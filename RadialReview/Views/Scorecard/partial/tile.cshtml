@@ -12,9 +12,7 @@
                 <div class="component">
                     <div class="clearfix"></div>
                     <div style="position: relative;" ng-hide="(@(selector)).Measurables.length==0">
-                        @*{{functions.scorecardColor(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)))}}*@
                         <div class="scorecard-table ng-cloak " ng-repeat="measurable in (@(selector)).Measurables | orderBy: ['Ordering']">
-                            @*filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate)*@
                         <div ng-repeat="week in (@(selector)).Weeks | filter:week.IsCurrentWeek " class="score zover" ng-if="week.IsCurrentWeek">
                             <div class="ellipsis alignCenter zover measurable-name" title="{{measurable.Name}}">{{measurable.Name}}</div>
                             <input ng-class="{'inlineEdit': measurable.Disabled!=true}"

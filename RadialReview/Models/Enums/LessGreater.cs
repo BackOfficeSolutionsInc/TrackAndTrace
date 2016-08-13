@@ -37,7 +37,12 @@ namespace RadialReview.Models.Enums
 		[Description("Greater than")]
 		//[EnumMember(Value = "Greater than")]
         GreaterThanNotEqual = 2,
-	}
+
+        [Display(Name = "⇔")]
+        [Description("Between")]
+        //[EnumMember(Value = "Less than")]
+        Between = -3,
+    }
 
 	
 }
@@ -46,7 +51,7 @@ namespace RadialReview
 {
 	public static class LessGreaterExtensions
 	{
-        public static bool MeetGoal(this LessGreater self,decimal goal, decimal? measured)
+        public static bool MeetGoal(this LessGreater self,decimal goal,decimal? alternate, decimal? measured)
         {
             if (measured == null)
                 return false;
@@ -62,6 +67,8 @@ namespace RadialReview
                     return measured > (goal);
                 case LessGreater.LessThanOrEqual:
                     return measured <= (goal);
+                case LessGreater.Between:
+                    return goal<= measured && measured <= (alternate);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -81,7 +88,9 @@ namespace RadialReview
                     return ">";
                 case LessGreater.LessThanOrEqual:
                     return "≤";
-				default:                    
+                case LessGreater.Between:
+                    return "<->";
+                default:                    
 					throw new ArgumentOutOfRangeException();
 			}
 		}

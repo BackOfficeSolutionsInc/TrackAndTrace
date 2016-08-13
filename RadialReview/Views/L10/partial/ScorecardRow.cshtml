@@ -87,6 +87,7 @@
                     <form>
                         <input @(inlineEdit == "" ? "disabled" : "")
                                data-goal="@(found.NotNull(x => x.OriginalGoal) ?? Model.MeetingMeasurable.Measurable.Goal)"
+                               data-alt-goal="@(found.NotNull(x => x.AlternateOriginalGoal) ?? Model.MeetingMeasurable.Measurable.AlternateGoal)"
                                data-goal-dir="@(found.NotNull(x => x.OriginalGoalDirection) ?? Model.MeetingMeasurable.Measurable.GoalDirection)"
                                data-row="@(ViewBag.Row)"
                                data-col="@(col)"

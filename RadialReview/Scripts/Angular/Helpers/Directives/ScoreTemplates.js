@@ -24,7 +24,8 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
 
             $scope.lastValue = $scope.score.Measured;
             
-            $scope.changeFunc = function () {
+            $scope.changeFunc = function (type) {
+                console.log("changefunc: " + type + " <" + $scope.lastValue + " - " + $scope.score.Measured +">");
                 if ($scope.lastValue != $scope.score.Measured) {
                     if ($scope.change) {
                         $scope.change();
@@ -32,11 +33,6 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
                 }
                 $scope.lastValue = $scope.score.Measured;
             }
-            //    console.log("sending measurable");
-            //    if (typeof ($scope.change) === "function") {
-            //        $scope.change();
-            //    }
-            //};
            
             var currWeekNumber= getWeekSinceEpoch(new Date().addDays(13));
 
@@ -48,48 +44,47 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
 
                 var useMeasurableTarget = s.ForWeek >= currWeekNumber
                 var goal = undefined;
+                var altgoal = undefined;
                 var dir = undefined;
                 if (!useMeasurableTarget) {
                     goal = s.Target;//s.Measurable.Target;
+                    altgoal = s.AltTarget;//s.Measurable.Target;
                     dir = s.Direction;//s.Measurable.Direction;
                 }
                 if (typeof (goal) === "undefined")
                     goal = s.Measurable.Target;
+                if (typeof (altgoal) === "undefined")
+                    altgoal = s.Measurable.AltTarget;
                 if (typeof (dir) === "undefined")
                     dir = s.Measurable.Direction;
 
                 if (typeof (goal) === "undefined") {
-                    goal = $("[data-measurable=" + s.Measurable.Id + "][data-week=" + s.ForWeek + "]").data("goal");
+                    var item =$("[data-measurable=" + s.Measurable.Id + "][data-week=" + s.ForWeek + "]");
+                    goal = item.data("goal");
+                    if (typeof(altgoal)==="undefined")
+                        altgoal = item.data("alt-goal");
                     console.log("goal not found, trying element. Found: " + goal + " -- "+s.Id+","+s.Measurable.Id);
                 }
+
+                //if (typeof (goal) === "undefined") {
+                //    var item =$("[data-measurable=" + s.Measurable.Id + "][data-week=" + s.ForWeek + "]");
+                //    goal = item.data("goal");
+                //    if (typeof(altgoal)==="undefined")
+                //        altgoal = item.data("alt-goal");
+                //    }
+                //}
 
                 if (!$.trim(v)) {
                     return "";
                 } else {
-                    var met = metGoal(dir, goal, v);
+                    var met = metGoal(dir, goal, v, altgoal);
                     if (met == true)
                         return "success";
                     else if (met == false)
                         return "danger";
                     else
                         return "error";
-                }
-                //if ($.isNumeric(v)) {
-                //    if (dir == "GreaterThan" || dir == 1) {
-                //        if (+v >= +goal)
-                //            return "success";
-                //        else
-                //            return ("danger");
-                //    } else {
-                //        if (+v < +goal)
-                //            return ("success");
-                //        else
-                //            return ("danger");
-                //    }
-
-                //} else {
-                //    return ("error");
-                //}
+                }               
             };
           
             $scope.scoreColor = scorecardColor($scope.score);
@@ -112,65 +107,62 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
                 }
             }
 
-
-            //ngModelCtrl.$modelValue
-            //$scope.add = function () {
-            //    console.log("add");
-            //    $scope.priority += 1;
-            //    if ($scope.priority > 6)
-            //        $scope.priority = 0;
-            //    ngModelCtrl.$setViewValue($scope.priority);
-            //    // console.log($scope.ngModel);
-            //    // $scope.$parent.$eval($attrs.ngChange);
-            //    //$scope.refresh();
-            //};
-            //$scope.remove = function () {
-            //    console.log("remove");
-            //    $scope.priority = Math.max(0, $scope.priority - 1);
-
-            //    ngModelCtrl.$setViewValue($scope.priority);
-            //    // console.log($scope.ngModel);
-            //    //  $scope.$parent.$eval($attrs.ngChange);
-            //    // $scope.refresh();
-            //};
-            //ngModelCtrl.$render = function () {
-            //    $scope.priority = ngModelCtrl.$modelValue;
-            //};
-
             $scope.$watch("score.Measured", refreshMeasurable);
             $scope.$watch("score.Measurable.Direction", refreshMeasurable);
             $scope.$watch("score.Measurable.Target", refreshMeasurable);
+            $scope.$watch("score.Measurable.AltTarget", refreshMeasurable);
             $scope.$watch("score.Direction", refreshMeasurable);
             $scope.$watch("score.Target", refreshMeasurable);
-            //refresh(ngModelCtrl.$modelValue);
+            $scope.$watch("score.AltTarget", refreshMeasurable);
         },
         controller: ["$scope", "$element", "$attrs", function ($scope, $element, $attrs) {
             $scope.getFcsa = function (measurable) {
+                var builder = {};
+                //var resize = 2;
+                //if ($scope.score.Measured >= 100000) {
+                //    maxDecimals = 0;
+                //}
+
                 if (measurable.Modifiers == "Dollar") {
-                    return { prepend: "$" };
+                    builder = {
+                        prepend: "$",
+                        resize: true,
+                        localization: {radix:","}
+                    };
                 } else if (measurable.Modifiers == "Percent") {
-                    return { append: "%" };
+                    builder = {
+                        append: "%",
+                        resize: true
+                    };
                 } else if (measurable.Modifiers == "Euros") {
-                    return { prepend: "€" };
+                    builder = {
+                        prepend: "€",
+                        resize: true
+                    };
                 } else if (measurable.Modifiers == "Pound") {
-                    return { prepend: "£" };
+                    builder = {
+                        prepend: "£",
+                        resize: true
+                    };
                 }
+
+                return builder;
             };
 
             $scope.measurable = $scope.score.Measurable;
             //$scope.week = week;//$scope.score.Week;
             $scope.fcsa = $scope.getFcsa($scope.measurable);
         }],
-        template: "<input data-goal='{{score.Target}}' data-goal-dir='{{score.Direction}}'" +
+        template: "<input data-goal='{{score.Target}}' data-alt-goal='{{score.AltTarget}}' data-goal-dir='{{score.Direction}}'" +
                   " data-row='{{$parent.$index}}' data-col='{{$index}}'" +
-                  " type='text' placeholder='' ng-model-options='{debounce: 75}' ng-disabled='measurable.Disabled'" +
+                  " type='text' placeholder='' ng1-model-options='{debounce:{\"default\":75,\"blur\":0}}' ng-disabled='measurable.Disabled'" +
                   " ng-model='score.Measured'" +
                   //" ng-model='functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)).Measured'"+
                   " class='grid rt1 ww_{{::week.ForWeekNumber}} {{scoreColor}}'" +
                   " data-scoreid='{{::Id}}' data-measurable='{{::measurable.Id}}' data-week='{{::week.ForWeekNumber}}'" +
                   " fcsa-number='{{fcsa}}'" +
-                  " ng-change='changeFunc()'" +
-                  " ng-blur='changeFunc()'" +
+                  " ng-change='changeFunc(\"change\")'" +
+                  " ng-blur='changeFunc(\"blur\")'" +
                   " id='{{scoreId}}' />"
     };
 }]);

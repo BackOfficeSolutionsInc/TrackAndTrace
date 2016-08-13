@@ -6,5 +6,17 @@
   {
     "outputFile": "Content/L10/Archive/Archive.css",
     "inputFile": "Content/L10/Archive/Archive.less"
+  },
+  {
+    "outputFile": "Content/bootstrap/custom/modal.css",
+    "inputFile": "Content/bootstrap/custom/modal.less"
+  },
+  {
+    "outputFile": "Content/bootstrap/bootstrap.css",
+    "inputFile": "Content/bootstrap/bootstrap.less"
+  },
+  {
+    "outputFile": "Content/bootstrap/custom/Site.css",
+    "inputFile": "Content/bootstrap/custom/Site.less"
   }
 ]

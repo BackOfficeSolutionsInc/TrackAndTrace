@@ -31,6 +31,7 @@ namespace RadialReview.Models.Scorecard
 		public virtual DateTime DateDue { get; set; }
 
         public virtual decimal? OriginalGoal { get; set; }
+        public virtual decimal? AlternateOriginalGoal { get; set; }
         public virtual LessGreater? OriginalGoalDirection { get; set; }
 
 		public virtual MeasurableModel Measurable { get; set; }
@@ -152,7 +153,7 @@ namespace RadialReview.Models.Scorecard
 
 		public virtual bool MetGoal()
 		{
-            return Measurable.GoalDirection.MeetGoal((OriginalGoal ?? Measurable.Goal),Measured);
+            return Measurable.GoalDirection.MeetGoal((OriginalGoal ?? Measurable.Goal), (AlternateOriginalGoal ?? Measurable.AlternateGoal),Measured);
            
 		}
 
@@ -168,6 +169,7 @@ namespace RadialReview.Models.Scorecard
                 Map(x => x.ForWeek);
                 Map(x => x.Measured);
                 Map(x => x.OriginalGoal);
+                Map(x => x.AlternateOriginalGoal);
                 Map(x => x.OriginalGoalDirection);
 				Map(x => x.OrganizationId);
 				Map(x => x.AccountableUserId).Column("AccountableUserId");

@@ -328,33 +328,6 @@ function makeXEditable_Scorecard(selector) {
                 $("[data-measurable=" + $(this).data("measurable") + "] .unit").html((newVal || "").toLowerCase());
             }
 
-            //var isGoal = $(this).hasClass("target-value"); 
-            /*if (isUnit || isGoal) {
-				var parent = $(this).closest(".target.value");
-				var units = parent.find(".unit");
-				var goal = parent.find(".numeric");
-				var a = transformNumber(goal.html(), "");
-				var unitsVal = units.html();
-				if (unitsVal == "dollar" || unitsVal == "dollars" || unitsVal == "$") {
-					$(units).insertBefore(goal);
-					console.log("bb");
-					if (isUnit) {
-						newVal = "$";
-						debugger;
-					}
-				} else {
-					$(goal).insertBefore(units);
-					console.log("aa");
-				}*/
-            /*$(goal).html(a);
-            $(units).html(unitsVal);
-
-            if (isGoal) {
-                newVal = a;
-                debugger;
-            }
-        }*/
-
             $(items).each(function (d) {
                 updateScore(this);
                 if (isUnit) {
@@ -362,17 +335,11 @@ function makeXEditable_Scorecard(selector) {
                 }
 
             });
-
-            /*return {
-				newValue: newVal
-			};*/
         }
     });
 }
 
 function addMeasurable(data, smallTable) {
-    //var row = $("<tr></tr>");
-    //row.append("<td>")
     $("#ScorecardTable tbody").append(data);
     $("#ScorecardTable_Over tbody").append(smallTable);
 
@@ -428,6 +395,7 @@ function updateScore(self, skipChart) {
     usCounter += 1;
     setTimeout(function () {
         var goal = $(self).attr("data-goal");
+        var altgoal = $(self).attr("data-alt-goal");
         var dir = $(self).attr("data-goal-dir");
         var v = getScoreTransform(self);//$(self).val();
         var id = $(self).attr("data-measurable");
@@ -441,30 +409,15 @@ function updateScore(self, skipChart) {
         if (!$.trim(v)) {
             //$(self).removeClass("error");
             //do nothing
-        } else {//if ($.isNumeric(v)) {
-            var met = metGoal(dir, goal, v);
+        } else {
+            var met = metGoal(dir, goal, v, altgoal);
             if (met == true)
                 $(self).addClass("success");
             else if (met == false)
                 $(self).addClass("danger");
             else
                 $(self).addClass("error");
-        }
-        //    if (dir == "GreaterThan") {
-        //        if (+v >= +goal)
-        //            $(self).addClass("success");
-        //        else
-        //            $(self).addClass("danger");
-        //    } else {
-        //        if (+v < +goal)
-        //            $(self).addClass("success");
-        //        else
-        //            $(self).addClass("danger");
-        //    }
-
-        //} else {
-        //    $(self).addClass("error");
-        //}
+        }      
 
         if (!skipChart && includeChart) {
             var arr = [];
@@ -481,17 +434,7 @@ function updateScore(self, skipChart) {
                     min = Math.min(min, v);
                     max = Math.max(max, v);
                     arr.push(v);
-                    //if (dir == "GreaterThan") {
-                    //    if (+v >= +goal)
-                    //        arr.push(v);
-                    //    else
-                    //        arr.push(v);
-                    //} else {
-                    //    if (+v < +goal)
-                    //        arr.push(v);
-                    //    else
-                    //        arr.push(v);
-                    //}
+                   
                 }
             });
 
@@ -531,26 +474,6 @@ function updateScore(self, skipChart) {
         }
     }, 1);
 }
-
-//var functionLock = false;
-//var functionCallbacks = [];
-//var lockingFunction = function(callback) {
-//	if (functionLock) {
-//		functionCallbacks.push(callback);
-//	} else {
-//		functionCallbacks.push(callback);
-//		while (functionCallbacks.length) {
-//			var thisCallback = functionCallbacks.pop();
-//			thisCallback();
-//		}
-//	}
-//};
-////function changeInput() {
-//	var that = this;
-//	lockingFunction(function() {
-//		changeInput_lock.apply(that);
-//	});
-//}
 
 var curColumn = -1;
 var curRow = -1;
@@ -660,21 +583,10 @@ function changeCells(found, input) {
     curRow = $(found).data("row");
     clearTimeout(changeCells.timeout);
     changeCells.timeout = setTimeout(function () {
-        $(found).select();
-        //$(found).ScrollTo({ onlyIfOutside: true });
-        /*if (goingRight) {
-			console.log("right: " + (foundPosition.left + foundWidth ) + ", " + scrollPosition[0]);
-			$(parent).scrollLeft(Math.max((foundPosition.left + foundWidth)*scale , scrollPosition[0]));
-		}
-		if (goingLeft) {
-			console.log("left:  " + (foundPosition.left ) + ", " + scrollPosition[0]);
-			$(parent).scrollLeft(Math.max((foundPosition.left) * scale, scrollPosition[0]));
-		}*/
-
+        $(found).select();       
         updateScore(input);
 
     }, 1);
-    //}
 }
 
 //Table
@@ -797,7 +709,6 @@ function addDivider(id) {
     });
 }
 
-
 function deleteDivider(id) {
     console.log("deleteDivider" + id);
     $.ajax({
@@ -809,12 +720,6 @@ function removeMeasurable(id) {
     console.log(id);
     $("tr[data-meetingmeasurable='" + id + "']").remove();
 }
-
-/*
-$('body').on('DOMNodeInserted', 'input', function () {
-
-});*/
-
 
 $(window).on("page-scorecard", function () {
     scrollRight();

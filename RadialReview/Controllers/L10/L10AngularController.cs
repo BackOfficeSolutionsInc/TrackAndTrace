@@ -61,13 +61,31 @@ namespace RadialReview.Controllers {
             L10Accessor.Remove(GetUser(), model, recurrenceId, connectionId);
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
-       
+
+        //[HttpPost]
+        //[Access(AccessLevel.UserOrganization)]
+        //public JsonResult UpdateAngularMeasurablePast(long id)
+        //{
+        //    L10Accessor.UpdateMeasurablePast(GetUser(),id);
+        //    return Json(ResultObject.SilentSuccess());
+        //}
 
         [HttpPost]
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult UpdateAngularMeasurable(AngularMeasurable model, string connectionId = null)
+        public JsonResult UpdateAngularMeasurable(AngularMeasurable model, string connectionId = null, bool historical = false, decimal? lower = null, decimal? upper = null)
         {
-            L10Accessor.Update(GetUser(), model, connectionId);
+            var target = model.Target;
+            var altTarget = (decimal?)null;
+            if (model.Direction == Models.Enums.LessGreater.Between)
+            {
+                target = lower;
+                altTarget = upper;
+
+            }
+            L10Accessor.UpdateArchiveMeasurable(GetUser(),
+                model.Id,model.Name,model.Direction,target,
+                model.Owner.NotNull(x => x.Id), model.Admin.NotNull(x => x.Id),
+                connectionId,!historical, altTarget);
             return Json(ResultObject.SilentSuccess());
         }
         

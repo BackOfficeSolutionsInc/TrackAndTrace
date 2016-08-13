@@ -137,7 +137,11 @@ namespace RadialReview.Utilities
                                 }
                                 catch (Exception e)
                                 {
-                                    ChromeExtensionComms.SendCommand("dbError",e.Message);
+                                    var mbox = e.Message;
+                                    if (e.InnerException != null && e.InnerException.Message != null)
+                                        mbox = e.InnerException.Message;
+
+                                    ChromeExtensionComms.SendCommand("dbError",mbox);
                                     throw e;
                                 }
                                 break;

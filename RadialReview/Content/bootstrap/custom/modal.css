@@ -23,7 +23,7 @@
 #modal .modal-icon .modal-body {
   position: relative;
   border-bottom: 1px solid #e5e5e5;
-  box-shadow: 0px 7px 15px -1px rgba(0, 0, 0, 0.55);
+  box-shadow: 0px 9px 15px -1px rgba(0, 0, 0, 0.55);
   padding-top: 0px;
   padding-bottom: 0px;
 }
@@ -61,7 +61,7 @@
   bottom: -11px;
 }
 #modal .modal-icon .modal-footer {
-  background-color: #3e3935;
+  background-color: #3E3935;
   border-top: none;
   height: 105px;
 }
@@ -73,7 +73,14 @@
   right: 0px;
   padding-bottom: 8px;
   font-size: 14px;
-  color: #3e3935;
+  color: #3E3935;
+}
+#modal .modal-icon .input-yesno input {
+  margin-left: auto;
+  margin-right: auto;
+  width: 20px;
+  height: 20px;
+  margin-top: 7px;
 }
 #modal .modal-icon .modal-icon:before {
   position: absolute;
@@ -107,7 +114,7 @@
   font-family: Arial;
   font-weight: bold;
   position: absolute;
-  color: #3e3935;
+  color: #3E3935;
   bottom: 28px;
   left: 0px;
   right: 0px;
@@ -139,13 +146,13 @@
 }
 #modal .modal-icon.modal-icon-primary .modal-icon:before {
   content: "\e122";
-  background-color: #ef7622;
+  background-color: #EF7622;
 }
 #modal .modal-icon.modal-icon-primary .modal-icon:after {
   content: "Hey!";
 }
 #modal .modal-icon.modal-icon-primary #modalOk {
-  background-color: #ef7622;
+  background-color: #EF7622;
 }
 #modal .modal-icon.modal-icon-warning .modal-icon:before {
   content: "\e123";
@@ -192,7 +199,7 @@
 }
 #modal .modal-icon.modal-icon-default .modal-icon:before {
   content: "\e162";
-  background-color: #ef7622;
+  background-color: #EF7622;
   padding-top: 23px;
   padding-left: 3px;
   border-style: solid;
@@ -201,5 +208,5 @@
   content: "Hey!";
 }
 #modal .modal-icon.modal-icon-default #modalOk {
-  background-color: #ef7622;
+  background-color: #EF7622;
 }

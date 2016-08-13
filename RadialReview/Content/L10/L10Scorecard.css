@@ -298,7 +298,7 @@
 
 .direction_LessThanOrEqual:empty:before {
     content: "≤";
-}
+} 
 
 .direction_GreaterThanNotEqual:empty:before {
     content: ">";
@@ -306,6 +306,9 @@
 
 .direction_EqualTo:empty:before {
     content: "=";
+}
+.direction_Between:empty:before {
+    content: "⇔";
 }
 
 .modifiers.Dollar:before,

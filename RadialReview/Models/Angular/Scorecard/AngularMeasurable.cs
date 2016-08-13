@@ -27,8 +27,9 @@ namespace RadialReview.Models.Angular.Scorecard
 			Owner = AngularUser.CreateUser(skipUser?null : measurable.AccountableUser);
 			Admin = AngularUser.CreateUser(skipUser ? null : measurable.AdminUser);
 			Name = measurable.Title;
-			Target = measurable.Goal;
-			Direction = measurable.GoalDirection;
+            Target = measurable.Goal;
+            AltTarget = measurable.AlternateGoal;
+            Direction = measurable.GoalDirection;
 			Modifiers = measurable.UnitType;
 			if (measurable.Id < 0)
 				Disabled = true;
@@ -45,8 +46,7 @@ namespace RadialReview.Models.Angular.Scorecard
 			};
 		}
 
-		public AngularMeasurable()
-		{
+		public AngularMeasurable(){
 			
 		}
 
@@ -55,8 +55,9 @@ namespace RadialReview.Models.Angular.Scorecard
 		public AngularUser Owner { get; set; }
 		public AngularUser Admin { get; set; }
 		public string Name { get; set; }
-		public decimal? Target { get; set; }
-		public LessGreater? Direction { get; set; }
+        public decimal? Target { get; set; }
+        public decimal? AltTarget { get; set; }
+        public LessGreater? Direction { get; set; }
 		
 		public UnitType? Modifiers { get; set; }
 

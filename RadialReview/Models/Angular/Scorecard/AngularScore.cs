@@ -22,7 +22,8 @@ namespace RadialReview.Models.Angular.Scorecard
 			Measurable = new AngularMeasurable(score.Measurable, skipUser);
 			Measured = score.Measured;
 			DateEntered = score.DateEntered;
-            Target = score.OriginalGoal??Measurable.Target;
+            Target = score.OriginalGoal ?? Measurable.Target;
+            AltTarget = score.AlternateOriginalGoal ?? Measurable.AltTarget;
             Direction = score.OriginalGoalDirection??Measurable.Direction;
 		}
 
@@ -36,5 +37,6 @@ namespace RadialReview.Models.Angular.Scorecard
         public bool? Disabled { get; set; }
         public LessGreater? Direction { get; set; }
         public decimal? Target { get; set; }
-	}
+        public decimal? AltTarget { get; set; }
+    }
 }

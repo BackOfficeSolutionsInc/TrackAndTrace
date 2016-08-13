@@ -253,8 +253,8 @@ function generateDatepicker(selector, date, name, id) {
     });
 }
 
-function metGoal(direction, goal, measured) {
-    
+function metGoal(direction, goal, measured, alternate) {
+
     if (!$.trim(measured)) {
         return undefined;
     } else if ($.isNumeric(measured)) {
@@ -270,6 +270,9 @@ function metGoal(direction, goal, measured) {
             return m > g;
         } else if (direction == "EqualTo" || direction == 0) {
             return m == g;
+        } else if (direction == "Between" || direction == -3) {
+            var ag = +alternate;
+            return g<=m && m<=ag;
         } else {
             console.log("Error: goal met could not be calculated. Unhandled direction: " + direction);
             return undefined;
@@ -294,11 +297,10 @@ Date.prototype.startOfWeek = function (pStartOfWeek) {
     return new Date(this.addDays(mDifference * -1));
 }
 
-function getWeekSinceEpoch(day)
-{
+function getWeekSinceEpoch(day) {
     var oneDay = 24 * 60 * 60 * 1000;
     var span = day.startOfWeek(0);
-    return Math.floor((span.getTime()/oneDay) / 7);
+    return Math.floor((span.getTime() / oneDay) / 7);
 }
 
 
@@ -306,6 +308,7 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onC
 
     $("#modal-icon").attr("class", "");
     $("#modal #class-container").attr("class", "");
+    $("#modalCancel").removeClass("hidden");
 
     if (typeof (title) === "object") {
         var obj = title;
@@ -354,18 +357,20 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onC
 ///      fields: [{                                                                                                             ///
 ///          name:(optional)                                                                                                    ///
 ///          text:(optional)                                                                                                    ///
-///          type: <text,textarea,checkbox,radio,span,header,h1,h2,h3,h4,h5,h6,number,date,time,file>(optional)                 ///
+///          type: <text,textarea,checkbox,radio,span,header,h1,h2,h3,h4,h5,h6,number,date,time,file,yesno,label>(optional)     ///
 ///          value: (optional)                                                                                                  ///
 ///          placeholder: (optional)                                                                                            ///
 ///      },...],                                                                                                                ///
 ///      pushUrl:"",                                                                                                            ///
 ///      success:function,                                                                                                      ///
 ///      cancel:function,                                                                                                       ///  
-///      reformat: function,                                                                                                    ///
+///      reformat: function,
+///      noCancel: bool
 ///  }                                                                                                                          ///
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 */
 function showModalObject(obj, pushUrl, onSuccess, onCancel) {
+    $("#modalCancel").toggleClass("hidden", obj.noCancel || false);
     if (typeof (pushUrl) === "undefined")
         pushUrl = obj["push"] || obj["pushUrl"];
     if (typeof (onSuccess) === "undefined")
@@ -406,12 +411,13 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
             obj.modalClass += " " + custom;
             if (!obj.icon.icon)
                 obj.modalClass += " modal-icon-info";
-            var icon = (obj.icon.icon || "").replace(".", "");
+
+            var icon = (obj.icon.icon || ("icon-" + custom)).replace(".", "");
             var title = escapeString(obj.icon.title || "Hey!");
             var color = escapeString(obj.icon.color || "#5bc0de");
             $("#modal-icon").addClass(icon);
             icon = icon.replace(" ", ".")
-            document.styleSheets[0].addRule("." + custom + " ." + icon + ":after", 'content: "' + title + '";');
+            document.styleSheets[0].addRule("." + custom + " ." + icon + ":after", 'content: "' + title + '" !important;');
             document.styleSheets[0].addRule("." + custom + " ." + icon + ":before", 'background-color: ' + color + ';');
             document.styleSheets[0].addRule("." + custom + " #modalOk", 'background-color: ' + color + ';');
         }
@@ -425,9 +431,9 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
     $("#modal").addClass("loading");
     $('#modal').modal('show');
 
-    var allowed = ["text", "hidden", "textarea", "checkbox", "radio", "number", "date", "time", "header", "span", "h1", "h2", "h3", "h4", "h5", "h6", "file"];
+    var allowed = ["text", "hidden", "textarea", "checkbox", "radio", "number", "date", "time", "header", "span", "h1", "h2", "h3", "h4", "h5", "h6", "file", "yesno","label"];
     var addLabel = ["text", "textarea", "checkbox", "radio", "number", "date", "time", "file"];
-    var tags = ["span", "h1", "h2", "h3", "h4", "h5", "h6"];
+    var tags = ["span", "h1", "h2", "h3", "h4", "h5", "h6","label"];
     var anyFields = ""
     if (typeof (obj.field) !== "undefined") {
         if (typeof (obj.fields) !== "undefined") {
@@ -456,6 +462,17 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 
     var builder = '<div class="form-horizontal modal-builder">';
     var runAfter = [];
+    var genInput = function (type, name, placeholder, value, others) {
+        others = others || "";
+        if (type == "number")
+            others += " step=\"any\"";
+
+        return '<input type="' + escapeString(type) + '" class="form-control blend"' +
+                      ' name="' + escapeString(name) + '" id="' + escapeString(name) + '" ' +
+                      escapeString(placeholder) + ' value="' + escapeString(value) + '" ' +others+'/>';
+
+    }
+
     for (var f in obj.fields) {
         try {
             var field = obj.fields[f];
@@ -498,8 +515,17 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
                 runAfter.push(function () {
                     generateDatepicker('.date-' + guid, curVal, curName, curName);
                 });
+            } else if (type == "yesno") {
+                var selectedYes = (value == true) ? 'checked="checked"' : "";
+                var selectedNo = (value == true) ? "" : 'checked="checked"';
+                input = '<div class="form-group input-yesno">' +
+                            '<label for="true" class="col-xs-4 control-label"> Yes </label>' +
+                            '<div class="col-xs-2">' + genInput("radio", name, placeholder, "true",selectedYes) + '</div>' +
+                            '<label for="false" class="col-xs-1 control-label"> No </label>' +
+                            '<div class="col-xs-2">' + genInput("radio", name, placeholder, "false",selectedNo) + '</div>' +
+                        '</div>';
             } else {
-                input = '<input type="' + escapeString(type) + '" class="form-control blend" name="' + escapeString(name) + '" id="' + escapeString(name) + '" ' + escapeString(placeholder) + ' value="' + escapeString(value) + '"/>';
+                input = genInput(type, name, placeholder, value);
             }
 
             if (addLabel.indexOf(type) != -1 && label) {
@@ -731,15 +757,15 @@ function clearAlerts() {
 }
 
 function showAngularError(d, status, headers, config, statusTxt) {
-	if (typeof (d.data) !== "undefined" && d.data!=null) {
-		showJsonAlert(d.data);
-	} else {
-		if (typeof (d.statusText) !== "undefined" && d.statusText !== "") {
-			showAlert(d.statusText);
-		} else {
-			showJsonAlert();
-		}
-	}
+    if (typeof (d.data) !== "undefined" && d.data != null) {
+        showJsonAlert(d.data);
+    } else {
+        if (typeof (d.statusText) !== "undefined" && d.statusText !== "") {
+            showAlert(d.statusText);
+        } else {
+            showJsonAlert();
+        }
+    }
 }
 
 function showJsonAlert(data, showSuccess, clearOthers) {

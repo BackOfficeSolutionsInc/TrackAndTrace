@@ -90,45 +90,31 @@
                                         <td class="target direction goal-column  data-column" data-measurable="{{::measurable.Id}}" ng-class="{handle: measurable.IsDivider}">
                                             <span class="item-wrapper place-left">
                                                 <span class="direction direction_{{measurable.Direction}}"
-                                                      onaftersave="functions.sendUpdate(measurable)"
+                                                      onaftersave="functions.checkFutureAndSend(measurable)"
                                                       editable-select="measurable.Direction" onshow="loadPossibleDirections()"
                                                       e-ng-options="s.value as s.text for s in possibleDirections"
                                                       e-ng-readonly="measurable.Disabled"></span>
                                             </span>
                                         </td>
                                         <td class="target value goal-column data-column" data-measurable="{{::measurable.Id}}" ng-class="{handle: measurable.IsDivider}">
-                                            <input ng-disabled="measurable.Disabled"
+                                            <input ng-if="measurable.Direction!='Between'" 
+                                                   ng-disabled="measurable.Disabled"
                                                    @(elastic)
                                                    class="blend  modifiers {{measurable.Modifiers}}"
                                                    fcsa-number="{{functions.getFcsa(measurable)}}"
                                                    ng-model-options="{ debounce: 75 }"
                                                    ng-model="measurable.Target"
-                                                   ng-change="functions.sendUpdate(measurable)" />
+                                                   ng-change="functions.sendUpdate(measurable)"
+                                                   ng-blur="functions.checkFutureAndSend(measurable)" />
+                                            <span ng-if="measurable.Direction=='Between'" ng-click="functions.checkFutureAndSend(measurable)">{{measurable.Target}}-{{measurable.AltTarget}}</span>
                                             <span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{::measurable.Id}}" data-pk="{{::measurable.Id}}_{{::meetingId}}" data-url="/L10/UpdateMeasurable"></span>
                                         </td>
                                         <td ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin))  | orderBy:'ForWeekNumber' " class="score score-column  data-column" ng-class="{current:week.IsCurrentWeek}">
-                                            @*<input data-goal="{{measurable.Target}}"
-                                                   data-goal-dir="{{measurable.Direction}}"
-                                                   data-row="{{$parent.$index}}"
-                                                   data-col="{{$index}}"
-                                                   type="text"
-                                                   placeholder=""
-                                                   ng-model-options="{debounce: 75}"
-                                                   ng-disabled="measurable.Disabled"
-                                                  // ng-model="functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)).Measured"
-                                                   class="grid rt1 ww_{{::week.ForWeekNumber}} {{functions.scorecardColor(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)))}}"
-                                                   data-scoreid="{{::Id}}"
-                                                   data-measurable="{{::measurable.Id}}"
-                                                   data-week="{{::week.ForWeekNumber}}"
-                                                   fcsa-number="{{functions.getFcsa(measurable)}}"
-                                                   //ng-change="functions.sendUpdate(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)))"
-                                                   id="{{functions.scorecardId(model,$parent.$index,$index)}}" />*@
+                                        
                                             <score week="week"
-                                                   score="functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey))"
-                                                   @*row="{{$parent.$index}}"
-                                                   col="{{$index}}"*@
-                                                   @*tt-onchange="functions.debugger()"*@
-                                                   tt-onchange="functions.sendUpdate(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)))"></score>
+                                                   score="functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey))"                                                 
+                                                   tt-onchange="functions.sendUpdate(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)))">
+                                            </score>
 
                                         </td>
                                         <td class="delete-column button-column">
@@ -200,7 +186,7 @@
                                     <td class="target direction  goal-column data-column" data-measurable="{{::measurable.Id}}" ng-class="{handle: measurable.IsDivider}">
                                         <span class="item-wrapper place-left">
                                             <span class="direction direction_{{measurable.Direction}}"
-                                                  onaftersave="functions.sendUpdate(measurable)"
+                                                  onaftersave="functions.checkFutureAndSend(measurable)"
                                                   editable-select="measurable.Direction"
                                                   onshow="loadPossibleDirections()"
                                                   e-ng-options="s.value as s.text for s in possibleDirections"
@@ -208,13 +194,17 @@
                                         </span>
                                     </td>
                                     <td class="target value goal-column data-column" data-measurable="{{::measurable.Id}}">
-                                        <input ng-disabled="measurable.Disabled"
+                                        <input ng-if="measurable.Direction!='Between'"
+                                               ng-disabled="measurable.Disabled"
                                                @(elastic)
                                                ng-model-options="{ debounce: 75 }"
                                                class="blend  modifiers {{measurable.Modifiers}}"
                                                fcsa-number="{{functions.getFcsa(measurable)}}"
                                                ng-model="measurable.Target"
-                                               ng-change="functions.sendUpdate(measurable)" />
+                                               ng-change="functions.sendUpdate(measurable)"
+                                               ng-blur="functions.checkFutureAndSend(measurable)" />
+                                        <span ng-if="measurable.Direction=='Between'" ng-click="functions.checkFutureAndSend(measurable)">{{measurable.Target}}-{{measurable.AltTarget}}</span>
+
                                         <span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{::measurable.Id}}" data-pk="{{::measurable.Id}}_{{::meetingId}}" data-url="/L10/UpdateMeasurable"></span>
                                     </td>
                                 </tr>
@@ -238,12 +228,6 @@
 @using (Html.BeginStyles()) {
     <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet" />
     <style>
-        /*.inlineEdit:hover {
-            text-decoration: none;
-            border-bottom: dashed 1px #08C;
-            cursor: pointer;
-        }*/
-
         .grid.gray {
             background-color: #eee;
             height: 100%;
@@ -251,9 +235,7 @@
     </style>
 }
 @using (Html.BeginScripts()) {
-    @*<script src="~/Scripts/jquery/jquery.ui.sortable.js"></script>*@
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
-    @*<script src="~/Scripts/L10/L10Scorecard.js"></script>*@
     @Scripts.Render("~/bundles/MeasurableList")
     <script>
 
@@ -264,18 +246,14 @@
 
             if ($(".scroll-right:not(.scroll-once)").length > 0) {
                 setTimeout(function () {
-                    //debugger;
-                    //$(".scroll-right").scrollLeft(4000);
                     $(".scroll-right:not(.scroll-once)").each(function () {
                         var that = this;
                         var dist = Math.max(4000, $(that).prop("scrollWidth"));
                         console.log("dist", dist);
                         $(that).addClass("scroll-once").animate({ scrollLeft:dist }, 500);
                     });
-                    //}); 
                 }, 1);
             } else {
-                //debugger;
                 setTimeout(scrollRight, 50);
             }
         }

@@ -77,6 +77,11 @@ namespace RadialReview.Accessors {
             };
         }
 
+        public static void UpdateMeasurablePast(UserOrganizationModel caller, long id)
+        {
+            var m =ScorecardAccessor.GetMeasurable(caller, id);
+            UpdateArchiveMeasurable(caller, id, m.Title, m.GoalDirection, m.Goal, m.AccountableUserId, m.AdminUserId, updateFutureOnly: false);
+        }
 
         public static string GetDefaultStartPage(L10Recurrence recurrence)
         {
@@ -2676,7 +2681,7 @@ namespace RadialReview.Accessors {
                 }
             }
         }
-        public static void UpdateArchiveMeasurable(UserOrganizationModel caller, long measurableId, string name = null, LessGreater? direction = null, decimal? target = null, long? accountableId = null, long? adminId = null, string connectionId = null, bool updateFutureOnly = true)
+        public static void UpdateArchiveMeasurable(UserOrganizationModel caller, long measurableId, string name = null, LessGreater? direction = null, decimal? target = null, long? accountableId = null, long? adminId = null, string connectionId = null, bool updateFutureOnly = true,decimal? altTarget=null)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -2726,7 +2731,7 @@ namespace RadialReview.Accessors {
                             foreach (var mmid in meetingMeasurableIds)
                                 rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "title", name));
                         }
-                        if (direction != null && measurable.GoalDirection != direction.Value) {
+                        if ((direction != null && measurable.GoalDirection != direction.Value) || !updateFutureOnly) {
                             measurable.GoalDirection = direction.Value;
                             updateText.Add("Goal Direction: " + measurable.GoalDirection.ToSymbol());
 
@@ -2748,7 +2753,7 @@ namespace RadialReview.Accessors {
                             //group.updateArchiveMeasurable(measurableId, "direction", direction.Value.ToSymbol(), direction.Value.ToString());
 
                         }
-                        if (target != null && measurable.Goal != target.Value) {
+                        if ((target != null && measurable.Goal != target.Value) || !updateFutureOnly) {
                             measurable.Goal = target.Value;
                             updateText.Add("Goal: " + measurable.Goal);
 
@@ -2769,6 +2774,33 @@ namespace RadialReview.Accessors {
                                 rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "target", target.Value.ToString("0.#####")));
                             //group.updateArchiveMeasurable(measurableId, "target", target.Value.ToString("0.#####"));
                         }
+
+
+                        if ((altTarget != null && measurable.AlternateGoal != altTarget.Value) || !updateFutureOnly)
+                        {
+                            measurable.AlternateGoal = altTarget.Value;
+                            updateText.Add("AltGoal: " + measurable.AlternateGoal);
+
+
+                            var scoresQ = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null && x.MeasurableId == measurable.Id);
+                            if (updateFutureOnly)
+                            {
+                                var nowSunday = DateTime.UtcNow.StartOfWeek(DayOfWeek.Sunday);
+                                scoresQ = scoresQ.Where(x => x.ForWeek > nowSunday);
+                            }
+                            var scores = scoresQ.List().ToList();
+                            foreach (var score in scores)
+                            {
+                                score.AlternateOriginalGoal = altTarget.Value;
+                                s.Update(score);
+                            }
+                            scoresToUpdate = scores;
+
+                            foreach (var mmid in meetingMeasurableIds)
+                                rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "altTarget", altTarget.Value.ToString("0.#####")));
+                            //group.updateArchiveMeasurable(measurableId, "target", target.Value.ToString("0.#####"));
+                        }
+
                         if (accountableId != null && measurable.AccountableUserId != accountableId.Value) {
                             perms.ViewUserOrganization(accountableId.Value, false);
                             var user = s.Get<UserOrganizationModel>(accountableId.Value);
