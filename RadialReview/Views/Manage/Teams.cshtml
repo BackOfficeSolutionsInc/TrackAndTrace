@@ -18,6 +18,10 @@
 @section hints{
 	@Html.AlertBoxDismissable("The next step is adding teams to your organization. To begin, click the Add button. You can come back to this any time.", "alert-info", "Info:")
 }
+@using (Html.BeginStyles()) {
+	@Styles.Render("~/Content/Manage")
+}
+
 <div class="panel panel-primary">
 	<div class="panel-heading-button">
 		<button class="btn btn-default fullWidth plus" onclick="@Html.ShowModal("Create Team", "/Team/Modal", "/Team/Modal?refresh=true")">Add</button>

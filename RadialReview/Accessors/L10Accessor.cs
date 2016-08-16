@@ -522,7 +522,7 @@ namespace RadialReview.Accessors {
             var accessibleUserIds = new[] { userId };
             var user = s.Get<UserOrganizationModel>(userId);
             if (user.Organization.Settings.ManagersCanViewSubordinateL10)
-                accessibleUserIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, userId).ToArray();
+                accessibleUserIds = DeepAccessor.Users.GetSubordinatesAndSelf(s, caller, userId).ToArray(); //DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, userId).ToArray();
 
             var attendee_ReccurenceIds = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
                 .Where(x => x.DeleteTime == null)

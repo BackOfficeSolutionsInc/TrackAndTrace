@@ -32,7 +32,7 @@ namespace RadialReview.Controllers
 	        var usefulReviews = pullData.Item2;
 	        var reviewContainers = pullData.Item1;//usefulReviews.Select(x => x.ForReviewContainer).Distinct(x => x.Id).ToList();
 
-            var subordinates = _DeepSubordianteAccessor.GetSubordinatesAndSelf(caller, caller.Id);
+            var subordinates = DeepAccessor.Users.GetSubordinatesAndSelf(caller, caller.Id);
 
             var editable = reviewContainers.Where(x => caller.IsManagingOrganization() || subordinates.Any(y => y == x.CreatedById)).Select(x => x.Id).ToList();
             var takabled = usefulReviews.Where(x => x.ForUserId == selfId).Distinct(x=>x.ForReviewsId).ToDictionary(x => x.ForReviewsId, x => (long?)x.Id);

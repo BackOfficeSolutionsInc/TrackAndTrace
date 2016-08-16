@@ -173,8 +173,8 @@ namespace RadialReview.Controllers {
             var managers = new List<SelectListItem>();
             var strictHierarchy = caller.Organization.StrictHierarchy;
             if (!strictHierarchy)
-                managers = _OrganizationAccessor.GetOrganizationManagers(GetUser(), GetUser().Organization.Id)
-                                                .ToSelectList(x => x.GetName() + x.GetTitles(3, caller.Id).Surround(" (", ")"), x => x.Id)
+                managers = AccountabilityAccessor.GetOrganizationManagerNodes(GetUser(), GetUser().Organization.Id)
+                                                .ToSelectList(x => x.User.GetName() + x.AccountabilityRolesGroup.NotNull(y=> y.Position.NotNull(z=> z.GetName().Surround(" (",")"))), x => x.Id)
                                                 .ToList();
 
             var e4 = sw.ElapsedMilliseconds;
@@ -182,11 +182,14 @@ namespace RadialReview.Controllers {
                 managers.Insert(0, new SelectListItem() { Selected = false, Text = "[Organization Admin]", Value = "-3" });
             }
 
+			var node = DeepAccessor.Users.GetNodesForUser(GetUser(), managerId ?? caller.Id).FirstOrDefault();
+			var nodeId = node == null?(long?)null: node.Id;
+
             var model = new CreateUserOrganizationViewModel() {
                 Position = posModel,
                 OrgId = caller.Organization.Id,
                 StrictlyHierarchical = strictHierarchy,
-                ManagerId = managerId ?? caller.Id,
+                ManagerNodeId = nodeId,
                 PotentialManagers = managers,
                 SendEmail = caller.Organization.SendEmailImmediately,
                 IsClient = isClient
@@ -235,7 +238,7 @@ namespace RadialReview.Controllers {
         {
             _UserAccessor.EditUser(GetUser(), model.UserId, model.IsManager, model.ManagingOrganization);
 
-            return Json(ResultObject.Success("User updated."));
+            return Json(ResultObject.SilentSuccess("User updated."));
         }
 
         [HttpPost]
@@ -431,7 +434,7 @@ namespace RadialReview.Controllers {
             } else if (GetUser().Organization.StrictHierarchy) {
                 potentialManagers = _UserAccessor.GetDirectSubordinates(GetUser(), GetUser().Id).Where(x => x.ManagerAtOrganization).ToListAlive();
             } else {
-                potentialManagers = _DeepSubordianteAccessor.GetSubordinatesAndSelfModels(GetUser(), GetUser().Id).Where(x => x.ManagerAtOrganization).ToListAlive();
+                potentialManagers = DeepAccessor.Users.GetSubordinatesAndSelfModels(GetUser(), GetUser().Id).Where(x => x.ManagerAtOrganization).ToListAlive();
             }
 
             var selfId = GetUser().Id;
@@ -445,7 +448,8 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.Manager)]
         [HttpPost]
-        public JsonResult DeleteManager(long id)
+		[Obsolete("Cannot remove manager like this", true)]
+		public JsonResult DeleteManager(long id)
         {
             _UserAccessor.RemoveManager(GetUser(), id, DateTime.UtcNow);
             return Json(ResultObject.Success("Removed manager.").ForceRefresh());
@@ -453,7 +457,8 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.Manager)]
         [HttpPost]
-        public JsonResult RemoveManager(long userId,long managerId)
+		[Obsolete("Cannot remove manager like this", true)]
+		public JsonResult RemoveManager(long userId,long managerId)
         {
             _UserAccessor.RemoveManager(GetUser(),userId, managerId,  DateTime.UtcNow);
             return Json(ResultObject.Success("Removed manager."));
@@ -461,7 +466,8 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.Manager)]
         [HttpPost]
-        public JsonResult AddManager(AddManagerViewModel model)
+		[Obsolete("Cannot add manager like this", true)]
+		public JsonResult AddManager(AddManagerViewModel model)
         {
             _UserAccessor.AddManager(GetUser(), model.UserId, model.ManagerId, DateTime.UtcNow);
             return Json(ResultObject.Success("Added manager."));
@@ -469,7 +475,8 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.Manager)]
         [HttpPost]
-        public JsonResult SwapManager(long oldManagerId, long newManagerId, long userId)
+		[Obsolete("Cannot remove manager like this", true)]
+		public JsonResult SwapManager(long oldManagerId, long newManagerId, long userId)
         {
             _UserAccessor.SwapManager(GetUser(), userId, oldManagerId, newManagerId, DateTime.UtcNow);
             return Json(ResultObject.Success("Swapped user."));

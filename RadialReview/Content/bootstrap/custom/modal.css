@@ -82,6 +82,13 @@
   height: 20px;
   margin-top: 7px;
 }
+#modal .modal-icon input[type=checkbox] {
+  outline: none !important;
+  border: none;
+  width: 19px;
+  height: 19px;
+  margin-top: 8px;
+}
 #modal .modal-icon .modal-icon:before {
   position: absolute;
   display: inline-block;

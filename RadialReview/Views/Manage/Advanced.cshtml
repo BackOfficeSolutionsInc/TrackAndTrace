@@ -1,384 +1,415 @@
 ﻿@using RadialReview.Models
 @model RadialReview.Models.ViewModels.OrganizationViewModel
 @{
-    ViewBag.Title = "Advanced";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.Page = "Advanced";
-    var showExtra_freeusers=false;
+	ViewBag.Title = "Advanced";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Page = "Advanced";
+	var showExtra_freeusers = false;
 }
 
 @section top{
-    <div class="jumbotron">
-        <h1>Manage</h1>
-    </div>
+	<div class="jumbotron">
+		<h1>Manage</h1>
+	</div>
 }
 
 @section header{
-    @Html.Partial("Partial/manageheader")
+	@Html.Partial("Partial/manageheader")
 }
 <br />
 
 @{
-    var l10Enabled = Html.Organization().Settings.EnableL10;
-    var reviewedEnabled = Html.Organization().Settings.EnableReview;
-    var surveyEnabled = Html.Organization().Settings.EnableSurvey;
+	var l10Enabled = Html.Organization().Settings.EnableL10;
+	var reviewedEnabled = Html.Organization().Settings.EnableReview;
+	var surveyEnabled = Html.Organization().Settings.EnableSurvey;
 }
 
 <div style="text-align: right;margin-bottom: 3px;">
-    <a class="btn btn-primary btn-invert" href="/Payment/SetCard">Add Credit Card</a>
+	<a class="btn btn-primary btn-invert" href="/Payment/SetCard">Add Credit Card</a>
 </div>
 <div class="panel panel-primary">
-    @if (Model.Cards.Any()) {
-        <table class="table table-condensed table-hover">
-            <thead>
-                <tr>
-                    <th>Card Owner</th>
-                    <th class="alignCenter">Number</th>
-                    <th class="alignCenter">Entered</th>
-                    <th class="alignCenter">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var card in Model.Cards) {
-                    <tr>
-                        <td>@card.Owner</td>
-                        <td class="alignCenter" style="width:150px;">************@card.Last4</td>
-                        <td class="alignCenter" style="width:90px;" title="@Html.Organization().ConvertFromUTC(card.Created).ToString()">@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",Html.Organization().ConvertFromUTC(card.Created))</td>
-                        <td class="alignCenter" style="width:90px;"><span style="width:56px;display:inline-block;" class="label label-@(card.Active ?"success":"default")">@(card.Active ? "Active" : "Inactive")</span></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    } else {
-        <div class="panel-heading">
-            Payment Methods
-        </div>
-        <div class="panel-body">
-            <span class="gray">No credit cards on file. Click Add button to create one.</span>
-        </div>
-    }
+	@if (Model.Cards.Any())
+	{
+		<table class="table table-condensed table-hover">
+			<thead>
+				<tr>
+					<th>Card Owner</th>
+					<th class="alignCenter">Number</th>
+					<th class="alignCenter">Entered</th>
+					<th class="alignCenter">Status</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var card in Model.Cards)
+				{
+					<tr>
+						<td>@card.Owner</td>
+						<td class="alignCenter" style="width:150px;">************@card.Last4</td>
+						<td class="alignCenter" style="width:90px;" title="@Html.Organization().ConvertFromUTC(card.Created).ToString()">@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", Html.Organization().ConvertFromUTC(card.Created))</td>
+						<td class="alignCenter" style="width:90px;"><span style="width:56px;display:inline-block;" class="label label-@(card.Active ?"success":"default")">@(card.Active ? "Active" : "Inactive")</span></td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	}
+	else
+	{
+		<div class="panel-heading">
+			Payment Methods
+		</div>
+		<div class="panel-body">
+			<span class="gray">No credit cards on file. Click Add button to create one.</span>
+		</div>
+	}
 </div>
 
 <div class="panel panel-primary">
-    <table class="table table-condensed payment">
-        <thead>
-            <tr>
-                <th style="width:250px;padding-left: 5px!important">Payment Plan</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.PaymentPlan is PaymentPlan_Monthly) {
-                var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
-                if (plan.BaselinePrice > 0) {
-                    <tr>
-                        <th>Base fee</th>
-                        <td>
-                            @String.Format("{0:C}", plan.BaselinePrice)
-                            @if (plan.FirstN_Users_Free > 0) {
-                                <span>(covers the first <b>@plan.FirstN_Users_Free</b> users)</span>
-                            }
-                        </td>
-                    </tr>
-                } else {
-                    showExtra_freeusers = true;
-                }
-            }
-            <tr>
-                <th>Level 10 Meeting Software </th>
-                <td>@(l10Enabled ? new HtmlString("<span class='enabled label label-success'>Enabled</span>") : new HtmlString("<span class='enabled label label-danger'>Not Enabled</span>"))</td>
-            </tr>
-            @if (l10Enabled) {
-                if (Model.PaymentPlan is PaymentPlan_Monthly) {
-                    var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
+	<table class="table table-condensed payment">
+		<thead>
+			<tr>
+				<th style="width:250px;padding-left: 5px!important">Payment Plan</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@if (Model.PaymentPlan is PaymentPlan_Monthly)
+			{
+				var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
+				if (plan.BaselinePrice > 0)
+				{
+					<tr>
+						<th>Base fee</th>
+						<td>
+							@String.Format("{0:C}", plan.BaselinePrice)
+							@if (plan.FirstN_Users_Free > 0)
+							{
+								<span>(covers the first <b>@plan.FirstN_Users_Free</b> users)</span>
+							}
+						</td>
+					</tr>
+				}
+				else
+				{
+					showExtra_freeusers = true;
+				}
+			}
+			<tr>
+				<th>Level 10 Meeting Software </th>
+				<td>@(l10Enabled ? new HtmlString("<span class='enabled label label-success'>Enabled</span>") : new HtmlString("<span class='enabled label label-danger'>Not Enabled</span>"))</td>
+			</tr>
+			@if (l10Enabled)
+			{
+				if (Model.PaymentPlan is PaymentPlan_Monthly)
+				{
+					var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
 
-                    <tr>
-                        <td>&nbsp;&nbsp;<span class="price">@String.Format("{0:C}", plan.L10PricePerPerson)</span><span class="price-ending">/Person/Month</span></td>
-                        <td></td>
-                    </tr>
-                    if (plan.L10FreeUntil != null && plan.L10FreeUntil > DateTime.UtcNow) {
-                        <tr>
-                            <td>&nbsp;&nbsp;Free until <span>@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",plan.L10FreeUntil.Value)</span></td>
-                            <td></td>
-                        </tr>
-                    }
-                }
-            }
-            <tr>
-                <td style="border-top:1px solid #f1f1f1"></td>
-                <td style="border-top:1px solid #f1f1f1"></td>
-            </tr>
-            <tr>
-                <th>Review Software</th>
-                <td> @(reviewedEnabled ? new HtmlString("<span class='enabled label label-success'>Enabled</span>") : new HtmlString("<span class='enabled label label-danger'>Not Enabled</span>"))</td>
-            </tr>
-            @if (reviewedEnabled) {
-                if (Model.PaymentPlan is PaymentPlan_Monthly) {
-                    var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
+					<tr>
+						<td>&nbsp;&nbsp;<span class="price">@String.Format("{0:C}", plan.L10PricePerPerson)</span><span class="price-ending">/Person/Month</span></td>
+						<td></td>
+					</tr>
+					if (plan.L10FreeUntil != null && plan.L10FreeUntil > DateTime.UtcNow)
+					{
+						<tr>
+							<td>&nbsp;&nbsp;Free until <span>@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", plan.L10FreeUntil.Value)</span></td>
+							<td></td>
+						</tr>
+					}
+				}
+			}
+			<tr>
+				<td style="border-top:1px solid #f1f1f1"></td>
+				<td style="border-top:1px solid #f1f1f1"></td>
+			</tr>
+			<tr>
+				<th>Review Software</th>
+				<td> @(reviewedEnabled ? new HtmlString("<span class='enabled label label-success'>Enabled</span>") : new HtmlString("<span class='enabled label label-danger'>Not Enabled</span>"))</td>
+			</tr>
+			@if (reviewedEnabled)
+			{
+				if (Model.PaymentPlan is PaymentPlan_Monthly)
+				{
+					var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
 
-                    <tr>
-                        <td>&nbsp;&nbsp;<span class="price">@String.Format("{0:C}", plan.ReviewPricePerPerson)</span><span class="price-ending">/Person/Month</span></td>
-                        <td></td>
-                    </tr>
-                    if (plan.ReviewFreeUntil != null && plan.ReviewFreeUntil > DateTime.UtcNow) {
-                        <tr>
-                            <td>&nbsp;&nbsp;Free until <span>@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",plan.ReviewFreeUntil.Value)</span></td>
-                            <td></td>
-                        </tr>
-                    }
-                }
-            }
-            <tr>
-                <td style="border-top:1px solid #f1f1f1"></td>
-                <td style="border-top:1px solid #f1f1f1"></td>
-            </tr>
-            @*<tr>
-                    <th>Survey Software </th>
-                    <td>@(surveyEnabled ? new HtmlString("<span class='enabled label label-success'>Enabled</span>") : new HtmlString("<span class='enabled label label-danger'>Not Enabled</span>"))</td>
-                </tr>
-                @if (surveyEnabled)
-                {
-                    if (Model.PaymentPlan is PaymentPlan_Monthly)
-                    {
-                        var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
+					<tr>
+						<td>&nbsp;&nbsp;<span class="price">@String.Format("{0:C}", plan.ReviewPricePerPerson)</span><span class="price-ending">/Person/Month</span></td>
+						<td></td>
+					</tr>
+					if (plan.ReviewFreeUntil != null && plan.ReviewFreeUntil > DateTime.UtcNow)
+					{
+						<tr>
+							<td>&nbsp;&nbsp;Free until <span>@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", plan.ReviewFreeUntil.Value)</span></td>
+							<td></td>
+						</tr>
+					}
+				}
+			}
+			<tr>
+				<td style="border-top:1px solid #f1f1f1"></td>
+				<td style="border-top:1px solid #f1f1f1"></td>
+			</tr>
+			@*<tr>
+					<th>Survey Software </th>
+					<td>@(surveyEnabled ? new HtmlString("<span class='enabled label label-success'>Enabled</span>") : new HtmlString("<span class='enabled label label-danger'>Not Enabled</span>"))</td>
+				</tr>
+				@if (surveyEnabled)
+				{
+					if (Model.PaymentPlan is PaymentPlan_Monthly)
+					{
+						var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
 
-                        <tr>
-                            <td>&nbsp;&nbsp;<span class="price">Free</span></td>
-                            <td></td>
-                        </tr>
-                    }
-                }*@
+						<tr>
+							<td>&nbsp;&nbsp;<span class="price">Free</span></td>
+							<td></td>
+						</tr>
+					}
+				}*@
 
 
-            @{
-                var extras = new List<HtmlString>();
-                if (Model.PaymentPlan is PaymentPlan_Monthly) {
-                    var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
-                    if (plan.FreeUntil.Date >= DateTime.UtcNow.Date) {
-                        extras.Add(new HtmlString("<li>Free until <b>" + Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",plan.FreeUntil) + "</b>.</li>"));
-                    }
-                    if (plan.FirstN_Users_Free>0 && showExtra_freeusers) {
-                        extras.Add(new HtmlString("<li>First <b>" + plan.FirstN_Users_Free+ "</b> are free.</li>"));
-                    }
+			@{
+				var extras = new List<HtmlString>();
+				if (Model.PaymentPlan is PaymentPlan_Monthly)
+				{
+					var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
+					if (plan.FreeUntil.Date >= DateTime.UtcNow.Date)
+					{
+						extras.Add(new HtmlString("<li>Free until <b>" + Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", plan.FreeUntil) + "</b>.</li>"));
+					}
+					if (plan.FirstN_Users_Free > 0 && showExtra_freeusers)
+					{
+						extras.Add(new HtmlString("<li>First <b>" + plan.FirstN_Users_Free + "</b> are free.</li>"));
+					}
 
-                }
-            }
+				}
+			}
 
-            @if (extras.Any()) {
-                <tr>
-                    <td style="border-top:1px solid #f1f1f1;height:3px"></td>
-                    <td style="border-top:1px solid #f1f1f1"></td>
-                </tr>
+			@if (extras.Any())
+			{
+				<tr>
+					<td style="border-top:1px solid #f1f1f1;height:3px"></td>
+					<td style="border-top:1px solid #f1f1f1"></td>
+				</tr>
 
-                <tr>
-                    <th>Extras</th>
-                    <td>
-                        <ul style="margin-left:-1px;padding-left: 0px;">
-                            @foreach (var e in extras) {
-                                @e
-                            }
-                        </ul>
-                    </td>
-                </tr>
+				<tr>
+					<th>Extras</th>
+					<td>
+						<ul style="margin-left:-1px;padding-left: 0px;">
+							@foreach (var e in extras)
+							{
+								@e
+							}
+						</ul>
+					</td>
+				</tr>
 
-            }
+			}
 
-        </tbody>
-    </table>
+		</tbody>
+	</table>
 </div>
 
 
-@using (var f = Html.BeginForm("Advanced", "Manage", FormMethod.Post)) {
-    @Html.HiddenFor(x => x.Id)
+@using (var f = Html.BeginForm("Advanced", "Manage", FormMethod.Post))
+{
+	@Html.HiddenFor(x => x.Id)
 
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <h3 class="panel-title">Settings:</h3>
-        </div>
-        <div class="panel-body">
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h3 class="panel-title">Settings:</h3>
+		</div>
+		<div class="panel-body">
 
-            <div class="form-group">
-                <div class="row ">
-                    <label class="col-sm-4 ttt control-label">Organization name:</label>
-                    <div class="col-sm-4">
-                        @Html.TextBoxFor(x => x.OrganizationName, new { @class = "form-control", placeholder = "Organization name" })
-                    </div>
-                </div>
-                @*<div class="row ">
-                        <label class="col-sm-4 ttt control-label">Quarterly Goals are called:</label>
-                        <div class="col-sm-4">
-                            @Html.TextBoxFor(x => x.RockName, new { @class = "form-control", placeholder = "Quarterly goal name" })
-                        </div>
-                    </div>*@
-                @Html.HiddenFor(x => x.RockName)
+			<div class="form-group">
+				<div class="row ">
+					<label class="col-sm-4 ttt control-label">Organization name:</label>
+					<div class="col-sm-4">
+						@Html.TextBoxFor(x => x.OrganizationName, new { @class = "form-control", placeholder = "Organization name" })
+					</div>
+				</div>
+				@*<div class="row ">
+						<label class="col-sm-4 ttt control-label">Quarterly Goals are called:</label>
+						<div class="col-sm-4">
+							@Html.TextBoxFor(x => x.RockName, new { @class = "form-control", placeholder = "Quarterly goal name" })
+						</div>
+					</div>*@
+				@Html.HiddenFor(x => x.RockName)
 
-                <div class="row">
-                    <div class="col-sm-4 ttt">
-                        <label class="control-label">Managers have admin ability:</label>
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.CheckBoxFor(x => x.ManagersCanEdit, new { @class = "checkbox" })
-                    </div>
-                </div>
+				<div class="row">
+					<div class="col-sm-4 ttt">
+						<label class="control-label">Managers have admin ability:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.CheckBoxFor(x => x.ManagersCanEdit, new { @class = "checkbox" })
+					</div>
+				</div>
 
-                <div class="row">
-                    <div class="col-sm-4 ttt">
-                        <label class="control-label">Strict heirarchy:</label>
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.CheckBoxFor(x => x.StrictHierarchy, new { @class = "checkbox" })
-                    </div>
-                </div>
+				<div class="row">
+					<div class="col-sm-4 ttt">
+						<label class="control-label">Strict heirarchy:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.CheckBoxFor(x => x.StrictHierarchy, new { @class = "checkbox" })
+					</div>
+				</div>
 
-                <div class="row">
-                    <div class="col-sm-4 ttt">
-                        <label class="control-label">Managers can edit their own questions:</label>
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.CheckBoxFor(x => x.ManagersCanEditSelf, new { @class = "checkbox" })
-                    </div>
-                </div>
+				<div class="row">
+					<div class="col-sm-4 ttt">
+						<label class="control-label">Managers can edit their own questions:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.CheckBoxFor(x => x.ManagersCanEditSelf, new { @class = "checkbox" })
+					</div>
+				</div>
 
-                <div class="row">
-                    <div class="col-sm-4 ttt">
-                        <label class="control-label">Employees can edit their own questions:</label>
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.CheckBoxFor(x => x.EmployeesCanEditSelf, new { @class = "checkbox" })
-                    </div>
-                </div>
+				<div class="row">
+					<div class="col-sm-4 ttt">
+						<label class="control-label">Employees can edit their own questions:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.CheckBoxFor(x => x.EmployeesCanEditSelf, new { @class = "checkbox" })
+					</div>
+				</div>
 
-                <div class="row">
-                    <div class="col-sm-4 ttt">
-                        <label class="control-label">Managers can edit positions:</label>
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.CheckBoxFor(x => x.ManagersCanEditPositions, new { @class = "checkbox" })
-                    </div>
-                </div>
+				<div class="row">
+					<div class="col-sm-4 ttt">
+						<label class="control-label">Managers can edit positions:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.CheckBoxFor(x => x.ManagersCanEditPositions, new { @class = "checkbox" })
+					</div>
+				</div>
 
-                <div class="row">
-                    <div class="col-sm-4 ttt">
-                        <label class="control-label">Managers can remove users:</label>
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.CheckBoxFor(x => x.ManagersCanRemoveUsers, new { @class = "checkbox" })
-                    </div>
-                </div>
+				<div class="row">
+					<div class="col-sm-4 ttt">
+						<label class="control-label">Managers can remove users:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.CheckBoxFor(x => x.ManagersCanRemoveUsers, new { @class = "checkbox" })
+					</div>
+				</div>
 
-                <div class="row">
-                    <div class="col-sm-4 ttt">
-                        <label class="control-label">Managers can create survey:</label>
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.CheckBoxFor(x => x.ManagersCanCreateSurvey, new { @class = "checkbox" })
-                    </div>
-                </div>
+				<div class="row">
+					<div class="col-sm-4 ttt">
+						<label class="control-label">Managers can create survey:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.CheckBoxFor(x => x.ManagersCanCreateSurvey, new { @class = "checkbox" })
+					</div>
+				</div>
 
-                <div class="row">
-                    <div class="col-sm-4 ttt">
-                        <label class="control-label">Employees can create survey:</label>
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.CheckBoxFor(x => x.EmployeesCanCreateSurvey, new { @class = "checkbox" })
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4 ttt">
-                        <label class="control-label">Managers can only see @Html.Organization().Settings.RockName and Measurables below them:</label>
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.CheckBoxFor(x => x.OnlySeeRockAndScorecardBelowYou, new { @class = "checkbox" })
-                    </div>
-                </div>
+				<div class="row">
+					<div class="col-sm-4 ttt">
+						<label class="control-label">Employees can create survey:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.CheckBoxFor(x => x.EmployeesCanCreateSurvey, new { @class = "checkbox" })
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4 ttt">
+						<label class="control-label">Managers can only see @Html.Organization().Settings.RockName and Measurables below them:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.CheckBoxFor(x => x.OnlySeeRockAndScorecardBelowYou, new { @class = "checkbox" })
+					</div>
+				</div>
 
-                <div class="row">
-                    <div class="col-sm-4 ttt">
-                        <label class="control-label">Send invitations immediately:</label>
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.CheckBoxFor(x => x.SendEmailImmediately, new { @class = "checkbox" })
-                    </div>
-                </div>
+				<div class="row">
+					<div class="col-sm-4 ttt">
+						<label class="control-label">Send invitations immediately:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.CheckBoxFor(x => x.SendEmailImmediately, new { @class = "checkbox" })
+					</div>
+				</div>
 
-                <div class="row">
-                    <div class="col-sm-4 ttt">
-                        <label class="control-label">Time-zone:</label>
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.DropDownListFor(x => x.TimeZone, Model.TimeZones, new { @class = "form-control" })
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4 ttt">
-                        <label class="control-label">Week start:</label>
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.EnumDropDownListFor(x => x.WeekStart, new { @class = "form-control" })
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4 ttt">
-                        <label class="control-label">Date Format:</label>
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.DropDownListFor(x=>x.DateFormat,new []{"MM-dd-yyyy","dd-MM-yyyy"}.ToSelectList(x=>x.ToLower(),x=>x),new { @class = "form-control" })
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4 ttt">
-                        <label class="control-label">Year Start:</label>
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.EnumDropDownListFor(x => x.StartOfYearMonth, new { @class = "form-control" })
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.EnumDropDownListFor(x => x.StartOfYearOffset, new { @class = "form-control" })
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4 ttt">
-                        <label class="control-label">Scorecard Period:</label>
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.EnumDropDownListFor(x => x.ScorecardPeriod, new { @class = "form-control" })
-                    </div>
-                </div>
-                <br />
-                <div class="form-group">
-                    <div class=" col-lg-offset-4 col-lg-3">
-                        <button type="submit" class="btn btn-primary">Save</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+				<div class="row">
+					<div class="col-sm-4 ttt">
+						<label class="control-label">Time-zone:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.DropDownListFor(x => x.TimeZone, Model.TimeZones, new { @class = "form-control" })
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4 ttt">
+						<label class="control-label">Week start:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.EnumDropDownListFor(x => x.WeekStart, new { @class = "form-control" })
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4 ttt">
+						<label class="control-label">Date Format:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.DropDownListFor(x => x.DateFormat, new[] { "MM-dd-yyyy", "dd-MM-yyyy" }.ToSelectList(x => x.ToLower(), x => x), new { @class = "form-control" })
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4 ttt">
+						<label class="control-label">Number Format:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.DropDownListFor(x => x.NumberFormat, NumberFormatExtensions.Formats(), new { @class = "form-control" })
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4 ttt">
+						<label class="control-label">Year Start:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.EnumDropDownListFor(x => x.StartOfYearMonth, new { @class = "form-control" })
+					</div>
+					<div class="col-sm-4">
+						@Html.EnumDropDownListFor(x => x.StartOfYearOffset, new { @class = "form-control" })
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4 ttt">
+						<label class="control-label">Scorecard Period:</label>
+					</div>
+					<div class="col-sm-4">
+						@Html.EnumDropDownListFor(x => x.ScorecardPeriod, new { @class = "form-control" })
+					</div>
+				</div>
+				<br />
+				<div class="form-group">
+					<div class=" col-lg-offset-4 col-lg-3">
+						<button type="submit" class="btn btn-primary">Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
 
 }
 
 
-@using (Html.BeginStyles()) {
-    <style>
-        .enabled {
-            font-size: 75%;
-        }
+@using (Html.BeginStyles())
+{
+	<style>
+		.enabled {
+			font-size: 75%;
+		}
 
-        .price {
-            font-size: 100%;
-        }
+		.price {
+			font-size: 100%;
+		}
 
-        .payment {
-            font-size: 110%;
-        }
+		.payment {
+			font-size: 110%;
+		}
 
-            .payment tbody td, .payment tbody th {
-                padding-top: 0 !important;
-                padding-bottom: 0 !important;
-            }
+			.payment tbody td, .payment tbody th {
+				padding-top: 0 !important;
+				padding-bottom: 0 !important;
+			}
 
-        .price-ending {
-            font-size: 80%;
-        }
-    </style>
+		.price-ending {
+			font-size: 80%;
+		}
+	</style>
+	@Styles.Render("~/Content/Manage")
 }

@@ -210,7 +210,7 @@ namespace RadialReview.Models.Json
             if (e is RedirectException)
                 Message = Capitalize(e.Message);
             else
-                Message = Capitalize(ExceptionStrings.AnErrorOccuredContactUs);
+                Message = Capitalize(ExceptionStrings.AnErrorOccured);
 #if(DEBUG)
 			TraceMessage = Capitalize(e.Message);
             Trace = e.StackTrace;

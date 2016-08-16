@@ -499,11 +499,18 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
             noCancel: true,
             fields: fields,
             success: function (model) {
-                //m.Target = Math.min(model.Lower,model.Upper);
+            	//m.Target = Math.min(model.Lower,model.Upper);
+            	var low = Math.min(+model.Lower, +model.Upper);
+            	var high = Math.max(+model.Lower, +model.Upper);
+            	if (isNaN(low))
+            		low = null;
+            	if (isNaN(high))
+            		high = null;
+
                 $scope.functions.sendUpdate(m, {
                     "historical": model.history,
-                    "Lower": Math.min(+model.Lower,+model.Upper),
-                    "Upper": Math.max(+model.Lower,+model.Upper),
+                    "Lower": low,
+                    "Upper": high,
                     "connectionId":null
                 });
             },

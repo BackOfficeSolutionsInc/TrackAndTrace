@@ -117,7 +117,7 @@ namespace RadialReview.Utilities
                                 try
                                 {
                                     var c = new Configuration();
-                                    //c.SetInterceptor(new NHSQLInterceptor());
+                                    c.SetInterceptor(new NHSQLInterceptor());
                                     //SetupAudit(c);
                                     factory = Fluently.Configure(c).Database(
                                                 MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionLocalMysql"].ConnectionString).ShowSql())

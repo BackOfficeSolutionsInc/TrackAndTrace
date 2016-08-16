@@ -246,7 +246,7 @@ namespace RadialReview.Accessors
 
 			if (caller.Organization.Settings.OnlySeeRocksAndScorecardBelowYou && !managing)
 			{
-				var userIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id);
+				var userIds = DeepAccessor.Users.GetSubordinatesAndSelf(s, caller, caller.Id);
 				q = s.QueryOver<RockModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).WhereRestrictionOn(x => x.ForUserId).IsIn(userIds);
 			}
 			else
@@ -321,7 +321,7 @@ namespace RadialReview.Accessors
 
 					var userIds = L10Accessor.GetL10Recurrence(s, perms, recurrenceId, true)._DefaultAttendees.Select(x => x.User.Id).ToList();
 					if (caller.Organization.Settings.OnlySeeRocksAndScorecardBelowYou){
-						userIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id).Intersect(userIds).ToList();
+						userIds = DeepAccessor.Users.GetSubordinatesAndSelf(s, caller, caller.Id).Intersect(userIds).ToList();
 					}
 					return rocks.Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.AccountableUser.Id).IsIn(userIds).List().ToList();
 				}
@@ -343,7 +343,7 @@ namespace RadialReview.Accessors
                     var rocksQ = s.QueryOver<RockModel>()
                         .Where(x => x.DeleteTime == null && x.PeriodId == period);
                     if (!caller.ManagingOrganization && !caller.IsRadialAdmin){
-                        var subs =DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id);
+                        var subs = DeepAccessor.Users.GetSubordinatesAndSelf(s, caller, caller.Id);
                         rocksQ= rocksQ.WhereRestrictionOn(x=>x.ForUserId).IsIn(subs);
                     }
                     var rocks = rocksQ.List().ToList();

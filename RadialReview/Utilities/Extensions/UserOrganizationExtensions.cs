@@ -293,8 +293,11 @@ namespace RadialReview
 		{
 			return self.AllSubordinates.Union(new List<UserOrganizationModel> { self }).ToList();
 		}
-		public static Boolean IsManager(this UserOrganizationModel self)
+		public static Boolean IsManager(this UserOrganizationModel self,bool excludeRadial=false)
 		{
+			if (excludeRadial) {
+				return self.ManagerAtOrganization || self.ManagingOrganization;
+			}
 			return self.IsRadialAdmin || self.ManagerAtOrganization || self.ManagingOrganization;
 		}
 		public static Boolean IsManagingOrganization(this UserOrganizationModel self)

@@ -19,12 +19,14 @@ using System.Threading.Tasks;
 using RadialReview.Models.Json;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
+using RadialReview.Models.Accountability;
+using RadialReview.Utilities.RealTime;
 
 namespace RadialReview.Accessors {
     public class NexusAccessor : BaseAccessor {
         //public static UrlAccessor _UrlAccessor = new UrlAccessor();
 
-        public TempUserModel CreateUserUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email, String firstName, String lastName, out UserOrganizationModel createdUser, bool isClient, string organizationName)
+        public TempUserModel CreateUserUnderManager(UserOrganizationModel caller, long? managerNodeId, Boolean isManager, long orgPositionId, String email, String firstName, String lastName, out UserOrganizationModel createdUser, bool isClient, string organizationName)
         {
             if (!Emailer.IsValid(email))
                 throw new PermissionsException(ExceptionStrings.InvalidEmail);
@@ -43,29 +45,44 @@ namespace RadialReview.Accessors {
                 long newUserId = 0;
                 using (var tx = db.BeginTransaction()) {
 
+					AccountabilityNode managerNode= null;
+					if (managerNodeId != null) {
+						managerNode = db.Get<AccountabilityNode>(managerNodeId.Value);
+						if (managerNode == null)
+							throw new PermissionsException("Parent does not exist.");
+					}
+
                     var newUser = new UserOrganizationModel();
                     createdUser = newUser;
-                    if (managerId == -4) {
-                        //No manager
+					if (managerNode == null){
+						//No manager
+					}else{
+						var chart = db.Get<AccountabilityChart>(managerNode.AccountabilityChartId);
+						if (chart == null)
+							throw new PermissionsException("No accountability chart");
 
-                    } else if (managerId == -3) {
-                        //Manager at organization
-                        if (!caller.ManagingOrganization)
-                            throw new PermissionsException();
-                        newUser.ManagingOrganization = true;
-                    } else {
-                        var manager = db.Get<UserOrganizationModel>(managerId);
-                        //Manager and Caller are in the same organization
-                        if (manager.Organization.Id != caller.Organization.Id)
-                            throw new PermissionsException();
-                        //Strict Hierarchy stuff
-                        if (caller.Organization.StrictHierarchy && caller.Id != managerId)
-                            throw new PermissionsException();
-                        //Both are managers at the organization
-                        if (!(caller.ManagerAtOrganization || caller.ManagingOrganization) || !(manager.ManagerAtOrganization || manager.ManagingOrganization))
-                            throw new PermissionsException();
+						if (chart.RootId == managerNode.Id){
+							//Manager at organization
+							if (!caller.ManagingOrganization)
+								throw new PermissionsException();
+							newUser.ManagingOrganization = true;
+						}else
+						{
+							//var manager = db.Get<UserOrganizationModel>(managerId);
+							//Manager and Caller are in the same organization
+							if (managerNode.OrganizationId != caller.Organization.Id)
+								throw new PermissionsException();
+							//Strict Hierarchy stuff
+							if (!caller.ManagingOrganization && caller.Organization.StrictHierarchy && (managerNode.UserId==null || caller.Id != managerNode.Id))
+								throw new PermissionsException();
 
-                    }
+
+							//Am I a manager?  ////Both are managers at the organization
+							if (!(caller.ManagerAtOrganization || caller.ManagingOrganization)/* || !(manager.ManagerAtOrganization || manager.ManagingOrganization)*/)
+								throw new PermissionsException();
+
+						}
+					}
                     newUser.ClientOrganizationName = organizationName;
                     newUser.IsClient = isClient;
                     newUser.ManagerAtOrganization = isManager;
@@ -104,16 +121,22 @@ namespace RadialReview.Accessors {
                         newUser.Positions.Add(positionDuration);
                     }
 
-                    if (managerId > 0) {
-                        var managerDuration = new ManagerDuration(managerId, newUser.Id, caller.Id) {
-                            Start = now,
-                            Manager = db.Load<UserOrganizationModel>(managerId),
-                            Subordinate = db.Load<UserOrganizationModel>(newUser.Id),
-                        };
-                        var manager = db.Get<UserOrganizationModel>(managerId);
-                        //db.Save(new DeepSubordinateModel() { CreateTime = now, Links = 1, ManagerId = newUserId, SubordinateId = newUserId });
-                        DeepSubordianteAccessor.Add(db, manager, newUser, caller.Organization.Id, now);
-                        newUser.ManagedBy.Add(managerDuration);
+                    if (managerNode!=null) {
+						if (managerNode.UserId != null) {
+							var managerDuration = new ManagerDuration(managerNode.UserId.Value, newUser.Id, caller.Id) {
+								Start = now,
+								Manager = db.Load<UserOrganizationModel>(managerNode.UserId.Value),
+								Subordinate = db.Load<UserOrganizationModel>(newUser.Id),
+							};
+							newUser.ManagedBy.Add(managerDuration);
+						}
+						// var manager = db.Get<UserOrganizationModel>(managerId);
+						//db.Save(new DeepSubordinateModel() { CreateTime = now, Links = 1, ManagerId = newUserId, SubordinateId = newUserId });
+						using (var rt = RealTimeUtility.Create()){
+							var node = AccountabilityAccessor.AppendNode(db, PermissionsUtility.Create(db, caller),rt, managerNode.Id, userId: newUser.Id);
+						}
+
+                        //DeepSubordianteAccessor.Add(db, manager, newUser, caller.Organization.Id, now);
                     }
 
                     db.Update(newUser);
@@ -155,13 +178,13 @@ namespace RadialReview.Accessors {
             return tempUser;
         }
 
-        public async Task<Tuple<string, UserOrganizationModel>> JoinOrganizationUnderManager(UserOrganizationModel caller, long managerId, Boolean isManager, long orgPositionId, String email, String firstName, String lastName, bool isClient, bool sendEmail, string organizationName)
+        public async Task<Tuple<string, UserOrganizationModel>> JoinOrganizationUnderManager(UserOrganizationModel caller, long? managerNodeId, Boolean isManager, long orgPositionId, String email, String firstName, String lastName, bool isClient, bool sendEmail, string organizationName)
         {
             //var sendEmail = caller.Organization.SendEmailImmediately;
 
             UserOrganizationModel createdUser;
 
-            var tempUser = CreateUserUnderManager(caller, managerId, isManager, orgPositionId, email, firstName, lastName, out createdUser, isClient, organizationName);
+            var tempUser = CreateUserUnderManager(caller, managerNodeId, isManager, orgPositionId, email, firstName, lastName, out createdUser, isClient, organizationName);
             if (sendEmail) {
                 var mail = CreateJoinEmailToGuid(caller, tempUser);
                 await Emailer.SendEmail(mail);

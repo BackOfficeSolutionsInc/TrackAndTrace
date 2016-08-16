@@ -150,24 +150,26 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.Manager)]
+		[Obsolete("Do not use",true)]
 		public ActionResult Reorganize()
 		{
-			new Cache().Push(CacheKeys.MANAGE_PAGE, "Reorganize", LifeTime.Request/*Session*/);
-			var orgId = GetUser().Organization.Id;
-			var allUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), orgId, false, false);
-			var allManagers = _OrganizationAccessor.GetOrganizationManagerLinks(GetUser(), orgId).ToListAlive();
+			throw new Exception("Do not use");
+			//new Cache().Push(CacheKeys.MANAGE_PAGE, "Reorganize", LifeTime.Request/*Session*/);
+			//var orgId = GetUser().Organization.Id;
+			//var allUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), orgId, false, false);
+			//var allManagers = _OrganizationAccessor.GetOrganizationManagerLinks(GetUser(), orgId).ToListAlive();
 
-			var depth = _DeepSubordianteAccessor.GetOrganizationMap(GetUser(), orgId);
+			//var depth = _DeepSubordianteAccessor.GetOrganizationMap(GetUser(), orgId);
 
-			allUsers.ForEach(x => x.SetLevel(depth.Count(y => y.SubordinateId == x.Id)));
+			//allUsers.ForEach(x => x.SetLevel(depth.Count(y => y.SubordinateId == x.Id)));
 
-			var model = new ReorganizeVM()
-			{
-				AllManagerLinks = allManagers,
-				AllUsers = allUsers,
-			};
+			//var model = new ReorganizeVM()
+			//{
+			//	AllManagerLinks = allManagers,
+			//	AllUsers = allUsers,
+			//};
 
-			return View(model);
+			//return View(model);
 		}
 
 		[Access(AccessLevel.Manager)]
@@ -199,7 +201,7 @@ namespace RadialReview.Controllers
 
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(GetUser().Organization.Id));
 
-		
+
 			var model = new OrganizationViewModel()
 			{
 				Id = user.Organization.Id,
@@ -208,28 +210,29 @@ namespace RadialReview.Controllers
 				StrictHierarchy = user.Organization.StrictHierarchy,
 				ManagersCanEditPositions = user.Organization.ManagersCanEditPositions,
 				ManagersCanRemoveUsers = user.Organization.ManagersCanRemoveUsers,
-			
+
 				SendEmailImmediately = user.Organization.SendEmailImmediately,
 				ManagersCanEditSelf = user.Organization.Settings.ManagersCanEditSelf,
 				EmployeesCanEditSelf = user.Organization.Settings.EmployeesCanEditSelf,
 				ManagersCanCreateSurvey = user.Organization.Settings.ManagersCanCreateSurvey,
 				EmployeesCanCreateSurvey = user.Organization.Settings.EmployeesCanCreateSurvey,
-				
+
 				RockName = user.Organization.Settings.RockName,
 				TimeZone = user.Organization.Settings.TimeZoneId,
 				WeekStart = user.Organization.Settings.WeekStart,
-                Cards = PaymentAccessor.GetCards(GetUser(),GetUser().Organization.Id),
+				Cards = PaymentAccessor.GetCards(GetUser(), GetUser().Organization.Id),
 
 				OnlySeeRockAndScorecardBelowYou = user.Organization.Settings.OnlySeeRocksAndScorecardBelowYou,
 
-				PaymentPlan = PaymentAccessor.GetPlan(GetUser(),GetUser().Organization.Id),
+				PaymentPlan = PaymentAccessor.GetPlan(GetUser(), GetUser().Organization.Id),
 
 				ScorecardPeriod = user.Organization.Settings.ScorecardPeriod,
 
 				StartOfYearMonth = user.Organization.Settings.StartOfYearMonth,
 				StartOfYearOffset = user.Organization.Settings.StartOfYearOffset,
 
-                DateFormat = user.Organization.Settings.DateFormat
+				DateFormat = user.Organization.Settings.DateFormat,
+				NumberFormat = user.Organization.Settings.NumberFormat
 
 			};
 
@@ -272,7 +275,8 @@ namespace RadialReview.Controllers
 				model.ScorecardPeriod,
 				model.StartOfYearMonth,
 				model.StartOfYearOffset,
-                model.DateFormat);
+				model.DateFormat,
+				model.NumberFormat);
 			ViewBag.Success = "Successfully Saved.";
 
 			model.CompanyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)

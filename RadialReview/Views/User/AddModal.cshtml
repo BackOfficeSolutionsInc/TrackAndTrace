@@ -34,14 +34,14 @@
 
 	if (Model.StrictlyHierarchical)
 	{
-		@Html.HiddenFor(x => x.ManagerId)
+		@Html.HiddenFor(x => x.ManagerNodeId)
 	}
 	else
 	{
 		<div class="smallBreak"></div>
 		<div class="row">
 			<div class="col-xs-3"><label>Supervisor:</label></div>
-			<div class="col-xs-9">@Html.DropDownListFor(x => x.ManagerId, Model.PotentialManagers, new { @class = "fullWidth form-control blend" })</div>
+			<div class="col-xs-9">@Html.DropDownListFor(x => x.ManagerNodeId, Model.PotentialManagers, new { @class = "fullWidth form-control blend" })</div>
 		</div>
 	}
 
@@ -54,7 +54,7 @@
 }
 else
 {
-	@Html.Hidden("ManagerId", "-4"); @*No Manger*@
+	@Html.Hidden("ManagerNodeId", "null"); @*No Manger*@
 	@Html.Hidden("Position.PositionId", "-2"); @*No Position*@
 }
 

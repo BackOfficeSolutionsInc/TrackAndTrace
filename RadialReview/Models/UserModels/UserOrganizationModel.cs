@@ -305,8 +305,8 @@ namespace RadialReview.Models
                 Cache.HasSentInvite = !(TempUser != null && TempUser.LastSent == null);
             if (Cache.IsAdmin != this.ManagingOrganization)
                 Cache.IsAdmin = ManagingOrganization;
-            if (Cache.IsManager != this.IsManager())
-                Cache.IsManager = this.IsManager();
+            if (Cache.IsManager != this.IsManager(true))
+                Cache.IsManager = this.IsManager(true);
             var managers = String.Join(", ", ManagedBy.ToListAlive().Select(x => x.Manager.GetName()));
             if (Cache.Managers != managers)
                 Cache.Managers = managers;

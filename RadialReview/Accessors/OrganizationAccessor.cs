@@ -28,6 +28,8 @@ using NHibernate;
 using WebGrease.Css.Extensions;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
+using RadialReview.Models.Accountability;
+using RadialReview.Utilities.RealTime;
 
 namespace RadialReview.Accessors {
 
@@ -40,6 +42,8 @@ namespace RadialReview.Accessors {
             OrganizationModel organization;
             OrganizationTeamModel allMemberTeam;
             PermissionsUtility perms;
+			AccountabilityChart acChart;
+
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
 
@@ -105,7 +109,7 @@ namespace RadialReview.Accessors {
                     s.Save(organization);
 
                     perms = PermissionsUtility.Create(s,userOrgModel);
-                    var acChart = AccountabilityAccessor.CreateChart(s,perms, organization.Id, false);
+                    acChart = AccountabilityAccessor.CreateChart(s,perms, organization.Id, false);
                     organization.AccountabilityChartId = acChart.Id;
 
                     if (positionName != null) {
@@ -194,13 +198,21 @@ namespace RadialReview.Accessors {
                     }
                     s.Update(allMemberTeam);
 
-                    s.Save(new DeepSubordinateModel {
-                        CreateTime = now,
-                        Links = 1,
-                        SubordinateId = userOrgModel.Id,
-                        ManagerId = userOrgModel.Id,
-                        OrganizationId = organization.Id,
-                    });
+					var permsAdmin = PermissionsUtility.Create(s, UserOrganizationModel.ADMIN);
+					using (var rt = RealTimeUtility.Create())
+					{
+						var node = AccountabilityAccessor.AppendNode(s, permsAdmin,rt, acChart.RootId,userId:userOrgModel.Id);
+						//AccountabilityAccessor.UpdateAccountabilityNode(s, RealTimeUtility.Create(false), permsAdmin, node.Id, null, );
+					}
+
+
+					//s.Save(new DeepAccountability {
+     //                   CreateTime = now,
+     //                   Links = 1,
+     //                   SubordinateId = userOrgModel.Id,
+     //                   ManagerId = userOrgModel.Id,
+     //                   OrganizationId = organization.Id,
+     //               });
                     newUser = userOrgModel;
 
                     userOrgModel.UpdateCache(s);
@@ -478,8 +490,9 @@ namespace RadialReview.Accessors {
                                                                             ScorecardPeriod? scorecardPeriod = null,
                                                                             Month? startOfYearMonth = null,
                                                                             DateOffset? startOfYearOffset = null,
-                                                                            string dateFormat = null
-            )
+																			string dateFormat = null,
+																			NumberFormat? numberFormat = null
+			)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -549,10 +562,13 @@ namespace RadialReview.Accessors {
                     if (startOfYearMonth != null)
                         org.Settings.StartOfYearMonth = startOfYearMonth.Value;
 
-                    if (startOfYearOffset != null)
-                        org.Settings.StartOfYearOffset = startOfYearOffset.Value;
+					if (startOfYearOffset != null)
+						org.Settings.StartOfYearOffset = startOfYearOffset.Value;
 
-                    s.Update(org);
+					if (numberFormat != null)
+						org.Settings.NumberFormat = numberFormat.Value;
+
+					s.Update(org);
 
                     var all = OrganizationAccessor.GetAllUserOrganizations(s, perms, organizationId);
                     var cache = new Cache();
@@ -622,7 +638,7 @@ namespace RadialReview.Accessors {
 
             var caller = perms.GetCaller();
 
-            var deep = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id);
+            var deep = DeepAccessor.Users.GetSubordinatesAndSelf(s, caller, caller.Id);
 
             //var classes = "organizations".AsList("admin");
 
@@ -911,7 +927,7 @@ namespace RadialReview.Accessors {
             perms.ViewOrganization(organizationId);
             var users = s.QueryOver<UserLookup>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null).List().ToList();
             if (populatePersonallyManaging) {
-                var subs = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id, type);
+                var subs = DeepAccessor.Users.GetSubordinatesAndSelf(s, caller, caller.Id, type);
 
                 var orgManager = PermissionsAccessor.AnyTrue(s, caller, type, x => x.ManagingOrganization);
 

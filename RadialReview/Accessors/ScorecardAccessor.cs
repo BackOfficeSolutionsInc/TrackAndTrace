@@ -54,7 +54,7 @@ namespace RadialReview.Accessors {
 
             List<long> userIds = null;
             List<NameId> visibleMeetings = null;
-            var getUserIds = new Func<List<long>>(() => { userIds = userIds ?? DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id); return userIds; });
+            var getUserIds = new Func<List<long>>(() => { userIds = userIds ?? DeepAccessor.Users.GetSubordinatesAndSelf(s, caller, caller.Id); return userIds; });
             var getVisibleMeetings = new Func<List<NameId>>(() => {
                 if (visibleMeetings == null)
                     visibleMeetings = getUserIds().SelectMany(x => L10Accessor.GetVisibleL10Meetings_Tiny(s, perms, x, true)).Distinct(x => x.Id).ToList();
@@ -166,7 +166,7 @@ namespace RadialReview.Accessors {
 
                     var userIds = L10Accessor.GetL10Recurrence(s, perms, recurrenceId, true)._DefaultAttendees.Select(x => x.User.Id).ToList();
                     if (caller.Organization.Settings.OnlySeeRocksAndScorecardBelowYou) {
-                        userIds = DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, caller.Id).Intersect(userIds).ToList();
+                        userIds = DeepAccessor.Users.GetSubordinatesAndSelf(s, caller, caller.Id).Intersect(userIds).ToList();
                     }
 
                     var measurables = s.QueryOver<MeasurableModel>();

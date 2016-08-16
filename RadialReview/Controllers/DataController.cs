@@ -22,8 +22,8 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.UserOrganization)]
         public JsonResult ForceDirected()
         {
-            var map=_DeepSubordianteAccessor.GetOrganizationMap(GetUser(), GetUser().Organization.Id).ToListAlive();
-            var allMembers = map.Select(x=>x.SubordinateId).Union(map.Select(x=>x.ManagerId)).Distinct().ToList();
+            var map=DeepAccessor.GetOrganizationMap(GetUser(), GetUser().Organization.Id).Where(x=> x.Child.UserId != null && x.Parent.UserId != null);
+            var allMembers = map.Select(x=>x.Child.UserId.Value).Union(map.Select(x=>x.Parent.UserId.Value)).Distinct().ToList();
             var dict=new Dictionary<long,int>();
 
             var membersDict = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false).ToDictionary(x=>x.Id,x=>x.GetName());
@@ -34,8 +34,8 @@ namespace RadialReview.Controllers
             }).ToArray();
 
             var links= map.Select(x=>new{
-                source=dict[x.ManagerId],
-                target=dict[x.SubordinateId],
+                source=dict[x.Parent.UserId.Value],
+                target=dict[x.Child.UserId.Value],
                 value=1
             }).ToArray();
 

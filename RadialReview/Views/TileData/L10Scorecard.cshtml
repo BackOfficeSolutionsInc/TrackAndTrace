@@ -4,13 +4,14 @@
         {{(model.L10Scorecards | filter:{KeyId:@(Model)})[0].Title}}<a href="/l10/details/@(Model)#Scorecard" class=""> (View all)</a>
 
     </div><div class="l10-scorecard-tile"><div class="specialDiv tile hidden-width-1">@{
-        Html.RenderPartial("~/Views/Measurable/partial/list.cshtml", new ViewDataDictionary(){
-            {"AddHeaders", false},
-            {"AddController", false},
-            //{"DisableName", true},
-            {"Selector", "((model.L10Scorecards)| filter:{KeyId:"+Model+"})[0].Contents "},
-            { "ForceMin", ViewBag.NumberOfWeeks??13*7 }
-        }); }</div><div class="tile visible-width-1">@{
+					Html.RenderPartial("~/Views/Measurable/partial/list.cshtml", new ViewDataDictionary(){
+			{"AddHeaders", false},
+			{"AddController", false},
+			//{"DisableName", true},
+			{"Localization", Html.Organization().Settings.NumberFormat.Angular() },
+			{"Selector", "((model.L10Scorecards)| filter:{KeyId:"+Model+"})[0].Contents "},
+			{ "ForceMin", ViewBag.NumberOfWeeks??13*7 }
+		}); }</div><div class="tile visible-width-1">@{
     Html.RenderPartial("~/Views/Scorecard/Partial/tile.cshtml", new ViewDataDictionary(){
             {"AddHeaders",false},
             {"AddController",false},

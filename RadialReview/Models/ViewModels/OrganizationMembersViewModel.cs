@@ -15,6 +15,7 @@ namespace RadialReview.Models.ViewModels
         public List<OrgMemberViewModel> Users { get; set; }
 
 		public bool ManagingOrganization { get; set; }
+		
 
         public OrgMembersViewModel(UserOrganizationModel caller,IEnumerable<UserLookup> members,OrganizationModel organization,bool hasAdminDelete)
         {

@@ -18,5 +18,9 @@
   {
     "outputFile": "Content/bootstrap/custom/Site.css",
     "inputFile": "Content/bootstrap/custom/Site.less"
+  },
+  {
+    "outputFile": "Content/Manage/Manage.css",
+    "inputFile": "Content/Manage/Manage.less"
   }
 ]

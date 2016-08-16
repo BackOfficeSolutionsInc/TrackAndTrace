@@ -143,9 +143,10 @@ namespace RadialReview.Models {
                     Map(x => x.EnableSurvey);
 
                     Map(x => x.RockName);
-                    Map(x => x.DateFormat);
+					Map(x => x.DateFormat);
+					Map(x => x.NumberFormat);
 
-                    Map(x => x.Branding).CustomType<BrandingType>();
+					Map(x => x.Branding).CustomType<BrandingType>();
                     Map(x => x.ScorecardPeriod).CustomType<ScorecardPeriod>();
                     Map(x => x.StartOfYearMonth).CustomType<Month>();
                     Map(x => x.StartOfYearOffset).CustomType<DateOffset>();
@@ -158,8 +159,14 @@ namespace RadialReview.Models {
 
             public virtual Month StartOfYearMonth { get; set; }
             public virtual DateOffset StartOfYearOffset { get; set; }
+			public virtual NumberFormat NumberFormat { get; set; }
 
-            public String GetDateFormat()
+			public virtual string GetAngularNumberFormat()
+			{
+				return NumberFormat.Angular();
+			}
+
+			public virtual String GetDateFormat()
             {
                 return DateFormat ?? "MM-dd-yyyy";
             }

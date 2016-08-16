@@ -22,7 +22,8 @@
     <a class="btn btn-link" href="/support/list?backlog=true">relavent</a>
     <a class="btn btn-link" href="/support/list?backlog=true&open=false">backlog</a>
     <a class="btn btn-link" href="/support/list?closed=true&open=false">closed</a>
-    <a class="btn btn-link" href="/support/list?nofix=true&open=false">nofix</a>
+	<a class="btn btn-link" href="/support/list?nofix=true&open=false">nofix</a>
+	<a class="btn btn-link" href="/support/list?js=true&open=false">JS</a>
 </div>
 <h2>Tickets</h2>
 <table class="table table-hover">
@@ -31,16 +32,16 @@
             <th style="width:1px;padding:0px inherit">
                 @Html.DisplayNameFor(model => model.Status)
             </th>
-            <th class=" ellipsis" style="max-width:200px">
+            <th class="ellipsis" style="max-width:200px">
                 @Html.DisplayNameFor(model => model.Subject)
             </th>
-            <th class=" ellipsis" style="max-width:200px">
+            <th class="ellipsis" style="max-width:200px">
                 @Html.DisplayNameFor(model => model.Body)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Email)
             </th>
-            <th class=" ellipsis" style="max-width:50px">
+            <th class="ellipsis" style="max-width:50px">
                 @Html.DisplayNameFor(model => model.PageTitle)
             </th>
             <th>

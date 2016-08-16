@@ -23,11 +23,13 @@ namespace RadialReview.Controllers
             public long UserId;
             public long OrganizationId;
             public long ChartId;
-	    }
+
+			public long? FocusUser { get; internal set; }
+		}
 
 
         [Access(AccessLevel.UserOrganization)]
-		public ActionResult Chart(long? id=null){
+		public ActionResult Chart(long? id=null,long? user=null){
 	        var u = GetUser();
 
             var idr = id ?? u.Organization.AccountabilityChartId;
@@ -35,7 +37,8 @@ namespace RadialReview.Controllers
 			return View(new AccountabilityChartVM() {
 		        UserId = u.Id,
 				OrganizationId = u.Organization.Id,
-                ChartId = idr
+                ChartId = idr,
+				FocusUser = user
 	        });
 	    }
     }

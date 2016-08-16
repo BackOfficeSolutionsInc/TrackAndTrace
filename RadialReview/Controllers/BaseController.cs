@@ -110,7 +110,7 @@ namespace RadialReview.Controllers
 		protected static ScorecardAccessor _ScorecardAccessor = new ScorecardAccessor();
 		protected static PermissionsAccessor _PermissionsAccessor = new PermissionsAccessor();
 		protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
-		protected static DeepSubordianteAccessor _DeepSubordianteAccessor = new DeepSubordianteAccessor();
+		//protected static DeepSubordianteAccessor _DeepSubordianteAccessor = new DeepSubordianteAccessor();
 		protected static ResponsibilitiesAccessor _ResponsibilitiesAccessor = new ResponsibilitiesAccessor();
 		#endregion
 		#region GetUserModel

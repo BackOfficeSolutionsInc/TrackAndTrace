@@ -30,7 +30,7 @@ namespace RadialReview.Engines
 {
 	public class ChartsEngine
 	{
-		protected static DeepSubordianteAccessor _DeepSubordianteAccessor = new DeepSubordianteAccessor();
+		//protected static DeepSubordianteAccessor _DeepSubordianteAccessor = new DeepSubordianteAccessor();
 		protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();
 		protected static ReviewAccessor _ReviewAccessor = new ReviewAccessor();
 		protected static PermissionsAccessor _PermissionsAccessor = new PermissionsAccessor();
@@ -259,7 +259,7 @@ namespace RadialReview.Engines
 			if (admin){
 				_PermissionsAccessor.Permitted(caller, x => x.ManagingOrganization(caller.Organization.Id).Or(y=>y.EditReviewContainer(reviewsId)));
 			}else{
-				var subordinateIds =_DeepSubordianteAccessor.GetSubordinatesAndSelf(caller, caller.Id);
+				var subordinateIds =DeepAccessor.Users.GetSubordinatesAndSelf(caller, caller.Id);
 				teamMembers=teamMembers.Where(x => subordinateIds.Contains(x.UserId)).ToList();
 			}
 

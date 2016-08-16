@@ -3,13 +3,22 @@
   "version": 2,
   "targets": {
     ".NETFramework,Version=v4.5.2": {
-      "DocX/1.0.0.19": {
+      "DocX/1.0.0.22": {
         "type": "package",
         "compile": {
           "lib/net40/DocX.dll": {}
         },
         "runtime": {
           "lib/net40/DocX.dll": {}
+        }
+      },
+      "LumenWorks.Framework.IO/3.8.0": {
+        "type": "package",
+        "compile": {
+          "lib/net20/LumenWorks.Framework.IO.dll": {}
+        },
+        "runtime": {
+          "lib/net20/LumenWorks.Framework.IO.dll": {}
         }
       },
       "Manatee.Trello/1.11.1": {
@@ -74,13 +83,22 @@
       }
     },
     ".NETFramework,Version=v4.5.2/win-x86": {
-      "DocX/1.0.0.19": {
+      "DocX/1.0.0.22": {
         "type": "package",
         "compile": {
           "lib/net40/DocX.dll": {}
         },
         "runtime": {
           "lib/net40/DocX.dll": {}
+        }
+      },
+      "LumenWorks.Framework.IO/3.8.0": {
+        "type": "package",
+        "compile": {
+          "lib/net20/LumenWorks.Framework.IO.dll": {}
+        },
+        "runtime": {
+          "lib/net20/LumenWorks.Framework.IO.dll": {}
         }
       },
       "Manatee.Trello/1.11.1": {
@@ -146,13 +164,24 @@
     }
   },
   "libraries": {
-    "DocX/1.0.0.19": {
-      "sha512": "ZoKdoM2ZlZ5bCBEtJHrTJMHICW3o9wsh6tStdqIXHh9mCjb+7o4+w5e6DWyNy2nnS5X7Q/eCFYQtyhInWMyc7w==",
+    "DocX/1.0.0.22": {
+      "sha512": "F2h7b4BU3rVlscSGClU7HpE3KQPHGjDDFOh0oPY5ZcZEMfvIwUxFTZu8VcFrgS9NPdK8VhUeSLjTupPUNfjTMA==",
       "type": "package",
       "files": [
-        "DocX.1.0.0.19.nupkg.sha512",
+        "DocX.1.0.0.22.nupkg.sha512",
         "DocX.nuspec",
         "lib/net40/DocX.dll"
+      ]
+    },
+    "LumenWorks.Framework.IO/3.8.0": {
+      "sha512": "Br2Q9j/tf2uF3Ci4CajidD18tui9DOg2iIzH5Xjro35ra6r8HGMD12B+ZlJ8v9AN3YXl7iPu5YDGbBlXVcZpHw==",
+      "type": "package",
+      "files": [
+        "COPYING.txt",
+        "LumenWorks.Framework.IO.3.8.0.nupkg.sha512",
+        "LumenWorks.Framework.IO.nuspec",
+        "lib/net20/LumenWorks.Framework.IO.dll",
+        "lib/net20/LumenWorks.Framework.IO.xml"
       ]
     },
     "Manatee.Trello/1.11.1": {
@@ -298,7 +327,8 @@
   },
   "projectFileDependencyGroups": {
     "": [
-      "DocX >= 1.0.0.19",
+      "DocX >= 1.0.0.22",
+      "LumenWorks.Framework.IO >= 3.8.0",
       "Manatee.Trello >= 1.11.1",
       "Newtonsoft.Json >= 9.0.1",
       "OxyPlot >= 1.0.0-unstable2100",

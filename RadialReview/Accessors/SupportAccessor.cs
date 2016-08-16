@@ -16,7 +16,9 @@ namespace RadialReview.Accessors {
         Open = 0,
         Backlog = 1,
         WillNotFix = 2,
-        Closed =100,
+		Closed =100,
+
+		JavascriptError = 50,
     }
     public class SupportData {
 
@@ -41,6 +43,7 @@ namespace RadialReview.Accessors {
         public virtual DateTime? CloseTime { get; set; }
         public virtual DateTime? LastViewed { get; set; }
         public virtual List<Tracker> _Listing { get; set; }
+		//public virtual string Type { get; set; }
         public SupportData()
         {
             CreateTime = DateTime.UtcNow;
@@ -59,8 +62,9 @@ namespace RadialReview.Accessors {
                 Map(x => x.Org);
                 Map(x => x.User);
                 Map(x => x.Url);
-                Map(x => x.PageTitle);
-                Map(x => x.CreateTime);
+				Map(x => x.PageTitle);
+				//Map(x => x.Type);
+				Map(x => x.CreateTime);
                 Map(x => x.CloseTime);
                 Map(x => x.LastViewed);
                 Map(x => x.Status).CustomType<SupportStatus>();
@@ -133,7 +137,7 @@ namespace RadialReview.Accessors {
                 }
             }
         }
-        public static List<SupportData> List(bool open, bool closed, bool backlog, bool noFix)
+        public static List<SupportData> List(bool open, bool closed, bool backlog, bool noFix,bool jsException)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -144,10 +148,12 @@ namespace RadialReview.Accessors {
                         d = d.Add<SupportData>(x => x.Status == SupportStatus.Closed);
                     if (backlog)
                         d = d.Add<SupportData>(x => x.Status == SupportStatus.Backlog);
-                    if (noFix)
-                        d = d.Add<SupportData>(x => x.Status == SupportStatus.WillNotFix);
+					if (noFix)
+						d = d.Add<SupportData>(x => x.Status == SupportStatus.WillNotFix);
+					if (jsException)
+						d = d.Add<SupportData>(x => x.Status == SupportStatus.JavascriptError);
 
-                    return s.QueryOver<SupportData>().And(d).List().ToList();
+					return s.QueryOver<SupportData>().And(d).List().ToList();
                     
                 }
             }

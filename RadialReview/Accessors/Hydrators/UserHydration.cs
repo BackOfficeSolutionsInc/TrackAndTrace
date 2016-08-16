@@ -117,7 +117,7 @@ namespace RadialReview
                 using (var tx = Session.BeginTransaction())
                 {
                     var user=GetUnderlying();
-					var children = DeepSubordianteAccessor.GetSubordinatesAndSelfModels(Session, user, user.Id)
+					var children = DeepAccessor.Users.GetSubordinatesAndSelfModels(Session, user, user.Id)
 						.Where(x=>x.Id!=user.Id).ToList();
                     //var children = SubordinateUtility.GetSubordinates(Session, user, true, levels);
                     User.AllSubordinates = children;

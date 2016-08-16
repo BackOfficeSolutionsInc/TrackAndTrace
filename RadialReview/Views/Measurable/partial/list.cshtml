@@ -8,6 +8,8 @@
     var selector = ViewBag.Selector as string ?? "(model.Scorecard)";
     var elasticInputs = ViewBag.ElasticInput == null || ((bool)ViewBag.ElasticInput) == true;
 
+	var localization = "localization=\""+ (ViewBag.Localization ?? "")+"\"";
+
     //var readOnly = ViewBag.ReadOnly as bool? ??false;
     
     var elastic = elasticInputs ? "pu-elastic-input" : "";
@@ -112,6 +114,7 @@
                                         <td ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin))  | orderBy:'ForWeekNumber' " class="score score-column  data-column" ng-class="{current:week.IsCurrentWeek}">
                                         
                                             <score week="week"
+												   @(new HtmlString(localization))
                                                    score="functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey))"                                                 
                                                    tt-onchange="functions.sendUpdate(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)))">
                                             </score>

@@ -131,7 +131,7 @@ namespace RadialReview.Controllers {
                         .Select(x => AngularUser.CreateUser(x, managing: true)).ToList();
                     //if (!GetUser().IsRadialAdmin)
                     //{
-                    var managingIds = _DeepSubordianteAccessor.GetSubordinatesAndSelf(GetUser(), GetUser().Id);
+                    var managingIds = DeepAccessor.Users.GetSubordinatesAndSelf(GetUser(), GetUser().Id);
                     directReports = directReports.Where(x => managingIds.Contains(x.Id)).ToList();
                     //}
                     output.Members = directReports;

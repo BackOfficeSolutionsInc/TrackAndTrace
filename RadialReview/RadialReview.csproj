@@ -323,6 +323,7 @@
     <Compile Include="Accessors\DashboardAccessor.cs" />
     <Compile Include="Accessors\DatabaseUtility.cs" />
     <Compile Include="Accessors\DbWrapper.cs" />
+    <Compile Include="Accessors\DeepAccessor.cs" />
     <Compile Include="Accessors\DeepSubordianteAccessor.cs" />
     <Compile Include="Accessors\Emailer.cs" />
     <Compile Include="Accessors\ExportAccessor.cs" />
@@ -582,6 +583,7 @@
     <Compile Include="Models\Customize\CustomL10.cs" />
     <Compile Include="Models\Dashboard\DashboardModel.cs" />
     <Compile Include="Models\Dashboard\TileModel.cs" />
+    <Compile Include="Models\DeepAccountability.cs" />
     <Compile Include="Models\DeepSubordinateModel.cs" />
     <Compile Include="Models\Enums\AccountType.cs" />
     <Compile Include="Models\Enums\AlertType.cs" />
@@ -595,6 +597,7 @@
     <Compile Include="Models\Enums\GenderType.cs" />
     <Compile Include="Models\Enums\LessGreater.cs" />
     <Compile Include="Models\Enums\Month.cs" />
+    <Compile Include="Models\Enums\NumberFormat.cs" />
     <Compile Include="Models\Enums\PaymentPlanType.cs" />
     <Compile Include="Models\Enums\PositiveNegativeNeutral.cs" />
     <Compile Include="Models\Enums\RepeatsType.cs" />
@@ -1018,6 +1021,12 @@
     <Content Include="Content\L10\L10.min.css">
       <DependentUpon>L10.css</DependentUpon>
     </Content>
+    <Content Include="Content\Manage\Manage.css">
+      <DependentUpon>Manage.less</DependentUpon>
+    </Content>
+    <Content Include="Content\Manage\Manage.min.css">
+      <DependentUpon>Manage.css</DependentUpon>
+    </Content>
     <Content Include="Content\MaterialDesign\Components\Animations.css">
       <DependentUpon>Animations.less</DependentUpon>
     </Content>
@@ -1166,6 +1175,7 @@
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
+    <Content Include="Content\Manage\Manage.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

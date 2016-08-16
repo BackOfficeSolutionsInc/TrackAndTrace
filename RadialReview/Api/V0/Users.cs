@@ -48,7 +48,7 @@ namespace RadialReview.Api.V0
 		
 		[Route("users/managing")]
 		public IEnumerable<UserOrganizationModel.DataContract> GetUsersManaged(){
-			return new DeepSubordianteAccessor().GetSubordinatesAndSelfModels(GetUser(), GetUser().Id).Select(x => x.GetUserDataContract());
+			return DeepAccessor.Users.GetSubordinatesAndSelfModels(GetUser(), GetUser().Id).Select(x => x.GetUserDataContract());
 		}
 
 

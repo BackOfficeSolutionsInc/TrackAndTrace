@@ -11,6 +11,10 @@
 
 * Dont panic labs
 
+* Update BillU scorecard values
+
+* Todo due dates.
+
 * Add user from wizard
 
 * decimals Joe Bussiere

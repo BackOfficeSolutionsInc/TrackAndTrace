@@ -23,6 +23,7 @@
 	{
 		<div class="panel-heading-button">
 			<a class="btn btn-default fullWidth plus"
+			   href ="/accountability/chart?"
 			   onclick="@Html.ShowModal(
 				                  "Add Supervisor",
 				                  Url.Action("ManagerModal", "User", new {id=Model.Id}),
@@ -35,12 +36,12 @@
 	<div class="panel-heading">
 
 		<h3 class="panel-title">
-			@Html.ViewOrEdit(Model.GetPersonallyManaging(), false) supervisors for <i>@Model.GetNameAndTitle()</i>
+			Supervisors for <i>@Model.GetNameAndTitle()</i>
 		</h3>
 	</div>
 	<table class="table table-condensed">
 		<tr>
-			<th>Position</th>
+			<th>Managers</th>
 			<th style="width: 100px;" class="alignCenter">Start</th>
 			<th style="width: 100px;" class="alignCenter">End</th>
 			@if (Model.GetPersonallyManaging())
@@ -99,4 +100,5 @@
 			text-decoration: line-through;
 		}
 	</style>
+	@Styles.Render("~/Content/Manage")
 }

@@ -348,7 +348,8 @@ namespace RadialReview {
                 "~/Scripts/jquery/jquery.filtertable.min.js"
             ));
 
-            //bundles.Add(new StyleBundle("~/Content/Manage").Include("~/Content/bootstrap-duallistbox.css"));
+            bundles.Add(new StyleBundle("~/Content/Manage")
+				.Include("~/Content/Manage/Manage.css"));
 
 
             bundles.Add(new ScriptBundle("~/bundles/Angular").Include(

@@ -21,7 +21,7 @@ namespace RadialReview.Models.ViewModels
         public bool IsManager { get; set; }
         public long OrgId { get; set; }
         public bool StrictlyHierarchical { get; set; }
-        public long ManagerId { get; set; }
+        public long? ManagerNodeId { get; set; }
         public List<SelectListItem> PotentialManagers { get; set; }
 
 		public string OrganizationName { get; set; }
