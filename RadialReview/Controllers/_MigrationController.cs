@@ -1591,13 +1591,13 @@ namespace RadialReview.Controllers {
 
 								if (user.ManagingOrganization) {
 									var r = AccountabilityAccessor.GetRoot(s, perms, user.Organization.AccountabilityChartId);
-									parentLu[user.Id] = AccountabilityAccessor.AppendNode(s, perms, rt, r.Id, userId: user.Id, skipAddManager: true);
+									parentLu[user.Id] = AccountabilityAccessor.AppendNode(s, perms, rt, r.Id,null, user.Id, true);
 								}
 
 
 								foreach (var manager in user.ManagedBy.ToListAlive()) {
 									if (parentLu.ContainsKey(manager.ManagerId)) {
-										var node = AccountabilityAccessor.AppendNode(s, perms, rt, parentLu[manager.ManagerId].Id, userId: user.Id, skipAddManager: true);
+										var node = AccountabilityAccessor.AppendNode(s, perms, rt, parentLu[manager.ManagerId].Id,null, user.Id, true);
 
 										if (!parentLu.ContainsKey(user.Id)) {
 											parentLu[user.Id] = node;

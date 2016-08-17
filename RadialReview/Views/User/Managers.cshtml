@@ -23,12 +23,12 @@
 	{
 		<div class="panel-heading-button">
 			<a class="btn btn-default fullWidth plus"
-			   href ="/accountability/chart?"
-			   onclick="@Html.ShowModal(
+			   href ="/accountability/chart?user=@Model.Id"
+			   @*onclick="@Html.ShowModal(
 				                  "Add Supervisor",
 				                  Url.Action("ManagerModal", "User", new {id=Model.Id}),
 				                  Url.Action("AddManager", "User", new { refresh = true })
-				                  )">Add</a>
+				                  )"*@>Edit</a>
 
 		</div>
 	}
@@ -55,7 +55,7 @@
 				<td class="position"><a href="/Manage/UserDetails/@p.Manager.Id">@p.Manager.GetNameAndTitle()</a></td>
 				<td class="alignCenter">@p.Start.ToShortDateString()</td>
 				<td class="alignCenter endTime">@(p.DeleteTime.HasValue ? p.DeleteTime.Value.ToShortDateString() : "Present")</td>
-				@if (Model.GetPersonallyManaging())
+				@*@if (Model.GetPersonallyManaging())
 				{
 					<td class="deleteButton">
 						@if (p.DeleteTime == null)
@@ -67,7 +67,7 @@
 							<span style="color: #929292" class="glyphicon glyphicon-trash"></span>
 						}
 					</td>
-				}
+				}*@
 			</tr>
 		}
 	</table>

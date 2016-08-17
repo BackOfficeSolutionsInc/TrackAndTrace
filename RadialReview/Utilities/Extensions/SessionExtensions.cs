@@ -52,6 +52,14 @@ namespace RadialReview
 		    }
 	    }
 
+        public static T GetFresh<T>(this ISession s, object id)
+        {
+            var proxy = s.Load<T>(id);
+            s.Evict(proxy);
+            return s.Get<T>(id);
+
+        }
+
 
 		public static void SaveWithBackReference<T>(this ISession session, T obj, params BackRef<T>[] backRefs)
 	    {

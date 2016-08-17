@@ -67,11 +67,11 @@ namespace RadialReview.Controllers
 
 
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult Data(long id, long? parent = null)
+		public JsonResult Data(long id, long? node = null, long? user = null)
 		{
-			var tree = AccountabilityAccessor.GetTree(GetUser(), id, parent);
+			var tree = AccountabilityAccessor.GetTree(GetUser(), id,user, node);
 			// var acTreeId = tree.Flatten().FirstOrDefault(x => x.user.NotNull(y => y.Id == (parent ?? GetUser().Id)));
-			var c = new Chart<AngularAccountabilityChart>(parent ?? id)
+			var c = new Chart<AngularAccountabilityChart>(tree.Id)
 			{
 				height = "100%",
 				width = "100%",

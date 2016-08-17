@@ -23,23 +23,27 @@ namespace RadialReview.Controllers
             public long UserId;
             public long OrganizationId;
             public long ChartId;
-
-			public long? FocusUser { get; internal set; }
-		}
+            
+            public long? FocusNode { get; internal set; }
+        }
 
 
         [Access(AccessLevel.UserOrganization)]
-		public ActionResult Chart(long? id=null,long? user=null){
+		public ActionResult Chart(long? id=null, long? user = null, long? node = null)
+        {
 	        var u = GetUser();
 
             var idr = id ?? u.Organization.AccountabilityChartId;
+
+            if (node == null && user != null)
+                node = AccountabilityAccessor.GetNodesForUser(GetUser(), user.Value).FirstOrDefault().NotNull(x=>(long?)x.Id);
 
 			return View(new AccountabilityChartVM() {
 		        UserId = u.Id,
 				OrganizationId = u.Organization.Id,
                 ChartId = idr,
-				FocusUser = user
-	        });
+                FocusNode = node
+            });
 	    }
     }
 }

@@ -26,8 +26,8 @@
                          md-selected-item="search.selected"
                          md-search-text-change="search.searchTextChange(search.searchText)"
                          md-search-text="search.searchText"
-                         md-selected-item-change="functions.selectedItemChange(item.id)"
-                         md-items="item in search.querySearch(search.searchText)"
+                         md-selected-item-change="functions.selectedItemChange(item)"
+                         md-items="item in search.findNode(search.searchText)"
                          md-item-text="item.name||item.User.Name"
                          md-min-length="1"
                          placeholder="Search">
@@ -40,7 +40,7 @@
             </md-not-found>
         </md-autocomplete>
 
-        <svg panzoom graph="model">
+        <svg panzoom graph="model" id="svg">
             <tree graph="model" 
 				  tt-enter="nodeEnter" 
 				  tt-update="nodeUpdate" 
@@ -66,7 +66,7 @@
     @Styles.Render("~/Content/AccChart")
 
     <style>
-        svg {
+        #svg {
             background-color: lightgoldenrodyellow;
         }
 
@@ -113,9 +113,9 @@
             fill: lightsteelblue;
         }
 
-        .selected rect {
+        /*.selected rect {
             stroke: red !important;
-        }
+        }*/
     </style>
 }
 
@@ -126,7 +126,7 @@
         angular.module('ACApp')
             .value('orgId',@Model.OrganizationId)
             .value('chartId',@Model.ChartId)
-            .value('dataUrl', "/Accountability/Data/{0}")
+            .value('dataUrl', "/Accountability/Data/{0}?@Model.FocusNode.NotNull(x=>"node="+x)")
 
 
         @*$(function () {

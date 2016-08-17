@@ -307,11 +307,11 @@ namespace RadialReview.Models
                 Cache.IsAdmin = ManagingOrganization;
             if (Cache.IsManager != this.IsManager(true))
                 Cache.IsManager = this.IsManager(true);
-            var managers = String.Join(", ", ManagedBy.ToListAlive().Select(x => x.Manager.GetName()));
+            var managers = String.Join(", ", ManagedBy.ToListAlive().Distinct(x=>x.ManagerId).Select(x => x.Manager.GetName()));
             if (Cache.Managers != managers)
                 Cache.Managers = managers;
-            var positions=String.Join(", ", Positions.ToListAlive().Select(x => x.Position.CustomName));
-            if (Cache.Positions != positions)
+            var positions=String.Join(", ", Positions.ToListAlive().Distinct(x => x.Position.Id).Select(x => x.Position.CustomName));
+           if (Cache.Positions != positions)
                 Cache.Positions = positions;
 
             if (Cache.IsImplementer != IsImplementer)
@@ -425,6 +425,7 @@ namespace RadialReview.Models
             //HasMany(x => x.CreatedReviews).Cascade.SaveUpdate();
 
             HasMany(x => x.Positions)
+                .KeyColumn("UserId")
                 .Not.LazyLoad()
                 .Cascade.SaveUpdate();
 

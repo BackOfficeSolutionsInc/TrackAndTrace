@@ -74,8 +74,9 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 
 	var self = this;
 
-	$scope.functions.selectedItemChange = function (id) {
-		$rootScope.$emit("SelectNode", id);
+	$scope.functions.selectedItemChange = function (node) {
+	    d3.select(".selected").classed("selected", false).attr("filter", null);
+		$rootScope.$emit("SelectNode", node.Id);
 	};
 
 	$scope.search = {};
@@ -91,7 +92,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 				return any;
 			};
 		}
-		var possible = $scope.model.data.AllUsers;
+		var possible =$scope.model.data.AllUsers;
 		return possible.filter(createFilterFor(query));
 	}
 
@@ -104,7 +105,33 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		});
 	}
 
+	$scope.search.findNode = function (query) {
+
+	    function createFilterFor(query) {
+	        var lowercaseQuery = angular.lowercase(query);
+	        return function filterFn(x) {
+	            var any = (x.Name + "").toLowerCase().indexOf(lowercaseQuery) === 0;
+	            if (x.User && x.User.Name) {
+	                var f = x.User.Name.toLowerCase().indexOf(lowercaseQuery);
+	                any = any || (f != -1 && f == 0 || x.User.Name[f - 1] == " ");
+	            }
+	            return any;
+	        };
+	    }
+
+	   var possible= [];
+	    for (var i in $scope.model.Lookup) {
+	        var n = $scope.model.Lookup[i];
+	        if (i.indexOf("AngularAccountabilityNode_") == 0 && n.User) {
+	            possible.push(n);
+	        }
+	    }
+	    return possible.filter(createFilterFor(query));
+	}
+
 	$scope.search.searchTerms = {};
+
+
 
 
 	$scope.nodeWatch = function (node) {
@@ -205,6 +232,11 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		}
 	}
 
+	$scope.functions.selectedItemChange_UpdateNode = function (id) {
+	    debugger;
+	    $scope.functions.sendUpdate($scope.model.Lookup['AngularAccountabilityNode_"' + id + '"'])
+	};
+
 	$scope.nodeEnter = function (nodeEnter) {
 		var rect = nodeEnter.append("rect")
             .attr("class", "acc-rect")
@@ -238,6 +270,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 
 		var posAutoComplete = position.append("md-autocomplete")
 			.attr("placeholder", "Function")
+            .attr("md-blur","alert()")
             .attr("md-selected-item", function (d) {
             	return "model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position";
             }).attr("md-item-text", function (d) {
@@ -245,7 +278,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
             }).attr("md-items", function (d) { return "pitem in search.queryPositions(search.searchPos_" + d.Id + ")"; })
             .attr("md-search-text", function (d) { return "search.searchPos_" + d.Id; })
             .attr("md-selected-item-change", function (d) {
-            	return "functions.sendUpdate(model.Lookup['AngularAccountabilityNode_" + d.Id + "'])";
+                return "functions.selectedItemChange_UpdateNode(" + d.Id + ")";
             }).attr("md-no-cache", "true").attr("md-delay", "300");
 		posAutoComplete.append("md-item-template")
             .append("span")
