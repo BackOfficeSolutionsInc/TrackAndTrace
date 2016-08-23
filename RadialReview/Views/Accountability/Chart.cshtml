@@ -45,6 +45,7 @@
 				  tt-enter="nodeEnter" 
 				  tt-update="nodeUpdate" 
 				  tt-exit="nodeExit" 
+				  tt-post-exit="nodePostExit"
 				  tt-watch="nodeWatch"
 				  tt-drag-start="dragStart"
 				  tt-drag-end="dragEnd"
@@ -67,10 +68,10 @@
 
     <style>
         #svg {
-            background-color: lightgoldenrodyellow;
+           /* background-color: lightgoldenrodyellow;*/
         }
 
-        .dot circle {
+        /*.dot circle {
             fill: lightsteelblue;
             stroke: steelblue;
             stroke-width: 1.5px;
@@ -111,7 +112,7 @@
 
         .collapsed rect {
             fill: lightsteelblue;
-        }
+        }*/
 
         /*.selected rect {
             stroke: red !important;

@@ -382,6 +382,8 @@ namespace RadialReview.Accessors
 						var allRGM = s.QueryOver<ResponsibilityGroupModel>().Where(x => x.Organization.Id == orgId && x.DeleteTime == null).List();
 						var allAboutCompany = s.QueryOver<AboutCompanyAskable>().Where(x => x.Organization.Id == orgId && x.DeleteTime == null).List();
 
+						var allRoleLinks = s.QueryOver<RoleLink>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).List();
+
 						var queryProvider = new IEnumerableQuery();
 						queryProvider.AddData(allRGM);
 						queryProvider.AddData(allOrgTeams);
@@ -397,6 +399,7 @@ namespace RadialReview.Accessors
 						queryProvider.AddData(application);
 						queryProvider.AddData(reviews);
 						queryProvider.AddData(allReviewContainers);
+						queryProvider.AddData(allRoleLinks);
 
 						var accessibleUsers = TeamAccessor.GetTeamMembers(s.ToQueryProvider(true), perms, reviewContainer.ForTeamId, false)
 														.ToListAlive()

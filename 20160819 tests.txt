@@ -1,0 +1,53 @@
+Make sure reviews are issued correctly
+ 
+Permissions
+	* add users from manage
+	* add user from Wizard
+	
+"Fix Me"
+
+Create review roles
+* Position 
+* Team
+* User
+
+*Edit roles modal
+
+* Transparent to begin with
+* refresh chart
+
+*remove function
+
+*Templates
+	* Add role to template
+	* Add user to template
+	* Edit template
+	* Remove role from template
+	* Remove user from template
+	* Unlink specific role from user
+
+* UserOrganizaitonExtensions.GetTree 
+
+* User templates page
+	
+========================
+
+Map up 
+
+Create new role for each role template
+UserTemplate.UT_Role.RoleId where RoleId = 0
+
+TeamDurationModel.ORganizationId when = 0
+PositionDurationModel.ORganizationId when = 0
+
+Root Node needs to be company node
+
+
+-=======================
+
+migration 8-14 > user.ManagedBy.ToListAlive()
+?? use the "links" variable instead
+
+exception count is too high
+
+delete role 

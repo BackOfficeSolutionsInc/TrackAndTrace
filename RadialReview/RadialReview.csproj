@@ -89,37 +89,11 @@
     <Reference Include="MathNet.Numerics">
       <HintPath>..\packages\MathNet.Numerics.3.6.0\lib\net40\MathNet.Numerics.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
-      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.1.0.0\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNet.SignalR.Redis">
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.Redis.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Redis.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.2.0\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Owin.Security.3.0.1\lib\net45\Microsoft.Owin.Security.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.OAuth, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
-    </Reference>
     <Reference Include="MigraDoc.DocumentObjectModel">
       <HintPath>..\packages\PDFsharp-MigraDoc-GDI.1.32.4334.0\lib\net20\MigraDoc.DocumentObjectModel.dll</HintPath>
     </Reference>
@@ -135,10 +109,6 @@
     <Reference Include="MySql.Data">
       <HintPath>..\packages\MySql.Data.6.7.4\lib\net40\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="NHibernate, Version=4.0.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NHibernate.4.0.0.4000\lib\net40\NHibernate.dll</HintPath>
@@ -148,18 +118,6 @@
     </Reference>
     <Reference Include="OpenPop">
       <HintPath>..\packages\OpenPop.NET.2.0.4.369\lib\net20\OpenPop.dll</HintPath>
-    </Reference>
-    <Reference Include="OxyPlot, Version=1.0.0.0, Culture=neutral, PublicKeyToken=638079a8f0bd61e9, processorArchitecture=MSIL">
-      <HintPath>..\packages\OxyPlot.Core.1.0.0-unstable2100\lib\net45\OxyPlot.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="OxyPlot.Wpf, Version=1.0.0.0, Culture=neutral, PublicKeyToken=75e952ba404cdbb0, processorArchitecture=MSIL">
-      <HintPath>..\packages\OxyPlot.Wpf.1.0.0-unstable2100\lib\net45\OxyPlot.Wpf.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="OxyPlot.Xps, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\OxyPlot.Wpf.1.0.0-unstable2100\lib\net45\OxyPlot.Xps.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="PdfSharp, Version=1.32.3057.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -279,32 +237,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.AspNet.Identity.Core">
-      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.1.0.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNet.Identity.Owin">
-      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.1.0.0\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin">
-      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.Facebook">
-      <HintPath>..\packages\Microsoft.Owin.Security.Facebook.2.0.0\lib\net45\Microsoft.Owin.Security.Facebook.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.Cookies">
-      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.2.0.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.Google">
-      <HintPath>..\packages\Microsoft.Owin.Security.Google.2.0.0\lib\net45\Microsoft.Owin.Security.Google.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.Twitter">
-      <HintPath>..\packages\Microsoft.Owin.Security.Twitter.2.0.0\lib\net45\Microsoft.Owin.Security.Twitter.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.MicrosoftAccount">
-      <HintPath>..\packages\Microsoft.Owin.Security.MicrosoftAccount.2.0.0\lib\net45\Microsoft.Owin.Security.MicrosoftAccount.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Accessors\AccountabilityAccessor.cs" />
     <Compile Include="Accessors\ApplicationAccessor.cs" />
     <Compile Include="Accessors\AskableAccessor.cs" />
@@ -322,6 +254,7 @@
     <Compile Include="Accessors\GroupAccessor.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="Controllers\Ac\AngularAccountabilityController.cs" />
+    <Compile Include="Controllers\IntegrationsController.cs" />
     <Compile Include="Hooks\BasecampTodoHook.cs" />
     <Compile Include="Hooks\CreateUserOrganization_UpdateHierarchy.cs" />
     <Compile Include="Accessors\Hydrators\ResponsibilityGroupHydration.cs" />
@@ -516,6 +449,7 @@
     <Compile Include="Helpers\SecuredValueHtmlHelper.cs" />
     <Compile Include="Helpers\SelectExtensions.cs" />
     <Compile Include="Hooks\HooksRegistry.cs" />
+    <Compile Include="Hooks\Outlook_TodoHook.cs" />
     <Compile Include="Hubs\AlertHub.cs" />
     <Compile Include="Hubs\BaseHub.cs" />
     <Compile Include="Hubs\MessageHub.cs" />
@@ -996,6 +930,18 @@
     <Content Include="Content\Angular\tablesort.css" />
     <Content Include="Content\Angular\xeditable.min.css" />
     <Content Include="Content\bootstrap-duallistbox.css" />
+    <Content Include="Content\bootstrap\buttons.css">
+      <DependentUpon>buttons.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\buttons.min.css">
+      <DependentUpon>buttons.css</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\custom\XEditable.css">
+      <DependentUpon>XEditable.less</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap\custom\XEditable.min.css">
+      <DependentUpon>XEditable.css</DependentUpon>
+    </Content>
     <Content Include="Content\favicon-local.ico" />
     <Content Include="Content\GettingStarted\GettingStarted.css">
       <DependentUpon>GettingStarted.less</DependentUpon>
@@ -1168,6 +1114,7 @@
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
     <Content Include="Content\Manage\Manage.less" />
+    <Content Include="Content\bootstrap\custom\XEditable.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1204,6 +1151,7 @@
     <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\components\jquery.bootstrap-duallistbox.js" />
     <Content Include="Scripts\AccountabilityChart\accountabilityChart.js" />
+    <Content Include="Scripts\d3\d3.v4.js" />
     <Content Include="Scripts\Dashboard\dashboard.js" />
     <Content Include="Scripts\home\html2canvas.js" />
     <Content Include="Scripts\home\landscape.js" />
@@ -1249,6 +1197,7 @@
     <Content Include="SoftwareUpdates\20160401.txt" />
     <Content Include="SoftwareUpdates\20160201.txt" />
     <Content Include="SoftwareUpdates\20160613.txt" />
+    <Content Include="SoftwareUpdates\20160818.txt" />
     <Content Include="SoftwareUpdates\20160622.txt" />
     <Content Include="SoftwareUpdates\20160620.txt" />
     <Content Include="Views\Permissions\Dropdown.cshtml" />
@@ -1625,6 +1574,7 @@
     <Content Include="Views\Support\Details.cshtml" />
     <Content Include="Views\Support\List.cshtml" />
     <Content Include="Views\TileData\L10Notes.cshtml" />
+    <Content Include="Views\Upload\UploadVTOResults.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-responsive.css" />
@@ -2356,6 +2306,7 @@
     <Folder Include="Views\DropDown\" />
     <Folder Include="Views\HealthCheck\" />
     <Folder Include="Views\Img\" />
+    <Folder Include="Views\Integrations\" />
     <Folder Include="Views\L10Data\" />
     <Folder Include="Views\L10Details\" />
     <Folder Include="Views\MeetingData\" />

@@ -55,9 +55,11 @@ namespace RadialReview.Models.Angular.Base
 		{
 			return DateTime.MaxValue - TimeSpan.FromSeconds(1);
 		}
-		public static decimal Decimal()
-		{
+		public static decimal Decimal() {
 			return decimal.MaxValue + decimal.MinusOne;
+		}
+		public static string String() {
+			return DELETED_KEY;
 		}
 
 		public const string DELETED_KEY = "`delete`";

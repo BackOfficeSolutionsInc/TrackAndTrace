@@ -319,6 +319,244 @@ input[type=checkbox].blend:checked:after {
     background-color: rgba(62, 57, 53, 0.002);
   }
 }
+.editable-wrap select {
+  height: 30px;
+  padding: 5px;
+}
+.editable-wrap button {
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: normal;
+  text-align: center;
+  vertical-align: middle;
+  touch-action: manipulation;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  border-radius: 4px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  width: 41px;
+  height: 30px;
+  font-size: 1px;
+  font-size: 0px;
+  color: transparent;
+}
+.editable-wrap button:focus,
+.editable-wrap button:active:focus,
+.editable-wrap button.active:focus,
+.editable-wrap button.focus,
+.editable-wrap button:active.focus,
+.editable-wrap button.active.focus {
+  outline: thin dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+.editable-wrap button:not(.nohover):hover,
+.editable-wrap button:not(.nohover):focus,
+.editable-wrap button:not(.nohover).focus {
+  color: #333;
+  text-decoration: none;
+}
+.editable-wrap button:not(.nohover):not(.btn-link):active,
+.editable-wrap button.active:not(.nohover):not(.btn-link) {
+  outline: 0;
+  background-image: none;
+  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.editable-wrap button.disabled,
+.editable-wrap button[disabled],
+fieldset[disabled] .editable-wrap button {
+  cursor: not-allowed;
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+a.editable-wrap button.disabled,
+fieldset[disabled] a.editable-wrap button {
+  pointer-events: none;
+}
+.editable-wrap button:before {
+  color: inherit;
+  font-size: 14px;
+}
+.editable-wrap button[type="submit"] {
+  color: #fff;
+  background-color: #EF7622;
+  border-color: #e76811;
+  /*border-width:1px;
+  font-weight:bold;*/
+  /*background-color: @traction-orange;
+				border:1px solid @traction-black;*/
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /*&:before {
+				/*color: white;*
+			}*/
+}
+.editable-wrap button[type="submit"]:not(.nohover):focus,
+.editable-wrap button[type="submit"]:not(.nohover).focus {
+  color: #fff;
+  background-color: #cf5e0f;
+  border-color: #703308;
+}
+.editable-wrap button[type="submit"]:not(.nohover):hover {
+  color: #fff;
+  background-color: #cf5e0f;
+  border-color: #ae4f0d;
+}
+.editable-wrap button[type="submit"]:not(.nohover):active,
+.editable-wrap button[type="submit"]:not(.nohover).active,
+.open > .dropdown-toggle.editable-wrap button[type="submit"] {
+  color: #fff;
+  background-color: #cf5e0f;
+  border-color: #ae4f0d;
+}
+.editable-wrap button[type="submit"]:not(.nohover):active:not(.nohover):hover,
+.editable-wrap button[type="submit"]:not(.nohover).active:not(.nohover):hover,
+.open > .dropdown-toggle.editable-wrap button[type="submit"]:not(.nohover):hover,
+.editable-wrap button[type="submit"]:not(.nohover):active:not(.nohover):focus,
+.editable-wrap button[type="submit"]:not(.nohover).active:not(.nohover):focus,
+.open > .dropdown-toggle.editable-wrap button[type="submit"]:not(.nohover):focus,
+.editable-wrap button[type="submit"]:not(.nohover):active:not(.nohover).focus,
+.editable-wrap button[type="submit"]:not(.nohover).active:not(.nohover).focus,
+.open > .dropdown-toggle.editable-wrap button[type="submit"]:not(.nohover).focus {
+  color: #fff;
+  background-color: #ae4f0d;
+  border-color: #703308;
+}
+.editable-wrap button[type="submit"]:active,
+.editable-wrap button[type="submit"].active,
+.open > .dropdown-toggle.editable-wrap button[type="submit"] {
+  background-image: none;
+}
+.editable-wrap button[type="submit"].disabled,
+.editable-wrap button[type="submit"][disabled],
+fieldset[disabled] .editable-wrap button[type="submit"],
+.editable-wrap button[type="submit"].disabled:hover,
+.editable-wrap button[type="submit"][disabled]:hover,
+fieldset[disabled] .editable-wrap button[type="submit"]:hover,
+.editable-wrap button[type="submit"].disabled:focus,
+.editable-wrap button[type="submit"][disabled]:focus,
+fieldset[disabled] .editable-wrap button[type="submit"]:focus,
+.editable-wrap button[type="submit"].disabled.focus,
+.editable-wrap button[type="submit"][disabled].focus,
+fieldset[disabled] .editable-wrap button[type="submit"].focus,
+.editable-wrap button[type="submit"].disabled:active,
+.editable-wrap button[type="submit"][disabled]:active,
+fieldset[disabled] .editable-wrap button[type="submit"]:active,
+.editable-wrap button[type="submit"].disabled.active,
+.editable-wrap button[type="submit"][disabled].active,
+fieldset[disabled] .editable-wrap button[type="submit"].active {
+  background-color: #EF7622;
+  border-color: #e76811;
+}
+.editable-wrap button[type="submit"] .badge {
+  color: #EF7622;
+  background-color: #fff;
+}
+.editable-wrap button[type="submit"]:before {
+  content: "\e013";
+}
+.editable-wrap button[type="button"] {
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+  /*border-width:1px;
+  font-weight:bold;*/
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /*border: 1px solid @traction-gray;*/
+  /*&:before {
+				/*color: @traction-gray;*
+			}*/
+}
+.editable-wrap button[type="button"]:not(.nohover):focus,
+.editable-wrap button[type="button"]:not(.nohover).focus {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #8c8c8c;
+}
+.editable-wrap button[type="button"]:not(.nohover):hover {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #adadad;
+}
+.editable-wrap button[type="button"]:not(.nohover):active,
+.editable-wrap button[type="button"]:not(.nohover).active,
+.open > .dropdown-toggle.editable-wrap button[type="button"] {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #adadad;
+}
+.editable-wrap button[type="button"]:not(.nohover):active:not(.nohover):hover,
+.editable-wrap button[type="button"]:not(.nohover).active:not(.nohover):hover,
+.open > .dropdown-toggle.editable-wrap button[type="button"]:not(.nohover):hover,
+.editable-wrap button[type="button"]:not(.nohover):active:not(.nohover):focus,
+.editable-wrap button[type="button"]:not(.nohover).active:not(.nohover):focus,
+.open > .dropdown-toggle.editable-wrap button[type="button"]:not(.nohover):focus,
+.editable-wrap button[type="button"]:not(.nohover):active:not(.nohover).focus,
+.editable-wrap button[type="button"]:not(.nohover).active:not(.nohover).focus,
+.open > .dropdown-toggle.editable-wrap button[type="button"]:not(.nohover).focus {
+  color: #333;
+  background-color: #d4d4d4;
+  border-color: #8c8c8c;
+}
+.editable-wrap button[type="button"]:active,
+.editable-wrap button[type="button"].active,
+.open > .dropdown-toggle.editable-wrap button[type="button"] {
+  background-image: none;
+}
+.editable-wrap button[type="button"].disabled,
+.editable-wrap button[type="button"][disabled],
+fieldset[disabled] .editable-wrap button[type="button"],
+.editable-wrap button[type="button"].disabled:hover,
+.editable-wrap button[type="button"][disabled]:hover,
+fieldset[disabled] .editable-wrap button[type="button"]:hover,
+.editable-wrap button[type="button"].disabled:focus,
+.editable-wrap button[type="button"][disabled]:focus,
+fieldset[disabled] .editable-wrap button[type="button"]:focus,
+.editable-wrap button[type="button"].disabled.focus,
+.editable-wrap button[type="button"][disabled].focus,
+fieldset[disabled] .editable-wrap button[type="button"].focus,
+.editable-wrap button[type="button"].disabled:active,
+.editable-wrap button[type="button"][disabled]:active,
+fieldset[disabled] .editable-wrap button[type="button"]:active,
+.editable-wrap button[type="button"].disabled.active,
+.editable-wrap button[type="button"][disabled].active,
+fieldset[disabled] .editable-wrap button[type="button"].active {
+  background-color: #fff;
+  border-color: #ccc;
+}
+.editable-wrap button[type="button"] .badge {
+  color: #fff;
+  background-color: #333;
+}
+.editable-wrap button[type="button"]:before {
+  content: "\e014";
+}
 body,
 html {
   background-color: #F7F7F7;

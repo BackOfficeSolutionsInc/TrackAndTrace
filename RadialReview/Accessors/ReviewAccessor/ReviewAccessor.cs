@@ -31,15 +31,17 @@ namespace RadialReview.Accessors
             var allPositions = s.QueryOver<PositionDurationModel>().JoinQueryOver(x => x.Position).Where(x => x.Organization.Id == orgId).List();
             var applicationQuestions = s.QueryOver<QuestionModel>().Where(x => x.OriginId == ApplicationAccessor.APPLICATION_ID && x.OriginType == OriginType.Application).List();
             var application = s.QueryOver<ApplicationWideModel>().Where(x => x.Id == ApplicationAccessor.APPLICATION_ID).List();
+			var allRoleLinks = s.QueryOver<RoleLink>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).List();
 
-            var queryProvider = new IEnumerableQuery(true);
+			var queryProvider = new IEnumerableQuery(true);
             queryProvider.AddData(allOrgTeams);
             queryProvider.AddData(allTeamDurations);
             queryProvider.AddData(allMembers);
             queryProvider.AddData(allManagerSubordinates);
             queryProvider.AddData(allPositions);
-            queryProvider.AddData(applicationQuestions);
-            queryProvider.AddData(application);
+			queryProvider.AddData(allRoleLinks);
+			queryProvider.AddData(applicationQuestions);
+			queryProvider.AddData(application);
             if (reviewContainerId != null)
             {
                 var reviews = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId.Value).List();

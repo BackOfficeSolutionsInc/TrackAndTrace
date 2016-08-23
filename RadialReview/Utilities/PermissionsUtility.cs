@@ -33,88 +33,34 @@ using RadialReview.Models.VTO;
 using Twilio;
 using RadialReview.Models.Accountability;
 
-namespace RadialReview.Utilities
-{
+namespace RadialReview.Utilities {
 	//[Obsolete("Not really obsolete. I just want this to stick out.", false)]
-	public partial class PermissionsUtility
-	{
+	public partial class PermissionsUtility {
 		protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		protected ISession session;
 		protected UserOrganizationModel caller;
 
-		public class CacheResult
-		{
-			public Exception Exception { get; set; }
-		}
-
-		protected Dictionary<string, CacheResult> cache = new Dictionary<string, CacheResult>();
-
-		protected List<PermissionOverride> Overrides { get; set; }
-
-		public PermissionsUtility RadialAdmin()
-		{
-			if (IsRadialAdmin(caller))
-				return this;
-			throw new PermissionsException();
-		}
-		protected static Boolean IsRadialAdmin(UserOrganizationModel caller)
-		{
-			if (caller != null && (caller.IsRadialAdmin || (caller.User != null && caller.User.IsRadialAdmin)))
-				return true;
-			return false;
-		}
-
-		#region Construction
-		protected PermissionsUtility(ISession session, UserOrganizationModel caller)
-		{
-			this.session = session;
-			this.caller = caller;
-
-		}
-
-
-		public static PermissionsUtility Create(ISession session, UserOrganizationModel caller)
-		{
-			var attached = caller;
-			if (!session.Contains(caller) && caller.Id != UserOrganizationModel.ADMIN_ID)
-			{
-				attached = session.Load<UserOrganizationModel>(caller.Id);
-				attached._ClientTimestamp = caller._ClientTimestamp;
-			}
-			return new PermissionsUtility(session, attached);
-		}
-		#endregion
-
 		#region Cache
-		public class CacheChecker
-		{
+		public class CacheChecker {
 			private PermissionsUtility p;
 			private String key;
 
-			public CacheChecker(String key, PermissionsUtility p)
-			{
+			public CacheChecker(String key, PermissionsUtility p) {
 				this.key = p.caller.Id + "~" + key;
 				this.p = p;
 			}
 
-			public PermissionsUtility Execute(Func<PermissionsUtility> action)
-			{
-				if (p.cache.ContainsKey(key))
-				{
+			public PermissionsUtility Execute(Func<PermissionsUtility> action) {
+				if (p.cache.ContainsKey(key)) {
 					if (p.cache[key].Exception != null)
 						throw p.cache[key].Exception;
 					return p;
-				}
-				else
-				{
-					try
-					{
+				} else {
+					try {
 						var result = action();
 						p.cache[key] = new CacheResult();
 						return result;
-					}
-					catch (Exception e)
-					{
+					} catch (Exception e) {
 						p.cache[key] = new CacheResult() { Exception = e };
 						throw;
 					}
@@ -122,16 +68,53 @@ namespace RadialReview.Utilities
 			}
 		}
 
-		public CacheChecker CheckCacheFirst(string key, params long[] arguments)
-		{
+		public class CacheResult {
+			public Exception Exception { get; set; }
+		}
+
+		protected Dictionary<string, CacheResult> cache = new Dictionary<string, CacheResult>();
+
+		protected List<PermissionOverride> Overrides { get; set; }
+
+		public PermissionsUtility RadialAdmin() {
+			if (IsRadialAdmin(caller))
+				return this;
+			throw new PermissionsException();
+		}
+		protected static Boolean IsRadialAdmin(UserOrganizationModel caller) {
+			if (caller != null && (caller.IsRadialAdmin || (caller.User != null && caller.User.IsRadialAdmin)))
+				return true;
+			return false;
+		}
+
+		#region Construction
+		protected PermissionsUtility(ISession session, UserOrganizationModel caller) {
+			this.session = session;
+			this.caller = caller;
+
+		}
+
+
+		public static PermissionsUtility Create(ISession session, UserOrganizationModel caller) {
+			var attached = caller;
+			if (!session.Contains(caller) && caller.Id != UserOrganizationModel.ADMIN_ID) {
+				attached = session.Load<UserOrganizationModel>(caller.Id);
+				attached._ClientTimestamp = caller._ClientTimestamp;
+			}
+			return new PermissionsUtility(session, attached);
+		}
+		#endregion
+
+
+
+		public CacheChecker CheckCacheFirst(string key, params long[] arguments) {
 			key = key + "~" + String.Join("_", arguments);
 			return new CacheChecker(key, this);
 		}
 		#endregion
 
 		#region User
-		public PermissionsUtility EditUserModel(string userId)
-		{
+		public PermissionsUtility EditUserModel(string userId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -139,8 +122,7 @@ namespace RadialReview.Utilities
 				return this;
 			throw new PermissionsException();
 		}
-		public PermissionsUtility EditUserOrganization(long userId)
-		{
+		public PermissionsUtility EditUserOrganization(long userId) {
 			if (caller.Id == userId)
 				return this;
 
@@ -163,21 +145,17 @@ namespace RadialReview.Utilities
             throw new PermissionsException("You don't manage this user.");*/
 		}
 
-		public PermissionsUtility ViewUserOrganization(long userOrganizationId, Boolean sensitive, params PermissionType[] alsoCheck)
-		{
-			return TryWithOverrides(p =>
-			{
-				return CheckCacheFirst("ViewUserOrganization", userOrganizationId, sensitive.ToLong()).Execute(() =>
-				{
+		public PermissionsUtility ViewUserOrganization(long userOrganizationId, Boolean sensitive, params PermissionType[] alsoCheck) {
+			return TryWithOverrides(p => {
+				return CheckCacheFirst("ViewUserOrganization", userOrganizationId, sensitive.ToLong()).Execute(() => {
 					if (IsRadialAdmin(caller))
 						return this;
 					var userOrg = session.Get<UserOrganizationModel>(userOrganizationId);
-					
+
 					if (IsManagingOrganization(userOrg.Organization.Id))
 						return this;
 
-					if (sensitive)
-					{
+					if (sensitive) {
 						/*if (!userOrg.Organization.StrictHierarchy && userOrg.Organization.Id == caller.Organization.Id)
                             return this;*/
 						if (userOrganizationId == caller.Id)
@@ -186,9 +164,7 @@ namespace RadialReview.Utilities
 						return ManagesUserOrganization(userOrganizationId, false);
 						/*if (IsOwnedBelowOrEqual(caller, x => x.Id == userOrganizationId))
                             return this;*/
-					}
-					else
-					{
+					} else {
 						if (userOrg.Organization.Id == caller.Organization.Id)
 							return this;
 					}
@@ -197,17 +173,14 @@ namespace RadialReview.Utilities
 				});
 			}, alsoCheck);
 		}
-		public PermissionsUtility ManagesUserOrganization(long userOrganizationId, bool disableIfSelf, params PermissionType[] alsoCheck)
-		{
-			return TryWithOverrides(p =>
-			{
+		public PermissionsUtility ManagesUserOrganization(long userOrganizationId, bool disableIfSelf, params PermissionType[] alsoCheck) {
+			return TryWithOverrides(p => {
 				if (IsRadialAdmin(caller))
 					return this;
 				//Confirm allowed if we manage organization.. was below
 				//return TryWithOverrides(y =>
 				//{
-				if (caller.ManagingOrganization)
-				{
+				if (caller.ManagingOrganization) {
 					var subordinate = session.Get<UserOrganizationModel>(userOrganizationId);
 					if (subordinate != null && subordinate.Organization.Id == caller.Organization.Id)
 						return this;
@@ -227,17 +200,14 @@ namespace RadialReview.Utilities
 			//}, PermissionType.ManageEmployees);
 		}
 
-		public PermissionsUtility ManagesUserOrganizationOrSelf(long userOrganizationId)
-		{
+		public PermissionsUtility ManagesUserOrganizationOrSelf(long userOrganizationId) {
 			if (userOrganizationId == caller.Id)
 				return this;
 			return ManagesUserOrganization(userOrganizationId, false);
 		}
 
-		public PermissionsUtility RemoveUser(long userId)
-		{
-			return TryWithOverrides(y =>
-			{
+		public PermissionsUtility RemoveUser(long userId) {
+			return TryWithOverrides(y => {
 				var found = session.Get<UserOrganizationModel>(userId);
 				if (caller.ManagingOrganization || caller.Organization.Id == found.Organization.Id)
 					return this;
@@ -252,8 +222,7 @@ namespace RadialReview.Utilities
 
 		#region Dashboard
 
-		public PermissionsUtility ViewDashboardForUser(String userid)
-		{
+		public PermissionsUtility ViewDashboardForUser(String userid) {
 			var user = session.Get<UserModel>(userid);
 			if (user == null)
 				throw new PermissionsException("Dashboard not found");
@@ -267,8 +236,7 @@ namespace RadialReview.Utilities
 			throw new PermissionsException("Cannot view dashboard");
 		}
 
-		public PermissionsUtility EditDashboard(long dashboardId)
-		{
+		public PermissionsUtility EditDashboard(long dashboardId) {
 			var dash = session.Get<Dashboard>(dashboardId);
 			if (dash == null)
 				throw new PermissionsException("Dashboard not found");
@@ -283,8 +251,7 @@ namespace RadialReview.Utilities
 
 		}
 
-		public PermissionsUtility EditTile(long tileId)
-		{
+		public PermissionsUtility EditTile(long tileId) {
 			var tile = session.Get<TileModel>(tileId);
 			if (tile == null)
 				throw new PermissionsException("Tile not found");
@@ -299,8 +266,7 @@ namespace RadialReview.Utilities
 		#endregion
 
 		#region Organization
-		public PermissionsUtility EditOrganization(long organizationId)
-		{
+		public PermissionsUtility EditOrganization(long organizationId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -310,20 +276,17 @@ namespace RadialReview.Utilities
 		}
 
 		[Obsolete("should never be caller.organization.id", false)]
-		private bool IsManagingOrganization(long organizationId, bool allowManagers = false)
-		{
+		private bool IsManagingOrganization(long organizationId, bool allowManagers = false) {
 			if (caller.Organization.Id == organizationId)
 				return caller.ManagingOrganization || (allowManagers && caller.ManagerAtOrganization && caller.Organization.ManagersCanEdit);
 			return false;
 		}
-		private bool IsManager(long organizationId)
-		{
+		private bool IsManager(long organizationId) {
 			if (caller.Organization.Id == organizationId)
 				return caller.ManagingOrganization || caller.ManagerAtOrganization;
 			return false;
 		}
-		public PermissionsUtility ViewOrganization(long organizationId)
-		{
+		public PermissionsUtility ViewOrganization(long organizationId) {
 			if (IsRadialAdmin(caller))
 				return this;
 			if (caller.Organization.Id == organizationId)
@@ -331,23 +294,20 @@ namespace RadialReview.Utilities
 			throw new PermissionsException("Cannot view organization: " + organizationId);
 		}
 
-		public PermissionsUtility EditCompanyValues(long organizationId)
-		{
+		public PermissionsUtility EditCompanyValues(long organizationId) {
 			return EditOrganization(organizationId);
 		}
 
 		#endregion
 
 		#region Payment
-		public PermissionsUtility EditCompanyPayment(long organizationId)
-		{
+		public PermissionsUtility EditCompanyPayment(long organizationId) {
 			return EditOrganization(organizationId);
 		}
 		#endregion
 
 		#region Group
-		public PermissionsUtility EditGroup(long groupId)
-		{
+		public PermissionsUtility EditGroup(long groupId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -357,8 +317,7 @@ namespace RadialReview.Utilities
 			throw new PermissionsException();
 		}
 
-		public PermissionsUtility ViewGroup(long groupId)
-		{
+		public PermissionsUtility ViewGroup(long groupId) {
 			if (IsRadialAdmin(caller))
 				return this;
 			if (caller.Groups.Any(x => x.Id == groupId))
@@ -370,24 +329,20 @@ namespace RadialReview.Utilities
 		#endregion
 
 		#region Application
-		public PermissionsUtility EditApplication(long forId)
-		{
+		public PermissionsUtility EditApplication(long forId) {
 			if (IsRadialAdmin(caller))
 				return this;
 			throw new PermissionsException();
 		}
-		public PermissionsUtility ViewApplication(long applicationId)
-		{
+		public PermissionsUtility ViewApplication(long applicationId) {
 			log.Info("ViewApplication always returns true.");
 			return this;
 		}
 		#endregion
 
 		#region Accountability
-		public PermissionsUtility ViewHierarchy(long hierarchyId)
-		{
-			return CanView(PermItem.ResourceType.AccountabilityHierarchy, hierarchyId, x =>
-			{
+		public PermissionsUtility ViewHierarchy(long hierarchyId) {
+			return CanView(PermItem.ResourceType.AccountabilityHierarchy, hierarchyId, x => {
 
 				var chart = session.Get<AccountabilityChart>(hierarchyId);
 				x.ViewOrganization(chart.OrganizationId);
@@ -395,15 +350,13 @@ namespace RadialReview.Utilities
 			});
 		}
 
-		public PermissionsUtility ManagesAccountabilityNode(long nodeId, params PermissionType[] alsoTry)
-		{
+		public PermissionsUtility ManagesAccountabilityNode(long nodeId, params PermissionType[] alsoTry) {
 			if (IsRadialAdmin(caller))
 				return this;
 
 			var node = session.Get<AccountabilityNode>(nodeId);
 
-			return TryWithOverrides(x =>
-			{
+			return TryWithOverrides(x => {
 				if (IsManagingOrganization(node.OrganizationId, false))
 					return x;
 				if (DeepAccessor.ManagesNode(session, this, caller.Id, nodeId))
@@ -412,10 +365,8 @@ namespace RadialReview.Utilities
 			}, alsoTry);
 		}
 
-		public PermissionsUtility EditHierarchy(long hierarchyId)
-		{
-			return CanEdit(PermItem.ResourceType.AccountabilityHierarchy, hierarchyId, x =>
-			{
+		public PermissionsUtility EditHierarchy(long hierarchyId) {
+			return CanEdit(PermItem.ResourceType.AccountabilityHierarchy, hierarchyId, x => {
 
 				var chart = session.Get<AccountabilityChart>(hierarchyId);
 				ViewOrganization(chart.OrganizationId);
@@ -430,22 +381,19 @@ namespace RadialReview.Utilities
 		#endregion
 
 		#region Industry
-		public PermissionsUtility EditIndustry(long forId)
-		{
+		public PermissionsUtility EditIndustry(long forId) {
 			if (IsRadialAdmin(caller))
 				return this;
 			throw new PermissionsException();
 		}
-		public PermissionsUtility ViewIndustry(long industryId)
-		{
+		public PermissionsUtility ViewIndustry(long industryId) {
 			log.Info("ViewIndustry always returns true.");
 			return this;
 		}
 		#endregion
 
 		#region Question
-		public PermissionsUtility EditQuestion(QuestionModel question)
-		{
+		public PermissionsUtility EditQuestion(QuestionModel question) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -457,37 +405,39 @@ namespace RadialReview.Utilities
 			throw new PermissionsException();
 		}
 
-		public PermissionsUtility ViewQuestion(QuestionModel question)
-		{
+		public PermissionsUtility ViewQuestion(QuestionModel question) {
 			if (IsRadialAdmin(caller))
 				return this;
 
-			switch (question.OriginType)
-			{
+			switch (question.OriginType) {
 				//case OriginType.User: if (!IsOwnedBelowOrEqual(caller, x => x.CustomQuestions.Any(y => y.Id == question.Id))) throw new PermissionsException(); break;
-				case OriginType.Group: if (!IsOwnedBelowOrEqual(caller, x => x.Groups.Any(y => y.CustomQuestions.Any(z => z.Id == question.Id)) || x.ManagingGroups.Any(y => y.CustomQuestions.Any(z => z.Id == question.Id)))) throw new PermissionsException(); break;
-				case OriginType.Organization: if (caller.Organization.Id != question.OriginId) throw new PermissionsException(); break;
-				case OriginType.Industry: break;
-				case OriginType.Application: break;
-				case OriginType.Invalid: throw new PermissionsException();
-				default: throw new PermissionsException();
+				case OriginType.Group:
+					if (!IsOwnedBelowOrEqual(caller, x => x.Groups.Any(y => y.CustomQuestions.Any(z => z.Id == question.Id)) || x.ManagingGroups.Any(y => y.CustomQuestions.Any(z => z.Id == question.Id))))
+						throw new PermissionsException();
+					break;
+				case OriginType.Organization:
+					if (caller.Organization.Id != question.OriginId)
+						throw new PermissionsException();
+					break;
+				case OriginType.Industry:
+					break;
+				case OriginType.Application:
+					break;
+				case OriginType.Invalid:
+					throw new PermissionsException();
+				default:
+					throw new PermissionsException();
 			}
 			return this;
 		}
 
-		public PermissionsUtility EditUserDetails(long forUserId)
-		{
-			return TryWithOverrides(x =>
-			{
-				try
-				{
+		public PermissionsUtility EditUserDetails(long forUserId) {
+			return TryWithOverrides(x => {
+				try {
 					return ManagesUserOrganization(forUserId, true);
-				}
-				catch (PermissionsException p)
-				{
+				} catch (PermissionsException p) {
 					var foundUser = session.Get<UserOrganizationModel>(forUserId);
-					if (foundUser.Id == caller.Id && ((foundUser.ManagerAtOrganization && foundUser.Organization.Settings.ManagersCanEditSelf) || foundUser.Organization.Settings.EmployeesCanEditSelf || foundUser.ManagingOrganization))
-					{
+					if (foundUser.Id == caller.Id && ((foundUser.ManagerAtOrganization && foundUser.Organization.Settings.ManagersCanEditSelf) || foundUser.Organization.Settings.EmployeesCanEditSelf || foundUser.ManagingOrganization)) {
 						return this;
 					}
 				}
@@ -495,54 +445,60 @@ namespace RadialReview.Utilities
 			}, PermissionType.EditEmployeeDetails);
 		}
 
-		public PermissionsUtility EditQuestionForUser(long forUserId)
-		{
+		public PermissionsUtility EditQuestionForUser(long forUserId) {
 			return EditUserDetails(forUserId);
 		}
 
-		public PermissionsUtility EditOrganizationQuestions(long orgId)
-		{
+		public PermissionsUtility EditOrganizationQuestions(long orgId) {
 			return EditOrganization(orgId);
 		}
 		#endregion
 
 		#region Origin
-		public PermissionsUtility EditOrigin(Origin origin)
-		{
+		public PermissionsUtility EditOrigin(Origin origin) {
 			return EditOrigin(origin.OriginType, origin.OriginId);
 		}
 
-		public PermissionsUtility EditOrigin(OriginType origin, long originId)
-		{
-			switch (origin)
-			{
-				case OriginType.User: return EditUserOrganization(originId);
-				case OriginType.Group: return EditGroup(originId);
-				case OriginType.Organization: return EditOrganization(originId);
-				case OriginType.Industry: return EditIndustry(originId);
-				case OriginType.Application: return EditApplication(originId);
-				case OriginType.Invalid: throw new PermissionsException();
-				default: throw new PermissionsException();
+		public PermissionsUtility EditOrigin(OriginType origin, long originId) {
+			switch (origin) {
+				case OriginType.User:
+					return EditUserOrganization(originId);
+				case OriginType.Group:
+					return EditGroup(originId);
+				case OriginType.Organization:
+					return EditOrganization(originId);
+				case OriginType.Industry:
+					return EditIndustry(originId);
+				case OriginType.Application:
+					return EditApplication(originId);
+				case OriginType.Invalid:
+					throw new PermissionsException();
+				default:
+					throw new PermissionsException();
 			}
 		}
-		public PermissionsUtility ViewOrigin(OriginType originType, long originId)
-		{
-			switch (originType)
-			{
-				case OriginType.User: return ViewUserOrganization(originId, false);
-				case OriginType.Group: return ViewGroup(originId);
-				case OriginType.Organization: return ViewOrganization(originId);
-				case OriginType.Industry: return ViewIndustry(originId);
-				case OriginType.Application: return ViewApplication(originId);
-				case OriginType.Invalid: throw new PermissionsException();
-				default: throw new PermissionsException();
+		public PermissionsUtility ViewOrigin(OriginType originType, long originId) {
+			switch (originType) {
+				case OriginType.User:
+					return ViewUserOrganization(originId, false);
+				case OriginType.Group:
+					return ViewGroup(originId);
+				case OriginType.Organization:
+					return ViewOrganization(originId);
+				case OriginType.Industry:
+					return ViewIndustry(originId);
+				case OriginType.Application:
+					return ViewApplication(originId);
+				case OriginType.Invalid:
+					throw new PermissionsException();
+				default:
+					throw new PermissionsException();
 			}
 		}
 		#endregion
 
 		#region Category
-		public PermissionsUtility ViewCategory(long id)
-		{
+		public PermissionsUtility ViewCategory(long id) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -555,8 +511,7 @@ namespace RadialReview.Utilities
 
 			throw new PermissionsException();
 		}
-		public PermissionsUtility PairCategoryToQuestion(long categoryId, long questionId)
-		{
+		public PermissionsUtility PairCategoryToQuestion(long categoryId, long questionId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -580,8 +535,7 @@ namespace RadialReview.Utilities
 		#endregion
 
 		#region Managers
-		public PermissionsUtility ManagerAtOrganization(long userOrganizationId, long organizationId)
-		{
+		public PermissionsUtility ManagerAtOrganization(long userOrganizationId, long organizationId) {
 			var user = session.Get<UserOrganizationModel>(userOrganizationId);
 			//var org = session.Get<OrganizationModel>(organizationId);
 
@@ -590,8 +544,7 @@ namespace RadialReview.Utilities
 
 			throw new PermissionsException();
 		}
-		public PermissionsUtility ManageUserReview(long reviewId, bool userCanManageOwnReview)
-		{
+		public PermissionsUtility ManageUserReview(long reviewId, bool userCanManageOwnReview) {
 			ViewReview(reviewId);
 			var review = session.Get<ReviewModel>(reviewId);
 			var userId = review.ForUserId;
@@ -601,8 +554,7 @@ namespace RadialReview.Utilities
 
 			return ManagesUserOrganization(userId, false);
 		}
-		public PermissionsUtility ManagingOrganization(long organizationId)
-		{
+		public PermissionsUtility ManagingOrganization(long organizationId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -612,8 +564,7 @@ namespace RadialReview.Utilities
 			throw new PermissionsException();
 		}
 
-		public PermissionsUtility ManageUserReview_Answer(long answerId, bool userCanManageOwnReview)
-		{
+		public PermissionsUtility ManageUserReview_Answer(long answerId, bool userCanManageOwnReview) {
 			var answer = session.Get<AnswerModel>(answerId);
 
 			if (answer == null)
@@ -624,8 +575,7 @@ namespace RadialReview.Utilities
 			if (!reviews.Any())
 				throw new PermissionsException("Review does not exist");
 
-			foreach (var review in reviews)
-			{
+			foreach (var review in reviews) {
 				ManageUserReview(review.Id, userCanManageOwnReview);
 			}
 
@@ -636,8 +586,7 @@ namespace RadialReview.Utilities
 		#endregion
 
 		#region Teams
-		public PermissionsUtility ViewTeam(long teamId)
-		{
+		public PermissionsUtility ViewTeam(long teamId) {
 			// Subordinates Team
 			//if (teamId == -5 && caller.IsManager()) 
 			//    return this;
@@ -670,8 +619,7 @@ namespace RadialReview.Utilities
 			throw new PermissionsException();
 		}
 
-		public PermissionsUtility EditTeam(long teamId)
-		{
+		public PermissionsUtility EditTeam(long teamId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -686,10 +634,8 @@ namespace RadialReview.Utilities
 			if (team.Type != TeamType.Standard)
 				throw new PermissionsException("Cannot edit auto-populated team.");
 
-			if (caller.IsManager() || !team.OnlyManagersEdit)
-			{
-				if (team.Organization.Id == caller.Organization.Id)
-				{
+			if (caller.IsManager() || !team.OnlyManagersEdit) {
+				if (team.Organization.Id == caller.Organization.Id) {
 					if (!team.Secret)// && team.Members.Any(x => x.UserOrganization.Organization.Id == caller.Organization.Id))
 						return this;
 
@@ -697,8 +643,7 @@ namespace RadialReview.Utilities
 					if (team.Secret && (team.CreatedBy == caller.Id || team.ManagedBy == caller.Id))
 						return this;
 
-					if (!team.OnlyManagersEdit)
-					{
+					if (!team.OnlyManagersEdit) {
 						var members = session.QueryOver<TeamDurationModel>().Where(x => x.TeamId == teamId && x.UserId == caller.Id).List().ToList();
 						if (team.Secret && members.Any())
 							return this;
@@ -710,16 +655,13 @@ namespace RadialReview.Utilities
 			throw new PermissionsException();
 		}
 
-		public PermissionsUtility IssueForTeam(long forTeamId)
-		{
-			return TryWithOverrides(p =>
-			{
+		public PermissionsUtility IssueForTeam(long forTeamId) {
+			return TryWithOverrides(p => {
 				return ManagingTeam(forTeamId);
 			}, PermissionType.IssueReview);
 		}
 
-		public PermissionsUtility ManagingTeam(long teamId)
-		{
+		public PermissionsUtility ManagingTeam(long teamId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -743,8 +685,7 @@ namespace RadialReview.Utilities
 		#endregion
 
 		#region Review
-		public PermissionsUtility EditReviewContainer(long reviewContainerId)
-		{
+		public PermissionsUtility EditReviewContainer(long reviewContainerId) {
 			//TODO more permissions here?
 			if (IsRadialAdmin(caller))
 				return this;
@@ -765,10 +706,8 @@ namespace RadialReview.Utilities
 			//return this;
 		}
 
-		public PermissionsUtility EditReview(long reviewId)
-		{
-			return CheckCacheFirst("EditReview", reviewId).Execute(() =>
-			{
+		public PermissionsUtility EditReview(long reviewId) {
+			return CheckCacheFirst("EditReview", reviewId).Execute(() => {
 				//TODO more permissions here?
 				if (IsRadialAdmin(caller))
 					return this;
@@ -782,8 +721,7 @@ namespace RadialReview.Utilities
 			});
 		}
 
-		public PermissionsUtility ViewReviews(long reviewContainerId, bool sensitive)
-		{
+		public PermissionsUtility ViewReviews(long reviewContainerId, bool sensitive) {
 			if (IsRadialAdmin(caller))
 				return this;
 			var review = session.Get<ReviewsModel>(reviewContainerId);
@@ -802,10 +740,8 @@ namespace RadialReview.Utilities
 			throw new PermissionsException();
 		}
 
-		public PermissionsUtility ViewReview(long reviewId)
-		{
-			return TryWithOverrides(y =>
-			{
+		public PermissionsUtility ViewReview(long reviewId) {
+			return TryWithOverrides(y => {
 				if (IsRadialAdmin(caller))
 					return this;
 
@@ -830,8 +766,7 @@ namespace RadialReview.Utilities
 		#endregion
 
 		#region Responsbility
-		public PermissionsUtility EditResponsibility(long responsibilityId)
-		{
+		public PermissionsUtility EditResponsibility(long responsibilityId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -839,20 +774,13 @@ namespace RadialReview.Utilities
 			var rGroupId = r.ForResponsibilityGroup;
 			ResponsibilityGroupModel rGroup = session.Get<ResponsibilityGroupModel>(rGroupId);
 
-			if (rGroup is OrganizationModel)
-			{
+			if (rGroup is OrganizationModel) {
 				return EditOrganization(rGroupId);
-			}
-			else if (rGroup is OrganizationTeamModel)
-			{
+			} else if (rGroup is OrganizationTeamModel) {
 				return EditTeam(rGroupId);
-			}
-			else if (rGroup is UserOrganizationModel)
-			{
+			} else if (rGroup is UserOrganizationModel) {
 				return EditUserOrganization(rGroupId);
-			}
-			else
-			{
+			} else {
 				throw new PermissionsException("Unknown responsibility group type.");
 			}
 
@@ -861,8 +789,7 @@ namespace RadialReview.Utilities
 		#endregion
 
 		#region Position
-		public PermissionsUtility ManagingPosition(long positionId)
-		{
+		public PermissionsUtility ManagingPosition(long positionId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -879,8 +806,7 @@ namespace RadialReview.Utilities
 
 			throw new PermissionsException();
 		}
-		public PermissionsUtility EditPositions(long organizationId)
-		{
+		public PermissionsUtility EditPositions(long organizationId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -896,23 +822,19 @@ namespace RadialReview.Utilities
 		#endregion
 
 		#region Templates
-		public PermissionsUtility CreateTemplates(long organizationId)
-		{
+		public PermissionsUtility CreateTemplates(long organizationId) {
 			return ManagerAtOrganization(caller.Id, organizationId);
 		}
-		public PermissionsUtility ViewTemplate(long templateId)
-		{
+		public PermissionsUtility ViewTemplate(long templateId) {
 			return ViewOrganization(session.Get<UserTemplate>(templateId).OrganizationId);
 		}
-		public PermissionsUtility EditTemplate(long templateId)
-		{
+		public PermissionsUtility EditTemplate(long templateId) {
 			return CreateTemplates(session.Get<UserTemplate>(templateId).OrganizationId);
 		}
 		#endregion
 
 		#region Prereview
-		public PermissionsUtility ViewPrereview(long prereviewId)
-		{
+		public PermissionsUtility ViewPrereview(long prereviewId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -932,13 +854,11 @@ namespace RadialReview.Utilities
 
 		#region Scorecard
 
-		public PermissionsUtility EditUserScorecard(long userId)
-		{
+		public PermissionsUtility EditUserScorecard(long userId) {
 			return EditUserOrganization(userId);
 		}
 
-		public PermissionsUtility ViewOrganizationScorecard(long organizationId)
-		{
+		public PermissionsUtility ViewOrganizationScorecard(long organizationId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -954,10 +874,36 @@ namespace RadialReview.Utilities
 			throw new PermissionsException();
 		}
 
-		public PermissionsUtility ViewMeasurable(long measurableId)
-		{
-			return CheckCacheFirst("ViewMeasurable", measurableId).Execute(() =>
-			{
+		public PermissionsUtility EditAttach(Attach attachTo) {
+			
+
+			if (IsRadialAdmin(caller))
+				return this;
+
+			var orgId = AttachAccessor.GetOrganizationId(session, attachTo);
+
+
+			ViewOrganization(orgId);
+
+			if (IsManagingOrganization(orgId))
+				return this;
+			
+			switch (attachTo.Type) {
+				case AttachType.Position:
+					return EditPositions(orgId);
+				case AttachType.Team:
+					return EditTeam(attachTo.Id);
+				case AttachType.User:
+					return EditUserOrganization(attachTo.Id);
+				default:
+					throw new PermissionsException("Invalid attach type ("+attachTo.Type+")");
+			}
+
+
+		}
+
+		public PermissionsUtility ViewMeasurable(long measurableId) {
+			return CheckCacheFirst("ViewMeasurable", measurableId).Execute(() => {
 				if (IsRadialAdmin(caller))
 					return this;
 
@@ -971,10 +917,8 @@ namespace RadialReview.Utilities
 				return ManagesUserOrganization(m.AccountableUserId, false);
 			});
 		}
-		public PermissionsUtility EditMeasurable(long measurableId)
-		{
-			return CheckCacheFirst("EditMeasurable", measurableId).Execute(() =>
-			{
+		public PermissionsUtility EditMeasurable(long measurableId) {
+			return CheckCacheFirst("EditMeasurable", measurableId).Execute(() => {
 				if (IsRadialAdmin(caller))
 					return this;
 
@@ -993,23 +937,18 @@ namespace RadialReview.Utilities
 						.Select(x => x.L10Recurrence.Id)
 						.List<long>().ToList();
 
-				foreach (var recur in measurableRecurs)
-				{
-					try
-					{
+				foreach (var recur in measurableRecurs) {
+					try {
 						EditL10Recurrence(recur);
 						return this;
-					}
-					catch (PermissionsException p)
-					{
+					} catch (PermissionsException p) {
 					}
 				}
 
 				throw new PermissionsException();
 			});
 		}
-		public PermissionsUtility EditScore(long scoreId)
-		{
+		public PermissionsUtility EditScore(long scoreId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -1028,22 +967,17 @@ namespace RadialReview.Utilities
 						.Select(x => x.L10Recurrence.Id)
 						.List<long>().ToList();
 
-			foreach (var p in possibleRecurrences)
-			{
-				try
-				{
+			foreach (var p in possibleRecurrences) {
+				try {
 					return ViewL10Recurrence(p);
-				}
-				catch (PermissionsException)
-				{
+				} catch (PermissionsException) {
 					//try next one..
 				}
 			}
 			throw new PermissionsException();
 		}
 
-		public PermissionsUtility CanViewUserMeasurables(long userId)
-		{
+		public PermissionsUtility CanViewUserMeasurables(long userId) {
 			return CanViewUserRocks(userId);
 		}
 
@@ -1051,8 +985,7 @@ namespace RadialReview.Utilities
 		#endregion
 
 		#region VTO
-		public PermissionsUtility CreateVTO(long organizationId)
-		{
+		public PermissionsUtility CreateVTO(long organizationId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -1061,12 +994,10 @@ namespace RadialReview.Utilities
 			throw new PermissionsException("Cannot create a VTO");
 		}
 
-		public PermissionsUtility ViewVTO(long vtoId)
-		{
+		public PermissionsUtility ViewVTO(long vtoId) {
 			if (IsRadialAdmin(caller))
 				return this;
-			return CanView(PermItem.ResourceType.VTO, vtoId, @this =>
-			{
+			return CanView(PermItem.ResourceType.VTO, vtoId, @this => {
 				var vto = session.Get<VtoModel>(vtoId);
 				if (IsManagingOrganization(vto.Organization.Id))
 					return this;
@@ -1076,13 +1007,11 @@ namespace RadialReview.Utilities
 			});
 
 		}
-		public PermissionsUtility EditVTO(long vtoId)
-		{
+		public PermissionsUtility EditVTO(long vtoId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
-			return CanEdit(PermItem.ResourceType.VTO, vtoId, @this =>
-			{
+			return CanEdit(PermItem.ResourceType.VTO, vtoId, @this => {
 				var vto = session.Get<VtoModel>(vtoId);
 				if (IsManagingOrganization(vto.Organization.Id))
 					return this;
@@ -1098,8 +1027,7 @@ namespace RadialReview.Utilities
 
 		#region L10
 
-		public PermissionsUtility CreateL10Recurrence(long organizationId)
-		{
+		public PermissionsUtility CreateL10Recurrence(long organizationId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -1113,14 +1041,12 @@ namespace RadialReview.Utilities
 			throw new PermissionsException("Cannot create meeting.");
 		}
 
-		public PermissionsUtility AdminL10Recurrence(long recurrenceId)
-		{
+		public PermissionsUtility AdminL10Recurrence(long recurrenceId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
 
-			if (recurrenceId == 0)
-			{
+			if (recurrenceId == 0) {
 				throw new PermissionsException("Meeting does not exist.");
 			}
 
@@ -1135,20 +1061,15 @@ namespace RadialReview.Utilities
 			return CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId);
 		}
 
-		public PermissionsUtility EditL10Recurrence(long recurrenceId)
-		{
-			return CheckCacheFirst("EditL10Recurrence", recurrenceId).Execute(() =>
-			{
+		public PermissionsUtility EditL10Recurrence(long recurrenceId) {
+			return CheckCacheFirst("EditL10Recurrence", recurrenceId).Execute(() => {
 				if (IsRadialAdmin(caller))
 					return this;
 
 
-				if (recurrenceId == 0)
-				{
+				if (recurrenceId == 0) {
 					throw new PermissionsException("Meeting does not exist.");
-				}
-				else
-				{
+				} else {
 					var recur = session.Get<L10Recurrence>(recurrenceId);
 					if (recur.CreatedById == caller.Id)
 						return this;
@@ -1157,12 +1078,10 @@ namespace RadialReview.Utilities
 						return this;
 
 
-					return CanEdit(PermItem.ResourceType.L10Recurrence, recurrenceId, (@this) =>
-					{
+					return CanEdit(PermItem.ResourceType.L10Recurrence, recurrenceId, (@this) => {
 						var availUserIds = new[] { caller.Id };
 
-						if (caller.Organization.Settings.ManagersCanEditSubordinateL10)
-						{
+						if (caller.Organization.Settings.ManagersCanEditSubordinateL10) {
 							availUserIds = DeepAccessor.Users.GetSubordinatesAndSelf(session, caller, caller.Id).ToArray();
 						}
 
@@ -1178,8 +1097,7 @@ namespace RadialReview.Utilities
 			});
 		}
 
-		public PermissionsUtility ViewIssue(long issueId)
-		{
+		public PermissionsUtility ViewIssue(long issueId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -1188,22 +1106,17 @@ namespace RadialReview.Utilities
 				.Select(x => x.Recurrence.Id).List<long>()
 				.ToList();
 
-			foreach (var p in possibleRecurrences)
-			{
-				try
-				{
+			foreach (var p in possibleRecurrences) {
+				try {
 					return ViewL10Recurrence(p);
-				}
-				catch (PermissionsException)
-				{
+				} catch (PermissionsException) {
 					//try next one..
 				}
 			}
 			throw new PermissionsException();
 		}
 
-		public PermissionsUtility ViewL10Recurrence(long recurrenceId)
-		{
+		public PermissionsUtility ViewL10Recurrence(long recurrenceId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -1212,8 +1125,7 @@ namespace RadialReview.Utilities
 			if (IsManagingOrganization(recurrences_OrgId))
 				return this;
 
-			return CanView(PermItem.ResourceType.L10Recurrence, recurrenceId, (@this) =>
-			{
+			return CanView(PermItem.ResourceType.L10Recurrence, recurrenceId, (@this) => {
 				var possibleUsers = session.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
 			.Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId)
 			.Select(x => x.User.Id).List<long>()
@@ -1222,8 +1134,7 @@ namespace RadialReview.Utilities
 				if (possibleUsers.Contains(caller.Id))
 					return @this;
 
-				if (caller.Organization.Settings.ManagersCanViewSubordinateL10)
-				{
+				if (caller.Organization.Settings.ManagersCanViewSubordinateL10) {
 					var subIds = DeepAccessor.Users.GetSubordinatesAndSelf(session, caller, caller.Id);
 					if (possibleUsers.ContainsAny(subIds))
 						return @this;
@@ -1233,8 +1144,7 @@ namespace RadialReview.Utilities
 
 		}
 
-		public PermissionsUtility ViewTodo(long todoId)
-		{
+		public PermissionsUtility ViewTodo(long todoId) {
 			if (IsRadialAdmin(caller))
 				return this;
 			var todo = session.Get<TodoModel>(todoId);
@@ -1242,22 +1152,39 @@ namespace RadialReview.Utilities
 				return this;
 			if (IsManagingOrganization(todo.OrganizationId))
 				return this;
-			if (todo.ForRecurrenceId != null && todo.ForRecurrenceId != 0)
-			{
-				try
-				{
+			if (todo.ForRecurrenceId != null && todo.ForRecurrenceId != 0) {
+				try {
 					ViewL10Recurrence(todo.ForRecurrenceId.Value);
 					return this;
-				}
-				catch (PermissionsException e)
-				{
+				} catch (PermissionsException e) {
 				}
 			}
 			throw new PermissionsException();
 		}
 
-		public PermissionsUtility ViewUsersL10Meetings(long userId)
-		{
+		public PermissionsUtility EditRole(long roleId) {
+			if (IsRadialAdmin(caller))
+				return this;
+
+			var role = session.Get<RoleModel>(roleId);
+			if (IsManagingOrganization(role.OrganizationId))
+				return this;
+
+			var ordering = new[] { AttachType.User, AttachType.Position, AttachType.Team }.ToList();
+			var links = session.QueryOver<RoleLink>()
+				.Where(x => x.DeleteTime == null && x.RoleId == roleId)
+				.List()
+				.OrderBy(x=> ordering.IndexOf(x.AttachType))
+				.ToList();
+
+			try {
+				return Or(links.Select(x => new Func<PermissionsUtility>(() => EditAttach(x.GetAttach()))).ToArray());
+			} catch (Exception e) {
+				throw new PermissionsException("Cannot edit role (" + roleId + ")");
+			}
+		}
+
+		public PermissionsUtility ViewUsersL10Meetings(long userId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -1268,8 +1195,7 @@ namespace RadialReview.Utilities
 			if (IsManagingOrganization(users_OrgId))
 				return this;
 
-			if (caller.Organization.Settings.ManagersCanViewSubordinateL10)
-			{
+			if (caller.Organization.Settings.ManagersCanViewSubordinateL10) {
 				var subIds = DeepAccessor.Users.GetSubordinatesAndSelf(session, caller, caller.Id);
 				if (subIds.Contains(userId))
 					return this;
@@ -1280,10 +1206,8 @@ namespace RadialReview.Utilities
 			throw new PermissionsException();
 		}
 
-		public PermissionsUtility ViewL10Meeting(long meetingId)
-		{
-			return CheckCacheFirst("ViewL10Meeting", meetingId).Execute(() =>
-			{
+		public PermissionsUtility ViewL10Meeting(long meetingId) {
+			return CheckCacheFirst("ViewL10Meeting", meetingId).Execute(() => {
 				if (IsRadialAdmin(caller))
 					return this;
 
@@ -1292,15 +1216,13 @@ namespace RadialReview.Utilities
 				if (IsManagingOrganization(meeting_OrgId))
 					return this;
 
-				return CanView(PermItem.ResourceType.L10Recurrence, meeting.L10RecurrenceId, (@this) =>
-				{
+				return CanView(PermItem.ResourceType.L10Recurrence, meeting.L10RecurrenceId, (@this) => {
 					var meetingIds = session.QueryOver<L10Meeting.L10Meeting_Attendee>().Where(x =>
 						x.L10Meeting.Id == meetingId &&
 						x.DeleteTime == null).List().Select(x => x.UserId).ToList();
 					if (caller.UserIds.ContainsAny(meetingIds))
 						return @this;
-					if (caller.Organization.Settings.ManagersCanViewSubordinateL10)
-					{
+					if (caller.Organization.Settings.ManagersCanViewSubordinateL10) {
 						var subIds = DeepAccessor.Users.GetSubordinatesAndSelf(session, caller, caller.Id);
 						if (subIds.ContainsAny(meetingIds))
 							return @this;
@@ -1313,8 +1235,7 @@ namespace RadialReview.Utilities
 
 					if (caller.UserIds.ContainsAny(defaultIds))
 						return @this;
-					if (caller.Organization.Settings.ManagersCanViewSubordinateL10)
-					{
+					if (caller.Organization.Settings.ManagersCanViewSubordinateL10) {
 						var subIds = DeepAccessor.Users.GetSubordinatesAndSelf(session, caller, caller.Id);
 						if (subIds.ContainsAny(defaultIds))
 							return @this;
@@ -1324,8 +1245,7 @@ namespace RadialReview.Utilities
 				});
 			});
 		}
-		public PermissionsUtility ViewL10Note(long noteId)
-		{
+		public PermissionsUtility ViewL10Note(long noteId) {
 			var note = session.Get<L10Note>(noteId);
 			if (note == null)
 				throw new PermissionsException("Note does not exist");
@@ -1335,13 +1255,11 @@ namespace RadialReview.Utilities
 		#endregion
 
 		#region Rocks
-		public PermissionsUtility ViewRock(RockModel rock)
-		{
+		public PermissionsUtility ViewRock(RockModel rock) {
 			return ViewUserOrganization(rock.ForUserId, false);
 		}
 
-		public PermissionsUtility EditRock(RockModel rock)
-		{
+		public PermissionsUtility EditRock(RockModel rock) {
 			var recurrences = session.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
 				.Where(x => x.DeleteTime == null && x.User.Id == caller.Id)
 				.Select(x => x.L10Recurrence.Id).List<long>().ToList();
@@ -1358,8 +1276,7 @@ namespace RadialReview.Utilities
 		}
 
 
-		public PermissionsUtility CanViewUserRocks(long userId)
-		{
+		public PermissionsUtility CanViewUserRocks(long userId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -1381,8 +1298,7 @@ namespace RadialReview.Utilities
 		#endregion
 
 		#region Survey
-		public PermissionsUtility ViewSurveyContainer(long surveyId)
-		{
+		public PermissionsUtility ViewSurveyContainer(long surveyId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -1395,18 +1311,15 @@ namespace RadialReview.Utilities
 			throw new PermissionsException("Cannot view this survey");
 		}
 
-		public PermissionsUtility CreateSurvey()
-		{
-			if (IsManagingOrganization(caller.Organization.Id))
-			{
+		public PermissionsUtility CreateSurvey() {
+			if (IsManagingOrganization(caller.Organization.Id)) {
 				return this;
 			}
 
 			if (caller.Organization.Settings.EmployeesCanCreateSurvey)
 				return this;
 
-			if (caller.Organization.Settings.ManagersCanCreateSurvey && IsManager(caller.Organization.Id))
-			{
+			if (caller.Organization.Settings.ManagersCanCreateSurvey && IsManager(caller.Organization.Id)) {
 				return this;
 			}
 
@@ -1415,12 +1328,10 @@ namespace RadialReview.Utilities
 		}
 
 
-		public PermissionsUtility EditSurvey(long surveyId)
-		{
+		public PermissionsUtility EditSurvey(long surveyId) {
 			var survey = session.Get<SurveyContainerModel>(surveyId);
 
-			if (survey != null)
-			{
+			if (survey != null) {
 				session.Evict(survey);
 				if (survey.QuestionGroup != null)
 					session.Evict(survey.QuestionGroup);
@@ -1446,8 +1357,7 @@ namespace RadialReview.Utilities
 		#endregion
 
 		#region PermissionOverride
-		public PermissionsUtility EditPermissionOverride(long permissionOverrideId)
-		{
+		public PermissionsUtility EditPermissionOverride(long permissionOverrideId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -1465,16 +1375,14 @@ namespace RadialReview.Utilities
 		#endregion
 
 		#region ForModel
-		public PermissionsUtility EditForModel(ForModel model)
-		{
+		public PermissionsUtility EditForModel(ForModel model) {
 			if (model.ModelType == ForModel.GetModelType<L10Recurrence>())
 				return EditL10Recurrence(model.ModelId);
 			if (model.ModelType == ForModel.GetModelType<UserOrganizationModel>())
 				return EditUserOrganization(model.ModelId);
 			throw new PermissionsException("ModelType unhandled");
 		}
-		public PermissionsUtility ViewForModel(ForModel model)
-		{
+		public PermissionsUtility ViewForModel(ForModel model) {
 			if (model.ModelType == ForModel.GetModelType<L10Recurrence>())
 				return ViewL10Recurrence(model.ModelId);
 			if (model.ModelType == ForModel.GetModelType<UserOrganizationModel>())
@@ -1484,46 +1392,39 @@ namespace RadialReview.Utilities
 		#endregion
 
 		#region Recursions
-		public PermissionsUtility OwnedBelowOrEqual(Predicate<UserOrganizationModel> visiblility)
-		{
+		public PermissionsUtility OwnedBelowOrEqual(Predicate<UserOrganizationModel> visiblility) {
 			if (IsOwnedBelowOrEqual(caller, visiblility))
 				return this;
 			throw new PermissionsException();
 		}
 
-		protected bool IsOwnedBelowOrEqual(UserOrganizationModel caller, Predicate<UserOrganizationModel> visibility)
-		{
+		protected bool IsOwnedBelowOrEqual(UserOrganizationModel caller, Predicate<UserOrganizationModel> visibility) {
 
 			if (visibility(caller))
 				return true;
 
-			foreach (var manager in caller.ManagingUsers.ToListAlive().Select(x => x.Subordinate))
-			{
+			foreach (var manager in caller.ManagingUsers.ToListAlive().Select(x => x.Subordinate)) {
 				if (IsOwnedBelowOrEqual(manager, visibility))
 					return true;
 			}
 			return false;
 		}
 
-		protected bool IsOwnedAboveOrEqual(UserOrganizationModel caller, Predicate<UserOrganizationModel> visibility)
-		{
+		protected bool IsOwnedAboveOrEqual(UserOrganizationModel caller, Predicate<UserOrganizationModel> visibility) {
 			if (visibility(caller))
 				return true;
-			foreach (var subordinate in caller.ManagedBy.ToListAlive().Select(x => x.Manager))
-			{
+			foreach (var subordinate in caller.ManagedBy.ToListAlive().Select(x => x.Manager)) {
 				if (IsOwnedAboveOrEqual(subordinate, visibility))
 					return true;
 			}
 			return false;
 		}
 
-		protected bool IsOwnedBelowOrEqualOrganizational<T>(T start, Origin origin) where T : IOrigin
-		{
+		protected bool IsOwnedBelowOrEqualOrganizational<T>(T start, Origin origin) where T : IOrigin {
 			if (origin.AreEqual(start))
 				return true;
 
-			foreach (var sub in start.OwnsOrigins())
-			{
+			foreach (var sub in start.OwnsOrigins()) {
 				if (IsOwnedBelowOrEqualOrganizational(sub, origin))
 					return true;
 			}
@@ -1533,14 +1434,10 @@ namespace RadialReview.Utilities
 		#endregion
 
 		#region Overrides
-		public PermissionsUtility TryWithOverrides(Func<PermissionsUtility, PermissionsUtility> p, params PermissionType[] types)
-		{
-			try
-			{
+		public PermissionsUtility TryWithOverrides(Func<PermissionsUtility, PermissionsUtility> p, params PermissionType[] types) {
+			try {
 				return p(this);
-			}
-			catch (PermissionsException)
-			{
+			} catch (PermissionsException) {
 
 				if (Overrides == null)
 					Overrides = session.QueryOver<PermissionOverride>().Where(x => x.DeleteTime == null && x.ForUser.Id == caller.Id).List().ToList();
@@ -1548,19 +1445,13 @@ namespace RadialReview.Utilities
 
 				var tryWith = Overrides.Where(x => types.Any(y => y == x.Permissions)).Where(x => x.AsUser.DeleteTime == null).Select(x => x.AsUser);
 				var originalCaller = caller;
-				foreach (var x in tryWith)
-				{
-					try
-					{
+				foreach (var x in tryWith) {
+					try {
 						caller = x;
 						return p(this);
-					}
-					catch (PermissionsException)
-					{
+					} catch (PermissionsException) {
 						//Pass through;
-					}
-					finally
-					{
+					} finally {
 						caller = originalCaller;
 					}
 				}
@@ -1569,33 +1460,23 @@ namespace RadialReview.Utilities
 			throw new PermissionsException();
 		}
 
-		protected bool TryWithOverrides(Func<PermissionsUtility, bool> p, params PermissionType[] types)
-		{
-			try
-			{
+		protected bool TryWithOverrides(Func<PermissionsUtility, bool> p, params PermissionType[] types) {
+			try {
 				return p(this);
-			}
-			catch (PermissionsException)
-			{
+			} catch (PermissionsException) {
 				if (Overrides == null)
 					Overrides = session.QueryOver<PermissionOverride>().Where(x => x.DeleteTime == null && x.ForUser.Id == caller.Id).List().ToList();
 
 
 				var tryWith = Overrides.Where(x => types.Any(y => y == x.Permissions)).Where(x => x.AsUser.DeleteTime != null).Select(x => x.AsUser);
 				var originalCaller = caller;
-				foreach (var x in tryWith)
-				{
-					try
-					{
+				foreach (var x in tryWith) {
+					try {
 						caller = x;
 						return p(this);
-					}
-					catch (PermissionsException)
-					{
+					} catch (PermissionsException) {
 						//Pass through;
-					}
-					finally
-					{
+					} finally {
 						caller = originalCaller;
 					}
 				}
@@ -1625,36 +1506,36 @@ namespace RadialReview.Utilities
 			}
 			throw new PermissionsException();
 		}*/
-
-
-		public PermissionsUtility Or(params Func<PermissionsUtility, PermissionsUtility>[] or)
-		{
-			foreach (var o in or)
-			{
-				try
-				{
-					return o(this);
-				}
-				catch (PermissionsException) { }
-				catch (Exception) { }
+		public PermissionsUtility Or(params Func<PermissionsUtility>[] or) {
+			foreach (var o in or) {
+				try {
+					return o();
+				} catch (PermissionsException) { } catch (Exception) { }
 			}
 			throw new PermissionsException();
 		}
 
 
-		public static bool IsAdmin(UserOrganizationModel caller)
-		{
+		public PermissionsUtility Or(params Func<PermissionsUtility, PermissionsUtility>[] or) {
+			foreach (var o in or) {
+				try {
+					return o(this);
+				} catch (PermissionsException) { } catch (Exception) { }
+			}
+			throw new PermissionsException();
+		}
+
+
+		public static bool IsAdmin(UserOrganizationModel caller) {
 			return IsRadialAdmin(caller);
 		}
 
 		public delegate PermissionsUtility LongFunc(long id);
 
-		private PermissionsUtility _ConfirmPermissions<T, M>(T model, bool fixRefs, Expression<Func<T, long?>> idSelector, Expression<Func<T, M>> modelSelector, Func<PermissionsUtility, LongFunc> permissionsSelector) where M : ILongIdentifiable
-		{
+		private PermissionsUtility _ConfirmPermissions<T, M>(T model, bool fixRefs, Expression<Func<T, long?>> idSelector, Expression<Func<T, M>> modelSelector, Func<PermissionsUtility, LongFunc> permissionsSelector) where M : ILongIdentifiable {
 			var id = model.Get(idSelector);
 			var m = model.Get(modelSelector);
-			if (id == null)
-			{
+			if (id == null) {
 				if (m == null)
 					return this; //No error.. looks like its optional
 				if (m.Id == 0)
@@ -1662,31 +1543,23 @@ namespace RadialReview.Utilities
 				if (fixRefs)
 					model.Set(idSelector, m.Id);
 				return permissionsSelector(this)(m.Id);
-			}
-			else if (m == null)
-			{
+			} else if (m == null) {
 				if (id == 0)
 					throw new PermissionsException();
-				if (fixRefs)
-				{
+				if (fixRefs) {
 					var mLoaded = session.Get<M>(id.Value);
 					model.Set(modelSelector, mLoaded);
 				}
 
 				return permissionsSelector(this)(id.Value);
-			}
-			else
-			{
-				if (id == 0)
-				{
+			} else {
+				if (id == 0) {
 					if (m.Id == 0)
 						throw new PermissionsException("Model uninitialized [2]");
 					if (fixRefs)
 						model.Set(idSelector, m.Id);
 					return permissionsSelector(this)(m.Id);
-				}
-				else
-				{
+				} else {
 					if (m.Id == 0)
 						throw new PermissionsException("Model uninitialized [3]");
 					if (id != m.Id)
@@ -1696,36 +1569,28 @@ namespace RadialReview.Utilities
 			}
 		}
 
-		private PermissionsUtility _ConfirmPermissions<T, M>(T model, bool fixRefs, Expression<Func<T, long>> idSelector, Expression<Func<T, M>> modelSelector, Func<PermissionsUtility, LongFunc> permissionsSelector) where M : ILongIdentifiable
-		{
+		private PermissionsUtility _ConfirmPermissions<T, M>(T model, bool fixRefs, Expression<Func<T, long>> idSelector, Expression<Func<T, M>> modelSelector, Func<PermissionsUtility, LongFunc> permissionsSelector) where M : ILongIdentifiable {
 			var id = model.Get(idSelector);
 			var m = model.Get(modelSelector);
-			if (m == null)
-			{
+			if (m == null) {
 				if (id == 0)
 					throw new PermissionsException();
 
-				if (fixRefs)
-				{
+				if (fixRefs) {
 					var mLoaded = session.Load<M>(id);
 					model.Set(modelSelector, mLoaded);
 				}
 
 				return permissionsSelector(this)(id);
-			}
-			else
-			{
-				if (id == 0)
-				{
+			} else {
+				if (id == 0) {
 					if (m.Id == 0)
 						throw new PermissionsException("Model uninitialized [2]");
 
 					if (fixRefs)
 						model.Set(idSelector, m.Id);
 					return permissionsSelector(this)(m.Id);
-				}
-				else
-				{
+				} else {
 					if (m.Id == 0)
 						throw new PermissionsException("Model uninitialized [3]");
 
@@ -1736,50 +1601,74 @@ namespace RadialReview.Utilities
 			}
 		}
 
-		public PermissionsUtility Confirm<T, M>(T model, Expression<Func<T, long?>> idSelector, Expression<Func<T, M>> modelSelector, Func<PermissionsUtility, LongFunc> permissionsSelector) where M : ILongIdentifiable
-		{
+		public PermissionsUtility Confirm<T, M>(T model, Expression<Func<T, long?>> idSelector, Expression<Func<T, M>> modelSelector, Func<PermissionsUtility, LongFunc> permissionsSelector) where M : ILongIdentifiable {
 			return _ConfirmPermissions(model, false, idSelector, modelSelector, permissionsSelector);
 		}
-		public PermissionsUtility Confirm<T, M>(T model, Expression<Func<T, long>> idSelector, Expression<Func<T, M>> modelSelector, Func<PermissionsUtility, LongFunc> permissionsSelector) where M : ILongIdentifiable
-		{
+		public PermissionsUtility Confirm<T, M>(T model, Expression<Func<T, long>> idSelector, Expression<Func<T, M>> modelSelector, Func<PermissionsUtility, LongFunc> permissionsSelector) where M : ILongIdentifiable {
 			return _ConfirmPermissions(model, false, idSelector, modelSelector, permissionsSelector);
 		}
-		public PermissionsUtility ConfirmAndFix<T, M>(T model, Expression<Func<T, long>> idSelector, Expression<Func<T, M>> modelSelector, Func<PermissionsUtility, LongFunc> permissionsSelector) where M : ILongIdentifiable
-		{
+		public PermissionsUtility ConfirmAndFix<T, M>(T model, Expression<Func<T, long>> idSelector, Expression<Func<T, M>> modelSelector, Func<PermissionsUtility, LongFunc> permissionsSelector) where M : ILongIdentifiable {
 			return _ConfirmPermissions(model, true, idSelector, modelSelector, permissionsSelector);
 		}
-		public PermissionsUtility ConfirmAndFix<T, M>(T model, Expression<Func<T, long?>> idSelector, Expression<Func<T, M>> modelSelector, Func<PermissionsUtility, LongFunc> permissionsSelector) where M : ILongIdentifiable
-		{
+		public PermissionsUtility ConfirmAndFix<T, M>(T model, Expression<Func<T, long?>> idSelector, Expression<Func<T, M>> modelSelector, Func<PermissionsUtility, LongFunc> permissionsSelector) where M : ILongIdentifiable {
 			return _ConfirmPermissions(model, true, idSelector, modelSelector, permissionsSelector);
 		}
 
 
-		public PermissionsUtility Noop(long id)
-		{
+		public PermissionsUtility Noop(long id) {
 			return this;
 		}
 
-		public bool IsPermitted(Action<PermissionsUtility> ensurePermitted)
-		{
-			try
-			{
+		public bool IsPermitted(Action<PermissionsUtility> ensurePermitted) {
+			try {
 				ensurePermitted(this);
 				return true;
-			}
-			catch (Exception)
-			{
+			} catch (Exception) {
 				return false;
 			}
 		}
 
+		public PermissionsUtility CanUpload() {
+			if (caller == null || caller.DeleteTime != null)
+				throw new PermissionsException("You cannot upload documents");
+			return this;
+		}
 
-		public PermissionsUtility ViewVideoL10Recurrence(long recurrenceId)
-		{
+
+
+		public PermissionsUtility ViewOrganizationPosition(long positionId) {
+			var orgId = session.Get<OrganizationPositionModel>(positionId).Organization.Id;
+			return ViewOrganization(orgId);
+		}
+
+		public PermissionsUtility EditAccountabilityNode(long id) {
+			var node = session.Get<AccountabilityNode>(id);
+			try {
+				return EditHierarchy(node.AccountabilityChartId);
+			} catch (PermissionsException e) {
+				if (node.UserId != null) {
+					return EditUserOrganization(node.UserId.Value);
+				}
+				var parentId = node.ParentNodeId;
+				while (true) {
+					if (parentId == null)
+						break;
+					var parent = session.Get<AccountabilityNode>(parentId.Value);
+					if (parent.UserId != null) {
+						return EditUserOrganization(parent.UserId.Value);
+					}
+
+					parentId = parent.ParentNodeId;
+				}
+			}
+			throw new PermissionsException("Could not edit node.");
+		}
+
+		public PermissionsUtility ViewVideoL10Recurrence(long recurrenceId) {
 			return ViewL10Recurrence(recurrenceId);
 		}
 
-		public PermissionsUtility Self(long userId)
-		{
+		public PermissionsUtility Self(long userId) {
 			if (IsRadialAdmin(caller))
 				return this;
 			if (userId == caller.Id)
@@ -1788,8 +1677,7 @@ namespace RadialReview.Utilities
 		}
 
 
-		public UserOrganizationModel GetCaller()
-		{
+		public UserOrganizationModel GetCaller() {
 			return caller;
 		}
 

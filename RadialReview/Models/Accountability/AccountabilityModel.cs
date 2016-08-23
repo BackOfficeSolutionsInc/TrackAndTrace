@@ -1,10 +1,12 @@
 ﻿using FluentNHibernate.Mapping;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using static RadialReview.Models.PermItem;
 
 namespace RadialReview.Models.Accountability {
 
@@ -69,6 +71,30 @@ namespace RadialReview.Models.Accountability {
             }
         }
     }
+
+	public class RoleGroup {
+		public virtual long AttachId {get;set;}
+		public virtual AttachType AttachType { get; set; }
+		public virtual List<RoleModel> Roles { get; set; }
+		public virtual String AttachName { get; set; }
+
+		public RoleGroup(List<RoleModel> roles,long attachId,AttachType attachType,string attachName) {
+			AttachId = attachId;
+			AttachType = attachType;
+			Roles = roles;
+			AttachName = attachName;
+		}
+
+		public virtual Attach GetAttach() {
+			return new Attach {
+				Id = AttachId,
+				Name = AttachName,
+				Type = AttachType,
+			};
+		}
+	}
+
+
     public class AccountabilityRolesGroup : ILongIdentifiable, IHistorical {
         public virtual long Id { get; set; }
         public virtual long? PositionId { get; set; }
@@ -76,7 +102,7 @@ namespace RadialReview.Models.Accountability {
         public virtual DateTime CreateTime { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
         public virtual long OrganizationId { get; set; }
-        public virtual List<AccountabilityNodeRoleMap> _Roles { get; set; }
+        public virtual List<RoleGroup> _Roles { get; set; }
         public virtual long AccountabilityChartId { get; set; }
 
         public AccountabilityRolesGroup()
@@ -96,6 +122,9 @@ namespace RadialReview.Models.Accountability {
             }
         }
     }
+
+
+
     public class AccountabilityNodeRoleMap : ILongIdentifiable, IHistorical {
         public virtual long Id { get; set; }
         public virtual DateTime CreateTime { get; set; }

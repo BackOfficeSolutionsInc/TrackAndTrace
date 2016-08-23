@@ -61,7 +61,7 @@ namespace RadialReview.Utilities {
                             return;
                         break;
                     case PermItem.AccessType.Members:
-                        var ids = GetMemeberIds(resourceType, resourceId);
+                        var ids = GetMyMemeberIds(resourceType, resourceId);
                         var idsAlive = session.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(ids).Select(x => x.Id).List<long>();
                         if (idsAlive.Any())
                             return;
@@ -200,55 +200,75 @@ namespace RadialReview.Utilities {
                 return false;
         }
 
-        protected List<long> GetMemeberIds(PermItem.ResourceType resourceType, long resourceId)
+        protected List<long> GetMyMemeberIds(PermItem.ResourceType resourceType, long resourceId,bool meOnly=false)
         {
             switch (resourceType) {
-                case PermItem.ResourceType.L10Recurrence:
-                    var isMember_ids = session.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x => x.L10Recurrence.Id == resourceId && x.DeleteTime == null && x.User.Id == caller.Id).Select(x => x.User.Id).List<long>().ToList();
-                    return isMember_ids;
-                default:
+                case PermItem.ResourceType.L10Recurrence: {
+						var isMember_idsQ = session.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
+						.Where(x => x.L10Recurrence.Id == resourceId && x.DeleteTime == null);
+						if (meOnly)
+							isMember_idsQ = isMember_idsQ.Where(x => x.User.Id == caller.Id);
+						var isMember_ids = isMember_idsQ.Select(x => x.User.Id).List<long>().ToList();
+						return isMember_ids;
+					}
+				case PermItem.ResourceType.AccountabilityHierarchy: {
+						var ac = session.Get<AccountabilityChart>(resourceId);
+						var isMember_idsQ = session.QueryOver<UserOrganizationModel>()
+							.Where(x => x.Organization.Id == ac.OrganizationId && x.DeleteTime == null);
+						if (meOnly)
+							isMember_idsQ = isMember_idsQ.Where(x => x.Id == caller.Id);
+						var isMember_ids = isMember_idsQ.Select(x => x.Id).List<long>().ToList();
+						return isMember_ids;
+					}
+				default:
                     throw new ArgumentOutOfRangeException("resourceType");
             }
         }
 
         protected bool IsMember(PermItem.ResourceType resourceType, long resourceId)
         {
-            var isMember_ids = GetMemeberIds(resourceType, resourceId);
-            if (isMember_ids.Any(id => id == caller.Id))
-                return true;
-            return false;
+            var isMember_ids = GetMyMemeberIds(resourceType, resourceId,true);
+			return (isMember_ids.Any(id => id == caller.Id));
         }
         protected bool IsCreator(PermItem.ResourceType resourceType, long resourceId)
         {
             switch (resourceType) {
-                case PermItem.ResourceType.L10Recurrence:
-                    if (session.Get<L10Recurrence>(resourceId).CreatedById == caller.Id)
-                        return true;
-                    break;
-                default:
+				case PermItem.ResourceType.L10Recurrence:
+					return (session.Get<L10Recurrence>(resourceId).CreatedById == caller.Id);
+				case PermItem.ResourceType.AccountabilityHierarchy:
+					return false;
+				default:
                     throw new ArgumentOutOfRangeException("resourceType");
             }
             return false;
         }
         protected bool IsOrgAdmin(PermItem.ResourceType resourceType, long resourceId)
         {
-            switch (resourceType) {
-                case PermItem.ResourceType.L10Recurrence:
-                    if (session.Get<L10Recurrence>(resourceId).OrganizationId == caller.Organization.Id && caller.IsManagingOrganization())
-                        return true;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException("resourceType");
-            }
-            return false;
+			return (GetOrganizationId(resourceType, resourceId) == caller.Organization.Id && caller.IsManagingOrganization());
+
+    //        switch (resourceType) {
+				//case PermItem.ResourceType.L10Recurrence:
+				//	if (session.Get<L10Recurrence>(resourceId).OrganizationId == caller.Organization.Id && caller.IsManagingOrganization())
+				//		return true;
+				//	break;
+				//case PermItem.ResourceType.:
+				//	if (session.Get<L10Recurrence>(resourceId).OrganizationId == caller.Organization.Id && caller.IsManagingOrganization())
+				//		return true;
+				//	break;
+				//default:
+    //                throw new ArgumentOutOfRangeException("resourceType");
+    //        }
+            //return false;
         }
 
         protected long GetOrganizationId(PermItem.ResourceType resourceType, long resourceId)
         {
             switch (resourceType) {
-                case PermItem.ResourceType.L10Recurrence:
-                    return session.Get<L10Recurrence>(resourceId).OrganizationId;
-                default:
+				case PermItem.ResourceType.L10Recurrence:
+					return session.Get<L10Recurrence>(resourceId).OrganizationId;
+				case PermItem.ResourceType.AccountabilityHierarchy:
+					return session.Get<AccountabilityChart>(resourceId).OrganizationId;
+				default:
                     throw new ArgumentOutOfRangeException("resourceType");
             }
         }
@@ -274,43 +294,6 @@ namespace RadialReview.Utilities {
         }*/
 
 
-        public PermissionsUtility CanUpload()
-        {
-            if (caller == null || caller.DeleteTime != null)
-                throw new PermissionsException("You cannot upload documents");
-            return this;
-        }
-
-
-
-        public PermissionsUtility ViewOrganizationPosition(long positionId)
-        {
-            var orgId = session.Get<OrganizationPositionModel>(positionId).Organization.Id;
-            return ViewOrganization(orgId);
-        }
-
-        public PermissionsUtility EditAccountabilityNode(long id)
-        {
-            var node = session.Get<AccountabilityNode>(id);
-            try {
-                return EditHierarchy(node.AccountabilityChartId);
-            } catch (PermissionsException e) {
-                if (node.UserId != null) {
-                    return EditUserOrganization(node.UserId.Value);
-                }
-                var parentId = node.ParentNodeId;
-                while (true) {
-                    if (parentId == null)
-                        break;
-                    var parent = session.Get<AccountabilityNode>(parentId.Value);
-                    if (parent.UserId != null) {
-                        return EditUserOrganization(parent.UserId.Value);
-                    }
-
-                    parentId = parent.ParentNodeId;
-                }
-            }
-            throw new PermissionsException("Could not edit node.");
-        }
+     
     }
 }

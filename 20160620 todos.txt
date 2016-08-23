@@ -1,11 +1,25 @@
 * Dan sedor (Update all L10)
 
-* vaughn
-* google calendar <=> todo
+
+* Close an issue but notes for that issue stayed open until I refreshed the page.
+* Same thing happened when I moved an issue to the v/to i.e. issue moved but notes stayed open until I refreshed page  
+
+* Timer auto resets when you go in/out/back into a section
+* It should probably give you the option of if you want the timer reset instead of auto-resetting
+
+* Would be nice if you could give a comment on the rating so people you could record reasons why people give bad ratings
 
 * scorecard context issue 
 * edit issue name / update list
 * Scorecard,rocks context todo (in the details section)
+
+* outlook todo
+
+* Todo owner update everywhere
+
+* Ann & scott
+
+* Linkedin message
 
 * NaNm
 
@@ -14,6 +28,11 @@
 * Update BillU scorecard values
 
 * Todo due dates.
+
+
+* vaughn
+* google calendar <=> todo
+
 
 * Add user from wizard
 

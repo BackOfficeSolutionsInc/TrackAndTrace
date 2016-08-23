@@ -31,6 +31,7 @@
                     <tr><th>PageTitle</th><td>@Model.PageTitle</td></tr>
                     <tr class="clickable" onclick="window.location.href='@Model.Url'"><th>Url</th><td class="ellipsis hover-line" style="max-width:23vw;"><a href="@Model.Url">@Model.Url</a></td></tr>
                     <tr><th>View As</th><td><a href="https://traction.tools/Account/SetRole/@Model.User?ReturnUrl=@Url.Encode(Model.Url)">User</a></td></tr>
+
                 </table>
             </div>
         </div>

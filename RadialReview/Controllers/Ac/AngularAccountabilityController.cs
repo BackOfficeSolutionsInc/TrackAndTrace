@@ -1,5 +1,7 @@
 ﻿using RadialReview.Accessors;
 using RadialReview.Models.Angular.Accountability;
+using RadialReview.Models.Angular.Roles;
+using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
 using RadialReview.Utilities.DataTypes;
 using System;
@@ -17,6 +19,14 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult UpdateAngularAccountabilityNode(AngularAccountabilityNode model, string connectionId = null)
 		{
+			AccountabilityAccessor.Update(GetUser(), model, connectionId);
+			return Json(ResultObject.SilentSuccess());
+		}
+
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult UpdateAngularRole(AngularRole model, string connectionId = null) {
 			AccountabilityAccessor.Update(GetUser(), model, connectionId);
 			return Json(ResultObject.SilentSuccess());
 		}
@@ -40,10 +50,15 @@ namespace RadialReview.Controllers
 
 
 
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult AddRole(long aid,AttachType atype) {
+			AccountabilityAccessor.AddRole(GetUser(), new Attach(atype,aid));
+			return Json(ResultObject.SilentSuccess());
+		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult Append(long id)
-		{
+		public JsonResult Append(long id){
 			var nodeId = id;
 			AccountabilityAccessor.AppendNode(GetUser(), nodeId);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);

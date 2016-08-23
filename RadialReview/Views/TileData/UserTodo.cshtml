@@ -11,12 +11,13 @@
         <span class="clickable pull-right new hidden-width-1" onclick="@Html.ShowModal("Create To-Do", "/Todo/CreateTodoRecurrence", "/Todo/CreateTodoRecurrence")">Create New <span class='glyphicon glyphicon-unchecked'></span></span>
         <span class="clickable pull-right new visible-width-1" style="text-decoration: none;" onclick="@Html.ShowModal("Create To-Do", "/Todo/CreateTodoRecurrence", "/Todo/CreateTodoRecurrence")"><span class='glyphicon glyphicon-unchecked'></span></span>
 		Current To-Dos<a href="/todo/list" class=""> (View all)</a>
-	</div><div class="tile">@{ Html.RenderPartial("~/Views/Todo/Partial/list.cshtml", new ViewDataDictionary(){
-		                           {"AddHeaders", false},
-		                           {"AddController", false},
-		                           {"AddCompletion", false},
-		                           {"AddDatePicker", false},
-                                   {"DefaultSort","'DueDate'"},
-                                   {"Filter",filter}
-	                           }); }<div ng-show="model.Todos===undefined" class="gray alignCenter" elem-ready="functions.reload(model.Todos===undefined)">Please wait</div></div></div>
+	</div><div class="tile personal-todo-list-container">@{ Html.RenderPartial("~/Views/Todo/Partial/list.cshtml", new ViewDataDictionary(){
+								   {"AddHeaders", false},
+								   {"AddController", false},
+								   {"AddCompletion", false},
+								   {"AddDatePicker", false},
+								   {"DefaultSort","'DueDate'"},
+								   {"Filter",filter},
+								   {"MeetingId", -1},
+							   }); }<div ng-show="model.Todos===undefined" class="gray alignCenter" elem-ready="functions.reload(model.Todos===undefined)">Please wait</div></div></div>
 

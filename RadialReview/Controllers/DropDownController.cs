@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using RadialReview.Models.L10;
 using RadialReview.Models.Angular.Positions;
+using RadialReview.Models.Angular.Users;
 
 namespace RadialReview.Controllers {
     public class DropDownController : BaseController {
@@ -74,7 +75,12 @@ namespace RadialReview.Controllers {
         public JsonResult AngularMeetingMembers(long id, bool userId = false)
         {
             var recurrenceId = id;
-            var attendees = L10Accessor.GetAngularRecurrence(GetUser(), id).Attendees;
+			IEnumerable<AngularUser> attendees;
+			if (id <= 0) {
+				attendees = OrganizationAccessor.GetAngularUsers(GetUser(), GetUser().Organization.Id);
+			} else {
+				attendees = L10Accessor.GetAngularRecurrence(GetUser(), id).Attendees;
+			}
 
             return Json(attendees, JsonRequestBehavior.AllowGet);
 

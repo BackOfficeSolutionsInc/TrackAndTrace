@@ -680,3 +680,12 @@
 .divider.ui-sortable-helper {
     display: none !important;
 }
+
+
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {  
+	.dashboard .scorecard-table .score input{
+		height:32px !important;
+
+	}
+}

@@ -39,11 +39,18 @@ namespace RadialReview.Utilities.DataTypes {
             return string.Join(",", rect);
         }
 
+		public bool IsCell() {
+			return (rect[0]==rect[2]) && (rect[1]==rect[3]);
+		}
+
         public RectType GetRectType()
         {
-            if (rect[0].CompareTo(rect[2]) == 0)
+			var col = rect[0].CompareTo(rect[2]) == 0;
+			var row = rect[1].CompareTo(rect[3]) == 0;
+
+			if (col && !row)
                 return RectType.Column;
-            else if (rect[1].CompareTo(rect[3]) == 0)
+            else if (!col && row)
                 return RectType.Row;
             return RectType.Rectangle;
         }

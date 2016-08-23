@@ -92,6 +92,7 @@ function UploadSteps(args) {
             that.showLoading();
             e.preventDefault();
             var formData = new FormData($(this)[0]);
+            console.log("upload_url: " + that.uploadFileUrl);
             $.ajax({
                 url: that.uploadFileUrl,
                 data: formData,
@@ -112,11 +113,19 @@ function UploadSteps(args) {
                     $(that.windowSelector).html(html);
                     that.initSelection();
                     $(".instructions").hide();
+                	try {
+                		debugger;
+                		console.log("path: "+$(html).find("#file_name").val());
+                	} catch (e) {
+                		console.error(e);
+                	}
+
                 },
                 error: function (d,e) {
                     showAlert(e);
                     that.initFileSelect();
                     console.error(d);
+                    sendErrorReport();
                     //$(this.windowSelector).html(uploadForm);
                 }
             });
@@ -205,11 +214,13 @@ function UploadSteps(args) {
                         str.push("td[data-row=" + j + "][data-col=" + i + "]");
                     }
                 }
-
-                console.log("1her");
+            	try{
+            		console.log("selection " + that.selectionSteps[that.currentSelectionStep-1].message + ": " + minx + "," + miny + "," + maxx + "," + maxy);
+            	} catch (e) {
+            		console.error(e);
+            	}
                 $("." + that.currentlySelectingClass).removeClass(that.currentlySelectingClass);
                 $(str.join(","), table).addClass(that.currentlySelectingClass);
-                console.log("2er");
             }
         });
 
@@ -357,9 +368,10 @@ function UploadSteps(args) {
                 that.initConfirmSelection(html);
             },
             error: function (d,e) {
-                showAlert(e);
+                showHtmlErrorAlert(d,"Error uploading file.");
                 that.initFileSelect();
                 console.error(d);
+                sendErrorReport();
             }
         });
     }
@@ -386,6 +398,7 @@ function UploadSteps(args) {
                 showAlert("An error occurred.");
                 that.initFileSelect();
                 console.error(e);
+                sendErrorReport();
             }
         });
     }

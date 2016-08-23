@@ -605,10 +605,14 @@ namespace RadialReview.Utilities {
             interpolated = 0;
             if (!dates.Any())
                 return new List<DateTime>();
-            if (dates.Count(x => x != null) <= 2)
+			if (dates.Count == 1 && dates[0] != null)
+				return dates.Select(x => x.Value).ToList();
+
+			if (dates.Count == 1 && dates[0] == null)
+				return (DateTime.UtcNow).AsList();
+
+			if (dates.Count(x => x != null) < 2)
                 throw new PermissionsException("Not enough dates to interpolate");
-            if (dates.Count == 1)
-                return dates.Select(x => x.Value).ToList();
 
             var temp = new List<DateTime>();
             DateTime? last = null;

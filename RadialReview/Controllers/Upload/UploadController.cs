@@ -123,6 +123,9 @@ namespace RadialReview.Controllers {
                     TableClass = "table table-bordered table-condensed noselect",
                     Responsive = true
                 });
+
+				table ="<div>"+table+"<input id='file_name' type='hidden' value='"+upload.Path+"'/></div>";
+
                 var data = new Dictionary<string, string> { { "Path", upload.Path }, { "UseAWS", upload.UseAWS + "" }, { "FileType", upload.GetLikelyFileType() + "" } };
                 return Json(ResultObject.CreateHtml(table, data));
 
@@ -150,6 +153,11 @@ namespace RadialReview.Controllers {
             return View();
         }
 
+		public class UploadVtoResultVM {
+			public List<Exception> Exceptions { get; set; }
+			public long VtoId { get; set; }
+		}
+
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
         public async Task<ActionResult> UploadVTO(long recurrenceId, HttpPostedFileBase file)
@@ -162,14 +170,19 @@ namespace RadialReview.Controllers {
                 var doc = DocX.Load(ms);
                 var sections = doc.GetSections();
 
+				var exceptions = new List<Exception>();
 
-                var vto = VtoAccessor.UploadVtoForRecurrence(GetUser(), doc, recurrenceId);
-
-
+                var vto = VtoAccessor.UploadVtoForRecurrence(GetUser(), doc, recurrenceId,exceptions);
+				
                 var a = 0;
 
+				if (exceptions.Count == 0)
+					return RedirectToAction("Edit", "VTO", new { id = vto.Id });
 
-                return RedirectToAction("Edit", "VTO", new { id = vto.Id });
+				return View("UploadVTOResults", new UploadVtoResultVM() {
+					Exceptions = exceptions,
+					VtoId = vto.Id
+				});
             }
         }
         [Access(AccessLevel.UserOrganization)]

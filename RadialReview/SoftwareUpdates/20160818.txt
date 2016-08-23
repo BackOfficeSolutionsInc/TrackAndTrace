@@ -1,0 +1,20 @@
+﻿Accountability Chart
+---------------
+Use the accountability chart to update responsibilities and organization hierarchy
+
+
+Scorecard
+---------------
+Scorecard goals
+* Set goal range as < ≤ = > ≥
+* Set goal range between two values
+* Update future goal ranges while preserving historical goals
+
+Scorecard number format can now be localized
+* Use 1,234.45 or 1.234,45 or 1 234,45
+* Update from the Advanced Settings in the top-right drop-down
+
+Better number formatting
+* Shorten long numbers to fit in cells (while retaining the underlying value)
+
+

@@ -8,6 +8,7 @@
 		{"AddHeaders", false},
 		{"AddController", false},
 		{"AllowEditOwner", false},
+		{"MeetingId", Model},
 		{"Selector", "((model.L10Issues )| filter:{KeyId:"+Model+"})[0].Contents "},
 	}); }<div ng-show="(model.L10Issues  | filter:{KeyId:@(Model)}).length==0" class="gray alignCenter" elem-ready="functions.reload((model.L10Issues | filter:{KeyId:@(Model)}).length==0)">Please wait</div><div ng-if="(model.L10Issues  | filter:{KeyId:@(Model)})[0].HasError" class="gray alignCenter">{{(model.L10Issues  | filter:{KeyId:@(Model)})[0].Message}}</div></div>
 </div>

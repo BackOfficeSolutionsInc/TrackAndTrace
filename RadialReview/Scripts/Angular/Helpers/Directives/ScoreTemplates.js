@@ -37,6 +37,9 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
                 if (!s)
                     return "";
 
+                if (s.Measurable && s.Measurable.IsDivider)
+                	return "";
+
                 var v = s.Measured;
 
                 var useMeasurableTarget = s.ForWeek >= currWeekNumber
@@ -104,7 +107,10 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
         },
         controller: ["$scope", "$element", "$attrs", function ($scope, $element, $attrs) {
             $scope.getFcsa = function (measurable) {
-            	var builder = { localization: $scope.localization };
+            	var builder = {
+            		resize: true, 
+					localization: $scope.localization
+            	};
 
                 if (measurable.Modifiers == "Dollar") {
                     builder = {

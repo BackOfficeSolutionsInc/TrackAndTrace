@@ -3,6 +3,7 @@ using RadialReview.Models.Angular.Base;
 using RadialReview.Models.Angular.Positions;
 using RadialReview.Models.Angular.Roles;
 using RadialReview.Models.Angular.Users;
+using RadialReview.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,10 +35,13 @@ namespace RadialReview.Models.Angular.Accountability {
             
             var childrens = node._Children.NotNull(x => x.Select(y => new AngularAccountabilityNode(y)).ToList());
 
-            if (collapse)
-                _children = childrens;
-            else
-                children = childrens;
+			__children = childrens;
+			collapsed = collapse;
+
+   //         if (collapse)
+   //             _children = childrens;
+   //         else
+   //             children = childrens;
 
         }
 
@@ -62,12 +66,16 @@ namespace RadialReview.Models.Angular.Accountability {
         public AngularAccountabilityGroup(long id):base(id){
         }
         public AngularAccountabilityGroup(AccountabilityRolesGroup group) : base(group.Id){
-            Roles = group._Roles.NotNull(x => x.Select(y => y.Role).Where(y=>y!=null).Select(y=>new AngularRole(y)).ToList());
+			RoleGroups = group._Roles.NotNull(x =>
+				x.Select(y=>new AngularRoleGroup(
+					new Attach(y.AttachType,y.AttachId,y.AttachName),
+					y.Roles.Select(z=> new AngularRole(z)).ToList()
+				)).ToList());
             Position = group.Position.NotNull(x=>new AngularPosition(x));
         }
 
         public AngularPosition Position { get; set; }
-        public IEnumerable<AngularRole> Roles { get; set; }
+        public IEnumerable<AngularRoleGroup> RoleGroups { get; set; }
 
 
     }

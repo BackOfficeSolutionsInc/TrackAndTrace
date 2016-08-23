@@ -22,5 +22,17 @@
   {
     "outputFile": "Content/Manage/Manage.css",
     "inputFile": "Content/Manage/Manage.less"
+  },
+  {
+    "outputFile": "Content/bootstrap/custom/dashboard.css",
+    "inputFile": "Content/bootstrap/custom/dashboard.less"
+  },
+  {
+    "outputFile": "Content/bootstrap/custom/XEditable.css",
+    "inputFile": "Content/bootstrap/custom/XEditable.less"
+  },
+  {
+    "outputFile": "Content/bootstrap/buttons.css",
+    "inputFile": "Content/bootstrap/buttons.less"
   }
 ]

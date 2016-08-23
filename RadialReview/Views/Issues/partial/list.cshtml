@@ -1,34 +1,36 @@
 ﻿@{
-    var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
-    var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
+	var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
+	var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
 
-    //var datepicker = (ViewBag.AddDatePicker == null || ((bool)ViewBag.AddDatePicker) == true);
-    //var includeOwner = (ViewBag.IncludeOwner == null || ((bool)ViewBag.IncludeOwner) == true);
-    //var rockName = (ViewBag.RockName ?? Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName)));
-    //var includeTitle = (ViewBag.IncludeTitle == null || ((bool)ViewBag.IncludeTitle) == true);
-    var selector = ViewBag.Selector as string ?? "model.IssuesList";
-    //var order = ViewBag.Order as string ?? "| orderBy: ['Complete','-CompleteTime','DueDate']";
-    var showDetails = (ViewBag.ShowDetails == null || ((bool)ViewBag.ShowDetails) == true);
-    var detailsCode = showDetails ? "issue.DetailsUrl_Src=issue.DetailsUrl;model.Selected = issue.Key" : "";
-    var allowEditOwner = ViewBag.AllowEditOwner == null || ((bool)ViewBag.AllowEditOwner) == true;
+	//var datepicker = (ViewBag.AddDatePicker == null || ((bool)ViewBag.AddDatePicker) == true);
+	//var includeOwner = (ViewBag.IncludeOwner == null || ((bool)ViewBag.IncludeOwner) == true);
+	//var rockName = (ViewBag.RockName ?? Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName)));
+	//var includeTitle = (ViewBag.IncludeTitle == null || ((bool)ViewBag.IncludeTitle) == true);
+	var selector = ViewBag.Selector as string ?? "model.IssuesList";
+	//var order = ViewBag.Order as string ?? "| orderBy: ['Complete','-CompleteTime','DueDate']";
+	var showDetails = (ViewBag.ShowDetails == null || ((bool)ViewBag.ShowDetails) == true);
+	var detailsCode = showDetails ? "issue.DetailsUrl_Src=issue.DetailsUrl;model.Selected = issue.Key" : "";
+	var allowEditOwner = ViewBag.AllowEditOwner == null || ((bool)ViewBag.AllowEditOwner) == true;
 
-    var filter = (ViewBag.Filter ?? " | filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate)");
+	var filter = (ViewBag.Filter ?? " | filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate)");
 
 
-    var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
-    var defaultSort = ViewBag.DefaultSort ?? "'-CreateTime'";
+	var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
+	var defaultSort = ViewBag.DefaultSort ?? "'-CreateTime'";
 
-    var attrLookup = new Dictionary<string, string>(){
-        {"checkbox-column",""},
-        {"priority-column",""},
-        {"owner-column",""},
-        {"issue-column",""},
-        {"createtime-column",""},
-        {"complete-column",""},
-        {"vto-column",""},
-        {"delete-column",""}
-    };
-    attrLookup[ViewBag.SortBy ?? "createtime-column"] += " ts-default=\"" + (ViewBag.SortByDirection ?? "ascending") + "\"";
+	var meetingId = ViewBag.MeetingId ?? "model.Id";
+
+	var attrLookup = new Dictionary<string, string>(){
+		{"checkbox-column",""},
+		{"priority-column",""},
+		{"owner-column",""},
+		{"issue-column",""},
+		{"createtime-column",""},
+		{"complete-column",""},
+		{"vto-column",""},
+		{"delete-column",""}
+	};
+	attrLookup[ViewBag.SortBy ?? "createtime-column"] += " ts-default=\"" + (ViewBag.SortByDirection ?? "ascending") + "\"";
 
 }
 
@@ -70,8 +72,8 @@
                                         @if (allowEditOwner) {
                                             <span onaftersave="functions.sendUpdate(issue)"
                                                   editable-select="issue.Owner"
-                                                  onshow="loadPossibleOwners()"
-                                                  e-ng-options="s as s.Name for s in possibleOwners">
+                                                  onshow="loadPossibleOwners(@(meetingId))"
+                                                  e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]">
                                                 <profile-image user="issue.Owner"></profile-image>
                                             </span>
                                         } else {

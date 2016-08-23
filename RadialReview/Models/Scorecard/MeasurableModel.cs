@@ -44,6 +44,8 @@ namespace RadialReview.Models.Scorecard
 		[DataMember(Name = "AdminUser")]
 		public virtual UserOrganizationModel.DataContract DataContract_AdminUser { get { return AdminUser.GetUserDataContract(); }}
 
+		public virtual bool Archived { get; set; }
+
 		public MeasurableModel()
 		{
             _Editable = true;
@@ -90,6 +92,8 @@ namespace RadialReview.Models.Scorecard
 
 				Map(x => x.DueDate);
 				Map(x => x.DueTime);
+
+				Map(x => x.Archived);
 
 				Map(x => x.FromTemplateItemId);
 			} 

@@ -8,6 +8,7 @@
 	{"AddController", false},
 	{"ElasticInput", true},
 	{"DisableName", true},
+	{"MeetingId", -1},
 	{"Localization", Html.Organization().Settings.NumberFormat.Angular() },
 	{ "ForceMin", (ViewBag.NumberOfWeeks??13)*7 }
 }); }
@@ -15,7 +16,8 @@
 	@{Html.RenderPartial("~/Views/Scorecard/Partial/tile.cshtml", new ViewDataDictionary(){
 	{"AddHeaders",false},
 	{"AddController",false},
-	{"DisableName",true}
+	{"DisableName",true},
+	{"MeetingId", -1},
 });}<div ng-show="model.Scorecard===undefined" class="gray alignCenter" elem-ready="functions.reload(model.Scorecard===undefined)">Please wait</div>
 </div>
 </div>

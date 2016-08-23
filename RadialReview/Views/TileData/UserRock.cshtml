@@ -7,6 +7,7 @@
 								   {"AddController", false},
 								   {"AddCompletion", false},
 								   {"AddDatePicker", false},
+								   {"MeetingId", -1},
 								   {"RockName", Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName.NotNull(z => z.ToLower())))}
 							   }); }<div ng-show="(model.Rocks)===undefined" class="gray alignCenter" elem-ready="functions.reload((model.Rocks)===undefined)">Please wait</div>
 </div></div>

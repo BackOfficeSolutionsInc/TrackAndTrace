@@ -68,6 +68,9 @@ namespace RadialReview.Models.Scorecard
 					return name + " goal was met at " +g;
 				if (v == Math.Floor(v) && g == Math.Floor(g))
 					return name + " goal was exceeded by " + Measurable.UnitType.Format((v - g)*dir);
+				if (g == 0)
+					return name + " goal was exceeded by " + (v - g) * dir;
+
 				return name + " goal was exceeded by " + ((v - g)/g*dir*100).ToString("0.####") + "%";
 			}else{
 
@@ -117,6 +120,8 @@ namespace RadialReview.Models.Scorecard
 					return name + " goal was met at " + g;
 				if (v == Math.Floor(v) && g == Math.Floor(g))
 					return name + " goal was exceeded by " + Measurable.UnitType.Format((v - g)*dir);
+				if (g == 0)
+					return name + " goal was exceeded by " + (v - g) * dir;
 				return name + " goal was exceeded by " + ((v - g) / g * dir * 100).ToString("0.####") + "%";
 			}
 			else

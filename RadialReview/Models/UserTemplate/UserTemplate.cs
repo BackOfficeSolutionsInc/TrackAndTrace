@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using FluentNHibernate.Mapping;
-using RadialReview.Models.Attach;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.Periods;
@@ -16,8 +15,9 @@ namespace RadialReview.Models.UserTemplate
 
 		public virtual long AttachId { get; set; }
 		public virtual AttachType AttachType { get; set; }
-		public virtual AttachModel _Attach { get; set; }
+		public virtual Attach _Attach { get; set; }
 
+		public virtual DateTime CreateTime { get; set; }
 		public virtual DateTime? DeleteTime { get; set; }
 		public virtual String JobDescription { get; set; }
 		public virtual List<UT_Role> _Roles { get; set; }
@@ -28,11 +28,16 @@ namespace RadialReview.Models.UserTemplate
 		public virtual long OrganizationId { get; set; }
 		public virtual OrganizationModel Organization { get; set; }
 
+		public UserTemplate() {
+			CreateTime = DateTime.UtcNow;
+		}
+
 		public class UserTemplateMap : ClassMap<UserTemplate>
 		{
 			public UserTemplateMap()
 			{
 				Id(x => x.Id);
+				Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
 				Map(x => x.JobDescription);
 				Map(x => x.AttachId);
@@ -46,7 +51,10 @@ namespace RadialReview.Models.UserTemplate
 		{
 			public virtual long Id { get; set; }
 			public virtual DateTime? DeleteTime { get; set; }
+			//[Obsolete("Do not use",true)]
 			public virtual String Role { get; set; }
+			public virtual long RoleId { get; set; }
+
 			public virtual long TemplateId { get; set; }
 			public virtual UserTemplate Template { get; set; }
 			public class UT_RoleMap : ClassMap<UT_Role>
@@ -56,6 +64,7 @@ namespace RadialReview.Models.UserTemplate
 					Id(x => x.Id);
 					Map(x => x.DeleteTime);
 					Map(x => x.Role);
+					Map(x => x.RoleId);
 					Map(x => x.TemplateId).Column("TemplateId");
 					References(x => x.Template).Column("TemplateId").LazyLoad().ReadOnly();
 				}

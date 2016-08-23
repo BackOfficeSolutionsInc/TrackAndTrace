@@ -1,10 +1,23 @@
 ﻿angular.module('updaterModule', []).factory('updater', [function () {
 
-	function removeDeleted(model) {
-		return _removeDeleted(model, []);
+	function applyUpdate(data, status) {
+		convertDates(data);
+		this._preExtend(data, status);
+		baseExtend(this.scope.model, [data], true);
+		this._postExtend(data, status);
+		this._preDelete(data, status);
+		removeDeleted(this.scope.model);
+		this._postDelete(data, status);
+		this._preResolve(data, status);
+		resolveRef(this.scope.model, data);
+		this._postResolve(this.scope.model, data, status);
 	}
 
-	function _removeDeleted(model,seen) {
+	function removeDeleted(model) {
+		return _removeDeleted(model, {});
+	}
+
+	function _removeDeleted(model, seen) {
 
 		for (var key in model) {
 			if (model[key] == "`delete`")
@@ -12,14 +25,19 @@
 			if (typeof (model[key]) == 'object') {
 				var alreadyParsed = false;
 				var value = model[key];
-				for (var i in seen) {
-					if (seen[i] == value) {
-						alreadyParsed = true;
-						break;
-					}
+				if (value in seen) {
+					alreadyParsed = true;
+					break;
 				}
+				//}
+				//for (var i in seen) {
+				//	if (seen[i] == value) {
+				//		alreadyParsed = true;
+				//		break;
+				//	}
+				//}
 				if (!alreadyParsed) {
-					seen.push(value);
+					seen[value] = true;//.push(value);
 					_removeDeleted(value, seen);
 				}
 
@@ -194,7 +212,7 @@
 
 	//When parsing data FROM the server
 	function convertDates(obj) {
-		var arr = [];
+		var arr = {};
 		_convertDates(obj, arr);
 	}
 
@@ -216,14 +234,12 @@
 				obj[key] = new Date(obj[key].getTime() /*- obj[key].getTimezoneOffset() * 60000*/);
 			} else if (type == 'object') {
 				var alreadyParsed = false;
-				for (var i in seen) {
-					if (seen[i] == value) {
-						alreadyParsed = true;
-						break;
-					}
+				if (value in seen) {
+					alreadyParsed = true;
+					break;
 				}
 				if (!alreadyParsed) {
-					seen.push(value);
+					seen[value]=true;
 					_convertDates(value, seen);
 				}
 
@@ -336,20 +352,6 @@
 
 
 		return populate(model, update);
-	}
-
-	function applyUpdate(data, status) {
-		convertDates(data);
-		this._preExtend(data, status);
-		baseExtend(this.scope.model, [data], true);
-		this._postExtend(data, status);
-		this._preDelete(data, status);
-		removeDeleted(this.scope.model);
-		this._postDelete(data, status);
-		this._preResolve(data, status);
-		resolveRef(this.scope.model, data);
-		this._postResolve(this.scope.model, data, status);
-
 	}
 
 	function updaterFactory($scope, hub) {

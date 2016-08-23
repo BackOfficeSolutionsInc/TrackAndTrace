@@ -113,16 +113,22 @@
       			return true;
       		};
       	};
-      	resize = function (val) {
+      	resize = function (val,options) {
       		var absV = Math.abs(val);
+      		var shorter = false;
+      		if (options && (options.prepend || options.append || val < 0)) {
+      			shorter = true;
+      		}
+
       		if (absV >= 1000000000) {
       			return { val: Math.round(val / 10000000) / 100 + "B", skipComma: true, decimals: -1 };
       		} else if (absV >= 1000000) {
       			return { val: Math.round(val / 10000) / 100 + "M", skipComma: true, decimals: -1 };
-      		} else if (absV >= 100000) {
-      			debugger;
+      		} else if (shorter && absV >= 100000) {
+      			return { val: Math.round(val / 100) / 10 + "k", skipComma: true, decimals: -1 };
+      		}else if ((absV >= 10000) || (shorter && absV >= 1000)) {
       			return { val: Math.round(val), skipComma: false, decimals:-1 };
-      		}
+      		} 
       		return { val: val, skipComma: false };
 
       	}
@@ -146,7 +152,6 @@
       			isValid = makeIsValid(options);
 
       			ngModelCtrl.$parsers.unshift(function (viewVal) {
-      				debugger;
       				var noCommasVal,radixReplace;
       				var groupSep = ",";
       				var radixSep = ".";
@@ -163,7 +168,7 @@
       				var radixFinder = new RegExp(radixSep.replace(".", "\\."), "g");
       				radixReplace = noCommasVal.replace(radixFinder, '.');
 					
-      				console.log("parser:" + viewVal + " -> " + radixReplace);
+      				//console.log("parser:" + viewVal + " -> " + radixReplace);
 
       				if (isValid(radixReplace) || !radixReplace) {
       					ngModelCtrl.$setValidity('fcsaNumber', true);
@@ -175,7 +180,7 @@
       				}
       			});
       			ngModelCtrl.$formatters.push(function (val) {
-      				console.log("$formatters:" + val);
+      				//console.log("$formatters:" + val);
       				if ((options.nullDisplay != null) && (!val || val === '')) {
       					return options.nullDisplay;
       				}
@@ -192,7 +197,7 @@
       				}
 
       				if (options.resize) {
-      					var r = resize(valFormat);
+      					var r = resize(valFormat,options);
       					valFormat = r.val;
       					skipComma = r.skipComma;
       					decimals = r.decimals || decimals;
@@ -215,7 +220,13 @@
       				}
 
       				if (options.prepend != null) {
-      					valFormat = "" + options.prepend + valFormat;
+      					var pre = "";
+      					if (valFormat.indexOf("-") == 0) {
+      						pre = "-";
+      						valFormat = valFormat.substr(1);
+      					}
+
+      					valFormat = pre + "" + options.prepend + valFormat;
       				}
       				if (options.append != null) {
       					valFormat = "" + valFormat + options.append;
@@ -225,7 +236,7 @@
       			elem.on('blur', function () {
       				var formatter, viewValue, _i, _len, _ref;
       				viewValue = ngModelCtrl.$modelValue ;
-      				console.log("fsca blur:" + ngModelCtrl.$modelValue);
+      				//console.log("fsca blur:" + ngModelCtrl.$modelValue);
       				scope.realValue = viewValue;
 					if ((viewValue == null) || !isValid(viewValue)) {
       					return;

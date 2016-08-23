@@ -62,6 +62,7 @@ namespace RadialReview.Controllers {
 		}
 
 		// GET: Migration
+		[Obsolete("Do not use", true)]
 		[Access(AccessLevel.Radial)]
 		public int M11_8_2014() {
 			throw new Exception("Old");
@@ -1266,6 +1267,7 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(Controllers.AccessLevel.Radial)]
+		[Obsolete("Do not use", true)]
 		public string M07_12_2016() {
 			HttpContext.Server.ScriptTimeout = 60 * 20;
 			var updatedA = 0;
@@ -1508,6 +1510,9 @@ namespace RadialReview.Controllers {
 			//var countOrgs = 0;
 			//var countNodesDeleted= 0;
 
+			Server.ScriptTimeout = 30*60;
+			Session.Timeout = 30;
+
 			if (orgId == null) {
 				using (var s = HibernateSession.GetCurrentSession()) {
 					using (var tx = s.BeginTransaction()) {
@@ -1555,6 +1560,8 @@ namespace RadialReview.Controllers {
 			//var countUsers = 0;
 			//var skipUsers = 0;
 			OrganizationModel nextOrg = null;
+			var skipped = false;
+			var laterNodePosition = new List<Tuple<long,long?>>();
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					using (var rt = RealTimeUtility.Create(false)) {
@@ -1578,44 +1585,67 @@ namespace RadialReview.Controllers {
 
 						var result = GraphUtility.TopologicalSort(allUsers, m2s);
 
-						var a = result.Count;
+						if (result != null) {
+							var a = result.Count;
 
-						var parentLu = new Dictionary<long, AccountabilityNode>();
-
-
-						foreach (var u in result) {
-							try {
-								var user = s.Get<UserOrganizationModel>(u);
-								if (user.Organization.DeleteTime != null)
-									continue;
-
-								if (user.ManagingOrganization) {
-									var r = AccountabilityAccessor.GetRoot(s, perms, user.Organization.AccountabilityChartId);
-									parentLu[user.Id] = AccountabilityAccessor.AppendNode(s, perms, rt, r.Id,null, user.Id, true);
-								}
+							var parentLu = new Dictionary<long, AccountabilityNode>();
 
 
-								foreach (var manager in user.ManagedBy.ToListAlive()) {
-									if (parentLu.ContainsKey(manager.ManagerId)) {
-										var node = AccountabilityAccessor.AppendNode(s, perms, rt, parentLu[manager.ManagerId].Id,null, user.Id, true);
+							foreach (var u in result) {
+								try {
+									var user = s.Get<UserOrganizationModel>(u);
+									if (user.Organization.DeleteTime != null)
+										continue;
 
-										if (!parentLu.ContainsKey(user.Id)) {
-											parentLu[user.Id] = node;
-										}
-									} else {
-										skipUsers += 1;
+									var posId = user.Positions.FirstOrDefault().NotNull(x => (long?)x.Position.Id);
+
+
+									if (user.ManagingOrganization) {
+										var r = AccountabilityAccessor.GetRoot(s, perms, user.Organization.AccountabilityChartId);
+										var node = AccountabilityAccessor.AppendNode(s, perms, rt, r.Id, null, user.Id, true);
+										parentLu[user.Id] = node;
+										laterNodePosition.Add(Tuple.Create(node.Id, posId));
+										//if (posId != null) {
+										//	AccountabilityAccessor.UpdateAccountabilityRolesGroup_Unsafe(s, rt, perms, node.Id, posId, now.Value);
+										//}
 									}
+
+									var managedBy = links.Where(x => x.Item2 == user.Id).Select(x => new {
+										ManagerId = x.Item1
+									});
+
+
+									foreach (var manager in managedBy) {
+										if (parentLu.ContainsKey(manager.ManagerId)) {
+											var node = AccountabilityAccessor.AppendNode(s, perms, rt, parentLu[manager.ManagerId].Id, null, user.Id, true);
+
+											laterNodePosition.Add(Tuple.Create(node.Id, posId));
+											//if (posId != null) {
+											//	AccountabilityAccessor.UpdateAccountabilityRolesGroup_Unsafe(s, rt, perms, node.Id, posId, now.Value);
+											//}
+
+											if (!parentLu.ContainsKey(user.Id)) {
+												parentLu[user.Id] = node;
+											}
+										} else {
+											skipUsers += 1;
+										}
+									}
+
+									countUsers += 1;
+								} catch (Exception e) {
+									var m = e.Message;
+									int b = 1;
+									exceptionCount += 1;
 								}
-
-								countUsers += 1;
-							} catch (Exception e) {
-								int b = 1;
-								exceptionCount += 1;
 							}
+
+							//throw new Exception("Users not hit");
+
+						} else {
+							exceptionCount += 1;
+							skipped = true;
 						}
-
-						//throw new Exception("Users not hit");
-
 						nextOrg = s.QueryOver<OrganizationModel>().Where(x => x.Id > orgId.Value).OrderBy(x => x.Id).Asc.Take(1).SingleOrDefault();
 						countOrgs += 1;
 
@@ -1624,12 +1654,117 @@ namespace RadialReview.Controllers {
 					}
 				}
 			}
+			if (!skipped) {
+				using (var s = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
+						using (var rt = RealTimeUtility.Create(false)) {
+							var perms = PermissionsUtility.Create(s, GetUser());
+							foreach (var np in laterNodePosition) {
+								if (np.Item2 != null) {
+									AccountabilityAccessor.UpdateAccountabilityRolesGroup_Unsafe(s, rt, perms, np.Item1, np.Item2, now.Value,true);
+								}
+							}
+							tx.Commit();
+							s.Flush();
+						}
+					}
+				}
+			}
+
 
 			if (nextOrg != null) {
 				return Content("<script>location.href='/migration/M08_14_2016?orgId=" + nextOrg.Id + "&countUsers=" + countUsers + "&skipUsers=" + skipUsers + "&countNodesDeleted=" + countNodesDeleted + "&countOrgs=" + countOrgs + "&now=" + Url.Encode(now.ToString()) + "&exceptionCount=" + exceptionCount + "&deletedCharts=" + deletedCharts + "';</script>");
 			}
 			return Content("orgs:" + countOrgs + " - nodesDeleted:" + countNodesDeleted + " nodesCreated: " + countUsers + "/" + (countUsers + skipUsers) + " errors: " + exceptionCount + " deletedCharts:" + deletedCharts);
 		}
+		[Access(Controllers.AccessLevel.Radial)]
+		[AsyncTimeout(20 * 60 * 1000)]
+		public ActionResult M08_21_2016() {
+			var builder = "";
+			var now = DateTime.UtcNow;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 
+					var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
+
+					var utCount = 0;
+					var tdCount = 0;
+					var pdCount = 0;
+					var ut = s.QueryOver<UserTemplate.UT_Role>().List().ToList();
+					foreach (var u in ut.Where(x => x.RoleId == 0)) {
+						var r = new RoleModel() {
+							Category = category,
+							OrganizationId = u.Template.OrganizationId,
+							Role = u.Role,
+							CreateTime = now,
+						};
+						s.Save(r);
+						u.RoleId = r.Id;
+						s.Update(u);
+
+						utCount += 1;
+					}
+
+
+					var td = s.QueryOver<TeamDurationModel>().List().ToList();
+					foreach (var u in td.Where(x => x.OrganizationId == 0)) {
+						u.OrganizationId = u.Team.Organization.Id;
+						s.Save(u);
+						tdCount += 1;
+					}
+					var pd = s.QueryOver<PositionDurationModel>().List().ToList();
+					foreach (var u in pd.Where(x => x.OrganizationId == 0)) {
+						u.OrganizationId = u.Position.Organization.Id;
+						s.Save(u);
+						pdCount += 1;
+					}
+
+					tx.Commit();
+					s.Flush();
+					builder += ("roles:" + utCount + " teamDuration:" + tdCount + " posDuration:" + pdCount);
+				}
+			}
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var templates = 0;
+					var user = 0;
+					var roles = s.QueryOver<RoleModel>().List().ToList();
+					var roleLink = s.QueryOver<RoleLink>().Where(x => x.DeleteTime == null).List().ToList();
+
+
+					foreach (var r in roles.Where(x => !roleLink.Any(y => y.RoleId == x.Id))) {
+						if (r.FromTemplateItemId == null) {
+							var link = new RoleLink() {
+								AttachId = r.ForUserId,
+								AttachType = AttachType.User,
+								CreateTime = now,
+								RoleId = r.Id,
+								OrganizationId = r.OrganizationId
+							};
+
+							s.Save(link);
+							templates += 1;
+						} else {
+							var template = s.Get<UserTemplate>(r.FromTemplateItemId.Value);
+
+							var link = new RoleLink() {
+								AttachId = template.AttachId,
+								AttachType = template.AttachType,
+								CreateTime = now,
+								RoleId = r.Id,
+								OrganizationId = r.OrganizationId
+							};
+
+							s.Save(link);
+							user += 1;
+						}
+					}
+					tx.Commit();
+					s.Flush();
+					builder += " roleLink_template:" + templates + " roleLink_user:" + user;
+					return Content(builder);
+				}
+			}
+		}
 	}
 }

@@ -2,14 +2,15 @@
     <div class="rock-heading heading" style="@(ViewBag.HeadingStyle)" data-style="@(ViewBag.HeadingStyle)">
         {{(model.L10Rocks | filter:{KeyId:@(Model)})[0].Title}}<a href="/l10/details/@(Model)#Rocks" class=""> (View all)</a>
     </div><div class="tile">@{ Html.RenderPartial("~/Views/Rocks/Partial/list.cshtml", new ViewDataDictionary(){
-		                           {"AddHeaders", false},
-		                           {"AddController", false},
-		                           {"AddCompletion", false},
-		                           {"AddDatePicker", false},
-		                           {"RockName", Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName.NotNull(z => z.ToLower())))},
-                                   {"Selector","(model.L10Rocks | filter:{KeyId:"+(Model)+"})[0].Contents"},
-                                   {"Filter",""}
-	                           }); }<div ng-show="(model.L10Rocks | filter:{KeyId:@(Model)}).length==0" class="gray alignCenter" elem-ready="functions.reload((model.L10Rocks | filter:{KeyId:@(Model)}).length==0)">Please wait</div></div>
+								   {"AddHeaders", false},
+								   {"AddController", false},
+								   {"AddCompletion", false},
+								   {"AddDatePicker", false},
+								   {"MeetingId", Model},
+								   {"RockName", Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName.NotNull(z => z.ToLower())))},
+								   {"Selector","(model.L10Rocks | filter:{KeyId:"+(Model)+"})[0].Contents"},
+								   {"Filter",""}
+							   }); }<div ng-show="(model.L10Rocks | filter:{KeyId:@(Model)}).length==0" class="gray alignCenter" elem-ready="functions.reload((model.L10Rocks | filter:{KeyId:@(Model)}).length==0)">Please wait</div></div>
 </div>
 
 @*<style>

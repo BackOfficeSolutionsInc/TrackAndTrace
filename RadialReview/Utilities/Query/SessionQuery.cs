@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Linq.Expressions;
 
 namespace RadialReview.Utilities.Query
 {
@@ -67,6 +68,16 @@ namespace RadialReview.Utilities.Query
 		public override T Load<T>(Guid id)
 		{
 			return Session.Load<T>(id);
+		}
+
+		public override List<T> WhereRestrictionOn<T>(Expression<Func<T, bool>> pred,Expression<Func<T, object>> selector, IEnumerable<object> isIn) {
+
+			var q = Session.QueryOver<T>();
+
+			if (pred != null)
+				q = q.Where(pred);
+			return q.WhereRestrictionOn(selector).IsIn(isIn.ToArray()).List().ToList();
+
 		}
 	}
 }

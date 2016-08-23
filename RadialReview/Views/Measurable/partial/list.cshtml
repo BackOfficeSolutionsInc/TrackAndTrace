@@ -10,6 +10,9 @@
 
 	var localization = "localization=\""+ (ViewBag.Localization ?? "")+"\"";
 
+
+	var meetingId = ViewBag.MeetingId ?? "model.Id";
+
     //var readOnly = ViewBag.ReadOnly as bool? ??false;
     
     var elastic = elasticInputs ? "pu-elastic-input" : "";
@@ -67,8 +70,8 @@
                                                 <span class="item-wrapper place-right">
                                                     <span class=""
                                                           @if (editOwner) {   @: onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Owner" e-ng-readonly="measurable.Disabled"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @: onshow="loadPossibleOwners()" e-ng-options="s as s.Name for s in possibleOwners"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  }>
+																				@: onshow="loadPossibleOwners(@(meetingId))" e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]"
+																			}>
                                                         <profile-image class="" user="measurable.Owner"></profile-image>
                                                     </span>
                                                 </span>
@@ -77,8 +80,8 @@
                                                 <span class="item-wrapper place-right">
                                                     <span class=""
                                                           @if (editOwner) {   @: onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Admin" e-ng-readonly="measurable.Disabled"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @: onshow="loadPossibleOwners()" e-ng-options="s as s.Name for s in possibleOwners"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            }>
+																		      @: onshow="loadPossibleOwners(@(meetingId))" e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]"
+																		  }>
                                                         <profile-image class="desaturate" user="measurable.Admin"></profile-image>
                                                     </span>
                                                 </span>
@@ -164,8 +167,8 @@
                                             <span class="item-wrapper place-right">
                                                 <span class=""
                                                       @if (editOwner) { @: onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Owner" e-ng-readonly="measurable.Disable"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @: onshow="loadPossibleOwners()" e-ng-options="s as s.Name for s in possibleOwners"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                              }>
+                                                                        @: onshow="loadPossibleOwners(@(meetingId))" e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]"
+                                                                    }>
                                                     <profile-image user="measurable.Owner"></profile-image>
                                                 </span>
                                             </span>
@@ -174,8 +177,8 @@
                                             <span class="item-wrapper place-right">
                                                 <span class=""
                                                       @if (editOwner) { @: onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Admin" e-ng-readonly="measurable.Disabled"
-                                                                                                                                                                                                                                                                                                                                                                                                                              @: onshow="loadPossibleOwners()" e-ng-options="s as s.Name for s in possibleOwners"
-                                                                                                                                                                                                                                                                                                                                                                                                                          }>
+                                                                        @: onshow="loadPossibleOwners(@(meetingId))" e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]"
+                                                                    }>
                                                     <profile-image class="desaturate" user="measurable.Admin"></profile-image>
                                                 </span>
                                             </span>

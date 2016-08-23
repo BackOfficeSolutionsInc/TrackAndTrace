@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Linq.Expressions;
 
 namespace RadialReview.Utilities.Query
 {
@@ -88,6 +89,20 @@ namespace RadialReview.Utilities.Query
 		public override T Load<T>(Guid id)
 		{
 			return Get<T>(id);
+		}
+
+		public override List<T> WhereRestrictionOn<T>(Expression<Func<T, bool>> pred, Expression<Func<T, object>> selector, IEnumerable<object> isIn) {
+			Func<T, object> selectorC = selector.Compile();
+			var enumer = GetIEnumerable<T>();
+			if (pred != null)
+				enumer = enumer.Where(pred.Compile());
+
+			var arr = isIn.ToArray();
+
+			return enumer.Where(x => {
+				var transform = selectorC(x);
+				return arr.Any(y => y.Equals(transform));
+			}).ToList();
 		}
 	}
 }

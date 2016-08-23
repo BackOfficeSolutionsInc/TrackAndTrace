@@ -27,6 +27,10 @@ namespace RadialReview.Models.Angular {
         public IEnumerable<T> children { get { return !collapsed ? __children : null; } set { collapsed = false; __children = value; } }
         public IEnumerable<T> _children { get { return collapsed?__children:null; } set { collapsed = true; __children = value; } }
 
+		public void SetChildren(IEnumerable<T> children, bool? collapse=null) {
+			__children = children;
+			collapsed = collapse ?? collapsed;
+		}
 
     }
 }

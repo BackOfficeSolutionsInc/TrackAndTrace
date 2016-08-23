@@ -1,26 +1,28 @@
 ﻿@{
-    var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
-    var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
-    var datepicker = (ViewBag.AddDatePicker == null || ((bool)ViewBag.AddDatePicker) == true);
-    var rockName = (ViewBag.RockName ?? Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName)));
-    var selector = ViewBag.Selector as string ?? "(model.Rocks)";
-    var filter = ViewBag.Filter as string ?? "";// | filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate)";
-    //var order = ViewBag.Order as string ?? "| orderBy: ['Complete','-CompleteTime','DueDate']";
+	var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
+	var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
+	var datepicker = (ViewBag.AddDatePicker == null || ((bool)ViewBag.AddDatePicker) == true);
+	var rockName = (ViewBag.RockName ?? Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName)));
+	var selector = ViewBag.Selector as string ?? "(model.Rocks)";
+	var filter = ViewBag.Filter as string ?? "";// | filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate)";
+												//var order = ViewBag.Order as string ?? "| orderBy: ['Complete','-CompleteTime','DueDate']";
 
-    var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
-    var defaultSort = ViewBag.DefaultSort ?? "'-CreateTime'";
-    
+	var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
+	var defaultSort = ViewBag.DefaultSort ?? "'-CreateTime'";
 
-    var attrLookup = new Dictionary<string, string>(){
-        {"status-column",""},
-        {"picture-column",""},
-        {"message-column",""},
-        {"due-column",""},
-        {"createtime-column",""},
-        {"company-rock-column",""},
-        {"delete-column",""}
-    };
-    attrLookup[ViewBag.SortBy ?? "picture-column"] += " ts-default=\"" + (ViewBag.SortByDirection ?? "ascending") + "\"";
+
+	var meetingId = ViewBag.MeetingId ?? "model.Id";
+
+	var attrLookup = new Dictionary<string, string>(){
+		{"status-column",""},
+		{"picture-column",""},
+		{"message-column",""},
+		{"due-column",""},
+		{"createtime-column",""},
+		{"company-rock-column",""},
+		{"delete-column",""}
+	};
+	attrLookup[ViewBag.SortBy ?? "picture-column"] += " ts-default=\"" + (ViewBag.SortByDirection ?? "ascending") + "\"";
 
 }
 <div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak rock-list-container app">
@@ -61,7 +63,7 @@
                             </td>
                             <td md-cell class="picture-column">
                                 <span class="item-wrapper place-right">
-                                    <span class="" onaftersave="functions.sendUpdate(rock)" editable-select="rock.Owner" onshow="loadPossibleOwners()" e-ng-options="s as s.Name for s in possibleOwners">
+                                    <span class="" onaftersave="functions.sendUpdate(rock)" editable-select="rock.Owner" onshow="loadPossibleOwners(@(meetingId))" e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]">
                                         <profile-image class="" user="rock.Owner"></profile-image>
                                     </span>
                                 </span>

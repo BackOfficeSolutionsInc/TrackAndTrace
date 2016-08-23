@@ -72,9 +72,9 @@ namespace RadialReview.Utilities {
             }
             switch (GetEnv()) {
                 case Env.local_sqlite:
-                    return "http://localhost:2200/";
+                    return "https://localhost:44300/";
                 case Env.local_mysql:
-                    return "http://localhost:2200/";
+                    return "https://localhost:44300/";
                 case Env.production:
                     if (organization == null)
                         return "https://traction.tools.com/";
@@ -88,7 +88,7 @@ namespace RadialReview.Utilities {
                             throw new ArgumentOutOfRangeException();
                     }
                 case Env.local_test_sqlite:
-                    return "http://localhost:2020/";
+                    return "https://localhost:44300/";
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -316,7 +316,21 @@ namespace RadialReview.Utilities {
             return GetAppSetting("NotesServer_ApiKey");
         }
 
-       
+		public static class Office365 {
+			public static string AppId() {
+				return GetAppSetting("ida:AppId");
+			}
+			public static string Password() {
+				return GetAppSetting("ida:AppPassword");
+			}
+
+			public static string RedirectUrl() {
+				return BaseUrl(null);
+			}
+			public static string[] Scopes() {
+				return GetAppSetting("ida:AppScopes").Replace(' ', ',').Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+			}
+		}
 
 
         public class RedisConfig {

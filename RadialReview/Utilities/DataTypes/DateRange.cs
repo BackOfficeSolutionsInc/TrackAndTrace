@@ -34,7 +34,7 @@ namespace RadialReview.Utilities.DataTypes
 		public static Expression<Func<T, bool>> Filter<T>(this DateRange range) where T : IHistorical
 		{
 			if (range == null) {
-				return x => true;
+				return x => x.DeleteTime == null; /// x => true
 			}
 			return (T x) => x.CreateTime <= range.EndTime && (x.DeleteTime == null || x.DeleteTime >= range.StartTime);
 			

@@ -160,7 +160,7 @@ namespace RadialReview.NHibernate
                     {
                         LoginProvider = login.LoginProvider,
                         ProviderKey = login.ProviderKey,
-                        User = user,
+                       // User = user,
                         UserId = user.Id
                     });
 

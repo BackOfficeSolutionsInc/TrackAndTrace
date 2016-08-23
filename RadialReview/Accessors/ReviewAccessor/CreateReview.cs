@@ -205,8 +205,9 @@ namespace RadialReview.Accessors {
 			var allRGM = s.QueryOver<ResponsibilityGroupModel>().Where(x => x.Organization.Id == orgId && x.DeleteTime == null).List();
 			var allAboutCompany = s.QueryOver<AboutCompanyAskable>().Where(x => x.Organization.Id == orgId && x.DeleteTime == null).List();
 
+			var allRoleLinks = s.QueryOver<RoleLink>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).List();
 
-            var queryProvider = new IEnumerableQuery();
+			var queryProvider = new IEnumerableQuery();
             queryProvider.AddData(allOrgTeams);
             queryProvider.AddData(allTeamDurations);
             queryProvider.AddData(allMembers);
@@ -217,10 +218,11 @@ namespace RadialReview.Accessors {
 			queryProvider.AddData(allRocks);
 			queryProvider.AddData(allAboutCompany);
 			queryProvider.AddData(allRGM);
+			queryProvider.AddData(allRoleLinks);
 			queryProvider.AddData(applicationQuestions);
 			queryProvider.AddData(application);
 
-            var updateProvider = new SessionUpdate(s);
+			var updateProvider = new SessionUpdate(s);
             var dataInteraction = new DataInteraction(queryProvider, updateProvider);
             return dataInteraction;
         }

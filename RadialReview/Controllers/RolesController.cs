@@ -42,9 +42,9 @@ namespace RadialReview.Controllers
 		public JsonResult Modal(RoleVM model) {
 			
 
-			foreach (var r in model.Roles){
-				r.ForUserId = model.UserId;
-			}
+			//foreach (var r in model.Roles){
+			//	r.ForUserId = model.UserId;
+			//}
 			_RoleAccessor.EditRoles(GetUser(), model.UserId, model.Roles,model.UpdateOutstandingReviews);
 			return Json(ResultObject.SilentSuccess());
 		}

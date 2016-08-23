@@ -403,9 +403,10 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 	if (iconType !== "undefined") {
 		obj.modalClass += " modal-icon";
 		$("#modal-icon").attr("class", "modal-icon");
-		if (iconType === "string")
+		if (iconType === "string") {
 			obj.modalClass += " modal-icon-" + obj.icon;
-		else if (iconType === "object") {
+			//obj.title = iconType.toLowerCase() + "!";
+		}else if (iconType === "object") {
 			var time = +new Date();
 			var custom = "modal-icon-custom" + time;
 			obj.modalClass += " " + custom;
@@ -435,6 +436,7 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 	var addLabel = ["text", "textarea", "checkbox", "radio", "number", "date", "time", "file"];
 	var tags = ["span", "h1", "h2", "h3", "h4", "h5", "h6","label"];
 	var anyFields = ""
+	
 	if (typeof (obj.field) !== "undefined") {
 		if (typeof (obj.fields) !== "undefined") {
 			throw "A 'field' and a 'fields' property exists";
@@ -728,6 +730,21 @@ function StoreJsonAlert(json) {
 	localStorage.setItem("Alert", JSON.stringify(alert));
 }
 
+function showHtmlErrorAlert(html, defaultMessage) {
+	var message = defaultMessage;
+	debugger;
+	if (typeof (html) === "object" && typeof (html.responseText) === "string") {
+		message = $(html).find("title").text();
+	}else if (typeof (html) === "string") {
+		message = $(html).text();
+	}
+	
+	if (typeof (message) === "undefined" || message == null || message == "") {
+		message = "An error occurred.";
+	}
+	showAlert(message);
+}
+
 function showAlert(message, alertType, preface) {
 	if (alertType === undefined)
 		alertType = "alert-danger";
@@ -802,6 +819,7 @@ function showJsonAlert(data, showSuccess, clearOthers) {
 				showAlert(message, "alert-" + mType.toLowerCase(), data.Heading);
 			}
 			if (data.Error) {
+				debugger;
 				sendErrorReport();
 			}
 
@@ -1241,6 +1259,7 @@ function sendErrorReport() {
 			data.Org = window.OrgId;
 			data.PageTitle = window.Title;
 			data.Status = "JavascriptError";
+			data.Subject = "Javascript Error - " + data.PageTitle;
 
 			if (image != null) {
 				data.ImageData = image;

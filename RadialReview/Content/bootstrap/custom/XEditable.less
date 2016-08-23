@@ -1,0 +1,49 @@
+﻿@import (reference) "../variables";
+@import (reference) "../glyphicons";
+@import (reference) "../buttons";
+
+
+.editable-wrap {
+	select {
+		height: 30px;
+		padding: 5px;
+	}
+
+	button {
+		color: transparent;
+		font-size: 1px;
+		.btn();
+		width: 41px;
+		height: 30px;
+		color:transparent;
+		font-size:1px;
+		font-size:0px;
+		color:transparent;
+
+		&:before{
+			color:inherit;
+			font-size:14px;
+		}
+
+		&[type="submit"] {
+			.btn-primary();
+			/*background-color: @traction-orange;
+				border:1px solid @traction-black;*/
+			.glyphicon();
+			.glyphicon-ok();
+			/*&:before {
+				/*color: white;*
+			}*/
+		}
+
+		&[type="button"] {
+			.btn-default();
+			.glyphicon();
+			.glyphicon-remove();
+			/*border: 1px solid @traction-gray;*/
+			/*&:before {
+				/*color: @traction-gray;*
+			}*/
+		}
+	}
+}

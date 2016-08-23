@@ -1,0 +1,32 @@
+﻿@model RadialReview.Controllers.UploadController.UploadVtoResultVM
+@{
+	ViewBag.Title = "Results";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>V/TO Upload Results</h2>
+
+@{
+	var group = Model.Exceptions.GroupBy(x => x.Message);
+
+}
+
+@Html.ActionLink("View V/TO", "Edit", "VTO", new { id = Model.VtoId }, null)
+
+<table>
+	<tr><th>Error</th><th></th></tr>
+	@foreach (var e in group) {
+		<tr>
+			<td>@e.Key</td>
+			<td>
+				@if (e.Count() > 1) {
+					@:x @e.Count()
+				}
+			</td>
+		</tr>
+
+	}
+
+</table>
+
+@Html.ActionLink("View V/TO", "Edit", "VTO", new { id = Model.VtoId }, null)

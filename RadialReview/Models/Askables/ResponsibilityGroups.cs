@@ -74,7 +74,7 @@ namespace RadialReview.Models.Askables
 
     public class OrganizationPositionModel : ResponsibilityGroupModel
     {
-        public virtual PositionModel Position { get; set; }
+        //public virtual PositionModel Position { get; set; }
         public virtual String CustomName { get; set; }
         public virtual long CreatedBy { get; set; }
 
@@ -201,7 +201,7 @@ namespace RadialReview.Models.Askables
             Map(x => x.CustomName);
             Map(x => x.CreatedBy);
             Map(x => x.TemplateId);
-            References(x => x.Position).Not.LazyLoad();
+            //References(x => x.Position).Not.LazyLoad();
         }
     }
 
