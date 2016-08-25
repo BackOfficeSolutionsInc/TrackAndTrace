@@ -64,7 +64,7 @@ namespace RadialReview.Accessors {
 				.Where(range.Filter<RoleLink>())
 				.Where(x => x.AttachId == attach.Id && x.AttachType == attach.Type)
 				.Select(x => x.RoleId)
-				.List<long>().ToList();
+				.List<long>().Distinct().ToList();
 
 			return s.QueryOver<RoleModel>()
 				.Where(range.Filter<RoleModel>())
@@ -85,6 +85,23 @@ namespace RadialReview.Accessors {
 			//allLinks.AddRange(posRoleLinks);
 
 			//return allLinks;
+		}
+
+		public static void EditRole(UserOrganizationModel caller, long id, string role, DateTime? deleteTime=null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					PermissionsUtility.Create(s, caller).EditRole(id);
+					var r = s.Get<RoleModel>(id);
+
+					r.Role = role;
+					r.DeleteTime = deleteTime;
+					s.Update(r);
+
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
 		}
 
 
@@ -214,8 +231,8 @@ namespace RadialReview.Accessors {
 
 		public static List<RoleGroup> ConstructRolesForNode(long? userId, long? positionId, Dictionary<long, RoleModel> rolesLU, List<RoleLink> links, List<PosDur> pd, List<TeamDur> td) {
 
-			var relaventPD = pd.Where(x => x.UserId == userId).ToList();
-			relaventPD.AddRange(pd.Where(x => x.PosId == positionId));
+			var relaventPD = pd.Where(x => x.PosId == positionId).ToList();
+			//relaventPD.AddRange(pd.Where(x => x.PosId == positionId));
 
 
 			var relaventTD = td.Where(x => x.UserId == userId).ToList();
@@ -233,21 +250,30 @@ namespace RadialReview.Accessors {
 				//	return new RoleGroup(, x.AttachId.Value, x.AttachType, "User").AsList();
 				//}));
 			}
-
+			//if (positionId!=null)
 			{
-				var posRolesLinks = links.Where(x => x.AttachType == AttachType.Position && relaventPD.Any(y => y.PosId == x.AttachId));
+				var roles = new List<RoleModel>();
 
-				foreach (var pos in posRolesLinks.GroupBy(x => x.AttachId.Value)) {
+				var posGroup = new DefaultDictionary<long, RoleGroup>(x => new RoleGroup(new List<RoleModel>(), x, AttachType.Position, "Function"));
+
+				if (positionId != null) {
+					var baseGroup = posGroup[positionId.Value];
+				}
+
+				var posRolesLinks = links.Where(x => x.AttachType == AttachType.Position && relaventPD.Any(y => y.PosId == x.AttachId));
+				foreach (var pos in posRolesLinks.GroupBy(x => x.AttachId)) {
 					var posRoles = pos.Select(x => rolesLU.GetOrDefault(x.RoleId, null)).Where(x => x != null).ToList();
-					if (posRoles.Any()) {
-						relaventGroups.Add(new RoleGroup(posRoles, pos.Key, AttachType.Position, "Function"));
-					}
+					posGroup[pos.Key].Roles.AddRange(posRoles);
+				}
+
+				foreach (var group in posGroup) {
+					relaventGroups.Add(group.Value);
 				}
 			}
 			{
 				var teamRolesLinks = links.Where(x => x.AttachType == AttachType.Team && relaventTD.Any(y => y.TeamId == x.AttachId));
 
-				foreach (var team in teamRolesLinks.GroupBy(x => x.AttachId.Value)) {
+				foreach (var team in teamRolesLinks.GroupBy(x => x.AttachId)) {
 					var teamRoles = team.Select(x => rolesLU.GetOrDefault(x.RoleId, null)).Where(x => x != null).ToList();
 					if (teamRoles.Any()) {
 						var teamName = td.FirstOrDefault(y => y.TeamId == team.Key).NotNull(y => y.TeamName) ?? "Team";

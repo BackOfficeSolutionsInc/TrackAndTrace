@@ -14,7 +14,7 @@ namespace RadialReview.Models.Angular.Base
 	{
         long Id { get; set; }
 		string Type { get; }
-        bool Hide { get; }
+		bool Hide { get; }
 	}
 
 	public interface IAngularUpdate : IAngular

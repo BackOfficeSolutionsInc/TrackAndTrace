@@ -32,7 +32,51 @@
 		
 		var disconnected = false;
 		var connection = getConnection();
-		var proxy = getHubProxy(connection,hubName, callback);
+		var proxy = getHubProxy(connection, hubName, callback);
+
+		var isUnloading = false;
+
+		//$rootScope.$on('$locationChangeStart', function (event, next, current) {
+		//	isUnloading = true;
+		//});
+		window.addEventListener("beforeunload", function () {
+			isUnloading = true;
+		});
+
+
+		//proxy.on("disconnected", function () {
+		//	console.log("signalr disconnect");
+		//	if (!isUnloading) {
+		//		clearAlerts();
+		//		setTimeout(function () {
+		//			showAlert("Connection lost. Reconnecting.");
+		//			disconnected = true;
+		//			setTimeout(function () {
+		//				debugger;
+		//				proxy.invoke("start",initConnection,Constants.StartHubSettings);
+		//			}, 5000); // Restart connection after 5 seconds.
+		//		}, 1000);
+		//	}
+		//});
+		connection.disconnected(function () {
+			console.log("Signalr disconnect. "+new Date());
+			if (!isUnloading) {
+				clearAlerts();
+				setTimeout(function () {
+					showAlert("Connection lost. Reconnecting.");
+					disconnected = true;
+					setTimeout(function () {
+						connection.start(/*Constants.StartHubSettings*/).done(function () {
+							if (callback) {
+								callback(connection, proxy);
+							}
+							clearAlerts();
+							showAlert("Connected.");
+						});
+					}, 5000); // Restart connection after 5 seconds.
+				}, 1000);
+			}
+		});
 
 		var dateRegex1 = /\/Date\([+-]?\d{13,14}\)\//;
 		var dateRegex2 = /^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/;
@@ -57,15 +101,24 @@
 			on: function (eventName, callback) {
 				proxy.on(eventName, function (result) {
 					//convertDates(result);
+					$rootScope.$emit("BeginCallbackSignalR");
 					$rootScope.$apply(function () {
 						if (callback) {
 							callback(result);
 						}
 					});
+					$rootScope.$emit("EndCallbackSignalR");
 				});
 			},
-			invoke: function (methodName, callback) {
-				proxy.invoke(methodName)
+			invoke: function (methodName, callback,args) {
+				var ags = [];
+				try{
+					ags = Array.prototype.slice.call(arguments, 2);
+				}catch(e){
+					console.error(e);
+				}
+
+				proxy.invoke(methodName,ags)
 				.done(function (result) {
 					//convertDates(result);
 					$rootScope.$apply(function () {

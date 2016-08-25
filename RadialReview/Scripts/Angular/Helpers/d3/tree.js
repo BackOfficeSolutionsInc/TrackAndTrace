@@ -64,7 +64,7 @@
 			$scope.duration = 250;
 
 			function getNode(source) {
-				
+
 				if (typeof (source) === "number") {
 					return d3.select("[data-id='" + source + "']").datum();
 				}
@@ -99,40 +99,45 @@
 					$scope.collapse(d);
 				}
 			};
-			
-			$scope.centerNode = function (source) {
-				try {
-					var scale = 1;
-					var pz3;
-					var pz = $element.closest('.pz-pan');
-					if (pz) {
-						var panzoom = pz.scope().panzoom;
-						if (panzoom)
-							scale = panzoom.scale();
-					}
-					source = getNode(source);
-					//if (typeof (source) === "number") {
-					//	source = d3.select("[data-id='" + source + "']").datum();
-					//}
-					if (source) {
-						console.log("CenterNode called " + source.Id);
-						x = -source.x0;
-						y = -source.y0;
-						x = x * scale + svg.width() / 2;
-						y = y * scale + svg.height() / 3;
-						scale = Math.max(1, scale);
-						d3.select(pz[0]).transition()
-                            .duration($scope.duration)
-                            .ease("quad-in-out")
-                            .attr("transform", "translate(" + x + "," + y + ")scale(" + scale + ")");
-						if (panzoom) {
-							panzoom.scale(scale);
-							panzoom.translate([x, y]);
+
+			$scope.centerNode = function (source, ms) {
+				if (typeof (ms) === "undefined")
+					ms = 1;
+
+				$timeout(function () {
+					try {
+						var scale = 1;
+						var pz3;
+						var pz = $element.closest('.pz-pan');
+						if (pz) {
+							var panzoom = pz.scope().panzoom;
+							if (panzoom)
+								scale = panzoom.scale();
 						}
+						source = getNode(source);
+						//if (typeof (source) === "number") {
+						//	source = d3.select("[data-id='" + source + "']").datum();
+						//}
+						if (source) {
+							console.log("CenterNode called " + source.Id);
+							x = -source.x0;
+							y = -source.y0;
+							x = x * scale + svg.width() / 2;
+							y = y * scale + svg.height() / 3;
+							scale = Math.max(1, scale);
+							d3.select(pz[0]).transition()
+								.duration($scope.duration)
+								.ease("quad-in-out")
+								.attr("transform", "translate(" + x + "," + y + ")scale(" + scale + ")");
+							if (panzoom) {
+								panzoom.scale(scale);
+								panzoom.translate([x, y]);
+							}
+						}
+					} catch (e) {
+						console.info("Could not center:", e);
 					}
-				} catch (e) {
-					console.info("Could not center:", e);
-				}
+				}, ms);
 			}
 
 			$scope.showNode = function (id) {
@@ -194,7 +199,6 @@
 
 			$scope.swap = function (nodeId, parentId) {
 				console.log("Swap called on" + nodeId + "=>" + parentId);
-				//debugger;
 				var draggingNode = null;
 				var selectedNode = null;
 				var nodes = $scope.tree.nodes($scope.root);
@@ -226,11 +230,10 @@
 				}
 			}
 
-
-			$rootScope.$on("CenterNode", function (event, source) {
-				setTimeout(function () {
-					$scope.centerNode(source);
-				}, 1);
+			$rootScope.$on("CenterNode", function (event, source,ms) {
+				//setTimeout(function () {
+					$scope.centerNode(source,ms);
+				//}, 1);
 			});
 			$rootScope.$on("ShowNode", function (event, id) {
 				$scope.showNode(id);
@@ -266,7 +269,6 @@
 
 			var i = 0,
             duration = scope.duration;
-			//scope.root;
 			scope.root = scope.root || {};
 
 			var vSeparation = 40;
@@ -300,41 +302,10 @@
 
 			var expandSource = scope.root;
 
-			//scope.swap = function (nodeId, parentId) {
-			//	var draggingNode = null;
-			//	var selectedNode = null;
-			//	for (var nid in scope.tree.nodes) {
-			//		var n = scope.tree.nodes[nid];
-			//		if (n.id == nodeId)
-			//			draggingNode = n;
-			//		if (n.id == parentId)
-			//			selectedNode = n;
-			//	}
-			//	if (draggingNode == null)
-			//		throw "Node not found";
-			//	if (selectedNode == null)
-			//		throw "Parent not found";
-
-			//	var index = draggingNode.parent.children.indexOf(draggingNode);
-			//	if (index > -1) {
-			//		draggingNode.parent.children.splice(index, 1);
-			//	}
-			//	if (Array.isArray(selectedNode.children) || Array.isArray(selectedNode._children)) {
-			//		if (Array.isArray(selectedNode.children)) {
-			//			selectedNode.children.push(draggingNode);
-			//		} else {
-			//			selectedNode._children.push(draggingNode);
-			//		}
-			//	} else {
-			//		selectedNode.children = [];
-			//		selectedNode.children.push(draggingNode);
-			//	}
-			//}
-
 			scope.updater = function (source, first) {
 
 				if (typeof (first) === "undefined")
-					first=true;
+					first = true;
 				// Compute the new tree layout.
 				var nodes = tree.nodes(scope.root),//.reverse(),
                     links = tree.links(nodes);
@@ -388,7 +359,6 @@
 
 
 				// Enter any new nodes at the parent's previous position.
-
 				var nodeEnter = node.enter().append("g")
                     .call(scope.dragListener || function () { })
                     .call(dragListener)
@@ -401,19 +371,10 @@
 
                     	return "translate(" + (es.x0) + "," + es.y0 + ")";
                     })
-                    .on("click", click);
-				//.call(function () {
-				//	var a = this[0];
-				//	for (var i in a) {
-				//		var s = angular.element(a[i]).scope();
-				//		if (s) {
-				//			s.$on("$destroy", function () {
-				//				debugger;
-				//			});
-				//		}
-				//	}
+					.classed("root-node", function (d) {
+						return d.Id == scope.root.Id;
+					}).on("click", click);
 
-				//});
 
 				if (scope.ttEnter) {
 					scope.ttEnter(nodeEnter);
@@ -463,7 +424,7 @@
 				nodeUpdate.select(".ghost circle")
                     .attr("r", 10)
                     //.attr("height", function (d) { return d.height + 16; })
-                    .attr("transform", function (d) { return "translate(" + (d.width / 2-.25) + "," + (d.height + 15.5) + ")"; });
+                    .attr("transform", function (d) { return "translate(" + (d.width / 2 - .25) + "," + (d.height + 15.5) + ")"; });
 
 				if (scope.ttUpdate)
 					scope.ttUpdate(node);
@@ -505,21 +466,20 @@
 				// Enter any new links at the parent's previous position.
 				link.enter().insert("path", "g")
                     .attr("class", "link")
-                    .style("opacity", 0);
-				//.attr("d", function (d) {
-				//	var o = { x: source.x0, y: source.y0 };
-				//	return diagonal({ source: o, target: o });
-				//});
+                    .style("opacity", 0)
+					.classed("root-node-link", function (d) {
+						if (d.source && scope.root)
+							return d.source.Id == scope.root.Id;
+						return false;
+					});
 
 				// Transition links to their new position.
-				link//.transition()
-					//.delay(duration/2)
-                    .attr("d", function (d) {
-                    	var s = d.source;
-                    	var t = d.target;
-                    	var o = { source: { x: s.x, y: s.y + (s.height || minHeight) }, target: { x: t.x, y: t.y } };
-                    	return diagonal(o);
-                    })
+				link.attr("d", function (d) {
+					var s = d.source;
+					var t = d.target;
+					var o = { source: { x: s.x, y: s.y + (s.height || minHeight) }, target: { x: t.x, y: t.y } };
+					return diagonal(o);
+				})
 					.transition()
                     .duration(duration * 2)
                     .style("opacity", 1);
@@ -548,7 +508,7 @@
 				tree.nodeSize([maxWidth + hSeparation, baseHeight]);
 
 				if (first)
-					$timeout(function () { scope.updater(scope.root,false); }, 1);
+					$timeout(function () { scope.updater(scope.root, false); }, 1);
 			}
 
 			var nestWatch = function (node) {
@@ -595,27 +555,23 @@
 					newValUndefined = true;
 				else if (newValUndefined)
 					$timeout(function () { scope.updater(scope.root); }, 1);
-				if (scope.graph && scope.graph.data && scope.graph.data.Root) {// Array.isArray(scope.graph.data) && scope.graph.data.length) {
+				if (scope.graph && scope.graph.data && scope.graph.data.Root) {
 					scope.root = scope.graph.data.Root;
 					scope.root.x = svg.width() / 2;
 					scope.root.y = 0;
 					scope.root.x0 = svg.width() / 2;
 					scope.root.y0 = 0;
 
-					$timeout(function () { scope.updater(scope.root); }, 1);
-					//scope.updater(scope.root);
+					$timeout(function () {
+						//console.log("timeout1")
+						scope.updater(scope.root);
+						//console.log("timeout2")
+					}, 1);
 
 					if (newVal && (!oldVal || newVal.center !== oldVal.center))
-						scope.centerNode(newVal.center);
+						scope.centerNode(newVal.center,200);
 
-					//////if (oldVal===undefined)
-					//var center = scope.root;
-					//if (scope.graph && scope.graph.center)
-					//    center =  scope.graph.center;
-					//scope.centerNode(center);
-					//setTimeout(function () {
-					//    scope.centerNode(center);
-					//}, duration);
+
 
 				}
 			}, true);
@@ -628,7 +584,7 @@
 					if (typeof (scope.ttCollapse) === "function") {
 						try {
 							scope.ttCollapse(d);
-						} catch (e) {//console.log("skipping collapse");
+						} catch (e) {
 							return;
 						}
 					}
@@ -638,7 +594,7 @@
 					if (typeof (scope.ttExpand) === "function") {
 						try {
 							scope.ttExpand(d);
-						} catch (e) {//console.log("skipping expand");
+						} catch (e) {
 							return;
 						}
 					}
@@ -663,7 +619,6 @@
 				var data = [];
 				if (draggingNode !== null && selectedNode !== null) {
 					// have to flip the source coordinates since we did this for the existing connectors on the original tree
-					//debugger;
 					data = [{
 						source: {
 							x: selectedNode.x0,
@@ -730,7 +685,7 @@
 				draggingNode = d;
 				d3.select(domNode).select('.ghost').attr('pointer-events', 'none');
 				d3.selectAll('.ghost').attr('class', 'ghost showing');
-				d3.select(domNode).classed('activeDrag',true).attr("filter", "url(#glow)");
+				d3.select(domNode).classed('activeDrag', true).attr("filter", "url(#glow)");
 
 
 				svgGroup.selectAll("g.node").sort(function (a, b) { // select the parent and sort the path's
@@ -793,8 +748,8 @@
                 	//var pz = element.closest('.pz-pan');
                 	dragStarted = true;
                 	nodes = tree.nodes(d);
-                	ox = d.width / 2; //d3.event.sourceEvent.offsetX + d.width / 2;/// pz.scope().panzoom.scale();
-                	oy = -50//d3.event.sourceEvent.offsetY;/// pz.scope().panzoom.scale();
+                	ox = d.width / 2;
+                	oy = -50;
 
                 	console.log(ox, oy);
                 	d3.event.sourceEvent.stopPropagation();
@@ -861,21 +816,6 @@
 
                 		scope.swap(draggingNode.Id, selectedNode.Id);
 
-                		//var index = draggingNode.parent.children.indexOf(draggingNode);
-                		//if (index > -1) {
-                		//	draggingNode.parent.children.splice(index, 1);
-                		//}
-                		//if (Array.isArray(selectedNode.children) || Array.isArray(selectedNode._children)) {
-                		//	if (Array.isArray(selectedNode.children)) {
-                		//		selectedNode.children.push(draggingNode);
-                		//	} else {
-                		//		selectedNode._children.push(draggingNode);
-                		//	}
-                		//} else {
-                		//	selectedNode.children = [];
-                		//	selectedNode.children.push(draggingNode);
-                		//}
-
                 		dat.newParentId = selectedNode.Id;
                 		// Make sure that the node being added to is expanded so user can see added node is correctly moved
                 		scope.expand(selectedNode);
@@ -892,16 +832,13 @@
 			function endDrag() {
 				selectedNode = null;
 				d3.selectAll('.ghost').attr('class', 'ghost');
-				d3.select(domNode).classed('activeDrag', false).attr("filter",null);
+				d3.select(domNode).classed('activeDrag', false).attr("filter", null);
 				// now restore the mouseover event or we won't be able to drag a 2nd time
 				d3.select(domNode).select('.ghost').attr('pointer-events', '');
 				updateTempConnector();
 				if (draggingNode !== null) {
 					scope.updater(scope.root);
 					var dn = draggingNode;
-					//setTimeout(function () {
-					//	scope.centerNode(dn);
-					//}, duration * 1 / 3);
 					draggingNode = null;
 				}
 			}

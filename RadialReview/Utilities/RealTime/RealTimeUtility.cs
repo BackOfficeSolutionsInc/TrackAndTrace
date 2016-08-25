@@ -75,14 +75,21 @@ namespace RadialReview.Utilities.RealTime {
             }
             return true;
         }
-        protected AngularUpdate GetUpdater<HUB>(string name) where HUB : IHub
-        {
-            if (_updaters.ContainsKey(name))
-                return _updaters[name];
 
-            GetGroup<HUB>(name);
+		private string KeyNameGen(string name, bool skip) {
+			return name + "`" + skip;
+		}
+
+        protected AngularUpdate GetUpdater<HUB>(string name,bool skip=true) where HUB : IHub
+        {
+			var key = KeyNameGen(name, skip);
+
+			if (_updaters.ContainsKey(key))
+                return _updaters[key];
+
+            GetGroup<HUB>(name,skip);
             var updater = new AngularUpdate();
-            _updaters[name] = updater;
+            _updaters[key] = updater;
             return updater;
 
         }
@@ -113,13 +120,13 @@ namespace RadialReview.Utilities.RealTime {
             return new RTOrganizationUpdater(orgId, this);
         }
 
-        protected dynamic GetGroup<HUB>(string name) where HUB : IHub
-        {
-            if (_groups.ContainsKey(name))
-                return _groups[name];
+        protected dynamic GetGroup<HUB>(string name,bool skip=true) where HUB : IHub {
+			var key = KeyNameGen(name, skip);
+			if (_groups.ContainsKey(key))
+                return _groups[key];
             var hub = GlobalHost.ConnectionManager.GetHubContext<HUB>();
-            var group = hub.Clients.Group(name,SkipUser);
-            _groups[name] = group;
+            var group = hub.Clients.Group(name,skip?SkipUser:null);
+            _groups[key] = group;
             return group;
         }
         

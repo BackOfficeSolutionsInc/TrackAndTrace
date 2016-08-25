@@ -1,6 +1,7 @@
 ﻿
 @import "../MaterialDesign/Components/Snackbar";
 @import (reference) "../bootstrap/variables";
+@import (reference) "../bootstrap/glyphicons";
 
 @border-color: @traction-orange;
 @collapsed-border-color: desaturate(lighten(@traction-orange,8%),70%);
@@ -52,13 +53,50 @@ html, body {
 			stroke: @collapsed-border-color;
 		}
 	}
+
+
+	&.root-node {
+
+		.move-icon {
+			cursor: default !important;
+		}
+
+		.acc-contents {
+			display: none;
+		}
+
+		.acc-buttons.top-bar {
+			height: 30px !important;
+			line-height: 30px;
+		}
+
+		.acc-rect {
+			stroke-width: 20px;
+		}
+
+		.node-button.remove {
+			display: none;
+		}
+		/*rect{
+			width:100px;
+			width:100px;
+		}*/
+	}
 }
+
+&.root-node-link {
+	display: none;
+}
+
 
 
 .acc-chart svg {
 
+	.role-row .role,
 	input {
 		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
 	}
 
 	button md-icon {
@@ -105,8 +143,8 @@ html, body {
 
 	.link {
 		fill: none;
-		stroke: #ccc;
-		stroke-width: 1.5px;
+		stroke: @traction-orange;
+		stroke-width: 2px;
 	}
 
 	.acc-node {
@@ -151,6 +189,12 @@ html, body {
 
 			&.top-bar {
 				height: 10px;
+				font-family: 'Roboto', sans-serif;
+				text-align: center;
+				color: #fff;
+				text-transform: uppercase;
+				text-shadow: 0 0 0px #fff;
+				font-size: 15px;
 			}
 
 			&.bottom-bar {
@@ -230,54 +274,113 @@ html, body {
 			}
 		}
 
-		.role-group {
-			margin: 0px 12px;
+		.role-groups {
+			min-height: 14px;
 
-			.role-row {
-				text-overflow: ellipsis;
-				font-size: 10px;
-			}
+			.role-group {
+				margin: 0px 12px;
+				padding-bottom: 6px;
 
-			.role-group-title {
-				border-top: 1px solid @border-color;
-				background-color: @border-color;
-				border-bottom: 1px solid @border-color;
-				font-family: 'Roboto',sans-serif;
-				color: white;
-				font-weight: bold;
-				text-transform: uppercase;
-				text-align: center;
-				font-size: 10px;
-				margin: auto;
+				ul {
+					padding-left: 16px;
+					margin-bottom: 0px;
 
 
-				.add-role-row {
-					cursor: pointer;
+					li.role-row {
+						margin-right: -3px;
+
+						.role {
+							text-overflow: ellipsis;
+							font-size: 10px;
+							margin-left: -6px;
+						}
+
+
+						.delete-role-row {
+							margin-right: 0px;
+							display: inline-block;
+							width: 0px;
+							.glyphicon();
+							.glyphicon-remove();
+							position: static;
+							font-size: 8px;
+							margin-top: -2px;
+							cursor: pointer;
+							opacity: 0;
+							color: lightgray;
+
+							&:hover {
+								color: #b7b7b7;
+							}
+
+							&:focus {
+								outline: none;
+							}
+						}
+
+						&:hover .delete-role-row {
+							opacity: 1;
+						}
+					}
+				}
+				.no-roles-placeholder{
+					font-family:'Roboto',san-sarif;
+					font-size:10px;
 				}
 
-				.circle {
-					width: 20px;
-					height: 20px;
-					display: inline-block;
-					border-radius: 10px;
-					border: 2px solid @border-color;
-					float: right;
-					margin-top: -16px;
-					margin-right: -22px;
-					text-align: center;
-					color: @border-color;
-					background-color: #fff;
-					padding: 0px 0px;
-					font-size: 14px;
-					line-height: 17px;
-					text-align: center;
-					transition: background-color .2s ease,color .2s ease;
 
-					&:hover {
-						//margin-top: -12px;
-						//box-shadow: 0px 1px 1px -1px #000 inset;
-						background-color: @border-color;
-						color: white !important;
+				.role-group-title {
+					border-top: 1px solid @border-color;
+					background-color: @border-color;
+					border-bottom: 1px solid @border-color;
+					font-family: 'Roboto',sans-serif;
+					color: white;
+					font-weight: bold;
+					text-transform: uppercase;
+					text-align: center;
+					font-size: 10px;
+					margin: auto;
+
+
+					.add-role-row {
+						cursor: pointer;
+
+						&.tinyRow .circle {
+							margin-top: -10px;
+						}
+
+						&:focus {
+							outline: none;
+						}
+					}
+					/*.delete-role-row:focus {
+						outline: none;
+					}*/
+					.circle {
+						width: 20px;
+						height: 20px;
+						display: inline-block;
+						border-radius: 10px;
+						border: 2px solid @border-color;
+						float: right;
+						margin-top: -16px;
+						margin-right: -22px;
+						text-align: center;
+						color: @border-color;
+						background-color: #fff;
+						padding: 0px 0px;
+						font-size: 14px;
+						line-height: 17px;
+						text-align: center;
+						transition: background-color .2s ease,color .2s ease;
+
+
+						&:hover {
+							//margin-top: -12px;
+							//box-shadow: 0px 1px 1px -1px #000 inset;
+							background-color: @border-color;
+							color: white !important;
+						}
 					}
 				}
 			}
@@ -408,7 +511,7 @@ html, body {
 
 		&.minimize text {
 			font-size: 9px;
-			transform: translate(-4px, 5.2px);
+			transform: translate(-4px, 3.8px);
 			//transform: translate(-4.6px, 4.1px);
 			fill: gray;
 		}
@@ -474,7 +577,7 @@ html, body {
 
 		.node-button.minimize text {
 			//transform: translate(-4.6px, 4.1px);
-			transform: translate(-4px, 3.8px);
+			transform: translate(-4px, 5.2px);
 		}
 	}
 }

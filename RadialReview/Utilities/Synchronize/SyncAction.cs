@@ -82,9 +82,11 @@ namespace RadialReview.Utilities.Synchronize
 			return new SyncAction("Strt_" + id);
 		}
 
-		public static SyncAction UpdateCoreFocus(object id)
-		{
+		public static SyncAction UpdateCoreFocus(object id) {
 			return new SyncAction("CoreF_" + id);
+		}
+		public static SyncAction UpdateRole(long id) {
+			return new SyncAction("Role_" + id);
 		}
 	}
 }

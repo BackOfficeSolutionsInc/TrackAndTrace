@@ -9,8 +9,8 @@
 				<label>Roles:</label>
 			</div>
 			<div class="col-sm-8" id="allRows">
-				@foreach (var item in Model.TemplateRoles) {
-					Html.RenderPartial("_TemplateRoleRow", item);
+				@foreach (var item in Model.Roles) {
+					Html.RenderPartial("_RoleRow", item);
 				}
 			</div>
 			<div class="col-sm-2">

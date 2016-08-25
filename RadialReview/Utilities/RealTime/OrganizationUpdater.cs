@@ -19,19 +19,21 @@ namespace RadialReview.Utilities.RealTime {
                 this.rt = rt;
             }
 
-            protected void UpdateAll(Func<long, IAngularItem> itemGenerater)
+            protected void UpdateAll(Func<long, IAngularItem> itemGenerater, bool forceNoSkip = false)
             {
-                var updater = rt.GetUpdater<OrganizationHub>(OrganizationHub.GenerateId(_OrganizationId));
+                var updater = rt.GetUpdater<OrganizationHub>(OrganizationHub.GenerateId(_OrganizationId),!forceNoSkip);
                 updater.Add(itemGenerater(_OrganizationId));
-            }
-            public RTOrganizationUpdater Update(IAngularItem item)
-            {
-                return Update(rid => item);
-            }
-            public RTOrganizationUpdater Update(Func<long, IAngularItem> item)
+			}
+			public RTOrganizationUpdater Update(IAngularItem item) {
+				return Update(rid => item);
+			}
+			public RTOrganizationUpdater ForceUpdate(IAngularItem item) {
+				return Update(rid => item, true);
+			}
+			public RTOrganizationUpdater Update(Func<long, IAngularItem> item,bool forceNoSkip = false)
             {
                 rt.AddAction(() => {
-                    UpdateAll(item);
+                    UpdateAll(item, forceNoSkip);
                 });
                 return this;
             }

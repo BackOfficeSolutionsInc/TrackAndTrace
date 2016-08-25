@@ -39,6 +39,8 @@ namespace RadialReview.Models.Angular.Roles {
 		public long? AttachId { get; set; }
 		public String AttachName { get; set; }
 
+		public bool? Editable { get; set; }
+
 		public AngularRoleGroup(long id) : base(id) { }
 
 		public static long GetId(Attach attach) {
@@ -47,12 +49,14 @@ namespace RadialReview.Models.Angular.Roles {
 
 		public IEnumerable<AngularRole> Roles { get; set; }
 
-		public AngularRoleGroup(Attach attach,IEnumerable<AngularRole> roles) : base(GetId(attach)) {			
+		public AngularRoleGroup(Attach attach,IEnumerable<AngularRole> roles,bool? editable=null) : base(GetId(attach)) {			
 			AttachType = attach.Type;
 			AttachId = attach.Id;
 			AttachName = attach.Name;
 
 			Roles = roles;
+
+			Editable = editable;
 
 		}
 	}

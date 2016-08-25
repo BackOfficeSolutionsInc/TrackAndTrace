@@ -6,6 +6,7 @@ using FluentNHibernate.Mapping;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.Periods;
+using RadialReview.Models.Askables;
 
 namespace RadialReview.Models.UserTemplate
 {
@@ -20,7 +21,7 @@ namespace RadialReview.Models.UserTemplate
 		public virtual DateTime CreateTime { get; set; }
 		public virtual DateTime? DeleteTime { get; set; }
 		public virtual String JobDescription { get; set; }
-		public virtual List<UT_Role> _Roles { get; set; }
+		public virtual List<RoleModel> _Roles { get; set; }
 		public virtual List<UT_User> _Members { get; set; }
 		public virtual List<UT_Rock> _Rocks { get; set; }
 		public virtual List<UT_Measurable> _Measurables { get; set; }
@@ -51,9 +52,11 @@ namespace RadialReview.Models.UserTemplate
 		{
 			public virtual long Id { get; set; }
 			public virtual DateTime? DeleteTime { get; set; }
-			//[Obsolete("Do not use",true)]
+			[Obsolete("Do not use")]
 			public virtual String Role { get; set; }
 			public virtual long RoleId { get; set; }
+
+			public virtual RoleModel _Role { get; set; }
 
 			public virtual long TemplateId { get; set; }
 			public virtual UserTemplate Template { get; set; }

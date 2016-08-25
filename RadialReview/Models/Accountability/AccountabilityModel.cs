@@ -49,7 +49,10 @@ namespace RadialReview.Models.Accountability {
         public virtual AccountabilityNode ParentNode { get; set; }
         public virtual AccountabilityRolesGroup AccountabilityRolesGroup { get; set; }
         public virtual List<AccountabilityNode> _Children { get; set; }
-        public AccountabilityNode()
+
+		public virtual string _Name { get; set; }
+		public virtual bool? _Editable { get; set; }
+		public AccountabilityNode()
         {
             CreateTime = DateTime.UtcNow;
         }
@@ -104,8 +107,9 @@ namespace RadialReview.Models.Accountability {
         public virtual long OrganizationId { get; set; }
         public virtual List<RoleGroup> _Roles { get; set; }
         public virtual long AccountabilityChartId { get; set; }
+		public virtual bool? _Editable { get; set; }
 
-        public AccountabilityRolesGroup()
+		public AccountabilityRolesGroup()
         {
             CreateTime = DateTime.UtcNow;
         }

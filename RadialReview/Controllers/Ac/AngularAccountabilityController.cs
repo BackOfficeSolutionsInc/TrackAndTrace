@@ -30,6 +30,12 @@ namespace RadialReview.Controllers
 			AccountabilityAccessor.Update(GetUser(), model, connectionId);
 			return Json(ResultObject.SilentSuccess());
 		}
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult RemoveAngularRole(long id) {
+			AccountabilityAccessor.RemoveRole(GetUser(), id);
+			return Json(ResultObject.SilentSuccess());
+		}
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]

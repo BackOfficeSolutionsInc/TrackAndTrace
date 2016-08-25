@@ -21,6 +21,7 @@ namespace RadialReview.Models.Angular.Accountability {
         public AngularAccountabilityNode Root { get;set; }
         public IEnumerable<AngularUser> AllUsers { get; set; }
         public long? CenterNode { get; set; }
+		
 
     }
 
@@ -29,24 +30,30 @@ namespace RadialReview.Models.Angular.Accountability {
         }
         public AngularAccountabilityNode(long id):base(id){
         }
-        public AngularAccountabilityNode(AccountabilityNode node,bool collapse=false) : base(node.Id){
+
+		public bool? Editable { get; set; }
+
+		public AngularAccountabilityNode(AccountabilityNode node,bool collapse=false,bool? editable = null) : base(node.Id){
             User = node.User.NotNull(x=>AngularUser.CreateUser(node.User));
-            Group = node.AccountabilityRolesGroup.NotNull(x => new AngularAccountabilityGroup(x));
+			Editable = editable??node._Editable;
+            Group = node.AccountabilityRolesGroup.NotNull(x => new AngularAccountabilityGroup(x,editable:x._Editable??Editable));
             
-            var childrens = node._Children.NotNull(x => x.Select(y => new AngularAccountabilityNode(y)).ToList());
+            var childrens = node._Children.NotNull(x => x.Select(y =>
+				new AngularAccountabilityNode(y,editable:y._Editable??Editable)
+			).ToList());
 
 			__children = childrens;
 			collapsed = collapse;
+			Name = node._Name;
 
-   //         if (collapse)
-   //             _children = childrens;
-   //         else
-   //             children = childrens;
+			//         if (collapse)
+			//             _children = childrens;
+			//         else
+			//             children = childrens;
 
-        }
+		}
 
 		private AngularUser _User;
-
 		public AngularUser User
 		{
 			get {
@@ -56,6 +63,8 @@ namespace RadialReview.Models.Angular.Accountability {
 			}
 			set { _User = value; }
 		}
+
+		public string Name { get; set; }
 				
         public AngularAccountabilityGroup Group { get; set; }     
 
@@ -65,16 +74,19 @@ namespace RadialReview.Models.Angular.Accountability {
         }
         public AngularAccountabilityGroup(long id):base(id){
         }
-        public AngularAccountabilityGroup(AccountabilityRolesGroup group) : base(group.Id){
+        public AngularAccountabilityGroup(AccountabilityRolesGroup group,bool? editable=null) : base(group.Id){
+			Editable = editable ?? group._Editable;
 			RoleGroups = group._Roles.NotNull(x =>
 				x.Select(y=>new AngularRoleGroup(
 					new Attach(y.AttachType,y.AttachId,y.AttachName),
-					y.Roles.Select(z=> new AngularRole(z)).ToList()
+					y.Roles.Select(z=> new AngularRole(z)).ToList(),
+					editable:Editable
 				)).ToList());
             Position = group.Position.NotNull(x=>new AngularPosition(x));
         }
 
         public AngularPosition Position { get; set; }
+		public bool? Editable { get; set; }
         public IEnumerable<AngularRoleGroup> RoleGroups { get; set; }
 
 

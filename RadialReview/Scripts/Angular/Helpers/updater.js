@@ -9,12 +9,70 @@
 		removeDeleted(this.scope.model);
 		this._postDelete(data, status);
 		this._preResolve(data, status);
+		removeDeleted(data);
 		resolveRef(this.scope.model, data);
 		this._postResolve(this.scope.model, data, status);
 	}
 
 	function removeDeleted(model) {
-		return _removeDeleted(model, {});
+		//console.log("-----");
+		//var arr = [];
+		//search("`delete`", model, arr);
+		//console.log(arr);
+		//console.log("-----");
+		//arr = [];
+		_removeDeleted(model, {});
+		//search("`delete`", model, arr);
+		//console.log(arr);
+		//console.log("-----");
+	}
+
+
+	function search(find, model,arr, str) {
+		if (typeof (str) === "undefined"){
+			find=find.toLowerCase();
+			str = "";
+		}
+
+		for (var i in model) {
+			var builder = str + "." + i;
+			if ((model[i] + "").toLowerCase() == find) {
+				console.log(builder)
+				arr.push(model);
+			}
+			if (typeof(model[i])==="object" && i!="parent")
+				search(find, model[i],arr, builder);
+		}
+
+	}
+
+	function _continueIfUnseen(item, seen, onUnseen) {
+
+		if (item) {
+			if (item.Key) {
+				if (!(item.Key in seen)) {
+					seen[item.Key] = true;
+					onUnseen();
+				} else {
+					//console.log("Skipping " + item.Key);
+				}
+			} else {
+				//console.log("No key " + item);
+				onUnseen();
+			}
+			/*} else {
+				if (item && !(item in seen)) {
+					seen[item] = true;
+					onUnseen();
+				} else {
+					console.log("skipping " + item);
+				}*/
+			//}
+		} else {
+			//console.log("No item " + item);
+			onUnseen();
+		}
+
 	}
 
 	function _removeDeleted(model, seen) {
@@ -22,24 +80,26 @@
 		for (var key in model) {
 			if (model[key] == "`delete`")
 				model[key] = null;
-			if (typeof (model[key]) == 'object') {
-				var alreadyParsed = false;
+			else if (typeof (model[key]) == 'object') {
+
 				var value = model[key];
-				if (value in seen) {
-					alreadyParsed = true;
-					break;
-				}
-				//}
-				//for (var i in seen) {
-				//	if (seen[i] == value) {
-				//		alreadyParsed = true;
-				//		break;
-				//	}
-				//}
-				if (!alreadyParsed) {
-					seen[value] = true;//.push(value);
+				_continueIfUnseen(value, seen, function () {
 					_removeDeleted(value, seen);
-				}
+				});
+
+				//var alreadyParsed = false;
+				//var k = null;
+				//if (value.Key) {
+				//	k = value.key
+				//	if (k in seen) {
+				//		alreadyParsed = true;
+				//		continue;
+				//	}
+				//}				
+				//if (!alreadyParsed) {
+				//	if (k!=null)
+				//		seen[k] = true;
+				//}
 
 			}
 		}
@@ -194,17 +254,22 @@
 			} else if (obj[key].getDate !== undefined) {
 				obj[key] = new Date(obj[key].getTime() + tzoffset() * 60 * 1000); //obj[key].getTimezoneOffset() * 60000);
 			} else if (type == 'object') {
-				var alreadyParsed = false;
-				for (var i in seen) {
-					if (seen[i] == value) {
-						alreadyParsed = true;
-						break;
-					}
-				}
-				if (!alreadyParsed) {
-					seen.push(value);
+
+				_continueIfUnseen(value, seen, function () {
 					_convertDatesForServer(value, seen);
-				}
+				});
+
+				//var alreadyParsed = false;
+				//for (var i in seen) {
+				//	if (seen[i] == value) {
+				//		alreadyParsed = true;
+				//		break;
+				//	}
+				//}
+				//if (!alreadyParsed) {
+				//	seen.push(value);
+				//	_convertDatesForServer(value, seen);
+				//}
 
 			}
 		}
@@ -233,15 +298,19 @@
 			} else if (obj[key].getDate !== undefined) {
 				obj[key] = new Date(obj[key].getTime() /*- obj[key].getTimezoneOffset() * 60000*/);
 			} else if (type == 'object') {
-				var alreadyParsed = false;
-				if (value in seen) {
-					alreadyParsed = true;
-					break;
-				}
-				if (!alreadyParsed) {
-					seen[value]=true;
+
+				_continueIfUnseen(value, seen, function () {
 					_convertDates(value, seen);
-				}
+				});
+				//var alreadyParsed = false;
+				//if (value in seen) {
+				//	alreadyParsed = true;
+				//	continue;
+				//}
+				//if (!alreadyParsed) {
+				//	seen[value]=true;
+				//	_convertDates(value, seen);
+				//}
 
 			}
 		}

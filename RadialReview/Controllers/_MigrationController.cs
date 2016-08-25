@@ -1506,7 +1506,7 @@ namespace RadialReview.Controllers {
 
 		[Access(Controllers.AccessLevel.Radial)]
 		[AsyncTimeout(20 * 60 * 1000)]
-		public ActionResult M08_14_2016(long? orgId = null, int countUsers = 0, int skipUsers = 0, int countNodesDeleted = 0, int countOrgs = 0, DateTime? now = null, int exceptionCount = 0, int deletedCharts = 0) {
+		public ActionResult M08_14_2016(long? orgId = null, int countUsers = 0, int skipUsers = 0, int countNodesDeleted = 0, int roleLinksDeleted = 0, int countOrgs = 0, DateTime? now = null, int exceptionCount = 0, int deletedCharts = 0) {
 			//var countOrgs = 0;
 			//var countNodesDeleted= 0;
 
@@ -1532,6 +1532,15 @@ namespace RadialReview.Controllers {
 							countNodesDeleted += 1;
 						}
 
+						var roleLinks = s.QueryOver<RoleLink>().Where(x => x.DeleteTime == null).List().ToList();
+
+						foreach (var n in roleLinks) {
+							n.DeleteTime = now;
+							s.Update(n);
+							roleLinksDeleted += 1;
+						}
+
+
 						foreach (var o in orgs) {
 							if (o.AccountabilityChartId > 0) {
 								var f = s.Get<AccountabilityChart>(o.AccountabilityChartId);
@@ -1552,7 +1561,7 @@ namespace RadialReview.Controllers {
 						tx.Commit();
 						s.Flush();
 
-						return RedirectToAction("M08_14_2016", "Migration", routeValues: new { orgId = org.Id, now, countNodesDeleted, deletedCharts });
+						return RedirectToAction("M08_14_2016", "Migration", routeValues: new { orgId = org.Id, now, countNodesDeleted, deletedCharts, roleLinksDeleted });
 					}
 				}
 			}
@@ -1673,9 +1682,9 @@ namespace RadialReview.Controllers {
 
 
 			if (nextOrg != null) {
-				return Content("<script>location.href='/migration/M08_14_2016?orgId=" + nextOrg.Id + "&countUsers=" + countUsers + "&skipUsers=" + skipUsers + "&countNodesDeleted=" + countNodesDeleted + "&countOrgs=" + countOrgs + "&now=" + Url.Encode(now.ToString()) + "&exceptionCount=" + exceptionCount + "&deletedCharts=" + deletedCharts + "';</script>");
+				return Content("<script>location.href='/migration/M08_14_2016?orgId=" + nextOrg.Id + "&countUsers=" + countUsers + "&skipUsers=" + skipUsers + "&countNodesDeleted=" + countNodesDeleted + "&countOrgs=" + countOrgs + "&now=" + Url.Encode(now.ToString()) + "&exceptionCount=" + exceptionCount + "&deletedCharts=" + deletedCharts + "&roleLinksDeleted="+ roleLinksDeleted+"';</script>");
 			}
-			return Content("orgs:" + countOrgs + " - nodesDeleted:" + countNodesDeleted + " nodesCreated: " + countUsers + "/" + (countUsers + skipUsers) + " errors: " + exceptionCount + " deletedCharts:" + deletedCharts);
+			return Content("orgs:" + countOrgs + " - nodesDeleted:" + countNodesDeleted + " roleLinksDeleted:"+ roleLinksDeleted + " nodesCreated: " + countUsers + "/" + (countUsers + skipUsers) + " errors: " + exceptionCount + " deletedCharts:" + deletedCharts);
 		}
 		[Access(Controllers.AccessLevel.Radial)]
 		[AsyncTimeout(20 * 60 * 1000)]
@@ -1730,26 +1739,36 @@ namespace RadialReview.Controllers {
 					var user = 0;
 					var roles = s.QueryOver<RoleModel>().List().ToList();
 					var roleLink = s.QueryOver<RoleLink>().Where(x => x.DeleteTime == null).List().ToList();
-
+					var c = 0;
+					var d = 0;
 
 					foreach (var r in roles.Where(x => !roleLink.Any(y => y.RoleId == x.Id))) {
 						if (r.FromTemplateItemId == null) {
-							var link = new RoleLink() {
-								AttachId = r.ForUserId,
-								AttachType = AttachType.User,
-								CreateTime = now,
-								RoleId = r.Id,
-								OrganizationId = r.OrganizationId
-							};
+							if (r.ForUserId == 1745) {
+								int a = 0;
+								c += 1;
+							}
+							if (r.ForUserId != null) {
+								var link = new RoleLink() {
+									AttachId = r.ForUserId.Value,
+									AttachType = AttachType.User,
+									CreateTime = now,
+									RoleId = r.Id,
+									OrganizationId = r.OrganizationId
+								};
 
-							s.Save(link);
-							templates += 1;
+								s.Save(link);
+								templates += 1;
+							}
 						} else {
-							var template = s.Get<UserTemplate>(r.FromTemplateItemId.Value);
+							var utr = s.Get<UserTemplate.UT_Role>(r.FromTemplateItemId.Value);
 
+							if (utr.Template.AttachId == 1745) {
+								d += 1;
+							}
 							var link = new RoleLink() {
-								AttachId = template.AttachId,
-								AttachType = template.AttachType,
+								AttachId = utr.Template.AttachId,
+								AttachType = utr.Template.AttachType,
 								CreateTime = now,
 								RoleId = r.Id,
 								OrganizationId = r.OrganizationId
@@ -1761,7 +1780,7 @@ namespace RadialReview.Controllers {
 					}
 					tx.Commit();
 					s.Flush();
-					builder += " roleLink_template:" + templates + " roleLink_user:" + user;
+					builder += " roleLink_template:" + templates + " roleLink_user:" + user + " c:"+c+" d:"+d;
 					return Content(builder);
 				}
 			}

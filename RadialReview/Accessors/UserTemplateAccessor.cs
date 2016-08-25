@@ -80,9 +80,10 @@ namespace RadialReview.Accessors {
 							.List().ToList();
 					}
 					if (loadRoles) {
-						found._Roles = s.QueryOver<UserTemplate.UT_Role>()
-							.Where(x => x.DeleteTime == null && x.TemplateId == utId)
-							.List().ToList();
+						found._Roles = RoleAccessor.GetRolesForAttach_Unsafe(s, new Attach(found.AttachType, found.AttachId));
+							//s.QueryOver<UserTemplate.UT_Role>()
+							//.Where(x => x.DeleteTime == null && x.TemplateId == utId)
+							//.List().ToList();
 					}
 					if (loadMeasurables) {
 						found._Measurables = s.QueryOver<UserTemplate.UT_Measurable>()

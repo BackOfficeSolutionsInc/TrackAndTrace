@@ -18,7 +18,7 @@ namespace RadialReview.Controllers
 			public long TemplateId { get; set; }
 			public long UserId { get; set; }
 			public List<RoleModel> Roles { get; set; }
-			public List<UserTemplate.UT_Role> TemplateRoles { get; set; }
+			//public List<UserTemplate.UT_Role> TemplateRoles { get; set; }
 			public bool UpdateOutstandingReviews { get; set; }
 
 			public DateTime CurrentTime = DateTime.UtcNow;
@@ -54,7 +54,7 @@ namespace RadialReview.Controllers
 		public PartialViewResult TemplateModal(long id)
 		{
 			var template= UserTemplateAccessor.GetUserTemplate(GetUser(), id,loadRoles:true);
-			return PartialView(new RoleVM { TemplateRoles = template._Roles, TemplateId = id });
+			return PartialView(new RoleVM { Roles = template._Roles, TemplateId = id });
 		}
 
 		[Access(AccessLevel.UserOrganization)]
@@ -72,14 +72,14 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Manager)]
 		public JsonResult TemplateModal(RoleVM model)
 		{
-			foreach (var r in model.TemplateRoles)
+			foreach (var r in model.Roles)
 			{
 				if (r.Id == 0){
 					if (r.DeleteTime==null)
 						UserTemplateAccessor.AddRoleToTemplate(GetUser(), model.TemplateId, r.Role);
 				}
 				else
-					UserTemplateAccessor.UpdateRoleTemplate(GetUser(), r.Id, r.Role, r.DeleteTime);
+					RoleAccessor.EditRole(GetUser(), r.Id, r.Role, r.DeleteTime);
 			}
 			return Json(ResultObject.SilentSuccess());
 		}

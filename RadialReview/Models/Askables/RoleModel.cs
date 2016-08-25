@@ -44,7 +44,7 @@ namespace RadialReview.Models.Askables {
 	public class RoleLink : IHistorical {
 		public virtual long Id { get; set; }
 		public virtual long RoleId { get; set; }
-		public virtual long? AttachId { get; set; }
+		public virtual long AttachId { get; set; }
 		public virtual AttachType AttachType { get; set; }
 		public virtual long OrganizationId { get; set; }
 
@@ -52,7 +52,11 @@ namespace RadialReview.Models.Askables {
 		public virtual DateTime? DeleteTime { get; set; }
 
 		public virtual Attach GetAttach() {
-			return new Attach(AttachType, AttachId??-2);
+			return new Attach(AttachType, AttachId);
+		}
+
+		public RoleLink() {
+			CreateTime = DateTime.UtcNow;
 		}
 
 		public class Map : ClassMap<RoleLink> {
