@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Runtime.Remoting.Proxies;
 using Amazon.SimpleDB.Model;
+using System.Collections.Generic;
 
 namespace RadialReview.Models.Angular.Base
 {
@@ -31,6 +32,8 @@ namespace RadialReview.Models.Angular.Base
 		public bool CreateOnly { get; set; }
         
         public bool Hide {get;set;}
+
+		public Dictionary<string, object> _ExtraProperties { get; set;  }
     }
 
 	public class Removed

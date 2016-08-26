@@ -10,7 +10,7 @@
 				<label>Roles:</label>
 			</div>
 			<div class="col-sm-8" id="allRows">
-				@foreach (var item in Model.Roles) {
+				@foreach (var item in Model.Roles.OrderBy(x => x == null ? 0 : (long)x._Attach.Type)) {
 					Html.RenderPartial("_RoleRow", item);
 				}
 			</div>

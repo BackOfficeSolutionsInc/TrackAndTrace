@@ -130,6 +130,7 @@ body {
   transition: fill .15s ease,stroke .4s ease;
   stroke-width: 1.5px;
   stroke-dasharray: 5,2;
+  stroke: #EF7622;
   cursor: pointer;
   pointer-events: all;
 }
@@ -188,8 +189,9 @@ body {
   text-align: center;
   color: #fff;
   text-transform: uppercase;
-  text-shadow: 0 0 0px #fff;
+  /*text-shadow: 0 0 0px #fff;*/
   font-size: 15px;
+  font-weight: bold;
 }
 .acc-chart svg .acc-node .acc-buttons.bottom-bar {
   height: 0px;
@@ -297,8 +299,15 @@ body {
   opacity: 1;
 }
 .acc-chart svg .acc-node .role-groups .role-group .no-roles-placeholder {
-  font-family: 'Roboto', san-sarif;
-  font-size: 10px;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 8px;
+  text-align: center;
+  padding-top: 3px;
+}
+.acc-chart svg .acc-node .role-groups .role-group .no-roles-placeholder .glyphicon-plus-sign {
+  color: rgba(239, 118, 34, 0.7);
+  position: static;
+  font-size: 7px;
 }
 .acc-chart svg .acc-node .role-groups .role-group .role-group-title {
   border-top: 1px solid #EF7622;
@@ -323,6 +332,11 @@ body {
 }
 .acc-chart svg .acc-node .role-groups .role-group .role-group-title .add-role-row:focus {
   outline: none;
+  opacity: 1 !important;
+}
+.acc-chart svg .acc-node .role-groups .role-group .role-group-title .add-role-row:focus .circle {
+  background-color: #f9ceb1;
+  opacity: 1 !important;
 }
 .acc-chart svg .acc-node .role-groups .role-group .role-group-title .circle {
   width: 20px;
@@ -435,6 +449,13 @@ body {
   stroke: #aaa;
   fill: white;
 }
+.acc-chart svg .node-button:focus {
+  opacity: 1 !important;
+  outline: none;
+}
+.acc-chart svg .node-button:focus circle {
+  fill: #d5d5d5;
+}
 .acc-chart svg .node-button.add text {
   transform: translate(-4.5px, 5.3px);
   font-size: 16px;
@@ -467,6 +488,16 @@ body {
 .acc-chart svg aria-status p {
   display: none;
 }
+.acc-chart svg .node.collapsed {
+  /*.node-button circle {
+			&:focus {
+				fill: lighten(@collapsed-border-color,30%);
+			}
+		}*/
+}
+.acc-chart svg .node.collapsed .ghost.showing circle {
+  stroke: #ad9a8d;
+}
 .acc-chart svg .node.collapsed .acc-buttons {
   background-color: #ad9a8d;
 }
@@ -484,12 +515,26 @@ body {
 .acc-chart svg .node.collapsed .role-group .role-group-title .add-role-row {
   cursor: pointer;
 }
+.acc-chart svg .node.collapsed .role-group .role-group-title .add-role-row:focus .circle {
+  background-color: #ede9e6 !important;
+}
 .acc-chart svg .node.collapsed .role-group .role-group-title .circle {
   border: 2px solid #ad9a8d;
   color: #ad9a8d;
 }
 .acc-chart svg .node.collapsed .role-group .role-group-title .circle:hover {
   background-color: #ad9a8d;
+}
+.acc-chart svg .node.collapsed .role-group .no-roles-placeholder {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 8px;
+  text-align: center;
+  padding-top: 3px;
+}
+.acc-chart svg .node.collapsed .role-group .no-roles-placeholder .glyphicon-plus-sign {
+  color: rgba(173, 154, 141, 0.7);
+  position: static;
+  font-size: 7px;
 }
 .acc-chart svg .node.collapsed .node-button.minimize text {
   transform: translate(-4px, 5.2px);

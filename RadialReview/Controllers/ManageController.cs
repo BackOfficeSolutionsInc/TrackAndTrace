@@ -66,7 +66,7 @@ namespace RadialReview.Controllers
 		public ActionResult Positions()
 		{
 			new Cache().Push(CacheKeys.MANAGE_PAGE, "Positions", LifeTime.Request/*Session*/);
-			var orgPos = _OrganizationAccessor.GetOrganizationPositions(GetUser(), GetUser().Organization.Id);
+			var orgPos = _OrganizationAccessor.GetOrganizationPositions(GetUser(), GetUser().Organization.Id).ToListAlive();
 
 			var positions = orgPos.Select(x =>
 				new OrgPosViewModel(x, _PositionAccessor.GetUsersWithPosition(GetUser(), x.Id).Count())

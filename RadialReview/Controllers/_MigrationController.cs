@@ -1670,7 +1670,7 @@ namespace RadialReview.Controllers {
 							var perms = PermissionsUtility.Create(s, GetUser());
 							foreach (var np in laterNodePosition) {
 								if (np.Item2 != null) {
-									AccountabilityAccessor.UpdateAccountabilityRolesGroup_Unsafe(s, rt, perms, np.Item1, np.Item2, now.Value,true);
+									AccountabilityAccessor.UpdatePosition_Unsafe(s, rt, perms, np.Item1, np.Item2, now.Value,true);
 								}
 							}
 							tx.Commit();

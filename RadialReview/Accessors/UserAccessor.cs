@@ -610,7 +610,7 @@ namespace RadialReview.Accessors
 			RemoveMangerUnsafe(s, caller, managerDuration, now);
 		}
 
-		[Obsolete("Cannot remove manager like this", true)]
+		[Obsolete("This is old. Only used for testing.", true)]
 		private static void RemoveMangerUnsafe(ISession s, UserOrganizationModel caller, ManagerDuration managerDuration, DateTime now)
 		{
 			//DeepSubordianteAccessor.Remove(s, managerDuration.Manager, managerDuration.Subordinate, now);
@@ -621,7 +621,7 @@ namespace RadialReview.Accessors
 			managerDuration.Manager.UpdateCache(s);
 		}
 
-		[Obsolete("Cannot remove manager like this", true)]
+		[Obsolete("This is old. Only used for testing.", true)]
 		public void RemoveManager(UserOrganizationModel caller, long managerDurationId, DateTime now)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
@@ -636,7 +636,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		[Obsolete("Cannot add manager like this", true)]
+		[Obsolete("This is old. Only used for testing.", false)]
 		public static void AddManager(ISession s, PermissionsUtility perms, long userId, long managerId, DateTime now, bool ignoreCircular = false)
 		{
 
@@ -647,7 +647,7 @@ namespace RadialReview.Accessors
 		}
 
 
-		[Obsolete("Cannot add manager like this", true)]
+		[Obsolete("This is old. Only used for testing.", false)]
 		public void AddManager(UserOrganizationModel caller, long userId, long managerId, DateTime now)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
@@ -664,7 +664,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		[Obsolete("Cannot add manager like this", true)]
+		[Obsolete("This is old. Only used for testing.", false)]
 		private static void AddMangerUnsafe(ISession s, UserOrganizationModel caller, long userId, long managerId, DateTime now, bool ignoreCircular = false)
 		{
 			var user = s.Get<UserOrganizationModel>(userId);

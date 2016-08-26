@@ -281,12 +281,14 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+		[Obsolete("Includes dead items")]
 		public static List<OrganizationPositionModel> GetOrganizationPositions(ISession s, PermissionsUtility perms, long organizationId) {
 			perms.ViewOrganization(organizationId);
 			var positions = s.QueryOver<OrganizationPositionModel>().Where(x => x.Organization.Id == organizationId).List().ToList();
 			return positions;
 		}
 
+		[Obsolete("Includes dead items")]
 		public List<OrganizationPositionModel> GetOrganizationPositions(UserOrganizationModel caller, long organizationId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -307,6 +309,7 @@ namespace RadialReview.Accessors {
 		}
 
 
+		[Obsolete("Includes dead items")]
 		public List<ManagerDuration> GetOrganizationManagerLinks(UserOrganizationModel caller, long organizationId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {

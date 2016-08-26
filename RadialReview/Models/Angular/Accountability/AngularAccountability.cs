@@ -20,10 +20,12 @@ namespace RadialReview.Models.Angular.Accountability {
         }
         public AngularAccountabilityNode Root { get;set; }
         public IEnumerable<AngularUser> AllUsers { get; set; }
-        public long? CenterNode { get; set; }
-		
+		public long? CenterNode { get; set; }
+		public long? ShowNode { get; set; }
+		public long? ExpandNode { get; set; }
 
-    }
+
+	}
 
     public class AngularAccountabilityNode : AngularTreeNode<AngularAccountabilityNode> {
         public AngularAccountabilityNode(){

@@ -24,8 +24,8 @@ namespace RadialReview.Utilities.RealTime {
                 var updater = rt.GetUpdater<OrganizationHub>(OrganizationHub.GenerateId(_OrganizationId),!forceNoSkip);
                 updater.Add(itemGenerater(_OrganizationId));
 			}
-			public RTOrganizationUpdater Update(IAngularItem item) {
-				return Update(rid => item);
+			public RTOrganizationUpdater Update(IAngularItem item, bool forceNoSkip = false) {
+				return Update(rid => item, forceNoSkip);
 			}
 			public RTOrganizationUpdater ForceUpdate(IAngularItem item) {
 				return Update(rid => item, true);

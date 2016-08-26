@@ -16,5 +16,6 @@ namespace RadialReview.Models.Angular.Positions {
         }
 
         public string Name { get; set; }
+		
     }
 }

@@ -1,25 +1,26 @@
 ﻿@model RadialReview.Models.Askables.RoleModel
 @{
-	var guid = Guid.NewGuid().ToString().Replace("-","");
-	var lockedClass = Model.FromTemplateItemId.HasValue ? "disable unlockRLR-" + guid : " unlockRLR-" + guid;
+	var guid = Guid.NewGuid().ToString().Replace("-", "");
+	var isLocked = Model._Attach != null && Model._Attach.Type != RadialReview.Models.Enums.AttachType.User;
+	var lockedClass = isLocked ? "disable unlockRLR-" + guid : " unlockRLR-" + guid;
 }
 <div class="roleRow">
-	@using (Html.BeginCollectionItem("roles"))
-	{
+	@using (Html.BeginCollectionItem("roles")) {
 		<div class="roww">
 			<div style="width:calc( 100% - 52px );display:inline-block">
 				@Html.HiddenFor(x => x.Id)
 				@Html.TextBoxFor(x => x.Role, new { @class = "form-control roleItem " + lockedClass })
 				@Html.HiddenFor(x => x.CreateTime)
 				@Html.HiddenFor(x => x.DeleteTime)
-				@Html.HiddenFor(x => x.FromTemplateItemId,new{@class="templateId "+lockedClass})
+				@*@Html.HiddenFor(x => x.FromTemplateItemId,new{@class="templateId "+lockedClass})*@
 			</div>
-			<span style="padding-left:8px;" class="glyphicon glyphicon-trash deleteRow clickable @lockedClass" title="Delete"></span>
-			@if (Model.FromTemplateItemId != null)
-			{
-				<span style="padding-left: 8px;" class="icon fontastic-icon-link-broken lock" 
-				      onclick="$('.unlockRLR-@guid').removeClass('disable');$(this).remove();$('.templateId.unlockRLR-@guid').prop('value',false);" 
-				      title="This role was created by a template. Click to disassociate.">
+			@if (!isLocked) {
+				<span style="padding-left:8px;" class="glyphicon glyphicon-trash deleteRow clickable @lockedClass" title="Delete"></span>
+			}
+			@if (isLocked) {
+				<span style="padding-left: 8px;" class="icon fontastic-icon-link-broken lock"
+					  onclick="$('.unlockRLR-@guid').removeClass('disable');$(this).remove();$('.templateId.unlockRLR-@guid').prop('value',false);"
+					  title="Click to edit role for every member of this @Model._Attach.Type.ToString().ToLower().">
 				</span>
 			}
 		</div>

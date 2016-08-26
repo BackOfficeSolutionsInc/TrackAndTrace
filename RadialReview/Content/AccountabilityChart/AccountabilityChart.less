@@ -126,6 +126,7 @@ html, body {
 			fill: @background-color;*/
 			.bottomButton();
 			stroke-dasharray: 5,2;
+			stroke: @border-color;
 			cursor: pointer;
 			pointer-events: all;
 		}
@@ -143,7 +144,7 @@ html, body {
 
 	.link {
 		fill: none;
-		stroke: @traction-orange;
+		stroke: @border-color;
 		stroke-width: 2px;
 	}
 
@@ -193,8 +194,9 @@ html, body {
 				text-align: center;
 				color: #fff;
 				text-transform: uppercase;
-				text-shadow: 0 0 0px #fff;
+				/*text-shadow: 0 0 0px #fff;*/
 				font-size: 15px;
+				font-weight: bold;
 			}
 
 			&.bottom-bar {
@@ -323,9 +325,18 @@ html, body {
 						}
 					}
 				}
-				.no-roles-placeholder{
-					font-family:'Roboto',san-sarif;
-					font-size:10px;
+
+				.no-roles-placeholder {
+					font-family: Roboto, "Helvetica Neue", sans-serif;
+					font-size: 8px;
+					text-align: center;
+					padding-top: 3px;
+
+					.glyphicon-plus-sign {
+						color: fade(@border-color,70%);
+						position: static;
+						font-size: 7px;
+					}
 				}
 
 
@@ -351,6 +362,12 @@ html, body {
 
 						&:focus {
 							outline: none;
+							opacity: 1 !important;
+
+							.circle {
+								background-color: lighten(@border-color,30%);
+								opacity: 1 !important;
+							}
 						}
 					}
 					/*.delete-role-row:focus {
@@ -493,6 +510,14 @@ html, body {
 			.bottomButtonHover();
 		}
 
+		&:focus {
+			opacity: 1 !important;
+			outline: none;
+
+			circle {
+				fill: darken(@background-color,10%);
+			}
+		}
 
 
 		&.add text {
@@ -538,6 +563,13 @@ html, body {
 
 	.node.collapsed {
 
+
+		.ghost.showing {
+			circle {
+				stroke: @collapsed-border-color;
+			}
+		}
+
 		.acc-buttons {
 			background-color: @collapsed-border-color;
 		}
@@ -552,6 +584,12 @@ html, body {
 			}
 		}
 
+		/*.node-button circle {
+			&:focus {
+				fill: lighten(@collapsed-border-color,30%);
+			}
+		}*/
+
 		.role-group {
 			.role-group-title {
 				border-top: 1px solid @collapsed-border-color;
@@ -563,6 +601,13 @@ html, body {
 					cursor: pointer;
 				}
 
+				.add-role-row:focus {
+
+					.circle {
+						background-color: lighten(@collapsed-border-color,30%) !important;
+					}
+				}
+
 				.circle {
 					border: 2px solid @collapsed-border-color;
 					color: @collapsed-border-color;
@@ -570,6 +615,19 @@ html, body {
 					&:hover {
 						background-color: @collapsed-border-color;
 					}
+				}
+			}
+
+			.no-roles-placeholder {
+				font-family: Roboto, "Helvetica Neue", sans-serif;
+				font-size: 8px;
+				text-align: center;
+				padding-top: 3px;
+
+				.glyphicon-plus-sign {
+					color: fade(@collapsed-border-color,70%);
+					position: static;
+					font-size: 7px;
 				}
 			}
 		}
@@ -585,9 +643,6 @@ html, body {
 .is-dragging .add-role-row .circle {
 	display: none !important;
 }
-
-
-
 /*:not(.is-dragging) .add-role-row  .circle {
 	width: 20px;
 	height: 20px;

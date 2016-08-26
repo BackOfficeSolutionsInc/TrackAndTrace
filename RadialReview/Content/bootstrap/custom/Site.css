@@ -234,6 +234,9 @@
   box-shadow: -1px -1px 0px 1px rgba(0, 0, 0, 0.25) inset;
   border: none;
 }
+#modal .modal-icon #modalOk:focus {
+  outline: 1px auto #bbb;
+}
 #modal .modal-icon.modal-icon-primary .modal-icon:before {
   content: "\e122";
   background-color: #EF7622;

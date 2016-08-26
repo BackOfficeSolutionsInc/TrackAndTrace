@@ -64,7 +64,9 @@
 			$scope.duration = 250;
 
 			function getNode(source) {
-
+				if (typeof (source) === "string") {
+					source = +source;
+				}
 				if (typeof (source) === "number") {
 					return d3.select("[data-id='" + source + "']").datum();
 				}
@@ -73,12 +75,25 @@
 				}
 				return false;
 			}
+			function getNodeId(source) {
+				if (typeof (source) === "string") {
+					return source = +source;
+				}
+				if (typeof (source) === "number") {
+					return source
+				}
+				if (typeof (source) === "object") {
+					return source.Id;
+				}
+				return false;
+			}
+
 
 			$scope.expand = function (d) {
 				d = getNode(d);
 				if (d && d._children) {
 					d.children = d._children;
-					d.children.forEach($scope.expand);
+					//d.children.forEach($scope.expand);
 					d._children = null;
 				}
 			};
@@ -86,11 +101,10 @@
 				d = getNode(d);
 				if (d && d.children) {
 					d._children = d.children;
-					d._children.forEach($scope.collapse);
+					//d._children.forEach($scope.collapse);
 					d.children = null;
 				}
 			};
-
 			$scope.toggle = function (d) {
 				d = getNode(d);
 				if (d && d._children) {
@@ -99,10 +113,11 @@
 					$scope.collapse(d);
 				}
 			};
-
 			$scope.centerNode = function (source, ms) {
 				if (typeof (ms) === "undefined")
 					ms = 1;
+				
+				$scope.showNode(source);
 
 				$timeout(function () {
 					try {
@@ -140,12 +155,13 @@
 				}, ms);
 			}
 
-			$scope.showNode = function (id) {
+			$scope.showNode = function (source) {
+				var id = getNodeId(source);
 				console.log("ShowNode called " + id);
 				//http://bl.ocks.org/jjzieve/a743242f46321491a950
 				function searchTree(obj, id, path) {
 					if (obj.Id === id) { //if search is found return, add the object to the path and return it
-						path.push(obj);
+						//path.push(obj);
 						return path;
 					}
 					else if (obj.children || obj._children) { //if children are collapsed d3 object will have them instantiated as _children
@@ -373,7 +389,10 @@
                     })
 					.classed("root-node", function (d) {
 						return d.Id == scope.root.Id;
-					}).on("click", click);
+					}).on("click", expandCollapse).on("keydown", function (d) {
+						if (d3.event.keyCode == 13 || d3.event.keyCode == 32)
+							expandCollapse(d);
+					});
 
 
 				if (scope.ttEnter) {
@@ -526,6 +545,10 @@
 					if (scope.ttWatch)
 						nr = scope.ttWatch(node);
 					nr.children = children;
+					if (node._children || !node.children)
+						nr.collapsed = true;
+					else
+						nr.collapsed = false;
 					return nr;
 
 				} else {
@@ -538,14 +561,20 @@
 				if (scope.graph) {
 					var r = null;
 					var cn = null;
+					var sn = null;
+					var en = null;
 					if (scope.graph.data) {
 						r = scope.graph.data.Root;
 						cn = scope.graph.data.CenterNode;
+						en = scope.graph.data.ExpandNode;
+						sn = scope.graph.data.ShowNode;
 					}
 					var n = nestWatch(r);
 					return {
-						nest: n,
-						center: cn
+						nest:	n,
+						center: cn,
+						expand: en,
+						show:	sn
 					};
 				}
 				return undefined;
@@ -569,17 +598,24 @@
 					}, 1);
 
 					if (newVal && (!oldVal || newVal.center !== oldVal.center))
-						scope.centerNode(newVal.center,200);
+						scope.centerNode(newVal.center, 200);
 
+					if (newVal && newVal.expand && (!oldVal || newVal.expand !== oldVal.expand))
+						scope.expand(newVal.expand, 200);
+
+					if (newVal && newVal.show && (!oldVal || newVal.show !== oldVal.show))
+						scope.showNode(newVal.show);
+
+
+					//var dive 
 
 
 				}
 			}, true);
 			// Toggle children on click.
-			function click(d) {
+			function expandCollapse(d) {
 
 				expandSource = d;
-
 				if (d.children) {
 					if (typeof (scope.ttCollapse) === "function") {
 						try {

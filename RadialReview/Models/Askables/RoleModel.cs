@@ -15,7 +15,8 @@ namespace RadialReview.Models.Askables {
 		public virtual UserOrganizationModel _Owner { get; set; }
 
 		public virtual String Role { get; set; }
-		
+		public virtual Attach _Attach { get; set; }
+
 		public override QuestionType GetQuestionType(){
 			return QuestionType.GWC;
 		}

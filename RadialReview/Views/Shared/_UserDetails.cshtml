@@ -110,11 +110,11 @@
                 <div class="panel-body numbers">
                     @if (Model.Roles.Any()) {
                         <ul>
-                            @foreach (var r in Model.Roles) {
+                            @foreach (var r in Model.Roles.OrderBy(x=>x==null?0:(long)x._Attach.Type)) {
                                 <li class="font-size:19px;">
                                     @r.Role
-                                    @if (r.FromTemplateItemId.HasValue) {
-                                        <span class="icon fontastic-icon-link-2 template-link" title="This role was created by a template."></span>
+                                    @if (r._Attach!=null && r._Attach.Type != RadialReview.Models.Enums.AttachType.User) {
+                                        <span class="icon fontastic-icon-link-2 template-link" title="This role is attached to a @(r._Attach.Type.ToString().ToLower())."></span>
                                     }
                                 </li>
                             }

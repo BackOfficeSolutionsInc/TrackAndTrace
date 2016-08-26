@@ -564,6 +564,8 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 	var reformatArg = reformat;
 	var callbackArg = callback;
 
+	$("#modalForm input:visible,#modalForm textarea:visible,#modalForm button:not(.close):visible").first().focus();
+
 	$("#modalForm").submit(function (ev) {
 		ev.preventDefault();
 

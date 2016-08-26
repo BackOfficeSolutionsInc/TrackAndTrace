@@ -15,16 +15,7 @@
 	}
 
 	function removeDeleted(model) {
-		//console.log("-----");
-		//var arr = [];
-		//search("`delete`", model, arr);
-		//console.log(arr);
-		//console.log("-----");
-		//arr = [];
 		_removeDeleted(model, {});
-		//search("`delete`", model, arr);
-		//console.log(arr);
-		//console.log("-----");
 	}
 
 
@@ -433,6 +424,7 @@
 			postDelete: function (data, status) { },
 			preResolve: function (data, status) { },
 			postResolve: function (data, status) { },
+			//interceptExtend: function (data, status) { },
 			convertDates: convertDates,
 			convertDatesForServer: convertDatesForServer,
 			tzoffset: tzoffset
@@ -448,6 +440,7 @@
 		o._postDelete = function (d, s) { o.postDelete && o.postDelete.call(o, d, s); };
 		o._preResolve = function (d, s) { o.preResolve && o.preResolve.call(o, d, s); };
 		o._postResolve = function (m, d, s) { o.postResolve && o.postResolve.call(o, m, d, s); };
+		//o._interceptExtend = function (m, d, s) {  };
 
 		hub.on('update', o.applyUpdate);
 		return o;

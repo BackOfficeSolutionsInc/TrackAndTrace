@@ -1,4 +1,4 @@
-﻿angular.module('signalRModule', []).factory('signalR', ['$rootScope', function ($rootScope) {
+﻿angular.module('signalRModule', []).factory('signalR', ['$rootScope',"$timeout", function ($rootScope,$timeout) {
 
 	if (typeof(window.angularSharedSignalR) === 'undefined' || window.angularSharedSignalR === null) {
 		angularSharedSignalR = {
@@ -94,6 +94,8 @@
 			}
 		};
 
+		var numberOutstanding = 0;
+
 		var o= {
 			proxy: proxy,
 			connection: connection,
@@ -101,13 +103,20 @@
 			on: function (eventName, callback) {
 				proxy.on(eventName, function (result) {
 					//convertDates(result);
-					$rootScope.$emit("BeginCallbackSignalR");
+					numberOutstanding += 1;
+					$rootScope.$emit("BeginCallbackSignalR", numberOutstanding);
 					$rootScope.$apply(function () {
-						if (callback) {
-							callback(result);
+						try {
+							if (callback) {
+								callback(result);
+							}
+						} finally {
+							$timeout(function () {
+								numberOutstanding -= 1;
+								$rootScope.$emit("EndCallbackSignalR",numberOutstanding);
+							}, 0);
 						}
 					});
-					$rootScope.$emit("EndCallbackSignalR");
 				});
 			},
 			invoke: function (methodName, callback,args) {

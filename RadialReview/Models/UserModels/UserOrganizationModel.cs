@@ -17,12 +17,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RadialReview.Utilities.DataTypes;
+using log4net;
 
 namespace RadialReview.Models {
 	[DebuggerDisplay("User {User}")]
 	[DataContract]
 	public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IDeletable, TimeSettings/*, IAngularizer<UserOrganizationModel>*/
 	{
+		protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
 		public static long ADMIN_ID = -7231398885982031L;
 
 		public static UserOrganizationModel ADMIN = new UserOrganizationModel() {
@@ -287,9 +290,21 @@ namespace RadialReview.Models {
 				Cache.IsAdmin = ManagingOrganization;
 			if (Cache.IsManager != this.IsManager(true))
 				Cache.IsManager = this.IsManager(true);
-			var managers = String.Join(", ", ManagedBy.ToListAlive().Distinct(x => x.ManagerId).Select(x => x.Manager.GetName()));
-			if (Cache.Managers != managers)
-				Cache.Managers = managers;
+			UserOrganizationModel managerA = null;
+			UserLookup cacheA = null;
+			try {
+				var managersQ = s.QueryOver<ManagerDuration>()
+					.JoinAlias(x => x.Manager, () => managerA)
+					.JoinAlias(x => managerA.Cache, () => cacheA)
+					.Where(x => x.DeleteTime == null && x.SubordinateId == Id && managerA.DeleteTime == null)
+					.Select(x => cacheA.Name).List<string>().Distinct().ToList();
+
+				var managers = String.Join(", ", managersQ);// ManagedBy.ToListAlive().Distinct(x => x.ManagerId).Select(x => x.Manager.GetName()));
+				if (Cache.Managers != managers)
+					Cache.Managers = managers;
+			} catch (Exception e) {
+				log.Error(e);
+			}
 			var positions = String.Join(", ", Positions.ToListAlive().Distinct(x => x.Position.Id).Select(x => x.Position.CustomName));
 			if (Cache.Positions != positions)
 				Cache.Positions = positions;
@@ -321,7 +336,7 @@ namespace RadialReview.Models {
 			if (Cache.UserId != Id)
 				Cache.UserId = Id;
 
-			s.SaveOrUpdate(Cache);
+			s.Merge(Cache);
 			try {
 				new Cache().InvalidateForUser(this, CacheKeys.USERORGANIZATION);
 				//var id = RadialReview.Cache.Get(CacheKeys.USERORGANIZATION_ID);

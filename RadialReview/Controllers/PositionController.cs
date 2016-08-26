@@ -49,23 +49,29 @@ namespace RadialReview.Controllers
             return PartialView(model);
         }
 
-        [HttpPost]
-        [Access(AccessLevel.Manager)]
-        public JsonResult Modal(PositionViewModel model)
-        {
-            var caller=GetUser();
-            _OrganizationAccessor.EditOrganizationPosition(caller,model.Id, caller.Organization.Id, /*model.Position.Value,*/model.PositionName);
-            return Json(ResultObject.Success("Updated position.").ForceRefresh());
-        }
-		
-        /*
-        public ActionResult EditAccountabilities(long positionId)
-        {
-            var caller = GetUser();
-            return View();
-        }*/
+		[HttpPost]
+		[Access(AccessLevel.Manager)]
+		public JsonResult Modal(PositionViewModel model) {
+			var caller = GetUser();
+			_OrganizationAccessor.EditOrganizationPosition(caller, model.Id, caller.Organization.Id, /*model.Position.Value,*/model.PositionName);
+			return Json(ResultObject.Success("Updated position.").ForceRefresh());
+		}
 
-        /*
+		
+		[Access(AccessLevel.Manager)]
+		public JsonResult Delete(long id) {
+			var caller = GetUser();
+			PositionAccessor.DeletePosition(caller, id);
+			return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
+		}
+		/*
+public ActionResult EditAccountabilities(long positionId)
+{
+	var caller = GetUser();
+	return View();
+}*/
+
+		/*
         public JsonResult Search(string search)
         {
             var positions=PositionAccessor.AllPositions();

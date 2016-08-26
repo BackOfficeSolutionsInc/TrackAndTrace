@@ -5,13 +5,49 @@ acapp.directive('mdBlur', ["$timeout", function ($timeout) {
 		restrict: 'A',
 		link: function (scope, element, attributes) {
 			$timeout(function () {
+				scope.oldValue = scope.$eval(attributes.mdSelectedItem);
+				scope.focused = false;
+				angular.element(element[0].querySelector("input")).bind("focus", function () {
+					//console.log("focus:",this,$(this).is(":focus"));
+					scope.focused = true;
+					var resolved = scope.$eval(attributes.mdSelectedItem);
+					if (resolved) {
+						scope.oldValue = resolved.Key;
+					} else {
+						scope.oldValue = null;
+					}
+				});
 				angular.element(element[0].querySelector("input")).bind("blur", function () {
 					var that = this;
+					scope.focused = false;
+					var e = element;
+					var that = this;
 					$timeout(function () {
-						//console.log(that);
-						//console.log(element);
-						scope.$eval(attributes.mdBlur);
-					}, 400);
+						////console.log(element);
+						//var a = attributes;
+						//var resolved = scope.$eval(attributes.mdSelectedItem);
+						//var newValue = null;
+						//if (resolved) {
+						//	newValue = resolved.Key;
+						//}
+
+						////var index = $(that).val().indexOf(" (Create)");
+						////if (index != -1) {
+						////	var a = attributes;
+						////	$(that).val(name.substring(0, index));
+						////}
+
+						//if (scope.oldValue != newValue || newValue=="AngularPosition_-2") {
+						//	//console.log("triggered");
+						//	console.log(scope.oldValue, newValue);
+						//	//scope.$eval(attributes.mdBlur);
+						//} else {
+						//	//if (newValue == null) {
+						//	//	$(that).val(null);
+						//	//}
+						//	//console.log("skip blur");
+						//}
+					}, 30);
 				});
 			}, 0);
 		}
@@ -29,14 +65,41 @@ acapp.directive('rolegroups', function () {
 			onUpdate: '&onUpdate',
 			onDeleteRole: '&onDeleteRole',
 		},
-		controller: ["$scope", "$http", function ($scope, $http) {
-			$scope.addRoleToNode = function (attachId, attachType) {
+		controller: ["$scope", "$http", "$timeout", "$element", function ($scope, $http, $timeout, $element) {
+			$scope.addRoleToNode = function (group) {
+				var attachType = group.AttachType;
+				var attachId = group.AttachId;
 				var _clientTimestamp = new Date().getTime();
 				$http.post("/Accountability/AddRole/?aid=" + attachId + "&atype=" + attachType + "&_clientTimestamp=" + _clientTimestamp, {})
 					.error(function (data) {
 						showJsonAlert(data, true, true);
 					});
+
 			};
+
+			$scope.newRoleButton = function (group) {
+
+				var origLength = group.Roles.length;
+				$scope.addRoleToNode(group);
+				depth = 0;
+				var setFocus = function () {
+					try {
+						if (depth == 100)
+							return;
+						if (origLength < group.Roles.length) {
+							console.log("focusing");
+							var res = $($($element).find("[data-group=" + group.Id + "] input").last()).focus();
+						} else {
+							depth += 1;
+							$timeout(setFocus, 20);
+						}
+					} catch (e) {
+						console.error(e);
+					}
+				}
+				$timeout(setFocus, 20);
+			}
+
 
 			$scope.updating = function (r) {
 				$scope.onUpdate()(r);
@@ -44,21 +107,102 @@ acapp.directive('rolegroups', function () {
 			$scope.deleting = function (r) {
 				$scope.onDeleteRole()(r);
 			};
+
+			$scope.checkCreateRole = function (evt, r, group, index) {
+
+				var origLength = group.Roles.length;
+				var depth = 0;
+				if (evt.which === 13) {
+					//var isLast = index === origLength - 1
+					if (/*isLast &&*/ group.Editable != false) {
+
+						$scope.addRoleToNode(group);
+
+						depth = 0;
+						var setFocus = function () {
+							try {
+								if (depth == 100)
+									return;
+								if (origLength < group.Roles.length) {
+									console.log("focusing");
+									$($($element).find("[data-group=" + group.Id + "] input")[index + 1]).focus();
+								} else {
+									depth += 1;
+									$timeout(setFocus, 20);
+								}
+							} catch (e) {
+								console.error(e);
+							}
+						}
+						$timeout(setFocus, 20);
+
+					}
+				} else if (evt.which == 8) {
+					if (r.Name == "" || typeof (r.Name) === "undefined" || r.Name == null) {
+						$scope.deleting(r);
+						if (origLength != 1) {
+							var setFocus = function () {
+								try {
+									if (depth == 100)
+										return;
+									if (origLength > group.Roles.length) {
+										console.log("focusing");
+
+										$($($element).find("[data-group=" + group.Id + "] input")[index - 1]).focus();
+										//$("[data-group=" + group.Id + "]").find("input:nth-child(" + (index) + ")").focus();
+									} else {
+										depth += 1;
+										$timeout(setFocus, 20);
+									}
+								} catch (e) {
+									console.error(e);
+								}
+							}
+							$timeout(setFocus, 20);
+						} else {
+							$($element).find("[data-group=" + group.Id + "] .add-role-row").focus();
+						}
+					}
+				} else if (evt.which == 38) {
+					if (index > 0) {
+						var that = $($($element).find("[data-group=" + group.Id + "] input")[index - 1]);
+						$(that).focus();
+						$timeout(function () {
+							var len = $(that).val().length * 2;
+							$(that)[0].setSelectionRange(len, len);
+						}, 0);
+					}
+				} else if (evt.which == 40) {
+					if (index < origLength - 1) {
+						var that = $($($element).find("[data-group=" + group.Id + "] input")[index + 1]);
+						$(that).focus();
+						$timeout(function () {
+							var len = $(that).val().length * 2;
+							$(that)[0].setSelectionRange(len, len);
+						}, 0);
+					} else {
+						var id = $($($element).find("[data-group=" + group.Id + "] input")).closest("g.node").attr("data-id");
+						$scope.$emit("ExpandNode", id);
+					}
+				}
+			}
 		}],
 
 		template: "<div class='role-groups'>" +
-						"<div ng-repeat='group in groups' class='role-group' ng-if='group.Editable!=false || group.Roles.length>0'>" +
+						"<div ng-repeat='group in groups' class='role-group' ng-if='group.Editable!=false || group.Roles.length>0' data-group='{{group.Id}}'>" +
 							"<div class='role-group-title'><span ng-if='!(groups.length==1 && group.AttachType==\"Position\")'>{{group.AttachName}} Roles </span>" +
-								"<div ng-if='group.Editable!=false' class='add-role-row' ng-class='{tinyRow:(groups.length==1 && group.AttachType==\"Position\")}' ng-click='addRoleToNode(group.AttachId,group.AttachType)' style='opacity:0;'> <div class='circle'>+</div> </div>" +
+								"<div ng-if='group.Editable!=false' class='add-role-row' ng-class='{tinyRow:(groups.length==1 && group.AttachType==\"Position\")}' ng-click='newRoleButton(group)' style='opacity:0;'> <div class='circle'>+</div> </div>" +
 							"</div>" +
 							"<ul>" +
-								"<li ng-repeat='role in group.Roles' class='role-row' >" +
-									"<input title='{{role.Name}}' class='role' ng-if='group.Editable!=false' ng-model=\"role.Name\" ng-disabled='group.Editable==false' ng-change=\"updating(role)\">" +
+								"<li ng-repeat='role in group.Roles'  class='role-row' >" +
+									"<input ng-model-options='{debounce:200}' ng-keydown='checkCreateRole($event,role,group,$index)' title='{{role.Name}}' class='role' ng-if='group.Editable!=false' ng-model=\"role.Name\" ng-disabled='group.Editable==false' ng-change=\"updating(role)\">" +
 									"<div title='{{role.Name}}' class='role' ng-if='group.Editable==false'>{{role.Name}}</div>" +
-									"<span ng-if='group.Editable!=false' class='delete-role-row' ng-click=\"deleting(role)\"></span>" +
+									"<span ng-if='group.Editable!=false' class='delete-role-row' ng-click=\"deleting(role)\" tabindex='-1'></span>" +
 								"</li>" +
 							"</ul>" +
-							"<div ng-if='group.Roles.length==0' class='gray no-roles-placeholder'>No roles</div>" +
+							"<div ng-if='group.Roles.length==0' class='gray no-roles-placeholder'>" +
+								"No roles. <span ng-if='group.Editable!=false'>Use the <span class='glyphicon glyphicon-plus-sign'></span> button to add some.</span>" +
+							"</div>" +
 						"</div>" +
 				  "</div>"
 	};
@@ -217,13 +361,17 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 
 	//SELECT AUTOCOMPLETE
 	//ULTRA HACK
-	$rootScope.$on("BeginCallbackSignalR", function (event, source) {
+	$rootScope.$on("BeginCallbackSignalR", function (event, count) {
 		$scope.suspendUpdate = true;
-		console.log("suspend update...");
+		console.log("suspend update (" + count + ")...");
 	});
-	$rootScope.$on("EndCallbackSignalR", function (event, source) {
-		$scope.suspendUpdate = false;
-		console.log("...resume update");
+	$rootScope.$on("EndCallbackSignalR", function (event, count) {
+		if (count <= 0) {
+			$scope.suspendUpdate = false;
+			console.log("...resume update");
+		} else {
+			console.log("...(" + count + ")...");
+		}
 		console.log("------------------");
 	});
 	//END ULTRA HACK
@@ -332,14 +480,27 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 	$scope.clearIfNull = function (item, searchText, update) {
 		if (!item) {
 			$scope.$eval(searchText + "=null");
-			if (update) {
-				var result = $scope.$eval(update);
-				if (result) {
-					$scope.functions.sendUpdate(result);
-				}
+		}
+
+		if (update) {
+			var result = $scope.$eval(update);
+			if (result) {
+				$scope.functions.sendUpdate(result);
 			}
 		}
 	}
+
+	$scope.functions.fixName = function (id, nameVar, item, self) {
+		if (!self.focused) {
+			if (item == null) {
+				$scope.$eval(nameVar + "=null");
+			} else {
+			}
+		} else {
+			$scope.functions.selectedItemChange_UpdateNode(id);
+		}
+	}
+
 	$scope.nodeEnter = function (nodeEnter) {
 		var rect = nodeEnter.append("rect").attr("class", "acc-rect")
             .attr("width", 0).attr("height", 0).attr("x", 0).attr("rx", 2).attr("ry", 2);
@@ -370,14 +531,15 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
             	return "pitem.Name";
             }).attr("md-items", function (d) { return "pitem in search.queryPositions(search.searchPos_" + d.Id + ")"; })
             .attr("md-search-text", function (d) { return "search.searchPos_" + d.Id; })
-            .attr("md-selected-item-change", function (d) {
+            /*.attr("md-selected-item-change", function (d) {
             	return "functions.selectedItemChange_UpdateNode(" + d.Id + ")";
-            })/*.attr("md-search-text-change", function (d) {
-            	return "functions.selectedTextChange_UpdateNode(" + d.Id + ")";
-            })*/.attr("md-no-cache", "true").attr("md-delay", "300");
+            })*/
+			.attr("md-selected-item-change", function (d) {
+				return "functions.fixName(" + d.Id + ",'search.searchPos_" + d.Id + "',model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,this)";
+			}).attr("md-no-cache", "true");//.attr("md-delay", "300");
 
 		//Is this even used? vvv
-		posAutoComplete.append("md-item-template").append("span").attr("md-highlight-text", function (d) { return "search.searchPos_" + d.Id; }).attr("md-highlight-flags", "^i").text("{{pitem.Name}}");
+		posAutoComplete.append("md-item-template").append("span").attr("md-highlight-text", function (d) { return "search.searchPos_" + d.Id; }).attr("md-highlight-flags", "^i").text("{{pitem.Name}}{{pitem.Create}}");
 		posAutoComplete.append("md-not-found").text(function (d) { return "No matches were found."; });
 
 
@@ -392,9 +554,12 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 			}).attr("md-items", function (d) { return "uitem in search.querySearch(search.searchText_" + d.Id + ")"; })
             .attr("md-search-text", function (d) { return "search.searchText_" + d.Id; })
 			.attr("placeholder", "Employee")
-            .attr("md-selected-item-change", function (d) {
-            	return "functions.selectedItemChange_UpdateUser(" + d.Id + ")";
-            });
+			.attr("md-selected-item-change", function (d) {
+				return "functions.fixName(" + d.Id + ",'search.searchText_" + d.Id + "',model.Lookup['AngularAccountabilityNode_" + d.Id + "'].User,this)";
+			})
+		/*.attr("md-selected-item-change", function (d) {
+			return "functions.selectedItemChange_UpdateUser(" + d.Id + ")";
+		})*/;
 		autoComplete.append("md-item-template")
             .append("span")
             .attr("md-highlight-text", function (d) { return "search.searchText_" + d.Id; })
@@ -458,22 +623,44 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 			}
 		};
 
+		function onClickKey(func) {
+			debugger;
+			if (d3.event && (d3.event.keyCode == 13 || d3.event.keyCode == 32))
+				return func;
+			return function (d) { };
+		}
+
+
 		var expandNode = function (d) {
 		};
 
 		nodeEnter.append("rect").classed("bounding-box", true);
-		var addNodeBtn = nodeEnter.append("g").classed("button add node-button", true).style("opacity", 0).on("click", clickAddNode);
+		var minimizeNodeBtn = nodeEnter.append("g").classed("button minimize minimize-icon node-button", true).style("opacity", 0).attr("tabindex", 0)
+			.on("click", expandNode)
+			.on("keydown", function (d) {
+				if (d3.event.keyCode == 13 || d3.event.keyCode == 32)
+					expandNode(d);
+			});
+		minimizeNodeBtn.append("circle").attr("r", 10).attr("title", "Collapse node").on("click", expandNode);//.on("keydown", onClickKey(expandNode));
+		minimizeNodeBtn.append("text").classed("glyphicon", true).attr("title", "Remove node").on("click", expandNode);//.on("keydown", onClickKey(expandNode));
+
+		var addNodeBtn = nodeEnter.append("g").classed("button add node-button", true).attr("tabindex", 0).style("opacity", 0)
+			.on("click", clickAddNode)
+			.on("keydown", function (d) {
+				if (d3.event.keyCode == 13 || d3.event.keyCode == 32)
+					clickAddNode(d);
+			});
 		addNodeBtn.append("circle").attr("r", 10).attr("title", "Add direct report").on("click", clickAddNode);
 		addNodeBtn.append("text").text("+").attr("title", "Add direct report").on("click", clickAddNode);
 
 
-		var deleteNodeBtn = nodeEnter.append("g").classed("button remove node-button", true).style("opacity", 0).on("click", clickRemoveNode);
+		var deleteNodeBtn = nodeEnter.append("g").classed("button remove node-button", true).attr("tabindex", 0).style("opacity", 0).on("click", clickRemoveNode).on("keyup", function (d) {
+			if (d3.event.keyCode == 13 || d3.event.keyCode == 32)
+				clickRemoveNode(d);
+		});
 		deleteNodeBtn.append("circle").attr("r", 10).attr("title", "Remove node").on("click", clickRemoveNode);
 		deleteNodeBtn.append("text").classed("glyphicon glyphicon-trash", true).attr("title", "Remove node").text("").on("click", clickRemoveNode);
 
-		var minimizeNodeBtn = nodeEnter.append("g").classed("button minimize minimize-icon node-button", true).style("opacity", 0).on("click", expandNode);
-		minimizeNodeBtn.append("circle").attr("r", 10).attr("title", "Collapse node").on("click", expandNode);
-		minimizeNodeBtn.append("text").classed("glyphicon", true).attr("title", "Remove node").on("click", expandNode);
 
 		nodeEnter.call(function (d3Selection) {
 			d3Selection.each(function (d, i) {
@@ -493,14 +680,18 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 
 		nodeUpdate.select(".button.add").attr("transform", function (d) {
 			return "translate(" + (d.width / 2 - 30) + "," + (d.height + 15.5) + ")";
-		}).classed("hidden", function (d) {
-			return d.Editable == false;
+		}).attr("tabindex", function (d) {
+			return d.Editable == false ? "-1" : "0";
+		}).style("display", function (d) {
+			return d.Editable == false ? "none" : null;
 		});
 
 		nodeUpdate.select(".button.remove").attr("transform", function (d) {
 			return "translate(" + (d.width / 2 + 30) + "," + (d.height + 15.5) + ")";
-		}).classed("hidden", function (d) {
-			return d.Editable == false;
+		}).attr("tabindex", function (d) {
+			return d.Editable == false ? "-1" : "0";
+		}).style("display", function (d) {
+			return d.Editable == false ? "none" : null;
 		});
 
 		nodeUpdate.select(".button.minimize").attr("transform", function (d) {
@@ -510,9 +701,10 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		nodeUpdate.select(".button.minimize")
 			.classed("minimize-icon", function (d) {
 				return (d.children && d.children.length) || (d._children && d._children.length);
-			})
-			.classed("hidden", function (d) {
-				return !((d.children && d.children.length) || (d._children && d._children.length));
+			}).attr("tabindex", function (d) {
+				return !((d.children && d.children.length) || (d._children && d._children.length)) ? "-1" : "0";
+			}).style("display", function (d) {
+				return !((d.children && d.children.length) || (d._children && d._children.length)) ? "none" : null;
 			})
 			.attr("title", function (d) {
 				if (d._children && d._children.length)

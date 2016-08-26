@@ -101,10 +101,11 @@ namespace RadialReview.Controllers {
             var apos = pos.Select(x => new AngularPosition(x)).ToList();
             
             if (create && !apos.Any(x => x.Name == q)) {
-        
-                apos.Add(new AngularPosition(-2) {
-                    Name = q + AccountabilityAccessor.CREATE_TEXT 
-                });
+				var p = new AngularPosition(-DateTime.UtcNow.ToJavascriptMilliseconds()) {
+					Name = q,
+					_ExtraProperties = new Dictionary<string, object> { { "Create", " (Create)" } }
+				};
+                apos.Add(p);
             }
 
 

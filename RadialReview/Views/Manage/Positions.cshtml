@@ -51,12 +51,12 @@
 					@*<th style="">Job Class</th>
 						<th style="width:1px" class="">Questions</th>*@
 					<th style="width:1px" class="">People</th>
-					<th style="width:1px" class="">Template</th>
+					<th style="width:10px" class=""></th>
 				</tr>
 			</thead>
 			@foreach (var p in Model.Positions.OrderBy(x => x.Name))
 			{
-				<tr>
+				<tr class="row_@p.Id">
 					<td>
 						@p.Name
 						@if (Model.CanEdit)
@@ -68,14 +68,16 @@
 						@p.NumPeople
 					</td>
 					<td class="alignCenter">
-						@if (p.TemplateId == null)
+						<span class="glyphicon glyphicon-trash @(p.NumPeople==0?"clickable":"gray")" onclick="deleteRow(@p.Id,@(p.NumPeople==0),'@p.Name')"></span>
+
+						@*@if (p.TemplateId == null)
 						{
 							<a href="@Url.Action("Create","UserTemplate",new {type="position",id=p.Id})">Create</a>
 						}
 						else
 						{
 							<a href="@Url.Action("Edit","UserTemplate",new {id=p.TemplateId})">Edit</a>
-						}
+						}*@
 					</td>
 					@*<td>@p.SimilarTo</td>
 						<td class="">
@@ -91,3 +93,29 @@
 		</table>
 	</div>
 </div>
+
+
+<script>
+	function deleteRow(id,canDelete,name) {
+		if (canDelete){
+			showModal({
+				title:"Are you sure you want to delete \""+name+"\".",
+				icon:"danger",
+				success:function(){
+					$.get('/Position/Delete/' + id, function (data) {
+						if (showJsonAlert(data)) {
+							$(".row_" + id).remove();
+						}
+					});
+				}
+			});
+			
+		}else{
+			showModal({
+				title:"Cannot delete position attached to users.",
+				icon:"warning"
+			});
+		}
+	}
+
+</script>

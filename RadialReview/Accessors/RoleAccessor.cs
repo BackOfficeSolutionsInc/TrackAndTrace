@@ -147,8 +147,16 @@ namespace RadialReview.Accessors {
 		public static List<RoleModel> GetRoles(ISession s, PermissionsUtility perms, long forUserId, DateRange range = null) {
 			perms.ViewUserOrganization(forUserId, false);
 			var allLinks = GetRoleLinksForUser_Unsafe(s, forUserId, range);
-			return s.QueryOver<RoleModel>().WhereRestrictionOn(x => x.Id).IsIn(allLinks.Select(x => x.RoleId).Distinct().ToArray())
+			var roles =  s.QueryOver<RoleModel>().WhereRestrictionOn(x => x.Id).IsIn(allLinks.Select(x => x.RoleId).Distinct().ToArray())
 				.Where(range.Filter<RoleModel>()).List().ToList();
+
+			roles.ForEach(x => {
+				var link = allLinks.FirstOrDefault(y => y.RoleId == x.Id);
+				if (link != null)
+					x._Attach = new Attach(link.AttachType, link.AttachId);
+			});
+			return roles;
+
 		}
 		#endregion
 
@@ -195,16 +203,29 @@ namespace RadialReview.Accessors {
 							if (r.Role != old.Role) {
 								var links = existingLinks.Where(x => x.RoleId == r.Id);
 								if (!links.Any(x => x.AttachType == AttachType.User && x.AttachId == userId)) {
-									var err = "Role does not belong to user: '" + r.Role + "'.";
-									err += links.FirstOrDefault().NotNull(x => "It belongs to a " + x.AttachType) ?? "";
-									throw new PermissionsException(err);
+									if (!perms.IsPermitted(x => x.EditRole(r.Id))) {
+										var err = "Role does not belong to user: '" + r.Role + "'.";
+										err += links.FirstOrDefault().NotNull(x => "It belongs to a " + x.AttachType) ?? "";
+										throw new PermissionsException(err);
+									}
 								}
 							}
 
 						}
 
 						var added = r.Id == 0;
-						s.SaveOrUpdate(r);
+						s.Merge(r);
+
+						if (added) {
+							var link = new RoleLink() {
+								AttachId = userId,
+								AttachType = AttachType.User,
+								OrganizationId = orgId,
+								RoleId = r.Id,
+								CreateTime = r.CreateTime
+							};
+							s.Save(link);
+						}
 
 						if (updateOutstanding && added) {
 							foreach (var o in outstanding) {
@@ -215,6 +236,7 @@ namespace RadialReview.Accessors {
 
 					//user.NumRoles = roles.Count(x => x.DeleteTime == null);
 					s.SaveOrUpdate(user);
+					s.Flush();
 					s.GetFresh<UserOrganizationModel>(user.Id).UpdateCache(s);
 
 
