@@ -151,7 +151,7 @@ namespace RadialReview.Utilities {
 					if (IsRadialAdmin(caller))
 						return this;
 					var userOrg = session.Get<UserOrganizationModel>(userOrganizationId);
-
+					
 					if (IsManagingOrganization(userOrg.Organization.Id))
 						return this;
 
@@ -275,12 +275,13 @@ namespace RadialReview.Utilities {
 			throw new PermissionsException();
 		}
 
-		[Obsolete("should never be caller.organization.id", false)]
-		private bool IsManagingOrganization(long organizationId, bool allowManagers = false) {
-			if (caller.Organization.Id == organizationId)
+		//[Obsolete("should never be caller.organization.id", false)]
+		private bool IsManagingOrganization(long orgId_DoNotUse_callerOrganizationId, bool allowManagers = false) {
+			if (caller.Organization.Id == orgId_DoNotUse_callerOrganizationId)
 				return caller.ManagingOrganization || (allowManagers && caller.ManagerAtOrganization && caller.Organization.ManagersCanEdit);
 			return false;
 		}
+
 		private bool IsManager(long organizationId) {
 			if (caller.Organization.Id == organizationId)
 				return caller.ManagingOrganization || caller.ManagerAtOrganization;
@@ -435,7 +436,7 @@ namespace RadialReview.Utilities {
 			return TryWithOverrides(x => {
 				try {
 					return ManagesUserOrganization(forUserId, true);
-				} catch (PermissionsException p) {
+				} catch (PermissionsException) {
 					var foundUser = session.Get<UserOrganizationModel>(forUserId);
 					if (foundUser.Id == caller.Id && ((foundUser.ManagerAtOrganization && foundUser.Organization.Settings.ManagersCanEditSelf) || foundUser.Organization.Settings.EmployeesCanEditSelf || foundUser.ManagingOrganization)) {
 						return this;
@@ -941,7 +942,7 @@ namespace RadialReview.Utilities {
 					try {
 						EditL10Recurrence(recur);
 						return this;
-					} catch (PermissionsException p) {
+					} catch (PermissionsException) {
 					}
 				}
 
@@ -1156,7 +1157,7 @@ namespace RadialReview.Utilities {
 				try {
 					ViewL10Recurrence(todo.ForRecurrenceId.Value);
 					return this;
-				} catch (PermissionsException e) {
+				} catch (PermissionsException) {
 				}
 			}
 			throw new PermissionsException();
@@ -1179,7 +1180,7 @@ namespace RadialReview.Utilities {
 
 			try {
 				return Or(links.Select(x => new Func<PermissionsUtility>(() => EditAttach(x.GetAttach()))).ToArray());
-			} catch (Exception e) {
+			} catch (Exception) {
 				throw new PermissionsException("Cannot edit role (" + roleId + ")");
 			}
 		}
@@ -1645,7 +1646,7 @@ namespace RadialReview.Utilities {
 			var node = session.Get<AccountabilityNode>(id);
 			try {
 				return EditHierarchy(node.AccountabilityChartId);
-			} catch (PermissionsException e) {
+			} catch (PermissionsException) {
 				if (node.UserId != null) {
 					return EditUserOrganization(node.UserId.Value);
 				}

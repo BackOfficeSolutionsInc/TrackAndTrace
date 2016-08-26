@@ -214,7 +214,7 @@ namespace RadialReview.Controllers
 						{
 							L10Accessor.AddAttendee(GetUser(), recurrence, user.Id);
 						}
-						catch (PermissionsException e)
+						catch (PermissionsException)
 						{
 							throw new PermissionsException("Could not add " + vm.FirstName + " " + vm.LastName + " to meeting.");
 						}
@@ -223,7 +223,7 @@ namespace RadialReview.Controllers
 					{
 						errors.Add(e.Message);
 					}
-					catch (Exception e)
+					catch (Exception)
 					{
 						errors.Add("An error has occurred.");
 					}

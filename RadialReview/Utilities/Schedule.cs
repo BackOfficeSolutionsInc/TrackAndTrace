@@ -36,16 +36,16 @@ namespace RadialReview.Utilities
 		public static RecurrenceModel RepeatEveryDay(long organizationId,string name,string description, TimeSpan startTime, TimeSpan endTime, DateTime startDate, DateTime? endtDate = null)
 		{
 			throw new Exception("Incomplete");
-			return new RecurrenceModel(){
-				OrganizationId = organizationId,
-				StartDate = startDate,
-				EndDate = endtDate ?? DateTime.MaxValue,
-				StartTime = startTime,
-				EndTime = endTime,
-				Name = name,
-				Description = description,
+			//return new RecurrenceModel(){
+			//	OrganizationId = organizationId,
+			//	StartDate = startDate,
+			//	EndDate = endtDate ?? DateTime.MaxValue,
+			//	StartTime = startTime,
+			//	EndTime = endTime,
+			//	Name = name,
+			//	Description = description,
 				
-			};
+			//};
 
 
 		}

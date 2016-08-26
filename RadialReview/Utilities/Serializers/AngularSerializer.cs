@@ -37,7 +37,7 @@ namespace RadialReview.Utilities.Serializers {
 				return;
 			}
 			throw new Exception();
-			serializer.Serialize(writer, AngularSerializer.Serialize((IAngular)value));
+			//serializer.Serialize(writer, AngularSerializer.Serialize((IAngular)value));
 		}
 
 		public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) {

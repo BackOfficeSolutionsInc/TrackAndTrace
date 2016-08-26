@@ -158,7 +158,7 @@ namespace RadialReview.Models.Todo
                 var httpResponse2 = (HttpWebResponse)httpWebRequest2.GetResponse();
                 using (var streamReader = new StreamReader(httpResponse2.GetResponseStream())) {
                     var result = streamReader.ReadToEnd();
-                    var a = true;
+                    //var a = true;
                 }
             }
             return true;

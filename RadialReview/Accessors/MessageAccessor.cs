@@ -46,7 +46,6 @@ namespace RadialReview.Accessors
 				case WebHookEventType.Send:			break;
 				case WebHookEventType.Hard_bounce:
 					return (new ManageMembersMessage(t, st, "Email address for " + t.FirstName + " " + t.LastName + " (" + t.Email + ")  does not exist. It may be spelled incorrectly."));
-					break;
 				case WebHookEventType.Soft_bounce: break;
 				case WebHookEventType.Open: break;
 				case WebHookEventType.Click: break;

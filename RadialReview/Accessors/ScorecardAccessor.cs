@@ -80,7 +80,7 @@ namespace RadialReview.Accessors {
                     foreach (var r in results) {
                         try {
                             r.AccountableUser.GetName();
-                        } catch (Exception e) {
+                        } catch (Exception) {
 
                         }
                     }
@@ -105,7 +105,7 @@ namespace RadialReview.Accessors {
                         foreach (var r in results) {
                             try {
                                 r.AccountableUser.GetName();
-                            } catch (Exception e) {
+                            } catch (Exception) {
 
                             }
                         }
@@ -468,7 +468,7 @@ namespace RadialReview.Accessors {
                     maxDate = maxDate.StartOfWeek(DayOfWeek.Sunday);
 
 
-                    DateTime start, end;
+                    //DateTime start, end;
 
                     if (week > maxDate) {
                         var scoresCreated = 0;
@@ -736,8 +736,10 @@ namespace RadialReview.Accessors {
             //Create new
             if (measurable == null)
                 throw new PermissionsException("You must include a measurable to create.");
-            if (measurable.OrganizationId == null)
-                throw new PermissionsException("You must include an organization id.");
+#pragma warning disable CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
+			if (measurable.OrganizationId == null)
+				throw new PermissionsException("You must include an organization id.");
+#pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
             if (checkEditDetails) {
                 perm.EditUserDetails(measurable.AccountableUser.Id);
             }

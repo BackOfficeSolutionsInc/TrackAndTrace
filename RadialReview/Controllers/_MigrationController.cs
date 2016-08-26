@@ -31,6 +31,8 @@ using RadialReview.Models.Scorecard;
 using System.Web.Routing;
 using RadialReview.Utilities.RealTime;
 
+#pragma warning disable CS0219 // Variable is assigned but its value is never used
+#pragma warning disable CS0618 // Type or member is obsolete
 namespace RadialReview.Controllers {
 	public class MigrationController : BaseController {
 		#region old
@@ -66,47 +68,47 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Radial)]
 		public int M11_8_2014() {
 			throw new Exception("Old");
-			var count = 0;
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					foreach (var a in s.QueryOver<Askable>().List()) {
-						if (a.OnlyAsk == AboutType.NoRelationship) {
-							a.OnlyAsk = (AboutType)long.MaxValue;
-							s.Update(a);
-							count++;
-						}
-					}
+			//var count = 0;
+			//using (var s = HibernateSession.GetCurrentSession()) {
+			//	using (var tx = s.BeginTransaction()) {
+			//		foreach (var a in s.QueryOver<Askable>().List()) {
+			//			if (a.OnlyAsk == AboutType.NoRelationship) {
+			//				a.OnlyAsk = (AboutType)long.MaxValue;
+			//				s.Update(a);
+			//				count++;
+			//			}
+			//		}
 
-					foreach (var r in s.QueryOver<RoleModel>().List()) {
-						if (r.OrganizationId == 0) {
-							r.OrganizationId = s.Get<UserOrganizationModel>(r.ForUserId).Organization.Id;
-							s.Update(r);
-							count++;
-						}
-					}
+			//		foreach (var r in s.QueryOver<RoleModel>().List()) {
+			//			if (r.OrganizationId == 0) {
+			//				r.OrganizationId = s.Get<UserOrganizationModel>(r.ForUserId).Organization.Id;
+			//				s.Update(r);
+			//				count++;
+			//			}
+			//		}
 
 
-					/*foreach (var r in s.QueryOver<UserOrganizationModel>().List())
-                    {
-                        if (r.NumRocks == 0)
-                        {
-                            r.NumRocks = s.QueryOver<RockModel>().Where(x => x.ForUserId == r.Id && x.DeleteTime == null).List().Count;
-                            s.Update(r);
-                            count++;
-                        }
-                        if (r.NumRoles == 0)
-                        {
-                            r.NumRoles = s.QueryOver<RoleModel>().Where(x => x.ForUserId == r.Id && x.DeleteTime == null).List().Count;
-                            s.Update(r);
-                            count++;
-                        }
-                    }*/
+			//		/*foreach (var r in s.QueryOver<UserOrganizationModel>().List())
+			//                 {
+			//                     if (r.NumRocks == 0)
+			//                     {
+			//                         r.NumRocks = s.QueryOver<RockModel>().Where(x => x.ForUserId == r.Id && x.DeleteTime == null).List().Count;
+			//                         s.Update(r);
+			//                         count++;
+			//                     }
+			//                     if (r.NumRoles == 0)
+			//                     {
+			//                         r.NumRoles = s.QueryOver<RoleModel>().Where(x => x.ForUserId == r.Id && x.DeleteTime == null).List().Count;
+			//                         s.Update(r);
+			//                         count++;
+			//                     }
+			//                 }*/
 
-					tx.Commit();
-					s.Flush();
-				}
-			}
-			return count;
+			//		tx.Commit();
+			//		s.Flush();
+			//	}
+			//}
+			//return count;
 		}
 
 		[Access(AccessLevel.Radial)]
@@ -730,7 +732,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Radial)]
 		public string M11_05_2015() {
-			var f = 0;
+			//var f = 0;
 			/*  using (var s = HibernateSession.GetCurrentSession())
               {
                   using (var tx = s.BeginTransaction())
@@ -757,7 +759,7 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Radial)]
-		public async Task<string> M12_07_2015_2() {
+		public string M12_07_2015_2() {
 			var f = 0;
 			var g = 0;
 			var h = 0;
@@ -765,7 +767,7 @@ namespace RadialReview.Controllers {
 			var g2 = 0;
 			var h2 = 0;
 
-			var i = 0;
+			//var i = 0;
 
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -828,7 +830,7 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Radial)]
-		public async Task<string> M12_07_2015() {
+		public string M12_07_2015() {
 			var f = 0;
 			var g = 0;
 			var h = 0;
@@ -1047,7 +1049,9 @@ namespace RadialReview.Controllers {
 				using (var tx = s.BeginTransaction()) {
 					//Fix TempUser userIds
 
+#pragma warning disable CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
 					var recur = s.QueryOver<L10Recurrence>().Where(x => x.TeamType == L10TeamType.Invalid || x.TeamType == null).List().ToList();
+#pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
 
 					foreach (var r in recur) {
 						r.TeamType = r.IsLeadershipTeam ? L10TeamType.LeadershipTeam : L10TeamType.Other;
@@ -1510,7 +1514,7 @@ namespace RadialReview.Controllers {
 			//var countOrgs = 0;
 			//var countNodesDeleted= 0;
 
-			Server.ScriptTimeout = 30*60;
+			Server.ScriptTimeout = 30 * 60;
 			Session.Timeout = 30;
 
 			if (orgId == null) {
@@ -1570,7 +1574,7 @@ namespace RadialReview.Controllers {
 			//var skipUsers = 0;
 			OrganizationModel nextOrg = null;
 			var skipped = false;
-			var laterNodePosition = new List<Tuple<long,long?>>();
+			var laterNodePosition = new List<Tuple<long, long?>>();
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					using (var rt = RealTimeUtility.Create(false)) {
@@ -1670,7 +1674,7 @@ namespace RadialReview.Controllers {
 							var perms = PermissionsUtility.Create(s, GetUser());
 							foreach (var np in laterNodePosition) {
 								if (np.Item2 != null) {
-									AccountabilityAccessor.UpdatePosition_Unsafe(s, rt, perms, np.Item1, np.Item2, now.Value,true);
+									AccountabilityAccessor.UpdatePosition_Unsafe(s, rt, perms, np.Item1, np.Item2, now.Value, true);
 								}
 							}
 							tx.Commit();
@@ -1682,9 +1686,9 @@ namespace RadialReview.Controllers {
 
 
 			if (nextOrg != null) {
-				return Content("<script>location.href='/migration/M08_14_2016?orgId=" + nextOrg.Id + "&countUsers=" + countUsers + "&skipUsers=" + skipUsers + "&countNodesDeleted=" + countNodesDeleted + "&countOrgs=" + countOrgs + "&now=" + Url.Encode(now.ToString()) + "&exceptionCount=" + exceptionCount + "&deletedCharts=" + deletedCharts + "&roleLinksDeleted="+ roleLinksDeleted+"';</script>");
+				return Content("<script>location.href='/migration/M08_14_2016?orgId=" + nextOrg.Id + "&countUsers=" + countUsers + "&skipUsers=" + skipUsers + "&countNodesDeleted=" + countNodesDeleted + "&countOrgs=" + countOrgs + "&now=" + Url.Encode(now.ToString()) + "&exceptionCount=" + exceptionCount + "&deletedCharts=" + deletedCharts + "&roleLinksDeleted=" + roleLinksDeleted + "';</script>");
 			}
-			return Content("orgs:" + countOrgs + " - nodesDeleted:" + countNodesDeleted + " roleLinksDeleted:"+ roleLinksDeleted + " nodesCreated: " + countUsers + "/" + (countUsers + skipUsers) + " errors: " + exceptionCount + " deletedCharts:" + deletedCharts);
+			return Content("orgs:" + countOrgs + " - nodesDeleted:" + countNodesDeleted + " roleLinksDeleted:" + roleLinksDeleted + " nodesCreated: " + countUsers + "/" + (countUsers + skipUsers) + " errors: " + exceptionCount + " deletedCharts:" + deletedCharts);
 		}
 		[Access(Controllers.AccessLevel.Radial)]
 		[AsyncTimeout(20 * 60 * 1000)]
@@ -1745,7 +1749,7 @@ namespace RadialReview.Controllers {
 					foreach (var r in roles.Where(x => !roleLink.Any(y => y.RoleId == x.Id))) {
 						if (r.FromTemplateItemId == null) {
 							if (r.ForUserId == 1745) {
-								int a = 0;
+								//int a = 0;
 								c += 1;
 							}
 							if (r.ForUserId != null) {
@@ -1780,10 +1784,12 @@ namespace RadialReview.Controllers {
 					}
 					tx.Commit();
 					s.Flush();
-					builder += " roleLink_template:" + templates + " roleLink_user:" + user + " c:"+c+" d:"+d;
+					builder += " roleLink_template:" + templates + " roleLink_user:" + user + " c:" + c + " d:" + d;
 					return Content(builder);
 				}
 			}
 		}
 	}
 }
+#pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore CS0219 // Variable is assigned but its value is never used

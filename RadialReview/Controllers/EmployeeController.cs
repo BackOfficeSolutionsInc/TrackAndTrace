@@ -20,7 +20,9 @@ namespace RadialReview.Controllers
 			{
 				using (var tx = s.BeginTransaction()){
 					var perms = PermissionsUtility.Create(s, user).ViewOrganization(user.Organization.Id);
+#pragma warning disable CS0618 // Type or member is obsolete
 					return View(OrganizationAccessor.GetAllUserOrganizations(s,perms,user.Organization.Id));
+#pragma warning restore CS0618 // Type or member is obsolete
 				}
 			}
 		}

@@ -30,18 +30,22 @@ namespace TractionTools.Tests.Accessors {
             Assert.AreEqual(PaymentPlanType.Enterprise_Monthly_March2016, PaymentAccessor.GetPlanType("ENTERPRISE"));
             Assert.AreEqual(PaymentPlanType.Professional_Monthly_March2016, PaymentAccessor.GetPlanType("professional"));
 
-            var plan = PaymentAccessor.GeneratePlan(PaymentPlanType.SelfImplementer_Monthly_March2016);
+#pragma warning disable CS0618 // Type or member is obsolete
+			var plan = PaymentAccessor.GeneratePlan(PaymentPlanType.SelfImplementer_Monthly_March2016);
+#pragma warning restore CS0618 // Type or member is obsolete
 
-            Assert.AreEqual(0, plan.Id);
+			Assert.AreEqual(0, plan.Id);
             Assert.AreEqual(0, plan.OrgId);
             Assert.AreEqual(199, plan.BaselinePrice);
             Assert.AreEqual(10, plan.FirstN_Users_Free);
             Assert.AreEqual(12, plan.L10PricePerPerson);
             Assert.AreEqual(5, plan.ReviewPricePerPerson);
 
-            plan = PaymentAccessor.GeneratePlan(PaymentPlanType.Enterprise_Monthly_March2016);
+#pragma warning disable CS0618 // Type or member is obsolete
+			plan = PaymentAccessor.GeneratePlan(PaymentPlanType.Enterprise_Monthly_March2016);
+#pragma warning restore CS0618 // Type or member is obsolete
 
-            Assert.AreEqual(0, plan.Id);
+			Assert.AreEqual(0, plan.Id);
             Assert.AreEqual(0, plan.OrgId);
             Assert.AreEqual(999, plan.BaselinePrice);
             Assert.AreEqual(100, plan.FirstN_Users_Free);
@@ -49,9 +53,11 @@ namespace TractionTools.Tests.Accessors {
             Assert.AreEqual(3, plan.ReviewPricePerPerson);
 
 
-            plan = PaymentAccessor.GeneratePlan(PaymentPlanType.Professional_Monthly_March2016);
+#pragma warning disable CS0618 // Type or member is obsolete
+			plan = PaymentAccessor.GeneratePlan(PaymentPlanType.Professional_Monthly_March2016);
+#pragma warning restore CS0618 // Type or member is obsolete
 
-            Assert.AreEqual(0, plan.Id);
+			Assert.AreEqual(0, plan.Id);
             Assert.AreEqual(0, plan.OrgId);
             Assert.AreEqual(149, plan.BaselinePrice);
             Assert.AreEqual(10, plan.FirstN_Users_Free);
@@ -144,11 +150,11 @@ namespace TractionTools.Tests.Accessors {
             var types = Enum.GetNames(typeof(PaymentPlanType));
             Assert.AreEqual(5, types.Length, "Make sure to update PaymentAccessor switch-cases and add test cases below");
             MockApplication();
-            OrganizationModel org = null;
+           // OrganizationModel org = null;
             UserModel userModel = null;
-            UserOrganizationModel manager = null;
-            L10Recurrence recur = null;
-            PeriodModel period = null;
+           // UserOrganizationModel manager = null;
+           // L10Recurrence recur = null;
+           // PeriodModel period = null;
             DbCommit(s => {
                 userModel = new UserModel();
                 s.Save(userModel);

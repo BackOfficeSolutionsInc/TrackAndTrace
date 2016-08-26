@@ -65,7 +65,7 @@ namespace RadialReview.Accessors {
 
             foreach (var d in data) {
                 var size = 8;
-                var colorValue = 1000;
+              //  var colorValue = 1000;
                 scatterSeries.Points.Add(new ScatterPoint((double)d.cx, (double)d.cy, size));
             }
             plot.Series.Add(scatterSeries);

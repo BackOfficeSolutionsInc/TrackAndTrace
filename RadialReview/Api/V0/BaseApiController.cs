@@ -16,7 +16,7 @@ namespace RadialReview.Api.V0
 	{
 	
 		private UserOrganizationModel _CurrentUser = null;
-		private string _CurrentUserOrganizationId = null;
+		//private string _CurrentUserOrganizationId = null;
 
 		protected static PermissionsAccessor _PermissionsAccessor = new PermissionsAccessor();
 

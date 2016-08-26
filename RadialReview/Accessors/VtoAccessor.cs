@@ -100,7 +100,7 @@ namespace RadialReview.Accessors {
 							//if (isLeadership) {
 							//   ang.QuarterlyRocks.Rocks = ang.QuarterlyRocks.Rocks.Where(x => x.Rock.CompanyRock ?? true).ToList();
 							//}
-						} catch (Exception e) {
+						} catch (Exception) {
 
 						}
 					}
@@ -393,6 +393,7 @@ namespace RadialReview.Accessors {
 
 					tx.Commit();
 					s.Flush();
+#pragma warning disable CS0618 // Type or member is obsolete
 					group.update(new AngularUpdate(){new AngularQuarterlyRocks(id) {
 						FutureDate = futuredate,
 						Revenue = revenue,
@@ -400,6 +401,7 @@ namespace RadialReview.Accessors {
 						Measurables = measurables,
 						RocksTitle=rocksTitle,
 					}});
+#pragma warning restore CS0618 // Type or member is obsolete
 				}
 			}
 		}
@@ -427,6 +429,7 @@ namespace RadialReview.Accessors {
 
 					tx.Commit();
 					s.Flush();
+#pragma warning disable CS0618 // Type or member is obsolete
 					group.update(new AngularUpdate(){new AngularOneYearPlan(id) {
 						FutureDate = futuredate,
 						Revenue = revenue,
@@ -434,6 +437,7 @@ namespace RadialReview.Accessors {
 						Measurables = measurables,
 						OneYearPlanTitle=oneYearPlanTitle
 					}});
+#pragma warning restore CS0618 // Type or member is obsolete
 				}
 			}
 		}
@@ -459,12 +463,14 @@ namespace RadialReview.Accessors {
 
 					tx.Commit();
 					s.Flush();
+#pragma warning disable CS0618 // Type or member is obsolete
 					group.update(new AngularUpdate(){new AngularStrategy(strategyId) {
 						ProvenProcess = provenProcess,
 						Guarantee = guarantee,
 						TargetMarket = targetMarket,
 						MarketingStrategyTitle=marketingStrategyTitle,
 					}});
+#pragma warning restore CS0618 // Type or member is obsolete
 				}
 			}
 		}
@@ -670,6 +676,7 @@ namespace RadialReview.Accessors {
 			var items = s.QueryOver<VtoItem_String>().Where(x => x.Vto.Id == vtoId && x.Type == type && x.DeleteTime == null).List().ToList();
 			var count = items.Count();
 
+#pragma warning disable CS0618 // Type or member is obsolete
 			var str = new VtoItem_String() {
 				Type = type,
 				Ordering = count,
@@ -677,6 +684,7 @@ namespace RadialReview.Accessors {
 				ForModel = forModel,
 				Data = value
 			};
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			s.Save(str);
 
@@ -704,20 +712,20 @@ namespace RadialReview.Accessors {
 		}
 
 
+#pragma warning disable CS0618 // Type or member is obsolete
 		public static void AddUniques(UserOrganizationModel caller, long vtoId) {
 			AddString(caller, vtoId, VtoItemType.List_Uniques, (vto, items) => new AngularStrategy(vto.MarketingStrategy.Id) { Uniques = items });
 		}
-
 		public static void AddThreeYear(UserOrganizationModel caller, long vtoId) {
 			AddString(caller, vtoId, VtoItemType.List_LookLike, (vto, list) => new AngularThreeYearPicture(vto.ThreeYearPicture.Id) { LooksLike = list });
 		}
-
 		public static void AddYearGoal(UserOrganizationModel caller, long vtoId) {
 			AddString(caller, vtoId, VtoItemType.List_YearGoals, (vto, list) => new AngularOneYearPlan(vto.OneYearPlan.Id) { GoalsForYear = list });
 		}
 		public static void AddIssue(UserOrganizationModel caller, long vtoId) {
 			AddString(caller, vtoId, VtoItemType.List_Issues, (vto, list) => new AngularVTO(vto.Id) { Issues = list }, true);
 		}
+#pragma warning restore CS0618 // Type or member is obsolete
 
 		public static void AddCompanyValue(UserOrganizationModel caller, long vtoId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -783,7 +791,9 @@ namespace RadialReview.Accessors {
 
 
 			var angularItems = AngularList.Create(AngularListType.Add, AngularVtoRock.Create(vtoRock).AsList());
+#pragma warning disable CS0618 // Type or member is obsolete
 			var update = new AngularUpdate() { new AngularQuarterlyRocks(vto.QuarterlyRocks.Id) { Rocks = angularItems } };
+#pragma warning restore CS0618 // Type or member is obsolete
 			UpdateVTO(s, vtoId, null, x => x.update(update));
 
 			/*if (vto.L10Recurrence.HasValue)
@@ -1173,7 +1183,9 @@ namespace RadialReview.Accessors {
 					}
 					OrganizationAccessor.EditCompanyValues(s, perms, organizationId, existing);
 
+#pragma warning disable CS0219 // Variable is assigned but its value is never used
 					var currencyStyle = NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign | NumberStyles.AllowLeadingWhite | NumberStyles.AllowParentheses | NumberStyles.AllowThousands | NumberStyles.AllowTrailingWhite | NumberStyles.Currency;
+#pragma warning restore CS0219 // Variable is assigned but its value is never used
 					var currentCulture = Thread.CurrentThread.CurrentCulture;
 					//Three Year Picture
 					vto.ThreeYearPicture.FutureDate = threeYearFuture.TryParseDateTime();

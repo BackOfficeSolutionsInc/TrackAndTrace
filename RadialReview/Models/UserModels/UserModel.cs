@@ -30,8 +30,10 @@ namespace RadialReview.Models
         //public virtual String IdMapping { get; set; }
         public virtual string FirstName { get; set; }
         public virtual string LastName { get; set; }
-        public virtual string Email { get { return UserName; } }
-        public virtual bool Hints { get; set; }
+#pragma warning disable CS0114 // Member hides inherited member; missing override keyword
+		public virtual string Email { get { return UserName; } }
+#pragma warning restore CS0114 // Member hides inherited member; missing override keyword
+		public virtual bool Hints { get; set; }
         public virtual bool ConsoleLog { get; set; }
         public virtual long CurrentRole { get; set; }
         public virtual string ImageGuid { get; set; }
@@ -54,7 +56,8 @@ namespace RadialReview.Models
             return ((FirstName ?? "").Trim() + " " + (LastName ?? "").Trim()).Trim();
         }
 
-        public virtual IList<UserRoleModel> Roles { get; set; }
+#pragma warning disable CS0114 // Member hides inherited member; missing override keyword
+		public virtual IList<UserRoleModel> Roles { get; set; }
 
 		public virtual async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<UserModel> manager, string authenticationType)
 		{
@@ -64,6 +67,7 @@ namespace RadialReview.Models
 			// Add custom user claims here
 			return userIdentity;
 		}
+#pragma warning restore CS0114 // Member hides inherited member; missing override keyword
 
 
         public UserModel()

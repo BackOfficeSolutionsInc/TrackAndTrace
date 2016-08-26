@@ -21,7 +21,7 @@ namespace RadialReview.Models.Angular.Base
 			//Removed = false;
 		}
 
-		[Obsolete("Use BaseAngular(id) instead.")]
+		//[Obsolete("Use BaseAngular(id) instead.")]
 		public BaseAngular()
 		{
 

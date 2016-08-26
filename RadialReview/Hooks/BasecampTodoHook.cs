@@ -11,7 +11,9 @@ using System.Web;
 
 namespace RadialReview.Hooks {
     public class BasecampTodoHook : ITodoHook {
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task CreateTodo(ISession s, TodoModel todo)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             //if (todo.ForRecurrenceId!=null){
             //    var recurrenceType = ForModel.GetModelType<L10Recurrence>();
@@ -29,12 +31,16 @@ namespace RadialReview.Hooks {
         }
 
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task UpdateMessage(ISession s, TodoModel todo)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             throw new NotImplementedException();
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task UpdateCompletion(ISession s, TodoModel todo)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             throw new NotImplementedException();
         }

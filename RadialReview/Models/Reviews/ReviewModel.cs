@@ -133,15 +133,15 @@ namespace RadialReview.Models
 			}*/
 
 
-			var requiredComplete1 = QuestionCompletion.NumRequiredComplete;//Answers.Count(x => x.Required && x.Complete);
-			var optionalComplete1 = QuestionCompletion.NumOptionalComplete;//Answers.Count(x => x.Complete && !x.Required);
-			var required1 = QuestionCompletion.NumRequired;//Answers.Count(x => x.Required);
-			var optional1 = QuestionCompletion.NumOptional;//Answers.Count(x => !x.Required);
+			////var requiredComplete1 = QuestionCompletion.NumRequiredComplete;//Answers.Count(x => x.Required && x.Complete);
+			////var optionalComplete1 = QuestionCompletion.NumOptionalComplete;//Answers.Count(x => x.Complete && !x.Required);
+			////var required1 = QuestionCompletion.NumRequired;//Answers.Count(x => x.Required);
+			////var optional1 = QuestionCompletion.NumOptional;//Answers.Count(x => !x.Required);
 
-			return new CompletionModel(requiredComplete1, required1, optionalComplete1, optional1, "")
-			{
-				ForceInactive = DateTime.UtcNow > DueDate
-			};
+			////return new CompletionModel(requiredComplete1, required1, optionalComplete1, optional1, "")
+			////{
+			////	ForceInactive = DateTime.UtcNow > DueDate
+			////};
 		}
 
 

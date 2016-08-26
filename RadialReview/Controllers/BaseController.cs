@@ -143,7 +143,7 @@ namespace RadialReview.Controllers
 		}
 		#endregion
 		#region GetUser
-		private long? _CurrentUserOrganizationId = null;
+		//private long? _CurrentUserOrganizationId = null;
 
         private UserOrganizationModel MockUser = null;
 
@@ -259,9 +259,9 @@ namespace RadialReview.Controllers
                     if (orgIdParam != null)
                         userOrganizationId = long.Parse(orgIdParam);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    var o = false;
+                    //var o = false;
                 }
 			}
 			var cache = new Cache();
@@ -699,13 +699,15 @@ namespace RadialReview.Controllers
 						if (IsLoggedIn()){
 							var userOrgsCount = GetUserOrganizationCounts(s, Request.Url.PathAndQuery);
 							UserOrganizationModel oneUser = null;
-							var hints = true;
+							//var hints = true;
 							try{
 								oneUser = GetUser(s);
                                 if (oneUser == null)
                                     throw new NoUserOrganizationException();
 
+#pragma warning disable CS0618 // Type or member is obsolete
 								var lu = s.Get<UserLookup>(oneUser.Cache.Id);
+#pragma warning restore CS0618 // Type or member is obsolete
 								if (!GetUserModel(s).IsRadialAdmin){
 									lu.LastLogin = DateTime.UtcNow;
 									s.Update(lu);
@@ -781,7 +783,7 @@ namespace RadialReview.Controllers
 				//DataCollection.CommentMarkProfile(2, "End");
 				base.OnActionExecuting(filterContext);
 			}
-            catch (LoginException e)
+            catch (LoginException)
             {
                 var f = filterContext.HttpContext.Response.Filter;
                 filterContext.HttpContext.Response.Filter = null;

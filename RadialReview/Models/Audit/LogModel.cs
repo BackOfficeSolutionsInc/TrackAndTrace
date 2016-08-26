@@ -32,6 +32,7 @@ namespace RadialReview.Models.Audit
 
 		public static LogModel Create(UserOrganizationModel creator, LogType logtype, ILongIdentifiable forModel, String message = null, DateTime? now = null)
 		{
+#pragma warning disable CS0618 // Type or member is obsolete
 			return new LogModel(){
 				About = ForModel.Create(forModel),
 				Creator = ForModel.Create(creator),
@@ -40,6 +41,7 @@ namespace RadialReview.Models.Audit
 				Organization = creator.Organization,
 				CreateTime = now ?? DateTime.UtcNow,
 			};
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		public class LogModelMap : ClassMap<LogModel>

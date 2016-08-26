@@ -8,7 +8,6 @@ namespace RadialReview.Models.Angular.CompanyValue
 {
 	public class AngularCompanyValue : Base.BaseAngular
 	{ 
-			[Obsolete("User Static constructor", false)]
 		public AngularCompanyValue(long id) : base(id){
 		}
 		public AngularCompanyValue(){
@@ -20,6 +19,7 @@ namespace RadialReview.Models.Angular.CompanyValue
 
 		public static List<AngularCompanyValue> Create(IEnumerable<CompanyValueModel> list)
 		{
+			new AngularCompanyValue();
 			return list.Select(Create).ToList();
 		}
 

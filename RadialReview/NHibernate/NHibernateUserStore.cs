@@ -25,25 +25,23 @@ namespace RadialReview.NHibernate
     //IUserPasswordStore<TUser>, IUserSecurityStampStore<TUser>, IUserStore<TUser>, IDisposable where TUser
     //: global::Microsoft.AspNet.Identity.EntityFramework.IdentityUser
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
     public class NHibernateUserStore : IUserLoginStore<UserModel>, IUserClaimStore<UserModel>,
         IUserRoleStore<UserModel>, IUserPasswordStore<UserModel>, IUserSecurityStampStore<UserModel>,
         IUserStore<UserModel>, IDisposable
     {
-        public async Task CreateAsync(UserModel user)
-        {
-            using (var db = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = db.BeginTransaction())
-                {
-                    db.Save(user);
-                    tx.Commit();
-                    db.Flush();
-                }
-            }
-        }
+		public async Task CreateAsync(UserModel user) {
+			using (var db = HibernateSession.GetCurrentSession()) {
+				using (var tx = db.BeginTransaction()) {
+					db.Save(user);
+					tx.Commit();
+					db.Flush();
+				}
+			}
+		}
 
-        public async Task DeleteAsync(UserModel user)
+		public async Task DeleteAsync(UserModel user)
         {
             using (var db = HibernateSession.GetCurrentSession())
             {
@@ -240,12 +238,11 @@ namespace RadialReview.NHibernate
 
         }
 
-        public async Task<bool> IsInRoleAsync(UserModel user, string role)
-        {
-            return user.Roles.NotNull(y=>y.Any(x => x.Role == role && x.Deleted==false));
-        }
+		public async Task<bool> IsInRoleAsync(UserModel user, string role) {
+			return user.Roles.NotNull(y => y.Any(x => x.Role == role && x.Deleted == false));
+		}
 
-        public async Task RemoveFromRoleAsync(UserModel user, string role)
+		public async Task RemoveFromRoleAsync(UserModel user, string role)
         {
             using(var db=HibernateSession.GetCurrentSession())
             {
@@ -318,5 +315,7 @@ namespace RadialReview.NHibernate
                 }
             }*/
         }
-    }
+
+	}
 }
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously

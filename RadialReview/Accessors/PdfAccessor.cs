@@ -185,16 +185,16 @@ namespace RadialReview.Accessors {
             section.AddImage(img);
 
             return doc;
-            var chartImg = XPdfForm.FromStream(new MemoryStream(stream.ToArray()));
-            XRect LetterRect = new XRect(0, 0, LetterWidth, LetterHeight);
+            //var chartImg = XPdfForm.FromStream(new MemoryStream(stream.ToArray()));
+            //XRect LetterRect = new XRect(0, 0, LetterWidth, LetterHeight);
 
-            var chartRect = new XRect(0, 0, LetterWidth / 2 * 0.9, LetterHeight / 2 * 0.9);
-            chartRect.X = LetterWidth * 0.05 / 2;
-            chartRect.Y = LetterHeight * 0.05 / 2;
+            //var chartRect = new XRect(0, 0, LetterWidth / 2 * 0.9, LetterHeight / 2 * 0.9);
+            //chartRect.X = LetterWidth * 0.05 / 2;
+            //chartRect.Y = LetterHeight * 0.05 / 2;
 
-            XGraphicsContainer container = gfx.BeginContainer(chartRect, LetterRect, XGraphicsUnit.Point);
-                gfx.DrawImage(chartImg, new XRect(0, 0, chartImg.PointWidth, chartImg.PointHeight));
-            gfx.EndContainer(container);
+            //XGraphicsContainer container = gfx.BeginContainer(chartRect, LetterRect, XGraphicsUnit.Point);
+            //    gfx.DrawImage(chartImg, new XRect(0, 0, chartImg.PointWidth, chartImg.PointHeight));
+            //gfx.EndContainer(container);
             ///////////////////////////////////////////
             #region EOSCLIENT
             //var Model = review;
@@ -1138,7 +1138,7 @@ namespace RadialReview.Accessors {
                 XSize size;
                 try {
                     size = ctx.MeasureString(txt.Content, new XFont(fontName, fontSize.Inch * 6.0225));
-                } catch (Exception e) {
+                } catch (Exception) {
                     size = new XSize(1, 1);
                 }
                 s.Width = Math.Max(s.Width, size.Width);

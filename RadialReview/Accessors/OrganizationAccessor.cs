@@ -60,7 +60,9 @@ namespace RadialReview.Accessors {
 					organization.Settings.EnableL10 = enableL10;
 					organization.Settings.EnableReview = enableReview;
 					s.Save(organization);
+#pragma warning disable CS0618 // Type or member is obsolete
 					var paymentPlan = PaymentAccessor.GeneratePlan(planType, now);
+#pragma warning restore CS0618 // Type or member is obsolete
 					PaymentAccessor.AttachPlan(s, organization, paymentPlan);
 					organization.PaymentPlan = paymentPlan;
 					organization.Organization = organization;
@@ -237,7 +239,9 @@ namespace RadialReview.Accessors {
 		public static IEnumerable<AngularUser> GetAngularUsers(UserOrganizationModel caller, long id) {
 			using (var db = HibernateSession.GetCurrentSession()) {
 				using (var tx = db.BeginTransaction()) {
+#pragma warning disable CS0618 // Type or member is obsolete
 					return GetAllUserOrganizations(db, PermissionsUtility.Create(db, caller), id).Select(x => AngularUser.CreateUser(x));
+#pragma warning restore CS0618 // Type or member is obsolete
 				}
 			}
 		}
@@ -570,7 +574,9 @@ namespace RadialReview.Accessors {
 
 					s.Update(org);
 
-					var all = OrganizationAccessor.GetAllUserOrganizations(s, perms, organizationId);
+#pragma warning disable CS0618 // Type or member is obsolete
+					var all = GetAllUserOrganizations(s, perms, organizationId);
+#pragma warning restore CS0618 // Type or member is obsolete
 					var cache = new Cache();
 					foreach (var u in all) {
 						cache.InvalidateForUser(u, CacheKeys.USERORGANIZATION);
@@ -790,9 +796,11 @@ namespace RadialReview.Accessors {
 			var vtoIds = s.QueryOver<VtoModel>().Where(x => x.Organization.Id == organizationId).Select(x => x.Id).List<long>();
 			foreach (var vtoId in vtoIds) {
 				var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId));
+#pragma warning disable CS0618 // Type or member is obsolete
 				group.update(new AngularVTO(vtoId) {
 					Values = AngularList.Create(AngularListType.ReplaceAll, AngularCompanyValue.Create(companyValues))
 				});
+#pragma warning restore CS0618 // Type or member is obsolete
 			}
 
 
@@ -855,7 +863,9 @@ namespace RadialReview.Accessors {
 					tx.Commit();
 					s.Flush();
 
-					var all = OrganizationAccessor.GetAllUserOrganizations(s, perms, caller.Organization.Id);
+#pragma warning disable CS0618 // Type or member is obsolete
+					var all = GetAllUserOrganizations(s, perms, caller.Organization.Id);
+#pragma warning restore CS0618 // Type or member is obsolete
 					var cache = new Cache();
 					foreach (var u in all) {
 						cache.InvalidateForUser(u, CacheKeys.USERORGANIZATION);

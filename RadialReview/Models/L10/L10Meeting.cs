@@ -109,12 +109,16 @@ namespace RadialReview.Models.L10
 				}
 			}
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 			public virtual async Task<string> GetTodoMessage()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 			{
 				return  "'" + ForRock.Rock + "'";
 			}
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 			public virtual async Task<string> GetTodoDetails()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 			{
 				var week = L10Meeting.CreateTime.StartOfWeek(DayOfWeek.Sunday).ToString("d");
 				var accountable = ForRock.AccountableUser.GetName();
@@ -122,7 +126,9 @@ namespace RadialReview.Models.L10
 				return footer;
 			}
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 			public virtual async Task<string> GetIssueMessage()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 			{
 				var name = "'" + ForRock.Rock + "'";
 				switch(Completion){
@@ -134,7 +140,9 @@ namespace RadialReview.Models.L10
 				}
 			}
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 			public virtual async Task<string> GetIssueDetails()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 			{
 				var week = L10Meeting.CreateTime.StartOfWeek(DayOfWeek.Sunday).ToString("d");
 				var accountable = ForRock.AccountableUser.GetName();

@@ -30,7 +30,7 @@ namespace RadialReview.Controllers {
 
         protected void ProcessDeadTile(Exception e)
         {
-            int a = 0;
+          //  int a = 0;
         }
 
 

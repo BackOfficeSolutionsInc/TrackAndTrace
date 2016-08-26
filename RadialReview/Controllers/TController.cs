@@ -25,7 +25,7 @@ namespace RadialReview {
             id=id.Replace(".gif", "");
             // Construct absolute image path
             try {
-                long tryId = -1;
+               // long tryId = -1;
                 Response.AppendHeader("Cache-Control", "no-cache, max-age=0");
                 UserOrganizationModel m=null;
                 try{m = GetUser();}catch{}
@@ -34,8 +34,8 @@ namespace RadialReview {
 
                 TrackingAccessor.MarkSeen(id, m, Tracker.TrackerSource.Email);
 
-            } catch (Exception e) {
-                var o = "";
+            } catch (Exception) {
+               // var o = "";
             }
             return File(ImageController.TrackingGif, "image/gif");
         }

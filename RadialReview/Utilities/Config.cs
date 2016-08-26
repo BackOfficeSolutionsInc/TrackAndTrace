@@ -205,7 +205,7 @@ namespace RadialReview.Utilities {
 
             public static BCXAPI.Service GetService(OrganizationModel organization)
             {
-                string key, secret, app;
+				string key, secret;//, app;
                 var redirect = BaseUrl(organization) + "Callback/Basecamp";
                 switch (GetEnv()) {
                     case Env.local_mysql:

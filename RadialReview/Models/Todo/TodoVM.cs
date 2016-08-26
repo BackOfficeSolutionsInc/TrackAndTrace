@@ -7,8 +7,8 @@ using System.Web.Mvc;
 
 namespace RadialReview.Models.Todo {
     public class TodoVM {
-        private long? _forModelId;
-        private string _forModelType;
+        //private long? _forModelId;
+       // private string _forModelType;
 
         [Required]
         public long MeetingId { get; set; }

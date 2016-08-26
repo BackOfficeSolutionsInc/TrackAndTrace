@@ -45,7 +45,7 @@ namespace RadialReview
                         var result = AddFontResource(@"c:\\Windows\\Fonts\\" + f);
                         var error = Marshal.GetLastWin32Error();
                         installed = installed + (error == 0 ? 1 : 0);
-                    } catch (Exception e) {
+                    } catch (Exception) {
                     }
                 }
                 return installed;
@@ -53,8 +53,9 @@ namespace RadialReview
             return 0;
         }
 
-        protected async void Application_Start()
-        {
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+		protected async void Application_Start()
+		{
             ChromeExtensionComms.SendCommand("appStart");
 			//GlobalConfiguration.Configure(WebApiConfig.Register);
             AntiForgeryConfig.SuppressXFrameOptionsHeader = true;
@@ -88,9 +89,9 @@ namespace RadialReview
 
 
             //install fonts
-            InstallFonts();
-            
+            InstallFonts();            
         }
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
 
 
@@ -121,7 +122,7 @@ namespace RadialReview
 					}
 					Request.InputStream.Seek(0, SeekOrigin.Begin);
 				}
-				catch (Exception ee){
+				catch (Exception){
 					Response.AppendToLog("~Error~");
 				}
 			}

@@ -34,7 +34,9 @@ namespace RadialReview.Models.Issues
         public virtual int _Rank { get; set; }
 
 		//public virtual long _RecurrenceIssueId { get; set; }
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 		public virtual async Task<string> GetTodoMessage()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 		{
 			return "";
 		}

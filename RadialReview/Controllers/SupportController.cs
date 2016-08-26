@@ -28,7 +28,7 @@ namespace RadialReview.Controllers {
 				email = user.UserName;
 				model.Email = email;
 				name = user.FirstName + " " + user.LastName;
-			} catch (Exception e) {
+			} catch (Exception) {
 				user = null;
 				email = model.Email;
 			}

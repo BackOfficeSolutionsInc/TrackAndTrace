@@ -53,7 +53,11 @@ namespace TractionTools.UITests.Selenium {
             }
             return false;
         }
-    }
+
+		public override int GetHashCode() {
+			return Username.GetHashCode()+Password.GetHashCode();
+		}
+	}
 
     [Flags]
     public enum WithBrowsers {
@@ -345,7 +349,7 @@ namespace TractionTools.UITests.Selenium {
                     ctx.Navigate().GoToUrl(GetAbsoluteUrl(url));
                 }
 
-            } catch (NoSuchElementException e) {
+            } catch (NoSuchElementException) {
                 throw new AssertFailedException("Could not login. (" + ctx.GetType().Name + ")");
             }
             test(ctx);
@@ -414,7 +418,7 @@ namespace TractionTools.UITests.Selenium {
                         proc.Kill();
                         proc.WaitForExit();
                     }
-                } catch (ArgumentException e) {
+                } catch (ArgumentException) {
                 }
             }
             lock (lck) {

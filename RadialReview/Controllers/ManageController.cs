@@ -66,7 +66,9 @@ namespace RadialReview.Controllers
 		public ActionResult Positions()
 		{
 			new Cache().Push(CacheKeys.MANAGE_PAGE, "Positions", LifeTime.Request/*Session*/);
+#pragma warning disable CS0618 // Type or member is obsolete
 			var orgPos = _OrganizationAccessor.GetOrganizationPositions(GetUser(), GetUser().Organization.Id).ToListAlive();
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			var positions = orgPos.Select(x =>
 				new OrgPosViewModel(x, _PositionAccessor.GetUsersWithPosition(GetUser(), x.Id).Count())

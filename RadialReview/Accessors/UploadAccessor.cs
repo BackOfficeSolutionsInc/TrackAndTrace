@@ -137,7 +137,7 @@ namespace RadialReview.Accessors {
                     try {
                         var upload = await UploadAccessor.UploadFile(caller, type, file, forModel);
                         path = upload.GetPath();
-                    } catch (Exception e) {
+                    } catch (Exception) {
                         useAws = false;
                         ms.Seek(0, SeekOrigin.Begin);
                         var read = ms.ReadToEnd();

@@ -10,6 +10,7 @@ using RadialReview.Exceptions;
 using RadialReview.Models.Json;
 using RadialReview.Models.Survey;
 using RadialReview.Utilities;
+using System.Threading.Tasks;
 
 namespace RadialReview.Controllers
 {
@@ -58,7 +59,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Any)]
 		public ActionResult Take(string id=null)
 		{
-			SurveyContainerModel container;
+			//SurveyContainerModel container;
 			if (id == null){
 				throw new PermissionsException("This id does not exist.");
 			}
@@ -98,7 +99,7 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Edit(SurveyContainerModel model)
+		public async Task<ActionResult> Edit(SurveyContainerModel model)
 		{
 			ValidateValues(model, x => x.Id, x => x.OrgId, x => x.CreateTime, x => x.DeleteTime, x => x.CreatorId);
 			if (ModelState.IsValid){
@@ -111,7 +112,7 @@ namespace RadialReview.Controllers
 						ModelState.AddModelError("Questions", "You must add at least one respondent or it must be embeddable.");
 
 					if (ModelState.IsValid)
-						SurveyAccessor.IssueSurvey(GetUser(), model.Id);
+						await SurveyAccessor.IssueSurvey(GetUser(), model.Id);
 					else
 						return View(model);
 				}

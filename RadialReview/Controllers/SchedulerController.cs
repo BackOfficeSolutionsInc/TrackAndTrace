@@ -225,7 +225,7 @@ namespace RadialReview.Controllers
 									unsent.Add(mail);
 								}
 							}
-							catch (Exception ex)
+							catch (Exception)
 							{
 
 							}
@@ -248,7 +248,7 @@ namespace RadialReview.Controllers
 
 
 		[Access(AccessLevel.Any)]
-		public async Task<bool> Daily()
+		public bool Daily()
 		{
 			var any = false;
 			using (var s = HibernateSession.GetCurrentSession())

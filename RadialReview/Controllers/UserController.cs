@@ -146,10 +146,13 @@ namespace RadialReview.Controllers {
             var e1 = sw.ElapsedMilliseconds;
 
 
-            var orgPos = _OrganizationAccessor
+#pragma warning disable CS0618 // Type or member is obsolete
+			var orgPos = _OrganizationAccessor
                             .GetOrganizationPositions(GetUser(), GetUser().Organization.Id)
+							.ToListAlive()
                             .OrderBy(x => x.CustomName)
                             .ToSelectList(x => x.CustomName, x => x.Id).ToList();
+#pragma warning restore CS0618 // Type or member is obsolete
             if (_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditPositions(GetUser().Organization.Id))) {
                 orgPos.Insert(0, new SelectListItem() { Value = "-1", Text = "<" + DisplayNameStrings.createNew + ">" });
             }
@@ -284,10 +287,13 @@ namespace RadialReview.Controllers {
             var user = _UserAccessor.GetUserOrganization(GetUser(), userId, false, false);
             var pos = user.Positions.FirstOrDefault(x => x.Id == id);
             var orgId = GetUser().Organization.Id;
-            var orgPos = _OrganizationAccessor
+#pragma warning disable CS0618 // Type or member is obsolete
+			var orgPos = _OrganizationAccessor
                             .GetOrganizationPositions(GetUser(), orgId)
+							.ToListAlive()
                             .OrderBy(x => x.CustomName)
                             .ToSelectList(x => x.CustomName, x => x.Id, id).ToList();
+#pragma warning restore CS0618 // Type or member is obsolete
             if (_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditPositions(orgId))) {
                 orgPos.Add(new SelectListItem() { Value = "-1", Text = "<" + DisplayNameStrings.createNew + ">" });
             }
@@ -518,7 +524,7 @@ namespace RadialReview.Controllers {
             if (exclude != null) {
                 try {
                     excludeLong = exclude.Split(',').Select(x => x.ToLong()).ToArray();
-                } catch (Exception e) { }
+                } catch (Exception) { }
             }
             results = Math.Max(0, Math.Min(100, results));
             var o = UserAccessor.Search(GetUser(), GetUser().Organization.Id, q, results, excludeLong)

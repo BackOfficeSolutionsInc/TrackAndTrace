@@ -52,9 +52,9 @@ namespace RadialReview.Controllers
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                var o = "";
+                //var o = "";
             }
             
             return File(TrackingGif, "image/gif");

@@ -37,8 +37,10 @@ namespace RadialReview.Accessors {
 				allAskables.AddRange(OrganizationAccessor.AskablesAboutOrganization(queryProvider,perms,orgId,range));
 			}else if (rgm is UserOrganizationModel){
 				allAskables.AddRange(ApplicationAccessor.GetApplicationQuestions(queryProvider));
+#pragma warning disable CS0618 // Type or member is obsolete
 				allAskables.AddRange(ResponsibilitiesAccessor.GetResponsibilitiesForUser(caller, queryProvider, perms, forRGMId, range));
 				allAskables.AddRange(QuestionAccessor.GetQuestionsForUser(queryProvider, perms, forRGMId, range));
+#pragma warning restore CS0618 // Type or member is obsolete
 				allAskables.AddRange(RockAccessor.GetRocks(queryProvider, perms, forRGMId/*, periodId*/, range));
 				allAskables.AddRange(RoleAccessor.GetRoles(queryProvider, perms, forRGMId, range));
 				allAskables.AddRange(OrganizationAccessor.GetCompanyValues(queryProvider, perms, orgId, range));

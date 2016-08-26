@@ -122,7 +122,7 @@ namespace RadialReview.Accessors
                     var team = dataInteraction.GetQueryProvider().Get<OrganizationTeamModel>(forTeamId);
                     var managerIds = teammembers.Where(x => x.User.ManagerAtOrganization || team.ManagedBy == x.UserId).Select(x => x.UserId).ToList();
                     var errors = 0;
-                    var sent = 0;
+                   // var sent = 0;
 
                     var createReviewNexus = new NexusModel(createReviewGuid) { ActionCode = NexusActions.CreateReview };
                     createReviewNexus.SetArgs("" + reviewContainer.Id);

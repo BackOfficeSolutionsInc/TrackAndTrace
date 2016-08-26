@@ -60,10 +60,11 @@ namespace RadialReview.Accessors
 					};
 					s.Save(text);
 
-					CallablePhoneNumber alias = null;
+					//CallablePhoneNumber alias = null;
 
 
-					found = s.QueryOver<PhoneActionMap>().Where(x => x.DeleteTime == null && (x.SystemNumber == systemNumber || x.SystemNumber == systemNumber - 10000000000 || x.SystemNumber == systemNumber + 10000000000) &&(x.CallerNumber == fromNumber || x.CallerNumber == fromNumber - 10000000000 || x.CallerNumber == fromNumber + 10000000000)).List().FirstOrDefault();
+					found = s.QueryOver<PhoneActionMap>()
+						.Where(x => x.DeleteTime == null && (x.SystemNumber == systemNumber || x.SystemNumber == systemNumber - 10000000000 || x.SystemNumber == systemNumber + 10000000000) && (x.CallerNumber == fromNumber || x.CallerNumber == fromNumber - 10000000000 || x.CallerNumber == fromNumber + 10000000000)).List().FirstOrDefault();
 
 					if (found == null){
 						//Try to register the phone

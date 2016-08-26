@@ -88,7 +88,7 @@ namespace RadialReview.Accessors
 							}
 							managingTeams.AddRange(directlyManaging);
 						}
-						catch (Exception e){
+						catch (Exception){
 							
 						}
 					}

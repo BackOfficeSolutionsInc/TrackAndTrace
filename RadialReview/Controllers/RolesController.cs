@@ -47,8 +47,7 @@ namespace RadialReview.Controllers
 			//}
 			try {
 				_RoleAccessor.EditRoles(GetUser(), model.UserId, model.Roles, model.UpdateOutstandingReviews);
-			} catch (Exception e) {
-				var a = 0;
+			} catch (Exception) {
 			}
 			return Json(ResultObject.SilentSuccess());
 		}

@@ -37,34 +37,34 @@ namespace RadialReview.Controllers
 		{
 			if (IsLoggedIn()){
 				return RedirectToAction("Index", "Dashboard");
-				var model = new BackendViewModel();
+				//var model = new BackendViewModel();
 
-				try
-				{
-					var user = GetUser();
-					model.User = new UserViewModel() { User = user.User };
-					if (user.IsManager())
-					{
-						model.OutstandingReview = _ReviewAccessor.GetMostRecentReviewContainer(GetUser(), GetUser().Id).Select(recentReview => new OutstandingReviewViewModel()
-						{
-							Name = recentReview.ReviewName,
-							ReviewContainerId = recentReview.Id,
-						}).ToList();
-					}
-					model.IncludeTodos = GetUser().Organization.Settings.EnableL10;
-					model.IncludeScorecard = GetUser().Organization.Settings.EnableL10;
-					model.IncludeRocks = GetUser().Organization.Settings.EnableL10;
-					ViewBag.AnyL10s = L10Accessor.GetVisibleL10Meetings(GetUser(), GetUser().Id, false).Any();
+				//try
+				//{
+				//	var user = GetUser();
+				//	model.User = new UserViewModel() { User = user.User };
+				//	if (user.IsManager())
+				//	{
+				//		model.OutstandingReview = _ReviewAccessor.GetMostRecentReviewContainer(GetUser(), GetUser().Id).Select(recentReview => new OutstandingReviewViewModel()
+				//		{
+				//			Name = recentReview.ReviewName,
+				//			ReviewContainerId = recentReview.Id,
+				//		}).ToList();
+				//	}
+				//	model.IncludeTodos = GetUser().Organization.Settings.EnableL10;
+				//	model.IncludeScorecard = GetUser().Organization.Settings.EnableL10;
+				//	model.IncludeRocks = GetUser().Organization.Settings.EnableL10;
+				//	ViewBag.AnyL10s = L10Accessor.GetVisibleL10Meetings(GetUser(), GetUser().Id, false).Any();
 
-				}
-				catch (Exception)
-				{
-					model.User = new UserViewModel() { User = GetUserModel() };
-				}
+				//}
+				//catch (Exception)
+				//{
+				//	model.User = new UserViewModel() { User = GetUserModel() };
+				//}
 
 
 
-				return View("Backend", model);
+				//return View("Backend", model);
 			}
 			return RedirectToAction("Login", "Account");
 		}

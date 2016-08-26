@@ -190,7 +190,7 @@ namespace RadialReview.Engines
 			        return result.Sent;
 		        });
 	        }
-	        catch (Exception e){
+	        catch (Exception){
 		        throw;// new PermissionsException(e.Message);
 	        }
         }

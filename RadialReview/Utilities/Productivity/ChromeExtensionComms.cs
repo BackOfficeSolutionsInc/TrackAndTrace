@@ -26,9 +26,9 @@ namespace RadialReview.Utilities.Productivity
                     singleton.Send(command,details);
 
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    int a = 0;
+                   // int a = 0;
                 }
             }
         }

@@ -400,16 +400,15 @@ namespace RadialReview.Controllers
 
             return PartialView(model);
         }
-        [HttpPost]
-        [Access(AccessLevel.Manager)]
-        public async Task<JsonResult> RemoveUser(RemoveUserVM model)
-        {
-            var result = _ReviewAccessor.RemoveUserFromReview(GetUser(), model.ReviewContainerId, model.SelectedUser);
-            return Json(result);
-        }
+		[HttpPost]
+		[Access(AccessLevel.Manager)]
+		public JsonResult RemoveUser(RemoveUserVM model) {
+			var result = _ReviewAccessor.RemoveUserFromReview(GetUser(), model.ReviewContainerId, model.SelectedUser);
+			return Json(result);
+		}
 
-        #region Individual Question
-        public class RemoveQuestionVM
+		#region Individual Question
+		public class RemoveQuestionVM
         {
             public long ReviewContainerId { get; set; }
             public List<SelectListItem> Users { get; set; }

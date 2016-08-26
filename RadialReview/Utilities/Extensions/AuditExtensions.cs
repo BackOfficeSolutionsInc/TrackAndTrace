@@ -66,12 +66,12 @@ namespace RadialReview.Utilities.Extensions {
 
             try {
                 s = self.GetRevisionNumberForDate(start);
-            } catch (RevisionDoesNotExistException ex) {
+            } catch (RevisionDoesNotExistException) {
                 s = 1;
             }
             try {
                 e = self.GetRevisionNumberForDate(end);
-            } catch (RevisionDoesNotExistException ex) {
+            } catch (RevisionDoesNotExistException) {
                 e = 1;
             }
 

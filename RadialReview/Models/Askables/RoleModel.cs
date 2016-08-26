@@ -34,10 +34,12 @@ namespace RadialReview.Models.Askables {
 			public RMMap()
 			{
 				Map(x => x.OrganizationId);
+#pragma warning disable CS0618 // Type or member is obsolete
 				Map(x => x.ForUserId).Column("ForUserId");
-               // References(x => x.Owner).Column("ForUserId").Nullable().LazyLoad().ReadOnly();
 				Map(x => x.Role);
 				Map(x => x.FromTemplateItemId);
+#pragma warning restore CS0618 // Type or member is obsolete
+				// References(x => x.Owner).Column("ForUserId").Nullable().LazyLoad().ReadOnly();
 			}
 		}
 	}

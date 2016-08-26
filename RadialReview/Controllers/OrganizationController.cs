@@ -87,7 +87,7 @@ namespace RadialReview.Controllers
                             DateTime? trialEnd =DateTime.MinValue;
                             try {
                                 trialEnd = tokens.ContainsKey(x.Id) ? (DateTime?)null : x.NotNull(u => u.PaymentPlan.NotNull(z => z.FreeUntil));
-                            } catch (Exception e) { 
+                            } catch (Exception) { 
                             }
 
                             return new OrgStats()
@@ -201,7 +201,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Any)]
 		public ActionResult Create(String name, bool enableL10, bool enableReview,string planType = "professional")
 		{
-			Boolean managersCanEdit = false;
+			//Boolean managersCanEdit = false;
 			var user = GetUserModel();
 			//var basicPlan=_PaymentAccessor.BasicPaymentPlan();
 			UserOrganizationModel uOrg;
@@ -485,7 +485,7 @@ namespace RadialReview.Controllers
 				}
 
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				ViewBag.Message = "An error has occurred.";
 				return RedirectToAction("Upload");
@@ -498,7 +498,9 @@ namespace RadialReview.Controllers
 		{
 			var nexus = new NexusController();
 
+#pragma warning disable CS0618 // Type or member is obsolete
 			var existingPositions = _OrganizationAccessor.GetOrganizationPositions(GetUser(), GetUser().Organization.Id);
+#pragma warning restore CS0618 // Type or member is obsolete
 			var existingUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 			var pos = _PositionAccessor.AllPositions().First();
 
@@ -559,7 +561,7 @@ namespace RadialReview.Controllers
 					{
 						errors.Add(e.Message);
 					}
-					catch (Exception e)
+					catch (Exception)
 					{
 						errors.Add("An error has occurred.");
 					}

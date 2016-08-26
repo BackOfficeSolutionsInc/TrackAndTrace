@@ -82,7 +82,7 @@ namespace RadialReview.Controllers
                     ControllerDescriptor cd = new ReflectedControllerDescriptor(controllerType);
                     ControllerContextLookup[key] = Tuple.Create(cd, cc);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                 }
             }
@@ -145,9 +145,9 @@ namespace RadialReview.Controllers
                     if (typeof(ActionResult).IsAssignableFrom(returnType))
                         return NavType.Action;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    var o = false;
+                    //var o = false;
                 }
                 return NavType.Invalid;
             
@@ -188,9 +188,8 @@ namespace RadialReview.Controllers
                     ll.NavType = GetNavType(ll);
                     o.Add(ll);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    var f = false;
                 }
             }
             return o;

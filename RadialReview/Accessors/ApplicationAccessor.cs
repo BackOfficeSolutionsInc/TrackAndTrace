@@ -502,10 +502,12 @@ namespace RadialReview.Accessors
 
 				    var customFeatureDevHoursTotal = devInteractions.Select(x => x.Duration).Sum()/60m;
 
-				    var MRR = PaymentAccessor.CalculateTotalCharge(s, PaymentAccessor.GetPayingOrganizations(s));
+#pragma warning disable CS0618 // Type or member is obsolete
+					var MRR = PaymentAccessor.CalculateTotalCharge(s, PaymentAccessor.GetPayingOrganizations(s));
+#pragma warning restore CS0618 // Type or member is obsolete
 
 
-				    var implementerLogins = usersLoggedInThisWeek.Where(x => orgLookup[x.OrganizationId].AccountType == AccountType.Implementer).GroupBy(x=>x.OrganizationId).Count();
+					var implementerLogins = usersLoggedInThisWeek.Where(x => orgLookup[x.OrganizationId].AccountType == AccountType.Implementer).GroupBy(x=>x.OrganizationId).Count();
 				    var numberOfDemoClients = demoOrgs.Count();
 
 

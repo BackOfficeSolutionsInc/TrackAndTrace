@@ -49,7 +49,7 @@ namespace RadialReview.Utilities
 				audit.UserOrganization = caller;
 				s.Save(audit);
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 
 			}
@@ -83,7 +83,7 @@ namespace RadialReview.Utilities
 				audit.Notes = notes;
 				s.Save(audit);
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 
 			}
@@ -127,7 +127,7 @@ namespace RadialReview.Utilities
 				meetingHub.addOrEditLogRow(type + "_" + forModel.ModelId, html, type);
 
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 
 			}

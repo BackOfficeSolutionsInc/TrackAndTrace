@@ -201,8 +201,10 @@ namespace RadialReview.Accessors {
 
                     var toSend = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == organizationId && x.TempUser != null && x.DeleteTime == null && x.User == null).Fetch(x => x.TempUser).Eager.List().ToList();
                     foreach (var user in toSend) {
-                        unsentEmails.Add(CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, user.TempUser));
-                        user.UpdateCache(s);
+#pragma warning disable CS0618 // Type or member is obsolete
+						unsentEmails.Add(CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, user.TempUser));
+#pragma warning restore CS0618 // Type or member is obsolete
+						user.UpdateCache(s);
                     }
                     tx.Commit();
                     s.Flush();
@@ -233,8 +235,10 @@ namespace RadialReview.Accessors {
                         var found = toUpdate.FirstOrDefault(x => x.Id == tempUser.UserOrganizationId);
                         if (found == null || found.DeleteTime != null)
                             continue;
-                        unsent.Add(CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, tempUser));
-                    }
+#pragma warning disable CS0618 // Type or member is obsolete
+						unsent.Add(CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, tempUser));
+#pragma warning restore CS0618 // Type or member is obsolete
+					}
 
                     foreach (var user in toUpdate) {
                         user.UpdateCache(s);
@@ -251,9 +255,11 @@ namespace RadialReview.Accessors {
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
-                    var result = CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, tempUser);
+#pragma warning disable CS0618 // Type or member is obsolete
+					var result = CreateJoinEmailToGuid(s.ToDataInteraction(false), caller, tempUser);
+#pragma warning restore CS0618 // Type or member is obsolete
 
-                    var user = s.Get<UserOrganizationModel>(tempUser.UserOrganizationId);
+					var user = s.Get<UserOrganizationModel>(tempUser.UserOrganizationId);
                     if (user != null)
                         user.UpdateCache(s);
 

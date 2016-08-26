@@ -52,9 +52,11 @@ namespace TractionTools.Tests.Accessors
                 });
             MockApplication();
             MockHttpContext();
-            new UserAccessor().AddManager(await GetAdminUser(testId), employee.Id, manager.Id, new DateTime(2016, 1, 1));
+#pragma warning disable CS0618 // Type or member is obsolete
+			new UserAccessor().AddManager(await GetAdminUser(testId), employee.Id, manager.Id, new DateTime(2016, 1, 1));
+#pragma warning restore CS0618 // Type or member is obsolete
 
-            var accessor = new RockAccessor();
+			var accessor = new RockAccessor();
             var controller = new RocksController();
             controller.MockUser(manager);
             var rocks = accessor.GetAllRocks(manager, employee.Id);

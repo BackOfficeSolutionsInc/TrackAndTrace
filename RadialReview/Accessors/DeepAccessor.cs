@@ -465,7 +465,7 @@ namespace RadialReview.Accessors
 			var allSubordinates = Dive.GetSubordinates(s, child);
 			allSubordinates.Add(child);
 
-			var selfRemove = false;
+			//var selfRemove = false;
 
 			foreach (var SUP in allSuperiors)
 			{

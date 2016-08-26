@@ -161,7 +161,7 @@ namespace RadialReview.Accessors {
 
                     var toReview = usersToReview.Select(x => x.User).ToList();
                     var orgName = organization.Name.Translate();
-                    int sent, errors;
+                   // int sent, errors;
 
 					////////////////////////////////////////////
 					//HEAVY LIFTING HERE:

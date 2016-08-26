@@ -20,10 +20,8 @@ using RadialReview.Utilities.DataTypes;
 using Mandrill;
 using System.Text.RegularExpressions;
 
-namespace RadialReview.Accessors
-{
-	public class EmailResult
-	{
+namespace RadialReview.Accessors {
+	public class EmailResult {
 		public int Sent { get; set; }
 		public int Unsent { get; set; }
 		public int Queued { get; set; }
@@ -32,8 +30,7 @@ namespace RadialReview.Accessors
 		public TimeSpan TimeTaken { get; set; }
 		public List<Exception> Errors { get; set; }
 
-		public EmailResult()
-		{
+		public EmailResult() {
 			Errors = new List<Exception>();
 		}
 
@@ -47,10 +44,8 @@ namespace RadialReview.Accessors
 		///     {3} = TimeTaken(InSeconds),<br/>
 		///     </param>
 		/// <returns></returns>
-		public ResultObject ToResults(String successMessage)
-		{
-			if (Errors.Count() > 0)
-			{
+		public ResultObject ToResults(String successMessage) {
+			if (Errors.Count() > 0) {
 				var message = String.Join(",\n", Errors.Select(x => x.Message).Distinct());
 				return new ResultObject(new RedirectException(Errors.Count() + " errors:\n" + message));
 			}
@@ -59,98 +54,89 @@ namespace RadialReview.Accessors
 		}
 	}
 
-	public class Emailer : BaseAccessor
-	{
-        private static Regex _regex = CreateRegEx();
-         public bool IsValid(object value) {
-            if (value == null) {
-                return true;
-            }
- 
-            string valueAsString = value as string;
- 
-            // Use RegEx implementation if it has been created, otherwise use a non RegEx version.
-            if (_regex != null) { 
-                return valueAsString != null && _regex.Match(valueAsString).Length > 0;
-            }
-            else {
-                int atCount = 0;
-                
-                foreach (char c in valueAsString) {
-                    if (c == '@') {
-                        atCount++;
-                    }
-                }
- 
-                return (valueAsString != null
-                && atCount == 1
-                && valueAsString[0] != '@'
-                && valueAsString[valueAsString.Length - 1] != '@');
-            }
-        }
- 
-        private static Regex CreateRegEx() {
-            // We only need to create the RegEx if this switch is enabled.
-          
- 
-            const string pattern = @"^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$";
-            const RegexOptions options = RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture;
- 
-            // Set explicit regex match timeout, sufficient enough for email parsing
-            // Unless the global REGEX_DEFAULT_MATCH_TIMEOUT is already set
-            TimeSpan matchTimeout = TimeSpan.FromSeconds(2);
- 
-            try {
-                if (AppDomain.CurrentDomain.GetData("REGEX_DEFAULT_MATCH_TIMEOUT") == null) {
-                    return new Regex(pattern, options, matchTimeout);
-                }
-            }
-            catch {
-                // Fallback on error
-            }
- 
-            // Legacy fallback (without explicit match timeout)
-            return new Regex(pattern, options);
-        }
-    
-
-		#region Helpers
-		private static String EmailBodyWrapper(String htmlBody,int? tableWidth=null)
-		{
-			var footer = String.Format(EmailStrings.Footer, ProductStrings.CompanyName);
-			return String.Format(EmailStrings.BodyWrapper, htmlBody, footer, tableWidth??600);
-		}
-
-		public static bool IsValid(string emailaddress)
-		{
-			try
-			{
-				MailAddress m = new MailAddress(emailaddress);
+	public class Emailer : BaseAccessor {
+		private static Regex _regex = CreateRegEx();
+		public bool IsValid(object value) {
+			if (value == null) {
 				return true;
 			}
-			catch (FormatException)
-			{
+
+			string valueAsString = value as string;
+
+			// Use RegEx implementation if it has been created, otherwise use a non RegEx version.
+			if (_regex != null) {
+				return valueAsString != null && _regex.Match(valueAsString).Length > 0;
+			} else {
+				int atCount = 0;
+
+				foreach (char c in valueAsString) {
+					if (c == '@') {
+						atCount++;
+					}
+				}
+
+				return (valueAsString != null
+				&& atCount == 1
+				&& valueAsString[0] != '@'
+				&& valueAsString[valueAsString.Length - 1] != '@');
+			}
+		}
+
+		private static Regex CreateRegEx() {
+			// We only need to create the RegEx if this switch is enabled.
+
+
+			const string pattern = @"^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$";
+			const RegexOptions options = RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture;
+
+			// Set explicit regex match timeout, sufficient enough for email parsing
+			// Unless the global REGEX_DEFAULT_MATCH_TIMEOUT is already set
+			TimeSpan matchTimeout = TimeSpan.FromSeconds(2);
+
+			try {
+				if (AppDomain.CurrentDomain.GetData("REGEX_DEFAULT_MATCH_TIMEOUT") == null) {
+					return new Regex(pattern, options, matchTimeout);
+				}
+			} catch {
+				// Fallback on error
+			}
+
+			// Legacy fallback (without explicit match timeout)
+			return new Regex(pattern, options);
+		}
+
+
+		#region Helpers
+		private static String EmailBodyWrapper(String htmlBody, int? tableWidth = null) {
+			var footer = String.Format(EmailStrings.Footer, ProductStrings.CompanyName);
+			return String.Format(EmailStrings.BodyWrapper, htmlBody, footer, tableWidth ?? 600);
+		}
+
+		public static bool IsValid(string emailaddress) {
+			try {
+				MailAddress m = new MailAddress(emailaddress);
+				return true;
+			} catch (FormatException) {
 				return false;
 			}
 		}
 		#endregion
 		#region AsyncMailer
 
-        //private static MailMessage CreateMessage(EmailModel email)
-        //{
-        //    MailMessage message = new MailMessage()
-        //    {
-        //        Subject = email.Subject,
-        //        Body = email.Body,
-        //        IsBodyHtml = true,
-        //        From = new MailAddress(ConstantStrings.SmtpFromAddress),
-        //    };
-        //    message.To.Add(email.ToAddress);
-        //    return message;
-        //}
+		//private static MailMessage CreateMessage(EmailModel email)
+		//{
+		//    MailMessage message = new MailMessage()
+		//    {
+		//        Subject = email.Subject,
+		//        Body = email.Body,
+		//        IsBodyHtml = true,
+		//        From = new MailAddress(ConstantStrings.SmtpFromAddress),
+		//    };
+		//    message.To.Add(email.ToAddress);
+		//    return message;
+		//}
 
-		private static Pool<SmtpClient> SmtpPool = new Pool<SmtpClient>(30, TimeSpan.FromMinutes(2), () => new SmtpClient
-		{
+		private static Pool<SmtpClient> SmtpPool = new Pool<SmtpClient>(30, TimeSpan.FromMinutes(2), () => new SmtpClient {
 			Host = ConstantStrings.SmtpHost,
 			Port = int.Parse(ConstantStrings.SmtpPort),
 			Timeout = 50000,
@@ -331,81 +317,72 @@ namespace RadialReview.Accessors
 
 
 
-		public class MandrillModel
-		{
+		public class MandrillModel {
 			public String FirstName { get; set; }
 			public String LastName { get; set; }
 		}
 
-		private static string FixEmail(string email)
-		{
+		private static string FixEmail(string email) {
 			return Config.IsLocal() ? "clay.upton+test_" + email.Replace("@", "_at_") + "@radialreview.com" : email;
 		}
 
-		private static EmailMessage CreateMandrillMessage(EmailModel email)
-		{
+		private static EmailMessage CreateMandrillMessage(EmailModel email) {
 			var toAddress = FixEmail(email.ToAddress);
 
 			var toAddresses = new EmailAddress(toAddress).AsList();
-			if (email.Bcc != null){
-				foreach (var bcc in email.Bcc.Split(new []{','},StringSplitOptions.RemoveEmptyEntries)){
+			if (email.Bcc != null) {
+				foreach (var bcc in email.Bcc.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)) {
 					var fixedBcc = FixEmail(bcc);
 					toAddresses.Add(new EmailAddress(fixedBcc) { type = "bcc" });
 				}
 			}
 
 
-			var oEmail= new EmailMessage()
-			{
-               
+			var oEmail = new EmailMessage() {
+
 				from_email = MandrillStrings.FromAddress,
-				from_name = email._ReplyToName??MandrillStrings.FromName,
+				from_name = email._ReplyToName ?? MandrillStrings.FromName,
 				html = email.Body,
 				subject = email.Subject,
 				to = toAddresses,
 				track_opens = true,
 				track_clicks = true,
-				google_analytics_domains = Config.GetMandrillGoogleAnalyticsDomain().NotNull(x=>x.Split(new []{','},StringSplitOptions.RemoveEmptyEntries).ToList())
+				google_analytics_domains = Config.GetMandrillGoogleAnalyticsDomain().NotNull(x => x.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList())
 			};
 
-            if (!string.IsNullOrWhiteSpace(email._ReplyToEmail)){
-                oEmail.AddHeader("Reply-To", email._ReplyToEmail);
-            }
+			if (!string.IsNullOrWhiteSpace(email._ReplyToEmail)) {
+				oEmail.AddHeader("Reply-To", email._ReplyToEmail);
+			}
 
 
-            return oEmail;
+			return oEmail;
 		}
 
-		private static async Task<List<Mandrill.EmailResult>> SendMessage(MandrillApi api, EmailModel email)
-		{
+		private static async Task<List<Mandrill.EmailResult>> SendMessage(MandrillApi api, EmailModel email) {
 			var result = await api.SendMessageAsync(CreateMandrillMessage(email));
-			email.MandrillId = result.FirstOrDefault().NotNull(x=>x.Id);
+			email.MandrillId = result.FirstOrDefault().NotNull(x => x.Id);
 			return result;
 		}
 
-		public static async Task<int> SendMandrillEmails(List<EmailModel> emails, EmailResult result, bool forceSend = false)
-		{
+		public static async Task<int> SendMandrillEmails(List<EmailModel> emails, EmailResult result, bool forceSend = false) {
 
 			var api = new MandrillApi(ConstantStrings.MandrillApiKey, true);
 			var results = new List<Mandrill.EmailResult>();
 
 			if (!emails.Any())
 				return 1;
-			if (Config.SendEmails() || forceSend){
-				results = (await Task.WhenAll(emails.Select(email => SendMessage(api,email)))).SelectMany(x => x).ToList();
-			}else{
-				results = emails.Select(x => new Mandrill.EmailResult(){
+			if (Config.SendEmails() || forceSend) {
+				results = (await Task.WhenAll(emails.Select(email => SendMessage(api, email)))).SelectMany(x => x).ToList();
+			} else {
+				results = emails.Select(x => new Mandrill.EmailResult() {
 					Status = EmailResultStatus.Sent,
 					Email = x.ToAddress,
 				}).ToList();
 			}
 			var now = DateTime.UtcNow;
-			foreach (var r in results)
-			{
-				switch (r.Status)
-				{
-					case EmailResultStatus.Invalid:
-						{
+			foreach (var r in results) {
+				switch (r.Status) {
+					case EmailResultStatus.Invalid: {
 							result.Unsent += 1;
 							result.Errors.Add(new Exception("Invalid"));
 							break;
@@ -413,8 +390,7 @@ namespace RadialReview.Accessors
 					case EmailResultStatus.Queued:
 						result.Queued += 1;
 						break;
-					case EmailResultStatus.Rejected:
-						{
+					case EmailResultStatus.Rejected: {
 							result.Unsent += 1;
 							result.Errors.Add(new Exception(r.RejectReason));
 							break;
@@ -422,18 +398,13 @@ namespace RadialReview.Accessors
 					case EmailResultStatus.Scheduled:
 						result.Queued += 1;
 						break;
-					case EmailResultStatus.Sent:
-						{
+					case EmailResultStatus.Sent: {
 							result.Sent += 1;
-							try
-							{
+							try {
 								var found = emails.First(x => x.ToAddress.ToLower() == r.Email.ToLower());
 								found.Sent = true;
 								found.CompleteTime = now;
-							}
-							catch (Exception e)
-							{
-								int a = 0;
+							} catch (Exception) {
 							}
 						}
 						break;
@@ -446,40 +417,33 @@ namespace RadialReview.Accessors
 			return 1;
 		}
 
-		public static async Task<EmailResult> SendEmail(Mail email,bool forceSend=false)
-		{
-			return await SendEmails(email.AsList(),forceSend);
+		public static async Task<EmailResult> SendEmail(Mail email, bool forceSend = false) {
+			return await SendEmails(email.AsList(), forceSend);
 		}
 
-		public static async Task<EmailResult> SendEmails(IEnumerable<Mail> emails, bool forceSend = false)
-		{
+		public static async Task<EmailResult> SendEmails(IEnumerable<Mail> emails, bool forceSend = false) {
 			return await SendEmailsWrapped(emails, forceSend);
 		}
 
-		private static async Task<EmailResult> SendEmailsWrapped(IEnumerable<Mail> emails, bool forceSend = false,int? tableWidth=null)
-		{
+		private static async Task<EmailResult> SendEmailsWrapped(IEnumerable<Mail> emails, bool forceSend = false, int? tableWidth = null) {
 			//Register emails
 			var unsentEmails = new List<EmailModel>();
 			var now = DateTime.UtcNow;
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
-					foreach (var email in emails)
-					{
-						var unsent = new EmailModel()
-						{
-							Body = EmailBodyWrapper(email.HtmlBody,tableWidth),
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					foreach (var email in emails) {
+						var unsent = new EmailModel() {
+							Body = EmailBodyWrapper(email.HtmlBody, tableWidth),
 							CompleteTime = null,
 							Sent = false,
 							Subject = email.Subject,
 							ToAddress = email.ToAddress,
-							Bcc = String.Join(",",email.BccList),
+							Bcc = String.Join(",", email.BccList),
 							SentTime = now,
 							EmailType = email.EmailType,
-                            _ReplyToName = email.ReplyToName,
-                            _ReplyToEmail = email.ReplyToAddress,
-                            
+							_ReplyToName = email.ReplyToName,
+							_ReplyToEmail = email.ReplyToAddress,
+
 						};
 						s.Save(unsent);
 						unsentEmails.Add(unsent);
@@ -494,15 +458,13 @@ namespace RadialReview.Accessors
 			var startSending = DateTime.UtcNow;
 
 			//And... Go.
-			var threads = await SendMandrillEmails(unsentEmails, result,forceSend);
-			
+			var threads = await SendMandrillEmails(unsentEmails, result, forceSend);
+
 			result.TimeTaken = DateTime.UtcNow - startSending;
 
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
-					foreach (var email in unsentEmails){
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					foreach (var email in unsentEmails) {
 						s.Update(email);
 					}
 					tx.Commit();

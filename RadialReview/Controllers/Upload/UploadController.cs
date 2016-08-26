@@ -174,7 +174,7 @@ namespace RadialReview.Controllers {
 
                 var vto = VtoAccessor.UploadVtoForRecurrence(GetUser(), doc, recurrenceId,exceptions);
 				
-                var a = 0;
+              //  var a = 0;
 
 				if (exceptions.Count == 0)
 					return RedirectToAction("Edit", "VTO", new { id = vto.Id });

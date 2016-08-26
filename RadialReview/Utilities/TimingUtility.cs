@@ -347,10 +347,10 @@ namespace RadialReview.Utilities {
         public static DateRange GetLocalRange(DayOfWeek weekStart, int timezoneOffset, DateTime date, ScorecardPeriod scorecardPeriod, YearStart yearStart)
         {
             var w = date;
-            L10MeetingVM.WeekVM vm = null;
+           // L10MeetingVM.WeekVM vm = null;
 
             //var periods = GetPeriods(weekStart, timezoneOffset, w, null, true, scorecardPeriod, yearStart);
-            DateRange o;
+            //DateRange o;
             switch (scorecardPeriod) {
                 case ScorecardPeriod.Weekly:
                     var sw = w.StartOfWeek(DayOfWeek.Sunday).AddDays(6.9999).StartOfWeek(weekStart).AddMinutes(-timezoneOffset);
@@ -532,7 +532,7 @@ namespace RadialReview.Utilities {
                 if (!format.Contains("y"))
                     fixedDates = _FixOrderedDates_Year(fixedDates);
                 return fixedDates;
-            } catch (ArgumentOutOfRangeException e) {
+            } catch (ArgumentOutOfRangeException) {
                 var tempDates = dates.Select(x => {
                     DateTime o = DateTime.MinValue;
                     if (DateTime.TryParse(x, out o))

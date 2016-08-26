@@ -42,14 +42,18 @@ namespace RadialReview.Accessors
 		{
 			return (string)CacheLookup.GetOrAddDefault("username_" + username, x =>
 			{
+#pragma warning disable CS0618 // Type or member is obsolete
 				return GetUserByEmail(s, username).Id;
+#pragma warning restore CS0618 // Type or member is obsolete
 			});
 		}
 		public String GetUserNameByUserOrganizationId(long userOrgId)
 		{
 			return (string)CacheLookup.GetOrAddDefault("userorgid_" + userOrgId, x =>
 			{
+#pragma warning disable CS0618 // Type or member is obsolete
 				return GetUserOrganizationUnsafe(userOrgId).User.UserName;
+#pragma warning restore CS0618 // Type or member is obsolete
 			});
 		}
 

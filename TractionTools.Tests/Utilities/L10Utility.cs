@@ -38,8 +38,10 @@ namespace TractionTools.Tests.Utilities {
                     o.Settings.TimeZoneId = "GMT Standard Time";
                     s.Save(o);
 
-                    var plan = PaymentAccessor.GeneratePlan(PaymentPlanType.Professional_Monthly_March2016, new DateTime(2016,5,14));
-                    PaymentAccessor.AttachPlan(s, o, plan);
+#pragma warning disable CS0618 // Type or member is obsolete
+					var plan = PaymentAccessor.GeneratePlan(PaymentPlanType.Professional_Monthly_March2016, new DateTime(2016,5,14));
+#pragma warning restore CS0618 // Type or member is obsolete
+					PaymentAccessor.AttachPlan(s, o, plan);
                     //User
                     var u = new UserOrganizationModel() { Organization = o };
                     s.Save(u);

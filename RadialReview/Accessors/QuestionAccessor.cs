@@ -163,8 +163,10 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var perms = PermissionsUtility.Create(s, caller);
+#pragma warning disable CS0618 // Type or member is obsolete
 					return GetQuestionsForUser(s.ToQueryProvider(true), perms, forUserId, range);
-                }
+#pragma warning restore CS0618 // Type or member is obsolete
+				}
             }
         }
 

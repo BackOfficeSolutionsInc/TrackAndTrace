@@ -152,7 +152,7 @@ namespace RadialReview.Controllers
 					date = new DateTime(file.Substring(0, 4).ToInt(), file.Substring(4, 2).ToInt(), file.Substring(6, 2).ToInt());
 					title = file.Substring(8).Replace(".txt", "");
 				}
-				catch (Exception e){
+				catch (Exception){
 					
 				}
 				groups.Add(new SoftwareUpdateGroup(){

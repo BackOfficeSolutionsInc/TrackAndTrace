@@ -42,7 +42,7 @@ namespace RadialReview
 				    return "shape-diamond";
 			    case AboutType.Teammate:
 					goto case AboutType.NoRelationship;
-				    return "shape-plus";
+				    //return "shape-plus";
 				case AboutType.Peer:
 					return "shape-triangle";
 				case AboutType.Manager:
@@ -93,16 +93,12 @@ namespace RadialReview
 			{
 				case PositiveNegativeNeutral.Indeterminate:
 					return 0;
-					break;
 				case PositiveNegativeNeutral.Negative:
 					return 0;
-					break;
 				case PositiveNegativeNeutral.Neutral:
 					return .5m;
-					break;
 				case PositiveNegativeNeutral.Positive:
 					return 1;
-					break;
 				default:
 					throw new ArgumentOutOfRangeException("self");
 			}
@@ -113,16 +109,12 @@ namespace RadialReview
 			{
 				case PositiveNegativeNeutral.Indeterminate:
 					return 0;
-					break;
 				case PositiveNegativeNeutral.Negative:
 					return 1;
-					break;
 				case PositiveNegativeNeutral.Neutral:
 					return 2;
-					break;
 				case PositiveNegativeNeutral.Positive:
 					return 3;
-					break;
 				default:
 					throw new ArgumentOutOfRangeException("self");
 			}

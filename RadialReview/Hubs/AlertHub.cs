@@ -49,8 +49,8 @@ namespace RadialReview.Hubs
                     if (u.IsManager()){
                         await hub.Groups.Add(Context.ConnectionId, "manager_" + u.Organization.Id);
                     }
-                }catch (Exception e){
-                    var a = 0;
+                }catch (Exception){
+                   // var a = 0;
                 }
             }
 

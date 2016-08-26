@@ -37,8 +37,10 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var perms = PermissionsUtility.Create(s, caller);
-                    return GetResponsibilitiesForUser(caller, s.ToQueryProvider(true), perms, forUserId, range);
-                }
+#pragma warning disable CS0618 // Type or member is obsolete
+					return GetResponsibilitiesForUser(caller, s.ToQueryProvider(true), perms, forUserId, range);
+#pragma warning restore CS0618 // Type or member is obsolete
+				}
             }
         }
 
@@ -112,8 +114,10 @@ namespace RadialReview.Accessors
 			    perm.ViewUserOrganization(found.Id, false);
 			    return new List<UserOrganizationModel>(){(UserOrganizationModel)found};
 		    }else if (found is OrganizationModel){
-			    return OrganizationAccessor.GetAllUserOrganizations(s, perm, found.Id);
-		    }else if (found is OrganizationTeamModel){
+#pragma warning disable CS0618 // Type or member is obsolete
+				return OrganizationAccessor.GetAllUserOrganizations(s, perm, found.Id);
+#pragma warning restore CS0618 // Type or member is obsolete
+			} else if (found is OrganizationTeamModel){
 			    return TeamAccessor.GetTeamMembers(s.ToQueryProvider(true), perm, found.Id, true).Select(x => x.User).ToList();
 		    }else if (found is OrganizationPositionModel){
 				return OrganizationAccessor.GetUsersWithOrganizationPositions(s, perm, found.Organization.Id,rgmId);

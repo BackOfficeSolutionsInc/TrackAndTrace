@@ -199,7 +199,7 @@ namespace RadialReview.Accessors {
 									u.Measurable.AdminUser.GetName();
 									u.Measurable.AdminUser.ImageUrl();
 								}
-							} catch (Exception e) {
+							} catch (Exception) {
 
 							}
 						}
@@ -847,7 +847,7 @@ namespace RadialReview.Accessors {
 								OriginalGoal = TodoMeasurable.Goal
 
 							}.AsList();
-						} catch (Exception e) {
+						} catch (Exception) {
 							return new List<ScoreModel>();
 						}
 					});
@@ -881,7 +881,7 @@ namespace RadialReview.Accessors {
 									OriginalGoalDirection = mm.GoalDirection
 
 								}.AsList();
-							} catch (Exception e) {
+							} catch (Exception) {
 								return new List<ScoreModel>();
 							}
 						});
@@ -928,7 +928,7 @@ namespace RadialReview.Accessors {
 						var k = a.AccountableUser.ImageUrl(true);
 					}
 
-				} catch (Exception e) {
+				} catch (Exception) {
 					//Opps
 				}
 			}
@@ -2091,7 +2091,7 @@ namespace RadialReview.Accessors {
 						return deflt;
 					}
 				}
-			} catch (Exception e) {
+			} catch (Exception) {
 				return deflt;
 			}
 		}
@@ -2184,7 +2184,7 @@ namespace RadialReview.Accessors {
 									var meetingId = _GetCurrentL10Meeting(s, perm, todo.ForRecurrenceId.Value, true, false, false).NotNull(x => x.Id);
 									if (meetingId != 0)
 										todo.CompleteDuringMeetingId = meetingId;
-								} catch (Exception e) {
+								} catch (Exception) {
 
 								}
 							}
@@ -2439,7 +2439,7 @@ namespace RadialReview.Accessors {
 						sc.DateEntered = (measured == null) ? null : (DateTime?)now;
 						s.Update(sc);
 					}
-					L10Meeting meetingAlias = null;
+					//L10Meeting meetingAlias = null;
 					var possibleRecurrences = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
 						.Where(x => x.DeleteTime == null && x.Measurable.Id == score.MeasurableId)
 						.Select(x => x.L10Recurrence.Id)
@@ -2505,7 +2505,7 @@ namespace RadialReview.Accessors {
 				maxDate = maxDate.StartOfWeek(DayOfWeek.Sunday);
 
 
-				DateTime start, end;
+				//DateTime start, end;
 
 				if (week > maxDate) {
 					//Create going up until sufficient
@@ -2948,7 +2948,6 @@ namespace RadialReview.Accessors {
 						matchingMeasurable.DeleteTime = now;
 						s.Update(matchingMeasurable);
 					} else {
-						int a = 0;
 					}
 
 					s.Update(divider);
@@ -3582,7 +3581,7 @@ namespace RadialReview.Accessors {
                                 s.Update(g);
                             }*/
 						} else {
-							int a = 0;
+							//int a = 0;
 						}
 					}
 
@@ -3691,10 +3690,12 @@ namespace RadialReview.Accessors {
 					rock.Archived = true;
 					rock.DeleteTime = now;
 					s.Update(rock);
+#pragma warning disable CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
 					if (rock.ForUserId != null) {
 						s.Flush();
 						s.GetFresh<UserOrganizationModel>(rock.ForUserId).UpdateCache(s);
 					}
+#pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
 				}
 			}
 
@@ -3742,10 +3743,12 @@ namespace RadialReview.Accessors {
 					measurable.DeleteTime = now;
 					s.Update(measurable);
 
+#pragma warning disable CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
 					if (measurable.AccountableUserId != null) {
 						s.Flush();
 						s.GetFresh<UserOrganizationModel>(measurable.AccountableUserId).UpdateCache(s);
 					}
+#pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
 				}
 			}
 
@@ -3897,7 +3900,7 @@ namespace RadialReview.Accessors {
 			var now = DateTime.UtcNow;
 			RockModel rock;
 
-			var wasCreated = false;
+			//var wasCreated = false;
 			if (model.SelectedRock == -3) {
 				//Create new
 				if (model.Rocks == null)
@@ -3917,7 +3920,7 @@ namespace RadialReview.Accessors {
 
 				s.Save(rock);
 				rock.AccountableUser.UpdateCache(s);
-				wasCreated = true;
+				//wasCreated = true;
 			} else {
 				//Find Existing
 				rock = s.Get<RockModel>(model.SelectedRock);
@@ -4268,7 +4271,7 @@ namespace RadialReview.Accessors {
 						foreach (var u in users) {
 							try {
 								var a = u.GetName();
-							} catch (Exception e) {
+							} catch (Exception) {
 
 							}
 						}

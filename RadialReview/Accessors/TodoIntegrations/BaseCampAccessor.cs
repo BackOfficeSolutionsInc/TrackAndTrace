@@ -117,7 +117,7 @@ namespace RadialReview.Accessors.TodoIntegrations
 						Name = (string)b["name"] + ": " + (string)b["bucket"]["name"]
 					});
 				}catch (Exception){
-					var failed = true;
+					//var failed = true;
 				}
 			}
 

@@ -58,7 +58,7 @@ namespace RadialReview.Accessors {
             }
         }
         public class PaymentResult {
-            private string _cardNumber;
+           // private string _cardNumber;
             public string id { get; set; }
             public string @class { get; set; }
             public DateTime created_at { get; set; }
@@ -120,9 +120,11 @@ namespace RadialReview.Accessors {
             }
 
 
-            await EmailInvoice(email, invoice, executeTime);
+#pragma warning disable CS0618 // Type or member is obsolete
+			await EmailInvoice(email, invoice, executeTime);
+#pragma warning restore CS0618 // Type or member is obsolete
 
-            return invoice;
+			return invoice;
         }
 
         [Obsolete("Unsafe")]
@@ -186,8 +188,10 @@ namespace RadialReview.Accessors {
                     try {
                         var itemized = CalculateCharge(s, org, plan, executeTime.Value);
                         invoice = CreateInvoice(s, org, plan, executeTime.Value, itemized);
-                        result = await ExecuteInvoice(s, invoice, forceUseTest);
-                    } finally {
+#pragma warning disable CS0618 // Type or member is obsolete
+						result = await ExecuteInvoice(s, invoice, forceUseTest);
+#pragma warning restore CS0618 // Type or member is obsolete
+					} finally {
 
                         tx.Commit();
                         s.Flush();
@@ -195,8 +199,10 @@ namespace RadialReview.Accessors {
                 }
             }
             if (sendReceipt) {
-                await SendReceipt(result, invoice);
-            }
+#pragma warning disable CS0618 // Type or member is obsolete
+				await SendReceipt(result, invoice);
+#pragma warning restore CS0618 // Type or member is obsolete
+			}
 
             return result;
         }
@@ -606,9 +612,13 @@ namespace RadialReview.Accessors {
 
                     // Create the HttpContent for the form to be posted.
                     var requestContent = new FormUrlEncodedContent(keys.ToArray());
-
+					
+					
+					//Do not supress
                     var privateApi = Config.PaymentSpring_PrivateKey();
-                    var byteArray = new UTF8Encoding().GetBytes(privateApi + ":");
+
+
+					var byteArray = new UTF8Encoding().GetBytes(privateApi + ":");
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
                     HttpResponseMessage response = await client.PostAsync("https://api.paymentspring.com/api/v1/customers", requestContent);
                     HttpContent responseContent = response.Content;

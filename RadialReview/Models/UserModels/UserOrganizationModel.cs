@@ -89,7 +89,9 @@ namespace RadialReview.Models {
 		public virtual List<ReviewsModel> CreatedReviews { get; set; }
 		public virtual IList<PositionDurationModel> Positions { get; set; }
 		public virtual IList<TeamDurationModel> Teams { get; set; }
+#pragma warning disable CS0114 // Member hides inherited member; missing override keyword
 		public virtual DateTime? DeleteTime { get; set; }
+#pragma warning restore CS0114 // Member hides inherited member; missing override keyword
 		public virtual DateTime CreateTime { get; set; }
 		public virtual int CountPerPage { get; set; }
 		public virtual String JobDescription { get; set; }

@@ -8,8 +8,10 @@ using System.Web;
 namespace RadialReview.Models.Angular {
     public class AngularTreeNode<T> : BaseAngular where T : AngularTreeNode<T>{
 
-        public AngularTreeNode(){
+#pragma warning disable CS0618 // Type or member is obsolete
+		public AngularTreeNode(){
         }
+#pragma warning restore CS0618 // Type or member is obsolete
 
         public AngularTreeNode(long id ) : base(id){
         }

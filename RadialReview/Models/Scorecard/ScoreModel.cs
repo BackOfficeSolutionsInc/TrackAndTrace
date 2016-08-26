@@ -51,7 +51,9 @@ namespace RadialReview.Models.Scorecard
 			_Editable = true;
 		}
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 		public virtual async Task<string> GetIssueMessage()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 		{
 			var name = "'" + Measurable.Title + "'";
 
@@ -84,7 +86,9 @@ namespace RadialReview.Models.Scorecard
 			}
 		}
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 		public virtual async Task<string> GetIssueDetails()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 		{
 			var week = ForWeek.AddDays(-7).ToString("d");
 			var accountable = Measurable.AccountableUser.NotNull(x => x.GetName());
@@ -102,7 +106,9 @@ namespace RadialReview.Models.Scorecard
 			return footer ;
 		}
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 		public virtual async Task<string> GetTodoMessage()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 		{
 			var name = "'" + Measurable.Title + "'";
 
@@ -136,7 +142,9 @@ namespace RadialReview.Models.Scorecard
 			}
 		}
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 		public virtual async Task<string> GetTodoDetails()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 		{
 			var week = ForWeek.AddDays(-7).ToString("d");
 			var accountable = Measurable.AccountableUser.GetName();

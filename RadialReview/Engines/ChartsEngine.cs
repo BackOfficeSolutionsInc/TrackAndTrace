@@ -249,8 +249,8 @@ namespace RadialReview.Engines
 			//var allAnswers = _ReviewAccessor.GetReviewContainerAnswers(caller, reviewsId);
 			//var reviewContainer = _ReviewAccessor.GetReviewContainer(caller, reviewsId, false, false, false);
 
-			QuestionCategoryModel companyValuesCategory;
-			QuestionCategoryModel rolesCategory;
+			//QuestionCategoryModel companyValuesCategory;
+			//QuestionCategoryModel rolesCategory;
 
 
 			var teammemberLookup = new Multimap<long, OrganizationTeamModel>();
@@ -1126,8 +1126,8 @@ namespace RadialReview.Engines
 					case QuestionType.GWC:
 						{
 							var a = (GetWantCapacityAnswer)answer;
-							var num = 0.0m;
-							var denom = 0.0m;
+							//var num = 0.0m;
+							//var denom = 0.0m;
 							
 							/*
 							num += a.GetIt == Tristate.True ? 1 : 0;
@@ -1146,12 +1146,12 @@ namespace RadialReview.Engines
 							return (score.Denominator != 0);
 							//AddScatterScore(rolesCategory.Id, "Roles", count / 3.0, weight / 3.0);
 						}
-						break;
+						//break;
 					case QuestionType.CompanyValue:
 						{
 							var a = (CompanyValueAnswer)answer;
-							var num = 0.0m;
-							var denom = 1m;
+							//var num = 0.0m;
+							//var denom = 1m;
 
 							score = ScoreValue(a.Exhibits);
 
@@ -1160,7 +1160,7 @@ namespace RadialReview.Engines
 							return (score.Denominator != 0);
 							//AddScatterScore(companyValueCategory.Id, "Values", count / 2.0, weight);
 						}
-						break;
+						//break;
 					default:
 						throw new ArgumentOutOfRangeException();
 				}

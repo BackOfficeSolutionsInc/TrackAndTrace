@@ -285,14 +285,16 @@ namespace RadialReview.Accessors {
 		}
 
 		public static void SetUser(ISession s, RealTimeUtility rt, PermissionsUtility perms, long nodeId, long? userId) {
+#pragma warning disable CS0618 // Type or member is obsolete
 			SetUser(s, rt, perms, nodeId, userId, false, false, DateTime.UtcNow);
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 
-		[Obsolete("Use the other SetUser")]
+		[Obsolete("Use the other SetUser.")]
 		public static void SetUser(ISession s, RealTimeUtility rt, PermissionsUtility perms, long nodeId, long? userId, bool skipAddManger, bool skipPosition, DateTime now) {
 
-			//var updateUsers = new List<long>();
+			var updateUsers = new List<long>();
 
 			if (userId.HasValue)
 				perms.ManagesUserOrganization(userId.Value, true, PermissionType.EditEmployeeManagers);
@@ -324,7 +326,8 @@ namespace RadialReview.Accessors {
 						}
 
 						if (n.ParentNode.UserId != null) {
-							s.GetFresh<UserOrganizationModel>(n.ParentNode.UserId).UpdateCache(s);
+							updateUsers.Add(n.ParentNode.UserId.Value);
+							//s.GetFresh<UserOrganizationModel>(n.ParentNode.UserId).UpdateCache(s);
 						}
 					}
 
@@ -339,7 +342,8 @@ namespace RadialReview.Accessors {
 							found.DeleteTime = now;
 							s.Update(found);
 
-							s.GetFresh<UserOrganizationModel>(c.UserId).UpdateCache(s);
+							updateUsers.Add(c.UserId.Value);
+							//s.GetFresh<UserOrganizationModel>(c.UserId).UpdateCache(s);
 						}
 					}
 
@@ -356,7 +360,8 @@ namespace RadialReview.Accessors {
 								}
 							}
 						}
-						s.GetFresh<UserOrganizationModel>(n.UserId).UpdateCache(s);
+						updateUsers.Add(n.UserId.Value);
+						//s.GetFresh<UserOrganizationModel>(n.UserId).UpdateCache(s);
 					}
 					//User is removed from updater below...
 					updater.ForceUpdate(new AngularAccountabilityGroup(n.AccountabilityRolesGroupId) {
@@ -398,7 +403,9 @@ namespace RadialReview.Accessors {
 
 								};
 								s.Save(md);
-								s.GetFresh<UserOrganizationModel>(c.UserId).UpdateCache(s);
+								//s.GetFresh<UserOrganizationModel>(c.UserId).UpdateCache(s);
+
+								updateUsers.Add(c.UserId.Value);
 							}
 						}
 					}
@@ -413,10 +420,10 @@ namespace RadialReview.Accessors {
 							Start = now
 						};
 						s.Save(md);
-						s.GetFresh<UserOrganizationModel>(n.ParentNode.UserId).UpdateCache(s);
+						updateUsers.Add(n.ParentNode.UserId.Value);
+						//s.GetFresh<UserOrganizationModel>(n.ParentNode.UserId).UpdateCache(s);
 					}
 					s.Update(n);
-
 					//Update positions
 					if (!skipPosition) {
 						if (n.AccountabilityRolesGroup.PositionId != null) {
@@ -433,7 +440,8 @@ namespace RadialReview.Accessors {
 
 					s.Flush();
 
-					s.GetFresh<UserOrganizationModel>(n.UserId).UpdateCache(s);
+					updateUsers.Add(n.UserId.Value);
+					//s.GetFresh<UserOrganizationModel>(n.UserId).UpdateCache(s);
 
 					updater.Update(new AngularAccountabilityNode(n.Id) {
 						User = AngularUser.CreateUser(n.User),
@@ -463,7 +471,10 @@ namespace RadialReview.Accessors {
 			} else {
 				//No change?
 			}
-
+			s.Flush();
+			foreach (var u in updateUsers.Distinct()) {
+				s.GetFresh<UserOrganizationModel>(n).UpdateCache(s);
+			}
 		}
 
 
@@ -546,7 +557,9 @@ namespace RadialReview.Accessors {
 
 						DeepAccessor.RemoveAll(s, node, now);
 
+#pragma warning disable CS0618 // Type or member is obsolete
 						SetUser(s, do_not_use, perms, node.Id, null, false, false, now);
+#pragma warning restore CS0618 // Type or member is obsolete
 						UpdatePosition_Unsafe(s, do_not_use, perms, node.Id, null, now);
 
 						////REMOVE MANAGER
@@ -625,7 +638,9 @@ namespace RadialReview.Accessors {
 
 						if (oldParentId != null) {
 							var oldParentNode = s.Get<AccountabilityNode>(oldParentId.Value);
+#pragma warning disable CS0618 // Type or member is obsolete
 							DeepAccessor.Remove(s, oldParentNode, node, now);
+#pragma warning restore CS0618 // Type or member is obsolete
 
 							//REMOVE MANAGER
 							if (oldParentNode.UserId != null && node.UserId != null) {
@@ -644,7 +659,9 @@ namespace RadialReview.Accessors {
 						}
 
 						var newParentNode = s.Get<AccountabilityNode>(newParentId);
+#pragma warning disable CS0618 // Type or member is obsolete
 						DeepAccessor.Add(s, newParentNode, node, node.OrganizationId, now);
+#pragma warning restore CS0618 // Type or member is obsolete
 						if (newParent.User != null && !newParentNode.User.IsManager()) {
 							UserAccessor.EditUser(s, perms, newParentNode.User.Id, true);
 							newParentNode.User.ManagerAtOrganization = true;
@@ -711,7 +728,9 @@ namespace RadialReview.Accessors {
 		}
 
 		public static AccountabilityNode AppendNode(ISession s, PermissionsUtility perms, RealTimeUtility rt, long parentNodeId, long? rolesGroupId = null, long? userId = null) {
+#pragma warning disable CS0618 // Type or member is obsolete
 			return AppendNode(s, perms, rt, parentNodeId, rolesGroupId, userId, false);
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		[Obsolete("Use the other AppendNode")]
@@ -752,11 +771,9 @@ namespace RadialReview.Accessors {
 			s.Save(node);
 
 			DeepAccessor.Add(s, parent, node, parent.OrganizationId, now, false);
-
-
-
-			if (userId != null) {
-				SetUser(s, rt, perms, node.Id, userId, skipAddManager, false, now);
+			
+			if (userId != null) { 
+				SetUser(s, rt, perms, node.Id, userId, skipAddManager, false, now );
 			}
 			//var hub = GlobalHost.ConnectionManager.GetHubContext<OrganizationHub>();
 			//var orgHub = hub.Clients.Group(OrganizationHub.GenerateId(node.OrganizationId));
@@ -813,7 +830,7 @@ namespace RadialReview.Accessors {
 			var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
 			var now = DateTime.UtcNow;
 
-			long? templateId = null;
+			//long? templateId = null;
 
 			var r = new RoleModel() {
 				OrganizationId = orgId,
@@ -965,7 +982,7 @@ namespace RadialReview.Accessors {
 						Position = newPosition
 					});
 				}
-				
+
 				arg.PositionId = positionId;
 				s.Update(arg);
 			}
@@ -979,10 +996,10 @@ namespace RadialReview.Accessors {
 			var now = DateTime.UtcNow;
 
 			if (newARG != null) {
-				
+
 				if (newARG.Position.NotNull(x => (long?)x.Id) < 0) {
 
-					var count = s.QueryOver<OrganizationPositionModel>().Where(x => x.DeleteTime == null && x.CustomName == newARG.Position.Name && x.Organization.Id==node.OrganizationId).RowCount();
+					var count = s.QueryOver<OrganizationPositionModel>().Where(x => x.DeleteTime == null && x.CustomName == newARG.Position.Name && x.Organization.Id == node.OrganizationId).RowCount();
 					if (count == 0) {
 
 						//throw new PermissionsException("Position with this name already exists.");
@@ -1000,9 +1017,9 @@ namespace RadialReview.Accessors {
 				}
 
 				// Do not change to (long?). we want zero when null (UBER HAX)
-				if (newARG.Position.NotNull(x => x.Id) >= 0 )
+				if (newARG.Position.NotNull(x => x.Id) >= 0)
 					UpdatePosition_Unsafe(s, rt, perms, nodeId, newARG.Position.NotNull(x => (long?)x.Id), now);
-				
+
 			}
 			var updater = rt.UpdateOrganization(node.OrganizationId);
 			if (node.UserId != userId) {

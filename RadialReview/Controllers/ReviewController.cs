@@ -287,7 +287,7 @@ namespace RadialReview.Controllers {
 
             } catch (PermissionsException e) {
                 throw e;
-            } catch (Exception e) {
+            } catch (Exception) {
                 throw new PermissionsException();
             }
         }

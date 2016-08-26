@@ -7,7 +7,6 @@ namespace RadialReview.Models.Angular.Users
 {
 	public class AngularUser : Base.BaseAngular
 	{		
-		[Obsolete("User Static constructor",false)]
 		public AngularUser(long id) : base(id)
 		{
 			
@@ -52,8 +51,10 @@ namespace RadialReview.Models.Angular.Users
                 
 			};
 		}
-		
+
+#pragma warning disable CS0618 // Type or member is obsolete
 		public AngularUser() { }
+#pragma warning restore CS0618 // Type or member is obsolete
 
 		public string Name { get; set; }
 		public string ImageUrl { get; set; }

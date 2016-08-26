@@ -62,12 +62,12 @@ namespace RadialReview.Accessors.TodoIntegrations
 						}
 						catch (Exception)
 						{
-							var failed = true;
+							//var failed = true;
 							
 						}
 					}
 				}catch (Exception){
-					var failed = true;
+					//var failed = true;
 				}
 			}
 			

@@ -12,9 +12,11 @@ using System.Web;
 namespace RadialReview.Models.Angular.Accountability {
 
     public class AngularAccountabilityChart : BaseAngular {
-        
-        public AngularAccountabilityChart(){
+
+#pragma warning disable CS0618 // Type or member is obsolete
+		public AngularAccountabilityChart(){
         }
+#pragma warning restore CS0618 // Type or member is obsolete
         public AngularAccountabilityChart(long id): base(id)
         {
         }
@@ -71,9 +73,11 @@ namespace RadialReview.Models.Angular.Accountability {
         public AngularAccountabilityGroup Group { get; set; }     
 
     }
-    public class AngularAccountabilityGroup : BaseAngular {  
-        public AngularAccountabilityGroup(){
-        }
+    public class AngularAccountabilityGroup : BaseAngular {
+#pragma warning disable CS0618 // Type or member is obsolete
+		public AngularAccountabilityGroup() {
+		}
+#pragma warning restore CS0618 // Type or member is obsolete
         public AngularAccountabilityGroup(long id):base(id){
         }
         public AngularAccountabilityGroup(AccountabilityRolesGroup group,bool? editable=null) : base(group.Id){

@@ -116,7 +116,9 @@ namespace RadialReview.Models.Todo
 			}
 		}
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 		public virtual async Task<string> GetIssueMessage()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             if (CompleteTime == null)
                 return "Incomplete: '" + Message + "'";//"Todo was not completed";

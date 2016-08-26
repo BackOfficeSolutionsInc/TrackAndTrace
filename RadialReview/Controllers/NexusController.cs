@@ -32,8 +32,10 @@ namespace RadialReview.Controllers
             }
             catch (Exception)
             {
-                var u = _UserAccessor.GetUserOrganizationUnsafe(nexus.ForUserId);
-                var username = u.GetUsername();
+#pragma warning disable CS0618 // Type or member is obsolete
+				var u = _UserAccessor.GetUserOrganizationUnsafe(nexus.ForUserId);
+#pragma warning restore CS0618 // Type or member is obsolete
+				var username = u.GetUsername();
                 try
                 {
                     SignOut();
@@ -110,7 +112,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public async Task<JsonResult> AddManagedUserToOrganization(CreateUserOrganizationViewModel model, long? meeting = null)
         {
-            UserOrganizationModel createdUser=null;
+           // UserOrganizationModel createdUser=null;
             try
             {
 				//var user = GetUser().Hydrate().Organization().Execute();
@@ -139,7 +141,7 @@ namespace RadialReview.Controllers
                 if (meeting != null) {
                     try {
                         L10Accessor.AddAttendee(GetUser(), meeting.Value, result.Item2.Id);
-                    } catch (Exception e) {
+                    } catch (Exception) {
                         throw new PermissionsException("Could not add to meeting.");
                     }
                 }

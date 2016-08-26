@@ -240,7 +240,7 @@ namespace RadialReview.Utilities {
 				default:
                     throw new ArgumentOutOfRangeException("resourceType");
             }
-            return false;
+           // return false;
         }
         protected bool IsOrgAdmin(PermItem.ResourceType resourceType, long resourceId)
         {

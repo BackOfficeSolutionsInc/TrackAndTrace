@@ -389,7 +389,7 @@ namespace RadialReview.Utilities {
                     var n = names[0].ToLower();
                     foreach (var a in available_first_last_id) {
                         //Try first name
-                        var added = false;
+                        //var added = false;
                         var best = int.MaxValue;
                         foreach (var nickname in GetNicknames(a.FirstName, ref nicknameCache)) {
                             var fnScore = DamerauLevenshteinDistance(n, nickname, thresh);
@@ -452,7 +452,7 @@ namespace RadialReview.Utilities {
                             }
                         } else if (names[0].TrimEnd('.').Length > 1 && names[1].TrimEnd('.').Length == 1) {// John S.
                             if (a.LastName.Length > 0 && names[1][0] == a.LastName[0]) {
-                                bool added = false;
+                                //bool added = false;
                                 var best = int.MaxValue;
                                 foreach (var nickname in GetNicknames(a.FirstName, ref nicknameCache)) {
                                     var fnThresh = DamerauLevenshteinDistance(names[0], nickname.ToLower(), thresh);
@@ -473,7 +473,7 @@ namespace RadialReview.Utilities {
                             }
                         } else if (names[0].TrimEnd('.').Length > 1 && names[1].TrimEnd('.').Length > 1) {
                             // John Smith
-                            var added = false;
+                            //var added = false;
                             var best = int.MaxValue;
                             foreach (var nickname in GetNicknames(a.FirstName, ref nicknameCache)) {
                                 var fnScore = DamerauLevenshteinDistance(fn, nickname.ToLower(), thresh);
@@ -493,7 +493,7 @@ namespace RadialReview.Utilities {
                                 formats.Add(NameFormat.FNLN, best);
 
                             // Smith John
-                            added = false;
+                           // added = false;
                             best = int.MaxValue;
                             foreach (var nickname in GetNicknames(a.LastName, ref nicknameCache)) {
                                 var fnScore = DamerauLevenshteinDistance(fn, nickname.ToLower(), thresh);

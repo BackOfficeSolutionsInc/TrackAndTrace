@@ -50,7 +50,7 @@ namespace RadialReview.Models.Json
 			        else
 				        System.Web.HttpContext.Current.Response.StatusCode = (int) HttpStatusCode.OK;
 		        }
-		        catch (Exception e){
+		        catch (Exception){
 			        
 		        }
 	        }
@@ -97,8 +97,8 @@ namespace RadialReview.Models.Json
                             return false;
                     }
 				}
-				catch (Exception e){
-					var ops = true;
+				catch (Exception){
+					//var ops = true;
 				}
 				if (_Refresh != null)
 					return _Refresh.Value;
@@ -128,8 +128,8 @@ namespace RadialReview.Models.Json
 						if (requestSilent.ToLower() == "true")
 							return true;
 					}
-				}catch (Exception e){
-					var ops = true;
+				}catch (Exception ){
+					//var ops = true;
 				}
 				//Assume Noisy
 				return false;

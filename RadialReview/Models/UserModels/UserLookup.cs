@@ -11,7 +11,7 @@ namespace RadialReview.Models.UserModels
 {
 	public class UserLookup : ILongIdentifiable, IHistorical
 	{
-		private bool _isClient;
+		//private bool _isClient;
 
 		[Obsolete("Use UserId instead")]
 		public virtual long Id { get; set; }
@@ -65,7 +65,9 @@ namespace RadialReview.Models.UserModels
 		{
 			public UserLookupMap()
 			{
+#pragma warning disable CS0618 // Type or member is obsolete
 				Id(x => x.Id);
+#pragma warning restore CS0618 // Type or member is obsolete
 				Map(x => x.UserId).Index("UserLookup_UserId_IDX");
 				Map(x => x.AttachTime);
 				Map(x => x.CreateTime);

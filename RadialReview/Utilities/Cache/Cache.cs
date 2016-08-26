@@ -84,7 +84,9 @@ namespace RadialReview
 			switch (lifetime)
 			{
 				case LifeTime.Session: Context.Session[key] = toCache; goto case LifeTime.Request;
+#pragma warning disable CS0618 // Type or member is obsolete
 				case LifeTime.AppDomain: Context.Cache.Add(key, toCache, null, expires ?? DateTime.MaxValue, System.Web.Caching.Cache.NoSlidingExpiration, CacheItemPriority.Default, null); goto case LifeTime.Request;
+#pragma warning restore CS0618 // Type or member is obsolete
 				case LifeTime.Request: Context.Items[key] = toCache; break;
 				default: throw new ArgumentOutOfRangeException("lifetime");
 			}

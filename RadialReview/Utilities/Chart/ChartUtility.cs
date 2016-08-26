@@ -189,7 +189,7 @@ namespace RadialReview.Utilities.Chart
                     return n.Intersect(o).ToArray();
             };
 
-            var id = 0;
+            //var id = 0;
 
 
             if (groupByClasses.Count() == 0)

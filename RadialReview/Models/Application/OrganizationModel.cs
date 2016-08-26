@@ -260,8 +260,10 @@ namespace RadialReview.Models {
         public virtual IList<QuestionCategoryModel> QuestionCategories { get; set; }
         //public virtual IList<IndustryModel> Industries { get; set; }
         public virtual IList<GroupModel> Groups { get; set; }
-        public virtual DateTime? DeleteTime { get; set; }
-        public virtual DateTime CreationTime { get; set; }
+#pragma warning disable CS0114 // Member hides inherited member; missing override keyword
+		public virtual DateTime? DeleteTime { get; set; }
+#pragma warning restore CS0114 // Member hides inherited member; missing override keyword
+		public virtual DateTime CreationTime { get; set; }
         public virtual bool SendEmailImmediately { get; set; }
         public virtual String ImageUrl { get; set; }
         public virtual long AccountabilityChartId { get; set; }

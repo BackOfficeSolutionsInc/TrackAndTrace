@@ -286,10 +286,10 @@ namespace RadialReview.Utilities
                     }
                     return session;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     //Something went wrong.. revert
-                    var a = "Error";
+                    //var a = "Error";
                 }
             }
             return GetDatabaseSessionFactory().OpenSession();

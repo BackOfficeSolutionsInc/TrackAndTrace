@@ -55,7 +55,7 @@ namespace TractionTools.UITests {
                         throw new Exception("Image is not different.");
                     return true;
                 });
-            } catch (Exception e) {
+            } catch (Exception) {
 
                 var folder = BaseSelenium.GetScreenshotFolder();
                 var file = Path.Combine(folder, driver.CurrentIdentifier+"-before.png");
@@ -140,7 +140,7 @@ namespace TractionTools.UITests {
 
         public static OUT Timeout<E, OUT>(double timeout, Func<OUT> action) where E : Exception
         {
-            int i = -1;
+            //int i = -1;
             var start = DateTime.UtcNow;
             var dur = TimeSpan.FromSeconds(timeout);
             E ex = default(E);
@@ -344,7 +344,7 @@ namespace TractionTools.UITests {
             //    return true;
             //});
 
-            int i = -1;
+            //int i = -1;
             var start = DateTime.UtcNow;
             var dur = TimeSpan.FromSeconds((double)seconds);
             while (DateTime.UtcNow - start < dur) {
@@ -352,7 +352,7 @@ namespace TractionTools.UITests {
                     var alert = driver.SwitchTo().Alert();
                     alert.Accept();
                     break;
-                } catch (NoAlertPresentException e) {
+                } catch (NoAlertPresentException) {
                     Thread.Sleep(200);
                     continue;
                 }
@@ -376,7 +376,7 @@ namespace TractionTools.UITests {
                     if (!es.Any())
                         return;
                     
-                } catch (FormatException e) {
+                } catch (FormatException) {
 
                 }
                 Thread.Sleep(50);

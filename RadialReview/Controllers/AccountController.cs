@@ -52,7 +52,9 @@ namespace RadialReview.Controllers {
 			//string message = null;
 			//the token is valid for one day
 			var until = DateTime.UtcNow.AddDays(1);
+#pragma warning disable CS0618 // Type or member is obsolete
 			var user = _UserAccessor.GetUserByEmail(rpvm.Email);
+#pragma warning restore CS0618 // Type or member is obsolete
 			var token = Guid.NewGuid();
 
 			if (null != user) {
@@ -76,12 +78,12 @@ namespace RadialReview.Controllers {
 
 		[AllowAnonymous]
 		[Access(AccessLevel.Any)]
-		public virtual async Task<ActionResult> ResetPasswordWithToken(string id) {
+		public virtual ActionResult ResetPasswordWithToken(string id) {
 			SignOut();
 			//Call this to force check permissions 
 			try {
 				var nexus = _NexusAccessor.Get(id);
-			} catch (Exception e) {
+			} catch (Exception) {
 
 			}
 
@@ -204,7 +206,9 @@ namespace RadialReview.Controllers {
 #if DEBUG
 					if (Config.IsLocal()) {
 						if (model.Password == "`123qwer") {
+#pragma warning disable CS0618 // Type or member is obsolete
 							user = _UserAccessor.GetUserByEmail(model.UserName.ToLower());
+#pragma warning restore CS0618 // Type or member is obsolete
 							if (user != null) {
 								await SignInAsync(user, model.RememberMe);
 								return RedirectToLocal(returnUrl);
@@ -240,7 +244,9 @@ namespace RadialReview.Controllers {
 
 					model.Email = nexus.GetArgs()[1];
 
+#pragma warning disable CS0618 // Type or member is obsolete
 					if (nexus.DateExecuted != null || _UserAccessor.GetUserByEmail(model.Email) != null) {
+#pragma warning restore CS0618 // Type or member is obsolete
 						var userOrgId = nexus.GetArgs()[2].ToLong();
 						var uname = _UserAccessor.GetUserNameByUserOrganizationId(userOrgId);
 						return RedirectToAction("Login", new { username = uname, returnUrl = "" });
@@ -391,7 +397,7 @@ namespace RadialReview.Controllers {
 		[HttpPost]
 		[Access(AccessLevel.User)]
 		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> Manage(ProfileViewModel model) {
+		public ActionResult Manage(ProfileViewModel model) {
 			_UserAccessor.EditUserModel(
 				GetUserModel(),
 				GetUserModel().Id,
@@ -623,6 +629,7 @@ namespace RadialReview.Controllers {
 			PasswordIncorrect,
 		}
 
+#pragma warning disable CS0108 // Member hides inherited member; missing new keyword
 		private ActionResult RedirectToLocal(string returnUrl) {
 			if (Url.IsLocalUrl(returnUrl)) {
 				return Redirect(returnUrl);
@@ -630,6 +637,7 @@ namespace RadialReview.Controllers {
 				return RedirectToAction("Index", "Home");
 			}
 		}
+#pragma warning restore CS0108 // Member hides inherited member; missing new keyword
 
 		private class ChallengeResult : HttpUnauthorizedResult {
 			public ChallengeResult(string provider, string redirectUri)

@@ -58,7 +58,7 @@ namespace RadialReview.Controllers {
 
 
         [Access(AccessLevel.Radial)]
-        public async Task<ActionResult> Meetings(int minutes = 120)
+        public ActionResult Meetings(int minutes = 120)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -72,7 +72,7 @@ namespace RadialReview.Controllers {
 
 
         [Access(AccessLevel.Radial)]
-        public async Task<ActionResult> MeetingsTable(int weeks = 3)
+        public ActionResult MeetingsTable(int weeks = 3)
         {
             ViewBag.Weeks = weeks;
             using (var s = HibernateSession.GetCurrentSession()) {
@@ -86,7 +86,7 @@ namespace RadialReview.Controllers {
         }
         
         [Access(AccessLevel.Radial)]
-        public async Task<ActionResult> ShiftScorecard(long recurrence = 0, int weeks = 0)
+        public ActionResult ShiftScorecard(long recurrence = 0, int weeks = 0)
         {
             if (recurrence == 0 || weeks == 0)
                 return Content("Requires a recurrence and weeks parameter ?recurrence=&weeks= <br/>Warning: this command will shift the measurable regardless of whether it has been shifted for another meeting.");
@@ -686,7 +686,7 @@ namespace RadialReview.Controllers {
                     foreach (var a in answers) {
                         var relationship = RelationshipAccessor.GetRelationships(perms, qp, a.ByUserId, a.AboutUserId).First();
                         if (relationship == Models.Enums.AboutType.NoRelationship) {
-                            int b = 0;
+                            //int b = 0;
                         }
 
 
@@ -911,17 +911,18 @@ namespace RadialReview.Controllers {
         [Access(AccessLevel.Radial)]
         public async Task<JsonResult> ChargeToken(long id, decimal amt)
         {
-            return Json(await PaymentAccessor.ChargeOrganizationAmount(id, amt, true), JsonRequestBehavior.AllowGet);
-        }
+#pragma warning disable CS0618 // Type or member is obsolete
+			return Json(await PaymentAccessor.ChargeOrganizationAmount(id, amt, true), JsonRequestBehavior.AllowGet);
+#pragma warning restore CS0618 // Type or member is obsolete
+		}
 
-        [Access(AccessLevel.Radial)]
-        public async Task<JsonResult> ClearCache()
-        {
-            var urlToRemove = Url.Action("UserScorecard", "TileData");
-            HttpResponse.RemoveOutputCacheItem(urlToRemove);
-            return Json("cleared", JsonRequestBehavior.AllowGet);
-        }
+		[Access(AccessLevel.Radial)]
+		public JsonResult ClearCache() {
+			var urlToRemove = Url.Action("UserScorecard", "TileData");
+			HttpResponse.RemoveOutputCacheItem(urlToRemove);
+			return Json("cleared", JsonRequestBehavior.AllowGet);
+		}
 
 
-    }
+	}
 }

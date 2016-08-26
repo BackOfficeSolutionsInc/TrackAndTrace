@@ -39,7 +39,7 @@ namespace RadialReview.Accessors
 							csv.Add(s.Measurable.Title, s.ForWeek.ToShortDateString(), s.Measured.NotNull(x => x.Value.ToString()) ?? "");
 						}
 						return new System.Text.UTF8Encoding().GetBytes(csv.ToCsv());
-						break;
+						//break;
 					}
 				default: throw new Exception("Unrecognized Type");
 			}
