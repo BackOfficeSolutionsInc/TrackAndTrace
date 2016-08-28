@@ -247,7 +247,7 @@ namespace RadialReview.Accessors {
 		}
 
 		public static int CountRoles(ISession s, long userId) {
-			return GetRoleLinks_Unsafe(s.ToQueryProvider(true), userId).Distinct(x => x.RoleId).Count();
+			return GetRoleLinksForUser_Unsafe(s, userId).Distinct(x => x.RoleId).Count();
 		}
 
 

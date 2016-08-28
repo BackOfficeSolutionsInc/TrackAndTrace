@@ -69,7 +69,7 @@ body {
 }
 .node rect {
   fill: #fff;
-  stroke: #EF7622;
+  stroke: #ef7622;
   stroke-width: 3px;
 }
 .node.collapsed rect {
@@ -130,7 +130,7 @@ body {
   transition: fill .15s ease,stroke .4s ease;
   stroke-width: 1.5px;
   stroke-dasharray: 5,2;
-  stroke: #EF7622;
+  stroke: #ef7622;
   cursor: pointer;
   pointer-events: all;
 }
@@ -146,7 +146,7 @@ body {
 }
 .acc-chart svg .link {
   fill: none;
-  stroke: #EF7622;
+  stroke: #ef7622;
   stroke-width: 2px;
 }
 .acc-chart svg .acc-node {
@@ -181,7 +181,7 @@ body {
 }
 .acc-chart svg .acc-node .acc-buttons {
   width: 100%;
-  background-color: #EF7622;
+  background-color: #ef7622;
 }
 .acc-chart svg .acc-node .acc-buttons.top-bar {
   height: 10px;
@@ -310,9 +310,9 @@ body {
   font-size: 7px;
 }
 .acc-chart svg .acc-node .role-groups .role-group .role-group-title {
-  border-top: 1px solid #EF7622;
-  background-color: #EF7622;
-  border-bottom: 1px solid #EF7622;
+  border-top: 1px solid #ef7622;
+  background-color: #ef7622;
+  border-bottom: 1px solid #ef7622;
   font-family: 'Roboto', sans-serif;
   color: white;
   font-weight: bold;
@@ -343,11 +343,11 @@ body {
   height: 20px;
   display: inline-block;
   border-radius: 10px;
-  border: 2px solid #EF7622;
+  border: 2px solid #ef7622;
   float: right;
   margin-top: -16px;
   margin-right: -22px;
-  color: #EF7622;
+  color: #ef7622;
   background-color: #fff;
   padding: 0px 0px;
   font-size: 14px;
@@ -356,7 +356,7 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 .acc-chart svg .acc-node .role-groups .role-group .role-group-title .circle:hover {
-  background-color: #EF7622;
+  background-color: #ef7622;
   color: white !important;
 }
 .acc-chart svg .acc-node .acc-add-role {
@@ -420,12 +420,12 @@ body {
   outline: none;
 }
 .acc-chart svg .add-role-row circle {
-  stroke: #EF7622;
+  stroke: #ef7622;
   stroke-width: 1.5px;
   fill: #fff;
 }
 .acc-chart svg .add-role-row .acc-plus {
-  fill: #EF7622;
+  fill: #ef7622;
   height: 0.1px;
   width: 0.1px;
   stroke-width: 1px;

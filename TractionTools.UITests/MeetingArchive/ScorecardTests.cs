@@ -81,7 +81,7 @@ namespace TractionTools.UITests.Selenium {
                     var row = element.Closest(By.TagName("tr"));
                     Assert.AreEqual(auc.User.GetFirstName() + " " + auc.User.GetLastName(), row.Find(".who .picture-container").Title());
                     Assert.IsTrue(row.Find(".target.direction .direction").HasClass("direction_LessThan"));
-                    Assert.AreEqual("$101", row.Find(".target.value input").Val());
+                    Assert.AreEqual("$101.00", row.Find(".target.value input").Val());
                     Assert.IsTrue(row.Find(".target.value span").HasClass("modifiers-Dollar"));
                     var dateRows = d.Finds("#ScorecardTable thead tr");
                     var ths = dateRows[0].Finds("th");

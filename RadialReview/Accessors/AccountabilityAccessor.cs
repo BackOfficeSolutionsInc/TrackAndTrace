@@ -473,7 +473,7 @@ namespace RadialReview.Accessors {
 			}
 			s.Flush();
 			foreach (var u in updateUsers.Distinct()) {
-				s.GetFresh<UserOrganizationModel>(n).UpdateCache(s);
+				s.GetFresh<UserOrganizationModel>(u).UpdateCache(s);
 			}
 		}
 
@@ -726,12 +726,11 @@ namespace RadialReview.Accessors {
 			}
 
 		}
-
-		public static AccountabilityNode AppendNode(ISession s, PermissionsUtility perms, RealTimeUtility rt, long parentNodeId, long? rolesGroupId = null, long? userId = null) {
 #pragma warning disable CS0618 // Type or member is obsolete
+		public static AccountabilityNode AppendNode(ISession s, PermissionsUtility perms, RealTimeUtility rt, long parentNodeId, long? rolesGroupId = null, long? userId = null) {
 			return AppendNode(s, perms, rt, parentNodeId, rolesGroupId, userId, false);
-#pragma warning restore CS0618 // Type or member is obsolete
 		}
+#pragma warning restore CS0618 // Type or member is obsolete
 
 		[Obsolete("Use the other AppendNode")]
 		public static AccountabilityNode AppendNode(ISession s, PermissionsUtility perms, RealTimeUtility rt, long parentNodeId, long? rolesGroupId, long? userId, bool skipAddManager) {

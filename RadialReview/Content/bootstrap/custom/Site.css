@@ -144,7 +144,7 @@
   bottom: -11px;
 }
 #modal .modal-icon .modal-footer {
-  background-color: #3E3935;
+  background-color: #3e3935;
   border-top: none;
   height: 105px;
 }
@@ -156,7 +156,7 @@
   right: 0px;
   padding-bottom: 8px;
   font-size: 14px;
-  color: #3E3935;
+  color: #3e3935;
 }
 #modal .modal-icon .input-yesno input {
   margin-left: auto;
@@ -204,7 +204,7 @@
   font-family: Arial;
   font-weight: bold;
   position: absolute;
-  color: #3E3935;
+  color: #3e3935;
   bottom: 28px;
   left: 0px;
   right: 0px;
@@ -239,13 +239,13 @@
 }
 #modal .modal-icon.modal-icon-primary .modal-icon:before {
   content: "\e122";
-  background-color: #EF7622;
+  background-color: #ef7622;
 }
 #modal .modal-icon.modal-icon-primary .modal-icon:after {
   content: "Hey!";
 }
 #modal .modal-icon.modal-icon-primary #modalOk {
-  background-color: #EF7622;
+  background-color: #ef7622;
 }
 #modal .modal-icon.modal-icon-warning .modal-icon:before {
   content: "\e123";
@@ -292,7 +292,7 @@
 }
 #modal .modal-icon.modal-icon-default .modal-icon:before {
   content: "\e162";
-  background-color: #EF7622;
+  background-color: #ef7622;
   padding-top: 23px;
   padding-left: 3px;
   border-style: solid;
@@ -301,7 +301,7 @@
   content: "Hey!";
 }
 #modal .modal-icon.modal-icon-default #modalOk {
-  background-color: #EF7622;
+  background-color: #ef7622;
 }
 tr.grayRow {
   background-image: url("/Content/img/graystripe-light.png");
@@ -321,10 +321,10 @@ tr.grayRow {
   color: #cf5e0f;
 }
 .table-hover-underline a {
-  color: #EF7622;
+  color: #ef7622;
 }
 .table-hover tr:hover .table-hover-underline a {
-  color: #EF7622;
+  color: #ef7622;
 }
 .jumbotron h1 {
   color: white;
@@ -343,10 +343,10 @@ select:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0px 1000px white inset !important;
 }
 .panel-default .headerButton {
-  color: #3E3935;
+  color: #3e3935;
 }
 .panel-default .headerButton:hover {
-  color: #3E3935;
+  color: #3e3935;
   text-decoration: underline;
 }
 .body-full-height {

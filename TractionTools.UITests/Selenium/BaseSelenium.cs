@@ -453,14 +453,17 @@ namespace TractionTools.UITests.Selenium {
 
         public static string GetTestSolutionPath()
         {
-            var solutionFolder = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)));
+            //var solutionFolder = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)));
+            //var testPath = Path.Combine(solutionFolder, TestName);
+
+            var solutionFolder = "c:\\TractionTools\\";// Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)));
             var testPath = Path.Combine(solutionFolder, TestName);
             return testPath;
         }
 
         public static string GetTractionToolsSolutionPath()
         {
-            var solutionFolder = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)));
+            var solutionFolder = "c:\\TractionTools\\";// Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)));
             var solutionPath = Path.Combine(solutionFolder, ApplicationName);
             return solutionPath;
         }
@@ -498,6 +501,9 @@ namespace TractionTools.UITests.Selenium {
             var testConfigFileMap = new ExeConfigurationFileMap() { ExeConfigFilename = Path.Combine(testPath, "app.config") };
             var testConfig = ConfigurationManager.OpenMappedExeConfiguration(testConfigFileMap, ConfigurationUserLevel.None);
             var testSettings = (AppSettingsSection)testConfig.GetSection("appSettings");
+
+            if (!testSettings.Settings.AllKeys.Any())
+                throw new Exception("App.config was empty. Cannot correctly remap Web.config.");
 
             var webConfigPaths = new string[] { Path.Combine(Path.Combine(temp, "bin"), "web.config"), Path.Combine(temp, "web.config") };
 
