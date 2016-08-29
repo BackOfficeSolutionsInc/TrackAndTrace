@@ -33,6 +33,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TractionTools.Tests", "Trac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TractionTools.UITests", "TractionTools.UITests\TractionTools.UITests.csproj", "{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTestMetrics", "UnitTestMetrics", "{21E01D76-2050-4C5A-A151-0BC54D90FA69}"
+	ProjectSection(SolutionItems) = preProject
+		GenerateMetrics.bat = GenerateMetrics.bat
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -217,5 +222,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{21E01D76-2050-4C5A-A151-0BC54D90FA69} = {16819F84-7706-4695-A0E6-A8E810585DAE}
 	EndGlobalSection
 EndGlobal

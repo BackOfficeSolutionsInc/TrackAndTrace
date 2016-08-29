@@ -34,5 +34,17 @@
   {
     "outputFile": "Content/bootstrap/buttons.css",
     "inputFile": "Content/bootstrap/buttons.less"
+  },
+  {
+    "outputFile": "Content/L10/L10Wizard.css",
+    "inputFile": "Content/L10/L10Wizard.less"
+  },
+  {
+    "outputFile": "Content/Angular/LineChart.css",
+    "inputFile": "Content/Angular/LineChart.less"
+  },
+  {
+    "outputFile": "Content/GettingStarted/GettingStarted.css",
+    "inputFile": "Content/GettingStarted/GettingStarted.less"
   }
 ]

@@ -31,8 +31,9 @@ namespace TractionTools.UITests.L10Wizard {
                 d.Find("#l10-wizard-menu", 10);
                 var basics = d.FindElement(By.PartialLinkText("Basics"), 10);
                 Assert.IsTrue(basics.HasClass("selected"));
-
-                Assert.IsFalse(d.Find(".backButton", 10).Displayed);
+				d.FindElement(By.CssSelector(".nextButton"), 10);
+				d.WaitForNotVisible(".backButton");
+				Assert.IsFalse(d.Find(".backButton", 10).Displayed);
                 Assert.IsTrue(d.Find(".nextButton", 10).Displayed);
 
                 d.WaitUntil(x => MeetingName == d.Find("#l10-wizard-name input").Val());
@@ -126,15 +127,26 @@ namespace TractionTools.UITests.L10Wizard {
                 row.Find(".measurable-column input").SendKeys(measurableName);
                 row.Find(".value.goal-column input").SendKeys("1234");
 
-                d.TestScreenshot("Scorecard-AfterAdd");
+
+				d.Find("#modalOk").Submit();
+
+				d.TestScreenshot("Scorecard-AfterAdd");
+
+				rows = d.WaitUntil(x => {
+					var f = x.Finds("#ScorecardTable tbody tr");
+					if (f.Count == 0)
+						return null;
+					return f;
+				});
+				row = rows[0];
 
 
                 row.Find(".picture").Click();
-                d.WaitForVisible("#l10-wizard-scorecard .editable-wrap");
+                d.WaitForVisible(".editable-wrap");
                 d.TestScreenshot("Rocks-Picture");
 
                 row.Find(".delete-row").Click();
-                d.WaitForNotVisible("#l10-wizard-scorecard .editable-wrap");
+                d.WaitForNotVisible(/*"#l10-wizard-scorecard */".editable-wrap");
 
                 d.WaitForVisible("#l10-wizard-scorecard .empty-search");
 
@@ -165,14 +177,14 @@ namespace TractionTools.UITests.L10Wizard {
                 page.Find(".create-row").Click();
 
                 var rows = d.WaitUntil(x => {
-                    var f = x.Finds(".rock-pane tbody tr");
+                    var f = x.Finds(".rock-pane tbody tr[md-row]");
                     if (f.Count == 0)
                         return null;
                     return f;
                 });
                 d.WaitForNotVisible("#l10-wizard-rocks .empty-search");
 
-                Assert.AreEqual(1, rows.Count);
+                Assert.AreEqual(1, rows.Count); //extra one for ".vs-repeat-before-content"
 
                 var row = rows[0];
                 d.TestScreenshot("Rocks-BeforeAdd");
@@ -190,11 +202,11 @@ namespace TractionTools.UITests.L10Wizard {
                 d.TestScreenshot("Rocks-AfterAdd");
 
                 row.Find(".picture").Click();
-                d.WaitForVisible("#l10-wizard-rocks .editable-wrap");
+                d.WaitForVisible(/*"#l10-wizard-rocks */".editable-wrap");
                 d.TestScreenshot("Rocks-Picture");
 
                 row.Find(".delete-row").Click();
-                d.WaitForNotVisible("#l10-wizard-rocks .editable-wrap");
+                d.WaitForNotVisible(/*"#l10-wizard-rocks */".editable-wrap");
 
                 d.WaitForVisible("#l10-wizard-rocks .empty-search");
 
@@ -227,7 +239,7 @@ namespace TractionTools.UITests.L10Wizard {
                 page.Find(".create-row").Click();
 
                 var rows = d.WaitUntil(x => {
-                    var f = x.Finds(".todo-pane tbody tr");
+                    var f = x.Finds(".todo-pane tbody tr[md-row]");
                     if (f.Count == 0)
                         return null;
                     return f;
@@ -235,7 +247,7 @@ namespace TractionTools.UITests.L10Wizard {
 
                 d.WaitForNotVisible("#l10-wizard-todos .empty-search");
 
-                Assert.AreEqual(1, rows.Count);
+                Assert.AreEqual(1, rows.Count); //extra one for repeat container
 
                 var row = rows[0];
                 d.TestScreenshot("BeforeAdd");
@@ -246,12 +258,12 @@ namespace TractionTools.UITests.L10Wizard {
                 d.TestScreenshot("AfterAdd");
 
                 row.Find(".picture").Click();
-                Assert.IsTrue(d.WaitUntil(x => row.Find(".editable-wrap").Displayed));
+                Assert.IsTrue(d.WaitUntil(x => x.Find(".editable-wrap").Displayed));
                 d.TestScreenshot("Picture");
 
                 row.Find(".delete-row").Click();
 
-                d.WaitForNotVisible("#l10-wizard-todos .editable-wrap");
+                d.WaitForNotVisible(/*"#l10-wizard-todos */".editable-wrap");
 
                 d.WaitForVisible("#l10-wizard-todos .empty-search");
 
@@ -282,16 +294,16 @@ namespace TractionTools.UITests.L10Wizard {
                 page.Find(".create-row").Click();
 
                 var rows = d.WaitUntil(x => {
-                    var f = x.Finds(".issues-pane tbody tr");
+                    var f = x.Finds(".issues-pane tbody tr[md-row]");
                     if (f.Count == 0)
                         return null;
                     return f;
                 });
                 d.WaitForNotVisible("#l10-wizard-issues .empty-search");
 
-                Assert.AreEqual(1, rows.Count);
+                Assert.AreEqual(1, rows.Count);//extra one for ".vs-repeat-before-content"
 
-                var row = rows[0];
+				var row = rows[0];
                 d.TestScreenshot("BeforeAdd");
 
                 var measurableName = "Issue-Name";
@@ -300,12 +312,12 @@ namespace TractionTools.UITests.L10Wizard {
                 d.TestScreenshot("AfterAdd");
 
                 row.Find(".picture").Click();
-                d.WaitForVisible("#l10-wizard-issues .editable-wrap");
+                d.WaitForVisible(/*"#l10-wizard-issues */".editable-wrap");
                 d.TestScreenshot("Picture");
 
                 row.Find(".delete-row").Click();
 
-                d.WaitForNotVisible("#l10-wizard-issues .editable-wrap");
+                d.WaitForNotVisible(/*"#l10-wizard-issues */".editable-wrap");
 
                 d.WaitForVisible("#l10-wizard-issues .empty-search");
 

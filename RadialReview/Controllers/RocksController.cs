@@ -137,9 +137,9 @@ namespace RadialReview.Controllers
 		}
 
         [Access(AccessLevel.UserOrganization)]
-        public FileContentResult Listing(long period)
+        public FileContentResult Listing()
         {
-            var csv=_RockAccessor.PeriodListing(GetUser(), period);
+            var csv=_RockAccessor.Listing(GetUser(), GetUser().Organization.Id);
             return File(csv.ToBytes(), "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + csv.Title + ".csv");
         }
 

@@ -64,45 +64,7 @@
 		window.OrgId = @(ViewBag.OrganizationId ?? -1);
 		window.Title = "@(ViewBag.Title ?? "")";
 	</script>
-	@if (RadialReview.Utilities.Config.GetEnv() == RadialReview.Models.Enums.Env.local_test_sqlite) {
-		<script type="text/javascript">
-			$(function(){
-				window.onerror=function(message, source, lineno, colno, error){
-					try{
-						$(".JSError").append($("<li><div class='error'>"+msg+"</div>"+
-                            "<div class='source'>"+source+"</div>"+
-                            "<div class='lineno'>"+lineno+"</div>"+
-                            "<div class='colno'>"+colno+"</div>"+
-                            "<div class='error'>"+error+"</div></li>"));
-					}catch(e){
-						debugger;
-					}
-				}
-			});
-			(function(){
-				var oldError = console.error;
-				console.error = function (a1,a2,a3,a4,a5,a6) {
-					try{
-						// DO MESSAGE HERE.
-						$(".JSError").append($("<li class='console_error'>"+
-                      "<div class='a1'>"+a1+"</div>"+
-                      "<div class='a2'>"+a2+"</div>"+
-                      "<div class='a3'>"+a3+"</div>"+
-                      "<div class='a4'>"+a4+"</div>"+
-                      "<div class='a5'>"+a5+"</div>"+
-                      "<div class='a6'>"+a6+"</div></li>"));
-
-					}catch(e){
-						debugger;
-					}
-					oldError.apply(console, [a1,a2,a3,a4,a5,a6]);
-				};
-			})();
-
-		</script>
-		<ul class="JSError" style="position:fixed;top:0px;right:0px;opacity:.5;pointer-events:none;"></ul>
-	}
-
+	
 
 	@RenderSection("topSection", required: false)
 
@@ -275,6 +237,46 @@
 	<div class="scripts-container">
 		<script src="https://cdn.polyfill.io/v2/polyfill.js?features=CustomEvent"></script>
 		@Scripts.Render("~/bundles/jquery")
+		@if (RadialReview.Utilities.Config.GetEnv() == RadialReview.Models.Enums.Env.local_test_sqlite) {
+			<script type="text/javascript">
+			$(function(){
+				window.onerror=function(message, source, lineno, colno, error){
+					try{
+						$(".JSError").append($("<li><div class='error'>"+msg+"</div>"+
+                            "<div class='source'>"+source+"</div>"+
+                            "<div class='lineno'>"+lineno+"</div>"+
+                            "<div class='colno'>"+colno+"</div>"+
+                            "<div class='error'>"+error+"</div></li>"));
+					}catch(e){
+						debugger;
+					}
+				}
+			});
+			(function(){
+				var oldError = console.error;
+				console.error = function (a1,a2,a3,a4,a5,a6) {
+					try{
+						// DO MESSAGE HERE.
+						$(".JSError").append($("<li class='console_error'>"+
+                      "<div class='a1'>"+a1+"</div>"+
+                      "<div class='a2'>"+a2+"</div>"+
+                      "<div class='a3'>"+a3+"</div>"+
+                      "<div class='a4'>"+a4+"</div>"+
+                      "<div class='a5'>"+a5+"</div>"+
+                      "<div class='a6'>"+a6+"</div></li>"));
+
+					}catch(e){
+						debugger;
+					}
+					oldError.apply(console, [a1,a2,a3,a4,a5,a6]);
+				};
+			})();
+
+			</script>
+			<ul class="JSError" style="position:fixed;top:0px;right:0px;opacity:.5;pointer-events:none;"></ul>
+		}
+
+
 		<script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
 		@Scripts.Render("~/bundles/bootstrap")
 		@RenderSection("scripts", required: false) @RenderSection("modals", required: false)

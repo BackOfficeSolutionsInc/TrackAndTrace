@@ -328,35 +328,37 @@ namespace RadialReview.Accessors
 			}
 		}
 
-        public Csv PeriodListing(UserOrganizationModel caller, long period)
+        public Csv Listing(UserOrganizationModel caller,long organizationId)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var p = s.Get<PeriodModel>(period);
+                   // var p = s.Get<PeriodModel>(period);
 
-                    PermissionsUtility.Create(s, caller).ManagerAtOrganization(caller.Id, caller.Organization.Id);
+                    PermissionsUtility.Create(s, caller).ManagingOrganization(organizationId);
 
                     
 
                     var rocksQ = s.QueryOver<RockModel>()
-                        .Where(x => x.DeleteTime == null && x.PeriodId == period);
-                    if (!caller.ManagingOrganization && !caller.IsRadialAdmin){
-                        var subs = DeepAccessor.Users.GetSubordinatesAndSelf(s, caller, caller.Id);
-                        rocksQ= rocksQ.WhereRestrictionOn(x=>x.ForUserId).IsIn(subs);
-                    }
+                        .Where(x => x.DeleteTime == null && x.OrganizationId== organizationId);
+                    //if (!caller.ManagingOrganization && !caller.IsRadialAdmin){
+                    //    var subs = DeepAccessor.Users.GetSubordinatesAndSelf(s, caller, caller.Id);
+                    //    rocksQ= rocksQ.WhereRestrictionOn(x=>x.ForUserId).IsIn(subs);
+                    //}
                     var rocks = rocksQ.List().ToList();
 
                     var csv = new Csv();
-                    csv.SetTitle(p.Name + " " + caller.Organization.Settings.RockName);
+                    csv.SetTitle(caller.Organization.Settings.RockName);
                     
                     foreach (var r in rocks)
                     {
                         csv.Add(r.Rock, "Owner", r.AccountableUser.GetName());
-                        csv.Add(r.Rock, "Manager", string.Join(" & ", r.AccountableUser.ManagedBy.Select(x => x.Manager.GetName())));
-                        csv.Add(r.Rock, "Status",  ""+r.Completion);
-                    }
+						//csv.Add(r.Rock, "Manager", string.Join(" & ", r.AccountableUser.ManagedBy.Select(x => x.Manager.GetName())));
+						csv.Add(r.Rock, "Status", "" + r.Completion);
+						csv.Add(r.Rock, "CreateTime", "" + r.CreateTime);
+						csv.Add(r.Rock, "CompleteTime", "" + r.CompleteTime);
+					}
                     return csv;
                 }
             }

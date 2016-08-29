@@ -111,8 +111,18 @@ namespace RadialReview.Controllers
         {
             SetupViewBag(id);
             return PartialView("L10Todos", id);
-        }
-        [Access(AccessLevel.User)]
+		}
+
+		[Access(AccessLevel.Any)]
+		//[OutputCache(Duration = 600, VaryByParam = "none",Location=OutputCacheLocation.Server)]
+		//[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
+		//[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
+		public PartialViewResult L10Stats(long id) {
+			ViewBag.Name = L10Accessor.GetL10Recurrence(GetUser(),id,false).Name;
+
+			return PartialView("L10Stats", id);
+		}
+		[Access(AccessLevel.User)]
         public PartialViewResult L10Scorecard(long id)
         {
             SetupViewBag(id);

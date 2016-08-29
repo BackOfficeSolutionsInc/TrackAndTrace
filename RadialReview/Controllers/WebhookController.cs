@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using RadialReview.Accessors;
 using RadialReview.Controllers;
 
-namespace RadialReview.Content
+namespace RadialReview.Controllers 
 {
 	public class WebhookController :BaseController
     {

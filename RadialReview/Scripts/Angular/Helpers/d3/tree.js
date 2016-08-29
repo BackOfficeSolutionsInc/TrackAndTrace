@@ -3,9 +3,9 @@
 		templateNamespace: 'svg',
 		restrict: "E",
 		scope: {
-			graph: "=", ttEnter: "=?", ttUpdate: "=?", ttExit: "=?", ttWatch: "=?", ttPostExit: "=?",
-			ttDragStart: "=?", ttDragEnd: "=?",
-			ttCollapse: "=?", ttExpand: "=?",
+			graph: "=graph", ttEnter: "=?ttEnter", ttUpdate: "=?ttUpdate", ttExit: "=?ttExit", ttWatch: "=?ttWatch", ttPostExit: "=?ttPostExit",
+			ttDragStart: "=?ttDragStart", ttDragEnd: "=?ttDragEnd",
+			ttCollapse: "=?ttCollapse", ttExpand: "=?ttExpand",
 		},
 		transclude: true,
 		replace: true,
@@ -116,7 +116,7 @@
 			$scope.centerNode = function (source, ms) {
 				if (typeof (ms) === "undefined")
 					ms = 1;
-				
+
 				$scope.showNode(source);
 
 				$timeout(function () {
@@ -246,9 +246,9 @@
 				}
 			}
 
-			$rootScope.$on("CenterNode", function (event, source,ms) {
+			$rootScope.$on("CenterNode", function (event, source, ms) {
 				//setTimeout(function () {
-					$scope.centerNode(source,ms);
+				$scope.centerNode(source, ms);
 				//}, 1);
 			});
 			$rootScope.$on("ShowNode", function (event, id) {
@@ -571,10 +571,10 @@
 					}
 					var n = nestWatch(r);
 					return {
-						nest:	n,
+						nest: n,
 						center: cn,
 						expand: en,
-						show:	sn
+						show: sn
 					};
 				}
 				return undefined;
@@ -766,6 +766,14 @@
 			dragListener = d3.behavior.drag()
                 .on("dragstart", function (d) {
                 	skipDrag = false;
+                	if (d == scope.root)
+                		skipDrag = true;
+                	//if ($("input:focus").length > 0) {
+                	//	skipDrag = true;
+                	//}
+
+                	if (skipDrag)
+                		return;
                 	if (typeof (scope.ttDragStart) === "function") {
                 		try {
                 			scope.ttDragStart(d);
@@ -775,8 +783,6 @@
                 			return;
                 		}
                 	}
-                	if (d == scope.root)
-                		skipDrag = true;
                 	if (skipDrag)
                 		return;
                 	selfSvg.classed("is-dragging", true);

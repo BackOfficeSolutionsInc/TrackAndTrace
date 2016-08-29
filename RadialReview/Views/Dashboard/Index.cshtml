@@ -145,6 +145,7 @@
                                     </ul>
                                     }
                                 </li>
+								<li><a onclick="createTile('/TileData/L10Stats/@i.Value','Url',@i.Value)">Stats</a></li>
                             </ul>
                         </li>
                     }
@@ -166,8 +167,8 @@
         <li><a onclick="createTile('/TileData/UserNotes','Url')">Personal Notes</a></li>
         @*<li><a onclick="createTile('/TileData/UserButtons','Url')">Quick Links</a></li>*@
         <li><a onclick="createTile('/TileData/SoftwareUpdates','Url')">Software Updates</a></li>
-        @*<li class="divider"></li>
-        <li><a onclick="createTile('/TileData/FAQTips','Url')">FAQ Guide</a></li>*@
+        <li class="divider"></li>
+        <li><a onclick="createTile('/TileData/FAQTips','Url')">FAQ Guide</a></li>
 
     </ul>
 </div>
@@ -216,4 +217,9 @@
     @*<link href="~/Scripts/Grid/style.css" rel="stylesheet" />*@
 
     @Styles.Render("~/styles/Dashboard");
+}
+
+
+@using (Html.BeginScripts()) {
+	@Scripts.Render("~/bundles/DashboardPostAngular")
 }

@@ -88,9 +88,10 @@ namespace RadialReview.Accessors
 						var perms = PermissionsUtility.Create(s, caller);
 						//x: 0, y: 0, w: 1, h: 1
 						CreateTile(s, perms, dash.Id, 1, 1, 0, 0, "/TileData/UserProfile2",		"Profile",			TileType.Profile);
+						CreateTile(s, perms, dash.Id, 1, 1, 0, 1, "/TileData/FAQTips",			"FAQ Guide",		TileType.FAQGuide);
 						if (caller.IsManager()){
 							//x: 0, y: 1, w: 1, h: 3
-							CreateTile(s, perms, dash.Id, 3, 1, 0, 1, "/TileData/UserManage2", "Managing",			TileType.Manage);
+							CreateTile(s, perms, dash.Id, 2, 1, 0, 2, "/TileData/UserManage2", "Managing",			TileType.Manage);
 						}
 						//x: 1, y: 2, w: 3, h: 2
 						CreateTile(s, perms, dash.Id, 2, 3, 1, 2, "/TileData/UserTodo2",			"To-dos",		TileType.Todo);
@@ -98,6 +99,7 @@ namespace RadialReview.Accessors
 						CreateTile(s, perms, dash.Id, 2, 6, 1, 0, "/TileData/UserScorecard2",	"Scorecard",		TileType.Scorecard);
 						//x: 4, y: 2, w: 3, h: 2
 						CreateTile(s, perms, dash.Id, 2, 3, 4, 2, "/TileData/UserRock2",			"Rocks",		TileType.Rocks);
+
 					}
 
 					tx.Commit();

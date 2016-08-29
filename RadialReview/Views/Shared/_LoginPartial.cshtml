@@ -110,7 +110,7 @@
     }
 } else {
     <ul class="nav navbar-nav navbar-right">
-        <li>@Html.ActionLink(DisplayNameStrings.register, "Register", "Account", routeValues: new { returnUrl = ViewBag.ReturnUrl }, htmlAttributes: new { id = "registerLink", returnUrl = Model ?? "" })</li>
+        <li>@Html.ActionLink(DisplayNameStrings.register, "Index", "GetStarted", routeValues: new { returnUrl = ViewBag.ReturnUrl }, htmlAttributes: new { id = "registerLink", returnUrl = Model ?? "" })</li>
         <li>@Html.ActionLink(DisplayNameStrings.login, "Login", "Account", routeValues: new { returnUrl = ViewBag.ReturnUrl }, htmlAttributes: new { id = "loginLink", })</li>
     </ul>
 }

@@ -46,6 +46,10 @@ md-content.md-default-theme, md-content {
     background-color: transparent;
 }
 
+.fixBug{
+	display:inherit;
+}
+
 .navbar {
     display: none;
 }
@@ -55,6 +59,10 @@ md-content.md-default-theme, md-content {
     padding-top: 0px;
 }
 //.md-button.md-default-theme.md-primary.md-raised:not([disabled]):hover, .md-button.md-primary.md-raised:not([disabled]):hover, .md-button.md-default-theme.md-primary.md-fab:not([disabled]):hover, .md-button.md-primary.md-fab:not([disabled]):hover,
+
+md-stepper-card-content:empty{
+	background-color:white;
+}
 
 .md-step.md-complete md-step-label-wrapper::before {
     background-color: @traction-black !important;

@@ -290,9 +290,9 @@
 				obj[key] = new Date(obj[key].getTime() /*- obj[key].getTimezoneOffset() * 60000*/);
 			} else if (type == 'object') {
 
-				_continueIfUnseen(value, seen, function () {
+				//_continueIfUnseen(value, seen, function () {
 					_convertDates(value, seen);
-				});
+				//});
 				//var alreadyParsed = false;
 				//if (value in seen) {
 				//	alreadyParsed = true;
@@ -441,8 +441,9 @@
 		o._preResolve = function (d, s) { o.preResolve && o.preResolve.call(o, d, s); };
 		o._postResolve = function (m, d, s) { o.postResolve && o.postResolve.call(o, m, d, s); };
 		//o._interceptExtend = function (m, d, s) {  };
-
-		hub.on('update', o.applyUpdate);
+		if (typeof (hub) !== "undefined") {
+			hub.on('update', o.applyUpdate);
+		}
 		return o;
 	}
 

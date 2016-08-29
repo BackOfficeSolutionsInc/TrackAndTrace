@@ -21,17 +21,15 @@
 		<h3 class="panel-title">Company Values:</h3>
 	</div>
 	<div class="panel-body numbers">
-		@if (Model.CompanyValues.Any())
-		{
+		@if (Model.CompanyValues.Any()) {
 			int i = 1;
 			<table>
-				@foreach (var r in Model.CompanyValues){
+				@foreach (var r in Model.CompanyValues) {
 					<tr class="font-size:19px;vertical-align:top;">
 						<td style="vertical-align:top;">@(i).</td>
 						<td><b>@r.CompanyValue</b></td>
 					</tr>
-					if (!String.IsNullOrWhiteSpace(r.CompanyValueDetails))
-					{
+					if (!String.IsNullOrWhiteSpace(r.CompanyValueDetails)) {
 						<tr class="font-size:14px;">
 							<td></td>
 							<td>@r.CompanyValueDetails</td>
@@ -40,8 +38,7 @@
 					i++;
 				}
 			</table>
-		}
-		else{
+		} else {
 			<span class="gray">No Company Values. Click edit to add some.</span>
 		}
 	</div>
@@ -52,58 +49,54 @@
 		<h3 class="panel-title">Company @Html.Organization().Settings.RockName:</h3>
 	</div>
 	<div class="panel-body numbers">
-		@if (Model.CompanyRocks.Any())
-		{
-			foreach (var rg in Model.CompanyRocks.GroupBy(x => x.PeriodId).OrderByDescending(x => x.First().Period.NotNull(y=>y.EndTime)))
-			{
+		@if (Model.CompanyRocks.Any()) {
+			foreach (var rg in Model.CompanyRocks.GroupBy(x => x.PeriodId).OrderByDescending(x => x.First().Period.NotNull(y => y.EndTime))) {
 				<b>@rg.First().Period.NotNull(x => x.Name):</b>
 				<ul>
-					@foreach (var r in rg)
-					{
+					@foreach (var r in rg) {
 						<li class="font-size:19px;">
 							@r.Rock
 						</li>
 					}
 				</ul>
 			}
-		}else{
+		} else {
 			<span class="gray">No Company @Html.Organization().Settings.RockName. Click edit to add some.</span>
 		}
 	</div>
 </div>
-<div class="panel panel-primary">
-	<div class="headerButton btn-link" onclick="@Html.ShowModal("Edit Organization Questions", "/OrganizationQuestion/Modal/" + Model.Id, "/OrganizationQuestion/Modal", onComplete: "location.reload()")">Edit</div>
-	<div class="panel-heading">
-		<h3 class="panel-title">Company Questions:</h3>
-	</div>
-	<div class="panel-body numbers">
-		@if (Model.CompanyQuestions.Any())
-		{
-			
-			<table style="width:100%">
-				<tr>
-					<th></th>
-					<th>Question</th>
-					<th>Question Type</th>
-				</tr>
+@if (ViewBag.ShowReview == true) {
+	<div class="panel panel-primary">
+		<div class="headerButton btn-link" onclick="@Html.ShowModal("Edit Organization Questions", "/OrganizationQuestion/Modal/" + Model.Id, "/OrganizationQuestion/Modal", onComplete: "location.reload()")">Edit</div>
+		<div class="panel-heading">
+			<h3 class="panel-title">Company Questions for reviews:</h3>
+		</div>
+		<div class="panel-body numbers">
+			@if (Model.CompanyQuestions.Any()) {
 
-				@{ var i = 1;}
-				@foreach (var r in Model.CompanyQuestions)
-				{
+				<table style="width:100%">
 					<tr>
-						<td style="width:20px">@(i).</td>
-						<td>@r.Question</td>
-						<td class="bold1 alignCenter" style="width:96px">@r.QuestionType</td>
+						<th></th>
+						<th>Question</th>
+						<th>Question Type</th>
 					</tr>
-					i++;
-				}
-			</table>
-		}else{
-			<span class="gray">No Company Questions. Click edit to add some.</span>
-		}
-	</div>
-</div>
 
+					@{ var i = 1;}
+					@foreach (var r in Model.CompanyQuestions) {
+						<tr>
+							<td style="width:20px">@(i).</td>
+							<td>@r.Question</td>
+							<td class="bold1 alignCenter" style="width:96px">@r.QuestionType</td>
+						</tr>
+						i++;
+					}
+				</table>
+						} else {
+							<span class="gray">No Company Questions. Click edit to add some.</span>
+						}
+		</div>
+	</div>
+}
 
 @using (Html.BeginStyles()) {
 	@Styles.Render("~/Content/Manage")

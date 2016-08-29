@@ -84,6 +84,10 @@ app.config(['$mdThemingProvider', function ($mdThemingProvider) {
 
 app.controller('GSCtrl', ["$scope", "$q", "$timeout", "$http", function ($scope, $q, $timeout, $http) {
 
+	setInterval(function () {
+		$(".lf-ng-md-file-input-frame img").addClass("fixBug");
+	}, 500);
+
     var vm = this;
 
    // $scope.profilePicture = {};
@@ -117,7 +121,7 @@ app.controller('GSCtrl', ["$scope", "$q", "$timeout", "$http", function ($scope,
 
 
 
-    vm.eosdurations = [{ value: 1, text: "12+ months" }, { value: .5, text: "4 to 12 months" }, { value: .333, text: "4 months or less" }, { value: 0, text: "Just getting started" }, { value: -1, text: "What's EOS?" }]
+    vm.eosdurations = [{ value: 1, text: "12+ months" }, { value: .5, text: "4 to 12 months" }, { value: .333, text: "4 months or less" }, { value: -1, text: "Just getting started" }, { value: -2, text: "What's EOS?" }]
 
     vm.enableNextStep = function nextStep() {
         //do not exceed into max step
@@ -157,11 +161,8 @@ app.controller('GSCtrl', ["$scope", "$q", "$timeout", "$http", function ($scope,
         vm.showBusyText = true;
         console.log('On before submit');
 
-        $("img.lf-ng-md-file-input-frame").addClass("fixBug");
-        $("img.lf-ng-md-file-input-frame").removeClass("fixBug");
-
         var toSend = stepData;
-        if (!stepData.completed && !isSkip) {
+      //  if (!stepData.completed && !isSkip) {
             var page = stepData.page;
             var config = {};
             //Special case to upload picture
@@ -200,10 +201,10 @@ app.controller('GSCtrl', ["$scope", "$q", "$timeout", "$http", function ($scope,
                 vm.showBusyText = false;
             });
 
-        } else {
-            vm.showBusyText = false;
-            vm.enableNextStep();
-        }
+        //} else {
+        //    vm.showBusyText = false;
+        //    vm.enableNextStep();
+        //}
     }
 
 }]);

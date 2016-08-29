@@ -144,7 +144,7 @@
             <img src="~/Content/img/TRACTION-TOOLS_large_stacked_wh.png" />
         </div>
         <div class="guarantee">
-            <div class="focused">Your first 30 days? It's on us!</div>
+            <div class="focused">Your first 30 days are on us!</div>
             <div class="titlebar">
                 <span class="title">GUARANTEE</span>
                 <div class="bar"><div class="sparkle"></div></div>
@@ -202,7 +202,7 @@
                                                             </md-input-container>
                                                             <md-input-container class="md-block">
                                                                 <label>Phone number</label>
-                                                                <input name="phone" ng-model="vm.stepData[0].data.phone" ng-disabled="vm.stepData[0].disable" />
+                                                                <input name="phone" ng-model="vm.stepData[0].data.phone" required ng-disabled="vm.stepData[0].disable" />
                                                                 <div ng-messages="step1.phone.$error">
                                                                     <div ng-message="required">
                                                                         Phone number is required to proceed
@@ -255,7 +255,7 @@
                                                                 <input name="implementer" ng-model="vm.stepData[1].data.implementer" ng-disabled="vm.stepData[1].disable" />
                                                             </md-input-container>
                                                             <md-input-container class="md-block">
-                                                                <label>Website</label>
+                                                                <label>Your Website</label>
                                                                 <input name="website" ng-model="vm.stepData[1].data.website" ng-disabled="vm.stepData[1].disable" />
                                                             </md-input-container>
                                                             @*<md-input-container class="md-block" style="padding-left:0;">

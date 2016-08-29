@@ -37,7 +37,15 @@ namespace RadialReview.Utilities.DataTypes
 				return (T x) => x.DeleteTime == null; /// x => true
 			}
 			return (T x) => x.CreateTime <= range.EndTime && (x.DeleteTime == null || x.DeleteTime >= range.StartTime);
-			
+
+		}
+
+		public static Expression<Func<T, bool>> Filter<T>(this DateRange range,Func<T,DateTime> transform) where T : IHistorical {
+			if (range == null) {
+				return x=>true; /// x => true
+			}
+			return (T x) => transform(x) <= range.EndTime && transform(x) >= range.StartTime;
+
 		}
 	}
 }

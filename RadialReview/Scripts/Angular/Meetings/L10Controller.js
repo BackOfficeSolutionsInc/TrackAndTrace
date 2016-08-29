@@ -534,6 +534,8 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
 		//row.hide();
 		self.Hide = true;
 
+		$(".editable-wrap").remove();
+
 		$http.post("/L10/Remove" + self.Type + "/?recurrenceId=" + $scope.meetingId + "&_clientTimestamp=" + _clientTimestamp, dat).error(function (data) {
 			showJsonAlert(data, false, true);
 			self.Hide = false;
@@ -631,4 +633,4 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
 		//});
 	};
 
-}]);
+}])

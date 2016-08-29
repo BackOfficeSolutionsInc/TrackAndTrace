@@ -211,9 +211,7 @@ namespace RadialReview.Models.L10
 				}
 			}
 		}
-
 		
-
 		public class L10Meeting_Connection : IDeletable, ILongIdentifiable
 		{
 			public virtual long Id { get; set; }

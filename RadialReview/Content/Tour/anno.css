@@ -246,3 +246,13 @@
     margin-top: -100px;
     margin-left: -150px;
 }
+
+button.anno-btn.right-anno-overlay {
+	width: 70px !important;
+	position: absolute;
+	height: 10px;
+	background-color: transparent !important;
+	right: -101px;
+	top: 34px;
+	height: 70px !important;
+}

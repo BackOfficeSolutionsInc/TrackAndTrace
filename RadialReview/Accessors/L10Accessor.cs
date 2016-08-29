@@ -46,12 +46,14 @@ using ListExtensions = WebGrease.Css.Extensions.ListExtensions;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Angular.Users;
 using RadialReview.Models.Angular.Base;
-using System.Web.WebPages.Html;
+//using System.Web.WebPages.Html;
 using RadialReview.Models.VTO;
 using RadialReview.Models.Angular.VTO;
 using RadialReview.Utilities.RealTime;
 using RadialReview.Models.Periods;
 using RadialReview.Models.Interfaces;
+using System.Dynamic;
+using Newtonsoft.Json;
 
 namespace RadialReview.Accessors {
 	public class L10Accessor : BaseAccessor {
@@ -651,6 +653,166 @@ namespace RadialReview.Accessors {
 				todoList = todoList.Where(x => x.CloseTime == null || x.CloseTime > everythingAfter);//todoList.Where(x => x.CompleteTime == null || x.CompleteTime > everythingAfter);
 			}
 			return todoList.Fetch(x => x.AccountableUser).Eager.List().ToList();
+		}
+
+		public class StatsDataGroup {
+			public int Margin { get; set; }
+			///public StatsDataData  Data { get; set; }
+
+			public List<StatsData> Series { get; set; }
+			public DateRange Range { get; set; }
+
+			//public class StatsDataData {
+			//	public List<StatsData> todo { get; set; }
+			//	public List<StatsData> issue { get; set; }
+			//	public List<StatsData> rating { get; set; }
+			//}
+
+
+			public StatsDataGroup(DateRange range) {
+				Margin = 5;
+				Series = new List<StatsData>();
+				Range = range;
+			}
+
+			public String ToJson() {
+				///http://n3-charts.github.io/line-chart/#/docs
+				dynamic o = new ExpandoObject();
+
+
+				o.options = new {
+					margin = new { top = Margin },
+					series = Series.Select(x => new {
+						axis = "y",
+						dataset = x.Dataset,
+						key = "y",
+						label = x.Title,
+						color = x.Color,
+						type = new[] { "dot", "line" },
+						id = x.Dataset
+					}).ToList(),
+					axes = new {
+						x = new { key = "x", type = "date" } ,
+						y = new { includeZero = true }
+					}
+				};
+
+				o.data = Series.ToDictionary(
+					s => s.Dataset,
+					s => s.Data.Select(d => new { x = d.Key, y = Math.Round(d.Value*100)/100.0m })
+							   .OrderBy(x => x.x)
+							   .Where(x=>Range.StartTime<=x.x && x.x <= Range.EndTime)
+							   .ToList()
+				);
+				//var microsoftDateFormatSettings = new JsonSerializerSettings {
+				//	DateFormatHandling = DateFormatHandling.
+				//};
+				return JsonConvert.SerializeObject(o/*, microsoftDateFormatSettings*/);
+				/*
+				 * $scope.data = {
+					  dataset0: [
+						{x: 0, y: 2}, {x: 1, y: 3}
+					  ],
+					  dataset1: [
+						{x: 0, value: 2}, {x: 1, value: 3}
+					  ],
+					  ...
+					};*/
+			}
+		}
+
+		public class StatsData {
+			public string Dataset { get; set; }
+			public string Title { get; set; }
+			public string Color { get; set; }
+			public IEnumerable<KeyValuePair<DateTime, decimal>> Data { get; set; }
+		}
+
+		public static StatsDataGroup GetStatsData(UserOrganizationModel caller, long recurrenceId, DateRange range = null) {
+
+			var today = DateTime.UtcNow.Date;
+			range = range ?? new DateRange(today.AddDays(-7 * 13), today);
+
+			range.EndTime = range.EndTime.AddDays(1);
+
+			var weekStart = caller.Organization.Settings.WeekStart;
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+					//Do not filter todo completion here.
+					var meetings = s.QueryOver<L10Meeting>()
+						.Where(x => x.L10RecurrenceId == recurrenceId &&
+							x.DeleteTime == null && x.StartTime != null &&
+							(x.CompleteTime == null || x.CompleteTime > range.StartTime) &&
+							x.StartTime < range.EndTime
+						).Future();
+
+					var issues = s.QueryOver<IssueModel.IssueModel_Recurrence>()
+						.Where(x => x.DeleteTime == null && x.CloseTime != null && x.CloseTime > range.StartTime && x.Recurrence.Id == recurrenceId)
+						.Future();
+
+					L10Meeting l10Alias = null;
+
+					var ratings = s.QueryOver<L10Meeting.L10Meeting_Attendee>()
+						.JoinAlias(x => x.L10Meeting, () => l10Alias)
+						.Where(x => x.DeleteTime == null && l10Alias.L10RecurrenceId == recurrenceId && l10Alias.DeleteTime == null && x.Rating != null)
+						.Future();
+
+
+					var todoData = new StatsData() {
+						Dataset = "todo",
+						Color = "hsla(88, 48%, 48%, 1)",
+						Title = "To-do Completion",
+						Data = meetings.Where(x => x.TodoCompletion != null)
+									.GroupBy(x => x.StartTime.Value.StartOfWeek(weekStart))
+									.SelectMany(x => {
+
+										var den = x.Sum(y => y.TodoCompletion.Denominator);
+										if (den == 0)
+											return new List<KeyValuePair<DateTime, decimal>>();
+										var num = x.Sum(y => y.TodoCompletion.Numerator);
+
+										return (new KeyValuePair<DateTime, decimal>(x.Key, num / den*100)).AsList();
+									})
+					};
+
+					var issueData = new StatsData() {
+						Dataset = "issue",
+						Color = "hsla(213, 48%, 48%, 1)",
+						Title = "Issues Solved",
+						Data = issues.GroupBy(x => x.CloseTime.Value.StartOfWeek(weekStart))
+									.SelectMany(x => {
+										var count = x.Count();
+										if (count == 0)
+											return new List<KeyValuePair<DateTime, decimal>>();
+										return (new KeyValuePair<DateTime, decimal>(x.Key, count)).AsList();
+									})
+					};
+
+					var ratingData = new StatsData() {
+						Dataset = "rating",
+						Color = "hsla(318, 48%, 48%, 1)",
+						Title = "Avg. Meeting Rating",
+						Data = ratings.GroupBy(x => x.L10Meeting.StartTime.Value.StartOfWeek(weekStart))
+									.SelectMany(x => {
+										//if (count == 0)
+										//	return new List<KeyValuePair<DateTime, decimal>>();
+										return (new KeyValuePair<DateTime, decimal>(x.Key, x.Average(y => y.Rating.Value))).AsList();
+									})
+					};
+
+					var group = new StatsDataGroup(range);
+					group.Series.Add(todoData);
+					group.Series.Add(issueData);
+					group.Series.Add(ratingData);
+
+
+					return group;
+				}
+			}
+
+
 		}
 
 		public static List<TodoModel> GetAllTodosForRecurrence(ISession s, PermissionsUtility perms, long recurrenceId, bool includeClosed = true, DateRange range = null) {
@@ -2737,7 +2899,7 @@ namespace RadialReview.Accessors {
 							scoresToUpdate = scores;
 
 							foreach (var mmid in meetingMeasurableIds)
-								rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "altTarget", measurable.AlternateGoal.NotNull(x=>x.Value.ToString("0.#####"))??""));
+								rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "altTarget", measurable.AlternateGoal.NotNull(x => x.Value.ToString("0.#####")) ?? ""));
 							//group.updateArchiveMeasurable(measurableId, "target", target.Value.ToString("0.#####"));
 						}
 

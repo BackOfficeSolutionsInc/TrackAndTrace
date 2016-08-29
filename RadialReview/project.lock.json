@@ -66,10 +66,10 @@
           "lib/net45/Microsoft.AspNet.Identity.EntityFramework.dll": {}
         }
       },
-      "Microsoft.AspNet.Identity.Owin/2.1.0": {
+      "Microsoft.AspNet.Identity.Owin/2.2.1": {
         "type": "package",
         "dependencies": {
-          "Microsoft.AspNet.Identity.Core": "2.1.0",
+          "Microsoft.AspNet.Identity.Core": "2.2.1",
           "Microsoft.Owin.Security": "2.1.0",
           "Microsoft.Owin.Security.Cookies": "2.1.0",
           "Microsoft.Owin.Security.OAuth": "2.1.0"
@@ -79,6 +79,28 @@
         },
         "runtime": {
           "lib/net45/Microsoft.AspNet.Identity.Owin.dll": {}
+        }
+      },
+      "Microsoft.AspNet.Mvc/5.2.3": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNet.Razor": "[3.2.3, 3.3.0)",
+          "Microsoft.AspNet.WebPages": "[3.2.3, 3.3.0)"
+        },
+        "compile": {
+          "lib/net45/System.Web.Mvc.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Web.Mvc.dll": {}
+        }
+      },
+      "Microsoft.AspNet.Razor/3.2.3": {
+        "type": "package",
+        "compile": {
+          "lib/net45/System.Web.Razor.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Web.Razor.dll": {}
         }
       },
       "Microsoft.AspNet.SignalR.Core/2.2.1": {
@@ -107,6 +129,25 @@
         },
         "runtime": {
           "lib/net45/Microsoft.AspNet.SignalR.Redis.dll": {}
+        }
+      },
+      "Microsoft.AspNet.WebPages/3.2.3": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNet.Razor": "[3.2.3, 3.3.0)",
+          "Microsoft.Web.Infrastructure": "1.0.0"
+        },
+        "compile": {
+          "lib/net45/System.Web.Helpers.dll": {},
+          "lib/net45/System.Web.WebPages.Deployment.dll": {},
+          "lib/net45/System.Web.WebPages.Razor.dll": {},
+          "lib/net45/System.Web.WebPages.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Web.Helpers.dll": {},
+          "lib/net45/System.Web.WebPages.Deployment.dll": {},
+          "lib/net45/System.Web.WebPages.Razor.dll": {},
+          "lib/net45/System.Web.WebPages.dll": {}
         }
       },
       "Microsoft.Identity.Client/1.0.304142221-alpha": {
@@ -266,7 +307,7 @@
           "lib/portable-net45+win+wpa81+wp80/Microsoft.Office365.OutlookServices.Portable.dll": {}
         }
       },
-      "Microsoft.Owin/2.1.0": {
+      "Microsoft.Owin/3.0.1": {
         "type": "package",
         "dependencies": {
           "Owin": "1.0.0"
@@ -278,10 +319,10 @@
           "lib/net45/Microsoft.Owin.dll": {}
         }
       },
-      "Microsoft.Owin.Host.SystemWeb/2.1.0": {
+      "Microsoft.Owin.Host.SystemWeb/3.0.1": {
         "type": "package",
         "dependencies": {
-          "Microsoft.Owin": "2.1.0",
+          "Microsoft.Owin": "3.0.1",
           "Owin": "1.0.0"
         },
         "compile": {
@@ -291,10 +332,10 @@
           "lib/net45/Microsoft.Owin.Host.SystemWeb.dll": {}
         }
       },
-      "Microsoft.Owin.Security/2.1.0": {
+      "Microsoft.Owin.Security/3.0.1": {
         "type": "package",
         "dependencies": {
-          "Microsoft.Owin": "2.1.0",
+          "Microsoft.Owin": "3.0.1",
           "Owin": "1.0.0"
         },
         "compile": {
@@ -304,11 +345,11 @@
           "lib/net45/Microsoft.Owin.Security.dll": {}
         }
       },
-      "Microsoft.Owin.Security.Cookies/2.1.0": {
+      "Microsoft.Owin.Security.Cookies/3.0.1": {
         "type": "package",
         "dependencies": {
-          "Microsoft.Owin": "2.1.0",
-          "Microsoft.Owin.Security": "2.1.0",
+          "Microsoft.Owin": "3.0.1",
+          "Microsoft.Owin.Security": "3.0.1",
           "Owin": "1.0.0"
         },
         "compile": {
@@ -318,12 +359,12 @@
           "lib/net45/Microsoft.Owin.Security.Cookies.dll": {}
         }
       },
-      "Microsoft.Owin.Security.OAuth/2.1.0": {
+      "Microsoft.Owin.Security.OAuth/3.0.1": {
         "type": "package",
         "dependencies": {
-          "Microsoft.Owin": "2.1.0",
-          "Microsoft.Owin.Security": "2.1.0",
-          "Newtonsoft.Json": "4.5.11",
+          "Microsoft.Owin": "3.0.1",
+          "Microsoft.Owin.Security": "3.0.1",
+          "Newtonsoft.Json": "6.0.4",
           "Owin": "1.0.0"
         },
         "compile": {
@@ -371,6 +412,15 @@
           }
         }
       },
+      "Microsoft.Web.Infrastructure/1.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Microsoft.Web.Infrastructure.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Microsoft.Web.Infrastructure.dll": {}
+        }
+      },
       "Newtonsoft.Json/9.0.1": {
         "type": "package",
         "compile": {
@@ -379,6 +429,9 @@
         "runtime": {
           "lib/net45/Newtonsoft.Json.dll": {}
         }
+      },
+      "OpenCover/4.6.519": {
+        "type": "package"
       },
       "Owin/1.0.0": {
         "type": "package",
@@ -505,10 +558,10 @@
           "lib/net45/Microsoft.AspNet.Identity.EntityFramework.dll": {}
         }
       },
-      "Microsoft.AspNet.Identity.Owin/2.1.0": {
+      "Microsoft.AspNet.Identity.Owin/2.2.1": {
         "type": "package",
         "dependencies": {
-          "Microsoft.AspNet.Identity.Core": "2.1.0",
+          "Microsoft.AspNet.Identity.Core": "2.2.1",
           "Microsoft.Owin.Security": "2.1.0",
           "Microsoft.Owin.Security.Cookies": "2.1.0",
           "Microsoft.Owin.Security.OAuth": "2.1.0"
@@ -518,6 +571,28 @@
         },
         "runtime": {
           "lib/net45/Microsoft.AspNet.Identity.Owin.dll": {}
+        }
+      },
+      "Microsoft.AspNet.Mvc/5.2.3": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNet.Razor": "[3.2.3, 3.3.0)",
+          "Microsoft.AspNet.WebPages": "[3.2.3, 3.3.0)"
+        },
+        "compile": {
+          "lib/net45/System.Web.Mvc.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Web.Mvc.dll": {}
+        }
+      },
+      "Microsoft.AspNet.Razor/3.2.3": {
+        "type": "package",
+        "compile": {
+          "lib/net45/System.Web.Razor.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Web.Razor.dll": {}
         }
       },
       "Microsoft.AspNet.SignalR.Core/2.2.1": {
@@ -546,6 +621,25 @@
         },
         "runtime": {
           "lib/net45/Microsoft.AspNet.SignalR.Redis.dll": {}
+        }
+      },
+      "Microsoft.AspNet.WebPages/3.2.3": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNet.Razor": "[3.2.3, 3.3.0)",
+          "Microsoft.Web.Infrastructure": "1.0.0"
+        },
+        "compile": {
+          "lib/net45/System.Web.Helpers.dll": {},
+          "lib/net45/System.Web.WebPages.Deployment.dll": {},
+          "lib/net45/System.Web.WebPages.Razor.dll": {},
+          "lib/net45/System.Web.WebPages.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Web.Helpers.dll": {},
+          "lib/net45/System.Web.WebPages.Deployment.dll": {},
+          "lib/net45/System.Web.WebPages.Razor.dll": {},
+          "lib/net45/System.Web.WebPages.dll": {}
         }
       },
       "Microsoft.Identity.Client/1.0.304142221-alpha": {
@@ -705,7 +799,7 @@
           "lib/portable-net45+win+wpa81+wp80/Microsoft.Office365.OutlookServices.Portable.dll": {}
         }
       },
-      "Microsoft.Owin/2.1.0": {
+      "Microsoft.Owin/3.0.1": {
         "type": "package",
         "dependencies": {
           "Owin": "1.0.0"
@@ -717,10 +811,10 @@
           "lib/net45/Microsoft.Owin.dll": {}
         }
       },
-      "Microsoft.Owin.Host.SystemWeb/2.1.0": {
+      "Microsoft.Owin.Host.SystemWeb/3.0.1": {
         "type": "package",
         "dependencies": {
-          "Microsoft.Owin": "2.1.0",
+          "Microsoft.Owin": "3.0.1",
           "Owin": "1.0.0"
         },
         "compile": {
@@ -730,10 +824,10 @@
           "lib/net45/Microsoft.Owin.Host.SystemWeb.dll": {}
         }
       },
-      "Microsoft.Owin.Security/2.1.0": {
+      "Microsoft.Owin.Security/3.0.1": {
         "type": "package",
         "dependencies": {
-          "Microsoft.Owin": "2.1.0",
+          "Microsoft.Owin": "3.0.1",
           "Owin": "1.0.0"
         },
         "compile": {
@@ -743,11 +837,11 @@
           "lib/net45/Microsoft.Owin.Security.dll": {}
         }
       },
-      "Microsoft.Owin.Security.Cookies/2.1.0": {
+      "Microsoft.Owin.Security.Cookies/3.0.1": {
         "type": "package",
         "dependencies": {
-          "Microsoft.Owin": "2.1.0",
-          "Microsoft.Owin.Security": "2.1.0",
+          "Microsoft.Owin": "3.0.1",
+          "Microsoft.Owin.Security": "3.0.1",
           "Owin": "1.0.0"
         },
         "compile": {
@@ -757,12 +851,12 @@
           "lib/net45/Microsoft.Owin.Security.Cookies.dll": {}
         }
       },
-      "Microsoft.Owin.Security.OAuth/2.1.0": {
+      "Microsoft.Owin.Security.OAuth/3.0.1": {
         "type": "package",
         "dependencies": {
-          "Microsoft.Owin": "2.1.0",
-          "Microsoft.Owin.Security": "2.1.0",
-          "Newtonsoft.Json": "4.5.11",
+          "Microsoft.Owin": "3.0.1",
+          "Microsoft.Owin.Security": "3.0.1",
+          "Newtonsoft.Json": "6.0.4",
           "Owin": "1.0.0"
         },
         "compile": {
@@ -810,6 +904,15 @@
           }
         }
       },
+      "Microsoft.Web.Infrastructure/1.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Microsoft.Web.Infrastructure.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Microsoft.Web.Infrastructure.dll": {}
+        }
+      },
       "Newtonsoft.Json/9.0.1": {
         "type": "package",
         "compile": {
@@ -818,6 +921,9 @@
         "runtime": {
           "lib/net45/Newtonsoft.Json.dll": {}
         }
+      },
+      "OpenCover/4.6.519": {
+        "type": "package"
       },
       "Owin/1.0.0": {
         "type": "package",
@@ -980,14 +1086,36 @@
         "lib/net45/Microsoft.AspNet.Identity.EntityFramework.xml"
       ]
     },
-    "Microsoft.AspNet.Identity.Owin/2.1.0": {
-      "sha512": "ihBB979erQJhFWHdWZTMLNuIOpJjShnF9r0vhwBqZ9ijTOj6cbaflHtOmjRXMrUaJQw+WXNw0biQVVzQ2rvLbw==",
+    "Microsoft.AspNet.Identity.Owin/2.2.1": {
+      "sha512": "Cz/dqC85+6bgPj9Mt1qGLJ+v8HdTqXTMe1ms4e8pzPXJjDJw3DK7XtimtDtWwiDs63vnIDgy195TByV9wxEwjA==",
       "type": "package",
       "files": [
-        "Microsoft.AspNet.Identity.Owin.2.1.0.nupkg.sha512",
+        "Microsoft.AspNet.Identity.Owin.2.2.1.nupkg.sha512",
         "Microsoft.AspNet.Identity.Owin.nuspec",
         "lib/net45/Microsoft.AspNet.Identity.Owin.dll",
         "lib/net45/Microsoft.AspNet.Identity.Owin.xml"
+      ]
+    },
+    "Microsoft.AspNet.Mvc/5.2.3": {
+      "sha512": "i8jZf5QrbcFmjiYWRD7o7qTak/oXKxV80MgP4cZ33A8GC0RBtBIdZ1VHaloGUg+qsHUz5rVkGpwenM+ugDz5PA==",
+      "type": "package",
+      "files": [
+        "Content/Web.config.install.xdt",
+        "Content/Web.config.uninstall.xdt",
+        "Microsoft.AspNet.Mvc.5.2.3.nupkg.sha512",
+        "Microsoft.AspNet.Mvc.nuspec",
+        "lib/net45/System.Web.Mvc.dll",
+        "lib/net45/System.Web.Mvc.xml"
+      ]
+    },
+    "Microsoft.AspNet.Razor/3.2.3": {
+      "sha512": "leta+Q73O7+pR8ThTqXmwaNMSqwZQQ3BHfpUHd8S1XaUWe1jRVLitMHqo1AmY7wPNLyankPA1beiUKEGj8Q3Dw==",
+      "type": "package",
+      "files": [
+        "Microsoft.AspNet.Razor.3.2.3.nupkg.sha512",
+        "Microsoft.AspNet.Razor.nuspec",
+        "lib/net45/System.Web.Razor.dll",
+        "lib/net45/System.Web.Razor.xml"
       ]
     },
     "Microsoft.AspNet.SignalR.Core/2.2.1": {
@@ -1008,6 +1136,24 @@
         "Microsoft.AspNet.SignalR.Redis.nuspec",
         "lib/net45/Microsoft.AspNet.SignalR.Redis.XML",
         "lib/net45/Microsoft.AspNet.SignalR.Redis.dll"
+      ]
+    },
+    "Microsoft.AspNet.WebPages/3.2.3": {
+      "sha512": "zbtxBERla5RE/mhftwbrXOzc0r6lh8WcnjpGW7QQe+PvSDDx1BgsTUGzfCXO/vJznHNpY5oCSYLt8Q5vUu7F0g==",
+      "type": "package",
+      "files": [
+        "Content/Web.config.install.xdt",
+        "Content/Web.config.uninstall.xdt",
+        "Microsoft.AspNet.WebPages.3.2.3.nupkg.sha512",
+        "Microsoft.AspNet.WebPages.nuspec",
+        "lib/net45/System.Web.Helpers.dll",
+        "lib/net45/System.Web.Helpers.xml",
+        "lib/net45/System.Web.WebPages.Deployment.dll",
+        "lib/net45/System.Web.WebPages.Deployment.xml",
+        "lib/net45/System.Web.WebPages.Razor.dll",
+        "lib/net45/System.Web.WebPages.Razor.xml",
+        "lib/net45/System.Web.WebPages.dll",
+        "lib/net45/System.Web.WebPages.xml"
       ]
     },
     "Microsoft.Identity.Client/1.0.304142221-alpha": {
@@ -1171,55 +1317,51 @@
         "lib/portable-net45+win+wpa81+wp80/Microsoft.Office365.OutlookServices.Portable.dll"
       ]
     },
-    "Microsoft.Owin/2.1.0": {
-      "sha512": "lk0kK64mlmcmtWX8YOYkZsnZKDoGEzMZhe8e1bcP+FFcgD4f2QfKwvu5Z8Bh8WS0VO7Rgk+DJ0hwW0k+S/UGMg==",
+    "Microsoft.Owin/3.0.1": {
+      "sha512": "64yZsGN9uRnXNVAyAT4F6KWmdDUJ6yX4uqzxKTdGANKH1oMt0IKZ7THRRa3mXIOo8iSu4tq/DCBUycUY9pXZzw==",
       "type": "package",
       "files": [
-        "Microsoft.Owin.2.1.0.nupkg.sha512",
+        "Microsoft.Owin.3.0.1.nupkg.sha512",
         "Microsoft.Owin.nuspec",
-        "lib/net40/Microsoft.Owin.XML",
-        "lib/net40/Microsoft.Owin.dll",
         "lib/net45/Microsoft.Owin.XML",
         "lib/net45/Microsoft.Owin.dll"
       ]
     },
-    "Microsoft.Owin.Host.SystemWeb/2.1.0": {
-      "sha512": "S+YOPgtQuXlKGh1OZCVzvmz++2ibNeACzDlMpeXFN1QBUf9l+gstfV0f5hTbhmkDBE8LrSCBWu+9Rrte+ivNhg==",
+    "Microsoft.Owin.Host.SystemWeb/3.0.1": {
+      "sha512": "sNKJ7cPOnXpK5fr7upc77RF0MYUg1lKeR3hiMVhXWH9LLK7UZN7bKf2YwObT0wn+bAs3LRXdjbqDH48PF243Nw==",
       "type": "package",
       "files": [
-        "Microsoft.Owin.Host.SystemWeb.2.1.0.nupkg.sha512",
+        "Microsoft.Owin.Host.SystemWeb.3.0.1.nupkg.sha512",
         "Microsoft.Owin.Host.SystemWeb.nuspec",
-        "lib/net40/Microsoft.Owin.Host.SystemWeb.dll",
-        "lib/net40/Microsoft.Owin.Host.SystemWeb.xml",
         "lib/net45/Microsoft.Owin.Host.SystemWeb.dll",
         "lib/net45/Microsoft.Owin.Host.SystemWeb.xml"
       ]
     },
-    "Microsoft.Owin.Security/2.1.0": {
-      "sha512": "4n1V0p+O6W1L0xHUM8Cjp2Y+MmmUkiCZv6PvRNIDCJD9zlerBJa2HECo9lUiWC+KuasQJ3QxB1FmipNBxdXXIQ==",
+    "Microsoft.Owin.Security/3.0.1": {
+      "sha512": "LPoUxaTKzmjs97wDCTtBIoRwp30Jkq9UFnoj+EfMFJv+XxjcvHE/D573LRomA568WhvXoI2cUiwhZFvqfbLMVg==",
       "type": "package",
       "files": [
-        "Microsoft.Owin.Security.2.1.0.nupkg.sha512",
+        "Microsoft.Owin.Security.3.0.1.nupkg.sha512",
         "Microsoft.Owin.Security.nuspec",
         "lib/net45/Microsoft.Owin.Security.XML",
         "lib/net45/Microsoft.Owin.Security.dll"
       ]
     },
-    "Microsoft.Owin.Security.Cookies/2.1.0": {
-      "sha512": "P+3cjwBpUDGF+5s+oMfyySG0qvLqb71M+1q9jGSsaF0qCg14ix0qF5pEV6IqhGUEgV40E/1K4hDcWjS+essVoQ==",
+    "Microsoft.Owin.Security.Cookies/3.0.1": {
+      "sha512": "l2GRNvO4oyxfpmWtfUYvN3fA4jWduE84UCNqWTj6yhYDSE76wI+W022qTTEMr0VoCDiJ0GGYdvAjQm3xbSsB9Q==",
       "type": "package",
       "files": [
-        "Microsoft.Owin.Security.Cookies.2.1.0.nupkg.sha512",
+        "Microsoft.Owin.Security.Cookies.3.0.1.nupkg.sha512",
         "Microsoft.Owin.Security.Cookies.nuspec",
         "lib/net45/Microsoft.Owin.Security.Cookies.dll",
         "lib/net45/Microsoft.Owin.Security.Cookies.xml"
       ]
     },
-    "Microsoft.Owin.Security.OAuth/2.1.0": {
-      "sha512": "jR/LoeV02Cne9IV6fG4L9KR+uofPLokq6sxGy4bBDxLAAmZ35y0H/NiV6riqXSee6PypNAcJzTytJpYb0xK6Hw==",
+    "Microsoft.Owin.Security.OAuth/3.0.1": {
+      "sha512": "wttlhNSijhsrF7iwxYzxhTr8AYxXI6qoiw3b6dhVhqXOYCDp8OQ5yhHFtWlst+65l7VHduXassspZ974rtLMaw==",
       "type": "package",
       "files": [
-        "Microsoft.Owin.Security.OAuth.2.1.0.nupkg.sha512",
+        "Microsoft.Owin.Security.OAuth.3.0.1.nupkg.sha512",
         "Microsoft.Owin.Security.OAuth.nuspec",
         "lib/net45/Microsoft.Owin.Security.OAuth.XML",
         "lib/net45/Microsoft.Owin.Security.OAuth.dll"
@@ -1266,6 +1408,15 @@
         "lib/portable-net40+sl5+wp8+win8+wpa/zh-Hant/Microsoft.Spatial.resources.dll"
       ]
     },
+    "Microsoft.Web.Infrastructure/1.0.0": {
+      "sha512": "RKFGbWdso8unJPFctEFEcjWuq7Ccf/QmHvuJNLuAV8js1HuBwfHo5SlVm0DdDBY4LTgpxvCDyqJeCYMU0Bwrtw==",
+      "type": "package",
+      "files": [
+        "Microsoft.Web.Infrastructure.1.0.0.nupkg.sha512",
+        "Microsoft.Web.Infrastructure.nuspec",
+        "lib/net40/Microsoft.Web.Infrastructure.dll"
+      ]
+    },
     "Newtonsoft.Json/9.0.1": {
       "sha512": "U82mHQSKaIk+lpSVCbWYKNavmNH1i5xrExDEquU1i6I5pV6UMOqRnJRSlKO3cMPfcpp0RgDY+8jUXHdQ4IfXvw==",
       "type": "package",
@@ -1287,6 +1438,56 @@
         "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll",
         "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.xml",
         "tools/install.ps1"
+      ]
+    },
+    "OpenCover/4.6.519": {
+      "sha512": "oReudTijK4ghbd1GNTzl7Su2KzOufj2evTS5PTGAGC5ThfrThcInB/t9w2ISkcEacOsgLQTdG+PO0UUUGZ+zTw==",
+      "type": "package",
+      "files": [
+        "License.rtf",
+        "MSBuild/OpenCover.MSBuild.dll",
+        "MSBuild/OpenCover.targets",
+        "OpenCover.4.6.519.nupkg.sha512",
+        "OpenCover.nuspec",
+        "SampleSln/.nuget/packages.config",
+        "SampleSln/Bom/Bom.csproj",
+        "SampleSln/Bom/BomManager.cs",
+        "SampleSln/Bom/Properties/AssemblyInfo.cs",
+        "SampleSln/BomSample.sln",
+        "SampleSln/BomTest/BomManagerTests.cs",
+        "SampleSln/BomTest/BomTest.csproj",
+        "SampleSln/BomTest/Properties/AssemblyInfo.cs",
+        "SampleSln/BomTest/packages.config",
+        "SampleSln/coverage.bat",
+        "SampleSln/packages/repositories.config",
+        "Samples/x64/OpenCover.Simple.Target.exe",
+        "Samples/x64/OpenCover.Simple.Target.pdb",
+        "Samples/x86/OpenCover.Simple.Target.exe",
+        "Samples/x86/OpenCover.Simple.Target.pdb",
+        "docs/ReleaseNotes.txt",
+        "docs/Usage.rtf",
+        "readme.txt",
+        "tools/Autofac.Configuration.dll",
+        "tools/Autofac.dll",
+        "tools/CrashReporter.NET.dll",
+        "tools/Gendarme.Framework.dll",
+        "tools/Gendarme.Rules.Maintainability.dll",
+        "tools/Mono.Cecil.Mdb.dll",
+        "tools/Mono.Cecil.Pdb.dll",
+        "tools/Mono.Cecil.dll",
+        "tools/OpenCover.Console.exe",
+        "tools/OpenCover.Console.exe.config",
+        "tools/OpenCover.Console.pdb",
+        "tools/OpenCover.Extensions.dll",
+        "tools/OpenCover.Extensions.pdb",
+        "tools/OpenCover.Framework.dll",
+        "tools/OpenCover.Framework.pdb",
+        "tools/log4net.config",
+        "tools/log4net.dll",
+        "tools/x64/OpenCover.Profiler.dll",
+        "tools/x86/OpenCover.Profiler.dll",
+        "transform/simple_report.xslt",
+        "transform/transform.ps1"
       ]
     },
     "Owin/1.0.0": {
@@ -1406,17 +1607,21 @@
       "Manatee.Trello >= 1.12.0",
       "Microsoft.AspNet.Identity.Core >= 2.2.1",
       "Microsoft.AspNet.Identity.EntityFramework >= 2.2.1",
-      "Microsoft.AspNet.Identity.Owin >= 2.1.0",
+      "Microsoft.AspNet.Identity.Owin >= 2.2.1",
+      "Microsoft.AspNet.Mvc >= 5.2.3",
       "Microsoft.AspNet.SignalR.Core >= 2.2.1",
       "Microsoft.AspNet.SignalR.Redis >= 2.2.1",
+      "Microsoft.AspNet.WebPages >= 3.2.3",
       "Microsoft.Identity.Client >= 1.0.304142221-alpha",
       "Microsoft.Office365.OutlookServices-V2.0 >= 2.0.1",
-      "Microsoft.Owin >= 2.1.0",
-      "Microsoft.Owin.Host.SystemWeb >= 2.1.0",
-      "Microsoft.Owin.Security >= 2.1.0",
-      "Microsoft.Owin.Security.Cookies >= 2.1.0",
-      "Microsoft.Owin.Security.OAuth >= 2.1.0",
+      "Microsoft.Owin >= 3.0.1",
+      "Microsoft.Owin.Host.SystemWeb >= 3.0.1",
+      "Microsoft.Owin.Security >= 3.0.1",
+      "Microsoft.Owin.Security.Cookies >= 3.0.1",
+      "Microsoft.Owin.Security.OAuth >= 3.0.1",
+      "Microsoft.Web.Infrastructure >= 1.0.0",
       "Newtonsoft.Json >= 9.0.1",
+      "OpenCover >= 4.6.519",
       "OxyPlot >= 1.0.0-unstable2100",
       "OxyPlot.Core >= 1.0.0-unstable2100",
       "OxyPlot.Wpf >= 1.0.0-unstable2100"

@@ -210,6 +210,8 @@ namespace RadialReview.Accessors
 				if (user==null || user.DeleteTime != null)
 					throw new PermissionsException("User ("+userId+") does not exist.");
 
+				PermissionsUtility.Create(s, caller).ViewOrganization(user.Organization.Id);
+
 				if (caller.Id != userId && !PermissionsUtility.IsAdmin(caller))
 				{
 					//var found = s.QueryOver<DeepAccountability>().Where(x => x.DeleteTime == null && x.ManagerId == caller.Id && x.SubordinateId == nodeId).SingleOrDefault();
@@ -223,7 +225,13 @@ namespace RadialReview.Accessors
 					if (found == null)
 						throw new PermissionsException("You don't have access to this user");
 				}
-				var allPermitted = new List<long>() { userId };
+
+				var allPermitted = s.QueryOver<AccountabilityNode>()
+					.Where(x => x.DeleteTime == null && x.OrganizationId == user.Organization.Id && x.UserId == userId)
+					.Select(x => x.Id)
+					.List<long>().ToList();
+
+				//var allPermitted = new List<long>() { allNodes };
 				if (type != null)
 					allPermitted.AddRange(s.QueryOver<PermissionOverride>()
 						.Where(x => x.DeleteTime == null && x.ForUser.Id == userId && x.Permissions == type)

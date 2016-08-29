@@ -180,9 +180,14 @@ namespace RadialReview.Utilities {
 				//Confirm allowed if we manage organization.. was below
 				//return TryWithOverrides(y =>
 				//{
+				var user = session.Get<UserOrganizationModel>(userOrganizationId);
+
+				if (IsManagingOrganization(user.Organization.Id, true))
+					return this;
+
 				if (caller.ManagingOrganization) {
 					var subordinate = session.Get<UserOrganizationModel>(userOrganizationId);
-					if (subordinate != null && subordinate.Organization.Id == caller.Organization.Id)
+					if (user != null && user.Organization.Id == caller.Organization.Id)
 						return this;
 				}
 
@@ -559,7 +564,9 @@ namespace RadialReview.Utilities {
 			if (IsRadialAdmin(caller))
 				return this;
 
-			if (IsManagingOrganization(organizationId, true))
+			var org = session.Get<OrganizationModel>(organizationId);
+
+			if (IsManagingOrganization(organizationId, org.ManagersCanEdit))
 				return this;
 
 			throw new PermissionsException();
@@ -632,6 +639,9 @@ namespace RadialReview.Utilities {
 			//    return this;
 
 			var team = session.Get<OrganizationTeamModel>(teamId);
+			if (IsManagingOrganization(team.Organization.Id, true))
+				return this;
+
 			if (team.Type != TeamType.Standard)
 				throw new PermissionsException("Cannot edit auto-populated team.");
 
@@ -811,7 +821,9 @@ namespace RadialReview.Utilities {
 			if (IsRadialAdmin(caller))
 				return this;
 
-			if (IsManagingOrganization(organizationId, true))
+			var org = session.Get<OrganizationModel>(organizationId);
+
+			if (IsManagingOrganization(organizationId, org.ManagersCanEditPositions))
 				return this;
 
 			if (caller.Organization.ManagersCanEditPositions && caller.ManagerAtOrganization)

@@ -45,14 +45,14 @@
                     </td>
                     <td style="width:1px">
                         @if (ViewBag.HideDelete == null || ViewBag.HideDelete == false) {
-                            <span style="padding-left: 8px;" class="glyphicon glyphicon-trash deleteRow clickable @lockedClass" title="Delete"></span>
+                            <span style="padding-left: 8px;" class="glyphicon glyphicon-trash archiveRow clickable @lockedClass" title="Archive"></span>
                         }
                     </td>
-                    <td style="width:1px">
+                    @*<td style="width:1px">
                         @if (ViewBag.HideArchive == null || ViewBag.HideArchive == false) {
                             <span style="padding-left: 8px;" class="icon fontastic-icon-archive archiveRow  clickable @lockedClass" title="Archive"></span>
                         }
-                    </td>
+                    </td>*@
                 </tr>
             </table>
         </div>

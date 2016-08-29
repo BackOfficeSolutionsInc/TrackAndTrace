@@ -73,7 +73,7 @@ namespace RadialReview.Accessors {
 							if (managerNode.OrganizationId != caller.Organization.Id)
 								throw new PermissionsException();
 							//Strict Hierarchy stuff
-							if (!caller.ManagingOrganization && caller.Organization.StrictHierarchy && (managerNode.UserId==null || caller.Id != managerNode.Id))
+							if (!caller.ManagingOrganization && caller.Organization.StrictHierarchy && (managerNode.UserId==null || caller.Id != managerNode.UserId))
 								throw new PermissionsException();
 
 
@@ -122,14 +122,14 @@ namespace RadialReview.Accessors {
                     }
 
                     if (managerNode!=null) {
-						if (managerNode.UserId != null) {
-							var managerDuration = new ManagerDuration(managerNode.UserId.Value, newUser.Id, caller.Id) {
-								Start = now,
-								Manager = db.Load<UserOrganizationModel>(managerNode.UserId.Value),
-								Subordinate = db.Load<UserOrganizationModel>(newUser.Id),
-							};
-							newUser.ManagedBy.Add(managerDuration);
-						}
+						//if (managerNode.UserId != null) {
+						//	var managerDuration = new ManagerDuration(managerNode.UserId.Value, newUser.Id, caller.Id) {
+						//		Start = now,
+						//		Manager = db.Load<UserOrganizationModel>(managerNode.UserId.Value),
+						//		Subordinate = db.Load<UserOrganizationModel>(newUser.Id),
+						//	};
+						//	newUser.ManagedBy.Add(managerDuration);
+						//}
 						// var manager = db.Get<UserOrganizationModel>(managerId);
 						//db.Save(new DeepSubordinateModel() { CreateTime = now, Links = 1, ManagerId = newUserId, SubordinateId = newUserId });
 						using (var rt = RealTimeUtility.Create()){
