@@ -337,9 +337,9 @@ namespace RadialReview.Controllers {
             return Json(ResultObject.SilentSuccess(tile), JsonRequestBehavior.AllowGet);
         }
         [Access(AccessLevel.UserOrganization)]
-        public ActionResult CreateDashboard(string title = null, bool primary = false)
+        public ActionResult CreateDashboard(string title = null, bool primary = false, bool prepopulate= false)
         {
-            var dash = DashboardAccessor.CreateDashboard(GetUser(), title, primary);
+            var dash = DashboardAccessor.CreateDashboard(GetUser(), title, primary,prepopulate);
             return RedirectToAction("Index", new { id = dash.Id });
         }
 

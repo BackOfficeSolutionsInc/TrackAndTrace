@@ -1,6 +1,6 @@
 ﻿var acapp = angular.module('ACApp', ['helpers', 'panzoom', 'tree']);
 
-acapp.directive('mdBlur', ["$timeout", function ($timeout) {
+acapp.directive('mdBlur', ["$timeout","$rootScope", function ($timeout,$rootScope) {
 	var directive = {
 		restrict: 'A',
 		link: function (scope, element, attributes) {
@@ -8,7 +8,7 @@ acapp.directive('mdBlur', ["$timeout", function ($timeout) {
 				scope.oldValue = scope.$eval(attributes.mdSelectedItem);
 				scope.focused = false;
 				angular.element(element[0].querySelector("input")).bind("focus", function () {
-					//console.log("focus:",this,$(this).is(":focus"));
+				    //console.log("focus:",this,$(this).is(":focus"));
 					scope.focused = true;
 					var resolved = scope.$eval(attributes.mdSelectedItem);
 					if (resolved) {
@@ -20,6 +20,7 @@ acapp.directive('mdBlur', ["$timeout", function ($timeout) {
 				angular.element(element[0].querySelector("input")).bind("blur", function () {
 					var that = this;
 					scope.focused = false;
+
 					var e = element;
 					var that = this;
 					$timeout(function () {
@@ -65,7 +66,7 @@ acapp.directive('rolegroups', function () {
 			onUpdate: '&onUpdate',
 			onDeleteRole: '&onDeleteRole',
 		},
-		controller: ["$scope", "$http", "$timeout", "$element", function ($scope, $http, $timeout, $element) {
+		controller: ["$scope", "$http", "$timeout", "$element","$rootScope", function ($scope, $http, $timeout, $element,$rootScope) {
 			$scope.addRoleToNode = function (group) {
 				var attachType = group.AttachType;
 				var attachId = group.AttachId;
@@ -108,100 +109,112 @@ acapp.directive('rolegroups', function () {
 				$scope.onDeleteRole()(r);
 			};
 
+			$scope.focusing = function () {
+			    $rootScope.$emit("RoleFocused");
+			}
+			$scope.blurring = function () {
+			    $rootScope.$emit("RoleBlurred");
+			}
+
+			//$($element).on("keydown","input", function () {
+			//    console.log("faster");
+			//});
+
 			$scope.checkCreateRole = function (evt, r, group, index) {
+			    $timeout(function () {
+			        var origLength = group.Roles.length;
+			        var depth = 0;
+			        if (evt.which === 13) {
+			            //var isLast = index === origLength - 1
+			            if (/*isLast &&*/ group.Editable != false) {
 
-				var origLength = group.Roles.length;
-				var depth = 0;
-				if (evt.which === 13) {
-					//var isLast = index === origLength - 1
-					if (/*isLast &&*/ group.Editable != false) {
+			                $scope.addRoleToNode(group);
 
-						$scope.addRoleToNode(group);
+			                depth = 0;
+			                var setFocus = function () {
+			                    try {
+			                        if (depth == 100)
+			                            return;
+			                        if (origLength < group.Roles.length) {
+			                            console.log("focusing");
+			                            $($($element).find("[data-group=" + group.Id + "] input")[index + 1]).focus();
+			                        } else {
+			                            depth += 1;
+			                            $timeout(setFocus, 20);
+			                        }
+			                    } catch (e) {
+			                        console.error(e);
+			                    }
+			                }
+			                $timeout(setFocus, 20);
 
-						depth = 0;
-						var setFocus = function () {
-							try {
-								if (depth == 100)
-									return;
-								if (origLength < group.Roles.length) {
-									console.log("focusing");
-									$($($element).find("[data-group=" + group.Id + "] input")[index + 1]).focus();
-								} else {
-									depth += 1;
-									$timeout(setFocus, 20);
-								}
-							} catch (e) {
-								console.error(e);
-							}
-						}
-						$timeout(setFocus, 20);
+			            }
+			        } else if (evt.which == 8) {
+			            if (r.Name == "" || typeof (r.Name) === "undefined" || r.Name == null) {
+			                $scope.deleting(r);
+			                if (origLength != 1) {
+			                    var setFocus = function () {
+			                        try {
+			                            if (depth == 100)
+			                                return;
+			                            if (origLength > group.Roles.length) {
+			                                console.log("focusing");
 
-					}
-				} else if (evt.which == 8) {
-					if (r.Name == "" || typeof (r.Name) === "undefined" || r.Name == null) {
-						$scope.deleting(r);
-						if (origLength != 1) {
-							var setFocus = function () {
-								try {
-									if (depth == 100)
-										return;
-									if (origLength > group.Roles.length) {
-										console.log("focusing");
-
-										$($($element).find("[data-group=" + group.Id + "] input")[index - 1]).focus();
-										//$("[data-group=" + group.Id + "]").find("input:nth-child(" + (index) + ")").focus();
-									} else {
-										depth += 1;
-										$timeout(setFocus, 20);
-									}
-								} catch (e) {
-									console.error(e);
-								}
-							}
-							$timeout(setFocus, 20);
-						} else {
-							$($element).find("[data-group=" + group.Id + "] .add-role-row").focus();
-						}
-					}
-				} else if (evt.which == 38) {
-					if (index > 0) {
-						var that = $($($element).find("[data-group=" + group.Id + "] input")[index - 1]);
-						$(that).focus();
-						$timeout(function () {
-							var len = $(that).val().length * 2;
-							$(that)[0].setSelectionRange(len, len);
-						}, 0);
-					}
-				} else if (evt.which == 40) {
-					if (index < origLength - 1) {
-						var that = $($($element).find("[data-group=" + group.Id + "] input")[index + 1]);
-						$(that).focus();
-						$timeout(function () {
-							var len = $(that).val().length * 2;
-							$(that)[0].setSelectionRange(len, len);
-						}, 0);
-					} else {
-						var id = $($($element).find("[data-group=" + group.Id + "] input")).closest("g.node").attr("data-id");
-						$scope.$emit("ExpandNode", id);
-					}
-				}
+			                                $($($element).find("[data-group=" + group.Id + "] input")[index - 1]).focus();
+			                                //$("[data-group=" + group.Id + "]").find("input:nth-child(" + (index) + ")").focus();
+			                            } else {
+			                                depth += 1;
+			                                $timeout(setFocus, 20);
+			                            }
+			                        } catch (e) {
+			                            console.error(e);
+			                        }
+			                    }
+			                    $timeout(setFocus, 20);
+			                } else {
+			                    $($element).find("[data-group=" + group.Id + "] .add-role-row").focus();
+			                }
+			            }
+			        } else if (evt.which == 38) {
+			            if (index > 0) {
+			                var that = $($($element).find("[data-group=" + group.Id + "] input")[index - 1]);
+			                $(that).focus();
+			                $timeout(function () {
+			                    var len = $(that).val().length * 2;
+			                    $(that)[0].setSelectionRange(len, len);
+			                }, 0);
+			            }
+			        } else if (evt.which == 40) {
+			            if (index < origLength - 1) {
+			                var that = $($($element).find("[data-group=" + group.Id + "] input")[index + 1]);
+			                $(that).focus();
+			                $timeout(function () {
+			                    var len = $(that).val().length * 2;
+			                    $(that)[0].setSelectionRange(len, len);
+			                }, 0);
+			            } else {
+			                var id = $($($element).find("[data-group=" + group.Id + "] input")).closest("g.node").attr("data-id");
+			                $scope.$emit("ExpandNode", id);
+			            }
+			        }
+			    }, 1);
 			}
 		}],
 
 		template: "<div class='role-groups'>" +
-						"<div ng-repeat='group in groups' class='role-group' ng-if='group.Editable!=false || group.Roles.length>0' data-group='{{group.Id}}'>" +
-							"<div class='role-group-title'><span ng-if='!(groups.length==1 && group.AttachType==\"Position\")'>{{group.AttachName}} Roles </span>" +
-								"<div ng-if='group.Editable!=false' class='add-role-row' ng-class='{tinyRow:(groups.length==1 && group.AttachType==\"Position\")}' ng-click='newRoleButton(group)' style='opacity:0;'> <div class='circle'>+</div> </div>" +
+						"<div ng-repeat='group in groups' class='role-group' ng-if='::group.Editable!=false || group.Roles.length>0' data-group='{{group.Id}}'>" +
+							"<div class='role-group-title'><span ng-if='!(groups.length==1 && group.AttachType==\"Position\")'>{{::group.AttachName}} Roles </span>" +
+								"<div ng-if='::group.Editable!=false' class='add-role-row' ng-class='{tinyRow:(groups.length==1 && group.AttachType==\"Position\")}' ng-click='newRoleButton(group)' style='opacity:0;'> <div class='circle'>+</div> </div>" +
 							"</div>" +
 							"<ul>" +
 								"<li ng-repeat='role in group.Roles'  class='role-row' >" +
-									"<input ng-model-options='{debounce:200}' ng-keydown='checkCreateRole($event,role,group,$index)' title='{{role.Name}}' class='role' ng-if='group.Editable!=false' ng-model=\"role.Name\" ng-disabled='group.Editable==false' ng-change=\"updating(role)\">" +
-									"<div title='{{role.Name}}' class='role' ng-if='group.Editable==false'>{{role.Name}}</div>" +
-									"<span ng-if='group.Editable!=false' class='delete-role-row' ng-click=\"deleting(role)\" tabindex='-1'></span>" +
+									"<input ng-model-options='{debounce:200}'  ng-focus='focusing()' ng-blur='blurring()'"+" ng-keydown='checkCreateRole($event,role,group,$index)'"+ " title='{{role.Name}}' class='role' ng-if='::group.Editable!=false' ng-model=\"role.Name\" ng-change=\"updating(role)\">" +
+									"<div title='{{role.Name}}' class='role' ng-if='::group.Editable==false'>{{role.Name}}</div>" +
+									"<span ng-if='::group.Editable!=false' class='delete-role-row' ng-click=\"deleting(role)\" tabindex='-1'></span>" +
 								"</li>" +
 							"</ul>" +
 							"<div ng-if='group.Roles.length==0' class='gray no-roles-placeholder'>" +
-								"No roles. <span ng-if='group.Editable!=false'>Use the <span class='glyphicon glyphicon-plus-sign'></span> button to add some.</span>" +
+								"No roles. <span ng-if='::group.Editable!=false'>Use the <span class='glyphicon glyphicon-plus-sign'></span> button to add some.</span>" +
 							"</div>" +
 						"</div>" +
 				  "</div>"
@@ -363,16 +376,24 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 	//ULTRA HACK
 	$rootScope.$on("BeginCallbackSignalR", function (event, count) {
 		$scope.suspendUpdate = true;
-		console.log("suspend update (" + count + ")...");
+		//console.log("suspend update (" + count + ")...");
 	});
 	$rootScope.$on("EndCallbackSignalR", function (event, count) {
 		if (count <= 0) {
 			$scope.suspendUpdate = false;
-			console.log("...resume update");
+			//console.log("...resume update");
 		} else {
-			console.log("...(" + count + ")...");
+			//console.log("...(" + count + ")...");
 		}
-		console.log("------------------");
+		//console.log("------------------");
+	});
+
+	$scope.roleFocused = false;
+	$rootScope.$on("RoleFocused", function (event) {
+	    $scope.roleFocused = true;
+	});
+	$rootScope.$on("RoleBlurred", function (event) {
+	    $scope.roleFocused = false;
 	});
 	//END ULTRA HACK
 	$scope.functions.selectedItemChange = function (node) {
@@ -417,8 +438,24 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		var pos = false;
 		if (node.User && node.User.Name)
 			uname = node.User.Name;
-		if (node.Group && node.Group.RoleGroups)
-			roles = node.Group.RoleGroups;
+		if (node.Group && node.Group.RoleGroups) {
+		    if ($scope.roleFocused){
+		        var copy = node.Group.RoleGroups.map(function (rg) {
+		            var cp = angular.copy(rg);
+		            cp.Roles = cp.Roles.map(function () { return null; });
+		            return cp;
+		        });
+		    //    var rolesGroups = [];
+		    //    for(var c in copy){
+		    //        var rg = copy[c];
+		    //        rg.Roles = null;
+		    //        rolesGroups.push(rg);
+		    //    }
+		        roles = copy;
+		    }
+		    else
+		        roles = node.Group.RoleGroups;
+		}
 		if (node.Group)
 			pos = node.Group.Position;
 		return {
@@ -672,7 +709,8 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		});
 	}
 	$scope.nodeUpdate = function (nodeUpdate) {
-		nodeUpdate.select(".acc-rect").attr("width", function (d) {
+	    nodeUpdate.select(".acc-rect").attr("width", function (d) {
+	        console.log("update called");
 			return d.width;
 		}).attr("height", function (d) {
 			return (d.height || 20);

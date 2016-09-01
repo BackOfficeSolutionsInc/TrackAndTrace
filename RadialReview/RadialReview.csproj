@@ -1094,6 +1094,7 @@
     <None Include="Resources\Unchecked.png" />
     <None Include="Resources\EOS_Model.png" />
     <Content Include="Scripts\Angular\AccountabilityChart\ACController.js" />
+    <Content Include="Scripts\Angular\angular.js" />
     <Content Include="Scripts\Angular\GettingStartd\GSApp.js" />
     <Content Include="Scripts\Angular\GettingStartd\GSController.js" />
     <Content Include="Scripts\Angular\Helpers\angular-elastic-input.js" />
@@ -1149,6 +1150,7 @@
     <Content Include="Scripts\Tour\createL10.js" />
     <Content Include="Scripts\Tour\lib\anno.js" />
     <Content Include="Scripts\Tour\lib\jquery.scrollintoview.min.js" />
+    <Content Include="Scripts\Tour\texttodoissue.js" />
     <Content Include="Scripts\undo.js" />
     <Content Include="Scripts\Upload\UploadRocks.js" />
     <Content Include="Scripts\Upload\UploadUsers.js" />

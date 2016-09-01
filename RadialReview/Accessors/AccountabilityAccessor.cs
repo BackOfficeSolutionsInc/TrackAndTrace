@@ -295,6 +295,7 @@ namespace RadialReview.Accessors {
 		public static void SetUser(ISession s, RealTimeUtility rt, PermissionsUtility perms, long nodeId, long? userId, bool skipAddManger, bool skipPosition, DateTime now) {
 
 			var updateUsers = new List<long>();
+            UserOrganizationModel user = null;
 
 			if (userId.HasValue)
 				perms.ManagesUserOrganization(userId.Value, true, PermissionType.EditEmployeeManagers);
@@ -379,6 +380,7 @@ namespace RadialReview.Accessors {
 
 					n.User = s.Get<UserOrganizationModel>(userId);
 					n.UserId = n.User.Id;
+                    user = n.User;
 
 					if (DeepAccessor.HasChildren(s, n.Id)) {
 						//UPDATE MANAGER STATUS,
@@ -475,7 +477,10 @@ namespace RadialReview.Accessors {
 			foreach (var u in updateUsers.Distinct()) {
 				s.GetFresh<UserOrganizationModel>(u).UpdateCache(s);
 			}
-		}
+            if (user != null)
+                s.Evict(user);
+
+        }
 
 
 		public static void RemoveRole(ISession s, PermissionsUtility perms, RealTimeUtility rt, long roleId) {

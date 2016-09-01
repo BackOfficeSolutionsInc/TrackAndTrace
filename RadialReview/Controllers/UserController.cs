@@ -182,7 +182,8 @@ namespace RadialReview.Controllers {
 
             var e4 = sw.ElapsedMilliseconds;
             if (caller.ManagingOrganization) {
-                managers.Insert(0, new SelectListItem() { Selected = false, Text = "[Organization Admin]", Value = "-3" });
+                var root = AccountabilityAccessor.GetRoot(GetUser(), caller.Organization.AccountabilityChartId);
+                managers.Insert(0, new SelectListItem() { Selected = false, Text = "[Organization Admin]", Value = ""+root.Id });
             }
 
 			var node = DeepAccessor.Users.GetNodesForUser(GetUser(), managerId ?? caller.Id).FirstOrDefault();

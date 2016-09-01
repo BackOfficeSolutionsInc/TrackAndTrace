@@ -34,7 +34,8 @@ namespace RadialReview.Accessors {
                 throw new PermissionsException("First name cannot be empty.");
             if (lastName == null)
                 throw new PermissionsException("Last name cannot be empty.");
-
+            if (managerNodeId == -3)
+                managerNodeId = null;
 
             var nexusId = Guid.NewGuid();
             String id = null;
@@ -46,7 +47,7 @@ namespace RadialReview.Accessors {
                 using (var tx = db.BeginTransaction()) {
 
 					AccountabilityNode managerNode= null;
-					if (managerNodeId != null) {
+					if (managerNodeId != null ) {
 						managerNode = db.Get<AccountabilityNode>(managerNodeId.Value);
 						if (managerNode == null)
 							throw new PermissionsException("Parent does not exist.");
@@ -121,6 +122,14 @@ namespace RadialReview.Accessors {
                         newUser.Positions.Add(positionDuration);
                     }
 
+                    db.Update(newUser);
+
+                    if (isManager) {
+                        var subordinateTeam = OrganizationTeamModel.SubordinateTeam(caller, newUser);
+                        db.Save(subordinateTeam);
+                    }
+
+                    newUserId = newUser.Id;
                     if (managerNode!=null) {
 						//if (managerNode.UserId != null) {
 						//	var managerDuration = new ManagerDuration(managerNode.UserId.Value, newUser.Id, caller.Id) {
@@ -135,19 +144,13 @@ namespace RadialReview.Accessors {
 						using (var rt = RealTimeUtility.Create()){
 							var node = AccountabilityAccessor.AppendNode(db, PermissionsUtility.Create(db, caller),rt, managerNode.Id, userId: newUser.Id);
 						}
-
                         //DeepSubordianteAccessor.Add(db, manager, newUser, caller.Organization.Id, now);
-                    }
-
-                    db.Update(newUser);
-
-                    if (isManager) {
-                        var subordinateTeam = OrganizationTeamModel.SubordinateTeam(caller, newUser);
-                        db.Save(subordinateTeam);
-                    }
-
-                    newUserId = newUser.Id;
+                    }else
+                    {
                     newUser.UpdateCache(db);
+
+                    }
+
                     HooksRegistry.Each<ICreateUserOrganizationHook>(x => x.CreateUser(db, newUser));
                     tx.Commit();
                 }

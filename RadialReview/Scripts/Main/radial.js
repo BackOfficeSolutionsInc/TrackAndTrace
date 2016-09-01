@@ -1440,7 +1440,7 @@ function startTour(name, method) {
 			Tours = {
 				NextButton: function () {
 					return {
-						text: "Next1",
+						text: "Next",
 						click: function (a, e) {
 							var anno = a;
 							$(anno.target).click();
@@ -1449,7 +1449,7 @@ function startTour(name, method) {
 					};
 				},
 				clickToAdvance: function (anno) {
-
+				    debugger;
 					var existingShow = anno.onShow;
 					var existingHide = anno.onHide;
 
@@ -1540,7 +1540,13 @@ function startTour(name, method) {
 			Anno.prototype.overlayClick = function () {
 				console.log("overlay clicked");
 			};
-			$.getScript("/Scripts/Tour/" + name + ".js").done(function () { Tours[name][method](); });
+			$.getScript("/Scripts/Tour/" + name + ".js").done(function () {
+			    //debugger;
+			    Tours[name][method]();
+			}, function () {
+			    //debugger;
+			   // showAlert("Something went wrong.");
+			});
 		} catch (e) {
 			showAlert("Tour could not be loaded.");
 		}
@@ -1587,6 +1593,12 @@ function waitUntil(isready, success, error, count, interval) {
 			waitUntil(isready, success, error, count - 1, interval);
 		}
 	}, interval);
+}
+
+function waitUntilVisible(selector,onVisible){
+    waitUntil(function(){
+        return $(selector).is(":visible");
+    },onVisible,function(){},60,50);
 }
 
 //Debounce

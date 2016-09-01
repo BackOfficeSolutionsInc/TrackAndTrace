@@ -165,8 +165,9 @@ namespace RadialReview.Controllers
             {
                 return Json(new ResultObject(e));
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                log.Error(e);
                 return Json(new ResultObject(true, ExceptionStrings.AnErrorOccuredContactUs));
             }
         }

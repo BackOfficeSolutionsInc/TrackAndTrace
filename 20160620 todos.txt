@@ -1,5 +1,10 @@
 * Dan sedor (Update all L10)
 
+* Australian phone numbers
+
+* Fix Archive button
+
+*IsRadialAdmin hook
 
 * Close an issue but notes for that issue stayed open until I refreshed the page.
 * Same thing happened when I moved an issue to the v/to i.e. issue moved but notes stayed open until I refreshed page  

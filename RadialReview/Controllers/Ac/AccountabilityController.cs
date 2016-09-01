@@ -35,9 +35,11 @@ namespace RadialReview.Controllers
 
             var idr = id ?? u.Organization.AccountabilityChartId;
 
+            user = user ?? u.Id;
+
             if (node == null && user != null)
                 node = AccountabilityAccessor.GetNodesForUser(GetUser(), user.Value).FirstOrDefault().NotNull(x=>(long?)x.Id);
-
+            
 			return View(new AccountabilityChartVM() {
 		        UserId = u.Id,
 				OrganizationId = u.Organization.Id,

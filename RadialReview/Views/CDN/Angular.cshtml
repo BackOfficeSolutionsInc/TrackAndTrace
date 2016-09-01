@@ -23,25 +23,33 @@
 }@using (Html.BeginScripts()) {
     <!--Begin Angular Scripts-->
     if (RadialReview.Utilities.Config.IsLocal()) {
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.js"></script>
-    } else {
+       <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.js"></script>
+         @*< script src="~/Scripts/Angular/angular.js" ></script>*@
+    }
+    else
+    {
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
     }
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-aria.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-messages.min.js"></script>
-	if (RadialReview.Utilities.Config.IsLocal())
-	{
-		<script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.js"></script>
-	}else{
-		<script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.js"></script>
-	}
+
+    if (RadialReview.Utilities.Config.IsLocal())
+    {
+
+        <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.js"></script>
+
+    }else{
+
+        <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.js"></script>
+
+    }
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material-data-table/0.10.8/md-data-table.min.js"></script>
      if (stepper) {
         @*<script src="~/Scripts/Angular/MaterialDesign/md-stepper.js"></script>*@
         @Scripts.Render("~/bundles/MdStepper")
      }
-     if (fileUpload) {
+    if (fileUpload) {
         @Scripts.Render("~/bundles/MdFile")
         @*<script src="~/Scripts/Angular/MaterialDesign/lf-ng-md-file-input.min.js"></script>*@
      }
