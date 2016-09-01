@@ -808,10 +808,11 @@ function showJsonAlert(data, showSuccess, clearOthers) {
 			else
 				showAlert(stdError);
 		} else {
+			var showDetails = typeof (data.NoErrorReport) === "undefined" || !data.NoErrorReport;
 			var message = data.Message;
 			if (message === undefined)
 				message = "";
-			if (data.Trace) {
+			if (data.Trace && showDetails) {
 				console.error(data.TraceMessage);
 				console.error(data.Trace);
 			}
@@ -821,8 +822,10 @@ function showJsonAlert(data, showSuccess, clearOthers) {
 				showAlert(message, "alert-" + mType.toLowerCase(), data.Heading);
 			}
 			if (data.Error) {
-				debugger;
-				sendErrorReport();
+				if (showDetails) {
+					debugger;
+					sendErrorReport();
+				}
 			}
 
 		}
@@ -1041,8 +1044,7 @@ $(document).ajaxSend(function (event, jqX, ajaxOptions) {
 	}
 
 	//var date = (new Date().getTime());
-
-
+	
 
 	if (ajaxOptions.url.indexOf("_clientTimestamp") == -1) {
 		if (!window.tzoffset) {
@@ -1058,6 +1060,8 @@ $(document).ajaxSend(function (event, jqX, ajaxOptions) {
 
 		ajaxOptions.url += "_clientTimestamp=" + ((+new Date()) + (window.tzoffset * 60 * 1000));
 	}
+
+	console.info(ajaxOptions.method + ajaxOptions.url);
 });
 /////////////////////////////////////////////////////////////////
 

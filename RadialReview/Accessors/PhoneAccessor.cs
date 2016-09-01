@@ -94,9 +94,12 @@ namespace RadialReview.Accessors {
 
 				}
 			}
+
+
 			switch (found.Action) {
 				case "todo":
-					await TodoAccessor.CreateTodo(found.Caller, found.ForId, new TodoModel() {
+
+					var todoModel = new TodoModel() {
 						AccountableUser = found.Caller,
 						AccountableUserId = found.Caller.Id,
 						CreatedBy = found.Caller,
@@ -110,7 +113,15 @@ namespace RadialReview.Accessors {
 						Details = "-sent from phone",
 						ForModel = "TodoModel",
 						ForModelId = -2,
-					});
+					};
+
+					if (found.ForId == -2) { // Personal todo list
+						todoModel.ForRecurrenceId = null;
+						todoModel.CreatedDuringMeetingId = null;
+						todoModel.TodoType = TodoType.Personal;
+					}
+
+					await TodoAccessor.CreateTodo(found.Caller, found.ForId, todoModel);
 					return "Added todo.";
 				case "issue":
 					await IssuesAccessor.CreateIssue(found.Caller, found.ForId, found.Caller.Id, new IssueModel() {
@@ -177,7 +188,9 @@ namespace RadialReview.Accessors {
 		public static PhoneCode AddAction(UserOrganizationModel caller, long userId, string action, long callableId, long recurrenceId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					var perms = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId).Self(userId);
+					var perms = PermissionsUtility.Create(s, caller).Self(userId);
+					if(recurrenceId!=-2)
+						perms.ViewL10Recurrence(recurrenceId);
 
 					var unused = GetUnusedCallablePhoneNumbersForUser(s, perms, userId);
 					var found = unused.FirstOrDefault(x => x.Id == callableId);

@@ -89,7 +89,10 @@ namespace RadialReview.Controllers
 		public JsonResult Modal(PhoneVM model)
 		{
 			//ValidateValues(model,x=>x.RecurrenceId);
-			new PermissionsAccessor().Permitted(GetUser(), x => x.ViewL10Recurrence(model.RecurrenceId));
+			if (model.RecurrenceId != -2) {
+				//Personal Todo
+				new PermissionsAccessor().Permitted(GetUser(), x => x.ViewL10Recurrence(model.RecurrenceId));
+			}
 			if(PossibleActions.All(x => x.Value != model.SelectedAction))
 				throw new PermissionsException("Action does not exist.");
 			var code = PhoneAccessor.AddAction(GetUser(),GetUser().Id, model.SelectedAction, model.SelectedNumber.ToLong(),model.RecurrenceId);
