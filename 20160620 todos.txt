@@ -2,6 +2,8 @@
 
 * Australian phone numbers
 
+* lost leads from the register page
+
 * Fix Archive button
 
 *IsRadialAdmin hook

@@ -12,6 +12,7 @@ namespace RadialReview.Exceptions
 		{
 			ClientTimestamp = clientTimestamp;
 			Silent = true;
+			NoErrorReport = true;
 		}
 
 		public SyncException(long? clientTimestamp) : 
