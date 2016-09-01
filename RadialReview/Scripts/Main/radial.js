@@ -1449,7 +1449,7 @@ function startTour(name, method) {
 					};
 				},
 				clickToAdvance: function (anno) {
-				    debugger;
+				    
 					var existingShow = anno.onShow;
 					var existingHide = anno.onHide;
 

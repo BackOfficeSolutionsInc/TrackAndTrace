@@ -375,8 +375,14 @@ namespace RadialReview.Controllers {
 				ViewBag.ImageUrl = ConstantStrings.ImageUserPlaceholder;
 			}
 
-
 			var model = constructProfileViewModel(user);
+			try {
+				var uo = GetUser();
+				model.LoggedIn = true;
+				model.PersonalTextNumber =  ""+PhoneAccessor.GetPersonalTextATodo(uo,uo.Id).CallerNumber;
+			} catch (Exception) {
+
+			}
 
 			return View(model);
 		}

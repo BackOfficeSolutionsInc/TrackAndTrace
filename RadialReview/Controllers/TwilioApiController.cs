@@ -31,21 +31,32 @@ namespace RadialReview.Controllers
 			public string SelectedAction { get; set; }
 			public string SelectedNumber { get; set; }
 			public long RecurrenceId { get; set; }
+			public bool TodoOnly { get; internal set; }
+		}
 
-	    }
+		private static string TODO = "todo";
+		private static string ISSUE = "issue";
 
-	    protected static List<SelectListItem> PossibleActions = new List<SelectListItem>(){new SelectListItem(){Text = "Add an Issue", Value = "issue"}, new SelectListItem(){Text = "Add a To-Do", Value = "todo"}};
+		protected static List<SelectListItem> PossibleActions = new List<SelectListItem>(){new SelectListItem(){Text = "Add an Issue", Value = ISSUE }, new SelectListItem(){Text = "Add a To-Do", Value = TODO } };
 
 		[Access(AccessLevel.UserOrganization)]
-        public PartialViewResult Modal(long recurrenceId)
+        public PartialViewResult Modal(long recurrenceId,bool todoOnly=false)
 		{
-			new PermissionsAccessor().Permitted(GetUser(), x => x.ViewL10Recurrence(recurrenceId));
+			if (recurrenceId != -2) {
+				//Personal Todo
+				new PermissionsAccessor().Permitted(GetUser(), x => x.ViewL10Recurrence(recurrenceId));
+			}
+
+			var posActions = PossibleActions.ToList();
+			if (todoOnly)
+				posActions = posActions.Where(x => x.Value == TODO).ToList();
 
 			var model = new PhoneVM()
 			{
 				RecurrenceId = recurrenceId,
-				PossibleActions = PossibleActions,
-				PossibleNumbers = PhoneAccessor.GetUnusedCallablePhoneNumbersForUser(GetUser(), GetUser().Id).ToSelectList(x => x.Number.ToPhoneNumber(), x => x.Id)
+				PossibleActions = posActions,
+				PossibleNumbers = PhoneAccessor.GetUnusedCallablePhoneNumbersForUser(GetUser(), GetUser().Id).ToSelectList(x => x.Number.ToPhoneNumber(), x => x.Id),
+				TodoOnly= todoOnly
 			};
 
 			return PartialView(model);

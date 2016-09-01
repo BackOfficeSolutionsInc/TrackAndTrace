@@ -83,6 +83,8 @@ namespace RadialReview.Accessors {
 
 				.Where(x => x.Rock.DeleteTime == null && x.Rock.CompanyRock).ToList();
 			model._Issues = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Issues && x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList();
+
+
 			return model;
 		}
 
@@ -93,6 +95,7 @@ namespace RadialReview.Accessors {
 					var vto = GetVTO(s, perms, vtoId);
 
 					var ang = AngularVTO.Create(vto);
+
 					if (ang.L10Recurrence != null) {
 						try {
 							var recur = L10Accessor.GetL10Recurrence(s, perms, ang.L10Recurrence.Value, false);
@@ -100,6 +103,8 @@ namespace RadialReview.Accessors {
 							//if (isLeadership) {
 							//   ang.QuarterlyRocks.Rocks = ang.QuarterlyRocks.Rocks.Where(x => x.Rock.CompanyRock ?? true).ToList();
 							//}
+							if (recur.TeamType != L10TeamType.LeadershipTeam)
+								ang.IncludeVision = false;
 						} catch (Exception) {
 
 						}

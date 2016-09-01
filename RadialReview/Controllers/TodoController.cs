@@ -49,13 +49,13 @@ namespace RadialReview.Controllers
 			public string name { get; set; }
 		}
 	    [Access(AccessLevel.UserOrganization)]
-        public PartialViewResult CreateTodoRecurrence()
+        public PartialViewResult CreateTodoRecurrence(long? id=null)
 	    {
 			var model = new TodoVM(GetUser().Id){
 				ByUserId = GetUser().Id,
 				AccountabilityId = new []{GetUser().Id},
 				MeetingId = -1,
-                RecurrenceId = -2
+                RecurrenceId = id??-2
 
 			};
 
@@ -69,6 +69,7 @@ namespace RadialReview.Controllers
                 id = -2 // Personal todo list
             });
             ViewBag.PossibleMeetings = meetings;
+			
 
 			return PartialView("CreateTodoRecurrence", model);
 	    }

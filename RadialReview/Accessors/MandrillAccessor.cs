@@ -91,29 +91,33 @@ namespace RadialReview.Accessors {
             var lus = s.QueryOver<UserLookup>().WhereRestrictionOn(x => x.UserId).IsIn(userIds).List().ToList();
 
             foreach (var tu in temps) {
-                var tuple = evts.First(x => x.Item2.ToAddress.ToUpper() == tu.Email.ToUpper());
-                var e = tuple.Item1;
-                tu.EmailStatus = e.Event;
-                switch (e.Event) {
-                    case WebHookEventType.Send: tu.EmailStatusUnseen = false; break;
-                    case WebHookEventType.Hard_bounce: tu.EmailStatusUnseen = true; break;
-                    case WebHookEventType.Soft_bounce: ; break;
-                    case WebHookEventType.Open: ; break;
-                    case WebHookEventType.Click: ; break;
-                    case WebHookEventType.Spam: tu.EmailStatusUnseen = true; break;
-                    case WebHookEventType.Unsub: tu.EmailStatusUnseen = true; break;
-                    case WebHookEventType.Reject: tu.EmailStatusUnseen = true; break;
-                    case WebHookEventType.Deferral: ; break;
-                    case WebHookEventType.Inbound: ; break;
-                    default: break;
-                }
+                var tuples = evts.Where(x => x.Item2.ToAddress.ToUpper() == tu.Email.ToUpper());
+				if(tuples.Any())
+				{
+					var tuple = tuples.First();
+					var e = tuple.Item1;
+					tu.EmailStatus = e.Event;
+					switch (e.Event) {
+						case WebHookEventType.Send: tu.EmailStatusUnseen = false; break;
+						case WebHookEventType.Hard_bounce: tu.EmailStatusUnseen = true; break;
+						case WebHookEventType.Soft_bounce: ; break;
+						case WebHookEventType.Open: ; break;
+						case WebHookEventType.Click: ; break;
+						case WebHookEventType.Spam: tu.EmailStatusUnseen = true; break;
+						case WebHookEventType.Unsub: tu.EmailStatusUnseen = true; break;
+						case WebHookEventType.Reject: tu.EmailStatusUnseen = true; break;
+						case WebHookEventType.Deferral: ; break;
+						case WebHookEventType.Inbound: ; break;
+						default: break;
+					}
 
-                var lu = lus.FirstOrDefault(x => x.UserId == tu.UserOrganizationId);
-                if (lu != null) {
-                    lu.EmailStatus = e.Event;
-                    s.Update(lu);
-                }
-                s.Update(tu);
+					var lu = lus.FirstOrDefault(x => x.UserId == tu.UserOrganizationId);
+					if (lu != null) {
+						lu.EmailStatus = e.Event;
+						s.Update(lu);
+					}
+					s.Update(tu);
+				}
             }
 
         }

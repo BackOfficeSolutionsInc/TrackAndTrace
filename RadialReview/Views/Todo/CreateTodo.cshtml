@@ -28,7 +28,7 @@
 	<div class="col-sm-5">
 		<div class="form-group">
 			<label>Due Date:</label>
-            @Html.Partial("~/Views/Shared/EditorTemplates/DateTime.cshtml", Model.DueDate, new ViewDataDictionary() { { "name", "TodoDueDate" } })
+            @Html.Partial("~/Views/Shared/EditorTemplates/DateTime.cshtml", Model.DueDate, new ViewDataDictionary() { { "name", "DueDate" } })
             @*<div class="date" data-date="@Model.DueDate.ToString(Html.Organization().Settings.GetDateFormat())" data-date-format="@Html.Organization().Settings.GetDateFormat().ToLower()">
                 <div class="">
                     @Html.TextBox("DueDate", Model.DueDate.ToString(Html.Organization().Settings.GetDateFormat()), new { @class = "form-control datePicker", id = "TodoDueDate" })

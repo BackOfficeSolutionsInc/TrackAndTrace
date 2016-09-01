@@ -39,13 +39,13 @@ namespace RadialReview.Models
         public virtual string ImageGuid { get; set; }
         public virtual GenderType? Gender { get; set; }
 		protected virtual string _UserOrganizationIds { get; set; }
-        /*
+		/*
         public ICollection<UserLogin> Logins { get; set; }
         */
 		public virtual int? SendTodoTime { get; set; }
 
-        //[NotMapped]
-        private string _ImageUrl { get; set; }
+		//[NotMapped]
+		private string _ImageUrl { get; set; }
 
 
         public virtual IList<UserOrganizationModel> UserOrganization { get; set; }

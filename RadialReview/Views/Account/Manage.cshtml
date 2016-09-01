@@ -7,7 +7,7 @@
 }
 
 @*<p class="text-success">@ViewBag.StatusMessage</p>*@
-@if (!string.IsNullOrWhiteSpace(ViewBag.StatusMessage)){
+@if (!string.IsNullOrWhiteSpace(ViewBag.StatusMessage)) {
 	@Html.AlertBoxDismissable((string)ViewBag.StatusMessage, (string)ViewBag.AlertType, ViewBag.AlertType != "alert-danger" ? "Success" : "Warning")
 	<br />
 }
@@ -21,8 +21,7 @@
 				<h3 class="panel-title">Profile</h3>
 			</div>
 			<div class="panel-body">
-				@using (Html.BeginForm("Manage", "Account", FormMethod.Post))
-				{
+				@using (Html.BeginForm("Manage", "Account", FormMethod.Post)) {
 					@Html.AntiForgeryToken()
 					<div class="row">
 						<div class="col-md-3">  First Name:</div>
@@ -38,7 +37,7 @@
 						<div class="col-md-3">  Time to send To-Do Email:</div>
 						<div class="col-md-9">  @Html.DropDownListFor(x => x.SendTodoTime, Model.PossibleTimes, new { @class = "form-control" })</div>
 					</div>
-                    <div class="row smallBreak">
+					<div class="row smallBreak">
 						<div class="col-md-3">  Show color on scorecard:</div>
 						<div class="col-md-9">  @Html.CheckBoxFor(x => x.ShowScorecardColors, new { @class = "checkbox" })</div>
 					</div>
@@ -58,12 +57,9 @@
 				<h3 class="panel-title">Password</h3>
 			</div>
 			<div class="panel-body">
-				@if (ViewBag.HasLocalPassword)
-				{
+				@if (ViewBag.HasLocalPassword) {
 					@Html.Partial("_ChangePasswordPartial", (RadialReview.Models.ManageUserViewModel)Model.Manage, new ViewDataDictionary())
-				}
-				else
-				{
+				} else {
 					@Html.Partial("_SetPasswordPartial", (RadialReview.Models.ManageUserViewModel)Model.Manage, new ViewDataDictionary())
 				}
 
@@ -81,17 +77,34 @@
 				<h3 class="panel-title">Profile Image</h3>
 			</div>
 			<div class="panel-body alignCenter">
-				@Html.Partial("~/Views/Upload/Image.cshtml", new RadialReview.Models.ViewModels.ImageUploadViewModel()
-					{
-						ForType = RadialReview.Models.Enums.UploadType.ProfileImage.ToString(),
-                        ImageUrl = Model.ImageUrl,
-                        UploadUrl = "/upload/image/" + Model.UserId
-						/*Width = 200,
-						Height = 200,*/
-					})
+				@Html.Partial("~/Views/Upload/Image.cshtml", new RadialReview.Models.ViewModels.ImageUploadViewModel() {
+			   ForType = RadialReview.Models.Enums.UploadType.ProfileImage.ToString(),
+			   ImageUrl = Model.ImageUrl,
+			   UploadUrl = "/upload/image/" + Model.UserId
+			   /*Width = 200,
+			   Height = 200,*/
+		   })
 			</div>
 		</div>
 	</div>
+	@if (Model.LoggedIn) {
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Personal Text-a-Todo™ </h3>
+
+				</div>
+				<div class="panel-body alignCenter">
+					@if (Model.PersonalTextNumber == null) {
+						<div class="btn btn-success" onclick="@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId=-2&todoOnly=true","/TwilioApi/Modal")"><span style="top: 2px;" class="glyphicon glyphicon-phone l10-texting-actions"></span> Set Up</div>
+					} else {
+						<h3>@Model.PersonalTextNumber</h3>
+					}
+				</div>
+			</div>
+		</div>
+	}
+
 </div>
 
 <div class="row">

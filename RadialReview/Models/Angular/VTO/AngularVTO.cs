@@ -29,6 +29,7 @@ namespace RadialReview.Models.Angular.VTO {
 		public DateTime? CreateTime { get; set; }
 		public long? CopiedFrom { get; set; }
 		public String Name { get; set; }
+		public bool IncludeVision { get; set; }
 
 		public AngularCoreFocus CoreFocus { get; set; }
 		public AngularStrategy Strategy { get; set; }
@@ -59,7 +60,8 @@ namespace RadialReview.Models.Angular.VTO {
 				Issues = AngularVtoString.Create(vto._Issues),
 				TenYearTargetTitle = vto.TenYearTargetTitle ?? "10-YEAR TARGET™",
 				CoreValueTitle = vto.CoreValueTitle ?? "CORE VALUES",
-				IssuesListTitle = vto.IssuesListTitle ?? "ISSUES LIST"
+				IssuesListTitle = vto.IssuesListTitle ?? "ISSUES LIST",
+				IncludeVision = true
 			};
 		}
 

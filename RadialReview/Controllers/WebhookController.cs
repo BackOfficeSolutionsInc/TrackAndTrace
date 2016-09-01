@@ -23,9 +23,22 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Any)]
 		public ActionResult Mandrill_0106CFAB089241C9BEFC7B084408D082(MandrillWebHookBindingModel model)
 		{
-			var events = JsonConvert.DeserializeObject<IEnumerable<WebHookEvent>>(model.mandrill_events);
+			try {
+				var events = JsonConvert.DeserializeObject<IEnumerable<WebHookEvent>>(model.mandrill_events);
+				MandrillAccessor.ProcessWebhooks(events);
+			} catch (Exception e1) {
+				log.Error(e1);
 
-			MandrillAccessor.ProcessWebhooks(events);
+				try {
+					var events = JsonConvert.DeserializeObject<WebHookEvent>(model.mandrill_events);
+					MandrillAccessor.ProcessWebhooks(events.AsList());
+				} catch (Exception e2) {
+					log.Info(model.mandrill_events);
+					log.Error(e2);
+					throw new Exception(model.mandrill_events, e2);
+				}
+
+			}
 
 			return Content("ok");
 		}

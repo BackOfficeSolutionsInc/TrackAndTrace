@@ -73,6 +73,9 @@ namespace RadialReview.Models
 		public virtual long CallerId { get; set; }
 		public virtual UserOrganizationModel Caller { get; set; }
 		public virtual String Action { get; set; }
+		/// <summary>
+		/// RecurrenceId
+		/// </summary>
 		public virtual long ForId { get; set; }
 		public virtual long CallerNumber { get; set; }
 		public virtual long SystemNumber { get; set; }

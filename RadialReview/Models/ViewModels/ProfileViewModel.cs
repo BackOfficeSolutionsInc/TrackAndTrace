@@ -22,5 +22,8 @@ namespace RadialReview.Models.ViewModels
         public string UserId { get; set; }
 
         public bool ShowScorecardColors { get; set; }
-    }
+		
+		public string PersonalTextNumber { get; set; }
+		public bool LoggedIn { get; set; }
+	}
 }

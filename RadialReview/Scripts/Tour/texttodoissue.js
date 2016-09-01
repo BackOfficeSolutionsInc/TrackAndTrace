@@ -109,7 +109,7 @@
         var anno5 = {
             target: "#modalOk",
             className: "anno-width-300",
-            position: "right-bottom",
+            position: "bottom-right",
             arrowPosition:"top-right",
             content: "When you've selected a phone number and action, click OK. ",
             buttons: [],
@@ -123,16 +123,23 @@
         var anno6 = {
             target: "#alerts",
             className: "anno-width-300",
-            content: "Follow the instructions to register your phone.",
+            content: "Use these instructions to register your phone.",
+            arrowPosition: "top",
+            position: "bottom",
             buttons: [AnnoButton.NextButton],
+            noGlow: true,
             //noEmphasis: true
         };
         //Tours.clickToAdvance(anno5);
         var anno7 = {
             target: "#alerts",
             className: "anno-center anno-width-300",
-            content: "In the future, texting this number will add an issue or to-do to your meeting.",
-            noEmphasis: true
+            title: "You're all set!",
+            arrowPosition: "none",
+            content: "You're all set! In the future, texting this number will add an issue or to-do to your meeting.",
+            noEmphasis: true,
+			noOverlay:true,
+
         };
 
 

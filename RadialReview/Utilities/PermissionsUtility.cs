@@ -82,8 +82,14 @@ namespace RadialReview.Utilities {
 			throw new PermissionsException();
 		}
 		protected static Boolean IsRadialAdmin(UserOrganizationModel caller) {
-			if (caller != null && (caller.IsRadialAdmin || (caller.User != null && caller.User.IsRadialAdmin)))
+			if (caller != null && (caller.IsRadialAdmin || (caller.User != null && caller.User.IsRadialAdmin))) {
+				if (caller.Organization !=null && (caller.Organization.Id == 1795 || caller.Organization.Id == 1634)) {
+					//1795 = EOSWW
+					//1634 = TT
+					return false;
+				}
 				return true;
+			}
 			return false;
 		}
 
