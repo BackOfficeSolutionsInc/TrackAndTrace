@@ -37,27 +37,41 @@ using RadialReview.Models.Issues;
 using RadialReview.Models.Scorecard;
 using RadialReview.Models.L10;
 using OxyPlot;
+using RadialReview.Models.Onboard;
 
 namespace RadialReview.Controllers {
 
     public class AdminController : BaseController {
 
-        //[Access(AccessLevel.Radial)]
-        //public async Task<ActionResult> Plot()
-        //{
-        //    //var stream = new MemoryStream();
-        //    //var pngExporter = new PdfExporter { Width = 400, Height = 400, Background = OxyColors.White };
-        //    //var s=_ChartsEngine.ReviewScatter2(GetUser(), 797, 198, "about-*", true, false);
-        //    //var chart = OxyplotAccessor.ScatterPlot(s);
-        //    //pngExporter.Export(chart, stream);
-            
-        //    return Pdf(PdfAccessor.GenerateReviewPrintout(GetUser(),))
+		//[Access(AccessLevel.Radial)]
+		//public async Task<ActionResult> Plot()
+		//{
+		//    //var stream = new MemoryStream();
+		//    //var pngExporter = new PdfExporter { Width = 400, Height = 400, Background = OxyColors.White };
+		//    //var s=_ChartsEngine.ReviewScatter2(GetUser(), 797, 198, "about-*", true, false);
+		//    //var chart = OxyplotAccessor.ScatterPlot(s);
+		//    //pngExporter.Export(chart, stream);
 
-        //    return new FileStreamResult(new MemoryStream(stream.ToArray()), "application/pdf");
-        //}
+		//    return Pdf(PdfAccessor.GenerateReviewPrintout(GetUser(),))
+
+		//    return new FileStreamResult(new MemoryStream(stream.ToArray()), "application/pdf");
+		//}
+
+		[Access(AccessLevel.Radial)]
+		public ActionResult Signups(int days = 14) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var notRecent = DateTime.UtcNow.AddDays(-days);
+					//var  = DateTime.UtcNow.AddDays(-1);
+					var users = s.QueryOver<OnboardingUser>().OrderBy(x=>x.StartTime).Desc.Where(x=>x.StartTime > notRecent).List().ToList();
+					return View(users);
+				}
+			}
+		}
 
 
-        [Access(AccessLevel.Radial)]
+
+		[Access(AccessLevel.Radial)]
         public ActionResult Meetings(int minutes = 120)
         {
             using (var s = HibernateSession.GetCurrentSession()) {

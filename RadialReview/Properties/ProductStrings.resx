@@ -130,6 +130,9 @@
   <data name="CompanyName" xml:space="preserve">
     <value>Radial Inc.</value>
   </data>
+  <data name="EngineeringEmail" xml:space="preserve">
+    <value>tech@mail.traction.tools</value>
+  </data>
   <data name="ErrorEmail" xml:space="preserve">
     <value>clay.upton@mytractiontools.com</value>
   </data>

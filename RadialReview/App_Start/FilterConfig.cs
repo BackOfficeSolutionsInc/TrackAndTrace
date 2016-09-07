@@ -7,7 +7,9 @@ namespace RadialReview
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
+			//GlobalFilters.Filters.Add(new RequireHttpsAttribute());
             filters.Add(new HandleErrorAttribute());
-        }
-    }
+
+		}
+	}
 }

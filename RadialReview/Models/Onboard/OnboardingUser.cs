@@ -60,7 +60,7 @@ namespace RadialReview.Models.Onboard {
         [ScriptIgnore]
         public virtual DateTime? CreateOrganizationTime { get; set; }
         [ScriptIgnore]
-        public virtual DateTime OrganizationCompleteTime { get; set; }
+        public virtual DateTime? OrganizationCompleteTime { get; set; }
         #endregion
         #region User stats
         [ScriptIgnore]

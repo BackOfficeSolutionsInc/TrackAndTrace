@@ -283,6 +283,12 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+		public static void SetPosition(ISession s, PermissionsUtility perms, RealTimeUtility rt, long nodeId, long? positionId) {
+			perms.EditAccountabilityNode(nodeId);
+			var now = DateTime.UtcNow;
+			UpdatePosition_Unsafe(s, rt, perms, nodeId, positionId, now);
+
+		}
 
 		public static void SetUser(ISession s, RealTimeUtility rt, PermissionsUtility perms, long nodeId, long? userId) {
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -295,7 +301,7 @@ namespace RadialReview.Accessors {
 		public static void SetUser(ISession s, RealTimeUtility rt, PermissionsUtility perms, long nodeId, long? userId, bool skipAddManger, bool skipPosition, DateTime now) {
 
 			var updateUsers = new List<long>();
-            UserOrganizationModel user = null;
+			UserOrganizationModel user = null;
 
 			if (userId.HasValue)
 				perms.ManagesUserOrganization(userId.Value, true, PermissionType.EditEmployeeManagers);
@@ -380,7 +386,7 @@ namespace RadialReview.Accessors {
 
 					n.User = s.Get<UserOrganizationModel>(userId);
 					n.UserId = n.User.Id;
-                    user = n.User;
+					user = n.User;
 
 					if (DeepAccessor.HasChildren(s, n.Id)) {
 						//UPDATE MANAGER STATUS,
@@ -477,10 +483,10 @@ namespace RadialReview.Accessors {
 			foreach (var u in updateUsers.Distinct()) {
 				s.GetFresh<UserOrganizationModel>(u).UpdateCache(s);
 			}
-            if (user != null)
-                s.Evict(user);
+			if (user != null)
+				s.Evict(user);
 
-        }
+		}
 
 
 		public static void RemoveRole(ISession s, PermissionsUtility perms, RealTimeUtility rt, long roleId) {
@@ -775,9 +781,9 @@ namespace RadialReview.Accessors {
 			s.Save(node);
 
 			DeepAccessor.Add(s, parent, node, parent.OrganizationId, now, false);
-			
-			if (userId != null) { 
-				SetUser(s, rt, perms, node.Id, userId, skipAddManager, false, now );
+
+			if (userId != null) {
+				SetUser(s, rt, perms, node.Id, userId, skipAddManager, false, now);
 			}
 			//var hub = GlobalHost.ConnectionManager.GetHubContext<OrganizationHub>();
 			//var orgHub = hub.Clients.Group(OrganizationHub.GenerateId(node.OrganizationId));

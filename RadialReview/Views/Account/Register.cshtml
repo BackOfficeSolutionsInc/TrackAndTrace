@@ -2,6 +2,7 @@
 @{
     ViewBag.Title = "Register";
 	ViewBag.FullLogo = true;
+	ViewBag.NoLogin = true;
 }
 
 @section scripts
@@ -89,6 +90,11 @@
 			font-size: 16px;
 		}
 
+		.validation-summary-errors
+		{
+			color:white;
+		}
+
 	</style>
 }
 
@@ -150,8 +156,14 @@
 				</div>
 				<div class="form-group">
 					@Html.LabelFor(m => m.Password, new { @class = "col-md-4 control-label" })
-					<div class=" col-md-8">
+					<div class="col-md-8">
 						@Html.PasswordFor(m => m.Password, new { @class = "form-control password", autocomplete = "off", placeholder = Html.DisplayNameFor(x => x.Password) })
+					</div>
+				</div>
+				<div class="form-group">
+					@Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-4 control-label" })
+					<div class="col-md-8">
+						@Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control password", autocomplete = "off", placeholder = Html.DisplayNameFor(x => x.ConfirmPassword) })
 					</div>
 				</div>
 				@*<div class="form-group">
@@ -170,7 +182,7 @@
 						@if (ViewBag.ReturnUrl != null){
                             <br />
 							<div class="row alignCenter">
-								@Html.ActionLink("or link to an existing Traction® Tools account", "Login", "Account", routeValues: new { returnUrl = ViewBag.ReturnUrl,info="Login with your existing credentials to link your accounts" }, htmlAttributes: new { id = "loginLink", @class = "btn btn-link gray", style = "text-decoration: underline;" })
+								@Html.ActionLink("Already have a Traction® Tools account? Click here.", "Login", "Account", routeValues: new { returnUrl = ViewBag.ReturnUrl,info="Login with your existing credentials to link your accounts" }, htmlAttributes: new { id = "loginLink", @class = "btn btn-link gray", style = "text-decoration: underline;" })
 							</div>
 						}
 					</div>

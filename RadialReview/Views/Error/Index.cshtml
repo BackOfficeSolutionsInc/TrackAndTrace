@@ -15,17 +15,15 @@
 <div class="centered">
 	<div class="component">
 		<div class="">
-			<h2>@(String.IsNullOrWhiteSpace(ViewBag.Message)?RadialReview.Properties.ExceptionStrings.AnErrorOccured:ViewBag.Message)</h2>
+			<h2>@(String.IsNullOrWhiteSpace(ViewBag.Message) ? RadialReview.Properties.ExceptionStrings.AnErrorOccured : ViewBag.Message)</h2>
 		</div>
 
-		@if (Context.IsDebuggingEnabled && Model != null && !String.IsNullOrWhiteSpace(Model.StackTrace))
-		{
+		@if (Context.IsDebuggingEnabled && Model != null && !String.IsNullOrWhiteSpace(Model.StackTrace)) {
 			<div class="review" style="white-space: pre;font-size: 11px;overflow-x: auto;">@Model.NotNull(x => x.StackTrace)</div>
 			<a target="_blank" href="mailto:@ProductStrings.SupportEmail?subject=Error:@(subject)&body=I%27ve+received+the+following+error%3A%0D%0A@(body)">Email Support</a>
 		}
 
-		@if (((int?)ViewBag.Organizations ?? 0) == 0)
-		{
+		@if (((int?)ViewBag.Organizations ?? 0) == 0) {
 			<div class="review">
 				<h4>Instructions to access your organization:</h4>
 				<p>
@@ -42,8 +40,20 @@
 						<button class="btn btn-primary col-md-2 col-md-offset-5" type="submit">Submit</button>
 					</div>
 				</form>
-			</div>
-		}
 
+			</div>
+			<br />
+		}
+		<h3>Need help?</h3>
+		<button class="btn btn-default"  href="#" onclick="supportEmail('An error has occurred.', 'support@mail.traction.tools','@(ViewBag.Message??"I received an error message")')">Contact Customer Support</button>
 	</div>
 </div>
+
+<script>
+	try {
+		console.error("@ViewBag.Message");
+		console.error("@ViewBag.StackTrace");
+	} catch (e) {
+		console.error(e);
+	}
+</script>

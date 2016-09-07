@@ -56,8 +56,10 @@ namespace RadialReview
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 		protected async void Application_Start()
 		{
-            ChromeExtensionComms.SendCommand("appStart");
+
+			ChromeExtensionComms.SendCommand("appStart");
 			//GlobalConfiguration.Configure(WebApiConfig.Register);
+			//AntiForgeryConfig.RequireSsl = true;
             AntiForgeryConfig.SuppressXFrameOptionsHeader = true;
 
 			//AreaRegistration.RegisterAllAreas();

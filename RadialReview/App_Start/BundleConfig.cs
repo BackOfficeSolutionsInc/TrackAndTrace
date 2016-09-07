@@ -364,7 +364,7 @@ namespace RadialReview {
 				"~/Scripts/jquery/jquery.filtertable.min.js"
 			));
 
-			bundles.Add(new StyleBundle("~/Content/Manage")
+			bundles.Add(new StyleBundle("~/Content/ManageCSS")
 				.Include("~/Content/Manage/Manage.css"));
 
 

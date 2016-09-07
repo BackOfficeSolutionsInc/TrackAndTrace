@@ -142,7 +142,11 @@ namespace RadialReview.Accessors {
 						// var manager = db.Get<UserOrganizationModel>(managerId);
 						//db.Save(new DeepSubordinateModel() { CreateTime = now, Links = 1, ManagerId = newUserId, SubordinateId = newUserId });
 						using (var rt = RealTimeUtility.Create()){
-							var node = AccountabilityAccessor.AppendNode(db, PermissionsUtility.Create(db, caller),rt, managerNode.Id, userId: newUser.Id);
+							var perms = PermissionsUtility.Create(db, caller);
+							var node = AccountabilityAccessor.AppendNode(db,perms ,rt, managerNode.Id, userId: newUser.Id);
+							if (orgPositionId>0)
+								AccountabilityAccessor.SetPosition(db, perms, rt, node.Id, orgPositionId);
+
 						}
                         //DeepSubordianteAccessor.Add(db, manager, newUser, caller.Organization.Id, now);
                     }else

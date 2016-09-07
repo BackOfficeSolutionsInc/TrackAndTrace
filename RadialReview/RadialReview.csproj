@@ -1978,6 +1978,7 @@
     </Content>
     <Content Include="Views\Admin\Meetings.cshtml" />
     <Content Include="Views\Admin\MeetingsTable.cshtml" />
+    <Content Include="Views\Admin\Signups.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

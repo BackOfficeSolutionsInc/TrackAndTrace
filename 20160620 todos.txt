@@ -4,6 +4,8 @@
 
 * lost leads from the register page
 
+* Add User dialog needs to hook up with AC positions
+
 * Fix Archive button
 
 *IsRadialAdmin hook

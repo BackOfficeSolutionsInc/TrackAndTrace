@@ -53,7 +53,9 @@
 		<link href="~/Content/L10/L10Conference.css" rel="stylesheet" />
 	}
 	<link href="/User/styles" rel="stylesheet" type="text/css" />
-
+	<script>		
+		window.dateFormat = '@(Html.Organization().NotNull(x=>x.Settings.NotNull(y=>y.GetDateFormat()))??"MM-dd-yyyy")';
+	</script>
 </head>
 @if (ViewBag.HasBaseController == null) {
 	throw new Exception("You must extend from the base controller.");
@@ -207,7 +209,6 @@
 		@using (var s = Html.BeginScripts()) {
 				<!--script src="~/Scripts/Main/radial.js"></script-->
 			<script>
-				window.dateFormat = '@(Html.Organization().NotNull(x=>x.Settings.NotNull(y=>y.GetDateFormat()))??"MM-dd-yyyy")';
 				$(function () {
 					//qtip();
 					$('[data-toggle="tooltip"]').tooltip();

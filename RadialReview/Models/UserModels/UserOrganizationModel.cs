@@ -371,8 +371,13 @@ namespace RadialReview.Models
 
             if (Cache.UserId != Id)
                 Cache.UserId = Id;
-
-            s.Merge(Cache);
+#pragma warning disable CS0618 // Type or member is obsolete
+			if (Cache.Id == 0) {
+#pragma warning restore CS0618 // Type or member is obsolete
+				s.Save(Cache);
+			} else {
+				s.Merge(Cache);
+			}
             try
             {
                 new Cache().InvalidateForUser(this, CacheKeys.USERORGANIZATION);

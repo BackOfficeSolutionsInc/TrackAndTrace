@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RadialReview.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -24,5 +25,9 @@ namespace RadialReview.Controllers
             return PartialView("ModalError",e);
         }
 
+		[Access(AccessLevel.Any)]
+		public JsonResult TestSync() {
+			throw new SyncException(null);
+		}
 	}
 }

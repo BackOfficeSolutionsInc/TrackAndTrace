@@ -97,6 +97,15 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to tech@mail.traction.tools.
+        /// </summary>
+        public static string EngineeringEmail {
+            get {
+                return ResourceManager.GetString("EngineeringEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to clay.upton@mytractiontools.com.
         /// </summary>
         public static string ErrorEmail {

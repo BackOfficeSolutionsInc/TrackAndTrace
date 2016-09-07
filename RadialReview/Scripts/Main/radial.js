@@ -1060,8 +1060,8 @@ $(document).ajaxSend(function (event, jqX, ajaxOptions) {
 
 		ajaxOptions.url += "_clientTimestamp=" + ((+new Date()) + (window.tzoffset * 60 * 1000));
 	}
-
-	console.info(ajaxOptions.method + ajaxOptions.url);
+	debugger;
+	console.info(ajaxOptions.method +" "+ ajaxOptions.url);
 });
 /////////////////////////////////////////////////////////////////
 
@@ -1309,7 +1309,7 @@ function sendErrorReport() {
 
 }
 
-function supportEmail(title) {
+function supportEmail(title,nil,defaultSubject,defaultBody) {
 	var message = "[";
 	var mArray = [];
 	for (var i in consoleStore) {
@@ -1317,12 +1317,13 @@ function supportEmail(title) {
 	}
 	message = "[" + mArray.join(",\n") + "]";
 	var fields = [
-            { name: "Subject", text: "Subject", type: "text", },
-            { name: "Body", text: "Body", type: "textarea" }
+            { name: "Subject", text: "Subject", type: "text",value:defaultSubject },
+            { name: "Body", text: "Body", type: "textarea",value:defaultBody }
 	];
 
 	if (typeof (window.UserId) === "undefined")
 		fields.push({ name: "Email", text: "Email", type: "text" });
+
 	var image = null;
 	var show = function () {
 		showModal({

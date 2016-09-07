@@ -12,7 +12,7 @@ $(window).on("wizard:changed-page", function (e, data) {
 		}
 		setCompletion(data.completion * 100);
 
-	}, 400);
+	}, 800);
 
 	setTimeout(function () {
 		try {
@@ -22,7 +22,7 @@ $(window).on("wizard:changed-page", function (e, data) {
 		} catch (e) {
 			console.error(e);
 		}
-	},200)
+	},1500)
 
 
 	$(".backButton.disabled,.nextButton.disabled").removeClass("disabled");

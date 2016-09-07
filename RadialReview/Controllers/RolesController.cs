@@ -45,10 +45,11 @@ namespace RadialReview.Controllers
 			//foreach (var r in model.Roles){
 			//	r.ForUserId = model.UserId;
 			//}
-			try {
+			//try {
 				_RoleAccessor.EditRoles(GetUser(), model.UserId, model.Roles, model.UpdateOutstandingReviews);
-			} catch (Exception) {
-			}
+			//} catch (Exception) {
+
+			//}
 			return Json(ResultObject.SilentSuccess());
 		}
 

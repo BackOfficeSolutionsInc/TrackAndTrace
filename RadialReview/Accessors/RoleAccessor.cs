@@ -214,7 +214,11 @@ namespace RadialReview.Accessors {
 						}
 
 						var added = r.Id == 0;
-						s.Merge(r);
+						if (added) {
+							s.Save(r);
+						}else {
+							s.Merge(r);
+						}
 
 						if (added) {
 							var link = new RoleLink() {

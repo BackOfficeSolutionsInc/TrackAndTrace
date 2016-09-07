@@ -52,9 +52,13 @@ namespace RadialReview.Controllers {
 			//builder.Append("<tr><th>Console</th><td >" + model.Console + "</td></tr>");            
 			//builder.Append("</table></div>");
 
-			var mail = Mail.To(EmailTypes.CustomerSupport, ProductStrings.SupportEmail)
-				.SubjectPlainText(model.Subject ?? "Customer Service")
-				.BodyPlainText(builder.ToString());
+			var emailAddress = ProductStrings.SupportEmail;
+			if (model.Status == SupportStatus.JavascriptError)
+				emailAddress = ProductStrings.EngineeringEmail;
+
+			var mail = Mail.To(EmailTypes.CustomerSupport, emailAddress)
+			.SubjectPlainText(model.Subject ?? "Customer Service")
+			.BodyPlainText(builder.ToString());
 			mail.ReplyToAddress = email;
 			mail.ReplyToName = name;
 
@@ -64,8 +68,8 @@ namespace RadialReview.Controllers {
 			var result = ResultObject.Success("A message has been sent to support. We'll be contacting you shortly.");
 
 			if (model.Status == SupportStatus.JavascriptError)
-				result.ForceSilent();	
-					
+				result.ForceSilent();
+
 			return Json(result);
 		}
 
@@ -77,8 +81,8 @@ namespace RadialReview.Controllers {
 
 
 		[Access(AccessLevel.User)]
-		public ActionResult List(bool open = true, bool closed = false, bool backlog = false, bool nofix = false, bool all = false,bool js=false) {
-			return View(SupportAccessor.List(open || all, closed || all, backlog || all, nofix || all,js ||all));
+		public ActionResult List(bool open = true, bool closed = false, bool backlog = false, bool nofix = false, bool all = false, bool js = false) {
+			return View(SupportAccessor.List(open || all, closed || all, backlog || all, nofix || all, js || all));
 		}
 
 		[Access(AccessLevel.User)]
