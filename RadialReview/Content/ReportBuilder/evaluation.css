@@ -84,7 +84,7 @@
 			/*margin-top: -2px;*/
 		}
 
-		.table-io.companyValues .fill:not(.hasReason):not(.score):not(.Indeterminate):after, .valueTable .fill{
+		.table-io.companyValues .fill:not(.hasReason):not(.score):not(.Indeterminate):after, .valueTable .fill {
 			/*background-color: rgba(51, 51, 51, 0.2);*/
 			-ms-border-radius: 20px;
 			-moz-border-radius: 20px;
@@ -134,61 +134,63 @@
 		margin-top: -4px;
 	}*/
 
-	.table-io.companyValues .fill.Indeterminate,.valueTable .fill.Indeterminate {
+	.table-io.companyValues .fill.Indeterminate, .valueTable .fill.Indeterminate {
 		background-color: transparent;
 	}
 
-	.table-io.companyValues .fill.Positive,.valueTable .fill.Positive  {
+	.table-io.companyValues .fill.Positive, .valueTable .fill.Positive {
 		background-color: #449D44;
 		border: 1px solid #449D44;
 	}
 
-	.table-io.companyValues .fill.Neutral,.valueTable .fill.Neutral  {
+	.table-io.companyValues .fill.Neutral, .valueTable .fill.Neutral {
 		background-color: #EC971F;
 		border: 1px solid #EC971F;
 	}
 
 
-	.table-io.companyValues .fill.Negative,.valueTable .fill.Negative  {
+	.table-io.companyValues .fill.Negative, .valueTable .fill.Negative {
 		background-color: #D9534F;
 		border: 1px solid #D9534F;
 	}
 
-	.table-io.companyValues .fill.Indeterminate:after,.valueTable .fill.Indeterminate:after {
+	.table-io.companyValues .fill.Indeterminate:after, .valueTable .fill.Indeterminate:after {
 		content: "n/a";
 		color: #c3c3c3;
 	}
 
 	/*padding-top: 14px;*/
 
-	.table-io.companyValues .fill.Positive:not(.companyValues-score):after,.valueTable .fill.Positive:after {
+	.table-io.companyValues .fill.Positive:not(.companyValues-score):after, .valueTable .fill.Positive:after {
 		content: "+";
 	}
 
-	.table-io.companyValues .fill.Neutral:not(.companyValues-score):after,.valueTable .fill.Neutral:after {
+	.table-io.companyValues .fill.Neutral:not(.companyValues-score):after, .valueTable .fill.Neutral:after {
 		content: "+/-";
 	}
 
-	.table-io.companyValues .fill.Negative:not(.companyValues-score):after,.valueTable .fill.Negative:after {
+	.table-io.companyValues .fill.Negative:not(.companyValues-score):after, .valueTable .fill.Negative:after {
 		content: "–";
 	}
 
-	
-.fill.True,.fill.Always {
+
+.fill.True, .fill.Always {
 	background-color: #449D44;
 	border: 1px solid #449D44;
 }
 
 
-.fill.False,.fill.Mostly {
+.fill.False, .fill.Mostly {
 	background-color: #71BE71;
 	border: 1px solid #71BE71;
 }
-.fill.False,.fill.Rarely {
+
+.fill.False, .fill.Rarely {
 	background-color: #FC827F;
 	border: 1px solid #FC827F;
 }
-.fill.False,.fill.Never {
+
+.fill.False, .fill.Never {
 	background-color: #D9534F;
 	border: 1px solid #D9534F;
 }
@@ -202,6 +204,7 @@
 	background-color: #1F68EC;
 	border: 1px solid #1F68EC;
 }
+
 .fill.AtRisk {
 	background-color: #D9534F;
 	border: 1px solid #D9534F;
@@ -211,12 +214,15 @@
 	content: "n/a";
 	color: #CCCCCC;
 }
+
 .table-io.rocks .fill.AtRisk:after, .gwc-details-square .AtRisk:after, .roleTable .AtRisk:after {
 	content: "OFF TRACK";
 }
+
 .table-io.rocks .fill.OnTrack:after, .gwc-details-square .OnTrack:after, .roleTable .OnTrack:after {
 	content: "ON TRACK";
 }
+
 .table-io.rocks .fill.Complete:after, .gwc-details-square .Complete:after, .roleTable .Complete:after {
 	content: "DONE";
 }
@@ -234,31 +240,32 @@
 	content: "NO";
 }*/
 
-.table-io.rocks .fill.Always:after, 
-.gwc-details-square .Always:after, 
+.table-io.rocks .fill.Always:after,
+.gwc-details-square .Always:after,
 .roleTable .Always:after,
-.table-io.rocks .fill.True:after, 
-.gwc-details-square .True:after, 
-.roleTable .True:after  {
+.table-io.rocks .fill.True:after,
+.gwc-details-square .True:after,
+.roleTable .True:after {
 	content: "Always";
 }
 
-.table-io.rocks .fill.Mostly:after, 
-.gwc-details-square .Mostly:after, 
+.table-io.rocks .fill.Mostly:after,
+.gwc-details-square .Mostly:after,
 .roleTable .Mostly:after {
 	content: "Mostly";
 }
-.table-io.rocks .fill.Rarely:after, 
-.gwc-details-square .Rarely:after, 
+
+.table-io.rocks .fill.Rarely:after,
+.gwc-details-square .Rarely:after,
 .roleTable .Rarely:after {
 	content: "Rarely";
 }
 
-.table-io.rocks .fill.Never:after, 
-.gwc-details-square .Never:after, 
+.table-io.rocks .fill.Never:after,
+.gwc-details-square .Never:after,
 .roleTable .Never:after,
-.table-io.rocks .fill.False:after, 
-.gwc-details-square .False:after, 
+.table-io.rocks .fill.False:after,
+.gwc-details-square .False:after,
 .roleTable .False:after {
 	content: "Never";
 }
@@ -316,10 +323,10 @@
 	padding-right: 1px;
 }
 
-.table-io.gwc > tbody > tr > td:first-child {
-	padding-bottom: 6px;
-	padding-top: 6px;  
-}
+	.table-io.gwc > tbody > tr > td:first-child {
+		padding-bottom: 6px;
+		padding-top: 6px;
+	}
 
 	.table-io.gwc > tbody > tr > td > .fill {
 		height: 80px;
@@ -352,7 +359,7 @@
 }
 
 	.table-io .details .header {
-		background-color: #767F99;
+		background-color: #EF7622;
 		color: #FFF;
 		padding: 2px 6px;
 		font-weight: bold;
@@ -480,6 +487,7 @@
 	margin-left: 2px;
 	margin-top: -20px;
 	color: #AAAAAA;
+	width: 102px;
 }
 
 .subsection {
@@ -574,19 +582,19 @@
 	border-bottom: 1px solid #DDDDDD;
 }
 
-	.roleTable tr, .valueTable tr {
-		vertical-align: top;
-		/*border-bottom: 1px solid #ddd;*/
-	}
+.roleTable tr, .valueTable tr {
+	vertical-align: top;
+	/*border-bottom: 1px solid #ddd;*/
+}
 
-#roleTable .header,#valueTable .header {
+#roleTable .header, #valueTable .header {
 	max-width: 50%;
 	width: 300px;
 	margin-bottom: 10px;
 	margin-top: 8px;
 }
 
-.roleTable td,.valueTable td {
+.roleTable td, .valueTable td {
 	/*white-space: nowrap;*/
 	border: 0px;
 	margin: 0px;
@@ -594,11 +602,11 @@
 	padding-right: 10px;
 }
 
-	.roleTable td.block,.valueTable td.block {
+	.roleTable td.block, .valueTable td.block {
 		padding-right: 0px;
 	}
 
-.roleTable thead,.valueTable thead {
+.roleTable thead, .valueTable thead {
 	border-bottom: 1px solid #BBBBBB;
 }
 /*
@@ -612,14 +620,15 @@
 	background-color: #bbbbbb;*
 }*/
 
-.roleTableBtn,.valueTableBtn {
+.roleTableBtn, .valueTableBtn {
 	/*position: absolute;
 	right: 10px;
 	top: 65px;*/
 	padding: 0px 10px;
+	margin: 15px;
 }
 
-	.roleTableBtn.on,.valueTableBtn.on {
+	.roleTableBtn.on, .valueTableBtn.on {
 		/*position: absolute;
 	right: 10px;
 	top: 65px;*/
@@ -627,11 +636,11 @@
 		float: left;
 	}
 
-	.roleTableBtn:before,.valueTableBtn:before {
+	.roleTableBtn:before, .valueTableBtn:before {
 		content: "Show ";
 	}
 
-	.roleTableBtn.on:before,.valueTableBtn.on:before {
+	.roleTableBtn.on:before, .valueTableBtn.on:before {
 		content: "Hide ";
 	}
 
@@ -652,7 +661,8 @@ td.alt {
 
 .valueTable .fill {
 	text-align: center;
-	color: #FFF;
+	color: #FFF;    
+	width: 22px;
 }
 
 
@@ -675,6 +685,7 @@ td.alt {
 .valueTableReason {
 	padding-bottom: 4px !important;
 }
+
 .roleTableReason {
 	padding-bottom: 4px !important;
 }
@@ -686,10 +697,10 @@ td.alt {
 }
 
 
-.landscape-shift{
-    display:none;
+.landscape-shift {
+	display: none;
 }
 
-.landscape-placeholder{
-    display:none;
+.landscape-placeholder {
+	display: none;
 }

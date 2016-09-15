@@ -114,14 +114,14 @@ namespace RadialReview.Controllers {
 
 
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult OrganizationRGM(string q)
-        {
+        public JsonResult OrganizationRGM(string q){
+            q = q.ToLower().Replace("%20"," ");
 
-            q = q.ToLower();
+			var rgm = OrganizationAccessor.GetOrganizationResponsibilityGroupModels(GetUser(), GetUser().Organization.Id)
+				.Search(q, x => x.GetName());
 
-            var rgm = OrganizationAccessor.GetOrganizationResponsibilityGroupModels(GetUser(), GetUser().Organization.Id).Where(x => x.GetName().ToLower().Contains(q));
             var result = rgm.Select(x => new DropDownItem() {
-                text = x.GetName() + "<span class='label label-default group-" + x.GetGroupType() + "'>" + x.GetGroupType() + "</span>",
+                text = "<span class='label label-default group-" + x.GetGroupType() + "'>" + x.GetGroupType() + "</span> "+x.GetName() ,
                 value = "" + x.Id
             }).OrderBy(x => x.text).ToList();
 

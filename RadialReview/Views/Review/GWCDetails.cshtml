@@ -1,6 +1,8 @@
 ﻿@using RadialReview.Models
 @using RadialReview.Models.Enums
 @model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
+
+<!--GWCDetails.cshtml-->
 <div class="gwc-details details">
 	@{
 		var found = Model.AnswersAbout.Where(x => x is GetWantCapacityAnswer).Cast<GetWantCapacityAnswer>().Where(x => x.Askable.Id == ViewBag.RoleId);

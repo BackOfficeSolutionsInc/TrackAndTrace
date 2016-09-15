@@ -15,6 +15,8 @@ using RadialReview.Models.L10;
 using RadialReview.Models.L10.VM;
 using RadialReview.Utilities;
 using RadialReview.Models.Angular.Base;
+using RadialReview.Utilities.DataTypes;
+using System.Text;
 
 namespace RadialReview.Accessors
 {
@@ -268,5 +270,65 @@ namespace RadialReview.Accessors
             }
             viewModel.children = childrenVMs.ToArray();
         }
-    }
+		//private static void RecurseIssue(StringBuilder sb, int index, IssueModel.IssueModel_Recurrence parent, int depth, bool includeDetails) {
+		//	var time = "";
+		//	if (parent.CloseTime != null)
+		//		time = parent.CloseTime.Value.ToShortDateString();
+		//	sb.Append(index).Append(",")
+		//		.Append(depth).Append(",")
+		//		.Append(Csv.CsvQuote(parent.Owner.NotNull(x => x.GetName()))).Append(",")
+		//		.Append(parent.CreateTime.ToShortDateString()).Append(",")
+		//		.Append(time).Append(",");
+		//	sb.Append(Csv.CsvQuote(parent.Issue.Message)).Append(",");
+						
+		//	sb.AppendLine();
+		//	foreach (var child in parent._ChildIssues)
+		//		RecurseIssue(sb, index, child, depth + 1, includeDetails);
+		//}
+		public static Csv Listing(UserOrganizationModel caller, long organizationId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					// var p = s.Get<PeriodModel>(period);
+
+					PermissionsUtility.Create(s, caller).ManagingOrganization(organizationId);
+
+					var sb = new StringBuilder();
+
+					sb.Append("Id,Depth,Owner,Created,Closed,Issue");
+
+					var csv = new Csv();
+
+					IssueModel issueA = null;
+
+					//var id = 0;
+					var issues =s.QueryOver<IssueModel.IssueModel_Recurrence>()
+						.JoinAlias(x=>x.Issue,()=>issueA)
+						.Where(x => x.DeleteTime == null)
+						.Where(x => issueA.OrganizationId == organizationId)
+						.Fetch(x=>x.Issue).Eager
+						.List().ToList();
+
+					foreach (var t in issues) {
+						var time = "";
+						csv.Add("" + t.Id, "Owner", t.Owner.NotNull(x => x.GetName()));
+						csv.Add("" + t.Id, "Created", t.CreateTime.ToShortDateString());
+						if (t.CloseTime != null)
+							time = t.CloseTime.Value.ToShortDateString();
+						csv.Add("" + t.Id, "Completed", time);
+						csv.Add("" + t.Id, "Issue", "" + t.Issue.Message);
+
+						//if (false /*&& includeDetails*/) {
+						//	var padDetails = await PadAccessor.GetText(t.PadId);
+						//	csv.Add("" + t.Id, "Details", "" + padDetails);
+						//}
+					}
+
+
+					csv.SetTitle("Issues");
+					
+					return csv;
+				}
+			}
+		}
+	}
 }

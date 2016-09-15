@@ -2,6 +2,9 @@
     height: 0px;
     line-height: normal;
 }
+body.body-normal-width ,html.body-normal-width  {	
+	background-color:white!important;
+}
 
 .noPrint {
     display: none;
@@ -767,4 +770,8 @@ html {
 .ico.glyphicon-remove {
     top: 10px;
     left: -1px;
+}
+
+.empty-search{
+	display:none;
 }

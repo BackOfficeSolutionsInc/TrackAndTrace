@@ -22,6 +22,7 @@
 .editor.fivestate {
 	cursor: pointer;
 }
+
 .display.fivestate {
 	cursor: default;
 }
@@ -38,13 +39,13 @@
 	bottom: 0;
 	left: 0;
 	right: 0;
-	background-color:#CDCDCD;
+	background-color: #CDCDCD;
 	z-index: 2;
-	-webkit-transition:background-color .3s;
-	-moz-transition:background-color .3s;
-	-ms-transition:background-color .3s;
-	-o-transition:background-color .3s;
-	transition:background-color .3s;
+	-webkit-transition: background-color .3s;
+	-moz-transition: background-color .3s;
+	-ms-transition: background-color .3s;
+	-o-transition: background-color .3s;
+	transition: background-color .3s;
 }
 
 .editor .fill:hover {
@@ -61,11 +62,11 @@
 	line-height: 80px;
 }
 
-.fivestate input[value='True'] ~ .fill,.fivestate input[value='Always'] ~ .fill {
+.fivestate input[value='True'] ~ .fill, .fivestate input[value='Always'] ~ .fill {
 	background-color: #449D44;
 }
 
-.fivestate input[value='False'] ~ .fill,.fivestate input[value='Never'] ~ .fill  {
+.fivestate input[value='False'] ~ .fill, .fivestate input[value='Never'] ~ .fill {
 	background-color: #D9534F;
 }
 
@@ -74,7 +75,7 @@
 	background-color: #71BE71;
 }
 
-.fivestate input[value='Rarely'] ~ .fill  {
+.fivestate input[value='Rarely'] ~ .fill {
 	background-color: #FC827F;
 }
 
@@ -105,8 +106,8 @@
 	/*display: none;*/
 	opacity: 0;
 	transition: opacity ease .4s;
-	
 }
+
 .fivestate:hover .fivestate-slider {
 	/*display: inherit;*/
 	opacity: .8;
@@ -122,19 +123,21 @@
 	z-index: 3;
 }
 
-.fivestate-slider  .slider-selection {
+.fivestate-slider .slider-selection {
 	background: #FF8282;
 	height: 10px;
-	width:10px;
+	width: 10px;
 }
+
 .fivestate-slider .slider-track {
 	height: 10px;
 	background: gray;
 }
-.fivestate-slider  .slider-handle {
+
+.fivestate-slider .slider-handle {
 	background: red;
 	height: 10px;
-	width:10px; 
+	width: 10px;
 	margin-left: -10px;
 	margin-top: -5px;
 }
@@ -150,15 +153,26 @@
 	border-radius: 0px;
 	background: #BBB;
 	box-shadow: none;
-}
-.fivestate-slider .slider > .dragger:hover,
-.fivestate-slider .slider > .dragger.dragging {
-	background: #BBB;
-	box-shadow: none;
+	cursor: move; /* fallback if grab cursor is unsupported */
+	cursor: grab;
+	cursor: -moz-grab;
+	cursor: -webkit-grab;
 }
 
+	.fivestate-slider .slider > .dragger:hover,
+	.fivestate-slider .slider > .dragger.dragging {
+		background: #BBB;
+		box-shadow: none;
+	}
+
+	.fivestate-slider .slider > .dragger.dragging {
+		cursor: grabbing;
+		cursor: -moz-grabbing;
+		cursor: -webkit-grabbing;
+	}
+
 .fivestate-slider .slider > .track,
- .fivestate-slider .slider > .highlight-track {
+.fivestate-slider .slider > .highlight-track {
 	-webkit-border-radius: 0px;
 	-moz-border-radius: 0px;
 	border-radius: 0px;
@@ -166,6 +180,7 @@
 	margin-left: -6px;
 	margin-right: -12px;
 }
+
 .fivestate-slider .slider > .track {
 	width: calc(100% + 10px) !important;
 }

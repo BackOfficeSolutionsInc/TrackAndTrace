@@ -236,6 +236,7 @@
     <Compile Include="TestUtils\ControllerExtensions.cs" />
     <Compile Include="Utilities\Extensions\WebDriverExtensions.cs" />
     <Compile Include="Utilities\FileUtility.cs" />
+    <Compile Include="Utilities\OrgUtil.cs" />
     <Compile Include="Utilities\TimingUtilityTests.cs" />
   </ItemGroup>
   <ItemGroup>

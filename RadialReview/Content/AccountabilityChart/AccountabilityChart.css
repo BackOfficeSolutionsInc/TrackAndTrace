@@ -69,13 +69,17 @@ body {
 }
 .node rect {
   fill: #fff;
-  stroke: #ef7622;
+  stroke: #EF7622;
   stroke-width: 3px;
 }
 .node.collapsed rect {
   stroke: #ad9a8d;
 }
+.node.no-edit:not(.is-me) .ghost {
+  display: none !important;
+}
 .node.root-node {
+  background-color: #eeeeee;
   /*rect{
 			width:100px;
 			width:100px;
@@ -89,7 +93,11 @@ body {
 }
 .node.root-node .acc-buttons.top-bar {
   height: 30px !important;
-  line-height: 30px;
+  line-height: 15px;
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  width: 200px;
 }
 .node.root-node .acc-rect {
   stroke-width: 20px;
@@ -105,6 +113,7 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  font-family: 'Roboto', sans-serif;
 }
 .acc-chart svg button md-icon {
   display: none;
@@ -130,7 +139,7 @@ body {
   transition: fill .15s ease,stroke .4s ease;
   stroke-width: 1.5px;
   stroke-dasharray: 5,2;
-  stroke: #ef7622;
+  stroke: #EF7622;
   cursor: pointer;
   pointer-events: all;
 }
@@ -146,7 +155,7 @@ body {
 }
 .acc-chart svg .link {
   fill: none;
-  stroke: #ef7622;
+  stroke: #EF7622;
   stroke-width: 2px;
 }
 .acc-chart svg .acc-node {
@@ -181,7 +190,7 @@ body {
 }
 .acc-chart svg .acc-node .acc-buttons {
   width: 100%;
-  background-color: #ef7622;
+  background-color: #EF7622;
 }
 .acc-chart svg .acc-node .acc-buttons.top-bar {
   height: 10px;
@@ -261,11 +270,26 @@ body {
 }
 .acc-chart svg .acc-node .role-groups .role-group ul li.role-row {
   margin-right: -3px;
+  /*.role-row .role {
+							margin-left: -15px;
+
+							div:before {
+								content: " ";
+								margin-right: 10px;
+							}
+						}*/
 }
 .acc-chart svg .acc-node .role-groups .role-group ul li.role-row .role {
   text-overflow: ellipsis;
   font-size: 10px;
-  margin-left: -6px;
+  margin-left: -15px;
+}
+.acc-chart svg .acc-node .role-groups .role-group ul li.role-row .role:before {
+  content: " ";
+  margin-left: 8px;
+}
+.acc-chart svg .acc-node .role-groups .role-group ul li.role-row input.role {
+  margin-left: -8px;
 }
 .acc-chart svg .acc-node .role-groups .role-group ul li.role-row .delete-role-row {
   margin-right: 0px;
@@ -310,9 +334,9 @@ body {
   font-size: 7px;
 }
 .acc-chart svg .acc-node .role-groups .role-group .role-group-title {
-  border-top: 1px solid #ef7622;
-  background-color: #ef7622;
-  border-bottom: 1px solid #ef7622;
+  border-top: 1px solid #EF7622;
+  background-color: #EF7622;
+  border-bottom: 1px solid #EF7622;
   font-family: 'Roboto', sans-serif;
   color: white;
   font-weight: bold;
@@ -343,11 +367,11 @@ body {
   height: 20px;
   display: inline-block;
   border-radius: 10px;
-  border: 2px solid #ef7622;
+  border: 2px solid #EF7622;
   float: right;
   margin-top: -16px;
   margin-right: -22px;
-  color: #ef7622;
+  color: #EF7622;
   background-color: #fff;
   padding: 0px 0px;
   font-size: 14px;
@@ -356,7 +380,7 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 .acc-chart svg .acc-node .role-groups .role-group .role-group-title .circle:hover {
-  background-color: #ef7622;
+  background-color: #EF7622;
   color: white !important;
 }
 .acc-chart svg .acc-node .acc-add-role {
@@ -420,12 +444,12 @@ body {
   outline: none;
 }
 .acc-chart svg .add-role-row circle {
-  stroke: #ef7622;
+  stroke: #EF7622;
   stroke-width: 1.5px;
   fill: #fff;
 }
 .acc-chart svg .add-role-row .acc-plus {
-  fill: #ef7622;
+  fill: #EF7622;
   height: 0.1px;
   width: 0.1px;
   stroke-width: 1px;
@@ -477,6 +501,9 @@ body {
 .acc-chart svg .is-dragging .node-button,
 .acc-chart svg .is-dragging .node-button * {
   display: none;
+  pointer-events: none;
+}
+.acc-chart svg .is-dragging input {
   pointer-events: none;
 }
 .acc-chart svg .bounding-box {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Web;
 
@@ -18,5 +19,9 @@ namespace RadialReview.Utilities {
 
             // voila, e is unmodified save for _remoteStackTraceString
         }
+
+		public static bool IsInException() {
+			return Marshal.GetExceptionPointers() != IntPtr.Zero || Marshal.GetExceptionCode() != 0;
+		}
     }
 }

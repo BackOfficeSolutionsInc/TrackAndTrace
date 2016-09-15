@@ -9,6 +9,8 @@ using RadialReview.Models.Enums;
 using System.Threading.Tasks;
 using RadialReview;
 using System.Collections.Generic;
+using TractionTools.Tests.Utilities;
+using RadialReview.Models.Accountability;
 
 namespace TractionTools.Tests.Accessors {
     [TestClass]
@@ -70,10 +72,12 @@ namespace TractionTools.Tests.Accessors {
             int chargeAnd107Users_L10_Review)
         {
             MockHttpContext();
-            UserOrganizationModel user;
-            var now = new DateTime(2016, 3, 9);
+			UserOrganizationModel user;
+			AccountabilityNode userNode;
+			var now = new DateTime(2016, 3, 9);
+
             var org = new OrganizationAccessor().CreateOrganization(userModel,"PaymentPlanTest " + plan + " Org",plan,
-                now, out user, true, true);
+                now, out user,out userNode, true, true);
 
             var token = await PaymentAccessor.GenerateFakeCard(plan+" " + DateTime.UtcNow.ToJavascriptMilliseconds());
 

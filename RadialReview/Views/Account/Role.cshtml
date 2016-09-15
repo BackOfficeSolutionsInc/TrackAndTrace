@@ -30,12 +30,13 @@
 				</td>
                 <td><a href="/Organization/stats">stats</a></td>
 				<td width="50%">
-					<select class="js-data-example-ajax" style="width:100%;">
-						
-					</select>
+					@Html.Partial("~/Views/Shared/EditorTemplates/AdminSearchAllUsers.cshtml", new ViewDataDictionary() {
+					   {"OnClick","/Account/SetRole/{0}?ReturnUrl="+Url.Encode(ViewBag.ReturnUrl) }
+				   })
 				</td>
+
 			</tr>
-			using (Html.BeginStyles())
+			@*using (Html.BeginStyles())
 			{
 				<link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet" />
 				<style>
@@ -76,7 +77,14 @@
 									escapeMarkup: function(markup) { return markup; }, // let our custom formatter work
 									minimumInputLength: 3,
 									templateResult: function (d) {
-										return "<a href='/Account/SetRole/" + d.value + "'>" + d.text + "</a>";
+										var pos = "";
+										if (typeof (d.position) === "string")
+											pos = d.position;
+										var org = "";
+										if (typeof (d.organization) === "string")
+											org = " at " + d.organization ;
+
+										return "<a href='/Account/SetRole/" + d.value + "'>" + d.text + "<span class='gray'>"+pos+org+"</span></a>";
 									}, // omitted for brevity, see the source of this page
 									templateSelection: function () {
 										return d.value;
@@ -87,7 +95,7 @@
 				</script>
 				<script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
 
-			}
+			}*@
 
 		}
 		@foreach (var userOrg in Model)

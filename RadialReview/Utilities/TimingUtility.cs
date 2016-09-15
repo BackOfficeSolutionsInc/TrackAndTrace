@@ -76,6 +76,12 @@ namespace RadialReview.Utilities {
                 case DateOffset.FirstOfMonth: return new DateTime(time.Year, time.Month, 1);
                 case DateOffset.FirstMondayOfTheMonth: return new DateTime(time.Year, time.Month, 1).AddDays(6.9999).StartOfWeek(DayOfWeek.Monday);
                 case DateOffset.FirstSundayOfTheMonth: return new DateTime(time.Year, time.Month, 1).AddDays(6.9999).StartOfWeek(DayOfWeek.Sunday);
+				case DateOffset.MondayOfFourthWeek: {
+						var s = new DateTime(time.Year, time.Month, 1);
+						if (s.DayOfWeek <= DayOfWeek.Monday) 
+							return s.AddDays(6.9999 * 4).StartOfWeek(DayOfWeek.Monday);
+						return s.AddDays(6.9999 * 3).StartOfWeek(DayOfWeek.Monday);
+					}
                 default: throw new ArgumentOutOfRangeException("offset");
             }
         }

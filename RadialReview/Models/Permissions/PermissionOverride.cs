@@ -29,8 +29,10 @@ namespace RadialReview.Models.Permissions
         ChangeEmployeePermissions = 6,
         [Display(Name = "Change Employee's Manager")]
         EditEmployeeManagers = 7,
-        [Display(Name = "View Reviews")]
-        ViewReviews = 8
+		[Display(Name = "View Reviews")]
+		ViewReviews = 8,
+		//[Display(Name = "HR")]
+		//HumanResources = 9
 	}
 
 	public class PermissionOverride : ILongIdentifiable,IDeletable

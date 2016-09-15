@@ -92,7 +92,7 @@ namespace RadialReview.Utilities {
 			}
 			return false;
 		}
-
+		
 		#region Construction
 		protected PermissionsUtility(ISession session, UserOrganizationModel caller) {
 			this.session = session;
@@ -203,9 +203,12 @@ namespace RadialReview.Utilities {
 				//..was here
 
 				//Confirm this is correct. Do you want children to also be managers?
-				if (caller.IsManager() && IsOwnedBelowOrEqual(caller, x => x.Id == userOrganizationId))
+				if (caller.IsManager() && DeepAccessor.Users.GetSubordinatesAndSelf(session, caller, caller.Id).Any(x=>x==userOrganizationId))
 					return this;
-				throw new PermissionsException();
+
+				//if (caller.IsManager() && IsOwnedBelowOrEqual(caller, x => x.Id == userOrganizationId))
+				//	return this;
+				throw new PermissionsException("You do not manage this user.");
 
 			}, alsoCheck);
 			//}, PermissionType.ManageEmployees);
@@ -367,14 +370,28 @@ namespace RadialReview.Utilities {
 				return this;
 
 			var node = session.Get<AccountabilityNode>(nodeId);
+			try {
+				return TryWithOverrides(x => {
 
-			return TryWithOverrides(x => {
-				if (IsManagingOrganization(node.OrganizationId, false))
-					return x;
-				if (DeepAccessor.ManagesNode(session, this, caller.Id, nodeId))
-					return x;
-				throw new PermissionsException("You do not manage this accountability node.");
-			}, alsoTry);
+					if (IsManagingOrganization(node.OrganizationId, true))
+						return x;
+					try {
+						return EditHierarchy(node.AccountabilityChartId);
+					} catch (PermissionsException) {
+						if (node.UserId != null) {
+							return EditUserOrganization(node.UserId.Value); //don't add alsoTry. It will get checked n^2 times
+						}
+						if (DeepAccessor.ManagesNode(session, this, caller.Id, nodeId))
+							return x;
+					}
+					throw new PermissionsException("You do not manage this node.");
+				}, alsoTry);
+			} catch (PermissionsException e) {
+				throw new PermissionsException("You do not manage this node.") {
+					NoErrorReport = true
+				};
+			}
+
 		}
 
 		public PermissionsUtility EditHierarchy(long hierarchyId) {
@@ -390,6 +407,29 @@ namespace RadialReview.Utilities {
 				return x;
 			});
 		}
+
+		//public PermissionsUtility EditAccountabilityNode(long nodeId) {
+		//	var node = session.Get<AccountabilityNode>(nodeId);
+		//	try {
+		//		return EditHierarchy(node.AccountabilityChartId);
+		//	} catch (PermissionsException) {
+		//		if (node.UserId != null) {
+		//			return EditUserOrganization(node.UserId.Value);
+		//		}
+		//		var parentId = node.ParentNodeId;
+		//		while (true) {
+		//			if (parentId == null)
+		//				break;
+		//			var parent = session.Get<AccountabilityNode>(parentId.Value);
+		//			if (parent.UserId != null) {
+		//				return EditUserOrganization(parent.UserId.Value);
+		//			}
+
+		//			parentId = parent.ParentNodeId;
+		//		}
+		//	}
+		//	throw new PermissionsException("Could not edit node.");
+		//}
 		#endregion
 
 		#region Industry
@@ -1197,9 +1237,14 @@ namespace RadialReview.Utilities {
 				.ToList();
 
 			try {
-				return Or(links.Select(x => new Func<PermissionsUtility>(() => EditAttach(x.GetAttach()))).ToArray());
+				var ors = links.Select(x => new Func<PermissionsUtility>(() => EditAttach(x.GetAttach()))).ToList();
+				ors.Add(() => {
+					var org = session.Get<OrganizationModel>(role.OrganizationId);
+					return EditHierarchy(org.AccountabilityChartId);
+				});
+				return Or(ors.ToArray());
 			} catch (Exception) {
-				throw new PermissionsException("Cannot edit role (" + roleId + ")");
+				throw new PermissionsException("Cannot edit role.");
 			}
 		}
 
@@ -1506,25 +1551,8 @@ namespace RadialReview.Utilities {
 
 
 		#endregion
+			
 
-		#region PermissionItem
-
-
-
-		#endregion
-
-		/*public PermissionsUtility ViewImage(string imageId)
-		{
-			if (imageId == null)
-				throw new PermissionsException();
-			Predicate<UserOrganizationModel> p = x => x.User.NotNull(y => y.ImageUrl.NotNull(z => z.Id.ToString() == imageId));
-
-			if (IsOwnedBelowOrEqual(caller, p) || IsOwnedAboveOrEqual(caller, p))
-			{
-				return this;
-			}
-			throw new PermissionsException();
-		}*/
 		public PermissionsUtility Or(params Func<PermissionsUtility>[] or) {
 			foreach (var o in or) {
 				try {
@@ -1533,7 +1561,6 @@ namespace RadialReview.Utilities {
 			}
 			throw new PermissionsException();
 		}
-
 
 		public PermissionsUtility Or(params Func<PermissionsUtility, PermissionsUtility>[] or) {
 			foreach (var o in or) {
@@ -1660,28 +1687,6 @@ namespace RadialReview.Utilities {
 			return ViewOrganization(orgId);
 		}
 
-		public PermissionsUtility EditAccountabilityNode(long id) {
-			var node = session.Get<AccountabilityNode>(id);
-			try {
-				return EditHierarchy(node.AccountabilityChartId);
-			} catch (PermissionsException) {
-				if (node.UserId != null) {
-					return EditUserOrganization(node.UserId.Value);
-				}
-				var parentId = node.ParentNodeId;
-				while (true) {
-					if (parentId == null)
-						break;
-					var parent = session.Get<AccountabilityNode>(parentId.Value);
-					if (parent.UserId != null) {
-						return EditUserOrganization(parent.UserId.Value);
-					}
-
-					parentId = parent.ParentNodeId;
-				}
-			}
-			throw new PermissionsException("Could not edit node.");
-		}
 
 		public PermissionsUtility ViewVideoL10Recurrence(long recurrenceId) {
 			return ViewL10Recurrence(recurrenceId);

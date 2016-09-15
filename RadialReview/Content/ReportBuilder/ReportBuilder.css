@@ -266,11 +266,12 @@ ul.empty:empty {
 }
 
 .collapseIcon {
-	-webkit-transform-origin: 46% 62%;
-	-moz-transform-origin: 46% 62%;
-	-ms-transform-origin: 46% 62%;
-	-o-transform-origin: 46% 62%;
-	transform-origin: 46% 62%;
+	/*transform-origin: 46% 62%;*/
+	-moz-transform-origin: 48% 53%;
+	-ms-transform-origin: 48% 53%;
+	-o-transform-origin: 48% 53%;
+	-webkit-transform-origin: 48% 53%;
+	transform-origin: 48% 53%;
 	-webkit-transform: rotate(0deg);
 	-moz-transform: rotate(0deg);
 	-ms-transform: rotate(0deg);

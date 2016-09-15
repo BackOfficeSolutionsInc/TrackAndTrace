@@ -1,16 +1,27 @@
 ﻿@model RadialReview.Accessors.SupportData
 @{
-    ViewBag.Title = "Index";
-    ViewBag.FullWidth = true;
+	ViewBag.Title = "Index";
+	ViewBag.FullWidth = true;
+
+	var url = Model.Url;
+	try {
+		url = Model.Url.SubstringAfter("traction.tools/");
+	} catch (Exception) {
+		try {
+			url = Model.Url.SubstringAfter("localhost:44300/");
+		} catch (Exception) {
+
+		}
+	}
 }
 
 <div class="pull-right">
-    <a class="" href="/support/list" style="padding:0 10px">back</a>
-    <select style="margin-top:27px;" class="" onchange="$.ajax('/support/status/@(Model.Lookup)?status='+$(this).val())">
-        @foreach (var v in Enum.GetValues(typeof(RadialReview.Accessors.SupportStatus))) {
-            <option value="@v" @(Model.Status == (RadialReview.Accessors.SupportStatus)v ? "selected" : "")>@v</option>
-        }
-    </select>
+	<a class="" href="/support/list" style="padding:0 10px">back</a>
+	<select style="margin-top:27px;" class="" onchange="$.ajax('/support/status/@(Model.Lookup)?status='+$(this).val())">
+		@foreach (var v in Enum.GetValues(typeof(RadialReview.Accessors.SupportStatus))) {
+			<option value="@v" @(Model.Status == (RadialReview.Accessors.SupportStatus)v ? "selected" : "")>@v</option>
+		}
+	</select>
 </div>
 <h2>Ticket - @Model.Lookup</h2>
 <a class="btn btn-link" href="#data">Data</a>
@@ -20,202 +31,202 @@
 <a class="btn btn-link" href="#image">Image</a>
 <hr />
 <div class="row">
-    <div class="col-lg-4">
-        <div class="panel panel-default">
-            <div class="panel-heading"><h4 id="data">Data</h4></div>
-            <div class="panel-body">
-                <table class="table table-hover">
-                    <tr><th>From</th><td><a href="mailto:@Model.Email?subject=@Model.Subject&body=@Model.Body">@Model.Email</a></td></tr>
-                    <tr><th>User</th><td><a href="/user/details/@Model.User">@Model.User</a></td></tr>
-                    <tr><th>Org</th><td>@Model.Org</td></tr>
-                    <tr><th>PageTitle</th><td>@Model.PageTitle</td></tr>
-                    <tr class="clickable" onclick="window.location.href='@Model.Url'"><th>Url</th><td class="ellipsis hover-line" style="max-width:23vw;"><a href="@Model.Url">@Model.Url</a></td></tr>
-                    <tr><th>View As</th><td><a href="https://traction.tools/Account/SetRole/@Model.User?ReturnUrl=@Url.Encode(Model.Url)">User</a></td></tr>
+	<div class="col-lg-4">
+		<div class="panel panel-default">
+			<div class="panel-heading"><h4 id="data">Data</h4></div>
+			<div class="panel-body">
+				<table class="table table-hover">
+					<tr><th>From</th><td><a href="mailto:@Model.Email?subject=@Model.Subject&body=@Model.Body">@Model.Email</a></td></tr>
+					<tr><th>User</th><td><a href="/user/details/@Model.User">@Model.User</a></td></tr>
+					<tr><th>Org</th><td>@Model.Org</td></tr>
+					<tr><th>PageTitle</th><td>@Model.PageTitle</td></tr>
+					<tr class="clickable" onclick="window.location.href='@Model.Url'"><th>Url</th><td class="ellipsis hover-line" style="max-width:23vw;"><a href="@Model.Url">@Model.Url</a></td></tr>
+					<tr><th>View As</th><td><a href="https://traction.tools/Account/SetRole/@Model.User?ReturnUrl=@Url.Encode(url)">User</a></td></tr>
 
-                </table>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-8">
-        <div class="panel panel-default">
-            <div class="panel-heading"><h4 id="email"><small><b>Subject:</b></small> @(string.IsNullOrWhiteSpace(Model.Subject) ? new MvcHtmlString("<i>No subject</i>") : new MvcHtmlString(Model.Subject))</h4></div>
-            <div class="panel-body">
-                <p style="white-space:pre-line">@(string.IsNullOrWhiteSpace(Model.Body) ? new MvcHtmlString("<center><i>--No body--</i></center>") : new MvcHtmlString(Model.Body))</p>
-            </div>
-        </div>
-    </div>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-8">
+		<div class="panel panel-default">
+			<div class="panel-heading"><h4 id="email"><small><b>Subject:</b></small> @(string.IsNullOrWhiteSpace(Model.Subject) ? new MvcHtmlString("<i>No subject</i>") : new MvcHtmlString(Model.Subject))</h4></div>
+			<div class="panel-body">
+				<p style="white-space:pre-line">@(string.IsNullOrWhiteSpace(Model.Body) ? new MvcHtmlString("<center><i>--No body--</i></center>") : new MvcHtmlString(Model.Body))</p>
+			</div>
+		</div>
+	</div>
 </div>
 <hr />
 
 <div class="row">
-    <div class="col-md-12">
-        <div class="panel panel-default">
-            <div class="panel-heading"><h3 id="image">Image</h3></div>
-            <div class="panel-body">
-                <span class="imageHolder"><a href="#" onclick="renderImg(this)">(Render Image)</a></span>
-            </div>
-        </div>
-    </div>
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-heading"><h3 id="image">Image</h3></div>
+			<div class="panel-body">
+				<span class="imageHolder"><a href="#" onclick="renderImg(this)">(Render Image)</a></span>
+			</div>
+		</div>
+	</div>
 </div>
 <hr />
 
 <div class="row">
-    <div class="col-lg-4">
+	<div class="col-lg-4">
 
-        <div class="panel panel-default">
-            <div class="panel-heading"><h3 id="views">Views</h3></div>
-            <div class="panel-body">
-                <div style="max-height:500px; overflow:auto;border:1px solid #eee;padding:15px 30px;">
-                    <table class="table">
-                        @foreach (var i in Model._Listing.OrderByDescending(i => i.ViewedAt)) {
-                            <tr>
+		<div class="panel panel-default">
+			<div class="panel-heading"><h3 id="views">Views</h3></div>
+			<div class="panel-body">
+				<div style="max-height:500px; overflow:auto;border:1px solid #eee;padding:15px 30px;">
+					<table class="table">
+						@foreach (var i in Model._Listing.OrderByDescending(i => i.ViewedAt)) {
+							<tr>
 
-                                <td>@Html.Organization().ConvertFromUTC(i.ViewedAt)</td>
-                                <td><a href="/User/Details/@i.ViewedBy">@i.ViewedBy</a></td>
-                                <td>@i.Source</td>
-                            </tr>
-                        }
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-8">
+								<td>@Html.Organization().ConvertFromUTC(i.ViewedAt)</td>
+								<td><a href="/User/Details/@i.ViewedBy">@i.ViewedBy</a></td>
+								<td>@i.Source</td>
+							</tr>
+						}
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-8">
 
-        <div class="panel panel-default">
-            <div class="panel-heading"><h3 id="consoleA">Console</h3></div>
-            <div class="panel-body">
-                <div id="console" style="overflow:auto;white-space:pre;border:1px solid #eee;padding:15px 30px;max-height:500px;resize:vertical;"></div>
-            </div>
-        </div>
-    </div>
+		<div class="panel panel-default">
+			<div class="panel-heading"><h3 id="consoleA">Console</h3></div>
+			<div class="panel-body">
+				<div id="console" style="overflow:auto;white-space:pre;border:1px solid #eee;padding:15px 30px;max-height:500px;resize:vertical;"></div>
+			</div>
+		</div>
+	</div>
 </div>
 
 @*@(Model.Console.Replace("\\r\\n", "\r\n").Replace(@"\""Trace\"":\",@"\""Trace\"":\r\n").Replace("\\\\", "\\"))*@
 <style>
-    i {
-        color: gray;
-    }
+	i {
+		color: gray;
+	}
 
-    body,
-    html {
-        background-color: #f5f5f5;
-    }
+	body,
+	html {
+		background-color: #f5f5f5;
+	}
 
-    .line:hover:after {
-        content: "";
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        background-color: rgba(0,0,0,.05);
-    }
+	.line:hover:after {
+		content: "";
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		background-color: rgba(0,0,0,.05);
+	}
 
-    .line {
-        position: relative;
-        border-left: 2px solid #aaa;
-        margin-bottom: 5px;
-        padding-left: 5px;
-        z-index: 1;
-        background-color: rgba(170, 170, 170, 0.125);
-    }
+	.line {
+		position: relative;
+		border-left: 2px solid #aaa;
+		margin-bottom: 5px;
+		padding-left: 5px;
+		z-index: 1;
+		background-color: rgba(170, 170, 170, 0.125);
+	}
 
-    .info-line {
-        color: #215378;
-        border-left-color: #215378;
-        background-color: rgba(33, 83, 120, 0.125);
-    }
+	.info-line {
+		color: #215378;
+		border-left-color: #215378;
+		background-color: rgba(33, 83, 120, 0.125);
+	}
 
-    .error-line {
-        color: #782121;
-        border-left-color: #782121;
-        background-color: rgba(120, 33, 33, 0.125);
-    }
+	.error-line {
+		color: #782121;
+		border-left-color: #782121;
+		background-color: rgba(120, 33, 33, 0.125);
+	}
 
-    .ln {
-        color: #ccc;
-        padding-right: 2px;
-    }
+	.ln {
+		color: #ccc;
+		padding-right: 2px;
+	}
 
-        .date:hover,
-        .ln:hover {
-            background-color: white;
-            z-index: 100000;
-        }
+		.date:hover,
+		.ln:hover {
+			background-color: white;
+			z-index: 100000;
+		}
 
-    frame {
-        border: 1px solid #eee;
-    }
+	frame {
+		border: 1px solid #eee;
+	}
 
-        frame:before {
-            content: "No image to load";
-        }
+		frame:before {
+			content: "No image to load";
+		}
 
-    .panel-default > .panel-heading {
-        background-color: #dadada;
-    }
+	.panel-default > .panel-heading {
+		background-color: #dadada;
+	}
 </style>
 
 
 @using (Html.BeginScripts()) {
-    <script src="~/Scripts/Main/moment.min.js"></script>
-    @*<script src="~/Scripts/home/pretty-json.min.js"></script>*@
-    <script>
+	<script src="~/Scripts/Main/moment.min.js"></script>
+	@*<script src="~/Scripts/home/pretty-json.min.js"></script>*@
+	<script>
 
-        function dataURLtoBlob(dataurl) {
-            var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+		function dataURLtoBlob(dataurl) {
+			var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
                 bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-            while(n--){
-                u8arr[n] = bstr.charCodeAt(n);
-            }
-            return new Blob([u8arr], {type:mime});
-        }
+			while(n--){
+				u8arr[n] = bstr.charCodeAt(n);
+			}
+			return new Blob([u8arr], {type:mime});
+		}
 
 
 
-        var model = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Console,Newtonsoft.Json.Formatting.Indented));
-        var parsed = JSON.parse(model);
-        var builder="";
-        for(var i in parsed){
-            var row="";
-            for(var j in parsed[i]["dat"]){
-                if (typeof(parsed[i]["dat"][j])==="object" || parsed[i].t=="error")
-                {
-                    row=JSON.stringify(parsed[i]["dat"][j], null, 4);
-                }else{
-                    row=JSON.stringify(parsed[i]["dat"][j]);
-                }
-            }
-            var d =new Date(parsed[i]["dt"]);
+		var model = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Console,Newtonsoft.Json.Formatting.Indented));
+		var parsed = JSON.parse(model);
+		var builder="";
+		for(var i in parsed){
+			var row="";
+			for(var j in parsed[i]["dat"]){
+				if (typeof(parsed[i]["dat"][j])==="object" || parsed[i].t=="error")
+				{
+					row=JSON.stringify(parsed[i]["dat"][j], null, 4);
+				}else{
+					row=JSON.stringify(parsed[i]["dat"][j]);
+				}
+			}
+			var d =new Date(parsed[i]["dt"]);
 
-            builder+="<span class='pull-right date'>"+moment(d).format("MM-DD-YY h:mm:ss")+"</span>";
-            builder+="<span class='pull-right ln'>"+parsed[i]["ln"]+"</span>";
+			builder+="<span class='pull-right date'>"+moment(d).format("MM-DD-YY h:mm:ss")+"</span>";
+			builder+="<span class='pull-right ln'>"+parsed[i]["ln"]+"</span>";
 
-            row = row.replace(/\\r\\n/g, "<br/>");
-
-
-            if (parsed[i].t=="error"){
-                builder+="<div class='line error-line'>"+row+"</div>";
-            }else if (parsed[i].t=="info"){
-                builder+="<div class='line info-line'>"+row+"</div>";
-            }else{
-                builder+="<div class='line'>"+row+"</div>";
-            }
-        }
+			row = row.replace(/\\r\\n/g, "<br/>");
 
 
+			if (parsed[i].t=="error"){
+				builder+="<div class='line error-line'>"+row+"</div>";
+			}else if (parsed[i].t=="info"){
+				builder+="<div class='line info-line'>"+row+"</div>";
+			}else{
+				builder+="<div class='line'>"+row+"</div>";
+			}
+		}
 
-        $("#console").html(builder);
-        function renderImg(self){
-            $(".imageHolder").append($("<iframe sandbox='allow-forms allow-pointer-lock allow-popups allow-same-origin allow-top-navigation' style='width:100%;height:500px;resize:vertical;' scrolling='yes' src='@Model.ImageData'>Cannot load image</iframe>"));
-            $(self).remove();
-        }
-        //$('frame').contents().scrollTop(438);
-        //var builder = "";
-        //var node = new PrettyJSON.view.Node({
-        //    el:$('#console'),
-        //    data:parsed
-        //});
-    </script>
+
+
+		$("#console").html(builder);
+		function renderImg(self){
+			$(".imageHolder").append($("<iframe sandbox='allow-forms allow-pointer-lock allow-popups allow-same-origin allow-top-navigation' style='width:100%;height:500px;resize:vertical;' scrolling='yes' src='@Model.ImageData'>Cannot load image</iframe>"));
+			$(self).remove();
+		}
+		//$('frame').contents().scrollTop(438);
+		//var builder = "";
+		//var node = new PrettyJSON.view.Node({
+		//    el:$('#console'),
+		//    data:parsed
+		//});
+	</script>
 }

@@ -3,13 +3,13 @@
 	var guid = Guid.NewGuid().ToString().Replace("-", "");
 }
 
-<div class="dropdown dropdown-permissions dd_@guid">
-	<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+<span class="dropdown dropdown-permissions dd_@guid">
+	<button class="btn btn-default dropdown-toggle @(@ViewBag.ButtonClass??"")" type="button" id="dropdownMenu122" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 		<span class="icon fontastic-icon-unlock-1 gray"></span>
 		@(Model.DisplayText ?? new HtmlString("Permissions"))
 		<span class="caret"></span>
 	</button>
-	<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+	<ul class="dropdown-menu permissions-dropdown-menu" aria-labelledby="dropdownMenu122">
 
 		<li class="">
 			<form class="container">
@@ -17,24 +17,25 @@
 				<br />
 				<select id="search_@guid" style="width:600px;height: 28px !important;" placeholder=""></select>
 				<hr />
-				<div class="form-group" id="container_@guid" >
-					<table style="text-align: center;">
+				<div class="form-group" id="container_@guid">
+					<table class="table-hover" style="text-align: center;">
 						<thead>
 							<tr>
-								<th class="name"></th>
-								<th></th>
 								<th class="setting">View</th>
 								<th class="setting">Edit</th>
 								<th class="setting">Admin</th>
+								<th></th>
+								<th class="name"></th>
+								<th class="setting"></th>
 							</tr>
 						</thead>
 						<tbody>
-							@foreach (var u in Model.Items)
-							{
+							@foreach (var u in Model.Items) {
 								@Html.Partial("PermItemRow", new ViewDataDictionary(u){
 									{"CanEdit_View", Model.CanEdit_View},
 									{"CanEdit_Edit", Model.CanEdit_Edit},
-									{"CanEdit_Admin", Model.CanEdit_Admin}
+									{"CanEdit_Admin", Model.CanEdit_Admin},
+									{"CanEdit_Delete",u.Deletable }
 								})
 							}
 						</tbody>
@@ -43,18 +44,19 @@
 			</form>
 		</li>
 	</ul>
-</div>
+</span>
 
-@using (Html.BeginStyles())
-{
+@using (Html.BeginStyles()) {
 	<style>
 		.dropdown-permissions .select2-container .select2-selection--single {
 			height: 28px !important;
 		}
 
 		.dropdown-permissions .search-row .label {
-			float: right;
+			float: left;
 			width: 80px;
+			margin-right: 4px;
+			margin-top: 2px;
 		}
 
 		.dropdown-permissions .group-User {
@@ -78,25 +80,42 @@
 			width: 32px;
 		}
 
-		
+
 		.dropdown-permissions th.name,
-		.dropdown-permissions td.name{
+		.dropdown-permissions td.name {
 			min-width: 110px;
-			text-align: right;
-			padding-right: 4px;
+			text-align: left;
+			padding-left: 4px;
 			font-weight: bold;
+			/*max-width: 210px;*/
+			width:100%;
 		}
 
-		.dropdown-permissions th.setting{
+		.dropdown-permissions th.setting {
+			min-width: 40px;
 			width: 40px;
 			text-align: center;
 		}
 	</style>
 }
 
-@using (Html.BeginScripts())
-{
+@using (Html.BeginScripts()) {
 	<script>
+		$(".permissions-dropdown-menu").on("click", function () {
+			skipHideDropdown = true;
+			setTimeout(function () {
+				skipHideDropdown = false;
+			}, 1);
+		});
+		$("*").on("hide.bs.dropdown", function (e) {
+			if (skipHideDropdown) {
+				console.log(e);
+				e.preventDefault();
+			}// else {
+			//	debugger;
+			//}
+		});
+
 		$.fn.extend({
 			OptionsSelect2Create: function () {
 				var $me = this;
@@ -122,7 +141,7 @@
 							delay: 250,
 							data: function (params) {
 								return {
-								    q: encodeURI(params.term), // search term
+									q: encodeURI(params.term), // search term
 									page: params.page
 								};
 							},
@@ -155,34 +174,44 @@
 		});
 
 		function updatePermItem(id, level, self) {
-			if (!$(self).attr("disabled")){
+			if (!$(self).attr("disabled")) {
 				var on = $(self).is(":checked");
 				$(self).attr("disabled", true);
 				$.ajax({
-				    url: "/Permissions/UpdatePerm/" + encodeURIComponent(id) + "?" + level + "=" + on,
-					success: function(data) {
+					url: "/Permissions/UpdatePerm/" + encodeURIComponent(id) + "?" + level + "=" + on,
+					success: function (data) {
 						if (!showJsonAlert(data, false, true)) {
 							$(self).prop('checked', !on);
 						}
 					},
-					error: function(data) {
+					error: function (data) {
 						$(self).prop('checked', !on);
 					},
-					complete:function() {
+					complete: function () {
 						$(self).attr("disabled", false);
 					}
 				});
 			}
 		}
+		function deletePermItem(id) {
+			console.log("deletePermItem: " + id);
+
+			$.ajax({
+				url: "/Permissions/DeletePermItem/" + id,
+				success: function (data) {
+					$("#permItem_" + id).remove();
+				}
+
+			});
+		}
 
 		function add_@(guid)(accessorId) {
-		    debugger;
 			console.log(accessorId);
 
 			$.ajax({
-			    url: "/Permissions/BlankDropdownRow/?q=" + encodeURIComponent(accessorId) + "&resource=@Model.ResId&type=@Model.ResType",
+				url: "/Permissions/BlankDropdownRow/?q=" + encodeURIComponent(accessorId) + "&resource=@Model.ResId&type=@Model.ResType",
 				success: function (data) {
-					$("#container_@guid table").append(data);
+					$("#container_@guid table tbody").append(data);
 				}
 
 			});

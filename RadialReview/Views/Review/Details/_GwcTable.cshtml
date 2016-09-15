@@ -2,6 +2,7 @@
 @using RadialReview.Models.Enums
 @model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
 
+<!--_GwcTable.cshtml-->
 <div class="pull-right header">
 	<input id="roleTableFilter" type="text" class="form-control" placeholder="Filter" />
 </div>
@@ -41,7 +42,7 @@
 				<tr>
 					<td>@r.ByUser.GetName()</td>
 					<td class="alignLeft italic">@gwc.Item1</td>
-					<td class="bold">@r.Askable.GetQuestion()</td>
+					<td class="bold nowrap" style="max-width:200px;" title="@r.Askable.GetQuestion()">@r.Askable.GetQuestion()</td>
 					<td class="block">
 						<div class="fill @gwc.Item2(r)" data-sort="@(sorter[gwc.Item2(r)])"></div><span style="display:none">@(sorter[gwc.Item2(r)]) @text[gwc.Item2(r)]</span>
 					</td>

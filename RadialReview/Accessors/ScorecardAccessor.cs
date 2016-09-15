@@ -124,7 +124,57 @@ namespace RadialReview.Accessors {
 
         }
 
-        public static List<MeasurableModel> GetVisibleMeasurables(UserOrganizationModel caller, long organizationId, bool loadUsers)
+
+		public Csv Listing(UserOrganizationModel caller, long organizationId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					// var p = s.Get<PeriodModel>(period);
+
+					PermissionsUtility.Create(s, caller).ManagingOrganization(organizationId);
+
+
+					var scores = s.QueryOver<ScoreModel>()
+						.Where(x => x.DeleteTime == null && x.OrganizationId == organizationId)
+						.List().ToList();
+
+					var csv = new Csv();
+					csv.SetTitle("Measurable");
+					foreach (var sss in scores.GroupBy(x => x.MeasurableId)) {
+						var ss = sss.First();
+						csv.Add(ss.Measurable.Title, "Owner", ss.Measurable.AccountableUser.NotNull(x => x.GetName()));
+						csv.Add(ss.Measurable.Title, "Admin", ss.Measurable.AdminUser.NotNull(x => x.GetName()));
+						csv.Add(ss.Measurable.Title, "Goal", "" + ss.Measurable.Goal);
+						csv.Add(ss.Measurable.Title, "GoalDirection", "" + ss.Measurable.GoalDirection);
+					}
+					foreach (var ss in scores.OrderBy(x => x.ForWeek)) {
+						csv.Add(ss.Measurable.Title, ss.ForWeek.ToShortDateString(), ss.Measured.NotNull(x => x.Value.ToString()) ?? "");
+					}
+					return csv;
+
+					//var rocksQ = s.QueryOver<ScoreModel>()
+					//	.Where(x => x.DeleteTime == null && x.OrganizationId == organizationId);
+					////if (!caller.ManagingOrganization && !caller.IsRadialAdmin){
+					////    var subs = DeepAccessor.Users.GetSubordinatesAndSelf(s, caller, caller.Id);
+					////    rocksQ= rocksQ.WhereRestrictionOn(x=>x.ForUserId).IsIn(subs);
+					////}
+					//var rocks = rocksQ.List().ToList();
+
+					//var csv = new Csv();
+					//csv.SetTitle(caller.Organization.Settings.RockName);
+
+					//foreach (var r in rocks) {
+					//	csv.Add(r.Rock, "Owner", r.AccountableUser.GetName());
+					//	//csv.Add(r.Rock, "Manager", string.Join(" & ", r.AccountableUser.ManagedBy.Select(x => x.Manager.GetName())));
+					//	csv.Add(r.Rock, "Status", "" + r.Completion);
+					//	csv.Add(r.Rock, "CreateTime", "" + r.CreateTime);
+					//	csv.Add(r.Rock, "CompleteTime", "" + r.CompleteTime);
+					//}
+					//return csv;
+				}
+			}
+		}
+
+		public static List<MeasurableModel> GetVisibleMeasurables(UserOrganizationModel caller, long organizationId, bool loadUsers)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {

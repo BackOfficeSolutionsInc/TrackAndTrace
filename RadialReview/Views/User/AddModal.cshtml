@@ -10,8 +10,7 @@
 		<div class="col-xs-6 noPadRight noPadLeft">@Html.TextBoxFor(x => x.LastName, new { placeholder = RadialReview.Properties.DisplayNameStrings.lastName, @class = "fullWidth form-control blend" })</div>
 	</div>
 </div>
-@if (Model.IsClient)
-{
+@if (Model.IsClient) {
 	<div class="smallBreak"></div>
 	<div class="row">
 		<div class="col-xs-3"><label>Organization Name:</label></div>
@@ -28,16 +27,19 @@
 	<div class="col-xs-9">@Html.TextBoxFor(x => x.Email, new { placeholder = RadialReview.Properties.DisplayNameStrings.email, @class = "fullWidth form-control blend" })</div>
 </div>
 <div class="smallBreak"></div>
-@if (!Model.IsClient)
-{
-	@Html.EditorFor(x => x.Position, "~/Views/User/EditorTemplates/UserPositionViewModel.cshtml")
+@if (!Model.IsClient) {
 
-	if (Model.StrictlyHierarchical)
-	{
-		@Html.HiddenFor(x => x.ManagerNodeId)
+	if (ViewBag.HidePosition == true) {
+		@Html.HiddenFor(x => x.Position.PositionId);
+		@Html.HiddenFor(x => x.Position.CustomPositionId);
+		@Html.HiddenFor(x => x.Position.CustomPosition);
+	} else {
+		@Html.EditorFor(x => x.Position, "~/Views/User/EditorTemplates/UserPositionViewModel.cshtml")
 	}
-	else
-	{
+
+	if (Model.StrictlyHierarchical || ViewBag.ForceManager == true) {
+		@Html.HiddenFor(x => x.ManagerNodeId)
+	} else {
 		<div class="smallBreak"></div>
 		<div class="row">
 			<div class="col-xs-3"><label>Supervisor:</label></div>
@@ -45,20 +47,23 @@
 		</div>
 	}
 
-	<div class="smallBreak"></div>
-	<div class="row">
-		<div class="col-xs-3"><label>Is Manager:</label></div>
-		<div class="col-xs-9">@Html.CheckBoxFor(x => x.IsManager, new { style = "padding-bottom: 7px;", @class = "checkbox blend" })</div>
-	</div>
+	if (ViewBag.HideIsManager == true) {
+		@Html.HiddenFor(x => x.IsManager)
+	} else {
+		<div class="smallBreak"></div>
+		<div class="row">
+			<div class="col-xs-3"><label>Is Manager:</label></div>
+			<div class="col-xs-9">@Html.CheckBoxFor(x => x.IsManager, new { style = "padding-bottom: 7px;", @class = "checkbox blend" })</div>
+		</div>
+	}
 
-}
-else
-{
+} else {
 	@Html.Hidden("ManagerNodeId", "null"); @*No Manger*@
 	@Html.Hidden("Position.PositionId", "-2"); @*No Position*@
 }
 
 @Html.HiddenFor(x => x.IsClient)
+@Html.HiddenFor(x => x.NodeId)
 
 
 

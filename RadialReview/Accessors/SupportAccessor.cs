@@ -43,8 +43,10 @@ namespace RadialReview.Accessors {
         public virtual DateTime? CloseTime { get; set; }
         public virtual DateTime? LastViewed { get; set; }
         public virtual List<Tracker> _Listing { get; set; }
+		public virtual string UserAgent { get; set; }
+
 		//public virtual string Type { get; set; }
-        public SupportData()
+		public SupportData()
         {
             CreateTime = DateTime.UtcNow;
             Lookup = Guid.NewGuid().ToString();
@@ -68,8 +70,9 @@ namespace RadialReview.Accessors {
                 Map(x => x.CloseTime);
                 Map(x => x.LastViewed);
                 Map(x => x.Status).CustomType<SupportStatus>();
-                Map(x => x.EmailViewed);
-            }
+				Map(x => x.EmailViewed);
+				Map(x => x.UserAgent);
+			}
         }
 
     }

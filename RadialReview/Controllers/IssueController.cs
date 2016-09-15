@@ -164,7 +164,8 @@ namespace RadialReview.Controllers
             return PartialView();
         }
 
-        /*
+
+		/*
         [HttpPost]
         [Access(AccessLevel.Manager)]
         public ActionResult IssueOrganization(CreateReviewModel model)
@@ -173,5 +174,5 @@ namespace RadialReview.Controllers
 
             //return View();
         }*/
-    }
+	}
 }

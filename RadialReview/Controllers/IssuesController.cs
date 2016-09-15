@@ -376,5 +376,12 @@ namespace RadialReview.Controllers
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 			//return PartialView("ScorecardIssueModal", model);
 		}
-    }
+
+
+		[Access(AccessLevel.UserOrganization)]
+		public FileContentResult Listing() {
+			var csv = IssuesAccessor.Listing(GetUser(), GetUser().Organization.Id);
+			return File(csv.ToBytes(), "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + csv.Title + ".csv");
+		}
+	}
 }

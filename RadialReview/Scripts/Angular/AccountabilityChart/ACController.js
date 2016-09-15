@@ -313,12 +313,43 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 			showJsonAlert(data, true, true);
 		});
 	};
-	$scope.functions.removeRow = function (self) {
-		var _clientTimestamp = new Date().getTime();
-		$http.post("/Accountability/Remove" + self.Type + "/" + self.Id + "?connectionId=" + $scope.connectionId + "&_clientTimestamp=" + _clientTimestamp, null)
-			.error(function (data) {
-				showJsonAlert(data, true, true);
-			});
+
+	
+	var RemoveRow = Undo.Command.extend({
+		constructor: function (data) {
+			//this.id = data.id;
+			//this.oldParent = data.oldParentId;
+			//this.newParent = data.newParentId;
+
+			//this.change = function (nodeId, newParent, revertId) {
+			//	var _clientTimestamp = new Date().getTime();
+			//	$http.post("/Accountability/Swap/" + nodeId + "?parent=" + newParent + "&connectionId=" + $scope.connectionId + "&_clientTimestamp=" + _clientTimestamp, {})
+			//		.then(function () { }, function (data) {
+			//			showJsonAlert(data.data, true, true);
+			//			$rootScope.$emit("SwapNode", nodeId, revertId);
+
+			//		});
+			//}
+			this.self = data;
+		},
+		execute: function () {
+			var _clientTimestamp = new Date().getTime();
+			$http.post("/Accountability/Remove" + this.self.Type + "/" + this.self.Id + "?connectionId=" + $scope.connectionId + "&_clientTimestamp=" + _clientTimestamp, null)
+				.error(function (data) {
+					showJsonAlert(data, true, true);
+				});
+		},
+		undo: function () {
+			var _clientTimestamp = new Date().getTime();
+			$http.post("/Accountability/Unremove" + this.self.Type + "/" + this.self.Id + "?connectionId=" + $scope.connectionId + "&_clientTimestamp=" + _clientTimestamp, null)
+				.error(function (data) {
+					showJsonAlert(data, true, true);
+				});
+		}
+	});
+
+	$scope.functions.removeRow = function (self) {		
+		undoStack.execute(new RemoveRow(self));		
 	};
 
 	//SEARCH
@@ -328,6 +359,9 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		function createFilterFor(query) {
 			var lowercaseQuery = angular.lowercase(query);
 			return function filterFn(x) {
+				if (x.Managing == false)
+					return false;
+
 				var index = (x.Name + "").toLowerCase().indexOf(lowercaseQuery);
 				var any = index != -1 && (index === 0 || x.Name[index - 1] == " ");
 				if (x.User && x.User.Name) {
@@ -338,7 +372,15 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 			};
 		}
 		var possible = $scope.model.data.AllUsers;
-		return possible.filter(createFilterFor(query));
+		var results = possible.filter(createFilterFor(query));
+		var tcQ = toTitleCase(query);
+		results.push({
+			Name:  tcQ+ " (Create User)",
+			RealName: tcQ,
+			Id: -2			
+		});
+
+		return results;
 	}
 	$scope.search.queryPositions = function (query) {
 		return $http({
@@ -534,7 +576,25 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 			} else {
 			}
 		} else {
-			$scope.functions.selectedItemChange_UpdateNode(id);
+			if (item && item.Id == -2) {
+				$scope.$eval(nameVar + "=null");
+				var managerId = -3;
+				//try{
+				//	var node = $scope.model.Lookup["AngularAccountabilityNode_" + id];
+				//	if (node && node.parent && node.parent.Id) {
+				//		managerId = node.parent.Id;
+				//	}					
+				//} catch (e) {
+				//}
+
+				$scope.functions.showModal('Add user',
+					'/User/AddModal?managerNodeId=' + managerId + "&forceManager=true&name=" + item.RealName + "&hideIsManager=true&hidePosition=true&nodeId="+id
+				   , '/nexus/AddManagedUserToOrganization'
+				);
+				
+			} else {
+				$scope.functions.selectedItemChange_UpdateNode(id);
+			}
 		}
 	}
 
@@ -560,7 +620,11 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 
 		var posAutoComplete = position.append("md-autocomplete")
 			.attr("placeholder", "Function")
-            .attr("md-blur", function (d) {
+			.attr("ng-disabled", function (d) {
+				if (d.Editable == false)
+					return "true";
+				return null;
+			}).attr("md-blur", function (d) {
             	return "clearIfNull(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,\"search.searchPos_" + d.Id + "\",\"model.Lookup['AngularAccountabilityNode_" + d.Id + "']\")";
             }).attr("md-selected-item", function (d) {
             	return "model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position";
@@ -591,7 +655,11 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 			}).attr("md-items", function (d) { return "uitem in search.querySearch(search.searchText_" + d.Id + ")"; })
             .attr("md-search-text", function (d) { return "search.searchText_" + d.Id; })
 			.attr("placeholder", "Employee")
-			.attr("md-selected-item-change", function (d) {
+			.attr("ng-disabled", function (d) {
+				if (d.Editable == false)
+					return "true";
+				return null;
+			}).attr("md-selected-item-change", function (d) {
 				return "functions.fixName(" + d.Id + ",'search.searchText_" + d.Id + "',model.Lookup['AngularAccountabilityNode_" + d.Id + "'].User,this)";
 			})
 		/*.attr("md-selected-item-change", function (d) {

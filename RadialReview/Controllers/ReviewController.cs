@@ -1053,13 +1053,15 @@ namespace RadialReview.Controllers {
         }
 
         [Access(AccessLevel.Manager)]
-        public PartialViewResult ValueDetails(long reviewId, long valueId, long userId)
+        public PartialViewResult ValueDetails(long? reviewId, long? valueId, long? userId)
         {
-            var review = _ReviewAccessor.GetReview(GetUser(), reviewId);
-            var model = GetReviewDetails(review);
-            ViewBag.ValueId = valueId;
-            ViewBag.ByUserId = userId;
+			if (reviewId == null && valueId == null && userId == null)
+				return null;
 
+			var review = _ReviewAccessor.GetReview(GetUser(), reviewId.Value);
+            var model = GetReviewDetails(review);
+            ViewBag.ValueId = valueId.Value;
+            ViewBag.ByUserId = userId.Value;
 
             return PartialView(model);
         }

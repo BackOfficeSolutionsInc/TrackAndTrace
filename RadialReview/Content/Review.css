@@ -138,6 +138,7 @@ input[type="range"] {
 
 .table-gwc td {
 	position: relative;
+	vertical-align: top;
 }
 
 .table-gwc .reasonPopup {
@@ -148,9 +149,10 @@ input[type="range"] {
 	-webkit-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5),8px 8px 10px rgba(0, 0, 0, 0.2);
 	-ms-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5),8px 8px 10px rgba(0, 0, 0, 0.2);
 	box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5),8px 8px 10px rgba(0, 0, 0, 0.2);
+	height:150px;
 }
 
-.table-gwc .reasonPopup .popup {
+	.table-gwc .reasonPopup .popup {
 		border: 1px solid #333333;
 		padding: 3px 6px;
 		width: 300px;
@@ -181,11 +183,12 @@ input[type="range"] {
 		right: 10px;
 		position: absolute;
 	}
-	
-	.table-gwc .tristate:hover ~ .reasonButton {
-		-ms-opacity: .3;
-		opacity: .3;
-	}
+
+.table-gwc .tristate:hover ~ .reasonButton {
+	-ms-opacity: .3;
+	opacity: .3;
+}
+
 	.table-gwc .tristate:hover ~ .reasonButton.on {
 		-ms-opacity: 1;
 		opacity: 1;
@@ -207,15 +210,16 @@ input[type="range"] {
 		opacity: 1;
 		color: goldenrod;
 	}
-	.reasonButton.on:hover {
-		-ms-opacity: 1;
-		opacity: 1;
-		-ms-text-shadow: 0px 0px 1px #514900;
-		text-shadow: 0px 0px 1px #514900;
-		color: goldenrod;
-	}
 
-.reasonButton:hover {
+		.reasonButton.on:hover {
+			-ms-opacity: 1;
+			opacity: 1;
+			-ms-text-shadow: 0px 0px 1px #514900;
+			text-shadow: 0px 0px 1px #514900;
+			color: goldenrod;
+		}
+
+	.reasonButton:hover {
 		-ms-opacity: .6;
 		opacity: .6;
 	}
@@ -307,19 +311,20 @@ input[type="range"] {
 	background-color: white;
 	color: #888;
 }
-.reason.popup:empty:after {
-	content: "No comment provided.";
-	font-style: italic;
-}
+
+	.reason.popup:empty:after {
+		content: "No comment provided.";
+		font-style: italic;
+	}
 
 
-.reason.popup:not(:empty):after {
-	content: "\"";
-}
+	.reason.popup:not(:empty):after {
+		content: "\"";
+	}
 
-.reason.popup:not(:empty):before {
-	content: "\"";
-}
+	.reason.popup:not(:empty):before {
+		content: "\"";
+	}
 
 /*
 .flexcontainer {
@@ -385,23 +390,23 @@ input[type="range"] {
 	transform: rotateY( 0deg );
 }
 
-.flipCard figure {
-	display: block;
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	-webkit-backface-visibility: hidden;
-	-moz-backface-visibility: hidden;
-	-ms-backface-visibility: hidden;
-	-o-backface-visibility: hidden;
-	backface-visibility: hidden;
-	-webkit-transform-style: preserve-3d;
-	-moz-transform-style: preserve-3d;
-	-ms-transform-style: preserve-3d;
-	-o-transform-style: preserve-3d;
-	transform-style: preserve-3d;
-	transition: opacity .4s ease;
-}
+	.flipCard figure {
+		display: block;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		-webkit-backface-visibility: hidden;
+		-moz-backface-visibility: hidden;
+		-ms-backface-visibility: hidden;
+		-o-backface-visibility: hidden;
+		backface-visibility: hidden;
+		-webkit-transform-style: preserve-3d;
+		-moz-transform-style: preserve-3d;
+		-ms-transform-style: preserve-3d;
+		-o-transform-style: preserve-3d;
+		transform-style: preserve-3d;
+		transition: opacity .4s ease;
+	}
 
 .flipCar figure * {
 	-webkit-backface-visibility: hidden !important;
@@ -411,18 +416,19 @@ input[type="range"] {
 	backface-visibility: hidden !important;
 }
 
-.flipCard  .front {
-  /*background: red;*/
+.flipCard .front {
+	/*background: red;*/
 }
-	.flipCard .back {
-		/*background: blue;*/
-		-moz-transform: rotateY( 180deg );
-		-ms-transform: rotateY( 180deg );
-		-o-transform: rotateY( 180deg );
-		-webkit-transform: rotateY( 180deg );
-		transform: rotateY( 180deg );
-	}
-	
+
+.flipCard .back {
+	/*background: blue;*/
+	-moz-transform: rotateY( 180deg );
+	-ms-transform: rotateY( 180deg );
+	-o-transform: rotateY( 180deg );
+	-webkit-transform: rotateY( 180deg );
+	transform: rotateY( 180deg );
+}
+
 .flipCard.flipped {
 	-moz-transform: rotateY( 180deg );
 	-ms-transform: rotateY( 180deg );
@@ -430,13 +436,14 @@ input[type="range"] {
 	-webkit-transform: rotateY( 180deg );
 	transform: rotateY( 180deg );
 }
+
 	.flipCard.flipped .front {
 		opacity: 0;
 	}
 
-	.flipCard:not(.flipped) .back {
-		opacity: 0;
-	}
+.flipCard:not(.flipped) .back {
+	opacity: 0;
+}
 
 .flipCard.flipped .back {
 	-ms-backface-visibility: visible !important;
@@ -463,10 +470,10 @@ input[type="range"] {
 	transition: opacity 1s;
 }
 
-.nameFade.flipped {
-	-ms-opacity: 0;
-	opacity: 0;
-}
+	.nameFade.flipped {
+		-ms-opacity: 0;
+		opacity: 0;
+	}
 
 .flipButton:not(.flipped) {
 	-ms-opacity: .5;
@@ -491,6 +498,7 @@ input[type="range"] {
 	color: #BBB;
 	float: left;
 }
+
 .progressIndicator {
 	position: absolute;
 	width: 20px;
@@ -498,6 +506,7 @@ input[type="range"] {
 	color: #BBBBBB;
 	float: left;
 }
+
 .currentPage {
 	font-weight: bold;
 }

@@ -54,8 +54,12 @@ html, body {
 		}
 	}
 
+	&.no-edit:not(.is-me) .ghost{
+		display:none !important;
+	}
 
 	&.root-node {
+		background-color: @background-color;
 
 		.move-icon {
 			cursor: default !important;
@@ -67,7 +71,11 @@ html, body {
 
 		.acc-buttons.top-bar {
 			height: 30px !important;
-			line-height: 30px;
+			line-height: 15px;
+			display:table-cell;
+			vertical-align:middle;
+			text-align:center;
+			width: 200px;
 		}
 
 		.acc-rect {
@@ -97,6 +105,7 @@ html, body {
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		overflow: hidden;
+		font-family: 'Roboto', sans-serif;
 	}
 
 	button md-icon {
@@ -291,13 +300,28 @@ html, body {
 					li.role-row {
 						margin-right: -3px;
 
-						.role {
+						.role{
 							text-overflow: ellipsis;
 							font-size: 10px;
-							margin-left: -6px;
+							margin-left: -15px;
+
+							&:before {
+								content: " ";
+								margin-left: 8px;
+							}
 						}
 
+						input.role  {
+							margin-left: -8px;
+						}
+						/*.role-row .role {
+							margin-left: -15px;
 
+							div:before {
+								content: " ";
+								margin-right: 10px;
+							}
+						}*/
 						.delete-role-row {
 							margin-right: 0px;
 							display: inline-block;
@@ -544,8 +568,12 @@ html, body {
 
 	.is-dragging .bounding-box,
 	.is-dragging .node-button,
-	.is-dragging .node-button * {
+	.is-dragging .node-button *{
 		display: none;
+		pointer-events: none;
+	}
+	
+	.is-dragging input {
 		pointer-events: none;
 	}
 
@@ -583,13 +611,11 @@ html, body {
 				fill: @collapsed-border-color;
 			}
 		}
-
 		/*.node-button circle {
 			&:focus {
 				fill: lighten(@collapsed-border-color,30%);
 			}
 		}*/
-
 		.role-group {
 			.role-group-title {
 				border-top: 1px solid @collapsed-border-color;

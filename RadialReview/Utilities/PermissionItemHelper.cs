@@ -51,9 +51,11 @@ namespace RadialReview.Utilities {
         {
             var items = session.QueryOver<PermItem>().Where(x => x.DeleteTime == null && x.CanAdmin && x.ResId == resourceId && x.ResType == resourceType).List();
             if (!items.Any())
-                throw new PermissionsException("You must have an admin. Reverting setting change.");
-            //Cheapest first..
-            foreach (var i in items.OrderBy(x => (int)x.AccessorType)) {
+                throw new PermissionsException("You must have an admin. Reverting setting change.") {
+					NoErrorReport = true
+				};
+			//Cheapest first..
+			foreach (var i in items.OrderBy(x => (int)x.AccessorType)) {
                 switch (i.AccessorType) {
                     case PermItem.AccessType.RGM:
                         var users = ResponsibilitiesAccessor.GetResponsibilityGroupMembers(session, this, i.AccessorId);
@@ -89,7 +91,9 @@ namespace RadialReview.Utilities {
                         throw new ArgumentOutOfRangeException();
                 }
             }
-            throw new PermissionsException("You must have an admin. Reverting setting change.");
+            throw new PermissionsException("You must have an admin. Reverting setting change.") {
+				NoErrorReport =true
+			};
         }
         public PermissionsUtility CanViewPermissions(PermItem.ResourceType resourceType, long resourceId)
         {

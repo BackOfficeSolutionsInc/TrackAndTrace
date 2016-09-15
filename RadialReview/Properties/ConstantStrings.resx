@@ -130,7 +130,7 @@
     <value>placeholder/orgPlaceholder.png</value>
   </data>
   <data name="ImagePositionPlaceholder" xml:space="preserve">
-    <value>/placeholder/Briefcase.png</value>
+    <value>placeholder/Briefcase.png</value>
   </data>
   <data name="ImageUserPlaceholder" xml:space="preserve">
     <value>placeholder/placeholder.png</value>

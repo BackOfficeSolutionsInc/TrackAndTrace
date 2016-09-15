@@ -49,6 +49,10 @@ if (!Array.prototype.indexOf) {
 		return -1;
 	};
 }
+function toTitleCase(str) {
+	return str.replace(/\w\S*/g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
+}
+
 
 (function ($) {
 	$.fn.valList = function () {
@@ -126,7 +130,6 @@ function load(key) {
 		console.log("Could not load");
 	}
 }
-
 
 function ForceUnhide() {
 	var speed = 40;
@@ -272,7 +275,7 @@ function metGoal(direction, goal, measured, alternate) {
 			return m == g;
 		} else if (direction == "Between" || direction == -3) {
 			var ag = +alternate;
-			return g<=m && m<=ag;
+			return g <= m && m <= ag;
 		} else {
 			console.log("Error: goal met could not be calculated. Unhandled direction: " + direction);
 			return undefined;
@@ -406,7 +409,7 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 		if (iconType === "string") {
 			obj.modalClass += " modal-icon-" + obj.icon;
 			//obj.title = iconType.toLowerCase() + "!";
-		}else if (iconType === "object") {
+		} else if (iconType === "object") {
 			var time = +new Date();
 			var custom = "modal-icon-custom" + time;
 			obj.modalClass += " " + custom;
@@ -432,11 +435,11 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 	$("#modal").addClass("loading");
 	$('#modal').modal('show');
 
-	var allowed = ["text", "hidden", "textarea", "checkbox", "radio", "number", "date", "time", "header", "span", "h1", "h2", "h3", "h4", "h5", "h6", "file", "yesno","label"];
+	var allowed = ["text", "hidden", "textarea", "checkbox", "radio", "number", "date", "time", "header", "span", "h1", "h2", "h3", "h4", "h5", "h6", "file", "yesno", "label"];
 	var addLabel = ["text", "textarea", "checkbox", "radio", "number", "date", "time", "file"];
-	var tags = ["span", "h1", "h2", "h3", "h4", "h5", "h6","label"];
+	var tags = ["span", "h1", "h2", "h3", "h4", "h5", "h6", "label"];
 	var anyFields = ""
-	
+
 	if (typeof (obj.field) !== "undefined") {
 		if (typeof (obj.fields) !== "undefined") {
 			throw "A 'field' and a 'fields' property exists";
@@ -469,12 +472,12 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 		if (type == "number")
 			others += " step=\"any\"";
 
-		if (type=="checkbox" && ((typeof(value)==="string" && (value.toLowerCase() === 'true'))||(typeof(value)==="boolean" && value)))
-			others +="checked";
+		if (type == "checkbox" && ((typeof (value) === "string" && (value.toLowerCase() === 'true')) || (typeof (value) === "boolean" && value)))
+			others += "checked";
 
 		return '<input type="' + escapeString(type) + '" class="form-control blend"' +
                       ' name="' + escapeString(name) + '" id="' + escapeString(name) + '" ' +
-                      escapeString(placeholder) + ' value="' + escapeString(value) + '" ' +others+'/>';
+                      escapeString(placeholder) + ' value="' + escapeString(value) + '" ' + others + '/>';
 
 	}
 
@@ -525,9 +528,9 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 				var selectedNo = (value == true) ? "" : 'checked="checked"';
 				input = '<div class="form-group input-yesno">' +
                             '<label for="true" class="col-xs-4 control-label"> Yes </label>' +
-                            '<div class="col-xs-2">' + genInput("radio", name, placeholder, "true",selectedYes) + '</div>' +
+                            '<div class="col-xs-2">' + genInput("radio", name, placeholder, "true", selectedYes) + '</div>' +
                             '<label for="false" class="col-xs-1 control-label"> No </label>' +
-                            '<div class="col-xs-2">' + genInput("radio", name, placeholder, "false",selectedNo) + '</div>' +
+                            '<div class="col-xs-2">' + genInput("radio", name, placeholder, "false", selectedNo) + '</div>' +
                         '</div>';
 			} else {
 				input = genInput(type, name, placeholder, value);
@@ -737,10 +740,10 @@ function showHtmlErrorAlert(html, defaultMessage) {
 	debugger;
 	if (typeof (html) === "object" && typeof (html.responseText) === "string") {
 		message = $(html).find("title").text();
-	}else if (typeof (html) === "string") {
+	} else if (typeof (html) === "string") {
 		message = $(html).text();
 	}
-	
+
 	if (typeof (message) === "undefined" || message == null || message == "") {
 		message = "An error occurred.";
 	}
@@ -1044,7 +1047,7 @@ $(document).ajaxSend(function (event, jqX, ajaxOptions) {
 	}
 
 	//var date = (new Date().getTime());
-	
+
 
 	if (ajaxOptions.url.indexOf("_clientTimestamp") == -1) {
 		if (!window.tzoffset) {
@@ -1060,8 +1063,11 @@ $(document).ajaxSend(function (event, jqX, ajaxOptions) {
 
 		ajaxOptions.url += "_clientTimestamp=" + ((+new Date()) + (window.tzoffset * 60 * 1000));
 	}
-	debugger;
-	console.info(ajaxOptions.method +" "+ ajaxOptions.url);
+	console.info(ajaxOptions.type + " " + ajaxOptions.url);
+	if (typeof (ajaxOptions.type) === "string" && ajaxOptions.type.toUpperCase() == "POST" && !(ajaxOptions.url.indexOf("/support/email")==0)) {
+		debugger;
+		console.info(ajaxOptions.data);
+	}
 });
 /////////////////////////////////////////////////////////////////
 
@@ -1248,7 +1254,7 @@ Constants = {
 
 
 function sendErrorReport() {
-	try{
+	try {
 		console.log("Sending Error Report...");
 		var message = "[";
 		var mArray = [];
@@ -1256,8 +1262,8 @@ function sendErrorReport() {
 			mArray.push(JSON.stringify(consoleStore[i]));
 		}
 		message = "[" + mArray.join(",\n") + "]";
-	
-		function _send(){
+
+		function _send() {
 			data = {};
 			data.Console = message;
 			data.Url = window.location.href;
@@ -1279,11 +1285,11 @@ function sendErrorReport() {
 				},
 				error: function (a, b, c) {
 					console.error("Error sending report:");
-					console.error(b,c);
+					console.error(b, c);
 				}
 			});
 		}
-	
+
 		try {
 			$.getScript("/Scripts/home/html2canvas.js").done(function () {
 				try {
@@ -1292,7 +1298,7 @@ function sendErrorReport() {
 						image = res;
 						console.log("...end render");
 						_send();
-					});			
+					});
 				} catch (e) {
 					_send();
 				}
@@ -1309,7 +1315,7 @@ function sendErrorReport() {
 
 }
 
-function supportEmail(title,nil,defaultSubject,defaultBody) {
+function supportEmail(title, nil, defaultSubject, defaultBody) {
 	var message = "[";
 	var mArray = [];
 	for (var i in consoleStore) {
@@ -1317,8 +1323,8 @@ function supportEmail(title,nil,defaultSubject,defaultBody) {
 	}
 	message = "[" + mArray.join(",\n") + "]";
 	var fields = [
-            { name: "Subject", text: "Subject", type: "text",value:defaultSubject },
-            { name: "Body", text: "Body", type: "textarea",value:defaultBody }
+            { name: "Subject", text: "Subject", type: "text", value: defaultSubject },
+            { name: "Body", text: "Body", type: "textarea", value: defaultBody }
 	];
 
 	if (typeof (window.UserId) === "undefined")
@@ -1454,7 +1460,7 @@ function startTour(name, method) {
 					};
 				},
 				clickToAdvance: function (anno) {
-				    
+
 					var existingShow = anno.onShow;
 					var existingHide = anno.onHide;
 
@@ -1546,11 +1552,11 @@ function startTour(name, method) {
 				console.log("overlay clicked");
 			};
 			$.getScript("/Scripts/Tour/" + name + ".js").done(function () {
-			    //debugger;
-			    Tours[name][method]();
+				//debugger;
+				Tours[name][method]();
 			}, function () {
-			    //debugger;
-			   // showAlert("Something went wrong.");
+				//debugger;
+				// showAlert("Something went wrong.");
 			});
 		} catch (e) {
 			showAlert("Tour could not be loaded.");
@@ -1600,10 +1606,10 @@ function waitUntil(isready, success, error, count, interval) {
 	}, interval);
 }
 
-function waitUntilVisible(selector,onVisible){
-    waitUntil(function(){
-        return $(selector).is(":visible");
-    },onVisible,function(){},60,50);
+function waitUntilVisible(selector, onVisible) {
+	waitUntil(function () {
+		return $(selector).is(":visible");
+	}, onVisible, function () { }, 60, 50);
 }
 
 //Debounce

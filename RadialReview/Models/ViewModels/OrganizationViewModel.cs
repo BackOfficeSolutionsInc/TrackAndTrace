@@ -32,6 +32,7 @@ namespace RadialReview.Models.ViewModels
 		public DateOffset StartOfYearOffset { get; set; }
 		public string DateFormat { get; set; }
 		public NumberFormat NumberFormat { get; set; }
+		public long AccountabilityChartId { get; set; }
 
 		public List<SelectListItem> TimeZones
 		{
@@ -49,6 +50,10 @@ namespace RadialReview.Models.ViewModels
         public String RockName { get; set; }
         public List<CreditCardVM> Cards { get; set; }
 		public PaymentPlanModel PaymentPlan { get; set; }
+
+
+		//public OrganizationViewModel() {
+		//}
 
 	}
 }

@@ -136,7 +136,10 @@ namespace RadialReview.Models.Json
 			}
 			set { _Silent = value; }
 		}
-        public static ResultObject Success(String message)
+
+		public bool NoErrorReport { get; internal set; }
+
+		public static ResultObject Success(String message)
         {
             return new ResultObject(false, message) { Status=StatusType.Success };
         }

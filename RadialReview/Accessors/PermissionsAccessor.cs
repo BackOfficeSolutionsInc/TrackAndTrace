@@ -196,7 +196,7 @@ namespace RadialReview.Accessors {
                         DisplayText = new HtmlString("Permissions"),
                         ResId = resourceId,
                         ResType = resourceType,
-                        Items = items.Select(PermItemVM.Create).ToList()
+                        Items = items.Select(x=>PermItemVM.Create(x,admin)).ToList()
                     };
                 }
             }
@@ -248,18 +248,38 @@ namespace RadialReview.Accessors {
                     model.CanAdmin = admin ?? model.CanAdmin;
                     model.CanEdit = edit ?? model.CanEdit;
                     model.CanView = view ?? model.CanView;
+					//model.CanDelete = model.CanAdmin;
                     s.Update(model);
 
                     perms.EnsureAdminExists(model.ResType, model.ResId);
 
                     tx.Commit();
                     s.Flush();
-                    return PermItemVM.Create(model);
+
+
+                    return PermItemVM.Create(model, true);
                 }
             }
-        }
+		}
+		public static void DeletePermItem(UserOrganizationModel caller, long id) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					var model = s.Get<PermItem>(id);
+					if (model == null || model.DeleteTime != null)
+						throw new PermissionsException("Permission setting does not exist.");
+					perms.CanAdmin(model.ResType, model.ResId);
+					model.DeleteTime = DateTime.UtcNow;
+					s.Update(model);
+					perms.EnsureAdminExists(model.ResType, model.ResId);
 
-        public static PermissionDropdownVM EditPermItems(UserOrganizationModel caller, PermissionDropdownVM model)
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+		public static PermissionDropdownVM EditPermItems(UserOrganizationModel caller, PermissionDropdownVM model)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {

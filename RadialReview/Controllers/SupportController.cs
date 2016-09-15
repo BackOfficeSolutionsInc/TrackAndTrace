@@ -33,6 +33,8 @@ namespace RadialReview.Controllers {
 				email = model.Email;
 			}
 
+			model.UserAgent = Request.UserAgent;
+
 			SupportAccessor.Add(model);
 
 			StringBuilder builder = new StringBuilder();

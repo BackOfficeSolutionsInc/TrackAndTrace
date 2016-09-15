@@ -1,5 +1,6 @@
 ﻿using RadialReview.Accessors;
 using RadialReview.Models;
+using RadialReview.Models.Accountability;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
 using RadialReview.NHibernate;
@@ -160,11 +161,12 @@ namespace RadialReview.Controllers {
                 }
 
                 var now = DateTime.UtcNow;
-                UserOrganizationModel uOrg = null;
-                OrganizationModel organization=null;
+				UserOrganizationModel uOrg = null;
+				AccountabilityNode uNode = null;
+				OrganizationModel organization=null;
                 if (o.OrganizationId == null) {
                     var paymentPlanType = PaymentAccessor.GetPlanType(o.PaymentPlan ?? "professional");
-                    organization = _OrganizationAccessor.CreateOrganization(user, o.CompanyName, paymentPlanType, now, out uOrg, true, false,startDeactivated:true);
+                    organization = _OrganizationAccessor.CreateOrganization(user, o.CompanyName, paymentPlanType, now, out uOrg,out uNode, true, false,startDeactivated:true);
 
                 }
 

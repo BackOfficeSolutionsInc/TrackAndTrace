@@ -97,7 +97,7 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /placeholder/Briefcase.png.
+        ///   Looks up a localized string similar to placeholder/Briefcase.png.
         /// </summary>
         public static string ImagePositionPlaceholder {
             get {

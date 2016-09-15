@@ -518,6 +518,8 @@ namespace RadialReview.Controllers
 						if (re.Silent != null)
 							exception.Silent = re.Silent.Value;
 
+						exception.NoErrorReport = re.NoErrorReport;
+
 						if (re.ForceReload)
 							exception.Refresh = true;
 					}

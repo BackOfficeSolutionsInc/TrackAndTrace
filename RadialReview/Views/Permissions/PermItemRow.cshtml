@@ -1,15 +1,7 @@
 ﻿@model RadialReview.Models.Permissions.PermItemVM
 
 
-<tr>
-	<td class="name">@Model.Title</td>
-	<td>
-		@{Html.RenderPartial("~/Views/Shared/_Picture.cshtml", new ViewDataDictionary(Model.ImageUrl){
-			  {"ImageTitle",Model.Title},
-              {"Initials",Model.Initials},
-              {"Color",Model.Color}
-		  });}
-	</td>
+<tr id="permItem_@Model.Id">
 	<td>
 		@if (ViewBag.CanEdit_View)
 		{
@@ -36,15 +28,25 @@
 	</td>
 	<td>
 
-		@if (ViewBag.CanEdit_Admin)
-		{
+		@if (ViewBag.CanEdit_Admin) {
 			@Html.CheckBoxFor(x => x.CanAdmin, new { onchange = "updatePermItem(" + Model.Id + ",'admin',this)" })
 			@*<span class="icon fontastic-icon-key"></span>*@
-		}
-		else
-		{
+		} else {
 			@Html.CheckBoxFor(x => x.CanAdmin, new { title = "Cannot change admin permissions.", disabled = true })
 			@*<div class="disabled gray" title="Cannot change admin permissions.">Admin</div>*@
+		}
+	</td>
+	<td>
+		@{Html.RenderPartial("~/Views/Shared/_Picture.cshtml", new ViewDataDictionary(Model.ImageUrl){
+			  {"ImageTitle",Model.Title},
+			  {"Initials",Model.Initials},
+			  {"Color",Model.Color}
+		  });}
+	</td>
+	<td class="name">@Model.Title</td>
+	<td class="setting">
+		@if (ViewBag.CanEdit_Delete) {
+			<span class="gray glyphicon glyphicon-trash clickable" onclick="deletePermItem(@Model.Id)"></span>
 		}
 	</td>
 

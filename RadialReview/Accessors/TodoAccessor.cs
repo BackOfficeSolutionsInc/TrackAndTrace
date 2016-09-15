@@ -204,32 +204,88 @@ namespace RadialReview.Accessors {
             }
         }
 
+		public static List<TodoModel> GetMyTodos(UserOrganizationModel caller, long userId, bool excludeCompleteDuringMeeting = false, DateRange range = null) {
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					PermissionsUtility.Create(s, caller).Self(userId);
+					var allSelf = s.QueryOver<UserOrganizationModel>()
+						.Where(x => x.DeleteTime == null && x.User.Id==caller.User.Id)
+						.Select(x=>x.Id)
+						.List<long>().ToArray();
+					return GetTodosForUsers_Unsafe(s, allSelf, excludeCompleteDuringMeeting, range);
+				}
+			}
+		}
+		
+
         public static List<TodoModel> GetTodosForUser(UserOrganizationModel caller, long userId, bool excludeCompleteDuringMeeting = false, DateRange range = null)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
-                    PermissionsUtility.Create(s, caller).ManagesUserOrganizationOrSelf(userId);
-                    List<TodoModel> found;
-                    var weekAgo = DateTime.UtcNow.StartOfWeek(DayOfWeek.Sunday).AddDays(-7);
-                    var q = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.AccountableUserId == userId);
-                    if (excludeCompleteDuringMeeting)
-                        q = q.Where(x => ((x.CompleteTime != null && x.CompleteTime > weekAgo && x.CompleteDuringMeetingId == null) || x.CompleteTime == null));
-
-                    if (range != null)
-                        q = q.Where(x => x.CompleteTime == null || (x.CompleteTime != null && x.CompleteTime >= range.StartTime && x.CompleteTime <= range.EndTime));
-
-                    found = q.List().ToList();
-
-
-                    foreach (var f in found) {
-                        var a = f.ForRecurrence.NotNull(x => x.Id);
-                        var b = f.AccountableUser.NotNull(x => x.GetName());
-                        var c = f.AccountableUser.NotNull(x => x.ImageUrl(true, ImageSize._32));
-                        var d = f.CreatedDuringMeeting.NotNull(x => x.Id);
-                    }
-                    return found;
-                }
-            }
+					PermissionsUtility.Create(s, caller).ManagesUserOrganizationOrSelf(userId);
+					List<TodoModel> found = GetTodosForUsers_Unsafe(s,new[] { userId }, excludeCompleteDuringMeeting, range);
+					return found;
+				}
+			}
         }
-    }
+
+		private static List<TodoModel> GetTodosForUsers_Unsafe(ISession s,long[] userIds, bool excludeCompleteDuringMeeting, DateRange range) {
+			List<TodoModel> found;
+			var weekAgo = DateTime.UtcNow.StartOfWeek(DayOfWeek.Sunday).AddDays(-7);
+			var q = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null)
+				.WhereRestrictionOn(x=> x.AccountableUserId)
+				.IsIn(userIds);
+			if (excludeCompleteDuringMeeting)
+				q = q.Where(x => ((x.CompleteTime != null && x.CompleteTime > weekAgo && x.CompleteDuringMeetingId == null) || x.CompleteTime == null));
+
+			if (range != null)
+				q = q.Where(x => x.CompleteTime == null || (x.CompleteTime != null && x.CompleteTime >= range.StartTime && x.CompleteTime <= range.EndTime));
+
+			found = q.List().ToList();
+
+
+			foreach (var f in found) {
+				var a = f.ForRecurrence.NotNull(x => x.Id);
+				var b = f.AccountableUser.NotNull(x => x.GetName());
+				var c = f.AccountableUser.NotNull(x => x.ImageUrl(true, ImageSize._32));
+				var d = f.CreatedDuringMeeting.NotNull(x => x.Id);
+			}
+
+			return found;
+		}
+
+
+		public static Csv Listing(UserOrganizationModel caller, long organizationId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					// var p = s.Get<PeriodModel>(period);
+
+					PermissionsUtility.Create(s, caller).ManagingOrganization(organizationId);
+
+					var csv = new Csv();
+
+					var todos = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.OrganizationId == organizationId).List().ToList();
+					foreach (var t in todos) {
+						csv.Add("" + t.Id, "Owner", t.AccountableUser.NotNull(x => x.GetName()));
+						csv.Add("" + t.Id, "Created", t.CreateTime.ToShortDateString());
+						csv.Add("" + t.Id, "Due Date", t.DueDate.ToShortDateString());
+						var time = "";
+						if (t.CompleteTime != null)
+							time = t.CompleteTime.Value.ToShortDateString();
+						csv.Add("" + t.Id, "Completed", time);
+						csv.Add("" + t.Id, "To-Do", "" + t.Message);
+
+						//if (false /*&& includeDetails*/) {
+						//	var padDetails = await PadAccessor.GetText(t.PadId);
+						//	csv.Add("" + t.Id, "Details", "" + padDetails);
+						//}
+					}
+					
+					csv.SetTitle("Todos");					
+					return csv;
+				}
+			}
+		}
+	}
 }

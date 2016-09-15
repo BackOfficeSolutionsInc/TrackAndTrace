@@ -436,5 +436,11 @@ namespace RadialReview.Controllers
 		{
 			return PartialView("~/Views/Todo/Partial/list.cshtml",id ?? GetUser().Id);
 		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public FileContentResult Listing() {
+			var csv = TodoAccessor.Listing(GetUser(), GetUser().Organization.Id);
+			return File(csv.ToBytes(), "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + csv.Title + ".csv");
+		}
 	}
 }

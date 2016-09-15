@@ -28,6 +28,7 @@ namespace RadialReview.Models.ViewModels
 		public bool IsClient { get; set; }
 
 		public bool SendEmail { get; set; }
+		public long? NodeId { get; set; }
 	}
 
     public class EditUserOrganizationViewModel

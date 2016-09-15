@@ -23,6 +23,7 @@ using RadialReview.Utilities.Extensions;
 using RadialReview.Models.Payments;
 using RadialReview.Models.L10;
 using NHibernate.Criterion;
+using RadialReview.Models.Accountability;
 
 namespace RadialReview.Controllers
 {
@@ -205,15 +206,17 @@ namespace RadialReview.Controllers
 			var user = GetUserModel();
 			//var basicPlan=_PaymentAccessor.BasicPaymentPlan();
 			UserOrganizationModel uOrg;
+			AccountabilityNode uNode = null;
 
 			//var plan = PaymentOptions.MonthlyPlan(12m, 4m, DateTime.UtcNow.AddMonths(1), 2);
-            var paymentPlanType = PaymentAccessor.GetPlanType(planType);
+			var paymentPlanType = PaymentAccessor.GetPlanType(planType);
 			var organization = _OrganizationAccessor.CreateOrganization(
 				user,
 				name,
                 paymentPlanType,
 				DateTime.UtcNow,
                 out uOrg,
+				out uNode,
 				enableL10,
 				enableReview
 			);

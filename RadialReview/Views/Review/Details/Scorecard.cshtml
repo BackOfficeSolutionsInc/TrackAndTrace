@@ -4,7 +4,7 @@
     Html.RenderPartial("~/Views/Angular/_L10App.cshtml", 0L, new ViewDataDictionary() { { "PullUrl", "/Review/ScorecardData/" + Model.Review.Id+"?" } });
 
 }
-
+<!--Scorecard.cshtml-->
 <script>
     var dataDateRange = {
         startDate: new Date(@(Model.Review.DueDate.ToJavascriptMilliseconds()) + 1000*60*60*24*7*(-13)),

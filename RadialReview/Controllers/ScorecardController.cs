@@ -119,6 +119,11 @@ namespace RadialReview.Controllers
 				ed = sd.EndOfWeek(DayOfWeek.Monday);
 			}
 		}
-		
-    }
+
+		[Access(AccessLevel.UserOrganization)]
+		public FileContentResult Listing() {
+			var csv = _ScorecardAccessor.Listing(GetUser(), GetUser().Organization.Id);
+			return File(csv.ToBytes(), "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + csv.Title + ".csv");
+		}
+	}
 }

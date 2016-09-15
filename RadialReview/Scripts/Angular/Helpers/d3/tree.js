@@ -402,7 +402,13 @@
                         return "translate(" + (es.x0) + "," + es.y0 + ")";
                     })
 					.classed("root-node", function (d) {
-					    return d.Id == scope.root.Id;
+						return d.Id == scope.root.Id;
+					})
+					.classed("no-edit", function (d) {
+						return d.Editable == false;
+					})
+					.classed("is-me", function (d) {
+						return d.Me == true;
 					}).on("click", expandCollapse).on("keydown", function (d) {
 					    if (d3.event.keyCode == 13 || d3.event.keyCode == 32)
 					        expandCollapse(d);
@@ -697,7 +703,8 @@
                 var svgGroup = d3.select(pz[0]);
                 var zoomListener = pz.scope().panzoom;
                 if (panTimer) {
-                    clearTimeout(panTimer);
+                	clearTimeout(panTimer);
+                	console.log("clear2");
                     translateCoords = d3.transform(svgGroup.attr("transform"));
                     if (direction == 'left' || direction == 'right') {
                         translateX = direction == 'left' ? translateCoords.translate[0] + speed : translateCoords.translate[0] - speed;
@@ -714,10 +721,13 @@
                     zoomListener.scale(zoomListener.scale());
                     zoomListener.translate([translateX, translateY]);
                     panTimer = setTimeout(function () {
-                        pan(domNode, speed, direction);
+                    	pan(domNode,/* speed*10, */direction);
+                    	console.log("shift " + direction);
                     }, 50);
                 }
             }
+
+		//	function applyPan(domNode,direction)
 
             var overCircle = function (d) {
                 selectedNode = d;
@@ -822,6 +832,8 @@
 
                     // get coords of mouseEvent relative to svg container to allow for panning
                     relCoords = d3.mouse(svg.get(0));
+                    console.log(relCoords);
+
                     if (relCoords[0] < panBoundary) {
                         panTimer = true;
                         pan(this, 'left');
@@ -836,7 +848,8 @@
                         pan(this, 'down');
                     } else {
                         try {
-                            clearTimeout(panTimer);
+                        	clearTimeout(panTimer);
+                        	console.log("clear1");
                         } catch (e) {
 
                         }

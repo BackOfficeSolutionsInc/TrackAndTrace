@@ -145,7 +145,8 @@ var undoStack = new Undo.Stack();
 $(document).keydown(function (event) {
     var keyCode = event.keyCode;
     if (event.metaKey === true || event.ctrlKey === true) {
-        if (keyCode === 89) {
+    	if (keyCode === 89) {
+    		console.log("Redo called");
             //fire your custom redo logic
             event.preventDefault();
             event.preventDefault();
@@ -159,7 +160,7 @@ $(document).keydown(function (event) {
                 undoStack.canRedo() && undoStack.redo()
             }
             else {
-            	debugger;
+				console.log("Undo called");
                 //fire your custom undo logic
                 event.preventDefault();
                 undoStack.canUndo() && undoStack.undo();

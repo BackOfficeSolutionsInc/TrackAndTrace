@@ -3,7 +3,7 @@
 @import "../../Angular/Rocks";
 @import "../../Angular/Issues";
 @import "modal";
-@import url('../../Tour/anno.css');
+@import (inline) '../../Tour/anno.css';
 @import (reference) "../glyphicons";
 
 tr.grayRow {
@@ -415,4 +415,23 @@ body.resizing, body.resizing *::-moz-selection {
 		/*color: #FFE296;
 		-webkit-text-stroke-color: #BFA970;*/
 	}
+}
+
+
+.nowrap {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.dropdown-permissions.open button{
+	//border-bottom:none;
+	z-index:1001;
+	border-bottom-left-radius:0px;
+	border-bottom-right-radius:0px;
+}
+
+.permissions-dropdown-menu {
+	padding: 5px;
+	border-radius: 0px 4px 4px 4px;
 }

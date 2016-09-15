@@ -36,6 +36,12 @@ namespace RadialReview.Controllers
 			AccountabilityAccessor.RemoveRole(GetUser(), id);
 			return Json(ResultObject.SilentSuccess());
 		}
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult UnremoveAngularRole(long id) {
+			AccountabilityAccessor.UnremoveRole(GetUser(), id);
+			return Json(ResultObject.SilentSuccess());
+		}
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
@@ -79,12 +85,11 @@ namespace RadialReview.Controllers
 		//}
 
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult Remove(long id)
-		{
+		public JsonResult Remove(long id) {
 			var nodeId = id;
 			AccountabilityAccessor.RemoveNode(GetUser(), nodeId);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
-		}
+		}	
 
 
 		[Access(AccessLevel.UserOrganization)]

@@ -30,19 +30,19 @@
   opacity: .4;
 }
 .chart-legend .item.column > .icon {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' style='fill: white;' width='10' height='10'><rect y='2' width='2' height='8'/><rect x='4' y='5' width='2' height='5'/><rect x='8' y='3' width='2' height='7'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20style%3D%27fill%3A%20white%3B%27%20width%3D%2710%27%20height%3D%2710%27%3E%3Crect%20y%3D%272%27%20width%3D%272%27%20height%3D%278%27/%3E%3Crect%20x%3D%274%27%20y%3D%275%27%20width%3D%272%27%20height%3D%275%27/%3E%3Crect%20x%3D%278%27%20y%3D%273%27%20width%3D%272%27%20height%3D%277%27/%3E%3C/svg%3E");
 }
 .chart-legend .item.dot > .icon {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' style='fill: white;' width='10' height='10'><circle cx='5' cy='6' r='2'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,%3csvg+xmlns%3d%27http%3a%2f%2fwww.w3.org%2f2000%2fsvg%27+style%3d%27fill%3a+white%3b%27+width%3d%2710%27+height%3d%2710%27%3e%3ccircle+cx%3d%275%27+cy%3d%276%27+r%3d%272%27%2f%3e%3c%2fsvg%3e");
 }
 .chart-legend .item.dashed-line > .icon {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' style='fill: white;' width='10' height='10'>\a <g style=\"stroke: white; fill: none; stroke-dasharray: 4px,2px;\">\a <path d='M0,6 L10,6'/>\a </g>\a </svg>");
+  background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20style%3D%27fill%3A%20white%3B%27%20width%3D%2710%27%20height%3D%2710%27%3E%5Ca%20%3Cg%20style%3D%5C%22stroke%3A%20white%3B%20fill%3A%20none%3B%20stroke-dasharray%3A%204px%2C2px%3B%5C%22%3E%5Ca%20%3Cpath%20d%3D%27M0%2C6%20L10%2C6%27/%3E%5Ca%20%3C/g%3E%5Ca%20%3C/svg%3E");
 }
 .chart-legend .item.line > .icon {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' style='fill: white;' width='10' height='10'>\a <g style=\"stroke: white;\">\a <path d='M0,6 L10,6'/>\a </g>\a </svg>");
+  background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20style%3D%27fill%3A%20white%3B%27%20width%3D%2710%27%20height%3D%2710%27%3E%5Ca%20%3Cg%20style%3D%5C%22stroke%3A%20white%3B%5C%22%3E%5Ca%20%3Cpath%20d%3D%27M0%2C6%20L10%2C6%27/%3E%5Ca%20%3C/g%3E%5Ca%20%3C/svg%3E");
 }
 .chart-legend .item.area > .icon {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' style='fill: white;' width='10' height='10'><polygon points='0,10 2.428,3 5,6 7.625,5 10,10 10,10 0,10'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20style%3D%27fill%3A%20white%3B%27%20width%3D%2710%27%20height%3D%2710%27%3E%3Cpolygon%20points%3D%270%2C10%202.428%2C3%205%2C6%207.625%2C5%2010%2C10%2010%2C10%200%2C10%27/%3E%3C/svg%3E");
 }
 .tooltip-line {
   stroke: grey;

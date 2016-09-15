@@ -16,6 +16,8 @@ namespace RadialReview.Models.Enums
 		FirstMondayOfTheMonth = 3,
 		[Display(Name = "First Sunday of the month")]
 		FirstSundayOfTheMonth = 4,
-		
+		[Display(Name = "Monday of the 4th week")]
+		MondayOfFourthWeek = 5,
+
 	}
 }

@@ -137,30 +137,42 @@ namespace RadialReview.Controllers
 				//var nexusId=nexusIdandUser.Item1;
 
 	            var result = await _UserAccessor.CreateUser(GetUser(), model);
+				var createdUser = result.Item2;
 
                 if (meeting != null) {
                     try {
-                        L10Accessor.AddAttendee(GetUser(), meeting.Value, result.Item2.Id);
+                        L10Accessor.AddAttendee(GetUser(), meeting.Value, createdUser.Id);
                     } catch (Exception) {
                         throw new PermissionsException("Could not add to meeting.");
                     }
                 }
+				if (model.NodeId != null) {
+					AccountabilityAccessor.SetUser(GetUser(), model.NodeId.Value, createdUser.Id);
+				}
 
 
                 var message = "Successfully added " + model.FirstName + " " + model.LastName + ".";
-                if (model.SendEmail)
-                {
+				ResultObject res;
+                if (model.SendEmail){
                     message += " An invitation has been sent to " + model.Email + ".";
-					return Json(ResultObject.Create(null, message).ForceRefresh());
+					res = ResultObject.Create(null, message);
                 }
                 else
                 {
                     message += " The invitation has NOT been sent.";
                     if (meeting == null)
                         message += " To send, click \"Send Invites\" below.";
-                    return Json(ResultObject.Create(null, message, StatusType.Warning).ForceRefresh());
+					res = ResultObject.Create(null, message, StatusType.Warning);
                 }
-            }
+
+				if (model.NodeId == null) {
+					res.ForceRefresh();
+					res.Message = "Successfully added " + model.FirstName + " " + model.LastName + ".";
+				}
+
+				return Json(res);
+
+			}
             catch (RedirectException e)
             {
                 return Json(new ResultObject(e));

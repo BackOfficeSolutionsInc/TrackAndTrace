@@ -35,7 +35,7 @@ namespace RadialReview.Models.Angular.Accountability {
         public AngularAccountabilityNode(long id):base(id){
         }
 
-		public bool? Editable { get; set; }
+		//public bool? Editable { get; set; }
 
 		public AngularAccountabilityNode(AccountabilityNode node,bool collapse=false,bool? editable = null) : base(node.Id){
             User = node.User.NotNull(x=>AngularUser.CreateUser(node.User));

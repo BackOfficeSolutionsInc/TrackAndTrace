@@ -31,6 +31,7 @@ using RadialReview.Utilities.Hooks;
 using RadialReview.Models.Accountability;
 using RadialReview.Utilities.RealTime;
 using RadialReview.Models.Angular.Users;
+using NHibernate.Criterion;
 
 namespace RadialReview.Accessors
 {
@@ -39,15 +40,18 @@ namespace RadialReview.Accessors
     {
 
 
-        public OrganizationModel CreateOrganization(UserModel user, string name, PaymentPlanType planType, DateTime now, out UserOrganizationModel newUser, bool enableL10, bool enableReview, bool startDeactivated = false, string positionName = null)
+        public OrganizationModel CreateOrganization(UserModel user, string name, PaymentPlanType planType, DateTime now, out UserOrganizationModel newUser, out AccountabilityNode node,
+			bool enableL10, bool enableReview, bool startDeactivated = false, string positionName = null)
         {
             UserOrganizationModel userOrgModel;
             OrganizationModel organization;
             OrganizationTeamModel allMemberTeam;
             PermissionsUtility perms;
             AccountabilityChart acChart;
+			node = null;
 
-            using (var s = HibernateSession.GetCurrentSession())
+
+			using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
@@ -250,7 +254,7 @@ namespace RadialReview.Accessors
                     var permsAdmin = PermissionsUtility.Create(s, UserOrganizationModel.ADMIN);
                     using (var rt = RealTimeUtility.Create(false))
                     {
-                        var node = AccountabilityAccessor.AppendNode(s, permsAdmin, rt, acChart.RootId, userId: userOrgModel.Id);
+                        node = AccountabilityAccessor.AppendNode(s, permsAdmin, rt, acChart.RootId, userId: userOrgModel.Id);
                         //AccountabilityAccessor.UpdateAccountabilityNode(s, RealTimeUtility.Create(false), permsAdmin, node.Id, null, );
                     }
                     tx.Commit();
@@ -1095,9 +1099,23 @@ namespace RadialReview.Accessors
                     return s.QueryOver<ResponsibilityGroupModel>().Where(x => x.DeleteTime == null && x.Organization.Id == organizationId).List().ToList();
                 }
             }
-        }
+		}
+		//public static List<ResponsibilityGroupModel> GetOrganizationResponsibilityGroupModels(UserOrganizationModel caller, long organizationId,string search) {
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
+		//			PermissionsUtility.Create(s, caller).ViewOrganization(organizationId);
+		//			var terms = search.ToLower().Split(' ');
+		//			s.CreateCriteria<ResponsibilityGroupModel>().Add(Restrictions.InsensitiveLike(x=>"LastName", "something", MatchMode.Anywhere))
 
-        public void EnsureAllAtOrganization(UserOrganizationModel caller, long organizationId, List<long> userIds, bool includedDeleted = false)
+		//			var q = s.QueryOver<ResponsibilityGroupModel>().Where(x => x.DeleteTime == null && x.Organization.Id == organizationId);
+					
+		//			q.
+		//			.List().ToList();
+		//		}
+		//	}
+		//}
+
+		public void EnsureAllAtOrganization(UserOrganizationModel caller, long organizationId, List<long> userIds, bool includedDeleted = false)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {

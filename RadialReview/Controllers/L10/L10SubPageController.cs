@@ -257,7 +257,7 @@ namespace RadialReview.Controllers
             model.SendEmail = true;
             model.CloseTodos = true;
 
-			model.Meeting._MeetingAttendees.ForEach(x=>x.Rating=x.Rating??10);
+			//model.Meeting._MeetingAttendees.ForEach(x=>x.Rating=x.Rating??10);
 			
 			var stats=L10Accessor.GetStats(GetUser(), model.Recurrence.Id);
 			ViewBag.TodosCreated = stats.AllTodos.Where(x=>x.CompleteTime == null).ToList();

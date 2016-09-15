@@ -1,0 +1,79 @@
+﻿@model RadialReview.Controllers.AdminController.MergeAcc
+@{
+	ViewBag.Title = "MergeAccounts";
+	var hasMerge = Model.ToMerge != null && Model.ToMerge.Id != Model.Main.Id;
+	var message = !hasMerge && Model.ToMerge != null && Model.ToMerge.Id == Model.Main.Id ? "Main and Merge are the same user organization" : "";
+}
+<h4>Merge Accounts</h4>
+<div class="row">
+	<div class="col-sm-6 left">
+		<div class="clearfix">
+			<h3>Main</h3>
+		</div>
+		<hr />
+		<div>
+			@Html.DisplayFor(x => x.Main)
+		</div>
+	</div>
+	<div class="col-sm-6 right">
+
+		@if (!hasMerge) {
+			<div class="clearfix">
+				<h3 class="pull-left">To merge</h3>
+			</div>
+			<hr />
+			Html.RenderPartial("~/Views/Shared/EditorTemplates/AdminSearchAllUsers.cshtml", new ViewDataDictionary() {
+				{"OnClick","/Admin/MergeAccounts/{0}" }
+			});
+			<div style="color:red">@message</div>
+		} else {
+
+			<div class="clearfix">
+				<h3 class="pull-left">To merge</h3>
+				<a class="gray pull-right" style="color:gray;" href="/Admin/MergeAccounts">Cancel</a>
+			</div>
+			<hr />
+
+
+			@Html.DisplayFor(x => x.ToMerge)
+		}
+	</div>
+</div>
+
+@if (hasMerge) {
+	<hr />
+	<div>
+		Merging into email = <b>@Model.Main.User.Email</b>
+	</div>
+	<br />
+
+	using (Html.BeginForm("PerformMergeAccounts", "Admin", FormMethod.Get)) {
+		@Html.Hidden("mainId", Model.Main.Id)
+		@Html.Hidden("mergeId", Model.ToMerge.Id)
+
+		<input type="submit" />
+	}
+}
+
+<style>
+	.left .display-label {
+		font-weight: bold;
+		float: left;
+		clear: both;
+		margin-bottom: 10px;
+	}
+	
+	.left .display-field {
+		float: right;
+	}
+	
+	.right .display-label{
+		font-weight: bold;
+		float: right;
+		clear: both;
+		margin-bottom: 10px;
+	}
+	.right .display-field{
+		float: left;
+	}
+</style>

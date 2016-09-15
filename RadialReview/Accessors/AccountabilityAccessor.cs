@@ -163,9 +163,13 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+			
 		#endregion
 
-		protected static AngularAccountabilityNode Dive(UserOrganizationModel caller, long nodeId, List<AccountabilityNode> nodes, List<AccountabilityRolesGroup> groups, Dictionary<long, RoleModel> rolesLU, List<RoleLink> links, List<PosDur> positions, List<TeamDur> teams, List<AngularAccountabilityNode> parents, long? selectedNode = null, bool? editableBelow = null) {
+		protected static AngularAccountabilityNode Dive(UserOrganizationModel caller, long nodeId, List<AccountabilityNode> nodes,
+			List<AccountabilityRolesGroup> groups, Dictionary<long, RoleModel> rolesLU, List<RoleLink> links, List<PosDur> positions,
+			List<TeamDur> teams, List<AngularAccountabilityNode> parents, HashSet<long> allManagingUserIds, long? selectedNode = null,
+			bool? editableBelow = null) {
 			// var children = links.Where(x=>x.ManagerId==parent);
 			var me = nodes.FirstOrDefault(x => x.Id == nodeId);
 			var children = nodes.Where(x => x.ParentNodeId == nodeId).ToList();
@@ -178,9 +182,10 @@ namespace RadialReview.Accessors {
 				isEditable = true;
 			}
 
-
+			var isMe = false;
 			if (editableBelow != null && me.UserId != null && caller.Id == me.UserId) {
 				editableBelow = true;
+				isMe = true;
 			}
 
 			var group = groups.First(x => x.Id == me.AccountabilityRolesGroupId);
@@ -192,8 +197,11 @@ namespace RadialReview.Accessors {
 				User = AngularUser.CreateUser(me.User),
 				Group = aaGroup,
 				collapsed = true,
-				Editable = isEditable
+				Editable = isEditable,
+				Me = isMe
 			};
+			if (isEditable && me.UserId.HasValue)
+				allManagingUserIds.Add(me.UserId.Value);
 
 			var parentsCopy = parents.ToList();
 			parentsCopy.Add(aan);
@@ -204,7 +212,7 @@ namespace RadialReview.Accessors {
 			}
 
 
-			aan.SetChildren(children.Select(x => Dive(caller, x.Id, nodes, groups, rolesLU, links, positions, teams, parentsCopy, selectedNode, editableBelow)).ToList());
+			aan.SetChildren(children.Select(x => Dive(caller, x.Id, nodes, groups, rolesLU, links, positions, teams, parentsCopy, allManagingUserIds, selectedNode, editableBelow)).ToList());
 			return aan;
 		}
 		public static AngularAccountabilityChart GetTree(UserOrganizationModel caller, long chartId, long? centerUserId = null, long? centerNodeId = null) {
@@ -247,15 +255,21 @@ namespace RadialReview.Accessors {
 						if (cn != null)
 							centerNode = cn.Id;
 					}
-					var editAll = perms.IsPermitted(x => x.ManagingOrganization(chart.OrganizationId));
 
-					var root = Dive(caller, chart.RootId, nodes.ToList(), groups.ToList(), roles.ToDictionary(x => x.Id, x => x), roleLinks.ToList(), pd, td, new List<AngularAccountabilityNode>(), centerNode, editableBelow: editAll);
+					var editAll = perms.IsPermitted(x => x.Or(y => y.ManagingOrganization(chart.OrganizationId), y => y.EditHierarchy(chart.Id)));
 
+					var allManaging = new HashSet<long>();
+
+					var root = Dive(caller, chart.RootId, nodes.ToList(), groups.ToList(), roles.ToDictionary(x => x.Id, x => x), roleLinks.ToList(), pd, td, new List<AngularAccountabilityNode>(), allManaging, centerNode, editableBelow: editAll);
+
+					var allUsers = usersF.ToList().Select(x =>
+						AngularUser.CreateUser(x, managing: editAll || allManaging.Contains(x.Id) || (caller.IsManager() && caller.Id == x.Id))
+					).ToList();
 
 					var c = new AngularAccountabilityChart(chartId) {
 						Root = root,
 						CenterNode = centerNode,
-						AllUsers = usersF.ToList().Select(x => AngularUser.CreateUser(x)).ToList()
+						AllUsers = allUsers,
 					};
 
 					c.Root.Name = chart.Name;
@@ -284,10 +298,22 @@ namespace RadialReview.Accessors {
 			}
 		}
 		public static void SetPosition(ISession s, PermissionsUtility perms, RealTimeUtility rt, long nodeId, long? positionId) {
-			perms.EditAccountabilityNode(nodeId);
+			perms.ManagesAccountabilityNode(nodeId);
 			var now = DateTime.UtcNow;
 			UpdatePosition_Unsafe(s, rt, perms, nodeId, positionId, now);
 
+		}
+		public static void SetUser(UserOrganizationModel caller, long nodeId, long? userId, string connectionId = null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					using (var rt = RealTimeUtility.Create(connectionId)) {
+						var perms = PermissionsUtility.Create(s, caller);
+						SetUser(s, rt, perms, nodeId, userId);
+						tx.Commit();
+						s.Flush();
+					}
+				}
+			}
 		}
 
 		public static void SetUser(ISession s, RealTimeUtility rt, PermissionsUtility perms, long nodeId, long? userId) {
@@ -516,12 +542,50 @@ namespace RadialReview.Accessors {
 				using (var tx = s.BeginTransaction()) {
 					using (var rt = RealTimeUtility.Create()) {
 						var perms = PermissionsUtility.Create(s, caller);
-
 						RemoveRole(s, perms, rt, roleId);
-
-
 						tx.Commit();
 						s.Flush();
+					}
+				}
+			}
+		}
+		public static void UnremoveRole(UserOrganizationModel caller, long roleId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					using (var rt = RealTimeUtility.Create()) {
+						try {
+							var perms = PermissionsUtility.Create(s, caller);
+							var role = s.Get<RoleModel>(roleId);
+							if (role.DeleteTime == null)
+								throw new PermissionsException("Role already exists") { NoErrorReport = true };
+
+							var dt = role.DeleteTime;
+							role.DeleteTime = null;
+							s.Update(role);
+							var links = s.QueryOver<RoleLink>()
+								.Where(x => x.DeleteTime == dt && x.RoleId == roleId && x.OrganizationId == role.OrganizationId)
+								.List().ToList();
+							//s.Flush();
+							var roleGroupUpdates = new List<AngularRoleGroup>();
+							foreach (var link in links) {
+								link.DeleteTime = null;
+								s.Update(link);
+
+								var arg = new AngularRoleGroup(link.GetAttach(), AngularList.CreateFrom(AngularListType.Add, new AngularRole(role)));
+								rt.UpdateOrganization(role.OrganizationId).Update(arg);
+							}
+							s.Flush();
+							//Permissions need to happen after update. (DeleteTime !=null)
+							perms.ViewOrganization(role.OrganizationId).EditRole(roleId);
+
+
+						
+							tx.Commit();
+							s.Flush();
+						} catch (Exception e) {
+							tx.Rollback();
+							throw e;
+						}
 					}
 				}
 			}
@@ -551,7 +615,7 @@ namespace RadialReview.Accessors {
 						var node = s.Get<AccountabilityNode>(nodeId);
 						if (node.DeleteTime != null)
 							throw new PermissionsException("Node does not exist.");
-						perms.EditHierarchy(node.AccountabilityChartId);
+						perms.ManagesAccountabilityNode(nodeId);
 						var children = s.QueryOver<AccountabilityNode>().Where(x => x.ParentNodeId == nodeId && x.DeleteTime == null).RowCount();
 
 						if (children > 0)
@@ -616,7 +680,8 @@ namespace RadialReview.Accessors {
 					var node = s.Get<AccountabilityNode>(nodeId);
 					if (node == null)
 						throw new PermissionsException("Node does not exist");
-					perms.EditHierarchy(node.AccountabilityChartId);
+					perms.ManagesAccountabilityNode(node.Id)
+						.ManagesAccountabilityNode(newParentId);
 
 					var newParent = s.Get<AccountabilityNode>(newParentId);
 
@@ -749,7 +814,7 @@ namespace RadialReview.Accessors {
 			var parent = s.Get<AccountabilityNode>(parentNodeId);
 			if (parent == null)
 				throw new PermissionsException("Parent does not exist");
-			perms.EditHierarchy(parent.AccountabilityChartId);
+			perms.ManagesAccountabilityNode(parent.Id);//.EditHierarchy(parent.AccountabilityChartId);
 			AccountabilityRolesGroup group = null;
 			if (rolesGroupId != null) {
 				group = s.Get<AccountabilityRolesGroup>(rolesGroupId);
@@ -999,7 +1064,7 @@ namespace RadialReview.Accessors {
 		}
 
 		public static void UpdateAccountabilityNode(ISession s, RealTimeUtility rt, PermissionsUtility perms, long nodeId, AngularAccountabilityGroup newARG, long? userId) {
-			perms.EditAccountabilityNode(nodeId);
+			perms.ManagesAccountabilityNode(nodeId);
 
 			var node = s.Get<AccountabilityNode>(nodeId);
 

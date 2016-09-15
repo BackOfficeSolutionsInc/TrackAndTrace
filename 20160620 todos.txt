@@ -1,10 +1,33 @@
+* Erin Email
+* Pay EOS WW
+* Wayne Scott
+* UNL ITS
+* Fiorilli stuff
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
 * Dan sedor (Update all L10)
 
 * Australian phone numbers
 
-* lost leads from the register page
+* Order of rocks on the workspace
 
-* Add User dialog needs to hook up with AC positions
+* ORder of Measurables on workspace for L10 meeting
+
+* SSL
+
+* Tile Speed
+
+* marketing pamphlet
+
+* "Rocks Review" > "Rock Review"
+
+* Gino 
+	*  Rock sheet for the quarterly to include the measurables at the top so that the measurables print from the V/TO.
+	*  When the V/TO is printed (I've noticed this a few times now), the second Traction page is getting cut off at the top. The second page will just print the headings across the top and none of the content. 
+	*  Please adjust the copyright date at the bottom of the V/TO to go to 2016. 
+
 
 * Fix Archive button
 
@@ -85,6 +108,8 @@
 * Josh Greg fix emails
 * email Umesh
 -------------------------------
+* Add User dialog needs to hook up with AC positions
+* lost leads from the register page
 
 * Todo completion %
 * Test VTO under slow conection

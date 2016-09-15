@@ -12,6 +12,7 @@ namespace RadialReview.Models.Permissions
 		public bool CanView { get; set; }
 		public bool CanEdit { get; set; }
 		public bool CanAdmin { get; set; }
+		public bool Deletable { get; set; }
 		public PermItem.AccessType AccessorType { get; set; }
 		public long AccessorId { get; set; }
 
@@ -26,9 +27,9 @@ namespace RadialReview.Models.Permissions
         public string Initials { get; set; }
         public int Color{ get; set; }
 
-		public static PermItemVM Create(PermItem item)
+		public static PermItemVM Create(PermItem item,bool canAdmin)
 		{
-			return new PermItemVM(){
+			var o= new PermItemVM(){
 				Id = item.Id,
 
 				AccessorId = item.AccessorId,
@@ -41,8 +42,20 @@ namespace RadialReview.Models.Permissions
 				CanView = item.CanView,
 				Deleted = item.DeleteTime!=null,
 				Edited = false,
-				Initials= item._DisplayInitials
+				Initials= item._DisplayInitials,
 			};
+
+			var canDelete = canAdmin;
+			switch (item.AccessorType) {
+				case PermItem.AccessType.Admins: canDelete = false;break;
+				case PermItem.AccessType.Creator:canDelete = false;break;
+				case PermItem.AccessType.Members:canDelete = false;break;
+				default:break;
+			}
+
+			o.Deletable = canDelete;
+
+			return o;
 		}
 	}
 
@@ -54,6 +67,7 @@ namespace RadialReview.Models.Permissions
 		public bool CanEdit_View { get; set; }
 		public bool CanEdit_Edit { get; set; }
 		public bool CanEdit_Admin { get; set; }
+		public bool CanEdit_Delete { get; set; }
 
 		public PermItem.ResourceType ResType { get; set; }
 		public long ResId { get; set; }

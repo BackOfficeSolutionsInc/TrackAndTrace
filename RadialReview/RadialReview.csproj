@@ -217,6 +217,7 @@
     <Compile Include="Accessors\GroupAccessor.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="Controllers\Ac\AngularAccountabilityController.cs" />
+    <Compile Include="Utilities\EmailUtil.cs" />
     <Compile Include="Controllers\IntegrationsController.cs" />
     <Compile Include="Hooks\BasecampTodoHook.cs" />
     <Compile Include="Hooks\CreateUserOrganization_UpdateHierarchy.cs" />
@@ -795,6 +796,7 @@
     <Compile Include="Utilities\RealTime\VtoUpdater.cs" />
     <Compile Include="Utilities\ReflectionUtility.cs" />
     <Compile Include="Utilities\ResourceUtility.cs" />
+    <Compile Include="Utilities\SearchUtil.cs" />
     <Compile Include="Utilities\Serializers\AngularSerializer.cs" />
     <Compile Include="Utilities\SetUtility.cs" />
     <Compile Include="Utilities\AskableUtility.cs" />
@@ -1550,6 +1552,7 @@
     <Content Include="Views\TileData\L10Notes.cshtml" />
     <Content Include="Views\Upload\UploadVTOResults.cshtml" />
     <Content Include="Views\TileData\L10Stats.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\AdminSearchAllUsers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-responsive.css" />
@@ -1979,6 +1982,7 @@
     <Content Include="Views\Admin\Meetings.cshtml" />
     <Content Include="Views\Admin\MeetingsTable.cshtml" />
     <Content Include="Views\Admin\Signups.cshtml" />
+    <Content Include="Views\Admin\MergeAccounts.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -17,7 +17,7 @@
 				@Html.DisplayNameFor(model => model.StartTime)
 			</th>
 			<th>
-				@Html.DisplayNameFor(model => model.OrganizationCompleteTime)
+				CompleteTime
 			</th>
 			<th>
 				@Html.DisplayNameFor(model => model.FirstName)
@@ -75,7 +75,7 @@
 				@Html.DisplayNameFor(model => model.EosStartTime)
 			</th>
 			<th>
-				@Html.DisplayNameFor(model => model.OrganizationId)
+				OrgId
 			</th>
 			<th>
 				@Html.DisplayNameFor(model => model.UserId)
@@ -85,20 +85,20 @@
 					@Html.DisplayNameFor(model => model.DeleteTime)
 				</th>*@
 			@*<th>
-			@Html.DisplayNameFor(model => model.ContactCompleteTime)
-		</th>
-		<th>
-			@Html.DisplayNameFor(model => model.OutcomeCompleteTime)
-		</th>
-		<th>
-			@Html.DisplayNameFor(model => model.L10CompleteTime)
-		</th>
-		<th>
-			@Html.DisplayNameFor(model => model.CreditCardCompleteTime)
-		</th>
-	<th>
-		@Html.DisplayNameFor(model => model.CreateOrganizationTime)
-	</th>*@
+						@Html.DisplayNameFor(model => model.ContactCompleteTime)
+					</th>
+					<th>
+						@Html.DisplayNameFor(model => model.OutcomeCompleteTime)
+					</th>
+					<th>
+						@Html.DisplayNameFor(model => model.L10CompleteTime)
+					</th>
+					<th>
+						@Html.DisplayNameFor(model => model.CreditCardCompleteTime)
+					</th>
+				<th>
+					@Html.DisplayNameFor(model => model.CreateOrganizationTime)
+				</th>*@
 			<th>
 				@Html.DisplayNameFor(model => model.City)
 			</th>
@@ -111,9 +111,9 @@
 			<th>
 				@Html.DisplayNameFor(model => model.Country)
 			</th>
-			@*<th>
+			<th>
 					@Html.DisplayNameFor(model => model.UserAgent)
-				</th>
+				@*</th>
 				<th>
 					@Html.DisplayNameFor(model => model.Languages)
 				</th>*@
@@ -224,10 +224,10 @@
 				<td>
 					@Html.DisplayFor(modelItem => item.Country)
 				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.UserAgent)
+				</td>
 				@*<td>
-						@Html.DisplayFor(modelItem => item.UserAgent)
-					</td>
-					<td>
 						@Html.DisplayFor(modelItem => item.Languages)
 					</td>*@
 			</tr>

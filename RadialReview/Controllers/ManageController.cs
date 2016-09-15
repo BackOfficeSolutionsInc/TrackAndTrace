@@ -234,7 +234,9 @@ namespace RadialReview.Controllers
 				StartOfYearOffset = user.Organization.Settings.StartOfYearOffset,
 
 				DateFormat = user.Organization.Settings.DateFormat,
-				NumberFormat = user.Organization.Settings.NumberFormat
+				NumberFormat = user.Organization.Settings.NumberFormat,
+
+				AccountabilityChartId = user.Organization.AccountabilityChartId
 
 			};
 
