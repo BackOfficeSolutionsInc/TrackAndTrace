@@ -110,4 +110,5 @@ Logs/*
 RadialReview/logs/*
 RadialReview/log-file.txt
 TractionTools.UITests/_Log/*
+TractionTools.UITests/_Log/current/NoMatch.txt
 GeneratedReports/*
