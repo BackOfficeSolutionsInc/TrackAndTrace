@@ -19,7 +19,7 @@
 	<select name="@Html.NameFor(x => x.OwnerId)" class="select-user form-control" style="width: 100%;height:64px;">
 		@foreach (var u in Model.PossibleUsers.OrderBy(x => x.name))
 		{
-			<option data-img="@u.imageUrl" value="@u.id" value="@u.id" @(u.id==Model.OwnerId?"selected":"")>@u.name</option>
+			<option data-img="@u.imageUrl" value="@u.id" @(u.id==Model.OwnerId?"selected":"")>@u.name</option>
 		}
 	</select>
 </div>

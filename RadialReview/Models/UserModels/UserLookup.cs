@@ -46,9 +46,14 @@ namespace RadialReview.Models.UserModels
 
 		public virtual string ImageUrl(ImageSize size = ImageSize._32)
 		{
+			return TransformImageSuffix(_ImageUrlSuffix, size);
+		}
+
+		public static string TransformImageSuffix(string imageSuffix, ImageSize size = ImageSize._32) {
+
 			var s = size.ToString().Substring(1);
-			if (_ImageUrlSuffix != null && !_ImageUrlSuffix.EndsWith("/i/userplaceholder"))
-				return ConstantStrings.AmazonS3Location + s + _ImageUrlSuffix;
+			if (imageSuffix != null && !imageSuffix.EndsWith("/i/userplaceholder"))
+				return ConstantStrings.AmazonS3Location + s + imageSuffix;
 			return "/i/userplaceholder";
 		}
 

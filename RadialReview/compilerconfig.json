@@ -46,5 +46,9 @@
   {
     "outputFile": "Content/GettingStarted/GettingStarted.css",
     "inputFile": "Content/GettingStarted/GettingStarted.less"
+  },
+  {
+    "outputFile": "Content/L10/L10Headlines.css",
+    "inputFile": "Content/L10/L10Headlines.less"
   }
 ]

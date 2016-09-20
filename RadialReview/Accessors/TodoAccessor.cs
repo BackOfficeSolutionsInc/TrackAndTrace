@@ -95,7 +95,7 @@ namespace RadialReview.Accessors {
             perms.ConfirmAndFix(todo,
                 x => x.ForRecurrenceId,
                 x => x.ForRecurrence,
-                x => x.ViewL10Recurrence);
+                x => x.EditL10Recurrence);
 
             if ((todo.ForRecurrenceId == null || todo.ForRecurrence == null) && todo.TodoType == TodoType.Recurrence)
                 throw new PermissionsException("Recurrence Id is required to create a meeting todo.");

@@ -60,7 +60,7 @@ namespace RadialReview.Controllers
 			};
 
 
-			var meetings = L10Accessor.GetVisibleL10Meetings(GetUser(), GetUser().Id, false)
+			var meetings = L10Accessor.GetVisibleL10Recurrences(GetUser(), GetUser().Id, false)
 				.Select(x => new MeetingVm { name = x.Recurrence.Name, id = x.Recurrence.Id })
 				.ToList();
 
@@ -254,6 +254,7 @@ namespace RadialReview.Controllers
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 			//return PartialView("ScorecardIssueModal", model);
 		}
+
 		[Access(AccessLevel.UserOrganization)]
         public async Task<PartialViewResult> CreateRockTodo(long meeting, long recurrence, long rock, long? accountable = null)
 		{
@@ -282,7 +283,6 @@ namespace RadialReview.Controllers
 			};
 			return PartialView("RockTodoModal", model);
 		}
-
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<JsonResult> CreateRockTodo(RockTodoVM model)
@@ -308,6 +308,58 @@ namespace RadialReview.Controllers
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 			//return PartialView("ScorecardIssueModal", model);
 		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<PartialViewResult> CreateTodoFromHeadline(long meeting, long recurrence, long headline, long? accountable = null) {
+			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
+
+			var s = HeadlineAccessor.GetHeadline(GetUser(), headline);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
+
+			var people = recur._DefaultAttendees.Select(x => x.User).ToList();
+			people.Add(GetUser());
+			people = people.Distinct(x => x.Id).ToList();
+
+			var model = new HeadlineTodoVm(recur.DefaultTodoOwner) {
+				ByUserId = GetUser().Id,
+				Message = await s.NotNull(async x => await x.GetTodoMessage()),
+				Details = await s.NotNull(async x => await x.GetTodoDetails()),
+				HeadlineId = headline,
+				MeetingId = meeting,
+				RecurrenceId = recurrence,
+				AccountabilityId = new[] { accountable ?? recur.DefaultTodoOwner },
+				PossibleUsers = people.Select(x => new AccountableUserVM() {
+					id = x.Id,
+					imageUrl = x.ImageUrl(true, ImageSize._32),
+					name = x.GetName()
+				}).ToList(),
+			};
+			return PartialView("HeadlineTodoModal", model);
+		}
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> CreateTodoFromHeadline(HeadlineTodoVm model) {
+			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.HeadlineId, x => x.RecurrenceId);
+			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
+			
+			foreach (var m in model.AccountabilityId) {
+				await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, new TodoModel() {
+					CreatedById = GetUser().Id,
+					ForRecurrenceId = model.RecurrenceId,
+					CreatedDuringMeetingId = model.MeetingId,
+					Message = model.Message ?? "",
+					Details = model.Details ?? "",
+					ForModel = "PeopleHeadline",
+					ForModelId = model.HeadlineId,
+					Organization = GetUser().Organization,
+					AccountableUserId = m,
+					DueDate = model.DueDate
+				});
+			}
+			return Json(ResultObject.SilentSuccess().NoRefresh());
+			//return PartialView("ScorecardIssueModal", model);
+		}
+		
 
 
 		[Access(AccessLevel.UserOrganization)]

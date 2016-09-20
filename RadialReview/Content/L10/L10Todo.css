@@ -1,6 +1,6 @@
 .todo .page-header {
     margin-top: 0px;
-    margin: 5px 0;
+    margin: 0px 0;
 }
 
     .todo .page-header.listing {
@@ -18,7 +18,7 @@
 }
 
 .todo h4 {
-    margin-top: 20px;
+    margin-top: 13px;
     margin-bottom: 0px;
 }
 

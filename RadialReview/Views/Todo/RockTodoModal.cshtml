@@ -20,7 +20,7 @@
 		@Html.LabelFor(x => x.AccountabilityId)
             <select name="@Html.NameFor(x => x.AccountabilityId)" class="select-user form-control" style="width: 100%;height:64px;" multiple="multiple">
                 @foreach (var u in Model.PossibleUsers.OrderBy(x => x.name)) {
-                    <option data-img="@u.imageUrl" value="@u.id" value="@u.id" @(Model.AccountabilityId.Any(x => x == u.id) ? "selected" : "")>@u.name</option>
+                    <option data-img="@u.imageUrl" value="@u.id" @(Model.AccountabilityId.Any(x => x == u.id) ? "selected" : "")>@u.name</option>
                 }
             </select>
 		</div>

@@ -27,6 +27,8 @@ namespace RadialReview.Models.L10.VM
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
 
+		public List<PeopleHeadline> Headlines { get; set; }
+
 		public bool CanEdit { get; set; }
 		public bool CanAdmin { get; set; }
         public long VtoId { get;set;}
@@ -86,6 +88,7 @@ namespace RadialReview.Models.L10.VM
 			EndDate = DateTime.UtcNow;
 			Weeks = new List<WeekVM>();
 			CurrentTranscript=new List<MeetingTranscriptVM>();
+			Headlines = new List<PeopleHeadline>();
 		}
 
 		//public bool AutoPrioritize { get; set; }

@@ -65,7 +65,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.UserOrganization)]
         public PartialViewResult ModalRecurrence()
 		{
-			var meetings = L10Accessor.GetVisibleL10Meetings(GetUser(), GetUser().Id, false);
+			var meetings = L10Accessor.GetVisibleL10Recurrences(GetUser(), GetUser().Id, false);
 
 			if (!meetings.Any()){
 				throw new PermissionsException("You are not connected to any meetings.");

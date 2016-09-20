@@ -942,3 +942,60 @@ body.resizing *::-moz-selection {
   padding: 5px;
   border-radius: 0px 4px 4px 4px;
 }
+.searchresult {
+  line-height: 16px;
+}
+.searchresult .searchresult-image {
+  display: inline-block;
+  padding-right: 6px;
+  float: left;
+}
+.searchresult .searchresult-image .profile-picture .picture-container {
+  width: 32px;
+  height: 32px;
+  line-height: 29px;
+  position: relative;
+  top: 0px;
+  float: left;
+  font-size: 9px;
+}
+.searchresult .searchresult-image .profile-picture.desaturate {
+  filter: gray;
+  filter: grayscale(0.7);
+  -webkit-filter: grayscale(0.7);
+  opacity: 0.7;
+  -moz-transition: all ease .2s;
+  -o-transition: all ease .2s;
+  -webkit-transition: all ease .2s;
+  transition: all ease .2s;
+}
+.searchresult .searchresult-image .profile-picture.desaturate:hover {
+  filter: none;
+  filter: grayscale(0.3);
+  -webkit-filter: grayscale(0.3);
+  opacity: .9;
+}
+.searchresult .searchresult-meta {
+  display: inline-block;
+  float: left;
+}
+.searchresult .searchresult-meta .searchresult-description {
+  display: inline-block;
+  color: #aaa;
+  font-size: 11px;
+}
+.searchresult.searchresult-selected {
+  line-height: 32px;
+}
+.searchresult.searchresult-selected .searchresult-meta .searchresult-description {
+  display: none;
+}
+.select2-container--open .select2-dropdown--below {
+  box-shadow: 0 6px 13px -1px rgba(0, 0, 0, 0.5);
+}
+.select2-container--default .select2-selection--single {
+  border: 1px solid #ccc;
+}
+.select2-results__option--highlighted .searchresult .searchresult-meta .searchresult-description {
+  color: white;
+}

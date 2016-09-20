@@ -22,8 +22,9 @@
 				<h3 class="pull-left">To merge</h3>
 			</div>
 			<hr />
-			Html.RenderPartial("~/Views/Shared/EditorTemplates/AdminSearchAllUsers.cshtml", new ViewDataDictionary() {
-				{"OnClick","/Admin/MergeAccounts/{0}" }
+			Html.RenderPartial("~/Views/Shared/EditorTemplates/SearchUsers.cshtml", new ViewDataDictionary() {
+				{"Href","/Admin/MergeAccounts/{0}" },
+				{"SearchUrl","/Account/AdminAllUsers" }
 			});
 			<div style="color:red">@message</div>
 		} else {
@@ -62,18 +63,19 @@
 		clear: both;
 		margin-bottom: 10px;
 	}
-	
+
 	.left .display-field {
 		float: right;
 	}
-	
-	.right .display-label{
+
+	.right .display-label {
 		font-weight: bold;
 		float: right;
 		clear: both;
 		margin-bottom: 10px;
 	}
-	.right .display-field{
+
+	.right .display-field {
 		float: left;
 	}
 </style>

@@ -1,0 +1,93 @@
+﻿@{
+	var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
+	var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
+	var completion = (ViewBag.AddCompletion == null || ((bool)ViewBag.AddCompletion) == true);
+	var datepicker = (ViewBag.AddDatePicker == null || ((bool)ViewBag.AddDatePicker) == true);
+	var selector = ViewBag.Selector as string ?? "model.Headlines";
+	var filter = ViewBag.Filter as string ?? "| filter:filters.byRange('CloseTime',model.dataDateRange.startDate,model.dataDateRange.endDate)";
+
+	var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
+	var defaultSort = ViewBag.DefaultSort ?? "'-CreateTime'";
+
+	var showDetails = (ViewBag.ShowDetails == null || ((bool)ViewBag.ShowDetails) == true);
+	var detailsCode = showDetails ? "headline.DetailsUrl_Src=headline.DetailsUrl;model.Selected = headline.Key;" : "";
+
+	var meetingId = ViewBag.MeetingId ?? "model.Id";
+
+	var attrLookup = new Dictionary<string, string>(){
+		{"picture-column",""},
+		{"about-column",""},
+		{"message-column",""},
+		{"due-column",""},
+		{"createtime-column",""},
+		{"close-column",""},
+		{"delete-column",""}
+	};
+}
+<div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak headline-list-container app">
+	<div @(headers || controller ? "ng-controller=L10Controller" : "")>
+		<div class="row">
+			<div class="col-md-12 component">			
+				<div id="Headline" class="tab-pane headline-pane scrollbox pull-left fullWidth scroller">
+					<div></div>
+					<md-table-container class="repeater-container">
+						<table class="@(orderVariable)" md-table width="100%" class="component table-hover" ng-if="(@(selector) @(filter)).length" click-anywhere-but-here="model.Selected = -1">
+							<thead md-head md-order="@(orderVariable)" ng-init="functions.setValue('@(orderVariable)',@(orderVariable) || @(defaultSort))">
+								<tr class="table-header" md-row>
+									<th md-column @(attrLookup["picture-column"]) class="picture-column owner-column" style="width: 32px;" md-order-by="Owner.Name">&nbsp;</th>
+									<th md-column @(attrLookup["about-column"]) class="picture-column about-column" style="width: 32px;" md-order-by="About.Name">&nbsp;</th>
+									<th md-column @(attrLookup["message-column"]) class="message-column" md-order-by="Name">Headline</th>
+									<th md-column md-numeric @(attrLookup["createtime-column"]) class="createtime-column" md-order-by="Created">Created</th>
+									<th md-column md-numeric @(attrLookup["close-column"]) class="close-column alignCenter" md-order-by="CloseTime" style="width:90px;">Close</th>
+									<th md-column md-numeric @(attrLookup["delete-column"]) class="delete-column"></th>
+
+								</tr>
+							</thead>
+							<tbody md-body vs-repeat vs-autoresize vs-scroll-parent=".repeater-container">
+								<tr id="headline_{{headline.Id}}"
+									ng-repeat="headline in @(selector) | orderBy: @(orderVariable) @(filter) track by $index"
+									ng-class="{grayRow: headline.Complete}"
+									class="clickable {{model.Selected == headline.Key?'selected':''}}"
+									md-row>
+									<td class="picture-column owner-column" md-cell>
+										<span class="item-wrapper place-right">
+											<span onaftersave="functions.sendUpdate(headline)"
+												  editable-select="headline.Owner"
+												  onshow="loadPossibleOwners(@(meetingId))"
+												  e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]">
+												<profile-image user="headline.Owner"></profile-image>
+											</span>
+										</span>
+									</td>
+									<td class="picture-column about-column" md-cell>
+										<profile-image user="headline.About"></profile-image>
+									</td>
+									<td class="headline-text message-column" style="width:100%" ng-click="@(detailsCode)" md-cell>
+										<input class="blend" placeholder="Enter people headline here" ng-model-options="{debounce: 400}" type="text" ng-model="headline.Name" ng-change="functions.sendUpdate(headline)" title="{{headline.Name}}" />
+
+										<div class="headline-text" ng-if="model.Selected==headline.Key">
+											<a class="pull-right timeline-button" ng-if="headline.Link!=null" target="_blank" href="{{headline.Link}}" style="margin-top: 4px;margin-right: 2px;"><span class="glyphicon glyphicon-comment"></span></a>
+											<iframe class="keep-background" style="background-color: white" width="100%" ng-src="{{trustAsResourceUrl(headline.DetailsUrl_Src)}}" ng-data-src="{{headline.DetailsUrl}}"></iframe>
+										</div>
+									</td>
+									<td class="alignCenter createtime-column date-column" md-cell>
+										{{headline.CreateTime | date:dateFormat}}
+									</td>
+									<td class="alignCenter close-column date-column" md-cell>{{headline.CloseTime | date:dateFormat}}</td>
+									<td class="delete-column" md-cell>
+										<span class="delete-row" ng-click="functions.removeRow($event,headline)"></span>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</md-table-container>
+					<div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
+					<div class="create-row" ng-click="functions.addRow($event,'AngularHeadline')" data-toggle="tooltip" data-placement="left" title="New Headline"></div>
+					<div class="gray no-headlines empty-search" style="padding: 30px 15px;" ng-if="(@(selector) @(filter)).length==0">
+						No people headlines fit your search criteria.
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

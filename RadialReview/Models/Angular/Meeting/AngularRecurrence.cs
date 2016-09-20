@@ -11,6 +11,8 @@ using RadialReview.Models.Angular.Users;
 using RadialReview.Models.L10;
 using RadialReview.Models.Scorecard;
 using RadialReview.Utilities;
+using RadialReview.Models.Angular.Headlines;
+using RadialReview.Model.Enums;
 
 namespace RadialReview.Models.Angular.Meeting
 {
@@ -23,6 +25,8 @@ namespace RadialReview.Models.Angular.Meeting
             };
             IssuesList.Prioritization = recurrence.Prioritization!=PrioritizationType.Invalid?recurrence.Prioritization:PrioritizationType.Priority;
             VtoId = recurrence.VtoId;
+
+			HeadlineType = recurrence.HeadlineType;
 		}
 
 		public AngularRecurrence(long id):base(id){
@@ -40,9 +44,11 @@ namespace RadialReview.Models.Angular.Meeting
 		public IEnumerable<AngularMeetingNotes> Notes { get; set; }
 		public IEnumerable<AngularRock> Rocks { get; set; }
 		public IEnumerable<AngularTodo> Todos { get; set; }
-        public AngularIssuesList IssuesList { get; set; }
+		public IEnumerable<AngularHeadline> Headlines { get; set; }
+		public AngularIssuesList IssuesList { get; set; }
 		public AngularDateRange date { get; set; }
         public string HeadlinesUrl { get; set; }
+		public PeopleHeadlineType HeadlineType { get; set; }
         //public PrioritizationType Prioritization { get; set; }
         public long? VtoId { get; set; }
 	}

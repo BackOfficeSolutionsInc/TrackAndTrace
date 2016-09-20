@@ -26,7 +26,20 @@ namespace RadialReview.Utilities.DataTypes {
             return this.Tuplize().GetHashCode();
         }
 
-        public TinyUser Standardize()
+		public string GetName() {
+			return ((FirstName ?? "") + " " + (LastName ?? "")).Trim();
+		}
+
+		public string GetInitials() {
+			var inits = new List<string>();
+			if (FirstName!= null && FirstName.Length > 0)
+				inits.Add(FirstName.Substring(0, 1));
+			if (LastName != null && LastName.Length > 0)
+				inits.Add(LastName.Substring(0, 1));
+			return string.Join(" ", inits).ToUpperInvariant();			
+		}
+
+		public TinyUser Standardize()
         {
             var x = this;
             return new TinyUser() {

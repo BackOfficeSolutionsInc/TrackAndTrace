@@ -4,9 +4,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Web;
-using System.Web.UI.WebControls.Expressions;
 
-namespace RadialReview.Utilities.Extensions
+namespace RadialReview
 {
 	public static class ExpressionExtensions
 	{

@@ -263,14 +263,21 @@
                             @Html.Partial("~/Views/L10/Details/rocks.cshtml")
                         </md-content>
                     </md-tab>
-                    @if (ViewBag.IncludeHeadlines ?? true) {
-                        <md-tab label="Headlines" href="Headlines" md-on-select="functions.setHash('Headlines')">
-                            <md-content class="md-padding">
-                                @*<h1 class="md-display-2">Headlines</h1>*@
-                                @Html.Partial("~/Views/L10/Details/headlines.cshtml")
-                            </md-content>
-                        </md-tab>
-                    }
+					@if ((ViewBag.IncludeHeadlines ?? RadialReview.Model.Enums.PeopleHeadlineType.None) == RadialReview.Model.Enums.PeopleHeadlineType.HeadlinesBox) {
+						<md-tab label="Headlines" href="Headlines" md-on-select="functions.setHash('Headlines')">
+							<md-content class="md-padding">
+								@*<h1 class="md-display-2">Headlines</h1>*@
+								@Html.Partial("~/Views/L10/Details/headlines.cshtml")
+							</md-content>
+						</md-tab>
+					} else if ((ViewBag.IncludeHeadlines ?? RadialReview.Model.Enums.PeopleHeadlineType.None) == RadialReview.Model.Enums.PeopleHeadlineType.HeadlinesList) {
+						<md-tab label="Headlines" href="Headlines" md-on-select="functions.setHash('Headlines')">
+							<md-content class="md-padding">
+								@*<h1 class="md-display-2">Headlines</h1>*@
+								@Html.Partial("~/Views/L10/Details/headlinesList.cshtml")
+							</md-content>
+						</md-tab>
+					}
                     <md-tab label="To-dos" href="Todos" md-on-select="functions.setHash('Todos')">
                         <md-content class="md-padding">
                             @*<h1 class="md-display-2">To-do List</h1>*@

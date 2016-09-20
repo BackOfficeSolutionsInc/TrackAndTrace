@@ -29,7 +29,7 @@ namespace RadialReview.Controllers
             var recur = L10Accessor.GetL10Recurrence(GetUser(),id,false);
 
             ViewBag.VtoId = recur.VtoId;
-            ViewBag.IncludeHeadlines = recur.ShowHeadlinesBox;
+            ViewBag.IncludeHeadlines = recur.HeadlineType;
             ViewBag.ShowPriority = (recur.Prioritization == Models.L10.PrioritizationType.Invalid||recur.Prioritization == Models.L10.PrioritizationType.Priority);
 
             
