@@ -29,7 +29,7 @@
 }
 .headlines .page-header {
   margin-top: 0px;
-  margin: 0px 0;
+  margin-bottom: 22px;
 }
 .headlines .page-header.listing {
   margin-top: -28px;
@@ -344,6 +344,7 @@
 }
 .headlines .page-header.details {
   color: #666;
+  margin-top: 0px;
 }
 .headlines .profile-image {
   position: relative;

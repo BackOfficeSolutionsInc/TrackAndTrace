@@ -18,8 +18,8 @@ namespace RadialReview.Controllers
 			public string Message { get; set; }
 			public List<L10VM> PossibleRecurrences { get; set; }
 			public List<SelectListItem> PossibleOwners { get; set; }
-			public long? AboutId { get; set; }
-			public string AboutName { get; set; }
+            public long? AboutId { get; set; }
+            public string AboutIdText { get; set; }
 			public long? MeetingId { get; set; }
 			public bool ShowRecurrences { get; set; }
 			public bool ShowOwners { get; set; }
@@ -28,9 +28,11 @@ namespace RadialReview.Controllers
 
 
 			public PeopleHeadline ToPeopleHeadline() {
+                
+
 				return new PeopleHeadline() {
 					AboutId = AboutId,
-					AboutName = AboutName,
+					AboutName = AboutIdText,
 					Message = Message,
 					CreatedDuringMeetingId = MeetingId,
 					OwnerId = OwnerId,
@@ -76,6 +78,10 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<JsonResult> Modal(HeadlineVM model) {
 			ValidateValues(model,x => x.CreatedBy, x => x.MeetingId);
+            if (model.AboutId < 0){
+                model.AboutId = null;
+
+            }
 			var ph = model.ToPeopleHeadline();
 			ph.OrganizationId = GetUser().Organization.Id;
 			await HeadlineAccessor.CreateHeadline(GetUser(),ph);

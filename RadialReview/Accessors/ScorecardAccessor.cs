@@ -99,7 +99,7 @@ namespace RadialReview.Accessors {
                         .WhereRestrictionOn(x => x.L10Recurrence.Id).IsIn(visibleMeetingIds)
                         .Select(x => x.Measurable).List<MeasurableModel>().ToList();
                     results.AddRange(additionalFromL10);
-                    results = results.Distinct(x => x.Id).ToList();
+                    results = results.Where(x=>x!=null).Distinct(x => x.Id).ToList();
 
                     if (loadUsers) {
                         foreach (var r in results) {

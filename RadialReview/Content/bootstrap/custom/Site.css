@@ -999,3 +999,9 @@ body.resizing *::-moz-selection {
 .select2-results__option--highlighted .searchresult .searchresult-meta .searchresult-description {
   color: white;
 }
+.navbar-collapse.in .btn-group.heading button {
+  display: none;
+}
+.navbar-collapse.in ul.navbar-nav {
+  margin-left: -25px;
+}

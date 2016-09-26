@@ -225,16 +225,16 @@
 
 			<div class="form-group">
 				<div class="row smallBreak2">
-					<label class="col-sm-5  ttt control-label">Organization name:</label>
-					<div class="col-sm-3">
+					<label class="col-xs-5  ttt control-label">Organization name:</label>
+					<div class="col-xs-3">
 						@Html.TextBoxFor(x => x.OrganizationName, new { @class = "form-control", placeholder = "Organization name" })
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-sm-5  ttt">
+					<div class="col-xs-5  ttt">
 						<label class="control-label">Edit organization hierarchy:</label>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-xs-3">
 						<div class="pull-left">
 							@{
 								Html.RenderAction("Dropdown", "Permissions", new { id = Model.AccountabilityChartId, type = PermItem.ResourceType.AccountabilityHierarchy, buttonClass = "btn-xs" });
@@ -243,35 +243,35 @@
 					</div>
 				</div>
 				@*<div class="row ">
-						<label class="col-sm-5  ttt control-label">Quarterly Goals are called:</label>
-						<div class="col-sm-3">
+						<label class="col-xs-5  ttt control-label">Quarterly Goals are called:</label>
+						<div class="col-xs-3">
 							@Html.TextBoxFor(x => x.RockName, new { @class = "form-control", placeholder = "Quarterly goal name" })
 						</div>
 					</div>*@
 				@Html.HiddenFor(x => x.RockName)
 
 				<div class="row">
-					<div class="col-sm-5  ttt">
+					<div class="col-xs-5  ttt">
 						<label class="control-label">Managers have admin ability:</label>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-xs-3">
 						@Html.CheckBoxFor(x => x.ManagersCanEdit, new { @class = "checkbox cb-managers-edit", onclick = "managersEdit()" })
 					</div>
 				</div>
 
 				<div class="row">
-					<div class="col-sm-5  ttt">
+					<div class="col-xs-5  ttt">
 						<label class="control-label">Managers only see @Html.Organization().Settings.RockName and Measurables under them:</label>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-xs-3">
 						@Html.CheckBoxFor(x => x.OnlySeeRockAndScorecardBelowYou, new { @class = "checkbox" })
 					</div>
 				</div>
 				@*<div class="row">
-						<div class="col-sm-5  ttt">
+						<div class="col-xs-5  ttt">
 							<label class="control-label">Strict hierarchy:</label>
 						</div>
-						<div class="col-sm-3">
+						<div class="col-xs-3">
 							@Html.CheckBoxFor(x => x.StrictHierarchy, new { @class = "checkbox" })
 						</div>
 					</div>*@
@@ -279,115 +279,115 @@
 				@Html.HiddenFor(x => x.StrictHierarchy)
 
 				<div class="row">
-					<div class="col-sm-5  ttt">
+					<div class="col-xs-5  ttt">
 						<label class="control-label">Managers can edit their accountabilities:</label>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-xs-3">
 						@Html.CheckBoxFor(x => x.ManagersCanEditSelf, new { @class = "checkbox" })
 					</div>
 				</div>
 
 				<div class="row">
-					<div class="col-sm-5  ttt">
+					<div class="col-xs-5  ttt">
 						<label class="control-label">Employees can edit their accountabilities:</label>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-xs-3">
 						@Html.CheckBoxFor(x => x.EmployeesCanEditSelf, new { @class = "checkbox" })
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-sm-5  ttt">
+					<div class="col-xs-5  ttt">
 						<label class="control-label">Managers can remove users:</label>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-xs-3">
 						@Html.CheckBoxFor(x => x.ManagersCanRemoveUsers, new { @class = "checkbox" })
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-sm-5  ttt">
+					<div class="col-xs-5  ttt">
 						<label class="control-label">Managers can edit positions:</label>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-xs-3">
 						@Html.CheckBoxFor(x => x.ManagersCanEditPositions, new { @class = "checkbox" })
 					</div>
 				</div>
 
 				@if (ViewBag.ShowSurvey == true) {
 					<div class="row">
-						<div class="col-sm-5  ttt">
+						<div class="col-xs-5  ttt">
 							<label class="control-label">Managers can create survey:</label>
 						</div>
-						<div class="col-sm-3">
+						<div class="col-xs-3">
 							@Html.CheckBoxFor(x => x.ManagersCanCreateSurvey, new { @class = "checkbox" })
 						</div>
 					</div>
 
 					<div class="row">
-						<div class="col-sm-5  ttt">
+						<div class="col-xs-5  ttt">
 							<label class="control-label">Employees can create survey:</label>
 						</div>
-						<div class="col-sm-3">
+						<div class="col-xs-3">
 							@Html.CheckBoxFor(x => x.EmployeesCanCreateSurvey, new { @class = "checkbox" })
 						</div>
 					</div>
 				}
 				<div class="row">
-					<div class="col-sm-5  ttt">
+					<div class="col-xs-5  ttt">
 						<label class="control-label">Send email invitations by default:</label>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-xs-3">
 						@Html.CheckBoxFor(x => x.SendEmailImmediately, new { @class = "checkbox" })
 					</div>
 				</div>
 
 				<div class="row">
-					<div class="col-sm-5  ttt">
+					<div class="col-xs-5  ttt">
 						<label class="control-label">Time-zone:</label>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-xs-3">
 						@Html.DropDownListFor(x => x.TimeZone, Model.TimeZones, new { @class = "form-control" })
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-sm-5  ttt">
+					<div class="col-xs-5  ttt">
 						<label class="control-label">Week start:</label>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-xs-3">
 						@Html.EnumDropDownListFor(x => x.WeekStart, new { @class = "form-control" })
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-sm-5  ttt">
+					<div class="col-xs-5  ttt">
 						<label class="control-label">Date Format:</label>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-xs-3">
 						@Html.DropDownListFor(x => x.DateFormat, new[] { "MM-dd-yyyy", "dd-MM-yyyy" }.ToSelectList(x => x.ToLower(), x => x), new { @class = "form-control" })
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-sm-5  ttt">
+					<div class="col-xs-5  ttt">
 						<label class="control-label">Number Format:</label>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-xs-3">
 						@Html.DropDownListFor(x => x.NumberFormat, NumberFormatExtensions.Formats(), new { @class = "form-control" })
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-sm-5  ttt">
+					<div class="col-xs-5  ttt">
 						<label class="control-label">Year Start:</label>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-xs-3">
 						@Html.EnumDropDownListFor(x => x.StartOfYearMonth, new { @class = "form-control" })
 					</div>
-					<div class="col-sm-3">
+					<div class="col-xs-3">
 						@Html.EnumDropDownListFor(x => x.StartOfYearOffset, new { @class = "form-control" })
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-sm-5  ttt">
+					<div class="col-xs-5  ttt">
 						<label class="control-label">Scorecard Period:</label>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-xs-3">
 						@Html.EnumDropDownListFor(x => x.ScorecardPeriod, new { @class = "form-control" })
 					</div>
 				</div>
@@ -400,7 +400,7 @@
 			</div>
 		</div>
 	</div>
-								}
+}
 
 
 

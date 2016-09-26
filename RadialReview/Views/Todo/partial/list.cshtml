@@ -62,7 +62,7 @@
 
 								</tr>
 							</thead>
-							<tbody md-body vs-repeat vs-autoresize vs-scroll-parent=".repeater-container">
+							<tbody md-body @*vs-repeat vs-autoresize vs-scroll-parent=".repeater-container"*@>
 								<tr ng-hide="todo.Hide" id="todo_{{todo.Id}}"
 									ng-repeat="todo in @(selector) | orderBy: @(orderVariable) @(filter) track by $index"
 									ng-class="{grayRow: todo.Complete}"

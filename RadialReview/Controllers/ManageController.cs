@@ -283,16 +283,19 @@ namespace RadialReview.Controllers
 				model.NumberFormat);
 			ViewBag.Success = "Successfully Saved.";
 
-			model.CompanyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)
-				//.Select(x => x.CompanyValue)
-				.ToList();
+			//model.CompanyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)
+			//	//.Select(x => x.CompanyValue)
+			//	.ToList();
 
-			model.CompanyRocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
-			model.Cards = PaymentAccessor.GetCards(GetUser(), GetUser().Organization.Id);
+			//model.CompanyRocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
+			//model.Cards = PaymentAccessor.GetCards(GetUser(), GetUser().Organization.Id);
 
-			model.CompanyQuestions = OrganizationAccessor.GetQuestionsAboutCompany(GetUser(), GetUser().Organization.Id, null).ToList();
+			//model.CompanyQuestions = OrganizationAccessor.GetQuestionsAboutCompany(GetUser(), GetUser().Organization.Id, null).ToList();
 
-			return View(model);
+   //         model.AccountabilityChartId = user.Organization.AccountabilityChartId
+
+
+            return Advanced();
 		}
 	}
 }

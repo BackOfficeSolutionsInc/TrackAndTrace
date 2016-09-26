@@ -51,7 +51,7 @@
                             <th md-column @(attrLookup["delete-column"]) class="delete-column"></th>
                         </tr>
                     </thead>
-                    <tbody md-body vs-repeat vs-autoresize vs-scroll-parent=".repeater-container">
+                    <tbody md-body @*vs-repeat vs-autoresize vs-scroll-parent=".repeater-container"*@>
                         <tr ng-hide="rock.Hide" @*ts-repeat*@ class="{{rock.Completion}}  keep-background" id="rock_{{::rock.Id}}" ng-repeat="rock in @(selector) | orderBy: @(orderVariable) @(filter)" md-row>
                             <td class="icon-column"></td>
                             <td md-cell class="rock-completion-container hidden-width-1 status-column" style="min-width: 80px;;vertical-align: top;">

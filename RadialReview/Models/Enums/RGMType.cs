@@ -10,5 +10,7 @@ namespace RadialReview.Models.Enums {
 		Organization = 2,
 		Team = 3,
 		Position = 4,
-	}
+        SearchResult = 5,
+        
+    }
 }
