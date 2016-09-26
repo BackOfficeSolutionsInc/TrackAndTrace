@@ -77,13 +77,13 @@ namespace RadialReview.Utilities {
                     return "https://localhost:44300/";
                 case Env.production:
                     if (organization == null)
-                        return "https://traction.tools.com/";
+                        return "https://traction.tools/";
 
                     switch (organization.Settings.Branding) {
                         case BrandingType.RadialReview:
-                            return "https://traction.tools.com/";
+                            return "https://traction.tools/";
                         case BrandingType.RoundTable:
-                            return "https://traction.tools.com/";
+                            return "https://traction.tools/";
                         default:
                             throw new ArgumentOutOfRangeException();
                     }

@@ -41,7 +41,9 @@ namespace TractionTools.UITests.L10Wizard {
 
                 var select = d.Find("#l10-wizard-teamtype select");
 
-                Assert.AreEqual("string:LeadershipTeam", select.Val());
+				d.WaitUntil(x=> "string:LeadershipTeam" == select.Val());
+
+				//Assert.AreEqual(, select.Val());
                 d.TestScreenshot("Basics");
 
                 select.Click();

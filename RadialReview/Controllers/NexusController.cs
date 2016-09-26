@@ -52,8 +52,8 @@ namespace RadialReview.Controllers
         }
         
         [Access(AccessLevel.Any)]
-        [AsyncTimeout(60*20*1000)]
-        public async Task<ActionResult> Index(String id)
+        [AsyncTimeout(60*60*1000)]
+		public async Task<ActionResult> Index(String id)
         {
             try
             {
@@ -86,9 +86,10 @@ namespace RadialReview.Controllers
                                 return RedirectToAction("Customize", "Prereview", new { id = nexus.GetArgs()[1] });
                             });
                         };
-                    case NexusActions.CreateReview:
-                        {
-                           // HttpContext.Server.ScriptTimeout = 60*20;
+                    case NexusActions.CreateReview: {
+							Server.ScriptTimeout = 60 * 60;
+							Session.Timeout = 60;
+							// HttpContext.Server.ScriptTimeout = 60*20;
 							var sent = await _ReviewEngine.CreateReviewFromPrereview(System.Web.HttpContext.Current, nexus);
 							NexusAccessor.Execute(nexus);
                             return Content("Sent:"+ sent);
@@ -97,8 +98,8 @@ namespace RadialReview.Controllers
             }
             catch (Exception e){
 				log.Error("Error executing nexus", e);
-                ViewBag.Message = "Could not access resource. Make sure you're logging in with the correct account.";
-	            throw;
+                //ViewBag.Message = "Could not access resource. Make sure you're logging in with the correct account.";
+	            return RedirectToAction("Index","Home");
 				/*log.Error("Error executing nexus",e);
 				ViewBag.Message = "There was an error in your request.";
 				ViewBag.AlertType = "alert-danger";
