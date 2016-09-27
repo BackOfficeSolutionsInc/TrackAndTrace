@@ -8,6 +8,7 @@ using System.Web;
 using System.Threading.Tasks;
 using System.Dynamic;
 using RadialReview.Utilities;
+using RadialReview.Properties;
 
 namespace RadialReview.Models.L10 {
 	public class PeopleHeadline : ILongIdentifiable, IHistorical, IIssue, ITodo {
@@ -27,6 +28,7 @@ namespace RadialReview.Models.L10 {
 
 		public virtual long RecurrenceId { get; set; }
 		public virtual long? CreatedDuringMeetingId { get; set; }
+		public virtual long? CloseDuringMeetingId { get; set; }
 
 		public virtual string HeadlinePadId { get; set; }
 		public virtual long OrganizationId { get; set; }
@@ -55,6 +57,7 @@ namespace RadialReview.Models.L10 {
 				Map(x => x.CloseTime);
 				Map(x => x.RecurrenceId);
 				Map(x => x.CreatedDuringMeetingId);
+				Map(x => x.CloseDuringMeetingId);
 				Map(x => x.HeadlinePadId);
 				Map(x => x.Ordering);
 				Map(x => x.OrganizationId);
@@ -92,9 +95,11 @@ namespace RadialReview.Models.L10 {
 			o.Owner.ImageUrl = Owner.ImageUrl(awsFaster:true,size:ImageSize._32);
 
 			o.About = new ExpandoObject();
-			o.About.Id = About.NotNull(x => x.Id);
-			o.About.ImageUrl = About.NotNull(x=>x.GetImageUrl());
-			o.About.Name = About.NotNull(x =>x.GetName());
+			o.About.Id = About.NotNull(x => (long?)x.Id)??AboutId;
+			o.About.ImageUrl = About.NotNull(x=>x.GetImageUrl())??(ConstantStrings.AmazonS3Location+ConstantStrings.ImagePlaceholder);
+			o.About.Name = About.NotNull(x =>x.GetName())??AboutName;
+
+			o.HeadlinePadId = HeadlinePadId;
 
 			o.RecurrenceId = RecurrenceId;
 

@@ -11,6 +11,11 @@ using System.Web;
 
 namespace RadialReview.Models.Angular.Headlines {
 	public class AngularHeadline : BaseAngular {
+
+		public AngularHeadline(long id) : base(id) {
+
+		}
+
 		public AngularHeadline(PeopleHeadline headline) : base(headline.Id)
 		{
 			Name = headline.Message;
@@ -22,7 +27,7 @@ namespace RadialReview.Models.Angular.Headlines {
 				About = new AngularPicture(headline.About);
 			else
 				About = new AngularPicture(-headline.Id) {
-					ImageUrl = ConstantStrings.ImageUserPlaceholder,
+					ImageUrl = ConstantStrings.AmazonS3Location + ConstantStrings.ImagePlaceholder,
 					Name = headline.AboutName
 				};
 			CloseTime = headline.CloseTime;

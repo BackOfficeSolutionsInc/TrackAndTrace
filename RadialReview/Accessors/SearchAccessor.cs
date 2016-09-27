@@ -25,11 +25,12 @@ namespace RadialReview.Accessors {
 	}
 	public class SearchAccessor : BaseAccessor {
 		public class SearchSelectors<T> {
-			public SearchSelectors(RGMType resultType, bool forceLookupOrganizationName = false) {
+			public SearchSelectors(RGMType resultType, bool forceLookupOrganizationName = false/*, bool or = false*/) {
 				ResultType = resultType;
 				LookupOrganizationName = forceLookupOrganizationName;
 				ImageUrlTransform = (x) => x.ImageUrl;
 				DescriptionTransform = (x) => x.Description;
+				//Or = or;
 			}
 
 			public Expression<Func<T, long>> Id { get; set; }
@@ -43,6 +44,7 @@ namespace RadialReview.Accessors {
 			public Func<SearchResult, string> DescriptionTransform { get; set; }
 			public RGMType ResultType { get; set; }
 			public bool LookupOrganizationName { get; set; }
+			public bool Or { get; set; }
 
 			public ProjectionList ToProjectionList() {
 				var list = Projections.ProjectionList();
@@ -110,8 +112,8 @@ namespace RadialReview.Accessors {
 
 			public List<SearchResult> ToSearchResults(List<object[]> results) {
 				IndexLookup = null;
-				return results.Select(x => {					
-					var res =  new SearchResult() {
+				return results.Select(x => {
+					var res = new SearchResult() {
 						Email = GetField(x, Email),
 						Id = GetField(x, Id),
 						Name = GetField(x, Name),
@@ -130,7 +132,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static List<SearchResult> SearchOrganizationUsers(UserOrganizationModel caller,long orgId, string search,  bool nameOnly = true) {
+		public static List<SearchResult> SearchOrganizationUsers(UserOrganizationModel caller, long orgId, string search, bool nameOnly = true) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).ViewOrganization(orgId);
@@ -148,7 +150,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static List<SearchResult> SearchOrganizationRGM(UserOrganizationModel caller, long orgId, string search) {
+		public static List<SearchResult> SearchOrganizationRGM(UserOrganizationModel caller, long orgId, string search, bool or = false) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).ViewOrganization(orgId);
@@ -183,6 +185,50 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+		//public List<string> skipShortWords = new List<string>() {
+		//	"the", 
+		//	"and", 
+		//	"for", 
+		//	"are", 
+		//	"but", 
+		//	"not", 
+		//	"you", 
+		//	"all", 
+		//	"any", 
+		//	"can", 
+		//	"her", 
+		//	"was", 
+		//	"one", 
+		//	"our", 
+		//	"out", 
+		//	"day", 
+		//	"get", 
+		//	"has", 
+		//	"him", 
+		//	"his", 
+		//	"how", 
+		//	"man", 
+		//	"new", 
+		//	"now", 
+		//	"old", 
+		//	"see", 
+		//	"two", 
+		//	"way", 
+		//	"who", 
+		//	"boy", 
+		//	"did", 
+		//	"its", 
+		//	"let", 
+		//	"put", 
+		//	"say", 
+		//	"she", 
+		//	"too", 
+		//	"use", 
+		//	"dad", 
+		//	"mom",
+		//};
+
+
 		private static List<SearchResult> SearchAbstract<T>(ISession s, string search, Func<ICriteria, ICriteria> filter, SearchSelectors<T> selectors, params Expression<Func<T, object>>[] lookAt) where T : class {
 			if (!lookAt.Any())
 				throw new Exception("Must look at at least one field");
@@ -194,13 +240,28 @@ namespace RadialReview.Accessors {
 				criteria = filter(criteria);
 			}
 
-			foreach (var term in searches) {
-				var disjunction = Restrictions.Disjunction();    // OR
-				foreach (var la in lookAt) {
-					disjunction = (Disjunction)disjunction.Add(Restrictions.InsensitiveLike(Projections.Property<T>(la), term, MatchMode.Anywhere));
+			//if (selectors.Or) {
+			//	//OR  search terms
+				
+			//	var disjunction = Restrictions.Disjunction();    // OR
+			//	foreach (var term in searches) {
+			//		if (term.Length >= 3) {
+			//			foreach (var la in lookAt) {
+			//				disjunction = (Disjunction)disjunction.Add(Restrictions.InsensitiveLike(Projections.Property<T>(la), term, MatchMode.Anywhere));
+			//			}
+			//		}
+			//	}
+			//	criteria = criteria.Add(disjunction);
+			//} else {
+				//AND search terms
+				foreach (var term in searches) {
+					var disjunction = Restrictions.Disjunction();    // OR
+					foreach (var la in lookAt) {
+						disjunction = (Disjunction)disjunction.Add(Restrictions.InsensitiveLike(Projections.Property<T>(la), term, MatchMode.Anywhere));
+					}
+					criteria = criteria.Add(disjunction);
 				}
-				criteria = criteria.Add(disjunction);
-			}
+			//}
 			var results = criteria.SetProjection(selectors.ToProjectionList()).List<object[]>().ToList();
 
 			Dictionary<long, string> orgs = new Dictionary<long, string>();
@@ -242,7 +303,7 @@ namespace RadialReview.Accessors {
 				Id = x => x.Id,
 				OrganizationId = x => x.Organization.Id,
 				Name = x => x.CustomName,
-				ImageUrlTransform = x=> ConstantStrings.AmazonS3Location + ConstantStrings.ImagePositionPlaceholder,
+				ImageUrlTransform = x => ConstantStrings.AmazonS3Location + ConstantStrings.ImagePositionPlaceholder,
 				DescriptionTransform = x => {
 					var o = "Position";
 					if (includeOrganizationName && !string.IsNullOrWhiteSpace(x.Organization))
@@ -253,16 +314,16 @@ namespace RadialReview.Accessors {
 			return SearchAbstract(s, search, filter, selectors, x => x.CustomName);
 		}
 
-		private static List<SearchResult> SearchUsersUnsafe(ISession s, string search, Func<ICriteria, ICriteria> filter = null, bool includeOrganizationName = false, params Expression<Func<UserLookup, object>>[] lookAt) {
+		private static List<SearchResult> SearchUsersUnsafe(ISession s, string search, Func<ICriteria, ICriteria> filter = null, bool includeOrganizationName = false,/* bool or = false,*/ params Expression<Func<UserLookup, object>>[] lookAt) {
 			var selectors = new SearchSelectors<UserLookup>(RGMType.User, includeOrganizationName) {
 				Email = x => x.Email,
 				Id = x => x.UserId,
 				Description = x => x.Positions,
 				OrganizationId = x => x.OrganizationId,
 				Name = x => x.Name,
-				ImageUrl = x=>x._ImageUrlSuffix,
+				ImageUrl = x => x._ImageUrlSuffix,
 				ImageUrlTransform = x => UserLookup.TransformImageSuffix(x.ImageUrl),
-				DescriptionTransform = x=> {
+				DescriptionTransform = x => {
 					var o = x.Description;
 					if (includeOrganizationName && !string.IsNullOrWhiteSpace(x.Organization))
 						o += " at " + x.Organization;
@@ -273,6 +334,6 @@ namespace RadialReview.Accessors {
 				lookAt = new Expression<Func<UserLookup, object>>[] { x => x.Name, x => x.Email, x => x.Positions };
 			return SearchAbstract<UserLookup>(s, search, filter, selectors, lookAt);
 		}
-		
+
 	}
 }

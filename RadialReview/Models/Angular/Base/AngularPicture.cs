@@ -19,7 +19,8 @@ namespace RadialReview.Models.Angular.Base {
 			Initials = "";
 			if (model is UserOrganizationModel)
 				Initials = ((UserOrganizationModel)model).GetInitials();
-			
+			else
+				Initials = string.Join(" ", Name.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Where(x => x.Length > 0).Select(x => x[0]));
 		}
 		public string ImageUrl { get; set; }
 		public string Name { get; set; }

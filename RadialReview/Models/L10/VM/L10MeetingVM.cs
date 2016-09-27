@@ -9,6 +9,7 @@ using RadialReview.Models.Todo;
 using System.Runtime.Serialization;
 using RadialReview.Utilities;
 using RadialReview.Models.UserModels;
+using RadialReview.Model.Enums;
 
 namespace RadialReview.Models.L10.VM
 {
@@ -23,6 +24,7 @@ namespace RadialReview.Models.L10.VM
         public List<ProfilePictureVM> MemberPictures { get; set; }
 
 		public ScorecardPeriod ScorecardType { get; set; }
+		public PeopleHeadlineType HeadlineType { get; set; }
 
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }

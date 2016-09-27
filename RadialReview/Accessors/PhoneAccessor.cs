@@ -18,6 +18,12 @@ using RadialReview.Utilities;
 namespace RadialReview.Accessors {
 	public class PhoneAccessor : BaseAccessor {
 
+
+		public const string TODO = "todo";
+		public const string HEADLINE = "headline";
+		public const string ISSUE = "issue";
+
+
 		public static List<CallablePhoneNumber> GetUnusedCallablePhoneNumbersForUser(ISession s, PermissionsUtility perms, long userId) {
 			perms.Self(userId);
 
@@ -97,7 +103,7 @@ namespace RadialReview.Accessors {
 
 
 			switch (found.Action) {
-				case "todo":
+				case TODO:
 
 					var todoModel = new TodoModel() {
 						AccountableUser = found.Caller,
@@ -123,7 +129,7 @@ namespace RadialReview.Accessors {
 
 					await TodoAccessor.CreateTodo(found.Caller, found.ForId, todoModel);
 					return "Added todo.";
-				case "issue":
+				case ISSUE:
 					await IssuesAccessor.CreateIssue(found.Caller, found.ForId, found.Caller.Id, new IssueModel() {
 						CreatedById = found.Caller.Id,
 						CreatedDuringMeetingId = null,
@@ -136,6 +142,28 @@ namespace RadialReview.Accessors {
 
 					});
 					return "Added issue.";
+				case HEADLINE: {
+						//var allGrams = new List<String>();
+						//allGrams.AddRange(StringExtensions.GetNGrams(body, 2));
+						//allGrams.AddRange(StringExtensions.GetNGrams(body, 1));
+
+						//var users = L10Accessor.GetAttendees(found.Caller, found.ForId);
+
+						//var userLookup = DistanceUtility.TryMatch(allGrams, users);
+
+						await HeadlineAccessor.CreateHeadline(found.Caller, new PeopleHeadline() {
+							AboutId = null,
+							CreatedBy = found.Caller.Id,
+							OrganizationId = found.Caller.Organization.Id,
+							Owner = found.Caller,
+							OwnerId = found.Caller.Id,
+							RecurrenceId  = found.ForId,								
+							AboutName = "n/a",
+							_Details = "-sent from phone",
+
+						});
+						return "Added headline.";
+					}
 				default:
 					throw new Exception();
 
@@ -189,7 +217,7 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller).Self(userId);
-					if(recurrenceId!=-2)
+					if (recurrenceId != -2)
 						perms.ViewL10Recurrence(recurrenceId);
 
 					var unused = GetUnusedCallablePhoneNumbersForUser(s, perms, userId);

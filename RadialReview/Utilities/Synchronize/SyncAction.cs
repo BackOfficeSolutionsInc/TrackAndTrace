@@ -88,5 +88,9 @@ namespace RadialReview.Utilities.Synchronize
 		public static SyncAction UpdateRole(long id) {
 			return new SyncAction("Role_" + id);
 		}
+
+		public static SyncAction UpdateHeadlineMessage(long id) {
+			return new SyncAction("Headln_" + id);
+		}
 	}
 }

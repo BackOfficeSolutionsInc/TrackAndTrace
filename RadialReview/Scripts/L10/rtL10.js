@@ -88,6 +88,7 @@ $(function () {
 	meetingHub.client.addOrEditLogRow = addOrEditLogRow;
 
 	meetingHub.client.appendHeadline = appendHeadline;
+	meetingHub.client.updateHeadlineMessage = updateHeadlineMessage;
 
 	meetingHub.client.addTranscription = addTranscription;
 

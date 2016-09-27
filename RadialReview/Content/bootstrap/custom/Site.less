@@ -377,9 +377,14 @@ body.resizing, body.resizing *::-moz-selection {
 
 @media(max-width:768px) {
 	.navbar-icon-button.issuesModal,
+	.navbar-icon-button.headlineModal,
 	.navbar-icon-button.todoModal {
 		font-size: 16px;
 		padding: 6px 10px;
+	}
+
+	.navbar-icon-button.headlineModal {
+		font-size: 18px;
 	}
 }
 
@@ -476,11 +481,12 @@ body.resizing, body.resizing *::-moz-selection {
 	}
 }
 
-.select2-container--open .select2-dropdown--below { 
+.select2-container--open .select2-dropdown--below {
 	box-shadow: 0 6px 13px -1px rgba(0,0,0,0.5);
 }
+
 .select2-container--default .select2-selection--single {
-    border: 1px solid #ccc;
+	border: 1px solid #ccc;
 }
 
 .select2-results__option--highlighted {
@@ -490,12 +496,12 @@ body.resizing, body.resizing *::-moz-selection {
 }
 
 
-.navbar-collapse.in{
-    .btn-group.heading button{
-        display:none;
-    }
+.navbar-collapse.in {
+	.btn-group.heading button {
+		display: none;
+	}
 
-    ul.navbar-nav{
-        margin-left:-25px;
-    }
+	ul.navbar-nav {
+		margin-left: -25px;
+	}
 }

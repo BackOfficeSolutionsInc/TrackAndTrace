@@ -67,38 +67,38 @@
 			clearInterval(tid);
 			// do your work
 			var select2 = $(".selectusers-@guid").select2({
-                closeOnSelect:true,
-			    placeholder: { Name: "Who is this about?" },
-			    ajax: {
-			        url: "@searchUrl",
-			        dataType: 'json',
-			        delay: 450,
-			        data: function (params) {
-			            return {
-			                search: params.term,
-			            };
-			        },
-			        processResults: function (data, page) {
-			            data.forEach(function (d, i) {
-			                d.id = d.Id;
-			            });
-			            return {
-			                results: data
-			            };
-			        },
-			        cache: true
-			    },
-			    escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
-			    minimumInputLength: 1,
-			    templateResult: function (d) {
-			        return "@(new HtmlString(tag))<div class='searchresult clearfix' data-id='" + d.Id + "'>" + template(d) + "</div>@(new HtmlString(tagEnd))";
+				closeOnSelect:true,
+				placeholder: { Name: "Who is this about?" },
+				ajax: {
+					url: "@searchUrl",
+					dataType: 'json',
+					delay: 450,
+					data: function (params) {
+						return {
+							search: params.term,
+						};
+					},
+					processResults: function (data, page) {
+						data.forEach(function (d, i) {
+							d.id = d.Id;
+						});
+						return {
+							results: data
+						};
+					},
+					cache: true
+				},
+				escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+				minimumInputLength: 1,
+				templateResult: function (d) {
+					return "@(new HtmlString(tag))<div class='searchresult clearfix' data-id='" + d.Id + "'>" + template(d) + "</div>@(new HtmlString(tagEnd))";
 			    },
 			    templateSelection: function (d) {
 			        return "<div class='searchresult searchresult-selected'>" + template(d) + "</div>";
 			    }
-			}).on("change", function () {
-			    debugger;
-			    $("[@(nameAttr+"Text")]").val($(this).text());
+			}).on("change", function (e) {
+				//console.info($(this).select2('data')[0].Name);
+				$("[@(nameAttr+"Text")]").val($(this).select2('data')[0].Name);
 			});
 			$(window).keyup(function (e) {
 				var code = (e.keyCode ? e.keyCode : e.which);
@@ -162,13 +162,13 @@
 							}
 							try { $("body").off(key); } catch (e) { }
 							try { $("body").off(blur); } catch (e) { }
-							
+
 						}, 1);
 					});
 				}, 10);
 			});
 
-		
+
 
 
 		}, 100);

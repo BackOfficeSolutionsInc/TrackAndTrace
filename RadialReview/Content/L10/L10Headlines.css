@@ -74,6 +74,9 @@
   margin: 5px;
   margin-left: -20px;
 }
+.headlines .headlines-list .headline-row {
+  cursor: pointer;
+}
 .headlines .headlines-list .headline-row .move-icon:hover {
   color: #565656;
 }
@@ -399,4 +402,7 @@
 .headlines .fixed-pos {
   position: relative;
   width: 100%;
+}
+.headlines.headline-type-HeadlinesList .page-header {
+  margin-bottom: 0;
 }

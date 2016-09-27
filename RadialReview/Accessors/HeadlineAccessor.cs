@@ -72,7 +72,7 @@ namespace RadialReview.Accessors {
 
 			if (headline.AboutId.HasValue)
 				headline.About = s.Get<ResponsibilityGroupModel>(headline.AboutId.Value);
-
+			
 			headline.Owner = s.Get<UserOrganizationModel>(headline.OwnerId);
 
 			HooksRegistry.Each<IHeadlineHook>(x => x.CreateHeadline(s, headline));

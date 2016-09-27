@@ -34,10 +34,11 @@ namespace RadialReview.Controllers
 			public bool TodoOnly { get; internal set; }
 		}
 
-		private static string TODO = "todo";
-		private static string ISSUE = "issue";
-
-		protected static List<SelectListItem> PossibleActions = new List<SelectListItem>(){new SelectListItem(){Text = "Add an Issue", Value = ISSUE }, new SelectListItem(){Text = "Add a To-Do", Value = TODO } };
+		protected static List<SelectListItem> PossibleActions = new List<SelectListItem>(){
+			new SelectListItem(){Text = "Add an Issue", Value = PhoneAccessor.ISSUE },
+			new SelectListItem(){Text = "Add a To-Do", Value = PhoneAccessor.TODO },
+			new SelectListItem(){Text = "Add a People Headline", Value = PhoneAccessor.HEADLINE },
+		};
 
 		[Access(AccessLevel.UserOrganization)]
         public PartialViewResult Modal(long recurrenceId,bool todoOnly=false)
@@ -49,7 +50,7 @@ namespace RadialReview.Controllers
 
 			var posActions = PossibleActions.ToList();
 			if (todoOnly)
-				posActions = posActions.Where(x => x.Value == TODO).ToList();
+				posActions = posActions.Where(x => x.Value == PhoneAccessor.TODO).ToList();
 
 			var model = new PhoneVM()
 			{

@@ -312,14 +312,16 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		public static List<PeopleHeadline> GetHeadlinesForMeeting(ISession s, PermissionsUtility perms, long recurrenceId) {
+		public static List<PeopleHeadline> GetHeadlinesForMeeting(ISession s, PermissionsUtility perms, long recurrenceId, bool includeClosed = false) {
 			perms.ViewL10Recurrence(recurrenceId);
 
-			var found = s.QueryOver<PeopleHeadline>()
-				.Where(x => x.DeleteTime == null && x.RecurrenceId == recurrenceId)
-				.Fetch(x => x.Owner).Eager
-				.Fetch(x => x.About).Eager
-				.List().ToList();
+			var foundQ = s.QueryOver<PeopleHeadline>().Where(x => x.DeleteTime == null && x.RecurrenceId == recurrenceId);
+			if (!includeClosed)
+				foundQ = foundQ.Where(x => x.CloseTime == null);
+
+			var found = foundQ.Fetch(x => x.Owner).Eager
+								.Fetch(x => x.About).Eager
+								.List().ToList();
 
 			foreach (var f in found) {
 				if (f.Owner != null) {
@@ -589,6 +591,36 @@ namespace RadialReview.Accessors {
 			return available;
 		}
 
+		public static void UpdateHeadline(UserOrganizationModel caller, long headlineId, string message) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					var headline = s.Get<PeopleHeadline>(headlineId);
+					perms.EditL10Recurrence(headline.RecurrenceId);
+
+					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateHeadlineMessage(headlineId));
+					headline.Message = message;
+					s.Update(headline);
+
+					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+					var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(headline.RecurrenceId));
+					group.updateHeadlineMessage(headlineId, message);
+
+
+
+					group.update(new AngularUpdate() {
+						new AngularHeadline(headlineId) {
+							Name = message
+						}
+					});
+
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
 		public static List<L10VM> GetVisibleL10Recurrences(UserOrganizationModel caller, long userId, bool loadUsers) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -724,16 +756,16 @@ namespace RadialReview.Accessors {
 						id = x.Dataset
 					}).ToList(),
 					axes = new {
-						x = new { key = "x", type = "date" } ,
+						x = new { key = "x", type = "date" },
 						y = new { includeZero = true }
 					}
 				};
 
 				o.data = Series.ToDictionary(
 					s => s.Dataset,
-					s => s.Data.Select(d => new { x = d.Key, y = Math.Round(d.Value*100)/100.0m })
+					s => s.Data.Select(d => new { x = d.Key, y = Math.Round(d.Value * 100) / 100.0m })
 							   .OrderBy(x => x.x)
-							   .Where(x=>Range.StartTime<=x.x && x.x <= Range.EndTime)
+							   .Where(x => Range.StartTime <= x.x && x.x <= Range.EndTime)
 							   .ToList()
 				);
 				//var microsoftDateFormatSettings = new JsonSerializerSettings {
@@ -805,7 +837,7 @@ namespace RadialReview.Accessors {
 											return new List<KeyValuePair<DateTime, decimal>>();
 										var num = x.Sum(y => y.TodoCompletion.Numerator);
 
-										return (new KeyValuePair<DateTime, decimal>(x.Key, num / den*100)).AsList();
+										return (new KeyValuePair<DateTime, decimal>(x.Key, num / den * 100)).AsList();
 									})
 					};
 
@@ -1927,7 +1959,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		public async static Task ConcludeMeeting(UserOrganizationModel caller, long recurrenceId, List<System.Tuple<long, decimal?>> ratingValues, bool sendEmail, bool closeTodos) {
+		public async static Task ConcludeMeeting(UserOrganizationModel caller, long recurrenceId, List<System.Tuple<long, decimal?>> ratingValues, bool sendEmail, bool closeTodosAndHeadlines) {
 			var unsent = new List<Mail>();
 			L10Meeting meeting = null;
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -1946,7 +1978,7 @@ namespace RadialReview.Accessors {
 						if (todo.CreateTime < meeting.StartTime) {
 							if (todo.CompleteTime != null) {
 								todo.CompleteDuringMeetingId = meeting.Id;
-								if (closeTodos) {
+								if (closeTodosAndHeadlines) {
 									todo.CloseTime = now;
 								}
 								s.Update(todo);
@@ -1954,6 +1986,19 @@ namespace RadialReview.Accessors {
 							todoRatio.Add(todo.CompleteTime != null ? 1 : 0, 1);
 						}
 					}
+
+					if (closeTodosAndHeadlines) {
+						var headlines = GetHeadlinesForMeeting(s, perms, recurrenceId);
+
+						foreach (var headline in headlines) {
+							if (headline.CloseTime == null) {
+								headline.CloseDuringMeetingId = meeting.Id;
+								headline.CloseTime = now;
+							}
+							s.Update(headline);
+						}
+					}
+
 					//s.QueryOver<TodoModel>().Where(x=>x.CompleteTime)
 					//foreach(var todo )
 
@@ -2308,10 +2353,8 @@ namespace RadialReview.Accessors {
 				using (var tx = s.BeginTransaction()) {
 					var p = PermissionsUtility.Create(s, caller);
 					//forUsers.Distinct().ForEach(x => p.ManagesUserOrganizationOrSelf(x));
-
 					//s.QueryOver<TodoModel>().Where(x=>x.)
 					throw new Exception("todo");
-
 				}
 			}
 		}
@@ -3519,7 +3562,7 @@ namespace RadialReview.Accessors {
 				var et = range.EndTime.AddDays(1);
 				headlineListQ = headlineListQ.Where(x => x.CloseTime == null || (x.CloseTime >= st && x.CloseTime <= et));
 			}
-			
+
 			if (!includeClosed) {
 				headlineListQ = headlineListQ.Where(x => x.CloseTime == null);
 			}

@@ -5,7 +5,7 @@
 	</div>
 </div>*@
 
-<div class="scorecard meeting-page" style="clear: both;">
+@*<div class="scorecard meeting-page" style="clear: both;">
 	<div class="row">
 		<div class="col-md-12" click-anywhere-but-here="model.Selected = -1">
             <div class="component" ng-repeat1="note in model.HeadlinesUrl" style="padding:5px 10px;height:500px;">
@@ -13,4 +13,32 @@
             </div>
 		</div>
 	</div>
-</div>
+</div>*@
+
+<md-toolbar class="md-table-toolbar md-default" ng-hide="filter.show == true">
+	<div class="md-toolbar-tools">
+		<span>People Headlines</span>
+		<span flex></span>
+		@*<md-button class="md-icon-button" aria-label="Filter" ng-click="filter.show = true">
+				<md-icon>filter_list</md-icon>
+			</md-button>*@
+		<span class="headlineModal" @*data-method="CreateTodo"*@ data-recurrenceId="{{::meetingId}}" @*owner="{{::meetingId}}"*@>
+			<md-button class="md-icon-button" aria-label="Add Headline">
+				<md-tooltip md-direction="left">
+					Add People Headline
+				</md-tooltip>
+				<md-icon>add</md-icon>
+			</md-button>
+		</span>
+	</div>
+</md-toolbar>
+
+@{ Html.RenderPartial("~/Views/Headlines/partial/list.cshtml", new ViewDataDictionary(){
+		{"AddHeaders", false},
+		{"AddController", false},
+		{"AddCompletion", true},
+		{"AddDatePicker", false},
+	}); 
+}
+
+

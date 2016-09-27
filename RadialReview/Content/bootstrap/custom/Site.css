@@ -878,9 +878,13 @@ body.resizing *::-moz-selection {
 }
 @media (max-width: 768px) {
   .navbar-icon-button.issuesModal,
+  .navbar-icon-button.headlineModal,
   .navbar-icon-button.todoModal {
     font-size: 16px;
     padding: 6px 10px;
+  }
+  .navbar-icon-button.headlineModal {
+    font-size: 18px;
   }
 }
 [data-permicon] {

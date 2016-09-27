@@ -44,7 +44,7 @@ namespace RadialReview.Controllers
 				model.CanAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
 				model.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
                 model.MemberPictures = model.Recurrence._DefaultAttendees.Select(x => new ProfilePictureVM {Initials = x.User.GetInitials(),Name = x.User.GetName(),UserId=x.User.Id,Url=x.User.ImageUrl(true,ImageSize._32) }).ToList();
-
+				model.HeadlineType = recurrence.HeadlineType;
 			}
 			//Dont need the meeting 
 			switch(page){

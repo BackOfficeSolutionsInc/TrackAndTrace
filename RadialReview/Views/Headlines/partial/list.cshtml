@@ -31,19 +31,19 @@
 				<div id="Headline" class="tab-pane headline-pane scrollbox pull-left fullWidth scroller">
 					<div></div>
 					<md-table-container class="repeater-container">
-						<table class="@(orderVariable)" md-table width="100%" class="component table-hover" ng-if="(@(selector) @(filter)).length" click-anywhere-but-here="model.Selected = -1">
+						<table md-table class="@(orderVariable)" width="100%" class="component table-hover" ng-if="(@(selector) @(filter)).length" click-anywhere-but-here="model.Selected = -1">
 							<thead md-head md-order="@(orderVariable)" ng-init="functions.setValue('@(orderVariable)',@(orderVariable) || @(defaultSort))">
 								<tr class="table-header" md-row>
 									<th md-column @(attrLookup["picture-column"]) class="picture-column owner-column" style="width: 32px;" md-order-by="Owner.Name">&nbsp;</th>
 									<th md-column @(attrLookup["about-column"]) class="picture-column about-column" style="width: 32px;" md-order-by="About.Name">&nbsp;</th>
 									<th md-column @(attrLookup["message-column"]) class="message-column" md-order-by="Name">Headline</th>
-									<th md-column md-numeric @(attrLookup["createtime-column"]) class="createtime-column" md-order-by="Created">Created</th>
+									<th md-column md-numeric @(attrLookup["createtime-column"]) class="createtime-column" md-order-by="CreateTime">Created</th>
 									<th md-column md-numeric @(attrLookup["close-column"]) class="close-column alignCenter" md-order-by="CloseTime" style="width:90px;">Close</th>
 									<th md-column md-numeric @(attrLookup["delete-column"]) class="delete-column"></th>
 
 								</tr>
 							</thead>
-							<tbody md-body vs-repeat vs-autoresize vs-scroll-parent=".repeater-container">
+							<tbody md-body @*vs-repeat vs-autoresize vs-scroll-parent=".repeater-container"*@>
 								<tr id="headline_{{headline.Id}}"
 									ng-repeat="headline in @(selector) | orderBy: @(orderVariable) @(filter) track by $index"
 									ng-class="{grayRow: headline.Complete}"
@@ -51,12 +51,12 @@
 									md-row>
 									<td class="picture-column owner-column" md-cell>
 										<span class="item-wrapper place-right">
-											<span onaftersave="functions.sendUpdate(headline)"
+											@*<span onaftersave="functions.sendUpdate(headline)"
 												  editable-select="headline.Owner"
 												  onshow="loadPossibleOwners(@(meetingId))"
-												  e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]">
+												  e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]">*@
 												<profile-image user="headline.Owner"></profile-image>
-											</span>
+											@*</span>*@
 										</span>
 									</td>
 									<td class="picture-column about-column" md-cell>

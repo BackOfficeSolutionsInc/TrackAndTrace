@@ -768,10 +768,8 @@ namespace RadialReview.Controllers
 								filterContext.Controller.ViewBag.UserId = oneUser.Id;
 								filterContext.Controller.ViewBag.OrganizationId = oneUser.Organization.Id;
 								filterContext.Controller.ViewBag.Organization = oneUser.Organization;
-								filterContext.Controller.ViewBag.Hints = oneUser.User.NotNull(x => x.Hints);
-
-							}
-							else{
+								filterContext.Controller.ViewBag.Hints = oneUser.User.NotNull(x => x.Hints);								
+							}else{
 								var user = GetUserModel(s);
 								filterContext.Controller.ViewBag.Hints = user.Hints;
 								filterContext.Controller.ViewBag.UserName = user.Name() ?? MessageStrings.User;

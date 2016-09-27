@@ -7,16 +7,18 @@
 	Layout = "~/Views/L10/BasePage.cshtml";
 }
 
-<div class="headlines meeting-page">
+<div class="headlines meeting-page headline-type-@Model.Recurrence.HeadlineType">
 	<div class="row">
 		<div class="@(isList?"col-md-8":"col-md-12")">
 			<hgroup class="page-header @(isList?"listing fixed-pos":"")">
 				<div class="pull-right">
-					<div class="btn-group">
-						<a class="btn btn-default btn-xs headlineModal" data-recurrenceId="@Model.Recurrence.Id">
-							<span class="icon fontastic-icon-plus" style="color:#5e5e5e"></span>Add Headline
-						</a>
-					</div>
+					@if (isList) {
+						<div class="btn-group">
+							<a class="btn btn-default btn-xs headlineModal" data-recurrenceId="@Model.Recurrence.Id">
+								<span class="icon fontastic-icon-plus" style="color:#5e5e5e"></span>Add Headline
+							</a>
+						</div>
+					}
 
 					@Html.Partial("partial/ButtonBar", Model)
 				</div>
@@ -43,10 +45,12 @@
 				</div>
 			} else if (isList) {
 				<div class="headlines-container " style="margin-bottom:128px;">
-					<ol class="headlines-list sortable init-@(guid)">@foreach (var i in Model.Headlines.OrderBy(x => x.CreateTime)) {
+					<ol class="headlines-list sortable init-@(guid)">
+						@foreach (var i in Model.Headlines.OrderBy(x => x.CreateTime)) {
 						var vm = new ViewDataDictionary { { "MeetingId", Model.Meeting.Id }, { "Organization", ViewBag.Organization }, { "MeetingStart", Model.Meeting.StartTime } };
 						@Html.Partial("~/Views/L10/partial/HeadlineRow.cshtml", i, vm)
-					}</ol>
+					}
+				</ol>
 			</div>
 
 			}

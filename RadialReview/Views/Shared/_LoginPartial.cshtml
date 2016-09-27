@@ -3,25 +3,28 @@
 @using Microsoft.AspNet.Identity
 @using RadialReview.Properties
 
-@if (ViewBag.NoLogin != true) { 
+@if (ViewBag.NoLogin != true) {
 	if (Request.IsAuthenticated) {
 		using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" })) {
 			@Html.AntiForgeryToken()
 
 			<span class="pull-left navbar-icon-container hidden-xs">
 				@if (((int?)ViewBag.Organizations ?? 0) > 0) {
-					<span id="header-tab-new-issue" class="navbar-icon-button icon fontastic-icon-pinboard glyphico1n glyphicon-pushpi1n issuesModal" data-method="CreateIssueRecurrence" title="New Issue"></span>
+					if (ViewBag.ShowL10) {
+						<span id="header-tab-new-headline" class="navbar-icon-button icon fontastic-icon-bookmark headlineModal" title="New People Headline"></span>
+						<span id="header-tab-new-issue" class="navbar-icon-button icon fontastic-icon-pinboard glyphico1n glyphicon-pushpi1n issuesModal" data-method="CreateIssueRecurrence" title="New Issue"></span>
+					}
 					<span id="header-tab-new-todo" class="navbar-icon-button glyphicon glyphicon-check todoModal" data-method="CreateTodoRecurrence" title="New To-do"></span>
 				}
 			</span>
 
-		<span class="hidden-sm hidden-xs" id="header-tab-profile-picture">
-			@Html.Partial("_Picture", (string)ViewBag.UserImage, new ViewDataDictionary(){
+			<span class="hidden-sm hidden-xs" id="header-tab-profile-picture">
+				@Html.Partial("_Picture", (string)ViewBag.UserImage, new ViewDataDictionary(){
 					{ "ImageTitle", ((string)ViewBag.UsersName) },
 					{ "Initials", ViewBag.UserInitials },
 					{ "Color", ViewBag.UserColor }
 				})
-		</span>
+			</span>
 			<ul class="nav navbar-nav navbar-right1">
 				<li>
 
@@ -48,10 +51,10 @@
 								doDivider = true;
 							}
 							@*<li>
-						<a onclick="setHints(@((!(bool?)ViewBag.Hints??true).ToString().ToLower()))">
-							Hints<div class="pull-right">@(((bool?)ViewBag.Hints ?? true).GetIcon())</div>
-						</a>
-					</li>*@
+									<a onclick="setHints(@((!(bool?)ViewBag.Hints??true).ToString().ToLower()))">
+										Hints<div class="pull-right">@(((bool?)ViewBag.Hints ?? true).GetIcon())</div>
+									</a>
+								</li>*@
 							@if (ViewBag.ManagingOrganization ?? false) {
 								<li>
 									<a href="@Url.Action("Advanced", "Manage")" title1="Add credit card information, edit advanced settings" id="header-tab-dropdown-advancedsettings">
@@ -74,7 +77,7 @@
 							<li>@Html.ActionLink("My Settings", "Manage", "Account")</li>
 
 							<li class="divider"></li>
-								<li><a href="#" onclick="supportEmail('@ViewBag.Title','@ProductStrings.SupportEmail')"><span class="icon fontastic-icon-lifebuoy pull-right" style="color:#EF7622"></span>Contact Support</a></li>
+							<li><a href="#" onclick="supportEmail('@ViewBag.Title','@ProductStrings.SupportEmail')"><span class="icon fontastic-icon-lifebuoy pull-right" style="color:#EF7622"></span>Contact Support</a></li>
 							<li class="divider"></li>
 							@if (((int?)ViewBag.Organizations ?? 0) > 1) {
 								<li class="@(((int?)ViewBag.Organizations ?? 0 )> 1?"":"disabled")" id="header-tab-dropdown-changeorganization">
@@ -94,28 +97,28 @@
 				<li></li>
 			</ul>
 
-		}
+								}
 
-		using (var s = Html.BeginScripts()) {
-			<script>
-				function setHints(b) {
-					//TODO hit hints url
-					$.ajax({
-						url: "@Url.Action("SetHint", "Account")",
-						data: { hint: b },
-						success: function (data) {
-							location.reload();
-						}
-					});
-				}
-			</script>
-		}
-	} else {
-		<ul class="nav navbar-nav navbar-right">
-			<li>@Html.ActionLink("Sign Up", "Index", "GetStarted", routeValues: new { returnUrl = ViewBag.ReturnUrl }, htmlAttributes: new { id = "registerLink", returnUrl = Model ?? "" })</li>
-			<li>@Html.ActionLink(DisplayNameStrings.login, "Login", "Account", routeValues: new { returnUrl = ViewBag.ReturnUrl }, htmlAttributes: new { id = "loginLink", })</li>
-		</ul>
-	}
+								using (var s = Html.BeginScripts()) {
+									<script>
+										function setHints(b) {
+											//TODO hit hints url
+											$.ajax({
+												url: "@Url.Action("SetHint", "Account")",
+												data: { hint: b },
+												success: function (data) {
+													location.reload();
+												}
+											});
+										}
+									</script>
+									}
+								} else {
+									<ul class="nav navbar-nav navbar-right">
+										<li>@Html.ActionLink("Sign Up", "Index", "GetStarted", routeValues: new { returnUrl = ViewBag.ReturnUrl }, htmlAttributes: new { id = "registerLink", returnUrl = Model ?? "" })</li>
+										<li>@Html.ActionLink(DisplayNameStrings.login, "Login", "Account", routeValues: new { returnUrl = ViewBag.ReturnUrl }, htmlAttributes: new { id = "loginLink", })</li>
+									</ul>
+									}
 
 
-}
+								}

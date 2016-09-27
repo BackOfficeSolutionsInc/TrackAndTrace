@@ -790,6 +790,11 @@ function clearAlerts() {
 }
 
 function showAngularError(d, status, headers, config, statusTxt) {
+	if (typeof (d) === "undefined") {
+		showJsonAlert();
+		return;
+	}
+
 	if (typeof (d.data) !== "undefined" && d.data != null) {
 		showJsonAlert(d.data);
 	} else {
