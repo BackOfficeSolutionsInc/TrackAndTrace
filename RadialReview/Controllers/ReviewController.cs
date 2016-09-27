@@ -87,7 +87,7 @@ namespace RadialReview.Controllers {
             var reviews = _ReviewAccessor.GetReviewForUser(GetUser(), GetUser().Id, id);
 
             if (!reviews.Any())
-                throw new PermissionsException("Review does not exist.");
+                throw new PermissionsException("No reviews to complete.");
 
             if (!reviews.All(x => user.UserIds.Any(y => y == x.ForUserId)))
                 throw new PermissionsException("You cannot take this review.");

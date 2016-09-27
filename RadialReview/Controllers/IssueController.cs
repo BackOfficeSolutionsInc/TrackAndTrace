@@ -73,7 +73,8 @@ namespace RadialReview.Controllers
                     //form["NextSessionId"].ToLong()
 
                     );
-            }
+				return RedirectToAction("Index", "Reviews");
+			}
             else if (form["review"] == "issuePrereview")
             {
                 await _PrereviewAccessor.CreatePrereview(

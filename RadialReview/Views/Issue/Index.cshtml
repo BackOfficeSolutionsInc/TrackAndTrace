@@ -1,110 +1,136 @@
 ﻿@using System.Web.UI.WebControls
 @model RadialReview.Controllers.IssueReviewModel
 @{
-    ViewBag.Title = "Issue";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.Page = "Issue";
+	ViewBag.Title = "Issue";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Page = "Issue";
 }
 
 @section top{
-    <div class="jumbotron">
-        <h1>
-            @Html.ReviewName()s
-        </h1>
-    </div>
+	<div class="jumbotron">
+		<h1>
+			@Html.ReviewName()s
+		</h1>
+	</div>
 }
 
 @section header{
-    @*@Html.Partial("_ReviewsHeader")*@    
+	@*@Html.Partial("_ReviewsHeader")*@
 }
 
 <div class="panel panel-primary">
-    <div class="panel-heading">
-        Create a @Html.ReviewName():
-    </div>
-    <div class="panel-body alignCenter">
+	@*<div class="panel-heading">
+		Create a @Html.ReviewName():
+	</div>*@
+	<div class="panel-body alignCenter">
 
-        <form id="issueForm" method="post" action="/Issue/">
-            <h2 class="">Who is this @Html.ReviewName().ToLower() for?</h2>
-            <div class="row">
-                <div class="col-md-5 col-md-push-7">
-                    <p class="well">
-                        As a supervisor of this organization you can issue @Html.ReviewName().ToLower()s to teams you manage or to the organization as a whole.
-                    </p>
-                </div>
-                <div class="col-md-7 col-md-pull-5" style="padding-top: 25px;">
-                    <div class="row alignCenter" data-toggle="buttons">
-                        @*<div class="col-sm-4">
-                            <label class="btn btn-default fullWidth" onclick="loadOrganization()">
-                                <input type="radio" name="forWho" value="all" class="hidden" />All of @Model.OrganizationName
-                            </label>
-                        </div>*@
-	                    <div class="col-sm-6">
-		                    <label class="btn btn-default  fullWidth" onclick="loadTeam()">
-			                    <input type="radio" name="forWho" value="team" class="hidden" />One of my teams
-		                    </label>
-	                    </div>
-						<div class="col-sm-6">
-							<label class="btn btn-default fullWidth @((ViewBag.ShowSurvey as bool?)==true?"":"disabled")" 
-							       title="@((ViewBag.ShowSurvey as bool?) == true ? "Use the survey tool to issue to outside clients." : "Enable the survey tool to issue to outside clients.")" 
-								   onclick="@((ViewBag.ShowSurvey as bool?) == true ? "window.location = '/Survey/Edit'" : "")">
-								<input type="radio" name="forWho" value="team" class="hidden" />An outside client
+		<form id="issueForm" method="post" action="/Issue/">
+			<div style="display:none">
+				<h2 class="">Who is this @Html.ReviewName().ToLower() for?</h2>
+				<div class="row">
+					<div class="col-md-5 col-md-push-7">
+						<p class="well">
+							As a supervisor of this organization you can issue @Html.ReviewName().ToLower()s to teams you manage or to the organization as a whole.
+						</p>
+					</div>
+					<div class="col-md-7 col-md-pull-5" style="padding-top: 25px;">
+						<div class="row alignCenter" data-toggle="buttons">
+							@*<div class="col-sm-4">
+							<label class="btn btn-default fullWidth" onclick="loadOrganization()">
+								<input type="radio" name="forWho" value="all" class="hidden" />All of @Model.OrganizationName
 							</label>
+						</div>*@
+							<div class="col-sm-6">
+								<label class="btn btn-default  fullWidth" onclick="loadTeam()">
+									<input type="radio" name="forWho" value="team" class="hidden" />One of my teams
+								</label>
+							</div>
+							<div class="col-sm-6">
+								<label class="btn btn-default fullWidth @((ViewBag.ShowSurvey as bool?)==true?"":"disabled")"
+									   title="@((ViewBag.ShowSurvey as bool?) == true ? "Use the survey tool to issue to outside clients." : "Enable the survey tool to issue to outside clients.")"
+									   onclick="@((ViewBag.ShowSurvey as bool?) == true ? "window.location = '/Survey/Edit'" : "")">
+									<input type="radio" name="forWho" value="team" class="hidden" />An outside client
+								</label>
+							</div>
 						</div>
-                    </div>
-                </div>
-            </div>
-            <input type="hidden" name="TimeZoneOffset" id="TimeZoneOffset" value="" />
-            <input type="hidden" name="TeamId" id="TeamId" value="@ViewBag.OrganizationId">
+					</div>
+				</div>
+				<input type="hidden" name="TimeZoneOffset" id="TimeZoneOffset" value="" />
+				<input type="hidden" name="TeamId" id="TeamId" value="@ViewBag.OrganizationId">
 
-            <div id="pageIndex">
+			</div>
+			<div id="pageIndex">
 
-            </div>
-        </form>
-    </div>
+			</div>
+		</form>
+	</div>
 </div>
 
 
-@using (Html.BeginScripts())
-{
-    <script>
-        
-        var offset = new Date().getTimezoneOffset();
-        $("#TimeZoneOffset").val(offset/60);
+@using (Html.BeginScripts()) {
+	<script>
+
+		var offset = new Date().getTimezoneOffset();
+		$("#TimeZoneOffset").val(offset / 60);
 
 
-        function loadPage(selector, url) {
-            $(selector).html('<div class="alignCenter"><img src="/Content/img/ajax-loader.gif" /></div>');
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function (data) {
-                    $(selector).html(data);
+		function loadPage(selector, url) {
+			$(selector).html('<div class="alignCenter"><img src="/Content/img/ajax-loader.gif" /></div>');
+			$.ajax({
+				url: url,
+				type: 'GET',
+				success: function (data) {
+					$(selector).html(data);
 
-                }
-            });
-        }
+				}
+			});
+		}
 
-        function loadOrganization() {
-            $("#TeamId").val("@ViewBag.OrganizationId");
-            loadPage("#pageIndex", "/Issue/IssueOrganization/@ViewBag.OrganizationId");
-        }
+		function loadOrganization() {
+			$("#TeamId").val("@ViewBag.OrganizationId");
+			loadPage("#pageIndex", "/Issue/IssueOrganization/@ViewBag.OrganizationId");
+		}
 
-        function loadTeam() {
-            loadPage("#pageIndex", "/Issue/IssueTeam/" + $("#team").val());
-        }
+		function loadTeam() {
+			loadPage("#pageIndex", "/Issue/IssueTeam/" + $("#team").val());
+		}
 
-        function loadClient() {
-            loadPage("#pageIndex", "/Issue/IssueTeam/" + $("#team").val());
-        }
+		function loadClient() {
+			loadPage("#pageIndex", "/Issue/IssueTeam/" + $("#team").val());
+		}
 
-        var issuing = false;
+		var issuing = false;
 
-        window.onbeforeunload = function() {
+		window.onbeforeunload = function () {
 			if (issuing) {
 				return "Please wait until the survey has been issued before leaving the page.";
 			}
 		};
 
-    </script>
+		loadTeam();
+
+	</script>
+}
+
+@using (Html.BeginStyles()) {
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+	<style>
+		hr {
+			margin: 20px -16px;
+			height: 20px;
+			background-color: #eee;
+		}
+
+		h2 {
+			font-family: 'Roboto','Lato',sans-serif;
+			text-transform: uppercase;
+			/* font-weight: bold; */
+			color: #666;
+		}
+
+		body, html {
+			background-color: #eee;
+		}
+	</style>
 }

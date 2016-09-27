@@ -25,7 +25,7 @@
 	}
 
 	.customizeSelection .customize .selected {
-		background-color: #D7D8FF;
+		background-color: rgba(239, 118, 34, 0.24);
 		color: #000;
 	}
 
@@ -75,8 +75,11 @@
 				<label class="btn btn-default simple-btn" title="Supervisors review direct reports and vise versa">
 					<input type="radio" name="review_type" id="review_S2D_D2S" autocomplete="off"> Supervisor <b>&hArr;</b> Direct Report
 				</label>
-				<label class="btn btn-default simple-btn">
-					<input type="radio" name="review_type" id="review_S2D" autocomplete="off" title="Supervisors review direct reports only">Supervisor <b>&rArr;</b> Direct Report
+				<label class="btn btn-default simple-btn" title="Supervisors review direct reports only">
+					<input type="radio" name="review_type" id="review_S2D" autocomplete="off">Supervisor <b>&rArr;</b> Direct Report
+				</label>
+				<label class="btn btn-default simple-btn" title="No reviewer-reviewees selected">
+					<input type="radio" name="review_type" id="review_S" autocomplete="off">Blank Review
 				</label>
 			</div>
 
@@ -116,6 +119,7 @@
 					}
 				</div>
 			</div>
+			<div> &nbsp;</div>
 			<div class="row">
 
 				<div class="col-sm-10 col-sm-offset-1 bordered noselect">
@@ -207,6 +211,7 @@
 			case "review_360": $(".isDefault input, .isOrganization input").prop("checked", true); break;
 			case "review_S2D_D2S": $(".isSupervisors input, .isDirectReports input, .isOrganization input").prop("checked", true); break;
 			case "review_S2D": $(".isDirectReports input, .isOrganization input").prop("checked", true); break;
+			case "review_S": break;
 		}
 
 		switch (rself) {
