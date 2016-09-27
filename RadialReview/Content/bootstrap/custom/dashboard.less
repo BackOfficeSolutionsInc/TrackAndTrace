@@ -496,7 +496,8 @@ body.resizing .notes-tile,
 			}
 
 			.todotype-column {
-				vertical-align:top;
+				vertical-align: top;
+
 				.type-icon {
 					.glyphicon();
 					.glyphicon-user();
@@ -715,6 +716,30 @@ body.resizing .notes-tile,
 		.details-row {
 			display: none;
 			font-size: 11px;
+		}
+	}
+
+	l10-stats-tile {
+		.chart-legend {
+			max-height: 16px !important;
+			min-height: 16px !important;
+		}
+
+		.chart-tooltip {
+			//max-height: 10px !important;
+			min-height: 10px !important;
+		}
+	}
+
+	.width_1 l10-stats-tile {
+		g.axis.x-axis {
+			display: none;
+		}
+	}
+
+	.faq-tile {
+		.tile {
+			padding: 8px;
 		}
 	}
 

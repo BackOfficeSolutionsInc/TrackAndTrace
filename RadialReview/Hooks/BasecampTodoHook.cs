@@ -44,5 +44,9 @@ namespace RadialReview.Hooks {
         {
             throw new NotImplementedException();
         }
-    }
+
+		public Task UpdateDueDate(ISession s, TodoModel todo) {
+			throw new NotImplementedException();
+		}
+	}
 }

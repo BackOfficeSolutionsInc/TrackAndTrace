@@ -7,8 +7,9 @@ using System.Web;
 namespace RadialReview.Models.Enums
 {
 	public enum DateOffset
-	{
-		Invalid = 0,
+    {
+        [Display(Name = "Not set")]
+        Invalid = 0,
 		[Display(Name = "First of the month")]
 		FirstOfMonth = 1,
 		//LastOfMonth = 2,

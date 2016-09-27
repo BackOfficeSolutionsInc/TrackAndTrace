@@ -1,0 +1,47 @@
+﻿@model RadialReview.Models.L10.PeopleHeadline
+@using RadialReview.Properties
+<li class="headline-row dd-item arrowkey"
+	data-createtime="@(Model.CreateTime.ToJavascriptMilliseconds())"
+	data-closetime="@(Model.CloseTime.NotNull(x=>(long?)x.Value.ToJavascriptMilliseconds()))"
+	data-id="@Model.Id"
+	data-message="@Model.Message.EscapeHtml()"
+	data-owner="@Model.OwnerId"
+	data-ownername="@Model.Owner.GetName().EscapeHtml()"
+	data-ownerimage="@Model.Owner.ImageUrl(true,ImageSize._64)"
+	data-padid="@Model.HeadlinePadId"
+	data-about="@Model.AboutId"
+	data-aboutname="@(((Model.AboutId==null?Model.AboutName:Model.About.GetName())??"").EscapeHtml())"
+	data-aboutimage="@Model.About.NotNull(x=>x.GetImageUrl())"
+	data-createdbefore="@(ViewBag.MeetingStart == null?false:Model.CreateTime<((DateTime)ViewBag.MeetingStart))">
+	@*<div class="move-icon noselect dd-handle">
+			<span class="outer icon fontastic-icon-three-bars icon-rotate"></span>
+			<span class="inner icon fontastic-icon-primitive-square"></span>
+		</div>*@
+	<div class="btn-group pull-right">
+		<span class="icon fontastic-icon-pinboard issuesModal issuesButton"
+			  data-method="CreateHeadlineIssue"
+			  data-headline="@Model.Id"
+			  data-recurrence="@Model.RecurrenceId"
+			  data-meeting="@ViewBag.MeetingId"
+			  title="Create a Context-Aware Issue™"></span>
+		<span class='glyphicon glyphicon-unchecked todoButton issuesButton todoModal' style="padding-right: 5px"
+			  title="Create a Context-Aware To-Do™"
+			  data-headline="@Model.Id"
+			  data-meeting="@ViewBag.MeetingId"
+			  data-recurrence="@Model.RecurrenceId"
+			  data-method='CreateTodoFromHeadline'></span>
+	</div>
+	<span class="profile-image desaturate">@Html.Partial("_ProfilePicture", Model.Owner)</span>
+	<span class="profile-image">
+		@if (Model.About == null) {
+			@Html.Partial("_Picture", ConstantStrings.AmazonS3Location+ConstantStrings.ImagePlaceholder, new ViewDataDictionary() {
+				{ "ImageTitle", Model.AboutName }, { "Initials", "" },
+			})
+		} else {
+			@Html.Partial("_ProfilePicture", Model.About)
+		}
+	</span>
+	<div class="message" data-headline="@Model.Id">@Model.Message</div>
+	<div class="date-created">@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", Model.CreateTime)</div>
+
+</li>

@@ -1,0 +1,481 @@
+﻿@import (reference)"../Angular/ProfilePicture";
+
+.headlines {
+
+	.headlines-container {
+		.headlines-list:empty:after {
+			content: "No People Headlines";
+			color: #cacaca;
+			font-size: 18px;
+			font-family: 'Roboto', 'Lato', sans-serif;
+			padding: 15px;
+			text-align: center;
+			display: block;
+		}
+	}
+
+	.page-header {
+		margin-top: 0px;    
+        margin-bottom: 22px;
+
+
+		&.listing {
+			margin-top: -28px;
+			padding-top: 26px;
+			background-color: #eee;
+			z-index: 11;
+			box-shadow: 0 4px 2px -2px rgba(128, 128, 128, 0.2);
+		}
+	}
+
+	h2 {
+		margin-top: 0px;
+		margin-bottom: 0px;
+	}
+
+	h4 {
+		margin-top: 13px;
+		margin-bottom: 0px;
+	}
+
+	.headlines-list {
+
+		.move-icon {
+			display: inline-block;
+			position: relative;
+			left: -16px;
+			top: -8px;
+			cursor: move;
+			color: #8E8E8E;
+		}
+
+		.message {
+			display: inline-block;
+			position: relative;
+			top: -2px;
+			overflow: hidden;
+			-ms-text-overflow: ellipsis;
+			-o-text-overflow: ellipsis;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			width: 70%;
+			width: ~"calc(100% - 122px)";
+			font-size: 18px;
+			min-height: 19px;
+		}
+
+		.placeholder {
+			min-height: 10px;
+			border: 1px dotted gray;
+			margin: 5px;
+			margin-left: -20px;
+		}
+
+		.headline-row {
+			cursor:pointer;
+
+			.move-icon:hover {
+				color: #565656;
+			}
+
+			.btn-group {
+				display: none;
+			}
+
+			.btn-group .issuesButton {
+				color: #808080;
+				padding: 7px 2px 7px 5px;
+			}
+
+			.todoButton:hover:after {
+				position: absolute;
+				left: 5px;
+				opacity: 1;
+				content: "\e067";
+			}
+
+			.headline-row .message {
+				font-size: 95%;
+				color: #969696;
+			}
+		}
+
+		.due-date {
+			float: right;
+			width: 65px;
+			color: #808080;
+			font-size: 12px;
+			display: inline;
+			position: relative;
+			right: 0px;
+			text-align: right;
+			top: 10px;
+			display: none;
+		}
+
+		ol {
+			padding-left: 20px;
+		}
+
+		&.hideDetails ol li {
+			display: none;
+		}
+
+		.outer:before {
+			display: none;
+		}
+
+		.date-created {
+			display: none;
+		}
+
+		.headlines-details-container iframe {
+			min-height: 120px;
+		}
+
+		& > .headline-row {
+			border: 1px solid #ddd;
+			padding: 0 5px 0 0;
+			margin: 2px;
+			border: 1px solid #CCC;
+			/*background: #EEE;*/
+			background: #F5F5F5;
+			/*position: relative;*/
+			line-height: 14px;
+			box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.1);
+			-moz-transition: background-color ease .15s,color ease .15s;
+			-o-transition: background-color ease .15s,color ease .15s;
+			-webkit-transition: background-color ease .15s,color ease .15s;
+			transition: background-color ease .15s,color ease .15s;
+			border-top-left-radius: 16px;
+			border-bottom-left-radius: 16px;
+
+
+			&.selected {
+				border: 1px solid #A5ACB8;
+				/*background: #E9ECF4;*/
+				background: white;
+				box-shadow: 0px 6px 5px -2px rgba(0,0,0,0.1);
+				margin: 0 0px 4px 0px;
+				margin: -1px;
+				padding: 1px 8px 1px 3px;
+				border-top-left-radius: 17px;
+				border-bottom-left-radius: 17px;
+			}
+
+			&.selected > .todo-checkbox {
+				/*top:-5px;*/
+				margin-left: 2px;
+			}
+
+			&.selected > .desaturate {
+				left: -1px;
+			}
+
+
+			&.selected > .message {
+				/*font-weight: bold;*/
+				top: -2px;
+				position: relative;
+				/*color: #3B70CB !important;
+            text-shadow: 0 0 0 #3B70CB;*/
+				text-shadow: 0 0 0 #333;
+				/*text-shadow: 0 0 0 #3B70CB;*/
+			}
+
+			&.selected > .move-icon {
+				color: #7188B0 !important;
+			}
+
+
+			& > .todo-checkbox {
+				display: inline-block;
+				position: relative;
+				left: -21px;
+				top: -6px;
+				cursor: pointer;
+				width: 15px;
+				height: 15px;
+			}
+
+			& ol .move-icon .inner {
+				color: #969696;
+				cursor: move;
+			}
+
+			& .headline-row .move-icon > .outer {
+				display: none;
+			}
+
+			& > .move-icon > .inner {
+				display: none;
+			}
+
+			& > .message {
+				cursor: pointer;
+			}
+
+			& > .btn-group {
+				display: inline-block;
+				top: -1px;
+			}
+
+			& > ol {
+				padding-left: 35px;
+			}
+		}
+
+		& > .placeholder {
+			margin-left: 6px;
+		}
+
+		& .headlines-details-container {
+			display: none;
+		}
+	}
+
+	.dragged {
+		position: absolute;
+		top: 0;
+		opacity: .5;
+		z-index: 2000;
+		margin: 0px !important;
+		margin-top: -10px !important;
+	}
+
+	.dragged, .dragged * {
+		background-color: transparent !important;
+	}
+
+	body.dragging, body.dragging * {
+		cursor: move !important;
+	}
+
+	.createHeadlineButton:hover .headlinesButton:after {
+		position: absolute;
+		left: 0;
+		opacity: 1;
+		content: "\e067";
+	}
+
+	.headlineDetails {
+		position: relative;
+
+		.headlines-details-container {
+			padding-left: 5px;
+			border-left: 2px solid #EFEFEF;
+			padding-left: 13px;
+			margin-left: -14px;
+			min-height: 60px;
+		}
+
+		h4 {
+			margin-top: 0px;
+			margin-bottom: 4px;
+			padding-bottom: 6px;
+			border-bottom: 1px solid #eee;
+			margin-top: 0px;
+			margin-bottom: 10px;
+			min-height: 30px;
+		}
+
+		li {
+			cursor: pointer;
+			list-style-type: none;
+		}
+
+		.move-icon {
+			display: none;
+		}
+
+		.button-bar {
+			padding-top: 6px;
+
+			.btn-group {
+				margin: 2px;
+			}
+
+			.doneButton {
+				float: right;
+			}
+
+			.expandContract {
+				float: left;
+			}
+
+			.headlinesButton {
+				color: #5E5E5E;
+				top: 1px;
+				opacity: 1;
+				transition: all .4s ease;
+			}
+		}
+
+		.heading {
+			width: ~"calc(100% - 32px)";
+		}
+
+		&:empty {
+			color: #ddd;
+		}
+
+		&:empty:after {
+			content: "Click a People Headline to see its details.";
+		}
+
+		& > ol {
+			overflow: visible;
+			color: #999;
+		}
+
+		ol {
+			padding-left: 22px;
+			font-size: 12px;
+		}
+
+		& > ol .headline-row {
+			list-style-type: square;
+			overflow: visible;
+			white-space: normal;
+		}
+
+		& > ol .headline-row .message {
+			color: #666;
+		}
+
+		.createTime {
+			color: #ccc;
+			text-align: right;
+			position: absolute;
+			top: -36px;
+			right: 0px;
+		}
+
+		.details {
+			/*white-space: pre-line;*/
+			border: 1px solid #E8E8E8;
+			/*padding: 2px 6px;*/
+			padding: 0 1px 0 0;
+			color: #666;
+			font-size: 12px;
+			background-color: #FcFcFc;
+			width: 100%;
+			resize: vertical;
+			height: 116px;
+			min-height: 116px;
+		}
+
+		& > .dd-list {
+			max-height: 400px;
+			padding-bottom: 20px;
+			margin-bottom: 20px;
+			overflow-y: auto;
+			border-bottom: 1px solid #eee;
+		}
+
+		.date input {
+			border: 0px;
+			-webkit-box-shadow: none;
+			-box-shadow: none;
+			color: #767F99;
+			cursor: pointer;
+		}
+
+		.date input:hover {
+			text-decoration: underline;
+		}
+
+		.message-input {
+			width: 100%;
+			outline: none;
+			border: none;
+			border-bottom: 2px solid #EF7622;
+			margin-top: -1px;
+			color: black !important;
+		}
+
+		.message:hover {
+			border-top: 1px solid transparent;
+			border-bottom: 1px solid #EF7622;
+		}
+	}
+
+	.page-header.details {
+		color: #666;
+        margin-top:0px;
+	}
+
+	.profile-image {
+		position: relative;
+
+		&.desaturate {
+			.desaturate();
+
+
+			.picture-container {
+				width: 28px;
+				height: 28px;
+				top: -2px;
+				left: 2px;
+				border-radius: 14px;
+			}
+
+			.picture {
+				border-radius: 14px;
+
+				.initials {
+					font-size: 10px;
+				}
+			}
+		}
+	}
+
+	.picture-container {
+		position: relative;
+		top: 0px;
+		width: 32px;
+		height: 32px;
+		border: 1px solid #DDD;
+		padding: 1px;
+		background-color: white;
+	}
+
+	.picture {
+		display: inline-block;
+	}
+	/*.todo .due-date.red input.md-datepicker-input,*/
+	/*.due-date.red, .todo-pane .due-date.red {
+		color: #E23737 !important;
+		text-decoration: none;
+		/*font-weight: bold;*
+	}
+
+
+	.todo-pane .md-default-theme .md-datepicker-input, .todo-pane .md-datepicker-input {
+		color: inherit;
+		top: -4px;
+		position: relative;
+	}
+	/*.todo .due-date.green input.md-datepicker-input,*
+	.due-date.green, .todo-pane .due-date.green {
+		color: green !important;
+		text-decoration: none;
+	}*/
+	ol.sortable:not(.dragged) {
+		list-style-type: none;
+		padding: 0;
+		margin: 7px 0 9px 0px;
+		list-style: decimal;
+	}
+
+	.fixed-pos {
+		position: relative;
+		width: 100%;
+	}
+
+	&.headline-type-HeadlinesList{
+		.page-header{
+			margin-bottom:0;
+		}
+	}
+}

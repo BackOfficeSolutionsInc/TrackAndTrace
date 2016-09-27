@@ -1,39 +1,72 @@
 ﻿@model RadialReview.Models.L10.VM.L10MeetingVM
 
-<div class="headlines meeting-page">
-    <div class="row">
-        <div class="col-md-12">
-            <hgroup class="page-header">
-                <div class="pull-right">
-                    @Html.Partial("partial/ButtonBar", Model)
-                </div>
-                @*<h2>Employee/Customer Headlines <small></small></h2>*@
-                <h2>&nbsp;</h2>
-            </hgroup>
-            @*<div style="height:60px;"></div>*@
-            <div class="centered" style="width:90%;;margin-top:-22px;">
-                <div class="component">
-                    <div style="padding: 20px 70px 20px 70px">
-                        <h2>People Headlines</h2>
-                        <h4>@(new MvcHtmlString(ViewBag.CEH_Subheading))</h4>
-                    </div>
+@{
+	var isList = Model.Recurrence.HeadlineType == RadialReview.Model.Enums.PeopleHeadlineType.HeadlinesList;
+	var guid = Guid.NewGuid().ToString();
+	ViewBag.Title = "Headlines";
+	Layout = "~/Views/L10/BasePage.cshtml";
+}
 
-                    @*<textarea class="rt" id="segue"></textarea>*@
-                    @*</div>
-                        </div>
+<div class="headlines meeting-page headline-type-@Model.Recurrence.HeadlineType">
+	<div class="row">
+		<div class="@(isList?"col-md-8":"col-md-12")">
+			<hgroup class="page-header @(isList?"listing fixed-pos":"")">
+				<div class="pull-right">
+					@if (isList) {
+						<div class="btn-group">
+							<a class="btn btn-default btn-xs headlineModal" data-recurrenceId="@Model.Recurrence.Id">
+								<span class="icon fontastic-icon-plus" style="color:#5e5e5e"></span>Add Headline
+							</a>
+						</div>
+					}
 
+					@Html.Partial("partial/ButtonBar", Model)
+				</div>
+				@if (isList) {
+					<h2>People Headlines</h2>
+				}
+			</hgroup>
+			@*<div style="height:60px;"></div>*@
+			@if (!isList) {
+				<div class="centered" style="width:90%;">
+					<div class="component">
 
-                        <div class="centered" style="width:92%; margin-top:22px;height: 430px">
-                            <div class="component" style="padding: 0px">*@
-                    @if (Model.Recurrence.ShowHeadlinesBox) {
-                        <div class="headlines-notes">
-                            <iframe style="width: 100%;height: 100%; border: 1px solid #CCCCCC;width:calc(100% - 2px);" src="https://notes.traction.tools/p/@(Model.HeadlinesId)?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=@(HttpContext.Current.Server.UrlEncode(Html.UserOrganization().GetName()))"></iframe>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
+						<div style="padding: 20px 70px 20px 70px">
+							<h2>People Headlines</h2>
+							<h4>@(new MvcHtmlString(ViewBag.CEH_Subheading))</h4>
+						</div>
+
+						@if (Model.Recurrence.HeadlineType == RadialReview.Model.Enums.PeopleHeadlineType.HeadlinesBox) {
+							<div class="headlines-notes">
+								<iframe style="width: 100%;height: 100%; border: 1px solid #CCCCCC;width:calc(100% - 2px);" src="https://notes.traction.tools/p/@(Model.HeadlinesId)?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=@(HttpContext.Current.Server.UrlEncode(Html.UserOrganization().GetName()))"></iframe>
+							</div>
+						}
+					</div>
+				</div>
+			} else if (isList) {
+				<div class="headlines-container " style="margin-bottom:128px;">
+					<ol class="headlines-list sortable init-@(guid)">
+						@foreach (var i in Model.Headlines.OrderBy(x => x.CreateTime)) {
+						var vm = new ViewDataDictionary { { "MeetingId", Model.Meeting.Id }, { "Organization", ViewBag.Organization }, { "MeetingStart", Model.Meeting.StartTime } };
+						@Html.Partial("~/Views/L10/partial/HeadlineRow.cshtml", i, vm)
+					}
+				</ol>
+			</div>
+
+			}
+		</div>
+		@if (isList) {
+			<div class="col-md-4">
+				<div class="hidden-lg hidden-md" style="height: 25px;"></div>
+				<div style="">
+					<div class="fixed-pos">
+						<hgroup class="page-header details">
+							<h4>Notes</h4>
+						</hgroup>
+						<div class="component headlineDetails" id="headlineDetails"></div>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
 </div>
-
-

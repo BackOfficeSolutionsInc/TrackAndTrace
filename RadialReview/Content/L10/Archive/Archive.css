@@ -27,7 +27,7 @@ input.blend {
   padding-bottom: 7px;
   font-size: 13px;
   font-family: 'Roboto', sans-serif;
-  color: #3e3935;
+  color: #3E3935;
   -moz-transition: all .08s ease;
   -o-transition: all .08s ease;
   -webkit-transition: all .08s ease;
@@ -62,19 +62,19 @@ input.blend {
   padding-left: 4px;
 }
 input.blend:not(:disabled):focus {
-  border-bottom: 2px solid #ef7622;
+  border-bottom: 2px solid #EF7622;
 }
 textarea.blend {
   padding-left: 4px;
 }
 textarea.blend:not(:disabled):focus {
-  border: 1px solid #ef7622;
+  border: 1px solid #EF7622;
 }
 select.blend {
   padding-left: 0px;
 }
 select.blend:not(:disabled):focus {
-  border-bottom: 1px solid #ef7622;
+  border-bottom: 1px solid #EF7622;
 }
 input.blend[type='file'] {
   /*opacity: .5;
@@ -195,7 +195,7 @@ input[type=checkbox].blend:focus:before {
 }
 input[type=checkbox].blend:checked:before {
   border: 0px;
-  background-color: #ef7622;
+  background-color: #EF7622;
 }
 input[type=checkbox].blend:checked:after {
   content: "✔";
@@ -361,7 +361,7 @@ input[type=checkbox].blend:checked:after {
 .editable-wrap button:not(.nohover):hover,
 .editable-wrap button:not(.nohover):focus,
 .editable-wrap button:not(.nohover).focus {
-  color: #333333;
+  color: #333;
   text-decoration: none;
 }
 .editable-wrap button:not(.nohover):not(.btn-link):active,
@@ -389,8 +389,8 @@ fieldset[disabled] a.editable-wrap button {
   font-size: 14px;
 }
 .editable-wrap button[type="submit"] {
-  color: #ffffff;
-  background-color: #ef7622;
+  color: #fff;
+  background-color: #EF7622;
   border-color: #e76811;
   /*border-width:1px;
   font-weight:bold;*/
@@ -411,19 +411,19 @@ fieldset[disabled] a.editable-wrap button {
 }
 .editable-wrap button[type="submit"]:not(.nohover):focus,
 .editable-wrap button[type="submit"]:not(.nohover).focus {
-  color: #ffffff;
+  color: #fff;
   background-color: #cf5e0f;
   border-color: #703308;
 }
 .editable-wrap button[type="submit"]:not(.nohover):hover {
-  color: #ffffff;
+  color: #fff;
   background-color: #cf5e0f;
   border-color: #ae4f0d;
 }
 .editable-wrap button[type="submit"]:not(.nohover):active,
 .editable-wrap button[type="submit"]:not(.nohover).active,
 .open > .dropdown-toggle.editable-wrap button[type="submit"] {
-  color: #ffffff;
+  color: #fff;
   background-color: #cf5e0f;
   border-color: #ae4f0d;
 }
@@ -436,7 +436,7 @@ fieldset[disabled] a.editable-wrap button {
 .editable-wrap button[type="submit"]:not(.nohover):active:not(.nohover).focus,
 .editable-wrap button[type="submit"]:not(.nohover).active:not(.nohover).focus,
 .open > .dropdown-toggle.editable-wrap button[type="submit"]:not(.nohover).focus {
-  color: #ffffff;
+  color: #fff;
   background-color: #ae4f0d;
   border-color: #703308;
 }
@@ -463,20 +463,20 @@ fieldset[disabled] .editable-wrap button[type="submit"]:active,
 .editable-wrap button[type="submit"].disabled.active,
 .editable-wrap button[type="submit"][disabled].active,
 fieldset[disabled] .editable-wrap button[type="submit"].active {
-  background-color: #ef7622;
+  background-color: #EF7622;
   border-color: #e76811;
 }
 .editable-wrap button[type="submit"] .badge {
-  color: #ef7622;
-  background-color: #ffffff;
+  color: #EF7622;
+  background-color: #fff;
 }
 .editable-wrap button[type="submit"]:before {
   content: "\e013";
 }
 .editable-wrap button[type="button"] {
-  color: #333333;
-  background-color: #ffffff;
-  border-color: #cccccc;
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
   /*border-width:1px;
   font-weight:bold;*/
   position: relative;
@@ -495,19 +495,19 @@ fieldset[disabled] .editable-wrap button[type="submit"].active {
 }
 .editable-wrap button[type="button"]:not(.nohover):focus,
 .editable-wrap button[type="button"]:not(.nohover).focus {
-  color: #333333;
+  color: #333;
   background-color: #e6e6e6;
   border-color: #8c8c8c;
 }
 .editable-wrap button[type="button"]:not(.nohover):hover {
-  color: #333333;
+  color: #333;
   background-color: #e6e6e6;
   border-color: #adadad;
 }
 .editable-wrap button[type="button"]:not(.nohover):active,
 .editable-wrap button[type="button"]:not(.nohover).active,
 .open > .dropdown-toggle.editable-wrap button[type="button"] {
-  color: #333333;
+  color: #333;
   background-color: #e6e6e6;
   border-color: #adadad;
 }
@@ -520,7 +520,7 @@ fieldset[disabled] .editable-wrap button[type="submit"].active {
 .editable-wrap button[type="button"]:not(.nohover):active:not(.nohover).focus,
 .editable-wrap button[type="button"]:not(.nohover).active:not(.nohover).focus,
 .open > .dropdown-toggle.editable-wrap button[type="button"]:not(.nohover).focus {
-  color: #333333;
+  color: #333;
   background-color: #d4d4d4;
   border-color: #8c8c8c;
 }
@@ -547,12 +547,12 @@ fieldset[disabled] .editable-wrap button[type="button"]:active,
 .editable-wrap button[type="button"].disabled.active,
 .editable-wrap button[type="button"][disabled].active,
 fieldset[disabled] .editable-wrap button[type="button"].active {
-  background-color: #ffffff;
-  border-color: #cccccc;
+  background-color: #fff;
+  border-color: #ccc;
 }
 .editable-wrap button[type="button"] .badge {
-  color: #ffffff;
-  background-color: #333333;
+  color: #fff;
+  background-color: #333;
 }
 .editable-wrap button[type="button"]:before {
   content: "\e014";
@@ -782,6 +782,46 @@ html {
 .meeting-archive .rock-list-container .company-rock-column,
 .meeting-archive .rock-list-container .due-column {
   display: none;
+}
+.meeting-archive .headline-list-container .owner-column {
+  filter: gray;
+  filter: grayscale(0.7);
+  -webkit-filter: grayscale(0.7);
+  opacity: 0.7;
+  -moz-transition: all ease .2s;
+  -o-transition: all ease .2s;
+  -webkit-transition: all ease .2s;
+  transition: all ease .2s;
+  padding: 0 0px 0 12px !important;
+}
+.meeting-archive .headline-list-container .owner-column:hover {
+  filter: none;
+  filter: grayscale(0.3);
+  -webkit-filter: grayscale(0.3);
+  opacity: .9;
+}
+.meeting-archive .headline-list-container .owner-column .picture-container {
+  width: 28px;
+  height: 28px;
+  top: -2px;
+  left: 2px;
+  border-radius: 14px;
+}
+.meeting-archive .headline-list-container .owner-column .picture {
+  border-radius: 14px;
+}
+.meeting-archive .headline-list-container .owner-column .picture .initials {
+  font-size: 10px !important;
+}
+.meeting-archive .headline-list-container .about-column {
+  padding: 0 0px 0 4px !important;
+}
+.meeting-archive .headline-list-container .message-column {
+  padding-left: 12px !important;
+}
+.meeting-archive .headline-list-container .close-column,
+.meeting-archive .headline-list-container .createtime-column {
+  min-width: 140px;
 }
 .repeater-container {
   max-height: 800px;

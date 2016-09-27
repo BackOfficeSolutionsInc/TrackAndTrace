@@ -12,6 +12,7 @@ namespace RadialReview.Utilities.Hooks {
         Task CreateTodo(ISession s, TodoModel todo);
         Task UpdateMessage(ISession s, TodoModel todo);
         Task UpdateCompletion(ISession s, TodoModel todo);
+		Task UpdateDueDate(ISession s, TodoModel todo);
 
-    }
+	}
 }

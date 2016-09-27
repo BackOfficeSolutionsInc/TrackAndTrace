@@ -1,0 +1,11 @@
+﻿People Headlines List
+---------------
+Record individual people headlines for your meetings
+* Select Headline List in the advanced settings
+* Use the bookmark in the title-bar
+* Use your phone to Text-A-Headline
+
+
+FAQ Guide Tile
+---------------
+Use this tile to walk through the software.

@@ -567,7 +567,12 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 	var reformatArg = reformat;
 	var callbackArg = callback;
 
-	$("#modalForm input:visible,#modalForm textarea:visible,#modalForm button:not(.close):visible").first().focus();
+	var dur = 1;
+	if ($("#modalBody :focusable").first().is("select"))
+		dur = 360;
+
+	setTimeout(function () { $("#modalBody :focusable").first().focus(); }, dur);
+	//$("#modalForm input:visible,#modalForm textarea:visible,#modalForm button:not(.close):visible").first().focus();
 
 	$("#modalForm").submit(function (ev) {
 		ev.preventDefault();
@@ -647,7 +652,7 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 			else if (typeof (callbackArg) === "function")
 				callbackArg();
 		} else {
-			$('#modal input:not([type=hidden]):not(.disable):first').focus();
+			//$('#modal input:not([type=hidden]):not(.disable):first').focus();
 		}
 	}, 50);
 }
@@ -785,6 +790,11 @@ function clearAlerts() {
 }
 
 function showAngularError(d, status, headers, config, statusTxt) {
+	if (typeof (d) === "undefined") {
+		showJsonAlert();
+		return;
+	}
+
 	if (typeof (d.data) !== "undefined" && d.data != null) {
 		showJsonAlert(d.data);
 	} else {
@@ -898,42 +908,48 @@ function getInitials(name, initials) {
 
 	if (typeof (initials) === "undefined") {
 		var m = name.match(/\b\w/g) || [];
-		initials = m.join(' ');
+		var arr = [];
+		if (m.length > 0)
+			arr.push(m[0]);
+		if (m.length > 1)
+			arr.push(m[1]);
+		initials = arr.join(' ');
 	}
 	return initials;
 }
 
 function profilePicture(url, name, initials) {
 	var picture = "";
-	if (url !== "/i/userplaceholder") {
+	var hash = 0;
+	if (typeof (name) !== "string") {
+		name = "";
+	}
+	if (name.length != 0) {
+		for (var i = 0; i < name.length; i++) {
+			{
+				var chr = name.charCodeAt(i);
+				hash = ((hash << 5) - hash) + chr;
+				hash |= 0; // Convert to 32bit integer
+			}
+		}
+		//console.log(name + ": " + hash + " = " + Math.abs(hash) % 360);
+		hash = Math.abs(hash) % 360;
+	}
+	if (url !== "/i/userplaceholder" && url!==null) {
 		picture = "<span class='picture' style='background: url(" + url + ") no-repeat center center;'></span>";
 	} else {
-		var hash = 0;
-		if (typeof (name) === "undefined") {
-			name = "";
-		}
-		if (name.length != 0) {
-			for (var i = 0; i < name.length; i++) {
-				{
-					var chr = name.charCodeAt(i);
-					hash = ((hash << 5) - hash) + chr;
-					hash |= 0; // Convert to 32bit integer
-				}
-			}
-			hash = hash % 360;
+		if (name == "")
+			name = "n/a";
 
-			initials = getInitials(name, initials).toUpperCase();
-			//initials = name.match(/\b\w/g).join(' ');
-			picture = "<span class='picture' style='background-color:hsla(" + hash + ", 36%, 49%, 1);color:hsla(" + hash + ", 36%, 72%, 1)'><span class='initials'>" + initials + "</span></span>";
-
-		}
+		initials = getInitials(name, initials).toUpperCase();
+		picture = "<span class='picture' style='background-color:hsla(" + hash + ", 36%, 49%, 1);color:hsla(" + hash + ", 36%, 72%, 1)'><span class='initials'>" + initials + "</span></span>";
 	}
 
 	return "<span class='profile-picture'>" +
-        "<span class='picture-container' title='" + escapeString(name) + "'>" +
-            picture +
-    "</span>" +
-"</span>";
+		      "<span class='picture-container' title='" + escapeString(name) + "'>" +
+					picture +
+			  "</span>" +
+		   "</span>";
 }
 
 
@@ -1064,7 +1080,7 @@ $(document).ajaxSend(function (event, jqX, ajaxOptions) {
 		ajaxOptions.url += "_clientTimestamp=" + ((+new Date()) + (window.tzoffset * 60 * 1000));
 	}
 	console.info(ajaxOptions.type + " " + ajaxOptions.url);
-	if (typeof (ajaxOptions.type) === "string" && ajaxOptions.type.toUpperCase() == "POST" && !(ajaxOptions.url.indexOf("/support/email")==0)) {
+	if (typeof (ajaxOptions.type) === "string" && ajaxOptions.type.toUpperCase() == "POST" && !(ajaxOptions.url.indexOf("/support/email") == 0)) {
 		debugger;
 		console.info(ajaxOptions.data);
 	}
@@ -1417,6 +1433,20 @@ $("body").on("click", ".todoModal:not(.disabled)", function () {
 		return true;
 	});
 });
+$("body").on("click", ".headlineModal:not(.disabled)", function () {
+	var dat = $(this).data();
+	var parm = $.param(dat);
+	var m = $(this).data("method");
+	if (!m)
+		m = "Modal";
+	var title = dat.title || "Add a people headline";
+	showModal(title, "/Headlines/" + m + "?" + parm, "/Headlines/" + m, null, function () {
+		var found = $('#modalBody').find(".select-user");
+		//if (found.length && found.val() == null)
+		//	return "You must select at least one to-do owner.";
+		return true;
+	});
+});
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function getParameterByName(name, url) {
 	if (!url) url = window.location.href;
@@ -1612,6 +1642,7 @@ function waitUntilVisible(selector, onVisible) {
 	}, onVisible, function () { }, 60, 50);
 }
 
+
 //Debounce
 (function (n, t) { var $ = n.jQuery || n.Cowboy || (n.Cowboy = {}), i; $.throttle = i = function (n, i, r, u) { function o() { function o() { e = +new Date; r.apply(h, c) } function l() { f = t } var h = this, s = +new Date - e, c = arguments; u && !f && o(); f && clearTimeout(f); u === t && s > n ? o() : i !== !0 && (f = setTimeout(u ? l : o, u === t ? n - s : n)) } var f, e = 0; return typeof i != "boolean" && (u = r, r = i, i = t), $.guid && (o.guid = r.guid = r.guid || $.guid++), o }; $.debounce = function (n, r, u) { return u === t ? i(n, r, !1) : i(n, u, r !== !1) } })(this);
 
@@ -1632,3 +1663,9 @@ Error.captureStackTrace = Error.captureStackTrace || function (obj) {
 		obj.stack = obj.stack || obj.name || "Error";
 	}
 };
+
+
+//tabbable.js
+//https://github.com/marklagendijk/jquery.tabbable/blob/master/jquery.tabbable.min.js
+!function (e) { "use strict"; function t(t) { var n = e(t), a = e(":focus"), r = 0; if (1 === a.length) { var i = n.index(a); i + 1 < n.length && (r = i + 1) } n.eq(r).focus() } function n(t) { var n = e(t), a = e(":focus"), r = n.length - 1; if (1 === a.length) { var i = n.index(a); i > 0 && (r = i - 1) } n.eq(r).focus() } function a(t) { function n(t) { return e.expr.filters.visible(t) && !e(t).parents().addBack().filter(function () { return "hidden" === e.css(this, "visibility") }).length } var a, r, i, u = t.nodeName.toLowerCase(), o = !isNaN(e.attr(t, "tabindex")); return "area" === u ? (a = t.parentNode, r = a.name, t.href && r && "map" === a.nodeName.toLowerCase() ? (i = e("img[usemap=#" + r + "]")[0], !!i && n(i)) : !1) : (/input|select|textarea|button|object/.test(u) ? !t.disabled : "a" === u ? t.href || o : o) && n(t) } e.focusNext = function () { t(":focusable") }, e.focusPrev = function () { n(":focusable") }, e.tabNext = function () { t(":tabbable") }, e.tabPrev = function () { n(":tabbable") }, e.extend(e.expr[":"], { data: e.expr.createPseudo ? e.expr.createPseudo(function (t) { return function (n) { return !!e.data(n, t) } }) : function (t, n, a) { return !!e.data(t, a[3]) }, focusable: function (t) { return a(t, !isNaN(e.attr(t, "tabindex"))) }, tabbable: function (t) { var n = e.attr(t, "tabindex"), r = isNaN(n); return (r || n >= 0) && a(t, !r) } }) }(jQuery);
+

@@ -22,13 +22,13 @@ namespace RadialReview.Controllers {
 			public List<UserOrganizationModel> PossibleUsers { get; set; }
 		}
 
-		[HttpPost]
-		[Access(AccessLevel.UserOrganization)]
-		public PartialViewResult Dropdown(PermissionDropdownVM model) {
-			PermissionsAccessor.EditPermItems(GetUser(), model);
+		//[HttpPost]
+		//[Access(AccessLevel.UserOrganization)]
+		//public PartialViewResult Dropdown(PermissionDropdownVM model) {
+		//	PermissionsAccessor.EditPermItems(GetUser(), model);
 
-			return Dropdown(model.ResId, model.ResType);
-		}
+		//	return Dropdown(model.ResId, model.ResType);
+		//}
 
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult BlankDropdownRow(string q, long resource, PermItem.ResourceType type) {

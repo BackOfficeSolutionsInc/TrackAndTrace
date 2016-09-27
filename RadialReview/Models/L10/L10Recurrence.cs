@@ -7,6 +7,7 @@ using FluentNHibernate.Mapping;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.Scorecard;
+using RadialReview.Model.Enums;
 
 namespace RadialReview.Models.L10
 {
@@ -76,7 +77,10 @@ namespace RadialReview.Models.L10
 		public virtual bool EnableTranscription { get; set; }
 
         public virtual string HeadlinesId { get; set; }
+		[Obsolete("Do not use",false)]
         public virtual bool ShowHeadlinesBox { get; set; }
+		public virtual PeopleHeadlineType HeadlineType { get; set; }
+
         public virtual L10TeamType TeamType { get; set; }
         public virtual bool IsLeadershipTeam { get; set; }
         public virtual bool CombineRocks { get; set; }
@@ -101,6 +105,7 @@ namespace RadialReview.Models.L10
             IsLeadershipTeam = true;
             Prioritization = PrioritizationType.Rank;
             ShowHeadlinesBox=false;
+			HeadlineType = PeopleHeadlineType.HeadlinesList;
             TeamType = L10TeamType.LeadershipTeam;
             CombineRocks = false;
 
@@ -115,7 +120,9 @@ namespace RadialReview.Models.L10
                 Map(x => x.VideoId);
                 Map(x => x.CombineRocks);
                 Map(x => x.Pristine);
-                Map(x => x.ShowHeadlinesBox);
+				Map(x => x.ShowHeadlinesBox);
+				Map(x => x.HeadlineType);
+
 				Map(x => x.HeadlinesId);
 				Map(x => x.CreateTime);
                 Map(x => x.MeetingInProgress);

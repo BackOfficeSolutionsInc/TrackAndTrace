@@ -54,6 +54,7 @@ using RadialReview.Models.Periods;
 using RadialReview.Models.Interfaces;
 using System.Dynamic;
 using Newtonsoft.Json;
+using RadialReview.Models.Angular.Headlines;
 
 namespace RadialReview.Accessors {
 	public class L10Accessor : BaseAccessor {
@@ -302,6 +303,39 @@ namespace RadialReview.Accessors {
 			}
 
 		}
+
+		public static List<PeopleHeadline> GetHeadlinesForMeeting(UserOrganizationModel caller, long recurrenceId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					return GetHeadlinesForMeeting(s, perms, recurrenceId);
+				}
+			}
+		}
+		public static List<PeopleHeadline> GetHeadlinesForMeeting(ISession s, PermissionsUtility perms, long recurrenceId, bool includeClosed = false) {
+			perms.ViewL10Recurrence(recurrenceId);
+
+			var foundQ = s.QueryOver<PeopleHeadline>().Where(x => x.DeleteTime == null && x.RecurrenceId == recurrenceId);
+			if (!includeClosed)
+				foundQ = foundQ.Where(x => x.CloseTime == null);
+
+			var found = foundQ.Fetch(x => x.Owner).Eager
+								.Fetch(x => x.About).Eager
+								.List().ToList();
+
+			foreach (var f in found) {
+				if (f.Owner != null) {
+					var a = f.Owner.GetName();
+					var b = f.Owner.ImageUrl(true, ImageSize._32);
+				}
+				if (f.About != null) {
+					var a = f.About.GetName();
+					var b = f.About.GetImageUrl();
+				}
+			}
+			return found;
+		}
+
 		private static List<IssueModel.IssueModel_Recurrence> _PopulateChildrenIssues(List<IssueModel.IssueModel_Recurrence> list) {
 			var output = list.Where(x => x.ParentRecurrenceIssue == null)/*.Select(x =>{
 				x.Issue._Order = x.Ordering;
@@ -557,7 +591,37 @@ namespace RadialReview.Accessors {
 			return available;
 		}
 
-		public static List<L10VM> GetVisibleL10Meetings(UserOrganizationModel caller, long userId, bool loadUsers) {
+		public static void UpdateHeadline(UserOrganizationModel caller, long headlineId, string message) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					var headline = s.Get<PeopleHeadline>(headlineId);
+					perms.EditL10Recurrence(headline.RecurrenceId);
+
+					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateHeadlineMessage(headlineId));
+					headline.Message = message;
+					s.Update(headline);
+
+					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+					var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(headline.RecurrenceId));
+					group.updateHeadlineMessage(headlineId, message);
+
+
+
+					group.update(new AngularUpdate() {
+						new AngularHeadline(headlineId) {
+							Name = message
+						}
+					});
+
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+		public static List<L10VM> GetVisibleL10Recurrences(UserOrganizationModel caller, long userId, bool loadUsers) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
@@ -692,16 +756,16 @@ namespace RadialReview.Accessors {
 						id = x.Dataset
 					}).ToList(),
 					axes = new {
-						x = new { key = "x", type = "date" } ,
+						x = new { key = "x", type = "date" },
 						y = new { includeZero = true }
 					}
 				};
 
 				o.data = Series.ToDictionary(
 					s => s.Dataset,
-					s => s.Data.Select(d => new { x = d.Key, y = Math.Round(d.Value*100)/100.0m })
+					s => s.Data.Select(d => new { x = d.Key, y = Math.Round(d.Value * 100) / 100.0m })
 							   .OrderBy(x => x.x)
-							   .Where(x=>Range.StartTime<=x.x && x.x <= Range.EndTime)
+							   .Where(x => Range.StartTime <= x.x && x.x <= Range.EndTime)
 							   .ToList()
 				);
 				//var microsoftDateFormatSettings = new JsonSerializerSettings {
@@ -773,7 +837,7 @@ namespace RadialReview.Accessors {
 											return new List<KeyValuePair<DateTime, decimal>>();
 										var num = x.Sum(y => y.TodoCompletion.Numerator);
 
-										return (new KeyValuePair<DateTime, decimal>(x.Key, num / den*100)).AsList();
+										return (new KeyValuePair<DateTime, decimal>(x.Key, num / den * 100)).AsList();
 									})
 					};
 
@@ -1895,7 +1959,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		public async static Task ConcludeMeeting(UserOrganizationModel caller, long recurrenceId, List<System.Tuple<long, decimal?>> ratingValues, bool sendEmail, bool closeTodos) {
+		public async static Task ConcludeMeeting(UserOrganizationModel caller, long recurrenceId, List<System.Tuple<long, decimal?>> ratingValues, bool sendEmail, bool closeTodosAndHeadlines) {
 			var unsent = new List<Mail>();
 			L10Meeting meeting = null;
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -1914,7 +1978,7 @@ namespace RadialReview.Accessors {
 						if (todo.CreateTime < meeting.StartTime) {
 							if (todo.CompleteTime != null) {
 								todo.CompleteDuringMeetingId = meeting.Id;
-								if (closeTodos) {
+								if (closeTodosAndHeadlines) {
 									todo.CloseTime = now;
 								}
 								s.Update(todo);
@@ -1922,6 +1986,19 @@ namespace RadialReview.Accessors {
 							todoRatio.Add(todo.CompleteTime != null ? 1 : 0, 1);
 						}
 					}
+
+					if (closeTodosAndHeadlines) {
+						var headlines = GetHeadlinesForMeeting(s, perms, recurrenceId);
+
+						foreach (var headline in headlines) {
+							if (headline.CloseTime == null) {
+								headline.CloseDuringMeetingId = meeting.Id;
+								headline.CloseTime = now;
+							}
+							s.Update(headline);
+						}
+					}
+
 					//s.QueryOver<TodoModel>().Where(x=>x.CompleteTime)
 					//foreach(var todo )
 
@@ -2276,10 +2353,8 @@ namespace RadialReview.Accessors {
 				using (var tx = s.BeginTransaction()) {
 					var p = PermissionsUtility.Create(s, caller);
 					//forUsers.Distinct().ForEach(x => p.ManagesUserOrganizationOrSelf(x));
-
 					//s.QueryOver<TodoModel>().Where(x=>x.)
 					throw new Exception("todo");
-
 				}
 			}
 		}
@@ -3407,6 +3482,7 @@ namespace RadialReview.Accessors {
 
 
 					var recur = new AngularRecurrence(recurrence);
+
 					recur.Attendees = recurrence._DefaultAttendees.Select(x => {
 						var au = AngularUser.CreateUser(x.User);
 						au.CreateTime = x.CreateTime;
@@ -3455,6 +3531,8 @@ namespace RadialReview.Accessors {
 					recur.Todos = GetAllTodosForRecurrence(s, perms, recurrenceId, includeClosed: includeHistorical, range: range).Select(x => new AngularTodo(x)).OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ToList();
 					recur.IssuesList.Issues = GetAllIssuesForRecurrence(s, perms, recurrenceId, includeCompleted: includeHistorical, range: range).Select(x => new AngularIssue(x)).OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ToList();
 
+					recur.Headlines = GetAllHeadlinesForRecurrence(s, perms, recurrenceId, includeClosed: includeHistorical, range: range).Select(x => new AngularHeadline(x)).OrderByDescending(x => x.CloseTime ?? DateTime.MaxValue).ToList();
+
 					recur.Notes = recurrence._MeetingNotes.Select(x => new AngularMeetingNotes(x)).ToList();
 					if (range == null) {
 						recur.date = new AngularDateRange() {
@@ -3473,6 +3551,33 @@ namespace RadialReview.Accessors {
 					return recur;
 				}
 			}
+		}
+
+		public static List<PeopleHeadline> GetAllHeadlinesForRecurrence(ISession s, PermissionsUtility perms, long recurrenceId, bool includeClosed, DateRange range) {
+			perms.ViewL10Recurrence(recurrenceId);
+
+			var headlineListQ = s.QueryOver<PeopleHeadline>().Where(x => x.DeleteTime == null && x.RecurrenceId == recurrenceId);
+			if (range != null && includeClosed) {
+				var st = range.StartTime.AddDays(-1);
+				var et = range.EndTime.AddDays(1);
+				headlineListQ = headlineListQ.Where(x => x.CloseTime == null || (x.CloseTime >= st && x.CloseTime <= et));
+			}
+
+			if (!includeClosed) {
+				headlineListQ = headlineListQ.Where(x => x.CloseTime == null);
+			}
+			var headlineList = headlineListQ.List().ToList();
+			foreach (var t in headlineList) {
+				if (t.About != null) {
+					var a = t.About.GetName();
+					var b = t.About.GetImageUrl();
+				}
+				if (t.Owner != null) {
+					var a = t.Owner.GetName();
+					var b = t.Owner.GetImageUrl();
+				}
+			}
+			return headlineList;
 		}
 
 		public static void Remove(UserOrganizationModel caller, BaseAngular model, long recurrenceId, string connectionId) {

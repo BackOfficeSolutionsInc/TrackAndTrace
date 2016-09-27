@@ -3,5 +3,7 @@
 	<div class="l10-stats-heading heading" style="@(ViewBag.HeadingStyle)" data-style="@(ViewBag.HeadingStyle)">
 		@(ViewBag.Name??"Level 10") - Stats
 	</div>
-	<l10-stats-tile class="" tt-url="/L10/StatsLine/@Model"></l10-stats-tile>
+    <div style="min-height:166px!important;">
+        <l10-stats-tile class="" tt-url="/L10/StatsLine/@Model"></l10-stats-tile>
+    </div>
 </div>

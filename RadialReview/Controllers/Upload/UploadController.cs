@@ -71,7 +71,7 @@ namespace RadialReview.Controllers {
         public ActionResult L10(string id = null, long recurrence = 0)
         {
             if (string.IsNullOrWhiteSpace(id)) {
-                var recurs = L10Accessor.GetVisibleL10Meetings(GetUser(), GetUser().Id, false);
+                var recurs = L10Accessor.GetVisibleL10Recurrences(GetUser(), GetUser().Id, false);
                 return View(recurs);
             }
 

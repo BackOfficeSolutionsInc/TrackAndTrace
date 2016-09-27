@@ -5,6 +5,7 @@
 @import "../../MaterialDesign/Components/MaterialDesign";
 @import "../../MaterialDesign/Components/Shading";
 @import "../../bootstrap/custom/XEditable";
+@import (reference)"../../Angular/ProfilePicture";
 
 body, html {
 	background-color: #F7F7F7;
@@ -160,6 +161,43 @@ body, html {
 			display: none;
 		}
 	}
+
+	.headline-list-container {
+
+		.owner-column {
+			.desaturate();
+			padding: 0 0px 0 12px !important;
+
+			.picture-container {
+				width: 28px;
+				height: 28px;
+				top: -2px;
+				left: 2px;
+				border-radius: 14px;
+			}
+
+			.picture {
+				border-radius: 14px;
+
+				.initials {
+					font-size: 10px !important;
+				}
+			}
+		}
+
+		.about-column {
+			padding: 0 0px 0 4px !important;
+		}
+
+		.message-column {
+			padding-left: 12px !important;
+		}
+
+		.close-column,
+		.createtime-column {
+			min-width: 140px;
+		}
+	}
 }
 
 .repeater-container {
@@ -179,4 +217,3 @@ body, html {
 	height: 40px;
 	width: 308px;
 }
-

@@ -54,7 +54,7 @@
                                 <th md-column md-numeric @(attrLookup["delete-column"]) class="delete-column"></th>
                             </tr>
                         </thead>
-                        <tbody md-body vs-repeat vs-autoresize vs-scroll-parent=".repeater-container">
+                        <tbody md-body @*vs-repeat vs-autoresize vs-scroll-parent=".repeater-container"*@>
                             <tr ng-hide="issue.Hide" ng-repeat="issue in ((@(selector)).Issues) | orderBy: @(orderVariable) @(filter)"
                                 ng-class="{grayRow: issue.Complete}"
                                 class="clickable"

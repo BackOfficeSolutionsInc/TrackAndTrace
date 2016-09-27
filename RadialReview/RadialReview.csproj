@@ -215,8 +215,19 @@
     <Compile Include="Accessors\Emailer.cs" />
     <Compile Include="Accessors\ExportAccessor.cs" />
     <Compile Include="Accessors\GroupAccessor.cs" />
+    <Compile Include="Accessors\HeadlineAccessor.cs" />
+    <Compile Include="Accessors\SearchAccessor.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="Controllers\Ac\AngularAccountabilityController.cs" />
+    <Compile Include="Controllers\HeadlinesController.cs" />
+    <Compile Include="Controllers\SearchController.cs" />
+    <Compile Include="Models\Angular\Base\AngularPicture.cs" />
+    <Compile Include="Models\Angular\Headlines\AngularHeadline.cs" />
+    <Compile Include="Models\Enums\RGMType.cs" />
+    <Compile Include="Models\Issues\HeadlineIssueVM.cs" />
+    <Compile Include="Models\L10\PeopleHeadline.cs" />
+    <Compile Include="Models\L10\PeopleHeadlineType.cs" />
+    <Compile Include="Models\Todo\HeadlineTodoVm.cs" />
     <Compile Include="Utilities\EmailUtil.cs" />
     <Compile Include="Controllers\IntegrationsController.cs" />
     <Compile Include="Hooks\BasecampTodoHook.cs" />
@@ -777,6 +788,7 @@
     <Compile Include="Utilities\FileUtilities.cs" />
     <Compile Include="Utilities\DistanceUtility.cs" />
     <Compile Include="Utilities\GraphUtility.cs" />
+    <Compile Include="Utilities\Hooks\IHeadlineHook.cs" />
     <Compile Include="Utilities\Hooks\ICreateTodo.cs" />
     <Compile Include="Utilities\Hooks\ICreateUserOrganization.cs" />
     <Compile Include="Utilities\Hooks\IDeleteUserOrganizationHook.cs" />
@@ -929,6 +941,12 @@
     </Content>
     <Content Include="Content\L10\L10.min.css">
       <DependentUpon>L10.css</DependentUpon>
+    </Content>
+    <Content Include="Content\L10\L10Headlines.css">
+      <DependentUpon>L10Headlines.less</DependentUpon>
+    </Content>
+    <Content Include="Content\L10\L10Headlines.min.css">
+      <DependentUpon>L10Headlines.css</DependentUpon>
     </Content>
     <Content Include="Content\Manage\Manage.css">
       <DependentUpon>Manage.less</DependentUpon>
@@ -1087,6 +1105,7 @@
     <Content Include="Content\Manage\Manage.less" />
     <Content Include="Content\bootstrap\custom\XEditable.less" />
     <Content Include="Content\Angular\LineChart.less" />
+    <Content Include="Content\L10\L10Headlines.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1131,6 +1150,7 @@
     <Content Include="Scripts\home\html2canvas.js" />
     <Content Include="Scripts\home\landscape.js" />
     <Content Include="Scripts\home\pretty-json.min.js" />
+    <Content Include="Scripts\jquery\jquery.tabbable.js" />
     <Content Include="Scripts\jquery\jquery.attrchange.js" />
     <Content Include="Scripts\jquery\jquery.autoNumeric.min.js" />
     <Content Include="Scripts\jquery\jquery.autoresize.js" />
@@ -1173,6 +1193,7 @@
     <Content Include="SoftwareUpdates\20160401.txt" />
     <Content Include="SoftwareUpdates\20160201.txt" />
     <Content Include="SoftwareUpdates\20160613.txt" />
+    <Content Include="SoftwareUpdates\20160927.txt" />
     <Content Include="SoftwareUpdates\20160818.txt" />
     <Content Include="SoftwareUpdates\20160622.txt" />
     <Content Include="SoftwareUpdates\20160620.txt" />
@@ -1552,7 +1573,8 @@
     <Content Include="Views\TileData\L10Notes.cshtml" />
     <Content Include="Views\Upload\UploadVTOResults.cshtml" />
     <Content Include="Views\TileData\L10Stats.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\AdminSearchAllUsers.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\SearchUsers.cshtml" />
+    <Content Include="Views\Todo\HeadlineTodoModal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-responsive.css" />
@@ -1983,6 +2005,11 @@
     <Content Include="Views\Admin\MeetingsTable.cshtml" />
     <Content Include="Views\Admin\Signups.cshtml" />
     <Content Include="Views\Admin\MergeAccounts.cshtml" />
+    <Content Include="Views\L10\partial\HeadlineRow.cshtml" />
+    <Content Include="Views\Headlines\Modal.cshtml" />
+    <Content Include="Views\L10\Details\headlinesList.cshtml" />
+    <Content Include="Views\Headlines\partial\list.cshtml" />
+    <Content Include="Views\Issues\HeadlineIssueModal.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

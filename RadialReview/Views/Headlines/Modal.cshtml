@@ -1,0 +1,67 @@
+﻿
+@model RadialReview.Controllers.HeadlinesController.HeadlineVM
+
+@Html.SecuredHiddenFor(x => x.CreatedBy)
+@Html.SecuredHiddenFor(x => x.MeetingId)
+
+@{
+	var width = "col-sm-12";
+	if (Model.ShowOwners && Model.ShowRecurrences) {
+		width = "col-sm-6";
+	}
+
+}
+
+<div class="form-group">
+	<label>About</label>
+	<div class="row ">
+		<div class="col-sm-12">
+			@Html.Partial("~/Views/Shared/EditorTemplates/SearchUsers.cshtml", new ViewDataDictionary() {
+			{"Name","AboutId"},
+			{"SearchUrl","/Search/RGM?includeTerm=true" }
+		})
+		</div>
+	</div>
+</div>
+
+<div class="form-group">
+	@Html.LabelFor(x => x.Message)
+	@Html.TextBoxFor(x => x.Message, new { @class = "form-control", placeholder = "Enter the People Headline", autocomplete = "off" })
+</div>
+<div class="form-group">
+	@Html.LabelFor(x => x.Details)
+	@Html.TextAreaFor(x => x.Details, new { @class = "form-control verticalOnly", rows = "6", placeholder = "Enter details (optional)" })
+</div>
+
+
+
+<div class="row">
+	@if (Model.ShowOwners) {
+		<div class="@width">
+			<div class="form-group">
+				<label>Owner</label>
+				<select name="@Html.NameFor(x => x.OwnerId)" class="select-user form-control" style="width: 100%;">
+					@foreach (var u in Model.PossibleOwners.OrderBy(x => x.Text)) {
+						<option value="@u.Value" @(u.Selected ? "selected" : "")>@u.Text</option>
+				}
+				</select>
+			</div>
+		</div>
+	} else {
+		@Html.HiddenFor(x => x.OwnerId)
+	}
+	@if (Model.ShowRecurrences) {
+		<div class="@width">
+			<div class="form-group">
+				<label>Meeting</label>
+				<select name="@Html.NameFor(x => x.RecurrenceId)" class="select-recurrence form-control" style="width: 100%;">
+					@foreach (var u in Model.PossibleRecurrences.OrderBy(x => x.Recurrence.Name)) {
+						<option value="@u.Recurrence.Id" @(u.Recurrence.Id == Model.RecurrenceId ? "selected" : "")>@u.Recurrence.Name</option>
+					}
+				</select>
+			</div>
+		</div>
+	} else {
+		@Html.HiddenFor(x => x.RecurrenceId)
+	}
+</div>

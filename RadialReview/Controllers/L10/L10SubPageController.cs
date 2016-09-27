@@ -44,7 +44,7 @@ namespace RadialReview.Controllers
 				model.CanAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
 				model.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
                 model.MemberPictures = model.Recurrence._DefaultAttendees.Select(x => new ProfilePictureVM {Initials = x.User.GetInitials(),Name = x.User.GetName(),UserId=x.User.Id,Url=x.User.ImageUrl(true,ImageSize._32) }).ToList();
-
+				model.HeadlineType = recurrence.HeadlineType;
 			}
 			//Dont need the meeting 
 			switch(page){
@@ -225,6 +225,9 @@ namespace RadialReview.Controllers
 		{
             ViewBag.CEH_Subheading = CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.CustomerEmployeeHeadlines_Subheading, "Share headlines about customers/clients and people in the company.<br/> Good and bad. Drop down (to the issues list) anything that needs discussion.");
 			model.HeadlinesId=model.Recurrence.HeadlinesId;
+
+			model.Headlines = L10Accessor.GetHeadlinesForMeeting(GetUser(), model.Recurrence.Id);
+
 			return PartialView("Headlines", model);
 		}
 		#endregion

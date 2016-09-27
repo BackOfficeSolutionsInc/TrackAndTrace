@@ -165,7 +165,7 @@ namespace RadialReview.Controllers
 			//if (meeting != -1)
 			//	_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
-			ViewBag.PossibleMeetings = L10Accessor.GetVisibleL10Meetings(GetUser(), GetUser().Id, false)
+			ViewBag.PossibleMeetings = L10Accessor.GetVisibleL10Recurrences(GetUser(), GetUser().Id, false)
 				.Select(x=>new MeetingVm{name=x.Recurrence.Name,id =x.Recurrence.Id})
 				.ToList();
 			
@@ -372,6 +372,58 @@ namespace RadialReview.Controllers
 				ForModelId = model.RockId,
                 Organization = GetUser().Organization,
                 _Priority = model.Priority
+			});
+			return Json(ResultObject.SilentSuccess().NoRefresh());
+			//return PartialView("ScorecardIssueModal", model);
+		}
+
+
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<PartialViewResult> CreateHeadlineIssue(long meeting, long headline) {
+			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
+
+			var s = HeadlineAccessor.GetHeadline(GetUser(), headline);
+			var recur = L10Accessor.GetCurrentL10RecurrenceFromMeeting(GetUser(), meeting);
+
+			var people = recur._DefaultAttendees.Select(x => x.User).ToList();
+			people.Add(GetUser());
+			people = people.Distinct(x => x.Id).ToList();
+
+			var possible = people.Select(x => new IssueVM.AccountableUserVM() {
+				id = x.Id,
+				imageUrl = x.ImageUrl(true, ImageSize._32),
+				name = x.GetName()
+			}).ToList();
+
+
+			var model = new HeadlineIssueVM() {
+				ByUserId = GetUser().Id,
+				Message = await s.NotNull(async x => await x.GetIssueMessage()),
+				Details = await s.NotNull(async x => await x.GetIssueDetails()),
+				MeetingId = meeting,
+				HeadlineId = headline,
+				RecurrenceId = s.RecurrenceId,
+				PossibleUsers = possible,
+				OwnerId = s.OwnerId
+			};
+			return PartialView("HeadlineIssueModal", model);
+		}
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> CreateHeadlineIssue(HeadlineIssueVM model) {
+			ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.HeadlineId, x => x.RecurrenceId);
+			_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
+
+			await IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId, model.OwnerId, new IssueModel() {
+				CreatedById = GetUser().Id,
+				//MeetingRecurrenceId = model.RecurrenceId,
+				CreatedDuringMeetingId = model.MeetingId,
+				Message = model.Message,
+				Description = model.Details,
+				ForModel = "PeopleHeadline",
+				ForModelId = model.HeadlineId,
+				Organization = GetUser().Organization,
+				_Priority = model.Priority
 			});
 			return Json(ResultObject.SilentSuccess().NoRefresh());
 			//return PartialView("ScorecardIssueModal", model);

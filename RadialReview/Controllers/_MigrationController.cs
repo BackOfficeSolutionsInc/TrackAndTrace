@@ -30,13 +30,13 @@ using RadialReview.Models.UserTemplate;
 using RadialReview.Models.Scorecard;
 using System.Web.Routing;
 using RadialReview.Utilities.RealTime;
+using RadialReview.Model.Enums;
 
 #pragma warning disable CS0219 // Variable is assigned but its value is never used
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace RadialReview.Controllers {
 	public class MigrationController : BaseController {
 		#region old
-
 		// GET: Migration
 		[Access(AccessLevel.Radial)]
 		public string M1_7_2015() {
@@ -133,7 +133,6 @@ namespace RadialReview.Controllers {
 			return count;
 		}
 
-
 		[Access(AccessLevel.Radial)]
 		public string M12_09_2014(int orgId) {
 			var count = 0;
@@ -171,7 +170,6 @@ namespace RadialReview.Controllers {
 			}
 			return count + "";
 		}
-
 
 		[Access(AccessLevel.Radial)]
 		public string M12_29_2014(long orgId, long periodId, long nextPeriodId) {
@@ -514,7 +512,6 @@ namespace RadialReview.Controllers {
 			return "" + f;
 		}
 
-
 		[Access(AccessLevel.Radial)]
 		public string M6_3_2015() {
 			var f = 0;
@@ -535,7 +532,6 @@ namespace RadialReview.Controllers {
 			}
 			return "" + f;
 		}
-
 
 		[Access(AccessLevel.Radial)]
 		public string M6_22_2015(long reviewId) {
@@ -702,7 +698,6 @@ namespace RadialReview.Controllers {
 			}
 			return "" + f;
 		}
-
 
 		[Access(AccessLevel.Radial)]
 		public string M10_27_2015() {
@@ -900,8 +895,6 @@ namespace RadialReview.Controllers {
 			return "" + f + ", " + g + ", " + h + "   --   " + f2 + ", " + g2 + ", " + h2;
 		}
 
-
-
 		[Access(AccessLevel.Radial)]
 		public string M1_18_2016() {
 			var f = 0;
@@ -1040,7 +1033,6 @@ namespace RadialReview.Controllers {
 			}
 		}
 
-
 		[Access(AccessLevel.Radial)]
 		public string M4_15_2016() {
 
@@ -1153,7 +1145,6 @@ namespace RadialReview.Controllers {
 				}
 			}
 		}
-		#endregion
 
 		[Access(Controllers.AccessLevel.Radial)]
 		public string M06_04_2016() {
@@ -1231,7 +1222,6 @@ namespace RadialReview.Controllers {
 				}
 			}
 		}
-
 
 		[Access(Controllers.AccessLevel.Radial)]
 		public string M06_27_2016() {
@@ -1422,8 +1412,6 @@ namespace RadialReview.Controllers {
 
 		}
 
-
-
 		[Access(Controllers.AccessLevel.Radial)]
 		[AsyncTimeout(20 * 60 * 1000)]
 		public string M07_21_2016() {
@@ -1456,8 +1444,6 @@ namespace RadialReview.Controllers {
 
 			return "(" + updatedA + ") ";
 		}
-
-
 
 		[Access(Controllers.AccessLevel.Radial)]
 		[AsyncTimeout(20 * 60 * 1000)]
@@ -1788,6 +1774,31 @@ namespace RadialReview.Controllers {
 					return Content(builder);
 				}
 			}
+		}
+		#endregion
+
+		[Access(Controllers.AccessLevel.Radial)]
+		[AsyncTimeout(20 * 60 * 1000)]
+		public ActionResult M09_17_2016() {
+			var builder = "";
+			var now = DateTime.UtcNow;
+			var count = 0;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+
+					var pd = s.QueryOver<L10Recurrence>().List().ToList();
+					foreach (var u in pd) {
+						u.HeadlineType = u.ShowHeadlinesBox? PeopleHeadlineType.HeadlinesBox : PeopleHeadlineType.HeadlinesList;
+						s.Update(u);
+						count += 1;
+					}
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+
+			return Content("count:"+count);
 		}
 	}
 }

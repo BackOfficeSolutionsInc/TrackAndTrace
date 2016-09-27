@@ -9,6 +9,7 @@ using RadialReview.Models.Todo;
 using System.Runtime.Serialization;
 using RadialReview.Utilities;
 using RadialReview.Models.UserModels;
+using RadialReview.Model.Enums;
 
 namespace RadialReview.Models.L10.VM
 {
@@ -23,9 +24,12 @@ namespace RadialReview.Models.L10.VM
         public List<ProfilePictureVM> MemberPictures { get; set; }
 
 		public ScorecardPeriod ScorecardType { get; set; }
+		public PeopleHeadlineType HeadlineType { get; set; }
 
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
+
+		public List<PeopleHeadline> Headlines { get; set; }
 
 		public bool CanEdit { get; set; }
 		public bool CanAdmin { get; set; }
@@ -86,6 +90,7 @@ namespace RadialReview.Models.L10.VM
 			EndDate = DateTime.UtcNow;
 			Weeks = new List<WeekVM>();
 			CurrentTranscript=new List<MeetingTranscriptVM>();
+			Headlines = new List<PeopleHeadline>();
 		}
 
 		//public bool AutoPrioritize { get; set; }

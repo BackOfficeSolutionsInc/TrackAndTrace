@@ -6,7 +6,10 @@
 			className: 'anno-width-300',
 			position: { left: "-15px" },
 			arrowPosition: "top",
-			buttons: []
+			buttons: [],
+		    onShow: function (a) {
+		        $(".navbar-collapse").addClass("in");
+		    },
 		});
 		Tours.appendParams(a, '#header-tab-l10', "createL10", "l10");
 		a.show();

@@ -1,0 +1,177 @@
+﻿
+@{
+    var guid = Guid.NewGuid().ToString().Replace("-", "");
+    var href = ViewBag.Href; //"/Account/SetRole/{0}"
+    var onclick = ViewBag.OnClick;
+    var tag = "<span";
+    var tagEnd = "</span>";
+    if (href != null) {
+        tag = "<a href=\"" + new HtmlString(string.Format(href, "\"+d.Id+\"")) + "\"";
+        tagEnd = "</a>";
+    }
+    if (onclick != null) {
+        tag += "onclick=\"" + new HtmlString(string.Format(onclick, "\"+d.Id+\"")) + "\"";
+    }
+    tag += ">";
+
+    var nameAttr = "";
+    if (ViewBag.Name != null) {
+        nameAttr = " name=" + new HtmlString(ViewBag.Name);
+    }
+
+    var searchUrl = ViewBag.SearchUrl ?? "/Search/OrganizationUsers";
+}
+
+
+<select id="selectusers-@guid" class="selectusers selectusers-@guid" @nameAttr style="width:100%;padding-right:1px;"></select>
+<input type="hidden" @(nameAttr+"Text") /> 
+<link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet" />
+<style>
+	.select2-container .select2-selection--single {
+		/*height: 28px !important;*/
+	}
+</style>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.js"></script>
+<script>
+	//$.fn.select2.amd.require(
+	//	["select2/core", "select2/utils", "select2/compat/matcher"],
+	//	function (Select2, Utils, oldMatcher) {
+	function a@(guid)() {
+		var template = function (d) {
+			var des = "";
+			var org = "";
+			var name = "";
+			var img = "";
+			if (typeof (d.Name) === "string")
+				name = d.Name;
+			if (typeof (d.Description) === "string")
+				des = " " + d.Description;
+
+			if (typeof (d.ImageUrl) === "string")
+				img = profilePicture(d.ImageUrl, name);
+
+			if (d.loading)
+				return d.text;
+
+			var markup = "<div class='searchresult-image'>" + img + "</div>" +
+			  "<div class='searchresult-meta'>" +
+				"<div class='searchresult-title'>" + name + "</div>" +
+				"<div class='searchresult-description'>" + des + "</div>" +
+			  "</div>";
+
+			return markup;
+		};
+		var tid = setInterval(function () {
+			if (document.readyState !== 'complete') return;
+			clearInterval(tid);
+			// do your work
+			var select2 = $(".selectusers-@guid").select2({
+				closeOnSelect:true,
+				placeholder: { Name: "Who is this about?" },
+				ajax: {
+					url: "@searchUrl",
+					dataType: 'json',
+					delay: 450,
+					data: function (params) {
+						return {
+							search: params.term,
+						};
+					},
+					processResults: function (data, page) {
+						data.forEach(function (d, i) {
+							d.id = d.Id;
+						});
+						return {
+							results: data
+						};
+					},
+					cache: true
+				},
+				escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+				minimumInputLength: 1,
+				templateResult: function (d) {
+					return "@(new HtmlString(tag))<div class='searchresult clearfix' data-id='" + d.Id + "'>" + template(d) + "</div>@(new HtmlString(tagEnd))";
+			    },
+			    templateSelection: function (d) {
+			        return "<div class='searchresult searchresult-selected'>" + template(d) + "</div>";
+			    }
+			}).on("change", function (e) {
+				//console.info($(this).select2('data')[0].Name);
+				$("[@(nameAttr+"Text")]").val($(this).select2('data')[0].Name);
+			});
+			$(window).keyup(function (e) {
+				var code = (e.keyCode ? e.keyCode : e.which);
+				if (code == 9 && $('.selectusers-@guid + .select2-container .select2-selection:focus').length) {
+					$(select2).select2("open");
+
+				}
+			});
+			$(".selectusers-@guid + .select2-container .select2-selection").on("focus", function () {
+				$(select2).select2("open");
+			});
+
+			var existing = false;
+			var tabOut = false;
+			var hadShift = false;
+			var selectedId = null;
+			var key, blur;
+			function getSelectedId() {
+				var open = $(".select2-results__option--highlighted");
+				if (open.length)
+					selectedId = $(".select2-results__option--highlighted .searchresult").data("id");
+				else
+					selectedId = null;
+				console.log("s:" + selectedId);
+			}
+
+			$("body").on("focus", ".select2-search__field", function () {
+				tabOut = false;
+				hadShift = false;
+				if (existing)
+					clearTimeout(existing);
+				existing = setTimeout(function () {
+					if (key) {
+						try { $("body").off(key); } catch (e) { }
+					}
+					if (blur) {
+						try { $("body").off(blur); } catch (e) { }
+					}
+					key = $("body").keydown(function (e) {
+						var code = (e.keyCode ? e.keyCode : e.which);
+						if (code == 9)
+							tabOut = true;
+						if (event.shiftKey)
+							hadShift = true;
+					});
+
+					var blurTimeout = false;
+					blur = $("body").on("focusout", ".select2-search__field", function () {
+						if (blurTimeout)
+							clearTimeout(blurTimeout);
+						//if (selectedIdInterval)
+						//	clearInterval(selectedIdInterval);
+						blurTimeout = setTimeout(function () {
+							if (tabOut) {
+								console.log("tabOut");
+								var selection = $(".selectusers-@guid + .select2-container .select2-selection");
+								if (hadShift)
+									setTimeout(function () { $.tabPrev(selection); }, 1);
+								else
+									setTimeout(function () { $.tabNext(selection); }, 1);
+							}
+							try { $("body").off(key); } catch (e) { }
+							try { $("body").off(blur); } catch (e) { }
+
+						}, 1);
+					});
+				}, 10);
+			});
+
+
+
+
+		}, 100);
+	}
+	a@(guid)();
+</script>

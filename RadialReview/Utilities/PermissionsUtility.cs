@@ -83,7 +83,7 @@ namespace RadialReview.Utilities {
 		}
 		protected static Boolean IsRadialAdmin(UserOrganizationModel caller) {
 			if (caller != null && (caller.IsRadialAdmin || (caller.User != null && caller.User.IsRadialAdmin))) {
-				if (caller.Organization !=null && (caller.Organization.Id == 1795 || caller.Organization.Id == 1634)) {
+				if (caller.Organization != null && (caller.Organization.Id == 1795 || caller.Organization.Id == 1634)) {
 					//1795 = EOSWW
 					//1634 = TT
 					return false;
@@ -92,7 +92,7 @@ namespace RadialReview.Utilities {
 			}
 			return false;
 		}
-		
+
 		#region Construction
 		protected PermissionsUtility(ISession session, UserOrganizationModel caller) {
 			this.session = session;
@@ -128,6 +128,7 @@ namespace RadialReview.Utilities {
 				return this;
 			throw new PermissionsException();
 		}
+
 		public PermissionsUtility EditUserOrganization(long userId) {
 			if (caller.Id == userId)
 				return this;
@@ -157,7 +158,7 @@ namespace RadialReview.Utilities {
 					if (IsRadialAdmin(caller))
 						return this;
 					var userOrg = session.Get<UserOrganizationModel>(userOrganizationId);
-					
+
 					if (IsManagingOrganization(userOrg.Organization.Id))
 						return this;
 
@@ -203,7 +204,7 @@ namespace RadialReview.Utilities {
 				//..was here
 
 				//Confirm this is correct. Do you want children to also be managers?
-				if (caller.IsManager() && DeepAccessor.Users.GetSubordinatesAndSelf(session, caller, caller.Id).Any(x=>x==userOrganizationId))
+				if (caller.IsManager() && DeepAccessor.Users.GetSubordinatesAndSelf(session, caller, caller.Id).Any(x => x == userOrganizationId))
 					return this;
 
 				//if (caller.IsManager() && IsOwnedBelowOrEqual(caller, x => x.Id == userOrganizationId))
@@ -840,7 +841,20 @@ namespace RadialReview.Utilities {
 			} else {
 				throw new PermissionsException("Unknown responsibility group type.");
 			}
+		}
 
+		public PermissionsUtility ViewRGM(long id) {
+			var rgm = session.Get<ResponsibilityGroupModel>(id);
+
+			if (rgm is OrganizationModel) {
+				return ViewOrganization(rgm.Id);
+			} else if (rgm is OrganizationTeamModel) {
+				return ViewTeam(rgm.Id);
+			} else if (rgm is UserOrganizationModel) {
+				return ViewUserOrganization(rgm.Id, false);
+			}
+
+			throw new PermissionsException("Unknown responsibility group type.");
 		}
 
 		#endregion
@@ -934,7 +948,7 @@ namespace RadialReview.Utilities {
 		}
 
 		public PermissionsUtility EditAttach(Attach attachTo) {
-			
+
 
 			if (IsRadialAdmin(caller))
 				return this;
@@ -946,7 +960,7 @@ namespace RadialReview.Utilities {
 
 			if (IsManagingOrganization(orgId))
 				return this;
-			
+
 			switch (attachTo.Type) {
 				case AttachType.Position:
 					return EditPositions(orgId);
@@ -955,7 +969,7 @@ namespace RadialReview.Utilities {
 				case AttachType.User:
 					return EditUserOrganization(attachTo.Id);
 				default:
-					throw new PermissionsException("Invalid attach type ("+attachTo.Type+")");
+					throw new PermissionsException("Invalid attach type (" + attachTo.Type + ")");
 			}
 
 
@@ -1233,7 +1247,7 @@ namespace RadialReview.Utilities {
 			var links = session.QueryOver<RoleLink>()
 				.Where(x => x.DeleteTime == null && x.RoleId == roleId)
 				.List()
-				.OrderBy(x=> ordering.IndexOf(x.AttachType))
+				.OrderBy(x => ordering.IndexOf(x.AttachType))
 				.ToList();
 
 			try {
@@ -1315,6 +1329,14 @@ namespace RadialReview.Utilities {
 				throw new PermissionsException("Note does not exist");
 
 			return ViewL10Recurrence(note.Recurrence.Id);
+		}
+		#endregion
+
+		#region Headlines
+
+		public PermissionsUtility ViewHeadline(long headlineId) {
+			var h = session.Get<PeopleHeadline>(headlineId);
+			return ViewL10Recurrence(h.RecurrenceId);
 		}
 		#endregion
 
@@ -1551,7 +1573,7 @@ namespace RadialReview.Utilities {
 
 
 		#endregion
-			
+
 
 		public PermissionsUtility Or(params Func<PermissionsUtility>[] or) {
 			foreach (var o in or) {

@@ -183,7 +183,7 @@ namespace RadialReview
 					hash |= 0; // Convert to 32bit integer
 				}
 			}
-			hash = hash % 360;
+			hash = Math.Abs(hash) % 360;
 			return hash;
 		}
 		public static int GetUserHashCode(this UserModel user)
@@ -198,7 +198,7 @@ namespace RadialReview
 					hash |= 0; // Convert to 32bit integer
 				}
 			}
-			hash = hash % 360;
+			hash = Math.Abs(hash) % 360;
 			return hash;
 		}
 	

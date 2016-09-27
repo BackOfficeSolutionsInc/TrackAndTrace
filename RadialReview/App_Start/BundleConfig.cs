@@ -224,6 +224,7 @@ namespace RadialReview {
 					"~/Content/L10/L10Todo.css",
 					"~/Content/L10/L10Stats.css",
 					"~/Content/L10/L10Rocks.css",
+					"~/Content/L10/L10Headlines.css",
 					"~/Content/L10/L10IDS.v2.css",
 					"~/Content/L10/L10Scorecard.css",
 					"~/Content/L10/L10Notes.css",
@@ -295,7 +296,9 @@ namespace RadialReview {
 					  "~/Scripts/jquery/jquery.tablesorter.js",
 					  "~/Scripts/Main/finally.js",
 					  "~/Scripts/Main/intercom.min.js",
-					  "~/Scripts/L10/jquery-ui.color.js"/*,
+					  "~/Scripts/L10/jquery-ui.color.js",
+					  "~/Scripts/jquery/jquery.tabbable.js"
+					  /*,
 					  "~/Scripts/Main/realtime.js"*/
 			));
 

@@ -1,23 +1,36 @@
 ﻿@using RadialReview.Models
+@using RadialReview.Models.Askables
 @model object
 
 @{
 	var M = Model as UserOrganizationModel;
 	var size = ImageSize._64;
-	if (ViewBag.Size != null){
-		switch ((int)ViewBag.Size){
-			case 32: size = ImageSize._32; break;
-			case 64: size = ImageSize._64; break;
-			case 128: size = ImageSize._128; break;
+	if (ViewBag.Size != null) {
+		switch ((int)ViewBag.Size) {
+			case 32:
+				size = ImageSize._32;
+				break;
+			case 64:
+				size = ImageSize._64;
+				break;
+			case 128:
+				size = ImageSize._128;
+				break;
 		}
 	}
-	var url = M.NotNull(x => x.ImageUrl(true,size)) ?? "/i/userplaceholder";
-	
-	var title = M.NotNull(x => x.GetName()) ?? "n/a";
+	var rgm = Model as ResponsibilityGroupModel;
+
+	var url = M.NotNull(x => x.ImageUrl(true, size)) ?? rgm.NotNull(x => x.GetImageUrl()) ?? "/i/userplaceholder";
+
+
+
+	var title = M.NotNull(x => x.GetName()) ?? rgm.NotNull(x => x.GetName()) ?? "n/a";
 	var initials = M.NotNull(x => x.GetInitials()) ?? "n/a";
 	var color = M.NotNull(x => x.GeUserHashCode());
 }
 
 <span class="profile-picture">
-	@Html.Partial("_Picture", url, new ViewDataDictionary() { { "ImageTitle", title }, { "Initials", initials }, { "Color", color} })
+@Html.Partial("_Picture", url, new ViewDataDictionary() {
+	{ "ImageTitle", title }, { "Initials", initials }, { "Color", color}
+})
 </span>

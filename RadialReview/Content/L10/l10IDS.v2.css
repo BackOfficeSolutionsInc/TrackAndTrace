@@ -1,6 +1,6 @@
 ﻿.ids .page-header {
     margin-top: 0px;
-    margin: 5px 0;
+    margin: 0px 0;
 }
 
     .ids .page-header.listing {
@@ -440,7 +440,8 @@ ol.sortable li {
 
 
     .issues-list > .issue-row > ol:not(:empty) {
-        padding-top: 5px;
+        /*padding-top: 5px;*/
+        padding-top: 0px;
     }
 
 .detailsBtn {
@@ -620,7 +621,7 @@ body.dragging, body.dragging * {
     display: none;
 }
 
-    .issueDetails > .dd-list:empty {
+    .issueDetails > .dd-list {
         display: none;
     }
 
@@ -878,7 +879,7 @@ body.dragging, body.dragging * {
     width: 24px;
     float: left;
     height: 14px;
-    top: -1px;
+    top: -3px;
     position: relative;
     left: -16px;
     text-align: center;

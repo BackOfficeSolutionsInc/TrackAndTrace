@@ -20,4 +20,15 @@
     $(".remember").on("change", onRemember);
     $(".remember").on("hidden.bs.collapse", onRemember);
     $(".remember").on("shown.bs.collapse", onRemember);
+
+
+
+    $('.navbar-collapse').on('shown.bs.collapse', function () {
+        if ($(window).width() < 768) {
+            $(this).find(".btn-group.heading").addClass("open");
+        }
+    });
+    $('.navbar-collapse').on('hidden.bs.collapse', function () {
+        $(this).find(".btn-group.heading").removeClass("open");
+    });
 });

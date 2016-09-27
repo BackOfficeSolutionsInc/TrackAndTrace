@@ -5,6 +5,7 @@
 @import "modal";
 @import (inline) '../../Tour/anno.css';
 @import (reference) "../glyphicons";
+@import (reference) "../../Angular/ProfilePicture";
 
 tr.grayRow {
 	background-image: url("/Content/img/graystripe-light.png");
@@ -376,9 +377,14 @@ body.resizing, body.resizing *::-moz-selection {
 
 @media(max-width:768px) {
 	.navbar-icon-button.issuesModal,
+	.navbar-icon-button.headlineModal,
 	.navbar-icon-button.todoModal {
 		font-size: 16px;
 		padding: 6px 10px;
+	}
+
+	.navbar-icon-button.headlineModal {
+		font-size: 18px;
 	}
 }
 
@@ -424,11 +430,11 @@ body.resizing, body.resizing *::-moz-selection {
 	white-space: nowrap;
 }
 
-.dropdown-permissions.open button{
+.dropdown-permissions.open button {
 	//border-bottom:none;
-	z-index:1001;
-	border-bottom-left-radius:0px;
-	border-bottom-right-radius:0px;
+	z-index: 1001;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
 }
 
 .permissions-dropdown-menu {
@@ -436,6 +442,65 @@ body.resizing, body.resizing *::-moz-selection {
 	border-radius: 0px 4px 4px 4px;
 }
 
-.qtip{
-	//pointer-events:none;
+.searchresult {
+	line-height: 16px;
+
+	.searchresult-image {
+		display: inline-block;
+		padding-right: 6px;
+		float: left;
+
+		.profile-picture {
+			.profile-picture;
+		}
+	}
+
+	.searchresult-meta {
+		display: inline-block;
+		float: left;
+
+		.searchresult-title {
+		}
+
+		.searchresult-description {
+			display: inline-block;
+			color: #aaa;
+			font-size: 11px;
+		}
+	}
+
+	&.searchresult-selected {
+		line-height: 32px;
+
+		.searchresult-meta {
+			.searchresult-description {
+				display: none;
+			}
+		}
+	}
+}
+
+.select2-container--open .select2-dropdown--below {
+	box-shadow: 0 6px 13px -1px rgba(0,0,0,0.5);
+}
+
+.select2-container--default .select2-selection--single {
+	border: 1px solid #ccc;
+}
+
+.select2-results__option--highlighted {
+	.searchresult .searchresult-meta .searchresult-description {
+		color: white;
+	}
+}
+
+
+.navbar-collapse.in {
+	.btn-group.heading button {
+		display: none;
+	}
+
+	ul.navbar-nav {
+		margin-left: -25px;
+	}
 }

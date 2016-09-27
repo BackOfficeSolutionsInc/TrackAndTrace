@@ -451,6 +451,7 @@ namespace RadialReview.Controllers {
 			L10Accessor.UpdateIssue(GetUser(), issueId, time.Value, complete: @checked, connectionId: connectionId);
 			return Json(ResultObject.SilentSuccess(@checked));
 		}
+
 		[Access(AccessLevel.UserOrganization)]
 		[HttpGet]
 		public JsonResult UpdateIssueCompleted(long id, bool @checked, string connectionId = null) {
@@ -459,8 +460,7 @@ namespace RadialReview.Controllers {
 			L10Accessor.UpdateIssue(GetUser(), id, time, complete: @checked, connectionId: connectionId);
 			return Json(ResultObject.SilentSuccess(@checked), JsonRequestBehavior.AllowGet);
 		}
-
-
+		
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
 		public JsonResult UpdateIssue(long id, DateTime? time = null, string message = null, string details = null, long? owner = null, int? priority = null, int? rank = null) {
@@ -468,6 +468,7 @@ namespace RadialReview.Controllers {
 			L10Accessor.UpdateIssue(GetUser(), id, time.Value, message, details, owner: owner, priority: priority, rank: rank);
 			return Json(ResultObject.SilentSuccess());
 		}
+
 		public class IssueRankVM {
 			public long id { get; set; }
 			public int rank { get; set; }
@@ -565,6 +566,19 @@ namespace RadialReview.Controllers {
 		}
 
 
+
+		#endregion
+
+		#region Headlines
+
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public JsonResult UpdateHeadline(long id, string message) {
+			var recurrenceId = id;
+			L10Accessor.UpdateHeadline(GetUser(), id, message);
+			return Json(ResultObject.SilentSuccess());
+		}
+		
 
 		#endregion
 
@@ -688,7 +702,6 @@ namespace RadialReview.Controllers {
 			var recurIssue = await L10Accessor.MoveIssueFromVto(GetUser(), vtoIssue);
 			return Json(ResultObject.SilentSuccess(recurIssue.Id), JsonRequestBehavior.AllowGet);
 		}
-
 
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult StatsLine(long id) {
