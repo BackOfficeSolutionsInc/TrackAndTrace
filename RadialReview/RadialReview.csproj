@@ -1715,7 +1715,6 @@
     <Content Include="Radial_files\radial.png" />
     <Content Include="Radial_files\radial2.png" />
     <Content Include="Radial_files\widgets.js" />
-    <Content Include="Scatter.html" />
     <Content Include="Scripts\animations\circles.js" />
     <Content Include="Scripts\bootstrap-datepicker-old.js" />
     <Content Include="Scripts\bootstrap-slider.js" />
@@ -2337,7 +2336,6 @@
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>
-    <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Data.resx">

@@ -43,12 +43,17 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.UserOrganization)]
         public PartialViewResult Modal(long recurrenceId,bool todoOnly=false)
 		{
+			var posActions = PossibleActions.ToList();
 			if (recurrenceId != -2) {
 				//Personal Todo
 				new PermissionsAccessor().Permitted(GetUser(), x => x.ViewL10Recurrence(recurrenceId));
+
+				var recur = L10Accessor.GetAngularRecurrence(GetUser(), recurrenceId, false, false, false);
+				if (recur.HeadlineType != Model.Enums.PeopleHeadlineType.HeadlinesList)
+					posActions= posActions.Where(x => x.Value != PhoneAccessor.HEADLINE).ToList();
+
 			}
 
-			var posActions = PossibleActions.ToList();
 			if (todoOnly)
 				posActions = posActions.Where(x => x.Value == PhoneAccessor.TODO).ToList();
 

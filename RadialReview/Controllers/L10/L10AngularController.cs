@@ -18,6 +18,8 @@ using RadialReview.Models.Issues;
 using System.Threading.Tasks;
 using RadialReview.Models.Todo;
 using RadialReview.Models.Angular.Users;
+using RadialReview.Models.L10;
+using RadialReview.Models.Angular.Headlines;
 
 namespace RadialReview.Controllers {
     public partial class L10Controller :BaseController {
@@ -181,11 +183,37 @@ namespace RadialReview.Controllers {
             L10Accessor.Remove(GetUser(), model, recurrenceId, connectionId);
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
-        #endregion
+		#endregion
 
-        #region Attendeees
+		#region Headline
 
-        [HttpGet]
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult UpdateAngularHeadline(AngularHeadline model, string connectionId = null) {
+			L10Accessor.Update(GetUser(), model, connectionId);
+			return Json(ResultObject.SilentSuccess());
+		}
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult RemoveAngularHeadline(long recurrenceId, AngularHeadline model, string connectionId = null) {
+			//var recurrenceId = id;
+			L10Accessor.Remove(GetUser(), model, recurrenceId, connectionId);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+		//[HttpGet]
+		//[Access(AccessLevel.UserOrganization)]
+		//public async Task<JsonResult> AddAngularHeadline(long id) {
+		//	var recurrenceId = id;
+		//	await HeadlineAccessor.CreateHeadline(GetUser(), new PeopleHeadline() {
+
+		//	});
+		//	return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		//}
+		#endregion
+
+		#region Attendeees
+
+		[HttpGet]
         [Access(AccessLevel.UserOrganization)]
         public JsonResult AddAngularUser(long id,long userid)
         {

@@ -4,9 +4,9 @@
 $(window).on("wizard:changed-page", function (e, data) {
 	setTimeout(function () {
 		try {
-			var scope = angular.element("[vs-repeat]").scope();
-			scope.$emit("vs-repeat-resize");
-			scope.$digest();
+			//var scope = angular.element("[vs-repeat]").scope();
+			//scope.$emit("vs-repeat-resize");
+			//scope.$digest();
 		} catch (e) {
 			console.error(e);
 		}
@@ -16,9 +16,9 @@ $(window).on("wizard:changed-page", function (e, data) {
 
 	setTimeout(function () {
 		try {
-			var scope = angular.element("[vs-repeat]").scope();
-			scope.$emit("vs-repeat-resize");
-			scope.$digest();
+			//var scope = angular.element("[vs-repeat]").scope();
+			//scope.$emit("vs-repeat-resize");
+			//scope.$digest();
 		} catch (e) {
 			console.error(e);
 		}

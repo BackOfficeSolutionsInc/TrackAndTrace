@@ -591,7 +591,7 @@ namespace RadialReview.Accessors {
 			return available;
 		}
 
-		public static void UpdateHeadline(UserOrganizationModel caller, long headlineId, string message) {
+		public static void UpdateHeadline(UserOrganizationModel caller, long headlineId, string message,string connectionId=null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
@@ -603,18 +603,15 @@ namespace RadialReview.Accessors {
 					s.Update(headline);
 
 					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-					var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(headline.RecurrenceId));
+					var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(headline.RecurrenceId),connectionId);
 					group.updateHeadlineMessage(headlineId, message);
-
-
-
+					
 					group.update(new AngularUpdate() {
 						new AngularHeadline(headlineId) {
 							Name = message
 						}
 					});
-
-
+					
 					tx.Commit();
 					s.Flush();
 				}
@@ -3597,6 +3594,8 @@ namespace RadialReview.Accessors {
 							RemoveMeasurable(s, perms, rt, recurrenceId, model.Id);
 						} else if (model.Type == typeof(AngularUser).Name) {
 							RemoveAttendee(s, perms, rt, recurrenceId, model.Id);
+						} else if (model.Type == typeof(AngularHeadline).Name) {
+							RemoveHeadline(s, perms, rt, recurrenceId, model.Id);
 						} else {
 							throw new PermissionsException("Unhandled type: " + model.Type);
 						}
@@ -3638,6 +3637,9 @@ namespace RadialReview.Accessors {
 			} else if (model.Type == typeof(AngularBasics).Name) {
 				var m = (AngularBasics)model;
 				UpdateRecurrence(caller, m.Id, m.Name, m.TeamType, connectionId);
+			} else if (model.Type == typeof(AngularHeadline).Name) {
+				var m = (AngularHeadline)model;
+				UpdateHeadline(caller, m.Id, m.Name, connectionId);
 			} else {
 				throw new PermissionsException("Unhandled type: " + model.Type);
 			}
@@ -3965,7 +3967,24 @@ namespace RadialReview.Accessors {
 #pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
 				}
 			}
+		}
 
+
+		public static void RemoveHeadline(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceId, long headlineId) {
+			perm.EditL10Recurrence(recurrenceId);
+
+			perm.ViewHeadline(headlineId);
+
+			var r= s.Get<PeopleHeadline>(headlineId);
+
+			var now = DateTime.UtcNow;
+			r.CloseTime = now;
+			s.Update(r);
+			rt.UpdateRecurrences(recurrenceId).Update(
+				new AngularRecurrence(recurrenceId) {
+					Headlines = AngularList.CreateFrom(AngularListType.Remove, new AngularHeadline(r.Id))
+				}
+			);			
 		}
 
 		public static void RemoveMeasurable(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceId, long measurableId) {

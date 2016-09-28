@@ -65,6 +65,7 @@
                             <li><span id="l10-wizard-attendees-btn"><a href="#Attendees">Attendees</a></span></li>
                             <li><a href="#Scorecard">Scorecard</a></li>
                             <li><a href="#Rocks">Rocks</a></li>
+							<li ng-show="model.HeadlineType=='HeadlinesList'"><a href="#Headlines">People Headlines</a></li>
                             <li><a href="#Todos">To-dos</a></li>
                             <li><a href="#Issues">Issues</a></li>
                             @*<li><a href="#VTO">V/TO</a></li>*@
@@ -129,6 +130,19 @@
                           });
                         }
                     </div>
+					<div class="component wizard-page" data-page="Headlines" id="l10-wizard-headlines" ng-show="model.HeadlineType=='HeadlinesList'">
+						@*<div class="upload upload-todos" ng-click="functions.goto('/upload/l10/todos?recurrence='+meetingId)" data-toggle="tooltip" data-placement="left" title="Upload To-dos"></div>*@
+						<div class="title-bar">People Headlines</div>
+						@{Html.RenderPartial("~/Views/Headlines/partial/list.cshtml", new ViewDataDictionary{
+							  {"AddHeaders",false},
+							  {"ShowDetails",false},
+							  {"SortBy","createtime-column"},
+							  {"AddDatePicker",false},
+							  {"DefaultSort","CreateTime"},
+							  {"Order","| orderBy: ['DateCreated','Id']"}
+						  });
+						}
+					</div>
                     <div class="component wizard-page" data-page="Todos" id="l10-wizard-todos">
                         <div class="upload upload-todos" ng-click="functions.goto('/upload/l10/todos?recurrence='+meetingId)" data-toggle="tooltip" data-placement="left" title="Upload To-dos"></div>
                         <div class="title-bar">To-do List</div>

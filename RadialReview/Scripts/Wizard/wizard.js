@@ -43,8 +43,9 @@ function changePage(page,first) {
             //cpe.css("opacity", "0");
             setTimeout(function () { cpe.removeClass("hidden"); }, 2);
 
-            cpe.fadeIn( function () {
-                cpe.removeClass("hidden")
+            cpe.fadeIn(function () {
+            	cpe.removeClass("hidden");
+            	cpe.css("opacity", "1");
                 doneLoading = true;
                 console.log("Changed page");
                 currentPage = page;

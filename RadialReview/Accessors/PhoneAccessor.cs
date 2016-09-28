@@ -28,7 +28,13 @@ namespace RadialReview.Accessors {
 			perms.Self(userId);
 
 			var numbers = s.QueryOver<CallablePhoneNumber>().Where(x => x.DeleteTime == null).List().ToList();
-			var used = s.QueryOver<PhoneActionMap>().Where(x => x.DeleteTime == null && x.Caller.Id == userId).List().ToList();
+
+			var user = s.Get<UserOrganizationModel>(userId);
+			var ids = user.UserIds.ToArray();
+
+			var used = s.QueryOver<PhoneActionMap>().Where(x => x.DeleteTime == null)
+				.WhereRestrictionOn(x=>x.Caller.Id).IsIn(ids)
+				.List().ToList();
 
 			return numbers.Where(x => used.All(y => y.SystemNumber != x.Number)).ToList();
 		}
@@ -128,7 +134,7 @@ namespace RadialReview.Accessors {
 					}
 
 					await TodoAccessor.CreateTodo(found.Caller, found.ForId, todoModel);
-					return "Added todo.";
+					return "To-do added.";
 				case ISSUE:
 					await IssuesAccessor.CreateIssue(found.Caller, found.ForId, found.Caller.Id, new IssueModel() {
 						CreatedById = found.Caller.Id,
@@ -141,14 +147,12 @@ namespace RadialReview.Accessors {
 						Organization = found.Caller.Organization,
 
 					});
-					return "Added issue.";
+					return "Issue added.";
 				case HEADLINE: {
 						//var allGrams = new List<String>();
 						//allGrams.AddRange(StringExtensions.GetNGrams(body, 2));
 						//allGrams.AddRange(StringExtensions.GetNGrams(body, 1));
-
 						//var users = L10Accessor.GetAttendees(found.Caller, found.ForId);
-
 						//var userLookup = DistanceUtility.TryMatch(allGrams, users);
 
 						await HeadlineAccessor.CreateHeadline(found.Caller, new PeopleHeadline() {
@@ -159,10 +163,11 @@ namespace RadialReview.Accessors {
 							OwnerId = found.Caller.Id,
 							RecurrenceId  = found.ForId,								
 							AboutName = "n/a",
+							Message = body,
 							_Details = "-sent from phone",
 
 						});
-						return "Added headline.";
+						return "People Headline added.";
 					}
 				default:
 					throw new Exception();

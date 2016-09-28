@@ -48,7 +48,7 @@ namespace RadialReview.Models.Angular.Meeting
 		public AngularIssuesList IssuesList { get; set; }
 		public AngularDateRange date { get; set; }
         public string HeadlinesUrl { get; set; }
-		public PeopleHeadlineType HeadlineType { get; set; }
+		public PeopleHeadlineType? HeadlineType { get; set; }
         //public PrioritizationType Prioritization { get; set; }
         public long? VtoId { get; set; }
 	}

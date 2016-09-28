@@ -562,6 +562,7 @@ button.anno-btn.right-anno-overlay {
 }
 tr.grayRow {
   background-image: url("/Content/img/graystripe-light.png");
+  background-color: rgba(62, 57, 53, 0.13);
 }
 .btn.heading:focus,
 .btn.heading:active {
