@@ -39,6 +39,8 @@ namespace RadialReview.Models
         public virtual long? _ClientTimestamp { get; set; }
         public virtual int? _ClientOffset { get; set; }
         protected virtual TimeData _timeData { get; set; }
+		public virtual bool _IsRadialAdmin { get; set; }
+
         public virtual TimeData GetTimeSettings()
         {
             if (_timeData == null)

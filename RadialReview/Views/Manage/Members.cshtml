@@ -345,6 +345,7 @@
 					<th style="width:15px;" class="alignCenter  noPadLeft"></th>
 					<th style="width:1px">Name</th>
 					<th style="width:100%">Email</th>
+					<th style="width:10px"></th>
 					<th style="min-width:10px" class="NalignCenter">Positions</th>
 					<th style="min-width:40px" class="NalignCenter">Teams</th>
 					<th style="min-width:10px" class="NalignCenter">Managers</th>
@@ -370,12 +371,12 @@
 								}*@
 
 							<span data-permicon="@(!p.IsClient)" id="permissions_@p.Id" data-isclient="@p.IsClient" data-ismanager="@p.Manager" data-isadmin="@p.Admin" @if (p.IsClient) {  @: @*class="glyphicon glyphicon-globe green strokeGreen"*@ title="A client" data-sort="0"
-								  								                                    								  							      } else { if (p.Manager) { if (p.Admin) { @: @*class="glyphicon glyphicon-tower gold strokeGold"*@ title="An admin" data-sort="1"
-								  								                                    								  									      } else { @: @*class="glyphicon glyphicon-tower darkblue strokeDarkBlue"*@ title="A supervisor" data-sort="2"
-								  								                                    								  									      } } else { @: @*class="glyphicon glyphicon-user blue strokeBlue"*@ title="Not a supervisor" data-sort="3"
-								  								                                    								  								      } }
+								  								  								                                    								  							      } else { if (p.Manager) { if (p.Admin) { @: @*class="glyphicon glyphicon-tower gold strokeGold"*@ title="An admin" data-sort="1"
+								  								  								                                    								  									      } else { @: @*class="glyphicon glyphicon-tower darkblue strokeDarkBlue"*@ title="A supervisor" data-sort="2"
+								  								  								                                    								  									      } } else { @: @*class="glyphicon glyphicon-user blue strokeBlue"*@ title="Not a supervisor" data-sort="3"
+								  								  								                                    								  								      } }
 								  @if (p.Managing && !p.IsClient) { @: style="cursor:pointer;" onclick="EditUser(@p.Id)"
-								  								                                    								  								  								                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          }>
+								  								  								                                    								  								  								                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          }>
 							</span>
 
 
@@ -418,6 +419,9 @@
 						<td class="noOverflow emailField" style="max-width: 150px;" title="@p.Email">
 							<a href="~/Manage/UserDetails/@p.Id" class="">@p.Email</a>
 						</td>
+						<td>
+							<a class="icon fontastic-icon-flow-tree" href="/accountability/chart?user=@p.Id"></a>
+						</td>
 						<td class="NalignCenter noOverflow" style="max-width: 200px;">
 							@if (!p.IsClient) {
 								<a href="@Url.Action("Positions", "User", new { id = p.Id })" class="fullWidth">
@@ -441,6 +445,7 @@
 								<span class="gray" title="Clients have no managers">N/A</span>
 							}
 						</td>
+
 						@*<td class="NalignCenter noOverflow">
 								<span>
 									@*Html.ViewOrEdit(p.Managing)*

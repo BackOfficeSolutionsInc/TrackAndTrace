@@ -634,7 +634,6 @@
             }, true);
             // Toggle children on click.
             function expandCollapse(d) {
-
                 expandSource = d;
                 if (d.children) {
                     if (typeof (scope.ttCollapse) === "function") {

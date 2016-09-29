@@ -533,7 +533,14 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 	});
 
 	$scope.dragStart = function (d) {
-		if (!d3.select(d3.event.sourceEvent.srcElement).classed("move-icon")) {
+		var targ = undefined;
+		if (d3.event.sourceEvent && d3.event.sourceEvent.srcElement)
+			targ = d3.event.sourceEvent.srcElement;
+		else
+			targ = d3.event.sourceEvent.target;
+
+
+		if (!d3.select(targ).classed("move-icon")) {
 			throw "Incorrect selector";
 		}
 		if (d.Editable == false) {
@@ -551,7 +558,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 	}
 
 	$scope.collapseExpand = function (d) {
-		if ($(d3.event.srcElement).closest(".minimize-icon").length != 1) {
+		if ($(d3.event.srcElement||d3.event.target).closest(".minimize-icon").length != 1) {
 			throw "Incorrect selector";
 		}
 	}
@@ -836,7 +843,9 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 			return "translate(" + d.width + "," + (d.height - 11) + ")";
 		});
 
-		nodeUpdate.select("foreignObject").attr("width", function (d) { return d.width; });
+		nodeUpdate.select("foreignObject")
+		.attr("width", function (d) { return d.width+20; })
+			.attr("height", function (d) { return d.height; });
 	};
 	$scope.nodeExit = function (nodeExit) {
 		nodeExit.each(function (d, i) {

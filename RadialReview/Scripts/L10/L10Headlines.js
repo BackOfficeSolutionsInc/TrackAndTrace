@@ -170,6 +170,7 @@ function constructHeadlineRow(headline) {
 				'data-method="CreateHeadlineIssue"' +
 				'data-headline="' + Model.Id + '"' +
 				'data-recurrence="' + Model.RecurrenceId + '"' +
+				'data-meeting="' + window.MeetingId + '"' +
 				'title="Create a Context-Aware Issue™"></span>' +
 			'<span class="glyphicon glyphicon-unchecked todoButton issuesButton todoModal" style="padding-right: 5px"' +
 				'title="Create a Context-Aware To-Do™"' +

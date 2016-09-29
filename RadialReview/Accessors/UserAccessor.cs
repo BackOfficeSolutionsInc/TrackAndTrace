@@ -284,7 +284,6 @@ namespace RadialReview.Accessors
 		{
 			var result = session.Get<UserOrganizationModel>(id);
 			return result;
-
 		}
 
 		public UserOrganizationModel GetUserOrganizations(ISession s, String userId, long userOrganizationId, String redirectUrl, Boolean full = false)

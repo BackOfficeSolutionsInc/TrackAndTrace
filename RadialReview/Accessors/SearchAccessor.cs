@@ -86,14 +86,18 @@ namespace RadialReview.Accessors {
 			}
 
 			public List<U> GetAllFromExpression<U>(List<object[]> results, Expression<Func<T, U>> exp) {
-				var idx = GetIndex(exp.AddBox());
-				if (idx == -1)
-					return null;
-				return results.Select(x => {
-					if (x[idx] == null)
-						return default(U);
-					return (U)x[idx];
-				}).ToList();
+				var boxed = exp.AddBox().ToString();
+				if (IndexLookup == null)
+					IndexLookup = GetExpressions().Select((x, i) => Tuple.Create(x, i)).ToDictionary(x => x.Item1.ToString(), x => x.Item2);
+				if (IndexLookup.ContainsKey(boxed)) {
+					return results.Select(x => {
+						if (x[IndexLookup[boxed]] == null)
+							return default(U);
+						return (U)x[IndexLookup[boxed]];
+					}).ToList();
+				}
+				return null;
+				
 			}
 
 			private Dictionary<string, int> IndexLookup = null;
@@ -123,10 +127,7 @@ namespace RadialReview.Accessors {
 						ImageUrl = GetField(x, ImageUrl),
 						ResultType = ResultType
 					};
-					var newDes = DescriptionTransform(res);
-					var newImg = ImageUrlTransform(res);
-					res.Description = newDes;
-					res.ImageUrl = newImg;
+				
 					return res;
 				}).ToList();
 			}
@@ -179,7 +180,7 @@ namespace RadialReview.Accessors {
 		public static List<SearchResult> AdminSearchAllUsers(UserOrganizationModel caller, string search) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					PermissionsUtility.Create(s, caller).RadialAdmin();
+					PermissionsUtility.Create(s, caller).RadialAdmin(true);
 					return SearchUsersUnsafe(s, search, includeOrganizationName: true);
 				}
 			}
@@ -279,6 +280,14 @@ namespace RadialReview.Accessors {
 					x.Organization = orgs.GetOrDefault(x.OrganizationId, "");
 				});
 			}
+
+			foreach (var o in output) {
+				var newDes = selectors.DescriptionTransform(o);
+				var newImg = selectors.ImageUrlTransform(o);
+				o.Description = newDes;
+				o.ImageUrl = newImg;
+			}
+
 			return output;
 		}
 

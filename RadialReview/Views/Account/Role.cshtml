@@ -31,7 +31,7 @@
                 <td><a href="/Organization/stats">stats</a></td>
 				<td width="50%">
 					@Html.Partial("~/Views/Shared/EditorTemplates/SearchUsers.cshtml", new ViewDataDictionary() {
-					   {"OnClick","/Account/SetRole/{0}?ReturnUrl="+Url.Encode(ViewBag.ReturnUrl) },
+					   {"Href","/Account/SetRole/{0}?ReturnUrl="+Url.Encode(ViewBag.ReturnUrl) },
 					   {"SearchUrl","/Search/AdminAllUsers" }
 				   })
 				</td>

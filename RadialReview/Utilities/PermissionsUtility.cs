@@ -32,6 +32,7 @@ using RadialReview.Models.UserTemplate;
 using RadialReview.Models.VTO;
 using Twilio;
 using RadialReview.Models.Accountability;
+using System.Threading;
 
 namespace RadialReview.Utilities {
 	//[Obsolete("Not really obsolete. I just want this to stick out.", false)]
@@ -76,14 +77,17 @@ namespace RadialReview.Utilities {
 
 		protected List<PermissionOverride> Overrides { get; set; }
 
-		public PermissionsUtility RadialAdmin() {
-			if (IsRadialAdmin(caller))
+		public PermissionsUtility RadialAdmin(bool allowSpecialOrgs = false) {
+			if (IsRadialAdmin(caller, allowSpecialOrgs))
 				return this;
 			throw new PermissionsException();
 		}
-		protected static Boolean IsRadialAdmin(UserOrganizationModel caller) {
-			if (caller != null && (caller.IsRadialAdmin || (caller.User != null && caller.User.IsRadialAdmin))) {
-				if (caller.Organization != null && (caller.Organization.Id == 1795 || caller.Organization.Id == 1634)) {
+		protected static Boolean IsRadialAdmin(UserOrganizationModel caller,bool allowSpecialOrgs=false) {
+
+			var adminFromThread = Thread.GetData(Thread.GetNamedDataSlot("IsRadialAdmin")).NotNull(x=>(bool)x);
+
+			if (caller != null && (caller.IsRadialAdmin || caller._IsRadialAdmin || adminFromThread || (caller.User != null && caller.User.IsRadialAdmin))) {
+				if (!allowSpecialOrgs && caller.Organization != null && (caller.Organization.Id == 1795 || caller.Organization.Id == 1634)) {
 					//1795 = EOSWW
 					//1634 = TT
 					return false;

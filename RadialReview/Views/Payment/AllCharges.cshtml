@@ -2,6 +2,7 @@
 @{
 	ViewBag.Title = "AllCharges";
 	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.FullWidth = true;
 }
 
 <h2>All Charges</h2>
@@ -12,11 +13,12 @@
 		<thead>
 			<tr>
 				<td>Create Time (local)</td>
+				<td>TaskId</td>
+				<td>OrgId</td>
 				<td>Organization</td>
 				<td>Amount</td>
 				<td>Status</td>
 				<td>TransactionId</td>
-				<td>TaskId</td>
 				<td>Message</td>
 			</tr>
 		</thead>
@@ -26,11 +28,12 @@
 				<tr>
 
 					<td>@Html.Organization().ConvertFromUTC(i.CreateTime)</td>
+					<td>@i.TaskId</td>
+					<td>@i.OrganizationId</td>
 					<td title="@i.OrganizationId"><b>@i.Organization</b></td>
 					<td>@String.Format("{0:C}",i.Amount)</td>
 					<td><span class="label label-@(i.Label)">@(i.Status)</span></td>
 					<td>@i.TransactionId</td>
-					<td>@i.TaskId</td>
 					<td>@i.Message</td>
 				</tr>
 			}

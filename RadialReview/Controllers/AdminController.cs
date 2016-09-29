@@ -349,8 +349,38 @@ namespace RadialReview.Controllers {
 
 	}
 	public partial class AccountController : UserManagementController {
-		[Access(AccessLevel.Radial)]
 
+
+		[Access(Controllers.AccessLevel.Radial)]
+		public async Task<string> SetRadialAdmin(bool admin = true, string user = null) {
+			user = user ?? GetUser().User.Id;
+			var u = _UserAccessor.GetUserById(user);
+			if (admin) {
+				await UserManager.AddToRoleAsync(user, "RadialAdmin");
+				return "Added " + u.UserName + ". (" + string.Join(", ", await UserManager.GetRolesAsync(u.Id)) + ")";
+			} else {
+				await UserManager.RemoveFromRoleAsync(user, "RadialAdmin");
+				return "Removed " + u.UserName + ". (" + string.Join(", ", await UserManager.GetRolesAsync(u.Id)) + ")";
+			}
+		}
+
+		[Access(Controllers.AccessLevel.Radial)]
+		public ActionResult ListRadialAdmin() {
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var res = s.CreateSQLQuery("select user.UserName,role.UserModel_id from UserRoleModel as role inner join UserModel as user where role.Role='RadialAdmin' and user.Id=role.UserModel_id").List<object[]>();
+					var builder = "<table>";
+					foreach (var o in res) {
+						builder += "<tr><td>" + o[0] + "</td><td>" + o[1] + "</td></tr>";
+					}
+					builder += "</table>";
+					return Content(builder);
+				}			
+			}
+		}
+
+		[Access(AccessLevel.Radial)]
 		public ActionResult Headers() {
 			return View();
 		}

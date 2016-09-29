@@ -686,6 +686,15 @@ function sendIssueMessage(self, id) {
     });
 }
 
+function unstarAll() {
+	$(".ids .issue-row").filter(function () {
+		var i = $(this).find(".number-priority > .priority");
+		return i.data("priority") > 0;
+	}).each(function () {
+		sendPriority($(this).data("recurrence_issue"), 0);
+	});
+}
+
 $("body").on("blur", ".issueDetails .details", function () {
     sendIssueDetails(this, $(this).data("recurrence_issue"));
 });
@@ -802,7 +811,21 @@ $("body").on("contextmenu", ".issue-row .rank123", function (e) {
     return false;
 });
 */
+function sendPriority(id, priority) {
+	var d = { priority: priority, time: new Date().getTime() };
+	$.ajax({
+		url: "/L10/UpdateIssue/" + id,
+		data: d,
+		method: "POST",
+		success: function (d) {
+			showJsonAlert(d);
+		}
+	});
+}
+
 $(function () {
+
+
 
     var priorityTimer = {};
     $("body").on("mousedown", ".issue-row .priority", function (e) {
@@ -835,16 +858,17 @@ $(function () {
         }
         var that = this;
         priorityTimer[id] = setTimeout(function () {
-            var pp = +$(that).data("priority");
-            var d = { priority: pp, time: new Date().getTime() };
-            $.ajax({
-                url: "/L10/UpdateIssue/" + id,
-                data: d,
-                method: "POST",
-                success: function (d) {
-                    showJsonAlert(d);
-                }
-            });
+        	var pp = +$(that).data("priority");
+        	sendPriority(id, pp);
+            //var d = { priority: pp, time: new Date().getTime() };
+            //$.ajax({
+            //    url: "/L10/UpdateIssue/" + id,
+            //    data: d,
+            //    method: "POST",
+            //    success: function (d) {
+            //        showJsonAlert(d);
+            //    }
+            //});
         }, 500);
 
         e.preventDefault();
