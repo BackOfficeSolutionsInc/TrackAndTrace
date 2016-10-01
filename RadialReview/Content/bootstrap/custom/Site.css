@@ -1010,3 +1010,10 @@ body.resizing *::-moz-selection {
 .navbar-collapse.in ul.navbar-nav {
   margin-left: -25px;
 }
+#modal input[type=checkbox] {
+  outline: none !important;
+  border: none;
+  width: 19px;
+  height: 19px;
+  margin-top: 8px;
+}

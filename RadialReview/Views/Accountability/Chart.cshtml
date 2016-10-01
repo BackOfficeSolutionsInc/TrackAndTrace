@@ -20,6 +20,10 @@
             </g>
         </g>
     </svg>*@
+<div onclick="genPdf(true)">PDF</div>
+<div onclick="genPdf(false)">Scale</div>
+@*<canvas id="canvas" width="1000" height="600"></canvas>*@
+
 <div ng-app="ACApp" class="full-height acc-chart ng-cloak">
     <div ng-controller="ACController" class="full-height">
         <md-autocomplete style="position:fixed;top: 30px;right: 0px;width:320px"
@@ -121,6 +125,9 @@
 }
 
 @using (Html.BeginScripts()) {
+	<script type="text/javascript" src="https://canvg.github.io/canvg/rgbcolor.js"></script>
+	<script type="text/javascript" src="https://canvg.github.io/canvg/StackBlur.js"></script>
+	<script type="text/javascript" src="https://canvg.github.io/canvg/canvg.js"></script>
     @Scripts.Render("~/bundles/AccountabilityChart")
     <script type="text/javascript">
 

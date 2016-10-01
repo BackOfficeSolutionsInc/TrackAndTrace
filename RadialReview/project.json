@@ -22,7 +22,8 @@
     "OpenCover": "4.6.519",
     "OxyPlot": "1.0.0-unstable2100",
     "OxyPlot.Core": "1.0.0-unstable2100",
-    "OxyPlot.Wpf": "1.0.0-unstable2100"
+    "OxyPlot.Wpf": "1.0.0-unstable2100",
+    "PDFsharp-MigraDoc-GDI": "1.50.4000-beta3b"
   },
   "frameworks": {
     "net452": {}

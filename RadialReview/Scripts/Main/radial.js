@@ -1307,7 +1307,7 @@ function sendErrorReport() {
 		}
 
 		try {
-			$.getScript("/Scripts/home/html2canvas.js").done(function () {
+			$.getScript("/Scripts/home/screenshot.js").done(function () {
 				try {
 					console.log("...begin render");
 					screenshotPage(function (res) {
@@ -1367,7 +1367,7 @@ function supportEmail(title, nil, defaultSubject, defaultBody) {
 		});
 	};
 	try {
-		$.getScript("/Scripts/home/html2canvas.js").done(function () {
+		$.getScript("/Scripts/home/screenshot.js").done(function () {
 			try {
 				console.log("begin render");
 				screenshotPage(function (res) {

@@ -844,7 +844,12 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		});
 
 		nodeUpdate.select("foreignObject")
-		.attr("width", function (d) { return d.width+20; })
+		.attr("width", function (d) {
+			var isFirefox = typeof InstallTrigger !== 'undefined';
+			if (isFirefox)
+				return d.width + 20;
+			return d.width;
+		})
 			.attr("height", function (d) { return d.height; });
 	};
 	$scope.nodeExit = function (nodeExit) {

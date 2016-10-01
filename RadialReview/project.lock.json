@@ -484,6 +484,40 @@
           "lib/net45/OxyPlot.Xps.dll": {}
         }
       },
+      "PDFsharp-MigraDoc-GDI/1.50.4000-beta3b": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.Drawing"
+        ],
+        "compile": {
+          "lib/net20/MigraDoc.DocumentObjectModel-gdi.dll": {},
+          "lib/net20/MigraDoc.Rendering-gdi.dll": {},
+          "lib/net20/MigraDoc.RtfRendering-gdi.dll": {},
+          "lib/net20/PdfSharp-gdi.dll": {},
+          "lib/net20/PdfSharp.Charting-gdi.dll": {}
+        },
+        "runtime": {
+          "lib/net20/MigraDoc.DocumentObjectModel-gdi.dll": {},
+          "lib/net20/MigraDoc.Rendering-gdi.dll": {},
+          "lib/net20/MigraDoc.RtfRendering-gdi.dll": {},
+          "lib/net20/PdfSharp-gdi.dll": {},
+          "lib/net20/PdfSharp.Charting-gdi.dll": {}
+        },
+        "resource": {
+          "lib/net20/de/MigraDoc.DocumentObjectModel-gdi.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net20/de/MigraDoc.Rendering-gdi.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net20/de/MigraDoc.RtfRendering-gdi.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net20/de/PdfSharp.Charting-gdi.resources.dll": {
+            "locale": "de"
+          }
+        }
+      },
       "StackExchange.Redis.StrongName/1.0.322": {
         "type": "package",
         "compile": {
@@ -974,6 +1008,40 @@
         "runtime": {
           "lib/net45/OxyPlot.Wpf.dll": {},
           "lib/net45/OxyPlot.Xps.dll": {}
+        }
+      },
+      "PDFsharp-MigraDoc-GDI/1.50.4000-beta3b": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.Drawing"
+        ],
+        "compile": {
+          "lib/net20/MigraDoc.DocumentObjectModel-gdi.dll": {},
+          "lib/net20/MigraDoc.Rendering-gdi.dll": {},
+          "lib/net20/MigraDoc.RtfRendering-gdi.dll": {},
+          "lib/net20/PdfSharp-gdi.dll": {},
+          "lib/net20/PdfSharp.Charting-gdi.dll": {}
+        },
+        "runtime": {
+          "lib/net20/MigraDoc.DocumentObjectModel-gdi.dll": {},
+          "lib/net20/MigraDoc.Rendering-gdi.dll": {},
+          "lib/net20/MigraDoc.RtfRendering-gdi.dll": {},
+          "lib/net20/PdfSharp-gdi.dll": {},
+          "lib/net20/PdfSharp.Charting-gdi.dll": {}
+        },
+        "resource": {
+          "lib/net20/de/MigraDoc.DocumentObjectModel-gdi.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net20/de/MigraDoc.Rendering-gdi.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net20/de/MigraDoc.RtfRendering-gdi.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net20/de/PdfSharp.Charting-gdi.resources.dll": {
+            "locale": "de"
+          }
         }
       },
       "StackExchange.Redis.StrongName/1.0.322": {
@@ -1584,6 +1652,28 @@
         "lib/net45/OxyPlot.Xps.pdb"
       ]
     },
+    "PDFsharp-MigraDoc-GDI/1.50.4000-beta3b": {
+      "sha512": "/IkMTri6INDMCIQfhg2yYFghbqDtPU68LIp/Jc+BROg8DPGUMNJT34DH6uF6JXoJhL6JBSHqTEMF2HJsGCMXWw==",
+      "type": "package",
+      "files": [
+        "PDFsharp-MigraDoc-GDI.1.50.4000-beta3b.nupkg.sha512",
+        "PDFsharp-MigraDoc-GDI.nuspec",
+        "lib/net20/MigraDoc.DocumentObjectModel-gdi.dll",
+        "lib/net20/MigraDoc.DocumentObjectModel-gdi.xml",
+        "lib/net20/MigraDoc.Rendering-gdi.dll",
+        "lib/net20/MigraDoc.Rendering-gdi.xml",
+        "lib/net20/MigraDoc.RtfRendering-gdi.dll",
+        "lib/net20/MigraDoc.RtfRendering-gdi.xml",
+        "lib/net20/PdfSharp-gdi.dll",
+        "lib/net20/PdfSharp-gdi.xml",
+        "lib/net20/PdfSharp.Charting-gdi.dll",
+        "lib/net20/PdfSharp.Charting-gdi.xml",
+        "lib/net20/de/MigraDoc.DocumentObjectModel-gdi.resources.dll",
+        "lib/net20/de/MigraDoc.Rendering-gdi.resources.dll",
+        "lib/net20/de/MigraDoc.RtfRendering-gdi.resources.dll",
+        "lib/net20/de/PdfSharp.Charting-gdi.resources.dll"
+      ]
+    },
     "StackExchange.Redis.StrongName/1.0.322": {
       "sha512": "W+7E6VPqD7NnllYiJ1s6GzbzHyK/OON/eB+ryljMRbmFZrTQEqwP3rNY8HfUlKIh9OeuodEjAiRc/k5b++wwdQ==",
       "type": "package",
@@ -1624,7 +1714,8 @@
       "OpenCover >= 4.6.519",
       "OxyPlot >= 1.0.0-unstable2100",
       "OxyPlot.Core >= 1.0.0-unstable2100",
-      "OxyPlot.Wpf >= 1.0.0-unstable2100"
+      "OxyPlot.Wpf >= 1.0.0-unstable2100",
+      "PDFsharp-MigraDoc-GDI >= 1.50.4000-beta3b"
     ],
     ".NETFramework,Version=v4.5.2": []
   }

@@ -24,6 +24,20 @@ namespace RadialReview.Models.Angular {
 		//[JsonIgnore]
 		//public new long Id { get { return base.Id; } set { base.Id=value; }}
 		public bool collapsed { get; set; }
+		//public bool collapsed {
+		//	get { return _collapsed; }
+		//	set {
+		//		_collapsed = value;
+		//		if (_collapsed) {
+		//			_children = __children;
+		//			children = null;
+		//		} else {
+		//			children = __children;
+		//			_children = null;
+		//		}
+				
+		//	}
+		//}
 		public bool? Editable { get; set; }
 		public bool? Me { get; set; }
 

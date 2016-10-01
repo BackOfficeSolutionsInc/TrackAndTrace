@@ -35,6 +35,9 @@ using PdfSharp.Pdf.IO;
 using OxyPlot;
 using VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment;
 using OxyPlot.Wpf;
+using System.Globalization;
+using RadialReview.Utilities.DataTypes;
+using PdfSharp.Drawing.Layout;
 
 namespace RadialReview.Accessors {
 	public class LayoutHelper {
@@ -100,7 +103,7 @@ namespace RadialReview.Accessors {
 		//    if (this.fontFamilies.ContainsKey(key))
 		//        throw new ArgumentException("An entry with the specified family name already exists.");
 		//    System.Windows.Media.FontFamily fontFamily = new System.Windows.Media.FontFamily(baseUri, familyName);
-		//    &nbsp;
+		//    
 		//    this.fontFamilies.Add(key, fontFamily);
 		//}
 
@@ -151,7 +154,7 @@ namespace RadialReview.Accessors {
 			XGraphics gfx = XGraphics.FromPdfPage(page);
 			//// HACK²
 			gfx.MUH = PdfFontEncoding.Unicode;
-			gfx.MFEH = PdfFontEmbedding.Default;
+			//gfx.MFEH = PdfFontEmbedding.Default;
 
 			// Create document from HalloMigraDoc sample
 			// Document doc = HelloMigraDoc.Documents.CreateDocument();
@@ -805,7 +808,7 @@ namespace RadialReview.Accessors {
 				column = table.AddColumn(Unit.FromInch(0.75 * mult));
 				column.Format.Alignment = ParagraphAlignment.Center;
 				//Rock
-				column = table.AddColumn(Unit.FromInch((4.85+.7) * mult));
+				column = table.AddColumn(Unit.FromInch((4.85 + .7) * mult));
 				column.Format.Alignment = ParagraphAlignment.Left;
 
 				row = table.AddRow();
@@ -898,7 +901,7 @@ namespace RadialReview.Accessors {
 			column = table.AddColumn(Unit.FromInch(0.75 * mult));
 			column.Format.Alignment = ParagraphAlignment.Center;
 			//Rock
-			column = table.AddColumn(Unit.FromInch((4.85+.7) * mult));
+			column = table.AddColumn(Unit.FromInch((4.85 + .7) * mult));
 			column.Format.Alignment = ParagraphAlignment.Left;
 
 			row = table.AddRow();
@@ -1172,7 +1175,7 @@ namespace RadialReview.Accessors {
 		private static YSize GetSize(DocumentObject o, Unit width) {
 			var ctx = XGraphics.CreateMeasureContext(new XSize(width.Inch, Unit.FromInch(1000)), XGraphicsUnit.Inch, XPageDirection.Downwards);
 			var size = GetSize(ctx, o, GetFontFamily(o), GetFontSize(o), Unit.FromInch(3.47));
-			return new YSize(Unit.FromInch(size.Width * 0.166044),Unit.FromInch(size.Height * 0.166044));
+			return new YSize(Unit.FromInch(size.Width * 0.166044), Unit.FromInch(size.Height * 0.166044));
 		}
 		private static YSize GetSize(List<DocumentObject> os, Unit width) {
 			var ctx = XGraphics.CreateMeasureContext(new XSize(width.Inch, Unit.FromInch(1000)), XGraphicsUnit.Inch, XPageDirection.Downwards);
@@ -1246,8 +1249,8 @@ namespace RadialReview.Accessors {
 				var h = 0.0;
 				var w = 0.0;
 				var maxH = 0.0;
-				s.Height += Math.Max(row.Height.Inch * 6.0225, maxH);				
-				
+				s.Height += Math.Max(row.Height.Inch * 6.0225, maxH);
+
 				//for (var i = 0; i < row.Cells.Count; i++) {
 				//	w += row.Cells[i].Column.Width.Inch * 6.0225;
 				//}
@@ -1295,7 +1298,7 @@ namespace RadialReview.Accessors {
 				var f = GetFontFamily(x);
 				var s = GetFontSize(x);
 				var size = GetSize(ctx, x, f, s, width);
-				var height = Unit.FromInch(size.Height* 0.166044002);
+				var height = Unit.FromInch(size.Height * 0.166044002);
 
 				return Tuple.Create(x, height);
 			}).ToList();
@@ -1743,7 +1746,7 @@ namespace RadialReview.Accessors {
 				return o;
 			}, maxFontSize: 10);
 		}
-		
+
 		private static void AddVtoTraction(Document doc, AngularVTO vto, string dateformat) {
 			Cell oneYear, quarterlyRocks, issuesList;
 			Table issueTable, rockTable, goalTable;
@@ -1903,7 +1906,7 @@ namespace RadialReview.Accessors {
 					p.Format.Font.Name = "Arial Narrow";
 					issueRows.Add(r);
 				}
-				issueSplits = SplitHeights(Unit.FromInch(3), new[] { (baseHeight),(baseHeight) }, issueRows);
+				issueSplits = SplitHeights(Unit.FromInch(3), new[] { (baseHeight), (baseHeight) }, issueRows);
 				issuesObjects.Add(issueTable);
 
 			}
@@ -1941,17 +1944,17 @@ namespace RadialReview.Accessors {
 					}
 				}
 
-				if (p+1 < maxPage) {
+				if (p + 1 < maxPage) {
 					AddPage_VtoTraction(doc, vto, baseHeight, out oneYear, out quarterlyRocks, out issuesList, out issueTable, out rockTable, out goalTable);
 					AppendAll(oneYear, new DocumentObject[] { goalTable }.ToList());
 					AppendAll(quarterlyRocks, new DocumentObject[] { rockTable }.ToList());
-					AppendAll(issuesList, new DocumentObject[] {issueTable }.ToList());
+					AppendAll(issuesList, new DocumentObject[] { issueTable }.ToList());
 
 				}
 			}
 		}
 
-		private static void AddPage_VtoTraction(Document doc, AngularVTO vto,Unit height, out Cell oneYear, out Cell quarterlyRocks, out Cell issuesList, out Table issueTable, out Table rockTable, out Table goalTable) {
+		private static void AddPage_VtoTraction(Document doc, AngularVTO vto, Unit height, out Cell oneYear, out Cell quarterlyRocks, out Cell issuesList, out Table issueTable, out Table rockTable, out Table goalTable) {
 			var section = AddVtoPage(doc, vto.Name ?? "", "TRACTION");
 
 			var table = section.AddTable();
@@ -2023,5 +2026,286 @@ namespace RadialReview.Accessors {
 		}
 
 
+		public class AccNodeJs {
+			public List<AccNodeJs> children { get; set; }
+			public List<AccNodeJs> _children { get; set; }
+			public string Name { get; set; }
+			public string Position { get; set; }
+			public List<string> Roles { get; set; }
+
+			public double x { get; set; }
+			public double y { get; set; }
+			public double width { get; set; }
+			public double height { get; set; }
+		}
+
+		private class PageProp {
+			public XUnit pageWidth { get; set; }
+			public XUnit pageHeight { get; set; }
+			public XUnit margin { get; set; }
+			public XPen pen = new XPen(XColors.Black, 1);
+			public XBrush brush = new XSolidBrush(XColors.Transparent);
+
+			public double scale = 1;
+
+			public XUnit allowedWidth {
+				get {
+					return pageWidth - 2 * margin;
+				}
+			}
+			public XUnit allowedHeight {
+				get {
+					return pageHeight - 2 * margin;
+				}
+			}
+		}
+
+		#region AC Helpers 
+		private static void ACDrawRole(XGraphics gfx, AccNodeJs me, PageProp pageProps, double[] origin = null) {
+			origin = origin ?? new[] { 0.0, 0.0 };
+
+			var x = (int)me.x - origin[0];
+			var y = (int)me.y - origin[1];
+
+			gfx.DrawRectangle(pageProps.pen, pageProps.brush, x, y, (int)me.width, (int)me.height);
+
+			var top = 50 * pageProps.scale;
+			var pad = 1.0 / 24.0 * me.width;
+
+			var tf = new XTextFormatter(gfx);
+
+			tf.Alignment = XParagraphAlignment.Center;
+			XFont bold = new XFont("Times New Roman", 14 * pageProps.scale, XFontStyle.Bold);
+			XFont norm = new XFont("Times New Roman", 14 * pageProps.scale, XFontStyle.Regular);
+			tf.DrawString(me.Position ?? "", bold, XBrushes.Black, new XRect(x, y + 12 * pageProps.scale / 3.0, me.width, top / 2.0));
+			tf.DrawString(me.Name ?? "", norm, XBrushes.Black, new XRect(x, y + top / 2.0 + 12 * pageProps.scale / 3.0, me.width, top / 2.0));
+
+			if (me.height > top) {
+				gfx.DrawLine(XPens.Black, x + pad, y + top, x + (me.width - 2 * pad), y + top);
+			}
+
+			tf = new XTextFormatter(gfx);
+			tf.Alignment = XParagraphAlignment.Left;
+			norm = new XFont("Times New Roman", 12 * pageProps.scale, XFontStyle.Regular);
+
+			var h = 50 * pageProps.scale;
+
+			if (me.Roles != null && me.Roles.Any()) {
+				var rheight = (me.height - top) / (me.Roles.Count + 1);
+				h += rheight / 2.0;
+				foreach (var r in me.Roles) {
+					var text = r;
+					if (text != null) {
+						text = text.TrimStart(' ', '•', '*');
+						text = "• " + r;
+					}
+
+					tf.DrawString(text ?? "", norm, XBrushes.Black, new XRect(x + pad, y + h, me.width - pad * 2, rheight));
+					h += rheight;
+				}
+			}
+		}
+
+		private static void ACDrawRoleLine(XGraphics gfx, AccNodeJs parent, AccNodeJs me, PageProp pageProps, double[] origin = null) {
+			origin = origin ?? new[] { 0.0, 0.0 };
+			//gfx.DrawRectangle(pageProps.pen, pageProps.brush, (int)me.x - origin[0], (int)me.y - origin[1], (int)me.width, (int)me.height);
+
+			var parentX1 = parent.x + parent.width / 2.0 - origin[0];
+			var parentY1 = parent.y + parent.height - origin[1]-1;
+			var parentY2 = parent.y + parent.height + (me.y - (parent.y + parent.height)) / 3 - origin[1];
+			var parentX2 = me.x + me.width / 2.0 - origin[0];
+
+			//if (me.x > parent.x)
+			//	parentX2 += 1;
+			//else
+			//	parentX2 -= 1;
+
+
+			var parentY3 = me.y - origin[1];
+
+			gfx.DrawLine(pageProps.pen, parentX1, parentY1, parentX1, parentY2);
+			gfx.DrawLine(pageProps.pen, parentX1, parentY2, parentX2, parentY2);
+			gfx.DrawLine(pageProps.pen, parentX2, parentY2, parentX2, parentY3);
+		}
+
+		private static void ACDrawRoles(XGraphics gfx, AccNodeJs root, PageProp pageProps, double[] origin = null) {
+			ACDrawRole(gfx, root, pageProps, origin);
+			if (root.children != null) {
+				foreach (var c in root.children) {
+					ACDrawRoleLine(gfx, root, c, pageProps, origin);
+					ACDrawRoles(gfx, c, pageProps, origin);
+				}
+			}
+		}
+
+		private static double[] ACRanges(AccNodeJs root) {
+			var range = new[] { root.x, root.y, root.x + root.width, root.y + root.height };
+			if (root.children != null) {
+				foreach (var n in root.children) {
+					var n_range = ACRanges(n);
+					range[0] = Math.Min(range[0], n_range[0]);
+					range[1] = Math.Min(range[1], n_range[1]);
+					range[2] = Math.Max(range[2], n_range[2]);
+					range[3] = Math.Max(range[3], n_range[3]);
+				}
+			}
+			return range;
+		}
+		private static void ACNormalize(AccNodeJs root, double[] range, PageProp pageProp, double? forceScale = null) {
+			root.x += -range[0];
+			root.y += -range[1];
+			var shouldScale = forceScale == null;
+			var scale = forceScale ?? 1.0;
+
+			var width = (double)(range[2] - range[0]);
+			var height = (double)(range[3] - range[1]);
+			if (shouldScale) {
+				if (width > pageProp.allowedWidth)
+					scale = pageProp.allowedWidth / width;
+				if (height > pageProp.allowedHeight)
+					scale = Math.Min(scale, pageProp.allowedHeight / height);
+			}
+
+			//For centering
+			var numPagesWide = width * scale / pageProp.allowedWidth;
+			var numPagesTall = height * scale / pageProp.allowedHeight;
+
+			//Rescale
+			root.x *= scale;
+			root.y *= scale;
+			root.width *= scale;
+			root.height *= scale;
+
+			pageProp.scale = scale;
+
+			var extraWidth = (Math.Ceiling(numPagesWide) - (numPagesWide)) * pageProp.allowedWidth;
+			var extraHeight = (Math.Ceiling(numPagesTall) - (numPagesTall)) * pageProp.allowedHeight;
+			root.x += extraWidth / 2.0;
+			root.y += extraHeight / 2.0;
+
+			root.x += pageProp.margin.Point;
+			root.y += pageProp.margin.Point;
+
+			if (root.children != null) {
+				foreach (var n in root.children) {
+					ACNormalize(n, range, pageProp, scale);
+				}
+			}
+		}
+		private static Tuple<int, int> ACGetPage(double x, double y, PageProp pageProp) {
+			return Tuple.Create((int)(x / pageProp.allowedWidth), (int)(y / pageProp.allowedHeight));
+		}
+		private static double[] ACGetOrigin(Tuple<int, int> page, PageProp pageProp) {
+			return new[] {
+				page.Item1 * pageProp.allowedWidth,
+				page.Item2 * pageProp.allowedHeight
+			};
+
+		}
+		private static void ACGeneratePages(DefaultDictionary<Tuple<int, int>, PdfPage> pageLookup, AccNodeJs root, PageProp pageProp) {
+			var a = pageLookup[ACGetPage(root.x, root.y, pageProp)];
+			var b = pageLookup[ACGetPage(root.x + root.width, root.y, pageProp)];
+			var c = pageLookup[ACGetPage(root.x + root.width, root.y + root.height, pageProp)];
+			var d = pageLookup[ACGetPage(root.x, root.y + root.height, pageProp)];
+			if (root.children != null) {
+				foreach (var p in root.children) {
+					ACGeneratePages(pageLookup, p, pageProp);
+				}
+			}
+		}
+		private static void ACDrawOnAllPages(DefaultDictionary<Tuple<int, int>, PdfPage> pageLookup, DefaultDictionary<PdfPage, XGraphics> gfxLookup, AccNodeJs parent, AccNodeJs me, PageProp pageProp) {
+			var pages = new List<Tuple<int, int>>();
+
+			pages.Add(ACGetPage(me.x, me.y, pageProp));
+			pages.Add(ACGetPage(me.x + me.width, me.y, pageProp));
+			pages.Add(ACGetPage(me.x + me.width, me.y + me.height, pageProp));
+			pages.Add(ACGetPage(me.x, me.y + me.height, pageProp));
+			if (parent != null) {
+				pages.Add(ACGetPage(parent.x, parent.y, pageProp));
+				pages.Add(ACGetPage(parent.x + parent.width, parent.y, pageProp));
+				pages.Add(ACGetPage(parent.x + parent.width, parent.y + parent.height, pageProp));
+				pages.Add(ACGetPage(parent.x, parent.y + parent.height, pageProp));
+			}
+			pages.Distinct();
+
+			foreach (var p in pages) {
+				var origin = ACGetOrigin(p, pageProp);
+				var page = pageLookup[p];
+				var gfx = gfxLookup[page];
+				ACDrawRole(gfx, me, pageProp, origin);
+				if (parent != null)
+					ACDrawRoleLine(gfx, parent, me, pageProp, origin);
+			}
+		}
+
+
+		private static void ACDrawOnAllPages_Dive(DefaultDictionary<Tuple<int, int>, PdfPage> pageLookup, DefaultDictionary<PdfPage, XGraphics> gfxLookup, AccNodeJs me, PageProp pageProp, AccNodeJs parent = null) {
+			ACDrawOnAllPages(pageLookup, gfxLookup, parent, me, pageProp);
+			if (me.children != null) {
+				foreach (var c in me.children) {
+					ACDrawOnAllPages_Dive(pageLookup, gfxLookup, c, pageProp, me);
+				}
+			}
+		}
+
+		#endregion
+
+
+		private static void ACGenerate_Resized(PdfPage page, AccNodeJs root, PageProp pageProp) {
+			var ranges = ACRanges(root);
+			ACNormalize(root, ranges, pageProp, null);
+			XGraphics gfx = XGraphics.FromPdfPage(page);
+			ACDrawRoles(gfx, root, pageProp);
+		}
+
+		private static void ACGenerate_Full(PdfDocument doc, AccNodeJs root, PageProp pageProp, double scale) {
+			var ranges = ACRanges(root);
+			ACNormalize(root, ranges, pageProp, scale);
+
+			var pageLookup = new DefaultDictionary<Tuple<int, int>, PdfPage>(x => new PdfPage(doc) {
+				Width = pageProp.pageWidth,
+				Height = pageProp.pageHeight
+			});
+			var gfxLookup = new DefaultDictionary<PdfPage, XGraphics>(x => XGraphics.FromPdfPage(x));
+
+			ACGeneratePages(pageLookup, root, pageProp);
+			ACDrawOnAllPages_Dive(pageLookup, gfxLookup, root, pageProp);
+
+			pageLookup.Keys.OrderBy(x => x.Item1)
+				.ThenBy(x => x.Item2)
+				.ToList()
+				.ForEach(x => {
+					doc.AddPage(pageLookup[x]);
+				});
+		}
+
+
+		public static PdfDocument GenerateAccountabilityChart(AccNodeJs root, double width,double height, bool restrictSize = false) {
+
+			// Create new PDF document
+			PdfDocument document = new PdfDocument();
+			// Create new page
+			var _unusedPage = new PdfPage();
+			_unusedPage.Width = XUnit.FromInch(width);
+			_unusedPage.Height= XUnit.FromInch(height);
+
+			_unusedPage.Orientation = PdfSharp.PageOrientation.Landscape;
+
+			var margin = XUnit.FromInch(.25);
+
+			var pageProp = new PageProp() {
+				pageWidth = _unusedPage.Width,
+				pageHeight = _unusedPage.Height,
+				margin = margin
+			};
+
+			if (restrictSize) {
+				document.AddPage(_unusedPage);
+				ACGenerate_Resized(_unusedPage, root, pageProp);
+			} else {
+				ACGenerate_Full(document, root, pageProp, .5);
+			}
+			return document;
+		}
 	}
 }

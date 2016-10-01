@@ -338,15 +338,69 @@ namespace RadialReview.Controllers {
 				throw new RedirectException("Return URL is invalid.");
 		}
 
-		protected FileResult Pdf(PdfDocument document, string name = null, bool inline = true) {
-			var stream = new MemoryStream();
-			document.Save(stream, false);
-			name = name ?? (Guid.NewGuid() + ".pdf");
-			//if (inline){
-			//    Response.AppendHeader("content-disposition", "inline; filename=\""+name+"\"");
-			//}
+		protected ActionResult Pdf(PdfDocument document, string name = null, bool inline = true) {
+			//var stream = new MemoryStream();
+			////try {
 
-			return new FileStreamResult(stream, MediaTypeNames.Application.Pdf);
+			////	document.Save("C:\\Users\\Clay\\Desktop\\Stuff\\doc.pdf");
+			////} catch (Exception e) {
+			////	int a = 0;
+			////}
+			//document.Save(stream, false);
+			//name = name ?? (Guid.NewGuid() + ".pdf");
+			////if (inline){
+			////    Response.AppendHeader("content-disposition", "inline; filename=\""+name+"\"");
+			////}
+			////stream.Seek(0, SeekOrigin.Begin);
+			////stream.Position = 0;
+
+			////Response.ContentEncoding = Encoding.UTF8;
+			////return new FileStreamResult(stream, MediaTypeNames.Application.Pdf);
+			//stream.Seek(0, SeekOrigin.Begin);
+
+			//Response.ContentType = "application/pdf";
+			//Response.AddHeader("Content-Disposition", "attachment;filename=" + name);
+			//Response.Buffer = true;
+			//Response.Clear();
+			//Response.OutputStream.Write(stream.GetBuffer(), 0, stream.GetBuffer().Length);
+			//Response.OutputStream.Flush();
+			//Response.End();
+
+			//return new FileStreamResult(Response.OutputStream, "application/pdf");
+
+			//XPdfFontOptions opt = new XPdfFontOptions(PdfFontEmbedding.Default);
+			MemoryStream stream = new MemoryStream();
+			document.Save(stream, false);
+			Response.Clear();
+			Response.ContentType = "application/pdf";
+			Response.AddHeader("content-length", stream.Length.ToString());
+			Response.BinaryWrite(stream.ToArray());
+			Response.Flush();
+			stream.Close();
+			Response.End();
+			//var pdfRenderer = new PdfDocumentRenderer(true, PdfFontEmbedding.None);
+			//pdfRenderer.PdfDocument = document;
+			//pdfRenderer.DocumentRenderer = new DocumentRenderer(document) { PrivateFonts = pfc };
+			//pdfRenderer.RenderDocument();
+
+			//var stream = new MemoryStream();
+			//pdfRenderer.Save(stream, false);
+			//name = name ?? (Guid.NewGuid() + ".pdf");
+			////var file = File(stream, System.Net.Mime.MediaTypeNames.Application.Pdf, name);
+			//if (inline) {
+			//	//Response.Headers.Remove("Content-Disposition");
+			//	//var f = Response.Filter;
+			//	//Response.Filter = null;
+			//	//if (Response.Headers.AllKeys.Any(x => x == "Content-Encoding"))
+			//	//    Response.Headers.Remove("Content-Encoding");
+			//	//Response.AppendHeader("Content-Disposition", "inline; filename=output.pdf");
+			//	//Response.AppendHeader("Cache-Control", "private");
+
+			//}
+			return new EmptyResult();
+			//new ActionResult(stream, System.Net.Mime.MediaTypeNames.Application.Pdf);
+
+
 
 			//return File(stream, System.Net.Mime.MediaTypeNames.Application.Pdf, name);
 		}
@@ -362,9 +416,10 @@ namespace RadialReview.Controllers {
 				it += @"\";
 			return it;
 		}
+
 		protected FileResult Pdf(Document document, string name = null, bool inline = true) {
 
-			XPrivateFontCollection privateFontCollection = new XPrivateFontCollection();
+			//XPrivateFontCollection privateFontCollection = XPrivateFontCollection.;
 
 			//  Uri fontUri = new Uri(MappedAppPath() + "Content\\ttf\\");
 			//  //Uri fontUri = new Uri(Config.BaseUrl(caller.Organization) + "//");
@@ -393,20 +448,22 @@ namespace RadialReview.Controllers {
 			//globalFontCollection.AddFont(uri, n);
 
 
-			//XPdfFontOptions opt = new XPdfFontOptions(PdfFontEmbedding.Default);
-			var assembly = Assembly.GetExecutingAssembly();
+			////XPdfFontOptions opt = new XPdfFontOptions(PdfFontEmbedding.Default);
 
-			foreach (var resourceName in assembly.GetManifestResourceNames()) {
-				try {
-					if (resourceName.ToLower().EndsWith(".ttf")) {
-						using (var resourceStream = assembly.GetManifestResourceStream(resourceName)) {
-							XPrivateFontCollection.Global.AddFont(resourceStream.ReadBytes(), resourceName.Substring(0, resourceName.Length - 4).Split('.').Last());
-						}
-					}
-				} catch (Exception e) {
-					throw e;
-				}
-			}
+
+			//var assembly = Assembly.GetExecutingAssembly();
+
+			//foreach (var resourceName in assembly.GetManifestResourceNames()) {
+			//	try {
+			//		if (resourceName.ToLower().EndsWith(".ttf")) {
+			//			using (var resourceStream = assembly.GetManifestResourceStream(resourceName)) {
+			//				XPrivateFontCollection.Add(resourceStream);//, resourceName.Substring(0, resourceName.Length - 4).Split('.').Last());
+			//			}
+			//		}
+			//	} catch (Exception e) {
+			//		throw e;
+			//	}
+			//}
 
 			var pdfRenderer = new PdfDocumentRenderer(true, PdfFontEmbedding.None);
 			pdfRenderer.Document = document;

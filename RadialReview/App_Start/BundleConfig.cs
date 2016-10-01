@@ -181,6 +181,8 @@ namespace RadialReview {
 				"~/Scripts/d3/d3.js",
 				"~/Scripts/Angular/Helpers/d3/panzoom.js",
 				"~/Scripts/Angular/Helpers/d3/tree.js",
+				"~/Scripts/home/html2canvas.js",
+				"~/Scripts/home/jspdf.js",
 				"~/Scripts/AccountabilityChart/accountabilityChart.js",
 				"~/Scripts/Angular/AccountabilityChart/ACController.js",
 				"~/Scripts/undo.js"

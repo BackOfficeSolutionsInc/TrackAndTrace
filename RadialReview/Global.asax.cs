@@ -20,6 +20,8 @@ using RadialReview.Utilities.Productivity;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using RadialReview.App_Start;
+using System.Reflection;
+using PdfSharp.Drawing;
 
 namespace RadialReview
 {
@@ -37,7 +39,7 @@ namespace RadialReview
         public static extern int AddFontResource([In][MarshalAs(UnmanagedType.LPWStr)]string lpFileName);
         protected int InstallFonts()
         {
-            if (!Config.IsLocal()) {
+			if (!Config.IsLocal()) {
                 var fonts = new[] { "Arial Narrow Bold.TTF", "Arial Narrow.TTF", "arial.ttf" };
                 var installed = 0;
                 foreach (var f in fonts) {
@@ -48,7 +50,22 @@ namespace RadialReview
                     } catch (Exception) {
                     }
                 }
-                return installed;
+
+				var assembly = Assembly.GetExecutingAssembly();
+
+				foreach (var resourceName in assembly.GetManifestResourceNames()) {
+					try {
+						if (resourceName.ToLower().EndsWith(".ttf")) {
+							using (var resourceStream = assembly.GetManifestResourceStream(resourceName)) {
+								XPrivateFontCollection.Add(resourceStream);//, resourceName.Substring(0, resourceName.Length - 4).Split('.').Last());
+							}
+						}
+					} catch (Exception e) {
+						throw e;
+					}
+				}
+
+				return installed;
             }
             return 0;
         }
