@@ -53,7 +53,7 @@ namespace RadialReview.Accessors {
 				x => x.CreateTemplates);
 
 			s.Save(template);
-			var a = new Attach(template.AttachType, template.Id);
+			var a = new Attach(template.AttachType, template.AttachId);
 
 			AttachAccessor.SetTemplateUnsafe(s, a, template.Id);
 			var members = AttachAccessor.GetMemberIdsUnsafe(s, a);

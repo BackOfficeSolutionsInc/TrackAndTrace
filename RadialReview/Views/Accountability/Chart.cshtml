@@ -20,10 +20,11 @@
             </g>
         </g>
     </svg>*@
-<div onclick="genPdf(true)">PDF</div>
-<div onclick="genPdf(false)">Scale</div>
-@*<canvas id="canvas" width="1000" height="600"></canvas>*@
-
+<div style="position:absolute;">
+	<span class="icon fontastic-icon-page-export-pdf clickable gray" style="font-size: 16px;top: 1px;position: relative;left: 2px;margin:2px;" onclick="genPdf()" title="Export PDF"></span>
+	<span class="icon fontastic-icon-arrows-out clickable gray" style="margin:2px;" onclick="expandAll()" title="Expand All"></span>
+	<span class="icon fontastic-icon-arrows-in clickable gray" style="margin:2px;" onclick="collapseAll()" title="Collapse All"></span>
+</div>
 <div ng-app="ACApp" class="full-height acc-chart ng-cloak">
     <div ng-controller="ACController" class="full-height">
         <md-autocomplete style="position:fixed;top: 30px;right: 0px;width:320px"
@@ -40,7 +41,6 @@
             </md-item-template>
             <md-not-found>
                 No states matching "{{search.searchText}}" were found.
-                @*<a ng-click="ctrl.newState(ctrl.searchText)">Create a new one!</a>*@
             </md-not-found>
         </md-autocomplete>
 
@@ -57,71 +57,12 @@
 				  tt-expand="collapseExpand"
 			></tree>
         </svg>
-        <!--<chart-form></chart-form>
-                <bar-chart height="options.height" data="data" hovered="hovered(args)"></bar-chart>
-        <bar-chart height="300" data="data" hovered="hovered(args)></bar-chart>-->
-        @*<panzoom>
-
-            </panzoom>*@
     </div>
 </div>
 
 
 @using (Html.BeginStyles()) {
-    @Styles.Render("~/Content/AccChart")
-
-    <style>
-        #svg {
-           /* background-color: lightgoldenrodyellow;*/
-        }
-
-        /*.dot circle {
-            fill: lightsteelblue;
-            stroke: steelblue;
-            stroke-width: 1.5px;
-        }
-
-
-            .dot circle.dragging {
-                fill: red;
-                stroke: brown;
-            }
-
-        .axis line {
-            fill: none;
-            stroke: #ddd;
-            shape-rendering: crispEdges;
-            vector-effect: non-scaling-stroke;
-        }
-
-        .node {
-            cursor: pointer;
-        }
-
-            .node rect {
-                fill: #fff;
-                stroke: steelblue;
-                stroke-width: 3px;
-            }
-
-            .node text {
-                font: 12px sans-serif;
-            }
-
-        .link {
-            fill: none;
-            stroke: #ccc;
-            stroke-width: 2px;
-        }
-
-        .collapsed rect {
-            fill: lightsteelblue;
-        }*/
-
-        /*.selected rect {
-            stroke: red !important;
-        }*/
-    </style>
+    @Styles.Render("~/Content/AccChart")	
 }
 
 @using (Html.BeginScripts()) {
@@ -137,8 +78,5 @@
             .value('dataUrl', "/Accountability/Data/{0}?@Model.FocusNode.NotNull(x=>"node="+x)")
 
 
-        @*$(function () {
-        startAccChart("#viewer",@Model.OrganizationId);
-    });*@
     </script>
 }

@@ -1018,6 +1018,16 @@ namespace RadialReview.Controllers {
 			return Json("cleared", JsonRequestBehavior.AllowGet);
 		}
 
+		[Access(AccessLevel.Radial)]
+		public JsonResult CalculateOrganizationCharge(long id) {
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var org = s.Get<OrganizationModel>(id);
+					return Json(PaymentAccessor.CalculateCharge(s, org, org.PaymentPlan, DateTime.UtcNow),JsonRequestBehavior.AllowGet);
+				}
+			}
+		}
 
 	}
 }

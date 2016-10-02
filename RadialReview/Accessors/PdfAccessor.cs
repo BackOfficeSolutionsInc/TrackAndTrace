@@ -2033,6 +2033,8 @@ namespace RadialReview.Accessors {
 			public string Position { get; set; }
 			public List<string> Roles { get; set; }
 
+			public bool hasHiddenChildren { get; set; }
+
 			public double x { get; set; }
 			public double y { get; set; }
 			public double width { get; set; }
@@ -2111,8 +2113,8 @@ namespace RadialReview.Accessors {
 			//gfx.DrawRectangle(pageProps.pen, pageProps.brush, (int)me.x - origin[0], (int)me.y - origin[1], (int)me.width, (int)me.height);
 
 			var parentX1 = parent.x + parent.width / 2.0 - origin[0];
-			var parentY1 = parent.y + parent.height - origin[1]-1;
-			var parentY2 = parent.y + parent.height + (me.y - (parent.y + parent.height)) / 3 - origin[1];
+			var parentY1 = parent.y + parent.height - origin[1] - 1;
+			var parentY2 = parent.y + parent.height + (me.y - (parent.y + parent.height)) * 2 / 3 - origin[1];
 			var parentX2 = me.x + me.width / 2.0 - origin[0];
 
 			//if (me.x > parent.x)
@@ -2135,8 +2137,26 @@ namespace RadialReview.Accessors {
 					ACDrawRoleLine(gfx, root, c, pageProps, origin);
 					ACDrawRoles(gfx, c, pageProps, origin);
 				}
+				if (root.hasHiddenChildren) {
+					ACDrawEllipse(gfx, root, pageProps, origin);
+				}
+
+
 			}
 		}
+
+		private static void ACDrawEllipse(XGraphics gfx, AccNodeJs root, PageProp pageProps, double[] origin = null) {
+			origin = origin ?? new[] { 0.0, 0.0 };
+			var x = root.x + root.width / 2.0 - origin[0];
+			var y = root.y + root.height - origin[1];
+
+			for (var ii = 0; ii < 3; ii += 1) {
+				var i = (3 + 6 * ii) * pageProps.scale;
+				var d = (4.0) * pageProps.scale;
+				gfx.DrawEllipse(XBrushes.Black, x - (d / 2.0), y + i - (d / 2.0), d, d);
+			}
+		}
+
 
 		private static double[] ACRanges(AccNodeJs root) {
 			var range = new[] { root.x, root.y, root.x + root.width, root.y + root.height };
@@ -2235,6 +2255,10 @@ namespace RadialReview.Accessors {
 				ACDrawRole(gfx, me, pageProp, origin);
 				if (parent != null)
 					ACDrawRoleLine(gfx, parent, me, pageProp, origin);
+
+				if (me.hasHiddenChildren) {
+					ACDrawEllipse(gfx, me, pageProp, origin);
+				}
 			}
 		}
 
@@ -2280,16 +2304,16 @@ namespace RadialReview.Accessors {
 		}
 
 
-		public static PdfDocument GenerateAccountabilityChart(AccNodeJs root, double width,double height, bool restrictSize = false) {
+		public static PdfDocument GenerateAccountabilityChart(AccNodeJs root, double width, double height, bool restrictSize = false) {
 
 			// Create new PDF document
 			PdfDocument document = new PdfDocument();
 			// Create new page
 			var _unusedPage = new PdfPage();
 			_unusedPage.Width = XUnit.FromInch(width);
-			_unusedPage.Height= XUnit.FromInch(height);
+			_unusedPage.Height = XUnit.FromInch(height);
 
-			_unusedPage.Orientation = PdfSharp.PageOrientation.Landscape;
+			//_unusedPage.Orientation = PdfSharp.PageOrientation.Landscape;
 
 			var margin = XUnit.FromInch(.25);
 

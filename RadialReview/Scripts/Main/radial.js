@@ -744,7 +744,10 @@ function showHtmlErrorAlert(html, defaultMessage) {
 	var message = defaultMessage;
 	debugger;
 	if (typeof (html) === "object" && typeof (html.responseText) === "string") {
-		message = $(html).find("title").text();
+		var ele = $($(html.responseText)[1]);
+		if (ele.is("title")){
+			message = ele.text();
+		}
 	} else if (typeof (html) === "string") {
 		message = $(html).text();
 	}

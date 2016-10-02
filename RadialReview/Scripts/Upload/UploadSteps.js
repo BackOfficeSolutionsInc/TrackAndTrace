@@ -72,6 +72,7 @@ function UploadSteps(args) {
         //var submit = $("<input class='btn btn-primary'/>");
         // 
         $(".instructions").show();
+        $(that.notificationSelector).hide();
 
         var uploadForm = $("<form action='javascript:;' enctype='multipart/form-data' method='post' accept-charset='utf-8'>   " +
         "    <div class='row'>                                                                 " +

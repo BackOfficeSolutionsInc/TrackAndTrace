@@ -97,10 +97,19 @@ namespace RadialReview.Utilities.Extensions {
                         Object = self.Find<T>(id, x),
                         RevisionId = x
                     }.AsList();
-                }catch(Exception ex){
-                    log.Error("AuditExtension "+id+","+x,ex);
-                    
-                }
+                }catch(Exception ex) {
+					try {
+						return new Revision<T> {
+							Date = self.GetRevisionDate(x),
+							Object = self.Find<T>(id, x),
+							RevisionId = x
+						}.AsList();
+					} catch (Exception ex2) {
+						log.Error("AuditExtension " + id + "," + x, ex2);
+						throw ex2;
+					}
+
+				}
                 return new List<Revision<T>>();
             }).ToList();
         }

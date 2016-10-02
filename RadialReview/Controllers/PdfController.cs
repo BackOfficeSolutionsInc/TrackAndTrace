@@ -24,7 +24,7 @@ namespace RadialReview.Controllers {
 
 		[HttpPost, ValidateInput(false)]
 		[Access(AccessLevel.Any)]
-		public ActionResult AC(PdfAccessor.AccNodeJs root, bool fit = false,PageSize pagesize = PageSize.Letter,double? width=null, double? height =null) {
+		public ActionResult AC(PdfAccessor.AccNodeJs root, bool fit = false,PageSize ps = PageSize.Letter,double? pw=null, double? ph =null) {
 			//using (var stream = new MemoryStream()) {
 			//	var html = new HtmlDocument();
 			//	var config = new GlobalConfig();
@@ -43,13 +43,14 @@ namespace RadialReview.Controllers {
 			//	return File(pdfBuf, MediaTypeNames.Application.Pdf);
 			//	//res.Draw(
 			//}
-			if (width == null || height == null) {
-				var s = PageSizeConverter.ToSize(pagesize);
-				width = s.Width;
-				height = s.Height;
+			if (pw == null || ph == null) {
+				var s = PageSizeConverter.ToSize(ps);
+				pw = Math.Max(s.Width, s.Height) / 72.0;
+				ph = Math.Min(s.Width, s.Height) / 72.0;
+				
 			}
 
-			var pdf = PdfAccessor.GenerateAccountabilityChart(root,width.Value,height.Value,restrictSize: fit);
+			var pdf = PdfAccessor.GenerateAccountabilityChart(root,pw.Value,ph.Value,restrictSize: fit);
 
 
 			return Pdf(pdf,"Accountability Chart",false);

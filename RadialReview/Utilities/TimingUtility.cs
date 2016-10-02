@@ -617,8 +617,13 @@ namespace RadialReview.Utilities {
 			if (dates.Count == 1 && dates[0] == null)
 				return (DateTime.UtcNow).AsList();
 
-			if (dates.Count(x => x != null) < 2)
-                throw new PermissionsException("Not enough dates to interpolate");
+
+			if (dates.Count(x => x != null) < 2) {
+				if (dates.Count() > 0 && !dates.Any(x => x != null))
+					throw new PermissionsException("Unreadable date format.");
+
+				throw new PermissionsException("Not enough dates.");
+			}
 
             var temp = new List<DateTime>();
             DateTime? last = null;
