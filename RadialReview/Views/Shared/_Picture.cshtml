@@ -1,5 +1,12 @@
 ﻿@model string
-<span class="picture-container" title="@(ViewData["ImageTitle"]??"")">
+
+@{ 
+	var style = "";
+	if(ViewBag.Size!=null) {
+		style = "width:"+ ViewBag.Size + "px;height:" + ViewBag.Size + "px;";
+	}
+}
+<span class="picture-container" title="@(ViewData["ImageTitle"]??"")" style="@style">
 	@if (Model != "/i/userplaceholder"){
 		<span class="picture" style="background: url(@Model) no-repeat center center;"></span>
     } else {

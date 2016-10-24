@@ -1,4 +1,5 @@
 ﻿using FluentNHibernate.Mapping;
+using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Web;
 using System.Web.Script.Serialization;
 
 namespace RadialReview.Models.Onboard {
-    public class OnboardingUser {
+    public class OnboardingUser : ILongIdentifiable{
         public virtual long Id { get; set; }
         #region Entered Data
         public virtual String CurrentPage { get; set; }

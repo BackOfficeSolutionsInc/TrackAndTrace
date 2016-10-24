@@ -253,7 +253,7 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 
 	_attachUiHandlers = function () {
 		// Add click handler to users in the "Users" pane
-		$('body').on('click', '.start-video:not(.disabled)', function () {
+		$('body').on('click', '.start-internal-video:not(.disabled)', function () {
 			$(".start-video").addClass("disabled");
 			_tryGetMedia(true, true, function () {
 				$(".start-conference").addClass("hidden");

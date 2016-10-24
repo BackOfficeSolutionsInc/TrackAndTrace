@@ -1,323 +1,372 @@
 ﻿
 .rockstate.display {
-    width: 80px;
-    cursor: default;
+	width: 80px;
+	cursor: default;
 }
 
 .rockstate.editor {
-    cursor: pointer;
+	cursor: pointer;
 }
 
 .rockstate {
-    height: 80px;
-    width: 242px;
-    position: relative;
-    display: inline-block;
-    /*align-items: center;
+	height: 80px;
+	width: 242px;
+	position: relative;
+	display: inline-block;
+	/*align-items: center;
 	justify-content: center;*/
-    -moz-user-select: none;
-    -khtml-user-select: none;
-    -webkit-user-select: none;
-    -o-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    padding: -1px;
-    /*margin: 0px;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-o-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	padding: -1px;
+	/*margin: 0px;
     background-color: #CDCDCD;*/
-    margin: 1px;
-    background-color: #f7f7f7;
-    border: 1px solid #dfdfdf;
-    -ms-border-radius: 6px;
-    -moz-border-radius: 6px;
-    -webkit-border-radius: 6px;
-    border-radius: 6px;
+	margin: 1px;
+	background-color: #f7f7f7;
+	border: 1px solid #dfdfdf;
+	-ms-border-radius: 6px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
 }
 
 .rockstate-contents {
-    height: 100%;
-    width: 100%;
-    position: relative;
-    display: inline-block;
-    overflow: hidden;
-    z-index: 1;
+	height: 100%;
+	width: 100%;
+	position: relative;
+	display: inline-block;
+	overflow: hidden;
+	z-index: 1;
 }
 
 .rockstate.rockstate-thin {
-    height: 30px;
+	height: 30px;
 }
 
 
 .rockstate .fill {
-    width: 76px;
-    height: 76px;
-    margin: 2px;
-    position: absolute;
-    top: 0px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    /*background-color: #CDCDCD;*/
-    pointer-events: none;
-    z-index: -1;
-    -ms-border-radius: 4px;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    border-radius: 4px;
-    z-index: -1;
-    pointer-events: none;
+	width: 76px;
+	height: 76px;
+	margin: 2px;
+	position: absolute;
+	top: 0px;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	/*background-color: #CDCDCD;*/
+	pointer-events: none;
+	z-index: -1;
+	-ms-border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	z-index: -1;
+	pointer-events: none;
 }
 
 .rockstate.rockstate-thin .fill {
-    height: 24px;
+	height: 24px;
 }
 
 .rockstate.editor .fill.hover {
-    /*background-color: rgba(0, 0, 0, 0.15);*/
-    left: -80px;
+	/*background-color: rgba(0, 0, 0, 0.15);*/
+	left: -80px;
 }
 
 .rockstate .fill.cursor {
-    -webkit-transition: all .5s;
-    -moz-transition: all .5s;
-    -ms-transition: all .5s;
-    -o-transition: all .5s;
-    transition: all .5s;
-    /*border: 1px dotted rgba(0, 0, 0, 0.25);*/
-    border-bottom: 2px solid rgba(0, 0, 0, 0.15);
+	-webkit-transition: all .5s;
+	-moz-transition: all .5s;
+	-ms-transition: all .5s;
+	-o-transition: all .5s;
+	transition: all .5s;
+	/*border: 1px dotted rgba(0, 0, 0, 0.25);*/
+	border-bottom: 2px solid rgba(0, 0, 0, 0.15);
 }
 
 
 .rockstate .rockstate-val {
-    width: 79px;
-    height: 80px;
-    display: inline-block;
-    line-height: 80px;
-    text-align: center;
-    float: left;
-    z-index: 3;
-    /*align-items: center;
+	width: 79px;
+	height: 80px;
+	display: inline-block;
+	line-height: 80px;
+	text-align: center;
+	float: left;
+	z-index: 3;
+	/*align-items: center;
 	justify-content: center;*/
-    /*color: rgba(255, 255, 255, 0.4);*/
-    /*opacity: .5;*/
-    font-family: 'Roboto',sans-serif;
-    /*font-weight: bolder;*/
-    font-size: 13px;
-    padding: 0;
-    margin: 0;
-    -moz-transition: ease .3s opacity, ease .3s color;
-    -o-transition: ease .3s opacity, ease .3s color;
-    -webkit-transition: ease .3s opacity, ease .3s color;
-    transition: ease .3s opacity, ease .3s color;
-    color: #d6d6d6;
-    opacity: .34;
-    text-shadow: 0 1px white;
+	/*color: rgba(255, 255, 255, 0.4);*/
+	/*opacity: .5;*/
+	font-family: 'Roboto',sans-serif;
+	/*font-weight: bolder;*/
+	font-size: 13px;
+	padding: 0;
+	margin: 0;
+	-moz-transition: ease .3s opacity, ease .3s color;
+	-o-transition: ease .3s opacity, ease .3s color;
+	-webkit-transition: ease .3s opacity, ease .3s color;
+	transition: ease .3s opacity, ease .3s color;
+	color: #d6d6d6;
+	opacity: .34;
+	text-shadow: 0 1px white;
 }
 
 .rockstate.rockstate-thin .rockstate-val {
-    height: 30px;
-    font-size: 12px;
-    line-height: 29px;
+	height: 30px;
+	font-size: 12px;
+	line-height: 29px;
 }
 
 
 .rockstate .rockstate-val .center {
-    z-index: 2;
+	z-index: 2;
 }
 
 .rockstate .rockstate-val {
-    opacity: .75;
+	opacity: .75;
 }
 
 .rockstate .rockstate-Complete:hover {
-    color: #449D44;
+	color: #449D44;
 }
 
 .rockstate .rockstate-OnTrack:hover {
-    color: #1F68EC;
+	color: #1F68EC;
 }
 
 .rockstate .rockstate-AtRisk:hover {
-    color: #D9534F;
+	color: #D9534F;
 }
 
 
 
 
-    .rockstate .rockstate-AtRisk:hover ~ .fill.hover {
-        left: 0px;
-    }
+	.rockstate .rockstate-AtRisk:hover ~ .fill.hover {
+		left: 0px;
+	}
 
 .rockstate .rockstate-OnTrack:hover ~ .fill.hover {
-    left: 80px;
+	left: 80px;
 }
 
 .rockstate .rockstate-Complete:hover ~ .fill.hover {
-    left: 160px;
+	left: 160px;
 }
 
 .rockstate.display .fill.cursor {
-    left: 0px !important;
-    -webkit-filter: contrast(50%);
+	left: 0px !important;
+	-webkit-filter: contrast(50%);
 }
 
 .rockstate.display:hover .fill.cursor {
-    -webkit-filter: contrast(100%);
+	-webkit-filter: contrast(100%);
 }
 
 
 
 .rockstate.display .fill.cursor:before {
-    content: "Marked as:";
-    font-size: 10px;
-    -webkit-filter: brightness(100%);
-    color: rgba(255,255,255,.9);
-    position: relative;
-    top: 14px;
+	content: "Marked as:";
+	font-size: 10px;
+	-webkit-filter: brightness(100%);
+	color: rgba(255,255,255,.9);
+	position: relative;
+	top: 14px;
 }
 
 .rockstate input[value='Complete'] ~ .fill.cursor {
-    background-color: #449D44;
-    left: 160px;
+	background-color: #449D44;
+	left: 160px;
 }
 
 .rockstate input[value='OnTrack'] ~ .fill.cursor {
-    background-color: #1F68EC;
-    left: 80px;
+	background-color: #1F68EC;
+	left: 80px;
 }
 
 .rockstate input[value='AtRisk'] ~ .fill.cursor {
-    background-color: #D9534F;
-    left: 0px;
+	background-color: #D9534F;
+	left: 0px;
 }
 
 .rockstate input[value='Indeterminate'] ~ .fill.cursor {
-    left: 80px;
-    -ms-opacity: 0;
-    opacity: 0;
+	left: 80px;
+	-ms-opacity: 0;
+	opacity: 0;
 }
 
 .rockstate.display input[value='Complete'] ~ .rockstate-AtRisk,
 .rockstate.display input[value='Complete'] ~ .rockstate-Indeterminate,
 .rockstate.display input[value='Complete'] ~ .rockstate-OnTrack {
-    display: none;
+	display: none;
 }
 
 .rockstate.display input[value='AtRisk'] ~ .rockstate-Complete,
 .rockstate.display input[value='AtRisk'] ~ .rockstate-Indeterminate,
 .rockstate.display input[value='AtRisk'] ~ .rockstate-OnTrack {
-    display: none;
+	display: none;
 }
 
 .rockstate.display input[value='OnTrack'] ~ .rockstate-Complete,
 .rockstate.display input[value='OnTrack'] ~ .rockstate-Indeterminate,
 .rockstate.display input[value='OnTrack'] ~ .rockstate-AtRisk {
-    display: none;
+	display: none;
 }
 
 .rockstate.display input[value='Indeterminate'] ~ .rockstate-Complete,
 .rockstate.display input[value='Indeterminate'] ~ .rockstate-OnTrack,
 .rockstate.display input[value='Indeterminate'] ~ .rockstate-AtRisk {
-    display: none;
+	display: none;
 }
 
 .rockstate input[value='Complete'] ~ .rockstate-Complete,
 .rockstate input[value='OnTrack'] ~ .rockstate-OnTrack,
 .rockstate input[value='AtRisk'] ~ .rockstate-AtRisk {
-    color: white;
-    /*text-shadow:none;*/
-    text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.2); /*,0px 0px 0px rgba(255, 255, 255, 0.34);*/
+	color: white;
+	/*text-shadow:none;*/
+	text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.2); /*,0px 0px 0px rgba(255, 255, 255, 0.34);*/
 }
 
 .rockstate input[value='Complete'] ~ .rockstate-Complete {
-    color: #e2f7e6;
+	color: #e2f7e6;
 }
 
 .rockstate input[value='OnTrack'] ~ .rockstate-OnTrack {
-    color: #ffffff; /*#9abbf6;*/
+	color: #ffffff; /*#9abbf6;*/
 }
 
 .rockstate input[value='AtRisk'] ~ .rockstate-AtRisk {
-    color: #f1d9d8;
+	color: #f1d9d8;
 }
 
 
 .rockstate-val.rockstate-Indeterminate {
-    font-size: 80%;
+	font-size: 80%;
 }
 
 .toText.Complete:after {
-    content: "Complete";
+	content: "Complete";
 }
 
 .toText.AtRisk:after {
-    content: "Off Track";
+	content: "Off Track";
 }
 
 .toText.OnTrack:after {
-    content: "On Track";
+	content: "On Track";
 }
 
 .toText.Indeterminate:after {
-    content: "Unspecified";
-    font-style: italic;
+	content: "Unspecified";
+	font-style: italic;
 }
 
 
 @media(max-width:767px) {
-    .rock-state-holder {
-        width: 90px;
-    }
+	.rock-state-holder {
+		width: 90px;
+	}
 
-    .rockstate {
-        width: 90px;
-    }
+	.rockstate {
+		width: 90px;
+	}
 
-        .rockstate.rockstate-thin .rockstate-val {
-            width: 29px;
-            font-size: 0px;
-        }
+		.rockstate.rockstate-thin .rockstate-val {
+			width: 29px;
+			font-size: 0px;
+		}
 
-        .rockstate .rockstate-AtRisk:after {
-            content: "OFF";
-            font-size: 10px;
-        }
+		.rockstate .rockstate-AtRisk:after {
+			content: "OFF";
+			font-size: 10px;
+		}
 
-        .rockstate .rockstate-OnTrack:after {
-            content: "ON";
-            font-size: 10px;
-        }
+		.rockstate .rockstate-OnTrack:after {
+			content: "ON";
+			font-size: 10px;
+		}
 
-        .rockstate .rockstate-Complete:after {
-            content: "DONE";
-            font-size: 10px;
-        }
+		.rockstate .rockstate-Complete:after {
+			content: "DONE";
+			font-size: 10px;
+		}
 
-        .rockstate .fill {
-            width: 25px;
-        }
+		.rockstate .fill {
+			width: 25px;
+		}
 
-        .rockstate.editor .fill.hover {
-            left: -30px;
-        }
+		.rockstate.editor .fill.hover {
+			left: -30px;
+		}
 
-        .rockstate input[value='AtRisk'] ~ .fill.cursor,
-        .rockstate .rockstate-AtRisk:hover ~ .fill.hover {
-            left: 0px;
-        }
 
-        .rockstate input[value='OnTrack'] ~ .fill.cursor,
-        .rockstate .rockstate-OnTrack:hover ~ .fill.hover {
-            left: 29px;
-        }
 
-        .rockstate input[value='Complete'] ~ .fill.cursor,
-        .rockstate .rockstate-Complete:hover ~ .fill.hover {
-            left: 58px;
-        }
+		.rockstate input[value='AtRisk'] ~ .fill.cursor,
+		.rockstate .rockstate-AtRisk:hover ~ .fill.hover {
+			left: 0px;
+		}
 
-        .rockstate input[value='Indeterminate'] ~ .fill.cursor {
-            left: 29px;
-            -ms-opacity: 0;
-            opacity: 0;
-        }
+		.rockstate input[value='OnTrack'] ~ .fill.cursor,
+		.rockstate .rockstate-OnTrack:hover ~ .fill.hover {
+			left: 29px;
+		}
+
+		.rockstate input[value='Complete'] ~ .fill.cursor,
+		.rockstate .rockstate-Complete:hover ~ .fill.hover {
+			left: 58px;
+		}
+
+		.rockstate input[value='Indeterminate'] ~ .fill.cursor {
+			left: 29px;
+			-ms-opacity: 0;
+			opacity: 0;
+		}
+
+	.nonangular.rockstate input[value='AtRisk'] ~ .rockstate-Complete,
+	.nonangular.rockstate input[value='AtRisk'] ~ .rockstate-OnTrack {
+		display: none;
+	}
+
+	.nonangular.rockstate input[value='Complete'] ~ .rockstate-AtRisk,
+	.nonangular.rockstate input[value='Complete'] ~ .rockstate-OnTrack {
+		display: none;
+	}
+
+	.nonangular.rockstate input[value='OnTrack'] ~ .rockstate-AtRisk,
+	.nonangular.rockstate input[value='OnTrack'] ~ .rockstate-Complete {
+		display: none;
+	}
+
+	.nonangular.rockstate input[value='Indeterminate'] ~ .rockstate-AtRisk,
+	.nonangular.rockstate input[value='Indeterminate'] ~ .rockstate-Complete,
+	.nonangular.rockstate input[value='Indeterminate'] ~ .rockstate-OnTrack {
+		display: none;
+	}
+
+	.nonangular.rockstate .rockstate-val .center {
+		display: none;
+	}
+
+	.nonangular.rockstate .fill {
+		left: 0px !important;    
+		width: 74px;
+		height: 74px;
+	}
+
+	.nonangular.rockstate .rockstate-val {
+		width: 88px;
+	}
+
+	.nonangular.rockstate input[value='Indeterminate'] ~ .hover:after {
+		content: "Unset";
+		font-size: 10px;
+		line-height: 76px;
+	}
+
+
+	/*.rockstate .rockstate-Complete:after {
+		content: "DONE";
+		font-size: 10px;
+	}*/
 }

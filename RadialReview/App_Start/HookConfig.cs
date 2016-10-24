@@ -14,7 +14,9 @@ namespace RadialReview.App_Start {
         
         internal static void RegisterHooks()
         {
-            //HooksRegistry.RegisterHook(new CreateUserOrganization_UpdateHierarchy());
+			//HooksRegistry.RegisterHook(new CreateUserOrganization_UpdateHierarchy());
+
+			HooksRegistry.RegisterHook(new UpdateUserModel_TeamNames());
 
             //HooksRegistry.RegisterHook(new TodoEdit())
         }

@@ -10,7 +10,8 @@
                 {
                     <div class="pull-left star @((ViewBag.Incomplete != null && !f.Complete) ? "red" : "")"><span class="glyphicon glyphicon-asterisk"></span></div>
                 }*@
-                <h4 class="alignRight question">@f.Askable.GetQuestion()</h4>
+				<h4 class="alignRight question hidden-xs hidden-sm">@f.Askable.GetQuestion()</h4>
+				<h4 class="alignLeft question visible-xs visible-sm">@f.Askable.GetQuestion()</h4>
             </div>
             <div class="col-md-6 alignRight startHidden">
                 <textarea placeholder="@(f.Required ? "" : "Optional")"
@@ -25,7 +26,7 @@
         </div>
         if ((int)ViewData["I"] < (int)ViewData["Max"])
         {
-            <hr class="smallBreak2" style="margin-top: 8px;" />
+            <div class="smallBreak2" style="margin-top: 16px;"></div>
         }
     }
 </div>

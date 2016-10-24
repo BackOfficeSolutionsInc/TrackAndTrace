@@ -206,10 +206,12 @@ namespace RadialReview.Accessors
             }
         }
 
+		public const string ACCOUNT_AGE = "ACCOUNT_AGE";
 		public const string DAILY_EMAIL_TODO_TASK = "DAILY_EMAIL_TODO_TASK";
 		public const string DAILY_TASK = "DAILY_TASK";
+		//public const string HOURLY_TASK = "DAILY_TASK";
 
-	    public void ConstructApplicationTasks(ISession s)
+		public void ConstructApplicationTasks(ISession s)
 	    {
 		    var found =s.QueryOver<ScheduledTask>().Where(x => x.DeleteTime == null && x.Executed == null && x.TaskName == DAILY_EMAIL_TODO_TASK).List().ToList();
 		    for (var i = 0; i < 24; i++){
@@ -507,7 +509,7 @@ namespace RadialReview.Accessors
 #pragma warning restore CS0618 // Type or member is obsolete
 
 
-					var implementerLogins = usersLoggedInThisWeek.Where(x => orgLookup[x.OrganizationId].AccountType == AccountType.Implementer).GroupBy(x=>x.OrganizationId).Count();
+					var implementerLogins = usersLoggedInThisWeek.Where(x => orgLookup.ContainsKey(x.OrganizationId) &&  orgLookup[x.OrganizationId].AccountType == AccountType.Implementer).GroupBy(x=>x.OrganizationId).Count();
 				    var numberOfDemoClients = demoOrgs.Count();
 
 

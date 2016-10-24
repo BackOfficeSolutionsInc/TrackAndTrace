@@ -193,7 +193,7 @@ namespace TractionTools.UITests.Selenium {
 						if (_ChromeDriver == null) {
 							_ChromeDriver = new ChromeDriver();
 						}
-						_ChromeDriver.Manage().Window.Size = new Size(1024, 768);
+						_ChromeDriver.Manage().Window.Size = new Size(1022, 767);
 						return _ChromeDriver;
 					}
 				case WithBrowsers.Firefox: {

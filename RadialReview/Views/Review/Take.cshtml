@@ -13,11 +13,10 @@
 
 }
 @section top{
-	@if (!Model.Editable)
-	{
+	@if (!Model.Editable) {
 		<div class="alertBar progress">
-			<div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
-				This @Html.ReviewName().ToLower() is past due. This screen is read-only, you won't be able to make changes to it.
+			<div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;font-size:14px;">
+				This @Html.ReviewName().ToLower() is past due. This screen is read-only <span class="hidden-xs">, you won't be able to make changes to it.</span>
 			</div>
 		</div>
 	}
@@ -25,62 +24,83 @@
 		<h1 class="nameFade">@Model.ForUser.GetName()</h1>
 	</div>
 	<div class="hover" style="position: relative; bottom: -28px; padding-left: 6px; color: #FFF;">
-		@if (Model.Anonymous)
-		{
+		@if (Model.Anonymous) {
 			@:<span class="glyphicon glyphicon-lock"></span> Your feedback will be anonymous to @(Model.ForUser.GetNameShort()). &nbsp;Only their manager will see your name.
-		}
-		else
-		{
+		} else {
 			@:<span class="glyphicon glyphicon-eye-open"></span>Your name will be included on your feedback to @Model.ForUser.GetNameShort().
 		}
 	</div>
 }
 
 @section sidebar{
-	<div class="flipButton" onclick="$('.flipCard,.nameFade').toggleClass('flipped');"><span class="glyphicon glyphicon-share-alt"></span></div>
-	<div class="userContainer noselect">
-		<div class="flipCard">
-			<figure class="front ">
-				<div class="sidebar noselect">
-					<div class="sidebar-contents">
-						@Html.Partial("_ResponsibilityGroup", Model.ForUser)
+
+	<div class="hidden-xs hidden-sm">
+		<div class="flipButton" onclick="$('.flipCard,.nameFade').toggleClass('flipped');"><span class="glyphicon glyphicon-share-alt"></span></div>
+		<div class="userContainer noselect">
+			<div class="flipCard">
+				<figure class="front ">
+					<div class="sidebar noselect">
+						<div class="sidebar-contents">
+							@Html.Partial("_ResponsibilityGroup", Model.ForUser)
+						</div>
 					</div>
-				</div>
-			</figure>
-			<figure class="back">
-				<div class="sidebar">
-					<div class="sidebar-contents">
-						<ol id="nameList">
-							@for (int i = 0; i < Model.OrderedPeople.Count; i++)
-							{
-								<li class="@(Model.OrderedPeople[i].Item2?"complete1":"incomplete1")">
-									<span class="indicator">
-										<span class="progress progressIndicator">
-											<span class="progress-bar @(Model.OrderedPeople[i].Item2 ? "progress-bar-success" : "progress-bar-primary progress-bar-striped")" style="width:@(Model.OrderedPeople[i].Item3)%"></span>
+				</figure>
+				<figure class="back">
+					<div class="sidebar">
+						<div class="sidebar-contents">
+							<ol id="nameList">
+								@for (int i = 0; i < Model.OrderedPeople.Count; i++) {
+									<li class="@(Model.OrderedPeople[i].Item2?"complete1":"incomplete1")">
+										<span class="indicator">
+											<span class="progress progressIndicator">
+												<span class="progress-bar @(Model.OrderedPeople[i].Item2 ? "progress-bar-success" : "progress-bar-primary progress-bar-striped")" style="width:@(Model.OrderedPeople[i].Item3)%"></span>
+											</span>
 										</span>
-									</span>
-									<a class="@(i == Model.Page ? "currentPage" : "")" href="@Url.Action("take", new{id = Model.Id, page = i} )">@Model.OrderedPeople[i].Item1</a>
+										<a class="@(i == Model.Page ? "currentPage" : "")" href="@Url.Action("take", new{id = Model.Id, page = i} )">@Model.OrderedPeople[i].Item1</a>
 
-								</li>
-							}
-						</ol>
-						<hr />
-						<div class="alignCenter" style="padding:5px;padding-top: 14px;"><a class="btn btn-default reviewOthersButton" href="@Url.Action("AdditionalReview", new { id = Model.Id ,page = Model.Page })">Evaluate Others <span class="glyphicon glyphicon-plus gray"></span></a></div>
+									</li>
+								}
+							</ol>
+							<hr />
+							<div class="alignCenter" style="padding:5px;padding-top: 14px;"><a class="btn btn-default reviewOthersButton" href="@Url.Action("AdditionalReview", new { id = Model.Id ,page = Model.Page })">Evaluate Others <span class="glyphicon glyphicon-plus gray"></span></a></div>
 
+						</div>
 					</div>
-				</div>
-			</figure>
+				</figure>
+			</div>
 		</div>
 	</div>
+	<div class="visible-xs visible-sm row">
+		<div class="col-xs-10 col-xs-offset-1">
+			@Html.Partial("_ResponsibilityGroup", Model.ForUser)
+
+			<ol id="nameList">
+				@for (int i = 0; i < Model.OrderedPeople.Count; i++) {
+					<li class="@(Model.OrderedPeople[i].Item2?"complete1":"incomplete1")">
+						<span class="indicator">
+							<span class="progress progressIndicator">
+								<span class="progress-bar @(Model.OrderedPeople[i].Item2 ? "progress-bar-success" : "progress-bar-primary progress-bar-striped")" style="width:@(Model.OrderedPeople[i].Item3)%"></span>
+							</span>
+						</span>
+						<a class="@(i == Model.Page ? "currentPage" : "")" href="@Url.Action("take", new{id = Model.Id, page = i} )">@Model.OrderedPeople[i].Item1</a>
+
+					</li>
+				}
+			</ol>
+			<hr />
+			<div class="alignCenter" style="padding:5px;padding-top: 14px;"><a class="btn btn-default reviewOthersButton" href="@Url.Action("AdditionalReview", new { id = Model.Id ,page = Model.Page })">Evaluate Others <span class="glyphicon glyphicon-plus gray"></span></a></div>
+			<br/>
+		</div>
+	</div>
+
 }
 
 
 @Html.HiddenFor(x => x.StartTime.Ticks)
-@if (Model.Page == 0 && Model.Editable && Model.FirstPageHint)
-{
+@if (Model.Page == 0 && Model.Editable && Model.FirstPageHint) {
 	<div class="row">
 		<div class="col-md-12">
-			<div class="panel panel-default">
+			<div class="panel panel-primary">
 				<div class="panel-heading">
 					<h3 class="panel-title">Instructions:</h3>
 				</div>
@@ -95,14 +115,13 @@
 }
 
 <span class="glyphicon glyphicon-question-sign"
-	  style="float: right;margin-top: -13px;opacity: .4; cursor:pointer"
+	  style="float: right;margin-top: -13px;opacity: .4; cursor:pointer;position:absolute;top: 38px;right: 20px;z-index: 10000;"
 	  onclick="cancelTips($('.cancelTipsButton'));resetHints();runTips();"></span>
-<div class="row">
+<div class="row review-page @(Model.Editable?"":"no-edits")">
 	<div class="col-md-12">
 		<div>
 			<div class="smallBreak"></div>
-			@foreach (var group in Model.Answers.GroupBy(x => x.BaseAnswer.Askable.Category.Id).OrderByDescending(x => x.Key))
-			{
+			@foreach (var group in Model.Answers.GroupBy(x => x.BaseAnswer.Askable.Category.Id).OrderByDescending(x => x.Key)) {
 				var dict = new ViewDataDictionary(ViewData);
 
 				var sliders = group.ToList().Where(x => x.BaseAnswer is SliderAnswer).Select(x => x.BaseAnswer).Cast<SliderAnswer>().ToList();
@@ -141,12 +160,11 @@
 </div>
 
 
-@using (Html.BeginScripts())
-{
+@using (Html.BeginScripts()) {
 	@*<script src="~/Scripts/review/review.js"></script>
-	<script src="~/Scripts/review/translateSlider.js"></script>
-	<script src="~/Scripts/jquery/jquery-simple-slider.js"></script>*@
-    @Scripts.Render("~/bundles/TakeReview")
+		<script src="~/Scripts/review/translateSlider.js"></script>
+		<script src="~/Scripts/jquery/jquery-simple-slider.js"></script>*@
+	@Scripts.Render("~/bundles/TakeReview")
 	<script>
 		var canUpdate = true;
 
@@ -209,9 +227,18 @@
 
 			if (tips.length > 0) {
 				setTimeout(function () {
+					//Special case.
+					var windowWidth = $(window).width();
+					if (tips[0].selector.is("#nameList") && windowWidth < 767) {
+						debugger;
+						tips[0].selector =$(".visible-xs #nameList");
+					}
+
 					var tip = tips[0].tip;
 					var heading = tips[0].heading;
 					var item = $(tips[0].selector);
+
+
 
 					if (item.length == 0) {
 						tips.splice(0, 1);
@@ -220,6 +247,10 @@
 					}
 
 					var position = tips[0].position || { at: 'center right', my: 'center left' };
+
+					if (windowWidth<767) {
+						position = { at: 'top center', my: 'bottom center' };
+					}
 
 					$(item).addClass("currentTip");
 
@@ -243,7 +274,7 @@
 								"<div>"
 						},
 						style: {
-							classes: 'qtip-green qtip-shadow'
+							classes: 'qtip-shadow qtip-bootstrap qtip-gray'
 						},
 						show: { when: false, ready: true },
 						position: position,
@@ -286,7 +317,7 @@
 			addTip($(".table-values .posneg").first(), "Evaluating Values", "You'll need to evaluate whether an individual exhibits Company Values. Choose between <i>Almost Always</i>, <i>Sometimes</i>, or <i>Hardly Ever</i>.");
 			var t = addTip($(".table-values .reason").first(), "Adding Comments", 'You can optionally add a comment by clicking here.');
 			t.position = { at: 'top center', my: 'bottom center' };
-			t = addTip($("#nameList").first(), "Who are you evaluating?", "The sidebar lists all the people you'll need to evaluate. Red text indicates an incomplete evaluation, while blue indicates that it is complete.");
+			t = addTip($("#nameList"), "Who are you evaluating?", "The sidebar lists all the people you'll need to evaluate. Red text indicates an incomplete evaluation, while blue indicates that it is complete.");
 			t.position = { at: 'center left', my: 'center right' };
 			t = addTip($(".reviewOthersButton").last(), "Evaluate more people", "You may optionally add more people to evaluate by clicking 'Evaluate Others'.");
 			t.position = { at: 'center left', my: 'center right' };
@@ -321,11 +352,10 @@
 
 
 	</script>
-	if (ViewBag.NoSubmit == null)
-	{
+	if (ViewBag.NoSubmit == null) {
 		<script>
 			$(function () {
-				
+
 				var reviewChanges = false;
 
 				$(".changeable").change(function () {
@@ -375,8 +405,7 @@
 		</script>
 	}
 
-	if (Model.Page == 0 && Model.Editable && Model.FirstPageHint)
-	{
+	if (Model.Page == 0 && Model.Editable && Model.FirstPageHint) {
 		<script>
 			$(function () {
 				runTips();
@@ -386,12 +415,19 @@
 
 }
 
-@using (Html.BeginStyles())
-{
+@using (Html.BeginStyles()) {
 	@*<link href="~/Content/simple-slider.css" rel="stylesheet" />
-	<link href="~/Content/Review.css" rel="stylesheet" />*@
-    @Styles.Render("~/Content/TakeReview")
+		<link href="~/Content/Review.css" rel="stylesheet" />*@
+	@Styles.Render("~/Content/TakeReview")
 	<style>
+		html, body {
+			background-color: #eee;
+		}
+
+		.qtip-grays {
+			background-color: #f7f7f7;
+		}
+
 		.complete a {
 			/*color: #52AC52 !important;*/
 		}
@@ -401,7 +437,7 @@
 		}
 
 		textarea {
-			border: 1px solid #A9A9A9;
+			border: 1px solid #dfdfdf;
 		}
 
 		.slowFade {
@@ -412,11 +448,11 @@
 		}
 
 		.tip.fill {
-			 background-color: #EF7622 !important;
+			background-color: #EF7622 !important;
 		}
 
-		.tip.posneg,textarea.tip,.reviewOthersButton.tip {
-			border: 1px solid #6c584b !important;
+		.tip.posneg, textarea.tip, .reviewOthersButton.tip {
+			/*border: 1px solid #6c584b !important;*/
 			box-shadow: 0 0 8px 2px #6c584b;
 		}
 
@@ -424,18 +460,35 @@
 			opacity: 1;
 			color: #EF7622;
 		}
+
+
+
 		@@-webkit-keyframes thumb {
-			0% { -webkit-transform: translateX(0px); }
-			25% { -webkit-transform: translateX(-5px); }
-			50% { -webkit-transform: translateX(0px); }
-			75% { -webkit-transform: translateX(5px); }
-			100% { -webkit-transform: translateX(0px); }
+			0% {
+				-webkit-transform: translateX(0px);
+			}
+
+			25% {
+				-webkit-transform: translateX(-5px);
+			}
+
+			50% {
+				-webkit-transform: translateX(0px);
+			}
+
+			75% {
+				-webkit-transform: translateX(5px);
+			}
+
+			100% {
+				-webkit-transform: translateX(0px);
+			}
 		}
 
-		#nameList.tip li a{
+		#nameList.tip li a {
 			-webkit-animation-name: thumb;
 			-webkit-animation-duration: 500ms;
-			-webkit-transform-origin:50% 50%;
+			-webkit-transform-origin: 50% 50%;
 			-webkit-animation-iteration-count: 3;
 			-webkit-animation-timing-function: ease;
 		}

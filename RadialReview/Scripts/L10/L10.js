@@ -131,7 +131,13 @@ function updateTime() {
     }
 }
 var firstSetPageTime = true;
+var pausePageTimer = false;
 function setPageTime(pageName, minutes) {
+	//if (pausePageTimer) {
+	//	console.warn("Page timer paused (" + pageName + ")");
+	//	return;
+	//}
+
     try{
         if (typeof (meetingStart) !== "undefined" && meetingStart == true) {
             var over = $(".page-" + pageName + " .page-time").data("over");
@@ -147,11 +153,11 @@ function setPageTime(pageName, minutes) {
                 if (!firstSetPageTime && p.length && !p.hasClass("over")) {
                     var audio1 = new Audio('https://s3.amazonaws.com/Radial/audio/pop+pop.mp3');
                     audio1.play();
-                    setTimeout(function () {
-                        var audio2 = new Audio('https://s3.amazonaws.com/Radial/audio/pop+pop.mp3');
-                        //audio.currentTime = 0;
-                        audio2.play();
-                    }, 250);
+                    //setTimeout(function () {
+                    //    var audio2 = new Audio('https://s3.amazonaws.com/Radial/audio/pop+pop.mp3');
+                    //    //audio.currentTime = 0;
+                    //    audio2.play();
+                    //}, 250);
                 } else if ($(".page-" + pageName + " .page-time").length) {
                     firstSetPageTime = false;
                 }
@@ -167,10 +173,10 @@ function setPageTime(pageName, minutes) {
 }
 function setupMeeting(_startTime, leaderId) {
     console.log("setupmeeting");
-    $(".over").removeClass(".over")
+    $(".over").removeClass("over");
     $(".page-item .page-time").each(function () {
         var o = $(this).data("over");
-        $(this).html("<span class='gray'>" + (Math.round(100 * o) / 100.0) + "m</span>")
+        $(this).html("<span class='gray'>" + (Math.round(100 * o) / 100.0) + "m</span>");
 
     });
     meetingStart = true;
@@ -191,14 +197,17 @@ function setCurrentPage(pageName, startTime, baseMinutes) {
     if (pageName == "") {
         pageName = "segue";
     }
+    pausePageTimer = true;
     currentPage = pageName;
-    currentPageStartTime = startTime;
+    currentPageStartTime = new Date().getTime();//startTime;
     currentPageBaseMinutes = baseMinutes;
+    console.log("setCurrentPage:" + pageName + " " + currentPageStartTime + " " + baseMinutes);
     $(".page-item.current").removeClass("current");
     $(".page-item.page-" + pageName).addClass("current");
     if (followLeader && !isLeader) {
         loadPageForce(pageName);
     }
+
 }
 
 function setHash(hash) {
@@ -239,7 +248,8 @@ function loadPageForce(location) {
         locationLoading = location;
         setTimeout(function () {
             if (locationLoading == location) {
-                locationLoading = null;
+            	locationLoading = null;
+            	pausePageTimer = false;
             }
         }, 4000);
         $.ajax({
@@ -259,11 +269,13 @@ function loadPageForce(location) {
                 }, 1000);
             },
             complete: function () {
-                locationLoading = null;
+            	locationLoading = null;
+            	pausePageTimer = false;
             }
         });
     } else {
-        console.log("Already Loading: " + location);
+    	console.log("Already Loading: " + location);
+    	pausePageTimer = false;
     }
     //}
 }

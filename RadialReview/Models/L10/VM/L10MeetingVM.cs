@@ -75,9 +75,10 @@ namespace RadialReview.Models.L10.VM
 
         public long[] Attendees { get; set; }
         public bool SendEmail { get; set; }
-        public bool CloseTodos { get; set; }
+		public bool CloseTodos { get; set; }
+		public bool CloseHeadlines { get; set; }
 
-        public bool ShowAdmin { get; set; }
+		public bool ShowAdmin { get; set; }
         public bool ShowScorecardChart { get; set; }
 
 		public bool EnableTranscript { get; set; }

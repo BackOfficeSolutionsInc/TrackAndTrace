@@ -24,6 +24,7 @@ using RadialReview.Models.Payments;
 using RadialReview.Models.L10;
 using NHibernate.Criterion;
 using RadialReview.Models.Accountability;
+using System.Threading;
 
 namespace RadialReview.Controllers
 {
@@ -128,10 +129,13 @@ namespace RadialReview.Controllers
 
 						return View("WhichList", list);
 					}
-					
-					var perms =PermissionsUtility.Create(s, GetUser()).ManagingOrganization(id.Value);
+
+					Thread.SetData(Thread.GetNamedDataSlot("AllowSpecialOrgs"), true);
+
+					var perms = PermissionsUtility.Create(s, GetUser());//.ManagingOrganization(id.Value);
 
 					var org = s.Get<OrganizationModel>(id);
+					var b = org.PaymentPlan.FreeUntil;
 
                     ViewBag.Members = OrganizationAccessor.GetOrganizationMembersLookup(s, perms, id.Value, false);
                     var meetings = s.QueryOver<L10Meeting>()
@@ -396,7 +400,7 @@ namespace RadialReview.Controllers
 
 			_UserAccessor.UpdateTempUser(GetUser(), id, model.FirstName, model.LastName, model.Email, DateTime.UtcNow);
 			model.Id = TempId;
-			var result = await Emailer.SendEmail(_NexusAccessor.CreateJoinEmailToGuid(GetUser(), model));
+			var result = await Emailer.SendEmail(JoinOrganizationAccessor.CreateJoinEmailToGuid(GetUser(), model));
 			var prefix = "Resent";
 			if (model.LastSent == null)
 				prefix = "Sent";

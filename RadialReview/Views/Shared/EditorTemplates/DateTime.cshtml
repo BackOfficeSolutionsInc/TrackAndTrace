@@ -1,34 +1,60 @@
 ﻿@model DateTime?
 
 @{
-    var guid = "date-"+Guid.NewGuid().ToString();
-    string name = null;
-    if (Html.NameForModel()!=null && !String.IsNullOrWhiteSpace(Html.NameForModel().ToString())) {
-          name = Html.NameForModel().ToString();
-        
-    }
-    name = name ?? ViewData["name"] as string ?? "Date";
-    var id = ViewData["id"] ?? name;
-    var jsDate = "new Date()";
-    if (Model != null) {
-        jsDate = "new Date(" + (Model.Value.Year) + "," + (Model.Value.Month - 1) + "," + Model.Value.Day + "," + Model.Value.Hour + "," + Model.Value.Minute + "," + Model.Value.Second + ")";
-    }
-    var generater = new MvcHtmlString("generateDatepicker('." + guid + "'," + jsDate + ",'" + name + "','" + id + "');");  
-}
+	if (ViewData["startDate"] is DateTime) {
+		ViewData["startDate"] = ((DateTime)ViewData["startDate"]).ToJavascriptMilliseconds();
+	}
+	if (ViewData["endDate"] is DateTime) {
+		ViewData["endDate"] = ((DateTime)ViewData["endDate"]).ToJavascriptMilliseconds();
+	}
+
+	if (ViewData["startDate"] is long) {
+		ViewData["startDate"] = "new Date(" + ViewData["startDate"] + ")";
+	}
+
+	if (ViewData["endDate"] is long) {
+		ViewData["endDate"] = "new Date(" + ViewData["endDate"] + ")";
+	}
+
+
+	var startDate = ViewData["startDate"]??"-Infinity";
+	var endDate = ViewData["endDate"]??"Infinity";
+
+
+
+
+
+	var guid = "date-"+Guid.NewGuid().ToString();
+	string name = null;
+	if (Html.NameForModel()!=null && !String.IsNullOrWhiteSpace(Html.NameForModel().ToString())) {
+		name = Html.NameForModel().ToString();
+
+	}
+	name = name ?? ViewData["name"] as string ?? "Date";
+	var id = ViewData["id"] ?? name;
+	var jsDate = "new Date()";
+	if (Model != null) {
+		jsDate = "new Date(" + (Model.Value.Year) + "," + (Model.Value.Month - 1) + "," + Model.Value.Day + "," + Model.Value.Hour + "," + Model.Value.Minute + "," + Model.Value.Second + ")";
+	}
+	var options = "{startDate:" + startDate + ",endDate:" + endDate + "}";
+
+	var generater = new MvcHtmlString("generateDatepicker('." + guid + "'," + jsDate + ",'" + name + "','" + id + "',"+options+");");
+	}
 <div class="date-container @guid" id="@guid"></div>
 
 <script type="text/javascript">
-    var generate@(guid.Replace("-","")) = function () {
-        var count = count || 0;
-        count += 1;
-        if (typeof (generateDatepicker) === "undefined") {
-            if (count < 500) { setTimeout(generate@(guid.Replace("-", "")), 10); }
-            else {document.getElementById("@guid").innerHTML = "Err: No Date Generator";}
-        } else {
-            @generater
-        }
-    };
-    generate@(guid.Replace("-",""))();
+	var generate@(guid.Replace("-","")) = function () {
+		var count = count || 0;
+		count += 1;
+		if (typeof (generateDatepicker) === "undefined") {
+			if (count < 500) { setTimeout(generate@(guid.Replace("-", "")), 10); }
+			else {document.getElementById("@guid").innerHTML = "Err: No Date Generator";}
+		} else {
+			@generater
+
+		}
+	};
+	generate@(guid.Replace("-",""))();
 </script>
     
     

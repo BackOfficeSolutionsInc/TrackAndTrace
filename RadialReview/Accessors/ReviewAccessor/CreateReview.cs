@@ -170,7 +170,9 @@ namespace RadialReview.Accessors {
                     unsentEmails.AddRange(clientReviews);
 
 
-                    tx.Commit();
+					EventUtil.Trigger(x => x.Create(s, EventType.IssueReview, caller, reviewContainer, message: reviewContainer.ReviewName));
+
+					tx.Commit();
                     s.Flush();
                     hub.Clients.User(userId).status("Done!");
 

@@ -1,4 +1,5 @@
 ﻿using RadialReview.Accessors;
+using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Json;
 using RadialReview.Models.Payments;
@@ -12,13 +13,10 @@ using System.Web;
 using System.Web.Mvc;
 using TrelloNet;
 
-namespace RadialReview.Controllers
-{
-	public class PaymentController : BaseController
-	{
+namespace RadialReview.Controllers {
+	public class PaymentController : BaseController {
 		[Access(AccessLevel.Any)]
-		public ActionResult Index(int? count)
-		{
+		public ActionResult Index(int? count) {
 			//GetUserModel();
 
 			if (count == null)
@@ -29,8 +27,7 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult SetCard()
-		{
+		public ActionResult SetCard() {
 			_PermissionsAccessor.Permitted(GetUser(), x => x.EditCompanyPayment(GetUser().Organization.Id));
 
 			return View();
@@ -38,46 +35,118 @@ namespace RadialReview.Controllers
 
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Plan()
-		{
+		public ActionResult Plan() {
 			var plan = PaymentAccessor.GetPlan(GetUser(), GetUser().Organization.Id);
 			return View(plan);
 		}
 
 		[HttpPost]
 		[Access(AccessLevel.Radial)]
-		public ActionResult Plan(PaymentPlanModel model)
-		{
+		public ActionResult Plan(PaymentPlanModel model) {
 			return View(model);
 		}
 
 		[Access(AccessLevel.Radial)]
-		public ActionResult Plan_Monthly(long? orgid=null)
-		{
+		public ActionResult Plan_Monthly(long? orgid = null) {
 			var id = orgid ?? GetUser().Organization.Id;
 
 			var plan = PaymentAccessor.GetPlan(GetUser(), id);
 			var org = _OrganizationAccessor.GetOrganization(GetUser(), id);
-			if (plan is PaymentPlan_Monthly){
-				var pr = (PaymentPlan_Monthly) plan;
+			if (plan is PaymentPlan_Monthly) {
+				var pr = (PaymentPlan_Monthly)plan;
 				pr._Org = org;
 				return View(pr);
 			}
-			return View(new PaymentPlan_Monthly()
-			{
-                BaselinePrice = 149,
+			return View(new PaymentPlan_Monthly() {
+				BaselinePrice = 149,
 				FirstN_Users_Free = 10,
 				L10PricePerPerson = 10,
 				ReviewPricePerPerson = 4,
 				PlanCreated = DateTime.UtcNow,
 				OrgId = id,
-				_Org =org
+				_Org = org
 			});
 		}
 
+		[Access(AccessLevel.Radial)]
+		public ActionResult FreeUntil(long id, DateTime date) {
 
-		public class Charge
-		{
+			var plan = PaymentAccessor.GetPlan(GetUser(), id); 
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var org = s.Get<OrganizationModel>(id);
+					var model = s.Get<PaymentPlan_Monthly>(org.PaymentPlan.Id);
+
+					if (model == null)
+						throw new PermissionsException("Payment plan doesnt exist");
+
+					if (model != null && model.Task != null) {
+						var delete = s.QueryOver<ScheduledTask>().Where(x => x.DeleteTime == null && x.OriginalTaskId == model.Task.OriginalTaskId).List().ToList();
+						foreach (var oldTask in delete) {
+							oldTask.DeleteTime = DateTime.UtcNow;
+							s.Update(oldTask);
+						}
+					}
+
+					var fireTime = DateTime.MaxValue;
+					var setDate = false;
+					var result= ResultObject.SilentSuccess();
+					//adjust the date
+					if (model.LastExecuted != null) {
+						date = Math2.Max(model.LastExecuted.Value + model.SchedulerPeriod(), date);
+						result.Message = "Date must be after last payment execution. Adjusting.";
+						result.Silent = false;
+						result.Refresh = true;
+					}
+
+					model.FreeUntil = Math2.Max(DateTime.UtcNow,date);
+
+
+					if (model.FreeUntil.Date > DateTime.UtcNow.Date) {
+						fireTime = Math2.Min(fireTime, model.FreeUntil.Date);
+						setDate = true;
+					}
+
+					if (model.L10FreeUntil != null) {
+						fireTime = Math2.Min(fireTime, model.L10FreeUntil.Value.Date);
+						setDate = true;
+					}
+
+					if (model.ReviewFreeUntil != null) {
+						fireTime = Math2.Min(fireTime, model.ReviewFreeUntil.Value.Date);
+						setDate = true;
+					}
+
+					if (setDate == false)
+						fireTime = DateTime.UtcNow.Date;
+
+					fireTime = Math2.Max(DateTime.UtcNow.Date, fireTime);
+					
+
+					model.Task = new ScheduledTask() {
+						MaxException = 1,
+						Url = "/Scheduler/ChargeAccount/" + model.OrgId,
+						NextSchedule = model.SchedulerPeriod(),
+						Fire = fireTime,
+						FirstFire = fireTime,
+						TaskName = ScheduledTask.MonthlyPaymentPlan,
+						EmailOnException = true,
+					};
+					s.Save(model.Task);
+					model.Task.OriginalTaskId = model.Task.Id;
+					model.Task.CreatedFromTaskId = model.Task.Id;
+					s.Update(model.Task);
+
+					tx.Commit();
+					s.Flush();
+
+					return Json(result, JsonRequestBehavior.AllowGet);
+				}
+			}
+		}
+
+
+		public class Charge {
 			public DateTime CreateTime { get; set; }
 			public string Status { get; set; }
 			public string Label { get; set; }
@@ -92,12 +161,9 @@ namespace RadialReview.Controllers
 
 
 		[Access(AccessLevel.Radial)]
-		public ActionResult AllCharges(int id = 7)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+		public ActionResult AllCharges(int id = 7) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					var now = DateTime.UtcNow.Subtract(TimeSpan.FromDays(id));
 
 					var items = s.QueryOver<InvoiceModel>().Where(x => x.CreateTime > now).List().ToList();
@@ -106,23 +172,23 @@ namespace RadialReview.Controllers
 
 					var allCharges = new List<Charge>();
 
-					allCharges.AddRange(items.Select(x=>new Charge(){
-						Amount = x.InvoiceItems.Sum(y=>y.AmountDue),
+					allCharges.AddRange(items.Select(x => new Charge() {
+						Amount = x.InvoiceItems.Sum(y => y.AmountDue),
 						CreateTime = x.CreateTime,
-						Message =  "<Invoice>",
-						Label = x.PaidTime != null?"success":"warning",
-						Status = x.PaidTime!=null?"Charged":"Not Charged",
+						Message = "<Invoice>",
+						Label = x.PaidTime != null ? "success" : "warning",
+						Status = x.PaidTime != null ? "Charged" : "Not Charged",
 						TransactionId = x.TransactionId,
 						Organization = x.Organization.GetName(),
 						OrganizationId = x.Organization.Id,
 					}));
 
-					allCharges.AddRange(errors.Select(x=>new Charge(){
+					allCharges.AddRange(errors.Select(x => new Charge() {
 						Amount = x.Amount,
 						Label = "danger",
 						Status = "Error",
 						CreateTime = x.OccurredAt,
-						Message = "<"+x.Type+"> "+x.Message,
+						Message = "<" + x.Type + "> " + x.Message,
 						TaskId = x.TaskId,
 						Organization = x.OrganizationName,
 						OrganizationId = x.OrganizationId,
@@ -138,11 +204,9 @@ namespace RadialReview.Controllers
 
 
 		[Access(AccessLevel.Radial)]
-		public ActionResult Errors(int id=7)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction()){
+		public ActionResult Errors(int id = 7) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					var now = DateTime.UtcNow.Subtract(TimeSpan.FromDays(id));
 
 					var items = s.QueryOver<PaymentErrorLog>().Where(x => x.HandledAt == null || x.HandledAt > now).List().ToList();
@@ -152,69 +216,58 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.Radial)]
-		public JsonResult SetErrorHandled(long id,bool handled)
-		{
-			using(var s = HibernateSession.GetCurrentSession())
-			{
-				using(var tx=s.BeginTransaction()){
+		public JsonResult SetErrorHandled(long id, bool handled) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					var e = s.Get<PaymentErrorLog>(id);
 
-					if (handled){
+					if (handled) {
 						e.HandledAt = DateTime.UtcNow;
-					}
-					else{
+					} else {
 						e.HandledAt = null;
 					}
 					tx.Commit();
-					s.Flush(); 
+					s.Flush();
 				}
 			}
 
-			return Json(ResultObject.SilentSuccess(new{
-				id=id,
-				handled=handled,
+			return Json(ResultObject.SilentSuccess(new {
+				id = id,
+				handled = handled,
 			}), JsonRequestBehavior.AllowGet);
 		}
 
 		[HttpPost]
 		[Access(AccessLevel.Radial)]
-		public ActionResult Plan_Monthly(PaymentPlan_Monthly model)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+		public ActionResult Plan_Monthly(PaymentPlan_Monthly model) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					var org = s.Get<OrganizationModel>(model.OrgId);
 
-					if (String.IsNullOrWhiteSpace(Request.Form["TaskId"]))
-					{
-						if (!String.IsNullOrWhiteSpace(Request.Form["OldTaskId"])){
-							var delete = s.QueryOver<ScheduledTask>().Where(x=>x.DeleteTime==null && x.OriginalTaskId==Request["OldTaskId"].ToLong()).List().ToList();
-							foreach (var oldTask in delete){
+					if (String.IsNullOrWhiteSpace(Request.Form["TaskId"])) {
+						if (!String.IsNullOrWhiteSpace(Request.Form["OldTaskId"])) {
+							var delete = s.QueryOver<ScheduledTask>().Where(x => x.DeleteTime == null && x.OriginalTaskId == Request["OldTaskId"].ToLong()).List().ToList();
+							foreach (var oldTask in delete) {
 								oldTask.DeleteTime = DateTime.UtcNow;
 								s.Update(oldTask);
 							}
-							
 						}
 
 
 						var fireTime = DateTime.MaxValue;
 						var setDate = false;
 
-						if (model.FreeUntil.Date > DateTime.UtcNow.Date)
-						{
+						if (model.FreeUntil.Date > DateTime.UtcNow.Date) {
 							fireTime = Math2.Min(fireTime, model.FreeUntil.Date);
 							setDate = true;
 						}
 
-						if (model.L10FreeUntil != null)
-						{
+						if (model.L10FreeUntil != null) {
 							fireTime = Math2.Min(fireTime, model.L10FreeUntil.Value.Date);
 							setDate = true;
 						}
 
-						if (model.ReviewFreeUntil != null)
-						{
+						if (model.ReviewFreeUntil != null) {
 							fireTime = Math2.Min(fireTime, model.ReviewFreeUntil.Value.Date);
 							setDate = true;
 						}
@@ -226,23 +279,21 @@ namespace RadialReview.Controllers
 
 
 
-						model.Task = new ScheduledTask()
-						{
+						model.Task = new ScheduledTask() {
 							MaxException = 1,
 							Url = "/Scheduler/ChargeAccount/" + model.OrgId,
 							NextSchedule = model.SchedulerPeriod(),
 							Fire = fireTime,
 							FirstFire = fireTime,
 							TaskName = ScheduledTask.MonthlyPaymentPlan,
+							EmailOnException = true,
 						};
 						s.Save(model.Task);
 						model.Task.OriginalTaskId = model.Task.Id;
 						model.Task.CreatedFromTaskId = model.Task.Id;
 						s.Update(model.Task);
 
-					}
-					else
-					{
+					} else {
 						model.Task = s.Get<ScheduledTask>(Request["TaskId"].ToLong());
 					}
 
@@ -255,7 +306,7 @@ namespace RadialReview.Controllers
 					tx.Commit();
 					s.Flush();
 
-                    model._Org = org;
+					model._Org = org;
 
 					return View(model);
 				}
@@ -264,8 +315,7 @@ namespace RadialReview.Controllers
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public async Task<ActionResult> SetCard(bool submit)
-		{
+		public async Task<ActionResult> SetCard(bool submit) {
 			await PaymentAccessor.SetCard(
 				GetUser(),
 				GetUser().Organization.Id,
@@ -290,8 +340,7 @@ namespace RadialReview.Controllers
 			return RedirectToAction("Advanced", "Manage");
 		}
 
-		public ActionResult EditPlan(long id)
-		{
+		public ActionResult EditPlan(long id) {
 			throw new NotImplementedException();
 		}
 	}

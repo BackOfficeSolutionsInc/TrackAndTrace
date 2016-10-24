@@ -207,7 +207,7 @@ function getFormattedDate(date) {
 	return _userFormat;
 }
 
-function generateDatepicker(selector, date, name, id) {
+function generateDatepicker(selector, date, name, id, options) {
 	if (typeof (date) === "undefined") {
 		date = new Date();
 	} else if (typeof (date) === "string") {
@@ -241,18 +241,23 @@ function generateDatepicker(selector, date, name, id) {
 	builder += '</div>';
 	var dp = $(builder);
 	$(selector).append(dp);
-	$('.' + guid + ' .client-date').datepickerX({
+	var dpOptions = {
 		format: window.dateFormat.toLowerCase(),
-		//onRender: function (date) {
-		//    return date.valueOf() <= now.valueOf() ? 'disabled' : '';
-		//}
-	}).on('changeDate', function (e) {
+	};
+	if (options){
+		for(var k in options)		{
+			dpOptions[k] = options[k];
+		}
+	}
+
+	$('.' + guid + ' .client-date').datepickerX(dpOptions).on('changeDate', function (e) {
 		var _d = e.date.getDate(),
-            d = _d > 9 ? _d : '0' + _d,
-            _m = e.date.getMonth() + 1,
-            m = _m > 9 ? _m : '0' + _m,
-            formatted = m + '-' + d + '-' + (e.date.getFullYear());
+			d = _d > 9 ? _d : '0' + _d,
+			_m = e.date.getMonth() + 1,
+			m = _m > 9 ? _m : '0' + _m,
+			formatted = m + '-' + d + '-' + (e.date.getFullYear());
 		$('.' + guid + ' .server-date').val(formatted);
+		$("[name='" + name + "']").trigger("change")
 	});
 }
 
@@ -307,6 +312,27 @@ function getWeekSinceEpoch(day) {
 }
 
 
+/*
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///  obj ={                                                                                                                     ///
+///      title:,                                                                                                                ///
+///      icon : <success,warning,danger,info,primary,default> or {icon:"css icon name",title:"Title Text!",color:"Hex-Color"}   ///
+///      fields: [{                                                                                                             ///
+///          name:(optional)                                                                                                    ///
+///          text:(optional)                                                                                                    ///
+///          type: <text,textarea,checkbox,radio,span,div,header,h1,h2,h3,h4,h5,h6,number,date,time,file,yesno,label>(optional) ///
+///          value: (optional)                                                                                                  ///
+///          placeholder: (optional)                                                                                            ///
+///          classes: (optional)																								///
+///      },...],                                                                                                                ///
+///      pushUrl:"",                                                                                                            ///
+///      success:function,                                                                                                      ///
+///      cancel:function,                                                                                                       ///  
+///      reformat: function,
+///      noCancel: bool
+///  }                                                                                                                          ///
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+*/
 function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onCancel) {
 
 	$("#modal-icon").attr("class", "");
@@ -352,26 +378,6 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onC
 		}
 	});
 }
-/*
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///  obj ={                                                                                                                     ///
-///      title:,                                                                                                                ///
-///      icon : <success,warning,danger,info,primary,default> or {icon:"css icon name",title:"Title Text!",color:"Hex-Color"}   ///
-///      fields: [{                                                                                                             ///
-///          name:(optional)                                                                                                    ///
-///          text:(optional)                                                                                                    ///
-///          type: <text,textarea,checkbox,radio,span,header,h1,h2,h3,h4,h5,h6,number,date,time,file,yesno,label>(optional)     ///
-///          value: (optional)                                                                                                  ///
-///          placeholder: (optional)                                                                                            ///
-///      },...],                                                                                                                ///
-///      pushUrl:"",                                                                                                            ///
-///      success:function,                                                                                                      ///
-///      cancel:function,                                                                                                       ///  
-///      reformat: function,
-///      noCancel: bool
-///  }                                                                                                                          ///
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-*/
 function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 	$("#modalCancel").toggleClass("hidden", obj.noCancel || false);
 	if (typeof (pushUrl) === "undefined")
@@ -421,9 +427,13 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 			var color = escapeString(obj.icon.color || "#5bc0de");
 			$("#modal-icon").addClass(icon);
 			icon = icon.replace(" ", ".")
-			document.styleSheets[0].addRule("." + custom + " ." + icon + ":after", 'content: "' + title + '" !important;');
-			document.styleSheets[0].addRule("." + custom + " ." + icon + ":before", 'background-color: ' + color + ';');
-			document.styleSheets[0].addRule("." + custom + " #modalOk", 'background-color: ' + color + ';');
+			try{
+				document.styleSheets[0].insertRule("." + custom + " ." + icon + ":after{content: '" + title + "' !important;",0);
+				document.styleSheets[0].insertRule("." + custom + " ." + icon + ":before{ background-color: " + color + ";",0);
+				document.styleSheets[0].insertRule("." + custom + " #modalOk{ background-color: " + color + ";",0);
+			} catch (e) {
+				console.error(e);
+			}
 		}
 
 	}
@@ -435,9 +445,9 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 	$("#modal").addClass("loading");
 	$('#modal').modal('show');
 
-	var allowed = ["text", "hidden", "textarea", "checkbox", "radio", "number", "date", "time", "header", "span", "h1", "h2", "h3", "h4", "h5", "h6", "file", "yesno", "label"];
+	var allowed = ["text", "hidden", "textarea", "checkbox", "radio", "number", "date", "time", "header", "span","div", "h1", "h2", "h3", "h4", "h5", "h6", "file", "yesno", "label","img"];
 	var addLabel = ["text", "textarea", "checkbox", "radio", "number", "date", "time", "file"];
-	var tags = ["span", "h1", "h2", "h3", "h4", "h5", "h6", "label"];
+	var tags = ["span", "h1", "h2", "h3", "h4", "h5", "h6", "label", "div"];
 	var anyFields = ""
 
 	if (typeof (obj.field) !== "undefined") {
@@ -467,7 +477,7 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 
 	var builder = '<div class="form-horizontal modal-builder">';
 	var runAfter = [];
-	var genInput = function (type, name, placeholder, value, others) {
+	var genInput = function (type, name, placeholder, value, others,classes) {
 		others = others || "";
 		if (type == "number")
 			others += " step=\"any\"";
@@ -475,9 +485,9 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 		if (type == "checkbox" && ((typeof (value) === "string" && (value.toLowerCase() === 'true')) || (typeof (value) === "boolean" && value)))
 			others += "checked";
 
-		return '<input type="' + escapeString(type) + '" class="form-control blend"' +
+		return '<input type="' + escapeString(type) + '" class="form-control blend ' + classes + '"' +
                       ' name="' + escapeString(name) + '" id="' + escapeString(name) + '" ' +
-                      escapeString(placeholder) + ' value="' + escapeString(value) + '" ' + others + '/>';
+                      placeholder + ' value="' + escapeString(value) + '" ' + others + '/>';
 
 	}
 
@@ -491,13 +501,19 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 			var value = field.value || "";
 			var placeholder = field.placeholder;
 			var type = (field.type || "text").toLowerCase();
+			var classes = field.classes||"";
+
+			if (typeof(classes)==="string" && (classes.indexOf('\'') != -1 || classes.indexOf('\"') != -1))
+				throw "Classes cannot contain a quote character.";
+
 
 			if (type == "header")
 				type = "h4";
 
 			if (typeof (placeholder) !== "undefined")
-				placeholder = "placeholder='" + placeholder + "'";
-			else placeholder = "";
+				placeholder = "placeholder='" + escapeString(placeholder) + "'";
+			else
+				placeholder = "";
 			var input = "";
 			var inputIndex = allowed.indexOf(type);
 			if (inputIndex == -1) {
@@ -512,28 +528,31 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 				contentType = 'enctype="multipart/form-data"';
 
 			if (tags.indexOf(type) != -1) {
-				input = "<" + type + " name=" + escapeString(name) + '" id="' + escapeString(name) + '">' + value + '</' + type + '>';
+				var txt = value || text;
+				input = "<" + type + " name=" + escapeString(name) + '" id="' + escapeString(name) + '" class="' + classes + '">' + txt + '</' + type + '>';
 			} else if (type == "textarea") {
-				input = '<textarea class="form-control blend verticalOnly" rows=5 name="' + escapeString(name) + '" id="' + escapeString(name) + '" ' + escapeString(placeholder) + '>' + value + '</textarea>';
+				input = '<textarea class="form-control blend verticalOnly ' + classes + '" rows=5 name="' + escapeString(name) + '" id="' + escapeString(name) + '" ' + escapeString(placeholder) + '>' + value + '</textarea>';
 			} else if (type == "date") {
 				var guid = generateGuid();
 				var curName = name;
 				var curVal = originalValue;
-				input = '<div class="date-container date-' + guid + '"></div>';
+				input = '<div class="date-container date-' + guid + ' ' + classes + '"></div>';
 				runAfter.push(function () {
 					generateDatepicker('.date-' + guid, curVal, curName, curName);
 				});
 			} else if (type == "yesno") {
 				var selectedYes = (value == true) ? 'checked="checked"' : "";
 				var selectedNo = (value == true) ? "" : 'checked="checked"';
-				input = '<div class="form-group input-yesno">' +
+				input = '<div class="form-group input-yesno '+classes+'">' +
                             '<label for="true" class="col-xs-4 control-label"> Yes </label>' +
                             '<div class="col-xs-2">' + genInput("radio", name, placeholder, "true", selectedYes) + '</div>' +
                             '<label for="false" class="col-xs-1 control-label"> No </label>' +
                             '<div class="col-xs-2">' + genInput("radio", name, placeholder, "false", selectedNo) + '</div>' +
                         '</div>';
+			} else if (type == "img") {				
+				input = "<img src='"+field.src+"' class='" + classes + "'/>";
 			} else {
-				input = genInput(type, name, placeholder, value);
+				input = genInput(type, name, placeholder, value, null, classes);
 			}
 
 			if (addLabel.indexOf(type) != -1 && label) {
@@ -745,7 +764,7 @@ function showHtmlErrorAlert(html, defaultMessage) {
 	debugger;
 	if (typeof (html) === "object" && typeof (html.responseText) === "string") {
 		var ele = $($(html.responseText)[1]);
-		if (ele.is("title")){
+		if (ele.is("title")) {
 			message = ele.text();
 		}
 	} else if (typeof (html) === "string") {
@@ -758,7 +777,13 @@ function showHtmlErrorAlert(html, defaultMessage) {
 	showAlert(message);
 }
 
-function showAlert(message, alertType, preface) {
+function showAlert(message, alertType, preface,duration) {
+	if (typeof (alertType) === "number" && typeof (preface) === "undefined" && typeof (duration) === "undefined")
+		duration = alertType;
+	else if (typeof (preface) === "number" && typeof (duration) === "undefined")
+		duration = preface;
+
+
 	if (alertType === undefined)
 		alertType = "alert-danger";
 	if (preface === undefined)
@@ -778,6 +803,11 @@ function showAlert(message, alertType, preface) {
 	var alert = $("<div class=\"alert " + alertType + " alert-dismissable start\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button><strong>" + preface + "</strong> <span class=\"message\">" + message + "</span></div>");
 	$("#alerts").prepend(alert);
 	setTimeout(function () { alert.removeClass("start"); }, 1);
+
+	if (typeof (duration) === "number")
+		setTimeout(function () {
+			$(alert).remove();
+		},duration);
 }
 
 var alertsTimer = null;
@@ -938,7 +968,7 @@ function profilePicture(url, name, initials) {
 		//console.log(name + ": " + hash + " = " + Math.abs(hash) % 360);
 		hash = Math.abs(hash) % 360;
 	}
-	if (url !== "/i/userplaceholder" && url!==null) {
+	if (url !== "/i/userplaceholder" && url !== null) {
 		picture = "<span class='picture' style='background: url(" + url + ") no-repeat center center;'></span>";
 	} else {
 		if (name == "")
@@ -1084,7 +1114,7 @@ $(document).ajaxSend(function (event, jqX, ajaxOptions) {
 	}
 	console.info(ajaxOptions.type + " " + ajaxOptions.url);
 	if (typeof (ajaxOptions.type) === "string" && ajaxOptions.type.toUpperCase() == "POST" && !(ajaxOptions.url.indexOf("/support/email") == 0)) {
-		debugger;
+		//debugger;
 		console.info(ajaxOptions.data);
 	}
 });
@@ -1118,18 +1148,10 @@ function dateFormatter(date) {
 }
 
 $(function () {
-	/*$('img').hide().on('load', function () {
-        // do something, maybe:
-        $(this).fadeIn();
-        $(this).addClass("loaded");
-    });*/
-
 	$(window).bind('beforeunload', function () {
 		if (document.activeElement) $(document.activeElement).blur();
 
 	});
-
-
 
 	$(".footer-bar-container").each(function () {
 		var h = parseInt($(this).attr("data-height"));
@@ -1154,7 +1176,6 @@ $(function () {
 				curHeight += selfH;
 			}
 			$(this).css("bottom", -(-curHeight + selfH) + "px");
-			//$(this).parent(".footer-bar-container").css("bottom", curHeight + "px");
 		});
 
 		$(".body-full-width #main").css("padding-bottom", Math.max(20, curHeight) + "px");
@@ -1281,7 +1302,6 @@ function sendErrorReport() {
 			mArray.push(JSON.stringify(consoleStore[i]));
 		}
 		message = "[" + mArray.join(",\n") + "]";
-
 		function _send() {
 			data = {};
 			data.Console = message;
@@ -1291,7 +1311,6 @@ function sendErrorReport() {
 			data.PageTitle = window.Title;
 			data.Status = "JavascriptError";
 			data.Subject = "Javascript Error - " + data.PageTitle;
-
 			if (image != null) {
 				data.ImageData = image;
 			}
@@ -1308,7 +1327,6 @@ function sendErrorReport() {
 				}
 			});
 		}
-
 		try {
 			$.getScript("/Scripts/home/screenshot.js").done(function () {
 				try {
@@ -1377,16 +1395,7 @@ function supportEmail(title, nil, defaultSubject, defaultBody) {
 					image = res;
 					console.log("end render");
 				});
-				show();
-				//html2canvas(document.body, {
-				//    allowTaint: true,
-				//    onrendered: function (canvas) {
-				//        image = canvas;
-
-				//        
-				//        show();
-				//    }
-				//});
+				show();			
 			} catch (e) {
 				show();
 			}
@@ -1477,7 +1486,6 @@ function startTour(name, method) {
 	if (typeof (method) === "undefined" || method == null || (typeof (method) === "string" && method.trim() == ""))
 		method = "start";
 	$.getScript("/Scripts/Tour/lib/anno.js").done(function () {
-
 		//ensureLoaded("/Scripts/Tour/lib/jquery.scrollintoview.min.js");
 		//ensureLoaded("/Content/Tour/lib/anno.css");
 		if (typeof (Tours) === "undefined") {

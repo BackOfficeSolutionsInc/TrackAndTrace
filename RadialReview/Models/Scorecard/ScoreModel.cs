@@ -45,6 +45,8 @@ namespace RadialReview.Models.Scorecard
 
 		public virtual bool _Editable { get; set; }
 
+		public virtual long _OneMeeting { get; set; }
+
 
 		public ScoreModel()
 		{

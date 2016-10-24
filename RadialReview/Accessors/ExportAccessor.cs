@@ -113,14 +113,24 @@ namespace RadialReview.Accessors
                     sb.AppendLine();
 					//var id = 0;
 
+					var rows = new List<Tuple<long, List<string>>>();
+
                     var tasks = issues.Select((i, id) => {
-                        return RecurseIssue(sb, id, i, 0, includeDetails);
+                        return RecurseIssue(rows, id, i, 0, includeDetails);
                     });
                     //foreach (var i in issues){
                     //    id++;
                     //    await ;
                     //}
                     await Task.WhenAll(tasks);
+
+					foreach (var r in rows.OrderBy(x => x.Item1)) {
+						foreach (var c in r.Item2) {
+							sb.Append(c).Append(",");
+						}
+						sb.AppendLine();
+					}
+
 
 					return new System.Text.UTF8Encoding().GetBytes(sb.ToString());
 				}
@@ -205,29 +215,40 @@ namespace RadialReview.Accessors
 		
 			
 		}
-
-        public static async Task RecurseIssue(StringBuilder sb, int index, IssueModel.IssueModel_Recurrence parent, int depth, bool includeDetails)
+        public static async Task RecurseIssue(List<Tuple<long,List<string>>> rows, int index, IssueModel.IssueModel_Recurrence parent, int depth, bool includeDetails)
 		{
+			var cells = new List<string>();
+			var row = Tuple.Create((long)index, cells);
+
 			var time = "";
 			if (parent.CloseTime != null)
 				time = parent.CloseTime.Value.ToShortDateString();
-			sb  .Append(index).Append(",")
-				.Append(depth).Append(",")
-				.Append(Csv.CsvQuote(parent.Owner.NotNull(x => x.GetName()))).Append(",")
-				.Append(parent.CreateTime.ToShortDateString()).Append(",")
-				.Append(time).Append(",");
-	/*		for (var d = 0; d < depth - 1; d++)
-				sb.Append(",");*/
-			sb.Append(Csv.CsvQuote(parent.Issue.Message)).Append(",");
+			cells.Add("" + index);
+			cells.Add("" + depth);
+			cells.Add("" + Csv.CsvQuote(parent.Owner.NotNull(x => x.GetName())));
+			cells.Add("" + parent.CreateTime.ToShortDateString());
+			cells.Add("" + time);
+			cells.Add("" + Csv.CsvQuote(parent.Issue.Message));
+
+
+			//.Append(depth).Append(",")
+			//.Append().Append(",")
+			//.Append().Append(",")
+			//.Append().Append(",");
+			/*		for (var d = 0; d < depth - 1; d++)
+						sb.Append(",");*/
+			//sb.Append(Csv.CsvQuote(parent.Issue.Message)).Append(",");
 
             if (includeDetails) {
                 var padDetails = await PadAccessor.GetText(parent.Issue.PadId);
-                //var bytes = new System.Text.UTF8Encoding().GetBytes(padDetails);
-                sb.Append(Csv.CsvQuote(padDetails));
+				//var bytes = new System.Text.UTF8Encoding().GetBytes(padDetails);
+				cells.Add(Csv.CsvQuote(padDetails));
             }
-			sb.AppendLine();
+
+			rows.Add(row);
+
 			foreach(var child in parent._ChildIssues)
-                await RecurseIssue(sb, index, child, depth + 1, includeDetails);
+                await RecurseIssue(rows, index, child, depth + 1, includeDetails);
 		}
 	
 		

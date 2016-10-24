@@ -98,15 +98,17 @@ namespace RadialReview.Controllers
             }
             catch (Exception e){
 				log.Error("Error executing nexus", e);
-                //ViewBag.Message = "Could not access resource. Make sure you're logging in with the correct account.";
-	            return RedirectToAction("Index","Home");
+				//ViewBag.Message = "Could not access resource. Make sure you're logging in with the correct account.";
+				ViewBag.Message = e.Message;
+				return RedirectToAction("Index","Home");
 				/*log.Error("Error executing nexus",e);
 				ViewBag.Message = "There was an error in your request.";
 				ViewBag.AlertType = "alert-danger";
                 return Con("Index", "Home");*/
             }
             log.Fatal("Nexus fall-through");
-            return View();
+			ViewBag.Message = "Action could not be performed. (2)";
+			return View();
         }
 
         [HttpPost]
@@ -188,7 +190,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public async Task<JsonResult> SendAllEmails()
         {
-            var output = await NexusAccessor.SendAllJoinEmails(GetUser(), GetUser().Organization.Id);
+            var output = await JoinOrganizationAccessor.SendAllJoinEmails(GetUser(), GetUser().Organization.Id);
 
 	        var errors = output.Errors.Select(x => x.Message).GroupBy(x => x).Select(x =>{
 		        var r = x.First();
@@ -205,7 +207,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.Manager)]
         public async Task<JsonResult> ResendAllEmails()
         {
-            var result = await NexusAccessor.ResendAllEmails(GetUser(), GetUser().Organization.Id);
+            var result = await JoinOrganizationAccessor.ResendAllEmails(GetUser(), GetUser().Organization.Id);
             return Json(result.ToResults("Successfully sent {0} out of {2}."), JsonRequestBehavior.AllowGet);
         }
 

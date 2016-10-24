@@ -15,7 +15,6 @@ using RadialReview.Models.Json;
 using RadialReview.Models.L10;
 using RadialReview.Models.L10.VM;
 using RadialReview.Models.VideoConference;
-using RestSharp.Validation;
 using MathNet.Numerics.Distributions;
 using RadialReview.Utilities;
 using WebGrease.Css.Extensions;
@@ -176,7 +175,11 @@ namespace RadialReview.Controllers
 
 			var scorecardType = GetUser().Organization.Settings.ScorecardPeriod;
 			model.ScorecardType = scorecardType;
-			model.Weeks = TimingUtility.GetPeriods(GetUser(), DateTime.UtcNow, model.MeetingStart, /*model.Scores,*/ true);
+			var timeSettings = GetUser().GetTimeSettings();
+			timeSettings.WeekStart = model.Recurrence.StartOfWeekOverride ?? timeSettings.WeekStart;
+			timeSettings.Descending = model.Recurrence.ReverseScorecard;
+
+			model.Weeks = TimingUtility.GetPeriods(timeSettings, DateTime.UtcNow, model.MeetingStart, /*model.Scores,*/ true);
 			return PartialView("Scorecard", model);
 			/*model.StartDate = ordered.FirstOrDefault().NotNull(x => DateTime.UtcNow);
 			model.EndDate = ordered.LastOrDefault().NotNull(x => DateTime.UtcNow).AddDays(7);
@@ -272,13 +275,13 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.UserOrganization)]
         public async Task<ActionResult> ForceConclude(long id)
         {
-            await L10Accessor.ConcludeMeeting(GetUser(), id,new List<Tuple<long,decimal?>>(), false,false);
+            await L10Accessor.ConcludeMeeting(GetUser(), id,new List<Tuple<long,decimal?>>(), false,false,false,null);
             return Content("Done");
         }
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public async Task<ActionResult> Conclusion(L10MeetingVM model, FormCollection form)
+		public async Task<ActionResult> Conclusion(L10MeetingVM model, FormCollection form,string connectionId=null)
 		{
 			ValidateValues(model, x => x.Recurrence.Id);
 
@@ -316,7 +319,7 @@ namespace RadialReview.Controllers
 
 				if (ModelState.IsValid)
 				{
-					await L10Accessor.ConcludeMeeting(GetUser(), model.Recurrence.Id, ratingValues, model.SendEmail,model.CloseTodos);
+					await L10Accessor.ConcludeMeeting(GetUser(), model.Recurrence.Id, ratingValues, model.SendEmail, model.CloseTodos, model.CloseHeadlines, connectionId);
 
 
 					//var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();

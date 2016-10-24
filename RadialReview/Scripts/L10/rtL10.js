@@ -92,10 +92,14 @@ $(function () {
 
 	meetingHub.client.addTranscription = addTranscription;
 
+	meetingHub.client.showAlert = showAlert;
 
 	meetingHub.client.userEnterMeeting = userEnterMeeting;
 	meetingHub.client.userExitMeeting = userExitMeeting;
 
+	meetingHub.client.addVideoProvider = addVideoProvider;
+	meetingHub.client.setSelectedVideoProvider = setSelectedVideoProvider;
+	meetingHub.client.joinVideoConference = joinVideoConference;
 	//meetingHub.client.setLeader = setLeader;
 
 	console.log("StartingHub ");

@@ -9,18 +9,32 @@ using Microsoft.Identity.Client;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Office365.OutlookServices;
+using RadialReview.Models.Json;
+using RadialReview.Accessors.VideoConferenceProviders;
 
-namespace RadialReview.Controllers
-{
-    public class IntegrationsController : Controller
-    {
-        // GET: Integrations
+namespace RadialReview.Controllers {
+	public class IntegrationsController : BaseController {
+		// GET: Integrations
 		[Access(AccessLevel.UserOrganization)]
-        public void OutlookSignin() {
+		public void OutlookSignin() {
 			//(HttpContext).GetOwinContext().Authentication.Challenge(
 			//	new AuthenticationProperties { RedirectUri = "/" },
 			//	OpenIdConnectAuthenticationDefaults.AuthenticationType);
 
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult AddZoomRoom(long recurId,long userId,string zoomMeetingId, string connectionId = null,string name=null) {
+
+			var link = VideoProviderAccessor.GenerateLink(GetUser(), userId, zoomMeetingId, recurId, name:name);
+
+			if (connectionId != null) {
+				VideoProviderAccessor.StartMeeting(GetUser(), GetUser().User, link.Id);
+			}
+
+			
+			
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 	}
 }

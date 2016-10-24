@@ -28,7 +28,7 @@
 		var MeetingId = @Model.Recurrence.Id;
 		@if (Model.MeetingStart != null){
 			@:var startTime = new Date(@(Model.MeetingStart.Value.ToJavascriptMilliseconds()));
-				                                                                        																				}
+						                                                                        																				}
 
 
 	</script>
@@ -57,23 +57,19 @@
 			console.log("called afterLoad");
 			userId = @(ViewBag.UserId);
 
-
-
-
 			@if (Model.Meeting != null){
-        foreach (var m in Model.MemberPictures.ToList()) {
-            @:addToPictureLookup(@m.UserId,"@m.Url","@m.Name","@m.Initials");
-									                            }
+				foreach (var m in Model.MemberPictures.ToList()) {
+					@:addToPictureLookup(@m.UserId,"@m.Url","@m.Name","@m.Initials");
+				}
 				@:isLeader = @(Model.Meeting.MeetingLeaderId == ViewBag.UserId ? "true" : "false");
-									                                                                                                                                                                    	@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),@(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0))
-
+				@:var bmin = @(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0) + @(Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => (DateTime.UtcNow.ToJavascriptMilliseconds() - x.Value.ToJavascriptMilliseconds()))/(60*1000.0));
+				@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),bmin);
 				foreach (var i in Model.Meeting._MeetingLeaderPageDurations.Where(x => x.Item1 != Model.Meeting._MeetingLeaderCurrentPage)){
-					@:setPageTime("@i.Item1",@i.Item2);
-									                                                                                                                                                                    	}
+						@:setPageTime("@i.Item1",@i.Item2);
+				}
+			}else{
+					@:isLeader =false;
 			}
-			else{
-				@:isLeader =false;
-									                                                                                                                                                                    }
 			initL10();
 			try {
 				resetClickables();
@@ -349,7 +345,7 @@
 		@if (Model.EnableTranscript)
 		{
 		@:shouldStartTranscribe = true;
-				                                                                                        }
+						                                                                                        }
 
 
 

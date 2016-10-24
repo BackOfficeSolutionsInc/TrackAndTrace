@@ -17,6 +17,7 @@ using NHibernate;
 using NHibernate.Proxy;
 using RadialReview.Models.Angular;
 using RadialReview.Models.Angular.Base;
+using System.Linq.Expressions;
 
 namespace RadialReview.Utilities.Serializers {
 	/**
@@ -84,7 +85,7 @@ namespace RadialReview.Utilities.Serializers {
 			foreach (var p in properties) {
 				var name = p.Name;
 				var value = p.GetValue(item, null);
-				if (name == "_ExtraProperties" && value!=null) {
+				if (name == "_ExtraProperties" && value != null) {
 					var dict = (Dictionary<string, object>)value;
 					foreach (var k in dict.Keys) {
 						var serialized = _SerializeProperty(k, dict[k], parent, lookup, now);
@@ -125,8 +126,9 @@ namespace RadialReview.Utilities.Serializers {
 				parent[name] = Removed.DELETED_KEY;
 				return parent[name];
 			}
-
-
+			if (value is IAngularIgnore) {
+				return null;
+			}
 
 			if (value is IAngularItem) {
 				var sub = new Dictionary<string, object>();

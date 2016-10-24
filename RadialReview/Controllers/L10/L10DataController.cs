@@ -25,6 +25,7 @@ using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
 using System.Dynamic;
 using Newtonsoft.Json;
+using RadialReview.Accessors.VideoConferenceProviders;
 
 namespace RadialReview.Controllers {
 	public partial class L10Controller : BaseController {
@@ -88,7 +89,7 @@ namespace RadialReview.Controllers {
 				AllowCreateCompanyRock = recurrence.TeamType == L10TeamType.LeadershipTeam
 			};
 
-			am.AvailableRocks.Add(new SelectListItem() { Text = "<Create Rock>", Value = "-3" });
+			//am.AvailableRocks.Add(new SelectListItem() { Text = "<Create Rock>", Value = "-3" });
 
 			return PartialView(am);
 		}
@@ -335,7 +336,7 @@ namespace RadialReview.Controllers {
 
 
 		[Access(AccessLevel.UserOrganization)]
-		public async Task<FileStreamResult> ExportAll(long id) {
+		public async Task<FileStreamResult> ExportAll(long id, bool includeDetails = false) {
 			/*Response.Clear();
             Response.BufferOutput = false; // false = stream immediately
             System.Web.HttpContext c = System.Web.HttpContext.Current;
@@ -349,8 +350,8 @@ namespace RadialReview.Controllers {
 			var memoryStream = new MemoryStream();
 			using (var zip = new ZipFile()) {
 				zip.AddEntry(String.Format("Scorecard.csv", time, recur.Name), ExportAccessor.Scorecard(GetUser(), id));
-				zip.AddEntry(String.Format("To-Do.csv", time, recur.Name), await ExportAccessor.TodoList(GetUser(), id, false));
-				zip.AddEntry(String.Format("Issues.csv", time, recur.Name), await ExportAccessor.IssuesList(GetUser(), id, false));
+				zip.AddEntry(String.Format("To-Do.csv", time, recur.Name), await ExportAccessor.TodoList(GetUser(), id, includeDetails));
+				zip.AddEntry(String.Format("Issues.csv", time, recur.Name), await ExportAccessor.IssuesList(GetUser(), id, includeDetails));
 				zip.AddEntry(String.Format("Rocks.csv", time, recur.Name), ExportAccessor.Rocks(GetUser(), id));
 				zip.AddEntry(String.Format("MeetingSummary.csv", time, recur.Name), ExportAccessor.MeetingSummary(GetUser(), id));
 
@@ -460,7 +461,7 @@ namespace RadialReview.Controllers {
 			L10Accessor.UpdateIssue(GetUser(), id, time, complete: @checked, connectionId: connectionId);
 			return Json(ResultObject.SilentSuccess(@checked), JsonRequestBehavior.AllowGet);
 		}
-		
+
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
 		public JsonResult UpdateIssue(long id, DateTime? time = null, string message = null, string details = null, long? owner = null, int? priority = null, int? rank = null) {
@@ -578,7 +579,7 @@ namespace RadialReview.Controllers {
 			L10Accessor.UpdateHeadline(GetUser(), id, message);
 			return Json(ResultObject.SilentSuccess());
 		}
-		
+
 
 		#endregion
 
@@ -712,8 +713,21 @@ namespace RadialReview.Controllers {
 			//o["options"]["margin"]
 
 			var data = L10Accessor.GetStatsData(GetUser(), id);
-						
-			return Content(data.ToJson(),"application/json");
+
+			return Content(data.ToJson(), "application/json");
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult SetVideoProvider(long recur, long provider) {
+			L10Accessor.SetVideoProvider(GetUser(), recur, provider);
+			VideoProviderAccessor.StartMeeting(GetUser(), GetUser().User, provider);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult SetJoinedVideo(long recur, long provider) {
+			L10Accessor.SetJoinedVideo(GetUser(), GetUser().Id, recur, provider);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 	}
 }

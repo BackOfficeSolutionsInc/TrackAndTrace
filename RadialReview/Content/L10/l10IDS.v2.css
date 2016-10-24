@@ -124,13 +124,13 @@
     color: gray;
 }
 
-.ids .unstar-all{
+/*.ids .unstar-all{
 	display:none;
 }
 
 .ids.prioritization-Priority .unstar-all{
 	display:block;
-}
+}*/
 
 .ids .priority.single-3 .icon {
     font-size: 10px;

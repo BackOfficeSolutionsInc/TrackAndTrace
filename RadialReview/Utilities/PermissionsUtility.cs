@@ -84,7 +84,8 @@ namespace RadialReview.Utilities {
 		}
 		protected static Boolean IsRadialAdmin(UserOrganizationModel caller,bool allowSpecialOrgs=false) {
 
-			var adminFromThread = Thread.GetData(Thread.GetNamedDataSlot("IsRadialAdmin")).NotNull(x=>(bool)x);
+			var adminFromThread = Thread.GetData(Thread.GetNamedDataSlot("IsRadialAdmin")).NotNull(x => (bool)x);
+			allowSpecialOrgs = allowSpecialOrgs || Thread.GetData(Thread.GetNamedDataSlot("AllowSpecialOrgs")).NotNull(x => (bool)x);
 
 			if (caller != null && (caller.IsRadialAdmin || caller._IsRadialAdmin || adminFromThread || (caller.User != null && caller.User.IsRadialAdmin))) {
 				if (!allowSpecialOrgs && caller.Organization != null && (caller.Organization.Id == 1795 || caller.Organization.Id == 1634)) {
@@ -1127,12 +1128,12 @@ namespace RadialReview.Utilities {
 				throw new PermissionsException("Meeting does not exist.");
 			}
 
-			var recur = session.Get<L10Recurrence>(recurrenceId);
-			if (recur.CreatedById == caller.Id)
-				return this;
+			//var recur = session.Get<L10Recurrence>(recurrenceId);
+			//if (recur.CreatedById == caller.Id)
+			//	return this;
 
-			if (IsManagingOrganization(recur.OrganizationId))
-				return this;
+			//if (IsManagingOrganization(recur.OrganizationId))
+			//	return this;
 
 
 			return CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId);

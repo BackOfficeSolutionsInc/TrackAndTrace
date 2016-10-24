@@ -1017,3 +1017,9 @@ body.resizing *::-moz-selection {
   height: 19px;
   margin-top: 8px;
 }
+.a-link {
+  text-decoration: underline;
+}
+.a-link:hover {
+  color: #EF7622 !important;
+}

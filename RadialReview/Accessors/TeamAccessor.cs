@@ -93,7 +93,7 @@ namespace RadialReview.Accessors
 						}
 					}
 					managingTeams=managingTeams.Distinct(x => x.Id).ToList();
-					return managingTeams;
+					return managingTeams.Where(x=>x.DeleteTime==null).ToList();
 				}
 			}
 		}

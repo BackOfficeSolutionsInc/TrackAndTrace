@@ -147,8 +147,8 @@ body.resizing .notes-tile,
 	}
 
 	.width_1 .notes-tile iframe {
-		margin-top: -70px;
-		height: ~"calc(100% + 70px)";
+		margin-top: -38px;
+		height: ~"calc(100% + 38px)";
 	}
 
 	.notes-tile iframe {
@@ -211,6 +211,21 @@ body.resizing .notes-tile,
 				max-height: 24px !important;
 				height: 24px;
 				max-height: none !important;
+
+				score input {
+					height: 31px!important;
+				}
+			}
+
+			tr.IsDivider td{
+				height:3px;
+				background-color:#e2e2e2;
+			}
+
+			@-moz-document url-prefix() {
+				tr td {
+					height: 30px;
+				}
 			}
 
 			.score input {
@@ -379,6 +394,10 @@ body.resizing .notes-tile,
 
 		tr.AtRisk .icon-column:after {
 			border-color: #dca7a7;
+		}
+
+		tr.Indeterminate .icon-column:before {
+			content: "\e203";
 		}
 
 		.table-header,
@@ -699,6 +718,10 @@ body.resizing .notes-tile,
 	.width_1 .faq-tile ul {
 		font-size: 11px !important;
 		padding-left: 1px;
+
+		@-moz-document url-prefix() {
+			padding-left: 7px;
+		}
 
 		li {
 			padding-bottom: 5px;

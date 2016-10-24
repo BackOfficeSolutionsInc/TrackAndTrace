@@ -131,6 +131,12 @@ input[type="range"] {
 		font-weight: bold;
 	}
 
+
+	.table-values .header-title {
+		width: 80px;
+		padding: 10px;
+	}
+
 .widthOnly {
 	height: 0px;
 	color: transparent;
@@ -141,6 +147,10 @@ input[type="range"] {
 	vertical-align: top;
 }
 
+.table-gwc .question-cell {
+	width: 50%;
+}
+
 .table-gwc .reasonPopup {
 	position: absolute;
 	top: -150px;
@@ -149,12 +159,12 @@ input[type="range"] {
 	-webkit-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5),8px 8px 10px rgba(0, 0, 0, 0.2);
 	-ms-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5),8px 8px 10px rgba(0, 0, 0, 0.2);
 	box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5),8px 8px 10px rgba(0, 0, 0, 0.2);
-	height:150px;
+	height: 150px;
 }
 
 	.table-gwc .reasonPopup .popup {
 		border: 1px solid #333333;
-		padding: 3px 6px;
+		padding: 6px 9px;
 		width: 300px;
 		margin: 0px;
 	}
@@ -194,12 +204,78 @@ input[type="range"] {
 		opacity: 1;
 	}
 
+
+.review-page.no-edits .fivestate,
+.review-page.no-edits .posneg,
+.review-page.no-edits .rockstate,
+.review-page.no-edits textarea {
+	cursor: not-allowed;
+}
+
+.sidebar-contents1 {
+	margin-top: 45px;
+}
+
+
+.table-rocks .question {
+	font-size: 14px;
+	padding-left: 6px;
+}
+
+
+@media(max-width:767px) {
+	.table-gwc .header {
+		font-size: 11px;
+		width: 60px;
+	}
+
+	.table-gwc .question {
+		font-size: 18px;
+	}
+
+	.table-rocks .question {
+		font-size: 14px;
+		padding-left: 4px;
+	}
+
+	.table-gwc .question-cell {
+		width: 60%;
+	}
+}
+
+@media(max-width:600px) {
+	.table-rocks .question,
+	.table-gwc .question {
+		font-size: 12px;
+		padding-left: 2px;
+	}
+
+	.table-rocks .reason,
+	.table-values .reason {
+		font-size: 11px;
+		padding-left: 4px;
+		padding-right: 2px;
+	}
+
+	.table-gwc .question-cell {
+		width: 100%;
+	}
+}
+
+@media(max-width:1199px) {
+	.table-values .header-title {
+		font-size: 12px;
+		width: 60px;
+		padding: 2px;
+	}
+}
+
 .reasonButton {
 	position: absolute;
 	top: 5px;
 	right: 6px;
 	z-index: 2;
-	color: white;
+	color: #ddd;
 	-ms-opacity: .5;
 	opacity: .5;
 	cursor: pointer;
@@ -242,8 +318,8 @@ input[type="range"] {
 
 .subsection {
 	/*border: 1px solid #e5e5e5;*/
-	border-left: 17px solid #DDDDDD;
-	margin-bottom: 30px;
+	border-left: 17px solid #DDDDDD;   
+	margin-bottom: 15px;
 	padding: 6px 0px;
 }
 
@@ -306,6 +382,34 @@ input[type="range"] {
 	margin-top: 6px;
 }
 
+.review-page.no-edits .table-rocks .reason:empty,
+.review-page.no-edits .table-values .reason:empty {
+	text-align: center;
+}
+
+	.review-page.no-edits .table-rocks .reason:empty:after,
+	.review-page.no-edits .table-values .reason:empty:after {
+		content: "No comments provided";
+		font-size: 11px;
+		color: #ccc;
+		font-style: italic;
+		top: 8px;
+		position: relative;
+	}
+
+.review-page.no-edits .table-values .reason,
+.review-page.no-edits .table-rocks .reason {
+	color: #666;
+}
+
+	.review-page.no-edits .table-values .reason:not(:empty):before,
+	.review-page.no-edits .table-values .reason:not(:empty):after,
+	.review-page.no-edits .table-rocks .reason:not(:empty):before,
+	.review-page.no-edits .table-rocks .reason:not(:empty):after {
+		content: "\"";
+	}
+
+
 .reason.popup {
 	height: 150px;
 	background-color: white;
@@ -326,6 +430,10 @@ input[type="range"] {
 		content: "\"";
 	}
 
+
+textarea[disabled] {
+	background-color: #eee;
+}
 /*
 .flexcontainer {
    display: -webkit-flex;
@@ -357,6 +465,23 @@ input[type="range"] {
 .flexB {
 	width: 240px;
 }*/
+
+
+.review-page .panel-default {
+	border-color: #eee;
+	border-radius: 0px;
+}
+
+	.review-page .panel-default .panel-heading {
+		background-color: #eee;
+		font-size: 18px;
+	}
+
+		.review-page .panel-default .panel-heading h3 {
+			font-size: 18px;
+		}
+
+
 
 
 .userContainer {
@@ -452,7 +577,7 @@ input[type="range"] {
 .flipButton {
 	position: absolute;
 	right: 19px;
-	top: -17px;
+	top: 23px;
 	color: #BDBDBD;
 	cursor: pointer;
 	-webkit-transition: opacity .25s;
@@ -509,4 +634,28 @@ input[type="range"] {
 
 .currentPage {
 	font-weight: bold;
+}
+
+
+.block-separator {
+	margin-left: -18px;
+	margin-right: -18px;
+	height: 30px;
+	background-color: #eee;
+	margin-bottom: 15px;
+	display:block;
+}
+
+.panel-body {
+	/*padding:0px;
+	padding-right:15px;*/
+
+}
+
+.panel-body blocksep:last-of-type {
+	display: none;
+}
+
+.panel-body br:last-of-type {
+	display: none;
 }

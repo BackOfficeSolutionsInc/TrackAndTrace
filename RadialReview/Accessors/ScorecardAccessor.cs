@@ -30,7 +30,9 @@ namespace RadialReview.Accessors {
             var scorecardEnd = range.EndTime.AddDays(6).StartOfWeek(DayOfWeek.Sunday);
 
             var scores = ScorecardAccessor.GetUserScores(caller, userId, scorecardStart, scorecardEnd, includeAdmin: includeAdmin);
-            return new AngularScorecard(-1, caller, measurables.Select(x => new AngularMeasurable(x) { }), scores.ToList(), now, range, includeNextWeek, now);
+            return new AngularScorecard(-1, caller, measurables.Select(x => new AngularMeasurable(x) {
+				//Ordering = x._Ordering
+			}), scores.ToList(), now, range, includeNextWeek, now);
         }
 
         public static List<ScoreModel> GetScores(UserOrganizationModel caller, long organizationId, DateTime start, DateTime end, bool loadUsers)
@@ -241,26 +243,51 @@ namespace RadialReview.Accessors {
             var found = foundQuery.List().ToList();
 
             if (ordered) {
-                var measuableIds = found.Select(x => x.Id).ToList();
-                var ordering = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
-                    .Where(x => x.DeleteTime == null)
-                    .WhereRestrictionOn(x => x.Measurable.Id).IsIn(measuableIds)
-                    .Select(x => x.Measurable.Id, x => x._Ordering, x => x.L10Recurrence.Id)
-                    .List<object[]>().ToList();
-                var orderedOrdering = ordering.GroupBy(x => (long?)x[2] ?? 0).SelectMany(y => y.OrderBy(x => (int?)x[1] ?? 0)).Distinct(x => (long)x[0]).ToList();
+                //var measuableIds = found.Select(x => x.Id).ToList();
+                //var ordering = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
+                //    .Where(x => x.DeleteTime == null)
+                //    .WhereRestrictionOn(x => x.Measurable.Id).IsIn(measuableIds)
+                //    .Select(x => x.Measurable.Id, x => x._Ordering, x => x.L10Recurrence.Id)
+                //    .List<object[]>().ToList();
+                //var orderedOrdering = ordering.GroupBy(x => (long?)x[2] ?? 0).SelectMany(y => y.OrderBy(x => (int?)x[1] ?? 0)).Distinct(x => (long)x[0]).ToList();
 
-                var newOrder = new List<MeasurableModel>();
-                var i = 0;
-                foreach (var o in orderedOrdering) {
-                    var newOrderItem = found.FirstOrDefault(x => x.Id == (long)o[0]);
-                    if (newOrderItem != null) {
-                        newOrder.Add(newOrderItem);
-                        newOrderItem._Ordering = i;
-                        i++;
-                    }
+                //var newOrder = new List<MeasurableModel>();
+                //var i = 0;
+                //foreach (var o in orderedOrdering) {
+                //    var newOrderItem = found.FirstOrDefault(x => x.Id == (long)o[0]);
+                //    if (newOrderItem != null) {
+                //        newOrder.Add(newOrderItem);
+                //        newOrderItem._Ordering = i;
+                //        i++;
+                //    }
 
-                }
-                found = newOrder;
+                //}
+               // found = newOrder;
+
+				var order = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
+					.Where(x => x.DeleteTime == null)
+					.WhereRestrictionOn(x => x.Measurable.Id)
+					.IsIn(found.Select(x => x.Id).Distinct().ToArray())
+					.Select(x => x.Measurable.Id,x=>x.L10Recurrence.Id, x => x._Ordering)
+					.List<object[]>()
+					.Select(x=> new {
+						Measurable = (long)x[0],
+						Meeting = (long)x[1],
+						Order = (int?)x[2]
+					}).ToList();
+
+
+				var lookup = order.Distinct(x => x.Measurable)
+					.OrderBy(x => x.Meeting).ThenBy(x => x.Order ?? int.MaxValue).ThenBy(x => x.Measurable)
+					.Select((x, i) => Tuple.Create(x, i))
+					.ToDictionary(x => x.Item1.Measurable, x => x.Item2);
+
+
+				foreach (var o in found) {
+					if (lookup.ContainsKey(o.Id))
+						o._Ordering = lookup[o.Id];
+				}
+				found = found.OrderBy(x => x._Ordering).ToList();
 
             }
 
@@ -311,7 +338,7 @@ namespace RadialReview.Accessors {
             }
         }*/
 
-        public static void EditMeasurables(UserOrganizationModel caller, long userId, List<MeasurableModel> measurables, bool updateAllL10s)
+		public static void EditMeasurables(UserOrganizationModel caller, long userId, List<MeasurableModel> measurables, bool updateAllL10s)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -409,7 +436,11 @@ namespace RadialReview.Accessors {
                     } else {
                         query = query.Where(x => x.AccountableUserId == userId);
                     }
-                    return query.List().ToList();
+                    var output = query.List().ToList();
+
+				
+
+					return output;
                 }
             }
         }

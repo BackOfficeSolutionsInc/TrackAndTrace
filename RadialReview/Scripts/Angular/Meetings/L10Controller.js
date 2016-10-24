@@ -139,7 +139,14 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
 	//    debugger;
 	//};
 
+	$scope.isReloading = false;
+
 	$scope.functions.reload = function (reload, range, first) {
+		if ($scope.isReloading) {
+			console.log("Already reloading.");
+		}
+		$scope.isReloading = true;
+
 		if (typeof (reload) === "undefined") {
 			reload = true;
 		}
@@ -205,7 +212,12 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
             		meetingCallback();
             		//}, 1);
             	}
-            }).error(showAngularError);
+            	$scope.isReloading = false;
+
+            }).error(function (a, b, c, d, e, f) {
+            	showAngularError(a, b, c, d, e, f);
+            	$scope.isReloading = false;
+            });
 		}
 	}
 

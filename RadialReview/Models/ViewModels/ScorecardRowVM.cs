@@ -19,5 +19,6 @@ namespace RadialReview.Models.ViewModels
 		public bool IsDivider { get; set; }
         public bool ShowAdmin { get;set; }
         public bool ShowScorecardChart { get; set; }
+		public bool ReverseOrder { get; set; }
     }
 }

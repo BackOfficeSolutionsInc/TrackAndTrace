@@ -66,6 +66,10 @@
 		window.UserId = @(ViewBag.UserId??-1);
 		window.OrgId = @(ViewBag.OrganizationId ?? -1);
 		window.Title = "@(ViewBag.Title ?? "")";
+		window.ServerTime = new Date(@DateTime.UtcNow.ToJavascriptMilliseconds());
+		window.ServerTimeDiff = window.ServerTime - new Date();
+		window.ConvertFromServerTime=function(serverTime){return serverTime -window.ServerTimeDiff;}
+		window.ConvertToServerTime = function (clientTime){return clientTime + window.ServerTimeDiff;}
 	</script>
 
 

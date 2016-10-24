@@ -1,46 +1,96 @@
 ﻿@model RadialReview.Controllers.L10Controller.AddRockVm
-		   
+@{
+	var guid = Guid.NewGuid().ToString().Replace("-", "");
+}
 
 @Html.SecuredHiddenFor(x => x.RecurrenceId)
-	
-<div class="form-group @(Model.AvailableRocks.Count()==1?"hidden":"")" >
-    <label>Select a rock</label>
-	@Html.DropDownListFor(x => x.SelectedRock, Model.AvailableRocks, new { id = "rockSelector", @class = "form-control", placeholder = "Select a rock..." })
+
+<div class="rockmodal_@guid">
+	<!-- Nav tabs -->
+	<ul class="nav nav-tabs" role="tablist">
+		<li role="presentation" class="active"><a data-target="#addrock" aria-controls="addrock" role="tab" data-toggle="tab">Add Rock</a></li>
+		<li role="presentation">
+			<a data-target="#createrock" aria-controls="createrock" role="tab" data-toggle="tab"> Create Rock</a>
+		</li>
+	</ul>
+	<!-- Tab panes -->
+	<div class="tab-content">
+
+		<div role="tabpanel" class="tab-pane @(Model.AvailableRocks.Count()==1?"hidden":"active")" id="addrock">
+			<div class="form-group">
+				<label>Select a rock to add:</label>
+				@Html.DropDownListFor(x => x.SelectedRock, Model.AvailableRocks, new { id = "rockSelector", @class = "form-control", placeholder = "Select a rock..." })
+			</div>
+		</div>
+
+		<div role="tabpanel" class="tab-pane  @(Model.AvailableRocks.Count()==1?"active":"")" id="createrock">
+			<div class="createNewRock">
+				<label>Create a new rock:</label>
+				<div class="contents spinner" style="min-height:40px;"></div>
+			</div>
+		</div>
+
+	</div>
 </div>
-<div class="createNewRock hidden">
-    <label>Create a new rock</label>
-    @*<div class="row">
-        <div class="col-xs-8 col-xs-offset-1">*@
-            <div class="contents spinner" style="min-height:40px;"></div>
-        @*</div>
-    </div>
-    <hr/>*@
-</div>
+
+
+<style>
+	.rockmodal_@(guid) .nav-tabs > li:not(.active) > a{
+	    border-bottom: 1px solid #ddd;
+	}
+
+	.rockmodal_@(guid) .nav-tabs{
+		border-bottom:1px solid #ddd;
+	    margin-top: -61px;
+		background-color: #fff;
+		margin-bottom: 15px;
+	}
+
+</style>
 
 
 <script>
-    function Update_AddRock() {
-        if ($("#rockSelector").val() == -3) {
-            $(".createNewRock").removeClass("hidden");
-            var companyRock = "@(Model.AllowCreateCompanyRock?"&companyRock=true":"")";
+	$(function () {
+		var oldRock=null;
+		function Update_AddRock(e) {
+			//if ($("#rockSelector").val() == -3) {
+			//debugger;
+			var target = null;
+			if (e.target) {
+				target = $(e.target).attr("data-target");
+			}
 
-	        $.ajax({
-	            url: "/Rocks/BlankEditorRow?includeUsers=true&excludeDelete=true&recurrenceId=@(Model.RecurrenceId)" + companyRock,
-				success:function(data) {
-					$(".createNewRock .contents").html(data);
+			if (target == "#createrock") {
+				//$(".createNewRock").removeClass("hidden");
+				oldRock = $("#rockSelector").val();
+				$("#rockSelector").append("<option value='-3'></option>");
+				$("#rockSelector").val("-3");
+
+				var companyRock = "@(new HtmlString(Model.AllowCreateCompanyRock? "&companyRock=true&showCompany=true" : ""))";
+
+				$.ajax({
+					url: "/Rocks/BlankEditorRow?includeUsers=true&excludeDelete=true&recurrenceId=@(Model.RecurrenceId)" + companyRock,
+					success: function (data) {
+						$(".createNewRock .contents").html(data);
+					}
+				});
+			} else {
+				$("#rockSelector").find("[value='-3']").remove();
+
+				if (oldRock!=null) {
+					$("#rockSelector").val(oldRock);
 				}
-	        });
+				$(".createNewRock .contents").html("");
+			}
+		}
 
-        } else {
-            $(".createNewRock").addClass("hidden");
-            $(".createNewRock .contents").html("");
-        }
-    }
-
-    $(function () {
-	    $("#rockSelector").change(function() {
-		    Update_AddRock();
-	    });
-        Update_AddRock();
-    });
+		$('.rockmodal_@guid a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			Update_AddRock(e);
+		});
+		//$("#rockSelector").change(function () {
+		//});
+		Update_AddRock({
+			target: $("[data-target='#addrock']")
+		});
+	});
 </script>

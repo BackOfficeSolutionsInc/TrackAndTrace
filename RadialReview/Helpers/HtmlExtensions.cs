@@ -35,8 +35,12 @@ namespace System.Web {
             return (OrganizationModel)html.ViewBag.Organization;
         }
         public static DateTime ConvertFromUtc(this HtmlHelper html, DateTime time)
-        {
-            var org = (OrganizationModel)html.ViewBag.Organization;
+		{
+			var user = (UserOrganizationModel)html.ViewBag.UserOrganization;
+			if (user != null) {				
+				return time.AddMinutes(-user.GetTimezoneOffset());
+			}
+			var org = (OrganizationModel)html.ViewBag.Organization;
             if (org != null)
                 return org.ConvertFromUTC(time);
             return time;

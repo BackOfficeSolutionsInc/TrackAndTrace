@@ -119,7 +119,7 @@
 				</th>*@
 		</tr>
 
-		@foreach (var item in Model) {
+		@foreach (var item in Model.Where(x=> !string.IsNullOrWhiteSpace(x.Email) || !string.IsNullOrWhiteSpace(x.LastName) || !string.IsNullOrWhiteSpace(x.FirstName) || !string.IsNullOrWhiteSpace(x.Phone))) {
 			<tr>
 				@*<td>
 						@Html.DisplayFor(modelItem => item.CurrentPage)

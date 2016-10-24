@@ -70,19 +70,22 @@
                                             <button id="" type="button" class="btn btn-default btn-sm dropdown-toggle l10-extra-options" data-toggle="dropdown" aria-expanded="false">
                                                 <span style="top: 2px;" class="glyphicon glyphicon-chevron-down"></span>
                                             </button>
-                                            <ul class="dropdown-menu alignLeft pull-right" role="menu">
-                                                <li><a href="#"  onclick="showPrint(@(meeting.Recurrence.Id))" @*href="/Quarterly/Printout/@meeting.Recurrence.Id"*@><span style="top: 2px;" class="icon fontastic-icon-page-export-pdf" title=""></span> Generate Quarterly Printout</a></li>
-                                                <li><a href="@Url.Action("ExportAll",new { id=meeting.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
-                                                <li><a  href="/L10/Timeline/@meeting.Recurrence.Id"><span class="icon fontastic-icon-back-in-time"></span> Timeline</a></li>
-                                                <li role="separator" class="divider"></li>
-                                                <li><a  class="l10-texting-actions" href="#" onclick="@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId="+meeting.Recurrence.Id,"/TwilioApi/Modal")"><span style="top: 2px;" class="glyphicon glyphicon-phone l10-texting-actions"></span> Texting Actions</a></li>
-                                                @*<li><a href="/L10/External/@meeting.Recurrence.Id"><span style="top: 2px;" class="icon fontastic-icon-share-1" title=""></span> Link to external services</a></li>*@
-                                                @if (meeting.EditMeeting) {
+											<ul class="dropdown-menu alignLeft pull-right" role="menu">
+												<li><a href="#" onclick="showPrint(@(meeting.Recurrence.Id))" @*href="/Quarterly/Printout/@meeting.Recurrence.Id"*@><span style="top: 2px;" class="icon fontastic-icon-page-export-pdf" title=""></span> Generate Quarterly Printout</a></li>
+												<li><a href="@Url.Action("ExportAll",new { id=meeting.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
+												<li><a href="/L10/Timeline/@meeting.Recurrence.Id"><span class="icon fontastic-icon-back-in-time"></span> Timeline</a></li>
+												<li role="separator" class="divider"></li>
+												<li><a class="l10-texting-actions" href="#" onclick="@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId="+meeting.Recurrence.Id,"/TwilioApi/Modal")"><span style="top: 2px;" class="glyphicon glyphicon-phone l10-texting-actions"></span> Texting Actions</a></li>
+												@*<li><a href="/L10/External/@meeting.Recurrence.Id"><span style="top: 2px;" class="icon fontastic-icon-share-1" title=""></span> Link to external services</a></li>*@
 
-                                                    <li role="separator" class="divider"></li>
-                                                    <li><a href="/L10/Edit/@meeting.Recurrence.Id" style="color:#AB3333"><span style="top: 2px;" class="glyphicon glyphicon-cog"></span>Advanced Settings</a></li>
-                                                }
-                                            </ul>
+
+												<li role="separator" class="divider"></li>
+												@if (meeting.EditMeeting) {
+													<li><a href="/L10/Edit/@meeting.Recurrence.Id" style="color:#AB3333"><span style="top: 2px;" class="glyphicon glyphicon-cog"></span>Advanced Settings</a></li>
+												} else {
+													<li><a href="#" class="clickable" onclick="getAdmins(@meeting.Recurrence.Id)" style="color:#AB3333"><span style="top: 2px;" class="glyphicon glyphicon-cog"></span>Advanced Settings</a></li>
+												}
+											</ul>
                                         </div>
                                     </div>
                                 </td>
@@ -152,6 +155,8 @@
                 $("#modal").modal('hide');
             });
         }
-
+		function getAdmins(id){
+			showModal("You do not have access to this page.","/l10/getadmins/"+id,null);
+		}
     </script>
 }

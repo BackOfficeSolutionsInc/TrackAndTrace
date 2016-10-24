@@ -1041,20 +1041,21 @@ namespace RadialReview.Controllers {
 				using (var tx = s.BeginTransaction()) {
 					//Fix TempUser userIds
 
+					throw new Exception("Old");
 #pragma warning disable CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
-					var recur = s.QueryOver<L10Recurrence>().Where(x => x.TeamType == L10TeamType.Invalid || x.TeamType == null).List().ToList();
-#pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
+//					var recur = s.QueryOver<L10Recurrence>().Where(x => x.TeamType == L10TeamType.Invalid || x.TeamType == null).List().ToList();
+//#pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
 
-					foreach (var r in recur) {
-						r.TeamType = r.IsLeadershipTeam ? L10TeamType.LeadershipTeam : L10TeamType.Other;
-						s.Update(r);
-						f++;
-					}
+//					foreach (var r in recur) {
+//						r.TeamType = r.IsLeadershipTeam ? L10TeamType.LeadershipTeam : L10TeamType.Other;
+//						s.Update(r);
+//						f++;
+//					}
 
-					tx.Commit();
-					s.Flush();
+//					tx.Commit();
+//					s.Flush();
 
-					return "" + f;
+//					return "" + f;
 				}
 			}
 		}

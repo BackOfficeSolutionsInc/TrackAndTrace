@@ -185,6 +185,11 @@ body {
 .acc-chart svg .acc-node md-autocomplete input:focus {
   /*text-align: left !important;*/
 }
+.acc-chart svg .acc-node md-autocomplete.no-match input:not(:focus) {
+  font-style: italic;
+  color: #e29d9d;
+  text-shadow: none;
+}
 .acc-chart svg .acc-node .move-icon {
   cursor: move;
 }

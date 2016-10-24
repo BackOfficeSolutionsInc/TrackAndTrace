@@ -12,6 +12,7 @@ namespace RadialReview.Utilities.DataTypes {
         public int TimezoneOffset { get; set; }
         public YearStart YearStart { get; set; }
         public DateTime Now { get; set; }
+		public bool Descending { get; set; }
 
         public TimeData GetTimeSettings()
         {

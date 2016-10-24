@@ -23,7 +23,7 @@
         $("#SelectedTeam").change(function () {
             if ($(this).val() != "") {
                 $("#TeamId").val($("#SelectedTeam").val());
-                loadPage("#pageIssueTeam", "/Issue/IssueOrganization/");
+                loadPage("#pageIssueTeam", "/Issue/IssueOrganization?_clientTimestamp="+(+new Date()));
             }
         });
     }

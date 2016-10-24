@@ -40,6 +40,7 @@ using FluentConfiguration = NHibernate.Envers.Configuration.Fluent.FluentConfigu
 using RadialReview.Models.Payments;
 using NHibernate.Driver;
 using RadialReview.Utilities.Productivity;
+using RadialReview.Models.VideoConference;
 
 //using Microsoft.VisualStudio.Profiler;
 
@@ -126,7 +127,6 @@ namespace RadialReview.Utilities
                                            m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
                                                .Conventions.Add<StringColumnLengthConvention>();
                                            // m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
-
                                            ////m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
                                            ////m.AutoMappings.Add(CreateAutomappings);
                                            ////m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
@@ -420,9 +420,12 @@ namespace RadialReview.Utilities
 
 
             enversConf.Audit<Dashboard>();
-            enversConf.Audit<TileModel>();
+			enversConf.Audit<TileModel>();
 
-            nhConf.IntegrateWithEnvers(enversConf);
+			enversConf.Audit<AbstractVCProvider>();
+			enversConf.Audit<ZoomUserLink>();
+
+			nhConf.IntegrateWithEnvers(enversConf);
         }
 
 

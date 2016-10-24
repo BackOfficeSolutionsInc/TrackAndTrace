@@ -517,17 +517,20 @@ function updateChart() {
 		};
 	}
 
-	chart.PullPlot(dataUrl+"&groupBy="+groupBy+"&includePrevious="+IncludePrevious, null, function(data) {
+	opts.rest = function(data) {
 		setTimeout(function() { $(".chartPlaceholder").addClass("hidden"); }, 1);
-		$("#chart2,#legend").fadeIn();
-	},opts);
+		$("#chart2,#legend").animate({ opacity: 1 });
+	};
+
+	chart.PullPlot(dataUrl+"&groupBy="+groupBy+"&includePrevious="+IncludePrevious, null, null,opts);
 }
 
 $(".update").change(function () {
 	$(".chartPlaceholder").removeClass("hidden");
-	$("#chart2,#legend").fadeOut();
-	UpdateChart();
-	updateChart();
+	$("#chart2,#legend").animate({ opacity: 0 }, function () {
+		UpdateChart();
+		updateChart();
+	});
 });
 
 

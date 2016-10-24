@@ -7,24 +7,27 @@
 		ViewBag.HideDelete = true;
 		ViewBag.HidePeriod = true;
 		ViewBag.HideUser = true;
-		
+
 	}
 	<div class="">
 
 		<div class="row">
 			<div class="col-sm-10 col-sm-offset-1" id="allRows">
 				<div>
-					<label>Edit @Html.Organization().Settings.RockName for @(((List<SelectListItem>)ViewBag.Periods).First().Text):</label>
+					<label>
+						Add Rock:@*@if (ViewBag.Periods!=null) {
+							@:for @(((List<SelectListItem>)ViewBag.Periods).First().Text)
+							}*@:
+					</label>
 				</div>
-				@foreach (var item in Model.Rocks)
-				{
-					Html.RenderPartial("_RockRow", item);
-				}
+				@foreach (var item in Model.Rocks) {
+				Html.RenderPartial("_RockRow", item);
+			}
 			</div>
 		</div>
-        <div>
-            <label>Update All Level 10s: </label> @Html.CheckBoxFor(x => x.UpdateAllL10s)
-        </div>
+		<div style="padding-left: 99px;padding-top: 10px;">
+			<label>Update All Level 10s: </label> @Html.CheckBoxFor(x => x.UpdateAllL10s)
+		</div>
 	</div>
 </div>
 <script>

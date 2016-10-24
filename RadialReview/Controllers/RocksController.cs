@@ -42,7 +42,7 @@ namespace RadialReview.Controllers
         }
 
 		[Access(AccessLevel.UserOrganization)]
-		public PartialViewResult ModalSingle(long id,long userId,long periodId)
+		public PartialViewResult ModalSingle(long id,long userId,long? periodId)
 		{
 			_PermissionsAccessor.Permitted(GetUser(), x => x.EditQuestionForUser(userId));
 			RockModel rock;
@@ -56,16 +56,19 @@ namespace RadialReview.Controllers
 				rock = _RockAccessor.GetRock(GetUser(), id);
 			}
 
-			ViewBag.Periods = PeriodAccessor.GetPeriod(GetUser(), periodId).AsList().ToSelectList(x => x.Name, x => x.Id);//PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.Name, x => x.Id);
+			ViewBag.Periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.Name, x => x.Id);
+			//ViewBag.Periods = PeriodAccessor.GetPeriod(GetUser(), periodId.Value).AsList().ToSelectList(x => x.Name, x => x.Id);//PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.Name, x => x.Id);
 
 			return PartialView(new RocksController.RockVM { Rocks = rock.AsList(), UserId = userId });
 		}
+
 	    [Access(AccessLevel.UserOrganization)]
 	    public JsonResult Delete(long id)
 	    {
 		    RockAccessor.DeleteRock(GetUser(), id);
 		    return Json(ResultObject.SilentSuccess());
 	    }
+
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult BlankEditorRow(bool includeUsers = false, bool companyRock = false, long? periodId = null, bool hideperiod = false, bool showCompany = false,bool excludeDelete=false,long? recurrenceId = null)
 		{

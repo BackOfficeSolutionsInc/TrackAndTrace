@@ -52,10 +52,15 @@ namespace RadialReview.Accessors {
                     foreach (var todo in todos.OrderBy(x => x.DueDate.Date).ThenBy(x => x.Message)) {
                         var color = todo.DueDate.Date <= now ? "color:#F22659;" : "color: #34AD00;";
                         var completionIcon = Config.BaseUrl(org) + @"Image/TodoCompletion?id=" + HttpUtility.UrlEncode(Crypto.EncryptStringAES("" + todo.Id, _SharedSecretTodoPrefix(todo.AccountableUserId))) + "&userId=" + todo.AccountableUserId;
+						var duedate = todo.DueDate;
+						if (org != null) {
+							duedate = org.ConvertFromUTC(todo.DueDate);
+						}
+
                         table.Append(@"<tr><td width=""16px"" valign=""top"" style=""padding: 3px 0 0 0;""><img src='").Append(completionIcon).Append("' width='15' height='15'/>").Append(@"</td><td width=""1px"" style=""vertical-align: top;""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(org) + @"Todo/List"">")
                             .Append(i).Append(@". </a></b></td><td align=""left""><b><a style=""color:#333333;text-decoration:none;"" href=""" + Config.BaseUrl(org) + @"Todo/List?todo=" + todo.Id + @""">")
                             .Append(todo.Message).Append(@"</a></b></td><td  align=""right"" valign=""top"" style=""" + color + @""">")
-                            .Append(todo.DueDate.ToString(format)).Append("</td></tr>");
+                            .Append(duedate.ToString(format)).Append("</td></tr>");
 
                         var details = await PadAccessor.GetHtml(todo.PadId);
 
@@ -153,8 +158,9 @@ namespace RadialReview.Accessors {
 
                 if (todo.CreatedDuringMeetingId != null)
                     todoData.isNew = true;
-                meetingHub.appendTodo(".todo-list", todoData);
-                var updates = new AngularRecurrence(recurrenceId);
+				meetingHub.appendTodo(".todo-list", todoData);
+				meetingHub.showAlert("Created to-do.", 1500);
+				var updates = new AngularRecurrence(recurrenceId);
                 updates.Todos = AngularList.CreateFrom(AngularListType.Add, new AngularTodo(todo));
                 meetingHub.update(updates);
                 Audit.L10Log(s, perms.GetCaller(), recurrenceId, "CreateTodo", ForModel.Create(todo), todo.NotNull(x => x.Message));

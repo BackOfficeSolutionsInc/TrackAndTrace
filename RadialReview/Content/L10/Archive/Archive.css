@@ -722,6 +722,9 @@ html {
   padding-right: 10px;
   font-size: 12px;
 }
+.meeting-archive .scorecard-list-container table score input {
+  height: 31px !important;
+}
 .meeting-archive .scorecard-list-container table .goal-column.value {
   width: inherit;
   min-width: 56px;

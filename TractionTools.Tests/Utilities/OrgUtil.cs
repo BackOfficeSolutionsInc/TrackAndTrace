@@ -43,6 +43,7 @@ namespace TractionTools.Tests.Utilities {
 				s.Save(_nilUserModel);
 			});
 
+			BaseTest.MockHttpContext();
 			var organization = new OrganizationAccessor().CreateOrganization(_nilUserModel, name,
 				PaymentPlanType.Professional_Monthly_March2016, time1, out manager, out managerNode, true, true);
 
@@ -51,7 +52,7 @@ namespace TractionTools.Tests.Utilities {
 			org.Organization = organization;
 
 			var employeeName = "employee_" + nowMs;
-			var tempUser = new NexusAccessor().CreateUserUnderManager(manager, managerNode.Id, false, -2, employeeName + "@test.com", employeeName, "employee", out employee, false, "");
+			var tempUser = JoinOrganizationAccessor.CreateUserUnderManager(manager, managerNode.Id, false, -2, employeeName + "@test.com", employeeName, "employee", out employee, false, "");
 
 			org.Employee = employee;
 			org.EmployeeNode = AccountabilityAccessor.AppendNode(manager, managerNode.Id, userId: employee.Id);

@@ -15,6 +15,7 @@ namespace RadialReview.Models
 		public virtual ScheduledTask Task { get; set; }
 		public virtual ScheduledTask _CurrentTask { get; set; }
         public virtual PaymentPlanType PlanType { get; set; }
+		public virtual DateTime? LastExecuted { get; set; }
 
         public virtual TimeSpan SchedulerPeriod()        {
             return TimeSpan.MaxValue;
@@ -31,8 +32,9 @@ namespace RadialReview.Models
                 Id(x => x.Id);
                 Map(x => x.IsDefault);
                 Map(x => x.Description);
-                Map(x => x.PlanCreated);
-                Map(x => x.FreeUntil);
+				Map(x => x.PlanCreated);
+				Map(x => x.LastExecuted);
+				Map(x => x.FreeUntil);
                 References(x => x.Task).Not.Nullable().Not.LazyLoad();
                 Map(x => x.PlanType).CustomType<PaymentPlanType>();
             }
@@ -59,7 +61,11 @@ namespace RadialReview.Models
 		public virtual DateTime? ReviewFreeUntil { get; set; }
 		public virtual DateTime? L10FreeUntil { get; set; }
 
-        public override TimeSpan SchedulerPeriod()
+		public virtual bool NoChargeForClients { get; set; }
+
+		public virtual bool NoChargeForUnregisteredUsers { get; set; }
+
+		public override TimeSpan SchedulerPeriod()
         {
             return TimespanExtensions.OneMonth();
         }
@@ -74,8 +80,10 @@ namespace RadialReview.Models
 				Map(x => x.OrgId).Column("OrganizationId");
                 Map(x => x.ReviewFreeUntil);
                 Map(x => x.L10FreeUntil);
-                Map(x => x.BaselinePrice);
-            }
+				Map(x => x.BaselinePrice);
+				Map(x => x.NoChargeForClients);
+				Map(x => x.NoChargeForUnregisteredUsers);
+			}
         }
 
         public override string TaskName()

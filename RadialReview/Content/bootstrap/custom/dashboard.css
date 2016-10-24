@@ -677,8 +677,8 @@ body.resizing .notes-tile:after,
   display: none;
 }
 .dashboard .width_1 .notes-tile iframe {
-  margin-top: -70px;
-  height: calc(100% + 70px);
+  margin-top: -38px;
+  height: calc(100% + 38px);
 }
 .dashboard .notes-tile iframe {
   display: block;
@@ -834,6 +834,18 @@ body.resizing .notes-tile:after,
   max-height: 24px !important;
   height: 24px;
   max-height: none !important;
+}
+.dashboard .scorecard table tr td score input {
+  height: 31px!important;
+}
+.dashboard .scorecard table tr.IsDivider td {
+  height: 3px;
+  background-color: #e2e2e2;
+}
+@-moz-document url-prefix() {
+  .dashboard .scorecard table tr td {
+    height: 30px;
+  }
 }
 .dashboard .scorecard table .score input {
   padding-left: 0px !important;
@@ -1079,6 +1091,9 @@ body.resizing .notes-tile:after,
 }
 .dashboard .rock-list-container tr.AtRisk .icon-column:after {
   border-color: #dca7a7;
+}
+.dashboard .rock-list-container tr.Indeterminate .icon-column:before {
+  content: "\e203";
 }
 .dashboard .rock-list-container .table-header,
 .dashboard .rock-list-container .picture-column,
@@ -1551,6 +1566,11 @@ body.resizing .notes-tile:after,
 .dashboard .width_1 .faq-tile ul {
   font-size: 11px !important;
   padding-left: 1px;
+}
+@-moz-document url-prefix() {
+  .dashboard .width_1 .faq-tile ul {
+    padding-left: 7px;
+  }
 }
 .dashboard .width_1 .faq-tile ul li {
   padding-bottom: 5px;

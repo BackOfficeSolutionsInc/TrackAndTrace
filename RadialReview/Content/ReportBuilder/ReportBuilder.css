@@ -292,3 +292,10 @@ ul.empty:empty {
 .body-content {
 	max-width: 1400px;
 }
+
+.scorecard score input {
+	height: 23px !important;
+}
+.scorecard-table .score input[disabled]{
+	background-color:white!important;
+}

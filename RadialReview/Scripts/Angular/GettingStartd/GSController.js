@@ -88,6 +88,10 @@ app.controller('GSCtrl', ["$scope", "$q", "$timeout", "$http", function ($scope,
 		$(".lf-ng-md-file-input-frame img").addClass("fixBug");
 	}, 500);
 
+	$timeout(function () {
+		$(".onLoadFinished").addClass("finishedLoading").removeClass("onLoadFinished");
+	}, 0);
+
     var vm = this;
 
    // $scope.profilePicture = {};

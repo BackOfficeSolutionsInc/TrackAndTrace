@@ -237,7 +237,7 @@ namespace RadialReview.Accessors {
 					var posDurs = s.QueryOver<PositionDurationModel>().Where(x => x.OrganizationId == chart.OrganizationId && x.DeleteTime == null).Select(x => x.Position.Id, x => x.UserId).Future<object[]>();
 
 
-					var usersF = s.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime == null && x.Organization.Id == chart.OrganizationId).List().ToList();
+					var usersF = s.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime == null && x.Organization.Id == chart.OrganizationId && !x.IsClient).List().ToList();
 
 					var teamName = teams.ToDictionary(x => (long)x[0], x => (string)x[1]);
 					var posName = positions.ToDictionary(x => (long)x[0], x => (string)x[1]);

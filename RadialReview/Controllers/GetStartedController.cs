@@ -1,9 +1,12 @@
 ﻿using RadialReview.Accessors;
+using RadialReview.Hooks;
 using RadialReview.Models;
 using RadialReview.Models.Accountability;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
 using RadialReview.NHibernate;
+using RadialReview.Utilities;
+using RadialReview.Utilities.Hooks;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -94,9 +97,11 @@ namespace RadialReview.Controllers {
                 x.LastName = lname ?? x.LastName;
                 x.Position = title;
                 x.Phone = phone;
+				x.CurrentPage = "Personal";
             });
 
             OnboardingAccessor.TryUpdateUser(o);
+
 
             return Json(ResultObject.SilentSuccess());
         }
@@ -121,7 +126,8 @@ namespace RadialReview.Controllers {
                 }
                 x.ImplementerName = implementer;
                 x.Website = website;
-            });
+				x.CurrentPage = "Organization";
+			});
 
 
             OnboardingAccessor.TryUpdateOrganizatoin(o);
@@ -178,8 +184,11 @@ namespace RadialReview.Controllers {
                         x.OrganizationId = organization.Id;
                     if (uOrg != null)
                         x.UserId = uOrg.Id;
-                });
-            } catch (Exception) {
+					x.CurrentPage = "Login";
+				});
+
+
+			} catch (Exception) {
                 //probably should try to delete the user here.
                 throw;
             }
@@ -199,7 +208,8 @@ namespace RadialReview.Controllers {
                 x.State = Request.Form["state"] ?? x.State;
                 x.Zip = Request.Form["zip"] ?? x.Zip;
                 x.Country = Request.Form["country"] ?? x.Country;
-            });
+				x.CurrentPage = "Payment";
+			});
             
             if (o._UserOrg == null)
                 throw new Exception("User was not created. Could not complete setup.");

@@ -84,6 +84,7 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
 
             var refreshMeasurable = function (newVal, oldVal) {
                 if (newVal !== oldVal) {
+            		console.log("refresh:" + $scope.score.Id);
                     var newColor = scorecardColor($scope.score);
                     if (newColor !== $scope.scoreColor) {
                         $scope.scoreColor = newColor;
@@ -104,6 +105,7 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
             $scope.$watch("score.Target", refreshMeasurable);
             $scope.$watch("score.AltTarget", refreshMeasurable);
             $scope.$watch("localization", refreshMeasurable);
+            $scope.score.hidden = false;
         },
         controller: ["$scope", "$element", "$attrs", function ($scope, $element, $attrs) {
             $scope.getFcsa = function (measurable) {
@@ -142,9 +144,11 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
             };
 
             $scope.measurable = $scope.score.Measurable;
+
             $scope.fcsa = $scope.getFcsa($scope.measurable);
         }],
-        template: "<input data-goal='{{score.Target}}' data-alt-goal='{{score.AltTarget}}' data-goal-dir='{{score.Direction}}'" +
+        template: "<span ng-if='score.hidden' ng-click='score.hidden=false'>hidden</span>" +
+				  "<input ng-if='!score.hidden' data-goal='{{score.Target}}' data-alt-goal='{{score.AltTarget}}' data-goal-dir='{{score.Direction}}'" +
                   " data-row='{{$parent.$index}}' data-col='{{$index}}'" +
                   " type='text' placeholder='' ng1-model-options='{debounce:{\"default\":75,\"blur\":0}}' ng-disabled='measurable.Disabled'" +
                   " ng-model='score.Measured'" +

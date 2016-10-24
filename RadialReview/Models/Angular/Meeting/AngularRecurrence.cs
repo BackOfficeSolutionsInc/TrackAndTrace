@@ -13,6 +13,7 @@ using RadialReview.Models.Scorecard;
 using RadialReview.Utilities;
 using RadialReview.Models.Angular.Headlines;
 using RadialReview.Model.Enums;
+using Newtonsoft.Json;
 
 namespace RadialReview.Models.Angular.Meeting
 {
@@ -23,16 +24,16 @@ namespace RadialReview.Models.Angular.Meeting
 			    Name = recurrence.Name,
                 TeamType = recurrence.TeamType,                
             };
-            IssuesList.Prioritization = recurrence.Prioritization!=PrioritizationType.Invalid?recurrence.Prioritization:PrioritizationType.Priority;
+            IssuesList.Prioritization = /*recurrence.Prioritization!=PrioritizationType.Invalid?*/recurrence.Prioritization/*:PrioritizationType.Priority*/;
             VtoId = recurrence.VtoId;
-
 			HeadlineType = recurrence.HeadlineType;
+			_Recurrence = AngularIgnore.Create(recurrence);
 		}
 
 		public AngularRecurrence(long id):base(id){
             IssuesList = new AngularIssuesList(id);
 		}
-        //[Obsolete("Do not use.",false)]
+
         public AngularRecurrence(){
         }
 
@@ -51,6 +52,8 @@ namespace RadialReview.Models.Angular.Meeting
 		public PeopleHeadlineType? HeadlineType { get; set; }
         //public PrioritizationType Prioritization { get; set; }
         public long? VtoId { get; set; }
+		
+		public AngularIgnore<L10Recurrence> _Recurrence { get; set; }
 	}
 
     public class AngularBasics : BaseAngular {

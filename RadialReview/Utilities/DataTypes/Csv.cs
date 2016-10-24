@@ -80,6 +80,9 @@ namespace RadialReview.Utilities.DataTypes
 				return string.Empty;
 			}
 
+			if (cell.StartsWith("-"))
+				cell = " " + cell;
+
 			var containsQuote = false;
 			var containsComma = false;
 			var containsReturn = false;

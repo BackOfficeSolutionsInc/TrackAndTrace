@@ -23,6 +23,7 @@ using RadialReview.Models.L10;
 using RadialReview.Models.Angular.Roles;
 using RadialReview.Models.Angular.CompanyValue;
 using RadialReview.Exceptions;
+using RadialReview.Models.Scorecard;
 
 namespace RadialReview.Controllers {
     [SessionState(SessionStateBehavior.ReadOnly)]
@@ -48,11 +49,15 @@ namespace RadialReview.Controllers {
             DateTime startRange;
             DateTime endRange;
 
-            if (start == null) startRange = TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod);
-            else startRange = start.Value.ToDateTime();
+            if (start == null)
+				startRange = TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod);
+            else
+				startRange = start.Value.ToDateTime();
 
-            if (end == null) endRange = DateTime.UtcNow.AddDays(14);
-            else endRange = end.Value.ToDateTime();
+            if (end == null)
+				endRange = DateTime.UtcNow.AddDays(14);
+            else
+				endRange = end.Value.ToDateTime();
 
             if (completed) {
                 startRange = Math2.Min(DateTime.UtcNow.AddDays(-1), startRange);
@@ -92,7 +97,7 @@ namespace RadialReview.Controllers {
                     var scorecardStart = fullScorecard ? TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod) : startRange;
                     var scorecardEnd = fullScorecard ? DateTime.UtcNow.AddDays(14) : endRange;
 
-                    output.Scorecard=ScorecardAccessor.GetAngularScorecardForUser(GetUser(), userId, new DateRange(scorecardStart, scorecardEnd), true,now:DateTime.UtcNow);
+                    output.Scorecard=ScorecardAccessor.GetAngularScorecardForUser(GetUser(), userId, new DateRange(scorecardStart, scorecardEnd), true, now:DateTime.UtcNow);
 
                     //var scores = ScorecardAccessor.GetUserScores(GetUser(), GetUser().Id, scorecardStart, scorecardEnd, includeAdmin: true);
                     //output.Scorecard = new AngularScorecard(-1,
@@ -221,12 +226,22 @@ namespace RadialReview.Controllers {
                                 var tile = new DashboardController.AngularTileId<AngularScorecard>(scorecard.Id, l10Id, l10Lookup[l10Id].Name + " scorecard");
                                 //tile.Contents;
 
-                                var scores = L10Accessor.GetScoresForRecurrence(s, perms, l10Id, false);
-                                var measurables = scores.Select(x => x.Measurable).Distinct(x => x.Id).ToList();
+                                var sam = L10Accessor.GetScoresAndMeasurablesForRecurrence(s, perms, l10Id, false, getMeasurables:true);
+                                var scores= sam.Scores;
+								var measurables = sam.Measurables; // measurables =scores.Select(x => x.Measurable).Distinct(x => x.Id).ToList();
 
-                                //var scores = ScorecardAccessor.GetUserScores(GetUser(), GetUser().Id, start, end, includeAdmin: true);
-                                tile.Contents = new AngularScorecard(scorecard.Id, GetUser(),
-                                    measurables.Select(x => new AngularMeasurable(x) { }),
+								var orders = L10Accessor.GetMeasurableOrdering(GetUser(), l10Id);
+
+								//var scores = ScorecardAccessor.GetUserScores(GetUser(), GetUser().Id, start, end, includeAdmin: true);
+								var ts = GetUser().GetTimeSettings();
+								ts.WeekStart = L10Accessor.GetL10Recurrence(GetUser(), l10Id, false).StartOfWeekOverride ?? ts.WeekStart;
+
+
+								tile.Contents =  AngularScorecard.Create(scorecard.Id, ts,
+         //                           measurables.Select(x => new AngularMeasurable(x) {
+									//	Ordering = orders.Where(y=>y.Item1==x.Id).Select(y=>y.Item2).FirstOrDefault()
+									//}),
+									sam.MeasurablesAndDividers,
                                     scores.ToList(),DateTime.UtcNow);
                                 output.L10Scorecards.Add(tile);
 

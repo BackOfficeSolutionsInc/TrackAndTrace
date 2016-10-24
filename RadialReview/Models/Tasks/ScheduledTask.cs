@@ -22,13 +22,16 @@ namespace RadialReview.Models.Tasks
         public virtual DateTime? DeleteTime { get; set; }
         public virtual DateTime? Started { get; set; }
 		public virtual TimeSpan? NextSchedule { get; set; }
+		public virtual bool EmailOnException { get; set; }
+
+		public virtual DateTime CreateTime { get; set; }
 
 		public virtual String TaskName { get; set; }
 	    public virtual int? MaxException { get; set; }
 
         public ScheduledTask()
         {
-
+			CreateTime = DateTime.UtcNow;
         }
 
     }
@@ -41,15 +44,17 @@ namespace RadialReview.Models.Tasks
             Map(x => x.Url);
             Map(x => x.Fire);
             Map(x => x.Started);
-            Map(x => x.Executed);
+			Map(x => x.Executed);
 			Map(x => x.TaskName);
 			Map(x => x.FirstFire);
+			Map(x => x.CreateTime);
 			Map(x => x.DeleteTime);
 			Map(x => x.ExceptionCount);
 			Map(x => x.NextSchedule);
 			Map(x => x.MaxException);
+			Map(x => x.EmailOnException);
 			Map(x => x.CreatedFromTaskId);
 			Map(x => x.OriginalTaskId);
-        }
+		}
     }
 }

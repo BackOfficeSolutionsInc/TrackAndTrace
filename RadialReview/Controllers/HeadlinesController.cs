@@ -13,7 +13,7 @@ namespace RadialReview.Controllers
 {
 	public class HeadlinesController : BaseController {
 		public class HeadlineVM {
-			public long RecurrenceId { get; set; }
+			public long[] RecurrenceIds { get; set; }
 			public long CreatedBy { get; set; }
 			public string Message { get; set; }
 			public List<L10VM> PossibleRecurrences { get; set; }
@@ -26,19 +26,22 @@ namespace RadialReview.Controllers
 			public long OwnerId { get; set; }
 			public string Details { get; set; }
 
+			public HeadlineVM() {
+				RecurrenceIds = new long[0];
+			}
 
-			public PeopleHeadline ToPeopleHeadline() {
+			public List<PeopleHeadline> ToPeopleHeadline() {
                 
 
-				return new PeopleHeadline() {
+				return RecurrenceIds.Select(x=>new PeopleHeadline() {
 					AboutId = AboutId,
 					AboutName = AboutIdText,
 					Message = Message,
 					CreatedDuringMeetingId = MeetingId,
 					OwnerId = OwnerId,
-					RecurrenceId = RecurrenceId,
+					RecurrenceId = x,
 					_Details = Details,
-				};
+				}).ToList();
 			}
 
 		}
@@ -59,7 +62,8 @@ namespace RadialReview.Controllers
 				ShowOwners = _listOwners
 			};
 			if (recurrenceId != null)
-				model.RecurrenceId = recurrenceId.Value;
+				model.RecurrenceIds = new[] { recurrenceId.Value };
+			
 
 			model.PossibleRecurrences = (_listRecur == true) 
 				? L10Accessor.GetVisibleL10Recurrences(GetUser(), GetUser().Id, false)
@@ -84,11 +88,12 @@ namespace RadialReview.Controllers
 			ValidateValues(model,x => x.CreatedBy, x => x.MeetingId);
             if (model.AboutId < 0){
                 model.AboutId = null;
-
             }
-			var ph = model.ToPeopleHeadline();
-			ph.OrganizationId = GetUser().Organization.Id;
-			await HeadlineAccessor.CreateHeadline(GetUser(),ph);
+			var phs = model.ToPeopleHeadline();
+			foreach (var ph in phs) {
+				ph.OrganizationId = GetUser().Organization.Id;
+				await HeadlineAccessor.CreateHeadline(GetUser(), ph);
+			}
 			return Json(ResultObject.SilentSuccess());
 		}
 	}

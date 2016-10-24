@@ -1,0 +1,212 @@
+﻿@model IEnumerable<RadialReview.Models.Events.AccountEvent>
+@using RadialReview.Utilities
+@using RadialReview.Models.Enums
+
+@{
+	ViewBag.FullWidth = true;
+	var enums = Enum.GetNames(typeof(EventType));
+
+	var nameFilter = enums.Select(x => x.Split('_')[0]).Distinct().OrderBy(x => x).ToList();
+	var durationFilter = enums.OrderBy(x => EventUtil.GetTimespanFromEvent(x))
+	.Select(x => {
+		var sp = x.Split('_');
+		if (sp.Length > 1)
+			return sp[1];
+		return null;
+	}).Distinct().Where(x => x != null)
+	.ToList();
+
+	var accTypeFilter = Enum.GetNames(typeof(AccountType)).Select(x => "" + x).Distinct().ToList();
+
+	var dc = durationFilter.Count;
+
+	var durColor = durationFilter.Select((x, i) => Tuple.Create(x, i)).ToDictionary(x => x.Item1, x => Html.Color(x.Item2, dc, dc / 2, 0, 1));
+
+	durColor[""] = new HtmlString("transparent");
+}
+
+
+<div class="row">
+	<div class="col-xs-4">
+		<div @(ViewBag.FixSidebar ?? true ? "style='position:fixed; top: 32px;'" : "")>
+			<div class="row">
+				<div class="col-xs-4 alignRight">
+					<div style="font-size:9px">
+						<span onclick="$('.durations').prop('checked', false); rerun();">(deselect)</span>
+						<span onclick="$('.durations').prop('checked', true); rerun();">(select)</span>
+					</div>
+					@foreach (var n in durationFilter) {
+						<div style="white-space: nowrap;"><label for="@n">@n</label> <input class="durations" type="checkbox" name="@n" checked /></div>
+					}
+				</div>
+				<div class="col-xs-8">
+					<div style="font-size:9px">
+						<span onclick="$('.names').prop('checked', false);rerun();">(deselect)</span>
+						<span onclick="$('.names').prop('checked', true); rerun();">(select)</span>
+					</div>
+					@foreach (var n in nameFilter) {
+						<div style="white-space: nowrap;"><input type="checkbox" class="names" name="@n" checked /><label for="@n">@n</label> </div>
+					}
+				</div>
+			</div>
+			<hr />
+			<div class="row">
+				<div class="col-xs-4 alignRight">
+					<div style="font-size:9px">
+						<span onclick="$('.accTypes').prop('checked', false); rerun();">(deselect)</span>
+						<span onclick="$('.accTypes').prop('checked', true); rerun();">(select)</span>
+					</div>
+					@foreach (var n in accTypeFilter) {
+						<div style="white-space: nowrap;"><label for="accstatus_@n">@n</label> <input type="checkbox" class="accTypes" name="accstatus_@n" checked /> </div>
+					}
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<div class="col-xs-8" style="border-left:1px solid lightgray;">
+		<table class="table table-responsive table-hover">
+			<thead>
+				<tr>
+					<th>eid</th>
+					<th>@Html.DisplayNameFor(model => model.CreateTime)</th>
+					<th class="alignRight">Org</th>
+					<th class="alignCenter">OrgId</th>
+					<th class="alignCenter">Status</th>
+					@*<th>@Html.DisplayNameFor(model => model.Type)</th>*@
+					<th>Dur.</th>
+					<th>Type</th>
+					<th>ByUser</th>
+					<th>Arg1</th>
+					<th>@Html.DisplayNameFor(model => model.Message)</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in Model) {
+					var sp = (item.Type + "").Split('_');
+					var dur = "";
+					var main = sp[0];
+					if (sp.Length > 1) {
+						dur = sp[1];
+					}
+
+					<tr class="@item.Type @main @dur tableRow accstatus_@ViewBag.OrgStatusLookup[item.OrgId]">
+						<td>@item.Id</td>
+						<td>@Html.DisplayFor(modelItem => item.CreateTime)</td>
+						<td class="alignRight" style="white-space:nowrap;overflow:hidden">
+							<a href="/Organization/which/@item.OrgId">
+								@*@if (ViewBag.OrgLookup.ContainsKey(item.OrgId)) {*@
+								@ViewBag.OrgLookup[item.OrgId]
+								@* } *@
+							</a>
+						</td>
+						<td class="alignCenter">
+							<a href="/Organization/which/@item.OrgId">
+								@item.OrgId
+							</a>
+						</td>
+						<td class="alignCenter account-@ViewBag.OrgStatusLookup[item.OrgId]" style="white-space:nowrap;overflow:hidden">
+							@ViewBag.OrgStatusLookup[item.OrgId]
+						</td>
+
+						@*<td>@Html.DisplayFor(modelItem => item.Type)</td>*@
+						<td class="alignRight" style="background-color:@durColor[dur]">@dur</td>
+						<td>@main</td>
+						<td><a href="/user/details/@item.TriggeredBy">@Html.DisplayFor(modelItem => item.TriggeredBy)</a></td>
+						<td>@Html.DisplayFor(modelItem => item.Argument1)</td>
+						<td style="white-space:nowrap">@Html.DisplayFor(modelItem => item.Message)</td>
+					</tr>
+				}
+			</tbody>
+
+		</table>
+	</div>
+</div>
+
+@using (Html.BeginScripts()) {
+	<script>
+
+		function rerun(first) {
+			$(".nomatch").prop("disabled", false).prop("checked", true).removeClass("nomatch");//.show();
+			$(".tableRow").show().addClass("visible");
+			$(":not(:checked)").each(function () {
+				var name = $(this).attr("name");
+				$("." + name).removeClass("visible").hide();
+			});
+
+			$("label").removeClass("gray");
+
+			$("input[type ='checkbox']").each(function () {
+				var name = $(this).attr("name");
+				if ($(".tableRow.visible." + name).length == 0) {
+					if (first) {
+						$(this).prop("disabled", true).prop("checked", false).hide();
+						$("label[for='" + name + "']").hide();
+					} else {
+						$("label[for='" + name + "']").addClass("gray");
+					}
+
+					if ($(this).is(":checked")) {
+						$(this).addClass("nomatch").prop("disabled", true).prop("checked", false);//.hide();
+						//$("label[for='" + name + "']").addClass("nomatch").hide();
+					}
+
+				}
+			});
+
+		}
+
+		$("body").on("change", "input[type='checkbox']", function () {
+			rerun();
+		});
+		$("table").tablesorter({
+			sortList: [[0, 1]]
+		});
+
+		rerun(true);
+	</script>
+
+}
+
+
+@using (Html.BeginStyles()) {
+	<style>
+		.gray.none{
+			opacity:.25;
+			text-decoration:line-through;
+		}
+
+		.account-Paying {
+			background-color: #1b6b74;
+			color: white;
+			font-weight: bold;
+		}
+
+		.account-Dormant {
+			color: gray;
+		}
+
+		.account-Other {
+			background-color: gray;
+			color: white;
+			font-weight: bold;
+		}
+
+		.account-Cancelled {
+			color: lightgray;
+			font-style: italic;
+		}
+
+		.account-Demo {
+			background-color: #d9534f;
+			color: white;
+			font-weight: bold;
+		}
+
+		.account-Implementer {
+			background-color: #ff7d00;
+			color: white;
+			font-weight: bold;
+		}
+	</style>
+}

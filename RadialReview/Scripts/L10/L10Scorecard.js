@@ -5,9 +5,14 @@ var canMoveCells = true;
 
 $(function () {
 	$(".main-window-container").on("keydown", ".grid", changeInput);
-	$(".main-window-container").on("click", ".grid", function (e, d) { if (!d) { mode = "scan"; } });
+	$(".main-window-container").on("click", ".grid", function (e, d) {
+		console.log("clicked!");
+		if (!d) { mode = "scan"; }
+		$(this).focus();
+	});
 	$(".main-window-container").on("change", ".grid", function (e, d) { if (!d){ mode = "type";} });
 	$(".main-window-container").on("scroll", ".grid", function (e) {
+		console.log("scroll!");
 		if (mode == "type") {
 			e.preventDefault();
 		}
@@ -475,10 +480,11 @@ function updateScore(self, skipChart) {
 var curColumn = -1;
 var curRow = -1;
 
-function changeInput() {
+function changeInput(event) {
 	var found;
 	var goingLeft = false;
 	var goingRight = false;
+	console.log("changeInput");
 	if (mode == "scan" ||
 		event.which == 38 ||	//pressing up
 		event.which == 40 ||	//pressing down
@@ -720,4 +726,6 @@ function removeMeasurable(id) {
 
 $(window).on("page-scorecard", function () {
 	scrollRight();
+
 });
+

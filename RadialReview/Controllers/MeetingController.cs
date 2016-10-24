@@ -48,16 +48,23 @@ namespace RadialReview.Controllers
 				model.AgendaItems.Add(new AngularAgendaItem_Segue(-1));
 				//Scorecard 
 			    var scorecard = new AngularAgendaItem_Scorecard(-2);
-			    var scores =L10Accessor.GetScoresForRecurrence(GetUser(), id);
+			    var scores = L10Accessor.GetScoresForRecurrence(GetUser(), id);
 				scorecard.Measurables = current._MeetingMeasurables.Select(x => new AngularMeetingMeasurable(x)).ToList();
 
 
-                //var sow = GetUser().Organization.Settings.WeekStart;
-                //var offset = GetUser().Organization.GetTimezoneOffset();
-                //var period = GetUser().Organization.Settings.ScorecardPeriod;
+				//var sow = GetUser().Organization.Settings.WeekStart;
+				//var offset = GetUser().Organization.GetTimezoneOffset();
+				//var period = GetUser().Organization.Settings.ScorecardPeriod;
 
 
-				scorecard.Weeks = TimingUtility.GetPeriods(GetUser(), DateTime.UtcNow, current.StartTime, true).Select(x => new AngularWeek(x)).ToList();
+				var ts = GetUser().GetTimeSettings();
+				//ts.Descending = recur.ReverseScorecard;
+
+				scorecard.Weeks = TimingUtility.GetPeriods(ts, DateTime.UtcNow, current.StartTime, true).Select(x => new AngularWeek(x)).ToList();
+
+				if (recurrence.ReverseScorecard)
+					scorecard.Weeks.Reverse();
+
 			    scorecard.Scores = scores.Select(x => new AngularScore(x)).ToList();
 
 				model.AgendaItems.Add(scorecard);

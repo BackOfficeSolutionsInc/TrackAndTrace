@@ -10,6 +10,7 @@ namespace RadialReview.Models.Enums
 	{
 		Paying=-20,
 		Implementer=-10,
+		Invalid = -5,
         [Display(Name="Trial")]
 		Demo=0,
 		Other = 10,

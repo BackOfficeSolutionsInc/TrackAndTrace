@@ -5,9 +5,11 @@
 }
 
 <h1 class="pull-left">Plan Monthly:&nbsp;</h1>
-<h1 style="color:orange" class="pull-left"><b> @Model._Org.GetName()</b></h1>
+<h1 style="color:orange" class="pull-left"><b> @Model._Org.GetName()</b> (@Model._Org.Id)</h1>
 <div class="clearfix"></div>
+<a target="_blank" href="/account/calculateorganizationcharge/@Model._Org.Id">Calculate Charge</a>
 <hr />
+
 @using (Html.BeginForm())
 {
 	<div class="row">

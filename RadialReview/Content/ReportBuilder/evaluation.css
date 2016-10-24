@@ -367,7 +367,7 @@
 	}
 
 		.table-io .details .header .extra {
-			color: #CCCCCC;
+			color: #fff;
 			font-weight: normal;
 			white-space: nowrap;
 			display: inline-block;
@@ -703,4 +703,9 @@ td.alt {
 
 .landscape-placeholder {
 	display: none;
+}
+
+
+.onlyPrint{
+	display:none;
 }

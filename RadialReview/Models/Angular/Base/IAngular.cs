@@ -25,4 +25,21 @@ namespace RadialReview.Models.Angular.Base
 	{
 		public static string GetKey(this IAngularItem self){	return self.Type + "_" + self.Id;	}
 	}
+
+	public interface IAngularIgnore {
+
+	}
+
+	public static class AngularIgnore {
+		public static AngularIgnore<T> Create<T>(T item) {
+			return new AngularIgnore<T>(item);
+		}
+	}
+
+	public class AngularIgnore<T> : IAngularIgnore {
+		public T Item { get; set; }
+		public AngularIgnore(T item) {
+			Item = item;
+		}
+	}
 }

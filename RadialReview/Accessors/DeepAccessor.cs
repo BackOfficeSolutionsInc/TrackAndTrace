@@ -221,6 +221,7 @@ namespace RadialReview.Accessors
 								.JoinAlias(x => x.Parent, () => parent)
 								.JoinAlias(x => x.Child, () => child1)
 									.Where(x => parent.DeleteTime == null && child1.DeleteTime == null && parent.UserId == caller.Id && child1.UserId == userId)
+									.Take(1)
 									.SingleOrDefault();
 					if (found == null)
 						throw new PermissionsException("You don't have access to this user");
@@ -356,6 +357,7 @@ namespace RadialReview.Accessors
 				var found = s.QueryOver<DeepAccountability>().Where(x => x.DeleteTime == null && x.ChildId == nodeId)
 							.JoinAlias(x => x.Parent, () => parent)
 								.Where(x => parent.DeleteTime == null && parent.UserId == caller.Id)
+								.Take(1)
 								.SingleOrDefault();
 				if (found == null)
 					throw new PermissionsException("You don't have access to this user");
@@ -387,6 +389,7 @@ namespace RadialReview.Accessors
 				var found = s.QueryOver<DeepAccountability>().Where(x => x.DeleteTime == null && x.ChildId == nodeId)
 							.JoinAlias(x => x.Parent, () => parent)
 								.Where(x => parent.DeleteTime == null && parent.UserId == caller.Id)
+								.Take(1)
 								.SingleOrDefault();
 				if (found == null)
 					throw new PermissionsException("You don't have access to this user");
@@ -441,7 +444,8 @@ namespace RadialReview.Accessors
 				.Where(x => x.DeleteTime == null && x.Links > 0)
 				.JoinAlias(x => x.Parent, () => manager)
 					.Where(x => manager.DeleteTime == null && manager.UserId == managerUserId && x.ChildId == nodeId)
-					.Take(1).SingleOrDefault();
+					.Take(1)
+					.SingleOrDefault();
 
 
 			return found != null;

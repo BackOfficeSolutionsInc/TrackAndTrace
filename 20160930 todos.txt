@@ -1,5 +1,82 @@
+Team deleted, still shows up in review
 
-* Create Team Template
+
+Separate Checkbox to clear people headlines
+
+default issue owner
+
+add multiple meetings to people headlines to the list
+
+advanced settings not saving 
+
+Edit page error Rose
+default issue owner
+	* If only one attendee, set default to defaulttodo owner
+
+Edit todos on conclusion
+	
+Scorecard on dashboard is slow
+
+Incorporate review document feedback
+
+Auto gen Team 
+* Auto delete
+* Auto fix name
+Jennifers teams
+* Blinker
+
+Scorecard:
+* Reversible date order
+* Decimals  $100,000.00 when not in use $100,000
+* Decimal formatting for regions
+
+************************
+
 * Michael Erath
 * Fiorilli
+
+* Executive travel
+* Timesheets
+
+* Bill La Peer
+* letsjoin payment
+
+* Emails not being sent after L10
+
+* Firespring questions
+
+* Material to UNL ITS
+
+
+--------------------------
+* Create Team Template
+* Scorecard different dates
+* Absentee ballot
+* mail check
+* Amber marketing website link
 * Names on AC for fake users
+* NDA 
+* Conference atlanta
+* Errors 
+* Gino Email
+* SSL
+* Next Session Rocks error (Curt Pikschus)
+* Pay invoice 5622
+* Merging accounts
+* Update AC Name with org-name change
+* Scorecard on firefox
+* fireworks on firefox
+* Segment timers
+* L10 printout initials
+
+* Conclude for non-meeting runners
+* auto generate peoplehealines 
+* Row lineup
+* Dividers on homepage
+
+
+You'll be able to evaluate how well individuals Get, Want, and Have Capacity to perform each role. Its based on the following scale: Always, Mostly, Rarely, or Never. 
+
+When evaluating individuals, there are three dimensions to consider: do they Get it, Want it, and Have Capacity to Do it. For each dimension of a role, you'll have the option to mark whether they Always, Mostly, Rarely, or Never exhibit the role. 
+
+Collect payments

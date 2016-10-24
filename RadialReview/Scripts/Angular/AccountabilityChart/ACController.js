@@ -1,6 +1,6 @@
 ﻿var acapp = angular.module('ACApp', ['helpers', 'panzoom', 'tree']);
 
-acapp.directive('mdBlur', ["$timeout","$rootScope", function ($timeout,$rootScope) {
+acapp.directive('mdBlur', ["$timeout", "$rootScope", function ($timeout, $rootScope) {
 	var directive = {
 		restrict: 'A',
 		link: function (scope, element, attributes) {
@@ -8,7 +8,7 @@ acapp.directive('mdBlur', ["$timeout","$rootScope", function ($timeout,$rootScop
 				scope.oldValue = scope.$eval(attributes.mdSelectedItem);
 				scope.focused = false;
 				angular.element(element[0].querySelector("input")).bind("focus", function () {
-				    //console.log("focus:",this,$(this).is(":focus"));
+					//console.log("focus:",this,$(this).is(":focus"));
 					scope.focused = true;
 					var resolved = scope.$eval(attributes.mdSelectedItem);
 					if (resolved) {
@@ -66,7 +66,7 @@ acapp.directive('rolegroups', function () {
 			onUpdate: '&onUpdate',
 			onDeleteRole: '&onDeleteRole',
 		},
-		controller: ["$scope", "$http", "$timeout", "$element","$rootScope", function ($scope, $http, $timeout, $element,$rootScope) {
+		controller: ["$scope", "$http", "$timeout", "$element", "$rootScope", function ($scope, $http, $timeout, $element, $rootScope) {
 			$scope.addRoleToNode = function (group) {
 				var attachType = group.AttachType;
 				var attachId = group.AttachId;
@@ -110,10 +110,10 @@ acapp.directive('rolegroups', function () {
 			};
 
 			$scope.focusing = function () {
-			    $rootScope.$emit("RoleFocused");
+				$rootScope.$emit("RoleFocused");
 			}
 			$scope.blurring = function () {
-			    $rootScope.$emit("RoleBlurred");
+				$rootScope.$emit("RoleBlurred");
 			}
 
 			//$($element).on("keydown","input", function () {
@@ -121,83 +121,83 @@ acapp.directive('rolegroups', function () {
 			//});
 
 			$scope.checkCreateRole = function (evt, r, group, index) {
-			    $timeout(function () {
-			        var origLength = group.Roles.length;
-			        var depth = 0;
-			        if (evt.which === 13) {
-			            //var isLast = index === origLength - 1
-			            if (/*isLast &&*/ group.Editable != false) {
+				$timeout(function () {
+					var origLength = group.Roles.length;
+					var depth = 0;
+					if (evt.which === 13) {
+						//var isLast = index === origLength - 1
+						if (/*isLast &&*/ group.Editable != false) {
 
-			                $scope.addRoleToNode(group);
+							$scope.addRoleToNode(group);
 
-			                depth = 0;
-			                var setFocus = function () {
-			                    try {
-			                        if (depth == 100)
-			                            return;
-			                        if (origLength < group.Roles.length) {
-			                            console.log("focusing");
-			                            $($($element).find("[data-group=" + group.Id + "] input")[index + 1]).focus();
-			                        } else {
-			                            depth += 1;
-			                            $timeout(setFocus, 20);
-			                        }
-			                    } catch (e) {
-			                        console.error(e);
-			                    }
-			                }
-			                $timeout(setFocus, 20);
+							depth = 0;
+							var setFocus = function () {
+								try {
+									if (depth == 100)
+										return;
+									if (origLength < group.Roles.length) {
+										console.log("focusing");
+										$($($element).find("[data-group=" + group.Id + "] input")[index + 1]).focus();
+									} else {
+										depth += 1;
+										$timeout(setFocus, 20);
+									}
+								} catch (e) {
+									console.error(e);
+								}
+							}
+							$timeout(setFocus, 20);
 
-			            }
-			        } else if (evt.which == 8) {
-			            if (r.Name == "" || typeof (r.Name) === "undefined" || r.Name == null) {
-			                $scope.deleting(r);
-			                if (origLength != 1) {
-			                    var setFocus = function () {
-			                        try {
-			                            if (depth == 100)
-			                                return;
-			                            if (origLength > group.Roles.length) {
-			                                console.log("focusing");
+						}
+					} else if (evt.which == 8) {
+						if (r.Name == "" || typeof (r.Name) === "undefined" || r.Name == null) {
+							$scope.deleting(r);
+							if (origLength != 1) {
+								var setFocus = function () {
+									try {
+										if (depth == 100)
+											return;
+										if (origLength > group.Roles.length) {
+											console.log("focusing");
 
-			                                $($($element).find("[data-group=" + group.Id + "] input")[index - 1]).focus();
-			                                //$("[data-group=" + group.Id + "]").find("input:nth-child(" + (index) + ")").focus();
-			                            } else {
-			                                depth += 1;
-			                                $timeout(setFocus, 20);
-			                            }
-			                        } catch (e) {
-			                            console.error(e);
-			                        }
-			                    }
-			                    $timeout(setFocus, 20);
-			                } else {
-			                    $($element).find("[data-group=" + group.Id + "] .add-role-row").focus();
-			                }
-			            }
-			        } else if (evt.which == 38) {
-			            if (index > 0) {
-			                var that = $($($element).find("[data-group=" + group.Id + "] input")[index - 1]);
-			                $(that).focus();
-			                $timeout(function () {
-			                    var len = $(that).val().length * 2;
-			                    $(that)[0].setSelectionRange(len, len);
-			                }, 0);
-			            }
-			        } else if (evt.which == 40) {
-			            if (index < origLength - 1) {
-			                var that = $($($element).find("[data-group=" + group.Id + "] input")[index + 1]);
-			                $(that).focus();
-			                $timeout(function () {
-			                    var len = $(that).val().length * 2;
-			                    $(that)[0].setSelectionRange(len, len);
-			                }, 0);
-			            } else {
-			                var id = $($($element).find("[data-group=" + group.Id + "] input")).closest("g.node").attr("data-id");
-			                $scope.$emit("ExpandNode", id);
-			            }
-			        }
-			    }, 1);
+											$($($element).find("[data-group=" + group.Id + "] input")[index - 1]).focus();
+											//$("[data-group=" + group.Id + "]").find("input:nth-child(" + (index) + ")").focus();
+										} else {
+											depth += 1;
+											$timeout(setFocus, 20);
+										}
+									} catch (e) {
+										console.error(e);
+									}
+								}
+								$timeout(setFocus, 20);
+							} else {
+								$($element).find("[data-group=" + group.Id + "] .add-role-row").focus();
+							}
+						}
+					} else if (evt.which == 38) {
+						if (index > 0) {
+							var that = $($($element).find("[data-group=" + group.Id + "] input")[index - 1]);
+							$(that).focus();
+							$timeout(function () {
+								var len = $(that).val().length * 2;
+								$(that)[0].setSelectionRange(len, len);
+							}, 0);
+						}
+					} else if (evt.which == 40) {
+						if (index < origLength - 1) {
+							var that = $($($element).find("[data-group=" + group.Id + "] input")[index + 1]);
+							$(that).focus();
+							$timeout(function () {
+								var len = $(that).val().length * 2;
+								$(that)[0].setSelectionRange(len, len);
+							}, 0);
+						} else {
+							var id = $($($element).find("[data-group=" + group.Id + "] input")).closest("g.node").attr("data-id");
+							$scope.$emit("ExpandNode", id);
+						}
+					}
+				}, 1);
 			}
 		}],
 
@@ -208,7 +208,7 @@ acapp.directive('rolegroups', function () {
 							"</div>" +
 							"<ul>" +
 								"<li ng-repeat='role in group.Roles'  class='role-row' >" +
-									"<input ng-model-options='{debounce:200}'  ng-focus='focusing()' ng-blur='blurring()'"+" ng-keydown='checkCreateRole($event,role,group,$index)'"+ " title='{{role.Name}}' class='role' ng-if='::group.Editable!=false' ng-model=\"role.Name\" ng-change=\"updating(role)\">" +
+									"<input ng-model-options='{debounce:200}'  ng-focus='focusing()' ng-blur='blurring()'" + " ng-keydown='checkCreateRole($event,role,group,$index)'" + " title='{{role.Name}}' class='role' ng-if='::group.Editable!=false' ng-model=\"role.Name\" ng-change=\"updating(role)\">" +
 									"<div title='{{role.Name}}' class='role' ng-if='::group.Editable==false'>{{role.Name}}</div>" +
 									"<span ng-if='::group.Editable!=false' class='delete-role-row' ng-click=\"deleting(role)\" tabindex='-1'></span>" +
 								"</li>" +
@@ -314,7 +314,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		});
 	};
 
-	
+
 	var RemoveRow = Undo.Command.extend({
 		constructor: function (data) {
 			//this.id = data.id;
@@ -348,8 +348,8 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		}
 	});
 
-	$scope.functions.removeRow = function (self) {		
-		undoStack.execute(new RemoveRow(self));		
+	$scope.functions.removeRow = function (self) {
+		undoStack.execute(new RemoveRow(self));
 	};
 
 	//SEARCH
@@ -375,9 +375,9 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		var results = possible.filter(createFilterFor(query));
 		var tcQ = toTitleCase(query);
 		results.push({
-			Name:  tcQ+ " (Create User)",
+			Name: tcQ + " (Create User)",
 			RealName: tcQ,
-			Id: -2			
+			Id: -2
 		});
 
 		return results;
@@ -432,10 +432,10 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 
 	$scope.roleFocused = false;
 	$rootScope.$on("RoleFocused", function (event) {
-	    $scope.roleFocused = true;
+		$scope.roleFocused = true;
 	});
 	$rootScope.$on("RoleBlurred", function (event) {
-	    $scope.roleFocused = false;
+		$scope.roleFocused = false;
 	});
 	//END ULTRA HACK
 	$scope.functions.selectedItemChange = function (node) {
@@ -481,22 +481,22 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		if (node.User && node.User.Name)
 			uname = node.User.Name;
 		if (node.Group && node.Group.RoleGroups) {
-		    if ($scope.roleFocused){
-		        var copy = node.Group.RoleGroups.map(function (rg) {
-		            var cp = angular.copy(rg);
-		            cp.Roles = cp.Roles.map(function () { return null; });
-		            return cp;
-		        });
-		    //    var rolesGroups = [];
-		    //    for(var c in copy){
-		    //        var rg = copy[c];
-		    //        rg.Roles = null;
-		    //        rolesGroups.push(rg);
-		    //    }
-		        roles = copy;
-		    }
-		    else
-		        roles = node.Group.RoleGroups;
+			if ($scope.roleFocused) {
+				var copy = node.Group.RoleGroups.map(function (rg) {
+					var cp = angular.copy(rg);
+					cp.Roles = cp.Roles.map(function () { return null; });
+					return cp;
+				});
+				//    var rolesGroups = [];
+				//    for(var c in copy){
+				//        var rg = copy[c];
+				//        rg.Roles = null;
+				//        rolesGroups.push(rg);
+				//    }
+				roles = copy;
+			}
+			else
+				roles = node.Group.RoleGroups;
 		}
 		if (node.Group)
 			pos = node.Group.Position;
@@ -558,7 +558,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 	}
 
 	$scope.collapseExpand = function (d) {
-		if ($(d3.event.srcElement||d3.event.target).closest(".minimize-icon").length != 1) {
+		if ($(d3.event.srcElement || d3.event.target).closest(".minimize-icon").length != 1) {
 			throw "Incorrect selector";
 		}
 	}
@@ -595,14 +595,18 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 				//}
 
 				$scope.functions.showModal('Add user',
-					'/User/AddModal?managerNodeId=' + managerId + "&forceManager=true&name=" + item.RealName + "&hideIsManager=true&hidePosition=true&nodeId="+id
+					'/User/AddModal?managerNodeId=' + managerId + "&forceManager=true&name=" + item.RealName + "&hideIsManager=true&hidePosition=true&nodeId=" + id
 				   , '/nexus/AddManagedUserToOrganization'
 				);
-				
+
 			} else {
 				$scope.functions.selectedItemChange_UpdateNode(id);
 			}
 		}
+	}
+	self.dirtyList = {};
+	$scope.functions.markDirty = function (id) {
+		self.dirtyList[id] = true;
 	}
 
 	$scope.nodeEnter = function (nodeEnter) {
@@ -627,28 +631,53 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 
 		var posAutoComplete = position.append("md-autocomplete")
 			.attr("placeholder", "Function")
-			.attr("ng-disabled", function (d) {
+			.attr("md-input-name", function (d) {
+				return "searchPosName_" + d.Id;
+			}).attr("ng-disabled", function (d) {
 				if (d.Editable == false)
 					return "true";
 				return null;
-			}).attr("md-blur", function (d) {
-            	return "clearIfNull(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,\"search.searchPos_" + d.Id + "\",\"model.Lookup['AngularAccountabilityNode_" + d.Id + "']\")";
-            }).attr("md-selected-item", function (d) {
-            	return "model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position";
-            }).attr("md-item-text", function (d) {
-            	return "pitem.Name";
-            }).attr("md-items", function (d) { return "pitem in search.queryPositions(search.searchPos_" + d.Id + ")"; })
+			})
+			.attr("md-blur", function (d) {
+				return "clearIfNull(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,\"search.searchPos_" + d.Id + "\",\"model.Lookup['AngularAccountabilityNode_" + d.Id + "']\")";
+			})
+			//.attr("md-blur", function (d) {
+			//	return "functions.clearI";
+			//})
+			.attr("md-selected-item", function (d) {
+				return "model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position";
+			}).attr("md-item-text", function (d) {
+				return "pitem.Name";
+			}).attr("md-items", function (d) { return "pitem in search.queryPositions(search.searchPos_" + d.Id + ")"; })
             .attr("md-search-text", function (d) { return "search.searchPos_" + d.Id; })
             /*.attr("md-selected-item-change", function (d) {
             	return "functions.selectedItemChange_UpdateNode(" + d.Id + ")";
             })*/
+			//.attr("md-require-match", "")
+			.attr("ng-class", function (d) {
+				return "{'no-match':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position ==null && search.searchPos_" + d.Id+" }";
+			}).attr("ng-attr-title", function (d) {
+				return "{{(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position ==null)?'Invalid: Position does not exist.':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position.Name}}";
+			})
+			////.attr("md-search-text-change", function (d) {
+			//	return "functions.markDirty('pos-" + d.Id + "')";
+			//})
 			.attr("md-selected-item-change", function (d) {
 				return "functions.fixName(" + d.Id + ",'search.searchPos_" + d.Id + "',model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,this)";
 			}).attr("md-no-cache", "true");//.attr("md-delay", "300");
 
 		//Is this even used? vvv
 		posAutoComplete.append("md-item-template").append("span").attr("md-highlight-text", function (d) { return "search.searchPos_" + d.Id; }).attr("md-highlight-flags", "^i").text("{{pitem.Name}}{{pitem.Create}}");
-		posAutoComplete.append("md-not-found").text(function (d) { return "No matches were found."; });
+		//posAutoComplete.append("md-not-found").text(function (d) { return "No matches were found."; });
+		/*posAutoComplete.append("div").attr("ng-messages", function (d) {
+			return "";//"{'md-require-match':searchPosName_" + d.Id + ".$error}";
+		}).attr("ng-if", function (d) {
+			return "searchPosName_" + d.Id + ".$touched";
+		//})*.append("div").attr("ng-message", "md-require-match")
+		//	.text(function () { return "Could not find function"; });
+		//posAutoComplete.append("md-require-match")
+		//	.text(function () { return "Could not find function"; });
+		*/
 
 
 		var owner = contents.append("xhtml:div").classed("acc-owner", true);
@@ -662,6 +691,11 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 			}).attr("md-items", function (d) { return "uitem in search.querySearch(search.searchText_" + d.Id + ")"; })
             .attr("md-search-text", function (d) { return "search.searchText_" + d.Id; })
 			.attr("placeholder", "Employee")
+			.attr("ng-class", function (d) {
+				return "{'no-match':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].User ==null && search.searchText_" + d.Id + " }";
+			}).attr("ng-attr-title", function (d) {
+				return "{{(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].User ==null)?'Invalid: Employee does not exist.':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].User.Name}}";
+			})
 			.attr("ng-disabled", function (d) {
 				if (d.Editable == false)
 					return "true";
@@ -784,8 +818,8 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		});
 	}
 	$scope.nodeUpdate = function (nodeUpdate) {
-	    nodeUpdate.select(".acc-rect").attr("width", function (d) {
-	        console.log("update called");
+		nodeUpdate.select(".acc-rect").attr("width", function (d) {
+			console.log("update called");
 			return d.width;
 		}).attr("height", function (d) {
 			return (d.height || 20);
@@ -843,14 +877,19 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 			return "translate(" + d.width + "," + (d.height - 11) + ")";
 		});
 
-		nodeUpdate.select("foreignObject")
+		var isFirefox = typeof InstallTrigger !== 'undefined';
+		var fo = nodeUpdate.select("foreignObject")
 		.attr("width", function (d) {
-			var isFirefox = typeof InstallTrigger !== 'undefined';
 			if (isFirefox)
 				return d.width + 20;
 			return d.width;
-		})
-			.attr("height", function (d) { return d.height; });
+		});
+		if (isFirefox) {
+			fo.attr("height", function (d) {
+				return d.height;
+			});
+		}
+
 	};
 	$scope.nodeExit = function (nodeExit) {
 		nodeExit.each(function (d, i) {

@@ -134,7 +134,7 @@ namespace RadialReview.Controllers
             
             var prior = recur.Prioritization;
             var showPriority = false;
-            if (prior == Models.L10.PrioritizationType.Invalid || prior == Models.L10.PrioritizationType.Priority)
+            if (/*prior == Models.L10.PrioritizationType.Invalid ||*/ prior == Models.L10.PrioritizationType.Priority)
                 showPriority = true;
 
 

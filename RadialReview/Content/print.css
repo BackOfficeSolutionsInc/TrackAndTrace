@@ -2,12 +2,16 @@
     height: 0px;
     line-height: normal;
 }
-body.body-normal-width ,html.body-normal-width  {	
+body.body-normal-width ,html.body-normal-width ,html.body-normal-height  {	
 	background-color:white!important;
 }
 
 .noPrint {
     display: none;
+}
+
+.onlyPrint{
+	display:block!important;
 }
 
 .body-content {
@@ -774,4 +778,59 @@ html {
 
 .empty-search{
 	display:none;
+}
+
+.row-title {
+	margin-left: 0px;
+	margin-right: 0px;
+	background-color:white;
+	border:none;
+	border-bottom:1px solid gray;
+	border-radius:0px;
+	text-transform:uppercase;
+}
+
+	.row-title.first {
+		border-bottom:none;
+
+	}
+
+	html.body-normal-height .scorecard-table .score input[disabled]{
+		background-color:white!important;
+	}
+	
+#ScorecardTable tbody tr:first-child score input {
+	border-top:1px solid #E0E0E0;
+}
+	
+.scorecard-table tr th:nth-last-child(2),
+.scorecard-table tr td:nth-last-child(2) input{
+    border-right:1px solid #E0E0E0;
+}
+.scorecard-table td{
+	height:inherit;
+}
+/*.scorecard-table tr:nth-last-child(1) .score.current input {
+    border-bottom: 1px solid #2c77ba;
+    height: calc(100% + 1px) !important;
+}
+
+.scorecard-table .score.current input {
+    border-left: 1px solid #2c77ba;
+    border-right: 1px solid #2c77ba;
+    border-bottom: 1px solid #e4e4e4;
+}
+
+.scorecard-table .score.current{
+    border:none !important;
+    height:inherit;
+}*/
+
+
+.chart-container-box {
+	background-color: none;
+	margin-left: 0px;
+	margin-right: 0px;
+	margin-top: 0;
+	border: none
 }

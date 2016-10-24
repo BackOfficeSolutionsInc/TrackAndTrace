@@ -137,7 +137,17 @@ namespace RadialReview.Utilities {
             });
         }
 
-        protected bool CanAccessItem(PermItem.AccessLevel level, PermItem.ResourceType resourceType, long resourceId, Func<PermissionsUtility, PermissionsUtility> defaultAction, ref PermissionsUtility result, bool and = true)
+		public List<PermItem> GetAdmins(PermItem.ResourceType resourceType, long resourceId) {
+			CanView(resourceType, resourceId);
+			CanViewPermissions(resourceType, resourceId);
+			var admin = false;
+			var items = session.QueryOver<PermItem>().Where(x => x.DeleteTime == null && x.ResId == resourceId && x.ResType == resourceType).List().ToList();
+			PermissionsAccessor.LoadPermItem(session, items);
+			return items.Where(x=>x.CanAdmin).ToList();
+		}
+
+
+		protected bool CanAccessItem(PermItem.AccessLevel level, PermItem.ResourceType resourceType, long resourceId, Func<PermissionsUtility, PermissionsUtility> defaultAction, ref PermissionsUtility result, bool and = true)
         {
             if (IsRadialAdmin(caller))
                 return true;

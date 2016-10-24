@@ -38,6 +38,8 @@ using RadialReview.Models.Scorecard;
 using RadialReview.Models.L10;
 using OxyPlot;
 using RadialReview.Models.Onboard;
+using RadialReview.Models.Events;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Controllers {
 
@@ -106,6 +108,8 @@ namespace RadialReview.Controllers {
 		public ActionResult PerformMergeAccounts(long mainId, long mergeId) {
 			UserOrganizationModel main;
 			UserOrganizationModel merge;
+			UserOrganizationModel originalMerg;
+			string email;
 
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -125,7 +129,7 @@ namespace RadialReview.Controllers {
 					if (merge.Organization.DeleteTime != null)
 						throw new PermissionsException("Cannot combine users: Merge Organization was deleted");
 
-					var email = main.User.UserName;
+					email = main.User.UserName;
 					var newIds = main.User.UserOrganizationIds.ToList();
 					newIds.Add(mergeId);
 					newIds = newIds.Distinct().ToList();
@@ -135,10 +139,17 @@ namespace RadialReview.Controllers {
 					main.User.UserOrganizationCount = newIds.Count();
 					main.User.UserOrganization.Add(merge);
 
+					//if (merge.TempUser != null && merge.User.Id != main.User.Id) {
+					//	merge.User.UserOrganization = merge.User.UserOrganization.Where(x => x.Id != mergeId).ToArray();
+					//	s.Update(merge.User);
+					//}
+
 					s.Update(main.User);
 
+				//	tx.Commit();
+				//}
 
-
+				//using (var tx = s.BeginTransaction()) {
 
 					merge.EmailAtOrganization = email;
 
@@ -151,10 +162,15 @@ namespace RadialReview.Controllers {
 						merge.TempUser = null;
 					} else {
 						if (merge.User.Id != main.User.Id) {
-							merge.User.UserOrganizationIds = merge.User.UserOrganizationIds.Where(x => x != mainId).Distinct().ToArray();
+							merge.User.UserOrganizationIds = merge.User.UserOrganizationIds.Where(x => x != mergeId).Distinct().ToArray();
 							merge.User.UserOrganizationCount = merge.User.UserOrganizationIds.Count();
 							merge.User.CurrentRole = merge.User.UserOrganizationIds.FirstOrDefault();
-							merge.User.UserOrganization = merge.User.UserOrganization.Where(x => x.Id != mainId).ToArray();
+							merge.User.UserOrganization = merge.User.UserOrganization.Where(x => x.Id != mergeId).ToArray();
+
+							//merge.User.UserName = merge.User.UserName + "_merged";
+							//s.Update(merge.User);
+							s.Update(merge.User);
+
 							merge.User = main.User;
 						}
 
@@ -177,10 +193,27 @@ namespace RadialReview.Controllers {
 				Hi " + main.GetFirstName() + @",<br/><br/>
 				I've merged your accounts, please use '" + main.User.UserName + @"' to log on from now on to Traction Tools. To switch between accounts, click 'Change Organization' from the dropdown in the top-right.<br/><br/>
 				Thank you,<br/><br/>
-				" + GetUser().GetName());
+				" + GetUserModel().Name());
 		}
 
+		[Access(AccessLevel.Radial)]
+		public ActionResult Events(int days = 30, long? orgId = null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var evtsQ = s.QueryOver<AccountEvent>().Where(x => x.DeleteTime == null && x.CreateTime > DateTime.UtcNow.AddDays(-days));
+					if (orgId != null) {
+						evtsQ = evtsQ.Where(x => x.OrgId == orgId.Value);
+						ViewBag.FixSidebar = false;
+					}
 
+					var evts = evtsQ.List().ToList();
+					var org = s.QueryOver<OrganizationModel>().WhereRestrictionOn(x => x.Id).IsIn(evts.Select(x => x.OrgId).ToArray()).List().ToList();
+					ViewBag.OrgLookup = new DefaultDictionary<long?, string>(x => org.FirstOrDefault(y => y.Id == x).NotNull(y => y.GetName()) ?? "" + x);
+					ViewBag.OrgStatusLookup = new DefaultDictionary<long?, AccountType>(x => org.FirstOrDefault(y => y.Id == x).NotNull(y => (AccountType?)y.AccountType) ?? AccountType.Invalid);
+					return View(evts);
+				}
+			}
+		}
 
 		[Access(AccessLevel.Radial)]
 		public ActionResult MeetingsTable(int weeks = 3) {
@@ -257,6 +290,7 @@ namespace RadialReview.Controllers {
 			var deletedTodos = 0;
 			var deletedIssues = 0;
 			var deletedScores = 0;
+			var deletedHeadlines = 0;
 
 			DateTime start = DateTime.UtcNow;
 
@@ -302,6 +336,14 @@ namespace RadialReview.Controllers {
 						deletedIssues += 1;
 					}
 
+
+					foreach (var h in recur.Headlines) {
+						var headline = s.Load<PeopleHeadline>(h.Id);
+						headline.CloseTime = DateTime.MinValue;
+						s.Update(headline);
+						deletedHeadlines += 1;
+					}
+
 					createTime = DateTime.UtcNow.AddDays(-5);
 					foreach (var issue in issues) {
 						//var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
@@ -314,6 +356,38 @@ namespace RadialReview.Controllers {
 						createTime = createTime.AddMinutes(r.Next(5, 15));
 						addedIssues += 1;
 					}
+
+
+					var headlines = new[] {
+						new {Message ="Just had a baby", AboutId = (long?)604, AboutName = "Irene Bunn", About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(604L)},
+						new {Message ="Congratulations on retirement", AboutId = (long?)615, AboutName = "Don Barber", About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(615L)},
+						new {Message ="Supplier just raised shipping rates", AboutId = (long?)null, AboutName = "Maurice Sporting Goods", About=(ResponsibilityGroupModel)null},
+						new {Message ="Team pulled together after a customer shipment was lost", AboutId = (long?)644, AboutName = "Fulfillment Team", About=(ResponsibilityGroupModel)s.Load<OrganizationTeamModel>(644L)}
+					};
+
+
+					foreach (var h in headlines) {
+						//var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
+						var owner = possibleUsers[r.Next(possibleUsers.Count - 1)];
+						await HeadlineAccessor.CreateHeadline(s, perms, new PeopleHeadline {
+							Message = h.Message,
+							AboutId = h.AboutId,
+							AboutName = h.AboutName,
+							OwnerId = owner,
+							RecurrenceId = recurId,
+							About = h.About,
+							Owner = s.Load<UserOrganizationModel>(owner),
+							
+
+							OrganizationId = caller.Organization.Id,
+							CreateTime = createTime,
+						});
+						createTime = createTime.AddMinutes(r.Next(5, 15));
+						addedIssues += 1;
+					}
+
+
+
 					var current = recur.Scorecard.Weeks.FirstOrDefault(x => x.IsCurrentWeek).ForWeekNumber;
 					var emptyMeasurable = recur.Scorecard.Measurables.ElementAtOrDefault(r.Next(recur.Scorecard.Measurables.Count() - 1)).NotNull(x => x.Id);
 
@@ -376,7 +450,7 @@ namespace RadialReview.Controllers {
 					}
 					builder += "</table>";
 					return Content(builder);
-				}			
+				}
 			}
 		}
 
@@ -421,22 +495,33 @@ namespace RadialReview.Controllers {
 		[HttpPost]
 		public ActionResult FixEmail(FormCollection form) {
 			var user = GetUser();
+			var newEmail = form["newEmail"].ToLower();
 
 			if (user.GetEmail() != form["oldEmail"] || user.Id != form["userId"].ToLong())
 				throw new PermissionsException("Incorrect User.");
 
-			if (!IsValidEmail(form["newEmail"]))
+			if (!IsValidEmail(newEmail))
 				throw new PermissionsException("Email invalid.");
+
+
+
+
 
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
+
+					var any = s.QueryOver<UserModel>().Where(x => x.UserName == newEmail).Take(1).SingleOrDefault();
+
+					if (any != null)
+						throw new PermissionsException("User already exists with this email address. Could not change.");
+
 					s.Evict(user);
 					user = s.Get<UserOrganizationModel>(user.Id);
 					user.EmailAtOrganization = form["newEmail"];
 
 					if (user.User != null) {
 						//s.Evict(user.User);
-						user.User.UserName = form["newEmail"];
+						user.User.UserName = form["newEmail"].ToLower();
 						//s.Update(user.User);
 					}
 
@@ -471,7 +556,6 @@ namespace RadialReview.Controllers {
 			return Json(ApplicationAccessor.Stats(), JsonRequestBehavior.AllowGet);
 		}
 
-
 		[Access(AccessLevel.Radial)]
 		public String TempDeep(long id) {
 			var now = DateTime.UtcNow;
@@ -481,21 +565,6 @@ namespace RadialReview.Controllers {
 			log.Info(o);
 			return o;
 		}
-
-		/*[Access(AccessLevel.Radial)]
-        public String FixManagerGroups()
-        {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
-
-                    tx.Commit();
-                    s.Flush();
-                }
-            }
-        }*/
-
 
 		[Access(AccessLevel.Radial)]
 		public int FixTeams() {
@@ -570,7 +639,6 @@ namespace RadialReview.Controllers {
 			return "Undo Random Review. Update: " + count;
 
 		}
-
 
 		[Access(AccessLevel.Radial)]
 		public string RandomReview(long id) {
@@ -715,9 +783,6 @@ namespace RadialReview.Controllers {
 			return "Completed Randomize. Updated:" + count;
 		}
 
-
-
-
 		[Access(AccessLevel.Radial)]
 		public JsonResult AdminAllUserLookups(string search) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -852,100 +917,6 @@ namespace RadialReview.Controllers {
 			return Json(true, JsonRequestBehavior.AllowGet);
 		}
 
-		/*
-        [Access(AccessLevel.Radial)]
-        public async Task<String> TempCreate()
-        {
-            var lines = Regex.Replace(Data.people,"\r","").Split('\n');// = System.IO.File.ReadAllLines(file);
-            //var accountController = new AccountController();
-            //Column Ids
-            var FIRST_NAME      =0;
-            var LAST_NAME       =1;
-            var POSITION        =2;
-            var EMAIL           =3;
-            var MANAGER_EMAIL   =4;
-            var IS_MANAGER      =5;
-            //Other variables
-            var ORGANIZATION    ="Cornerstone";
-
-            String firstEmail = null;
-
-            var members = lines.Skip(1).Select(x=>{ 
-                var split= x.Split(',');
-                return new {
-                        Email       = split[EMAIL],
-                        FirstName   = split[FIRST_NAME],
-                        LastName    = split[LAST_NAME],
-                        Password    = "`123qwer",
-                        Position    = split[POSITION],
-                        ManagerEmail= split[MANAGER_EMAIL],
-                        IsManager   = split[IS_MANAGER],
-                        Created     = false
-                    };
-            });
-
-            //Create org
-            var orgCreatorData=members.First(x=>String.IsNullOrWhiteSpace(x.ManagerEmail));
-            /*await accountController.Register(new RegisterViewModel(){
-                Email=orgCreatorData.Email,
-                fname=orgCreatorData.FirstName,
-                lname=orgCreatorData.LastName,
-                Password=orgCreatorData.Password,
-            });*
-
-
-            foreach(var m in members)
-            {
-                await Register(new RegisterViewModel(){
-                    Email=m.Email,
-                    fname=m.FirstName,
-                    lname=m.LastName,
-                    Password=m.Password,
-                });
-
-            }
-
-
-            var orgCreator = _UserAccessor.GetUserByEmail(orgCreatorData.Email);
-            var basicPlan=_PaymentAccessor.BasicPaymentPlan();
-            var org=_OrganizationAccessor.CreateOrganization(orgCreator,new LocalizedStringModel(ORGANIZATION),true,basicPlan);
-
-
-            var orgCreatorUO = _UserAccessor.GetUserByEmail(orgCreatorData.Email).UserOrganization.First();
-
-            var posDict = new Dictionary<String,long>();
-
-            foreach(var position in members.UnionBy(x=>x.Position).Select(x=>x.Position))
-            {                
-                posDict[position]=_OrganizationAccessor.EditOrganizationPosition(orgCreatorUO,0,org.Id,_PositoinAccessor.AllPositions().FirstOrDefault().Id,position).Id;
-            }
-
-            var errors =true;
-            var notCreated = members.Where(x=>!x.Created && !String.IsNullOrWhiteSpace(x.ManagerEmail)).ToList();
-            while(errors)
-            {
-                errors=false;
-                foreach (var m in notCreated.ToList())
-                {
-                    try
-                    {
-                        var manager = _UserAccessor.GetUserByEmail(m.ManagerEmail).UserOrganization.First();
-                        var tempUser=_NexusAccessor.CreateUserUnderManager(orgCreatorUO, manager.Id, bool.Parse(m.IsManager), posDict[m.Position], "clay.upton@gmail.com", m.FirstName, m.LastName);
-                        var nexus = _NexusAccessor.Get(tempUser.Guid);
-                        //[organizationId,EmailAddress,userOrgId,Firstname,Lastname]
-                        _OrganizationAccessor.JoinOrganization(_UserAccessor.GetUserByEmail(m.Email), manager.Id, long.Parse(nexus.GetArgs()[2]));
-                        notCreated.Remove(m);
-                    }catch{
-                        errors=true;
-                    }
-                }
-            }
-
-            return "Success";
-        }*/
-
-
-
 		private RadialReview.Controllers.ReviewController.ReviewDetailsViewModel GetReviewDetails(ReviewModel review) {
 			var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id);
 			var answers = _ReviewAccessor.GetAnswersForUserReview(GetUser(), review.ForUserId, review.ForReviewsId);
@@ -964,7 +935,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Any)]
 		public bool TestTask(long id) {
 			var fire = DateTime.UtcNow.AddSeconds(id);
-			_TaskAccessor.AddTask(new ScheduledTask() { Fire = fire, Url = "/Account/TestTaskRecieve" });
+			TaskAccessor.AddTask(new ScheduledTask() { Fire = fire, Url = "/Account/TestTaskRecieve" });
 			log.Debug("TestTaskRecieve scheduled for: " + fire.ToString());
 			return true;
 		}
@@ -1024,7 +995,7 @@ namespace RadialReview.Controllers {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var org = s.Get<OrganizationModel>(id);
-					return Json(PaymentAccessor.CalculateCharge(s, org, org.PaymentPlan, DateTime.UtcNow),JsonRequestBehavior.AllowGet);
+					return Json(PaymentAccessor.CalculateCharge(s, org, org.PaymentPlan, DateTime.UtcNow), JsonRequestBehavior.AllowGet);
 				}
 			}
 		}

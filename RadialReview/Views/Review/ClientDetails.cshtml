@@ -353,7 +353,7 @@
                                     @:Scatter Chart
 							}
                             </div>
-                            <div class="alignCenter1">
+                            <div class="row alignCenter1 chart-container-box">
                                 <div class="chartItem" style="" id="scatter">
                                     <div id="chart2" class="inline">
                                         <!--Chart Goes Here-->
@@ -433,6 +433,7 @@
                                 <div class="landscape-shift"></div>
                                 <div class="landscape-contents">
                                     <div class="landscape-scale">
+										<div class="row-title onlyPrint" style="margin-bottom:20px;">Scorecard</div>
                                         @Html.Partial("~/Views/Review/Details/Scorecard.cshtml", Model)
                                     </div>
                                 </div>
@@ -470,8 +471,7 @@
                                             <div class="feedback-heading">@fg.First().Askable.GetQuestion()</div>
                                             foreach (var f in found) {
                                                 <div style="white-space: pre-line; padding-bottom: 15px; padding-left: 20px;" id="feedback_@(f.Id)" class="feedback"><span class="italic">"@(f.Feedback)"</span></div>
-                                                <div class="smallBreak"></div>
-                                                <div class="smallBreak"></div>
+                                               
                                             }
                                         }
                                     }
@@ -639,8 +639,8 @@
             var resizeScorecard = function () {
                 var w = $(".scorecard .table-responsive #ScorecardTable").width();
                 var h = $(".scorecard .table-responsive").height();
-                $(".landscape-placeholder").css({ width: 1, height: (25 + w * .7) });
-                $(".landscape-shift").css("margin-top", -h);
+                $(".landscape-placeholder").css({ width: 1, height: (26 + w * .7) });
+                $(".landscape-shift").css("margin-top", -(h+50));
             }
 
             setInterval(function () {

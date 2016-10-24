@@ -13,19 +13,26 @@
 					<th></th>
 					<th class="header" title="Does this person understand this role?">Gets It <span class="info"></span></th>
 					<th class="header" title="Does this person genuinely enjoy this role?">Wants It <span class="info"></span></th>
-					<th class="header" title="Does this person have the time, mental, physical, and emotional capacity to perform this role well?">Capacity To Do It <span class="info"></span></th>
+					<th class="header" title="Does this person have the time, mental, physical, and emotional capacity to perform this role well?">Capacity to Do It <span class="info"></span></th>
 					<th></th>
 				</tr>
 			</thead>
 			<tbody>
 				@{
-	var questions = Model.Item1.OrderBy(x => x.Askable.GetQuestion()).ToList();
+					var questions = Model.Item1.OrderBy(x => x.Askable.GetQuestion()).ToList();
 				}
 				@for (var i = 0; i < questions.Count(); i++)
 				{
 					var id = QuestionType.GWC+"_"+questions[i].Identifier;
+					@*<tr>
+						<td>
+							<div class="visible-xs">
+								<h4 class="question alignRight" style="padding-right:15px;padding-bottom: 7px;padding-top: 7px;">@questions[i].Askable.GetQuestion()</h4>
+							</div>
+						</td>
+					</tr>*@
 					<tr>
-						<td style="width:50%"><h4 class="question alignRight" style="padding-right:15px;padding-bottom: 7px;padding-top: 7px;">@questions[i].Askable.GetQuestion()</h4></td>
+						<td class="question-cell"  @*class="hidden-xs"*@><h4 class="question alignRight" style="padding-right:15px;padding-bottom: 7px;padding-top: 7px;">@questions[i].Askable.GetQuestion()</h4></td>
 						<td>
 							@if (Model.Item2){
 								@Html.EditorFor(x => questions[i].GetIt, new{name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_GetIt"})
@@ -35,7 +42,6 @@
 							}
 							<span class="reasonButton glyphicon glyphicon-pencil @(String.IsNullOrWhiteSpace(questions[i].GetItReason)?"":"on")" onclick="showReason(this)"></span>
 							<div id="reason_@(id)_GetItReason" class="hidden reasonPopup">
-
 								@if (Model.Item2)
 								{								
 									<textarea name="question_@(id)_GetItReason" class="full-width changeable reason popup" placeholder="Add Comment">@questions[i].GetItReason</textarea>
@@ -84,8 +90,6 @@
 							}
 							</div>
 						</td>
-						@*<td style="vertical-align:top;width:50%">
-						</td>*@
 					</tr>
 				}
 			</tbody>
@@ -93,4 +97,5 @@
 
 		<div class="evaluation-heading">Roles</div>
 	</div>
+	<blocksep class="block-separator"></blocksep>
 }

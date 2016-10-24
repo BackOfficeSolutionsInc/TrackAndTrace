@@ -258,8 +258,23 @@ namespace TractionTools.Tests.TestUtils {
                 HttpContext.Current.Request.Browser = browser;
             }
 
-        }
-        public static void Throws<T>(Action func) where T : Exception
+		}
+		public static async Task ThrowsAsync<T>(Func<Task> func,Action<T> onError=null) where T : Exception {
+
+			var exceptionThrown = false;
+			try {
+				await func();
+			} catch (T e) {
+				exceptionThrown = true;
+				if (onError != null)
+					onError(e);
+			}
+
+			if (!exceptionThrown)
+				throw new AssertFailedException(String.Format("An exception of type {0} was expected, but not thrown", typeof(T)));
+		}
+
+		public static void Throws<T>(Action func) where T : Exception
         {
             var exceptionThrown = false;
             try {

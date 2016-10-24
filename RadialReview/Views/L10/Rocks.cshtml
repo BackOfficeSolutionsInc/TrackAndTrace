@@ -21,7 +21,6 @@
                 @if (Model.Rocks.Where(x => x.ForRock.CompanyRock).Any()) {
                     <div class="company-rock-container">
                         @Html.Partial("partial/CompanyRockGroup", Model.Rocks.Where(x => x.ForRock.CompanyRock).ToList())
-
                         <hr /> 
                     </div>
                 }

@@ -138,7 +138,7 @@
 	}
 
 .start-conference {
-	width: 102px;
+	/*width: 102px;*/
 }
 
 .start-screenshare {
@@ -148,13 +148,18 @@
 	margin: 10px;
 	padding: 2px 8px;
 }
+.start-video .btn,
+.start-video.btn {
+	padding: 2px 8px;
+	margin-left:5px;
+}
 
-.start-video {
-	position: absolute;
+.start-buttons {
+	position: relative;
 	top: 35px;
 	right: 0px;
 	/* width: 60px; */
-	margin: 10px;
+	margin-right:10px;
 	padding: 2px 8px;
 }
 
@@ -201,4 +206,11 @@
 	color: rgba(255,255,255,.3);
 	font-size: 12px;
 	transition: color .2s;
+}
+
+.zoom-thumbnail{
+	width: 50%;
+    margin-left: 16.66666667%;
+    margin-right: auto;
+    text-align: center;
 }

@@ -1,12 +1,15 @@
 ﻿using NHibernate;
 using RadialReview.Controllers;
 using RadialReview.Exceptions;
+using RadialReview.Hooks;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Components;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Onboard;
 using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
+using RadialReview.Utilities.Hooks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,7 +67,10 @@ namespace RadialReview.Accessors {
                     var found = GetOrCreate(s, ctrl,overrideDisable:overrideDisable);
                     update(found);
                     s.Update(found);
-                    tx.Commit();
+
+					EventUtil.Trigger(x => x.Create(s,EventType.SignupStep,null,found,found.CurrentPage));
+
+					tx.Commit();
                     s.Flush();
                     return found;
                 }
@@ -144,6 +150,9 @@ namespace RadialReview.Accessors {
                         if (u.User != null) {
                             u.User.FirstName = o.FirstName;
                             u.User.LastName = o.LastName;
+
+							HooksRegistry.Each<IUpdateUserModelHook>(x=>x.UpdateUserModel(s,u.User));
+
                         }
 
                         var p = u.Positions.FirstOrDefault();

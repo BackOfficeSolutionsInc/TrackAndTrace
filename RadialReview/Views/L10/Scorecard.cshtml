@@ -38,20 +38,22 @@
 					{
 						if (i == 0)
 						{
-							@:<div class="table-responsive scroll-right" style="min-height: 100px;">
+							@:<div class="table-responsive @(Model.Recurrence.ReverseScorecard?"":"scroll-right")" style="min-height: 100px;">
 						}
-						<table id="ScorecardTable@(i==1?"_Over":"")" class="scorecard-table @(i == 1 ? "hidden-xs hidden-sm resizable Flipped" : "")" onload="alert()">
+						<table id="ScorecardTable@(i==1?"_Over":"")" class="scorecard-table @(i == 1 ? "hidden-xs hidden-sm resizable Flipped" : "")">
 							<thead class="Content">
 								<tr>
 									<th colspan="5">
 										<div class="btn-group" style="margin:2px 2px;">
+											@if (Model.CanAdmin) {
 											<button type="button" class="btn btn-link btn-xs dropdown-toggle gray" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 												<span class="caret"></span> Edit 
 											  </button>
 											  <ul class="dropdown-menu">
-												<li><a href="#" onclick="@(Model.CanEdit?new HtmlString("addDivider("+Model.Recurrence.Id+")"):new HtmlString(""))">Add Divider</a></li>
-												<li><a href="#" onclick="@(Model.CanEdit?Html.ShowModal("Add Measurable", "/L10/AddMeasurable/" + Model.Recurrence.Id, "/L10/AddMeasurable/"):new HtmlString(""))">Add Measurable</a></li>
+												<li><a href="#" onclick="@(Model.CanAdmin ? new HtmlString("addDivider(" + Model.Recurrence.Id + ")") : new HtmlString(""))">Add Divider</a></li>
+												<li><a href="#" onclick="@(Model.CanAdmin ? Html.ShowModal("Add Measurable", "/L10/AddMeasurable/" + Model.Recurrence.Id, "/L10/AddMeasurable/") : new HtmlString(""))">Add Measurable</a></li>
 											  </ul>
+											}
 											@*<div class="btn btn-link btn-xs @(Model.CanEdit?"":"disabled") gray" onclick="@(Model.CanEdit?Html.ShowModal("Add Measurable", "/L10/AddMeasurable/" + Model.Recurrence.Id, "/L10/AddMeasurable/"):new HtmlString(""))">
 												*<span class="icon fontastic-icon-science-laboratory"></span>*Add Measurable
 											</div>

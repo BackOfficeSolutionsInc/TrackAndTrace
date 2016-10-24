@@ -265,10 +265,10 @@ namespace RadialReview.Models
             if (this.Positions == null)
                 return "";
 
-            var count = this.Positions.Count();
+            var count = this.Positions.Distinct().ToListAlive().Count();
 
             String titles = null;
-            var actualPositions = Positions.ToListAlive().Select(x => x.Position.CustomName).ToList();
+            var actualPositions = Positions.Distinct().ToListAlive().Select(x => x.Position.CustomName).ToList();
             if (callerUserId == Id)
                 actualPositions.Insert(0, "You");
 

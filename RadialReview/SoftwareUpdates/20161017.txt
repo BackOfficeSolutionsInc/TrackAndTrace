@@ -1,0 +1,11 @@
+﻿External Video Conference Support
+---------------
+Use Zoom for video conferencing
+* Click the Video Conference tab
+* Select "Join Zoom"
+* Follow on-screen instructions to setup the meeting
+
+Mobile Friendly Website
+---------------
+Visit Traction Tools on your mobile device
+* Access the Dashboard, L10, and Reviews.

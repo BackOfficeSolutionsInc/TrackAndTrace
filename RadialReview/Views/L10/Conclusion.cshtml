@@ -2,138 +2,158 @@
 @using RadialReview.Model.Enums
 @model RadialReview.Models.L10.VM.L10MeetingVM
 @{
-    Layout = "~/Views/L10/BasePage.cshtml";
+	Layout = "~/Views/L10/BasePage.cshtml";
 }
 
 
 <div class="conclusion meeting-page">
-    <div class="row">
-        <div class="col-md-12">
-            <hgroup class="page-header fixed-pos listing fader" style="border-bottom:none;">
-                <div class="pull-right">
-                    @Html.Partial("partial/ButtonBar", Model)
-                </div>
-                <h2>&nbsp;</h2>
-            </hgroup>
-          
+	<div class="row">
+		<div class="col-md-12">
+			<hgroup class="page-header fixed-pos listing fader" style="border-bottom:none;">
+				<div class="pull-right">
+					@Html.Partial("partial/ButtonBar", Model)
+				</div>
+				<h2>&nbsp;</h2>
+			</hgroup>
 
-          
-            @if (ViewBag.TodosCreated is List<TodoModel>  )
-            {
-                <div class="centered" style="width: 75%; max-width: 700px; margin-bottom: 47px; margin-top: -22px; ">
-                    <div class="component meeting-stats">
-                        <h3 style="font-size: 20px; color: #444;">Recap Our To-Dos</h3>
-                        <div class="todo-container ">
-                            <ol class="todo-list sortable">@foreach (var i in ((List<TodoModel>)ViewBag.TodosCreated).OrderBy(x => x.Ordering).Where(x => x.CompleteTime == null).GroupBy(x => x.AccountableUser.NotNull(y => y.GetName())).SelectMany(x => x)){@*<li class="todo-item">@Html.Partial("_ProfilePicture", i.AccountableUser)<span class="todo-due pull-right">@i.DueDate.ToShortDateString()</span><span class="todo-message">@i.Message</span></li>*@
-                                var vm = new ViewDataDictionary { { "MeetingId", Model.Meeting.Id } };
-						        Html.RenderPartial("~/Views/L10/partial/TodoRow.cshtml", i, vm);
-                            }</ol>
-                        </div>
-                    </div>
-                </div>
-            }
-            
-            <div class="centered" style="width: 87%; max-width: 760px; margin-bottom: 47px; margin-top: -22px; ">
-                <div class="component cascading-messages">
-                    <div class="pull-right"><div class="btn btn-default btn-xs todoModal " data-method="createtodo" data-meeting="@Model.Meeting.Id" data-recurrence="@Model.Recurrence.Id"><span class="glyphicon glyphicon-unchecked"></span> New Todo</div></div>
-                    <h3 style="font-size: 20px; color: #444;margin-left: 91px;">Cascading Messages</h3>
-                    <h4 class="cascading-messages-container" style="padding-bottom:15px;">Do we need to tell anyone about any of the decisions we made?</h4>
-                </div>
-            </div>
 
-            <div class="centered" style="width:65%; max-width: 600px;margin-top:-22px;margin-bottom:128px;">
-                <div class="component">
-                    <div class="meeting-manager">
-                        <div class="title" style="font-size: 20px;color: #444;">Ratings (1 to 10)<div style="font-size: 12px;font-weight: lighter;"><small>Ratings less than an 8? Drop it down.</small></div></div>
-                        
-                        @using (Ajax.BeginForm("Conclusion", new AjaxOptions() {
-                            HttpMethod = "POST",
-                            UpdateTargetId = "main-window",
-                            LoadingElementDuration = 1000,
-                            InsertionMode = InsertionMode.Replace,
-                            OnSuccess = "ConclusionSuccess",
-                            OnBegin = "$('.concludeButton').attr('disabled',true).css('cursor','progress'); $(this).attr('novalidate','novalidate');"                          
-                        })) {
-                            @Html.ValidationSummaryMin()
-                            @Html.SecuredHiddenFor(x => x.Recurrence.Id)
-                            <table style="width: 100%;">
-                                @for (var i = 0; i < Model.Meeting._MeetingAttendees.Count; i++) {
-                                    <tr>
-                                        <td style="width:50%;"></td>
-                                        <td style="width: 1px;">
-                                            @Html.Partial("_ProfilePicture", Model.Meeting._MeetingAttendees[i].User)
-                                        </td>
-                                        <td style="width: 1px;white-space: nowrap;padding: 0 25px 0 5px;text-align: left;">
-                                            @Model.Meeting._MeetingAttendees[i].User.GetName()
-                                        </td>
-                                        <td style="width: 1px;">
-                                            @Html.TextBox("rating_" + (Model.Meeting._MeetingAttendees[i].User.Id), Model.Meeting._MeetingAttendees[i].Rating, new { max = "10", min = "1", step = "0.5",novalidate="novalidate", type = "number", style = "width:60px", @class = "rt" })
-                                        </td>
-                                        <td style="width:50%;"></td>
-                                    </tr>
-                                }
-                            <tr>
-                                <td colspan="3" class="alignRight"><label>Send e-mail summary:</label></td>
-                                <td>@Html.CheckBoxFor(x => x.SendEmail, new { @class = "checkbox", style = "margin:auto;" })</td>
-                            </tr>
-                                <tr>
-                                    <td colspan="3" class="alignRight"><label>Close completed to-dos @(Model.HeadlineType==PeopleHeadlineType.HeadlinesList?"and headlines":""):</label></td>
-                                    <td>@Html.CheckBoxFor(x => x.CloseTodos, new { @class = "checkbox", style = "margin:auto;" })</td>
-                                </tr>
-                            </table>
 
-                            <div class="alignCenter">
-                                <input type="submit" class="btn btn-primary center concludeButton" value="Conclude Meeting" />
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
+			@if (ViewBag.TodosCreated is List<TodoModel>) {
+				<div class="centered" style="width: 75%; max-width: 700px; margin-bottom: 47px; margin-top: -22px; ">
+					<div class="component meeting-stats">
+						<h3 style="font-size: 20px; color: #444;">Recap Our To-Dos</h3>
+						<div class="todo-container ">
+							<ol class="todo-list sortable">
+								@foreach (var i in ((List<TodoModel>)ViewBag.TodosCreated).OrderBy(x => x.Ordering).Where(x => x.CompleteTime == null).GroupBy(x => x.AccountableUser.NotNull(y => y.GetName())).SelectMany(x => x)) {@*<li class="todo-item">@Html.Partial("_ProfilePicture", i.AccountableUser)<span class="todo-due pull-right">@i.DueDate.ToShortDateString()</span><span class="todo-message">@i.Message</span></li>*@
+								var vm = new ViewDataDictionary { { "MeetingId", Model.Meeting.Id } };
+								Html.RenderPartial("~/Views/L10/partial/TodoRow.cshtml", i, vm);
+							}
+						</ol>
+					</div>
+				</div>
+			</div>
+			}
 
-        </div>
-    </div>
+			<div class="centered" style="width: 87%; max-width: 760px; margin-bottom: 47px; margin-top: -22px; ">
+				<div class="component cascading-messages">
+					<div class="pull-right"><div class="btn btn-default btn-xs todoModal " data-method="createtodo" data-meeting="@Model.Meeting.Id" data-recurrence="@Model.Recurrence.Id"><span class="glyphicon glyphicon-unchecked"></span> New Todo</div></div>
+					<h3 style="font-size: 20px; color: #444;margin-left: 91px;">Cascading Messages</h3>
+					<h4 class="cascading-messages-container" style="padding-bottom:15px;">Do we need to tell anyone about any of the decisions we made?</h4>
+				</div>
+			</div>
+
+			<div class="centered" style="width:65%; max-width: 600px;margin-top:-22px;margin-bottom:128px;">
+				<div class="component">
+					<div class="meeting-manager">
+						<div class="title" style="font-size: 20px;color: #444;">Ratings (1 to 10)<div style="font-size: 12px;font-weight: lighter;"><small>Ratings less than an 8? Drop it down.</small></div></div>
+
+						@using (Ajax.BeginForm("Conclusion", new AjaxOptions() {
+							HttpMethod = "POST",
+							UpdateTargetId = "main-window",
+							LoadingElementDuration = 1000,
+							InsertionMode = InsertionMode.Replace,
+							OnSuccess = "ConclusionSuccess",
+							OnBegin = "OnBeginSubmit"
+						})) {
+							@Html.ValidationSummaryMin()
+							@Html.SecuredHiddenFor(x => x.Recurrence.Id)
+							<table style="width: 100%;">
+								@for (var i = 0; i < Model.Meeting._MeetingAttendees.Count; i++) {
+									<tr>
+										<td style="width:50%;"></td>
+										<td style="width: 1px;">
+											@Html.Partial("_ProfilePicture", Model.Meeting._MeetingAttendees[i].User)
+										</td>
+										<td style="width: 1px;white-space: nowrap;padding: 0 25px 0 5px;text-align: left;">
+											@Model.Meeting._MeetingAttendees[i].User.GetName()
+										</td>
+										<td style="width: 1px;">
+											@Html.TextBox("rating_" + (Model.Meeting._MeetingAttendees[i].User.Id), Model.Meeting._MeetingAttendees[i].Rating, new { max = "10", min = "1", step = "0.5", novalidate = "novalidate", type = "number", style = "width:60px", @class = "rt" })
+										</td>
+										<td style="width:50%;"></td>
+									</tr>
+								}
+								<tr>
+									<td colspan="3" class="alignRight"><label>Send e-mail summary:</label></td>
+									<td>@Html.CheckBoxFor(x => x.SendEmail, new { @class = "checkbox", style = "margin:auto;" })</td>
+								</tr>
+								<tr>
+									<td colspan="3" class="alignRight"><label>Close completed to-do:</label></td>
+									<td>@Html.CheckBoxFor(x => x.CloseTodos, new { @class = "checkbox", style = "margin:auto;" })</td>
+								</tr>
+								@if (Model.HeadlineType == PeopleHeadlineType.HeadlinesList) {
+									<tr>
+										<td colspan="3" class="alignRight"><label>Close people headlines:</label></td>
+										<td>@Html.CheckBoxFor(x => x.CloseHeadlines, new { @class = "checkbox", style = "margin:auto;" })</td>
+									</tr>
+								}
+							</table>
+
+							<input type="hidden" id="conclude_connectionId" name="connectionId" value="" />
+							<div class="alignCenter">
+								<input type="submit" class="btn btn-primary center concludeButton" value="Conclude Meeting" />
+							</div>
+						}
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
 </div>
 
 
 <script>
-    function gotoIndex(data) {
-        window.location.href = "/L10/MeetingStats/";
-    }
-    function ConclusionSuccess() {
-        startTime = undefined;
-        skipBeforeUnload = true;
-    }
+	function gotoIndex(data) {
+		window.location.href = "/L10/MeetingStats/";
+	}
+	function ConclusionSuccess() {
+		startTime = undefined;
+		skipBeforeUnload = true;
+	}
+	setTimeout(function () {
+		try {
+			$('#conclude_connectionId').val(meetingHub.connection.id);
+		} catch (e) {
+			console.error(e);
+		}
+	}, 1);
+
+	function OnBeginSubmit(a,b) {
+		$('.concludeButton').attr('disabled', true).css('cursor', 'progress');
+		$(this).attr('novalidate', 'novalidate');
+	}
 </script>
 
 
 <style>
-    .todo-list:empty:after {
-        content: "No to-dos added.";
-        color: #C1C1C1;
-        font-size: 15px;
-        margin: 15px;
-        display: block;
-    }
+	.todo-list:empty:after {
+		content: "No to-dos added.";
+		color: #C1C1C1;
+		font-size: 15px;
+		margin: 15px;
+		display: block;
+	}
 
-    .todo-item {
-        font-size: 18px;
-        text-align: left;
-    }
+	.todo-item {
+		font-size: 18px;
+		text-align: left;
+	}
 
-    .todo-message {
-        position: relative;
-        top: -8px;
-    }
+	.todo-message {
+		position: relative;
+		top: -8px;
+	}
 
-    .todo-container .picture {
-        width: 32px;
-        height: 32px;
-    }
+	.todo-container .picture {
+		width: 32px;
+		height: 32px;
+	}
 
-    .todo-due {
-        float: right;
-        color: #CCC;
-        position: relative;
-        top: 8px;
-    }
+	.todo-due {
+		float: right;
+		color: #CCC;
+		position: relative;
+		top: 8px;
+	}
 </style>

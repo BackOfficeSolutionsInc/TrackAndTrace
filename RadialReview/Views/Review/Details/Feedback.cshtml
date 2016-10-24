@@ -11,7 +11,7 @@
 		<table class="fullWidth">
 			<tr>
 				<th colspan="3">@feedbacks.First().Askable.GetQuestion():</th>
-				<th class="rightButton alignCenter">Included</th>
+				<th class="rightButton alignCenter"><div onclick="$('.feedback_question_@feedbacks.Key').prop('checked', true);">(Included All)</div></th>
 			</tr>
 			@foreach (var feedback in feedbacks.GroupBy(x=>x.ByUserId).Select(x=>x.First())){
 				<tr class="feedback feedback_@feedback.Id" style="border-bottom: 1px solid #DDD">
@@ -22,7 +22,7 @@
 						@{
 							var on = Model.Review.ClientReview.FeedbackIds.ToListAlive().FirstOrDefault(x => x.Value == feedback.Id) != null;
 						}
-						<input @(on ? "checked" : "") class="feedback_input_@feedback.Id" type="checkbox" onchange=" OnclickFeedback(this, @feedback.Id) " />
+						<input @(on ? "checked" : "") class="feedback_input_@feedback.Id feedback_question_@feedbacks.Key" type="checkbox" onchange=" OnclickFeedback(this, @feedback.Id) " />
 
 
 						@*<div onclick="SetFeedback(@feedback.Id)" class="check  @(on?"on":"")">    </div>*@

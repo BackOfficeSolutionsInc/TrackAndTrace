@@ -116,9 +116,10 @@ namespace RadialReview.Accessors
             var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
             var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
 
-            meetingHub.appendIssue(".issues-list", IssuesData.FromIssueRecurrence(recur), r.OrderIssueBy);
+			meetingHub.appendIssue(".issues-list", IssuesData.FromIssueRecurrence(recur), r.OrderIssueBy);
+			meetingHub.showAlert("Created issue.", 1500);
 
-            var updates = new AngularRecurrence(recurrenceId);
+			var updates = new AngularRecurrence(recurrenceId);
             updates.IssuesList.Issues = AngularList.Create<AngularIssue>(AngularListType.Add, new []{ new AngularIssue(recur) });
             meetingHub.update(updates);
             Audit.L10Log(s, perms.GetCaller(), recurrenceId, "CreateIssue", ForModel.Create(issue), issue.NotNull(x => x.Message));

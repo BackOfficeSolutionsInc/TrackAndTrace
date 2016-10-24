@@ -48,9 +48,11 @@ namespace RadialReview.Controllers
             var recurrenceId = id.Value;
             var recurrence = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
 
-            ViewBag.VideoChatRoom = new VideoConferenceVM()
-            {
-                RoomId = recurrence.VideoId
+			ViewBag.VideoChatRoom = new VideoConferenceVM() {
+				RoomId = recurrence.VideoId,
+				CurrentProviders = recurrence._VideoConferenceProviders.Select(x => x.Provider).ToList(),
+				Selected = recurrence.SelectedVideoProvider,
+			
             };
 
             var model = new L10MeetingVM()
@@ -341,8 +343,16 @@ namespace RadialReview.Controllers
             return Pdf(doc, now + "_" + recur.Basics.Name + "_L10Meeting.pdf", true);
         }
 
-        #region Error
-        [Access(AccessLevel.Any)]
+
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult GetAdmins(long id) {
+			var model = L10Accessor.GetAdmins(GetUser(),id);
+
+			return PartialView(model);
+		}
+
+		#region Error
+		[Access(AccessLevel.Any)]
         public PartialViewResult Error(MeetingException e)
         {
             return PartialView("Error", e);

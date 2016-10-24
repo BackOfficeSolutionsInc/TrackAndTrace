@@ -84,6 +84,7 @@ namespace RadialReview.Accessors {
 				var aHeadline = new AngularHeadline(headline);
 
 				meetingHub.appendHeadline(".headlines-list", headline.ToRow());
+				meetingHub.showAlert("Created people headline.",1500);
 				var updates = new AngularRecurrence(recurrenceId);
 				updates.Headlines = AngularList.CreateFrom(AngularListType.Add, aHeadline);
 				meetingHub.update(updates);

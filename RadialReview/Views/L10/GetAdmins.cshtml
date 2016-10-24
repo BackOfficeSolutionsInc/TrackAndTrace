@@ -1,0 +1,21 @@
+﻿@model List<RadialReview.Models.PermItem>
+
+<div style="padding:5px 15px;">
+	<h4>The following people have admin access to this meeting:</h4>
+	<table>
+		@foreach (var m in Model) {
+			<tr>
+				<td> &nbsp;
+					@{Html.RenderPartial("~/Views/Shared/_Picture.cshtml", new ViewDataDictionary(m._ImageUrl){
+						  {"ImageTitle",m._DisplayText},
+						  {"Initials",m._DisplayInitials},
+						  {"Color",m._Color},
+						  {"Size",32}
+					  });}
+				</td>
+				<td>&nbsp;@m._DisplayText</td>
+			</tr>
+		}
+	</table>
+
+</div>

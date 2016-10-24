@@ -779,6 +779,8 @@ namespace RadialReview.Accessors
 						}
 					}
 
+					HooksRegistry.Each<IUpdateUserModelHook>(x => x.UpdateUserModel(s, userOrg));
+
 					tx.Commit();
 					s.Flush();
 				}
@@ -1112,7 +1114,7 @@ namespace RadialReview.Accessors
 			if (model.Position != null)
 				positionId = model.Position.PositionId;
 
-			var nexusIdandUser = await _NexusAccessor.JoinOrganizationUnderManager(
+			var nexusIdandUser = await JoinOrganizationAccessor.JoinOrganizationUnderManager(
 					user, model.ManagerNodeId, model.IsManager,
 					positionId, model.Email,
 					model.FirstName, model.LastName,
@@ -1230,7 +1232,7 @@ namespace RadialReview.Accessors
 		{
 			user.UserName = user.UserName.NotNull(x => x.ToLower());
 			var resultx = await UserManager.CreateAsync(user, password);
-			AddSettings(resultx, user);
+			AddSettings(resultx, user);			
 			return resultx;
 		}
 

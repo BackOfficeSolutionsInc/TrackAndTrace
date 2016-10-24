@@ -130,7 +130,9 @@ namespace RadialReview.Accessors
 
                     var task = new ScheduledTask(){
                         Fire = preReviewDue,
-                        Url = "/n/" + createReviewGuid
+                        Url = "/n/" + createReviewGuid,
+						MaxException = 1,		
+						EmailOnException = true				
                     };
 
                     TaskAccessor.AddTask(dataInteraction.GetUpdateProvider(), task);
@@ -177,7 +179,10 @@ namespace RadialReview.Accessors
                             }
                         }
                     }
-                    tx.Commit();
+
+					EventUtil.Trigger(x => x.Create(s, EventType.IssueReview, caller, reviewContainer, message: reviewContainer.ReviewName));
+
+					tx.Commit();
                     s.Flush();
                 }
             }

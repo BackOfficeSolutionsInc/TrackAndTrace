@@ -8,6 +8,7 @@ using RadialReview.Models.Application;
 using RadialReview.Models.Scorecard;
 using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
+using static RadialReview.Models.L10.L10Recurrence;
 
 namespace RadialReview.Models.Angular.Scorecard
 {
@@ -46,6 +47,23 @@ namespace RadialReview.Models.Angular.Scorecard
 				}
 
 			}
+		}
+
+		public static AngularScorecard Create(long id, TimeSettings settings, IEnumerable<L10Recurrence_Measurable> measurables, List<ScoreModel> scores, DateTime? currentWeek, DateRange range = null, bool includeNextWeek = true, DateTime? now = null) {
+			var ms = measurables.Select(x => {
+				if (x.IsDivider) {
+					var m = AngularMeasurable.CreateDivider(x._Ordering, x.Id);
+					m.RecurrenceId = x.L10Recurrence.Id;
+					return m;
+				} else {
+					var m = new AngularMeasurable(x.Measurable, false);
+					m.Ordering = x._Ordering;
+					m.RecurrenceId = x.L10Recurrence.Id;
+					return m;
+				}
+			}).ToList();
+
+			return new AngularScorecard(id, settings, ms, scores, currentWeek, range, includeNextWeek, now);
 		}
 
 		public AngularScorecard()

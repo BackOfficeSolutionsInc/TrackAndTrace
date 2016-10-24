@@ -375,9 +375,9 @@ namespace RadialReview.Controllers {
 			Response.ContentType = "application/pdf";
 			Response.AddHeader("content-length", stream.Length.ToString());
 			Response.BinaryWrite(stream.ToArray());
-			Response.Flush();
+			//Response.Flush();
 			stream.Close();
-			Response.End();
+			//Response.End();
 			//var pdfRenderer = new PdfDocumentRenderer(true, PdfFontEmbedding.None);
 			//pdfRenderer.PdfDocument = document;
 			//pdfRenderer.DocumentRenderer = new DocumentRenderer(document) { PrivateFonts = pfc };
@@ -726,6 +726,18 @@ namespace RadialReview.Controllers {
 								if (!oneUser._IsRadialAdmin) {
 									lu.LastLogin = DateTime.UtcNow;
 									s.Update(lu);
+
+									var ol = s.QueryOver<OrganizationLookup>().Where(x => x.OrgId == oneUser.Organization.Id).Take(1).SingleOrDefault();
+									if (ol == null) {
+										ol = new OrganizationLookup() {
+											OrgId = oneUser.Organization.Id,
+											CreateTime = oneUser.Organization.CreationTime
+										};
+									}
+									ol.LastUserLogin = oneUser.Id;
+									ol.LastUserLoginTime = lu.LastLogin.Value;
+									s.SaveOrUpdate(ol);
+
 								}
 							} catch (OrganizationIdException) {
 							} catch (NoUserOrganizationException) {

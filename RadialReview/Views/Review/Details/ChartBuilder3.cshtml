@@ -42,14 +42,16 @@
 	<div class="col-md-12">
 		<div class="alignCenter">
 			<div class="" style="width: 78%;width: calc( 100% - 145px ); float: left; padding-left: 13px;position:relative;">
-				<div id="chart2" class="inline">
+				<div id="chart2" class="inline" style="height:50vh;">
 					<!--Chart Goes Here-->
 				</div>
-				<div class="chartPlaceholder hidden" style="position:relative">
-					<img src="/Content/img/ajax-loader.gif" style="margin-top:calc(50% - 6px);margin-left:calc(50% - 7px);position:absolute;" />
-					<svg viewBox="0 0 500 500" height="100%" width="100%">
+				<div class="chartPlaceholder hidden" style="position: absolute;top: 50%;left: 50%;margin-top: -5px;margin-left: -1px;">
+					@*<div style="position:absolute">*@
+						<img src="/Content/img/ajax-loader.gif" @*style="top: 50%;position: absolute;left: 50%;"*@ />
+					@*</div>*@
+					@*<svg viewBox="0 0 500 500" height="100%" width="100%">
 
-					</svg>
+					</svg>*@
 				</div>
 			</div>
 			<div style="width: 136px; float: right;">

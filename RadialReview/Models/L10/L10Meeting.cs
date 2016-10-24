@@ -10,6 +10,7 @@ using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.Scorecard;
 using RadialReview.Utilities.DataTypes;
+using RadialReview.Models.VideoConference;
 
 namespace RadialReview.Models.L10
 {
@@ -27,6 +28,12 @@ namespace RadialReview.Models.L10
 		public virtual L10Recurrence L10Recurrence { get; set; }
 		public virtual long MeetingLeaderId { get; set; }
 		public virtual UserOrganizationModel MeetingLeader { get; set; }
+
+	//	public virtual VideoConferenceType SelectedVideoType { get; set; }
+		public virtual long? SelectedVideoProviderId { get; set; }
+		public virtual AbstractVCProvider SelectedVideoProvider { get; set; }
+		//public virtual string VideoUrl { get; set; }
+
 		/// <summary>
 		/// Current meetings measurables. Needed in case meeting measurables change throughout time
 		/// </summary>
@@ -59,6 +66,9 @@ namespace RadialReview.Models.L10
 			{
 				Id(x => x.Id);
 				Map(x => x.HubId);
+				Map(x => x.SelectedVideoProviderId).Column("SelectedVideoProviderId");
+				References(x => x.SelectedVideoProvider).Column("SelectedVideoProviderId").LazyLoad().Nullable().ReadOnly();
+
 				Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
 				Map(x => x.StartTime);

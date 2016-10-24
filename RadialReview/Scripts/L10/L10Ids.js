@@ -1,14 +1,9 @@
-﻿
-var currentIssuesDetailsId;
-
-
+﻿var currentIssuesDetailsId;
 
 $(function () {
-
     var CheckOffIssue = Undo.Command.extend({
         constructor: function (row) {
             this.row = row;
-
             this.issueRow = $(row).closest(".issue-row");
             if ($(this.issueRow).hasClass("selected")) {
                 $(this.issueRow).addClass("wasSelected");
@@ -17,7 +12,6 @@ $(function () {
                     try {
                         if (next.length) {
                             $(next).click();
-
                         } else {
                             var prev = $(this.issueRow).prev("[data-checked='False'],[data-checked='false']")
                             if (prev.length)
@@ -25,14 +19,11 @@ $(function () {
                             else {
                                 $("#issueDetails").html("");
                             }
-
                         }
                     } catch (e) {
                     }
                 },500);
-
             }
-
             this.checked = $(row).prop("checked");
             this.func = function (checked) {
                 var issueId = $(this.row).data("recurrence_issue");
@@ -81,7 +72,6 @@ $(function () {
 
     var MoveIssueToVTO = Undo.Command.extend({
         constructor: function (row) {
-            //this.row = row;
             this.rowId = row.data("recurrence_issue");
         },
         execute: function () {
@@ -93,7 +83,6 @@ $(function () {
                 success: function (data) {
                     if (showJsonAlert(data)) {
                         that.revertId = data.Object;
-                        //$(row).addClass("skipNumber");
                         $(row).remove();
                         refreshCurrentIssueDetails();
                         refreshRanks();
@@ -109,7 +98,6 @@ $(function () {
                 success: function (data) {
                     if (showJsonAlert(data)) {
                         $(row).removeClass("skipNumber");
-                        // $(row).show();
                         refreshCurrentIssueDetails();
                         refreshRanks();
                     }
@@ -118,7 +106,6 @@ $(function () {
         }
     });
 
-
     refreshCurrentIssueDetails();
     fixIssueDetailsBoxSize();
     $("body").on("click", ".issues-list>.issue-row:not(.undoable)", function (evt) {
@@ -126,7 +113,7 @@ $(function () {
             return;
         if ($(evt.target).hasClass("issue-checkbox"))
             return;
-        var issueRow = $(this);//.closest(".issue-row");
+        var issueRow = $(this);
         $(".issue-row.selected").removeClass("selected");
         $(issueRow).addClass("selected");
         var tempRowId = $(issueRow).data("recurrence_issue");
@@ -150,16 +137,8 @@ $(function () {
 
         var detailsList = $(issueRow).find(">.dd-list").clone();
         $("#issueDetails").html("");
-        /*$("#issueDetails").append(
-			"<span class='expandContract btn-group pull-right'>" +
-				"<span class='btn btn-default btn-xs contractButton' title='Hide details'><span class='glyphicon glyphicon-resize-small'></span></span>" +
-				"<span class='btn btn-default btn-xs expandButton'  title='Show details'><span class='glyphicon glyphicon-resize-full'></span></span>" +
-			"</span>");
-		$("#issueDetails").append("<div class='createTime'>" + dateFormatter(new Date(createtime)) + "</div>");
-        */
         $("#issueDetails").append("<div class='heading'><h4 class='message-holder clickable' data-recurrence_issue='" + recurrence_issue + "'><span class='message editable-text' data-recurrence_issue='" + recurrence_issue + "'>" + message + "</span></h4></div>");
         $("#issueDetails").append(detailsList);
-        //$("#issueDetails").append("<textarea class='details issue-details' data-recurrence_issue='" + recurrence_issue + "'>" + details + "</textarea>");
         $("#issueDetails").append("<iframe class='details issue-details' name='embed_readwrite' src='https://notes.traction.tools/p/" + padid + "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + encodeURI(UserName) + "' width='100%' height='100%'></iframe>");
 
         $("#issueDetails").append("<div class='button-bar'>" +
@@ -211,49 +190,8 @@ $(function () {
     $("body").on("click", ".issueDetails .doneButton input", function () { /*e.preventDefault();*/ });
     $("body").on("click", ".issueDetails .doneButton", function () { $(this).find(">input").trigger("click"); });
 
-
-
     $("body").on("change", ".issue-checkbox", function () {
-        undoStack.execute(new CheckOffIssue(this, $(this).prop("checked")));
-        /*var issueId = $(this).data("recurrence_issue");
-		var checked = $(this).prop("checked");
-		var selector = ".issue-checkbox[data-recurrence_issue='" + issueId + "']";
-		var selector2 = ".issue-row[data-recurrence_issue='" + issueId + "']";
-		var that = this;
-		$(selector).prop("disabled", true);
-		$(selector).prop("checked", checked);
-		$(selector2).data("checked", checked);
-
-
-		$(".undoable").slideUp('slow', function () {
-		    $(this).remove();
-		});
-
-		$.ajax({
-			url: "/l10/UpdateIssueCompletion/" + recurrenceId,
-			method: "post",
-			data: { issueId: issueId, checked: checked, connectionId: $.connection.hub.id },
-			success: function (data) {
-				showJsonAlert(data, false, true);
-				$(selector).prop("checked", (!data.Error ? data.Object : !checked));
-				$(selector2).data("checked", (!data.Error ? data.Object : !checked));
-				if (checked == true) {
-				    var row = $(that).closest(".issue-row");
-				    row.addClass("undoable");
-				    row.data("undo-url", "/l10/UpdateIssueCompleted/" + issueId +
-                        "?checked=false");
-				    row.data("undo-action", "unclass");
-				}
-				refreshCurrentIssueDetails();
-			},
-			error: function () {
-				$(selector).prop("checked", !checked);
-				$(selector2).data("checked", !checked);
-			},
-			complete: function () {
-				$(selector).prop("disabled", false);
-			}
-		});*/
+        undoStack.execute(new CheckOffIssue(this, $(this).prop("checked")));      
     });
 });
 
@@ -264,28 +202,22 @@ $("body").on("click", ".issueDetails .assignee .btn", function () {
         url: "/L10/Members/" + recurrenceId,
         success: function (data) {
             if (showJsonAlert(data)) {
-
-                var input = $("<select data-recurrence_issue='" + $(that).data("recurrence_issue") + "'/>");
+            	var input = $("<select data-recurrence_issue='" + $(that).data("recurrence_issue") + "'/>");
 
                 for (var i = 0; i < data.Object.length; i++) {
                     var d = data.Object[i];
                     var selected = $(that).attr("data-accountable") == d.id ? "selected" : "";
                     $(input).append("<option " + selected + " data-img='" + d.imageUrl + "' value='" + d.id + "'>" + d.name + "</option>");
                 }
-
                 $(input).on('change', function () {
                     sendNewIssueAccountable(this, $(this).data("recurrence_issue"));
                 });
-
                 $(that).html(input);
-
                 var item = $(input).select2({
                     templateResult: imageListFormat,
                     templateSelection: imageListFormat
                 });
                 $(item).parent().find(".select2").css("width", "inherit");
-                //$(item).parent().find("span").css(
-                /* right: 6px; */
                 $(input).select2("open");
             }
         }
@@ -307,10 +239,7 @@ function fixIssueDetailsBoxSize() {
         try {
             footerH = $(".footer-bar .footer-bar-container:not(.hidden)").last().offset().top;
         } catch (e) {
-
         }
-
-        //$(".details.issue-details").height(wh - pos.top + st - footerH - 110);
         $(".details.issue-details").height(footerH - 20 - 110 - pos.top);
     }
 }
@@ -507,21 +436,15 @@ function _detatchAllIssues() {
 }
 
 function _setIssueOrder(parentSelector, parentOrders, all) {
-    //var ouput = [];
     for (var i = 0; i < parentOrders.length; i++) {
         var p = $(all).filter("[data-recurrence_issue=" + parentOrders[i].id + "]");
         var ol = p.find("ol");
         var children = _setIssueOrder(ol, parentOrders[i].children, all);
-        /*for (var j = 0; j < children.length; j++) {
-            ol.append(children[j]);
-        }*/
         parentSelector.append(p);
     }
 }
 
 function setIssueOrder(order) {
-    //var items = $(".issues-list li");
-    //items.detach();
     debugger;
     var allIssues = _detatchAllIssues();
     _setIssueOrder($(".issues-list"), order, allIssues);
@@ -560,26 +483,20 @@ function updateIssuesList(recurrenceId, issueRow, orderby) {
         method: "POST",
         success: function (d) {
             if (!d.Error) {
-                oldIssueList = order;//$(".issues-list").clone(true);
+                oldIssueList = order;
             } else {
                 showJsonAlert(d, false, true);
                 $(that).html("");
                 setTimeout(function () {
                     setIssueOrder(oldIssueList);
-                    //$('.issues-container').html(oldIssueList);
-                    //oldIssueList = $(".issues-list").clone(true);
-                    //refreshCurrentIssueDetails();
                 }, 1);
             }
         },
         error: function (a, b) {
             clearAlerts();
             showAlert(a.statusText || b);
-            //$('.dd').html("");
             setTimeout(function () {
-                //$('.dd').html(oldIssueList);
                 setTodoOrder(oldTodoList);
-                //oldIssueList = $(".issues-list").clone(true);
                 refreshCurrentIssueDetails();
             }, 1);
         }
@@ -693,6 +610,29 @@ function unstarAll() {
 	}).each(function () {
 		sendPriority($(this).data("recurrence_issue"), 0);
 	});
+
+	$(".ids .issue-row").filter(function () {
+		var i = $(this).find(".number-priority > .rank123 ");
+		return i.data("rank") > 0;
+	}).each(function () {
+		var id = $(this).attr("data-recurrence_issue");
+		updateIssueRank(id, 0, true);
+		refreshRanks();
+
+		////DEBOUNCE
+			var pp = +$(this).data("rank");
+			var d = { rank: pp, time: new Date().getTime() };
+			//console.log("D - " + pp);
+			$.ajax({
+				url: "/L10/UpdateIssue/" + id,
+				data: d,
+				method: "POST",
+				success: function (d) {
+					showJsonAlert(d);
+				}
+			});
+	});
+	
 }
 
 $("body").on("blur", ".issueDetails .details", function () {
@@ -722,10 +662,7 @@ var refreshRankArr = [];
 function refreshRanks(last) {
     var ranks = $(".issues-list >.issue-row:not('.skipNumber'):not([data-checked='true']):not([data-checked='True']) > .number-priority > .rank123")
         .filter(function () { return $(this).data("rank") > 0 }).sort(function (a, b) {
-            //var rt = $(a).data("rank-time") - $(b).data("rank-time");
-            //if (rt<=0)
             return $(a).data("rank") - $(b).data("rank");
-            //return -1*rt;
         });
 
     if (typeof (last) === "undefined")
@@ -740,17 +677,15 @@ function refreshRanks(last) {
         last -= 1;
 
     var diff = 0;
-    console.log("A - " + last);
-    //var last = 0;
+   // console.log("A - " + last);
     for (var i = 0; i < ranks.length; i++) {
         var r = ranks[i];
         var cur = $(r).data("rank");
-        console.log(" B - " + cur);
+        //console.log(" B - " + cur);
         if (cur != last + 1) {
-            console.log("  C - " + (last + 1));
+           // console.log("  C - " + (last + 1));
             $(r).data("rank", last + 1);
             $(r).attr("data-rank", last + 1);
-            //$(r).html(last + 1)
             cur = last + 1;
             var row = $(r).closest(".issue-row");
             row.data("rank", cur);
@@ -779,14 +714,12 @@ function refreshRanks(last) {
             refreshRankArr = [];
         }, 50);
     }
-    //currentRank = last + 1;
 }
 
 function updateIssueRank(id, rank, skipRefresh) {
     var dom = $(".ids .issue-row[data-recurrence_issue=" + id + "] > .number-priority > .rank123");
     dom.data("rank", rank);
     dom.attr("data-rank", rank);
-    //dom.html(rank);
     var row = $(".ids .issue-row[data-recurrence_issue=" + id + "]");
     $(row).data("rank", rank);
     $(row).attr("data-rank", rank);
@@ -805,12 +738,6 @@ $("body").on("contextmenu", ".issue-row .rank123", function (e) {
     return false;
 });
 
-/*$(document).on("click", ".issue-row .priority", function (e) {
-    debugger;
-    e.preventDefault();
-    return false;
-});
-*/
 function sendPriority(id, priority) {
 	var d = { priority: priority, time: new Date().getTime() };
 	$.ajax({
@@ -824,9 +751,6 @@ function sendPriority(id, priority) {
 }
 
 $(function () {
-
-
-
     var priorityTimer = {};
     $("body").on("mousedown", ".issue-row .priority", function (e) {
         var p = +$(this).data("priority");
@@ -842,15 +766,12 @@ $(function () {
         } else {
             return false;
         }
-        // $(this).data("priority", p);
 
 
         console.log("new priority:" + p);
         var id = $(this).parents(".issue-row").attr("data-recurrence_issue");
 
         updateIssuePriority(id, p);
-        //refreshCurrentIssueDetails();
-        //refreshPriority(this);
 
         ////DEBOUNCE
         if (priorityTimer[id]) {
@@ -860,17 +781,7 @@ $(function () {
         priorityTimer[id] = setTimeout(function () {
         	var pp = +$(that).data("priority");
         	sendPriority(id, pp);
-            //var d = { priority: pp, time: new Date().getTime() };
-            //$.ajax({
-            //    url: "/L10/UpdateIssue/" + id,
-            //    data: d,
-            //    method: "POST",
-            //    success: function (d) {
-            //        showJsonAlert(d);
-            //    }
-            //});
         }, 500);
-
         e.preventDefault();
         return false;
     });
@@ -888,62 +799,35 @@ $(function () {
         $(".issues-list > .issue-row:not(.skipNumber):not([data-checked='True']):not([data-checked='true']) .rank123").each(function () {
             var d = $(this).data("rank");
             currentRank = Math.max(currentRank, d);
-            // if (d != 0)
-            //    last = Math.min(last, d);
         });
 
         $(".rank-solve-message").remove();
 
 
         currentRank += 1;
-        //var last = 10000;
 
         if (e.button == 0 || e.button == 2) {
             if (p == 0) {
                 p = currentRank;
-                //if (currentRank == 3) {
-                //    $("[data-rank='0'] .rank123").tooltip({ title: "Solve the top three issues first." });
-                //}
-
                 if (currentRank >= 4) {
-                    //$(e.target).tooltip({ title: "Solve the top three issues first." });
-                    //$(e.target).tooltip('show');
-                    //setTimer(function () {
-                    //    $(e.target).tooltip('hide');
-                    //    $(e.target).tooltip('destroy');
-                    //}, 1500);
-                    //clearAlerts();
-                    //showAlert("Solve the top three issues first.", "alert-info rank-solve-message", "Info:");
                     showModal({
                         icon: "primary",
                         title: "Solve the top three issues first."
                     });
                     return;
                 }
-                //currentRank += 1;
-
             } else {
                 last = p;
                 p = 0;
-                //refreshRanks();
             }
         } else {
             return false;
         }
-        // $(this).data("priority", p);
         console.log("new rank:" + p);
         var id = $(this).parents(".issue-row").attr("data-recurrence_issue");
 
-        //updateIssuePriority(id, p);
-        //refreshCurrentIssueDetails();
-        //refreshPriority(this);
-
         updateIssueRank(id, p, true);
         refreshRanks(last);
-        //if (p >= 3)
-        //    $(".ids").addClass("rank-full");
-        //else
-        //    $(".ids").removeClass("rank-full");
 
         ////DEBOUNCE
         if (rankTimer[id]) {
@@ -953,7 +837,7 @@ $(function () {
         rankTimer[id] = setTimeout(function () {
             var pp = +$(that).data("rank");
             var d = { rank: pp, time: new Date().getTime() };
-            console.log("D - " + pp);
+            //console.log("D - " + pp);
             $.ajax({
                 url: "/L10/UpdateIssue/" + id,
                 data: d,
@@ -962,11 +846,8 @@ $(function () {
                     showJsonAlert(d);
                 }
             });
-            // refreshRanks();
         }, 500);
-
         e.preventDefault();
         return false;
     });
-
 });

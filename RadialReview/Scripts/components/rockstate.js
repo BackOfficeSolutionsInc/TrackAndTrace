@@ -17,16 +17,33 @@ function InitRockstate() {
 		});
 
 		$(document).on("click", ".editor .rockstate-val", function () {
-			var oldValue = $(this).parent().find("input").val();
-			var newValue = $(this).data("value");
+			var parent = $(this).parent();
+			if (parent.width() > 90) {
+				var oldValue = parent.find("input").val();
+				var newValue = $(this).data("value");
 
-			if (oldValue !== "Indeterminate" && oldValue === newValue) {
-				newValue = "Indeterminate";
+				if (oldValue !== "Indeterminate" && oldValue === newValue) {
+					newValue = "Indeterminate";
+				}
+				$(this).parent().find("input").val(newValue).trigger('change');
+				recalculatePercentage();
 			}
-			$(this).parent().find("input").val(newValue).trigger('change');
-			recalculatePercentage();
-
 		});
+		
+		$(document).on("click", ".editor .rockstate-contents", function () {
+			var parent = $(this);
+			if (parent.width() <= 90) {
+				var oldValue = $(this).find("input").val();
+				var args = ["AtRisk", "OnTrack", "Complete", "Indeterminate"];
+
+				var idx = ((args.indexOf(oldValue) + 1) % (args.length));
+				newValue = args[idx];
+
+				$(this).parent().find("input").val(newValue).trigger('change');
+				recalculatePercentage();
+			}
+		});
+
 
 		$(document).on("change", ".rockstate.editor input", function() {
 			var input = $(this);//.attr("name");
@@ -35,14 +52,14 @@ function InitRockstate() {
 			$("[name=" + name + "]").not(input).val(newValue);
 		});
 		/*$('.editor .rockstate-val').click(function () {
-		var oldValue = $(this).parent().find("input").val();
-		var newValue = $(this).data("value");
+			var oldValue = $(this).parent().find("input").val();
+			var newValue = $(this).data("value");
 
-		if (oldValue !== "Indeterminate" && oldValue === newValue) {
-			newValue = "Indeterminate";
-		}
-		$(this).parent().find("input").val(newValue).trigger('change');
-	});*/
+			if (oldValue !== "Indeterminate" && oldValue === newValue) {
+				newValue = "Indeterminate";
+			}
+			$(this).parent().find("input").val(newValue).trigger('change');
+		});*/
 	}
 }
 function recalculatePercentage() {
