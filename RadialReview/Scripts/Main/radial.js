@@ -244,8 +244,8 @@ function generateDatepicker(selector, date, name, id, options) {
 	var dpOptions = {
 		format: window.dateFormat.toLowerCase(),
 	};
-	if (options){
-		for(var k in options)		{
+	if (options) {
+		for (var k in options) {
 			dpOptions[k] = options[k];
 		}
 	}
@@ -427,10 +427,10 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 			var color = escapeString(obj.icon.color || "#5bc0de");
 			$("#modal-icon").addClass(icon);
 			icon = icon.replace(" ", ".")
-			try{
-				document.styleSheets[0].insertRule("." + custom + " ." + icon + ":after{content: '" + title + "' !important;",0);
-				document.styleSheets[0].insertRule("." + custom + " ." + icon + ":before{ background-color: " + color + ";",0);
-				document.styleSheets[0].insertRule("." + custom + " #modalOk{ background-color: " + color + ";",0);
+			try {
+				document.styleSheets[0].insertRule("." + custom + " ." + icon + ":after{content: '" + title + "' !important;", 0);
+				document.styleSheets[0].insertRule("." + custom + " ." + icon + ":before{ background-color: " + color + ";", 0);
+				document.styleSheets[0].insertRule("." + custom + " #modalOk{ background-color: " + color + ";", 0);
 			} catch (e) {
 				console.error(e);
 			}
@@ -445,7 +445,7 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 	$("#modal").addClass("loading");
 	$('#modal').modal('show');
 
-	var allowed = ["text", "hidden", "textarea", "checkbox", "radio", "number", "date", "time", "header", "span","div", "h1", "h2", "h3", "h4", "h5", "h6", "file", "yesno", "label","img"];
+	var allowed = ["text", "hidden", "textarea", "checkbox", "radio", "number", "date", "time", "header", "span", "div", "h1", "h2", "h3", "h4", "h5", "h6", "file", "yesno", "label", "img"];
 	var addLabel = ["text", "textarea", "checkbox", "radio", "number", "date", "time", "file"];
 	var tags = ["span", "h1", "h2", "h3", "h4", "h5", "h6", "label", "div"];
 	var anyFields = ""
@@ -477,7 +477,7 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 
 	var builder = '<div class="form-horizontal modal-builder">';
 	var runAfter = [];
-	var genInput = function (type, name, placeholder, value, others,classes) {
+	var genInput = function (type, name, placeholder, value, others, classes) {
 		others = others || "";
 		if (type == "number")
 			others += " step=\"any\"";
@@ -501,9 +501,9 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 			var value = field.value || "";
 			var placeholder = field.placeholder;
 			var type = (field.type || "text").toLowerCase();
-			var classes = field.classes||"";
+			var classes = field.classes || "";
 
-			if (typeof(classes)==="string" && (classes.indexOf('\'') != -1 || classes.indexOf('\"') != -1))
+			if (typeof (classes) === "string" && (classes.indexOf('\'') != -1 || classes.indexOf('\"') != -1))
 				throw "Classes cannot contain a quote character.";
 
 
@@ -543,14 +543,14 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 			} else if (type == "yesno") {
 				var selectedYes = (value == true) ? 'checked="checked"' : "";
 				var selectedNo = (value == true) ? "" : 'checked="checked"';
-				input = '<div class="form-group input-yesno '+classes+'">' +
+				input = '<div class="form-group input-yesno ' + classes + '">' +
                             '<label for="true" class="col-xs-4 control-label"> Yes </label>' +
                             '<div class="col-xs-2">' + genInput("radio", name, placeholder, "true", selectedYes) + '</div>' +
                             '<label for="false" class="col-xs-1 control-label"> No </label>' +
                             '<div class="col-xs-2">' + genInput("radio", name, placeholder, "false", selectedNo) + '</div>' +
                         '</div>';
-			} else if (type == "img") {				
-				input = "<img src='"+field.src+"' class='" + classes + "'/>";
+			} else if (type == "img") {
+				input = "<img src='" + field.src + "' class='" + classes + "'/>";
 			} else {
 				input = genInput(type, name, placeholder, value, null, classes);
 			}
@@ -777,7 +777,7 @@ function showHtmlErrorAlert(html, defaultMessage) {
 	showAlert(message);
 }
 
-function showAlert(message, alertType, preface,duration) {
+function showAlert(message, alertType, preface, duration) {
 	if (typeof (alertType) === "number" && typeof (preface) === "undefined" && typeof (duration) === "undefined")
 		duration = alertType;
 	else if (typeof (preface) === "number" && typeof (duration) === "undefined")
@@ -807,7 +807,7 @@ function showAlert(message, alertType, preface,duration) {
 	if (typeof (duration) === "number")
 		setTimeout(function () {
 			$(alert).remove();
-		},duration);
+		}, duration);
 }
 
 var alertsTimer = null;
@@ -1153,6 +1153,11 @@ $(function () {
 
 	});
 
+	$('.navbar-collapse .dropdown-menu').parent().on('hidden.bs.dropdown', function () {
+		console.info("collapse", this);
+		$('.navbar-collapse').collapse('hide');
+	});
+
 	$(".footer-bar-container").each(function () {
 		var h = parseInt($(this).attr("data-height"));
 		$(this).find(".footer-bar-contents").css("bottom",/*-h+*/"0px");
@@ -1395,7 +1400,7 @@ function supportEmail(title, nil, defaultSubject, defaultBody) {
 					image = res;
 					console.log("end render");
 				});
-				show();			
+				show();
 			} catch (e) {
 				show();
 			}
@@ -1410,7 +1415,7 @@ function supportEmail(title, nil, defaultSubject, defaultBody) {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Create issues or todos 
+//Create issues or todos or headlines
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function imageListFormat(state) {
 	if (!state.id) {
@@ -1651,6 +1656,24 @@ function waitUntilVisible(selector, onVisible) {
 	waitUntil(function () {
 		return $(selector).is(":visible");
 	}, onVisible, function () { }, 60, 50);
+}
+
+
+function msieversion() {
+	var rv = false; // Return value assumes failure.
+	if (navigator.appName == 'Microsoft Internet Explorer') {
+		var ua = navigator.userAgent,
+			re = new RegExp("MSIE ([0-9]{1,}[\\.0-9]{0,})");
+		if (re.exec(ua) !== null) {
+			rv = parseFloat(RegExp.$1);
+		}
+	} else if (navigator.appName == "Netscape") {
+		/// in IE 11 the navigator.appVersion says 'trident'
+		/// in Edge the navigator.appVersion does not say trident
+		if (navigator.appVersion.indexOf('Trident') === -1) rv = 12;
+		else rv = 11;
+	}
+	return rv;
 }
 
 

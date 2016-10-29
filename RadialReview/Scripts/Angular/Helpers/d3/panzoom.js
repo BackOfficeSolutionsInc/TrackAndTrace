@@ -4,7 +4,7 @@
         restrict: "A",
         scope: { graph: "=" },
         transclude: true,
-        //replace:true,
+       // replace:true,
         template: '<g class="pz-zoom"> <rect class="pz-rect" width="100%" height="100%" style="width:100%;height:100%;fill:transparent;"></rect>' +
                   '<g class="pz-pan" ng-transclude></g>' +
                   '</g>',

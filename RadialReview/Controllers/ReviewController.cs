@@ -939,7 +939,7 @@ namespace RadialReview.Controllers {
         }
         
         [Access(AccessLevel.UserOrganization)]
-        public async Task<ActionResult> Plot(long id,int margin)
+		public async Task<ActionResult> Plot(long id,int margin)
         {
             //var stream = new MemoryStream();
             //var pngExporter = new PdfExporter { Width = 400, Height = 400, Background = OxyColors.White };

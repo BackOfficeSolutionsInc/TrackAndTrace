@@ -78,7 +78,9 @@ namespace RadialReview.Accessors {
 						ManagingOrganization = true,
 						EmailAtOrganization = user.Email,
 						AttachTime = now,
-						CreateTime = now
+						CreateTime = now,
+
+						
 					};
 
 					s.Save(user);

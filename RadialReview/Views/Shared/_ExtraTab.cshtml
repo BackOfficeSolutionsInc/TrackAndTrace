@@ -1,9 +1,11 @@
-﻿@if (ViewBag.ExtraTabs != null)
-{
-    foreach(var tab in ViewBag.ExtraTabs)
-    { 
-        <li class="clickable @(ViewBag.Page == tab.Page ? "active" : "")">
-            <a href="@tab.Url" >@tab.Text</a>
-        </li>
-    }
+﻿@if (ViewBag.ExtraTabs != null) {
+	foreach (var tab in ViewBag.ExtraTabs) {
+		if (tab.Url != null || tab.Text != null ) {
+			<li class="clickable @(ViewBag.Page == tab.Page ? "active" : "")">
+				<a href="@tab.Url">@tab.Text</a>
+			</li>
+		}else if (tab.Html!=null) {
+			@tab.Html
+		}
+	}
 }

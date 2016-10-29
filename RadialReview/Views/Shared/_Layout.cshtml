@@ -7,6 +7,8 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	@*<meta http-equiv="X-UA-Compatible" content="IE=8">*@
+
 
 	<link rel="apple-touch-icon" sizes="57x57" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-57x57.png">
 	<link rel="apple-touch-icon" sizes="60x60" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/apple-touch-icon-60x60.png">
@@ -83,7 +85,7 @@
 	<div id="wrap">
 		<div id="main">
 			@if (!(ViewBag.NoTitleBar ?? false)) {
-				<div class=" navbar navbar-inverse navbar-fixed-top">
+				<div class="navbar navbar-inverse navbar-fixed-top">
 					<div class="container body-navbar">
 						<div class="navbar-header">
 							<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -203,7 +205,7 @@
 			@RenderSection("top", false)
 			<div class="container body-content">
 				@RenderSection("header", false)
-				<div class="clearfix subheading noPrint">@ViewBag.Subheading</div>
+				<div class="clearfix subheading noPrint hidden-xs">@ViewBag.Subheading</div>
 				<div id="alerts"></div>
 				<div class="@((bool?)ViewBag.Hints ?? true ? "" : "hidden")">
 					@RenderSection("hints", false)

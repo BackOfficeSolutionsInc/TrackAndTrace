@@ -5,9 +5,30 @@ using RadialReview.Models.Interfaces;
 using RadialReview.Models.Responsibilities;
 using System;
 using RadialReview.Utilities.DataTypes;
+using RadialReview.Models.UserModels;
 
 namespace RadialReview.Models
 {
+	public class AnswerModel_TinyScatterPlot {
+		//public string Category { get; set; }
+		public WeightType Weight { get; set; }
+		//public bool Required { get; set; }
+		public AboutType AboutType { get; set; }
+		public long ByUserId { get; set; }
+		public string ByUserName { get; set; }
+		public string ByUserImage { get; set; }
+		public string ByUserPosition { get; set; }
+		public QuestionType QuestionType { get; set; }
+		public Ratio Score { get; set; }
+		public string Axis { get; set; }
+
+		public AnswerModel_TinyScatterPlot() {
+			ByUserName = "";
+			ByUserPosition = "";
+			ByUserImage = UserLookup.TransformImageSuffix(null);
+		}
+	}
+
 
     #region AnswerModel
     public abstract class AnswerModel : ILongIdentifiable,ICompletable,IDeletable

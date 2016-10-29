@@ -121,8 +121,13 @@ function ScatterImage(id) {
     this.shapeLegend = function (legendId, legend) {
         if (legendId && legend) {
             d3.select("#" + legendId).html("");
+            var hh = "140";
+
+            if (legend.length){
+            	hh = (42+16.667 * legend.length) + "";
+            }
             var svg = d3.select("#" + legendId).append("svg")
-				.attr("viewBox", "0 0 100 200")
+				.attr("viewBox", "0 0 100 " + hh)
 				.attr("width", "100%")
 				.attr("height", "100%")
 				.classed("scatterLegend", true);

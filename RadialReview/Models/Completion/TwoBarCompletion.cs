@@ -8,10 +8,10 @@ namespace RadialReview.Models
 {
     public class CompletionModel : ICompletionModel, ICompletable
     {
-        public int RequiredCompleted{get;private set;}
-        public int TotalRequired { get; private set; }
-        public int OptionalCompleted { get; private set; }
-        public int TotalOptional { get; private set; }
+        public decimal RequiredCompleted {get;private set;}
+        public decimal TotalRequired { get; private set; }
+        public decimal OptionalCompleted { get; private set; }
+        public decimal TotalOptional { get; private set; }
 
         public Boolean ForceInactive { get; set; }
 
@@ -82,7 +82,7 @@ namespace RadialReview.Models
             }
         }
 
-        public CompletionModel(int requiredCompleted, int totalRequired, int optionalCompleted, int totalOptional, String clss="")
+        public CompletionModel(decimal requiredCompleted, decimal totalRequired, decimal optionalCompleted, decimal totalOptional, String clss="")
         {
             RequiredCompleted=requiredCompleted;
             TotalRequired=totalRequired;
@@ -92,7 +92,7 @@ namespace RadialReview.Models
             Calculate();
         }
 
-        public CompletionModel(int RequiredCompleted, int TotalRequired, String clss="") : this(RequiredCompleted, TotalRequired, 0, 0, clss)
+        public CompletionModel(decimal RequiredCompleted, decimal TotalRequired, String clss="") : this(RequiredCompleted, TotalRequired, 0, 0, clss)
         {
 
         }
@@ -139,9 +139,9 @@ namespace RadialReview.Models
 
 		public decimal GetPercentage()
 		{
-			if (RequiredCompleted == 0 && (decimal) TotalRequired == 0)
+			if (RequiredCompleted == 0 &&  TotalRequired == 0)
 				return 1m;
-			return RequiredCompleted / (decimal)TotalRequired;
+			return RequiredCompleted / TotalRequired;
 		}
 	}
 }

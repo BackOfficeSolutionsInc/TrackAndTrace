@@ -21,165 +21,169 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
-namespace RadialReview.Controllers
-{
-    public class ReviewsController : BaseController
-    {
-        public static OrgReviewsViewModel GenerateReviewVM(UserOrganizationModel caller, DateTime date,int page)
-        {
-            var selfId = caller.Id;
+namespace RadialReview.Controllers {
+	public class ReviewsController : BaseController {
+		public static OrgReviewsViewModel GenerateReviewVM(UserOrganizationModel caller, DateTime date, int page) {
+			var selfId = caller.Id;
 			var pullData = _ReviewAccessor.GetUsefulReviewFaster(caller, selfId, date);
-	        var usefulReviews = pullData.Item2;
-	        var reviewContainers = pullData.Item1;//usefulReviews.Select(x => x.ForReviewContainer).Distinct(x => x.Id).ToList();
+			var usefulReviews = pullData.Item2;
+			var reviewContainers = pullData.Item1;//usefulReviews.Select(x => x.ForReviewContainer).Distinct(x => x.Id).ToList();
 
-            var subordinates = DeepAccessor.Users.GetSubordinatesAndSelf(caller, caller.Id);
+			var subordinates = DeepAccessor.Users.GetSubordinatesAndSelf(caller, caller.Id);
 
-            var editable = reviewContainers.Where(x => caller.IsManagingOrganization() || subordinates.Any(y => y == x.CreatedById)).Select(x => x.Id).ToList();
-            var takabled = usefulReviews.Where(x => x.ForUserId == selfId).Distinct(x=>x.ForReviewsId).ToDictionary(x => x.ForReviewsId, x => (long?)x.Id);
-            
+			var editable = reviewContainers.Where(x => caller.IsManagingOrganization() || subordinates.Any(y => y == x.CreatedById)).Select(x => x.Id).ToList();
+			var takabled = usefulReviews.Where(x => x.ForUserId == selfId).Distinct(x => x.ForReviewsId).ToDictionary(x => x.ForReviewsId, x => (long?)x.Id);
 
-            var reviewsVM = reviewContainers.Select(x => new ReviewsViewModel(x){
-                Editable = editable.Any(y => y == x.Id),
-                Viewable = true,
-                TakableId = takabled.GetOrDefault(x.Id, null),
-                UserReview = usefulReviews.FirstOrDefault(y=>y.ForReviewsId==x.Id)
 
-            }).Where(x=>x.Editable||x.TakableId!=null||x.UserReview!=null).OrderByDescending(x => x.Review.DateCreated).ToList();
+			var reviewsVM = reviewContainers.Select(x => new ReviewsViewModel(x) {
+				Editable = editable.Any(y => y == x.Id),
+				Viewable = true,
+				TakableId = takabled.GetOrDefault(x.Id, null),
+				UserReview = usefulReviews.FirstOrDefault(y => y.ForReviewsId == x.Id)
 
-			
+			}).Where(x => x.Editable || x.TakableId != null || x.UserReview != null).OrderByDescending(x => x.Review.DateCreated).ToList();
 
-            var resultPerPage = 10;
+			var resultPerPage = 10;
 
-            var model = new OrgReviewsViewModel(){
-                Reviews = reviewsVM.Paginate(page, resultPerPage).ToList(),
-                NumPages = reviewsVM.PageCount(resultPerPage),
-                AllowEdit = true,
-                Page = page,
+			var model = new OrgReviewsViewModel() {
+				Reviews = reviewsVM.Paginate(page, resultPerPage).ToList(),
+				NumPages = reviewsVM.PageCount(resultPerPage),
+				AllowEdit = true,
+				Page = page,
 
-            };
-            return model;
-        }
+			};
 
-        [Access(AccessLevel.UserOrganization)]
-        public ActionResult Index(int page = 0)
-        {
-            var model = GenerateReviewVM(GetUser(), DateTime.MinValue,page);
-            ViewBag.Page = "Reviews";
-            ViewBag.Title = "Reviews";
-            ViewBag.Subheading = "Reviews";
-            return View(model);
-        }
+			foreach (var x in model.Reviews) {
 
-        [Access(AccessLevel.UserOrganization)]
-        public ActionResult Outstanding(int page = 0)
-        {
-            var model = GenerateReviewVM(GetUser(), DateTime.UtcNow,page);
-            ViewBag.Page = "Outstanding";
-            ViewBag.Title = "Outstanding";
-            ViewBag.Subheading = "Reviews in progress.";
-            return View(model);
-        }
+				if (x.UserReview != null && x.UserReview.ClientReview.Visible)
+					x.AddLink("/Review/ClientDetails/" + x.UserReview.ClientReview.Id, "View Report", "glyphicon glyphicon-file");
+				else if (x.TakableId == null) {
+					x.AddLink("#", "Your report is not available yet", iconClass: "glyphicon glyphicon-file", linkClass: "gray noclick");
+				}
 
-        [Access(AccessLevel.UserOrganization)]
-        public ActionResult History(int page = 0)
-        {
-            var model = GenerateReviewVM(GetUser(), DateTime.MinValue, page);
-            ViewBag.Page = "History";
-            ViewBag.Title = "History";
-            ViewBag.Subheading = "All reviews.";
-            return View("Outstanding", model);
-        }
+				if (caller.IsManager()) {
+					x.AddDivider();
+					x.AddLink("/Reports/List/" + x.Review.Id, "Report Builder", "glyphicon glyphicon-list-alt");
+					x.AddLink("/Reports/Index/" + x.Review.Id + "#Reminders", "Send Reminders", "glyphicon glyphicon-send");
+					x.AddLink("/Reports/Index/" + x.Review.Id + "#Stats", "Stats", "glyphicon glyphicon-stats");
+				}
+				if (x.Editable && model.AllowEdit) {
+					x.AddDivider();
+					x.AddLink("/Reviews/Edit/" + x.Review.Id, "Admin Settings", "glyphicon glyphicon-cog", linkClass: "advanced-link");
+				}
+			}
 
-        [Access(AccessLevel.Manager)]
-        public ActionResult Edit(long id)
-        {
-            var user = GetUser().Hydrate().ManagingUsers(true).Execute();
-            var reviewContainer = _ReviewAccessor.GetReviewContainer(user, id, false,false,populateReview:true);
-			if (reviewContainer.DeleteTime!=null)
-				throw new PermissionsException("This review has been deleted.");
+			return model;
+		}
 
-            var allDirectSubs   = user.ManagingUsers.Select(x=>x.Subordinate).ToList();
-            foreach (var r in reviewContainer.Reviews)
-            {
-                if (r.ForUser.Id == GetUser().Id && reviewContainer.CreatedById == GetUser().Id)
-                {
-                    r.ForUser.SetPersonallyManaging(true);
-                }
-                else
-                {
-                    r.ForUser.PopulatePersonallyManaging(user, user.AllSubordinates);
-                    r.ForUser.PopulateDirectlyManaging(user, allDirectSubs);
-                }
-            }
-            var model = new ReviewsViewModel(reviewContainer);
-            return View(model);
-        }
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Index(int page = 0) {
+			var model = GenerateReviewVM(GetUser(), DateTime.MinValue, page);
 
-        public class UpdateReviewsViewModel
-        {
-            public long ReviewId { get; set; }
-            public List<SelectListItem> AdditionalUsers { get; set; }
-            public long SelectedUserId { get; set; }
-			public bool SendEmail { get; set; }
-        }
 
-	    public class DueDateVM
-	    {
-			public long RReviewId { get; set; }
-            public long[] reviews { get; set; }
-			public DateTime DueDate { get; set; }
-	    }
 
-	    [Access(AccessLevel.Manager)]
-        public PartialViewResult EditDueDateModal(long id)
-	    {
-		    var review = _ReviewAccessor.GetReview(GetUser(), id);
+			ViewBag.Page = "Reviews";
+			ViewBag.Title = "Reviews";
+			ViewBag.Subheading = "Reviews";
+			return View(model);
+		}
 
-		    var model = new DueDateVM(){
-				RReviewId = review.Id,
-				DueDate = review.DueDate,
-		    };
-			return PartialView("EditDueDateModal", model);
-	    }
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Outstanding(int page = 0) {
+			var model = GenerateReviewVM(GetUser(), DateTime.UtcNow, page);
+			ViewBag.Page = "Outstanding";
+			ViewBag.Title = "Outstanding";
+			ViewBag.Subheading = "Reviews in progress.";
+			return View(model);
+		}
 
-	    [HttpPost]
-	    [Access(AccessLevel.Manager)]
-		public JsonResult EditDueDateModal(DueDateVM model)
-        {
-            var ids = new List<long>();
-            var adjDate = GetUser().Organization.ConvertToUTC(model.DueDate);
-            if (model.RReviewId != 0) {
-                ids.Add(model.RReviewId);
-                _ReviewAccessor.UpdateDueDate(GetUser(), model.RReviewId, adjDate);
-            }
-            if (model.reviews != null) {
-                foreach (var m in model.reviews) {
-                    _ReviewAccessor.UpdateDueDate(GetUser(), m, adjDate);
-                    ids.Add(m);
-                }
-            }
-            return Json(ResultObject.Create(new { due = model.DueDate.ToString(GetUser().Organization.Settings.GetDateFormat()), ids = ids }, "Updated Due Date"));
-	    }
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult History(int page = 0) {
+			var model = GenerateReviewVM(GetUser(), DateTime.MinValue, page);
+			ViewBag.Page = "History";
+			ViewBag.Title = "History";
+			ViewBag.Subheading = "All reviews.";
+			return View("Outstanding", model);
+		}
 
 		[Access(AccessLevel.Manager)]
-        public PartialViewResult EditNameModal(long id)
-		{
+		public ActionResult Edit(long id) {
+			var user = GetUser().Hydrate().ManagingUsers(true).Execute();
+			var reviewContainer = _ReviewAccessor.GetReviewContainer(user, id, false, false, populateReview: true);
+			if (reviewContainer.DeleteTime != null)
+				throw new PermissionsException("This review has been deleted.");
+
+			var allDirectSubs = user.ManagingUsers.Select(x => x.Subordinate).ToList();
+			foreach (var r in reviewContainer.Reviews) {
+				if (r.ForUser.Id == GetUser().Id && reviewContainer.CreatedById == GetUser().Id) {
+					r.ForUser.SetPersonallyManaging(true);
+				} else {
+					r.ForUser.PopulatePersonallyManaging(user, user.AllSubordinates);
+					r.ForUser.PopulateDirectlyManaging(user, allDirectSubs);
+				}
+			}
+			var model = new ReviewsViewModel(reviewContainer);
+			return View(model);
+		}
+
+		public class UpdateReviewsViewModel {
+			public long ReviewId { get; set; }
+			public List<SelectListItem> AdditionalUsers { get; set; }
+			public long SelectedUserId { get; set; }
+			public bool SendEmail { get; set; }
+		}
+
+		public class DueDateVM {
+			public long RReviewId { get; set; }
+			public long[] reviews { get; set; }
+			public DateTime DueDate { get; set; }
+		}
+
+		[Access(AccessLevel.Manager)]
+		public PartialViewResult EditDueDateModal(long id) {
+			var review = _ReviewAccessor.GetReview(GetUser(), id);
+
+			var model = new DueDateVM() {
+				RReviewId = review.Id,
+				DueDate = review.DueDate,
+			};
+			return PartialView("EditDueDateModal", model);
+		}
+
+		[HttpPost]
+		[Access(AccessLevel.Manager)]
+		public JsonResult EditDueDateModal(DueDateVM model) {
+			var ids = new List<long>();
+			var adjDate = GetUser().Organization.ConvertToUTC(model.DueDate);
+			if (model.RReviewId != 0) {
+				ids.Add(model.RReviewId);
+				_ReviewAccessor.UpdateDueDate(GetUser(), model.RReviewId, adjDate);
+			}
+			if (model.reviews != null) {
+				foreach (var m in model.reviews) {
+					_ReviewAccessor.UpdateDueDate(GetUser(), m, adjDate);
+					ids.Add(m);
+				}
+			}
+			return Json(ResultObject.Create(new { due = model.DueDate.ToString(GetUser().Organization.Settings.GetDateFormat()), ids = ids }, "Updated Due Date"));
+		}
+
+		[Access(AccessLevel.Manager)]
+		public PartialViewResult EditNameModal(long id) {
 			var review = _ReviewAccessor.GetReviewContainer(GetUser(), id, false, false, false);
 
 			return PartialView(review);
 		}
 		[Access(AccessLevel.Manager)]
 		[HttpPost]
-		public ActionResult EditNameModal(ReviewsModel model)
-		{
-			_ReviewAccessor.EditReviewName(GetUser(),long.Parse(Request.Form["IID"]), model.ReviewName);
+		public ActionResult EditNameModal(ReviewsModel model) {
+			_ReviewAccessor.EditReviewName(GetUser(), long.Parse(Request.Form["IID"]), model.ReviewName);
 			return Json(ResultObject.Success("Updated review name."));
 
 		}
 
 
-	    public ActionResult Issue()
-        {
+		public ActionResult Issue() {
 			throw new PermissionsException("Deprecated");
 			/*
             var today = DateTime.UtcNow.ToLocalTime();
@@ -193,21 +197,19 @@ namespace RadialReview.Controllers
                 PotentialTeams = teams
             };
             return View(model);*/
-        }
+		}
 
-        public class IssueDetailsViewModel
-        {
-            public Dictionary<long, List<long>> ReviewWho { get; set; }
+		public class IssueDetailsViewModel {
+			public Dictionary<long, List<long>> ReviewWho { get; set; }
 
-            public Dictionary<long,UserOrganizationModel> AvailableUsers { get; set; }
-        }
-		
+			public Dictionary<long, UserOrganizationModel> AvailableUsers { get; set; }
+		}
 
-        [HttpPost]
-        public ActionResult IssueDetailsSubmit(IssueReviewViewModel model)
-        {
-            return View();
-            /*var teams = _TeamAccessor.GetTeamsDirectlyManaged(GetUser(), GetUser().Id).ToList();
+
+		[HttpPost]
+		public ActionResult IssueDetailsSubmit(IssueReviewViewModel model) {
+			return View();
+			/*var teams = _TeamAccessor.GetTeamsDirectlyManaged(GetUser(), GetUser().Id).ToList();
             if (!teams.Any(x => x.Id == model.ForTeamId)){
                 throw new PermissionsException("You do not have access to that team.");
             }
@@ -283,123 +285,103 @@ namespace RadialReview.Controllers
 
             var checks=new bool[][];*/
 
-        }
+		}
 
-        [Access(AccessLevel.Manager)]
-        public PartialViewResult Update(long id)
-        {
-            var review = _ReviewAccessor.GetReviewContainer(GetUser(), id, false,false);
-            var users = _ReviewAccessor.GetUsersInReview(GetUser(), id);
+		[Access(AccessLevel.Manager)]
+		public PartialViewResult Update(long id) {
+			var review = _ReviewAccessor.GetReviewContainer(GetUser(), id, false, false);
+			var users = _ReviewAccessor.GetUsersInReview(GetUser(), id);
 
-            var orgMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), review.ForOrganization.Id, false, false);
-            //Add to review
-            var alsoExclude = _KeyValueAccessor.Get("AddToReviewReserved_" + id).Select(x => long.Parse(x.V));
-            var additionalMembers = orgMembers.Where(x => !users.Any(y => y.Id == x.Id)).Where(x => !alsoExclude.Any(y => y == x.Id)).ToListAlive();
+			var orgMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), review.ForOrganization.Id, false, false);
+			//Add to review
+			var alsoExclude = _KeyValueAccessor.Get("AddToReviewReserved_" + id).Select(x => long.Parse(x.V));
+			var additionalMembers = orgMembers.Where(x => !users.Any(y => y.Id == x.Id)).Where(x => !alsoExclude.Any(y => y == x.Id)).ToListAlive();
 
-            var model = new UpdateReviewsViewModel()
-            {
-                ReviewId = id,
-                AdditionalUsers = additionalMembers.ToSelectList(x => x.GetNameAndTitle(youId: GetUser().Id), x => x.Id),
+			var model = new UpdateReviewsViewModel() {
+				ReviewId = id,
+				AdditionalUsers = additionalMembers.ToSelectList(x => x.GetNameAndTitle(youId: GetUser().Id), x => x.Id),
 				SendEmail = true
-            };
-            return PartialView(model);
-        }
+			};
+			return PartialView(model);
+		}
 
-        [HttpPost]
-        [Access(AccessLevel.Manager)]
-        public async Task<JsonResult> Update(UpdateReviewsViewModel model)
-        {
-            var reservedId = _KeyValueAccessor.Put("AddToReviewReserved_" + model.ReviewId, "" + model.SelectedUserId);
-            var userName = GetUserModel().UserName;
+		[HttpPost]
+		[Access(AccessLevel.Manager)]
+		public async Task<JsonResult> Update(UpdateReviewsViewModel model) {
+			var reservedId = _KeyValueAccessor.Put("AddToReviewReserved_" + model.ReviewId, "" + model.SelectedUserId);
+			var userName = GetUserModel().UserName;
 
-            var user = GetUser();
-            try
-            {
-                //TODO HERE
-                var result = await Task.Run<ResultObject>(async () =>
-                {
-                    ResultObject output;
-                    try
-                    {
-						output = await _ReviewAccessor.AddUserToReviewContainer(System.Web.HttpContext.Current,user, model.ReviewId, model.SelectedUserId, model.SendEmail);
-                    }
-                    catch (Exception e)
-                    {
-                        log.Error(e);
-                        output = new ResultObject(e);
-                    }
-                    finally
-                    {
-                        _KeyValueAccessor.Remove(reservedId);
-                    }
-                    return output;
-                });
+			var user = GetUser();
+			try {
+				//TODO HERE
+				var result = await Task.Run<ResultObject>(async () => {
+					ResultObject output;
+					try {
+						output = await _ReviewAccessor.AddUserToReviewContainer(System.Web.HttpContext.Current, user, model.ReviewId, model.SelectedUserId, model.SendEmail);
+					} catch (Exception e) {
+						log.Error(e);
+						output = new ResultObject(e);
+					} finally {
+						_KeyValueAccessor.Remove(reservedId);
+					}
+					return output;
+				});
 
-                new Thread(() =>
-                {
-                    Thread.Sleep(4000);
-                    var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
-                    hub.Clients.User(userName).jsonAlert(result, true);
-                    hub.Clients.User(userName).unhide("#ManageNotification");
-                }).Start();
+				new Thread(() => {
+					Thread.Sleep(4000);
+					var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
+					hub.Clients.User(userName).jsonAlert(result, true);
+					hub.Clients.User(userName).unhide("#ManageNotification");
+				}).Start();
 
-            }
-            catch (Exception e)
-            {
-                log.Error(e);
-                new Thread(() =>
-                {
-                    var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
-                    hub.Clients.User(userName).jsonAlert(new ResultObject(e));
-                    hub.Clients.User(userName).unhide("#ManageNotification");
-                }).Start();
-            }
-            return Json(ResultObject.SilentSuccess());
-        }
+			} catch (Exception e) {
+				log.Error(e);
+				new Thread(() => {
+					var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
+					hub.Clients.User(userName).jsonAlert(new ResultObject(e));
+					hub.Clients.User(userName).unhide("#ManageNotification");
+				}).Start();
+			}
+			return Json(ResultObject.SilentSuccess());
+		}
 
-        public class RemoveUserVM
-        {
-            public long ReviewContainerId { get; set; }
-            public long SelectedUser { get; set; }
+		public class RemoveUserVM {
+			public long ReviewContainerId { get; set; }
+			public long SelectedUser { get; set; }
 
-            public List<SelectListItem> PossibleUsers { get; set; }
-        }
+			public List<SelectListItem> PossibleUsers { get; set; }
+		}
 
-        public class DeleteReview
-        {
-            public long ReviewContainerId { get; set; }
-        }
+		public class DeleteReview {
+			public long ReviewContainerId { get; set; }
+		}
 
-        [Access(AccessLevel.Manager)]
-        [HttpPost]
-        public JsonResult Delete(DeleteReview model)
-        {
-            _ReviewAccessor.DeleteReviewContainer(GetUser(), model.ReviewContainerId);
-            ViewBag.Success = "Removed review.";
-            return Json(ResultObject.Success("Deleted Review"), JsonRequestBehavior.AllowGet);
-        }
+		[Access(AccessLevel.Manager)]
+		[HttpPost]
+		public JsonResult Delete(DeleteReview model) {
+			_ReviewAccessor.DeleteReviewContainer(GetUser(), model.ReviewContainerId);
+			ViewBag.Success = "Removed review.";
+			return Json(ResultObject.Success("Deleted Review"), JsonRequestBehavior.AllowGet);
+		}
 
-        [Access(AccessLevel.Manager)]
-        [HttpGet]
-        public PartialViewResult Delete(long id)
-        {
-            _PermissionsAccessor.Permitted(GetUser(),x=>x.EditReviewContainer(id));
-            var model=new DeleteReview(){ReviewContainerId = id};
-            return PartialView(model);
-        }
+		[Access(AccessLevel.Manager)]
+		[HttpGet]
+		public PartialViewResult Delete(long id) {
+			_PermissionsAccessor.Permitted(GetUser(), x => x.EditReviewContainer(id));
+			var model = new DeleteReview() { ReviewContainerId = id };
+			return PartialView(model);
+		}
 
-        [Access(AccessLevel.Manager)]
-        public PartialViewResult RemoveUser(long id)
-        {
-            var usersInReview = _ReviewAccessor.GetUsersInReview(GetUser(), id);
-            var model = new RemoveUserVM()
-            {
-                ReviewContainerId = id,
-                PossibleUsers = usersInReview.ToSelectList(x => x.GetNameAndTitle(youId: GetUser().Id), x => x.Id)
-            };
+		[Access(AccessLevel.Manager)]
+		public PartialViewResult RemoveUser(long id) {
+			var usersInReview = _ReviewAccessor.GetUsersInReview(GetUser(), id);
+			var model = new RemoveUserVM() {
+				ReviewContainerId = id,
+				PossibleUsers = usersInReview.ToSelectList(x => x.GetNameAndTitle(youId: GetUser().Id), x => x.Id)
+			};
 
-            return PartialView(model);
-        }
+			return PartialView(model);
+		}
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
 		public JsonResult RemoveUser(RemoveUserVM model) {
@@ -408,160 +390,144 @@ namespace RadialReview.Controllers
 		}
 
 		#region Individual Question
-		public class RemoveQuestionVM
-        {
-            public long ReviewContainerId { get; set; }
-            public List<SelectListItem> Users { get; set; }
-            public long SelectedUserId { get; set; }
-            public long SelectedQuestionId { get; set; }
-        }
-        public class AddQuestionVM
-        {
-            public long ReviewContainerId { get; set; }
-            public List<SelectListItem> Users { get; set; }
-            public long SelectedUserId { get; set; }
-            public long SelectedQuestionId { get; set; }
-        }
+		public class RemoveQuestionVM {
+			public long ReviewContainerId { get; set; }
+			public List<SelectListItem> Users { get; set; }
+			public long SelectedUserId { get; set; }
+			public long SelectedQuestionId { get; set; }
+		}
+		public class AddQuestionVM {
+			public long ReviewContainerId { get; set; }
+			public List<SelectListItem> Users { get; set; }
+			public long SelectedUserId { get; set; }
+			public long SelectedQuestionId { get; set; }
+		}
 
-        [Access(AccessLevel.Manager)]
-        public JsonResult PopulateAnswersForUser(long reviewId, long userId)
-        {
-            var answers = _ReviewAccessor.GetDistinctQuestionsAboutUserFromReview(GetUser(), userId, reviewId);
+		[Access(AccessLevel.Manager)]
+		public JsonResult PopulateAnswersForUser(long reviewId, long userId) {
+			var answers = _ReviewAccessor.GetDistinctQuestionsAboutUserFromReview(GetUser(), userId, reviewId);
 
-            return Json(answers.ToSelectList(x => x.Askable.GetQuestion(), x => x.Askable.Id), JsonRequestBehavior.AllowGet);
-        }
+			return Json(answers.ToSelectList(x => x.Askable.GetQuestion(), x => x.Askable.Id), JsonRequestBehavior.AllowGet);
+		}
 
-        [Access(AccessLevel.Manager)]
-        public JsonResult PopulatePossibleAnswersForUser(long reviewId, long userId)
-        {
-            var existing = _ReviewAccessor.GetDistinctQuestionsAboutUserFromReview(GetUser(), userId, reviewId);
-	        //var period =PeriodAccessor.GetPeriodForReviewContainer(GetUser(), reviewId);
+		[Access(AccessLevel.Manager)]
+		public JsonResult PopulatePossibleAnswersForUser(long reviewId, long userId) {
+			var existing = _ReviewAccessor.GetDistinctQuestionsAboutUserFromReview(GetUser(), userId, reviewId);
+			//var period =PeriodAccessor.GetPeriodForReviewContainer(GetUser(), reviewId);
 
-	        var review = _ReviewAccessor.GetReviewContainer(GetUser(), reviewId, false, false, false);
+			var review = _ReviewAccessor.GetReviewContainer(GetUser(), reviewId, false, false, false);
 
-	        var range = new DateRange(review.DateCreated,DateTime.UtcNow);
+			var range = new DateRange(review.DateCreated, DateTime.UtcNow);
 			var answers = _AskableAccessor.GetAskablesForUser(GetUser(), userId, /*period.NotNull(x=>x.Id),*/ range).Where(x => existing.All(y => y.Askable.Id != x.Id)).ToListAlive();
 
-            return Json(answers.ToSelectList(x => x.GetQuestion(), x => x.Id), JsonRequestBehavior.AllowGet);
+			return Json(answers.ToSelectList(x => x.GetQuestion(), x => x.Id), JsonRequestBehavior.AllowGet);
 
-        }
+		}
 
 
-        [Access(AccessLevel.Manager)]
-        public PartialViewResult RemoveQuestion(long id)
-        {
-            var users = _ReviewAccessor.GetUsersInReview(GetUser(), id);
-            var usersSelect = users.ToSelectList(x => x.GetNameAndTitle(), x => x.Id);
+		[Access(AccessLevel.Manager)]
+		public PartialViewResult RemoveQuestion(long id) {
+			var users = _ReviewAccessor.GetUsersInReview(GetUser(), id);
+			var usersSelect = users.ToSelectList(x => x.GetNameAndTitle(), x => x.Id);
 
-            usersSelect.Insert(0, new SelectListItem() { Selected = true, Text = "Select User...", Value = "-1" });
+			usersSelect.Insert(0, new SelectListItem() { Selected = true, Text = "Select User...", Value = "-1" });
 
-            var model = new RemoveQuestionVM()
-            {
-                Users = usersSelect,
-                SelectedQuestionId = -1,
-                SelectedUserId = -1,
-                ReviewContainerId = id,
-            };
+			var model = new RemoveQuestionVM() {
+				Users = usersSelect,
+				SelectedQuestionId = -1,
+				SelectedUserId = -1,
+				ReviewContainerId = id,
+			};
 
-            return PartialView(model);
-        }
+			return PartialView(model);
+		}
 
-        [HttpPost]
-        [Access(AccessLevel.Manager)]
-        public JsonResult RemoveQuestion(RemoveQuestionVM model)
-        {
-            _ReviewAccessor.RemoveQuestionFromReviewForUser(GetUser(), model.ReviewContainerId, model.SelectedUserId, model.SelectedQuestionId);
-            return Json(ResultObject.Success("Removed question."));
-        }
+		[HttpPost]
+		[Access(AccessLevel.Manager)]
+		public JsonResult RemoveQuestion(RemoveQuestionVM model) {
+			_ReviewAccessor.RemoveQuestionFromReviewForUser(GetUser(), model.ReviewContainerId, model.SelectedUserId, model.SelectedQuestionId);
+			return Json(ResultObject.Success("Removed question."));
+		}
 
-        [Access(AccessLevel.Manager)]
-        public PartialViewResult AddQuestion(long id)
-        {
-            var users = _ReviewAccessor.GetUsersInReview(GetUser(), id);
+		[Access(AccessLevel.Manager)]
+		public PartialViewResult AddQuestion(long id) {
+			var users = _ReviewAccessor.GetUsersInReview(GetUser(), id);
 
-            var userSelect = users.ToSelectList(x => x.GetNameAndTitle(), x => x.Id);
-            userSelect.Insert(0, new SelectListItem() { Text = "Select a user...", Value = "-1", Selected = true });
+			var userSelect = users.ToSelectList(x => x.GetNameAndTitle(), x => x.Id);
+			userSelect.Insert(0, new SelectListItem() { Text = "Select a user...", Value = "-1", Selected = true });
 
-            var model = new AddQuestionVM()
-            {
-                ReviewContainerId = id,
-                Users = userSelect,
-            };
+			var model = new AddQuestionVM() {
+				ReviewContainerId = id,
+				Users = userSelect,
+			};
 
-            return PartialView(model);
-        }
+			return PartialView(model);
+		}
 
-        [HttpPost]
-        [Access(AccessLevel.Manager)]
-        public JsonResult AddQuestion(AddQuestionVM model)
-        {
-            _ReviewAccessor.AddResponsibilityAboutUserToReview(GetUser(), model.ReviewContainerId, model.SelectedUserId, model.SelectedQuestionId);
-            return Json(ResultObject.Success("Added question."));
-        }
+		[HttpPost]
+		[Access(AccessLevel.Manager)]
+		public JsonResult AddQuestion(AddQuestionVM model) {
+			_ReviewAccessor.AddResponsibilityAboutUserToReview(GetUser(), model.ReviewContainerId, model.SelectedUserId, model.SelectedQuestionId);
+			return Json(ResultObject.Success("Added question."));
+		}
 
-        public class EditDueDate
-        {
-            public long ReviewContainerId { get; set; }
-            public DateTime ReviewDueDate { get; set; }
-            public DateTime ReportDueDate { get; set; }
-            public DateTime PrereviewDueDate { get; set; }
-            public bool HasPrereview { get; set; }
-            public double Offset { get; set; }
-        }
+		public class EditDueDate {
+			public long ReviewContainerId { get; set; }
+			public DateTime ReviewDueDate { get; set; }
+			public DateTime ReportDueDate { get; set; }
+			public DateTime PrereviewDueDate { get; set; }
+			public bool HasPrereview { get; set; }
+			public double Offset { get; set; }
+		}
 
-        [HttpGet]
-        [Access(AccessLevel.Manager)]
-        public PartialViewResult DueDate(long id)
-        {
-            _PermissionsAccessor.Permitted(GetUser(), x => x.EditReviewContainer(id));
-            var review = _ReviewAccessor.GetReviewContainer(GetUser(), id, false, false, false);
+		[HttpGet]
+		[Access(AccessLevel.Manager)]
+		public PartialViewResult DueDate(long id) {
+			_PermissionsAccessor.Permitted(GetUser(), x => x.EditReviewContainer(id));
+			var review = _ReviewAccessor.GetReviewContainer(GetUser(), id, false, false, false);
 
-            var maxDate = DateTime.UtcNow;
-            var minDate = DateTime.UtcNow;
-            if (review.DueDate > maxDate)
-            {
-                maxDate = review.DueDate;
-            }
+			var maxDate = DateTime.UtcNow;
+			var minDate = DateTime.UtcNow;
+			if (review.DueDate > maxDate) {
+				maxDate = review.DueDate;
+			}
 
-            if (minDate > review.DueDate)
-            {
-                minDate = review.DueDate;
-            }
+			if (minDate > review.DueDate) {
+				minDate = review.DueDate;
+			}
 
-            var model = new EditDueDate()
-            {
-                ReviewContainerId = id,
-                PrereviewDueDate = (review.PrereviewDueDate ?? minDate),
-                ReviewDueDate       = review.DueDate,
-                ReportDueDate = (review.ReportsDueDate ?? maxDate),
-                HasPrereview = review.HasPrereview,
-            };
+			var model = new EditDueDate() {
+				ReviewContainerId = id,
+				PrereviewDueDate = (review.PrereviewDueDate ?? minDate),
+				ReviewDueDate = review.DueDate,
+				ReportDueDate = (review.ReportsDueDate ?? maxDate),
+				HasPrereview = review.HasPrereview,
+			};
 
-            return PartialView(model);
-        }
+			return PartialView(model);
+		}
 
-        [HttpPost]
-        [Access(AccessLevel.Manager)]
-        public JsonResult DueDate(EditDueDate model)
-        {
-            DateTime? prereview,report;
-            try{
-                prereview = GetUser().Organization.ConvertToUTC(model.PrereviewDueDate);//model.PrereviewDueDate.ToDateTime("MM-dd-yyyy", model.Offset + 24);
-            }catch(FormatException){
-                prereview=null;
-            }
-            DateTime review = GetUser().Organization.ConvertToUTC(model.ReviewDueDate);// model.ReviewDueDate.ToDateTime("MM-dd-yyyy", model.Offset + 24);
-            try{
-                report = GetUser().Organization.ConvertToUTC(model.ReportDueDate);//model.ReportDueDate.ToDateTime("MM-dd-yyyy", model.Offset + 24);
-            }catch (FormatException){
-                report = null;
-            }
+		[HttpPost]
+		[Access(AccessLevel.Manager)]
+		public JsonResult DueDate(EditDueDate model) {
+			DateTime? prereview, report;
+			try {
+				prereview = GetUser().Organization.ConvertToUTC(model.PrereviewDueDate);//model.PrereviewDueDate.ToDateTime("MM-dd-yyyy", model.Offset + 24);
+			} catch (FormatException) {
+				prereview = null;
+			}
+			DateTime review = GetUser().Organization.ConvertToUTC(model.ReviewDueDate);// model.ReviewDueDate.ToDateTime("MM-dd-yyyy", model.Offset + 24);
+			try {
+				report = GetUser().Organization.ConvertToUTC(model.ReportDueDate);//model.ReportDueDate.ToDateTime("MM-dd-yyyy", model.Offset + 24);
+			} catch (FormatException) {
+				report = null;
+			}
 
-            _ReviewAccessor.UpdateDueDates(GetUser(), model.ReviewContainerId, prereview, review, report);
-            return Json(ResultObject.Success("Due date changed."), JsonRequestBehavior.AllowGet);
-        }
-        #endregion
-    }
+			_ReviewAccessor.UpdateDueDates(GetUser(), model.ReviewContainerId, prereview, review, report);
+			return Json(ResultObject.Success("Due date changed."), JsonRequestBehavior.AllowGet);
+		}
+		#endregion
+	}
 
 
 }

@@ -93,7 +93,7 @@ namespace RadialReview.Accessors
 						}
 					}
 					managingTeams=managingTeams.Distinct(x => x.Id).ToList();
-					return managingTeams.Where(x=>x.DeleteTime==null).ToList();
+					return managingTeams.Where(x=>x.DeleteTime==null).OrderByDescending(x=>x.Type).ToList();
 				}
 			}
 		}
@@ -113,7 +113,7 @@ namespace RadialReview.Accessors
 		public static List<OrganizationTeamModel> GetOrganizationTeams(ISession s, PermissionsUtility permissions, long organizationId)
 		{
 			permissions.ViewOrganization(organizationId);
-			var teams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == organizationId).List().ToListAlive();
+			var teams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == organizationId && x.DeleteTime==null).List().ToList();
 			//teams.ForEach(x => Populate(s, x));
 			return teams;
 		}
@@ -223,9 +223,12 @@ namespace RadialReview.Accessors
 								}
 							case TeamType.Subordinates:
 								{
-									var managerIds = teams.Select(x => x.ManagedBy).ToList();
+									var teamsAdj = teams.Distinct(x => x.ManagedBy).ToList();
+
+									var managerIds = teamsAdj.Select(x => x.ManagedBy).ToList();
 									var managerDurations = s.QueryOver<ManagerDuration>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.ManagerId).IsIn(managerIds).List();
-									var lookup = teams.ToDictionary(x => x.ManagedBy, x => x);
+									var lookup = teamsAdj.ToDictionary(x => x.ManagedBy, x => x);
+									
 
 									var additional = managerDurations.Select(x => new TeamDurationModel()
 									{

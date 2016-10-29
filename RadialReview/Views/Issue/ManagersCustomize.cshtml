@@ -4,89 +4,90 @@
 <h2>A few final details:</h2>
 <br />
 <div class="row">
-	<div class="col-md-5 col-md-push-7 ">
-		<p class="well">
-			Great! Managers will need some time to customize the reviews. During this pre-@Html.ReviewName().ToLower() period, supervisors will be able to customize who their direct reports review.
-			Please specify when you want the prereview period to end. Afterwards, specify when you want employees to be finished with their reviews.
-			<br />
-			The @Html.ReviewName().ToLower() will automatically be generated after the pre-@Html.ReviewName().ToLower() deadline.
-		</p>
-	</div>
-	<div class="col-md-7 col-md-pull-5 ">
+	@*<div class="col-md-5 col-md-push-7 ">
+			<p class="well">
+				Great! Managers will need some time to customize the reviews. During this pre-@Html.ReviewName().ToLower() period, supervisors will be able to customize who their direct reports review.
+				Please specify when you want the prereview period to end. Afterwards, specify when you want employees to be finished with their reviews.
+				<br />
+				The @Html.ReviewName().ToLower() will automatically be generated after the pre-@Html.ReviewName().ToLower() deadline.
+			</p>
+		</div>*@
+
+	<div class="col-md-8 col-md-offset-2">
 		<div class="row smallBreak2">
-			<div class="col-md-6">
+			<div class="col-sm-3 col-xs-4 col-sm-offset-1 alignRight">
 				<label class="control-label">@Html.ReviewName() name:</label>
 			</div>
-			<div class="col-md-4">
+			<div class="col-xs-6">
 				@Html.TextBox("ReviewName", null, new { @class = "form-control datePicker", id = "ReviewName" })
 				<!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
 			</div>
 		</div>
 		<div class="row smallBreak2">
-			<div class="col-md-6">
+			<div class="col-sm-3 col-xs-4 col-sm-offset-1 alignRight">
 				<label class="control-label">Manager pre-@Html.ReviewName().ToLower() due:</label>
 			</div>
-			<div class="col-md-4">
-                @Html.Partial("~/Views/Shared/EditorTemplates/DateTime.cshtml", DateTime.Now, new ViewDataDictionary() { {"name","PrereviewDate" }, { "startDate",Html.ConvertFromUtc(DateTime.UtcNow) }})
+			<div class="col-xs-6 ">
+				@Html.Partial("~/Views/Shared/EditorTemplates/DateTime.cshtml", DateTime.Now, new ViewDataDictionary() { { "name", "PrereviewDate" }, { "startDate", Html.ConvertFromUtc(DateTime.UtcNow) } })
 
-                @*
-    <div class="date" data-date="@DateTime.Now.ToString("MM-dd-yyyy")" data-date-format="mm-dd-yyyy">
-        <div class="">
-            @Html.TextBox("PrereviewDate", null, new { @class = "form-control datePicker", id = "PrereviewDate" })
-            <!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
-        </div>
-        <span class="add-on"><i class="icon-th"></i></span>
-    </div>
-                *@
+				@*
+			<div class="date" data-date="@DateTime.Now.ToString("MM-dd-yyyy")" data-date-format="mm-dd-yyyy">
+				<div class="">
+					@Html.TextBox("PrereviewDate", null, new { @class = "form-control datePicker", id = "PrereviewDate" })
+					<!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
+				</div>
+				<span class="add-on"><i class="icon-th"></i></span>
+			</div>
+				*@
 			</div>
 		</div>
 		<div class="row smallBreak2">
-			<div class="col-md-6">
+			<div class="col-sm-3 col-xs-4 col-sm-offset-1 alignRight">
 				<label class="control-label ">@Html.ReviewName()s are due:</label>
 			</div>
-			<div class="col-md-4 alignCenter">
-                @Html.Partial("~/Views/Shared/EditorTemplates/DateTime.cshtml", DateTime.Now, new ViewDataDictionary() { { "name", "DueDate" }, { "startDate", Html.ConvertFromUtc(DateTime.UtcNow) } })
+			<div class="col-xs-6 alignLeft">
+				@Html.Partial("~/Views/Shared/EditorTemplates/DateTime.cshtml", DateTime.Now, new ViewDataDictionary() { { "name", "DueDate" }, { "startDate", Html.ConvertFromUtc(DateTime.UtcNow) } })
 
 
 				@*<div class="date" data-date="@DateTime.Now.ToString("MM-dd-yyyy")" data-date-format="mm-dd-yyyy">
-                <div class="">
-                    @Html.TextBox("DueDate", null, new { @class = "form-control datePicker", id = "DueDate" })
-                    <!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
-                </div>
-                <span class="add-on"><i class="icon-th"></i></span>
-            </div>*@
+						<div class="">
+							@Html.TextBox("DueDate", null, new { @class = "form-control datePicker", id = "DueDate" })
+							<!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
+						</div>
+						<span class="add-on"><i class="icon-th"></i></span>
+					</div>*@
 			</div>
 		</div>
 		@*<div class="row smallBreak2">
-			<div class="col-md-6" title="Which session is this for?">
-				<label class="control-label">This Session:</label>
+				<div class="col-md-6" title="Which session is this for?">
+					<label class="control-label">This Session:</label>
+				</div>
+				<div class="col-md-4">
+					@Html.DropDownList("SessionId", Model.Periods, new { @class = "form-control SessionForm", id = "SessionId" })
+				</div>
 			</div>
-			<div class="col-md-4">
-				@Html.DropDownList("SessionId", Model.Periods, new { @class = "form-control SessionForm", id = "SessionId" })
-			</div>
-		</div>
-		
-		<div class="row smallBreak2">
-			<div class="col-md-6" title="Which session is next?">
-				<label class="control-label">Next Session:</label>
-			</div>
-			<div class="col-md-4">
-				@Html.DropDownList("NextSessionId", Model.Periods, new { @class = "form-control SessionForm", id = "NextSessionId" })
-			</div>
-		</div>*@
-		<div class="row smallBreak2">
-			<div class="col-md-6" title="Any @Html.ReviewName().ToLower()s resulting from supervisors that do not customize their pre-@Html.ReviewName().ToLower() will automatically be populated with a default @Html.ReviewName().ToLower() group consisting of themselves and thier peers, supervisors, and teammates.">
+
+			<div class="row smallBreak2">
+				<div class="col-md-6" title="Which session is next?">
+					<label class="control-label">Next Session:</label>
+				</div>
+				<div class="col-md-4">
+					@Html.DropDownList("NextSessionId", Model.Periods, new { @class = "form-control SessionForm", id = "NextSessionId" })
+				</div>
+			</div>*@
+		@*<div class="row smallBreak2">
+			<div class="col-sm-3 col-xs-4 col-sm-offset-1 alignRight" title="Any @Html.ReviewName().ToLower()s resulting from supervisors that do not customize their pre-@Html.ReviewName().ToLower() will automatically be populated with a default @Html.ReviewName().ToLower() group consisting of themselves and thier peers, supervisors, and teammates.">
 				<label class="control-label">Ensure default:</label>
 			</div>
-			<div class="col-md-4">
-				@Html.CheckBox("EnsureDefault", true)
-			</div>
-		</div>
+			<div class="col-xs-6 alignLeft">*@
+				@Html.Hidden("EnsureDefault", true)
+			@*</div>
+		</div>*@
 		<div class="row smallBreak2">
-			<div class="col-md-6" title="Any feedback given will be anonymous. Only supervisors will be able to see it.">
+			<div class="col-sm-3 col-xs-4 col-sm-offset-1 alignRight" title="Any feedback given will be anonymous. Only supervisors will be able to see it.">
 				<label class="control-label">Anonymous Feedback:</label>
 			</div>
-			<div class="col-md-4">
+			<div class="col-xs-6 alignLeft checkbox-holder">
 				@Html.CheckBox("Anonymous", true)
 			</div>
 		</div>

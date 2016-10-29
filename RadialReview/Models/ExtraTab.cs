@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Web.Mvc;
 
 namespace RadialReview
 {
@@ -13,6 +14,7 @@ namespace RadialReview
             public HtmlString Text {get;set;}
             public String Url {get;set;}
             public String Page {get;set;}
+			public MvcHtmlString Html { get; set; }
         }
 
         public static List<Tab> Create(params String[] textUrl)
@@ -25,5 +27,6 @@ namespace RadialReview
             }
             return output;
         }
+		
     }
 }

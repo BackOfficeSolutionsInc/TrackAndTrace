@@ -1,5 +1,12 @@
 Team deleted, still shows up in review
 
+why wasnt Avalution Charged
+
+video ssl activate
+
+Gino rock request
+
+dialog for Texting actions
 
 Separate Checkbox to clear people headlines
 
@@ -29,6 +36,13 @@ Scorecard:
 * Reversible date order
 * Decimals  $100,000.00 when not in use $100,000
 * Decimal formatting for regions
+* Cumulative Goal
+
+* comments on scores
+
+* Todo uploading
+
+* Receipts
 
 ************************
 

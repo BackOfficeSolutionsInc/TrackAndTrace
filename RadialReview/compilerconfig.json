@@ -50,5 +50,21 @@
   {
     "outputFile": "Content/L10/L10Headlines.css",
     "inputFile": "Content/L10/L10Headlines.less"
+  },
+  {
+    "outputFile": "Content/ReportsIndex/Reports.css",
+    "inputFile": "Content/ReportsIndex/Reports.less"
+  },
+  {
+    "outputFile": "Content/Reports/Reports.css",
+    "inputFile": "Content/Reports/Reports.less"
+  },
+  {
+    "outputFile": "Content/Reports/ReportDetails.css",
+    "inputFile": "Content/Reports/ReportDetails.less"
+  },
+  {
+    "outputFile": "Content/Reports/ClientDetails.css",
+    "inputFile": "Content/Reports/ClientDetails.less"
   }
 ]

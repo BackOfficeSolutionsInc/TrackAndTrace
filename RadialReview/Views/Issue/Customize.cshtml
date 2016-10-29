@@ -1,78 +1,81 @@
 ﻿@model RadialReview.Models.Reviews.CustomizeModel
 
 <hr />
-<h2>Who evaluates who?</h2>
-
+<h2>What type of evaluation?</h2>
+<br />
 @Html.Partial("_Customization",Model)
 
 <hr />
-<h2>A few final details:</h2>
+<h2><span class="hidden-xs">A few final details:</span><span class="visible-xs">Last step:</span></h2>
 <br />
 
-<div class="row">
-    <div class="col-md-5 col-md-push-7 ">
+@*<div class="row">*@
+    @*<div class="col-md-5 col-md-push-7 ">
         <p class="well">
             Almost finished. We just need to specify a name, when the @Html.ReviewName().ToLower() period will end, and whether or not to e-mail employees about the new @Html.ReviewName().ToLower().
         </p>
-    </div>
-    <div class="col-md-7 col-md-pull-5 ">
-        <div class="row smallBreak2">
-            <div class="col-md-6">
-                <label class="control-label">@Html.ReviewName() name:</label>
-            </div>
-            <div class="col-md-4">
-                @Html.TextBox("ReviewName", null, new { @class = "form-control datePicker", id = "ReviewName" })
-                <!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
-            </div>
-        </div>
-	    <div class="row smallBreak2">
-		    <div class="col-md-6">
-			    <label class="control-label">@Html.ReviewName()s are due:</label>
-		    </div>
-		    <div class="col-md-4">
-                @Html.Partial("~/Views/Shared/EditorTemplates/DateTime.cshtml", DateTime.Now, new ViewDataDictionary{{"name","DueDate" }, { "startDate", Html.ConvertFromUtc(DateTime.UtcNow) } })
-			    @*<div class="date" data-date="@DateTime.Now.ToString("MM-dd-yyyy")" data-date-format="mm-dd-yyyy">
-				    @Html.TextBox("DueDate", null, new { @class = "form-control datePicker", id = "DueDate" })
-				    <!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
-				    <span class="add-on"><i class="icon-th"></i></span>
-			    </div>*@
-		    </div>
-	    </div>
-		@*<div class="row smallBreak2">
-			<div class="col-md-6" title="Which session is this for?">
-				<label class="control-label">This Session:</label>
+    </div>*@
+    @*<div class="col-md-7 col-md-pull-5 ">*@
+<div class="row">
+	<div class="col-md-8 col-md-offset-2">
+		<div class="row smallBreak2">
+			<div class="col-sm-3 col-xs-4 col-sm-offset-1 alignRight">
+				<label class="control-label" style="padding-top: 6px;">@Html.ReviewName() name:</label>
 			</div>
-			<div class="col-md-4">
-				@Html.DropDownList("SessionId", Model.Periods, new { @class = "form-control SessionForm", id = "SessionId" })
+			<div class="col-xs-6">
+				@Html.TextBox("ReviewName", null, new { @class = "form-control datePicker", id = "ReviewName" })
+				<!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
 			</div>
 		</div>
 		<div class="row smallBreak2">
-			<div class="col-md-6" title="Which session is next?">
-				<label class="control-label">Next Session:</label>
+			<div class="col-sm-3 col-xs-4 col-sm-offset-1 alignRight">
+				<label class="control-label" style="padding-top: 6px;">@Html.ReviewName()s are due:</label>
 			</div>
-			<div class="col-md-4">
-				@Html.DropDownList("NextSessionId", Model.Periods, new { @class = "form-control SessionForm", id = "NextSessionId" })
+			<div class="col-xs-6 ">
+				@Html.Partial("~/Views/Shared/EditorTemplates/DateTime.cshtml", DateTime.Now, new ViewDataDictionary { { "name", "DueDate" }, { "startDate", Html.ConvertFromUtc(DateTime.UtcNow) } })
+				@*<div class="date" data-date="@DateTime.Now.ToString("MM-dd-yyyy")" data-date-format="mm-dd-yyyy">
+						@Html.TextBox("DueDate", null, new { @class = "form-control datePicker", id = "DueDate" })
+						<!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->
+						<span class="add-on"><i class="icon-th"></i></span>
+					</div>*@
 			</div>
-		</div>*@
-	    <div class="row smallBreak2">
-			<div class="col-md-6" title="Send an email notifying employees of the @Html.ReviewName().ToLower().">
+		</div>
+		@*<div class="row smallBreak2">
+				<div class="col-md-6" title="Which session is this for?">
+					<label class="control-label">This Session:</label>
+				</div>
+				<div class="col-md-4">
+					@Html.DropDownList("SessionId", Model.Periods, new { @class = "form-control SessionForm", id = "SessionId" })
+				</div>
+			</div>
+			<div class="row smallBreak2">
+				<div class="col-md-6" title="Which session is next?">
+					<label class="control-label">Next Session:</label>
+				</div>
+				<div class="col-md-4">
+					@Html.DropDownList("NextSessionId", Model.Periods, new { @class = "form-control SessionForm", id = "NextSessionId" })
+				</div>
+			</div>*@
+		<div class="row smallBreak2">
+			<div class="col-sm-3 col-xs-4 col-sm-offset-1 alignRight" title="Send an email notifying employees of the @Html.ReviewName().ToLower().">
 				<label class="control-label">Email employees:</label>
 			</div>
-		    <div class="col-md-4">
-			    @Html.CheckBox("SendEmails")
-		    </div>
-	    </div>
-		<div class="row smallBreak2">
-			<div class="col-md-6" title="Any feedback given will be anonymous. Only supervisors will be able to see it.">
-				<label class="control-label">Anonymous Feedback:</label>
+			<div class="col-xs-6 alignLeft checkbox-holder">
+				@Html.CheckBox("SendEmails")
 			</div>
-			<div class="col-md-4">
+		</div>
+		<div class="row smallBreak2 ">
+			<div class="col-sm-3 col-xs-4 col-sm-offset-1 alignRight" title="Any feedback given will be anonymous. Only supervisors will be able to see it.">
+				<label class="control-label ">Anonymous Feedback:</label>
+			</div>
+			<div class="col-xs-6 alignLeft checkbox-holder">
 				@Html.CheckBox("Anonymous", true)
 			</div>
 		</div>
-    </div>
-
+	</div>
 </div>
+
+@*</div>*@
 <input name="review" value="issueReview" type="hidden">
 <button type="submit" id="submitButton" class="btn btn-primary">Issue @Html.ReviewName()</button>
 

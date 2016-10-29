@@ -70,6 +70,10 @@ namespace RadialReview.Models
             return TimespanExtensions.OneMonth();
         }
 
+		public PaymentPlan_Monthly() {
+
+		}
+
         public class PaymentPlan_MonthlyMap : SubclassMap<PaymentPlan_Monthly>
         {
             public PaymentPlan_MonthlyMap()

@@ -207,6 +207,7 @@
     <Compile Include="Accessors\GroupAccessor.cs" />
     <Compile Include="Accessors\HeadlineAccessor.cs" />
     <Compile Include="Accessors\OrganizationAccessors\JoinOrganizationAccessor.cs" />
+    <Compile Include="Accessors\PdfChartAccessor.cs" />
     <Compile Include="Accessors\SearchAccessor.cs" />
     <Compile Include="Accessors\VideoConferenceProviders\VideoProviderAccessor.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
@@ -1061,6 +1062,24 @@
     </Content>
     <Content Include="Content\MaterialDesign\Libraries\lf-ng-md-file-input.css" />
     <Content Include="Content\MaterialDesign\Libraries\md-stepper.css" />
+    <Content Include="Content\Reports\ClientDetails.css">
+      <DependentUpon>ClientDetails.less</DependentUpon>
+    </Content>
+    <Content Include="Content\Reports\ClientDetails.min.css">
+      <DependentUpon>ClientDetails.css</DependentUpon>
+    </Content>
+    <Content Include="Content\Reports\ReportDetails.css">
+      <DependentUpon>ReportDetails.less</DependentUpon>
+    </Content>
+    <Content Include="Content\Reports\ReportDetails.min.css">
+      <DependentUpon>ReportDetails.css</DependentUpon>
+    </Content>
+    <Content Include="Content\Reports\Reports.css">
+      <DependentUpon>Reports.less</DependentUpon>
+    </Content>
+    <Content Include="Content\Reports\Reports.min.css">
+      <DependentUpon>Reports.css</DependentUpon>
+    </Content>
     <Content Include="Content\Tour\anno.css" />
     <Content Include="Content\Upload.css" />
     <Content Include="Content\Upload\Upload.css">
@@ -1110,6 +1129,9 @@
     <Content Include="Content\bootstrap\custom\XEditable.less" />
     <Content Include="Content\Angular\LineChart.less" />
     <Content Include="Content\L10\L10Headlines.less" />
+    <Content Include="Content\Reports\Reports.less" />
+    <Content Include="Content\Reports\ReportDetails.less" />
+    <Content Include="Content\Reports\ClientDetails.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -2176,7 +2198,6 @@
     <Content Include="Views\Shared\EditorTemplates\DateTime.cshtml" />
     <Content Include="Views\Issue\IssueTeam.cshtml" />
     <Content Include="Views\Issue\ManagersCustomize.cshtml" />
-    <Content Include="Views\Issue\SelfCustomize.cshtml" />
     <Content Include="Views\Issue\Customize.cshtml" />
     <Content Include="Views\Prereview\Customize.cshtml" />
     <Content Include="Views\Shared\_Customization.cshtml" />

@@ -98,8 +98,8 @@ namespace RadialReview.Engines
 	        //Default
             var Default = new CustomizeSelector()
             {
-                Name = "Default",
-                UniqueId = DEFAULT, //Don't change
+                Name = "360 Degree Review",
+				UniqueId = DEFAULT, //Don't change
 				Pairs = managers.Pairs.Union(subordinates.Pairs).Union(peers.Pairs).Union(teams.Pairs).Union(self.Pairs).Union(company.Pairs).ToList()
             };
 

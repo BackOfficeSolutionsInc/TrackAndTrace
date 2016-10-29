@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using FluentNHibernate.Mapping;
+using RadialReview.Models.Components;
+using RadialReview.Models.Interfaces;
+using RadialReview.Models;
 
 namespace RadialReview.Utilities.DataTypes
 {
-	public class Ratio
+	public class Ratio : ICompletable
 	{
 		public decimal Numerator { get; set; }
 		public decimal Denominator { get; set; }
@@ -75,6 +78,10 @@ namespace RadialReview.Utilities.DataTypes
 			if (IsValid())
 				return String.Format("{0}%", Math.Round(GetValue()*100));
 			return onInvalid;
+		}
+
+		public ICompletionModel GetCompletion(bool split = false) {
+			return new CompletionModel(Numerator,Denominator); 
 		}
 
 		public class RatioComponent : ComponentMap<Ratio> 

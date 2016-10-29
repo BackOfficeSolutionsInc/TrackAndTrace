@@ -1,0 +1,59 @@
+﻿
+@import "../MaterialDesign/Components/Snackbar";
+
+.alert {
+	position: relative;
+	z-index: 10010;
+}
+
+#alerts {
+	.material-snackbar();
+	z-index: 10011;
+}
+
+.position-column {
+	width: 50%;
+	max-width: 100px;
+}
+
+
+.evalby-percentage {
+	font-size: 10px;
+	width: 0px;
+	display: inline-block;
+	color: #808080;
+}
+
+@media(max-width:768px) {
+	.nav-tabs.tabs-left {
+		text-align: center;
+
+		& > li {
+			display: inline-block;
+
+			& > a {
+				border-radius: 4px;
+				//margin-bottom: 2px;
+				margin: 2px;
+				width: 185px;
+				background-color: rgba(255, 255, 255, 0.4);
+			}
+
+			&.active > a {
+				border: 1px solid #ddd;
+			}
+		}
+
+		border-right: none;
+	}
+
+	.tab-content.tabs-left {
+		margin-left: inherit;
+	}
+
+	#Reminders {
+		.btn-link {
+			font-size: 11px;
+		}
+	}
+}

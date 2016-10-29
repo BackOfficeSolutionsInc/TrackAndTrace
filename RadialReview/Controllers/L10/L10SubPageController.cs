@@ -261,10 +261,11 @@ namespace RadialReview.Controllers
 		private PartialViewResult Conclusion(L10MeetingVM model, FormCollection form, bool start)
         {
             model.SendEmail = true;
-            model.CloseTodos = true;
+			model.CloseTodos = true;
+			model.CloseHeadlines = true;
 
 			//model.Meeting._MeetingAttendees.ForEach(x=>x.Rating=x.Rating??10);
-			
+
 			var stats=L10Accessor.GetStats(GetUser(), model.Recurrence.Id);
 			ViewBag.TodosCreated = stats.AllTodos.Where(x=>x.CompleteTime == null).ToList();
 

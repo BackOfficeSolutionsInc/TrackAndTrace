@@ -148,7 +148,8 @@ namespace RadialReview {
 				"~/Content/toggle.css",
 				"~/Content/bootstrap-switch.css",
 				"~/Content/ReportBuilder/ReportBuilder.css",
-				"~/Content/ReportBuilder/evaluation.css"
+				"~/Content/ReportBuilder/evaluation.css",
+				"~/Content/Reports/ReportDetails.css"
 		   ));
 			bundles.Add(new ScriptBundle("~/bundles/ReviewDetails").Include(
 				"~/Scripts/Angular/MaterialDesign/md-stepper.js",
@@ -202,6 +203,7 @@ namespace RadialReview {
 			bundles.Add(new ScriptBundle("~/bundles/GetStarted").Include("~/Scripts/Angular/GettingStartd/GSController.js", "~/Scripts/jquery/jquery.redirect.js", "~/Scripts/jquery/jquery.vide.js"));
 			bundles.Add(new StyleBundle("~/Content/GetStarted").Include("~/Content/GettingStarted/GettingStarted.css"));
 
+			bundles.Add(new StyleBundle("~/Content/ReportStyles").Include("~/Content/Reports/Reports.css"));
 
 			bundles.Add(new StyleBundle("~/Content/ClientDetails").Include(
 					"~/Content/Chart/Scatter.v2.css",
@@ -210,7 +212,8 @@ namespace RadialReview {
 					//"~/Content/ReportBuilder/evaluation.css",
 					"~/Content/Chart/Chart.css",
 					"~/Content/ReportBuilder/ClientDetails.css",
-					"~/Content/chart.css"
+					"~/Content/chart.css",
+					"~/Content/Reports/ClientDetails.css"
 				));
 			bundles.Add(new ScriptBundle("~/bundles/ClientDetails").Include(
 					"~/Scripts/d3/d3.v3.js",

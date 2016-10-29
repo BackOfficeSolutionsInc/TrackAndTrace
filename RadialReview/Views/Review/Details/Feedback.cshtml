@@ -11,12 +11,12 @@
 		<table class="fullWidth">
 			<tr>
 				<th colspan="3">@feedbacks.First().Askable.GetQuestion():</th>
-				<th class="rightButton alignCenter"><div onclick="$('.feedback_question_@feedbacks.Key').prop('checked', true);">(Included All)</div></th>
+				<th class="rightButton alignCenter"><div style="cursor:pointer;font-size:11px;color:#333" onclick="$('.feedback_question_@feedbacks.Key').prop('checked', true);">(all)</div></th>
 			</tr>
 			@foreach (var feedback in feedbacks.GroupBy(x=>x.ByUserId).Select(x=>x.First())){
 				<tr class="feedback feedback_@feedback.Id" style="border-bottom: 1px solid #DDD">
 					<td></td>
-					<td style ="width: 120px">@feedback.ByUser.GetName():</td>
+					<td style ="width: 120px;vertical-align:top;">@feedback.ByUser.GetName():</td>
 					<td class="text" style="font-style: italic;white-space: pre-line;">"@feedback.Feedback"</td>
 					<td class="alignCenter clickable">
 						@{

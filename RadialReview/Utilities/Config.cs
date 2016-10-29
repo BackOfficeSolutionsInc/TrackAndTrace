@@ -122,22 +122,22 @@ namespace RadialReview.Utilities {
             if (organization != null) {
                 switch (organization.Settings.Branding) {
                     case BrandingType.RadialReview:
-                        return GetAppSetting("ReviewName_Review", "Review");
+                        return GetAppSetting("ReviewName_Review", "Eval");
                     case BrandingType.RoundTable:
-                        return GetAppSetting("ReviewName_Roundtable", "Round Table");
+                        return GetAppSetting("ReviewName_Roundtable", "Eval");
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
             }
             try {
                 if (HttpContext.Current.Request.Url.Authority.ToLower().Contains("radialreview"))
-                    return GetAppSetting("ReviewName_Review", "Review");
+                    return GetAppSetting("ReviewName_Review", "Eval");
                 else if (HttpContext.Current.Request.Url.Authority.ToLower().Contains("radialroundtable"))
-                    return GetAppSetting("ReviewName_Roundtable", "Round Table");
+                    return GetAppSetting("ReviewName_Roundtable", "Eval");
             } catch (Exception) {
                 //Fall back...
             }
-            return GetAppSetting("ReviewName_Review", "Review");
+            return GetAppSetting("ReviewName_Review", "Eval");
         }
 
         public static bool IsLocal()

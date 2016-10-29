@@ -1777,6 +1777,7 @@ body.resizing .notes-tile:after,
 }
 .dashboard .component {
   padding: 0px;
+  margin: 0px;
 }
 .dashboard .container.body-content {
   max-width: 100% !important;
@@ -1976,6 +1977,9 @@ body.resizing .notes-tile:after,
   }
   .scorecard-list-container .goal-column {
     display: none;
+  }
+  #ScorecardTable {
+    margin-bottom: 0px;
   }
   .grid-tile {
     height: initial !important;

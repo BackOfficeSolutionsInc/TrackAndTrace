@@ -99,7 +99,7 @@
 
 								}
 
-								using (var s = Html.BeginScripts()) {
+								@*using (var s = Html.BeginScripts()) {
 									<script>
 										function setHints(b) {
 											//TODO hit hints url
@@ -112,7 +112,7 @@
 											});
 										}
 									</script>
-									}
+									}*@
 								} else {
 									<ul class="nav navbar-nav navbar-right">
 										<li>@Html.ActionLink("Sign Up Your Organization", "Index", "GetStarted", routeValues: new { returnUrl = ViewBag.ReturnUrl }, htmlAttributes: new { id = "registerLink", returnUrl = Model ?? "" })</li>

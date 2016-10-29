@@ -64,12 +64,12 @@
 					@foreach (var feedback in feedbacks.GroupBy(x => x.ByUserId + "_" + x.Askable.Id).Select(x => x.First())) {
 						var on = Model.Review.ClientReview.FeedbackIds.ToListAlive().FirstOrDefault(x => x.Value == feedback.Id) != null;
 
-						<li class="feedback feedback_@feedback.Id">
+						<li class="feedback feedback_@feedback.Id" title="@feedback.Feedback" for="cb_feedback_input_@feedback.Id">
 							@*<input name="feedback_input_@feedback.Id" onchange="SetFeedback(@feedback.Id)">*@
-							<span title="@feedback.Feedback">@feedback.ByUser.GetName()</span>
+								<span>@feedback.ByUser.GetName()</span>
 
 
-							<input class="pull-right feedback_input_@feedback.Id" type="checkbox" @(on ? "checked" : "") onchange=" OnclickFeedback(this, @feedback.Id ) " />
+								<input id="cb_feedback_input_@feedback.Id" class="pull-right feedback_input_@feedback.Id" type="checkbox" @(on ? "checked" : "") onchange="OnclickFeedback(this, @feedback.Id )" />
 							@*<span onclick="SetFeedback(@feedback.Id,false)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span>*@
 						</li>
 					}
@@ -100,7 +100,7 @@
 
 		</div>
 		<div class="alignCenter">
-			<div class=" btn-group">
+			<div class="btn-group">
 				<div onclick="clickDetails()" class="btn btn-default" style="width:72px;">View</div>
 				<div onclick="clickPrint()" class="btn btn-default" style="height: 34px;padding: 8px 16px;">
 					<span class="glyphicon glyphicon-print pull-right clickable hover"></span>

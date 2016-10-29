@@ -112,14 +112,14 @@
 				@Html.DisplayNameFor(model => model.Country)
 			</th>
 			<th>
-					@Html.DisplayNameFor(model => model.UserAgent)
+				@Html.DisplayNameFor(model => model.UserAgent)
 				@*</th>
-				<th>
-					@Html.DisplayNameFor(model => model.Languages)
-				</th>*@
+					<th>
+						@Html.DisplayNameFor(model => model.Languages)
+					</th>*@
 		</tr>
 
-		@foreach (var item in Model.Where(x=> !string.IsNullOrWhiteSpace(x.Email) || !string.IsNullOrWhiteSpace(x.LastName) || !string.IsNullOrWhiteSpace(x.FirstName) || !string.IsNullOrWhiteSpace(x.Phone))) {
+		@foreach (var item in Model.Where(x => !string.IsNullOrWhiteSpace(x.Email) || !string.IsNullOrWhiteSpace(x.LastName) || !string.IsNullOrWhiteSpace(x.FirstName) || !string.IsNullOrWhiteSpace(x.Phone))) {
 			<tr>
 				@*<td>
 						@Html.DisplayFor(modelItem => item.CurrentPage)
@@ -189,10 +189,14 @@
 					@Html.DisplayFor(modelItem => item.EosStartTime)
 				</td>
 				<td>
-					@Html.DisplayFor(modelItem => item.OrganizationId)
+					<a href="/organization/which/@item.OrganizationId">
+						@Html.DisplayFor(modelItem => item.OrganizationId)
+					</a>
 				</td>
 				<td>
-					@Html.DisplayFor(modelItem => item.UserId)
+					<a href="/user/details/@item.UserId">
+						@Html.DisplayFor(modelItem => item.UserId)
+					</a>
 				</td>
 				@*<td>
 						@Html.DisplayFor(modelItem => item.DeleteTime)

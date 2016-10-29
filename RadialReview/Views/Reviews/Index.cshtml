@@ -1,8 +1,10 @@
 ﻿@model RadialReview.Models.ViewModels.OrgReviewsViewModel
+@using RadialReview.Models
 @{
 	Layout = "~/Views/Shared/_Layout.cshtml";
-	ViewBag.Title = "Reviews";
+	ViewBag.Title = Html.ReviewName() + "s";
 	ViewBag.Subheading = "";
+	var showDropdown = Model.Reviews.Any(x => x.DropdownLinks.Any());
 }
 
 @section top{
@@ -14,26 +16,32 @@
 @section header{
 	@*Html.Partial("_ReviewsHeader")*@
 }
-@using (Html.BeginStyles())
-{
+@using (Html.BeginStyles()) {
 	<style>
 		.fontastic-icon-checklist {
 			position: relative;
 			top: -2px;
 		}
-		html,body{
-			background-color:#eee;
+
+		.advanced-link {
+			color: #AB3333;
+		}
+
+		html, body {
+			background-color: #eee;
+		}
+
+		.reviews-table td {
+			vertical-align:middle !important;
 		}
 	</style>
 
 }
 
-@using (Html.BeginScripts())
-{
+@using (Html.BeginScripts()) {
 
 }
-@if (ViewBag.IsManager ?? false)
-{
+@if (ViewBag.IsManager ?? false) {
 	<div style="text-align: right;margin-bottom: 3px;">
 		<a class="btn btn-primary btn-invert" href="/Issue/">Issue New @Html.ReviewName()</a>
 	</div>
@@ -43,212 +51,78 @@
 	<div class="panel-heading hidden">
 		<h3 class="panel-title">Your @Html.ReviewName().ToLower()s:</h3>
 	</div>
-	@if (Model.Reviews.Any())
-	{
-		<div class="table-responsive">
-			<table class="table table-condensed tablesorter tablefilter tablesorter-default table-hover">
-				<thead>
-					<tr>
-						<th style="width:80px" class="alignCenter">Status</th>
-						@if (Model.Reviews.Any(x => x.UserReview != null && x.UserReview.ClientReview.Visible))
-						{
-							<th style="width: 90px;" data-title="Your Report">Your Report</th>
-						}
-						<th style="min-width: 100%">@Html.ReviewName() @RadialReview.Properties.DisplayNameStrings.name</th>
-						@*<th style="width:100px" class="alignCenter">Created</th>*@
-						<th style="width:100px" class="alignCenter">Due</th>
-						@*<th style="width: 120px; padding-right: 0px; padding-left: 0px; " class="alignCenter">Completion</th>*@
-
-						@if (ViewBag.IsManager ?? false)
-						{
-                            <th style="width: 110px;"></th>
-							@*<th style="width: 20px;" class="alignCenter" data-title="Review statistics"></th>*@
-							<th class="alignCenter" style="width:1px" @*data-title="Send review reminders"*@></th>
-							@*<th class="alignCenter" style="width:1px" data-title="Edit your subordinate's reports"></th>
-								<th class="alignCenter" style="width:1px" data-title="View  chart"></th>
-								<th class="alignCenter" style="width:1px" data-title="View aggregate chart"></th>
-								<th class="alignCenter" style="width:1px" data-title="View review stats"></th>*@
-						}
-						@if (Model.AllowEdit && Model.Reviews.Any(x => x.Editable))
-						{
-							<th style="width: 20px;" class="alignCenter" data-title="Edit the @Html.ReviewName().ToLower()"></th>
-						}
-
-						@*if (ViewBag.ManagingOrganization ?? false)
-							{
-								<th style="width: 20px;" class="alignCenter"></th>
-							}*@
-
-
-					</tr>
-				</thead>
-				<tbody>
-					@foreach (var review in Model.Reviews)
-					{
-						var takable = review.TakableId;
-						@*var edit = review.Review.Reviews.FirstOrDefault(x => x.ForUserId == ViewBag.UserId);*@
-						<tr class="startHiddenn @(review.Review.DueDate > DateTime.UtcNow ? "" : "grayRoww")">
-							
-							<td class="alignCenter">
-								@{
-									var clzz = "label label-";
-									var txt = "";
-									var hover = "";
-								}
-
-								@if (review.UserReview != null)
-								{
-									if (review.Review.DueDate > DateTime.UtcNow)
-									{
-										if (review.UserReview.Complete)
-										{
-											clzz += "success";
-											txt = "complete";
-											hover = "You've completed this review.";
-										}
-										
-										else if (review.UserReview.Started)
-										{
-											clzz += "warning";
-											txt = "started";
-											hover = "You've started this review.";
-										}
-										else
-										{
-											clzz += "default";
-											txt = "unstarted";
-											hover = "You have not started this review.";
-										}
-									}
-									else
-									{
-										if (review.UserReview.Complete)
-										{
-											clzz += "success";
-											txt = "concluded";
-											hover = "You've completed this review.";
-										}
-										else
-										{
-											//overdue
-											clzz += "warning";
-											txt = "concluded";
-											hover = "This review has concluded but you have not completed it.";
-										}
-									}
-									<span class="@clzz" title="@hover" style="display: block; top: 1px;position: relative;">@txt</span>
-								}
-								else
-								{
-									clzz += "default";
-									txt = "no action required";
-								}
-
-							</td>
-
-							@if (Model.Reviews.Any(x => x.UserReview!=null && x.UserReview.ClientReview.Visible))
-							{
-								<td class="alignCenter click">
-									@if (review.UserReview != null)
-									{
-										if (review.UserReview.ClientReview.Visible)
-										{
-											<a href="/Review/ClientDetails/@review.UserReview.ClientReview.Id">View</a>
-											@*<span class="icon icon new-icon-clipboard-notes clickable" onclick=" location.href='/Review/ClientDetails/@review.UserReview.ClientReview.Id' ; "></span>*@
-										}
-										else
-										{
-											<span class="gray hover" title="Your supervisor has not shared this report with you yet.">N/A</span>
-											@*<span class="icon icon new-icon-clipboard-notes gray hover" title="Your supervisor has not shared this report with you yet."></span>*@
-										}
-									}
-								</td>
-							}
-							<td class="@(review.TakableId != null ? "table-hover-underline clickable" : "")">
-								@*if (review.TakableId != null)
-									{
-									}
-									else
-									{
-										<span class="glyphicon glyphicon-edit" style="color:transparent;"></span>
-									}*@
-								<span>
-									@if (review.TakableId != null)
-									{
-										@:<a href='/Review/Take/@review.Review.Id'>
-									}
-									@review.Review.ReviewName
-									@if (review.TakableId != null)
-									{
-										@:</a>
-									}
-								</span>
-							</td>
-
-							@*<td class="alignCenter">@review.Review.DateCreated.ToShortDateString()</td>*@
-							<td class="alignCenter">
-								@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",review.Review.DueDate.Subtract(TimeSpan.FromDays(1)))
-							</td>
-							
-							@*<td style="padding-right: 0px; padding-left: 0px; ">
-									@Html.Partial("_Completion", review.Review)
-								</td>*@
-							@if (ViewBag.IsManager ?? false)
-							{
-								@*<td class="alignCenter">
-											<a href="/Statistics/Review/@review.Review.Id"><span class="glyphicon glyphicon-stats" title="Review statistics"></span></a>
-										</td>
-
-									<td class="alignCenter">
-										@if (review.Review.DueDate > DateTime.UtcNow)
-										{
-										<a href="/Reports/Index/@review.Review.Id#Reminders"><span class="glyphicon glyphicon-bell" title="Send review reminders" ></span></a>
-
-										}
-									</td>
-									<td class="alignCenter">
-										<a href="/Reports/Index/@review.Review.Id#Reports"><span class="icon new-icon-page-multiple" title="Edit your subordinate's reports" ></span></a>
-									</td>
-									<td class="alignCenter">
-										<a href="/Reports/Index/@review.Review.Id#Aggregate"><span class="glyphicon glyphicon-th-large" title="View aggregate chart"> </span></a>
-									</td>
-									<td class="alignCenter">
-										<a href="/Reports/Index/@review.Review.Id#Stats"><span class="glyphicon glyphicon-stats" title="View review stats" ></span></a>
-									</td>*@
-                                <td class="alignCenter clickable">
-                                    <a href="/Reports/List/@review.Review.Id">Report Builder</a>
-                                </td>
-								<td class="alignCenter clickable">
-									<a href="/Reports/Index/@review.Review.Id">@*<span class="icon fontastic-icon-checklist" title="Manage this @Html.ReviewName().ToLower()"></span>*@ Manage</a>
-								</td>
-							}
-
-							@if (review.Editable && Model.AllowEdit && Model.Reviews.Any(x => x.Editable))
-							{
-								<td class="alignCenter clickable">
-									<a href="/Reviews/Edit/@review.Review.Id">@*<span class="glyphicon glyphicon-cog" title="Edit the @Html.ReviewName().ToLower()"></span>*@Settings</a>
-								</td>
-							}
-							@*if (ViewBag.ManagingOrganization ?? false)
-								{
-									<td>
-										<div onclick="deleteReview(@review.Review.Id)"><span class="glyphicon glyphicon-trash clickable"></span></div>
-									</td>
-								}*@
-
-
-						</tr>
+	@if (Model.Reviews.Any()) {
+		@*<div class="table-responsive">*@
+		<table class="table table-condensed tablesorter tablefilter tablesorter-default table-hover reviews-table">
+			<thead>
+				<tr>
+					<th style="width:80px" class="alignCenter hidden-xs1">Status</th>
+					@if (Model.Reviews.Any(x => x.UserReview != null && x.UserReview.ClientReview.Visible)) {
+						<th style="width: 90px;" data-title="Your Report">Your Report</th>
 					}
-				</tbody>
-			</table>
-		</div>
+					<th style="min-width: 100%">@Html.ReviewName() @RadialReview.Properties.DisplayNameStrings.name</th>
+					@*<th style="width:100px" class="alignCenter">Created</th>*@
+					<th style="width:100px" class="alignCenter hidden-xs1">Due</th>
 
-	}
-	else
-	{
+					@if (showDropdown) {
+						<th style="width: 36px;min-width: 36px;max-width: 36px;padding:0"></th>
+					}				
+
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var review in Model.Reviews) {
+					var takable = review.TakableId;
+					@*var edit = review.Review.Reviews.FirstOrDefault(x => x.ForUserId == ViewBag.UserId);*@
+					<tr class="startHiddenn @(review.Review.DueDate > DateTime.UtcNow ? "" : "grayRoww")">
+
+						<td class="alignCenter hidden-xs1">
+							@Model.CreateLabel(review)
+						</td>
+						<td>
+							@if (review.TakableId != null) {
+								<a href='/Review/Take/@review.Review.Id'>
+									@review.Review.ReviewName
+								</a>
+							} else {
+								@review.Review.ReviewName
+							}
+						</td>
+						<td class="alignCenter hidden-xs1">
+							@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", review.Review.DueDate.Subtract(TimeSpan.FromDays(1)))
+						</td>
+
+						@if (showDropdown) {
+							<td>
+								@if (review.DropdownLinks.Any()) {
+									<div class="btn-group">
+										<button id="" type="button" class="btn btn-default btn-sm dropdown-toggle l10-extra-options" data-toggle="dropdown" aria-expanded="false">
+											<span style="top: 2px;" class="glyphicon glyphicon-chevron-down"></span>
+										</button>
+										<ul class="dropdown-menu alignLeft pull-right" role="menu">
+											@foreach (var link in review.DropdownLinks) {
+												if (link == null) {
+													<li class="divider"></li>
+												} else {
+													<li>@link</li>
+												}
+											}
+										</ul>
+									</div>
+								}
+							</td>
+						}
+					</tr>
+				}
+			</tbody>
+		</table>
+			@*</div>*@
+
+	} else {
 		<div class="panel-body gray">
 			There are no @Html.ReviewName().ToLower()s at this time.
 		</div>
 	}
 </div>
 @Html.Partial("_Pagination", Model)
+

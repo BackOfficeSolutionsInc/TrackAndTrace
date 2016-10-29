@@ -144,7 +144,9 @@ namespace RadialReview.Accessors {
 				return data;
 			}
 		}
-		public static Document GenerateReviewPrintout(UserOrganizationModel caller, ReviewController.ReviewDetailsViewModel review, int margin) {
+
+
+		public static PdfDocument GenerateReviewPrintout(UserOrganizationModel caller, ReviewController.ReviewDetailsViewModel review, int margin) {
 			var name = review.Review.ForUser.GetName();
 			//var doc = CreateDoc(caller, review.ReviewContainer.ReviewName + " - " + name);
 
@@ -160,26 +162,38 @@ namespace RadialReview.Accessors {
 			// Document doc = HelloMigraDoc.Documents.CreateDocument();
 			//var section = doc.AddSection();
 			//var chartPage = PdfAccessor.AddTitledPage(doc, name);
-			var scatter = new ChartsEngine().ReviewScatter2(caller, review.Review.ForUserId, review.Review.ForReviewContainer.Id, review.Review.ClientReview.ScatterChart.Groups, true, false);
-			var plot = OxyplotAccessor.ScatterPlot(scatter, margin);
-			//var pdfExporter = new PdfExporter { Width = 8.5 * 72, Height = 8.5 * 72, Background = OxyColors.White };
+			var scatter = new ChartsEngine().ReviewScatter2(caller, review.Review.ForUserId, review.Review.ForReviewContainer.Id, review.Review.ClientReview.ScatterChart.Groups, true, review.Review.ClientReview.ScatterChart.IncludePrevious);
 
-			var stream = new MemoryStream();
-			//pdfExporter.Export(plot, stream);
+			var w2 = Unit.FromInch(8.5 / 2.0);
+			var h2 = Unit.FromInch(10 / 2.0);
+
+			var top = Unit.FromInch(1);
+
+			PdfChartAccessor.DrawQuadrant(scatter, gfx, new XRect(0, top, w2, h2),centerHeight:false);
+
+			var gwcAnswers = review.AnswersAbout.Where(x => x is GetWantCapacityAnswer).Cast<GetWantCapacityAnswer>().ToList();
+			PdfChartAccessor.DrawRolesTable(gfx, new XRect(w2, top, w2, h2),gwcAnswers);
 
 
-			//PdfDocument imgDoc = new PdfDocument(stream);
-			PngExporter.Export(plot, stream, 400, 400, OxyColor.FromRgb(255, 255, 255));
+
+			//var plot = OxyplotAccessor.ScatterPlot(scatter, margin);
+			////var pdfExporter = new PdfExporter { Width = 8.5 * 72, Height = 8.5 * 72, Background = OxyColors.White };
+
+			//var stream = new MemoryStream();
+			////pdfExporter.Export(plot, stream);
 
 
-			Document doc = CreateDoc(caller, "Printout");
-			var arr = LoadImage(stream);
-			var img = MigraDocFilenameFromByteArray(arr);
+			////PdfDocument imgDoc = new PdfDocument(stream);
+			//PngExporter.Export(plot, stream, 400, 400, OxyColor.FromRgb(255, 255, 255));
 
-			var section = doc.AddSection();
-			section.AddImage(img);
 
-			return doc;
+			//Document doc = CreateDoc(caller, "Printout");
+			//var arr = LoadImage(stream);
+			//var img = MigraDocFilenameFromByteArray(arr);
+			//var section = doc.AddSection();
+			//section.AddImage(img);
+
+			return document;
 			//var chartImg = XPdfForm.FromStream(new MemoryStream(stream.ToArray()));
 			//XRect LetterRect = new XRect(0, 0, LetterWidth, LetterHeight);
 
@@ -491,7 +505,7 @@ namespace RadialReview.Accessors {
 
 			var r = t.AddRow();
 			r.Cells[0].AddParagraph("Segue");
-			r.Cells[1].AddParagraph((int)recurr.SegueMinutes+" Minutes");
+			r.Cells[1].AddParagraph((int)recurr.SegueMinutes + " Minutes");
 			r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
 			r = t.AddRow();
 			r.Cells[0].AddParagraph("Scorecard");

@@ -83,7 +83,19 @@ html, body {
     .alignCenter-md {
         text-align: center;
     }
+
 }
+@media (min-width: 769px){
+	
+	.pull-right-sm{
+		float:right;
+	}
+	.pull-left-sm{
+		float:left;
+	}
+
+}
+
 
 .addButton {
     width: 100%;
@@ -128,6 +140,7 @@ html, body {
     padding-bottom: 20px;
     background-color: #F8F8F8;
     height: 150px;
+	overflow:hidden;
 }
 
     .stats h1 {
@@ -519,18 +532,6 @@ body {
 }
 
 @media screen and (max-width: 768px) {
-    .navbar .picture-container {
-        right: 0px;
-    }
-
-    .nav.navbar-nav .btn-group.heading a.heading {
-        max-width: inherit !important;
-    }
-
-    .nav.navbar-nav .btn-group.heading {
-        width: 70%;
-        width: calc(100% - 60px);
-    }
 }
 
 
@@ -1369,10 +1370,15 @@ table.tablesorter thead tr .tablesorter-headerDesc .tablesorter-header-inner:aft
     cursor: pointer;
 }
 
-table.tablesorter thead tr .tablesorter-header:not(.tablesorter-headerDesc):not(.tablesorter-headerAsc) .tablesorter-header-inner:after {
-    color: #F5A873;
+table.tablesorter thead tr .tablesorter-header:not(.tablesorter-headerDesc):not(.tablesorter-headerAsc):not(.sorter-false) .tablesorter-header-inner:after {
+    color: rgba(245, 168, 115, 0);
     content: "⇅";
     cursor: pointer;
+	transition: ease color .25s;
+}
+
+table.tablesorter thead tr .tablesorter-header:not(.tablesorter-headerDesc):not(.tablesorter-headerAsc):hover .tablesorter-header-inner:after {
+    color: #F5A873;
 }
 
 .panel > .table-responsive > table.tablesorter thead tr .tablesorter-header:not(.tablesorter-headerDesc):not(.tablesorter-headerAsc):hover .tablesorter-header-inner:after,

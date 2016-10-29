@@ -1,7 +1,7 @@
 ﻿@using System.Web.UI.WebControls
 @model RadialReview.Controllers.IssueReviewModel
 @{
-	ViewBag.Title = "Issue";
+	ViewBag.Title = "Issue " + Html.ReviewName() + "s";
 	Layout = "~/Views/Shared/_Layout.cshtml";
 	ViewBag.Page = "Issue";
 }
@@ -20,26 +20,26 @@
 
 <div class="panel panel-primary">
 	@*<div class="panel-heading">
-		Create a @Html.ReviewName():
-	</div>*@
+			Create a @Html.ReviewName():
+		</div>*@
 	<div class="panel-body alignCenter">
 
 		<form id="issueForm" method="post" action="/Issue/">
 			<div style="display:none">
 				<h2 class="">Who is this @Html.ReviewName().ToLower() for?</h2>
 				<div class="row">
-					<div class="col-md-5 col-md-push-7">
-						<p class="well">
-							As a supervisor of this organization you can issue @Html.ReviewName().ToLower()s to teams you manage or to the organization as a whole.
-						</p>
-					</div>
+					@*<div class="col-md-5 col-md-push-7">
+							<p class="well">
+								As a supervisor of this organization you can issue @Html.ReviewName().ToLower()s to teams you manage or to the organization as a whole.
+							</p>
+						</div>*@
 					<div class="col-md-7 col-md-pull-5" style="padding-top: 25px;">
 						<div class="row alignCenter" data-toggle="buttons">
 							@*<div class="col-sm-4">
-							<label class="btn btn-default fullWidth" onclick="loadOrganization()">
-								<input type="radio" name="forWho" value="all" class="hidden" />All of @Model.OrganizationName
-							</label>
-						</div>*@
+									<label class="btn btn-default fullWidth" onclick="loadOrganization()">
+										<input type="radio" name="forWho" value="all" class="hidden" />All of @Model.OrganizationName
+									</label>
+								</div>*@
 							<div class="col-sm-6">
 								<label class="btn btn-default  fullWidth" onclick="loadTeam()">
 									<input type="radio" name="forWho" value="team" class="hidden" />One of my teams
@@ -75,7 +75,7 @@
 
 
 		function loadPage(selector, url) {
-			$(selector).html('<div class="alignCenter"><img src="/Content/img/ajax-loader.gif" /></div>');
+			$(selector).html('<div class="alignCenter throbber"><img src="/Content/img/ajax-loader.gif" /></div>');
 			$.ajax({
 				url: url,
 				type: 'GET',
@@ -127,10 +127,51 @@
 			text-transform: uppercase;
 			/* font-weight: bold; */
 			color: #666;
+			margin-top: 0px;
+			margin-bottom: 0px;
+			padding: 0px 20px;
+			font-size: 24px;
 		}
 
 		body, html {
 			background-color: #eee;
+		}
+
+		.throbber {
+			padding: 15px 0px 0px;
+		}
+
+		.nav-tabs > li > a {
+			left: 6px;
+		}
+
+
+		@@media(max-width:767px) {
+			.adjTop {
+				margin-top: 15px;
+			}
+		}
+
+		.dflt-button {
+			/*background-color: #fff1e7 !important;*/
+			position: relative;
+		}
+
+			.dflt-button:after {
+				content: "(recommended)";
+				color: rgba(128, 128, 128, 0.64);
+				/* width: 0px; */
+				display: inline-block;
+				font-size: 10px;
+				top: -14px;
+				position: absolute;
+				left: -47px;
+				right: 0px;
+				left: 0px;
+			}
+
+		.checkbox-holder {
+			padding: 0 18px;
 		}
 	</style>
 }

@@ -101,6 +101,7 @@
 
 @using (Html.BeginScripts()) {
 	<script>
+		var skipHideDropdown = false;
 		$(".permissions-dropdown-menu").on("click", function () {
 			skipHideDropdown = true;
 			setTimeout(function () {

@@ -591,6 +591,10 @@ tr.grayRow {
   margin-top: 0px;
   margin-bottom: 2px;
 }
+#alerts .alert {
+  max-width: 100%;
+  max-width: 85vw;
+}
 input:-webkit-autofill,
 textarea:-webkit-autofill,
 select:-webkit-autofill,
@@ -877,7 +881,19 @@ body.resizing *::-moz-selection {
   bottom: -6px;
   right: -6px;
 }
+.navbar-collapse.in .btn-group.heading button {
+  display: none;
+}
+.navbar-collapse.in ul.navbar-nav {
+  margin-left: -25px;
+}
 @media (max-width: 768px) {
+  .navbar-icon-container {
+    padding-top: 11px;
+  }
+  .body-full-width .navbar-icon-container {
+    padding-top: 0px;
+  }
   .navbar-icon-button.issuesModal,
   .navbar-icon-button.headlineModal,
   .navbar-icon-button.todoModal {
@@ -886,6 +902,37 @@ body.resizing *::-moz-selection {
   }
   .navbar-icon-button.headlineModal {
     font-size: 18px;
+  }
+  .body-full-width .navbar-toggle {
+    margin-right: 0px;
+  }
+  .navbar-collapse .divider {
+    display: none;
+  }
+  .navbar-collapse > ul.navbar-nav {
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+  }
+  .navbar-collapse > ul.navbar-nav a {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+  .navbar-collapse form {
+    /*margin-left: -10px;
+			margin-right: -10px;*/
+  }
+  .navbar .picture-container {
+    right: 0px;
+  }
+  .nav.navbar-nav .btn-group.heading a.heading {
+    max-width: inherit !important;
+  }
+  /*.nav.navbar-nav .btn-group.heading {
+        width: 70%;
+        width: calc(100% - 60px);
+    }*/
+  .body-normal-width .navbar-nav > li > a {
+    padding: 4px 10px;
   }
 }
 [data-permicon] {
@@ -1004,12 +1051,6 @@ body.resizing *::-moz-selection {
 .select2-results__option--highlighted .searchresult .searchresult-meta .searchresult-description {
   color: white;
 }
-.navbar-collapse.in .btn-group.heading button {
-  display: none;
-}
-.navbar-collapse.in ul.navbar-nav {
-  margin-left: -25px;
-}
 #modal input[type=checkbox] {
   outline: none !important;
   border: none;
@@ -1022,4 +1063,10 @@ body.resizing *::-moz-selection {
 }
 .a-link:hover {
   color: #EF7622 !important;
+}
+.dropdown-menu > li > a.gray {
+  color: #BDBDBD;
+}
+.noclick {
+  cursor: pointer;
 }

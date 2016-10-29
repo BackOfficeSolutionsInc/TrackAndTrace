@@ -75,8 +75,8 @@ namespace RadialReview
             }
             return new HtmlString(string.Empty);*/
             if (value)
-                return new HtmlString("<span class='glyphicon glyphicon-ok-sign icon greenHover'></span>");
-            return new HtmlString("<span class='glyphicon glyphicon-minus-sign icon redHover'></span>");
+                return new HtmlString("<span class='glyphicon glyphicon-ok-sign icon greenHover' title='Shared'></span>");
+            return new HtmlString("<span class='glyphicon glyphicon-minus-sign icon redHover' title='Not Shared'></span>");
         }
         public static HtmlString GetIcon(this bool value, string up, string down, String upTitle, String downTitle, String upAttributes = "", String downAttributes = "")
         {

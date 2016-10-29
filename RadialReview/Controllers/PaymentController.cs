@@ -61,7 +61,7 @@ namespace RadialReview.Controllers {
 				BaselinePrice = 149,
 				FirstN_Users_Free = 10,
 				L10PricePerPerson = 10,
-				ReviewPricePerPerson = 4,
+				ReviewPricePerPerson = 2,
 				PlanCreated = DateTime.UtcNow,
 				OrgId = id,
 				_Org = org

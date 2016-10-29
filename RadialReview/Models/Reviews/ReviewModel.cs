@@ -25,6 +25,7 @@ namespace RadialReview.Models
 		//public virtual DateTime De { get; set; }
 		public virtual DateTime DueDate { get; set; }
 		public virtual ClientReviewModel ClientReview { get; set; }
+
 		public virtual List<AnswerModel> Answers { get; set; }
 
 		public virtual long? PeriodId { get; set; }
@@ -33,7 +34,6 @@ namespace RadialReview.Models
 		public virtual bool Complete { get; set; }
 		public virtual decimal? DurationMinutes { get; set; }
 		public virtual bool Started { get; set; }
-
 		public virtual bool SeenHints { get; set; }
 
 		//public virtual Ratio Roles { get; set; }

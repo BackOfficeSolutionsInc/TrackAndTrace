@@ -1,61 +1,63 @@
 ﻿@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
 @using RadialReview.Models;
 <!--ChartBuilder3.cshtml-->
-<div class="noselect">
-	<form id="controls">
-		<div class="row " style="padding-top:5px">
-			<div class="col-xs-4">
-				<b style="margin-left:10px;">Aggregate by:</b>
-				<div style="overflow-y: auto; overflow-x: hidden; height: 90px; border: 1px solid #CACACA; padding-left: 5px;margin-left:10px;background-color: rgba(255, 255, 255, 0.5);">
-					@{
-						var agg = Model.Review.ClientReview.ScatterChart.Groups;
-					}
+<div class="charts-container">
+	<div class="noselect">
+		<form id="controls">
+			<div class="row " style="padding-top:5px">
+				<div class="col-sm-4 col-xs-6">
+					<b style="margin-left:10px;">Aggregate by:</b>
+					<div style="overflow-y: auto; overflow-x: hidden; height: 90px; border: 1px solid #CACACA; padding-left: 5px;margin-left:10px;background-color: rgba(255, 255, 255, 0.5);">
+						@{
+							var agg = Model.Review.ClientReview.ScatterChart.Groups;
+						}
 
-					<ul class="noBullet separation" id="groupSet">
-						<li>
-							<input name="separate" id="separateUsers" class="update group" @(agg == "user-*" ? "checked" : "") type="radio" data-class="user-*" data-addclass="separateUser user-*" value="user-*" />
-							<label for="separateUsers">Users</label>
-							<span class="info" title="Each user will show up as a dot on the chart."></span>
-						</li>
-						<li>
-							<input name="separate" id="separateRelationship" class="update group" @(agg == "about-*" ? "checked" : "") type="radio" data-class="about-*" data-addclass="separateAbout about-*" value="about-*" />
-							<label for="separateRelationship">Relationship</label>
-							<span class="info" title="Each dot represents the average of each relationship group."></span>
-						</li>
-						<li>
-							<input name="separate" id="separateReview" class="update group" @((agg == "review-*" || agg == "") ? "checked" : "") type="radio" data-addclass="separateReview" data-class="review-*" value="review-*" />
-							<label for="separateReview">@Html.ReviewName()</label>
-							<span class="info" title="The dot represents the aggregate average for this individual."></span>
-						</li>
-					</ul>
+						<ul class="noBullet separation" id="groupSet">
+							<li>
+								<input name="separate" id="separateUsers" class="update group" @(agg == "user-*" ? "checked" : "") type="radio" data-class="user-*" data-addclass="separateUser user-*" value="user-*" />
+								<label for="separateUsers">Users</label>
+								<span class="info" title="Each user will show up as a dot on the chart."></span>
+							</li>
+							<li>
+								<input name="separate" id="separateRelationship" class="update group" @(agg == "about-*" ? "checked" : "") type="radio" data-class="about-*" data-addclass="separateAbout about-*" value="about-*" />
+								<label for="separateRelationship">Relationship</label>
+								<span class="info" title="Each dot represents the average of each relationship group."></span>
+							</li>
+							<li>
+								<input name="separate" id="separateReview" class="update group" @((agg == "review-*" || agg == "") ? "checked" : "") type="radio" data-addclass="separateReview" data-class="review-*" value="review-*" />
+								<label for="separateReview">@Html.ReviewName()</label>
+								<span class="info" title="The dot represents the aggregate average for this individual."></span>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-sm-4 col-xs-6">
+					<b class="showPrevious-label">Include previous review: </b> <input type="checkbox" class="checkbox update showPrevious" @(Model.Review.ClientReview.ScatterChart.IncludePrevious ? "checked" : "") />
+
 				</div>
 			</div>
-			<div class="col-xs-4">
-				<b style="margin-left:10px;">Include previous review: </b> <input type="checkbox" class="checkbox update showPrevious" style="display:inline-block;margin: 0;" @(Model.Review.ClientReview.ScatterChart.IncludePrevious?"checked":"")/>
-				
-			</div>
-		</div>
-	</form>
-</div>
+		</form>
+	</div>
 
-<div class="row noselect">
-	<div class="col-md-12">
-		<div class="alignCenter">
-			<div class="" style="width: 78%;width: calc( 100% - 145px ); float: left; padding-left: 13px;position:relative;">
-				<div id="chart2" class="inline" style="height:50vh;">
-					<!--Chart Goes Here-->
-				</div>
-				<div class="chartPlaceholder hidden" style="position: absolute;top: 50%;left: 50%;margin-top: -5px;margin-left: -1px;">
-					@*<div style="position:absolute">*@
+	<div class="row noselect">
+		<div class="col-md-12">
+			<div class="alignCenter">
+				<div class="chart-panel" style="">
+					<div id="chart2" class="inline" style="height:50vh;">
+						<!--Chart Goes Here-->
+					</div>
+					<div class="chartPlaceholder hidden" style="position: absolute;top: 50%;left: 50%;margin-top: -5px;margin-left: -1px;">
+						@*<div style="position:absolute">*@
 						<img src="/Content/img/ajax-loader.gif" @*style="top: 50%;position: absolute;left: 50%;"*@ />
-					@*</div>*@
-					@*<svg viewBox="0 0 500 500" height="100%" width="100%">
+						@*</div>*@
+						@*<svg viewBox="0 0 500 500" height="100%" width="100%">
 
-					</svg>*@
+							</svg>*@
+					</div>
 				</div>
-			</div>
-			<div style="width: 136px; float: right;">
-				<div id="legend" class="legend inline">
+				<div class="legend-bar">
+					<div id="legend" class="legend inline">
+					</div>
 				</div>
 			</div>
 		</div>

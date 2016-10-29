@@ -48,6 +48,11 @@ tr.grayRow {
 #alerts {
 	margin-top: 0px;
 	margin-bottom: 2px;
+
+	.alert {
+		max-width: 100%;
+		max-width: 85vw;
+	}
 }
 
 input:-webkit-autofill,
@@ -375,8 +380,25 @@ body.resizing, body.resizing *::-moz-selection {
 	right: -6px;
 }
 
+.navbar-collapse.in {
+	.btn-group.heading button {
+		display: none;
+	}
+
+	ul.navbar-nav {
+		margin-left: -25px;
+	}
+}
 
 @media(max-width:768px) {
+	.navbar-icon-container {
+		padding-top: 11px;
+	}
+
+	.body-full-width .navbar-icon-container {
+		padding-top: 0px;
+	}
+
 	.navbar-icon-button.issuesModal,
 	.navbar-icon-button.headlineModal,
 	.navbar-icon-button.todoModal {
@@ -384,8 +406,53 @@ body.resizing, body.resizing *::-moz-selection {
 		padding: 6px 10px;
 	}
 
+
+
 	.navbar-icon-button.headlineModal {
 		font-size: 18px;
+	}
+
+	.body-full-width .navbar-toggle {
+		margin-right: 0px;
+	}
+
+	.navbar-collapse {
+		.divider {
+			display: none;
+		}
+
+		& > ul.navbar-nav {
+			margin-left: 0px !important;
+			margin-right: 0px !important;
+
+			a {
+				padding-left: 0px;
+				padding-right: 0px;
+			}
+		}
+
+		form {
+			/*margin-left: -10px;
+			margin-right: -10px;*/
+		}
+	}
+
+	.navbar .picture-container {
+		right: 0px;
+	}
+
+	.nav.navbar-nav .btn-group.heading a.heading {
+		max-width: inherit !important;
+	}
+
+	/*.nav.navbar-nav .btn-group.heading {
+        width: 70%;
+        width: calc(100% - 60px);
+    }*/
+
+
+	.body-normal-width .navbar-nav > li > a {
+		padding: 4px 10px;
 	}
 }
 
@@ -495,19 +562,6 @@ body.resizing, body.resizing *::-moz-selection {
 	}
 }
 
-
-.navbar-collapse.in {
-	.btn-group.heading button {
-		display: none;
-	}
-
-	ul.navbar-nav {
-		margin-left: -25px;
-	}
-}
-
-
-
 #modal {
 	input[type=checkbox] {
 		outline: none !important;
@@ -519,10 +573,18 @@ body.resizing, body.resizing *::-moz-selection {
 }
 
 
-.a-link{
-	text-decoration:underline;
+.a-link {
+	text-decoration: underline;
 }
 
-.a-link:hover{
+.a-link:hover {
 	color: @traction-orange !important;
+}
+
+.dropdown-menu > li > a.gray {
+	color: #BDBDBD;
+}
+
+.noclick{
+	cursor:pointer;
 }

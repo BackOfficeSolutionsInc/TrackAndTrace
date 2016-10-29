@@ -11,7 +11,7 @@
     var i = 0;
 }
 @section top{
-    <div class="aboveJumbotron noPrint">
+    <div class="aboveJumbotron noPrint hidden-xs">
         <h2>Aggregate report for @Model.Review.Name.</h2>
     </div>
     <div class="jumbotron noPrint @(ViewBag.Reviewing??false?"reviewing":"") @(Model.Review.ClientReview.Visible?"on":"")">
@@ -96,16 +96,16 @@
     </div>
 
 
-    <div class="col-lg-9 review clientDetailsContainer" style="min-width:660px;border-radius: 2px;">
+    <div class="col-lg-9 review clientDetailsContainer" style="border-radius: 2px;">
         <a id="name" class="shiftByTitle"></a>
         <div class="row zoom8 topRow">
             <div class="col-xs-12">
                 <div class="row-title first row" style="">
                     <div class="col-xs-12 alignCenter pull-left">
                         @if (!String.IsNullOrWhiteSpace(Model.Review.ForUser.GetTitles())) {
-                            <div style="padding-top:43px;" class="pull-left reviewPosition">@Model.Review.ForUser.GetTitles()</div>
+                            <div style="padding-top:43px;" class="pull-left-sm reviewPosition">@Model.Review.ForUser.GetTitles()</div>
                         }
-                        <div style="padding-top:43px;" class="pull-right reviewName">@Model.Review.Name</div>
+                        <div style="padding-top:43px;" class="pull-right-sm reviewName">@Model.Review.Name</div>
 
                         <div class="employee-name">@Model.Review.ForUser.GetName()</div>
                     </div>
@@ -115,11 +115,11 @@
         @* JOB DESCRIPTION HERE*@
         @if (!String.IsNullOrWhiteSpace(Model.JobDescription)) {
             <div class="row  zoom8" style="margin-bottom: 10px;">
-                <div class="col-xs-3 jobDescriptionHeading alignRight ">
+                <div class="col-sm-3 jobDescriptionHeading alignRight ">
                     <a id="jobDescription" class="shiftByTitle"></a>
                     <b>Job Description:</b>
                 </div>
-                <div class="col-xs-9 jobDescription">
+                <div class="col-sm-9 jobDescription">
                     @Model.JobDescription
                 </div>
             </div>
@@ -633,8 +633,8 @@
             updateChart();
         });
 
+        updateChart();
         $(function () {
-            updateChart();
 
             var resizeScorecard = function () {
                 var w = $(".scorecard .table-responsive #ScorecardTable").width();

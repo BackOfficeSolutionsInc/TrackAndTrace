@@ -1,0 +1,108 @@
+﻿@import (reference) "../bootstrap/glyphicons";
+@import (reference) "../bootstrap/buttons";
+
+.nav-tabs.manage li {
+	min-width: 95px;
+	text-align: left;
+
+	.glyphicon {
+		color: #9f9f9f;
+		left: -5px;
+	}
+}
+
+.header-sharing-btn {
+	margin-left: 4px;
+	margin-top: 3px;
+
+
+
+	.btn {
+		.btn-danger();
+
+		&:not(.dropdown-toggle) {
+			width: 100px;
+
+			.icon {
+				.glyphicon();
+				.glyphicon-minus-sign();
+				padding-right: 6px;
+			}
+
+			&:after {
+				content: " Private";
+			}
+		}
+	}
+
+
+
+	&.on {
+		.btn {
+			.btn-success();
+
+			&:not(.dropdown-toggle) {
+				.icon {
+					.glyphicon-ok();
+				}
+
+				&:after {
+					content: " Sharing";
+				}
+			}
+		}
+	}
+}
+
+.sidebar {
+	max-width: 300px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.charts-container {
+	.legend-bar .legend {
+		width: 136px;
+		float: right;
+	}
+
+	.chart-panel {
+		width: 78%;
+		width: ~"calc( 100% - 145px )";
+		float: left;
+		padding-left: 13px;
+		position: relative;
+	}
+
+	.showPrevious {
+		display: inline-block;
+		margin: 0;
+	}
+	.showPrevious-label{
+		margin-left:10px;
+	}
+
+	@media(max-width:768px) {
+		.legend-bar {
+			clear: both;
+
+			.legend {
+				float: none;
+				margin: auto;
+				
+			}
+		}
+
+		.chart-panel {
+			width: 100%;
+		}
+
+		.showPrevious {
+		}
+		.showPrevious-label{
+			font-size:12px;
+			display:block;
+
+		}
+	}
+}

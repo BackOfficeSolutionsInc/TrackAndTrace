@@ -62,21 +62,20 @@
 	<br /><br />
 	<ul class="nav nav-tabs nav-tabs-line" role="tablist">
 		<li role="presentation" class="active"><a href="#simple" aria-controls="home" role="tab" data-toggle="tab">Simple</a></li>
-		<li role="presentation" class=""><a href="#advanced" aria-controls="home" role="tab" data-toggle="tab">Advanced</a></li>
+		<li role="presentation" class=""><a href="#advanced" aria-controls="home" role="tab" data-toggle="tab">Advanced <span class="hidden-xs">Customization</span></a></li>
 	</ul>
 	<div class="tab-content">
 		<div role="tabpanel" class="tab-pane active" id="simple">
 			<br />
 			<div class="" data-toggle="buttons">
-				<label class="btn btn-default active simple-btn" title="Supervisors, Direct Reports and Teammembers review each other.">
-					<input type="radio" name="review_type" id="review_360" autocomplete="off" checked> 360° Review
-				</label>
-
-				<label class="btn btn-default simple-btn" title="Supervisors review direct reports and vise versa">
-					<input type="radio" name="review_type" id="review_S2D_D2S" autocomplete="off"> Supervisor <b>&hArr;</b> Direct Report
+				<label class="btn btn-default dflt-button active simple-btn" title="Supervisors review direct reports and vise versa">
+					<input type="radio" name="review_type" id="review_S2D_D2S" autocomplete="off" checked> Supervisor <b>&hArr;</b> Direct Report
 				</label>
 				<label class="btn btn-default simple-btn" title="Supervisors review direct reports only">
 					<input type="radio" name="review_type" id="review_S2D" autocomplete="off">Supervisor <b>&rArr;</b> Direct Report
+				</label>
+				<label class="btn btn-default  simple-btn" title="Supervisors, Direct Reports and Teammembers review each other.">
+					<input type="radio" name="review_type" id="review_360" autocomplete="off"> 360° Review
 				</label>
 				<label class="btn btn-default simple-btn" title="No reviewer-reviewees selected">
 					<input type="radio" name="review_type" id="review_S" autocomplete="off">Blank Review
@@ -86,13 +85,13 @@
 			<br />
 
 			<br />
-
+			<h2 class="smallBreak2">Employees Evaluate Themselves?</h2>
 			<div class="" data-toggle="buttons">
-				<label class="btn btn-default active simple-btn">
-					<input type="radio" name="self_review" id="review_self" autocomplete="off" checked> Employees Review Themselves
+				<label class="btn btn-default dflt-button active simple-btn-yn">
+					<input type="radio" name="self_review" id="review_self" autocomplete="off" checked> Yes
 				</label>
-				<label class="btn btn-default simple-btn">
-					<input type="radio" name="self_review" id="review_notself" autocomplete="off"> Employees Do Not Review Themselves
+				<label class="btn btn-default simple-btn-yn">
+					<input type="radio" name="self_review" id="review_notself" autocomplete="off"> No
 				</label>
 			</div>
 			<br />
@@ -104,15 +103,16 @@
 				<div class="col-sm-5 col-sm-push-7">
 					<div class="well">
 						<p>
-							From this menu, you can choose select who each employee will evaluate. The "Default" option ensures that users will evaluate themselves and their Supervisors, Direct Reports, Teammates, and Peers.
+							Customize who reviews who. The highlighted individual in the left column evaluates the selected individuald in the right column. Use the
+							<abbr onmouseover="$('.quickSelect').addClass('hovered');" onmouseout="$('.quickSelect').removeClass('hovered');">selectors</abbr>
+							to select/deselect from all individuals simultaneously.
 
-							<i> For the most organizations, selecting "Default" is sufficient.</i>
+							@*<i> For the most organizations, selecting "Default" is sufficient.</i>*@
 						</p>
 					</div>
 				</div>
 				<div class="col-sm-7 col-sm-pull-5 smallBreak2">
-					@foreach (var s in Model.Selectors)
-					{
+					@foreach (var s in Model.Selectors) {
 						<div class="row ">
 							<div class="alignRight col-xs-6">@(s.Name)</div> <div class="alignLeft quickSelect col-xs-6" data-checkclass="is@(s.UniqueId)">       (<a class="select">select</a> | <a class="deselect">deselect</a>)</div>
 						</div>
@@ -139,20 +139,17 @@
 								var first = true;
 								var firstId = -1L;
 							}
-							@foreach (var user in Model.Subordinates.OrderBy(x => x.GetNameAndTitle()))
-							{
+							@foreach (var user in Model.Subordinates.OrderBy(x => x.GetNameAndTitle())) {
 								<div id="first_@user.Id" class="@(first?"selected":"") selectable clickable" data-id="@(user.Id)" onclick="unhide(@user.Id)">
 									<div class="pull-left counter">0</div>
 									@user.GetNameAndTitle()
 								</div>
-								if (first)
-								{
+								if (first) {
 									firstId = user.Id;
 								}
 								first = false;
 							}
-							@for (int i = Model.Subordinates.Count; i < Model.AllReviewees.Count - 1; i++)
-							{
+							@for (int i = Model.Subordinates.Count; i < Model.AllReviewees.Count - 1; i++) {
 								<div id="" class="">
 									<div class="pull-left counter">&nbsp;</div>
 									&nbsp;
@@ -162,21 +159,16 @@
 						@{
 							first = true;
 						}
-						@foreach (var firstUser in Model.Subordinates.OrderBy(x => x.GetNameAndTitle()))
-						{
+						@foreach (var firstUser in Model.Subordinates.OrderBy(x => x.GetNameAndTitle())) {
 							<div id="second_@firstUser.Id" class="col-xs-6 noPad alignLeft customize hideable @(first ? "selected" : "hide")">
-								@foreach (var secondUser in Model.AllReviewees.OrderBy(x => x.GetGroupType()).ThenBy(x => x.GetName()))
-								{
+								@foreach (var secondUser in Model.AllReviewees.OrderBy(x => x.GetGroupType()).ThenBy(x => x.GetName())) {
 									var classes = new HashSet<String>();
-									foreach (var s in Model.Selectors)
-									{
-										if (s.Pairs.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id))
-										{
+									foreach (var s in Model.Selectors) {
+										if (s.Pairs.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id)) {
 											classes.Add("is" + s.UniqueId);
 										}
 									}
-									if (Model.Selected.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id))
-									{
+									if (Model.Selected.Any(x => x.Item1 == firstUser.Id && x.Item2 == secondUser.Id)) {
 										<input type="hidden" name="originalCustomize_@(firstUser.Id)_@secondUser.Id" value="True" />
 									}
 									<div class="selected isAll @String.Join(" ",classes)">
@@ -188,7 +180,7 @@
 									</div>
 								}
 							</div>
-								first = false;
+							first = false;
 						}
 					</div>
 				</div>
@@ -242,10 +234,10 @@
 
 			@if (!Model.Selected.Any()){
 				@:UpdateSimple();
-			}
+															}
 			else{
 				@:$('.customizeSelection a[href="#advanced"]').tab('show');
-			}
+															}
 			$(".quickSelect a").hover(function () {
 				var parent = $(this).parent().get(0);
 				var clss = $(parent).data("checkclass");
@@ -324,12 +316,25 @@
 <style>
 	.simple-btn {
 		width: 260px;
+		margin-top: 4px;
+	}
+
+	.simple-btn-yn{
+		width:128px;
+		margin-top: 4px;
 	}
 
 		.simple-btn:not(.active) {
 			color: #5e5e5e;
-			;
-			background-color: #FFF;
+			/*background-color: #FFF;*/
 			border-color: #CCC;
 		}
+
+	.quickSelect.hovered{
+		color:orange;
+	}
+
+	abbr{
+		border-bottom:1px dotted gray;
+	}
 </style>

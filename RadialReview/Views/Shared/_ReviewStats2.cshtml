@@ -43,8 +43,7 @@
 		</div>
 	</div>
 </div>
-@using (Html.BeginStyles())
-{
+@using (Html.BeginStyles()) {
 	<link href="~/Content/Chart/Scatter.v2.css" rel="stylesheet" />
 	<style>
 		.filter-header {
@@ -93,11 +92,16 @@
 			resize: vertical;
 			margin-bottom: 10px;
 		}
+
+		.checktree .branch {
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
 	</style>
 
 }
-@using (Html.BeginScripts())
-{
+@using (Html.BeginScripts()) {
 	<script src="~/Scripts/d3/d3.v3.min.js"></script>
 	<script src="~/Scripts/d3/Scatter.v2.js"></script>
 	<script>

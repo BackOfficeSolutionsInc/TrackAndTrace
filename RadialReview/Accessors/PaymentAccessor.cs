@@ -642,8 +642,8 @@ namespace RadialReview.Accessors {
 				MaxException = 1,
 				Url = "/Scheduler/ChargeAccount/" + organization.Id,
 				NextSchedule = plan.SchedulerPeriod(),
-				Fire = Math2.Max(DateTime.UtcNow.Date, plan.FreeUntil.Date),
-				FirstFire = Math2.Max(DateTime.UtcNow.Date, plan.FreeUntil.Date),
+				Fire = Math2.Max(DateTime.UtcNow.Date, plan.FreeUntil.Date.AddHours(3)),
+				FirstFire = Math2.Max(DateTime.UtcNow.Date, plan.FreeUntil.Date.AddHours(3)),
 				TaskName = plan.TaskName(),
 				EmailOnException = true,
 			};
@@ -772,7 +772,7 @@ namespace RadialReview.Accessors {
 				L10FreeUntil = day30,
 				ReviewFreeUntil = day90,
 				PlanCreated = now1,
-
+				NoChargeForUnregisteredUsers = true,
 			};
 			switch (type) {
 				case PaymentPlanType.Enterprise_Monthly_March2016:

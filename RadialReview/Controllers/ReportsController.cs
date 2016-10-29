@@ -20,7 +20,7 @@ namespace RadialReview.Controllers
 
 			//TODO remove first true, we dont want all answers
 
-			var reviewContainer = _ReviewAccessor.GetReviewContainer(user, reviewContainerId, deep, deep);
+			var reviewContainer = _ReviewAccessor.GetReviewContainer(user, reviewContainerId, deep && false, deep);
 		
 			var directSubs = user.ManagingUsers.Select(x => x.Subordinate).ToList();
 
@@ -51,16 +51,26 @@ namespace RadialReview.Controllers
 			
 			var model = new ReviewsViewModel(reviewContainer);
 
-		    var viewSurvey = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagerAtOrganization(GetUser().Id, reviewContainer.ForOrganizationId)
+
+			
+
+			var viewSurvey = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagerAtOrganization(GetUser().Id, reviewContainer.ForOrganizationId)
 				.Or(
 					y => y.EditReviewContainer(reviewContainerId),
 					y => y.ManagingTeam(reviewContainer.ForTeamId)
 				));
-		    if (viewSurvey){
-			    model.SurveyAnswers = reviewContainer.Reviews.SelectMany(x => x.Answers.Where(y => y.AboutUserId == reviewContainer.ForOrganizationId)).ToList();
+
+			var simpleLookup = ReviewAccessor.GetSimpleAnswerLookup_Unsafe(reviewContainerId, viewSurvey, true);
+
+			if (viewSurvey){
+				model.SurveyAnswers = simpleLookup.SurveyAnswers;//reviewContainer.Reviews.SelectMany(x => x.Answers.Where(y => y.AboutUserId == reviewContainer.ForOrganizationId)).ToList();
 		    }
+
+			model.SimpleAnswersLookup = simpleLookup;
 			return model;
 	    }
+
+
 
         //[Access(AccessLevel.UserOrganization)]
         //public ActionResult List(long id)

@@ -1,29 +1,36 @@
 ﻿@model RadialReview.Controllers.CreateReviewModel
 
 <hr />
-<h2 class="alignCenter">Who will customize this review?</h2>
-<br />
 <div class="row">
-    <div class="col-sm-5 col-sm-push-7">
-        <p class="well">
-            For large organizations, it's difficult for a single person to manage who reviews who. You may find it useful to have
-            all supervisors chose who their direct reports review.
-        </p>
-    </div>
-    <div class="col-sm-7 col-sm-pull-5" style="padding-top: 50px;">
-        <div class="row alignCenter " data-toggle="buttons">
-            <div class="col-sm-6">
-                <label class="btn btn-default fullWidth" onclick="SelfCustomize()">
-                    <input type="radio" name="customize" value="self" class="hidden" />I will
-                </label>
-            </div>
-            <div class="col-sm-6">
-                <label class="btn btn-default fullWidth" onclick="ManagersCustomize()">
-                    <input type="radio" name="customize" value="manager" class="hidden" />Supervisors
-                </label>
-            </div>
-        </div>
-    </div>
+	@*<div class="col-sm-5 col-sm-push-7">
+			<p class="well">
+				For large organizations, it's difficult for a single person to manage who reviews who. You may find it useful to have
+				all supervisors chose who their direct reports review.
+			</p>
+		</div>*@
+	<div class="col-sm-6">
+		<h2 class="alignCenter"><span style="white-space:nowrap">Let supervisors</span><wbr><span style="white-space:nowrap"> customize @(Html.ReviewName() + "s")?</span></h2>
+	</div>
+	<div class="col-sm-6">
+
+		<div class="row alignCenter adjTop" data-toggle="buttons">
+			<div class="col-xs-6">
+				<label class="btn btn-default fullWidth" onclick="ManagersCustomize()">
+					<input type="radio" name="customize" value="manager" class="hidden" />Yes
+				</label>
+			</div>
+			<div class="col-xs-6">
+				<label class="btn btn-default dflt-button fullWidth" onclick="SelfCustomize()">
+					<input type="radio" name="customize" value="self" class="hidden" />No
+				</label>
+			</div>
+
+		</div>
+	</div>
+
+	@*<div class="col-sm-7 col-sm-pull-5" style="padding-top: 50px;">
+
+		</div>*@
 </div>
 
 
@@ -32,16 +39,16 @@
 </div>
 
 <script>
-    function startIssueOrganization(){
-        $('.btn').button();
-        qtip();
-    }
+	function startIssueOrganization() {
+		$('.btn').button();
+		qtip();
+	}
 
-    function SelfCustomize() {
-        loadPage("#pageIssueOrganization", "/Issue/Customize/" + $("#TeamId").val());
-    }
-    function ManagersCustomize() {
-        loadPage("#pageIssueOrganization", "/Issue/ManagersCustomize");
-    }
+	function SelfCustomize() {
+		loadPage("#pageIssueOrganization", "/Issue/Customize/" + $("#TeamId").val());
+	}
+	function ManagersCustomize() {
+		loadPage("#pageIssueOrganization", "/Issue/ManagersCustomize");
+	}
 </script>
 <img src="~/Content/img/blank.gif" onload="startIssueOrganization()" />
