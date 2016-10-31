@@ -67,6 +67,7 @@ namespace RadialReview.Accessors
 			public List<PeopleAnalyzerRow> Rows { get; set; }
 			public List<CompanyValueModel> Values { get; set; }
 			public List<TinyUser> Users { get; set; }
+			public string ReviewName { get; set; }
 
 			//public Dictionary<long, TinyUser> UsersLookup { get; set}
 
@@ -156,9 +157,10 @@ namespace RadialReview.Accessors
 				}
 			}
 			return new PeopleAnalyzer() {
-				Rows = o.Select(x=>x.Value).ToList(),
+				Rows = o.Select(x => x.Value).ToList(),
 				Users = users.ToList(),
-				Values = values.ToList()
+				Values = values.ToList(),
+				ReviewName = reviewContainer.ReviewName
 			};
 
 		}

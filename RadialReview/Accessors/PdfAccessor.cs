@@ -112,6 +112,7 @@ namespace RadialReview.Accessors {
 
 			var doc = CreateDoc(caller, "People Analyzer");
 
+			//var sec = doc.AddSection();
 			AddPeopleAnalyzer(doc, peopleAnalyzer);
 
 			return doc;
@@ -119,7 +120,8 @@ namespace RadialReview.Accessors {
 
 		public static void AddPeopleAnalyzer(Document doc, PeopleAnalyzer peopleAnalyzer) {
 
-			var section = doc.AddSection();
+			var section = AddTitledPage(doc, "People Analyzer - " + peopleAnalyzer.ReviewName);
+			//var section = doc.AddSection();
 			var table = section.AddTable();
 
 			table.Style = "Table";
@@ -437,7 +439,7 @@ namespace RadialReview.Accessors {
 				paragraph.AddPageField();
 				// Add paragraph to footer for odd pages.
 				section.Footers.Primary.Add(paragraph);
-				//section.Footers.Primary.Format.SpaceBefore = Unit.FromInch(0.75);
+				section.Footers.Primary.Format.SpaceBefore = Unit.FromInch(-0.2);
 			}
 
 

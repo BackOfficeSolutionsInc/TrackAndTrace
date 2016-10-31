@@ -96,7 +96,9 @@ function clickDetails(self) {
 	//if (allowed() || confirm("You need to include data in the review. Add some feedback and charts before viewing. You may turn off this indicator by turning off hints. Continue anyway?")) {
 	w = window.open("/Review/Plot/" + ReviewId + "?r=" + (+new Date()));
 	//}
-	$(self).parent().removeClass("active");
+	setTimeout(function () {
+		$(self).parent().removeClass("active");
+	}, 10);
 }
 
 function clickPrint(self) {
@@ -104,8 +106,9 @@ function clickPrint(self) {
 	w = window.open("/Review/Plot/" + ReviewId + "?r=" + (+new Date()));
 	w.focus();
 	w.print();
-
-	$(self).parent().removeClass("active");
+	setTimeout(function () {
+		$(self).parent().removeClass("active");
+	}, 10);
 	//w.loading
 	//setTimeout(function () {
 	//	w.close();

@@ -167,10 +167,10 @@
 										<td class="table-hover-underline nowrap "><a target="_blank" href="@Url.Action("Details", "Review", new{id = review.Id})">@review.ForUser.GetName()</a></td>
 										<td class="hidden-xs hidden-sm ellipsis position-column">@review.ForUser.GetTitles()</td>
 										<td class="alignCenter" style="width: 30px;">
-											<a href="/Review/ClientDetails/@(review.Id)?reviewing=true&printing=true"><span class="glyphicon glyphicon-print" style="color:#aaa"></span></a>
+											<a onclick="printReport(@review.Id)" href="#Reports"><span class="glyphicon glyphicon-print" style="color:#aaa"></span></a>
 										</td>
 										<td class="alignCenter" style="width: 30px;">
-											<a data-sort="@(review.ClientReview.Visible ? "1" : "2")" href="/Review/ClientDetails/@(review.Id)?reviewing=true">@review.ClientReview.Visible.GetIcon()</a>
+											<a data-sort="@(review.ClientReview.Visible ? "1" : "2")" href="/Review/Plot/@(review.Id)">@review.ClientReview.Visible.GetIcon()</a>
 										</td>
 									</tr>
 								}
@@ -330,6 +330,15 @@
 			} else {
 				showAlert("You must select at least one user");
 			}
+		}
+
+		function printReport(id){
+			w = window.open("/Review/Plot/" + id + "?r=" + (+new Date()));
+			w.focus();
+			w.print();
+			//setTimeout(function () {
+			//	$(self).parent().removeClass("active");
+			//}, 10);
 		}
 
 		function printSelected() {
