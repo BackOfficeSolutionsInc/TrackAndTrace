@@ -319,12 +319,12 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					return GetMembers_Tiny(s, perms, organizationId);
+					return GetMembers_Tiny(s, perms, organizationId).ToList();
 				}
 			}
 		}
 
-		public static List<TinyUser> GetMembers_Tiny(ISession s, PermissionsUtility perms, long organizationId) {
+		public static IEnumerable<TinyUser> GetMembers_Tiny(ISession s, PermissionsUtility perms, long organizationId) {
 			perms.ViewOrganization(organizationId);
 			UserOrganizationModel uo = null;
 			UserModel u = null;
@@ -334,7 +334,7 @@ namespace RadialReview.Accessors {
 				.Left.JoinAlias(x => x.TempUser, () => t)
 				.Where(x => x.Organization.Id == organizationId && x.DeleteTime == null)
 				.Select(x => u.FirstName, x => u.LastName, x => x.Id, x => t.FirstName, x => t.LastName, x => u.UserName, x => t.Email)
-				.List<object[]>()
+				.Future<object[]>()
 				.Select(x => {
 					var fname = (string)x[0];
 					var lname = (string)x[1];
@@ -351,7 +351,7 @@ namespace RadialReview.Accessors {
 						Email = email,
 						UserOrgId = uoId
 					};// Tuple.Create(fname, lname, (long)x[2], email);
-				}).ToList();
+				});
 
 		}
 

@@ -212,3 +212,6 @@ fieldset[disabled] .header-sharing-btn.on .btn.active {
     display: block;
   }
 }
+#ScorecardTable_Over td {
+  height: 24px;
+}

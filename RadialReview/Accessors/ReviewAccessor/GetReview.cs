@@ -190,27 +190,32 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+		public static ReviewModel GetReview(ISession s, PermissionsUtility perms, long reviewId, bool includeReviewContainer = false, bool populate = true) {
+			var reviewPopulated = s.Get<ReviewModel>(reviewId);
+
+			perms.ViewUserOrganization(reviewPopulated.ForUserId, true, PermissionType.ViewReviews)
+				.ViewReview(reviewId);
+			if (populate) {
+				var allAnswers = s.QueryOver<AnswerModel>()
+									.Where(x => x.ForReviewId == reviewId && x.DeleteTime == null)
+									.List().ToListAlive();
+				var allAlive = UserAccessor.WasAliveAt(s, allAnswers.Select(x => x.AboutUserId).Distinct().ToList(), reviewPopulated.DueDate);
+				allAnswers = allAnswers.Where(x => allAlive.Contains(x.AboutUserId)).ToList();
+				PopulateAnswers(/*s,*/ reviewPopulated, allAnswers);
+			}
+			if (includeReviewContainer) {
+				reviewPopulated.ForReviewContainer = s.Get<ReviewsModel>(reviewPopulated.ForReviewsId);
+			}
+
+			return reviewPopulated;
+		}
+
 		public ReviewModel GetReview(UserOrganizationModel caller, long reviewId, bool includeReviewContainer = false, bool populate = true) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					var reviewPopulated = s.Get<ReviewModel>(reviewId);
 
-					PermissionsUtility.Create(s, caller)
-						.ViewUserOrganization(reviewPopulated.ForUserId, true, PermissionType.ViewReviews)
-						.ViewReview(reviewId);
-					if (populate) {
-						var allAnswers = s.QueryOver<AnswerModel>()
-											.Where(x => x.ForReviewId == reviewId && x.DeleteTime == null)
-											.List().ToListAlive();
-						var allAlive = UserAccessor.WasAliveAt(s, allAnswers.Select(x => x.AboutUserId).Distinct().ToList(), reviewPopulated.DueDate);
-						allAnswers = allAnswers.Where(x => allAlive.Contains(x.AboutUserId)).ToList();
-						PopulateAnswers(/*s,*/ reviewPopulated, allAnswers);
-					}
-					if (includeReviewContainer) {
-						reviewPopulated.ForReviewContainer = s.Get<ReviewsModel>(reviewPopulated.ForReviewsId);
-					}
-
-					return reviewPopulated;
+					var perms = PermissionsUtility.Create(s, caller);
+					return GetReview(s, perms, reviewId, includeReviewContainer, populate);
 				}
 			}
 		}
@@ -281,14 +286,14 @@ namespace RadialReview.Accessors {
 						.Select(x => x.UserId, x => x.Name, x => x._ImageUrlSuffix, x => x.Positions)
 						.List<object[]>()
 						.ToDictionary(x => (long)x[0], x => new UserLookup {
-							UserId =(long)x[0],
+							UserId = (long)x[0],
 							Name = (string)x[1],
 							_ImageUrlSuffix = (string)x[2],
 							Positions = (string)x[3]
 						});
 
 					foreach (var a in o) {
-						UserLookup ot=null;
+						UserLookup ot = null;
 						if (ulu.TryGetValue(a.ByUserId, out ot)) {
 							a.ByUserName = ot.Name;
 							a.ByUserImage = ot.ImageUrl();

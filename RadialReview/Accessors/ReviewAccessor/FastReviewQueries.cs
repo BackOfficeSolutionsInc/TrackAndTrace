@@ -7,6 +7,10 @@ using NHibernate;
 using RadialReview.Engines;
 using RadialReview.Models.Enums;
 using RadialReview.Utilities.DataTypes;
+using RadialReview.Models;
+using NHibernate.Criterion;
+using RadialReview.Models.Askables;
+using RadialReview.Utilities;
 
 namespace RadialReview.Accessors
 {
@@ -38,6 +42,127 @@ namespace RadialReview.Accessors
 			public long reviewId { get; set; }
 			public long numberIncomplete { get; set; }
 		}
+
+		public class PeopleAnalyzerRow {
+			public class ValueRating {
+				public long ValueId { get; set; }
+				public PositiveNegativeNeutral Rating { get; set; }
+			}
+			public class RoleRating {
+				public long RoleId { get; set; }
+				public string GWC { get; set; }
+				public FiveState Rating { get; set; }
+			}
+			public long UserId { get; set; }
+			public List<ValueRating> ValueRatings { get; set; }
+			public List<RoleRating> RoleRatings { get; set; }
+
+			public PeopleAnalyzerRow() {
+				ValueRatings = new List<ValueRating>();
+				RoleRatings = new List<RoleRating>();
+			}
+		}
+
+		public class PeopleAnalyzer {
+			public List<PeopleAnalyzerRow> Rows { get; set; }
+			public List<CompanyValueModel> Values { get; set; }
+			public List<TinyUser> Users { get; set; }
+
+			//public Dictionary<long, TinyUser> UsersLookup { get; set}
+
+			//private void MakeDict() {
+			//	if (Users
+			//}
+			
+			public TinyUser GetUser(PeopleAnalyzerRow row) {
+				return Users.FirstOrDefault(x => x.UserOrgId == row.UserId);
+			}
+
+		}
+
+		public static PeopleAnalyzer PeopleAnalyzerData(UserOrganizationModel caller,long reviewContainerId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					return PeopleAnalyzerData(s, perms, reviewContainerId);
+				}
+			}
+		}
+		public static PeopleAnalyzer PeopleAnalyzerData(ISession s,PermissionsUtility perms, long reviewContainerId) {
+
+			var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
+
+			perms.Or(x=>x.EditReviewContainer(reviewContainerId),x=>x.ManagingOrganization(reviewContainer.ForOrganizationId));
+
+
+			var valueAnswers = s.QueryOver<CompanyValueAnswer>().Where(x => x.DeleteTime == null && x.ForReviewContainerId == reviewContainerId && x.Complete)
+				.Select(
+					Projections.Property<CompanyValueAnswer>(x => x.AboutUserId),
+					Projections.Property<CompanyValueAnswer>(x => x.Askable.Id),
+					Projections.Property<CompanyValueAnswer>(x => x.Exhibits)
+				).Future<object[]>();
+			var roleAnswers = s.QueryOver<GetWantCapacityAnswer>().Where(x => x.DeleteTime == null && x.ForReviewContainerId == reviewContainerId && (x.GetIt != FiveState.Indeterminate || x.WantIt != FiveState.Indeterminate || x.HasCapacity != FiveState.Indeterminate))
+				.Select(
+					Projections.Property<GetWantCapacityAnswer>(x => x.AboutUserId),
+					Projections.Property<GetWantCapacityAnswer>(x => x.Askable.Id),
+					Projections.Property<GetWantCapacityAnswer>(x => x.GetIt),
+					Projections.Property<GetWantCapacityAnswer>(x => x.WantIt),
+					Projections.Property<GetWantCapacityAnswer>(x => x.HasCapacity)
+				).Future<object[]>();
+
+
+			var users = OrganizationAccessor.GetMembers_Tiny(s, perms, reviewContainer.ForOrganizationId);
+			var values = s.QueryOver<CompanyValueModel>().Where(x => x.DeleteTime == null && x.OrganizationId == reviewContainer.ForOrganizationId).List().ToList();
+
+			var o = new DefaultDictionary<long, PeopleAnalyzerRow>(x => new PeopleAnalyzerRow() { UserId = x });
+
+			foreach (var va in valueAnswers.ToList()) {
+				var userId = (long)va[0];
+				var askable = (long)va[1];
+				var exhibits = (PositiveNegativeNeutral)va[2];
+				o[userId].ValueRatings.Add(new PeopleAnalyzerRow.ValueRating() {
+					Rating = exhibits,
+					ValueId = askable
+				});
+			}
+
+			foreach (var va in roleAnswers.ToList()) {
+				var userId = (long)va[0];
+				var askable = (long)va[1];
+				var g = (FiveState)va[2];
+				var w = (FiveState)va[3];
+				var c = (FiveState)va[4];
+				var list = o[userId].RoleRatings;
+				if (g != FiveState.Indeterminate) {
+					list.Add(new PeopleAnalyzerRow.RoleRating() {
+						Rating = g,
+						GWC = "g",
+						RoleId = askable,
+					});
+				}
+				if (w != FiveState.Indeterminate) {
+					list.Add(new PeopleAnalyzerRow.RoleRating() {
+						Rating = w,
+						GWC = "w",
+						RoleId = askable,
+					});
+				}
+				if (c != FiveState.Indeterminate) {
+					list.Add(new PeopleAnalyzerRow.RoleRating() {
+						Rating = c,
+						GWC = "c",
+						RoleId = askable,
+					});
+				}
+			}
+			return new PeopleAnalyzer() {
+				Rows = o.Select(x=>x.Value).ToList(),
+				Users = users.ToList(),
+				Values = values.ToList()
+			};
+
+		}
+
 
 		public static List<ReviewIncomplete> AnyUnansweredReviewQuestions(ISession s, IEnumerable<long> reviewIds)
 		{

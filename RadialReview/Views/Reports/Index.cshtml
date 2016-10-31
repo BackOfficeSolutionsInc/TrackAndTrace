@@ -120,11 +120,30 @@
 					</div>
 				}
 				<div role="tabpanel" class="tab-pane in" id="Reports">
+					<div class="" style="padding: 5px; background-color: white;">
+						<div class="row">
+							<div class="col-sm-4 alignCenter">
+								<span class="btn btn-default pull-left-sm" onclick="printSelected()">Print Selected</span>
+							</div>
+							<div class="col-sm-8 alignCenter">
+								<div class="pull-right-sm">
+									<div class="btn btn-link" onclick="$('.active .reviewCheck').prop('checked', true)">(all)</div>
+									<div class="btn btn-link" onclick="$('.active .reviewCheck').removeAttr('checked')">(none)</div>
+									<div class="btn btn-link" onclick="$('.active .reviewCheck.shared').prop('checked', true)">(shared)</div>
+									<div class="btn btn-link" onclick="$('.active .reviewCheck.notshared').prop('checked', true)">(not shared)</div>
+									@*<div class="btn btn-link" onclick="$('.active .reviewCheck.incomplete').prop('checked', true)">(incomplete)</div>
+									<div class="btn btn-link" onclick="$('.active .reviewCheck.unstarted').prop('checked', true)">(unstarted)</div>*@
+								</div>
+							</div>
+						</div>
+						<div class="clearfix smallBreak2"></div>
+					</div>
 					<div class="table-responsive">
 						<table id="table_@(panel.Item2)" class="table table-condensed table-hover tablesorter reports">
 							<thead>
 								<tr>
 									<th style="width: 1px;"></th>
+									<th style="width: 10px;"></th>
 									<th>Name</th>
 									<th style="max-width:70%;" class="hidden-xs hidden-sm position-column">Position</th>
 									<th class="alignCenter" style="width: 10px;"></th>
@@ -144,6 +163,7 @@
 									@*onclick="$(this).find('.userCheck').prop('checked', !$(this).find('.userCheck').prop('checked'))"*@
 									<tr class="checkRow @(review.ForUser.GetDirectlyManaging() ? "managing" : "not-managing grayRow")">
 										<td><span class="hidden">@(review.ForUser.GetDirectlyManaging() ? 1 : 2)</span></td>
+										<td style="padding:0px;"><label style="padding:7px;cursor:pointer;" for="cb_review_print_@review.Id"><input type="checkbox" class="reviewCheck @(review.ClientReview.Visible?"shared":"notshared")" id="cb_review_print_@review.Id" name="user_print_@review.Id" data-id="@review.Id" /></label></td>
 										<td class="table-hover-underline nowrap "><a target="_blank" href="@Url.Action("Details", "Review", new{id = review.Id})">@review.ForUser.GetName()</a></td>
 										<td class="hidden-xs hidden-sm ellipsis position-column">@review.ForUser.GetTitles()</td>
 										<td class="alignCenter" style="width: 30px;">
@@ -175,7 +195,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="clearfix"></div>
+						<div class="clearfix smallBreak2"></div>
 					</div>
 					<div class="table-responsive">
 						<table id="table_@(panel.Item2)" class="table table-condensed table-hover tablesorter reminder">
@@ -263,7 +283,7 @@
 				sortForce: [[0, 0]]
 			});
 			$(".tablesorter.reports").tablesorter({
-				sortList: [[0, 0], [1, 0]],
+				sortList: [[0, 0], [2, 0]],
 				sortForce: [[0, 0]]
 			});
 		
@@ -309,6 +329,24 @@
 				showModal('Send Reminder', '/Email/Remind?reviewId=@(Model.Review.Id)&userIds=' + ids.join(","), '/Email/Remind');
 			} else {
 				showAlert("You must select at least one user");
+			}
+		}
+
+		function printSelected() {
+			var ids = [];
+			$('.reviewCheck:checked').each(function () {
+				ids.push($(this).data("id"));
+			});
+			if (ids && ids.length != 0) {
+				url = "/review/GenerateReports?ids=" + ids.join(",");
+				var win = window.open(url, '_blank');
+				win.focus();
+				win.print();
+				//setTimeout(function () {
+				//	win.close();
+				//},1000);
+			} else {
+				showAlert("You must select at least one review");
 			}
 		}
 	</script>

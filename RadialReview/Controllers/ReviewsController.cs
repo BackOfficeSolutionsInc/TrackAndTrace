@@ -56,14 +56,19 @@ namespace RadialReview.Controllers {
 			foreach (var x in model.Reviews) {
 
 				if (x.UserReview != null && x.UserReview.ClientReview.Visible)
-					x.AddLink("/Review/ClientDetails/" + x.UserReview.ClientReview.Id, "View Report", "glyphicon glyphicon-file");
+					x.AddLink("/Review/Plot/" + x.UserReview.Id, "View Report", "glyphicon glyphicon-file");
 				else if (x.TakableId == null) {
 					x.AddLink("#", "Your report is not available yet", iconClass: "glyphicon glyphicon-file", linkClass: "gray noclick");
 				}
 
+				if (caller.IsManagingOrganization() || (x.Editable && model.AllowEdit)) {
+					x.AddDivider();
+					x.AddLink("/Reports/PeopleAnalyzer/" + x.Review.Id , "People Analyzer", "glyphicon glyphicon-list-alt");
+				}
+
 				if (caller.IsManager()) {
 					x.AddDivider();
-					x.AddLink("/Reports/List/" + x.Review.Id, "Report Builder", "glyphicon glyphicon-list-alt");
+					x.AddLink("/Reports/Index/" + x.Review.Id + "#Reports", "Report Builder", "glyphicon glyphicon-file");
 					x.AddLink("/Reports/Index/" + x.Review.Id + "#Reminders", "Send Reminders", "glyphicon glyphicon-send");
 					x.AddLink("/Reports/Index/" + x.Review.Id + "#Stats", "Stats", "glyphicon glyphicon-stats");
 				}

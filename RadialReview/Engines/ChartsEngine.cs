@@ -921,6 +921,54 @@ namespace RadialReview.Engines
 				return ratio.GetValue(.5m) * 200 - 100;
 			}
 
+			public static PositiveNegativeNeutral MergeValueScores(List<PositiveNegativeNeutral> scores) {
+				if (scores.Any(x => x == PositiveNegativeNeutral.Negative))
+					return PositiveNegativeNeutral.Negative;
+				var valid = scores.Where(x => x != PositiveNegativeNeutral.Indeterminate).ToList();
+				var total = valid.Count;
+				if (total == 0)
+					return PositiveNegativeNeutral.Indeterminate;
+				var pos = valid.Count(x => x == PositiveNegativeNeutral.Positive);
+
+				if (pos / total >= 3.0 / 5.0)
+					return PositiveNegativeNeutral.Positive;
+				return PositiveNegativeNeutral.Neutral;
+			}
+
+			public static FiveState MergeRoleScores(List<FiveState> scores) {
+				if (scores.Any(x => x == FiveState.Never))
+					return FiveState.Never;
+
+				var valid = scores.Where(x => x != FiveState.Indeterminate).ToList();
+
+				if (valid.Count == 0)
+					return FiveState.Indeterminate;
+
+				var score= (double)valid.Average(x => x.Score());
+
+				if (score >= 0.9)
+					return FiveState.Always;
+				if (score >= 0.75)
+					return FiveState.Mostly;
+				if (score >= 0.5)
+					return FiveState.Rarely;
+				return FiveState.Never;
+
+
+
+
+				//var total = valid.Count;
+				//var pos = valid.Count(x => x == FiveState.Always || x== FiveState.Mostly);
+
+				//var score = pos / total;
+
+				//if (score >= .75)
+				//	return FiveState.Always;
+				//if (score >= .5)
+				//	return FiveState.Mostly;
+
+			}
+
 			public static bool ScoreFunction(FastReviewQueries.UserReviewRoleValues roleValue, out Ratio roles, out Ratio values)
 			{
 				roles = ScoreRole(roleValue.GetIt, roleValue.WantIt, roleValue.HasCapacity);

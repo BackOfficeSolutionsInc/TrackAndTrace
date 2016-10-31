@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using RadialReview.Models.Angular.Meeting;
 
 namespace RadialReview.Models.Reviews
 {
@@ -33,6 +34,8 @@ namespace RadialReview.Models.Reviews
         public virtual String ManagerNotes { get; set; }
         public virtual DateTime? SignedTime { get; set; }
 
+		public virtual AngularRecurrence _ScorecardRecur { get; set; }
+
         public virtual bool Started()
         {
             return (
@@ -58,7 +61,7 @@ namespace RadialReview.Models.Reviews
 
 
         public virtual bool IncludeScorecard { get; set; }
-    }
+	}
 
     public class ClientReviewModelMap : ClassMap<ClientReviewModel>
     {

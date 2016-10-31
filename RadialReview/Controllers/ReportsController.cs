@@ -70,15 +70,7 @@ namespace RadialReview.Controllers
 			return model;
 	    }
 
-
-
-        //[Access(AccessLevel.UserOrganization)]
-        //public ActionResult List(long id)
-        //{
-        //    return View(GenModel(id, false));
-        //}
-
-        //
+		//
         // GET: /Reports/
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Index(long id/*,int page=0*/)
@@ -92,10 +84,7 @@ namespace RadialReview.Controllers
 			return View(GenModel(id));
 		}
 
-
-
-
-	    [Access(AccessLevel.Manager)]
+		[Access(AccessLevel.Manager)]
 	    public ActionResult Details(int id,int userId)
 	    {
 		    var reviewContainerId = id;
@@ -111,14 +100,6 @@ namespace RadialReview.Controllers
 			}
 		    return RedirectToAction("Details", "Review",new{id=reviewId});
 	    }
-
-	    /*[Access(AccessLevel.Manager)]
-	    public ActionResult Affinity(int id)
-	    {
-
-
-	    }*/
-
 
 	    [Access(AccessLevel.Manager)]
         public ActionResult Generate(int page = 0)
@@ -138,34 +119,43 @@ namespace RadialReview.Controllers
             return View(model);
         }
 
-        [Access(AccessLevel.Manager)]
-        public ActionResult List(long id){
-            var reviewContainerId = id; 
-            var user = GetUser().Hydrate().ManagingUsers(true).Execute();
-            var reviewContainer = _ReviewAccessor.GetReviewContainer(user, id, false, true,deduplicate:true);
-            var directSubs = user.ManagingUsers.Select(x => x.Subordinate).ToList();
+		[Access(AccessLevel.Manager)]
+		public ActionResult List(long id) {
+			var reviewContainerId = id;
+			var user = GetUser().Hydrate().ManagingUsers(true).Execute();
+			var reviewContainer = _ReviewAccessor.GetReviewContainer(user, id, false, true, deduplicate: true);
+			var directSubs = user.ManagingUsers.Select(x => x.Subordinate).ToList();
 
-            var acceptedReviews = new List<ReviewModel>();
-            foreach (var r in reviewContainer.Reviews)
-            {
-                var add = false;
-                r.ForUser.PopulateDirectlyManaging(user, directSubs);
-                if (r.ForUser.Id == GetUser().Id && reviewContainer.CreatedById == GetUser().Id){
-                    r.ForUser.SetPersonallyManaging(true);
-                    add = true;
-                }else{
-                    add = r.ForUser.PopulatePersonallyManaging(user, user.AllSubordinates);
-                }
-                if (add){
-                    acceptedReviews.Add(r);
-                }
-            }
-            reviewContainer.Reviews = acceptedReviews;
-            reviewContainer.Reviews = reviewContainer.Reviews.GroupBy(x => x.ForUserId).Select(x => x.First()).ToList();
+			var acceptedReviews = new List<ReviewModel>();
+			foreach (var r in reviewContainer.Reviews) {
+				var add = false;
+				r.ForUser.PopulateDirectlyManaging(user, directSubs);
+				if (r.ForUser.Id == GetUser().Id && reviewContainer.CreatedById == GetUser().Id) {
+					r.ForUser.SetPersonallyManaging(true);
+					add = true;
+				} else {
+					add = r.ForUser.PopulatePersonallyManaging(user, user.AllSubordinates);
+				}
+				if (add) {
+					acceptedReviews.Add(r);
+				}
+			}
+			reviewContainer.Reviews = acceptedReviews;
+			reviewContainer.Reviews = reviewContainer.Reviews.GroupBy(x => x.ForUserId).Select(x => x.First()).ToList();
 
-            var model = new ReviewsViewModel(reviewContainer);
-            return View(model);
+			var model = new ReviewsViewModel(reviewContainer);
+			return View(model);
 
-        }
+		}
+
+
+		[Access(AccessLevel.Manager)]
+		public ActionResult PeopleAnalyzer(long id) {
+
+			var pad = FastReviewQueries.PeopleAnalyzerData(GetUser(), id);
+			var pdf =PdfAccessor.GeneratePeopleAnalyzer(GetUser(), pad);
+
+			return Pdf(pdf);
+		}
 	}
 }

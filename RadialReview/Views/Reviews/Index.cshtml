@@ -57,9 +57,9 @@
 			<thead>
 				<tr>
 					<th style="width:80px" class="alignCenter hidden-xs1">Status</th>
-					@if (Model.Reviews.Any(x => x.UserReview != null && x.UserReview.ClientReview.Visible)) {
+					@*@if (Model.Reviews.Any(x => x.UserReview != null && x.UserReview.ClientReview.Visible)) {
 						<th style="width: 90px;" data-title="Your Report">Your Report</th>
-					}
+					}*@
 					<th style="min-width: 100%">@Html.ReviewName() @RadialReview.Properties.DisplayNameStrings.name</th>
 					@*<th style="width:100px" class="alignCenter">Created</th>*@
 					<th style="width:100px" class="alignCenter hidden-xs1">Due</th>

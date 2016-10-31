@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using RadialReview.Utilities.DataTypes;
 using PdfSharp.Drawing;
+using MigraDoc.DocumentObjectModel;
 
 namespace RadialReview.Models.Enums {
 	public enum FiveState {
@@ -47,10 +48,10 @@ namespace RadialReview.Models.Enums {
 			return new Ratio(self.Score(), self == FiveState.Indeterminate ? 0 : 1);
 		}
 
-		public static XColor GetColor(this FiveState self) {
+		public static XColor GetXColor(this FiveState self) {
 			switch (self) {
 				case FiveState.Indeterminate:
-					return XColor.FromArgb(255, 128 + 64 + 32, 128 + 64 + 32, 128 + 64 + 32);
+					return XColor.FromArgb(255, 224, 224, 224);
 				case FiveState.Always:
 					return XColor.FromArgb(255, 68, 157, 68);
 				case FiveState.Mostly:
@@ -62,6 +63,26 @@ namespace RadialReview.Models.Enums {
 				default:
 					throw new ArgumentOutOfRangeException("GetColor out of range: " + self);
 			}
+		}
+
+		public static Color GetColor(this FiveState self) {
+			var x= self.GetXColor();
+			return Color.FromArgb((byte)(x.A*255), x.R, x.G, x.B);
+
+			//switch (self) {
+			//	case FiveState.Indeterminate:
+			//		return Color.FromArgb(255, 224, 224, 224);
+			//	case FiveState.Always:
+			//		return Color.FromArgb(255, 68, 157, 68);
+			//	case FiveState.Mostly:
+			//		return Color.FromArgb(255, 113, 190, 113);
+			//	case FiveState.Rarely:
+			//		return Color.FromArgb(255, 252, 130, 127);
+			//	case FiveState.Never:
+			//		return Color.FromArgb(255, 217, 83, 79);
+			//	default:
+			//		throw new ArgumentOutOfRangeException("GetColor out of range: " + self);
+			//}
 		}
 	}
 }

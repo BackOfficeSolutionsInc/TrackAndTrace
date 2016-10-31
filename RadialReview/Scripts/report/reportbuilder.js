@@ -92,14 +92,24 @@ function Advanced() {
 	$(".advanced").toggleClass("hidden");
 }
 
-function clickDetails() {
-    //if (allowed() || confirm("You need to include data in the review. Add some feedback and charts before viewing. You may turn off this indicator by turning off hints. Continue anyway?")) {
-    window.location = "/Review/ClientDetails/" + ReviewId + "?reviewing=true";
-    //}
+function clickDetails(self) {
+	//if (allowed() || confirm("You need to include data in the review. Add some feedback and charts before viewing. You may turn off this indicator by turning off hints. Continue anyway?")) {
+	w = window.open("/Review/Plot/" + ReviewId + "?r=" + (+new Date()));
+	//}
+	$(self).parent().removeClass("active");
 }
 
-function clickPrint() {
-	w = window.open("/Review/ClientDetails/" + ReviewId + "?reviewing=true&printing=true");
+function clickPrint(self) {
+	//w = window.open("/Review/ClientDetails/" + ReviewId + "?reviewing=true&printing=true");
+	w = window.open("/Review/Plot/" + ReviewId + "?r=" + (+new Date()));
+	w.focus();
+	w.print();
+
+	$(self).parent().removeClass("active");
+	//w.loading
+	//setTimeout(function () {
+	//	w.close();
+	//},4000)
 }
 
 function clickAuthorize() {
@@ -293,9 +303,12 @@ function setAuthorize(auth) {
             if (data.Object.Authorized) {
                 $("#Authorize").prop('checked', true);
                 $(".authorized").addClass("on");
+                $('.switch').bootstrapSwitch('state', true, true);
+
             } else {
                 $("#Authorize").prop('checked', false);
                 $(".authorized").removeClass("on");
+                $('.switch').bootstrapSwitch('state', false, true);
             }
         }
     });

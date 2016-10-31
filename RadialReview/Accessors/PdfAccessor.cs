@@ -1,43 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Web;
-//using Pechkin;
-//using Pechkin.Synchronized;
 using MigraDoc.DocumentObjectModel.Tables;
-using MigraDoc.Rendering;
-using NHibernate;
-using PdfSharp;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using RadialReview.Models;
 using RadialReview.Models.Enums;
 using RadialReview.Models.L10;
-using RadialReview.Models.Pdf;
-using RadialReview.Models.Scorecard;
 using RadialReview.Utilities;
 using MigraDoc.DocumentObjectModel;
-using MigraDoc.DocumentObjectModel.Shapes;
-using System.Xml.XPath;
 using RadialReview.Models.Angular.Meeting;
-using System.Reflection;
-using RadialReview.Properties;
 using RadialReview.Models.Angular.VTO;
-using System.Threading;
 using RadialReview.Controllers;
-using MigraDoc.DocumentObjectModel.Shapes.Charts;
-using RadialReview.Models.Charts;
 using RadialReview.Engines;
 using Table = MigraDoc.DocumentObjectModel.Tables.Table;
-using PdfSharp.Pdf.IO;
-using OxyPlot;
 using VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment;
-using OxyPlot.Wpf;
-using System.Globalization;
 using RadialReview.Utilities.DataTypes;
 using PdfSharp.Drawing.Layout;
+using RadialReview.Models.Reviews;
+using MigraDoc.Rendering;
+using static RadialReview.Accessors.FastReviewQueries;
+using static RadialReview.Engines.ChartsEngine;
 
 namespace RadialReview.Accessors {
 	public class LayoutHelper {
@@ -87,31 +72,9 @@ namespace RadialReview.Accessors {
 		static double A4Height = XUnit.FromCentimeter(29.7).Point;
 		static double LetterWidth = XUnit.FromInch(8.5).Point;
 		static double LetterHeight = XUnit.FromInch(11).Point;
-		//public void AddFont(Uri baseUri, string familyName)
-		//{
-		//    if (String.IsNullOrEmpty(familyName))
-		//        throw new ArgumentNullException("familyName");
-		//    if (familyName.Contains(","))
-		//        throw new NotImplementedException("Only one family name is supported.");
-		//    // family name starts right of '#'
-		//    int idxHash = familyName.IndexOf('#');
-		//    if (idxHash < 0)
-		//        throw new ArgumentException("Family name must contain a '#'. Example './#MyFontFamilyName'", "familyName");
-		//    string key = familyName.Substring(idxHash + 1);
-		//    if (String.IsNullOrEmpty(key))
-		//        throw new ArgumentException("familyName has invalid format.");
-		//    if (this.fontFamilies.ContainsKey(key))
-		//        throw new ArgumentException("An entry with the specified family name already exists.");
-		//    System.Windows.Media.FontFamily fontFamily = new System.Windows.Media.FontFamily(baseUri, familyName);
-		//    
-		//    this.fontFamilies.Add(key, fontFamily);
-		//}
-
 
 		public static Document CreateDoc(UserOrganizationModel caller, string docTitle) {
 			var document = new Document();
-
-
 
 			document.Info.Title = docTitle;
 			document.Info.Author = caller.GetName();
@@ -145,12 +108,147 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+		public static Document GeneratePeopleAnalyzer(UserOrganizationModel caller, PeopleAnalyzer peopleAnalyzer) {
 
-		public static PdfDocument GenerateReviewPrintout(UserOrganizationModel caller, ReviewController.ReviewDetailsViewModel review, int margin) {
-			var name = review.Review.ForUser.GetName();
-			//var doc = CreateDoc(caller, review.ReviewContainer.ReviewName + " - " + name);
+			var doc = CreateDoc(caller, "People Analyzer");
 
-			PdfDocument document = new PdfDocument();
+			AddPeopleAnalyzer(doc, peopleAnalyzer);
+
+			return doc;
+		}
+
+		public static void AddPeopleAnalyzer(Document doc, PeopleAnalyzer peopleAnalyzer) {
+
+			var section = doc.AddSection();
+			var table = section.AddTable();
+
+			table.Style = "Table";
+			table.Borders.Color = TableBlack;
+			table.Borders.Width = 1;
+			table.Rows.LeftIndent = 0;
+			table.LeftPadding = 0;
+			table.RightPadding = 0;
+
+			var colCount = Math.Max(1,peopleAnalyzer.Values.Count);
+
+			var size = Math.Max(.15, (8.5 - (1.5 + 3 * 0.5 + 1))/colCount );
+
+
+			//Who
+
+			var column = table.AddColumn(Unit.FromInch(1.5));
+			column.Format.Alignment = ParagraphAlignment.Left;
+
+			//Values
+			foreach (var v in peopleAnalyzer.Values) {
+				column = table.AddColumn(Unit.FromInch(size));
+				column.Format.Alignment = ParagraphAlignment.Center;
+			}
+
+			//G
+			column = table.AddColumn(Unit.FromInch(0.5));
+			column.Format.Alignment = ParagraphAlignment.Center;
+			//W
+			column = table.AddColumn(Unit.FromInch(0.5));
+			column.Format.Alignment = ParagraphAlignment.Center;
+			//C
+			column = table.AddColumn(Unit.FromInch(0.5));
+			column.Format.Alignment = ParagraphAlignment.Center;
+
+
+			//rows
+			var row = table.AddRow();
+			row.HeadingFormat = true;
+			row.Format.Alignment = ParagraphAlignment.Center;
+			row.Format.Font.Bold = true;
+			row.Shading.Color = TableGray;
+
+			row.Height = Unit.FromInch(0.25);
+
+			row.Cells[0].AddParagraph("Name");
+			row.Cells[0].VerticalAlignment = VerticalAlignment.Bottom;
+			row.Cells[0].Format.Font.Size = 8;
+
+
+			var i = 0;
+			for (i = 0; i < peopleAnalyzer.Values.Count; i++) {
+				row.Cells[1 + i].AddParagraph("" + peopleAnalyzer.Values[i].CompanyValue);
+				row.Cells[1 + i].VerticalAlignment = VerticalAlignment.Bottom;
+				row.Cells[1 + i].Format.Font.Size = 8;
+			}
+
+			row.Cells[i + 1].AddParagraph("Gets It");
+			row.Cells[i + 1].VerticalAlignment = VerticalAlignment.Bottom;
+			row.Cells[i + 1].Format.Font.Size = 8;
+
+			row.Cells[i + 2].AddParagraph("Wants It");
+			row.Cells[i + 2].VerticalAlignment = VerticalAlignment.Bottom;
+			row.Cells[i + 2].Format.Font.Size = 8;
+
+			row.Cells[i + 3].AddParagraph("Capacity");
+			row.Cells[i + 3].VerticalAlignment = VerticalAlignment.Bottom;
+			row.Cells[i + 3].Format.Font.Size = 8;
+
+
+			foreach (var r in peopleAnalyzer.Rows.OrderBy(x => peopleAnalyzer.GetUser(x).NotNull(y => y.GetName()))) {
+				var user = peopleAnalyzer.GetUser(r);
+				if (user == null)
+					continue;
+
+				if (string.IsNullOrWhiteSpace(user.GetName()))
+					continue;
+
+				row = table.AddRow();
+
+				row.Cells[0].AddParagraph("" + user.GetName());
+				row.Cells[0].Format.RightIndent = Unit.FromInch(.05);
+				row.Cells[0].Format.Alignment = ParagraphAlignment.Right;
+				i = 1;
+				foreach (var val in peopleAnalyzer.Values) {
+					var thisValue = r.ValueRatings.Where(x => x.ValueId == val.Id).Select(x => x.Rating).ToList();
+					var merge = ScatterScorer.MergeValueScores(thisValue);
+					var text = merge.ToShortKey();
+					row.Cells[i].AddParagraph("" + text);
+					row.Cells[i].Shading.Color = merge.GetColor();
+					i++;
+				}
+
+				var stateName = new Func<FiveState, string>(x => {
+					if (x == FiveState.Indeterminate)
+						return "";
+					return (x == FiveState.Always || x == FiveState.Mostly) ? "Y" : "N";
+				});
+
+				var gwcKey = "g";
+				var gwc = ScatterScorer.MergeRoleScores(r.RoleRatings.Where(x => x.GWC == gwcKey).Select(x => x.Rating).ToList());
+				row.Cells[i + 0].AddParagraph("" + stateName(gwc));
+				row.Cells[i + 0].Shading.Color = gwc.GetColor();
+
+				gwcKey = "w";
+				gwc = ScatterScorer.MergeRoleScores(r.RoleRatings.Where(x => x.GWC == gwcKey).Select(x => x.Rating).ToList());
+				row.Cells[i + 1].AddParagraph("" + stateName(gwc));
+				row.Cells[i + 1].Shading.Color = gwc.GetColor();
+
+				gwcKey = "c";
+				gwc = ScatterScorer.MergeRoleScores(r.RoleRatings.Where(x => x.GWC == gwcKey).Select(x => x.Rating).ToList());
+				row.Cells[i + 2].AddParagraph("" + stateName(gwc));
+				row.Cells[i + 2].Shading.Color = gwc.GetColor();
+
+			}
+
+
+
+		}
+
+
+		public static void AddReviewPrintout(UserOrganizationModel caller, PdfDocument document, ReviewController.ReviewDetailsViewModel review) {
+
+			var pageNum = 0;
+			var AddPageNum = new Action<XGraphics, XRect>((g, pageDim) => {
+				pageNum++;
+				g.DrawString(review.Review.ForUser.GetName() + "  |  " + pageNum, PdfChartAccessor._Font8, XBrushes.LightGray, new XPoint(pageDim.Width - 20, pageDim.Height - 20), XStringFormats.BottomRight);
+			});
+
 			PdfPage page = document.AddPage();
 			page.Size = PdfSharp.PageSize.Letter;
 			XGraphics gfx = XGraphics.FromPdfPage(page);
@@ -158,252 +256,165 @@ namespace RadialReview.Accessors {
 			gfx.MUH = PdfFontEncoding.Unicode;
 			//gfx.MFEH = PdfFontEmbedding.Default;
 
-			// Create document from HalloMigraDoc sample
-			// Document doc = HelloMigraDoc.Documents.CreateDocument();
-			//var section = doc.AddSection();
-			//var chartPage = PdfAccessor.AddTitledPage(doc, name);
-			var scatter = new ChartsEngine().ReviewScatter2(caller, review.Review.ForUserId, review.Review.ForReviewContainer.Id, review.Review.ClientReview.ScatterChart.Groups, true, review.Review.ClientReview.ScatterChart.IncludePrevious);
+			var sensitive = true;
+			if (caller.Id == review.Review.ForUserId)
+				sensitive = false;
 
-			var w2 = Unit.FromInch(8.5 / 2.0);
-			var h2 = Unit.FromInch(10 / 2.0);
+			var scatter = new ChartsEngine().ReviewScatter2(caller, review.Review.ForUserId, review.Review.ForReviewContainer.Id, review.Review.ClientReview.ScatterChart.Groups, sensitive, review.Review.ClientReview.ScatterChart.IncludePrevious);
 
-			var top = Unit.FromInch(1);
+			var pageSize = new XRect(0, 0, Unit.FromInch(8.5), Unit.FromInch(11));
+			var margin = Unit.FromInch(0.3);
+			AddPageNum(gfx, pageSize);
 
-			PdfChartAccessor.DrawQuadrant(scatter, gfx, new XRect(0, top, w2, h2),centerHeight:false);
+			var w2 = pageSize.Width / 2.0;
 
 			var gwcAnswers = review.AnswersAbout.Where(x => x is GetWantCapacityAnswer).Cast<GetWantCapacityAnswer>().ToList();
-			PdfChartAccessor.DrawRolesTable(gfx, new XRect(w2, top, w2, h2),gwcAnswers);
+			var valAnswers = review.AnswersAbout.Where(x => x is CompanyValueAnswer).Cast<CompanyValueAnswer>().ToList();
+			var rockAnswers = review.AnswersAbout.Where(x => x is RockAnswer).Cast<RockAnswer>().ToList();
+			var feedbackIds = review.Review.ClientReview.FeedbackIds.ToListAlive().GroupBy(x => x.Value).Select(x => x.First()).ToList();
+			var feedbackAnswers = review.AnswersAbout.Where(x => x is FeedbackAnswer).Cast<FeedbackAnswer>()
+				.Where(x => !string.IsNullOrWhiteSpace(x.Feedback) && feedbackIds.Any(y => y.Value == x.Id)).ToList();
 
 
+			var headerRect = PdfChartAccessor.DrawHeader(gfx, pageSize, review.Review, margin: margin);
 
-			//var plot = OxyplotAccessor.ScatterPlot(scatter, margin);
-			////var pdfExporter = new PdfExporter { Width = 8.5 * 72, Height = 8.5 * 72, Background = OxyColors.White };
+			var top = headerRect.Height - margin;
+			var leftColumnHeight = top;
+			var rightColumnHeight = top;
 
-			//var stream = new MemoryStream();
-			////pdfExporter.Export(plot, stream);
+			if (review.Review.ClientReview.IncludeScatterChart) {
+				var r = new XRect(w2, top, w2, w2 * 0.8);
+				var q = PdfChartAccessor.DrawQuadrant(scatter, gfx, r, centerHeight: false, margin: margin);
+				rightColumnHeight += q.Height;
+			}
+
+			var addedPage2 = false;
+			PdfPage page2;
+			XGraphics gfxPage2 = null;
+
+			if (review.Review.ClientReview.IncludeEvaluation) {
+				var testDoc = new PdfDocument();
+				var testPage = testDoc.AddPage();
+				var tester = XGraphics.FromPdfPage(testPage);
+				var r = new XRect(0, top, w2, 1);
+				var roleRect = PdfChartAccessor.DrawRolesTable(gfx, r, gwcAnswers, margin: margin);
+
+				leftColumnHeight += roleRect.Height;
+
+				r = new XRect(w2, rightColumnHeight, w2, 1);
+				List<ValueBar> theBar = null;
+				var valueRect = PdfChartAccessor.DrawValueTable(tester, r, review.Review.ForUser, valAnswers, review.Supervisers, theBar, margin: margin);
+
+				if (r.Top + valueRect.Height > pageSize.Height) {
+					if (!addedPage2) {
+						page2 = document.AddPage();
+						addedPage2 = true;
+						gfxPage2 = XGraphics.FromPdfPage(page2);
+						AddPageNum(gfxPage2, pageSize);
+						r = new XRect(w2, 0, w2, 1);
+						rightColumnHeight = 0;
+					}
+					PdfChartAccessor.DrawValueTable(gfxPage2, r, review.Review.ForUser, valAnswers, review.Supervisers, theBar, margin: margin);
+				} else {
+					PdfChartAccessor.DrawValueTable(gfx, r, review.Review.ForUser, valAnswers, review.Supervisers, theBar, margin: margin);
+				}
+
+				rightColumnHeight += valueRect.Height;
 
 
-			////PdfDocument imgDoc = new PdfDocument(stream);
-			//PngExporter.Export(plot, stream, 400, 400, OxyColor.FromRgb(255, 255, 255));
+				r = new XRect(0, leftColumnHeight, w2, 1);
+				var rockRect = PdfChartAccessor.DrawRocksTable(gfx, r, rockAnswers, margin: margin);
 
 
-			//Document doc = CreateDoc(caller, "Printout");
-			//var arr = LoadImage(stream);
-			//var img = MigraDocFilenameFromByteArray(arr);
-			//var section = doc.AddSection();
-			//section.AddImage(img);
+				if (r.Top + rockRect.Height > pageSize.Height) {
+					if (!addedPage2) {
+						page2 = document.AddPage();
+						addedPage2 = true;
+						gfxPage2 = XGraphics.FromPdfPage(page2);
+						AddPageNum(gfxPage2, pageSize);
+
+						r = new XRect(0, 0, w2, 1);
+						leftColumnHeight = 0;
+					}
+					PdfChartAccessor.DrawRocksTable(gfxPage2, r, rockAnswers, margin: margin);
+				} else {
+					PdfChartAccessor.DrawRocksTable(gfx, r, rockAnswers, margin: margin);
+				}
+				leftColumnHeight += rockRect.Height;
+			}
+
+			if (review.Review.ClientReview.IncludeScorecard && review.Review.ClientReview._ScorecardRecur.Scorecard.Measurables.Any()) {
+				Document doc = new Document();
+				var sc = GenerateScorecard(review.Review.ClientReview._ScorecardRecur, true);
+				var sec = doc.AddSection();
+				sec.Add(sc);
+
+				var scorePage = document.AddPage();
+				scorePage.Height = Math.Min(pageSize.Width, pageSize.Height);
+				scorePage.Width = Math.Max(pageSize.Width, pageSize.Height);
+				var scoreGfx = XGraphics.FromPdfPage(scorePage);
+
+				DocumentRenderer docRenderer = new DocumentRenderer(doc);
+				docRenderer.PrepareDocument();
+
+				docRenderer.RenderObject(scoreGfx, XUnit.FromPoint(margin), XUnit.FromPoint(margin), XUnit.FromPoint(pageSize.Width - 2 * margin), sc);
+
+				AddPageNum(scoreGfx, new XRect(0, 0, scorePage.Width, scorePage.Height));
+			}
+
+			var addedPage3 = false;
+			PdfPage page3;
+			XGraphics gfxPage3 = null;
+
+			var availableRect = new XRect(pageSize.Left, pageSize.Top, pageSize.Width, pageSize.Height);
+
+			if (feedbackAnswers.Any()) {
+				if (!addedPage3) {
+					addedPage3 = true;
+					page3 = document.AddPage();
+					gfxPage3 = XGraphics.FromPdfPage(page3);
+					AddPageNum(gfxPage3, pageSize);
+				}
+				var rect = PdfChartAccessor.DrawFeedback(gfxPage3, availableRect, feedbackAnswers, review.ReviewContainer.AnonymousByDefault, margin: margin);
+				availableRect = new XRect(pageSize.Left, rect.Bottom, pageSize.Width, pageSize.Height - rect.Bottom);
+			}
+
+			var addedPage4 = false;
+			PdfPage page4;
+			XGraphics gfxPage4 = null;
+
+			if (review.Review.ClientReview.IncludeNotes && !string.IsNullOrWhiteSpace(review.Review.ClientReview.ManagerNotes)) {
+				if (!addedPage3) {
+					addedPage3 = true;
+					page3 = document.AddPage();
+					gfxPage3 = XGraphics.FromPdfPage(page3);
+					AddPageNum(gfxPage3, pageSize);
+				}
+				var testDoc = new PdfDocument();
+				var testPage = testDoc.AddPage();
+				var tester = XGraphics.FromPdfPage(testPage);
+				var notesSize = PdfChartAccessor.DrawNotes(tester, availableRect, review.Review.ClientReview.ManagerNotes, margin: margin);
+
+				if (notesSize.Bottom > pageSize.Bottom) {
+					addedPage4 = true;
+					page4 = document.AddPage();
+					gfxPage4 = XGraphics.FromPdfPage(page4);
+					AddPageNum(gfxPage4, pageSize);
+					PdfChartAccessor.DrawNotes(gfxPage4, pageSize, review.Review.ClientReview.ManagerNotes, margin: margin);
+				} else {
+					PdfChartAccessor.DrawNotes(gfxPage3, availableRect, review.Review.ClientReview.ManagerNotes, margin: margin);
+				}
+			}
+
+		}
+
+		public static PdfDocument GenerateReviewPrintout(UserOrganizationModel caller, ReviewController.ReviewDetailsViewModel review) {
+			var name = review.Review.ForUser.GetName();
+			PdfDocument document = new PdfDocument();
+			AddReviewPrintout(caller, document, review);
 
 			return document;
-			//var chartImg = XPdfForm.FromStream(new MemoryStream(stream.ToArray()));
-			//XRect LetterRect = new XRect(0, 0, LetterWidth, LetterHeight);
 
-			//var chartRect = new XRect(0, 0, LetterWidth / 2 * 0.9, LetterHeight / 2 * 0.9);
-			//chartRect.X = LetterWidth * 0.05 / 2;
-			//chartRect.Y = LetterHeight * 0.05 / 2;
-
-			//XGraphicsContainer container = gfx.BeginContainer(chartRect, LetterRect, XGraphicsUnit.Point);
-			//    gfx.DrawImage(chartImg, new XRect(0, 0, chartImg.PointWidth, chartImg.PointHeight));
-			//gfx.EndContainer(container);
-			///////////////////////////////////////////
-			#region EOSCLIENT
-			//var Model = review;
-			//if (Model.CompanyValuesTable((long)review.ReviewContainer.Id).Rows.Any())
-			//{
-			//    var valueAnswers = Model.AnswersAbout.Where(x => x is CompanyValueAnswer).Cast<CompanyValueAnswer>().Where(x => x.IncludeReason);
-			//    if (Model.ReviewContainer.AnonymousByDefault)
-			//    {
-			//        //@Html.Partial("Table", Model.CompanyValuesScore)
-			//        throw new Exception("todo");
-			//    }
-			//    else
-			//    {
-			//        //@Html.Partial("Table", Model.CompanyValuesTable(Model.Review.ForReviewsId))
-			//        throw new Exception("todo");
-			//    }
-
-			//            if (valueAnswers.Any())
-			//            {
-			//                <table class="valueTable" style="width:100%;margin-left: 10px;">
-			//                    <thead>
-			//                        <tr>
-			//                            <th colspan="2">Value:</th>
-			//                        </tr>
-			//                    </thead>
-			//                    <tbody style="vertical-align: top;">
-			//                        @foreach (var r in valueAnswers.GroupBy(x => x.AboutUserId + "_" + x.Askable.Id + "_" + x.ByUserId).Select(x=>x.First()))
-			//                        {
-			//                            <tr style="border-top:1px solid #ddd;">
-			//                                <td class="block" rowspan="2"><div class="fill @r.Exhibits"></div></td>
-			//                                <td class="bold alignLeft valueTableQuestion">@r.Askable.GetQuestion()</td>
-
-			//                            </tr>
-			//                            <tr>
-			//                                <td class="valueTableReason" style="white-space: normal;">
-			//                                    <span class="italic">"@r.Reason"</span>
-			//                                    @if (!Model.ReviewContainer.AnonymousByDefault)
-			//                                    {
-			//                                        @:- @r.ByUser.GetName()
-			//                                    }
-			//                                </td>
-			//                            </tr>
-			//                        }
-			//                    </tbody>
-			//                </table>
-
-			//            }
-			//            <div class="evaluation-heading">Company Values</div>
-			//        </div>
-			//    </div>
-			//}
-			//@if (Model.RockTable((long)ViewBag.ReviewId).Rows.Any())
-			//{
-			//    <div class="print-col-xs-6 zoom8 fixHeight">
-			//        <div class="subsection subsection-rocks noBreak">
-			//            @*Html.Partial("Table", Model.RockTable((long)ViewBag.ReviewId))*@
-			//            @{
-			//    var rrs = Model.AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.Rock).Cast<RockAnswer>();
-			//    var first = true;
-			//            }
-
-			//            @**@
-			//            @foreach (var r in rrs.GroupBy(x=>x.Askable.Id).Select(x=>x.First()))
-			//            {
-			//                <div class="row smallBreak2">
-			//                    <div class="col-xs-3 print-col-xs-3 alignRight noPadLeft">
-			//                        @if (first)
-			//                        {
-			//                            <div style="height: 25px;"></div>
-			//                        }
-			//                        <div style="height: 8px;"></div>
-			//                        <div class="bold alignRight">
-			//                            @r.Askable.GetQuestion()
-			//                        </div>
-			//                    </div>
-			//                    <div class="col-xs-9">
-			//                        <div class="row zoom8">
-			//                            <div class="col-xs-7">
-			//                                @if (first)
-			//                                {
-			//                                    <div class="hidden-xs1 alignCenter bold" style="border-bottom: 2px solid #494949;color: #494949;">Supervisor</div>
-			//                                    <div class="hidden-xs1 fullWidth" style="height: 10px;"></div>
-			//                                }
-			//                                <div class="row">
-			//                                    <div class="col-xs-5 alignCenter">
-			//                                        @{
-			//                                            var state = Tristate.Indeterminate;
-			//                                            if (r.ManagerOverride == RockState.AtRisk)
-			//                                            {
-			//                                                state = Tristate.False;
-			//                                            }
-			//                                            else if (r.ManagerOverride == RockState.Complete)
-			//                                            {
-			//                                                state = Tristate.True;
-			//                                            }
-			//                                        }
-			//                                        @*<div style="padding-top:5px;"></div>*@
-
-
-
-			//                                        @Html.DisplayFor(x => state, "CompleteIncomplete")
-			//                                    </div>
-			//                                    <div class="col-xs-7 noPadRight">
-			//                                        <div style="" class="fullWidth verticalOnly reason rockReason">
-			//                                            @if (!String.IsNullOrWhiteSpace(r.OverrideReason))
-			//                                            {
-			//                                                @:"@r.OverrideReason"
-			//                                            }
-			//                                            else
-			//                                            {
-			//                                                <i class="gray">No comment provided.</i>
-			//                                            }
-			//                                        </div>
-			//                                    </div>
-			//                                </div>
-			//                            </div>
-
-			//                            <div class="col-xs-5">
-
-			//                                @if (first)
-			//                                {
-			//                                    <div class="hidden-sm1 hidden-xs1 alignCenter bold" style="border-bottom: 2px solid #494949;color: #494949;">@Model.Review.ForUser.GetName()</div>
-			//                                    <div class="hidden-sm1 hidden-xs1 fullWidth" style="height: 10px;"></div>
-			//                                }
-			//                                @{
-			//                first = false;
-			//                                }
-
-
-			//                                @*<div class="row">
-			//                                    <div class="col-xs-5 alignCenter">
-			//                                        @Html.DisplayFor(x => r.Completion)
-			//                                    </div>
-			//                                                                        <div class="col-xs-12" style="padding-left: 7px;">*@
-			//                                <div class="rockReasonHeight">
-			//                                    @if (!String.IsNullOrWhiteSpace(r.Reason))
-			//                                    {
-			//                                        <i>"@r.Reason"</i>
-			//                                    }
-			//                                    else
-			//                                    {
-			//                                        <span class="gray italic">No comment provided.</span>
-			//                                    }
-			//                                </div>
-			//                                <div class="gray markedAs">Marked as: <span class="completion toText @r.Completion"></span></div>
-
-			//                                @*</div>
-			//                                    </div>*@
-			//                            </div>
-			//                        </div>
-			//                    </div>
-			//                </div>
-			//                @*<hr style="margin:10px;" class="visible-xs1" />*@
-			//            }
-
-			//            @**@
-
-
-			//            <div class="evaluation-heading">@Html.Organization().Settings.RockName</div>
-			//        </div>
-			//    </div>
-			//}
-
-			#endregion
-			//////////////////////////////
-
-			//// Create a renderer and prepare (=layout) the document
-			//MigraDoc.Rendering.DocumentRenderer docRenderer = new DocumentRenderer(doc);
-			//docRenderer.PrepareDocument();
-
-			//// For clarity we use point as unit of measure in this sample.
-			//// A4 is the standard letter size in Germany (21cm x 29.7cm).
-
-			//XRect A4Rect = new XRect(0, 0, A4Width, A4Height);
-
-			//int pageCount = docRenderer.FormattedDocument.PageCount;
-			//for (int idx = 0; idx < pageCount; idx++) {
-			//    XRect rect = GetRect(idx);
-
-			//    // Use BeginContainer / EndContainer for simplicity only. You can naturaly use you own transformations.
-			//    XGraphicsContainer container = gfx.BeginContainer(rect, A4Rect, XGraphicsUnit.Point);
-
-			//    // Draw page border for better visual representation
-			//    gfx.DrawRectangle(XPens.LightGray, A4Rect);
-
-			//    // Render the page. Note that page numbers start with 1.
-			//    docRenderer.RenderPage(gfx, idx + 1);
-
-			//    // Note: The outline and the hyperlinks (table of content) does not work in the produced PDF document.
-
-			//    // Pop the previous graphical state
-			//    gfx.EndContainer(container);
-			//}
-
-
-
-			//chartPage.ad
-
-
-			//return document;
 		}
 
 		private static Color TableGray = new Color(100, 100, 100, 100);
@@ -991,24 +1002,9 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static void AddScorecard(Document doc, AngularRecurrence recur) {
-			// Create a new PDF document
-			//var recur = L10Accessor.GetAngularRecurrence(caller,recurrenceId);
+		private static Table GenerateScorecard(AngularRecurrence recur, bool includeDisabled = false) {
 
-
-			// var document = SetupDoc(caller, "Scorecard", Orientation.Landscape);
-
-			var section = AddTitledPage(doc, "Scorecard", Orientation.Landscape);
-
-
-			var TableGray = new Color(100, 100, 100, 100);
-			var TableBlack = new Color(0, 0, 0);
-
-			// var section = document.AddSection();
-
-
-
-			var table = section.AddTable();
+			var table = new Table();
 			table.Style = "Table";
 			table.Borders.Color = TableBlack;
 			table.Borders.Width = 1;
@@ -1073,7 +1069,7 @@ namespace RadialReview.Accessors {
 			}
 			//var r = new Random();
 
-			var measurables = recur.Scorecard.Measurables.OrderBy(x => x.Ordering).Where(x => !(x.Disabled ?? false) && !x.IsDivider);
+			var measurables = recur.Scorecard.Measurables.OrderBy(x => x.Ordering).Where(x => includeDisabled || !(x.Disabled ?? false) && !x.IsDivider);
 			var mn = 1;
 
 			//for (var k = 0; k < 2; k++){
@@ -1114,9 +1110,9 @@ namespace RadialReview.Accessors {
 						}
 						if (dir != null) {
 							if (dir.Value.MeetGoal(target ?? 0, found.AltTarget ?? m.AltTarget, val)) {
-								cell.Shading.Color = Colors.LightGreen;// Color.FromCmyk(0.0708, 0.0, 0.1, .0588);
+								cell.Shading.Color = Color.FromArgb(255, 223, 240, 216); //Colors.LightGreen;// Color.FromCmyk(0.0708, 0.0, 0.1, .0588);
 							} else {
-								cell.Shading.Color = Colors.LightSalmon;// Color.FromCmyk(0, 0.0826, 0.0826, .0510);
+								cell.Shading.Color = Color.FromArgb(255, 255, 236, 242);//Colors.LightSalmon;// Color.FromCmyk(0, 0.0826, 0.0826, .0510);
 							}
 						}
 
@@ -1125,9 +1121,15 @@ namespace RadialReview.Accessors {
 				}
 				mn += 1;
 			}
-			//}
+			return table;
+		}
 
-
+		public static void AddScorecard(Document doc, AngularRecurrence recur) {
+			var section = AddTitledPage(doc, "Scorecard", Orientation.Landscape);
+			var TableGray = new Color(100, 100, 100, 100);
+			var TableBlack = new Color(0, 0, 0);
+			var table = GenerateScorecard(recur);
+			section.Add(table);
 		}
 
 		private static List<Paragraph> AddVtoSectionHeader(IVtoSectionHeader section, Unit fontSize, string dateformat) {
@@ -2040,6 +2042,7 @@ namespace RadialReview.Accessors {
 			AddVtoTraction(doc, vto, dateformat);
 
 		}
+
 
 
 		public class AccNodeJs {

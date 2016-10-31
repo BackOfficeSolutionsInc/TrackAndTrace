@@ -30,8 +30,8 @@
 			<span class=""sr-only"">Toggle Dropdown</span>
 		</button>
 		<ul class=""dropdown-menu dropdown-menu-right"">
-			<li><a href=""#"" onclick=""clickDetails()""><span class=""glyphicon glyphicon-file""></span> View Report</a></li>
-			<li><a href=""#"" onclick=""clickPrint()""  ><span class=""glyphicon glyphicon-print""></span> Print Report</a></li>
+			<li><a href=""#"" onclick=""clickDetails(this)""><span class=""glyphicon glyphicon-file""></span> View Report</a></li>
+			<li><a href=""#"" onclick=""clickPrint(this)""  ><span class=""glyphicon glyphicon-print""></span> Print Report</a></li>
 		</ul>
 	</div>"; 
 
@@ -107,7 +107,6 @@
 		<script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
 		<script src="~/Scripts/d3/Plot.js"></script>
 		<script src="~/Scripts/moment.min.js"></script>
-
 		<script src="~/Scripts/report/reportbuilder.js"></script>*@
 	@Scripts.Render("~/bundles/ReviewDetails")
 	<script>
