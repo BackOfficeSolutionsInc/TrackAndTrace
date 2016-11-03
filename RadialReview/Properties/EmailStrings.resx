@@ -196,7 +196,7 @@ The {4} Team</value>
     <comment>[username,organizationName,productName]</comment>
   </data>
   <data name="NewReview_Subject" xml:space="preserve">
-    <value>You have a new review task from {0}</value>
+    <value>You have a new eval from {0}</value>
     <comment>[organizationName]</comment>
   </data>
   <data name="PasswordReset_Body" xml:space="preserve">
@@ -248,7 +248,7 @@ The {4} Team</value>
   </data>
   <data name="NewReview_Body" xml:space="preserve">
     <value>&lt;p&gt;{0},&lt;/p&gt;
-&lt;p&gt;{6} is now open. This review is due on {2}. You can take your review by clicking the following link:&lt;/p&gt;
+&lt;p&gt;{6} is open until {2}. You can take your eval by clicking the following link:&lt;/p&gt;
 &lt;br&gt; 
     &lt;a href="{3}"&gt;{4}&lt;/a&gt;
 &lt;br /&gt;&lt;br /&gt;If you have any questions, feedback, or concerns, you can reply to this e-mail address.

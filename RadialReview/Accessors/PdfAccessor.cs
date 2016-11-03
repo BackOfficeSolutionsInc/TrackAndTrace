@@ -131,7 +131,7 @@ namespace RadialReview.Accessors {
 			table.LeftPadding = 0;
 			table.RightPadding = 0;
 
-			var colCount = Math.Max(1,peopleAnalyzer.Values.Count);
+			var colCount = Math.Max(1,peopleAnalyzer.Values.Count)+3;
 
 			var size = Math.Max(.15, (8.5 - (1.5 + 3 * 0.5 + 1))/colCount );
 
@@ -148,13 +148,13 @@ namespace RadialReview.Accessors {
 			}
 
 			//G
-			column = table.AddColumn(Unit.FromInch(0.5));
+			column = table.AddColumn(Unit.FromInch(size));
 			column.Format.Alignment = ParagraphAlignment.Center;
 			//W
-			column = table.AddColumn(Unit.FromInch(0.5));
+			column = table.AddColumn(Unit.FromInch(size));
 			column.Format.Alignment = ParagraphAlignment.Center;
 			//C
-			column = table.AddColumn(Unit.FromInch(0.5));
+			column = table.AddColumn(Unit.FromInch(size));
 			column.Format.Alignment = ParagraphAlignment.Center;
 
 

@@ -18,6 +18,9 @@ namespace RadialReview.Models
         public virtual long ByUserId { get; set; }
         public virtual NexusActions ActionCode { get; set; }
         public virtual string[] GetArgs(){
+			if (pArgs == null)
+				return new string[0];
+
             return pArgs.Split('\a');
         }
         public virtual void SetArgs(params string[] args)

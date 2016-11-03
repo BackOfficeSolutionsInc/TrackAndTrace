@@ -1,5 +1,13 @@
 Team deleted, still shows up in review
 
+Scorecard overlay height
+
+fix MN UI
+
+reassign todos during meeting
+
+* Current Week not highlighting (when only UserScorecard is active)
+
 why wasnt Avalution Charged
 
 video ssl activate

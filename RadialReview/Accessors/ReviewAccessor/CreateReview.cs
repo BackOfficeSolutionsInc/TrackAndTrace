@@ -61,15 +61,27 @@ namespace RadialReview.Accessors {
                     var guid = Guid.NewGuid();
                     var nexus = new NexusModel(guid) {
                         ForUserId = user.Id,
-                        ActionCode = NexusActions.TakeReview
+                        ActionCode = NexusActions.TakeReview,
+						
                     };
                     NexusAccessor.Put(dataInteraction.GetUpdateProvider(), nexus);
+
+					nexus.SetArgs(""+reviewContainer.Id);
+
 					var org = reviewContainer.ForOrganization;
 					var productName = Config.ProductName(org);
+
                     unsentEmails.Add(
 							Mail.To(EmailTypes.NewReviewIssued, user.GetEmail())
                             .Subject(EmailStrings.NewReview_Subject, organizationName)
-							.Body(EmailStrings.NewReview_Body, user.GetName(), organizationName, (reviewContainer.DueDate.AddDays(-1)).ToString(format), Config.BaseUrl(org) + "n/" + guid, Config.BaseUrl(org) + "n/" + guid, productName, reviewContainer.ReviewName)
+							.Body(EmailStrings.NewReview_Body, user.GetName(),
+							organizationName,
+								(reviewContainer.DueDate.AddDays(-1)).ToString(format),
+								Config.BaseUrl(org) + "n/" + guid,
+								Config.BaseUrl(org) + "n/" + guid,
+								productName,
+								reviewContainer.ReviewName
+							)
 						);
 					log.Info("CreateReview user=" + reviewerId + " for review=" + reviewContainer.Id);
                 }

@@ -168,8 +168,8 @@ namespace RadialReview.Accessors {
 					}
 					
 					foreach (var defaultQ in new[]{
-						"What should they start or stop doing?",
-						"What is their greatest contribution to the team?"
+						"What is their greatest contribution to the team?",
+						"What should they start or stop doing?"
 					}) {
 						var r = new ResponsibilityModel() {
 							Category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.FEEDBACK),

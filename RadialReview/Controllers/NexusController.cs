@@ -26,8 +26,10 @@ namespace RadialReview.Controllers
         {
             try
             {
-                if (GetUser().Id != nexus.ForUserId)
-                    throw new Exception();
+				if (!NexusAccessor.IsCorrectUser(GetUser(), nexus)) {
+					ViewBag.Message = "Incorrect user.";
+					throw new Exception();
+				}
                 return otherwise();
             }
             catch (Exception)
@@ -50,8 +52,9 @@ namespace RadialReview.Controllers
                 }
             }
         }
-        
-        [Access(AccessLevel.Any)]
+		
+
+		[Access(AccessLevel.Any)]
         [AsyncTimeout(60*60*1000)]
 		public async Task<ActionResult> Index(String id)
         {
@@ -68,12 +71,20 @@ namespace RadialReview.Controllers
                         }
                     case NexusActions.TakeReview:
                         {
-                            return MatchingNexus(nexus, () =>
-                            {
-                                NexusAccessor.Execute(nexus);
-                                return RedirectToAction("Index", "Tasks");
-                            });
-                        };
+							//return MatchingNexus(nexus, () =>
+							//{
+							var review = nexus.GetArgs().FirstOrDefault();
+                            NexusAccessor.Execute(nexus);
+							if (review == null)
+								return RedirectToAction("Index", "Reviews");
+
+							var reviewId = review.TryParseLong();
+							if (reviewId == null)
+								return RedirectToAction("Index", "Reviews");
+							
+							return RedirectToAction("Take", "Review",new { Id = reviewId });
+							//});
+						};
                     case NexusActions.ResetPassword:
                         {
                             SignOut();

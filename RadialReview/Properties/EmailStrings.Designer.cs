@@ -159,7 +159,7 @@ namespace RadialReview.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;p&gt;{0},&lt;/p&gt;
-        ///&lt;p&gt;{6} is now open. This review is due on {2}. You can take your review by clicking the following link:&lt;/p&gt;
+        ///&lt;p&gt;{6} is open until {2}. You can take your eval by clicking the following link:&lt;/p&gt;
         ///&lt;br&gt; 
         ///    &lt;a href=&quot;{3}&quot;&gt;{4}&lt;/a&gt;
         ///&lt;br /&gt;&lt;br /&gt;If you have any questions, feedback, or concerns, you can reply to this e-mail address.
@@ -175,7 +175,7 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You have a new review task from {0}.
+        ///   Looks up a localized string similar to You have a new eval from {0}.
         /// </summary>
         public static string NewReview_Subject {
             get {

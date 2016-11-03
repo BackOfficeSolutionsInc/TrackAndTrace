@@ -44,6 +44,20 @@ namespace RadialReview.Accessors {
             }
         }
 
+		public static bool IsCorrectUser(UserOrganizationModel caller, NexusModel nexus) {
+
+			if (caller.Id == nexus.ForUserId)
+				return true;
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					
+					var nexUsers = s.Get<UserOrganizationModel>(nexus.ForUserId);
+					return caller.User.Id == nexUsers.User.Id;
+				}
+			}
+		}
+
         public NexusModel Put(NexusModel model)
         {
             using (var s = HibernateSession.GetCurrentSession()) {

@@ -74,7 +74,7 @@
 				@foreach (var review in Model.Reviews) {
 					var takable = review.TakableId;
 					@*var edit = review.Review.Reviews.FirstOrDefault(x => x.ForUserId == ViewBag.UserId);*@
-					<tr class="startHiddenn @(review.Review.DueDate > DateTime.UtcNow ? "" : "grayRoww")">
+					<tr class="startHiddenn @(review.Review.DueDate > DateTime.UtcNow ? "" : "grayRoww")  @(review.TakableId==null?" grayRow ":"")">
 
 						<td class="alignCenter hidden-xs1">
 							@Model.CreateLabel(review)
