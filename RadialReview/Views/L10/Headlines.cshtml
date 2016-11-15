@@ -13,7 +13,7 @@
 			<hgroup class="page-header @(isList?"listing fixed-pos":"")">
 				<div class="pull-right">
 					@if (isList) {
-						<div class="btn-group">
+						<div class="btn-group smallBreak">
 							<a class="btn btn-default btn-xs headlineModal" data-recurrenceId="@Model.Recurrence.Id">
 								<span class="icon fontastic-icon-plus" style="color:#5e5e5e"></span>Add Headline
 							</a>
@@ -23,7 +23,7 @@
 					@Html.Partial("partial/ButtonBar", Model)
 				</div>
 				@if (isList) {
-					<h2>People Headlines</h2>
+					<h2 class="l10-page-title">People Headlines</h2>
 				}
 			</hgroup>
 			@*<div style="height:60px;"></div>*@
@@ -56,14 +56,14 @@
 			}
 		</div>
 		@if (isList) {
-			<div class="col-md-4">
+			<div class="col-md-4 hidden-xs hidden-sm">
 				<div class="hidden-lg hidden-md" style="height: 25px;"></div>
 				<div style="">
 					<div class="fixed-pos">
 						<hgroup class="page-header details">
 							<h4>Notes</h4>
 						</hgroup>
-						<div class="component headlineDetails" id="headlineDetails"></div>
+						<div class="component" id="headlineDetails"></div>
 					</div>
 				</div>
 			</div>

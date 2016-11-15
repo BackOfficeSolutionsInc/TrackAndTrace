@@ -1,4 +1,14 @@
-﻿var Grid = {
+﻿/*
+ Events are on the li.grid-tile
+ Events list:
+	loaded
+	load-error
+	resize
+
+*/
+
+
+var Grid = {
     currentSize: 7,
     container: null,
     callback: null,
@@ -73,9 +83,8 @@
 
                     var style = $(dom).find(".heading").data("style");
                     $item.addClass("loaded");
-                    //console.log("style:" + style);
-                    //debugger;
-                    //$(dom).closest(".grid-tile").find(".inner").attr("style", style);
+
+                    $item.trigger("loaded");
 
                     setTimeout(function () {
                         dom.removeClass("transparent");
@@ -90,6 +99,9 @@
                 var dom = $item.find(".content");
                 dom.addClass("error");
                 dom.html("<div class='gray error-message'>An error has occurred loading this tile.</div>");
+
+                $item.trigger("load-error");
+
                 setTimeout(function () {
                     dom.removeClass("transparent");
                     console.log("appearing tile (error)");
@@ -131,6 +143,8 @@
                 w: w,
                 h: h
             });
+
+            li.trigger("resize-tile");
         }
 
 
@@ -146,7 +160,8 @@
 
         if (Grid.first) {
             $(window).resize(function () {
-                Grid.container.gridList('reflow');
+            	Grid.container.gridList('reflow');
+            	$($gridContainer).find("li.grid-tile").each(function () { $(this).trigger("resize-tile"); });
             });
             var resizeing = false;
             var resizeDir = "vertical";

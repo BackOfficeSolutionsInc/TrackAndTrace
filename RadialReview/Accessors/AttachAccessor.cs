@@ -7,9 +7,13 @@ using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.UserModels;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Accessors {
 	public class AttachAccessor {
+		public static Attach PopulateAttachUnsafe(ISession s, Attach attach) {
+			return PopulateAttachUnsafe(s, attach.Id, attach.Type);
+		}
 		public static Attach PopulateAttachUnsafe(ISession s, long attachId, AttachType type) {
 			var a = new Attach() {
 				Id = attachId,
@@ -73,10 +77,19 @@ namespace RadialReview.Accessors {
 							.Select(x => x.UserId)
 							.List<long>().ToList();
 					}
+				case AttachType.User: {
+						return attachId.AsList();
+					}
 				default:
 					throw new ArgumentOutOfRangeException("type");
 			}
 		}
+
+		public static List<TinyUser> GetTinyMembersUnsafe(ISession s, Attach attach) {
+			var p = GetMemberIdsUnsafe(s, attach);
+			return TinyUserAccessor.GetUsers_Unsafe(s, p).ToList();
+		}
+
 		public static List<UserOrganizationModel> GetMembersUnsafe(ISession s, Attach attach) {
 			var p = GetMemberIdsUnsafe(s, attach);
 			return s.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime == null)

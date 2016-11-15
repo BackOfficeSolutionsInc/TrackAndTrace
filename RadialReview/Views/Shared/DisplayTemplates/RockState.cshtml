@@ -1,6 +1,6 @@
 ﻿@model RadialReview.Models.Enums.RockState
 
-<div class="rockstate display nonangular">
+<div class="rockstate display nonangular @ViewData["class"]">
 	<div class="rockstate-contents">
 		<input type="hidden" class="changeable" value="@Model" name="@ViewData["name"]" />
 		<span class="rockstate-val rockstate-AtRisk" data-value="AtRisk"><span class="center">OFF TRACK</span></span>

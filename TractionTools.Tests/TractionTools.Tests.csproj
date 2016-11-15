@@ -227,6 +227,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Accessors\EvalScorerTests.cs" />
     <Compile Include="Accessors\L10Accessor_EditRecurrenceTests.cs" />
     <Compile Include="Accessors\RockAccessorTests.cs" />
     <Compile Include="Accessors\ScorecardAccessorTests.cs" />

@@ -144,21 +144,27 @@
                                                     <div>
                                                         <table class="table" style="margin-bottom:0px;">
                                                             <tr class="purpose">
-                                                                <td style="width: 175px;">
+                                                                <td style="width: 175px;" class="hidden-xs">
                                                                     <div class="title" style="color:transparent;height:0px;">{{(model).CoreFocus.PurposeTitle}}:</div>
                                                                     <input style="width:100%;" class="title" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)" ng-model="(model).CoreFocus.PurposeTitle" />
                                                                 </td>
-                                                                <td>
-                                                                    <textarea textarea-resize ng-model="(model).CoreFocus.Purpose" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)"></textarea>
-                                                                </td>
+																<td>
+																	<div class="visible-xs">
+																		<input style="width:100%;" class="title alignLeft" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)" ng-model="(model).CoreFocus.PurposeTitle" />
+																	</div>
+																	<textarea textarea-resize ng-model="(model).CoreFocus.Purpose" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)"></textarea>
+																</td>
                                                             </tr>
                                                             <tr class="niche">
-                                                                <td style="width: 1px">
+                                                                <td style="width: 1px" class="hidden-xs">
                                                                     <span class="title">Our Niche:</span>
                                                                 </td>
-                                                                <td>
-                                                                    <textarea textarea-resize ng-model="(model).CoreFocus.Niche" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)"></textarea>
-                                                                </td>
+																<td>
+																	<div class="visible-xs alignLeft">
+																		<span class="title alignLeft">Our Niche:</span>
+																	</div>
+																	<textarea textarea-resize ng-model="(model).CoreFocus.Niche" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)"></textarea>
+																</td>
                                                             </tr>
                                                         </table>
                                                     </div>
@@ -446,7 +452,7 @@
                                         <div class="smallBreak2">&nbsp;</div>
                                         <div class="rocks-table border-table">
                                             <table class="add-row-container">
-                                                <tr><th colspan="2">Rocks for the Quarter:</th><th class="alignRight">Who</th></tr>
+                                                <tr><th colspan="2">Rocks for the Quarter:</th><th class="alignRight hidden-xs">Who</th></tr>
                                                 <tr class="add-row-row" ng-repeat="item in (model.QuarterlyRocks).Rocks | filter:{Deleted:false,Rock:{CompanyRock:true}}">
                                                     <td class="number">{{$index+1}}.</td>
                                                     <td>
@@ -457,7 +463,7 @@
                                                         <span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteRock?value='+item.Id)"></span>
                                                     </td>
 
-                                                    <td>
+                                                    <td class="hidden-xs">
                                                         <a href="#rock" data-value="{{item.Rock.Owner.Id}}" data-display="false" class="inlineEdit rock-accountable" data-type="select" data-pk="{{item.Id}}" data-url="/Vto/XUpdateRock" data-name="accountable" data-source="/Dropdown/OrganizationMembers/@(Html.Organization().Id)?userId=true">
                                                             <profile-image user="(item.Rock.Owner)"></profile-image>
                                                             {{(item.Rock.Owner).Name}}

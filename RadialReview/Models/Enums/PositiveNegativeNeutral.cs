@@ -1,5 +1,6 @@
 ﻿using MigraDoc.DocumentObjectModel;
 using PdfSharp.Drawing;
+using RadialReview.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,9 @@ namespace RadialReview.Models.Enums {
 		Neutral = 0,
 		Positive = 1,
 	}
+}
 
+namespace RadialReview {
 	public static class PositiveNegativeNeutralExtensions {
 		public static XColor GetXColor(this PositiveNegativeNeutral self) {
 			switch (self) {
@@ -34,6 +37,11 @@ namespace RadialReview.Models.Enums {
 		public static Color GetColor(this PositiveNegativeNeutral self) {
 			var x = self.GetXColor();
 			return Color.FromArgb((byte)(x.A * 255), x.R, x.G, x.B);
+		}
+
+		public static string GetRgbColor(this PositiveNegativeNeutral self) {
+			var x = self.GetXColor();
+			return "rgba(" + x.R + "," + x.G + "," + x.B + "," + x.A + ")";
 		}
 
 		public static string ToShortKey(this PositiveNegativeNeutral self) {

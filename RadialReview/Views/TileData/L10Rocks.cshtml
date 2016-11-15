@@ -10,7 +10,7 @@
 								   {"RockName", Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName.NotNull(z => z.ToLower())))},
 								   {"Selector","(model.L10Rocks | filter:{KeyId:"+(Model)+"})[0].Contents"},
 								   {"Filter",""}
-							   }); }<div ng-show="(model.L10Rocks | filter:{KeyId:@(Model)})===undefined" class="gray alignCenter" elem-ready="functions.reload((model.L10Rocks | filter:{KeyId:@(Model)})===undefined)">Please wait</div></div>
+							   }); }<div ng-show="(model.L10Rocks | filter:{KeyId:@(Model)}).length==0" class="gray alignCenter" elem-ready="functions.reload((model.L10Rocks | filter:{KeyId:@(Model)}).length==0)">Please wait</div></div>
 </div>
 
 @*<style>

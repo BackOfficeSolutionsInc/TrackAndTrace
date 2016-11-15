@@ -15,6 +15,8 @@ using RadialReview.Models.Angular.Roles;
 using RadialReview.Models.Enums;
 using RadialReview;
 using RadialReview.Models.Accountability;
+using RadialReview.Hooks;
+using RadialReview.Utilities.Hooks;
 
 namespace RadialReview.Accessors {
 
@@ -93,9 +95,22 @@ namespace RadialReview.Accessors {
 					PermissionsUtility.Create(s, caller).EditRole(id);
 					var r = s.Get<RoleModel>(id);
 
+					var updateSent = false;
 					r.Role = role;
-					r.DeleteTime = deleteTime;
+					if (r.DeleteTime != deleteTime) {
+						r.DeleteTime = deleteTime;
+						if (deleteTime == null) {
+							HooksRegistry.Each<IRolesHook>(x => x.CreateRole(s, r));
+						} else {
+							HooksRegistry.Each<IRolesHook>(x => x.DeleteRole(s, r));
+						}
+						updateSent = true;
+					}
 					s.Update(r);
+					if (!updateSent)
+						HooksRegistry.Each<IRolesHook>(x => x.UpdateRole(s, r));
+
+
 
 
 					tx.Commit();
@@ -229,6 +244,9 @@ namespace RadialReview.Accessors {
 								CreateTime = r.CreateTime
 							};
 							s.Save(link);
+							HooksRegistry.Each<IRolesHook>(x => x.CreateRole(s, r));
+						} else {
+							HooksRegistry.Each<IRolesHook>(x => x.UpdateRole(s, r));
 						}
 
 						if (updateOutstanding && added) {
@@ -290,7 +308,7 @@ namespace RadialReview.Accessors {
 					posGroup[positionId.Value].Roles.AddRange(posRoles);
 				}
 
-				var posRolesLinks = links.Where(x => x.AttachType == AttachType.Position && relaventPD.Any(y => y.PosId == x.AttachId) && x.AttachId!=positionId);
+				var posRolesLinks = links.Where(x => x.AttachType == AttachType.Position && relaventPD.Any(y => y.PosId == x.AttachId) && x.AttachId != positionId);
 				foreach (var pos in posRolesLinks.GroupBy(x => x.AttachId)) {
 					var posRoles = pos.Select(x => rolesLU.GetOrDefault(x.RoleId, null)).Where(x => x != null).ToList();
 					posGroup[pos.Key].Roles.AddRange(posRoles);

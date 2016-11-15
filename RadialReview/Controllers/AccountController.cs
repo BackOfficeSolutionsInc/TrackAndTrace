@@ -316,37 +316,6 @@ namespace RadialReview.Controllers {
 			return RedirectToAction("Manage", new { Message = message });
 		}
 
-		protected List<SelectListItem> GetPossibleTimes(int? selected) {
-
-			var possibleTimes = new List<SelectListItem>();
-
-			possibleTimes.Add(new SelectListItem() {
-				Selected = (selected ?? -1) == -1,
-				Text = "Do not send e-mail",
-				Value = "-1"
-			});
-
-			for (int i = 0; i < 24; i++) {
-				var name = " AM (GMT)";
-				if (i == 0)
-					name = "12" + name;
-				else if (i < 12)
-					name = "" + i + name;
-				else if (i == 12)
-					name = "12 PM (GMT)";
-				else
-					name = "" + (i - 12) + " PM (GMT)";
-
-				possibleTimes.Add(new SelectListItem() {
-					Selected = selected == i,
-					Text = name,
-					Value = "" + i
-				});
-			}
-			return possibleTimes;
-
-		}
-
 		//
 		// GET: /Account/Manage
 		[Access(AccessLevel.User)]
@@ -394,7 +363,7 @@ namespace RadialReview.Controllers {
 				LastName = user.LastName,
 				ImageUrl = _ImageAccessor.GetImagePath(GetUserModel(), user.ImageGuid),
 				SendTodoTime = user.SendTodoTime,
-				PossibleTimes = GetPossibleTimes(user.SendTodoTime),
+				PossibleTimes = TimingUtility.GetPossibleTimes(user.SendTodoTime),
 				UserId = user.Id,
 				ShowScorecardColors = user._StylesSettings.ShowScorecardColors,
 			};
@@ -532,6 +501,7 @@ namespace RadialReview.Controllers {
 		[ValidateAntiForgeryToken]
 		[Access(AccessLevel.Any)]
 		public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl) {
+			throw new Exception("Fix Default Todo Send Time");
 			if (User.Identity.IsAuthenticated) {
 				return RedirectToAction("Manage");
 			}

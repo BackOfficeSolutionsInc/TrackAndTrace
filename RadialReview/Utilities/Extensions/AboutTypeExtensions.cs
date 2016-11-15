@@ -1,4 +1,5 @@
 ﻿using RadialReview.Models.Enums;
+using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,14 +19,14 @@ namespace RadialReview
 				case AboutType.Self:
 					return "Self";
 				case AboutType.Subordinate:
-					return "Subordinate";
+					return ""+Config.DirectReportName()+"s";
 				case AboutType.Teammate:
 					goto case AboutType.NoRelationship;
 					//return "Teammate";
 				case AboutType.Peer:
 					return "Peers";
 				case AboutType.Manager:
-					return "Manager";
+					return ""+Config.ManagerName()+"s";
 				default:
 					throw new ArgumentOutOfRangeException();
 			}

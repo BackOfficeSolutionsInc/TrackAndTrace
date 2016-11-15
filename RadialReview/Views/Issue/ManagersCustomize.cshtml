@@ -25,7 +25,7 @@
 		</div>
 		<div class="row smallBreak2">
 			<div class="col-sm-3 col-xs-4 col-sm-offset-1 alignRight">
-				<label class="control-label">Manager pre-@Html.ReviewName().ToLower() due:</label>
+				<label class="control-label">@RadialReview.Utilities.Config.ManagerName() pre-@Html.ReviewName().ToLower() due:</label>
 			</div>
 			<div class="col-xs-6 ">
 				@Html.Partial("~/Views/Shared/EditorTemplates/DateTime.cshtml", DateTime.Now, new ViewDataDictionary() { { "name", "PrereviewDate" }, { "startDate", Html.ConvertFromUtc(DateTime.UtcNow) } })
@@ -83,14 +83,17 @@
 				@Html.Hidden("EnsureDefault", true)
 			@*</div>
 		</div>*@
-		<div class="row smallBreak2">
+
+		@Html.Hidden("Anonymous",true)
+
+		@*<div class="row smallBreak2">
 			<div class="col-sm-3 col-xs-4 col-sm-offset-1 alignRight" title="Any feedback given will be anonymous. Only supervisors will be able to see it.">
 				<label class="control-label">Anonymous Feedback:</label>
 			</div>
 			<div class="col-xs-6 alignLeft checkbox-holder">
 				@Html.CheckBox("Anonymous", true)
 			</div>
-		</div>
+		</div>*@
 		@*<div class="row smallBreak2">
 				<div class="col-md-6">
 					<label class="control-label">Email employees:</label>
@@ -114,7 +117,7 @@
 			//issuing = true;
 			$("#submitButton").prop("disabled", true);
 			if ($("#ReviewName").val().trim() == "") {
-				alert("You must specify a @Html.ReviewName().ToLower() name.");
+				alert("You must specify an @Html.ReviewName().ToLower() name.");
 				event.preventDefault();
 				$("#submitButton").prop("disabled", false);
 				return;

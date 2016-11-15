@@ -372,7 +372,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
 		[HttpGet]
 		public PartialViewResult Delete(long id) {
-			_PermissionsAccessor.Permitted(GetUser(), x => x.EditReviewContainer(id));
+			_PermissionsAccessor.Permitted(GetUser(), x => x.AdminReviewContainer(id));
 			var model = new DeleteReview() { ReviewContainerId = id };
 			return PartialView(model);
 		}
@@ -488,7 +488,7 @@ namespace RadialReview.Controllers {
 		[HttpGet]
 		[Access(AccessLevel.Manager)]
 		public PartialViewResult DueDate(long id) {
-			_PermissionsAccessor.Permitted(GetUser(), x => x.EditReviewContainer(id));
+			_PermissionsAccessor.Permitted(GetUser(), x => x.AdminReviewContainer(id));
 			var review = _ReviewAccessor.GetReviewContainer(GetUser(), id, false, false, false);
 
 			var maxDate = DateTime.UtcNow;

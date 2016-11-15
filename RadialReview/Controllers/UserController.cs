@@ -428,7 +428,7 @@ namespace RadialReview.Controllers {
 			var user = _UserAccessor.GetUserOrganization(GetUser(), id, false, false).Hydrate().Managers().PersonallyManaging(GetUser()).Execute();
 
 			if (user.IsClient)
-				throw new PermissionsException("Cannot edit managers of a client.", true);
+				throw new PermissionsException("Cannot edit " + Config.ManagerName() + "s of a client.", true);
 
 			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeManagers);
 			user.SetPersonallyManaging(members.Any(x => x.UserId == userId && x._PersonallyManaging));//.Hydrate().PersonallyManaging(GetUser()).Execute();
@@ -471,7 +471,7 @@ namespace RadialReview.Controllers {
 		[Obsolete("Cannot remove manager like this", true)]
 		public JsonResult DeleteManager(long id) {
 			_UserAccessor.RemoveManager(GetUser(), id, DateTime.UtcNow);
-			return Json(ResultObject.Success("Removed manager.").ForceRefresh());
+			return Json(ResultObject.Success("Removed " + Config.ManagerName() + ".").ForceRefresh());
 		}
 
 		[Access(AccessLevel.Manager)]
@@ -479,7 +479,7 @@ namespace RadialReview.Controllers {
 		[Obsolete("Cannot remove manager like this", true)]
 		public JsonResult RemoveManager(long userId, long managerId) {
 			_UserAccessor.RemoveManager(GetUser(), userId, managerId, DateTime.UtcNow);
-			return Json(ResultObject.Success("Removed manager."));
+			return Json(ResultObject.Success("Removed " + Config.ManagerName() + "."));
 		}
 
 		[Access(AccessLevel.Manager)]
@@ -487,7 +487,7 @@ namespace RadialReview.Controllers {
 		[Obsolete("Cannot add manager like this", true)]
 		public JsonResult AddManager(AddManagerViewModel model) {
 			_UserAccessor.AddManager(GetUser(), model.UserId, model.ManagerId, DateTime.UtcNow);
-			return Json(ResultObject.Success("Added manager."));
+			return Json(ResultObject.Success("Added " + Config.ManagerName() + "."));
 		}
 
 		[Access(AccessLevel.Manager)]

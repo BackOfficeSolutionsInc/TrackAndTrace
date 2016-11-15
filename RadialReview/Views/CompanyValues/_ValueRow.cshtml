@@ -1,9 +1,8 @@
 ﻿@model RadialReview.Models.Askables.CompanyValueModel
 <div class="roleRow">
-	@using (Html.BeginCollectionItem("companyValues"))
-	{
+	@using (Html.BeginCollectionItem("companyValues")) {
 		<div class="roww">
-				
+
 			<div style="width:calc( 100% - 25px );display:inline-block">
 				@Html.HiddenFor(x => x.Id)
 				@Html.TextBoxFor(x => x.CompanyValue, new { @class = "form-control roleItem", placeholder = "Enter your company value (character limit: 64)...", maxlength = "64" })
@@ -11,12 +10,36 @@
 				@Html.HiddenFor(x => x.DeleteTime)
 			</div>
 			<span style="padding-left:8px;" class="glyphicon glyphicon-trash deleteRow clickable" title="Delete"></span>
-			<div  style="width:calc( 100% - 25px );padding-top: 2px;">
+			<div style="width:calc( 100% - 25px );padding-top: 2px;">
 				@Html.TextAreaFor(x => x.CompanyValueDetails, new { @class = "form-control roleItem verticalOnly", placeholder = "Enter details...", style = "height:75px" })
 			</div>
-			<hr style="margin-bottom: 7px;margin-top: 7px;margin-left: -30px;margin-right: -30px;"/>
+			<div class="row" style="padding:3px;">
+
+				<div class="col-xs-2" style="padding: 7px 0px 7px 15px;text-align: left;">
+					<b>The Bar</b>
+				</div>
+				<div class="col-xs-10">
+					<div class="row">
+						@*<div class="col-xs-7 smallHeight alignRight" >
+							@Html.EditorFor(x => x.Minimum, new { name = Html.NameFor(x => x.Minimum) })
+						</div>*@
+						<div class="col-xs-12">
+							@Html.TextBoxFor(x => x.MinimumPercentage, new {
+							   @class = "form-control",
+							   max = "100",
+							   step = "1",
+							   type = "number",
+							   min = "0",
+							   style = "width: 68px;display: inline-block;margin-right: 5px;"
+						   })
+							<span style="font-size: 15px;">% of Positive Ratings</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<hr style="margin-bottom: 14px;margin-top: 14px;" />@*margin-left: -30px;margin-right: -30px;*@
 		</div>
-	}
+			}
 	<div class="smallBreak"></div>
 	<div class="smallBreak"></div>
 </div>

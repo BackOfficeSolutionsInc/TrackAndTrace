@@ -675,10 +675,10 @@ namespace RadialReview.Accessors
 			var managerNull = user.ManagedBy.ToListAlive().Where(x => x.ManagerId == managerId).FirstOrDefault();
 
 			if (managerNull != null)
-				throw new PermissionsException(manager.GetName() + " is already a manager for this user.");
+				throw new PermissionsException(manager.GetName() + " is already a "+Config.ManagerName()+" for this user.");
 
 			if (!manager.IsManager())
-				throw new PermissionsException(manager.GetName() + " is not a manager.");
+				throw new PermissionsException(manager.GetName() + " is not a "+Config.ManagerName() + ".");
 
 			//DeepSubordianteAccessor.Add(s, manager, user, manager.Organization.Id, now, ignoreCircular);
 			user.ManagedBy.Add(new ManagerDuration(managerId, userId, caller.Id)
@@ -801,7 +801,7 @@ namespace RadialReview.Accessors
 					{
 						if (m.Type != TeamType.Subordinates)
 						{
-							warnings.Add("The team, " + m.GetName() + " is managed by" + user.GetFirstName() + ". You will be promoted to manager of this team.");
+							warnings.Add("The team, " + m.GetName() + " is managed by" + user.GetFirstName() + ". You will be promoted to "+ Config.ManagerName() + " of this team.");
 						}
 					}
 					var subordinates = s.QueryOver<ManagerDuration>().Where(x => x.ManagerId == userId && x.DeleteTime == null).List().ToList();
@@ -1145,7 +1145,7 @@ namespace RadialReview.Accessors
 				{
 					var perms = PermissionsUtility.Create(s, caller).ViewOrganization(orgId);
 
-					var users = OrganizationAccessor.GetMembers_Tiny(s, perms, orgId);
+					var users = TinyUserAccessor.GetOrganizationMembers(s, perms, orgId);
 
 					exclude = exclude ?? new long[0];
 

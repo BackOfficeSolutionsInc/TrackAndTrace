@@ -56,7 +56,7 @@ namespace RadialReview.Controllers
 
 			var viewSurvey = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagerAtOrganization(GetUser().Id, reviewContainer.ForOrganizationId)
 				.Or(
-					y => y.EditReviewContainer(reviewContainerId),
+					y => y.AdminReviewContainer(reviewContainerId),
 					y => y.ManagingTeam(reviewContainer.ForTeamId)
 				));
 
@@ -147,8 +147,7 @@ namespace RadialReview.Controllers
 			return View(model);
 
 		}
-
-
+		
 		[Access(AccessLevel.Manager)]
 		public ActionResult PeopleAnalyzer(long id) {
 
@@ -157,5 +156,8 @@ namespace RadialReview.Controllers
 
 			return Pdf(pdf);
 		}
+
+
+	
 	}
 }

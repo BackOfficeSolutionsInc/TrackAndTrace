@@ -14,6 +14,7 @@ using RadialReview.Utilities.DataTypes;
 using System.Globalization;
 using System.Threading;
 using log4net;
+using System.Web.Mvc;
 
 namespace RadialReview.Utilities {
 	public static class TimingUtility {
@@ -712,6 +713,39 @@ namespace RadialReview.Utilities {
 					return 52;
 			}
 			return 13;
+		}
+
+
+
+		public static List<SelectListItem> GetPossibleTimes(int? selected) {
+
+			var possibleTimes = new List<SelectListItem>();
+
+			possibleTimes.Add(new SelectListItem() {
+				Selected = (selected ?? -1) == -1,
+				Text = "Do not send e-mail",
+				Value = "-1"
+			});
+
+			for (int i = 0; i < 24; i++) {
+				var name = " AM (GMT)";
+				if (i == 0)
+					name = "12" + name;
+				else if (i < 12)
+					name = "" + i + name;
+				else if (i == 12)
+					name = "12 PM (GMT)";
+				else
+					name = "" + (i - 12) + " PM (GMT)";
+
+				possibleTimes.Add(new SelectListItem() {
+					Selected = selected == i,
+					Text = name,
+					Value = "" + i
+				});
+			}
+			return possibleTimes;
+
 		}
 
 	}

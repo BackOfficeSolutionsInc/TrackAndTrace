@@ -6,6 +6,11 @@
 	ViewBag.FullHeight = true;
 
 	Html.RenderPartial("~/Views/CDN/Angular.cshtml");
+	var searchLoc = "top:30px";
+	if (ViewBag.NoTitleBar ?? false) {
+		searchLoc = "top:0px";
+	}
+
 }
 @*
 	<div class="acc-chart">
@@ -27,7 +32,7 @@
 </div>
 <div ng-app="ACApp" class="full-height acc-chart ng-cloak">
 	<div ng-controller="ACController" class="full-height">
-		<md-autocomplete style="position:fixed;top: 30px;right: 0px;width:320px"
+		<md-autocomplete style="position:fixed;@(searchLoc);right: 0px;width:320px;max-width: 70vw;"
 						 md-selected-item="search.selected"
 						 md-search-text-change="search.searchTextChange(search.searchText)"
 						 md-search-text="search.searchText"

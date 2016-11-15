@@ -576,26 +576,7 @@ namespace RadialReview.Controllers
 			}
 
 
-			AccountabilityAccessor._FinishUploadAccountabilityChart(GetUser(),existingUsers, managerLookup, errors);
-
-			//var now = DateTime.UtcNow;
-			//foreach (var m in managerLookup)
-			//{
-			//	var foundManager = existingUsers.FirstOrDefault(x => x.GetFirstName() == m.Value[0] && x.GetLastName() == m.Value[1]);
-			//	if (foundManager == null)
-			//	{
-			//		errors.Add("Could not find manager " + m.Value[0] + " " + m.Value[1] + ".");
-			//		continue;
-			//	}
-			//	if (!foundManager.IsManager())
-			//	{
-			//		_UserAccessor.EditUser(GetUser(), foundManager.Id, true);
-			//		foundManager.ManagerAtOrganization = true;
-			//	}
-
-			//	_UserAccessor.AddManager(GetUser(), m.Key, foundManager.Id, now);
-			//}
-
+			AccountabilityAccessor._FinishUploadAccountabilityChart(GetUser(),existingUsers, managerLookup, errors);			
 
 			ViewBag.Message = String.Join("\n", errors.Select(x => x.Key));
 			return RedirectToAction("Members", "Manage");

@@ -15,8 +15,8 @@
 	}
 
 	.page-header {
-		margin-top: 0px;    
-        margin-bottom: 22px;
+		margin-top: 0px;
+		margin-bottom: 22px;
 
 
 		&.listing {
@@ -72,7 +72,7 @@
 		}
 
 		.headline-row {
-			cursor:pointer;
+			cursor: pointer;
 
 			.move-icon:hover {
 				color: #565656;
@@ -258,151 +258,9 @@
 		content: "\e067";
 	}
 
-	.headlineDetails {
-		position: relative;
-
-		.headlines-details-container {
-			padding-left: 5px;
-			border-left: 2px solid #EFEFEF;
-			padding-left: 13px;
-			margin-left: -14px;
-			min-height: 60px;
-		}
-
-		h4 {
-			margin-top: 0px;
-			margin-bottom: 4px;
-			padding-bottom: 6px;
-			border-bottom: 1px solid #eee;
-			margin-top: 0px;
-			margin-bottom: 10px;
-			min-height: 30px;
-		}
-
-		li {
-			cursor: pointer;
-			list-style-type: none;
-		}
-
-		.move-icon {
-			display: none;
-		}
-
-		.button-bar {
-			padding-top: 6px;
-
-			.btn-group {
-				margin: 2px;
-			}
-
-			.doneButton {
-				float: right;
-			}
-
-			.expandContract {
-				float: left;
-			}
-
-			.headlinesButton {
-				color: #5E5E5E;
-				top: 1px;
-				opacity: 1;
-				transition: all .4s ease;
-			}
-		}
-
-		.heading {
-			width: ~"calc(100% - 32px)";
-		}
-
-		&:empty {
-			color: #ddd;
-		}
-
-		&:empty:after {
-			content: "Click a People Headline to see its details.";
-		}
-
-		& > ol {
-			overflow: visible;
-			color: #999;
-		}
-
-		ol {
-			padding-left: 22px;
-			font-size: 12px;
-		}
-
-		& > ol .headline-row {
-			list-style-type: square;
-			overflow: visible;
-			white-space: normal;
-		}
-
-		& > ol .headline-row .message {
-			color: #666;
-		}
-
-		.createTime {
-			color: #ccc;
-			text-align: right;
-			position: absolute;
-			top: -36px;
-			right: 0px;
-		}
-
-		.details {
-			/*white-space: pre-line;*/
-			border: 1px solid #E8E8E8;
-			/*padding: 2px 6px;*/
-			padding: 0 1px 0 0;
-			color: #666;
-			font-size: 12px;
-			background-color: #FcFcFc;
-			width: 100%;
-			resize: vertical;
-			height: 116px;
-			min-height: 116px;
-		}
-
-		& > .dd-list {
-			max-height: 400px;
-			padding-bottom: 20px;
-			margin-bottom: 20px;
-			overflow-y: auto;
-			border-bottom: 1px solid #eee;
-		}
-
-		.date input {
-			border: 0px;
-			-webkit-box-shadow: none;
-			-box-shadow: none;
-			color: #767F99;
-			cursor: pointer;
-		}
-
-		.date input:hover {
-			text-decoration: underline;
-		}
-
-		.message-input {
-			width: 100%;
-			outline: none;
-			border: none;
-			border-bottom: 2px solid #EF7622;
-			margin-top: -1px;
-			color: black !important;
-		}
-
-		.message:hover {
-			border-top: 1px solid transparent;
-			border-bottom: 1px solid #EF7622;
-		}
-	}
-
 	.page-header.details {
 		color: #666;
-        margin-top:0px;
+		margin-top: 0px;
 	}
 
 	.profile-image {
@@ -473,9 +331,161 @@
 		width: 100%;
 	}
 
-	&.headline-type-HeadlinesList{
-		.page-header{
-			margin-bottom:0;
+	&.headline-type-HeadlinesList {
+		.page-header {
+			margin-bottom: 0;
 		}
+	}
+
+	@media(max-width:767px) {
+		.l10-page-title {
+			color: rgba(0, 0, 0, 0);
+			height: 15px;
+		}
+	}
+}
+
+#headlineDetails{	
+	&:empty {
+		color: #ddd;
+	}
+
+	&:empty:after {
+		content: "Click a People Headline to see its details.";
+	}
+
+}
+
+.headlineDetails {
+	position: relative;
+
+	.headlines-details-container {
+		padding-left: 5px;
+		border-left: 2px solid #EFEFEF;
+		padding-left: 13px;
+		margin-left: -14px;
+		min-height: 60px;
+	}
+
+	h4 {
+		margin-top: 0px;
+		margin-bottom: 4px;
+		padding-bottom: 6px;
+		border-bottom: 1px solid #eee;
+		margin-top: 0px;
+		margin-bottom: 10px;
+		min-height: 30px;
+	}
+
+	li {
+		cursor: pointer;
+		list-style-type: none;
+	}
+
+	.move-icon {
+		display: none;
+	}
+
+	.button-bar {
+		padding-top: 6px;
+
+		.btn-group {
+			margin: 2px;
+		}
+
+		.doneButton {
+			float: right;
+		}
+
+		.expandContract {
+			float: left;
+		}
+
+		.headlinesButton {
+			color: #5E5E5E;
+			top: 1px;
+			opacity: 1;
+			transition: all .4s ease;
+		}
+	}
+
+	.heading {
+		width: ~"calc(100% - 32px)";
+	}
+
+	& > ol {
+		overflow: visible;
+		color: #999;
+	}
+
+	ol {
+		padding-left: 22px;
+		font-size: 12px;
+	}
+
+	& > ol .headline-row {
+		list-style-type: square;
+		overflow: visible;
+		white-space: normal;
+	}
+
+	& > ol .headline-row .message {
+		color: #666;
+	}
+
+	.createTime {
+		color: #ccc;
+		text-align: right;
+		position: absolute;
+		top: -36px;
+		right: 0px;
+	}
+
+	.details {
+		/*white-space: pre-line;*/
+		border: 1px solid #E8E8E8;
+		/*padding: 2px 6px;*/
+		padding: 0 1px 0 0;
+		color: #666;
+		font-size: 12px;
+		background-color: #FcFcFc;
+		width: 100%;
+		resize: vertical;
+		height: 116px;
+		min-height: 116px;
+	}
+
+	& > .dd-list {
+		max-height: 400px;
+		padding-bottom: 20px;
+		margin-bottom: 20px;
+		overflow-y: auto;
+		border-bottom: 1px solid #eee;
+	}
+
+	.date input {
+		border: 0px;
+		-webkit-box-shadow: none;
+		-box-shadow: none;
+		color: #767F99;
+		cursor: pointer;
+	}
+
+	.date input:hover {
+		text-decoration: underline;
+	}
+
+	.message-input {
+		width: 100%;
+		outline: none;
+		border: none;
+		border-bottom: 2px solid #EF7622;
+		margin-top: -1px;
+		color: black !important;
+	}
+
+	.message:hover {
+		border-top: 1px solid transparent;
+		border-bottom: 1px solid #EF7622;
 	}
 }

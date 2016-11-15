@@ -105,7 +105,7 @@ namespace RadialReview.Accessors {
                         LastSent = null,
                         OrganizationId = caller.Organization.Id,
                         LastSentByUserId = caller.Id,
-                        EmailStatus = null
+                        EmailStatus = null,						
                     };
                     newUser.TempUser = tempUser;
 

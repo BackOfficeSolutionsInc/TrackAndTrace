@@ -24,6 +24,8 @@ using RadialReview.Models.Angular.Roles;
 using RadialReview.Models.Angular.CompanyValue;
 using RadialReview.Exceptions;
 using RadialReview.Models.Scorecard;
+using RadialReview.Notifications;
+using RadialReview.Models.Angular.Notifications;
 
 namespace RadialReview.Controllers {
     [SessionState(SessionStateBehavior.ReadOnly)]
@@ -163,9 +165,18 @@ namespace RadialReview.Controllers {
                 }
             }
 
+			if (tiles.Any(x => x.Type == TileType.Notifications || (x.DataUrl ?? "").Contains("UserNotifications"))) {
+				try {
+					var notifications = AngularNotification.Create(PubSub.ListUnseen(GetUser(), GetUser().Id)).ToList();
+					output.Notifications = notifications;
+				} catch (Exception e) {
+					ProcessDeadTile(e);
+				}
+			}
 
 
-            var caller = GetUser();
+
+			var caller = GetUser();
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     var l10Lookup = new DefaultDictionary<long, L10Recurrence>(x => L10Accessor.GetL10Recurrence(caller, x, false));
@@ -302,9 +313,10 @@ namespace RadialReview.Controllers {
 
             public IEnumerable<AngularRole> Roles { get; set; }
             public IEnumerable<AngularCompanyValue> CoreValues { get; set; }
+			public IEnumerable<AngularNotification> Notifications { get; set; }
 
 
-            public List<AngularTileId<AngularScorecard>> L10Scorecards { get; set; }
+			public List<AngularTileId<AngularScorecard>> L10Scorecards { get; set; }
             public List<AngularTileId<List<AngularRock>>> L10Rocks { get; set; }
             public List<AngularTileId<AngularIssuesList>> L10Issues { get; set; }
             public List<AngularTileId<List<AngularTodo>>> L10Todos { get; set; }

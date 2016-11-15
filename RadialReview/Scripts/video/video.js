@@ -194,10 +194,22 @@ function addVideoProvider(vcProvider) {
 }
 
 function selectVideoProvider(providerId) {
+	var connectionId = "";
+	try{
+		connectionId=meetingHub.connection.id;
+	}catch(e){
+		console.error(e);
+	}
+
 	$.ajax({
-		url: "/L10/SetVideoProvider?provider=" + providerId + "&recur=" + window.recurrenceId,		
+		url: "/L10/SetVideoProvider?provider=" + providerId + "&recur=" + window.recurrenceId + "&connectionid=" + connectionId,
 	});
 
+}
+
+function clickVideoProvider(vcProvider) {
+	setSelectedVideoProvider(vcProvider);
+	joinVideoConference(vcProvider.Url, vcProvider.VideoConferenceType, vcProvider.FriendlyName, vcProvider.Id);
 }
 
 function setSelectedVideoProvider(vcProvider) {
@@ -212,6 +224,7 @@ function setSelectedVideoProvider(vcProvider) {
 					   vcProvider.Id+
 	')">Join Conference</div><div class="start-conference start-video btn btn-xs btn-default" onclick="unsetSelectedVideoProvider()">Reset Video</div>');
 	selector.show();
+	//joinVideoConference(vcProvider.Url, vcProvider.VideoConferenceType, vcProvider.FriendlyName, vcProvider.Id);
 }
 function unsetSelectedVideoProvider() {
 	$(".videoconference-container .unselected-video").show();

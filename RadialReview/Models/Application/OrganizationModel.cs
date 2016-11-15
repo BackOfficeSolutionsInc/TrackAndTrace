@@ -70,6 +70,8 @@ namespace RadialReview.Models {
 			public virtual bool EnableL10 { get; set; }
 			public virtual bool EnableReview { get; set; }
 
+			public virtual int? DefaultSendTodoTime { get; set; }
+
 			public virtual bool EnableSurvey { get; set; }
 
 			public virtual String DateFormat { get; set; }
@@ -102,10 +104,14 @@ namespace RadialReview.Models {
 				EmployeesCanCreateSurvey = false;
 				ManagersCanCreateSurvey = true;
 
+				DefaultSendTodoTime = -1;
+
 				OnlySeeRocksAndScorecardBelowYou = true;
 
 				EnableL10 = false;
 				EnableReview = false;
+
+				LimitFiveState = true;
 
 				DateFormat = "MM-dd-yyyy";
 
@@ -135,12 +141,15 @@ namespace RadialReview.Models {
 					Map(x => x.EmployeesCanCreateSurvey);
 					Map(x => x.ManagersCanCreateSurvey);
 
+					Map(x => x.DefaultSendTodoTime);
 
 					Map(x => x.OnlySeeRocksAndScorecardBelowYou);
 
 					Map(x => x.EnableL10);
 					Map(x => x.EnableReview);
 					Map(x => x.EnableSurvey);
+
+					Map(x => x.LimitFiveState);
 
 					Map(x => x.RockName);
 					Map(x => x.DateFormat);
@@ -160,6 +169,7 @@ namespace RadialReview.Models {
 			public virtual Month StartOfYearMonth { get; set; }
 			public virtual DateOffset StartOfYearOffset { get; set; }
 			public virtual NumberFormat NumberFormat { get; set; }
+			public virtual bool LimitFiveState { get; set; }
 
 			public virtual string GetAngularNumberFormat() {
 				return NumberFormat.Angular();

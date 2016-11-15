@@ -1,4 +1,5 @@
 ﻿
+var modalWidth = 991;
 function fixHeadlinesBoxSize() {
 	if ($(".headlines-notes").length) {
 		var wh = $(window).height();
@@ -20,6 +21,12 @@ $(window).on("footer-resize", function () {
 });
 
 var clickHeadlineRow = function (evt) {
+
+	if ($(evt.target).hasClass("todoButton"))
+		return;
+	if ($(evt.target).hasClass("issuesButton"))
+		return;
+
 
 	var headlineRow = $(this);
 	$(".headline-row.selected").removeClass("selected");
@@ -43,15 +50,16 @@ var clickHeadlineRow = function (evt) {
 	//var recurrence_issue = $(headlineRow).data("recurrence_issue");
 	var checked = $(headlineRow).find(".issue-checkbox").prop("checked");
 
-	$("#headlineDetails").html("");
-	$("#headlineDetails").append("<span class='expandContract btn-group pull-right'></span>");
-	$("#headlineDetails").append("<div class='createTime'>" + dateFormatter(new Date(createtime)) + "</div>");
+	var detailsContents = $("<div class='headlineDetails abstract-details-panel'></div>");
+	//$("#headlineDetails").html("");
+	$(detailsContents).append("<span class='expandContract btn-group pull-right'></span>");
+	$(detailsContents).append("<div class='createTime'>" + dateFormatter(new Date(createtime)) + "</div>");
 
-	$("#headlineDetails").append("<div class='heading'><h4 class='message-holder clickable' data-headline='" + headline + "'><span data-headline='" + headline + "' class='message editable-text'>" + message + "</span></h4></div>");
-	//$("#headlineDetails").append("<textarea id='headlineDetailsField' class='details headline-details' data-headline='" + headline + "'>" + details + "</textarea>");
-	$("#headlineDetails").append("<iframe class='details headline-details' name='embed_readwrite' src='https://notes.traction.tools/p/" + padId + "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + encodeURI(UserName) + "' width='100%' height='100%'></iframe>");
+	$(detailsContents).append("<div class='heading'><h4 class='message-holder clickable' data-headline='" + headline + "'><span data-headline='" + headline + "' class='message editable-text'>" + message + "</span></h4></div>");
+	//$(detailsContents).append("<textarea id='headlineDetailsField' class='details headline-details' data-headline='" + headline + "'>" + details + "</textarea>");
+	$(detailsContents).append("<iframe class='details headline-details' name='embed_readwrite' src='https://notes.traction.tools/p/" + padId + "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + encodeURI(UserName) + "' width='100%' height='100%'></iframe>");
 
-	$("#headlineDetails").append(
+	$(detailsContents).append(
 		"<div class='button-bar'>" +
 			"<div style='height:28px'>" +
 			"<span class='btn-group pull-right'>" +
@@ -73,6 +81,18 @@ var clickHeadlineRow = function (evt) {
 			//	"</span>" +
 			//"</div>" +
 		"</div>");
+	var w = $(window).width();
+	if (w <= modalWidth) {
+		var c = detailsContents.clone();
+		c.find("h4").addClass("form-control");
+		showModal({
+			contents: c,
+			title: "Edit People Headline",
+			noCancel: true,
+		});
+	}
+	$("#headlineDetails").html("");
+	$("#headlineDetails").append(detailsContents);
 	fixHeadlineDetailsBoxSize();
 }
 $("body").on("click", ".headlines-list>.headline-row", clickHeadlineRow);
@@ -102,7 +122,7 @@ function refreshCurrentHeadlineDetails() {
 }
 
 $("body").on("click", ".headlineDetails .message-holder .message", function () {
-	var input = $("<input class='message-input' value='" + escapeString($(this).html()) + "' data-old='" + escapeString($(this).html()) + "' onblur='sendHeadlineMessage(this," + $(this).parent().data("headline") + ")'/>");
+	var input = $("<textarea class='message-input' value='" + escapeString($(this).html()) + "' data-old='" + escapeString($(this).html()) + "' onblur='sendHeadlineMessage(this," + $(this).parent().data("headline") + ")'>" + $(this).html() + "</textarea>");
 	$(this).parent().html(input);
 	input.focusTextToEnd();
 });

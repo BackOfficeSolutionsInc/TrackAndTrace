@@ -116,17 +116,10 @@ function clickPrint(self) {
 }
 
 function clickAuthorize() {
-    //if (allowed() || $("#Authorized").hasClass("on") || confirm("You need to include data in the review. You should add some feedback and charts before authorizing. You may turn off this indicator by turning off hints. Continue anyway?")) {
     setAuthorize();
-    //} else {
-    //    ;
-    //}i
 }
 
 function UpdateChart() {
-   // var date1 = new Date(+$("#DateSlider").val()[0]);
-    //var date2 = new Date(+$("#DateSlider").val()[1]);
-   // var date3 = new Date();
     var groups = [];
     var filters = [];
     var extraClasses = [];
@@ -143,25 +136,12 @@ function UpdateChart() {
     	}
     });
 
-    /*$(".filters:checked").each(function (x) {
-    	var split = $(this).data("class");//.split(" ");
-    	extraClasses.push($(this).data("addclass"));
-    	filters.push(split);
-    });*/
-
 	IncludePrevious = $(".showPrevious").is(":checked");
     var dat = {
         reviewId: ReviewId,
         aggregateBy: groups.join(" "),
         includePrevious:IncludePrevious,
-       // filterBy: filters.join(","),
-        //title: $(".title").val(),
-        //xAxis: parseInt($("#xAxis").val().split("category-")[1]),
-    	//yAxis: parseInt($("#yAxis").val().split("category-")[1]),
-	
-        //startTime: Math.min(date1, date2),//new Date(parseInt($("#slider").val())),
-       // endTime: Math.max(date1, date2),//new Date(parseInt($("#date").val()))
-        //time: date3,//new Date(parseInt($("#date").val()))
+      
     };
 
     $.ajax({
@@ -251,9 +231,7 @@ function SetFeedback(id, on) {
     var dat = new Object();
     dat.feedbackId = id;
     dat.reviewId = ReviewId/* "@Model.Review.Id"*/;
-    /*if (on === undefined) {
-        on = !$(".feedback_" + id + " .check").hasClass("on");
-    }*/
+    
     dat.on = on;
 
     $(".feedback_input_" + id /*+ " .check"*/).prop("disabled", true);
@@ -268,16 +246,7 @@ function SetFeedback(id, on) {
                     showAlert("An error occurred.");
                     location.href = "#top";
                 }
-                $(".feedback_input_" + data.Object.FeedbackId /*+ " .check"*/).prop("checked", data.Object.On);
-                //if (data.Object.On) {
-                //    $(".feedback_" + data.Object.FeedbackId + " .check").addClass("on");
-                //    var text = $(".feedback_" + data.Object.FeedbackId + " .text").html();
-                //    var toAppend = '<li class="feedback feedback_' + data.Object.FeedbackId + '">' + text + '<span onclick="SetFeedback(' + data.Object.FeedbackId + ',false)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span></li>';
-                //    $("#feedbacks").append(toAppend);
-                //} else {
-                //    $(".feedback_" + data.Object.FeedbackId + " .check").removeClass("on");
-                //    $("#feedbacks .feedback_" + data.Object.FeedbackId).remove();
-                //}
+                $(".feedback_input_" + data.Object.FeedbackId /*+ " .check"*/).prop("checked", data.Object.On);               
             }
         },
         complete: function () {
@@ -385,10 +354,10 @@ function legend(legendData, chart) {
         $("#legend .contents").append("<div>" + self + " <div class='inlineBlock'>Self</div></div>");
 
         var manager = "<svg viewBox=\"0 0 20 20\" width=\"12\" height=\"12\"><rect x=\"-7\" y=\"-7\" width=\"14\" height=\"14\" transform=\"translate(9,9)\"  class=\"about-Manager scatter-point nearest inclusive\"/></svg>";
-        $("#legend .contents").append("<div>" + manager + " <div class='inlineBlock'>Manager</div></div>");
+        $("#legend .contents").append("<div>" + manager + " <div class='inlineBlock'>Supervisor</div></div>");
 
         var subordinate = "<svg viewBox=\"0 0 20 20\" width=\"12\" height=\"12\"><rect x=\"-5\" y=\"-5\" width=\"10\" height=\"10\" transform=\"translate(9,9)rotate(45)\"  class=\"about-Subordinate scatter-point nearest inclusive\"/></svg>";
-        $("#legend .contents").append("<div>" + subordinate + " <div class='inlineBlock'>Subordinate</div></div>");
+        $("#legend .contents").append("<div>" + subordinate + " <div class='inlineBlock'>Direct Report</div></div>");
 
         var peer = "<svg viewBox=\"0 0 20 20\" width=\"12\" height=\"12\"><polygon transform=\"translate(10,10)\" class=\"about-Peer scatter-point nearest inclusive\" points=\"" + chart.triangle + "\"></svg>";
         $("#legend .contents").append("<div>" + peer + " <div class='inlineBlock'>Peer</div></div>");
@@ -411,61 +380,6 @@ function legendReview(legendData, chart) {
         $("#legend .contents").append("<div><div class='about-NoRelationship circle inlineBlock'></div><div class='inlineBlock'>Review Average</div></div>");
     }
 }
-
-//var chart = new ScatterChart("chart");
-
-//function update(reset) {
-//    var date1 = new Date(+$("#DateSlider").val()[0]);
-//    var date2 = new Date(+$("#DateSlider").val()[1]);
-//    var date3 = new Date();
-
-//    var groups = [];
-//    var filters = [];
-//    var extraClasses = [];
-//    var legendFunc = legend;
-    
-//    $(".group:checked").each(function (x) {
-//        var split = $(this).data("class").split(" ");
-//        if (split[0] == "")
-//            legendFunc = legendReview;
-
-//        extraClasses.push($(this).data("addclass"));
-//        for (var i in split) {
-//            groups.push(split[i]);
-//        }
-//    });
-
-//    $(".filters:checked").each(function (x) {
-//        var split = $(this).data("class");//.split(" ");
-//        extraClasses.push($(this).data("addclass"));
-//        filters.push(split);/*
-//                    for (var i in split) {
-//                        filters.push(split[i]);
-//                    }*/
-//    });
-//    //var groups = [$(".group:checked").map(function () { return  })];
-
-
-
-//    UpdateChart();
-//    chart.Plot(AllScatterData, {
-//        //mouseout: mouseout,
-//        //mouseover: mouseover,
-//        animate: true,
-//        reset: reset,
-//        xAxis: $("#xAxis option:selected").text(),
-//        yAxis: $("#yAxis option:selected").text(),
-//        xDimensionId: $("#xAxis").val(),
-//        yDimensionId: $("#yAxis").val(),
-//        startTime: Math.min(date1, date2),//new Date(parseInt($("#slider").val())),
-//        endTime: Math.max(date1, date2),//new Date(parseInt($("#date").val()))
-//        time: date3,//new Date(parseInt($("#date").val()))
-//        groups: [groups],
-//        filters: filters,
-//        legendFunc: legendFunc,
-//        extraClasses : extraClasses,
-//    });
-//}
 
 var slider;
 $(function () {
@@ -548,156 +462,3 @@ $(".update").change(function () {
 		updateChart();
 	});
 });
-
-
-
-//var dataUrl = "/Data/ReviewScatter/" + ForUserId + "?reviewsId=" + ForReviewsId;//"@Model.Review.ForReviewsId";
-//chart.Pull(dataUrl, null, function (dat) {
-//    AllScatterData = dat;
-//    for (var key in dat.Dimensions) {
-//        var item = dat.Dimensions[key];
-//        $("#xAxis").append("<option value=\"" + item.Id + "\">" + item.Name + "</option>");
-//        $("#yAxis").append("<option value=\"" + item.Id + "\">" + item.Name + "</option>");
-//    }
-
-//    $("#xAxis").val(dat.InitialXDimension);
-//    $("#yAxis").val(dat.InitialYDimension);
-
-//    for (var i = 0; i < dat.Filters.length; i++) {
-//        var filter = dat.Filters[i];
-//        var checked = "";
-//        if (filter.On)
-//            checked = "checked";
-//        $("#filterSet").append("<li><input class='filters update' type='checkbox' " + checked + " data-class='" + filter.Class + "'/><label>" + filter.Name + "</label></li>");
-//    }
-
-//    if (dat.Filters.length > 0) {
-//        $("#filtersContainer").removeClass("hidden");
-//    }
-
-
-
-//    $(".update").change(false, function (d) {
-//        update(d.data);
-//    });
-
-//    //$(".date").attr("min",);
-//    //$(".date").attr("max", );
-
-//    /*$("#date1").change(function () { update(false); });
-//    $("#date2").change(function () { update(false); });
-//    $("#date3").change(function () { update(false); });*/
-//    $("#xAxis").change(function () { update(false); });
-//    $("#yAxis").change(function () { update(false); });
-//    slider.noUiSlider({
-//        range: [this.GetDate(AllScatterData.MinDate).getTime() - 86400000, this.GetDate(AllScatterData.MaxDate).getTime() + 86400000],
-//        start: [this.GetDate(AllScatterData.MinDate).getTime() - 86400000, this.GetDate(AllScatterData.MaxDate).getTime() + 86400000],
-//        slide: function () { update(false); }
-//    }, true);
-//    slider.change(function () { update(false); });
-
-//    update(true);
-//});
-
-
-//document.getElementById("controls").addEventListener("click", chart.update, false);
-//document.getElementById("controls").addEventListener("keyup", chart.update, false);
-//document.getElementById("xAxis").addEventListener("change", chart.update, false);
-//document.getElementById("yAxis").addEventListener("change", chart.update, false);
-
-
-////////////////////////////////END
-
-//function SetManagerAnswers() {
-//    var on = !$(".ManagerAnswers").hasClass("on");
-//    var dat = { reviewId:ReviewId/* "@Model.Review.Id"*/, on: on };
-//    $.ajax({
-//        url: "/Review/SetIncludeManagerAnswers",
-//        data: dat,
-//        method: "GET",
-//        success: function (data) {
-//            if (data.Object) {
-//                if (data.Object.On) {
-//                    $(".ManagerAnswers").addClass("on");
-//                } else {
-//                    $(".ManagerAnswers").removeClass("on");
-//                }
-//            }
-//        }
-//    });
-//}
-//function OnclickAggregate() {
-//	var self = $(this);
-//    var on = $(self).val();//.attr('value');
-//    var dat = { reviewId: ReviewId/* "@Model.Review.Id"*/, on: on };
-//    $.ajax({
-//        url: "/Review/SetScatterChart",
-//        data: dat,
-//        method: "GET",
-//        success: function (data) {
-//            if (data.Object && on == data.Object.On) {
-
-//            } else {
-//                clearAlerts();
-//                showAlert("An error occurred.");
-//                console.log(data.Object);
-//                location.href = "#top";
-//            }
-//        },
-//        complete: function () {
-//            //UpdateFeedbacks();
-//        },
-//        error: function (jqXHR, textStatus, errorThrown) {
-//            clearAlerts();
-//            showAlert("An error occurred.");
-//            console.log("Error:" + textStatus);
-//            console.log(errorThrown);
-//            location.href = "#top";
-//        }
-//    });
-//}
-//function OnclickSelfAnswers() {
-//	UpdateInclude("/Review/SetIncludeSelfAnswers", $(this).is(':checked'), "includeSelf");
-//}
-//function OnclickScatter() {
-//	UpdateInclude("/Review/SetIncludeScatter", $(this).is(':checked'), "includeScatter");
-//}
-//function OnclickNotes() {
-//	UpdateInclude("/Review/SetIncludeNotes", $(this).is(':checked'), "includeScatter");
-//}
-
-
-//function SetSelfAnswers() {
-//    var on = !$(".SelfAnswers").hasClass("on");
-//    var dat = { reviewId: ReviewId/* "@Model.Review.Id"*/, on: on };
-//    $.ajax({
-//        url: "/Review/SetIncludeSelfAnswers",
-//        data: dat,
-//        method: "GET",
-//        success: function (data) {
-//            if (data.Object) {
-//                if (data.Object.On) {
-//                    $(".SelfAnswers").addClass("on");
-//                } else {
-//                    $(".SelfAnswers").removeClass("on");
-//                }
-//            }
-//        }
-//    });
-//}
-/*function UpdateFeedbacks() {
-    $(".feedback .check").each(function (i, e) {
-        if ($(e).hasClass("on"))
-            $(e).html('<span title="Included" class="glyphicon glyphicon glyphicon-ok   green strokeGreen"></span>');
-        else
-            $(e).html('<span title="Excluded" class="glyphicon glyphicon-ban-circle     red strokeRed"></span>');
-    });
-}*/
-/*
-$(".group").change(function() {
-    OnclickAggregate($(this));
-});*/
-/*
-$(function () {
-	UpdateFeedbacks();
-});*/

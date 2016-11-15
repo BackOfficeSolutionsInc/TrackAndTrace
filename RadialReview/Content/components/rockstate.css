@@ -265,107 +265,107 @@
 
 @media(max-width:767px) {
 	.rock-state-holder {
-		width: 90px;
+		width: 85px;
 	}
 
-	.rockstate {
-		width: 90px;
+	.rockstate:not(.nocollapse) {   
+		width: 85px;
 	}
 
-		.rockstate.rockstate-thin .rockstate-val {
+		.rockstate:not(.nocollapse).rockstate-thin .rockstate-val {
 			width: 29px;
 			font-size: 0px;
 		}
 
-		.rockstate .rockstate-AtRisk:after {
+		.rockstate:not(.nocollapse) .rockstate-AtRisk:after {
 			content: "OFF";
-			font-size: 10px;
+			font-size: 8px;
 		}
 
-		.rockstate .rockstate-OnTrack:after {
+		.rockstate:not(.nocollapse) .rockstate-OnTrack:after {
 			content: "ON";
-			font-size: 10px;
+			font-size: 8px;
 		}
 
-		.rockstate .rockstate-Complete:after {
+		.rockstate:not(.nocollapse) .rockstate-Complete:after {
 			content: "DONE";
-			font-size: 10px;
+			font-size: 8px;
 		}
 
-		.rockstate .fill {
+		.rockstate:not(.nocollapse) .fill {
 			width: 25px;
 		}
 
-		.rockstate.editor .fill.hover {
+		.rockstate:not(.nocollapse).editor .fill.hover {
 			left: -30px;
 		}
 
 
 
-		.rockstate input[value='AtRisk'] ~ .fill.cursor,
-		.rockstate .rockstate-AtRisk:hover ~ .fill.hover {
+		.rockstate:not(.nocollapse) input[value='AtRisk'] ~ .fill.cursor,
+		.rockstate:not(.nocollapse) .rockstate-AtRisk:hover ~ .fill.hover {
 			left: 0px;
 		}
 
-		.rockstate input[value='OnTrack'] ~ .fill.cursor,
-		.rockstate .rockstate-OnTrack:hover ~ .fill.hover {
+		.rockstate:not(.nocollapse) input[value='OnTrack'] ~ .fill.cursor,
+		.rockstate:not(.nocollapse) .rockstate-OnTrack:hover ~ .fill.hover {
 			left: 29px;
 		}
 
-		.rockstate input[value='Complete'] ~ .fill.cursor,
-		.rockstate .rockstate-Complete:hover ~ .fill.hover {
+		.rockstate:not(.nocollapse) input[value='Complete'] ~ .fill.cursor,
+		.rockstate:not(.nocollapse) .rockstate-Complete:hover ~ .fill.hover {
 			left: 58px;
 		}
 
-		.rockstate input[value='Indeterminate'] ~ .fill.cursor {
+		.rockstate:not(.nocollapse) input[value='Indeterminate'] ~ .fill.cursor {
 			left: 29px;
 			-ms-opacity: 0;
 			opacity: 0;
 		}
 
-	.nonangular.rockstate input[value='AtRisk'] ~ .rockstate-Complete,
-	.nonangular.rockstate input[value='AtRisk'] ~ .rockstate-OnTrack {
+	.nonangular.rockstate:not(.nocollapse) input[value='AtRisk'] ~ .rockstate-Complete,
+	.nonangular.rockstate:not(.nocollapse) input[value='AtRisk'] ~ .rockstate-OnTrack {
 		display: none;
 	}
 
-	.nonangular.rockstate input[value='Complete'] ~ .rockstate-AtRisk,
-	.nonangular.rockstate input[value='Complete'] ~ .rockstate-OnTrack {
+	.nonangular.rockstate:not(.nocollapse) input[value='Complete'] ~ .rockstate-AtRisk,
+	.nonangular.rockstate:not(.nocollapse) input[value='Complete'] ~ .rockstate-OnTrack {
 		display: none;
 	}
 
-	.nonangular.rockstate input[value='OnTrack'] ~ .rockstate-AtRisk,
-	.nonangular.rockstate input[value='OnTrack'] ~ .rockstate-Complete {
+	.nonangular.rockstate:not(.nocollapse) input[value='OnTrack'] ~ .rockstate-AtRisk,
+	.nonangular.rockstate:not(.nocollapse) input[value='OnTrack'] ~ .rockstate-Complete {
 		display: none;
 	}
 
-	.nonangular.rockstate input[value='Indeterminate'] ~ .rockstate-AtRisk,
-	.nonangular.rockstate input[value='Indeterminate'] ~ .rockstate-Complete,
-	.nonangular.rockstate input[value='Indeterminate'] ~ .rockstate-OnTrack {
+	.nonangular.rockstate:not(.nocollapse) input[value='Indeterminate'] ~ .rockstate-AtRisk,
+	.nonangular.rockstate:not(.nocollapse) input[value='Indeterminate'] ~ .rockstate-Complete,
+	.nonangular.rockstate:not(.nocollapse) input[value='Indeterminate'] ~ .rockstate-OnTrack {
 		display: none;
 	}
 
-	.nonangular.rockstate .rockstate-val .center {
+	.nonangular.rockstate:not(.nocollapse) .rockstate-val .center {
 		display: none;
 	}
 
-	.nonangular.rockstate .fill {
-		left: 0px !important;    
-		width: 74px;
+	.nonangular.rockstate:not(.nocollapse) .fill {
+		left: 0px !important;        
+		width: 79px;
 		height: 74px;
 	}
 
-	.nonangular.rockstate .rockstate-val {
-		width: 88px;
+	.nonangular.rockstate:not(.nocollapse) .rockstate-val {
+		width: 83px;
 	}
 
-	.nonangular.rockstate input[value='Indeterminate'] ~ .hover:after {
+	.nonangular.rockstate:not(.nocollapse) input[value='Indeterminate'] ~ .hover:after {
 		content: "Unset";
 		font-size: 10px;
 		line-height: 76px;
 	}
 
 
-	/*.rockstate .rockstate-Complete:after {
+	/*.rockstate:not(.nocollapse) .rockstate-Complete:after {
 		content: "DONE";
 		font-size: 10px;
 	}*/

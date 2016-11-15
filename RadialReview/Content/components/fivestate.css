@@ -39,9 +39,9 @@
 	bottom: 0;
 	left: 0;
 	right: 0;
-	/*background-color: #CDCDCD;*/    
+	/*background-color: #CDCDCD;*/
 	background-color: #f7f7f7;
-	border:1px solid #dfdfdf;
+	border: 1px solid #dfdfdf;
 	z-index: 2;
 	-webkit-transition: background-color .3s;
 	-moz-transition: background-color .3s;
@@ -93,6 +93,23 @@
 	display: inherit;
 }
 
+.fivestate-limit-true .fivestate input[value='True'] ~ .fivestate-always,
+.fivestate-limit-true .fivestate input[value='Always'] ~ .fivestate-always {
+	display: none;
+}
+.fivestate-limit-true .fivestate input[value='False'] ~ .fivestate-never,
+.fivestate-limit-true .fivestate input[value='Never'] ~ .fivestate-never {
+	display: none;
+}
+.fivestate-limit-true .fivestate input[value='True'] ~ .fivestate-yes,
+.fivestate-limit-true .fivestate input[value='Always'] ~ .fivestate-yes {
+	display: inherit;
+}
+.fivestate-limit-true .fivestate input[value='False'] ~ .fivestate-no,
+.fivestate-limit-true .fivestate input[value='Never'] ~ .fivestate-no {
+	display: inherit;
+}
+
 .fivestate input[value='Mostly'] ~ .fivestate-mostly {
 	display: inherit;
 }
@@ -104,6 +121,7 @@
 .fivestate input[value='Indeterminate'] ~ .fivestate-indeterminate {
 	display: inherit;
 }
+
 .fivestate input[value='Indeterminate'] ~ .fivestate-val {
 	color: #ddd;
 }
@@ -201,9 +219,16 @@
 	.fivestate {
 		height: 60px;
 		width: 60px;
-		text-align:center;
+		text-align: center;
 	}
-	.fivestate .fivestate-val{
-		line-height:60px;
-	}
+
+		.fivestate .fivestate-val {
+			line-height: 60px;
+		}
+
+
+		.fivestate > .fivestate-contents > .fivestate-slider {
+			top: 36px;
+			display:none;
+		}
 }

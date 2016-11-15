@@ -1,0 +1,92 @@
+﻿@{ 
+	var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
+	var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
+	var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
+
+	var selector = ViewBag.Selector as string ?? "model.Notifications";
+	var filter = ViewBag.Filter as string ?? "| filter:filters.byRange('CreateTime',model.dataDateRange.startDate,model.dataDateRange.endDate)";
+	var meetingId = ViewBag.MeetingId ?? "model.Id";
+	var defaultSort = ViewBag.DefaultSort ?? "'-CreateTime'";
+
+	var filterExpr = filter;
+	var loc = filter.IndexOf("|");
+	if (loc != -1) {
+		filterExpr = filter.SubstringAfter("|");
+		loc = filterExpr.IndexOf(":");
+		if (loc != -1) {
+			filterExpr = filterExpr.SubstringAfter(":");
+		}
+
+	}
+
+	var attrLookup = new Dictionary<string, string>(){
+		{"checkbox-column",""},
+		{"message-column",""},
+		{"createtime-column",""},
+		{"expand-column",""},
+		{"empty-column",""},
+		};
+}
+
+<div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak notification-list-container app">
+	<div @(headers || controller ? "ng-controller=L10Controller" : "")>
+		<div class="row">
+			<div class="col-md-12 component">
+				<div id="Notifications" class="tab-pane notifications-pane scrollbox pull-left fullWidth scroller">
+					<div></div>
+					<md-table-container class="repeater-container">
+						<table class="@(orderVariable)" md-table width="100%" class="component table-hover" ng-if="(@(selector) @(filter)).length" click-anywhere-but-here="model.Selected = -1">
+							<thead md-head md-order="@(orderVariable)" ng-init="functions.setValue('@(orderVariable)',@(orderVariable) || @(defaultSort))">
+								<tr class="table-header" md-row>
+									@*<th md-column @(attrLookup["-column"]) class="notificationtype-column" style="width: 25px;" md-order-by="NotificationType">&nbsp;</th>*@
+									<th md-column @(attrLookup["checkbox-column"]) class="checkbox-column" style="width: 25px;text-align: center;font-size: 14px;" @*md-order-by="Complete"*@>
+										<span class="glyphicon glyphicon-ok-circle clickable" ng-click="functions.checkAllNotifications()"></span>
+									</th>
+									<th md-column @(attrLookup["message-column"]) class="message-column" md-order-by="Name">Message</th>
+									<th md-column md-numeric @(attrLookup["createtime-column"]) class="createtime-column" md-order-by="Created">Created</th>
+									<th md-column md-numeric @(attrLookup["expand-column"]) class="expand-column"></th>
+									@*<th md-column md-numeric @(attrLookup["empty-column"]) class="empty-cell" style="width:1px;">&nbsp;</th>*@
+								</tr>
+							</thead>
+							<tbody md-body @*vs-repeat vs-autoresize vs-scroll-parent=".repeater-container"*@>
+								<tr ng-repeat="notification in @(selector) | orderBy: @(orderVariable) @(filter) track by $index"
+									ng-hide="notification.Hide" id="notification_{{notification.Id}}"
+									ng-class="{grayRow: notification.Seen}"
+									class="clickable {{model.Selected == notification.Key?'selected':''}}"
+									md-row>
+									@*<td class="notificationtype-column"><span class="type-icon"></span></td>*@
+									<td class="notification-checkbox-container clickable checkbox-column" style="min-width: 25px;text-align: center;" md-cell>
+										<md-checkbox aria-label="Seen" ng-model="notification.Seen" class="md-align-top-left" ng-change="functions.sendUpdate(notification);"></md-checkbox>
+									</td>									
+									<td class="notification-text message-column" style="width:100%" md-cell>
+										<div class="message" ng-if="notification.DetailsList && notification.DetailsList.length!=0" ng-click="model.Selected = notification.Key">
+											{{notification.Name}}
+										</div>
+										<a ng-if="!notification.DetailsList || notification.DetailsList.length==0" class="message" href="{{notification.Url}}">{{notification.Name}}</a>
+										<ul class="notification-details" ng-if="model.Selected == notification.Key">
+											<li>
+												<a class="message" href="{{notification.Url}}">{{notification.Details}}</a>
+											</li>
+											<li ng-repeat="detail in notification.DetailsList">
+												<a class="message" href="{{detail.Url}}">{{detail.Details}}</a>
+											</li>
+										</ul>
+									</td>
+									<td class="alignCenter createtime-column date-column" md-cell>
+										{{notification.CreateTime | date:dateFormat}}
+									</td>
+									<td ng-click="model.Selected == notification.Key?model.Selected=-1:model.Selected = notification.Key" class="expand-column" style="min-width: 15px;text-align:center!important;" md-cell><span ng-class="{'glyphicon-chevron-left':model.Selected != notification.Key,'glyphicon-chevron-down':model.Selected == notification.Key,}" class="glyphicon"></span></td>			
+									@*<td class="empty-cell" style="min-width: 15px;" md-cell></td>*@								
+								</tr>
+							</tbody>
+						</table>
+					</md-table-container>
+					<div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
+					<div class="gray no-notifications empty-search" style="padding: 30px 15px;" ng-if="(@(selector) @(filter)).length==0">
+						No notifications fit your search criteria.
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

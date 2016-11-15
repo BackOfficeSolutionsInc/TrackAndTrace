@@ -91,8 +91,7 @@ namespace RadialReview.Models.Charts
 		public String TableClass { get; set; }
 
 
-		public Table(TableData data)
-			: this(data.Rows, data.Columns, data)
+		public Table(TableData data): this(data.Rows, data.Columns, data)
 		{
 		}
 

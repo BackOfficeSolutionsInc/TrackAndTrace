@@ -574,6 +574,20 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
                 });
 		}
 	};
+
+	
+	$scope.functions.checkAllNotifications = function () {
+		debugger;
+		var items = $scope.model.Notifications;
+		if (items) {
+			for (var i in items) {
+				var item = items[i];
+				item.Seen = true;
+				$scope.functions.sendUpdate(item);
+			}
+		}
+	};
+
 	$scope.ShowSearch = false;
 	$scope.functions.showUserSearch = function (event) {
 		$scope.ShowSearch = true;

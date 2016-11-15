@@ -22,24 +22,7 @@ namespace RadialReview.Accessors
 {
 	public class TeamAccessor : BaseAccessor
 	{
-		/*
-		private OrganizationTeamModel Populate(ISession session, OrganizationTeamModel team)
-		{
-			switch (team.Type)
-			{
-				case TeamType.Standard:{
-						return team;
-					}
-				case TeamType.AllMembers:{
-						team.Name = team.Organization.GetName(); return team;
-					}
-				case TeamType.Managers:{
-						team.Name = "Managers at "+team.Organization.GetName(); return team;
-					}
-				default: throw new NotImplementedException("Team Type Unknown");
-			}
-		}*/
-
+		
 		public OrganizationTeamModel GetSubordinateTeam(UserOrganizationModel caller, long userOrganizationId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
@@ -328,6 +311,7 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
+		
 
 		public static List<TeamDurationModel> GetTeamMembers(AbstractQuery s, PermissionsUtility permissions, long teamId, bool includeTeamManagers)
 		{
@@ -356,6 +340,8 @@ namespace RadialReview.Accessors
 			}
 			return members;
 		}
+
+
 
 
 		/// <summary>
@@ -436,17 +422,47 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public List<TeamDurationModel> GetUsersTeams(UserOrganizationModel caller, long forUserId)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
-					var perms = PermissionsUtility.Create(s, caller);
-					return GetUsersTeams(s.ToQueryProvider(true), perms, caller, forUserId);
+		public static IEnumerable<long> GetTeamMemberIds(ISession s, PermissionsUtility permissions, long teamId) {
+			permissions.ViewTeam(teamId);
+			OrganizationTeamModel team;
+			TeamType type;
+			team = s.Get<OrganizationTeamModel>(teamId);
+			type = team.Type;
+
+
+			switch (type) {
+				case TeamType.Standard: {
+						return s.QueryOver<TeamDurationModel>().Where(x => x.Team.Id == teamId).Select(x=>x.UserId).Future<long>();						
 				}
+				case TeamType.AllMembers: {
+						return OrganizationAccessor.GetAllUserOrganizationIds(s, permissions, team.Organization.Id, true);
+				}
+				case TeamType.Managers: {
+						return OrganizationAccessor.GetAllManagerIds(s, permissions, team.Organization.Id, true);
+				}
+				case TeamType.Subordinates: {
+						return DeepAccessor.Users.GetSubordinatesAndSelf(s, permissions, team.ManagedBy);
+						//var subordinates = caller.Hydrate(s).ManagingUsers(true).Execute().AllSubordinates;
+						//permissions.OwnedBelowOrEqual(x => x.Id == team.ManagedBy);
+						//var callerUnderlying = s.Get<UserOrganizationModel>(team.ManagedBy);
+						//var subs = SubordinateUtility.GetSubordinates(callerUnderlying, false);
+						//var subordinates = subs.Union(callerUnderlying.AsList(), new EqualityComparer<UserOrganizationModel>((x, y) => x.Id == y.Id, x => x.Id.GetHashCode()));
+						//return subordinates.Select(x => new TeamDurationModel() {
+						//	Id = -2,
+						//	Start = x.AttachTime,
+						//	Team = team,
+						//	User = x,
+						//	DeleteTime = x.DeleteTime ?? x.DetachTime,
+						//	UserId = x.Id,
+						//	TeamId = team.Id
+						//}).ToList();
+					}
+				default:
+					throw new NotImplementedException("Team Type unknown");
 			}
 		}
+
+		
 
 		public List<TeamDurationModel> GetAllTeammembersAssociatedWithUser(UserOrganizationModel caller, long forUserId)
 		{
@@ -487,6 +503,35 @@ namespace RadialReview.Accessors
 			return teams;
 		}*/
 
+		public static IEnumerable<long> GetUsersTeamIds(ISession s, PermissionsUtility perms, long forUserId) {
+			var forUser = s.Get<UserOrganizationModel>(forUserId);
+			perms.ViewOrganization(forUser.Organization.Id);
+
+			var output = new List<IEnumerable<long>>();
+
+			output.Add(s.QueryOver<TeamDurationModel>().Where(x => x.DeleteTime == null && x.UserId == forUserId).Select(x=>x.TeamId).Future<long>());
+			output.Add(s.QueryOver<OrganizationTeamModel>().Where(x => x.DeleteTime == null && x.ManagedBy == forUserId).Select(x => x.Id).Future<long>());
+
+			if (forUser.IsManager()) {
+				var managerTeam = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == forUser.Organization.Id && x.Type == TeamType.Managers).Select(x => x.Id).Take(1).SingleOrDefault<long?>();
+				if (managerTeam != null)
+					output.Add(managerTeam.Value.AsList());
+			}
+			var allMembersTeam = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == forUser.Organization.Id && x.Type == TeamType.AllMembers).Select(x => x.Id).Take(1).SingleOrDefault<long?>();
+			if (allMembersTeam != null)
+				output.Add(allMembersTeam.Value.AsList());
+
+			return output.SelectMany(x=>x);
+		}
+
+		public List<TeamDurationModel> GetUsersTeams(UserOrganizationModel caller, long forUserId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					return GetUsersTeams(s.ToQueryProvider(true), perms, caller, forUserId);
+				}
+			}
+		}
 		public static List<TeamDurationModel> GetUsersTeams(AbstractQuery s, PermissionsUtility permissions, UserOrganizationModel caller, long forUserId)
 		{
 			var forUser = s.Get<UserOrganizationModel>(forUserId);

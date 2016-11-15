@@ -1,39 +1,72 @@
+
+==Today=====================
+x	The bar
+x	Edge
+x	Fix heights on scorecard
+	Draft Email for QCE
+
+==Tomorrow==================
+Video of people tools
+Roles for Isaiah
+	* LMA
+	* EOSI relationships (recruit and retain)
+	* Client retention
+	* Sales
+	* Sales SC numbers
+
+Email To EOSI
+	
+
+==Next Day =================
+
+555 through purity
+Create QCE document 
+Approve QCE document
+Send QCE document
+App for L10
+
+iOS app
+
+============================
+
+Key for Quad chart
+
+View Report somewhere else
+360 Review Blank Review
+
+Due date change
+
+Look at context aware people headline
+
+Managers incorrect for CK
+Notifications when roles change
+
+easlier way to see admins from client details page
+Review sections on by default
+duplicate roles in YJT
+
+
+Scorecard reverse
+
 Team deleted, still shows up in review
-
 Scorecard overlay height
-
 fix MN UI
-
 reassign todos during meeting
-
 * Current Week not highlighting (when only UserScorecard is active)
-
+Move to another meeting, indicators that it was solved
 why wasnt Avalution Charged
-
 video ssl activate
-
 Gino rock request
-
 dialog for Texting actions
-
-Separate Checkbox to clear people headlines
-
 default issue owner
-
 add multiple meetings to people headlines to the list
-
 advanced settings not saving 
-
 Edit page error Rose
 default issue owner
 	* If only one attendee, set default to defaulttodo owner
-
-Edit todos on conclusion
-	
+Edit todos on conclusion	
 Scorecard on dashboard is slow
-
 Incorporate review document feedback
-
 Auto gen Team 
 * Auto delete
 * Auto fix name
@@ -67,10 +100,13 @@ Scorecard:
 
 * Firespring questions
 
-* Material to UNL ITS
 
 
 --------------------------
+* Separate Checkbox to clear people headlines
+* Material to UNL ITS
+* Admin reset
+* the bar 60 percent Santiago Murtagh
 * Create Team Template
 * Scorecard different dates
 * Absentee ballot

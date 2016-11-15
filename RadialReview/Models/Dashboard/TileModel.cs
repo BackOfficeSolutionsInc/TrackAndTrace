@@ -22,7 +22,8 @@ namespace RadialReview.Models.Dashboard
         L10Scorecard,
         L10Rocks,
 		L10Issues,
-		FAQGuide
+		FAQGuide,
+		Notifications
 	}
 
 	public class TileModel : ILongIdentifiable, IHistorical

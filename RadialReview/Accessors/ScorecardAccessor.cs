@@ -28,7 +28,7 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					return GetAngularScorecardForUser(s, perms, userId, range, includeAdmin, includeNextWeek);
+					return GetAngularScorecardForUser(s, perms, userId, range, includeAdmin, includeNextWeek, now);
 				}
 			}
 		}

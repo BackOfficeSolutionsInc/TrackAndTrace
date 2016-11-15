@@ -2,8 +2,12 @@
 @using RadialReview.Properties
 @using RadialReview
 
+@{ 
+	var limitFiveState = ViewBag.LimitFiveState ?? true;
+}
+
 <!DOCTYPE html>
-<html class="@(ViewBag.FullHeight ?? false ? "body-full-height" : "body-normal-height")">
+<html class="@(ViewBag.FullHeight ?? false ? "body-full-height" : "body-normal-height")  @(ViewBag.NoTitleBar?? false?"body-notitlebar":"")">
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -63,7 +67,7 @@
 @if (ViewBag.HasBaseController == null) {
 	throw new Exception("You must extend from the base controller.");
 }
-<body class="@(ViewBag.FullWidth ?? false ? "body-full-width" : "body-normal-width")  @(ViewBag.LayoutClass??"")">
+<body class="@(ViewBag.FullWidth ?? false ? "body-full-width" : "body-normal-width")  @(ViewBag.LayoutClass??"")  @(limitFiveState?"fivestate-limit-true":"")">
 	<script>
 		window.UserId = @(ViewBag.UserId??-1);
 		window.OrgId = @(ViewBag.OrganizationId ?? -1);
@@ -72,6 +76,7 @@
 		window.ServerTimeDiff = window.ServerTime - new Date();
 		window.ConvertFromServerTime=function(serverTime){return serverTime -window.ServerTimeDiff;}
 		window.ConvertToServerTime = function (clientTime){return clientTime + window.ServerTimeDiff;}
+		window.LimitFiveState = @((""+limitFiveState).ToLower());
 	</script>
 
 

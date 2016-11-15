@@ -95,7 +95,7 @@ namespace RadialReview.Controllers {
                 "<p>If uploading a .csv file, please have a column for your rocks. You can also optionally add a column for rock details, rock due-dates, and rock owners.</p>" +
                 "<p>If uploading a .txt file, please add one rock per line</p>");
             dictinary["users"] = new MvcHtmlString("<h3><b>Instructions:</b> Upload as a .csv file.</h3>" +
-                "<p>Please upload a .csv with a column for first names, last names, and e-mails. You can also optionally add a column for positions, and managers. If adding a column for managers, please separate into two columns for managers' first and last names</p>" +
+                "<p>Please upload a .csv with a column for first names, last names, and e-mails. You can also optionally add a column for positions, and "+Config.ManagerName()+"s. If adding a column for managers, please separate into two columns for managers' first and last names</p>" +
                 "");
             ViewBag.Instructions = dictinary[title.ToLower()];
 

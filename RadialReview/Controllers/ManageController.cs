@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using RadialReview.Utilities.DataTypes;
+using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
 {
@@ -236,6 +237,11 @@ namespace RadialReview.Controllers
 				DateFormat = user.Organization.Settings.DateFormat,
 				NumberFormat = user.Organization.Settings.NumberFormat,
 
+				LimitFiveState = user.Organization.Settings.LimitFiveState,
+
+				DefaultSendTodoTime = user.Organization.Settings.DefaultSendTodoTime,
+				PossibleTodoTimes = TimingUtility.GetPossibleTimes(user.Organization.Settings.DefaultSendTodoTime),
+
 				AccountabilityChartId = user.Organization.AccountabilityChartId
 
 			};
@@ -280,7 +286,9 @@ namespace RadialReview.Controllers
 				model.StartOfYearMonth,
 				model.StartOfYearOffset,
 				model.DateFormat,
-				model.NumberFormat);
+				model.NumberFormat,
+				model.LimitFiveState,
+				model.DefaultSendTodoTime);
 			ViewBag.Success = "Successfully Saved.";
 
 			//model.CompanyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)

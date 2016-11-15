@@ -228,123 +228,6 @@
   opacity: 1;
   content: "\e067";
 }
-.headlines .headlineDetails {
-  position: relative;
-}
-.headlines .headlineDetails .headlines-details-container {
-  padding-left: 5px;
-  border-left: 2px solid #EFEFEF;
-  padding-left: 13px;
-  margin-left: -14px;
-  min-height: 60px;
-}
-.headlines .headlineDetails h4 {
-  margin-bottom: 4px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid #eee;
-  margin-top: 0px;
-  margin-bottom: 10px;
-  min-height: 30px;
-}
-.headlines .headlineDetails li {
-  cursor: pointer;
-  list-style-type: none;
-}
-.headlines .headlineDetails .move-icon {
-  display: none;
-}
-.headlines .headlineDetails .button-bar {
-  padding-top: 6px;
-}
-.headlines .headlineDetails .button-bar .btn-group {
-  margin: 2px;
-}
-.headlines .headlineDetails .button-bar .doneButton {
-  float: right;
-}
-.headlines .headlineDetails .button-bar .expandContract {
-  float: left;
-}
-.headlines .headlineDetails .button-bar .headlinesButton {
-  color: #5E5E5E;
-  top: 1px;
-  opacity: 1;
-  transition: all .4s ease;
-}
-.headlines .headlineDetails .heading {
-  width: calc(100% - 32px);
-}
-.headlines .headlineDetails:empty {
-  color: #ddd;
-}
-.headlines .headlineDetails:empty:after {
-  content: "Click a People Headline to see its details.";
-}
-.headlines .headlineDetails > ol {
-  overflow: visible;
-  color: #999;
-}
-.headlines .headlineDetails ol {
-  padding-left: 22px;
-  font-size: 12px;
-}
-.headlines .headlineDetails > ol .headline-row {
-  list-style-type: square;
-  overflow: visible;
-  white-space: normal;
-}
-.headlines .headlineDetails > ol .headline-row .message {
-  color: #666;
-}
-.headlines .headlineDetails .createTime {
-  color: #ccc;
-  text-align: right;
-  position: absolute;
-  top: -36px;
-  right: 0px;
-}
-.headlines .headlineDetails .details {
-  /*white-space: pre-line;*/
-  border: 1px solid #E8E8E8;
-  /*padding: 2px 6px;*/
-  padding: 0 1px 0 0;
-  color: #666;
-  font-size: 12px;
-  background-color: #FcFcFc;
-  width: 100%;
-  resize: vertical;
-  height: 116px;
-  min-height: 116px;
-}
-.headlines .headlineDetails > .dd-list {
-  max-height: 400px;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
-  overflow-y: auto;
-  border-bottom: 1px solid #eee;
-}
-.headlines .headlineDetails .date input {
-  border: 0px;
-  -webkit-box-shadow: none;
-  -box-shadow: none;
-  color: #767F99;
-  cursor: pointer;
-}
-.headlines .headlineDetails .date input:hover {
-  text-decoration: underline;
-}
-.headlines .headlineDetails .message-input {
-  width: 100%;
-  outline: none;
-  border: none;
-  border-bottom: 2px solid #EF7622;
-  margin-top: -1px;
-  color: black !important;
-}
-.headlines .headlineDetails .message:hover {
-  border-top: 1px solid transparent;
-  border-bottom: 1px solid #EF7622;
-}
 .headlines .page-header.details {
   color: #666;
   margin-top: 0px;
@@ -405,4 +288,127 @@
 }
 .headlines.headline-type-HeadlinesList .page-header {
   margin-bottom: 0;
+}
+@media (max-width: 767px) {
+  .headlines .l10-page-title {
+    color: rgba(0, 0, 0, 0);
+    height: 15px;
+  }
+}
+#headlineDetails:empty {
+  color: #ddd;
+}
+#headlineDetails:empty:after {
+  content: "Click a People Headline to see its details.";
+}
+.headlineDetails {
+  position: relative;
+}
+.headlineDetails .headlines-details-container {
+  padding-left: 5px;
+  border-left: 2px solid #EFEFEF;
+  padding-left: 13px;
+  margin-left: -14px;
+  min-height: 60px;
+}
+.headlineDetails h4 {
+  margin-bottom: 4px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #eee;
+  margin-top: 0px;
+  margin-bottom: 10px;
+  min-height: 30px;
+}
+.headlineDetails li {
+  cursor: pointer;
+  list-style-type: none;
+}
+.headlineDetails .move-icon {
+  display: none;
+}
+.headlineDetails .button-bar {
+  padding-top: 6px;
+}
+.headlineDetails .button-bar .btn-group {
+  margin: 2px;
+}
+.headlineDetails .button-bar .doneButton {
+  float: right;
+}
+.headlineDetails .button-bar .expandContract {
+  float: left;
+}
+.headlineDetails .button-bar .headlinesButton {
+  color: #5E5E5E;
+  top: 1px;
+  opacity: 1;
+  transition: all .4s ease;
+}
+.headlineDetails .heading {
+  width: calc(100% - 32px);
+}
+.headlineDetails > ol {
+  overflow: visible;
+  color: #999;
+}
+.headlineDetails ol {
+  padding-left: 22px;
+  font-size: 12px;
+}
+.headlineDetails > ol .headline-row {
+  list-style-type: square;
+  overflow: visible;
+  white-space: normal;
+}
+.headlineDetails > ol .headline-row .message {
+  color: #666;
+}
+.headlineDetails .createTime {
+  color: #ccc;
+  text-align: right;
+  position: absolute;
+  top: -36px;
+  right: 0px;
+}
+.headlineDetails .details {
+  /*white-space: pre-line;*/
+  border: 1px solid #E8E8E8;
+  /*padding: 2px 6px;*/
+  padding: 0 1px 0 0;
+  color: #666;
+  font-size: 12px;
+  background-color: #FcFcFc;
+  width: 100%;
+  resize: vertical;
+  height: 116px;
+  min-height: 116px;
+}
+.headlineDetails > .dd-list {
+  max-height: 400px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  overflow-y: auto;
+  border-bottom: 1px solid #eee;
+}
+.headlineDetails .date input {
+  border: 0px;
+  -webkit-box-shadow: none;
+  -box-shadow: none;
+  color: #767F99;
+  cursor: pointer;
+}
+.headlineDetails .date input:hover {
+  text-decoration: underline;
+}
+.headlineDetails .message-input {
+  width: 100%;
+  outline: none;
+  border: none;
+  border-bottom: 2px solid #EF7622;
+  margin-top: -1px;
+  color: black !important;
+}
+.headlineDetails .message:hover {
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid #EF7622;
 }

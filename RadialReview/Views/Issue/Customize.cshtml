@@ -64,14 +64,15 @@
 				@Html.CheckBox("SendEmails")
 			</div>
 		</div>
-		<div class="row smallBreak2 ">
+		@Html.Hidden("Anonymous", true)
+		@*<div class="row smallBreak2 ">
 			<div class="col-sm-3 col-xs-4 col-sm-offset-1 alignRight" title="Any feedback given will be anonymous. Only supervisors will be able to see it.">
 				<label class="control-label ">Anonymous Feedback:</label>
 			</div>
 			<div class="col-xs-6 alignLeft checkbox-holder">
 				@Html.CheckBox("Anonymous", true)
 			</div>
-		</div>
+		</div>*@
 	</div>
 </div>
 

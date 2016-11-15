@@ -39,7 +39,7 @@ namespace RadialReview.Controllers {
                 var m = new UploadRocksSelectedDataVM() { };
                 //var allUsers = OrganizationAccessor.GetMembers_Tiny(GetUser(), GetUser().Organization.Id);
                 var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, false).OrganizationId;
-                var allUsers = OrganizationAccessor.GetMembers_Tiny(GetUser(), orgId);
+                var allUsers = TinyUserAccessor.GetOrganizationMembers(GetUser(), orgId);
                 m.AllUsers = allUsers.ToSelectList(x => x.FirstName + " " + x.LastName, x => x.UserOrgId);
                 var now = DateTime.UtcNow;
 

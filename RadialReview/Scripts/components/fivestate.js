@@ -1,9 +1,30 @@
 ﻿
 $(function () {
-	InitFivestate();
+	//setTimeout(function () {
+		InitFivestate();
+	//},1);
+	
 });
 
 function InitFivestate() {
+	var wasLimited = -1;
+
+	function getStates() {
+		var states = ['Indeterminate', 'Always', 'Mostly', "Rarely", "Never"];
+		if (window.LimitFiveState)
+			states = ['Indeterminate', 'Always', 'Never'];
+
+		if (window.LimitFiveState != wasLimited) {
+			$("body").removeClass("fivestate-limit-" + wasLimited);
+			wasLimited = window.LimitFiveState;
+			
+			$(".fivestate .slider").attr("data-slider-range", "0," + (states.length - 1));
+			$("body").addClass("fivestate-limit-" + wasLimited);
+		}
+		return states;
+	}
+	getStates();
+
 	$(".fivestate input.data").each(function () {
 		if ($(this).val() == "True")
 			$(this).val("Always");
@@ -22,7 +43,7 @@ function InitFivestate() {
 	});
 
 	$('.editor.fivestate .fill').click(function (e) {
-		var states = ['Indeterminate', 'Always', 'Mostly',"Rarely","Never"];
+		var states = getStates();//['Indeterminate', 'Always', 'Mostly', "Rarely", "Never"];
 		var oldValue = $(this).closest(".fivestate").find("input.data").val();
 		var oldIndex = $.inArray(oldValue, states);
 		var newIndex = (oldIndex + 1) % states.length;
@@ -33,7 +54,7 @@ function InitFivestate() {
 	});
 
 	$('.editor.fivestate').bind("contextmenu",function(e){
-		var states = ['Indeterminate', 'Always', 'Mostly',"Rarely","Never"];
+		var states = getStates();//var states = ['Indeterminate', 'Always', 'Mostly',"Rarely","Never"];
 		var oldValue = $(this).find("input.data").val();
 		var oldIndex = $.inArray(oldValue, states);
 		var newIndex = (oldIndex + states.length - 1) % states.length;
@@ -46,7 +67,7 @@ function InitFivestate() {
 	$("input.slider").bind("slider:changed", function (e, data) {
 		if (data.trigger == "setValue")
 			return;
-		var states = ['Indeterminate', 'Always', 'Mostly',"Rarely","Never"];
+		var states = getStates();//var states = ['Indeterminate', 'Always', 'Mostly',"Rarely","Never"];
 		var newValue = states[data.value];
 		$(this).closest(".fivestate").find("> .fivestate-contents > input").val(newValue).trigger('change');
 		

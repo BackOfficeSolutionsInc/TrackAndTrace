@@ -74,7 +74,7 @@ namespace RadialReview.Controllers
 			if (recurrenceId != null && _listOwners && !_listRecur) {
 				model.PossibleOwners = L10Accessor.GetAttendees(GetUser(), recurrenceId.Value).ToSelectList(x => x.GetName(), x => x.Id, GetUser().Id);
 			} else if (_listOwners) {
-				model.PossibleOwners = OrganizationAccessor.GetMembers_Tiny(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.GetName(), x => x.UserOrgId);
+				model.PossibleOwners = TinyUserAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.GetName(), x => x.UserOrgId);
 			}
 
 			model.OwnerId = owner ?? GetUser().Id;

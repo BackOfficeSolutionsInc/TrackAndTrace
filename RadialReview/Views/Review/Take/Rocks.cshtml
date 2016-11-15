@@ -9,8 +9,8 @@
 			<thead>
 				<tr>
 					<th></th>
-					<th style="text-align: center">Complete</th>
-					<th class="header"></th>
+					<th style="text-align: center" class="hidden-xs"> Complete</th>
+					@*<th class="header"></th>*@
 				</tr>
 			</thead>
 			<tbody>
@@ -18,24 +18,43 @@
 					var questions = Model.Item1.OrderBy(x => x.Askable.GetQuestion()).ToList();
 				}
 				@for (var i = 0; i < questions.Count(); i++) {
-					<tr>
-						<td style="width:50%"><h4 class="question alignRight" style="padding-right:15px;padding-bottom: 7px;padding-top: 7px;">@questions[i].Askable.GetQuestion()</h4></td>
-						<td style="vertical-align:top">
-							<div style="text-align: center">
-								@if (Model.Item2) {
-									@Html.EditorFor(x => questions[i].Completion, new { name = "question_" + RadialReview.Models.Enums.QuestionType.Rock + "_" + questions[i].Identifier })
-								} else {
-									@Html.DisplayFor(x => questions[i].Completion, new { name = "question_" + RadialReview.Models.Enums.QuestionType.Rock + "_" + questions[i].Identifier })
-								}
+					<tr class="visible-xs">
+						<td colspan="1">
+							<div class="question alignCenter" style="padding-bottom: 0px;padding-top: 25px;">
+								<h4 style="margin-top: 0px;">@questions[i].Askable.GetQuestion()</h4>
 							</div>
 						</td>
-						<td style="vertical-align:top;width:50%; padding-left: 14px;">
-							@if (Model.Item2) {
-								<textarea name="question_@(QuestionType.Rock)_@(questions[i].Identifier)_Reason" class="full-width changeable reason" placeholder="Add Comment">@questions[i].Reason</textarea>
-							} else {
-								<div class="full-width changeable reason">@questions[i].Reason</div>
-							}
+					</tr>
+					<tr>
+						<td class="hidden-xs" @*style="width:50%"*@><h4 class="question alignRight" style="padding-right:15px;padding-bottom: 7px;padding-top: 7px;">@questions[i].Askable.GetQuestion()</h4></td>
+						<td style="vertical-align:top;" class="rock-input-reason">
+							<div class="row">
+								<div class="col-sm-6">
+									<span>
+										<div style="text-align: center">
+											@if (Model.Item2) {
+												@Html.EditorFor(x => questions[i].Completion, new { name = "question_" + RadialReview.Models.Enums.QuestionType.Rock + "_" + questions[i].Identifier, @class="nocollapse" })
+											} else {
+												@Html.DisplayFor(x => questions[i].Completion, new { name = "question_" + RadialReview.Models.Enums.QuestionType.Rock + "_" + questions[i].Identifier, @class = "nocollapse" })
+											}
+										</div>
+									</span>
+								</div>
+								<div class="col-sm-6">
+									<span>
+										@if (Model.Item2) {
+											<textarea name="question_@(QuestionType.Rock)_@(questions[i].Identifier)_Reason" class="full-width changeable reason" placeholder="Add Comment">@questions[i].Reason</textarea>
+										} else {
+											<div class="full-width changeable reason">@questions[i].Reason</div>
+										}
+									</span>
+								</div>
+							</div>
+
 						</td>
+						@*<td style="vertical-align:top;width:50%; padding-left: 14px;">
+
+							</td>*@
 					</tr>
 				}
 			</tbody>

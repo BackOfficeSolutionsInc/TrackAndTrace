@@ -14,26 +14,20 @@ using System.Web;
 using RadialReview.Models.Accountability;
 using FluentNHibernate.Mapping;
 
-namespace RadialReview.Accessors
-{
-	public class DeepAccessor : BaseAccessor
-	{
+namespace RadialReview.Accessors {
+	public class DeepAccessor : BaseAccessor {
 		#region Helpers
-		public class Dive
-		{
-			public static List<AccountabilityNode> GetSubordinates(ISession s, AccountabilityNode manager, int levels = int.MaxValue)
-			{
+		public class Dive {
+			public static List<AccountabilityNode> GetSubordinates(ISession s, AccountabilityNode manager, int levels = int.MaxValue) {
 				var alreadyHit = new List<long>();
 				return Children(s, manager, new List<String> { "" + manager.Id }, levels, 0, alreadyHit);
 			}
-			public static List<AccountabilityNode> GetSuperiors(ISession s, AccountabilityNode manager, int levels = int.MaxValue)
-			{
+			public static List<AccountabilityNode> GetSuperiors(ISession s, AccountabilityNode manager, int levels = int.MaxValue) {
 				var alreadyHit = new List<long>();
 				return Parents(s, manager, new List<String> { "" + manager.Id }, levels, 0, alreadyHit);
 			}
 
-			private static List<AccountabilityNode> Children(ISession s, AccountabilityNode parent, List<String> parents, int levels, int level, List<long> alreadyHit)
-			{
+			private static List<AccountabilityNode> Children(ISession s, AccountabilityNode parent, List<String> parents, int levels, int level, List<long> alreadyHit) {
 				var children = new List<AccountabilityNode>();
 				if (levels <= 0)
 					return children;
@@ -50,10 +44,8 @@ namespace RadialReview.Accessors
 				if (!children.Any())
 					return children;
 				var iter = children.ToList();
-				foreach (var c in iter)
-				{
-					if (!alreadyHit.Contains(c.Id))
-					{
+				foreach (var c in iter) {
+					if (!alreadyHit.Contains(c.Id)) {
 						//if (populateParents)
 						//	c.Properties["parents"] = parents;
 						alreadyHit.Add(c.Id);
@@ -67,8 +59,7 @@ namespace RadialReview.Accessors
 				return children;
 			}
 
-			private static List<AccountabilityNode> Parents(ISession s, AccountabilityNode child, List<String> children, int levels, int level, List<long> alreadyHit)
-			{
+			private static List<AccountabilityNode> Parents(ISession s, AccountabilityNode child, List<String> children, int levels, int level, List<long> alreadyHit) {
 				var parents = new List<AccountabilityNode>();
 				if (levels <= 0)
 					return parents;
@@ -84,8 +75,7 @@ namespace RadialReview.Accessors
 				if (parents.Count == 0)
 					return parents;
 				var c = child.ParentNode;
-				if (!alreadyHit.Contains(c.Id))
-				{
+				if (!alreadyHit.Contains(c.Id)) {
 					//if (populateChildren)
 					//	c.Properties["children"] = children;
 					alreadyHit.Add(c.Id);
@@ -99,10 +89,8 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public class Users
-		{
-			public class DeleteRecord
-			{
+		public class Users {
+			public class DeleteRecord {
 				public virtual long Id { get; set; }
 				//DeleteRecord created (user removed from node)
 				public virtual DateTime Time { get; set; }
@@ -111,10 +99,8 @@ namespace RadialReview.Accessors
 				//DeleteRecord delete time
 				public virtual DateTime? DeleteTime { get; set; }
 
-				public class Map : ClassMap<DeleteRecord>
-				{
-					public Map()
-					{
+				public class Map : ClassMap<DeleteRecord> {
+					public Map() {
 						Id(x => x.Id);
 						Map(x => x.Time);
 						Map(x => x.UserId);
@@ -125,27 +111,23 @@ namespace RadialReview.Accessors
 			}
 
 
-			public static void DeleteAll(ISession s, UserOrganizationModel forUser, DateTime? deleteTime = null)
-			{
+			public static void DeleteAll(ISession s, UserOrganizationModel forUser, DateTime? deleteTime = null) {
 				var id = forUser.Id;
 				var all = s.QueryOver<AccountabilityNode>().Where(x => x.UserId == id).List().ToList();
 				var dt = deleteTime ?? DateTime.UtcNow;
 
-				foreach (var a in all)
-				{
+				foreach (var a in all) {
 					a.UserId = null;
 					s.Update(a);
 
-					s.Save(new DeleteRecord()
-					{
+					s.Save(new DeleteRecord() {
 						Time = dt,
 						NodeId = a.Id,
 						UserId = id
 					});
 				}
 			}
-			public static bool UndeleteAll(ISession s, UserOrganizationModel forUser, DateTime deleteTime, ref List<String> messages)
-			{
+			public static bool UndeleteAll(ISession s, UserOrganizationModel forUser, DateTime deleteTime, ref List<String> messages) {
 				var id = forUser.Id;
 				var all = s.QueryOver<DeleteRecord>().Where(x => x.Time == deleteTime && x.DeleteTime == null).List().ToList();
 				if (messages == null)
@@ -153,17 +135,13 @@ namespace RadialReview.Accessors
 				var count = 0;
 				var success = 0;
 				var allSuccess = true;
-				foreach (var a in all)
-				{
+				foreach (var a in all) {
 					var node = s.Get<AccountabilityNode>(a.NodeId);
-					if (node.UserId == null)
-					{
+					if (node.UserId == null) {
 						node.UserId = a.UserId;
 						s.Update(node);
 						success++;
-					}
-					else
-					{
+					} else {
 						messages.Add("Could not re-add to accountability chart. Accountability already occupied by " + node.User.GetName() + ".");
 						allSuccess = false;
 					}
@@ -172,49 +150,44 @@ namespace RadialReview.Accessors
 				messages.Add("Updated " + success + "/" + count + " accountabilities.");
 				return allSuccess;
 			}
-			public static List<long> GetSubordinatesAndSelf(UserOrganizationModel caller, long userId, PermissionType? type = null)
-			{
-				using (var s = HibernateSession.GetCurrentSession())
-				{
-					using (var tx = s.BeginTransaction())
-					{
+			public static List<long> GetSubordinatesAndSelf(UserOrganizationModel caller, long userId, PermissionType? type = null) {
+				using (var s = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
 						return GetSubordinatesAndSelf(s, caller, userId, type);
 					}
 				}
 			}
-			public static List<UserOrganizationModel> GetSubordinatesAndSelfModels(UserOrganizationModel caller, long userId, PermissionType? type = null)
-			{
-				using (var s = HibernateSession.GetCurrentSession())
-				{
-					using (var tx = s.BeginTransaction())
-					{
+			public static List<UserOrganizationModel> GetSubordinatesAndSelfModels(UserOrganizationModel caller, long userId, PermissionType? type = null) {
+				using (var s = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
 						return GetSubordinatesAndSelfModels(s, caller, userId, type);
 
 					}
 				}
 			}
 
-			public static List<UserOrganizationModel> GetSubordinatesAndSelfModels(ISession s, UserOrganizationModel caller, long userId, PermissionType? type = null)
-			{
-					var userIds = GetSubordinatesAndSelf(s, caller, userId, type);
-					var users = s.QueryOver<UserOrganizationModel>()
-						.WhereRestrictionOn(x => x.Id).IsIn(userIds.ToArray())
-						.List().ToList();
+			public static List<UserOrganizationModel> GetSubordinatesAndSelfModels(ISession s, UserOrganizationModel caller, long userId, PermissionType? type = null) {
+				var userIds = GetSubordinatesAndSelf(s, caller, userId, type);
+				var users = s.QueryOver<UserOrganizationModel>()
+					.WhereRestrictionOn(x => x.Id).IsIn(userIds.ToArray())
+					.List().ToList();
 
-					return users;
+				return users;
 			}
 
-			public static List<long> GetSubordinatesAndSelf(ISession s, UserOrganizationModel caller, long userId, PermissionType? type = null)
-			{
+			public static List<long> GetSubordinatesAndSelf(ISession s, UserOrganizationModel caller, long userId, PermissionType? type = null) {
+				return GetSubordinatesAndSelf(s, PermissionsUtility.Create(s, caller), userId, type).ToList();
+			}
+
+			public static IEnumerable<long> GetSubordinatesAndSelf(ISession s, PermissionsUtility perms, long userId, PermissionType? type = null) {
 				var user = s.Get<UserOrganizationModel>(userId);
-				if (user==null || user.DeleteTime != null)
-					throw new PermissionsException("User ("+userId+") does not exist.");
+				if (user == null || user.DeleteTime != null)
+					throw new PermissionsException("User (" + userId + ") does not exist.");
 
-				PermissionsUtility.Create(s, caller).ViewOrganization(user.Organization.Id);
+				perms.ViewOrganization(user.Organization.Id);
+				var caller = perms.GetCaller();
 
-				if (caller.Id != userId && !PermissionsUtility.IsAdmin(caller))
-				{
-					//var found = s.QueryOver<DeepAccountability>().Where(x => x.DeleteTime == null && x.ManagerId == caller.Id && x.SubordinateId == nodeId).SingleOrDefault();
+				if (caller.Id != userId && !PermissionsUtility.IsAdmin(caller)) {
 					AccountabilityNode parent = null;
 					AccountabilityNode child1 = null;
 					var found = s.QueryOver<DeepAccountability>().Where(x => x.DeleteTime == null)
@@ -231,14 +204,12 @@ namespace RadialReview.Accessors
 					.Where(x => x.DeleteTime == null && x.OrganizationId == user.Organization.Id && x.UserId == userId)
 					.Select(x => x.Id)
 					.List<long>().ToList();
-
-				//var allPermitted = new List<long>() { allNodes };
+				
 				if (type != null)
 					allPermitted.AddRange(s.QueryOver<PermissionOverride>()
 						.Where(x => x.DeleteTime == null && x.ForUser.Id == userId && x.Permissions == type)
 						.Select(x => x.AsUser.Id).List<long>().ToList());
-
-				//allPermissions.Add(userId);
+				
 				AccountabilityNode child = null;
 
 				var subordinates = s.QueryOver<DeepAccountability>()
@@ -247,15 +218,13 @@ namespace RadialReview.Accessors
 										.JoinAlias(x => x.Child, () => child)
 											.Where(x => child.DeleteTime == null && child.UserId != null)
 											.Select(x => child.UserId)
-											.List<long>()
-											.ToList();
-				subordinates.Add(userId);
-
-				return subordinates.Distinct().ToList();
+											.Future<long>();
+				subordinates= subordinates.Union(userId.AsList());
+				return subordinates.Distinct();
 			}
 
-			public static bool ManagesUser(ISession s, PermissionsUtility perms, long managerId, long subordinateId)
-			{
+
+			public static bool ManagesUser(ISession s, PermissionsUtility perms, long managerId, long subordinateId) {
 				perms.ViewUserOrganization(managerId, false).ViewUserOrganization(subordinateId, false);
 				var m = s.Get<UserOrganizationModel>(managerId);
 				var sub = s.Get<UserOrganizationModel>(subordinateId);
@@ -286,32 +255,26 @@ namespace RadialReview.Accessors
 				return found != null;
 			}
 
-			public static bool ManagesUser(UserOrganizationModel caller, long managerId, long subordinateId)
-			{
-				using (var s = HibernateSession.GetCurrentSession())
-				{
-					using (var tx = s.BeginTransaction())
-					{
+			public static bool ManagesUser(UserOrganizationModel caller, long managerId, long subordinateId) {
+				using (var s = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
 						var perms = PermissionsUtility.Create(s, caller);
 
 						return ManagesUser(s, perms, managerId, subordinateId);
 					}
 				}
 			}
-			public static List<AccountabilityNode> GetNodesForUser(UserOrganizationModel caller, long userId)
-			{
-				using (var s = HibernateSession.GetCurrentSession())
-				{
-					using (var tx = s.BeginTransaction())
-					{
+			public static List<AccountabilityNode> GetNodesForUser(UserOrganizationModel caller, long userId) {
+				using (var s = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
 						var perms = PermissionsUtility.Create(s, caller);
 						return GetNodesForUser(s, perms, userId);
 					}
 				}
 
 			}
-			public static List<AccountabilityNode> GetNodesForUser(ISession s, PermissionsUtility perms, long userId){
-				perms.ViewUserOrganization(userId,false);
+			public static List<AccountabilityNode> GetNodesForUser(ISession s, PermissionsUtility perms, long userId) {
+				perms.ViewUserOrganization(userId, false);
 
 				var user = s.Get<UserOrganizationModel>(userId);
 				if (user == null || user.DeleteTime != null)
@@ -323,35 +286,27 @@ namespace RadialReview.Accessors
 		}
 		#endregion
 		[Obsolete("Did you mean DeepAccountabilityAccessor.Users.GetSubordinatesAndSelf")]
-		public List<long> GetChildrenAndSelf(UserOrganizationModel caller, long nodeId)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+		public List<long> GetChildrenAndSelf(UserOrganizationModel caller, long nodeId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					return GetChildrenAndSelf(s, caller, nodeId);
 				}
 			}
 		}
 		[Obsolete("Did you mean DeepAccountabilityAccessor.Users.GetSubordinatesAndSelfModels")]
-		public List<AccountabilityNode> GetChildrenAndSelfModels(UserOrganizationModel caller, long nodeId)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+		public List<AccountabilityNode> GetChildrenAndSelfModels(UserOrganizationModel caller, long nodeId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					return GetChildrenAndSelfModels(s, caller, nodeId);
 				}
 			}
 
 		}
 		[Obsolete("Did you mean DeepAccountabilityAccessor.Users.GetSubordinatesAndSelfModels")]
-		public static List<AccountabilityNode> GetChildrenAndSelfModels(ISession s, UserOrganizationModel caller, long nodeId)
-		{
+		public static List<AccountabilityNode> GetChildrenAndSelfModels(ISession s, UserOrganizationModel caller, long nodeId) {
 			var node = s.Get<AccountabilityNode>(nodeId);
 
-			if (caller.Id != node.UserId && !PermissionsUtility.IsAdmin(caller))
-			{
+			if (caller.Id != node.UserId && !PermissionsUtility.IsAdmin(caller)) {
 				AccountabilityNode parent = null;
 
 				var found = s.QueryOver<DeepAccountability>().Where(x => x.DeleteTime == null && x.ChildId == nodeId)
@@ -378,12 +333,10 @@ namespace RadialReview.Accessors
 			return subordinates;
 		}
 		[Obsolete("Did you mean DeepAccountabilityAccessor.Users.GetSubordinatesAndSelf")]
-		public static List<long> GetChildrenAndSelf(ISession s, UserOrganizationModel caller, long nodeId, PermissionType? type = null)
-		{
+		public static List<long> GetChildrenAndSelf(ISession s, UserOrganizationModel caller, long nodeId, PermissionType? type = null) {
 			var node = s.Get<AccountabilityNode>(nodeId);
 
-			if (caller.Id != node.UserId && !PermissionsUtility.IsAdmin(caller))
-			{
+			if (caller.Id != node.UserId && !PermissionsUtility.IsAdmin(caller)) {
 				//var found = s.QueryOver<DeepAccountability>().Where(x => x.DeleteTime == null && x.ManagerId == caller.Id && x.SubordinateId == nodeId).SingleOrDefault();
 				AccountabilityNode parent = null;
 				var found = s.QueryOver<DeepAccountability>().Where(x => x.DeleteTime == null && x.ChildId == nodeId)
@@ -411,15 +364,13 @@ namespace RadialReview.Accessors
 			return subordinates.Distinct().ToList();
 		}
 
-		public static bool HasChildren(ISession s, long nodeId)
-		{
+		public static bool HasChildren(ISession s, long nodeId) {
 			return s.QueryOver<DeepAccountability>()
 						.Where(x => x.DeleteTime == null && x.Links > 0 && x.ParentId == nodeId && x.ChildId != nodeId)
-						.RowCount()>0;
+						.RowCount() > 0;
 		}
 
-		public static bool ManagesNode(ISession s, PermissionsUtility perms, long managerUserId, long nodeId)
-		{
+		public static bool ManagesNode(ISession s, PermissionsUtility perms, long managerUserId, long nodeId) {
 			perms.ViewUserOrganization(managerUserId, false);
 			var m = s.Get<UserOrganizationModel>(managerUserId);
 			var node = s.Get<AccountabilityNode>(nodeId);
@@ -434,9 +385,9 @@ namespace RadialReview.Accessors
 				return true;
 
 			if (node.DeleteTime != null)
-				throw new PermissionsException("Accountability node ("+nodeId+") does not exist.");
+				throw new PermissionsException("Accountability node (" + nodeId + ") does not exist.");
 
-					
+
 
 			AccountabilityNode manager = null;
 
@@ -451,26 +402,21 @@ namespace RadialReview.Accessors
 			return found != null;
 		}
 
-		public static List<DeepAccountability> GetOrganizationMap(UserOrganizationModel caller, long organizationId)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+		public static List<DeepAccountability> GetOrganizationMap(UserOrganizationModel caller, long organizationId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					var perm = PermissionsUtility.Create(s, caller);
 					return GetOrganizationMap(s, perm, organizationId);
 				}
 			}
 		}
 
-		public static List<DeepAccountability> GetOrganizationMap(ISession s, PermissionsUtility perm, long organizationId)
-		{
+		public static List<DeepAccountability> GetOrganizationMap(ISession s, PermissionsUtility perm, long organizationId) {
 			perm.ViewOrganization(organizationId);
 			return s.QueryOver<DeepAccountability>().Where(x => x.DeleteTime == null && x.OrganizationId == organizationId).List().ToList();
 		}
 		[Obsolete("Use UserAccessor.RemoveManager", false)]
-		public static void Remove(ISession s, AccountabilityNode parent, AccountabilityNode child, DateTime now, bool ignoreCircular = false)
-		{
+		public static void Remove(ISession s, AccountabilityNode parent, AccountabilityNode child, DateTime now, bool ignoreCircular = false) {
 			//Grab all subordinates' deep subordinates
 			var allSuperiors = Dive.GetSuperiors(s, parent);
 			allSuperiors.Add(parent);
@@ -479,24 +425,18 @@ namespace RadialReview.Accessors
 
 			//var selfRemove = false;
 
-			foreach (var SUP in allSuperiors)
-			{
+			foreach (var SUP in allSuperiors) {
 				var managerSubordinates = s.QueryOver<DeepAccountability>().Where(x => x.ParentId == SUP.Id).List().ToListAlive();
 
-				foreach (var sub in allSubordinates)
-				{
+				foreach (var sub in allSubordinates) {
 					var found = managerSubordinates.FirstOrDefault(x => x.ChildId == sub.Id && x.Links > 0);
-					if (found == null)
-					{
+					if (found == null) {
 						log.Error("Manager link doesn't exist for orgId=(" + parent.OrganizationId + "). Advise that you run deep subordinate creation.");
-					}
-					else
-					{
+					} else {
 						found.Links -= 1;
 						if (found.Links == 0)
 							found.DeleteTime = now;
-						if (found.Links < 0)
-						{
+						if (found.Links < 0) {
 							if (!ignoreCircular)
 								throw new Exception("This shouldn't happen.");
 						}
@@ -507,8 +447,7 @@ namespace RadialReview.Accessors
 		}
 
 		[Obsolete("Use UserAccessor.AddManager", false)]
-		public static void Add(ISession s, AccountabilityNode manager, AccountabilityNode subordinate, long organizationId, DateTime now, bool ignoreCircular = false)
-		{
+		public static void Add(ISession s, AccountabilityNode manager, AccountabilityNode subordinate, long organizationId, DateTime now, bool ignoreCircular = false) {
 			//Get **users** subordinates, make them deep subordinates of manager
 			var allSubordinates = Dive.GetSubordinates(s, subordinate);
 			allSubordinates.Add(subordinate);
@@ -516,20 +455,17 @@ namespace RadialReview.Accessors
 			allSuperiors.Add(manager);
 
 			var allManagerSubordinates = s.QueryOver<DeepAccountability>()
-				.Where(x =>x.DeleteTime == null)
-				.WhereRestrictionOn(x=>x.ParentId).IsIn(allSuperiors.Select(x=>x.Id).ToList())
+				.Where(x => x.DeleteTime == null)
+				.WhereRestrictionOn(x => x.ParentId).IsIn(allSuperiors.Select(x => x.Id).ToList())
 				.List().ToList();
 
 
 			//for manager and each of his superiors
-			foreach (var SUP in allSuperiors)
-			{
+			foreach (var SUP in allSuperiors) {
 				var managerSubordinates = allManagerSubordinates.Where(x => x.ParentId == SUP.Id).ToList();// s.QueryOver<DeepAccountability>().Where(x => x.ParentId == SUP.Id && x.DeleteTime == null).List().ToList();
 
-				foreach (var sub in allSubordinates)
-				{
-					if (sub.Id == SUP.Id && !ignoreCircular)
-					{
+				foreach (var sub in allSubordinates) {
+					if (sub.Id == SUP.Id && !ignoreCircular) {
 						var mname = "" + manager.Id;
 						var sname = "" + subordinate.Id;
 						if (manager.User != null)
@@ -541,10 +477,8 @@ namespace RadialReview.Accessors
 					}
 
 					var found = managerSubordinates.FirstOrDefault(x => x.ChildId == sub.Id);
-					if (found == null)
-					{
-						found = new DeepAccountability()
-						{
+					if (found == null) {
+						found = new DeepAccountability() {
 							CreateTime = now,
 							ParentId = SUP.Id,
 							Parent = s.Load<AccountabilityNode>(SUP.Id),
@@ -560,13 +494,11 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public static void RemoveAll(ISession s, AccountabilityNode node, DateTime now)
-		{
+		public static void RemoveAll(ISession s, AccountabilityNode node, DateTime now) {
 			var id = node.Id;
 			var all = s.QueryOver<DeepAccountability>().Where(x => (x.ParentId == id || x.ChildId == id) && x.DeleteTime == null).List().ToList();
 
-			foreach (var a in all)
-			{
+			foreach (var a in all) {
 				a.DeleteTime = now;
 				s.Update(a);
 			}

@@ -19,6 +19,7 @@ using RadialReview.Models.VideoConference;
 using RadialReview.Utilities;
 using RadialReview.Exceptions;
 using RadialReview.Models.UserModels;
+using static RadialReview.Models.PermItem;
 
 namespace RadialReview.Controllers
 {
@@ -55,7 +56,10 @@ namespace RadialReview.Controllers
 			
             };
 
-            var model = new L10MeetingVM()
+			ViewBag.ViewAccountabilityChart = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanView(ResourceType.AccountabilityHierarchy, GetUser().Organization.AccountabilityChartId));
+			
+
+			var model = new L10MeetingVM()
             {
                 Recurrence = recurrence,
                 Meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrenceId, true, loadLogs: true),

@@ -29,9 +29,12 @@ namespace RadialReview.Controllers
 
 
         [Access(AccessLevel.UserOrganization)]
-		public ActionResult Chart(long? id=null, long? user = null, long? node = null)
+		public ActionResult Chart(long? id=null, long? user = null, long? node = null,bool noheading=false)
         {
-	        var u = GetUser();
+
+			ViewBag.NoTitleBar = noheading;
+
+			var u = GetUser();
 
             var idr = id ?? u.Organization.AccountabilityChartId;
 

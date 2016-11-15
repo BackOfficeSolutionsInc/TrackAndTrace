@@ -43,7 +43,7 @@ namespace RadialReview.Controllers
 
 				var m = new UploadUsersSelectedDataVM() { };
 				var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, false).OrganizationId;
-				var allUsers = OrganizationAccessor.GetMembers_Tiny(GetUser(), orgId);
+				var allUsers = TinyUserAccessor.GetOrganizationMembers(GetUser(), orgId);
 				m.ExistingUser = new List<string>();
 
 
@@ -229,24 +229,7 @@ namespace RadialReview.Controllers
 					}
 				}
 
-				AccountabilityAccessor._FinishUploadAccountabilityChart(GetUser(),existingUsers, managerLookup, errors);
-				//	foreach (var m in links.Where(x => x.Item1 == s))
-				//	{
-				//		var foundManager = existingUsers.FirstOrDefault(x => x.GetFirstName() == m.Value[0] && x.GetLastName() == m.Value[1]);
-				//		if (foundManager == null) {
-				//			errors.Add("Could not find manager " + m.Value[0] + " " + m.Value[1] + ".");
-				//			continue;
-				//		}
-				//		if (!foundManager.IsManager()) {
-				//			_UserAccessor.EditUser(GetUser(), foundManager.Id, true);
-				//			foundManager.ManagerAtOrganization = true;
-				//		}
-
-				//		AccountabilityAccessor.AppendNode(GetUser(),
-
-				//		_UserAccessor.AddManager(GetUser(), m.Key, foundManager.Id, now);
-				//	}
-				//}
+				AccountabilityAccessor._FinishUploadAccountabilityChart(GetUser(),existingUsers, managerLookup, errors);		
 				return Json(ResultObject.CreateRedirect("/l10/wizard/" + recurrence + "#Attendees", "Uploaded Users"));
 			}
 			catch (Exception e)

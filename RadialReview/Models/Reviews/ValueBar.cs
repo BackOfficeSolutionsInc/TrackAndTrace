@@ -7,30 +7,32 @@ using System.Linq;
 using System.Web;
 
 namespace RadialReview.Models.Reviews {
-	public class ValueBar : ILongIdentifiable, IHistorical {
-		public virtual long Id { get; set; }
-		public virtual DateTime CreateTime { get; set; }
-		public virtual DateTime? DeleteTime { get; set; }
-		public virtual long OrganizationId { get; set; }
-		public virtual long CompanyValueId { get; set; }
-		public virtual PositiveNegativeNeutral Minimum { get; set; }
+	//public class ValueBar : ILongIdentifiable, IHistorical {
+	//	public virtual long Id { get; set; }
+	//	public virtual DateTime CreateTime { get; set; }
+	//	public virtual DateTime? DeleteTime { get; set; }
+	//	public virtual long OrganizationId { get; set; }
+	//	//public virtual long CompanyValueId { get; set; }
 
-		public ValueBar() {
-			CreateTime = DateTime.UtcNow;
-			Minimum = PositiveNegativeNeutral.Neutral;
-		}
+	//	public ValueBar() {
+	//		CreateTime = DateTime.UtcNow;
+	//		Minimum = PositiveNegativeNeutral.Neutral;
+	//		MinimumPercentage = 3m / 5m;
+	//	}
 
-		public class Map : ClassMap<ValueBar> {
-			public Map() {
-				Id(x => x.Id);
-				Map(x => x.CreateTime);
-				Map(x => x.DeleteTime);
-				Map(x => x.Minimum);
+	//	public class Map : ClassMap<ValueBar> {
+	//		public Map() {
+	//			Id(x => x.Id);
+	//			Map(x => x.CreateTime);
+	//			Map(x => x.DeleteTime);
 
-				Map(x => x.OrganizationId);
-				Map(x => x.CompanyValueId);
-			}
-		}
+	//			Map(x => x.Minimum);
+	//			Map(x => x.MinimumPercentage);
 
-	}
+	//			Map(x => x.OrganizationId);
+	//			//Map(x => x.CompanyValueId);
+	//		}
+	//	}
+
+	//}
 }

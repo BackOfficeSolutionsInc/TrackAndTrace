@@ -213,13 +213,13 @@ body.resizing .notes-tile,
 				max-height: none !important;
 
 				score input {
-					height: 31px!important;
+					height: 31px !important;
 				}
 			}
 
-			tr.IsDivider td{
-				height:3px;
-				background-color:#e2e2e2;
+			tr.IsDivider td {
+				height: 3px;
+				background-color: #e2e2e2;
 			}
 
 			@-moz-document url-prefix() {
@@ -797,6 +797,40 @@ body.resizing .notes-tile,
 			text-align: center;
 		}
 	}
+
+	.notifications-list-container {
+		table {
+			.dataTableTiny();
+
+			md-checkbox.md-align-top-left > div._md-container {
+				top: 9px;
+			}
+
+			.createtime-column {
+				display: none;
+			}
+
+			.message-column{    
+				padding-top: 4px !important;
+			}
+
+			.expand-column {
+				vertical-align: top;
+				padding-right: 7px !important;
+				padding-top: 1px!important;
+				
+				.glyphicon-chevron-left {
+					left: 1px;
+					position: relative;
+				}
+				.glyphicon-chevron-down {
+					left: 2px;
+					top: 2px;
+					position: relative;
+				}
+			}
+		}
+	}
 	//MEMBERS LIST
 	.members-pane {
 		max-height: ~"calc(50vh - 80px)";
@@ -955,7 +989,7 @@ body.resizing .notes-tile,
 
 	.component {
 		padding: 0px;
-		margin:0px;
+		margin: 0px;
 	}
 
 	.container {
@@ -1172,6 +1206,8 @@ body.resizing .notes-tile,
 }
 
 
+
+
 @media(max-width:768px) {
 
 	#grid {
@@ -1209,8 +1245,8 @@ body.resizing .notes-tile,
 		display: none;
 	}
 
-	#ScorecardTable{
-		margin-bottom:0px;
+	#ScorecardTable {
+		margin-bottom: 0px;
 	}
 
 	.grid-tile {

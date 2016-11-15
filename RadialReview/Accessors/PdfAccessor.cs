@@ -133,7 +133,7 @@ namespace RadialReview.Accessors {
 
 			var colCount = Math.Max(1,peopleAnalyzer.Values.Count)+3;
 
-			var size = Math.Max(.15, (8.5 - (1.5 + 3 * 0.5 + 1))/colCount );
+			var size = Math.Max(.15, (8.5 - (1.5 + 1))/colCount );
 
 
 			//Who
@@ -208,10 +208,10 @@ namespace RadialReview.Accessors {
 				i = 1;
 				foreach (var val in peopleAnalyzer.Values) {
 					var thisValue = r.ValueRatings.Where(x => x.ValueId == val.Id).Select(x => x.Rating).ToList();
-					var merge = ScatterScorer.MergeValueScores(thisValue);
-					var text = merge.ToShortKey();
+					var merge = ScatterScorer.MergeValueScores(thisValue, val);
+					var text = merge.Merged.ToShortKey();
 					row.Cells[i].AddParagraph("" + text);
-					row.Cells[i].Shading.Color = merge.GetColor();
+					row.Cells[i].Shading.Color = merge.Merged.GetColor();
 					i++;
 				}
 
@@ -242,7 +242,6 @@ namespace RadialReview.Accessors {
 
 		}
 
-
 		public static void AddReviewPrintout(UserOrganizationModel caller, PdfDocument document, ReviewController.ReviewDetailsViewModel review) {
 
 			var pageNum = 0;
@@ -251,7 +250,8 @@ namespace RadialReview.Accessors {
 				g.DrawString(review.Review.ForUser.GetName() + "  |  " + pageNum, PdfChartAccessor._Font8, XBrushes.LightGray, new XPoint(pageDim.Width - 20, pageDim.Height - 20), XStringFormats.BottomRight);
 			});
 
-			PdfPage page = document.AddPage();
+			PdfPage page = document.AddPage();	
+
 			page.Size = PdfSharp.PageSize.Letter;
 			XGraphics gfx = XGraphics.FromPdfPage(page);
 			//// HACK²
@@ -304,8 +304,8 @@ namespace RadialReview.Accessors {
 				leftColumnHeight += roleRect.Height;
 
 				r = new XRect(w2, rightColumnHeight, w2, 1);
-				List<ValueBar> theBar = null;
-				var valueRect = PdfChartAccessor.DrawValueTable(tester, r, review.Review.ForUser, valAnswers, review.Supervisers, theBar, margin: margin);
+				//List<ValueBar> theBar = null;
+				var valueRect = PdfChartAccessor.DrawValueTable(tester, r, review.Review.ForUser, valAnswers, review.Supervisers, margin: margin);
 
 				if (r.Top + valueRect.Height > pageSize.Height) {
 					if (!addedPage2) {
@@ -316,9 +316,9 @@ namespace RadialReview.Accessors {
 						r = new XRect(w2, 0, w2, 1);
 						rightColumnHeight = 0;
 					}
-					PdfChartAccessor.DrawValueTable(gfxPage2, r, review.Review.ForUser, valAnswers, review.Supervisers, theBar, margin: margin);
+					PdfChartAccessor.DrawValueTable(gfxPage2, r, review.Review.ForUser, valAnswers, review.Supervisers, margin: margin);
 				} else {
-					PdfChartAccessor.DrawValueTable(gfx, r, review.Review.ForUser, valAnswers, review.Supervisers, theBar, margin: margin);
+					PdfChartAccessor.DrawValueTable(gfx, r, review.Review.ForUser, valAnswers, review.Supervisers, margin: margin);
 				}
 
 				rightColumnHeight += valueRect.Height;
@@ -413,8 +413,12 @@ namespace RadialReview.Accessors {
 		public static PdfDocument GenerateReviewPrintout(UserOrganizationModel caller, ReviewController.ReviewDetailsViewModel review) {
 			var name = review.Review.ForUser.GetName();
 			PdfDocument document = new PdfDocument();
+			document.Info.Author = "Traction® Tools";
+			document.Info.Title = name + " - " + review.ReviewContainer.ReviewName;
+			document.Info.Creator = ""+caller.GetName();
+			document.Info.CreationDate = DateTime.UtcNow;		
+			document.Info.Keywords	= "Traction Tools, "+name + ", " + review.ReviewContainer.ReviewName;
 			AddReviewPrintout(caller, document, review);
-
 			return document;
 
 		}

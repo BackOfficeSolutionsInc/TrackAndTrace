@@ -405,20 +405,23 @@ function updateScore(self, skipChart) {
 		var r1 = "";
 		var r2 = "";
 		//Empty?
-		$(self).removeClass("error");
-		$(self).removeClass("success");
-		$(self).removeClass("danger");
+
+		var parentCell = self.closest("td");
+
+		$(parentCell).removeClass("error");
+		$(parentCell).removeClass("success");
+		$(parentCell).removeClass("danger");
 		if (!$.trim(v)) {
 			//$(self).removeClass("error");
 			//do nothing
 		} else {
 			var met = metGoal(dir, goal, v, altgoal);
 			if (met == true)
-				$(self).addClass("success");
+				$(parentCell).addClass("success");
 			else if (met == false)
-				$(self).addClass("danger");
+				$(parentCell).addClass("danger");
 			else
-				$(self).addClass("error");
+				$(parentCell).addClass("error");
 		}
 
 		if (!skipChart && includeChart) {

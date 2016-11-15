@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.SignalR;
 using NHibernate;
 using RadialReview.Exceptions;
+using RadialReview.Hooks;
 using RadialReview.Hubs;
 using RadialReview.Models;
 using RadialReview.Models.Accountability;
@@ -16,6 +17,7 @@ using RadialReview.Models.UserModels;
 using RadialReview.Models.UserTemplate;
 using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
+using RadialReview.Utilities.Hooks;
 using RadialReview.Utilities.RealTime;
 using RadialReview.Utilities.Synchronize;
 using System;
@@ -913,6 +915,7 @@ namespace RadialReview.Accessors {
 				CreateTime = now,
 			};
 			s.Save(r);
+			HooksRegistry.Each<IRolesHook>(x => x.CreateRole(s, r));
 
 			UserTemplateAccessor.AddRoleToAttach_Unsafe(s, perms, orgId, attachTo, r);
 
@@ -1114,6 +1117,7 @@ namespace RadialReview.Accessors {
 
 			role.Role = name;
 			s.Update(role);
+			HooksRegistry.Each<IRolesHook>(x => x.UpdateRole(s, role));
 
 			rt.UpdateOrganization(role.OrganizationId).Update(new AngularRole(roleId) {
 				Name = name ?? Removed.String()

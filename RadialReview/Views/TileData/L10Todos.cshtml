@@ -16,6 +16,6 @@
 								   {"Selector","(model.L10Todos | filter:{KeyId:"+(Model)+"})[0].Contents"},
 								   {"DefaultSort","'DueDate'"}
 
-							   }); }<div ng-show="(model.L10Todos | filter:{KeyId:@(Model)})===undefined" class="gray alignCenter" elem-ready="functions.reload((model.L10Todos | filter:{KeyId:@(Model)})===undefined)">Please wait</div>
+							   }); }<div ng-show="(model.L10Todos | filter:{KeyId:@(Model)}).length==0" class="gray alignCenter" elem-ready="functions.reload((model.L10Todos | filter:{KeyId:@(Model)}).length==0)">Please wait</div>
     </div>
 </div>

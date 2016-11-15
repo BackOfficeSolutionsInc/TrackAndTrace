@@ -167,23 +167,27 @@
 				var roleId = $(this).data("roleid");
 				var gwc = $(this).data("gwc");
 				var reviewId = $(this).data("reviewid");
-				$("#roleDetails").html("<div style='text-align:center;'><img src='/Content/img/ajax-loader.gif' alt='Loading...' /></div>");
+				//$("#roleDetails").html("<div style='text-align:center;'><img src='/Content/img/ajax-loader.gif' alt='Loading...' /></div>");
 				var that = $(this);
 				if (request)
 					request.abort();
 
-				request = $.ajax({
-					url: "/Review/GWCDetails?reviewId=" + reviewId + "&gwc=" + gwc + "&roleId=" + roleId,
-					success: function (data) {
-						$(".table-io.gwc .fill.selected").removeClass("selected");
-						$(that).addClass("selected");
-						$("#roleDetails").html(data);
-					},
-					error: function (a, b, c) {
-						$("#roleDetails").html("<div style='text-align:center;' class='gray'>An error has occurred.</div>");
 
-					}
-				});
+				showModal("Role Details", "/Review/GWCDetails?reviewId=" + reviewId + "&gwc=" + gwc + "&roleId=" + roleId, "");
+
+				//request = $.ajax({
+				//	url: "/Review/GWCDetails?reviewId=" + reviewId + "&gwc=" + gwc + "&roleId=" + roleId,
+				//	success: function (data) {
+
+				//		$(".table-io.gwc .fill.selected").removeClass("selected");
+				//		$(that).addClass("selected");
+				//		$("#roleDetails").html(data);
+				//	},
+				//	error: function (a, b, c) {
+				//		$("#roleDetails").html("<div style='text-align:center;' class='gray'>An error has occurred.</div>");
+
+				//	}
+				//});
 			});
 		</script>
 	}

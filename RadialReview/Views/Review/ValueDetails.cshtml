@@ -1,63 +1,44 @@
 ﻿@using RadialReview.Models
 @using RadialReview.Models.Enums
 @model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
-<div class="values-details details">
-	@{
+
+<div class="table-io">
+	<div class="values-details details">
+		@{
 		var found = Model.AnswersAbout.Where(x => x is CompanyValueAnswer).Cast<CompanyValueAnswer>().Where(x => x.Askable.Id == ViewBag.ValueId && x.ByUserId == ViewBag.ByUserId);
 	//var titleGWC = new Dictionary<string, string> { { "get", "Gets It" }, { "want", "Wants It" }, { "capacity", "Capacity To Do It" } };
 	//var lookup = new Dictionary<string, Func<CompanyValueAnswer, Tristate>> { { "get", x => x.Exhibits }, { "want", x => x.WantIt }, { "capacity", x => x.HasCapacity } };
 
-	}
+		}
 
-	@if (found.Any())
+		@if (found.Any())
 	{
-		<div class="header">
-			<span class="fill @found.First().Exhibits pull-right"></span>
-			@found.First().Askable.GetQuestion():
-			<span class="extra">@found.First().ByUser.GetName()</span>
-		</div>
-		@*<table>
-				<thead>
-					<tr>
-						<th></th>
-						<th></th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach (var i in found)
-					{
-						<tr class="value-row">
-							<td class="value-min">:</td>
-							<td class="value-details-square value-min">
-							</td>
-							<td class="reason">
-
-							</td>
-
-						</tr>
-					}
-				</tbody>
-			</table>*@
-		<div class="alignLeft">
-			@if (!String.IsNullOrWhiteSpace(found.First().Reason))
+			<div class="header">
+				<span class="fill @found.First().Exhibits pull-right"></span>
+				@found.First().Askable.GetQuestion():
+				<span class="extra">@found.First().ByUser.GetName()</span>
+			</div>
+			
+			<div class="alignLeft">
+				@if (!String.IsNullOrWhiteSpace(found.First().Reason))
 			{
-				<div class="reason" style="font-style: italic">
-					"@found.First().Reason"
-				</div>
-				<div class="pull-right">
-					<span style="font-size:80%;bottom: 4px;position: relative;">Include:</span> <input class="value_@(found.First().Id)" type="checkbox" onclick="toggleValue2(this, @(found.First().Id))" @(found.First().IncludeReason?"checked":"") />
-				</div>
+					<div class="reason" style="font-style: italic">
+						"@found.First().Reason"
+					</div>
+					<div class="alignRight">
+						<span @*style="font-size:80%;bottom: 4px;position: relative;"*@>Include:</span> <input class="value_@(found.First().Id)" type="checkbox" onclick="toggleValue2(this, @(found.First().Id))" @(found.First().IncludeReason?"checked":"") />
+					</div>
 			}
 			else
 			{
-				<div class="gray">No comment provided.</div>
+					<div class="gray">No comment provided.</div>
 			}
-		</div>
+			</div>
 
 	}
 	else
 	{
-		<div class="gray">No data.</div>
+			<div class="gray">No data.</div>
 	}
+	</div>
 </div>

@@ -29,6 +29,7 @@
         @if (showScorecardChart) {
             <td class="handle header-cell"></td>
         }
+		<td class="input-placeholder"></td>
         @if (ViewBag.ShowRow == null || ViewBag.ShowRow == true)
 		{
 			var col = 0;
@@ -47,7 +48,7 @@
 	<tr data-row="@ViewBag.Row" class="@(auto ? "auto" : "reorderable")" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-meetingmeasurable="@Model.MeetingMeasurable.Id">
 		<td class="header-cell">
 			@if (!auto) {
-				<div class="icon fontastic-icon-three-bars icon-rotate handle"></div>
+				<div class="icon fontastic-icon-three-bars icon-rotate handle reorder-icon"></div>
 			}
 		</td>
 		<td><div class="number header-cell"></div></td>
@@ -75,6 +76,7 @@
 		@if (Model.ShowScorecardChart) {
 			<td class="header-cell" data-measurable="@Model.MeetingMeasurable.Measurable.Id"><span class="inlinesparkline"></span></td>
 		}
+		<td class="input-placeholder"><form><input /></form></td>
 		@if (ViewBag.ShowRow == null || ViewBag.ShowRow == true) {
 			var col = 0;
 			var seenCurrent = false;
@@ -85,7 +87,7 @@
 				var found = Model.Scores.Where(x => r.ForWeek == x.ForWeek && x.MeasurableId == Model.MeetingMeasurable.Measurable.Id).OrderByDescending(x => x.Id).FirstOrDefault();
 				//var found = (founds.Count() > 1) ? founds.FirstOrDefault(x=>x.)
 
-				<td class="score @(r.IsCurrentWeek ? "current" : "") @(seenCurrent?"future":"")">
+				<td class="score @(r.IsCurrentWeek ? "current" : "") @(seenCurrent?"future":"") @(inlineEdit == "" ? "disabled" : "")">
 					<form>
 						<input @(inlineEdit == "" ? "disabled" : "")
 							   data-goal="@(found.NotNull(x => x.OriginalGoal) ?? Model.MeetingMeasurable.Measurable.Goal)"

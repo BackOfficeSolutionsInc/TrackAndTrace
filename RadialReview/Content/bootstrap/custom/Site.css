@@ -611,6 +611,9 @@ select:-webkit-autofill:focus {
   color: #3E3935;
   text-decoration: underline;
 }
+body.modal-open {
+  overflow: visible;
+}
 .body-full-height {
   overflow: auto;
 }
@@ -644,6 +647,9 @@ select:-webkit-autofill:focus {
 .body-full-width .jumbotron h1 {
   font-size: 32px;
   margin-top: -6px;
+}
+.body-notitlebar #wrap #main {
+  top: 0px;
 }
 .body-full-width .jumbotron .video-container .volume {
   position: absolute;
@@ -1056,7 +1062,9 @@ body.resizing *::-moz-selection {
   border: none;
   width: 19px;
   height: 19px;
-  margin-top: 8px;
+  /*margin-top: 8px;*/
+  position: relative;
+  bottom: -4px;
 }
 .a-link {
   text-decoration: underline;

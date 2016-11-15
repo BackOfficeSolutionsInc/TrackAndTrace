@@ -79,7 +79,7 @@ namespace RadialReview.Controllers {
 
 
 				var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, false).OrganizationId;
-				var allUsers = OrganizationAccessor.GetMembers_Tiny(GetUser(), orgId);
+				var allUsers = TinyUserAccessor.GetOrganizationMembers(GetUser(), orgId);
 				// var allUsers = OrganizationAccessor.GetMembers_Tiny(GetUser(), GetUser().Organization.Id);
 				var userLookups = DistanceUtility.TryMatch(userStrings, allUsers);
 

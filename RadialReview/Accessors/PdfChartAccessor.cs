@@ -1,6 +1,7 @@
 using MigraDoc.DocumentObjectModel;
 using PdfSharp.Drawing;
 using PdfSharp.Drawing.Layout;
+using RadialReview.Engines;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Charts;
@@ -531,7 +532,7 @@ namespace RadialReview.Accessors {
 			return actualSize;
 		}
 
-		public static XRect DrawValueTable(XGraphics gfx, XRect location, UserOrganizationModel aboutUser, List<CompanyValueAnswer> answers, List<UserOrganizationModel> supervisors, List<ValueBar> theBar, Unit? margin = null) {
+		public static XRect DrawValueTable(XGraphics gfx, XRect location, UserOrganizationModel aboutUser, List<CompanyValueAnswer> answers, List<UserOrganizationModel> supervisors, Unit? margin = null) {
 			var state = gfx.Save();
 
 			DrawDebug(gfx, new XRect(location.Left, location.Top, location.Width, 1), XPens.Red);
@@ -605,6 +606,7 @@ namespace RadialReview.Accessors {
 			top += titleHeight + pieMargin;
 			totalHeight += titleHeight + pieMargin;
 
+			var valueNameFont = _Font;
 
 			foreach (var valueRow in allValues) {
 				//double val1 = pieWidth;
@@ -617,24 +619,64 @@ namespace RadialReview.Accessors {
 					var pieLoc = new XRect(xx, yy, pieWidth, pieWidth);
 					DrawPieChart(gfx, pieLoc, slices);
 				}
-				var font = _Font;
-				var height = Math.Max(pieWidth, GetTextHeight(gfx, valueRow.Name, textWidth, font));
+				//var font = _Font;
+				var height = Math.Max(pieWidth, GetTextHeight(gfx, valueRow.Name, textWidth, valueNameFont));
 
 				var tf = new XTextFormatter(gfx) { Alignment = XParagraphAlignment.Right };
-				var h = GetTextHeight(gfx, valueRow.Name, textWidth, font);
+				var h = GetTextHeight(gfx, valueRow.Name, textWidth, valueNameFont);
 
 				if (h > pieWidth) {
 					var layoutRectangle = new XRect(placement.Left, top + pieMargin * 2, textWidth, height);
-					tf.DrawString(valueRow.Name, font, _BlackText, layoutRectangle, XStringFormats.TopLeft);
+					tf.DrawString(valueRow.Name, valueNameFont, _BlackText, layoutRectangle, XStringFormats.TopLeft);
 					totalHeight += h + 2.0 * pieMargin;
 					top += h + 2.0 * pieMargin;
 				} else {
-					var layoutRectangle = new XRect(placement.Left, top + pieMargin * 2 + (pieWidth - h - font.GetHeight() / 2.0) / 2.0, textWidth, h);
-					tf.DrawString(valueRow.Name, font, _BlackText, layoutRectangle, XStringFormats.TopLeft);
+					var layoutRectangle = new XRect(placement.Left, top + pieMargin * 2 + (pieWidth - h - valueNameFont.GetHeight() / 2.0) / 2.0, textWidth, h);
+					tf.DrawString(valueRow.Name, valueNameFont, _BlackText, layoutRectangle, XStringFormats.TopLeft);
 					totalHeight += pieWidth + 2.0 * pieMargin;
 					top += pieWidth + 2.0 * pieMargin;
 				}
 			}
+
+			//The bar
+			top += pieMargin;
+			totalHeight += pieMargin;
+			gfx.DrawLine(XPens.LightGray, placement.Left + textWidth, top, placement.Left + textWidth+(valueCount * 2.0 + 1.0) * pieMargin + valueCount * pieWidth, top);
+			top += pieMargin;
+			totalHeight += pieMargin;
+
+
+			var barHeight = pieWidth / 3.0;
+			var theBarRect = new XRect(placement.Left, top, textWidth, barHeight);
+			gfx.DrawString("The Bar", valueNameFont, _BlackText, theBarRect, XStringFormats.CenterRight);
+		
+
+			for (int i = 0; i < values.Count; ++i) {
+				var valueAnswers = answers.Where(x => x.Askable.Id == values[i].Id).ToList();
+				var coreValue = values[i];
+				var score = ChartsEngine.ScatterScorer.MergeValueScores(valueAnswers,(CompanyValueModel) coreValue);
+
+				var xx = placement.Left + textWidth + (i * 2.0 + 1.0) * pieMargin + i * pieWidth;
+				var yy = top + pieMargin;
+				var recLoc = new XRect(xx, yy, pieWidth, barHeight);
+
+				var tiny = values.Count > 3;
+
+				gfx.DrawRectangle(new XSolidBrush(score.Merged.GetXColor()), recLoc);
+				var above = "";
+				if (score.Above == true)
+					above = tiny?"+":"above";
+				else if (score.Above == false)
+					above = tiny?"-":"below";
+				gfx.DrawString(above, _Font7, XBrushes.White, recLoc,XStringFormats.Center);
+
+			}
+			top += barHeight;
+			totalHeight += barHeight;
+
+
+
+			//Feedback
 			var feedbacks = answers.Where(x => x.IncludeReason).Select(x=>new FeedbackRow() { Color = x.Exhibits.GetXColor(), Feedback=x.Reason}).ToList();
 			_DrawFeedbacks(gfx, feedbacks, placement, ref totalHeight, ref top);
 
@@ -680,6 +722,18 @@ namespace RadialReview.Accessors {
 			gfx.DrawLine(XPens.LightGray, placement.Left, placement.Top + totalHeight, placement.Right, placement.Top + totalHeight);
 
 			//totalHeight +=lineMargin;
+
+			var jd = review.ForUser.JobDescription;
+			if (!string.IsNullOrWhiteSpace(jd)) {
+				var jdW = Unit.FromInch(1.1);
+				var jdh = GetTextHeight(gfx, jd, placement.Width- jdW, _Font8);
+				gfx.DrawString("Job Description:", _Font8Bold, _BlackText, new XRect(placement.Left, placement.Top + totalHeight, jdW, jdh),XStringFormats.TopLeft);
+				var tf = new XTextFormatter(gfx) { Alignment = XParagraphAlignment.Left };
+				tf.DrawString(jd, _Font8, _BlackText, new XRect(placement.Left+ jdW, placement.Top + totalHeight, placement.Width - jdW, jdh), XStringFormats.TopLeft);
+
+				totalHeight += jdh;
+			}
+
 
 			var actualSize = new XRect(location.Left, location.Top, location.Width, totalHeight + 2*(margin ?? _DefaultMargin));
 			DrawDebug(gfx, actualSize, new XPen(XColors.Blue) { DashStyle = XDashStyle.Dot });

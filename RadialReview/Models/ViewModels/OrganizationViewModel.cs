@@ -34,6 +34,9 @@ namespace RadialReview.Models.ViewModels
 		public NumberFormat NumberFormat { get; set; }
 		public long AccountabilityChartId { get; set; }
 
+		public int? DefaultSendTodoTime { get; set; }
+		public List<SelectListItem> PossibleTodoTimes { get; set; }
+
 		public List<SelectListItem> TimeZones
 		{
 			get{
@@ -50,6 +53,7 @@ namespace RadialReview.Models.ViewModels
         public String RockName { get; set; }
         public List<CreditCardVM> Cards { get; set; }
 		public PaymentPlanModel PaymentPlan { get; set; }
+		public bool LimitFiveState { get; set; }
 
 
 		//public OrganizationViewModel() {

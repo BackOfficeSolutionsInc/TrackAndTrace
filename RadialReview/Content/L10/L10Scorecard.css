@@ -49,7 +49,7 @@
 		text-align: left;
 		padding-left: 5px;
 		padding-right: 10px;
-		font-size: 14px;
+		/*font-size: 14px;*/
 	}
 
 		.scorecard-table .target.value {
@@ -147,6 +147,8 @@
 	text-align: center;
 	color: #333;
 	padding: 0px;
+		border-left: 1px solid #E0E0E0;
+		border-top: 1px solid #E0E0E0;
 }
 
 	.scorecard-table .score form {
@@ -156,33 +158,53 @@
 	.scorecard-table .score input::-webkit-input-placeholder {
 		color: #EFEFEF;
 	}
-
-	.scorecard-table .score .danger {
+	
+	.scorecard-table .score.danger input,
+	.scorecard-table .score.danger,
+	.scorecard-table .score input.danger {
 		color: #C7254E;
 		background-color: #F9F2F4;
 	}
-
-	.scorecard-table .score .success {
+	
+	.scorecard-table .score.success input,
+	.scorecard-table .score input.success,
+	.scorecard-table .score.success {
 		color: #468847;
 		background-color: #DFF0D8 !important;
 	}
-
-	.scorecard-table .score .error {
+	
+	.scorecard-table .score.error input,
+	.scorecard-table .score input.error,
+	.scorecard-table .score.error {
 		color: #bbbbbb;
+	}
+	.scorecard-table .score .disabled,
+	.scorecard-table .score.disabled{
+		background-color:#ececec !important;
+	}
+	
+	.scorecard-table .IsDivider .score,
+	.scorecard-table .divider .score {
+		border-top: 0px solid;
 	}
 
 	.scorecard-table .score input {
+		
 		border: none;
-		padding-top: 2px;
+		padding-top: 0px;
 		text-align: center;
 		width: 70px;
 		height: 25px;
 		font-family: monospace;
 		font-size: 13px;
-		top: -2px;
+		top: 0px;
 		position: relative;
-		border-left: 1px solid #E0E0E0;
-		border-bottom: 1px solid #E0E0E0;
+		height: 21px;
+	}
+
+	.scorecard .scorecard-table .score input{
+		height: 29px;
+
 	}
 
 @-moz-document url-prefix() {
@@ -196,14 +218,13 @@
 	}
 }
 
-.scorecard-table .score input:focus, .scorecard-table .score input:active {
-	outline: #2c77ba auto 2px; /* rgb(33,115,70) auto 2px;*/
+.scorecard-table .score input:focus, .scorecard-table .score input:not([disabled]):active {
+	outline: #2c77ba auto 2px; 
 	outline-offset: -1px;
 	outline-style: solid;
 	background-color: #EFEFEF;
 	background-color: white;
 	z-index: 100000000;
-	width: 71px;
 	margin-right: -1px;
 	margin-top: 0px;
 }
@@ -223,7 +244,15 @@
 	background-color: #FFF;
 	display: block;
 	max-width: 80%;
+	overflow-x: auto;
+	overflow-y: hidden;
+	box-shadow: 11px 0px 19px -11px rgba(0, 0, 0, 0.36);
+	border-bottom: 4px solid #fff;
 }
+
+	#ScorecardTable_Over tr:not(.divider):not(.IsDivider) td {
+		height: 25px;
+	}
 
 .direction_1:empty:before,
 .direction_GreaterThan:empty:before {
@@ -284,11 +313,6 @@
 	content: "%";
 }
 
-#ScorecardTable_Over {
-	overflow-x: auto;
-	overflow-y: hidden;
-}
-
 
 .scorecard-table .score input[disabled] {
 	background-color: #f7f7f7 !important;
@@ -337,13 +361,14 @@
 	height: 8px;
 	position: relative;
 	border-bottom: 0px solid white;
-	top: -2px !important;
+	top: 0px !important;
 	background-color: #eee;
 	border-top: 2px solid rgba(0,0,0,.12);
 	box-shadow: 0px 2px 6px -5px rgba(0,0,0,0.1) inset;
 }
 
-	.scorecard-table .divider td.current-divider-left {
+	.scorecard-table .divider td.current-divider-left,
+	.scorecard-table .divider td.current-divider-right {
 		background-color: #2C77BA; /*#E8E8E8;*/
 		border-top: 2px solid #2C77BA;
 		background-color: #eee;
@@ -478,9 +503,6 @@
 	box-shadow: none;
 }
 
-#ScorecardTable_Over {
-	box-shadow: 11px 0px 19px -11px rgba(0, 0, 0, 0.36);
-}
 
 
 .accountable-column profile-image {
@@ -524,23 +546,43 @@
 	display: none !important;
 }
 
+.input-placeholder input{
+	border-color:transparent;
+	width:0px;
+}
+
 @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
 	.dashboard .scorecard-table .score input {
 		height: 32px !important;
 	}
 }
-
-#ScorecardTable_Over tr:not(.divider,.IsDivider) td {
+#ScorecardTable_Over tr.auto,
+#ScorecardTable tr.auto {
 	height: 25px;
 }
 
+.divider + tr:not(.divider) td{
+	border-top:2px solid #E0E0E0;
+}
+
+
+/*.divider td.current-divider-left,
+.divider td.current-divider-right{
+}*/
+
+.divider + tr:not(.divider) td.current,
+.divider + tr:not(.divider) td.buttonHolder{
+	border-top-color: #2c77ba;
+
+}
+
 .divider + tr:not(.divider) .current input {
-	border-top: 2px solid #2c77ba;
+	/*/*border-top: 2px solid #2c77ba;*
 	height: 22px;
 	margin-left: 0px;
-	/* border-left: 3px solid #2c77ba; */
+	/* border-left: 3px solid #2c77ba; *
 	border-bottom: 1px solid #e0e0e0;
-	padding-top: 0px;
+	padding-top: 0px;*/
 	/* border-left: 0px; */
 }
 
@@ -549,4 +591,64 @@
 		height: 25px;
 		padding-top: 6px;
 	}
+}
+
+
+
+@media(max-width:767px) {
+	.scorecard .scorecard-table .measurable {
+		max-width: 30vw;
+	}
+
+	.scorecard .scorecard-table .target {
+		max-width: 14vw;
+	}
+
+	.scorecard .scorecard-table .reorder-icon {
+		display: none;
+	}
+
+	.scorecard .scorecard-table .accountable.heading {
+		font-size: 1px;
+		color: rgba(0, 0, 0, 0);
+	}
+
+	.scorecard .l10-page-title {
+		color: rgba(0, 0, 0, 0);
+		height: 15px;
+	}
+}
+
+.angular-scorecard #ScorecardTable_Over tr:not(.divider):not(.IsDivider) td {
+    height: 32px;
+}
+
+
+.scorecard:hover *::-webkit-scrollbar-track {
+}
+.scorecard *::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0);
+  border: 6px solid transparent;
+  -moz-background-clip: padding-box;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+}
+.scorecard *::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 9px;
+  border-radius: 9px;
+  background: rgba(0, 0, 0, 0.07);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  margin: 2px;
+  -webkit-transition: background 0.2s ease-in-out;
+}
+.scorecard *:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  -webkit-border-radius: 9px;
+  border-radius: 9px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  margin: 2px;
 }

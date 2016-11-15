@@ -87,8 +87,9 @@ namespace RadialReview.Utilities.RealTime {
 			var updater = new AngularUpdate();
 			_updaters[key] = updater;
 			return updater;
-
 		}
+
+
 		public RTRecurrenceUpdater UpdateRecurrences(IEnumerable<long> recurrences) {
 			return UpdateRecurrences(recurrences.ToArray());
 		}
@@ -119,6 +120,29 @@ namespace RadialReview.Utilities.RealTime {
 			_groups[key] = group;
 			return group;
 		}
+
+		protected dynamic GetUserGroup<HUB>(List<string> userNames) where HUB : IHub {
+			var name = "u_"+string.Join("~", userNames);
+			var key = KeyNameGen(name, false);
+			if (_groups.ContainsKey(key))
+				return _groups[key];
+			var hub = GlobalHost.ConnectionManager.GetHubContext<HUB>();
+			var group = hub.Clients.Users(userNames);
+			_groups[key] = group;
+			return group;
+		}
+		protected AngularUpdate GetUserUpdater<HUB>(List<string> usernames) where HUB : IHub {
+			var name = "u_" + string.Join("~", usernames);
+			var key = KeyNameGen(name, false);
+
+			if (_updaters.ContainsKey(key))
+				return _updaters[key];
+			GetGroup<HUB>(name, false);
+			var updater = new AngularUpdate();
+			_updaters[key] = updater;
+			return updater;
+		}
+
 
 		public void Dispose() {
 			if (!Executed) {

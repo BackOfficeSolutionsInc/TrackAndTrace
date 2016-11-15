@@ -66,5 +66,9 @@
   {
     "outputFile": "Content/Reports/ClientDetails.css",
     "inputFile": "Content/Reports/ClientDetails.less"
+  },
+  {
+    "outputFile": "Content/L10/L10.css",
+    "inputFile": "Content/L10/L10.less"
   }
 ]

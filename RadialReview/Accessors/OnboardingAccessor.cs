@@ -209,7 +209,7 @@ namespace RadialReview.Accessors {
                             org.Name.UpdateDefault(organizationName);
                             var managers = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == org.Id && x.Type == TeamType.Managers).List().FirstOrDefault();
                             if (managers != null) {
-                                managers.Name = "Managers at " + organizationName;
+                                managers.Name = Config.ManagerName()+"s at " + organizationName;
                                 s.Update(managers);
                             }
                             var allTeam = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == org.Id && x.Type == TeamType.AllMembers).List().FirstOrDefault();

@@ -1,4 +1,8 @@
-﻿.vto {
+﻿html,body{
+	background-color:#eee;
+}
+
+.vto {
     border: 1px solid gray;
     padding: 20px;
     background-color: white;
@@ -435,4 +439,10 @@ profile-image .picture-container {
     border: 3px solid transparent;
     background-clip: padding-box;
     margin: 2px;
+}
+
+@media (max-width: 767px) {
+	 .vto .heading .vto-title {
+        font-size: 25px;
+    }
 }

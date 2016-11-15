@@ -28,7 +28,7 @@
 		var MeetingId = @Model.Recurrence.Id;
 		@if (Model.MeetingStart != null){
 			@:var startTime = new Date(@(Model.MeetingStart.Value.ToJavascriptMilliseconds()));
-						                                                                        																				}
+														                                                                        																				}
 
 
 	</script>
@@ -60,16 +60,16 @@
 			@if (Model.Meeting != null){
 				foreach (var m in Model.MemberPictures.ToList()) {
 					@:addToPictureLookup(@m.UserId,"@m.Url","@m.Name","@m.Initials");
-				}
+																}
 				@:isLeader = @(Model.Meeting.MeetingLeaderId == ViewBag.UserId ? "true" : "false");
-				@:var bmin = @(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0) + @(Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => (DateTime.UtcNow.ToJavascriptMilliseconds() - x.Value.ToJavascriptMilliseconds()))/(60*1000.0));
-				@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),bmin);
-				foreach (var i in Model.Meeting._MeetingLeaderPageDurations.Where(x => x.Item1 != Model.Meeting._MeetingLeaderCurrentPage)){
+																@:var bmin = @(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0) + @(Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => (DateTime.UtcNow.ToJavascriptMilliseconds() - x.Value.ToJavascriptMilliseconds()))/(60*1000.0));
+																@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),bmin);
+																foreach (var i in Model.Meeting._MeetingLeaderPageDurations.Where(x => x.Item1 != Model.Meeting._MeetingLeaderCurrentPage)){
 						@:setPageTime("@i.Item1",@i.Item2);
-				}
+																}
 			}else{
 					@:isLeader =false;
-			}
+															}
 			initL10();
 			try {
 				resetClickables();
@@ -116,14 +116,30 @@
 			var page = "main";
 			var vtoLastScroll=0;
 			$(".vto-button").click(function(){
-				if (typeof($(".vto-frame").attr("src"))==="undefined"){
-					$(".vto-frame").attr("src",$(".vto-frame").attr("data-src"));
+				if (typeof($(".vto-frame").attr("src"))==="undefined" || $(".vto-frame").attr("data-page")!="vto"){
+					//$(".vto-frame").attr("src",$(".vto-frame").attr("data-src"));
+					$(".vto-frame").attr("src","/vto/edit/@(Model.VtoId)?noheading=true");
+					$(".vto-frame").attr("data-page","vto");
 				}
 				$(".slider").css({marginLeft:"-100%"});
 				$(".slider-container").css("overflow-y","hidden");
-				$(".back-button").show();
+				$(".back-button").css("top","35px").show();
 				$(".print-vto-button").show();
 				page="vto";
+				vtoLastScroll = $(".slider-container").scrollTop();
+				$(".slider-container").scrollTop(0);
+			});
+
+			$(".ac-button").click(function(){
+				if (typeof($(".vto-frame").attr("src"))==="undefined"|| $(".vto-frame").attr("data-page")!="ac"){
+					$(".vto-frame").attr("src","/accountability/chart/@(Html.Organization().AccountabilityChartId)?noheading=true");
+					$(".vto-frame").attr("data-page","ac");
+				}
+				$(".slider").css({marginLeft:"-100%"});
+				$(".slider-container").css("overflow-y","hidden");
+				$(".back-button").css("top","55px").show();
+				//$(".print-vto-button").show();
+				page="ac";
 				vtoLastScroll = $(".slider-container").scrollTop();
 				$(".slider-container").scrollTop(0);
 			});
@@ -177,7 +193,7 @@
 						</div>
 						<div class="current-time">
 							<span class="centered">
-								<span class=" hour big"></span>
+								<span class="hour big"></span>
 								<span class="colon big">:</span>
 								<span class="minute big"></span>
 								<span class="second gray"></span>
@@ -213,15 +229,18 @@
 									}
 									<li class="divider"></li>
 								}
-								@if (Model.CanAdmin) {
-									<li><a href="/L10/Edit/@(Model.Recurrence.Id)?return=meeting" onclick="skipBeforeUnload = true"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
+								@if (Model.CanEdit) {
+									<li><a href="/L10/Wizard/@(Model.Recurrence.Id)?return=meeting" onclick="skipBeforeUnload = true"><span class="glyphicon glyphicon-edit"></span> Edit Meeting</a></li>
 									<li class="divider"></li>
 								}
+
 								<li><a href="@Url.Action("Details",new { id=Model.Recurrence.Id})" target="_blank"><span class="icon fontastic-icon-box"></span> Meeting Archive</a></li>
 
-
 								<li><a href="@Url.Action("ExportAll",new { id=Model.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
-
+								@if (Model.CanAdmin) {
+									<li class="divider"></li>
+									<li><a href="/L10/Edit/@(Model.Recurrence.Id)?return=meeting" onclick="skipBeforeUnload = true" style="color:#AB3333"><span class="glyphicon glyphicon-cog"></span> Advanced Settings</a></li>
+								}
 							</ul>
 						</div>
 						<div class="title">Agenda</div>
@@ -274,11 +293,20 @@
 								<div class="alignRight" style1="padding-left:24px;"><div class="vto-button clickable gray" data-location="Scorecard" href="#vto">View V/TO <span class="glyphicon glyphicon-chevron-right"></span></div></div>
 							}
 						</div>
-						@*<div class="alignCenter">
-								<a class="btn btn-default" data-location="stats" href="#stats"><span class="glyphicon glyphicon-stats"></span> Stats</a>
-							</div>*@
-
 					</div>
+
+					@if (ViewBag.ViewAccountabilityChart ?? false) {
+						<div class="component additional-pages">
+							<div>
+								<div class="alignRight" style1="padding-left:24px;"><div class="ac-button clickable gray" data-location="Scorecard" href="#ac">View Accountability Chart <span class="glyphicon glyphicon-chevron-right"></span></div></div>
+
+							</div>
+							@*<div class="alignCenter">
+									<a class="btn btn-default" data-location="stats" href="#stats"><span class="glyphicon glyphicon-stats"></span> Stats</a>
+								</div>*@
+
+						</div>
+					}
 					<div class="clearfix"></div>
 
 
@@ -306,7 +334,7 @@
 			<div class="back-button btn btn-primary btn-xs" style="display:none"><span class="glyphicon glyphicon-chevron-left"></span> Back</div>
 			<div class="print-vto-button btn btn-default btn-xs" style="display:none" onclick="printFromUrl('/quarterly/PrintPages/@(Model.Recurrence.Id)?vto=true')"><span class="glyphicon glyphicon-print"></span> Print</div>
 			@if (Model.VtoId != 0) {
-				<iframe id="vto-frame" class="vto-frame" data-src="/vto/edit/@(Model.VtoId)?noheading=true"></iframe>
+				<iframe id="vto-frame" class="vto-frame"></iframe>
 			}
 
 		</div>
@@ -345,7 +373,7 @@
 		@if (Model.EnableTranscript)
 		{
 		@:shouldStartTranscribe = true;
-						                                                                                        }
+														                                                                                        }
 
 
 

@@ -17,7 +17,7 @@ namespace RadialReview.Accessors
                 {
                     DateTime now =DateTime.UtcNow;
 
-                    PermissionsUtility.Create(s, caller).EditReviewContainer(reviewContainerId);
+                    PermissionsUtility.Create(s, caller).AdminReviewContainer(reviewContainerId);
 
                     var reviewContainer=s.Get<ReviewsModel>(reviewContainerId);
                     reviewContainer.DeleteTime = now;

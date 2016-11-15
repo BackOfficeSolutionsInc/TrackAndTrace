@@ -257,7 +257,7 @@ namespace RadialReview.Engines
 			Dictionary<long, OrganizationTeamModel> teamLookup = null;
 			var teamMembers = _TeamAccessor.GetTeamMembersAtOrganization(caller, orgId);
 			if (admin){
-				_PermissionsAccessor.Permitted(caller, x => x.ManagingOrganization(caller.Organization.Id).Or(y=>y.EditReviewContainer(reviewsId)));
+				_PermissionsAccessor.Permitted(caller, x => x.ManagingOrganization(caller.Organization.Id).Or(y=>y.AdminReviewContainer(reviewsId)));
 			}else{
 				var subordinateIds =DeepAccessor.Users.GetSubordinatesAndSelf(caller, caller.Id);
 				teamMembers=teamMembers.Where(x => subordinateIds.Contains(x.UserId)).ToList();
@@ -463,6 +463,7 @@ namespace RadialReview.Engines
 		{
 			var legend = Enum.GetValues(typeof(AboutType))
 				.Cast<AboutType>()
+				.Where(x=>x!=AboutType.Teammate && x!=AboutType.Organization)
 				.Select(aboutType => new Scatter.ScatterPoint()
 				{
 					@class = "about-" + aboutType + " point " + aboutType.GetBestShape(),
@@ -921,18 +922,100 @@ namespace RadialReview.Engines
 				return ratio.GetValue(.5m) * 200 - 100;
 			}
 
-			public static PositiveNegativeNeutral MergeValueScores(List<PositiveNegativeNeutral> scores) {
-				if (scores.Any(x => x == PositiveNegativeNeutral.Negative))
-					return PositiveNegativeNeutral.Negative;
-				var valid = scores.Where(x => x != PositiveNegativeNeutral.Indeterminate).ToList();
-				var total = valid.Count;
-				if (total == 0)
-					return PositiveNegativeNeutral.Indeterminate;
-				var pos = valid.Count(x => x == PositiveNegativeNeutral.Positive);
+			public class MergedValueScore {
+				public List<PositiveNegativeNeutral> Scores { get; set; }
+				public CompanyValueModel CoreValue { get; set; }
+				public PositiveNegativeNeutral Merged { get; set; }
+				public PositiveNegativeNeutral AboveBelow {
+					get {
+						if (Above == true)
+							return PositiveNegativeNeutral.Positive;
+						if (Above == false)
+							return PositiveNegativeNeutral.Negative;
+						return PositiveNegativeNeutral.Indeterminate;
+					}
+				}
+				public String InfoMessage { get; set; }
+				public bool Ambiguous { get; set; }
+				public bool? Above { get; set; }
 
-				if (pos / total >= 3.0 / 5.0)
-					return PositiveNegativeNeutral.Positive;
-				return PositiveNegativeNeutral.Neutral;
+				public String GetCompiledMessage() {
+					var builder = new List<String>();
+
+					if (Above == true)
+						builder.Add("Above the bar.");
+
+					if (Above == false)
+						builder.Add("Below the bar.");
+
+					if (Ambiguous)
+						builder.Add("There may not be enough evalutions to say for certain.");
+
+					if (!String.IsNullOrWhiteSpace( InfoMessage))
+						builder.Add(InfoMessage);
+					return string.Join(" ", builder);
+				}
+
+				public MergedValueScore(List<PositiveNegativeNeutral> scores, CompanyValueModel coreValue, PositiveNegativeNeutral merged, bool? above, bool ambiguous, String message) {
+					Scores = scores;
+					CoreValue = coreValue;
+					Merged = merged;
+					InfoMessage = message;
+					Ambiguous = ambiguous;
+					Above = above;
+				}
+
+			}
+			public static MergedValueScore MergeValueScores(List<CompanyValueAnswer> scores, CompanyValueModel value) {
+				var scoresResolved = scores.Distinct(x => Tuple.Create(x.AboutUserId, x.ByUserId, x.Askable.Id)).Select(x=>x.Exhibits).ToList();
+				return MergeValueScores(scoresResolved, value);
+			}
+
+			public static MergedValueScore MergeValueScores(List<PositiveNegativeNeutral> scores,CompanyValueModel value) {
+				
+				if (scores.Any(x => x == PositiveNegativeNeutral.Negative))
+					return new MergedValueScore(scores, value, PositiveNegativeNeutral.Negative, false, false, "Aim for no negatives. A single negative indicates an area of improvement.");
+				var valid = scores.Where(x => x != PositiveNegativeNeutral.Indeterminate).ToList();
+				decimal totalValid = valid.Count;
+				decimal total = scores.Count;
+				if (totalValid == 0) {
+					return new MergedValueScore(scores, value, PositiveNegativeNeutral.Indeterminate, null, true, "No evaluations.");
+				}
+
+				decimal pos = valid.Count(x => x == PositiveNegativeNeutral.Positive);
+				decimal neut = valid.Count(x => x == PositiveNegativeNeutral.Neutral);
+				decimal invalid = valid.Count(x => x == PositiveNegativeNeutral.Indeterminate);
+
+				var theBar = value.MinimumPercentage / 100m;
+				
+				var ambiguous = false;
+
+				///Enough info to say for certain?
+				if (invalid > 0) {
+					var scoreAssumeAllInvalidAsPositive =  (pos+invalid) / total;
+					var scoreAssumeAllInvalidAsNeutral  =   pos/ total;
+
+					var positiveEitherWay = scoreAssumeAllInvalidAsNeutral >= theBar && scoreAssumeAllInvalidAsPositive >= theBar;
+					var neutralEitherWay = scoreAssumeAllInvalidAsNeutral < theBar && scoreAssumeAllInvalidAsPositive < theBar;
+
+					ambiguous = !(positiveEitherWay || neutralEitherWay);
+				}
+
+				if (pos == totalValid)
+					return new MergedValueScore(scores, value, PositiveNegativeNeutral.Positive, true, ambiguous, "");
+
+				if (pos / totalValid >= theBar) {
+					var message = "A rating of +/- may indicate an area of improvement.";
+					if (neut>1)
+						message = "A few ratings of +/- may indicate an area of improvement.";
+					return new MergedValueScore(scores, value, PositiveNegativeNeutral.Positive, true, ambiguous, message);
+				}
+
+				if (totalValid>4 && pos / totalValid >= theBar/2.0m)
+					return new MergedValueScore(scores, value, PositiveNegativeNeutral.Negative, false, ambiguous, "Too many ratings of +/- indicates an area of improvement.");
+
+				return new MergedValueScore(scores, value, PositiveNegativeNeutral.Neutral, false, ambiguous, "Several ratings of +/- indicates an area of improvement.");
+
 			}
 
 			public static FiveState MergeRoleScores(List<FiveState> scores) {

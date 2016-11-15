@@ -30,8 +30,10 @@
 		-ms-border-radius: 50px;
 		border-radius: 50px;
 		margin-top: 1px;
-		cursor: pointer;
 		position: relative;
+	}
+	.table-io.companyValues .fill:not(.score) {
+		cursor: pointer;
 	}
 
 		.table-io.companyValues .fill:before {
@@ -240,6 +242,9 @@
 	content: "NO";
 }*/
 
+
+
+
 .table-io.rocks .fill.Always:after,
 .gwc-details-square .Always:after,
 .roleTable .Always:after,
@@ -270,6 +275,30 @@
 	content: "Never";
 }
 
+
+.fivestate-limit-true .table-io.rocks .fill.Always:after,
+.fivestate-limit-true .gwc-details-square .Always:after,
+.fivestate-limit-true .roleTable .Always:after,
+.fivestate-limit-true .table-io.rocks .fill.True:after,
+.fivestate-limit-true .gwc-details-square .True:after,
+.fivestate-limit-true .roleTable .True:after,
+.fivestate-limit-true .table-io.rocks .fill.Mostly:after,
+.fivestate-limit-true .gwc-details-square .Mostly:after,
+.fivestate-limit-true .roleTable .Mostly:after {
+	content: "Yes";
+}
+
+.fivestate-limit-true .table-io.rocks .fill.Rarely:after,
+.fivestate-limit-true .gwc-details-square .Rarely:after,
+.fivestate-limit-true .roleTable .Rarely:after ,
+.fivestate-limit-true .table-io.rocks .fill.Never:after,
+.fivestate-limit-true .gwc-details-square .Never:after,
+.fivestate-limit-true .roleTable .Never:after,
+.fivestate-limit-true .table-io.rocks .fill.False:after,
+.fivestate-limit-true .gwc-details-square .False:after,
+.fivestate-limit-true .roleTable .False:after {
+	content: "No";
+}
 
 
 
@@ -364,6 +393,11 @@
 		padding: 2px 6px;
 		font-weight: bold;
 		text-align: left;
+
+		margin-left: -25px;
+		margin-right: -15px;
+		margin-top: -20px;
+		margin-bottom: 10px;
 	}
 
 		.table-io .details .header .extra {
@@ -661,7 +695,7 @@ td.alt {
 
 .valueTable .fill {
 	text-align: center;
-	color: #FFF;    
+	color: #FFF;
 	width: 22px;
 }
 
@@ -706,7 +740,6 @@ td.alt {
 }
 
 
-.onlyPrint{
-	display:none;
+.onlyPrint {
+	display: none;
 }
-

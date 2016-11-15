@@ -718,9 +718,9 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult SetVideoProvider(long recur, long provider) {
+		public JsonResult SetVideoProvider(long recur, long provider, string connectionId = null) {
 			L10Accessor.SetVideoProvider(GetUser(), recur, provider);
-			VideoProviderAccessor.StartMeeting(GetUser(), GetUser().User, provider);
+			VideoProviderAccessor.StartMeeting(GetUser(), provider, connectionId);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 

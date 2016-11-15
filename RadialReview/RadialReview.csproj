@@ -208,27 +208,33 @@
     <Compile Include="Accessors\HeadlineAccessor.cs" />
     <Compile Include="Accessors\OrganizationAccessors\JoinOrganizationAccessor.cs" />
     <Compile Include="Accessors\PdfChartAccessor.cs" />
+    <Compile Include="Accessors\ReportAccessor.cs" />
     <Compile Include="Accessors\SearchAccessor.cs" />
+    <Compile Include="Accessors\TinyUserAccessor.cs" />
     <Compile Include="Accessors\VideoConferenceProviders\VideoProviderAccessor.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="Controllers\Ac\AngularAccountabilityController.cs" />
     <Compile Include="Controllers\HeadlinesController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\PdfController.cs" />
+    <Compile Include="Hooks\UpdateRoles_Notifications.cs" />
     <Compile Include="Hooks\UpdateUserModel_TeamNames.cs" />
     <Compile Include="Models\Angular\Base\AngularPicture.cs" />
     <Compile Include="Models\Angular\Headlines\AngularHeadline.cs" />
+    <Compile Include="Models\Angular\Notifications\AngularNotification.cs" />
     <Compile Include="Models\Enums\RGMType.cs" />
     <Compile Include="Models\Enums\VideoConferenceType.cs" />
     <Compile Include="Models\Events\Event.cs" />
     <Compile Include="Models\Issues\HeadlineIssueVM.cs" />
     <Compile Include="Models\L10\PeopleHeadline.cs" />
     <Compile Include="Models\L10\PeopleHeadlineType.cs" />
+    <Compile Include="Notifications\Notification.cs" />
     <Compile Include="Models\Reviews\ValueBar.cs" />
     <Compile Include="Models\Todo\HeadlineTodoVm.cs" />
     <Compile Include="Models\VideoConference\AbstractVCProvider.cs" />
     <Compile Include="Models\VideoConference\JoinedVideo.cs" />
     <Compile Include="Models\VideoConference\ZoomUserLink.cs" />
+    <Compile Include="Notifications\PubSub.cs" />
     <Compile Include="Utilities\EmailUtil.cs" />
     <Compile Include="Controllers\IntegrationsController.cs" />
     <Compile Include="Hooks\BasecampTodoHook.cs" />
@@ -797,6 +803,7 @@
     <Compile Include="Utilities\Hooks\ICreateUserOrganization.cs" />
     <Compile Include="Utilities\Hooks\IDeleteUserOrganizationHook.cs" />
     <Compile Include="Utilities\Hooks\IHook.cs" />
+    <Compile Include="Utilities\Hooks\IRolesHook.cs" />
     <Compile Include="Utilities\Hooks\IUpdateUserModelHook.cs" />
     <Compile Include="Utilities\HtmlUtility.cs" />
     <Compile Include="Utilities\NHibernateHelper.cs" />
@@ -1224,6 +1231,7 @@
     <Content Include="SoftwareUpdates\20160401.txt" />
     <Content Include="SoftwareUpdates\20160201.txt" />
     <Content Include="SoftwareUpdates\20160613.txt" />
+    <Content Include="SoftwareUpdates\20161113.txt" />
     <Content Include="SoftwareUpdates\20161017.txt" />
     <Content Include="SoftwareUpdates\20160927.txt" />
     <Content Include="SoftwareUpdates\20160818.txt" />
@@ -1607,6 +1615,7 @@
     <Content Include="Views\TileData\L10Stats.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\SearchUsers.cshtml" />
     <Content Include="Views\Todo\HeadlineTodoModal.cshtml" />
+    <Content Include="Views\TileData\UserNotifications.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-responsive.css" />
@@ -2043,6 +2052,7 @@
     <Content Include="Views\Issues\HeadlineIssueModal.cshtml" />
     <Content Include="Views\L10\GetAdmins.cshtml" />
     <Content Include="Views\Admin\Events.cshtml" />
+    <Content Include="Views\Notifications\partial\list.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -2336,6 +2346,7 @@
     <Folder Include="Content\fonts\fonts\" />
     <Folder Include="External\" />
     <Folder Include="logs\" />
+    <Folder Include="Models\Notifications\" />
     <Folder Include="Models\Rocks\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
     <Folder Include="Utilities\Migradoc\XYScatter\" />

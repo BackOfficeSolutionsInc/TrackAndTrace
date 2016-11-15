@@ -23,16 +23,25 @@
 	<div class="panel-body numbers">
 		@if (Model.CompanyValues.Any()) {
 			int i = 1;
-			<table>
+			<table class="table table-condensed">
+				@*<tr>
+					<th></th>
+					<th>Value</th>
+					<th colspan="2">The Bar</th>
+				</tr>*@
 				@foreach (var r in Model.CompanyValues) {
 					<tr class="font-size:19px;vertical-align:top;">
-						<td style="vertical-align:top;">@(i).</td>
+						<td style="width:20px">@(i). </td>
 						<td><b>@r.CompanyValue</b></td>
+						<td class="alignCenter" style="width:20px">@(r.MinimumPercentage)%</td>
+						@*<td class="alignCenter" style="width:28px"><span style="display: block;width: 26px;margin-top: 2px;background-color:@r.Minimum.GetRgbColor()" class="label label-default">@r.Minimum.ToShortKey()</span></td>*@
 					</tr>
 					if (!String.IsNullOrWhiteSpace(r.CompanyValueDetails)) {
 						<tr class="font-size:14px;">
 							<td></td>
 							<td>@r.CompanyValueDetails</td>
+							@*<td></td>*@
+							<td></td>
 						</tr>
 					}
 					i++;

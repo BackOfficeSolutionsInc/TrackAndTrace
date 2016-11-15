@@ -421,7 +421,7 @@ profile-image .picture {
   font-size: 30px;
   font-weight: bold;
   color: #E6E6E6;
-  text-shadow: 0px -1px 0px #ffffff;
+  text-shadow: 0px -1px 0px #FFF;
   -webkit-transition: opacity .75s;
 }
 .start-meeting .btn-default {
@@ -448,7 +448,7 @@ profile-image .picture {
   bottom: 0px;
   right: 0px;
   overflow-x: hidden;
-  margin: 5px;
+  margin: 0px;
 }
 .slider-container.static {
   position: static;
@@ -473,11 +473,9 @@ profile-image .picture {
 .slider-container .slider .right-panel {
   position: absolute;
   left: 100%;
-  left: calc(105%);
   top: 0px;
-  bottom: 35px;
+  bottom: 3px;
   width: 100%;
-  width: calc(90%);
   /* overflow-x: hidden; */
 }
 .slider-container .slider .right-panel iframe {
@@ -515,11 +513,11 @@ iframe:not([src="about:blank"]) {
   margin-bottom: 50px;
   background-color: #F8F8F8;
   /* margin: 40px 120px; */
-  width: 70%;
+  /*width: 70%;*/
   height: 160px;
   margin: 30px auto;
   text-align: center;
-  min-width: 300px;
+  /*min-width: 300px;*/
   /* vertical-align: middle; */
 }
 .video-overlay {
@@ -577,6 +575,9 @@ a.editable-click:hover {
     display: inline-block;
     float: right;
     padding: 5px 12px 5px 16px;
+    border: 1px solid #d8d8d8;
+    margin: 1px;
+    font-size: 12px;
   }
   .clock-container,
   .agenda {
@@ -599,4 +600,81 @@ a.editable-click:hover {
   -o-transition: ease 0.16s background-color;
   -webkit-transition: ease 0.16s background-color;
   transition: ease 0.16s background-color;
+}
+.segue .centered {
+  width: 65%;
+  max-width: 600px;
+  margin-top: -22px;
+}
+.segue .component {
+  padding: 20px 70px 30px 70px;
+}
+@media (max-width: 767px) {
+  .segue .centered {
+    width: 100%;
+    max-width: 600px;
+    margin-top: -22px;
+  }
+  .segue .component {
+    padding: 10px 35px 15px 35px;
+  }
+  .segue .component h4 {
+    font-size: 15px;
+  }
+}
+#modalBody .form-control.focus {
+  border-color: #66afe9;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+}
+#modalBody .abstract-details-panel input[type="checkbox"] {
+  width: 13px;
+  height: 13px;
+}
+#modalBody .abstract-details-panel h4 {
+  height: auto;
+  min-height: 34px;
+  color: inherit;
+}
+#modalBody .abstract-details-panel h4 input {
+  word-break: break-word;
+}
+#modalBody .abstract-details-panel .editable-text {
+  border-bottom: none;
+}
+#modalBody .abstract-details-panel .editable-text:hover:after {
+  content: "";
+}
+#modalBody .abstract-details-panel .message {
+  display: inline-block;
+  width: 100%;
+}
+#modalBody .abstract-details-panel .message:hover {
+  border-top: none;
+  border-bottom: none;
+}
+#modalBody .abstract-details-panel .message-input {
+  width: 100%;
+  border-bottom: none;
+}
+#modalBody .abstract-details-panel .heading {
+  width: 100%;
+}
+#modalBody .abstract-details-panel .createTime {
+  display: none;
+}
+#modalBody .details.issue-details,
+#modalBody .details.todo-details,
+#modalBody .details.headline-details {
+  height: 200px !important;
+}
+@media (max-width: 767px) {
+  .conclusion .todo-list .message {
+    width: 70%;
+    width: calc(100% - 52px);
+  }
+  .conclusion .overdue-indicator {
+    display: none;
+  }
 }

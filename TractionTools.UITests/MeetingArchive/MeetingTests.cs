@@ -137,7 +137,7 @@ namespace TractionTools.UITests.MeetingArchive {
 
                 Assert.AreEqual(TODO_TEXT, rows.First().Find(".message").Text);
 
-                Assert.IsTrue(String.IsNullOrWhiteSpace(d.Find(".todoDetails").Text));
+                Assert.IsTrue(String.IsNullOrWhiteSpace(d.Find("#todoDetails").Text));
 
 
                 d.TestScreenshot("TodoPage");
@@ -147,10 +147,10 @@ namespace TractionTools.UITests.MeetingArchive {
 
                 Assert.AreEqual(TODO_TEXT, d.Find(".message-holder").Text);
                 var messageHolder = d.Find(".message-holder");
-                messageHolder.Click();
+                messageHolder.Find("span").Click();
                 var EDITED_TODO = "edited todo";
-                messageHolder.Find("input").SendKeys(Keys.Control + "a");
-                messageHolder.Find("input").SendKeys(EDITED_TODO);
+                messageHolder.Find("textarea").SendKeys(Keys.Control + "a");
+                messageHolder.Find("textarea").SendKeys(EDITED_TODO);
                 d.Find(".level-10").Click();
                 Assert.AreEqual(EDITED_TODO, d.Find(".message-holder span", 2).Text);
                 Assert.AreEqual(EDITED_TODO, todoPage.Find(".todo-row .message").Text);
@@ -185,7 +185,7 @@ namespace TractionTools.UITests.MeetingArchive {
 
                 Assert.AreEqual(ISSUE_TEXT, rows.First().Find(".message").Text);
 
-                Assert.IsTrue(String.IsNullOrWhiteSpace(d.Find(".issueDetails").Text));
+                Assert.IsTrue(String.IsNullOrWhiteSpace(d.Find("#issueDetails").Text));
 
 
                 d.TestScreenshot("IssuePage");
@@ -197,8 +197,8 @@ namespace TractionTools.UITests.MeetingArchive {
                 var messageHolder = d.Find(".message-holder");
                 messageHolder.Find("span").Click();
                 var EDITED_ISSUE = "edited issue";
-                messageHolder.Find("input", d, 2).SendKeys(Keys.Control + "a");
-                messageHolder.Find("input", d, 2).SendKeys(EDITED_ISSUE);
+                messageHolder.Find("textarea", d, 2).SendKeys(Keys.Control + "a");
+                messageHolder.Find("textarea", d, 2).SendKeys(EDITED_ISSUE);
                 d.Find(".level-10").Click();
                 Assert.AreEqual(EDITED_ISSUE, d.Find(".message-holder span", 2).Text);
                 Assert.AreEqual(EDITED_ISSUE, idsPage.Find(".issue-row .message").Text);

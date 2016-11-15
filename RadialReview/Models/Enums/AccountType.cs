@@ -14,6 +14,7 @@ namespace RadialReview.Models.Enums
         [Display(Name="Trial")]
 		Demo=0,
 		Other = 10,
+		SwanServices = 11,
 		Dormant = 20,
 		Cancelled = 30,
 	}

@@ -18,12 +18,6 @@
 	</thead>
 	<tbody>
 		@{
-			/*var gwcs = new[]{
-				Tuple.Create<string,Func<GetWantCapacityAnswer,Tristate>,Func<GetWantCapacityAnswer,string>,Func<GetWantCapacityAnswer,bool>,string>("Gets It",x=>x.GetIt,x=>x.GetItReason,x=>x.IncludeGetItReason,"get"),
-				Tuple.Create<string,Func<GetWantCapacityAnswer,Tristate>,Func<GetWantCapacityAnswer,string>,Func<GetWantCapacityAnswer,bool>,string>("Wants It",x=>x.WantIt,x=>x.WantItReason,x=>x.IncludeWantItReason,"want"),
-				Tuple.Create<string,Func<GetWantCapacityAnswer,Tristate>,Func<GetWantCapacityAnswer,string>,Func<GetWantCapacityAnswer,bool>,string>("Capacity To Do It",x=>x.HasCapacity,x=>x.HasCapacityReason,x=>x.IncludeHasCapacityReason,"capacity")
-						};*/
-
 			var sorter = new Dictionary<PositiveNegativeNeutral, string> { { PositiveNegativeNeutral.Positive, "2" }, { PositiveNegativeNeutral.Neutral, "1" }, { PositiveNegativeNeutral.Negative, "-1" }, { PositiveNegativeNeutral.Indeterminate, "" } };
 			var text = new Dictionary<Tristate, string> { { Tristate.True, "yes" }, { Tristate.Indeterminate, "n/a" }, { Tristate.False, "no" } };
 		}

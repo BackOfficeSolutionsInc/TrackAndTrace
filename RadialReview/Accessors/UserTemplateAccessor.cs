@@ -20,6 +20,8 @@ using RadialReview.Models.UserTemplate;
 using RadialReview.Utilities;
 using WebGrease.Css.Extensions;
 using NHibernate;
+using RadialReview.Hooks;
+using RadialReview.Utilities.Hooks;
 
 namespace RadialReview.Accessors {
 	public class UserTemplateAccessor {
@@ -225,6 +227,7 @@ namespace RadialReview.Accessors {
 				Category = category,
 			};
 			s.Save(rm);
+			HooksRegistry.Each<IRolesHook>(x => x.CreateRole(s, rm));
 
 			s.Save(new RoleLink() {
 				AttachId = template.AttachId,
@@ -392,6 +395,7 @@ namespace RadialReview.Accessors {
 					r.DeleteTime = deleteTime;
 					s.Update(r);
 
+					HooksRegistry.Each<IRolesHook>(x => x.UpdateRole(s, r));
 					//foreach (var r in roles) {
 					//	r.Role = role;
 					//	r.DeleteTime = deleteTime;

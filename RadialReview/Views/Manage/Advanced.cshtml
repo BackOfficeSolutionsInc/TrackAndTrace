@@ -185,16 +185,16 @@
 						<td style="border-top:1px solid #f1f1f1"></td>
 					</tr>
 
-						<tr>
-							<th>Extras</th>
-							<td>
-								<ul style="margin-left:-1px;padding-left: 0px;">
-									@foreach (var e in extras) {
-										@e
-									}
-								</ul>
-							</td>
-						</tr>
+					<tr>
+						<th>Extras</th>
+						<td>
+							<ul style="margin-left:-1px;padding-left: 0px;">
+								@foreach (var e in extras) {
+									@e
+								}
+							</ul>
+						</td>
+					</tr>
 
 				}
 
@@ -280,7 +280,7 @@
 
 				<div class="row">
 					<div class="col-xs-5  ttt">
-						<label class="control-label">Managers can edit their accountabilities:</label>
+						<label class="control-label">@RadialReview.Utilities.Config.ManagerName()s can edit their accountabilities:</label>
 					</div>
 					<div class="col-xs-3">
 						@Html.CheckBoxFor(x => x.ManagersCanEditSelf, new { @class = "checkbox" })
@@ -297,7 +297,7 @@
 				</div>
 				<div class="row">
 					<div class="col-xs-5  ttt">
-						<label class="control-label">Managers can remove users:</label>
+						<label class="control-label">@RadialReview.Utilities.Config.ManagerName()s can remove users:</label>
 					</div>
 					<div class="col-xs-3">
 						@Html.CheckBoxFor(x => x.ManagersCanRemoveUsers, new { @class = "checkbox" })
@@ -305,17 +305,32 @@
 				</div>
 				<div class="row">
 					<div class="col-xs-5  ttt">
-						<label class="control-label">Managers can edit positions:</label>
+						<label class="control-label">@RadialReview.Utilities.Config.ManagerName()s can edit positions:</label>
 					</div>
 					<div class="col-xs-3">
 						@Html.CheckBoxFor(x => x.ManagersCanEditPositions, new { @class = "checkbox" })
 					</div>
 				</div>
 
+				@if (ViewBag.ShowReview) {
+					<div class="row">
+						<div class="col-xs-5  ttt">
+							<label class="control-label">Limited granularity on evals for GWC: </label>
+						</div>
+						<div class="col-xs-3">
+							@Html.CheckBoxFor(x => x.LimitFiveState, new { @class = "checkbox inlineBlock" })
+							<abbr style="top: -5px;position: relative;"class="info" title="When checked, users evaluate GWC with Yes and No. Unchecked, users evaluated with Always, Mostly, Rarely and Never"></abbr>
+						</div>
+					</div>
+
+				} else {
+					@Html.HiddenFor(x => x.LimitFiveState)
+				}
+
 				@if (ViewBag.ShowSurvey == true) {
 					<div class="row">
 						<div class="col-xs-5  ttt">
-							<label class="control-label">Managers can create survey:</label>
+							<label class="control-label">@RadialReview.Utilities.Config.ManagerName()s can create survey:</label>
 						</div>
 						<div class="col-xs-3">
 							@Html.CheckBoxFor(x => x.ManagersCanCreateSurvey, new { @class = "checkbox" })
@@ -374,6 +389,14 @@
 				</div>
 				<div class="row">
 					<div class="col-xs-5  ttt">
+						<label class="control-label">Default Time to send To-do Email:</label>
+					</div>
+					<div class="col-xs-3">
+						@Html.DropDownListFor(x => x.DefaultSendTodoTime, Model.PossibleTodoTimes, new { @class = "form-control" })
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-5  ttt">
 						<label class="control-label">Year Start:</label>
 					</div>
 					<div class="col-xs-3">
@@ -400,7 +423,7 @@
 			</div>
 		</div>
 	</div>
-}
+								}
 
 
 
@@ -441,7 +464,7 @@
 			if (newStatus == true) {
 				showModal({
 					icon: "warning",
-					title: "This gives managers all admin abilities. Are you sure you want to do this?",
+					title: "This gives supervisors all admin abilities. Are you sure you want to do this?",
 					success: function () {
 
 					},

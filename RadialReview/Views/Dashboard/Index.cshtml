@@ -155,16 +155,17 @@
         }
         @*<li><a onclick="createTile('/TileData/UserTodo2','Url')">To-do List</a></li>*@
 
-        <li><a onclick="createTile('/TileData/UserTodo2','Url')">To-do List</a></li>
-        <li><a onclick="createTile('/TileData/UserScorecard2','Url')">Scorecard</a></li>
-        <li><a onclick="createTile('/TileData/UserRock2','Url')">@Html.Organization().Settings.RockName</a></li>
-        <li><a onclick="createTile('/TileData/UserRoles','Url')">Roles</a></li>
+        <li><a onclick="createTile('/TileData/UserTodo2','Url')">My To-do List</a></li>
+        <li><a onclick="createTile('/TileData/UserScorecard2','Url')">My Scorecard</a></li>
+        <li><a onclick="createTile('/TileData/UserRock2','Url')">My @Html.Organization().Settings.RockName</a></li>
+        <li><a onclick="createTile('/TileData/UserRoles','Url')">My Roles</a></li>
         <li><a onclick="createTile('/TileData/OrganizationValues','Url')">Core Values</a></li>
         @if (ViewBag.IsManager) {
-            <li><a onclick=" createTile('/TileData/UserManage2', 'Url') ">Direct Reports</a></li>
+            <li><a onclick="createTile('/TileData/UserManage2', 'Url') ">Direct Reports</a></li>
         }
         <li><a onclick="createTile('/TileData/UserProfile2','Url')">Profile Picture</a></li>
-        <li><a onclick="createTile('/TileData/UserNotes','Url')">Personal Notes</a></li>
+		<li><a onclick="createTile('/TileData/UserNotes','Url')">Personal Notes</a></li>
+		<!--<li><a onclick="createTile('/TileData/UserNotifications','Url')">Notifications</a></li>-->
         @*<li><a onclick="createTile('/TileData/UserButtons','Url')">Quick Links</a></li>*@
         <li><a onclick="createTile('/TileData/SoftwareUpdates','Url')">Software Updates</a></li>
         <li class="divider"></li>

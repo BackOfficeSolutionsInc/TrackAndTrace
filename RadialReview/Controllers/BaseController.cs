@@ -44,7 +44,7 @@ using System.Drawing.Text;
 using RadialReview.NHibernate;
 using System.Threading.Tasks;
 using System.Net.Mime;
-
+using System.Text.RegularExpressions;
 
 namespace RadialReview.Controllers {
 	public class UserManagementController : BaseController {
@@ -338,6 +338,10 @@ namespace RadialReview.Controllers {
 				throw new RedirectException("Return URL is invalid.");
 		}
 
+		private static string CleanFileName(string fileName) {
+			return Path.GetInvalidFileNameChars().Aggregate(fileName, (current, c) => current.Replace(c.ToString(), string.Empty));
+		}
+
 		protected ActionResult Pdf(PdfDocument document, string name = null, bool inline = true) {
 			//var stream = new MemoryStream();
 			////try {
@@ -369,10 +373,18 @@ namespace RadialReview.Controllers {
 			//return new FileStreamResult(Response.OutputStream, "application/pdf");
 
 			//XPdfFontOptions opt = new XPdfFontOptions(PdfFontEmbedding.Default);
+			name = name ?? document.Info.Title;
+
 			MemoryStream stream = new MemoryStream();
 			document.Save(stream, false);
 			Response.Clear();
 			Response.ContentType = "application/pdf";
+			if (name != null) {
+				if (!name.ToLower().EndsWith(".pdf"))
+					name += ".pdf";
+				name = CleanFileName(name);
+				Response.AddHeader("Content-Disposition", "filename=\"" + name + "\"");
+			}
 			Response.AddHeader("content-length", stream.Length.ToString());
 			Response.BinaryWrite(stream.ToArray());
 			//Response.Flush();
@@ -679,7 +691,7 @@ namespace RadialReview.Controllers {
 								if (u2.Organization.DeleteTime != null)
 									throw new PermissionsException("This organization no longer exists.");
 								if (!u2.IsManager())
-									throw new PermissionsException("You must be a manager to view this resource.");
+									throw new PermissionsException("You must be a "+Config.ManagerName()+" to view this resource.");
 								break;
 							case AccessLevel.Radial:
 								if (!(GetUserModel(s).IsRadialAdmin || GetUser(s).IsRadialAdmin))
@@ -757,6 +769,7 @@ namespace RadialReview.Controllers {
 							filterContext.Controller.ViewBag.Organization = null;
 							filterContext.Controller.ViewBag.UserId = 0L;
 							filterContext.Controller.ViewBag.ConsoleLog = false;
+							filterContext.Controller.ViewBag.LimitFiveState = true;
 
 							if (oneUser != null) {
 								var name = new HtmlString(oneUser.GetName());
@@ -785,6 +798,7 @@ namespace RadialReview.Controllers {
 								filterContext.Controller.ViewBag.ShowReview = oneUser.Organization.Settings.EnableReview && !oneUser.IsClient;
 								filterContext.Controller.ViewBag.ShowSurvey = oneUser.Organization.Settings.EnableSurvey && oneUser.IsManager();
 								var isManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
+								filterContext.Controller.ViewBag.LimitFiveState = oneUser.Organization.Settings.LimitFiveState;
 								filterContext.Controller.ViewBag.IsManager = isManager;
 								filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
 								filterContext.Controller.ViewBag.UserId = oneUser.Id;

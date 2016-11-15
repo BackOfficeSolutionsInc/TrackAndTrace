@@ -138,7 +138,7 @@ namespace RadialReview.Controllers
 			if (ModelState.IsValid)
 			{
 
-				var allMembers = OrganizationAccessor.GetMembers_Tiny(GetUser(), GetUser().Organization.Id).Select(x=>x.UserOrgId);
+				var allMembers = TinyUserAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id).Select(x=>x.UserOrgId);
 
                 List<long> attendees = new List<long>();
                 if (model.Attendees!=null)

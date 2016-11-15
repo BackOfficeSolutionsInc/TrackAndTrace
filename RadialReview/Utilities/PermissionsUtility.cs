@@ -748,7 +748,7 @@ namespace RadialReview.Utilities {
 		#endregion
 
 		#region Review
-		public PermissionsUtility EditReviewContainer(long reviewContainerId) {
+		public PermissionsUtility AdminReviewContainer(long reviewContainerId) {
 			//TODO more permissions here?
 			if (IsRadialAdmin(caller))
 				return this;
@@ -1478,6 +1478,8 @@ namespace RadialReview.Utilities {
 				return ViewL10Recurrence(model.ModelId);
 			if (model.ModelType == ForModel.GetModelType<UserOrganizationModel>())
 				return ViewUserOrganization(model.ModelId, false);
+			if (model.ModelType == ForModel.GetModelType<OrganizationModel>())
+				return ViewOrganization(model.ModelId);
 			throw new PermissionsException("ModelType unhandled");
 		}
 		#endregion

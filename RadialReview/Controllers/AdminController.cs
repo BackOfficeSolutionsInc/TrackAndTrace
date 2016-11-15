@@ -40,6 +40,8 @@ using OxyPlot;
 using RadialReview.Models.Onboard;
 using RadialReview.Models.Events;
 using RadialReview.Utilities.DataTypes;
+using RadialReview.Notifications;
+using RadialReview.Models.Components;
 
 namespace RadialReview.Controllers {
 
@@ -146,10 +148,10 @@ namespace RadialReview.Controllers {
 
 					s.Update(main.User);
 
-				//	tx.Commit();
-				//}
+					//	tx.Commit();
+					//}
 
-				//using (var tx = s.BeginTransaction()) {
+					//using (var tx = s.BeginTransaction()) {
 
 					merge.EmailAtOrganization = email;
 
@@ -259,6 +261,196 @@ namespace RadialReview.Controllers {
 			}
 			return Content(string.Join("<br/>", messages));
 		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<ActionResult> ResetSwanServices(long id) {
+			var recurId = id;
+			if (GetUser().Organization.AccountType == AccountType.SwanServices) {
+				//fall through
+			} else {
+				throw new PermissionsException("Must be a Swan Services account");
+			}
+
+			var issues = new[] {
+				"Working outside the Core Focus",
+				"Scorecards & Measurables for all",
+				"Marketing Process",
+				"Technical Training",
+				"Revise financial department structure",
+				"Finance Department Level 10 Meeting",
+				"Accounting Software",
+				"Next Generation Technology",
+
+			};
+			var todos = new[] {
+				"Review Sales Process with Sales Team",
+				"Meet with Acme Industries for lunch",
+				"Schedule meeting with Dan",
+				"Send quote to 3 New Prospects",
+				"Find three possible locations for new HQ",
+				"Create Incentive plan for Sales Team (Rough Draft)",
+				"Create and email new clients technology solutions",
+				"Make sure entire team is following Marketing Core Process",
+				"Call Amber to schedule meeting",
+				"Meet with Carol in Finance",
+			};
+
+
+
+
+
+			//var recurId = 1;
+			var recur = L10Accessor.GetAngularRecurrence(GetUser(), recurId);
+			var possibleUsers = recur.Attendees.Select(x => x.Id).ToList();
+			possibleUsers.Add(GetUser().Id);
+
+			var addedTodos = 0;
+			var addedIssues = 0;
+			var addedScores = 0;
+			var deletedTodos = 0;
+			var deletedIssues = 0;
+			var deletedScores = 0;
+			var deletedHeadlines = 0;
+
+			DateTime start = DateTime.UtcNow;
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var recur1 = s.Get<L10Recurrence>(recurId);
+
+					if (recur1.OrganizationId != GetUser().Organization.Id)
+						throw new PermissionsException("Recurrence not part of organization");
+
+
+
+					var r = new Random(22586113);
+					var u1 = recur.Attendees.ToList()[r.Next(recur.Attendees.Count() - 1)];
+					var u2 = recur.Attendees.ToList()[r.Next(recur.Attendees.Count() - 1)];
+					var u3 = recur.Attendees.ToList()[r.Next(recur.Attendees.Count() - 1)];
+
+					var headlines = new[] {
+						new {Message ="Huge Deal Closed With New Client", AboutId = (long?)u1.Id, AboutName = u1.Name, About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(u1.Id)},
+						new {Message ="Jenny had her Baby!!It's A BOY!!!", AboutId = (long?)u2.Id, AboutName = u2.Name, About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(u2.Id)},
+						new {Message ="8 New Prospects from Business Convention", AboutId = (long?)u3.Id, AboutName = u3.Name, About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(u3.Id)},
+						//new {Message ="Team pulled together after a customer shipment was lost", AboutId = (long?)644, AboutName = "Fulfillment Team", About=(ResponsibilityGroupModel)s.Load<OrganizationTeamModel>(644L)}
+					};
+
+
+					//if (recur1.OrganizationId != 592)
+					//	throw new Exception("Cannot edit meetings outside of Gart Sports");
+					var me = GetUser().Organization.Members.FirstOrDefault() ?? GetUser();
+					var caller = s.Get<UserOrganizationModel>(me.Id);
+					var perms = PermissionsUtility.Create(s, caller);
+
+
+					foreach (var at in recur.Todos.Where(x => !x.Complete.Value)) {
+						var todo = s.Load<TodoModel>(at.Id);
+						todo.CompleteTime = DateTime.MinValue;
+						s.Update(todo);
+						deletedTodos += 1;
+					}
+					var createTime = DateTime.UtcNow.AddDays(-5);
+					foreach (var todo in todos) {
+						var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
+						await TodoAccessor.CreateTodo(s, perms, recurId, new Models.Todo.TodoModel {
+							AccountableUserId = possibleUsers[r.Next(possibleUsers.Count - 1)],
+							Message = todo,
+							ForRecurrenceId = recurId,
+							DueDate = DateTime.UtcNow.AddDays(r.Next(1, 2)),
+							CompleteTime = complete,
+							CreateTime = createTime,
+							OrganizationId = caller.Organization.Id,
+						});
+						createTime = createTime.AddMinutes(r.Next(3, 8));
+						addedTodos += 1;
+					}
+
+
+					foreach (var at in recur.IssuesList.Issues.Where(x => !x.Complete.Value)) {
+						var issue = s.Load<IssueModel.IssueModel_Recurrence>(at.Id);
+						issue.CloseTime = DateTime.MinValue;
+						s.Update(issue);
+						deletedIssues += 1;
+					}
+
+
+					foreach (var h in recur.Headlines) {
+						var headline = s.Load<PeopleHeadline>(h.Id);
+						headline.CloseTime = DateTime.MinValue;
+						s.Update(headline);
+						deletedHeadlines += 1;
+					}
+
+					createTime = DateTime.UtcNow.AddDays(-5);
+					foreach (var issue in issues) {
+						//var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
+						var owner = possibleUsers[r.Next(possibleUsers.Count - 1)];
+						await IssuesAccessor.CreateIssue(s, perms, recurId, owner, new IssueModel {
+							Message = issue,
+							OrganizationId = caller.Organization.Id,
+							CreateTime = createTime,
+						});
+						createTime = createTime.AddMinutes(r.Next(5, 15));
+						addedIssues += 1;
+					}
+
+
+
+
+					foreach (var h in headlines) {
+						//var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
+						var owner = possibleUsers[r.Next(possibleUsers.Count - 1)];
+						await HeadlineAccessor.CreateHeadline(s, perms, new PeopleHeadline {
+							Message = h.Message,
+							AboutId = h.AboutId,
+							AboutName = h.AboutName,
+							OwnerId = owner,
+							RecurrenceId = recurId,
+							About = h.About,
+							Owner = s.Load<UserOrganizationModel>(owner),
+
+
+							OrganizationId = caller.Organization.Id,
+							CreateTime = createTime,
+						});
+						createTime = createTime.AddMinutes(r.Next(5, 15));
+						addedIssues += 1;
+					}
+
+
+
+					var current = recur.Scorecard.Weeks.FirstOrDefault(x => x.IsCurrentWeek).ForWeekNumber;
+					var emptyMeasurable = recur.Scorecard.Measurables.ElementAtOrDefault(r.Next(recur.Scorecard.Measurables.Count() - 1)).NotNull(x => x.Id);
+
+					foreach (var angScore in recur.Scorecard.Scores.Where(x => x.ForWeek > current - 13)) {
+						if (angScore.Id > 0) {
+							if (angScore.ForWeek == current && angScore.Measurable.Id == emptyMeasurable) {
+								var score = s.Load<ScoreModel>(angScore.Id);
+								score.Measured = null;
+								s.Update(score);
+								deletedScores += 0;
+
+							} else if (angScore.Measured == null) {
+								var score = s.Load<ScoreModel>(angScore.Id);
+								double stdDev = (double)(angScore.Measurable.Target.Value * (angScore.Measurable.Id.GetHashCode() % 5 * 2 + 1) / 100.0m);
+								double mean = (double)angScore.Measurable.Target.Value;
+								score.Measured = (decimal)Math.Floor(100 * r.NextNormal(mean, stdDev)) / 100m;
+								s.Update(score);
+								addedScores += 1;
+							}
+						}
+
+					}
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			var duration = (DateTime.UtcNow - start).TotalSeconds;
+
+			return Content("Todos: +" + addedTodos + "/-" + deletedTodos + " <br/>Issues: +" + addedIssues + "/-" + deletedIssues + " <br/>Scores: +" + addedScores + "/-" + deletedScores + " <br/>Duration: " + duration + "s");
+		}
+
 
 
 		[Access(AccessLevel.UserOrganization)]
@@ -377,7 +569,7 @@ namespace RadialReview.Controllers {
 							RecurrenceId = recurId,
 							About = h.About,
 							Owner = s.Load<UserOrganizationModel>(owner),
-							
+
 
 							OrganizationId = caller.Organization.Id,
 							CreateTime = createTime,
@@ -481,6 +673,15 @@ namespace RadialReview.Controllers {
 			//var server = NetworkAccessor.GetPublicIP();//Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
 			var server = Amazon.EC2.Util.EC2Metadata.InstanceId.ToString();
 			return Content(version.ToString() + " <br/> " + date.ToString("U") + " <br/><br/> " + server);
+		}
+
+
+		[Access(AccessLevel.Radial)]
+		public ActionResult Subscribe(long org,NotificationKind kind) {
+
+			PubSub.Subscribe(GetUser(), GetUser().Id, ForModel.Create<OrganizationModel>(org), kind);
+
+			return Content("Subscribed");
 		}
 
 

@@ -3,69 +3,73 @@
 @model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
 
 <!--GWCDetails.cshtml-->
-<div class="gwc-details details">
-	@{
-		var found = Model.AnswersAbout.Where(x => x is GetWantCapacityAnswer).Cast<GetWantCapacityAnswer>().Where(x => x.Askable.Id == ViewBag.RoleId);
-		var titleGWC = new Dictionary<string, string> { { "get", "Gets It" }, { "want", "Wants It" }, { "capacity", "Capacity To Do It" } };
-		var lookup = new Dictionary<string, Func<GetWantCapacityAnswer, FiveState>> { { "get", x => x.GetIt }, { "want", x => x.WantIt }, { "capacity", x => x.HasCapacity } };
-		var lookupReason = new Dictionary<string, Func<GetWantCapacityAnswer, string>> { { "get", x => x.GetItReason }, { "want", x => x.WantItReason }, { "capacity", x => x.HasCapacityReason } };
+<div class="table-io">
+	<div class="gwc-details details">
+		@{
+			var found = Model.AnswersAbout.Where(x => x is GetWantCapacityAnswer).Cast<GetWantCapacityAnswer>().Where(x => x.Askable.Id == ViewBag.RoleId);
+			var titleGWC = new Dictionary<string, string> { { "get", "Gets It" }, { "want", "Wants It" }, { "capacity", "Capacity To Do It" } };
+			var lookup = new Dictionary<string, Func<GetWantCapacityAnswer, FiveState>> { { "get", x => x.GetIt }, { "want", x => x.WantIt }, { "capacity", x => x.HasCapacity } };
+			var lookupReason = new Dictionary<string, Func<GetWantCapacityAnswer, string>> { { "get", x => x.GetItReason }, { "want", x => x.WantItReason }, { "capacity", x => x.HasCapacityReason } };
 
-	}
+		}
 
-	@if (found.Any())
-	{
-		<div class="header">@found.First().Askable.GetQuestion(): <span class="extra">@titleGWC[ViewBag.GWC]</span></div>
-		<table>
-			<thead>
-				<tr>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var i in found.OrderBy(x => String.IsNullOrWhiteSpace(lookupReason[ViewBag.GWC](x))).ThenByDescending(x => (int)lookup[ViewBag.GWC](x))
-					.GroupBy(x => x.ByUserId + "_" + x.Askable.Id).Select(x => x.First()))
-				{
-					<tr class="gwc-row @lookup[ViewBag.GWC](i)">
-						<td class="gwc-min">@i.ByUser.GetName():</td>
-						<td class="gwc-details-square gwc-min">
-							<div class="fill @lookup[ViewBag.GWC](i)"></div>
-						</td>
-						<td class="reason">
-							@if (!String.IsNullOrWhiteSpace(lookupReason[ViewBag.GWC](i))){
-								<span style="font-style: italic">
-									"@lookupReason[ViewBag.GWC](i)"
-								</span>
-							}
-						</td>
-						<td>
-							@{
-								var check = "";
-								switch((string)ViewBag.GWC){
-									case "get":check = i.IncludeGetItReason ? "checked" : "";break;
-									case "want":check = i.IncludeWantItReason ? "checked" : "";break;
-									case "capacity":check = i.IncludeHasCapacityReason ? "checked" : "";break;
-									default: throw new Exception((string) ViewBag.GWC);
-								}
-							}
-							@if (!String.IsNullOrWhiteSpace(lookupReason[ViewBag.GWC](i))){
-								@:<input class="gwc_@(i.Id)_@(ViewBag.GWC)" type="checkbox" onclick="toggleGWC(this, @(i.Id))" @(check)/>
-							}
-						</td>
+		@if (found.Any()) {
+			<div class="header">@found.First().Askable.GetQuestion(): <span class="extra">@titleGWC[ViewBag.GWC]</span></div>
+			<table>
+				<thead>
+					<tr>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
 					</tr>
+				</thead>
+				<tbody>
+					@foreach (var i in found.OrderBy(x => String.IsNullOrWhiteSpace(lookupReason[ViewBag.GWC](x))).ThenByDescending(x => (int)lookup[ViewBag.GWC](x))
+				.GroupBy(x => x.ByUserId + "_" + x.Askable.Id).Select(x => x.First())) {
+						<tr class="gwc-row @lookup[ViewBag.GWC](i)">
+							<td class="gwc-min">@i.ByUser.GetName():</td>
+							<td class="gwc-details-square gwc-min">
+								<div class="fill @lookup[ViewBag.GWC](i)"></div>
+							</td>
+							<td class="reason">
+								@if (!String.IsNullOrWhiteSpace(lookupReason[ViewBag.GWC](i))) {
+									<span style="font-style: italic">
+										"@lookupReason[ViewBag.GWC](i)"
+									</span>
+								}
+							</td>
+							<td>
+								@{
+									var check = "";
+									switch ((string)ViewBag.GWC) {
+										case "get":
+											check = i.IncludeGetItReason ? "checked" : "";
+											break;
+										case "want":
+											check = i.IncludeWantItReason ? "checked" : "";
+											break;
+										case "capacity":
+											check = i.IncludeHasCapacityReason ? "checked" : "";
+											break;
+										default:
+											throw new Exception((string)ViewBag.GWC);
+									}
+								}
+								@if (!String.IsNullOrWhiteSpace(lookupReason[ViewBag.GWC](i))) {
+									@:<input class="gwc_@(i.Id)_@(ViewBag.GWC)" type="checkbox" onclick="toggleGWC(this, @(i.Id))" @(check) />
+							}
+							</td>
+						</tr>
 				}
-			</tbody>
-		</table>
+				</tbody>
+			</table>
 
-	}
-	else
-	{
-		<div class="gray">No data.</div>
-	}
+									} else {
+										<div class="gray">No data.</div>
+									}
+	</div>
 </div>
-
 <script>
 	function toggleGWC(s, id) {
 		var found = $(s).prop("checked");

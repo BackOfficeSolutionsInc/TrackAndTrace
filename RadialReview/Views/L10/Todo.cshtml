@@ -15,7 +15,7 @@
 							<div class="btn btn-default btn-xs detailsBtn sm" title='Hide details'><span class="icon fontastic-icon-arrows-in"></span></div>
 							<div class="btn btn-default btn-xs detailsBtn lg" title='Show details'><span class="icon fontastic-icon-arrows-out"></span></div>
 						</div>*@
-					<div class="btn-group">
+					<div class="btn-group smallBreak">
 						<a class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 							<span class="icon fontastic-icon-sort-alpha-two"></span> <span class="sort-button">Sort </span>
 						</a> 
@@ -33,7 +33,7 @@
 
 					@Html.Partial("partial/ButtonBar", Model)
 				</div>
-				<h2>To-do List <small class="todo-completion-percentage"></small></h2>
+				<h2 class="l10-page-title">To-do List <small class="todo-completion-percentage"></small></h2>
 			</hgroup>
             <div class="todo-container " style="margin-bottom:128px;">
                 <ol class="todo-list sortable init-@(guid)">
@@ -44,14 +44,14 @@
                 </ol>
             </div>
 		</div>
-		<div class="col-md-4">
+		<div class="col-md-4 hidden-xs hidden-sm">
 			<div class="hidden-lg hidden-md" style="height: 25px;"></div>
 			<div style="">
 				<div class="fixed-pos">
 					<hgroup class="page-header details">
 						<h4>Notes</h4>
 					</hgroup>
-					<div class="component todoDetails" id="todoDetails"></div>
+					<div class="component" id="todoDetails"></div>
 				</div>
 			</div>
 		</div>

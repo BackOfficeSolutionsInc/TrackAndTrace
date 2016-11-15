@@ -12,14 +12,11 @@ using NHibernate.Criterion;
 using RadialReview.Models.Askables;
 using RadialReview.Utilities;
 
-namespace RadialReview.Accessors
-{
-	public class FastReviewQueries
-	{
+namespace RadialReview.Accessors {
+	public class FastReviewQueries {
 
 
-		public class UserReviewRoleValues
-		{
+		public class UserReviewRoleValues {
 			public long UserId { get; set; }
 			public Ratio GetIt { get; set; }
 			public Ratio WantIt { get; set; }
@@ -28,8 +25,7 @@ namespace RadialReview.Accessors
 			public long ValueNeutral { get; set; }
 			public long ValueNegative { get; set; }
 
-			public UserReviewRoleValues(long userId)
-			{
+			public UserReviewRoleValues(long userId) {
 				GetIt = new Ratio();
 				WantIt = new Ratio();
 				HasCapacity = new Ratio();
@@ -37,8 +33,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public class ReviewIncomplete
-		{
+		public class ReviewIncomplete {
 			public long reviewId { get; set; }
 			public long numberIncomplete { get; set; }
 		}
@@ -64,6 +59,7 @@ namespace RadialReview.Accessors
 		}
 
 		public class PeopleAnalyzer {
+
 			public List<PeopleAnalyzerRow> Rows { get; set; }
 			public List<CompanyValueModel> Values { get; set; }
 			public List<TinyUser> Users { get; set; }
@@ -74,14 +70,14 @@ namespace RadialReview.Accessors
 			//private void MakeDict() {
 			//	if (Users
 			//}
-			
+
 			public TinyUser GetUser(PeopleAnalyzerRow row) {
 				return Users.FirstOrDefault(x => x.UserOrgId == row.UserId);
 			}
 
 		}
 
-		public static PeopleAnalyzer PeopleAnalyzerData(UserOrganizationModel caller,long reviewContainerId) {
+		public static PeopleAnalyzer PeopleAnalyzerData(UserOrganizationModel caller, long reviewContainerId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
@@ -89,18 +85,19 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
-		public static PeopleAnalyzer PeopleAnalyzerData(ISession s,PermissionsUtility perms, long reviewContainerId) {
+		public static PeopleAnalyzer PeopleAnalyzerData(ISession s, PermissionsUtility perms, long reviewContainerId) {
 
 			var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
 
-			perms.Or(x=>x.EditReviewContainer(reviewContainerId),x=>x.ManagingOrganization(reviewContainer.ForOrganizationId));
+			perms.Or(x => x.AdminReviewContainer(reviewContainerId), x => x.ManagingOrganization(reviewContainer.ForOrganizationId));
 
 
 			var valueAnswers = s.QueryOver<CompanyValueAnswer>().Where(x => x.DeleteTime == null && x.ForReviewContainerId == reviewContainerId && x.Complete)
 				.Select(
 					Projections.Property<CompanyValueAnswer>(x => x.AboutUserId),
 					Projections.Property<CompanyValueAnswer>(x => x.Askable.Id),
-					Projections.Property<CompanyValueAnswer>(x => x.Exhibits)
+					Projections.Property<CompanyValueAnswer>(x => x.Exhibits),
+					Projections.Property<CompanyValueAnswer>(x => x.ByUserId)
 				).Future<object[]>();
 			var roleAnswers = s.QueryOver<GetWantCapacityAnswer>().Where(x => x.DeleteTime == null && x.ForReviewContainerId == reviewContainerId && (x.GetIt != FiveState.Indeterminate || x.WantIt != FiveState.Indeterminate || x.HasCapacity != FiveState.Indeterminate))
 				.Select(
@@ -108,16 +105,20 @@ namespace RadialReview.Accessors
 					Projections.Property<GetWantCapacityAnswer>(x => x.Askable.Id),
 					Projections.Property<GetWantCapacityAnswer>(x => x.GetIt),
 					Projections.Property<GetWantCapacityAnswer>(x => x.WantIt),
-					Projections.Property<GetWantCapacityAnswer>(x => x.HasCapacity)
+					Projections.Property<GetWantCapacityAnswer>(x => x.HasCapacity),
+					Projections.Property<GetWantCapacityAnswer>(x => x.ByUserId)
 				).Future<object[]>();
 
 
-			var users = OrganizationAccessor.GetMembers_Tiny(s, perms, reviewContainer.ForOrganizationId);
+			var users = TinyUserAccessor.GetOrganizationMembers(s, perms, reviewContainer.ForOrganizationId);
 			var values = s.QueryOver<CompanyValueModel>().Where(x => x.DeleteTime == null && x.OrganizationId == reviewContainer.ForOrganizationId).List().ToList();
 
 			var o = new DefaultDictionary<long, PeopleAnalyzerRow>(x => new PeopleAnalyzerRow() { UserId = x });
 
-			foreach (var va in valueAnswers.ToList()) {
+			var valueAnswersResolved = valueAnswers.Distinct(x => Tuple.Create(x[3], x[0], x[1])).ToList();
+			var roleAnswersResolved = roleAnswers.Distinct(x => Tuple.Create(x[5], x[0], x[1])).ToList();
+
+			foreach (var va in valueAnswersResolved) {
 				var userId = (long)va[0];
 				var askable = (long)va[1];
 				var exhibits = (PositiveNegativeNeutral)va[2];
@@ -127,7 +128,7 @@ namespace RadialReview.Accessors
 				});
 			}
 
-			foreach (var va in roleAnswers.ToList()) {
+			foreach (var va in roleAnswersResolved) {
 				var userId = (long)va[0];
 				var askable = (long)va[1];
 				var g = (FiveState)va[2];
@@ -166,8 +167,7 @@ namespace RadialReview.Accessors
 		}
 
 
-		public static List<ReviewIncomplete> AnyUnansweredReviewQuestions(ISession s, IEnumerable<long> reviewIds)
-		{
+		public static List<ReviewIncomplete> AnyUnansweredReviewQuestions(ISession s, IEnumerable<long> reviewIds) {
 			s.Flush();
 
 			var query =
@@ -180,14 +180,13 @@ group by a.ForReviewId";
 
 			var result = s.CreateSQLQuery(query).SetParameterList("reviewIds", reviewIds).List<object[]>();
 
-			var output = reviewIds.Select(x => new ReviewIncomplete{reviewId = (long) x, numberIncomplete = result.SingleOrDefault(y=>(long)y[0]==x).NotNull(y=>(long)y[1])}).ToList();
+			var output = reviewIds.Select(x => new ReviewIncomplete { reviewId = (long)x, numberIncomplete = result.SingleOrDefault(y => (long)y[0] == x).NotNull(y => (long)y[1]) }).ToList();
 			//var o = result.Select(x => new ReviewIncomplete { reviewId = (long)x[0], numberIncomplete = (long)x[1] }).ToList();
 			return output;
 		}
 
 
-		public static List<UserReviewRoleValues> GetAllRoleValues(ISession s, long reviewContainerId)
-		{
+		public static List<UserReviewRoleValues> GetAllRoleValues(ISession s, long reviewContainerId) {
 			var roleQuery =
 @"select
 	a.AboutUserId,
@@ -211,8 +210,8 @@ from GetWantCapacityAnswer as g
 	Inner Join AnswerModel as a On a.Id = g.AnswerModel_id
 Where a.ForReviewContainerId = (:reviewsId)
 group by a.AboutUserId";
-			
-			var valueQuery = 
+
+			var valueQuery =
 @"select
 	a.AboutUserId,
 	SUM(if(g.Exhibits = 'Positive', 1, 0)) as Positive,
@@ -228,7 +227,7 @@ group by a.AboutUserId";
 			var roleData = s.CreateSQLQuery(roleQuery).SetInt64("reviewsId", reviewContainerId).List<Object[]>();
 			var valueData = s.CreateSQLQuery(valueQuery).SetInt64("reviewsId", reviewContainerId).List<Object[]>();
 			var allData = new DefaultDictionary<long, UserReviewRoleValues>(x => new UserReviewRoleValues(x));
-			foreach (var d in roleData){
+			foreach (var d in roleData) {
 
 				var x = allData[(long)d[0]];
 
@@ -260,8 +259,7 @@ group by a.AboutUserId";
 				//x.HasCapacity.Add((decimal)d[5], (decimal)d[6]);
 			}
 
-			foreach (var d in valueData)
-			{
+			foreach (var d in valueData) {
 				var x = allData[(long)d[0]];
 				x.ValuePositive += Convert.ToInt64(d[1]);
 				x.ValueNeutral += Convert.ToInt64(d[2]);

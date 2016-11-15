@@ -235,7 +235,7 @@ namespace RadialReview.Accessors
 		{
 			var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
 			var orgId = reviewContainer.ForOrganization.Id;
-			perms.ViewOrganization(orgId).Or(x => x.EditReviewContainer(reviewContainerId), x => x.EditQuestionForUser(userId));
+			perms.ViewOrganization(orgId).Or(x => x.AdminReviewContainer(reviewContainerId), x => x.EditQuestionForUser(userId));
 
 			var queryProvider = GetReviewQueryProvider(s, orgId, reviewContainerId);
 			queryProvider.AddData(reviewContainer.AsList());
@@ -309,7 +309,7 @@ namespace RadialReview.Accessors
 				{
 					var perms = PermissionsUtility.Create(s, caller)
 						.ManagesUserOrganization(userOrganizationId, false)
-						.EditReviewContainer(reviewContainerId);
+						.AdminReviewContainer(reviewContainerId);
 
 					var deleteTime = DateTime.UtcNow;
 					var user = s.Get<UserOrganizationModel>(userOrganizationId);
@@ -628,7 +628,7 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					var perm = PermissionsUtility.Create(s, caller).EditReviewContainer(reviewContainerId);
+					var perm = PermissionsUtility.Create(s, caller).AdminReviewContainer(reviewContainerId);
 					var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
 					var update = false;
 					if (prereviewDueDate != null)
@@ -686,7 +686,7 @@ namespace RadialReview.Accessors
 					if (review == null)
 						throw new PermissionsException("Review does not exist. (" + reviewId + ")");
 
-					PermissionsUtility.Create(s, caller).EditReviewContainer(review.ForReviewsId);
+					PermissionsUtility.Create(s, caller).AdminReviewContainer(review.ForReviewsId);
 
 					review.DueDate = dueDate;
 					s.Update(review);
@@ -703,7 +703,7 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, caller).EditReviewContainer(reviewContainerId);
+					PermissionsUtility.Create(s, caller).AdminReviewContainer(reviewContainerId);
 					var review = s.Get<ReviewsModel>(reviewContainerId);
 					if (review == null)
 						throw new PermissionsException("Review does not exist. (" + reviewContainerId + ")");

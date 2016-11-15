@@ -168,7 +168,7 @@
 		function EditUser(id) {
 			var fields = [{
 				name: "IsManager",
-				text: "Manager",
+				text: "Is a supervisor",
 				type: "checkbox",
 				value: $("#permissions_" + id).attr("data-ismanager")
 			},{
@@ -180,7 +180,7 @@
 			if (managingOrganization) {
 				fields.push({
 					name: "ManagingOrganization",
-					text: "Admin",
+					text: "Is an admin",
 					type: "checkbox",
 					value: $("#permissions_" + id).attr("data-isadmin")
 				});
@@ -290,7 +290,7 @@
 				<table class="fullWidth">
 					<tr>
 						<td class="filter-resize-tiny">
-							<input id="input-filter" style="display: inline-block;" type="text" class="form-control" placeholder="Filter by name, position, manager or email..." />
+							<input id="input-filter" style="display: inline-block;" type="text" class="form-control" placeholder="Filter by name, position, @RadialReview.Utilities.Config.ManagerName().ToLower() or email..." />
 						</td>
 						<td style="width: 186px; padding-left: 8px; padding-top: 1px; text-align: center;">
 							<div class="btn-group">
@@ -348,7 +348,7 @@
 					<th style="width:10px"></th>
 					<th style="min-width:10px" class="NalignCenter">Positions</th>
 					<th style="min-width:40px" class="NalignCenter">Teams</th>
-					<th style="min-width:10px" class="NalignCenter">Managers</th>
+					<th style="min-width:10px" class="NalignCenter">@RadialReview.Utilities.Config.ManagerName()s</th>
 					@*<th style="width:10px" class="NalignCenter">Roles</th>*@
 					@*<th style="width:10px" class="NalignCenter">Questions</th>*@
 					@if (Model.Organization.ManagersCanRemoveUsers || Model.ManagingOrganization || Model.Users.Any(x => x.ForceCanDelete)) {
@@ -442,7 +442,7 @@
 									@Html.EditFirstButton(p.ManagersTitles, p.Managing)
 								</a>
 							} else {
-								<span class="gray" title="Clients have no managers">N/A</span>
+								<span class="gray" title="Clients have no @RadialReview.Utilities.Config.ManagerName()s">N/A</span>
 							}
 						</td>
 

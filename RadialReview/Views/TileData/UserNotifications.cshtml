@@ -1,0 +1,15 @@
+﻿@model long?
+
+<div class="review smallBreak2 loading tiny" style2="min-height:30px;">
+	<div class="notifications-heading heading">
+		Notifications@*<a href="/notifications/list" class=""> (View all)</a>*@
+	</div><div class="tile notifications-list-container">
+		@{ Html.RenderPartial("~/Views/Notifications/Partial/list.cshtml", new ViewDataDictionary(){
+								   {"AddHeaders", false},
+								   {"AddController", false},
+								   {"AddCompletion", false},
+								   {"AddDatePicker", false},								 
+								   {"MeetingId", -1},
+							   }); }<div ng-show="model.Notifications===undefined" class="gray alignCenter" elem-ready="functions.reload(model.Notifications===undefined)">Please wait</div>
+</div>
+</div>

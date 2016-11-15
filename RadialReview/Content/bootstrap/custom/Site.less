@@ -75,6 +75,10 @@ select:-webkit-autofill:focus {
 	text-decoration: underline;
 }
 
+body.modal-open {
+	overflow: visible;
+}
+
 .body-full-height {
 	overflow: auto;
 
@@ -100,6 +104,7 @@ select:-webkit-autofill:focus {
 	}
 }
 
+
 .body-full-width {
 	.jumbotron {
 		height: 24px;
@@ -116,6 +121,12 @@ select:-webkit-autofill:focus {
 		}
 	}
 }
+.body-notitlebar {
+	#wrap #main {
+		top: 0px;
+	}
+}
+
 
 .body-full-width .jumbotron .video-container .volume {
 	position: absolute;
@@ -568,7 +579,10 @@ body.resizing, body.resizing *::-moz-selection {
 		border: none;
 		width: 19px;
 		height: 19px;
-		margin-top: 8px;
+		/*margin-top: 8px;*/
+		//newly added
+		position: relative;
+		bottom: -4px;
 	}
 }
 
@@ -585,6 +599,6 @@ body.resizing, body.resizing *::-moz-selection {
 	color: #BDBDBD;
 }
 
-.noclick{
-	cursor:pointer;
+.noclick {
+	cursor: pointer;
 }

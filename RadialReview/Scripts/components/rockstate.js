@@ -18,7 +18,7 @@ function InitRockstate() {
 
 		$(document).on("click", ".editor .rockstate-val", function () {
 			var parent = $(this).parent();
-			if (parent.width() > 90) {
+			if (parent.width() > 87) {
 				var oldValue = parent.find("input").val();
 				var newValue = $(this).data("value");
 
@@ -32,7 +32,7 @@ function InitRockstate() {
 		
 		$(document).on("click", ".editor .rockstate-contents", function () {
 			var parent = $(this);
-			if (parent.width() <= 90) {
+			if (parent.width() <= 87) {
 				var oldValue = $(this).find("input").val();
 				var args = ["AtRisk", "OnTrack", "Complete", "Indeterminate"];
 

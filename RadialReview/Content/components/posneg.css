@@ -27,6 +27,20 @@
 	border:1px solid #dfdfdf;
 }
 
+.smallHeight .posneg{
+	height: 32px;
+}
+.smallHeight .posneg .fill{
+	height: 28px;
+}
+.smallHeight .posneg .posneg-val{
+	height: 31px;
+
+}
+.smallHeight .posneg .posneg-val .center{
+	line-height:30px;
+}
+
 .editor.posneg {
 	cursor: pointer;
 }
@@ -141,11 +155,13 @@
 }
 
 
+
+
 @media(max-width:767px) {
 }
 @media(max-width:1199px) {
 	.posneg {
-		height: 80px;
+		height: 60px;
 		width: 180px;
 		position: relative;
 		/*display: -webkit-inline-flex; 
@@ -163,10 +179,10 @@
 		user-select: none;
 		padding: 0px;
 		margin: 0px;
-		-ms-border-radius: 20px;
-		-moz-border-radius: 20px;
-		-webkit-border-radius: 20px;
-		border-radius: 20px;
+		-ms-border-radius: 60px;
+		-moz-border-radius: 60px;
+		-webkit-border-radius: 60px;
+		border-radius: 60px;
 		z-index: 1;
 	}
 
@@ -188,7 +204,7 @@
 
 	.posneg .fill {
 		width: 58px;
-		height: 76px;
+		height: 56px;
 		margin: 1px;
 		position: absolute;
 		top: 0;
@@ -198,10 +214,10 @@
 		background-color: #CDCDCD;
 		pointer-events: none;
 		z-index: 0;
-		-ms-border-radius: 17px;
-		-moz-border-radius: 17px;
-		-webkit-border-radius: 17px;
-		border-radius: 17px;
+		-ms-border-radius: 57px;
+		-moz-border-radius: 57px;
+		-webkit-border-radius: 57px;
+		border-radius: 57px;
 	}
 
 
@@ -224,7 +240,7 @@
 
 	.posneg .posneg-val {
 		width: 59px;
-		height: 80px;
+		height: 60px;
 		/*display: -webkit-inline-flex; 
 		display: inline-flex;
 		align-items: center;
@@ -243,7 +259,7 @@
 			width: 100%;
 			height: 100%;
 			text-align: center;
-			line-height: 80px;
+			line-height: 57px;
 		}
 
 		.posneg .posneg-val .center {
@@ -282,3 +298,5 @@
 		opacity: 0;
 	}
 }
+
+

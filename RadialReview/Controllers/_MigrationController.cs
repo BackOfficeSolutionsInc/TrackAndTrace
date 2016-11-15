@@ -37,6 +37,7 @@ using RadialReview.Model.Enums;
 namespace RadialReview.Controllers {
 	public class MigrationController : BaseController {
 		#region old
+		#region 11/06/2016
 		// GET: Migration
 		[Access(AccessLevel.Radial)]
 		public string M1_7_2015() {
@@ -1043,19 +1044,19 @@ namespace RadialReview.Controllers {
 
 					throw new Exception("Old");
 #pragma warning disable CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
-//					var recur = s.QueryOver<L10Recurrence>().Where(x => x.TeamType == L10TeamType.Invalid || x.TeamType == null).List().ToList();
-//#pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
+					//					var recur = s.QueryOver<L10Recurrence>().Where(x => x.TeamType == L10TeamType.Invalid || x.TeamType == null).List().ToList();
+					//#pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
 
-//					foreach (var r in recur) {
-//						r.TeamType = r.IsLeadershipTeam ? L10TeamType.LeadershipTeam : L10TeamType.Other;
-//						s.Update(r);
-//						f++;
-//					}
+					//					foreach (var r in recur) {
+					//						r.TeamType = r.IsLeadershipTeam ? L10TeamType.LeadershipTeam : L10TeamType.Other;
+					//						s.Update(r);
+					//						f++;
+					//					}
 
-//					tx.Commit();
-//					s.Flush();
+					//					tx.Commit();
+					//					s.Flush();
 
-//					return "" + f;
+					//					return "" + f;
 				}
 			}
 		}
@@ -1789,7 +1790,7 @@ namespace RadialReview.Controllers {
 
 					var pd = s.QueryOver<L10Recurrence>().List().ToList();
 					foreach (var u in pd) {
-						u.HeadlineType = u.ShowHeadlinesBox? PeopleHeadlineType.HeadlinesBox : PeopleHeadlineType.HeadlinesList;
+						u.HeadlineType = u.ShowHeadlinesBox ? PeopleHeadlineType.HeadlinesBox : PeopleHeadlineType.HeadlinesList;
 						s.Update(u);
 						count += 1;
 					}
@@ -1799,9 +1800,41 @@ namespace RadialReview.Controllers {
 				}
 			}
 
-			return Content("count:"+count);
+			return Content("count:" + count);
 		}
+		#endregion
 
+		public static String M11_06_2016() {
+			var a = 0;
+			var b = 0;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+
+					var orgs = s.QueryOver<OrganizationModel>().List().ToList();
+					foreach (var o in orgs) {
+
+						o.Settings.LimitFiveState = true;
+						s.Update(o);
+						a += 1;
+					}
+
+
+					var values = s.QueryOver<CompanyValueModel>().List().ToList();
+					foreach (var v in values) {
+
+						v.MinimumPercentage= (3*100)/5;
+						s.Update(v);
+						b += 1;
+					}
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+
+
+			return "Updated " + a+", "+b;
+		}
 	}
 }
 #pragma warning restore CS0618 // Type or member is obsolete

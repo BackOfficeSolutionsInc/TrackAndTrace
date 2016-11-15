@@ -1239,7 +1239,7 @@ namespace RadialReview.Accessors {
 					vto.QuarterlyRocks.ProfitStr = rocksProfit;//.TryParseDecimal(currencyStyle, currentCulture);
 					vto.QuarterlyRocks.Measurables = rocksMeasurables;
 
-					var allUsers = OrganizationAccessor.GetMembers_Tiny(s, perms, vto.Organization.Id);
+					var allUsers = TinyUserAccessor.GetOrganizationMembers(s, perms, vto.Organization.Id);
 					Dictionary<string, DiscreteDistribution<TinyUser>> rockUserLookup = null;
 					if (rocksList.Any() && (rocksList[0].ColumnCount == 3 || rocksList[0].ColumnCount == 2)) {
 						var rockUsers = rocksList.Select(x => string.Join("\n", x.Cells.Last().Paragraphs.Select(y => y.Text)));

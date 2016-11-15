@@ -1,57 +1,58 @@
 ﻿@model List<RadialReview.Controllers.OrganizationController.OrgStats>
 @using RadialReview.Models.Enums
 @{
-    ViewBag.FullWidth = true;
+	ViewBag.FullWidth = true;
 
-    var scoreOrder = new Dictionary<AccountType, int>() {
-        {AccountType.Demo, 1},
-        {AccountType.Implementer, 2},
-        {AccountType.Dormant, 3},
-        {AccountType.Cancelled, 4},
-        {AccountType.Other, 5},
-        {AccountType.Paying, 6},
-    };
+	var scoreOrder = new Dictionary<AccountType, int>() {
+		{AccountType.Demo, 1},
+		{AccountType.Implementer, 2},
+		{AccountType.Dormant, 3},
+		{AccountType.Cancelled, 4},
+		{AccountType.SwanServices, 5},
+		{AccountType.Other, 6},
+		{AccountType.Paying, 7},
+	};
 
-    var creditCardTxt = new Func<RadialReview.Controllers.OrganizationController.OrgStats, string>(x => {
-        if (x.CreditCardExp == null) {
-            if (x.Status == AccountType.Demo) {
-                if (x.TrialEnd < DateTime.UtcNow) {
-                    return DateTime.UtcNow.AddDays(0).ToShortDateString();
-                } else if (x.TrialEnd < DateTime.UtcNow.AddDays(-9)) {
-                    return DateTime.UtcNow.AddDays(2).ToShortDateString();
-                } else {
-                    return DateTime.UtcNow.AddDays(3).ToShortDateString();
-                }
-            } else {
-                return DateTime.UtcNow.AddDays(4).ToShortDateString();                
-            }
-        }
-        return x.CreditCardExp.Value.ToShortDateString();
-    });
-    
-    var creditCardBG = new Func<RadialReview.Controllers.OrganizationController.OrgStats, string>(x => {
-        if (x.CreditCardExp != null) {
-            if (x.CreditCardExp < DateTime.UtcNow) {
-                return "#ff7979";
-            } else if (x.CreditCardExp < DateTime.UtcNow.Subtract(TimeSpan.FromDays(60))) {
-                return "orange";
-            } else {
-                return "transparent";
-            }
-        } else {
-            if (x.Status == AccountType.Demo) {
-                if (x.TrialEnd < DateTime.UtcNow) {
-                    return "#ff7979";
-                } else if (x.TrialEnd < DateTime.UtcNow.AddDays(-9)) {
-                    return "orange";
-                } else {
-                    return "transparent";
-                }
-            } else {
-                return "transparent";
-            }
-        }
-    });
+	var creditCardTxt = new Func<RadialReview.Controllers.OrganizationController.OrgStats, string>(x => {
+		if (x.CreditCardExp == null) {
+			if (x.Status == AccountType.Demo) {
+				if (x.TrialEnd < DateTime.UtcNow) {
+					return DateTime.UtcNow.AddDays(0).ToShortDateString();
+				} else if (x.TrialEnd < DateTime.UtcNow.AddDays(-9)) {
+					return DateTime.UtcNow.AddDays(2).ToShortDateString();
+				} else {
+					return DateTime.UtcNow.AddDays(3).ToShortDateString();
+				}
+			} else {
+				return DateTime.UtcNow.AddDays(4).ToShortDateString();
+			}
+		}
+		return x.CreditCardExp.Value.ToShortDateString();
+	});
+
+	var creditCardBG = new Func<RadialReview.Controllers.OrganizationController.OrgStats, string>(x => {
+		if (x.CreditCardExp != null) {
+			if (x.CreditCardExp < DateTime.UtcNow) {
+				return "#ff7979";
+			} else if (x.CreditCardExp < DateTime.UtcNow.Subtract(TimeSpan.FromDays(60))) {
+				return "orange";
+			} else {
+				return "transparent";
+			}
+		} else {
+			if (x.Status == AccountType.Demo) {
+				if (x.TrialEnd < DateTime.UtcNow) {
+					return "#ff7979";
+				} else if (x.TrialEnd < DateTime.UtcNow.AddDays(-9)) {
+					return "orange";
+				} else {
+					return "transparent";
+				}
+			} else {
+				return "transparent";
+			}
+		}
+	});
 
 }
 

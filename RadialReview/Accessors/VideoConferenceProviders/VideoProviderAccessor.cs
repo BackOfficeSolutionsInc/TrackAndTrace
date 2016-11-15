@@ -55,7 +55,7 @@ namespace RadialReview.Accessors.VideoConferenceProviders {
 			}
 		}
 
-		public static void StartMeeting(UserOrganizationModel caller, UserModel forUser, long vcProviderId) {
+		public static void StartMeeting(UserOrganizationModel caller, long vcProviderId,string connectionId) {
 			AbstractVCProvider vcp = null;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -64,7 +64,7 @@ namespace RadialReview.Accessors.VideoConferenceProviders {
 					vcp = (AbstractVCProvider)s.GetSessionImplementation().PersistenceContext.Unproxy(vcp);
 					if (vcp is ZoomUserLink) {
 						var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-						var group = hub.Clients.User(forUser.UserName).joinVideoConference((ZoomUserLink)vcp);
+						var group = hub.Clients.Client(connectionId).joinVideoConference((ZoomUserLink)vcp);
 					} else {
 						throw new PermissionsException("Unhandled video type");
 					}

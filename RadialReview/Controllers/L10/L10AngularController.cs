@@ -20,6 +20,8 @@ using RadialReview.Models.Todo;
 using RadialReview.Models.Angular.Users;
 using RadialReview.Models.L10;
 using RadialReview.Models.Angular.Headlines;
+using RadialReview.Models.Angular.Notifications;
+using RadialReview.Notifications;
 
 namespace RadialReview.Controllers {
     public partial class L10Controller :BaseController {
@@ -230,6 +232,23 @@ namespace RadialReview.Controllers {
             L10Accessor.Remove(GetUser(), model, recurrenceId, connectionId);
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
-        #endregion
-    }
+		#endregion
+
+		#region Notifications		
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult UpdateAngularNotification(AngularNotification model, string connectionId = null) {
+			if (model.Seen != null) {
+				var status = model.Seen.Value;
+				PubSub.SetSeenStatus(GetUser(), GetUser().Id, model.Id, status, connectionId);
+				if (model.DetailsList != null) {
+					foreach (var d in model.DetailsList)
+						PubSub.SetSeenStatus(GetUser(), GetUser().Id, d.Id, status, connectionId);
+				}
+			}
+			return Json(ResultObject.SilentSuccess());
+		}
+		
+		#endregion
+	}
 }

@@ -33,9 +33,9 @@
     /*position: relative;*/
     line-height: 14px;
     box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.1);
-    -moz-transition: background-color ease .15s,color ease .15s
-    -o-transition: background-color ease .15s,color ease .15s
-    -webkit-transition: background-color ease .15s,color ease .15s
+    -moz-transition: background-color ease .15s,color ease .15s;
+    -o-transition: background-color ease .15s,color ease .15s;
+    -webkit-transition: background-color ease .15s,color ease .15s;
     transition: background-color ease .15s,color ease .15s,padding ease .15s;
 }
 
@@ -364,7 +364,8 @@ body.dragging, body.dragging * {
 }
 
 .todoDetails .heading {
-    width: calc(100% - 32px);
+    /*width: calc(100% - 32px);*/
+	width:100%;
 }
 
 .todoDetails h4 {
@@ -373,11 +374,11 @@ body.dragging, body.dragging * {
     min-height: 30px;
 }
 
-.todoDetails:empty {
+#todoDetails:empty {
     color: #ddd;
 }
 
-    .todoDetails:empty:after {
+    #todoDetails:empty:after {
         content: "Click a To-Do to see its details.";
     }
 
@@ -487,7 +488,9 @@ body.dragging, body.dragging * {
     border: none;
     border-bottom: 2px solid #EF7622;
     margin-top: -1px;
-    color: black !important;
+    color: black !important;	
+	resize:vertical;
+	overflow:auto;
 }
 
 
@@ -527,4 +530,16 @@ body.dragging, body.dragging * {
 
 .todo-list .due-date {
     display: none;
+}
+
+
+@media(max-width:767px) {
+	
+	.todo .l10-page-title {
+		color: rgba(0, 0, 0, 0);
+		height: 15px;
+	}
+		.todo .l10-page-title small {
+			display:none;
+		}
 }

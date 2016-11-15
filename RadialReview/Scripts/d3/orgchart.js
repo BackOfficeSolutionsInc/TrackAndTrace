@@ -272,7 +272,7 @@ function startOrgChart(selector, orgId) {
                     } else {
                         if (selectedNode != null) {
                             if (!selectedNode.manager) {
-                                var alert = "You cannot add a subordinate to someone that isn't a manager.";
+                                var alert = "You cannot add a direct report to someone that isn't a supervisor.";
                                 if (selectedNode.managing)
                                     alert += " You can promote this user by hovering over their circle and clicking the up arrow.";
                                 showAlert(alert, "alert-danger", "Error");

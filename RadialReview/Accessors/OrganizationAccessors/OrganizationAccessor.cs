@@ -32,6 +32,7 @@ using RadialReview.Models.Accountability;
 using RadialReview.Utilities.RealTime;
 using RadialReview.Models.Angular.Users;
 using NHibernate.Criterion;
+using RadialReview.Models.Reviews;
 
 namespace RadialReview.Accessors {
 
@@ -142,7 +143,7 @@ namespace RadialReview.Accessors {
 					//Add team for every manager
 					var managerTeam = new OrganizationTeamModel() {
 						CreatedBy = userOrgModel.Id,
-						Name = "Managers at " + organization.Name.Translate(),
+						Name = Config.ManagerName()+"s at " + organization.Name.Translate(),
 						OnlyManagersEdit = true,
 						Organization = organization,
 						InterReview = false,
@@ -264,6 +265,10 @@ namespace RadialReview.Accessors {
 
 					db.Delete(userOrg.TempUser);
 
+					if (user.SendTodoTime == -1) {
+						user.SendTodoTime = organization.Settings.DefaultSendTodoTime;
+					}
+
 					userOrg.TempUser = null;
 					
 					db.SaveOrUpdate(user);
@@ -315,45 +320,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static List<TinyUser> GetMembers_Tiny(UserOrganizationModel caller, long organizationId) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var perms = PermissionsUtility.Create(s, caller);
-					return GetMembers_Tiny(s, perms, organizationId).ToList();
-				}
-			}
-		}
-
-		public static IEnumerable<TinyUser> GetMembers_Tiny(ISession s, PermissionsUtility perms, long organizationId) {
-			perms.ViewOrganization(organizationId);
-			UserOrganizationModel uo = null;
-			UserModel u = null;
-			TempUserModel t = null;
-			return s.QueryOver<UserOrganizationModel>(() => uo)
-				.Left.JoinAlias(x => x.User, () => u)
-				.Left.JoinAlias(x => x.TempUser, () => t)
-				.Where(x => x.Organization.Id == organizationId && x.DeleteTime == null)
-				.Select(x => u.FirstName, x => u.LastName, x => x.Id, x => t.FirstName, x => t.LastName, x => u.UserName, x => t.Email)
-				.Future<object[]>()
-				.Select(x => {
-					var fname = (string)x[0];
-					var lname = (string)x[1];
-					var email = (string)x[5];
-					var uoId = (long)x[2];
-					if (fname == null && lname == null) {
-						fname = (string)x[3];
-						lname = (string)x[4];
-						email = (string)x[6];
-					}
-					return new TinyUser() {
-						FirstName = fname,
-						LastName = lname,
-						Email = email,
-						UserOrgId = uoId
-					};// Tuple.Create(fname, lname, (long)x[2], email);
-				});
-
-		}
+	
 
 		public List<long> GetAllOrganizationMemberIdsAcrossTime(UserOrganizationModel caller, long organizationId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -506,7 +473,9 @@ namespace RadialReview.Accessors {
 																			Month? startOfYearMonth = null,
 																			DateOffset? startOfYearOffset = null,
 																			string dateFormat = null,
-																			NumberFormat? numberFormat = null
+																			NumberFormat? numberFormat = null,
+																			bool? limitFiveState = null,
+																			int? defaultTodoSendTime = null
 			) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -522,7 +491,7 @@ namespace RadialReview.Accessors {
 						org.Name.UpdateDefault(organizationName);
 						var managers = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == org.Id && x.Type == TeamType.Managers).List().FirstOrDefault();
 						if (managers != null) {
-							managers.Name = "Managers at " + organizationName;
+							managers.Name = Config.ManagerName() + "s at " + organizationName;
 							s.Update(managers);
 						}
 						var allTeam = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == org.Id && x.Type == TeamType.AllMembers).List().FirstOrDefault();
@@ -553,6 +522,9 @@ namespace RadialReview.Accessors {
 
 					if (managersCanEditSelf != null)
 						org.Settings.ManagersCanEditSelf = managersCanEditSelf.Value;
+
+					if (limitFiveState != null)
+						org.Settings.LimitFiveState = limitFiveState.Value;
 
 					if (employeesCanEditSelf != null)
 						org.Settings.EmployeesCanEditSelf = employeesCanEditSelf.Value;
@@ -588,6 +560,9 @@ namespace RadialReview.Accessors {
 
 					if (numberFormat != null)
 						org.Settings.NumberFormat = numberFormat.Value;
+
+					if (defaultTodoSendTime != null)
+						org.Settings.DefaultSendTodoTime = defaultTodoSendTime.Value;
 
 					s.Update(org);
 
@@ -806,7 +781,16 @@ namespace RadialReview.Accessors {
 					throw new PermissionsException("You do not have access to this value.");
 
 				r.Category = category;
+
+				//if (r.ValueBarId == null) {
+				//	r._ValueBar = r._ValueBar ?? new ValueBar();
+				//	s.SaveOrUpdate(bar);
+				//	r.ValueBarId = bar.
+				//} 
+
 				s.SaveOrUpdate(r);
+				
+
 			}
 
 			var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
@@ -845,14 +829,25 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-
-		public static List<long> GetAllUserOrganizationIds(ISession s, PermissionsUtility perm, long organizationId) {
+		public static IEnumerable<long> GetAllManagerIds(ISession s, PermissionsUtility perm, long organizationId, bool excludeClients = false) {
 			perm.ViewOrganization(organizationId);
 
-			return s.QueryOver<UserOrganizationModel>()
-				.Where(x => x.DeleteTime == null && x.Organization.Id == organizationId)
-				.Select(x => x.Id)
-				.List<long>().ToList();
+			var q = s.QueryOver<UserOrganizationModel>()
+				.Where(x => x.DeleteTime == null && x.Organization.Id == organizationId && (x.ManagerAtOrganization || x.ManagingOrganization));
+			if (excludeClients)
+				q = q.Where(x => !x.IsClient);
+			return q.Select(x => x.Id).Future<long>();
+		}
+
+		public static IEnumerable<long> GetAllUserOrganizationIds(ISession s, PermissionsUtility perm, long organizationId,bool excludeClients = false) {
+			perm.ViewOrganization(organizationId);
+
+			var q = s.QueryOver<UserOrganizationModel>()
+				.Where(x => x.DeleteTime == null && x.Organization.Id == organizationId);
+
+			if (excludeClients)
+				q = q.Where(x => !x.IsClient);
+			return q.Select(x => x.Id).Future<long>();
 		}
 		[Obsolete("Dangerous")]
 		public static List<UserOrganizationModel> GetAllUserOrganizations(ISession s, PermissionsUtility perm, long organizationId) {
@@ -969,10 +964,21 @@ namespace RadialReview.Accessors {
 		}
 
 		public static List<UserOrganizationModel> GetUsersWithOrganizationPositions(ISession s, PermissionsUtility perm, long orgId, long orgPositionId) {
-			perm.ViewOrganization(orgId);
-			var ids = s.QueryOver<PositionDurationModel>().Where(x => x.DeleteTime == null).JoinQueryOver(x => x.Position).Where(x => x.Organization.Id == orgId && x.DeleteTime == null && x.Id == orgPositionId).Select(x => x.UserId).List<long>().ToList();
+			//perm.ViewOrganization(orgId);
+			//var ids = s.QueryOver<PositionDurationModel>().Where(x => x.DeleteTime == null).JoinQueryOver(x => x.Position).Where(x => x.Organization.Id == orgId && x.DeleteTime == null && x.Id == orgPositionId).Select(x => x.UserId).List<long>().ToList();
+			var ids = GetUserIdsWithOrganizationPositions(s, perm, orgId, orgPositionId);
+			return s.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(ids.ToArray()).List().ToList();
+		}
 
-			return s.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(ids).List().ToList();
+		public static IEnumerable<long> GetUserIdsWithOrganizationPositions(ISession s, PermissionsUtility perm, long orgId, long orgPositionId) {
+			perm.ViewOrganization(orgId);
+			return s.QueryOver<PositionDurationModel>().Where(x => x.DeleteTime == null)
+				.JoinQueryOver(x => x.Position)
+				.Where(x => x.Organization.Id == orgId && x.DeleteTime == null && x.Id == orgPositionId)
+				.Select(x => x.UserId)
+				.Future<long>();
+
+			//return s.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(ids).List().ToList();
 		}
 
 		public static List<ResponsibilityGroupModel> GetOrganizationResponsibilityGroupModels(UserOrganizationModel caller, long organizationId) {

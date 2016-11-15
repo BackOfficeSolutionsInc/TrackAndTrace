@@ -5,6 +5,7 @@ using FluentNHibernate.Mapping;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Properties;
+using RadialReview.Utilities;
 
 namespace RadialReview.Models.Askables
 {
@@ -150,7 +151,7 @@ namespace RadialReview.Models.Askables
                 CreatedBy = creator.Id,
                 InterReview = false,
                 ManagedBy = manager.Id,
-                Name = manager.GetNameAndTitle() + " Direct Reports",
+                Name = manager.GetNameAndTitle() + " " + Config.DirectReportName() + "s",
                 OnlyManagersEdit = true,
                 Organization = manager.Organization,
                 Responsibilities = new List<ResponsibilityModel>(),

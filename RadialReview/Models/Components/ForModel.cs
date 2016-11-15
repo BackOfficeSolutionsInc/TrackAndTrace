@@ -13,6 +13,14 @@ namespace RadialReview.Models.Components
 		public virtual long ModelId { get; set; }
 		public virtual string ModelType { get; set; }
 
+
+		public virtual ForModel Clone() {
+			return new ForModel{
+				ModelId= ModelId,
+				ModelType=ModelType,
+			};
+		}
+
 		public class ForModelMap : ComponentMap<ForModel>
 		{
 			public ForModelMap(){
@@ -52,5 +60,6 @@ namespace RadialReview.Models.Components
 		{
 			return HibernateSession.GetDatabaseSessionFactory().GetClassMetadata(typeof(T)).EntityName;
 		}
+
 	}
 }

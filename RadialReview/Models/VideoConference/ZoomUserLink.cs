@@ -16,7 +16,7 @@ namespace RadialReview.Models.VideoConference {
 		}
 
 		public override string GetUrl() {
-			return "https://www.zoom.us/s/" + ZoomMeetingId;
+			return "https://www.zoom.us/j/" + ZoomMeetingId;
 		}
 
 		public ZoomUserLink() {

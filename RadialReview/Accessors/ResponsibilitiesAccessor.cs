@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using NHibernate.Criterion;
 
 namespace RadialReview.Accessors
 {
@@ -124,11 +125,43 @@ namespace RadialReview.Accessors
 		    }else{
 				throw new ArgumentOutOfRangeException();
 		    }
+	    }
 
-	    } 
+		public static IEnumerable<long> GetMemberIds(ISession s, PermissionsUtility perm, long rgmId) {
+			return GetMemberIds(s, perm, rgmId.AsList());
+		}
+
+		public static IEnumerable<long> GetMemberIds(ISession s, PermissionsUtility perm, IEnumerable<long> rgmId) {
+
+			var rgms = s.QueryOver<ResponsibilityGroupModel>().WhereRestrictionOn(x => x.Id).IsIn(rgmId.Distinct().ToArray())
+				//.Select(x=>x.Id,x=>x.accoun.,x=>x.Organization.Id).List<object[]>()
+				//.Select(x=> new {Id = (long)x[0],Type =(Type)x[1],OrgId = (long)x[2] })
+				.List()
+				.ToList();
+
+			var output = new List<IEnumerable<long>>();
+
+			foreach (var rgm in rgms) {
+				if (rgm.GetType() == typeof(UserOrganizationModel)) {
+					perm.ViewUserOrganization(rgm.Id, false);
+					output.Add(rgm.Id.AsList());
+				} else if (rgm.GetType() == typeof(OrganizationModel)) {
+					output.Add(OrganizationAccessor.GetAllUserOrganizationIds(s, perm, rgm.Id));
+#pragma warning restore CS0618 // Type or member is obsolete
+				} else if (rgm.GetType() == typeof(OrganizationTeamModel)) {
+					output.Add(TeamAccessor.GetTeamMemberIds(s, perm, rgm.Id));
+				} else if (rgm.GetType() == typeof(OrganizationPositionModel)) {
+					output.Add(OrganizationAccessor.GetUserIdsWithOrganizationPositions(s, perm, rgm.Organization.Id, rgm.Id));
+				} else {
+					throw new ArgumentOutOfRangeException();
+				}
+			}
+			return output.SelectMany(x => x.ToList()).Distinct();
+		}
 
 
-        public List<ResponsibilityGroupModel> GetResponsibilityGroupsForUser(UserOrganizationModel caller, long userId)
+
+		public List<ResponsibilityGroupModel> GetResponsibilityGroupsForUser(UserOrganizationModel caller, long userId)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -140,12 +173,24 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static List<ResponsibilityGroupModel> GetResponsibilityGroupsForUser(AbstractQuery s, PermissionsUtility permissions, UserOrganizationModel caller, long userId)
+		public static IEnumerable<long> GetGroupIdsForUser(ISession s, PermissionsUtility perms, long userId) {
+			perms.ViewUserOrganization(userId, false);
+
+			var output = new List<IEnumerable<long>>();
+			output.Add(userId.AsList());
+			output.Add(TeamAccessor.GetUsersTeamIds(s, perms, userId));
+			output.Add(PositionAccessor.GetPositionIdsForUser(s, perms, userId));
+			output.Add(TeamAccessor.GetUsersTeamIds(s, perms, userId));
+			
+			return output.SelectMany(x=>x);
+		}
+
+
+
+		public static List<ResponsibilityGroupModel> GetResponsibilityGroupsForUser(AbstractQuery s, PermissionsUtility permissions, UserOrganizationModel caller, long userId)
         {
             var teams = TeamAccessor.GetUsersTeams(s, permissions, caller, userId);
-            /*}
-            using (var tx = s.BeginTransaction())
-            {*/
+
             permissions.ViewUserOrganization(userId, false);
             var user = s.Get<UserOrganizationModel>(userId);
 

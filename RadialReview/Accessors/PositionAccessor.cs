@@ -1,4 +1,5 @@
-﻿using NHibernate.Criterion;
+﻿using NHibernate;
+using NHibernate.Criterion;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
@@ -113,6 +114,13 @@ namespace RadialReview.Accessors {
 					s.Flush();
 				}
 			}
+		}
+
+		public static IEnumerable<long> GetPositionIdsForUser(ISession s, PermissionsUtility perms, long userId) {
+			return s.QueryOver<PositionDurationModel>()
+				.Where(x => x.DeleteTime == null && x.UserId == userId)
+				.Select(x => x.Position.Id)
+				.Future<long>();
 		}
 
 		public List<PositionDurationModel> GetUsersWithPosition(UserOrganizationModel caller, long orgPositionId) {

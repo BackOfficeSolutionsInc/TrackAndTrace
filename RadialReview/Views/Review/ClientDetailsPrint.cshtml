@@ -147,7 +147,7 @@
         @if (!String.IsNullOrWhiteSpace(notes))
         {
             <div class="internalAvoid">
-                <h3>Manager Notes:</h3>
+                <h3>@RadialReview.Utilities.Config.ManagerName()s Notes:</h3>
 
                 <div style="margin-left:20px">
                     <div id="notes" style="white-space: pre-line" class="feedback">@notes</div>

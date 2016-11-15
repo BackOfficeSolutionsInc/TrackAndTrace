@@ -1,10 +1,13 @@
 ﻿var currentTodoDetailsId;
 
+var modalWidth = 991;
 $(function () {
     
-    var clickTodoRow = function (evt) {
-        if ($(evt.target).hasClass("todo-checkbox"))
-            return;
+	var clickTodoRow = function (evt) {
+		if ($(evt.target).hasClass("todo-checkbox"))
+			return;
+		if ($(evt.target).hasClass("issuesButton"))
+			return;
 
 		var todoRow = $(this);
 		$(".todo-row.selected").removeClass("selected");
@@ -22,17 +25,19 @@ $(function () {
 
 		var due =  new Date(new Date(duedate).toUTCString().substr(0,16));
 		//var recurrence_issue = $(todoRow).data("recurrence_issue");
-		var checked = $(todoRow).find(".issue-checkbox").prop("checked");
+		var checked = $(todoRow).find(".todo-checkbox").is(":checked");
 
-		$("#todoDetails").html("");
-		$("#todoDetails").append("<span class='expandContract btn-group pull-right'></span>");
-		$("#todoDetails").append("<div class='createTime'>" + dateFormatter(new Date(createtime)) + "</div>");
+		var detailsContents = $("<div class='todoDetails abstract-details-panel'></div>");
 
-		$("#todoDetails").append("<div class='heading'><h4 class='message-holder clickable' data-todo='" + todo + "'><span data-todo='" + todo + "' class='message editable-text'>" + message + "</span></h4></div>");
+		//$("#todoDetails").html("");
+		$(detailsContents).append("<span class='expandContract btn-group pull-right'></span>");
+		$(detailsContents).append("<div class='createTime'>" + dateFormatter(new Date(createtime)) + "</div>");
+
+		$(detailsContents).append("<div class='heading'><h4 class='message-holder clickable' data-todo='" + todo + "'><span data-todo='" + todo + "' class='message editable-text'>" + message + "</span></h4></div>");
 		//$("#todoDetails").append("<textarea id='todoDetailsField' class='details todo-details' data-todo='" + todo + "'>" + details + "</textarea>");
-		$("#todoDetails").append("<iframe class='details todo-details' name='embed_readwrite' src='https://notes.traction.tools/p/"+padId+"?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName="+encodeURI(UserName)+"' width='100%' height='100%'></iframe>");
+		$(detailsContents).append("<iframe class='details todo-details' name='embed_readwrite' src='https://notes.traction.tools/p/" + padId + "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + encodeURI(UserName) + "' width='100%' height='100%'></iframe>");
 
-		$("#todoDetails").append(
+		$(detailsContents).append(
 			"<div class='button-bar'>" +
 				"<div style='height:28px'>"+
 				"<span class='btn-group pull-right'>" +
@@ -54,6 +59,18 @@ $(function () {
 					"</span>" +
 				"</div>" +
 			"</div>");
+    	var w = $(window).width();
+    	if (w <= modalWidth || $(".conclusion").is(":visible")) {
+			var c = detailsContents.clone();
+			c.find("h4").addClass("form-control");
+			showModal({
+				contents: c,
+				title: "Edit To-do",
+				noCancel: true,
+			});
+		}
+		$("#todoDetails").html("");
+		$("#todoDetails").append(detailsContents);
 		fixTodoDetailsBoxSize();
 	}
     $("body").on("click", ".todo-list>.todo-row", clickTodoRow);
@@ -61,7 +78,7 @@ $(function () {
 	$("body").on("click", ".todoDetails .doneButton", function () { $(this).find(">input").trigger("click"); });
 
 	$("body").on("click", ".todoDetails .message-holder .message", function () {
-		var input = $("<input class='message-input' value='" + escapeString($(this).html()) + "' data-old='" + escapeString($(this).html()) + "' onblur='sendTodoMessage(this," + $(this).parent().data("todo") + ")'/>");
+		var input = $("<textarea class='message-input' value='" + escapeString($(this).html()) + "' data-old='" + escapeString($(this).html()) + "' onblur='sendTodoMessage(this," + $(this).parent().data("todo") + ")'>"+($(this).html())+"</textarea>");
 		$(this).parent().html(input);
 		input.focusTextToEnd();
 	});
@@ -451,8 +468,8 @@ function updateTodoCompletion(todoId, complete) {
 }
 
 function updateTodoMessage(id, message) {
-	$(".todo .message[data-todo=" + id + "]").html(message);
-	$(".todo .todo-row[data-todo=" + id + "]").data("message", escapeString(message));
+	$(" .message[data-todo=" + id + "]").html(message);
+	$(" .todo-row[data-todo=" + id + "]").data("message", escapeString(message));
 }
 function updateTodoDetails(id, details) {
 	$(".todo .todo-details[data-todo=" + id + "]").html(details);
@@ -461,9 +478,9 @@ function updateTodoDetails(id, details) {
 }
 
 function updateTodoAccountableUser(id, userId, name, image) {
-	$(".todo [data-todo=" + id + "] .picture-container").prop("title", name);
-	$(".todo [data-todo=" + id + "] .picture").css("background", "url(" + image + ") no-repeat center center");
-	$(".todo .assignee .btn[data-todo=" + id + "]").html(name);
+	$("[data-todo=" + id + "] .picture-container").prop("title", name);
+	$("[data-todo=" + id + "] .picture").css("background", "url(" + image + ") no-repeat center center");
+	$(".assignee .btn[data-todo=" + id + "]").html(name);
 	var row = $(".todo .todo-row[data-todo=" + id + "]");
 	$(row).data("name", name);
 	$(row).data("accountable", userId);
@@ -522,6 +539,7 @@ function runFireworks() {
     };
     shootFirework();
 
+
     showModal({
         icon: { icon: "icon fontastic-icon-trophy-1", title: "Congratulations!", color: "#FFA500" },
         title: "90% To-do completion!",
@@ -529,4 +547,6 @@ function runFireworks() {
             shootFirework=false;
         }
     });
+
+    setTimeout(function () { shootFireworks = false;},10000);
 }

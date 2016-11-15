@@ -117,7 +117,12 @@ namespace RadialReview.Utilities {
             }
             return GetAppSetting("ProductName_Review", "Traction Tools");
         }
-        public static string ReviewName(OrganizationModel organization = null)
+
+		public static string DirectReportName() {
+			return "Direct Report";
+		}
+
+		public static string ReviewName(OrganizationModel organization = null)
         {
             if (organization != null) {
                 switch (organization.Settings.Branding) {
@@ -140,7 +145,12 @@ namespace RadialReview.Utilities {
             return GetAppSetting("ReviewName_Review", "Eval");
         }
 
-        public static bool IsLocal()
+		public static string ManagerName() {
+			return "Supervisor";
+		}
+
+
+		public static bool IsLocal()
         {
             switch (GetEnv()) {
                 case Env.local_test_sqlite: return true;

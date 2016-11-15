@@ -55,6 +55,11 @@ namespace RadialReview.Controllers
         }
 
 
+		[Access(AccessLevel.Any)]
+		public PartialViewResult UserNotifications() {
+			return PartialView("UserNotifications");
+		}
+
 
 
 		[Access(AccessLevel.Any)]

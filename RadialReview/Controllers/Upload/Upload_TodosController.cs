@@ -38,7 +38,7 @@ namespace RadialReview.Controllers {
 
                 var m = new UploadTodosSelectedDataVM() { };
                 var orgId = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, false).OrganizationId;
-                var allUsers = OrganizationAccessor.GetMembers_Tiny(GetUser(), orgId);
+                var allUsers = TinyUserAccessor.GetOrganizationMembers(GetUser(), orgId);
                 m.AllUsers = allUsers.ToSelectList(x => x.FirstName + " " + x.LastName, x => x.UserOrgId);
                 var now = DateTime.UtcNow;
                 if (fileType == FileType.CSV && (users != null || details != null || duedate != null)) {

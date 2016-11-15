@@ -17,8 +17,9 @@ namespace RadialReview.App_Start {
 			//HooksRegistry.RegisterHook(new CreateUserOrganization_UpdateHierarchy());
 
 			HooksRegistry.RegisterHook(new UpdateUserModel_TeamNames());
+			HooksRegistry.RegisterHook(new UpdateRoles_Notifications());
 
-            //HooksRegistry.RegisterHook(new TodoEdit())
-        }
+			//HooksRegistry.RegisterHook(new TodoEdit())
+		}
     }
 }

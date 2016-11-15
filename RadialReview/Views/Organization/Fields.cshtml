@@ -40,7 +40,7 @@
 	</div>
 	<div class="row">
 		<div class="col-sm-3">
-			<label>Manager First Name Column</label>
+			<label>@RadialReview.Utilities.Config.ManagerName() First Name Column</label>
 		</div>
 		<div class="col-sm-6">
 			@Html.DropDownListFor(x => x.ManagerFirstNameColumn, Model.Fields.ToSelectList(x => x, x => x))
@@ -48,7 +48,7 @@
 	</div>
 	<div class="row">
 		<div class="col-sm-3">
-			<label>Manager Last Name Column</label>
+			<label>@RadialReview.Utilities.Config.ManagerName() Last Name Column</label>
 		</div>
 		<div class="col-sm-6">
 			@Html.DropDownListFor(x => x.ManagerLastNameColumn, Model.Fields.ToSelectList(x => x, x => x))

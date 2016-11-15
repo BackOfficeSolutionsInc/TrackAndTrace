@@ -29,7 +29,7 @@ namespace RadialReview.Controllers {
 			var link = VideoProviderAccessor.GenerateLink(GetUser(), userId, zoomMeetingId, recurId, name:name);
 
 			if (connectionId != null) {
-				VideoProviderAccessor.StartMeeting(GetUser(), GetUser().User, link.Id);
+				VideoProviderAccessor.StartMeeting(GetUser(),  link.Id, connectionId);
 			}
 
 			

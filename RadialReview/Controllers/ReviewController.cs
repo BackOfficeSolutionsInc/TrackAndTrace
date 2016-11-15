@@ -31,6 +31,7 @@ using RadialReview.Models.Permissions;
 using RadialReview.Models.Angular.Scorecard;
 using RadialReview.Models.Angular.Meeting;
 using PdfSharp.Pdf;
+using RadialReview.Engines;
 
 namespace RadialReview.Controllers {
 	public class ReviewController : BaseController {
@@ -98,10 +99,7 @@ namespace RadialReview.Controllers {
 				var pageConcrete = page ?? 0;
 				var p = pages[pageConcrete].ToListAlive();
 
-				//_ReviewAccessor.UpdateStarted(GetUser(),p,now);
-
 				var forUser = p.FirstOrDefault().NotNull(x => x.AboutUser);
-				//ViewBag.Subheading = "Only " + forUser.GetFirstName().Possessive() + " manager will see your answers.";
 
 				var model = new TakeViewModel(p) {
 					Anonymous = reviewContainer.AnonymousByDefault,
@@ -109,7 +107,6 @@ namespace RadialReview.Controllers {
 					Id = id,
 					StartTime = now,
 					Page = pageConcrete,
-					//Answers = p,
 					Editable = reviews.Any(x => x.DueDate > now),
 					ForUser = forUser,
 					OrderedPeople = pages.Select(x =>
@@ -121,7 +118,6 @@ namespace RadialReview.Controllers {
 				};
 
 				if (model.Editable && p.Any(x => x.Complete) && p.Any(x => !x.Complete && x.Required)) {
-					//TempData["Message"] = DisplayNameStrings.remainingQuestions;
 					ViewBag.Incomplete = true;
 				}
 
@@ -140,7 +136,6 @@ namespace RadialReview.Controllers {
 
 				return View(model);
 			} catch (ArgumentOutOfRangeException) {
-				//Session["Page"] = page;
 				return RedirectToAction("AdditionalReview", new { id = id, page = page });
 			}
 			#region Comment
@@ -779,75 +774,125 @@ namespace RadialReview.Controllers {
 			}
 
 			public Table CompanyValuesTable(long reviewId) {
-				var dictionary = new DefaultDictionary<String, decimal[]>(x => new decimal[] { 0, 0, 0 });
+				var dictionary = new DefaultDictionary<long, decimal[]>(x => new decimal[] { 0, 0, 0, 0, 0 });
 
 				var values = AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.CompanyValue).Cast<CompanyValueAnswer>();
 
 
 				var dictionaryPerson = new DefaultDictionary<string, decimal>(x => 0);
-
+				var dictionaryExhibits = new DefaultDictionary<long, List<PositiveNegativeNeutral>>(x => new List<PositiveNegativeNeutral>());
 
 				var table = Table.Create(
 					values,
 					x => x.ByUser.GetName(),
 					x => x.Askable.GetQuestion(),
 					x => {
-						var d = dictionary[x.Askable.GetQuestion()];
-
 						dictionaryPerson[x.ByUser.GetName()] += x.Exhibits.Score2();
-
-						d[0] += x.Exhibits.Score();
-						if (x.Complete)
-							d[1] += 1;
-						if (x.Exhibits == PositiveNegativeNeutral.Negative)
-							d[2] += 1;
 
 						return new SpanCell {
 							Class = "fill companyValues " + (String.IsNullOrWhiteSpace(x.Reason) ? "" : "hasReason") + " " + x.Exhibits,
 							Title = x.Reason,
-							Data = new Dictionary<string, string>() { { "reviewId", "" + reviewId }, { "valueId", "" + x.Askable.Id }, { "byuserid", "" + x.ByUserId } },
+							Data = new Dictionary<string, string>() {
+								{ "reviewId", "" + reviewId },
+								{ "valueId", "" + x.Askable.Id },
+								{ "byuserid", "" + x.ByUserId }
+							},
 						}.ToHtmlString();
-					},
-					"companyValues");
+					}, "companyValues");
 
-				foreach (var kv in dictionary) {
-					PositiveNegativeNeutral ex;
-					var v = kv.Value;
-					var reason = "";
-					if (v[1] == 0)
-						ex = PositiveNegativeNeutral.Indeterminate;
-					else if (v[2] > 0) {
-						reason = "Aiming for 0 negatives. A negative may indicate an area of improvement. It may also indicate animosity.";
-						ex = PositiveNegativeNeutral.Negative;
-					} else if (v[0] == v[1]) //Num == Denom
+
+				foreach (var valueAnswers in values.GroupBy(x => x.Askable)) {
+					var question = valueAnswers.Key.GetQuestion();
+					var score = ChartsEngine.ScatterScorer.MergeValueScores(valueAnswers.ToList(), (CompanyValueModel) valueAnswers.Key);
+
+					var clz = "";
+					var ex = PositiveNegativeNeutral.Indeterminate;
+					if (score.Above == true)
 						ex = PositiveNegativeNeutral.Positive;
-					else {
-						//(Completion - Scoring)* 2 = number of +/-
-						var numPlus_Minus = (v[1] - v[0]) * 2;
+					if (score.Above == false)
+						ex = PositiveNegativeNeutral.Negative;
 
-						if (v[1] <= 6) {
-							if (numPlus_Minus >= NEUTRAL_CUTOFF) {
-								ex = PositiveNegativeNeutral.Negative;
-								reason = "Several ratings of +/- may indicate an area of improvement.";
-							} else {
-								ex = PositiveNegativeNeutral.Neutral;
-								reason = "One +/- may indicate an area of improvement.";
-							}
-						} else {
-							if (numPlus_Minus * 5 / v[1] >= NEUTRAL_CUTOFF) {
-								ex = PositiveNegativeNeutral.Negative;
-								reason = "Several ratings of +/- may indicate an area of improvement.";
-							} else {
-								ex = PositiveNegativeNeutral.Neutral;
-								reason = "A few ratings of +/- may indicate an area of improvement.";
-							}
-						}
-					}
-					var clz = "";//String.IsNullOrWhiteSpace(reason) ? "" : "hasReason";
-					table.Data.Set("Score", kv.Key, new HtmlString("<span class='fill score " + clz + " " + ex + "' title='" + reason.Replace("'", "&#39;").Replace("\"", "&quot;") + "'></span>"));
+					var reason = score.GetCompiledMessage();
+					table.Data.Set("Score", question, new HtmlString("<span class='fill score " + clz + " " + ex + "' title='" + reason.Replace("'", "&#39;").Replace("\"", "&quot;") + "'></span>"));					
 				}
+
+
 				table.Rows = table.Rows.OrderByDescending(x => dictionaryPerson[x]).ToList();
 				table.Rows.Add("Score");
+
+
+
+
+
+				//var table = Table.Create(
+				//	values,
+				//	x => x.ByUser.GetName(),
+				//	x => x.Askable.GetQuestion(),
+				//	x => {
+				//		var d = dictionary[x.Askable.Id];
+
+				//		dictionaryPerson[x.ByUser.GetName()] += x.Exhibits.Score2();
+
+				//		d[0] += x.Exhibits.Score();
+				//		if (x.Complete)
+				//			d[1] += 1;
+				//		if (x.Exhibits == PositiveNegativeNeutral.Negative)
+				//			d[2] += 1;
+				//		if (x.Exhibits == PositiveNegativeNeutral.Neutral)
+				//			d[3] += 1;
+				//		if (x.Exhibits == PositiveNegativeNeutral.Positive)
+				//			d[4] += 1;
+
+				//		dictionaryExhibits[x.Askable.Id].Add(x.Exhibits);
+
+				//		return new SpanCell {
+				//			Class = "fill companyValues " + (String.IsNullOrWhiteSpace(x.Reason) ? "" : "hasReason") + " " + x.Exhibits,
+				//			Title = x.Reason,
+				//			Data = new Dictionary<string, string>() { { "reviewId", "" + reviewId }, { "valueId", "" + x.Askable.Id }, { "byuserid", "" + x.ByUserId } },
+				//		}.ToHtmlString();
+				//	},
+				//	"companyValues");
+
+				//foreach (var kv in dictionary) {
+				//	PositiveNegativeNeutral ex;
+				//	var v = kv.Value;
+				//	var reason = "";
+				//	if (v[1] == 0)
+				//		ex = PositiveNegativeNeutral.Indeterminate;
+				//	else if (v[2] > 0) {
+				//		reason = "Aiming for 0 negatives. A negative may indicate an area of improvement. It may also indicate animosity.";
+				//		ex = PositiveNegativeNeutral.Negative;
+				//	} else if (v[0] == v[1]) //Num == Denom
+				//		ex = PositiveNegativeNeutral.Positive;
+				//	else {
+				//		//(Completion - Scoring)* 2 = number of +/-
+				//		var numPlus_Minus = (v[1] - v[0]) * 2;
+
+				//		ChartsEngine.ScatterScorer.MergeValueScores(
+
+				//		if (v[1] <= 6) {
+				//			if (numPlus_Minus >= NEUTRAL_CUTOFF) {
+				//				ex = PositiveNegativeNeutral.Negative;
+				//				reason = "Several ratings of +/- may indicate an area of improvement.";
+				//			} else {
+				//				ex = PositiveNegativeNeutral.Neutral;
+				//				reason = "One +/- may indicate an area of improvement.";
+				//			}
+				//		} else {
+				//			if (numPlus_Minus * 5 / v[1] >= NEUTRAL_CUTOFF) {
+				//				ex = PositiveNegativeNeutral.Negative;
+				//				reason = "Several ratings of +/- may indicate an area of improvement.";
+				//			} else {
+				//				ex = PositiveNegativeNeutral.Neutral;
+				//				reason = "A few ratings of +/- may indicate an area of improvement.";
+				//			}
+				//		}
+				//	}
+				//	var clz = "";//String.IsNullOrWhiteSpace(reason) ? "" : "hasReason";
+				//	table.Data.Set("Score", kv.First()..Key, new HtmlString("<span class='fill score " + clz + " " + ex + "' title='" + reason.Replace("'", "&#39;").Replace("\"", "&quot;") + "'></span>"));
+				//}
+				//table.Rows = table.Rows.OrderByDescending(x => dictionaryPerson[x]).ToList();
+				//table.Rows.Add("Score");
 
 
 				return table;
@@ -899,7 +944,16 @@ namespace RadialReview.Controllers {
 			return Pdf(document);
 		}
 
+		[Access(AccessLevel.Manager)]
+		public async Task<JsonResult> SaveArchive(long id) {
 
+			var review = _ReviewAccessor.GetReview(GetUser(), id);
+			var model = GetReviewDetails(review, true);
+
+			var output = await ReportAccessor.ArchiveReport(GetUser(), model, true);
+			
+			return Json(ResultObject.Success("Saved report."), JsonRequestBehavior.AllowGet);
+		}
 
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<ActionResult> Plot(long id) {
@@ -981,7 +1035,7 @@ namespace RadialReview.Controllers {
 			ViewBag.ReviewId = id;
 			//Clients View
 			if (GetUser().Id == review.ForUserId && !GetUser().ManagingOrganization) {
-				return RedirectToAction("ClientDetails", new { id = id });
+				return RedirectToAction("Plot", new { id = id });
 
 			}
 			//Managers View

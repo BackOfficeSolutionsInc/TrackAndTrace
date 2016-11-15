@@ -12,7 +12,7 @@
 		<div class="col-md-8">
 			<hgroup class="page-header  listing fixed-pos">
 				<div class="pull-right">
-					<div class="btn-group">
+					<div class="btn-group  smallBreak">
 						<a class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 							<span class="icon fontastic-icon-thumbnails fontastic-ic1on-star-3"></span> <span class="mode-button">Columns </span>
 						</a>
@@ -23,12 +23,12 @@
 							<li><a class="clickable " onclick="changeMode('Prioritize (4 Columns)')"><span class="icon fontastic-icon-thumbnail1s"></span> 4 Columns</a></li>
 						</ul>
 					</div>
-					<div class="btn-group">
-						<a class="btn btn-default btn-xs unstar-all" onclick="unstarAll()">
+					<div class="btn-group smallBreak">
+						<a class="btn btn-default btn-xs unstar-all " onclick="unstarAll()">
 							<span class="icon fontastic-icon-star-2"></span> <span class="sort-button">Unstar</span>
 						</a>
 					</div>
-					<div class="btn-group">
+					<div class="btn-group smallBreak">
 						<a class="btn btn-default btn-xs" onclick="sortIssueByCurrent(recurrenceId,$('.issues-list'))">
 							<span class="icon fontastic-icon-sort-alpha-two"></span> <span class="sort-button">Sort</span>
 						</a>
@@ -54,7 +54,7 @@
 						</div>*@
 					@Html.Partial("partial/ButtonBar", Model)
 				</div>
-				<h2>IDS <small class="hidden-md hidden-sm">Identify. Discuss. Solve.</small></h2>
+				<h2 class="l10-page-title">IDS <small class="hidden-md hidden-sm">Identify. Discuss. Solve.</small></h2>
 			</hgroup>
 			@*<div class="dd">
 					<ol class="ids-list dd-list">
@@ -71,14 +71,14 @@
 			</div>
 
 		</div>
-		<div class="col-md-4">
+		<div class="col-md-4 hidden-xs hidden-sm">
 			<div style="">
 				<div class="fixed-pos">
 					<div class="hidden-lg hidden-md" style="height: 25px;"></div>
 					<hgroup class="page-header details">
 						<h4>Notes</h4>
 					</hgroup>
-					<div class="component issueDetails" id="issueDetails"></div>
+					<div class="component" id="issueDetails"></div>
 				</div>
 			</div>
 		</div>
