@@ -194,7 +194,7 @@ namespace RadialReview.Utilities {
 				if (meetingStart.NotNull(x => s1 <= x.Value && x.Value < next))
 					currWeek = true;
 				//var j = s.AddDays(-7);
-				var displayDate = s.AddDays(-7).AddDays(6.9999).StartOfWeek(weekStart).AddMinutes(-diff);
+				var displayDate = s.AddDays(-7).AddDays(6.9999).StartOfWeek(weekStart).AddMinutes(-(diff-60));
 				weeks.Add(new L10MeetingVM.WeekVM() {
 					DisplayDate = displayDate,
 					StartDate = displayDate.AddMinutes(diff),
@@ -340,7 +340,7 @@ namespace RadialReview.Utilities {
 				if (meetingStart.NotNull(x => s1.AddDays(7.0).StartOfWeek(weekNumber_StartOfWeek) <= x.Value && x.Value < next.AddDays(7.0).StartOfWeek(weekNumber_StartOfWeek)))
 					currWeek = true;
 				//var j = s.AddDays(-7);
-				var display = s.AddDays(6.9999).StartOfWeek(settings.WeekStart).AddMinutes(-settings.TimezoneOffset);
+				var display = s.AddDays(6.9999).StartOfWeek(settings.WeekStart).AddMinutes(-(settings.TimezoneOffset-60));
 				weeks.Add(new L10MeetingVM.WeekVM() {
 					DisplayDate = display,
 					StartDate = display.AddMinutes(-settings.TimezoneOffset),
@@ -377,17 +377,17 @@ namespace RadialReview.Utilities {
 				case ScorecardPeriod.Quarterly:
 					var soy = yearStart.GetDate(w.Year);
 					var year = w.Year;
-					if (w < soy.AddMinutes(-timezoneOffset)) {
+					if (w < soy.AddMinutes(-(timezoneOffset))) {
 						soy = yearStart.GetDate(w.Year - 1);
 						year = year - 1;
 					}
 					for (var i = 1; i <= 4; i++) {
-						var end = yearStart.GetDate(year, i).AddMinutes(-timezoneOffset);
+						var end = yearStart.GetDate(year, i).AddMinutes(-(timezoneOffset));
 						//if (i==4)
 						//    end = yearStart.GetDate(soy.Year + 1).AddMinutes(-timezoneOffset);
 						if (w < end) {
 							return new DateRange(
-									yearStart.GetDate(year, i - 1).AddMinutes(-timezoneOffset),
+									yearStart.GetDate(year, i - 1).AddMinutes(-(timezoneOffset)),
 									end
 								);
 						}
