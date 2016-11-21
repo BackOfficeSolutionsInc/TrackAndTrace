@@ -21,6 +21,7 @@ using RadialReview.Models.VTO;
 using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Query;
+using RadialReview.Models.Reviews;
 
 namespace RadialReview.Accessors
 {
@@ -113,21 +114,14 @@ namespace RadialReview.Accessors
 
 					var perm = PermissionsUtility.Create(s, caller);
 					var user = s.Get<UserOrganizationModel>(userId);
-					//var org = s.Get<OrganizationModel>(userId_OR_organizationId);
-
+					
 					long orgId = -1;
 
-					/*if (user == null && org != null){
-						perm.ManagingOrganization(userId_OR_organizationId);
-						orgId = org.Id;
-					}else if (user != null && org == null){*/
 					perm.EditQuestionForUser(userId);
 					orgId = user.Organization.Id;
-					//user.NumRocks = rocks.Count(x => x.DeleteTime == null);
+					
 					s.SaveOrUpdate(user);
-					/*}else{
-						throw new PermissionsException("What?");
-					}*/
+
                     List<ReviewsModel> outstanding=null;
                     if (updateOutstandingReviews)
 					    outstanding = ReviewAccessor.OutstandingReviewsForOrganization_Unsafe(s, orgId);
@@ -156,7 +150,7 @@ namespace RadialReview.Accessors
 							var r1 = r;
 							foreach (var o in outstanding/*.Where(x => x.PeriodId == r1.PeriodId)*/)
 							{
-								ReviewAccessor.AddResponsibilityAboutUserToReview(s, caller, perm, o.Id, userId, r.Id);
+								ReviewAccessor.AddResponsibilityAboutUserToReview(s, caller, perm, o.Id,new Reviewee(userId,null), r.Id);
 							}
 						}
                         if (updateAllL10s && added)

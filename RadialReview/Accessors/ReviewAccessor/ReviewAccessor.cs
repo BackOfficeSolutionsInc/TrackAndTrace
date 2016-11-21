@@ -44,7 +44,7 @@ namespace RadialReview.Accessors
 			queryProvider.AddData(application);
             if (reviewContainerId != null)
             {
-                var reviews = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId.Value).List();
+                var reviews = s.QueryOver<ReviewModel>().Where(x => x.ForReviewContainerId == reviewContainerId.Value).List();
                 queryProvider.AddData(reviews);
             }
 

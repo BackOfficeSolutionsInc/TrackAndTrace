@@ -88,7 +88,7 @@ namespace RadialReview.Controllers
             if (r is UserOrganizationModel)
             {
                 ViewBag.Page = "Members";
-                var teams = _TeamAccessor.GetUsersTeams(GetUser(), responsibilityGroupId);
+                var teams = TeamAccessor.GetUsersTeams(GetUser(), responsibilityGroupId);
                 var userResponsibility = ((UserOrganizationModel)r).Hydrate().Position().SetTeams(teams).Execute();
                 foreach (var rgId in userResponsibility.Positions.ToListAlive().Select(x => x.Position.Id))
                 {

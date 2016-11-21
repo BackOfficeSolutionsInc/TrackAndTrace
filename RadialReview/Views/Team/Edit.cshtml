@@ -57,13 +57,13 @@
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (var p in Model.Members.OrderBy(x => x.DeleteTime).ThenBy(x => x.Start))
+			@foreach (var p in Model.Members.OrderBy(x => x.DeleteTime).ThenBy(x => x.CreateTime))
 			{
 				<tr @*onclick="window.location='/Manage/UserDetails/@p.UserId';"*@ id="row_@p.Id" class="@(p.DeleteTime != null ? "danger" : "")">
 					<td class="position ">
 						<a href="@Url.Action("Details","User",new {id=p.User.Id})">@p.User.GetNameAndTitle()</a>
 					</td>
-					<td class="alignCenter">@p.Start.ToShortDateString()</td>
+					<td class="alignCenter">@p.CreateTime.ToShortDateString()</td>
 					<td class="alignCenter endTime">@(p.DeleteTime.HasValue ? p.DeleteTime.Value.ToShortDateString() : "Present")</td>
 					@if (Model.Team.Type == RadialReview.Models.Enums.TeamType.Standard)
 					{

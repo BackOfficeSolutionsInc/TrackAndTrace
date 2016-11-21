@@ -32,6 +32,7 @@ using RadialReview.Models.Angular.Scorecard;
 using RadialReview.Models.Angular.Meeting;
 using PdfSharp.Pdf;
 using RadialReview.Engines;
+using RadialReview.Models.Reviews;
 
 namespace RadialReview.Controllers {
 	public class ReviewController : BaseController {
@@ -65,10 +66,10 @@ namespace RadialReview.Controllers {
 		}
 
 		private List<IGrouping<long, AnswerModel>> GetPages(ReviewModel review) {
-			return review.Answers.GroupBy(x => x.AboutUserId).ToList();
+			return review.Answers.GroupBy(x => x.RevieweeUserId).ToList();
 		}
 		private List<IGrouping<long, AnswerModel>> GetPages(long callerId, IEnumerable<ReviewModel> reviews) {
-			return reviews.SelectMany(x => x.Answers).GroupBy(x => x.AboutUserId).OrderByDescending(x => x.Key == callerId).ToList();
+			return reviews.SelectMany(x => x.Answers).GroupBy(x => x.RevieweeUserId).OrderByDescending(x => x.Key == callerId).ToList();
 		}
 
 
@@ -86,7 +87,7 @@ namespace RadialReview.Controllers {
 			if (!reviews.Any())
 				throw new PermissionsException("No reviews to complete.");
 
-			if (!reviews.All(x => user.UserIds.Any(y => y == x.ForUserId)))
+			if (!reviews.All(x => user.UserIds.Any(y => y == x.ReviewerUserId)))
 				throw new PermissionsException("You cannot take this review.");
 
 			ViewBag.ReviewId = id;
@@ -99,7 +100,7 @@ namespace RadialReview.Controllers {
 				var pageConcrete = page ?? 0;
 				var p = pages[pageConcrete].ToListAlive();
 
-				var forUser = p.FirstOrDefault().NotNull(x => x.AboutUser);
+				var forUser = p.FirstOrDefault().NotNull(x => x.RevieweeUser);
 
 				var model = new TakeViewModel(p) {
 					Anonymous = reviewContainer.AnonymousByDefault,
@@ -111,7 +112,7 @@ namespace RadialReview.Controllers {
 					ForUser = forUser,
 					OrderedPeople = pages.Select(x =>
 						Tuple.Create(
-							x.First().AboutUser.GetNameExtended(),
+							x.First().RevieweeUser.GetNameExtended(),
 							x.All(y => !y.Required || y.Complete),
 							x.Count(y => y.Required && y.Complete) / (decimal)x.Count(y => y.Required) * 100
 						)).ToList()
@@ -297,7 +298,7 @@ namespace RadialReview.Controllers {
 			public bool Anonymous { get; set; }
 
 			public TakeViewModel(List<AnswerModel> answers) {
-				Answers = answers.GroupBy(x => Tuple.Create(x.Askable.Id, x.AboutUserId)).Select(x => new AnswerVM() {
+				Answers = answers.GroupBy(x => Tuple.Create(x.Askable.Id, x.RevieweeUserId)).Select(x => new AnswerVM() {
 					BaseAnswer = x.First(),
 					FromAnswers = x.ToList()
 				}).ToList();
@@ -319,20 +320,34 @@ namespace RadialReview.Controllers {
 			//var review = _ReviewAccessor.GetReview(GetUser(), id);
 
 
-			var existingUsers = _ReviewAccessor.GetReviewForUser(GetUser(), GetUser().Id, id).SelectMany(x => x.Answers.Select(y => y.AboutUserId).Distinct()).Distinct();
+			var existingUsers = _ReviewAccessor.GetReviewForUser(GetUser(), GetUser().Id, id).SelectMany(x => x.Answers.Select(y => new Reviewee(y.RevieweeUserId,y.RevieweeUser_AcNodeId)).Distinct()).Distinct();
+			//var orgRGM = OrganizationAccessor.GetOrganizationResponsibilityGroupModels(GetUser(), GetUser().Organization.Id);
 
-			var orgRGM = OrganizationAccessor.GetOrganizationResponsibilityGroupModels(GetUser(), GetUser().Organization.Id);
+			var orgRGM = ReviewAccessor.GetPossibleOrganizationReviewees(GetUser(), GetUser().Organization.Id, null,true);
 
-			var permittedUsers = orgRGM.Where(orgUser => existingUsers.All(existingUserId => existingUserId != orgUser.Id)).Where(x => x is OrganizationTeamModel && ((OrganizationTeamModel)x).Type != TeamType.Subordinates || !(x is OrganizationTeamModel));
+			var permittedUsers = orgRGM.Where(orgUser => existingUsers.All(existingUser => existingUser != orgUser)).ToList();
+									  // .Where(x => x.Type == OriginType.Team /*is OrganizationTeamModel && ((OrganizationTeamModel)x).Type != TeamType.Subordinates || !(x is OrganizationTeamModel)*/);
 
-			var selectList = permittedUsers.OrderBy(x => x.GetName()).Select(x => {
-				var text = x.GetName();
-				if (x is OrganizationTeamModel) {
+			//var tree = AccountabilityAccessor.GetTree(GetUser(), GetUser().Organization.AccountabilityChartId);
+
+
+
+			var selectList = permittedUsers.OrderBy(x => x._Name).SelectMany(x => {
+				var text = x._Name;
+				if (x.Type == OriginType.Team) {
 					text = text + " (All members)";
-				} else if (x is OrganizationPositionModel) {
+				} else if (x.Type == OriginType.Position) {
 					text = "" + text + " (Everyone in this position) ";
 				}
-				return new SelectListItem() { Text = text, Value = "" + x.Id };
+				var idName = "" + x.ToId();
+
+				//if (x.Type == OriginType.User) {
+				//	var nodes = AngularTreeUtil.FindUsersNodes(tree.Root, x.Id);
+				//	if (nodes.Any()) {
+				//		return nodes.Select(y => new SelectListItem() { Text = x.GetNameExtended(), Value = rgmId + "_" + y.Id });
+				//	}
+				//}
+				return new SelectListItem() { Text = text, Value = idName }.AsList();
 			}).ToList();
 
 			var model = new AdditionalReviewViewModel() {
@@ -347,6 +362,7 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
+		[Obsolete("Fix for AC")]
 		public ActionResult AdditionalReview(AdditionalReviewViewModel model) {
 			if (model.Users == null) {
 				return RedirectToAction("Index", "Home");
@@ -354,33 +370,40 @@ namespace RadialReview.Controllers {
 
 			var orgRGM = OrganizationAccessor.GetOrganizationResponsibilityGroupModels(GetUser(), GetUser().Organization.Id);
 
-			var intersection = orgRGM.Where(rgm => model.Users.Contains(rgm.Id)).ToList();
+			var usersRGM_AcNode = model.Users.Select(x => x.Split('_').Select(y => y.TryParseLong()).ToArray());
+			var userIds = usersRGM_AcNode.Select(x => x[0]).ToArray();
+
+			var intersection = orgRGM.Where(rgm => userIds.Contains(rgm.Id)).ToList();
 			var additionalGroups = intersection.Where(x => !(x is UserOrganizationModel)).Select(x => x.Id).ToList();
 
-			var users = intersection.Where(x => (x is UserOrganizationModel)).Select(x => x.Id).ToList();
+			var users = intersection.Where(x => (x is UserOrganizationModel)).Select(x => {
+				var lookup = usersRGM_AcNode.FirstOrDefault(y => y[0] == x.Id);
+				long? acNodeId = null;
+				if (lookup != null && lookup.Length > 0)
+					acNodeId = lookup[1];
+				return new Reviewee(x.Id, acNodeId);
+			}).ToList();
 
 			if (additionalGroups.Any()) {
 				using (var s = HibernateSession.GetCurrentSession()) {
 					using (var tx = s.BeginTransaction()) {
+						//Transaction here because of repeated calls
 						users.AddRange(additionalGroups.SelectMany(x =>
-							ResponsibilitiesAccessor.GetResponsibilityGroupMembers(s, PermissionsUtility.Create(s, GetUser()), x)
-								.Select(y => y.Id)
+							ResponsibilitiesAccessor.GetResponsibilityGroupMembers(s, PermissionsUtility.Create(s, GetUser()), x).Select(y => new Reviewee(y.Id,null))
 							)
-							);
+						);
 					}
 				}
 			}
 
 
-
-
-			foreach (var userId in users) {
-				_ReviewAccessor.AddToReview(GetUser(), GetUser().Id, model.Id, userId);
+			foreach (var user in users) {
+				_ReviewAccessor.AddToReview(GetUser(), new Reviewer(GetUser().Id), model.Id, user);
 			}
 
 			var reviews = _ReviewAccessor.GetReviewForUser(GetUser(), GetUser().Id, model.Id);
 			var pages = GetPages(GetUser().Id, reviews);
-			var found = pages.Select((x, i) => Tuple.Create(x.Key, i)).FirstOrDefault(x => x.Item1 == users.FirstOrDefault());
+			var found = pages.Select((x, i) => Tuple.Create(x.Key, i)).FirstOrDefault(x => x.Item1 == userIds.FirstOrDefault());
 			var pageNum = (pages.Count - 1);
 			if (found != null)
 				pageNum = found.Item2;
@@ -392,19 +415,19 @@ namespace RadialReview.Controllers {
 		public ActionResult Create() {
 			throw new PermissionsException("depricated");
 			/*
-            //TODO correct the time zone.
-            var today = DateTime.UtcNow.ToLocalTime();
-            var user = GetUser().Hydrate().ManagingUsers(subordinates: true).Organization().Execute();
+			//TODO correct the time zone.
+			var today = DateTime.UtcNow.ToLocalTime();
+			var user = GetUser().Hydrate().ManagingUsers(subordinates: true).Organization().Execute();
 
-            var teams = _TeamAccessor.GetTeamsDirectlyManaged(GetUser(), user.Id).ToSelectList(x => x.Name, x => x.Id).ToList();
+			var teams = _TeamAccessor.GetTeamsDirectlyManaged(GetUser(), user.Id).ToSelectList(x => x.Name, x => x.Id).ToList();
 
-            // teams.Add(new SelectListItem() { Text = "Subordinates", Value = "-5" });
+			// teams.Add(new SelectListItem() { Text = "Subordinates", Value = "-5" });
 
-            return PartialView(new IssueReviewViewModel() {
-                Today = today,
-                ForUsers = user.AllSubordinates,
-                PotentialTeams = teams
-            });*/
+			return PartialView(new IssueReviewViewModel() {
+				Today = today,
+				ForUsers = user.AllSubordinates,
+				PotentialTeams = teams
+			});*/
 		}
 
 
@@ -412,7 +435,7 @@ namespace RadialReview.Controllers {
 		[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
 		public ActionResult ClientDetails(long id, bool print = false, bool reviewing = false) {
 			var review = _ReviewAccessor.GetReview(GetUser(), id);
-			var managesUser = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(review.ForUserId, false, PermissionType.ViewReviews));
+			var managesUser = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(review.ReviewerUserId, false, PermissionType.ViewReviews));
 			if (managesUser)
 				ViewBag.Reviewing = true;
 			ViewBag.ReviewId = id;
@@ -566,122 +589,122 @@ namespace RadialReview.Controllers {
 			public int NumberOfWeeks { get; set; }
 
 			/*
-            public Table EvaluationTable
-            {
-                get { return CompanyValuesTable; }
-            }
-            *
-            *public Table RolesTable
-            {
-                get
-                {
-                    var answers = AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.GWC).Cast<GetWantCapacityAnswer>();
-                    var dictionary = new DefaultDictionary<String, decimal[]>(x => new decimal[]{0,0});
-                    var table = new TableData();
-                    foreach (var x in answers){
-                        var clz = String.IsNullOrWhiteSpace(x.Reason) ? "" : "hasReason";
-						
-                        if (x.GetIt != Tristate.Indeterminate){
-                            dictionary[x.Askable.GetQuestion() + " (Get It)"][0] += (x.GetIt == Tristate.True) ? 1 : 0;
-                            dictionary[x.Askable.GetQuestion() + " (Get It)"][1] += 1;
-                        }
-                        if (x.WantIt != Tristate.Indeterminate){
-                            dictionary[x.Askable.GetQuestion() + " (Want It)"][0] += (x.WantIt == Tristate.True) ? 1 : 0;
-                            dictionary[x.Askable.GetQuestion() + " (Want It)"][1] += 1;
-                        }
-                        if (x.HasCapacity != Tristate.Indeterminate){
-                            dictionary[x.Askable.GetQuestion() + " (Capacity To Do It)"][0] += (x.HasCapacity == Tristate.True) ? 1 : 0;
-                            dictionary[x.Askable.GetQuestion() + " (Capacity To Do It)"][1] += 1;
-                        }
+			public Table EvaluationTable
+			{
+				get { return CompanyValuesTable; }
+			}
+			*
+			*public Table RolesTable
+			{
+				get
+				{
+					var answers = AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.GWC).Cast<GetWantCapacityAnswer>();
+					var dictionary = new DefaultDictionary<String, decimal[]>(x => new decimal[]{0,0});
+					var table = new TableData();
+					foreach (var x in answers){
+						var clz = String.IsNullOrWhiteSpace(x.Reason) ? "" : "hasReason";
 
-                        table.Set(x.ByUser.GetName(),x.Askable.GetQuestion()+" (Get It)",new HtmlString("<span class='fill roles " + clz + " " + x.GetIt + "' title='" + x.Reason + "'></span>"));
-                        table.Set(x.ByUser.GetName(),x.Askable.GetQuestion()+" (Want It)",new HtmlString("<span class='fill roles " + clz + " " + x.WantIt+ "' title='" + x.Reason + "'></span>"));
-                        table.Set(x.ByUser.GetName(),x.Askable.GetQuestion()+" (Capacity To Do It)",new HtmlString("<span class='fill roles " + clz + " " + x.HasCapacity + "' title='" + x.Reason + "'></span>"));
-                    }
-					
-                    foreach (var kv in dictionary)
-                    {
-                        var ex = Tristate.True;
-                        var v = kv.Value;
-                        var reason = "";
-                        if (v[0] == 0){
-                            ex = Tristate.Indeterminate;
-                        }else if (v[0] != v[1]){
-                            reason = "Aiming for 0 No answers.";
-                            ex = Tristate.False;
-                        }
+						if (x.GetIt != Tristate.Indeterminate){
+							dictionary[x.Askable.GetQuestion() + " (Get It)"][0] += (x.GetIt == Tristate.True) ? 1 : 0;
+							dictionary[x.Askable.GetQuestion() + " (Get It)"][1] += 1;
+						}
+						if (x.WantIt != Tristate.Indeterminate){
+							dictionary[x.Askable.GetQuestion() + " (Want It)"][0] += (x.WantIt == Tristate.True) ? 1 : 0;
+							dictionary[x.Askable.GetQuestion() + " (Want It)"][1] += 1;
+						}
+						if (x.HasCapacity != Tristate.Indeterminate){
+							dictionary[x.Askable.GetQuestion() + " (Capacity To Do It)"][0] += (x.HasCapacity == Tristate.True) ? 1 : 0;
+							dictionary[x.Askable.GetQuestion() + " (Capacity To Do It)"][1] += 1;
+						}
 
-                        var clz = String.IsNullOrWhiteSpace(reason) ? "" : "hasReason";
-                        table.Set("Score", kv.Key, new HtmlString("<span class='fill score " + clz + " " + ex + "' title='" + reason + "'></span>"));
-                    }
-                    table.Rows.Add("Score");
+						table.Set(x.ByUser.GetName(),x.Askable.GetQuestion()+" (Get It)",new HtmlString("<span class='fill roles " + clz + " " + x.GetIt + "' title='" + x.Reason + "'></span>"));
+						table.Set(x.ByUser.GetName(),x.Askable.GetQuestion()+" (Want It)",new HtmlString("<span class='fill roles " + clz + " " + x.WantIt+ "' title='" + x.Reason + "'></span>"));
+						table.Set(x.ByUser.GetName(),x.Askable.GetQuestion()+" (Capacity To Do It)",new HtmlString("<span class='fill roles " + clz + " " + x.HasCapacity + "' title='" + x.Reason + "'></span>"));
+					}
 
-                    return new Table(table);
-                }
-            }**
-            public Table RolesTable
-            {
-                get
-                {
-                    var answers = AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.GWC).Cast<GetWantCapacityAnswer>();
+					foreach (var kv in dictionary)
+					{
+						var ex = Tristate.True;
+						var v = kv.Value;
+						var reason = "";
+						if (v[0] == 0){
+							ex = Tristate.Indeterminate;
+						}else if (v[0] != v[1]){
+							reason = "Aiming for 0 No answers.";
+							ex = Tristate.False;
+						}
 
+						var clz = String.IsNullOrWhiteSpace(reason) ? "" : "hasReason";
+						table.Set("Score", kv.Key, new HtmlString("<span class='fill score " + clz + " " + ex + "' title='" + reason + "'></span>"));
+					}
+					table.Rows.Add("Score");
 
-
-
-                    var dictionary = new DefaultDictionary<String, decimal[]>(x => new decimal[] { 0, 0 });
-                    var table = new TableData();
-                    foreach (var x in answers)
-                    {
-                        table.Update(x.Askable.GetQuestion(),"Get It",()=>);
+					return new Table(table);
+				}
+			}**
+			public Table RolesTable
+			{
+				get
+				{
+					var answers = AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.GWC).Cast<GetWantCapacityAnswer>();
 
 
 
-                        var clz = String.IsNullOrWhiteSpace(x.Reason) ? "" : "hasReason";
 
-                        if (x.GetIt != Tristate.Indeterminate)
-                        {
-                            dictionary[x.Askable.GetQuestion() + " (Get It)"][0] += (x.GetIt == Tristate.True) ? 1 : 0;
-                            dictionary[x.Askable.GetQuestion() + " (Get It)"][1] += 1;
-                        }
-                        if (x.WantIt != Tristate.Indeterminate)
-                        {
-                            dictionary[x.Askable.GetQuestion() + " (Want It)"][0] += (x.WantIt == Tristate.True) ? 1 : 0;
-                            dictionary[x.Askable.GetQuestion() + " (Want It)"][1] += 1;
-                        }
-                        if (x.HasCapacity != Tristate.Indeterminate)
-                        {
-                            dictionary[x.Askable.GetQuestion() + " (Capacity To Do It)"][0] += (x.HasCapacity == Tristate.True) ? 1 : 0;
-                            dictionary[x.Askable.GetQuestion() + " (Capacity To Do It)"][1] += 1;
-                        }
+					var dictionary = new DefaultDictionary<String, decimal[]>(x => new decimal[] { 0, 0 });
+					var table = new TableData();
+					foreach (var x in answers)
+					{
+						table.Update(x.Askable.GetQuestion(),"Get It",()=>);
 
-                        table.Set(x.ByUser.GetName(), x.Askable.GetQuestion() + " (Get It)", new HtmlString("<span class='fill roles " + clz + " " + x.GetIt + "' title='" + x.Reason + "'></span>"));
-                        table.Set(x.ByUser.GetName(), x.Askable.GetQuestion() + " (Want It)", new HtmlString("<span class='fill roles " + clz + " " + x.WantIt + "' title='" + x.Reason + "'></span>"));
-                        table.Set(x.ByUser.GetName(), x.Askable.GetQuestion() + " (Capacity To Do It)", new HtmlString("<span class='fill roles " + clz + " " + x.HasCapacity + "' title='" + x.Reason + "'></span>"));
-                    }
 
-                    foreach (var kv in dictionary)
-                    {
-                        var ex = Tristate.True;
-                        var v = kv.Value;
-                        var reason = "";
-                        if (v[0] == 0)
-                        {
-                            ex = Tristate.Indeterminate;
-                        }
-                        else if (v[0] != v[1])
-                        {
-                            reason = "Aiming for 0 No answers.";
-                            ex = Tristate.False;
-                        }
 
-                        var clz = String.IsNullOrWhiteSpace(reason) ? "" : "hasReason";
-                        table.Set("Score", kv.Key, new HtmlString("<span class='fill score " + clz + " " + ex + "' title='" + reason + "'></span>"));
-                    }
-                    table.Rows.Add("Score");
+						var clz = String.IsNullOrWhiteSpace(x.Reason) ? "" : "hasReason";
 
-                    return new Table(table);
-                }
-            }*/
+						if (x.GetIt != Tristate.Indeterminate)
+						{
+							dictionary[x.Askable.GetQuestion() + " (Get It)"][0] += (x.GetIt == Tristate.True) ? 1 : 0;
+							dictionary[x.Askable.GetQuestion() + " (Get It)"][1] += 1;
+						}
+						if (x.WantIt != Tristate.Indeterminate)
+						{
+							dictionary[x.Askable.GetQuestion() + " (Want It)"][0] += (x.WantIt == Tristate.True) ? 1 : 0;
+							dictionary[x.Askable.GetQuestion() + " (Want It)"][1] += 1;
+						}
+						if (x.HasCapacity != Tristate.Indeterminate)
+						{
+							dictionary[x.Askable.GetQuestion() + " (Capacity To Do It)"][0] += (x.HasCapacity == Tristate.True) ? 1 : 0;
+							dictionary[x.Askable.GetQuestion() + " (Capacity To Do It)"][1] += 1;
+						}
+
+						table.Set(x.ByUser.GetName(), x.Askable.GetQuestion() + " (Get It)", new HtmlString("<span class='fill roles " + clz + " " + x.GetIt + "' title='" + x.Reason + "'></span>"));
+						table.Set(x.ByUser.GetName(), x.Askable.GetQuestion() + " (Want It)", new HtmlString("<span class='fill roles " + clz + " " + x.WantIt + "' title='" + x.Reason + "'></span>"));
+						table.Set(x.ByUser.GetName(), x.Askable.GetQuestion() + " (Capacity To Do It)", new HtmlString("<span class='fill roles " + clz + " " + x.HasCapacity + "' title='" + x.Reason + "'></span>"));
+					}
+
+					foreach (var kv in dictionary)
+					{
+						var ex = Tristate.True;
+						var v = kv.Value;
+						var reason = "";
+						if (v[0] == 0)
+						{
+							ex = Tristate.Indeterminate;
+						}
+						else if (v[0] != v[1])
+						{
+							reason = "Aiming for 0 No answers.";
+							ex = Tristate.False;
+						}
+
+						var clz = String.IsNullOrWhiteSpace(reason) ? "" : "hasReason";
+						table.Set("Score", kv.Key, new HtmlString("<span class='fill score " + clz + " " + ex + "' title='" + reason + "'></span>"));
+					}
+					table.Rows.Add("Score");
+
+					return new Table(table);
+				}
+			}*/
 
 			public static int NEUTRAL_CUTOFF = 2;
 
@@ -693,20 +716,20 @@ namespace RadialReview.Controllers {
 				return Table.Create(
 					o,
 					x => x.Item1.Askable.GetQuestion(),
-					x => x.Item2 == 1 ? x.Item1.ByUser.GetName() : "Override",
+					x => x.Item2 == 1 ? x.Item1.ReviewerUser.GetName() : "Override",
 					xx => {
 						var x = xx.Item1;
 						if (xx.Item2 == 1) {
 							return new SpanCell {
 								Class = "fill rocks " + (String.IsNullOrWhiteSpace(x.Reason) ? "" : "hasReason") +/* " " + x.Finished +*/ " " + x.Completion,
 								Title = x.Reason,
-								Data = new Dictionary<string, string>() { { "reviewId", "" + reviewId }, { "rockId", "" + x.Askable.Id }, { "byuserid", "" + x.ByUserId } },
+								Data = new Dictionary<string, string>() { { "reviewId", "" + reviewId }, { "rockId", "" + x.Askable.Id }, { "byuserid", "" + x.ReviewerUserId } },
 							}.ToHtmlString();
 						} else {
 							return new SpanCell {
 								Class = "fill rocks override " + (String.IsNullOrWhiteSpace(x.Reason) ? "" : "hasReason") + /*" " + x.Finished +*/ " " + x.Completion,
 								Title = x.Reason,
-								Data = new Dictionary<string, string>() { { "reviewId", "" + reviewId }, { "rockId", "" + x.Askable.Id }, { "byuserid", "" + x.ByUserId } },
+								Data = new Dictionary<string, string>() { { "reviewId", "" + reviewId }, { "rockId", "" + x.Askable.Id }, { "byuserid", "" + x.ReviewerUserId } },
 							}.ToHtmlString();
 
 						}
@@ -753,12 +776,12 @@ namespace RadialReview.Controllers {
 
 					//Pull self
 					var selfAns = values.Where(x => x.AboutType.HasFlag(AboutType.Self)).GroupBy(x => x.Askable.Id);
-					AddCompanyValueRow(Review.ForUser.GetName(), data, selfAns, (x, y, z) => new HtmlString(""), "");
+					AddCompanyValueRow(Review.ReviewerUser.GetName(), data, selfAns, (x, y, z) => new HtmlString(""), "");
 					//Pull manager
-					var managers = values.Where(x => x.AboutType.HasFlag(AboutType.Subordinate)).GroupBy(x => x.ByUser.GetName());
+					var managers = values.Where(x => x.AboutType.HasFlag(AboutType.Subordinate)).GroupBy(x => x.ReviewerUser.GetName());
 					foreach (var m in managers) {
 						var mAnswers = m.GroupBy(x => x.Askable.Id);
-						AddCompanyValueRow(m.First().ByUser.GetName(), data, mAnswers, (x, y, z) => new HtmlString(""), "");
+						AddCompanyValueRow(m.First().ReviewerUser.GetName(), data, mAnswers, (x, y, z) => new HtmlString(""), "");
 					}
 					//Pull peer answers
 					var otherAns = values.Where(x => !x.AboutType.HasFlag(AboutType.Self) && !x.AboutType.HasFlag(AboutType.Subordinate)).GroupBy(x => x.Askable.Id);
@@ -784,10 +807,10 @@ namespace RadialReview.Controllers {
 
 				var table = Table.Create(
 					values,
-					x => x.ByUser.GetName(),
+					x => x.ReviewerUser.GetName(),
 					x => x.Askable.GetQuestion(),
 					x => {
-						dictionaryPerson[x.ByUser.GetName()] += x.Exhibits.Score2();
+						dictionaryPerson[x.ReviewerUser.GetName()] += x.Exhibits.Score2();
 
 						return new SpanCell {
 							Class = "fill companyValues " + (String.IsNullOrWhiteSpace(x.Reason) ? "" : "hasReason") + " " + x.Exhibits,
@@ -795,7 +818,7 @@ namespace RadialReview.Controllers {
 							Data = new Dictionary<string, string>() {
 								{ "reviewId", "" + reviewId },
 								{ "valueId", "" + x.Askable.Id },
-								{ "byuserid", "" + x.ByUserId }
+								{ "byuserid", "" + x.ReviewerUserId }
 							},
 						}.ToHtmlString();
 					}, "companyValues");
@@ -803,7 +826,7 @@ namespace RadialReview.Controllers {
 
 				foreach (var valueAnswers in values.GroupBy(x => x.Askable)) {
 					var question = valueAnswers.Key.GetQuestion();
-					var score = ChartsEngine.ScatterScorer.MergeValueScores(valueAnswers.ToList(), (CompanyValueModel) valueAnswers.Key);
+					var score = ChartsEngine.ScatterScorer.MergeValueScores(valueAnswers.ToList(), (CompanyValueModel)valueAnswers.Key);
 
 					var clz = "";
 					var ex = PositiveNegativeNeutral.Indeterminate;
@@ -813,7 +836,7 @@ namespace RadialReview.Controllers {
 						ex = PositiveNegativeNeutral.Negative;
 
 					var reason = score.GetCompiledMessage();
-					table.Data.Set("Score", question, new HtmlString("<span class='fill score " + clz + " " + ex + "' title='" + reason.Replace("'", "&#39;").Replace("\"", "&quot;") + "'></span>"));					
+					table.Data.Set("Score", question, new HtmlString("<span class='fill score " + clz + " " + ex + "' title='" + reason.Replace("'", "&#39;").Replace("\"", "&quot;") + "'></span>"));
 				}
 
 
@@ -939,7 +962,7 @@ namespace RadialReview.Controllers {
 			foreach (var id in idList) {
 				var review = _ReviewAccessor.GetReview(GetUser(), id);
 				var model = GetReviewDetails(review, true);
-				PdfAccessor.AddReviewPrintout(GetUser(),document, model);
+				PdfAccessor.AddReviewPrintout(GetUser(), document, model);
 			}
 			return Pdf(document);
 		}
@@ -951,14 +974,14 @@ namespace RadialReview.Controllers {
 			var model = GetReviewDetails(review, true);
 
 			var output = await ReportAccessor.ArchiveReport(GetUser(), model, true);
-			
+
 			return Json(ResultObject.Success("Saved report."), JsonRequestBehavior.AllowGet);
 		}
 
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<ActionResult> Plot(long id) {
 			var review = _ReviewAccessor.GetReview(GetUser(), id);
-			var managesUser = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(review.ForUserId, false, PermissionType.ViewReviews));
+			var managesUser = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(review.ReviewerUserId, false, PermissionType.ViewReviews));
 			if (managesUser)
 				ViewBag.Reviewing = true;
 			ViewBag.ReviewId = id;
@@ -975,19 +998,19 @@ namespace RadialReview.Controllers {
 
 		private ReviewDetailsViewModel GetReviewDetails(ReviewModel review, bool includeScorecard = false) {
 			var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id).OrderByDescending(x => x.Id);
-			var answers = _ReviewAccessor.GetAnswersForUserReview(GetUser(), review.ForUserId, review.ForReviewsId).Alive().ToList();
-			var managers = _UserAccessor.GetManagers(GetUser(), review.ForUserId, PermissionType.ViewReviews);
+			var answers = _ReviewAccessor.GetAnswersForUserReview(GetUser(), review.ReviewerUserId, review.ForReviewContainerId).Alive().ToList();
+			var managers = _UserAccessor.GetManagers(GetUser(), review.ReviewerUserId, PermissionType.ViewReviews);
 
-			var user = _UserAccessor.GetUserOrganization(GetUser(), review.ForUserId, false, false, PermissionType.ViewReviews);
+			var user = _UserAccessor.GetUserOrganization(GetUser(), review.ReviewerUserId, false, false, PermissionType.ViewReviews);
 
 
 			foreach (var c in review.ClientReview.Charts.ToListAlive()) {
 				c.Title = _ChartsEngine.GetChartTitle(GetUser(), c.Id);
 			}
 
-			var reviewContainer = _ReviewAccessor.GetReviewContainer(GetUser(), review.ForReviewsId, false, false, false);
+			var reviewContainer = _ReviewAccessor.GetReviewContainer(GetUser(), review.ForReviewContainerId, false, false, false);
 
-			var questions = _AskableAccessor.GetAskablesForUser(GetUser(), review.ForUserId, /*review.PeriodId,*/new DateRange(reviewContainer.DateCreated, DateTime.UtcNow));
+			var questions = _AskableAccessor.GetAskablesForUser(GetUser(), new Reviewee(review.ReviewerUserId, null), new DateRange(reviewContainer.DateCreated, DateTime.UtcNow));
 			var activeQuestions = questions.Where(x => answers.Any(y => y.Askable.Id == x.Id)).ToList();
 
 			var chartTypes = new List<ReviewDetailsViewModel.ChartType>();
@@ -997,7 +1020,7 @@ namespace RadialReview.Controllers {
 			chartTypes.Add(new ReviewDetailsViewModel.ChartType() { Checked = false, Title = "Show All (Uncolored)", ImageUrl = "https://s3.amazonaws.com/Radial/base/Charts/AllGray.png" });
 
 			var now = DateTime.UtcNow;
-			var nextRocks = _RockAccessor.GetRocks(GetUser(), review.ForUserId/*, reviewContainer.NextPeriodId*/).ToList();
+			var nextRocks = _RockAccessor.GetRocks(GetUser(), review.ReviewerUserId/*, reviewContainer.NextPeriodId*/).ToList();
 
 			if (review.ClientReview.IncludeScorecard && includeScorecard) {
 				review.ClientReview._ScorecardRecur = ScorecardAccessor.GetReview_Scorecard(GetUser(), review.Id);
@@ -1034,14 +1057,14 @@ namespace RadialReview.Controllers {
 			var review = _ReviewAccessor.GetReview(GetUser(), id);
 			ViewBag.ReviewId = id;
 			//Clients View
-			if (GetUser().Id == review.ForUserId && !GetUser().ManagingOrganization) {
+			if (GetUser().Id == review.ReviewerUserId && !GetUser().ManagingOrganization) {
 				return RedirectToAction("Plot", new { id = id });
 
 			}
 			//Managers View
 			else {
 				ViewBag.RoleDetails = true;
-				_PermissionsAccessor.Permitted(GetUser(), x => x.ManagesUserOrganization(review.ForUserId, false, PermissionType.ViewReviews));
+				_PermissionsAccessor.Permitted(GetUser(), x => x.ManagesUserOrganization(review.ReviewerUserId, false, PermissionType.ViewReviews));
 				var model = GetReviewDetails(review);
 				//model.Supervisors = model.AnswersAbout.Where(x => x.ByUserId == GetUser().Id).ToList();
 				return View(model);

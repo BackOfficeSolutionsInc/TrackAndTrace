@@ -17,9 +17,9 @@ namespace RadialReview.Models
 	{
 		public virtual long Id { get; protected set; }
 		public virtual ReviewsModel ForReviewContainer { get; set; }
-		public virtual long ForReviewsId { get; set; }
-		public virtual UserOrganizationModel ForUser { get; set; }
-		public virtual long ForUserId { get; set; }
+		public virtual long ForReviewContainerId { get; set; }
+		public virtual UserOrganizationModel ReviewerUser { get; set; }
+		public virtual long ReviewerUserId { get; set; }
 		public virtual String Name { get; set; }
 		public virtual DateTime CreatedAt { get; set; }
 		//public virtual DateTime De { get; set; }
@@ -161,19 +161,18 @@ namespace RadialReview.Models
 
 	public class ReviewModelMap : ClassMap<ReviewModel>
 	{
-		public ReviewModelMap()
-		{
+		public ReviewModelMap(){
 			Id(x => x.Id);
 			//Map(x => x.Complete);
 			//Map(x => x.Completion);
 			//Map(x => x.FullyComplete);
-			Map(x => x.ForUserId)
+			Map(x => x.ReviewerUserId)
 				.Column("ForUserId").Index("Review_ForUserId_IDX");
-			References(x => x.ForUser)
+			References(x => x.ReviewerUser)
 				.Column("ForUserId")
 				.Not.LazyLoad()
 				.ReadOnly();
-			Map(x => x.ForReviewsId)
+			Map(x => x.ForReviewContainerId)
 				.Column("ForReviewsId");
 			References(x => x.ForReviewContainer)
 				.Column("ForReviewsId").LazyLoad().ReadOnly();

@@ -280,9 +280,16 @@ namespace RadialReview.Accessors {
 					}).ToList();
 
 
-				var lookup = order.Distinct(x => x.Measurable)
-					.OrderBy(x => x.Meeting).ThenBy(x => x.Order ?? int.MaxValue).ThenBy(x => x.Measurable)
-					.Select((x, i) => Tuple.Create(x, i))
+				order = order.GroupBy(x => x.Meeting)
+					.OrderByDescending(x => x.Count())
+					.ThenBy(x => x.First().Meeting)
+					.Select(x => x.OrderBy(y => y.Order ?? int.MaxValue).ThenBy(y => y.Measurable))
+					.SelectMany(x => x)
+					.Distinct(x => x.Measurable)
+					.ToList();
+
+
+				var lookup = order.Select((x, i) => Tuple.Create(x, i))
 					.ToDictionary(x => x.Item1.Measurable, x => x.Item2);
 
 
@@ -848,7 +855,7 @@ namespace RadialReview.Accessors {
 			var start = review.DueDate.AddDays(-7 * 13);
 			var end = review.DueDate.AddDays(14);
 
-			var scorecard = GetAngularScorecardForUser(s, perms, review.ForUserId, new DateRange(start, end), includeNextWeek: true, now: review.DueDate);
+			var scorecard = GetAngularScorecardForUser(s, perms, review.ReviewerUserId, new DateRange(start, end), includeNextWeek: true, now: review.DueDate);
 			foreach (var m in scorecard.Measurables) {
 				m.Disabled = true;
 			}

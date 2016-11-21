@@ -23,7 +23,7 @@ namespace RadialReview.Models
 {
     [DebuggerDisplay("User {User}")]
     [DataContract]
-    public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IDeletable, TimeSettings/*, IAngularizer<UserOrganizationModel>*/
+    public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IHistorical, TimeSettings/*, IAngularizer<UserOrganizationModel>*/
     {
         protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -114,14 +114,17 @@ namespace RadialReview.Models
         public override string GetImageUrl()
         {
             return this.ImageUrl(true);
-        }
+		}
 
-        public virtual OriginType GetOriginType()
-        {
-            return OriginType.User;
-        }
+		public override OriginType GetOrigin() {
+			return OriginType.User;
+		}
+		
+		public virtual OriginType GetOriginType() {
+			return OriginType.User;
+		}
 
-        public virtual String GetSpecificNameForOrigin()
+		public virtual String GetSpecificNameForOrigin()
         {
             return this.GetName();
         }

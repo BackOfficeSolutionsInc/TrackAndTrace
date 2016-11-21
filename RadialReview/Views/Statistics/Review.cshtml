@@ -68,21 +68,21 @@
 				<tbody>
 					@foreach (var review in Model.Reviews.OrderByDescending(x =>
 					{
-						double complete = Model.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete));
-						double total = Model.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count());
+						double complete = Model.Reviews.Sum(n => n.Answers.Where(z => z.ReviewerUserId == x.ReviewerUserId).Distinct(y => y.RevieweeUserId).Count(y => y.Complete));
+						double total = Model.Reviews.Sum(n => n.Answers.Where(z => z.ReviewerUserId == x.ReviewerUserId).Distinct(y => y.RevieweeUserId).Count());
 						return complete / total;
 					}))
 					{
 						<tr class="checkRow" onclick="$(this).find('.userCheck').prop('checked', !$(this).find('.userCheck').prop('checked'))">
-							<td><input type="checkbox" class="userCheck clickThrough" name="user_@review.ForUserId" data-id="@review.ForUserId" /></td>
-							<td class="table-hover-underline">@review.ForUser.GetNameAndTitle()</td>
+							<td><input type="checkbox" class="userCheck clickThrough" name="user_@review.ReviewerUserId" data-id="@review.ReviewerUserId" /></td>
+							<td class="table-hover-underline">@review.ReviewerUser.GetNameAndTitle()</td>
 							<td class="alignCenter">
-								@Model.Reviews.Sum(x => x.Answers.Where(z => z.AboutUserId == review.ForUserId).Distinct(y => y.ByUserId).Count(y => y.Complete))/
-								@Model.Reviews.Sum(x => x.Answers.Where(z => z.AboutUserId == review.ForUserId).Distinct(y => y.ByUserId).Count())
+								@Model.Reviews.Sum(x => x.Answers.Where(z => z.RevieweeUserId == review.ReviewerUserId).Distinct(y => y.ReviewerUserId).Count(y => y.Complete))/
+								@Model.Reviews.Sum(x => x.Answers.Where(z => z.RevieweeUserId == review.ReviewerUserId).Distinct(y => y.ReviewerUserId).Count())
 							</td>
 							<td class="alignCenter">
-								@Model.Reviews.Sum(x => x.Answers.Where(z => z.ByUserId == review.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete))/
-								@Model.Reviews.Sum(x => x.Answers.Where(z => z.ByUserId == review.ForUserId).Distinct(y => y.AboutUserId).Count())
+								@Model.Reviews.Sum(x => x.Answers.Where(z => z.ReviewerUserId == review.ReviewerUserId).Distinct(y => y.RevieweeUserId).Count(y => y.Complete))/
+								@Model.Reviews.Sum(x => x.Answers.Where(z => z.ReviewerUserId == review.ReviewerUserId).Distinct(y => y.RevieweeUserId).Count())
 							</td>
 							<td>@Html.Partial("_Completion", review.GetCompletion())</td>
 							@*<td>

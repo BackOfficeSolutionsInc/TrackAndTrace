@@ -23,14 +23,14 @@ namespace RadialReview.Accessors
                     reviewContainer.DeleteTime = now;
                     s.Update(reviewContainer);
 
-                    var reviews = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId).List().ToList();
+                    var reviews = s.QueryOver<ReviewModel>().Where(x => x.ForReviewContainerId == reviewContainerId).List().ToList();
 	                var cache = new Cache();
                     foreach (var r in reviews)
                     {
 	                    if (r.DeleteTime == null){
 		                    r.DeleteTime = now;
 		                    s.Update(r);
-							cache.InvalidateForUser(r.ForUser, CacheKeys.UNSTARTED_TASKS);
+							cache.InvalidateForUser(r.ReviewerUser, CacheKeys.UNSTARTED_TASKS);
 	                    }
                     }
 

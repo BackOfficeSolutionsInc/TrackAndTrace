@@ -39,16 +39,16 @@ namespace RadialReview.Accessors
                 {
                     var perms = PermissionsUtility.Create(s, caller);
 #pragma warning disable CS0618 // Type or member is obsolete
-					return GetResponsibilitiesForUser(caller, s.ToQueryProvider(true), perms, forUserId, range);
+					return GetResponsibilitiesForUser(s.ToQueryProvider(true), perms, forUserId, range);
 #pragma warning restore CS0618 // Type or member is obsolete
 				}
             }
         }
 
 		[Obsolete("Use AskableAccessor.GetAskablesForUser",false)]
-        public static List<ResponsibilityModel> GetResponsibilitiesForUser(UserOrganizationModel caller,AbstractQuery queryProvider, PermissionsUtility perms,  long forUserId, DateRange range)
+        public static List<ResponsibilityModel> GetResponsibilitiesForUser(AbstractQuery queryProvider, PermissionsUtility perms,  long forUserId, DateRange range)
         {
-            return GetResponsibilityGroupsForUser(queryProvider, perms, caller, forUserId)
+            return GetResponsibilityGroupsForUser(queryProvider, perms, forUserId)
                     .SelectMany(x => x.Responsibilities)
 					.FilterRange(range)
                     .ToList();
@@ -168,7 +168,7 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     var perms = PermissionsUtility.Create(s, caller);
-                    return GetResponsibilityGroupsForUser(s.ToQueryProvider(true), perms, caller, userId);
+                    return GetResponsibilityGroupsForUser(s.ToQueryProvider(true), perms, userId);
                 }
             }
         }
@@ -187,9 +187,9 @@ namespace RadialReview.Accessors
 
 
 
-		public static List<ResponsibilityGroupModel> GetResponsibilityGroupsForUser(AbstractQuery s, PermissionsUtility permissions, UserOrganizationModel caller, long userId)
+		public static List<ResponsibilityGroupModel> GetResponsibilityGroupsForUser(AbstractQuery s, PermissionsUtility permissions, long userId)
         {
-            var teams = TeamAccessor.GetUsersTeams(s, permissions, caller, userId);
+            var teams = TeamAccessor.GetUsersTeams(s, permissions, userId);
 
             permissions.ViewUserOrganization(userId, false);
             var user = s.Get<UserOrganizationModel>(userId);

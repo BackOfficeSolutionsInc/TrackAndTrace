@@ -1,4 +1,4 @@
-@charset "UTF-8";
+﻿@charset "UTF-8";
 
 @font-face {
   font-family: "reports";
@@ -4527,7 +4527,7 @@
   content: "\e51a";
 }
 .fontastic-icon-pinboard:before {
-  content: "\e51b";
+  content: "\e51b\00FE0E";
 }
 .fontastic-icon-ping:before {
   content: "\e51c";

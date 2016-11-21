@@ -68,7 +68,7 @@ namespace RadialReview.Accessors {
 						surveyAnswers=s.QueryOver<AnswerModel>().Where(x =>
 							x.DeleteTime == null &&
 							x.ForReviewContainerId == reviewContainerId &&
-							x.AboutUserId == reviewContainer.ForOrganizationId
+							x.RevieweeUserId == reviewContainer.OrganizationId
 						).Future();
 					}
 
@@ -77,8 +77,8 @@ namespace RadialReview.Accessors {
 							  x.DeleteTime == null &&
 							  x.ForReviewContainerId == reviewContainerId
 						).Select(
-							Projections.Group<AnswerModel>(x => x.AboutUserId),
-							Projections.Group<AnswerModel>(x => x.ByUserId),
+							Projections.Group<AnswerModel>(x => x.RevieweeUserId),
+							Projections.Group<AnswerModel>(x => x.ReviewerUserId),
 							Projections.Min<AnswerModel>(x => x.Complete)
 						).Future<object[]>();
 					}
@@ -119,7 +119,7 @@ namespace RadialReview.Accessors {
 
 		private void PopulateReviewContainer(AbstractQuery s, ReviewsModel reviewContainer, bool populateAnswers, bool populateClientReport) {
 			var reviewContainerId = reviewContainer.Id;
-			var reviewsQuery = s.Where<ReviewModel>(x => x.ForReviewsId == reviewContainerId);
+			var reviewsQuery = s.Where<ReviewModel>(x => x.ForReviewContainerId == reviewContainerId);
 			//reviewsQuery.Fetch(x => x.ForUser).Default.Future();
 			/*if (populateClientReport){
                 reviewsQuery.Fetch(x => x.ClientReview).Default.Future();

@@ -38,12 +38,17 @@ Due date change
 
 Look at context aware people headline
 
+fix multiple emails on click conclude
+
+View todos for other people 
+
 Managers incorrect for CK
 Notifications when roles change
 
 easlier way to see admins from client details page
 Review sections on by default
 duplicate roles in YJT
+
 
 
 Scorecard reverse

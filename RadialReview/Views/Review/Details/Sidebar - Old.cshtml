@@ -51,7 +51,7 @@
 
                 <li class="feedback feedback_@feedback.Id">
                     @*<input name="feedback_input_@feedback.Id" onchange="SetFeedback(@feedback.Id)">*@
-                    <span title="@feedback.Feedback">@feedback.ByUser.GetName()</span>
+                    <span title="@feedback.Feedback">@feedback.ReviewerUser.GetName()</span>
 
 
                     <input class="pull-right feedback_input_@feedback.Id" type="checkbox" @(on ? "checked" : "") onchange="OnclickFeedback(this,@feedback.Id)" />
@@ -64,7 +64,7 @@
         <h4 class="alignCenter">Include</h4>
         <ul class="noBullet" id="includes">
             <li class="clearfix">
-                <a href="#SelfAnswers">@Model.Review.ForUser.GetName()'s Answers</a>
+                <a href="#SelfAnswers">@Model.Review.ReviewerUser.GetName()'s Answers</a>
                 @*<div onclick="SetSelfAnswers()"
                          class="SelfAnswers glyphicon includable pull-right clickable @( ? "on" : "")">
                     </div>*@

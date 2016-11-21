@@ -1,7 +1,7 @@
 ﻿@using RadialReview.Models.Enums
 @model List<RadialReview.Models.ThumbsAnswer>
 @{
-	var ordered = Model.Where(x => x.Complete).OrderBy(x => x.ByUser.GetNameExtended());
+	var ordered = Model.Where(x => x.Complete).OrderBy(x => x.ReviewerUser.GetNameExtended());
 	var guid = "thumbs_" + Guid.NewGuid().ToString().Replace("-", "");
 	var up = @Model.Count(x => x.Thumbs == ThumbsType.Up);
 	var down = @Model.Count(x => x.Thumbs == ThumbsType.Down);
@@ -19,7 +19,7 @@
 					i++;
 					<tr>
 						<td>@(i).</td>
-						<td>@a.ByUser.GetName()</td>
+						<td>@a.ReviewerUser.GetName()</td>
 						<td class="alignRight">@a.Thumbs.GetIcon()</td>
 					</tr>
 				}

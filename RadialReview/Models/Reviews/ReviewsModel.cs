@@ -33,8 +33,8 @@ namespace RadialReview.Models
 		public virtual PeriodModel NextPeriod { get; set; }
 
         public virtual List<ReviewModel> Reviews { get; set; }
-        public virtual long ForOrganizationId { get; set; }
-        public virtual OrganizationModel ForOrganization { get; set; }
+        public virtual long OrganizationId { get; set; }
+        public virtual OrganizationModel Organization { get; set; }
         public virtual long ForTeamId { get; set; }
         public virtual CompletionModel Completion { get; set; }
         public virtual long? TaskId { get; set; }
@@ -59,6 +59,10 @@ namespace RadialReview.Models
         {
             Reviews = null;
         }
+
+		public virtual DateRange GetDateRange(bool includeCurrent) {
+			return new DateRange(DateCreated, includeCurrent ? DateTime.MaxValue : DateCreated);
+		}
 	}
 
     public class ReviewsModelMap : ClassMap<ReviewsModel>
@@ -93,8 +97,8 @@ namespace RadialReview.Models
 			References(x => x.NextPeriod).Nullable().Column("NextPeriodId").LazyLoad().ReadOnly();
 
 
-            Map(x => x.ForOrganizationId).Column("ForOrganization_Id");
-            References(x => x.ForOrganization).Column("ForOrganization_Id").LazyLoad().ReadOnly();
+            Map(x => x.OrganizationId).Column("ForOrganization_Id");
+            References(x => x.Organization).Column("ForOrganization_Id").LazyLoad().ReadOnly();
         }
     }
 }

@@ -26,9 +26,9 @@
 				</thead>
 				<tbody>
 					@foreach (var i in found.OrderBy(x => String.IsNullOrWhiteSpace(lookupReason[ViewBag.GWC](x))).ThenByDescending(x => (int)lookup[ViewBag.GWC](x))
-				.GroupBy(x => x.ByUserId + "_" + x.Askable.Id).Select(x => x.First())) {
+				.GroupBy(x => x.ReviewerUserId + "_" + x.Askable.Id).Select(x => x.First())) {
 						<tr class="gwc-row @lookup[ViewBag.GWC](i)">
-							<td class="gwc-min">@i.ByUser.GetName():</td>
+							<td class="gwc-min">@i.ReviewerUser.GetName():</td>
 							<td class="gwc-details-square gwc-min">
 								<div class="fill @lookup[ViewBag.GWC](i)"></div>
 							</td>
@@ -76,7 +76,7 @@
 		var clzz = "input.gwc_" + id + "_@(ViewBag.GWC)";
 		$(clzz).prop("disabled", true);
 		$.ajax({
-			url: "/Review/SetIncludeGWCFeedback?reviewId=@(Model.Review.ForReviewsId)&answerId=" + id + "&on=" + found + "&gwc=@(ViewBag.GWC)",
+			url: "/Review/SetIncludeGWCFeedback?reviewId=@(Model.Review.ForReviewContainerId)&answerId=" + id + "&on=" + found + "&gwc=@(ViewBag.GWC)",
 			success: function (d) {
 				$(clzz).prop("checked", d.Object.On);
 			},

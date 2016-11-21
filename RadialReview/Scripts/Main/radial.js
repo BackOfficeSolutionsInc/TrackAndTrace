@@ -1,4 +1,5 @@
 ﻿
+
 $(window).bind('beforeunload', function (event) {
 	if ($(".unsaved").length > 0)
 		return "There are items you have not saved.";
@@ -402,6 +403,7 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 		return showModal(obj.title, obj.pullUrl, pushUrl, onSuccess, obj.validation, obj.success);
 
 	if (typeof (obj.title) === "undefined") {
+		debugger;
 		obj.title = "";
 		console.warn("No title supplied");
 	}
@@ -430,9 +432,9 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 			$("#modal-icon").addClass(icon);
 			icon = icon.replace(" ", ".")
 			try {
-				document.styleSheets[0].insertRule("." + custom + " ." + icon + ":after{content: '" + title + "' !important;", 0);
-				document.styleSheets[0].insertRule("." + custom + " ." + icon + ":before{ background-color: " + color + ";", 0);
-				document.styleSheets[0].insertRule("." + custom + " #modalOk{ background-color: " + color + ";", 0);
+				document.styleSheets[0].insertRule("." + custom + " ." + icon + ":after{content: '" + title + "' !important;}", 0);
+				document.styleSheets[0].insertRule("." + custom + " ." + icon + ":before{ background-color: " + color + ";}", 0);
+				document.styleSheets[0].insertRule("." + custom + " #modalOk{ background-color: " + color + ";}", 0);
 			} catch (e) {
 				console.error(e);
 			}
@@ -1686,6 +1688,11 @@ function waitUntilVisible(selector, onVisible) {
 //	return rv;
 //}
 
+function isIOS() {
+	var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+	return iOS;
+}
+
 function msieversion() {
 	var ua = window.navigator.userAgent;
 
@@ -1739,3 +1746,17 @@ Error.captureStackTrace = Error.captureStackTrace || function (obj) {
 //https://github.com/marklagendijk/jquery.tabbable/blob/master/jquery.tabbable.min.js
 !function (e) { "use strict"; function t(t) { var n = e(t), a = e(":focus"), r = 0; if (1 === a.length) { var i = n.index(a); i + 1 < n.length && (r = i + 1) } n.eq(r).focus() } function n(t) { var n = e(t), a = e(":focus"), r = n.length - 1; if (1 === a.length) { var i = n.index(a); i > 0 && (r = i - 1) } n.eq(r).focus() } function a(t) { function n(t) { return e.expr.filters.visible(t) && !e(t).parents().addBack().filter(function () { return "hidden" === e.css(this, "visibility") }).length } var a, r, i, u = t.nodeName.toLowerCase(), o = !isNaN(e.attr(t, "tabindex")); return "area" === u ? (a = t.parentNode, r = a.name, t.href && r && "map" === a.nodeName.toLowerCase() ? (i = e("img[usemap=#" + r + "]")[0], !!i && n(i)) : !1) : (/input|select|textarea|button|object/.test(u) ? !t.disabled : "a" === u ? t.href || o : o) && n(t) } e.focusNext = function () { t(":focusable") }, e.focusPrev = function () { n(":focusable") }, e.tabNext = function () { t(":tabbable") }, e.tabPrev = function () { n(":tabbable") }, e.extend(e.expr[":"], { data: e.expr.createPseudo ? e.expr.createPseudo(function (t) { return function (n) { return !!e.data(n, t) } }) : function (t, n, a) { return !!e.data(t, a[3]) }, focusable: function (t) { return a(t, !isNaN(e.attr(t, "tabindex"))) }, tabbable: function (t) { var n = e.attr(t, "tabindex"), r = isNaN(n); return (r || n >= 0) && a(t, !r) } }) }(jQuery);
 
+
+if (isIOS()) {
+	$('body').on('touchstart', function (e) {
+		$('input').css("pointer-events", "auto");
+	});
+	$('body').on('touchmove', function (e) {
+		$('input').css("pointer-events", "none");
+	});
+	$('body').on('touchend', function (e) {
+		setTimeout(function () {
+			$('input').css("pointer-events", "none");
+		}, 0);
+	});
+}

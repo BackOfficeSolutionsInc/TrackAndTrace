@@ -10,7 +10,7 @@ using RadialReview.Models.Askables;
 
 namespace RadialReview.Models.UserTemplate
 {
-	public class UserTemplate: ILongIdentifiable,IDeletable
+	public class UserTemplate: ILongIdentifiable, IHistorical
 	{
 		public virtual long Id { get; set; }
 

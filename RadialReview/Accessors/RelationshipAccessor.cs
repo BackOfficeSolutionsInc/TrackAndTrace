@@ -3,8 +3,10 @@ using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Responsibilities;
+using RadialReview.Models.Reviews;
 using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
+using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
@@ -15,47 +17,46 @@ namespace RadialReview.Accessors
 {
     public class RelationshipAccessor
     {
-        public static List<AboutType> GetRelationships(PermissionsUtility perms, AbstractQuery q, long userId, long otherId)
-        {
+        public static List<AboutType> GetRelationships(AbstractQuery q, PermissionsUtility perms, Reviewer reviewer, Reviewee reviewee, DateRange range) {
 
-            var user = q.Get<ResponsibilityGroupModel>(userId);
-			var other = q.Get<ResponsibilityGroupModel>(otherId);
+            var user = q.Get<ResponsibilityGroupModel>(reviewer.RGMId);
+			var other = q.Get<ResponsibilityGroupModel>(reviewee.RGMId);
 
-            perms.ViewUserOrganization(userId,false);
+            perms.ViewUserOrganization(reviewer.RGMId, false);
 			if (other is UserOrganizationModel)
-				perms.ViewUserOrganization(otherId, false);
+				perms.ViewUserOrganization(reviewee.RGMId, false);
 			else if (other is OrganizationModel)
-				perms.ViewOrganization(otherId);
+				perms.ViewOrganization(reviewee.RGMId);
 			else 
-				throw new PermissionsException("Unhandled. "+otherId);
+				throw new PermissionsException("Unhandled. "+reviewee.RGMId);
             
             var output = new List<AboutType>();
 
             //Self
 	        if (other.Organization.Id == other.Id){
 				output.Add(AboutType.Organization);
-	        }else if (userId == other.Id){
+	        }else if (reviewer.RGMId == other.Id){
 		        output.Add(AboutType.Self);
 	        }else{
 		        //Teammates
-		        var userTeams = q.Where<TeamDurationModel>(x => x.UserId == userId).ToListAlive();
-		        var otherTeams = q.Where<TeamDurationModel>(x => x.UserId == otherId).ToListAlive();
-		        var sharedTeams = userTeams.Intersect(otherTeams, new EqualityComparer<TeamDurationModel>((x, y) => x.TeamId == y.TeamId, x => x.TeamId.GetHashCode()));
+		        var userTeams = q.Where<TeamDurationModel>(x => x.UserId == reviewer.RGMId).FilterRange(range);
+				var otherTeams = q.Where<TeamDurationModel>(x => x.UserId == reviewee.RGMId).FilterRange(range);
+				var sharedTeams = userTeams.Intersect(otherTeams, new EqualityComparer<TeamDurationModel>((x, y) => x.TeamId == y.TeamId, x => x.TeamId.GetHashCode()));
 		        if (sharedTeams.Any())
 			        output.Add(AboutType.Teammate);
 		        //Peers
-		        var userManagers = q.Where<ManagerDuration>(x => x.SubordinateId == userId).ToListAlive();
-		        var otherManagers = q.Where<ManagerDuration>(x => x.SubordinateId == otherId).ToListAlive();
+		        var userManagers = q.Where<ManagerDuration>(x => x.SubordinateId == reviewer.RGMId).FilterRange(range);
+		        var otherManagers = q.Where<ManagerDuration>(x => x.SubordinateId == reviewee.RGMId).FilterRange(range);
 		        var sharedManagers = userManagers.Intersect(otherManagers, new EqualityComparer<ManagerDuration>((x, y) => x.ManagerId == y.ManagerId, x => x.ManagerId.GetHashCode()));
 		        if (sharedManagers.Any())
 			        output.Add(AboutType.Peer);
 		        //Subordinates
-		        var userSubordinates = q.Where<ManagerDuration>(x => x.ManagerId == userId && x.SubordinateId == otherId).ToListAlive();
-		        if (userSubordinates.Any())
+		        var userSubordinates = q.Where<ManagerDuration>(x => x.ManagerId == reviewer.RGMId && x.SubordinateId == reviewee.RGMId).FilterRange(range);
+				if (userSubordinates.Any())
 			        output.Add(AboutType.Subordinate);
 		        //Manages
-		        var userManaging = q.Where<ManagerDuration>(x => x.SubordinateId == userId && x.ManagerId == otherId).ToListAlive();
-		        if (userManaging.Any())
+		        var userManaging = q.Where<ManagerDuration>(x => x.SubordinateId == reviewer.RGMId && x.ManagerId == reviewee.RGMId).FilterRange(range);
+				if (userManaging.Any())
 			        output.Add(AboutType.Manager);
 	        }
 	        //No relationship
@@ -77,5 +78,11 @@ namespace RadialReview.Accessors
             //return output.OrderByDescending(x=>(int)x).ToList();
         }
 
-    }
+
+		public static AboutType GetRelationshipsMerged(AbstractQuery q, PermissionsUtility perms, Reviewer reviewer, Reviewee reviewee, DateRange range) {
+			var relationships=GetRelationships(q, perms, reviewer, reviewee, range);
+			return relationships.Aggregate(AboutType.NoRelationship, (o, n) => (o | n));
+		}
+
+	}
 }

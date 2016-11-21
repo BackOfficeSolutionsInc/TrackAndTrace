@@ -18,17 +18,15 @@ namespace RadialReview.Models.UserModels
 
 		public virtual UserOrganizationModel User { get; set; }
 		public virtual OrganizationTeamModel Team { get; set; }
-		public virtual DateTime Start { get; set; }
+		public virtual DateTime CreateTime { get; set; }
 		public virtual DateTime? DeleteTime { get; set; }
 		public virtual long? DeletedBy { get; set; }
 		public virtual long AddedBy { get; set; }
 
-		public virtual DateTime CreateTime { get { return Start; } set { Start = value; } }
-
+		//public virtual DateTime CreateTime { get { return CreateTime; } set { CreateTime = value; } }
 		//public virtual long OrganizationId { get; set; }
 
 		public TeamDurationModel() {
-
 		}
 
 		public TeamDurationModel(UserOrganizationModel forUser, OrganizationTeamModel team, long addedBy) {
@@ -42,7 +40,7 @@ namespace RadialReview.Models.UserModels
 			UserId = forUser.Id;
 			Team = team;
 			AddedBy = addedBy;
-			Start = DateTime.UtcNow;
+			CreateTime = DateTime.UtcNow;
 			User = forUser;
 		}
 
@@ -50,7 +48,7 @@ namespace RadialReview.Models.UserModels
 		public class TeamDurationMap : ClassMap<TeamDurationModel> {
 			public TeamDurationMap() {
 				Id(x => x.Id);
-				Map(x => x.Start);
+				Map(x => x.CreateTime).Column("Start");
 				Map(x => x.AddedBy);
 				Map(x => x.DeletedBy);
 				Map(x => x.DeleteTime);

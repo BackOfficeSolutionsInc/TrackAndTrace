@@ -38,7 +38,7 @@
 
 
 		function addRow() {
-			showModal("Add @Html.Organization().Settings.RockName", "/Rocks/ModalSingle/0?userId=@Model.Review.ForUserId&periodId=@Model.ReviewContainer.NextPeriodId", "/Rocks/Modal/", null, null, function (data) {
+			showModal("Add @Html.Organization().Settings.RockName", "/Rocks/ModalSingle/0?userId=@Model.Review.ReviewerUserId&periodId=@Model.ReviewContainer.NextPeriodId", "/Rocks/Modal/", null, null, function (data) {
 				for (var i = 0; i < data.Object.length; i++) {
 					var o = data.Object[i];
 					appendRow(o.Id,o.Rock,o.Session);

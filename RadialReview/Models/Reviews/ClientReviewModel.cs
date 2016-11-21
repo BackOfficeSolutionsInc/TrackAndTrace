@@ -32,6 +32,7 @@ namespace RadialReview.Models.Reviews
 		public virtual bool IncludeNotes { get; set; }
         public virtual bool Visible { get; set; }
         public virtual String ManagerNotes { get; set; }
+        public virtual bool IncludeScorecard { get; set; }
         public virtual DateTime? SignedTime { get; set; }
 
 		public virtual AngularRecurrence _ScorecardRecur { get; set; }
@@ -57,10 +58,11 @@ namespace RadialReview.Models.Reviews
             Charts = new List<LongTuple>();
             ScatterChart = new LongTuple();
 
-        }
+			IncludeScorecard = true;
+			IncludeEvaluation = true;
+			IncludeScatterChart = true;
+		}
 
-
-        public virtual bool IncludeScorecard { get; set; }
 	}
 
     public class ClientReviewModelMap : ClassMap<ClientReviewModel>

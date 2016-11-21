@@ -1,7 +1,7 @@
 ﻿@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
 @using RadialReview.Models;
 @{
-	ViewBag.Title = Model.Review.ForUser.GetName() + " - Details";
+	ViewBag.Title = Model.Review.ReviewerUser.GetName() + " - Details";
 	Layout = "~/Views/Shared/_Layout.cshtml";
 	ViewBag.Page = "me";
 
@@ -14,12 +14,12 @@
 				"<span class='icon new-icon-page-multiple'></span>Reports: " + Model.Review.Name +
 			"</span>" +
 		"</span>",
-		"/Reports/Index/" + Model.Review.ForReviewsId + "#Reports"
+		"/Reports/Index/" + Model.Review.ForReviewContainerId + "#Reports"
 	);
 
 	tabs.Add(new ExtraTab.Tab {
 		Page = "me",
-		Text = new HtmlString("<span class='hidden-xs'>" + Model.Review.ForUser.GetName() + "</span><span class='visible-xs'>Report</span>"),
+		Text = new HtmlString("<span class='hidden-xs'>" + Model.Review.ReviewerUser.GetName() + "</span><span class='visible-xs'>Report</span>"),
 		Url = "/Review/Details/" + Model.Review.Id
 	});
 
@@ -47,7 +47,7 @@
 	ViewBag.ExtraTabs = tabs;
 
 
-	var pluralized = Model.Review.ForUser.GetName().Trim();
+	var pluralized = Model.Review.ReviewerUser.GetName().Trim();
 	if (pluralized.ToLower().EndsWith("s")) {
 		pluralized += "'";
 	} else {
@@ -79,7 +79,7 @@
 		<div class="row">
 			<div class="col-sm-6 col-md-12 ">
 				<div class="" style="padding-top:5px;font-size:12px">
-					@Html.Partial("_User", Model.Review.ForUser)
+					@Html.Partial("_User", Model.Review.ReviewerUser)
 				</div>
 				<div class="smallBreak2"></div>
 			</div>
@@ -99,8 +99,8 @@
 @using (Html.BeginScripts()) {
 	<script type="text/javascript">
 		var ReviewId = "@Model.Review.Id";
-		var ForReviewsId = "@Model.Review.ForReviewsId";
-		var ForUserId = "@Model.Review.ForUserId";
+		var ForReviewsId = "@Model.Review.ForReviewContainerId";
+		var ForUserId = "@Model.Review.ReviewerUserId";
 		var IncludePrevious = @(Model.Review.ClientReview.ScatterChart.IncludePrevious?"true":"false");
 	</script>
 	@Scripts.Render("~/bundles/ReviewDetails")

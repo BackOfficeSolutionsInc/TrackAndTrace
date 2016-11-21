@@ -23,7 +23,7 @@ namespace RadialReview.Accessors
 	public class TeamAccessor : BaseAccessor
 	{
 		
-		public OrganizationTeamModel GetSubordinateTeam(UserOrganizationModel caller, long userOrganizationId)
+		public static OrganizationTeamModel GetSubordinateTeam(UserOrganizationModel caller, long userOrganizationId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -34,7 +34,8 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
-		public OrganizationTeamModel GetSubordinateTeam(ISession s, PermissionsUtility permissions, long userOrganizationId)
+
+		public static OrganizationTeamModel GetSubordinateTeam(ISession s, PermissionsUtility permissions, long userOrganizationId)
 		{
 			permissions.ViewUserOrganization(userOrganizationId, false);
 			var team = s.QueryOver<OrganizationTeamModel>().Where(x => x.DeleteTime == null && x.Type == TeamType.Subordinates && x.ManagedBy == userOrganizationId).SingleOrDefault();
@@ -43,9 +44,7 @@ namespace RadialReview.Accessors
 			return team;
 		}
 
-
-
-		public List<OrganizationTeamModel> GetTeamsDirectlyManaged(UserOrganizationModel caller1, long userOrganizationId)
+		public static List<OrganizationTeamModel> GetTeamsDirectlyManaged(UserOrganizationModel caller1, long userOrganizationId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -81,7 +80,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public List<OrganizationTeamModel> GetOrganizationTeams(UserOrganizationModel caller, long organizationId)
+		public static List<OrganizationTeamModel> GetOrganizationTeams(UserOrganizationModel caller, long organizationId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -101,7 +100,7 @@ namespace RadialReview.Accessors
 			return teams;
 		}
 
-		public OrganizationTeamModel GetTeam(UserOrganizationModel caller, long teamId)
+		public static OrganizationTeamModel GetTeam(UserOrganizationModel caller, long teamId)
 		{
 			if (teamId == 0)
 				return new OrganizationTeamModel() { };
@@ -123,7 +122,7 @@ namespace RadialReview.Accessors
 			return team;
 		}
 
-		public List<TeamDurationModel> GetTeamMembersAtOrganization(UserOrganizationModel caller, long orgId)
+		public static List<TeamDurationModel> GetTeamMembersAtOrganization(UserOrganizationModel caller, long orgId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -173,7 +172,7 @@ namespace RadialReview.Accessors
 										var additional = users.Select(x => new TeamDurationModel()
 										{
 											Id = -2,
-											Start = x.AttachTime,
+											CreateTime = x.AttachTime,
 											Team = t,
 											User = x,
 											DeleteTime = x.DeleteTime ?? x.DetachTime,
@@ -193,7 +192,7 @@ namespace RadialReview.Accessors
 										var additional = managers.Select(x => new TeamDurationModel()
 										{
 											Id = -2,
-											Start = x.AttachTime,
+											CreateTime = x.AttachTime,
 											Team = t,
 											User = x,
 											DeleteTime = x.DeleteTime ?? x.DetachTime,
@@ -216,7 +215,7 @@ namespace RadialReview.Accessors
 									var additional = managerDurations.Select(x => new TeamDurationModel()
 									{
 										Id = -2,
-										Start = x.Start,
+										CreateTime = x.CreateTime,
 										TeamId = lookup[x.ManagerId].Id,
 										Team = lookup[x.ManagerId],
 										DeleteTime = x.DeleteTime,
@@ -228,7 +227,7 @@ namespace RadialReview.Accessors
 									var additionalManagers = managerDurations.Distinct(x=>x.ManagerId).Select(x => new TeamDurationModel()
 									{
 										Id = -2,
-										Start = x.Start,
+										CreateTime = x.CreateTime,
 										TeamId = lookup[x.ManagerId].Id,
 										Team = lookup[x.ManagerId],
 										UserId = x.Manager.Id,
@@ -283,7 +282,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public List<TeamDurationModel> GetSubordinateTeamMembers(UserOrganizationModel caller, long userOrganizationId, bool includeManager)
+		public static List<TeamDurationModel> GetSubordinateTeamMembers(UserOrganizationModel caller, long userOrganizationId, bool includeManager)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -294,13 +293,14 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
-		public List<TeamDurationModel> GetSubordinateTeamMembers(ISession s, PermissionsUtility permissions, long userOrganizationId, bool includeManager)
+
+		public static List<TeamDurationModel> GetSubordinateTeamMembers(ISession s, PermissionsUtility permissions, long userOrganizationId, bool includeManager)
 		{
 			var team = GetSubordinateTeam(s, permissions, userOrganizationId);
 			return GetTeamMembers(s.ToQueryProvider(true), permissions, team.Id, includeManager);
 		}
 
-		public List<TeamDurationModel> GetTeamMembers(UserOrganizationModel caller, long teamId, bool includeManager)
+		public static List<TeamDurationModel> GetTeamMembers(UserOrganizationModel caller, long teamId, bool includeManager)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -312,7 +312,6 @@ namespace RadialReview.Accessors
 			}
 		}
 		
-
 		public static List<TeamDurationModel> GetTeamMembers(AbstractQuery s, PermissionsUtility permissions, long teamId, bool includeTeamManagers)
 		{
 			var members = GetTeamMembers(s, permissions, teamId);
@@ -340,21 +339,13 @@ namespace RadialReview.Accessors
 			}
 			return members;
 		}
-
-
-
-
+		
 		/// <summary>
 		/// Requires:
 		///     OrganizationTeamModel
 		///     TeamDurationModel
 		///     UserOrganizationModel
 		/// </summary>
-		/// <param name="s"></param>
-		/// <param name="permissions"></param>
-		/// <param name="caller"></param>
-		/// <param name="teamId"></param>
-		/// <returns></returns>
 		private static List<TeamDurationModel> GetTeamMembers(AbstractQuery s, PermissionsUtility permissions, long teamId)
 		{
 			permissions.ViewTeam(teamId);
@@ -377,7 +368,7 @@ namespace RadialReview.Accessors
 						return users.Select(x => new TeamDurationModel()
 						{
 							Id = -2,
-							Start = x.AttachTime,
+							CreateTime = x.AttachTime,
 							Team = team,
 							User = x,
 							DeleteTime = x.DeleteTime ?? x.DetachTime,
@@ -391,7 +382,7 @@ namespace RadialReview.Accessors
 						return managers.Select(x => new TeamDurationModel()
 						{
 							Id = -2,
-							Start = x.AttachTime,
+							CreateTime = x.AttachTime,
 							Team = team,
 							User = x,
 							DeleteTime = x.DeleteTime ?? x.DetachTime,
@@ -410,7 +401,7 @@ namespace RadialReview.Accessors
 						return subordinates.Select(x => new TeamDurationModel()
 						{
 							Id = -2,
-							Start = x.AttachTime,
+							CreateTime = x.AttachTime,
 							Team = team,
 							User = x,
 							DeleteTime = x.DeleteTime ?? x.DetachTime,
@@ -462,9 +453,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		
-
-		public List<TeamDurationModel> GetAllTeammembersAssociatedWithUser(UserOrganizationModel caller, long forUserId)
+		public static List<TeamDurationModel> GetAllTeammembersAssociatedWithUser(UserOrganizationModel caller, long forUserId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -483,26 +472,7 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
-
-		/*
-		public static List<TeamDurationModel> GetUsersTeams(ISession s, PermissionsUtility permissions, UserOrganizationModel caller, UserOrganizationModel forUserId, List<OrganizationTeamModel> allOrganizationTeamModel, List<TeamDurationModel> allTeamDurationModels)
-		{
-			var forUser = s.Get<UserOrganizationModel>(forUserId);
-			permissions.ViewOrganization(forUser.Organization.Id);
-			var teams = forUser.Teams.ToList();
-			if (forUser.IsManager())
-			{
-				var managerTeam = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == forUser.Organization.Id && x.Type == TeamType.Managers).SingleOrDefault();
-				//Populate(s,managerTeam);
-				teams.Add(new TeamDurationModel() { Start = forUser.AttachTime, Id = -2, Team = managerTeam, User = forUser });
-			}
-			var allMembersTeam = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == forUser.Organization.Id && x.Type == TeamType.AllMembers).SingleOrDefault();
-			//Populate(s,allMembersTeam);
-			teams.Add(new TeamDurationModel() { Start = forUser.AttachTime, Id = -2, Team = allMembersTeam, User = forUser });
-			//teams.ForEach(x => Populate(s, x.Team));
-			return teams;
-		}*/
-
+		
 		public static IEnumerable<long> GetUsersTeamIds(ISession s, PermissionsUtility perms, long forUserId) {
 			var forUser = s.Get<UserOrganizationModel>(forUserId);
 			perms.ViewOrganization(forUser.Organization.Id);
@@ -524,15 +494,15 @@ namespace RadialReview.Accessors
 			return output.SelectMany(x=>x);
 		}
 
-		public List<TeamDurationModel> GetUsersTeams(UserOrganizationModel caller, long forUserId) {
+		public static List<TeamDurationModel> GetUsersTeams(UserOrganizationModel caller, long forUserId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					return GetUsersTeams(s.ToQueryProvider(true), perms, caller, forUserId);
+					return GetUsersTeams(s.ToQueryProvider(true), perms, forUserId);
 				}
 			}
 		}
-		public static List<TeamDurationModel> GetUsersTeams(AbstractQuery s, PermissionsUtility permissions, UserOrganizationModel caller, long forUserId)
+		public static List<TeamDurationModel> GetUsersTeams(AbstractQuery s, PermissionsUtility permissions, long forUserId)
 		{
 			var forUser = s.Get<UserOrganizationModel>(forUserId);
 			permissions.ViewOrganization(forUser.Organization.Id);
@@ -544,75 +514,22 @@ namespace RadialReview.Accessors
 				var managerTeam = s.Where<OrganizationTeamModel>(x => x.Organization.Id == forUser.Organization.Id && x.Type == TeamType.Managers).SingleOrDefault();
 				//Populate(s,managerTeam);
 				if (managerTeam!=null)
-                    teams.Add(new TeamDurationModel() { Start = forUser.AttachTime, Id = -2, Team = managerTeam, User = forUser });
+                    teams.Add(new TeamDurationModel() { CreateTime = forUser.AttachTime, Id = -2, Team = managerTeam, User = forUser });
 			}
 			var allMembersTeam = s.Where<OrganizationTeamModel>(x => x.Organization.Id == forUser.Organization.Id && x.Type == TeamType.AllMembers).SingleOrDefault();
 			//Populate(s,allMembersTeam);
             if (allMembersTeam!=null)
-			    teams.Add(new TeamDurationModel() { Start = forUser.AttachTime, Id = -2, Team = allMembersTeam, User = forUser });
+			    teams.Add(new TeamDurationModel() { CreateTime = forUser.AttachTime, Id = -2, Team = allMembersTeam, User = forUser });
 			//teams.ForEach(x => Populate(s, x.Team));
 			return teams;
 		}
 
-		public OrganizationTeamModel EditTeam(UserOrganizationModel caller, long teamId, String name = null,
-																							bool? interReview = null,
-																							bool? onlyManagerCanEdit = null,
-																							long? managerId = null)
+		public static OrganizationTeamModel EditTeam(UserOrganizationModel caller, long teamId, String name = null,bool? interReview = null,bool? onlyManagerCanEdit = null,long? managerId = null)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
-				using (var tx = s.BeginTransaction())
-				{
-					PermissionsUtility.Create(s, caller).EditTeam(teamId);
-					caller = s.Get<UserOrganizationModel>(caller.Id);
-
-					var team = s.Get<OrganizationTeamModel>(teamId);
-
-					if (teamId == 0)
-					{
-						if (name == null || onlyManagerCanEdit == null || managerId == null || interReview == null)
-							throw new PermissionsException();
-
-						team = new OrganizationTeamModel()
-						{
-							CreatedBy = caller.Id,
-							Organization = caller.Organization,
-							OnlyManagersEdit = onlyManagerCanEdit.Value,
-							ManagedBy = managerId.Value,
-						};
-
-						s.SaveOrUpdate(team);
-					}
-
-
-					if (name != null && team.Type == TeamType.Standard && team.Name!=name)
-					{
-						team.Name = name;
-
-						var all =s.QueryOver<TeamDurationModel>().Where(x => x.Team.Id == team.Id && x.DeleteTime == null).List().ToList();
-						foreach(var a in all)
-							a.User.UpdateCache(s);
-
-					}
-
-					if (onlyManagerCanEdit != null && onlyManagerCanEdit.Value != team.OnlyManagersEdit)
-					{
-						if (!caller.IsManager())
-							throw new PermissionsException();
-						team.OnlyManagersEdit = onlyManagerCanEdit.Value;
-					}
-
-
-					if (interReview != null)
-					{
-						team.InterReview = interReview.Value;
-					}
-
-					if (managerId != null){
-						team.ManagedBy = managerId.Value;
-					}
-
-					s.Update(team);
+				using (var tx = s.BeginTransaction()) {
+					OrganizationTeamModel team = EditTeam(s,PermissionsUtility.Create(s,caller), teamId, name, interReview, onlyManagerCanEdit, managerId);
 					tx.Commit();
 					s.Flush();
 					return team;
@@ -620,7 +537,56 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public Boolean AddMember(UserOrganizationModel caller, long teamId, long userOrgId)
+		public static OrganizationTeamModel EditTeam(ISession s, PermissionsUtility perms, long teamId, string name, bool? interReview, bool? onlyManagerCanEdit, long? managerId) {
+			perms.EditTeam(teamId);
+			var caller = perms.GetCaller();
+
+			var team = s.Get<OrganizationTeamModel>(teamId);
+
+			if (teamId == 0) {
+				if (name == null || onlyManagerCanEdit == null || managerId == null || interReview == null)
+					throw new PermissionsException();
+
+				team = new OrganizationTeamModel() {
+					CreatedBy = caller.Id,
+					Organization = caller.Organization,
+					OnlyManagersEdit = onlyManagerCanEdit.Value,
+					ManagedBy = managerId.Value,
+				};
+
+				s.SaveOrUpdate(team);
+			}
+
+
+			if (name != null && team.Type == TeamType.Standard && team.Name != name) {
+				team.Name = name;
+
+				var all = s.QueryOver<TeamDurationModel>().Where(x => x.Team.Id == team.Id && x.DeleteTime == null).List().ToList();
+				foreach (var a in all)
+					a.User.UpdateCache(s);
+
+			}
+
+			if (onlyManagerCanEdit != null && onlyManagerCanEdit.Value != team.OnlyManagersEdit) {
+				if (!caller.IsManager())
+					throw new PermissionsException();
+				team.OnlyManagersEdit = onlyManagerCanEdit.Value;
+			}
+
+
+			if (interReview != null) {
+				team.InterReview = interReview.Value;
+			}
+
+			if (managerId != null) {
+				team.ManagedBy = managerId.Value;
+			}
+
+			s.Update(team);
+			return team;
+		}
+
+		public static bool AddMember(UserOrganizationModel caller, long teamId, long userOrgId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -654,7 +620,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public Boolean RemoveMember(UserOrganizationModel caller, long teamDurationId)
+		public static bool RemoveMember(UserOrganizationModel caller, long teamDurationId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{

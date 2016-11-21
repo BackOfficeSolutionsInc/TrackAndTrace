@@ -121,6 +121,7 @@ body.modal-open {
 		}
 	}
 }
+
 .body-notitlebar {
 	#wrap #main {
 		top: 0px;
@@ -401,7 +402,7 @@ body.resizing, body.resizing *::-moz-selection {
 	}
 }
 
-@media(max-width:768px) {
+@media(max-width:767px) {
 	.navbar-icon-container {
 		padding-top: 11px;
 	}
@@ -601,4 +602,42 @@ body.resizing, body.resizing *::-moz-selection {
 
 .noclick {
 	cursor: pointer;
+}
+
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2) {
+	select, textarea,
+	input[type="text"], input[type="password"],
+	input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"],
+	input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"] {
+		font-size: 16px !important;
+	}
+}
+
+.is-ios #logo {
+	display: inline-block;
+
+	.link a {
+		color: #fff;
+		font-size: 14px;
+		font-family: 'Lato',sans-serif;
+		padding: 4px;
+		display: inline-block;
+		text-decoration: none;
+
+		&:not(.disabled):active {
+			text-shadow: 0 0 1px #888888;
+		}
+
+		&.disabled {
+			color: #888888;
+			cursor:default;
+		}
+	}
+}
+
+.body-normal-width.is-ios #logo {
+	.link a {
+		padding: 15px;
+	}
 }

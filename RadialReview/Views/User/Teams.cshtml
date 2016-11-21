@@ -51,7 +51,7 @@
                 </td>
                 <td class="position">@p.Team.Name</td>
 
-                <td class="alignCenter">@p.Start.ToShortDateString()</td>
+                <td class="alignCenter">@p.CreateTime.ToShortDateString()</td>
                 <td class="alignCenter endTime">@(p.DeleteTime.HasValue ? p.DeleteTime.Value.ToShortDateString() : "Present")</td>
                 @if (Model.GetPersonallyManaging())
                 {

@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using TractionTools.Tests.TestUtils;
 using RadialReview;
 using RadialReview.Models.Accountability;
+using System.Linq.Expressions;
+using RadialReview.Models.Askables;
 
 namespace TractionTools.Tests.Utilities {
 	public class Org {
@@ -19,17 +21,59 @@ namespace TractionTools.Tests.Utilities {
 
 		public AccountabilityNode ManagerNode { get; set; }
 		public AccountabilityNode EmployeeNode { get; set; }
+
+		public DateTime CreateTime { get; set; }
+
+		public List<AccountabilityNode> AllUserNodes { get; set; }
+		public List<UserOrganizationModel> AllUsers { get; set; }
 	}
 
+
+	public class FullOrg : Org{
+
+		public UserOrganizationModel Client { get; set; }
+		public UserOrganizationModel Middle { get; set; }
+		public UserOrganizationModel E1 { get; set; }
+		public UserOrganizationModel E2 { get; set; }
+		public UserOrganizationModel E3 { get; set; }
+		public UserOrganizationModel E4 { get; set; }
+		public UserOrganizationModel E5 { get; set; }
+		public UserOrganizationModel E6 { get; set; }
+		public UserOrganizationModel E7 { get; set; }
+
+
+		public AccountabilityNode MiddleNode { get; set; }
+		public AccountabilityNode E1MiddleNode { get; set; }
+		public AccountabilityNode E1BottomNode { get; set; }
+		public AccountabilityNode E2Node { get; set; }
+		public AccountabilityNode E3Node { get; set; }
+		public AccountabilityNode E4Node { get; set; }
+		public AccountabilityNode E5Node { get; set; }
+		public AccountabilityNode E6Node { get; set; }
+
+		[Obsolete("E7 is not on the AC", true)]
+		public AccountabilityNode E7Node { get; set; }
+		[Obsolete("Client is not on the AC", true)]
+		public AccountabilityNode ClientNode { get; set; }
+
+
+		public OrganizationTeamModel AllMembersTeam { get; set; }
+		public OrganizationTeamModel AllManagersTeam { get; set; }
+		public OrganizationTeamModel MiddleSubordinatesTeam { get; set; }
+
+		public OrganizationTeamModel NonreviewTeam { get; set; }
+		public OrganizationTeamModel InterreviewTeam { get; set; }
+	}
 
 	public class OrgUtil {
 		public static Org CreateOrganization(string name = null,DateTime? time=null) {
 			var now = DateTime.UtcNow;
 			var time1 = time ?? DateTime.UtcNow;
-			var nowMs = now.ToJavascriptMilliseconds();
+			var nowMs = now.ToJavascriptMilliseconds() / 10000;
 			name = name ?? ("TestOrg_" + nowMs);
 
-			var org = new Org();
+			var org = new FullOrg();
+			org.CreateTime = time1;
 
 			UserOrganizationModel employee = null;
 			UserOrganizationModel manager = null;
@@ -48,14 +92,91 @@ namespace TractionTools.Tests.Utilities {
 				PaymentPlanType.Professional_Monthly_March2016, time1, out manager, out managerNode, true, true);
 
 			org.ManagerNode = managerNode;
+			org.ManagerNode._Name = "manager " + nowMs;
+
 			org.Manager = manager;
 			org.Organization = organization;
 
-			var employeeName = "employee_" + nowMs;
-			var tempUser = JoinOrganizationAccessor.CreateUserUnderManager(manager, managerNode.Id, false, -2, employeeName + "@test.com", employeeName, "employee", out employee, false, "");
+			var employeeName = "employee";
+			var tempUser = JoinOrganizationAccessor.CreateUserUnderManager(manager, null, false, -2, employeeName + "@test.com", employeeName, ""+nowMs, out employee, false, "");
 
 			org.Employee = employee;
 			org.EmployeeNode = AccountabilityAccessor.AppendNode(manager, managerNode.Id, userId: employee.Id);
+			org.EmployeeNode._Name = "employee "+nowMs;
+
+			org.AllUserNodes = new List<AccountabilityNode>() { org.ManagerNode, org.EmployeeNode };
+			org.AllUsers = new List<UserOrganizationModel>() { org.Manager, org.Employee };
+
+			return org;
+		}
+
+		private static void AddUserToOrg(FullOrg org, AccountabilityNode managerNode, string uname, Expression<Func<FullOrg, UserOrganizationModel>> userSelector, Expression<Func<FullOrg, AccountabilityNode>> nodeSelector = null, bool isClient = false) {
+
+			var ms = org.CreateTime.ToJavascriptMilliseconds()/10000;
+			UserOrganizationModel user = null;
+			//UserOrganizationModel manager = null;
+			//if (managerNode != null) {
+			//	manager = org.AllUsers.First(x => x.Id == managerNode.UserId);
+			//}
+			var temp = JoinOrganizationAccessor.CreateUserUnderManager(org.Manager, null, false, -2, uname  + "@test.com", uname,""+ ms, out user, isClient, isClient?"ClientOrg":"");
+			org.AllUsers.Add(user);
+			org.Set(userSelector, user);
+
+
+			if (managerNode != null) {
+				var userNode = AccountabilityAccessor.AppendNode(org.Manager, managerNode.Id, userId: user.Id);
+				userNode._Name = user.GetName();
+				org.Set(nodeSelector, userNode);
+				org.AllUserNodes.Add(userNode);
+			}
+		}
+
+
+		/// <summary>
+		/// See \TractionTools.Tests\Utilities\FullOrganization.png
+		/// </summary>
+		///
+		public static FullOrg CreateFullOrganization(string name = null, DateTime? time = null) {
+			FullOrg org = (FullOrg)CreateOrganization(name, time);
+
+			AddUserToOrg(org, null, "Client", x => x.Client, null, true);
+			AddUserToOrg(org, org.ManagerNode,	"Middle", x => x.Middle, x => x.MiddleNode);
+			AddUserToOrg(org, org.ManagerNode,	"E1", x => x.E1, x => x.E1MiddleNode);
+			AddUserToOrg(org, org.MiddleNode,	"E2", x => x.E2, x => x.E2Node);
+			AddUserToOrg(org, org.MiddleNode,	"E3", x => x.E3, x => x.E3Node);
+			AddUserToOrg(org, org.E1MiddleNode,	"E4", x => x.E4, x => x.E4Node);
+			AddUserToOrg(org, org.E1MiddleNode,	"E5", x => x.E5, x => x.E5Node);
+			AddUserToOrg(org, org.E2Node,		"E6", x => x.E6, x => x.E6Node);
+			AddUserToOrg(org, null,	"E7", x => x.E7, null);
+
+			org.E1BottomNode = AccountabilityAccessor.AppendNode(org.Manager,org.MiddleNode.Id, userId: org.E1.Id);
+			org.E1BottomNode._Name = org.E1.GetName();
+			org.AllUserNodes.Add(org.E1BottomNode);
+
+			//Create inter-reviewing team
+			org.InterreviewTeam = TeamAccessor.EditTeam(org.Manager, 0, "interreviewing-team", true, false, org.E5.Id);
+			TeamAccessor.AddMember(org.Manager, org.InterreviewTeam.Id, org.E5.Id);
+			TeamAccessor.AddMember(org.Manager, org.InterreviewTeam.Id, org.E6.Id);
+
+			//Create non-reviewing team
+			org.NonreviewTeam = TeamAccessor.EditTeam(org.Manager, 0, "non-interreviewing-team", false, false, org.E3.Id);
+			TeamAccessor.AddMember(org.Manager, org.NonreviewTeam.Id, org.E3.Id);
+			TeamAccessor.AddMember(org.Manager, org.NonreviewTeam.Id, org.E4.Id);
+
+
+			var allTeams = TeamAccessor.GetOrganizationTeams(org.Manager,org.Id);
+
+			org.AllMembersTeam = allTeams.First(x => x.Type == TeamType.AllMembers);
+			org.AllManagersTeam = allTeams.First(x => x.Type == TeamType.Managers);
+			org.MiddleSubordinatesTeam = allTeams.First(x => x.Type == TeamType.Subordinates && x.ManagedBy==org.Middle.Id);
+
+			//Register E3
+			UserModel e3User = null;
+			BaseTest.DbCommit(s => {
+				e3User = new UserModel();
+				s.Save(e3User);
+			});
+			OrganizationAccessor.JoinOrganization(e3User, org.Middle.Id, org.E3.Id);
 
 			return org;
 		}

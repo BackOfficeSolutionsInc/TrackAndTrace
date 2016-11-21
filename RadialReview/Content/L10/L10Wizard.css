@@ -2,6 +2,7 @@
 .editable-wrap select {
   height: 30px;
   padding: 5px;
+  -webkit-appearance: none;
 }
 .editable-wrap button {
   display: inline-block;

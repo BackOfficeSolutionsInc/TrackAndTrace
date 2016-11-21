@@ -89,29 +89,29 @@ namespace RadialReview.Accessors {
 
 			var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
 
-			perms.Or(x => x.AdminReviewContainer(reviewContainerId), x => x.ManagingOrganization(reviewContainer.ForOrganizationId));
+			perms.Or(x => x.AdminReviewContainer(reviewContainerId), x => x.ManagingOrganization(reviewContainer.OrganizationId));
 
 
 			var valueAnswers = s.QueryOver<CompanyValueAnswer>().Where(x => x.DeleteTime == null && x.ForReviewContainerId == reviewContainerId && x.Complete)
 				.Select(
-					Projections.Property<CompanyValueAnswer>(x => x.AboutUserId),
+					Projections.Property<CompanyValueAnswer>(x => x.RevieweeUserId),
 					Projections.Property<CompanyValueAnswer>(x => x.Askable.Id),
 					Projections.Property<CompanyValueAnswer>(x => x.Exhibits),
-					Projections.Property<CompanyValueAnswer>(x => x.ByUserId)
+					Projections.Property<CompanyValueAnswer>(x => x.ReviewerUserId)
 				).Future<object[]>();
 			var roleAnswers = s.QueryOver<GetWantCapacityAnswer>().Where(x => x.DeleteTime == null && x.ForReviewContainerId == reviewContainerId && (x.GetIt != FiveState.Indeterminate || x.WantIt != FiveState.Indeterminate || x.HasCapacity != FiveState.Indeterminate))
 				.Select(
-					Projections.Property<GetWantCapacityAnswer>(x => x.AboutUserId),
+					Projections.Property<GetWantCapacityAnswer>(x => x.RevieweeUserId),
 					Projections.Property<GetWantCapacityAnswer>(x => x.Askable.Id),
 					Projections.Property<GetWantCapacityAnswer>(x => x.GetIt),
 					Projections.Property<GetWantCapacityAnswer>(x => x.WantIt),
 					Projections.Property<GetWantCapacityAnswer>(x => x.HasCapacity),
-					Projections.Property<GetWantCapacityAnswer>(x => x.ByUserId)
+					Projections.Property<GetWantCapacityAnswer>(x => x.ReviewerUserId)
 				).Future<object[]>();
 
 
-			var users = TinyUserAccessor.GetOrganizationMembers(s, perms, reviewContainer.ForOrganizationId);
-			var values = s.QueryOver<CompanyValueModel>().Where(x => x.DeleteTime == null && x.OrganizationId == reviewContainer.ForOrganizationId).List().ToList();
+			var users = TinyUserAccessor.GetOrganizationMembers(s, perms, reviewContainer.OrganizationId);
+			var values = s.QueryOver<CompanyValueModel>().Where(x => x.DeleteTime == null && x.OrganizationId == reviewContainer.OrganizationId).List().ToList();
 
 			var o = new DefaultDictionary<long, PeopleAnalyzerRow>(x => new PeopleAnalyzerRow() { UserId = x });
 

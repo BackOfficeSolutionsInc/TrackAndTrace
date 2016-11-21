@@ -32,14 +32,14 @@ namespace RadialReview.Controllers {
 			var subordinates = DeepAccessor.Users.GetSubordinatesAndSelf(caller, caller.Id);
 
 			var editable = reviewContainers.Where(x => caller.IsManagingOrganization() || subordinates.Any(y => y == x.CreatedById)).Select(x => x.Id).ToList();
-			var takabled = usefulReviews.Where(x => x.ForUserId == selfId).Distinct(x => x.ForReviewsId).ToDictionary(x => x.ForReviewsId, x => (long?)x.Id);
+			var takabled = usefulReviews.Where(x => x.ReviewerUserId == selfId).Distinct(x => x.ForReviewContainerId).ToDictionary(x => x.ForReviewContainerId, x => (long?)x.Id);
 
 
 			var reviewsVM = reviewContainers.Select(x => new ReviewsViewModel(x) {
 				Editable = editable.Any(y => y == x.Id),
 				Viewable = true,
 				TakableId = takabled.GetOrDefault(x.Id, null),
-				UserReview = usefulReviews.FirstOrDefault(y => y.ForReviewsId == x.Id)
+				UserReview = usefulReviews.FirstOrDefault(y => y.ForReviewContainerId == x.Id)
 
 			}).Where(x => x.Editable || x.TakableId != null || x.UserReview != null).OrderByDescending(x => x.Review.DateCreated).ToList();
 
@@ -85,8 +85,6 @@ namespace RadialReview.Controllers {
 		public ActionResult Index(int page = 0) {
 			var model = GenerateReviewVM(GetUser(), DateTime.MinValue, page);
 
-
-
 			ViewBag.Page = "Reviews";
 			ViewBag.Title = "Reviews";
 			ViewBag.Subheading = "Reviews";
@@ -120,11 +118,11 @@ namespace RadialReview.Controllers {
 
 			var allDirectSubs = user.ManagingUsers.Select(x => x.Subordinate).ToList();
 			foreach (var r in reviewContainer.Reviews) {
-				if (r.ForUser.Id == GetUser().Id && reviewContainer.CreatedById == GetUser().Id) {
-					r.ForUser.SetPersonallyManaging(true);
+				if (r.ReviewerUser.Id == GetUser().Id && reviewContainer.CreatedById == GetUser().Id) {
+					r.ReviewerUser.SetPersonallyManaging(true);
 				} else {
-					r.ForUser.PopulatePersonallyManaging(user, user.AllSubordinates);
-					r.ForUser.PopulateDirectlyManaging(user, allDirectSubs);
+					r.ReviewerUser.PopulatePersonallyManaging(user, user.AllSubordinates);
+					r.ReviewerUser.PopulateDirectlyManaging(user, allDirectSubs);
 				}
 			}
 			var model = new ReviewsViewModel(reviewContainer);
@@ -134,7 +132,7 @@ namespace RadialReview.Controllers {
 		public class UpdateReviewsViewModel {
 			public long ReviewId { get; set; }
 			public List<SelectListItem> AdditionalUsers { get; set; }
-			public long SelectedUserId { get; set; }
+			public string SelectedUserId { get; set; }
 			public bool SendEmail { get; set; }
 		}
 
@@ -214,82 +212,6 @@ namespace RadialReview.Controllers {
 		[HttpPost]
 		public ActionResult IssueDetailsSubmit(IssueReviewViewModel model) {
 			return View();
-			/*var teams = _TeamAccessor.GetTeamsDirectlyManaged(GetUser(), GetUser().Id).ToList();
-            if (!teams.Any(x => x.Id == model.ForTeamId)){
-                throw new PermissionsException("You do not have access to that team.");
-            }
-            using(var s = HibernateSession.GetCurrentSession())
-            {
-	            using(var tx=s.BeginTransaction())
-	            {
-                    var orgId=GetUser().Organization.Id;
-
-                    var allOrgTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId).List();
-                    var allTeamDurations = s.QueryOver<TeamDurationModel>().JoinQueryOver(x => x.Team).Where(x => x.Organization.Id == orgId).List();
-                    var allMembers = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == orgId).List();
-                    var allManagerSubordinates = s.QueryOver<ManagerDuration>().JoinQueryOver(x => x.Manager).Where(x => x.Organization.Id == orgId).List();
-                    var allPositions = s.QueryOver<PositionDurationModel>().JoinQueryOver(x => x.Position).Where(x => x.Organization.Id == orgId).List();
-                    var applicationQuestions = s.QueryOver<QuestionModel>().Where(x => x.OriginId == ApplicationAccessor.APPLICATION_ID && x.OriginType == OriginType.Application).List();
-                    var application = s.QueryOver<ApplicationWideModel>().Where(x => x.Id == ApplicationAccessor.APPLICATION_ID).List();
-
-                    var reviewWhoSettings = s.QueryOver<ReviewWhoSettingsModel>().Where(x => x.OrganizationId == orgId).List();
-                    
-                    var queryProvider = new IEnumerableQuery(true);
-                    queryProvider.AddData(allOrgTeams);
-                    queryProvider.AddData(allTeamDurations);
-                    queryProvider.AddData(allMembers);
-                    queryProvider.AddData(allManagerSubordinates);
-                    queryProvider.AddData(allPositions);
-                    queryProvider.AddData(applicationQuestions);
-                    queryProvider.AddData(application);
-
-                    queryProvider.AddData(reviewWhoSettings);
-
-                    var d=new DataInteraction(queryProvider,s.ToUpdateProvider());
-                    
-                    var perms=PermissionsUtility.Create(s,GetUser());
-                    var teamMembers=TeamAccessor.GetTeamMembers(queryProvider,perms,GetUser(),model.ForTeamId).Select(x=>x.User);
-                    
-                    var reviewParams=new ReviewParameters(){
-                        ReviewManagers=model.ReviewManagers,
-                        ReviewSelf=model.ReviewSelf,
-                        ReviewSubordinates=model.ReviewSubordinates,
-                        ReviewPeers=model.ReviewPeers,
-                        ReviewTeammates=model.ReviewTeammates,
-                    };
-
-                    var team = teams.First(x=>x.Id==model.ForTeamId);
-
-                    var reviewWhoDictionary=new Dictionary<long,HashSet<long>>();
-
-                    foreach(var member in teamMembers)
-                    {
-                        var reviewing=queryProvider.Get<UserOrganizationModel>(member.Id);
-                        var usersTheyReview=ReviewAccessor.GetUsersThatReviewUser(GetUser(),perms,d,reviewing,reviewParams,team,teamMembers.ToList()).ToList();
-                        reviewWhoDictionary[member.Id]=new HashSet<long>(usersTheyReview.Select(x=>x.Key.Id));
-                        var reviewWho=queryProvider.Where<ReviewWhoSettingsModel>(x=>x.ByUserId==member.Id).ToList();
-                        foreach(var r in reviewWho){
-                            if(r.ForceState){
-                                reviewWhoDictionary[member.Id].Add(r.ForUserId);
-                            }else{
-                                reviewWhoDictionary[member.Id].Remove(r.ForUserId);
-                            }
-                        }
-                    }
-
-	            }
-            }
-
-
-            
-            
-
-            var teamMembers = _TeamAccessor.GetTeamMembers(GetUser(), model.ForTeamId);
-
-
-
-            var checks=new bool[][];*/
-
 		}
 
 		[Access(AccessLevel.Manager)]
@@ -297,14 +219,19 @@ namespace RadialReview.Controllers {
 			var review = _ReviewAccessor.GetReviewContainer(GetUser(), id, false, false);
 			var users = _ReviewAccessor.GetUsersInReview(GetUser(), id);
 
-			var orgMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), review.ForOrganization.Id, false, false);
+			var existingReviewees = ReviewAccessor.GetReviewees(GetUser(), id);
+			var allPossibleReviewees = ReviewAccessor.GetAllPossibleReviewees(GetUser(), review.OrganizationId, review.GetDateRange(true));
+			
 			//Add to review
 			var alsoExclude = _KeyValueAccessor.Get("AddToReviewReserved_" + id).Select(x => long.Parse(x.V));
-			var additionalMembers = orgMembers.Where(x => !users.Any(y => y.Id == x.Id)).Where(x => !alsoExclude.Any(y => y == x.Id)).ToListAlive();
+
+			var additionalMembers = allPossibleReviewees.Where(everyone => !existingReviewees.Any(existing => existing == everyone))
+				.Where(x=> !alsoExclude.Any(y => y == x.RGMId))
+				.Where(x=> x.Type != OriginType.Organization);
 
 			var model = new UpdateReviewsViewModel() {
 				ReviewId = id,
-				AdditionalUsers = additionalMembers.ToSelectList(x => x.GetNameAndTitle(youId: GetUser().Id), x => x.Id),
+				AdditionalUsers = additionalMembers.ToSelectList(x => x._Name, x => x.ToId()),
 				SendEmail = true
 			};
 			return PartialView(model);
@@ -312,6 +239,7 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
+		[Obsolete("Fix for AC")]
 		public async Task<JsonResult> Update(UpdateReviewsViewModel model) {
 			var reservedId = _KeyValueAccessor.Put("AddToReviewReserved_" + model.ReviewId, "" + model.SelectedUserId);
 			var userName = GetUserModel().UserName;
@@ -322,7 +250,7 @@ namespace RadialReview.Controllers {
 				var result = await Task.Run<ResultObject>(async () => {
 					ResultObject output;
 					try {
-						output = await _ReviewAccessor.AddUserToReviewContainer(System.Web.HttpContext.Current, user, model.ReviewId, model.SelectedUserId, model.SendEmail);
+						output = await _ReviewAccessor.AddUserToReviewContainer(System.Web.HttpContext.Current, user, model.ReviewId, Reviewee.FromId(model.SelectedUserId), model.SendEmail);
 					} catch (Exception e) {
 						log.Error(e);
 						output = new ResultObject(e);
@@ -391,6 +319,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
 		public JsonResult RemoveUser(RemoveUserVM model) {
 			var result = _ReviewAccessor.RemoveUserFromReview(GetUser(), model.ReviewContainerId, model.SelectedUser);
+			result.ForceRefresh();
 			return Json(result);
 		}
 
@@ -423,7 +352,7 @@ namespace RadialReview.Controllers {
 			var review = _ReviewAccessor.GetReviewContainer(GetUser(), reviewId, false, false, false);
 
 			var range = new DateRange(review.DateCreated, DateTime.UtcNow);
-			var answers = _AskableAccessor.GetAskablesForUser(GetUser(), userId, /*period.NotNull(x=>x.Id),*/ range).Where(x => existing.All(y => y.Askable.Id != x.Id)).ToListAlive();
+			var answers = _AskableAccessor.GetAskablesForUser(GetUser(),new Reviewee(userId,null), range).Where(x => existing.All(y => y.Askable.Id != x.Id)).ToListAlive();
 
 			return Json(answers.ToSelectList(x => x.GetQuestion(), x => x.Id), JsonRequestBehavior.AllowGet);
 
@@ -472,7 +401,7 @@ namespace RadialReview.Controllers {
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
 		public JsonResult AddQuestion(AddQuestionVM model) {
-			_ReviewAccessor.AddResponsibilityAboutUserToReview(GetUser(), model.ReviewContainerId, model.SelectedUserId, model.SelectedQuestionId);
+			_ReviewAccessor.AddResponsibilityAboutUserToReview(GetUser(), model.ReviewContainerId, new Reviewee(model.SelectedUserId,null), model.SelectedQuestionId);
 			return Json(ResultObject.Success("Added question."));
 		}
 

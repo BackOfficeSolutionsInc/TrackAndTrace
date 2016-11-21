@@ -357,9 +357,9 @@ namespace RadialReview.Accessors
 					tx.Commit();
 					s.Flush();
 					if (authorized)
-						return ResultObject.Success(review.ForUser.GetFirstName() + " is authorized to view this report.");
+						return ResultObject.Success(review.ReviewerUser.GetFirstName() + " is authorized to view this report.");
 					else
-						return ResultObject.Success(review.ForUser.GetFirstName() + " is NOT authorized to view this report.");
+						return ResultObject.Success(review.ReviewerUser.GetFirstName() + " is NOT authorized to view this report.");
 				}
 			}
 		}

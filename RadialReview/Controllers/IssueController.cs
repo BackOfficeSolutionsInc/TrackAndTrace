@@ -31,7 +31,7 @@ namespace RadialReview.Controllers {
 	public class IssueController : BaseController {
 
 		private List<SelectListItem> _GenerateTeamList(UserOrganizationModel user) {
-			return _TeamAccessor.GetTeamsDirectlyManaged(user, user.Id)
+			return TeamAccessor.GetTeamsDirectlyManaged(user, user.Id)
 						.Select(x => {
 							var name = x.Name;
 							if (x.Type == TeamType.AllMembers) {
@@ -67,11 +67,19 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
+		[Obsolete("Fix for AC")]
 		public async Task<ActionResult> Index(FormCollection form) {
 			if (form["review"] == "issueReview") {
 				var customized = form.AllKeys.Where(x => x.StartsWith("customize_")).Select(x => {
 					var split = x.Split('_');
-					return Tuple.Create(long.Parse(split[1]), long.Parse(split[2]));
+					var acNodeId = split.Length > 3?(split[3]).TryParseLong():null;
+
+					//make sure that acNodeId is not null
+					var wrw = new WhoReviewsWho() {
+						Reviewer = new Reviewer(long.Parse(split[1])),
+						Reviewee = new Reviewee(long.Parse(split[2]), acNodeId)
+					};
+					return wrw;
 				});
 
 				await _ReviewAccessor.CreateReviewFromCustom(
@@ -122,12 +130,13 @@ namespace RadialReview.Controllers {
 			//
 			//model.Periods = plist;
 
-			var allUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false)
-				.Cast<ResponsibilityGroupModel>().ToList();
+			//TODO should the date range be null?
+			//var allUsers
+			//var allUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false)
+			//	.Select(x=>new Reviewee(x)).ToList();
+			//model.AllReviewees.Add(GetUser().Organization);
 
-
-			model.AllReviewees = allUsers;
-			model.AllReviewees.Add(GetUser().Organization);
+			//model.AllReviewees  = ReviewAccessor.GetPossibleOrganizationReviewees(GetUser(),GetUser().Organization.Id, null);//= allUsers;
 
 			return PartialView(model);
 
@@ -140,7 +149,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Manager)]
 		public PartialViewResult IssueOrganization() {
-			var orgTeam = _TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id).FirstOrDefault(x => x.Type == TeamType.AllMembers);
+			var orgTeam = TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id).FirstOrDefault(x => x.Type == TeamType.AllMembers);
 			ViewBag.OrganizationId = orgTeam.Id;
 			return PartialView();
 		}

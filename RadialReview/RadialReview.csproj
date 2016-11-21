@@ -228,6 +228,7 @@
     <Compile Include="Models\Issues\HeadlineIssueVM.cs" />
     <Compile Include="Models\L10\PeopleHeadline.cs" />
     <Compile Include="Models\L10\PeopleHeadlineType.cs" />
+    <Compile Include="Models\Reviews\WhoReviewsWho.cs" />
     <Compile Include="Notifications\Notification.cs" />
     <Compile Include="Models\Reviews\ValueBar.cs" />
     <Compile Include="Models\Todo\HeadlineTodoVm.cs" />
@@ -235,6 +236,7 @@
     <Compile Include="Models\VideoConference\JoinedVideo.cs" />
     <Compile Include="Models\VideoConference\ZoomUserLink.cs" />
     <Compile Include="Notifications\PubSub.cs" />
+    <Compile Include="Utilities\AngularTreeUtil.cs" />
     <Compile Include="Utilities\EmailUtil.cs" />
     <Compile Include="Controllers\IntegrationsController.cs" />
     <Compile Include="Hooks\BasecampTodoHook.cs" />
@@ -797,6 +799,7 @@
     <Compile Include="Utilities\FileUtilities.cs" />
     <Compile Include="Utilities\DistanceUtility.cs" />
     <Compile Include="Utilities\GraphUtility.cs" />
+    <Compile Include="Utilities\HashUtil.cs" />
     <Compile Include="Utilities\Hooks\IAccountEvent.cs" />
     <Compile Include="Utilities\Hooks\IHeadlineHook.cs" />
     <Compile Include="Utilities\Hooks\ICreateTodo.cs" />
@@ -808,6 +811,7 @@
     <Compile Include="Utilities\HtmlUtility.cs" />
     <Compile Include="Utilities\NHibernateHelper.cs" />
     <Compile Include="Utilities\NHibernate\AuditEventListener.cs" />
+    <Compile Include="Utilities\NHibernate\Context.cs" />
     <Compile Include="Utilities\NHibernate\CustomAuditStrategy.cs" />
     <Compile Include="Utilities\NHibernate\SingleRequestSession.cs" />
     <Compile Include="Utilities\NumberUtility.cs" />

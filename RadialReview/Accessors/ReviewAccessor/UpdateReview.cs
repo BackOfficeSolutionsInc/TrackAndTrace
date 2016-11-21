@@ -22,39 +22,35 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using RadialReview.Models.Accountability;
 
-namespace RadialReview.Accessors
-{
-	public partial class ReviewAccessor : BaseAccessor
-	{
+namespace RadialReview.Accessors {
+	public partial class ReviewAccessor : BaseAccessor {
 		#region Edit Review
-		public static void AddAskablesToReview(DataInteraction s, PermissionsUtility perms, UserOrganizationModel caller,
-			ResponsibilityGroupModel forUser, ReviewModel reviewModel, bool anonymous, List<AskableAbout> askables)
-		{
-			foreach (var q in askables)
-			{
-				switch (q.Askable.GetQuestionType())
-				{
-					case QuestionType.RelativeComparison:
-						GenerateRelativeComparisonAnswers(s, caller, (UserOrganizationModel)forUser, q, reviewModel, anonymous);
-						break;
+		public static void AddAskablesToReview(DataInteraction s, PermissionsUtility perms,
+			Reviewer reviewer, ReviewModel reviewModel, bool anonymous, AskableCollection askables) {
+			foreach (var q in askables) {
+				switch (q.Askable.GetQuestionType()) {
+					//case QuestionType.RelativeComparison:
+					//	GenerateRelativeComparisonAnswers(s, (UserOrganizationModel)reviewer, q, reviewModel, anonymous);
+					//	break;
 					case QuestionType.Slider:
-						GenerateSliderAnswers(s, caller, forUser, q, reviewModel, anonymous);
+						GenerateSliderAnswers(s, reviewer, q, reviewModel, anonymous);
 						break;
 					case QuestionType.Thumbs:
-						GenerateThumbsAnswers(s, caller, forUser, q, reviewModel, anonymous);
+						GenerateThumbsAnswers(s, reviewer, q, reviewModel, anonymous);
 						break;
 					case QuestionType.Feedback:
-						GenerateFeedbackAnswers(s, caller, forUser, q, reviewModel, anonymous);
+						GenerateFeedbackAnswers(s, reviewer, q, reviewModel, anonymous);
 						break;
 					case QuestionType.GWC:
-						GenerateGWCAnswers(s, caller, forUser, q, reviewModel, anonymous);
+						GenerateGWCAnswers(s, reviewer, q, reviewModel, anonymous);
 						break;
 					case QuestionType.Rock:
-						GenerateRockAnswers(s, caller, forUser, q, reviewModel, anonymous);
+						GenerateRockAnswers(s, reviewer, q, reviewModel, anonymous);
 						break;
 					case QuestionType.CompanyValue:
-						GenerateCompanyValuesAnswer(s, caller, forUser, q, reviewModel, anonymous);
+						GenerateCompanyValuesAnswer(s, reviewer, q, reviewModel, anonymous);
 						break;
 					default:
 						throw new ArgumentException("Unrecognized questionType(" + q.Askable.GetQuestionType() + ")");
@@ -63,15 +59,6 @@ namespace RadialReview.Accessors
 			reviewModel.QuestionCompletion.NumRequired += askables.Count(x => x.Askable.Required);
 			reviewModel.QuestionCompletion.NumOptional += askables.Count(x => !x.Askable.Required);
 
-			/*var counts = s.QueryOver<AnswerModel>()
-				.Where(x =>
-					x.DeleteTime == null &&
-					x.ForReviewContainerId == reviewModel.ForReviewsId &&
-					(x.ByUserId == reviewModel.ForUserId || x.AboutUserId == reviewModel.ForUserId)
-				).Select(x => x.ByUserId, x => x.AboutUserId).List<long[]>().ToList();
-
-			reviewModel.ReviewedByCompletion.NumRequired = counts.Select(x => x[0]).Distinct().Count();
-			reviewModel.ReviewingCompletion.NumRequired = counts.Select(x => x[1]).Distinct().Count();*/
 
 			s.SaveOrUpdate(reviewModel);
 		}
@@ -93,19 +80,16 @@ namespace RadialReview.Accessors
 			}
 		}*/
 
-		private static void DeleteAnswers_Unsafe(ISession s, IEnumerable<AnswerModel> answers, DateTime now)
-		{
+		private static void DeleteAnswers_Unsafe(ISession s, IEnumerable<AnswerModel> answers, DateTime now) {
 			var toDelete = answers.Where(x => x.DeleteTime == null).ToList();
-			foreach (var answer in toDelete)
-			{
+			foreach (var answer in toDelete) {
 				answer.DeleteTime = now;
 				s.Update(answer);
 			}
 
 			var reviewIds = toDelete.Select(x => x.ForReviewId).Distinct().ToList();
 			var reviews = s.QueryOver<ReviewModel>().WhereRestrictionOn(x => x.Id).IsIn(reviewIds).List().ToList();
-			foreach (var r in reviews)
-			{
+			foreach (var r in reviews) {
 				r.QuestionCompletion.NumRequired -= toDelete.Count(x => x.Required && x.ForReviewId == r.Id);
 				r.QuestionCompletion.NumOptional -= toDelete.Count(x => !x.Required && x.ForReviewId == r.Id);
 				r.QuestionCompletion.NumRequiredComplete -= toDelete.Count(x => x.Required && x.Complete && x.ForReviewId == r.Id);
@@ -125,50 +109,86 @@ namespace RadialReview.Accessors
 				r.ReviewingCompletion.NumRequired = counts.Select(x => x[1]).Distinct().Count();*/
 
 				s.Update(r);
-				new Cache().InvalidateForUser(r.ForUser, CacheKeys.UNSTARTED_TASKS);
+				new Cache().InvalidateForUser(r.ReviewerUser, CacheKeys.UNSTARTED_TASKS);
 			}
 		}
 
-		public void AddToReview(UserOrganizationModel caller, long byUserId, long reviewContainerId, long aboutUserId)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+		[Obsolete("Fix for AC")]
+		public void AddToReview(UserOrganizationModel caller, Reviewer reviewer, long reviewContainerId, Reviewee reviewee) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					AddToReview(s.ToDataInteraction(true), perms, caller, byUserId, reviewContainerId, aboutUserId, AboutType.NoRelationship);
+					//var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
+					//var team = s.Get<OrganizationTeamModel>(reviewContainer.ForTeamId);
+					//var tree = AccountabilityAccessor.GetTree(s, perms, caller.Organization.Id);
+					//var rels = Relationships.GetRelationships_Filtered(s.ToDataInteraction(true), perms, tree, reviewer, team, reviewContainer.GetDateRange());
+
+					//rels.Where(x => x.Reviewer == reviewer && x.Reviewee == reviewee).OrderByDescending(x=>x..FirstOrDefault();
+
+					AddToReview(s.ToDataInteraction(true), perms, caller, reviewer, reviewContainerId, reviewee, AboutType.NoRelationship);
 					tx.Commit();
 					s.Flush();
 				}
 			}
 		}
-
-		public void RemoveFromReview(UserOrganizationModel caller, long byUserId, long reviewContainerId, long aboutUserId)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
-					var perms = PermissionsUtility.Create(s, caller);
-					RemoveFromReview(s, perms, caller, byUserId, reviewContainerId, aboutUserId);
-					tx.Commit();
-					s.Flush();
-				}
-			}
-		}
-
-
-
-		private static void RemoveFromReview(ISession s, PermissionsUtility perms, UserOrganizationModel caller, long byUserId, long reviewContainerId, long aboutUserId)
-		{
+		[Obsolete("Fix for AC")]
+		private static void AddToReview(DataInteraction s, PermissionsUtility perms, UserOrganizationModel caller, Reviewer reviewer, long reviewContainerId, Reviewee reviewee, AboutType aboutType) {
 			//TODO Fix permissions. Should make sure we can edit the review
-			perms.ViewUserOrganization(byUserId, false).ViewReviews(reviewContainerId, false);
-			var revieww = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId && x.ForUserId == byUserId).List().ToList();
-			foreach (var review in revieww)
-			{
-				perms.ViewUserOrganization(review.ForUserId, false);
+			perms.ViewUserOrganization(reviewer.RGMId, false).ViewReviews(reviewContainerId, false);
+
+			var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
+			var reviews = s.Where<ReviewModel>(x => x.ForReviewContainerId == reviewContainerId && x.ReviewerUserId == reviewer.RGMId).ToList();
+			if (!reviews.Any())
+				throw new InvalidOperationException("Review does not exist.");
+
+			foreach (var review in reviews) {
+				perms.ViewUserOrganization(review.ReviewerUserId, false).ManageUserReview(review.Id, true);
+
+				var range = new DateRange(reviewContainer.DateCreated, DateTime.UtcNow);
+
+				var askables = ReviewAccessor.GetAskables(s, perms, reviewer, new[] { reviewee }, range);
+
+				var forUser = s.Get<UserOrganizationModel>(review.ReviewerUserId);
+				//var review=s.QueryOver<ReviewModel>().Where(x=>x.ForReviewsId == reviewContainerId && x.ForUserId==byUserId).SingleOrDefault();
+
+				AddAskablesToReview(s, perms, new Reviewer(review.ReviewerUserId), review, reviewContainer.AnonymousByDefault, askables);
+			}
+
+
+			var revieweeReview = reviews.Where(x => x.ReviewerUserId == reviewee.RGMId).SingleOrDefault();
+			if (revieweeReview == null) {
+				var u = s.Get<UserOrganizationModel>(reviewee.RGMId);
+				QuestionAccessor.GenerateReviewForUser(null, s, perms, u, reviewContainer, new AskableCollection());
+			}
+		}
+
+		public void RemoveFromReview(UserOrganizationModel caller, Reviewer reviewer, long reviewContainerId, Reviewee reviewee) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					RemoveFromReview(s, perms, caller, reviewer, reviewContainerId, reviewee);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+
+
+		private static void RemoveFromReview(ISession s, PermissionsUtility perms, UserOrganizationModel caller, Reviewer reviewer, long reviewContainerId, Reviewee reviewee) {
+			//TODO Fix permissions. Should make sure we can edit the review
+			perms.ViewUserOrganization(reviewer.RGMId, false).ViewReviews(reviewContainerId, false);
+			var revieww = s.QueryOver<ReviewModel>().Where(x => x.ForReviewContainerId == reviewContainerId && x.ReviewerUserId == reviewer.RGMId).List().ToList();
+			foreach (var review in revieww) {
+				perms.ViewUserOrganization(review.ReviewerUserId, false);
 				perms.ManageUserReview(review.Id, false);
-				var ans = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == reviewContainerId && x.ByUserId == byUserId && x.AboutUserId == aboutUserId).List();
+
+
+				var q = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == reviewContainerId && x.ReviewerUserId == reviewer.RGMId && x.RevieweeUserId == reviewee.RGMId);
+				if (reviewee.ACNodeId != null) {
+					q = q.Where(x => x.RevieweeUser_AcNodeId == null || x.RevieweeUser_AcNodeId == reviewee.ACNodeId.Value);
+				}
+				var ans = q.List();
 				var now = DateTime.UtcNow;
 				DeleteAnswers_Unsafe(s, ans, now);
 			}
@@ -177,51 +197,11 @@ namespace RadialReview.Accessors
 
 		}
 
-		private static void AddToReview(DataInteraction s, PermissionsUtility perms, UserOrganizationModel caller, long byUserId, long reviewContainerId, long aboutUserId, AboutType aboutType)
-		{
-			//TODO Fix permissions. Should make sure we can edit the review
-			perms.ViewUserOrganization(byUserId, false).ViewReviews(reviewContainerId, false);
 
-			var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
-			var reviews = s.Where<ReviewModel>(x => x.ForReviewsId == reviewContainerId && x.ForUserId == byUserId).ToList();
-			if (!reviews.Any())
-				throw new InvalidOperationException("Review does not exist.");
-
-			foreach (var review in reviews)
-			{
-				perms.ViewUserOrganization(review.ForUserId, false).ManageUserReview(review.Id, true);
-
-				/*var askable = new AskableUtility();
-
-				var appQuestions = ApplicationAccessor.GetApplicationQuestions(s.GetQueryProvider()).ToList();//, ApplicationAccessor.FEEDBACK);
-				var userResponsibilities = AskableAccessor.GetAskablesForUser(caller, s.GetQueryProvider(), perms, aboutUserId, reviewContainer.PeriodId).ToListAlive();
-												/*ResponsibilitiesAccessor
-													  .GetResponsibilityGroupsForUser(s.GetQueryProvider(), perms, caller, aboutUserId)
-													  .SelectMany(x => x.Responsibilities)
-													  .ToListAlive();*
-
-				askable.AddUnique(userResponsibilities, aboutType, aboutUserId);
-				foreach (var aq in appQuestions)
-					askable.AddUnique(aq, aboutType, aboutUserId);*/
-
-				var range = new DateRange(reviewContainer.DateCreated, DateTime.UtcNow);
-
-				var askables = ReviewAccessor.GetAskables(caller, perms, s, new[] { aboutUserId }, byUserId, /*reviewContainer.PeriodId,*/ range);
-
-				var forUser = s.Get<UserOrganizationModel>(review.ForUserId);
-				//var review=s.QueryOver<ReviewModel>().Where(x=>x.ForReviewsId == reviewContainerId && x.ForUserId==byUserId).SingleOrDefault();
-
-				AddAskablesToReview(s, perms, caller, forUser, review, reviewContainer.AnonymousByDefault, askables);
-			}
-		}
-
-		public void RemoveQuestionFromReviewForUser(UserOrganizationModel caller, long reviewContainerId, long userId, long askableId)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
-					var answers = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == reviewContainerId && x.Askable.Id == askableId && x.AboutUserId == userId && x.DeleteTime == null).List();
+		public void RemoveQuestionFromReviewForUser(UserOrganizationModel caller, long reviewContainerId, long userId, long askableId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var answers = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == reviewContainerId && x.Askable.Id == askableId && x.RevieweeUserId == userId && x.DeleteTime == null).List();
 					var deleteTime = DateTime.UtcNow;
 
 					DeleteAnswers_Unsafe(s, answers, deleteTime);
@@ -231,14 +211,17 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public static void AddResponsibilityAboutUserToReview(ISession s, UserOrganizationModel caller, PermissionsUtility perms, long reviewContainerId, long userId, long askableId)
-		{
+		public static void AddResponsibilityAboutUserToReview(ISession s, UserOrganizationModel caller, PermissionsUtility perms, long reviewContainerId, Reviewee reviewee, long askableId) {
+			DateRange range = null; //Does this need to be set?
+
+			var userId = reviewee.RGMId;
 			var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
-			var orgId = reviewContainer.ForOrganization.Id;
+			var orgId = reviewContainer.Organization.Id;
 			perms.ViewOrganization(orgId).Or(x => x.AdminReviewContainer(reviewContainerId), x => x.EditQuestionForUser(userId));
 
 			var queryProvider = GetReviewQueryProvider(s, orgId, reviewContainerId);
 			queryProvider.AddData(reviewContainer.AsList());
+
 
 			queryProvider.AddData(s.Get<ResponsibilityGroupModel>(userId).AsList());
 
@@ -247,53 +230,53 @@ namespace RadialReview.Accessors
 
 			var team = dataInteration.Get<OrganizationTeamModel>(reviewContainer.ForTeamId);
 			//I think we want ToList, not ToListAlive
-			var existingReviewUsers = dataInteration.Where<ReviewModel>(x => x.ForReviewsId == reviewContainerId).Select(x => x.ForUser.Id).ToList();
+			var existingReviewUsers = dataInteration.Where<ReviewModel>(x => x.ForReviewContainerId == reviewContainerId).Select(x => new Reviewee(x.ReviewerUser.Id, null)).ToList();
 			var user = dataInteration.Get<UserOrganizationModel>(userId);
 
-			var relationships = GetReviewersForUser(caller, perms, dataInteration, user, reviewContainer.GetParameters(), team, existingReviewUsers);
+			var tree = AccountabilityAccessor.GetTree(s, perms, team.Organization.AccountabilityChartId, range: range);
+
+			var relationships = Relationships.GetRelationships_Filtered(dataInteration, perms, tree, reviewee, team, range, existingReviewUsers);
 
 			//also want to get the NoRelationship people
 			var norel = ((long)AboutType.NoRelationship);
 			var allNoRelationshipps = s.QueryOver<AnswerModel>()
-				.Where(x => x.DeleteTime == null && x.AboutTypeNum == norel && x.AboutUserId == userId && x.ForReviewContainerId == reviewContainerId)
-				.Select(x => x.ByUserId)
+				.Where(x => x.DeleteTime == null && x.AboutTypeNum == norel && x.RevieweeUserId == userId && x.ForReviewContainerId == reviewContainerId)
+				.Select(x => x.ReviewerUserId)
 				.List<long>().Distinct()
 				.ToList();
-			foreach (var nr in allNoRelationshipps)
-			{
+			foreach (var nr in allNoRelationshipps) {
 				var u = dataInteration.Where<UserOrganizationModel>(x => x.Id == nr).Single();
-				relationships.Add(u, AboutType.NoRelationship);
+				relationships.AddRelationship(new Reviewer(nr), reviewee, AboutType.NoRelationship);
 			}
 
 			var askable = s.Get<Askable>(askableId);
 
-			foreach (var r in relationships)
-			{
-				var existingReviews = dataInteration.Where<ReviewModel>(x => x.ForUserId == r.Key.Id).ToList();
-				foreach (var existingReview in existingReviews)
-				{
-					var askableUtil = new AskableUtility();
-					foreach (var about in r.Value)
-					{
-						if (ReviewAccessor.ShouldAddToReview(askable, about))
-						{
-							askableUtil.AddUnique(askable, about.Invert(), userId);
-						}
-					}
-					AddAskablesToReview(dataInteration, perms, caller, r.Key, existingReview, reviewContainer.AnonymousByDefault, askableUtil.Askables);
+			foreach (var r in relationships) {
+				var existingReviews = dataInteration.Where<ReviewModel>(x => x.ReviewerUserId == r.Reviewer.RGMId).ToList();
+				foreach (var existingReview in existingReviews) {
+					var askables = new AskableCollection();
+					//Is it correct that this be inverted?
+					askables.AddUnique(askable, r.RevieweeIsThe, r.Reviewee);
+
+
+					//foreach (var about in r.Value)
+					//{
+					//	if (ReviewAccessor.ShouldAddToReview(askable, about))
+					//	{
+					//		askables.AddUnique(askable, about.Invert(), userId);
+					//	}
+					//}
+					AddAskablesToReview(dataInteration, perms, r.Reviewer, existingReview, reviewContainer.AnonymousByDefault, askables);
 				}
 			}
 
 		}
 
-		public void AddResponsibilityAboutUserToReview(UserOrganizationModel caller, long reviewContainerId, long userId, long askableId)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+		public void AddResponsibilityAboutUserToReview(UserOrganizationModel caller, long reviewContainerId, Reviewee reviewee, long askableId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					AddResponsibilityAboutUserToReview(s, caller, perms, reviewContainerId, userId, askableId);
+					AddResponsibilityAboutUserToReview(s, caller, perms, reviewContainerId, reviewee, askableId);
 					tx.Commit();
 					s.Flush();
 				}
@@ -301,12 +284,9 @@ namespace RadialReview.Accessors
 		}
 		#endregion
 
-		public ResultObject RemoveUserFromReview(UserOrganizationModel caller, long reviewContainerId, long userOrganizationId)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+		public ResultObject RemoveUserFromReview(UserOrganizationModel caller, long reviewContainerId, long userOrganizationId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller)
 						.ManagesUserOrganization(userOrganizationId, false)
 						.AdminReviewContainer(reviewContainerId);
@@ -314,13 +294,12 @@ namespace RadialReview.Accessors
 					var deleteTime = DateTime.UtcNow;
 					var user = s.Get<UserOrganizationModel>(userOrganizationId);
 
-					var revieww = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId && x.ForUserId == userOrganizationId && x.DeleteTime == null).List().ToList();
-					foreach (var review in revieww)
-					{
+					var revieww = s.QueryOver<ReviewModel>().Where(x => x.ForReviewContainerId == reviewContainerId && x.ReviewerUserId == userOrganizationId && x.DeleteTime == null).List().ToList();
+					foreach (var review in revieww) {
 						review.DeleteTime = deleteTime;
 						s.Update(review);
-						new Cache().InvalidateForUser(review.ForUser, CacheKeys.UNSTARTED_TASKS);
-						var answers = s.QueryOver<AnswerModel>().Where(x => (x.AboutUserId == userOrganizationId || x.ByUserId == userOrganizationId) && x.ForReviewContainerId == reviewContainerId && x.DeleteTime == null).List();
+						new Cache().InvalidateForUser(review.ReviewerUser, CacheKeys.UNSTARTED_TASKS);
+						var answers = s.QueryOver<AnswerModel>().Where(x => (x.RevieweeUserId == userOrganizationId || x.ReviewerUserId == userOrganizationId) && x.ForReviewContainerId == reviewContainerId && x.DeleteTime == null).List();
 
 						DeleteAnswers_Unsafe(s, answers, deleteTime);
 					}
@@ -333,18 +312,18 @@ namespace RadialReview.Accessors
 		}
 
 		#region Update
-		public async Task<ResultObject> AddUserToReviewContainer(HttpContext context, UserOrganizationModel caller, long reviewContainerId, long userOrganizationId, bool sendEmails)
-		{
+		[Obsolete("Fix for AC")]
+		public async Task<ResultObject> AddUserToReviewContainer(HttpContext context, UserOrganizationModel caller, long reviewContainerId, Reviewee reviewee, bool sendEmails) {
 			var unsent = new List<Mail>();
-			String userBeingReviewed = null;
-			try
-			{
-				using (var s = HibernateSession.GetCurrentSession())
-				{
-					using (var tx = s.BeginTransaction())
-					{
+			string userBeingReviewed = null;
+			var now = DateTime.UtcNow;
+			var range = new DateRange(now, now);
+
+			try {
+				using (var s = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
 						var perms = PermissionsUtility.Create(s, caller)
-							.ManagesUserOrganization(userOrganizationId, false)
+							.ManagesUserOrganization(reviewee.RGMId, false)
 							.ViewReviews(reviewContainerId, false);
 						var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
 						var dueDate = reviewContainer.DueDate;
@@ -354,7 +333,7 @@ namespace RadialReview.Accessors
 						var reviewSubordinates = reviewContainer.ReviewSubordinates;
 						var reviewTeammates = reviewContainer.ReviewTeammates;
 						var reviewPeers = reviewContainer.ReviewPeers;
-						var organization = reviewContainer.ForOrganization;
+						var organization = reviewContainer.Organization;
 
 						var team = TeamAccessor.GetTeam(s, perms, caller, reviewContainer.ForTeamId);
 
@@ -363,26 +342,29 @@ namespace RadialReview.Accessors
 						// int sent = 0;
 						//int errors = 0;
 
-						var beingReviewedUser = s.Get<UserOrganizationModel>(userOrganizationId);
+						var beingReviewedUser = s.Get<UserOrganizationModel>(reviewee.RGMId);
 
 						var orgId = organization.Id;
 
-						var allOrgTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId).List();
-						var allTeamDurations = s.QueryOver<TeamDurationModel>().JoinQueryOver(x => x.Team).Where(x => x.Organization.Id == orgId).List();
-						var allMembers = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == orgId).List();
-						var allManagerSubordinates = s.QueryOver<ManagerDuration>().JoinQueryOver(x => x.Manager).Where(x => x.Organization.Id == orgId).List();
-						var allPositions = s.QueryOver<PositionDurationModel>().JoinQueryOver(x => x.Position).Where(x => x.Organization.Id == orgId).List();
-						var applicationQuestions = s.QueryOver<QuestionModel>().Where(x => x.OriginId == ApplicationAccessor.APPLICATION_ID && x.OriginType == OriginType.Application).List();
-						var application = s.QueryOver<ApplicationWideModel>().Where(x => x.Id == ApplicationAccessor.APPLICATION_ID).List();
-						var reviews = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId).List();
-						var allRoles = s.QueryOver<RoleModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).List();
-						var allRocks = s.QueryOver<RockModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).List();
-						var allValues = s.QueryOver<CompanyValueModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).List();
-						var allReviewContainers = s.QueryOver<ReviewsModel>().Where(x => x.ForOrganizationId == orgId && x.DeleteTime == null).List();
-						var allRGM = s.QueryOver<ResponsibilityGroupModel>().Where(x => x.Organization.Id == orgId && x.DeleteTime == null).List();
-						var allAboutCompany = s.QueryOver<AboutCompanyAskable>().Where(x => x.Organization.Id == orgId && x.DeleteTime == null).List();
+						var allOrgTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId).Future();
+						var allTeamDurations = s.QueryOver<TeamDurationModel>().JoinQueryOver(x => x.Team).Where(x => x.Organization.Id == orgId).Future();
+						var allMembers = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == orgId).Future();
+						var allManagerSubordinates = s.QueryOver<ManagerDuration>().JoinQueryOver(x => x.Manager).Where(x => x.Organization.Id == orgId).Future();
+						var allPositions = s.QueryOver<PositionDurationModel>().JoinQueryOver(x => x.Position).Where(x => x.Organization.Id == orgId).Future();
+						var applicationQuestions = s.QueryOver<QuestionModel>().Where(x => x.OriginId == ApplicationAccessor.APPLICATION_ID && x.OriginType == OriginType.Application).Future();
+						var application = s.QueryOver<ApplicationWideModel>().Where(x => x.Id == ApplicationAccessor.APPLICATION_ID).Future();
+						var reviews = s.QueryOver<ReviewModel>().Where(x => x.ForReviewContainerId == reviewContainerId).Future();
+						var allRoles = s.QueryOver<RoleModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).Future();
+						var allRocks = s.QueryOver<RockModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).Future();
+						var allValues = s.QueryOver<CompanyValueModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).Future();
+						var allReviewContainers = s.QueryOver<ReviewsModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).Future();
+						var allRGM = s.QueryOver<ResponsibilityGroupModel>().Where(x => x.Organization.Id == orgId && x.DeleteTime == null).Future();
+						var allAboutCompany = s.QueryOver<AboutCompanyAskable>().Where(x => x.Organization.Id == orgId && x.DeleteTime == null).Future();
+						var allAccNodes = s.QueryOver<AccountabilityNode>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).Future();
 
-						var allRoleLinks = s.QueryOver<RoleLink>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).List();
+						var allRoleLinks = s.QueryOver<RoleLink>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).Future();
+
+						var tree = AccountabilityAccessor.GetTree(s, perms, organization.AccountabilityChartId, range: range);
 
 						var queryProvider = new IEnumerableQuery();
 						queryProvider.AddData(allRGM);
@@ -400,33 +382,35 @@ namespace RadialReview.Accessors
 						queryProvider.AddData(reviews);
 						queryProvider.AddData(allReviewContainers);
 						queryProvider.AddData(allRoleLinks);
+						queryProvider.AddData(allAccNodes);
 
-						var accessibleUsers = TeamAccessor.GetTeamMembers(s.ToQueryProvider(true), perms, reviewContainer.ForTeamId, false)
-														.ToListAlive()
-														.Select(x => x.User).ToListAlive();
 
-						accessibleUsers.Add(beingReviewedUser);
+						//var accessibleUsers = TeamAccessor.GetTeamMembers(s.ToQueryProvider(true), perms, reviewContainer.ForTeamId, false)
+						//								.ToListAlive()
+						//								.Select(x => x.User).ToListAlive();
 
-						var now = DateTime.UtcNow;
-						var range = new DateRange(now, now);
+
+
+
+						var di = new DataInteraction(queryProvider, s.ToUpdateProvider());
+
+						var availableUsers = Relationships.GetAvailableUsers(di, perms, tree, team, range, reviewContainerId);
+						availableUsers.Add(new Reviewee(beingReviewedUser));
 
 						//TODO Populate a query provider structure here..
-						var toEmail = AddUserToReview(context, caller, true, dueDate, reviewContainer.GetParameters(), new DataInteraction(queryProvider, s.ToUpdateProvider()), reviewContainer, perms, organization, team, ref exceptions, beingReviewedUser, accessibleUsers, range);
+						var toEmail = AddUserToReview(context, caller, true, dueDate, reviewContainer.GetParameters(), di, reviewContainer, perms, organization, team, ref exceptions, reviewee, tree, availableUsers, range);
 						unsent.AddRange(toEmail);
 						userBeingReviewed = beingReviewedUser.GetName();
 						tx.Commit();
 						s.Flush();
 					}
 				}
-			}
-			catch (Exception e)
-			{
+			} catch (Exception e) {
 				return new ResultObject(e);
 			}
 			var result = new EmailResult();
 
-			if (sendEmails)
-			{
+			if (sendEmails) {
 				result = await Emailer.SendEmails(unsent);
 			}
 
@@ -455,8 +439,7 @@ namespace RadialReview.Accessors
 
 		}*/
 		public static ReviewContainerStats UpdateAllCompleted(ISession s, PermissionsUtility perms, long organizationId, FastReviewQueries.ReviewIncomplete reviewId_Incomplete,
-			bool started, decimal durationMinutes, int additionalAnswered, int optionalAnswered)
-		{
+			bool started, decimal durationMinutes, int additionalAnswered, int optionalAnswered) {
 			var reviewId = reviewId_Incomplete.reviewId;
 			var anyIncomplete = reviewId_Incomplete.numberIncomplete > 0;
 			perms.EditReview(reviewId);
@@ -468,44 +451,40 @@ namespace RadialReview.Accessors
 
 			//var anyIncomplete = firstIncomplete != null;
 			var review = s.Get<ReviewModel>(reviewId);
-			var output = new ReviewContainerStats(review.ForReviewsId);
+			var output = new ReviewContainerStats(review.ForReviewContainerId);
 
 			var updated = false;
-			if (durationMinutes != 0)
-			{
+			if (durationMinutes != 0) {
 				if (review.DurationMinutes == null)
 					review.DurationMinutes = 0;
 				review.DurationMinutes += (decimal)Math.Min(durationMinutes, (decimal)TimingUtility.ExcludeLongerThan.TotalMinutes);
 				updated = true;
 			}
 
-			if (!anyIncomplete && !review.Complete)
-			{
+			if (!anyIncomplete && !review.Complete) {
 				review.Complete = true;
 				updated = true;
 				output.Stats.ReviewsCompleted += 1;
 				output.Completion.Started -= 1;
 				output.Completion.Finished += 1;
-				new Cache().InvalidateForUser(review.ForUser, CacheKeys.UNSTARTED_TASKS);
+				new Cache().InvalidateForUser(review.ReviewerUser, CacheKeys.UNSTARTED_TASKS);
 			}
 
-			if (started && !review.Started)
-			{
+			if (started && !review.Started) {
 				review.Started = true;
 				updated = true;
 				output.Completion.Started += 1;
 				output.Completion.Unstarted -= 1;
 			}
 
-			if (anyIncomplete && review.Complete)
-			{
+			if (anyIncomplete && review.Complete) {
 				review.Complete = false;
 				review.DurationMinutes = null;
 				updated = true;
 				output.Stats.ReviewsCompleted -= 1;
 				output.Completion.Finished -= 1;
 				output.Completion.Started += 1;
-				new Cache().InvalidateForUser(review.ForUser, CacheKeys.UNSTARTED_TASKS);
+				new Cache().InvalidateForUser(review.ReviewerUser, CacheKeys.UNSTARTED_TASKS);
 			}
 
 			output.Stats.QuestionsAnswered += additionalAnswered;
@@ -513,8 +492,7 @@ namespace RadialReview.Accessors
 
 			review.QuestionCompletion.NumRequiredComplete += additionalAnswered;
 
-			if (updated || output.Stats.QuestionsAnswered != 0 || output.Stats.OptionalsAnswered != 0)
-			{
+			if (updated || output.Stats.QuestionsAnswered != 0 || output.Stats.OptionalsAnswered != 0) {
 				var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
 				hub.Clients.Group("manager_" + organizationId).updateReviewStats(ResultObject.Create(output));
 			}
@@ -526,12 +504,9 @@ namespace RadialReview.Accessors
 
 		}
 
-		public ReviewContainerStats UpdateAllCompleted(UserOrganizationModel caller, long reviewId, bool started, decimal durationMinutes, int additionalAnswered, int optionalAnswered)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+		public ReviewContainerStats UpdateAllCompleted(UserOrganizationModel caller, long reviewId, bool started, decimal durationMinutes, int additionalAnswered, int optionalAnswered) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
 
 					var reviewIncomplete = FastReviewQueries.AnyUnansweredReviewQuestions(s, reviewId.AsList()).First();
@@ -543,22 +518,16 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		private static void UpdateCompletion(AnswerModel answer, DateTime now, ref int questionsAnsweredDelta, ref int optionalAnsweredDelta)
-		{
-			if (answer.Complete)
-			{
-				if (answer.CompleteTime == null)
-				{
+		private static void UpdateCompletion(AnswerModel answer, DateTime now, ref int questionsAnsweredDelta, ref int optionalAnsweredDelta) {
+			if (answer.Complete) {
+				if (answer.CompleteTime == null) {
 					if (!answer.Required)
 						optionalAnsweredDelta += 1;
 					questionsAnsweredDelta += 1;
 				}
 				answer.CompleteTime = now;
-			}
-			else
-			{
-				if (answer.CompleteTime != null)
-				{
+			} else {
+				if (answer.CompleteTime != null) {
 					if (!answer.Required)
 						optionalAnsweredDelta -= 1;
 					questionsAnsweredDelta -= 1;
@@ -575,46 +544,39 @@ namespace RadialReview.Accessors
 		/// <param name="value"></param>
 		/// <returns>Complete</returns>
 
-		public void AddAnswerToReview(UserOrganizationModel caller, long reviewId, long answerId)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+		public void AddAnswerToReview(UserOrganizationModel caller, long reviewId, long answerId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId, false);
 					var feedback = s.Get<AnswerModel>(answerId);
 					var review = s.Get<ReviewModel>(reviewId);
-					if (review.ForUserId != feedback.AboutUserId)
+					if (review.ReviewerUserId != feedback.RevieweeUserId)
 						throw new PermissionsException("Answer and Review do not match.");
 
 					review.ClientReview.FeedbackIds.Add(new LongModel() { Value = answerId });
 					s.Update(review);
-					new Cache().InvalidateForUser(review.ForUser, CacheKeys.UNSTARTED_TASKS);
+					new Cache().InvalidateForUser(review.ReviewerUser, CacheKeys.UNSTARTED_TASKS);
 					tx.Commit();
 					s.Flush();
 				}
 			}
 		}
-		public void RemoveAnswerFromReview(UserOrganizationModel caller, long reviewId, long answerId)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+		public void RemoveAnswerFromReview(UserOrganizationModel caller, long reviewId, long answerId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).ManageUserReview(reviewId, false);
 					var answer = s.Get<AnswerModel>(answerId);
 					var review = s.Get<ReviewModel>(reviewId);
 
-					if (review.ForUserId != answer.AboutUserId)
+					if (review.ReviewerUserId != answer.RevieweeUserId)
 						throw new PermissionsException("Answer and Review do not match.");
 
-					foreach (var id in review.ClientReview.FeedbackIds)
-					{
+					foreach (var id in review.ClientReview.FeedbackIds) {
 						if (id.Value == answerId)
 							id.DeleteTime = DateTime.UtcNow;
 					}
 					s.Update(review);
-					new Cache().InvalidateForUser(review.ForUser, CacheKeys.UNSTARTED_TASKS);
+					new Cache().InvalidateForUser(review.ReviewerUser, CacheKeys.UNSTARTED_TASKS);
 					tx.Commit();
 					s.Flush();
 				}
@@ -622,51 +584,41 @@ namespace RadialReview.Accessors
 		}
 
 
-		public void UpdateDueDates(UserOrganizationModel caller, long reviewContainerId, DateTime? prereviewDueDate, DateTime reviewDueDate, DateTime? reportDueDate)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+		public void UpdateDueDates(UserOrganizationModel caller, long reviewContainerId, DateTime? prereviewDueDate, DateTime reviewDueDate, DateTime? reportDueDate) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					var perm = PermissionsUtility.Create(s, caller).AdminReviewContainer(reviewContainerId);
 					var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
 					var update = false;
-					if (prereviewDueDate != null)
-					{
-						if (reviewContainer.PrereviewDueDate != prereviewDueDate.Value)
-						{
+					if (prereviewDueDate != null) {
+						if (reviewContainer.PrereviewDueDate != prereviewDueDate.Value) {
 							reviewContainer.PrereviewDueDate = prereviewDueDate.Value;
 							update = true;
 							var prereviews = s.QueryOver<PrereviewModel>().Where(x => x.ReviewContainerId == reviewContainerId).List().ToList();
-							foreach (var p in prereviews)
-							{
+							foreach (var p in prereviews) {
 								p.PrereviewDue = prereviewDueDate.Value;
 								s.Update(p);
 							}
 						}
 					}
 
-					if (reviewContainer.DueDate != reviewDueDate)
-					{
+					if (reviewContainer.DueDate != reviewDueDate) {
 						update = true;
 						reviewContainer.DueDate = reviewDueDate;
-						var reviews = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId).List().ToList();
-						foreach (var r in reviews)
-						{
+						var reviews = s.QueryOver<ReviewModel>().Where(x => x.ForReviewContainerId == reviewContainerId).List().ToList();
+						foreach (var r in reviews) {
 							r.DueDate = reviewDueDate;
 							s.Update(r);
-							new Cache().InvalidateForUser(r.ForUser, CacheKeys.UNSTARTED_TASKS);
+							new Cache().InvalidateForUser(r.ReviewerUser, CacheKeys.UNSTARTED_TASKS);
 						}
 					}
 
-					if (reportDueDate != null && reviewContainer.ReportsDueDate != reportDueDate)
-					{
+					if (reportDueDate != null && reviewContainer.ReportsDueDate != reportDueDate) {
 						update = true;
 						reviewContainer.ReportsDueDate = reportDueDate;
 					}
 
-					if (update)
-					{
+					if (update) {
 						s.Update(reviewContainer);
 						tx.Commit();
 						s.Flush();
@@ -675,34 +627,28 @@ namespace RadialReview.Accessors
 			}
 
 		}
-		public void UpdateDueDate(UserOrganizationModel caller, long reviewId, DateTime dueDate)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+		public void UpdateDueDate(UserOrganizationModel caller, long reviewId, DateTime dueDate) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 
 					var review = s.Get<ReviewModel>(reviewId);
 					if (review == null)
 						throw new PermissionsException("Review does not exist. (" + reviewId + ")");
 
-					PermissionsUtility.Create(s, caller).AdminReviewContainer(review.ForReviewsId);
+					PermissionsUtility.Create(s, caller).AdminReviewContainer(review.ForReviewContainerId);
 
 					review.DueDate = dueDate;
 					s.Update(review);
 					tx.Commit();
 					s.Flush();
-					new Cache().InvalidateForUser(review.ForUser, CacheKeys.UNSTARTED_TASKS);
+					new Cache().InvalidateForUser(review.ReviewerUser, CacheKeys.UNSTARTED_TASKS);
 				}
 			}
 		}
 
-		public void EditReviewName(UserOrganizationModel caller, long reviewContainerId, String reviewName)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+		public void EditReviewName(UserOrganizationModel caller, long reviewContainerId, String reviewName) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).AdminReviewContainer(reviewContainerId);
 					var review = s.Get<ReviewsModel>(reviewContainerId);
 					if (review == null)
@@ -711,13 +657,12 @@ namespace RadialReview.Accessors
 					review.ReviewName = reviewName;
 					s.Update(review);
 
-					var reviews = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewContainerId).List().ToList();
+					var reviews = s.QueryOver<ReviewModel>().Where(x => x.ForReviewContainerId == reviewContainerId).List().ToList();
 					var cache = new Cache();
-					foreach (var r in reviews)
-					{
+					foreach (var r in reviews) {
 						r.Name = reviewName;
 						s.Update(r);
-						cache.InvalidateForUser(r.ForUser, CacheKeys.UNSTARTED_TASKS);
+						cache.InvalidateForUser(r.ReviewerUser, CacheKeys.UNSTARTED_TASKS);
 					}
 
 					tx.Commit();

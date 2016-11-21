@@ -162,7 +162,7 @@ namespace RadialReview.Accessors {
 
         public static List<long> GetPermItemsForUser(ISession s, PermissionsUtility perms, long forUserId, PermItem.ResourceType resourceType)
         {
-            var groups = ResponsibilitiesAccessor.GetResponsibilityGroupsForUser(s.ToQueryProvider(true), perms, perms.GetCaller(), forUserId).ToList();
+            var groups = ResponsibilitiesAccessor.GetResponsibilityGroupsForUser(s.ToQueryProvider(true), perms, forUserId).ToList();
             var permList = s.QueryOver<PermItem>().Where(x => x.DeleteTime == null && x.ResType == resourceType)
                 .WhereRestrictionOn(x => x.AccessorId).IsIn(groups.Select(x => x.Id).ToList())
                 .Select(x => x.ResId).List<long>().ToList();

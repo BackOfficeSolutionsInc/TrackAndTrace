@@ -85,7 +85,7 @@ namespace RadialReview.Accessors
         /// 
         /// </summary>
         /// <param name="caller"></param>
-        /// <param name="forUser"></param>
+        /// <param name="reviewer"></param>
         /// <returns></returns>
         /*public ReviewModel GenerateReviewForUser(UserOrganizationModel caller, UserOrganizationModel forUser, ReviewsModel reviewContainer, List<AskableAbout> askables)
         {
@@ -102,34 +102,28 @@ namespace RadialReview.Accessors
             }
         }*/
 
-        public static ReviewModel GenerateReviewForUser(HttpContext context ,DataInteraction dataInteraction, PermissionsUtility perms, UserOrganizationModel caller, UserOrganizationModel forUser, ReviewsModel reviewContainer, List<AskableAbout> askables)
-        {
-            //var questions = GetQuestionsForUser(s, caller, forUser,caller.AllSubordinatesAndSelf());
-            //var responsibilities =
+        public static ReviewModel GenerateReviewForUser(HttpContext context ,DataInteraction dataInteraction, PermissionsUtility perms, UserOrganizationModel reviewer, ReviewsModel reviewContainer, AskableCollection askables){
 
-            forUser = dataInteraction.Get<UserOrganizationModel>(forUser.Id);
+            reviewer = dataInteraction.Get<UserOrganizationModel>(reviewer.Id);
 
-			// var askable = new List<Askable>();
-
-            var reviewModel = new ReviewModel(){
-                ForUserId = forUser.Id,
-                ForReviewsId = reviewContainer.Id,
+			var reviewModel = new ReviewModel(){
+                ReviewerUserId = reviewer.Id,
+                ForReviewContainerId = reviewContainer.Id,
                 DueDate = reviewContainer.DueDate,
                 Name = reviewContainer.ReviewName,
-				//PeriodId = reviewContainer.PeriodId,
             };
 			if (context!=null)
-				new Cache(new HttpContextWrapper(context)).InvalidateForUser(forUser, CacheKeys.UNSTARTED_TASKS);
+				new Cache(new HttpContextWrapper(context)).InvalidateForUser(reviewer, CacheKeys.UNSTARTED_TASKS);
 			else{
 				log.Info("Context was null, could not invalidate unstarted tasks");
 			}
 
             dataInteraction.Save(reviewModel);
             reviewModel.ClientReview.ReviewId = reviewModel.Id;
-	        reviewModel.ClientReview.ReviewContainerId = reviewModel.ForReviewsId;
+	        reviewModel.ClientReview.ReviewContainerId = reviewModel.ForReviewContainerId;
             dataInteraction.Update(reviewModel);
 
-			ReviewAccessor.AddAskablesToReview(dataInteraction, perms, caller, forUser, reviewModel, reviewContainer.AnonymousByDefault ,askables);
+			ReviewAccessor.AddAskablesToReview(dataInteraction, perms, new Reviewer(reviewer.Id), reviewModel, reviewContainer.AnonymousByDefault, askables);
             return reviewModel;
         }
 		

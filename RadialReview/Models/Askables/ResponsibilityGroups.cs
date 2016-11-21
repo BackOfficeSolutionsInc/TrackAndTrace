@@ -25,10 +25,11 @@ namespace RadialReview.Models.Askables
             return GetName();
         }
 
-        public virtual string GetImageUrl()
-        {
-            return ConstantStrings.AmazonS3Location + ConstantStrings.ImagePlaceholder;
-        }
+		public virtual string GetImageUrl() {
+			return ConstantStrings.AmazonS3Location + ConstantStrings.ImagePlaceholder;
+		}
+
+		public abstract OriginType GetOrigin();
 
         public abstract String GetGroupType();
 
@@ -73,13 +74,14 @@ namespace RadialReview.Models.Askables
         }
     }
 
-    public class OrganizationPositionModel : ResponsibilityGroupModel
+    public class OrganizationPositionModel : ResponsibilityGroupModel, IHistorical
     {
         //public virtual PositionModel Position { get; set; }
         public virtual String CustomName { get; set; }
         public virtual long CreatedBy { get; set; }
 
         public virtual long? TemplateId { get; set; }
+		public virtual DateTime CreateTime { get; set; }
 
         public override string GetName()
         {
@@ -100,13 +102,17 @@ namespace RadialReview.Models.Askables
             return ConstantStrings.AmazonS3Location + ConstantStrings.ImagePositionPlaceholder;
 	    }
 
-        public OrganizationPositionModel()
+		public override OriginType GetOrigin() {
+			return OriginType.Position;
+		}
+
+		public OrganizationPositionModel()
         {
 
         }
     }
 
-    public class OrganizationTeamModel : ResponsibilityGroupModel
+    public class OrganizationTeamModel : ResponsibilityGroupModel, IHistorical
     {
         public virtual TeamType Type { get; set; }
         public virtual String Name { get; set; }
@@ -116,6 +122,7 @@ namespace RadialReview.Models.Askables
         public virtual Boolean InterReview { get; set; }
         public virtual Boolean Secret { get; set; }
 	    public virtual  long? TemplateId { get; set; }
+		public virtual DateTime CreateTime { get; set; }
 
 	    // public virtual IList<TeamMemberModel> Members { get; set; }
         public OrganizationTeamModel() : base()
@@ -123,7 +130,9 @@ namespace RadialReview.Models.Askables
             // Members = new List<TeamMemberModel>();
             OnlyManagersEdit = true;
             InterReview = true;
-        }
+			CreateTime = DateTime.UtcNow;
+
+		}
         public override string GetName()
         {
             return Name;
@@ -160,7 +169,11 @@ namespace RadialReview.Models.Askables
                 _Editable = false,
             };
         }
-    }
+
+		public override OriginType GetOrigin() {
+			return OriginType.Team;
+		}
+	}
     /*
     public class TeamMemberModel : ILongIdentifiable, IDeletable
     {
@@ -191,16 +204,17 @@ namespace RadialReview.Models.Askables
 			Map(x => x.InterReview);
 			Map(x => x.OnlyManagersEdit);
 			Map(x => x.TemplateId);
-            //HasMany(x => x.Members).Not.LazyLoad().Cascade.SaveUpdate();
-        }
+			Map(x => x.CreateTime);
+			//HasMany(x => x.Members).Not.LazyLoad().Cascade.SaveUpdate();
+		}
     }
 
     public class OrganizationPositionModelMap : SubclassMap<OrganizationPositionModel>
     {
-        public OrganizationPositionModelMap()
-        {
-            Map(x => x.CustomName);
-            Map(x => x.CreatedBy);
+        public OrganizationPositionModelMap() {
+			Map(x => x.CustomName);
+			Map(x => x.CreateTime);
+			Map(x => x.CreatedBy);
             Map(x => x.TemplateId);
             //References(x => x.Position).Not.LazyLoad();
         }

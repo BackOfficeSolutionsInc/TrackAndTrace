@@ -117,8 +117,8 @@
 }
 @{
     //var users = Model.Review.Reviews.ToListAlive().Where(x => x.ForUser.GetPersonallyManaging()).ToList();
-    var direct = Model.Review.Reviews.ToListAlive().Where(x => x.ForUser.GetDirectlyManaging()).ToList();
-    var indirect = Model.Review.Reviews.ToListAlive().Where(x => !x.ForUser.GetDirectlyManaging()).ToList();
+    var direct = Model.Review.Reviews.ToListAlive().Where(x => x.ReviewerUser.GetDirectlyManaging()).ToList();
+    var indirect = Model.Review.Reviews.ToListAlive().Where(x => !x.ReviewerUser.GetDirectlyManaging()).ToList();
     var panels = new List<Tuple<int, String, List<RadialReview.Models.ReviewModel>>>(){
         Tuple.Create(1,"Direct Subordinates",direct),
         Tuple.Create(2,"All Other Subordinates",indirect)
@@ -148,11 +148,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var r in panel.Item3.OrderBy(x => x.ForUser.GetNameAndTitle())) {
-                                <tr class="@(r.ForUser.GetPersonallyManaging() ? "managing" : "not-managing")"
-                                    @if (r.ForUser.GetPersonallyManaging()) {  @: onclick="window.location='@Url.Action("Details", "Review", new { id = r.Id })';"
+                            @foreach (var r in panel.Item3.OrderBy(x => x.ReviewerUser.GetNameAndTitle())) {
+                                <tr class="@(r.ReviewerUser.GetPersonallyManaging() ? "managing" : "not-managing")"
+                                    @if (r.ReviewerUser.GetPersonallyManaging()) {  @: onclick="window.location='@Url.Action("Details", "Review", new { id = r.Id })';"
                                                                                                                                 									}>
-                                    <td class="table-hover-underline">@r.ForUser.GetNameAndTitle()</td>
+                                    <td class="table-hover-underline">@r.ReviewerUser.GetNameAndTitle()</td>
                                     <td class="alignCenter">
                                         <a data-sort="@(r.ClientReview.Visible? "1" : "2")">@r.ClientReview.Visible.GetIcon()</a>
                                     </td>

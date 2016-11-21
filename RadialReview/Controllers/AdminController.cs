@@ -861,9 +861,9 @@ namespace RadialReview.Controllers {
 					var rocks = s.QueryOver<RockAnswer>().Where(x => x.ForReviewContainerId == id).List().ToList();
 					var feebacks = s.QueryOver<FeedbackAnswer>().Where(x => x.ForReviewContainerId == id).List().ToList();
 
-					var about2 = new HashSet<long>(values.Select(x => x.AboutUserId));
-					roles.Select(x => x.AboutUserId).ForEach(x => about2.Add(x));
-					rocks.Select(x => x.AboutUserId).ForEach(x => about2.Add(x));
+					var about2 = new HashSet<long>(values.Select(x => x.RevieweeUserId));
+					roles.Select(x => x.RevieweeUserId).ForEach(x => about2.Add(x));
+					rocks.Select(x => x.RevieweeUserId).ForEach(x => about2.Add(x));
 
 					var reviewIds = new HashSet<long>();
 
@@ -895,11 +895,11 @@ namespace RadialReview.Controllers {
 					});
 
 					foreach (var v in values) {
-						var a = lookup[v.AboutUserId];
+						var a = lookup[v.RevieweeUserId];
 						if (!v.Complete) {
-							if (unstartedList.Contains(v.ByUserId))
+							if (unstartedList.Contains(v.ReviewerUserId))
 								continue;
-							if (incompleteList.Contains(v.ByUserId) && r.NextDouble() > .5)
+							if (incompleteList.Contains(v.ReviewerUserId) && r.NextDouble() > .5)
 								continue;
 							count++;
 							v.CompleteTime = DateTime.MinValue;
@@ -918,11 +918,11 @@ namespace RadialReview.Controllers {
 					}
 
 					foreach (var v in roles) {
-						var a = lookup[v.AboutUserId];
+						var a = lookup[v.RevieweeUserId];
 						if (!v.Complete) {
-							if (unstartedList.Contains(v.ByUserId))
+							if (unstartedList.Contains(v.ReviewerUserId))
 								continue;
-							if (incompleteList.Contains(v.ByUserId) && r.NextDouble() > .5)
+							if (incompleteList.Contains(v.ReviewerUserId) && r.NextDouble() > .5)
 								continue;
 
 							count += 3;
@@ -942,11 +942,11 @@ namespace RadialReview.Controllers {
 					}
 
 					foreach (var v in rocks) {
-						var a = lookup[v.AboutUserId];
+						var a = lookup[v.RevieweeUserId];
 						if (!v.Complete) {
-							if (unstartedList.Contains(v.ByUserId))
+							if (unstartedList.Contains(v.ReviewerUserId))
 								continue;
-							if (incompleteList.Contains(v.ByUserId) && r.NextDouble() > .5)
+							if (incompleteList.Contains(v.ReviewerUserId) && r.NextDouble() > .5)
 								continue;
 
 							count++;
@@ -960,11 +960,11 @@ namespace RadialReview.Controllers {
 					var allFeedbacks = new[] { "No comment.", "Good progress.", "Could use some work", "Excellent", "A pleasure to work with" };
 
 					foreach (var v in feebacks) {
-						var a = lookup[v.AboutUserId];
+						var a = lookup[v.RevieweeUserId];
 						if (!v.Complete) {
-							if (unstartedList.Contains(v.ByUserId))
+							if (unstartedList.Contains(v.ReviewerUserId))
 								continue;
-							if (incompleteList.Contains(v.ByUserId) && r.NextDouble() > .5)
+							if (incompleteList.Contains(v.ReviewerUserId) && r.NextDouble() > .5)
 								continue;
 							if (!v.Required)
 								continue;
@@ -1036,44 +1036,45 @@ namespace RadialReview.Controllers {
 			return "" + i;
 		}
 
-		[Access(AccessLevel.Radial)]
-		public String FixAnswers(long id) {
-			var reviewContainerId = id;
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var reviewContainer = s.Get<ReviewsModel>(id);
-					var orgId = reviewContainer.ForOrganizationId;
+		//[Access(AccessLevel.Radial)]
+		//[Obsolete("Fix for AC")]
+		//public String FixAnswers(long id) {
+		//	var reviewContainerId = id;
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
+		//			var reviewContainer = s.Get<ReviewsModel>(id);
+		//			var orgId = reviewContainer.ForOrganizationId;
 
 
-					var answers = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == id).List().ToList();
-					var perms = PermissionsUtility.Create(s, GetUser());
+		//			var answers = s.QueryOver<AnswerModel>().Where(x => x.ForReviewContainerId == id).List().ToList();
+		//			var perms = PermissionsUtility.Create(s, GetUser());
 
-					int i = 0;
+		//			int i = 0;
 
-					var dataInteraction = ReviewAccessor.GetReviewDataInteraction(s, orgId);
-					var qp = dataInteraction.GetQueryProvider();
+		//			var dataInteraction = ReviewAccessor.GetReviewDataInteraction(s, orgId);
+		//			var qp = dataInteraction.GetQueryProvider();
 
-					foreach (var a in answers) {
-						var relationship = RelationshipAccessor.GetRelationships(perms, qp, a.ByUserId, a.AboutUserId).First();
-						if (relationship == Models.Enums.AboutType.NoRelationship) {
-							//int b = 0;
-						}
-
-
-						if (relationship != a.AboutType) {
-							a.AboutType = relationship;
-							s.Update(a);
-							i++;
-						}
-					}
+		//			foreach (var a in answers) {
+		//				var relationship = RelationshipAccessor.GetRelationships(qp, perms, a.ReviewerUserId, a.RevieweeUserId).First();
+		//				if (relationship == Models.Enums.AboutType.NoRelationship) {
+		//					//int b = 0;
+		//				}
 
 
-					tx.Commit();
-					s.Flush();
-					return "" + i;
-				}
-			}
-		}
+		//				if (relationship != a.AboutType) {
+		//					a.AboutType = relationship;
+		//					s.Update(a);
+		//					i++;
+		//				}
+		//			}
+
+
+		//			tx.Commit();
+		//			s.Flush();
+		//			return "" + i;
+		//		}
+		//	}
+		//}
 
 
 		[Access(AccessLevel.Radial)]
@@ -1120,7 +1121,7 @@ namespace RadialReview.Controllers {
 
 		private RadialReview.Controllers.ReviewController.ReviewDetailsViewModel GetReviewDetails(ReviewModel review) {
 			var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id);
-			var answers = _ReviewAccessor.GetAnswersForUserReview(GetUser(), review.ForUserId, review.ForReviewsId);
+			var answers = _ReviewAccessor.GetAnswersForUserReview(GetUser(), review.ReviewerUserId, review.ForReviewContainerId);
 			var model = new RadialReview.Controllers.ReviewController.ReviewDetailsViewModel() {
 				Review = review,
 				Axis = categories.ToSelectList(x => x.Category.Translate(), x => x.Id),

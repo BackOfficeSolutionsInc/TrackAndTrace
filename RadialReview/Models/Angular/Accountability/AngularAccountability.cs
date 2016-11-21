@@ -11,22 +11,19 @@ using System.Web;
 
 namespace RadialReview.Models.Angular.Accountability {
 
-    public class AngularAccountabilityChart : BaseAngular {
+	public class AngularAccountabilityChart : BaseAngular {
 
 #pragma warning disable CS0618 // Type or member is obsolete
-		public AngularAccountabilityChart(){
-        }
+		public AngularAccountabilityChart() {
+		}
 #pragma warning restore CS0618 // Type or member is obsolete
-        public AngularAccountabilityChart(long id): base(id)
-        {
-        }
-        public AngularAccountabilityNode Root { get;set; }
-        public IEnumerable<AngularUser> AllUsers { get; set; }
+		public AngularAccountabilityChart(long id) : base(id) {
+		}
+		public AngularAccountabilityNode Root { get; set; }
+		public IEnumerable<AngularUser> AllUsers { get; set; }
 		public long? CenterNode { get; set; }
 		public long? ShowNode { get; set; }
-		public long? ExpandNode { get; set; }
-
-
+		public long? ExpandNode { get; set; }		
 	}
 
     public class AngularAccountabilityNode : AngularTreeNode<AngularAccountabilityNode> {
@@ -70,7 +67,7 @@ namespace RadialReview.Models.Angular.Accountability {
 
 		public string Name { get; set; }
 				
-        public AngularAccountabilityGroup Group { get; set; }     
+        public AngularAccountabilityGroup Group { get; set; }  
 
     }
     public class AngularAccountabilityGroup : BaseAngular {

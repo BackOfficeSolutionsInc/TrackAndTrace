@@ -3,7 +3,7 @@
 @model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
 
 @{
-    ViewBag.Title = Model.Review.ForUser.GetNameAndTitle() + " Review";
+    ViewBag.Title = Model.Review.ReviewerUser.GetNameAndTitle() + " Review";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var charts = Model.Review.ClientReview.Charts.ToListAlive();
     var feedbacks = Model.Review.ClientReview.FeedbackIds.ToListAlive().GroupBy(x => x.Value).Select(x => x.First()).ToList();
@@ -71,7 +71,7 @@
                         <li><a class="clickable" onclick="scrollToId('questionTable')">Answer Distribution</a></li>
                     }
                     @if (Model.Review.ClientReview.IncludeSelfFeedback) {
-                        <li><a class="clickable" onclick="scrollToId('selfFeedback')">@Model.Review.ForUser.GetName().Possessive() Answers</a></li>
+                        <li><a class="clickable" onclick="scrollToId('selfFeedback')">@Model.Review.ReviewerUser.GetName().Possessive() Answers</a></li>
                     }
                     @if (Model.Review.ClientReview.IncludeManagerFeedback && Model.Supervisers.Any()) {
                         <li><a class="clickable" onclick="scrollToId('managerFeedback')">Supervisor's Answers</a></li>
@@ -102,12 +102,12 @@
             <div class="col-xs-12">
                 <div class="row-title first row" style="">
                     <div class="col-xs-12 alignCenter pull-left">
-                        @if (!String.IsNullOrWhiteSpace(Model.Review.ForUser.GetTitles())) {
-                            <div style="padding-top:43px;" class="pull-left-sm reviewPosition">@Model.Review.ForUser.GetTitles()</div>
+                        @if (!String.IsNullOrWhiteSpace(Model.Review.ReviewerUser.GetTitles())) {
+                            <div style="padding-top:43px;" class="pull-left-sm reviewPosition">@Model.Review.ReviewerUser.GetTitles()</div>
                         }
                         <div style="padding-top:43px;" class="pull-right-sm reviewName">@Model.Review.Name</div>
 
-                        <div class="employee-name">@Model.Review.ForUser.GetName()</div>
+                        <div class="employee-name">@Model.Review.ReviewerUser.GetName()</div>
                     </div>
                 </div>
             </div>
@@ -131,7 +131,7 @@
                         <table class="padBottom">
                             <tr>
                                 <td class="role alignRight"><b>Position:</b></td>
-                                <td style="padding-left: 10px;">@Model.Review.ForUser.GetTitles()</td>
+                                <td style="padding-left: 10px;">@Model.Review.ReviewerUser.GetTitles()</td>
                             </tr>
 
 
@@ -402,10 +402,10 @@
         @if (Model.Review.ClientReview.IncludeSelfFeedback) {
             <div class="noBreak">
                 <a id="selfFeedback" class="shiftByTitle"></a>
-                <div class="row-title" style="margin-bottom:10px;">@Model.Review.ForUser.GetName().Possessive() Answers</div>
+                <div class="row-title" style="margin-bottom:10px;">@Model.Review.ReviewerUser.GetName().Possessive() Answers</div>
                 <div class="row">
                     <div class="col-sm-12">
-                        @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Review.ForUser.AsList(), Model.AnswersAbout))
+                        @Html.Partial("~/Views/Partial/_SupervisorAnswers.cshtml", Tuple.Create(Model.Review.ReviewerUser.AsList(), Model.AnswersAbout))
                     </div>
                 </div>
             </div>
@@ -586,7 +586,7 @@
 
         var chart = new ScatterImage("chart2");
 
-        var dataUrl = "/Data/ReviewScatter2/@(Model.Review.ForUserId)?reviewsId=@(Model.Review.ForReviewsId)&client=true";
+        var dataUrl = "/Data/ReviewScatter2/@(Model.Review.ReviewerUser)?reviewsId=@(Model.Review.ForReviewContainerId)&client=true";
 
         var first = true;
 

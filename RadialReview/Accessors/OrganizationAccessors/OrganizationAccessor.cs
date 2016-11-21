@@ -122,7 +122,7 @@ namespace RadialReview.Accessors {
 							UserId = userOrgModel.Id,
 							Position = orgPos,
 							PromotedBy = userOrgModel.Id,
-							Start = DateTime.UtcNow,
+							CreateTime = DateTime.UtcNow,
 							OrganizationId = organization.Id,
 						};
 						userOrgModel.Positions.Add(posDur);
@@ -242,7 +242,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public UserOrganizationModel JoinOrganization(UserModel user, long managerId, long userOrgPlaceholder) {
+		public static UserOrganizationModel JoinOrganization(UserModel user, long managerId, long userOrgPlaceholder) {
 			using (var db = HibernateSession.GetCurrentSession()) {
 				using (var tx = db.BeginTransaction()) {
 					var manager = db.Get<UserOrganizationModel>(managerId);

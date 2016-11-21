@@ -30,7 +30,7 @@
 				}
 				else
 				{
-					@Html.Partial("Table", Model.CompanyValuesTable(Model.Review.ForReviewsId))
+					@Html.Partial("Table", Model.CompanyValuesTable(Model.Review.ForReviewContainerId))
 				}
 
 				@if (valueAnswers.Any())
@@ -42,7 +42,7 @@
 							</tr>
 						</thead>
 						<tbody style="vertical-align: top;">
-							@foreach (var r in valueAnswers.GroupBy(x => x.AboutUserId + "_" + x.Askable.Id + "_" + x.ByUserId).Select(x=>x.First()))
+							@foreach (var r in valueAnswers.GroupBy(x => x.RevieweeUserId + "_" + x.Askable.Id + "_" + x.ReviewerUserId).Select(x=>x.First()))
 							{
 								<tr style="border-top:1px solid #ddd;">
 									<td class="block" rowspan="2"><div class="fill @r.Exhibits"></div></td>
@@ -54,7 +54,7 @@
 										<span class="italic">"@r.Reason"</span>
 										@if (!Model.ReviewContainer.AnonymousByDefault)
 										{
-											@:- @r.ByUser.GetName()
+											@:- @r.ReviewerUser.GetName()
 									    }
 									</td>
 								</tr>
@@ -137,7 +137,7 @@
 
 									@if (first)
 									{
-										<div class="hidden-sm1 hidden-xs1 alignCenter bold" style="border-bottom: 2px solid #494949;color: #494949;">@Model.Review.ForUser.GetName()</div>
+										<div class="hidden-sm1 hidden-xs1 alignCenter bold" style="border-bottom: 2px solid #494949;color: #494949;">@Model.Review.ReviewerUser.GetName()</div>
 										<div class="hidden-sm1 hidden-xs1 fullWidth" style="height: 10px;"></div>
 									}
 									@{

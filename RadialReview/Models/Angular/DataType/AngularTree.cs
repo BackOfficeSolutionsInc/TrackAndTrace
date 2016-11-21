@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using RadialReview.Models.Angular.Accountability;
 using RadialReview.Models.Angular.Base;
 using System;
 using System.Collections.Generic;
@@ -13,31 +14,10 @@ namespace RadialReview.Models.Angular {
         }
 #pragma warning restore CS0618 // Type or member is obsolete
 
-        public AngularTreeNode(long id ) : base(id){
-        }
-		//[JsonIgnore]
-		//public long id
-		//{
-		//    // get is intentionally omitted here
-		//    get { return Id; }
-		//}
-		//[JsonIgnore]
-		//public new long Id { get { return base.Id; } set { base.Id=value; }}
+        public AngularTreeNode(long id ) : base(id){}
+
 		public bool collapsed { get; set; }
-		//public bool collapsed {
-		//	get { return _collapsed; }
-		//	set {
-		//		_collapsed = value;
-		//		if (_collapsed) {
-		//			_children = __children;
-		//			children = null;
-		//		} else {
-		//			children = __children;
-		//			_children = null;
-		//		}
-				
-		//	}
-		//}
+		
 		public bool? Editable { get; set; }
 		public bool? Me { get; set; }
 
@@ -50,5 +30,10 @@ namespace RadialReview.Models.Angular {
 			collapsed = collapse ?? collapsed;
 		}
 
-    }
+		public List<T> GetDirectChildren() {
+			if (__children == null)
+				return new List<T>();
+			return __children.ToList();
+		}
+	}
 }

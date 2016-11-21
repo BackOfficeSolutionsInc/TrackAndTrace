@@ -39,7 +39,7 @@ namespace RadialReview.Accessors
 
 					var reviews = GetReviewForUser_SpecificAnswers(s, perms, caller.Id, reviewId, askableIds);
 
-					if (!reviews.All(x => user.UserIds.Any(y => y == x.ForUserId)))
+					if (!reviews.All(x => user.UserIds.Any(y => y == x.ReviewerUserId)))
 						throw new PermissionsException("You cannot take this review.");
 
 					var answers = reviews.SelectMany(x => x.Answers).ToList();
@@ -63,7 +63,7 @@ namespace RadialReview.Accessors
 							var edited = false;
 							var currentComplete = false;
 
-							var matchingQuestions = answers.Where(x => x.Askable.Id == askableId && x.AboutUserId == aboutUserId && x.ForReviewContainerId == forReviewContainerId);
+							var matchingQuestions = answers.Where(x => x.Askable.Id == askableId && x.RevieweeUserId == aboutUserId && x.ForReviewContainerId == forReviewContainerId);
 
 
 

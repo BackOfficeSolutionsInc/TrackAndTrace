@@ -69,7 +69,7 @@ namespace RadialReview.Controllers
                 DeleteTime = chartTuple.DeleteTime,
                 DimensionIds = "category-" + chartTuple.Item1 + ",category-" + chartTuple.Item2,
                 Filters = chartTuple.Filters,
-                ForUserId = review.ForUserId,
+                ForUserId = review.ReviewerUserId,
                 GroupBy = chartTuple.Groups,
                 Options = "" + reviewContainer.Id,
                 Source = ChartDataSource.Review,
@@ -204,7 +204,7 @@ namespace RadialReview.Controllers
             var titles = categories.Select(x => "" + x.Id).ToList();
             titles.Insert(0, "about");
 
-            var lines = completeSliders.GroupBy(x => x.ByUserId).Select(x => new Merger(x.ToList()).ToCsv(categories)).ToList();
+            var lines = completeSliders.GroupBy(x => x.ReviewerUserId).Select(x => new Merger(x.ToList()).ToCsv(categories)).ToList();
             lines.Insert(0, String.Join(",", titles));
 
 
@@ -232,7 +232,7 @@ namespace RadialReview.Controllers
             var sbMiddle = new StringBuilder();
             var sbEnd = new StringBuilder();
 
-            foreach (var c in completedSliders.GroupBy(x => x.AboutUserId)) //answers about each user
+            foreach (var c in completedSliders.GroupBy(x => x.RevieweeUserId)) //answers about each user
             {
                 var dictionary = new Multimap<long, decimal>();
 
@@ -253,13 +253,13 @@ namespace RadialReview.Controllers
 
                 sb.AppendLine("Employee," + row);
 
-	            if (c.First().AboutUser is UserOrganizationModel &&
-	                ((UserOrganizationModel) (c.First().AboutUser)).IsManager()
+	            if (c.First().RevieweeUser is UserOrganizationModel &&
+	                ((UserOrganizationModel) (c.First().RevieweeUser)).IsManager()
 		            ){
 		            sbMiddle.AppendLine("Management," + row);
 	            }
 
-	            if (c.First().AboutUserId == id)
+	            if (c.First().RevieweeUserId == id)
                     sbEnd.AppendLine("You," + row);
             }
             var managers = sbMiddle.ToString();

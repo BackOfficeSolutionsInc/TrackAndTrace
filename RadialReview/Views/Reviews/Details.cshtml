@@ -100,7 +100,8 @@
         function toggleComplete(){
             $('.toggle-completion').toggleClass('on');
         }
-    </script>
+   
+	</script>
 }
 
 <div class="panel panel-primary">
@@ -174,12 +175,12 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var r in Model.Review.Reviews.ToListAlive().OrderBy(x => x.ForUser.GetPersonallyManaging()).ThenBy(x => x.ForUser.GetNameAndTitle()))
+                @foreach (var r in Model.Review.Reviews.ToListAlive().OrderBy(x => x.ReviewerUser.GetPersonallyManaging()).ThenBy(x => x.ReviewerUser.GetNameAndTitle()))
                 {
-                    <tr class="@(r.ForUser.GetPersonallyManaging() ? "managing" : "not-managing")"
-                        @if (r.ForUser.GetPersonallyManaging()) { @: onclick="window.location='@Url.Action("Details", "Review", new { id = r.Id })';"
+                    <tr class="@(r.ReviewerUser.GetPersonallyManaging() ? "managing" : "not-managing")"
+                        @if (r.ReviewerUser.GetPersonallyManaging()) { @: onclick="window.location='@Url.Action("Details", "Review", new { id = r.Id })';"
                                                                                                     }>
-                        <td class="table-hover-underline">@r.ForUser.GetNameAndTitle()</td>
+                        <td class="table-hover-underline">@r.ReviewerUser.GetNameAndTitle()</td>
                         <td class="alignCenter">
                             <a>@r.ClientReview.Visible.GetIcon()</a>
                         </td>

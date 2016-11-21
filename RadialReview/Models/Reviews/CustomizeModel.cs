@@ -12,18 +12,17 @@ namespace RadialReview.Models.Reviews
     {
         public String Name { get; set; }
         public String UniqueId { get; set; }
-        public List<Tuple<long, long>> Pairs { get; set; }
+        public List<WhoReviewsWho> Pairs { get; set; }
     }
 
     public class CustomizeModel
     {
-
-        public List<UserOrganizationModel> Subordinates { get; set; }
-        public List<ResponsibilityGroupModel> AllReviewees { get; set; }
+        public List<Reviewer> Reviewers { get; set; }
+		public List<Reviewee> AllReviewees { get; set; }
         public List<CustomizeSelector> Selectors { get; set; }
-        public List<Tuple<long, long>> Selected { get; set; }
+        public List<WhoReviewsWho> Selected { get; set; }
 
-		public List<SelectListItem> Periods { get; set; } 
-
-    }
+		public List<SelectListItem> Periods { get; set; }
+		public List<long> MasterList { get; internal set; }
+	}
 }

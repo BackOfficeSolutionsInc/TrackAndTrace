@@ -14,10 +14,10 @@
 
 @using (Html.BeginStyles()) {
 	<style>
-		html {
+		 /*{
 			background-color: #1f1e1d;
-		}
-
+		}*/
+		html,
 		body {
 			background-color: #ef7622;
 		}
@@ -157,6 +157,7 @@
 				window.location = "/getstarted";
 			}, 130);
 
+			$("html").css({ backgroundColor: "rgb(31, 30, 29)" });
 			$("body").animate({ backgroundColor: "rgba(239,118,34,0)" }, 150);
 			$("#loginForm,.navbar,#footer").animate({ opacity: 0 }, 150);
 			$("#learnMore").animate({ opacity: 0 }, 5);

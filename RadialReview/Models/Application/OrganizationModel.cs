@@ -272,6 +272,9 @@ namespace RadialReview.Models {
 
 		public virtual IList<ReviewsModel> Reviews { get; set; }
 
+		public override OriginType GetOrigin() {
+			return OriginType.Organization;
+		}
 		public virtual OriginType GetOriginType() {
 			return OriginType.Organization;
 		}
@@ -327,6 +330,7 @@ namespace RadialReview.Models {
 		public override string GetGroupType() {
 			return DisplayNameStrings.organization;
 		}
+
 
 		//public OrganizationLookup Lookup { get; set; }
 

@@ -240,7 +240,7 @@ namespace RadialReview.Engines
 				{
 					roleValues	= FastReviewQueries.GetAllRoleValues(s, reviewsId);
 					reviewContainer = s.Get<ReviewsModel>(reviewsId);
-					orgId = reviewContainer.ForOrganizationId; 
+					orgId = reviewContainer.OrganizationId; 
 					tx.Commit();
 					s.Flush();
 				}
@@ -255,7 +255,7 @@ namespace RadialReview.Engines
 
 			var teammemberLookup = new Multimap<long, OrganizationTeamModel>();
 			Dictionary<long, OrganizationTeamModel> teamLookup = null;
-			var teamMembers = _TeamAccessor.GetTeamMembersAtOrganization(caller, orgId);
+			var teamMembers = TeamAccessor.GetTeamMembersAtOrganization(caller, orgId);
 			if (admin){
 				_PermissionsAccessor.Permitted(caller, x => x.ManagingOrganization(caller.Organization.Id).Or(y=>y.AdminReviewContainer(reviewsId)));
 			}else{
@@ -521,8 +521,8 @@ namespace RadialReview.Engines
 					{
 						var p=PermissionsUtility.Create(s, caller);//.ManagesUserOrganization(forUserId, false);
 						//p.Permitted(caller, x => x.ManagesUserOrganization(forUserId, false));
-						var review = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == reviewsId && x.ForUserId == forUserId).Take(1).SingleOrDefault();
-						var managingOrg = p.IsPermitted(x => x.ManagingOrganization(review.ForReviewContainer.ForOrganizationId));
+						var review = s.QueryOver<ReviewModel>().Where(x => x.ForReviewContainerId == reviewsId && x.ReviewerUserId == forUserId).Take(1).SingleOrDefault();
+						var managingOrg = p.IsPermitted(x => x.ManagingOrganization(review.ForReviewContainer.OrganizationId));
 						if (forUserId == caller.Id && ((!review.ClientReview.Visible && !managingOrg) || !review.ClientReview.IncludeScatterChart))
 							throw new PermissionsException();
 						if (forUserId != caller.Id && !managingOrg)
@@ -538,10 +538,10 @@ namespace RadialReview.Engines
 				using (var s = HibernateSession.GetCurrentSession()){
 					using (var tx = s.BeginTransaction())
 					{
-						var review = s.QueryOver<ReviewModel>().Where(x => x.DeleteTime == null && x.ForUserId == forUserId && x.ForReviewsId<reviewsId)
+						var review = s.QueryOver<ReviewModel>().Where(x => x.DeleteTime == null && x.ReviewerUserId == forUserId && x.ForReviewContainerId<reviewsId)
 							.OrderBy(x=>x.DueDate).Desc
 							.Take(1).SingleOrDefault();
-						previousReview = review.NotNull(x => x.ForReviewsId);
+						previousReview = review.NotNull(x => x.ForReviewContainerId);
 
 					}
 				}
@@ -720,7 +720,7 @@ namespace RadialReview.Engines
 			}
 
 			var completeSliders = review.UnionBy(x => x.Id, history).Where(x => /*x.Askable.GetQuestionType() == QuestionType.Slider &&*/ x.Complete)/*.Cast<SliderAnswer>()*/.ToListAlive();
-			var groupedByUsers = completeSliders.GroupBy(x => x.ByUserId);
+			var groupedByUsers = completeSliders.GroupBy(x => x.ReviewerUserId);
 
 			/*var dimensions = completeSliders.Distinct(x => x.Askable.Category.Id).Select(x => new ScatterDimension()
 			{
@@ -743,7 +743,7 @@ namespace RadialReview.Engines
 			}
 
 
-			var teamMembers = _TeamAccessor.GetAllTeammembersAssociatedWithUser(caller, forUserId);
+			var teamMembers = TeamAccessor.GetAllTeammembersAssociatedWithUser(caller, forUserId);
 			//var teamLookup = teamMembers.Distinct(x => x.TeamId).ToDictionary(x => x.TeamId, x => x.Team);
 
 			var scatterDataPoints = new List<ScatterData>();
@@ -768,7 +768,7 @@ namespace RadialReview.Engines
 				foreach (var userReviewAnswers in byReviewOrdered)
 				{
 					//Each review container
-					var userId = userReviewAnswers.First().ByUserId;
+					var userId = userReviewAnswers.First().ReviewerUserId;
 					var reviewContainerId = userReviewAnswers.First().ForReviewContainerId;
 					var reviewContainer = _ReviewAccessor.GetReviewContainer(caller, reviewContainerId, false, false, false);
 
@@ -816,7 +816,7 @@ namespace RadialReview.Engines
 						String title, subtext = "";
 						if (sensitive)
 						{
-							var user = userReviewAnswers.First().ByUser;
+							var user = userReviewAnswers.First().ReviewerUser;
 							title = "<span class='nameAndTitle hoverTitle title'>" + user.GetNameAndTitle() + "</span> <span class='aboutType hoverTitle title'>" + aboutType + "</span> <span class='reviewName hoverTitle title'>" + reviewContainer.ReviewName + "</span>";
 						}
 						else
@@ -967,7 +967,7 @@ namespace RadialReview.Engines
 
 			}
 			public static MergedValueScore MergeValueScores(List<CompanyValueAnswer> scores, CompanyValueModel value) {
-				var scoresResolved = scores.Distinct(x => Tuple.Create(x.AboutUserId, x.ByUserId, x.Askable.Id)).Select(x=>x.Exhibits).ToList();
+				var scoresResolved = scores.Distinct(x => Tuple.Create(x.RevieweeUserId, x.ReviewerUserId, x.Askable.Id)).Select(x=>x.Exhibits).ToList();
 				return MergeValueScores(scoresResolved, value);
 			}
 

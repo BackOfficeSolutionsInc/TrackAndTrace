@@ -216,9 +216,16 @@ namespace RadialReview
 	    {
 		    if (!source.ContainsAll(other,selector))
 				throw new PermissionsException("Item is required in source.");
-	    }
+		}
 
-	    public static IEnumerable<T> FilterRange<T>(this IEnumerable<T> source, DateRange range, DateRangeType rangeType = DateRangeType.Any) where T : IHistorical
+		public static IEnumerable<T> FilterRangeRestricted<T>(this IEnumerable<T> source, DateRange range, DateRangeType rangeType = DateRangeType.Any) where T : IDeletable {
+			if (range == null)
+				return source.Where(x => x.DeleteTime == null);
+			
+			return source.FilterRange(range, x => DateTime.MinValue, x => x.DeleteTime, rangeType);
+		}
+
+		public static IEnumerable<T> FilterRange<T>(this IEnumerable<T> source, DateRange range, DateRangeType rangeType = DateRangeType.Any) where T : IHistorical
 	    {
 		    if (range == null)
 			    return source.Where(x => x.DeleteTime == null);

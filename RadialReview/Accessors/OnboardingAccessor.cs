@@ -167,7 +167,7 @@ namespace RadialReview.Accessors {
                                 UserId = u.Id,
                                 Position = orgPos,
                                 PromotedBy = u.Id,
-                                Start = DateTime.UtcNow,
+                                CreateTime = DateTime.UtcNow,
 								OrganizationId = o.OrganizationId.Value
                             };
                             u.Positions.Add(posDur);

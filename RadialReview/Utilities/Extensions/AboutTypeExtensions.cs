@@ -82,6 +82,7 @@ namespace RadialReview
 					case AboutType.Self: build = build | AboutType.Self; break;
 					case AboutType.Subordinate: build = build | AboutType.Manager; break;
 					case AboutType.Teammate: build = build | AboutType.Teammate; break;
+					case AboutType.Organization: build = build | AboutType.Organization; break; // The Organization Selector in GetCustomizeModel() depends on this inversion
 					default:
 						throw new ArgumentException("Unknown about type (" + self + ")");
 				}

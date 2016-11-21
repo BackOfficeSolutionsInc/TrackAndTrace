@@ -13,7 +13,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title> @(Model.Review.ForUser.GetNameAndTitle()) - @(Model.Review.Name) [@(Model.Review.DueDate.ToShortDateString())]</title>
+    <title> @(Model.Review.ReviewerUser.GetNameAndTitle()) - @(Model.Review.Name) [@(Model.Review.DueDate.ToShortDateString())]</title>
     <link href="~/Content/print.css" rel="stylesheet" />
     <link href="~/Content/chart.css" rel="stylesheet" />
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
@@ -61,7 +61,7 @@
 </head>
 <body>
     <div>     
-        <h1 class="inlined noMargin" style="float:left"> @(Model.Review.ForUser.GetNameAndTitle()) - @(Model.Review.Name)</h1>
+        <h1 class="inlined noMargin" style="float:left"> @(Model.Review.ReviewerUser.GetNameAndTitle()) - @(Model.Review.Name)</h1>
         <h2 class="inlined noMargin" style="float: right; padding-right: 10px;">&nbsp;&nbsp; @(Model.Review.DueDate.ToShortDateString()) </h2>
         <div style="clear:both;"></div>
         @if (charts.Any())
@@ -162,7 +162,7 @@
     <script>
         var done = 0;
 
-        d3.csv("/Data/ReviewData/@Model.Review.ForUserId?reviewsId=@Model.Review.ForReviewsId", function (data) {
+        d3.csv("/Data/ReviewData/@Model.Review.ReviewerUserId?reviewsId=@Model.Review.ForReviewContainerId", function (data) {
             var dataFunc = function (dd, redrawFunc) {
                 dd.data = data;
                 redrawFunc();

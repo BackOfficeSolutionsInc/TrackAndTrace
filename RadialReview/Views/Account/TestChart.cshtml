@@ -33,7 +33,7 @@
         };
     };
 
-    var dataUrl = "/Data/OrganizationReviewData/@Model.Review.ForUserId?reviewsId=@Model.Review.ForReviewsId";
+    var dataUrl = "/Data/OrganizationReviewData/@Model.Review.ReviewerUserId?reviewsId=@Model.Review.ForReviewContainerId";
     var dataFunc = function (dd, redrawFunc) {
         d3.csv(dataUrl, function (data) {
             // store data in the appropriate variables

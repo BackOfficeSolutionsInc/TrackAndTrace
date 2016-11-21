@@ -47,11 +47,11 @@ namespace RadialReview
 			{
 				var managerTeam = allOrgTeams.Where(x => x.Type == TeamType.Managers).SingleOrDefault();
 				//Populate(s,managerTeam);
-				teams.Add(new TeamDurationModel() { Start = self.AttachTime, Id = -2, Team = managerTeam, User = self });
+				teams.Add(new TeamDurationModel() { CreateTime = self.AttachTime, Id = -2, Team = managerTeam, User = self });
 			}
 			var allMembersTeam = allOrgTeams.Where(x => x.Organization.Id == self.Organization.Id && x.Type == TeamType.AllMembers).SingleOrDefault();
 			//Populate(s,allMembersTeam);
-			teams.Add(new TeamDurationModel() { Start = self.AttachTime, Id = -2, Team = allMembersTeam, User = self });
+			teams.Add(new TeamDurationModel() { CreateTime = self.AttachTime, Id = -2, Team = allMembersTeam, User = self });
 
 			teams.AddRange(allTeamDurations.Where(x => x.UserId == self.Id));
 			//teams.ForEach(x => Populate(s, x.Team));

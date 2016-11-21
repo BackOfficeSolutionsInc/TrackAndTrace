@@ -46,10 +46,10 @@ namespace RadialReview.Accessors {
 					var pdfUpload = new ReportPdfModel() {
 						CreatedBy = caller.Id,
 						ForReviewContainerId = model.ReviewContainer.Id,
-						OrganizationId = model.ReviewContainer.ForOrganizationId,
+						OrganizationId = model.ReviewContainer.OrganizationId,
 						Filename = pdf.Info.Title,
 						Finalized = finalized,
-						ForUserId = model.Review.ForUserId,
+						ForUserId = model.Review.ReviewerUserId,
 						ForReviewId = model.Review.Id,
 						PdfType = PdfType.Report,
 						Sent = false,

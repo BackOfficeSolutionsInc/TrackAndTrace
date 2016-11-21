@@ -7,19 +7,19 @@ using System.Web;
 
 namespace RadialReview.Models.UserModels
 {
-    public class ManagerDuration : IDeletable,ILongIdentifiable
+    public class ManagerDuration : IHistorical,ILongIdentifiable
     {
         public virtual long Id { get; set; }
         public virtual long ManagerId { get; set; }
         public virtual UserOrganizationModel Manager {get;set;}
         public virtual long SubordinateId { get; set; }
         public virtual UserOrganizationModel Subordinate {get;set;}
-        public virtual DateTime Start { get; set; }
+        public virtual DateTime CreateTime { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
         public virtual long? DeletedBy { get; set; }
         public virtual long PromotedBy { get; set; }
-
-        public ManagerDuration()
+				
+		public ManagerDuration()
         {
 
         }
@@ -28,7 +28,7 @@ namespace RadialReview.Models.UserModels
         {
             ManagerId = managerId;
             SubordinateId = subordinateId;
-            Start = DateTime.UtcNow;
+            CreateTime = DateTime.UtcNow;
             PromotedBy = promotedById;
         }
     }
@@ -38,7 +38,7 @@ namespace RadialReview.Models.UserModels
         public ManagerDurationMap()
         {
             Id(x => x.Id);
-            Map(x => x.Start);
+            Map(x => x.CreateTime).Column("Start");
             Map(x => x.DeleteTime);
             Map(x => x.DeletedBy);
             Map(x => x.PromotedBy);

@@ -119,7 +119,7 @@ namespace RadialReview.Accessors {
 
                     if (position != null) {
                         var positionDuration = new PositionDurationModel(position, caller.Id, newUser.Id) {
-                            Start = now,
+                            CreateTime = now,
                         };
 
 

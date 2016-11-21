@@ -1,6 +1,6 @@
 ﻿@model List<RadialReview.Models.FeedbackAnswer>
 @{
-	var ordered = Model.Where(x => x.Complete).OrderBy(x => x.ByUser.GetNameExtended());
+	var ordered = Model.Where(x => x.Complete).OrderBy(x => x.ReviewerUser.GetNameExtended());
 }
 <div class="row">
 	<div class="col-md-3 noPrint">
@@ -8,7 +8,7 @@
 			@foreach (var a in ordered)
 			{
 				<li>
-					<a href="#feedback_@a.Id">@a.ByUser.GetName()</a>
+					<a href="#feedback_@a.Id">@a.ReviewerUser.GetName()</a>
 				</li>
 			}
 		</ol>
@@ -17,7 +17,7 @@
 		<div class="survey-feedback" style="overflow-y: scroll; height:400px;resize:vertical; border: 1px solid #ddd;padding:15px;">
 			@foreach (var a in ordered){
 				<a name="feedback_@a.Id"></a>
-				<b>@a.ByUser.GetName()</b>
+				<b>@a.ReviewerUser.GetName()</b>
 				<div  class="smallBreak2" style="white-space: pre-line;border-left: 4px solid #ddd;padding: 0px 5px 5px 15px;margin:3px 0 15px 0;">@a.Feedback</div>
 			}
 		</div>

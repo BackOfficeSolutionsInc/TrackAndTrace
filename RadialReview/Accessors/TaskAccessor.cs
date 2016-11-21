@@ -293,7 +293,7 @@ namespace RadialReview.Accessors {
 					profileImage = String.IsNullOrEmpty(s.Get<UserOrganizationModel>(forUserId).User.ImageGuid) ? 1 : 0;
 				} catch {
 				}
-				var reviewCount = s.QueryOver<ReviewModel>().Where(x => x.ForUserId == forUserId && x.DueDate > now && !x.Complete && x.DeleteTime == null).Select(Projections.RowCount()).FutureValue<int>();
+				var reviewCount = s.QueryOver<ReviewModel>().Where(x => x.ReviewerUserId == forUserId && x.DueDate > now && !x.Complete && x.DeleteTime == null).Select(Projections.RowCount()).FutureValue<int>();
 				var prereviewCount = s.QueryOver<PrereviewModel>().Where(x => x.ManagerId == forUserId && x.PrereviewDue > now && !x.Started && x.DeleteTime == null).Select(Projections.RowCount()).FutureValue<int>();
 				var nowPlus = now.Add(TimeSpan.FromDays(1));
 				var todoCount = s.QueryOver<TodoModel>().Where(x => x.AccountableUserId == forUserId && x.DueDate < nowPlus && x.CompleteTime == null && x.DeleteTime == null).Select(Projections.RowCount()).FutureValue<int>();
@@ -313,10 +313,10 @@ namespace RadialReview.Accessors {
 					var reviews = ReviewAccessor
 						.GetReviewsForUser(s, perms, caller, forUserId, 0, int.MaxValue, now)
 						.ToListAlive()
-						.GroupBy(x => x.ForReviewsId);
+						.GroupBy(x => x.ForReviewContainerId);
 
 					var reviewTasks = reviews.Select(x => new TaskModel() {
-						Id = x.First().ForReviewsId,
+						Id = x.First().ForReviewContainerId,
 						Type = TaskType.Review,
 						Completion = CompletionModel.FromList(x.Select(y => y.GetCompletion())),
 						DueDate = x.Max(y => y.DueDate),

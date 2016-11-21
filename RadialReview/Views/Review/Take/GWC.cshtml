@@ -2,8 +2,7 @@
 
 @using RadialReview.Models.Enums
 
-@if (Model.Item1.Any())
-{
+@if (Model.Item1.Any()) {
 
 	<div class="subsection subsection-roles">
 
@@ -19,78 +18,81 @@
 			</thead>
 			<tbody>
 				@{
-					var questions = Model.Item1.OrderBy(x => x.Askable.GetQuestion()).ToList();
+					var questions1 = Model.Item1.OrderBy(x => x.Askable.GetQuestion()).ToList();
+					var groups = questions1.GroupBy(x => x.RevieweeUser_AcNodeId).ToList();
 				}
-				@for (var i = 0; i < questions.Count(); i++)
-				{
-					var id = QuestionType.GWC+"_"+questions[i].Identifier;
-					@*<tr>
-						<td>
-							<div class="visible-xs">
-								<h4 class="question alignRight" style="padding-right:15px;padding-bottom: 7px;padding-top: 7px;">@questions[i].Askable.GetQuestion()</h4>
-							</div>
-						</td>
-					</tr>*@
-					<tr>
-						<td class="question-cell"  @*class="hidden-xs"*@><h4 class="question alignRight" style="padding-right:15px;padding-bottom: 7px;padding-top: 7px;">@questions[i].Askable.GetQuestion()</h4></td>
-						<td>
-							@if (Model.Item2){
-								@Html.EditorFor(x => questions[i].GetIt, new{name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_GetIt"})
-							}
-							else{
-								@Html.DisplayFor(x => questions[i].GetIt, new{name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_GetIt"})
-							}
-							<span class="reasonButton glyphicon glyphicon-pencil @(String.IsNullOrWhiteSpace(questions[i].GetItReason)?"":"on")" onclick="showReason(this)"></span>
-							<div id="reason_@(id)_GetItReason" class="hidden reasonPopup">
-								@if (Model.Item2)
-								{								
-									<textarea name="question_@(id)_GetItReason" class="full-width changeable reason popup" placeholder="Add Comment">@questions[i].GetItReason</textarea>
+				@for (var j = 0; j < groups.Count(); j++) {
+					var group = groups[j];
+					for (var i = 0; i < group.Count(); i++) {
+						var questions = group.OrderBy(x=>x.Id).ToList();
+						var id = QuestionType.GWC + "_" + questions[i].Identifier;
+
+
+						<tr>
+							<td class="question-cell"><h4 class="question alignRight" style="padding-right:15px;padding-bottom: 7px;padding-top: 7px;">@questions[i].Askable.GetQuestion()</h4></td>
+							<td>
+								@if (Model.Item2) {
+									@Html.EditorFor(x => questions[i].GetIt, new { name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_GetIt" })
+								} else {
+									@Html.DisplayFor(x => questions[i].GetIt, new { name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_GetIt" })
 								}
-								else
-								{
-									<div class="full-width reason popup">@questions[i].GetItReason</div>
+								<span class="reasonButton glyphicon glyphicon-pencil @(String.IsNullOrWhiteSpace(questions[i].GetItReason) ? "" : "on")" onclick="showReason(this)"></span>
+								<div id="reason_@(id)_GetItReason" class="hidden reasonPopup">
+									@if (Model.Item2) {
+										<textarea name="question_@(id)_GetItReason" class="full-width changeable reason popup" placeholder="Add Comment">@questions[i].GetItReason</textarea>
+									} else {
+										<div class="full-width reason popup">@questions[i].GetItReason</div>
+									}
+								</div>
+							</td>
+							<td>
+								@if (Model.Item2) {
+									@Html.EditorFor(x => questions[i].WantIt, new { name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_WantIt" })
+								} else {
+									@Html.DisplayFor(x => questions[i].WantIt, new { name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_WantIt" })
 								}
-							</div>
-						</td>
-						<td>
-							@if (Model.Item2){
-								@Html.EditorFor(x => questions[i].WantIt, new{name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_WantIt"})
-							}
-							else { 
-								@Html.DisplayFor(x => questions[i].WantIt, new{name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_WantIt"})
-							}
-							<span class="reasonButton glyphicon glyphicon-pencil  @(String.IsNullOrWhiteSpace(questions[i].WantItReason) ? "" : "on")" onclick="showReason(this)"></span>
-							<div id="reason_@(id)_WantItReason" class="hidden reasonPopup">
-								@if (Model.Item2)
-								{
-									<textarea name="question_@(id)_WantItReason" class="full-width changeable reason popup" placeholder="Add Comment">@questions[i].WantItReason</textarea>
+								<span class="reasonButton glyphicon glyphicon-pencil  @(String.IsNullOrWhiteSpace(questions[i].WantItReason) ? "" : "on")" onclick="showReason(this)"></span>
+								<div id="reason_@(id)_WantItReason" class="hidden reasonPopup">
+									@if (Model.Item2) {
+										<textarea name="question_@(id)_WantItReason" class="full-width changeable reason popup" placeholder="Add Comment">@questions[i].WantItReason</textarea>
+									} else {
+										<div class="full-width reason popup">@questions[i].WantItReason</div>
+									}
+								</div>
+							</td>
+							<td>
+								@if (Model.Item2) {
+									@Html.EditorFor(x => questions[i].HasCapacity, new { name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_HasCapacity" })
+								} else {
+									@Html.DisplayFor(x => questions[i].HasCapacity, new { name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_HasCapacity" })
 								}
-								else
-								{
-									<div class="full-width reason popup">@questions[i].WantItReason</div>
-								}
-							</div>
-						</td>
-						<td>
-							@if (Model.Item2){
-								@Html.EditorFor(x => questions[i].HasCapacity, new{name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_HasCapacity"})
-							}
-							else{
-								@Html.DisplayFor(x => questions[i].HasCapacity, new{name = "question_" + RadialReview.Models.Enums.QuestionType.GWC + "_" + questions[i].Identifier + "_HasCapacity"})
-							}
-							<span class="reasonButton glyphicon glyphicon-pencil  @(String.IsNullOrWhiteSpace(questions[i].HasCapacityReason) ? "" : "on")" onclick="showReason(this)"></span>
-							<div id="reason_@(id)_HasCapacityReason" class="hidden reasonPopup">
-							@if (Model.Item2)
-							{
-								<textarea name="question_@(id)_HasCapacityReason" class="full-width changeable reason popup" placeholder="Add Comment">@questions[i].HasCapacityReason</textarea>
-							}
-							else
-							{
-								<div class="full-width reason popup">@questions[i].HasCapacityReason</div>
-							}
-							</div>
-						</td>
-					</tr>
+								<span class="reasonButton glyphicon glyphicon-pencil  @(String.IsNullOrWhiteSpace(questions[i].HasCapacityReason) ? "" : "on")" onclick="showReason(this)"></span>
+								<div id="reason_@(id)_HasCapacityReason" class="hidden reasonPopup">
+									@if (Model.Item2) {
+										<textarea name="question_@(id)_HasCapacityReason" class="full-width changeable reason popup" placeholder="Add Comment">@questions[i].HasCapacityReason</textarea>
+									} else {
+										<div class="full-width reason popup">@questions[i].HasCapacityReason</div>
+									}
+								</div>
+							</td>
+						</tr>
+					}
+					if (j < groups.Count() - 1) {
+						<tr style="height:4px;">
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr style="border-top:1px solid #dfdfdf;height:4px;">
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+					}
 				}
 			</tbody>
 		</table>
@@ -98,4 +100,4 @@
 		<div class="evaluation-heading">Roles</div>
 	</div>
 	<blocksep class="block-separator"></blocksep>
-}
+					}

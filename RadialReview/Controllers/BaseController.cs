@@ -345,7 +345,6 @@ namespace RadialReview.Controllers {
 		protected ActionResult Pdf(PdfDocument document, string name = null, bool inline = true) {
 			//var stream = new MemoryStream();
 			////try {
-
 			////	document.Save("C:\\Users\\Clay\\Desktop\\Stuff\\doc.pdf");
 			////} catch (Exception e) {
 			////	int a = 0;

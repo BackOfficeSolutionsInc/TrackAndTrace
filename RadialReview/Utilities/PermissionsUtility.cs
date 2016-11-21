@@ -605,9 +605,9 @@ namespace RadialReview.Utilities {
 		public PermissionsUtility ManageUserReview(long reviewId, bool userCanManageOwnReview) {
 			ViewReview(reviewId);
 			var review = session.Get<ReviewModel>(reviewId);
-			var userId = review.ForUserId;
+			var userId = review.ReviewerUserId;
 
-			if (userCanManageOwnReview && review.ForUserId == caller.Id)
+			if (userCanManageOwnReview && review.ReviewerUserId == caller.Id)
 				return this;
 
 			return ManagesUserOrganization(userId, false);
@@ -630,7 +630,7 @@ namespace RadialReview.Utilities {
 			if (answer == null)
 				throw new PermissionsException("Answer does not exist");
 			var reviews = session.QueryOver<ReviewModel>()
-				.Where(x => x.DeleteTime == null && x.ForReviewsId == answer.ForReviewContainerId && x.ForUserId == answer.AboutUserId)
+				.Where(x => x.DeleteTime == null && x.ForReviewContainerId == answer.ForReviewContainerId && x.ReviewerUserId == answer.RevieweeUserId)
 				.List();
 			if (!reviews.Any())
 				throw new PermissionsException("Review does not exist");
@@ -777,7 +777,7 @@ namespace RadialReview.Utilities {
 				var review = session.Get<ReviewModel>(reviewId);
 				if (review.DueDate < DateTime.UtcNow)
 					throw new PermissionsException("Review period has expired.");
-				if (review.ForUserId == caller.Id)
+				if (review.ReviewerUserId == caller.Id)
 					return this;
 
 				throw new PermissionsException();
@@ -788,7 +788,7 @@ namespace RadialReview.Utilities {
 			if (IsRadialAdmin(caller))
 				return this;
 			var review = session.Get<ReviewsModel>(reviewContainerId);
-			var orgId = review.ForOrganization.Id;
+			var orgId = review.Organization.Id;
 			if (sensitive)
 				ManagerAtOrganization(caller.Id, orgId);
 			if (orgId == caller.Organization.Id)
@@ -809,10 +809,10 @@ namespace RadialReview.Utilities {
 					return this;
 
 				var review = session.Get<ReviewModel>(reviewId);
-				var reviewUserId = review.ForUserId;
+				var reviewUserId = review.ReviewerUserId;
 
 				//Is this correct?
-				if (IsManagingOrganization(review.ForUser.Organization.Id))
+				if (IsManagingOrganization(review.ReviewerUser.Organization.Id))
 					return this;
 
 				//Cannot be viewed by the user
@@ -917,7 +917,7 @@ namespace RadialReview.Utilities {
 				return this;
 
 			var prereview = session.Get<PrereviewModel>(prereviewId);
-			var prereviewOrgId = session.Get<ReviewsModel>(prereview.ReviewContainerId).ForOrganizationId;
+			var prereviewOrgId = session.Get<ReviewsModel>(prereview.ReviewContainerId).OrganizationId;
 
 			if (IsManagingOrganization(prereviewOrgId))
 				return this;

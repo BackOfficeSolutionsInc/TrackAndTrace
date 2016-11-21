@@ -13,26 +13,26 @@ namespace RadialReview.Accessors
     public class OriginAccessor
     {
         /*[Obsolete("Want this to stand out.",false)]*/
-        public IOrigin GetOrigin(UserOrganizationModel caller,OriginType originType,long originId)
-        {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
-                    PermissionsUtility.Create(s, caller).ViewOrigin(originType, originId);
-                    switch (originType)
-                    {
-                        case OriginType.User:           return s.Get<UserOrganizationModel>(originId);
-                        case OriginType.Group:          return s.Get<GroupModel>(originId);
-                        case OriginType.Organization:   return s.Get<OrganizationModel>(originId);
-                        case OriginType.Industry:       return s.Get<IndustryModel>(originId);
-                        case OriginType.Application:    return s.Get<ApplicationWideModel>(originId);
-                        case OriginType.Invalid:        throw new PermissionsException();
-                        default:                        throw new PermissionsException();
-                    }
-                }
-            }
-        }
+        //public IOrigin GetOrigin(UserOrganizationModel caller,OriginType originType,long originId)
+        //{
+        //    using (var s = HibernateSession.GetCurrentSession())
+        //    {
+        //        using (var tx = s.BeginTransaction())
+        //        {
+        //            PermissionsUtility.Create(s, caller).ViewOrigin(originType, originId);
+        //            switch (originType)
+        //            {
+        //                case OriginType.User:           return s.Get<UserOrganizationModel>(originId);
+        //                case OriginType.Group:          return s.Get<GroupModel>(originId);
+        //                case OriginType.Organization:   return s.Get<OrganizationModel>(originId);
+        //                case OriginType.Industry:       return s.Get<IndustryModel>(originId);
+        //                case OriginType.Application:    return s.Get<ApplicationWideModel>(originId);
+        //                case OriginType.Invalid:        throw new PermissionsException();
+        //                default:                        throw new PermissionsException();
+        //            }
+        //        }
+        //    }
+        //}
         /*
         protected static UserAccessor _UserAccessor = new UserAccessor();
         protected static OrganizationAccessor _OrganizationAccessor = new OrganizationAccessor();

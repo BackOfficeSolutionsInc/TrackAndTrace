@@ -247,7 +247,7 @@ namespace RadialReview.Accessors {
 			var pageNum = 0;
 			var AddPageNum = new Action<XGraphics, XRect>((g, pageDim) => {
 				pageNum++;
-				g.DrawString(review.Review.ForUser.GetName() + "  |  " + pageNum, PdfChartAccessor._Font8, XBrushes.LightGray, new XPoint(pageDim.Width - 20, pageDim.Height - 20), XStringFormats.BottomRight);
+				g.DrawString(review.Review.ReviewerUser.GetName() + "  |  " + pageNum, PdfChartAccessor._Font8, XBrushes.LightGray, new XPoint(pageDim.Width - 20, pageDim.Height - 20), XStringFormats.BottomRight);
 			});
 
 			PdfPage page = document.AddPage();	
@@ -259,10 +259,10 @@ namespace RadialReview.Accessors {
 			//gfx.MFEH = PdfFontEmbedding.Default;
 
 			var sensitive = true;
-			if (caller.Id == review.Review.ForUserId)
+			if (caller.Id == review.Review.ReviewerUserId)
 				sensitive = false;
 
-			var scatter = new ChartsEngine().ReviewScatter2(caller, review.Review.ForUserId, review.Review.ForReviewContainer.Id, review.Review.ClientReview.ScatterChart.Groups, sensitive, review.Review.ClientReview.ScatterChart.IncludePrevious);
+			var scatter = new ChartsEngine().ReviewScatter2(caller, review.Review.ReviewerUserId, review.Review.ForReviewContainer.Id, review.Review.ClientReview.ScatterChart.Groups, sensitive, review.Review.ClientReview.ScatterChart.IncludePrevious);
 
 			var pageSize = new XRect(0, 0, Unit.FromInch(8.5), Unit.FromInch(11));
 			var margin = Unit.FromInch(0.3);
@@ -305,7 +305,7 @@ namespace RadialReview.Accessors {
 
 				r = new XRect(w2, rightColumnHeight, w2, 1);
 				//List<ValueBar> theBar = null;
-				var valueRect = PdfChartAccessor.DrawValueTable(tester, r, review.Review.ForUser, valAnswers, review.Supervisers, margin: margin);
+				var valueRect = PdfChartAccessor.DrawValueTable(tester, r, review.Review.ReviewerUser, valAnswers, review.Supervisers, margin: margin);
 
 				if (r.Top + valueRect.Height > pageSize.Height) {
 					if (!addedPage2) {
@@ -316,9 +316,9 @@ namespace RadialReview.Accessors {
 						r = new XRect(w2, 0, w2, 1);
 						rightColumnHeight = 0;
 					}
-					PdfChartAccessor.DrawValueTable(gfxPage2, r, review.Review.ForUser, valAnswers, review.Supervisers, margin: margin);
+					PdfChartAccessor.DrawValueTable(gfxPage2, r, review.Review.ReviewerUser, valAnswers, review.Supervisers, margin: margin);
 				} else {
-					PdfChartAccessor.DrawValueTable(gfx, r, review.Review.ForUser, valAnswers, review.Supervisers, margin: margin);
+					PdfChartAccessor.DrawValueTable(gfx, r, review.Review.ReviewerUser, valAnswers, review.Supervisers, margin: margin);
 				}
 
 				rightColumnHeight += valueRect.Height;
@@ -411,12 +411,12 @@ namespace RadialReview.Accessors {
 		}
 
 		public static PdfDocument GenerateReviewPrintout(UserOrganizationModel caller, ReviewController.ReviewDetailsViewModel review) {
-			var name = review.Review.ForUser.GetName();
+			var name = review.Review.ReviewerUser.GetName();
 			PdfDocument document = new PdfDocument();
 			document.Info.Author = "Traction® Tools";
 			document.Info.Title = name + " - " + review.ReviewContainer.ReviewName;
-			document.Info.Creator = ""+caller.GetName();
-			document.Info.CreationDate = DateTime.UtcNow;		
+			document.Info.Creator = ""+caller.GetName();			
+			document.Info.CreationDate = DateTime.UtcNow;
 			document.Info.Keywords	= "Traction Tools, "+name + ", " + review.ReviewContainer.ReviewName;
 			AddReviewPrintout(caller, document, review);
 			return document;

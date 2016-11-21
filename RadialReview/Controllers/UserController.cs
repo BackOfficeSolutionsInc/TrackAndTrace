@@ -356,7 +356,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
 		public ActionResult Teams(long id) {
 			var userId = id;
-			var teams = _TeamAccessor.GetUsersTeams(GetUser(), userId);
+			var teams = TeamAccessor.GetUsersTeams(GetUser(), userId);
 			var user = _UserAccessor.GetUserOrganization(GetUser(), userId, false, false).Hydrate().SetTeams(teams).Execute();//.PersonallyManaging(GetUser());
 
 			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails);
@@ -367,7 +367,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Manager)]
 		public JsonResult RemoveTeam(long id) {
-			_TeamAccessor.RemoveMember(GetUser(), id);
+			TeamAccessor.RemoveMember(GetUser(), id);
 			return Json(ResultObject.Success("Removed team.").ForceRefresh(), JsonRequestBehavior.AllowGet);
 		}
 
@@ -387,12 +387,12 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Manager)]
 		public PartialViewResult TeamModal(long userId, long id = 0) {
-			var teams = _TeamAccessor.GetUsersTeams(GetUser(), userId);
+			var teams = TeamAccessor.GetUsersTeams(GetUser(), userId);
 			var aliveTeams = teams.ToListAlive();
 			var user = _UserAccessor.GetUserOrganization(GetUser(), userId, false, false).Hydrate().SetTeams(teams).Execute();
 			var team = user.Teams.FirstOrDefault(x => x.Id == id);
-			var orgTeam = _TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id)
-							.Where(x => aliveTeams.All(y => y.Team.Id != x.Id))//_TeamAccessor.GetTeamsDirectlyManaged(GetUser(), GetUser().Id)
+			var orgTeam = TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id)
+							.Where(x => aliveTeams.All(y => y.Team.Id != x.Id))//TeamAccessor.GetTeamsDirectlyManaged(GetUser(), GetUser().Id)
 							.Where(x => x.Type == TeamType.Standard)
 							.ToSelectList(x => x.Name, x => x.Id, id).ToList();
 			orgTeam.Add(new SelectListItem() { Value = "-1", Text = "<" + DisplayNameStrings.createNew + ">" });
@@ -415,7 +415,7 @@ namespace RadialReview.Controllers {
 				model.TeamId = orgTeam.Id;
 			}
 
-			_TeamAccessor.AddMember(GetUser(), model.TeamId, model.UserId);
+			TeamAccessor.AddMember(GetUser(), model.TeamId, model.UserId);
 
 			return Json(ResultObject.Success("Added to team.").ForceRefresh());
 		}

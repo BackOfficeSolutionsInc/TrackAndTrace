@@ -1,6 +1,6 @@
 ﻿@model List<RadialReview.Models.SliderAnswer>
 @{
-	var ordered = Model.Where(x => x.Complete).OrderBy(x => x.ByUser.GetNameExtended());
+	var ordered = Model.Where(x => x.Complete).OrderBy(x => x.ReviewerUser.GetNameExtended());
 	var guid = "slider_" + Guid.NewGuid().ToString().Replace("-", "");
 	var i = 0;
 }
@@ -16,7 +16,7 @@
 					i++;
 					<tr>
 						<td>@(i).</td>
-						<td>@a.ByUser.GetName()</td>
+						<td>@a.ReviewerUser.GetName()</td>
 						<td class="alignRight">@(Math.Round(a.Percentage.Value*100m))%</td>
 					</tr>
 				}

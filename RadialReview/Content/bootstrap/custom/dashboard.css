@@ -322,6 +322,7 @@ input[type=checkbox].blend:checked:after {
 .editable-wrap select {
   height: 30px;
   padding: 5px;
+  -webkit-appearance: none;
 }
 .editable-wrap button {
   display: inline-block;
@@ -584,11 +585,11 @@ html {
 }
 .tile input,
 .tile {
-  font-size: 14px !important;
+  font-size: 14px /*!important*/;
 }
 .width_1 input,
 .width_1 {
-  font-size: 12px !important;
+  font-size: 12px /*!important*/;
 }
 /* Track */
 .tiny *::-webkit-scrollbar-track {
@@ -872,7 +873,7 @@ body.resizing .notes-tile:after,
   padding-left: 3px;
 }
 .dashboard .scorecard input {
-  font-size: 12px !important;
+  font-size: 12px;
 }
 .dashboard .scorecard .goal-column.direction {
   padding-right: 10px !important;

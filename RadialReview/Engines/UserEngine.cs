@@ -36,7 +36,7 @@ namespace RadialReview.Engines
 					var responsibilities = new List<String>();
 
 					var r = _ResponsibilitiesAccessor.GetResponsibilityGroup(s, perms, id);
-					var teams = TeamAccessor.GetUsersTeams(s.ToQueryProvider(true),perms,caller, id);
+					var teams = TeamAccessor.GetUsersTeams(s.ToQueryProvider(true),perms, id);
 					var userResponsibility = ((UserOrganizationModel)r).Hydrate(s).Position().SetTeams(teams).Execute();
 
 					responsibilities.AddRange(userResponsibility.Responsibilities.ToListAlive().Select(x => x.GetQuestion()));

@@ -13,6 +13,10 @@
 
 @using (Html.BeginStyles()) {
     <style>
+		html,body{
+			background-color:#eee;
+		}
+
         .bar {
         }
 
@@ -169,13 +173,13 @@
     </script>
 }
 
-<div class="panel panel-primary">
+<div class="panel panel-primary" style="border: none;">
     <div class="panel-heading">
         <h3 class="panel-title">@Html.ReviewName() : @Model.Review.ReviewName</h3>
     </div>
 
     <div class="table-responsive">
-        <table class="fullWidth equalWidth btn-bar">
+        <table class="fullWidth equalWidth btn-bar" style="background-color: #eee;">
             <tbody>
                 <tr class="globalButtons">
                     <td>
@@ -251,7 +255,7 @@
                     <tr><td>Error with dates.</td></tr>
                 }
         </table>
-        <table class="table table-condensed table-hover">
+		<table class="table table-condensed table-hover">
             <thead>
                 <tr style="height:30px;">
                     <th style="width:1px;"></th>
@@ -260,10 +264,10 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var r in Model.Review.Reviews.ToListAlive().OrderBy(x => x.ForUser.GetPersonallyManaging()).ThenBy(x => x.ForUser.GetNameAndTitle())) {
+                @foreach (var r in Model.Review.Reviews.ToListAlive().OrderBy(x => x.ReviewerUser.GetPersonallyManaging()).ThenBy(x => x.ReviewerUser.GetNameAndTitle())) {
                     <tr id="row-@r.Id">
                         <td><input type="checkbox" name="box-@r.Id" /></td>
-                        <td class="">@r.ForUser.GetNameAndTitle()</td>
+                        <td class="">@r.ReviewerUser.GetNameAndTitle()</td>
                         <td class="">
                             <span style="padding: 0;" class="btn btn-link duedate"
                                   onclick="@Html.ShowModal("Edit Due Date", "/Reviews/EditDueDateModal/" + r.Id, "/Reviews/EditDueDateModal",onComplete:"duedateUpdate")">

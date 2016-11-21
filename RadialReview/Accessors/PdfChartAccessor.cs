@@ -370,7 +370,7 @@ namespace RadialReview.Accessors {
 					Alignment = XParagraphAlignment.Left,
 				};
 
-				var selfAnswer = rock.Where(x => x.ByUserId == x.AboutUserId).FirstOrDefault();
+				var selfAnswer = rock.Where(x => x.ReviewerUserId == x.RevieweeUserId).FirstOrDefault();
 				var selfAnswerCompletion = RockState.Indeterminate;
 				if (selfAnswer != null)
 					selfAnswerCompletion = selfAnswer.Completion;
@@ -392,7 +392,7 @@ namespace RadialReview.Accessors {
 				var reasons = rock.SelectMany(x => {
 					var list = new List<String>();
 					if (!string.IsNullOrWhiteSpace(x.Reason))
-						list.Add("\"" + x.Reason + "\" - " + x.AboutUser.GetName());
+						list.Add("\"" + x.Reason + "\" - " + x.RevieweeUser.GetName());
 					if (!string.IsNullOrWhiteSpace(x.OverrideReason))
 						list.Add("\"" + x.OverrideReason + "\" - Supervisor");
 					return list;
@@ -554,16 +554,16 @@ namespace RadialReview.Accessors {
 			var allValues = new List<ValueRow>();
 
 
-			var managers = answers.Where(x => supervisors.Any(y => y.Id == x.ByUserId)).GroupBy(x => x.ByUserId).Select(x => new ValueRow() {
+			var managers = answers.Where(x => supervisors.Any(y => y.Id == x.ReviewerUserId)).GroupBy(x => x.ReviewerUserId).Select(x => new ValueRow() {
 				Answers = x.ToList(),
-				Name = x.First().ByUser.GetName()
+				Name = x.First().ReviewerUser.GetName()
 			});
 			var self = new ValueRow() {
-				Answers = answers.Where(x => x.ByUserId == aboutUser.Id).ToList(),
+				Answers = answers.Where(x => x.ReviewerUserId == aboutUser.Id).ToList(),
 				Name = aboutUser.GetName()
 			};
 			var others = new ValueRow() {
-				Answers = answers.Where(x => !supervisors.Any(y => y.Id == x.ByUserId) && x.ByUserId != aboutUser.Id).ToList(),
+				Answers = answers.Where(x => !supervisors.Any(y => y.Id == x.ReviewerUserId) && x.ReviewerUserId != aboutUser.Id).ToList(),
 				Name = "Others"
 			};
 
@@ -694,7 +694,7 @@ namespace RadialReview.Accessors {
 
 			var lineMargin = 6.0;
 
-			var forUser = review.ForUser;
+			var forUser = review.ReviewerUser;
 
 			var nameFont = _FontLargeBold;
 			var name = forUser.GetName();
@@ -723,7 +723,7 @@ namespace RadialReview.Accessors {
 
 			//totalHeight +=lineMargin;
 
-			var jd = review.ForUser.JobDescription;
+			var jd = review.ReviewerUser.JobDescription;
 			if (!string.IsNullOrWhiteSpace(jd)) {
 				var jdW = Unit.FromInch(1.1);
 				var jdh = GetTextHeight(gfx, jd, placement.Width- jdW, _Font8);
@@ -786,7 +786,7 @@ namespace RadialReview.Accessors {
 				foreach (var q in questionAnswers) {
 					var feedback = q.Feedback;
 					if (!anon) {
-						feedback = "\"" + feedback + "\" - " + q.ByUser.GetName();
+						feedback = "\"" + feedback + "\" - " + q.ReviewerUser.GetName();
 					}
 
 					var fh = GetTextHeight(gfx, feedback, placement.Width, font);

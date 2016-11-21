@@ -35,12 +35,12 @@
 
 
 		@foreach (var r in Model.AnswersAbout.Where(x => x is GetWantCapacityAnswer).Cast<GetWantCapacityAnswer>()
-			.GroupBy(x=>x.ByUserId+"_"+x.Askable.Id).Select(x=>x.First()))
+			.GroupBy(x=>x.ReviewerUserId+"_"+x.Askable.Id).Select(x=>x.First()))
 		{
 			foreach (var gwc in gwcs)
 			{
 				<tr>
-					<td>@r.ByUser.GetName()</td>
+					<td>@r.ReviewerUser.GetName()</td>
 					<td class="alignLeft italic">@gwc.Item1</td>
 					<td class="bold nowrap" style="max-width:200px;" title="@r.Askable.GetQuestion()">@r.Askable.GetQuestion()</td>
 					<td class="block">

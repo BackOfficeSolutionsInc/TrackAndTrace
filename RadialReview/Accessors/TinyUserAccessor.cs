@@ -65,17 +65,20 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static IEnumerable<TinyUser> GetOrganizationMembers(ISession s, PermissionsUtility perms, long organizationId) {
+		public static IEnumerable<TinyUser> GetOrganizationMembers(ISession s, PermissionsUtility perms, long organizationId,bool excludeClients = false) {
 			TempUserModel tempUserAlias = null;
 			UserOrganizationModel userOrgAlias = null;
 			UserModel userAlias = null;
 
 			perms.ViewOrganization(organizationId);
-			return s.QueryOver<UserOrganizationModel>(() => userOrgAlias)
+			var q = s.QueryOver<UserOrganizationModel>(() => userOrgAlias)
 				.Left.JoinAlias(x => x.User, () => userAlias)
 				.Left.JoinAlias(x => x.TempUser, () => tempUserAlias)
-				.Where(x => x.Organization.Id == organizationId && x.DeleteTime == null)
-				.Select(x => userAlias.FirstName, x => userAlias.LastName, x => x.Id, x => tempUserAlias.FirstName, x => tempUserAlias.LastName, x => userAlias.UserName, x => tempUserAlias.Email)
+				.Where(x => x.Organization.Id == organizationId && x.DeleteTime == null);
+			if (excludeClients)
+				q = q.Where(x => !x.IsClient);
+
+			return q.Select(x => userAlias.FirstName, x => userAlias.LastName, x => x.Id, x => tempUserAlias.FirstName, x => tempUserAlias.LastName, x => userAlias.UserName, x => tempUserAlias.Email)
 				.Future<object[]>()
 				.Select(Unpackage);
 

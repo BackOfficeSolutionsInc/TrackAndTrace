@@ -21,211 +21,210 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using RadialReview.Models.Accountability;
+using RadialReview.Models.Angular.Accountability;
 
 namespace RadialReview.Accessors {
-    public partial class ReviewAccessor : BaseAccessor {
-		
-        #region Create
-        public List<Mail> CreateReviewFromPrereview(
+	public partial class ReviewAccessor : BaseAccessor {
+
+		#region Create
+
+
+		[Obsolete("Fix for AC")]
+		public List<Mail> CreateReviewFromPrereview(
 			HttpContext context,
-            DataInteraction dataInteraction, PermissionsUtility perms,
-            UserOrganizationModel caller, ReviewsModel reviewContainer,
-            string organizationName, List<Tuple<long, long>> whoReviewsWho,
-            IHubContext hub = null, String userId = null, int total = 0) {
-            int count = 0;
+			DataInteraction dataInteraction, PermissionsUtility perms,
+			UserOrganizationModel caller, ReviewsModel reviewContainer,
+			List<WhoReviewsWho> whoReviewsWho,
+			IHubContext hub = null, String userId = null, int total = 0) {
+			int count = 0;
 
-            var format = perms.GetCaller().NotNull(x => x.Organization.NotNull(y => y.Settings.NotNull(z => z.GetDateFormat()))) ?? "MM-dd-yyyy";
 
-            var unsentEmails = new List<Mail>();
-	        var nw = DateTime.UtcNow;
-			var range = new DateRange(nw,nw);
-	        var reviewerIds = whoReviewsWho.Select(x => x.Item1).Distinct().ToList();
+			var unsentEmails = new List<Mail>();
+			var nw = DateTime.UtcNow;
+			var range = new DateRange(nw, nw);
+			// var reviewerIds = whoReviewsWho.Select(x => x.Item1).Distinct().ToList();
+			var reviewersWRW = whoReviewsWho.GroupBy(x => x.Reviewer).ToList();
+			var reviewers = whoReviewsWho.Select(x => x.Reviewer).Distinct().ToList();
 
-            foreach (var reviewerId in reviewerIds) {
-                //Create review for user
-				var revieweeIds = whoReviewsWho.Where(x => x.Item1 == reviewerId).Distinct().Select(x => x.Item2);
-                var user = dataInteraction.Get<UserOrganizationModel>(reviewerId);
+			foreach (var reviewerWRW in reviewersWRW) {
+				//Create review for user
+				var reviewer = reviewerWRW.Key;
+				var reviewees = reviewerWRW.Select(x => x.Reviewee).ToList();//  whoReviewsWho.Where(x => x.Item1 == reviewerId).Distinct().Select(x => x.Item2);
+				var reviewerUser = dataInteraction.Get<UserOrganizationModel>(reviewer.RGMId);
 
-				if (user==null || user.DeleteTime != null)
+				if (reviewerUser == null || reviewerUser.DeleteTime != null)
 					continue;
 
-	            var allAskables=GetAskables(caller, perms, dataInteraction, revieweeIds, reviewerId,/*reviewContainer.PeriodId,*/range);
-				
-				if (allAskables.Any()) {
-					QuestionAccessor.GenerateReviewForUser(context,dataInteraction, perms, caller, user, reviewContainer, allAskables);
-                    if (hub != null) {
-                        hub.Clients.User(userId).status("Added " + count + " user".Pluralize(count) + " out of " + total + ".");
-                    }
+				var askables = GetAskables(dataInteraction, perms, reviewer, reviewees, range);
 
-                    //Emails
-                    var guid = Guid.NewGuid();
-                    var nexus = new NexusModel(guid) {
-                        ForUserId = user.Id,
-                        ActionCode = NexusActions.TakeReview,
-						
-                    };
-                    NexusAccessor.Put(dataInteraction.GetUpdateProvider(), nexus);
+				if (askables.Any()) {
+					QuestionAccessor.GenerateReviewForUser(context, dataInteraction, perms, reviewerUser, reviewContainer, askables);
+					if (hub != null)
+						hub.Clients.User(userId).status("Added " + count + " user".Pluralize(count) + " out of " + total + ".");
 
-					nexus.SetArgs(""+reviewContainer.Id);
+					//Emails
+					var guid = Guid.NewGuid();
+					var nexus = new NexusModel(guid) { ForUserId = reviewerUser.Id, ActionCode = NexusActions.TakeReview };
+					nexus.SetArgs("" + reviewContainer.Id);
+					NexusAccessor.Put(dataInteraction.GetUpdateProvider(), nexus);
+					var org = reviewContainer.Organization;
+					var email = ConstructNewReviewEmail(reviewContainer, reviewerUser, guid, org);
+					unsentEmails.Add(email);
 
-					var org = reviewContainer.ForOrganization;
-					var productName = Config.ProductName(org);
+					log.Info("CreateReview user=" + reviewer.RGMId + " for review=" + reviewContainer.Id);
+				} else {
+					log.Info("NO ASKABLES, Skipping CreateReview user=" + reviewer.RGMId + " review=" + reviewContainer.Id);
+				}
+			}
 
-                    unsentEmails.Add(
-							Mail.To(EmailTypes.NewReviewIssued, user.GetEmail())
-                            .Subject(EmailStrings.NewReview_Subject, organizationName)
-							.Body(EmailStrings.NewReview_Body, user.GetName(),
-							organizationName,
-								(reviewContainer.DueDate.AddDays(-1)).ToString(format),
-								Config.BaseUrl(org) + "n/" + guid,
-								Config.BaseUrl(org) + "n/" + guid,
-								productName,
-								reviewContainer.ReviewName
-							)
-						);
-					log.Info("CreateReview user=" + reviewerId + " for review=" + reviewContainer.Id);
-                }
-                else {
-					log.Info("NO ASKABLES, Skipping CreateReview user=" + reviewerId + " review=" + reviewContainer.Id);
-                }
-            }
+			var haventGeneratedAReview = new Func<long, bool>(revieweeId => !reviewers.Any(reviewer => reviewer.RGMId == revieweeId));
 
-	        foreach (var revieweeId in whoReviewsWho.Select(x => x.Item2).Distinct().Where(x => !reviewerIds.Contains(x))){
-		        try{
-			        var user = dataInteraction.Get<UserOrganizationModel>(revieweeId);
-			        if (user != null){
-						QuestionAccessor.GenerateReviewForUser(context,dataInteraction, perms, caller, user, reviewContainer, new List<AskableAbout>());
-			        }
-		        }
-		        catch (Exception e){
-					log.Error("Error in creating review from prereview",e);
-		        }
-	        }
+			foreach (var revieweeId in whoReviewsWho.Select(x => x.Reviewee.RGMId).Distinct().Where(haventGeneratedAReview)) {
+				try {
+					var user = dataInteraction.Get<UserOrganizationModel>(revieweeId);
+					if (user != null) {
+						QuestionAccessor.GenerateReviewForUser(context, dataInteraction, perms, user, reviewContainer, new AskableCollection());
+					}
+				} catch (Exception e) {
+					log.Error("Error in creating review from prereview", e);
+				}
+			}
 
-	        return unsentEmails;
-        }
+			return unsentEmails;
+		}
 
+		private static Mail ConstructNewReviewEmail(ReviewsModel reviewContainer, UserOrganizationModel reviewerUser, Guid nexusGuid, OrganizationModel org) {
+			var format = org.NotNull(y => y.Settings.NotNull(z => z.GetDateFormat())) ?? "MM-dd-yyyy";
+			var dueDate = (reviewContainer.DueDate.AddDays(-1)).ToString(format);
+			var url = Config.BaseUrl(org) + "n/" + nexusGuid;
+			var productName = Config.ProductName(org);
+			var orgName = org.GetName();
+			var reviewName = reviewContainer.ReviewName;
+			var usersName = reviewerUser.GetName();
+			return Mail.To(EmailTypes.NewReviewIssued, reviewerUser.GetEmail())
+					   .Subject(EmailStrings.NewReview_Subject, orgName)
+					   .Body(EmailStrings.NewReview_Body, usersName, orgName, dueDate, url, url, productName, reviewName);
+		}
 
+		[Obsolete("Fix for AC")]
 		public async Task<ResultObject> CreateReviewFromCustom(
 			HttpContext context,
 			UserOrganizationModel caller, long forTeamId, DateTime dueDate, String reviewName, bool emails, bool anonFeedback,
-			List<Tuple<long, long>> whoReviewsWho/*, long periodId, long nextPeriodId*/)
-		{
-            var unsentEmails = new List<Mail>();
-            using (var s = HibernateSession.GetCurrentSession()) {
-                ReviewsModel reviewContainer;
-                var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
-                var userId = caller.User.UserName;
+			List<WhoReviewsWho> whoReviewsWho/*, long periodId, long nextPeriodId*/) {
+			var unsentEmails = new List<Mail>();
+			using (var s = HibernateSession.GetCurrentSession()) {
+				ReviewsModel reviewContainer;
+				var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
+				var userId = caller.User.UserName;
 
-                using (var tx = s.BeginTransaction()) {
+				using (var tx = s.BeginTransaction()) {
 
-                    hub.Clients.User(userId).status("Creating Review");
-                    var perms = PermissionsUtility.Create(s, caller);
+					hub.Clients.User(userId).status("Creating Review");
+					var perms = PermissionsUtility.Create(s, caller);
 
-                    bool reviewManagers = true,
-                         reviewPeers = true,
-                         reviewSelf = true,
-                         reviewSubordinates = true,
-                         reviewTeammates = true;
+					bool reviewManagers = true,
+						 reviewPeers = true,
+						 reviewSelf = true,
+						 reviewSubordinates = true,
+						 reviewTeammates = true;
 
-					reviewContainer = new ReviewsModel()
-					{
+					reviewContainer = new ReviewsModel() {
 						AnonymousByDefault = anonFeedback,
-                        DateCreated = DateTime.UtcNow,
-                        DueDate = dueDate,
-                        ReviewName = reviewName,
-                        CreatedById = caller.Id,
-                        HasPrereview = false,
+						DateCreated = DateTime.UtcNow,
+						DueDate = dueDate,
+						ReviewName = reviewName,
+						CreatedById = caller.Id,
+						HasPrereview = false,
 
-                        ReviewManagers = reviewManagers,
-                        ReviewPeers = reviewPeers,
-                        ReviewSelf = reviewSelf,
-                        ReviewSubordinates = reviewSubordinates,
-                        ReviewTeammates = reviewTeammates,
+						ReviewManagers = reviewManagers,
+						ReviewPeers = reviewPeers,
+						ReviewSelf = reviewSelf,
+						ReviewSubordinates = reviewSubordinates,
+						ReviewTeammates = reviewTeammates,
 
 						/*PeriodId = periodId,
 						NextPeriodId = nextPeriodId,*/
 
-                        ForTeamId = forTeamId
-                    };
-                    ReviewAccessor.CreateReviewContainer(s, perms, caller, reviewContainer);
-                }
-                using (var tx = s.BeginTransaction()) {
-                    var perms = PermissionsUtility.Create(s, caller);
-					
-                    perms.IssueForTeam(forTeamId);
+						ForTeamId = forTeamId
+					};
+					ReviewAccessor.CreateReviewContainer(s, perms, caller, reviewContainer);
+				}
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
 
-                    var organization = caller.Organization;
-                    OrganizationTeamModel team;
+					perms.IssueForTeam(forTeamId);
 
-                    var orgId = caller.Organization.Id;
+					var organization = caller.Organization;
+					OrganizationTeamModel team;
+
+					var orgId = caller.Organization.Id;
 
 
-                    hub.Clients.User(userId).status("Gathering Data");
+					hub.Clients.User(userId).status("Gathering Data");
 
-                    var dataInteraction = GetReviewDataInteraction(s, orgId);
+					var dataInteraction = GetReviewDataInteraction(s, orgId);
 
-                    team = dataInteraction.GetQueryProvider().All<OrganizationTeamModel>().First(x => x.Id == forTeamId);
-
+					team = dataInteraction.GetQueryProvider().All<OrganizationTeamModel>().First(x => x.Id == forTeamId);
 					var usersToReview = TeamAccessor.GetTeamMembers(dataInteraction.GetQueryProvider(), perms, forTeamId, false).ToListAlive();
 
-                    List<Exception> exceptions = new List<Exception>();
-
-                    var toReview = usersToReview.Select(x => x.User).ToList();
-                    var orgName = organization.Name.Translate();
-                   // int sent, errors;
+					List<Exception> exceptions = new List<Exception>();
+					var toReview = usersToReview.Select(x => x.User).ToList();
+					//var orgName = organization.Name.Translate();
 
 					////////////////////////////////////////////
 					//HEAVY LIFTING HERE:
-					var clientReviews = CreateReviewFromPrereview(context,dataInteraction, perms, caller, reviewContainer, orgName, whoReviewsWho, hub, userId, usersToReview.Count());
+					var clientReviews = CreateReviewFromPrereview(context, dataInteraction, perms, caller, reviewContainer, whoReviewsWho, hub, userId, usersToReview.Count());
 					////////////////////////////////////////////
-                    unsentEmails.AddRange(clientReviews);
-
+					unsentEmails.AddRange(clientReviews);
 
 					EventUtil.Trigger(x => x.Create(s, EventType.IssueReview, caller, reviewContainer, message: reviewContainer.ReviewName));
 
 					tx.Commit();
-                    s.Flush();
-                    hub.Clients.User(userId).status("Done!");
+					s.Flush();
+					hub.Clients.User(userId).status("Done!");
 
 
-          
-                }
-            }
-            var emailResult = new EmailResult();
-            if (emails) {
-                emailResult = await Emailer.SendEmails(unsentEmails);
 
-            }
-            if (emailResult.Errors.Count() > 0) {
-                var message = String.Join("\n", emailResult.Errors.Select(x => x.Message));
-                return new ResultObject(new RedirectException(emailResult.Errors.Count() + " errors:\n" + message));
-            }
-            return ResultObject.Create(new { due = dueDate, sent = emailResult.Sent, errors = emailResult.Errors.Count() });
-        }
+				}
+			}
+			var emailResult = new EmailResult();
+			if (emails) {
+				emailResult = await Emailer.SendEmails(unsentEmails);
 
-        public static DataInteraction GetReviewDataInteraction(ISession s, long orgId) {
-            var allOrgTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId).List();
-            var allTeamDurations = s.QueryOver<TeamDurationModel>().JoinQueryOver(x => x.Team).Where(x => x.Organization.Id == orgId).List();
-            var allMembers = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == orgId).List();
-            var allManagerSubordinates = s.QueryOver<ManagerDuration>().JoinQueryOver(x => x.Manager).Where(x => x.Organization.Id == orgId).List();
-            var allPositions = s.QueryOver<PositionDurationModel>().JoinQueryOver(x => x.Position).Where(x => x.Organization.Id == orgId).List();
-            var applicationQuestions = s.QueryOver<QuestionModel>().Where(x => x.OriginId == ApplicationAccessor.APPLICATION_ID && x.OriginType == OriginType.Application).List();
-			var application = s.QueryOver<ApplicationWideModel>().Where(x => x.Id == ApplicationAccessor.APPLICATION_ID).List();
+			}
+			if (emailResult.Errors.Count() > 0) {
+				var message = String.Join("\n", emailResult.Errors.Select(x => x.Message));
+				return new ResultObject(new RedirectException(emailResult.Errors.Count() + " errors:\n" + message));
+			}
+			return ResultObject.Create(new { due = dueDate, sent = emailResult.Sent, errors = emailResult.Errors.Count() });
+		}
 
-			var allRoles = s.QueryOver<RoleModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).List();
-			var allValues = s.QueryOver<CompanyValueModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).List();
-			var allRocks = s.QueryOver<RockModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).List();
-			var allRGM = s.QueryOver<ResponsibilityGroupModel>().Where(x => x.Organization.Id == orgId && x.DeleteTime == null).List();
-			var allAboutCompany = s.QueryOver<AboutCompanyAskable>().Where(x => x.Organization.Id == orgId && x.DeleteTime == null).List();
+		[Obsolete("Fix for AC")]
+		public static DataInteraction GetReviewDataInteraction(ISession s, long orgId) {
+			var allOrgTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId).Future();
+			var allTeamDurations = s.QueryOver<TeamDurationModel>().JoinQueryOver(x => x.Team).Where(x => x.Organization.Id == orgId).Future();
+			var allMembers = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == orgId).Future();
+			var allManagerSubordinates = s.QueryOver<ManagerDuration>().JoinQueryOver(x => x.Manager).Where(x => x.Organization.Id == orgId).Future();
+			var allPositions = s.QueryOver<PositionDurationModel>().JoinQueryOver(x => x.Position).Where(x => x.Organization.Id == orgId).Future();
+			var applicationQuestions = s.QueryOver<QuestionModel>().Where(x => x.OriginId == ApplicationAccessor.APPLICATION_ID && x.OriginType == OriginType.Application).Future();
+			var application = s.QueryOver<ApplicationWideModel>().Where(x => x.Id == ApplicationAccessor.APPLICATION_ID).Future();
 
-			var allRoleLinks = s.QueryOver<RoleLink>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).List();
+			var allRoles = s.QueryOver<RoleModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).Future();
+			var allValues = s.QueryOver<CompanyValueModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).Future();
+			var allRocks = s.QueryOver<RockModel>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).Future();
+			var allRGM = s.QueryOver<ResponsibilityGroupModel>().Where(x => x.Organization.Id == orgId && x.DeleteTime == null).Future();
+			var allAboutCompany = s.QueryOver<AboutCompanyAskable>().Where(x => x.Organization.Id == orgId && x.DeleteTime == null).Future();
+
+			var allRoleLinks = s.QueryOver<RoleLink>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).Future();
+
+			var accountablityNodes = s.QueryOver<AccountabilityNode>().Where(x => x.OrganizationId == orgId && x.DeleteTime == null).Future();
 
 			var queryProvider = new IEnumerableQuery();
-            queryProvider.AddData(allOrgTeams);
-            queryProvider.AddData(allTeamDurations);
-            queryProvider.AddData(allMembers);
-            queryProvider.AddData(allManagerSubordinates);
+			queryProvider.AddData(allOrgTeams.ToList());
+			queryProvider.AddData(allTeamDurations);
+			queryProvider.AddData(allMembers);
+			queryProvider.AddData(allManagerSubordinates);
 			queryProvider.AddData(allPositions);
 			queryProvider.AddData(allRoles);
 			queryProvider.AddData(allValues);
@@ -234,100 +233,133 @@ namespace RadialReview.Accessors {
 			queryProvider.AddData(allRGM);
 			queryProvider.AddData(allRoleLinks);
 			queryProvider.AddData(applicationQuestions);
+			queryProvider.AddData(accountablityNodes);
 			queryProvider.AddData(application);
 
 			var updateProvider = new SessionUpdate(s);
-            var dataInteraction = new DataInteraction(queryProvider, updateProvider);
-            return dataInteraction;
-        }
+			var dataInteraction = new DataInteraction(queryProvider, updateProvider);
+			return dataInteraction;
+		}
 
-        public static void CreateReviewContainer(ISession s, PermissionsUtility perms, UserOrganizationModel caller, ReviewsModel reviewContainer) {
-            using (var tx = s.BeginTransaction()) {
-                perms.ManagerAtOrganization(caller.Id, caller.Organization.Id);
+		[Obsolete("Fix for AC")]
+		public static void CreateReviewContainer(ISession s, PermissionsUtility perms, UserOrganizationModel caller, ReviewsModel reviewContainer) {
+			using (var tx = s.BeginTransaction()) {
+				perms.ManagerAtOrganization(caller.Id, caller.Organization.Id);
 				//foreach(var pid in new[] {reviewContainer.NextPeriodId,reviewContainer.PeriodId})
-	            //{
-		        //    var p = s.Get<PeriodModel>(pid);
+				//{
+				//    var p = s.Get<PeriodModel>(pid);
 				//	if (p.OrganizationId != caller.Organization.Id){
 				//		throw new PermissionsException("You do not have access to this session.");
 				//	}
-	            //}
+				//}
 
-	            reviewContainer.CreatedById = caller.Id;
-                reviewContainer.ForOrganizationId = caller.Organization.Id;
-	            reviewContainer.ForOrganization = caller.Organization;
+				reviewContainer.CreatedById = caller.Id;
+				reviewContainer.OrganizationId = caller.Organization.Id;
+				reviewContainer.Organization = caller.Organization;
 
-                s.SaveOrUpdate(reviewContainer);
-                tx.Commit();
-            }
-        }
+				s.SaveOrUpdate(reviewContainer);
+				tx.Commit();
+			}
+		}
 
-        private static List<Mail> AddUserToReview(
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="context"></param>
+		/// <param name="caller"></param>
+		/// <param name="updateOthers"></param>
+		/// <param name="dueDate"></param>
+		/// <param name="parameters"></param>
+		/// <param name="dataInteraction"></param>
+		/// <param name="reviewContainer"></param>
+		/// <param name="perms"></param>
+		/// <param name="organization"></param>
+		/// <param name="team"></param>
+		/// <param name="exceptions"></param>
+		/// <param name="user"></param>
+		/// <param name="tree"></param>
+		/// <param name="accessibleUsers"></param>
+		/// <param name="range"></param>
+		/// <returns></returns>
+		[Obsolete("Fix for AC")]
+		private static List<Mail> AddUserToReview(
 			HttpContext context,
-            UserOrganizationModel caller,
-            bool updateOthers, DateTime dueDate,
-            ReviewParameters parameters, DataInteraction dataInteraction, ReviewsModel reviewContainer, PermissionsUtility perms,
-            OrganizationModel organization, OrganizationTeamModel team, ref List<Exception> exceptions,
-            UserOrganizationModel beingReviewedUser,
-            List<UserOrganizationModel> accessibleUsers,
+			UserOrganizationModel caller,
+			bool updateOthers, DateTime dueDate,
+			ReviewParameters parameters, DataInteraction dataInteraction, ReviewsModel reviewContainer, PermissionsUtility perms,
+			OrganizationModel organization, OrganizationTeamModel team, ref List<Exception> exceptions,
+			Reviewee user, AngularAccountabilityChart tree,
+			List<Reviewee> accessibleUsers,
 			DateRange range) {
-            var unsentEmails = new List<Mail>();
-            var format = caller.NotNull(x => x.Organization.NotNull(y => y.Settings.NotNull(z => z.GetDateFormat()))) ?? "MM-dd-yyyy";
-            try {
-				var askables = GetAskablesBidirectional(
-					dataInteraction, perms, caller, beingReviewedUser,
-					team, parameters, accessibleUsers.Select(x=>x.Id).ToList(),/*reviewContainer.PeriodId,*/range);
+			var unsentEmails = new List<Mail>();
+			var format = caller.NotNull(x => x.Organization.NotNull(y => y.Settings.NotNull(z => z.GetDateFormat()))) ?? "MM-dd-yyyy";
+			try {
 
-                //Create the Review
-                if (askables.Askables.Any()) {
-					var review = QuestionAccessor.GenerateReviewForUser(context,dataInteraction, perms, caller, beingReviewedUser, reviewContainer, askables.Askables);
-                    //Generate Review Nexus
-                    var guid = Guid.NewGuid();
-                    var nexus = new NexusModel(guid) {
-                        ForUserId = beingReviewedUser.Id,
-                        ActionCode = NexusActions.TakeReview
-                    };
-                    NexusAccessor.Put(dataInteraction.GetUpdateProvider(), nexus);
+				AskableCollection addToOthers = null;
+				//var accessibleUserIds = accessibleUsers.Select(x => x.Id).ToList();
+				var askables = GetAskablesBidirectional(dataInteraction, perms, tree, user, team, parameters, accessibleUsers, range, updateOthers, ref addToOthers);
+
+				var revieweeUser = dataInteraction.Get<UserOrganizationModel>(user.ConvertToReviewer().RGMId);
+
+				//Create the Review
+				if (askables.Askables.Any()) {
+					var review = QuestionAccessor.GenerateReviewForUser(context, dataInteraction, perms, revieweeUser, reviewContainer, askables);
+					//Generate Review Nexus
+					var guid = Guid.NewGuid();
+					var nexus = new NexusModel(guid) {
+						ForUserId = user.ConvertToReviewer().RGMId,
+						ActionCode = NexusActions.TakeReview
+					};
+					NexusAccessor.Put(dataInteraction.GetUpdateProvider(), nexus);
 					var url = Config.BaseUrl(organization) + "n/" + guid;
-                    unsentEmails.Add(Mail
-                        .To(EmailTypes.NewReviewIssued,beingReviewedUser.GetEmail())
-                        .Subject(EmailStrings.NewReview_Subject, organization.Name.Translate())
-                        .Body(EmailStrings.NewReview_Body, beingReviewedUser.GetName(), caller.GetName(), (dueDate.AddDays(-1)).ToString(format),url,url, ProductStrings.ProductName,reviewContainer.ReviewName)
-                    );
-                }
-
-                
-
-                //Update everyone else's review.
-                if (updateOthers) {
-                    var beingReviewedUserId = beingReviewedUser.Id;
-					
-                    var reviewsLookup = dataInteraction.Where<ReviewModel>(x => x.ForReviewsId == reviewContainer.Id);
-                    var newUsers = askables.AllUsers.GroupBy(x => x.Item1.Id).Select(x => x.OrderByDescending(y => (long)y.Item2).First());
+					unsentEmails.Add(Mail
+						.To(EmailTypes.NewReviewIssued, revieweeUser.GetEmail())
+						.Subject(EmailStrings.NewReview_Subject, organization.Name.Translate())
+						.Body(EmailStrings.NewReview_Body, revieweeUser.GetName(), caller.GetName(), (dueDate.AddDays(-1)).ToString(format), url, url, ProductStrings.ProductName, reviewContainer.ReviewName)
+					);
+				}
 
 
-                    foreach (var askableUser in newUsers.Where(x => x.Item2 != AboutType.Self)) {
-                        try {
-                            var r = reviewsLookup.Where(x => x.ForUserId == askableUser.Item1.Id).SingleOrDefault();
-                            if (r != null) {
-                                AddToReview(dataInteraction, perms, caller, askableUser.Item1.Id, r.ForReviewsId, beingReviewedUserId, askableUser.Item2.Invert());
-                            }
-                        }
-                        catch (Exception e) {
-                            log.Error(e.Message, e);
-                            exceptions.Add(e);
 
-                        }
-                    }
-                }
+				//Update everyone else's review.
+				if (updateOthers) {
 
-            }
-            catch (Exception e) {
-                log.Error(e.Message, e);
-                exceptions.Add(e);
-            }
-            return unsentEmails;
-        }
+					var reviewsLookup = dataInteraction.Where<ReviewModel>(x => x.ForReviewContainerId == reviewContainer.Id && x.DeleteTime == null);
+					var newReviewers = addToOthers.Reviewers; //addToOthers.GroupBy(x => x.Reviewee).Select(relationship => relationship.OrderByDescending(y => (long)y.ReviewerIsThe).First());
 
-        #endregion
+
+					foreach (var reviewer in newReviewers/*.Where(x => x.ReviewerIsThe != AboutType.Self)*/) {
+						try {
+							var r = reviewsLookup.Where(x => x.ReviewerUserId == reviewer.RGMId).SingleOrDefault();
+							if (r != null) {
+								// Check that askableUser.Reviewee.ConvertToReviewer() != reviewee
+								var revieweeIsThe = addToOthers.RevieweeIsThe[reviewer];
+
+								AddToReview(dataInteraction, perms, caller, reviewer, r.ForReviewContainerId, user, revieweeIsThe);
+							}
+
+							var revieweeReview = reviewsLookup.Where(x => x.ReviewerUserId == user.RGMId).SingleOrDefault();
+
+							if (revieweeReview == null) {
+								var u = dataInteraction.Get<UserOrganizationModel>(user.RGMId);
+								QuestionAccessor.GenerateReviewForUser(context, dataInteraction, perms,u, reviewContainer, new AskableCollection());
+							}
+
+						} catch (Exception e) {
+							log.Error(e.Message, e);
+							exceptions.Add(e);
+
+						}
+					}
+				}
+
+			} catch (Exception e) {
+				log.Error(e.Message, e);
+				exceptions.Add(e);
+			}
+			return unsentEmails;
+		}
+
+		#endregion
 	}
 }

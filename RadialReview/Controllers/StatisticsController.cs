@@ -18,7 +18,7 @@ namespace RadialReview.Controllers
 
             foreach (var review in reviewContainer.Reviews)
             {
-                review.ForUser.PopulatePersonallyManaging(GetUser(), user.AllSubordinates);
+                review.ReviewerUser.PopulatePersonallyManaging(GetUser(), user.AllSubordinates);
             }
 
             return View(reviewContainer);

@@ -113,7 +113,7 @@ namespace RadialReview.Utilities {
 			var orgLookupsQ = s.QueryOver<OrganizationLookup>().Future();
 			var recursQ = s.QueryOver<L10Recurrence>().Where(x => x.DeleteTime == null).Select(x => x.Id, x => x.TeamType, x => x.CreateTime, x => x.OrganizationId).Future<object[]>();
 			var meetingsQ = s.QueryOver<L10Meeting>().Where(x => x.DeleteTime == null).Select(x => x.Id, x => x.L10RecurrenceId, x => x.StartTime, x => x.CompleteTime, x => x.OrganizationId).Future<object[]>();
-			var reviewsQ = s.QueryOver<ReviewsModel>().Where(x => x.DeleteTime == null).Select(x => x.Id, x => x.DateCreated, x => x.ForOrganizationId).Future<object[]>();
+			var reviewsQ = s.QueryOver<ReviewsModel>().Where(x => x.DeleteTime == null).Select(x => x.Id, x => x.DateCreated, x => x.OrganizationId).Future<object[]>();
 			var eventsQ = s.QueryOver<AccountEvent>().Where(x => x.DeleteTime == null).Select(x => x.Id, x => x.CreateTime, x => x.Type, x => x.OrgId).Future<object[]>();
 
 			var orgs = orgsQ.ToList();

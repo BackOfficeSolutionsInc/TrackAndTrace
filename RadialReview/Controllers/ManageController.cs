@@ -86,7 +86,7 @@ namespace RadialReview.Controllers
         {
 
             new Cache().Push(CacheKeys.MANAGE_PAGE, "Teams", LifeTime.Request/*Session*/);
-            var orgTeams = _TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id);
+            var orgTeams = TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id);
             var teams = orgTeams.Select(x => new OrganizationTeamViewModel { Team = x, Members = 0, TemplateId = x.TemplateId }).ToList();
 
             for (int i = 0; i < orgTeams.Count(); i++)
@@ -94,7 +94,7 @@ namespace RadialReview.Controllers
                 try
                 {
                     teams[i].Team = teams[i].Team.HydrateResponsibilityGroup().PersonallyManaging(GetUser()).Execute();
-                    teams[i].Members = _TeamAccessor.GetTeamMembers(GetUser(), teams[i].Team.Id, false).ToListAlive().Count();
+                    teams[i].Members = TeamAccessor.GetTeamMembers(GetUser(), teams[i].Team.Id, false).ToListAlive().Count();
                 }
                 catch (Exception e)
                 {

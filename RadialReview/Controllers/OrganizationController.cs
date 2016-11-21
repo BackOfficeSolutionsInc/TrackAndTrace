@@ -282,7 +282,7 @@ namespace RadialReview.Controllers
 				//We want to hit this exception.
 				new Cache().Invalidate(CacheKeys.ORGANIZATION_ID);
 				//Session["OrganizationId"] = null;
-				var org = _OrganizationAccessor.JoinOrganization(user, nexus.ByUserId, placeholderUserId);
+				var org = OrganizationAccessor.JoinOrganization(user, nexus.ByUserId, placeholderUserId);
 				_NexusAccessor.Execute(nexus);
 				return RedirectToAction("Index", "Home", new { message = String.Format(MessageStrings.SuccessfullyJoinedOrganization, org.Organization.Name) });
 			}

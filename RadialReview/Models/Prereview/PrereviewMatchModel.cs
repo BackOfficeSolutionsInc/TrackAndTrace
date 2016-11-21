@@ -12,8 +12,9 @@ namespace RadialReview.Models.Prereview
         public virtual long Id { get; set; }
         public virtual long PrereviewId { get; set; }
         public virtual long FirstUserId { get; set; }
-        public virtual long SecondUserId { get; set; }
-        public virtual DateTime? DeleteTime { get; set; }
+		public virtual long SecondUserId { get; set; }
+		public virtual long? Second_ACNodeId { get; set; }
+		public virtual DateTime? DeleteTime { get; set; }
     }
 
     public class PrereviewMatchModelMap : ClassMap<PrereviewMatchModel>
@@ -23,8 +24,9 @@ namespace RadialReview.Models.Prereview
             Id(x => x.Id);
             Map(x => x.PrereviewId);
             Map(x => x.FirstUserId);
-            Map(x => x.SecondUserId);
-            Map(x => x.DeleteTime);
+			Map(x => x.SecondUserId);
+			Map(x => x.Second_ACNodeId);
+			Map(x => x.DeleteTime);
         }
     }
 }

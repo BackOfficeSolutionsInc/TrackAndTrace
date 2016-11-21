@@ -179,7 +179,7 @@ namespace RadialReview.Controllers {
 			var now = DateTime.UtcNow;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					foreach (var a in s.QueryOver<ReviewsModel>().Where(x => x.ForOrganizationId == orgId).List()) {
+					foreach (var a in s.QueryOver<ReviewsModel>().Where(x => x.OrganizationId == orgId).List()) {
 						var update = false;
 						/* if (a.PeriodId == 0) {
                              a.PeriodId = periodId;
@@ -197,7 +197,7 @@ namespace RadialReview.Controllers {
 						}
 						var rId = a.Id;
 
-						foreach (var b in s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == rId).List()) {
+						foreach (var b in s.QueryOver<ReviewModel>().Where(x => x.ForReviewContainerId == rId).List()) {
 							if (b.PeriodId == 0) {
 								b.PeriodId = periodId;
 								s.Update(b);
@@ -397,7 +397,7 @@ namespace RadialReview.Controllers {
 
 							var review = s.Get<ReviewModel>(x.ReviewId);
 							if (review != null) {
-								x.ReviewContainerId = review.ForReviewsId;
+								x.ReviewContainerId = review.ForReviewContainerId;
 								s.Update(x);
 								c++;
 							}
@@ -552,7 +552,7 @@ namespace RadialReview.Controllers {
 					var rrs = s.QueryOver<ReviewModel>().Where(x => x.DeleteTime == null && x.ForReviewContainer.Id == reviewId).List().ToList();
 					foreach (var o in cr) {
 						if (!ar.Any(x => x.Askable.Id == o.Id)) {
-							var rr = rrs.FirstOrDefault(x => x.ForUserId == o.ForUserId);
+							var rr = rrs.FirstOrDefault(x => x.ReviewerUserId == o.ForUserId);
 
 							if (rr == null)
 								continue;
@@ -568,9 +568,9 @@ namespace RadialReview.Controllers {
 								Askable = o,
 								Required = true,
 								ForReviewId = rid,
-								ByUserId = o.ForUserId,
-								AboutUserId = o.ForUserId,
-								AboutUser = s.Load<ResponsibilityGroupModel>(o.ForUserId),
+								ReviewerUserId = o.ForUserId,
+								RevieweeUserId = o.ForUserId,
+								RevieweeUser = s.Load<ResponsibilityGroupModel>(o.ForUserId),
 								ForReviewContainerId = review.Id,
 								AboutType = AboutType.Self
 							};

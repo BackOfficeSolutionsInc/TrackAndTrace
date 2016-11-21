@@ -227,20 +227,21 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Accessors\EvalScorerTests.cs" />
-    <Compile Include="Accessors\L10Accessor_EditRecurrenceTests.cs" />
-    <Compile Include="Accessors\RockAccessorTests.cs" />
-    <Compile Include="Accessors\ScorecardAccessorTests.cs" />
-    <Compile Include="Accessors\PaymentPlanAccessorTests.cs" />
-    <Compile Include="Accessors\L10Accessor_AngularTests.cs" />
-    <Compile Include="Accessors\PdfAccessor_RunAll.cs" />
-    <Compile Include="Accessors\PaymentAccessorTests.cs" />
+    <Compile Include="Accessors\Evals\EvalScorerTests.cs" />
+    <Compile Include="Accessors\Evals\IssueEvalTests.cs" />
+    <Compile Include="Accessors\L10\L10Accessor_EditRecurrenceTests.cs" />
+    <Compile Include="Accessors\BaseTools\RockAccessorTests.cs" />
+    <Compile Include="Accessors\BaseTools\ScorecardAccessorTests.cs" />
+    <Compile Include="Accessors\Payment\PaymentPlanAccessorTests.cs" />
+    <Compile Include="Accessors\L10\L10Accessor_AngularTests.cs" />
+    <Compile Include="Accessors\PDF\PdfAccessor_RunAll.cs" />
+    <Compile Include="Accessors\Payment\PaymentAccessorTests.cs" />
     <Compile Include="Utilities\EventUtilTests.cs" />
     <Compile Include="TestUtils\RouteHandler.cs" />
     <Compile Include="Utilities\L10Utility.cs" />
     <Compile Include="Utilities\DistanceUtility_User.cs" />
     <Compile Include="TestUtils\BaseTest.cs" />
-    <Compile Include="Accessors\L10AccessorTests.cs" />
+    <Compile Include="Accessors\L10\L10AccessorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestUtils\ControllerExtensions.cs" />
     <Compile Include="Utilities\Extensions\WebDriverExtensions.cs" />
@@ -260,6 +261,9 @@
       <Project>{7104473e-4e35-4107-9b11-4346291f8b4e}</Project>
       <Name>RadialReview</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Utilities\FullOrganization.png" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

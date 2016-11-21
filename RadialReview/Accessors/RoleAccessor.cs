@@ -17,6 +17,7 @@ using RadialReview;
 using RadialReview.Models.Accountability;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
+using RadialReview.Models.Reviews;
 
 namespace RadialReview.Accessors {
 
@@ -24,14 +25,17 @@ namespace RadialReview.Accessors {
 		public long UserId { get; set; }
 		public long PosId { get; set; }
 		public string PosName { get; set; }
+		public DateTime _StartTime { get; set; }
+		public DateTime? _DeleteTime { get; set; }
 	}
 	public class TeamDur {
 		public long UserId { get; set; }
 		public long TeamId { get; set; }
 		public string TeamName { get; set; }
+		public DateTime _StartTime { get; set; }
+		public DateTime? _DeleteTime { get; set; }
 	}
 	public class RoleAccessor {
-
 
 		#region GetRoleLinks_Unsafe
 		//Update Both GetRoleLinks_Unsafe Methods
@@ -157,6 +161,20 @@ namespace RadialReview.Accessors {
 				.ToList();
 		}
 
+		public static List<RoleModel> GetRolesForReviewee(AbstractQuery queryProvider, PermissionsUtility perms, Reviewee revieweeUser, DateRange range = null) {
+
+			var forUserId = revieweeUser.RGMId;
+
+			if (revieweeUser.ACNodeId == null)
+				return GetRoles(queryProvider, perms, revieweeUser.RGMId, range);
+			else {
+				return GetRolesForAcNode(queryProvider, perms, revieweeUser.ACNodeId.Value, range);
+			}
+
+			//var allLinks = GetRoleLinks_Unsafe(queryProvider, forUserId, range);
+		}
+
+
 
 		//Update Both GetRoles Methods
 		public static List<RoleModel> GetRoles(ISession s, PermissionsUtility perms, long forUserId, DateRange range = null) {
@@ -251,7 +269,7 @@ namespace RadialReview.Accessors {
 
 						if (updateOutstanding && added) {
 							foreach (var o in outstanding) {
-								ReviewAccessor.AddResponsibilityAboutUserToReview(s, caller, perms, o.Id, userId, r.Id);
+								ReviewAccessor.AddResponsibilityAboutUserToReview(s, caller, perms, o.Id, new Reviewee(userId,null), r.Id);
 							}
 						}
 					}
@@ -272,6 +290,68 @@ namespace RadialReview.Accessors {
 			return GetRoleLinksForUser_Unsafe(s, userId).Distinct(x => x.RoleId).Count();
 		}
 
+
+		public static List<RoleModel> GetRolesForAcNode(AbstractQuery queryProvider, PermissionsUtility perms, long acNodeId, DateRange range = null) {
+
+			var node = queryProvider.Get<AccountabilityNode>(acNodeId);
+			perms.ViewOrganization(node.OrganizationId);
+
+
+			var teamDur = new List<TeamDurationModel>();
+			var allRoleLinks = new List<RoleLink>();
+			if (node.UserId != null) {
+				perms.ViewUserOrganization(node.UserId.Value, false);
+				teamDur = queryProvider.Where<TeamDurationModel>(x =>
+					x.OrganizationId == node.OrganizationId && x.UserId == node.UserId
+				).FilterRange(range).ToList();
+
+				var userRoleLinks = queryProvider.Where<RoleLink>(x => x.OrganizationId == node.OrganizationId && x.AttachType == AttachType.User && x.AttachId == node.UserId).FilterRange(range).ToList();
+				allRoleLinks.AddRange(userRoleLinks);
+			}
+
+			var posDur = new List<PositionDurationModel>();
+			if (node.AccountabilityRolesGroup.PositionId != null) {
+				posDur = queryProvider.Where<PositionDurationModel>(x =>
+						x.OrganizationId == node.OrganizationId && x.Position.Id == node.AccountabilityRolesGroup.PositionId
+					).FilterRange(range).ToList();
+			}
+
+			if (teamDur.Any()) {
+				var teamsRoleLinks = queryProvider.WhereRestrictionOn<RoleLink>(x => x.OrganizationId == node.OrganizationId && x.AttachType == AttachType.Team, x => x.AttachId, teamDur.Select(x => x.TeamId).Cast<object>()).FilterRange(range).ToList();
+				allRoleLinks.AddRange(teamsRoleLinks);
+			}
+			if (posDur.Any()) {
+				var positionsRoleLinks = queryProvider.WhereRestrictionOn<RoleLink>(x => x.OrganizationId == node.OrganizationId && x.AttachType == AttachType.Position, x => x.AttachId, posDur.Select(x => x.Position.Id).Cast<object>()).FilterRange(range).ToList();
+				allRoleLinks.AddRange(positionsRoleLinks);
+			}
+
+
+			var allRoles = queryProvider.WhereRestrictionOn<RoleModel>(x => x.OrganizationId == node.OrganizationId, x => x.Id, allRoleLinks.Select(x => x.RoleId).Cast<object>())
+				.FilterRange(range).Distinct(x => x.Id).ToList();
+
+
+			var roleLU = allRoles.ToDictionary(x => x.Id, x => x);
+
+			var pd = posDur.Select(x => new PosDur() {
+				PosName = x.Position.GetName(),
+				PosId = x.Position.Id,
+				UserId = x.UserId
+			}).ToList();
+
+			var td = teamDur.Select(x => new TeamDur() {
+				TeamName = x.Team.GetName(),
+				TeamId = x.TeamId,
+				UserId = x.UserId
+			}).ToList();
+
+
+			return ConstructRolesForNode(node.UserId, node.AccountabilityRolesGroup.PositionId, roleLU, allRoleLinks, pd, td).SelectMany(x=>x.Roles).ToList();
+
+
+			//return queryProvider.WhereRestrictionOn<RoleModel>(null, x => x.Id, allLinks.Select(x => x.RoleId).Distinct().Cast<object>())
+			//	.FilterRange(range)
+			//	.ToList();
+		}
 
 		public static List<RoleGroup> ConstructRolesForNode(long? userId, long? positionId, Dictionary<long, RoleModel> rolesLU,
 			List<RoleLink> links, List<PosDur> pd, List<TeamDur> td) {

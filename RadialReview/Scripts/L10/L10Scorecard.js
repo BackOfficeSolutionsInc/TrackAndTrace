@@ -729,6 +729,9 @@ function removeMeasurable(id) {
 
 $(window).on("page-scorecard", function () {
 	scrollRight();
+	if (isIOS()) {
+		$('input').css("pointer-events", "none");
+	}
 
 });
 

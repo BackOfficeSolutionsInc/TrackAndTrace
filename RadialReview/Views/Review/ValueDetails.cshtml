@@ -5,7 +5,7 @@
 <div class="table-io">
 	<div class="values-details details">
 		@{
-		var found = Model.AnswersAbout.Where(x => x is CompanyValueAnswer).Cast<CompanyValueAnswer>().Where(x => x.Askable.Id == ViewBag.ValueId && x.ByUserId == ViewBag.ByUserId);
+		var found = Model.AnswersAbout.Where(x => x is CompanyValueAnswer).Cast<CompanyValueAnswer>().Where(x => x.Askable.Id == ViewBag.ValueId && x.ReviewerUserId == ViewBag.ByUserId);
 	//var titleGWC = new Dictionary<string, string> { { "get", "Gets It" }, { "want", "Wants It" }, { "capacity", "Capacity To Do It" } };
 	//var lookup = new Dictionary<string, Func<CompanyValueAnswer, Tristate>> { { "get", x => x.Exhibits }, { "want", x => x.WantIt }, { "capacity", x => x.HasCapacity } };
 
@@ -16,7 +16,7 @@
 			<div class="header">
 				<span class="fill @found.First().Exhibits pull-right"></span>
 				@found.First().Askable.GetQuestion():
-				<span class="extra">@found.First().ByUser.GetName()</span>
+				<span class="extra">@found.First().ReviewerUser.GetName()</span>
 			</div>
 			
 			<div class="alignLeft">

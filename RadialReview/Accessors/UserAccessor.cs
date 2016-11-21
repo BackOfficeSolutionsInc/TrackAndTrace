@@ -32,6 +32,7 @@ using System.Text;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
 using RadialReview.Models.Accountability;
+using RadialReview.Models.Reviews;
 
 namespace RadialReview.Accessors
 {
@@ -196,6 +197,7 @@ namespace RadialReview.Accessors
 				throw new LoginException(redirectUrl);
 			return user.UserOrganizationCount;
 		}
+		
 
 		public List<UserOrganizationModel> GetPeers(UserOrganizationModel caller, long forId)
 		{
@@ -208,6 +210,25 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
+		
+		//[Obsolete("Fix for AC")]
+		//public static List<UserOrganizationModel> GetPeers(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, Reviewer reviewer) {
+		//	throw new NotImplementedException();
+		//}
+		[Obsolete("Fix for AC")]
+		public static List<UserOrganizationModel> GetPeers(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, Reviewee reviewee) {
+			throw new NotImplementedException();
+		}
+		[Obsolete("Fix for AC")]
+		public static List<UserOrganizationModel> GetManagers(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, Reviewee reviewee) {
+			throw new NotImplementedException();
+		}
+		[Obsolete("Fix for AC")]
+		public static List<UserOrganizationModel> GetDirectSubordinates(AbstractQuery s, PermissionsUtility perms, Reviewee reviewee) {
+			throw new NotImplementedException();
+		}
+
+
 		public static List<UserOrganizationModel> GetPeers(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, long forId)
 		{
 			perms.ViewUserOrganization(forId, false);
@@ -222,6 +243,7 @@ namespace RadialReview.Accessors
 			}
 			return new List<UserOrganizationModel>();
 		}
+
 
 		public List<UserOrganizationModel> GetManagers(UserOrganizationModel caller, long forUserId, params PermissionType[] alsoCheck)
 		{
@@ -683,7 +705,7 @@ namespace RadialReview.Accessors
 			//DeepSubordianteAccessor.Add(s, manager, user, manager.Organization.Id, now, ignoreCircular);
 			user.ManagedBy.Add(new ManagerDuration(managerId, userId, caller.Id)
 			{
-				Start = now,
+				CreateTime = now,
 				Manager = manager,
 				Subordinate = user
 			});

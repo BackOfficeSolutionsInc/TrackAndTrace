@@ -19,8 +19,8 @@
 }
 
 @{
-	var direct = Model.Review.Reviews.Where(x => x.ForUser.GetDirectlyManaging()).ToList();
-	var indirect = Model.Review.Reviews.Where(x => true || !x.ForUser.GetDirectlyManaging()).ToList();
+	var direct = Model.Review.Reviews.Where(x => x.ReviewerUser.GetDirectlyManaging()).ToList();
+	var indirect = Model.Review.Reviews.Where(x => true || !x.ReviewerUser.GetDirectlyManaging()).ToList();
 
 
 	var panels = new List<Tuple<int, String, List<RadialReview.Models.ReviewModel>>>();
@@ -91,13 +91,13 @@
 							</tr>
 						</thead>
 						<tbody>
-							@foreach (var review in panel.Item3.GroupBy(x => x.ForUserId).Select(x => x.FirstOrDefault()).OrderByDescending(x => x.ForUser.GetDirectlyManaging()).ThenBy(x => x.ForUser.GetNameAndTitle())) {
-								<tr class="@(review.ForUser.GetDirectlyManaging() ? "managing" : "not-managing grayRow")">
+							@foreach (var review in panel.Item3.GroupBy(x => x.ReviewerUserId).Select(x => x.FirstOrDefault()).OrderByDescending(x => x.ReviewerUser.GetDirectlyManaging()).ThenBy(x => x.ReviewerUser.GetNameAndTitle())) {
+								<tr class="@(review.ReviewerUser.GetDirectlyManaging() ? "managing" : "not-managing grayRow")">
 									<td class="alignRight">
-										<span class="hidden">@(review.ForUser.GetDirectlyManaging() ? 1 : 2)</span>
+										<span class="hidden">@(review.ReviewerUser.GetDirectlyManaging() ? 1 : 2)</span>
 										<a style="border-bottom: 1px dotted" class="visible-xs" href="/Prereview/Update/@review.Id">Edit</a>
 									</td>
-									<td class="table-hover-underline"><a target="_blank" href="@Url.Action("Details", "Review", new{id = review.Id})">@review.ForUser.GetNameAndTitle()</a></td>
+									<td class="table-hover-underline"><a target="_blank" href="@Url.Action("Details", "Review", new{id = review.Id})">@review.ReviewerUser.GetNameAndTitle()</a></td>
 									<td class="alignCenter hidden-xs">
 										<a style="border-bottom: 1px dotted" href="/Prereview/Update/@review.Id">Edit</a>
 									</td>
@@ -151,8 +151,8 @@
 								</tr>
 							</thead>
 							<tbody>
-								@foreach (var review in panel.Item3.GroupBy(x => x.ForUserId).Select(x => x.FirstOrDefault()).OrderByDescending(x => {
-									return Model.SimpleAnswersLookup.GetNumberReviewed_ByUser(x.ForUserId).GetValue(0);
+								@foreach (var review in panel.Item3.GroupBy(x => x.ReviewerUserId).Select(x => x.FirstOrDefault()).OrderByDescending(x => {
+									return Model.SimpleAnswersLookup.GetNumberReviewed_ByUser(x.ReviewerUserId).GetValue(0);
 
 									//double complete = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete));
 									//double total = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count());
@@ -161,11 +161,11 @@
 									//return x.GetCompletion().GetPercentage();
 								})) {
 									@*onclick="$(this).find('.userCheck').prop('checked', !$(this).find('.userCheck').prop('checked'))"*@
-									<tr class="checkRow @(review.ForUser.GetDirectlyManaging() ? "managing" : "not-managing grayRow")">
-										<td><span class="hidden">@(review.ForUser.GetDirectlyManaging() ? 1 : 2)</span></td>
+									<tr class="checkRow @(review.ReviewerUser.GetDirectlyManaging() ? "managing" : "not-managing grayRow")">
+										<td><span class="hidden">@(review.ReviewerUser.GetDirectlyManaging() ? 1 : 2)</span></td>
 										<td style="padding:0px;"><label style="padding:7px;cursor:pointer;" for="cb_review_print_@review.Id"><input type="checkbox" class="reviewCheck @(review.ClientReview.Visible?"shared":"notshared")" id="cb_review_print_@review.Id" name="user_print_@review.Id" data-id="@review.Id" /></label></td>
-										<td class="table-hover-underline nowrap "><a target="_blank" href="@Url.Action("Details", "Review", new{id = review.Id})">@review.ForUser.GetName()</a></td>
-										<td class="hidden-xs hidden-sm ellipsis position-column">@review.ForUser.GetTitles()</td>
+										<td class="table-hover-underline nowrap "><a target="_blank" href="@Url.Action("Details", "Review", new{id = review.Id})">@review.ReviewerUser.GetName()</a></td>
+										<td class="hidden-xs hidden-sm ellipsis position-column">@review.ReviewerUser.GetTitles()</td>
 										<td class="alignCenter" style="width: 30px;">
 											<a onclick="printReport(@review.Id)" href="#Reports"><span class="glyphicon glyphicon-print" style="color:#aaa"></span></a>
 										</td>
@@ -216,26 +216,26 @@
 								</tr>
 							</thead>
 							<tbody>
-								@foreach (var review in panel.Item3.GroupBy(x => x.ForUserId).Select(x => x.FirstOrDefault()).OrderByDescending(x => {
+								@foreach (var review in panel.Item3.GroupBy(x => x.ReviewerUserId).Select(x => x.FirstOrDefault()).OrderByDescending(x => {
 									//double complete = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count(y => y.Complete));
 									//double total = Model.Review.Reviews.Sum(n => n.Answers.Where(z => z.ByUserId == x.ForUserId).Distinct(y => y.AboutUserId).Count());
 									//return complete / total;
-									return Model.SimpleAnswersLookup.GetNumberReviewed_ByUser(x.ForUserId).GetValue(0);
+									return Model.SimpleAnswersLookup.GetNumberReviewed_ByUser(x.ReviewerUserId).GetValue(0);
 
 
 									/*return x.GetCompletion().GetPercentage();*/
 								})) {
 									@*onclick="$(this).find('.userCheck').prop('checked', !$(this).find('.userCheck').prop('checked'))"*@
-								var reviewees = Model.SimpleAnswersLookup.GetNumberReviewees_AboutUser(review.ForUserId);
-								var reviewers = Model.SimpleAnswersLookup.GetNumberReviewed_ByUser(review.ForUserId);
+								var reviewees = Model.SimpleAnswersLookup.GetNumberReviewees_AboutUser(review.ReviewerUserId);
+								var reviewers = Model.SimpleAnswersLookup.GetNumberReviewed_ByUser(review.ReviewerUserId);
 
 
 
-								<tr class="checkRow @(review.ForUser.GetDirectlyManaging() ? "managing" : "not-managing grayRow")">
-									<td><span class="hidden">@(review.ForUser.GetDirectlyManaging() ? 1 : 2)</span></td>
-									<td style="padding:0px;" @*onclick="$(this).find('*> input').prop('checked', function (i, v) { debugger; return !v; })"*@><label style="padding:7px;cursor:pointer;" for="cb_user_@review.ForUserId"><input type="checkbox" class="userCheck @(reviewers.GetCompletion().GetPercentage() < 1 ? "incomplete" : "") @(reviewers.GetCompletion().GetPercentage() <= 0 ? "unstarted" : "")" id="cb_user_@review.ForUserId" name="user_@review.ForUserId" data-id="@review.ForUserId" /></label></td>
-									<td class="table-hover-underline nowrap "><a target="_blank" href="@Url.Action("Details", "Review", new{id = review.Id})">@review.ForUser.GetName()</a></td>
-									<td class="hidden-xs hidden-sm ellipsis reminder-position-column position-column">@review.ForUser.GetTitles()</td>
+								<tr class="checkRow @(review.ReviewerUser.GetDirectlyManaging() ? "managing" : "not-managing grayRow")">
+									<td><span class="hidden">@(review.ReviewerUser.GetDirectlyManaging() ? 1 : 2)</span></td>
+									<td style="padding:0px;" @*onclick="$(this).find('*> input').prop('checked', function (i, v) { debugger; return !v; })"*@><label style="padding:7px;cursor:pointer;" for="cb_user_@review.ReviewerUserId"><input type="checkbox" class="userCheck @(reviewers.GetCompletion().GetPercentage() < 1 ? "incomplete" : "") @(reviewers.GetCompletion().GetPercentage() <= 0 ? "unstarted" : "")" id="cb_user_@review.ReviewerUserId" name="user_@review.ReviewerUserId" data-id="@review.ReviewerUserId" /></label></td>
+									<td class="table-hover-underline nowrap "><a target="_blank" href="@Url.Action("Details", "Review", new{id = review.Id})">@(review.ReviewerUser.GetName())</a></td>
+									<td class="hidden-xs hidden-sm ellipsis reminder-position-column position-column">@review.ReviewerUser.GetTitles()</td>
 									<td class="alignCenter" data-sort="@reviewees.GetValue(0.9999m)">
 										<span class="hidden">@((int)(reviewees.GetValue(0) * 100))</span>
 										@*  @Model.Review.Reviews.Sum(x => x.Answers.Where(z => z.AboutUserId == review.ForUserId).Distinct(y => y.ByUserId).Count(y => y.Complete)) /

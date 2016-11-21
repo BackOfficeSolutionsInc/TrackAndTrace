@@ -29,18 +29,18 @@ namespace RadialReview.Controllers
 			foreach (var r in reviewContainer.Reviews)
 			{
 				var add = false;
-				r.ForUser.PopulateDirectlyManaging(user, directSubs);
+				r.ReviewerUser.PopulateDirectlyManaging(user, directSubs);
 
 				if ((managesTeam) ||
-					(user.ManagingOrganization && user.Organization.Id == reviewContainer.ForOrganizationId) ||
-					(r.ForUser.Id == GetUser().Id && reviewContainer.CreatedById == GetUser().Id))
+					(user.ManagingOrganization && user.Organization.Id == reviewContainer.OrganizationId) ||
+					(r.ReviewerUser.Id == GetUser().Id && reviewContainer.CreatedById == GetUser().Id))
 				{
-					r.ForUser.SetPersonallyManaging(true);
+					r.ReviewerUser.SetPersonallyManaging(true);
 					add = true;
 				}
 				else
 				{
-					add = r.ForUser.PopulatePersonallyManaging(user, user.AllSubordinates);
+					add = r.ReviewerUser.PopulatePersonallyManaging(user, user.AllSubordinates);
 				}
 				if (add)
 				{
@@ -54,7 +54,7 @@ namespace RadialReview.Controllers
 
 			
 
-			var viewSurvey = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagerAtOrganization(GetUser().Id, reviewContainer.ForOrganizationId)
+			var viewSurvey = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagerAtOrganization(GetUser().Id, reviewContainer.OrganizationId)
 				.Or(
 					y => y.AdminReviewContainer(reviewContainerId),
 					y => y.ManagingTeam(reviewContainer.ForTeamId)
@@ -92,7 +92,7 @@ namespace RadialReview.Controllers
 			using (var s = HibernateSession.GetCurrentSession())
 			{
 				using (var tx = s.BeginTransaction()){
-					var found = s.QueryOver<ReviewModel>().Where(x => x.ForReviewsId == id && x.ForUserId == userId).List().FirstOrDefault();
+					var found = s.QueryOver<ReviewModel>().Where(x => x.ForReviewContainerId == id && x.ReviewerUserId == userId).List().FirstOrDefault();
 					if (found==null)
 						throw new PermissionsException("Report does not exist");
 					reviewId = found.Id;
@@ -129,19 +129,19 @@ namespace RadialReview.Controllers
 			var acceptedReviews = new List<ReviewModel>();
 			foreach (var r in reviewContainer.Reviews) {
 				var add = false;
-				r.ForUser.PopulateDirectlyManaging(user, directSubs);
-				if (r.ForUser.Id == GetUser().Id && reviewContainer.CreatedById == GetUser().Id) {
-					r.ForUser.SetPersonallyManaging(true);
+				r.ReviewerUser.PopulateDirectlyManaging(user, directSubs);
+				if (r.ReviewerUser.Id == GetUser().Id && reviewContainer.CreatedById == GetUser().Id) {
+					r.ReviewerUser.SetPersonallyManaging(true);
 					add = true;
 				} else {
-					add = r.ForUser.PopulatePersonallyManaging(user, user.AllSubordinates);
+					add = r.ReviewerUser.PopulatePersonallyManaging(user, user.AllSubordinates);
 				}
 				if (add) {
 					acceptedReviews.Add(r);
 				}
 			}
 			reviewContainer.Reviews = acceptedReviews;
-			reviewContainer.Reviews = reviewContainer.Reviews.GroupBy(x => x.ForUserId).Select(x => x.First()).ToList();
+			reviewContainer.Reviews = reviewContainer.Reviews.GroupBy(x => x.ReviewerUserId).Select(x => x.First()).ToList();
 
 			var model = new ReviewsViewModel(reviewContainer);
 			return View(model);

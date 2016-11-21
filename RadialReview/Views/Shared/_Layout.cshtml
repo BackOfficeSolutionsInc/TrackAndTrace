@@ -67,7 +67,7 @@
 @if (ViewBag.HasBaseController == null) {
 	throw new Exception("You must extend from the base controller.");
 }
-<body class="@(ViewBag.FullWidth ?? false ? "body-full-width" : "body-normal-width")  @(ViewBag.LayoutClass??"")  @(limitFiveState?"fivestate-limit-true":"")">
+<body id="body" class="@(ViewBag.FullWidth ?? false ? "body-full-width" : "body-normal-width")  @(ViewBag.LayoutClass??"")  @(limitFiveState?"fivestate-limit-true":"")">
 	<script>
 		window.UserId = @(ViewBag.UserId??-1);
 		window.OrgId = @(ViewBag.OrganizationId ?? -1);
@@ -123,7 +123,7 @@
 								@if (((int?)ViewBag.Organizations ?? 0) > 0) {
 									if (ViewBag.ShowL10) {
 										<span id="header-tab-new-headline" class="navbar-icon-button icon fontastic-icon-bookmark headlineModal" title="New People Headline"></span>
-										<span id="header-tab-new-issue" class="navbar-icon-button glyphicon glyphicon-pushpin issuesModal" data-method="CreateIssueRecurrence" title="New Issue"></span>
+										<span id="header-tab-new-issue" class="navbar-icon-button glyphicon1 glyphicon-pushpi1n icon fontastic-icon-pinboard issuesModal" data-method="CreateIssueRecurrence" title="New Issue"></span>
 									}
 									<span id="header-tab-new-todo" class="navbar-icon-button glyphicon glyphicon-check todoModal" data-method="CreateTodoRecurrence" title="New To-do"></span>
 								}
@@ -144,16 +144,6 @@
 
 
 									if (((int?)ViewBag.Organizations ?? 0) > 0) {
-										@*<li>
-												<a href="@Url.Action("Index", "Tasks")" class="@(ViewBag.TaskCount == 0?"":"flashing")">
-													To-Dos
-													@if (ViewBag.TaskCount > 0)
-													{
-														@:[@ViewBag.TaskCount]
-													}
-													<span id="TasksNotification" style="display:none;" class="glyphicon glyphicon glyphicon-flag"></span>
-												</a>
-											</li>*@
 										<li>
 											<a href="@Url.Action("Index", "Home")" id="header-tab-workspace">
 												Workspace
@@ -185,19 +175,8 @@
 												</a>
 											</li>
 										}
-
-										@*<li>
-												<a href="@Url.Action("Index", "Reports")">
-													Reports
-													<span id="ReviewsNotification" style="display:none;" class="glyphicon glyphicon-exclamation-sign"></span>
-												</a>
-											</li>*@
 									}
 								} else {
-									/*if (!(ViewBag.IsLogin ?? false))
-								{
-									<li>@Html.ActionLink(RadialReview.Properties.DisplayNameStrings.about, "Index", "Home")</li>
-								}*/
 								}
 							</ul>
 							@if (!(ViewBag.IsLogin ?? false)) {
@@ -206,6 +185,20 @@
 						</div>
 					</div>
 				</div>
+				<script>
+					//Test for IOS
+					if ((/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream)) {
+						document.getElementById("body").className += " is-ios";
+						debugger;
+						var allowBack = document.referrer != "" && document.referrer.toLowerCase().lastIndexOf("/account/login") == -1;
+
+						var link = allowBack ?"javascript:history.back()":"#";
+						var disabled = allowBack ?"":"disabled";
+						var newLogo = "<span class='link'><a class='"+disabled+"' href='"+link+"'>Back</a></span>";
+						document.getElementById("logo").innerHTML =newLogo						
+					}
+				</script>
+
 			}
 			@RenderSection("top", false)
 			<div class="container body-content">

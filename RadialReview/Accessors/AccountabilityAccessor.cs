@@ -18,6 +18,7 @@ using RadialReview.Models.UserTemplate;
 using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Hooks;
+using RadialReview.Utilities.Query;
 using RadialReview.Utilities.RealTime;
 using RadialReview.Utilities.Synchronize;
 using System;
@@ -165,7 +166,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-			
+
 		#endregion
 
 		protected static AngularAccountabilityNode Dive(UserOrganizationModel caller, long nodeId, List<AccountabilityNode> nodes,
@@ -217,68 +218,72 @@ namespace RadialReview.Accessors {
 			aan.SetChildren(children.Select(x => Dive(caller, x.Id, nodes, groups, rolesLU, links, positions, teams, parentsCopy, allManagingUserIds, selectedNode, editableBelow)).ToList());
 			return aan;
 		}
-		public static AngularAccountabilityChart GetTree(UserOrganizationModel caller, long chartId, long? centerUserId = null, long? centerNodeId = null) {
+		public static AngularAccountabilityChart GetTree(UserOrganizationModel caller, long chartId, long? centerUserId = null, long? centerNodeId = null,DateRange range=null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					perms.ViewHierarchy(chartId);
-
-					var chart = s.Get<AccountabilityChart>(chartId);
-
-					var nodes = s.QueryOver<AccountabilityNode>().Where(x => x.AccountabilityChartId == chartId && x.DeleteTime == null).Future();
-					var groups = s.QueryOver<AccountabilityRolesGroup>().Where(x => x.AccountabilityChartId == chartId && x.DeleteTime == null).Future();
-					var userTemplates = s.QueryOver<UserTemplate>().Where(x => x.OrganizationId == chart.OrganizationId && x.DeleteTime == null).Future();
-
-					var roles = s.QueryOver<RoleModel>().Where(x => x.OrganizationId == chart.OrganizationId && x.DeleteTime == null).Future();
-					var roleLinks = s.QueryOver<RoleLink>().Where(x => x.OrganizationId == chart.OrganizationId && x.DeleteTime == null).Future();
-
-					var teams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == chart.OrganizationId && x.DeleteTime == null).Select(x => x.Id, x => x.Name).Future<object[]>();
-					var positions = s.QueryOver<OrganizationPositionModel>().Where(x => x.Organization.Id == chart.OrganizationId && x.DeleteTime == null).Select(x => x.Id, x => x.CustomName).Future<object[]>();
-
-					var teamDurs = s.QueryOver<TeamDurationModel>().Where(x => x.OrganizationId == chart.OrganizationId && x.DeleteTime == null).Select(x => x.TeamId, x => x.UserId).Future<object[]>();
-					var posDurs = s.QueryOver<PositionDurationModel>().Where(x => x.OrganizationId == chart.OrganizationId && x.DeleteTime == null).Select(x => x.Position.Id, x => x.UserId).Future<object[]>();
-
-
-					var usersF = s.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime == null && x.Organization.Id == chart.OrganizationId && !x.IsClient).List().ToList();
-
-					var teamName = teams.ToDictionary(x => (long)x[0], x => (string)x[1]);
-					var posName = positions.ToDictionary(x => (long)x[0], x => (string)x[1]);
-
-					var pd = posDurs.Select(x => new PosDur { PosId = (long)x[0], PosName = posName.GetOrDefault((long)x[0], null), UserId = (long)x[1] }).ToList();
-					var td = teamDurs.Select(x => new TeamDur { TeamId = (long)x[0], TeamName = posName.GetOrDefault((long)x[0], null), UserId = (long)x[1] }).ToList();
-
-					var centerNode = chart.RootId;
-					if (centerNodeId != null) {
-						var cn = nodes.FirstOrDefault(x => x.Id == centerNodeId);
-						if (cn != null)
-							centerNode = cn.Id;
-					} else if (centerUserId != null) {
-						var cn = nodes.FirstOrDefault(x => x.UserId == centerUserId);
-						if (cn != null)
-							centerNode = cn.Id;
-					}
-
-					var editAll = perms.IsPermitted(x => x.Or(y => y.ManagingOrganization(chart.OrganizationId), y => y.EditHierarchy(chart.Id)));
-
-					var allManaging = new HashSet<long>();
-
-					var root = Dive(caller, chart.RootId, nodes.ToList(), groups.ToList(), roles.ToDictionary(x => x.Id, x => x), roleLinks.ToList(), pd, td, new List<AngularAccountabilityNode>(), allManaging, centerNode, editableBelow: editAll);
-
-					var allUsers = usersF.ToList().Select(x =>
-						AngularUser.CreateUser(x, managing: editAll || allManaging.Contains(x.Id) || (caller.IsManager() && caller.Id == x.Id))
-					).ToList();
-
-					var c = new AngularAccountabilityChart(chartId) {
-						Root = root,
-						CenterNode = centerNode,
-						AllUsers = allUsers,
-					};
-
-					c.Root.Name = chart.Name;
-
-					return c;
+					return GetTree(s, perms, chartId, centerUserId, centerNodeId,range);
 				}
 			}
+		}
+
+		public static AngularAccountabilityChart GetTree(ISession s, PermissionsUtility perms, long chartId, long? centerUserId=null, long? centerNodeId=null, DateRange range = null) {
+			perms.ViewHierarchy(chartId);
+
+			var chart = s.Get<AccountabilityChart>(chartId);
+
+			var nodes = s.QueryOver<AccountabilityNode>().Where(x => x.AccountabilityChartId == chartId).Where(range.Filter<AccountabilityNode>()).Future();
+			var groups = s.QueryOver<AccountabilityRolesGroup>().Where(x => x.AccountabilityChartId == chartId).Where(range.Filter<AccountabilityRolesGroup>()).Future();
+			var userTemplates = s.QueryOver<UserTemplate>().Where(x => x.OrganizationId == chart.OrganizationId).Where(range.Filter<UserTemplate>()).Future();
+
+			var roles = s.QueryOver<RoleModel>().Where(x => x.OrganizationId == chart.OrganizationId).Where(range.Filter<RoleModel>()).Future();
+			var roleLinks = s.QueryOver<RoleLink>().Where(x => x.OrganizationId == chart.OrganizationId).Where(range.Filter<RoleLink>()).Future();
+
+			var teams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == chart.OrganizationId).Where(range.Filter<OrganizationTeamModel>()).Select(x => x.Id, x => x.Name).Future<object[]>();
+			var positions = s.QueryOver<OrganizationPositionModel>().Where(x => x.Organization.Id == chart.OrganizationId).Where(range.Filter<OrganizationPositionModel>()).Select(x => x.Id, x => x.CustomName).Future<object[]>();
+
+			var teamDurs = s.QueryOver<TeamDurationModel>().Where(x => x.OrganizationId == chart.OrganizationId).Where(range.Filter<TeamDurationModel>()).Select(x => x.TeamId, x => x.UserId).Future<object[]>();
+			var posDurs = s.QueryOver<PositionDurationModel>().Where(x => x.OrganizationId == chart.OrganizationId).Where(range.Filter<PositionDurationModel>()).Select(x => x.Position.Id, x => x.UserId).Future<object[]>();
+
+
+			var usersF = s.QueryOver<UserOrganizationModel>().Where(x =>x.Organization.Id == chart.OrganizationId && !x.IsClient).Where(range.Filter<UserOrganizationModel>()).List().ToList();
+
+			var teamName = teams.ToDictionary(x => (long)x[0], x => (string)x[1]);
+			var posName = positions.ToDictionary(x => (long)x[0], x => (string)x[1]);
+
+			var pd = posDurs.Select(x => new PosDur { PosId = (long)x[0], PosName = posName.GetOrDefault((long)x[0], null), UserId = (long)x[1] }).ToList();
+			var td = teamDurs.Select(x => new TeamDur { TeamId = (long)x[0], TeamName = posName.GetOrDefault((long)x[0], null), UserId = (long)x[1] }).ToList();
+
+			var centerNode = chart.RootId;
+			if (centerNodeId != null) {
+				var cn = nodes.FirstOrDefault(x => x.Id == centerNodeId);
+				if (cn != null)
+					centerNode = cn.Id;
+			} else if (centerUserId != null) {
+				var cn = nodes.FirstOrDefault(x => x.UserId == centerUserId);
+				if (cn != null)
+					centerNode = cn.Id;
+			}
+
+			var editAll = perms.IsPermitted(x => x.Or(y => y.ManagingOrganization(chart.OrganizationId), y => y.EditHierarchy(chart.Id)));
+
+			var allManaging = new HashSet<long>();
+
+			var root = Dive(perms.GetCaller(), chart.RootId, nodes.ToList(), groups.ToList(), roles.ToDictionary(x => x.Id, x => x), roleLinks.ToList(), pd, td, new List<AngularAccountabilityNode>(), allManaging, centerNode, editableBelow: editAll);
+
+			var allUsers = usersF.ToList().Select(x =>
+				AngularUser.CreateUser(x, managing: editAll || allManaging.Contains(x.Id) || (perms.GetCaller().IsManager() && perms.GetCaller().Id == x.Id))
+			).ToList();
+
+			var c = new AngularAccountabilityChart(chartId) {
+				Root = root,
+				CenterNode = centerNode,
+				AllUsers = allUsers,
+			};
+
+			c.Root.Name = chart.Name;
+
+			return c;
 		}
 
 		public static List<AccountabilityNode> GetOrganizationManagerNodes(UserOrganizationModel caller, long orgId) {
@@ -435,7 +440,7 @@ namespace RadialReview.Accessors {
 									SubordinateId = c.UserId.Value,
 									Subordinate = s.Load<UserOrganizationModel>(c.UserId.Value),
 									PromotedBy = perms.GetCaller().Id,
-									Start = now,
+									CreateTime = now,
 
 								};
 								s.Save(md);
@@ -453,7 +458,7 @@ namespace RadialReview.Accessors {
 							SubordinateId = userId.Value,
 							Subordinate = s.Load<UserOrganizationModel>(userId.Value),
 							PromotedBy = perms.GetCaller().Id,
-							Start = now
+							CreateTime = now
 						};
 						s.Save(md);
 						updateUsers.Add(n.ParentNode.UserId.Value);
@@ -465,7 +470,7 @@ namespace RadialReview.Accessors {
 						if (n.AccountabilityRolesGroup.PositionId != null) {
 							var pd = new PositionDurationModel() {
 								UserId = n.UserId.Value,
-								Start = now,
+								CreateTime = now,
 								Position = n.AccountabilityRolesGroup.Position,
 								PromotedBy = perms.GetCaller().Id,
 								OrganizationId = n.OrganizationId,
@@ -581,7 +586,7 @@ namespace RadialReview.Accessors {
 							perms.ViewOrganization(role.OrganizationId).EditRole(roleId);
 
 
-						
+
 							tx.Commit();
 							s.Flush();
 						} catch (Exception e) {
@@ -753,7 +758,7 @@ namespace RadialReview.Accessors {
 								SubordinateId = node.UserId.Value,
 								Subordinate = s.Load<UserOrganizationModel>(node.UserId.Value),
 								PromotedBy = perms.GetCaller().Id,
-								Start = now
+								CreateTime = now
 							};
 							s.Save(md);
 
@@ -1019,7 +1024,7 @@ namespace RadialReview.Accessors {
 						if (node.UserId != null) {
 							var pd = new PositionDurationModel() {
 								UserId = node.UserId.Value,
-								Start = now,
+								CreateTime = now,
 								Position = arg.Position,
 								PromotedBy = perms.GetCaller().Id,
 								OrganizationId = node.OrganizationId

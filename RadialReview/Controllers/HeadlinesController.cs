@@ -71,6 +71,10 @@ namespace RadialReview.Controllers
 					.ToList() 
 				: new List<Models.L10.VM.L10VM>();
 
+			if (_listRecur && model.PossibleRecurrences.Any()) {
+				model.RecurrenceIds = new[] { model.PossibleRecurrences.First().Recurrence.Id };
+			}
+
 			if (recurrenceId != null && _listOwners && !_listRecur) {
 				model.PossibleOwners = L10Accessor.GetAttendees(GetUser(), recurrenceId.Value).ToSelectList(x => x.GetName(), x => x.Id, GetUser().Id);
 			} else if (_listOwners) {
@@ -78,6 +82,7 @@ namespace RadialReview.Controllers
 			}
 
 			model.OwnerId = owner ?? GetUser().Id;
+
 
 			return PartialView(model);
 		}

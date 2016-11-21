@@ -57,7 +57,7 @@ namespace RadialReview.Controllers
 			var ids = userIds.Split(',').Select(long.Parse);
 
 			var allReviews = _ReviewAccessor.GetReviewsForReviewContainer(GetUser(), reviewId, true);
-			var uniqueUsers = allReviews.Where(x => ids.Contains(x.ForUserId));
+			var uniqueUsers = allReviews.Where(x => ids.Contains(x.ReviewerUserId));
 			return PartialView(new ReminderVM{
 				UserIds = string.Join(",",uniqueUsers.Select(x => x.Id)),
 				ReviewId = reviewId,
@@ -76,24 +76,24 @@ namespace RadialReview.Controllers
 		    var ids = model.UserIds.Split(',').Select(long.Parse);
 
 			var uniqueReviews = allReviews
-				.Where(x => ids.Contains(x.ForUserId))
+				.Where(x => ids.Contains(x.ReviewerUserId))
 				.OrderByDescending(x=>x.DueDate);
 
-		    var url = Config.BaseUrl(review.ForOrganization) + "Tasks";
+		    var url = Config.BaseUrl(review.Organization) + "Tasks";
 
             var format = GetUser().NotNull(x => x.Organization.NotNull(y => y.Settings.NotNull(z => z.GetDateFormat()))) ?? "MM-dd-yyyy";
 		    //var users = _UserAccessor.GetUsersByIds(model.UserIds);
 			var organization = GetUser().Organization.GetName();
 			
 			var result = await Emailer.SendEmails(uniqueReviews.Select(x =>
-				Mail.To(EmailTypes.ReviewReminder,x.ForUser.GetEmail())
+				Mail.To(EmailTypes.ReviewReminder,x.ReviewerUser.GetEmail())
 				.Subject(EmailStrings.ReminderReview_Subject, organization)
 				.Body(EmailStrings.RemindReview_Body,
-					x.ForUser.GetFirstName(),
+					x.ReviewerUser.GetFirstName(),
 					review.DueDate.AddDays(-1).ToString(format),
 					url,
 					url,
-					Config.ProductName(review.ForOrganization))
+					Config.ProductName(review.Organization))
 			   ));
 
 			return Json(ResultObject.Create(result), JsonRequestBehavior.AllowGet);

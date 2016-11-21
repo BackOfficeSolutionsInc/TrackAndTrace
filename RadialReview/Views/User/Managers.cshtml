@@ -49,11 +49,11 @@
 				<th style="width: 10px;"></th>
 			}
 		</tr>
-		@foreach (var p in Model.ManagedBy.OrderBy(x => x.DeleteTime).ThenByDescending(x => x.Start).Where(x => x.DeleteTime == null))
+		@foreach (var p in Model.ManagedBy.OrderBy(x => x.DeleteTime).ThenByDescending(x => x.CreateTime).Where(x => x.DeleteTime == null))
 		{
 			<tr id="row_@p.Id" class="@(p.DeleteTime != null ? "danger" : "")">
 				<td class="position"><a href="/Manage/UserDetails/@p.Manager.Id">@p.Manager.GetNameAndTitle()</a></td>
-				<td class="alignCenter">@p.Start.ToShortDateString()</td>
+				<td class="alignCenter">@p.CreateTime.ToShortDateString()</td>
 				<td class="alignCenter endTime">@(p.DeleteTime.HasValue ? p.DeleteTime.Value.ToShortDateString() : "Present")</td>
 				@if (Model.GetPersonallyManaging())
 				{

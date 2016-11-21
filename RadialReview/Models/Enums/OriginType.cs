@@ -16,12 +16,17 @@ namespace RadialReview.Models.Enums
         User,
         [Display(Name = "group", ResourceType = typeof(DisplayNameStrings))]
         Group,
+		[Display(Name = "position", ResourceType = typeof(DisplayNameStrings))]
+		Position,
+		[Display(Name = "team", ResourceType = typeof(DisplayNameStrings))]
+		Team,
         [Display(Name = "organization", ResourceType = typeof(DisplayNameStrings))]
         Organization,
         [Display(Name = "industry", ResourceType = typeof(DisplayNameStrings))]
         Industry,
-        [Display(Name = "application", ResourceType = typeof(DisplayNameStrings))]
-        Application,
+		[Display(Name = "application", ResourceType = typeof(DisplayNameStrings))]
+		Application,
+		
 
-    }
+	}
 }

@@ -95,15 +95,15 @@
 			{
 				if (f.IncludeGetItReason)
 				{
-					feedbacks.Add(Tuple.Create(f.ByUser.GetName(), "Gets It", f.Askable.GetQuestion(), f.GetIt, f.GetItReason));
+					feedbacks.Add(Tuple.Create(f.ReviewerUser.GetName(), "Gets It", f.Askable.GetQuestion(), f.GetIt, f.GetItReason));
 				}
 				if (f.IncludeWantItReason)
 				{
-					feedbacks.Add(Tuple.Create(f.ByUser.GetName(), "Wants It", f.Askable.GetQuestion(), f.WantIt, f.WantItReason));
+					feedbacks.Add(Tuple.Create(f.ReviewerUser.GetName(), "Wants It", f.Askable.GetQuestion(), f.WantIt, f.WantItReason));
 				}
 				if (f.IncludeHasCapacityReason)
 				{
-					feedbacks.Add(Tuple.Create(f.ByUser.GetName(), "Capacity To Do It", f.Askable.GetQuestion(), f.HasCapacity, f.HasCapacityReason));
+					feedbacks.Add(Tuple.Create(f.ReviewerUser.GetName(), "Capacity To Do It", f.Askable.GetQuestion(), f.HasCapacity, f.HasCapacityReason));
 				}
 			}
 			if (feedbacks.Any())

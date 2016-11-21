@@ -193,7 +193,7 @@ namespace RadialReview.Utilities {
                     //Special Teams/Positions/Etc (only call if necessary)
                     if (!currentTrue && permItems.Any(x => x.HasFlags(flag) && x.AccessorType == PermItem.AccessType.RGM && x.AccessorId != caller.Id)) {
                         //Expensive, only call once.
-                        groups = groups ?? ResponsibilitiesAccessor.GetResponsibilityGroupsForUser(session.ToQueryProvider(true), this, caller, caller.Id);
+                        groups = groups ?? ResponsibilitiesAccessor.GetResponsibilityGroupsForUser(session.ToQueryProvider(true), this, caller.Id);
                         currentTrue = currentTrue || permItems.Any(pItem => pItem.HasFlags(flag) && pItem.AccessorType == PermItem.AccessType.RGM && groups.Any(group => pItem.AccessorId == group.Id));
                     }
                     if (!currentTrue && and)
