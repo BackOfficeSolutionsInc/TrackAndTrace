@@ -52,7 +52,9 @@ namespace RadialReview.Models.Accountability {
 
 		public virtual string _Name { get; set; }
 		public virtual bool? _Editable { get; set; }
-		public AccountabilityNode()
+        public virtual int Ordering { get; set; }
+
+        public AccountabilityNode()
         {
             CreateTime = DateTime.UtcNow;
         }
@@ -63,6 +65,7 @@ namespace RadialReview.Models.Accountability {
                 Id(x => x.Id);
                 Map(x => x.CreateTime);
                 Map(x => x.DeleteTime);
+                Map(x => x.Ordering);
                 Map(x => x.OrganizationId);
                 Map(x => x.AccountabilityChartId);
                 Map(x => x.UserId).Column("UserId");

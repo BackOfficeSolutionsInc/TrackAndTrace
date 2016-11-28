@@ -87,10 +87,9 @@
 		angular.module('ACApp')
             .value('orgId',@Model.OrganizationId)
             .value('chartId',@Model.ChartId)
-            .value('dataUrl', "/Accountability/Data/{0}?@Model.FocusNode.NotNull(x=>"node="+x)")
+            .value('dataUrl', "/Accountability/Data/{0}?expandAll=@Model.ExpandAll&@Model.FocusNode.NotNull(x=>"node="+x)")
 
 	
-
 
 	</script>
 }

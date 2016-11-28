@@ -816,6 +816,7 @@
     <Compile Include="Utilities\NHibernate\SingleRequestSession.cs" />
     <Compile Include="Utilities\NumberUtility.cs" />
     <Compile Include="Utilities\PaymentSpringUtil.cs" />
+    <Compile Include="Utilities\Pdf\PdfWordWrapper.cs" />
     <Compile Include="Utilities\PermissionItemHelper.cs" />
     <Compile Include="Utilities\Productivity\ChromeExtensionComms.cs" />
     <Compile Include="Utilities\RandomUtil.cs" />
@@ -2354,6 +2355,7 @@
     <Folder Include="Models\Rocks\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
     <Folder Include="Utilities\Migradoc\XYScatter\" />
+    <Folder Include="Utilities\NewFolder1\" />
     <Folder Include="Views\AngularAccountability\" />
     <Folder Include="Views\Console\" />
     <Folder Include="Views\Data\" />

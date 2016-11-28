@@ -43,6 +43,8 @@ namespace RadialReview.Models.Angular.Accountability {
 				new AngularAccountabilityNode(y,editable:y._Editable??Editable)
 			).ToList());
 
+            order = node.Ordering;
+
 			__children = childrens;
 			collapsed = collapse;
 			Name = node._Name;

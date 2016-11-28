@@ -28,6 +28,7 @@ namespace RadialReview.Controllers {
             public bool rocks { get; set; }
             public bool vto { get; set; }
             public bool l10 { get; set; }
+            public bool acc { get; set; }
         }
 
         [Access(AccessLevel.UserOrganization)]
@@ -40,7 +41,8 @@ namespace RadialReview.Controllers {
                 model["scorecard"].ToBooleanJS(),
                 model["rocks"].ToBooleanJS(),
                 model["vto"].ToBooleanJS(),
-                model["l10"].ToBooleanJS()
+                model["l10"].ToBooleanJS(),
+                model["acc"].ToBooleanJS()
             );
         }
 
@@ -57,14 +59,14 @@ namespace RadialReview.Controllers {
         }
         [Access(AccessLevel.UserOrganization)]
         [HttpGet]
-        public ActionResult PrintPages(long id, bool issues = false, bool todos = false, bool scorecard = false, bool rocks = false, bool vto = false, bool l10 = false, bool print = false)
+        public ActionResult PrintPages(long id, bool issues = false, bool todos = false, bool scorecard = false, bool rocks = false, bool vto = false, bool l10 = false, bool acc = false, bool print = false)
         {
-            return Printout(id, issues, todos, scorecard, rocks, vto, l10, print);
+            return Printout(id, issues, todos, scorecard, rocks, vto, l10, acc, print);
         }
 
         [Access(AccessLevel.UserOrganization)]
         [HttpGet]
-        public ActionResult Printout(long id, bool issues = false, bool todos = false, bool scorecard = true, bool rocks = true, bool vto = true, bool l10 = true, bool print = false)
+        public ActionResult Printout(long id, bool issues = false, bool todos = false, bool scorecard = true, bool rocks = true, bool vto = true, bool l10 = true, bool acc = true, bool print = false)
         {
             var recur = L10Accessor.GetAngularRecurrence(GetUser(), id);
             var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout");
@@ -78,8 +80,9 @@ namespace RadialReview.Controllers {
                 
             if (todos){ PdfAccessor.AddTodos(GetUser(), doc, recur); anyPages = true;}
             if (issues){ PdfAccessor.AddIssues(GetUser(), doc, recur, todos); anyPages = true;}
-            if (scorecard){ PdfAccessor.AddScorecard(doc, recur); anyPages = true;}
-            if (rocks){ PdfAccessor.AddRocks(GetUser(), doc, recur); anyPages = true;}
+            if (scorecard){ PdfAccessor.AddScorecard(doc, recur); anyPages = true; }
+            if (rocks) { PdfAccessor.AddRocks(GetUser(), doc, recur); anyPages = true; }
+            if (acc) { PdfAccessor.AddAccountabilityChart(GetUser(), doc, GetUser().Organization.AccountabilityChartId); anyPages = true; }
             var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
             if (!anyPages)
                 return Content("No pages to print.");

@@ -39,7 +39,7 @@ namespace TractionTools.UITests.MeetingArchive {
                 d.EnsureDifferent(x => x.Find(".print-button").Click());
                 d.EnsureDifferent(x => x.FindElementByText("Quarterly Printout", 1).Click());
                 
-                d.WaitUntil(x=>x.Finds("#modalBody .checkbox").Count==4);
+                d.WaitUntil(x=>x.Finds("#modalBody .checkbox").Count==5);
                 d.EnsureDifferent(x => x.Find("#modalCancel").Click());
 
                 d.Find(".button-bar", 10);

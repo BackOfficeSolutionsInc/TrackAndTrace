@@ -25,11 +25,12 @@ namespace RadialReview.Controllers
             public long ChartId;
             
             public long? FocusNode { get; internal set; }
+            public bool ExpandAll { get; set; }
         }
 
 
         [Access(AccessLevel.UserOrganization)]
-		public ActionResult Chart(long? id=null, long? user = null, long? node = null,bool noheading=false)
+        public ActionResult Chart(long? id = null, long? user = null, long? node = null, bool noheading = false, bool expandAll = false)
         {
 
 			ViewBag.NoTitleBar = noheading;
@@ -47,7 +48,8 @@ namespace RadialReview.Controllers
 		        UserId = u.Id,
 				OrganizationId = u.Organization.Id,
                 ChartId = idr,
-                FocusNode = node
+                FocusNode = node,
+                ExpandAll = expandAll,
             });
 	    }
     }

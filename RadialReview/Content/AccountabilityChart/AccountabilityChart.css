@@ -101,6 +101,7 @@ body {
 }
 .node.root-node .acc-rect {
   stroke-width: 20px;
+  fill: #EF7622;
 }
 .node.root-node .node-button.remove {
   display: none;

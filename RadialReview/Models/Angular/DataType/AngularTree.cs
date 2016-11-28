@@ -16,9 +16,10 @@ namespace RadialReview.Models.Angular {
 
         public AngularTreeNode(long id ) : base(id){}
 
-		public bool collapsed { get; set; }
-		
-		public bool? Editable { get; set; }
+        public bool collapsed { get; set; }
+        public int? order { get; set; }
+
+        public bool? Editable { get; set; }
 		public bool? Me { get; set; }
 
 		protected IEnumerable<T> __children { get; set; }
