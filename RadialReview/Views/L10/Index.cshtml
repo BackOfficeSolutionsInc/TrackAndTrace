@@ -23,25 +23,23 @@
             </div>
         }
         <div class="panel panel-primary" id="l10-meeting-list">
-            <div class="panel-heading">
-                <h3 class="panel-title">L10 Meetings</h3>
-            </div>
             @if (Model.Recurrences.Any()) {
-                <table class="table startHiddenGroup2 table-condensed table-hover table-condensed">
+                <table class="table startHiddenGroup2 table-condensed table-hover table-condensed tablesorter">
                     <thead>
                         <tr>
-                            <th style="width:30px;padding:0"></th>
-                            <th class="startHidden" style="padding:0;width:42%;">@*Meeting:*@</th>
+                            <th style="width:30px;padding:0" class=""></th>
+                            <th class="" style="padding:0;width:42%;">@*Meeting:*@</th>
                             @*<th style="width: 100px; text-align: center">@RadialReview.Properties.DisplayNameStrings.due</th><th style="width:150px;text-align:center">@RadialReview.Properties.DisplayNameStrings.completion</th>*@
-                            <th class="alignRight hidden-xs" style="padding:0"@*width:42%;*@>@*Attendees*@</th>
-							<th class="visible-xs"></th>
-                            <th style="width:1px;"@*width: 110px;min-width: 110px;max-width: 110px;padding:0"*@></th>
+                            <th class="alignRight hidden-xs" data-sorter="false" style="padding:0"@*width:42%;*@>@*Attendees*@</th>
+							<th class="visible-xs" data-sorter="false"></th>
+                            <th style="width:1px;"@*width: 110px;min-width: 110px;max-width: 110px;padding:0"*@ data-sorter="false"></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var meeting in Model.Recurrences.OrderByDescending(x => x.IsAttendee)) {
                             <tr class="startHidden2 clickable imageRow @(meeting.IsAttendee??false?"":"grayRow") l10-row">
                                 <td style="vertical-align:top" onclick="location.href='@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})';">
+                                    <span class="hidden">@(meeting.IsAttendee ?? false ? "1" : "2")</span>
                                     @if (meeting.Recurrence.MeetingInProgress != null) {
                                         <div class="label label-success hoverable" style="height:16px; width: 80px;display: inline-block">in-progress</div>
                                     } else {
@@ -93,6 +91,9 @@
                     </tbody>
                 </table>
             } else {
+                <div class="panel-heading">
+                    <h3 class="panel-title">L10 Meetings</h3>
+                </div>
                 <div class="panel-body gray">
                     <div>You have no L10 meetings.</div>
                 </div>
@@ -135,6 +136,13 @@
 
             location.href = "/l10/meeting/" + id + additional;
         }
+
+        
+        $(".tablesorter").tablesorter({
+            sortList: [[0, 0], [1, 0]],
+            sortForce: [[0, 0]],
+            sortStable: true,
+        });
 
         
         var curRecur=0;

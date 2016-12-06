@@ -54,7 +54,7 @@ namespace TractionTools.Tests.Accessors {
             Assert.AreEqual(500, plan.BaselinePrice);
             Assert.AreEqual(45, plan.FirstN_Users_Free);
             Assert.AreEqual(2, plan.L10PricePerPerson);
-            Assert.AreEqual(0, plan.ReviewPricePerPerson);
+            Assert.AreEqual(2, plan.ReviewPricePerPerson);
 
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -208,7 +208,7 @@ namespace TractionTools.Tests.Accessors {
 
 			var slf_reviewPrice = 3 * 100;
 			var pro_reviewPrice = 2 * 100;
-			var ent_reviewPrice = 0 * 100;
+			var ent_reviewPrice = 2 * 100;
 
 			var slf_l10Price = 12 * 100;
 			var pro_l10Price = 10 * 100;

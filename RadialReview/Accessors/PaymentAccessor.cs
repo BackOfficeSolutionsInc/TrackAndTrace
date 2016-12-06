@@ -386,12 +386,16 @@ namespace RadialReview.Accessors {
 			var token = PaymentSpringUtil.GetToken(s, organizationId);
 
 			var org2 = s.Get<OrganizationModel>(organizationId);
-			if (org2 != null && org2.AccountType == AccountType.Implementer) {
-				EventUtil.Trigger(x => x.Create(s, EventType.PaymentFree, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "Implementer", arg1: 0));
-				throw new FallthroughException("Failed to charge implementer account (" + org2.Id + ") " + org2.GetName());
-			}
+            if (org2 != null && org2.AccountType == AccountType.Implementer) {
+                EventUtil.Trigger(x => x.Create(s, EventType.PaymentFree, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "Implementer", arg1: 0));
+                throw new FallthroughException("Failed to charge implementer account (" + org2.Id + ") " + org2.GetName());
+            }
+            if (org2 != null && org2.AccountType == AccountType.Dormant) {
+                EventUtil.Trigger(x => x.Create(s, EventType.PaymentFailed, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "Dormant", arg1: 0));
+                throw new FallthroughException("Failed to charge dormant account (" + org2.Id + ") " + org2.GetName());
+            }
 
-			if (token == null) {
+            if (token == null) {
 				EventUtil.Trigger(x => x.Create(s, EventType.PaymentFailed, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "MissingToken", arg1: amount));
 				throw new PaymentException(s.Get<OrganizationModel>(organizationId), amount, PaymentExceptionType.MissingToken);
 			}
@@ -779,7 +783,7 @@ namespace RadialReview.Accessors {
 					basePlan.Description = "Traction® Tools for Enterprise";
 					basePlan.BaselinePrice = 500;
 					basePlan.L10PricePerPerson = 2;
-					basePlan.ReviewPricePerPerson = 0;
+					basePlan.ReviewPricePerPerson = 2;
 					basePlan.FirstN_Users_Free = 45;
 					break;
 				case PaymentPlanType.Professional_Monthly_March2016:

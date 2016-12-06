@@ -14,6 +14,14 @@ namespace RadialReview.Utilities.DataTypes {
         public DateTime Now { get; set; }
 		public bool Descending { get; set; }
 
+        public DateTime ConvertFromServerTime(DateTime serverTime) {
+            return serverTime.AddMinutes(TimezoneOffset);
+        }
+
+        public DateTime ConvertToServerTime(DateTime localTime) {
+            return localTime.AddMinutes(-TimezoneOffset);
+        }
+
         public TimeData GetTimeSettings()
         {
             return this;

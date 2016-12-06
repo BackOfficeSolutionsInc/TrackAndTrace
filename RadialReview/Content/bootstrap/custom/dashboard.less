@@ -228,6 +228,10 @@ body.resizing .notes-tile,
 				}
 			}
 
+            .direction {
+                cursor:pointer;
+            }
+
 			.score input {
 				padding-left: 0px !important;
 				padding-right: 10px !important;
@@ -367,6 +371,11 @@ body.resizing .notes-tile,
 			float: left;
 			position: absolute;
 			margin-top: -2px;
+		}
+
+		tr .icon-column:before {
+			content: "\e203";
+			color: #555555;
 		}
 
 		tr.Complete .icon-column:before {

@@ -15,7 +15,13 @@ namespace RadialReview.Utilities.DataTypes
 		public DateTime StartTime { get; set; }
 		public DateTime EndTime { get; set; }
 
-		public DateRange(DateTime start, DateTime end)
+
+        public DateRange(long? start, long? end) {
+            StartTime = (start == null) ? DateTime.MinValue : start.Value.ToDateTime();
+            EndTime = (end == null) ? DateTime.MaxValue : end.Value.ToDateTime();
+        }
+
+        public DateRange(DateTime start, DateTime end)
 		{
 			StartTime = start;
 			EndTime = end;

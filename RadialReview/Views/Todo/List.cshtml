@@ -5,22 +5,22 @@
     var dict = new ViewDataDictionary(ViewBag);
     dict.Add(new KeyValuePair<string, object>("SetName", "All To-Dos"));
     dict.Add(new KeyValuePair<string, object>("IncludeComplete", true));
-    //dict.Add(new KeyValuePair<string, object>("AddHeaders", false));
-    //dict.Add(new KeyValuePair<string, object>("AddController", false));
+    dict.Add(new KeyValuePair<string, object>("PullUrl", "/Todo/ForUser/" + Model + "?"));
+
     Html.RenderPartial("~/Views/CDN/Angular.cshtml");
+
 
 }
 
 <div ng-app="L10App" class="ng-cloak">
     <div ng-controller="L10Controller">
-		<div style="background-color:white;padding:10px">
-			@{
-				Html.RenderPartial("~/Views/Angular/_DateRange.cshtml");
-				Html.RenderPartial("~/Views/Todo/Partial/list.cshtml", new ViewDataDictionary() { { "AddHeaders", false } });
-				Html.RenderPartial("~/Views/Angular/_L10App.cshtml", Model, dict);
+        <div style="padding:10px">
+            @{Html.RenderPartial("~/Views/Angular/_DateRange.cshtml");
+                Html.RenderPartial("~/Views/Todo/Partial/list.cshtml", new ViewDataDictionary() { { "AddHeaders", false } });
+                Html.RenderPartial("~/Views/Angular/_L10App.cshtml", Model, dict);
 
-			}
-		</div>
+            }
+        </div>
     </div>
 </div>
 
@@ -33,7 +33,7 @@
 
 @using (Html.BeginScripts()) {
     <script>
-        dataDateRange= {
+        dataDateRange = {
             endDate: moment().add(1, 'days').toDate(),
             startDate: moment().toDate(),
         };
@@ -47,14 +47,49 @@
             min-height: 60px;
         }
 
-		.repeater-container{
-			height:500px;
-		}
+        .repeater-container {
+            height: 500px;
+        }
 
         .component {
             margin: 0px;
         }
+        
+        table .checkbox-column,
+        table .todotype-column {
+            padding: 7px !important;
+        }
 
+        .todo-list-container tr.todotype-Personal .todotype-column .type-icon {
+            position: relative;
+            top: 1px;
+            display: inline-block;
+            font-family: 'Glyphicons Halflings';
+            font-style: normal;
+            font-weight: normal;
+            line-height: 1;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            top: 6px;
+            left: 5px;
+            color: #7383d6;
+        }
+
+            .todo-list-container tr.todotype-Personal .todotype-column .type-icon:before {
+                content: "\e008";
+            }
+
+        .todo-list-container tr.todotype-Personal .message-column input {
+            text-shadow: 0 0 0 #00e7ff;
+            color: #7383d6;
+        }
+
+        .todo-list-container > div > .row,
+        .todo-list-container > .row {
+            background-color: white;
+        }
+
+        /*.todotype-column,*/
         .md-datepicker-button,
         .createtime-column,
         .picture-column,
@@ -66,20 +101,21 @@
         input.blend, .md-datepicker-input-container {
             border-bottom: none;
         }
-        
+
         td.message-column {
             padding-top: 0px !important;
         }
 
-        td{
+        td {
             padding-top: 10px !important;
             vertical-align: top !important;
         }
-        
-        .due-column,.complete-column {
-            text-align:left !important;
+
+        .due-column, .complete-column {
+            text-align: left !important;
             padding-top: 14px !important;
         }
+
         .md-datepicker-input-mask {
             height: 40px;
             width: 308px;

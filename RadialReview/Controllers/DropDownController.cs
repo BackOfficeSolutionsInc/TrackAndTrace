@@ -82,6 +82,8 @@ namespace RadialReview.Controllers {
 				attendees = L10Accessor.GetAngularRecurrence(GetUser(), id).Attendees;
 			}
 
+            attendees = attendees.OrderBy(x => x.Name).ToList();
+
             return Json(attendees, JsonRequestBehavior.AllowGet);
 
             //var result = attendees.Select(x => new {

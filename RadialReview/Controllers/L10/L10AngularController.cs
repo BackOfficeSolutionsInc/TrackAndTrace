@@ -73,6 +73,13 @@ namespace RadialReview.Controllers {
         //    L10Accessor.UpdateMeasurablePast(GetUser(),id);
         //    return Json(ResultObject.SilentSuccess());
         //}
+        [HttpPost]
+        [Access(AccessLevel.UserOrganization)]
+        public JsonResult OrderAngularMeasurable(long id, long recurrence, int oldOrder, int newOrder) {
+            L10Accessor.OrderAngularMeasurable(GetUser(), id, recurrence, oldOrder, newOrder);
+            return Json(ResultObject.SilentSuccess());
+        }
+
 
         [HttpPost]
         [Access(AccessLevel.UserOrganization)]

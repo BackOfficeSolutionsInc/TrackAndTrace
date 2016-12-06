@@ -56,11 +56,11 @@ namespace RadialReview.Accessors {
 					.Select(Unpackage);
 		}
 
-		public static List<TinyUser> GetOrganizationMembers(UserOrganizationModel caller, long organizationId) {
+		public static List<TinyUser> GetOrganizationMembers(UserOrganizationModel caller, long organizationId,bool excludeClients=false) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					return GetOrganizationMembers(s, perms, organizationId).ToList();
+					return GetOrganizationMembers(s, perms, organizationId,excludeClients).ToList();
 				}
 			}
 		}

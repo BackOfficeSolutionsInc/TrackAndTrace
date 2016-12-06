@@ -28,7 +28,8 @@ namespace RadialReview {
 				"~/Scripts/Angular/Helpers/Directives/fcsaNumber.js",
 				"~/Scripts/Angular/Helpers/Directives/vsRepeat.js",
 				"~/Scripts/Angular/Helpers/angular-timer.min.js",
-				"~/Scripts/Angular/Helpers/angular-elastic-input.js",
+                "~/Scripts/Angular/Helpers/angular-elastic-input.js",
+                "~/Scripts/Angular/Helpers/Libraries/ngsortable.js",
                      
                 //"~/bower_components/angular-animate/angular-animate.js",           
                // "~/bower_components/angular-aria/angular-aria.js",
@@ -39,7 +40,8 @@ namespace RadialReview {
 			var angularHelpers_Styles = new[]{
 				"~/Content/components/daterangepicker-bs3.css",
 				"~/Content/Angular/tablesort.css",
-				"~/Content/Angular/xeditable.min.css",
+                "~/Content/Angular/xeditable.min.css",
+                "~/Content/Angular/ngsortable.css",
                 
                 //"~/bower_components/angular-material/angular-material.css"
 			};

@@ -29,14 +29,13 @@
         {"AddController", false},
         {"DisableName", false},
         {"EditOwner", true},
+        {"Reorderable", true},
         {"ForceMin", ViewBag.ForceMin},
         {"Selector", "(model.Scorecard) "},
     }); }
 
 
 @using (Html.BeginScripts()) {
-    @*<script src="~/Scripts/jquery/jquery.ui.sortable.js"></script>
-    <script src="~/Scripts/L10/L10Scorecard.js"></script>*@
     @Scripts.Render("~/bundles/ScorecardDetails")
     <script>
 
@@ -71,14 +70,6 @@
                     }
                 });
             };
-
-            $(".scorecard-table tbody").xsortable({
-                items: ">.reorderable",
-                handle: ".handle",
-                helper: fixHelperModified,
-                stop: updateIndex,
-                placeholder: "xsortable-placeholder"
-            }).disableSelection();
         });
     </script>
 }
@@ -86,19 +77,9 @@
 @using (Html.BeginStyles()) {
     <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet" />
     <style>
-        /*.inlineEdit:hover {
-                    text-decoration: none;
-                    border-bottom: dashed 1px #08C;
-                    cursor: pointer;
-                }*/
-
         .grid.gray {
             background-color: #eee;
             height: 100%;
         }
-
-        /*md-fab-actions .md-button.md-fab md-icon{
-            vertical-align: top !important;
-        }*/
     </style>
 }

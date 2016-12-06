@@ -60,16 +60,16 @@
 <table class="pull-right ">
     @foreach (var type in Enum.GetValues(typeof(AccountType))) {
         <tr>
-            <th style="color: orange;text-align:right;">@((AccountType)type)</th>
+            <th style="color: orange;text-align:right;">@(((AccountType)type==AccountType.Demo?"Trial":""+(AccountType)type))</th>
             <td>@Model.Count(x => x.Status == (AccountType)type)</td>
         </tr>
     }
     <tr style="border-top:1px solid orange;">
-        <th style="color: orange;text-align:right;" title="Paying+Demo+Implementer">PDI</th>
+        <th style="color: orange;text-align:right;" title="Paying+Demo+Implementer">PTI</th>
         <td>@Model.Count(x => x.Status == AccountType.Demo || x.Status == AccountType.Paying || x.Status == AccountType.Implementer)</td>
     </tr>
     <tr style="border-top:1px solid orange;">
-        <th style="color: orange;text-align:right;" title="Paying+Demo">PD</th>
+        <th style="color: orange;text-align:right;" title="Paying+Demo">PT</th>
         <td>@Model.Count(x => x.Status == AccountType.Demo || x.Status == AccountType.Paying)</td>
     </tr>
     <tr style="border-top:1px solid orange">

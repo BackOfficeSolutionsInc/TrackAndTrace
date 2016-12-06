@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using static RadialReview.Models.Reviews.CustomizeModel;
 
 namespace RadialReview.Engines {
 	public class ReviewEngine : BaseEngine {
@@ -161,8 +162,21 @@ namespace RadialReview.Engines {
 			masterList = masterList.Distinct(x => x).ToList();
 
 			model.MasterList = masterList;
+            var lookup = new DefaultDictionary<string, ReviewerRevieweeInfo>(x=>new ReviewerRevieweeInfo());
 
-			return model;
+            foreach(var selector in model.Selectors) {
+                foreach(var p in selector.Pairs) {
+                    lookup[p.Reviewer.ToId() + "~" + p.Reviewee.ToId()].Classes += " is" + selector.UniqueId;
+                }
+            }
+
+            foreach(var p in model.Selected) {
+                lookup[p.Reviewer.ToId() + "~" + p.Reviewee.ToId()].Selected = true;
+            }
+
+            model.Lookup = lookup;
+
+            return model;
 		}
 
 		[Obsolete("Fix for AC")]

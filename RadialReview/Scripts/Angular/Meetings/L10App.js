@@ -1,4 +1,4 @@
-﻿var l10App = angular.module('L10App', ['helpers', 'rockstate', 'buttonbar', 'xeditable',"puElasticInput"]);
+﻿var l10App = angular.module('L10App', ['helpers', 'rockstate', 'buttonbar', 'xeditable', "puElasticInput", "as.sortable"]);
 
 
 //l10App.config(['$locationProvider', function ($locationProvider) {

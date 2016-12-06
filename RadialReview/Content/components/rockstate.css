@@ -273,7 +273,7 @@
 	}
 
 		.rockstate:not(.nocollapse).rockstate-thin .rockstate-val {
-			width: 29px;
+			width: 27px;
 			font-size: 0px;
 		}
 
@@ -297,7 +297,7 @@
 		}
 
 		.rockstate:not(.nocollapse).editor .fill.hover {
-			left: -30px;
+			left: -27px;
 		}
 
 
@@ -309,12 +309,12 @@
 
 		.rockstate:not(.nocollapse) input[value='OnTrack'] ~ .fill.cursor,
 		.rockstate:not(.nocollapse) .rockstate-OnTrack:hover ~ .fill.hover {
-			left: 29px;
+			left: 27px;
 		}
 
 		.rockstate:not(.nocollapse) input[value='Complete'] ~ .fill.cursor,
 		.rockstate:not(.nocollapse) .rockstate-Complete:hover ~ .fill.hover {
-			left: 58px;
+			left: 54px;
 		}
 
 		.rockstate:not(.nocollapse) input[value='Indeterminate'] ~ .fill.cursor {

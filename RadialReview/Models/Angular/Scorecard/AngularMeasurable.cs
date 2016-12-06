@@ -20,8 +20,11 @@ namespace RadialReview.Models.Angular.Scorecard
         //{
         //    RecurrenceMeasurableId = measurable.Id;
         //}
+        public AngularMeasurable(long id) : base(id) {
+        }
 
-		public AngularMeasurable(MeasurableModel measurable,bool skipUser=false):base(measurable.Id)
+
+        public AngularMeasurable(MeasurableModel measurable,bool skipUser=false):base(measurable.Id)
 		{
 
 			Owner = AngularUser.CreateUser(skipUser?null : measurable.AccountableUser);
@@ -65,6 +68,7 @@ namespace RadialReview.Models.Angular.Scorecard
         public bool? Disabled { get; set; }
         public long? RecurrenceId { get; set; }
         public long? RecurrenceMeasurableId { get; set; }
+        public AngularMeasurableGroup Grouping { get; set; }
 
 	}
 }

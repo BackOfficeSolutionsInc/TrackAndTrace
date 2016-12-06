@@ -83,7 +83,6 @@ var Grid = {
 
                     var style = $(dom).find(".heading").data("style");
                     $item.addClass("loaded");
-
                     $item.trigger("loaded");
 
                     setTimeout(function () {
@@ -115,8 +114,6 @@ var Grid = {
 
         if (typeof (callback) === "function")
             Grid.callback = callback;
-
-
 
         Grid.container = $gridContainer;
         var i;

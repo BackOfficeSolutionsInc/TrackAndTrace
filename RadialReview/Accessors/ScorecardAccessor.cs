@@ -246,26 +246,6 @@ namespace RadialReview.Accessors {
 			var found = foundQuery.List().ToList();
 
 			if (ordered) {
-				//var measuableIds = found.Select(x => x.Id).ToList();
-				//var ordering = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
-				//    .Where(x => x.DeleteTime == null)
-				//    .WhereRestrictionOn(x => x.Measurable.Id).IsIn(measuableIds)
-				//    .Select(x => x.Measurable.Id, x => x._Ordering, x => x.L10Recurrence.Id)
-				//    .List<object[]>().ToList();
-				//var orderedOrdering = ordering.GroupBy(x => (long?)x[2] ?? 0).SelectMany(y => y.OrderBy(x => (int?)x[1] ?? 0)).Distinct(x => (long)x[0]).ToList();
-
-				//var newOrder = new List<MeasurableModel>();
-				//var i = 0;
-				//foreach (var o in orderedOrdering) {
-				//    var newOrderItem = found.FirstOrDefault(x => x.Id == (long)o[0]);
-				//    if (newOrderItem != null) {
-				//        newOrder.Add(newOrderItem);
-				//        newOrderItem._Ordering = i;
-				//        i++;
-				//    }
-
-				//}
-				// found = newOrder;
 
 				var order = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
 					.Where(x => x.DeleteTime == null)

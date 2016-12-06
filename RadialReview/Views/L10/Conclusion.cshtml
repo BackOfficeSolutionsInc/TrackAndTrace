@@ -91,7 +91,7 @@
 
 							<input type="hidden" id="conclude_connectionId" name="connectionId" value="" />
 							<div class="alignCenter">
-								<input type="submit" class="btn btn-primary center concludeButton" value="Conclude Meeting" />
+								<input type="submit" id="conclude_meeting_button" class="btn btn-primary center concludeButton" value="Conclude Meeting" />
 							</div>
 						}
 					</div>
@@ -122,6 +122,8 @@
 	function OnBeginSubmit(a, b) {
 		$('.concludeButton').attr('disabled', true).css('cursor', 'progress');
 		$(this).attr('novalidate', 'novalidate');
+
+		sendDisable("conclude_meeting_button", true);
 	}
 </script>
 

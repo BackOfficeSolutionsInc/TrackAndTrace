@@ -462,3 +462,7 @@ function callbackPrint() {
         $("#modal").modal('hide');
     });
 }
+
+function lockConcludeButton() {
+    $("#conclude_meeting_button").prop("disabled", "disabled");
+}

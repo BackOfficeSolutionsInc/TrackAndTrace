@@ -141,13 +141,19 @@ namespace RadialReview.Utilities {
 
 		private static List<L10MeetingVM.WeekVM> GetWeeks(TimeData settings, DateTime now, DateTime? meetingStart, bool includeNextWeek, bool useWeekstartForWeekNumber = false, DateRange range = null) {
 
-			//var ordered = scores.Select(x => x.DateDue).OrderBy(x => x).ToList();
-			//var StartDate = ordered.FirstOrDefault().NotNull(x => now);
-			//var EndDate = ordered.LastOrDefault().NotNull(x => now).AddDays(7);
+            //var ordered = scores.Select(x => x.DateDue).OrderBy(x => x).ToList();
+            //var StartDate = ordered.FirstOrDefault().NotNull(x => now);
+            //var EndDate = ordered.LastOrDefault().NotNull(x => now).AddDays(7);
 
-			//var s = StartDate.StartOfWeek(weekStart).AddDays(-7 * 4);
-			//var e = EndDate.StartOfWeek(weekStart).AddDays(7 * 4);
-			var weekStart = settings.WeekStart;
+            //var s = StartDate.StartOfWeek(weekStart).AddDays(-7 * 4);
+            //var e = EndDate.StartOfWeek(weekStart).AddDays(7 * 4);
+
+            DateTime? localTimeMeetingStart = null;
+            if (meetingStart != null) {
+                localTimeMeetingStart = settings.ConvertFromServerTime(meetingStart.Value);
+            }
+                
+            var weekStart = settings.WeekStart;
 			var timezoneOffset = settings.TimezoneOffset;
 
 
@@ -156,8 +162,8 @@ namespace RadialReview.Utilities {
 				weekNumber_StartOfWeek = weekStart;
 
 
-			var s = (meetingStart ?? now).StartOfWeek(DayOfWeek.Sunday).AddDays(-7 * 13);
-			var e = (meetingStart ?? now).StartOfWeek(DayOfWeek.Sunday);
+			var s = (localTimeMeetingStart ?? now).StartOfWeek(DayOfWeek.Sunday).AddDays(-7 * 13);
+			var e = (localTimeMeetingStart ?? now).StartOfWeek(DayOfWeek.Sunday);
 
 			if (range != null) {
 				s = range.StartTime.StartOfWeek(DayOfWeek.Sunday);
@@ -191,10 +197,11 @@ namespace RadialReview.Utilities {
 				var currWeek = false;
 				var next = s.AddDays(7);
 				var s1 = s;
-				if (meetingStart.NotNull(x => s1 <= x.Value && x.Value < next))
+                var displayDate = s.AddDays(-7).AddDays(6.9999).StartOfWeek(weekStart).AddMinutes(-(diff - 60));
+                var displayDateNext = displayDate.AddDays(7);
+                if (localTimeMeetingStart.NotNull(x => displayDate <= x.Value && x.Value < displayDateNext))
 					currWeek = true;
 				//var j = s.AddDays(-7);
-				var displayDate = s.AddDays(-7).AddDays(6.9999).StartOfWeek(weekStart).AddMinutes(-(diff-60));
 				weeks.Add(new L10MeetingVM.WeekVM() {
 					DisplayDate = displayDate,
 					StartDate = displayDate.AddMinutes(diff),
@@ -301,6 +308,7 @@ namespace RadialReview.Utilities {
 			//var s = (meetingStart ?? now).StartOfWeek(DayOfWeek.Sunday).AddDays(-7 * 13);
 			//var e = (meetingStart ?? now).StartOfWeek(DayOfWeek.Sunday);
 
+            
 
 			var weekNumber_StartOfWeek = DayOfWeek.Sunday;
 			if (useWeekstartForWeekNumber)

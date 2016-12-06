@@ -123,7 +123,7 @@ namespace RadialReview.Models.L10
 			public virtual async Task<string> GetTodoMessage()
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 			{
-				return  "'" + ForRock.Rock + "'";
+                return "";
 			}
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
@@ -132,7 +132,8 @@ namespace RadialReview.Models.L10
 			{
 				var week = L10Meeting.CreateTime.StartOfWeek(DayOfWeek.Sunday).ToString("d");
 				var accountable = ForRock.AccountableUser.GetName();
-				var footer = "Week: " + week + "\nOwner: " + accountable;
+                
+                var footer = "'" + ForRock.Rock + "'\n\n"+"Week: " + week + "\nOwner: " + accountable;
 				return footer;
 			}
 

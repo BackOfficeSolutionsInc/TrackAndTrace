@@ -8,13 +8,13 @@
     var selector = ViewBag.Selector as string ?? "(model.Scorecard)";
     var elasticInputs = ViewBag.ElasticInput == null || ((bool)ViewBag.ElasticInput) == true;
 
-	var localization = "localization=\""+ (ViewBag.Localization ?? "")+"\"";
+    var localization = "localization=\"" + (ViewBag.Localization ?? "") + "\"";
 
 
-	var meetingId = ViewBag.MeetingId ?? "model.Id";
+    var meetingId = ViewBag.MeetingId ?? "model.Id";
 
     //var readOnly = ViewBag.ReadOnly as bool? ??false;
-    
+
     var elastic = elasticInputs ? "pu-elastic-input" : "";
     var scorecardKey = "(" + selector + ").Key";
 }
@@ -25,7 +25,7 @@
             <div class="col-md-12">
                 <div class="component">
                     <div class="clearfix"></div>
-                    <div style="position: relative;" ng-hide="(@(selector)).Measurables.length==0">
+                    <div style="position: relative;" ng-show="(@(selector)).Measurables.length">
                         <div class="table-responsive scroll-right scroller repeater-container-scorecard" style1="min-height: 200px;">
                             <table id="ScorecardTable" class="scorecard-table ng-cloak">
                                 <thead>
@@ -60,18 +60,25 @@
                                         <th class="delete-column button-column"></th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr @*vs-scroll-parent1=".repeater-container-scorecard"*@ ng-hide="measurable.Hide" ng-class="{IsDivider: measurable.IsDivider,disabled:measurable.Disabled}" data-measurable="{{::measurable.Id}}" class="specialClass @(reorderable ? "reorderable" : "")" ng-repeat="measurable in (@(selector)).Measurables  | orderBy: ['Ordering'] ">
+                                <tbody as-sortable="scorecardSortListener" ng-model="measurableGroupItems" ng-repeat="(measurableGroup,measurableGroupItems) in (@(selector)).Measurables | groupBy: 'Grouping'">
+                                    @*<tr><td>{{measurableGroup}}</td><td>{{measurableGroupItems.length}}</td></tr>*@
+                                    <tr as-sortable-item="measurable" ng-hide="measurable.Hide"
+                                        ng-class="{IsDivider: measurable.IsDivider,disabled:measurable.Disabled}"
+                                        data-measurable="{{::measurable.Id}}"
+                                        class="specialClass @(reorderable ? "reorderable" : "")"
+                                        ng-repeat="measurable in measurableGroupItems | orderBy: ['Ordering'] ">
                                         @if (reorderable) {
-                                            <td class="handle-cell button-column" ng-class="{handle: measurable.IsDivider}"><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
+                                            @*<td as-sortable-item-handle class="handle-cell button-column" ng-class="{handle: measurable.IsDivider}"><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>*@
+                                            <td as-sortable-item-handle class="handle-cell button-column" ng-class="{handle: measurable.IsDivider}"><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
                                         }
+
                                         @if (disableName) {
                                             <td class="who first1 alignRight accountable-column  text-column" ng-class="{handle: measurable.IsDivider}">
                                                 <span class="item-wrapper place-right">
                                                     <span class=""
                                                           @if (editOwner) {   @: onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Owner" e-ng-readonly="measurable.Disabled"
-																				@: onshow="loadPossibleOwners(@(meetingId))" e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]"
-																			}>
+                                                                                                                                                                                                                                    																				@: onshow="loadPossibleOwners(@(meetingId))" e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]"
+                                                                                                                                                                                                                                    																			}>
                                                         <profile-image class="" user="measurable.Owner"></profile-image>
                                                     </span>
                                                 </span>
@@ -80,8 +87,8 @@
                                                 <span class="item-wrapper place-right">
                                                     <span class=""
                                                           @if (editOwner) {   @: onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Admin" e-ng-readonly="measurable.Disabled"
-																		      @: onshow="loadPossibleOwners(@(meetingId))" e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]"
-																		  }>
+                                                                                                                                                                                                                                    																		      @: onshow="loadPossibleOwners(@(meetingId))" e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]"
+                                                                                                                                                                                                                                    																		  }>
                                                         <profile-image class="desaturate" user="measurable.Admin"></profile-image>
                                                     </span>
                                                 </span>
@@ -102,7 +109,7 @@
                                             </span>
                                         </td>
                                         <td class="target value goal-column data-column" data-measurable="{{::measurable.Id}}" ng-class="{handle: measurable.IsDivider}">
-                                            <input ng-if="measurable.Direction!='Between'" 
+                                            <input ng-if="measurable.Direction!='Between'"
                                                    ng-disabled="measurable.Disabled"
                                                    @(elastic)
                                                    class="blend  modifiers {{measurable.Modifiers}}"
@@ -115,10 +122,10 @@
                                             <span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{::measurable.Id}}" data-pk="{{::measurable.Id}}_{{::meetingId}}" data-url="/L10/UpdateMeasurable"></span>
                                         </td>
                                         <td ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin))  | orderBy:'ForWeekNumber' " class="score score-column  data-column" ng-class="{current:week.IsCurrentWeek}">
-                                        
+
                                             <score week="week"
-												   @(new HtmlString(localization))
-                                                   score="functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey))"                                                 
+                                                   @(new HtmlString(localization))
+                                                   score="functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey))"
                                                    tt-onchange="functions.sendUpdate(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)))">
                                             </score>
 
@@ -127,7 +134,6 @@
                                             <span class="delete-row" ng-click="functions.removeRow($event,measurable)"></span>
                                         </td>
                                     </tr>
-
                                 </tbody>
                             </table>
                         </div>
@@ -149,26 +155,26 @@
                                         <th class="button-column">&nbsp;</th>
                                     }
                                     @if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false) {
-                                        <th class=" who alignRight accountable-column  text-column" title="This person is accountable for reaching the goal">Acc</th>
+                                        <th class=" who alignRight accountable-column text-column" title="This person is accountable for reaching the goal">Acc</th>
                                         <th class=" who alignLeft admin-column text-column"><span class="newLine gray" title="This person is responsible for entering the number">/Admin</span></th>
                                     }
                                     <th class="measurable measurable-column text-column">Measurable</th>
                                     <th class="target  goal-column data-column" colspan="2">Goal</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr ng-hide="measurable.Hide" ng-class="{IsDivider: measurable.IsDivider,disabled:measurable.Disabled}" ng-repeat="measurable in (@(selector)).Measurables | orderBy: ['Ordering']  ">
+                            <tbody as-sortable="scorecardSortListener" ng-model="measurableGroupItems" ng-repeat="(measurableGroup,measurableGroupItems) in (@(selector)).Measurables | groupBy: 'Grouping'">
+                                <tr as-sortable-item="measurable" ng-repeat="measurable in measurableGroupItems | orderBy: ['Ordering']"  ng-hide="measurable.Hide" ng-class="{IsDivider: measurable.IsDivider,disabled:measurable.Disabled}">
                                     @if (reorderable) {
-                                        <td class="handle-cell button-column" ng-class="{handle: measurable.IsDivider}"><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
+                                        @*<td as-sortable-item-handle class="handle-cell button-column" ng-class="{handle: measurable.IsDivider}"><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>*@
+                                        <td as-sortable-item-handle class="handle-cell button-column" ng-class="{handle: measurable.IsDivider}"><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
                                     }
-
                                     @if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false) {
                                         <td class="who first1 alignRight accountable-column  text-column" ng-class="{handle: measurable.IsDivider}">
                                             <span class="item-wrapper place-right">
                                                 <span class=""
                                                       @if (editOwner) { @: onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Owner" e-ng-readonly="measurable.Disable"
-                                                                        @: onshow="loadPossibleOwners(@(meetingId))" e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]"
-                                                                    }>
+                                                                                                                @: onshow="loadPossibleOwners(@(meetingId))" e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]"
+                                                                                                              }>
                                                     <profile-image user="measurable.Owner"></profile-image>
                                                 </span>
                                             </span>
@@ -176,9 +182,10 @@
                                         <td class="who first1 alignLeft admin-column text-column" ng-class="{handle: measurable.IsDivider}">
                                             <span class="item-wrapper place-right">
                                                 <span class=""
-                                                      @if (editOwner) { @: onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Admin" e-ng-readonly="measurable.Disabled"
-                                                                        @: onshow="loadPossibleOwners(@(meetingId))" e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]"
-                                                                    }>
+                                                      @if (editOwner) { 
+                                                          @:onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Admin" e-ng-readonly="measurable.Disabled"                                                                                                                
+                                                          @: onshow="loadPossibleOwners(@(meetingId))" e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]"
+                                                       }>
                                                     <profile-image class="desaturate" user="measurable.Admin"></profile-image>
                                                 </span>
                                             </span>
@@ -214,8 +221,10 @@
                                         <span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{::measurable.Id}}" data-pk="{{::measurable.Id}}_{{::meetingId}}" data-url="/L10/UpdateMeasurable"></span>
                                     </td>
                                 </tr>
-
                             </tbody>
+
+
+
                         </table>
                     </div>
                     <div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
@@ -223,13 +232,14 @@
                     <div class="gray empty-search" style="padding: 30px 15px;" ng-show="(@(selector)).Measurables.length==0">
                         No measurables fit your search criteria.
                     </div>
+                    <div class="gray empty-search" style="padding: 30px 15px;" ng-hide="(@(selector)).Measurables || (@(selector)).Measurables.length==0">
+                        Loading measurables...
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-
 
 @using (Html.BeginStyles()) {
     <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet" />
@@ -245,8 +255,8 @@
     @Scripts.Render("~/bundles/MeasurableList")
     <script>
 
-		if (typeof (scrollRight) === "undefined")
-			scrollRight = false;
+        if (typeof (scrollRight) === "undefined")
+            scrollRight = false;
 
         scrollRight = scrollRight || function scrollRight() {
 
@@ -256,7 +266,7 @@
                         var that = this;
                         var dist = Math.max(4000, $(that).prop("scrollWidth"));
                         console.log("dist", dist);
-                        $(that).addClass("scroll-once").animate({ scrollLeft:dist }, 500);
+                        $(that).addClass("scroll-once").animate({ scrollLeft: dist }, 500);
                     });
                 }, 1);
             } else {

@@ -211,7 +211,6 @@ namespace RadialReview.Accessors {
 						.Select(x => x.AsUser.Id).List<long>().ToList());
 				
 				AccountabilityNode child = null;
-
 				var subordinates = s.QueryOver<DeepAccountability>()
 										.Where(x => x.DeleteTime == null)
 										.WhereRestrictionOn(x => x.ParentId).IsIn(allPermitted)
@@ -219,6 +218,7 @@ namespace RadialReview.Accessors {
 											.Where(x => child.DeleteTime == null && child.UserId != null)
 											.Select(x => child.UserId)
 											.Future<long>();
+
 				subordinates= subordinates.Union(userId.AsList());
 				return subordinates.Distinct();
 			}

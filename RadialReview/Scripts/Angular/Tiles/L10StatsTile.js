@@ -38,6 +38,7 @@ app.directive('l10StatsTile', function() {
 					$.extend($scope.model, data);
 				
 					$scope.data = $scope.model.data;
+					$scope.model.options = $scope.model.options || {};
 					$scope.model.options.tooltipHook = function (rows) {
 						var monthNames = [
 						  "January", "February", "March",

@@ -979,7 +979,6 @@ namespace RadialReview.Utilities {
 
 
 		}
-
 		public PermissionsUtility ViewMeasurable(long measurableId) {
 			return CheckCacheFirst("ViewMeasurable", measurableId).Execute(() => {
 				if (IsRadialAdmin(caller))
@@ -992,8 +991,26 @@ namespace RadialReview.Utilities {
 					return this;
 				if (m.AdminUserId == caller.Id)
 					return this;
-				return ManagesUserOrganization(m.AccountableUserId, false);
-			});
+                try {
+                    ManagesUserOrganization(m.AccountableUserId, false);
+                    return this;
+                }catch(PermissionsException) {
+                }
+
+                var measurableRecurs = session.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
+                        .Where(x => x.DeleteTime == null && x.Measurable.Id == measurableId)
+                        .Select(x => x.L10Recurrence.Id)
+                        .List<long>().ToList();
+
+                foreach (var recur in measurableRecurs) {
+                    try {
+                        ViewL10Recurrence(recur);
+                        return this;
+                    } catch (PermissionsException) {
+                    }
+                }
+                throw new PermissionsException("Cannot view measurable");
+            });
 		}
 		public PermissionsUtility EditMeasurable(long measurableId) {
 			return CheckCacheFirst("EditMeasurable", measurableId).Execute(() => {

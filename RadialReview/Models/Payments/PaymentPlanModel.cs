@@ -51,18 +51,15 @@ namespace RadialReview.Models
         public virtual decimal L10PricePerPerson { get; set; }
         public virtual decimal ReviewPricePerPerson { get; set; }
         public virtual int FirstN_Users_Free { get; set; }
-
         public virtual decimal BaselinePrice { get; set; }
 
         public virtual long OrgId { get; set; }
-
 		public virtual OrganizationModel _Org { get; set; }
 
 		public virtual DateTime? ReviewFreeUntil { get; set; }
 		public virtual DateTime? L10FreeUntil { get; set; }
 
 		public virtual bool NoChargeForClients { get; set; }
-
 		public virtual bool NoChargeForUnregisteredUsers { get; set; }
 
 		public override TimeSpan SchedulerPeriod()

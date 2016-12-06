@@ -25,7 +25,7 @@ namespace RadialReview.Models.Reviews {
 
 		public Reviewee(ResponsibilityGroupModel rgm) : this(rgm.Id,null){
 			Type = rgm is OrganizationModel ? OriginType.Organization : OriginType.User;
-			_Name = rgm.GetName();
+			_Name = rgm.GetNameExtended();
 		}
 
 		public Reviewee(AccountabilityNode node) : this(new AngularAccountabilityNode(node)) { }
@@ -154,7 +154,11 @@ namespace RadialReview.Models.Reviews {
 			builder += "(User:" + RGMId +")";
 			return builder;
 		}
-	}
+
+        public string ToId() {
+            return "" + RGMId;
+        }
+    }
 
 	public class WhoReviewsWho {
 		public Reviewer Reviewer { get; set; }

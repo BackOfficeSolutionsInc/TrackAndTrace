@@ -159,7 +159,21 @@ namespace RadialReview.Accessors {
                 if (todo.CreatedDuringMeetingId != null)
                     todoData.isNew = true;
 				meetingHub.appendTodo(".todo-list", todoData);
-				meetingHub.showAlert("Created to-do.", 1500);
+
+                var message = "Created to-do.";
+
+                var showWhoCreatedDetails = true;
+                if (showWhoCreatedDetails) {
+                    try {
+                        if (perms.GetCaller() != null && perms.GetCaller().GetFirstName() != null) {
+                            message = perms.GetCaller().GetFirstName() + " created a to-do.";
+                        }
+                    } catch (Exception) {
+                    }
+                }
+
+                meetingHub.showAlert(message, 1500);
+                
 				var updates = new AngularRecurrence(recurrenceId);
                 updates.Todos = AngularList.CreateFrom(AngularListType.Add, new AngularTodo(todo));
                 meetingHub.update(updates);

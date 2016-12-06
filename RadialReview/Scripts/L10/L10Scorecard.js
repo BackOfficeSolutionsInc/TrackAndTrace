@@ -732,6 +732,5 @@ $(window).on("page-scorecard", function () {
 	if (isIOS()) {
 		$('input').css("pointer-events", "none");
 	}
-
 });
 

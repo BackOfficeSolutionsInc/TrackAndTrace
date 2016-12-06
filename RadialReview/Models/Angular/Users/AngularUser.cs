@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Proxy;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Models.Angular.Users
 {
@@ -9,15 +10,13 @@ namespace RadialReview.Models.Angular.Users
 	{		
 		public AngularUser(long id) : base(id)
 		{
-			
-		}
 
-		public static AngularUser CreateUser(UserOrganizationModel user, ImageSize imageSize = ImageSize._64, bool? managing = null)
+        }
+
+        public static AngularUser CreateUser(UserOrganizationModel user, ImageSize imageSize = ImageSize._64, bool? managing = null)
 		{
 			if (user == null)
 				return NoUser();
-
-
 			return new AngularUser(user.Id){
 				Name = user.GetName(),
 				ImageUrl = user.ImageUrl(true, imageSize),

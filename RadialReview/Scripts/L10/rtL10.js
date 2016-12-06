@@ -100,7 +100,9 @@ $(function () {
 	meetingHub.client.addVideoProvider = addVideoProvider;
 	meetingHub.client.setSelectedVideoProvider = setSelectedVideoProvider;
 	meetingHub.client.joinVideoConference = joinVideoConference;
-	//meetingHub.client.setLeader = setLeader;
+    //meetingHub.client.setLeader = setLeader;
+	meetingHub.client.disableItem = disableItem;
+	
 
 	console.log("StartingHub ");
 
@@ -208,6 +210,15 @@ function sendTextContents() {
 	meetingHub.server.updateTextContents(MeetingId, id, val);
 	console.log("send Contents for " + id);
 }
+function sendDisable(id,disabled) {
+    meetingHub.server.sendDisable(MeetingId, id, disabled);
+    console.log("sendDisabled:"+id+" "+disabled);
+}
+
+function disableItem(id, disabled) {
+    $("#" + id).attr("disabled", disabled ? "disabled" : false);
+    console.log("receivedDisable:" + id + " " + disabled);
+}
 
 function sendFocus() {
 	var id = $(this).attr('id');
@@ -217,7 +228,6 @@ function sendFocus() {
 function sendUnfocus() {
 	setTimeout(function() {
 		if (!$(':focus').is(".rt")) {
-			//var id = $(this).attr('id');
 			meetingHub.server.updateUserFocus(MeetingId, "");
 			console.log("sendUnfocus");
 		}
@@ -246,64 +256,3 @@ function userExitMeeting(connectionId) {
     $("user-status-" + connectionId).remove();
     $("user-picture-" + connectionId).remove();
 }
-/*
-function insert(newUserMeeting, index, characters, id) {
-	userMeeting = newUserMeeting;
-	$(id).each(function() {
-		var message = $(this).val();
-		$(this).val(message.substr(0, index) + characters + message.substr(index, message.length));
-		$(this).get(0).setSelectionRange(userMeeting.StartSelection, userMeeting.EndSelection);
-	});
-}
-
-
-function remove(newUserMeeting, startIndex, endIndex,id) {
-	userMeeting = newUserMeeting;
-	$(id).each(function() {
-		var message = $(id).val();
-		$(id).val(message.substr(0, startIndex) + message.substr(endIndex, message.length - (endIndex - startIndex)));
-	});
-};
-
-function update(newUserMeeting) {
-	userMeeting = newUserMeeting;
-}
-
-function edit(event,id) {
-	//typed = typed + String.fromCharCode(event.charCode);
-	var message = $("#message")[0];
-
-	if (typed != "" || event.keyCode == 8 || event.keyCode == 46) {
-		var temp = typed;
-		typed = "";
-		//Type text
-		if (userMeeting.selectionStart == userMeeting.selectionEnd) {
-			if (temp != "") {//Insertion
-				meetingHub.server.insertion($.connection.hub.id, MeetingId, userId, meetingItemId, userMeeting.EndSelection, temp).done(update);
-			} else {//deletion
-				meetingHub.server.removal($.connection.hub.id, MeetingId, userId, meetingItemId, userMeeting.StartSelection, message.selectionStart).done(update);
-			}
-		} else { //Overwrite text
-			meetingHub.server.removal($.connection.hub.id, MeetingId, userId, meetingItemId, userMeeting.StartSelection, userMeeting.EndSelection)
-				.done(function (data) {
-					meetingHub.server.insertion($.connection.hub.id, MeetingId, userId, meetingItemId, userMeeting.EndSelection, temp).done(update);
-				});
-			f
-		}
-	} else {
-		if (message.selectionStart == message.selectionEnd) {
-			meetingHub.server.shift(MeetingId, userId, userMeeting.EndSelection, message.selectionStart).done(update);
-			selectionStarted = false;
-		}
-		if (message.selectionStart != message.selectionEnd) {
-			if (selectionStarted) {
-				meetingHub.server.selectionStart(MeetingId, userId, userMeeting.EndSelection, message.selectionStart).done(update);
-				selectionStarted = true;
-			} else {
-				meetingHub.server.selectionEnd(MeetingId, userId, userMeeting.EndSelection, message.selectionStart).done(update);
-			}
-		}
-	}
-	//lastSelectionStart = message.selectionStart;
-	//lastSelectionEnd = message.selectionEnd;
-}*/

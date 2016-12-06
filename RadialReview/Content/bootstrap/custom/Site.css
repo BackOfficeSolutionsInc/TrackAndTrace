@@ -1119,3 +1119,6 @@ body.resizing *::-moz-selection {
 .body-normal-width.is-ios #logo .link a {
   padding: 15px;
 }
+textarea {
+  white-space: pre-wrap;
+}

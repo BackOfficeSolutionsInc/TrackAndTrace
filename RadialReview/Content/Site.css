@@ -1728,9 +1728,9 @@ textarea.reason {
     background-color: blue;
 }
 
-textarea {
+/*textarea {
     white-space: pre-line;
-}
+}*/
 
     input.disable,
     textarea.disable,

@@ -117,7 +117,18 @@ namespace RadialReview.Accessors
             var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
 
 			meetingHub.appendIssue(".issues-list", IssuesData.FromIssueRecurrence(recur), r.OrderIssueBy);
-			meetingHub.showAlert("Created issue.", 1500);
+            var message = "Created issue.";
+            var showWhoCreatedDetails = true;
+            if (showWhoCreatedDetails) {
+                try {
+                    if (perms.GetCaller() != null && perms.GetCaller().GetFirstName() != null) {
+                        message = perms.GetCaller().GetFirstName() + " created an issue.";
+                    }
+                } catch (Exception) {
+                }
+            }
+
+            meetingHub.showAlert(message, 1500);
 
 			var updates = new AngularRecurrence(recurrenceId);
             updates.IssuesList.Issues = AngularList.Create<AngularIssue>(AngularListType.Add, new []{ new AngularIssue(recur) });

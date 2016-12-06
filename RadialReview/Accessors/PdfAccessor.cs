@@ -25,28 +25,23 @@ using static RadialReview.Accessors.FastReviewQueries;
 using static RadialReview.Engines.ChartsEngine;
 using RadialReview.Utilities.Pdf;
 
-namespace RadialReview.Accessors
-{
-    public class LayoutHelper
-    {
+namespace RadialReview.Accessors {
+    public class LayoutHelper {
         private readonly PdfDocument _document;
         private readonly XUnit _topPosition;
         private readonly XUnit _bottomMargin;
         private XUnit _currentPosition;
-        public LayoutHelper(PdfDocument document, XUnit topPosition, XUnit bottomMargin)
-        {
+        public LayoutHelper(PdfDocument document, XUnit topPosition, XUnit bottomMargin) {
             _document = document;
             _topPosition = topPosition;
             _bottomMargin = bottomMargin;
             // Set a value outside the page - a new page will be created on the first request.
             _currentPosition = bottomMargin + 10000;
         }
-        public XUnit GetLinePosition(XUnit requestedHeight)
-        {
+        public XUnit GetLinePosition(XUnit requestedHeight) {
             return GetLinePosition(requestedHeight, -1f);
         }
-        public XUnit GetLinePosition(XUnit requestedHeight, XUnit requiredHeight)
-        {
+        public XUnit GetLinePosition(XUnit requestedHeight, XUnit requiredHeight) {
             XUnit required = requiredHeight == -1f ? requestedHeight : requiredHeight;
             if (_currentPosition + required > _bottomMargin)
                 CreatePage();
@@ -57,8 +52,7 @@ namespace RadialReview.Accessors
         public XGraphics Gfx { get; private set; }
         public PdfPage Page { get; private set; }
 
-        void CreatePage()
-        {
+        void CreatePage() {
             Page = _document.AddPage();
             Page.Size = PdfSharp.PageSize.A4;
             Gfx = XGraphics.FromPdfPage(Page);
@@ -67,11 +61,9 @@ namespace RadialReview.Accessors
     }
 
 
-    public class PdfAccessor
-    {
+    public class PdfAccessor {
 
-        static XRect GetRect(int index)
-        {
+        static XRect GetRect(int index) {
             XRect rect = new XRect(0, 0, A4Width / 2 * 0.9, A4Height / 2 * 0.9);
             rect.X = (index % 2) * A4Width / 2 + A4Width * 0.05 / 2;
             rect.Y = (index / 2) * A4Height / 2 + A4Height * 0.05 / 2;
@@ -82,8 +74,7 @@ namespace RadialReview.Accessors
         static double LetterWidth = XUnit.FromInch(8.5).Point;
         static double LetterHeight = XUnit.FromInch(11).Point;
 
-        public static Document CreateDoc(UserOrganizationModel caller, string docTitle)
-        {
+        public static Document CreateDoc(UserOrganizationModel caller, string docTitle) {
             var document = new Document();
 
             document.Info.Title = docTitle;
@@ -105,17 +96,14 @@ namespace RadialReview.Accessors
             return document;
         }
 
-        public static void AddAccountabilityChart(UserOrganizationModel caller, Document doc, long chartId)
-        {
+        public static void AddAccountabilityChart(UserOrganizationModel caller, Document doc, long chartId) {
             //var tree = AccountabilityAccessor.GetTree(caller, chartId, expandAll: true);
             //Doesnt do anything
 
         }
 
-        public static byte[] LoadImage(MemoryStream st)
-        {
-            using (Stream stream = new MemoryStream(st.ToArray()))
-            {
+        public static byte[] LoadImage(MemoryStream st) {
+            using (Stream stream = new MemoryStream(st.ToArray())) {
                 if (stream == null)
                     throw new ArgumentException("No resource with name " + stream);
 
@@ -126,8 +114,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static Document GeneratePeopleAnalyzer(UserOrganizationModel caller, PeopleAnalyzer peopleAnalyzer)
-        {
+        public static Document GeneratePeopleAnalyzer(UserOrganizationModel caller, PeopleAnalyzer peopleAnalyzer) {
 
             var doc = CreateDoc(caller, "People Analyzer");
 
@@ -137,8 +124,7 @@ namespace RadialReview.Accessors
             return doc;
         }
 
-        public static void AddPeopleAnalyzer(Document doc, PeopleAnalyzer peopleAnalyzer)
-        {
+        public static void AddPeopleAnalyzer(Document doc, PeopleAnalyzer peopleAnalyzer) {
 
             var section = AddTitledPage(doc, "People Analyzer - " + peopleAnalyzer.ReviewName);
             //var section = doc.AddSection();
@@ -162,8 +148,7 @@ namespace RadialReview.Accessors
             column.Format.Alignment = ParagraphAlignment.Left;
 
             //Values
-            foreach (var v in peopleAnalyzer.Values)
-            {
+            foreach (var v in peopleAnalyzer.Values) {
                 column = table.AddColumn(Unit.FromInch(size));
                 column.Format.Alignment = ParagraphAlignment.Center;
             }
@@ -194,8 +179,7 @@ namespace RadialReview.Accessors
 
 
             var i = 0;
-            for (i = 0; i < peopleAnalyzer.Values.Count; i++)
-            {
+            for (i = 0; i < peopleAnalyzer.Values.Count; i++) {
                 row.Cells[1 + i].AddParagraph("" + peopleAnalyzer.Values[i].CompanyValue);
                 row.Cells[1 + i].VerticalAlignment = VerticalAlignment.Bottom;
                 row.Cells[1 + i].Format.Font.Size = 8;
@@ -214,8 +198,7 @@ namespace RadialReview.Accessors
             row.Cells[i + 3].Format.Font.Size = 8;
 
 
-            foreach (var r in peopleAnalyzer.Rows.OrderBy(x => peopleAnalyzer.GetUser(x).NotNull(y => y.GetName())))
-            {
+            foreach (var r in peopleAnalyzer.Rows.OrderBy(x => peopleAnalyzer.GetUser(x).NotNull(y => y.GetName()))) {
                 var user = peopleAnalyzer.GetUser(r);
                 if (user == null)
                     continue;
@@ -229,8 +212,7 @@ namespace RadialReview.Accessors
                 row.Cells[0].Format.RightIndent = Unit.FromInch(.05);
                 row.Cells[0].Format.Alignment = ParagraphAlignment.Right;
                 i = 1;
-                foreach (var val in peopleAnalyzer.Values)
-                {
+                foreach (var val in peopleAnalyzer.Values) {
                     var thisValue = r.ValueRatings.Where(x => x.ValueId == val.Id).Select(x => x.Rating).ToList();
                     var merge = ScatterScorer.MergeValueScores(thisValue, val);
                     var text = merge.Merged.ToShortKey();
@@ -239,8 +221,7 @@ namespace RadialReview.Accessors
                     i++;
                 }
 
-                var stateName = new Func<FiveState, string>(x =>
-                {
+                var stateName = new Func<FiveState, string>(x => {
                     if (x == FiveState.Indeterminate)
                         return "";
                     return (x == FiveState.Always || x == FiveState.Mostly) ? "Y" : "N";
@@ -267,12 +248,10 @@ namespace RadialReview.Accessors
 
         }
 
-        public static void AddReviewPrintout(UserOrganizationModel caller, PdfDocument document, ReviewController.ReviewDetailsViewModel review)
-        {
+        public static void AddReviewPrintout(UserOrganizationModel caller, PdfDocument document, ReviewController.ReviewDetailsViewModel review) {
 
             var pageNum = 0;
-            var AddPageNum = new Action<XGraphics, XRect>((g, pageDim) =>
-            {
+            var AddPageNum = new Action<XGraphics, XRect>((g, pageDim) => {
                 pageNum++;
                 g.DrawString(review.Review.ReviewerUser.GetName() + "  |  " + pageNum, PdfChartAccessor._Font8, XBrushes.LightGray, new XPoint(pageDim.Width - 20, pageDim.Height - 20), XStringFormats.BottomRight);
             });
@@ -311,8 +290,7 @@ namespace RadialReview.Accessors
             var leftColumnHeight = top;
             var rightColumnHeight = top;
 
-            if (review.Review.ClientReview.IncludeScatterChart)
-            {
+            if (review.Review.ClientReview.IncludeScatterChart) {
                 var r = new XRect(w2, top, w2, w2 * 0.8);
                 var q = PdfChartAccessor.DrawQuadrant(scatter, gfx, r, centerHeight: false, margin: margin);
                 rightColumnHeight += q.Height;
@@ -322,8 +300,7 @@ namespace RadialReview.Accessors
             PdfPage page2;
             XGraphics gfxPage2 = null;
 
-            if (review.Review.ClientReview.IncludeEvaluation)
-            {
+            if (review.Review.ClientReview.IncludeEvaluation) {
                 var testDoc = new PdfDocument();
                 var testPage = testDoc.AddPage();
                 var tester = XGraphics.FromPdfPage(testPage);
@@ -336,10 +313,8 @@ namespace RadialReview.Accessors
                 //List<ValueBar> theBar = null;
                 var valueRect = PdfChartAccessor.DrawValueTable(tester, r, review.Review.ReviewerUser, valAnswers, review.Supervisers, margin: margin);
 
-                if (r.Top + valueRect.Height > pageSize.Height)
-                {
-                    if (!addedPage2)
-                    {
+                if (r.Top + valueRect.Height > pageSize.Height) {
+                    if (!addedPage2) {
                         page2 = document.AddPage();
                         addedPage2 = true;
                         gfxPage2 = XGraphics.FromPdfPage(page2);
@@ -348,9 +323,7 @@ namespace RadialReview.Accessors
                         rightColumnHeight = 0;
                     }
                     PdfChartAccessor.DrawValueTable(gfxPage2, r, review.Review.ReviewerUser, valAnswers, review.Supervisers, margin: margin);
-                }
-                else
-                {
+                } else {
                     PdfChartAccessor.DrawValueTable(gfx, r, review.Review.ReviewerUser, valAnswers, review.Supervisers, margin: margin);
                 }
 
@@ -361,10 +334,8 @@ namespace RadialReview.Accessors
                 var rockRect = PdfChartAccessor.DrawRocksTable(gfx, r, rockAnswers, margin: margin);
 
 
-                if (r.Top + rockRect.Height > pageSize.Height)
-                {
-                    if (!addedPage2)
-                    {
+                if (r.Top + rockRect.Height > pageSize.Height) {
+                    if (!addedPage2) {
                         page2 = document.AddPage();
                         addedPage2 = true;
                         gfxPage2 = XGraphics.FromPdfPage(page2);
@@ -374,16 +345,13 @@ namespace RadialReview.Accessors
                         leftColumnHeight = 0;
                     }
                     PdfChartAccessor.DrawRocksTable(gfxPage2, r, rockAnswers, margin: margin);
-                }
-                else
-                {
+                } else {
                     PdfChartAccessor.DrawRocksTable(gfx, r, rockAnswers, margin: margin);
                 }
                 leftColumnHeight += rockRect.Height;
             }
 
-            if (review.Review.ClientReview.IncludeScorecard && review.Review.ClientReview._ScorecardRecur.Scorecard.Measurables.Any())
-            {
+            if (review.Review.ClientReview.IncludeScorecard && review.Review.ClientReview._ScorecardRecur.Scorecard.Measurables.Any()) {
                 Document doc = new Document();
                 var sc = GenerateScorecard(review.Review.ClientReview._ScorecardRecur, true);
                 var sec = doc.AddSection();
@@ -408,10 +376,8 @@ namespace RadialReview.Accessors
 
             var availableRect = new XRect(pageSize.Left, pageSize.Top, pageSize.Width, pageSize.Height);
 
-            if (feedbackAnswers.Any())
-            {
-                if (!addedPage3)
-                {
+            if (feedbackAnswers.Any()) {
+                if (!addedPage3) {
                     addedPage3 = true;
                     page3 = document.AddPage();
                     gfxPage3 = XGraphics.FromPdfPage(page3);
@@ -425,10 +391,8 @@ namespace RadialReview.Accessors
             PdfPage page4;
             XGraphics gfxPage4 = null;
 
-            if (review.Review.ClientReview.IncludeNotes && !string.IsNullOrWhiteSpace(review.Review.ClientReview.ManagerNotes))
-            {
-                if (!addedPage3)
-                {
+            if (review.Review.ClientReview.IncludeNotes && !string.IsNullOrWhiteSpace(review.Review.ClientReview.ManagerNotes)) {
+                if (!addedPage3) {
                     addedPage3 = true;
                     page3 = document.AddPage();
                     gfxPage3 = XGraphics.FromPdfPage(page3);
@@ -439,24 +403,20 @@ namespace RadialReview.Accessors
                 var tester = XGraphics.FromPdfPage(testPage);
                 var notesSize = PdfChartAccessor.DrawNotes(tester, availableRect, review.Review.ClientReview.ManagerNotes, margin: margin);
 
-                if (notesSize.Bottom > pageSize.Bottom)
-                {
+                if (notesSize.Bottom > pageSize.Bottom) {
                     addedPage4 = true;
                     page4 = document.AddPage();
                     gfxPage4 = XGraphics.FromPdfPage(page4);
                     AddPageNum(gfxPage4, pageSize);
                     PdfChartAccessor.DrawNotes(gfxPage4, pageSize, review.Review.ClientReview.ManagerNotes, margin: margin);
-                }
-                else
-                {
+                } else {
                     PdfChartAccessor.DrawNotes(gfxPage3, availableRect, review.Review.ClientReview.ManagerNotes, margin: margin);
                 }
             }
 
         }
 
-        public static PdfDocument GenerateReviewPrintout(UserOrganizationModel caller, ReviewController.ReviewDetailsViewModel review)
-        {
+        public static PdfDocument GenerateReviewPrintout(UserOrganizationModel caller, ReviewController.ReviewDetailsViewModel review) {
             var name = review.Review.ReviewerUser.GetName();
             PdfDocument document = new PdfDocument();
             document.Info.Author = "Traction® Tools";
@@ -473,21 +433,16 @@ namespace RadialReview.Accessors
         private static Color TableDark = new Color(50, 50, 50);
         private static Color TableBlack = new Color(0, 0, 0);
 
-        protected static Section AddTitledPage(Document document, string pageTitle, Orientation orientation = Orientation.Portrait, bool addSection = true, bool addPageNumber = true)
-        {
+        protected static Section AddTitledPage(Document document, string pageTitle, Orientation orientation = Orientation.Portrait, bool addSection = true, bool addPageNumber = true) {
             Section section;
 
-            if (addSection || document.LastSection == null)
-            {
+            if (addSection || document.LastSection == null) {
                 section = document.AddSection();
                 section.PageSetup.Orientation = orientation;
-            }
-            else
-            {
+            } else {
                 section = document.LastSection;
             }
-            if (addPageNumber)
-            {
+            if (addPageNumber) {
                 var paragraph = new Paragraph();
                 paragraph.AddTab();
 
@@ -532,8 +487,7 @@ namespace RadialReview.Accessors
             return section;
         }
 
-        public static Document AddL10(Document doc, AngularRecurrence recur, DateTime? lastMeeting)
-        {
+        public static Document AddL10(Document doc, AngularRecurrence recur, DateTime? lastMeeting) {
             //CreateDoc(caller,"THE LEVEL 10 MEETING");
             var section = AddTitledPage(doc, "THE LEVEL 10 MEETING™", addPageNumber: false);
             var p = section.Footers.Primary.AddParagraph("© 2003 - " + DateTime.UtcNow.Year + " EOS. All Rights Reserved.");
@@ -623,8 +577,7 @@ namespace RadialReview.Accessors
             //}, maxFontSize: 12, minFontSize: 8);
             var fs = 10;
 
-            for (var i = 0; i < todos.Count; i++)
-            {
+            for (var i = 0; i < todos.Count; i++) {
                 var pp = new Table();
                 pp.Format.SpaceAfter = 0;
                 pp.AddColumn(Unit.FromInch(1.25));
@@ -651,8 +604,7 @@ namespace RadialReview.Accessors
             r.Cells[1].AddParagraph((int)recurr.IDSMinutes + " Minutes");
             r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
 
-            for (var i = 0; i < issues.Count; i++)
-            {
+            for (var i = 0; i < issues.Count; i++) {
                 var pp = new Table();
 
                 pp.Format.SpaceAfter = 0;
@@ -689,8 +641,7 @@ namespace RadialReview.Accessors
             return doc;
         }
 
-        public static void AddTodos(UserOrganizationModel caller, Document doc, AngularRecurrence recur)
-        {
+        public static void AddTodos(UserOrganizationModel caller, Document doc, AngularRecurrence recur) {
             //var recur = L10Accessor.GetAngularRecurrence(caller, recurrenceId);
 
             //return SetupDoc(caller, caller.Organization.Settings.RockName);
@@ -741,8 +692,7 @@ namespace RadialReview.Accessors
             row.Cells[3].Format.Alignment = ParagraphAlignment.Left;
 
             var mn = 1;
-            foreach (var m in recur.Todos.Where(x => x.Complete == false).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate))
-            {
+            foreach (var m in recur.Todos.Where(x => x.Complete == false).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)) {
 
                 row = table.AddRow();
                 row.HeadingFormat = false;
@@ -764,8 +714,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static void AddIssues(UserOrganizationModel caller, Document doc, AngularRecurrence recur, bool mergeWithTodos)
-        {
+        public static void AddIssues(UserOrganizationModel caller, Document doc, AngularRecurrence recur, bool mergeWithTodos) {
             //var recur = L10Accessor.GetAngularRecurrence(caller, recurrenceId);
 
             //return SetupDoc(caller, caller.Organization.Settings.RockName);
@@ -817,8 +766,7 @@ namespace RadialReview.Accessors
             row.Cells[3].VerticalAlignment = VerticalAlignment.Center;
 
             var mn = 1;
-            foreach (var m in recur.IssuesList.Issues.Where(x => x.Complete == false).OrderByDescending(x => x.Priority).ThenBy(x => x.Name))
-            {
+            foreach (var m in recur.IssuesList.Issues.Where(x => x.Complete == false).OrderByDescending(x => x.Priority).ThenBy(x => x.Name)) {
 
                 row = table.AddRow();
                 row.HeadingFormat = false;
@@ -833,15 +781,11 @@ namespace RadialReview.Accessors
                 //row.Cells[0].AddParagraph("" + mn + ".");
 
                 var p = "";
-                if (isPriority)
-                {
-                    if (m.Priority >= 1 && m.Priority <= 3)
-                    {
+                if (isPriority) {
+                    if (m.Priority >= 1 && m.Priority <= 3) {
                         for (var i = 0; i < m.Priority; i++)
                             p += "*";//"★";
-                    }
-                    else if (m.Priority > 3)
-                    {
+                    } else if (m.Priority > 3) {
                         p = "* x" + m.Priority;
                     }
                     //row.Cells[1].Format.Font.Name = "Arial";
@@ -863,8 +807,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static void AddRocks(UserOrganizationModel caller, Document doc, AngularRecurrence recur)
-        {
+        public static void AddRocks(UserOrganizationModel caller, Document doc, AngularRecurrence recur,AngularVTO vto) {
             //var recur = L10Accessor.GetAngularRecurrence(caller, recurrenceId);
 
             //return SetupDoc(caller, caller.Organization.Settings.RockName);
@@ -878,8 +821,57 @@ namespace RadialReview.Accessors
 
             var format = caller.NotNull(x => x.Organization.NotNull(y => y.Settings.NotNull(z => z.GetDateFormat()))) ?? "MM-dd-yyyy";
 
-            if (recur.Rocks.Any(x => x.CompanyRock ?? false))
-            {
+            var addVTO = true;
+            if (addVTO && vto != null) {
+                table = section.AddTable();
+                column = table.AddColumn(Unit.FromInch(5.0));
+                column.Format.Alignment = ParagraphAlignment.Right;
+
+                table.AddColumn(Unit.FromInch(5.0));
+                column.Format.Alignment = ParagraphAlignment.Right;
+
+                row = table.AddRow();
+                var p1 = new Paragraph();
+                p1.AddFormattedText("Future Date:", TextFormat.Bold);
+                row.Cells[0].Add(p1);
+                var p2 = new Paragraph();
+                p2.AddText(vto.QuarterlyRocks.FutureDate.NotNull(x=>x.Value.ToString(format))??"");
+                row.Cells[1].Add(p2);
+
+
+                row = table.AddRow();
+                var p3 = new Paragraph();
+                p3.AddFormattedText("Revenue:", TextFormat.Bold);
+                row.Cells[0].Add(p3);
+                var p4 = new Paragraph();
+                p4.AddText(vto.QuarterlyRocks.Revenue??"");
+                row.Cells[1].Add(p4);
+
+                row = table.AddRow();
+                var p5 = new Paragraph();
+                p5.AddFormattedText("Profit:", TextFormat.Bold);
+                row.Cells[0].Add(p5);
+                var p6 = new Paragraph();
+                p6.AddText(vto.QuarterlyRocks.Profit ?? "");
+                row.Cells[1].Add(p6);
+
+                row = table.AddRow();
+                var p7 = new Paragraph();
+                p7.AddFormattedText("Measurables:", TextFormat.Bold);
+                row.Cells[0].Add(p7);
+                var p8 = new Paragraph();
+                p8.AddText(vto.QuarterlyRocks.Measurables ?? "");
+                row.Cells[1].Add(p8);
+
+                row = table.AddRow();
+                row.Height = Unit.FromPoint(25);
+            }
+
+
+
+
+
+            if (recur.Rocks.Any(x => x.CompanyRock ?? false)) {
                 table = section.AddTable();
                 table.Format.Font.Size = 9;
 
@@ -928,8 +920,7 @@ namespace RadialReview.Accessors
                 row.Cells[4].VerticalAlignment = VerticalAlignment.Center;
 
                 mn = 1;
-                foreach (var m in recur.Rocks.Where(x => x.CompanyRock == true).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate))
-                {
+                foreach (var m in recur.Rocks.Where(x => x.CompanyRock == true).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)) {
 
                     row = table.AddRow();
                     row.BottomPadding = Unit.FromInch(.05);
@@ -951,8 +942,7 @@ namespace RadialReview.Accessors
 
 
                     //Update below also
-                    switch (m.Completion)
-                    {
+                    switch (m.Completion) {
                         case RockState.OnTrack:
                             row.Cells[3].Format.Font.Color = Colors.DarkBlue;
                             break;
@@ -1024,8 +1014,7 @@ namespace RadialReview.Accessors
             row.Cells[4].VerticalAlignment = VerticalAlignment.Center;
             //table.Format.Font.Size = Unit.FromInch(.1); // --- 1/16"
             mn = 1;
-            foreach (var m in recur.Rocks.OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate))
-            {
+            foreach (var m in recur.Rocks.OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)) {
 
                 row = table.AddRow();
                 row.HeadingFormat = false;
@@ -1050,8 +1039,7 @@ namespace RadialReview.Accessors
 
 
                 //Update above also
-                switch (m.Completion)
-                {
+                switch (m.Completion) {
                     case RockState.OnTrack:
                         row.Cells[3].Format.Font.Color = Colors.DarkBlue;
                         break;
@@ -1076,8 +1064,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        private static Table GenerateScorecard(AngularRecurrence recur, bool includeDisabled = false)
-        {
+        private static Table GenerateScorecard(AngularRecurrence recur, bool includeDisabled = false) {
 
             var table = new Table();
             table.Style = "Table";
@@ -1109,8 +1096,7 @@ namespace RadialReview.Accessors
             column.Format.Alignment = ParagraphAlignment.Center;
 
             //Measured
-            for (var i = 0; i < 13; i++)
-            {
+            for (var i = 0; i < 13; i++) {
                 column = table.AddColumn(Unit.FromInch(6.25 / 13.0));
                 column.Format.Alignment = ParagraphAlignment.Center;
             }
@@ -1137,8 +1123,7 @@ namespace RadialReview.Accessors
 
             var weeks = recur.Scorecard.Weeks.OrderByDescending(x => x.ForWeekNumber).Take(numWeeks).OrderBy(x => x.ForWeekNumber);
             var ii = 0;
-            foreach (var w in weeks)
-            {
+            foreach (var w in weeks) {
                 row.Cells[4 + ii].AddParagraph(w.DisplayDate.ToString("MM/dd/yy") + " to " + w.DisplayDate.AddDays(6).ToString("MM/dd/yy"));
                 row.Cells[4 + ii].Format.Font.Size = Unit.FromInch(0.07);
                 row.Cells[4 + ii].Format.Font.Size = Unit.FromInch(0.07);
@@ -1150,8 +1135,7 @@ namespace RadialReview.Accessors
             var mn = 1;
 
             //for (var k = 0; k < 2; k++){
-            foreach (var m in measurables)
-            {
+            foreach (var m in measurables) {
 
                 row = table.AddRow();
                 row.HeadingFormat = false;
@@ -1174,29 +1158,22 @@ namespace RadialReview.Accessors
 
                 row.Cells[3].AddParagraph((m.Direction ?? LessGreater.LessThan).ToSymbol() + " " + modifier.Format(m.Target ?? 0));
                 ii = 0;
-                foreach (var w in weeks)
-                {
+                foreach (var w in weeks) {
                     var found = recur.Scorecard.Scores.FirstOrDefault(x => x.ForWeek == w.ForWeekNumber && x.Measurable.Id == m.Id);
-                    if (found != null && found.Measured.HasValue)
-                    {
+                    if (found != null && found.Measured.HasValue) {
                         var val = found.Measured ?? 0;
                         var cell = row.Cells[4 + ii];
                         cell.AddParagraph("" + modifier.Format(val.KiloFormat()));
                         var dir = found.Direction ?? m.Direction;
                         var target = found.Target;
-                        if (dir == null)
-                        {
+                        if (dir == null) {
                             dir = m.Direction;
                             target = m.Target;
                         }
-                        if (dir != null)
-                        {
-                            if (dir.Value.MeetGoal(target ?? 0, found.AltTarget ?? m.AltTarget, val))
-                            {
+                        if (dir != null) {
+                            if (dir.Value.MeetGoal(target ?? 0, found.AltTarget ?? m.AltTarget, val)) {
                                 cell.Shading.Color = Color.FromArgb(255, 223, 240, 216); //Colors.LightGreen;// Color.FromCmyk(0.0708, 0.0, 0.1, .0588);
-                            }
-                            else
-                            {
+                            } else {
                                 cell.Shading.Color = Color.FromArgb(255, 255, 236, 242);//Colors.LightSalmon;// Color.FromCmyk(0, 0.0826, 0.0826, .0510);
                             }
                         }
@@ -1209,8 +1186,7 @@ namespace RadialReview.Accessors
             return table;
         }
 
-        public static void AddScorecard(Document doc, AngularRecurrence recur)
-        {
+        public static void AddScorecard(Document doc, AngularRecurrence recur) {
             var section = AddTitledPage(doc, "Scorecard", Orientation.Landscape);
             var TableGray = new Color(100, 100, 100, 100);
             var TableBlack = new Color(0, 0, 0);
@@ -1218,8 +1194,7 @@ namespace RadialReview.Accessors
             section.Add(table);
         }
 
-        private static List<Paragraph> AddVtoSectionHeader(IVtoSectionHeader section, Unit fontSize, string dateformat)
-        {
+        private static List<Paragraph> AddVtoSectionHeader(IVtoSectionHeader section, Unit fontSize, string dateformat) {
             var o = new List<Paragraph>();
 
             var futureDate = new Paragraph();
@@ -1238,8 +1213,7 @@ namespace RadialReview.Accessors
             revenue.AddFormattedText("Revenue: ", TextFormat.Bold);
             revenue.Format.Font.Name = "Arial Narrow";
             revenue.Format.Font.Size = fontSize;
-            if (section.Revenue != null)
-            {
+            if (section.Revenue != null) {
                 //revenue.AddFormattedText(string.Format(Thread.CurrentThread.CurrentCulture, "{0:c0}", section.Revenue.Value), TextFormat.NotBold);
                 revenue.AddFormattedText(section.Revenue, TextFormat.NotBold);
             }
@@ -1250,8 +1224,7 @@ namespace RadialReview.Accessors
             profit.AddFormattedText("Profit: ", TextFormat.Bold);
             profit.Format.Font.Name = "Arial Narrow";
             profit.Format.Font.Size = fontSize;
-            if (section.Profit != null)
-            {
+            if (section.Profit != null) {
                 //profit.AddFormattedText(string.Format(Thread.CurrentThread.CurrentCulture, "{0:c0}", section.Profit.Value), TextFormat.NotBold);
                 profit.AddFormattedText(section.Profit, TextFormat.NotBold);
             }
@@ -1269,20 +1242,16 @@ namespace RadialReview.Accessors
             return o;
         }
 
-        static string MigraDocFilenameFromByteArray(byte[] image)
-        {
+        static string MigraDocFilenameFromByteArray(byte[] image) {
             return "base64:" + Convert.ToBase64String(image);
         }
 
-        public class YSize
-        {
-            public YSize(XSize ptSize)
-            {
+        public class YSize {
+            public YSize(XSize ptSize) {
                 Width = Unit.FromPoint(ptSize.Width);
                 Height = Unit.FromPoint(ptSize.Height);
             }
-            public YSize(Unit width, Unit height)
-            {
+            public YSize(Unit width, Unit height) {
                 Width = width;
                 Height = height;
             }
@@ -1292,18 +1261,15 @@ namespace RadialReview.Accessors
             public Unit Width { get; set; }
         }
 
-        private static YSize GetSize(DocumentObject o, Unit width)
-        {
+        private static YSize GetSize(DocumentObject o, Unit width) {
             var ctx = XGraphics.CreateMeasureContext(new XSize(width, Unit.FromInch(1000)), XGraphicsUnit.Inch, XPageDirection.Downwards);
             var size = GetSize(ctx, o, GetFontFamily(o), GetFontSize(o), width/* Unit.FromInch(3.47)*/);
             return size;// new YSize(Unit.FromInch(size.Width /** 0.166044*/), /*Unit.FromInch(*/size.Height /** 0.166044)*/);
         }
-        private static YSize GetSize(List<DocumentObject> os, Unit width)
-        {
+        private static YSize GetSize(List<DocumentObject> os, Unit width) {
             var ctx = XGraphics.CreateMeasureContext(new XSize(width, Unit.FromInch(1000)), XGraphicsUnit.Inch, XPageDirection.Downwards);
             var size = new YSize(0, 0);
-            foreach (var o in os)
-            {
+            foreach (var o in os) {
                 var s = GetSize(ctx, o, GetFontFamily(o), GetFontSize(o), width/* Unit.FromInch(3.47)*/);
                 size.Width = Math.Max(size.Width, s.Width);
                 size.Height += s.Height;
@@ -1311,26 +1277,22 @@ namespace RadialReview.Accessors
             return size;// new YSize(Unit.FromInch(size.Width * 0.166044), Unit.FromInch(size.Height * 0.166044));
         }
 
-        private static YSize GetSize(XGraphics ctx, DocumentObject o, String fontName, Unit fontSize, Unit maxWidth)
-        {
+        private static YSize GetSize(XGraphics ctx, DocumentObject o, String fontName, Unit fontSize, Unit maxWidth) {
             var s = new YSize(0, 0);
 
-            if (o is FormattedText)
-            {
+            if (o is FormattedText) {
                 var txt = (FormattedText)o;
-                foreach (DocumentObject e in txt.Elements)
-                {
-                    var size = GetSize(ctx, e, txt.FontName, fontSize, maxWidth);
+                foreach (DocumentObject e in txt.Elements) {
+                    var fn = string.IsNullOrWhiteSpace(txt.FontName) ? fontName : txt.FontName;
+                    var size = GetSize(ctx, e, fn, fontSize, maxWidth);
                     s.Width = Math.Max(s.Width, size.Width);
                     s.Height += size.Height;
                 }
-            }
-            else if (o is Text)
-            {
+            } else if (o is Text) {
                 var txt = (Text)o;
-              //  YSize size;
+                //  YSize size;
 
-                var wrapper= new PdfWordWrapper(ctx, maxWidth);
+                var wrapper = new PdfWordWrapper(ctx, maxWidth);
 
                 wrapper.Add(txt.Content, new XFont(fontName, fontSize), XBrushes.Black);
                 wrapper.Process();
@@ -1347,12 +1309,9 @@ namespace RadialReview.Accessors
                 //}
                 //s.Width = Math.Max(s.Width, size.Width);
                 //s.Height += size.Height * Math.Ceiling(size.Width * 0.166044 / maxWidth.Inch);
-            }
-            else if (o is Paragraph)
-            {
+            } else if (o is Paragraph) {
                 var para = (Paragraph)o;
-                foreach (DocumentObject e in para.Elements)
-                {
+                foreach (DocumentObject e in para.Elements) {
                     var family = para.Format.Font.Name;
                     if (string.IsNullOrWhiteSpace(family))
                         family = fontName;
@@ -1362,21 +1321,16 @@ namespace RadialReview.Accessors
                 }
                 s.Width += (para.Format.LeftIndent + para.Format.RightIndent);//(para.Format.LeftIndent.Inch + para.Format.RightIndent.Inch) * 6.0225;
                 s.Height += (para.Format.SpaceBefore + para.Format.SpaceAfter);// (para.Format.SpaceBefore.Inch + para.Format.SpaceAfter.Inch) * 6.0225;
-            }
-            else if (o is Table)
-            {
+            } else if (o is Table) {
                 var table = (Table)o;
                 var family = table.Format.Font.Name;
                 var h = 0.0;
                 var w = 0.0;
                 var maxH = new Unit(0.0);
-                for (var i = 0; i < table.Rows.Count; i++)
-                {
-                    for (var j = 0; j < table.Rows[i].Cells.Count; j++)
-                    {
+                for (var i = 0; i < table.Rows.Count; i++) {
+                    for (var j = 0; j < table.Rows[i].Cells.Count; j++) {
                         var curH = new Unit(0.0);
-                        for (var k = 0; k < table.Rows[i].Cells[j].Elements.Count; k++)
-                        {
+                        for (var k = 0; k < table.Rows[i].Cells[j].Elements.Count; k++) {
                             var size = GetSize(ctx, table.Rows[i].Cells[j].Elements[k], family, fontSize, table.Columns[j].Width);
                             curH += size.Height;
                         }
@@ -1385,15 +1339,12 @@ namespace RadialReview.Accessors
                     h += Math.Max(table.Rows[i].Height/*.Inch * 6.0225*/, maxH);
                     maxH = 0;
                 }
-                for (var i = 0; i < table.Columns.Count; i++)
-                {
+                for (var i = 0; i < table.Columns.Count; i++) {
                     w += table.Columns[i].Width/*.Inch * 6.0225*/;
                 }
                 s.Width += w;
                 s.Height += h;
-            }
-            else if (o is Row)
-            {
+            } else if (o is Row) {
 
                 var row = (Row)o;
                 var family = row.Format.Font.Name;
@@ -1416,44 +1367,37 @@ namespace RadialReview.Accessors
 
                 s.Width += w;
                 s.Height += h;
-            }
-            else if (o is Cell)
-            {
+            } else if (o is Cell) {
                 var cell = (Cell)o;
                 var family = cell.Format.Font.Name;
                 var h = 0.0;
                 var w = 0.0;
                 var maxH = new Unit(0.0);
                 var rowMin = new Unit(0.0);
-                if (cell.Row!=null && cell.Row.HeightRule == RowHeightRule.AtLeast){
+                if (cell.Row != null && cell.Row.HeightRule == RowHeightRule.AtLeast) {
                     rowMin = cell.Row.Height;
                 }
-                for (var i=0;i<cell.Elements.Count;i++) {
+                for (var i = 0; i < cell.Elements.Count; i++) {
                     var size = GetSize(cell.Elements[i], maxWidth);// Math.Max(cell.Height.Inch * 6.0225, maxH);
-                    s.Height += Math.Max(rowMin,size.Height)/*.Inch * 6.0225*/;
+                    s.Height += Math.Max(rowMin, size.Height)/*.Inch * 6.0225*/;
                 }
-               //Width is not calculated.
-               //s.Width += size.Width;
-               //for (var i = 0; i < row.Cells.Count; i++) {
-               //	w += row.Cells[i].Column.Width.Inch * 6.0225;
-               //}
+                //Width is not calculated.
+                //s.Width += size.Width;
+                //for (var i = 0; i < row.Cells.Count; i++) {
+                //	w += row.Cells[i].Column.Width.Inch * 6.0225;
+                //}
 
-               //s.Width += w;
-               //s.Height += h;
-            }
-            else if (o is Character)
-            {
+                //s.Width += w;
+                //s.Height += h;
+            } else if (o is Character) {
 
-            }
-            else
-            {
+            } else {
                 throw new Exception("donno this type:" + o.NotNull(x => x.GetType()));
             }
             return s;
         }
 
-        public static List<Unit> GetRowHeights(Table table)
-        {
+        public static List<Unit> GetRowHeights(Table table) {
             var doc = new Document();
             var sec = doc.AddSection();
             var clone = table.Clone();
@@ -1461,30 +1405,28 @@ namespace RadialReview.Accessors
             var renderer = new DocumentRenderer(doc);
             renderer.PrepareDocument();
             var o = new List<Unit>();
-            for(var i=0;i<clone.Rows.Count;i++) {
+            for (var i = 0; i < clone.Rows.Count; i++) {
                 var row = clone.Rows[i];
                 o.Add(row.Height);
             }
             return o;
         }
 
-        public static List<Unit> GetRowHeights(List<Row> rows,Unit maxWidth)
-        {
+        public static List<Unit> GetRowHeights(List<Row> rows, Unit maxWidth) {
             if (!rows.Any())
                 return new List<Unit>();
 
             var table = new Table();
             var first = rows.First();
 
-            foreach(var c in first.Cells){
+            foreach (var c in first.Cells) {
                 table.AddColumn();
             }
-                        
+
             foreach (var row in rows) {
                 var tr = table.AddRow();
-                for (var i=0;i<row.Cells.Count;i++)
-                {
-                    for(var ei=0;ei<row.Cells[i].Elements.Count;ei++) {
+                for (var i = 0; i < row.Cells.Count; i++) {
+                    for (var ei = 0; ei < row.Cells[i].Elements.Count; ei++) {
                         tr.Cells[i].Elements.Add((DocumentObject)row.Cells[i].Elements[ei].Clone()); //(r.Clone());
                     }
                 }
@@ -1494,15 +1436,11 @@ namespace RadialReview.Accessors
             return GetRowHeights(table);
         }
 
-        private static Unit GetFontSize(DocumentObject p)
-        {
+        private static Unit GetFontSize(DocumentObject p) {
             Unit? size = null;
-            if (p is Paragraph)
-            {
+            if (p is Paragraph) {
                 size = ((Paragraph)p).Format.Font.Size;
-            }
-            else if (p is Table)
-            {
+            } else if (p is Table) {
                 var table = (Table)p;
                 size = table.Format.Font.Size;
             }
@@ -1511,15 +1449,11 @@ namespace RadialReview.Accessors
             return size.Value;
         }
 
-        private static string GetFontFamily(DocumentObject p)
-        {
+        private static string GetFontFamily(DocumentObject p) {
             string family = null;
-            if (p is Paragraph)
-            {
+            if (p is Paragraph) {
                 family = ((Paragraph)p).Format.Font.Name;
-            }
-            else if (p is Table)
-            {
+            } else if (p is Table) {
                 var table = (Table)p;
                 family = table.Format.Font.Name;
             }
@@ -1528,36 +1462,31 @@ namespace RadialReview.Accessors
             return family;
         }
 
-        public static List<Tuple<DocumentObject, Unit>> GetHeights<T>(Unit width, IEnumerable<T> paragraphs, Func<T, DocumentObject> selector = null,Unit? extraHeight=null) where T : DocumentObject
-        {
+        public static List<Tuple<DocumentObject, Unit>> GetHeights<T>(Unit width, IEnumerable<T> paragraphs, Func<T, DocumentObject> selector = null, Unit? extraHeight = null) where T : DocumentObject {
             var ctx = XGraphics.CreateMeasureContext(new XSize(width.Inch, Unit.FromInch(1000)), XGraphicsUnit.Inch, XPageDirection.Downwards);
-            return paragraphs.Select(xx =>
-            {
+            return paragraphs.Select(xx => {
                 DocumentObject x = (selector == null) ? xx : selector(xx);
                 var f = GetFontFamily(x);
                 var s = GetFontSize(x);
                 var size = GetSize(ctx, x, f, s, width);
                 //var height = Unit.FromInch(size.Height * 0.166044002);
                 // var extraHeight2 = extraHeight ?? new Unit(0);
-                Unit totalHeight = size.Height + extraHeight ?? new Unit(0.0);
+                Unit totalHeight = size.Height + (extraHeight ?? new Unit(0.0));
                 return Tuple.Create(x, totalHeight);
             }).ToList();
         }
 
-        public static List<List<Tuple<DocumentObject, Unit>>> SplitHeights<T>(Unit width, Unit[] heights, IEnumerable<T> paragraphs, Func<T, DocumentObject> selector=null,Unit? extraHeight =null) where T : DocumentObject
-        {
+        public static List<List<Tuple<DocumentObject, Unit>>> SplitHeights<T>(Unit width, Unit[] heights, IEnumerable<T> paragraphs, Func<T, DocumentObject> selector = null, Unit? extraHeight = null) where T : DocumentObject {
             Unit cumulative = 0;
             var splits = new List<List<Tuple<DocumentObject, Unit>>>();
             var curHeight = heights[0];
             var page = 0;
-            var heightObj = GetHeights(width, paragraphs,selector, extraHeight);
+            var heightObj = GetHeights(width, paragraphs, selector, extraHeight);
             var curSplit = new List<Tuple<DocumentObject, Unit>>();
-            for (var i = 0; i < heightObj.Count(); i++)
-            {
+            for (var i = 0; i < heightObj.Count(); i++) {
                 var ho = heightObj[i];
                 cumulative += ho.Item2;
-                if (cumulative > curHeight && curSplit.Any())
-                {
+                if (cumulative > curHeight && curSplit.Any()) {
                     //next
                     page += 1;
                     curHeight = heights[Math.Min(page, heights.Count() - 1)];
@@ -1568,8 +1497,7 @@ namespace RadialReview.Accessors
                 curSplit.Add(ho);
 
             }
-            if (curSplit.Any())
-            {
+            if (curSplit.Any()) {
                 splits.Add(curSplit);
             }
 
@@ -1577,10 +1505,8 @@ namespace RadialReview.Accessors
             return splits;
         }
 
-        public static void AppendAll(DocumentObject o, List<DocumentObject> toAdd)
-        {
-            foreach (var p in toAdd)
-            {
+        public static void AppendAll(DocumentObject o, List<DocumentObject> toAdd) {
+            foreach (var p in toAdd) {
                 if (o is Paragraph)
                     ((Paragraph)o).Elements.Add(p);
                 if (o is Cell)
@@ -1590,8 +1516,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static Unit ResizeToFit(DocumentObject cell, Unit width, Unit height, Func<DocumentObject, Unit, IEnumerable<DocumentObject>> paragraphs, Unit? minFontSize = null, Unit? maxFontSize = null)
-        {
+        public static Unit ResizeToFit(DocumentObject cell, Unit width, Unit height, Func<DocumentObject, Unit, IEnumerable<DocumentObject>> paragraphs, Unit? minFontSize = null, Unit? maxFontSize = null) {
             var ctx = XGraphics.CreateMeasureContext(new XSize(width.Inch, height.Inch), XGraphicsUnit.Inch, XPageDirection.Downwards);
             var fontSize = maxFontSize ?? Unit.FromPoint(12);
             var minSize = minFontSize ?? Unit.FromPoint(8);
@@ -1600,28 +1525,22 @@ namespace RadialReview.Accessors
             if (!(cell is Cell || cell is Paragraph || cell is Section))
                 throw new Exception("cant handle:" + cell.NotNull(x => x.GetType()));
 
-            while (true)
-            {
+            while (true) {
                 var curHeight = new Unit(0.0);
                 var curWidth = new Unit(0.0);
                 paragraphsToAdd = paragraphs(cell, fontSize).ToList();
 
-                foreach (var p in paragraphsToAdd)
-                {
+                foreach (var p in paragraphsToAdd) {
                     string family = null;
-                    if (p is Paragraph)
-                    {
+                    if (p is Paragraph) {
                         ((Paragraph)p).Format.Font.Size = fontSize;
                         family = ((Paragraph)p).Format.Font.Name;
-                    }
-                    else if (p is Table)
-                    {
+                    } else if (p is Table) {
                         var table = (Table)p;
                         table.Format.Font.Size = fontSize;
                         family = table.Format.Font.Name;
                     }
-                    if (string.IsNullOrWhiteSpace(family))
-                    {
+                    if (string.IsNullOrWhiteSpace(family)) {
                         if (cell is Paragraph)
                             family = ((Paragraph)cell).Format.Font.Name;
                         if (cell is Cell)
@@ -1635,8 +1554,7 @@ namespace RadialReview.Accessors
                     curWidth += size.Width;
                 }
 
-                if (curHeight < height || fontSize <= minSize)
-                {
+                if (curHeight < height || fontSize <= minSize) {
                     break;
                 }
                 fontSize -= Unit.FromPoint(1);
@@ -1646,23 +1564,21 @@ namespace RadialReview.Accessors
             return fontSize;
         }
 
-        private static List<Paragraph> OrderedList(IEnumerable<string> items, ListType type, Unit? leftIndent = null)
-        {
+        private static List<Paragraph> OrderedList(IEnumerable<string> items, ListType type, Unit? leftIndent = null) {
 
             var o = new List<Paragraph>();
             var res = items.Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
-            for (int idx = 0; idx < res.Count(); ++idx)
-            {
+            for (int idx = 0; idx < res.Count(); ++idx) {
                 ListInfo listinfo = new ListInfo();
                 listinfo.ContinuePreviousList = idx > 0;
                 listinfo.ListType = type;
                 var paragraph = new Paragraph();
                 paragraph.AddText((res[idx] ?? "").Trim());
                 paragraph.Format.Font.Name = "Arial Narrow";
+                paragraph.Format.Font.Size = 10;
                 paragraph.Style = "" + type;
                 paragraph.Format.ListInfo = listinfo;
-                if (leftIndent != null)
-                {
+                if (leftIndent != null) {
                     var tabStopDist = Unit.FromInch(.15);
                     paragraph.Format.TabStops.ClearAll();
                     paragraph.Format.TabStops.AddTabStop(Unit.FromInch(leftIndent.Value.Inch + tabStopDist));
@@ -1674,8 +1590,7 @@ namespace RadialReview.Accessors
             return o;
         }
 
-        private static Section AddVtoPage(Document doc, string docName, string pageName)
-        {
+        private static Section AddVtoPage(Document doc, string docName, string pageName) {
 
             //doc.AddTab
 
@@ -1789,56 +1704,299 @@ namespace RadialReview.Accessors
             return section;
         }
 
-        private static void AddVtoVision(Document doc, AngularVTO vto, string dateformat)
-        {
+        private static void AddVtoVision(Document doc, AngularVTO vto, string dateformat) {
+
+            Cell coreValuesPanel, coreFocusPanel, tenYearPanel, marketingStrategyPanel, threeYearPanel;
+            Table issueTable, rockTable, goalTable;
+            Unit baseHeight = Unit.FromInch(5.1);//5.15
+
 
             var TableGray = new Color(100, 100, 100, 100);
             var TableBlack = new Color(0, 0, 0);
-            /////////////////////////////
 
-            var section = AddVtoPage(doc, vto.Name ?? "", "VISION");
+            AddPage_VtoVision(doc, vto, baseHeight, out coreValuesPanel, out coreFocusPanel, out tenYearPanel, out marketingStrategyPanel, out threeYearPanel);
 
-            /////////////////////////////
+            var values = vto.Values.ToList();
+            ResizeToFit(coreValuesPanel, Unit.FromInch(5.33), Unit.FromInch(1.2), (cell, fs) => {
+                var o = new List<Paragraph>();
+                return OrderedList(values.Select(x => x.CompanyValue), ListType.NumberList1);
+            }, maxFontSize: Unit.FromPoint(10));
+
+
+            ResizeToFit(coreFocusPanel, Unit.FromInch(5.33), Unit.FromInch(1.2), (cell, fs) => {
+                var o = new List<Paragraph>();
+                var p1 = new Paragraph();
+                var txt = p1.AddFormattedText((vto.CoreFocus.PurposeTitle ?? "Purpose/Cause/Passion").Trim().TrimEnd(':') + ": ", TextFormat.Bold);
+                p1.Format.Font.Name = "Arial Narrow";
+                p1.AddText(vto.CoreFocus.Purpose ?? "");
+                o.Add(p1);
+                p1.Format.SpaceAfter = fs * 1.5;
+                var p2 = new Paragraph();
+                p2.AddFormattedText("Our Niche: ", TextFormat.Bold);
+                p2.AddText(vto.CoreFocus.Niche ?? "");
+                p2.Format.Font.Name = "Arial Narrow";
+                o.Add(p2);
+                return o;
+            }, maxFontSize: 10);
+
+
+            ResizeToFit(tenYearPanel, Unit.FromInch(5.33), Unit.FromInch(.6), (cell, fs1) => {
+                var o = new List<Paragraph>();
+                var p11 = new Paragraph();
+                p11.Format.Font.Name = "Arial Narrow";
+                p11.AddText(vto.TenYearTarget ?? "");
+                o.Add(p11);
+                return o;
+            }, maxFontSize: 10);
+
+            var marketingParagraphs = new List<Paragraph>();
+
+            //////
+            {
+                var fs = 10;
+                var p1 = new Paragraph();
+                p1.Format.Font.Size = fs;
+                var txt = p1.AddFormattedText("Target Market/\"The List\": ", TextFormat.Bold);
+                p1.Format.Font.Name = "Arial Narrow";
+                p1.AddText(vto.Strategy.TargetMarket ?? "");
+                marketingParagraphs.Add(p1);
+
+                var p2 = new Paragraph();
+                p2.Format.Font.Size = fs;
+                var uniques = vto.Strategy.Uniques.ToList();
+                p2.Format.SpaceBefore = fs * 1.5;
+                var uniquesTitle = "Uniques: ";
+                if (uniques.Count == 3)
+                    uniquesTitle = "Three " + uniquesTitle;
+                p2.AddFormattedText(uniquesTitle, TextFormat.Bold);
+                p2.Format.Font.Name = "Arial Narrow";
+                marketingParagraphs.Add(p2);
+                marketingParagraphs.AddRange(OrderedList(uniques.Select(x => x.Data), ListType.NumberList1, Unit.FromInch(.44)));
+
+                var p3 = new Paragraph();
+                p3.Format.Font.Size = fs;
+                p3.Format.SpaceBefore = fs * 1.5;
+                p3.AddFormattedText("Proven Process: ", TextFormat.Bold);
+                p3.Format.Font.Name = "Arial Narrow";
+                p3.AddText(vto.Strategy.ProvenProcess ?? "");
+                marketingParagraphs.Add(p3);
+
+                var p4 = new Paragraph();
+                p4.Format.Font.Size = fs;
+                p4.Format.SpaceBefore = fs * 1.5;
+                p4.AddFormattedText("Guarantee: ", TextFormat.Bold);
+                p4.Format.Font.Name = "Arial Narrow";
+                p4.AddText(vto.Strategy.Guarantee ?? "");
+                marketingParagraphs.Add(p4);
+            }
+            //////
+            var marketingPages = SplitHeights(Unit.FromInch(5.33), new[] { Unit.FromInch(2.7), Unit.FromInch(5.7) }, marketingParagraphs);
+
+            var looksList = vto.ThreeYearPicture.LooksLike.Where(x => !string.IsNullOrWhiteSpace(x.Data)).Select(x => x.Data).ToList();
+
+            var threeYearParagraphs = new List<Paragraph>();
+            {
+                var fs = 10;
+                threeYearParagraphs.AddRange(AddVtoSectionHeader(vto.ThreeYearPicture, fs, dateformat));
+                var p = new Paragraph();
+                p.AddFormattedText("What does it look like?", TextFormat.Bold | TextFormat.Underline);
+                p.Format.Font.Name = "Arial Narrow";
+                p.Format.Font.Size = fs;
+                threeYearParagraphs.Add(p);
+                threeYearParagraphs.AddRange(OrderedList(looksList, ListType.BulletList1));
+            }
+
+            var threeYearPages = SplitHeights(Unit.FromInch(3.4), new[] { Unit.FromInch(5.15), Unit.FromInch(5.7) }, threeYearParagraphs);
+
+            var curMSI = 0;
+            var curTYPI = 0;
+            //Page 1
+            if (marketingPages.Any()) {
+                foreach (var mPara in marketingPages[0]) {
+                    marketingStrategyPanel.Add(marketingParagraphs[curMSI].Clone());
+                    curMSI++;
+                }
+            }
+            if (threeYearPages.Any()) {
+                foreach (var tyPara in threeYearPages[0]) {
+                    threeYearPanel.Add(threeYearParagraphs[curTYPI].Clone());
+                    curTYPI++;
+                }
+            }
             
 
+            var maxPage = Math.Max(marketingPages.Count(), threeYearPages.Count());
+            for (var p = 1; p < maxPage; p++) {
+                if (p < maxPage) {
+                    var showMarketing = p < marketingPages.Count();
+                    var showThreeYear = p < threeYearPages.Count();
+
+                    AddPage_VtoVision(doc, vto, baseHeight, out coreValuesPanel, out coreFocusPanel, out tenYearPanel, out marketingStrategyPanel, out threeYearPanel, false, false, false, showMarketing, showThreeYear);
+                }
+                if (p < marketingPages.Count()) {
+                    foreach (var r in marketingPages[p]) {
+                        marketingStrategyPanel.Add(marketingParagraphs[curMSI].Clone());
+                        curMSI++;
+                    }
+                }
+
+                if (p < threeYearPages.Count()) {
+                    foreach (var r in threeYearPages[p]) {
+                        threeYearPanel.Add(threeYearParagraphs[curTYPI].Clone());
+                        curTYPI++;
+                    }
+                }
+
+            }
+        }
+
+        private static void AddPage_VtoVision(Document doc, AngularVTO vto, Unit height,
+            out Cell coreValuePanel, out Cell coreFocusPanel, out Cell tenYearPanel, out Cell marketingStrategyPanel, out Cell threeYearPanel,
+            bool showCoreValue = true, bool showCoreFocus = true, bool showTenYear = true, bool showMarketingStrategy = true, bool showThreeYear = true) {
+            var section = AddVtoPage(doc, vto.Name ?? "", "VISION");
             var vision = section.AddTable();
             vision.Style = "Table";
             vision.Borders.Color = TableBlack;
             vision.Borders.Width = 1;
-            //table.Borders.Left.Width = 0.25;
-            //table.Borders.Right.Width = 0.25;
-            //table.Borders.Top.Width = 7.0/8.0;
             vision.Rows.LeftIndent = 0;
             vision.LeftPadding = 0;
             vision.RightPadding = 0;
 
-            vision.AddColumn(Unit.FromInch(1.66 + 5.33));
-            //vision.AddColumn(Unit.FromInch());
-            vision.AddColumn(Unit.FromInch(3.4));
+            var anyCellsOnLeft = showMarketingStrategy || showCoreValue || showCoreFocus || showTenYear;
+
+            if (anyCellsOnLeft && showThreeYear) {
+                vision.AddColumn(Unit.FromInch(1.66 + 5.33));
+                vision.AddColumn(Unit.FromInch(3.4));
+            }else {
+                vision.AddColumn(Unit.FromInch(1.66 + 5.33+ 3.4));
+            }
 
             var vrow = vision.AddRow();
-
             var vtoLeft = vrow.Cells[0].Elements.AddTable();
-            var column = vtoLeft.AddColumn(Unit.FromInch(1.66));
-            column = vtoLeft.AddColumn(Unit.FromInch(5.33));
-
-            var row = vtoLeft.AddRow();
-            var cvTitle = row.Cells[0];
-            row.Height = Unit.FromInch(1.2);
-            row.Borders.Bottom.Color = TableBlack;
-            row.Borders.Right.Color = TableBlack;
-
-            cvTitle.Shading.Color = TableGray;
-            cvTitle.Format.Font.Bold = true;
-            cvTitle.Format.Font.Size = 14;
-            cvTitle.Format.Font.Name = "Arial Narrow";
-            cvTitle.AddParagraph(vto.CoreValueTitle ?? "CORE VALUES");
-            cvTitle.Format.Alignment = ParagraphAlignment.Center;
-            row.VerticalAlignment = VerticalAlignment.Center;
-            var coreValue = row.Cells[1];//.AddParagraph("CV-asdf");
 
 
-            var values = vto.Values.ToList();
+            Column column;
+            if (anyCellsOnLeft) {
+                column = vtoLeft.AddColumn(Unit.FromInch(1.66));
+                if (showThreeYear) {
+                    column = vtoLeft.AddColumn(Unit.FromInch(5.33));
+                } else {
+                    column = vtoLeft.AddColumn(Unit.FromInch(5.33 + 3.4));
+                }
+            }else {
+                column = vtoLeft.AddColumn(Unit.FromInch(0));
+                column = vtoLeft.AddColumn(Unit.FromInch(0));
+            }
+
+
+            Row row;
+
+            var extraHeight = Unit.FromInch(0);
+
+            //core values
+            if (showCoreValue) {
+                row = vtoLeft.AddRow();
+                var cvTitle = row.Cells[0];
+                row.Height = Unit.FromInch(1.2);
+                row.Borders.Bottom.Color = TableBlack;
+                row.Borders.Right.Color = TableBlack;
+                cvTitle.Shading.Color = TableGray;
+                cvTitle.Format.Font.Bold = true;
+                cvTitle.Format.Font.Size = 14;
+                cvTitle.Format.Font.Name = "Arial Narrow";
+                cvTitle.AddParagraph(vto.CoreValueTitle ?? "CORE VALUES");
+                cvTitle.Format.Alignment = ParagraphAlignment.Center;
+                row.VerticalAlignment = VerticalAlignment.Center;
+                coreValuePanel = row.Cells[1];
+            } else {
+                coreValuePanel = null;
+                extraHeight += Unit.FromInch(1.2);
+            }
+
+            //corefocus
+            if (showCoreFocus) {
+                row = vtoLeft.AddRow();
+                row.Borders.Bottom.Color = TableBlack;
+                row.Borders.Right.Color = TableBlack;
+                row.Height = Unit.FromInch(1.2);
+                var cfTitle = row.Cells[0];
+                cfTitle.Shading.Color = TableGray;
+                cfTitle.AddParagraph(vto.CoreFocus.CoreFocusTitle ?? "CORE FOCUS™");
+                cfTitle.Format.Font.Name = "Arial Narrow";
+                cfTitle.Format.Font.Bold = true;
+                cfTitle.Format.Font.Size = 14;
+                coreFocusPanel = row.Cells[1];
+                cfTitle.Format.Alignment = ParagraphAlignment.Center;
+                row.VerticalAlignment = VerticalAlignment.Center;
+            } else {
+                coreFocusPanel = null;
+                extraHeight += Unit.FromInch(1.2);
+            }
+
+            //ten year target
+            if (showTenYear) {
+                row = vtoLeft.AddRow();
+                row.Borders.Bottom.Color = TableBlack;
+                row.Borders.Right.Color = TableBlack;
+                var tyTitle = row.Cells[0];
+                row.Height = Unit.FromInch(0.6);
+                tyTitle.Shading.Color = TableGray;
+                tyTitle.AddParagraph(vto.TenYearTargetTitle ?? "10-YEAR TARGET™");
+                tyTitle.Format.Font.Name = "Arial Narrow";
+                tyTitle.Format.Font.Bold = true;
+                tyTitle.Format.Font.Size = 13.5;
+                tenYearPanel = row.Cells[1];
+                tyTitle.Format.Alignment = ParagraphAlignment.Center;
+                row.VerticalAlignment = VerticalAlignment.Center;
+            } else {
+                tenYearPanel = null;
+                extraHeight += Unit.FromInch(0.6);
+            }
+
+            //marketing strategy
+            if (showMarketingStrategy) {
+                row = vtoLeft.AddRow();
+                var msTitle = row.Cells[0];
+                msTitle.Shading.Color = TableGray;
+                msTitle.AddParagraph(vto.Strategy.MarketingStrategyTitle ?? "MARKETING STRATEGY");
+                msTitle.Format.Font.Name = "Arial Narrow";
+                marketingStrategyPanel = row.Cells[1];
+                msTitle.Format.Font.Bold = true;
+                msTitle.Format.Font.Size = 14;
+                row.Height = Unit.FromInch(2.7)+extraHeight;
+                msTitle.Format.Alignment = ParagraphAlignment.Center;
+                row.VerticalAlignment = VerticalAlignment.Center;
+                row.Borders.Right.Color = TableBlack;
+            } else {
+                marketingStrategyPanel = null;
+            }
+
+            //three year picture
+            if (showThreeYear) {
+                var vtoRight = vrow.Cells[1].Elements.AddTable();
+                if (anyCellsOnLeft) {
+                    column = vtoRight.AddColumn(Unit.FromInch(3.4));
+                }else {
+                    column = vtoRight.AddColumn(Unit.FromInch(5.33 + 3.4));
+                }
+                row = vtoRight.AddRow();
+                row.Height = Unit.FromInch(.55);
+                var typTitle = row.Cells[0];
+                typTitle.Shading.Color = TableGray;
+                typTitle.AddParagraph(vto.ThreeYearPicture.ThreeYearPictureTitle ?? "3-YEAR-PICTURE™");
+                typTitle.Format.Font.Name = "Arial Narrow";
+                typTitle.Format.Font.Bold = true;
+                typTitle.Format.Font.Size = 14;
+                typTitle.Format.Alignment = ParagraphAlignment.Center;
+                row.VerticalAlignment = VerticalAlignment.Center;
+                row.Borders.Bottom.Color = TableBlack;
+                row = vtoRight.AddRow();
+                threeYearPanel = row.Cells[0];
+            } else {
+                threeYearPanel = null;
+            }
+
+            //bullet points
             Style style = doc.AddStyle("NumberList1", "Normal");
             style.ParagraphFormat.RightIndent = 12;
             style.ParagraphFormat.TabStops.ClearAll();
@@ -1856,164 +2014,9 @@ namespace RadialReview.Accessors
             style.ParagraphFormat.FirstLineIndent = Unit.FromInch(-.15);
             style.ParagraphFormat.SpaceBefore = 0;
             style.ParagraphFormat.SpaceAfter = 0;
-
-
-
-
-            ResizeToFit(coreValue, Unit.FromInch(5.33), Unit.FromInch(1.2), (cell, fs) =>
-            {
-                var o = new List<Paragraph>();
-                return OrderedList(values.Select(x => x.CompanyValue), ListType.NumberList1);
-            }, maxFontSize: Unit.FromPoint(10));
-
-            row = vtoLeft.AddRow();
-            row.Borders.Bottom.Color = TableBlack;
-            row.Borders.Right.Color = TableBlack;
-            row.Height = Unit.FromInch(1.2);
-            var cfTitle = row.Cells[0];
-            cfTitle.Shading.Color = TableGray;
-            cfTitle.AddParagraph(vto.CoreFocus.CoreFocusTitle ?? "CORE FOCUS™");
-            cfTitle.Format.Font.Name = "Arial Narrow";
-            cfTitle.Format.Font.Bold = true;
-            cfTitle.Format.Font.Size = 14;
-            var coreFocus = row.Cells[1];
-            cfTitle.Format.Alignment = ParagraphAlignment.Center;
-            row.VerticalAlignment = VerticalAlignment.Center;
-
-            ResizeToFit(coreFocus, Unit.FromInch(5.33), Unit.FromInch(1.2), (cell, fs) =>
-            {
-                var o = new List<Paragraph>();
-                var p1 = new Paragraph();
-                var txt = p1.AddFormattedText((vto.CoreFocus.PurposeTitle ?? "Purpose/Cause/Passion").Trim().TrimEnd(':') + ": ", TextFormat.Bold);
-                p1.Format.Font.Name = "Arial Narrow";
-                p1.AddText(vto.CoreFocus.Purpose ?? "");
-                o.Add(p1);
-                p1.Format.SpaceAfter = fs * 1.5;
-                var p2 = new Paragraph();
-                p2.AddFormattedText("Our Niche: ", TextFormat.Bold);
-                p2.AddText(vto.CoreFocus.Niche ?? "");
-                p2.Format.Font.Name = "Arial Narrow";
-                o.Add(p2);
-                return o;
-            }, maxFontSize: 10);
-
-
-
-            row = vtoLeft.AddRow();
-            row.Borders.Bottom.Color = TableBlack;
-            row.Borders.Right.Color = TableBlack;
-            var tyTitle = row.Cells[0];
-            row.Height = Unit.FromInch(0.6);
-            tyTitle.Shading.Color = TableGray;
-            tyTitle.AddParagraph(vto.TenYearTargetTitle ?? "10-YEAR TARGET™");
-            tyTitle.Format.Font.Name = "Arial Narrow";
-            tyTitle.Format.Font.Bold = true;
-            tyTitle.Format.Font.Size = 13.5;
-            var tenYear = row.Cells[1];
-            tyTitle.Format.Alignment = ParagraphAlignment.Center;
-            row.VerticalAlignment = VerticalAlignment.Center;
-
-            ResizeToFit(tenYear, Unit.FromInch(5.33), Unit.FromInch(.6), (cell, fs) =>
-            {
-                var o = new List<Paragraph>();
-                var p1 = new Paragraph();
-                p1.Format.Font.Name = "Arial Narrow";
-                p1.AddText(vto.TenYearTarget ?? "");
-                o.Add(p1);
-                return o;
-            }, maxFontSize: 10);
-
-
-            row = vtoLeft.AddRow();
-            var msTitle = row.Cells[0];
-            msTitle.Shading.Color = TableGray;
-            msTitle.AddParagraph(vto.Strategy.MarketingStrategyTitle ?? "MARKETING STRATEGY");
-            msTitle.Format.Font.Name = "Arial Narrow";
-            var marketingStrategy = row.Cells[1];
-            msTitle.Format.Font.Bold = true;
-            msTitle.Format.Font.Size = 14;
-            row.Height = Unit.FromInch(2.7);
-            msTitle.Format.Alignment = ParagraphAlignment.Center;
-            row.VerticalAlignment = VerticalAlignment.Center;
-            row.Borders.Right.Color = TableBlack;
-
-            var uniques = vto.Strategy.Uniques.ToList();
-
-            ResizeToFit(marketingStrategy, Unit.FromInch(5.33), Unit.FromInch(2.7), (cell, fs) =>
-            {
-                var o = new List<Paragraph>();
-                var p1 = new Paragraph();
-                var txt = p1.AddFormattedText("Target Market/\"The List\": ", TextFormat.Bold);
-                p1.Format.Font.Name = "Arial Narrow";
-                p1.AddText(vto.Strategy.TargetMarket ?? "");
-                o.Add(p1);
-
-                var p2 = new Paragraph();
-                p2.Format.SpaceBefore = fs * 1.5;
-                var uniquesTitle = "Uniques: ";
-                if (uniques.Count == 3)
-                    uniquesTitle = "Three " + uniquesTitle;
-                p2.AddFormattedText(uniquesTitle, TextFormat.Bold);
-                p2.Format.Font.Name = "Arial Narrow";
-                o.Add(p2);
-
-                o.AddRange(OrderedList(uniques.Select(x => x.Data), ListType.NumberList1, Unit.FromInch(.44)));
-
-                var p3 = new Paragraph();
-                p3.Format.SpaceBefore = fs * 1.5;
-                p3.AddFormattedText("Proven Process: ", TextFormat.Bold);
-                p3.Format.Font.Name = "Arial Narrow";
-                p3.AddText(vto.Strategy.ProvenProcess ?? "");
-                o.Add(p3);
-
-                var p4 = new Paragraph();
-                p4.Format.SpaceBefore = fs * 1.5;
-                p4.AddFormattedText("Guarantee: ", TextFormat.Bold);
-                p4.Format.Font.Name = "Arial Narrow";
-                p4.AddText(vto.Strategy.Guarantee ?? "");
-                o.Add(p4);
-
-                return o;
-            }, maxFontSize: 10);
-
-
-
-            //RIGHT SIDE
-
-            var vtoRight = vrow.Cells[1].Elements.AddTable();
-            column = vtoRight.AddColumn(Unit.FromInch(3.4));
-
-            row = vtoRight.AddRow();
-            row.Height = Unit.FromInch(.55);
-            var typTitle = row.Cells[0];
-            typTitle.Shading.Color = TableGray;
-            typTitle.AddParagraph(vto.ThreeYearPicture.ThreeYearPictureTitle ?? "3-YEAR-PICTURE™");
-            typTitle.Format.Font.Name = "Arial Narrow";
-            typTitle.Format.Font.Bold = true;
-            typTitle.Format.Font.Size = 14;
-            typTitle.Format.Alignment = ParagraphAlignment.Center;
-            row.VerticalAlignment = VerticalAlignment.Center;
-            row.Borders.Bottom.Color = TableBlack;
-
-            row = vtoRight.AddRow();
-            var threeYear = row.Cells[0];
-            var looksList = vto.ThreeYearPicture.LooksLike.Where(x => !string.IsNullOrWhiteSpace(x.Data)).Select(x => x.Data).ToList();
-
-            ResizeToFit(threeYear, Unit.FromInch(3.4), Unit.FromInch(5.15), (cell, fs) =>
-            {
-                var o = new List<Paragraph>();
-                o.AddRange(AddVtoSectionHeader(vto.ThreeYearPicture, fs, dateformat));
-                var p = new Paragraph();
-                p.AddFormattedText("What does it look like?", TextFormat.Bold | TextFormat.Underline);
-                p.Format.Font.Name = "Arial Narrow";
-                o.Add(p);
-                o.AddRange(OrderedList(looksList, ListType.BulletList1));
-                return o;
-            }, maxFontSize: 10);
         }
 
-        private static void AddVtoTraction(Document doc, AngularVTO vto, string dateformat)
-        {
+        private static void AddVtoTraction(Document doc, AngularVTO vto, string dateformat) {
             Cell oneYear, quarterlyRocks, issuesList;
             Table issueTable, rockTable, goalTable;
             Unit baseHeight = Unit.FromInch(5.1);//5.15
@@ -2039,8 +2042,7 @@ namespace RadialReview.Accessors
                 //var pt = new Paragraph();
                 //pt.Elements.Add(t);
 
-                var goalParagraphs = goals.Select(x =>
-                {
+                var goalParagraphs = goals.Select(x => {
                     var c = new Cell();
                     var p = c.AddParagraph(x);
                     p.Format.SpaceBefore = Unit.FromPoint(2);
@@ -2050,8 +2052,7 @@ namespace RadialReview.Accessors
                 });
 
 
-                for (var i = 0; i < goals.Count; i++)
-                {
+                for (var i = 0; i < goals.Count; i++) {
                     var r = new Row();
                     //rockTable.AddRow();
                     r.Height = Unit.FromInch(0.2444 * fs.Point / 10);
@@ -2092,8 +2093,7 @@ namespace RadialReview.Accessors
                 rockObjects.Add(gfy);
 
 
-                var rockParagraphs = rocks.Select(x =>
-                {
+                var rockParagraphs = rocks.Select(x => {
                     var c = new Cell();
                     var p = c.AddParagraph(x.Rock.Name);
                     p.Format.SpaceBefore = Unit.FromPoint(2);
@@ -2104,8 +2104,7 @@ namespace RadialReview.Accessors
 
 
 
-                for (var i = 0; i < rocks.Count; i++)
-                {
+                for (var i = 0; i < rocks.Count; i++) {
                     var r = new Row();
                     r.Height = Unit.FromInch(0.2444 * fs.Point / 10);
                     r.HeightRule = RowHeightRule.AtLeast;
@@ -2144,8 +2143,7 @@ namespace RadialReview.Accessors
                 //ResizeToFit(issuesList, Unit.FromInch(3.47), Unit.FromInch(5.15), (cell, fs) => {
 
 
-                var issueParagraphs = issues.Select(x =>
-                {
+                var issueParagraphs = issues.Select(x => {
                     var c = new Cell();
                     var p = c.AddParagraph(x);
                     p.Format.SpaceBefore = Unit.FromPoint(2);
@@ -2162,8 +2160,7 @@ namespace RadialReview.Accessors
                 rspace.Borders.Right.Visible = false;
                 rspace.Borders.Top.Visible = false;
 
-                for (var i = 0; i < issues.Count; i++)
-                {
+                for (var i = 0; i < issues.Count; i++) {
                     var r = new Row();
                     r.Height = Unit.FromInch(0.2444 * fs.Point / 10);
                     r.HeightRule = RowHeightRule.AtLeast;
@@ -2181,8 +2178,8 @@ namespace RadialReview.Accessors
 
                 //var rowHeights = GetRowHeights(issueRows, Unit.FromInch(3));
                 var extraHeight = 0.51;
-                
-                issueSplits = SplitHeights(Unit.FromInch(3), new[] { (baseHeight), (baseHeight) }, issueRows,x=>x.Cells[1],extraHeight);
+
+                issueSplits = SplitHeights(Unit.FromInch(3), new[] { (baseHeight), (baseHeight) }, issueRows, x => x.Cells[1], extraHeight);
                 issuesObjects.Add(issueTable);
 
             }
@@ -2197,38 +2194,30 @@ namespace RadialReview.Accessors
             var curRockI = 0;
             var curIssueI = 0;
 
-            for (var p = 0; p < maxPage; p++)
-            {
+            for (var p = 0; p < maxPage; p++) {
 
-                if (p < goalsSplits.Count())
-                {
-                    foreach (var r in goalsSplits[p])
-                    {
+                if (p < goalsSplits.Count()) {
+                    foreach (var r in goalsSplits[p]) {
                         goalTable.Rows.Add(goalRows[curGoalI]);
                         curGoalI++;
                     }
                 }
 
-                if (p < rockSplits.Count())
-                {
-                    foreach (var r in rockSplits[p])
-                    {
+                if (p < rockSplits.Count()) {
+                    foreach (var r in rockSplits[p]) {
                         rockTable.Rows.Add(rockRows[curRockI]);
                         curRockI++;
                     }
                 }
 
-                if (p < issueSplits.Count())
-                {
-                    foreach (var r in issueSplits[p])
-                    {
+                if (p < issueSplits.Count()) {
+                    foreach (var r in issueSplits[p]) {
                         issueTable.Rows.Add(issueRows[curIssueI]);
                         curIssueI++;
                     }
                 }
 
-                if (p + 1 < maxPage)
-                {
+                if (p + 1 < maxPage) {
                     AddPage_VtoTraction(doc, vto, baseHeight, out oneYear, out quarterlyRocks, out issuesList, out issueTable, out rockTable, out goalTable);
                     AppendAll(oneYear, new DocumentObject[] { goalTable }.ToList());
                     AppendAll(quarterlyRocks, new DocumentObject[] { rockTable }.ToList());
@@ -2238,8 +2227,10 @@ namespace RadialReview.Accessors
             }
         }
 
-        private static void AddPage_VtoTraction(Document doc, AngularVTO vto, Unit height, out Cell oneYear, out Cell quarterlyRocks, out Cell issuesList, out Table issueTable, out Table rockTable, out Table goalTable)
-        {
+
+
+
+        private static void AddPage_VtoTraction(Document doc, AngularVTO vto, Unit height, out Cell oneYear, out Cell quarterlyRocks, out Cell issuesList, out Table issueTable, out Table rockTable, out Table goalTable) {
             var section = AddVtoPage(doc, vto.Name ?? "", "TRACTION");
 
             var table = section.AddTable();
@@ -2258,7 +2249,6 @@ namespace RadialReview.Accessors
             paragraph.Format.Alignment = ParagraphAlignment.Center;
 
             tractionHeader.Cells[0].VerticalAlignment = VerticalAlignment.Center;
-
             //tractionHeader.Cells[0].Format.Shading.Color = TableGray;
 
 
@@ -2277,7 +2267,6 @@ namespace RadialReview.Accessors
             paragraph.Format.Alignment = ParagraphAlignment.Center;
             tractionHeader.Cells[2].VerticalAlignment = VerticalAlignment.Center;
             //tractionHeader.Cells[2].Format.Shading.Color = TableGray;
-
 
             var tractionData = table.AddRow();
 
@@ -2302,19 +2291,13 @@ namespace RadialReview.Accessors
             goalTable.AddColumn(Unit.FromInch(3));
         }
 
-        public static void AddVTO(Document doc, AngularVTO vto, string dateformat)
-        {
-
+        public static void AddVTO(Document doc, AngularVTO vto, string dateformat) {
             if (vto.IncludeVision)
                 AddVtoVision(doc, vto, dateformat);
             AddVtoTraction(doc, vto, dateformat);
-
         }
 
-
-
-        public class AccNodeJs
-        {
+        public class AccNodeJs {
             public List<AccNodeJs> children { get; set; }
             public List<AccNodeJs> _children { get; set; }
             public string Name { get; set; }
@@ -2329,8 +2312,7 @@ namespace RadialReview.Accessors
             public double height { get; set; }
         }
 
-        private class PageProp
-        {
+        private class PageProp {
             public XUnit pageWidth { get; set; }
             public XUnit pageHeight { get; set; }
             public XUnit margin { get; set; }
@@ -2339,25 +2321,20 @@ namespace RadialReview.Accessors
 
             public double scale = 1;
 
-            public XUnit allowedWidth
-            {
-                get
-                {
+            public XUnit allowedWidth {
+                get {
                     return pageWidth - 2 * margin;
                 }
             }
-            public XUnit allowedHeight
-            {
-                get
-                {
+            public XUnit allowedHeight {
+                get {
                     return pageHeight - 2 * margin;
                 }
             }
         }
 
         #region AC Helpers 
-        private static void ACDrawRole(XGraphics gfx, AccNodeJs me, PageProp pageProps, double[] origin = null)
-        {
+        private static void ACDrawRole(XGraphics gfx, AccNodeJs me, PageProp pageProps, double[] origin = null) {
             origin = origin ?? new[] { 0.0, 0.0 };
 
             var x = (int)me.x - origin[0];
@@ -2376,8 +2353,7 @@ namespace RadialReview.Accessors
             tf.DrawString(me.Position ?? "", bold, XBrushes.Black, new XRect(x, y + 12 * pageProps.scale / 3.0, me.width, top / 2.0));
             tf.DrawString(me.Name ?? "", norm, XBrushes.Black, new XRect(x, y + top / 2.0 + 12 * pageProps.scale / 3.0, me.width, top / 2.0));
 
-            if (me.height > top)
-            {
+            if (me.height > top) {
                 gfx.DrawLine(XPens.Black, x + pad, y + top, x + (me.width - 2 * pad), y + top);
             }
 
@@ -2387,15 +2363,12 @@ namespace RadialReview.Accessors
 
             var h = 50 * pageProps.scale;
 
-            if (me.Roles != null && me.Roles.Any())
-            {
+            if (me.Roles != null && me.Roles.Any()) {
                 var rheight = (me.height - top) / (me.Roles.Count + 1);
                 h += rheight / 2.0;
-                foreach (var r in me.Roles)
-                {
+                foreach (var r in me.Roles) {
                     var text = r;
-                    if (text != null)
-                    {
+                    if (text != null) {
                         text = text.TrimStart(' ', '•', '*');
                         text = "• " + r;
                     }
@@ -2406,8 +2379,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        private static void ACDrawRoleLine(XGraphics gfx, AccNodeJs parent, AccNodeJs me, PageProp pageProps, double[] origin = null)
-        {
+        private static void ACDrawRoleLine(XGraphics gfx, AccNodeJs parent, AccNodeJs me, PageProp pageProps, double[] origin = null) {
             origin = origin ?? new[] { 0.0, 0.0 };
             //gfx.DrawRectangle(pageProps.pen, pageProps.brush, (int)me.x - origin[0], (int)me.y - origin[1], (int)me.width, (int)me.height);
 
@@ -2429,18 +2401,14 @@ namespace RadialReview.Accessors
             gfx.DrawLine(pageProps.pen, parentX2, parentY2, parentX2, parentY3);
         }
 
-        private static void ACDrawRoles(XGraphics gfx, AccNodeJs root, PageProp pageProps, double[] origin = null)
-        {
+        private static void ACDrawRoles(XGraphics gfx, AccNodeJs root, PageProp pageProps, double[] origin = null) {
             ACDrawRole(gfx, root, pageProps, origin);
-            if (root.children != null)
-            {
-                foreach (var c in root.children)
-                {
+            if (root.children != null) {
+                foreach (var c in root.children) {
                     ACDrawRoleLine(gfx, root, c, pageProps, origin);
                     ACDrawRoles(gfx, c, pageProps, origin);
                 }
-                if (root.hasHiddenChildren)
-                {
+                if (root.hasHiddenChildren) {
                     ACDrawEllipse(gfx, root, pageProps, origin);
                 }
 
@@ -2448,14 +2416,12 @@ namespace RadialReview.Accessors
             }
         }
 
-        private static void ACDrawEllipse(XGraphics gfx, AccNodeJs root, PageProp pageProps, double[] origin = null)
-        {
+        private static void ACDrawEllipse(XGraphics gfx, AccNodeJs root, PageProp pageProps, double[] origin = null) {
             origin = origin ?? new[] { 0.0, 0.0 };
             var x = root.x + root.width / 2.0 - origin[0];
             var y = root.y + root.height - origin[1];
 
-            for (var ii = 0; ii < 3; ii += 1)
-            {
+            for (var ii = 0; ii < 3; ii += 1) {
                 var i = (3 + 6 * ii) * pageProps.scale;
                 var d = (4.0) * pageProps.scale;
                 gfx.DrawEllipse(XBrushes.Black, x - (d / 2.0), y + i - (d / 2.0), d, d);
@@ -2463,13 +2429,10 @@ namespace RadialReview.Accessors
         }
 
 
-        private static double[] ACRanges(AccNodeJs root)
-        {
+        private static double[] ACRanges(AccNodeJs root) {
             var range = new[] { root.x, root.y, root.x + root.width, root.y + root.height };
-            if (root.children != null)
-            {
-                foreach (var n in root.children)
-                {
+            if (root.children != null) {
+                foreach (var n in root.children) {
                     var n_range = ACRanges(n);
                     range[0] = Math.Min(range[0], n_range[0]);
                     range[1] = Math.Min(range[1], n_range[1]);
@@ -2479,8 +2442,7 @@ namespace RadialReview.Accessors
             }
             return range;
         }
-        private static void ACNormalize(AccNodeJs root, double[] range, PageProp pageProp, double? forceScale = null)
-        {
+        private static void ACNormalize(AccNodeJs root, double[] range, PageProp pageProp, double? forceScale = null) {
             root.x += -range[0];
             root.y += -range[1];
             var shouldScale = forceScale == null;
@@ -2488,8 +2450,7 @@ namespace RadialReview.Accessors
 
             var width = (double)(range[2] - range[0]);
             var height = (double)(range[3] - range[1]);
-            if (shouldScale)
-            {
+            if (shouldScale) {
                 if (width > pageProp.allowedWidth)
                     scale = pageProp.allowedWidth / width;
                 if (height > pageProp.allowedHeight)
@@ -2516,50 +2477,41 @@ namespace RadialReview.Accessors
             root.x += pageProp.margin.Point;
             root.y += pageProp.margin.Point;
 
-            if (root.children != null)
-            {
-                foreach (var n in root.children)
-                {
+            if (root.children != null) {
+                foreach (var n in root.children) {
                     ACNormalize(n, range, pageProp, scale);
                 }
             }
         }
-        private static Tuple<int, int> ACGetPage(double x, double y, PageProp pageProp)
-        {
+        private static Tuple<int, int> ACGetPage(double x, double y, PageProp pageProp) {
             return Tuple.Create((int)(x / pageProp.allowedWidth), (int)(y / pageProp.allowedHeight));
         }
-        private static double[] ACGetOrigin(Tuple<int, int> page, PageProp pageProp)
-        {
+        private static double[] ACGetOrigin(Tuple<int, int> page, PageProp pageProp) {
             return new[] {
                 page.Item1 * pageProp.allowedWidth,
                 page.Item2 * pageProp.allowedHeight
             };
 
         }
-        private static void ACGeneratePages(DefaultDictionary<Tuple<int, int>, PdfPage> pageLookup, AccNodeJs root, PageProp pageProp)
-        {
+        private static void ACGeneratePages(DefaultDictionary<Tuple<int, int>, PdfPage> pageLookup, AccNodeJs root, PageProp pageProp) {
             var a = pageLookup[ACGetPage(root.x, root.y, pageProp)];
             var b = pageLookup[ACGetPage(root.x + root.width, root.y, pageProp)];
             var c = pageLookup[ACGetPage(root.x + root.width, root.y + root.height, pageProp)];
             var d = pageLookup[ACGetPage(root.x, root.y + root.height, pageProp)];
-            if (root.children != null)
-            {
-                foreach (var p in root.children)
-                {
+            if (root.children != null) {
+                foreach (var p in root.children) {
                     ACGeneratePages(pageLookup, p, pageProp);
                 }
             }
         }
-        private static void ACDrawOnAllPages(DefaultDictionary<Tuple<int, int>, PdfPage> pageLookup, DefaultDictionary<PdfPage, XGraphics> gfxLookup, AccNodeJs parent, AccNodeJs me, PageProp pageProp)
-        {
+        private static void ACDrawOnAllPages(DefaultDictionary<Tuple<int, int>, PdfPage> pageLookup, DefaultDictionary<PdfPage, XGraphics> gfxLookup, AccNodeJs parent, AccNodeJs me, PageProp pageProp) {
             var pages = new List<Tuple<int, int>>();
 
             pages.Add(ACGetPage(me.x, me.y, pageProp));
             pages.Add(ACGetPage(me.x + me.width, me.y, pageProp));
             pages.Add(ACGetPage(me.x + me.width, me.y + me.height, pageProp));
             pages.Add(ACGetPage(me.x, me.y + me.height, pageProp));
-            if (parent != null)
-            {
+            if (parent != null) {
                 pages.Add(ACGetPage(parent.x, parent.y, pageProp));
                 pages.Add(ACGetPage(parent.x + parent.width, parent.y, pageProp));
                 pages.Add(ACGetPage(parent.x + parent.width, parent.y + parent.height, pageProp));
@@ -2567,8 +2519,7 @@ namespace RadialReview.Accessors
             }
             pages.Distinct();
 
-            foreach (var p in pages)
-            {
+            foreach (var p in pages) {
                 var origin = ACGetOrigin(p, pageProp);
                 var page = pageLookup[p];
                 var gfx = gfxLookup[page];
@@ -2576,21 +2527,17 @@ namespace RadialReview.Accessors
                 if (parent != null)
                     ACDrawRoleLine(gfx, parent, me, pageProp, origin);
 
-                if (me.hasHiddenChildren)
-                {
+                if (me.hasHiddenChildren) {
                     ACDrawEllipse(gfx, me, pageProp, origin);
                 }
             }
         }
 
 
-        private static void ACDrawOnAllPages_Dive(DefaultDictionary<Tuple<int, int>, PdfPage> pageLookup, DefaultDictionary<PdfPage, XGraphics> gfxLookup, AccNodeJs me, PageProp pageProp, AccNodeJs parent = null)
-        {
+        private static void ACDrawOnAllPages_Dive(DefaultDictionary<Tuple<int, int>, PdfPage> pageLookup, DefaultDictionary<PdfPage, XGraphics> gfxLookup, AccNodeJs me, PageProp pageProp, AccNodeJs parent = null) {
             ACDrawOnAllPages(pageLookup, gfxLookup, parent, me, pageProp);
-            if (me.children != null)
-            {
-                foreach (var c in me.children)
-                {
+            if (me.children != null) {
+                foreach (var c in me.children) {
                     ACDrawOnAllPages_Dive(pageLookup, gfxLookup, c, pageProp, me);
                 }
             }
@@ -2599,21 +2546,18 @@ namespace RadialReview.Accessors
         #endregion
 
 
-        private static void ACGenerate_Resized(PdfPage page, AccNodeJs root, PageProp pageProp)
-        {
+        private static void ACGenerate_Resized(PdfPage page, AccNodeJs root, PageProp pageProp) {
             var ranges = ACRanges(root);
             ACNormalize(root, ranges, pageProp, null);
             XGraphics gfx = XGraphics.FromPdfPage(page);
             ACDrawRoles(gfx, root, pageProp);
         }
 
-        private static void ACGenerate_Full(PdfDocument doc, AccNodeJs root, PageProp pageProp, double scale)
-        {
+        private static void ACGenerate_Full(PdfDocument doc, AccNodeJs root, PageProp pageProp, double scale) {
             var ranges = ACRanges(root);
             ACNormalize(root, ranges, pageProp, scale);
 
-            var pageLookup = new DefaultDictionary<Tuple<int, int>, PdfPage>(x => new PdfPage(doc)
-            {
+            var pageLookup = new DefaultDictionary<Tuple<int, int>, PdfPage>(x => new PdfPage(doc) {
                 Width = pageProp.pageWidth,
                 Height = pageProp.pageHeight
             });
@@ -2625,14 +2569,13 @@ namespace RadialReview.Accessors
             pageLookup.Keys.OrderBy(x => x.Item1)
                 .ThenBy(x => x.Item2)
                 .ToList()
-                .ForEach(x =>
-                {
+                .ForEach(x => {
                     doc.AddPage(pageLookup[x]);
                 });
         }
 
 
-        public static PdfDocument GenerateAccountabilityChart(AccNodeJs root, double width, double height, bool restrictSize = false){
+        public static PdfDocument GenerateAccountabilityChart(AccNodeJs root, double width, double height, bool restrictSize = false) {
 
             // Create new PDF document
             PdfDocument document = new PdfDocument();
@@ -2645,20 +2588,16 @@ namespace RadialReview.Accessors
 
             var margin = XUnit.FromInch(.25);
 
-            var pageProp = new PageProp()
-            {
+            var pageProp = new PageProp() {
                 pageWidth = _unusedPage.Width,
                 pageHeight = _unusedPage.Height,
                 margin = margin
             };
 
-            if (restrictSize)
-            {
+            if (restrictSize) {
                 document.AddPage(_unusedPage);
                 ACGenerate_Resized(_unusedPage, root, pageProp);
-            }
-            else
-            {
+            } else {
                 ACGenerate_Full(document, root, pageProp, .5);
             }
             return document;

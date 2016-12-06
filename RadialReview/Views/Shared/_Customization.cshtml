@@ -180,16 +180,17 @@
 									for (var i = 0; i < Math.Max(secondUsers.Count, otherSide.Count); i++) {
 										if (i >= secondUsers.Count) {
 											<div class="emptyRow revieweeRow">&nbsp;</div>
-										} else {
-											//foreach (var secondUser in secondUsers) {
-											var secondUser = secondUsers[i];
-											var classes = new HashSet<String>();
-											foreach (var selector in Model.Selectors) {
-												if (selector.Pairs.Any(x => x.Reviewer == firstUser && x.Reviewee == secondUser)) {
-													classes.Add("is" + selector.UniqueId);
-												}
-											}
-											if (Model.Selected.Any(x => x.Reviewer == firstUser && x.Reviewee == secondUser)) {
+} else {
+                                            //foreach (var secondUser in secondUsers) {
+                                            var secondUser = secondUsers[i];
+                                           // var classes = new HashSet<String>();
+
+                                            var itemLookup = Model.Lookup[firstUser.ToId()+"~"+secondUser.ToId()];
+                                            var selected = itemLookup.Selected;
+                                            var classes = itemLookup.Classes;
+
+                                            
+                                            if (selected /*Model.Selected.Any(x => x.Reviewer == firstUser && x.Reviewee == secondUser)*/) {
 												<input type="hidden" name="originalCustomize_@(firstUser.RGMId)_@secondUser.ToId()" value="True" />
 											}
 											<div class="selected isAll @String.Join(" ", classes) revieweeRow">

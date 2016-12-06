@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using Amazon.IdentityManagement.Model;
 using RadialReview.Accessors;
+using RadialReview.Models.Angular.VTO;
 
 namespace RadialReview.Controllers {
     public class QuarterlyController : BaseController {
@@ -71,8 +72,9 @@ namespace RadialReview.Controllers {
             var recur = L10Accessor.GetAngularRecurrence(GetUser(), id);
             var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout");
             var anyPages = false;
+            AngularVTO vtoModel= VtoAccessor.GetAngularVTO(GetUser(), recur.VtoId.Value);
             if (vto && recur.VtoId.HasValue && recur.VtoId > 0) {
-                var vtoModel = VtoAccessor.GetAngularVTO(GetUser(), recur.VtoId.Value);
+                //vtoModel 
                 PdfAccessor.AddVTO(doc, vtoModel, GetUser().GetOrganizationSettings().GetDateFormat());
                 anyPages = true;
             }
@@ -81,7 +83,7 @@ namespace RadialReview.Controllers {
             if (todos){ PdfAccessor.AddTodos(GetUser(), doc, recur); anyPages = true;}
             if (issues){ PdfAccessor.AddIssues(GetUser(), doc, recur, todos); anyPages = true;}
             if (scorecard){ PdfAccessor.AddScorecard(doc, recur); anyPages = true; }
-            if (rocks) { PdfAccessor.AddRocks(GetUser(), doc, recur); anyPages = true; }
+            if (rocks) { PdfAccessor.AddRocks(GetUser(), doc, recur, vtoModel); anyPages = true; }
             if (acc) { PdfAccessor.AddAccountabilityChart(GetUser(), doc, GetUser().Organization.AccountabilityChartId); anyPages = true; }
             var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
             if (!anyPages)

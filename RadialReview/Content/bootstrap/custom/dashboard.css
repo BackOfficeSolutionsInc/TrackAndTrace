@@ -848,6 +848,9 @@ body.resizing .notes-tile:after,
     height: 30px;
   }
 }
+.dashboard .scorecard table .direction {
+  cursor: pointer;
+}
 .dashboard .scorecard table .score input {
   padding-left: 0px !important;
   padding-right: 10px !important;
@@ -1071,6 +1074,10 @@ body.resizing .notes-tile:after,
   float: left;
   position: absolute;
   margin-top: -2px;
+}
+.dashboard .rock-list-container tr .icon-column:before {
+  content: "\e203";
+  color: #555555;
 }
 .dashboard .rock-list-container tr.Complete .icon-column:before {
   content: "\e1fa";

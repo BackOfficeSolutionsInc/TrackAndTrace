@@ -781,6 +781,10 @@ body.dragging, body.dragging * {
 	margin-left: 2px;
 }
 
+.dashboard .single-1{
+    margin-left: 0px;
+}
+
 .columns.triple .message {
 	font-size: 12px;
 	word-wrap: normal;

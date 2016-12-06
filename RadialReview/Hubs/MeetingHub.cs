@@ -190,8 +190,17 @@ namespace RadialReview.Hubs
 			}
 		}
 
+        public ResultObject SendDisable(long recurrenceId, string domId, bool disabled) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    PermissionsUtility.Create(s, GetUser(s)).ViewL10Recurrence(recurrenceId);
+                    Clients.Group(GenerateMeetingGroupId(recurrenceId)).disableItem(domId,disabled);
+                    return ResultObject.SilentSuccess();
+                }
+            }
+        }
 
-		public ResultObject UpdateUserFocus(long meetingId, string domId)
+        public ResultObject UpdateUserFocus(long meetingId, string domId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{

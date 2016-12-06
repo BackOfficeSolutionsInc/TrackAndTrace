@@ -20,24 +20,13 @@
         }
 
     </style>
-    <!--asdf-->
 }
 
 @using (Html.BeginScripts())
 {
-    @*<script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>*@
-    @*<script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
-	<script src="~/Scripts/Angular/Helpers/Libraries/angular-filter.min.js"></script>
-	<script src="~/Scripts/Main/moment.min.js"></script>*@
-
     @Scripts.Render("~/bundles/meeting")
-    @Scripts.Render("~/bundles/Dashboard") 
-
-    @*<script src="~/Scripts/L10/L10.js"></script>
-    <script src="~/Scripts/L10/L10Scorecard.js"></script>*@
-    
+    @Scripts.Render("~/bundles/Dashboard")
+        
     <script>
 		angular.module('L10App')
 			.value('meetingId',-3)
@@ -56,33 +45,6 @@
 		    e.preventDefault();
 		    $(this).tab('show');
 		});
-
-		/*$(document).on('click', "input.due-date", function () {
-			if (!$(this).attr("init")) {
-				var now = new Date();
-				var todo = $(this).attr("data-todo");
-				$(this).datepickerX({
-					format: 'mm/dd/yyyy',
-					todayBtn:true
-				}).on('changeDate', function (ev) {
-					var data = { date: (ev.date- ev.date.getTimezoneOffset() * 60000).valueOf() };
-					$.ajax({
-						method: "POST",
-						data: data,
-						url: "/L10/UpdateTodoDate/" + todo,
-						success: function (dd) {
-							showJsonAlert(dd);
-						}
-					});
-				});
-				$(this).attr("init", 1);
-				$(this).blur();
-				var that = this;
-				setTimeout(function () {
-					$(that).datepickerX("show");
-				}, 10);
-			}
-		});*/
 
 		function meetingCallback_Todo() {
 			location.queryString = {};

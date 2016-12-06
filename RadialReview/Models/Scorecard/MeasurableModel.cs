@@ -36,9 +36,11 @@ namespace RadialReview.Models.Scorecard
 		public virtual UnitType UnitType { get; set; }
 
 		public virtual bool _Editable { get; set; }
-		public virtual int? _Ordering { get; set; }
+        public virtual int? _Ordering { get; set; }
+        public virtual long? _Grouping { get; set; }
+        public virtual string _GroupingName { get; set; }
 
-		[DataMember(Name = "AccountableUser")]
+        [DataMember(Name = "AccountableUser")]
 		public virtual UserOrganizationModel.DataContract DataContract_AccountableUser { get { return AccountableUser.GetUserDataContract(); } }
 
 		[DataMember(Name = "AdminUser")]

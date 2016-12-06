@@ -24,32 +24,38 @@ namespace RadialReview.Models.Angular.Scorecard
 
         }
 		//public AngularScorecard(long id, DayOfWeek weekstart,int timezoneOffset, IEnumerable<AngularMeasurable> measurables, List<ScoreModel> scores,DateTime? currentWeek,ScorecardPeriod scorecardPeriod,YearStart yearStart,DateRange range=null,bool includeNextWeek=true,DateTime? now=null) : base(id)
-        public AngularScorecard(long id, TimeSettings settings, IEnumerable<AngularMeasurable> measurables, List<ScoreModel> scores, DateTime? currentWeek, DateRange range = null, bool includeNextWeek = true, DateTime? now = null)
-            : base(id)
-		{
+  //      public AngularScorecard(long id, TimeSettings settings, IEnumerable<AngularMeasurable> measurables, List<ScoreModel> scores, DateTime? currentWeek, DateRange range = null, bool includeNextWeek = true, DateTime? now = null)
+  //          : this(id,settings, new List<AngularMeasurableGroup>() { new AngularMeasurableGroup(id, measurables) },scores,currentWeek,range,includeNextWeek,now){
+
+		//}
+
+        public AngularScorecard(long id, TimeSettings settings, IEnumerable<AngularMeasurable> measurables, List<ScoreModel> scores, DateTime? currentWeek, DateRange range = null, bool includeNextWeek = true, DateTime? now = null) : base(id) {
             var cur = currentWeek;
-            if (cur != null)
-                cur = cur.Value.AddDays(7);
+            //if (cur != null)
+            //    cur = cur.Value.AddDays(7);
 
             Weeks = TimingUtility.GetPeriods(settings, now ?? DateTime.UtcNow, cur, includeNextWeek, range: range)
                 .Select(x => new AngularWeek(x)).ToList();
-			Measurables = measurables.ToList();
-			Scores = scores.Select(x => new AngularScore(x,false)).ToList();
+
+            Measurables = measurables;
+
+            Scores = scores.Select(x => new AngularScore(x, false)).ToList();
 
             DateFormat1 = TimingUtility.ScorecardFormat1(settings.GetTimeSettings().Period);
             DateFormat2 = TimingUtility.ScorecardFormat2(settings.GetTimeSettings().Period);
 
-			foreach (var s in Scores){
-				var found = Measurables.FirstOrDefault(x => x.Id == s.Measurable.Id);
-				if (found != null){
-					s.Measurable.Ordering = found.Ordering;
-					s.Measurable.RecurrenceId = found.RecurrenceId;
-				}
+            //var allMeasurables = measurableGroups.SelectMany(x => x.Measurables);
 
-			}
-		}
+            foreach (var s in Scores) {
+                var found = Measurables.FirstOrDefault(x => x.Id == s.Measurable.Id);
+                if (found != null) {
+                    s.Measurable.Ordering = found.Ordering;
+                    s.Measurable.RecurrenceId = found.RecurrenceId;
+                }
+            }
+        }
 
-		public static AngularScorecard Create(long id, TimeSettings settings, IEnumerable<L10Recurrence_Measurable> measurables, List<ScoreModel> scores, DateTime? currentWeek, DateRange range = null, bool includeNextWeek = true, DateTime? now = null) {
+        public static AngularScorecard Create(long id, TimeSettings settings, IEnumerable<L10Recurrence_Measurable> measurables, List<ScoreModel> scores, DateTime? currentWeek, DateRange range = null, bool includeNextWeek = true, DateTime? now = null) {
 			var ms = measurables.Select(x => {
 				if (x.IsDivider) {
 					var m = AngularMeasurable.CreateDivider(x._Ordering, x.Id);
@@ -66,8 +72,7 @@ namespace RadialReview.Models.Angular.Scorecard
 			return new AngularScorecard(id, settings, ms, scores, currentWeek, range, includeNextWeek, now);
 		}
 
-		public AngularScorecard()
-		{
+		public AngularScorecard(){
 		}
 
 		public IEnumerable<AngularMeasurable> Measurables { get; set; }
