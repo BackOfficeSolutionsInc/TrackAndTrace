@@ -1064,16 +1064,16 @@ body.resizing .notes-tile:after,
 }
 .dashboard .rock-list-container .icon-column:after {
   content: "";
-  border: 10px solid;
+  border: 8px solid;
   z-index: 0;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   position: relative;
-  left: 10px;
-  border-radius: 16px;
+  left: 12px;
+  border-radius: 14px;
   float: left;
   position: absolute;
-  margin-top: -2px;
+  /* margin-top: -2px; */
 }
 .dashboard .rock-list-container tr .icon-column:before {
   content: "\e203";
@@ -1759,7 +1759,7 @@ body.resizing .notes-tile:after,
 .dashboard .notifications-list-container table .expand-column {
   vertical-align: top;
   padding-right: 7px !important;
-  padding-top: 1px!important;
+  padding-top: 1px !important;
 }
 .dashboard .notifications-list-container table .expand-column .glyphicon-chevron-left {
   left: 1px;
@@ -2241,3 +2241,14 @@ body.resizing .notes-tile:after,
 .l10-issue-tile, .issues-list-container, .l10-issues-list-container {
     background-color: hsl(150,32%,85%)!important;
 }*/
+l10-stats-tile .chart-legend {
+  bottom: 22px;
+}
+.width_1 l10-stats-tile .chart-legend {
+  bottom: 42px;
+}
+.width_1 l10-stats-tile .chart-legend .item .icon {
+  width: 11px;
+  min-height: 10px !important;
+  height: 11px;
+}

@@ -6,19 +6,36 @@
         //    $(this).closest(".grid-tile").css("height",h+"px !important");
         //});
     } else {
-    	//zoomScorecards();
+        //zoomScorecards();
 
     }
+}
 
+setInterval(fixTileHeight, 750);
 
+function fixTileHeight() {
+    $(".tile-height-resize").each(function () {
+        var tile = $(this).closest(".tile");
+        var scrollHeight = Math.max(Math.max($(this).children().height(), $(this).height()), tile[0].scrollHeight);
+
+        if (tile.height() >= scrollHeight) {
+            var self = $(this);
+            var position = self.position();
+            var a = tile.height() - position.top - (self.outerHeight() - self.innerHeight());
+            var diff = +(self.data("tile-resize-diff")||0);
+            $(this).height((a - diff));
+        } else {
+            $(this).height("");
+        }
+    });
 }
 
 function zoomScorecards() {
-	$(this).find(".scorecard-list-container,.l10-scorecard-tile").each(function () {
-		var availHeight = $(this).closest(".tile").height();
-		var myHeight = $(this).height();
-		$(this).css("zoom", Math.max(1, availHeight / myHeight));
-	});
+    $(this).find(".scorecard-list-container,.l10-scorecard-tile").each(function () {
+        var availHeight = $(this).closest(".tile").height();
+        var myHeight = $(this).height();
+        $(this).css("zoom", Math.max(1, availHeight / myHeight));
+    });
 }
 
 var isMobile = function () {

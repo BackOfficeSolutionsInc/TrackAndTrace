@@ -1,4 +1,7 @@
-﻿<div class="form-horizontal">
+﻿@model long
+<div class="form-horizontal">
+
+    <input type="hidden" id="meetingId" value="@Model"/>
 
     <div class="form-group">
         <div class="col-sm-1  ">
@@ -18,13 +21,13 @@
 
     </div>
     <div class="form-group">
-        <div class="col-sm-1 ">
-            <input type="checkbox" class="checkbox  pull-right" id="acc" name="acc" checked />
+        <div class="col-sm-1 "><input type="checkbox" class="checkbox  pull-right" id="acc" name="acc" onchange="updateAllowDone()" />
         </div>
-        <label for="acc" class="col-sm-9 control-label alignLeft">Include Accountability Chart</label>
+        <label for="acc" class="col-sm-9 control-label alignLeft">Include Accountability Chart </label>
+        <span style="top: -2px;position: relative;" id="accLoadingContainer"></span>
     </div>
 
-    @*<iframe style="display:none;" src="/accountability/chart?expandAll=true"></iframe>*@
+    <iframe id="accFrame" style="display:none;" src="about:blank"></iframe>
 
     @*<div class="form-group">
         <div class="col-sm-1 ">
@@ -58,3 +61,63 @@
 
     </div>
 </div>
+
+<script>
+    var guid = "@(Guid.NewGuid().ToString())";
+    var doneLoadingAC = false;
+    function createNodes() {
+        doneLoadingAC = true;
+
+        var nodes = $("#accFrame")[0].contentWindow.generateAccNodes();
+        $("#modalForm").on("submit." + guid, function (e) {
+            debugger;
+            e.preventDefault();
+            var data = $("#modalForm").serializeArray();
+            data.push({
+                name:"root",
+                value:"root:"+JSON.stringify(nodes)
+            })
+           // data["root"] = nodes;
+            $.ajax({
+                url: "/quarterly/printout/"+$("#meetingId").val(),
+                method: "post",
+                data: data,
+
+            });
+
+        });
+        $("#modalOk").attr("disabled", false);
+        $("#modalOk").attr("title", false);
+        $("#accLoadingContainer").html("");
+    }
+
+    function updateAllowDone() {
+        if (doneLoadingAC || !$(acc).is(":checked")){
+            $("#modalOk").attr("disabled", false);
+        } else {
+            $("#modalOk").attr("disabled", "disabled");
+            $("#modalOk").attr("title", "Generating accountability chart");
+        }
+        if ($("#accFrame").attr("src") == "about:blank") {
+            $("#accFrame").attr("src", "/accountability/chart?expandAll=true");
+            $("#accLoadingContainer").html("<img src='/content/img/ajax-loader.gif'/>");
+        }
+
+    }
+
+    $("body").on("AccountabilityChartRenderComplete."+guid, function () {
+        if (createNodes.timeout) {
+            clearTimeout(createNodes.timeout);
+        }
+        createNodes.timeout = setTimeout(createNodes, 300);
+    });
+
+    $('#modal').on("hidden.bs.modal." + guid, function () {
+        var guid2 = guid;
+        setTimeout(function () {
+            debugger;
+            $("body").off("." + guid2);
+        }, 1000);
+    })
+
+</script>

@@ -1184,6 +1184,7 @@
     <Content Include="Scripts\Angular\Helpers\Directives\TableSort.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\vsRepeat.js" />
     <Content Include="Scripts\Angular\Helpers\Libraries\angular-xeditable.js" />
+    <Content Include="Scripts\Angular\Helpers\Libraries\ngfittext.js" />
     <Content Include="Scripts\Angular\Helpers\Libraries\ngsortable.js" />
     <Content Include="Scripts\Angular\Helpers\radialModule.js" />
     <Content Include="Scripts\Angular\Helpers\updater.js" />

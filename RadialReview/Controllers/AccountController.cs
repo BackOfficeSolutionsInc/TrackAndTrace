@@ -25,15 +25,26 @@ namespace RadialReview.Controllers {
 	[Authorize]
 	public partial class AccountController : UserManagementController {
 
-		//public AccountController()
-		//    : this(new NHibernateUserManager(new NHibernateUserStore())) //this(new UserManager<ApplicationUser>(new NHibernateUserStore<UserModel>(new ApplicationDbContext())))
-		//{
-		//}
+        //public AccountController()
+        //    : this(new NHibernateUserManager(new NHibernateUserStore())) //this(new UserManager<ApplicationUser>(new NHibernateUserStore<UserModel>(new ApplicationDbContext())))
+        //{
+        //}
 
-		//public AccountController(NHibernateUserManager userManager)
-		//{
-		//    UserManager = userManager;
-		//}
+        //public AccountController(NHibernateUserManager userManager)
+        //{
+        //    UserManager = userManager;
+        //}
+        [Access(AccessLevel.Radial)]
+        public virtual async Task<ActionResult> SetAsUser(string id) {
+            var user = _UserAccessor.GetUserByEmail(id.ToLower());
+            if (user != null) {
+                await SignInAsync(user);
+                return RedirectToAction("Index", "Dashboard");
+            }
+            return Content("Could not set as "+ id);
+        }
+
+
 
 		[AllowAnonymous]
 		//[RecaptchaControlMvc.CaptchaValidator]

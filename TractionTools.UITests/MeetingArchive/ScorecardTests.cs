@@ -85,7 +85,7 @@ namespace TractionTools.UITests.Selenium {
                     Assert.IsTrue(row.Find(".target.value span").HasClass("modifiers-Dollar"));
                     var dateRows = d.Finds("#ScorecardTable thead tr");
                     var ths = dateRows[0].Finds("th");
-                    for (var i = 4; i < ths.Count - 2; i++) {
+                    for (var i = 5; i < ths.Count - 2; i++) {
                         var top = ths[i].Text;
                         var date1 = DateTime.Parse(top);
                         Assert.AreEqual(dow, date1.DayOfWeek, top);

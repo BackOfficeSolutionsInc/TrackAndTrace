@@ -176,6 +176,7 @@ namespace RadialReview.Accessors {
                 
 				var updates = new AngularRecurrence(recurrenceId);
                 updates.Todos = AngularList.CreateFrom(AngularListType.Add, new AngularTodo(todo));
+                updates.Focus = "[data-todo='" + todo.Id + "'] input:visible:first";
                 meetingHub.update(updates);
                 Audit.L10Log(s, perms.GetCaller(), recurrenceId, "CreateTodo", ForModel.Create(todo), todo.NotNull(x => x.Message));
             }

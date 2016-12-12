@@ -30,6 +30,7 @@ namespace RadialReview {
 				"~/Scripts/Angular/Helpers/angular-timer.min.js",
                 "~/Scripts/Angular/Helpers/angular-elastic-input.js",
                 "~/Scripts/Angular/Helpers/Libraries/ngsortable.js",
+               // "~/Scripts/Angular/Helpers/Libraries/ngfittext.js",
                      
                 //"~/bower_components/angular-animate/angular-animate.js",           
                // "~/bower_components/angular-aria/angular-aria.js",

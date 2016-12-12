@@ -678,3 +678,6 @@ a.editable-click:hover {
     display: none;
   }
 }
+.conclusion.meeting-page .todo-list .label {
+  top: 11px;
+}

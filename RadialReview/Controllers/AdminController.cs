@@ -224,8 +224,11 @@ namespace RadialReview.Controllers {
 				using (var tx = s.BeginTransaction()) {
 					var recent = DateTime.UtcNow.AddDays(-weeks * 7);
 					var notRecent = DateTime.UtcNow.AddDays(-weeks * 7 - 1);
-					var measurables = s.QueryOver<L10Meeting>().Where(x => x.DeleteTime == null && (x.CompleteTime == null || x.CompleteTime >= recent) && x.CreateTime > notRecent).List().ToList();
-					return View(measurables);
+					var measurables = s.QueryOver<L10Meeting>().Where(x => x.DeleteTime == null && (x.CompleteTime == null || x.CompleteTime >= recent) && x.CreateTime > notRecent)
+                        .List().ToList()
+                        .Where(x=>x.Organization.AccountType!=AccountType.SwanServices)
+                        .ToList();
+                    return View(measurables);
 				}
 			}
 		}

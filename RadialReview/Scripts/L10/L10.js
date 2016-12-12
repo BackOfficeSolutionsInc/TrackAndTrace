@@ -450,7 +450,7 @@ $(document).keydown(function (event) {
 
 function showPrint() {
     //Html.ShowModal("Generate Printout","/Quarterly/Modal","/Quarterly/Printout/"+Model.Recurrence.Id,newTab:true)
-    showModal("Generate Quarterly Printout", "/Quarterly/Modal", "/Quarterly/Printout/" + recurrenceId, "callbackPrint");
+    showModal("Generate Quarterly Printout", "/Quarterly/Modal/" + recurrenceId, "/Quarterly/Printout/" + recurrenceId, "callbackPrint");
 }
 function callbackPrint() {
 
@@ -466,3 +466,26 @@ function callbackPrint() {
 function lockConcludeButton() {
     $("#conclude_meeting_button").prop("disabled", "disabled");
 }
+
+
+$(window).on("page-segue", function () {
+    $("#edit_meeting_link").attr("href", "/L10/Wizard/" + recurrenceId + "?return=meeting");
+});
+$(window).on("page-scorecard", function () {
+    $("#edit_meeting_link").attr("href", "/L10/Wizard/" + recurrenceId + "?return=meeting#/Scorecard");
+});
+$(window).on("page-rocks", function () {
+    $("#edit_meeting_link").attr("href", "/L10/Wizard/" + recurrenceId + "?return=meeting#/Rocks");
+});
+$(window).on("page-headlines", function () {
+    $("#edit_meeting_link").attr("href", "/L10/Wizard/" + recurrenceId + "?return=meeting#/Headlines");
+});
+$(window).on("page-todo", function () {
+    $("#edit_meeting_link").attr("href", "/L10/Wizard/" + recurrenceId + "?return=meeting#/Todos");
+});
+$(window).on("page-ids", function () {
+    $("#edit_meeting_link").attr("href", "/L10/Wizard/" + recurrenceId + "?return=meeting#/Issues");
+});
+$(window).on("page-conclusion", function () {
+    $("#edit_meeting_link").attr("href", "/L10/Wizard/" + recurrenceId + "?return=meeting");
+});

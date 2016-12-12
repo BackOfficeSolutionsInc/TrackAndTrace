@@ -63,7 +63,7 @@
 										<profile-image user="headline.About"></profile-image>
 									</td>
 									<td class="headline-text message-column" style="width:100%" ng-click="@(detailsCode)" md-cell>
-										<input class="blend" placeholder="Enter people headline here" ng-model-options="{debounce: 400}" type="text" ng-model="headline.Name" ng-change="functions.sendUpdate(headline)" title="{{headline.Name}}" />
+										<input class="blend" placeholder="Enter people headline here" ng-model-options="{debounce: 75}" type="text" ng-model="headline.Name" ng-change="functions.sendUpdate(headline)" title="{{headline.Name}}" />
 
 										<div class="headline-text" ng-if="model.Selected==headline.Key">
 											<a class="pull-right timeline-button" ng-if="headline.Link!=null" target="_blank" href="{{headline.Link}}" style="margin-top: 4px;margin-right: 2px;"><span class="glyphicon glyphicon-comment"></span></a>

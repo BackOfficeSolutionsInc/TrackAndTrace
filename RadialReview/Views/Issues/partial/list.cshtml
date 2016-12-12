@@ -54,13 +54,13 @@
                                 <th md-column md-numeric @(attrLookup["delete-column"]) class="delete-column"></th>
                             </tr>
                         </thead>
-                        <tbody md-body @*vs-repeat vs-autoresize vs-scroll-parent=".repeater-container"*@>
+                        <tbody md-body>
                             <tr ng-hide="issue.Hide" ng-repeat="issue in ((@(selector)).Issues) | orderBy: @(orderVariable) @(filter)"
                                 ng-class="{grayRow: issue.Complete}"
                                 class="clickable"
+                                data-issue="{{::issue.Id}}"
                                 md-row>
-                                <td md-cell class="checkbox-column" @*style="vertical-align: top;min-width: 25px;text-align: center;top:5px;position: relative" *@>
-                                    @*<input type="checkbox" ng-model="issue.Complete" ng-change="functions.updateComplete(this);functions.sendUpdate(issue)" />*@
+                                <td md-cell class="checkbox-column">
                                     <md-checkbox aria-label="Complete" ng-model="issue.Complete" class="md-align-top-left" ng-change="functions.updateComplete(this);functions.sendUpdate(issue)"></md-checkbox>
 
                                 </td>
@@ -81,16 +81,10 @@
 
                                         }
                                     </span>
-                                    @*<a href="#" data-display="false" data-value="{{issue.Owner.Id}}" data-placement="right" class="inlineEdit" data-type="select" data-pk="{{::issue.Id}}" data-url="/L10/XUpdateIssue" data-name="owner" data-source="/Dropdown/MeetingMembers/{{::model.Id}}?userId=true">
-                                            <profile-image user="issue.Owner"></profile-image>
-                                        </a>*@
                                 </td>
                                 <td md-cell class="issue-column message-column" style="width:100%;padding-left:2px" ng-click="@(detailsCode)">
-                                    @*<div style="padding-top: 6px;">{{issue.Name}}</div><div style="padding-top: 6px;"></div>*@
-
-                                    <input class="blend" placeholder="Enter issue here" ng-model-options="{debounce: 400}" type="text" @*ng-if="model.Selected!=issue.Key"*@ ng-model="issue.Name" class="fullWidth" ng-change="functions.sendUpdate(issue)" title="{{issue.Name}}" />
+                                    <input class="blend" placeholder="Enter issue here" ng-model-options="{debounce: 75}" type="text" ng-model="issue.Name" class="fullWidth" ng-change="functions.sendUpdate(issue)" title="{{issue.Name}}" />
                                     <div class="iframe-container" ng-if="model.Selected==issue.Key">
-                                        @*<input ng-model-options="{debounce: 400}" type="text" ng-model="issue.Name" class="fullWidth" ng-change="functions.sendUpdate(issue)" />*@
                                         <iframe class="details-row keep-background" style="background-color: white" width="100%" ng-src="{{::trustAsResourceUrl(issue.DetailsUrl_Src)}}" ng-data-src="{{::issue.DetailsUrl}}"></iframe>
                                     </div>
                                     <table class="sub-issue-column">
@@ -114,8 +108,7 @@
                 </md-table-container>
                 <div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
                 <div class="create-row" ng-click="functions.addRow($event,'AngularIssue')" data-toggle="tooltip" data-placement="left" title="New Issue"></div>
-
-                <div class="component gray empty-search" style="padding: 30px 15px;clear: both;;display: inline-block;" ng-show="((@(selector)).Issues @(filter)).length==0">
+                <div class="component gray empty-search" style="padding: 30px 15px;clear: both;display:inline-block;" ng-show="((@(selector)).Issues @(filter)).length==0">
                     No issues fit your search criteria.
                 </div>
             </div>

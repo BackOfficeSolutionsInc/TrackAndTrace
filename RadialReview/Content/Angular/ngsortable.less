@@ -43,10 +43,20 @@
 
 tbody.as-sortable-drag {
     position: relative;
-    z-index:1000000000000000;
-    display:block;
+    z-index: 1000000000000000;
+    display: block;
 
-    .picture-container{
-        display:none;
+    .picture-container {
+        display: none;
+    }
+}
+
+tbody.as-sortable-dragging {
+    margin-top: -43px;
+    margin-left: -3px;
+
+    input.blend {
+        border-bottom: 0px solid transparent;
+        padding-top: 9px;
     }
 }

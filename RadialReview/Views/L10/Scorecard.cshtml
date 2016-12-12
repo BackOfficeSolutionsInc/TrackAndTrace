@@ -229,13 +229,6 @@
 		updateScore(this,true);
 		setScoreTransform(this,getScoreTransform(this));
 	});
-	/*
-	$("#ScorecardTable tr").each(function() {
-		var input = $(this).first("input");
-		updateScore(input,true);
-	});
-	*/
-
 	$(function() {
 		var fixHelperModified = function(e, tr) {
 			var $originals = tr.children();
@@ -287,18 +280,12 @@
 	function fixHandle() {
 		$(".ui-resizable-e").css("right", -$("#ScorecardTable_Over").scrollLeft());
 	}
-
-	function scrollRight(){
-        
+	function scrollRight(){        
 	    if ($(".scroll-right").length>0){
 	        setTimeout(function(){
-	            //debugger;
-	            //$(".scroll-right").scrollLeft(4000);
 	            $(".scroll-right").animate({scrollLeft: $(".scroll-right").width()},500);
-	            //}); 
 	        },1);
 	    }else{
-	        //debugger;
 	        setTimeout(scrollRight,50);
 	    }
 	}
@@ -327,72 +314,5 @@
 
 	var Weeks = [@(String.Join(",",Model.Weeks.Select(x=>x.ForWeek.ToJavascriptMilliseconds())))];
     var includeChart = @(Model.ShowScorecardChart.ToJavascript());
-	//debugger;
-	//new ColumnResize($("#ScorecardTable")[0]);
-	//$(".scorecard-table").colResizable({
-	//	liveDrag: true,
-	//	gripInnerHtml: "<div class='grip'></div>",
-	//	draggingClass: "dragging"
-	//});
-	//$("#ScorecardTable").wrap('<div id="table_container"></div>').after('<div id="bottom_anchor"></div>');
-	//$("#ScorecardTable_resp").scroll(moveScroll("#ScorecardTable", "#ScorecardTable_resp"));
 
-	//$('#ScorecardTable').cTable({
-	//	width: 1300,
-	//	height: 500,
-	//	fCols: 3,
-	//	fRows: 2
-	////});
-	//var onColumnSort = function (newIndexOrder, columnIndex, lastColumnIndex) {
-	//	var offset = (this.options.allowSelections && this.options.showSelectionColumn) ? 1 : 0,
-	//		doc = document;
-
-	//	if (columnIndex !== lastColumnIndex) {
-	//		if (lastColumnIndex > -1) {
-	//			doc.getElementById("demoHdr" + (lastColumnIndex - offset)).parentNode.style.backgroundColor = "";
-	//		}
-	//		doc.getElementById("demoHdr" + (columnIndex - offset)).parentNode.style.backgroundColor = "#f7f7f7";
-	//	}
-	//};
-
-	//var onResizeGrid = function (newWidth, newHeight) {
-	//	var demoDivStyle = document.getElementById("ScorecardDiv").style;
-	//	demoDivStyle.width = newWidth + "px";
-	//	demoDivStyle.height = newHeight + "px";
-	//};
-
-	//var myGrid = new Grid("ScorecardGrid", {
-	//	srcType: "dom",
-	//	srcData: "ScorecardTable",
-	//	allowGridResize: true,
-	//	allowColumnResize: true,
-	//	allowClientSideSorting: true,
-	//	allowSelections: true,
-	//	allowMultipleSelections: true,
-	//	showSelectionColumn: true,
-	//	onColumnSort: onColumnSort,
-	//	onResizeGrid: onResizeGrid,
-	//	//colAlign: gridColAlign,
-	//	colBGColors: ["#fafafa"],
-	//	//colSortTypes: gridColSortTypes,
-	//	fixedCols: 1
-	//});
-	/*$('#ScorecardTable').fxdHdrCol({
-		fixedCols: 3,
-		width: "100%",
-		height: 400,
-		colModal: [
-			   { width: 50, align: 'center' },
-			   { width: 110, align: 'center' },
-			   { width: 170, align: 'left' },
-			   { width: 250, align: 'left' },
-			   { width: 100, align: 'left' },
-			   { width: 70, align: 'left' },
-			   { width: 100, align: 'left' },
-			   { width: 100, align: 'center' },
-			   { width: 90, align: 'left' },
-			   { width: 400, align: 'left' }
-		],
-		sort: true
-	});*/
 </script>

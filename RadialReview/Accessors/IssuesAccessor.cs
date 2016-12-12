@@ -130,9 +130,14 @@ namespace RadialReview.Accessors
 
             meetingHub.showAlert(message, 1500);
 
-			var updates = new AngularRecurrence(recurrenceId);
+            var updates = new AngularRecurrence(recurrenceId) {
+                Focus = "[data-issue='" + recur.Id + "'] input:visible:first"
+            };
             updates.IssuesList.Issues = AngularList.Create<AngularIssue>(AngularListType.Add, new []{ new AngularIssue(recur) });
             meetingHub.update(updates);
+
+            //rt.UpdateRecurrences(recurrenceId).SetFocus("");
+
             Audit.L10Log(s, perms.GetCaller(), recurrenceId, "CreateIssue", ForModel.Create(issue), issue.NotNull(x => x.Message));
             return o;
 

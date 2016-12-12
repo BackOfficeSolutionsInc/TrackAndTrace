@@ -430,6 +430,18 @@
           "lib/net45/Newtonsoft.Json.dll": {}
         }
       },
+      "NReco.PhantomJS/1.0.3": {
+        "type": "package",
+        "dependencies": {
+          "PhantomJS": "2.1.1"
+        },
+        "compile": {
+          "lib/net40-Client/NReco.PhantomJS.dll": {}
+        },
+        "runtime": {
+          "lib/net40-Client/NReco.PhantomJS.dll": {}
+        }
+      },
       "OpenCover/4.6.519": {
         "type": "package"
       },
@@ -517,6 +529,9 @@
             "locale": "de"
           }
         }
+      },
+      "PhantomJS/2.1.1": {
+        "type": "package"
       },
       "StackExchange.Redis.StrongName/1.0.322": {
         "type": "package",
@@ -956,6 +971,18 @@
           "lib/net45/Newtonsoft.Json.dll": {}
         }
       },
+      "NReco.PhantomJS/1.0.3": {
+        "type": "package",
+        "dependencies": {
+          "PhantomJS": "2.1.1"
+        },
+        "compile": {
+          "lib/net40-Client/NReco.PhantomJS.dll": {}
+        },
+        "runtime": {
+          "lib/net40-Client/NReco.PhantomJS.dll": {}
+        }
+      },
       "OpenCover/4.6.519": {
         "type": "package"
       },
@@ -1043,6 +1070,9 @@
             "locale": "de"
           }
         }
+      },
+      "PhantomJS/2.1.1": {
+        "type": "package"
       },
       "StackExchange.Redis.StrongName/1.0.322": {
         "type": "package",
@@ -1508,6 +1538,17 @@
         "tools/install.ps1"
       ]
     },
+    "NReco.PhantomJS/1.0.3": {
+      "sha512": "GAfeSIb6g5azm8j0xBd0jbpb8JBKdCp09Z9ruLQJErN69MUbEY+M+EkrkPWxK1POrC7JzPGLPDlGl3awQqT9LQ==",
+      "type": "package",
+      "files": [
+        "NReco.PhantomJS.1.0.3.nupkg.sha512",
+        "NReco.PhantomJS.nuspec",
+        "lib/net40-Client/NReco.PhantomJS.XML",
+        "lib/net40-Client/NReco.PhantomJS.dll",
+        "readme.txt"
+      ]
+    },
     "OpenCover/4.6.519": {
       "sha512": "oReudTijK4ghbd1GNTzl7Su2KzOufj2evTS5PTGAGC5ThfrThcInB/t9w2ISkcEacOsgLQTdG+PO0UUUGZ+zTw==",
       "type": "package",
@@ -1674,6 +1715,67 @@
         "lib/net20/de/PdfSharp.Charting-gdi.resources.dll"
       ]
     },
+    "PhantomJS/2.1.1": {
+      "sha512": "31xkN06TjBGQ9/8sGkm8IAN4DM/gMDChryu9Pp1ng9OK/xLPL2ZNbAgRCaB2g9vDkUDvhHjBEtP9JRenMDiHUg==",
+      "type": "package",
+      "files": [
+        "PhantomJS.2.1.1.nupkg.sha512",
+        "PhantomJS.nuspec",
+        "content/phantomjs-license.txt",
+        "tools/install.ps1",
+        "tools/phantomjs/ChangeLog",
+        "tools/phantomjs/LICENSE.BSD",
+        "tools/phantomjs/README.md",
+        "tools/phantomjs/examples/arguments.js",
+        "tools/phantomjs/examples/child_process-examples.js",
+        "tools/phantomjs/examples/colorwheel.js",
+        "tools/phantomjs/examples/countdown.js",
+        "tools/phantomjs/examples/detectsniff.js",
+        "tools/phantomjs/examples/echoToFile.js",
+        "tools/phantomjs/examples/features.js",
+        "tools/phantomjs/examples/fibo.js",
+        "tools/phantomjs/examples/hello.js",
+        "tools/phantomjs/examples/injectme.js",
+        "tools/phantomjs/examples/loadspeed.js",
+        "tools/phantomjs/examples/loadurlwithoutcss.js",
+        "tools/phantomjs/examples/modernizr.js",
+        "tools/phantomjs/examples/module.js",
+        "tools/phantomjs/examples/netlog.js",
+        "tools/phantomjs/examples/netsniff.js",
+        "tools/phantomjs/examples/openurlwithproxy.js",
+        "tools/phantomjs/examples/outputEncoding.js",
+        "tools/phantomjs/examples/page_events.js",
+        "tools/phantomjs/examples/pagecallback.js",
+        "tools/phantomjs/examples/phantomwebintro.js",
+        "tools/phantomjs/examples/post.js",
+        "tools/phantomjs/examples/postjson.js",
+        "tools/phantomjs/examples/postserver.js",
+        "tools/phantomjs/examples/printenv.js",
+        "tools/phantomjs/examples/printheaderfooter.js",
+        "tools/phantomjs/examples/printmargins.js",
+        "tools/phantomjs/examples/rasterize.js",
+        "tools/phantomjs/examples/render_multi_url.js",
+        "tools/phantomjs/examples/responsive-screenshot.js",
+        "tools/phantomjs/examples/run-jasmine.js",
+        "tools/phantomjs/examples/run-jasmine2.js",
+        "tools/phantomjs/examples/run-qunit.js",
+        "tools/phantomjs/examples/scandir.js",
+        "tools/phantomjs/examples/server.js",
+        "tools/phantomjs/examples/serverkeepalive.js",
+        "tools/phantomjs/examples/simpleserver.js",
+        "tools/phantomjs/examples/sleepsort.js",
+        "tools/phantomjs/examples/stdin-stdout-stderr.js",
+        "tools/phantomjs/examples/universe.js",
+        "tools/phantomjs/examples/unrandomize.js",
+        "tools/phantomjs/examples/useragent.js",
+        "tools/phantomjs/examples/version.js",
+        "tools/phantomjs/examples/waitfor.js",
+        "tools/phantomjs/examples/walk_through_frames.js",
+        "tools/phantomjs/phantomjs.exe",
+        "tools/phantomjs/third-party.txt",
+        "tools/uninstall.ps1"
+      ]
+    },
     "StackExchange.Redis.StrongName/1.0.322": {
       "sha512": "W+7E6VPqD7NnllYiJ1s6GzbzHyK/OON/eB+ryljMRbmFZrTQEqwP3rNY8HfUlKIh9OeuodEjAiRc/k5b++wwdQ==",
       "type": "package",
@@ -1710,6 +1812,7 @@
       "Microsoft.Owin.Security.Cookies >= 3.0.1",
       "Microsoft.Owin.Security.OAuth >= 3.0.1",
       "Microsoft.Web.Infrastructure >= 1.0.0",
+      "NReco.PhantomJS >= 1.0.3",
       "Newtonsoft.Json >= 9.0.1",
       "OpenCover >= 4.6.519",
       "OxyPlot >= 1.0.0-unstable2100",

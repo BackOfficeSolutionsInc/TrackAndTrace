@@ -11,15 +11,13 @@ namespace RadialReview.Controllers {
     public class QuarterlyController : BaseController {
         // GET: Quarterly
         [Access(AccessLevel.UserOrganization)]
-        public ActionResult Index()
-        {
+        public ActionResult Index() {
             return View();
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public PartialViewResult Modal()
-        {
-            return PartialView();
+        public PartialViewResult Modal(long id) {
+            return PartialView(id);
         }
 
         public class PrintoutOptions {
@@ -32,10 +30,15 @@ namespace RadialReview.Controllers {
             public bool acc { get; set; }
         }
 
+
+
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
-        public ActionResult Printout(long id, FormCollection model)
-        {
+        public ActionResult Printout(long id, FormCollection model, PdfAccessor.AccNodeJs root = null) {
+
+            if (model["root"] != null && root == null)
+                root = Newtonsoft.Json.JsonConvert.DeserializeObject<PdfAccessor.AccNodeJs>(model["root"]);
+
             return Printout(id,
                 model["issues"].ToBooleanJS(),
                 model["todos"].ToBooleanJS(),
@@ -43,16 +46,16 @@ namespace RadialReview.Controllers {
                 model["rocks"].ToBooleanJS(),
                 model["vto"].ToBooleanJS(),
                 model["l10"].ToBooleanJS(),
-                model["acc"].ToBooleanJS()
+                model["acc"].ToBooleanJS(),
+                root
             );
         }
 
         [Access(AccessLevel.UserOrganization)]
         [HttpGet]
-        public ActionResult PrintVTO(long id)
-        {
+        public ActionResult PrintVTO(long id) {
             var vto = VtoAccessor.GetAngularVTO(GetUser(), id);
-            var doc = PdfAccessor.CreateDoc(GetUser(), vto.Name+" Vision/Traction Organizer");
+            var doc = PdfAccessor.CreateDoc(GetUser(), vto.Name + " Vision/Traction Organizer");
 
             PdfAccessor.AddVTO(doc, vto, GetUser().GetOrganizationSettings().GetDateFormat());
             var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
@@ -60,31 +63,39 @@ namespace RadialReview.Controllers {
         }
         [Access(AccessLevel.UserOrganization)]
         [HttpGet]
-        public ActionResult PrintPages(long id, bool issues = false, bool todos = false, bool scorecard = false, bool rocks = false, bool vto = false, bool l10 = false, bool acc = false, bool print = false)
-        {
+        public ActionResult PrintPages(long id, bool issues = false, bool todos = false, bool scorecard = false, bool rocks = false, bool vto = false, bool l10 = false, bool acc = false, bool print = false) {
             return Printout(id, issues, todos, scorecard, rocks, vto, l10, acc, print);
         }
 
         [Access(AccessLevel.UserOrganization)]
         [HttpGet]
-        public ActionResult Printout(long id, bool issues = false, bool todos = false, bool scorecard = true, bool rocks = true, bool vto = true, bool l10 = true, bool acc = true, bool print = false)
-        {
+        public ActionResult Printout(long id, bool issues = false, bool todos = false, bool scorecard = true, bool rocks = true, bool vto = true, bool l10 = true, bool acc = true, bool print = false, PdfAccessor.AccNodeJs root = null) {
             var recur = L10Accessor.GetAngularRecurrence(GetUser(), id);
-            var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout");
+            var merger = new DocumentMerger();
+
+
+            //
             var anyPages = false;
-            AngularVTO vtoModel= VtoAccessor.GetAngularVTO(GetUser(), recur.VtoId.Value);
+            AngularVTO vtoModel = VtoAccessor.GetAngularVTO(GetUser(), recur.VtoId.Value);
             if (vto && recur.VtoId.HasValue && recur.VtoId > 0) {
                 //vtoModel 
+                var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout");
                 PdfAccessor.AddVTO(doc, vtoModel, GetUser().GetOrganizationSettings().GetDateFormat());
                 anyPages = true;
+                merger.AddDoc(doc);
             }
-            if (l10) { PdfAccessor.AddL10(doc, recur, L10Accessor.GetLastMeetingEndTime(GetUser(), id)); anyPages = true;}
-                
-            if (todos){ PdfAccessor.AddTodos(GetUser(), doc, recur); anyPages = true;}
-            if (issues){ PdfAccessor.AddIssues(GetUser(), doc, recur, todos); anyPages = true;}
-            if (scorecard){ PdfAccessor.AddScorecard(doc, recur); anyPages = true; }
+            if (l10) {
+                var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout");
+                PdfAccessor.AddL10(doc, recur, L10Accessor.GetLastMeetingEndTime(GetUser(), id)); anyPages = true;
+                merger.AddDoc(doc);
+            }
+
+            if (todos) {
+                var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout"); PdfAccessor.AddTodos(GetUser(), doc, recur); anyPages = true; }
+            if (issues) { PdfAccessor.AddIssues(GetUser(), doc, recur, todos); anyPages = true; }
+            if (scorecard) { PdfAccessor.AddScorecard(doc, recur); anyPages = true; }
             if (rocks) { PdfAccessor.AddRocks(GetUser(), doc, recur, vtoModel); anyPages = true; }
-            if (acc) { PdfAccessor.AddAccountabilityChart(GetUser(), doc, GetUser().Organization.AccountabilityChartId); anyPages = true; }
+            if (acc && root != null) { PdfAccessor.AddAccountabilityChart(GetUser(), doc, root); anyPages = true; }
             var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
             if (!anyPages)
                 return Content("No pages to print.");

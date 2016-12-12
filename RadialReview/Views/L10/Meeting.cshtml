@@ -230,7 +230,7 @@
 									<li class="divider"></li>
 								}
 								@if (Model.CanEdit) {
-									<li><a href="/L10/Wizard/@(Model.Recurrence.Id)?return=meeting" onclick="skipBeforeUnload = true"><span class="glyphicon glyphicon-edit"></span> Edit Meeting</a></li>
+									<li><a href="/L10/Wizard/@(Model.Recurrence.Id)?return=meeting" id="edit_meeting_link" onclick="skipBeforeUnload = true"><span class="glyphicon glyphicon-edit"></span> Edit Meeting</a></li>
 									<li class="divider"></li>
 								}
 

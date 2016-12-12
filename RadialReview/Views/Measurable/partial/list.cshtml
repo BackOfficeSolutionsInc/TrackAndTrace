@@ -26,7 +26,7 @@
                 <div class="component">
                     <div class="clearfix"></div>
                     <div style="position: relative;" ng-show="(@(selector)).Measurables.length">
-                        <div class="table-responsive scroll-right scroller repeater-container-scorecard" style1="min-height: 200px;">
+                        <div class="table-responsive scroll-right scroller repeater-container-scorecard tile-height-resize" style1="min-height: 200px;">
                             <table id="ScorecardTable" class="scorecard-table ng-cloak">
                                 <thead>
                                     <tr class="top-row">
@@ -137,7 +137,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <table id="ScorecardTable_Over" class="scorecard-table hidden-xs hidden-sm ng-cloak resizable background-color">
+                        <table id="ScorecardTable_Over" class="scorecard-table hidden-xs hidden-sm ng-cloak resizable background-color tile-height-resize"  data-tile-resize-diff="11">
                             <thead>
                                 <tr class="top-row">
                                     @if (reorderable) {
@@ -155,8 +155,8 @@
                                         <th class="button-column">&nbsp;</th>
                                     }
                                     @if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false) {
-                                        <th class=" who alignRight accountable-column text-column" title="This person is accountable for reaching the goal">Acc</th>
-                                        <th class=" who alignLeft admin-column text-column"><span class="newLine gray" title="This person is responsible for entering the number">/Admin</span></th>
+                                        <th class="who alignRight accountable-column text-column" title="This person is accountable for reaching the goal">Acc</th>
+                                        <th class="who alignLeft admin-column text-column"><span class="newLine gray" title="This person is responsible for entering the number">/Admin</span></th>
                                     }
                                     <th class="measurable measurable-column text-column">Measurable</th>
                                     <th class="target  goal-column data-column" colspan="2">Goal</th>
@@ -222,9 +222,6 @@
                                     </td>
                                 </tr>
                             </tbody>
-
-
-
                         </table>
                     </div>
                     <div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>

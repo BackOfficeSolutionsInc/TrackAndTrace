@@ -36,3 +36,11 @@ tbody.as-sortable-drag {
 tbody.as-sortable-drag .picture-container {
   display: none;
 }
+tbody.as-sortable-dragging {
+  margin-top: -43px;
+  margin-left: -3px;
+}
+tbody.as-sortable-dragging input.blend {
+  border-bottom: 0px solid transparent;
+  padding-top: 9px;
+}

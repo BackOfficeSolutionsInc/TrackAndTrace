@@ -54,7 +54,8 @@ namespace RadialReview.Models.Angular.Meeting
         public long? VtoId { get; set; }
 		
 		public AngularIgnore<L10Recurrence> _Recurrence { get; set; }
-	}
+        public string Focus { get; set; }
+    }
 
     public class AngularBasics : BaseAngular {
         public AngularBasics(long recurrenceId): base(recurrenceId){

@@ -13,26 +13,7 @@ app.directive('l10StatsTile', function() {
 					$scope.model = {};
 					updater().convertDates(data);
 
-					if ($scope.model && $scope.model.options){
-						//$scope.model.options.tooltopHook = function (arr) {
-						//	var monthNames = [
-						//	  "January", "February", "March",
-						//	  "April", "May", "June", "July",
-						//	  "August", "September", "October",
-						//	  "November", "December"
-						//	];
-
-						//	return arr.map(function (d) {
-						//		var date = d.x;
-						//		var day = date.getDate();
-						//		var monthIndex = date.getMonth();
-						//		var year = date.getFullYear();
-
-						//		return {
-
-						//		};
-						//	});
-						//}
+					if ($scope.model && $scope.model.options){				
 					}
 
 					$.extend($scope.model, data);

@@ -1,6 +1,7 @@
 ﻿using NHibernate;
 using RadialReview.Hubs;
 using RadialReview.Models.Angular.Base;
+using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.Angular.Scorecard;
 using RadialReview.Models.Application;
 using RadialReview.Models.L10;
@@ -18,22 +19,19 @@ namespace RadialReview.Utilities.RealTime {
             protected List<long> _recurrenceIds = new List<long>();
             protected Dictionary<long, L10Meeting> _recurrenceId_meeting = new Dictionary<long, L10Meeting>();
             protected RealTimeUtility rt;
-            public RTRecurrenceUpdater(IEnumerable<long> recurrences, RealTimeUtility rt)
-            {
+            public RTRecurrenceUpdater(IEnumerable<long> recurrences, RealTimeUtility rt) {
                 _recurrenceIds = recurrences.Distinct().ToList();
                 this.rt = rt;
             }
 
-            protected void UpdateAll(Func<long, IAngularItem> itemGenerater)
-            {
+            protected void UpdateAll(Func<long, IAngularItem> itemGenerater) {
                 foreach (var r in _recurrenceIds) {
                     var updater = rt.GetUpdater<MeetingHub>(MeetingHub.GenerateMeetingGroupId(r));
                     updater.Add(itemGenerater(r));
                 }
             }
 
-            public RTRecurrenceUpdater AddLowLevelAction(Action<dynamic> action)
-            {
+            public RTRecurrenceUpdater AddLowLevelAction(Action<dynamic> action) {
                 rt.AddAction(() => {
                     foreach (var r in _recurrenceIds) {
                         var g = rt.GetGroup<MeetingHub>(MeetingHub.GenerateMeetingGroupId(r));
@@ -43,35 +41,30 @@ namespace RadialReview.Utilities.RealTime {
                 return this;
             }
 
-            public RTRecurrenceUpdater UpdateMeasurable(MeasurableModel measurable, AngularListType type = AngularListType.ReplaceIfNewer)
-            {
+            public RTRecurrenceUpdater UpdateMeasurable(MeasurableModel measurable, AngularListType type = AngularListType.ReplaceIfNewer) {
                 rt.AddAction(() => {
                     UpdateAll(rid => new AngularMeasurable(measurable));
                 });
                 return this;
             }
-            public RTRecurrenceUpdater UpdateMeasurable(MeasurableModel measurable, IEnumerable<ScoreModel> scores, AngularListType type = AngularListType.ReplaceIfNewer)
-            {
+            public RTRecurrenceUpdater UpdateMeasurable(MeasurableModel measurable, IEnumerable<ScoreModel> scores, AngularListType type = AngularListType.ReplaceIfNewer) {
                 rt.AddAction(() => {
                     UpdateAll(rid => new AngularMeasurable(measurable));
                 });
                 return UpdateScorecard(scores.Where(x => x.Measurable.Id == measurable.Id), type);
             }
 
-            public RTRecurrenceUpdater Update(IAngularItem item)
-            {
+            public RTRecurrenceUpdater Update(IAngularItem item) {
                 return Update(rid => item);
             }
-            public RTRecurrenceUpdater Update(Func<long,IAngularItem> item)
-            {
+            public RTRecurrenceUpdater Update(Func<long, IAngularItem> item) {
                 rt.AddAction(() => {
                     UpdateAll(item);
                 });
                 return this;
             }
 
-            public RTRecurrenceUpdater UpdateScorecard(IEnumerable<ScoreModel> scores, AngularListType type = AngularListType.ReplaceIfNewer)
-            {
+            public RTRecurrenceUpdater UpdateScorecard(IEnumerable<ScoreModel> scores, AngularListType type = AngularListType.ReplaceIfNewer) {
                 rt.AddAction(() => {
                     //UpdateAngular stuff
                     var scorecard = new AngularScorecard();
@@ -87,7 +80,7 @@ namespace RadialReview.Utilities.RealTime {
                         scorecard.Scores = AngularList.Create<AngularScore>(type, scoresList);
                     }
                     scorecard.Measurables = AngularList.Create(type, measurablesList);
-                    UpdateAll(rid =>{
+                    UpdateAll(rid => {
                         scorecard.Id = rid;
                         return scorecard;
                     });
@@ -95,6 +88,14 @@ namespace RadialReview.Utilities.RealTime {
                 return this;
             }
 
+            public void SetFocus(string selector) {
+
+                rt.AddAction(() => {
+                    UpdateAll(x => new AngularRecurrence(x) {
+                       Focus = selector
+                    });
+                });
+            }
         }
     }
 }

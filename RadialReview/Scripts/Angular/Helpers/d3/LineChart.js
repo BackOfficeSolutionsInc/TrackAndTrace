@@ -403,9 +403,9 @@ var n3Charts;
 			Dimensions.getDefaultMargins = function () {
 				return {
 					top: 0,
-					left: 40,
-					bottom: 40,
-					right: 40
+					left: 5,//40,
+					bottom: 5,//40,
+					right: 5,//40
 				};
 			};
 			Dimensions.prototype.updateMargins = function (options) {

@@ -24,6 +24,8 @@ using MigraDoc.Rendering;
 using static RadialReview.Accessors.FastReviewQueries;
 using static RadialReview.Engines.ChartsEngine;
 using RadialReview.Utilities.Pdf;
+using NReco.PhantomJS;
+using RadialReview.Properties;
 
 namespace RadialReview.Accessors {
     public class LayoutHelper {
@@ -60,8 +62,72 @@ namespace RadialReview.Accessors {
         }
     }
 
+    public class DocumentMerger{
+
+        protected List<object> docs { get; set; }
+
+        public void AddDoc(PdfDocument doc) {
+            docs.Add(doc);
+        }
+        public void AddDoc(Document doc) {
+            docs.Add(doc);
+        }
+
+        public PdfDocument Flatten(string filename,string title) {
+            DateTime now = DateTime.Now;
+            filename = filename.ToLower().EndsWith(".pdf")?filename:filename+".pdf";
+            PdfDocument document = new PdfDocument();
+            document.Info.Title = title;
+            document.Info.Author = "Traction Tools";
+            document.Info.Keywords = "Traction Tools";
+            document.Info.CreationDate = now;
+            var pages = 0;
+
+            foreach(var doc in docs) {
+                if (doc is PdfDocument) {
+                    var pdfDoc = (PdfDocument)doc;
+                    foreach (var p in pdfDoc.Pages) {
+                        document.AddPage(p);
+                        pages += 1;
+                    }
+                }
+                if (doc is Document) {
+                    var mdoc = (Document)doc;
+                    //////////////
+                 
+                    // Create a renderer and prepare (=layout) the document
+                    MigraDoc.Rendering.DocumentRenderer docRenderer = new DocumentRenderer(mdoc);
+                    docRenderer.PrepareDocument();
+                    
+                    int pageCount = docRenderer.FormattedDocument.PageCount;
+                    for (int idx = 0; idx < pageCount; idx++) {
+                        PdfPage page = document.AddPage();
+                        XGraphics gfx = XGraphics.FromPdfPage(page);
+                        // HACK²
+                        gfx.MUH = PdfFontEncoding.Unicode;
+                        //XRect rect = GetRect(idx);
+
+                        // Render the page. Note that page numbers start with 1.
+                        docRenderer.RenderPage(gfx, idx + 1);
+
+                        // Pop the previous graphical state
+                        //gfx.EndContainer(container);
+                        pages += 1;
+                    }
+                    //////////////
+                }
+            }
+            return document;
+
+        }
+
+    }
+
 
     public class PdfAccessor {
+
+
+
 
         static XRect GetRect(int index) {
             XRect rect = new XRect(0, 0, A4Width / 2 * 0.9, A4Height / 2 * 0.9);
@@ -96,11 +162,6 @@ namespace RadialReview.Accessors {
             return document;
         }
 
-        public static void AddAccountabilityChart(UserOrganizationModel caller, Document doc, long chartId) {
-            //var tree = AccountabilityAccessor.GetTree(caller, chartId, expandAll: true);
-            //Doesnt do anything
-
-        }
 
         public static byte[] LoadImage(MemoryStream st) {
             using (Stream stream = new MemoryStream(st.ToArray())) {
@@ -807,7 +868,7 @@ namespace RadialReview.Accessors {
             }
         }
 
-        public static void AddRocks(UserOrganizationModel caller, Document doc, AngularRecurrence recur,AngularVTO vto) {
+        public static void AddRocks(UserOrganizationModel caller, Document doc, AngularRecurrence recur, AngularVTO vto) {
             //var recur = L10Accessor.GetAngularRecurrence(caller, recurrenceId);
 
             //return SetupDoc(caller, caller.Organization.Settings.RockName);
@@ -835,7 +896,7 @@ namespace RadialReview.Accessors {
                 p1.AddFormattedText("Future Date:", TextFormat.Bold);
                 row.Cells[0].Add(p1);
                 var p2 = new Paragraph();
-                p2.AddText(vto.QuarterlyRocks.FutureDate.NotNull(x=>x.Value.ToString(format))??"");
+                p2.AddText(vto.QuarterlyRocks.FutureDate.NotNull(x => x.Value.ToString(format)) ?? "");
                 row.Cells[1].Add(p2);
 
 
@@ -844,7 +905,7 @@ namespace RadialReview.Accessors {
                 p3.AddFormattedText("Revenue:", TextFormat.Bold);
                 row.Cells[0].Add(p3);
                 var p4 = new Paragraph();
-                p4.AddText(vto.QuarterlyRocks.Revenue??"");
+                p4.AddText(vto.QuarterlyRocks.Revenue ?? "");
                 row.Cells[1].Add(p4);
 
                 row = table.AddRow();
@@ -1823,7 +1884,7 @@ namespace RadialReview.Accessors {
                     curTYPI++;
                 }
             }
-            
+
 
             var maxPage = Math.Max(marketingPages.Count(), threeYearPages.Count());
             for (var p = 1; p < maxPage; p++) {
@@ -1867,8 +1928,8 @@ namespace RadialReview.Accessors {
             if (anyCellsOnLeft && showThreeYear) {
                 vision.AddColumn(Unit.FromInch(1.66 + 5.33));
                 vision.AddColumn(Unit.FromInch(3.4));
-            }else {
-                vision.AddColumn(Unit.FromInch(1.66 + 5.33+ 3.4));
+            } else {
+                vision.AddColumn(Unit.FromInch(1.66 + 5.33 + 3.4));
             }
 
             var vrow = vision.AddRow();
@@ -1883,7 +1944,7 @@ namespace RadialReview.Accessors {
                 } else {
                     column = vtoLeft.AddColumn(Unit.FromInch(5.33 + 3.4));
                 }
-            }else {
+            } else {
                 column = vtoLeft.AddColumn(Unit.FromInch(0));
                 column = vtoLeft.AddColumn(Unit.FromInch(0));
             }
@@ -1963,7 +2024,7 @@ namespace RadialReview.Accessors {
                 marketingStrategyPanel = row.Cells[1];
                 msTitle.Format.Font.Bold = true;
                 msTitle.Format.Font.Size = 14;
-                row.Height = Unit.FromInch(2.7)+extraHeight;
+                row.Height = Unit.FromInch(2.7) + extraHeight;
                 msTitle.Format.Alignment = ParagraphAlignment.Center;
                 row.VerticalAlignment = VerticalAlignment.Center;
                 row.Borders.Right.Color = TableBlack;
@@ -1976,7 +2037,7 @@ namespace RadialReview.Accessors {
                 var vtoRight = vrow.Cells[1].Elements.AddTable();
                 if (anyCellsOnLeft) {
                     column = vtoRight.AddColumn(Unit.FromInch(3.4));
-                }else {
+                } else {
                     column = vtoRight.AddColumn(Unit.FromInch(5.33 + 3.4));
                 }
                 row = vtoRight.AddRow();
@@ -2545,6 +2606,15 @@ namespace RadialReview.Accessors {
 
         #endregion
 
+        public static void AddAccountabilityChart(UserOrganizationModel caller, PdfDocument doc, AccNodeJs root) {
+            //var tree = AccountabilityAccessor.GetTree(caller, chartId, expandAll: true);
+            //Doesnt do anything
+            var chart = GenerateAccountabilityChart(root, 11, 8, false);
+            foreach (var p in chart.Pages) {
+                doc.AddPage(p);
+            }
+            
+        }
 
         private static void ACGenerate_Resized(PdfPage page, AccNodeJs root, PageProp pageProp) {
             var ranges = ACRanges(root);
@@ -2574,6 +2644,28 @@ namespace RadialReview.Accessors {
                 });
         }
 
+       // public static AccNodeJs CreateAccountabilityChartWithPhantomJs(UserOrganizationModel caller,long organizationId) {
+
+           // var phantomJS = new PhantomJS();
+            //phantomJS.OutputReceived += (sender, e) => {
+            //    Console.WriteLine("PhantomJS output: {0}", e.Data);
+            //};
+            //phantomJS.RunScript("for (var i=0; i<10; i++) console.log('hello from js '+i); phantom.exit();", null);
+
+            //phantomJS.
+
+//            phantomJS.RunScript(@"
+//var webPage = require('webpage');
+//var page = webPage.create();
+
+//page.viewportSize = { width: 1920, height: 1080 };
+//page.open("""+ProductStrings.BaseUrl2+@"accountability/chart?expandAll=true"", function start(status) {
+//    page.render('google_home.jpeg', { format: 'jpeg', quality: '100'});
+//phantom.exit();
+//});",new string[0]);
+
+//            return null;
+      //  }
 
         public static PdfDocument GenerateAccountabilityChart(AccNodeJs root, double width, double height, bool restrictSize = false) {
 

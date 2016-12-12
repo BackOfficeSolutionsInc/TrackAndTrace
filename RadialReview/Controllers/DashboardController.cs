@@ -298,7 +298,6 @@ namespace RadialReview.Controllers {
                 date = new AngularDateRange() { startDate = startRange, endDate = endRange }
             };
             try {//Scorecard
-
                 var scorecardStart = fullScorecard ? TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod) : startRange;
                 var scorecardEnd = fullScorecard ? DateTime.UtcNow.AddDays(14) : endRange;
                 output.Scorecard = ScorecardAccessor.GetAngularScorecardForUser(GetUser(), userId, new DateRange(scorecardStart, scorecardEnd), true, now: DateTime.UtcNow);

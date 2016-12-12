@@ -140,6 +140,21 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
         }
     });
 
+    $scope.$watch('model.Focus', function (newValue, oldValue) {
+        console.log("watch LoadUrls");
+        if (newValue) {
+
+            $timeout(function () {
+                try{
+                    $($scope.model.Focus).focus();
+                } catch (e) {
+                    console.error("Set Focus", e);
+                }
+                $scope.model.Focus = null;
+            }, 10);
+        }
+    });
+
     var tzoffset = r.updater.tzoffset;
     var firstLoad = true;
 

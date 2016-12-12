@@ -177,11 +177,6 @@ function getScoreTransform(self) {
 
 }
 
-
-
-
-
-
 var zoomLevel = 1;
 function zoomIn() {
 	zoomLevel *= 1.10;
@@ -728,7 +723,10 @@ function removeMeasurable(id) {
 }
 
 $(window).on("page-scorecard", function () {
-	scrollRight();
+    scrollRight();
+
+    //$("#edit_meeting_link").attr("href","/L10/Wizard/"+recurrenceId+"?return=meeting#/Scorecard");
+
 	if (isIOS()) {
 		$('input').css("pointer-events", "none");
 	}

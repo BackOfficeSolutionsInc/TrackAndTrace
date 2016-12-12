@@ -149,7 +149,7 @@
         function showPrint(recurrenceId) {
             //Html.ShowModal("Generate Printout","/Quarterly/Modal","/Quarterly/Printout/"+Model.Recurrence.Id,newTab:true)
             curRecur=recurrenceId;
-            showModal("Generate Quarterly Printout", "/Quarterly/Modal", "/Quarterly/Printout/" + recurrenceId, "callbackPrint");
+            showModal("Generate Quarterly Printout", "/Quarterly/Modal/"+ recurrenceId, "/Quarterly/Printout/" + recurrenceId, "callbackPrint");
 
         }
         

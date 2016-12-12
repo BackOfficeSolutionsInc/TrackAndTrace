@@ -170,7 +170,7 @@ namespace RadialReview.Accessors {
                                         .Where(x => x.L10Recurrence.Id == recurrenceId && x.DeleteTime == null)
                                         .List().ToList();
 
-                        var ctx = Reordering.Create(recurMeasureables, measurableId, recurrenceId, oldOrder, newOrder, x => x._Ordering, x=>x.Measurable.Id);
+                        var ctx = Reordering.Create(recurMeasureables, measurableId, recurrenceId, oldOrder, newOrder, x => x._Ordering, x => x.Measurable.Id);
                         ctx.ApplyReorder(rt, s, (id, order) => new AngularMeasurable(id) { Ordering = order });
 
                         tx.Commit();
@@ -1123,19 +1123,23 @@ namespace RadialReview.Accessors {
             allRecurrenceIds.AddRange(admin_RecurrenceIds);
 
 
-            var allViewPerms = PermissionsAccessor.GetPermItemsForUser(s, perms, userId, PermItem.ResourceType.L10Recurrence);
-            var additionalRecurrenceIdsFromPerms = allViewPerms.Where(x => !allRecurrenceIds.Any(y => y.Id == x)).ToList();
-
+            var allViewPerms = PermissionsAccessor.GetPermItemsForUser(s, perms, userId, PermItem.ResourceType.L10Recurrence).Where(x => x.CanView);
+            //Outside the company
+            var additionalRecurrenceIdsFromPerms = allViewPerms.Where(allViewPermId => !allRecurrenceIds.Any(y => y.Id == allViewPermId.ResId)).ToList();
             var additionalRecurrenceFromViewPerms = s.QueryOver<L10Recurrence>()
                 .Where(x => !x.Pristine && x.DeleteTime == null)
-                .WhereRestrictionOn(x => x.Id).IsIn(additionalRecurrenceIdsFromPerms)
+                .WhereRestrictionOn(x => x.Id).IsIn(additionalRecurrenceIdsFromPerms.Select(x => x.ResId).ToArray())
                 .Select(x => x.Name, x => x.Id)
                 .List<object[]>().Select(x => new NameId((string)x[0], (long)x[1])).ToList();
+            recurrencesPersonallyAttending.AddRange(allViewPerms.Select(x => x.ResId));
 
 
             allRecurrenceIds.AddRange(additionalRecurrenceFromViewPerms);
             allRecurrenceIds = allRecurrenceIds.Distinct(x => x.Id).ToList();
             var available = new List<NameId>();
+
+            recurrencesPersonallyAttending = recurrencesPersonallyAttending.Distinct().ToList();
+
             if (caller.ManagingOrganization) {
                 return allRecurrenceIds;
             }
@@ -1803,7 +1807,8 @@ namespace RadialReview.Accessors {
                 var arecur = new AngularRecurrence(recurrenceId) {
                     Rocks = AngularList.Create(AngularListType.Add, new[]{new AngularRock(mm.ForRock){
                         ForceOrder =int.MaxValue,
-                    }})
+                    }}),
+                    Focus = "[data-rock='" + mm.ForRock.Id + "'] input:visible:first"
                 };
                 group.update(new AngularUpdate { arecur });
             } else {
@@ -1811,6 +1816,10 @@ namespace RadialReview.Accessors {
                 var arecur = new AngularRecurrence(recurrenceId) {
                     Rocks = AngularList.Create(AngularListType.ReplaceAll, recurRocks.Select(x => new AngularRock(x.ForRock)).ToList()),
                 };
+                if (recurRocks.Any() && recurRocks.Last().ForRock!=null) {
+                    arecur.Focus = "[data-rock='" + recurRocks.Last().ForRock.Id + "'] input:visible:first";
+                }
+
                 group.update(arecur);
             }
             Audit.L10Log(s, perm.GetCaller(), recurrenceId, "CreateRock", ForModel.Create(rm), rock.Rock);
@@ -3022,6 +3031,8 @@ namespace RadialReview.Accessors {
             if (!skipRealTime) {
 
                 rt.UpdateRecurrences(recurrenceId).UpdateScorecard(scores.Where(x => x.Measurable.Id == measurable.Id));
+
+                rt.UpdateRecurrences(recurrenceId).SetFocus("[data-measurable='" + measurable.Id + "'] input:visible:first");
                 //var scorecard = new AngularScorecard();
                 //var measurablesList = new List<AngularMeasurable>() { new AngularMeasurable(measurable) };
 

@@ -52,7 +52,7 @@
                         </tr>
                     </thead>
                     <tbody md-body @*vs-repeat vs-autoresize vs-scroll-parent=".repeater-container"*@>
-                        <tr ng-hide="rock.Hide" @*ts-repeat*@ class="{{rock.Completion}}  keep-background" id="rock_{{::rock.Id}}" ng-repeat="rock in @(selector) | orderBy: @(orderVariable) @(filter)" md-row>
+                        <tr ng-hide="rock.Hide" @*ts-repeat*@ class="{{rock.Completion}}  keep-background" id="rock_{{::rock.Id}}" data-rock="{{::rock.Id}}" ng-repeat="rock in @(selector) | orderBy: @(orderVariable) @(filter)" md-row>
                             <td class="icon-column"></td>
                             <td md-cell class="rock-completion-container hidden-width-1 status-column" style="min-width: 80px;;vertical-align: top;">
                                 <md-select aria-label="Status" ng-model="rock.Completion" ng-change="functions.sendUpdate(rock)" ng-class="forRock_{{::rock.Id}}" class="keep-background rock-completion1 {{rock.Completion}}">

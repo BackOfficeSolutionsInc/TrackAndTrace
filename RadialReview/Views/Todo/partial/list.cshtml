@@ -54,6 +54,7 @@
 									ng-repeat="todo in @(selector) | orderBy: @(orderVariable) @(filter) track by $index"
 									ng-class="{grayRow: todo.Complete}"
 									class="clickable todotype-{{todo.TodoType}} {{model.Selected == todo.Key?'selected':''}}"
+                                    data-todo="{{::todo.Id}}"
 									md-row>
 									<td class="todotype-column"><span class="type-icon"></span></td>
 									<td class="todo-checkbox-container clickable checkbox-column" style="min-width: 25px;text-align: center;" md-cell>
@@ -70,7 +71,7 @@
 										</span>
 									</td>
 									<td class="todo-text message-column" style="width:100%" ng-click="@(detailsCode)" md-cell>
-										<input class="blend" placeholder="Enter to-do here" ng-model-options="{debounce: 400}" type="text" ng-model="todo.Name" ng-change="functions.sendUpdate(todo)" title="{{todo.Name}}" />
+										<input class="blend" placeholder="Enter to-do here" ng-model-options="{debounce: 75}" type="text" ng-model="todo.Name" ng-change="functions.sendUpdate(todo)" title="{{todo.Name}}" />
 										<div class="todo-text" ng-if="model.Selected==todo.Key">
 											<a class="pull-right timeline-button" ng-if="todo.Link!=null" target="_blank" href="{{todo.Link}}" style="margin-top: 4px;margin-right: 2px;"><span class="glyphicon glyphicon-comment"></span></a>
 											<iframe class="keep-background" style="background-color: white" width="100%" ng-src="{{trustAsResourceUrl(todo.DetailsUrl_Src)}}" ng-data-src="{{todo.DetailsUrl}}"></iframe>

@@ -160,12 +160,25 @@ namespace RadialReview.Accessors {
 
         }
 
-        public static List<long> GetPermItemsForUser(ISession s, PermissionsUtility perms, long forUserId, PermItem.ResourceType resourceType)
+        public static List<PermItem> GetPermItemsForUser(ISession s, PermissionsUtility perms, long forUserId, PermItem.ResourceType resourceType)
         {
             var groups = ResponsibilitiesAccessor.GetResponsibilityGroupsForUser(s.ToQueryProvider(true), perms, forUserId).ToList();
-            var permList = s.QueryOver<PermItem>().Where(x => x.DeleteTime == null && x.ResType == resourceType)
+            var permList = s.QueryOver<PermItem>().Where(x => x.DeleteTime == null && x.ResType == resourceType && x.AccessorType == PermItem.AccessType.RGM)
                 .WhereRestrictionOn(x => x.AccessorId).IsIn(groups.Select(x => x.Id).ToList())
-                .Select(x => x.ResId).List<long>().ToList();
+                .List().ToList();
+            
+            var user = s.Get<UserOrganizationModel>(forUserId);
+            var emailAccessorIds = new List<long>();
+            if (user != null && user.User != null && !string.IsNullOrWhiteSpace(user.User.UserName)) {
+                var emailPermsAccessorIds = s.QueryOver<EmailPermItem>().Where(x => x.DeleteTime == null && x.Email == user.User.UserName).Select(x=>x.Id).List<long>().ToList();
+                if (emailPermsAccessorIds.Any()) {
+                    var emailPermList = s.QueryOver<PermItem>().Where(x => x.DeleteTime == null && x.ResType == resourceType && x.AccessorType == PermItem.AccessType.Email)
+                        .WhereRestrictionOn(x => x.AccessorId).IsIn(emailPermsAccessorIds)
+                        .List().ToList();
+                    permList.AddRange(emailPermList);
+                }
+            }
+
             return permList;
         }
 
@@ -446,7 +459,7 @@ namespace RadialReview.Accessors {
                 CanAdmin = admin,
                 CanEdit = edit,
                 CanView = view,
-                EmailAddress = email
+                EmailAddress = email.ToLower()
             };
         }
 

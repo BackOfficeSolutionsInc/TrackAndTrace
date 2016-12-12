@@ -811,7 +811,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		nodeEnter.call(function (d3Selection) {
 			d3Selection.each(function (d, i) {
 				// this is the actual DOM element
-				console.log("ac-node: create scope");
+				//console.log("ac-node: create scope");
 				var newScope = $scope.$new();
 				$compile(this)(newScope);
 			});
@@ -819,7 +819,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 	}
 	$scope.nodeUpdate = function (nodeUpdate) {
 		nodeUpdate.select(".acc-rect").attr("width", function (d) {
-			console.log("update called");
+			//console.log("update called");
 			return d.width;
 		}).attr("height", function (d) {
 			return (d.height || 20);

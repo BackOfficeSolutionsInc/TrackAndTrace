@@ -41,17 +41,6 @@
                     .attr("result", "blurred")
                     .attr("stdDeviation", "5");
 
-                //filter.append("feColorMatrix")
-                //    .attr("result","bluralpha")
-                //    .attr("type","matrix")
-                //    .attr("values", "1 0 0 0   0 0 1 0 0   0		        0 0 1 0   0		        0 0 0 0.4 0 ");
-
-                //filter.append("feOffset")
-                //    .attr("in","bluralpha")
-                //    .attr("dx","3")
-                //    .attr("dy","3")
-                //    .attr("result","offsetBlur");
-
                 var femerge = filter.append("feMerge");
                 femerge.append("feMergeNode").attr("in", "blurred");
                 femerge.append("feMergeNode").attr("in", "SourceGraphic");
@@ -184,6 +173,7 @@
                                 reject("Element not found");
                             }
                         } catch (e) {
+                           // debugger;
                             console.info("Could not center:", e);
                         }
                     }, ms);
@@ -371,7 +361,7 @@
                 if (typeof (first) === "undefined")
                     first = true;
                 // Compute the new tree layout.
-                var nodes = tree.nodes(scope.root),//.reverse(),
+                var nodes = tree.nodes(scope.root),
                     links = tree.links(nodes);
 
                 // Normalize for fixed-depth.
@@ -413,21 +403,11 @@
                     d.ddx = shift;
                 });
 
-                //
-
                 // Update the nodes�
                 var node = self.selectAll("g.node")
                     .data(nodes, function (d) {
                         return (d.Id);//|| (d.Id = ++i));
                     });
-
-                //node = node.sort(function (a, b) {
-                //    console.log("sorting2")
-                //    if (b && a) {
-                //        return b.order - a.order;
-                //    }
-                //    return 0;
-                //});
 
                 // Enter any new nodes at the parent's previous position.
                 var nodeEnter = node.enter().append("g")
@@ -503,7 +483,6 @@
 
                 nodeUpdate.select(".ghost circle")
                     .attr("r", 10)
-                    //.attr("height", function (d) { return d.height + 16; })
                     .attr("transform", function (d) { return "translate(" + (d.width / 2 - .25) + "," + (d.height + 15.5) + ")"; });
 
                 if (scope.ttUpdate)
@@ -562,7 +541,7 @@
                     d.x0 = d.x;
                     d.y0 = d.y;
                 });
-            
+
                 var maxWidth = baseWidth;
                 nodes.forEach(function (d) {
                     maxWidth = Math.max(maxWidth, d.width);
@@ -570,8 +549,13 @@
 
                 tree.nodeSize([maxWidth + hSeparation, baseHeight]);
 
-                if (first)
-                    $timeout(function () { scope.updater(scope.root, false); }, 1);
+                if (first) {
+                    $timeout(function () {
+                        scope.updater(scope.root, false);
+                    }, 1);
+                }
+
+               
             }
 
             var nestWatch = function (node) {
@@ -583,7 +567,7 @@
                         for (var i in flatChilds) {
                             dict[flatChilds[i].Key] = nestWatch(flatChilds[i]);
                         }
-                        children = dict;//flatChilds.map(function (x) { return nestWatch(x) });
+                        children = dict;
                     }
                     var nr = {};
                     if (scope.ttWatch)
@@ -637,17 +621,7 @@
                     scope.root.y0 = 0;
 
                     $timeout(function () {
-                        //console.log("timeout1")
                         scope.updater(scope.root);
-
-                        //scope.tree.sort(function (a, b) {
-                        //    console.log("sorting")
-                        //    if (b && a) {
-                        //        return b.order - a.order;
-                        //    }
-                        //    return 0;
-                        //})
-                        //console.log("timeout2")
                     }, 1);
 
                     if (newVal && (!oldVal || newVal.center !== oldVal.center))
@@ -659,9 +633,19 @@
                     if (newVal && newVal.show && (!oldVal || newVal.show !== oldVal.show))
                         scope.showNode(newVal.show);
 
+                    //console.log("Timeout for AccountabilityChartRenderComplete");
+                    $timeout(function () {
+                        try {
+                            console.log("Sending AccountabilityChartRenderComplete");
+                            parent.console.log("Sending(p) AccountabilityChartRenderComplete");
+                            $('body').trigger('AccountabilityChartRenderComplete');
+                            parent.$('body').trigger('AccountabilityChartRenderComplete');
+                           // debugger;
+                        } catch (e) {
+                            console.error("could not send complete event.")
+                        }
 
-                    //var dive 
-
+                    }, 1);
 
                 }
             }, true);
@@ -759,8 +743,6 @@
                 }
             }
 
-            //	function applyPan(domNode,direction)
-
             var overCircle = function (d) {
                 selectedNode = d;
                 updateTempConnector();
@@ -824,9 +806,6 @@
                     skipDrag = false;
                     if (d == scope.root)
                         skipDrag = true;
-                    //if ($("input:focus").length > 0) {
-                    //	skipDrag = true;
-                    //}
 
                     if (skipDrag)
                         return;
@@ -834,7 +813,6 @@
                         try {
                             scope.ttDragStart(d);
                         } catch (e) {
-                            //console.log("skipping drag");
                             skipDrag = true;
                             return;
                         }
@@ -843,7 +821,6 @@
                         return;
                     selfSvg.classed("is-dragging", true);
 
-                    //var pz = element.closest('.pz-pan');
                     dragStarted = true;
                     nodes = tree.nodes(d);
                     ox = d.width / 2;
@@ -883,7 +860,6 @@
                             clearTimeout(panTimer);
                             console.log("clear1");
                         } catch (e) {
-
                         }
                     }
 
@@ -914,13 +890,10 @@
                         dat.swap = true;
                         // now remove the element from the parent, and insert it into the new elements children
                         dat.oldParentId = draggingNode.parent.Id;
-
                         scope.swap(draggingNode.Id, selectedNode.Id);
-
                         dat.newParentId = selectedNode.Id;
                         // Make sure that the node being added to is expanded so user can see added node is correctly moved
                         scope.expand(selectedNode);
-                        //sortTree();
                         endDrag();
                     } else {
                         endDrag();
