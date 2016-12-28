@@ -25,7 +25,7 @@
 	}
 
 	.customizeSelection .customize .selected {
-		background-color:  #fbdeca;
+		background-color: #fbdeca;
 		color: #000;
 	}
 
@@ -180,17 +180,17 @@
 									for (var i = 0; i < Math.Max(secondUsers.Count, otherSide.Count); i++) {
 										if (i >= secondUsers.Count) {
 											<div class="emptyRow revieweeRow">&nbsp;</div>
-} else {
-                                            //foreach (var secondUser in secondUsers) {
-                                            var secondUser = secondUsers[i];
-                                           // var classes = new HashSet<String>();
+										} else {
+											//foreach (var secondUser in secondUsers) {
+											var secondUser = secondUsers[i];
+											// var classes = new HashSet<String>();
 
-                                            var itemLookup = Model.Lookup[firstUser.ToId()+"~"+secondUser.ToId()];
-                                            var selected = itemLookup.Selected;
-                                            var classes = itemLookup.Classes;
+											var itemLookup = Model.Lookup[firstUser.ToId() + "~" + secondUser.ToId()];
+											var selected = itemLookup.Selected;
+											var classes = itemLookup.Classes;
 
-                                            
-                                            if (selected /*Model.Selected.Any(x => x.Reviewer == firstUser && x.Reviewee == secondUser)*/) {
+
+											if (selected /*Model.Selected.Any(x => x.Reviewer == firstUser && x.Reviewee == secondUser)*/) {
 												<input type="hidden" name="originalCustomize_@(firstUser.RGMId)_@secondUser.ToId()" value="True" />
 											}
 											<div class="selected isAll @String.Join(" ", classes) revieweeRow">
@@ -215,6 +215,87 @@
 	</div>
 </div>
 <script>
+@*========================================*@
+@*===DON'T DELETE. FOR CONVERSION LATER===*@
+@*========================================*@
+
+	@*var data = {
+		reviewers: [
+			@{
+				first = true;
+				firstId = -1L;
+				index = 0;
+			}
+			@foreach (var id in Model.MasterList) {
+				var firstUsers = Model.Reviewers.Where(x => x.RGMId == id).ToList();
+				var otherSide = Model.AllReviewees.Where(x => x.RGMId == id).ToList();
+				for (var i = 0; i < Math.Max(firstUsers.Count, otherSide.Count); i++) {
+					if (i >= firstUsers.Count) {
+						@:null,
+						//<div class="emptyRow reviewerRow"><div class="pull-left counter">&nbsp;</div>&nbsp;</div>
+					} else {
+						var user = firstUsers[i];
+						@:{name:"@(Html.Encode(user._Name))",RGMId:@(user.RGMId),selected:@((""+first.ToString()).ToLower()),counter:0},
+						//<div id="first_@user.RGMId" class="@(first ? "selected" : "") selectable clickable reviewerRow" data-id="@(user.RGMId)" onclick="unhide(@user.RGMId)">
+						//	<div class="pull-left counter"> 0</div>
+						//	@user._Name
+						//</div>
+							if (first) {
+								firstId = user.RGMId;
+							}
+							first = false;
+					}
+					index += 1;
+				}
+			}
+		],
+		links: [
+			@{
+				first = true;
+			}
+			@foreach (var firstUser in Model.Reviewers) {
+				//<div id="second_@firstUser.RGMId" class="col-xs-6 noPad alignLeft customize hideable revieweeBlock @(first ? "selected" : "hide")">
+				@:{selected : @((""+first.ToString()).ToLower()),reviewer:@(firstUser.RGMId)),
+					foreach (var id in Model.MasterList) {
+						var otherSide = Model.Reviewers.Where(x => x.RGMId == id).ToList();
+						var secondUsers = Model.AllReviewees.Where(x => x.RGMId == id).ToList();
+
+						for (var i = 0; i < Math.Max(secondUsers.Count, otherSide.Count); i++) {
+							if (i >= secondUsers.Count) {
+								<div class="emptyRow revieweeRow">&nbsp;</div>
+					} else {
+					//foreach (var secondUser in secondUsers) {
+								var secondUser = secondUsers[i];
+					// var classes = new HashSet<String>();
+
+								var itemLookup = Model.Lookup[firstUser.ToId() + "~" + secondUser.ToId()];
+								var selected = itemLookup.Selected;
+								var classes = itemLookup.Classes;
+
+
+								if (selected /*Model.Selected.Any(x => x.Reviewer == firstUser && x.Reviewee == secondUser)*/) {
+									<input type="hidden" name="originalCustomize_@(firstUser.RGMId)_@secondUser.ToId()" value="True" />
+				}
+								<div class="selected isAll @String.Join(" ", classes) revieweeRow">
+									<label class="noMargin" style="padding-left:15px;">
+										<input data-original="@(Model.Selected.Any(x => x.Reviewer == firstUser && x.Reviewee == secondUser) ? "checked" : "")" @(Model.Selected.Any(x => x.Reviewer == firstUser && x.Reviewee == secondUser) ? "checked" : "")
+												class="shiftedCheckbox customizeBoxes parent_first_@(firstUser.RGMId)" data-parent="first_@(firstUser.RGMId)" type="checkbox" name="customize_@(firstUser.RGMId)_@secondUser.ToId()" />
+										@secondUser._Name
+									</label>
+								</div>
+					//}
+				}
+				}
+				}
+				</div>
+				first = false;
+				}
+
+
+		],
+	};*@
+
+
 
 
 
@@ -223,7 +304,7 @@
 		var rself = $(" [name='self_review']:checked").attr("id");
 
 		debugger;
-		if (rtype != "review_Customized" && rtype!==undefined) {
+		if (rtype != "review_Customized" && rtype !== undefined) {
 			$(".customizeBoxes").attr("checked", null);
 			switch (rtype) {
 				case "review_360": $(".isDefault input, .isOrganization input").prop("checked", true); break;
@@ -264,10 +345,10 @@
 
 			@if (!Model.Selected.Any()){
 				@:UpdateSimple();
-			}
+									}
 			else{
 				@:$('.customizeSelection a[href="#advanced"]').tab('show');
-			}
+									}
 			$(".quickSelect a").hover(function () {
 				var parent = $(this).parent().get(0);
 				var clss = $(parent).data("checkclass");
@@ -377,11 +458,9 @@
 		border-bottom: 1px dotted gray;
 	}
 
-	.reviewerRow,.revieweeRow{
-		white-space:nowrap;
-		overflow:hidden;
-		text-overflow:ellipsis;
-
+	.reviewerRow, .revieweeRow {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
-
 </style>

@@ -26,12 +26,11 @@ namespace TractionTools.Tests.Accessors {
             var r = L10Utility.CreateRecurrence("QuarterlyPrintout");
             var d = PdfAccessor.CreateDoc(r.Creator, "d");
 
-            var ctrl = new QuarterlyController();
+			//var ctrl = new QuarterlyController();
 
-            MockHttpContext();
-            ctrl.MockUser(r.Creator);
-
-            ctrl.Printout(r.Id, true, true, true, true, true, true, true);
+			MockController<QuarterlyController>(r.Creator, ctrl => {
+				ctrl.Printout(r.Id, true, true, true, true, true, true, true);
+			});
 
 
         }

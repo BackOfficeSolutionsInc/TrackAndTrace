@@ -150,7 +150,7 @@ namespace RadialReview.Accessors
 							var r1 = r;
 							foreach (var o in outstanding/*.Where(x => x.PeriodId == r1.PeriodId)*/)
 							{
-								ReviewAccessor.AddResponsibilityAboutUserToReview(s, caller, perm, o.Id,new Reviewee(userId,null), r.Id);
+								ReviewAccessor.AddResponsibilityAboutUserToReview(s, perm, o.Id, new Reviewee(userId, null), r.Id);
 							}
 						}
                         if (updateAllL10s && added)

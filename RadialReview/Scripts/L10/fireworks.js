@@ -131,17 +131,17 @@ function FireworksController() {
 
   self.getWindowCoords = function() {
     self.canvasX = (document.documentElement.clientWidth||document.body.clientWidth||document.body.scrollWidth);
-    self.canvasY = (document.documentElement.clientHeight||document.body.clientHeight||document.body.scrollHeight);
-    self.screenY = self.canvasY;
-    self.scrollY = parseInt(window.scrollY||document.documentElement.scrollTop||document.body.scrollTop, 10);
+    self.canvasY = (document.documentElement.clientHeight || document.body.clientHeight || document.body.scrollHeight) - 40;
+    self.screenY = self.canvasY - 40;
+    self.scrollY = parseInt(window.scrollY || document.documentElement.scrollTop || document.body.scrollTop, 10) - 40;
     self.canvasY += self.scrollY;
   };
 
   this.getWindowCoordsAlt = function() {
     self.canvasX = window.innerWidth-16;
-    self.canvasY = window.innerHeight;
-    self.screenY = self.canvasY;
-    self.scrollY = parseInt(window.scrollY||document.documentElement.scrollTop||document.body.scrollTop, 10);
+    self.canvasY = window.innerHeight - 40;
+    self.screenY = self.canvasY - 40;
+    self.scrollY = parseInt(window.scrollY || document.documentElement.scrollTop || document.body.scrollTop, 10) - 40;
     self.canvasY += self.scrollY;
   };
 

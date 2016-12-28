@@ -20,16 +20,14 @@ using WebGrease.Css.Extensions;
 namespace RadialReview.Accessors {
     public class PermissionsAccessor {
 
-        public void Permitted(UserOrganizationModel caller, Action<PermissionsUtility> ensurePermitted)
-        {
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    ensurePermitted(PermissionsUtility.Create(s, caller));
-                }
-            }
-        }
-
-        public bool IsPermitted(UserOrganizationModel caller, Action<PermissionsUtility> ensurePermitted)
+		public void Permitted(UserOrganizationModel caller, Action<PermissionsUtility> ensurePermitted) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					ensurePermitted(PermissionsUtility.Create(s, caller));
+				}
+			}
+		}
+		public bool IsPermitted(UserOrganizationModel caller, Action<PermissionsUtility> ensurePermitted)
         {
             try {
                 Permitted(caller, ensurePermitted);
@@ -39,9 +37,20 @@ namespace RadialReview.Accessors {
             }
         }
 
+		public static void Permitted(ISession s, UserOrganizationModel caller, Action<PermissionsUtility> ensurePermitted) {
+			ensurePermitted(PermissionsUtility.Create(s, caller));
+		}
 
+		public static bool IsPermitted(ISession s,UserOrganizationModel caller, Action<PermissionsUtility> ensurePermitted) {
+			try {
+				Permitted(s, caller, ensurePermitted);
+				return true;
+			} catch (Exception) {
+				return false;
+			}
+		}		
 
-        public List<PermissionOverride> AllPermissionsAtOrganization(UserOrganizationModel caller, long organizationId)
+		public List<PermissionOverride> AllPermissionsAtOrganization(UserOrganizationModel caller, long organizationId)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {

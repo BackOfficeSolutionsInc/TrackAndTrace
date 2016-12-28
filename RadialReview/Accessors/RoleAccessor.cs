@@ -269,7 +269,7 @@ namespace RadialReview.Accessors {
 
 						if (updateOutstanding && added) {
 							foreach (var o in outstanding) {
-								ReviewAccessor.AddResponsibilityAboutUserToReview(s, caller, perms, o.Id, new Reviewee(userId,null), r.Id);
+								ReviewAccessor.AddResponsibilityAboutUserToReview(s, perms, o.Id, new Reviewee(userId, null), r.Id);
 							}
 						}
 					}

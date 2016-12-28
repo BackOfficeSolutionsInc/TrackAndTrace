@@ -42,10 +42,15 @@ namespace RadialReview.Controllers {
 
         //[OutputCache(Duration = 3, VaryByParam = "id", Location = OutputCacheLocation.Client, NoStore = true)]
         //[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
-        public JsonResult Data2(long id, bool completed = false, string name = null, long? start = null, long? end = null, bool fullScorecard = false) {
+        public JsonResult Data2(long id, bool completed = false, string name = null, long? start = null, long? end = null, bool fullScorecard = false, long? dashboardId=null) {
             //Response.AddHeader("Content-Encoding", "gzip");
             var userId = id;
-            var dash = DashboardAccessor.GetPrimaryDashboardForUser(GetUser(), id);
+			Dashboard dash;
+			if (dashboardId == null)
+				dash = DashboardAccessor.GetPrimaryDashboardForUser(GetUser(), id);
+			else
+				dash = DashboardAccessor.GetDashboard(GetUser(), dashboardId.Value);
+
             var tiles = DashboardAccessor.GetTiles(GetUser(), dash.Id);
             DateTime startRange;
             DateTime endRange;
@@ -399,11 +404,22 @@ namespace RadialReview.Controllers {
             tile.Dashboard = null;
             return Json(ResultObject.SilentSuccess(tile), JsonRequestBehavior.AllowGet);
         }
-        [Access(AccessLevel.UserOrganization)]
-        public ActionResult CreateDashboard(string title = null, bool primary = false, bool prepopulate = false) {
+
+		[Access(AccessLevel.UserOrganization)]
+        public JsonResult CreateDashboard(string title = null, bool primary = false, bool prepopulate = false) {
             var dash = DashboardAccessor.CreateDashboard(GetUser(), title, primary, prepopulate);
-            return RedirectToAction("Index", new { id = dash.Id });
+            return Json(ResultObject.SilentSuccess(dash.Id));
         }
+
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult EditDashboard(long id, string title,bool delete=false) {
+			if (delete == true) {
+				DashboardAccessor.DeleteDashboard(GetUser(), id);
+				return Json(ResultObject.SilentSuccess(new { deleted=true}), JsonRequestBehavior.AllowGet);
+			}
+			DashboardAccessor.RenameDashboard(GetUser(), id, title);
+			return Json(ResultObject.SilentSuccess(new { title = title }),JsonRequestBehavior.AllowGet);
+		}
 
         [Access(AccessLevel.UserOrganization)]
         public PartialViewResult CreateTileModal() {
@@ -411,7 +427,7 @@ namespace RadialReview.Controllers {
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult CreateTile(long id, bool? hidden = null, int w = 1, int h = 1, int x = 0, int y = 0, TileType type = TileType.Invalid, string dataurl = null, string title = null, string keyId = null) {
+        public JsonResult CreateTile(long id, bool? hidden = null, int w = 2, int h = 5, int x = 0, int y = 100, TileType type = TileType.Invalid, string dataurl = null, string title = null, string keyId = null) {
             var tile = DashboardAccessor.CreateTile(GetUser(), id, w, h, x, y, dataurl, title, type, keyId);
             tile.ForUser = null;
             tile.Dashboard = null;
@@ -419,9 +435,12 @@ namespace RadialReview.Controllers {
         }
 
         public class DashboardVM {
+			public string Title { get; set; }
             public long DashboardId { get; set; }
             public String TileJson { get; set; }
             public List<L10> L10s { get; set; }
+
+			public List<SelectListItem> Dashboards { get; set; }
 
             public class L10 {
                 public bool Selected { get; set; }
@@ -435,44 +454,61 @@ namespace RadialReview.Controllers {
 
             public DashboardVM() {
                 L10s = new List<L10>();
+				Dashboards = new List<SelectListItem>();
             }
         }
 
 
         [Access(AccessLevel.UserOrganization)]
         public ActionResult Index(long? id = null) {
-            if (id == null)
-                id = DashboardAccessor.GetPrimaryDashboardForUser(GetUser(), GetUser().Id).NotNull(x => x.Id);
+
+			var useDefault = id == null;
+
+			if (id == null) {
+				id = DashboardAccessor.GetPrimaryDashboardForUser(GetUser(), GetUser().Id).NotNull(x => x.Id);
+			}
             if (id == 0) {
                 id = DashboardAccessor.CreateDashboard(GetUser(), null, false, true).Id;
                 return RedirectToAction("Index", new { id = id });
             }
 
             var tiles = DashboardAccessor.GetTiles(GetUser(), id.Value);
-
             var l10s = L10Accessor.GetVisibleL10Meetings_Tiny(GetUser(), GetUser().Id, true);
-
             var notes = L10Accessor.GetVisibleL10Notes_Unsafe(l10s.Select(x => x.Id).ToList());
-
 
             var jsonTiles = Json(ResultObject.SilentSuccess(tiles), JsonRequestBehavior.AllowGet);
             var jsonTilesStr = new JavaScriptSerializer().Serialize(jsonTiles.Data);
 
-
-
             ViewBag.UserId = GetUser().Id;
-            return View(new DashboardVM() {
-                DashboardId = id.Value,
-                TileJson = jsonTilesStr,
-                L10s = l10s.Select(x => new DashboardVM.L10() {
-                    Value = "" + x.Id,
-                    Text = x.Name,
-                    Notes = notes.Where(y => y.Recurrence.Id == x.Id).Select(z => new SelectListItem() {
-                        Text = z.Name,
-                        Value = "" + z.Id
-                    }).ToList()
-                }).ToList()
-            });
+
+			var dashboard = new DashboardVM() {
+				DashboardId = id.Value,
+				TileJson = jsonTilesStr,
+				L10s = l10s.Select(x => new DashboardVM.L10() {
+					Value = "" + x.Id,
+					Text = x.Name,
+					Notes = notes.Where(y => y.Recurrence.Id == x.Id).Select(z => new SelectListItem() {
+						Text = z.Name,
+						Value = "" + z.Id
+					}).ToList()
+				}).ToList()
+			};
+
+			var allDashboards = DashboardAccessor.GetDashboardsForUser(GetUser(), GetUser().Id);
+
+			dashboard.Dashboards = allDashboards
+				.OrderByDescending(x => x.PrimaryDashboard)
+				.Select(x => new SelectListItem() {
+					Selected = x.PrimaryDashboard,
+					Text = string.IsNullOrWhiteSpace(x.Title)?"Default Workspace":x.Title,
+					Value = "" + x.Id
+				}).ToList();
+
+			if (!useDefault) {
+				ViewBag.WorkspaceName = dashboard.Dashboards.FirstOrDefault(x => x.Value == "" + id).NotNull(x=>x.Text);
+			}
+
+            return View(dashboard);
         }
 
 

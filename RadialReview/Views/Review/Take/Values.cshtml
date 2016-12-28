@@ -10,15 +10,21 @@
 				<tr class="hidden-xs">
 					<th></th>
 					<th>
-						<table>
-							<tr class="alignCenter">
-								@*<td class="visible-xs1" style="width:50%"></td>*@
-								<td class="header-title">Hardly Ever</td>
-								<td class="header-title">Sometimes</td>
-								<td class="header-title">Almost Always</td>
-								@*<td class="visible-xs1" style="width:50%"></td>*@
-							</tr>
-						</table>
+						<div class="row">
+							<div class="col-sm-6">
+								<table style="margin:auto;">
+									<tr class="alignCenter">
+										@*<td class="visible-xs1" style="width:50%"></td>*@
+										<td class="header-title">Hardly Ever</td>
+										<td class="header-title">Sometimes</td>
+										<td class="header-title">Almost Always</td>
+										@*<td class="visible-xs1" style="width:50%"></td>*@
+									</tr>
+								</table>
+							</div>
+							<div class="col-sm-6"></div>
+						</div>
+
 					</th>
 					<th></th>
 
@@ -38,13 +44,13 @@
 						</td>
 					</tr>
 					<tr>
-						<td @*width:50%;*@style="vertical-align:top;" class="hidden-xs">
+						<td style="vertical-align:top;" class="hidden-xs valueName">
 							<div class="question alignRight" style="padding-right:15px;padding-left:7px;padding-bottom: 7px;padding-top: 7px;">
 								<h4 style="margin-top: 0px;">@questions[i].Askable.GetQuestion()</h4>
 								<h5>@(((CompanyValueModel)questions[i].Askable).CompanyValueDetails)</h5>
 							</div>
 						</td>
-						<td style="vertical-align:top;text-align:center;padding-left:5px;">
+						<td style="vertical-align:top;text-align:center;padding-left:5px;" class="valueResponse">
 							<div class="row">
 								<div class="col-sm-6">
 									<span>

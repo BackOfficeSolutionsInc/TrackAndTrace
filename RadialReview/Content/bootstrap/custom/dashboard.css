@@ -1141,7 +1141,7 @@ body.resizing .notes-tile:after,
   padding-left: 3px;
 }
 .dashboard .width_1 .rock-list-container .icon-column:after {
-  left: 2px;
+  left: 4px;
 }
 .dashboard .width_1 .rock-list-container .message-column {
   padding: 0px !important;
@@ -2113,6 +2113,7 @@ body.resizing .notes-tile:after,
     font-size: 18px;
     margin-top: -2px;
   }
+  .add-pages button,
   .add-tile button {
     padding: 3px;
     font-size: 11px;
@@ -2163,6 +2164,26 @@ body.resizing .notes-tile:after,
     padding-top: 0;
   }
 }
+.add-pages .dropdown-menu a {
+  position: relative;
+}
+.add-pages .dropdown-menu .dashtitle {
+  position: relative;
+  left: 0px;
+  top: 0px;
+  bottom: 6px;
+  right: 20px;
+  display: block;
+}
+.add-pages .dropdown-menu .glyphicon {
+  opacity: 0;
+  position: absolute;
+  right: 2px;
+  top: 5px;
+}
+.add-pages .dropdown-menu a:hover .glyphicon {
+  opacity: .8;
+}
 .dashboard {
   /*::-webkit-input-placeholder { /* WebKit, Blink, Edge *
         color: #909;
@@ -2202,6 +2223,14 @@ body.resizing .notes-tile:after,
 }
 .dashboard .gray {
   color: rgba(51, 51, 51, 0.5) !important;
+}
+#modal input[type=checkbox] {
+  outline: none !important;
+  border: none;
+  height: 47px;
+  width: 47px;
+  margin-top: -8px;
+  bottom: auto;
 }
 /* Track */
 .tiny:hover *::-webkit-scrollbar-track {

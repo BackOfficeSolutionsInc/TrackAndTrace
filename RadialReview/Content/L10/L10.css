@@ -681,3 +681,84 @@ a.editable-click:hover {
 .conclusion.meeting-page .todo-list .label {
   top: 11px;
 }
+.clock-container .timer-bar {
+  height: 4px;
+  background-color: #EF7622;
+  width: 0%;
+  top: 4px;
+  position: relative;
+}
+.clock-container.overtime .timer-bar {
+  -moz-animation-name: timerbarFlashing;
+  -o-animation-name: timerbarFlashing;
+  -webkit-animation-name: timerbarFlashing;
+  animation-name: timerbarFlashing;
+  -moz-animation-duration: 1s;
+  -o-animation-duration: 1s;
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -moz-animation-timing-function: ease-in-out;
+  -o-animation-timing-function: ease-in-out;
+  -webkit-animation-timing-function: ease-in-out;
+  animation-timing-function: ease-in-out;
+  -moz-animation-iteration-count: infinite;
+  -o-animation-iteration-count: infinite;
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+  -moz-animation-direction: alternate;
+  -o-animation-direction: alternate;
+  -webkit-animation-direction: alternate;
+  animation-direction: alternate;
+}
+.clock-container.overtime.extra-overtime {
+  /*.component {
+				-moz-animation-name: timerbarFlashing;
+				-o-animation-name: timerbarFlashing;
+				-webkit-animation-name: timerbarFlashing;
+				animation-name: timerbarFlashing;
+				-moz-animation-duration: 1.5s;
+				-o-animation-duration: 1.5s;
+				-webkit-animation-duration: 1.5s;
+				animation-duration: 1.5s;
+				-moz-animation-timing-function: ease-in-out;
+				-o-animation-timing-function: ease-in-out;
+				-webkit-animation-timing-function: ease-in-out;
+				animation-timing-function: ease-in-out;
+				-moz-animation-iteration-count: infinite;
+				-o-animation-iteration-count: infinite;
+				-webkit-animation-iteration-count: infinite;
+				animation-iteration-count: infinite;
+				animation-direction: alternate;
+				color:white;
+			}*/
+}
+.clock-container.overtime.extra-overtime .timer-bar {
+  animation-duration: .5s;
+}
+.clock-container.overtime.extra-overtime .component .elapsed-time {
+  color: #e23737;
+}
+@-moz-keyframes timerbarFlashing {
+  0% {
+    background-color: #EF7622;
+  }
+  100% {
+    background-color: #e23737;
+  }
+}
+@-webkit-keyframes timerbarFlashing {
+  0% {
+    background-color: #EF7622;
+  }
+  100% {
+    background-color: #e23737;
+  }
+}
+@keyframes timerbarFlashing {
+  0% {
+    background-color: #EF7622;
+  }
+  100% {
+    background-color: #e23737;
+  }
+}

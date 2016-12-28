@@ -79,5 +79,9 @@ namespace RadialReview.Utilities.Query
 			return q.WhereRestrictionOn(selector).IsIn(isIn.ToArray()).List().ToList();
 
 		}
+
+		public override bool Contains<T>() {
+			return true;// Probably should check this...
+		}
 	}
 }

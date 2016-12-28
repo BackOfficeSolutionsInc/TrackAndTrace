@@ -1198,6 +1198,7 @@
     <Content Include="Scripts\components\jquery.bootstrap-duallistbox.js" />
     <Content Include="Scripts\AccountabilityChart\accountabilityChart.js" />
     <Content Include="Scripts\d3\d3.v4.js" />
+    <Content Include="Scripts\d3\radial.d3.tree.js" />
     <Content Include="Scripts\Dashboard\dashboard.js" />
     <Content Include="Scripts\home\html2canvas.js" />
     <Content Include="Scripts\home\jspdf.js" />
@@ -1689,7 +1690,9 @@
     <Content Include="Content\home\features5.png" />
     <Content Include="Content\home\features6.png" />
     <Content Include="Content\img\footer.png" />
-    <Content Include="Content\img\graystripe.png" />
+    <Content Include="Content\img\graystripe.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\img\greenlight.png" />
     <Content Include="Content\img\little_pluses.png" />
     <Content Include="Content\home\logo1.png" />

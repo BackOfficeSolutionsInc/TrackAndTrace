@@ -1,39 +1,4 @@
-﻿@*@{
-        ViewBag.Title = "Details";
-        Layout = "~/Views/Shared/_Layout.cshtml";
-    }
-    <div style="height:28px"></div>
-    <ul class="nav nav-tabs tabs-up" id="friends">
-        <li><a href="/L10/Details/Todo" data-target="#Todo" class="media_node active span" id="contacts_tab" data-toggle="tabajax" rel="tooltip"> To-Do List </a></li>
-        <li><a href="/L10/Details/Issues" data-target="#Issues" class="media_node span" id="friends_list_tab" data-toggle="tabajax" rel="tooltip"> Issues List </a></li>
-        <li><a href="/L10/Details/Scorecard" data-target="#Scorecard" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"> Scorecard </a></li>
-        <li><a href="/L10/Details/Recent" data-target="#Recent" class="media_node span" id="awaiting_request_tab" data-toggle="tabajax" rel="tooltip"> Recent </a></li>
-    </ul>
-
-    <div class="tab-content">
-        <div id="Todo"			class="tab-pane active"></div>
-        <div id="Issues"		class="tab-pane"></div>
-        <div id="Scorecard"		class="tab-pane"></div>
-        <div id="Recent"		class="tab-pane"></div>
-    </div>
-
-    @using (Html.BeginScripts()){
-        <script>
-            $('[data-toggle="tabajax"]').click(function(e) {
-                var $this = $(this),
-                    loadurl = $this.attr('href'),
-                    targ = $this.attr('data-target');
-
-                $.get(loadurl, function(data) {
-                    $(targ).html(data);
-                });
-
-                $this.tab('show');
-                return false;
-            });
-        </script>
-    }*@
-@model long
+﻿@model long
 @{
     ViewBag.Title = "Meeting Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -88,20 +53,17 @@
 
 }
 @using (Html.BeginScripts()) {
-    @*<script src="~/Scripts/L10/charts/sparklines.min.js"></script>
-    <script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>*@
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
     @Scripts.Render("~/bundles/meeting")
     @Scripts.Render("~/bundles/MeetingDetails")
-
-    @*<script src="~/Scripts/L10/L10.js"></script>*@
+	
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
 
     <script>
         angular.module('L10App')
 			.value('meetingId', @Model)
 			.value('date-range',"today")
-			.value('meetingDataUrlBase', '/L10/DetailsData/')
+			.value('meetingDataUrlBase', '/L10/DetailsData/{0}?start=@ViewBag.StartDate')
 			.value("meetingCallback",false);
         $('#pages a').click(function(e) {
             e.preventDefault();
@@ -117,25 +79,10 @@
             return false;
         }
 
-        //function fixResize(){
-        //    var top = $(".archive").offset().top;
-        //    if (top==0){
-        //        setTimeout(fixResize,100);
-        //    }else{
-        //        var padding=30;
-        //        var h = $(window).height()-top - padding;
-        //        $(".archive").height(h);
-        //    }
-        //}
-
-        //fixResize();
 
         $(function() {
             $('md-tab-item').on('click',"body", function (e) {
                 var target = $(e.target).attr("href") // activated tab
-                //angular.element($('[ng-controller="L10Controller"]')).scope().model
-                //debugger;
-                //setpage(target);
                 window.location.hash = target;
             });
 
@@ -166,7 +113,7 @@
 
             function slideRight(){
                 setTimeout(function() {
-                    if ($(".scroll-right").length){
+                	if ($(".scroll-right").length){
                         $(".scroll-right").scrollLeft(4000);
                         $("#ScorecardTable_Over").scrollLeft(10000).scrollLeft(0);
                     }else{
@@ -176,7 +123,6 @@
             }
 
             setTimeout(function() {
-
                 slideRight();
 
                 $("#ScorecardTable_Over").resizable({
@@ -192,6 +138,8 @@
                         $("#ScorecardTable_Over").addClass("hidden");
                     }
                 });
+				
+                $("#ScorecardTable_Over").scrollLeft(10000).scrollLeft(0);
 
             }, 1000);
 
@@ -229,77 +177,60 @@
             });
 
 
-        });
-
-        //function resizeIframe(obj) {
-        //    obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
-        //}
-
+        });		
     </script>
 }
 <div ng-app="L10App" class="meeting-review ng-cloak meeting-archive">
     <div ng-controller="L10Controller">
         <div class="pull-left"><h3 id="meeting-name" style="margin-top: 5px;">{{::model.Basics.Name}}</h3></div>
-        @*<div class="calendar-container pull-right" style="width:240px;">
-                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
-                <input date-range-picker id="daterange3" class="form-control date-picker" type="text" name="date" ng-model="model.dataDateRange" options="opts" required placeholder="Select a date range..." />
-                <b class="caret"></b>
-            </div>*@
+        
         @{Html.RenderPartial("~/Views/Angular/_DateRange.cshtml");}
-        <div style="/*height:90px*/" class="clearfix"></div>
+        <div style="" class="clearfix"></div>
 
         <div ng-cloak>
             <md-content class="archive">
                 <md-tabs md-dynamic-height md-border-bottom md-selected="selectedTab" md-enable-disconnect="false" md-no-disconnect="true">
                     <md-tab label="Scorecard" ng-href="Scorecard" md-on-select="functions.setHash('/Scorecard')">
                         <md-content class="md-padding">
-                            @*<h1 class="md-display-2">Scorecard</h1>*@
                             @Html.Partial("~/Views/L10/Details/scorecard.cshtml", new ViewDataDictionary() { { "ForceMin", ViewBag.NumberOfWeeks } })
                         </md-content>
                     </md-tab>
                     <md-tab label="Rocks" href="Rocks" md-on-select="functions.setHash('Rocks')">
                         <md-content class="md-padding">
-                            @*<h1 class="md-display-2">Rocks</h1>*@
                             @Html.Partial("~/Views/L10/Details/rocks.cshtml")
                         </md-content>
                     </md-tab>
 					@if ((ViewBag.IncludeHeadlines ?? RadialReview.Model.Enums.PeopleHeadlineType.None) == RadialReview.Model.Enums.PeopleHeadlineType.HeadlinesBox) {
 						<md-tab label="Headlines" href="Headlines" md-on-select="functions.setHash('Headlines')">
 							<md-content class="md-padding">
-								@*<h1 class="md-display-2">Headlines</h1>*@
 								@Html.Partial("~/Views/L10/Details/headlines.cshtml")
 							</md-content>
 						</md-tab>
 					} else if ((ViewBag.IncludeHeadlines ?? RadialReview.Model.Enums.PeopleHeadlineType.None) == RadialReview.Model.Enums.PeopleHeadlineType.HeadlinesList) {
 						<md-tab label="Headlines" href="Headlines" md-on-select="functions.setHash('Headlines')">
 							<md-content class="md-padding">
-								@*<h1 class="md-display-2">Headlines</h1>*@
 								@Html.Partial("~/Views/L10/Details/headlinesList.cshtml")
 							</md-content>
 						</md-tab>
 					}
                     <md-tab label="To-dos" href="Todos" md-on-select="functions.setHash('Todos')">
                         <md-content class="md-padding">
-                            @*<h1 class="md-display-2">To-do List</h1>*@
                             @Html.Partial("~/Views/L10/Details/todo.cshtml")
                         </md-content>
                     </md-tab>
 
                     <md-tab label="Issues" href="Issues" md-on-select="functions.setHash('Issues')">
                         <md-content class="md-padding">
-                            @*<h1 class="md-display-2">Issues</h1>*@
                             @Html.Partial("~/Views/L10/Details/issues.cshtml")
                         </md-content>
                     </md-tab>
                     <md-tab label="V/TO" href="VTO" md-on-select="functions.setHash('VTO')">
                         <md-content class="md-padding1">
-                            @*<h1 class="md-display-2">Vision/Traction Organizer</h1>*@
                             <iframe id="vto-frame" class="vto-frame"  data-src="/vto/edit/@(ViewBag.VtoId)?noheading=true" src="/vto/edit/@(ViewBag.VtoId)?noheading=true"></iframe>
                         </md-content>
                     </md-tab>
                     <md-tab label="Notes" href="Notes" md-on-select="functions.setHash('Notes')">
                         <md-content class="md-padding">
-                            @*<h1 class="md-display-2">Notes</h1>*@
                             @Html.Partial("~/Views/L10/Details/notes.cshtml")
                         </md-content>
                     </md-tab>

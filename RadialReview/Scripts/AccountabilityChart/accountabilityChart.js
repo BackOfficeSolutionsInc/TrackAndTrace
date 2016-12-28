@@ -21,6 +21,12 @@ function generateAccNodes() {
         output.y = parent.y;
         output.width = parent.width;
         output.height = parent.height;
+
+        if (parent._compact) {
+        	output.side = parent._compact.side;
+			output.isLeaf = parent._compact.isLeaf;
+        }
+
         output.Roles = []
         if (parent.User)
             output.Name = parent.User.Name;
@@ -62,6 +68,9 @@ function generateAccNodes() {
 }
 
 var genPdf = function () {
+	angular.element($("[ng-controller]")).scope().$apply(function () {
+		angular.element($("[ng-controller]")).scope().compact = true;
+	});
     showModal({
         title: "Generate PDF",
         fields: [
@@ -69,9 +78,7 @@ var genPdf = function () {
 			{ text: "Height (inches)", name: "ph", type: "text", value: 8.5 },
 			{ text: "Scale to one page", name: "fit", type: "checkbox", value: false }],
         success: function (d) {
-
             var copy = generateAccNodes();
-
             $.ajax({
                 url: "/pdf/ac?fit=" + d.fit + "&pw=" + d.pw + "&ph=" + d.ph,
                 method: "POST",
@@ -92,6 +99,12 @@ var genPdf = function () {
                     showAlert("An error occurred");
                 }
             });
+        },
+        close: function () {
+
+        	angular.element($("[ng-controller]")).scope().$apply(function () {
+        		angular.element($("[ng-controller]")).scope().compact = false;
+        	});
         }
     });
 };

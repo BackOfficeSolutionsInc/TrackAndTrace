@@ -2,47 +2,43 @@
 @model RadialReview.Models.ViewModels.ScorecardRowVM
 @{
 	var inlineEdit = "inlineEdit";
-	if (Model.MeetingMeasurable.Measurable.NotNull(x => x._Editable) == false)
-	{
+	if (Model.MeetingMeasurable.Measurable.NotNull(x => x._Editable) == false) {
 		inlineEdit = "";
 	}
-	var auto = Model.MeetingMeasurable.Measurable.NotNull(x=>x.AccountableUser) == null;
+	var auto = Model.MeetingMeasurable.Measurable.NotNull(x => x.AccountableUser) == null;
 
-    var showAdmin = Model.ShowAdmin;
-    var showScorecardChart = Model.ShowScorecardChart;
+	var showAdmin = Model.ShowAdmin;
+	var showScorecardChart = Model.ShowScorecardChart;
 }
 
-@if (Model.IsDivider)
-{
-    <tr data-row="@ViewBag.Row" class="reorderable divider" data-meetingmeasurable="@Model.MeetingMeasurable.Id">
-        <td colspan="2" class="divider-icon handle">
-            @*<span class="icon fontastic-icon-three-bars icon-rotate"></span>*@
-            <span class="glyphicon glyphicon-remove deleteDivider" onclick="deleteDivider(@Model.MeetingMeasurable.Id)"></span>
-        </td>
-        <td class="who first1 alignRight handle header-cell"></td>
-        @if (showAdmin) {
-            <td class="who first1 alignLeft handle header-cell"></td>
-        }
-        <td class="measurable first1 handle header-cell"></td>
-        <td class="target direction handle header-cell"></td>
-        <td class="target value handle header-cell"></td>
-        @if (showScorecardChart) {
-            <td class="handle header-cell"></td>
-        }
+@if (Model.IsDivider) {
+	<tr data-row="@ViewBag.Row" class="reorderable divider" data-meetingmeasurable="@Model.MeetingMeasurable.Id">
+		<td colspan="2" class="divider-icon handle">
+			@*<span class="icon fontastic-icon-three-bars icon-rotate"></span>*@
+			<span class="glyphicon glyphicon-remove deleteDivider" onclick="deleteDivider(@Model.MeetingMeasurable.Id)"></span>
+		</td>
+		<td class="who first1 alignRight handle header-cell"></td>
+		@if (showAdmin) {
+			<td class="who first1 alignLeft handle header-cell"></td>
+		}
+		<td class="measurable first1 handle header-cell"></td>
+		<td class="target direction handle header-cell"></td>
+		<td class="target value handle header-cell"></td>
+		@if (showScorecardChart) {
+			<td class="handle header-cell"></td>
+		}
 		<td class="input-placeholder"></td>
-        @if (ViewBag.ShowRow == null || ViewBag.ShowRow == true)
-		{
+		@if (ViewBag.ShowRow == null || ViewBag.ShowRow == true) {
 			var col = 0;
-			foreach (var r in Model.Weeks)
-			{
-                <td class="@(r.IsCurrentWeek ? "current-divider-left" : "") handle"></td>
-				if (r.IsCurrentWeek){
-                    <td class="current-divider-right handle"></td>
+			foreach (var r in Model.Weeks) {
+				<td class="@(r.IsCurrentWeek ? "current-divider-left" : "") handle"></td>
+				if (r.IsCurrentWeek) {
+					<td class="current-divider-right handle"></td>
 				}
 				col += 1;
 			}
 		}
-    </tr>
+	</tr>
 } else {
 
 	<tr data-row="@ViewBag.Row" class="@(auto ? "auto" : "reorderable")" data-measurable="@Model.MeetingMeasurable.Measurable.Id" data-meetingmeasurable="@Model.MeetingMeasurable.Id">
@@ -88,6 +84,12 @@
 				//var found = (founds.Count() > 1) ? founds.FirstOrDefault(x=>x.)
 
 				<td class="score @(r.IsCurrentWeek ? "current" : "") @(seenCurrent?"future":"") @(inlineEdit == "" ? "disabled" : "")">
+					@if (r.IsCurrentWeek) {
+						<div class="lineCovers">
+							<div class="lineCoverLeft"></div>
+							<div class="lineCoverRight"></div>
+						</div>
+					}
 					<form>
 						<input @(inlineEdit == "" ? "disabled" : "")
 							   data-goal="@(found.NotNull(x => x.OriginalGoal) ?? Model.MeetingMeasurable.Measurable.Goal)"
@@ -99,7 +101,7 @@
 							   type="text"
 							   placeholder="N/A"
 							   @if (found != null && !found._Editable) { @: disabled
-							                                  }
+							   							   							                                  }
 							   value="@(found.NotNull(x => x.Measured.NotNull(y => y.Value.ToString("0.####"))) ?? "")"
 							   class="grid rt score-value @(seenCurrent?"future-score":"")"
 							   data-scoreid="@(found.NotNull(x => x.Id))"
@@ -108,6 +110,7 @@
 							   @*id="sc_@(found != null ? "" + found.Id : ViewBag.Row + "_" + col)" />*@
 							   id="sc_@(found != null ? "" + found.Id : Model.MeetingMeasurable.Measurable.Id + "_" + r.ForWeek.ToJavascriptMilliseconds())" />
 					</form>
+
 				</td>
 				if (r.IsCurrentWeek) {
 					<td class="buttonHolder">

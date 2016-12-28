@@ -242,7 +242,7 @@ namespace TractionTools.Tests.TestUtils {
         public static void MockHttpContext()
         {
             if (HttpContext.Current == null) {
-                HttpContext.Current = new HttpContext(new HttpRequest("", "http://fake.url", ""), new HttpResponse(new StringWriter()));
+				HttpContext.Current = new HttpContext(new HttpRequest("", "http://fake.url", ""), new HttpResponse(HttpWriter.Null));
 
                 var fakeIdentity = new GenericIdentity("TestUser");
                 var principal = new GenericPrincipal(fakeIdentity, null);
@@ -256,6 +256,7 @@ namespace TractionTools.Tests.TestUtils {
                 }
                 };
                 HttpContext.Current.Request.Browser = browser;
+				
             }
 
 		}
@@ -337,5 +338,18 @@ namespace TractionTools.Tests.TestUtils {
             throw new Exception("Not called from a test method");
             //return "Not called from a test method";
         }
-    }
+
+		public static void MockController<T>(UserOrganizationModel caller, Action<T> f) where T : BaseController, new() {
+
+			MockHttpContext();
+			var ctrl = new T();
+			ctrl.MockUser(caller);
+
+			ctrl.ControllerContext = new ControllerContext(new HttpContextWrapper(HttpContext.Current),new RouteData(), ctrl);
+			
+			f(ctrl);
+
+
+		}
+	}
 }

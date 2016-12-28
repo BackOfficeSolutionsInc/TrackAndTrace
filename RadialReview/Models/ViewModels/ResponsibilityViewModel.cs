@@ -21,7 +21,11 @@ namespace RadialReview.Models.ViewModels
 		public Boolean Anonymous { get; set; }
 		public Boolean Required { get; set; }
         public String NewCategory { get; set; }
-        public WeightType Weight { get; set; }
+		public WeightType Weight { get; set; }
+		public AboutType[] OnlyAsk { get; set; }
+
+		public bool UpdateOutstandingReviews { get; set; }
+
 
 		public long TypeSelected { get; set; }
 		public List<SelectListItem> TypeDropdown { get; set; } 
@@ -68,6 +72,8 @@ namespace RadialReview.Models.ViewModels
             //CategoryId = model.Category.Id;
             ResponsibilityGroupId = responsibilityGroupId;
             Weight = model.Weight;
+			OnlyAsk = model.OnlyAsk.GetFlags<AboutType>().ToArray();
+			UpdateOutstandingReviews = true;
         }
 
     }

@@ -39,7 +39,7 @@
                         @foreach (var meeting in Model.Recurrences.OrderByDescending(x => x.IsAttendee)) {
                             <tr class="startHidden2 clickable imageRow @(meeting.IsAttendee??false?"":"grayRow") l10-row">
                                 <td style="vertical-align:top" onclick="location.href='@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})';">
-                                    <span class="hidden">@(meeting.IsAttendee ?? false ? "1" : "2")</span>
+                                    <span class="hidden">@(meeting.IsAttendee ?? false ? "1" : "2")@(meeting.Recurrence.MeetingInProgress !=null ? "1" : "2")</span>
                                     @if (meeting.Recurrence.MeetingInProgress != null) {
                                         <div class="label label-success hoverable" style="height:16px; width: 80px;display: inline-block">in-progress</div>
                                     } else {

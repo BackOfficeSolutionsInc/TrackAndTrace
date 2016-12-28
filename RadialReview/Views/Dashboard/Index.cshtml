@@ -1,226 +1,264 @@
 ﻿@model RadialReview.Controllers.DashboardController.DashboardVM
 
 @{
-    ViewBag.Title = "Workspace";
-    ViewBag.LayoutClass = (ViewBag.LayoutClass ?? "") + " dashboard";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.AnyL10s = ViewBag.AnyL10s ?? false;
-    ViewBag.FullWidth = true;
+	ViewBag.Title = "Workspace";
+	ViewBag.LayoutClass = (ViewBag.LayoutClass ?? "") + " dashboard";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.AnyL10s = ViewBag.AnyL10s ?? false;
+	ViewBag.FullWidth = true;
 }
 
 @section top{
-    <div class="jumbotron">
-        <h1>Traction<sup style="top: -0.72em;font-size: 50%;">®</sup> Tools @*<small>Dashboard</small>*@</h1>
-    </div>
+	<div class="jumbotron">
+		@if (ViewBag.WorkspaceName == null) {
+			<h1>Traction<sup style="top: -0.72em;font-size: 50%;">®</sup> Tools</h1>
+		} else {
+			<h1 class="dashboard_txt_@Model.DashboardId">@ViewBag.WorkspaceName</h1>
+		}
+	</div>
 }
 
 @using (Html.BeginScripts()) {
+	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+	@Scripts.Render("~/bundles/DashboardGrid")
+	<script type="text/javascript">
+		dataDateRange = {
+			startDate : new Date().setDate(new Date().getDate() - 1)
+		};
+		function buildGrid(data) {
+			if (showJsonAlert(data, false, true)) {
+				Grid.buildElements($('#grid'), data.Object, function(changed) {
+					if (changed.length == 0)
+						return;
+					var arr = [];
+					for (var cc in changed) {
+						var c = changed[cc];
+						arr.push({ x: c.x, y: c.y, w: c.w, h: c.h, id: c.id });
+					}
+					var dat = {
+						id: @(Model.DashboardId),
+						model: arr,
+					};
+					$.ajax({
+						traditional:true,
+						contentType: "application/json; charset=utf-8",
+						method: "post",
+						data: JSON.stringify( dat),
+						url: "/Dashboard/UpdateTiles/",
+						success: function(data) {
+							showJsonAlert(data, false, true);
+						}
+					});
+				});
+			}
+			$(".grid").addClass("post-load");
+		}
+		$(function() {
+			var tileJson = @(new HtmlString(Model.TileJson));
+			buildGrid(tileJson);
+		});
 
-    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
-    @*<script src="~/Scripts/Grid/fixtures.js"></script>
-        <script src="~/Scripts/Grid/src/gridList.js"></script>
-        <script src="~/Scripts/Grid/src/jquery.gridList.js"></script>
-        <script src="~/Scripts/Grid/load.js?v=2"></script>*@
+		function initTiles() {
+			meetingCallback();
+		}
 
-    @Scripts.Render("~/bundles/DashboardGrid")
-
-    <script type="text/javascript">
-
-        dataDateRange = {
-            startDate : new Date().setDate(new Date().getDate() - 1)
-        };
-
-
-        function buildGrid(data) {
-            if (showJsonAlert(data, false, true)) {
-                Grid.buildElements($('#grid'), data.Object, function(changed) {
-                    if (changed.length == 0)
-                        return;
-                    var arr = [];
-                    for (var cc in changed) {
-                        var c = changed[cc];
-                        arr.push({ x: c.x, y: c.y, w: c.w, h: c.h, id: c.id });
-                    }
-                    var dat = {
-                        id: @(Model.DashboardId),
-                        model: arr,
-                    };
-                    $.ajax({
-                        traditional:true,
-                        contentType: "application/json; charset=utf-8",
-                        method: "post",
-                        data: JSON.stringify( dat),
-                        url: "/Dashboard/UpdateTiles/",
-                        success: function(data) {
-                            showJsonAlert(data, false, true);
-                        }
-
-                    });
-                });
-            }
-
-            $(".grid").addClass("post-load");
-        }
-
-        $(function() {
-            var tileJson = @(new HtmlString(Model.TileJson));
-            buildGrid(tileJson);
-        });
-
-        function initTiles() {
-
-            meetingCallback();
-        }
-
-        @*$(function() {
-			$.ajax({
-				method: "get",
-				url: "/Dashboard/Tiles/@Model.DashboardId",
-				success: buildGrid,
-				error: function(data) {
-					showAlert("There was an error getting your dashboard.");
+		function addPage(){
+			showModal({
+				title:"Add Workspace page",
+				fields:[{
+					name:"title",
+					text:"Title"
+				}],
+				push:"/Dashboard/CreateDashboard",
+				success:function(d){
+					window.location.href = "/Dashboard/Index/"+d.Object;
 				}
 			});
-		});*@
+		}
 
-        function createTile(url,type,keyId) {
-            if(typeof(keyId)=="undefined")
-                keyId=null;
+		function renamePage(id,existingName,deflt){
+
+			var fields = [{
+				name:"title",
+				text:"Title",
+				value: existingName
+			}];
+			if (!deflt){
+				fields.push({
+					name:"delete",
+					text:"Delete page",
+					value:false,
+					type:"checkbox"
+				});
+			}
+			showModal({
+				title:"Edit Workspace page",
+				fields:fields,
+				push:"/Dashboard/EditDashboard/"+id,
+				success:function(d){
+					if (d.Object.deleted){
+						if (@Model.DashboardId == id){
+							window.location="/Dashboard/";
+						}else{
+							$(".dashboard_txt_"+id).closest("li").remove();
+							showAlert("Workspace deleted");
+						}
+					}else{
+						$(".dashboard_txt_"+id).html(d.Object.title);
+					}
+				}
+			});
+		}
+
+		function createTile(url,type,keyId) {
+			if(typeof(keyId)=="undefined")
+				keyId=null;
 
 
-            var dat = {
-                id: @(Model.DashboardId),
-                type:type,
-                dataUrl:url,
-                keyId:keyId,
-                x:1,y:100
-            };
-            $.ajax({
-                url: "/Dashboard/CreateTile/",
-                data: dat,
-                success: function(data) {
-                    if (showJsonAlert(data, false, true)) {
-                        Grid.addTile(data.Object);
-                    }
-                }
-            });
-        }
-    </script>
+			var dat = {
+				id: @(Model.DashboardId),
+				type:type,
+				dataUrl:url,
+				keyId:keyId,
+				x:0,y:100
+			};
+			$.ajax({
+				url: "/Dashboard/CreateTile/",
+				data: dat,
+				success: function(data) {
+					if (showJsonAlert(data, false, true)) {
+						Grid.addTile(data.Object);
+					}
+				}
+			});
+		}
+	</script>
 }
-
-
 @section topSection{
-
-    <div class="ng-cloak2" ng-app="L10App">
-        <div ng-controller="L10Controller">
+	<div class="ng-cloak2" ng-app="L10App">
+		<div ng-controller="L10Controller">
 }
-
-
 <!-- Single button -->
-<div class="btn-group add-tile" style="position: fixed;top: 25px;;z-index: 1001;color:white">
-    <button type="button" class="btn btn-link clickable dropdown-toggle" style="color:white" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Add Tile <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu">
-        @if (Model.L10s.Any()) {
-            <li class="dropdown-submenu">
-                <a tabindex="-1" href="#">L10s</a>
-                <ul class="dropdown-menu" style="">
-                    @foreach (var i in Model.L10s) {
-                        <li class="dropdown-submenu">
-                            <a tabindex="-1" href="#">@i.Text</a>
-                            <ul class="dropdown-menu">
-                                <li><a onclick="createTile('/TileData/L10Scorecard/@i.Value','Url',@i.Value)">Scorecard</a></li>
-                                <li><a onclick="createTile('/TileData/L10Rocks/@i.Value','Url',@i.Value)">Rocks</a></li>
-                                <li><a onclick="createTile('/TileData/L10Todos/@i.Value','Url',@i.Value)">To-do list</a></li>
-                                <li><a onclick="createTile('/TileData/L10Issues/@i.Value','Url',@i.Value)">Issues</a></li>
-                                <li class="dropdown-submenu">
-                                    <a tabindex="-1" href="#" @(i.Notes.Any()?"":"disabled")>Notes</a>
-                                    @if (i.Notes.Any()) { 
-                                    <ul class="dropdown-menu" style="">
-                                        @foreach (var n in i.Notes) 
-                                        {
-                                            <li><a onclick="createTile('/TileData/L10Notes/@n.Value','Url',@n.Value)">@n.Text</a></li>
-                                        }
-                                    </ul>
-                                    }
-                                </li>
+<div class="btn-group add-tile" style="position: fixed;top: 25px;z-index: 1001;color:white">
+	<button type="button" class="btn btn-link clickable dropdown-toggle" style="color:white" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		Add Tile <span class="caret"></span>
+	</button>
+	<ul class="dropdown-menu">
+		<li class="dropdown-submenu">
+			<a tabindex="-1" href="#">Personal</a>
+			<ul class="dropdown-menu" style="">
+				<li><a onclick="createTile('/TileData/UserTodo2','Url')">To-do List</a></li>
+				<li><a onclick="createTile('/TileData/UserScorecard2','Url')">Scorecard</a></li>
+				<li><a onclick="createTile('/TileData/UserRock2','Url')">@Html.Organization().Settings.RockName</a></li>
+				<li><a onclick="createTile('/TileData/UserRoles','Url')">Roles</a></li>
+				@if (ViewBag.IsManager) {
+					<li><a onclick="createTile('/TileData/UserManage2', 'Url') ">Direct Reports</a></li>
+				}
+				<li><a onclick="createTile('/TileData/UserNotes','Url')">Personal Notes</a></li>
+				<li><a onclick="createTile('/TileData/UserProfile2','Url')">Profile Picture</a></li>
+				<!--<li><a onclick="createTile('/TileData/UserNotifications','Url')">Notifications</a></li>-->
+			</ul>
+		</li>
+		<li class="dropdown-submenu">
+			<a tabindex="-1" href="#">@Html.Organization().GetName()</a>
+			<ul class="dropdown-menu" style="">
+				<li><a onclick="createTile('/TileData/OrganizationValues','Url')">Core Values</a></li>
+			</ul>
+		</li>
+		@if (Model.L10s.Any()) {
+			<li class="dropdown-submenu">
+				<a tabindex="-1" href="#">L10s</a>
+				<ul class="dropdown-menu" style="">
+					@foreach (var i in Model.L10s) {
+						<li class="dropdown-submenu">
+							<a tabindex="-1" href="#">@i.Text</a>
+							<ul class="dropdown-menu">
+								<li><a onclick="createTile('/TileData/L10Scorecard/@i.Value','Url',@i.Value)">Scorecard</a></li>
+								<li><a onclick="createTile('/TileData/L10Rocks/@i.Value','Url',@i.Value)">Rocks</a></li>
+								<li><a onclick="createTile('/TileData/L10Todos/@i.Value','Url',@i.Value)">To-do list</a></li>
+								<li><a onclick="createTile('/TileData/L10Issues/@i.Value','Url',@i.Value)">Issues</a></li>
+								<li class="dropdown-submenu">
+									<a tabindex="-1" href="#" @(i.Notes.Any() ? "" : "disabled")>Notes</a>
+									@if (i.Notes.Any()) {
+										<ul class="dropdown-menu" style="">
+											@foreach (var n in i.Notes) {
+												<li><a onclick="createTile('/TileData/L10Notes/@n.Value','Url',@n.Value)">@n.Text</a></li>
+											}
+										</ul>
+									}
+								</li>
 								<li><a onclick="createTile('/TileData/L10Stats/@i.Value','Url',@i.Value)">Stats</a></li>
-                            </ul>
-                        </li>
-                    }
-                </ul>
-            </li>
-            <li class="divider"></li>
-        }
-        @*<li><a onclick="createTile('/TileData/UserTodo2','Url')">To-do List</a></li>*@
-
-        <li><a onclick="createTile('/TileData/UserTodo2','Url')">My To-do List</a></li>
-        <li><a onclick="createTile('/TileData/UserScorecard2','Url')">My Scorecard</a></li>
-        <li><a onclick="createTile('/TileData/UserRock2','Url')">My @Html.Organization().Settings.RockName</a></li>
-        <li><a onclick="createTile('/TileData/UserRoles','Url')">My Roles</a></li>
-        <li><a onclick="createTile('/TileData/OrganizationValues','Url')">Core Values</a></li>
-        @if (ViewBag.IsManager) {
-            <li><a onclick="createTile('/TileData/UserManage2', 'Url') ">Direct Reports</a></li>
-        }
-        <li><a onclick="createTile('/TileData/UserProfile2','Url')">Profile Picture</a></li>
-		<li><a onclick="createTile('/TileData/UserNotes','Url')">Personal Notes</a></li>
-		<!--<li><a onclick="createTile('/TileData/UserNotifications','Url')">Notifications</a></li>-->
-        @*<li><a onclick="createTile('/TileData/UserButtons','Url')">Quick Links</a></li>*@
-        <li><a onclick="createTile('/TileData/SoftwareUpdates','Url')">Software Updates</a></li>
-        <li class="divider"></li>
-        <li><a onclick="createTile('/TileData/FAQTips','Url')">FAQ Guide</a></li>
-
-    </ul>
+							</ul>
+						</li>
+					}
+				</ul>
+			</li>
+		}
+		<li class="divider"></li>
+		<li class="dropdown-submenu">
+			<a tabindex="-1" href="#">Traction<sup style="font-size: 8px;top: -5px;">®</sup> Tools</a>
+			<ul class="dropdown-menu" style="">
+				<li><a onclick="createTile('/TileData/FAQTips','Url')">FAQ Guide</a></li>
+				<li><a onclick="createTile('/TileData/SoftwareUpdates','Url')">Software Updates</a></li>
+			</ul>
+		</li>
+	</ul>
 </div>
 
+<div class="btn-group add-pages" style="position: fixed;top: 25px;left:90px;z-index: 1001;color:white">
+	<button type="button" class="btn btn-link clickable dropdown-toggle" style="color:white" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		Pages <span class="caret"></span>
+	</button>
+	<ul class="dropdown-menu">
+		@foreach (var dashboard in Model.Dashboards) {
+			<li>
+				<a href="#">
+					<span class="dashboard_txt_@dashboard.Value dashtitle" onclick="window.location='/Dashboard/Index/@dashboard.Value'" >@dashboard.Text</span>
+					<span class="glyphicon glyphicon-edit gray clickable" onclick="renamePage(@dashboard.Value,'@Html.Encode(dashboard.Text)',@((""+dashboard.Selected).ToLower()))"></span>
+				</a>
+			</li>
+		}
+		<li class="divider"></li>
+		<li><a onclick="addPage()">Add Page</a></li>
+	</ul>
+</div>
 
 <div class="meeting-review ng-cloa2k grid-container">
-    <div ng-controller2="L10Controller">
-        @Html.Partial("~/Views/Angular/_L10App.cshtml", (long)ViewBag.UserId, new ViewDataDictionary(){
+	<div ng-controller2="L10Controller">
+		@Html.Partial("~/Views/Angular/_L10App.cshtml", (long)ViewBag.UserId, new ViewDataDictionary(){
 			{ "IncludeComplete", false},
-			//{ "Callback", "initTiles"}
+			{"PullUrl","/DashboardData/Data2/" + ViewBag.UserId + "?dashboardId="+ Model.DashboardId+"&"}
 		})
-        <ul id="grid" class="grid"></ul>
-    </div>
+		<ul id="grid" class="grid"></ul>
+	</div>
 </div>
-
-
 @section bottomSection{
 </div>
 </div>
 }
-
 @using (Html.BeginStyles()) {
-    @*KEEP AT THE BOTTOM*@
+	@*KEEP AT THE BOTTOM*@
+	<style>
+		.welcome a {
+			color: #4A79FF;
+		}
 
+		h3 {
+			color: #6D6D6D;
+		}
 
-    @*<link href="~/Content/bootstrap/custom/dashboard.css" rel="stylesheet" />*@
-    <style>
-        .welcome a {
-            color: #4A79FF;
-        }
+		.todo-pane {
+			max-height: 360px;
+			overflow: auto;
+			width: 100%;
+		}
 
-        h3 {
-            color: #6D6D6D;
-        }
-
-        .todo-pane {
-            max-height: 360px;
-            overflow: auto;
-            width: 100%;
-        }
-
-        #alerts .alert {
-            z-index: 1000;
-        }
-    </style>
-    @*<link href="~/Scripts/Grid/style.css" rel="stylesheet" />*@
-
-    @Styles.Render("~/styles/Dashboard");
+		#alerts .alert {
+			z-index: 1000;
+		}
+	</style>
+	@Styles.Render("~/styles/Dashboard");
 }
-
-
 @using (Html.BeginScripts()) {
 	@Scripts.Render("~/bundles/DashboardPostAngular")
 }

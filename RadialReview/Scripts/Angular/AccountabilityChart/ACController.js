@@ -208,8 +208,8 @@ acapp.directive('rolegroups', function () {
 							"</div>" +
 							"<ul>" +
 								"<li ng-repeat='role in group.Roles'  class='role-row' >" +
-									"<input ng-model-options='{debounce:200}'  ng-focus='focusing()' ng-blur='blurring()'" + " ng-keydown='checkCreateRole($event,role,group,$index)'" + " title='{{role.Name}}' class='role' ng-if='::group.Editable!=false' ng-model=\"role.Name\" ng-change=\"updating(role)\">" +
-									"<div title='{{role.Name}}' class='role' ng-if='::group.Editable==false'>{{role.Name}}</div>" +
+									"<input ng-model-options='{debounce:75}'  ng-focus='focusing()' ng-blur='blurring()'" + " ng-keydown='checkCreateRole($event,role,group,$index)'" + " title='{{role.Name}}' class='role' ng-if='::group.Editable!=false' ng-model=\"role.Name\" ng-change=\"updating(role)\">" +
+									"<div title='{{role.Name}}' class='role' ng-show='::group.Editable==false'>{{role.Name}}</div>" +
 									"<span ng-if='::group.Editable!=false' class='delete-role-row' ng-click=\"deleting(role)\" tabindex='-1'></span>" +
 								"</li>" +
 							"</ul>" +

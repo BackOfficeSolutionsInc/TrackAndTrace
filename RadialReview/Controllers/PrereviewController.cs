@@ -62,7 +62,14 @@ namespace RadialReview.Controllers {
 		public ActionResult Customize(FormCollection form) {
 			var whoReviewsWho = form.AllKeys.Where(x => x.StartsWith("customize_")).Select(x => {
 				var split = x.Split('_');
-				return Tuple.Create(long.Parse(split[1]), long.Parse(split[2]));
+				long? acNodeId = null;
+
+				if (split.Length > 3) {
+					var temp = 0L;
+					if (long.TryParse(split[3], out temp))
+						acNodeId = temp;
+				}
+				return new WhoReviewsWho(new Reviewer(long.Parse(split[1])), new Reviewee(long.Parse(split[2]),acNodeId));
 			}).ToList();
 
 			_PrereviewAccessor.ManagerCustomizePrereview(GetUser(), form["prereviewId"].ToLong(), whoReviewsWho);

@@ -5,11 +5,16 @@
 @if (Model.Item1.Any()) {
 
 	<div class="subsection subsection-rocks">
-		<table class="table-rocks">
+		<table class="table-rocks rockTable">
 			<thead>
 				<tr>
 					<th></th>
-					<th style="text-align: center" class="hidden-xs"> Complete</th>
+					<th style="text-align: center" class="hidden-xs">
+						<div class="row">
+							<div class="col-sm-6 alignCenter">Completion</div>
+							<div class="col-sm-6"></div>
+						</div>
+					</th>
 					@*<th class="header"></th>*@
 				</tr>
 			</thead>
@@ -27,7 +32,7 @@
 					</tr>
 					<tr>
 						<td class="hidden-xs" @*style="width:50%"*@><h4 class="question alignRight" style="padding-right:15px;padding-bottom: 7px;padding-top: 7px;">@questions[i].Askable.GetQuestion()</h4></td>
-						<td style="vertical-align:top;" class="rock-input-reason">
+						<td style="vertical-align:top;" class="rock-input-reason rockResponse">
 							<div class="row">
 								<div class="col-sm-6">
 									<span>

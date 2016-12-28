@@ -512,13 +512,14 @@ function checkFireworks() {
     }
 }
 
+var shootFirework = false;
 function runFireworks() {
     window.fireworksRan = true;
     fc.init();
 
     $.ajax("/L10/ranfireworks/" + recurrenceId);
     
-    var shootFirework = function(){
+    shootFirework = function(){
 
         if (shootFirework) {
             ////http://www.schillmania.com/projects/fireworks/
@@ -537,16 +538,16 @@ function runFireworks() {
             }
         }
     };
-    shootFirework();
+    if (typeof (shootFirework) === "function") {
+    	shootFirework();
+    	showModal({
+    		icon: { icon: "icon fontastic-icon-trophy-1", title: "Congratulations!", color: "#FFA500" },
+    		title: "90% To-do completion!",
+    		close: function () {
+    			shootFirework = false;
+    		}
+    	});
 
-
-    showModal({
-        icon: { icon: "icon fontastic-icon-trophy-1", title: "Congratulations!", color: "#FFA500" },
-        title: "90% To-do completion!",
-        close:function(){
-            shootFirework=false;
-        }
-    });
-
-    setTimeout(function () { shootFireworks = false;},10000);
+    	setTimeout(function () { shootFirework = false; }, 10000);
+    }
 }

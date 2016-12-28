@@ -9,11 +9,11 @@
 
 
 var Grid = {
-    currentSize: 7,
+    currentSize: 14,
     container: null,
     callback: null,
     first: true,
-    ratio: 1.23,
+    ratio: 6.15,//1.23,
     createTile: function (item) {
         var x, y, w, h, id, url;
         if (typeof (item.X) !== "undefined") {
@@ -244,8 +244,8 @@ var Grid = {
         Grid.container.gridList({
             lanes: Grid.currentSize,
             direction: "vertical",
-            minWidth: 200,
-            minHeight: 200,
+            minWidth: 191,
+            minHeight: 34,
             widthHeightRatio: Grid.ratio,
             onChange: Grid.callback
         }, { handle: ".heading" });

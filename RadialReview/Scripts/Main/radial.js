@@ -670,6 +670,13 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 		} else if (typeof onCancelArg === "function") {
 			onCancelArg();
 		}
+		if (onCloseArg) {
+			if (typeof onCloseArg === "string") {
+				eval(onCloseArg + "()");
+			} else if (typeof onCloseArg === "function") {
+				onCloseArg();
+			}
+		}
 	});
 
 	$("#modal").removeClass("loading");

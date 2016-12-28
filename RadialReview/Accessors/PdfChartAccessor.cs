@@ -40,6 +40,8 @@ namespace RadialReview.Accessors {
 			var maxWidth = 0.0;
 			var num = 0;
 			var height2 = 0.0;
+			text = text ?? "";
+
 			foreach (var row in text.Replace("\r","").Split('\n')) {
 				var measure = gfx.MeasureString(row, font);
 				height2 += measure.Height;
@@ -500,13 +502,13 @@ namespace RadialReview.Accessors {
 				//var h = GetTextHeight(gfx, question, textWidth, font);
 				if (h > pieWidth) {
 					var layoutRectangle = new XRect(placement.Left, top + pieMargin * 2, textWidth, height);
-					tf.DrawString(question, font, _BlackText, layoutRectangle, XStringFormats.TopLeft);
+					tf.DrawString(question ?? "", font, _BlackText, layoutRectangle, XStringFormats.TopLeft);
 					top += h + 4.0 * pieMargin;
 					totalHeight += h + 4.0 * pieMargin;
 
 				} else {
 					var layoutRectangle = new XRect(placement.Left, top + pieMargin * 2 + (pieWidth - h - font.GetHeight() / 2.0) / 2.0, textWidth, h);
-					tf.DrawString(question, font, _BlackText, layoutRectangle, XStringFormats.TopLeft);
+					tf.DrawString(question??"", font, _BlackText, layoutRectangle, XStringFormats.TopLeft);
 					top += pieWidth + 2.0 * pieMargin;
 					totalHeight += pieWidth + 2.0 * pieMargin;
 				}
@@ -599,7 +601,7 @@ namespace RadialReview.Accessors {
 				var pt = new XPoint(xx, yy);
 				gfx.RotateAtTransform(-angle, pt);
 				var value = theValues[i].GetQuestion();
-				gfx.DrawString(value, valueFont, XBrushes.Black, pt);
+				gfx.DrawString(value??"", valueFont, XBrushes.Black, pt);
 				gfx.RotateAtTransform(angle, pt);
 			}
 
@@ -627,12 +629,12 @@ namespace RadialReview.Accessors {
 
 				if (h > pieWidth) {
 					var layoutRectangle = new XRect(placement.Left, top + pieMargin * 2, textWidth, height);
-					tf.DrawString(valueRow.Name, valueNameFont, _BlackText, layoutRectangle, XStringFormats.TopLeft);
+					tf.DrawString(valueRow.Name ?? "", valueNameFont, _BlackText, layoutRectangle, XStringFormats.TopLeft);
 					totalHeight += h + 2.0 * pieMargin;
 					top += h + 2.0 * pieMargin;
 				} else {
 					var layoutRectangle = new XRect(placement.Left, top + pieMargin * 2 + (pieWidth - h - valueNameFont.GetHeight() / 2.0) / 2.0, textWidth, h);
-					tf.DrawString(valueRow.Name, valueNameFont, _BlackText, layoutRectangle, XStringFormats.TopLeft);
+					tf.DrawString(valueRow.Name ?? "", valueNameFont, _BlackText, layoutRectangle, XStringFormats.TopLeft);
 					totalHeight += pieWidth + 2.0 * pieMargin;
 					top += pieWidth + 2.0 * pieMargin;
 				}
@@ -668,7 +670,7 @@ namespace RadialReview.Accessors {
 					above = tiny?"+":"above";
 				else if (score.Above == false)
 					above = tiny?"-":"below";
-				gfx.DrawString(above, _Font7, XBrushes.White, recLoc,XStringFormats.Center);
+				gfx.DrawString(above??"", _Font7, XBrushes.White, recLoc,XStringFormats.Center);
 
 			}
 			top += barHeight;
@@ -702,18 +704,18 @@ namespace RadialReview.Accessors {
 
 			//Employee Name
 			var top = new XRect(placement.Left, placement.Top, placement.Width, h);
-			gfx.DrawString(forUser.GetName(), nameFont, XBrushes.DarkGray, top, XStringFormats.TopCenter);
+			gfx.DrawString(forUser.GetName() ?? "", nameFont, XBrushes.DarkGray, top, XStringFormats.TopCenter);
 
 			var extraFont = _Font8Bold;
 			//Review Name
 			h = GetTextHeight(gfx, review.Name, placement.Width / 2.0, extraFont);
 			var left = new XRect(placement.Left, top.Bottom, placement.Width / 2.0, h);
-			gfx.DrawString(review.Name, extraFont, XBrushes.DarkGray, left, XStringFormats.BottomLeft);
+			gfx.DrawString(review.Name ?? "", extraFont, XBrushes.DarkGray, left, XStringFormats.BottomLeft);
 
 			//Titles
 			h = GetTextHeight(gfx, review.Name, placement.Width / 2.0, extraFont);
 			var right = new XRect(left.Right, top.Bottom, placement.Width / 2.0, h);
-			gfx.DrawString(forUser.GetTitles(), extraFont, XBrushes.DarkGray, right, XStringFormats.BottomRight);
+			gfx.DrawString(forUser.GetTitles() ?? "", extraFont, XBrushes.DarkGray, right, XStringFormats.BottomRight);
 
 			var h2 = Math.Max(left.Height, right.Height);
 			
@@ -729,7 +731,7 @@ namespace RadialReview.Accessors {
 				var jdh = GetTextHeight(gfx, jd, placement.Width- jdW, _Font8);
 				gfx.DrawString("Job Description:", _Font8Bold, _BlackText, new XRect(placement.Left, placement.Top + totalHeight, jdW, jdh),XStringFormats.TopLeft);
 				var tf = new XTextFormatter(gfx) { Alignment = XParagraphAlignment.Left };
-				tf.DrawString(jd, _Font8, _BlackText, new XRect(placement.Left+ jdW, placement.Top + totalHeight, placement.Width - jdW, jdh), XStringFormats.TopLeft);
+				tf.DrawString(jd ?? "", _Font8, _BlackText, new XRect(placement.Left+ jdW, placement.Top + totalHeight, placement.Width - jdW, jdh), XStringFormats.TopLeft);
 
 				totalHeight += jdh;
 			}
@@ -758,7 +760,7 @@ namespace RadialReview.Accessors {
 			var feedbackTitle = "Feedback:";
 			var h = GetTextHeight(gfx, feedbackTitle, placement.Width, font);
 			var pos = new XRect(placement.Left, curH, placement.Width, h);
-			tf.DrawString(feedbackTitle, font, _BlackText, pos, XStringFormats.TopLeft);
+			tf.DrawString(feedbackTitle ?? "", font, _BlackText, pos, XStringFormats.TopLeft);
 
 			totalHeight += h + titleMargin;
 			curH += h + titleMargin;
@@ -777,7 +779,7 @@ namespace RadialReview.Accessors {
 				tf = new XTextFormatter(gfx) { Alignment = XParagraphAlignment.Left };
 				h = GetTextHeight(gfx, question, placement.Width, font);
 				pos = new XRect(placement.Left, curH, placement.Width, h);
-				tf.DrawString(question, font, _BlackText, pos, XStringFormats.TopLeft);
+				tf.DrawString(question ?? "", font, _BlackText, pos, XStringFormats.TopLeft);
 
 				curH += h + feedbackMargin;
 				totalHeight += h + feedbackMargin;
@@ -791,7 +793,7 @@ namespace RadialReview.Accessors {
 
 					var fh = GetTextHeight(gfx, feedback, placement.Width, font);
 					var fpos = new XRect(placement.Left + 10, curH, placement.Width - 10, fh);
-					tf.DrawString(feedback, font, _BlackText, fpos, XStringFormats.TopLeft);
+					tf.DrawString(feedback ?? "", font, _BlackText, fpos, XStringFormats.TopLeft);
 					curH += fh+ feedbackMargin;
 					totalHeight += fh+ feedbackMargin;
 				}
@@ -827,7 +829,7 @@ namespace RadialReview.Accessors {
 			var feedbackTitle = "Supervisor Notes:";
 			var h = GetTextHeight(gfx, feedbackTitle, placement.Width, font);
 			var pos = new XRect(placement.Left, curH, placement.Width, h);
-			tf.DrawString(feedbackTitle, font, _BlackText, pos, XStringFormats.TopLeft);
+			tf.DrawString(feedbackTitle ?? "", font, _BlackText, pos, XStringFormats.TopLeft);
 
 			totalHeight += h + titleMargin;
 			curH += h + titleMargin;
@@ -843,7 +845,7 @@ namespace RadialReview.Accessors {
 			var feedback = notes;
 			var fh = GetTextHeight(gfx, feedback, placement.Width - 10, font);
 			var fpos = new XRect(placement.Left + 10, curH, placement.Width - 10, fh);
-			tf.DrawString(feedback, font, _BlackText, fpos, XStringFormats.TopLeft);
+			tf.DrawString(feedback ?? "", font, _BlackText, fpos, XStringFormats.TopLeft);
 			curH += fh + feedbackMargin;
 			totalHeight += fh + feedbackMargin;
 				
@@ -885,10 +887,6 @@ namespace RadialReview.Accessors {
 			public string Feedback { get; set; }
 			public XColor Color { get; set; }
 			public string IconName { get; set; }
-		}
-
-
-
-
+		}		
 	}
 }

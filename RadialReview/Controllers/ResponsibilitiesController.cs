@@ -55,7 +55,7 @@ namespace RadialReview.Controllers
         public JsonResult Modal(ResponsibilityViewModel model)
         {
             var caller = GetUser();
-            /*if (model.CategoryId == -1)
+			/*if (model.CategoryId == -1)
             {
                 var category=_CategoryAccessor.Edit(caller, 0, new Origin(OriginType.Organization, caller.Organization.Id), new LocalizedStringModel(model.NewCategory), true);
                 model.CategoryId = category.Id;
@@ -73,8 +73,14 @@ namespace RadialReview.Controllers
 				questionType = QuestionType.Feedback;
 			}
 			*/
+			var oa = AboutType.NoRelationship;
+			foreach (var onlyAsk in model.OnlyAsk) {
+				oa = oa | onlyAsk;
+			}
+
+
 			
-	        _ResponsibilitiesAccessor.EditResponsibility(caller, model.Id, model.Responsibility, model.CategoryId, model.ResponsibilityGroupId,model.Active,model.Weight,model.Required);
+	        _ResponsibilitiesAccessor.EditResponsibility(caller, model.Id, model.Responsibility, model.CategoryId, model.ResponsibilityGroupId,model.Active,model.Weight,model.Required, oa, model.UpdateOutstandingReviews);
             return Json(ResultObject.Success("Responsibility updated."));
         }
 

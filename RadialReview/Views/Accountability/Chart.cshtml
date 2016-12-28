@@ -32,6 +32,7 @@
 </div>
 <div ng-app="ACApp" class="full-height acc-chart ng-cloak">
 	<div ng-controller="ACController" class="full-height">
+
 		<md-autocomplete style="position:fixed;@(searchLoc);right: 0px;width:320px;max-width: 70vw;"
 						 md-selected-item="search.selected"
 						 md-search-text-change="search.searchTextChange(search.searchText)"
@@ -48,9 +49,13 @@
 				No states matching "{{search.searchText}}" were found.
 			</md-not-found>
 		</md-autocomplete>
+		@*<div style="top:26px;position:absolute">
+			<md-checkbox ng-model="compact"></md-checkbox>
+		</div>*@
 
 		<svg panzoom id="svg" graph="model">
 			<tree graph="model"
+				  tt-compact="compact"
 				  tt-enter="nodeEnter"
 				  tt-update="nodeUpdate"
 				  tt-exit="nodeExit"

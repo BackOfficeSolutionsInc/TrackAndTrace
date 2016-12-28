@@ -104,6 +104,12 @@ namespace RadialReview.Accessors
 
         public static ReviewModel GenerateReviewForUser(HttpContext context ,DataInteraction dataInteraction, PermissionsUtility perms, UserOrganizationModel reviewer, ReviewsModel reviewContainer, AskableCollection askables){
 
+			if (dataInteraction.Contains<ReviewModel>()) {
+				var existing = dataInteraction.Where<ReviewModel>(x => x.ForReviewContainerId == reviewContainer.Id && x.ReviewerUserId == reviewer.Id && x.DeleteTime == null).ToList();
+				if (existing.Any())
+					return existing.First();
+			}
+
             reviewer = dataInteraction.Get<UserOrganizationModel>(reviewer.Id);
 
 			var reviewModel = new ReviewModel(){

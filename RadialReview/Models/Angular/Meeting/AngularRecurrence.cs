@@ -14,6 +14,7 @@ using RadialReview.Utilities;
 using RadialReview.Models.Angular.Headlines;
 using RadialReview.Model.Enums;
 using Newtonsoft.Json;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Models.Angular.Meeting
 {
@@ -48,6 +49,7 @@ namespace RadialReview.Models.Angular.Meeting
 		public IEnumerable<AngularHeadline> Headlines { get; set; }
 		public AngularIssuesList IssuesList { get; set; }
 		public AngularDateRange date { get; set; }
+		public AngularDateRange dateDataRange { get; set; }
         public string HeadlinesUrl { get; set; }
 		public PeopleHeadlineType? HeadlineType { get; set; }
         //public PrioritizationType Prioritization { get; set; }
@@ -55,7 +57,7 @@ namespace RadialReview.Models.Angular.Meeting
 		
 		public AngularIgnore<L10Recurrence> _Recurrence { get; set; }
         public string Focus { get; set; }
-    }
+	}
 
     public class AngularBasics : BaseAngular {
         public AngularBasics(long recurrenceId): base(recurrenceId){
@@ -85,25 +87,12 @@ namespace RadialReview.Models.Angular.Meeting
 		public DateTime startDate { get; set; }
 		public DateTime endDate { get; set; }
 
-        public AngularDateRange()
-        {
+		public AngularDateRange() {
 
-        }
-	}
-
-	//	public class AngularScorecardRow : BaseAngular
-	//	{
-	//		public AngularScorecardRow(MeasurableModel measurable,List<AngularWeek> weeks,List<ScoreModel> allScores) : base(measurable.Id){
-					
-	//		}
-	//		public List<AngularScorecardItem> Items { get; set; }
-	//	}
-
-	//	public class AngularScorecardItem : BaseAngular
-	//	{
-	//		public AngularScorecardItem(ScoreModel score) :base(score.Id){
-				
-	//		}
-	//	}
-	//}
+		}
+		public AngularDateRange(DateRange range) {
+			startDate = range.StartTime;
+			endDate = range.EndTime;
+		}
+	}	
 }

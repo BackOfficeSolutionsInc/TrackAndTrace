@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using NHibernate.Criterion;
+using RadialReview.Models.Reviews;
 
 namespace RadialReview.Accessors
 {
@@ -204,7 +205,8 @@ namespace RadialReview.Accessors
 			return responsibilityGroups;
         }
 
-        public void EditResponsibility(UserOrganizationModel caller, long responsibilityId, String responsibility = null, long? categoryId = null, long? responsibilityGroupId = null, bool? active = null, WeightType? weight = null,bool? required = null)
+        public void EditResponsibility(UserOrganizationModel caller, long responsibilityId, String responsibility = null,
+			long? categoryId = null, long? responsibilityGroupId = null, bool? active = null, WeightType? weight = null,bool? required = null,AboutType? onlyAsk= null,bool updateOutstandingReviews=false)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -232,7 +234,12 @@ namespace RadialReview.Accessors
 
                         if (responsibilityGroupId != null && responsibilityGroupId != r.ForResponsibilityGroup)//Cant change responsibility Group
                             throw new PermissionsException();
+
+						responsibilityGroupId = r.ForResponsibilityGroup;
                     }
+
+
+					permissions.EditOrganization(r.ForOrganizationId);
 
                     if (responsibility != null)
                         r.Responsibility = responsibility;
@@ -264,13 +271,30 @@ namespace RadialReview.Accessors
 
 	                if (required != null)
 		                r.Required = required.Value;
-
                     if (weight != null)
-                    {
                         r.Weight = weight.Value;
-                    }
+					if (onlyAsk != null)
+						r.OnlyAsk = onlyAsk.Value;
+					
 
-                    permissions.EditOrganization(r.ForOrganizationId);
+					// update outstanding reviews.
+					if (updateOutstandingReviews) {
+						var	outstanding = ReviewAccessor.OutstandingReviewsForOrganization_Unsafe(s, r.ForOrganizationId);
+
+						if (outstanding.Any()) {
+							var members = GetResponsibilityGroupMembers(s, permissions, responsibilityGroupId.Value);
+							var reviewees = members.Select(x => new Reviewee(x));
+							foreach (var o in outstanding) {
+								ReviewAccessor.AddResponsibilityAboutUsersToReview(s, permissions, o.Id, reviewees, r.Id);
+							}
+
+							//foreach (var member in members) {
+							//	var userId = member.Id;
+							//		ReviewAccessor.AddResponsibilityAboutUserToReview(s, permissions, o.Id, new Reviewee(userId, null), r.Id);
+							//	}
+							//}							
+						}
+					}
 
                     s.Update(r);
                     tx.Commit();

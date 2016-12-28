@@ -92,5 +92,9 @@ namespace RadialReview.Utilities.Query
 		{
 			return QueryProvider.Load<T>(id);
 		}
+
+		public bool Contains<T>() {
+			return QueryProvider.Contains<T>();
+		}
 	}
 }

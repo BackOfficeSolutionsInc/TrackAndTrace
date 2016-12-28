@@ -285,8 +285,13 @@ body.modal-open {
 	margin-right: -10px;
 }
 
-.dropdown-submenu:hover > a:after {
-	border-left-color: #ffffff;
+.dropdown-submenu:hover > a {
+
+	background-color:#f5f5f5;
+
+	&:after {
+		/*border-left-color: #AAAAAA;*/
+	}
 }
 
 .dropdown-submenu.pull-left {
@@ -631,7 +636,7 @@ body.resizing, body.resizing *::-moz-selection {
 
 		&.disabled {
 			color: #888888;
-			cursor:default;
+			cursor: default;
 		}
 	}
 }
@@ -643,6 +648,6 @@ body.resizing, body.resizing *::-moz-selection {
 }
 
 
-textarea{
-    white-space:pre-wrap;
+textarea {
+	white-space: pre-wrap;
 }

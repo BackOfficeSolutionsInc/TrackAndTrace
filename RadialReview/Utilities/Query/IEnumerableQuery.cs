@@ -104,5 +104,9 @@ namespace RadialReview.Utilities.Query
 				return arr.Any(y => y.Equals(transform));
 			}).ToList();
 		}
+
+		public override bool Contains<T>() {
+			return Data.ContainsKey(typeof(T));
+		}
 	}
 }

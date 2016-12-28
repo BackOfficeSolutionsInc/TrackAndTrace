@@ -1802,8 +1802,6 @@ namespace RadialReview.Controllers {
 
 			return Content("count:" + count);
 		}
-		#endregion
-
 		public static String M11_06_2016() {
 			var a = 0;
 			var b = 0;
@@ -1835,6 +1833,31 @@ namespace RadialReview.Controllers {
 
 			return "Updated " + a+", "+b;
 		}
+		#endregion
+
+		[Access(Controllers.AccessLevel.Radial)]
+		public String M12_13_2016(double id=5) {
+			var a = 0;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+
+					var tiles = s.QueryOver<TileModel>().Where(x=>x.DeleteTime==null).List().ToList();
+					foreach (var o in tiles) {
+						o.Height = (int)Math.Round(o.Height * id);
+						o.Y = (int)Math.Round(o.Y * id);
+						s.Update(o);
+						a++;
+					}					
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+
+
+			return "Updated " + a + " tiles";
+		}
+
 	}
 }
 #pragma warning restore CS0618 // Type or member is obsolete

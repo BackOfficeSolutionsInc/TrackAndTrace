@@ -68,7 +68,9 @@ namespace RadialReview.Controllers {
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
 		[Obsolete("Fix for AC")]
+		[AsyncTimeout(60000 * 30)]//20 minutes..
 		public async Task<ActionResult> Index(FormCollection form) {
+			Server.ScriptTimeout = 60*30;
 			if (form["review"] == "issueReview") {
 				var customized = form.AllKeys.Where(x => x.StartsWith("customize_")).Select(x => {
 					var split = x.Split('_');

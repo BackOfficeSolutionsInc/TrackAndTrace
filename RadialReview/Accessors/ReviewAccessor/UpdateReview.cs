@@ -158,7 +158,9 @@ namespace RadialReview.Accessors {
 			var revieweeReview = reviews.Where(x => x.ReviewerUserId == reviewee.RGMId).SingleOrDefault();
 			if (revieweeReview == null) {
 				var u = s.Get<UserOrganizationModel>(reviewee.RGMId);
-				QuestionAccessor.GenerateReviewForUser(null, s, perms, u, reviewContainer, new AskableCollection());
+				if (u != null) {
+					QuestionAccessor.GenerateReviewForUser(null, s, perms, u, reviewContainer, new AskableCollection());
+				}
 			}
 		}
 
@@ -211,72 +213,104 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static void AddResponsibilityAboutUserToReview(ISession s, UserOrganizationModel caller, PermissionsUtility perms, long reviewContainerId, Reviewee reviewee, long askableId) {
+		public static void AddResponsibilityAboutUsersToReview(ISession s, PermissionsUtility perms, long reviewContainerId, IEnumerable<Reviewee> reviewees, long askableId) {
 			DateRange range = null; //Does this need to be set?
 
-			var userId = reviewee.RGMId;
+			if (!reviewees.Any())
+				return; //Nothing to do.
+				
+
 			var reviewContainer = s.Get<ReviewsModel>(reviewContainerId);
 			var orgId = reviewContainer.Organization.Id;
-			perms.ViewOrganization(orgId).Or(x => x.AdminReviewContainer(reviewContainerId), x => x.EditQuestionForUser(userId));
+			
+			perms.ViewOrganization(orgId).Or(x => x.AdminReviewContainer(reviewContainerId), x => {
+				foreach (var reviewee in reviewees) {
+					var userId = reviewee.RGMId;
+					x.EditQuestionForUser(userId);
+				}
+				return x;
+			});
 
 			var queryProvider = GetReviewQueryProvider(s, orgId, reviewContainerId);
 			queryProvider.AddData(reviewContainer.AsList());
 
+			var allRGMs = s.QueryOver<ResponsibilityGroupModel>().WhereRestrictionOn(x => x.Id).IsIn(reviewees.Select(x => x.RGMId).ToArray()).List();
+			queryProvider.AddData(allRGMs);
+			var norel = ((long)AboutType.NoRelationship);
+			var allNoRelationshipsLookup = s.QueryOver<AnswerModel>()
+						.Where(x => x.DeleteTime == null && x.AboutTypeNum == norel && x.ForReviewContainerId == reviewContainerId)
+						.WhereRestrictionOn(x => x.RevieweeUserId).IsIn(reviewees.Select(x => x.RGMId).ToArray())
+						.Select(x => x.ReviewerUserId, x => x.RevieweeUserId)
+						.List<object[]>()
+						.Select(x => new {
+							Reviewer = (long)x[0],
+							Reviewee = (long)x[1],
+						})
+						.GroupBy(x => x.Reviewee)
+						.ToDictionary(x => x.Key, x => x.Select(y=>y.Reviewer).ToList());
 
-			queryProvider.AddData(s.Get<ResponsibilityGroupModel>(userId).AsList());
-
+			//queryProvider.AddData(allNoRelationships);
 
 			var dataInteration = new DataInteraction(queryProvider, s.ToUpdateProvider());
 
-			var team = dataInteration.Get<OrganizationTeamModel>(reviewContainer.ForTeamId);
 			//I think we want ToList, not ToListAlive
 			var existingReviewUsers = dataInteration.Where<ReviewModel>(x => x.ForReviewContainerId == reviewContainerId).Select(x => new Reviewee(x.ReviewerUser.Id, null)).ToList();
-			var user = dataInteration.Get<UserOrganizationModel>(userId);
 
+			var team = dataInteration.Get<OrganizationTeamModel>(reviewContainer.ForTeamId);
 			var tree = AccountabilityAccessor.GetTree(s, perms, team.Organization.AccountabilityChartId, range: range);
-
-			var relationships = Relationships.GetRelationships_Filtered(dataInteration, perms, tree, reviewee, team, range, existingReviewUsers);
-
-			//also want to get the NoRelationship people
-			var norel = ((long)AboutType.NoRelationship);
-			var allNoRelationshipps = s.QueryOver<AnswerModel>()
-				.Where(x => x.DeleteTime == null && x.AboutTypeNum == norel && x.RevieweeUserId == userId && x.ForReviewContainerId == reviewContainerId)
-				.Select(x => x.ReviewerUserId)
-				.List<long>().Distinct()
-				.ToList();
-			foreach (var nr in allNoRelationshipps) {
-				var u = dataInteration.Where<UserOrganizationModel>(x => x.Id == nr).Single();
-				relationships.AddRelationship(new Reviewer(nr), reviewee, AboutType.NoRelationship);
-			}
-
 			var askable = s.Get<Askable>(askableId);
 
-			foreach (var r in relationships) {
-				var existingReviews = dataInteration.Where<ReviewModel>(x => x.ReviewerUserId == r.Reviewer.RGMId).ToList();
-				foreach (var existingReview in existingReviews) {
-					var askables = new AskableCollection();
-					//Is it correct that this be inverted?
-					askables.AddUnique(askable, r.RevieweeIsThe, r.Reviewee);
 
+			
 
-					//foreach (var about in r.Value)
-					//{
-					//	if (ReviewAccessor.ShouldAddToReview(askable, about))
-					//	{
-					//		askables.AddUnique(askable, about.Invert(), userId);
-					//	}
-					//}
-					AddAskablesToReview(dataInteration, perms, r.Reviewer, existingReview, reviewContainer.AnonymousByDefault, askables);
+			foreach (var reviewee in reviewees) {
+				try {
+					var userId = reviewee.RGMId;
+					var user = dataInteration.Get<UserOrganizationModel>(userId);
+					var relationships = Relationships.GetRelationships_Filtered(dataInteration, perms, tree, reviewee, team, range, existingReviewUsers);
+
+					//also want to get the NoRelationship people
+					var usersNoRelationships = new List<long>();
+					if (allNoRelationshipsLookup.ContainsKey(userId))
+						usersNoRelationships= allNoRelationshipsLookup[userId];
+
+					//var usersNoRelationships = allNoRelationshipsLookup
+					//	.Where<AnswerModel>(x => x.DeleteTime == null && x.AboutTypeNum == norel && x.RevieweeUserId == userId && x.ForReviewContainerId == reviewContainerId)
+					//	.Select(x => x.ReviewerUserId)
+					//	.List<long>().Distinct()
+					//	.ToList();
+
+					foreach (var nr in usersNoRelationships) {
+						var u = dataInteration.Where<UserOrganizationModel>(x => x.Id == nr).Single();
+						relationships.AddRelationship(new Reviewer(nr), reviewee, AboutType.NoRelationship);
+					}
+					
+					foreach (var r in relationships) {
+						var existingReviews = dataInteration.Where<ReviewModel>(x => x.ReviewerUserId == r.Reviewer.RGMId).ToList();
+						foreach (var existingReview in existingReviews) {
+							var askables = new AskableCollection();
+							//Is it correct that this be inverted?
+							askables.AddUnique(askable, r.RevieweeIsThe, r.Reviewee);
+							AddAskablesToReview(dataInteration, perms, r.Reviewer, existingReview, reviewContainer.AnonymousByDefault, askables);
+						}
+					}
+
+				} catch (Exception) {
+					//fall through
 				}
 			}
 
+		}
+
+		public static void AddResponsibilityAboutUserToReview(ISession s, PermissionsUtility perms, long reviewContainerId, Reviewee reviewee, long askableId) {
+			AddResponsibilityAboutUsersToReview(s, perms, reviewContainerId, reviewee.AsList(), askableId);
 		}
 
 		public void AddResponsibilityAboutUserToReview(UserOrganizationModel caller, long reviewContainerId, Reviewee reviewee, long askableId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					AddResponsibilityAboutUserToReview(s, caller, perms, reviewContainerId, reviewee, askableId);
+					AddResponsibilityAboutUserToReview(s, perms, reviewContainerId, reviewee, askableId);
 					tx.Commit();
 					s.Flush();
 				}

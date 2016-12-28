@@ -56,14 +56,18 @@ namespace RadialReview
             return GetDisplayName(value);
         }
 
-        public static IEnumerable<Enum> GetFlags(this Enum input)
-        {
-            foreach (Enum value in Enum.GetValues(input.GetType()))
-                if (input.HasFlag(value))
-                    yield return value;
-        }
+		public static IEnumerable<Enum> GetFlags(this Enum input) {
+			foreach (Enum value in Enum.GetValues(input.GetType()))
+				if (input.HasFlag(value))
+					yield return value;
+		}
 
-        public static HtmlString GetIcon(this bool value)
+		public static IEnumerable<T> GetFlags<T>(this Enum input) {
+			return GetFlags(input).Cast<T>();
+		}
+
+
+		public static HtmlString GetIcon(this bool value)
         {
             /*var fieldInfo = value.GetType().GetField(value.ToString());
             var iconAttr = fieldInfo.GetCustomAttributes(typeof(IconAttribute), false) as IconAttribute[];

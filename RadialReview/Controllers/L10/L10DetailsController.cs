@@ -22,7 +22,7 @@ namespace RadialReview.Controllers
     {
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Details(long id,bool complete=false)
+		public ActionResult Details(long id,bool complete=false,long? start=null)
 		{
 			ViewBag.NumberOfWeeks = (int)Math.Ceiling(TimingUtility.ApproxDurationOfPeriod(GetUser().Organization.Settings.ScorecardPeriod).TotalDays)*13;
 			
@@ -31,7 +31,7 @@ namespace RadialReview.Controllers
             ViewBag.VtoId = recur.VtoId;
             ViewBag.IncludeHeadlines = recur.HeadlineType;
             ViewBag.ShowPriority = (/*recur.Prioritization == Models.L10.PrioritizationType.Invalid||*/recur.Prioritization == Models.L10.PrioritizationType.Priority);
-
+			ViewBag.StartDate = start.NotNull(x=>x.Value);
             
             return View(id);
 		}
@@ -42,10 +42,17 @@ namespace RadialReview.Controllers
         {
             var startRange = start.ToDateTime();
             var endRange   = end.ToDateTime();
+			var range = new DateRange(startRange, endRange);
 
-            var model = L10Accessor.GetAngularRecurrence(GetUser(), id, scores, historical, fullScorecard: fullScorecard,range:new DateRange(startRange, endRange));
-            //model.Name=null;
-		    return Json(model, JsonRequestBehavior.AllowGet);
+            var model = L10Accessor.GetAngularRecurrence(GetUser(), id, scores, historical, fullScorecard: fullScorecard,range: range);
+			//model.Name=null;
+
+			if (start != 0 && end != long.MaxValue) {
+				model.dateDataRange = new AngularDateRange(range);
+			}
+
+
+			return Json(model, JsonRequestBehavior.AllowGet);
 	    }       		
 
     }

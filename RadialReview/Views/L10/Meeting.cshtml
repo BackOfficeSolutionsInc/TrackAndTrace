@@ -28,21 +28,12 @@
 		var MeetingId = @Model.Recurrence.Id;
 		@if (Model.MeetingStart != null){
 			@:var startTime = new Date(@(Model.MeetingStart.Value.ToJavascriptMilliseconds()));
-														                                                                        																				}
+		}
 
 
 	</script>
-	@*<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
-		<script src="~/signalr/hubs"></script>*@
-	@*<script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
-		<script src="~/Scripts/jquery/jquery.scrollTo.js"></script>
-		<script src="~/Scripts/bootstrap-switch.js"></script>*@
 	@Scripts.Render("~/bundles/MeetingPage")
-
-
-
-	@*<script src="~/Scripts/L10/L10.js"></script>
-		<script src="~/Scripts/L10/rtL10.js"></script>*@
+		
 	@Scripts.Render("~/bundles/L10")
 	@Html.Partial("_SetupScript", Model)
 	<script>
@@ -62,14 +53,14 @@
 					@:addToPictureLookup(@m.UserId,"@m.Url","@m.Name","@m.Initials");
 																}
 				@:isLeader = @(Model.Meeting.MeetingLeaderId == ViewBag.UserId ? "true" : "false");
-																@:var bmin = @(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0) + @(Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => (DateTime.UtcNow.ToJavascriptMilliseconds() - x.Value.ToJavascriptMilliseconds()))/(60*1000.0));
-																@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),bmin);
-																foreach (var i in Model.Meeting._MeetingLeaderPageDurations.Where(x => x.Item1 != Model.Meeting._MeetingLeaderCurrentPage)){
-						@:setPageTime("@i.Item1",@i.Item2);
-																}
+				@:var bmin = (@(Math.Round((Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0)*1000))/1000) + (@((DateTime.UtcNow.ToJavascriptMilliseconds()-(Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds())))))/(60*1000);
+				@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),bmin);
+				foreach (var i in Model.Meeting._MeetingLeaderPageDurations.Where(x => x.Item1 != Model.Meeting._MeetingLeaderCurrentPage)){
+						@:setPageTime("@i.Item1",@(Math.Round(i.Item2*10000))/10000);
+				}
 			}else{
 					@:isLeader =false;
-															}
+			}
 			initL10();
 			try {
 				resetClickables();
@@ -86,15 +77,6 @@
 			embed.append($('<iframe  type="application/pdf" src="'+printUrl+'" id="pdf-frame" width="100%" height="100%"></embeded>'));
 
 			$("body").append(embed);
-			//var documentId = "pdfDocument";
-			//var doc = document.getElementById(documentId);
-
-			////Wait until PDF is ready to print
-			//if (typeof doc.print === 'undefined') {
-			//    setTimeout(function(){printDocument(documentId);}, 1000);
-			//} else {
-			//    doc.print();
-			//}
 			var PDF = document.getElementById("pdf-frame");
 			PDF.focus();
 			PDF.contentWindow.print();
@@ -106,18 +88,13 @@
 			$('#Follow').on('switchChange', function(e, data) {
 				setFollowLeader(data.value);
 			});
-
-			// $(".slider-container").css({position:"relative",left:"0px",top:"0px",width:"100%",height:"100%"});
-			// $(".left-panel").css({position:"absolute",left:"0px",top:"0px",width:"100%",overflowX:"hidden"});
-			// $(".right-panel").css({position:"absolute",left:"100%",top:"0px",width:"100%",overflowX:"hidden","background-color":"red"});
-
+			
 			$(".back-button").hide();
 			$(".print-vto-button").hide();
 			var page = "main";
 			var vtoLastScroll=0;
 			$(".vto-button").click(function(){
 				if (typeof($(".vto-frame").attr("src"))==="undefined" || $(".vto-frame").attr("data-page")!="vto"){
-					//$(".vto-frame").attr("src",$(".vto-frame").attr("data-src"));
 					$(".vto-frame").attr("src","/vto/edit/@(Model.VtoId)?noheading=true");
 					$(".vto-frame").attr("data-page","vto");
 				}
@@ -138,7 +115,6 @@
 				$(".slider").css({marginLeft:"-100%"});
 				$(".slider-container").css("overflow-y","hidden");
 				$(".back-button").css("top","55px").show();
-				//$(".print-vto-button").show();
 				page="ac";
 				vtoLastScroll = $(".slider-container").scrollTop();
 				$(".slider-container").scrollTop(0);
@@ -159,15 +135,10 @@
 				if(e.ctrlKey && e.keyCode == 80){
 					var printUrl = "/quarterly/printout/@(Model.Recurrence.Id)";
 					if (page=="vto"){
-						//printIframe("vto-frame");
-						//e.preventDefault();
 						printUrl = "/quarterly/PrintPages/@(Model.Recurrence.Id)?vto=true";
-					}//else if (page=="main"){
-
+					}
 					printFromUrl(printUrl);
-					// printIframe("pdf-frame");
 					e.preventDefault();
-					//}
 				}
 			});
 		});
@@ -181,6 +152,7 @@
 		<div class="row full left-panel">
 			<div class="col-sm-3 col-md-2 full fixed-pos" style="padding-bottom: 30px;">
 				<div class="clock-container">
+					<div class="timer-bar"></div>
 					<div class="component clocks hidden">
 						<div class="elapsed-time centered">
 							<span class="">
@@ -205,8 +177,6 @@
 				</div>
 				<div class="agenda">
 					<div class="component">
-						@*<div class="pull-left" style="width: 24px; height: 22px;"></div>*@
-
 						<div class="btn-group pull-left">
 							<span class="btn btn-default btn-xs dropdown-toggle print-button" data-toggle="dropdown" aria-expanded="false">
 								<span class="icon fontastic-icon-print" style="top:2px;"></span>
@@ -263,7 +233,7 @@
 							@if (Model.Recurrence.IDSMinutes > 0) {
 								<li class="page-item page-ids">			<a data-location="IDS" href="#IDS">IDS</a><span data-over="@Model.Recurrence.IDSMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.IDSMinutes) minutes on IDS" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.IDSMinutes))m</span></span></li>
 							}
-							<li class="page-item page-conclusion">	<a data-location="Conclusion" href="#Conclusion">Conclude</a><span data-over="@Model.Recurrence.ConclusionMinutes" title="Spend @String.Format("{0:0.##}",Model.Recurrence.ConclusionMinutes) minutes on your Conclusion" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.ConclusionMinutes))m</span></span></li>
+							<li class="page-item page-conclusion">		<a data-location="Conclusion" href="#Conclusion">Conclude</a><span data-over="@Model.Recurrence.ConclusionMinutes" title="Spend @String.Format("{0:0.##}",Model.Recurrence.ConclusionMinutes) minutes on your Conclusion" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.ConclusionMinutes))m</span></span></li>
 						</ol>
 
 						@if (Model.Meeting.NotNull(x => x.MeetingLeaderId) != ViewBag.UserId) {
@@ -373,7 +343,7 @@
 		@if (Model.EnableTranscript)
 		{
 		@:shouldStartTranscribe = true;
-														                                                                                        }
+		}
 
 
 
@@ -401,6 +371,6 @@
 				<li title="@t.Owner" data-order="@t.Order">@t.Message</li>
 			}
 		</ul>
-		<span class="noselect" style="position: relative;left:0;bottom:0;" target="blank" href="http://www.webrtc.org/#TOC-Supported-Browsers" class="experimental">This experimental feature is built for Chrome.</span>
+		<span class="noselect experimental" style="position: relative;left:0;bottom:0;" target="blank" href="http://www.webrtc.org/#TOC-Supported-Browsers">This experimental feature is built for Chrome.</span>
 	</div>
 </div>

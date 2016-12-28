@@ -1,41 +1,40 @@
 ﻿@model RadialReview.Models.ViewModels.ResponsibilityViewModel
-
+@using RadialReview.Models.Enums
 @{
-    ViewBag.Title = "Modal";
+	ViewBag.Title = "Modal";
 }
 
 <div class="form">
-    @Html.HiddenFor(x => x.Id)
-    @Html.HiddenFor(x => x.ResponsibilityGroupId)
-    <div class="row">
-        <div class="col-sm-3">
-            <label>Question Type:</label>
-        </div>
-        <div class="col-sm-9 catContainer">
-            @Html.DropDownListFor(x => x.CategoryId, Model.Categories.OrderBy(x => x.Id == -1).ThenBy(y => y.Id==1).ThenBy(y => y.Id).Select(x =>
-                    new SelectListItem()
-                    {
-                        Selected = (x.Id == Model.CategoryId),
-                        Text = x.Category.Translate(),
-                        Value = "" + x.Id
-                    }), new { id = "positionSelector", @class = "form-control" })
-        </div>
-        <div class="col-sm-5 hidden" id="newCategory">
-            @Html.TextBoxFor(x => x.NewCategory, new { id = "newCategoryInput", placeholder = "New category name", @class = "form-control" })
-        </div>
-    </div>
-    <div class="smallBreak"></div>
-    <div class="smallBreak"></div>
-    <div class="row">
-        <div class="col-sm-3">
-            <label>Importance:</label>
-        </div>
-        <div class="col-sm-9">
-            @Html.EnumDropDownListFor(x => x.Weight,new { @class = "form-control" })
-        </div>
-    </div>
-    <div class="smallBreak"></div>
-    <div class="smallBreak"></div>
+	@Html.HiddenFor(x => x.Id)
+	@Html.HiddenFor(x => x.ResponsibilityGroupId)
+	<div class="row">
+		<div class="col-sm-3">
+			<label>Question Type:</label>
+		</div>
+		<div class="col-sm-9 catContainer">
+			@Html.DropDownListFor(x => x.CategoryId, Model.Categories.OrderBy(x => x.Id == -1).ThenBy(y => y.Id == 1).ThenBy(y => y.Id).Select(x =>
+					  new SelectListItem() {
+						  Selected = (x.Id == Model.CategoryId),
+						  Text = x.Category.Translate(),
+						  Value = "" + x.Id
+					  }), new { id = "positionSelector", @class = "form-control" })
+		</div>
+		<div class="col-sm-5 hidden" id="newCategory">
+			@Html.TextBoxFor(x => x.NewCategory, new { id = "newCategoryInput", placeholder = "New category name", @class = "form-control" })
+		</div>
+	</div>
+	<div class="smallBreak"></div>
+	<div class="smallBreak"></div>
+	<div class="row">
+		<div class="col-sm-3">
+			<label>Importance:</label>
+		</div>
+		<div class="col-sm-9">
+			@Html.EnumDropDownListFor(x => x.Weight, new { @class = "form-control" })
+		</div>
+	</div>
+	<div class="smallBreak"></div>
+	<div class="smallBreak"></div>
 	<div class="row">
 		<div class="col-sm-3">
 			<label>Question:</label>
@@ -75,33 +74,56 @@
 			@Html.CheckBoxFor(x => x.Anonymous, new { @class = "checkbox" })
 		</div>
 	</div>
+	<div class="smallBreak"></div>
+	<div class="row">
+		<div class="col-sm-3">
+			<label>Ask about:</label>
+		</div>
+		<div class="col-sm-1">
+			<select class="form-control" multiple="true" name="@Html.NameFor(x=>x.OnlyAsk)" style="width: 128px;height: 128px;padding: 0;overflow: auto;">
+				@foreach (var a in Enum.GetValues(typeof(AboutType))) {
+					<option value="@((AboutType)a)" selected>@a</option>
+				}
+			</select>
+
+		</div>
+	</div>
+	<div class="smallBreak"></div>
+	<div class="row">
+		<div class="col-sm-3">
+			<label>Update Outstanding Reviews:</label>
+		</div>
+		<div class="col-sm-1">
+			@Html.CheckBoxFor(x => x.UpdateOutstandingReviews, new { @class = "checkbox" })
+		</div>
+	</div>
 </div>
 <script>
-    function Update() {
-        if ($("#positionSelector").val() == -1) {
-            $("#newCategory").removeClass("hidden");
-            $(".catContainer").addClass("col-sm-4");
-	        $(".catContainer").removeClass("col-sm-9");
-        } else {
-            $("#newCategory").addClass("hidden");
-            $("#newCategoryInput").val(null);
-	        $(".catContainer").addClass("col-sm-9");
-	        $(".catContainer").removeClass("col-sm-4");
-        }
-    }
+	function Update() {
+		if ($("#positionSelector").val() == -1) {
+			$("#newCategory").removeClass("hidden");
+			$(".catContainer").addClass("col-sm-4");
+			$(".catContainer").removeClass("col-sm-9");
+		} else {
+			$("#newCategory").addClass("hidden");
+			$("#newCategoryInput").val(null);
+			$(".catContainer").addClass("col-sm-9");
+			$(".catContainer").removeClass("col-sm-4");
+		}
+	}
 
-    $(function () {
-	    $("#positionSelector").change(function() {
-		    Update();
-	    });
-        Update();
-    });
+	$(function () {
+		$("#positionSelector").change(function () {
+			Update();
+		});
+		Update();
+	});
 
-    function verify() {
-        if ($("[name='CategoryId']").val() == -1 && !$("[name='NewCategory']").val())
-            return "New category name is required.";
-        if (!$("[name='Responsibility']").val())
-            return "Responsibility is required.";
-        return true;
-    }
+	function verify() {
+		if ($("[name='CategoryId']").val() == -1 && !$("[name='NewCategory']").val())
+			return "New category name is required.";
+		if (!$("[name='Responsibility']").val())
+			return "Responsibility is required.";
+		return true;
+	}
 </script>

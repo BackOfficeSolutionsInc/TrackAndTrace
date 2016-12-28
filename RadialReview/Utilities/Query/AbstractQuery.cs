@@ -40,6 +40,6 @@ namespace RadialReview.Utilities.Query
 	    public abstract T Load<T>(string id) where T : IStringIdentifiable;
 	    public abstract T Load<T>(Guid id) where T : IGuidIdentifiable;
 	    public abstract ITransaction BeginTransaction();
-
-    }
+		public abstract bool Contains<T>();
+	}
 }

@@ -189,6 +189,7 @@ namespace RadialReview {
 				"~/Scripts/home/jspdf.js",
 				"~/Scripts/AccountabilityChart/accountabilityChart.js",
 				"~/Scripts/Angular/AccountabilityChart/ACController.js",
+				"~/Scripts/d3/radial.d3.tree.js",
 				"~/Scripts/undo.js"
 			));
 			bundles.Add(new StyleBundle("~/Content/AccChart")

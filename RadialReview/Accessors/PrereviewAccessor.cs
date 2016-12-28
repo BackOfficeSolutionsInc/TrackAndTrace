@@ -21,7 +21,7 @@ using System.Web;
 
 namespace RadialReview.Accessors {
 	public class PrereviewAccessor : BaseAccessor {
-		public void ManagerCustomizePrereview(UserOrganizationModel caller, long prereviewId, List<Tuple<long, long>> whoReviewsWho) {
+		public void ManagerCustomizePrereview(UserOrganizationModel caller, long prereviewId, List<WhoReviewsWho> whoReviewsWho) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var prereview = s.Get<PrereviewModel>(prereviewId);
@@ -36,17 +36,18 @@ namespace RadialReview.Accessors {
 
 					var existing = s.QueryOver<PrereviewMatchModel>().Where(x => x.PrereviewId == prereviewId).List().ToListAlive();
 
-					foreach (var mids in whoReviewsWho.Where(x => !existing.Any(y => y.FirstUserId == x.Item1 && y.SecondUserId == x.Item2))) {
+					foreach (var mids in whoReviewsWho.Where(x => !existing.Any(y => y.FirstUserId == x.Reviewer.RGMId && y.SecondUserId == x.Reviewee.RGMId && x.Reviewee.ACNodeId == y.Second_ACNodeId))) {
 						var match = new PrereviewMatchModel() {
-							FirstUserId = mids.Item1,
-							SecondUserId = mids.Item2,
+							FirstUserId = mids.Reviewer.RGMId,
+							SecondUserId = mids.Reviewee.RGMId,
+							Second_ACNodeId = mids.Reviewee.ACNodeId,
 							PrereviewId = prereviewId,
 						};
 						s.Save(match);
 					}
 					var deleteTime = DateTime.UtcNow;
 
-					foreach (var mids in existing.Where(x => !whoReviewsWho.Any(y => y.Item1 == x.FirstUserId && y.Item2 == x.SecondUserId))) {
+					foreach (var mids in existing.Where(x => !whoReviewsWho.Any(y => y.Reviewer.RGMId == x.FirstUserId && y.Reviewee.RGMId == x.SecondUserId && x.Second_ACNodeId == y.Reviewee.ACNodeId))) {
 						mids.DeleteTime = deleteTime;
 						s.Update(mids);
 					}

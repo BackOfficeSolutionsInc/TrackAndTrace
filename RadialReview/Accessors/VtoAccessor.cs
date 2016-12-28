@@ -35,11 +35,11 @@ using RadialReview.Utilities.Synchronize;
 namespace RadialReview.Accessors {
 	public class VtoAccessor : BaseAccessor {
 
-		public static void UpdateAllVTOs(ISession s, long organizationId, Action<dynamic> action) {
+		public static void UpdateAllVTOs(ISession s, long organizationId, string connectionId, Action<dynamic> action) {
 			var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
 			var vtoIds = s.QueryOver<VtoModel>().Where(x => x.Organization.Id == organizationId).Select(x => x.Id).List<long>();
 			foreach (var vtoId in vtoIds) {
-				var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId));
+				var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId),connectionId);
 				action(group);
 			}
 		}
@@ -50,7 +50,7 @@ namespace RadialReview.Accessors {
 			action(group);
 		}
 
-		public static List<VtoModel> GetAllVTOForOrganization(UserOrganizationModel caller, long organizationId) {
+		public static List<VtoModel> GetAllVTOForOrganization(UserOrganizationModel caller, long organizationId) { 
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).ManagingOrganization(organizationId);
@@ -531,7 +531,7 @@ namespace RadialReview.Accessors {
 					}
 					var update = new AngularUpdate();
 					update.Add(AngularCompanyValue.Create(companyValue));
-					UpdateAllVTOs(s, companyValue.OrganizationId, x => x.update(update));
+					UpdateAllVTOs(s, companyValue.OrganizationId,connectionId, x => x.update(update));
 
 					tx.Commit();
 					s.Flush();

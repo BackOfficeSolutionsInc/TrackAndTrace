@@ -71,7 +71,7 @@ namespace RadialReview.Accessors {
 
 					if (found == null) {
 						//Try to register the phone
-						var p = body.ToLower();
+						var p = (body.Trim().Split(new[] {' ','\n','\r' }).FirstOrDefault()??"").Trim().ToLower();
 						var found2 = s.QueryOver<PhoneActionMap>().Where(x => x.DeleteTime != null && x.Placeholder == p).OrderBy(x => x.DeleteTime).Desc.List().FirstOrDefault();
 						if (found2 != null) {
 							if (found2.DeleteTime < DateTime.UtcNow) {

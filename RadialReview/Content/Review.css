@@ -357,7 +357,7 @@ input[type="range"] {
 	-ms-opacity: 0.0;
 	opacity: 0.0;
 	cursor: pointer;
-	transition:opacity ease .35s;
+	transition: opacity ease .35s;
 }
 
 .table-gwc td:hover .reasonButton:not(.on) {
@@ -750,3 +750,21 @@ textarea[disabled] {
 	.panel-body br:last-of-type {
 		display: none;
 	}
+
+.valueName {
+	max-width: 50%;
+}
+
+.valueResponse {
+	width: 480px;
+}
+
+
+.rockTable {
+	width: 100%;
+}
+
+.rockResponse {
+	width: 480px;
+	padding-left: 5px;
+}

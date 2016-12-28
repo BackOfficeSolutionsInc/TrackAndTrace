@@ -151,8 +151,9 @@
 				var item = this.items[i],
 					position = this._getItemPosition(item);
 
-				this._updateItemPosition(
-				  item, this.findPositionForItem(item, { x: currentColumn, y: 0 }));
+				//this._updateItemPosition(item, this.findPositionForItem(item, { x: currentColumn, y: 0 }));
+
+				this._updateItemPosition(item, this.findPositionForItem(item, { x: position.x, y: position.y }));
 
 				// New items should never be placed to the left of previous items
 				currentColumn = Math.max(currentColumn, position.x);
@@ -272,16 +273,19 @@
 		},
 
 		_sortItemsByPosition: function () {
+			var anySorted = false;
 			this.items.sort(function (item1, item2) {
 				var position1 = this._getItemPosition(item1),
 					position2 = this._getItemPosition(item2);
 
 				// Try to preserve columns.
 				if (position1.x != position2.x) {
+					anySorted = true;
 					return position1.x - position2.x;
 				}
 
 				if (position1.y != position2.y) {
+					anySorted = true;
 					return position1.y - position2.y;
 				}
 
