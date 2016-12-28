@@ -227,10 +227,21 @@ namespace TractionTools.UITests.Selenium {
 		//    //return "Not called from a test method";
 		//}
 
+		protected Dictionary<string, int> TestCount = new Dictionary<string, int>();
+
 		public void TestView(Credentials mockUser, string url, Action<TestCtx> test, WithBrowsers browsers = WithBrowsers.All) {
 			var exceptions = new List<Exception>();
 			var flagDrivers = AllBrowsers;
-			var ctx = new TestCtx(url, GetTestName(), ExistingIds, ImagesNeedingGeneration, ImagesDoNotMatch);
+			var testName = GetTestName();
+
+			var count = TestCount.GetOrAddDefault(testName, x => 0);
+			TestCount[testName] += 1;
+			if (TestCount[testName] > 1)
+				testName += "_" + TestCount[testName];
+
+			var ctx = new TestCtx(url, testName, ExistingIds, ImagesNeedingGeneration, ImagesDoNotMatch);
+
+
 
 			ctx._Deferred = Deferred;
 			Parallel.ForEach(flagDrivers, b => {

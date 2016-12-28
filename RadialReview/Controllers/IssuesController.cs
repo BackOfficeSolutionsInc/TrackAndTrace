@@ -80,15 +80,20 @@ namespace RadialReview.Controllers {
         /// <param name="recurrence_issue"></param>
         /// <returns></returns>
         [Access(AccessLevel.UserOrganization)]
-        public PartialViewResult CopyModal(long recurrence_issue, long? copyto = null) {
+        public async Task<PartialViewResult> CopyModal(long recurrence_issue, long? copyto = null) {
             var i = IssuesAccessor.GetIssue_Recurrence(GetUser(), recurrence_issue);
 
             copyto = copyto ?? i.Recurrence.Id;
+			var details = "";
+			try {
+				details = await PadAccessor.GetText(i.Issue.PadId);
+			} catch (Exception e) {
+			}
 
             var model = new CopyIssueVM() {
                 IssueId = i.Issue.Id,
                 Message = i.Issue.Message,
-                Details = i.Issue.Description,
+                Details = details,//i.Issue.Description,
                 ParentIssue_RecurrenceId = i.Id,
                 CopyIntoRecurrenceId = copyto.Value,
                 PossibleRecurrences = L10Accessor.GetAllL10RecurrenceAtOrganization(GetUser(), GetUser().Organization.Id)

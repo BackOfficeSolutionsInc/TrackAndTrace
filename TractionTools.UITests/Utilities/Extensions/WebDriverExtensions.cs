@@ -185,6 +185,18 @@ namespace TractionTools.UITests {
 		}
 
 		[DebuggerHidden]
+		public static bool NotFind(this IWebDriver d, string selector, int? timeoutSeconds = null) {
+			try {
+				Find(d, selector, timeoutSeconds);
+				throw new Exception("Item(" + selector + ") was not expected");
+			} catch (WebDriverTimeoutException e) {
+				return true;
+			} catch (NoSuchElementException e) {
+				return true;
+			}
+		}
+
+		[DebuggerHidden]
 		public static IWebElement Find(this IWebDriver d, string selector, int? timeoutSeconds = null) {
 			return d.FindElement(By.CssSelector(selector), timeoutSeconds);
 		}
@@ -215,6 +227,11 @@ namespace TractionTools.UITests {
 		public static IWebElement Parent(this IWebElement e) {
 			return e.FindElement(By.XPath(".."));
 		}
+
+		public static IWebElement Closest(this IWebElement e, string selector) {
+			return Closest(e, By.CssSelector(selector));
+		}
+
 		public static IWebElement Closest(this IWebElement e, By by) {
 			var thisE = e.Parent();
 			while (true) {

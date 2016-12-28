@@ -63,7 +63,7 @@ namespace TractionTools.Tests.Utilities {
 					LastName = user.TempUser.LastName,
 				};
 				new AccountController().UserManager.Create(u, password);
-
+				var org = OrganizationAccessor.JoinOrganization(u, Manager.Id, user.Id);
 				//await new AccountController().Register(new RegisterViewModel() {
 				//	Email = user.TempUser.Email,
 				//	fname = user.TempUser.FirstName,
