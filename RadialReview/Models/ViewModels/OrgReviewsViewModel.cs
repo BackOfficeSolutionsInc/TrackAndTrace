@@ -1,4 +1,5 @@
 ﻿using RadialReview.Models.Interfaces;
+using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,14 @@ namespace RadialReview.Models.ViewModels {
 			var clzz = "label label-";
 			var txt = "";
 			var hover = "";
+
+			if (review.IsPrereview) {
+
+				clzz += "info";
+				hover = "Complete pre-" + Config.ReviewName().ToLower()+".";
+				txt = "Pre-"+Config.ReviewName().ToLower();
+				return new MvcHtmlString("<span class='" + clzz + "' title='" + hover + "' style='display: block; top: 1px;position: relative;'>" + txt + "</span>");
+			}
 
 			if (review.UserReview != null) {
 				if (review.Review.DueDate > DateTime.UtcNow) {

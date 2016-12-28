@@ -68,8 +68,8 @@
 		<div role="tabpanel" class="tab-pane active" id="simple">
 			<br />
 			<div class="" data-toggle="buttons">
-				<label class="btn btn-default dflt-button simple-btn active" title="Supervisors review direct reports only">
-					<input type="radio" name="review_type" id="review_S2D" autocomplete="off" checked>Supervisor <b>&rArr;</b> Direct Report
+				<label class="btn btn-default dflt-button simple-btn  @(Model.IsCustom?"":"active")" title="Supervisors review direct reports only">
+					<input type="radio" name="review_type" id="review_S2D" autocomplete="off" @(Model.IsCustom?"":"checked")>Supervisor <b>&rArr;</b> Direct Report
 				</label>
 				<label class="btn btn-default  simple-btn" title="Supervisors review direct reports and vise versa">
 					<input type="radio" name="review_type" id="review_S2D_D2S" autocomplete="off"> Supervisor <b>&hArr;</b> Direct Report
@@ -80,8 +80,8 @@
 				<label class="btn btn-default simple-btn" title="No reviewer-reviewees selected">
 					<input type="radio" name="review_type" id="review_S" autocomplete="off">Blank Review
 				</label>
-				<label class="btn btn-default simple-btn hidden customizedReviewButton" title="Customized">
-					<input type="radio" name="review_type" id="review_Customized" autocomplete="off">Customized
+				<label class="btn btn-default simple-btn @(Model.IsCustom?"":"hidden") customizedReviewButton  @(Model.IsCustom?"active":"")" title="Customized">
+					<input type="radio" name="review_type" id="review_Customized" autocomplete="off" @(Model.IsCustom?"checked":"")>Customized
 				</label>
 			</div>
 
@@ -193,9 +193,10 @@
 											if (selected /*Model.Selected.Any(x => x.Reviewer == firstUser && x.Reviewee == secondUser)*/) {
 												<input type="hidden" name="originalCustomize_@(firstUser.RGMId)_@secondUser.ToId()" value="True" />
 											}
+											var isSelected = Model.Selected.Any(x => x.Reviewer == firstUser && ((x.Reviewee.ACNodeId == null && x.Reviewee.RGMId == secondUser.RGMId) || x.Reviewee == secondUser));
 											<div class="selected isAll @String.Join(" ", classes) revieweeRow">
 												<label class="noMargin" style="padding-left:15px;">
-													<input data-original="@(Model.Selected.Any(x => x.Reviewer == firstUser && x.Reviewee == secondUser) ? "checked" : "")" @(Model.Selected.Any(x => x.Reviewer == firstUser && x.Reviewee == secondUser) ? "checked" : "")
+													<input data-original="@(isSelected ? "checked" : "")" @(isSelected ? "checked" : "")
 														   class="shiftedCheckbox customizeBoxes parent_first_@(firstUser.RGMId)" data-parent="first_@(firstUser.RGMId)" type="checkbox" name="customize_@(firstUser.RGMId)_@secondUser.ToId()" />
 													@secondUser._Name
 												</label>
@@ -333,6 +334,7 @@
 	}
 
 	function start_Customize() {
+		debugger;
 		setTimeout(function () {
 			$(document).off("change", ".simple-btn input,.simple-btn-yn input");
 			$(document).on("change", ".simple-btn input,.simple-btn-yn input", function () {

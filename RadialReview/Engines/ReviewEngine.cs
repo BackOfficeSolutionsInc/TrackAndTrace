@@ -25,7 +25,7 @@ namespace RadialReview.Engines {
 		}
 
 		[Obsolete("Fix for AC")]
-		public CustomizeModel GetCustomizeModel(UserOrganizationModel caller, long teamId, bool includeCopyFrom, DateRange dateRange = null) {			
+		public CustomizeModel GetCustomizeModel(UserOrganizationModel caller, long teamId, bool includeCopyFrom, DateRange dateRange = null,List<WhoReviewsWho> existingMatches=null) {			
 
 			var parameters = new ReviewParameters() {
 				ReviewManagers = true,
@@ -142,7 +142,7 @@ namespace RadialReview.Engines {
 				Reviewers = teamMembers.Select(x => new Reviewer(x.User)).ToList(),
 				AllReviewees = allReviewees,//new List<Reviewee>(),
 				Selectors = combine,
-				Selected = new List<WhoReviewsWho>(),
+				Selected = existingMatches ?? new List<WhoReviewsWho>(),
 				
 			};
 			var masterList = model.Reviewers.Select(x=>x.RGMId).ToList();
@@ -182,7 +182,7 @@ namespace RadialReview.Engines {
 		[Obsolete("Fix for AC")]
 		public async Task<int> CreateReviewFromPrereview(HttpContext context, NexusModel nexus) {
 			try {
-				return await Task.Run(async () => {
+				//return await Task.Run(async () => {
 					var now = DateTime.UtcNow;
 					var admin = UserOrganizationModel.ADMIN;
 					var reviewContainerId = nexus.GetArgs()[0].ToLong();
@@ -213,7 +213,7 @@ namespace RadialReview.Engines {
 					}
 					var result = await Emailer.SendEmails(unsentEmail);
 					return result.Sent;
-				});
+			//	});
 			} catch (Exception) {
 				throw;// new PermissionsException(e.Message);
 			}

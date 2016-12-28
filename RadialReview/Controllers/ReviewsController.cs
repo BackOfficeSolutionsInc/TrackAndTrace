@@ -35,13 +35,22 @@ namespace RadialReview.Controllers {
 			var takabled = usefulReviews.Where(x => x.ReviewerUserId == selfId).Distinct(x => x.ForReviewContainerId).ToDictionary(x => x.ForReviewContainerId, x => (long?)x.Id);
 
 
-			var reviewsVM = reviewContainers.Select(x => new ReviewsViewModel(x) {
+			var reviewsVM = new List<ReviewsViewModel>();
+			var existingReviews = reviewContainers.Select(x => new ReviewsViewModel(x) {
 				Editable = editable.Any(y => y == x.Id),
 				Viewable = true,
 				TakableId = takabled.GetOrDefault(x.Id, null),
 				UserReview = usefulReviews.FirstOrDefault(y => y.ForReviewContainerId == x.Id)
 
 			}).Where(x => x.Editable || x.TakableId != null || x.UserReview != null).OrderByDescending(x => x.Review.DateCreated).ToList();
+
+			var prereviews = PrereviewAccessor.GetPrereviewsForUser(caller, caller.Id, DateTime.UtcNow,true,true).Select(x => new ReviewsViewModel(x) {
+				Editable = true,
+				Viewable = true,
+			});
+
+			reviewsVM.AddRange(prereviews);
+			reviewsVM.AddRange(existingReviews);
 
 			var resultPerPage = 10;
 
@@ -55,24 +64,25 @@ namespace RadialReview.Controllers {
 
 			foreach (var x in model.Reviews) {
 
-				if (x.UserReview != null && x.UserReview.ClientReview.Visible)
-					x.AddLink("/Review/Plot/" + x.UserReview.Id, "View Report", "glyphicon glyphicon-file");
-				else if (x.TakableId == null) {
-					x.AddLink("#", "Your report is not available yet", iconClass: "glyphicon glyphicon-file", linkClass: "gray noclick");
+				if (!x.IsPrereview) {
+					if (x.UserReview != null && x.UserReview.ClientReview.Visible)
+						x.AddLink("/Review/Plot/" + x.UserReview.Id, "View Report", "glyphicon glyphicon-file");
+					else
+						x.AddLink("#", "Your report is not available yet", iconClass: "glyphicon glyphicon-file", linkClass: "gray noclick");
 				}
 
-				if (caller.IsManagingOrganization() || (x.Editable && model.AllowEdit)) {
+				if (!x.IsPrereview && (caller.IsManagingOrganization() || (x.Editable && model.AllowEdit))) {
 					x.AddDivider();
-					x.AddLink("/Reports/PeopleAnalyzer/" + x.Review.Id , "People Analyzer", "glyphicon glyphicon-list-alt");
+					x.AddLink("/Reports/PeopleAnalyzer/" + x.Review.Id, "People Analyzer", "glyphicon glyphicon-list-alt");
 				}
 
-				if (caller.IsManager()) {
+				if (!x.IsPrereview && caller.IsManager()) {
 					x.AddDivider();
 					x.AddLink("/Reports/Index/" + x.Review.Id + "#Reports", "Report Builder", "glyphicon glyphicon-file");
 					x.AddLink("/Reports/Index/" + x.Review.Id + "#Reminders", "Send Reminders", "glyphicon glyphicon-send");
 					x.AddLink("/Reports/Index/" + x.Review.Id + "#Stats", "Stats", "glyphicon glyphicon-stats");
 				}
-				if (x.Editable && model.AllowEdit) {
+				if (x.Editable && model.AllowEdit && x.Review!=null) {
 					x.AddDivider();
 					x.AddLink("/Reviews/Edit/" + x.Review.Id, "Admin Settings", "glyphicon glyphicon-cog", linkClass: "advanced-link");
 				}
@@ -221,13 +231,13 @@ namespace RadialReview.Controllers {
 
 			var existingReviewees = ReviewAccessor.GetReviewees(GetUser(), id);
 			var allPossibleReviewees = ReviewAccessor.GetAllPossibleReviewees(GetUser(), review.OrganizationId, review.GetDateRange(true));
-			
+
 			//Add to review
 			var alsoExclude = _KeyValueAccessor.Get("AddToReviewReserved_" + id).Select(x => long.Parse(x.V));
 
 			var additionalMembers = allPossibleReviewees.Where(everyone => !existingReviewees.Any(existing => existing == everyone))
-				.Where(x=> !alsoExclude.Any(y => y == x.RGMId))
-				.Where(x=> x.Type != OriginType.Organization);
+				.Where(x => !alsoExclude.Any(y => y == x.RGMId))
+				.Where(x => x.Type != OriginType.Organization);
 
 			var model = new UpdateReviewsViewModel() {
 				ReviewId = id,
@@ -352,7 +362,7 @@ namespace RadialReview.Controllers {
 			var review = _ReviewAccessor.GetReviewContainer(GetUser(), reviewId, false, false, false);
 
 			var range = new DateRange(review.DateCreated, DateTime.UtcNow);
-			var answers = _AskableAccessor.GetAskablesForUser(GetUser(),new Reviewee(userId,null), range).Where(x => existing.All(y => y.Askable.Id != x.Id)).ToListAlive();
+			var answers = _AskableAccessor.GetAskablesForUser(GetUser(), new Reviewee(userId, null), range).Where(x => existing.All(y => y.Askable.Id != x.Id)).ToListAlive();
 
 			return Json(answers.ToSelectList(x => x.GetQuestion(), x => x.Id), JsonRequestBehavior.AllowGet);
 
@@ -401,7 +411,7 @@ namespace RadialReview.Controllers {
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
 		public JsonResult AddQuestion(AddQuestionVM model) {
-			_ReviewAccessor.AddResponsibilityAboutUserToReview(GetUser(), model.ReviewContainerId, new Reviewee(model.SelectedUserId,null), model.SelectedQuestionId);
+			_ReviewAccessor.AddResponsibilityAboutUserToReview(GetUser(), model.ReviewContainerId, new Reviewee(model.SelectedUserId, null), model.SelectedQuestionId);
 			return Json(ResultObject.Success("Added question."));
 		}
 

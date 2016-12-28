@@ -59,6 +59,7 @@ namespace RadialReview.Controllers
 		[Obsolete("Fix for AC")]
 		public async Task<ActionResult> Index(String id)
         {
+			var rethrow = false;
             try
             {
                 if (id == null)
@@ -99,8 +100,13 @@ namespace RadialReview.Controllers
                             });
                         };
                     case NexusActions.CreateReview: {
+							rethrow = true;
 							Server.ScriptTimeout = 60 * 60;
 							Session.Timeout = 60;
+
+							if (nexus.DateExecuted != null)
+								throw new PermissionsException("CreateReview already executed.");
+
 							// HttpContext.Server.ScriptTimeout = 60*20;
 							var sent = await _ReviewEngine.CreateReviewFromPrereview(System.Web.HttpContext.Current, nexus);
 							NexusAccessor.Execute(nexus);
@@ -112,6 +118,9 @@ namespace RadialReview.Controllers
 				log.Error("Error executing nexus", e);
 				//ViewBag.Message = "Could not access resource. Make sure you're logging in with the correct account.";
 				ViewBag.Message = e.Message;
+				if (rethrow)
+					throw e;
+
 				return RedirectToAction("Index","Home");
 				/*log.Error("Error executing nexus",e);
 				ViewBag.Message = "There was an error in your request.";

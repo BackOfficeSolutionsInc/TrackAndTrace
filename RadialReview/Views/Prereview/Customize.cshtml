@@ -15,17 +15,25 @@
 
 <div class="panel panel-primary">
     <div class="panel-heading">
-       Pre-review:
+       Pre-@(RadialReview.Utilities.Config.ReviewName()):
     </div>
     <div class="panel-body alignCenter">
         <form method="post">
             <input type="hidden" name="prereviewId" value="@ViewBag.PrereviewId" />
             <button type="submit" name="review" class="btn btn-primary" value="issuePrereview">Save</button>
+			@*DOESNT WORK ---<button type="reset" name="review" class="btn btn-default" value="issuePrereview">Undo</button>*@
             <br/>
             @Html.Partial("_Customization", Model)
             <br/>
-            <button type="submit" name="review" class="btn btn-primary" value="issuePrereview">Save</button>
+			<button type="submit" name="review" class="btn btn-primary" value="issuePrereview">Save</button>
+			@*DOESNT WORK ---<button type="reset" name="review" class="btn btn-default" value="issuePrereview">Undo</button>*@
 
         </form>
     </div>
 </div>
+
+<style>
+	html,body{
+		background-color:#eee;
+	}
+</style>

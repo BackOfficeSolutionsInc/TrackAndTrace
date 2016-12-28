@@ -11,6 +11,8 @@ namespace RadialReview.Models.Tasks
     {
 
 		public const string MonthlyPaymentPlan = "MONTHLY_PAYMENT_PLAN";
+		public const string Prereview = "CREATE_REVIEW";
+
 		public virtual long Id { get; set; }
 		public virtual long? CreatedFromTaskId { get; set; }
 		public virtual long OriginalTaskId { get; set; }

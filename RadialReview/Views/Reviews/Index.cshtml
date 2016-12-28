@@ -32,8 +32,13 @@
 		}
 
 		.reviews-table td {
-			vertical-align:middle !important;
+			vertical-align: middle !important;
 		}
+
+		.grayRow.prereview{
+			background-color: rgba(91, 192, 222, 0.42);
+		}
+
 	</style>
 
 }
@@ -58,15 +63,15 @@
 				<tr>
 					<th style="width:80px" class="alignCenter hidden-xs1">Status</th>
 					@*@if (Model.Reviews.Any(x => x.UserReview != null && x.UserReview.ClientReview.Visible)) {
-						<th style="width: 90px;" data-title="Your Report">Your Report</th>
-					}*@
+							<th style="width: 90px;" data-title="Your Report">Your Report</th>
+						}*@
 					<th style="min-width: 100%">@Html.ReviewName() @RadialReview.Properties.DisplayNameStrings.name</th>
 					@*<th style="width:100px" class="alignCenter">Created</th>*@
 					<th style="width:100px" class="alignCenter hidden-xs1">Due</th>
 
 					@if (showDropdown) {
 						<th style="width: 36px;min-width: 36px;max-width: 36px;padding:0"></th>
-					}				
+					}
 
 				</tr>
 			</thead>
@@ -74,22 +79,16 @@
 				@foreach (var review in Model.Reviews) {
 					var takable = review.TakableId;
 					@*var edit = review.Review.Reviews.FirstOrDefault(x => x.ForUserId == ViewBag.UserId);*@
-					<tr class="startHiddenn @(review.Review.DueDate > DateTime.UtcNow ? "" : "grayRoww")  @(review.TakableId==null?" grayRow ":"")">
 
+					<tr class="startHiddenn @(review.GetDueDate() > DateTime.UtcNow ? "" : "grayRoww")  @(review.TakableId == null ? " grayRow " : "") @(review.IsPrereview?"prereview":"")">
 						<td class="alignCenter hidden-xs1">
 							@Model.CreateLabel(review)
 						</td>
 						<td>
-							@if (review.TakableId != null) {
-								<a href='/Review/Take/@review.Review.Id'>
-									@review.Review.ReviewName
-								</a>
-							} else {
-								@review.Review.ReviewName
-							}
+							@review.GetTitle()
 						</td>
 						<td class="alignCenter hidden-xs1">
-							@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", review.Review.DueDate.Subtract(TimeSpan.FromDays(1)))
+							@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", review.GetDueDate())
 						</td>
 
 						@if (showDropdown) {
@@ -114,9 +113,11 @@
 						}
 					</tr>
 				}
+
 			</tbody>
+
 		</table>
-			@*</div>*@
+		@*</div>*@
 
 	} else {
 		<div class="panel-body gray">

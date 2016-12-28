@@ -20,6 +20,8 @@ namespace RadialReview.Models.Reviews {
         public List<CustomizeSelector> Selectors { get; set; }
         public List<WhoReviewsWho> Selected { get; set; }
 
+		public bool IsCustom { get; set; }
+
         public List<SelectListItem> Periods { get; set; }
         public List<long> MasterList { get; internal set; }
 

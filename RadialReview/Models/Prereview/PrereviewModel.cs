@@ -9,7 +9,9 @@ namespace RadialReview.Models.Prereview
 {
     public class PrereviewModel : IDeletable
     {
-        public virtual long Id { get; set; }
+		public virtual ReviewsModel _ReviewContainer { get; set; }
+
+		public virtual long Id { get; set; }
         //who customizes this review?
         public virtual long ManagerId { get; set; }
         public virtual DateTime PrereviewDue { get; set; }

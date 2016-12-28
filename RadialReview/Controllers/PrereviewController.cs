@@ -25,7 +25,8 @@ namespace RadialReview.Controllers {
 			//var membersAndSubordinates=_OrganizationAccessor.GetOrganizationMembersAndSubordinates(GetUser(),GetUser().Id,false);
 
 			var teamId = review.ForTeamId;
-			var customization = _ReviewEngine.GetCustomizeModel(GetUser(), teamId, true, review.GetDateRange(true));
+			var existingMatches = _PrereviewAccessor.GetCustomMatches(GetUser(), prereviewId);
+			var customization = _ReviewEngine.GetCustomizeModel(GetUser(), teamId, true, review.GetDateRange(true),existingMatches);
 			//var allUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 
 			//var allReviewees = ReviewAccessor.GetPossibleOrganizationReviewees(GetUser(), review.OrganizationId, review.GetDateRange(true));
@@ -35,10 +36,17 @@ namespace RadialReview.Controllers {
 			//customization.AllReviewees = allReviewees;
 			ViewBag.PrereviewId = prereview.Id;
 
-			var selectedPrereivew = _PrereviewAccessor.GetCustomMatches(GetUser(), prereviewId);
-			customization.Selected = selectedPrereivew;
+			//customization.Selected = selectedPrereivew;
+
+			//foreach (var s in customization.Selected) {
+			//	customization.Lookup[s.Reviewer.ToId() + "~" + s.Reviewee.ToId()].Selected = true;
+			//}
 
 			//customization.AllReviewees.Add(GetUser().Organization);
+
+			if (customization.Selected.Any()) {
+				customization.IsCustom = true;
+			}
 
 			return customization;
 		}

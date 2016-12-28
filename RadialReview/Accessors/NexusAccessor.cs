@@ -95,6 +95,7 @@ namespace RadialReview.Accessors {
                         }
                         throw new PermissionsException(message);
                     }
+
                     return found;
                 }
             }

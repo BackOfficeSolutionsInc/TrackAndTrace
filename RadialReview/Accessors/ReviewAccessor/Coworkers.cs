@@ -383,14 +383,16 @@ namespace RadialReview.Accessors {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     var perms = PermissionsUtility.Create(s, caller).ViewTeam(forTeam);
-                    var orgId = caller.Organization.Id;
+                    var team = s.Get<OrganizationTeamModel>(forTeam);
+					
+					var org = team.Organization;
+                    var orgId = org.Id;
 
                     //Order is important
                     var allOrgTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId).Where(range.Filter<OrganizationTeamModel>()).Future();
                     var allTeamDurations = s.QueryOver<TeamDurationModel>().Where(range.Filter<TeamDurationModel>()).JoinQueryOver(x => x.Team).Where(x => x.Organization.Id == orgId).Future();
                     var allMembers = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == orgId && !x.IsClient).Where(range.Filter<UserOrganizationModel>()).Future();
-                    var tree = AccountabilityAccessor.GetTree(s, perms, caller.Organization.AccountabilityChartId, range: range);
-                    var team = s.Get<OrganizationTeamModel>(forTeam);
+                    var tree = AccountabilityAccessor.GetTree(s, perms, org.AccountabilityChartId, range: range);
                     var queryProvider = new IEnumerableQuery(true);
 
                     queryProvider.AddData(allOrgTeams);
