@@ -192,6 +192,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Evals\EvalTests.cs" />
     <Compile Include="FAQ\FaqTests.cs" />
     <Compile Include="L10Wizard\L10Wizard.cs" />
     <Compile Include="MeetingArchive\MeetingTests.cs" />

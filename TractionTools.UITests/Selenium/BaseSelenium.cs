@@ -33,29 +33,6 @@ using System.Reflection;
 namespace TractionTools.UITests.Selenium {
 	//http://stephenwalther.com/archive/2011/12/22/asp-net-mvc-selenium-iisexpress
 
-	public class Credentials {
-		public string Username { get; private set; }
-		public string Password { get; private set; }
-		public UserOrganizationModel User { get; private set; }
-
-		public Credentials(String username, string password, UserOrganizationModel user = null) {
-			Username = username;
-			Password = password;
-			User = user;
-		}
-
-		public override bool Equals(object obj) {
-			if (obj is Credentials) {
-				var o = (Credentials)obj;
-				return o.Username == Username && o.Password == Password;
-			}
-			return false;
-		}
-
-		public override int GetHashCode() {
-			return Username.GetHashCode() + Password.GetHashCode();
-		}
-	}
 
 	[Flags]
 	public enum WithBrowsers {

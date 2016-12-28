@@ -236,6 +236,7 @@
     <Compile Include="Accessors\L10\L10Accessor_AngularTests.cs" />
     <Compile Include="Accessors\PDF\PdfAccessor_RunAll.cs" />
     <Compile Include="Accessors\Payment\PaymentAccessorTests.cs" />
+    <Compile Include="Utilities\Credentials.cs" />
     <Compile Include="Utilities\EventUtilTests.cs" />
     <Compile Include="TestUtils\RouteHandler.cs" />
     <Compile Include="Utilities\L10Utility.cs" />

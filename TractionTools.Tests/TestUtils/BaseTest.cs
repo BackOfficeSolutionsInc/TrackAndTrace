@@ -256,8 +256,10 @@ namespace TractionTools.Tests.TestUtils {
                 }
                 };
                 HttpContext.Current.Request.Browser = browser;
-				
-            }
+				var data = new Dictionary<string, object>(){{"a", "b"}};
+
+				HttpContext.Current.Items["owin.Environment"] = data;
+			}
 
 		}
 		public static async Task ThrowsAsync<T>(Func<Task> func,Action<T> onError=null) where T : Exception {

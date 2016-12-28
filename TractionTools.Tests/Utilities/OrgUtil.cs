@@ -11,9 +11,23 @@ using RadialReview;
 using RadialReview.Models.Accountability;
 using System.Linq.Expressions;
 using RadialReview.Models.Askables;
+using RadialReview.NHibernate;
+using RadialReview.Controllers;
+using RadialReview.Utilities;
+using Microsoft.AspNet.Identity;
 
 namespace TractionTools.Tests.Utilities {
 	public class Org {
+
+		public static NHibernateUserManager UserManager {
+			get {
+				if (_UserManager == null)
+					_UserManager = new NHibernateUserManager(new NHibernateUserStore());
+				return _UserManager;
+			}
+		}
+		protected static NHibernateUserManager _UserManager { get; set; }
+
 		public long Id { get { return Organization.Id; } }
 		public OrganizationModel Organization { get; set; }
 		public UserOrganizationModel Employee { get; set; }
@@ -23,13 +37,61 @@ namespace TractionTools.Tests.Utilities {
 		public AccountabilityNode EmployeeNode { get; set; }
 
 		public DateTime CreateTime { get; set; }
+		public long UID { get; set; }
 
 		public List<AccountabilityNode> AllUserNodes { get; set; }
 		public List<UserOrganizationModel> AllUsers { get; set; }
+
+		protected Dictionary<long, Credentials> ExistingCreds { get; set; }
+
+		public Org() {
+			ExistingCreds = new Dictionary<long, Credentials>();
+		}
+
+		public async Task RegisterUser(UserOrganizationModel user) {
+			await GetCredentials(user);
+		}
+
+		public async Task<Credentials> GetCredentials(UserOrganizationModel user) {
+			if (!ExistingCreds.ContainsKey(user.Id)) {
+				BaseTest.MockHttpContext();
+				var password = Guid.NewGuid().ToString();
+
+				var u = new UserModel() {
+					UserName = user.TempUser.Email.ToLower(),
+					FirstName = user.TempUser.FirstName,					
+					LastName = user.TempUser.LastName,
+				};
+				new AccountController().UserManager.Create(u, password);
+
+				//await new AccountController().Register(new RegisterViewModel() {
+				//	Email = user.TempUser.Email,
+				//	fname = user.TempUser.FirstName,
+				//	lname = user.TempUser.LastName,
+				//	Password = password,
+				//	ConfirmPassword = password,
+				//});
+				//var u = new UserModel() { UserName = user.TempUser.Email, FirstName = user.TempUser.FirstName, LastName = user.TempUser.LastName };
+				//var result = await UserAccessor.CreateUser(UserManager, u, password);
+				ExistingCreds[user.Id] = new Credentials(u.UserName, password, user);
+			}
+			return ExistingCreds[user.Id];
+		}
+
+		public async Task RegisterAllUsers() {
+			foreach (var u in AllUsers) {
+				await GetCredentials(u);
+			}
+		}
+
+		public void AddCredentials(UserOrganizationModel user, string username, string password) {
+			ExistingCreds[user.Id] = new Credentials(username, password, user);
+		}
+
 	}
 
 
-	public class FullOrg : Org{
+	public class FullOrg : Org {
 
 		public UserOrganizationModel Client { get; set; }
 		public UserOrganizationModel Middle { get; set; }
@@ -66,7 +128,7 @@ namespace TractionTools.Tests.Utilities {
 	}
 
 	public class OrgUtil {
-		public static Org CreateOrganization(string name = null,DateTime? time=null) {
+		public static Org CreateOrganization(string name = null, DateTime? time = null) {
 			var now = DateTime.UtcNow;
 			var time1 = time ?? DateTime.UtcNow;
 			var nowMs = now.ToJavascriptMilliseconds() / 10000;
@@ -74,35 +136,66 @@ namespace TractionTools.Tests.Utilities {
 
 			var org = new FullOrg();
 			org.CreateTime = time1;
+			org.UID = new Random().Next();
+
 
 			UserOrganizationModel employee = null;
 			UserOrganizationModel manager = null;
 			AccountabilityNode managerNode = null;
 			OrganizationModel o = null;
 
-			UserModel _nilUserModel = null;
+			//UserModel _nilUserModel = null;
 
-			BaseTest.DbCommit(s => {
-				_nilUserModel = new UserModel();
-				s.Save(_nilUserModel);
-			});
+			//BaseTest.DbCommit(s => {
+			//	s.Save(_nilUserModel);
+			//});
+			var managerUser = new UserModel() {
+				UserName = "manager@test_" + org.UID + ".com",
+				FirstName = "manager",
+				LastName = "" + nowMs,
+			};
+			var password = Guid.NewGuid().ToString();
+			new AccountController().UserManager.Create(managerUser, password);
+
+			//var u = new UserModel() { UserName = "manager@test_"+org.Id+, FirstName = user.TempUser.FirstName, LastName = user.TempUser.LastName };
+			//var result = await UserAccessor.CreateUser(UserManager, u, password);
 
 			BaseTest.MockHttpContext();
-			var organization = new OrganizationAccessor().CreateOrganization(_nilUserModel, name,
+			var organization = new OrganizationAccessor().CreateOrganization(managerUser, name,
 				PaymentPlanType.Professional_Monthly_March2016, time1, out manager, out managerNode, true, true);
+			org.Organization = organization;
+			org.AddCredentials(manager, managerUser.UserName, password);
+
+			//Now make them an actual user
+			//UserModel managerUser = null;
+			//BaseTest.DbCommit(s => {
+			//	s.Evict(_nilUserModel);
+			//	var u = s.Get<UserModel>(_nilUserModel.Id);
+			//	u.UserName = "manager@test_" + org.Id + ".com";
+			//	u.FirstName = "manager";
+			//	u.LastName = "" + nowMs;
+			//	s.Merge(u);
+			//	managerUser = u;
+			//});
+			//var password = Guid.NewGuid().ToString();
+			//var result = await new UserAccessor().CreateUser(new AccountController().UserManager, _nilUserModel, password);///.AddLogin(_nilUserModel.UserName, new UserLoginInfo() {
+			//new AccountController().UserManager.Create(managerUser, password);
+			//org.AddCredentials(manager, _nilUserModel.UserName, password);
+			//Registration Complete
+
+
 
 			org.ManagerNode = managerNode;
 			org.ManagerNode._Name = "manager " + nowMs;
 
 			org.Manager = manager;
-			org.Organization = organization;
 
 			var employeeName = "employee";
-			var tempUser = JoinOrganizationAccessor.CreateUserUnderManager(manager, null, false, -2, employeeName + "@test.com", employeeName, ""+nowMs, out employee, false, "");
+			var tempUser = JoinOrganizationAccessor.CreateUserUnderManager(manager, null, false, -2, employeeName + "@test_" + org.UID + ".com", employeeName, "" + nowMs, out employee, false, "");
 
 			org.Employee = employee;
 			org.EmployeeNode = AccountabilityAccessor.AppendNode(manager, managerNode.Id, userId: employee.Id);
-			org.EmployeeNode._Name = "employee "+nowMs;
+			org.EmployeeNode._Name = "employee " + nowMs;
 
 			org.AllUserNodes = new List<AccountabilityNode>() { org.ManagerNode, org.EmployeeNode };
 			org.AllUsers = new List<UserOrganizationModel>() { org.Manager, org.Employee };
@@ -112,13 +205,13 @@ namespace TractionTools.Tests.Utilities {
 
 		private static void AddUserToOrg(FullOrg org, AccountabilityNode managerNode, string uname, Expression<Func<FullOrg, UserOrganizationModel>> userSelector, Expression<Func<FullOrg, AccountabilityNode>> nodeSelector = null, bool isClient = false) {
 
-			var ms = org.CreateTime.ToJavascriptMilliseconds()/10000;
+			var ms = org.CreateTime.ToJavascriptMilliseconds() / 10000;
 			UserOrganizationModel user = null;
 			//UserOrganizationModel manager = null;
 			//if (managerNode != null) {
 			//	manager = org.AllUsers.First(x => x.Id == managerNode.UserId);
 			//}
-			var temp = JoinOrganizationAccessor.CreateUserUnderManager(org.Manager, null, false, -2, uname  + "@test.com", uname,""+ ms, out user, isClient, isClient?"ClientOrg":"");
+			var temp = JoinOrganizationAccessor.CreateUserUnderManager(org.Manager, null, false, -2, uname.ToLower() + "@test_" + org.UID + ".com", uname, "" + ms, out user, isClient, isClient ? "ClientOrg" : "");
 			org.AllUsers.Add(user);
 			org.Set(userSelector, user);
 
@@ -140,16 +233,16 @@ namespace TractionTools.Tests.Utilities {
 			FullOrg org = (FullOrg)CreateOrganization(name, time);
 
 			AddUserToOrg(org, null, "Client", x => x.Client, null, true);
-			AddUserToOrg(org, org.ManagerNode,	"Middle", x => x.Middle, x => x.MiddleNode);
-			AddUserToOrg(org, org.ManagerNode,	"E1", x => x.E1, x => x.E1MiddleNode);
-			AddUserToOrg(org, org.MiddleNode,	"E2", x => x.E2, x => x.E2Node);
-			AddUserToOrg(org, org.MiddleNode,	"E3", x => x.E3, x => x.E3Node);
-			AddUserToOrg(org, org.E1MiddleNode,	"E4", x => x.E4, x => x.E4Node);
-			AddUserToOrg(org, org.E1MiddleNode,	"E5", x => x.E5, x => x.E5Node);
-			AddUserToOrg(org, org.E2Node,		"E6", x => x.E6, x => x.E6Node);
-			AddUserToOrg(org, null,	"E7", x => x.E7, null);
+			AddUserToOrg(org, org.ManagerNode, "Middle", x => x.Middle, x => x.MiddleNode);
+			AddUserToOrg(org, org.ManagerNode, "E1", x => x.E1, x => x.E1MiddleNode);
+			AddUserToOrg(org, org.MiddleNode, "E2", x => x.E2, x => x.E2Node);
+			AddUserToOrg(org, org.MiddleNode, "E3", x => x.E3, x => x.E3Node);
+			AddUserToOrg(org, org.E1MiddleNode, "E4", x => x.E4, x => x.E4Node);
+			AddUserToOrg(org, org.E1MiddleNode, "E5", x => x.E5, x => x.E5Node);
+			AddUserToOrg(org, org.E2Node, "E6", x => x.E6, x => x.E6Node);
+			AddUserToOrg(org, null, "E7", x => x.E7, null);
 
-			org.E1BottomNode = AccountabilityAccessor.AppendNode(org.Manager,org.MiddleNode.Id, userId: org.E1.Id);
+			org.E1BottomNode = AccountabilityAccessor.AppendNode(org.Manager, org.MiddleNode.Id, userId: org.E1.Id);
 			org.E1BottomNode._Name = org.E1.GetName();
 			org.AllUserNodes.Add(org.E1BottomNode);
 
@@ -164,11 +257,11 @@ namespace TractionTools.Tests.Utilities {
 			TeamAccessor.AddMember(org.Manager, org.NonreviewTeam.Id, org.E4.Id);
 
 
-			var allTeams = TeamAccessor.GetOrganizationTeams(org.Manager,org.Id);
+			var allTeams = TeamAccessor.GetOrganizationTeams(org.Manager, org.Id);
 
 			org.AllMembersTeam = allTeams.First(x => x.Type == TeamType.AllMembers);
 			org.AllManagersTeam = allTeams.First(x => x.Type == TeamType.Managers);
-			org.MiddleSubordinatesTeam = allTeams.First(x => x.Type == TeamType.Subordinates && x.ManagedBy==org.Middle.Id);
+			org.MiddleSubordinatesTeam = allTeams.First(x => x.Type == TeamType.Subordinates && x.ManagedBy == org.Middle.Id);
 
 			//Register E3
 			UserModel e3User = null;

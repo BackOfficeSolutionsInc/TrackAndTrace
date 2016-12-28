@@ -48,7 +48,7 @@
 }
 @if (ViewBag.IsManager ?? false) {
 	<div style="text-align: right;margin-bottom: 3px;">
-		<a class="btn btn-primary btn-invert" href="/Issue/">Issue New @Html.ReviewName()</a>
+		<a id="issue-eval-btn" class="btn btn-primary btn-invert" href="/Issue/">Issue New @Html.ReviewName()</a>
 	</div>
 }
 
