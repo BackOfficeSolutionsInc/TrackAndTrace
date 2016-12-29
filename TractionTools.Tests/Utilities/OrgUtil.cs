@@ -64,15 +64,6 @@ namespace TractionTools.Tests.Utilities {
 				};
 				new AccountController().UserManager.Create(u, password);
 
-				//await new AccountController().Register(new RegisterViewModel() {
-				//	Email = user.TempUser.Email,
-				//	fname = user.TempUser.FirstName,
-				//	lname = user.TempUser.LastName,
-				//	Password = password,
-				//	ConfirmPassword = password,
-				//});
-				//var u = new UserModel() { UserName = user.TempUser.Email, FirstName = user.TempUser.FirstName, LastName = user.TempUser.LastName };
-				//var result = await UserAccessor.CreateUser(UserManager, u, password);
 				ExistingCreds[user.Id] = new Credentials(u.UserName, password, user);
 			}
 			return ExistingCreds[user.Id];
