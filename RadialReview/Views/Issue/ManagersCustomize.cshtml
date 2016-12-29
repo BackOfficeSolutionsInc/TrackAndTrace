@@ -28,7 +28,7 @@
 				<label class="control-label">@RadialReview.Utilities.Config.ManagerName() pre-@Html.ReviewName().ToLower() due:</label>
 			</div>
 			<div class="col-xs-6 ">
-				@Html.Partial("~/Views/Shared/EditorTemplates/DateTime.cshtml", DateTime.Now, new ViewDataDictionary() { { "name", "PrereviewDate" }, { "startDate", Html.ConvertFromUtc(DateTime.UtcNow) } })
+				@Html.Partial("~/Views/Shared/EditorTemplates/DateTime.cshtml", DateTime.Now.AddDays(7), new ViewDataDictionary() { { "name", "PrereviewDate" }, { "startDate", Html.ConvertFromUtc(DateTime.UtcNow) } })
 
 				@*
 			<div class="date" data-date="@DateTime.Now.ToString("MM-dd-yyyy")" data-date-format="mm-dd-yyyy">
@@ -46,7 +46,7 @@
 				<label class="control-label ">@Html.ReviewName()s are due:</label>
 			</div>
 			<div class="col-xs-6 alignLeft">
-				@Html.Partial("~/Views/Shared/EditorTemplates/DateTime.cshtml", DateTime.Now, new ViewDataDictionary() { { "name", "DueDate" }, { "startDate", Html.ConvertFromUtc(DateTime.UtcNow) } })
+				@Html.Partial("~/Views/Shared/EditorTemplates/DateTime.cshtml", DateTime.Now.AddDays(14), new ViewDataDictionary() { { "name", "DueDate" }, { "startDate", Html.ConvertFromUtc(DateTime.UtcNow) } })
 
 
 				@*<div class="date" data-date="@DateTime.Now.ToString("MM-dd-yyyy")" data-date-format="mm-dd-yyyy">

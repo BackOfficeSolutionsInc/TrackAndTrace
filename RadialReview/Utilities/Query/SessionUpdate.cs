@@ -19,7 +19,7 @@ namespace RadialReview.Utilities.Query
             Session.Save(obj);
         }
 
-        public override void SaveOrUpdate(object obj)
+        public override void Merge(object obj)
         {
             Session.SaveOrUpdate(obj);
         }

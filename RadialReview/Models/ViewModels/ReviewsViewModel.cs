@@ -48,6 +48,9 @@ namespace RadialReview.Models.ViewModels
 		public void AddLink(string href, string text, string iconClass = "", string linkClass = "") {
 			DropdownLinks.Add(new MvcHtmlString("<a class='"+linkClass+"' href='" + href + "'><span class='"+ iconClass + "'></span> " + HttpUtility.HtmlEncode(text) + "</a>"));
 		}
+		public void AddAction(string javascript, string text, string iconClass = "", string linkClass = "") {
+			DropdownLinks.Add(new MvcHtmlString("<a class='" + linkClass + "' href='#' onclick='"+javascript+"'><span class='" + iconClass + "'></span> " + HttpUtility.HtmlEncode(text) + "</a>"));
+		}
 
 		public DateTime GetDueDate() {
 			if (IsPrereview) {

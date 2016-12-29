@@ -294,7 +294,7 @@ namespace RadialReview.Accessors {
 
             tempUser = s.Get<TempUserModel>(tempUser.Id);
             tempUser.LastSent = DateTime.UtcNow;
-            s.SaveOrUpdate(tempUser);
+            s.Merge(tempUser);
 
             //Send Email
             //[OrganizationName,LinkUrl,LinkDisplay,ProductName]            

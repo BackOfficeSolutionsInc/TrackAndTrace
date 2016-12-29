@@ -39,7 +39,9 @@ namespace RadialReview.Models
         public virtual CompletionModel Completion { get; set; }
         public virtual long? TaskId { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
-        public virtual ICompletionModel GetCompletion(bool split=false)
+		public virtual DateTime? Executed { get; set; }
+
+		public virtual ICompletionModel GetCompletion(bool split=false)
         {
             return Completion;
             //return CompletionModel.FromList(Reviews.Select(x => x.GetCompletion()));
@@ -73,9 +75,10 @@ namespace RadialReview.Models
             Map(x => x.ReviewName);
             Map(x => x.DateCreated);
             Map(x => x.DueDate);
-            Map(x => x.CreatedById);
+			Map(x => x.CreatedById);
+			Map(x => x.Executed);
 
-            Map(x => x.TaskId);
+			Map(x => x.TaskId);
             Map(x => x.ForTeamId);
             
             Map(x => x.ReviewManagers);

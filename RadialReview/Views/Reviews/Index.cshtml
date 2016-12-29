@@ -24,7 +24,7 @@
 		}
 
 		.advanced-link {
-			color: #AB3333;
+			color: #AB3333 !important;
 		}
 
 		html, body {
@@ -44,7 +44,27 @@
 }
 
 @using (Html.BeginScripts()) {
+	<script>
+		function issueReviewImmediately(reviewContainerId,self) {
 
+			showModal({
+				icon: "warning",
+				title: "Are you sure you want to issue the @(RadialReview.Utilities.Config.ReviewName().ToLower()) now? Supervisors my not be finished.",
+				success: function () {
+					$.ajax({
+						url: "/Prereview/IssueImmediately/" + reviewContainerId,
+						success: function () {
+							showAlert("The @(RadialReview.Utilities.Config.ReviewName()) has been issued.");
+						}
+					});
+					$(self).remove();
+					showAlert("Issuing @(RadialReview.Utilities.Config.ReviewName().ToLower()). This may take a few minutes.");
+				}
+			});
+
+		}
+
+	</script>
 }
 @if (ViewBag.IsManager ?? false) {
 	<div style="text-align: right;margin-bottom: 3px;">
@@ -95,7 +115,7 @@
 							<td>
 								@if (review.DropdownLinks.Any()) {
 									<div class="btn-group">
-										<button id="" type="button" class="btn btn-default btn-sm dropdown-toggle l10-extra-options" data-toggle="dropdown" aria-expanded="false">
+										<button id="" type="button" class="btn btn-default btn-sm dropdown-toggle review-extra-options" data-toggle="dropdown" aria-expanded="false">
 											<span style="top: 2px;" class="glyphicon glyphicon-chevron-down"></span>
 										</button>
 										<ul class="dropdown-menu alignLeft pull-right" role="menu">

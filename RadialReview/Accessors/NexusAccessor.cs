@@ -21,6 +21,7 @@ using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
 using RadialReview.Models.Accountability;
 using RadialReview.Utilities.RealTime;
+using RadialReview.Models.Tasks;
 
 namespace RadialReview.Accessors {
     public class NexusAccessor : BaseAccessor {
@@ -100,5 +101,19 @@ namespace RadialReview.Accessors {
                 }
             }
         }
-    }
+
+		//public static void FindPrereviewNexus_Unsafe(long reviewContainerId) {
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
+		//			/*var found = db.Nexuses.Find(id);
+  //                  if (found == null)
+  //                      throw new PermissionsException();
+  //                  return found;*/
+		//			var found = s.QueryOver<ScheduledTask>().Where(x=>x.DeleteTime==null && x.;
+
+		//			return found;
+		//		}
+		//	}
+		//}
+	}
 }

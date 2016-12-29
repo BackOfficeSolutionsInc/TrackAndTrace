@@ -1,2 +1,7 @@
-Chrome~CanCreateEval_2~_~Complete.png
-Chrome~CanCreateEval_3~_~Complete.png
+Chrome~CreateSupervisor_2~_~Complete.png
+Chrome~CreateSupervisor_2~_~DropdownEmployee.png
+Chrome~CreateSupervisor_3~_~Complete.png
+Chrome~CreateSupervisor~_~Complete.png
+Chrome~CreateSupervisor~_~CreatingReview.png
+Chrome~CreateSupervisor~_~Dropdown.png
+Chrome~CreateSupervisor~_~Dropdown.png

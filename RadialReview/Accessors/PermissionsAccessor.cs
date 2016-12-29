@@ -20,6 +20,10 @@ using WebGrease.Css.Extensions;
 namespace RadialReview.Accessors {
     public class PermissionsAccessor {
 
+		public static void EnsurePermitted(UserOrganizationModel caller, Action<PermissionsUtility> ensurePermitted) {
+			new PermissionsAccessor().Permitted(caller, ensurePermitted);
+		}
+
 		public void Permitted(UserOrganizationModel caller, Action<PermissionsUtility> ensurePermitted) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {

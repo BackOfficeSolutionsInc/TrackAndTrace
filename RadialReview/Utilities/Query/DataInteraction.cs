@@ -5,96 +5,80 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
+using RadialReview.Models;
 
-namespace RadialReview.Utilities.Query
-{
-    public class DataInteraction : IUpdate,IQuery
-    {
-        private AbstractQuery QueryProvider;
-        private AbstractUpdate UpdateProvider;
+namespace RadialReview.Utilities.Query {
+	public class DataInteraction : IUpdate, IQuery {
+		private AbstractQuery QueryProvider;
+		private AbstractUpdate UpdateProvider;
 
-        public DataInteraction(AbstractQuery query, AbstractUpdate update)
-        {
-            QueryProvider = query;
-            UpdateProvider = update;
-        }
+		public DataInteraction(AbstractQuery query, AbstractUpdate update) {
+			QueryProvider = query;
+			UpdateProvider = update;
+		}
 
-        public AbstractQuery GetQueryProvider()
-        {
-            return QueryProvider;
-        }
-        public AbstractUpdate GetUpdateProvider()
-        {
-            return UpdateProvider;
-        }
+		public AbstractQuery GetQueryProvider() {
+			return QueryProvider;
+		}
+		public AbstractUpdate GetUpdateProvider() {
+			return UpdateProvider;
+		}
 
-        public List<T> All<T>() where T : class
-        {
-            return QueryProvider.All<T>();
-        }
+		public List<T> All<T>() where T : class {
+			return QueryProvider.All<T>();
+		}
 
-        public List<T> Where<T>(Expression<Func<T, bool>> pred) where T : class
-        {
-            return QueryProvider.Where(pred);
-        }
+		public List<T> Where<T>(Expression<Func<T, bool>> pred) where T : class {
+			return QueryProvider.Where(pred);
+		}
 
-        public T SingleOrDefault<T>(Expression<Func<T, bool>> pred) where T : class
-        {
-            return QueryProvider.SingleOrDefault(pred);
-        }
+		public T SingleOrDefault<T>(Expression<Func<T, bool>> pred) where T : class {
+			return QueryProvider.SingleOrDefault(pred);
+		}
 
-        public T Get<T>(long id) where T : ILongIdentifiable
-        {
-            return QueryProvider.Get<T>(id);
-        }
+		public T Get<T>(long id) where T : ILongIdentifiable {
+			return QueryProvider.Get<T>(id);
+		}
 
-        public T Get<T>(string id) where T : IStringIdentifiable
-        {
-            return QueryProvider.Get<T>(id);
-        }
+		public T Get<T>(string id) where T : IStringIdentifiable {
+			return QueryProvider.Get<T>(id);
+		}
 
-        public T Get<T>(Guid id) where T : IGuidIdentifiable
-        {
-            return QueryProvider.Get<T>(id);
-        }
+		public T Get<T>(Guid id) where T : IGuidIdentifiable {
+			return QueryProvider.Get<T>(id);
+		}
 
-        public ITransaction BeginTransaction()
-        {
-            return QueryProvider.BeginTransaction();
-        }
-        
-        public void Save(object obj)
-        {
-            UpdateProvider.Save(obj);
-        }
+		public ITransaction BeginTransaction() {
+			return QueryProvider.BeginTransaction();
+		}
 
-        public void SaveOrUpdate(object obj)
-        {
-            UpdateProvider.SaveOrUpdate(obj);
-        }
+		public void Save(object obj) {
+			UpdateProvider.Save(obj);
+		}
 
-        public void Update(object obj)
-        {
-            UpdateProvider.Update(obj);
-        }
+		public void Merge(object obj) {
+			UpdateProvider.Merge(obj);
+		}
 
-		public T Load<T>(long id) where T : ILongIdentifiable
-		{
+		public void Update(object obj) {
+			UpdateProvider.Update(obj);
+		}
+
+		public T Load<T>(long id) where T : ILongIdentifiable {
 			return QueryProvider.Load<T>(id);
 		}
 
-		public T Load<T>(string id) where T : IStringIdentifiable
-		{
+		public T Load<T>(string id) where T : IStringIdentifiable {
 			return QueryProvider.Load<T>(id);
 		}
 
-		public T Load<T>(Guid id) where T : IGuidIdentifiable
-		{
+		public T Load<T>(Guid id) where T : IGuidIdentifiable {
 			return QueryProvider.Load<T>(id);
 		}
 
 		public bool Contains<T>() {
 			return QueryProvider.Contains<T>();
 		}
+		
 	}
 }

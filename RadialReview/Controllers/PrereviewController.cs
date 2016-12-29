@@ -10,6 +10,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using RadialReview.Utilities;
+using RadialReview.Models.Json;
+using System.Threading.Tasks;
 
 namespace RadialReview.Controllers {
 	public class PrereviewController : BaseController {
@@ -57,6 +59,23 @@ namespace RadialReview.Controllers {
 		public ActionResult Index() {
 			return View();
 		}
+
+
+		[Access(AccessLevel.Manager)]
+		[AsyncTimeout(60 * 60 * 1000)]
+		[Obsolete("Fix for AC")]
+		public async Task<JsonResult> IssueImmediately(long id) {
+			Server.ScriptTimeout = 60 * 60;
+			Session.Timeout = 60;
+
+			var reviewContainerId = id;
+
+			var sent = await _ReviewEngine.CreateReviewFromPrereview(System.Web.HttpContext.Current,GetUser(),id);			
+			//NexusAccessor.FindPrereviewNexus_Unsafe(reviewContainerId);
+
+			return Json(ResultObject.SilentSuccess().ForceRefresh(),JsonRequestBehavior.AllowGet);
+		}
+
 
 		[Access(AccessLevel.Manager)]
 		public ActionResult Customize(long id) {

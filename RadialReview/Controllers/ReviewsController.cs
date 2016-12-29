@@ -44,12 +44,16 @@ namespace RadialReview.Controllers {
 
 			}).Where(x => x.Editable || x.TakableId != null || x.UserReview != null).OrderByDescending(x => x.Review.DateCreated).ToList();
 
-			var prereviews = PrereviewAccessor.GetPrereviewsForUser(caller, caller.Id, DateTime.UtcNow,true,true).Select(x => new ReviewsViewModel(x) {
-				Editable = true,
+			var prereviews = PrereviewAccessor.GetPrereviewsForUser(caller, caller.Id, DateTime.UtcNow,true,true).Select(x => new ReviewsViewModel(x) {				
 				Viewable = true,
-			});
+			}).ToList();
+
+			prereviews.ForEach(x => x.Editable = x.Review.CreatedById == caller.Id || caller.IsManagingOrganization());
 
 			reviewsVM.AddRange(prereviews);
+
+			existingReviews = existingReviews.Where(x => !prereviews.Any(y => y.Review.Id == x.Review.Id)).ToList();
+
 			reviewsVM.AddRange(existingReviews);
 
 			var resultPerPage = 10;
@@ -69,6 +73,9 @@ namespace RadialReview.Controllers {
 						x.AddLink("/Review/Plot/" + x.UserReview.Id, "View Report", "glyphicon glyphicon-file");
 					else
 						x.AddLink("#", "Your report is not available yet", iconClass: "glyphicon glyphicon-file", linkClass: "gray noclick");
+				}
+				if (x.IsPrereview && x.Editable && model.AllowEdit && x.Review != null) {
+					x.AddAction("issueReviewImmediately("+x.Review.Id+",this)", "Issue immediately", iconClass: "glyphicon glyphicon-log-in", linkClass: "issue-immediately" );
 				}
 
 				if (!x.IsPrereview && (caller.IsManagingOrganization() || (x.Editable && model.AllowEdit))) {
@@ -122,6 +129,9 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
 		public ActionResult Edit(long id) {
 			var user = GetUser().Hydrate().ManagingUsers(true).Execute();
+
+			PermissionsAccessor.EnsurePermitted(GetUser(), x => x.AdminReviewContainer(id));
+
 			var reviewContainer = _ReviewAccessor.GetReviewContainer(user, id, false, false, populateReview: true);
 			if (reviewContainer.DeleteTime != null)
 				throw new PermissionsException("This review has been deleted.");

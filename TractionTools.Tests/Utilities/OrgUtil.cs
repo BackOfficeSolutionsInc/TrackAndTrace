@@ -15,6 +15,7 @@ using RadialReview.NHibernate;
 using RadialReview.Controllers;
 using RadialReview.Utilities;
 using Microsoft.AspNet.Identity;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace TractionTools.Tests.Utilities {
 	public class Org {
@@ -48,11 +49,11 @@ namespace TractionTools.Tests.Utilities {
 			ExistingCreds = new Dictionary<long, Credentials>();
 		}
 
-		public async Task RegisterUser(UserOrganizationModel user) {
-			await GetCredentials(user);
+		public void RegisterUser(UserOrganizationModel user) {
+			GetCredentials(user);
 		}
 
-		public async Task<Credentials> GetCredentials(UserOrganizationModel user) {
+		public Credentials GetCredentials(UserOrganizationModel user) {
 			if (!ExistingCreds.ContainsKey(user.Id)) {
 				BaseTest.MockHttpContext();
 				var password = Guid.NewGuid().ToString();
@@ -78,14 +79,34 @@ namespace TractionTools.Tests.Utilities {
 			return ExistingCreds[user.Id];
 		}
 
-		public async Task RegisterAllUsers() {
+		public void RegisterAllUsers() {
 			foreach (var u in AllUsers) {
-				await GetCredentials(u);
+				GetCredentials(u);
 			}
 		}
 
 		public void AddCredentials(UserOrganizationModel user, string username, string password) {
 			ExistingCreds[user.Id] = new Credentials(username, password, user);
+		}
+		public void AssertAllUsers(Predicate<UserOrganizationModel> testFunction, params UserOrganizationModel[] trueFor) {
+			AssertAllUsers(testFunction, trueFor.ToList());
+		}
+
+		public void AssertAllUsers(Predicate<UserOrganizationModel> testFunction, IEnumerable<UserOrganizationModel> trueFor) {
+			var exceptions = new List<AssertFailedException>();
+			foreach (var user in AllUsers) {
+				var expecting = false;
+				if (trueFor.Any(x => x.Id == user.Id))
+					expecting = true;
+				var found = testFunction(user);
+				if (expecting != found)
+					exceptions.Add(new AssertFailedException("Assertion failed for "+user.GetName()+" ("+user.Id+"). Expecting: "+expecting+". Found:"+ found +"."));
+			}
+
+			if (exceptions.Count == 1)
+				throw exceptions[0];
+			if (exceptions.Count > 1)
+				throw new AssertFailedException("Assertion failed for " + exceptions.Count + " users.");
 		}
 
 	}
@@ -264,12 +285,17 @@ namespace TractionTools.Tests.Utilities {
 			org.MiddleSubordinatesTeam = allTeams.First(x => x.Type == TeamType.Subordinates && x.ManagedBy == org.Middle.Id);
 
 			//Register E3
-			UserModel e3User = null;
-			BaseTest.DbCommit(s => {
-				e3User = new UserModel();
-				s.Save(e3User);
-			});
-			OrganizationAccessor.JoinOrganization(e3User, org.Middle.Id, org.E3.Id);
+			//UserModel e3User = null;
+			//BaseTest.DbCommit(s => {
+			//	e3User = new UserModel() {
+			//		FirstName = org.E3.TempUser.FirstName,
+			//		LastName = org.E3.TempUser.FirstName,
+			//	};
+			//	s.Save(e3User);
+			//});
+			//OrganizationAccessor.JoinOrganization(e3User, org.Middle.Id, org.E3.Id);
+
+			org.RegisterUser(org.E3);
 
 			return org;
 		}

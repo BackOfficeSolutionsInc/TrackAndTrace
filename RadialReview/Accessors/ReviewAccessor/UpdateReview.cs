@@ -60,7 +60,7 @@ namespace RadialReview.Accessors {
 			reviewModel.QuestionCompletion.NumOptional += askables.Count(x => !x.Askable.Required);
 
 
-			s.SaveOrUpdate(reviewModel);
+			s.Merge(reviewModel);
 		}
 
 		/*private static void UpdateReview_Unsafe(ISession s,long reviewContainerId, IEnumerable<long> userIds)

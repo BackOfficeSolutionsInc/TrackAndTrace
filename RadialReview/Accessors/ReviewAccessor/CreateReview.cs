@@ -39,6 +39,8 @@ namespace RadialReview.Accessors {
 			IHubContext hub = null, String userId = null, int total = 0) {
 			int count = 0;
 
+			if (reviewContainer.Executed != null)
+				throw new PermissionsException("Eval already executed");
 
 			var unsentEmails = new List<Mail>();
 			var nw = DateTime.UtcNow;
@@ -77,6 +79,9 @@ namespace RadialReview.Accessors {
 					log.Info("NO ASKABLES, Skipping CreateReview user=" + reviewer.RGMId + " review=" + reviewContainer.Id);
 				}
 			}
+
+			reviewContainer.Executed = DateTime.UtcNow;
+			dataInteraction.Merge(reviewContainer);
 
 			var haventGeneratedAReview = new Func<long, bool>(revieweeId => !reviewers.Any(reviewer => reviewer.RGMId == revieweeId));
 
