@@ -28,6 +28,7 @@ namespace RadialReview.Utilities.NHibernate
 	{
 
 		private ISession _backingSession;
+		private bool _shouldDispose;
 		public bool WasDisposed { get; set; }
 
 		public ISession GetBackingSession()
@@ -36,9 +37,10 @@ namespace RadialReview.Utilities.NHibernate
 		}
 
 		
-		public SessionPerRequest(ISession toWrap)
+		public SessionPerRequest(ISession toWrap,bool dispose=false)
 		{
 			_backingSession = toWrap;
+			_shouldDispose = dispose;
 		}
 		public IAuditReader Auditer()
 		{
@@ -49,6 +51,10 @@ namespace RadialReview.Utilities.NHibernate
 		public void Dispose()
 		{
 			WasDisposed = true;
+			if (_shouldDispose) {
+				_backingSession.Dispose();
+			}
+
 			//skips
 			//_backingSession.Dispose();
 		}

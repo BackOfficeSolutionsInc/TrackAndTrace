@@ -391,7 +391,7 @@ namespace RadialReview.Accessors {
 				p = "conclusion";
 			return p;
 		}
-		public static void StartMeeting(UserOrganizationModel caller, UserOrganizationModel meetingLeader, long recurrenceId, List<long> attendees) {
+		public static L10Meeting StartMeeting(UserOrganizationModel caller, UserOrganizationModel meetingLeader, long recurrenceId, List<long> attendees) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
@@ -485,6 +485,8 @@ namespace RadialReview.Accessors {
 						s.Flush();
 						var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 						hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting)).setupMeeting(meeting.CreateTime.ToJavascriptMilliseconds(), meetingLeader.Id);
+
+						return meeting;
 					}
 				}
 			}
@@ -4711,6 +4713,10 @@ namespace RadialReview.Accessors {
 					}
 				}
 			}
+		}
+
+		public static object CreateBlankRecurrence(object middle, long id) {
+			throw new NotImplementedException();
 		}
 
 		#endregion

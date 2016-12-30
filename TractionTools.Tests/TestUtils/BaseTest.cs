@@ -259,6 +259,7 @@ namespace TractionTools.Tests.TestUtils {
 				var data = new Dictionary<string, object>(){{"a", "b"}};
 
 				HttpContext.Current.Items["owin.Environment"] = data;
+				HttpContext.Current.Items["IsTest"] = true;
 			}
 
 		}

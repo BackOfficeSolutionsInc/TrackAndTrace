@@ -15,6 +15,7 @@ using RadialReview.NHibernate;
 using RadialReview.Controllers;
 using RadialReview.Utilities;
 using Microsoft.AspNet.Identity;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace TractionTools.Tests.Utilities {
 	public class Org {
@@ -41,6 +42,9 @@ namespace TractionTools.Tests.Utilities {
 
 		public List<AccountabilityNode> AllUserNodes { get; set; }
 		public List<UserOrganizationModel> AllUsers { get; set; }
+		
+		public List<UserOrganizationModel> AllManagers { get { return new[] { Manager }.ToList(); } }
+		public List<UserOrganizationModel> AllFrontLine { get { return new[] { Employee }.ToList(); } }
 
 		protected Dictionary<long, Credentials> ExistingCreds { get; set; }
 
@@ -48,11 +52,11 @@ namespace TractionTools.Tests.Utilities {
 			ExistingCreds = new Dictionary<long, Credentials>();
 		}
 
-		public async Task RegisterUser(UserOrganizationModel user) {
-			await GetCredentials(user);
+		public void RegisterUser(UserOrganizationModel user) {
+			GetCredentials(user);
 		}
 
-		public async Task<Credentials> GetCredentials(UserOrganizationModel user) {
+		public Credentials GetCredentials(UserOrganizationModel user) {
 			if (!ExistingCreds.ContainsKey(user.Id)) {
 				BaseTest.MockHttpContext();
 				var password = Guid.NewGuid().ToString();
@@ -69,16 +73,40 @@ namespace TractionTools.Tests.Utilities {
 			return ExistingCreds[user.Id];
 		}
 
-		public async Task RegisterAllUsers() {
+		public void RegisterAllUsers() {
 			foreach (var u in AllUsers) {
-				await GetCredentials(u);
+				GetCredentials(u);
 			}
 		}
 
 		public void AddCredentials(UserOrganizationModel user, string username, string password) {
 			ExistingCreds[user.Id] = new Credentials(username, password, user);
 		}
+		public void AssertAllUsers(Predicate<UserOrganizationModel> testFunction, params UserOrganizationModel[] trueFor) {
+			AssertAllUsers(testFunction, trueFor.ToList());
+		}
 
+		public void AssertAllUsers(Predicate<UserOrganizationModel> testFunction, IEnumerable<UserOrganizationModel> trueFor) {
+			var exceptions = new List<AssertFailedException>();
+			foreach (var user in AllUsers) {
+				var expecting = false;
+				if (trueFor.Any(x => x.Id == user.Id))
+					expecting = true;
+				var found = testFunction(user);
+				if (expecting != found)
+					exceptions.Add(new AssertFailedException("Assertion failed for " + user.GetName() + " (" + user.Id + "). Expecting: " + expecting + ".  Found: " + found + "."));
+			}
+
+			if (exceptions.Count == 1)
+				throw exceptions[0];
+			if (exceptions.Count > 1) {
+				foreach (var e in exceptions) {
+					Console.WriteLine(e.Message);
+				}
+				throw new AssertFailedException("Assertion failed for " + exceptions.Count + " users.");
+				
+			}
+		}
 	}
 
 
@@ -116,6 +144,11 @@ namespace TractionTools.Tests.Utilities {
 
 		public OrganizationTeamModel NonreviewTeam { get; set; }
 		public OrganizationTeamModel InterreviewTeam { get; set; }
+
+		public new List<UserOrganizationModel> AllManagers { get { return new[] { Manager, Middle, E1, E2, }.ToList(); } }
+		public new List<UserOrganizationModel> AllFrontLine { get { return new[] { Employee, E1, E6, E3, E4, E5, E7 }.ToList(); } }
+		public List<UserOrganizationModel> AllClients { get { return new[] { Client }.ToList(); } }
+
 	}
 
 	public class OrgUtil {
