@@ -272,9 +272,9 @@ namespace RadialReview.Utilities
 
 
 
-        public static ISession GetCurrentSession(bool singleSession = true)
-        {
-            if (singleSession && !(HttpContext.Current == null || HttpContext.Current.Items == null))
+        public static ISession GetCurrentSession(bool singleSession = true) {
+			
+			if (singleSession && !(HttpContext.Current == null || HttpContext.Current.Items == null) && HttpContext.Current.Items["IsTest"]==null)
             {
                 try
                 {
@@ -292,7 +292,8 @@ namespace RadialReview.Utilities
                     //var a = "Error";
                 }
             }
-            return GetDatabaseSessionFactory().OpenSession();
+            return new SessionPerRequest(GetDatabaseSessionFactory().OpenSession(),true);
+			//GetDatabaseSessionFactory().OpenSession();
             /*while(true)
             {
                 lock (lck)

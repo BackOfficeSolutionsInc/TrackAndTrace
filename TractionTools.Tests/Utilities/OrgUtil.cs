@@ -42,6 +42,9 @@ namespace TractionTools.Tests.Utilities {
 
 		public List<AccountabilityNode> AllUserNodes { get; set; }
 		public List<UserOrganizationModel> AllUsers { get; set; }
+		
+		public List<UserOrganizationModel> AllManagers { get { return new[] { Manager }.ToList(); } }
+		public List<UserOrganizationModel> AllFrontLine { get { return new[] { Employee }.ToList(); } }
 
 		protected Dictionary<long, Credentials> ExistingCreds { get; set; }
 
@@ -65,15 +68,7 @@ namespace TractionTools.Tests.Utilities {
 				};
 				new AccountController().UserManager.Create(u, password);
 				var org = OrganizationAccessor.JoinOrganization(u, Manager.Id, user.Id);
-				//await new AccountController().Register(new RegisterViewModel() {
-				//	Email = user.TempUser.Email,
-				//	fname = user.TempUser.FirstName,
-				//	lname = user.TempUser.LastName,
-				//	Password = password,
-				//	ConfirmPassword = password,
-				//});
-				//var u = new UserModel() { UserName = user.TempUser.Email, FirstName = user.TempUser.FirstName, LastName = user.TempUser.LastName };
-				//var result = await UserAccessor.CreateUser(UserManager, u, password);
+
 				ExistingCreds[user.Id] = new Credentials(u.UserName, password, user);
 			}
 			return ExistingCreds[user.Id];
@@ -100,15 +95,19 @@ namespace TractionTools.Tests.Utilities {
 					expecting = true;
 				var found = testFunction(user);
 				if (expecting != found)
-					exceptions.Add(new AssertFailedException("Assertion failed for "+user.GetName()+" ("+user.Id+"). Expecting: "+expecting+". Found:"+ found +"."));
+					exceptions.Add(new AssertFailedException("Assertion failed for " + user.GetName() + " (" + user.Id + "). Expecting: " + expecting + ".  Found: " + found + "."));
 			}
 
 			if (exceptions.Count == 1)
 				throw exceptions[0];
-			if (exceptions.Count > 1)
+			if (exceptions.Count > 1) {
+				foreach (var e in exceptions) {
+					Console.WriteLine(e.Message);
+				}
 				throw new AssertFailedException("Assertion failed for " + exceptions.Count + " users.");
+				
+			}
 		}
-
 	}
 
 
@@ -146,6 +145,11 @@ namespace TractionTools.Tests.Utilities {
 
 		public OrganizationTeamModel NonreviewTeam { get; set; }
 		public OrganizationTeamModel InterreviewTeam { get; set; }
+
+		public new List<UserOrganizationModel> AllManagers { get { return new[] { Manager, Middle, E1, E2, }.ToList(); } }
+		public new List<UserOrganizationModel> AllFrontLine { get { return new[] { Employee, E1, E6, E3, E4, E5, E7 }.ToList(); } }
+		public List<UserOrganizationModel> AllClients { get { return new[] { Client }.ToList(); } }
+
 	}
 
 	public class OrgUtil {
