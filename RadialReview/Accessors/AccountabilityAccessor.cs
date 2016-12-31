@@ -306,7 +306,7 @@ namespace RadialReview.Accessors {
             }
         }
         public static void SetPosition(ISession s, PermissionsUtility perms, RealTimeUtility rt, long nodeId, long? positionId) {
-            perms.ManagesAccountabilityNode(nodeId);
+            perms.ManagesAccountabilityNodeOrSelf(nodeId);
             var now = DateTime.UtcNow;
             UpdatePosition_Unsafe(s, rt, perms, nodeId, positionId, now);
 
@@ -340,7 +340,7 @@ namespace RadialReview.Accessors {
             if (userId.HasValue)
                 perms.ManagesUserOrganization(userId.Value, true, PermissionType.EditEmployeeManagers);
 
-            perms.ManagesAccountabilityNode(nodeId, PermissionType.EditEmployeeManagers);
+            perms.ManagesAccountabilityNodeOrSelf(nodeId, PermissionType.EditEmployeeManagers);
 
             //SetUser_Unsafe(s, nodeId, userId);
             var n = s.Get<AccountabilityNode>(nodeId);
@@ -623,7 +623,7 @@ namespace RadialReview.Accessors {
                         var node = s.Get<AccountabilityNode>(nodeId);
                         if (node.DeleteTime != null)
                             throw new PermissionsException("Node does not exist.");
-                        perms.ManagesAccountabilityNode(nodeId);
+                        perms.ManagesAccountabilityNodeOrSelf(nodeId);
                         var children = s.QueryOver<AccountabilityNode>().Where(x => x.ParentNodeId == nodeId && x.DeleteTime == null).RowCount();
 
                         if (children > 0)
@@ -688,8 +688,8 @@ namespace RadialReview.Accessors {
                     var node = s.Get<AccountabilityNode>(nodeId);
                     if (node == null)
                         throw new PermissionsException("Node does not exist");
-                    perms.ManagesAccountabilityNode(node.Id)
-                        .ManagesAccountabilityNode(newParentId);
+                    perms.ManagesAccountabilityNodeOrSelf(node.Id)
+                        .ManagesAccountabilityNodeOrSelf(newParentId);
 
                     var newParent = s.Get<AccountabilityNode>(newParentId);
 
@@ -835,7 +835,7 @@ namespace RadialReview.Accessors {
             var parent = s.Get<AccountabilityNode>(parentNodeId);
             if (parent == null)
                 throw new PermissionsException("Parent does not exist");
-            perms.ManagesAccountabilityNode(parent.Id);//.EditHierarchy(parent.AccountabilityChartId);
+            perms.ManagesAccountabilityNodeOrSelf(parent.Id);//.EditHierarchy(parent.AccountabilityChartId);
             AccountabilityRolesGroup group = null;
             if (rolesGroupId != null) {
                 group = s.Get<AccountabilityRolesGroup>(rolesGroupId);
@@ -1091,7 +1091,7 @@ namespace RadialReview.Accessors {
         }
 
         public static void UpdateAccountabilityNode(ISession s, RealTimeUtility rt, PermissionsUtility perms, long nodeId, AngularAccountabilityGroup newARG, long? userId) {
-            perms.ManagesAccountabilityNode(nodeId);
+            perms.ManagesAccountabilityNodeOrSelf(nodeId);
 
             var node = s.Get<AccountabilityNode>(nodeId);
 

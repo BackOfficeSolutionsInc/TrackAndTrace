@@ -4715,9 +4715,6 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static object CreateBlankRecurrence(object middle, long id) {
-			throw new NotImplementedException();
-		}
 
 		#endregion
 	}

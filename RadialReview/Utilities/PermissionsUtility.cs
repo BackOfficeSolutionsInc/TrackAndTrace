@@ -229,11 +229,11 @@ namespace RadialReview.Utilities {
 		public PermissionsUtility RemoveUser(long userId) {
 			return TryWithOverrides(y => {
 				var found = session.Get<UserOrganizationModel>(userId);
-				if (caller.ManagingOrganization || caller.Organization.Id == found.Organization.Id)
+				if (caller.ManagingOrganization && caller.Organization.Id == found.Organization.Id)
 					return this;
 
 				if (caller.Organization.ManagersCanRemoveUsers)
-					ManagesUserOrganization(userId, true);
+					return ManagesUserOrganization(userId, true);
 
 				throw new PermissionsException("You cannot remove this user.");
 			}, PermissionType.EditEmployeeDetails);
@@ -371,7 +371,7 @@ namespace RadialReview.Utilities {
 			});
 		}
 
-		public PermissionsUtility ManagesAccountabilityNode(long nodeId, params PermissionType[] alsoTry) {
+		public PermissionsUtility ManagesAccountabilityNodeOrSelf(long nodeId, params PermissionType[] alsoTry) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -622,20 +622,13 @@ namespace RadialReview.Utilities {
 			var user = session.Get<UserOrganizationModel>(userOrganizationId);
 			//var org = session.Get<OrganizationModel>(organizationId);
 
+			if (caller.Organization.Id != organizationId)
+				throw new PermissionsException();
+
 			if (user.Organization.Id == organizationId && (user.ManagerAtOrganization || user.ManagingOrganization))
 				return this;
 
 			throw new PermissionsException();
-		}
-		public PermissionsUtility ManageUserReview(long reviewId, bool userCanManageOwnReview) {
-			ViewReview(reviewId);
-			var review = session.Get<ReviewModel>(reviewId);
-			var userId = review.ReviewerUserId;
-
-			if (userCanManageOwnReview && review.ReviewerUserId == caller.Id)
-				return this;
-
-			return ManagesUserOrganization(userId, false);
 		}
 		public PermissionsUtility ManagingOrganization(long organizationId) {
 			if (IsRadialAdmin(caller))
@@ -649,24 +642,7 @@ namespace RadialReview.Utilities {
 			throw new PermissionsException();
 		}
 
-		public PermissionsUtility ManageUserReview_Answer(long answerId, bool userCanManageOwnReview) {
-			var answer = session.Get<AnswerModel>(answerId);
 
-			if (answer == null)
-				throw new PermissionsException("Answer does not exist");
-			var reviews = session.QueryOver<ReviewModel>()
-				.Where(x => x.DeleteTime == null && x.ForReviewContainerId == answer.ForReviewContainerId && x.ReviewerUserId == answer.RevieweeUserId)
-				.List();
-			if (!reviews.Any())
-				throw new PermissionsException("Review does not exist");
-
-			foreach (var review in reviews) {
-				ManageUserReview(review.Id, userCanManageOwnReview);
-			}
-
-
-			return this;
-		}
 
 		#endregion
 
@@ -851,6 +827,35 @@ namespace RadialReview.Utilities {
 			}, PermissionType.ViewReviews);
 
 		}
+
+		public PermissionsUtility ManageUserReview(long reviewId, bool userCanManageOwnReview) {
+			ViewReview(reviewId);
+			var review = session.Get<ReviewModel>(reviewId);
+			var userId = review.ReviewerUserId;
+
+			if (userCanManageOwnReview && review.ReviewerUserId == caller.Id)
+				return this;
+
+			return ManagesUserOrganization(userId, false);
+		}
+		public PermissionsUtility ManageUserReview_Answer(long answerId, bool userCanManageOwnReview) {
+			var answer = session.Get<AnswerModel>(answerId);
+
+			if (answer == null)
+				throw new PermissionsException("Answer does not exist");
+			var reviews = session.QueryOver<ReviewModel>()
+				.Where(x => x.DeleteTime == null && x.ForReviewContainerId == answer.ForReviewContainerId && x.ReviewerUserId == answer.RevieweeUserId)
+				.List();
+			if (!reviews.Any())
+				throw new PermissionsException("Review does not exist");
+
+			foreach (var review in reviews) {
+				ManageUserReview(review.Id, userCanManageOwnReview);
+			}
+
+
+			return this;
+		}
 		#endregion
 
 		#region Responsbility
@@ -952,7 +957,6 @@ namespace RadialReview.Utilities {
 
 			throw new PermissionsException();
 		}
-
 		#endregion
 
 		#region Scorecard
@@ -1277,7 +1281,7 @@ namespace RadialReview.Utilities {
 			}
 			throw new PermissionsException();
 		}
-		
+
 		[Obsolete("Avoid using")]
 		public PermissionsUtility ViewUsersL10Meetings(long userId) {
 			if (IsRadialAdmin(caller))
@@ -1356,27 +1360,40 @@ namespace RadialReview.Utilities {
 		#endregion
 
 		#region Rocks
-		public PermissionsUtility ViewRock(RockModel rock) {
+		public PermissionsUtility ViewRock(long rockId) {
+			var rock = session.Get<RockModel>(rockId);
 			return ViewUserOrganization(rock.ForUserId, false);
 		}
+		public PermissionsUtility EditRock(long rockId) {
+			var rock = session.Get<RockModel>(rockId);
+			//var recurrences = session.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
+			//	.Where(x => x.DeleteTime == null && x.User.Id == caller.Id)
+			//	.Select(x => x.L10Recurrence.Id).List<long>().ToList();
 
-		public PermissionsUtility EditRock(RockModel rock) {
-			var recurrences = session.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
-				.Where(x => x.DeleteTime == null && x.User.Id == caller.Id)
-				.Select(x => x.L10Recurrence.Id).List<long>().ToList();
 
-			var rocks = session.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
+			var recurrenceIds = session.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
 				.Where(x => x.DeleteTime == null && x.ForRock.Id == rock.Id)
-				.WhereRestrictionOn(x => x.L10Recurrence.Id).IsIn(recurrences)
-				.Select(x => x.Id).List<long>();
-			if (rocks.Any())
+				.Select(x => x.L10Recurrence.Id).List<long>();
+
+			recurrenceIds = recurrenceIds.Where(rid => {
+				try {
+					EditL10Recurrence(rid);
+					return true;
+				} catch (Exception) {
+					return false;
+				}
+			}).ToList();
+
+			if (recurrenceIds.Any())
 				return this;
 
+			if (rock.OrganizationId != caller.Organization.Id)
+				throw new PermissionsException();
 
-			return ManagesUserOrganizationOrSelf(rock.ForUserId);
+			var editSelf = caller.Organization.Settings.EmployeesCanEditSelf;
+
+			return ManagesUserOrganization(rock.ForUserId, !editSelf, PermissionType.EditEmployeeDetails);
 		}
-
-
 		public PermissionsUtility CanViewUserRocks(long userId) {
 			if (IsRadialAdmin(caller))
 				return this;

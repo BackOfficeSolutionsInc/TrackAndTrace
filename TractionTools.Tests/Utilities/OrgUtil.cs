@@ -16,6 +16,7 @@ using RadialReview.Controllers;
 using RadialReview.Utilities;
 using Microsoft.AspNet.Identity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Diagnostics;
 
 namespace TractionTools.Tests.Utilities {
 	public class Org {
@@ -43,8 +44,11 @@ namespace TractionTools.Tests.Utilities {
 		public List<AccountabilityNode> AllUserNodes { get; set; }
 		public List<UserOrganizationModel> AllUsers { get; set; }
 		
+
+		public List<UserOrganizationModel> AllAdmins { get { return new[] { Manager }.ToList(); } }
 		public List<UserOrganizationModel> AllManagers { get { return new[] { Manager }.ToList(); } }
 		public List<UserOrganizationModel> AllFrontLine { get { return new[] { Employee }.ToList(); } }
+		public List<UserOrganizationModel> AllNonmanagers { get { return new[] { Employee }.ToList(); } }
 
 		protected Dictionary<long, Credentials> ExistingCreds { get; set; }
 
@@ -69,6 +73,10 @@ namespace TractionTools.Tests.Utilities {
 				new AccountController().UserManager.Create(u, password);
 				var org = OrganizationAccessor.JoinOrganization(u, Manager.Id, user.Id);
 
+				user.User = org.User;
+				user.TempUser = org.TempUser;
+				
+
 				ExistingCreds[user.Id] = new Credentials(u.UserName, password, user);
 			}
 			return ExistingCreds[user.Id];
@@ -83,10 +91,11 @@ namespace TractionTools.Tests.Utilities {
 		public void AddCredentials(UserOrganizationModel user, string username, string password) {
 			ExistingCreds[user.Id] = new Credentials(username, password, user);
 		}
+
 		public void AssertAllUsers(Predicate<UserOrganizationModel> testFunction, params UserOrganizationModel[] trueFor) {
 			AssertAllUsers(testFunction, trueFor.ToList());
 		}
-
+		
 		public void AssertAllUsers(Predicate<UserOrganizationModel> testFunction, IEnumerable<UserOrganizationModel> trueFor) {
 			var exceptions = new List<AssertFailedException>();
 			foreach (var user in AllUsers) {
@@ -147,6 +156,7 @@ namespace TractionTools.Tests.Utilities {
 		public OrganizationTeamModel InterreviewTeam { get; set; }
 
 		public new List<UserOrganizationModel> AllManagers { get { return new[] { Manager, Middle, E1, E2, }.ToList(); } }
+		public new List<UserOrganizationModel> AllNonmanagers { get { return new[] { Employee, E6, E3, E4, E5, E7 }.ToList(); } }
 		public new List<UserOrganizationModel> AllFrontLine { get { return new[] { Employee, E1, E6, E3, E4, E5, E7 }.ToList(); } }
 		public List<UserOrganizationModel> AllClients { get { return new[] { Client }.ToList(); } }
 
