@@ -207,7 +207,16 @@ namespace RadialReview.Accessors {
 						s.Save(attendee);
 
 
+						if (caller.Organization.Settings.DisableUpgradeUsers && user.EvalOnly) {
+							throw new PermissionsException("This user is set to participate in " + Config.ReviewName() + " only.");
+						}
 
+						if (user.EvalOnly) {
+							perms.CanUpgradeUser(user.Id);
+							s.Update(user);
+						}
+
+						
 						var curr = _GetCurrentL10Meeting(s, perms, recurrenceId, true, false, false);
 						if (curr != null) {
 							s.Save(new L10Meeting.L10Meeting_Attendee() {
@@ -1879,7 +1888,7 @@ namespace RadialReview.Accessors {
 				rock = s.Get<RockModel>(model.SelectedRock);
 				if (rock == null)
 					throw new PermissionsException("Rock does not exist.");
-				perm.ViewRock(rock);
+				perm.ViewRock(rock.Id);
 			}
 			AddRock(s, perm, recurrenceId, rock, now);
 		}
@@ -1934,7 +1943,7 @@ namespace RadialReview.Accessors {
 					using (var rt = RealTimeUtility.Create(connectionId)) {
 						var perms = PermissionsUtility.Create(s, caller);
 						var rock = s.Get<RockModel>(id);
-						perms.EditRock(rock);
+						perms.EditRock(rock.Id);
 						var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 
 						List<Tuple<long, long>> rockRecurrenceIds = null;

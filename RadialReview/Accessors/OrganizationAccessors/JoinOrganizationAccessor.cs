@@ -15,7 +15,7 @@ using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
 using RadialReview.Models.Accountability;
 using RadialReview.Utilities.RealTime;
-
+using RadialReview.Models.ViewModels;
 
 namespace RadialReview.Accessors {
 	public class AddedUser {
@@ -23,18 +23,34 @@ namespace RadialReview.Accessors {
 		public UserOrganizationModel User { get; set; }
 	}
 
+	//public class CreateUserSettings {
+	//	public String FirstName { get; set; }
+	//	public String LastName { get; set; }
+	//	public String Email { get; set; }
+	//	public long? ManagerNodeId { get; set; }
+	//	public long? OrgPositionId { get; set; }
+	//	public bool EvalOnly { get; set; }
+	//	public bool IsManager { get; set; }
+	//	public bool IsClient { get; set; }
+	//	public string ClientOrgName { get; set; }
+	//}
+
 	public class JoinOrganizationAccessor : BaseAccessor {
 
-		public static AddedUser AddUser(UserOrganizationModel caller, AccountabilityNode managerNode, string fname, string lname, string email, long? orgPosition) {
+		public static AddedUser AddUser(UserOrganizationModel caller, CreateUserOrganizationViewModel settings) {
 			UserOrganizationModel created;			
-			var temp=CreateUserUnderManager(caller, managerNode.Id, false, orgPosition, email, fname, lname, out created, false, null);
+			var temp=CreateUserUnderManager(caller, settings, out created);
 			return new AddedUser() {
 				TempUser=temp,
 				User = created
 			};
 		}
 
-		public static TempUserModel CreateUserUnderManager(UserOrganizationModel caller, long? managerNodeId, Boolean isManager, long? orgPositionId, String email, String firstName, String lastName, out UserOrganizationModel createdUser, bool isClient, string organizationName)
+		public static TempUserModel CreateUserUnderManager(UserOrganizationModel caller, CreateUserOrganizationViewModel settings, out UserOrganizationModel createdUser) {
+			return CreateUserUnderManager(caller, settings.ManagerNodeId, settings.IsManager, settings.OrgPositionId, settings.Email, settings.FirstName, settings.LastName, out createdUser, settings.IsClient, settings.ClientOrganizationName, settings.EvalOnly);
+		}
+
+		private static TempUserModel CreateUserUnderManager(UserOrganizationModel caller, long? managerNodeId, Boolean isManager, long? orgPositionId, String email, String firstName, String lastName, out UserOrganizationModel createdUser, bool isClient, string organizationName,bool evalOnly)
         {
             if (!Emailer.IsValid(email))
                 throw new PermissionsException(ExceptionStrings.InvalidEmail);
@@ -92,6 +108,7 @@ namespace RadialReview.Accessors {
 
 						}
 					}
+					newUser.EvalOnly = evalOnly;
                     newUser.ClientOrganizationName = organizationName;
                     newUser.IsClient = isClient;
                     newUser.ManagerAtOrganization = isManager;
@@ -193,14 +210,14 @@ namespace RadialReview.Accessors {
             return tempUser;
         }
 
-        public static async Task<Tuple<string, UserOrganizationModel>> JoinOrganizationUnderManager(UserOrganizationModel caller, long? managerNodeId, Boolean isManager, long orgPositionId, String email, String firstName, String lastName, bool isClient, bool sendEmail, string organizationName)
+		public static async Task<Tuple<string, UserOrganizationModel>> JoinOrganizationUnderManager(UserOrganizationModel caller, CreateUserOrganizationViewModel settings) // long? managerNodeId, Boolean isManager, long orgPositionId, String email, String firstName, String lastName, bool isClient, bool sendEmail, string organizationName,bool evalOnly)
         {
             //var sendEmail = caller.Organization.SendEmailImmediately;
 
             UserOrganizationModel createdUser;
 
-            var tempUser = CreateUserUnderManager(caller, managerNodeId, isManager, orgPositionId, email, firstName, lastName, out createdUser, isClient, organizationName);
-            if (sendEmail) {
+			var tempUser = CreateUserUnderManager(caller, settings, out createdUser);// managerNodeId, isManager, orgPositionId, email, firstName, lastName, out createdUser, isClient, organizationName,evalOnly);
+            if (settings.SendEmail) {
                 var mail = CreateJoinEmailToGuid(caller, tempUser);
                 await Emailer.SendEmail(mail);
             }

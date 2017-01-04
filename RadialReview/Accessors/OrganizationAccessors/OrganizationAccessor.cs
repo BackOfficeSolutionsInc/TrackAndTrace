@@ -57,6 +57,7 @@ namespace RadialReview.Accessors {
 						ManagersCanEdit = false,
 					};
 
+					#region Set Settings
 					if (startDeactivated)
 						organization.DeleteTime = new DateTime(1, 1, 1);
 
@@ -70,6 +71,9 @@ namespace RadialReview.Accessors {
 					organization.PaymentPlan = paymentPlan;
 					organization.Organization = organization;
 					s.Update(organization);
+					#endregion
+
+					#region AddUser to Organization
 					user = s.Get<UserModel>(user.Id);
 					
 					userOrgModel = new UserOrganizationModel() {
@@ -79,14 +83,14 @@ namespace RadialReview.Accessors {
 						ManagingOrganization = true,
 						EmailAtOrganization = user.Email,
 						AttachTime = now,
-						CreateTime = now,
-
-						
+						CreateTime = now,						
 					};
 
 					s.Save(user);
 					s.SaveOrUpdate(userOrgModel);
+					#endregion
 
+					#region Set Role
 					user.UserOrganization.Add(userOrgModel);
 					user.UserOrganizationCount += 1;
 
@@ -100,13 +104,17 @@ namespace RadialReview.Accessors {
 					organization.Members.Add(userOrgModel);
 					s.Update(user);
 					s.Save(organization);
+					#endregion
 
+					#region Update OrganizationLookup
 					s.Save(new OrganizationLookup() {
 						OrgId = organization.Id,
 						LastUserLogin = userOrgModel.Id,
 						LastUserLoginTime = DateTime.UtcNow,
 					});
+					#endregion
 
+					#region Create/Populate Accountability Chart
 					perms = PermissionsUtility.Create(s, userOrgModel);
 					acChart = AccountabilityAccessor.CreateChart(s, perms, organization.Id, false);
 					organization.AccountabilityChartId = acChart.Id;
@@ -128,8 +136,9 @@ namespace RadialReview.Accessors {
 						userOrgModel.Positions.Add(posDur);
 						s.Update(userOrgModel);
 					}
+					#endregion
 
-
+					#region Create Teams
 					//Add team for every member
 					allMemberTeam = new OrganizationTeamModel() {
 						CreatedBy = userOrgModel.Id,
@@ -150,10 +159,23 @@ namespace RadialReview.Accessors {
 						Type = TeamType.Managers
 					};
 					s.Save(managerTeam);
+					#endregion
 
+					#region Update UserLookup
 					if (userOrgModel != null)
 						userOrgModel.UpdateCache(s);
-					
+					#endregion
+
+
+					#region Add Default Permissions
+					PermissionsAccessor.CreatePermItems(s, perms.GetCaller(), PermItem.ResourceType.UpgradeUsersForOrganization, organization.Id,
+						PermTiny.Admins(),
+						PermTiny.RGM(allMemberTeam.Id, admin:false)
+					);
+
+					#endregion
+
+
 					tx.Commit();
 				}
 				using (var tx = s.BeginTransaction()) {

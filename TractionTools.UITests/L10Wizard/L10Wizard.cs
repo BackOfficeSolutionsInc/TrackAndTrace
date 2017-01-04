@@ -25,7 +25,8 @@ namespace TractionTools.UITests.L10Wizard {
         }
 
         [TestMethod]
-        public void L10_Wizard_Basics()
+		[TestCategory("Visual")]
+		public void L10_Wizard_Basics()
         {
             TestView(AUC, "/l10/wizard/" + Recur.Id, d => {
                 d.Find("#l10-wizard-menu", 10);
@@ -53,7 +54,8 @@ namespace TractionTools.UITests.L10Wizard {
             });
         }
         [TestMethod]
-        public void L10_Wizard_Attendees()
+		[TestCategory("Visual")]
+		public void L10_Wizard_Attendees()
         {
             TestView(AUC, "/l10/wizard/" + Recur.Id, d => {
                 d.Find("#l10-wizard-menu", 10);
@@ -89,7 +91,8 @@ namespace TractionTools.UITests.L10Wizard {
             });
         }
         [TestMethod]
-        public void L10_Wizard_Scorecard()
+		[TestCategory("Visual")]
+		public void L10_Wizard_Scorecard()
         {
             TestView(AUC, "/l10/wizard/" + Recur.Id, d => {
                 d.Find("#l10-wizard-menu", 10);
@@ -155,7 +158,8 @@ namespace TractionTools.UITests.L10Wizard {
             });
         }
         [TestMethod]
-        public void L10_Wizard_Rocks()
+		[TestCategory("Visual")]
+		public void L10_Wizard_Rocks()
         {
             TestView(AUC, "/l10/wizard/" + Recur.Id, d => {
                 d.Find("#l10-wizard-menu", 10);
@@ -215,7 +219,8 @@ namespace TractionTools.UITests.L10Wizard {
             });
         }
         [TestMethod]
-        public void L10_Wizard_Todo()
+		[TestCategory("Visual")]
+		public void L10_Wizard_Todo()
         {
             TestView(AUC, "/l10/wizard/" + Recur.Id, d => {
                 d.Find("#l10-wizard-menu", 10);
@@ -272,7 +277,8 @@ namespace TractionTools.UITests.L10Wizard {
             });
         }
         [TestMethod]
-        public void L10_Wizard_Issues()
+		[TestCategory("Visual")]
+		public void L10_Wizard_Issues()
         {
             TestView(AUC, "/l10/wizard/" + Recur.Id, d => {
                 d.Find("#l10-wizard-menu", 10);

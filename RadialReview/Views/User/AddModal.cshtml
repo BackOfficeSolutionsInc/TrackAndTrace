@@ -16,7 +16,7 @@
 		<div class="col-xs-3"><label>Organization Name:</label></div>
 
 		<div class="col-xs-9">
-			@Html.TextBoxFor(x => x.OrganizationName, new { placeholder = "Client Name", @class = "fullWidth form-control blend" })
+			@Html.TextBoxFor(x => x.ClientOrganizationName, new { placeholder = "Client Name", @class = "fullWidth form-control blend" })
 			@*<div class="col-xs-6 noPadRight noPadLeft">@Html.TextBoxFor(x => x.LastName, new { placeholder = RadialReview.Properties.DisplayNameStrings.lastName, @class = "fullWidth form-control" })</div>*@
 		</div>
 	</div>
@@ -53,6 +53,15 @@
 		<div class="smallBreak"></div>
 		<div class="row">
 			<div class="col-xs-3"><label>Is @RadialReview.Utilities.Config.ManagerName():</label></div>
+			<div class="col-xs-9">@Html.CheckBoxFor(x => x.IsManager, new { style = "padding-bottom: 7px;", @class = "checkbox blend" })</div>
+		</div>
+	}
+	if (ViewBag.HideEvalOnly == true) {
+		@Html.HiddenFor(x => x.EvalOnly)
+	} else {
+		<div class="smallBreak"></div>
+		<div class="row">
+			<div class="col-xs-3"><label>Only enable @RadialReview.Utilities.Config.ReviewName():</label></div>
 			<div class="col-xs-9">@Html.CheckBoxFor(x => x.IsManager, new { style = "padding-bottom: 7px;", @class = "checkbox blend" })</div>
 		</div>
 	}

@@ -1,41 +1,46 @@
 ﻿@model RadialReview.Models.Permissions.PermItemVM
-
+@{
+	var headings = (RadialReview.Models.PermissionsHeading)ViewBag.Heading?? new RadialReview.Models.PermissionsHeading();
+}
 
 <tr id="permItem_@Model.Id">
-	<td>
-		@if (ViewBag.CanEdit_View)
-		{
-			@Html.CheckBoxFor(x => x.CanView, new { onchange = "updatePermItem("+Model.Id+",'view',this)" })
-		}
-		else
-		{
-			@Html.CheckBoxFor(x => x.CanView, new { title = "Cannot change view permissions.",disabled=true })
-			@*<span class="disabled gray icon fontastic-icon-eye-2" title=""></span>*@
-		}
-	</td>
-	<td>
-		@if (ViewBag.CanEdit_Edit)
-		{
-			@Html.CheckBoxFor(x => x.CanEdit, new { onchange = "updatePermItem(" + Model.Id + ",'edit',this)" })
-			@*<span class="glyphicon glyphicon-pencil"></span>*@
-		}
-		else
-		{
-			@Html.CheckBoxFor(x => x.CanEdit, new { title = "Cannot change edit permissions.", disabled = true })
-			@*<div class="disabled gray" title="Cannot change edit permissions.">Edit</div>*@
-		}
 
-	</td>
-	<td>
+	@if (headings.ViewName != null) {
+		<td>
+			@if (ViewBag.CanEdit_View) {
+				@Html.CheckBoxFor(x => x.CanView, new { onchange = "updatePermItem(" + Model.Id + ",'view',this)" })
+			} else {
+				@Html.CheckBoxFor(x => x.CanView, new { title = "Cannot change view permissions.", disabled = true })
+				@*<span class="disabled gray icon fontastic-icon-eye-2" title=""></span>*@
+			}
+		</td>
+	}
 
-		@if (ViewBag.CanEdit_Admin) {
-			@Html.CheckBoxFor(x => x.CanAdmin, new { onchange = "updatePermItem(" + Model.Id + ",'admin',this)" })
-			@*<span class="icon fontastic-icon-key"></span>*@
-		} else {
-			@Html.CheckBoxFor(x => x.CanAdmin, new { title = "Cannot change admin permissions.", disabled = true })
-			@*<div class="disabled gray" title="Cannot change admin permissions.">Admin</div>*@
-		}
-	</td>
+	@if (headings.EditName != null) {
+		<td>
+			@if (ViewBag.CanEdit_Edit) {
+				@Html.CheckBoxFor(x => x.CanEdit, new { onchange = "updatePermItem(" + Model.Id + ",'edit',this)" })
+				@*<span class="glyphicon glyphicon-pencil"></span>*@
+			} else {
+				@Html.CheckBoxFor(x => x.CanEdit, new { title = "Cannot change edit permissions.", disabled = true })
+				@*<div class="disabled gray" title="Cannot change edit permissions.">Edit</div>*@
+			}
+
+		</td>
+	}
+
+	@if (headings.AdminName != null) {
+		<td>
+
+			@if (ViewBag.CanEdit_Admin) {
+				@Html.CheckBoxFor(x => x.CanAdmin, new { onchange = "updatePermItem(" + Model.Id + ",'admin',this)" })
+				@*<span class="icon fontastic-icon-key"></span>*@
+			} else {
+				@Html.CheckBoxFor(x => x.CanAdmin, new { title = "Cannot change admin permissions.", disabled = true })
+				@*<div class="disabled gray" title="Cannot change admin permissions.">Admin</div>*@
+			}
+		</td>
+	}
 	<td>
 		@{Html.RenderPartial("~/Views/Shared/_Picture.cshtml", new ViewDataDictionary(Model.ImageUrl){
 			  {"ImageTitle",Model.Title},

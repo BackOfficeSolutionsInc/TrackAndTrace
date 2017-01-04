@@ -17,6 +17,7 @@ using RadialReview.Utilities;
 using Microsoft.AspNet.Identity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
+using RadialReview.Models.ViewModels;
 
 namespace TractionTools.Tests.Utilities {
 	public class Org {
@@ -60,26 +61,26 @@ namespace TractionTools.Tests.Utilities {
 			GetCredentials(user);
 		}
 
-		public Credentials GetCredentials(UserOrganizationModel user) {
-			if (!ExistingCreds.ContainsKey(user.Id)) {
+		public Credentials GetCredentials(UserOrganizationModel userOrg) {
+			if (!ExistingCreds.ContainsKey(userOrg.Id)) {
 				BaseTest.MockHttpContext();
 				var password = Guid.NewGuid().ToString();
 
-				var u = new UserModel() {
-					UserName = user.TempUser.Email.ToLower(),
-					FirstName = user.TempUser.FirstName,					
-					LastName = user.TempUser.LastName,
+				var user = new UserModel() {
+					UserName = userOrg.TempUser.Email.ToLower(),
+					FirstName = userOrg.TempUser.FirstName,					
+					LastName = userOrg.TempUser.LastName,
 				};
-				new AccountController().UserManager.Create(u, password);
-				var org = OrganizationAccessor.JoinOrganization(u, Manager.Id, user.Id);
+				new AccountController().UserManager.Create(user, password);
+				var newUserOrg = OrganizationAccessor.JoinOrganization(user, Manager.Id, userOrg.Id);
 
-				user.User = org.User;
-				user.TempUser = org.TempUser;
+				userOrg.User = newUserOrg.User;
+				userOrg.TempUser = newUserOrg.TempUser;
 				
 
-				ExistingCreds[user.Id] = new Credentials(u.UserName, password, user);
+				ExistingCreds[userOrg.Id] = new Credentials(user.UserName, password, userOrg);
 			}
-			return ExistingCreds[user.Id];
+			return ExistingCreds[userOrg.Id];
 		}
 
 		public void RegisterAllUsers() {
@@ -226,7 +227,19 @@ namespace TractionTools.Tests.Utilities {
 			org.Manager = manager;
 
 			var employeeName = "employee";
-			var tempUser = JoinOrganizationAccessor.CreateUserUnderManager(manager, null, false, -2, employeeName + "@test_" + org.UID + ".com", employeeName, "" + nowMs, out employee, false, "");
+
+			var settings = new CreateUserOrganizationViewModel() {
+				ManagerNodeId = null,
+				IsManager = false,
+				OrgPositionId = -2,
+				Email = employeeName + "@test_" + org.UID + ".com",
+				FirstName = employeeName,
+				LastName = "" + nowMs,
+				IsClient = false,
+				ClientOrganizationName = "",
+			};
+
+			var tempUser = JoinOrganizationAccessor.CreateUserUnderManager(manager, settings, out employee);// null, false, -2, employeeName + "@test_" + org.UID + ".com", employeeName, "" + nowMs, out employee, false, "");
 
 			org.Employee = employee;
 			org.EmployeeNode = AccountabilityAccessor.AppendNode(manager, managerNode.Id, userId: employee.Id);
@@ -246,7 +259,19 @@ namespace TractionTools.Tests.Utilities {
 			//if (managerNode != null) {
 			//	manager = org.AllUsers.First(x => x.Id == managerNode.UserId);
 			//}
-			var temp = JoinOrganizationAccessor.CreateUserUnderManager(org.Manager, null, false, -2, uname.ToLower() + "@test_" + org.UID + ".com", uname, "" + ms, out user, isClient, isClient ? "ClientOrg" : "");
+
+			var settings = new CreateUserOrganizationViewModel() {
+				ManagerNodeId = null,
+				IsManager = false,
+				OrgPositionId = -2,
+				Email = uname.ToLower() + "@test_" + org.UID + ".com",
+				FirstName = uname,
+				LastName = "" + ms,
+				IsClient = isClient,
+				ClientOrganizationName = isClient ? "ClientOrg" : ""
+			};
+
+			var temp = JoinOrganizationAccessor.CreateUserUnderManager(org.Manager, settings, out user);// null, false, -2, uname.ToLower() + "@test_" + org.UID + ".com", uname, "" + ms, out user, isClient, isClient ? "ClientOrg" : "");
 			org.AllUsers.Add(user);
 			org.Set(userSelector, user);
 

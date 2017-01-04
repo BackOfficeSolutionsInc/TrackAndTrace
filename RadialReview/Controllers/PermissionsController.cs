@@ -100,6 +100,7 @@ namespace RadialReview.Controllers {
 			var model = PermissionsAccessor.GetPermItems(GetUser(), id, type);
 
 			ViewBag.ButtonClass = buttonClass;
+			
 			return PartialView(model);
 		}
 

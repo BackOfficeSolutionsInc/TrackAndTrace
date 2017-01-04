@@ -1553,6 +1553,14 @@ namespace RadialReview.Utilities {
 		}
 		#endregion
 
+		#region Upgrades
+		public PermissionsUtility CanUpgradeUser(long userId) {
+			ViewUserOrganization(userId, false);
+			var user = session.Get<UserOrganizationModel>(userId);
+			return CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, user.Organization.Id);
+		}
+		#endregion
+
 		#region Overrides
 
 		public PermissionsUtility TryWithAllUsers(Func<PermissionsUtility, PermissionsUtility> p) {

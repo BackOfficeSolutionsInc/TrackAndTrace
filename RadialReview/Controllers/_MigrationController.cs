@@ -1820,7 +1820,7 @@ namespace RadialReview.Controllers {
 					var values = s.QueryOver<CompanyValueModel>().List().ToList();
 					foreach (var v in values) {
 
-						v.MinimumPercentage= (3*100)/5;
+						v.MinimumPercentage = (3 * 100) / 5;
 						s.Update(v);
 						b += 1;
 					}
@@ -1831,23 +1831,23 @@ namespace RadialReview.Controllers {
 			}
 
 
-			return "Updated " + a+", "+b;
+			return "Updated " + a + ", " + b;
 		}
 		#endregion
 
 		[Access(Controllers.AccessLevel.Radial)]
-		public String M12_13_2016(double id=5) {
+		public String M12_13_2016(double id = 5) {
 			var a = 0;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 
-					var tiles = s.QueryOver<TileModel>().Where(x=>x.DeleteTime==null).List().ToList();
+					var tiles = s.QueryOver<TileModel>().Where(x => x.DeleteTime == null).List().ToList();
 					foreach (var o in tiles) {
 						o.Height = (int)Math.Round(o.Height * id);
 						o.Y = (int)Math.Round(o.Y * id);
 						s.Update(o);
 						a++;
-					}					
+					}
 
 					tx.Commit();
 					s.Flush();
@@ -1858,6 +1858,57 @@ namespace RadialReview.Controllers {
 			return "Updated " + a + " tiles";
 		}
 
+
+		[Access(Controllers.AccessLevel.Radial)]
+		public String M01_04_2017() {
+			var a = 0;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+
+					var orgs = s.QueryOver<OrganizationModel>().List().ToList();
+					var teams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Type == TeamType.Managers).List().ToList();
+
+					foreach (var org in orgs) {
+
+						var team = teams.Where(x => x.Type == TeamType.Managers && org.Id == x.Organization.Id).FirstOrDefault();
+
+						var items = new List<PermTiny>() {
+							PermTiny.Admins()
+						};
+
+						if (team != null) {
+							items.Add(PermTiny.RGM(team.Id, admin: false));
+						}
+
+						var admin = UserOrganizationModel.CreateAdmin();
+						admin.Organization = org;
+
+
+
+						PermissionsAccessor.CreatePermItems(s, admin, PermItem.ResourceType.UpgradeUsersForOrganization, org.Id,
+							items.ToArray()
+						);
+						a += 1;
+					}
+
+
+					//
+					//foreach (var o in tiles) {
+					//	o.Height = (int)Math.Round(o.Height * id);
+					//	o.Y = (int)Math.Round(o.Y * id);
+					//	s.Update(o);
+					//	a++;
+					//}
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+
+
+			return "Updated " + a + " org permissions";
+
+		}
 	}
 }
 #pragma warning restore CS0618 // Type or member is obsolete

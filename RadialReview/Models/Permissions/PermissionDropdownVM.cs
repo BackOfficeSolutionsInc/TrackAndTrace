@@ -72,5 +72,9 @@ namespace RadialReview.Models.Permissions
 		public PermItem.ResourceType ResType { get; set; }
 		public long ResId { get; set; }
 
+		public PermissionsHeading GetHeading() {
+			return PermissionsHeading.GetHeading(ResType);
+		}
+
 	}
 }

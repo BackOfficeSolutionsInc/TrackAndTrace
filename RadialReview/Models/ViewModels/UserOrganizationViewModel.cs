@@ -9,26 +9,52 @@ using System.Web;
 using System.Web.Mvc;
 using RadialReview.Models.Scorecard;
 using RadialReview.Models.UserModels;
+using RadialReview.Exceptions;
 
 namespace RadialReview.Models.ViewModels
 {
     public class CreateUserOrganizationViewModel
     {
-        public UserPositionViewModel Position { get; set; }
-        public String FirstName { get; set; }
+		//Creation variables
+		#region Creation Variables
+		public String FirstName { get; set; }
         public String LastName { get; set; }
         public String Email { get; set; }
         public bool IsManager { get; set; }
         public long OrgId { get; set; }
         public bool StrictlyHierarchical { get; set; }
         public long? ManagerNodeId { get; set; }
-        public List<SelectListItem> PotentialManagers { get; set; }
+		public bool EvalOnly { get; set; }
 
-		public string OrganizationName { get; set; }
 		public bool IsClient { get; set; }
-
+		public string ClientOrganizationName { get; set; }
+		
 		public bool SendEmail { get; set; }
 		public long? NodeId { get; set; }
+		
+
+		public long? OrgPositionId {
+			get {
+				if (_OrgPositionId != null && Position != null)
+					throw new PermissionsException("Position and PositionId cannot both be set");
+
+				if (Position != null)
+					return Position.PositionId;
+				return _OrgPositionId;
+			}
+			set {
+				_OrgPositionId = value;
+			}
+		}
+		private long? _OrgPositionId { get; set; }
+
+		#endregion
+
+		//ViewModel Variables
+		#region VM Variables
+		public UserPositionViewModel Position { get; set; }
+        public List<SelectListItem> PotentialManagers { get; set; }
+		#endregion
 	}
 
     public class EditUserOrganizationViewModel

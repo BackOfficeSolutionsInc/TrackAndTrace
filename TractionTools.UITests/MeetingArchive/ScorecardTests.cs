@@ -25,7 +25,8 @@ namespace TractionTools.UITests.Selenium {
         private const string MEETING_NAME = "SuperMeeting";
         
         [TestMethod]
-        public async Task L10_Archive_TestScorecard()
+		[TestCategory("Visual")]
+		public async Task L10_Archive_TestScorecard()
         {
             var testId = Guid.NewGuid();
             //Ensure correct week

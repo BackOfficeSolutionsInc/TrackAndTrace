@@ -35,7 +35,16 @@ namespace RadialReview.Models
             Id = UserOrganizationModel.ADMIN_ID,
         };
 
-        public virtual DateTime? _MethodStart { get; set; }
+		public static UserOrganizationModel CreateAdmin() {
+
+			return new UserOrganizationModel() {
+				IsRadialAdmin = true,
+				Id = UserOrganizationModel.ADMIN_ID,
+			};
+		}
+
+
+		public virtual DateTime? _MethodStart { get; set; }
         public virtual long? _ClientTimestamp { get; set; }
         public virtual int? _ClientOffset { get; set; }
         protected virtual TimeData _timeData { get; set; }
@@ -106,12 +115,13 @@ namespace RadialReview.Models
         public virtual String JobDescription { get; set; }
 
         public virtual long? JobDescriptionFromTemplateId { get; set; }
+		public virtual Boolean EvalOnly { get; set; }
 
-        /*public virtual int NumRocks { get; set; }
+		/*public virtual int NumRocks { get; set; }
 		public virtual int NumRoles { get; set; }
 		public virtual int NumMeasurables { get; set; }*/
 
-        public override string GetImageUrl()
+		public override string GetImageUrl()
         {
             return this.ImageUrl(true);
 		}
@@ -450,9 +460,11 @@ namespace RadialReview.Models
             Map(x => x.DetachTime);
             Map(x => x.DeleteTime);
             Map(x => x.EmailAtOrganization);
-            Map(x => x.IsClient);
+			Map(x => x.IsClient);
 
-            Map(x => x.ClientOrganizationName);
+			Map(x => x.EvalOnly);
+
+			Map(x => x.ClientOrganizationName);
             /*Map(x => x.NumRocks);
 			Map(x => x.NumRoles);
 			Map(x => x.NumMeasurables);*/

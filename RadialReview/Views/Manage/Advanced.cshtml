@@ -242,6 +242,18 @@
 						</div>
 					</div>
 				</div>
+				<div class="row">
+					<div class="col-xs-5  ttt">
+						<label class="control-label">Upgrade users:</label>
+					</div>
+					<div class="col-xs-3">
+						<div class="pull-left">
+							@{
+								Html.RenderAction("Dropdown", "Permissions", new { id = Model.Id, type = PermItem.ResourceType.UpgradeUsersForOrganization, buttonClass = "btn-xs" });
+							}<abbr class="info" title="Who can upgrade users."></abbr>
+						</div>
+					</div>
+				</div>
 				@*<div class="row ">
 						<label class="col-xs-5  ttt control-label">Quarterly Goals are called:</label>
 						<div class="col-xs-3">

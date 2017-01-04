@@ -69,7 +69,7 @@ namespace RadialReview.Controllers {
 						.WhereRestrictionOn(x => x.Name).Not.IsIn(supportNames)
 						.OrderBy(x => x.LastLogin).Desc
 						.SelectList(a =>
-							a.SelectGroup(x => x.OrganizationId)
+							a.Select(x => x.OrganizationId)
 							 .Select(x => x.Name)
 							 .Select(x => x.Positions)
 							 .Select(x => x.LastLogin)
@@ -116,7 +116,7 @@ namespace RadialReview.Controllers {
 							TrialEnd = trialEnd,
 							CreditCardExp = !tokens.ContainsKey(x.Id) ? (DateTime?)null : new DateTime(tokens[x.Id].YearExpire, tokens[x.Id].MonthExpire, 1)
 						};
-					}).ToList();
+					}).OrderByDescending(x=>x.OrgId).ToList();
 
 					return stats;
 

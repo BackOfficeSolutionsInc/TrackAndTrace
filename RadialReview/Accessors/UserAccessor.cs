@@ -1132,18 +1132,22 @@ namespace RadialReview.Accessors
 				model.Position.PositionId = newPosition.Id;
 			}
 
-			var positionId = -2L;
-			if (model.Position != null)
-				positionId = model.Position.PositionId;
+			//var positionId = -2L;
+			//if (model.Position != null)
+			//	positionId = model.Position.PositionId;
 
-			var nexusIdandUser = await JoinOrganizationAccessor.JoinOrganizationUnderManager(
-					user, model.ManagerNodeId, model.IsManager,
-					positionId, model.Email,
-					model.FirstName, model.LastName,
-					model.IsClient,
-					model.SendEmail,
-					model.OrganizationName
-				);
+
+
+
+
+			var nexusIdandUser = await JoinOrganizationAccessor.JoinOrganizationUnderManager(user, model);
+				//	user, model.ManagerNodeId, model.IsManager,
+				//	positionId, model.Email,
+				//	model.FirstName, model.LastName,
+				//	model.IsClient,
+				//	model.SendEmail,
+				//	model.OrganizationName
+				//);
 			createdUser = nexusIdandUser.Item2;
 			var nexusId = nexusIdandUser.Item1;
 

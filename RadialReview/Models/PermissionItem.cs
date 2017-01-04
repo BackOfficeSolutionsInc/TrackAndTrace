@@ -4,12 +4,37 @@ using System.Linq;
 using System.Web;
 using FluentNHibernate.Mapping;
 using RadialReview.Models.Interfaces;
+using static RadialReview.Models.PermItem;
 
-namespace RadialReview.Models
-{
+namespace RadialReview.Models {
+	public class PermissionsHeading {
+		public string ViewName { get; set; }
+		public string EditName { get; set; }
+		public string AdminName { get; set; }
+		public PermissionsHeading() {
+			ViewName  = "View";
+			EditName  = "Edit";
+			AdminName = "Admin";
+
+		}
+
+		public static PermissionsHeading GetHeading(ResourceType type) {
+			switch (type) {
+				case ResourceType.UpgradeUsersForOrganization:
+					return new PermissionsHeading() {
+						ViewName = null,
+						EditName = "Edit",
+						AdminName = "Admin"
+					};
+				default:
+					return new PermissionsHeading();
+			};
+		}
+	}
 
 	public class PermItem : ILongIdentifiable, IHistorical
 	{
+
 
 		public enum AccessType
 		{
@@ -26,7 +51,8 @@ namespace RadialReview.Models
             InvoiceForOrganization = 2,
             VTO = 3,
             AccountabilityHierarchy= 4,
-        }
+			UpgradeUsersForOrganization = 5,
+		}
 		[Flags]
 		public enum AccessLevel
 		{

@@ -17,6 +17,7 @@ namespace TractionTools.UITests.FAQ {
 		}
 
 		[TestMethod]
+		[TestCategory("Visual")]
 		public async Task FAQ_CreateMeeting() {
 
 			var testId = Guid.NewGuid();

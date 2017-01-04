@@ -12,6 +12,7 @@ namespace TractionTools.UITests.Evals {
 	public class EvalTests : BaseSelenium {
 
 		[TestMethod]
+		[TestCategory("Visual")]
 		public async Task CanCreateEval() {
 			var testId = Guid.NewGuid();
 			//var AUC = await GetAdminCredentials(testId);
@@ -39,6 +40,7 @@ namespace TractionTools.UITests.Evals {
 		}
 
 		[TestMethod]
+		[TestCategory("Visual")]
 		public async Task CreateNoSupervisor() {
 			var testId = Guid.NewGuid();
 			//var AUC = await GetAdminCredentials(testId);
@@ -128,6 +130,7 @@ namespace TractionTools.UITests.Evals {
 		}
 
 		[TestMethod]
+		[TestCategory("Visual")]
 		public async Task CreateSupervisor() {
 			var testId = Guid.NewGuid();
 			//var AUC = await GetAdminCredentials(testId);

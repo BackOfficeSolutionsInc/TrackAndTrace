@@ -133,7 +133,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
 		public PartialViewResult AddModal(
 			long? managerId = null, string name = null, bool isClient = false, long? managerNodeId = null, 
-			bool forceManager = false, bool hideIsManager = false,bool hidePosition=false,long? nodeId=null)
+			bool forceManager = false, bool hideIsManager = false,bool hidePosition=false,long? nodeId=null,bool hideEvalOnly=false)
 		{
 			var sw = new Stopwatch();
 			sw.Start();
@@ -188,10 +188,15 @@ namespace RadialReview.Controllers {
 				var node = DeepAccessor.Users.GetNodesForUser(GetUser(), managerId ?? caller.Id).FirstOrDefault();
 				managerNodeId = node == null ? (long?)null : node.Id;
 			}
+
+			if (!caller.Organization.Settings.EnableReview) {
+				hideEvalOnly = true;
+			}
+
 			ViewBag.ForceManager = forceManager;
 			ViewBag.HideIsManager = hideIsManager;
 			ViewBag.HidePosition = hidePosition;
-
+			ViewBag.HideEvalOnly = hideEvalOnly;
 
 			string fname = null;
 			string lname = null;
@@ -223,7 +228,7 @@ namespace RadialReview.Controllers {
 				FirstName = fname,
 				LastName = lname,
 				Email = email,
-				NodeId = nodeId
+				NodeId = nodeId				
 			};
 			var e5 = sw.ElapsedMilliseconds;
 			return PartialView(model);

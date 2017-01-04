@@ -224,7 +224,8 @@ namespace TractionTools.UITests.MeetingArchive {
         #endregion
 
         [TestMethod]
-        public async Task L10_Meeting_Segue()
+		[TestCategory("Visual")]
+		public async Task L10_Meeting_Segue()
         {
             var testId = Guid.NewGuid();
             var auc = await GetAdminCredentials(testId);
@@ -252,7 +253,8 @@ namespace TractionTools.UITests.MeetingArchive {
 
 
         [TestMethod]
-        public async Task L10_Meeting_Scorecard()
+		[TestCategory("Visual")]
+		public async Task L10_Meeting_Scorecard()
         {
             var testId = Guid.NewGuid();
             var auc = await GetAdminCredentials(testId);

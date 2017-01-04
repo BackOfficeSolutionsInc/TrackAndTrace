@@ -149,6 +149,8 @@ namespace RadialReview.Models {
 					Map(x => x.EnableReview);
 					Map(x => x.EnableSurvey);
 
+					Map(x => x.DisableUpgradeUsers);
+
 					Map(x => x.LimitFiveState);
 
 					Map(x => x.RockName);
@@ -170,6 +172,7 @@ namespace RadialReview.Models {
 			public virtual DateOffset StartOfYearOffset { get; set; }
 			public virtual NumberFormat NumberFormat { get; set; }
 			public virtual bool LimitFiveState { get; set; }
+			public virtual bool DisableUpgradeUsers { get; set; }
 
 			public virtual string GetAngularNumberFormat() {
 				return NumberFormat.Angular();
@@ -346,6 +349,8 @@ namespace RadialReview.Models {
 				Map(x => x.ManagersCanEditPositions);
 				Map(x => x.ManagersCanRemoveUsers);
 				Map(x => x.AccountabilityChartId);
+
+				
 
 				//References(x => x.Lookup).LazyLoad().Cascade.SaveUpdate();
 

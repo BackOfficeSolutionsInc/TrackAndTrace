@@ -1,6 +1,7 @@
 ﻿@model RadialReview.Models.Permissions.PermissionDropdownVM
 @{
 	var guid = Guid.NewGuid().ToString().Replace("-", "");
+	var headings = Model.GetHeading();
 }
 
 <span class="dropdown dropdown-permissions dd_@guid">
@@ -10,20 +11,25 @@
 		<span class="caret"></span>
 	</button>
 	<ul class="dropdown-menu permissions-dropdown-menu" aria-labelledby="dropdownMenu122">
-
 		<li class="">
-			<form class="container">
+			<form class="permissions-container">
 				<label>Add permissions for a user, team, or position. Begin typing here...</label>
 				<br />
-				<select id="search_@guid" style="width:600px;height: 28px !important;" placeholder=""></select>
+				<select id="search_@guid" style="width:450px;height: 28px !important;" placeholder=""></select>
 				<hr />
 				<div class="form-group" id="container_@guid">
 					<table class="table-hover" style="text-align: center;">
 						<thead>
 							<tr>
-								<th class="setting">View</th>
-								<th class="setting">Edit</th>
-								<th class="setting">Admin</th>
+								@if (headings.ViewName != null) {
+									<th class="setting">@(headings.ViewName)</th>
+								}
+								@if (headings.EditName != null) {
+									<th class="setting">@(headings.EditName)</th>
+								}
+								@if (headings.AdminName != null) {
+									<th class="setting">@(headings.AdminName)</th>
+								}
 								<th></th>
 								<th class="name"></th>
 								<th class="setting"></th>
@@ -35,7 +41,8 @@
 									{"CanEdit_View", Model.CanEdit_View},
 									{"CanEdit_Edit", Model.CanEdit_Edit},
 									{"CanEdit_Admin", Model.CanEdit_Admin},
-									{"CanEdit_Delete",u.Deletable }
+									{"CanEdit_Delete",u.Deletable },
+									{"Heading", headings }
 								})
 							}
 						</tbody>

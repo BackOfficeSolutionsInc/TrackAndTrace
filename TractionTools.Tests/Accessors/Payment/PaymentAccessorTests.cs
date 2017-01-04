@@ -11,6 +11,7 @@ using RadialReview.Models.Tasks;
 using System.Linq;
 using RadialReview;
 using RadialReview.Utilities;
+using RadialReview.Models.ViewModels;
 
 namespace TractionTools.Tests.Accessors {
 	[TestClass]
@@ -99,7 +100,15 @@ namespace TractionTools.Tests.Accessors {
 			});
 
 			MockHttpContext();
-			JoinOrganizationAccessor.AddUser(caller, org.ManagerNode, "a", "a", "a@a.com", null);
+			var settings = new CreateUserOrganizationViewModel() {
+				Email = "a@a.com",
+				FirstName = "a",
+				LastName = "a",
+				OrgPositionId = null,
+				ManagerNodeId = org.ManagerNode.Id
+			};
+
+			JoinOrganizationAccessor.AddUser(caller, settings);
 
 
 			//Try with newly created task

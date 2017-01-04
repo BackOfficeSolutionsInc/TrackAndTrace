@@ -45,15 +45,18 @@ namespace TractionTools.Tests.Permissions {
 				OrganizationId = c.Id,
 				Rock = "rock"
 			};
+			//Make the rock, assign to L10
 			L10Accessor.CreateRock(c.Manager, l10.Id, L10Controller.AddRockVm.CreateRock(l10.Id, rock));
 
 			var perm = new Action<PermissionsUtility>(p => p.EditRock(rock.Id));
 
 			c.AssertAll(perm, c.Manager, c.Middle, c.E1);
 
+			//Add attendee E5
 			L10Accessor.AddAttendee(c.Manager, l10.Id, c.E5.Id);
 			c.AssertAll(perm, c.Manager, c.Middle, c.E5, c.E1);
 
+			//Add attendee E4
 			L10Accessor.AddAttendee(c.Manager, l10.Id, c.E4.Id);
 			c.AssertAll(perm, c.Manager, c.Middle, c.E5, c.E1, c.E4);
 
@@ -63,20 +66,20 @@ namespace TractionTools.Tests.Permissions {
 			//Remove Creator
 			{
 				var creator = allPerms.Items.First(x => x.AccessorType == AccessType.Creator);
-				PermissionsAccessor.EditPermItem(c.Manager, creator.Id, false, null, null);
+				PermissionsAccessor.EditPermItem(c.Manager, creator.Id, false, false, null);
 				c.AssertAll(perm, c.Manager, c.E5, c.E1, c.E4);
 			}
 			//Remove Admin
 			{
 				var admin = allPerms.Items.First(x => x.AccessorType == AccessType.Admins);
-				PermissionsAccessor.EditPermItem(c.Manager, admin.Id, false, null, null);
+				PermissionsAccessor.EditPermItem(c.Manager, admin.Id, false, false, null);
 				c.AssertAll(perm, c.E5, c.Manager, c.E1, c.E4);
 			}
 
 			//Remove members
 			{
 				var member = allPerms.Items.First(x => x.AccessorType == AccessType.Members);
-				PermissionsAccessor.EditPermItem(c.Manager, member.Id, false, null, null);
+				PermissionsAccessor.EditPermItem(c.Manager, member.Id, false, false, null);
 				c.AssertAll(perm, c.Manager, c.E1);
 			}
 
