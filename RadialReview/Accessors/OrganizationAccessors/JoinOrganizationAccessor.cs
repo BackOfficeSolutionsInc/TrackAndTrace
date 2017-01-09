@@ -23,17 +23,6 @@ namespace RadialReview.Accessors {
 		public UserOrganizationModel User { get; set; }
 	}
 
-	//public class CreateUserSettings {
-	//	public String FirstName { get; set; }
-	//	public String LastName { get; set; }
-	//	public String Email { get; set; }
-	//	public long? ManagerNodeId { get; set; }
-	//	public long? OrgPositionId { get; set; }
-	//	public bool EvalOnly { get; set; }
-	//	public bool IsManager { get; set; }
-	//	public bool IsClient { get; set; }
-	//	public string ClientOrgName { get; set; }
-	//}
 
 	public class JoinOrganizationAccessor : BaseAccessor {
 
@@ -156,16 +145,6 @@ namespace RadialReview.Accessors {
 
                     newUserId = newUser.Id;
                     if (managerNode!=null) {
-						//if (managerNode.UserId != null) {
-						//	var managerDuration = new ManagerDuration(managerNode.UserId.Value, newUser.Id, caller.Id) {
-						//		Start = now,
-						//		Manager = db.Load<UserOrganizationModel>(managerNode.UserId.Value),
-						//		Subordinate = db.Load<UserOrganizationModel>(newUser.Id),
-						//	};
-						//	newUser.ManagedBy.Add(managerDuration);
-						//}
-						// var manager = db.Get<UserOrganizationModel>(managerId);
-						//db.Save(new DeepSubordinateModel() { CreateTime = now, Links = 1, ManagerId = newUserId, SubordinateId = newUserId });
 						using (var rt = RealTimeUtility.Create()){
 							var perms = PermissionsUtility.Create(db, caller);
 							var node = AccountabilityAccessor.AppendNode(db,perms ,rt, managerNode.Id, userId: newUser.Id);
@@ -173,7 +152,7 @@ namespace RadialReview.Accessors {
 								AccountabilityAccessor.SetPosition(db, perms, rt, node.Id, orgPositionId);
 
 						}
-                        //DeepSubordianteAccessor.Add(db, manager, newUser, caller.Organization.Id, now);
+                        
                     }else
                     {
                     newUser.UpdateCache(db);

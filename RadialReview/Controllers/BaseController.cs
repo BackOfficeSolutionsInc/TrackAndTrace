@@ -786,8 +786,9 @@ namespace RadialReview.Controllers {
 								filterContext.Controller.ViewBag.ShowAC = PermissionsAccessor.IsPermitted(s,oneUser, x => x.CanView(PermItem.ResourceType.AccountabilityHierarchy,oneUser.Organization.AccountabilityChartId)); // oneUser.Organization.acc && oneUser.IsManager();
 								
 								var isManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
-                                filterContext.Controller.ViewBag.LimitFiveState = oneUser.Organization.Settings.LimitFiveState;
-                                filterContext.Controller.ViewBag.IsManager = isManager;
+								filterContext.Controller.ViewBag.LimitFiveState = oneUser.Organization.Settings.LimitFiveState;
+								filterContext.Controller.ViewBag.IsRadialAdmin = oneUser.IsRadialAdmin;
+								filterContext.Controller.ViewBag.IsManager = isManager;
                                 filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
                                 filterContext.Controller.ViewBag.UserId = oneUser.Id;
                                 filterContext.Controller.ViewBag.OrganizationId = oneUser.Organization.Id;

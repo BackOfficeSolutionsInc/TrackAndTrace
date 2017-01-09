@@ -53,7 +53,7 @@ namespace RadialReview.Controllers
 					OnlyAsk = AboutType.Self,
 				};
 			else{
-				rock = _RockAccessor.GetRock(GetUser(), id);
+				rock = RockAccessor.GetRock(GetUser(), id);
 			}
 
 			ViewBag.Periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.Name, x => x.Id);
@@ -113,7 +113,7 @@ namespace RadialReview.Controllers
 			//var rocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
 			var oid = GetUser().Organization.Id;
 			model.Rocks.ForEach(x=>x.OrganizationId=oid);
-			_RockAccessor.EditCompanyRocks(GetUser(), GetUser().Organization.Id, model.Rocks);
+			RockAccessor.EditCompanyRocks(GetUser(), GetUser().Organization.Id, model.Rocks);
 			return Json(ResultObject.Create(model.Rocks.Select(x => new { Session = x.Period.Name, Rock = x.Rock, Id = x.Id }), status: StatusType.Success));
 		}
 
@@ -122,7 +122,7 @@ namespace RadialReview.Controllers
 		{
 			_PermissionsAccessor.Permitted(GetUser(), x => x.EditQuestionForUser(id));
 			var userId = id;
-			var rocks = _RockAccessor.GetAllRocks(GetUser(), userId);
+			var rocks = RockAccessor.GetAllRocks(GetUser(), userId);
 			var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).OrderByDescending(x=>x.EndTime).ToSelectList(x=>x.Name,x=>x.Id);
 			ViewBag.Periods = periods;
 			return PartialView(new RocksController.RockVM { Rocks = rocks, UserId = id });
@@ -135,14 +135,14 @@ namespace RadialReview.Controllers
 			foreach (var r in model.Rocks){
 				r.ForUserId = model.UserId;
 			}
-			 _RockAccessor.EditRocks(GetUser(), model.UserId, model.Rocks,model.UpdateOutstandingReviews, model.UpdateAllL10s);
+			 RockAccessor.EditRocks(GetUser(), model.UserId, model.Rocks,model.UpdateOutstandingReviews, model.UpdateAllL10s);
 			return Json(ResultObject.Create(model.Rocks.Select(x=>new { Session = x.Period.Name, Rock = x.Rock, Id =x.Id }),status:StatusType.Success));
 		}
 
         [Access(AccessLevel.UserOrganization)]
         public FileContentResult Listing()
         {
-            var csv=_RockAccessor.Listing(GetUser(), GetUser().Organization.Id);
+            var csv=RockAccessor.Listing(GetUser(), GetUser().Organization.Id);
             return File(csv.ToBytes(), "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + csv.Title + ".csv");
         }
 
@@ -157,7 +157,7 @@ namespace RadialReview.Controllers
         public PartialViewResult Table(long id, bool editor = false, bool current = true)
 	    {
 		    var forUserId = id;
-			var rocks = _RockAccessor.GetAllRocks(GetUser(), forUserId);
+			var rocks = RockAccessor.GetAllRocks(GetUser(), forUserId);
 		    var editables = new List<long>();
 
 		    if (current)

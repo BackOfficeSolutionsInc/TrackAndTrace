@@ -332,7 +332,9 @@ namespace RadialReview.Models
                 Cache.IsAdmin = ManagingOrganization;
             if (Cache.IsManager != this.IsManager(true))
                 Cache.IsManager = this.IsManager(true);
-            UserOrganizationModel managerA = null;
+			if (Cache.EvalOnly != this.EvalOnly)
+				Cache.EvalOnly = this.EvalOnly;
+			UserOrganizationModel managerA = null;
             UserLookup cacheA = null;
             try
             {

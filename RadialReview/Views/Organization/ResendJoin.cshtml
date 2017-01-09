@@ -25,7 +25,9 @@
         </div>
     </div>
 }
+@if (ViewBag.IsRadialAdmin == true) {
 <div style="color:white;font-size:4px;">https://traction.tools/Account/Register?returnUrl=%2FOrganization%2FJoin%2F@(Model.Guid)</div>
+}
 @Html.Hidden("TempId", "" + Model.Id)
 @Html.HiddenFor(x => x.Guid)
 @Html.HiddenFor(x => x.EmailStatus)

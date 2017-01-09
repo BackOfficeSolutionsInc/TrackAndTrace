@@ -58,19 +58,19 @@ namespace TractionTools.Tests.Accessors {
             Assert.AreEqual(rocks2[0].ForRock.Id, rocks[0].ForRock.Id); //in fact the same rock
 
 
-            var ra = new RockAccessor();
-            var myRocks = ra.GetRocks(r.Creator, r.Creator.Id);
+            //var ra = new RockAccessor();
+            var myRocks = RockAccessor.GetRocks(r.Creator, r.Creator.Id);
 
             Assert.AreEqual(1, myRocks.Count);
             Assert.AreEqual(rocks2[0].ForRock.Id, myRocks[0].Id);
 
             ctrl.RemoveAngularRock(r.Id, new AngularRock(rocks[0])); //Remove it from one meeting
-            myRocks = ra.GetRocks(r.Creator, r.Creator.Id);
+            myRocks = RockAccessor.GetRocks(r.Creator, r.Creator.Id);
             Assert.AreEqual(1, myRocks.Count);
             Assert.AreEqual(rocks2[0].ForRock.Id, myRocks[0].Id);
 
             ctrl.RemoveAngularRock(r2.Id, new AngularRock(rocks[0]));
-            myRocks = ra.GetRocks(r.Creator, r.Creator.Id);
+            myRocks = RockAccessor.GetRocks(r.Creator, r.Creator.Id);
             Assert.AreEqual(0, myRocks.Count);
 
         }

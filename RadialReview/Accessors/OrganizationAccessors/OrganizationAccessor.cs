@@ -477,7 +477,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public void Edit(UserOrganizationModel caller, long organizationId, string organizationName = null,
+		public static void Edit(UserOrganizationModel caller, long organizationId, string organizationName = null,
 																			bool? managersHaveAdmin = null,
 																			bool? strictHierarchy = null,
 																			bool? managersCanEditPositions = null,

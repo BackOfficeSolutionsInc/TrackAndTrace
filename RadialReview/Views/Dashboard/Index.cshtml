@@ -145,7 +145,7 @@
 	</button>
 	<ul class="dropdown-menu">
 		<li class="dropdown-submenu">
-			<a tabindex="-1" href="#">Personal</a>
+			<a tabindex="-1">Personal</a>
 			<ul class="dropdown-menu" style="">
 				<li><a onclick="createTile('/TileData/UserTodo2','Url')">To-do List</a></li>
 				<li><a onclick="createTile('/TileData/UserScorecard2','Url')">Scorecard</a></li>
@@ -160,14 +160,14 @@
 			</ul>
 		</li>
 		<li class="dropdown-submenu">
-			<a tabindex="-1" href="#">@Html.Organization().GetName()</a>
+			<a tabindex="-1">@Html.Organization().GetName()</a>
 			<ul class="dropdown-menu" style="">
 				<li><a onclick="createTile('/TileData/OrganizationValues','Url')">Core Values</a></li>
 			</ul>
 		</li>
 		@if (Model.L10s.Any()) {
 			<li class="dropdown-submenu">
-				<a tabindex="-1" href="#">L10s</a>
+				<a tabindex="-1">L10s</a>
 				<ul class="dropdown-menu" style="">
 					@foreach (var i in Model.L10s) {
 						<li class="dropdown-submenu">
@@ -196,7 +196,7 @@
 		}
 		<li class="divider"></li>
 		<li class="dropdown-submenu">
-			<a tabindex="-1" href="#">Traction<sup style="font-size: 8px;top: -5px;">®</sup> Tools</a>
+			<a tabindex="-1">Traction<sup style="font-size: 8px;top: -5px;">®</sup> Tools</a>
 			<ul class="dropdown-menu" style="">
 				<li><a onclick="createTile('/TileData/FAQTips','Url')">FAQ Guide</a></li>
 				<li><a onclick="createTile('/TileData/SoftwareUpdates','Url')">Software Updates</a></li>

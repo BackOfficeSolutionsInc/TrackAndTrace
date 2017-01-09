@@ -27,7 +27,7 @@ namespace RadialReview.Accessors
 {
 	public class RockAccessor
 	{
-		public List<RockModel> GetRocks(UserOrganizationModel caller, long forUserId,/* long? periodId,*/ DateRange range = null)
+		public static List<RockModel> GetRocks(UserOrganizationModel caller, long forUserId,/* long? periodId,*/ DateRange range = null)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -89,7 +89,7 @@ namespace RadialReview.Accessors
 			}*/
 		}
 
-		public void EditCompanyRocks(UserOrganizationModel caller, long organizationId, List<RockModel> rocks)
+		public static void EditCompanyRocks(UserOrganizationModel caller, long organizationId, List<RockModel> rocks)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -102,7 +102,10 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
-		public List<PermissionsException> EditRocks(UserOrganizationModel caller, long userId, List<RockModel> rocks, bool updateOutstandingReviews,bool updateAllL10s)
+
+
+
+		public static List<PermissionsException> EditRocks(UserOrganizationModel caller, long userId, List<RockModel> rocks, bool updateOutstandingReviews,bool updateAllL10s)
 		{
             var output = new List<PermissionsException>();
 			using (var s = HibernateSession.GetCurrentSession())
@@ -138,7 +141,7 @@ namespace RadialReview.Accessors
 						r.OnlyAsk = AboutType.Self; //|| AboutType.Manager; 
 						r.Category = category;
 						r.OrganizationId = orgId;
-						r.Period = s.Get<PeriodModel>(r.PeriodId);
+						r.Period = r.PeriodId == null? null :s.Get<PeriodModel>(r.PeriodId);
 						var added = r.Id == 0;
                         if (added)
                             s.Save(r);
@@ -177,7 +180,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public RockModel GetRock(UserOrganizationModel caller, long rockId)
+		public static RockModel GetRock(UserOrganizationModel caller, long rockId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -206,8 +209,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-
-		public List<RockModel> GetAllRocks(UserOrganizationModel caller, long forUserId)
+		public static List<RockModel> GetAllRocks(UserOrganizationModel caller, long forUserId)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
@@ -322,7 +324,7 @@ namespace RadialReview.Accessors
 			}
 		}
 
-        public Csv Listing(UserOrganizationModel caller,long organizationId)
+        public static Csv Listing(UserOrganizationModel caller,long organizationId)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {

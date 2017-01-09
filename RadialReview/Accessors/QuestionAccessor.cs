@@ -21,21 +21,21 @@ namespace RadialReview.Accessors
     {
 
 
-        public QuestionModel CreateQuestion(QuestionModel question)
-        {
-            using (var db = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = db.BeginTransaction())
-                {
-                    db.Save(question);
-                    tx.Commit();
-                    db.Flush();
-                    //db.Questions.Add(question);
-                    //db.SaveChanges();
-                }
-            }
-            return question;
-        }
+        //public QuestionModel CreateQuestion(QuestionModel question)
+        //{
+        //    using (var db = HibernateSession.GetCurrentSession())
+        //    {
+        //        using (var tx = db.BeginTransaction())
+        //        {
+        //            db.Save(question);
+        //            tx.Commit();
+        //            db.Flush();
+        //            //db.Questions.Add(question);
+        //            //db.SaveChanges();
+        //        }
+        //    }
+        //    return question;
+        //}
 
         public void SetQuestionsEnabled(UserOrganizationModel caller, long forUserId, List<long> enabled, List<long> disabled)
         {
@@ -254,8 +254,8 @@ namespace RadialReview.Accessors
                     }
                     else
                     {
+                        permissionUtility.EditQuestion(questionId);
                         q = s.Get<QuestionModel>(questionId);
-                        permissionUtility.EditQuestion(q);
                     }
 
                     /*if (question.CreatedBy.Id == caller.Id)
@@ -263,7 +263,7 @@ namespace RadialReview.Accessors
                     //Edit Origin
                     if (origin != null)
                     {
-                        permissionUtility.EditOrigin(origin);
+                        permissionUtility.EditOrigin(origin,true);
                         q.OriginId = origin.OriginId;
                         q.OriginType = origin.OriginType;
                     }
@@ -307,8 +307,8 @@ namespace RadialReview.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
+                    PermissionsUtility.Create(s, caller).ViewQuestion(id);
                     var question = s.Get<QuestionModel>(id);
-                    PermissionsUtility.Create(s, caller).ViewQuestion(question);
                     return question;
                 }
             }

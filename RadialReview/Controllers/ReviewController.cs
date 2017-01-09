@@ -1020,7 +1020,7 @@ namespace RadialReview.Controllers {
 			chartTypes.Add(new ReviewDetailsViewModel.ChartType() { Checked = false, Title = "Show All (Uncolored)", ImageUrl = "https://s3.amazonaws.com/Radial/base/Charts/AllGray.png" });
 
 			var now = DateTime.UtcNow;
-			var nextRocks = _RockAccessor.GetRocks(GetUser(), review.ReviewerUserId/*, reviewContainer.NextPeriodId*/).ToList();
+			var nextRocks = RockAccessor.GetRocks(GetUser(), review.ReviewerUserId/*, reviewContainer.NextPeriodId*/).ToList();
 
 			if (review.ClientReview.IncludeScorecard && includeScorecard) {
 				review.ClientReview._ScorecardRecur = ScorecardAccessor.GetReview_Scorecard(GetUser(), review.Id);

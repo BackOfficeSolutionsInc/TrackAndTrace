@@ -2,8 +2,26 @@
 @using RadialReview.Properties
 @using RadialReview
 
-@{ 
+@{
 	var limitFiveState = ViewBag.LimitFiveState ?? true;
+	var l10Enabled = false;
+	var reviewEnabled = false;
+	var acEnabled = false;
+	var surveyEnabled = false;
+	if (((int?)ViewBag.Organizations ?? 0) > 0) {
+		if (ViewBag.ShowL10) {
+			l10Enabled = true;
+		}
+		if (ViewBag.ShowReview) {
+			reviewEnabled = true;
+		}
+		if (ViewBag.ShowAC) {
+			acEnabled = true;
+		}
+		if (ViewBag.ShowSurvey) {
+			surveyEnabled = true;
+		}
+	}
 }
 
 <!DOCTYPE html>
@@ -59,10 +77,8 @@
 		<link href="~/Content/L10/L10Conference.css" rel="stylesheet" />
 	}
 	<link href="/User/styles" rel="stylesheet" type="text/css" />
-	<script>
-
-		window.dateFormat = '@(Html.Organization().NotNull(x=>x.Settings.NotNull(y=>y.GetDateFormat()))??"MM-dd-yyyy")';
-	</script>
+	@*<script>
+		</script>*@
 </head>
 @if (ViewBag.HasBaseController == null) {
 	throw new Exception("You must extend from the base controller.");
@@ -76,7 +92,32 @@
 		window.ServerTimeDiff = window.ServerTime - new Date();
 		window.ConvertFromServerTime=function(serverTime){return serverTime -window.ServerTimeDiff;}
 		window.ConvertToServerTime = function (clientTime){return clientTime + window.ServerTimeDiff;}
+		window.dateFormat = '@(Html.Organization().NotNull(x=>x.Settings.NotNull(y=>y.GetDateFormat()))??"MM-dd-yyyy")';
+
+		window.Products = {
+			L10 : @(l10Enabled?"true":"false"),
+			Review : @(reviewEnabled?"true":"false"),
+			AC : @(acEnabled?"true":"false"),
+			Survey : @(surveyEnabled?"true":"false"),
+		};
+
 		window.LimitFiveState = @((""+limitFiveState).ToLower());
+
+		function getFormattedDate(date,format) {
+			if (typeof (date) === "undefined") {date = new Date();}
+			else if (typeof (date) === "number") {date = new Date(date);}
+			else if (typeof (date) === "string") {console.error("unknown format: " + date)}
+
+			if (typeof(format)==="undefined") {format = window.dateFormat;}
+
+			var _d = date.getDate(),dd = _d > 9 ? _d : '0' + _d,_M = date.getMonth() + 1,MM = _M > 9 ? _M : '0' + _M,yyyy = date.getFullYear(),formatted = MM + '-' + dd + '-' + (yyyy),
+				H = date.getHours(),HH =H > 9 ? H : '0' + H,  h = H%12||12; hh =h > 9 ? h : '0' + h,m = date.getMinutes(),mm =m > 9 ? m : '0' + m,s = date.getSeconds(),ss =s > 9 ? s : '0' + s, t = H>=12?"p":"a", tt = t+"m";
+
+			var _userFormat = format.replace(/MM/g, MM).replace(/M/g, _M).replace(/dd/g, dd).replace(/d/g, _d).replace(/yyyy/g, yyyy).replace(/yy/g, (yyyy - 2000))
+				.replace(/HH/g, HH).replace(/H/g, H).replace(/hh/g, hh).replace(/h/g, h).replace(/mm/g, mm).replace(/m/g, m).replace(/ss/g, ss).replace(/s/g, s).replace(/tt/g, tt).replace(/t/g, t);
+			return _userFormat;
+		}
+
 	</script>
 
 
@@ -84,7 +125,7 @@
 
 	@if (ViewBag.IsLocal ?? false) {
 		<div id="local"></div>
-		<div class="debugger"></div>
+			<div class="debugger"></div>
 	}
 	<div class="statusContainer"><div id="status">No status</div></div>
 	<div id="wrap">
@@ -123,7 +164,7 @@
 								@if (((int?)ViewBag.Organizations ?? 0) > 0) {
 									if (ViewBag.ShowL10) {
 										<span id="header-tab-new-headline" class="navbar-icon-button icon fontastic-icon-bookmark headlineModal" title="New People Headline"></span>
-										<span id="header-tab-new-issue" class="navbar-icon-button glyphicon1 glyphicon-pushpi1n icon fontastic-icon-pinboard issuesModal" data-method="CreateIssueRecurrence" title="New Issue"></span>
+											<span id="header-tab-new-issue" class="navbar-icon-button glyphicon1 glyphicon-pushpi1n icon fontastic-icon-pinboard issuesModal" data-method="CreateIssueRecurrence" title="New Issue"></span>
 									}
 									<span id="header-tab-new-todo" class="navbar-icon-button glyphicon glyphicon-check todoModal" data-method="CreateTodoRecurrence" title="New To-do"></span>
 								}
@@ -141,8 +182,6 @@
 											</a>
 										</li>
 									}
-
-
 									if (((int?)ViewBag.Organizations ?? 0) > 0) {
 										<li>
 											<a href="@Url.Action("Index", "Home")" id="header-tab-workspace">
@@ -193,18 +232,18 @@
 						</div>
 					</div>
 				</div>
-				<script>
-					//Test for IOS
-					if ((/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream)) {
-						document.getElementById("body").className += " is-ios";
-						var allowBack = document.referrer != "" && document.referrer.toLowerCase().lastIndexOf("/account/login") == -1;
+					<script>
+						//Test for IOS
+						if ((/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream)) {
+							document.getElementById("body").className += " is-ios";
+							var allowBack = document.referrer != "" && document.referrer.toLowerCase().lastIndexOf("/account/login") == -1;
 
-						var link = allowBack ?"javascript:history.back()":"#";
-						var disabled = allowBack ?"":"disabled";
-						var newLogo = "<span class='link'><a class='"+disabled+"' href='"+link+"'>Back</a></span>";
-						document.getElementById("logo").innerHTML =newLogo						
-					}
-				</script>
+							var link = allowBack ?"javascript:history.back()":"#";
+							var disabled = allowBack ?"":"disabled";
+							var newLogo = "<span class='link'><a class='"+disabled+"' href='"+link+"'>Back</a></span>";
+							document.getElementById("logo").innerHTML =newLogo
+						}
+					</script>
 
 			}
 			@RenderSection("top", false)
@@ -230,18 +269,18 @@
 					ForceUnhide();
 					@if (ViewBag.Alert!=null){
 							@:showAlert("@ViewBag.Alert");
-															                                        }
+																																				                                        }
 					@if(ViewBag.Success!=null){
                       @: showAlert("@ViewBag.Success", "alert-success" , "Success!" );
 
                     }
 					@if(ViewBag.InfoAlert!=null){
                         @: showAlert("@ViewBag.InfoAlert", "alert-info" , "Info!" );
-															                                        }
+																																				                                        }
 					UnstoreJsonAlert();
 				});  var statusTimeout;
 			</script>
-		}
+			}
 	</div>
 	@if (!(ViewBag.NoTitleBar ?? false)) {
 		<div id="footer">
@@ -289,8 +328,8 @@
 				})();
 
 			</script>
-			<ul class="JSError" style="position:fixed;top:0px;right:0px;opacity:.5;pointer-events:none;"></ul>
-		}
+				<ul class="JSError" style="position:fixed;top:0px;right:0px;opacity:.5;pointer-events:none;"></ul>
+			}
 
 
 		<script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>

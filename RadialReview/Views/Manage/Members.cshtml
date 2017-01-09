@@ -100,28 +100,13 @@
 			}
 		}
 	</style>
-
 	@Styles.Render("~/Content/ManageCSS")
 
 }
 
 @using (Html.BeginScripts()) {
-
-	@*<script src="~/Scripts/jquery/jquery.tablesorter.js"></script>
-		<script src="~/Scripts/jquery/jquery.filtertable.min.js"></script>*@
 	@Scripts.Render("~/bundles/Manage")
-
 	<script>
-
-		$(function () {
-
-			//All Scripts loaded
-			/*var meetingHub = $.connection.manageHub;
-		    meetingHub.client.showAlert = function(data, showSuccess) { showJsonAlert(data, showSuccess); };
-
-			$.connection.hub.start(Constants.StartHubSettings).done(initConnection);
-		    meetingHub.server.join(MeetingId, $.connection.hub.id);*/
-		});
 
 		function deleteUser(id) {
 
@@ -134,12 +119,10 @@
 					$('.row_' + id).remove();
 					UnstoreJsonAlert();
 				},
-
 			});
 		}
 
 		function afterResend(data) {
-
 			if (data.Object) {
 				console.log(data.Object);
 				var row = $('.row_' + data.Object.UserOrganizationId);
@@ -164,13 +147,14 @@
 		}
 
 		var managingOrganization = @(Model.ManagingOrganization.ToString().ToLower());
+		var canUpgradeUsers = @(Model.CanUpgradeUsers.ToString().ToLower());
 
 		function EditUser(id) {
 			var fields = [{
 				name: "IsManager",
 				text: "Is a supervisor",
 				type: "checkbox",
-				value: $("#permissions_" + id).attr("data-ismanager")
+				value: $("#permissions_" + id).attr("data-ismanager"),
 			},{
 				name:"UserId",
 				type:"hidden",
@@ -185,6 +169,26 @@
 					value: $("#permissions_" + id).attr("data-isadmin")
 				});
 			}
+			
+			if (window.Products.Review){
+				if (canUpgradeUsers){
+					fields.push({
+						name: "EvalOnly",
+						text: "@RadialReview.Utilities.Config.ReviewName() only",
+						type: "checkbox",
+						value: $("#permissions_" + id).attr("data-evalonly")
+					});
+				}else{
+					if ($("#permissions_" + id).attr("data-evalonly")=="True"){
+						fields.push({
+							text: "This user is @RadialReview.Utilities.Config.ReviewName() only",
+							type: "span",
+							classes:"gray"
+						});
+					}
+				}
+			}
+
 
 			var pid = id;
 			showModal({
@@ -192,18 +196,27 @@
 				icon: "info",
 				fields: fields,
 				pushUrl: "@Url.Action("EditModal", "User")",
-				success: function (d,form) {
-					if (showJsonAlert(d)){
-						var override = false;
-						if(typeof(form.ManagingOrganization)!=="undefined"){
-							$("#permissions_" + pid).attr("data-isadmin",form.ManagingOrganization);
-							override = form.ManagingOrganization =="True"?"True":false;
-						}
-						$("#permissions_" + pid).attr("data-ismanager",override||form.IsManager);
+				labelColumnClass: "col-sm-6",
+				valueColumnClass: "col-sm-6",
+				complete: function (d,form) {
+					//showJsonAlert(d);
+					var override = false;
+					if(typeof(d.Object.ManagingOrganization)!=="undefined"){
+						$("#permissions_" + pid).attr("data-isadmin",d.Object.ManagingOrganization?"True":"False");
+						override = d.Object.ManagingOrganization?"True":false;
 					}
+					$("#permissions_" + pid).attr("data-ismanager",override||(d.Object.IsManager?"True":"False"));
+
+					var eval =$("#permissions_" + id).attr("data-evalonly");
+					if (d.Object.EvalOnly==true)
+						eval="True";
+					else if (d.Object.EvalOnly==false)
+						eval = "False";
+					$("#permissions_" + pid).attr("data-evalonly",eval );
+					$("#permissions_" + pid).attr("title",null);
+
 				}
 			});
-			@*//@Html.ShowModal("Edit " + p.Name, Url.Action("EditModal", "User", new { id = p.Id }), Url.Action("EditModal", "User"))*@
 		}
 
 		function ResendEmails() {
@@ -215,6 +228,33 @@
 					location.reload();
 				}
 			});
+		}
+
+		function checkAddUser(a,b){
+			var modal = $("#modal");
+			var err = "";
+			var required = [];
+
+			if (modal.find("#FirstName").val()=="")
+				required.push("First name");
+			if (modal.find("#LastName").val()=="")
+				required.push("Last name");
+			if (modal.find("#Email").val()=="")
+				required.push("Email");
+
+			if (required.length==1){
+				return required[0]+" is required.";
+			}else if (required.length>1){
+				for(var i=0;i<required.length-1;i++){
+					var r = required[i];
+					if (i>0)
+						r = r.toLowerCase();
+					err+=r+", ";
+				}
+				err+=" and "+required[i].toLowerCase()+ " are required.";
+				return err;
+			}
+			return true;
 		}
 
 		$(function () {
@@ -229,58 +269,14 @@
 				sortStable: true,
 			});
 		});
+
+
+
 	</script>
-
-
 }
 
 
 <div class="panel panel-primary">
-	@* <div style="float:right;padding: 1px 1px 0 0;width: calc(100% - 180px); min-width:632px;text-align: right;" class="">
-		<input id="input-filter" style="max-width: 296px;display: inline-block;" type="text" class="form-control" placeholder="Filter by.. (ex. 'Joe', 'CEO', 'Sales Dept.' etc)" />
-		<!-- Single button -->
-		<div class="btn-group">
-			<button type="button" class="btn btn-default dropdown-toggle plus" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="send">
-				Send invites <span class="caret"></span>
-			</button>
-			<ul class="dropdown-menu alignRight dropdown-menu-right">
-				<li>
-					<a href="#" id="resendButton" class="" onclick="ResendEmails()">
-						Email uninvited members
-					</a>
-				</li>
-				@if (Model.Users.Any(p => p.EmailSent) || !Model.Organization.SendEmailImmediately)
-				{
-					<li>
-						<a href="#" id="sendButton" class="" onclick="SendEmails()">
-							Email members that have not joined
-						</a>
-					</li>
-				}
-
-			</ul>
-		</div>*@
-
-
-	@*<button class="btn btn-default  plus" style="width: 69px;">
-			Add
-		</button>*@<!-- Split button -->
-	@*<div class="btn-group plus" style="width: 79px;">
-			<button type="button" class="btn btn-default plus" onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization")">Add</button>
-			<button type="button" class="btn btn-default dropdown-toggle plus" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				<span class="caret"></span>
-				<span class="sr-only">Toggle Dropdown</span>
-			</button>
-			<ul class="dropdown-menu dropdown-menu-right">
-				<li><a href="#" onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization")"><span class="glyphicon glyphicon-user gray"></span> Add Member</a></li>
-				<li><a href="#" onclick="@Html.ShowModal("Add managed user", "/User/AddModal?isClient=true", "/nexus/AddManagedUserToOrganization")"><span class="glyphicon glyphicon-globe gray"></span> Add Client</a></li>
-			</ul>
-		</div>*@
-
-	@*<a class="btn btn-default plus"  href="/Manage/Reorganize">
-					Reorganize
-				</a>
-		</div>*@
 	<div class="panel-heading">
 		<div class="row">
 			<div class="col-md-2 hidden-sm hidden-xs noPadLeft">
@@ -317,12 +313,8 @@
 							</div>
 							<div class="btn-group">
 								<button type="button" class="btn btn-default plus dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @*onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization")"*@>Add<span class="caret"></span></button>
-								@*<button type="button" class="btn btn-default  plus" >
-
-										<span class="sr-only">Toggle Dropdown</span>
-									</button>*@
 								<ul class="dropdown-menu dropdown-menu-right">
-									<li><a href="#" onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization")"><span class="glyphicon glyphicon-user gray"></span> Add Member</a></li>
+									<li><a href="#" onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization",preSubmitCheck:"checkAddUser")"><span class="glyphicon glyphicon-user gray"></span> Add Member</a></li>
 									<li><a href="#" onclick="@Html.ShowModal("Add client", "/User/AddModal?isClient=true", "/nexus/AddManagedUserToOrganization")"><span class="glyphicon glyphicon-globe gray"></span> Add Client</a></li>
 								</ul>
 							</div>
@@ -331,7 +323,6 @@
 				</table>
 			</div>
 		</div>
-
 	</div>
 	<div class="table-responsive" style="clear: both;top: -1px;position: relative;">
 		<table class="table table-condensed table-hover tablesorter tablefilter">
@@ -349,8 +340,6 @@
 					<th style="min-width:10px" class="NalignCenter">Positions</th>
 					<th style="min-width:40px" class="NalignCenter">Teams</th>
 					<th style="min-width:10px" class="NalignCenter">@RadialReview.Utilities.Config.ManagerName()s</th>
-					@*<th style="width:10px" class="NalignCenter">Roles</th>*@
-					@*<th style="width:10px" class="NalignCenter">Questions</th>*@
 					@if (Model.Organization.ManagersCanRemoveUsers || Model.ManagingOrganization || Model.Users.Any(x => x.ForceCanDelete)) {
 						<th style="width:10px" class="alignCenter"></th>
 					}
@@ -362,25 +351,39 @@
 					<tr class="@(p.Managing?"managing":"grayRow") row_@(p.Id)">
 						<td class="hidden">@(p.Managing ? 1 : 0)</td>
 						<td class="alignCenter noselect  noPadLeft">
-							@*@((p.Managing).GetIcon("glyphicon-eye-open strokeLightGreen", "glyphicon-eye-close gray", "You are managing", "You are not managing"))*@
+							@{
+								//Icon
+								string attrs = "";
+								var title = "";
+								var sort = "0";
+								if (p.IsClient) {
+									title = "A client";
+									sort = "0";
+								} else {
+									if (p.Manager) {
+										if (p.Admin) {
+											title = "An admin";
+											sort = "1";
+										} else {
+											title = "A supervisor";
+											sort = "2";
+										}
+									} else {
+										title = "Not a supervisor";
+										sort = "3";
+									}
+								}
+								if (p.EvalOnly) {
+									title += " &amp; " + @RadialReview.Utilities.Config.ReviewName().ToLower() + " only";
+								}
 
+								attrs = @"title=""" + title + @""" data-sort=""" + sort + @"""";
+								if (p.Managing && !p.IsClient) {
+									attrs += @" style=""cursor:pointer;"" onclick=""EditUser(" + p.Id + @")""";
+								}
+							}
 
-							@*if (p.Managing)
-									{
-										<div onclick="@Html.ShowModal("Edit " + p.Name, Url.Action("EditModal", "User", new { id=p.Id }), Url.Action("EditModal", "User"))" class="editButton"></div>
-								}*@
-
-							<span data-permicon="@(!p.IsClient)" id="permissions_@p.Id" data-isclient="@p.IsClient" data-ismanager="@p.Manager" data-isadmin="@p.Admin" @if (p.IsClient) {  @: @*class="glyphicon glyphicon-globe green strokeGreen"*@ title="A client" data-sort="0"
-								  								  								                                    								  							      } else { if (p.Manager) { if (p.Admin) { @: @*class="glyphicon glyphicon-tower gold strokeGold"*@ title="An admin" data-sort="1"
-								  								  								                                    								  									      } else { @: @*class="glyphicon glyphicon-tower darkblue strokeDarkBlue"*@ title="A supervisor" data-sort="2"
-								  								  								                                    								  									      } } else { @: @*class="glyphicon glyphicon-user blue strokeBlue"*@ title="Not a supervisor" data-sort="3"
-								  								  								                                    								  								      } }
-								  @if (p.Managing && !p.IsClient) { @: style="cursor:pointer;" onclick="EditUser(@p.Id)"
-								  								  								                                    								  								  								                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          }>
-							</span>
-
-
-
+							<span data-permicon="@(!p.IsClient)" id="permissions_@p.Id" data-evalonly="@p.EvalOnly" data-isclient="@p.IsClient" data-ismanager="@p.Manager" data-isadmin="@p.Admin" @(new HtmlString(attrs))></span>
 						</td>
 						<td class="alignCenter noselect noPadLeft">
 
@@ -473,7 +476,7 @@
 							</td>
 						}
 					</tr>
-	}
+								}
 			</tbody>
 
 		</table>

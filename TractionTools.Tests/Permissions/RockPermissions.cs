@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using RadialReview.Models;
 using RadialReview.Controllers;
 using RadialReview.Models.Askables;
+using RadialReview;
 
 namespace TractionTools.Tests.Permissions {
 	[TestClass]
@@ -22,7 +23,7 @@ namespace TractionTools.Tests.Permissions {
 		[TestCategory("Permissions")]
 		public void ViewRock() {
 			var c = new Ctx();
-
+			
 			var l10=L10Accessor.CreateBlankRecurrence(c.Manager, c.Id);
 
 			var rock = new RockModel() {
@@ -33,6 +34,7 @@ namespace TractionTools.Tests.Permissions {
 			L10Accessor.CreateRock(c.Manager, l10.Id, L10Controller.AddRockVm.CreateRock(l10.Id, rock));
 
 			c.AssertAll(p => p.ViewRock(rock.Id), c.AllUsers);
+			Assert.Inconclusive("Are the view permissions restrictive enough");
 		}
 
 		[TestMethod]
@@ -85,8 +87,42 @@ namespace TractionTools.Tests.Permissions {
 
 
 
-		}
 
+		}
+		[TestMethod]
+		[TestCategory("Permissions")]
+		public void EditRock_OutsideMeeting() {
+			var c = new Ctx();			
+			var rock = new RockModel() {
+				ForUserId = c.E2.Id,
+				Rock="Rock"
+			};
+			RockAccessor.EditRocks(c.Middle, c.E2.Id, rock.AsList(), false, false);
+			var perm = new Action<PermissionsUtility>(p => p.EditRock(rock.Id));
+
+			OrganizationAccessor.Edit(c.Manager, c.Id, managersCanEditSelf: false, employeesCanEditSelf: false);
+			c.AssertAll(perm, c.Manager, c.Middle);
+			OrganizationAccessor.Edit(c.Manager, c.Id, managersCanEditSelf: true, employeesCanEditSelf: false);
+			c.AssertAll(perm, c.Manager, c.Middle, c.E2);
+			OrganizationAccessor.Edit(c.Manager, c.Id, managersCanEditSelf: false, employeesCanEditSelf: true);
+			c.AssertAll(perm, c.Manager, c.Middle, c.E2);
+
+
+			rock = new RockModel() {
+				ForUserId = c.E6.Id,
+				Rock = "Rock2"
+			};
+			RockAccessor.EditRocks(c.Middle, c.E6.Id, rock.AsList(), false, false);
+
+			OrganizationAccessor.Edit(c.Manager, c.Id, managersCanEditSelf: false, employeesCanEditSelf: false);
+			c.AssertAll(perm, c.Manager, c.Middle, c.E2);
+			OrganizationAccessor.Edit(c.Manager, c.Id, managersCanEditSelf: true, employeesCanEditSelf: false);
+			c.AssertAll(perm, c.Manager, c.Middle, c.E2);
+			OrganizationAccessor.Edit(c.Manager, c.Id, managersCanEditSelf: false, employeesCanEditSelf: true);
+			c.AssertAll(perm, c.Manager, c.Middle, c.E2, c.E6);
+
+
+		}
 		/*
 		 
 		[TestMethod]

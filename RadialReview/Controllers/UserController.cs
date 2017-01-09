@@ -270,9 +270,15 @@ namespace RadialReview.Controllers {
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
 		public JsonResult EditModal(EditUserOrganizationViewModel model) {
-			_UserAccessor.EditUser(GetUser(), model.UserId, model.IsManager, model.ManagingOrganization);
+			var res = _UserAccessor.EditUser(GetUser(), model.UserId, model.IsManager, model.ManagingOrganization, model.EvalOnly);
+			var result = ResultObject.SilentSuccess(model);
+			model.EvalOnly = res.OverrideEvalOnly ?? model.EvalOnly;
+			model.ManagingOrganization = res.OverrideManageringOrganization ?? model.ManagingOrganization;
+			model.IsManager = res.OverrideIsManager ?? model.IsManager;
 
-			return Json(ResultObject.SilentSuccess("User updated."));
+			if (res.Errors.Any())
+				result = ResultObject.CreateError(string.Join(" ", res.Errors), model).ForceNoErrorReport();
+			return Json(result);
 		}
 
 		[HttpPost]

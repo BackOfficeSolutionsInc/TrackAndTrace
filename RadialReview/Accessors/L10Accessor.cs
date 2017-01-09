@@ -213,7 +213,9 @@ namespace RadialReview.Accessors {
 
 						if (user.EvalOnly) {
 							perms.CanUpgradeUser(user.Id);
+							user.EvalOnly = false;
 							s.Update(user);
+							user.UpdateCache(s);
 						}
 
 						
@@ -223,6 +225,8 @@ namespace RadialReview.Accessors {
 								L10Meeting = curr,
 								User = user,
 							});
+
+
 						}
 						var auser = AngularUser.CreateUser(user);
 						auser.CreateTime = attendee.CreateTime;
@@ -4569,10 +4573,10 @@ namespace RadialReview.Accessors {
 						TodoCompletionPercentage = completion
 					};
 
-					if (stats.StartTime != null)
-						stats.StartTime = caller.Organization.ConvertFromUTC(stats.StartTime.Value);
-					if (stats.EndTime != null)
-						stats.EndTime = caller.Organization.ConvertFromUTC(stats.EndTime.Value);
+					//if (stats.StartTime != null)
+					//	stats.StartTime = caller.Organization.ConvertFromUTC(stats.StartTime.Value);
+					//if (stats.EndTime != null)
+					//	stats.EndTime = caller.Organization.ConvertFromUTC(stats.EndTime.Value);
 
 					return stats;
 				}

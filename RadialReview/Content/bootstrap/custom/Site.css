@@ -169,7 +169,7 @@
   border: none;
   width: 19px;
   height: 19px;
-  margin-top: 8px;
+  margin-top: 4px;
 }
 #modal .modal-icon .modal-icon:before {
   position: absolute;
@@ -613,6 +613,7 @@ select:-webkit-autofill:focus {
 }
 body.modal-open {
   overflow: visible;
+  padding-right: 0px !important;
 }
 .body-full-height {
   overflow: auto;
@@ -989,6 +990,13 @@ body.resizing *::-moz-selection {
 [data-permicon][data-isclient="True"]:before {
   content: "\e135";
 }
+[data-permicon][data-evalonly="True"] {
+  -webkit-text-stroke-color: #9785ad;
+  color: #d3baf3;
+}
+[data-permicon][data-evalonly="True"][data-isadmin="True"] {
+  color: #FFE296;
+}
 .nowrap {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1068,6 +1076,7 @@ body.resizing *::-moz-selection {
   /*margin-top: 8px;*/
   position: relative;
   bottom: -4px;
+  margin-top: 0px;
 }
 .a-link {
   text-decoration: underline;

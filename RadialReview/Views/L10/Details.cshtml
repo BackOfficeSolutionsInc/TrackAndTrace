@@ -63,7 +63,7 @@
         angular.module('L10App')
 			.value('meetingId', @Model)
 			.value('date-range',"today")
-			.value('meetingDataUrlBase', '/L10/DetailsData/{0}?start=@ViewBag.StartDate')
+			.value('meetingDataUrlBase', '/L10/DetailsData/{0}?'@*start=@ViewBag.StartDate'*@)
 			.value("meetingCallback",false);
         $('#pages a').click(function(e) {
             e.preventDefault();

@@ -43,6 +43,7 @@ namespace RadialReview.Models.UserModels
 		public virtual bool IsClient { get; set; }
 
 		public virtual WebHookEventType? EmailStatus { get; set; }
+		public virtual bool EvalOnly { get; set; }
 
 		public virtual string ImageUrl(ImageSize size = ImageSize._32)
 		{
@@ -96,6 +97,7 @@ namespace RadialReview.Models.UserModels
 				Map(x => x.EmailStatus).Nullable().CustomType<WebHookEventType>();
 				Map(x => x.OrganizationId).Index("UserLookup_OrganizationId_IDX");
 				Map(x => x._ImageUrlSuffix);
+				Map(x => x.EvalOnly);
 			}
 		}
 

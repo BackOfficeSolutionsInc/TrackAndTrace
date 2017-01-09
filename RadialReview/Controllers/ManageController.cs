@@ -132,6 +132,8 @@ namespace RadialReview.Controllers
 
 			var messages = MessageAccessor.GetManageMembers_Messages(GetUser(), GetUser().Organization.Id);
 
+			var canUpgrade = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, GetUser().Organization.Id));
+
 			for (int i = 0; i < members.Count(); i++)
 			{
 				var u = members[i];
@@ -139,7 +141,7 @@ namespace RadialReview.Controllers
 				//var teams = _TeamAccessor.GetUsersTeams(GetUser(), u.Id);
 				//members[i] = members[i].Hydrate().SetTeams(teams).PersonallyManaging(GetUser()).Managers().Execute();
 			}
-			var model = new OrgMembersViewModel(GetUser(), members, GetUser().Organization, hasAdminDelete);
+			var model = new OrgMembersViewModel(GetUser(), members, GetUser().Organization, hasAdminDelete, canUpgrade);
 			model.Messages = messages;
 			return View(model);
 		}
@@ -265,7 +267,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Manager)]
 		public ActionResult Advanced(OrganizationViewModel model)
 		{
-			_OrganizationAccessor.Edit(
+			OrganizationAccessor.Edit(
 				GetUser(),
 				model.Id,
 				model.OrganizationName,

@@ -65,6 +65,13 @@ namespace RadialReview.Utilities.RealTime {
                 return this;
             }
 
-        }
+			public RTOrganizationUpdater AddLowLevelAction(Action<dynamic> action, bool forceNoSkip = false) {
+				rt.AddAction(() => {
+					var updater = rt.GetUpdater<OrganizationHub>(OrganizationHub.GenerateId(_OrganizationId), forceNoSkip);
+					action(updater);
+				});
+				return this;
+			}
+		}
     }
 }

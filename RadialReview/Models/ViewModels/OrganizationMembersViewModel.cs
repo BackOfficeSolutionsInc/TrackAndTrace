@@ -15,13 +15,16 @@ namespace RadialReview.Models.ViewModels
         public List<OrgMemberViewModel> Users { get; set; }
 
 		public bool ManagingOrganization { get; set; }
+
+		public bool CanUpgradeUsers { get; set; }
 		
 
-        public OrgMembersViewModel(UserOrganizationModel caller,IEnumerable<UserLookup> members,OrganizationModel organization,bool hasAdminDelete)
+        public OrgMembersViewModel(UserOrganizationModel caller,IEnumerable<UserLookup> members,OrganizationModel organization,bool hasAdminDelete,bool canUpgradeUsers)
         {
 	        ManagingOrganization = caller.ManagingOrganization;
             Organization = organization;
 			Users = members.ToListAlive().Select(x => new OrgMemberViewModel(x, hasAdminDelete)).ToList();
+			CanUpgradeUsers = canUpgradeUsers;
         }
 
 		public List<MessageAccessor.ManageMembersMessage> Messages { get; set; } 
@@ -41,6 +44,7 @@ namespace RadialReview.Models.ViewModels
         //public int NumTeams { get; set; }
         //public int NumPositions { get; set; }
         public Boolean Managing { get; set; }
+		public bool EvalOnly { get; set; }
 
         public List<String> PositionTitles { get; set; }
         public List<String> TeamsTitles { get; set; }
@@ -62,6 +66,7 @@ namespace RadialReview.Models.ViewModels
             NumIndividualResponsibilities = userOrg.Responsibilities.ToListAlive().Count();
 
 	        EmailEvent = userOrg.TempUser.EmailStatus;
+			EvalOnly = userOrg.EvalOnly;
 
 	        IsClient = userOrg.IsClient;
             EmailSent=true;
@@ -99,6 +104,8 @@ namespace RadialReview.Models.ViewModels
 			Admin = u.IsAdmin;
 			IsClient = u.IsClient;
 			Managing = u._PersonallyManaging;
+
+			EvalOnly = u.EvalOnly;
 
 			EmailEvent = u.EmailStatus;
 			//PositionTitle = userOrg.Positions.ToListAlive().FirstOrDefault().NotNull(x => x.Position.CustomName);

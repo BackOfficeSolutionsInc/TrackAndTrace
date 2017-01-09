@@ -259,12 +259,16 @@ namespace RadialReview.Models.Json
             };
         }
 
-		public ResultObject ForceSilent(){
+		public ResultObject ForceSilent() {
 			Silent = true;
 			return this;
 		}
+		public ResultObject ForceNoErrorReport() {
+			NoErrorReport = true;
+			return this;
+		}
 
-        public static ResultObject CreateRedirect(string url,String message=null)
+		public static ResultObject CreateRedirect(string url,String message=null)
         {
             return new ResultObject() {
                 Error = false,

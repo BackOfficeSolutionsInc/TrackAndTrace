@@ -2,22 +2,22 @@
 @{
 	//Layout = "~/Views/L10/BasePage.cshtml";
 
-	var list = new List<String>();
-	var join = "n/a";
+	var list = new List<HtmlString>();
+	var join = new HtmlString("n/a");
 	var duration = "On-Going";
 	if (Model.StartTime != null)
 	{
-		list.Add(Model.StartTime.NotNull(x => x.Value.ToShortTimeString().Replace("AM", "").Replace("PM", "")));
-		if (Model.EndTime != null)
-		{
-			list.Add(Model.EndTime.NotNull(x => x.Value.ToShortTimeString().Replace("AM", "").Replace("PM", "")));
+		var format = "h:mm";
+		list.Add(Html.ConvertFromUtcLocal(Model.StartTime.Value, format));
+		if (Model.EndTime != null) {
+			list.Add(Html.ConvertFromUtcLocal(Model.EndTime.Value, format));
 			duration = (long)(Model.EndTime.Value - Model.StartTime.Value).TotalMinutes + " minutes";
 		}
 		else
 		{
-			list.Add(" In Progress ");
+			list.Add(new HtmlString(" In Progress "));
 		}
-		join = String.Join(" - ", list);
+		join = new HtmlString(String.Join(" - ", list));
 	}
 }
 

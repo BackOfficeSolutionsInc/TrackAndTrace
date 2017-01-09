@@ -101,39 +101,47 @@ namespace RadialReview.Utilities {
                 var result = this;
                 if (CanAccessItem(PermItem.AccessLevel.View, resourceType, resourceId, null, ref result))
                     return result;
-                throw new PermissionsException("Can not view this item.");
+                throw new PermissionsException("Can not view this item.") {
+					NoErrorReport = true
+				};
             });
         }
 
 
-        public PermissionsUtility CanView(PermItem.ResourceType resourceType, long resourceId, Func<PermissionsUtility, PermissionsUtility> defaultAction = null)
+        public PermissionsUtility CanView(PermItem.ResourceType resourceType, long resourceId, Func<PermissionsUtility, PermissionsUtility> defaultAction = null,string exceptionMessage=null)
         {
             return CheckCacheFirst("CanView_" + resourceType, resourceId).Execute(() => {
                 var result = this;
                 if (CanAccessItem(PermItem.AccessLevel.View, resourceType, resourceId, defaultAction, ref result))
                     return result;
-                throw new PermissionsException("Can not view this item.");
+                throw new PermissionsException(exceptionMessage??"Can not view this item.") {
+					NoErrorReport = true
+				};
             });
         }
 
-        public PermissionsUtility CanEdit(PermItem.ResourceType resourceType, long resourceId, Func<PermissionsUtility, PermissionsUtility> defaultAction = null)
+        public PermissionsUtility CanEdit(PermItem.ResourceType resourceType, long resourceId, Func<PermissionsUtility, PermissionsUtility> defaultAction = null, string exceptionMessage = null)
         {
             return CheckCacheFirst("CanEdit_" + resourceType, resourceId).Execute(() => {
                 var result = this;
                 if (CanAccessItem(PermItem.AccessLevel.Edit, resourceType, resourceId, defaultAction, ref result))
                     return result;
 
-                throw new PermissionsException("Can not edit this item.");
+				throw new PermissionsException(exceptionMessage ?? "Can not edit this item.") {
+					NoErrorReport = true
+				};
             });
         }
-        public PermissionsUtility CanAdmin(PermItem.ResourceType resourceType, long resourceId, Func<PermissionsUtility, PermissionsUtility> defaultAction = null)
+        public PermissionsUtility CanAdmin(PermItem.ResourceType resourceType, long resourceId, Func<PermissionsUtility, PermissionsUtility> defaultAction = null, string exceptionMessage = null)
         {
             return CheckCacheFirst("CanAdmin_" + resourceType, resourceId).Execute(() => {
                 var result = this;
                 if (CanAccessItem(PermItem.AccessLevel.Admin, resourceType, resourceId, defaultAction, ref result))
                     return result;
 
-                throw new PermissionsException("Can not administrate this item.");
+                throw new PermissionsException(exceptionMessage ?? "Can not administrate this item.") {
+					NoErrorReport = true
+				};
             });
         }
 
@@ -282,6 +290,8 @@ namespace RadialReview.Utilities {
 					return session.Get<L10Recurrence>(resourceId).OrganizationId;
 				case PermItem.ResourceType.AccountabilityHierarchy:
 					return session.Get<AccountabilityChart>(resourceId).OrganizationId;
+				case PermItem.ResourceType.UpgradeUsersForOrganization:
+					return resourceId;
 				default:
                     throw new ArgumentOutOfRangeException("resourceType");
             }

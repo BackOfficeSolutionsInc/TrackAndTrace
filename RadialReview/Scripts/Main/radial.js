@@ -186,27 +186,27 @@ function generateGuid() {
 	return result;
 }
 
-function getFormattedDate(date) {
+//function getFormattedDate(date) {
 
-	if (typeof (date) === "undefined") {
-		date = new Date();
-	} else if (typeof (date) === "string") {
-		console.error("Could not determine format from date string: " + date)
-	}
+//	if (typeof (date) === "undefined") {
+//		date = new Date();
+//	} else if (typeof (date) === "string") {
+//		console.error("Could not determine format from date string: " + date)
+//	}
 
-	var _d = date.getDate(),
-                dd = _d > 9 ? _d : '0' + _d,
-                _m = date.getMonth() + 1,
-                mm = _m > 9 ? _m : '0' + _m,
-                yyyy = date.getFullYear(),
-                formatted = mm + '-' + dd + '-' + (yyyy);
+//	var _d = date.getDate(),
+//                dd = _d > 9 ? _d : '0' + _d,
+//                _m = date.getMonth() + 1,
+//                mm = _m > 9 ? _m : '0' + _m,
+//                yyyy = date.getFullYear(),
+//                formatted = mm + '-' + dd + '-' + (yyyy);
 
-	var _userFormat = window.dateFormat
-        .replace(/mm/gi, mm).replace(/m/gi, _m)
-        .replace(/dd/gi, dd).replace(/d/gi, _d)
-        .replace(/yyyy/gi, yyyy).replace(/yy/gi, (yyyy - 2000));
-	return _userFormat;
-}
+//	var _userFormat = window.dateFormat
+//        .replace(/mm/gi, mm).replace(/m/gi, _m)
+//        .replace(/dd/gi, dd).replace(/d/gi, _d)
+//        .replace(/yyyy/gi, yyyy).replace(/yy/gi, (yyyy - 2000));
+//	return _userFormat;
+//}
 
 function generateDatepicker(selector, date, name, id, options) {
 	if (typeof (date) === "undefined") {
@@ -329,6 +329,7 @@ function getWeekSinceEpoch(day) {
 ///		 contents: jquery object (optional, overrides fields)																	///
 ///      pushUrl:"",                                                                                                            ///
 ///      success:function,                                                                                                      ///
+///      complete:function,                                                                                                     ///
 ///      cancel:function,                                                                                                       ///  
 ///      reformat: function,																									///
 ///      noCancel: bool																											///
@@ -375,7 +376,7 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onC
 				return;
 			}
 			_bindModal(modal, title, callback, validation, function (formData) {
-				_submitModal(formData, pushUrl, onSuccess, false);
+				_submitModal(formData, pushUrl, onSuccess,null, false);
 			});
 		}
 	});
@@ -389,10 +390,10 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 		onSuccess = obj["success"];
 	if (typeof (onSuccess) !== "undefined" && typeof (pushUrl) !== "undefined") {
 		var oldSuccess = onSuccess;
-		onSuccess = function (formData, contentType) { _submitModal(formData, pushUrl, oldSuccess, true, contentType); };
+		onSuccess = function (formData, contentType) { _submitModal(formData, pushUrl, oldSuccess, obj.complete, true, contentType); };
 	}
 	if (typeof (onSuccess) === "undefined" && typeof (pushUrl) !== "undefined")
-		onSuccess = function (formData, contentType) { _submitModal(formData, pushUrl, null, true, contentType); };
+		onSuccess = function (formData, contentType) { _submitModal(formData, pushUrl, null, obj.complete, true, contentType); };
 
 	var onClose = obj.close;
 
@@ -486,14 +487,18 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 		if (type == "number")
 			others += " step=\"any\"";
 
-		if (type == "checkbox" && ((typeof (value) === "string" && (value.toLowerCase() === 'true')) || (typeof (value) === "boolean" && value)))
+		if (type == "checkbox" && ((typeof (value) === "string" && (value.toLowerCase() === 'true')) || (typeof (value) === "boolean" && value))) 
 			others += "checked";
 
 		return '<input type="' + escapeString(type) + '" class="form-control blend ' + classes + '"' +
                       ' name="' + escapeString(name) + '" id="' + escapeString(name) + '" ' +
                       placeholder + ' value="' + escapeString(value) + '" ' + others + '/>';
-
 	}
+
+	var defaultLabelColumnClass = obj.labelColumnClass || "col-sm-2";
+	var defaultValueColumnClass = obj.valueColumnClass || "col-sm-10";
+
+
 	if (!obj.contents) {
 		for (var f in obj.fields) {
 			try {
@@ -506,6 +511,9 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 				var placeholder = field.placeholder;
 				var type = (field.type || "text").toLowerCase();
 				var classes = field.classes || "";
+				
+				var labelColumnClass = field.labelColumnClass || defaultLabelColumnClass;
+				var valueColumnClass = field.valueColumnClass || defaultValueColumnClass;
 
 				if (typeof (classes) === "string" && (classes.indexOf('\'') != -1 || classes.indexOf('\"') != -1))
 					throw "Classes cannot contain a quote character.";
@@ -560,7 +568,7 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 				}
 
 				if (addLabel.indexOf(type) != -1 && label) {
-					builder += '<div class="form-group"><label for="' + name + '" class="col-sm-2 control-label">' + text + '</label><div class="col-sm-10">' + input + '</div></div>';
+					builder += '<div class="form-group"><label for="' + name + '" class="' + labelColumnClass + ' control-label">' + text + '</label><div class="' + valueColumnClass + '">' + input + '</div></div>';
 				} else {
 					builder += input;
 				}
@@ -694,7 +702,7 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 	}, 50);
 }
 
-function _submitModal(formData, pushUrl, onSuccess, useJson, contentType) {
+function _submitModal(formData, pushUrl, onSuccess, onComplete, useJson, contentType) {
 	///FORM DATA IS NOT USED
 	///TODO use form data;
 	var serialized
@@ -716,6 +724,7 @@ function _submitModal(formData, pushUrl, onSuccess, useJson, contentType) {
 		contentType = contentType || "application/x-www-form-urlencoded";
 	}
 	var onSuccessArg = onSuccess;
+	var onCompleteArg = onComplete;
 
 	$.ajax({
 		url: pushUrl,
@@ -736,6 +745,18 @@ function _submitModal(formData, pushUrl, onSuccess, useJson, contentType) {
 						onSuccessArg(data, formData);
 					}
 				} else {
+				}
+			}
+		},
+		complete: function (dd) {
+			var data = dd.responseJSON;
+			if (data){
+				if (onCompleteArg) {
+					if (typeof onCompleteArg === "string") {
+						eval(onCompleteArg + "(data,formData)");
+					} else if (typeof onCompleteArg === "function") {
+						onCompleteArg(data, formData);
+					}
 				}
 			}
 		},
@@ -845,8 +866,9 @@ function showAngularError(d, status, headers, config, statusTxt) {
 		showJsonAlert();
 		return;
 	}
-
-	if (typeof (d.data) !== "undefined" && d.data != null) {
+	if (typeof (d.Message) !== "undefined" && d.Message != null) {
+		showJsonAlert(d);
+	}else if (typeof (d.data) !== "undefined" && d.data != null) {
 		showJsonAlert(d.data);
 	} else {
 		if (typeof (d.statusText) !== "undefined" && d.statusText !== "") {
@@ -1767,3 +1789,11 @@ Error.captureStackTrace = Error.captureStackTrace || function (obj) {
 //		}, 0);
 //	});
 //}
+
+////Fix Submenus
+//$('ul.dropdown-menu [data-toggle=dropdown]').on('click', function (event) {
+//	event.preventDefault();
+//	event.stopPropagation();
+//	$('ul.dropdown-menu [data-toggle=dropdown]').parent().removeClass('open');
+//	$(this).parent().addClass('open');
+//});

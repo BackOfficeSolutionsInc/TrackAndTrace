@@ -31,7 +31,11 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.UserOrganization)]
         public ActionResult Index()
         {
-            var recurrences = L10Accessor.GetVisibleL10Recurrences(GetUser(), GetUser().Id, true);
+            var recurrences = L10Accessor.GetVisibleL10Recurrences(GetUser(), GetUser().Id, true)
+				.OrderByDescending(x=>x.IsAttendee)
+				.OrderByDescending(x=>x.Recurrence.MeetingInProgress)
+				.ToList();
+			
             var model = new L10ListingVM()
             {
                 Recurrences = recurrences,

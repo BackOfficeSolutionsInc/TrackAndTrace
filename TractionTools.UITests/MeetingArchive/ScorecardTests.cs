@@ -62,7 +62,7 @@ namespace TractionTools.UITests.Selenium {
                 //DbCommit(s => {
 
                 //});
-                new OrganizationAccessor().Edit(au, recur.Org.Id, weekStart: pType);
+                OrganizationAccessor.Edit(au, recur.Org.Id, weekStart: pType);
 
                 TestView(auc, "/L10/Details/" + recur.Id, d => {
 

@@ -476,9 +476,13 @@ namespace RadialReview.Utilities {
 		#endregion
 
 		#region Question
-		public PermissionsUtility EditQuestion(QuestionModel question) {
+		public PermissionsUtility EditQuestion(long questionId) {
 			if (IsRadialAdmin(caller))
 				return this;
+
+			var question = session.Get<QuestionModel>(questionId);
+			if (question.OriginType != OriginType.Invalid)
+				return EditOrigin(question.OriginType, question.OriginId);
 
 			var createdById = question.CreatedById;
 
@@ -488,9 +492,12 @@ namespace RadialReview.Utilities {
 			throw new PermissionsException();
 		}
 
-		public PermissionsUtility ViewQuestion(QuestionModel question) {
+		public PermissionsUtility ViewQuestion(long questionId) {
+
 			if (IsRadialAdmin(caller))
 				return this;
+
+			var question = session.Get<QuestionModel>(questionId);
 
 			switch (question.OriginType) {
 				//case OriginType.User: if (!IsOwnedBelowOrEqual(caller, x => x.CustomQuestions.Any(y => y.Id == question.Id))) throw new PermissionsException(); break;
@@ -538,13 +545,15 @@ namespace RadialReview.Utilities {
 		#endregion
 
 		#region Origin
-		public PermissionsUtility EditOrigin(Origin origin) {
-			return EditOrigin(origin.OriginType, origin.OriginId);
+		public PermissionsUtility EditOrigin(Origin origin,bool manageOnly =false) {
+			return EditOrigin(origin.OriginType, origin.OriginId, manageOnly);
 		}
 
-		public PermissionsUtility EditOrigin(OriginType origin, long originId) {
+		public PermissionsUtility EditOrigin(OriginType origin, long originId, bool manageOnly = false) {
 			switch (origin) {
 				case OriginType.User:
+					if (manageOnly)
+						return ManagesUserOrganization(originId, true);
 					return EditUserOrganization(originId);
 				case OriginType.Group:
 					return EditGroup(originId);
@@ -1121,14 +1130,20 @@ namespace RadialReview.Utilities {
 		public PermissionsUtility ViewVTO(long vtoId) {
 			if (IsRadialAdmin(caller))
 				return this;
-			return CanView(PermItem.ResourceType.VTO, vtoId, @this => {
-				var vto = session.Get<VtoModel>(vtoId);
-				if (IsManagingOrganization(vto.Organization.Id))
-					return this;
-				if (vto.L10Recurrence != null)
-					return @this.ViewL10Recurrence(vto.L10Recurrence.Value);
-				throw new PermissionsException("Cannot view V/TO");
-			});
+			var vto = session.Get<VtoModel>(vtoId);
+
+			if (vto.L10Recurrence.HasValue && vto.L10Recurrence.Value > 0) {
+				return ViewL10Recurrence(vto.L10Recurrence.Value);
+				//return CanView(PermItem.ResourceType.L10Recurrence, vto.L10Recurrence.Value);
+			} else {
+				return CanView(PermItem.ResourceType.VTO, vtoId, @this => {
+					if (IsManagingOrganization(vto.Organization.Id))
+						return this;
+					if (vto.L10Recurrence != null)
+						return @this.ViewL10Recurrence(vto.L10Recurrence.Value);
+					throw new PermissionsException("Cannot view V/TO");
+				});
+			}
 
 		}
 		public PermissionsUtility EditVTO(long vtoId) {
@@ -1375,23 +1390,26 @@ namespace RadialReview.Utilities {
 				.Where(x => x.DeleteTime == null && x.ForRock.Id == rock.Id)
 				.Select(x => x.L10Recurrence.Id).List<long>();
 
-			recurrenceIds = recurrenceIds.Where(rid => {
+			var acceptedRecurrenceIds = recurrenceIds.Where(rid => {
 				try {
 					EditL10Recurrence(rid);
 					return true;
 				} catch (Exception) {
 					return false;
 				}
-			}).ToList();
+			});
 
-			if (recurrenceIds.Any())
+			if (acceptedRecurrenceIds.Any())
 				return this;
 
 			if (rock.OrganizationId != caller.Organization.Id)
 				throw new PermissionsException();
 
-			var editSelf = caller.Organization.Settings.EmployeesCanEditSelf;
 
+			if (caller.Organization.Settings.EmployeesCanEditSelf && rock.ForUserId == caller.Id)
+				return this;
+
+			var editSelf = caller.Organization.Settings.ManagersCanEditSelf;
 			return ManagesUserOrganization(rock.ForUserId, !editSelf, PermissionType.EditEmployeeDetails);
 		}
 		public PermissionsUtility CanViewUserRocks(long userId) {
@@ -1557,7 +1575,7 @@ namespace RadialReview.Utilities {
 		public PermissionsUtility CanUpgradeUser(long userId) {
 			ViewUserOrganization(userId, false);
 			var user = session.Get<UserOrganizationModel>(userId);
-			return CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, user.Organization.Id);
+			return CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, user.Organization.Id,exceptionMessage:"This user is '"+Config.ReviewName().ToLower()+" only' and cannot be added to an L10. You are not permitted to upgrade them.");
 		}
 		#endregion
 

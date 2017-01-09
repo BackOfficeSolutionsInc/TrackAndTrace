@@ -10,6 +10,7 @@ using System.Web.Mvc;
 using RadialReview.Models.Scorecard;
 using RadialReview.Models.UserModels;
 using RadialReview.Exceptions;
+using System.ComponentModel.DataAnnotations;
 
 namespace RadialReview.Models.ViewModels
 {
@@ -17,9 +18,15 @@ namespace RadialReview.Models.ViewModels
     {
 		//Creation variables
 		#region Creation Variables
+		[Required]
 		public String FirstName { get; set; }
-        public String LastName { get; set; }
-        public String Email { get; set; }
+		[Required]
+		public String LastName { get; set; }
+
+		[Required]
+		[EmailAddress]
+		public String Email { get; set; }
+
         public bool IsManager { get; set; }
         public long OrgId { get; set; }
         public bool StrictlyHierarchical { get; set; }
@@ -63,11 +70,12 @@ namespace RadialReview.Models.ViewModels
         public bool IsManager { get; set; }
         //public long ManagerId { get; set; }
         public Boolean? ManagingOrganization { get; set; }
-        public Boolean CanSetManagingOrganization { get; set; }
+		public Boolean CanSetManagingOrganization { get; set; }
+		public Boolean? EvalOnly { get; set; }
 
-        //public bool StrictlyHierarchical { get; set; }
-        //public List<SelectListItem> PotentialManagers { get; set; }
-    }
+		//public bool StrictlyHierarchical { get; set; }
+		//public List<SelectListItem> PotentialManagers { get; set; }
+	}
 
     public class UserViewModel : ICompletable
     {

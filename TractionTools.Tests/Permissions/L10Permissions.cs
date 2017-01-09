@@ -125,6 +125,7 @@ namespace TractionTools.Tests.Permissions {
 				try {
 					var admin = allPerms.Items.First(x => x.AccessorType == AccessType.Admins);
 					PermissionsAccessor.EditPermItem(c.Manager, admin.Id, null, null, false);
+					Assert.Fail();
 				} catch (PermissionsException e) {
 					Assert.AreEqual("You must have an admin. Reverting setting change.", e.Message);
 				}

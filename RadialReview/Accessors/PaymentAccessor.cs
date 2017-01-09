@@ -290,14 +290,15 @@ namespace RadialReview.Accessors {
 					//    Restrictions.Eq(Projections.Property(()=>uo.User.IsRadialAdmin),false)
 					//))
 					.Where(() => uo.Organization.Id == org.Id && uo.CreateTime < rangeEnd && (uo.DeleteTime == null || uo.DeleteTime > rangeStart) && !uo.IsRadialAdmin)
-					.Select(x => x.Id, x => u.IsRadialAdmin, x => x.IsClient, x => x.User.Id)
+					.Select(x => x.Id, x => u.IsRadialAdmin, x => x.IsClient, x => x.User.Id, x => x.EvalOnly)
 					.List<object[]>()
 					.Select(x => new {
 						UserOrgId = (long)x[0],
 						IsRadialAdmin = (bool?)x[1],
 						IsClient = (bool)x[2],
 						UserId = (string)x[3],
-						IsRegistered = x[3] != null
+						IsRegistered = x[3] != null,
+						EvalOnly = (bool)x[4]
 					})
 					.Where(x => x.IsRadialAdmin == null || (bool)x.IsRadialAdmin == false)
 					.ToList();
@@ -309,9 +310,10 @@ namespace RadialReview.Accessors {
 					allPeopleList = allPeopleList.Where(x => x.IsRegistered).ToList();
 				}
 
-				var allPeople = allPeopleList.Count();
+				var l10Users = allPeopleList.Where(x => !x.EvalOnly);
+				var l10UserCount = l10Users.Count();
 
-				var people = Math.Max(0, allPeople - plan.FirstN_Users_Free);
+				var people = Math.Max(0, l10UserCount - plan.FirstN_Users_Free);
 				var allRevisions = s.AuditReader().GetRevisionsBetween<OrganizationModel>(org.Id, rangeStart, rangeEnd).ToList();
 
 				var reviewEnabled = allRevisions.Any(x => x.Object.Settings.EnableReview);

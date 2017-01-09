@@ -40,6 +40,7 @@ namespace TractionTools.Tests.Permissions {
 			c.AssertAll(p => p.ManagesAccountabilityNodeOrSelf(c.Org.E5Node.Id), c.Manager, c.E1, c.E5);
 			c.AssertAll(p => p.ManagesAccountabilityNodeOrSelf(c.Org.E6Node.Id), c.Manager, c.Middle, c.E2, c.E6);
 			
+
 		}
 
 		[TestMethod]
