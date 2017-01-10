@@ -15,6 +15,7 @@ using RadialReview.Utilities;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Scorecard;
 using RadialReview.Utilities.DataTypes;
+using RadialReview.Models.Angular.DataType;
 
 namespace RadialReview.Controllers
 {
@@ -49,6 +50,22 @@ namespace RadialReview.Controllers
 
 			if (start != 0 && end != long.MaxValue) {
 				model.dateDataRange = new AngularDateRange(range);
+			}
+
+			if (scores) {
+				if (model.Scorecard.Scores.Count() > 22*16) {
+					var min = TimingUtility.GetDateSinceEpoch(model.Scorecard.Scores.Min(x => x.ForWeek)).ToJavascriptMilliseconds();
+					var max = TimingUtility.GetDateSinceEpoch(model.Scorecard.Scores.Max(x => x.ForWeek)).ToJavascriptMilliseconds();
+					if (max != min) {
+						var mid = (max + min) / 2;
+						model = new AngularRecurrence(id);
+						model.LoadUrls = new List<AngularString>() {
+							new AngularString((min / 13),   $"/L10/DetailsData/{id}?scores={scores}&historical={historical}&start={start}&end={mid}&fullScorecard={fullScorecard}"),
+							new AngularString((min / 13)-1, $"/L10/DetailsData/{id}?scores={scores}&historical={historical}&start={ mid }&end={end}&fullScorecard={fullScorecard}"),
+						};
+					}
+
+				}
 			}
 
 

@@ -388,7 +388,7 @@ namespace RadialReview.Accessors {
 
 				//Rock Name
 				var rockNameContainer = new XRect(completionBoxOuter.Right, completionBox.Top, textAreaWidth, rockNameHeight);
-				tf.DrawString(question, rockFont, _BlackText, rockNameContainer, XStringFormats.TopLeft);
+				tf.DrawString(question??"", rockFont, _BlackText, rockNameContainer, XStringFormats.TopLeft);
 
 				//Reasons
 				var reasons = rock.SelectMany(x => {
@@ -403,7 +403,7 @@ namespace RadialReview.Accessors {
 				var ch = rockNameContainer.Bottom + reasonMargin;
 				foreach (var r in reasons) {
 					var hh = GetTextHeight(gfx, r, textAreaWidth, reasonsFont);
-					tf.DrawString(r, reasonsFont, XBrushes.DarkGray, new XRect(completionBoxOuter.Right, ch, textAreaWidth, hh), XStringFormats.TopLeft);
+					tf.DrawString(r??"", reasonsFont, XBrushes.DarkGray, new XRect(completionBoxOuter.Right, ch, textAreaWidth, hh), XStringFormats.TopLeft);
 					ch += hh + reasonMargin;
 
 				}
@@ -412,7 +412,7 @@ namespace RadialReview.Accessors {
 				var userSubmittedCompletionHeight = GetTextHeight(gfx, userCompletionText, textAreaWidth, userCompletionFont);
 				//var calculatedHeight = rockNameHeight + userSubmittedCompletionHeight + completionMargin * 3;
 				var userStatusContainer = new XRect(completionBoxOuter.Right, ch, textAreaWidth, userSubmittedCompletionHeight);
-				tf.DrawString(userCompletionText, userCompletionFont, XBrushes.LightGray, userStatusContainer, XStringFormats.TopLeft);
+				tf.DrawString(userCompletionText??"", userCompletionFont, XBrushes.LightGray, userStatusContainer, XStringFormats.TopLeft);
 
 				var calculatedHeight = ch + userSubmittedCompletionHeight + reasonMargin - curH;
 

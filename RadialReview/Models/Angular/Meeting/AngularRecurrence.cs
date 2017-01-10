@@ -15,6 +15,7 @@ using RadialReview.Models.Angular.Headlines;
 using RadialReview.Model.Enums;
 using Newtonsoft.Json;
 using RadialReview.Utilities.DataTypes;
+using RadialReview.Models.Angular.DataType;
 
 namespace RadialReview.Models.Angular.Meeting
 {
@@ -57,6 +58,7 @@ namespace RadialReview.Models.Angular.Meeting
 		
 		public AngularIgnore<L10Recurrence> _Recurrence { get; set; }
         public string Focus { get; set; }
+		public List<AngularString> LoadUrls { get; set; }
 	}
 
     public class AngularBasics : BaseAngular {

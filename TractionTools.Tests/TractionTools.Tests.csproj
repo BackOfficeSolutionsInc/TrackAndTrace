@@ -242,6 +242,7 @@
     <Compile Include="Permissions\SettledPermissions.cs" />
     <Compile Include="Permissions\DashboardPermissions.cs" />
     <Compile Include="Permissions\QuestionPermissions.cs" />
+    <Compile Include="Permissions\DeepAccessor_User.cs" />
     <Compile Include="Permissions\VtoPermissions.cs" />
     <Compile Include="Permissions\_BasePermissionsTest.cs" />
     <Compile Include="Permissions\OrganizationPermissions.cs" />

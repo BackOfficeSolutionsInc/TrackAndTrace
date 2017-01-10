@@ -749,13 +749,15 @@ function _submitModal(formData, pushUrl, onSuccess, onComplete, useJson, content
 			}
 		},
 		complete: function (dd) {
-			var data = dd.responseJSON;
-			if (data){
-				if (onCompleteArg) {
-					if (typeof onCompleteArg === "string") {
-						eval(onCompleteArg + "(data,formData)");
-					} else if (typeof onCompleteArg === "function") {
-						onCompleteArg(data, formData);
+			if (dd) {
+				var data = dd.responseJSON;
+				if (data) {
+					if (onCompleteArg) {
+						if (typeof onCompleteArg === "string") {
+							eval(onCompleteArg + "(data,formData)");
+						} else if (typeof onCompleteArg === "function") {
+							onCompleteArg(data, formData);
+						}
 					}
 				}
 			}

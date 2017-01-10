@@ -45,7 +45,7 @@ namespace RadialReview.Accessors
                 using (var tx = s.BeginTransaction())
                 {
                     caller = s.Get<UserOrganizationModel>(caller.Id);
-                    PermissionsUtility.Create(s, caller).OwnedBelowOrEqual(x => x.Id == forUserId);
+                    PermissionsUtility.Create(s, caller).OwnedBelowOrEqual(forUserId);
 
                     //Enable
                     var foundEnabled = s.GetByMultipleIds<QuestionModel>(enabled);

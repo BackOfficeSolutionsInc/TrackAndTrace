@@ -50,7 +50,7 @@ namespace RadialReview.Accessors
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					PermissionsUtility.Create(s, caller1).OwnedBelowOrEqual(x => x.Id == userOrganizationId);
+					PermissionsUtility.Create(s, caller1).OwnedBelowOrEqual(userOrganizationId);
 					var asUsers = s.QueryOver<PermissionOverride>()
 						.Where(x => x.DeleteTime == null && x.ForUser.Id == userOrganizationId && x.Permissions == PermissionType.IssueReview)
 						.Select(x => x.AsUser)
@@ -59,7 +59,7 @@ namespace RadialReview.Accessors
 					var managingTeams = new List<OrganizationTeamModel>();
 					foreach (var caller in asUsers){
 						try{
-							PermissionsUtility.Create(s, caller).OwnedBelowOrEqual(x => x.Id == userOrganizationId);
+							PermissionsUtility.Create(s, caller).OwnedBelowOrEqual(userOrganizationId);
 							var directlyManaging = s.QueryOver<OrganizationTeamModel>()
 								.Where(x => x.ManagedBy == userOrganizationId)
 								.List().ToList();

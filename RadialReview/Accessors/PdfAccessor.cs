@@ -511,7 +511,7 @@ namespace RadialReview.Accessors {
 			document.Info.Author = "Traction® Tools";
 			document.Info.Title = name + " - " + review.ReviewContainer.ReviewName;
 			document.Info.Creator = "" + caller.GetName();
-			document.Info.CreationDate = DateTime.UtcNow;
+			//document.Info.CreationDate = DateTime.UtcNow;
 			document.Info.Keywords = "Traction Tools, " + name + ", " + review.ReviewContainer.ReviewName;
 			AddReviewPrintout(caller, document, review);
 			return document;

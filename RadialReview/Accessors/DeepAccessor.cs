@@ -237,9 +237,7 @@ namespace RadialReview.Accessors {
 					return true;
 				if (m.ManagingOrganization && m.Organization.Id == sub.Organization.Id)
 					return true;
-
-
-
+				
 				AccountabilityNode manager = null;
 				AccountabilityNode subordinate = null;
 
@@ -248,7 +246,8 @@ namespace RadialReview.Accessors {
 					.JoinAlias(x => x.Parent, () => manager)
 					.JoinAlias(x => x.Child, () => subordinate)
 						.Where(x => manager.DeleteTime == null && subordinate.DeleteTime == null && manager.UserId == managerId && subordinate.UserId == subordinateId)
-						.Take(1).SingleOrDefault();
+						.Select(x=>x.Id)
+						.Take(1).SingleOrDefault<object>();
 
 				//&& x.ManagerId == managerId && x.SubordinateId == subordinateId &&).Take(1).SingleOrDefault();
 

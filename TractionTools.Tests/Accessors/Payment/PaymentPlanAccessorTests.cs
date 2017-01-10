@@ -97,22 +97,16 @@ namespace TractionTools.Tests.Accessors {
             Assert.IsNotNull(org.PaymentPlan.Task);
             Assert.IsNotNull(org.PaymentPlan.Description);
 
-
-			//var result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendReceipt: false, executeTime: now);
+			
 			var result =await TaskAccessor.ExecuteTask_Test(org.PaymentPlan.Task, now);
-			//var log = (await PaymentSpringUtil.GetAllLogs(true, 1,10)).Where(x => x.action == "/api/v1/charge").OrderByDescending(x => x.date).FirstOrDefault();
 			Assert.AreEqual(0, result.Response.amount_settled);
-
-			//result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendReceipt: false, executeTime: now.AddDays(29));
+			
 			var nextTask = result.NewTasks.Single();
 			result = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(29));
-			//log = (await PaymentSpringUtil.GetAllLogs(true, 1, 10)).Where(x => x.action == "/api/v1/charge").OrderByDescending(x => x.date).FirstOrDefault();
 			Assert.AreEqual(0, result.Response.amount_settled);
-
-            //result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendReceipt: false, executeTime: now.AddDays(31));
+			
 			nextTask = result.NewTasks.Single();
 			result = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(31));
-			//log = (await PaymentSpringUtil.GetAllLogs(true, 1, 10)).Where(x => x.action == "/api/v1/charge").OrderByDescending(x => x.date).FirstOrDefault();
             Assert.AreEqual(baseCharge, result.Response.amount_settled);
 						
             var ids = new List<long>();
@@ -123,11 +117,9 @@ namespace TractionTools.Tests.Accessors {
                     ids.Add(u.Id);
                 }
             });
-
-			//result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendReceipt: false, executeTime: now.AddDays(62));
+			
 			nextTask = result.NewTasks.Single();
 			result = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(62));
-			//log = (await PaymentSpringUtil.GetAllLogs(true, 1, 10)).Where(x => x.action == "/api/v1/charge").OrderByDescending(x => x.date).FirstOrDefault();
 			Assert.AreEqual(baseCharge, result.Response.amount_settled);
 			
             DbCommit(s => {
@@ -137,20 +129,14 @@ namespace TractionTools.Tests.Accessors {
 					});
                 }
             });
-
-			// result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendReceipt: false, executeTime: now.AddDays(73));
-			// Assert.AreEqual(chargeAnd19Users_L10, result.amount_settled);
+			
 			nextTask = result.NewTasks.Single();
 			result = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(74));
-			//log = (await PaymentSpringUtil.GetAllLogs(true, 1, 10)).Where(x => x.action == "/api/v1/charge").OrderByDescending(x => x.date).FirstOrDefault();
 			Assert.AreEqual(chargeAnd19Users_L10, result.Response.amount_settled);
 
 
-			//result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendReceipt: false, executeTime: now.AddDays(93));
-			//Assert.AreEqual(chargeAnd19Users_L10_Review, result.amount_settled);
 			nextTask = result.NewTasks.Single();
 			result = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(93));
-			//log = (await PaymentSpringUtil.GetAllLogs(true, 1, 10)).Where(x => x.action == "/api/v1/charge").OrderByDescending(x => x.date).FirstOrDefault();
 			Assert.AreEqual(chargeAnd19Users_L10_Review, result.Response.amount_settled);
 
 
@@ -161,19 +147,13 @@ namespace TractionTools.Tests.Accessors {
                     s.Update(u);
                 }
             });
-
-			//result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendReceipt: false, executeTime: now.AddDays(73));
-			//Assert.AreEqual(chargeAnd19Users_L10, result.amount_settled);
+			
 			nextTask = result.NewTasks.Single();
 			result = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(73));
-			//log = (await PaymentSpringUtil.GetAllLogs(true, 1, 10)).Where(x => x.action == "/api/v1/charge").OrderByDescending(x => x.date).FirstOrDefault();
 			Assert.AreEqual(chargeAnd19Users_L10, result.Response.amount_settled);
-
-			//result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendReceipt: false, executeTime: now.AddDays(94));
-			//Assert.AreEqual(chargeAnd17Users_L10_Review, result.amount_settled);
+			
 			nextTask = result.NewTasks.Single();
 			result = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(94));
-			//log = (await PaymentSpringUtil.GetAllLogs(true, 1, 10)).Where(x => x.action == "/api/v1/charge").OrderByDescending(x => x.date).FirstOrDefault();
 			Assert.AreEqual(chargeAnd17Users_L10_Review, result.Response.amount_settled);
 
 			DbCommit(s => {
@@ -181,13 +161,12 @@ namespace TractionTools.Tests.Accessors {
                     s.Save(new UserOrganizationModel() { Organization = org, CreateTime = now.AddDays(62) });
                 }
             });
-
-			//result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendReceipt: false, executeTime: now.AddDays(94));
-			//Assert.AreEqual(chargeAnd107Users_L10_Review, result.amount_settled);
+			
 			nextTask = result.NewTasks.Single();
 			result = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(94));
-			//log = (await PaymentSpringUtil.GetAllLogs(true, 1, 10)).Where(x => x.action == "/api/v1/charge").OrderByDescending(x => x.date).FirstOrDefault();
 			Assert.AreEqual(chargeAnd107Users_L10_Review, result.Response.amount_settled);
+
+			Assert.Inconclusive("Also test Eval Only");
 		}
 
         [TestMethod]
@@ -196,11 +175,8 @@ namespace TractionTools.Tests.Accessors {
             var types = Enum.GetNames(typeof(PaymentPlanType));
             Assert.AreEqual(5, types.Length, "Make sure to update PaymentAccessor switch-cases and add test cases below");
             MockApplication();
-           // OrganizationModel org = null;
+
             UserModel userModel = null;
-           // UserOrganizationModel manager = null;
-           // L10Recurrence recur = null;
-           // PeriodModel period = null;
             DbCommit(s => {
                 userModel = new UserModel();
                 s.Save(userModel);
@@ -249,16 +225,7 @@ namespace TractionTools.Tests.Accessors {
 				baseprice + Math.Max(0, 17 - numFreeUsers) * l10Price + 17 * reviewPrice,
 				baseprice + Math.Max(0, 107 - numFreeUsers) * l10Price + 107 * reviewPrice
 			);
-
-			///await TestPlan(userModel, PaymentPlanType.Enterprise_Monthly_March2016,
-			//ent_baseprice,
-			//ent_baseprice,
-			//ent_baseprice + 19 * ent_reviewPrice,
-			//ent_baseprice,
-			//ent_baseprice + 17 * ent_reviewPrice,
-			//ent_baseprice + 7 * 200 + 107 * ent_reviewPrice
-			//); 
-
+			
 
 
 			///
@@ -275,95 +242,8 @@ namespace TractionTools.Tests.Accessors {
 				baseprice + Math.Max(0, 107 - numFreeUsers) * l10Price + 107 * reviewPrice
 			);
 
-			//await TestPlan(userModel, PaymentPlanType.SelfImplementer_Monthly_March2016,
-			//    19900,
-			//    19900 + 9  * 1200,
-			//    19900 + 9  * 1200 + 19  * 500,
-			//    19900 + 7  * 1200,        
-			//    19900 + 7  * 1200 + 17  * 500,
-			//    19900 + 97 * 1200 + 107 * 500
-			//);
+			Assert.Inconclusive("Also test Eval Only");
 
-            //var now = new DateTime(2016, 3, 9);
-            //org = new OrganizationAccessor().CreateOrganization(
-            //    userModel,
-            //    "PaymentPlanTest Professional Org",
-            //    PaymentPlanType.Professional_Monthly_March2016,
-            //    now, out user, true, true);
-
-            //var token = await PaymentAccessor.GenerateFakeCard("Professional " + DateTime.UtcNow.ToJavascriptMilliseconds());
-
-            //await PaymentAccessor.SetCard(user, org.Id,
-            //    token.id, token.@class, token.card_type, token.card_owner_name, token.last_4, token.card_exp_month, token.card_exp_year,
-            //    "", "", "", "", "", "", "", "", "", true);
-
-
-
-            //Assert.IsNotNull(org.PaymentPlan);
-            //Assert.IsNotNull(org.PaymentPlan.Task);
-            //Assert.IsNotNull(org.PaymentPlan.Description);
-
-            //var result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendInvoice: false, executeTime: now);
-            //Assert.AreEqual(0, result.amount_settled);
-
-            //result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendInvoice: false, executeTime: now.AddDays(29));
-            //Assert.AreEqual(0, result.amount_settled);
-
-            //result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendInvoice: false, executeTime: now.AddDays(31));
-            //Assert.AreEqual(14900, result.amount_settled);
-            //var ids = new List<long>();
-            //DbCommit(s => {
-            //    for (var i = 0; i < 9; i++) {
-            //        var u = new UserOrganizationModel() { Organization = org, CreateTime = now.AddDays(32 + i) };
-            //        s.Save(u);
-            //        ids.Add(u.Id);
-            //    }
-            //});
-
-            //result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendInvoice: false, executeTime: now.AddDays(62));
-            //Assert.AreEqual(14900, result.amount_settled);
-
-            //DbCommit(s => {
-            //    for (var i = 0; i < 9; i++) {
-            //        s.Save(new UserOrganizationModel() { Organization = org, CreateTime = now.AddDays(62 + i) });
-            //    }
-            //});
-
-            //result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendInvoice: false, executeTime: now.AddDays(73));
-            //Assert.AreEqual(14900 + 9000, result.amount_settled);
-
-
-            //result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendInvoice: false, executeTime: now.AddDays(93));
-            //Assert.AreEqual(14900 + (1000 + 400) * 9, result.amount_settled);
-
-
-            //DbCommit(s => {
-            //    for (var i = 0; i < 2; i++) {
-            //        var u = s.Get<UserOrganizationModel>(ids[i]);
-            //        u.DeleteTime = now.AddDays(63);
-            //        s.Update(u);
-            //    }
-            //});
-
-            //result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendInvoice: false, executeTime: now.AddDays(73));
-            //Assert.AreEqual(14900 + 9000, result.amount_settled);
-
-            //result = await PaymentAccessor.ChargeOrganization(org.Id, org.PaymentPlan.Task.Id, sendInvoice: false, executeTime: now.AddDays(94));
-            //Assert.AreEqual(14900 + (1000 + 400) * 7, result.amount_settled);
-
-
-            //org = new OrganizationAccessor().CreateOrganization(
-            //   userModel,
-            //   "PaymentPlanTest Enterprise Org",
-            //   PaymentPlanType.Enterprise_Monthly_March2016,
-            //   now, out user, true, true);
-
-            //token = await PaymentAccessor.GenerateFakeCard("Enterprise " + DateTime.UtcNow.ToJavascriptMilliseconds());
-
-            //await PaymentAccessor.SetCard(user, org.Id,
-            //    token.id, token.@class, token.card_type, token.card_owner_name, token.last_4, token.card_exp_month, token.card_exp_year,
-            //    "", "", "", "", "", "", "", "", "", true);
-
-        }
+		}
     }
 }

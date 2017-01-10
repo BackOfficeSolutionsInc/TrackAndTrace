@@ -235,13 +235,15 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
 	}
 
 	$scope.functions.orderScorecard = function (d, reverse) {
-		if (d && d.ForWeekNumber) {
-			if (reverse)
-				return -d.ForWeekNumber;
-			return d.ForWeekNumber
-		} else {
-			return 0;
-		}
+		return function (d) {
+			if (d && d.ForWeekNumber) {
+				if (reverse)
+					return -d.ForWeekNumber;
+				return d.ForWeekNumber
+			} else {
+				return 0;
+			}
+		};
 	}
 
 

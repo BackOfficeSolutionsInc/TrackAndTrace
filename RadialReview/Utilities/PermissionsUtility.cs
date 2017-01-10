@@ -327,27 +327,27 @@ namespace RadialReview.Utilities {
 		}
 		#endregion
 
-		#region Group
-		public PermissionsUtility EditGroup(long groupId) {
-			if (IsRadialAdmin(caller))
-				return this;
+		//#region Group
+		//public PermissionsUtility EditGroup(long groupId) {
+		//	if (IsRadialAdmin(caller))
+		//		return this;
 
-			if (caller.IsManager() && IsOwnedBelowOrEqual(caller, x => x.ManagingGroups.Any(y => y.Id == groupId)))
-				return this;
+		//	if (caller.IsManager() && IsOwnedBelowOrEqual(caller, x => x.ManagingGroups.Any(y => y.Id == groupId)))
+		//		return this;
 
-			throw new PermissionsException();
-		}
+		//	throw new PermissionsException();
+		//}
 
-		public PermissionsUtility ViewGroup(long groupId) {
-			if (IsRadialAdmin(caller))
-				return this;
-			if (caller.Groups.Any(x => x.Id == groupId))
-				return this;
-			if (IsOwnedBelowOrEqual(caller, x => x.ManagingGroups.Any(y => y.Id == groupId)))
-				return this;
-			throw new PermissionsException();
-		}
-		#endregion
+		//public PermissionsUtility ViewGroup(long groupId) {
+		//	if (IsRadialAdmin(caller))
+		//		return this;
+		//	if (caller.Groups.Any(x => x.Id == groupId))
+		//		return this;
+		//	if (IsOwnedBelowOrEqual(caller, x => x.ManagingGroups.Any(y => y.Id == groupId)))
+		//		return this;
+		//	throw new PermissionsException();
+		//}
+		//#endregion
 
 		#region Application
 		public PermissionsUtility EditApplication(long forId) {
@@ -486,7 +486,7 @@ namespace RadialReview.Utilities {
 
 			var createdById = question.CreatedById;
 
-			if (caller.IsManager() && IsOwnedBelowOrEqual(caller, x => x.Id == createdById))
+			if (caller.IsManager() && IsOwnedBelowOrEqual(caller, createdById))
 				return this;
 
 			throw new PermissionsException();
@@ -501,10 +501,12 @@ namespace RadialReview.Utilities {
 
 			switch (question.OriginType) {
 				//case OriginType.User: if (!IsOwnedBelowOrEqual(caller, x => x.CustomQuestions.Any(y => y.Id == question.Id))) throw new PermissionsException(); break;
-				case OriginType.Group:
-					if (!IsOwnedBelowOrEqual(caller, x => x.Groups.Any(y => y.CustomQuestions.Any(z => z.Id == question.Id)) || x.ManagingGroups.Any(y => y.CustomQuestions.Any(z => z.Id == question.Id))))
-						throw new PermissionsException();
-					break;
+
+				//case OriginType.Group:
+				//	if (!IsOwnedBelowOrEqual(caller, x => x.Groups.Any(y => y.CustomQuestions.Any(z => z.Id == question.Id)) || x.ManagingGroups.Any(y => y.CustomQuestions.Any(z => z.Id == question.Id))))
+				//		throw new PermissionsException();
+				//	break;
+
 				case OriginType.Organization:
 					if (caller.Organization.Id != question.OriginId)
 						throw new PermissionsException();
@@ -555,8 +557,8 @@ namespace RadialReview.Utilities {
 					if (manageOnly)
 						return ManagesUserOrganization(originId, true);
 					return EditUserOrganization(originId);
-				case OriginType.Group:
-					return EditGroup(originId);
+				//case OriginType.Group:
+				//	return EditGroup(originId);
 				case OriginType.Organization:
 					return EditOrganization(originId);
 				case OriginType.Industry:
@@ -573,8 +575,8 @@ namespace RadialReview.Utilities {
 			switch (originType) {
 				case OriginType.User:
 					return ViewUserOrganization(originId, false);
-				case OriginType.Group:
-					return ViewGroup(originId);
+				//case OriginType.Group:
+				//	return ViewGroup(originId);
 				case OriginType.Organization:
 					return ViewOrganization(originId);
 				case OriginType.Industry:
@@ -829,8 +831,11 @@ namespace RadialReview.Utilities {
 				if (reviewUserId == caller.Id)
 					return this;
 
-				if (IsOwnedBelowOrEqual(caller, x => x.Id == reviewUserId))
+				if (DeepAccessor.Users.ManagesUser(session, this, caller.Id, reviewUserId))
 					return this;
+
+				//if (IsOwnedBelowOrEqual(caller, x => x.Id == reviewUserId))
+				//	return this;
 
 				throw new PermissionsException();
 			}, PermissionType.ViewReviews);
@@ -960,8 +965,8 @@ namespace RadialReview.Utilities {
 
 			if (IsManagingOrganization(prereviewOrgId))
 				return this;
-
-			if (IsOwnedBelowOrEqual(caller, x => x.Id == prereview.ManagerId))
+			
+			if (IsOwnedBelowOrEqual(caller, prereview.ManagerId))
 				return this;
 
 			throw new PermissionsException();
@@ -1530,33 +1535,50 @@ namespace RadialReview.Utilities {
 		#endregion
 
 		#region Recursions
-		public PermissionsUtility OwnedBelowOrEqual(Predicate<UserOrganizationModel> visiblility) {
-			if (IsOwnedBelowOrEqual(caller, visiblility))
+		//public PermissionsUtility OwnedBelowOrEqual(Predicate<UserOrganizationModel> visiblility) {
+		//	if (IsOwnedBelowOrEqual(caller, visiblility))
+		//		return this;
+		//	throw new PermissionsException();
+		//}
+
+		public PermissionsUtility OwnedBelowOrEqual(long userId) {
+			if (IsOwnedBelowOrEqual(caller, userId))
 				return this;
 			throw new PermissionsException();
 		}
 
-		protected bool IsOwnedBelowOrEqual(UserOrganizationModel caller, Predicate<UserOrganizationModel> visibility) {
-
-			if (visibility(caller))
+		protected bool IsOwnedBelowOrEqual(UserOrganizationModel caller, long userId) {
+			if (userId == caller.Id)
 				return true;
 
-			foreach (var manager in caller.ManagingUsers.ToListAlive().Select(x => x.Subordinate)) {
-				if (IsOwnedBelowOrEqual(manager, visibility))
-					return true;
-			}
-			return false;
+			return DeepAccessor.Users.ManagesUser(session,this,caller.Id,userId);
 		}
 
-		protected bool IsOwnedAboveOrEqual(UserOrganizationModel caller, Predicate<UserOrganizationModel> visibility) {
-			if (visibility(caller))
-				return true;
-			foreach (var subordinate in caller.ManagedBy.ToListAlive().Select(x => x.Manager)) {
-				if (IsOwnedAboveOrEqual(subordinate, visibility))
-					return true;
-			}
-			return false;
-		}
+		//protected bool IsOwnedBelowOrEqual(UserOrganizationModel caller, Predicate<UserOrganizationModel> visibility) {
+
+		//	var allSubs = DeepAccessor.Users.GetSubordinatesAndSelfModels(caller, caller.Id);
+
+		//	return allSubs.Any(x => visibility(x));
+
+
+		//	//if (visibility(caller))
+		//	//	return true;
+		//	//foreach (var manager in caller.ManagingUsers.ToListAlive().Select(x => x.Subordinate)) {
+		//	//	if (IsOwnedBelowOrEqual(manager, visibility))
+		//	//		return true;
+		//	//}
+		//	//return false;
+		//}
+
+		//protected bool IsOwnedAboveOrEqual(UserOrganizationModel caller, Predicate<UserOrganizationModel> visibility) {
+		//	if (visibility(caller))
+		//		return true;
+		//	foreach (var subordinate in caller.ManagedBy.ToListAlive().Select(x => x.Manager)) {
+		//		if (IsOwnedAboveOrEqual(subordinate, visibility))
+		//			return true;
+		//	}
+		//	return false;
+		//}
 
 		protected bool IsOwnedBelowOrEqualOrganizational<T>(T start, Origin origin) where T : IOrigin {
 			if (origin.AreEqual(start))
