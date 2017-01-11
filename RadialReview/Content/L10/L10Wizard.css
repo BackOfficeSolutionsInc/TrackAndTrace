@@ -2042,7 +2042,7 @@ body,
 .wizard .user-list-container .isSearching > .create-row-container > .tooltip {
   display: none !important;
 }
-.wizard .user-list-container .isSearching:before {
+.wizard .user-list-container .isSearching .new-user-overlay {
   content: "";
   position: fixed;
   left: 0;
@@ -2341,4 +2341,8 @@ body,
 }
 #alerts .alert strong {
   display: none;
+}
+#modal input[type=checkbox].blend {
+  width: 47px;
+  height: 47px;
 }

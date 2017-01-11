@@ -50,21 +50,23 @@
                     </table>
                     <div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
                     <div class="new-user-container" ng-class="{isSearching:ShowSearch}">
+						<span class="new-user-overlay" ng-click="functions.blurSearch(this);"></span>
                         <div class="create-row-container">
                             <div class="create-row" ng-click="functions.showUserSearch($event)" data-toggle="tooltip" data-placement="left" title="Add @tableTitle"></div>
                             <div class="livesearch-container" ng-show="ShowSearch == true">
                                 <span class="search-icon"></span>
                                 <live-search class="user-searchbox blend"
-                                             ng-blur="functions.blurSearch(this);"
+                                             @*ng-blur="functions.blurSearch(this);"*@
                                              live-search-callback="userSearchCallback"
                                              live-search-selection-callback="functions.addAttendee"
                                              live-search-item-template="{{result.first}} {{result.last}}"
                                              live-search-select="name"
+											 tt-on-select ="functions.blurSearch(this)"
                                              ng-model="model.Search"></live-search>
                             </div>
                         </div>
-                        <div class="create-user" ng-click="functions.createUser()" data-toggle="tooltip" data-placement="left" title="Create new user"></div>
-                        <div class="upload-users" ng-click="functions.uploadUsers()" data-toggle="tooltip" data-placement="left" title="Upload users"></div>
+                        <div class="create-user" ng-click="functions.createUser();functions.blurSearch(this);" data-toggle="tooltip" data-placement="left" title="Create new user"></div>
+                        <div class="upload-users" ng-click="functions.uploadUsers();functions.blurSearch(this);" data-toggle="tooltip" data-placement="left" title="Upload users"></div>
                     </div>
                     <div class="new-user-container-space"></div>
                     <div class="gray no-todos empty-search" style="padding: 30px 15px;" ng-if="(@(selector) ).length==0">

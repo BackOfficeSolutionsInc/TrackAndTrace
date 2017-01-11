@@ -44,8 +44,7 @@ $(function () {
 					"<span class='btn btn-default btn-xs doneButton'><input data-todo='" + todo + "' class='todo-checkbox' type='checkbox' " + (checked ? "checked" : "") + "/> Complete</span>" +
 				"</span>" +
 				"<span class='expandContract btn-group'>" +
-				"<span class='btn btn-default btn-xs copyButton issuesModal' data-method='issuefromtodo' data-todo='" + todo + "' data-recurrence='" + recurrenceId + "' data-meeting='" + meetingId + "'><span class='icon fontastic-icon-pinboard'></span> New Issue</span>" +
-				//"<span class='btn btn-default btn-xs createTodoButton todoModal'><span class='glyphicon glyphicon-unchecked todoButton'></span> Todo</span>"+
+				"<span class='btn btn-default btn-xs copyButton issuesModal' data-method='issuefromtodo' data-todo='" + todo + "' data-recurrence='" + window.recurrenceId + "' data-meeting='" + window.meetingId + "'><span class='icon fontastic-icon-pinboard'></span> New Issue</span>" +
 				"</span>" +
 				"</div>"+
 				"<span class='clearfix'></span>" +
@@ -114,7 +113,7 @@ $(function () {
 		var that = $(this).parent();
 		$.ajax({
 			method: "POST",
-			url: "/L10/Members/" + recurrenceId,
+			url: "/L10/Members/" + window.recurrenceId,
 			success: function (data) {
 				if (showJsonAlert(data)) {
 
@@ -163,7 +162,7 @@ $(function () {
 		$(selector2).data("checked", checked);
 		$(selector2).attr("data-checked", checked);
 		$.ajax({
-			url: "/l10/UpdateTodoCompletion/" + recurrenceId,
+			url: "/l10/UpdateTodoCompletion/" + window.recurrenceId,
 			method: "post",
 			data: { todoId: todoId, checked: checked, connectionId: $.connection.hub.id },
 			success: function (data) {
@@ -292,7 +291,7 @@ function refreshCurrentTodoDetails() {
 	$(".todo-row[data-todo=" + currentTodoDetailsId + "]").addClass("selected");
 }
 
-function sortTodoBy(recurrenceId, todoList,sortBy,title,mult) {
+function sortTodoBy(recurId, todoList,sortBy,title,mult) {
 	mult = mult || 1;
 
 	$(".sort-button").html("Sort by " + title);
@@ -302,32 +301,16 @@ function sortTodoBy(recurrenceId, todoList,sortBy,title,mult) {
 			return mult*$(a).attr("data-message").toUpperCase().localeCompare($(b).attr("data-message").toUpperCase());
 		return mult*$(a).attr(sortBy).localeCompare($(b).attr(sortBy));
 	}).appendTo($(todoList));
-	updateTodoList(recurrenceId, todoList);
+	updateTodoList(recurId, todoList);
 }
-function sortTodoByUser(recurrenceId, todoList) {
-	
+function sortTodoByUser(recurId, todoList) {	
 	$(todoList).children().detach().sort(function(a, b) {
 		if ($(a).attr("data-name")===$(b).attr("data-name"))
 			return $(a).attr("data-message").toUpperCase().localeCompare($(b).attr("data-message").toUpperCase());
 		return $(a).attr("data-name").localeCompare($(b).attr("data-name"));
 	}).appendTo($(todoList));
 
-	/*
-	$(todoList).find("li").sort(function (a, b) {
-		//if ($(a).attr("data-name") == $(b).attr("data-name"))
-		//	return $(a).attr("data-message") < $(b).attr("data-message") ;
-		return ($(a).attr("data-name") <= $(b).attr("data-name"));
-	}).each(function () {
-		$(todoList).prepend(this);
-	});
-	$(todoList).find("li").sort(function (a, b) {
-		if ($(a).attr("data-name") != $(b).attr("data-name"))
-			return true;
-		return ($(a).attr("data-message") <= $(b).attr("data-message"));
-	}).each(function () {
-		$(todoList).prepend(this);
-	});*/
-	updateTodoList(recurrenceId, todoList);
+	updateTodoList(recurId, todoList);
 }
 
 function constructTodoRow(todo) {
@@ -367,7 +350,7 @@ function constructTodoRow(todo) {
 		
 			 '  <div class="btn-group pull-right">' +
                     labelIndicator+
-			 '  <span class="icon fontastic-icon-pinboard issuesModal issuesButton" data-method="issuefromtodo" data-todo="'+todo.todo+'" data-recurrence="'+MeetingId+'" data-meeting="'+meetingId+'"></span>'+
+			 '  <span class="icon fontastic-icon-pinboard issuesModal issuesButton" data-method="issuefromtodo" data-todo="'+todo.todo+'" data-recurrence="'+window.recurrenceId+'" data-meeting="'+window.meetingId+'"></span>'+
 			 '  </div>' +        
             '<span class="profile-image">'+
                 profilePicture(todo.imageurl, todo.accountableUser) +
@@ -404,13 +387,13 @@ function getTodoOrder() {
     return $.map($(".todo-list").sortable('serialize').toArray(), function (v) { return v.todo; });
 }
 
-function updateTodoList(recurrenceId, todoRow) {
+function updateTodoList(recurId, todoRow) {
     var order = getTodoOrder();
     var d = { todos: order, connectionId: $.connection.hub.id };
 	console.log(d);
 	var that = todoRow;
 	$.ajax({
-		url: "/l10/UpdateTodos/" + recurrenceId,
+		url: "/l10/UpdateTodos/" + recurId,
 		data: JSON.stringify(d),
 		contentType: "application/json; charset=utf-8",
 		method: "POST",
@@ -517,7 +500,7 @@ function runFireworks() {
     window.fireworksRan = true;
     fc.init();
 
-    $.ajax("/L10/ranfireworks/" + recurrenceId);
+    $.ajax("/L10/ranfireworks/" + window.recurrenceId);
     
     shootFirework = function(){
 

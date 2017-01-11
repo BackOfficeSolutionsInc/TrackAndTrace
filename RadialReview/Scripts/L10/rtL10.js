@@ -178,7 +178,7 @@ function rejoin(callback) {
 	console.log("called rejoin");
 	try {
 		if (meetingHub) {
-			meetingHub.server.join(MeetingId, $.connection.hub.id).done(function() {
+			meetingHub.server.join(window.recurrenceId, $.connection.hub.id).done(function () {
 				//update(d);
 				console.log("rejoin completed");
 				$(".rt").prop("disabled", false);
@@ -207,11 +207,11 @@ function rejoin(callback) {
 function sendTextContents() {
 	var val = $(this).val();
 	var id = $(this).attr('id');
-	meetingHub.server.updateTextContents(MeetingId, id, val);
+	meetingHub.server.updateTextContents(window.recurrenceId, id, val);
 	console.log("send Contents for " + id);
 }
 function sendDisable(id,disabled) {
-    meetingHub.server.sendDisable(MeetingId, id, disabled);
+	meetingHub.server.sendDisable(window.recurrenceId, id, disabled);
     console.log("sendDisabled:"+id+" "+disabled);
 }
 
@@ -222,13 +222,13 @@ function disableItem(id, disabled) {
 
 function sendFocus() {
 	var id = $(this).attr('id');
-	meetingHub.server.updateUserFocus(MeetingId, id);
+	meetingHub.server.updateUserFocus(window.recurrenceId, id);
 	console.log("sendFocus");
 }
 function sendUnfocus() {
 	setTimeout(function() {
 		if (!$(':focus').is(".rt")) {
-			meetingHub.server.updateUserFocus(MeetingId, "");
+			meetingHub.server.updateUserFocus(window.recurrenceId, "");
 			console.log("sendUnfocus");
 		}
 	}, 1);

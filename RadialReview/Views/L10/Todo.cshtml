@@ -11,23 +11,17 @@
 		<div class="col-md-8">
 			<hgroup class="page-header listing fixed-pos">
 				<div class="pull-right">
-					@*<div class="btn-group ">
-							<div class="btn btn-default btn-xs detailsBtn sm" title='Hide details'><span class="icon fontastic-icon-arrows-in"></span></div>
-							<div class="btn btn-default btn-xs detailsBtn lg" title='Show details'><span class="icon fontastic-icon-arrows-out"></span></div>
-						</div>*@
 					<div class="btn-group smallBreak">
 						<a class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 							<span class="icon fontastic-icon-sort-alpha-two"></span> <span class="sort-button">Sort </span>
 						</a> 
 						<ul class="dropdown-menu pull-right" role="menu">
-							@*<li><a class="clickable " onclick="sortTodoBy(recurrenceId,$('.todo-list'),'data-message','To-Do')"> By To-Do</a></li>*@
-							<li><a class="clickable " onclick="sortTodoBy(recurrenceId,$('.todo-list'),'data-name','Owner')"> By Owner</a></li>
-                            <li><a class="clickable " onclick="sortTodoBy(recurrenceId,$('.todo-list'),'data-checked','Incomplete',1)"> Incomplete</a></li>
-                            <li><a class="clickable " onclick="sortTodoBy(recurrenceId,$('.todo-list'),'data-duedate','Due Date',-1)"> By Due Date (Desc)</a></li>
-                            <li><a class="clickable " onclick="sortTodoBy(recurrenceId,$('.todo-list'),'data-duedate','Due Date',1)"> By Due Date (Asc)</a></li>
-                            <li><a class="clickable " onclick="sortTodoBy(recurrenceId,$('.todo-list'),'data-createtime','Date Created',-1)"> By Date Created (Desc)</a></li>
-                            <li><a class="clickable " onclick="sortTodoBy(recurrenceId,$('.todo-list'),'data-createtime','Date Created',1)"> By Date Created (Asc)</a></li>
-
+							<li><a class="clickable" onclick="sortTodoBy(recurrenceId,$('.todo-list'),'data-name','Owner')"> By Owner</a></li>
+							<li><a class="clickable" onclick="sortTodoBy(recurrenceId,$('.todo-list'),'data-checked','Incomplete',1)"> Incomplete</a></li>
+							<li><a class="clickable" onclick="sortTodoBy(recurrenceId,$('.todo-list'),'data-duedate','Due Date',-1)"> By Due Date (Desc)</a></li>
+							<li><a class="clickable" onclick="sortTodoBy(recurrenceId,$('.todo-list'),'data-duedate','Due Date',1)"> By Due Date (Asc)</a></li>
+							<li><a class="clickable" onclick="sortTodoBy(recurrenceId,$('.todo-list'),'data-createtime','Date Created',1)"> By Date Created (Oldest First)</a></li>
+							<li><a class="clickable" onclick="sortTodoBy(recurrenceId,$('.todo-list'),'data-createtime','Date Created',-1)"> By Date Created (Newest First)</a></li>
 						</ul>
 					</div>
 
@@ -58,15 +52,14 @@
 	</div>
 </div>
 
-
 <div id="fireworks-template">
     <div id="fw" class="firework"></div>
     <div id="fp" class="fireworkParticle"><img src="~/Content/img/particles.gif" alt="" /></div>
 </div>
 
 <script>
-	var recurrenceId = @Model.Recurrence.Id;
-	var meetingId = @Model.Meeting.Id;
+	window.recurrenceId = @Model.Recurrence.Id;
+	window.meetingId = @Model.Meeting.Id;
 	var oldContainer;
 	var oldTodoList;
     
@@ -83,23 +76,8 @@
 		$(".todo-list").sortable({
 			group: 'nested',
 			handle: '.move-icon',
-			/*afterMove: function(placeholder, container) {
-			if (oldContainer != container) {
-				if (oldContainer)
-					oldContainer.el.removeClass("active");
-				container.el.addClass("active");
-
-				oldContainer = container;
-			}
-			},
-			onDrop: function(item, container, _super) {
-				container.el.removeClass("active");
-				_super(item);
-			}*/
 			onDrop: function($item, container, _super, event) {
-				debugger;
 				if ($item.hasClass("issue-row")) {
-					debugger;
 					_super($item, container);
 					updateIssuesList(@Model.Recurrence.Id, $(".issues-list"));
 					refreshCurrentIssueDetails();
@@ -110,6 +88,6 @@
 				}
 			}
 		});
-	    oldTodoList = getTodoOrder();//$(".todo-list").clone(true);
+	    oldTodoList = getTodoOrder();
 	});
 </script>

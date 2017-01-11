@@ -1,6 +1,6 @@
 ﻿/// <reference path="UploadSteps.js" />
 var uploader = UploadSteps({
-    defaultData: { recurrenceId: recurrenceId,type:"Scorecard",csv:true },
+	defaultData: { recurrenceId: window.recurrenceId, type: "Scorecard", csv: true },
     uploadFileUrl: "/Upload/UploadRecurrenceFile",
     uploadSelectionUrl: "/Upload/ProcessScorecardSelection",
     confirmSelectionUrl: "/Upload/SubmitScorecard",

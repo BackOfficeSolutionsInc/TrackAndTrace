@@ -6,7 +6,7 @@
 
 @using (Html.BeginScripts()) {
     <script>
-        var recurrenceId = @ViewBag.RecurrenceId;
+        window.recurrenceId = @ViewBag.RecurrenceId;
     </script>
     <script src="~/Scripts/Upload/UploadSteps.js"></script>
     <script src="~/Scripts/Upload/@ViewBag.UploadScript"></script>

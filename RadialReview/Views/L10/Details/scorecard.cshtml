@@ -8,13 +8,13 @@
         <span>Scorecard</span>
         <span flex></span>
       
-        <md-button class="md-icon-button" aria-label="Export Scorecard" href="/L10/ExportScorecard/{{::meetingId}}?type=csv" target="_blank">
+        <md-button class="md-icon-button" aria-label="Export Scorecard" href="/L10/ExportScorecard/{{::recurrenceId}}?type=csv" target="_blank">
             <md-tooltip md-direction="left">
                 Export Scorecard
             </md-tooltip>
             <md-icon>file_download</md-icon>
         </md-button>
-        <md-button class="md-icon-button measurableModal" aria-label="Add Measurable" data-recurrence="{{::meetingId}}">
+        <md-button class="md-icon-button measurableModal" aria-label="Add Measurable" data-recurrence="{{::recurrenceId}}">
             <md-tooltip md-direction="left">
                 Add Measurable
             </md-tooltip>
@@ -58,7 +58,7 @@
 
                 var data = {
                     ordering: order,
-                    recurrenceId: angular.element(document.querySelector('#ScorecardContainer')).scope().meetingId
+                    recurrenceId: angular.element(document.querySelector('#ScorecardContainer')).scope().recurrenceId
                 };
                 $.ajax({
                     url: "/L10/UpdateRecurrenceMeasurableOrdering",

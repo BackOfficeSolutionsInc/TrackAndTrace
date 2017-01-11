@@ -302,7 +302,7 @@ function loadPageForce(location) {
 			}
 		}, 4000);
 		$.ajax({
-			url: "/L10/Load/" + MeetingId + "?page=" + location + "&connection=" + $.connection.hub.id,
+			url: "/L10/Load/" + window.recurrenceId + "?page=" + location + "&connection=" + $.connection.hub.id,
 			success: function (data) {
 				replaceMainWindow(data, function () {
 					$(window).trigger("page-" + location.toLowerCase());
@@ -499,14 +499,14 @@ $(document).keydown(function (event) {
 
 function showPrint() {
 	//Html.ShowModal("Generate Printout","/Quarterly/Modal","/Quarterly/Printout/"+Model.Recurrence.Id,newTab:true)
-	showModal("Generate Quarterly Printout", "/Quarterly/Modal/" + recurrenceId, "/Quarterly/Printout/" + recurrenceId, "callbackPrint");
+	showModal("Generate Quarterly Printout", "/Quarterly/Modal/" + window.recurrenceId, "/Quarterly/Printout/" + window.recurrenceId, "callbackPrint");
 }
 function callbackPrint() {
 
 	$("#modalForm").unbind("submit");
 	$("#modalForm").attr("target", "_blank");
 	$("#modalForm").attr("method", "post");
-	$("#modalForm").attr("action", "/Quarterly/Printout/" + recurrenceId);
+	$("#modalForm").attr("action", "/Quarterly/Printout/" + window.recurrenceId);
 	$("#modalForm").bind("submit", function () {
 		$("#modal").modal('hide');
 	});
@@ -518,23 +518,23 @@ function lockConcludeButton() {
 
 
 $(window).on("page-segue", function () {
-	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + recurrenceId + "?return=meeting");
+	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting");
 });
 $(window).on("page-scorecard", function () {
-	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + recurrenceId + "?return=meeting#/Scorecard");
+	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Scorecard");
 });
 $(window).on("page-rocks", function () {
-	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + recurrenceId + "?return=meeting#/Rocks");
+	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Rocks");
 });
 $(window).on("page-headlines", function () {
-	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + recurrenceId + "?return=meeting#/Headlines");
+	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Headlines");
 });
 $(window).on("page-todo", function () {
-	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + recurrenceId + "?return=meeting#/Todos");
+	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Todos");
 });
 $(window).on("page-ids", function () {
-	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + recurrenceId + "?return=meeting#/Issues");
+	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Issues");
 });
 $(window).on("page-conclusion", function () {
-	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + recurrenceId + "?return=meeting");
+	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting");
 });

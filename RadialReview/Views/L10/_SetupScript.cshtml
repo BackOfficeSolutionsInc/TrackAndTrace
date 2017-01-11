@@ -12,8 +12,8 @@
 			@:var startTime = new Date(@(Model.MeetingStart.Value.ToJavascriptMilliseconds()));
                                         		}
 
-        var recurrenceId = @Model.Recurrence.Id;
-        var meetingId = -1;
+        window.recurrenceId = @Model.Recurrence.Id;
+        window.meetingId = -1;
 
         var UserName = "@Html.UserOrganization().GetName()";
 
@@ -24,8 +24,8 @@
             @:var currentPageBaseMinutes = @(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0) + @(Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => (DateTime.UtcNow.ToJavascriptMilliseconds() - x.Value.ToJavascriptMilliseconds()))/(60*1000.0));
             @:meetingStart = true;
 
-			@:var meetingId = @Model.Meeting.Id;
-            @:console.log("Setting meetingid="+meetingId);
+			@:window.meetingId = @Model.Meeting.Id;
+            @:console.log("Setting meetingid="+window.meetingId);
         }
 		else{
 

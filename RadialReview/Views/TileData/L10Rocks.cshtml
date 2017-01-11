@@ -6,7 +6,7 @@
 								   {"AddController", false},
 								   {"AddCompletion", false},
 								   {"AddDatePicker", false},
-								   {"MeetingId", Model},
+								   {"RecurrenceId", Model},
 								   {"RockName", Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName.NotNull(z => z.ToLower())))},
 								   {"Selector","(model.L10Rocks | filter:{KeyId:"+(Model)+"})[0].Contents"},
 								   {"Filter",""}

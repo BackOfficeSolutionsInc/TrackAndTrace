@@ -8,7 +8,7 @@
             {"AddHeaders", false},
             {"AddController", false},
 
-            {"MeetingId", Model},
+            {"RecurrenceId", Model},
             {"Reorderable", true},
 			//{"DisableName", true},
 			{"Localization", Html.Organization().Settings.NumberFormat.Angular() },
@@ -20,7 +20,7 @@
 			{"AddController",false},
 			{"DisableName",true},
 
-			{"MeetingId", Model},
+			{"RecurrenceId", Model},
 			{"Selector", "((model.L10Scorecards)| filter:{KeyId:"+Model+"})[0].Contents "},
 		});}</div><div ng-show="(model.L10Scorecards | filter:{KeyId:@(Model)}).length==0" class="gray alignCenter" elem-ready="functions.reload((model.L10Scorecards | filter:{KeyId:@(Model)}).length==0)">Please wait</div></div></div>
 

@@ -196,7 +196,7 @@ function updateServerScore(self) {
 	var dom = $(self).attr("id");
 	var oldVal = $(self).attr("data-oldval");
 	$.ajax({
-		url: "/l10/UpdateScore/" + MeetingId + "?s=" + id + "&w=" + w + "&m=" + m + "&value=" + val + "&dom=" + dom + "&connection=" + $.connection.hub.id,
+		url: "/l10/UpdateScore/" + window.recurrenceId + "?s=" + id + "&w=" + w + "&m=" + m + "&value=" + val + "&dom=" + dom + "&connection=" + $.connection.hub.id,
 		success: function (data) {
 			if (data.Error) {
 				showJsonAlert(data);

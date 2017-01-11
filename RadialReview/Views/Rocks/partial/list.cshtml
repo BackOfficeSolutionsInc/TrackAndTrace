@@ -11,7 +11,7 @@
 	var defaultSort = ViewBag.DefaultSort ?? "'-CreateTime'";
 
 
-	var meetingId = ViewBag.MeetingId ?? "model.Id";
+	var recurrenceId = ViewBag.RecurrenceId ?? "model.Id";
 
 	var attrLookup = new Dictionary<string, string>(){
 		{"status-column",""},
@@ -26,15 +26,7 @@
 
 }
 <div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak rock-list-container app">
-    <div @(headers || controller ? "ng-controller=L10Controller" : "")>
-        @*@if (datepicker) {
-            <div class="calendar-container pull-right" style="width: 240px;">
-                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
-                <input date-range-picker id="daterange3" class="form-control date-picker" type="text" name="date" ng-model="date" options="opts" required placeholder="Select a date range..." />
-                <b class="caret"></b>
-            </div>
-            <div class="height-placeholder" style="height:40px"></div>
-        }*@
+    <div @(headers || controller ? "ng-controller=L10Controller" : "")>       
         <div id="Rocks_list" class="tab-pane rock-pane scrollbox scroller">
             <div></div>
             <md-table-container class="repeater-container">
@@ -63,7 +55,7 @@
                             </td>
                             <td md-cell class="picture-column">
                                 <span class="item-wrapper place-right">
-                                    <span class="" onaftersave="functions.sendUpdate(rock)" editable-select="rock.Owner" onshow="loadPossibleOwners(@(meetingId))" e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]">
+                                    <span class="" onaftersave="functions.sendUpdate(rock)" editable-select="rock.Owner" onshow="loadPossibleOwners(@(recurrenceId))" e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]">
                                         <profile-image class="" user="rock.Owner"></profile-image>
                                     </span>
                                 </span>
@@ -86,7 +78,6 @@
                     </tbody>
                 </table>
                 <div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
-                @*</div>*@
                 <div class="create-row" ng-click="functions.addRow($event,'AngularRock')" data-toggle="tooltip" data-placement="left" title="New Rock"></div>
                 <div class="gray empty-search" style="padding: 15px 15px;" ng-show="(@(selector)  @(filter)).length==0">
                     No @rockName fit your search criteria.

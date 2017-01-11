@@ -10,7 +10,7 @@
 
     var localization = "localization=\"" + (ViewBag.Localization ?? "") + "\"";
 	
-    var meetingId = ViewBag.MeetingId ?? "model.Id";
+    var recurrenceId = ViewBag.RecurrenceId ?? "model.Id";
 	
     var elastic = elasticInputs ? "pu-elastic-input" : "";
     var scorecardKey = "(" + selector + ").Key";
@@ -73,7 +73,7 @@
                                                 <span class="item-wrapper place-right">
                                                     <span class=""
                                                           @if (editOwner) {   @: onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Owner" e-ng-readonly="measurable.Disabled"
-																			  @: onshow="loadPossibleOwners(@(meetingId))" e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]"
+																			  @: onshow="loadPossibleOwners(@(recurrenceId))" e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]"
 														}>
                                                         <profile-image class="" user="measurable.Owner"></profile-image>
                                                     </span>
@@ -83,7 +83,7 @@
                                                 <span class="item-wrapper place-right">
                                                     <span class=""
                                                           @if (editOwner) {   @: onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Admin" e-ng-readonly="measurable.Disabled"
-                                                              @: onshow="loadPossibleOwners(@(meetingId))" e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]"
+                                                              @: onshow="loadPossibleOwners(@(recurrenceId))" e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]"
                                                           }>
                                                         <profile-image class="desaturate" user="measurable.Admin"></profile-image>
                                                     </span>
@@ -115,7 +115,7 @@
                                                    ng-change="functions.sendUpdate(measurable)"
                                                    ng-blur="functions.checkFutureAndSend(measurable)" />
                                             <span ng-if="measurable.Direction=='Between'" ng-click="functions.checkFutureAndSend(measurable)">{{measurable.Target}}-{{measurable.AltTarget}}</span>
-                                            <span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{::measurable.Id}}" data-pk="{{::measurable.Id}}_{{::meetingId}}" data-url="/L10/UpdateMeasurable"></span>
+                                            <span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{::measurable.Id}}" data-pk="{{::measurable.Id}}_{{::recurrenceId}}" data-url="/L10/UpdateMeasurable"></span>
                                         </td>
                                         <td ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin)) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="score score-column data-column" ng-class="{current:week.IsCurrentWeek}">
                                             <score week="week"
@@ -167,7 +167,7 @@
                                             <span class="item-wrapper place-right">
                                                 <span class=""
                                                       @if (editOwner) { @: onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Owner" e-ng-readonly="measurable.Disable"
-                                                                        @: onshow="loadPossibleOwners(@(meetingId))" e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]"
+                                                                        @: onshow="loadPossibleOwners(@(recurrenceId))" e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]"
                                                       }>
                                                     <profile-image user="measurable.Owner"></profile-image>
                                                 </span>
@@ -178,7 +178,7 @@
                                                 <span class=""
                                                       @if (editOwner) { 
                                                           @:onaftersave="functions.sendUpdate(measurable)" editable-select="measurable.Admin" e-ng-readonly="measurable.Disabled"                                                                                                                
-                                                          @: onshow="loadPossibleOwners(@(meetingId))" e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]"
+                                                          @: onshow="loadPossibleOwners(@(recurrenceId))" e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]"
                                                        }>
                                                     <profile-image class="desaturate" user="measurable.Admin"></profile-image>
                                                 </span>
@@ -211,7 +211,7 @@
                                                ng-change="functions.sendUpdate(measurable)"
                                                ng-blur="functions.checkFutureAndSend(measurable)" />
                                         <span ng-if="measurable.Direction=='Between'" ng-click="functions.checkFutureAndSend(measurable)">{{measurable.Target}}-{{measurable.AltTarget}}</span>
-                                        <span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{::measurable.Id}}" data-pk="{{::measurable.Id}}_{{::meetingId}}" data-url="/L10/UpdateMeasurable"></span>
+                                        <span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{::measurable.Id}}" data-pk="{{::measurable.Id}}_{{::recurrenceId}}" data-url="/L10/UpdateMeasurable"></span>
                                     </td>
                                 </tr>
                             </tbody>
@@ -285,7 +285,7 @@
 
                 var data = {
                     ordering: order,
-                    recurrenceId: angular.element(document.querySelector('#ScorecardContainer')).scope().meetingId
+                    recurrenceId: angular.element(document.querySelector('#ScorecardContainer')).scope().recurrenceId
                 };
                 $.ajax({
                     url: "/L10/UpdateRecurrenceMeasurableOrdering",

@@ -79,7 +79,7 @@
                 click: function (anno, evt) {
                     var aa = anno;
                     $.ajax({
-                        url: "/l10/ForceConclude/" + recurrenceId,
+                    	url: "/l10/ForceConclude/" + window.recurrenceId,
                         method: "POST",
                         success: function () {
                             location.reload();

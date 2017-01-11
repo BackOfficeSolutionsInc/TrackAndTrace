@@ -1,19 +1,19 @@
 ﻿angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', '$location',
-    'radial', 'meetingDataUrlBase'/*, 'dateFormat'*/, 'meetingId', "meetingCallback", "$compile", "$sce", "$q", "$window",
-function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetingId, meetingCallback, $compile, $sce, $q, $window) {
+    'radial', 'meetingDataUrlBase'/*, 'dateFormat'*/, 'recurrenceId', "meetingCallback", "$compile", "$sce", "$q", "$window",
+function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurrenceId, meetingCallback, $compile, $sce, $q, $window) {
 
 	$scope.trustAsResourceUrl = $sce.trustAsResourceUrl;
-	if (meetingId == null)
-		throw Error("MeetingId was empty");
+	if (recurrenceId == null)
+		throw Error("recurrenceId was empty");
 	$scope.disconnected = false;
-	$scope.meetingId = meetingId;
+	$scope.recurrenceId = recurrenceId;
 
 	$scope.dateFormat = window.dateFormat || "MM-dd-yyyy";
 
 	function rejoin(connection, proxy, callback) {
 		try {
 			if (proxy) {
-				proxy.invoke("join", $scope.meetingId, connection.id).done(function () {
+				proxy.invoke("join", $scope.recurrenceId, connection.id).done(function () {
 					console.log("rejoin");
 					//$(".rt").prop("disabled", false);
 					if (callback) {
@@ -211,9 +211,9 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
 			console.log("reloading...");
 			var url = meetingDataUrlBase;
 			if (meetingDataUrlBase.indexOf("{0}") != -1) {
-				url = url.replace("{0}", $scope.meetingId);
+				url = url.replace("{0}", $scope.recurrenceId);
 			} else {
-				url = url + $scope.meetingId;
+				url = url + $scope.recurrenceId;
 			}
 
 			var date = ((+new Date()) + (window.tzoffset * 60 * 1000));
@@ -256,6 +256,8 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
 	};
 
 	$scope.functions.setPage = function (page) {
+		debugger
+		console.info("should we be here?")
 		$http.get("/meeting/SetPage/" + $scope.model.RecurrenceId + "?page=" + page + "&connection=" + $scope.connectionId);
 		if (!$scope.model.FollowLeader || $scope.model.IsLeader) {
 			$scope.model.CurrentPage = page;
@@ -548,7 +550,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
 
 		$(".editable-wrap").remove();
 
-		$http.post("/L10/Remove" + self.Type + "/?recurrenceId=" + $scope.meetingId + "&_clientTimestamp=" + _clientTimestamp, dat).error(function (data) {
+		$http.post("/L10/Remove" + self.Type + "/?recurrenceId=" + $scope.recurrenceId + "&_clientTimestamp=" + _clientTimestamp, dat).error(function (data) {
 			showJsonAlert(data, false, true);
 			self.Hide = false;
 		}).finally(function () { });
@@ -564,7 +566,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
 			if (typeof (args) === "undefined")
 				args = "";
 
-			$http.get("/L10/Add" + type + "/" + $scope.meetingId + "?connectionId=" + $scope.connectionId + "&_clientTimestamp=" + _clientTimestamp + args)
+			$http.get("/L10/Add" + type + "/" + $scope.recurrenceId + "?connectionId=" + $scope.connectionId + "&_clientTimestamp=" + _clientTimestamp + args)
                 .error(showAngularError)
                 .finally(function () {
                 	controller.removeClass("loading");
@@ -574,7 +576,6 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
 	};
 
 	$scope.functions.checkAllNotifications = function () {
-		debugger;
 		var items = $scope.model.Notifications;
 		if (items) {
 			for (var i in items) {
@@ -600,7 +601,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
 
 	$scope.functions.createUser = function () {
 		$timeout(function () {
-			$scope.functions.showModal('Add managed user', '/User/AddModal', '/nexus/AddManagedUserToOrganization?meeting=' + $scope.meetingId + "&refresh=false");
+			$scope.functions.showModal('Add managed user', '/User/AddModal', '/nexus/AddManagedUserToOrganization?meeting=' + $scope.recurrenceId + "&refresh=false");
 		}, 1);
 	}
 
@@ -609,12 +610,12 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
 	}
 
 	$scope.functions.blurSearch = function (self) {
-		$timeout(function () {
-			$scope.model.Search = '';
+		//$timeout(function () {
+			angular.element(".searchresultspopup").addClass("ng-hide");
 			self.visible = false;
 			$scope.ShowSearch = false;
-			angular.element(".searchresultspopup").addClass("ng-hide");
-		}, 150);
+			$scope.model.Search = '';
+		//}, 300);
 	}
 
 	$scope.userSearchCallback = function (params) {
@@ -644,7 +645,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
 	};
 
 	$scope.functions.uploadUsers = function () {
-		$window.location.href = "/upload/l10/Users?recurrence=" + $scope.meetingId;
+		$window.location.href = "/upload/l10/Users?recurrence=" + $scope.recurrenceId;
 	};
 
 	$scope.scorecardSortListener = {
@@ -652,7 +653,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, meetin
 			return true;
 		},
 		orderChanged: function (event) {
-			var mid = $scope.meetingId;
+			var mid = $scope.recurrenceId;
 			if (mid <= 0)
 				mid = event.source.itemScope.measurable.RecurrenceId;
 

@@ -102,6 +102,7 @@ namespace RadialReview.Models.L10 {
 			o.HeadlinePadId = HeadlinePadId;
 
 			o.RecurrenceId = RecurrenceId;
+			o.MeetingId = CreatedDuringMeetingId;
 
 			o.Id = Id;
 

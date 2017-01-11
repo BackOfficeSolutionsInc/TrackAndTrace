@@ -38,7 +38,7 @@
     });
 	
 	$("body").on("click", ".notes .tab.add", function () {
-		showModal("Add page", "/L10/CreateNote?recurrence=" + MeetingId, "/L10/CreateNote");
+		showModal("Add page", "/L10/CreateNote?recurrence=" + window.recurrenceId, "/L10/CreateNote");
 	});
 	$("body").on("click", ".notes .overlay", function () {
 		$(".notes").fadeOut();

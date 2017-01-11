@@ -63,11 +63,10 @@ var clickHeadlineRow = function (evt) {
 		"<div class='button-bar'>" +
 			"<div style='height:28px'>" +
 			"<span class='btn-group pull-right'>" +
-				//"<span class='btn btn-default btn-xs doneButton'><input data-headline='" + headline + "' class='headline-checkbox' type='checkbox' " + (checked ? "checked" : "") + "/> Complete</span>" +
 			"</span>" +
 			"<span class='expandContract btn-group'>" +
-			"<span class='btn btn-default btn-xs issuesModal' data-method='CreateHeadlineIssue'   data-headline='" + headline + "' data-recurrence='" + recurrenceId + "' data-meeting='" + meetingId + "' title='Create a Context-Aware Issue™'><span class='icon fontastic-icon-pinboard'></span> New Issue</span>" +
-			"<span class='btn btn-default btn-xs todoModal' data-method='CreateTodoFromHeadline'  data-headline='" + headline + "' data-recurrence='" + recurrenceId + "' data-meeting='" + meetingId + "' title='Create a Context-Aware To-do™'><span class='glyphicon glyphicon-unchecked'></span> New To-do</span>" +
+			"<span class='btn btn-default btn-xs issuesModal' data-method='CreateHeadlineIssue'   data-headline='" + headline + "' data-recurrence='" + window.recurrenceId + "' data-meeting='" + window.meetingId + "' title='Create a Context-Aware Issue™'><span class='icon fontastic-icon-pinboard'></span> New Issue</span>" +
+			"<span class='btn btn-default btn-xs todoModal' data-method='CreateTodoFromHeadline'  data-headline='" + headline + "' data-recurrence='" + window.recurrenceId + "' data-meeting='" + window.meetingId + "' title='Create a Context-Aware To-do™'><span class='glyphicon glyphicon-unchecked'></span> New To-do</span>" +
 			"</span>" +
 			"</div>" +
 			"<span class='clearfix'></span>" +
@@ -170,7 +169,7 @@ function constructHeadlineRow(headline) {
 
 	if (!Model.Message)
 		Model.Message = "";
-
+	debugger;
 	//Accountable user name populated?
 	return '<li class="headline-row dd-item arrowkey"' +
 		'data-createtime="' + (+new Date(Model.CreateTime)) + '"' +
@@ -190,12 +189,12 @@ function constructHeadlineRow(headline) {
 				'data-method="CreateHeadlineIssue"' +
 				'data-headline="' + Model.Id + '"' +
 				'data-recurrence="' + Model.RecurrenceId + '"' +
-				'data-meeting="' + window.MeetingId + '"' +
+				'data-meeting="' + Model.MeetingId + '"' +
 				'title="Create a Context-Aware Issue™"></span>' +
 			'<span class="glyphicon glyphicon-unchecked todoButton issuesButton todoModal" style="padding-right: 5px"' +
 				'title="Create a Context-Aware To-Do™"' +
 				'data-headline="' + Model.Id + '"' +
-				'data-meeting="' + window.MeetingId + '"' +
+				'data-meeting="' + Model.MeetingId + '"' +
 				'data-recurrence="' + Model.RecurrenceId + '"' +
 				'data-method="CreateTodoFromHeadline"></span>' +
 		'</div>' +

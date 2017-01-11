@@ -5,7 +5,7 @@
 
 		var selector = "input[name='" + name + "']";
 		$.ajax({
-			url: "/l10/UpdateRockCompletion/" + recurrenceId,
+			url: "/l10/UpdateRockCompletion/" + window.recurrenceId,
 			method: "post",
 			data: { rockId: rockId, state: $(this).val(), connectionId: $.connection.hub.id },
 			success: function (data) {

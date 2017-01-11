@@ -6,7 +6,7 @@
     var callback = ViewBag.Callback ?? "meetingCallback";
 
     var pullUrl = ViewBag.PullUrl??"/DashboardData/Data2/" + Model + "?" + (includeComplete) + (name);
-    var meetingId = ViewBag.MeetingId == null ? -3 : (long)ViewBag.MeetingId;
+    var recurrenceId = ViewBag.RecurrenceId == null ? -3 : (long)ViewBag.RecurrenceId;
 
     Html.RenderPartial("~/Views/CDN/Angular.cshtml");
 
@@ -40,7 +40,7 @@
 
     <script>
     angular.module('L10App')
-        .value('meetingId', @(meetingId))
+        .value('recurrenceId', @(recurrenceId))
         .value('meetingDataUrlBase', '@pullUrl')
         .value('meetingCallback', @callback);
   

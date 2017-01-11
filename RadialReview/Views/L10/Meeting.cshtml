@@ -25,7 +25,9 @@
 	<script>
 		@*Initialize some variables for the scripts*@
 
-		var MeetingId = @Model.Recurrence.Id;
+
+		@*Dangerous MeetingId*@
+		window.RecurrenceId = @Model.Recurrence.Id;
 		@if (Model.MeetingStart != null){
 			@:var startTime = new Date(@(Model.MeetingStart.Value.ToJavascriptMilliseconds()));
 		}

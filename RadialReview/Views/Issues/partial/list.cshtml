@@ -18,7 +18,7 @@
 	var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
 	var defaultSort = ViewBag.DefaultSort ?? "'-CreateTime'";
 
-	var meetingId = ViewBag.MeetingId ?? "model.Id";
+	var recurrenceId = ViewBag.RecurrenceId ?? "model.Id";
 
 	var attrLookup = new Dictionary<string, string>(){
 		{"checkbox-column",""},
@@ -72,8 +72,8 @@
                                         @if (allowEditOwner) {
                                             <span onaftersave="functions.sendUpdate(issue)"
                                                   editable-select="issue.Owner"
-                                                  onshow="loadPossibleOwners(@(meetingId))"
-                                                  e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]">
+                                                  onshow="loadPossibleOwners(@(recurrenceId))"
+                                                  e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]">
                                                 <profile-image user="issue.Owner"></profile-image>
                                             </span>
                                         } else {

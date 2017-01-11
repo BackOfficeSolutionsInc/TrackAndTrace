@@ -1,6 +1,6 @@
 ﻿
 var uploader = UploadSteps({
-    defaultData: { recurrenceId: recurrenceId, type: "Issues", csv: false },
+	defaultData: { recurrenceId: window.recurrenceId, type: "Issues", csv: false },
     uploadFileUrl: "/Upload/UploadRecurrenceFile",
     uploadSelectionUrl: "/Upload/ProcessIssuesSelection",
     confirmSelectionUrl: "/Upload/SubmitIssues",

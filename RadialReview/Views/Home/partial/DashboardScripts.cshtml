@@ -29,7 +29,7 @@
         
     <script>
 		angular.module('L10App')
-			.value('meetingId',-3)
+			.value('recurrenceId', -3)
 			.value('meetingDataUrlBase', '/Todo/ListData/@Model?')
 			.value('meetingCallback', meetingCallback_Todo);
 		$('#pages a').click(function (e) {
@@ -38,7 +38,7 @@
 		});
 
 		angular.module('L10App')
-			.value('meetingId', -3)
+			.value('recurrenceId', -3)
 			.value('meetingDataUrlBase', '/Scorecard/ListData/@Model?')
 			.value('meetingCallback', meetingCallback_Todo);
 		$('#pages a').click(function (e) {

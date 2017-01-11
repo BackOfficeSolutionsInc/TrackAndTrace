@@ -33,12 +33,6 @@
               title="Create a Context-Aware Issue™"></span>
     </div>
     <span class="profile-image">@Html.Partial("_ProfilePicture", Model.AccountableUser)</span>
-    @*<div class="btn-group pull-right">
-            <span class='issuesModal issuesButton icon fontastic-icon-forward-1'
-                  data-copyto="@Model.ForRecurrenceId"
-                  data-recurrence_issue="@Model.Id"
-                  data-method='copymodal'></span>
-        </div>*@
     <div class="message" data-todo="@Model.Id">@Model.Message</div>
     <div class="todo-details-container"><div class="todo-details" data-todo="@Model.Id">@Model.Details</div></div>
     <div class="due-date @(Model.DueDate.Date<Html.ConvertFromUtc(DateTime.UtcNow).Date?"red":"")">@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml",Model.DueDate.Date)</div>

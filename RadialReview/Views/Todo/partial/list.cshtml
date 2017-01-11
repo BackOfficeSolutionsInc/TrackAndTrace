@@ -12,7 +12,7 @@
 	var showDetails = (ViewBag.ShowDetails == null || ((bool)ViewBag.ShowDetails) == true);
 	var detailsCode = showDetails ? "todo.DetailsUrl_Src=todo.DetailsUrl;model.Selected = todo.Key;" : "";
 
-	var meetingId = ViewBag.MeetingId ?? "model.Id";
+	var recurrenceId = ViewBag.RecurrenceId ?? "model.Id";
 
 	var attrLookup = new Dictionary<string, string>(){
 		{"todotype-column",""},
@@ -64,8 +64,8 @@
 										<span class="item-wrapper place-right">
 											<span onaftersave="functions.sendUpdate(todo)"
 												  editable-select="todo.Owner"
-												  onshow="loadPossibleOwners(@(meetingId))"
-												  e-ng-options="s as s.Name for s in possibleOwners[@(meetingId)]">
+												  onshow="loadPossibleOwners(@(recurrenceId))"
+												  e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]">
 												<profile-image user="todo.Owner"></profile-image>
 											</span>
 										</span>

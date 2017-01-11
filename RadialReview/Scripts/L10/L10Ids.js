@@ -48,7 +48,7 @@ $(function () {
 				$(selector).prop("checked", checked);
 				$(selector2).data("checked", checked);
 				$.ajax({
-					url: "/l10/UpdateIssueCompletion/" + recurrenceId,
+					url: "/l10/UpdateIssueCompletion/" + window.recurrenceId,
 					method: "post",
 					data: { issueId: issueId, checked: checked, connectionId: $.connection.hub.id },
 					success: function (data) {
@@ -178,8 +178,8 @@ $(function () {
 				"<span class='btn btn-default btn-xs doneButton'><input data-recurrence_issue='" + recurrence_issue + "' class='issue-checkbox hidden' type='checkbox' " + (checked ? "checked" : "") + "/> Resolve</span>" +
 			"</span>" +
 			"<span class='expandContract btn-group'>" +
-			"<span class='btn btn-default btn-xs copyButton issuesModal' data-method='copymodal' data-recurrence_issue='" + recurrence_issue + "' data-copyto='" + MeetingId + "'><span class='icon fontastic-icon-forward-1' title='Move issue to another L10'></span> Move To</span>" +
-			"<span class='btn btn-default btn-xs createTodoButton todoModal' data-method='CreateTodoFromIssue' data-meeting='" + meetingId + "' data-issue='" + issueId + "' data-recurrence='" + MeetingId + "' ><span class='glyphicon glyphicon-unchecked todoButton'></span> To-Do</span>" +
+			"<span class='btn btn-default btn-xs copyButton issuesModal' data-method='copymodal' data-recurrence_issue='" + recurrence_issue + "' data-copyto='" + window.recurrenceId + "'><span class='icon fontastic-icon-forward-1' title='Move issue to another L10'></span> Move To</span>" +
+			"<span class='btn btn-default btn-xs createTodoButton todoModal' data-method='CreateTodoFromIssue' data-meeting='" + window.meetingId + "' data-issue='" + issueId + "' data-recurrence='" + window.recurrenceId + "' ><span class='glyphicon glyphicon-unchecked todoButton'></span> To-Do</span>" +
 			"</span>" +
 			"</div>" +
 			"<span class='clearfix'></span>" +
@@ -241,7 +241,7 @@ $("body").on("click", ".issueDetails .assignee .btn", function () {
 	var that = $(this).parent();
 	$.ajax({
 		method: "POST",
-		url: "/L10/Members/" + recurrenceId,
+		url: "/L10/Members/" + window.recurrenceId,
 		success: function (data) {
 			if (showJsonAlert(data)) {
 				var input = $("<select data-recurrence_issue='" + $(that).data("recurrence_issue") + "'/>");
@@ -325,14 +325,14 @@ function changeMode(type) {
 	}
 	refreshCurrentIssueDetails();
 }
-function sortIssueByCurrent(recurrenceId, issueList) {
+function sortIssueByCurrent(recurId, issueList) {
 	if ($(".meeting-page").hasClass("prioritization-Rank"))
-		return sortIssueBy(recurrenceId, issueList, "data-rank", "Priority");
+		return sortIssueBy(recurId, issueList, "data-rank", "Priority");
 	else
-		return sortIssueBy(recurrenceId, issueList, "data-priority", "Votes", -1);
+		return sortIssueBy(recurId, issueList, "data-priority", "Votes", -1);
 }
 
-function sortIssueBy(recurrenceId, issueList, sortBy, title, mult) {
+function sortIssueBy(recurId, issueList, sortBy, title, mult) {
 	mult = mult || 1;
 
 	//$(".sort-button").html("Sort by " + title);
@@ -358,7 +358,7 @@ function sortIssueBy(recurrenceId, issueList, sortBy, title, mult) {
 			return mult * $(a).attr(sortBy).localeCompare($(b).attr(sortBy));
 		}
 	}).appendTo($(issueList));
-	updateIssuesList(recurrenceId, issueList, sortBy);
+	updateIssuesList(recurId, issueList, sortBy);
 	refreshCurrentIssueDetails();
 
 }
@@ -441,8 +441,8 @@ function constructRow(issue) {
 		+ '<span class="inner icon fontastic-icon-primitive-square"></span>\n'
 		+ '</div>\n'
 		+ '<div class="btn-group pull-right">\n'
-		+ '<span class="issuesButton issuesModal icon fontastic-icon-forward-1" data-copyto="' + recurrenceId + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-method="copymodal" style="padding-right: 5px"></span>\n'
-		+ '<span class="glyphicon glyphicon-unchecked todoButton issuesButton todoModal" data-issue="' + issue.issue + '" data-meeting="' + issue.createdDuringMeetingId + '" data-recurrence="' + recurrenceId + '" data-method="CreateTodoFromIssue" style="padding-right:5px;"></span>\n'
+		+ '<span class="issuesButton issuesModal icon fontastic-icon-forward-1" data-copyto="' + window.recurrenceId + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-method="copymodal" style="padding-right: 5px"></span>\n'
+		+ '<span class="glyphicon glyphicon-unchecked todoButton issuesButton todoModal" data-issue="' + issue.issue + '" data-meeting="' + issue.createdDuringMeetingId + '" data-recurrence="' + window.recurrenceId + '" data-method="CreateTodoFromIssue" style="padding-right:5px;"></span>\n'
         + '<span class="glyphicon glyphicon-vto vtoButton"></span>'
         + '</div>\n'
 		+ '<div class="number-priority">\n'
@@ -510,13 +510,13 @@ function getIssueOrder() {
 	return output;
 }
 
-function updateIssuesList(recurrenceId, issueRow, orderby) {
+function updateIssuesList(recurId, issueRow, orderby) {
 	var order = getIssueOrder();
 	var d = { issues: order, connectionId: $.connection.hub.id, orderby: orderby };
 	console.log(d);
 	var that = issueRow;
 	$.ajax({
-		url: "/l10/UpdateIssues/" + recurrenceId,
+		url: "/l10/UpdateIssues/" + recurId,
 		data: JSON.stringify(d),
 		contentType: "application/json; charset=utf-8",
 		method: "POST",

@@ -33,6 +33,7 @@ namespace RadialReview.Controllers
             ViewBag.IncludeHeadlines = recur.HeadlineType;
             ViewBag.ShowPriority = (/*recur.Prioritization == Models.L10.PrioritizationType.Invalid||*/recur.Prioritization == Models.L10.PrioritizationType.Priority);
 			ViewBag.StartDate = start.NotNull(x=>x.Value);
+			ViewBag.Title = recur.Name;
             
             return View(id);
 		}

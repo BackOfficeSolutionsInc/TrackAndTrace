@@ -1,6 +1,6 @@
 ﻿@model long
 @{
-    ViewBag.Title = "Meeting Details";
+    ViewBag.Title = ViewBag.Title?? "Meeting Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.FullWidth = true;
 
@@ -61,7 +61,7 @@
 
     <script>
         angular.module('L10App')
-			.value('meetingId', @Model)
+			.value('recurrenceId', @Model)
 			.value('date-range',"today")
 			.value('meetingDataUrlBase', '/L10/DetailsData/{0}?'@*start=@ViewBag.StartDate'*@)
 			.value("meetingCallback",false);

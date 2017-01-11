@@ -2,10 +2,8 @@
 @{
 	ViewBag.Title = "IDS";
 	Layout = "~/Views/L10/BasePage.cshtml";
-
 	var guid = Guid.NewGuid().ToString();
 }
-
 
 <div class="meeting-page ids prioritization-@Model.Recurrence.Prioritization">
 	<div class="row">
@@ -37,33 +35,17 @@
 							<span class="sr-only">Toggle Dropdown</span>
 						</button>
 						<ul class="dropdown-menu pull-right" role="menu">
-							@*<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-priority','Auto-Priority',-1)"> By Priority (Auto)</a></li>*@
 							<li><a class="clickable show-priority" onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-priority','Votes',-1)"> By Votes</a></li>
 							<li><a class="clickable show-rank " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-rank','Priority')"> By Priority (1,2 &amp; 3)</a></li>
-							@*<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-message','Issue')"> By Issue</a></li>*@
 							<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-owner','Owner')"> By Owner</a></li>
-							@*<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-duedate','Due Date',-1)"> By Due Date</a></li>*@
-							<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-createtime','Date Created',1)"> By Date Created (Asc)</a></li>
-							<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-createtime','Date Created',-1)"> By Date Created (Desc)</a></li>
-
+							<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-createtime','Date Created',1)"> By Date Created (Oldest First)</a></li>
+							<li><a class="clickable " onclick="sortIssueBy(recurrenceId,$('.issues-list'),'data-createtime','Date Created',-1)"> By Date Created (Newest First)</a></li>
 						</ul>
-					</div>
-					@*<div class="btn-group ">
-							<div class="btn btn-default btn-xs detailsBtn sm" title='Hide details'><span class="icon fontastic-icon-arrows-in"></span></div>
-							<div class="btn btn-default btn-xs detailsBtn lg" title='Show details'><span class="icon fontastic-icon-arrows-out"></span></div>
-						</div>*@
+					</div>					
 					@Html.Partial("partial/ButtonBar", Model)
 				</div>
 				<h2 class="l10-page-title">IDS <small class="hidden-md hidden-sm">Identify. Discuss. Solve.</small></h2>
 			</hgroup>
-			@*<div class="dd">
-					<ol class="ids-list dd-list">
-						@foreach (var i in Model.Issues.OrderBy(x => x._Order))
-						{
-							@Html.Partial("~/Views/L10/partial/IssueRow.cshtml", i)
-						}
-					</ol>
-				</div>*@
 			<div class="issues-container prioritization-@Model.Recurrence.Prioritization" style="margin-bottom:128px;">
 				<ol class="issues-list sortable init-@(guid)">
 					@foreach (var i in Model.Issues.OrderBy(x => x.Ordering).ThenByDescending(x => x.CreateTime)) {@Html.Partial("~/Views/L10/partial/IssueRow.cshtml", i)}
@@ -86,74 +68,29 @@
 </div>
 
 <script>
-	@*$('.dd').nestable({
-		maxDepth :2000,
-		threshold: 20,
-	}).on('change', function() {
-		updateIssuesList(@Model.Recurrence.Id, this);
-		$(".issue-row[data-issue=" + currentIssuesDetailsId + "]").closest(".ids-list>.issue-row").trigger("click");
-
-	});*@
-
-	var recurrenceId = @Model.Recurrence.Id;
-	var meetingId = @Model.Meeting.Id;
+	window.recurrenceId = @Model.Recurrence.Id;
+	window.meetingId = @Model.Meeting.Id;
 	var oldContainer;
 	var oldIssueList;
 
 	$(function() {
 		refreshCurrentIssueDetails();
-
 		$(".issues-list").sortable({
 			group: 'nested',
 			handle: '.move-icon',
-			/*afterMove: function(placeholder, container) {
-			if (oldContainer != container) {
-				if (oldContainer)
-					oldContainer.el.removeClass("active");
-				container.el.addClass("active");
-
-				oldContainer = container;
-			}
-			},
-			onDrop: function(item, container, _super) {
-				container.el.removeClass("active");
-				_super(item);
-			}*/
-			onDrop: function($item, container, _super, event) {
-				@*debugger;
-				_super($item, container);
-				updateIssuesList(@Model.Recurrence.Id, $(".issues-list"));
-				refreshCurrentIssueDetails();*@
+			onDrop: function($item, container, _super, event) {				
 				if ($item.hasClass("issue-row")) {
 					_super($item, container);
 					updateIssuesList(@Model.Recurrence.Id, $(".issues-list"));
 					refreshCurrentIssueDetails();
 				} else {
-					debugger;
 					_super($item, container);
 					updateTodoList(@Model.Recurrence.Id, $(".todo-list"));
 					refreshCurrentTodoDetails();
 				}
 			}
 		});
-		oldIssueList = getIssueOrder();//$(".issues-list").clone(true);
+		oldIssueList = getIssueOrder();
 	});
-	//$('.sortable').sortable({
-	//	//handle: '.move-icon',
-	//	connectWith: '.sortable',
-	//	forcePlaceholderSize: true
-	//}).bind('sortupdate', function(e, ui) {
-	//	//ui.item contains the current dragged element.
-	//	//Triggered when the user stopped sorting and the DOM position has changed.
 
-	//});
-	//$('.inner-sortable').sortable({
-	//	//handle: '.move-icon',
-	//	forcePlaceholderSize: true
-	//	connectWith: '.sortable',
-	//}).bind('sortupdate', function(e, ui) {
-	//	//ui.item contains the current dragged element.
-	//	//Triggered when the user stopped sorting and the DOM position has changed.
-
-	//});;
 </script>

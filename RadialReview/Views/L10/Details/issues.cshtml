@@ -1,20 +1,8 @@
-﻿
-@*<div class="btn-group pull-left" style="padding: 5px 0px;">
-    <div class="btn btn-default btn-xs issuesModal" data-method="CreateIssue" data-recurrence="{{meetingId}}"><span class="icon fontastic-icon-pinboard"></span> New Issue</div>
-</div>
-
-<div class="btn-group pull-right" style="padding: 5px 0px;">
-    <div class="btn btn-default btn-xs issuesModal" data-method="CreateIssue" data-recurrence="{{::meetingId}}"><span class="icon fontastic-icon-pinboard"></span> New Issue</div>
-</div>*@
-@*<div class="clearfix"></div>*@
-<md-toolbar class="md-table-toolbar md-default" ng-hide="filter.show == true">
+﻿<md-toolbar class="md-table-toolbar md-default" ng-hide="filter.show == true">
     <div class="md-toolbar-tools">
         <span>Issues</span>
         <span flex></span>
-        @*<md-button class="md-icon-button" aria-label="Filter" ng-click="filter.show = true">
-            <md-icon>filter_list</md-icon>
-        </md-button>*@
-        <span class="issuesModal" data-method="CreateIssue" data-recurrence="{{::meetingId}}">
+        <span class="issuesModal" data-method="CreateIssue" data-recurrence="{{::recurrenceId}}">
             <md-button class="md-icon-button" aria-label="Add Issue">
                 <md-tooltip md-direction="left">
                     Add Issue
@@ -24,20 +12,6 @@
         </span>
     </div>
 </md-toolbar>
-@*<md-toolbar class="md-table-toolbar md-default" ng-show="filter.show == true">
-        <div class="md-toolbar-tools">
-            <md-input-container>
-                <md-select ng-model="filterList" multiple>
-                    <md-option ng-value="f.value" ng-repeat="f in filters.completionFilterItems">{{f.name}}</md-option>
-                </md-select>
-            </md-input-container>
-            <span flex></span>
-            <md-button class="md-icon-button" ng-click="filter.show = false">
-                <md-icon>close</md-icon>
-            </md-button>
-        </div>
-    </md-toolbar>*@
-
 @{ Html.RenderPartial("~/Views/Issues/Partial/list.cshtml", new ViewDataDictionary(){
 		{"AddHeaders", false},
 		{"AddController", false},

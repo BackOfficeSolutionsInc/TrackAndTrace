@@ -11,6 +11,7 @@ angular.module("LiveSearch", ["ng"])
              liveSearchSelectCallback: '=', // do not use
              liveSearchSelectionCallback:'=',
              blur: '&ngBlur',
+			 ttOnSelect:'&ttOnSelect',
              liveSearchItemTemplate: '@',
              liveSearchWaitTimeout: '=?',
              liveSearchMaxResultSize: '=?',
@@ -18,7 +19,7 @@ angular.module("LiveSearch", ["ng"])
              placeholder: "@",
              noResults: "@"
          },
-         template: "<input type='text' ng-model-options='{debounce:1500}' placeholder='{{placeholder}}' ng-blur='blur'/>",
+         template: "<input type='text' ng-model-options='{debounce:250}' placeholder='{{placeholder}}'/>",
          link: function (scope, element, attrs, controller) {
              var timeout;
 
@@ -33,10 +34,6 @@ angular.module("LiveSearch", ["ng"])
                  scope.selectedIndex = index;
                  console.log("live clicked");
                  onSelection();
-
-
-
-
              };
 
              scope.isSelected = function (index) {
@@ -50,6 +47,9 @@ angular.module("LiveSearch", ["ng"])
                          var value = scope.liveSearchSelectionCallback.call(null, { items: scope.results, item: item });
                          element.val(value);
                      }
+                 }
+                 if (scope.ttOnSelect) {
+                 	scope.ttOnSelect();
                  }
              }
 

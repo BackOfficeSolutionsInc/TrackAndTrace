@@ -2048,7 +2048,6 @@
     <Content Include="Views\Accountability\Chart.cshtml" />
     <Content Include="Views\Quarterly\Modal.cshtml" />
     <Content Include="Views\L10\Wizard.cshtml" />
-    <Content Include="Views\L10\Details\_oldScorecard.cshtml" />
     <Content Include="Views\CDN\Angular.cshtml" />
     <Content Include="Views\CoreValues\partial\list.cshtml" />
     <Content Include="Views\Angular\_L10App.cshtml" />
@@ -2313,12 +2312,9 @@
     <Content Include="Views\Shared\Survey\Feedback.cshtml" />
     <Content Include="Views\Todo\LinkToExternal.cshtml" />
     <Content Include="Views\UnitTest\Index.cshtml" />
-    <Content Include="Views\UnitTest\SinglePageL10.cshtml" />
-    <Content Include="Views\UnitTest\VideoChat.cshtml" />
     <Content Include="Views\Shared\Partial\_VideoChat.cshtml" />
     <Content Include="Views\Todo\List.cshtml" />
     <Content Include="Views\Todo\partial\list.cshtml" />
-    <Content Include="Views\Todo\partial\listscripts.cshtml" />
     <Content Include="Views\VTO\Index.cshtml" />
     <Content Include="Views\VTO\Edit.cshtml" />
     <Content Include="Views\Survey\Index.cshtml" />
@@ -2331,7 +2327,6 @@
     <Content Include="Views\TwilioApi\Modal.cshtml" />
     <Content Include="Views\TwilioApi\_PhoneRow.cshtml" />
     <Content Include="Views\TwilioApi\Index.cshtml" />
-    <Content Include="Views\Scorecard\partial\OLD - list.cshtml" />
     <Content Include="Views\Scorecard\partial\listscripts.cshtml" />
     <Content Include="Views\Rocks\partial\list.cshtml" />
     <Content Include="Views\Todo\CreateTodoRecurrence.cshtml" />

@@ -1,5 +1,5 @@
 ﻿<div class="btn-group pull-right" style="padding: 5px 0px;">
-	<div class="btn btn-default btn-xs" ng-click="functions.showModal('Add notes page','/L10/CreateNote?recurrence='+meetingId,'/L10/CreateNote')">
+	<div class="btn btn-default btn-xs" ng-click="functions.showModal('Add notes page','/L10/CreateNote?recurrence='+window.recurrenceId,'/L10/CreateNote')">
 		<span class="icon fontastic-icon-align-left-2"></span> Add Note
 	</div>
 </div>
@@ -13,14 +13,11 @@
                         <div class="clickable" style="padding: 5px 0 ;"><span class="glyphicon glyphicon-chevron-right  gray"></span> <b>{{note.Title}}</b></div>
                     </div>
                     <div ng-show="model.Selected==note.Key">
-                        <div style="padding: 5px 0;" class=""><span class="glyphicon glyphicon-chevron-down gray"></span> <b>{{note.Title}}</b><span class="pull-right glyphicon glyphicon-trash clickable" ng-click="functions.showModal('Delete note?','/L10/DeleteNote/'+note.Id,'/L10/DeleteNote',null,null,alert('asdf'))"></span></div>
-                        @*<div style="padding: 5px 5px;"class="pull-right"><span class="glyphicon glyphicon-trash"></span></div>*@
+                        <div style="padding: 5px 0;" class=""><span class="glyphicon glyphicon-chevron-down gray"></span> <b>{{note.Title}}</b><span class="pull-right glyphicon glyphicon-trash clickable" ng-click="functions.showModal('Delete note?','/L10/DeleteNote/'+note.Id,'/L10/DeleteNote')"></span></div>
                         <div style="padding-left: 18px;">
-                            @*<textarea ng-model-options="{debounce: 400}" ng-change="functions.sendUpdate(note)" ng-model="note.Contents" class="fullWidth verticalOnly" style="min-height: 200px; "></textarea>*@
                             <iframe style="background-color: white" width="100%" ng-src="{{trustAsResourceUrl(note.DetailsUrl_Src)}}" ng-data-src="{{note.DetailsUrl}}"></iframe>
                         </div>
                     </div>
-
                 </div>
                 <div class="gray no-todos" style="padding: 30px 15px;" ng-show="(model.Notes).length==0">
                     No notes exist.
@@ -33,6 +30,5 @@
 <style>
     div:focus {
         outline:none;
-
     }
 </style>

@@ -41,6 +41,7 @@ namespace RadialReview.Controllers
 					OwnerId = OwnerId,
 					RecurrenceId = x,
 					_Details = Details,
+
 				}).ToList();
 			}
 

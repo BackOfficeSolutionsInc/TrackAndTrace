@@ -5,7 +5,7 @@
 
 	var selector = ViewBag.Selector as string ?? "model.Notifications";
 	var filter = ViewBag.Filter as string ?? "| filter:filters.byRange('CreateTime',model.dataDateRange.startDate,model.dataDateRange.endDate)";
-	var meetingId = ViewBag.MeetingId ?? "model.Id";
+	var recurrenceId = ViewBag.RecurrenceId ?? "model.Id";
 	var defaultSort = ViewBag.DefaultSort ?? "'-CreateTime'";
 
 	var filterExpr = filter;

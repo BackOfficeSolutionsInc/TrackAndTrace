@@ -132,7 +132,7 @@ function InitTranscribe(thisRecurrenceId, thisMeetingId, shouldStartTranscribe) 
         var style = "";
         var text = e.transcript;
         var data = {
-            MeetingId: meetingId,
+            MeetingId: window.meetingId,
             RecurrenceId: thisRecurrenceId,
             Text: text,
             ConnectionId: $.connection.hub.id
