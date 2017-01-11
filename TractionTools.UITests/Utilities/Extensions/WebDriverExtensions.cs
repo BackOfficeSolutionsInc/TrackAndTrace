@@ -129,6 +129,18 @@ namespace TractionTools.UITests {
 
 		#endregion
 
+		#region Wait
+		[DebuggerHidden]
+		public static IWebDriver Wait(this IWebDriver d, int? timeoutMs = null) {
+			Thread.Sleep(timeoutMs ?? 250);
+			return d;
+		}
+		public static IWebElement Wait(this IWebElement d, int? timeoutMs = null) {
+			Thread.Sleep(timeoutMs ?? 250);
+			return d;
+		}
+		#endregion
+
 		#region Jquery
 
 		public static OUT Timeout<E, OUT>(double timeout, Func<OUT> action) where E : Exception {

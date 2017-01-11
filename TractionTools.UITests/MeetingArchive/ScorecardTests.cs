@@ -89,10 +89,17 @@ namespace TractionTools.UITests.Selenium {
                     for (var i = 5; i < ths.Count - 2; i++) {
                         var top = ths[i].Text;
                         var date1 = DateTime.Parse(top);
+						if (date1 > DateTime.UtcNow.AddDays(180)) {
+							date1 = date1.AddYears(-1);
+						}
+
                         Assert.AreEqual(dow, date1.DayOfWeek, top);
                         var bottom = dateRows[1].Finds("th")[i].Text;
                         var date2 = DateTime.Parse(bottom);
-                        var dayBefore = (DayOfWeek)(((int)dow + 6) % 7);
+						if (date2 > DateTime.UtcNow.AddDays(180)) {
+							date2 = date2.AddYears(-1);
+						}
+						var dayBefore = (DayOfWeek)(((int)dow + 6) % 7);
                         Assert.AreEqual(dayBefore, date2.DayOfWeek, bottom);
                     }
                     Assert.AreEqual(dow, au.Organization.Settings.WeekStart);

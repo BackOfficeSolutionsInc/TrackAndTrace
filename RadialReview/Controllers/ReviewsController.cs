@@ -44,7 +44,7 @@ namespace RadialReview.Controllers {
 
 			}).Where(x => x.Editable || x.TakableId != null || x.UserReview != null).OrderByDescending(x => x.Review.DateCreated).ToList();
 
-			var prereviews = PrereviewAccessor.GetPrereviewsForUser(caller, caller.Id, DateTime.UtcNow,true,true).Select(x => new ReviewsViewModel(x) {				
+			var prereviews = PrereviewAccessor.GetPrereviewsForUser(caller, caller.Id, DateTime.UtcNow, true, true).Select(x => new ReviewsViewModel(x) {
 				Viewable = true,
 			}).ToList();
 
@@ -75,7 +75,7 @@ namespace RadialReview.Controllers {
 						x.AddLink("#", "Your report is not available yet", iconClass: "glyphicon glyphicon-file", linkClass: "gray noclick");
 				}
 				if (x.IsPrereview && x.Editable && model.AllowEdit && x.Review != null) {
-					x.AddAction("issueReviewImmediately("+x.Review.Id+",this)", "Issue immediately", iconClass: "glyphicon glyphicon-log-in", linkClass: "issue-immediately" );
+					x.AddAction("issueReviewImmediately(" + x.Review.Id + ",this)", "Issue immediately", iconClass: "glyphicon glyphicon-log-in", linkClass: "issue-immediately");
 				}
 
 				if (!x.IsPrereview && (caller.IsManagingOrganization() || (x.Editable && model.AllowEdit))) {
@@ -89,7 +89,7 @@ namespace RadialReview.Controllers {
 					x.AddLink("/Reports/Index/" + x.Review.Id + "#Reminders", "Send Reminders", "glyphicon glyphicon-send");
 					x.AddLink("/Reports/Index/" + x.Review.Id + "#Stats", "Stats", "glyphicon glyphicon-stats");
 				}
-				if (x.Editable && model.AllowEdit && x.Review!=null) {
+				if (x.Editable && model.AllowEdit && x.Review != null) {
 					x.AddDivider();
 					x.AddLink("/Reviews/Edit/" + x.Review.Id, "Admin Settings", "glyphicon glyphicon-cog", linkClass: "advanced-link");
 				}
@@ -251,7 +251,7 @@ namespace RadialReview.Controllers {
 
 			var model = new UpdateReviewsViewModel() {
 				ReviewId = id,
-				AdditionalUsers = additionalMembers.ToSelectList(x => x._Name, x => x.ToId()),
+				AdditionalUsers = additionalMembers.ToSelectList(x => x._Name, x => x.ToId()).OrderBy(x => x.Text).ToList(),
 				SendEmail = true
 			};
 			return PartialView(model);
@@ -330,7 +330,9 @@ namespace RadialReview.Controllers {
 			var usersInReview = _ReviewAccessor.GetUsersInReview(GetUser(), id);
 			var model = new RemoveUserVM() {
 				ReviewContainerId = id,
-				PossibleUsers = usersInReview.ToSelectList(x => x.GetNameAndTitle(youId: GetUser().Id), x => x.Id)
+				PossibleUsers = usersInReview
+					.ToSelectList(x => x.GetNameAndTitle(youId: GetUser().Id), x => x.Id)
+					.OrderBy(x => x.Text).ToList()
 			};
 
 			return PartialView(model);
@@ -382,7 +384,8 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
 		public PartialViewResult RemoveQuestion(long id) {
 			var users = _ReviewAccessor.GetUsersInReview(GetUser(), id);
-			var usersSelect = users.ToSelectList(x => x.GetNameAndTitle(), x => x.Id);
+			var usersSelect = users.ToSelectList(x => x.GetNameAndTitle(), x => x.Id)
+				.OrderBy(x => x.Text).ToList();
 
 			usersSelect.Insert(0, new SelectListItem() { Selected = true, Text = "Select User...", Value = "-1" });
 
@@ -407,8 +410,14 @@ namespace RadialReview.Controllers {
 		public PartialViewResult AddQuestion(long id) {
 			var users = _ReviewAccessor.GetUsersInReview(GetUser(), id);
 
-			var userSelect = users.ToSelectList(x => x.GetNameAndTitle(), x => x.Id);
-			userSelect.Insert(0, new SelectListItem() { Text = "Select a user...", Value = "-1", Selected = true });
+			var userSelect = users.ToSelectList(x => x.GetNameAndTitle(), x => x.Id)
+				.OrderBy(x => x.Text).ToList();
+
+			userSelect.Insert(0, new SelectListItem() {
+				Text = "Select a user...",
+				Value = "-1",
+				Selected = true
+			});
 
 			var model = new AddQuestionVM() {
 				ReviewContainerId = id,
