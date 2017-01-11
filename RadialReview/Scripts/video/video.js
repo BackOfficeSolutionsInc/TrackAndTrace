@@ -135,22 +135,25 @@ function closeVideoBar() {
 
 function createZoom() {
 	closeVideoBar();
-
-	showModal({
-		title: "Add a Meeting Room",
-		fields: [
-			{ type: "h3", text: "Click <a class='a-link' target='_blank' href='https://www.zoom.us/meeting/schedule'>Here</a> to sign into Zoom. Schedule a recurring meeting with these settings:" },
-			{ type: "img", src: "https://s3.amazonaws.com/Radial/Instructional/ZoomSetup/ZoomSetup1.png", classes: "img-thumbnail zoom-thumbnail"  },
-			{ type: "h3", text: "<br/>After clicking 'Schedule', find and copy your Meeting ID" },
-			{ type: "img", src: "https://s3.amazonaws.com/Radial/Instructional/ZoomSetup/ZoomSetup2.png", classes: "img-thumbnail zoom-thumbnail" },
-			{ type: "h3", text: "&nbsp;" },
-			{ name: "zoomMeetingId", text: "Meeting ID" },
-			{ name: "name", text: "Name",placeholder:"(optional)" },
-		],
-		push: "/integrations/addzoomroom?recurId=" + window.recurrenceId + "&userId=" + window.UserId,
-		success: function () {
-		}
-	})
+	showModal("Add Meeting Room", "/Integrations/AddZoomModal", "/Integrations/addzoomroom?recurId=" + window.recurrenceId + "&userId=" + window.UserId, null, null,
+		function (d) {
+			debugger;
+		});
+	//{
+	//	title: "Add a Meeting Room",
+	//	fields: [
+	//		{ type: "h3", text: "Click <a class='a-link' target='_blank' href='https://www.zoom.us/meeting/schedule'>Here</a> to sign into Zoom. Schedule a recurring meeting with these settings:" },
+	//		{ type: "img", src: "https://s3.amazonaws.com/Radial/Instructional/ZoomSetup/ZoomSetup1.png", classes: "img-thumbnail zoom-thumbnail"  },
+	//		{ type: "h3", text: "<br/>After clicking 'Schedule', find and copy your Meeting ID" },
+	//		{ type: "img", src: "https://s3.amazonaws.com/Radial/Instructional/ZoomSetup/ZoomSetup2.png", classes: "img-thumbnail zoom-thumbnail" },
+	//		{ type: "h3", text: "&nbsp;" },
+	//		{ name: "zoomMeetingId", text: "Meeting ID" },
+	//		{ name: "name", text: "Name",placeholder:"(optional)" },
+	//	],
+	//	push: "/integrations/addzoomroom?recurId=" + window.recurrenceId + "&userId=" + window.UserId,
+	//	success: function () {
+	//	}
+	//})
 }
 
 
@@ -184,13 +187,24 @@ function joinVideoConference(url, type, friendlyName, providerId) {
 	}, 2000);
 }
 
+var videoProviderList = {};
+
+function getVideoProviderLink(vcProvider) {
+	return "<a class='clickable' onclick='selectVideoProvider(" + vcProvider.Id + ");'>" + vcProvider.FriendlyName + "</a>";
+}
+
 function addVideoProvider(vcProvider) {
 	var item = $("<li></li>");
-	item.append("<a class='' onclick='selectVideoProvider(" + vcProvider.Id + ")'>" + vcProvider.FriendlyName + "</a>");
+	item.append(getVideoProviderLink(vcProvider));
 	var dropDown = $(".videoconference-container .type-" + vcProvider.VideoConferenceType + " .dropdown-menu");
 	if (dropDown.find(".before-add-new").length==0)
 		dropDown.append("<li role='separator' class='divider before-add-new'></li");
 	dropDown.append(item);
+
+	if (!(vcProvider.VideoConferenceType in videoProviderList)) {
+		videoProviderList[vcProvider.VideoConferenceType] = [];
+	}
+	videoProviderList[vcProvider.VideoConferenceType].push(vcProvider);
 }
 
 function selectVideoProvider(providerId) {
@@ -222,7 +236,7 @@ function setSelectedVideoProvider(vcProvider) {
 			'\'' + vcProvider.VideoConferenceType + '\','+
 			'\'' + vcProvider.FriendlyName + '\',' +
 					   vcProvider.Id+
-	')">Join Conference</div><div class="start-conference start-video btn btn-xs btn-default" onclick="unsetSelectedVideoProvider()">Reset Video</div>');
+	')">Join Conference</div><div class="start-conference start-video btn btn-xs btn-default" onclick="unsetSelectedVideoProvider()">Change Video Provider</div>');
 	selector.show();
 	//joinVideoConference(vcProvider.Url, vcProvider.VideoConferenceType, vcProvider.FriendlyName, vcProvider.Id);
 }

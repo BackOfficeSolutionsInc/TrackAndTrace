@@ -155,6 +155,10 @@
 	border-left: 1px solid #E0E0E0;
 	border-top: 1px solid #E0E0E0;
 }
+	.level-10 .scorecard-table .score:last-of-type:not(.current) ,	
+	.level-10 .scorecard-table .date:last-of-type:not(.current) {
+		border-right:3px solid #E0E0E0;
+	}
 
 .scorecard-table tr.IsDivider + tr:not(.IsDivider) > .score {
 	border-top: 1px solid transparent;
@@ -313,9 +317,11 @@
 	margin-top: 0px;
 }
 
-	.level-10 .scorecard-table .score input:focus, .scorecard-table .score input:not([disabled]):active {
+	.level-10 .scorecard-table .score input:focus,
+	.level-10 .scorecard-table .score input:not([disabled]):active {
 		margin-right: 0px;
 	}
+
 
 	.scorecard-table .score input:focus::-webkit-input-placeholder {
 		color: transparent;

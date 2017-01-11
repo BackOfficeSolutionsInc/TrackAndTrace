@@ -62,44 +62,81 @@
 		<div class="video-bar footer-bar-contents">
 			@*<div class="collapser">Hide</div>*@
 			<div class="pull-right start-buttons">
-					<div class="unselected-video" style="@(MM.Selected != null?"display:none":"")">
-						@if (MM.VideoProvider == VideoConferenceType.Unselected || MM.VideoProvider == VideoConferenceType.Zoom) {
+				<div class="unselected-video" style="@(MM.Selected != null?"display:none":"")">
+					@if (MM.VideoProvider == VideoConferenceType.Unselected || MM.VideoProvider == VideoConferenceType.Zoom) {
 
-							var zoomProviders = MM.CurrentProviders.Where(x => x.GetVideoConferenceType() == VideoConferenceType.Zoom);
-							var defaultAction = new HtmlString("createZoom()");
-							if (zoomProviders.Any()) {
-								var found = zoomProviders.OrderByDescending(x => x.LastUsed).First();
-								defaultAction = new HtmlString("selectVideoProvider(" + found.Id + ")");
-							}
+						var zoomProviders = MM.CurrentProviders.Where(x => x.GetVideoConferenceType() == VideoConferenceType.Zoom);
+						var defaultAction = new HtmlString("createZoom()");
+						if (zoomProviders.Any()) {
+							var found = zoomProviders.OrderByDescending(x => x.LastUsed).First();
+							defaultAction = new HtmlString("selectVideoProvider(" + found.Id + ")");
+						}
 
-							<div class="btn-group start-zoom-conference start-video type-@(VideoConferenceType.Zoom) dropup">
-								<button type="button" class="btn btn-success btn-xs" onclick="@defaultAction">Join Zoom</button>
-								<button type="button" class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-									<span class="caret"></span>
-									<span class="sr-only">Toggle Dropdown</span>
-								</button>
-								<ul class="dropdown-menu">
-									<li><a onclick="createZoom()">Add new Zoom meeting</a></li>
-									@if (zoomProviders.Any()) {
-										<li role="separator" class="divider before-add-new"></li>
-									}
+						<div class="btn-group start-zoom-conference start-video type-@(VideoConferenceType.Zoom) dropup">
+							<button type="button" class="btn btn-success btn-xs" onclick="@defaultAction">Join Zoom</button>
+							<button type="button" class="btn btn-success btn-xs dropdown-toggle" @*data-toggle="dropdown"*@ onclick="clickZoomButton1()" aria-haspopup="true" aria-expanded="false">
+								<span class="caret"></span>
+								<span class="sr-only">Toggle Dropdown</span>
+							</button>
+							<ul class="dropdown-menu">
+								<li><a onclick="createZoom()">Add new Zoom meeting</a></li>
+								@if (zoomProviders.Any()) {
+									<li role="separator" class="divider before-add-new"></li>
+								}
+								@foreach (var i in zoomProviders) {
+									var str = new HtmlString("selectVideoProvider(" + i.Id) + ")";
+									<li><a class="" onclick="@str">@i.GetName()</a></li>
+								}
+
+							</ul>
+						</div>
+						using (Html.BeginScripts()) {
+							<script>
+
+								$(function(){
 									@foreach (var i in zoomProviders) {
-										var str = new HtmlString("selectVideoProvider(" + i.Id) + ")";
-										<li><a class="" onclick="@str">@i.GetName()</a></li>
+										@:addVideoProvider({Id : @i.Id , FriendlyName: "@i.FriendlyName", VideoConferenceType: "@i.VideoConferenceType" });
+																												}
+								});
+
+								function clickZoomButton1(){
+									var fields = [];
+
+									fields.push({
+										type:"div",
+										value:"<a class='clickable' onclick='createZoom();$(\"#modal\").modal(\"hide\");'>Add new Zoom meeting</a>"
+									});
+
+									if (typeof(videoProviderList)!=="undefined" && "Zoom" in videoProviderList){
+										for(var i in videoProviderList["Zoom"]){
+											fields.push({
+												type:"div",
+												value:"<div onclick='$(\"#modal\").modal(\"hide\");'>"+getVideoProviderLink(videoProviderList["Zoom"][i])+"</div>"
+											});
+										}
 									}
 
-								</ul>
-							</div>
+									showModal({
+										icon:"info" ,
+										title:"",
+										fields:fields,
+										modalClass:"addVideoModal",
+										
+									});
+								}
+							</script>
 						}
-						@if (MM.VideoProvider == VideoConferenceType.Unselected || MM.VideoProvider == VideoConferenceType.TractionTools) {
-							<div class="start-conference start-internal-video start-video btn btn-xs btn-success">Join Conference</div>
-						}
-					</div>				
+
+					}
+					@if (MM.VideoProvider == VideoConferenceType.Unselected || MM.VideoProvider == VideoConferenceType.TractionTools) {
+						<div class="start-conference start-internal-video start-video btn btn-xs btn-success"> Built-In Conference</div>
+					}
+				</div>
 				<div class="selected-video" style="@(MM.Selected != null?"":"display:none")">
 					@if (MM.Selected != null) {
 						<div class="start-conference start-video btn btn-xs btn-success" onclick="joinVideoConference('@MM.Selected.GetUrl()','@MM.Selected.GetVideoConferenceType()','@MM.Selected.GetName()',@MM.Selected.Id)">Join Conference</div>
 					}
-					<div class="start-conference start-video btn btn-xs btn-default" onclick="unsetSelectedVideoProvider()">Reset Video</div>
+					<div class="start-conference start-video btn btn-xs btn-default" onclick="unsetSelectedVideoProvider()">Change Video Provider</div>
 				</div>
 			</div>
 			@*<div class="start-conference start-screenshare btn btn-xs btn-default">Share Screen</div>*@
@@ -138,6 +175,11 @@
 			left: auto;
 			right: 128px;
 			bottom: 90px;
+		}
+
+		.addVideoModal .form-horizontal.modal-builder {
+			text-align: center;
+			padding-bottom: 20px;
 		}
 	</style>
 

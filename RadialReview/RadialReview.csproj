@@ -2072,6 +2072,7 @@
     <Content Include="Views\L10\GetAdmins.cshtml" />
     <Content Include="Views\Admin\Events.cshtml" />
     <Content Include="Views\Notifications\partial\list.cshtml" />
+    <Content Include="Views\Integrations\AddZoomModal.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -2376,7 +2377,6 @@
     <Folder Include="Views\DropDown\" />
     <Folder Include="Views\HealthCheck\" />
     <Folder Include="Views\Img\" />
-    <Folder Include="Views\Integrations\" />
     <Folder Include="Views\L10Data\" />
     <Folder Include="Views\L10Details\" />
     <Folder Include="Views\MeetingData\" />

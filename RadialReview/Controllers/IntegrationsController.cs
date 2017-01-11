@@ -20,7 +20,11 @@ namespace RadialReview.Controllers {
 			//(HttpContext).GetOwinContext().Authentication.Challenge(
 			//	new AuthenticationProperties { RedirectUri = "/" },
 			//	OpenIdConnectAuthenticationDefaults.AuthenticationType);
+		}
 
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult AddZoomModal() {
+			return PartialView();
 		}
 
 		[Access(AccessLevel.UserOrganization)]
