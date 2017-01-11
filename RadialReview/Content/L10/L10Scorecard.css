@@ -313,6 +313,10 @@
 	margin-top: 0px;
 }
 
+	.level-10 .scorecard-table .score input:focus, .scorecard-table .score input:not([disabled]):active {
+		margin-right: 0px;
+	}
+
 	.scorecard-table .score input:focus::-webkit-input-placeholder {
 		color: transparent;
 	}

@@ -40,6 +40,7 @@ namespace RadialReview.Models.L10 {
 		public virtual bool Pristine { get; set; }
 
 		public virtual bool CountDown { get; set; }
+		public virtual int CurrentWeekHighlightShift { get; set; }
 
 		public virtual bool IncludeIndividualTodos { get; set; }
 		public virtual bool IncludeAggregateTodoCompletion { get; set; }
@@ -116,6 +117,7 @@ namespace RadialReview.Models.L10 {
 			HeadlineType = PeopleHeadlineType.HeadlinesList;
 			TeamType = L10TeamType.LeadershipTeam;
 			CombineRocks = false;
+			CurrentWeekHighlightShift = 0;
 
 		}
 
@@ -126,6 +128,7 @@ namespace RadialReview.Models.L10 {
 				Map(x => x.VideoId);
 				Map(x => x.CombineRocks);
 				Map(x => x.Pristine);
+				Map(x => x.CurrentWeekHighlightShift);
 				Map(x => x.ShowHeadlinesBox);
 				Map(x => x.HeadlineType);
 				Map(x => x.HeadlinesId);

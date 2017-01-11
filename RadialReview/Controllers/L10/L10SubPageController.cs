@@ -63,8 +63,7 @@ namespace RadialReview.Controllers
 			//Do need the meeting
 			try{
 				model.Meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrenceId, load: true);
-
-				
+							
 				
 				switch (page)
 				{
@@ -179,7 +178,11 @@ namespace RadialReview.Controllers
 			timeSettings.WeekStart = model.Recurrence.StartOfWeekOverride ?? timeSettings.WeekStart;
 			timeSettings.Descending = model.Recurrence.ReverseScorecard;
 
-			model.Weeks = TimingUtility.GetPeriods(timeSettings, DateTime.UtcNow, model.MeetingStart, /*model.Scores,*/ true);
+			DateTime? highlight = null;
+			if (model.MeetingStart!=null)
+				highlight = model.MeetingStart.Value.AddDays(7 * model.Recurrence.NotNull(x => x.CurrentWeekHighlightShift));
+
+			model.Weeks = TimingUtility.GetPeriods(timeSettings, DateTime.UtcNow, highlight, /*model.Scores,*/ true);
 			return PartialView("Scorecard", model);
 			/*model.StartDate = ordered.FirstOrDefault().NotNull(x => DateTime.UtcNow);
 			model.EndDate = ordered.LastOrDefault().NotNull(x => DateTime.UtcNow).AddDays(7);
