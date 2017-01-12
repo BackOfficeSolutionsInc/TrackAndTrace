@@ -133,7 +133,6 @@ function updateHeadlineMessage(id, message) {
 }
 
 function sendHeadlineMessage(self, id) {
-	debugger;
 	var val = $(self).val();
 	$(".headlineDetails .message-holder[data-headline=" + id + "] input").prop("disabled", true);
 	var data = {
@@ -144,7 +143,6 @@ function sendHeadlineMessage(self, id) {
 		data: data,
 		url: "/L10/UpdateHeadline/" + id,
 		success: function (data) {
-			debugger;
 			if (showJsonAlert(data, false, true)) {
 				$(".headlineDetails .message-holder[data-headline=" + id + "]").html("<span data-headline='" + id + "' class='message editable-text'>" + val + "</span>");
 			}
@@ -169,7 +167,6 @@ function constructHeadlineRow(headline) {
 
 	if (!Model.Message)
 		Model.Message = "";
-	debugger;
 	//Accountable user name populated?
 	return '<li class="headline-row dd-item arrowkey"' +
 		'data-createtime="' + (+new Date(Model.CreateTime)) + '"' +

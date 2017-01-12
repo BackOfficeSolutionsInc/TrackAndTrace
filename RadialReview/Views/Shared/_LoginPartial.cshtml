@@ -11,10 +11,10 @@
 			<span class="pull-left navbar-icon-container hidden-xs">
 				@if (((int?)ViewBag.Organizations ?? 0) > 0) {
 					if (ViewBag.ShowL10) {
-						<span id="header-tab-new-headline" class="navbar-icon-button icon fontastic-icon-bookmark headlineModal" title="New People Headline"></span>
-						<span id="header-tab-new-issue" class="navbar-icon-button icon fontastic-icon-pinboard glyphico1n glyphicon-pushp1in issuesModal" data-method="CreateIssueRecurrence" title="New Issue"></span>
+						<span id="header-tab-new-headline" class="navbar-icon-button icon fontastic-icon-bookmark headlineModal populateMeetingData" data-listRecurrences="true" title="New People Headline"></span>
+						<span id="header-tab-new-issue" class="navbar-icon-button icon fontastic-icon-pinboard glyphico1n glyphicon-pushp1in issuesModal populateMeetingData" data-method="CreateIssueRecurrence" title="New Issue"></span>
 					}
-					<span id="header-tab-new-todo" class="navbar-icon-button glyphicon glyphicon-check todoModal" data-method="CreateTodoRecurrence" title="New To-do"></span>
+					<span id="header-tab-new-todo" class="navbar-icon-button glyphicon glyphicon-check todoModal populateMeetingData" data-method="CreateTodoRecurrence" title="New To-do"></span>
 				}
 			</span>
 

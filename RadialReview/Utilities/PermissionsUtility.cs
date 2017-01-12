@@ -901,6 +901,8 @@ namespace RadialReview.Utilities {
 				return ViewTeam(rgm.Id);
 			} else if (rgm is UserOrganizationModel) {
 				return ViewUserOrganization(rgm.Id, false);
+			} else if (rgm is OrganizationPositionModel) {
+				return ViewOrganizationPosition(rgm.Id);
 			}
 
 			throw new PermissionsException("Unknown responsibility group type.");

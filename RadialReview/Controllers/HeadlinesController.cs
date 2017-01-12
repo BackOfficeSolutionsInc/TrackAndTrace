@@ -72,7 +72,7 @@ namespace RadialReview.Controllers
 				? HeadlineAccessor.GetRecurrencesWithHeadlines(GetUser(),GetUser().Id)
 				: new List<NameId>();
 
-			if (_listRecur && model.PossibleRecurrences.Any()) {
+			if (recurrenceId==null && _listRecur && model.PossibleRecurrences.Any()) {
 				model.RecurrenceIds = new[] { model.PossibleRecurrences.First().Id };
 			}
 

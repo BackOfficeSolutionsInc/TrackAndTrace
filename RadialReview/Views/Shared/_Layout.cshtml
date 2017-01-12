@@ -278,7 +278,21 @@
                         @: showAlert("@ViewBag.InfoAlert", "alert-info" , "Info!" );
 																																				                                        }
 					UnstoreJsonAlert();
+					
+					try{
+						if (typeof(window.meetingId)!=="undefined"){
+							$(".populateMeetingData").attr("data-meetingId",window.meetingId);
+						}
+						if (typeof(window.recurrenceId)!=="undefined"){
+							$(".populateMeetingData").attr("data-recurrenceId",window.recurrenceId);
+						}
+					}catch(e){
+						console.error(e);
+					}
+				
 				});  var statusTimeout;
+
+
 			</script>
 			}
 	</div>
