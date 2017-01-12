@@ -1,4 +1,5 @@
 ﻿using RadialReview.Accessors;
+using RadialReview.Models.Application;
 using RadialReview.Models.Json;
 using RadialReview.Models.L10;
 using RadialReview.Models.L10.VM;
@@ -16,7 +17,7 @@ namespace RadialReview.Controllers
 			public long[] RecurrenceIds { get; set; }
 			public long CreatedBy { get; set; }
 			public string Message { get; set; }
-			public List<L10VM> PossibleRecurrences { get; set; }
+			public List<NameId> PossibleRecurrences { get; set; }
 			public List<SelectListItem> PossibleOwners { get; set; }
             public long? AboutId { get; set; }
             public string AboutIdText { get; set; }
@@ -41,7 +42,6 @@ namespace RadialReview.Controllers
 					OwnerId = OwnerId,
 					RecurrenceId = x,
 					_Details = Details,
-
 				}).ToList();
 			}
 
@@ -64,16 +64,16 @@ namespace RadialReview.Controllers
 			};
 			if (recurrenceId != null)
 				model.RecurrenceIds = new[] { recurrenceId.Value };
-			
+
+
+			//L10Accessor.GetVisibleL10Meetings_Tiny(GetUser(), GetUser().Id, false);
 
 			model.PossibleRecurrences = (_listRecur == true) 
-				? L10Accessor.GetVisibleL10Recurrences(GetUser(), GetUser().Id, false)
-					.Where(x=>x.Recurrence.HeadlineType==Model.Enums.PeopleHeadlineType.HeadlinesList)
-					.ToList() 
-				: new List<Models.L10.VM.L10VM>();
+				? HeadlineAccessor.GetRecurrencesWithHeadlines(GetUser(),GetUser().Id)
+				: new List<NameId>();
 
 			if (_listRecur && model.PossibleRecurrences.Any()) {
-				model.RecurrenceIds = new[] { model.PossibleRecurrences.First().Recurrence.Id };
+				model.RecurrenceIds = new[] { model.PossibleRecurrences.First().Id };
 			}
 
 			if (recurrenceId != null && _listOwners && !_listRecur) {

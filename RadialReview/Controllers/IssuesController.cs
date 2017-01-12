@@ -159,8 +159,8 @@ namespace RadialReview.Controllers {
             //if (meeting != -1)
             //	_PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
-            ViewBag.PossibleMeetings = L10Accessor.GetVisibleL10Recurrences(GetUser(), GetUser().Id, false)
-                .Select(x => new MeetingVm { name = x.Recurrence.Name, id = x.Recurrence.Id })
+            ViewBag.PossibleMeetings = L10Accessor.GetVisibleL10Meetings_Tiny(GetUser(), GetUser().Id, true)
+                .Select(x => new MeetingVm { name = x.Name, id = x.Id })
                 .ToList();
 
             var model = new IssueVM() {

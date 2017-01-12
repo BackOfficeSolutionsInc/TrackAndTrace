@@ -8,6 +8,7 @@ using RadialReview.Models;
 using RadialReview.Models.Angular.Base;
 using RadialReview.Models.Angular.Headlines;
 using RadialReview.Models.Angular.Meeting;
+using RadialReview.Models.Application;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Components;
 using RadialReview.Models.L10;
@@ -123,6 +124,25 @@ namespace RadialReview.Accessors {
 					}
 
 					return h;
+				}
+			}
+		}
+
+		public static List<NameId> GetRecurrencesWithHeadlines(UserOrganizationModel caller, long userId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					List<long> attendee_recurrences;
+					var uniqueL10NameIds = L10Accessor.GetVisibleL10Meetings_Tiny(s, perms, userId, out attendee_recurrences);
+					var uniqueL10Ids = uniqueL10NameIds.Select(x => x.Id).ToList();
+
+
+					return s.QueryOver<L10Recurrence>()
+						.Where(x => x.DeleteTime == null && x.HeadlineType == Model.Enums.PeopleHeadlineType.HeadlinesList)
+						.WhereRestrictionOn(x => x.Id).IsIn(uniqueL10Ids)
+						.Select(x=>x.Id,x=>x.Name)
+						.List<object[]>().Select(x=>new NameId((string)x[1],(long)x[0])).ToList();				
+
 				}
 			}
 		}

@@ -36,6 +36,40 @@
 	//	function (Select2, Utils, oldMatcher) {
 	function a@(guid)() {
 		$.getScript("//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.js").done(function () {
+			//delete (jQuery.fn.select2.amd.require._defined["select2/dropdown/selectOnClose"])
+			//jQuery.fn.select2.amd.define("select2/dropdown/selectOnClose",[], function () {
+			//	function SelectOnClose() { }
+			//	SelectOnClose.prototype.bind = function (decorated, container, $container) {
+			//		debugger;
+			//		var self = this;
+			//		decorated.call(this, container, $container);
+			//		container.on('close', function () {self._handleSelectOnClose();});
+			//	};
+
+			//	SelectOnClose.prototype._handleSelectOnClose = function () {
+			//		debugger;
+			//		var $highlightedResults = this.getHighlightedResults();
+			//		// Only select highlighted results
+			//		if ($highlightedResults.length < 1) {
+			//			return;
+			//		}
+			//		var data = $highlightedResults.data('data');
+			//		// Don't re-select already selected resulte
+			//		if (
+			//		  (data.element != null && data.element.selected) ||
+			//		  (data.element == null && data.selected)
+			//		) {
+			//			return;
+			//		}
+			//		this.trigger('select', {
+			//			data: data
+			//		});
+			//	};
+			//	return SelectOnClose;
+			//});
+
+
+
 			var template = function (d) {
 				var des = "";
 				var org = "";
@@ -67,6 +101,7 @@
 				var select2 = $(".selectusers-@guid").select2({
 					closeOnSelect: true,
 					placeholder: { Name: "Who is this about?" },
+					//selectOnClose: true,
 					ajax: {
 						url: "@searchUrl",
 						dataType: 'json',
@@ -120,6 +155,7 @@
 				var tabOut = false;
 				var hadShift = false;
 				var selectedId = null;
+				var enterOut = false;
 				var key, blur;
 				function getSelectedId() {
 					var open = $(".select2-results__option--highlighted");
@@ -132,6 +168,7 @@
 
 				$("body").on("focus", ".select2-search__field", function () {
 					tabOut = false;
+					enterOut = false;
 					hadShift = false;
 					if (existing)
 						clearTimeout(existing);
@@ -148,10 +185,27 @@
 								tabOut = true;
 							if (event.shiftKey)
 								hadShift = true;
+							if (code == 13)
+								enterOut = true;
 						});
 
+						var lastHighlight=null;
+						var interval = setInterval(function () {
+							lastHighlight = $(".select2-results__option--highlighted");
+						}, 70);
+
 						var blurTimeout = false;
-						blur = $("body").on("focusout", ".select2-search__field", function () {
+						blur = $("body").on("focusout", ".select2-search__field", function (e) {
+							if (!enterOut || tabOut) {
+								lastHighlight.trigger('mouseup');
+								enterOut = true;
+							}
+								//e.preventDefault();
+							//e.preventDefault();
+							//debugger;
+							//$(this).trigger({ type: 'keypress', which: 13, keyCode: 13 });
+							if (interval)
+								clearInterval(interval);
 							if (blurTimeout)
 								clearTimeout(blurTimeout);
 							//if (selectedIdInterval)
@@ -159,6 +213,7 @@
 							blurTimeout = setTimeout(function () {
 								if (tabOut) {
 									console.log("tabOut");
+									console.log(lastHighlight);
 									var selection = $(".selectusers-@guid + .select2-container .select2-selection");
 									if (hadShift)
 										setTimeout(function () { $.tabPrev(selection); }, 1);

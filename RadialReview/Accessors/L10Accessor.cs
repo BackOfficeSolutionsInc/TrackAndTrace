@@ -1200,14 +1200,13 @@ namespace RadialReview.Accessors {
 
 					//Load extra data
 					//var allRecurrencesDistinct = allRecurrences.Distinct(x => x.Id).ToList();
-
 					_LoadRecurrences(s, loadUsers, false, false, allRecurrences.ToArray());
 
 					//Make a lookup for self attendance
 					//var attending = attendee_recurrences.Where(x => userId == x.User.Id).Select(x => x.L10Recurrence.Id).ToArray();
 					return allRecurrences.Select(x => new L10VM(x) {
 						IsAttendee = attendee_recurrences.Any(y => y == x.Id),
-						EditMeeting = perms.IsPermitted(y => y.AdminL10Recurrence(x.Id))
+						EditMeeting =  perms.IsPermitted(y => y.AdminL10Recurrence(x.Id))
 					}).ToList();
 				}
 			}

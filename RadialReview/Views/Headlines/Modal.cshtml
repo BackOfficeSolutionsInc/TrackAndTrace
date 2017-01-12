@@ -56,8 +56,8 @@
 				<div class="form-group">
 					<label>Meeting</label>
 					<select name="@Html.NameFor(x => x.RecurrenceIds)" class="select-recurrence form-control" style="width: 100%;" multiple="multiple">
-						@foreach (var u in Model.PossibleRecurrences.OrderBy(x => x.Recurrence.Name)) {
-							<option value="@u.Recurrence.Id" @(Model.RecurrenceIds.Contains(u.Recurrence.Id) ? "selected" : "")>@u.Recurrence.Name</option>
+						@foreach (var u in Model.PossibleRecurrences.OrderBy(x => x.Name)) {
+							<option value="@u.Id" @(Model.RecurrenceIds.Contains(u.Id) ? "selected" : "")>@u.Name</option>
 						}
 					</select>
 				</div>
