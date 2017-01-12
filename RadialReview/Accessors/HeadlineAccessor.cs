@@ -83,7 +83,7 @@ namespace RadialReview.Accessors {
 				var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
 
 				if (headline.CreatedDuringMeetingId == null) {
-					headline.CreatedDuringMeetingId = L10Accessor._GetCurrentL10Meeting(s, perms, recurrenceId, true, false, false).Id;
+					headline.CreatedDuringMeetingId = L10Accessor._GetCurrentL10Meeting(s, perms, recurrenceId, true, false, false).NotNull(x=>(long?)x.Id);
 				}
 
 				var aHeadline = new AngularHeadline(headline);
