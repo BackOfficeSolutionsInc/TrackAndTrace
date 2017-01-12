@@ -126,7 +126,6 @@ $(function () {
 					}
 
 					$(input).on('change', function () {
-						debugger;
 						sendNewAccountable(this, $(this).data("todo"));
 					});
 
@@ -136,7 +135,6 @@ $(function () {
 						templateResult: imageListFormat,
 						templateSelection: imageListFormat
 					});
-						debugger;
 					$(item).parent().find(".select2").css("width", "inherit");
 					//$(item).parent().find("span").css(
 					  /* right: 6px; */

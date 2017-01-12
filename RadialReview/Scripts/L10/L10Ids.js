@@ -232,7 +232,6 @@ $(function () {
 	$("body").on("click", ".issueDetails .doneButton", function () { $(".issue-row.selected").find(">input").trigger("click"); $("#modal").modal("hide"); });
 
 	$("body").on("change", ".issue-checkbox", function () {
-		debugger;
 		undoStack.execute(new CheckOffIssue(this, $(this).prop("checked")));
 	});
 });
