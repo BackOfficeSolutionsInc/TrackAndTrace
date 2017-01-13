@@ -63,7 +63,7 @@
 			if (!isUnloading) {
 				clearAlerts();
 				setTimeout(function () {
-					showAlert("Connection lost. Reconnecting.");
+					showAlert("Connection lost. Reconnecting.", 1000);
 					disconnected = true;
 					setTimeout(function () {
 						connection.start(/*Constants.StartHubSettings*/).done(function () {
@@ -71,7 +71,7 @@
 								callback(connection, proxy);
 							}
 							clearAlerts();
-							showAlert("Connected.");
+							showAlert("Connected.", 1000);
 						});
 					}, 5000); // Restart connection after 5 seconds.
 				}, 1000);

@@ -3453,7 +3453,7 @@ namespace RadialReview.Accessors {
 					if (todo.TodoType == TodoType.Recurrence) {
 						if (todo.ForRecurrenceId == null || todo.ForRecurrenceId == 0)
 							throw new PermissionsException("Meeting does not exist.");
-						perm.EditL10Recurrence(todo.ForRecurrenceId.Value);
+						perm.Or(p=>p.Self(todo.AccountableUserId),p=>p.EditL10Recurrence(todo.ForRecurrenceId.Value));
 						group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(todo.ForRecurrenceId.Value), connectionId);
 					} else if (todo.TodoType == TodoType.Personal) {
 						perm.EditUserOrganization(todo.AccountableUserId);

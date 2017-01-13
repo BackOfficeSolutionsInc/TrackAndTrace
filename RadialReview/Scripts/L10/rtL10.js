@@ -188,7 +188,7 @@ function rejoin(callback) {
 				}
 				if (disconnected) {
 					clearAlerts();
-					showAlert("Reconnected.", "alert-success", "Success");
+					showAlert("Reconnected.", "alert-success", "Success", 1000);
 				}
 				disconnected = false;
 			}).fail(function (d) {

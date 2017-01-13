@@ -2,55 +2,60 @@
 @{
 	var guid = Guid.NewGuid().ToString().Replace("-", "");
 	var headings = Model.GetHeading();
+	
+	var disabled =(Model.Disabled ? "disabled" : "");
+	var lockClass = (Model.Disabled ? "fontastic-icon-lock-1" : "fontastic-icon-unlock-1");
 }
 
 <span class="dropdown dropdown-permissions dd_@guid">
-	<button class="btn btn-default dropdown-toggle @(@ViewBag.ButtonClass??"")" type="button" id="dropdownMenu122" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-		<span class="icon fontastic-icon-unlock-1 gray"></span>
+	<button class="btn btn-default dropdown-toggle @(@ViewBag.ButtonClass??"") @disabled" @disabled type="button" id="dropdownMenu122" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+		<span class="icon @lockClass gray"></span>
 		@(Model.DisplayText ?? new HtmlString("Permissions"))
 		<span class="caret"></span>
 	</button>
-	<ul class="dropdown-menu permissions-dropdown-menu" aria-labelledby="dropdownMenu122">
-		<li class="">
-			<form class="permissions-container">
-				<label>Add permissions for a user, team, or position. Begin typing here...</label>
-				<br />
-				<select id="search_@guid" style="width:450px;height: 28px !important;" placeholder=""></select>
-				<hr />
-				<div class="form-group" id="container_@guid">
-					<table class="table-hover" style="text-align: center;">
-						<thead>
-							<tr>
-								@if (headings.ViewName != null) {
-									<th class="setting">@(headings.ViewName)</th>
-								}
-								@if (headings.EditName != null) {
-									<th class="setting">@(headings.EditName)</th>
-								}
-								@if (headings.AdminName != null) {
-									<th class="setting">@(headings.AdminName)</th>
-								}
-								<th></th>
-								<th class="name"></th>
-								<th class="setting"></th>
-							</tr>
-						</thead>
-						<tbody>
-							@foreach (var u in Model.Items) {
-								@Html.Partial("PermItemRow", new ViewDataDictionary(u){
+	@if (!Model.Disabled) {
+		<ul class="dropdown-menu permissions-dropdown-menu" aria-labelledby="dropdownMenu122">
+			<li class="">
+				<form class="permissions-container">
+					<label>Add permissions for a user, team, or position. Begin typing here...</label>
+					<br />
+					<select id="search_@guid" style="width:450px;height: 28px !important;" placeholder=""></select>
+					<hr />
+					<div class="form-group" id="container_@guid">
+						<table class="table-hover" style="text-align: center;">
+							<thead>
+								<tr>
+									@if (headings.ViewName != null) {
+										<th class="setting">@(headings.ViewName)</th>
+									}
+									@if (headings.EditName != null) {
+										<th class="setting">@(headings.EditName)</th>
+									}
+									@if (headings.AdminName != null) {
+										<th class="setting">@(headings.AdminName)</th>
+									}
+									<th></th>
+									<th class="name"></th>
+									<th class="setting"></th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var u in Model.Items) {
+									@Html.Partial("PermItemRow", new ViewDataDictionary(u){
 									{"CanEdit_View", Model.CanEdit_View},
 									{"CanEdit_Edit", Model.CanEdit_Edit},
 									{"CanEdit_Admin", Model.CanEdit_Admin},
 									{"CanEdit_Delete",u.Deletable },
 									{"Heading", headings }
 								})
-							}
-						</tbody>
-					</table>
-				</div>
-			</form>
-		</li>
-	</ul>
+								}
+							</tbody>
+						</table>
+					</div>
+				</form>
+			</li>
+		</ul>
+	}
 </span>
 
 @using (Html.BeginStyles()) {
@@ -95,7 +100,7 @@
 			padding-left: 4px;
 			font-weight: bold;
 			/*max-width: 210px;*/
-			width:100%;
+			width: 100%;
 		}
 
 		.dropdown-permissions th.setting {
