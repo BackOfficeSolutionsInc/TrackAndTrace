@@ -332,9 +332,15 @@ namespace RadialReview.Controllers {
 					var u3 = recur.Attendees.ToList()[r.Next(recur.Attendees.Count() - 1)];
 
 					var headlines = new[] {
+<<<<<<< Updated upstream
+						new {Message ="Huge Deal Closed With New Client", AboutId = (long?)u1.Id, AboutName = u1.Name, About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(u1.Id)},
+						new {Message ="Jenny had her Baby!!It's A BOY!!!", AboutId = (long?)u2.Id, AboutName = u2.Name, About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(u2.Id)},
+						new {Message ="8 New Prospects from Business Convention", AboutId = (long?)u3.Id, AboutName = u3.Name, About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(u3.Id)},
+=======
 						new {Message ="Huge Deal Closed With New Client", AboutId = (long?)u1.Id, AboutName = u1.Name, About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(u1.Id), Details =(string)null },
 						new {Message ="Jenny had her Baby!!It's A BOY!!!", AboutId = (long?)u2.Id, AboutName = u2.Name, About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(u2.Id), Details="Her baby was 17lbs!!! she broke the state record!!"},
 						new {Message ="8 New Prospects from Business Convention", AboutId = (long?)u3.Id, AboutName = u3.Name, About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(u3.Id), Details =(string)null},
+>>>>>>> Stashed changes
 						//new {Message ="Team pulled together after a customer shipment was lost", AboutId = (long?)644, AboutName = "Fulfillment Team", About=(ResponsibilityGroupModel)s.Load<OrganizationTeamModel>(644L)}
 					};
 
