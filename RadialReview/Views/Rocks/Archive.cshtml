@@ -5,31 +5,39 @@
 
 
 @*@{Html.RenderPartial("~/Views/Rocks/partial/list.cshtml");}*@
-
-<table class="tablesorter">
-    <thead>
-        <tr>
-            <th style="min-width:50px"></th>
-            <th style="width:100%">Rock</th>
-            <th style="min-width:120px"></th>
-            <th style="min-width:160px">Archive Time</th>
-        </tr>
-    </thead>
-    <tbody>
-        @{var i = 1;}
-        @foreach (var r in Model) {
-            <tr>
-                <td>@i.</td>
-                <td>@r.Rock</td>
-                <td>@(new MvcHtmlString(r.CompanyRock ? "<span class='label label-success'>Company Rock</span>" : ""))</td>
-                <td>@(r.DeleteTime.NotNull(x => Html.Organization().ConvertFromUTC(x.Value).ToString()))</td>
-            </tr>
-            i += 1;
-        }
-    </tbody>
-</table>
+<div class="panel panel-primary">
+	<table class="tablesorter">
+		<thead>
+			<tr>
+				<th style="min-width:50px"></th>
+				<th style="width:100%">Rock</th>
+				<th style="min-width:120px"></th>
+				<th style="min-width:160px" class="alignRight">Archive Time</th>
+				<th style="min-width:160px" class="alignCenter">Status</th>
+			</tr>
+		</thead>
+		<tbody>
+			@{var i = 1;}
+			@foreach (var r in Model) {
+				<tr>
+					<td class="alignRight" style="padding-right:12px;">@i.</td>
+					<td >@r.Rock</td>
+					<td>@(new MvcHtmlString(r.CompanyRock ? "<span class='label label-success'>Company Rock</span>" : ""))</td>
+					<td class="alignRight" style="padding-right:8px;">@(r.DeleteTime.NotNull(x => Html.Organization().ConvertFromUTC(x.Value).ToString("MMMM dd, yyyy")))</td>
+					<td class="alignCenter">@(r.Completion.ToString())</td>
+				</tr>
+				i += 1;
+			}
+		</tbody>
+	</table>
+</div>
 @using (Html.BeginScripts()) {
     <script>
         $("table").tablesorter();
     </script>
 }
+<style>
+	html,body{
+		background-color:#eee;
+	}
+</style>

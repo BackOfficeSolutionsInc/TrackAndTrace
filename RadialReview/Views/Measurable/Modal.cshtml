@@ -19,7 +19,16 @@
 				}
 			</div>
 		</div>
-
+		<br />
+		@*<h4>Admininstering measurables:</h4>
+		<div class="row">
+			<div class="col-sm-12" id="allRows">
+				<div style="width:calc( 100% - 25px );display:inline-block"></div>
+				@foreach (var item in Model.AdminMeasurables) {
+					Html.RenderPartial("_MeasurableRow", item);
+				}
+			</div>
+		</div>*@		
         <label>Update All Level 10s: </label> @Html.CheckBoxFor(x => x.UpdateAllL10s)
 	</div>
 </div>

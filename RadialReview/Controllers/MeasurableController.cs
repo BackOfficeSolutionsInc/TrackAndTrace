@@ -18,6 +18,7 @@ namespace RadialReview.Controllers
 		{
 			public long UserId { get; set; }
 			public List<MeasurableModel> Measurables { get; set; }
+			public List<MeasurableModel> AdminMeasurables { get; set; }
 			public DateTime CurrentTime = DateTime.UtcNow;
 
 
@@ -30,15 +31,6 @@ namespace RadialReview.Controllers
             }
 		}
 
-		[Access(AccessLevel.UserOrganization)]
-		public PartialViewResult Modal(long id)
-		{
-			_PermissionsAccessor.Permitted(GetUser(), x => x.EditQuestionForUser(id));
-			var rocks = ScorecardAccessor.GetUserMeasurables(GetUser(), id);
-			ViewBag.AllMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false).ToSelectList(x => x.GetNameAndTitle(), x => x.Id);
-
-			return PartialView(new MeasurableController.MeasurableVM { Measurables = rocks, UserId = id });
-		}
 
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult BlankEditorRow(bool accountable=false,long? admin=null)
@@ -50,6 +42,32 @@ namespace RadialReview.Controllers
 			return PartialView("_MeasurableRow", new MeasurableModel(GetUser().Organization){
 				AdminUserId = admin ?? 0,
 			});
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult Modal(long id)
+		{
+			_PermissionsAccessor.Permitted(GetUser(), x => x.EditQuestionForUser(id));
+			var measurables = ScorecardAccessor.GetUserMeasurables(GetUser(), id, includeAdmin:false);
+			ViewBag.AllMembers = _OrganizationAccessor
+				.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false)
+				.ToSelectList(x => x.GetNameAndTitle(), x => x.Id);
+			
+
+			return PartialView(new MeasurableController.MeasurableVM {
+				Measurables = measurables.Where(x=>x.AccountableUserId==id).ToList(),
+				AdminMeasurables = measurables.Where(x=>x.AdminUserId == id && x.AccountableUserId!=id).ToList(),
+				UserId = id
+			});
+		}
+
+
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult RemoveAdmin(long id) {
+
+			ScorecardAccessor.RemoveAdmin(GetUser(), id);
+
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
 		[HttpPost]
