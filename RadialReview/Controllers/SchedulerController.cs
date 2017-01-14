@@ -19,6 +19,9 @@ using System.Web;
 using System.Web.Mvc;
 using RadialReview.Models.Json;
 using RadialReview.Models.Components;
+using NHibernate;
+using NHibernate.Cfg;
+using RadialReview.Models.Synchronize;
 
 namespace RadialReview.Controllers {
 
@@ -282,6 +285,18 @@ namespace RadialReview.Controllers {
 							any = true;
 						}
 					}
+
+
+					#region Cleanup Sync model
+					try {
+						var syncTable = "Sync";
+						s.CreateSQLQuery("delete from " + syncTable + " where CreateTime < \"" + DateTime.UtcNow.AddDays(-7).ToString("yyyy-MM-dd") + "\"")
+						 .ExecuteUpdate();
+						
+					} catch (Exception e) {
+						log.Error(e);
+					}
+					#endregion
 
 					EventUtil.GenerateAllDailyEvents(s, DateTime.UtcNow);
 
