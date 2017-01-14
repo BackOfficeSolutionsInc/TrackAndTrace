@@ -653,7 +653,7 @@ namespace RadialReview.Accessors {
 
 					if (!skipUpdate) {
 						var update2 = new AngularUpdate() { AngularVtoRock.Create(rock) };
-						UpdateVTO(s, rock.Vto.Id, connectionId, x => x.update(update2));
+						UpdateVTO(s, rock.Vto.Id, connectionId /*should not be null*/, x => x.update(update2));
 					}
 
 

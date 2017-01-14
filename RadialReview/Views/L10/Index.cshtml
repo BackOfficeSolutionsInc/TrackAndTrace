@@ -68,12 +68,14 @@
 												<li><a href="@Url.Action("ExportAll",new { id=meeting.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
 												<li><a href="/L10/Timeline/@meeting.Recurrence.Id"><span class="icon fontastic-icon-back-in-time"></span> Timeline</a></li>
 												<li role="separator" class="divider"></li>
+												<li><a href="/vto/edit/@meeting.Recurrence.VtoId" @*class="btn btn-default btn-sm"*@><span style="top: 2px;" class="glyphicon glyphicon-vto" title=""></span> View V/TO</a></li>
+												<li role="separator" class="divider"></li>
 												<li><a class="l10-texting-actions" href="#" onclick="@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId="+meeting.Recurrence.Id,"/TwilioApi/Modal")"><span style="top: 2px;" class="glyphicon glyphicon-phone l10-texting-actions"></span> Texting Actions</a></li>
 												@*<li><a href="/L10/External/@meeting.Recurrence.Id"><span style="top: 2px;" class="icon fontastic-icon-share-1" title=""></span> Link to external services</a></li>*@
 												<li role="separator" class="divider"></li>
 												<li>
 													<a @if (meeting.EditMeeting) { @: href="/L10/Wizard/@meeting.Recurrence.Id"
-													   														} class="@*btn btn-default btn-sm*@ @(meeting.EditMeeting?"":"disable")"><span style="top: 2px;" class="glyphicon glyphicon-edit"></span> Edit meeting</a>
+													} class="@*btn btn-default btn-sm*@ @(meeting.EditMeeting?"":"disable")"><span style="top: 2px;" class="glyphicon glyphicon-edit"></span>Edit meeting</a>
 												</li>
 
 												@if (meeting.EditMeeting) {
