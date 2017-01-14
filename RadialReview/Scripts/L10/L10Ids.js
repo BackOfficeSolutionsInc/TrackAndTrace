@@ -457,7 +457,7 @@ function constructRow(issue) {
 		//+ '			</span>\n'
 		//+ '		</span>\n'
 		+ '</span>\n'
-		+ '<div class="message" data-recurrence_issue=' + issue.issue + '>' + issue.message + '</div>\n'
+		+ '<div class="message" data-recurrence_issue=' + issue.recurrence_issue + '>' + issue.message + '</div>\n'
 		+ '<div class="issue-details-container"><div class="issue-details" data-recurrence_issue=' + issue.issue + '>' + details + '</div></div>\n'
 		+ '<ol class="dd-list"> '
 		+ sub
