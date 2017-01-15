@@ -26,6 +26,10 @@ using NHibernate;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
+using static RadialReview.Controllers.DashboardController;
+using RadialReview.Models.Angular.Dashboard;
+using RadialReview.Models.Dashboard;
+using NHibernate.Criterion;
 
 namespace RadialReview.Accessors {
     public class TodoAccessor : BaseAccessor {
@@ -177,7 +181,27 @@ namespace RadialReview.Accessors {
 				var updates = new AngularRecurrence(recurrenceId);
                 updates.Todos = AngularList.CreateFrom(AngularListType.Add, new AngularTodo(todo));
                 updates.Focus = "[data-todo='" + todo.Id + "'] input:visible:first";
-                meetingHub.update(updates);
+
+				var dashs = s.QueryOver<TileModel>()
+					.Where(x => x.DeleteTime == null && x.Type == TileType.Url && x.DataUrl == "/TileData/L10Todos/" + recurrenceId)
+					.Select(x => x.Dashboard.Id,x=>x.Id)					
+					.List<object[]>()
+					.Select(x=> new {
+						DashboardId = (long)x[0],
+						TileId = (long)x[1]
+					}).ToList();
+
+				foreach (var d in dashs) {
+					var tile  = new AngularTileId<IEnumerable<AngularTodo>>(d.TileId, recurrenceId, null) {
+						Contents = AngularList.Create(AngularListType.Add, new[] { new AngularTodo(todo) })
+					};
+					meetingHub.update(new AngularUpdate(){
+						tile
+					});
+				}
+
+
+				meetingHub.update(updates);
                 Audit.L10Log(s, perms.GetCaller(), recurrenceId, "CreateTodo", ForModel.Create(todo), todo.NotNull(x => x.Message));
             }
             if (todo.TodoType == TodoType.Personal) {

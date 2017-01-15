@@ -220,6 +220,7 @@
     <Compile Include="Hooks\UpdateRoles_Notifications.cs" />
     <Compile Include="Hooks\UpdateUserModel_TeamNames.cs" />
     <Compile Include="Models\Angular\Base\AngularPicture.cs" />
+    <Compile Include="Models\Angular\Dashboard\AngularDashboard.cs" />
     <Compile Include="Models\Angular\DataType\AngularString.cs" />
     <Compile Include="Models\Angular\Headlines\AngularHeadline.cs" />
     <Compile Include="Models\Angular\Notifications\AngularNotification.cs" />
