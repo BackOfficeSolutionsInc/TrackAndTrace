@@ -60,6 +60,7 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
 
     <script>
+		window.recurrenceId = @Model;
         angular.module('L10App')
 			.value('recurrenceId', @Model)
 			.value('date-range',"today")
@@ -69,6 +70,7 @@
             e.preventDefault();
             $(this).tab('show');
         });
+
 
         function printIframe(id)
         {
@@ -138,7 +140,7 @@
                         $("#ScorecardTable_Over").addClass("hidden");
                     }
                 });
-				
+
                 $("#ScorecardTable_Over").scrollLeft(10000).scrollLeft(0);
 
             }, 1000);
@@ -177,7 +179,7 @@
             });
 
 
-        });		
+        });
     </script>
 }
 <div ng-app="L10App" class="meeting-review ng-cloak meeting-archive">

@@ -8,6 +8,8 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 	$scope.disconnected = false;
 	$scope.recurrenceId = recurrenceId;
 
+	//$scope.window = $window;
+
 	$scope.dateFormat = window.dateFormat || "MM-dd-yyyy";
 
 	function rejoin(connection, proxy, callback) {
