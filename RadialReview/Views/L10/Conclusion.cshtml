@@ -68,7 +68,7 @@
 											@Model.Meeting._MeetingAttendees[i].User.GetName()
 										</td>
 										<td style="width: 1px;">
-											@Html.TextBox("rating_" + (Model.Meeting._MeetingAttendees[i].User.Id), Model.Meeting._MeetingAttendees[i].Rating, new { max = "10", min = "1", step = "0.5", novalidate = "novalidate", type = "number", style = "width:60px", @class = "rt" })
+											@Html.TextBox("rating_" + (Model.Meeting._MeetingAttendees[i].User.Id), Model.Meeting._MeetingAttendees[i].Rating, new { max = "10", min = "1", step = "0.5", novalidate = "novalidate", type = "number", style = "width:60px", @class = "rt", lang = "nb" })
 										</td>
 										<td style="width:50%;"></td>
 									</tr>
