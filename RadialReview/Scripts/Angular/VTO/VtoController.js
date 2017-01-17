@@ -39,6 +39,7 @@ function ($scope, $http, $timeout, radial, signalR, vtoDataUrlBase, vtoId, vtoCa
 	            vtoCallback();
 	        }, 1);
 	    }
+	    $("[textarea-resize]").autoResize();
 	}).error(showAngularError);
     $scope.functions = {};
     $scope.filters = {};

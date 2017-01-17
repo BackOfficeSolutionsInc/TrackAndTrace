@@ -27,6 +27,7 @@ using RadialReview.Models.Scorecard;
 using RadialReview.Notifications;
 using RadialReview.Models.Angular.Notifications;
 using RadialReview.Models.Angular.DataType;
+using RadialReview.Models.Angular.Dashboard;
 
 namespace RadialReview.Controllers {
     [SessionState(SessionStateBehavior.ReadOnly)]
@@ -71,7 +72,7 @@ namespace RadialReview.Controllers {
             }
             var dateRange = new DateRange(startRange, endRange);
 
-            var output = new DashboardController.ListDataVM(id) {
+            var output = new ListDataVM(id) {
                 Name = name,
                 date = new AngularDateRange() { startDate = startRange, endDate = endRange }
             };
@@ -159,11 +160,11 @@ namespace RadialReview.Controllers {
                         long l10Id = 0;
                         if (long.TryParse(todo.KeyId, out l10Id)) {
                             try {
-                                var tile = new DashboardController.AngularTileId<List<AngularTodo>>(todo.Id, l10Id, l10Lookup[l10Id].Name + " to-dos");
+                                var tile = new AngularTileId<List<AngularTodo>>(todo.Id, l10Id, l10Lookup[l10Id].Name + " to-dos");
                                 tile.Contents = L10Accessor.GetAllTodosForRecurrence(s, perms, l10Id, false).Select(x => new AngularTodo(x)).ToList();
                                 output.L10Todos.Add(tile);
                             } catch (Exception e) {
-                                output.L10Todos.Add(DashboardController.AngularTileId<List<AngularTodo>>.Error(todo.Id, l10Id, e));
+                                output.L10Todos.Add(AngularTileId<List<AngularTodo>>.Error(todo.Id, l10Id, e));
                             }
                         }
                     }
@@ -173,14 +174,14 @@ namespace RadialReview.Controllers {
                         long l10Id = 0;
                         if (long.TryParse(issue.KeyId, out l10Id)) {
                             try {
-                                var tile = new DashboardController.AngularTileId<AngularIssuesList>(issue.Id, l10Id, l10Lookup[l10Id].Name + " issues");
+                                var tile = new AngularTileId<AngularIssuesList>(issue.Id, l10Id, l10Lookup[l10Id].Name + " issues");
                                 tile.Contents = new AngularIssuesList(l10Id) {
                                     Issues = L10Accessor.GetIssuesForRecurrence(s, perms, l10Id).Select(x => new AngularIssue(x)).ToList(),
                                     Prioritization = l10Lookup[l10Id].Prioritization,
                                 };
                                 output.L10Issues.Add(tile);
                             } catch (Exception e) {
-                                output.L10Issues.Add(DashboardController.AngularTileId<AngularIssuesList>.Error(issue.Id, l10Id, e));
+                                output.L10Issues.Add(AngularTileId<AngularIssuesList>.Error(issue.Id, l10Id, e));
                             }
                         }
                     }
@@ -190,11 +191,11 @@ namespace RadialReview.Controllers {
                         long l10Id = 0;
                         if (long.TryParse(rock.KeyId, out l10Id)) {
                             try {
-                                var tile = new DashboardController.AngularTileId<List<AngularRock>>(rock.Id, l10Id, l10Lookup[l10Id].Name + " rocks");
+                                var tile = new AngularTileId<List<AngularRock>>(rock.Id, l10Id, l10Lookup[l10Id].Name + " rocks");
                                 tile.Contents = L10Accessor.GetRocksForRecurrence(s, perms, l10Id).Select(x => new AngularRock(x.ForRock)).ToList();
                                 output.L10Rocks.Add(tile);
                             } catch (Exception e) {
-                                output.L10Rocks.Add(DashboardController.AngularTileId<List<AngularRock>>.Error(rock.Id, l10Id, e));
+                                output.L10Rocks.Add(AngularTileId<List<AngularRock>>.Error(rock.Id, l10Id, e));
                             }
                         }
                     }
@@ -217,7 +218,7 @@ namespace RadialReview.Controllers {
                                 //random prime
                                 output.LoadUrls.Add(new AngularString(15291127 * l10Id, $"/DashboardData/L10ScorecardData/{id}?name={scname}&scorecardTileId={scorecard.Id}&l10Id={l10Id}&completed={completed}&fullScorecard={fullScorecard}" + startEnd));
                             } catch (Exception e) {
-                                output.L10Scorecards.Add(DashboardController.AngularTileId<AngularScorecard>.Error(scorecard.Id, l10Id, e));
+                                output.L10Scorecards.Add(AngularTileId<AngularScorecard>.Error(scorecard.Id, l10Id, e));
                             }
                         }
                     }
@@ -249,11 +250,11 @@ namespace RadialReview.Controllers {
             }
             var dateRange = new DateRange(startRange, endRange);
 
-            var output = new DashboardController.ListDataVM(id) {
+            var output = new ListDataVM(id) {
                 date = new AngularDateRange() { startDate = startRange, endDate = endRange }
             };
             try {
-                var tile = new DashboardController.AngularTileId<AngularScorecard>(scorecardTileId, l10Id, name + " scorecard");
+                var tile = new AngularTileId<AngularScorecard>(scorecardTileId, l10Id, name + " scorecard");
                 using (var s = HibernateSession.GetCurrentSession()) {
                     using (var tx = s.BeginTransaction()) {
                         var perms = PermissionsUtility.Create(s, GetUser());
@@ -271,7 +272,7 @@ namespace RadialReview.Controllers {
                     }
                 }
             } catch (Exception e) {
-                output.L10Scorecards.Add(DashboardController.AngularTileId<AngularScorecard>.Error(scorecardTileId, l10Id, e));
+                output.L10Scorecards.Add(AngularTileId<AngularScorecard>.Error(scorecardTileId, l10Id, e));
             }
 
             return Json(output, JsonRequestBehavior.AllowGet);
@@ -299,7 +300,7 @@ namespace RadialReview.Controllers {
             }
             var dateRange = new DateRange(startRange, endRange);
 
-            var output = new DashboardController.ListDataVM(id) {
+            var output = new ListDataVM(id) {
                 date = new AngularDateRange() { startDate = startRange, endDate = endRange }
             };
             try {//Scorecard
@@ -314,67 +315,6 @@ namespace RadialReview.Controllers {
     }
 
     public class DashboardController : BaseController {
-        public class AngularTileId<T> : BaseAngular {
-            public long KeyId { get; set; }
-            public string Title { get; set; }
-            public T Contents { get; set; }
-            public bool HasError { get; set; }
-            public string Message { get; set; }
-
-            public AngularTileId(long tile, long keyId, string title)
-                : base(tile) {
-                KeyId = keyId;
-                Title = title;
-            }
-
-            public static AngularTileId<T> Error(long tile, long keyId, Exception e) {
-                var message = "Could not load tile";
-                if (e is PermissionsException)
-                    message = (e as PermissionsException).Message;
-
-                return new AngularTileId<T>(tile, keyId, "Error") {
-                    HasError = true,
-                    Message = message,
-                };
-            }
-        }
-
-        public class ListDataVM : BaseAngular {
-            public string Name { get; set; }
-            public IEnumerable<AngularTodo> Todos { get; set; }
-            public AngularScorecard Scorecard { get; set; }
-            public IEnumerable<AngularRock> Rocks { get; set; }
-            public IEnumerable<AngularUser> Members { get; set; }
-
-            public AngularDateRange date { get; set; }
-
-            public class DateVM {
-                public DateTime startDate { get; set; }
-                public DateTime endDate { get; set; }
-            }
-
-            public IEnumerable<AngularRole> Roles { get; set; }
-            public IEnumerable<AngularCompanyValue> CoreValues { get; set; }
-            public IEnumerable<AngularNotification> Notifications { get; set; }
-
-
-            public List<AngularTileId<AngularScorecard>> L10Scorecards { get; set; }
-            public List<AngularTileId<List<AngularRock>>> L10Rocks { get; set; }
-            public List<AngularTileId<AngularIssuesList>> L10Issues { get; set; }
-            public List<AngularTileId<List<AngularTodo>>> L10Todos { get; set; }
-
-            public List<AngularString> LoadUrls { get; set; }
-
-            public ListDataVM(long id)
-                : base(id) {
-                L10Scorecards = new List<AngularTileId<AngularScorecard>>();
-                L10Rocks = new List<AngularTileId<List<AngularRock>>>();
-                L10Issues = new List<AngularTileId<AngularIssuesList>>();
-                L10Todos = new List<AngularTileId<List<AngularTodo>>>();
-
-                LoadUrls = new List<AngularString>();
-            }
-        }
 
         public class TileVM {
             public int w { get; set; }

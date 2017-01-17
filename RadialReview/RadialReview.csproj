@@ -220,6 +220,7 @@
     <Compile Include="Hooks\UpdateRoles_Notifications.cs" />
     <Compile Include="Hooks\UpdateUserModel_TeamNames.cs" />
     <Compile Include="Models\Angular\Base\AngularPicture.cs" />
+    <Compile Include="Models\Angular\Dashboard\AngularDashboard.cs" />
     <Compile Include="Models\Angular\DataType\AngularString.cs" />
     <Compile Include="Models\Angular\Headlines\AngularHeadline.cs" />
     <Compile Include="Models\Angular\Notifications\AngularNotification.cs" />
@@ -230,6 +231,7 @@
     <Compile Include="Models\Issues\HeadlineIssueVM.cs" />
     <Compile Include="Models\L10\PeopleHeadline.cs" />
     <Compile Include="Models\L10\PeopleHeadlineType.cs" />
+    <Compile Include="Models\QuestionModels\QuestionSectionModel.cs" />
     <Compile Include="Models\Reviews\WhoReviewsWho.cs" />
     <Compile Include="Notifications\Notification.cs" />
     <Compile Include="Models\Reviews\ValueBar.cs" />

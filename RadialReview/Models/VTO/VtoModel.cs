@@ -10,6 +10,7 @@ using RadialReview.Models.Askables;
 using RadialReview.Models.Interfaces;
 using Remotion.Linq.Clauses;
 using RadialReview.Models.Components;
+using RadialReview.Models.Issues;
 
 namespace RadialReview.Models.VTO {
     public enum VtoItemType : int {
@@ -358,8 +359,14 @@ namespace RadialReview.Models.VTO {
             }
         }
     }
-    #endregion
+	#endregion
 
+
+	public class VtoIssue : VtoItem_String {
+		
+		public IssueModel.IssueModel_Recurrence Issue { get; set; }
+
+	}
 
     public class VtoModel : ILongIdentifiable, IHistorical {
         public virtual long Id { get; set; }
@@ -383,7 +390,7 @@ namespace RadialReview.Models.VTO {
         public virtual string CoreValueTitle { get; set; }
 
         public virtual string IssuesListTitle { get; set; }
-        public virtual List<VtoItem_String> _Issues { get; set; }
+        public virtual List<VtoIssue> _Issues { get; set; }
 
         public VtoModel()
         {
@@ -393,7 +400,7 @@ namespace RadialReview.Models.VTO {
             MarketingStrategy = new MarketingStrategyModel();
             //Name; //= new VtoItem_String();
             _Values = new List<CompanyValueModel>();
-            _Issues = new List<VtoItem_String>();
+            _Issues = new List<VtoIssue>();
             ThreeYearPicture = new ThreeYearPictureModel();
             OneYearPlan = new OneYearPlanModel();
             QuarterlyRocks = new QuarterlyRocksModel();

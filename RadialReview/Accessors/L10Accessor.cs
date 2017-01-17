@@ -2157,7 +2157,7 @@ namespace RadialReview.Accessors {
 			var scoresQ = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null);
 			if (range != null) {
 				var st = range.StartTime.StartOfWeek(DayOfWeek.Sunday);
-				var et = range.EndTime.StartOfWeek(DayOfWeek.Sunday);
+				var et = range.EndTime.AddDays(7).StartOfWeek(DayOfWeek.Sunday);
 				scoresQ = scoresQ.Where(x => x.ForWeek >= st && x.ForWeek <= et);
 			}
 

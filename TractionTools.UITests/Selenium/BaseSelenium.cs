@@ -128,7 +128,11 @@ namespace TractionTools.UITests.Selenium {
 			TestName = "TractionTools.UITests";
 			StartIIS();
 			// Start Selenium drivers
-			_ChromeDriver = new ChromeDriver();
+
+			ChromeOptions options = new ChromeOptions();
+			options.AddArgument("--headless");
+
+			_ChromeDriver = new ChromeDriver(options);
 			_ChromeDriver.Navigate().GoToUrl(GetAbsoluteUrl("/Account/login"));
 			//_FirefoxDriver.Navigate().GoToUrl(GetAbsoluteUrl("/Account/login"));
 			//_InternetExplorerDriver.Navigate().GoToUrl(GetAbsoluteUrl("/Account/login"));

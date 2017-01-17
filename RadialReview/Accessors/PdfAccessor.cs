@@ -473,7 +473,7 @@ namespace RadialReview.Accessors {
 					AddPageNum(gfxPage3, pageSize);
 				}
 				var rect = PdfChartAccessor.DrawFeedback(gfxPage3, availableRect, feedbackAnswers, review.ReviewContainer.AnonymousByDefault, margin: margin);
-				availableRect = new XRect(pageSize.Left, rect.Bottom, pageSize.Width, pageSize.Height - rect.Bottom);
+				availableRect = new XRect(pageSize.Left, rect.Bottom, pageSize.Width, Math.Max(pageSize.Height - rect.Bottom,1));
 			}
 
 			var addedPage4 = false;

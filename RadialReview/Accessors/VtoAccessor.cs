@@ -80,10 +80,34 @@ namespace RadialReview.Accessors {
 			//model.._GoalsForYear = s.QueryOver<VtoModel.VtoItem_String>().Where(x => x.Type == VtoItemType.List_Issues && x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList();
 			model.QuarterlyRocks._Rocks = s.QueryOver<Vto_Rocks>()
 				.Where(x => x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList()
-
 				.Where(x => x.Rock.DeleteTime == null && x.Rock.CompanyRock).ToList();
-			model._Issues = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Issues && x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList();
 
+			model._Issues = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Issues && x.Vto.Id == vtoId && x.DeleteTime == null).List().Select(x=>new VtoIssue() {
+				Id = x.Id,
+				BaseId = x.BaseId,
+				CopiedFrom = x.CopiedFrom,
+				CreateTime = x.CreateTime,
+				Data=x.Data,
+				DeleteTime = x.DeleteTime,
+				ForModel = x.ForModel,
+				Ordering = x.Ordering,
+				Type = x.Type,
+				Vto = x.Vto,			
+			}).ToList();
+
+			var issuesAttachedToRecur = model._Issues
+				.Where(x => x.ForModel != null && x.ForModel.ModelType == ForModel.GetModelType<IssueModel.IssueModel_Recurrence>())
+				.Select(x=>x.ForModel.ModelId)
+				.Distinct().ToArray();
+
+			if (issuesAttachedToRecur.Any()) {
+				var foundIssues = s.QueryOver<IssueModel.IssueModel_Recurrence>().WhereRestrictionOn(x => x.Id).IsIn(issuesAttachedToRecur).List().ToList();
+				foreach (var i in model._Issues) {
+					if (i.ForModel!=null && i.ForModel.ModelType == ForModel.GetModelType<IssueModel.IssueModel_Recurrence>()) {
+						i.Issue = foundIssues.FirstOrDefault(x => x.Id == i.ForModel.ModelId);
+					}
+				}
+			}
 
 			return model;
 		}
@@ -150,49 +174,12 @@ namespace RadialReview.Accessors {
 			var model = new VtoModel();
 			model.Organization = s.Get<OrganizationModel>(organizationId);
 			s.SaveOrUpdate(model);
-			//s.Save(model.MarketingStrategy);
-			////s.Save(model.OrganizationWide);
-			//s.Save(model.CoreFocus);
-			//s.Save(model.ThreeYearPicture);
-			//s.Save(model.OneYearPlan);
-			//s.Save(model.QuarterlyRocks);
-
-
-			//model.Name.Vto = model;
-			//s.Update(model.Name);
-
-			//model.OrganizationWide.Vto = model;
-			//s.Update(model.OrganizationWide);
 
 			model.CoreFocus.Vto = model.Id;
-			//model.CoreFocus.Niche.Vto = model;
-			//model.CoreFocus.Purpose.Vto = model;
-
-			//s.Update(model.CoreFocus);
-
 			model.MarketingStrategy.Vto = model.Id;
-			//model.MarketingStrategy.Guarantee.Vto = model;
-			//model.MarketingStrategy.ProvenProcess.Vto = model;
-			//model.MarketingStrategy.TargetMarket.Vto = model;
-			//model.MarketingStrategy.TenYearTarget.Vto = model;
-
-
 			model.OneYearPlan.Vto = model.Id;
-			//model.OneYearPlan.FutureDate.Vto = model;
-			//model.OneYearPlan.Measurables.Vto = model;
-			//model.OneYearPlan.Profit.Vto = model;
-			//model.OneYearPlan.Revenue.Vto = model;
-
 			model.QuarterlyRocks.Vto = model.Id;
-			//model.QuarterlyRocks.Measurables.Vto = model;
-			//model.QuarterlyRocks.Profit.Vto = model;
-			//model.QuarterlyRocks.Revenue.Vto = model;
-
 			model.ThreeYearPicture.Vto = model.Id;
-			//model.ThreeYearPicture.FutureDate.Vto = model;
-			//model.ThreeYearPicture.Measurables.Vto = model;
-			//model.ThreeYearPicture.Profit.Vto = model;
-			//model.ThreeYearPicture.Revenue.Vto = model;
 
 			s.Update(model);
 			return model;
@@ -219,17 +206,7 @@ namespace RadialReview.Accessors {
 				using (var tx = s.BeginTransaction()) {
 					str = s.Get<VtoItem_String>(vtoStringId);
 					var perm = PermissionsUtility.Create(s, caller).EditVTO(str.Vto.Id);
-					//if (str.Data != message)
-					//{
-					/*newstr = new VtoModel.VtoItem_String(){
-                        BaseId = str.BaseId,
-                        CopiedFrom = str.Id,
-                        Data = message,
-                        Ordering = str.Ordering,
-                        Type = str.Type,
-                        Vto = str.Vto,
-                    };*/
-
+					
 					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateVtoItem(vtoStringId));
 
 					str.Data = message;
@@ -254,13 +231,10 @@ namespace RadialReview.Accessors {
 							var issueRecur = s.Get<IssueModel.IssueModel_Recurrence>(str.ForModel.ModelId);
 							if (perm.IsPermitted(x => x.EditL10Recurrence(issueRecur.Recurrence.Id))) {
 								issueRecur.Issue.Message = message;
-								//s.Update(issueRecur);
 								s.Update(issueRecur.Issue);
 							}
 						}
 					}
-
-					//}
 
 					tx.Commit();
 					s.Flush();
@@ -350,8 +324,7 @@ namespace RadialReview.Accessors {
 
 					var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
 					var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
-
-
+					
 					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateThreeYearPicture(id));
 
 					PermissionsUtility.Create(s, caller).EditVTO(vtoId);
@@ -653,7 +626,7 @@ namespace RadialReview.Accessors {
 
 					if (!skipUpdate) {
 						var update2 = new AngularUpdate() { AngularVtoRock.Create(rock) };
-						UpdateVTO(s, rock.Vto.Id, connectionId, x => x.update(update2));
+						UpdateVTO(s, rock.Vto.Id, connectionId /*should not be null*/, x => x.update(update2));
 					}
 
 

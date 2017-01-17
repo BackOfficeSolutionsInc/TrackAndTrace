@@ -23,7 +23,7 @@ using RadialReview.Models.Angular.Meeting;
 
 namespace RadialReview.Accessors {
 	public class ScorecardAccessor {
-		
+
 		public static AngularScorecard GetAngularScorecardForUser(UserOrganizationModel caller, long userId, DateRange range, bool includeAdmin = true, bool includeNextWeek = true, DateTime? now = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -56,6 +56,20 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+
+		public static void RemoveAdmin(UserOrganizationModel caller, long measurableId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					PermissionsUtility.Create(s, caller).EditMeasurable(measurableId);
+					var m = s.Get<MeasurableModel>(measurableId);
+					m.AdminUserId = m.AccountableUserId;
+					s.Update(m);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
 		public static List<MeasurableModel> GetVisibleMeasurables(ISession s, PermissionsUtility perms, long organizationId, bool loadUsers) {
 			var caller = perms.GetCaller();
 
@@ -823,8 +837,8 @@ namespace RadialReview.Accessors {
 		public static AngularRecurrence GetReview_Scorecard(UserOrganizationModel caller, long reviewId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					var perms=PermissionsUtility.Create(s, caller);
-					return GetReview_Scorecard(s,perms,reviewId);
+					var perms = PermissionsUtility.Create(s, caller);
+					return GetReview_Scorecard(s, perms, reviewId);
 				}
 			}
 		}

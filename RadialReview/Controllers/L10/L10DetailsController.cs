@@ -42,8 +42,8 @@ namespace RadialReview.Controllers
         [OutputCache(NoStore = true, Duration = 0)]
 	    public JsonResult DetailsData(long id,bool scores = true,bool historical=true,long start=0, long end= long.MaxValue,bool fullScorecard = false)
         {
-            var startRange = start.ToDateTime();
-            var endRange   = end.ToDateTime();
+            var startRange = Math2.Min(start.ToDateTime(), end.ToDateTime());
+            var endRange   = Math2.Max(start.ToDateTime(), end.ToDateTime());
 			var range = new DateRange(startRange, endRange);
 
             var model = L10Accessor.GetAngularRecurrence(GetUser(), id, scores, historical, fullScorecard: fullScorecard,range: range);
@@ -61,8 +61,8 @@ namespace RadialReview.Controllers
 						var mid = (max + min) / 2;
 						model = new AngularRecurrence(id);
 						model.LoadUrls = new List<AngularString>() {
-							new AngularString((min / 13),   $"/L10/DetailsData/{id}?scores={scores}&historical={historical}&start={start}&end={mid}&fullScorecard={fullScorecard}"),
-							new AngularString((min / 13)-1, $"/L10/DetailsData/{id}?scores={scores}&historical={historical}&start={ mid }&end={end}&fullScorecard={fullScorecard}"),
+							new AngularString((min / 13),   $"/L10/DetailsData/{id}?scores={scores}&historical={historical}&start={start}&end={mid}&fullScorecard=false"),
+							new AngularString((min / 13)-1, $"/L10/DetailsData/{id}?scores={scores}&historical={historical}&start={ mid }&end={end}&fullScorecard=false"),
 						};
 					}
 

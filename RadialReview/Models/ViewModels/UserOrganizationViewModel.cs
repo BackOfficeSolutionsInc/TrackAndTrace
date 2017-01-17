@@ -105,6 +105,7 @@ namespace RadialReview.Models.ViewModels
 		public List<RoleModel> Roles { get; set; }
 		public List<RockModel> Rocks { get; set; }
 		public List<MeasurableModel> Measurables { get; set; }
+		public List<MeasurableModel> AdminMeasurables { get; set; }
 		public bool ManagingOrganization { get; set; }
 		public bool Editable {
 			get
