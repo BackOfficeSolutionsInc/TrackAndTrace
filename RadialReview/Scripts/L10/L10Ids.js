@@ -20,7 +20,7 @@ $(function () {
 						var next = $(this.issueRow);
 						while (true) {
 							next = next.prev();
-							if (next.find("input:checked").length>0)
+							if (next.find("input:checked").length > 0)
 								continue;
 							break;
 						}
@@ -31,7 +31,7 @@ $(function () {
 							if (next.length) {
 								$(next).click();
 							} else {
-								$("#issueDetails").html("");								
+								$("#issueDetails").html("");
 							}
 						} catch (e) {
 						}
@@ -79,7 +79,7 @@ $(function () {
 		undo: function () {
 			this.func(!this.checked);
 			if ($(this.issueRow).hasClass("wasSelected")) {
-					var selected = $(this.issueRow).removeClass("wasSelected");
+				var selected = $(this.issueRow).removeClass("wasSelected");
 				if ($(window).width() > modalWidth) {
 					$(selected).click();
 				}
@@ -190,6 +190,7 @@ $(function () {
 				"</span>" +
 			"</span>" +
 			"</div>");
+		$("#issueDetails").html("");
 		if (w <= modalWidth) {
 			var c = detailsContents.clone();
 			c.find("h4").addClass("form-control");
@@ -198,10 +199,10 @@ $(function () {
 				title: "Edit Issue",
 				noCancel: true,
 			});
+		} else {
+			$("#issueDetails").append(detailsContents);
+			fixIssueDetailsBoxSize();
 		}
-		$("#issueDetails").html("");
-		$("#issueDetails").append(detailsContents);
-		fixIssueDetailsBoxSize();
 	});
 
 
@@ -211,7 +212,7 @@ $(function () {
 	});
 
 	$("body").on("click", ".issueDetails .message-holder .message", function () {
-		var input = $("<textarea class='message-input' value='" + escapeString($(this).html()) + "' data-old='" + escapeString($(this).html()) + "' onblur='sendIssueMessage(this," + $(this).parent().data("recurrence_issue") + ")'>"+$(this).html()+"</textarea>");
+		var input = $("<textarea class='message-input' value='" + escapeString($(this).html()) + "' data-old='" + escapeString($(this).html()) + "' onblur='sendIssueMessage(this," + $(this).parent().data("recurrence_issue") + ")'>" + $(this).html() + "</textarea>");
 		$(this).closest(".form-control").addClass("focus");
 		$(this).parent().html(input);
 		input.focusTextToEnd();

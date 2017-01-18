@@ -1347,7 +1347,7 @@ body.resizing .notes-tile:after,
   display: none;
 }
 .dashboard .personal-todo-list-container .picture-column {
-  display: table-cell;
+  /*display: table-cell;*/
   vertical-align: top;
 }
 .dashboard .personal-todo-list-container .picture-column profile-image {

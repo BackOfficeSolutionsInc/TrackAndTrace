@@ -17,6 +17,8 @@ namespace RadialReview.Models.Askables
         public virtual WeightType Weight { get; set; }
         public virtual bool Required { get;set; }
 
+		public virtual long? SectionId { get; set; }
+
 		public virtual AboutType OnlyAsk { get; set; }
 
 	    protected Askable()
@@ -40,7 +42,8 @@ namespace RadialReview.Models.Askables
 			Map(x => x.Required);
 			Map(x => x.CreateTime);
 			Map(x => x.DeleteTime);
-            References(x => x.Category).Not.LazyLoad();
+			Map(x => x.SectionId);
+			References(x => x.Category).Not.LazyLoad();
             Map(x => x.Weight).CustomType(typeof(WeightType));
 			Map(x => x.OnlyAsk).CustomType(typeof(AboutType));
         }

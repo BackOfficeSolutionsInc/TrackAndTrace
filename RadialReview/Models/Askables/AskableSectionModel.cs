@@ -6,7 +6,7 @@ using System.Linq;
 using System.Web;
 
 namespace RadialReview.Models.QuestionModels {
-	public class QuestionSectionModel : ILongIdentifiable, IHistorical{
+	public class AskableSectionModel : ILongIdentifiable, IHistorical{
 
 		public virtual long Id { get; set; }
 
@@ -18,11 +18,10 @@ namespace RadialReview.Models.QuestionModels {
 
 		public virtual long OrganizationId { get; set; }
 
-		public QuestionSectionModel() {
-
+		public AskableSectionModel() {
 		}
 
-		public class Map : ClassMap<QuestionSectionModel> {
+		public class Map : ClassMap<AskableSectionModel> {
 			public Map() {
 				Id(x => x.Id);
 				Map(x => x.CreateTime);

@@ -298,7 +298,7 @@ namespace RadialReview.Accessors {
 						IsClient = (bool)x[2],
 						UserId = (string)x[3],
 						IsRegistered = x[3] != null,
-						EvalOnly = (bool)x[4]
+						EvalOnly = (bool?)x[4]??false
 					})
 					.Where(x => x.IsRadialAdmin == null || (bool)x.IsRadialAdmin == false)
 					.ToList();

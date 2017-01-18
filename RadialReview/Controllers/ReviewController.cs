@@ -33,6 +33,7 @@ using RadialReview.Models.Angular.Meeting;
 using PdfSharp.Pdf;
 using RadialReview.Engines;
 using RadialReview.Models.Reviews;
+using RadialReview.Models.QuestionModels;
 
 namespace RadialReview.Controllers {
 	public class ReviewController : BaseController {
@@ -292,12 +293,17 @@ namespace RadialReview.Controllers {
 			public bool Editable { get; set; }
 			public DateTime StartTime { get; set; }
 			public List<AnswerVM> Answers { get; set; }
+			public DefaultDictionary<long?, AskableSectionModel> Sections { get; set; }
 			public ResponsibilityGroupModel ForUser { get; set; }
 			public List<Tuple<String, bool, decimal>> OrderedPeople { get; set; }
 			public bool FirstPageHint { get; set; }
 			public bool Anonymous { get; set; }
 
 			public TakeViewModel(List<AnswerModel> answers) {
+				Sections = new DefaultDictionary<long?, AskableSectionModel>(x => new AskableSectionModel() {
+					Color = "aaaaaa",
+					Name = "",
+				});
 				Answers = answers.GroupBy(x => Tuple.Create(x.Askable.Id, x.RevieweeUserId)).Select(x => new AnswerVM() {
 					BaseAnswer = x.First(),
 					FromAnswers = x.ToList()

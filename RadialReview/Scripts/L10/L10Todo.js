@@ -59,7 +59,8 @@ $(function () {
 				"</div>" +
 			"</div>");
     	var w = $(window).width();
-    	if (w <= modalWidth || $(".conclusion").is(":visible")) {
+		$("#todoDetails").html("");
+		if (w <= modalWidth || $(".conclusion").is(":visible")) {
 			var c = detailsContents.clone();
 			c.find("h4").addClass("form-control");
 			showModal({
@@ -67,10 +68,10 @@ $(function () {
 				title: "Edit To-do",
 				noCancel: true,
 			});
+		} else {
+			$("#todoDetails").append(detailsContents);
+			fixTodoDetailsBoxSize();
 		}
-		$("#todoDetails").html("");
-		$("#todoDetails").append(detailsContents);
-		fixTodoDetailsBoxSize();
 	}
     $("body").on("click", ".todo-list>.todo-row", clickTodoRow);
 

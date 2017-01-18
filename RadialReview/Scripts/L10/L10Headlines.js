@@ -81,6 +81,7 @@ var clickHeadlineRow = function (evt) {
 			//"</div>" +
 		"</div>");
 	var w = $(window).width();
+	$("#headlineDetails").html("");
 	if (w <= modalWidth) {
 		var c = detailsContents.clone();
 		c.find("h4").addClass("form-control");
@@ -89,10 +90,10 @@ var clickHeadlineRow = function (evt) {
 			title: "Edit People Headline",
 			noCancel: true,
 		});
+	} else {
+		$("#headlineDetails").append(detailsContents);
+		fixHeadlineDetailsBoxSize();
 	}
-	$("#headlineDetails").html("");
-	$("#headlineDetails").append(detailsContents);
-	fixHeadlineDetailsBoxSize();
 }
 $("body").on("click", ".headlines-list>.headline-row", clickHeadlineRow);
 

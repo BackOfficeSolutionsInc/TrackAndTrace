@@ -90,7 +90,7 @@
 			</ol>
 			<hr />
 			<div class="alignCenter" style="padding:5px;padding-top: 14px;"><a class="btn btn-default reviewOthersButton" href="@Url.Action("AdditionalReview", new { id = Model.Id ,page = Model.Page })">Evaluate Others <span class="glyphicon glyphicon-plus gray"></span></a></div>
-			<br/>
+			<br />
 		</div>
 	</div>
 
@@ -122,39 +122,44 @@
 	<div class="col-md-12">
 		<div>
 			<div class="smallBreak"></div>
-			@foreach (var group in Model.Answers.GroupBy(x => x.BaseAnswer.Askable.Category.Id).OrderByDescending(x => x.Key)) {
-				var dict = new ViewDataDictionary(ViewData);
+			@foreach (var section in Model.Answers.GroupBy(x => x.BaseAnswer.Askable.SectionId)) {
+				<div class="section">
+					<div class="section-title">@(Model.Sections[section.Key].Name)</div>
+					@foreach (var group in section.GroupBy(x => x.BaseAnswer.Askable.Category.Id).OrderByDescending(x => x.Key)) {
+						var dict = new ViewDataDictionary(ViewData);
 
-				var sliders = group.ToList().Where(x => x.BaseAnswer is SliderAnswer).Select(x => x.BaseAnswer).Cast<SliderAnswer>().ToList();
-				var thumbs = group.ToList().Where(x => x.BaseAnswer is ThumbsAnswer).Select(x => x.BaseAnswer).Cast<ThumbsAnswer>().ToList();
-				var feedbacks = group.ToList().Where(x => x.BaseAnswer is FeedbackAnswer).Select(x => x.BaseAnswer).Cast<FeedbackAnswer>().ToList();
-				var gwcs = group.ToList().Where(x => x.BaseAnswer is GetWantCapacityAnswer).Select(x => x.BaseAnswer).Cast<GetWantCapacityAnswer>().ToList();
-				var values = group.ToList().Where(x => x.BaseAnswer is CompanyValueAnswer).Select(x => x.BaseAnswer).Cast<CompanyValueAnswer>().ToList();
-				var rocks = group.ToList().Where(x => x.BaseAnswer is RockAnswer).Select(x => x.BaseAnswer).Cast<RockAnswer>().ToList();
-				//var gwc = group.ToList().Where(x => x is GetWantCapacityAnswer).Cast<GetWantCapacityAnswer>().ToList();
+						var sliders = group.ToList().Where(x => x.BaseAnswer is SliderAnswer).Select(x => x.BaseAnswer).Cast<SliderAnswer>().ToList();
+						var thumbs = group.ToList().Where(x => x.BaseAnswer is ThumbsAnswer).Select(x => x.BaseAnswer).Cast<ThumbsAnswer>().ToList();
+						var feedbacks = group.ToList().Where(x => x.BaseAnswer is FeedbackAnswer).Select(x => x.BaseAnswer).Cast<FeedbackAnswer>().ToList();
+						var gwcs = group.ToList().Where(x => x.BaseAnswer is GetWantCapacityAnswer).Select(x => x.BaseAnswer).Cast<GetWantCapacityAnswer>().ToList();
+						var values = group.ToList().Where(x => x.BaseAnswer is CompanyValueAnswer).Select(x => x.BaseAnswer).Cast<CompanyValueAnswer>().ToList();
+						var rocks = group.ToList().Where(x => x.BaseAnswer is RockAnswer).Select(x => x.BaseAnswer).Cast<RockAnswer>().ToList();
+						//var gwc = group.ToList().Where(x => x is GetWantCapacityAnswer).Cast<GetWantCapacityAnswer>().ToList();
 
+						dict["Max"] = group.Count();
 
-				dict["Max"] = group.Count();
-
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<h3 class="panel-title">@group.FirstOrDefault().NotNull(x => x.BaseAnswer.Askable.Category.Category.Translate())</h3>
-					</div>
-					<div class="panel-body">
-						@Html.Partial("Take/GWC", Tuple.Create(gwcs, Model.Editable), dict)
-						@Html.Partial("Take/Values", Tuple.Create(values, Model.Editable), dict)
-						@Html.Partial("Take/Rocks", Tuple.Create(rocks, Model.Editable), dict)
-						@{dict["I"] = 0;}
-						@Html.Partial("Slider", Tuple.Create(sliders, Model.Editable), dict)
-						@{dict["I"] = sliders.Count();}
-						@Html.Partial("Thumbs", Tuple.Create(thumbs, Model.Editable), dict)
-						@{dict["I"] = sliders.Count() + thumbs.Count();}
-						@Html.Partial("Feedback", Tuple.Create(feedbacks, Model.Editable), dict)
-						@*@{dict["I"] = sliders.Count() + thumbs.Count();}
-							@Html.Partial("GetWantCap", Tuple.Create(gwc, Model.Editable), dict)*@
-					</div>
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<h3 class="panel-title">@group.FirstOrDefault().NotNull(x => x.BaseAnswer.Askable.Category.Category.Translate())</h3>
+							</div>
+							<div class="panel-body">
+								@Html.Partial("Take/GWC", Tuple.Create(gwcs, Model.Editable), dict)
+								@Html.Partial("Take/Values", Tuple.Create(values, Model.Editable), dict)
+								@Html.Partial("Take/Rocks", Tuple.Create(rocks, Model.Editable), dict)
+								@{dict["I"] = 0;}
+								@Html.Partial("Slider", Tuple.Create(sliders, Model.Editable), dict)
+								@{dict["I"] = sliders.Count();}
+								@Html.Partial("Thumbs", Tuple.Create(thumbs, Model.Editable), dict)
+								@{dict["I"] = sliders.Count() + thumbs.Count();}
+								@Html.Partial("Feedback", Tuple.Create(feedbacks, Model.Editable), dict)
+								@*@{dict["I"] = sliders.Count() + thumbs.Count();}
+									@Html.Partial("GetWantCap", Tuple.Create(gwc, Model.Editable), dict)*@
+							</div>
+						</div>
+					}
 				</div>
 			}
+
 		</div>
 	</div>
 
@@ -232,7 +237,7 @@
 					var windowWidth = $(window).width();
 					if (tips[0].selector.is("#nameList") && windowWidth < 767) {
 						//debugger;
-						tips[0].selector =$(".visible-xs #nameList");
+						tips[0].selector = $(".visible-xs #nameList");
 					}
 
 					var tip = tips[0].tip;
@@ -249,7 +254,7 @@
 
 					var position = tips[0].position || { at: 'center right', my: 'center left' };
 
-					if (windowWidth<767) {
+					if (windowWidth < 767) {
 						position = { at: 'top center', my: 'bottom center' };
 					}
 
@@ -276,7 +281,7 @@
 						},
 						style: {
 							classes: 'qtip-shadow qtip-bootstrap qtip-gray'
-						},adjust : {
+						}, adjust: {
 							scroll: true
 						},
 						show: { when: false, ready: true },

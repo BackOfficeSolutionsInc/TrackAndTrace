@@ -26,7 +26,6 @@ namespace RadialReview.Models
         public virtual GroupModel ForGroup { get; set; }*/
         public virtual QuestionType QuestionType { get;set;}
 		
-		public virtual long? SectionId { get; set; }
 
         public virtual OriginType OriginType { get; set; }
         public virtual long OriginId { get; set; }
@@ -73,7 +72,6 @@ namespace RadialReview.Models
             Map(x => x.OriginId);
 			Map(x => x.OriginType);
 
-			Map(x => x.SectionId);
 
 			References(x => x.Question)
                 .Not.LazyLoad()

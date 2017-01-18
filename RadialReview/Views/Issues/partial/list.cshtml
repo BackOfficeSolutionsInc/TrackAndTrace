@@ -9,7 +9,10 @@
 	var selector = ViewBag.Selector as string ?? "model.IssuesList";
 	//var order = ViewBag.Order as string ?? "| orderBy: ['Complete','-CompleteTime','DueDate']";
 	var showDetails = (ViewBag.ShowDetails == null || ((bool)ViewBag.ShowDetails) == true);
-	var detailsCode = showDetails ? "issue.DetailsUrl_Src=issue.DetailsUrl;model.Selected = issue.Key" : "";
+
+	var guid = Guid.NewGuid().ToString().Replace("-", "");
+	var detailsCode = showDetails ? "issue.DetailsUrl_Src=issue.DetailsUrl;model.Selected = issue.Key+'"+ guid + "'" : "";
+
 	var allowEditOwner = ViewBag.AllowEditOwner == null || ((bool)ViewBag.AllowEditOwner) == true;
 
 	var filter = (ViewBag.Filter ?? " | filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate)");
@@ -84,7 +87,7 @@
                                 </td>
                                 <td md-cell class="issue-column message-column" style="width:100%;padding-left:2px" ng-click="@(detailsCode)">
                                     <input class="blend" placeholder="Enter issue here" ng-model-options="{debounce: 75}" type="text" ng-model="issue.Name" class="fullWidth" ng-change="functions.sendUpdate(issue)" title="{{issue.Name}}" />
-                                    <div class="iframe-container" ng-if="model.Selected==issue.Key">
+                                    <div class="iframe-container" ng-if="model.Selected==issue.Key+'@guid'">
                                         <iframe class="details-row keep-background" style="background-color: white" width="100%" ng-src="{{::trustAsResourceUrl(issue.DetailsUrl_Src)}}" ng-data-src="{{::issue.DetailsUrl}}"></iframe>
                                     </div>
                                     <table class="sub-issue-column">
