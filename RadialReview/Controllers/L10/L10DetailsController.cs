@@ -53,19 +53,24 @@ namespace RadialReview.Controllers
 				model.dateDataRange = new AngularDateRange(range);
 			}
 
+
 			if (scores) {
-				if (model.Scorecard.Scores.Count() > 22*16) {
+
+				if (model.Scorecard.Scores.Count() > 22*16 && GetUser().GetTimeSettings().Period == ScorecardPeriod.Weekly ) {
 					var min = TimingUtility.GetDateSinceEpoch(model.Scorecard.Scores.Min(x => x.ForWeek)).ToJavascriptMilliseconds();
 					var max = TimingUtility.GetDateSinceEpoch(model.Scorecard.Scores.Max(x => x.ForWeek)).ToJavascriptMilliseconds();
 					if (max != min) {
 						var mid = (max + min) / 2;
+						
 						model = new AngularRecurrence(id);
-						model.LoadUrls = new List<AngularString>() {
-							new AngularString((min / 13),   $"/L10/DetailsData/{id}?scores={scores}&historical={historical}&start={start}&end={mid}&fullScorecard=false"),
-							new AngularString((min / 13)-1, $"/L10/DetailsData/{id}?scores={scores}&historical={historical}&start={ mid }&end={end}&fullScorecard=false"),
-						};
-					}
+						model.LoadUrls = new List<AngularString>() { };
 
+						if (start != mid)
+							model.LoadUrls.Add(new AngularString((min / 13), $"/L10/DetailsData/{id}?scores={scores}&historical={historical}&start={start}&end={mid}&fullScorecard=false"));						
+						if (mid != end) 
+							model.LoadUrls.Add(new AngularString((min / 13) - 1, $"/L10/DetailsData/{id}?scores={scores}&historical={historical}&start={ mid }&end={end}&fullScorecard=false"));
+					
+					}
 				}
 			}
 
