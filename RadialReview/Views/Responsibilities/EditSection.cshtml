@@ -1,0 +1,28 @@
+﻿@model RadialReview.Models.Askables.AskableSectionModel
+
+@using RadialReview.Models.Enums
+@{
+	ViewBag.Title = "Modal";
+}
+
+
+<div class="form">
+	@Html.HiddenFor(x => x.Id)
+	@Html.HiddenFor(x => x.OrganizationId)
+	<div class="row smallBreak2">
+		<div class="col-sm-3">
+			<label>Section Name:</label>
+		</div>
+		<div class="col-sm-9 catContainer">
+			@Html.TextBoxFor(x => x.Name, new { placeholder = "New section name", @class = "form-control" })
+		</div>
+	</div>
+	<div class="row smallBreak2">
+		<div class="col-sm-3">
+			<label>Color:</label>
+		</div>
+		<div class="col-sm-9">
+			@Html.TextBoxFor(x => x.Color, new {  type="color" , style= "width: 28px;height: 28px;" })
+		</div>
+	</div>
+</div>

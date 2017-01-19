@@ -312,6 +312,541 @@ function getWeekSinceEpoch(day) {
 	return Math.floor((span.getTime() / oneDay) / 7);
 }
 
+/*
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///  settings ={                                                                                                                ///
+///      container:<element_id>,		                                                                                        ///
+///      id: (optional, default: guid),                                                                                         ///
+///      data:[{},{},...],                                                                                                      ///
+///		 title:(optional, default: ""),																							///
+///		 nodataText:(optional, default: "No data available."),																	///
+///																																///
+///		 clickAdd:<url,function(row,settings)>(optional, default: null),														///
+///		 clickEdit:<url,function(row,settings)>(optional, default: null),														///
+///		 clickRemove:<url,function(row,settings)>(optional, default: null),														///
+///		 clickReorder:<url,function(row,oldIndex,newIndex,settings)>(optional, default: null),									///
+///			{0} = row.Id																										///
+///			{1} = oldIndex																										///
+///			{2} = newIndex																										///
+///																																///
+///      panel:{	(optional)																									///
+///			id:(optional, default: "panel-{id}"),																				///
+///			classes:(optional, default: "panel panel-primary"),																	///
+///			element:(optional, default: "<div/>"),																				///
+///			header:{																											///
+///				id:(optional, defaults: null),																					///
+///				classes:(optional, default: "panel-heading"),																	///
+///				element:(optional, default: "<div/>"),																			///
+///				title:{																											///
+///					id:(optional, defaults: null),																				///
+///					classes:(optional, default: "panel-title"),																	///
+///					element:(optional, default: "<h2/>"),																		///
+///				}																												///
+///			},																													///
+///			nodata:{																											///
+///				id:(optional, defaults: "panel-nodata-{id}"),																	///
+///				classes:(optional, default: "panel-body"),																		///
+///				element:(optional, default: "<div/>"),																			///
+///			},																													///
+///		 },																														///
+///      addButton:(optional)<false,{																							///
+///			id:(optional, default: "add-{id}"),																					///
+///			element:(optional, default: "<div/>"),																				///
+///			classes:(optional, default: "btn btn-primary btn-invert"),															///
+///			text:(optional, default: "New {title}"),																			///
+///		 }>,																													///
+///      table:{	(optional)																									///
+///			id:(optional, default: "table-{id}"),																				///
+///			element:(optional, default: "<table/>"),																			///
+///			classes:(optional, default: "table table-hover"),																	///
+///			rows:{ (optional)																									///
+///				id:<function(row,settings)>(optional, defaults: "row row-{id}-{row.Id}"),										///
+///				classes:(optional, default: ""),																				///
+///				element:(optional, default: "<tr/>"),																			///
+///			},																													///
+///			cells:{ (optional)																									///
+///				id:<function(row,settings)>(optional, default: null),															///
+///				classes:<function(row,settings)>(optional, default: ""),														///
+///				element:(optional, default: "<td/>"),																			///
+///			}																													///
+///			editText:(optional, default: "Edit"),																				///
+///			removeText:(optional, default: "Delete"),																			///
+///		 },																														///
+///      cells: [{                                                                                                              ///
+///          id:(optional, overrides above),																					///
+///          classes:(optional, overrides above),																				///
+///          contents:<string,function(row,i)>(optional),																		///
+///          edit:<bool,function(settings)>(optional, false),																	///
+///          remove:<bool,function(settings)>(optional, false),																	///
+///          reorder:<bool,function(settings)>(optional, false),																///
+///		 },...,																													///
+///			...function(row,i) ,...																								///
+///      },...],																												///
+///      nodata: <string,element>,																								///
+///  }                                                                                                                          ///
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+*/
+var DataTable = function (settings) {
+
+	//Helpers
+	var resolve = function (strFunc, args) {
+		if (typeof (strFunc) === "string")
+			return strFunc;
+		else if (typeof (strFunc) === "function")
+			return strFunc.apply(settings, [].splice.call(arguments, 1));
+		else if (typeof (strFunc) === "boolean")
+			return strFunc;
+		return null;
+	}
+
+	if (!settings.container) {
+		console.warn("Container not set for data-table.");
+	}
+
+	settings.id = settings.id || generateGuid();
+	var id = settings.id;
+
+	if (typeof (data) === "undefined" || data === null || data === false)
+		data = [];
+
+	settings.title = resolve(settings.title, settings) || "";
+	settings.nodataText = resolve(settings.nodataText, settings) || "No data available.";
+
+	//AddButton
+	if (settings.addButton != false) {
+		if (!settings.clickAdd) {
+			console.warn("Cannot generate AddButton if clickAdd is null. To disable this warning set 'addButton: false'");
+			settings.addButton = false;
+		} else {
+			settings.addButton = settings.addButton || {};
+			settings.addButton.id = settings.addButton.id || "add-" + settings.id;
+			settings.addButton.element = settings.addButton.element || $("<div/>");
+			settings.addButton.classes = settings.addButton.classes || "btn btn-primary btn-invert";
+			settings.addButton.text = settings.addButton.text || "New " + settings.title;
+		}
+	}
+
+	//Panel
+	settings.panel = settings.panel || {};
+	settings.panel.id = settings.panel.id || "panel-" + settings.id;
+	settings.panel.element = settings.panel.element || $("<div/>");
+	settings.panel.classes = settings.panel.classes || "panel panel-primary";
+
+	//Panel - Header
+	if (settings.panel.header != false) {
+		settings.panel.header = settings.panel.header || {};
+		settings.panel.header.id = settings.panel.header.id || null;
+		settings.panel.header.classes = settings.panel.header.classes || "panel-heading";
+		settings.panel.header.element = settings.panel.header.element || $("<div/>");
+
+		settings.panel.header.title = settings.panel.header.title || {};
+		settings.panel.header.title.classes = settings.panel.header.title.classes || "panel-title";
+		settings.panel.header.title.element = settings.panel.header.title.element || $("<h2/>");
+	}
+
+	//Panel - No Data
+	settings.panel.nodata = settings.panel.nodata || {};
+	settings.panel.nodata.id = settings.panel.nodata.id || function (_settings) { return "panel-nodata-" + _settings.id; };
+	settings.panel.nodata.classes = settings.panel.nodata.classes || "panel-body gray";
+	settings.panel.nodata.element = settings.panel.nodata.element || $("<div/>");
+
+	//Table
+	settings.table = settings.table || {};
+	settings.table.id = settings.table.id || "table-" + settings.id;
+	settings.table.element = settings.table.element || $("<table/>");
+	settings.table.classes = settings.table.classes || "table table-hover";
+
+	//Table - Rows
+	settings.table.rows = settings.table.rows || {};
+	settings.table.rows.id = settings.table.rows.id || function (row, _settings) { return "row-" + _settings.id + "-" + row.Id; };
+	settings.table.rows.element = settings.table.rows.element || $("<tr/>");
+	settings.table.rows.classes = settings.table.rows.classes || "row";
+
+	//Table - Cells
+	settings.table.cells = settings.table.cells || {};
+	settings.table.cells.id = settings.table.cells.id || function (row, _settings) { return null; };
+	settings.table.cells.element = settings.table.cells.element || $("<td/>");
+	settings.table.cells.classes = settings.table.cells.classes || "";
+
+	settings.table.editText = settings.table.editText || "Edit";
+	settings.table.removeText = settings.table.removeText || "Delete";
+
+	//Cell Selectors
+	settings.cells = settings.cells || [];
+
+	//Internal
+	settings._ = settings._ || {};
+	settings._.olddata = settings._.olddata || [];
+
+	//Variables
+	var container, addButton, panel, panelTitle, panelHeader, table, nodata;
+
+	//Complex Updates
+	if (typeof (settings.clickEdit) === "string") {
+		settings._.onEditUrl = settings.clickEdit;
+		settings.clickEdit = function (row, settings) {
+			var title = settings.clickEditTitle || function (settings) { return "Edit " + resolve(settings.title, settings); };
+			showModal(resolve(title, settings), settings._.onEditUrl.replace("{0}", row.Id), settings._.onEditUrl.replace("{0}", ""), null, null, function (d) {
+				try {
+					var ids = getIds(settings.data);
+					var index = ids.indexOf(d.Object.Id);
+					settings.data[index] = d.Object;
+				} catch (e) {
+					console.error(e);
+				}
+				editRow(d.Object);
+			});
+		};
+	}
+	if (typeof (settings.clickAdd) === "string") {
+		settings._.onAddUrl = settings.clickAdd;
+		settings.clickAdd = function (settings) {
+			var title = settings.clickAddTitle || function (settings) { return "Add " + resolve(settings.title, settings); }
+			showModal(resolve(title, settings), settings._.onAddUrl, settings._.onAddUrl, null, null, function (d) {
+				addRow(d.Object);
+			});
+		};
+	}
+	if (typeof (settings.clickReorder) === "string") {
+		settings._.clickReorderUrl = settings.clickReorder;
+		settings.clickReorder = function (row, oldIndex, newIndex, settings) {
+			$.ajax({
+				url: settings._.clickReorderUrl.replace("{0}", row.Id).replace("{1}", oldIndex).replace("{2}", newIndex),
+				error: function (e) {
+					if (oldIndex > newIndex)
+						oldIndex -= 1;
+					var item = settings.data.splice(newIndex, 1);
+					settings.data.splice(oldIndex, 0, item);
+					update();
+					refreshRowNum();
+				}
+			})
+		};
+	}
+	if (typeof (settings.clickRemove) === "string") {
+		settings._.onRemoveUrl = settings.clickRemove;
+		settings.clickRemove = function (row, settings) {
+			var title = settings.clickRemoveTitle || function (settings) { return "Are you sure you want to remove " + (resolve(settings.title, settings) || "").toLowerCase(); };
+			showModal({
+				icon: "warning",
+				title: resolve(title, settings),
+				success: function (d) {
+					$.ajax({
+						url: settings._.onRemoveUrl.replace("{0}", row.Id),
+						success: function () {
+							removeRow(row);
+						}
+					});
+				}
+			});
+		};
+	}
+
+	//Generator Functions
+	var generateContainer = function () {
+		container = $("<div/>");
+		panel = $(settings.panel.element).clone();
+		if (settings.panel.header != false) {
+			panelHeader = $(settings.panel.header.element).clone();
+			panelTitle = $(settings.panel.header.title.element).clone();
+			panelHeader.append(panelTitle);
+			panel.append(panelHeader);
+		}
+		table = $(settings.table.element).clone();
+		$(panel).append(table);
+
+		nodata = $(settings.panel.nodata.element).clone();
+		$(panel).append(nodata);
+
+		if (settings.addButton != false) {
+			var btnHolder = $("<div style='text-align: right;margin-bottom: 3px;'/>");
+			addButton = $(settings.addButton.element).clone();
+			btnHolder.append(addButton);
+			container.append(btnHolder);
+			$(addButton).on("click", function () { resolve(settings.clickAdd, settings); });
+		}
+		container.append(panel);
+
+		var anyReorder = false;
+		for (var c in settings.cells) {
+			if (resolve(settings.cells[c].reorder, settings) == true) {
+				anyReorder = true;
+				break;
+			}
+		}
+		if (anyReorder) {
+			if (!settings.clickReorder) {
+				console.warn("Cannot use cell.reorder if clickReorder is not defined. To disable this warning set 'addButton: false'");
+				settings.addButton = false;
+			} else {
+				try {
+					$.getScript("/Scripts/jquery/jquery.ui.sortable.js").done(function () {
+						$("#" + settings.table.id + " tbody").xsortable({
+							items: ">.row",
+							handle: ".reorder-handle",
+							start: function (e, ui) {
+								$(this).attr('data-previndex', ui.item.index());
+							},
+							update: function (e, ui) {
+								var newIndex = ui.item.index();
+								var oldIndex = +$(this).attr('data-previndex');
+								$(this).removeAttr('data-previndex');
+								var row = settings.data[oldIndex];
+								resolve(settings.clickReorder, row, oldIndex, newIndex, settings);
+								refreshRowNum();
+							}
+						}).disableSelection();
+					});
+				} catch (e) {
+					console.warn("xsortable not loaded.");
+				}
+			}
+		}
+	}
+	var generateRow = function (rowData) {
+		var row = $(settings.table.rows.element).clone();
+		$(row).attr("id", resolve(settings.table.rows.id, rowData, settings));
+		$(row).attr("class", resolve(settings.table.rows.classes, rowData, settings));
+		row.append(generateRowCells(rowData));
+		return row;
+	};
+	var generateRowCells = function (row) {
+		var i = 0;
+		var results = [];
+		for (var s in settings.cells) {
+			var cellSelector = settings.cells[s];
+			var cell = $(settings.table.cells.element).clone();
+
+			var contents = null;
+			var cellSelectorId = settings.table.cells.id;
+			var cellSelectorClasses = settings.table.cells.classes;
+
+			if (typeof (cellSelector) === "object") {
+				cellSelectorId = cellSelector.id || cellSelectorId;
+				cellSelectorClasses = cellSelector.classes || cellSelectorId;
+				contents = cellSelector.contents;
+			} else if (typeof (cellSelector) === "function") {
+				contents = cellSelector;
+			}
+
+			cell.attr("id", resolve(cellSelectorId, row, settings));
+			cell.attr("class", resolve(cellSelectorClasses, row, settings));
+
+			//Is edit button?
+			if (resolve(cellSelector.edit, settings) == true) {
+				cell.on("click", function () { resolve(settings.clickEdit, row, settings); });
+				if (!contents)
+					contents = settings.table.editText;
+				cell.addClass("clickable");
+			}
+
+			//Is remove button?
+			if (resolve(cellSelector.remove, settings) == true) {
+				cell.on("click", function () { resolve(settings.clickRemove, row, settings); });
+				if (!contents)
+					contents = settings.table.removeText;
+				cell.addClass("clickable");
+			}
+
+			//Is row number?
+			if (resolve(cellSelector.rowNum, settings) == true) {
+				var oldContents = contents;
+				contents = function (row, i, settings) {
+					return "<span class='rowNum'>" + (i + 1) + ". </span>" + (resolve(oldContents, row, i, settings) || "");
+				};
+			}
+
+			//Is draggable?
+			if (resolve(cellSelector.reorder, settings) == true) {
+				contents = function (row, i, settings) {
+					return "<span class='reorder-handle icon fontastic-icon-three-bars icon-rotate gray' style='margin-left: -5px;margin-right: -5px;cursor:move;'></span>";
+				};
+				
+			}
+
+
+			cell.html(resolve(contents, row, i, settings));
+
+			results.push(cell);
+			i++;
+		}
+		return results;
+	};
+
+	//Update Function
+	var getIds = function (data) {
+		var res = [];
+		for (var d in data)
+			res.push(data[d].Id);
+		return res;
+	};
+	var diffIds = function (a, b) {
+		return a.filter(function (i) { return b.indexOf(i) < 0; });
+	};
+	var getRowById = function (data, id) {
+		for (var r in data) {
+			if (data[r].Id == id)
+				return data[r];
+		}
+		return null;
+	};
+	var insertAt = function (self, index, element) {
+		var lastIndex = self.children().size()
+		if (index < 0) {
+			index = Math.max(0, lastIndex + 1 + index)
+		}
+		self.append(element)
+		if (index < lastIndex) {
+			self.children().eq(index).before(self.children().last())
+		}
+		return self;
+	}
+
+	var refreshRowNum = function () {
+		$(".rowNum").each(function (i, x) {
+			$(this).html("" + (i + 1) + ". ");
+		});
+	};
+	var updateRowsUI = function (settings) {
+		settings.data = settings.data || [];
+
+		var dataIds = getIds(settings.data);
+		var oldIds = getIds(settings._.olddata);
+
+		var added = diffIds(dataIds, oldIds);
+		var removed = diffIds(oldIds, dataIds);
+		var checkEdit = diffIds(dataIds, added);
+
+		for (var a in added) {
+			var row = getRowById(settings.data, added[a]);
+			var tableId = resolve(settings.table.id, settings);
+			var tableElement = $("#" + tableId);
+			insertAt(tableElement, dataIds.indexOf(added[a]), generateRow(row));
+		}
+
+		for (var a in removed) {
+			var row = getRowById(settings._.olddata, removed[a])
+			var rowId = settings.table.rows.id(row, settings);
+			var rowElement = $("#" + rowId);
+			rowElement.children().off();
+			rowElement.off();
+			rowElement.remove();
+		}
+
+		for (var a in checkEdit) {
+			var newRow = getRowById(settings.data, checkEdit[a]);
+			var oldRow = getRowById(settings._.olddata, checkEdit[a]);
+			if (JSON.stringify(newRow) != JSON.stringify(oldRow)) {
+				console.log("edit row " + checkEdit[a]);
+				var rowId = settings.table.rows.id(newRow, settings);
+				var rowElement = $("#" + rowId);
+				rowElement.children().off();
+				rowElement.children().remove();
+				rowElement.append(generateRowCells(newRow));
+			}
+		}
+
+		if (!settings.data || !settings.data.length) {
+			$(table).hide();
+			$(nodata).show();
+		} else {
+			$(table).show();
+			$(nodata).hide();
+		}
+		refreshRowNum();
+		settings._.olddata = JSON.parse(JSON.stringify(settings.data));
+	}
+	var updateProperties = function (settings) {
+		$(panel).attr("id", resolve(settings.panel.id, settings));
+		$(panel).attr("class", resolve(settings.panel.classes, settings));
+
+		if (settings.panel.header != false) {
+			$(panelHeader).attr("id", resolve(settings.panel.header.id, settings));
+			$(panelHeader).attr("class", resolve(settings.panel.header.classes, settings));
+			$(panelTitle).attr("id", resolve(settings.panel.header.title.id, settings));
+			$(panelTitle).attr("class", resolve(settings.panel.header.title.classes, settings));
+			$(panelTitle).html(resolve(settings.title, settings));
+		}
+
+		$(table).attr("id", resolve(settings.table.id, settings));
+		$(table).attr("class", resolve(settings.table.classes, settings));
+
+		$(nodata).attr("id", resolve(settings.panel.nodata.id, settings));
+		$(nodata).attr("class", resolve(settings.panel.nodata.classes, settings));
+		$(nodata).html(resolve(settings.nodataText, settings));
+
+		if (settings.addButton != false) {
+			$(addButton).attr("id", resolve(settings.addButton.id, settings));
+			$(addButton).attr("class", resolve(settings.addButton.classes, settings));
+			$(addButton).html(resolve(settings.addButton.text, settings));
+		}
+	};
+
+	var addRow = function (row) {
+		console.info("add row");
+		if (row) {
+			settings.data.push(row);
+			update();
+		} else {
+			showAlert("Row could not be added.");
+			console.warn("row was " + row);
+		}
+	};
+	var editRow = function (row) {
+		console.info("edit row");
+		if (row) {
+			update();
+		} else {
+			showAlert("Row could not be edited.");
+			console.warn("row was " + row);
+		}
+	};
+	var removeRow = function (row, skipUpdate) {
+		console.info("remove row");
+		if (row) {
+			for (var i = settings.data.length - 1; i >= 0; i--) {
+				if (settings.data[i].Id == row.Id)
+					settings.data.splice(i, 1);
+			}
+			update();
+		} else {
+			showAlert("Row could not be removed.");
+			console.warn("row was " + row);
+		}
+	};
+
+	var update = function () {
+		updateProperties(settings);
+		updateRowsUI(settings);
+	};
+
+	generateContainer();
+
+	if (settings.container) {
+		$(settings.container).append(container);
+		update();
+	} else {
+		console.warn("container was not specified.")
+	}
+
+	return {
+		update: update,
+		settings: settings,
+
+		setData: function (data) {
+			settings.data = data;
+			update();
+		},
+		addRow: addRow,
+		editRow: editRow,
+		removeRow: removeRow,
+
+		container: container,
+
+		//data: settings.data,
+	};
+}
+
 
 /*
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -376,7 +911,7 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onC
 				return;
 			}
 			_bindModal(modal, title, callback, validation, function (formData) {
-				_submitModal(formData, pushUrl, onSuccess,null, false);
+				_submitModal(formData, pushUrl, onSuccess, null, false);
 			});
 		}
 	});
@@ -404,7 +939,6 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 		return showModal(obj.title, obj.pullUrl, pushUrl, onSuccess, obj.validation, obj.success);
 
 	if (typeof (obj.title) === "undefined") {
-		debugger;
 		obj.title = "";
 		console.warn("No title supplied");
 	}
@@ -487,7 +1021,7 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 		if (type == "number")
 			others += " step=\"any\"";
 
-		if (type == "checkbox" && ((typeof (value) === "string" && (value.toLowerCase() === 'true')) || (typeof (value) === "boolean" && value))) 
+		if (type == "checkbox" && ((typeof (value) === "string" && (value.toLowerCase() === 'true')) || (typeof (value) === "boolean" && value)))
 			others += "checked";
 
 		return '<input type="' + escapeString(type) + '" class="form-control blend ' + classes + '"' +
@@ -511,7 +1045,7 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 				var placeholder = field.placeholder;
 				var type = (field.type || "text").toLowerCase();
 				var classes = field.classes || "";
-				
+
 				var labelColumnClass = field.labelColumnClass || defaultLabelColumnClass;
 				var valueColumnClass = field.valueColumnClass || defaultValueColumnClass;
 
@@ -590,7 +1124,7 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 	$('#modalBody').html("");
 	setTimeout(function () {
 		$('#modalBody').append(html);
-	},0);
+	}, 0);
 
 	$("#modalTitle").html(title);
 	$("#modal").removeClass("loading");
@@ -870,7 +1404,7 @@ function showAngularError(d, status, headers, config, statusTxt) {
 	}
 	if (typeof (d.Message) !== "undefined" && d.Message != null) {
 		showJsonAlert(d);
-	}else if (typeof (d.data) !== "undefined" && d.data != null) {
+	} else if (typeof (d.data) !== "undefined" && d.data != null) {
 		showJsonAlert(d.data);
 	} else {
 		if (typeof (d.statusText) !== "undefined" && d.statusText !== "") {
@@ -1773,24 +2307,21 @@ Error.captureStackTrace = Error.captureStackTrace || function (obj) {
 };
 
 
+
+
 //tabbable.js
 //https://github.com/marklagendijk/jquery.tabbable/blob/master/jquery.tabbable.min.js
 !function (e) { "use strict"; function t(t) { var n = e(t), a = e(":focus"), r = 0; if (1 === a.length) { var i = n.index(a); i + 1 < n.length && (r = i + 1) } n.eq(r).focus() } function n(t) { var n = e(t), a = e(":focus"), r = n.length - 1; if (1 === a.length) { var i = n.index(a); i > 0 && (r = i - 1) } n.eq(r).focus() } function a(t) { function n(t) { return e.expr.filters.visible(t) && !e(t).parents().addBack().filter(function () { return "hidden" === e.css(this, "visibility") }).length } var a, r, i, u = t.nodeName.toLowerCase(), o = !isNaN(e.attr(t, "tabindex")); return "area" === u ? (a = t.parentNode, r = a.name, t.href && r && "map" === a.nodeName.toLowerCase() ? (i = e("img[usemap=#" + r + "]")[0], !!i && n(i)) : !1) : (/input|select|textarea|button|object/.test(u) ? !t.disabled : "a" === u ? t.href || o : o) && n(t) } e.focusNext = function () { t(":focusable") }, e.focusPrev = function () { n(":focusable") }, e.tabNext = function () { t(":tabbable") }, e.tabPrev = function () { n(":tabbable") }, e.extend(e.expr[":"], { data: e.expr.createPseudo ? e.expr.createPseudo(function (t) { return function (n) { return !!e.data(n, t) } }) : function (t, n, a) { return !!e.data(t, a[3]) }, focusable: function (t) { return a(t, !isNaN(e.attr(t, "tabindex"))) }, tabbable: function (t) { var n = e.attr(t, "tabindex"), r = isNaN(n); return (r || n >= 0) && a(t, !r) } }) }(jQuery);
 
 
-//if (isIOS()) {
-//	$('body').on('touchstart', function (e) {
-//		$('input').css("pointer-events", "auto");
-//	});
-//	$('body').on('touchmove', function (e) {
-//		$('input').css("pointer-events", "none");
-//	});
-//	$('body').on('touchend', function (e) {
-//		setTimeout(function () {
-//			$('input').css("pointer-events", "none");
-//		}, 0);
-//	});
-//}
+/*
+ * object.watch polyfill
+ * 2012-04-03
+ * By Eli Grey, http://eligrey.com
+ * Public Domain.
+ * NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
+ */
+
 
 ////Fix Submenus
 //$('ul.dropdown-menu [data-toggle=dropdown]').on('click', function (event) {
@@ -1799,3 +2330,9 @@ Error.captureStackTrace = Error.captureStackTrace || function (obj) {
 //	$('ul.dropdown-menu [data-toggle=dropdown]').parent().removeClass('open');
 //	$(this).parent().addClass('open');
 //});
+
+/*!
+ * deep-diff.
+ * Licensed under the MIT License.
+ */
+//(function(e,t){"use strict";if(typeof define==="function"&&define.amd){define([],function(){return t()})}else if(typeof exports==="object"){module.exports=t()}else{e.DeepDiff=t()}})(this,function(e){"use strict";var t,n,r=[];if(typeof global==="object"&&global){t=global}else if(typeof window!=="undefined"){t=window}else{t={}}n=t.DeepDiff;if(n){r.push(function(){if("undefined"!==typeof n&&t.DeepDiff===p){t.DeepDiff=n;n=e}})}function i(e,t){e.super_=t;e.prototype=Object.create(t.prototype,{constructor:{value:e,enumerable:false,writable:true,configurable:true}})}function a(e,t){Object.defineProperty(this,"kind",{value:e,enumerable:true});if(t&&t.length){Object.defineProperty(this,"path",{value:t,enumerable:true})}}function f(e,t,n){f.super_.call(this,"E",e);Object.defineProperty(this,"lhs",{value:t,enumerable:true});Object.defineProperty(this,"rhs",{value:n,enumerable:true})}i(f,a);function l(e,t){l.super_.call(this,"N",e);Object.defineProperty(this,"rhs",{value:t,enumerable:true})}i(l,a);function u(e,t){u.super_.call(this,"D",e);Object.defineProperty(this,"lhs",{value:t,enumerable:true})}i(u,a);function s(e,t,n){s.super_.call(this,"A",e);Object.defineProperty(this,"index",{value:t,enumerable:true});Object.defineProperty(this,"item",{value:n,enumerable:true})}i(s,a);function o(e,t,n){var r=e.slice((n||t)+1||e.length);e.length=t<0?e.length+t:t;e.push.apply(e,r);return e}function c(e){var t=typeof e;if(t!=="object"){return t}if(e===Math){return"math"}else if(e===null){return"null"}else if(Array.isArray(e)){return"array"}else if(Object.prototype.toString.call(e)==="[object Date]"){return"date"}else if(typeof e.toString!=="undefined"&&/^\/.*\//.test(e.toString())){return"regexp"}return"object"}function h(t,n,r,i,a,p,b){a=a||[];var d=a.slice(0);if(typeof p!=="undefined"){if(i){if(typeof i==="function"&&i(d,p)){return}else if(typeof i==="object"){if(i.prefilter&&i.prefilter(d,p)){return}if(i.normalize){var y=i.normalize(d,p,t,n);if(y){t=y[0];n=y[1]}}}}d.push(p)}if(c(t)==="regexp"&&c(n)==="regexp"){t=t.toString();n=n.toString()}var v=typeof t;var g=typeof n;if(v==="undefined"){if(g!=="undefined"){r(new l(d,n))}}else if(g==="undefined"){r(new u(d,t))}else if(c(t)!==c(n)){r(new f(d,t,n))}else if(Object.prototype.toString.call(t)==="[object Date]"&&Object.prototype.toString.call(n)==="[object Date]"&&t-n!==0){r(new f(d,t,n))}else if(v==="object"&&t!==null&&n!==null){b=b||[];if(b.indexOf(t)<0){b.push(t);if(Array.isArray(t)){var k,m=t.length;for(k=0;k<t.length;k++){if(k>=n.length){r(new s(d,k,new u(e,t[k])))}else{h(t[k],n[k],r,i,d,k,b)}}while(k<n.length){r(new s(d,k,new l(e,n[k++])))}}else{var j=Object.keys(t);var w=Object.keys(n);j.forEach(function(a,f){var l=w.indexOf(a);if(l>=0){h(t[a],n[a],r,i,d,a,b);w=o(w,l)}else{h(t[a],e,r,i,d,a,b)}});w.forEach(function(t){h(e,n[t],r,i,d,t,b)})}b.length=b.length-1}}else if(t!==n){if(!(v==="number"&&isNaN(t)&&isNaN(n))){r(new f(d,t,n))}}}function p(t,n,r,i){i=i||[];h(t,n,function(e){if(e){i.push(e)}},r);return i.length?i:e}function b(e,t,n){if(n.path&&n.path.length){var r=e[t],i,a=n.path.length-1;for(i=0;i<a;i++){r=r[n.path[i]]}switch(n.kind){case"A":b(r[n.path[i]],n.index,n.item);break;case"D":delete r[n.path[i]];break;case"E":case"N":r[n.path[i]]=n.rhs;break}}else{switch(n.kind){case"A":b(e[t],n.index,n.item);break;case"D":e=o(e,t);break;case"E":case"N":e[t]=n.rhs;break}}return e}function d(e,t,n){if(e&&t&&n&&n.kind){var r=e,i=-1,a=n.path?n.path.length-1:0;while(++i<a){if(typeof r[n.path[i]]==="undefined"){r[n.path[i]]=typeof n.path[i]==="number"?[]:{}}r=r[n.path[i]]}switch(n.kind){case"A":b(n.path?r[n.path[i]]:r,n.index,n.item);break;case"D":delete r[n.path[i]];break;case"E":case"N":r[n.path[i]]=n.rhs;break}}}function y(e,t,n){if(n.path&&n.path.length){var r=e[t],i,a=n.path.length-1;for(i=0;i<a;i++){r=r[n.path[i]]}switch(n.kind){case"A":y(r[n.path[i]],n.index,n.item);break;case"D":r[n.path[i]]=n.lhs;break;case"E":r[n.path[i]]=n.lhs;break;case"N":delete r[n.path[i]];break}}else{switch(n.kind){case"A":y(e[t],n.index,n.item);break;case"D":e[t]=n.lhs;break;case"E":e[t]=n.lhs;break;case"N":e=o(e,t);break}}return e}function v(e,t,n){if(e&&t&&n&&n.kind){var r=e,i,a;a=n.path.length-1;for(i=0;i<a;i++){if(typeof r[n.path[i]]==="undefined"){r[n.path[i]]={}}r=r[n.path[i]]}switch(n.kind){case"A":y(r[n.path[i]],n.index,n.item);break;case"D":r[n.path[i]]=n.lhs;break;case"E":r[n.path[i]]=n.lhs;break;case"N":delete r[n.path[i]];break}}}function g(e,t,n){if(e&&t){var r=function(r){if(!n||n(e,t,r)){d(e,t,r)}};h(e,t,r)}}Object.defineProperties(p,{diff:{value:p,enumerable:true},observableDiff:{value:h,enumerable:true},applyDiff:{value:g,enumerable:true},applyChange:{value:d,enumerable:true},revertChange:{value:v,enumerable:true},isConflict:{value:function(){return"undefined"!==typeof n},enumerable:true},noConflict:{value:function(){if(r){r.forEach(function(e){e()});r=null}return p},enumerable:true}});return p});

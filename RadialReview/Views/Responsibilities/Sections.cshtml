@@ -1,0 +1,49 @@
+﻿@model List<RadialReview.Models.Askables.AskableSectionModel>
+@{
+	ViewBag.Title = "Edit Sections";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="container"></div>
+
+@using (Html.BeginScripts()) {
+	<script>
+
+		var datas = @Html.ArrayToString(Model);
+
+		var table =DataTable({
+			container: "#container",
+			title:"Section",
+			data:datas,
+			clickAdd: "/Responsibilities/EditSection/",
+			clickEdit: "/Responsibilities/EditSection/{0}",
+			clickRemove:"/Responsibilities/DeleteSection/{0}",
+			clickReorder:"/Responsibilities/ReorderSection/{0}?oldOrder={1}&newOrder={2}",
+			cells:[
+				{reorder:true},
+				{rowNum:true},
+				{classes:"fullWidth",contents:function(r){return r.Name;}},
+				function(r){return $("<div class='color-box' style='background-color:"+r.Color+"'/>");},
+				{edit:true},
+				{remove:true},
+			]
+		});
+
+		table.setData(datas);
+	</script>
+}
+@using (Html.BeginStyles()) {
+	<style>
+		.color-box {
+			border: 1px solid #333;
+			padding: 2px;
+			margin: 2px;
+			width: 16px;
+			height: 16px;
+		}
+
+		html, body {
+			background-color: #eee;
+		}
+	</style>
+}

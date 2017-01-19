@@ -33,7 +33,6 @@ using RadialReview.Models.Angular.Meeting;
 using PdfSharp.Pdf;
 using RadialReview.Engines;
 using RadialReview.Models.Reviews;
-using RadialReview.Models.QuestionModels;
 
 namespace RadialReview.Controllers {
 	public class ReviewController : BaseController {
@@ -103,6 +102,8 @@ namespace RadialReview.Controllers {
 
 				var forUser = p.FirstOrDefault().NotNull(x => x.RevieweeUser);
 
+				var sections = ResponsibilitiesAccessor.GetAllSections(GetUser(), GetUser().Organization.Id);
+
 				var model = new TakeViewModel(p) {
 					Anonymous = reviewContainer.AnonymousByDefault,
 					FirstPageHint = !reviews.Any(x => x.SeenHints),
@@ -118,6 +119,10 @@ namespace RadialReview.Controllers {
 							x.Count(y => y.Required && y.Complete) / (decimal)x.Count(y => y.Required) * 100
 						)).ToList()
 				};
+
+				foreach (var section in sections) {
+					model.Sections[section.Id] = section;
+				}
 
 				if (model.Editable && p.Any(x => x.Complete) && p.Any(x => !x.Complete && x.Required)) {
 					ViewBag.Incomplete = true;
@@ -293,16 +298,17 @@ namespace RadialReview.Controllers {
 			public bool Editable { get; set; }
 			public DateTime StartTime { get; set; }
 			public List<AnswerVM> Answers { get; set; }
-			public DefaultDictionary<long?, AskableSectionModel> Sections { get; set; }
+			public DefaultDictionary<long, AskableSectionModel> Sections { get; set; }
 			public ResponsibilityGroupModel ForUser { get; set; }
 			public List<Tuple<String, bool, decimal>> OrderedPeople { get; set; }
 			public bool FirstPageHint { get; set; }
 			public bool Anonymous { get; set; }
 
 			public TakeViewModel(List<AnswerModel> answers) {
-				Sections = new DefaultDictionary<long?, AskableSectionModel>(x => new AskableSectionModel() {
-					Color = "aaaaaa",
+				Sections = new DefaultDictionary<long, AskableSectionModel>(x => new AskableSectionModel() {
+					Color = "#aaaaaa",
 					Name = "",
+					_Ordering = 1,
 				});
 				Answers = answers.GroupBy(x => Tuple.Create(x.Askable.Id, x.RevieweeUserId)).Select(x => new AnswerVM() {
 					BaseAnswer = x.First(),

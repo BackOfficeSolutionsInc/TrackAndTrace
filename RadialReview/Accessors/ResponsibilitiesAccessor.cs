@@ -16,117 +16,178 @@ using System.Web;
 using NHibernate.Criterion;
 using RadialReview.Models.Reviews;
 
-namespace RadialReview.Accessors
-{
-    public class ResponsibilitiesAccessor
-    {
-        public ResponsibilityModel GetResponsibility(UserOrganizationModel caller, long responsibilityId)
-        {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
-                    var responsibility = s.Get<ResponsibilityModel>(responsibilityId);
-                    PermissionsUtility.Create(s, caller).ViewOrganization(responsibility.ForOrganizationId);
-                    return responsibility;
-                }
-            }
-        }
-		public List<ResponsibilityModel> GetResponsibilitiesForUser(UserOrganizationModel caller, long forUserId, DateRange range)
-        {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
-                    var perms = PermissionsUtility.Create(s, caller);
+namespace RadialReview.Accessors {
+	public class ResponsibilitiesAccessor : BaseAccessor{
+		public ResponsibilityModel GetResponsibility(UserOrganizationModel caller, long responsibilityId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var responsibility = s.Get<ResponsibilityModel>(responsibilityId);
+					PermissionsUtility.Create(s, caller).ViewOrganization(responsibility.ForOrganizationId);
+					return responsibility;
+				}
+			}
+		}
+		public List<ResponsibilityModel> GetResponsibilitiesForUser(UserOrganizationModel caller, long forUserId, DateRange range) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
 #pragma warning disable CS0618 // Type or member is obsolete
 					return GetResponsibilitiesForUser(s.ToQueryProvider(true), perms, forUserId, range);
 #pragma warning restore CS0618 // Type or member is obsolete
 				}
-            }
-        }
+			}
+		}
 
-		[Obsolete("Use AskableAccessor.GetAskablesForUser",false)]
-        public static List<ResponsibilityModel> GetResponsibilitiesForUser(AbstractQuery queryProvider, PermissionsUtility perms,  long forUserId, DateRange range)
-        {
-            return GetResponsibilityGroupsForUser(queryProvider, perms, forUserId)
-                    .SelectMany(x => x.Responsibilities)
+		[Obsolete("Use AskableAccessor.GetAskablesForUser", false)]
+		public static List<ResponsibilityModel> GetResponsibilitiesForUser(AbstractQuery queryProvider, PermissionsUtility perms, long forUserId, DateRange range) {
+			return GetResponsibilityGroupsForUser(queryProvider, perms, forUserId)
+					.SelectMany(x => x.Responsibilities)
 					.FilterRange(range)
-                    .ToList();
-        }
+					.ToList();
+		}
 
-	    public ResponsibilityGroupModel GetResponsibilityGroup(ISession s,PermissionsUtility perms, long responsibilityGroupId)
-	    {
-		        var resGroup = s.Get<ResponsibilityGroupModel>(responsibilityGroupId);
-				long orgId;
+		public ResponsibilityGroupModel GetResponsibilityGroup(ISession s, PermissionsUtility perms, long responsibilityGroupId) {
+			var resGroup = s.Get<ResponsibilityGroupModel>(responsibilityGroupId);
+			long orgId;
 
-				if (resGroup is OrganizationModel) orgId = resGroup.Id;
-				else orgId = resGroup.Organization.Id;
+			if (resGroup is OrganizationModel)
+				orgId = resGroup.Id;
+			else
+				orgId = resGroup.Organization.Id;
 
-				try{
-					var a=resGroup.GetName();
-					var b=resGroup.GetImageUrl();
+			try {
+				var a = resGroup.GetName();
+				var b = resGroup.GetImageUrl();
+			} catch {
+
+			}
+
+			perms.ViewOrganization(orgId);
+			return resGroup;
+		}
+
+		public ResponsibilityGroupModel GetResponsibilityGroup(UserOrganizationModel caller, long responsibilityGroupId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					return GetResponsibilityGroup(s, perms, responsibilityGroupId);
 				}
-				catch{
-			    
+			}
+		}
+
+		public static void ReorderSection(UserOrganizationModel caller, long sectionId, int oldOrder, int newOrder) {
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					PermissionsUtility.Create(s, caller).EditOrganizationQuestions(caller.Organization.Id);
+					var found = s.Get<AskableSectionModel>(sectionId);
+					if (found.OrganizationId != caller.Organization.Id)
+						throw new PermissionsException();
+
+					var items = s.QueryOver<AskableSectionModel>().Where(x => x.DeleteTime == null && x.OrganizationId == caller.Organization.Id).List().ToList();
+
+					Reordering.Create(items, sectionId, null, oldOrder, newOrder, x => x._Ordering, x => x.Id)
+							  .ApplyReorder(s);
+
+
+					tx.Commit();
+					s.Flush();					
 				}
+			}
+		}
 
-				perms.ViewOrganization(orgId);
-				return resGroup;
-	    }
+		public static List<AskableSectionModel> GetAllSections(UserOrganizationModel caller, long organizationId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					PermissionsUtility.Create(s,caller).ViewOrganization(organizationId);
 
-        public ResponsibilityGroupModel GetResponsibilityGroup(UserOrganizationModel caller, long responsibilityGroupId)
-        {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction()){
-	                var perms = PermissionsUtility.Create(s, caller);
-	                return GetResponsibilityGroup(s, perms, responsibilityGroupId);
-                }
-            }
-        }
+					return s.QueryOver<AskableSectionModel>()
+								.Where(x => x.DeleteTime == null && x.OrganizationId == organizationId)								
+								.List().OrderBy(x => x._Ordering).ToList();
 
-        public List<ResponsibilityModel> GetResponsibilities(UserOrganizationModel caller, long responsibilityGroupId)
-        {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
-                    var responsibilities = s.QueryOver<ResponsibilityModel>().Where(x => x.ForResponsibilityGroup == responsibilityGroupId).List().ToList();
+				}
+			}
+		}
 
-                    var orgs = responsibilities.Select(x => x.ForOrganizationId).Distinct().ToList();
-                    var permissions = PermissionsUtility.Create(s, caller);
-                    foreach (var oId in orgs)
-                    {
-                        permissions.ViewOrganization(oId);
-                    }
-                    return responsibilities;
-                }
-            }
-        }
+		public static AskableSectionModel GetSection(UserOrganizationModel caller, long sectionId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 
-        private static TeamAccessor _TeamAccessor = new TeamAccessor();
-        private static PositionAccessor _PositionAccessor = new PositionAccessor();
+					var section = s.Get<AskableSectionModel>(sectionId);
+					PermissionsUtility.Create(s, caller).ViewOrganization(section.OrganizationId);
+					return section;
 
-	    public static List<UserOrganizationModel> GetResponsibilityGroupMembers(ISession s, PermissionsUtility perm, long rgmId)
-	    {
-		    var found = s.Get<ResponsibilityGroupModel>(rgmId);
+				}
+			}
+		}
 
-		    if (found is UserOrganizationModel){
-			    perm.ViewUserOrganization(found.Id, false);
-			    return new List<UserOrganizationModel>(){(UserOrganizationModel)found};
-		    }else if (found is OrganizationModel){
+		public static AskableSectionModel EditSection(UserOrganizationModel caller, AskableSectionModel section) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+
+					PermissionsUtility.Create(s, caller).EditOrganizationQuestions(caller.Organization.Id);
+					if (section.Id == 0) {
+						section.OrganizationId = caller.Organization.Id;
+
+						section._Ordering = s.QueryOver<AskableSectionModel>()
+							.Where(x => x.DeleteTime == null && x.OrganizationId == section.OrganizationId)
+							.Select(x => x._Ordering)
+							.List<int>().Max();
+
+						s.Save(section);
+					} else {
+						var found = s.Get<AskableSectionModel>(section.Id);
+						if (found.OrganizationId != caller.Organization.Id)
+							throw new PermissionsException();
+						if (found.OrganizationId != section.OrganizationId)
+							throw new PermissionsException();
+						s.Merge(section);
+					}
+					tx.Commit();
+					s.Flush();
+					return section;
+				}
+			}
+
+
+		}
+
+		public List<ResponsibilityModel> GetResponsibilities(UserOrganizationModel caller, long responsibilityGroupId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var responsibilities = s.QueryOver<ResponsibilityModel>().Where(x => x.ForResponsibilityGroup == responsibilityGroupId).List().ToList();
+
+					var orgs = responsibilities.Select(x => x.ForOrganizationId).Distinct().ToList();
+					var permissions = PermissionsUtility.Create(s, caller);
+					foreach (var oId in orgs) {
+						permissions.ViewOrganization(oId);
+					}
+					return responsibilities;
+				}
+			}
+		}
+
+		private static TeamAccessor _TeamAccessor = new TeamAccessor();
+		private static PositionAccessor _PositionAccessor = new PositionAccessor();
+
+		public static List<UserOrganizationModel> GetResponsibilityGroupMembers(ISession s, PermissionsUtility perm, long rgmId) {
+			var found = s.Get<ResponsibilityGroupModel>(rgmId);
+
+			if (found is UserOrganizationModel) {
+				perm.ViewUserOrganization(found.Id, false);
+				return new List<UserOrganizationModel>() { (UserOrganizationModel)found };
+			} else if (found is OrganizationModel) {
 #pragma warning disable CS0618 // Type or member is obsolete
 				return OrganizationAccessor.GetAllUserOrganizations(s, perm, found.Id);
 #pragma warning restore CS0618 // Type or member is obsolete
-			} else if (found is OrganizationTeamModel){
-			    return TeamAccessor.GetTeamMembers(s.ToQueryProvider(true), perm, found.Id, true).Select(x => x.User).ToList();
-		    }else if (found is OrganizationPositionModel){
-				return OrganizationAccessor.GetUsersWithOrganizationPositions(s, perm, found.Organization.Id,rgmId);
-		    }else{
+			} else if (found is OrganizationTeamModel) {
+				return TeamAccessor.GetTeamMembers(s.ToQueryProvider(true), perm, found.Id, true).Select(x => x.User).ToList();
+			} else if (found is OrganizationPositionModel) {
+				return OrganizationAccessor.GetUsersWithOrganizationPositions(s, perm, found.Organization.Id, rgmId);
+			} else {
 				throw new ArgumentOutOfRangeException();
-		    }
-	    }
+			}
+		}
 
 		public static IEnumerable<long> GetMemberIds(ISession s, PermissionsUtility perm, long rgmId) {
 			return GetMemberIds(s, perm, rgmId.AsList());
@@ -162,17 +223,14 @@ namespace RadialReview.Accessors
 
 
 
-		public List<ResponsibilityGroupModel> GetResponsibilityGroupsForUser(UserOrganizationModel caller, long userId)
-        {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
-                    var perms = PermissionsUtility.Create(s, caller);
-                    return GetResponsibilityGroupsForUser(s.ToQueryProvider(true), perms, userId);
-                }
-            }
-        }
+		public List<ResponsibilityGroupModel> GetResponsibilityGroupsForUser(UserOrganizationModel caller, long userId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					return GetResponsibilityGroupsForUser(s.ToQueryProvider(true), perms, userId);
+				}
+			}
+		}
 
 		public static IEnumerable<long> GetGroupIdsForUser(ISession s, PermissionsUtility perms, long userId) {
 			perms.ViewUserOrganization(userId, false);
@@ -182,72 +240,68 @@ namespace RadialReview.Accessors
 			output.Add(TeamAccessor.GetUsersTeamIds(s, perms, userId));
 			output.Add(PositionAccessor.GetPositionIdsForUser(s, perms, userId));
 			output.Add(TeamAccessor.GetUsersTeamIds(s, perms, userId));
-			
-			return output.SelectMany(x=>x);
+
+			return output.SelectMany(x => x);
 		}
 
 
 
-		public static List<ResponsibilityGroupModel> GetResponsibilityGroupsForUser(AbstractQuery s, PermissionsUtility permissions, long userId)
-        {
-            var teams = TeamAccessor.GetUsersTeams(s, permissions, userId);
+		public static List<ResponsibilityGroupModel> GetResponsibilityGroupsForUser(AbstractQuery s, PermissionsUtility permissions, long userId) {
+			var teams = TeamAccessor.GetUsersTeams(s, permissions, userId);
 
-            permissions.ViewUserOrganization(userId, false);
-            var user = s.Get<UserOrganizationModel>(userId);
+			permissions.ViewUserOrganization(userId, false);
+			var user = s.Get<UserOrganizationModel>(userId);
 
-            var responsibilityGroups = new List<ResponsibilityGroupModel>();
-            //User
-            responsibilityGroups.Add(user);
-            //Positions
-            responsibilityGroups.AddRange(user.Positions.ToListAlive().Select(x => x.Position));
-            //Teams
-            responsibilityGroups.AddRange(teams.ToListAlive().Select(x => x.Team));
+			var responsibilityGroups = new List<ResponsibilityGroupModel>();
+			//User
+			responsibilityGroups.Add(user);
+			//Positions
+			responsibilityGroups.AddRange(user.Positions.ToListAlive().Select(x => x.Position));
+			//Teams
+			responsibilityGroups.AddRange(teams.ToListAlive().Select(x => x.Team));
 			return responsibilityGroups;
-        }
+		}
 
-        public void EditResponsibility(UserOrganizationModel caller, long responsibilityId, String responsibility = null,
-			long? categoryId = null, long? responsibilityGroupId = null, bool? active = null, WeightType? weight = null,bool? required = null,AboutType? onlyAsk= null,bool updateOutstandingReviews=false)
-        {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                var r = new ResponsibilityModel();
-                using (var tx = s.BeginTransaction())
-                {
-                    var permissions = PermissionsUtility.Create(s, caller);
+		public void EditResponsibility(UserOrganizationModel caller, long responsibilityId, String responsibility = null,
+			long? categoryId = null, long? responsibilityGroupId = null, bool? active = null, WeightType? weight = null,
+			bool? required = null, AboutType? onlyAsk = null, bool updateOutstandingReviews = false,long? sectionId=null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				var r = new ResponsibilityModel();
+				using (var tx = s.BeginTransaction()) {
+					var permissions = PermissionsUtility.Create(s, caller);
 
-                    if (responsibilityId == 0)
-                    {
-                        if (responsibility == null || categoryId == null || responsibilityGroupId == null)
-                            throw new PermissionsException();
+					if (responsibilityId == 0) {
+						if (responsibility == null || categoryId == null || responsibilityGroupId == null)
+							throw new PermissionsException();
 
-                        var rg = s.Get<ResponsibilityGroupModel>(responsibilityGroupId.Value);
-                        permissions.ViewOrganization(rg.Organization.Id);
-                        r.ForResponsibilityGroup = responsibilityGroupId.Value;
-                        r.Responsibility = responsibility;
-                        r.Required = true;
-                        r.ForOrganizationId = caller.Organization.Id;
-                        s.Save(r);
-                        rg.Responsibilities.Add(r);
-                        s.Update(rg);
-                    }else{
-                        r = s.Get<ResponsibilityModel>(responsibilityId);
+						var rg = s.Get<ResponsibilityGroupModel>(responsibilityGroupId.Value);
+						permissions.ViewOrganization(rg.Organization.Id);
+						r.ForResponsibilityGroup = responsibilityGroupId.Value;
+						r.Responsibility = responsibility;
+						r.Required = true;
+						r.ForOrganizationId = caller.Organization.Id;
+						s.Save(r);
+						rg.Responsibilities.Add(r);
+						s.Update(rg);
+					} else {
+						r = s.Get<ResponsibilityModel>(responsibilityId);
 
-                        if (responsibilityGroupId != null && responsibilityGroupId != r.ForResponsibilityGroup)//Cant change responsibility Group
-                            throw new PermissionsException();
+						if (responsibilityGroupId != null && responsibilityGroupId != r.ForResponsibilityGroup)//Cant change responsibility Group
+							throw new PermissionsException();
 
 						responsibilityGroupId = r.ForResponsibilityGroup;
-                    }
+					}
 
 
 					permissions.EditOrganization(r.ForOrganizationId);
 
-                    if (responsibility != null)
-                        r.Responsibility = responsibility;
+					if (responsibility != null)
+						r.Responsibility = responsibility;
 
-                    if (categoryId != null){
-                        permissions.ViewCategory(categoryId.Value);
-                        var cat = s.Get<QuestionCategoryModel>(categoryId.Value);
-                        r.Category = cat;
+					if (categoryId != null) {
+						permissions.ViewCategory(categoryId.Value);
+						var cat = s.Get<QuestionCategoryModel>(categoryId.Value);
+						r.Category = cat;
 
 						if (ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.THUMBS).Id == cat.Id) {
 							r.SetQuestionType(QuestionType.Thumbs);
@@ -259,75 +313,67 @@ namespace RadialReview.Accessors
 							r.SetQuestionType(QuestionType.GWC);
 						}*/
 
-                    }
+					}
 
-                    if (active != null)
-                    {
-                        if (active == true)
-                            r.DeleteTime = null;
-                        else
-                            r.DeleteTime = DateTime.UtcNow;
-                    }
+					if (sectionId != null) {
+						var section = s.Get<AskableSectionModel>(sectionId);
+						permissions.ViewOrganization(section.OrganizationId);
+					}
 
-	                if (required != null)
-		                r.Required = required.Value;
-                    if (weight != null)
-                        r.Weight = weight.Value;
+					r.SectionId = sectionId;
+
+					if (active != null) {
+						if (active == true)
+							r.DeleteTime = null;
+						else
+							r.DeleteTime = DateTime.UtcNow;
+					}
+
+					if (required != null)
+						r.Required = required.Value;
+					if (weight != null)
+						r.Weight = weight.Value;
 					if (onlyAsk != null)
 						r.OnlyAsk = onlyAsk.Value;
-					
+
 
 					// update outstanding reviews.
 					if (updateOutstandingReviews) {
-						var	outstanding = ReviewAccessor.OutstandingReviewsForOrganization_Unsafe(s, r.ForOrganizationId);
-
+						var outstanding = ReviewAccessor.OutstandingReviewsForOrganization_Unsafe(s, r.ForOrganizationId);
 						if (outstanding.Any()) {
 							var members = GetResponsibilityGroupMembers(s, permissions, responsibilityGroupId.Value);
 							var reviewees = members.Select(x => new Reviewee(x));
 							foreach (var o in outstanding) {
 								ReviewAccessor.AddResponsibilityAboutUsersToReview(s, permissions, o.Id, reviewees, r.Id);
-							}
-
-							//foreach (var member in members) {
-							//	var userId = member.Id;
-							//		ReviewAccessor.AddResponsibilityAboutUserToReview(s, permissions, o.Id, new Reviewee(userId, null), r.Id);
-							//	}
-							//}							
+							}					
 						}
 					}
+					s.Update(r);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
 
-                    s.Update(r);
-                    tx.Commit();
-                    s.Flush();
-                }
-            }
-        }
+		public bool SetActive(UserOrganizationModel caller, long responsibilityId, Boolean active) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var responsibility = s.Get<ResponsibilityModel>(responsibilityId);
+					PermissionsUtility.Create(s, caller).EditOrganization(responsibility.ForOrganizationId);
+					if (active == true) {
+						responsibility.DeleteTime = null;
+					} else {
+						if (responsibility.DeleteTime == null)
+							responsibility.DeleteTime = DateTime.UtcNow;
+					}
+					s.Update(responsibility);
+					tx.Commit();
+					s.Flush();
+					return active;
+				}
+			}
+		}
 
-        public bool SetActive(UserOrganizationModel caller, long responsibilityId,Boolean active)
-        {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
-                    var responsibility = s.Get<ResponsibilityModel>(responsibilityId);
-                    PermissionsUtility.Create(s, caller).EditOrganization(responsibility.ForOrganizationId);
-                    if (active == true)
-                    {
-                        responsibility.DeleteTime = null;
-                    }
-                    else
-                    {
-                        if (responsibility.DeleteTime==null)
-                            responsibility.DeleteTime = DateTime.UtcNow;
-                    }
-                    s.Update(responsibility);
-                    tx.Commit();
-                    s.Flush();
-                    return active;
-                }
-            }
-        }
-
-        //public void SetActive(UserOrganizationModel caller,long respon
-    }
+		//public void SetActive(UserOrganizationModel caller,long respon
+	}
 }

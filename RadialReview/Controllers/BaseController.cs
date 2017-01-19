@@ -199,7 +199,7 @@ namespace RadialReview.Controllers {
             long? userOrganizationId = null;
 
             if (userOrganizationId == null) {
-                var orgIdParam = Request.Params.Get("organizationId");
+                var orgIdParam = Request.Params.Get("setUserOrganizationId");
                 if (orgIdParam != null)
                     userOrganizationId = long.Parse(orgIdParam);
             }
@@ -241,7 +241,7 @@ namespace RadialReview.Controllers {
             /**/
             if (userOrganizationId == null) {
                 try {
-                    var orgIdParam = Request.Params.Get("organizationId");
+                    var orgIdParam = Request.Params.Get("setUserOrganizationId");
                     if (orgIdParam != null)
                         userOrganizationId = long.Parse(orgIdParam);
                 } catch (Exception) {

@@ -1109,7 +1109,7 @@ namespace RadialReview.Utilities {
 
 			foreach (var p in possibleRecurrences) {
 				try {
-					return ViewL10Recurrence(p);
+					return EditL10Recurrence(p);
 				} catch (PermissionsException) {
 					//try next one..
 				}

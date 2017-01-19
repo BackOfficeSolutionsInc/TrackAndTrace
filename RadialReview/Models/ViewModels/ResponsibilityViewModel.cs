@@ -23,6 +23,8 @@ namespace RadialReview.Models.ViewModels
         public String NewCategory { get; set; }
 		public WeightType Weight { get; set; }
 		public AboutType[] OnlyAsk { get; set; }
+		public long? SectionId { get; set; }
+		public List<SelectListItem> SectionDropdown { get; set; }
 
 		public bool UpdateOutstandingReviews { get; set; }
 
@@ -35,11 +37,15 @@ namespace RadialReview.Models.ViewModels
 
         }
 
-        public ResponsibilityViewModel(long responsibilityGroupId, ResponsibilityModel model, List<QuestionCategoryModel> categories)
+        public ResponsibilityViewModel(long responsibilityGroupId, ResponsibilityModel model, List<QuestionCategoryModel> categories,List<AskableSectionModel> sections)
         {
             Id=model.Id;
             Active = model.DeleteTime==null;
             Categories = categories;
+			SectionDropdown = sections.ToSelectList(x => x.Name, x => x.Id, model.SectionId,true);
+			SectionDropdown.Add(new SelectListItem() { Text = "<none>", Value = "null", Selected = model.SectionId == null });
+			SectionDropdown = SectionDropdown.OrderBy(x => x.Text).ToList();
+			SectionId = model.SectionId;
             /*Categories.Add(new QuestionCategoryModel() { Id = -1, Category = new LocalizedStringModel("<" + DisplayNameStrings.createNew + ">") });
 
 			TypeDropdown = new List<SelectListItem>();

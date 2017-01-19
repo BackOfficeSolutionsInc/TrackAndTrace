@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using RadialReview.Models.Askables;
+using RadialReview.Models.Interfaces;
 
 namespace RadialReview.Models.Json
 {
@@ -83,6 +85,7 @@ namespace RadialReview.Models.Json
 		public String Trace { get; set; }
 		public String TraceMessage { get; set; }
 		private bool? _Refresh { get; set; }
+		public bool IsRowUpdate { get; set; }
 
 		public bool Refresh {
 			get
@@ -136,6 +139,12 @@ namespace RadialReview.Models.Json
 			}
 			set { _Silent = value; }
 		}
+
+		//public static ResultObject UpdateRow(ILongIdentifiable model) {
+		//	var r = SilentSuccess(model);
+		//	r.IsRowUpdate = true;
+		//	return r;
+		//}
 
 		public bool NoErrorReport { get; internal set; }
 

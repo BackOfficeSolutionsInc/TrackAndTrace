@@ -376,9 +376,9 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Any)]
 		public ActionResult Redirect(int organizationId, string returnUrl) {
 			if (returnUrl.Contains("?"))
-				return RedirectToLocal(returnUrl + "&organizationId=" + organizationId);
+				return RedirectToLocal(returnUrl + "&setUserOrganizationId=" + organizationId);
 			else
-				return RedirectToLocal(returnUrl + "?organizationId=" + organizationId);
+				return RedirectToLocal(returnUrl + "?setUserOrganizationId=" + organizationId);
 		}
 
 

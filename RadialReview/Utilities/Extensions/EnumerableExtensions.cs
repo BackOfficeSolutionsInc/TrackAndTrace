@@ -88,14 +88,14 @@ namespace RadialReview
 		    return AllSame(self, selector,out dud);
 	    }
 
-        public static List<SelectListItem> ToSelectList<T>(this IEnumerable<T> self, Func<T, object> textSelector, Func<T, object> idSelector, object selected = default(object))
+        public static List<SelectListItem> ToSelectList<T>(this IEnumerable<T> self, Func<T, object> textSelector, Func<T, object> idSelector, object selected = default(object),bool anyNull=false)
         {
             return self.Select((x, i) =>
             {
                 var id = idSelector(x);
                 var text = textSelector(x);
                 var isSelected = id.Equals(selected);
-                if (selected==null || selected.Equals(default(object)))
+                if (!anyNull && (selected == null || selected.Equals(default(object))))
                     isSelected = i == 0;
                 return new SelectListItem() { Selected = isSelected, Text = text.NotNull(y=>y.ToString()), Value = id.NotNull(y=>y.ToString()) };
             }).ToList();

@@ -2074,6 +2074,8 @@
     <Content Include="Views\Admin\Events.cshtml" />
     <Content Include="Views\Notifications\partial\list.cshtml" />
     <Content Include="Views\Integrations\AddZoomModal.cshtml" />
+    <Content Include="Views\Responsibilities\Sections.cshtml" />
+    <Content Include="Views\Responsibilities\EditSection.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

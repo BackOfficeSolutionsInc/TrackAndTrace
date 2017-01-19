@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using RadialReview.Utilities;
 using RadialReview;
+using RadialReview.Models.Interfaces;
 
 namespace System.Web {
 	public static class HtmlExtensions {
@@ -41,9 +42,9 @@ namespace System.Web {
 			return time;
 		}
 
-		public static HtmlString ConvertFromUtcLocal(this HtmlHelper html, DateTime utcDate,string format=null) {
+		public static HtmlString ConvertFromUtcLocal(this HtmlHelper html, DateTime utcDate, string format = null) {
 			var guid = "date_" + Guid.NewGuid().ToString().Replace("-", "");
-			var formatArg = format == null ? "" : ",\"" + format+"\"";
+			var formatArg = format == null ? "" : ",\"" + format + "\"";
 			var str = $@"<span class=""display-date local {guid}"" id=""{guid}""><script>document.getElementById(""{guid}"").innerHTML=getFormattedDate(ConvertFromServerTime({utcDate.ToJavascriptMilliseconds()}){formatArg});</script></span>";
 			return new HtmlString(str);
 		}
@@ -234,9 +235,16 @@ namespace System.Web {
 
 		public static MvcHtmlString ArrayToString<T>(this HtmlHelper html, IEnumerable<T> items) {
 			return new MvcHtmlString(Json.Encode(items));
-
 		}
 
+
+		//public class TableOptions {
+		//	public string @class { get; set; }
+		//}
+
+		//public static MvcHtmlString Table<T>(this HtmlHelper html, IEnumerable<T> row,TableOptions options, params Func<T,MvcHtmlString>[] cells) where T : ILongIdentifiable {
+		//	StringBuilder
+		//}
 
 
 		#region Blocks

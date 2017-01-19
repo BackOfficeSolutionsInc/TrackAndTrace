@@ -23,8 +23,7 @@
 			@Html.TextBoxFor(x => x.NewCategory, new { id = "newCategoryInput", placeholder = "New category name", @class = "form-control" })
 		</div>
 	</div>
-	<div class="smallBreak"></div>
-	<div class="smallBreak"></div>
+	<div class="smallBreak2"></div>
 	<div class="row">
 		<div class="col-sm-3">
 			<label>Importance:</label>
@@ -33,8 +32,7 @@
 			@Html.EnumDropDownListFor(x => x.Weight, new { @class = "form-control" })
 		</div>
 	</div>
-	<div class="smallBreak"></div>
-	<div class="smallBreak"></div>
+	<div class="smallBreak2"></div>
 	<div class="row">
 		<div class="col-sm-3">
 			<label>Question:</label>
@@ -43,9 +41,7 @@
 			@Html.TextBoxFor(x => x.Responsibility, new { @class = "form-control" })
 		</div>
 	</div>
-	<div class="smallBreak"></div>
-	<div class="smallBreak"></div>
-
+	<div class="smallBreak2"></div>
 	<div class="row">
 		<div class="col-sm-3">
 			<label>Required:</label>
@@ -54,9 +50,7 @@
 			@Html.CheckBoxFor(x => x.Required, new { @class = "checkbox" })
 		</div>
 	</div>
-	<div class="smallBreak"></div>
-	<div class="smallBreak"></div>
-
+	<div class="smallBreak2"></div>
 	<div class="row">
 		<div class="col-sm-3">
 			<label>Enabled:</label>
@@ -64,8 +58,8 @@
 		<div class="col-sm-1">
 			@Html.CheckBoxFor(x => x.Active, new { @class = "checkbox" })
 		</div>
-	</div><div class="smallBreak"></div>
-	<div class="smallBreak"></div>
+	</div>
+	<div class="smallBreak2"></div>
 	<div class="row">
 		<div class="col-sm-3">
 			<label>Anonymous:</label>
@@ -74,7 +68,7 @@
 			@Html.CheckBoxFor(x => x.Anonymous, new { @class = "checkbox" })
 		</div>
 	</div>
-	<div class="smallBreak"></div>
+	<div class="smallBreak2"></div>
 	<div class="row">
 		<div class="col-sm-3">
 			<label>Ask about:</label>
@@ -88,7 +82,16 @@
 
 		</div>
 	</div>
-	<div class="smallBreak"></div>
+	<div class="smallBreak2"></div>
+	<div class="row">
+		<div class="col-sm-3">
+			<label>Section:</label>
+		</div>
+		<div class="col-sm-9">
+			@Html.DropDownListFor(x => x.SectionId, Model.SectionDropdown.OrderBy(x => x.Text), new { id = "positionSelector", @class = "form-control" })
+		</div>
+	</div>
+	<div class="smallBreak2"></div>
 	<div class="row">
 		<div class="col-sm-3">
 			<label>Update Outstanding Reviews:</label>

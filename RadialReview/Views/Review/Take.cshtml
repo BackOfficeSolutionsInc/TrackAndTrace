@@ -1,5 +1,4 @@
 ﻿@model RadialReview.Controllers.ReviewController.TakeViewModel
-
 @{
 	ViewBag.Title = "Review";
 	Layout = "~/Views/Shared/_ReviewLayout.cshtml";
@@ -8,10 +7,10 @@
 @using RadialReview.Models
 @using RadialReview.Models.Askables
 
-
 @section header{
-
+	<!--Don't delete me-->
 }
+
 @section top{
 	@if (!Model.Editable) {
 		<div class="alertBar progress past-due">
@@ -34,7 +33,6 @@
 }
 
 @section sidebar{
-
 	<div class="hidden-xs hidden-sm">
 		<div class="flipButton" onclick="$('.flipCard,.nameFade').toggleClass('flipped');"><span class="glyphicon glyphicon-share-alt"></span></div>
 		<div class="userContainer noselect">
@@ -64,7 +62,6 @@
 							</ol>
 							<hr />
 							<div class="alignCenter" style="padding:5px;padding-top: 14px;"><a class="btn btn-default reviewOthersButton" href="@Url.Action("AdditionalReview", new { id = Model.Id ,page = Model.Page })">Evaluate Others <span class="glyphicon glyphicon-plus gray"></span></a></div>
-
 						</div>
 					</div>
 				</figure>
@@ -84,7 +81,6 @@
 							</span>
 						</span>
 						<a class="@(i == Model.Page ? "currentPage" : "")" href="@Url.Action("take", new{id = Model.Id, page = i} )">@Model.OrderedPeople[i].Item1</a>
-
 					</li>
 				}
 			</ol>
@@ -93,9 +89,7 @@
 			<br />
 		</div>
 	</div>
-
 }
-
 
 @Html.HiddenFor(x => x.StartTime.Ticks)
 @if (Model.Page == 0 && Model.Editable && Model.FirstPageHint) {
@@ -122,9 +116,10 @@
 	<div class="col-md-12">
 		<div>
 			<div class="smallBreak"></div>
-			@foreach (var section in Model.Answers.GroupBy(x => x.BaseAnswer.Askable.SectionId)) {
-				<div class="section">
-					<div class="section-title">@(Model.Sections[section.Key].Name)</div>
+			@foreach (var section in Model.Answers.GroupBy(x => x.BaseAnswer.Askable.SectionId).OrderBy(x=> x.Key==null? -1:Model.Sections[x.Key.Value]._Ordering)) {
+				<div class="section" style="position:relative;">
+					<div class="section-color" style="width:4px;top:30px;bottom:0px;position:absolute;background-color:@(section.Key.NotNull(x=> Model.Sections[x.Value].Color))"></div>
+					<h4 class="section-title" data-order="@(section.Key==null?"null":""+Model.Sections[section.Key.Value]._Ordering)">@(section.Key.NotNull(x=> Model.Sections[x.Value].Name))</h4>
 					@foreach (var group in section.GroupBy(x => x.BaseAnswer.Askable.Category.Id).OrderByDescending(x => x.Key)) {
 						var dict = new ViewDataDictionary(ViewData);
 
@@ -139,9 +134,9 @@
 						dict["Max"] = group.Count();
 
 						<div class="panel panel-default">
-							<div class="panel-heading">
-								<h3 class="panel-title">@group.FirstOrDefault().NotNull(x => x.BaseAnswer.Askable.Category.Category.Translate())</h3>
-							</div>
+							@*<div class="panel-heading">
+								<h3 class="panel-title">@*group.FirstOrDefault().NotNull(x => x.BaseAnswer.Askable.Category.Category.Translate())*</h3>
+							</div>*@
 							<div class="panel-body">
 								@Html.Partial("Take/GWC", Tuple.Create(gwcs, Model.Editable), dict)
 								@Html.Partial("Take/Values", Tuple.Create(values, Model.Editable), dict)
@@ -167,9 +162,6 @@
 
 
 @using (Html.BeginScripts()) {
-	@*<script src="~/Scripts/review/review.js"></script>
-		<script src="~/Scripts/review/translateSlider.js"></script>
-		<script src="~/Scripts/jquery/jquery-simple-slider.js"></script>*@
 	@Scripts.Render("~/bundles/TakeReview")
 	<script>
 		var canUpdate = true;
@@ -233,19 +225,15 @@
 
 			if (tips.length > 0) {
 				setTimeout(function () {
-					//Special case.
 					var windowWidth = $(window).width();
 					if (tips[0].selector.is("#nameList") && windowWidth < 767) {
-						//debugger;
 						tips[0].selector = $(".visible-xs #nameList");
 					}
 
 					var tip = tips[0].tip;
 					var heading = tips[0].heading;
 					var item = $(tips[0].selector);
-
-
-
+					
 					if (item.length == 0) {
 						tips.splice(0, 1);
 						runTips();
@@ -296,13 +284,6 @@
 
 		function slideUpdate(d) {
 			var name = $(this).attr("name");
-			/* var answers = ["Never", "Seldom", "Sometimes", "Usually", "Mostly", "Always", "Above and Beyond"];
-			 var div = 100 / answers.length;
-			 var i = Math.floor(d.value / div);
-
-			 var answer = answers[i];
-			 if (d.value == 0)
-				 answer = "No Answer";*/
 
 			var disp = d.value;
 			if (d.value == 0) {
@@ -337,33 +318,18 @@
 		}
 
 		$(function () {
-
-			/*
-			$(".sliderInput").slider().on('calculate', slideUpdate);//.on('click', slideUpdate).on('slideStop', slideUpdate);
-
-			$(".sliderBar").each(function () {
-				sliderUpdateInternal(this);
-			});*/
 			$(".sliderBar").bind("slider:changed", function (event, data) {
-				// The currently selected value of the slider
-
 				slideUpdate.call(this, data);
 			});
 			$(".sliderBar").each(function (d) {
 				slideUpdate.call(this, this);
 			});
 			$('.btn-group').button();
-
 			resetHints();
-
 			setTimeout(function () {
 				$('.flipCard,.nameFade,.flipButton').addClass("flipped");
 			}, 1500);
-
 		});
-
-
-
 	</script>
 	if (ViewBag.NoSubmit == null) {
 		<script>
@@ -429,8 +395,6 @@
 }
 
 @using (Html.BeginStyles()) {
-	@*<link href="~/Content/simple-slider.css" rel="stylesheet" />
-		<link href="~/Content/Review.css" rel="stylesheet" />*@
 	@Styles.Render("~/Content/TakeReview")
 	<style>
 		html, body {
@@ -440,11 +404,7 @@
 		.qtip-grays {
 			background-color: #f7f7f7;
 		}
-
-		.complete a {
-			/*color: #52AC52 !important;*/
-		}
-
+		
 		.incomplete a {
 			color: #D68585 !important;
 		}
@@ -465,7 +425,6 @@
 		}
 
 		.tip.posneg, textarea.tip, .reviewOthersButton.tip {
-			/*border: 1px solid #6c584b !important;*/
 			box-shadow: 0 0 8px 2px #6c584b;
 		}
 
@@ -473,8 +432,6 @@
 			opacity: 1;
 			color: #EF7622;
 		}
-
-
 
 		@@-webkit-keyframes thumb {
 			0% {

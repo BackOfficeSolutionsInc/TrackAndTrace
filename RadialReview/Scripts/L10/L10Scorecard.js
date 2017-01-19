@@ -10,7 +10,7 @@ $(function () {
 		if (!d) { mode = "scan"; }
 		$(this).focus();
 	});
-	$(".main-window-container").on("change", ".grid", function (e, d) { if (!d){ mode = "type";} });
+	$(".main-window-container").on("change", ".grid", function (e, d) { if (!d) { mode = "type"; } });
 	$(".main-window-container").on("scroll", ".grid", function (e) {
 		console.log("scroll!");
 		if (mode == "type") {
@@ -30,18 +30,13 @@ function blurChangeTimeout(key, self, d, i, executeNow) {
 		}
 	} else {
 		var val = $(self).val();
-		//if (val.indexOf("$") != -1) {
-		//	debugger;
-		//}
 
 		setScoreTransform(self, val);
 		updateScore(self);
 		if (!d) {
 			if ($(self).attr("data-oldval") != val) {
 				updateServerScore(self);
-			} //else {
-			//	//console.error("Value not updated"+$(self).attr("data-value"));
-			//}
+			}
 		}
 	}
 }
@@ -65,18 +60,12 @@ function blurChange(e, d) {
 //THESE ONLY WORK ON NON-ANGULAR FORMS
 $("body").on("blur change", ".scorecard-table .score:not(.ng-scope) input", blurChange);
 $("body").on("focus", ".scorecard-table .score:not(.ng-scope) input", function (e) {
-	//console.log("Called focus");
-	//console.log(this);
 	var val = getScoreTransform(this);
-	//console.log(val);
 	canMoveCells = false;
 	$(this).val(val);
-	//this.value = val;
-	//$(this).attr("value",val);
 	$(this).attr("data-isformatted", "false");
 	canMoveCells = true;
 	e.preventDefault();
-	//console.log(this);
 });
 
 function transformNumber(value, units) {
@@ -148,7 +137,6 @@ function setScoreTransform(self, value) {
 	$(self).attr("data-value", value);
 	var unitType = $(self).closest("tr").find(".unit").html();
 	var transf = transformNumber(value, unitType);
-	//console.log("Setting value:" + transf);
 	$(self).val(transf);
 	$(self).attr("data-isformatted", "true");
 
@@ -192,7 +180,7 @@ function updateServerScore(self) {
 	var m = $(self).data("measurable");
 	var w = $(self).data("week");
 	var id = $(self).data("scoreid");
-	var val = getScoreTransform(self);//$(self).attr("data-value");//.val();
+	var val = getScoreTransform(self);
 	var dom = $(self).attr("id");
 	var oldVal = $(self).attr("data-oldval");
 	$.ajax({
@@ -200,9 +188,7 @@ function updateServerScore(self) {
 		success: function (data) {
 			if (data.Error) {
 				showJsonAlert(data);
-				//$(self).attr("data-value", oldVal);
 				setScoreTransform(self, oldVal);
-				//$(self).val(oldVal);
 			} else {
 				$(self).attr("data-oldval", val);
 			}
@@ -215,10 +201,7 @@ function updateServerScore(self) {
 }
 
 function makeXEditable_Scorecard(selector) {
-
 	var placement = $(this).attr("data-placement") || "left";
-	//var mode = "inline";
-	//if ($(this).hasClass("accountable"))
 	var mode = "popup";
 	$(selector).editable({
 		mode: mode,
@@ -290,9 +273,6 @@ function makeXEditable_Scorecard(selector) {
 			}
 			if ($(this).hasClass("who") && $(this).hasClass("accountable")) {
 				var aid = value || $(this).data("accountable");
-				//var url = $(this).data("accountable-url");
-				//var initials = $(this).data("accountable-initials");
-				//var name = $(this).data("accountable-name");
 				var name = "";
 				var initials = "n/a";
 				var url = null;
@@ -311,26 +291,21 @@ function makeXEditable_Scorecard(selector) {
 			return null;
 		},
 		success: function (data, newVal) {
-
 			var items = $(".grid[data-measurable=" + $(this).data("measurable") + "]");
-
 			if ($(this).data("name") == "direction") {
 				$(items).filter(".future-score").attr("data-goal-dir", $(this).attr("data-value"));
 			} else if ($(this).data("name") == "target") {
 				$(items).filter(".future-score").attr("data-goal", $(this).attr("data-value"));
 			}
 			var isUnit = $(this).hasClass("unit");
-
 			if (isUnit) {
 				$("[data-measurable=" + $(this).data("measurable") + "] .unit").html((newVal || "").toLowerCase());
 			}
-
 			$(items).each(function (d) {
 				updateScore(this);
 				if (isUnit) {
 					setScoreTransform(this, getScoreTransform(this));
 				}
-
 			});
 		}
 	});
@@ -344,7 +319,6 @@ function addMeasurable(data, smallTable) {
 	makeXEditable_Scorecard("#ScorecardTable_Over .inlineEdit:not(.editable)");
 
 	updateScore($("#ScorecardTable").find(".score input").last());
-
 	updateScorecardNumbers();
 
 	$(".scorecard-holder").removeClass("hidden");
@@ -363,21 +337,17 @@ function updateArchiveMeasurable(id, name, text, value) {
 
 function updateMeasurable(id, name, text, value) {
 	var sel = $("[data-pk='" + id + "'][data-name='" + name + "']");
-
 	sel.html(text);
 	if (typeof value === 'undefined')
 		value = text;
 	sel.attr("data-value", value);
 	highlight(sel);
 
-
 	$($("tr[data-meetingmeasurable='" + id + "'] .score.future input")).each(function (d) {
-
 		if (name == "target")
 			$(this).attr("data-goal", value);
 		if (name == "direction")
 			$(this).attr("data-goal-dir", value);
-
 		updateScore(this, false);
 	});
 }
@@ -394,7 +364,7 @@ function updateScore(self, skipChart) {
 		var goal = $(self).attr("data-goal");
 		var altgoal = $(self).attr("data-alt-goal");
 		var dir = $(self).attr("data-goal-dir");
-		var v = getScoreTransform(self);//$(self).val();
+		var v = getScoreTransform(self);
 		var id = $(self).attr("data-measurable");
 
 		var r1 = "";
@@ -407,7 +377,6 @@ function updateScore(self, skipChart) {
 		$(parentCell).removeClass("success");
 		$(parentCell).removeClass("danger");
 		if (!$.trim(v)) {
-			//$(self).removeClass("error");
 			//do nothing
 		} else {
 			var met = metGoal(dir, goal, v, altgoal);
@@ -426,7 +395,6 @@ function updateScore(self, skipChart) {
 			var max = goal;
 
 			row.find("td.score").each(function (i) {
-				//var v = parseFloat($(this).find("input").val());
 				var v = parseFloat(getScoreTransform($(this).find("input")));
 				if (myIsNaN(v))
 					arr.push(null);
@@ -434,14 +402,12 @@ function updateScore(self, skipChart) {
 					min = Math.min(min, v);
 					max = Math.max(max, v);
 					arr.push(v);
-
 				}
 			});
-
 			var range;
 			var green = 'rgb(92 ,184,92)';
 			var red = 'rgb(217 ,83, 79)';
-			if (metGoal(dir, 0, 1)) {//dir == "GreaterThan") {
+			if (metGoal(dir, 0, 1)) {
 				var d = {};
 				d[(":" + goal)] = red;
 				d[(goal + ":")] = green;
@@ -492,7 +458,6 @@ function changeInput(event) {
 		) {
 		if (event.which == 37) { //left
 			found = $(".grid[data-col=" + (+$(this).data("col") - 1) + "][data-row=" + $(this).data("row") + "]");
-			//found = $(".grid[data-col=" + (curColumn - 1) + "][data-row=" + curRow + "]");
 			goingLeft = true;
 		} else if (event.which == 38) { //up
 			var curRow = (+$(this).data("row") - 1);
@@ -507,10 +472,8 @@ function changeInput(event) {
 				}
 				curRow -= 1;
 			}
-			//found = $(".grid[data-row=" + (curRow - 1) + "][data-col=" + curColumn + "]");
 		} else if (event.which == 39) { //right
 			found = $(".grid[data-col=" + (+$(this).data("col") + 1) + "][data-row=" + $(this).data("row") + "]");
-			//found = $(".grid[data-col=" + (curColumn + 1) + "][data-row=" + curRow + "]");
 			goingRight = true;
 		} else if (event.which == 40 || event.which == 13) { //down
 			var curRow = (+$(this).data("row") + 1);
@@ -525,7 +488,6 @@ function changeInput(event) {
 				}
 				curRow += 1;
 			}
-			//found = $(".grid[data-row=" + (+$(this).data("row") + 1) + "][data-col=" + $(this).data("col") + "]");
 		}
 		var keycode = event.which;
 		var validPrintable =
@@ -544,7 +506,6 @@ function changeInput(event) {
 		if (event.which == 9 /*|| event.which == 13*/) {
 			mode = "scan";
 		}
-
 	}
 
 	var input = this;
@@ -567,12 +528,8 @@ function changeInput(event) {
 }
 
 function changeCells(found, input) {
-	/*if (!canMoveCells) {
-		setTimeout(changeCells, 1);
-	} else {*/
 	var scrollPosition = [$(found).parents(".table-responsive").scrollLeft(), $(found).parents(".table-responsive").scrollTop()];
 
-	//var visible = isElementInViewport(found[0]);
 	var parent = $(found).parents(".table-responsive");
 	var parentWidth = $(parent).width();
 	var foundWidth = $(found).width();
@@ -639,14 +596,11 @@ function moveScroll(table, window) {
 }
 
 function isElementInViewport(el) {
-
 	//special bonus for those using jQuery
 	if (typeof jQuery === "function" && el instanceof jQuery) {
 		el = el[0];
 	}
-
 	var rect = el.getBoundingClientRect();
-
 	return (
         rect.top >= 0 &&
         rect.left >= 0 &&
@@ -723,10 +677,8 @@ function removeMeasurable(id) {
 }
 
 $(window).on("page-scorecard", function () {
-    scrollRight();
-
-    //$("#edit_meeting_link").attr("href","/L10/Wizard/"+recurrenceId+"?return=meeting#/Scorecard");
-
+	scrollRight();
+	
 	if (isIOS()) {
 		$('input').css("pointer-events", "none");
 	}

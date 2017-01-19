@@ -2,7 +2,7 @@
 
 var modalWidth = 991;
 $(function () {
-    
+
 	var clickTodoRow = function (evt) {
 		if ($(evt.target).hasClass("todo-checkbox"))
 			return;
@@ -20,33 +20,29 @@ $(function () {
 		var message = $(todoRow).data("message");
 		var details = $(todoRow).data("details");
 		var padId = $(todoRow).data("padid");
-		//var issueId = $(todoRow).data("issue");
 		var todo = $(todoRow).data("todo");
 
-		var due =  new Date(new Date(duedate).toUTCString().substr(0,16));
-		//var recurrence_issue = $(todoRow).data("recurrence_issue");
+		var due = new Date(new Date(duedate).toUTCString().substr(0, 16));
 		var checked = $(todoRow).find(".todo-checkbox").is(":checked");
 
 		var detailsContents = $("<div class='todoDetails abstract-details-panel'></div>");
 
-		//$("#todoDetails").html("");
 		$(detailsContents).append("<span class='expandContract btn-group pull-right'></span>");
 		$(detailsContents).append("<div class='createTime'>" + dateFormatter(new Date(createtime)) + "</div>");
 
 		$(detailsContents).append("<div class='heading'><h4 class='message-holder clickable' data-todo='" + todo + "'><span data-todo='" + todo + "' class='message editable-text'>" + message + "</span></h4></div>");
-		//$("#todoDetails").append("<textarea id='todoDetailsField' class='details todo-details' data-todo='" + todo + "'>" + details + "</textarea>");
 		$(detailsContents).append("<iframe class='details todo-details' name='embed_readwrite' src='https://notes.traction.tools/p/" + padId + "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + encodeURI(UserName) + "' width='100%' height='100%'></iframe>");
 
 		$(detailsContents).append(
 			"<div class='button-bar'>" +
-				"<div style='height:28px'>"+
+				"<div style='height:28px'>" +
 				"<span class='btn-group pull-right'>" +
 					"<span class='btn btn-default btn-xs doneButton'><input data-todo='" + todo + "' class='todo-checkbox' type='checkbox' " + (checked ? "checked" : "") + "/> Complete</span>" +
 				"</span>" +
 				"<span class='expandContract btn-group'>" +
 				"<span class='btn btn-default btn-xs copyButton issuesModal' data-method='issuefromtodo' data-todo='" + todo + "' data-recurrence='" + window.recurrenceId + "' data-meeting='" + window.meetingId + "'><span class='icon fontastic-icon-pinboard'></span> New Issue</span>" +
 				"</span>" +
-				"</div>"+
+				"</div>" +
 				"<span class='clearfix'></span>" +
 				"<span class='gray' style='width:75px;display:inline-block'>Assigned to:</span><span style='width:250px;padding-left:10px;' class='assignee' data-accountable='" + accountable + "' data-todo='" + todo + "'  ><span data-todo='" + todo + "' class='btn btn-link owner'>" + owner + "</span></span>" +
 				"<div >" +
@@ -58,7 +54,7 @@ $(function () {
 					"</span>" +
 				"</div>" +
 			"</div>");
-    	var w = $(window).width();
+		var w = $(window).width();
 		$("#todoDetails").html("");
 		if (w <= modalWidth || $(".conclusion").is(":visible")) {
 			var c = detailsContents.clone();
@@ -73,12 +69,12 @@ $(function () {
 			fixTodoDetailsBoxSize();
 		}
 	}
-    $("body").on("click", ".todo-list>.todo-row", clickTodoRow);
+	$("body").on("click", ".todo-list>.todo-row", clickTodoRow);
 
 	$("body").on("click", ".todoDetails .doneButton", function () { $(this).find(">input").trigger("click"); });
 
 	$("body").on("click", ".todoDetails .message-holder .message", function () {
-		var input = $("<textarea class='message-input' value='" + escapeString($(this).html()) + "' data-old='" + escapeString($(this).html()) + "' onblur='sendTodoMessage(this," + $(this).parent().data("todo") + ")'>"+($(this).html())+"</textarea>");
+		var input = $("<textarea class='message-input' value='" + escapeString($(this).html()) + "' data-old='" + escapeString($(this).html()) + "' onblur='sendTodoMessage(this," + $(this).parent().data("todo") + ")'>" + ($(this).html()) + "</textarea>");
 		$(this).parent().html(input);
 		input.focusTextToEnd();
 	});
@@ -88,8 +84,8 @@ $(function () {
 			var todo = $(this).data("todo");
 			$(this).datepickerX({
 				format: 'm/d/yyyy',
-				todayBtn:true,
-				orientation:"top left"
+				todayBtn: true,
+				orientation: "top left"
 			}).on('changeDate', function (ev) {
 				var data = { date: (ev.date).valueOf() };
 				$.ajax({
@@ -137,8 +133,6 @@ $(function () {
 						templateSelection: imageListFormat
 					});
 					$(item).parent().find(".select2").css("width", "inherit");
-					//$(item).parent().find("span").css(
-					  /* right: 6px; */
 					$(input).select2("open");
 				}
 			}
@@ -171,9 +165,9 @@ $(function () {
 				$(selector2).attr("data-checked", (!data.Error ? data.Object : !checked));
 			},
 			error: function () {
-			    $(selector).prop("checked", !checked);
-			    $(selector2).data("checked", !checked);
-			    $(selector2).attr("data-checked", !checked);
+				$(selector).prop("checked", !checked);
+				$(selector2).data("checked", !checked);
+				$(selector2).attr("data-checked", !checked);
 			},
 			complete: function () {
 				$(selector).prop("disabled", false);
@@ -190,15 +184,15 @@ function fixTodoDetailsBoxSize() {
 		var st = $(window).scrollTop();
 		var footerH = wh;
 		try {
-		    footerH = $(".footer-bar .footer-bar-container:not(.hidden)").last().offset().top;
-		} catch (e) {}
-		$(".details.todo-details").height(footerH - 20 - 140 - pos.top  );
+			footerH = $(".footer-bar .footer-bar-container:not(.hidden)").last().offset().top;
+		} catch (e) { }
+		$(".details.todo-details").height(footerH - 20 - 140 - pos.top);
 	}
 }
 
 $(window).resize(fixTodoDetailsBoxSize);
-$(window).on("page-todo",fixTodoDetailsBoxSize);
-$(window).on("footer-resize",function() {
+$(window).on("page-todo", fixTodoDetailsBoxSize);
+$(window).on("footer-resize", function () {
 	setTimeout(fixTodoDetailsBoxSize, 250);
 });
 
@@ -206,26 +200,23 @@ function updateTodoDueDate(todo, duedate) {
 	var row = $(".todo-row[data-todo=" + todo + "]");
 	row.attr("data-duedate", duedate);
 	var d = new Date(duedate);
-	var a=d.toISOString().substr(0, 10).split("-");
+	var a = d.toISOString().substr(0, 10).split("-");
 	var dispDate = new Date(a[0], a[1] - 1, a[2]);
-	//var nowDateStr = new Date().toISOString().substr(0, 10).split("-");
-    //var nowDate = new Date(nowDateStr[0], nowDateStr[1] - 1, nowDateStr[2]);
 	var nowDateStr = new Date();
-	var nowDate = new Date(nowDateStr.getYear()+1900, nowDateStr.getMonth(), nowDateStr.getDate());
-		
+	var nowDate = new Date(nowDateStr.getYear() + 1900, nowDateStr.getMonth(), nowDateStr.getDate());
+
 	var found = row.find(".due-date");
-	var overdue =  dispDate.getTime() < nowDate.getTime();
-	$(found).toggleClass("red",overdue);
+	var overdue = dispDate.getTime() < nowDate.getTime();
+	$(found).toggleClass("red", overdue);
 	if (overdue) {
-	    if ($(row).find(".btn-group .label").length == 0)
-	        $(row).find(".btn-group").prepend("<div class=\"label label-danger overdue-indicator\" title=\"This to-do is overdue\">late</div>");
+		if ($(row).find(".btn-group .label").length == 0)
+			$(row).find(".btn-group").prepend("<div class=\"label label-danger overdue-indicator\" title=\"This to-do is overdue\">late</div>");
 	} else {
-	    $(row).find(".btn-group .overdue-indicator").remove();
+		$(row).find(".btn-group .overdue-indicator").remove();
 	}
 	found.html(dateFormatter(dispDate));
-	//$("input[data-todo=" + todo + "]").val(dateFormatter(new Date(duedate)));
 	$("input[data-todo=" + todo + "]").val(dateFormatter(dispDate));
-	
+
 }
 
 function sendNewAccountable(self, id) {
@@ -234,7 +225,6 @@ function sendNewAccountable(self, id) {
 		accountableUser: val
 	};
 	var found = $(".todo .assignee[data-todo=" + id + "]");
-	//found.html("<span class='btn btn-link' data-todo='" + id + "'></span>");
 	found.attr("data-accountable", val);
 	$.ajax({
 		method: "POST",
@@ -290,21 +280,21 @@ function refreshCurrentTodoDetails() {
 	$(".todo-row[data-todo=" + currentTodoDetailsId + "]").addClass("selected");
 }
 
-function sortTodoBy(recurId, todoList,sortBy,title,mult) {
+function sortTodoBy(recurId, todoList, sortBy, title, mult) {
 	mult = mult || 1;
 
 	$(".sort-button").html("Sort by " + title);
 
-	$(todoList).children().detach().sort(function(a, b) {
-		if ($(a).attr(sortBy)===$(b).attr(sortBy))
-			return mult*$(a).attr("data-message").toUpperCase().localeCompare($(b).attr("data-message").toUpperCase());
-		return mult*$(a).attr(sortBy).localeCompare($(b).attr(sortBy));
+	$(todoList).children().detach().sort(function (a, b) {
+		if ($(a).attr(sortBy) === $(b).attr(sortBy))
+			return mult * $(a).attr("data-message").toUpperCase().localeCompare($(b).attr("data-message").toUpperCase());
+		return mult * $(a).attr(sortBy).localeCompare($(b).attr(sortBy));
 	}).appendTo($(todoList));
 	updateTodoList(recurId, todoList);
 }
-function sortTodoByUser(recurId, todoList) {	
-	$(todoList).children().detach().sort(function(a, b) {
-		if ($(a).attr("data-name")===$(b).attr("data-name"))
+function sortTodoByUser(recurId, todoList) {
+	$(todoList).children().detach().sort(function (a, b) {
+		if ($(a).attr("data-name") === $(b).attr("data-name"))
 			return $(a).attr("data-message").toUpperCase().localeCompare($(b).attr("data-message").toUpperCase());
 		return $(a).attr("data-name").localeCompare($(b).attr("data-name"));
 	}).appendTo($(todoList));
@@ -313,22 +303,22 @@ function sortTodoByUser(recurId, todoList) {
 }
 
 function constructTodoRow(todo) {
-    var red = "";
-    var nowDateStr = new Date();
-    var nowDate = new Date(nowDateStr.getYear() + 1900, nowDateStr.getMonth(), nowDateStr.getDate());
-    var duedateStr = todo.duedate.split("T")[0].split("-");
-    var duedate = new Date(duedateStr[0], duedateStr[1] - 1, duedateStr[2]).getTime();
+	var red = "";
+	var nowDateStr = new Date();
+	var nowDate = new Date(nowDateStr.getYear() + 1900, nowDateStr.getMonth(), nowDateStr.getDate());
+	var duedateStr = todo.duedate.split("T")[0].split("-");
+	var duedate = new Date(duedateStr[0], duedateStr[1] - 1, duedateStr[2]).getTime();
 
-    if (duedate < nowDate)
-        red = "red";
+	if (duedate < nowDate)
+		red = "red";
 
-    var labelIndicator = "";
-    if (todo.isNew)
-        labelIndicator = "<div class=\"label label-success new-indicator\" title=\"Created during this meeting.\">new</div>";
-    else if (todo.duedate < nowDate)
-        labelIndicator = "<div class=\"label label-danger overdue-indicator\" title=\"This to-do is overdue\">late</div>";
+	var labelIndicator = "";
+	if (todo.isNew)
+		labelIndicator = "<div class=\"label label-success new-indicator\" title=\"Created during this meeting.\">new</div>";
+	else if (todo.duedate < nowDate)
+		labelIndicator = "<div class=\"label label-danger overdue-indicator\" title=\"This to-do is overdue\">late</div>";
 
-	var date = new Date(new Date(todo.duedate).toUTCString().substr(0,16));
+	var date = new Date(new Date(todo.duedate).toUTCString().substr(0, 16));
 	//Accountable user name populated?
 	return '<li class="todo-row dd-item arrowkey"' +
 			'data-createtime="' + todo.createtime + '"' +
@@ -346,49 +336,42 @@ function constructTodoRow(todo) {
 			 '  <span class="outer icon fontastic-icon-three-bars icon-rotate"></span>' +
 			 '  <span class="inner icon fontastic-icon-primitive-square"></span>' +
 			 '  </div>' +
-		
+
 			 '  <div class="btn-group pull-right">' +
-                    labelIndicator+
-			 '  <span class="icon fontastic-icon-pinboard issuesModal issuesButton" data-method="issuefromtodo" data-todo="'+todo.todo+'" data-recurrence="'+window.recurrenceId+'" data-meeting="'+window.meetingId+'"></span>'+
-			 '  </div>' +        
-            '<span class="profile-image">'+
+                    labelIndicator +
+			 '  <span class="icon fontastic-icon-pinboard issuesModal issuesButton" data-method="issuefromtodo" data-todo="' + todo.todo + '" data-recurrence="' + window.recurrenceId + '" data-meeting="' + window.meetingId + '"></span>' +
+			 '  </div>' +
+            '<span class="profile-image">' +
                 profilePicture(todo.imageurl, todo.accountableUser) +
-            '</span>'+
-			//'	<span class="profile-image">'+
-			//'		<span class="profile-picture">' +
-			//'			<span class="picture-container" title="' + todo.accountableUser + '">' +
-			//'				<span class="picture" style="background: url(' + todo.imageurl + ') no-repeat center center;"></span>' +
-			//'			</span>' +
-			//'		</span>'+
-			//'	</span>' +
+            '</span>' +
 			'   <div class="message" data-todo=' + todo.todo + '>' + todo.message + '</div>' +
 			'   <div class="todo-details-container"><div class="todo-details" data-todo=' + todo.todo + '>' + todo.details + '</div></div>' +
-			'   <div class="due-date '+red+'">'+dateFormatter(date)+'</div>'+
+			'   <div class="due-date ' + red + '">' + dateFormatter(date) + '</div>' +
 			'</li>';
 }
 
 function setTodoOrder(order) {
-    var items = $(".todo-list li");
-    items.detach();
+	var items = $(".todo-list li");
+	items.detach();
 
-    var len = order.length,
+	var len = order.length,
         temp = [];
 
-    for (var i = 0; i < len; i++) {
-        var found = $(items).filter("[data-todo="+order[i]+"]");
-        temp.push(found);
-    }
+	for (var i = 0; i < len; i++) {
+		var found = $(items).filter("[data-todo=" + order[i] + "]");
+		temp.push(found);
+	}
 
-    $(".todo-list").append(temp);
+	$(".todo-list").append(temp);
 }
 
 function getTodoOrder() {
-    return $.map($(".todo-list").sortable('serialize').toArray(), function (v) { return v.todo; });
+	return $.map($(".todo-list").sortable('serialize').toArray(), function (v) { return v.todo; });
 }
 
 function updateTodoList(recurId, todoRow) {
-    var order = getTodoOrder();
-    var d = { todos: order, connectionId: $.connection.hub.id };
+	var order = getTodoOrder();
+	var d = { todos: order, connectionId: $.connection.hub.id };
 	console.log(d);
 	var that = todoRow;
 	$.ajax({
@@ -398,14 +381,11 @@ function updateTodoList(recurId, todoRow) {
 		method: "POST",
 		success: function (d) {
 			if (!d.Error) {
-			    oldTodoList = order;//$(".todo-list").clone(true);
+				oldTodoList = order;
 			} else {
 				showJsonAlert(d, false, true);
-				//$(that).html("");
 				setTimeout(function () {
-				    setTodoOrder(oldTodoList);
-					//$('.todo-container').html(oldTodoList);
-					//oldTodoList = $(".todo-list").clone(true);
+					setTodoOrder(oldTodoList);
 					refreshCurrentTodoDetails();
 				}, 1);
 			}
@@ -413,12 +393,9 @@ function updateTodoList(recurId, todoRow) {
 		error: function (a, b) {
 			clearAlerts();
 			showAlert(a.statusText || b);
-			//$('.dd').html("");
 			setTimeout(function () {
 
-			    setTodoOrder(oldTodoList);
-				//$('.dd').html(oldTodoList);
-				//oldTodoList = $(".todo-list").clone(true);
+				setTodoOrder(oldTodoList);
 				refreshCurrentTodoDetails();
 			}, 1);
 		}
@@ -445,8 +422,6 @@ function updateTodoCompletion(todoId, complete) {
 	var selector = ".todo-checkbox[data-todo='" + todoId + "']";
 	$(selector).prop("checked", complete);
 	checkFireworks();
-	//$(selector).data("checked", complete);
-	//$(selector).attr("data-checked", complete);
 }
 
 function updateTodoMessage(id, message) {
@@ -471,65 +446,55 @@ function updateTodoAccountableUser(id, userId, name, image) {
 
 
 function checkFireworks() {
+	var found = $(".todo-row[data-createdBefore='True']");
+	var total = found.length;
+	var complete = found.find(".todo-checkbox:checked").length;
+	$(".todo-completion-ratio").html(complete + "/" + total);
+	if (complete != 0) {
+		$(".todo-completion-percentage").html((Math.round(complete / total * 100)) + "%");
+	} else {
+		$(".todo-completion-percentage").html("-%")
+	}
 
-    var found = $(".todo-row[data-createdBefore='True']");
-    var total =found.length;
-    var complete = found.find(".todo-checkbox:checked").length;
-    $(".todo-completion-ratio").html(complete + "/" + total);
-    if (complete != 0) {
-        $(".todo-completion-percentage").html((Math.round(complete/total*100))+"%");
-    } else {
-        $(".todo-completion-percentage").html("-%")
-    }
-
-    if (typeof (seenFireworks) !== "undefined" && !window.fireworksRan && !seenFireworks) {
-
-        if (total>0)
-        {
-            if (complete / total >= .9) {
-                runFireworks();
-            }
-        }
-
-    }
+	if (typeof (seenFireworks) !== "undefined" && !window.fireworksRan && !seenFireworks) {
+		if (total > 0) {
+			if (complete / total >= .9) {
+				runFireworks();
+			}
+		}
+	}
 }
 
 var shootFirework = false;
 function runFireworks() {
-    window.fireworksRan = true;
-    fc.init();
-
-    $.ajax("/L10/ranfireworks/" + window.recurrenceId);
-    
-    shootFirework = function(){
-
-        if (shootFirework) {
-            ////http://www.schillmania.com/projects/fireworks/
-            //for (var i = 0; i < Math.random() * 2; i++) {
-            if (document.hasFocus()) {
-                var mult = 1;
-                if (Math.random() > .5)
-                    mult = -1;
-                createFirework(19, 81, 4, 5, 55 + Math.random() * 10*mult, 100, 55 + Math.random() * 22*mult, 55 + Math.random() * 22, true, false, "modal");
-            }
-            //}
-            if (Math.random() > .2) {
-                setTimeout(shootFirework, Math.random() * 1000 + 1500);
-            } else {
-                setTimeout(shootFirework, Math.random() * 500 + 150);
-            }
-        }
-    };
-    if (typeof (shootFirework) === "function") {
-    	shootFirework();
-    	showModal({
-    		icon: { icon: "icon fontastic-icon-trophy-1", title: "Congratulations!", color: "#FFA500" },
-    		title: "90% To-do completion!",
-    		close: function () {
-    			shootFirework = false;
-    		}
-    	});
-
-    	setTimeout(function () { shootFirework = false; }, 10000);
-    }
+	window.fireworksRan = true;
+	fc.init();
+	$.ajax("/L10/ranfireworks/" + window.recurrenceId);
+	shootFirework = function () {
+		if (shootFirework) {
+			////http://www.schillmania.com/projects/fireworks/
+			if (document.hasFocus()) {
+				var mult = 1;
+				if (Math.random() > .5)
+					mult = -1;
+				createFirework(19, 81, 4, 5, 55 + Math.random() * 10 * mult, 100, 55 + Math.random() * 22 * mult, 55 + Math.random() * 22, true, false, "modal");
+			}
+			if (Math.random() > .2) {
+				setTimeout(shootFirework, Math.random() * 1000 + 1500);
+			} else {
+				setTimeout(shootFirework, Math.random() * 500 + 150);
+			}
+		}
+	};
+	if (typeof (shootFirework) === "function") {
+		shootFirework();
+		showModal({
+			icon: { icon: "icon fontastic-icon-trophy-1", title: "Congratulations!", color: "#FFA500" },
+			title: "90% To-do completion!",
+			close: function () {
+				shootFirework = false;
+			}
+		});
+		setTimeout(function () { shootFirework = false; }, 10000);
+	}
 }
