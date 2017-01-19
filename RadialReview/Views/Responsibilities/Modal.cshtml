@@ -35,6 +35,27 @@
 	<div class="smallBreak2"></div>
 	<div class="row">
 		<div class="col-sm-3">
+			<label>Importance:</label>
+		</div>
+		<div class="col-sm-9">
+			@Html.EnumDropDownListFor(x => x.QuestionType, new { id = "questionType", @class = "form-control", onchange = "changeQuestion()" })
+		</div>
+	</div>
+	<div class="questionTypeExtra" style="@(Model.QuestionType==RadialReview.Models.Enums.QuestionType.Radio?"":"display:none;")">
+		<div class="smallBreak2"></div>
+
+		<div class="row">
+			<div class="col-sm-3">
+				<label>Radio Options (separate by ~):</label>
+			</div>
+			<div class="col-sm-9">
+				@Html.TextAreaFor(x => x.Arguments, new { @class = "form-control" })
+			</div>
+		</div>
+	</div>
+	<div class="smallBreak2"></div>
+	<div class="row">
+		<div class="col-sm-3">
 			<label>Question:</label>
 		</div>
 		<div class="col-sm-9">
@@ -128,5 +149,14 @@
 		if (!$("[name='Responsibility']").val())
 			return "Responsibility is required.";
 		return true;
+	}
+
+	function changeQuestion() {
+		if ($("#questionType").val() == "@((int)RadialReview.Models.Enums.QuestionType.Radio)") {
+			$(".questionTypeExtra").show();
+		} else {
+			$(".questionTypeExtra").hide();
+		}
+
 	}
 </script>

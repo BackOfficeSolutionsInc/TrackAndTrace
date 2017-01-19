@@ -60,7 +60,6 @@
 
 <!-- Split button -->
 @{
-
 }
 
 @section top{
@@ -138,6 +137,8 @@
 			setupSection("includeAggregateAnswers",@client.IncludeQuestionTable,"/Review/SetIncludeTable");
 
 			setupSection("includeScorecard",@client.IncludeScorecard,"/Review/SetIncludeScorecard");
+
+			setupSection("includeRadios",@client.IncludeRadios,"/Review/SetIncludeRadio");
 
 			setTimeout(function() {
 				$(".mainContent").removeClass("hidden");

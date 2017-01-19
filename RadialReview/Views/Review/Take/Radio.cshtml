@@ -1,0 +1,34 @@
+﻿@model Tuple<List<RadialReview.Models.RadioAnswer>, bool>
+
+@using RadialReview.Models
+@using RadialReview.Models.Enums
+@using RadialReview.Models.Askables
+
+@foreach (var radio in Model.Item1) {
+	ViewData["I"] = (int)ViewData["I"] + 1;
+	<div class="row question">
+
+		<div class="col-md-6 alignRight startHidden">
+			<h4 class="question alignCenter" style="padding-bottom: 10px;">@radio.Askable.GetQuestion()</h4>
+			@if (radio.Required) {
+				<div class="pull-left star @((ViewBag.Incomplete!=null && !radio.Complete)?"red":"")"><span class="glyphicon glyphicon-asterisk"></span></div>
+			}
+		</div>
+		<div class="col-md-6 startHidden">
+
+			@foreach (var radioOption in ((ResponsibilityModel)radio.Askable).Arguments.Split('~')) {
+				<div>
+					<label>
+						<input type="radio" name="question_@(RadialReview.Models.Enums.QuestionType.Radio)_@(radio.Identifier)" value="@radioOption" @(radio.Selected == radioOption ? "checked" : "") />
+						@radioOption
+					</label>
+				</div>
+			}
+
+			@*<textarea name="question_@(QuestionType.Radio)_@(radio.Identifier)_Reason" class="full-width changeable reason" placeholder="Add Comment">@radio.Reason</textarea>*@
+		</div>
+	</div>
+	if ((int)ViewData["I"] < (int)ViewData["Max"]) {
+		<hr class="smallBreak2" style="margin-top: 8px;" />
+	}
+}

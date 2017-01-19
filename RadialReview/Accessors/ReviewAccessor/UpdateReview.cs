@@ -52,6 +52,9 @@ namespace RadialReview.Accessors {
 					case QuestionType.CompanyValue:
 						GenerateCompanyValuesAnswer(s, reviewer, q, reviewModel, anonymous);
 						break;
+					case QuestionType.Radio:
+						GenerateRadioAnswer(s, reviewer, q, reviewModel, anonymous);
+						break;
 					default:
 						throw new ArgumentException("Unrecognized questionType(" + q.Askable.GetQuestionType() + ")");
 				}

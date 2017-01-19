@@ -88,39 +88,6 @@ namespace RadialReview.Accessors
                     return category;
                 }
             }
-        }
-		/*
-	    public static QuestionCategoryModel GetCategory(QuestionType questionType)
-	    {
-			using(var s = HibernateSession.GetCurrentSession())
-			{
-				using(var tx=s.BeginTransaction())
-				{ 
-					switch(questionType){
-						case QuestionType.Slider:
-							return ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.);
-						case QuestionType.Thumbs:
-							return ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.FEEDBACK);
-						case QuestionType.Feedback:
-							return ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.FEEDBACK);
-						default:
-							throw new ArgumentOutOfRangeException("questionType");
-					}
-				}
-			}		   
-	    }
-		*/
-        /*
-        public List<QuestionCategoryModel> GetForOrganization(UserOrganizationModel user)
-        {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
-                    return ;
-
-                }
-            }
-        }*/
+        }	
     }
 }

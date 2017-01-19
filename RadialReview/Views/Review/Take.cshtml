@@ -129,6 +129,7 @@
 						var gwcs = group.ToList().Where(x => x.BaseAnswer is GetWantCapacityAnswer).Select(x => x.BaseAnswer).Cast<GetWantCapacityAnswer>().ToList();
 						var values = group.ToList().Where(x => x.BaseAnswer is CompanyValueAnswer).Select(x => x.BaseAnswer).Cast<CompanyValueAnswer>().ToList();
 						var rocks = group.ToList().Where(x => x.BaseAnswer is RockAnswer).Select(x => x.BaseAnswer).Cast<RockAnswer>().ToList();
+						var radios = group.ToList().Where(x => x.BaseAnswer is RadioAnswer).Select(x => x.BaseAnswer).Cast<RadioAnswer>().ToList();
 						//var gwc = group.ToList().Where(x => x is GetWantCapacityAnswer).Cast<GetWantCapacityAnswer>().ToList();
 
 						dict["Max"] = group.Count();
@@ -146,6 +147,8 @@
 								@{dict["I"] = sliders.Count();}
 								@Html.Partial("Thumbs", Tuple.Create(thumbs, Model.Editable), dict)
 								@{dict["I"] = sliders.Count() + thumbs.Count();}
+								@Html.Partial("Take/Radio", Tuple.Create(radios, Model.Editable), dict)
+								@{dict["I"] = sliders.Count() + thumbs.Count() + radios.Count();}
 								@Html.Partial("Feedback", Tuple.Create(feedbacks, Model.Editable), dict)
 								@*@{dict["I"] = sliders.Count() + thumbs.Count();}
 									@Html.Partial("GetWantCap", Tuple.Create(gwc, Model.Editable), dict)*@
@@ -154,42 +157,32 @@
 					}
 				</div>
 			}
-
 		</div>
 	</div>
-
 </div>
-
-
 @using (Html.BeginScripts()) {
 	@Scripts.Render("~/bundles/TakeReview")
 	<script>
 		var canUpdate = true;
-
 		$(function () {
 			$(".sidebar1 img").one("load", fixMinheight);
 			fixMinheight();
 		});
-
 		function fixMinheight() {
 			var h = Math.max($(".front .sidebar").height(), $(".back .sidebar").height()) + 15;
 			$(".sidebar1").css("min-height", h);
 		}
-
 		function sliderUpdateInternal(self) {
 			var d = { value: parseInt($(self).val()) };
 			var disp = d.value;
 			if (d.value == 0) {
 				disp = "NA";
 			}
-
 			$("#" + $(self).attr("name") + " .rangevalue").html(disp).addClass("show");
-
 			slideUpdate.call(self, d);
 		}
 
 		var tips = [];
-
 		function cancelTips(self) {
 			try {
 				$(self).parents(".qtip").qtip("hide");
@@ -222,14 +215,12 @@
 		}
 
 		function runTips() {
-
 			if (tips.length > 0) {
 				setTimeout(function () {
 					var windowWidth = $(window).width();
 					if (tips[0].selector.is("#nameList") && windowWidth < 767) {
 						tips[0].selector = $(".visible-xs #nameList");
 					}
-
 					var tip = tips[0].tip;
 					var heading = tips[0].heading;
 					var item = $(tips[0].selector);
@@ -239,22 +230,17 @@
 						runTips();
 						return;
 					}
-
 					var position = tips[0].position || { at: 'center right', my: 'center left' };
-
 					if (windowWidth < 767) {
 						position = { at: 'top center', my: 'bottom center' };
 					}
-
 					$(item).addClass("currentTip");
-
 					var next = "Next";
 					var closeBtn = "<span class='btn btn-default cancelTipsButton' style='margin:2px;' onclick='cancelTips(this)'>Close</span>";
 					if (tips.length == 1) {
 						next = "Got it!";
 						closeBtn = "";
 					}
-
 					$(item).addClass("slowFade tip");
 					$(item).qtip({
 						content: {
@@ -280,20 +266,14 @@
 			}
 		}
 
-
-
 		function slideUpdate(d) {
 			var name = $(this).attr("name");
-
 			var disp = d.value;
 			if (d.value == 0) {
 				disp = "NA";
 			}
-
 			var answer = sliderToText(d.value);
-
 			$("#" + $(this).attr("name") + " .rangevalue").html(disp);
-
 			$("#" + name + "_title").html(answer);
 			$(this).val();
 			$(this).attr("name");
@@ -305,7 +285,6 @@
 			if (window.LimitFiveState) {
 				options = "Yes and No";
 			}
-
 			addTip($(".table-gwc tr").eq(1).find(".fill").first(), "Evaluating Roles", "You'll need to evaluate how well an individual performs their roles.<br/> Click this box to toggle between " + options + ".");
 			addTip($(".table-gwc tr").eq(1).find(".glyphicon-pencil").first(), "Adding Comments", 'You can optionally add a comment by clicking the pencil.');
 			addTip($(".table-values .posneg").first(), "Evaluating Values", "You'll need to evaluate whether an individual exhibits Company Values. Choose between <i>Almost Always</i>, <i>Sometimes</i>, or <i>Hardly Ever</i>.");
@@ -453,6 +432,10 @@
 			100% {
 				-webkit-transform: translateX(0px);
 			}
+		}
+
+		h4.question {
+			padding: 0px 10px 0px 10px !important;
 		}
 
 		#nameList.tip li a {

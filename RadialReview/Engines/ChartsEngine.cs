@@ -1106,6 +1106,12 @@ namespace RadialReview.Engines
 				return new Ratio(num, denom);//, (decimal)a.Askable.Weight);
 			}
 
+			public static Ratio ScoreValueDecimal(decimal? d) {
+				if (d == null)
+					return new Ratio(0, 0);
+				return new Ratio(d.Value, 1);
+			}
+
 
 			public static bool ScoreFunction(AnswerModel_TinyScatterPlot answer, out Ratio score, out string category) {
 				score = answer.Score;
@@ -1144,10 +1150,17 @@ namespace RadialReview.Engines
 							category = ROLE_CATEGORY;
 							return (score.Denominator != 0);
 						}
-					case QuestionType.CompanyValue:{
+					case QuestionType.CompanyValue: {
 							var a = (CompanyValueAnswer)answer;
 							score = ScoreValue(a.Exhibits);
 							category = VALUE_CATEGORY;
+							return (score.Denominator != 0);
+						}
+
+					case QuestionType.Radio: {
+							var a = (RadioAnswer)answer;
+							score = ScoreValueDecimal(a.Weight);
+							category = cat.Category.Translate();
 							return (score.Denominator != 0);
 						}
 					default:

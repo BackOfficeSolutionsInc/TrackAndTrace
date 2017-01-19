@@ -23,8 +23,10 @@ namespace RadialReview.Models.ViewModels
         public String NewCategory { get; set; }
 		public WeightType Weight { get; set; }
 		public AboutType[] OnlyAsk { get; set; }
+		public QuestionType QuestionType { get; set; }
 		public long? SectionId { get; set; }
 		public List<SelectListItem> SectionDropdown { get; set; }
+		public string Arguments { get; set; }
 
 		public bool UpdateOutstandingReviews { get; set; }
 
@@ -32,8 +34,7 @@ namespace RadialReview.Models.ViewModels
 		public long TypeSelected { get; set; }
 		public List<SelectListItem> TypeDropdown { get; set; } 
 
-        public ResponsibilityViewModel()
-        {
+        public ResponsibilityViewModel(){
 
         }
 
@@ -46,36 +47,12 @@ namespace RadialReview.Models.ViewModels
 			SectionDropdown.Add(new SelectListItem() { Text = "<none>", Value = "null", Selected = model.SectionId == null });
 			SectionDropdown = SectionDropdown.OrderBy(x => x.Text).ToList();
 			SectionId = model.SectionId;
-            /*Categories.Add(new QuestionCategoryModel() { Id = -1, Category = new LocalizedStringModel("<" + DisplayNameStrings.createNew + ">") });
-
-			TypeDropdown = new List<SelectListItem>();
-			TypeDropdown.AddRange(categories.Select(x=>new SelectListItem(){
-				Text = x.Category.Translate() + @" Slider" ,
-				Value = ""+x.Id,
-	        }));
-
-			TypeDropdown.Add(new SelectListItem() { Text = "Thumbs", Value = "-9" });
-			TypeDropdown.Add(new SelectListItem() { Text = "Text", Value = "-10" });
-
-	        switch(model.GetQuestionType()){
-		        case QuestionType.Slider:   
-					if (model.Category.Id > 0)
-						TypeSelected = model.Category.Id;
-			        break;
-		        case QuestionType.Thumbs:
-			        TypeSelected = -9;
-			        break;
-		        case QuestionType.Feedback:
-			        TypeSelected = -10;
-			        break;
-		        default:
-			        throw new ArgumentOutOfRangeException();
-	        }*/
+			QuestionType = model.GetQuestionType();
+			Arguments = model.Arguments;          
 
 	        Required = model.Required;
 
             Responsibility = model.Responsibility;
-            //CategoryId = model.Category.Id;
             ResponsibilityGroupId = responsibilityGroupId;
             Weight = model.Weight;
 			OnlyAsk = model.OnlyAsk.GetFlags<AboutType>().ToArray();

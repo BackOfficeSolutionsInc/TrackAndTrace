@@ -1,0 +1,125 @@
+﻿@model RadialReview.Controllers.ReviewController.ReviewDetailsViewModel
+@using RadialReview.Models
+@using RadialReview.Models.Charts
+@using RadialReview.Models.Enums
+@using RadialReview.Utilities.DataTypes
+@using WebGrease.Css.Extensions
+@using RadialReview.Models.Askables
+@{
+	var radioQuestions = Model.AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.Radio).Cast<RadioAnswer>().GroupBy(x => x.Askable.Id);
+}
+
+@*Must be at the top*@
+@using (Html.BeginScripts()) {
+	<script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script>
+		function barChartIt(chartId, data) {
+			var width = 600, barHeight = 24;
+
+			var x = d3.scale.linear()
+				.domain([-.01, d3.max(data, function (d) { return d.Value + 1; })])
+				.range([0, width/2]);
+
+			var chart = d3.select(chartId)
+				.attr("width", width)
+				.attr("height", barHeight * data.length);
+
+			var shift = chart.append("g").attr("transform", "translate(" + width / 2 + ",0)");
+
+			var bar = shift.selectAll("g")
+				.data(data)
+			  .enter().append("g")
+				.attr("transform", function (d, i) { return "translate(0," + i * barHeight + ")"; });
+
+			bar.append("rect")
+				.attr("width", function (d) { return x(d.Value); })
+				.attr("height", barHeight - 1);
+
+			bar.append("text")
+				.attr("x", function (d) {
+					var xx = x(d.Value) - 3;
+					if (xx < 0)
+						xx = 3;
+					return xx;
+				})
+				.classed("outside", function (d) {
+					var xx = x(d.Value) - 3;
+					if (xx < 0)
+						return true;
+					return false;
+				})
+				.attr("y", barHeight / 2)
+				.attr("dy", ".35em")
+				.text(function (d) { return d.Value; });
+
+			bar.append("text")
+				.attr("x", "-3")
+				.attr("y", barHeight / 2)
+				.attr("dy", ".35em")
+				.classed("title",true)
+				.text(function (d) { return d.Key; });
+		}
+
+	</script>
+}
+
+<!--GWC.cshtml-->
+
+
+
+@foreach (var radioQuestion in radioQuestions) {
+	<div style="margin-bottom:20px;margin-top:10px;text-align:center;">
+		<div class="alignCenter" style="margin-bottom:4px;"><b>@(radioQuestion.First().Askable.GetQuestion())</b></div>
+		<svg class="barchart" id="question_@radioQuestion.Key"></svg>
+	</div>
+	using (Html.BeginScripts()) {
+		<script>
+		@{
+			var options = ((ResponsibilityModel)radioQuestion.First().Askable).Arguments.Split('~');
+			var dict = new Dictionary<string, int>();
+
+			foreach (var o in options) {
+				dict[o] = 0;
+			}
+
+			foreach (var answerGroup in radioQuestion.GroupBy(x=>x.ReviewerUserId)) {
+				var answer = answerGroup.FirstOrDefault(x=>x.Selected!=null);
+				if (answer!=null && answer.Selected != null) {
+					dict[answer.Selected] += 1;
+				}
+			}
+
+			}
+
+			var data = @Html.ArrayToString(dict.ToList())
+			barChartIt("#question_@radioQuestion.Key",data);
+		</script>
+		}
+	}
+
+@using (Html.BeginStyles()) {
+	<style>
+		.barchart{
+			margin-left:auto;
+			margin-right:auto;
+		}
+		.barchart rect {
+			fill: rgba(51,51,51,.5);
+		}
+		
+		.barchart text {
+			fill: white;
+			font: 11px sans-serif;
+			text-anchor: end;
+		}
+		.barchart text.outside {
+			fill: rgba(51,51,51,.5);
+			text-anchor: start;
+		}
+		.barchart text.title {
+			fill: #333;
+			font: 11px sans-serif;
+			text-anchor: end;
+		}
+	</style>
+}

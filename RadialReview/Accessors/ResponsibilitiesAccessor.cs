@@ -129,10 +129,13 @@ namespace RadialReview.Accessors {
 					if (section.Id == 0) {
 						section.OrganizationId = caller.Organization.Id;
 
-						section._Ordering = s.QueryOver<AskableSectionModel>()
+						var allOrders = s.QueryOver<AskableSectionModel>()
 							.Where(x => x.DeleteTime == null && x.OrganizationId == section.OrganizationId)
-							.Select(x => x._Ordering)
-							.List<int>().Max();
+							.Select(x => x._Ordering).List<int>();
+						if (allOrders.Any())
+							section._Ordering = allOrders.Max() + 1;
+						else
+							section._Ordering = 0;
 
 						s.Save(section);
 					} else {
@@ -264,7 +267,8 @@ namespace RadialReview.Accessors {
 
 		public void EditResponsibility(UserOrganizationModel caller, long responsibilityId, String responsibility = null,
 			long? categoryId = null, long? responsibilityGroupId = null, bool? active = null, WeightType? weight = null,
-			bool? required = null, AboutType? onlyAsk = null, bool updateOutstandingReviews = false,long? sectionId=null) {
+			bool? required = null, AboutType? onlyAsk = null, bool updateOutstandingReviews = false, long? sectionId = null, 
+			QuestionType? questionType = null,string arguments=null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				var r = new ResponsibilityModel();
 				using (var tx = s.BeginTransaction()) {
@@ -298,6 +302,7 @@ namespace RadialReview.Accessors {
 					if (responsibility != null)
 						r.Responsibility = responsibility;
 
+					var qtWasSet = false;
 					if (categoryId != null) {
 						permissions.ViewCategory(categoryId.Value);
 						var cat = s.Get<QuestionCategoryModel>(categoryId.Value);
@@ -305,13 +310,15 @@ namespace RadialReview.Accessors {
 
 						if (ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.THUMBS).Id == cat.Id) {
 							r.SetQuestionType(QuestionType.Thumbs);
-						}
-						if (ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.FEEDBACK).Id == cat.Id) {
+							qtWasSet = true;
+						}else if (ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.FEEDBACK).Id == cat.Id) {
 							r.SetQuestionType(QuestionType.Feedback);
+							qtWasSet = true;
 						}
-						/*if (ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.GWC).Id == cat.Id) {
-							r.SetQuestionType(QuestionType.GWC);
-						}*/
+					}
+
+					if (qtWasSet == false && questionType!=null) {
+						r.SetQuestionType(questionType.Value);
 
 					}
 
@@ -319,8 +326,9 @@ namespace RadialReview.Accessors {
 						var section = s.Get<AskableSectionModel>(sectionId);
 						permissions.ViewOrganization(section.OrganizationId);
 					}
-
 					r.SectionId = sectionId;
+
+					r.Arguments = arguments;
 
 					if (active != null) {
 						if (active == true)

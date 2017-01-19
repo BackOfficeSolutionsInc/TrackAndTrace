@@ -11,7 +11,6 @@
 	</div>
 
 	<div class="sidebar-contents">
-		@*Notes*@
 		@*Charts*@
 		<h4 class="alignCenter">Charts</h4>
 		<div>
@@ -26,25 +25,12 @@
 			<span>Include Scorecard:</span>
 			<input class="pull-right includeScorecard" type="checkbox" />
 		</div>
+		<div>
+			<span>Include Bar Charts:</span>
+			<input class="pull-right includeRadios" type="checkbox" />
+		</div>
 		<hr />
-
-
-
-		@*Answers*@
-		@*<h4 class="alignCenter">Answers</h4>
-			<div>
-				<span>Include @Model.Review.ForUser.GetFirstName().Possessive() Answers:</span>
-				<input class="pull-right includeSelfAnswers" type="checkbox" />
-			</div>
-			<div>
-				<span>Include Manager Answers:</span>
-				<input class="pull-right includeManagerAnswers" type="checkbox" />
-			</div>
-			<div>
-				<span>Include Aggregate Answers:</span>
-				<input class="pull-right includeAggregateAnswers" type="checkbox" />
-			</div>
-			<hr />*@
+		@*Notes*@
 		<h4 class="alignCenter">Notes</h4>
 		<div>
 			<span>Include Notes:</span>
@@ -60,17 +46,11 @@
 			foreach (var feedbacks in feedbackGroups) {
 				<div style="font-weight: bold;">@feedbacks.First().Askable.GetQuestion():</div>
 				<ul style="padding-left:10px;" class="noBullet empty" id="feedbacks">
-					@*&& Model.Review.ClientReview.FeedbackIds.ToListAlive().Any(y => y.Value == x.Id)).Cast<FeedbackAnswer>())*@
 					@foreach (var feedback in feedbacks.GroupBy(x => x.ReviewerUserId + "_" + x.Askable.Id).Select(x => x.First())) {
 						var on = Model.Review.ClientReview.FeedbackIds.ToListAlive().FirstOrDefault(x => x.Value == feedback.Id) != null;
-
 						<li class="feedback feedback_@feedback.Id" title="@feedback.Feedback" for="cb_feedback_input_@feedback.Id">
-							@*<input name="feedback_input_@feedback.Id" onchange="SetFeedback(@feedback.Id)">*@
-								<span>@feedback.ReviewerUser.GetName()</span>
-
-
-								<input id="cb_feedback_input_@feedback.Id" class="pull-right feedback_input_@feedback.Id" type="checkbox" @(on ? "checked" : "") onchange="OnclickFeedback(this, @feedback.Id )" />
-							@*<span onclick="SetFeedback(@feedback.Id,false)" title="Remove" class="pull-right glyphicon glyphicon-remove red strokeRed clickable"></span>*@
+							<span>@feedback.ReviewerUser.GetName()</span>
+							<input id="cb_feedback_input_@feedback.Id" class="pull-right feedback_input_@feedback.Id" type="checkbox" @(on ? "checked" : "") onchange="OnclickFeedback(this, @feedback.Id )" />
 						</li>
 					}
 				</ul>

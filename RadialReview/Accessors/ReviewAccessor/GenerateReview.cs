@@ -83,13 +83,30 @@ namespace RadialReview.Accessors {
 			session.Save(rock);
 		}
 
-		private static void GenerateCompanyValuesAnswer(DataInteraction session, Reviewer reviewer, AskableAbout askable, ReviewModel review, bool anonymous)
-		{
-			var gwc = new CompanyValueAnswer()
-			{
+		private static void GenerateCompanyValuesAnswer(DataInteraction session, Reviewer reviewer, AskableAbout askable, ReviewModel review, bool anonymous) {
+			var gwc = new CompanyValueAnswer() {
 				Anonymous = anonymous,
 				Complete = false,
 				Exhibits = PositiveNegativeNeutral.Indeterminate,
+				Reason = null,
+				Askable = askable.Askable,
+				Required = askable.Askable.Required,
+				ForReviewId = review.Id,
+				ReviewerUserId = reviewer.RGMId,
+				RevieweeUserId = askable.Reviewee.RGMId,
+				RevieweeUser = session.Load<ResponsibilityGroupModel>(askable.Reviewee.RGMId),
+				RevieweeUser_AcNodeId = askable.Reviewee.ACNodeId,
+				ForReviewContainerId = review.ForReviewContainerId,
+				AboutType = askable.ReviewerIsThe
+			};
+			session.Save(gwc);
+		}
+
+		private static void GenerateRadioAnswer(DataInteraction session, Reviewer reviewer, AskableAbout askable, ReviewModel review, bool anonymous) {
+			var gwc = new RadioAnswer() {
+				Anonymous = anonymous,
+				Complete = false,
+				Selected = null,
 				Reason = null,
 				Askable = askable.Askable,
 				Required = askable.Askable.Required,

@@ -7,13 +7,14 @@ using RadialReview.Models.Askables;
 using RadialReview.Models.Charts;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Reviews;
+using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace RadialReview.Accessors {
 	public class PdfChartAccessor {
-		private static bool DEBUG = false;
+		private static bool DEBUG = false && Config.IsLocal();
 
 		private static XFont _FontLargeBold = new XFont("Verdana", 20, XFontStyle.Bold);
 		private static XFont _Font = new XFont("Verdana", 10, XFontStyle.Regular);
@@ -22,6 +23,7 @@ namespace RadialReview.Accessors {
 		private static XFont _Font8Bold = new XFont("Verdana", 8, XFontStyle.Bold);
 		private static XFont _Font7 = new XFont("Verdana", 7, XFontStyle.Regular);
 		private static XBrush _BlackText = new XSolidBrush(XColor.FromArgb(255, 51, 51, 51));
+		private static XBrush _GrayText = new XSolidBrush(XColor.FromArgb((128+255)/2, 51, 51, 51));
 		private static Unit _DefaultMargin = Unit.FromInch(0.3);
 		
 
@@ -852,16 +854,109 @@ namespace RadialReview.Accessors {
 
 			curH += feedbackMargin * 2;
 			totalHeight += feedbackMargin * 2;
-
-			///
-
-			//top.Height + h2;
-
+			
 			var actualSize = new XRect(location.Left, location.Top, location.Width, totalHeight + 2 * (margin ?? _DefaultMargin));
 			DrawDebug(gfx, actualSize, new XPen(XColors.Blue) { DashStyle = XDashStyle.Dot });
 			gfx.Restore(state);
 			return actualSize;
 		}
+
+		public static XRect DrawBarChart(XGraphics gfx, XRect location,string title, List<KeyValuePair<string, int>> items, Unit? margin = null) {
+			var state = gfx.Save();
+
+			var placement = FromMargin(location, margin);
+
+			var usedHeight = 0.0;
+			var titleMargin = 10;
+			var optionMargin = 5;
+			var barPercent = .8;
+
+			var font = _Font8Bold;
+			var tf = new XTextFormatter(gfx) { Alignment = XParagraphAlignment.Center };
+			var h = GetTextHeight(gfx, title, placement.Width, font);
+			var pos = new XRect(placement.Left, placement.Top, placement.Width, h);
+			tf.DrawString(title ?? "", font, _BlackText, pos, XStringFormats.TopLeft);
+			usedHeight += h+ titleMargin;
+
+			var allItems = items.ToList();
+			var maxCount = 1;
+			if (allItems.Any())
+				maxCount = Math.Max(maxCount, allItems.Select(x => x.Value).Max());
+			var pixPerTick = (placement.Width / 2) / maxCount;
+
+			foreach (var kv in allItems) {
+				font = _Font7;
+				tf = new XTextFormatter(gfx) { Alignment = XParagraphAlignment.Right };
+				h = GetTextHeight(gfx, kv.Key??"", placement.Width / 2 - optionMargin, font);
+				h = Math.Max(h, 16);
+				pos = new XRect(placement.Left, placement.Top+usedHeight, placement.Width / 2- optionMargin, h);
+				tf.DrawString(kv.Key ?? "", font, _BlackText, pos, XStringFormats.TopLeft);
+				
+				var w = Math.Max(1,pixPerTick * kv.Value);
+				gfx.DrawRectangle(_GrayText, new XRect(placement.Left + placement.Width / 2, placement.Top + usedHeight - h*(1- barPercent)/2.0, w, h* barPercent));
+				tf = new XTextFormatter(gfx) { Alignment = XParagraphAlignment.Left };
+				tf.DrawString(("" + kv.Value) ?? "", font, _GrayText, new XRect(
+					placement.Left + placement.Width / 2 + w + 6,
+					placement.Top + usedHeight,
+					60, h
+				), XStringFormats.TopLeft);
+
+				usedHeight += h;
+			}
+
+			var used = new XRect(location.X, location.Y, location.Width, usedHeight + (margin ?? _DefaultMargin) * 2);
+			DrawDebug(gfx, used, XPens.Red);
+			gfx.Restore(state);
+			return used;
+		}
+
+		public static XRect DrawBarChart(XGraphics gfx, XRect location, List<RadioAnswer> radios, Unit? margin = null) {
+			var state = gfx.Save();
+
+			DrawDebug(gfx, new XRect(location.Left, location.Top, location.Width, 1), XPens.Red);
+			var placement = FromMargin(location, margin);
+			
+			var radioQuestions = radios.GroupBy(x => x.Askable.Id);
+
+			var columns = (int)Math.Max(Math.Floor(placement.Width / Unit.FromInch(3).Point), 1);
+			var columnWidth = placement.Width / columns;
+
+			var row = 0;
+			var col = 0;
+
+			var usedHeight = Enumerable.Range(0, columns).Select(x => 0.0).ToList();
+			
+			foreach (var radioQuestion in radioQuestions) {
+				var question = ((ResponsibilityModel)radioQuestion.First().Askable);
+				var options = question.Arguments.Split('~');
+				var dict = new Dictionary<string, int>();
+				foreach (var o in options) {
+					dict[o] = 0;
+				}
+				foreach (var answerGroup in radioQuestion.GroupBy(x => x.ReviewerUserId)) {
+					var answer = answerGroup.FirstOrDefault(x => x.Selected != null);
+					if (answer != null && answer.Selected != null) {
+						dict[answer.Selected] += 1;
+					}
+				}
+				
+				var rect = new XRect(placement.X + columnWidth * col, placement.Y + usedHeight[col], columnWidth, Unit.FromInch(1).Point);
+				var chartRect = DrawBarChart(gfx, rect, question.GetQuestion(),dict.ToList());
+				var myHeight = chartRect.Height;//options.Count() * (barHeight + barMargin * 2) + titleHeight;
+				usedHeight[col] += myHeight;
+				col += 1;
+				if (col >= columns) {
+					col = 0;
+					row += 1;
+				}
+			}
+
+			var actualSize = new XRect(location.X, location.Y, location.Width, usedHeight.Max() + (margin ?? _DefaultMargin) * 2);
+
+			gfx.Restore(state);
+			return actualSize;
+		}
+		
 
 		private class ValueRow {
 			public string Name { get; set; }

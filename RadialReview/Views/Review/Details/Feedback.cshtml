@@ -12,7 +12,7 @@
 			<thead>
 				<tr>
 					<th colspan="3">@feedbacks.First().Askable.GetQuestion():</th>
-					<th class="rightButton alignCenter"><div style="cursor:pointer;font-size:11px;color:#333" onclick="$('.feedback_question_@feedbacks.Key').prop('checked', true);">(all)</div></th>
+					<th class="rightButton alignCenter"><div style="cursor:pointer;font-size:11px;color:#333" onclick="$('.feedback_question_@feedbacks.Key').prop('checked', true).trigger('change');">(all)</div></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -25,7 +25,7 @@
 							@{
 								var on = Model.Review.ClientReview.FeedbackIds.ToListAlive().FirstOrDefault(x => x.Value == feedback.Id) != null;
 							}
-							<input @(on ? "checked" : "") class="feedback_input_@feedback.Id feedback_question_@feedbacks.Key" type="checkbox" onchange=" OnclickFeedback(this, @feedback.Id ) " />
+							<input @(on ? "checked" : "") class="feedback_input_@feedback.Id feedback_question_@feedbacks.Key" type="checkbox" onchange="OnclickFeedback(this, @feedback.Id ) " />
 
 
 							@*<div onclick="SetFeedback(@feedback.Id)" class="check  @(on?"on":"")">    </div>*@

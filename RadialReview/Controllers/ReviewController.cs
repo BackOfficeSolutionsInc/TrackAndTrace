@@ -468,6 +468,11 @@ namespace RadialReview.Controllers {
 			_ReviewAccessor.SetIncludeScorecard(GetUser(), reviewId, on);
 			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }).ForceSilent(), JsonRequestBehavior.AllowGet);
 		}
+		[Access(AccessLevel.Manager)]
+		public JsonResult SetIncludeRadio(long reviewId, bool on) {
+			_ReviewAccessor.SetIncludeRadio(GetUser(), reviewId, on);
+			return Json(ResultObject.Create(new { ReviewId = reviewId, On = on }).ForceSilent(), JsonRequestBehavior.AllowGet);
+		}
 
 
 		[Access(AccessLevel.Manager)]

@@ -45,7 +45,8 @@ namespace RadialReview.Controllers {
 				oa = oa | onlyAsk;
 			}
 			_ResponsibilitiesAccessor.EditResponsibility(caller, model.Id, model.Responsibility, model.CategoryId,
-				model.ResponsibilityGroupId, model.Active, model.Weight, model.Required, oa, model.UpdateOutstandingReviews,model.SectionId);
+				model.ResponsibilityGroupId, model.Active, model.Weight, model.Required, oa, model.UpdateOutstandingReviews,
+				model.SectionId, model.QuestionType, model.Arguments);
 			return Json(ResultObject.Success("Responsibility updated."));
 		}
 

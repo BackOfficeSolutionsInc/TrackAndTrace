@@ -92,6 +92,19 @@ namespace RadialReview.Models {
 
 	#region Impls
 
+	public class RadioAnswer : AnswerModel {
+		public virtual String Selected { get; set; }
+		public virtual String Reason { get; set; }
+		public virtual decimal Weight { get; set; }
+		public class Map : SubclassMap<RadioAnswer> {
+			public Map() {
+				Map(x => x.Selected).Length(1024);
+				Map(x => x.Reason).Length(5000);
+				Map(x => x.Weight);
+			}
+		}
+	}
+
 	public class FeedbackAnswer : AnswerModel {
 		public virtual String Feedback { get; set; }
 		public class FeedbackAnswerMap : SubclassMap<FeedbackAnswer> {

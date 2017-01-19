@@ -88,6 +88,16 @@ namespace RadialReview.Accessors
 									case QuestionType.Thumbs:
 										currentComplete = UpdateThumbsAnswer(s, perms, questionId, collection[k].Parse<ThumbsType>(), now, out edited, ref qA, ref oA);
 										break;
+									case QuestionType.Radio:
+										if (args.Length == 6) {
+											if (args[5] != "Reason")
+												throw new Exception("Unexpected CompanyValue argument.");
+											currentComplete = UpdateRadioAnswerReason(s, perms, questionId, collection[k], now, out edited, ref qA, ref oA);
+										} else {
+											currentComplete = UpdateRadioAnswer(s, perms, questionId, collection[k], now, out edited, ref qA, ref oA);
+										}
+
+										break;
 									case QuestionType.Feedback:
 										currentComplete = UpdateFeedbackAnswer(s, perms, questionId, collection[k], now, out edited, ref qA, ref oA);
 										break;
@@ -101,15 +111,11 @@ namespace RadialReview.Accessors
 											currentComplete = UpdateGWCAnswer(s, perms, questionId, args[5], collection[k].Parse<FiveState>(), now, out edited, ref qA, ref oA);
 										break;
 									case QuestionType.CompanyValue:
-
-										if (args.Length == 6)
-										{
+										if (args.Length == 6){
 											if (args[5] != "Reason")
 												throw new Exception("Unexpected CompanyValue argument.");
 											currentComplete = UpdateCompanyValueReasonAnswer(s, perms, questionId, collection[k], now, out edited, ref qA, ref oA);
-										}
-										else
-										{
+										}else{
 											currentComplete = UpdateCompanyValueAnswer(s, perms, questionId, collection[k].Parse<PositiveNegativeNeutral>(), now, out edited, ref qA, ref oA);
 										}
 										break;
@@ -158,14 +164,11 @@ namespace RadialReview.Accessors
 		}
 
 
-		public static Boolean UpdateSliderAnswer(ISession s, PermissionsUtility perms, long id, decimal? value, DateTime now, out bool edited, ref int questionsAnsweredDelta, ref int optionalAnsweredDelta)
-		{
-
+		public static Boolean UpdateSliderAnswer(ISession s, PermissionsUtility perms, long id, decimal? value, DateTime now, out bool edited, ref int questionsAnsweredDelta, ref int optionalAnsweredDelta) {
 			var answer = s.Get<SliderAnswer>(id);
 			perms.EditReview(answer.ForReviewId);
 			edited = false;
-			if (answer.Percentage != value)
-			{
+			if (answer.Percentage != value) {
 				edited = true;
 				answer.Complete = value.HasValue;
 				answer.Percentage = value;
@@ -174,8 +177,36 @@ namespace RadialReview.Accessors
 
 			}
 			return answer.Complete || !answer.Required;
+		}
+
+		public static Boolean UpdateRadioAnswer(ISession s, PermissionsUtility perms, long id, string value, DateTime now, out bool edited, ref int questionsAnsweredDelta, ref int optionalAnsweredDelta) {
+			var answer = s.Get<RadioAnswer>(id);
+			perms.EditReview(answer.ForReviewId);
+			edited = false;
+			if (answer.Selected != value) {
+				edited = true;
+				answer.Complete = value!=null;
+				answer.Selected = value;
+				UpdateCompletion(answer, now, ref questionsAnsweredDelta, ref optionalAnsweredDelta);
+				s.Update(answer);
+
+			}
+			return answer.Complete || !answer.Required;
+		}
+
+		public bool UpdateRadioAnswerReason(ISession s, PermissionsUtility perms, long questionId, string reason, DateTime now, out bool edited, ref int questionsAnsweredDelta, ref int optionalAnsweredDelta) {
+			var answer = s.Get<RadioAnswer>(questionId);
+			perms.EditReview(answer.ForReviewId);
+			edited = false;
+			if (reason.Trim() != answer.Reason) {
+				edited = true;
+				answer.Reason = reason.Trim();
+				s.Update(answer);
+			}
+			return true; // Because "Reasons" are not required
 
 		}
+
 		/// <summary>
 		/// 
 		/// </summary>

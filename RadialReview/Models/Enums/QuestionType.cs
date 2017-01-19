@@ -25,9 +25,11 @@ namespace RadialReview.Models.Enums
 		[Display(Name = "Rock"), Icon(BootstrapGlyphs.pencil)]
 		Rock = 6,
 		[Display(Name = "CompanyValue"), Icon(BootstrapGlyphs.pencil)]
-		CompanyValue = 7
+		CompanyValue = 7,
+		[Display(Name = "Radio"), Icon(BootstrapGlyphs.pencil)]
+		Radio = 8
 
-        //Ranking
+		//Ranking
 
-    }
+	}
 }

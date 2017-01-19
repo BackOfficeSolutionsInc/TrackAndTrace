@@ -371,6 +371,7 @@ namespace RadialReview.Accessors {
 			var feedbackIds = review.Review.ClientReview.FeedbackIds.ToListAlive().GroupBy(x => x.Value).Select(x => x.First()).ToList();
 			var feedbackAnswers = review.AnswersAbout.Where(x => x is FeedbackAnswer).Cast<FeedbackAnswer>()
 				.Where(x => !string.IsNullOrWhiteSpace(x.Feedback) && feedbackIds.Any(y => y.Value == x.Id)).ToList();
+			var radioAnswers = review.AnswersAbout.Where(x => x is RadioAnswer).Cast<RadioAnswer>().ToList();
 
 
 			var headerRect = PdfChartAccessor.DrawHeader(gfx, pageSize, review.Review, margin: margin);
@@ -479,12 +480,17 @@ namespace RadialReview.Accessors {
 			var addedPage4 = false;
 			PdfPage page4;
 			XGraphics gfxPage4 = null;
+			PdfPage currentPage;
+			XGraphics currentGfx = null;
+
 
 			if (review.Review.ClientReview.IncludeNotes && !string.IsNullOrWhiteSpace(review.Review.ClientReview.ManagerNotes)) {
 				if (!addedPage3) {
 					addedPage3 = true;
 					page3 = document.AddPage();
 					gfxPage3 = XGraphics.FromPdfPage(page3);
+					currentGfx = gfxPage3;
+					currentPage = page3;
 					AddPageNum(gfxPage3, pageSize);
 				}
 				var testDoc = new PdfDocument();
@@ -495,12 +501,44 @@ namespace RadialReview.Accessors {
 				if (notesSize.Bottom > pageSize.Bottom) {
 					addedPage4 = true;
 					page4 = document.AddPage();
+					currentPage = page4;
 					gfxPage4 = XGraphics.FromPdfPage(page4);
+					currentGfx = gfxPage4;
 					AddPageNum(gfxPage4, pageSize);
-					PdfChartAccessor.DrawNotes(gfxPage4, pageSize, review.Review.ClientReview.ManagerNotes, margin: margin);
+					var rect = PdfChartAccessor.DrawNotes(gfxPage4, pageSize, review.Review.ClientReview.ManagerNotes, margin: margin);
+					availableRect = new XRect(pageSize.Left, rect.Bottom, pageSize.Width, Math.Max(pageSize.Height - rect.Bottom, 1));
 				} else {
-					PdfChartAccessor.DrawNotes(gfxPage3, availableRect, review.Review.ClientReview.ManagerNotes, margin: margin);
+					var rect = PdfChartAccessor.DrawNotes(gfxPage3, availableRect, review.Review.ClientReview.ManagerNotes, margin: margin);
+					availableRect = new XRect(pageSize.Left, rect.Bottom, pageSize.Width, Math.Max(pageSize.Height - rect.Bottom, 1));
 				}
+			}
+
+			if (review.Review.ClientReview.IncludeRadios) {
+				if (!addedPage3) {
+					addedPage3 = true;
+					page3 = document.AddPage();
+					gfxPage3 = XGraphics.FromPdfPage(page3);
+					currentGfx = gfxPage3;
+					currentPage = page3;
+					AddPageNum(gfxPage3, pageSize);
+				}
+				var testDoc = new PdfDocument();
+				var testPage = testDoc.AddPage();
+				var tester = XGraphics.FromPdfPage(testPage);
+				var barSize = PdfChartAccessor.DrawBarChart(tester, availableRect, radioAnswers, margin: margin);
+
+				if (barSize.Bottom > pageSize.Bottom) {
+					var pg = document.AddPage();
+					currentPage = pg;
+					var pgGfx = XGraphics.FromPdfPage(currentPage);
+					currentGfx = pgGfx;
+					AddPageNum(pgGfx, pageSize);
+					var rect = PdfChartAccessor.DrawBarChart(currentGfx, pageSize, radioAnswers, margin: margin);
+					availableRect = new XRect(pageSize.Left, rect.Bottom, pageSize.Width, Math.Max(pageSize.Height - rect.Bottom, 1));
+				} else {
+					var rect = PdfChartAccessor.DrawBarChart(currentGfx, availableRect, radioAnswers, margin: margin);
+					availableRect = new XRect(pageSize.Left, rect.Bottom, pageSize.Width, Math.Max(pageSize.Height - rect.Bottom, 1));
+				}				
 			}
 
 		}
