@@ -53,7 +53,6 @@ namespace RadialReview.Controllers
 				model.dateDataRange = new AngularDateRange(range);
 			}
 
-
 			if (scores) {
 
 				if (model.Scorecard.Scores.Count() > 22*16 && GetUser().GetTimeSettings().Period == ScorecardPeriod.Weekly ) {

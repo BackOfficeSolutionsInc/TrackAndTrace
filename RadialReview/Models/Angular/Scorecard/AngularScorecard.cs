@@ -55,7 +55,7 @@ namespace RadialReview.Models.Angular.Scorecard
             }
         }
 
-        public static AngularScorecard Create(long id, TimeSettings settings, IEnumerable<L10Recurrence_Measurable> measurables, List<ScoreModel> scores, DateTime? currentWeek, DateRange range = null, bool includeNextWeek = true, DateTime? now = null) {
+        public static AngularScorecard Create(long id, TimeSettings settings, IEnumerable<L10Recurrence_Measurable> measurables, List<ScoreModel> scores, DateTime? currentWeek, DateRange range = null, bool includeNextWeek = true, DateTime? now = null,bool reverseScorecard=false) {
 			var ms = measurables.Select(x => {
 				if (x.IsDivider) {
 					var m = AngularMeasurable.CreateDivider(x._Ordering, x.Id);
@@ -69,7 +69,7 @@ namespace RadialReview.Models.Angular.Scorecard
 				}
 			}).ToList();
 
-			return new AngularScorecard(id, settings, ms, scores, currentWeek, range, includeNextWeek, now);
+			return new AngularScorecard(id, settings, ms, scores, currentWeek, range, includeNextWeek, now, reverseScorecard);
 		}
 
 		public AngularScorecard(){

@@ -236,7 +236,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 		}
 	}
 
-	$scope.functions.orderScorecard = function (d, reverse) {
+	$scope.functions.orderScorecard = function (reverse) {
 		return function (d) {
 			if (d && d.ForWeekNumber) {
 				if (reverse)

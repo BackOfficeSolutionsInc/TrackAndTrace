@@ -115,7 +115,7 @@
 									}*@
 								} else {
 									<ul class="nav navbar-nav navbar-right">
-										<li>@Html.ActionLink("Sign Up Your Organization", "Index", "GetStarted", routeValues: new { returnUrl = ViewBag.ReturnUrl }, htmlAttributes: new { id = "registerLink", returnUrl = Model ?? "" })</li>
+										<li><a href="http://mytractiontools.com/contact-us/?type=tt">Sign Up Your Organization</a>@*@Html.ActionLink("Sign Up Your Organization", "Index", "GetStarted", routeValues: new { returnUrl = ViewBag.ReturnUrl }, htmlAttributes: new { id = "registerLink", returnUrl = Model ?? "" })*@</li>
 										<li>@Html.ActionLink(DisplayNameStrings.login, "Login", "Account", routeValues: new { returnUrl = ViewBag.ReturnUrl }, htmlAttributes: new { id = "loginLink", })</li>
 									</ul>
 									}

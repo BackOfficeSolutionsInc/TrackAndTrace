@@ -264,10 +264,11 @@ namespace RadialReview.Controllers {
 
                         var orders = L10Accessor.GetMeasurableOrdering(GetUser(), l10Id);
                         var ts = GetUser().GetTimeSettings();
-                        ts.WeekStart = L10Accessor.GetL10Recurrence(GetUser(), l10Id, false).StartOfWeekOverride ?? ts.WeekStart;
+						var recur = L10Accessor.GetL10Recurrence(GetUser(), l10Id, false);
+                        ts.WeekStart = recur.StartOfWeekOverride ?? ts.WeekStart;
                         tile.Contents = AngularScorecard.Create(scorecardTileId, ts,
                             sam.MeasurablesAndDividers,
-                            scores.ToList(), DateTime.UtcNow);
+                            scores.ToList(), DateTime.UtcNow, reverseScorecard: recur.ReverseScorecard);
                         output.L10Scorecards.Add(tile);
                     }
                 }
