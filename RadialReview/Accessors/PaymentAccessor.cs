@@ -319,6 +319,11 @@ namespace RadialReview.Accessors {
 				var reviewEnabled = allRevisions.Any(x => x.Object.Settings.EnableReview);
 				var l10Enabled = allRevisions.Any(x => x.Object.Settings.EnableL10);
 
+
+				//In case clocks are off.
+				var executionCalculationDate = executeTime.AddDays(1).Date;
+
+
 				if (plan.BaselinePrice > 0) {
 					var reviewItem = new Itemized() {
 						Name = "Traction® Tools",
@@ -336,7 +341,7 @@ namespace RadialReview.Accessors {
 					};
 					if (reviewItem.Quantity != 0) {
 						itemized.Add(reviewItem);
-						if (!(plan.ReviewFreeUntil == null || !(plan.ReviewFreeUntil.Value.Date > executeTime.Date))) {
+						if (!(plan.ReviewFreeUntil == null || !(plan.ReviewFreeUntil.Value.Date > executionCalculationDate))) {
 							//Discount it since it is free
 							itemized.Add(reviewItem.Discount());
 						}
@@ -351,13 +356,13 @@ namespace RadialReview.Accessors {
 					if (l10Item.Quantity != 0) {
 						itemized.Add(l10Item);
 
-						if (!(plan.L10FreeUntil == null || !(plan.L10FreeUntil.Value.Date > executeTime.Date))) {
+						if (!(plan.L10FreeUntil == null || !(plan.L10FreeUntil.Value.Date > executionCalculationDate))) {
 							//Discount it since it is free
 							itemized.Add(l10Item.Discount());
 						}
 					}
 				}
-				if ((plan.FreeUntil.Date > executeTime.Date)) {
+				if ((plan.FreeUntil.Date > executionCalculationDate)) {
 					//Discount it since it is free
 					var total = itemized.Sum(x => x.Total());
 					itemized.Add(new Itemized() {

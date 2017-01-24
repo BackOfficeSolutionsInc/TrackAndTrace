@@ -114,13 +114,19 @@ namespace RadialReview.Controllers
             return PartialView("L10Scorecard",id);
         }
 
-        [Access(AccessLevel.User)]
-        public PartialViewResult L10Issues(long id){
-            SetupViewBag(id);
-            return PartialView("L10Issues",id);
-        }
+		[Access(AccessLevel.User)]
+		public PartialViewResult L10Issues(long id) {
+			SetupViewBag(id);
+			return PartialView("L10Issues", id);
+		}
 
-        [Access(AccessLevel.User)]
+		[Access(AccessLevel.User)]
+		public PartialViewResult L10SolvedIssues(long id) {
+			SetupViewBag(id);
+			return PartialView("L10SolvedIssues", id);
+		}
+
+		[Access(AccessLevel.User)]
         public PartialViewResult L10Rocks(long id){
             SetupViewBag(id);
             return PartialView("L10Rocks", id);

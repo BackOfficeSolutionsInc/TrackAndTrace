@@ -1,51 +1,54 @@
 ﻿@model RadialReview.Models.L10.VM.L10MeetingVM
 
 @using (Html.BeginScripts()) {
-    <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
-    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-    <script>
-        // _SetupScript.cshtml
+	<script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+	<script>
+		// _SetupScript.cshtml
 
-        $.fn.editable.defaults.mode = 'inline';
+		$.fn.editable.defaults.mode = 'inline';
 
-        @if (Model.MeetingStart != null){
+		@if (Model.MeetingStart != null){
 			@:var startTime = new Date(@(Model.MeetingStart.Value.ToJavascriptMilliseconds()));
-                                        		}
+		                                        		}
 
-        window.recurrenceId = @Model.Recurrence.Id;
-        window.meetingId = -1;
+		window.recurrenceId = @Model.Recurrence.Id;
+		window.meetingId = -1;
 
-        var UserName = "@Html.UserOrganization().GetName()";
+		var UserName = "@Html.UserOrganization().GetName()";
 
-        @if (Model.Meeting != null){
+		@if (Model.Meeting != null){
 			@:var isLeader = @(Model.Meeting.MeetingLeaderId == ViewBag.UserId ? "true" : "false");
-            @:var currentPage = "@Model.Meeting._MeetingLeaderCurrentPage";
-            @:var currentPageStartTime = new Date().getTime();
-            @:var currentPageBaseMinutes = @(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0) + @(Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => (DateTime.UtcNow.ToJavascriptMilliseconds() - x.Value.ToJavascriptMilliseconds()))/(60*1000.0));
+		    @:var currentPage = "@Model.Meeting._MeetingLeaderCurrentPage";
+		    @:var currentPageStartTime = new Date().getTime();
+			@:var currentPageBaseMinutes = 0;
+			@:try {
+            @:var currentPageBaseMinutes = +("@(Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0)".replace(",",".")) + (+("@(Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => (DateTime.UtcNow.ToJavascriptMilliseconds() - x.Value.ToJavascriptMilliseconds()))/(60*1000.0))".replace(",",".")));
+			@:} catch (e) { console.warn(e); }
             @:meetingStart = true;
 
 			@:window.meetingId = @Model.Meeting.Id;
-            @:console.log("Setting meetingid="+window.meetingId);
-        }
+		            @:console.log("Setting meetingid="+window.meetingId);
+		        }
 		else{
 
 			@:var meetingStart = false;
-            @:var isLeader = false;
-        }
-      
-</script>
+		            @:var isLeader = false;
+		        }
+
+	</script>
 
 }
 @using (Html.BeginStyles()) {
-    <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet" />
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+	<link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet" />
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
 }
 
 @*<script>
-        try {
-            rejoin();
-        } catch (e) {
+		try {
+			rejoin();
+		} catch (e) {
 
-        }
-    </script>*@
+		}
+	</script>*@

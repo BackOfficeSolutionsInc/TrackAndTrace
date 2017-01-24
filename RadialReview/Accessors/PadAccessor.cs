@@ -21,12 +21,9 @@ namespace RadialReview.Accessors
 		{
 			try{
 				var client = new HttpClient();
-
 				var urlText = "";
-
 				if (!String.IsNullOrWhiteSpace(text))
 					urlText = "&text=" + WebUtility.UrlEncode(text);
-
 
 				var baseUrl = Config.NotesUrl() + "api/1/createPad?apikey=" + Config.NoteApiKey() + "&padID=" + padid + urlText;
 				HttpResponseMessage response = await client.GetAsync(baseUrl);
@@ -40,11 +37,32 @@ namespace RadialReview.Accessors
 					}
 					return true;
 				}
-
 			}
 			catch (Exception e){
 				log.Error("Error PadAccessor.CreatePad",e);
 				return false;
+			}
+		}
+
+		public static async Task<string> GetReadonlyPad(string padid) {
+			try {
+				var client = new HttpClient();
+
+				var baseUrl = Config.NotesUrl() + "api/1/getReadOnlyID?apikey=" + Config.NoteApiKey() + "&padID=" + padid ;
+				HttpResponseMessage response = await client.GetAsync(baseUrl);
+				HttpContent responseContent = response.Content;
+				using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync())) {
+					var result = await reader.ReadToEndAsync();
+					int code = Json.Decode(result).code;
+					string message = Json.Decode(result).message;
+					if (code != 0) {
+						throw new PermissionsException("Error " + code + ": " + message);
+					}
+					return (string)(Json.Decode(result).data.readOnlyID);
+				}
+			} catch (Exception e) {
+				log.Error("Error PadAccessor.GetReadOnlyID", e);
+				return "r.9571b86b1f325553ef5b80c8de042f6a";
 			}
 		}
 
@@ -63,7 +81,6 @@ namespace RadialReview.Accessors
 						if (message == "padID does not exist"){
 							return new HtmlString("");
 						}
-
 						throw new PermissionsException("Error " + code + ": " + message);
 					}
 
@@ -71,8 +88,7 @@ namespace RadialReview.Accessors
 					html = html.Substring("<!DOCTYPE HTML><html><body>".Length, html.Length - ("</body></html>".Length + "<!DOCTYPE HTML><html><body>".Length));
 					return new HtmlString(html);
 				}
-			}
-			catch (Exception e){
+			}catch (Exception e){
 				log.Error("Error PadAccessor.GetHtml", e);
 				return new HtmlString("");
 			}
@@ -96,10 +112,7 @@ namespace RadialReview.Accessors
 						}
 						throw new PermissionsException("Error " + code + ": " + message);
 					}
-
 					return (string) (Json.Decode(result).data.text);
-					/*html = html.Substring("<!DOCTYPE HTML><html><body>".Length, html.Length - ("</body></html>".Length + "<!DOCTYPE HTML><html><body>".Length));
-				return new HtmlString(html);*/
 				}
 			}
 			catch (Exception e){

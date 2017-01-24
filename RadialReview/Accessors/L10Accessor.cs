@@ -57,6 +57,7 @@ using Newtonsoft.Json;
 using RadialReview.Models.Angular.Headlines;
 using RadialReview.Models.VideoConference;
 using System.Linq.Expressions;
+using NHibernate.SqlCommand;
 
 namespace RadialReview.Accessors {
 	public class L10Accessor : BaseAccessor {
@@ -316,6 +317,8 @@ namespace RadialReview.Accessors {
 			}
 
 		}
+
+
 		public static string GetDefaultStartPage(L10Recurrence recurrence) {
 			var p = "segue";
 			if (recurrence.SegueMinutes > 0)
@@ -1835,6 +1838,8 @@ namespace RadialReview.Accessors {
 						throw new PermissionsException("Rock does not exist.");
 					var now = DateTime.UtcNow;
 					var updated = false;
+					perm.EditRock(rock.ForRock.Id);
+
 					if (state != RockState.Indeterminate && rock.Completion != state) {
 						if (state == RockState.Complete) {
 							rock.CompleteTime = now;
@@ -2080,7 +2085,12 @@ namespace RadialReview.Accessors {
 			var now1 = now ?? DateTime.UtcNow;
 			perm.ViewL10Recurrence(recurrenceId);
 
-			var r = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.L10Recurrence.Id == recurrenceId && x.DeleteTime == null).List().ToList();
+			MeasurableModel mAlias=null;
+			var r = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
+						.JoinAlias(x=>x.Measurable,()=>mAlias,JoinType.LeftOuterJoin)
+						.Where(x => x.L10Recurrence.Id == recurrenceId && x.DeleteTime == null && (x.Measurable == null || mAlias.DeleteTime==null))
+						.List().ToList();
+
 			var measurables = r.Where(x => x.Measurable != null).Distinct(x => x.Measurable.Id).Select(x => x.Measurable.Id).ToList();
 
 
@@ -2095,6 +2105,8 @@ namespace RadialReview.Accessors {
 			List<MeasurableModel> measurableModels = null;
 			if (getMeasurables)
 				measurableModels = s.QueryOver<MeasurableModel>().WhereRestrictionOn(x => x.Id).IsIn(measurables).Future().ToList();
+
+
 			var scores = scoresF.ToList();
 			var m = s.Get<L10Recurrence>(recurrenceId);
 
@@ -3383,10 +3395,10 @@ namespace RadialReview.Accessors {
 					if (todo.TodoType == TodoType.Recurrence) {
 						if (todo.ForRecurrenceId == null || todo.ForRecurrenceId == 0)
 							throw new PermissionsException("Meeting does not exist.");
-						perm.EditL10Recurrence(todo.ForRecurrenceId.Value);
+						perm.EditTodo(todoId);//EditL10Recurrence(todo.ForRecurrenceId.Value);
 						group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(todo.ForRecurrenceId.Value), connectionId);
 					} else if (todo.TodoType == TodoType.Personal) {
-						perm.EditUserOrganization(todo.AccountableUserId);
+						perm.EditTodo(todo.AccountableUserId);
 						group = hub.Clients.Group(MeetingHub.GenerateUserId(todo.AccountableUserId), connectionId);
 					} else {
 						throw new PermissionsException("unhandled TodoType");
@@ -3462,7 +3474,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 		public static void CompleteTodo(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceId, long todoModel) {
-			perm.EditL10Recurrence(recurrenceId);
+			perm.EditTodo(todoModel);
 			var todo = s.Get<TodoModel>(todoModel);
 			if (todo.CompleteTime != null)
 				throw new PermissionsException("Issue already deleted.");
@@ -3691,6 +3703,20 @@ namespace RadialReview.Accessors {
 
 			return _PopulateChildrenIssues(issues);
 		}
+
+		public static List<IssueModel.IssueModel_Recurrence> GetSolvedIssuesForRecurrence(ISession s, PermissionsUtility perms, long recurrenceId, DateRange range) {
+			perms.ViewL10Recurrence(recurrenceId);
+			
+			var issues = s.QueryOver<IssueModel.IssueModel_Recurrence>()
+				.Where(x =>x.DeleteTime == null && x.Recurrence.Id == recurrenceId)
+				.Where(x=>x.CloseTime>=range.StartTime && x.CloseTime<=range.EndTime)
+				.Fetch(x => x.Issue).Eager
+				.List().ToList();
+
+			return _PopulateChildrenIssues(issues);
+		}
+
+
 		public static List<IssueModel.IssueModel_Recurrence> GetIssuesForRecurrence(UserOrganizationModel caller, long meetingId, bool includeResolved) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -3722,6 +3748,7 @@ namespace RadialReview.Accessors {
 
 			return _PopulateChildrenIssues(issues);
 		}
+
 
 		public static void UpdateIssue(UserOrganizationModel caller, long issueRecurrenceId, DateTime updateTime, string message = null, string details = null, bool? complete = null, string connectionId = null, long? owner = null, int? priority = null, int? rank = null, bool? delete = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {

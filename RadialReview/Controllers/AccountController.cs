@@ -73,7 +73,7 @@ namespace RadialReview.Controllers {
 				var nexus = new NexusModel(token) { DateCreated = DateTime.UtcNow, DeleteTime = until, ActionCode = NexusActions.ResetPassword };
 				nexus.SetArgs(user.Id);
 				var result = _NexusAccessor.Put(nexus);
-
+				
 				await Emailer.SendEmail(
 						Mail.To(EmailTypes.ResetPassword, user.Email)
 						.Subject(EmailStrings.PasswordReset_Subject, ProductStrings.ProductName)
@@ -81,7 +81,10 @@ namespace RadialReview.Controllers {
 					);
 				TempData["InfoAlert"] = ("Please check your inbox, an email has been sent with further instructions.");
 
+				log.Info("Resent login information for " + user.Email);
+
 			} else {
+				log.Info("Could not send login information for " + rpvm.Email+". User was null");
 				TempData["Message"] = ("An error has occurred. Please check that you have the correct email address and try again. Contact us if the problem persists.");
 			}
 			return RedirectToAction("Index", "Home");

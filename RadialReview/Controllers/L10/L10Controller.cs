@@ -305,10 +305,7 @@ namespace RadialReview.Controllers
             return View(links);
         }
 
-
-
-
-        [Access(AccessLevel.UserOrganization)]
+		[Access(AccessLevel.UserOrganization)]
         public ActionResult Timeline(long id)
         {
             var recurrence = id;

@@ -62,6 +62,7 @@ namespace RadialReview.Models.Angular.Dashboard {
 		public List<AngularTileId<AngularScorecard>> L10Scorecards { get; set; }
 		public List<AngularTileId<List<AngularRock>>> L10Rocks { get; set; }
 		public List<AngularTileId<AngularIssuesList>> L10Issues { get; set; }
+		public List<AngularTileId<AngularIssuesList>> L10SolvedIssues { get; set; }
 		public List<AngularTileId<List<AngularTodo>>> L10Todos { get; set; }
 
 		public List<AngularString> LoadUrls { get; set; }
@@ -70,6 +71,7 @@ namespace RadialReview.Models.Angular.Dashboard {
 			L10Scorecards = new List<AngularTileId<AngularScorecard>>();
 			L10Rocks = new List<AngularTileId<List<AngularRock>>>();
 			L10Issues = new List<AngularTileId<AngularIssuesList>>();
+			L10SolvedIssues = new List<AngularTileId<AngularIssuesList>>();
 			L10Todos = new List<AngularTileId<List<AngularTodo>>>();
 			LoadUrls = new List<AngularString>();
 		}

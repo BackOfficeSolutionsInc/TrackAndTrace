@@ -1385,6 +1385,9 @@ body.resizing .notes-tile:after,
 .dashboard .l10-issue-tile .tile {
   padding: 2px 5px;
 }
+.dashboard .l10--solved-issue-tile .tile {
+  padding: 2px 5px;
+}
 .dashboard .issues-list-container {
   /*.picture-column {
             display: table-cell;

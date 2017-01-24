@@ -20,6 +20,7 @@ function InitRockstate() {
 			var parent = $(this).parent();
 			if (parent.width() > 87) {
 				var oldValue = parent.find("input").val();
+				$(this).closest(".editor").data("old-value", oldValue);
 				var newValue = $(this).data("value");
 
 				if (oldValue !== "Indeterminate" && oldValue === newValue) {
@@ -34,6 +35,7 @@ function InitRockstate() {
 			var parent = $(this);
 			if (parent.width() <= 87) {
 				var oldValue = $(this).find("input").val();
+				$(this).closest(".editor").data("old-value", oldValue);
 				var args = ["AtRisk", "OnTrack", "Complete", "Indeterminate"];
 
 				var idx = ((args.indexOf(oldValue) + 1) % (args.length));

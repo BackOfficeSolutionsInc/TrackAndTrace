@@ -14,6 +14,7 @@ namespace RadialReview.Utilities.DataTypes
 
 		public DateTime StartTime { get; set; }
 		public DateTime EndTime { get; set; }
+		public bool IncludeCurrent { get; set; }
 
 
         public DateRange(long? start, long? end) {
@@ -54,11 +55,22 @@ namespace RadialReview.Utilities.DataTypes
 
 		}
 
-		public static Expression<Func<T, bool>> Filter<T>(this DateRange range,Func<T,DateTime> transform) where T : IHistorical {
+		public static Expression<Func<T, bool>> Filter<T>(this DateRange range, Func<T, DateTime> transform) {
 			if (range == null) {
-				return x=>true; /// x => true
+				return x => true; /// x => true
 			}
 			return (T x) => transform(x) <= range.EndTime && transform(x) >= range.StartTime;
+		}
+
+		public static Expression<Func<T, bool>> Filter<T>(this DateRange range,bool allowNull, Func<T, DateTime?> transform) {
+			if (range == null) {
+				if (allowNull)
+					return x => true; /// x => true
+				return (T x) => transform(x) != null;
+			}
+			if (allowNull)
+				return (T x) => transform(x) == null || (transform(x) <= range.EndTime && transform(x) >= range.StartTime);
+			return (T x) => transform(x) != null && transform(x) <= range.EndTime && transform(x) >= range.StartTime;
 
 		}
 	}

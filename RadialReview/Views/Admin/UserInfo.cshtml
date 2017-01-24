@@ -1,0 +1,198 @@
+﻿@model RadialReview.Models.UserOrganizationModel
+
+@{
+	ViewBag.Title = "UserInfo";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>UserInfo</h2>
+
+<div>
+	<h4>UserOrganizationModel</h4>
+	<hr />
+	<dl class="dl-horizontal">
+
+		<dt>
+			Email Link:
+		</dt>
+		<dd>
+			@if (Model.TempUser != null) {
+			@Html.DisplayFor(model => model.DeleteTime)
+				@(RadialReview.Utilities.Config.BaseUrl(null)+"Account/Register?returnUrl=%2FOrganization%2FJoin%2F" + Model.TempUser.Guid)
+			}
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.DeleteTime)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.DeleteTime)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model._MethodStart)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model._MethodStart)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model._ClientTimestamp)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model._ClientTimestamp)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model._ClientOffset)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model._ClientOffset)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model._IsRadialAdmin)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model._IsRadialAdmin)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Name)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Name)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.UserName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.UserName)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.EmailAtOrganization)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.EmailAtOrganization)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.ManagerAtOrganization)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.ManagerAtOrganization)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.ManagingOrganization)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.ManagingOrganization)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.IsRadialAdmin)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.IsRadialAdmin)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.IsImplementer)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.IsImplementer)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.AttachTime)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.AttachTime)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.DetachTime)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.DetachTime)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CreateTime)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CreateTime)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CountPerPage)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CountPerPage)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.JobDescription)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.JobDescription)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.JobDescriptionFromTemplateId)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.JobDescriptionFromTemplateId)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.EvalOnly)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.EvalOnly)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.IsClient)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.IsClient)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.ClientOrganizationName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.ClientOrganizationName)
+		</dd>
+
+	</dl>
+</div>
+<p>
+	@Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+	@Html.ActionLink("Back to List", "Index")
+</p>

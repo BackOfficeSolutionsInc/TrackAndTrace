@@ -73,6 +73,10 @@ namespace RadialReview.Controllers {
 			}
 		}
 
+		[Access(AccessLevel.Radial)]
+		public ActionResult UserInfo(long id=0) {
+			return View(_UserAccessor.GetUserOrganizationUnsafe(id));
+		}
 
 
 		[Access(AccessLevel.Radial)]

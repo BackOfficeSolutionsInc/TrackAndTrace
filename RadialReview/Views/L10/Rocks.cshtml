@@ -25,47 +25,7 @@
                     </div>
                 }
 
-                @Html.Partial("partial/RockGroup", Model.Rocks)
-
-                @*@foreach (var person in Model.Rocks.GroupBy(x => x.ForRock.ForUserId))
-                    {
-                        <div class="component">
-                            @Html.Partial("_Picture", person.First().ForRock.AccountableUser.ImageUrl(true, ImageSize._32))
-                            <span class="owner">
-                                @person.First().ForRock.AccountableUser.GetName()
-                            </span>
-                            <div class="table-responsive">
-                                <table style="width:100%">
-                                    <tr>
-                                        <th style="width: 46px"></th>
-                                        <th style="width: 1px"></th>
-                                        <th></th>
-                                    </tr>
-                                    @foreach (var i in person)
-                                    {
-                                        <tr class="rock_@(i.ForRock.Id)">
-                                            <td class="buttonHolder currentBlue" style="min-width: 45px;border-radius: 6px;height: 30px;margin: 1px;padding: 4px;">
-                                                <span class="icon fontastic-icon-pinboard issuesButton issuesModal"
-                                                      data-meeting="@Model.Meeting.Id"
-                                                      data-recurrence="@Model.Recurrence.Id"
-                                                      data-rock="@(i.ForRock.Id)"
-                                                      data-method="CreateRockIssue"></span>
-                                                <span class="glyphicon glyphicon-unchecked todoButton todoModal"
-                                                      data-meeting="@Model.Meeting.Id"
-                                                      data-recurrence="@Model.Recurrence.Id"
-                                                      data-rock="@(i.ForRock.Id)"
-                                                      data-method="CreateRockTodo"
-                                                      data-accountable="@i.ForRock.ForUserId">
-                                                </span>
-                                            </td>
-                                            <td class="">@Html.EditorFor(x => i.Completion, "RockStateThin", new { name = "rock_" + i.Id })</td>
-                                            <td data-rock="@(i.ForRock.Id)" class="message">@i.ForRock.Rock</td>
-                                        </tr>
-                                    }
-                                </table>
-                            </div>
-                        </div>
-                    }*@
+                @Html.Partial("partial/RockGroup", Model.Rocks,new ViewDataDictionary() { {"CanEdit", Model.CanEdit } })
 
             </div>
         </div>

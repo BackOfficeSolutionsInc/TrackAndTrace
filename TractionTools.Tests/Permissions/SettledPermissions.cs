@@ -142,7 +142,7 @@ namespace TractionTools.Tests.Permissions {
 
 		[TestMethod]
 		[TestCategory("Unset")]
-		public void ManagingTeam() { 
+		public void ManagingTeam() {
 			Assert.Fail("Unimplemented");
 		}
 
@@ -199,6 +199,11 @@ namespace TractionTools.Tests.Permissions {
 			Assert.Fail("Unimplemented");
 		}
 
+		[TestMethod]
+		[TestCategory("Unset")]
+		public void EditTodo() {
+			Assert.Fail("Unimplemented");
+		}
 		[TestMethod]
 		[TestCategory("Unset")]
 		public void ViewTemplate() { 

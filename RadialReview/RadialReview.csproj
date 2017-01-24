@@ -1636,6 +1636,7 @@
     <Content Include="Views\Todo\HeadlineTodoModal.cshtml" />
     <Content Include="Views\TileData\UserNotifications.cshtml" />
     <Content Include="Views\Review\Take\Radio.cshtml" />
+    <Content Include="Views\TileData\L10SolvedIssues.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-responsive.css" />
@@ -2078,6 +2079,7 @@
     <Content Include="Views\Responsibilities\Sections.cshtml" />
     <Content Include="Views\Responsibilities\EditSection.cshtml" />
     <Content Include="Views\Review\Details\BarCharts.cshtml" />
+    <Content Include="Views\Admin\UserInfo.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

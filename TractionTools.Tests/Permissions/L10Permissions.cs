@@ -162,7 +162,7 @@ namespace TractionTools.Tests.Permissions {
 			
 			var l102 = L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
 			await IssuesAccessor.CreateIssue(c.Middle, l102.Id, c.Middle.Id, issue2);
-			c.AssertAll(perm2, c.Middle, c.Manager);			
+			c.AssertAll(perm2, c.Middle, c.Manager);
 		}
 
 		[TestMethod]
@@ -173,16 +173,136 @@ namespace TractionTools.Tests.Permissions {
 			L10Accessor.AddAttendee(c.Manager, l101.Id, c.Employee.Id);
 			L10Accessor.AddAttendee(c.Manager, l101.Id, c.Org.E5.Id);
 
-			var todo = new TodoModel() {ForRecurrenceId = l101.Id};
+			var todo = new TodoModel() { ForRecurrenceId = l101.Id };
 			var perm1 = new Action<PermissionsUtility>(p => p.ViewTodo(todo.Id));
 			await TodoAccessor.CreateTodo(c.Manager, l101.Id, todo);
 			c.AssertAll(perm1, c.Manager, c.Employee, c.Org.E5);
 
 			var l102 = L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
-			var todo2 = new TodoModel() {ForRecurrenceId = l102.Id};
+			var todo2 = new TodoModel() { ForRecurrenceId = l102.Id };
 			var perm2 = new Action<PermissionsUtility>(p => p.ViewTodo(todo2.Id));
 			await TodoAccessor.CreateTodo(c.Middle, l102.Id, todo2);
 			c.AssertAll(perm2, c.Middle, c.Manager);
+		}
+
+		[TestMethod]
+		[TestCategory("Permissions")]
+		public async Task ViewTodo_Personal() {
+			var c = new Ctx();
+
+			var todo = new TodoModel() { TodoType=TodoType.Personal, AccountableUser = c.Org.E5 };
+			await TodoAccessor.CreateTodo(c.Manager, -2, todo);
+
+			var perm1 = new Action<PermissionsUtility>(p => p.ViewTodo(todo.Id));
+			c.AssertAll(perm1, c.Manager, c.Org.E5);
+		}
+
+		[TestMethod]
+		[TestCategory("Permissions")]
+		public async Task EditTodo() {
+			var c = new Ctx();
+			{
+				var l101 = L10Accessor.CreateBlankRecurrence(c.Manager, c.Id);
+				L10Accessor.AddAttendee(c.Manager, l101.Id, c.Employee.Id);
+				L10Accessor.AddAttendee(c.Manager, l101.Id, c.Org.E5.Id);
+
+				var todo = new TodoModel() { ForRecurrenceId = l101.Id };
+				var perm = new Action<PermissionsUtility>(p => p.EditTodo(todo.Id));
+				await TodoAccessor.CreateTodo(c.Manager, l101.Id, todo);
+				c.AssertAll(perm, c.Manager, c.Employee, c.Org.E5);
+
+				///Revoke permissions
+				var allPerms = PermissionsAccessor.GetPermItems(c.Manager, l101.Id, ResourceType.L10Recurrence);
+				//Remove Creator
+				{
+					var creator = allPerms.Items.First(x => x.AccessorType == AccessType.Creator);
+					PermissionsAccessor.EditPermItem(c.Manager, creator.Id, null, false, null);
+					c.AssertAll(perm, c.Manager, c.Employee, c.Org.E5);
+				}
+				//Remove Admin
+				{
+					var admin = allPerms.Items.First(x => x.AccessorType == AccessType.Admins);
+					PermissionsAccessor.EditPermItem(c.Manager, admin.Id, null, false, null);
+					c.AssertAll(perm, c.Manager/*Manager owns todo*/, c.Employee, c.Org.E5);
+				}
+				//Re-add Creator
+				{
+					var creator = allPerms.Items.First(x => x.AccessorType == AccessType.Creator);
+					PermissionsAccessor.EditPermItem(c.Manager, creator.Id, null, true, null);
+					c.AssertAll(perm, c.Manager/*Manager owns todo*/, c.Employee, c.Org.E5);
+					PermissionsAccessor.EditPermItem(c.Manager, creator.Id, null, false, null);
+				}
+
+				//Remove members
+				{
+					var member = allPerms.Items.First(x => x.AccessorType == AccessType.Members);
+					PermissionsAccessor.EditPermItem(c.Manager, member.Id, null, false, null);
+					c.AssertAll(perm, c.Manager/*Manager owns todo*/);
+				}
+			}
+
+			{
+				var l101 = L10Accessor.CreateBlankRecurrence(c.Manager, c.Id);
+				L10Accessor.AddAttendee(c.Manager, l101.Id, c.Employee.Id);
+				L10Accessor.AddAttendee(c.Manager, l101.Id, c.Org.E5.Id);
+
+				var todo = new TodoModel() { ForRecurrenceId = l101.Id, AccountableUser = c.Org.E5 };
+				var perm = new Action<PermissionsUtility>(p => p.EditTodo(todo.Id));
+				await TodoAccessor.CreateTodo(c.Manager, l101.Id, todo);
+				c.AssertAll(perm, c.Manager, c.Employee, c.Org.E5);
+
+				///Revoke permissions
+				var allPerms = PermissionsAccessor.GetPermItems(c.Manager, l101.Id, ResourceType.L10Recurrence);
+				//Remove Creator
+				{
+					var creator = allPerms.Items.First(x => x.AccessorType == AccessType.Creator);
+					PermissionsAccessor.EditPermItem(c.Manager, creator.Id, null, false, null);
+					c.AssertAll(perm, c.Manager, c.Employee, c.Org.E5);
+				}
+				//Remove Admin
+				{
+					var admin = allPerms.Items.First(x => x.AccessorType == AccessType.Admins);
+					PermissionsAccessor.EditPermItem(c.Manager, admin.Id, null, false, null);
+					c.AssertAll(perm, c.Employee, c.Org.E5);
+				}
+
+				//Remove members
+				{
+					var member = allPerms.Items.First(x => x.AccessorType == AccessType.Members);
+					PermissionsAccessor.EditPermItem(c.Manager, member.Id, null, false, null);
+					c.AssertAll(perm, c.Org.E5/*Manager owns todo*/);
+				}
+			}
+			{
+				var l102 = L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
+				var todo2 = new TodoModel() { ForRecurrenceId = l102.Id, AccountableUser = c.Org.E5 };
+				var perm = new Action<PermissionsUtility>(p => p.EditTodo(todo2.Id));
+				await TodoAccessor.CreateTodo(c.Middle, l102.Id, todo2);
+				c.AssertAll(perm, c.Middle, c.Manager, c.Org.E5);
+				
+				var allPerms = PermissionsAccessor.GetPermItems(c.Manager, l102.Id, ResourceType.L10Recurrence);
+				//Remove Creator
+				{
+					var creator = allPerms.Items.First(x => x.AccessorType == AccessType.Creator);
+					PermissionsAccessor.EditPermItem(c.Manager, creator.Id, null, false, null);
+					c.AssertAll(perm, c.Manager, c.Org.E5);
+				}
+				//Remove Admin
+				{
+					var admin = allPerms.Items.First(x => x.AccessorType == AccessType.Admins);
+					PermissionsAccessor.EditPermItem(c.Manager, admin.Id, null, false, null);
+					c.AssertAll(perm, c.Org.E5);
+				}
+
+				L10Accessor.AddAttendee(c.Manager, l102.Id, c.Org.E4.Id);
+				c.AssertAll(perm, c.Org.E4, c.Org.E5);
+				//Remove members
+				{
+					var member = allPerms.Items.First(x => x.AccessorType == AccessType.Members);
+					PermissionsAccessor.EditPermItem(c.Manager, member.Id, null, false, null);
+					c.AssertAll(perm, c.Org.E5);
+				}				
+			}
 		}
 
 		[TestMethod]

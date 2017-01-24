@@ -9,7 +9,7 @@
     data-details="@Model.Details.EscapeHtml()"
     data-name="@Model.AccountableUser.GetName()"
     data-accountable="@Model.AccountableUser.Id"
-    data-padid="@Model.PadId"
+    data-padid="@(Model.GetPadId(ViewBag.CanEdit))"
     data-imageurl="@Model.AccountableUser.ImageUrl(true,ImageSize._64)"
     data-createdbefore="@(ViewBag.MeetingStart == null?false:Model.CreateTime<((DateTime)ViewBag.MeetingStart))">
     <input data-todo="@Model.Id" class="todo-checkbox" type="checkbox" @(Model.CompleteTime == null ? "" : "checked") />
@@ -25,12 +25,12 @@
                 <div class="label label-danger overdue-indicator" title="This to-do is overdue">late</div>
             }
         }
-        <span class="icon fontastic-icon-pinboard issuesModal issuesButton"
+        <span class="icon fontastic-icon-pinboard issuesButton @(ViewBag.CanEdit?"issuesModal":"disabled")"
               data-method="issuefromtodo"
               data-todo="@Model.Id"
               data-recurrence="@Model.ForRecurrenceId"
               data-meeting="@ViewData["MeetingId"]"
-              title="Create a Context-Aware Issue™"></span>
+              title="@(ViewBag.CanEdit?"Create a Context-Aware Issue™":"Cannot edit")"></span>
     </div>
     <span class="profile-image">@Html.Partial("_ProfilePicture", Model.AccountableUser)</span>
     <div class="message" data-todo="@Model.Id">@Model.Message</div>

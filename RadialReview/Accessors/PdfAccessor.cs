@@ -345,10 +345,14 @@ namespace RadialReview.Accessors {
 				g.DrawString(review.Review.ReviewerUser.GetName() + "  |  " + pageNum, PdfChartAccessor._Font8, XBrushes.LightGray, new XPoint(pageDim.Width - 20, pageDim.Height - 20), XStringFormats.BottomRight);
 			});
 
+			PdfPage currentPage;
+			XGraphics currentGfx = null;
 			PdfPage page = document.AddPage();
+			currentPage = page;
 
 			page.Size = PdfSharp.PageSize.Letter;
 			XGraphics gfx = XGraphics.FromPdfPage(page);
+			currentGfx = gfx;
 			//// HACK²
 			gfx.MUH = PdfFontEncoding.Unicode;
 			//gfx.MFEH = PdfFontEmbedding.Default;
@@ -390,6 +394,7 @@ namespace RadialReview.Accessors {
 			PdfPage page2;
 			XGraphics gfxPage2 = null;
 
+
 			if (review.Review.ClientReview.IncludeEvaluation) {
 				var testDoc = new PdfDocument();
 				var testPage = testDoc.AddPage();
@@ -411,6 +416,8 @@ namespace RadialReview.Accessors {
 						AddPageNum(gfxPage2, pageSize);
 						r = new XRect(w2, 0, w2, 1);
 						rightColumnHeight = 0;
+						currentPage = page2;
+						currentGfx = gfxPage2;
 					}
 					PdfChartAccessor.DrawValueTable(gfxPage2, r, review.Review.ReviewerUser, valAnswers, review.Supervisers, margin: margin);
 				} else {
@@ -470,7 +477,9 @@ namespace RadialReview.Accessors {
 				if (!addedPage3) {
 					addedPage3 = true;
 					page3 = document.AddPage();
+					currentPage = page3;
 					gfxPage3 = XGraphics.FromPdfPage(page3);
+					currentGfx = gfxPage3;
 					AddPageNum(gfxPage3, pageSize);
 				}
 				var rect = PdfChartAccessor.DrawFeedback(gfxPage3, availableRect, feedbackAnswers, review.ReviewContainer.AnonymousByDefault, margin: margin);
@@ -480,8 +489,6 @@ namespace RadialReview.Accessors {
 			var addedPage4 = false;
 			PdfPage page4;
 			XGraphics gfxPage4 = null;
-			PdfPage currentPage;
-			XGraphics currentGfx = null;
 
 
 			if (review.Review.ClientReview.IncludeNotes && !string.IsNullOrWhiteSpace(review.Review.ClientReview.ManagerNotes)) {

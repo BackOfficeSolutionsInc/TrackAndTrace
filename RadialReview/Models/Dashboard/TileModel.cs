@@ -9,6 +9,7 @@ namespace RadialReview.Models.Dashboard
 {
 	public enum TileType 
 	{
+		//DO NOT REORDER
 		Invalid = 0,
 		Profile,
 		Scorecard,
@@ -23,7 +24,8 @@ namespace RadialReview.Models.Dashboard
         L10Rocks,
 		L10Issues,
 		FAQGuide,
-		Notifications
+		Notifications,
+		L10SolvedIssues
 	}
 
 	public class TileModel : ILongIdentifiable, IHistorical

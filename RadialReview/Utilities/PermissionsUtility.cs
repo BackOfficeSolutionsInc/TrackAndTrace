@@ -204,7 +204,7 @@ namespace RadialReview.Utilities {
 				}
 
 				if (disableIfSelf && caller.Id == userOrganizationId)
-					throw new PermissionsException("You cannot do this to yourself.");
+					throw new PermissionsException("You cannot do this to yourself.") {NoErrorReport = true};
 
 				//..was here
 
@@ -214,7 +214,7 @@ namespace RadialReview.Utilities {
 
 				//if (caller.IsManager() && IsOwnedBelowOrEqual(caller, x => x.Id == userOrganizationId))
 				//	return this;
-				throw new PermissionsException("You do not manage this user.");
+				throw new PermissionsException("You do not manage this user.") {NoErrorReport = true};
 
 			}, alsoCheck);
 			//}, PermissionType.ManageEmployees);
@@ -482,12 +482,11 @@ namespace RadialReview.Utilities {
 
 			var question = session.Get<QuestionModel>(questionId);
 			if (question.OriginType != OriginType.Invalid)
-				return EditOrigin(question.OriginType, question.OriginId);
+				return EditOrigin(question.OriginType, question.OriginId,true);
 
-			var createdById = question.CreatedById;
-
-			if (caller.IsManager() && IsOwnedBelowOrEqual(caller, createdById))
-				return this;
+			//var createdById = question.CreatedById;
+			//if (caller.IsManager() && IsOwnedBelowOrEqual(caller, createdById))
+			//	return this;
 
 			throw new PermissionsException();
 		}
@@ -1286,13 +1285,31 @@ namespace RadialReview.Utilities {
 
 		}
 
-		public PermissionsUtility ViewTodo(long todoId) {
+		public PermissionsUtility EditTodo(long todoId) {
 			if (IsRadialAdmin(caller))
 				return this;
 			var todo = session.Get<TodoModel>(todoId);
 			if (todo.AccountableUserId == caller.Id)
 				return this;
-			if (IsManagingOrganization(todo.OrganizationId))
+			
+			if (todo.ForRecurrenceId != null && todo.ForRecurrenceId != 0) {
+				try {
+					EditL10Recurrence(todo.ForRecurrenceId.Value);
+					return this;
+				} catch (PermissionsException) {
+				}
+			} else {
+				if (IsManagingOrganization(todo.OrganizationId))
+					return this;
+			}
+			throw new PermissionsException();
+		}
+
+		public PermissionsUtility ViewTodo(long todoId) {
+			if (IsRadialAdmin(caller))
+				return this;
+			var todo = session.Get<TodoModel>(todoId);
+			if (todo.AccountableUserId == caller.Id)
 				return this;
 			if (todo.ForRecurrenceId != null && todo.ForRecurrenceId != 0) {
 				try {
@@ -1300,6 +1317,9 @@ namespace RadialReview.Utilities {
 					return this;
 				} catch (PermissionsException) {
 				}
+			} else {
+				if (IsManagingOrganization(todo.OrganizationId))
+					return this;
 			}
 			throw new PermissionsException();
 		}
@@ -1388,10 +1408,6 @@ namespace RadialReview.Utilities {
 		}
 		public PermissionsUtility EditRock(long rockId) {
 			var rock = session.Get<RockModel>(rockId);
-			//var recurrences = session.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
-			//	.Where(x => x.DeleteTime == null && x.User.Id == caller.Id)
-			//	.Select(x => x.L10Recurrence.Id).List<long>().ToList();
-
 
 			var recurrenceIds = session.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
 				.Where(x => x.DeleteTime == null && x.ForRock.Id == rock.Id)
@@ -1410,7 +1426,7 @@ namespace RadialReview.Utilities {
 				return this;
 
 			if (rock.OrganizationId != caller.Organization.Id)
-				throw new PermissionsException();
+				throw new PermissionsException() { NoErrorReport = true };
 
 
 			if (caller.Organization.Settings.EmployeesCanEditSelf && rock.ForUserId == caller.Id)

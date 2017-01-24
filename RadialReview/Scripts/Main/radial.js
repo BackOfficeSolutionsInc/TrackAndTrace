@@ -1945,8 +1945,8 @@ function supportEmail(title, nil, defaultSubject, defaultBody) {
             { name: "Body", text: "Body", type: "textarea", value: defaultBody }
 	];
 
-	if (typeof (window.UserId) === "undefined")
-		fields.push({ name: "Email", text: "Email", type: "text" });
+	if (typeof (window.UserId) === "undefined" || window.UserId == -1)
+		fields.push({ name: "Email", text: "Email", type: "text",placeholder:"Your e-mail here" });
 
 	var image = null;
 	var show = function () {

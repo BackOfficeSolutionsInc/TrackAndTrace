@@ -2,6 +2,7 @@
 	$(document).on("change", ".rocks-container .rockstate input", function() {
 		var name = $(this).prop("name");
 		var rockId = parseInt(name.split("_")[1]);
+		var oldValue = $(this).closest(".rockstate").data("old-value");
 
 		var selector = "input[name='" + name + "']";
 		$.ajax({
@@ -13,7 +14,7 @@
 				//$(selector).val((!data.Error ? data.Object : "Indeterminate"));
 			},
 			error: function () {
-				$(selector).val("Indeterminate");
+				$(selector).val(oldValue || "Indeterminate");
 			}
 		});
 	});

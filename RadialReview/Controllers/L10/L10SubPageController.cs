@@ -26,7 +26,7 @@ namespace RadialReview.Controllers
 	{
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Load(long id, string connection, string page = null)
+		public async Task<ActionResult> Load(long id, string connection, string page = null)
 		{
 			var recurrenceId = id;
 			page = page.NotNull(x=>x.ToLower());
@@ -72,7 +72,7 @@ namespace RadialReview.Controllers
 					case "rocks":
 						return Rocks(model);
 					case "todo":
-						return Todo(model);
+						return await Todo(model);
 					case "scorecard":
 						return ScoreCard(model);
 					case "segue":
@@ -239,9 +239,19 @@ namespace RadialReview.Controllers
 		#endregion
 
 		#region Todo
-		private PartialViewResult Todo(L10MeetingVM model)
+		private async Task<PartialViewResult> Todo(L10MeetingVM model)
 		{
 			model.Todos = L10Accessor.GetTodosForRecurrence(GetUser(), model.Recurrence.Id,model.Meeting.Id);
+			if (model.CanEdit == false) {
+				foreach (var t in model.Todos)
+					if (_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTodo(t.Id))) {
+						t._ReadOnlyPadId = t.PadId;
+					} else {
+						await t.ResolveReadOnlyPadId();
+					}
+
+			}
+
             model.SeenTodoFireworks = model.Meeting._MeetingAttendees.NotNull(x => x.FirstOrDefault(yx => yx.User.Id == GetUser().Id).NotNull(z=>z.SeenTodoFireworks));
 
             //ViewBag.TodoCompletion = L10Accessor.GetTodosCompletion(GetUser(), model.Meeting.Id);

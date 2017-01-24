@@ -1,0 +1,13 @@
+﻿@model long
+
+<div class="review smallBreak2 loading tiny l10-issue-tile" style="min-height:30px">
+    <div class="l10-solved-issue-heading heading" style="@(ViewBag.HeadingStyle)" data-style="@(ViewBag.HeadingStyle)">
+        {{(model.L10SolvedIssues | filter:{KeyId:@(Model)})[0].Title}}<a href="/l10/details/@(Model)#Issues" class=""> (View all)</a>
+    </div><div class="tile">@{ Html.RenderPartial("~/Views/Issues/Partial/list.cshtml", new ViewDataDictionary(){
+		{"AddHeaders", false},
+		{"AddController", false},
+		{"AllowEditOwner", false},
+		{"RecurrenceId", Model},
+		{"Selector", "((model.L10SolvedIssues )| filter:{KeyId:"+Model+"})[0].Contents "},
+	}); }<div ng-show="(model.L10SolvedIssues  | filter:{KeyId:@(Model)}).length==0" class="gray alignCenter" elem-ready="functions.reload((model.L10SolvedIssues | filter:{KeyId:@(Model)}).length==0)">Please wait</div><div ng-if="(model.L10SolvedIssues  | filter:{KeyId:@(Model)})[0].HasError" class="gray alignCenter">{{(model.L10SolvedIssues  | filter:{KeyId:@(Model)})[0].Message}}</div></div>
+</div>

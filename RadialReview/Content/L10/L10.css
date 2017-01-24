@@ -762,3 +762,8 @@ a.editable-click:hover {
     background-color: #e23737;
   }
 }
+.issuesButton.disabled,
+.todoButton.disabled {
+  cursor: not-allowed;
+  opacity: .15;
+}
