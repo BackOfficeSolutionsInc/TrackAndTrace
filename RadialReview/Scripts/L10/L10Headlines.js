@@ -166,6 +166,9 @@ function constructHeadlineRow(headline) {
 		closeTime = +new Date(Model.CloseTime)
 	}
 
+	if (Model.MeetingId == -1)
+		Model.MeetingId= window.MeetingId || Model.MeetingId;
+
 	if (!Model.Message)
 		Model.Message = "";
 	//Accountable user name populated?

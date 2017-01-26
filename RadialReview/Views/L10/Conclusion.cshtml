@@ -25,7 +25,7 @@
 						<div class="todo-container ">
 							<ol class="todo-list sortable">
 								@foreach (var i in ((List<TodoModel>)ViewBag.TodosCreated).OrderBy(x => x.Ordering).Where(x => x.CompleteTime == null).GroupBy(x => x.AccountableUser.NotNull(y => y.GetName())).SelectMany(x => x)) {@*<li class="todo-item">@Html.Partial("_ProfilePicture", i.AccountableUser)<span class="todo-due pull-right">@i.DueDate.ToShortDateString()</span><span class="todo-message">@i.Message</span></li>*@
-									var vm = new ViewDataDictionary { { "MeetingId", Model.Meeting.Id } };
+									var vm = new ViewDataDictionary { { "MeetingId", Model.Meeting.Id }, { "CanEdit", Model.CanEdit } };
 									Html.RenderPartial("~/Views/L10/partial/TodoRow.cshtml", i, vm);
 								}
 							</ol>
