@@ -70,7 +70,7 @@
 												<li role="separator" class="divider"></li>
 												<li><a href="/vto/edit/@meeting.Recurrence.VtoId" @*class="btn btn-default btn-sm"*@><span style="top: 2px;" class="glyphicon glyphicon-vto" title=""></span> View V/TO</a></li>
 												<li role="separator" class="divider"></li>
-												<li><a class="l10-texting-actions" href="#" onclick="@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId="+meeting.Recurrence.Id,"/TwilioApi/Modal")"><span style="top: 2px;" class="glyphicon glyphicon-phone l10-texting-actions"></span> Texting Actions</a></li>
+												<li><a class="l10-texting-actions" href="#" onclick="@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId="+meeting.Recurrence.Id,"/TwilioApi/Modal",null,null,"textingModal")"><span style="top: 2px;" class="glyphicon glyphicon-phone l10-texting-actions"></span> Texting Actions</a></li>
 												@*<li><a href="/L10/External/@meeting.Recurrence.Id"><span style="top: 2px;" class="icon fontastic-icon-share-1" title=""></span> Link to external services</a></li>*@
 												<li role="separator" class="divider"></li>
 												<li>
@@ -131,6 +131,18 @@
 
 @using (Html.BeginScripts()) {
     <script>
+
+		function textingModal(data){
+			if (!data.Error){
+				var message = data.Message.replace(" '"," '<b>").replace("' to ","</b>' to ");//.replace(" to activate.","</b> to activate.");
+
+				showModal({
+					icon:"info",
+					title: message
+				});
+			}
+		}
+
         function gotoMeeting(id) {
             var additional = "";
             if (tname != "")

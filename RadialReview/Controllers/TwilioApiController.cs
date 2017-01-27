@@ -102,8 +102,8 @@ namespace RadialReview.Controllers
 			if(PossibleActions.All(x => x.Value != model.SelectedAction))
 				throw new PermissionsException("Action does not exist.");
 			var code = PhoneAccessor.AddAction(GetUser(),GetUser().Id, model.SelectedAction, model.SelectedNumber.ToLong(),model.RecurrenceId);
-			var phone = code.PhoneNumber.ToPhoneNumber();
-			return Json(ResultObject.Success("Text '" + code.Code + "' to " + phone+" to activate."));
+			var phone = code.PhoneNumber.ToPhoneNumber();			
+			return Json(ResultObject.Success("Text '" + code.Code + "' to " + phone+" to activate.").ForceSilent());
 		}
 
 
