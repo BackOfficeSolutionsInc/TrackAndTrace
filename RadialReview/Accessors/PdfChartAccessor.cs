@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace RadialReview.Accessors {
 	public class PdfChartAccessor {
-		private static bool DEBUG = false && Config.IsLocal();
+		private static bool DEBUG = true && Config.IsLocal();
 
 		private static XFont _FontLargeBold = new XFont("Verdana", 20, XFontStyle.Bold);
 		private static XFont _Font = new XFont("Verdana", 10, XFontStyle.Regular);
@@ -22,6 +22,7 @@ namespace RadialReview.Accessors {
 		public static XFont _Font8 = new XFont("Verdana", 8, XFontStyle.Regular);
 		private static XFont _Font8Bold = new XFont("Verdana", 8, XFontStyle.Bold);
 		private static XFont _Font7 = new XFont("Verdana", 7, XFontStyle.Regular);
+		private static XFont _Font7Bold = new XFont("Verdana", 7, XFontStyle.Bold);
 		private static XBrush _BlackText = new XSolidBrush(XColor.FromArgb(255, 51, 51, 51));
 		private static XBrush _GrayText = new XSolidBrush(XColor.FromArgb((128+255)/2, 51, 51, 51));
 		private static Unit _DefaultMargin = Unit.FromInch(0.3);
@@ -33,8 +34,10 @@ namespace RadialReview.Accessors {
 		}
 
 		private static void DrawDebug(XGraphics gfx, XRect placement, XPen color = null) {
-			if (DEBUG)
-				gfx.DrawRectangle(color ?? XPens.Red, placement);
+			if (DEBUG) {
+				var newPlace = new XRect(placement.X, placement.Y, placement.Width, placement.Height - 1);
+				gfx.DrawRectangle(color ?? XPens.Red, newPlace);
+			}
 		}
 
 		private static double GetTextHeight(XGraphics gfx, string text, double rectWidth, XFont font) {
@@ -205,38 +208,52 @@ namespace RadialReview.Accessors {
 
 		private static void _DrawFeedbacks(XGraphics gfx, List<FeedbackRow> feedbackRows, XRect placement, ref double totalHeight, ref double top) {
 			var feedbackMargin = 6.0;
+			var feedbackGroupMargin = 4.0;
 			if (feedbackRows.Any()) {
-				top += feedbackMargin * 2;
-				var title = "Feedback:";
-				var titleFont = _Font8Bold;
-				var h = GetTextHeight(gfx, title, placement.Width, titleFont);
-				gfx.DrawString(title, titleFont, XBrushes.Gray, new XRect(placement.Left, top, placement.Width, h), XStringFormats.TopLeft);
-				top += h;
-				totalHeight += h;
-				gfx.DrawLine(XPens.LightGray, placement.Left, top, placement.Right, top);
-				top += feedbackMargin * 2;
-				totalHeight += feedbackMargin * 2;
-
+				{
+					top += feedbackMargin * 2;
+					var title = "Feedback:";
+					var titleFont = _Font8Bold;
+					var h = GetTextHeight(gfx, title, placement.Width, titleFont);
+					gfx.DrawString(title, titleFont, XBrushes.Gray, new XRect(placement.Left, top, placement.Width, h), XStringFormats.TopLeft);
+					top += h;
+					totalHeight += h;
+					gfx.DrawLine(XPens.LightGray, placement.Left, top, placement.Right, top);
+					top += feedbackMargin;
+					totalHeight += feedbackMargin;
+				}
 				var font = _Font7;
 				var iconWidth = 7;
-				var feedbackWidth = placement.Width - iconWidth - 2 * feedbackMargin;
+				var feedbackWidth = placement.Width - iconWidth - 2 * feedbackMargin - feedbackGroupMargin;
 
-				foreach (var included in feedbackRows) {
-					var fb = included.Feedback;
-					var tf = new XTextFormatter(gfx) { Alignment = XParagraphAlignment.Left };
+				foreach (var feedbackRowGroup in feedbackRows.GroupBy(x => x.GroupTitle)) {
+					var groupTitle = feedbackRowGroup.Key??"";
+					var groupTitleFont = _Font7Bold;
+					var h = GetTextHeight(gfx, groupTitle, placement.Width-feedbackGroupMargin, groupTitleFont);
+					gfx.DrawString(groupTitle, groupTitleFont, XBrushes.Gray, new XRect(placement.Left+ feedbackGroupMargin, top, placement.Width- feedbackGroupMargin, h), XStringFormats.TopLeft);
+					top += h+ feedbackGroupMargin;
+					totalHeight += h+ feedbackGroupMargin;
 
-					h = GetTextHeight(gfx, fb, feedbackWidth, font);
-					tf.DrawString(fb, font, XBrushes.Gray, new XRect(placement.Left + iconWidth + feedbackMargin, top, feedbackWidth, h), XStringFormats.TopLeft);
-					var myH = Math.Max(iconWidth, h) + feedbackMargin;
-					var iconRect = new XRect(placement.Left /*+ 1*/, top /*+ 1*/, iconWidth, h+1.5 /*- 2*/);
-					gfx.DrawRectangle(new XSolidBrush(included.Color), iconRect);
+					foreach (var included in feedbackRowGroup) {
+						var fb = included.Feedback;
+						var tf = new XTextFormatter(gfx) { Alignment = XParagraphAlignment.Left };
 
-					if (included.IconName != null) {
-						gfx.DrawString(included.IconName, _Font7, new XSolidBrush(XColor.FromArgb(200,255,255,255)), iconRect,XStringFormats.TopCenter);
+						h = GetTextHeight(gfx, fb, feedbackWidth, font);
+						tf.DrawString(fb, font, XBrushes.Gray, new XRect(placement.Left + iconWidth + feedbackMargin+ feedbackGroupMargin, top, feedbackWidth, h), XStringFormats.TopLeft);
+						var myH = Math.Max(iconWidth, h) + feedbackMargin;
+						var iconRect = new XRect(placement.Left+feedbackGroupMargin /*+ 1*/, top /*+ 1*/, iconWidth, h + 1.5 /*- 2*/);
+						gfx.DrawRectangle(new XSolidBrush(included.Color), iconRect);
+
+						if (included.IconName != null) {
+							gfx.DrawString(included.IconName, _Font7, new XSolidBrush(XColor.FromArgb(200, 255, 255, 255)), iconRect, XStringFormats.TopCenter);
+						}
+
+						top += myH;
+						totalHeight += myH;
 					}
 
-					top += myH;
-					totalHeight += myH;
+					top += feedbackGroupMargin*2;
+					totalHeight += feedbackGroupMargin*2;
 				}
 			}
 		}
@@ -519,9 +536,9 @@ namespace RadialReview.Accessors {
 			}
 
 
-			var feedbacksG = answers.Where(x => x.IncludeGetItReason).Select(x => new FeedbackRow() { Color = x.GetIt.GetXColor(), Feedback = x.GetItReason, IconName="G" }).ToList();
-			var feedbacksW = answers.Where(x => x.IncludeWantItReason).Select(x => new FeedbackRow() { Color = x.WantIt.GetXColor(), Feedback = x.WantItReason, IconName = "W" }).ToList();
-			var feedbacksC = answers.Where(x => x.IncludeHasCapacityReason).Select(x => new FeedbackRow() { Color = x.HasCapacity.GetXColor(), Feedback = x.HasCapacityReason, IconName = "C" }).ToList();
+			var feedbacksG = answers.Where(x => x.IncludeGetItReason).Select(x => new FeedbackRow() { Color = x.GetIt.GetXColor(), Feedback = x.GetItReason, IconName="G", GroupTitle=x.Askable.GetQuestion() }).ToList();
+			var feedbacksW = answers.Where(x => x.IncludeWantItReason).Select(x => new FeedbackRow() { Color = x.WantIt.GetXColor(), Feedback = x.WantItReason, IconName = "W", GroupTitle = x.Askable.GetQuestion() }).ToList();
+			var feedbacksC = answers.Where(x => x.IncludeHasCapacityReason).Select(x => new FeedbackRow() { Color = x.HasCapacity.GetXColor(), Feedback = x.HasCapacityReason, IconName = "C", GroupTitle = x.Askable.GetQuestion() }).ToList();
 
 			var feedbacks = new List<FeedbackRow>();
 			feedbacks.AddRange(feedbacksG);
@@ -681,7 +698,7 @@ namespace RadialReview.Accessors {
 
 
 			//Feedback
-			var feedbacks = answers.Where(x => x.IncludeReason).Select(x=>new FeedbackRow() { Color = x.Exhibits.GetXColor(), Feedback=x.Reason}).ToList();
+			var feedbacks = answers.Where(x => x.IncludeReason).Select(x=>new FeedbackRow() { Color = x.Exhibits.GetXColor(), Feedback=x.Reason, GroupTitle = x.Askable.GetQuestion()}).ToList();
 			_DrawFeedbacks(gfx, feedbacks, placement, ref totalHeight, ref top);
 
 			var actualSize = new XRect(location.Left, location.Top, location.Width, totalHeight + 2 * (margin ?? _DefaultMargin));
@@ -982,6 +999,11 @@ namespace RadialReview.Accessors {
 			public string Feedback { get; set; }
 			public XColor Color { get; set; }
 			public string IconName { get; set; }
+			public string GroupTitle { get; set; }
+
+			public FeedbackRow() {
+				GroupTitle = "";
+			}
 		}		
 	}
 }

@@ -132,3 +132,9 @@ svg.scatter .pointerEvents{
 .scatter .hoverable {
 	cursor: pointer;
 }
+
+.scatter .quadrantTitle{
+	fill: rgba(128, 128, 128, 0.5);
+    font-weight: bold;
+    font-size: 13px;
+}

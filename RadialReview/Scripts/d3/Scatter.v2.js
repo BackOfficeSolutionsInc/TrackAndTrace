@@ -232,6 +232,18 @@ ScatterImage.prototype.Plot = function Plot(scatterData, options) {
     options.xAxis = options.xAxis || "x";
     options.yAxis = options.yAxis || "y";
 
+    options.quadrants = options.quadrants || {};
+    options.quadrants[1] = options.quadrants[1] || {};
+    options.quadrants[2] = options.quadrants[2] || {};
+    options.quadrants[3] = options.quadrants[3] || {};
+    options.quadrants[4] = options.quadrants[4] || {};
+
+    options.quadrants[1].title = options.quadrants[1].title || "";
+    options.quadrants[2].title = options.quadrants[2].title || "";
+    options.quadrants[3].title = options.quadrants[3].title || "";
+    options.quadrants[4].title = options.quadrants[4].title || "";
+
+
     options.nodeSize = this.nodeSize;
     options.padding = options.padding || 0;//options.nodeSize/4;// separation between nodes
     options.chartPadding = options.chartPadding || 30;// separation between nodes
@@ -323,6 +335,15 @@ ScatterImage.prototype.Plot = function Plot(scatterData, options) {
 		.attr("width", options.width - 2 * options.chartPadding).attr("height", options.height - 2 * options.chartPadding);
 
     svg.append("text").classed("title", true).attr("x", chartCenterX).attr("y", options.chartPadding / 2 + options.axisRectSize / 3).attr("text-anchor", "middle").text(options.title);
+
+	///////////////////////////////////////////////////
+
+    svg.append("text").classed("quadrantTitle quadrantTitle-1", true).attr("x", chartCenterX + options.axisRectSize / 2).attr("y", options.chartPadding + options.axisRectSize * 1.16).attr("text-anchor", "start").text(options.quadrants[1].title);
+    svg.append("text").classed("quadrantTitle quadrantTitle-1", true).attr("x", options.chartPadding + options.axisRectSize / 2).attr("y", options.chartPadding + options.axisRectSize * 1.16).attr("text-anchor", "start").text(options.quadrants[2].title);
+    svg.append("text").classed("quadrantTitle quadrantTitle-1", true).attr("x", options.chartPadding + options.axisRectSize / 2).attr("y", chartCenterY + options.axisRectSize * 1.16).attr("text-anchor", "start").text(options.quadrants[3].title);
+    svg.append("text").classed("quadrantTitle quadrantTitle-1", true).attr("x", chartCenterX + options.axisRectSize / 2).attr("y", chartCenterY + options.axisRectSize * 1.16).attr("text-anchor", "start").text(options.quadrants[4].title);
+
+	///////////////////////////////////////////////////
 
     options.legendFunc.call(that, options.legendId, options.Legend);
 

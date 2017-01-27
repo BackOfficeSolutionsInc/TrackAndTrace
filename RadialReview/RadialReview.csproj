@@ -208,6 +208,7 @@
     <Compile Include="Accessors\HeadlineAccessor.cs" />
     <Compile Include="Accessors\OrganizationAccessors\JoinOrganizationAccessor.cs" />
     <Compile Include="Accessors\PdfChartAccessor.cs" />
+    <Compile Include="Accessors\PDF\DocumentPlacer.cs" />
     <Compile Include="Accessors\ReportAccessor.cs" />
     <Compile Include="Accessors\SearchAccessor.cs" />
     <Compile Include="Accessors\TinyUserAccessor.cs" />

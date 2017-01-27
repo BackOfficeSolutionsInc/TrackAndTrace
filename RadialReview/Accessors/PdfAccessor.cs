@@ -427,8 +427,11 @@ namespace RadialReview.Accessors {
 				rightColumnHeight += valueRect.Height;
 
 
+				testDoc = new PdfDocument();
+				testPage = testDoc.AddPage();
+				tester = XGraphics.FromPdfPage(testPage);
 				r = new XRect(0, leftColumnHeight, w2, 1);
-				var rockRect = PdfChartAccessor.DrawRocksTable(gfx, r, rockAnswers, margin: margin);
+				var rockRect = PdfChartAccessor.DrawRocksTable(tester, r, rockAnswers, margin: margin);
 
 
 				if (r.Top + rockRect.Height > pageSize.Height) {
