@@ -22,18 +22,18 @@
                         <td class="message multiline2"  data-rock="@(i.ForRock.Id)">@i.ForRock.Rock</td>
                         <td width="240px" class="rock-state-holder">@Html.EditorFor(x => i.Completion, "RockStateThin", new { name = "rock_" + i.Id })</td>
                         <td width="34px" class="buttonHolder currentBlue">
-                            <span class="icon fontastic-icon-pinboard issuesButton @(ViewBag.CanEdit?"issuesModal":"disabled")"
+                            <span class="icon fontastic-icon-pinboard issuesButton @((ViewBag.CanEdit??true)?"issuesModal":"disabled")"
                                   data-meeting="@person.First().L10Meeting.Id"
                                   data-recurrence="@person.First().ForRecurrence.Id"
                                   data-rock="@(i.ForRock.Id)"
                                   data-method="CreateRockIssue"
-                                  title="@(ViewBag.CanEdit?"Create a Context-Aware Issue™":"Cannot edit")"></span>
-                            <span class="glyphicon glyphicon-unchecked todoButton @(ViewBag.CanEdit?"todoModal":"disabled")"
+                                  title="@((ViewBag.CanEdit??true)?"Create a Context-Aware Issue™":"Cannot edit")"></span>
+                            <span class="glyphicon glyphicon-unchecked todoButton @((ViewBag.CanEdit??true)?"todoModal":"disabled")"
                                   data-meeting="@person.First().L10Meeting.Id"
                                   data-recurrence="@person.First().ForRecurrence.Id"
                                   data-rock="@(i.ForRock.Id)"
                                   data-method="CreateRockTodo"
-                                  title="@(ViewBag.CanEdit?"Create a Context-Aware To-Do™":"Cannot edit")">
+                                  title="@((ViewBag.CanEdit??true)?"Create a Context-Aware To-Do™":"Cannot edit")">
                             </span>
                         </td>
                     </tr>

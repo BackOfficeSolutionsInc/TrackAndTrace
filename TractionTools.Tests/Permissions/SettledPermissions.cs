@@ -148,10 +148,15 @@ namespace TractionTools.Tests.Permissions {
 
 		[TestMethod]
 		[TestCategory("Unset")]
-		public void AdminReviewContainer() { 
+		public void AdminReviewContainer() {
 			Assert.Fail("Unimplemented");
 		}
-
+		[TestMethod]
+		[TestCategory("Unset")]
+		public void EditL10Note() {
+			Assert.Fail("Unimplemented");
+		}
+		
 		[TestMethod]
 		[TestCategory("Unset")]
 		public async Task EditReview() { 

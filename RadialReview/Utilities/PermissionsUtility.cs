@@ -690,6 +690,13 @@ namespace RadialReview.Utilities {
 			throw new PermissionsException();
 		}
 
+		public PermissionsUtility EditL10Note(long id) {
+			if (IsRadialAdmin(caller))
+				return this;
+			var note = session.Get<L10Note>(id);
+			return EditL10Recurrence(note.Recurrence.Id);
+		}
+
 		public PermissionsUtility EditTeam(long teamId) {
 			if (IsRadialAdmin(caller))
 				return this;
@@ -1234,6 +1241,25 @@ namespace RadialReview.Utilities {
 					}
 				});
 			});
+		}
+
+		public PermissionsUtility EditIssue(long issueId) {
+			if (IsRadialAdmin(caller))
+				return this;
+
+			var possibleRecurrences = session.QueryOver<IssueModel.IssueModel_Recurrence>()
+				.Where(x => x.DeleteTime == null && x.Issue.Id == issueId)
+				.Select(x => x.Recurrence.Id).List<long>()
+				.ToList();
+
+			foreach (var p in possibleRecurrences) {
+				try {
+					return EditL10Recurrence(p);
+				} catch (PermissionsException) {
+					//try next one..
+				}
+			}
+			throw new PermissionsException();
 		}
 
 		public PermissionsUtility ViewIssue(long issueId) {
@@ -1853,12 +1879,6 @@ namespace RadialReview.Utilities {
 		public UserOrganizationModel GetCaller() {
 			return caller;
 		}
-
-
-
-
-
-
 
 	}
 }

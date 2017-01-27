@@ -241,16 +241,7 @@ namespace RadialReview.Controllers
 		#region Todo
 		private async Task<PartialViewResult> Todo(L10MeetingVM model)
 		{
-			model.Todos = L10Accessor.GetTodosForRecurrence(GetUser(), model.Recurrence.Id,model.Meeting.Id);
-			if (model.CanEdit == false) {
-				foreach (var t in model.Todos)
-					if (_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTodo(t.Id))) {
-						t._ReadOnlyPadId = t.PadId;
-					} else {
-						await t.ResolveReadOnlyPadId();
-					}
-
-			}
+			model.Todos = L10Accessor.GetTodosForRecurrence(GetUser(), model.Recurrence.Id,model.Meeting.Id);			
 
             model.SeenTodoFireworks = model.Meeting._MeetingAttendees.NotNull(x => x.FirstOrDefault(yx => yx.User.Id == GetUser().Id).NotNull(z=>z.SeenTodoFireworks));
 

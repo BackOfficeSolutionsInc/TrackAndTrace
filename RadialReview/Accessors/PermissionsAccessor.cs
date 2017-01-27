@@ -262,7 +262,16 @@ namespace RadialReview.Accessors {
             }
         }
 
-        public static PermItemVM EditPermItem(UserOrganizationModel caller, long id, bool? view, bool? edit, bool? admin)
+		public static PermItemVM EditPermItem(UserOrganizationModel caller, long id, PermItem.AccessLevel level, bool allowed) {
+			bool? view = level == PermItem.AccessLevel.View ? allowed : (bool?) null;
+			bool? edit = level == PermItem.AccessLevel.Edit ? allowed : (bool?)null;
+			bool? admin = level == PermItem.AccessLevel.Admin ? allowed : (bool?)null;
+
+			return EditPermItem(caller, id, view, edit, admin);
+
+		}
+
+		public static PermItemVM EditPermItem(UserOrganizationModel caller, long id, bool? view, bool? edit, bool? admin)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {

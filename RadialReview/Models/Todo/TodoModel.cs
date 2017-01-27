@@ -55,16 +55,12 @@ namespace RadialReview.Models.Todo
 
         public virtual TodoType TodoType { get; set; }
         public virtual long? ClearedInMeeting { get; set; }
-
-
-		public virtual async Task<string> GetPadId(bool editable) {
-			return editable ? PadId : _ReadOnlyPadId;
-		}		
-		public virtual string _ReadOnlyPadId { get; set; }
-		public virtual async Task<string> ResolveReadOnlyPadId() {
-			_ReadOnlyPadId = _ReadOnlyPadId ?? await PadAccessor.GetReadonlyPad(PadId);
-			return _ReadOnlyPadId;
-		}
+		
+		//public virtual string _ReadOnlyPadId { get; set; }
+		//public virtual async Task<string> ResolveReadOnlyPadId() {
+		//	_ReadOnlyPadId = _ReadOnlyPadId ?? await PadAccessor.GetReadonlyPad(PadId);
+		//	return _ReadOnlyPadId;
+		//}
 
 		public TodoModel()
 		{

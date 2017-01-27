@@ -97,7 +97,7 @@ namespace TractionTools.UITests.MeetingArchive {
                 TODO_TEXT = "A new todo!!";
                 TODO_DETAILS = "todo details!!";
 
-                d.WaitUntil(x => x.Find("#modal #Message").Displayed);
+                d.WaitUntil(15,x => x.Find("#modal #Message").Displayed);
 
                 d.Find("#modal #Message", 6).SendKeys(TODO_TEXT);
                 d.Find("#modal textarea", 6).SendKeys(TODO_DETAILS);

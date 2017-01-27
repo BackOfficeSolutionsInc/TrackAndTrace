@@ -102,7 +102,7 @@ namespace TractionTools.Tests.Accessors {
 			Assert.AreEqual(0, result.Response.amount_settled);
 			
 			var nextTask = result.NewTasks.Single();
-			result = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(29));
+			result = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(28));
 			Assert.AreEqual(0, result.Response.amount_settled);
 			
 			nextTask = result.NewTasks.Single();

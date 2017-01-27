@@ -608,6 +608,22 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
+		public async Task<ActionResult> NotePadId(long id) {
+
+			try {
+				var note = L10Accessor.GetNote(GetUser(), id);
+				var padId = note.PadId;
+				if (!_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditL10Note(id))) {
+					padId = await PadAccessor.GetReadonlyPad(note.PadId);
+				}
+				return Redirect(Config.NotesUrl("p/" + padId + "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
+			} catch (Exception e) {
+				return RedirectToAction("Index", "Error");
+			}
+		}
+
+
+		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult CreateNote(long recurrence) {
 			return PartialView(new NoteVM() { RecurrenceId = recurrence });
 		}

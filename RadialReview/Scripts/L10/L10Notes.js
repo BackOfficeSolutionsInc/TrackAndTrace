@@ -11,9 +11,9 @@
 		});
 
 		
-		var padid = $(this).data("padid");
+		var padNum = $(this).data("id");
 
-	    $(".notes iframe").attr("src", notesUrl + "p/" + padid + "?showControls=true&showChat=false");
+		$(".notes iframe").attr("src", '/L10/NotePadId/' + padNum);
 		$(".notes iframe").data("id",  $(this).data("id"));
 		$(this).addClass("active");
 		//$(".notes iframe").data("name", data.Object.Name);
@@ -104,18 +104,13 @@ function sendNoteContents() {
 		success: function (data) {
 			showJsonAlert(data, false, true);
 			if (!data.Error) {
-				//$(".notes textarea").val(data.Object.Contents);
-				//$(".notes textarea").data("id", data.Object.NoteId);
-				//$(".notes textarea").data("name", data.Object.Name);
-				//$(that).addClass("active");
-				//$(".notes textarea").prop("disable", false);
 			}
 		}
 	});
 }
 
-function createNote(id, name,padId) {
-	var row = $("<div class='tab' data-id='" + id + "' data-padid='"+padId+"'>" + name + "</div>");
+function createNote(id, name) {
+	var row = $("<div class='tab' data-id='" + id + "'>" + name + "</div>");
 	$(".notes .active").removeClass("active");
 	$(".notes .tabs").append(row);
 	$(row).addClass("active");

@@ -74,5 +74,13 @@
   {
     "outputFile": "Content/Angular/ngsortable.css",
     "inputFile": "Content/Angular/ngsortable.less"
+  },
+  {
+    "outputFile": "Content/VTO/VTO2.css",
+    "inputFile": "Content/VTO/VTO2.less"
+  },
+  {
+    "outputFile": "Content/VTO/VTO.css",
+    "inputFile": "Content/VTO/VTO.less"
   }
 ]

@@ -168,24 +168,24 @@ $(function () {
 		var detailsContents = $("<div class='issueDetails abstract-details-panel'></div>");
 
 		// $("#issueDetails").html("");
-		$(detailsContents).append("<div class='heading'><h4 class='message-holder clickable' data-recurrence_issue='" + recurrence_issue + "'><span class='message editable-text' data-recurrence_issue='" + recurrence_issue + "'>" + message + "</span></h4></div>");
+		$(detailsContents).append("<div class='heading'><h4 class='message-holder clickable on-edit-enabled' data-recurrence_issue='" + recurrence_issue + "'><span class='message editable-text' data-recurrence_issue='" + recurrence_issue + "'>" + message + "</span></h4></div>");
 		$(detailsContents).append(detailsList);
-		$(detailsContents).append("<iframe class='details issue-details' name='embed_readwrite' src='https://notes.traction.tools/p/" + padid + "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + encodeURI(UserName) + "' width='100%' height='100%'></iframe>");
+		$(detailsContents).append("<iframe class='details issue-details' name='embed_readwrite' src='/Issues/Pad/" + issueId + "' width='100%' height='100%'></iframe>");
 
 		$(detailsContents).append("<div class='button-bar'>" +
 			"<div style='height:28px;'>" +
 			"<span class='btn-group pull-right'>" +
-				"<span class='btn btn-default btn-xs doneButton'><input data-recurrence_issue='" + recurrence_issue + "' class='issue-checkbox hidden' type='checkbox' " + (checked ? "checked" : "") + "/> Resolve</span>" +
+				"<span class='btn btn-default btn-xs doneButton on-edit-enabled'><input data-recurrence_issue='" + recurrence_issue + "' class='issue-checkbox hidden' type='checkbox' " + (checked ? "checked" : "") + "/> Resolve</span>" +
 			"</span>" +
 			"<span class='expandContract btn-group'>" +
-			"<span class='btn btn-default btn-xs copyButton issuesModal' data-method='copymodal' data-recurrence_issue='" + recurrence_issue + "' data-copyto='" + window.recurrenceId + "'><span class='icon fontastic-icon-forward-1' title='Move issue to another L10'></span> Move To</span>" +
-			"<span class='btn btn-default btn-xs createTodoButton todoModal' data-method='CreateTodoFromIssue' data-meeting='" + window.meetingId + "' data-issue='" + issueId + "' data-recurrence='" + window.recurrenceId + "' ><span class='glyphicon glyphicon-unchecked todoButton'></span> To-Do</span>" +
+			"<span class='btn btn-default btn-xs copyButton issuesModal on-edit-enabled' data-method='copymodal' data-recurrence_issue='" + recurrence_issue + "' data-copyto='" + window.recurrenceId + "'><span class='icon fontastic-icon-forward-1' title='Move issue to another L10'></span> Move To</span>" +
+			"<span class='btn btn-default btn-xs createTodoButton todoModal on-edit-enabled' data-method='CreateTodoFromIssue' data-meeting='" + window.meetingId + "' data-issue='" + issueId + "' data-recurrence='" + window.recurrenceId + "' ><span class='glyphicon glyphicon-unchecked todoButton'></span> To-Do</span>" +
 			"</span>" +
 			"</div>" +
 			"<span class='clearfix'></span>" +
 			"<span class='gray' style='width:75px;display:inline-block'>Owned By:</span>" +
 			"<span>" +
-				"<span style='width:250px;padding-left:10px;' class='assignee' data-accountable='" + accountable + "' data-recurrence_issue='" + recurrence_issue + "'  >" +
+				"<span style='width:250px;padding-left:10px;' class='assignee on-edit-enabled' data-accountable='" + accountable + "' data-recurrence_issue='" + recurrence_issue + "'  >" +
 					"<span data-recurrence_issue='" + recurrence_issue + "' class='btn btn-link owner'>" + ownerStr + "</span>" +
 				"</span>" +
 			"</span>" +
@@ -206,7 +206,7 @@ $(function () {
 	});
 
 
-	$("body").on("click", ".issues-list>.issue-row .vtoButton", function () {
+	$("body").on("click", ".issues-list>.issue-row .vtoButton:not(.disabled)", function () {
 		var row = $(this).closest(".issue-row");
 		undoStack.execute(new MoveIssueToVTO(row));
 	});
@@ -433,7 +433,7 @@ function constructRow(issue) {
 	if (issue.details)
 		details = issue.details;
 
-	return '<li class="issue-row dd-item arrowkey undoable-stripped" data-padid="' + issue.padid + '" data-createtime="' + issue.createtime + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-issue="' + issue.issue + '" data-checked="' + issue.checked + '"  data-message="' + issue.message + '"  data-details="' + issue.details + '"  data-owner="' + issue.owner + '" data-accountable="' + issue.accountable + '"  data-priority="' + issue.priority + '"  data-rank="' + issue.rank + '">\n'
+	return '<li class="issue-row dd-item arrowkey undoable-stripped"  data-createtime="' + issue.createtime + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-issue="' + issue.issue + '" data-checked="' + issue.checked + '"  data-message="' + issue.message + '"  data-details="' + issue.details + '"  data-owner="' + issue.owner + '" data-accountable="' + issue.accountable + '"  data-priority="' + issue.priority + '"  data-rank="' + issue.rank + '">\n'
         + '<span class="undo-button">Undo</span>'
         + '<input data-recurrence_issue="' + issue.recurrence_issue + '" class="issue-checkbox" type="checkbox" ' + (issue.checked ? "checked" : "") + '/>\n'
 		+ '<div class="move-icon noselect dd-handle">\n'

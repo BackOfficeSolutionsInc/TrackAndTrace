@@ -328,7 +328,7 @@
 				<div class="tab add"><span class="pull-right glyphicon glyphicon-plus-sign"></span> Add Page</div>
 				@if (Model.Recurrence != null) {
 					foreach (var t in Model.Recurrence._MeetingNotes) {
-						<div data-id="@t.Id" data-padid="@t.PadId" class="tab">@t.Name</div>
+						<div data-id="@t.Id"  class="tab">@t.Name</div>
 					}
 				}
 			</div>

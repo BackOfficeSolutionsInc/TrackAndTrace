@@ -21,7 +21,7 @@
     "ValidationLocation": "Messages"
   },
   "General": {
-    "AllMessagesToOutputWindow": false,
+    "AllMessagesToOutputWindow": true,
     "KeepImportantComments": true,
     "ShowLogoWatermark": true,
     "SvgPreviewPane": true
@@ -35,7 +35,8 @@
     "EnableMicrodataValidation": true,
     "MinifyAngularBindingExpressions": false,
     "MinifyKnockoutBindingExpressions": false,
-    "ProcessableScriptTypeList": null
+    "ProcessableScriptTypeList": null,
+    "PreserveCase": false
   },
   "JavaScript": {
     "BlockCommentCompletion": true,

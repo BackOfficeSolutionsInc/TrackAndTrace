@@ -56,13 +56,18 @@ namespace RadialReview.Accessors
 					int code = Json.Decode(result).code;
 					string message = Json.Decode(result).message;
 					if (code != 0) {
+						if (message == "padID does not exist") {
+							var pad = await CreatePad(padid);
+							return await GetReadonlyPad(padid);
+						}
+
 						throw new PermissionsException("Error " + code + ": " + message);
 					}
 					return (string)(Json.Decode(result).data.readOnlyID);
 				}
 			} catch (Exception e) {
 				log.Error("Error PadAccessor.GetReadOnlyID", e);
-				return "r.9571b86b1f325553ef5b80c8de042f6a";
+				return "r.0a198a5362822f17b4690e5e66a6fba3"; // https://notes.traction.tools/p/undefined-1657717875444
 			}
 		}
 

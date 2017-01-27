@@ -14,8 +14,23 @@ using RadialReview.Utilities;
 
 namespace RadialReview.Controllers {
     public class IssuesController : BaseController {
-        #region From Todo
-        [Access(AccessLevel.UserOrganization)]
+
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<ActionResult> Pad(long id) {
+			try {
+				var issue = IssuesAccessor.GetIssue(GetUser(), id);
+				var padId = issue.PadId;
+				if (!_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditIssue(id))) {
+					padId = await PadAccessor.GetReadonlyPad(issue.PadId);
+				}
+				return Redirect(Config.NotesUrl("p/" + padId + "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
+			} catch (Exception e) {
+				return RedirectToAction("Index", "Error");
+			}
+		}
+
+		#region From Todo
+		[Access(AccessLevel.UserOrganization)]
         public async Task<PartialViewResult> IssueFromTodo(long recurrence, long todo, long meeting) {
             //var i = IssuesAccessor.GetIssue_Recurrence(GetUser(), recurrence_issue);
             //copyto = copyto ?? i.Recurrence.Id;

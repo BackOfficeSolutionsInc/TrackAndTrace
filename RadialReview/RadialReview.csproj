@@ -968,6 +968,9 @@
     <Content Include="Content\L10\Archive\Archive.min.css">
       <DependentUpon>Archive.css</DependentUpon>
     </Content>
+    <Content Include="Content\L10\L10.css">
+      <DependentUpon>L10.less</DependentUpon>
+    </Content>
     <Content Include="Content\L10\L10.min.css">
       <DependentUpon>L10.css</DependentUpon>
     </Content>
@@ -1112,6 +1115,9 @@
     <Content Include="Content\Upload\Upload.min.css">
       <DependentUpon>Upload.css</DependentUpon>
     </Content>
+    <Content Include="Content\VTO\VTO.css">
+      <DependentUpon>VTO.less</DependentUpon>
+    </Content>
     <Content Include="Data\nickname.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -1156,6 +1162,7 @@
     <Content Include="Content\Reports\Reports.less" />
     <Content Include="Content\Reports\ReportDetails.less" />
     <Content Include="Content\Reports\ClientDetails.less" />
+    <Content Include="Content\VTO\VTO.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1526,7 +1533,7 @@
     <Content Include="Content\L10\L10Conference.css" />
     <Content Include="Content\L10\L10Notes.css" />
     <Content Include="Content\ReportBuilder\ClientDetails.css" />
-    <Content Include="Content\VTO\VTO.css" />
+    <Content Include="Content\VTO\VTO_old.css" />
     <Content Include="libeay32.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -1720,7 +1727,6 @@
     <Content Include="Content\img\slider.png" />
     <Content Include="Content\jquery.nouislider.css" />
     <Content Include="Content\jquery.qtip.css" />
-    <Content Include="Content\L10\L10.css" />
     <Content Include="Content\L10\L10IDS.css" />
     <Content Include="Content\L10\L10Scorecard.css" />
     <Content Include="Content\L10\L10Stats.css" />

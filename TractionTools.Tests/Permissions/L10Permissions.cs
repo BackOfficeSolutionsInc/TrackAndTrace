@@ -10,6 +10,7 @@ using static RadialReview.Models.PermItem;
 using RadialReview.Exceptions;
 using RadialReview.Models.Todo;
 using System.Collections.Generic;
+using RadialReview.Models;
 
 namespace TractionTools.Tests.Permissions {
 	[TestClass]
@@ -21,7 +22,7 @@ namespace TractionTools.Tests.Permissions {
 		[TestCategory("Permissions")]
 		public void CreateL10Recurrence() {
 			var c = new Ctx();
-			c.AssertAll(p => p.CreateL10Recurrence(c.Id),c.AllManagers);
+			c.AssertAll(p => p.CreateL10Recurrence(c.Id), c.AllManagers);
 		}
 
 		[TestMethod]
@@ -142,28 +143,104 @@ namespace TractionTools.Tests.Permissions {
 			}
 
 		}
-		
+
 		[TestMethod]
 		[TestCategory("Permissions")]
 		public async Task ViewIssue() {
 			var c = new Ctx();
-			
+
 			var l101 = L10Accessor.CreateBlankRecurrence(c.Manager, c.Id);
 			L10Accessor.AddAttendee(c.Manager, l101.Id, c.Employee.Id);
 			L10Accessor.AddAttendee(c.Manager, l101.Id, c.Org.E5.Id);
-			
+
 			var issue = new IssueModel() { };
 			var issue2 = new IssueModel() { };
 			var perm1 = new Action<PermissionsUtility>(p => p.ViewIssue(issue.Id));
 			var perm2 = new Action<PermissionsUtility>(p => p.ViewIssue(issue2.Id));
-						
+
 			await IssuesAccessor.CreateIssue(c.Manager, l101.Id, c.Manager.Id, issue);
-			c.AssertAll(perm1, c.Manager,c.Employee, c.Org.E5);
-			
+			c.AssertAll(perm1, c.Manager, c.Employee, c.Org.E5);
+
 			var l102 = L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
 			await IssuesAccessor.CreateIssue(c.Middle, l102.Id, c.Middle.Id, issue2);
 			c.AssertAll(perm2, c.Middle, c.Manager);
+
+			//Revoke some permissions
+			var level = PermItem.AccessLevel.View;
+			var allPerms = PermissionsAccessor.GetPermItems(c.Manager, l101.Id, ResourceType.L10Recurrence);
+
+			//Remove Creator
+			{
+				var creator = allPerms.Items.First(x => x.AccessorType == AccessType.Creator);
+				PermissionsAccessor.EditPermItem(c.Manager, creator.Id, level, false);
+				c.AssertAll(perm1, c.Manager, c.Employee, c.Org.E5);
+			}
+
+			//Remove Members
+			{
+				var member = allPerms.Items.First(x => x.AccessorType == AccessType.Members);
+				PermissionsAccessor.EditPermItem(c.Manager, member.Id, level, false);
+				c.AssertAll(perm1, c.Manager);
+			}
+
+			//Remove Admin
+			{
+				var admin = allPerms.Items.First(x => x.AccessorType == AccessType.Admins);
+				PermissionsAccessor.EditPermItem(c.Manager, admin.Id, level, false);
+				c.AssertAll(perm1);
+			}
+
 		}
+
+		[TestMethod]
+		[TestCategory("Permissions")]
+		public async Task EditIssue() {
+			var c = new Ctx();
+
+			var l101 = L10Accessor.CreateBlankRecurrence(c.Manager, c.Id);
+			L10Accessor.AddAttendee(c.Manager, l101.Id, c.Employee.Id);
+			L10Accessor.AddAttendee(c.Manager, l101.Id, c.Org.E5.Id);
+
+			var issue = new IssueModel() { };
+			var issue2 = new IssueModel() { };
+			var perm1 = new Action<PermissionsUtility>(p => p.EditIssue(issue.Id));
+
+			await IssuesAccessor.CreateIssue(c.Manager, l101.Id, c.Manager.Id, issue);
+			c.AssertAll(perm1, c.Manager, c.Employee, c.Org.E5);
+			//Revoke some permissions
+			var level = PermItem.AccessLevel.Edit;
+			var allPerms = PermissionsAccessor.GetPermItems(c.Manager, l101.Id, ResourceType.L10Recurrence);
+
+			//Remove Creator
+			{
+				var creator = allPerms.Items.First(x => x.AccessorType == AccessType.Creator);
+				PermissionsAccessor.EditPermItem(c.Manager, creator.Id, level, false);
+				c.AssertAll(perm1, c.Manager, c.Employee, c.Org.E5);
+			}
+
+			//Remove Members
+			{
+				var member = allPerms.Items.First(x => x.AccessorType == AccessType.Members);
+				PermissionsAccessor.EditPermItem(c.Manager, member.Id, level, false);
+				c.AssertAll(perm1, c.Manager);
+			}
+
+			//Remove Admin
+			{
+				var admin = allPerms.Items.First(x => x.AccessorType == AccessType.Admins);
+				PermissionsAccessor.EditPermItem(c.Manager, admin.Id, level, false);
+				c.AssertAll(perm1);
+			}
+			
+
+			var l102 = L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
+			await IssuesAccessor.CreateIssue(c.Middle, l102.Id, c.Middle.Id, issue2);
+			var perm2 = new Action<PermissionsUtility>(p => p.EditIssue(issue2.Id));
+			c.AssertAll(perm2, c.Middle, c.Manager);
+
+		}
+
+
 
 		[TestMethod]
 		[TestCategory("Permissions")]
@@ -190,7 +267,7 @@ namespace TractionTools.Tests.Permissions {
 		public async Task ViewTodo_Personal() {
 			var c = new Ctx();
 
-			var todo = new TodoModel() { TodoType=TodoType.Personal, AccountableUser = c.Org.E5 };
+			var todo = new TodoModel() { TodoType = TodoType.Personal, AccountableUser = c.Org.E5 };
 			await TodoAccessor.CreateTodo(c.Manager, -2, todo);
 
 			var perm1 = new Action<PermissionsUtility>(p => p.ViewTodo(todo.Id));
@@ -279,7 +356,7 @@ namespace TractionTools.Tests.Permissions {
 				var perm = new Action<PermissionsUtility>(p => p.EditTodo(todo2.Id));
 				await TodoAccessor.CreateTodo(c.Middle, l102.Id, todo2);
 				c.AssertAll(perm, c.Middle, c.Manager, c.Org.E5);
-				
+
 				var allPerms = PermissionsAccessor.GetPermItems(c.Manager, l102.Id, ResourceType.L10Recurrence);
 				//Remove Creator
 				{
@@ -301,7 +378,7 @@ namespace TractionTools.Tests.Permissions {
 					var member = allPerms.Items.First(x => x.AccessorType == AccessType.Members);
 					PermissionsAccessor.EditPermItem(c.Manager, member.Id, null, false, null);
 					c.AssertAll(perm, c.Org.E5);
-				}				
+				}
 			}
 		}
 
@@ -323,7 +400,7 @@ namespace TractionTools.Tests.Permissions {
 			{
 				var creator = allPerms.Items.First(x => x.AccessorType == AccessType.Creator);
 				PermissionsAccessor.EditPermItem(c.Manager, creator.Id, false, null, null);
-				c.AssertAll( perm, c.Manager, c.Employee);
+				c.AssertAll(perm, c.Manager, c.Employee);
 			}
 			//Remove Admin
 			{
@@ -349,9 +426,9 @@ namespace TractionTools.Tests.Permissions {
 			L10Accessor.CreateNote(c.Middle, l10.Id, "note");
 			var note = L10Accessor.GetVisibleL10Notes_Unsafe(new List<long> { l10.Id }).First();
 			var perm = new Action<PermissionsUtility>(p => p.ViewL10Note(note.Id));
-			
+
 			c.AssertAll(perm, c.Manager, c.Middle);
-			
+
 			L10Accessor.AddAttendee(c.Middle, l10.Id, c.Employee.Id);
 			c.AssertAll(perm, c.Manager, c.Middle, c.Employee);
 

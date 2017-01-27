@@ -1,771 +1,772 @@
 ﻿@model RadialReview.Controllers.VTOController.VTOViewModel
 @{
-    ViewBag.Title = "Edit";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.FullWidth = true;
-    ViewBag.HideVision = ViewBag.HideVision ?? false;
-    ViewBag.HideTraction = ViewBag.HideTraction ?? false;
+	ViewBag.Title = "Edit";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.FullWidth = true;
+	ViewBag.HideVision = ViewBag.HideVision ?? false;
+	ViewBag.HideTraction = ViewBag.HideTraction ?? false;
 
-    if (ViewBag.HideVision && !ViewBag.HideTraction)
-    {
-        ViewBag.TractionPageTitle = "DEPARTMENT PLAN";
-    }
-    else
-    {
-        ViewBag.TractionPageTitle = "TRACTION";
-    }
+	if (ViewBag.HideVision && !ViewBag.HideTraction) {
+		ViewBag.TractionPageTitle = "DEPARTMENT PLAN";
+	} else {
+		ViewBag.TractionPageTitle = "TRACTION";
+	}
+
+	ViewBag.CanEditCoreValues = ViewBag.CanEditCoreValues ?? false;
+	ViewBag.CanEditVTO = ViewBag.CanEditVTO ?? false;
 
 
-    if (Model.IsPartial)
-    {
-        ViewBag.NoTitleBar = true;
-    }
-    Html.RenderPartial("~/Views/CDN/Angular.cshtml");
+	if (Model.IsPartial) {
+		ViewBag.NoTitleBar = true;
+	}
+	Html.RenderPartial("~/Views/CDN/Angular.cshtml");
 }
-@using (Html.BeginStyles())
-{
-    @*<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.min.js"></script>*@
-    <link href="~/Content/VTO/VTO.css" rel="stylesheet" />
+@using (Html.BeginStyles()) {
+	@*<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.min.js"></script>*@
+	<link href="~/Content/VTO/VTO.css" rel="stylesheet" />
 }
-@using (Html.BeginScripts())
-{
-    <script src="~/Scripts/VTO/vto.js"></script>
+@using (Html.BeginScripts()) {
+	<script src="~/Scripts/VTO/vto.js"></script>
 
-    <script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
-    <script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
-    @Scripts.Render("~/bundles/vto")
-    <script src="~/Scripts/Angular/VTO/VtoController.js"></script>
-    <script>
-        angular.module('VtoApp')
+	<script src="~/Scripts/jquery/jquery.ba-throttle-debounce.js"></script>
+	<script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
+	@Scripts.Render("~/bundles/vto")
+	<script src="~/Scripts/Angular/VTO/VtoController.js"></script>
+	<script>
+		angular.module('VtoApp')
 			.value('vtoId', @Model.Id)
 			.value('vtoDataUrlBase', '/Vto/Data/')
 			.value("vtoCallback",false);
-        function printPage() { refreshDocHeight();print(); }
-    </script>
+		function printPage() { refreshDocHeight();print(); }
+	</script>
 }
 
 @section topSection{
 
-    <div class="vto-outer ng-cloak print-100" ng-app="VtoApp">
-        <div ng-controller="VtoController" class="print-100">
+	<div class="vto-outer ng-cloak print-100" ng-app="VtoApp">
+		<div ng-controller="VtoController" class="print-100">
 }
 <div class="vto-no-print tiny">
-    @if (!ViewBag.HideVision)
-    {
-        <div class="vto">
-            <div class="vision">
-                <div class="heading">
-                    <div class="row">
-                        <div class="col-sm-3 hidden-xs">
-                            <img src="~/Content/img/EOS_Model.png" class="eos-model" />
-                        </div>
-                        <div class="col-sm-8">
-                            <div class="vto-title tm">THE VISION/TRACTION ORGANIZER</div>
-                            <div class="organzation-name"><span class="title">NAME:</span><input ng-change="functions.sendUpdate((model))" ng-model="(model).Name " type="text" ng-model-options="{ debounce: 75 }"> </div>
-                            <div class="page-title">VISION</div>
-                        </div>
-                        <div class="col-sm-1"></div>
-                    </div>
-                    <div class="clearfix"></div>
-                </div>
-                <div class="details boxed">
-                    <div class="row ">
-                        <div class="col-lg-8">
-                            <div class="core-values">
-                                <div class="row ">
-                                    <div class="col-lg-3 title">
-                                        <div class="boxed">
-                                            <div style="display:table; width: 100%;height: 100%;">
-                                                <div style="display:table-cell;vertical-align:middle;">
-                                                    <div style="text-align:center;">
-                                                        <input style="width:100%;"
-                                                               class="title alignCenter"
-                                                               ng-model-options="{ debounce: 75 }"
-                                                               ng-change="functions.sendUpdate((model))"
-                                                               ng-model="(model).CoreValueTitle" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-9">
-                                        <div class="boxed content">
-                                            <div style="display:table; width: 100%;height: 100%;">
-                                                <div style="display:table-cell;vertical-align:middle;">
-                                                    <table class="add-row-container table-list">
-                                                        <tr class="add-row-row" ng-repeat="value in (model).Values | filter:{Deleted:false}">
-                                                            <td class="row-number">{{$index+1}}.</td>
-                                                            <td>
-                                                                <textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddCompanyValue?vto='+vtoId,'model.Values')"
-                                                                          ng-model-options="{ debounce: 75 }"
-                                                                          ng-change="functions.sendUpdate(value)"
-                                                                          ng-model="value.CompanyValue"
-                                                                          textarea-resize></textarea>
-                                                            </td>
-                                                            <td class="delete-column">
-                                                                <span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteCompanyValue?value='+value.Id)"></span>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td></td>
-                                                            <td class="add-row" ng-click="functions.AddRow('/VTO/AddCompanyValue?vto='+vtoId,this)"></td>
+	@if (!ViewBag.HideVision) {
+		<div class="vto">
+			<div class="vision">
+				<div class="heading">
+					<div class="row">
+						<div class="col-sm-3 hidden-xs">
+							<img src="~/Content/img/EOS_Model.png" class="eos-model" />
+						</div>
+						<div class="col-sm-8">
+							<div class="vto-title tm">THE VISION/TRACTION ORGANIZER</div>
+							<div class="organzation-name"><span class="title">NAME:</span><input ng-change="functions.sendUpdate((model))" ng-model="(model).Name" type="text" ng-model-options="{ debounce: 75 }" @(ViewBag.CanEditVTO ? "" : "disabled")> </div>
+							<div class="page-title">VISION</div>
+						</div>
+						<div class="col-sm-1"></div>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="details boxed">
+					<div class="row ">
+						<div class="col-lg-8">
+							<div class="core-values">
+								<div class="row ">
+									<div class="col-lg-3 title">
+										<div class="boxed">
+											<div style="display:table; width: 100%;height: 100%;">
+												<div style="display:table-cell;vertical-align:middle;">
+													<div style="text-align:center;">
+														<input style="width:100%;"
+															   @(ViewBag.CanEditVTO ? "" : "disabled")
+															   class="title alignCenter"
+															   ng-model-options="{ debounce: 75 }"
+															   ng-change="functions.sendUpdate((model))"
+															   ng-model="(model).CoreValueTitle" />
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="col-lg-9">
+										<div class="boxed content">
+											<div style="display:table; width: 100%;height: 100%;">
+												<div style="display:table-cell;vertical-align:middle;">
+													<table class="add-row-container table-list">
+														<tr class="add-row-row" ng-repeat="value in (model).Values | filter:{Deleted:false}">
+															<td class="row-number">{{$index+1}}.</td>
+															<td>
+																<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddCompanyValue?vto='+vtoId,'model.Values')"
+																		  ng-model-options="{ debounce: 75 }"
+																		  ng-change="functions.sendUpdate(value)"
+																		  ng-model="value.CompanyValue"
+																		  @((!ViewBag.CanEditCoreValues || !ViewBag.CanEditVTO) ? "disabled" : "")
+																		  textarea-resize></textarea>
+															</td>
+															<td class="delete-column">
+																<span class="delete glyphicon glyphicon-remove" @((!ViewBag.CanEditCoreValues || !ViewBag.CanEditVTO) ? "disabled" : "") ng-click="functions.Get('/VTO/DeleteCompanyValue?value='+value.Id)"></span>
+															</td>
+														</tr>
+														<tr>
+															<td></td>
+															<td class="add-row" @((!ViewBag.CanEditCoreValues || !ViewBag.CanEditVTO) ? "disabled" : "") ng-click="functions.AddRow('/VTO/AddCompanyValue?vto='+vtoId,this)"></td>
 
-                                                        </tr>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="core-focus">
-                                <div class="row">
-                                    <div class="col-lg-3 title">
-                                        <div class="boxed">
-                                            <div style="display:table; width: 100%;height: 100%;">
-                                                <div style="display:table-cell;vertical-align:middle;">
-                                                    <div style="text-align:center;" class="tmm">
-                                                        <input style="width:100%;"
-                                                               class="title alignCenter"
-                                                               ng-model-options="{ debounce: 75 }"
-                                                               ng-change="functions.sendUpdate((model).CoreFocus)"
-                                                               ng-model="(model).CoreFocus.CoreFocusTitle" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-9 ">
-                                        <div class="boxed content">
-                                            <div style="display:table; width: 100%;height: 100%;">
-                                                <div style="display:table-cell;vertical-align:middle;padding-top: 0px">
-                                                    <div>
-                                                        <table class="table" style="margin-bottom:0px;">
-                                                            <tr class="purpose">
-                                                                <td style="width: 175px;" class="hidden-xs">
-                                                                    <div class="title" style="color:transparent;height:0px;">{{(model).CoreFocus.PurposeTitle}}:</div>
-                                                                    <input style="width:100%;" class="title" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)" ng-model="(model).CoreFocus.PurposeTitle" />
-                                                                </td>
+														</tr>
+													</table>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="core-focus">
+								<div class="row">
+									<div class="col-lg-3 title">
+										<div class="boxed">
+											<div style="display:table; width: 100%;height: 100%;">
+												<div style="display:table-cell;vertical-align:middle;">
+													<div style="text-align:center;" class="tmm">
+														<input style="width:100%;"
+															   class="title alignCenter"
+															   @(ViewBag.CanEditVTO ? "" : "disabled")
+															   ng-model-options="{ debounce: 75 }"
+															   ng-change="functions.sendUpdate((model).CoreFocus)"
+															   ng-model="(model).CoreFocus.CoreFocusTitle" />
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="col-lg-9 ">
+										<div class="boxed content">
+											<div style="display:table; width: 100%;height: 100%;">
+												<div style="display:table-cell;vertical-align:middle;padding-top: 0px">
+													<div>
+														<table class="table" style="margin-bottom:0px;">
+															<tr class="purpose">
+																<td style="width: 175px;" class="hidden-xs">
+																	<div class="title" style="color:transparent;height:0px;">{{(model).CoreFocus.PurposeTitle}}:</div>
+																	<input style="width:100%;" class="title" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)" ng-model="(model).CoreFocus.PurposeTitle" @(ViewBag.CanEditVTO ? "" : "disabled") />
+																</td>
 																<td>
 																	<div class="visible-xs">
-																		<input style="width:100%;" class="title alignLeft" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)" ng-model="(model).CoreFocus.PurposeTitle" />
+																		<input style="width:100%;" class="title alignLeft" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)" ng-model="(model).CoreFocus.PurposeTitle" @(ViewBag.CanEditVTO ? "" : "disabled") />
 																	</div>
-																	<textarea textarea-resize ng-model="(model).CoreFocus.Purpose" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)"></textarea>
+																	<textarea textarea-resize ng-model="(model).CoreFocus.Purpose" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
 																</td>
-                                                            </tr>
-                                                            <tr class="niche">
-                                                                <td style="width: 1px" class="hidden-xs">
-                                                                    <span class="title">Our Niche:</span>
-                                                                </td>
+															</tr>
+															<tr class="niche">
+																<td style="width: 1px" class="hidden-xs">
+																	<span class="title">Our Niche:</span>
+																</td>
 																<td>
 																	<div class="visible-xs alignLeft">
 																		<span class="title alignLeft">Our Niche:</span>
 																	</div>
-																	<textarea textarea-resize ng-model="(model).CoreFocus.Niche" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)"></textarea>
+																	<textarea textarea-resize ng-model="(model).CoreFocus.Niche" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
 																</td>
-                                                            </tr>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
+															</tr>
+														</table>
+													</div>
+												</div>
+											</div>
 
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="ten-year-target">
-                                <div class="row">
-                                    <div class="col-lg-3 title">
-                                        <div class="boxed">
-                                            <div style="display:table; width: 100%;height: 100%;">
-                                                <div style="display:table-cell;vertical-align:middle;">
-                                                    <div style="text-align:center;" class="tmm">
-                                                        <input style="width:100%;"
-                                                               class="title alignCenter"
-                                                               ng-model-options="{ debounce: 75 }"
-                                                               ng-change="functions.sendUpdate((model))"
-                                                               ng-model="(model).TenYearTargetTitle" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-9">
-                                        <div class="boxed content">
-                                            <div class="target">
-                                                <textarea textarea-resize ng-model="(model).TenYearTarget" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model))"></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="marketing-strategy">
-                                <div class="row">
-                                    <div class="col-lg-3 title">
-                                        <div class="boxed">
-                                            <div style="display:table; width: 100%;height: 100%;">
-                                                <div style="display:table-cell;vertical-align:middle;">
-                                                    <div style="text-align:center;">
-                                                        <input style="width:100%;"
-                                                               class="title alignCenter"
-                                                               ng-model-options="{ debounce: 75 }"
-                                                               ng-change="functions.sendUpdate((model).Strategy)"
-                                                               ng-model="(model.Strategy).MarketingStrategyTitle" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-9">
-                                        <div class="boxed content">
-                                            <div style="display:table; width: 100%;height: 100%;">
-                                                <div style="display:table-cell;vertical-align:middle;">
-                                                    <div class="target-market">
-                                                        <span class="title">Target Market/"The List":</span>
-                                                        <div>
-                                                            <textarea textarea-resize ng-model="(model.Strategy).TargetMarket" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).Strategy)"></textarea>
-                                                        </div>
-                                                    </div>
-                                                    <div class="three-uniques">
-                                                        <div class="title">Three Uniques:</div>
-                                                        <table class="add-row-container table-list">
-                                                            <tr class="add-row-row" ng-repeat="uniques in (model.Strategy.Uniques) | filter:{Deleted:false}">
-                                                                <td class="row-number">{{$index+1}}.</td>
-                                                                <td>
-                                                                    <textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddUniques?vto='+vtoId,'model.Strategy.Uniques')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(uniques)" ng-model="uniques.Data"></textarea>
-                                                                </td>
-                                                                <td class="delete-column">
-                                                                    <span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteString?value='+uniques.Id)"></span>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td></td>
-                                                                <td class="add-row" ng-click="functions.AddRow('/VTO/AddUniques?vto='+vtoId)"></td>
-                                                            </tr>
-                                                        </table>
-                                                    </div>
-                                                    <div class="proven-process">
-                                                        <span class="title">Proven Process:</span>
-                                                        <div>
-                                                            <textarea textarea-resize ng-model="(model.Strategy).ProvenProcess" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).Strategy)"></textarea>
-                                                        </div>
-                                                    </div>
-                                                    <div class="guarantee">
-                                                        <span class="title">Guarantee:</span>
-                                                        <div>
-                                                            <textarea textarea-resize ng-model="(model.Strategy).Guarantee" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).Strategy)"></textarea>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4">
-                            <div class="three-year-picture">
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <div class="title boxed">
-                                            <div style="display:table; width: 100%;height: 100%;">
-                                                <div style="display:table-cell;vertical-align:middle;">
-                                                    <div style="text-align:center; margin: 9px;" class="tmm">
-                                                        <input style="width:100%;"
-                                                               class="title alignCenter"
-                                                               ng-model-options="{ debounce: 75 }"
-                                                               ng-change="functions.sendUpdate((model.ThreeYearPicture))"
-                                                               ng-model="(model.ThreeYearPicture).ThreeYearPictureTitle" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="boxed content">
-                                            <div>
-                                                <span class="bold lbl">Future Date:</span> <span class="future-date input">
-                                                    <input type="date" class="datepicker2" ng-model='(model.ThreeYearPicture).FutureDate' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" />
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <span class="bold lbl">Revenue:</span><span class="revenue input ">
-                                                    <input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.ThreeYearPicture).Revenue' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" />
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <span class="bold lbl">Profit:</span><span class="profit input ">
-                                                    <input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.ThreeYearPicture).Profit' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" />
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <span class="bold lbl">Measurables:</span><span class="measurables input">
-                                                    <textarea textarea-resize type="text" ng-model='(model.ThreeYearPicture).Measurables' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))"></textarea>
-                                                </span>
-                                            </div>
-                                            <div class="looks-like">What does it look like?</div>
-                                            <div class="listing">
-                                                <table class="add-row-container table-list">
-                                                    <tr class="add-row-row" ng-repeat="item in (model.ThreeYearPicture).LooksLike | filter:{Deleted:false}">
-                                                        <td class="row-number">{{$index+1}}.</td>
-                                                        <td>
-                                                            <textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddThreeYear?vto='+vtoId,'model.ThreeYearPicture.LooksLike')"
-                                                                      textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data"></textarea>
-                                                        </td>
-                                                        <td class="delete-column">
-                                                            <span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteString?value='+item.Id)"></span>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td></td>
-                                                        <td class="add-row" ng-click="functions.AddRow('/VTO/AddThreeYear?vto='+vtoId)"></td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="copywrite">© 2003 - @DateTime.UtcNow.Year EOS. All Rights Reserved</div>
-            </div>
-        </div>
-    }
-    @if (!ViewBag.HideTraction)
-    {
-        <div class="vto">
-            <div class="traction">
-                <div class="heading">
-                    <div class="row">
-                        <div class="col-sm-3 hidden-xs">
-                            <img  src="~/Content/img/EOS_Model.png" class="eos-model" />
-                        </div>
-                        <div class="col-sm-8">
-                            <div class="vto-title tm">THE VISION/TRACTION ORGANIZER</div>
-                            @*<div class="organzation-name"><span class="title">NAME:</span><input ng-change="functions.sendUpdate((model))" ng-model="(model).Name " type="text" ng-model-options="{ debounce: 75 }"> </div>*@
-                            <div class="page-title">@ViewBag.TractionPageTitle</div>
-                        </div>
-                        <div class="col-sm-1"></div>
-                    </div>
-                    <div class="clearfix"></div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-4">
-                        <div class="three-year-picture">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="title boxed">
-                                        <div style="display:table; width: 100%;height: 100%;">
-                                            <div style="display:table-cell;vertical-align:middle;">
-                                                <div style="text-align:center; margin: 9px;" class="">
-                                                    <input style="width:100%;"
-                                                           class="title alignCenter"
-                                                           ng-model-options="{ debounce: 75 }"
-                                                           ng-change="functions.sendUpdate((model.OneYearPlan))"
-                                                           ng-model="(model.OneYearPlan).OneYearPlanTitle" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="boxed content">
-                                        <div>
-                                            <span class="bold lbl">Future Date:</span> <span class="future-date input">
-                                                <input type="date" class="datepicker2" ng-model='(model.OneYearPlan).FutureDate' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.OneYearPlan))" />
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <span class="bold lbl">Revenue:</span><span class="revenue input ">
-                                                <input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.OneYearPlan).Revenue' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.OneYearPlan))" />
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <span class="bold lbl">Profit:</span><span class="profit input ">
-                                                <input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.OneYearPlan).Profit' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.OneYearPlan))" />
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <span class="bold lbl">Measurables:</span><span class="measurables input">
-                                                <textarea textarea-resize type="text" ng-model='(model.OneYearPlan).Measurables' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.OneYearPlan))"></textarea>
-                                            </span>
-                                        </div>
-                                        <div class="smallBreak2">&nbsp;</div>
-                                        <div class="goals-table border-table">
-                                            <table class="add-row-container">
-                                                <tr><th colspan="2">Goals for the year:</th></tr>
-                                                <tr class="add-row-row" ng-repeat="item in (model.OneYearPlan).GoalsForYear | filter:{Deleted:false}">
-                                                    <td class="number">{{$index+1}}.</td>
-                                                    <td>
-                                                        <textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddYearGoal?vto='+vtoId,'model.OneYearPlan.GoalsForYear')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data"></textarea>
-                                                        <span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteString?value='+item.Id)"></span>
-                                                    </td>
-                                                </tr>
-                                                <tr class="add-row-tr">
-                                                    <td colspan="2" class="add-row" ng-click="functions.AddRow('/VTO/AddYearGoal?vto='+vtoId)"></td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="three-year-picture">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="title boxed">
-                                        <div style="display:table; width: 100%;height: 100%;">
-                                            <div style="display:table-cell;vertical-align:middle;">
-                                                <div style="text-align:center; margin: 9px;" class="">
-                                                    <input style="width:100%;"
-                                                           class="title alignCenter"
-                                                           ng-model-options="{ debounce: 75 }"
-                                                           ng-change="functions.sendUpdate((model.QuarterlyRocks))"
-                                                           ng-model="(model.QuarterlyRocks).RocksTitle" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="boxed content">
-                                        <div>
-                                            <span class="bold lbl">Future Date:</span><span class="future-date input">
-                                                <input type="date" class="datepicker2" ng-model='(model.QuarterlyRocks).FutureDate' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" />
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <span class="bold lbl">Revenue:</span><span class="revenue input ">
-                                                <input @*type="number" fcsa-number="{ prepend: '$' }"*@ ng-model='(model.QuarterlyRocks).Revenue' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" />
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <span class="bold lbl">Profit:</span><span class="profit input ">
-                                                <input @*type="number" fcsa-number="{ prepend: '$' }"*@ ng-model='(model.QuarterlyRocks).Profit' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" />
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <span class="bold lbl">Measurables:</span><span class="measurables input">
-                                                <textarea textarea-resize type="text" ng-model='(model.QuarterlyRocks).Measurables' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))"></textarea>
-                                            </span>
-                                        </div>
-                                        <div class="smallBreak2">&nbsp;</div>
-                                        <div class="rocks-table border-table">
-                                            <table class="add-row-container">
-                                                <tr><th colspan="2">Rocks for the Quarter:</th><th class="alignRight hidden-xs">Who</th></tr>
-                                                <tr class="add-row-row" ng-repeat="item in (model.QuarterlyRocks).Rocks | filter:{Deleted:false,Rock:{CompanyRock:true}}">
-                                                    <td class="number">{{$index+1}}.</td>
-                                                    <td>
-                                                        <textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddRock?vto='+vtoId,'model.QuarterlyRocks.Rocks')"
-                                                                  textarea-resize
-                                                                  style="width: 80%;width: calc(100% - 18px);"
-                                                                  ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Rock.Name"></textarea>
-                                                        <span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteRock?value='+item.Id)"></span>
-                                                    </td>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="ten-year-target">
+								<div class="row">
+									<div class="col-lg-3 title">
+										<div class="boxed">
+											<div style="display:table; width: 100%;height: 100%;">
+												<div style="display:table-cell;vertical-align:middle;">
+													<div style="text-align:center;" class="tmm">
+														<input style="width:100%;"
+															   @(ViewBag.CanEditVTO ? "" : "disabled")
+															   class="title alignCenter"
+															   ng-model-options="{ debounce: 75 }"
+															   ng-change="functions.sendUpdate((model))"
+															   ng-model="(model).TenYearTargetTitle" />
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="col-lg-9">
+										<div class="boxed content">
+											<div class="target">
+												<textarea textarea-resize ng-model="(model).TenYearTarget" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model))" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="marketing-strategy">
+								<div class="row">
+									<div class="col-lg-3 title">
+										<div class="boxed">
+											<div style="display:table; width: 100%;height: 100%;">
+												<div style="display:table-cell;vertical-align:middle;">
+													<div style="text-align:center;">
+														<input style="width:100%;"
+															   class="title alignCenter"
+															   @(ViewBag.CanEditVTO ? "" : "disabled")
+															   ng-model-options="{ debounce: 75 }"
+															   ng-change="functions.sendUpdate((model).Strategy)"
+															   ng-model="(model.Strategy).MarketingStrategyTitle" />
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="col-lg-9">
+										<div class="boxed content">
+											<div style="display:table; width: 100%;height: 100%;">
+												<div style="display:table-cell;vertical-align:middle;">
+													<div class="target-market">
+														<span class="title">Target Market/"The List":</span>
+														<div>
+															<textarea textarea-resize ng-model="(model.Strategy).TargetMarket" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).Strategy)" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+														</div>
+													</div>
+													<div class="three-uniques">
+														<div class="title">Three Uniques:</div>
+														<table class="add-row-container table-list">
+															<tr class="add-row-row" ng-repeat="uniques in (model.Strategy.Uniques) | filter:{Deleted:false}">
+																<td class="row-number">{{$index+1}}.</td>
+																<td>
+																	<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddUniques?vto='+vtoId,'model.Strategy.Uniques')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(uniques)" ng-model="uniques.Data" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+																</td>
+																<td class="delete-column">
+																	<span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteString?value='+uniques.Id)" @(ViewBag.CanEditVTO ? "" : "disabled")></span>
+																</td>
+															</tr>
+															<tr>
+																<td></td>
+																<td class="add-row" @(ViewBag.CanEditVTO ? "" : "disabled") ng-click="functions.AddRow('/VTO/AddUniques?vto='+vtoId)"></td>
+															</tr>
+														</table>
+													</div>
+													<div class="proven-process">
+														<span class="title">Proven Process:</span>
+														<div>
+															<textarea textarea-resize ng-model="(model.Strategy).ProvenProcess" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).Strategy)" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+														</div>
+													</div>
+													<div class="guarantee">
+														<span class="title">Guarantee:</span>
+														<div>
+															<textarea textarea-resize ng-model="(model.Strategy).Guarantee" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).Strategy)" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-4">
+							<div class="three-year-picture">
+								<div class="row">
+									<div class="col-lg-12">
+										<div class="title boxed">
+											<div style="display:table; width: 100%;height: 100%;">
+												<div style="display:table-cell;vertical-align:middle;">
+													<div style="text-align:center; margin: 9px;" class="tmm">
+														<input style="width:100%;"
+															   class="title alignCenter"
+															   @(ViewBag.CanEditVTO ? "" : "disabled")
+															   ng-model-options="{ debounce: 75 }"
+															   ng-change="functions.sendUpdate((model.ThreeYearPicture))"
+															   ng-model="(model.ThreeYearPicture).ThreeYearPictureTitle" />
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="boxed content">
+											<div>
+												<span class="bold lbl">Future Date:</span> <span class="future-date input">
+													<input type="date" class="datepicker2" ng-model='(model.ThreeYearPicture).FutureDate' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" @(ViewBag.CanEditVTO ? "" : "disabled") />
+												</span>
+											</div>
+											<div>
+												<span class="bold lbl">Revenue:</span><span class="revenue input ">
+													<input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.ThreeYearPicture).Revenue' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" @(ViewBag.CanEditVTO ? "" : "disabled") />
+												</span>
+											</div>
+											<div>
+												<span class="bold lbl">Profit:</span><span class="profit input ">
+													<input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.ThreeYearPicture).Profit' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" @(ViewBag.CanEditVTO ? "" : "disabled") />
+												</span>
+											</div>
+											<div>
+												<span class="bold lbl">Measurables:</span><span class="measurables input">
+													<textarea textarea-resize type="text" ng-model='(model.ThreeYearPicture).Measurables' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+												</span>
+											</div>
+											<div class="looks-like">What does it look like?</div>
+											<div class="listing">
+												<table class="add-row-container table-list">
+													<tr class="add-row-row" ng-repeat="item in (model.ThreeYearPicture).LooksLike | filter:{Deleted:false}">
+														<td class="row-number">{{$index+1}}.</td>
+														<td>
+															<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddThreeYear?vto='+vtoId,'model.ThreeYearPicture.LooksLike')"
+																	  textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+														</td>
+														<td class="delete-column">
+															<span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteString?value='+item.Id)" @(ViewBag.CanEditVTO ? "" : "disabled")></span>
+														</td>
+													</tr>
+													<tr>
+														<td></td>
+														<td class="add-row" ng-click="functions.AddRow('/VTO/AddThreeYear?vto='+vtoId)" @(ViewBag.CanEditVTO ? "" : "disabled")></td>
+													</tr>
+												</table>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="copywrite">© 2003 - @DateTime.UtcNow.Year EOS. All Rights Reserved</div>
+			</div>
+		</div>
+	}
+	@if (!ViewBag.HideTraction) {
+		<div class="vto">
+			<div class="traction">
+				<div class="heading">
+					<div class="row">
+						<div class="col-sm-3 hidden-xs">
+							<img src="~/Content/img/EOS_Model.png" class="eos-model" />
+						</div>
+						<div class="col-sm-8">
+							<div class="vto-title tm">THE VISION/TRACTION ORGANIZER</div>
+							@*<div class="organzation-name"><span class="title">NAME:</span><input ng-change="functions.sendUpdate((model))" ng-model="(model).Name " type="text" ng-model-options="{ debounce: 75 }"> </div>*@
+							<div class="page-title">@ViewBag.TractionPageTitle</div>
+						</div>
+						<div class="col-sm-1"></div>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="row">
+					<div class="col-lg-4">
+						<div class="three-year-picture">
+							<div class="row">
+								<div class="col-lg-12">
+									<div class="title boxed">
+										<div style="display:table; width: 100%;height: 100%;">
+											<div style="display:table-cell;vertical-align:middle;">
+												<div style="text-align:center; margin: 9px;" class="">
+													<input style="width:100%;"
+														   class="title alignCenter"
+														   @(ViewBag.CanEditVTO ? "" : "disabled")
+														   ng-model-options="{ debounce: 75 }"
+														   ng-change="functions.sendUpdate((model.OneYearPlan))"
+														   ng-model="(model.OneYearPlan).OneYearPlanTitle" />
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="boxed content">
+										<div>
+											<span class="bold lbl">Future Date:</span> <span class="future-date input">
+												<input type="date" class="datepicker2" ng-model='(model.OneYearPlan).FutureDate' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.OneYearPlan))" @(ViewBag.CanEditVTO ? "" : "disabled") />
+											</span>
+										</div>
+										<div>
+											<span class="bold lbl">Revenue:</span><span class="revenue input ">
+												<input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.OneYearPlan).Revenue' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.OneYearPlan))" @(ViewBag.CanEditVTO ? "" : "disabled") />
+											</span>
+										</div>
+										<div>
+											<span class="bold lbl">Profit:</span><span class="profit input ">
+												<input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.OneYearPlan).Profit' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.OneYearPlan))" @(ViewBag.CanEditVTO ? "" : "disabled") />
+											</span>
+										</div>
+										<div>
+											<span class="bold lbl">Measurables:</span><span class="measurables input">
+												<textarea textarea-resize type="text" ng-model='(model.OneYearPlan).Measurables' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.OneYearPlan))" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+											</span>
+										</div>
+										<div class="smallBreak2">&nbsp;</div>
+										<div class="goals-table border-table">
+											<table class="add-row-container">
+												<tr><th colspan="2">Goals for the year:</th></tr>
+												<tr class="add-row-row" ng-repeat="item in (model.OneYearPlan).GoalsForYear | filter:{Deleted:false}">
+													<td class="number">{{$index+1}}.</td>
+													<td>
+														<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddYearGoal?vto='+vtoId,'model.OneYearPlan.GoalsForYear')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+														<span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteString?value='+item.Id)" @(ViewBag.CanEditVTO ? "" : "disabled")></span>
+													</td>
+												</tr>
+												<tr class="add-row-tr">
+													<td colspan="2" class="add-row" ng-click="functions.AddRow('/VTO/AddYearGoal?vto='+vtoId)" @(ViewBag.CanEditVTO ? "" : "disabled")></td>
+												</tr>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4">
+						<div class="three-year-picture">
+							<div class="row">
+								<div class="col-lg-12">
+									<div class="title boxed">
+										<div style="display:table; width: 100%;height: 100%;">
+											<div style="display:table-cell;vertical-align:middle;">
+												<div style="text-align:center; margin: 9px;" class="">
+													<input style="width:100%;"
+														   class="title alignCenter"
+														   @(ViewBag.CanEditVTO ? "" : "disabled")
+														   ng-model-options="{ debounce: 75 }"
+														   ng-change="functions.sendUpdate((model.QuarterlyRocks))"
+														   ng-model="(model.QuarterlyRocks).RocksTitle" />
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="boxed content">
+										<div>
+											<span class="bold lbl">Future Date:</span><span class="future-date input">
+												<input type="date" class="datepicker2" ng-model='(model.QuarterlyRocks).FutureDate' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" @(ViewBag.CanEditVTO ? "" : "disabled") />
+											</span>
+										</div>
+										<div>
+											<span class="bold lbl">Revenue:</span><span class="revenue input ">
+												<input @*type="number" fcsa-number="{ prepend: '$' }"*@ ng-model='(model.QuarterlyRocks).Revenue' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" @(ViewBag.CanEditVTO ? "" : "disabled") />
+											</span>
+										</div>
+										<div>
+											<span class="bold lbl">Profit:</span><span class="profit input ">
+												<input @*type="number" fcsa-number="{ prepend: '$' }"*@ ng-model='(model.QuarterlyRocks).Profit' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" @(ViewBag.CanEditVTO ? "" : "disabled") />
+											</span>
+										</div>
+										<div>
+											<span class="bold lbl">Measurables:</span><span class="measurables input">
+												<textarea textarea-resize type="text" ng-model='(model.QuarterlyRocks).Measurables' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+											</span>
+										</div>
+										<div class="smallBreak2">&nbsp;</div>
+										<div class="rocks-table border-table">
+											<table class="add-row-container">
+												<tr><th colspan="2">Rocks for the Quarter:</th><th class="alignRight hidden-xs">Who</th></tr>
+												<tr class="add-row-row" ng-repeat="item in (model.QuarterlyRocks).Rocks | filter:{Deleted:false,Rock:{CompanyRock:true}}">
+													<td class="number">{{$index+1}}.</td>
+													<td>
+														<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddRock?vto='+vtoId,'model.QuarterlyRocks.Rocks')"
+																  textarea-resize
+																  @(ViewBag.CanEditVTO ? "" : "disabled")
+																  style="width: 80%;width: calc(100% - 18px);"
+																  ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Rock.Name" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+														<span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteRock?value='+item.Id)" @(ViewBag.CanEditVTO ? "" : "disabled")></span>
+													</td>
 
-                                                    <td class="hidden-xs">
-                                                        <a href="#rock" data-value="{{item.Rock.Owner.Id}}" data-display="false" class="inlineEdit rock-accountable" data-type="select" data-pk="{{item.Id}}" data-url="/Vto/XUpdateRock" data-name="accountable" data-source="/Dropdown/OrganizationMembers/@(Html.Organization().Id)?userId=true">
-                                                            <profile-image user="(item.Rock.Owner)"></profile-image>
-                                                            {{(item.Rock.Owner).Name}}
-                                                        </a>
+													<td class="hidden-xs">
+														<a href="#rock" data-value="{{item.Rock.Owner.Id}}" data-display="false" class="@(ViewBag.CanEditVTO ? "inlineEdit":"") rock-accountable" @(ViewBag.CanEditVTO ? "" : "disabled") data-type="select" data-pk="{{item.Id}}" data-url="/Vto/XUpdateRock" data-name="accountable" data-source="/Dropdown/OrganizationMembers/@(Html.Organization().Id)?userId=true">
+															<profile-image user="(item.Rock.Owner)"></profile-image>
+															{{(item.Rock.Owner).Name}}
+														</a>
 
-                                                    </td>
-                                                </tr>
-                                                <tr class="add-row-tr">
-                                                    <td colspan="2" class="add-row" ng-click="functions.AddRow('/VTO/AddRock?vto='+vtoId)"></td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="three-year-picture">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="title boxed">
-                                        <div style="display:table; width: 100%;height: 100%;">
-                                            <div style="display:table-cell;vertical-align:middle;">
-                                                <div style="text-align:center; margin: 9px;" class="">
-                                                    <input style="width:100%;"
-                                                           class="title alignCenter"
-                                                           ng-model-options="{ debounce: 75 }"
-                                                           ng-change="functions.sendUpdate((model))"
-                                                           ng-model="(model).IssuesListTitle" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="boxed content">
-                                        <div class="rocks-table border-table">
-                                            <table class="add-row-container">
-                                                <tr class="add-row-row" ng-repeat="item in (model).Issues | filter:{Deleted:false}">
-                                                    <td class="number">{{$index+1}}.</td>
-                                                    <td>
-                                                        <textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddIssue?vto='+vtoId,'model.Issues')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data"></textarea>
-                                                        @*</td>
-                                                            <td class="delete-column">*@
-                                                        <div class="pull-right" style="width:25px;margin-top: -4px;margin-bottom: -5px;">
-                                                            <span class="ids-button glyphicon glyphicon-ids gray clickable" ng-click="functions.Get('/L10/MoveIssueFromVto/'+item.Id)"></span>
-                                                            <span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteString?value='+item.Id)"></span>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr class="add-row-tr">
-                                                    <td colspan="3" class="add-row" ng-click="functions.AddRow('/VTO/AddIssue?vto='+vtoId)"></td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="copywrite">© 2003 - @DateTime.UtcNow.Year EOS. All Rights Reserved</div>
-            </div>
-        </div>
-    }
+													</td>
+												</tr>
+												<tr class="add-row-tr">
+													<td colspan="2" class="add-row" ng-click="functions.AddRow('/VTO/AddRock?vto='+vtoId)" @(ViewBag.CanEditVTO ? "" : "disabled")></td>
+												</tr>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4">
+						<div class="three-year-picture">
+							<div class="row">
+								<div class="col-lg-12">
+									<div class="title boxed">
+										<div style="display:table; width: 100%;height: 100%;">
+											<div style="display:table-cell;vertical-align:middle;">
+												<div style="text-align:center; margin: 9px;" class="">
+													<input style="width:100%;"
+														   class="title alignCenter"
+														   @(ViewBag.CanEditVTO ? "" : "disabled")
+														   ng-model-options="{ debounce: 75 }"
+														   ng-change="functions.sendUpdate((model))"
+														   ng-model="(model).IssuesListTitle" />
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="boxed content">
+										<div class="rocks-table border-table">
+											<table class="add-row-container">
+												<tr class="add-row-row" ng-repeat="item in (model).Issues | filter:{Deleted:false}">
+													<td class="number">{{$index+1}}.</td>
+													<td>
+														<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddIssue?vto='+vtoId,'model.Issues')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+														@*</td>
+															<td class="delete-column">*@
+														<div class="pull-right" style="width:25px;margin-top: -4px;margin-bottom: -5px;">
+															<span class="ids-button glyphicon glyphicon-ids gray clickable" ng-click="functions.Get('/L10/MoveIssueFromVto/'+item.Id)" @(ViewBag.CanEditVTO ? "" : "disabled")></span>
+															<span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteString?value='+item.Id)" @(ViewBag.CanEditVTO ? "" : "disabled")></span>
+														</div>
+													</td>
+												</tr>
+												<tr class="add-row-tr">
+													<td colspan="3" class="add-row" ng-click="functions.AddRow('/VTO/AddIssue?vto='+vtoId)" @(ViewBag.CanEditVTO ? "" : "disabled")></td>
+												</tr>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="copywrite">© 2003 - @DateTime.UtcNow.Year EOS. All Rights Reserved</div>
+			</div>
+		</div>
+	}
 </div>
 
 @section bottomSection{
-    <div class="vto-print vto">
-        @if (!ViewBag.HideVision)
-        {
-            <div class="page">
-                <div class="top">
-                    <div class="eos-icon"><div class="eos-model">The EOS Model™</div><img src="https://s3.amazonaws.com/Radial/base/Vto/EOS_Wheel.png"></div>
-                    <div class="eos-title">
-                        <div>THE VISION/TRACTION ORGANIZER™</div>
-                        <div class="page-title">Organization Name:<span class="page-title-text">{{(model).Name}}</span></div>
-                        <div class="page-name">VISION</div>
-                    </div>
-                </div>
-                <div class="body">
-                    <div class="column-1 resize-group">
-                        <table>
-                            <tr>
-                                <td class="cell-title cell-border">{{(model).CoreValueTitle}}</td>
-                                <td class="cell-contents resize-item cell-border">
-                                    <ol>
-                                        <li ng-repeat="value in (model).Values | filter:{Deleted:false}">
-                                            <div>{{value.CompanyValue}}</div>
-                                        </li>
-                                    </ol>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="cell-title cell-border">{{(model).CoreFocus.CoreFocusTitle}}</td>
-                                <td class="cell-contents resize-item cell-border">
-                                    <div class="purpose">
-                                        <div class="title">{{(model).CoreFocus.PurposeTitle}}</div>
-                                        <div class="data">{{(model).CoreFocus.Purpose}}</div>
-                                        <br />
-                                    </div>
-                                    <div class="niche">
-                                        <div class="title">Our Niche:</div>
-                                        <div class="data">{{(model).CoreFocus.Niche}}</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="cell-title cell-border">{{(model).TenYearTargetTitle}}</td>
-                                <td class="cell-contents resize-item cell-border">
-                                    <div class="data" style="padding-top: 10px;">{{(model).TenYearTarget}}</div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="cell-title cell-border">{{(model).Strategy.MarketingStrategyTitle}}</td>
-                                <td class="cell-contents resize-item cell-border">
+	<div class="vto-print vto">
+		@if (!ViewBag.HideVision) {
+			<div class="page">
+				<div class="top">
+					<div class="eos-icon"><div class="eos-model">The EOS Model™</div><img src="https://s3.amazonaws.com/Radial/base/Vto/EOS_Wheel.png"></div>
+					<div class="eos-title">
+						<div>THE VISION/TRACTION ORGANIZER™</div>
+						<div class="page-title">Organization Name:<span class="page-title-text">{{(model).Name}}</span></div>
+						<div class="page-name">VISION</div>
+					</div>
+				</div>
+				<div class="body">
+					<div class="column-1 resize-group">
+						<table>
+							<tr>
+								<td class="cell-title cell-border">{{(model).CoreValueTitle}}</td>
+								<td class="cell-contents resize-item cell-border">
+									<ol>
+										<li ng-repeat="value in (model).Values | filter:{Deleted:false}">
+											<div>{{value.CompanyValue}}</div>
+										</li>
+									</ol>
+								</td>
+							</tr>
+							<tr>
+								<td class="cell-title cell-border">{{(model).CoreFocus.CoreFocusTitle}}</td>
+								<td class="cell-contents resize-item cell-border">
+									<div class="purpose">
+										<div class="title">{{(model).CoreFocus.PurposeTitle}}</div>
+										<div class="data">{{(model).CoreFocus.Purpose}}</div>
+										<br />
+									</div>
+									<div class="niche">
+										<div class="title">Our Niche:</div>
+										<div class="data">{{(model).CoreFocus.Niche}}</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td class="cell-title cell-border">{{(model).TenYearTargetTitle}}</td>
+								<td class="cell-contents resize-item cell-border">
+									<div class="data" style="padding-top: 10px;">{{(model).TenYearTarget}}</div>
+								</td>
+							</tr>
+							<tr>
+								<td class="cell-title cell-border">{{(model).Strategy.MarketingStrategyTitle}}</td>
+								<td class="cell-contents resize-item cell-border">
 
-                                    <div class="target-market">
-                                        <span class="title">Target Market/"The List":</span>
-                                        <div class="data">{{(model.Strategy).TargetMarket}}</div>
-                                    </div>
-                                    <div class="three-uniques">
-                                        <div class="title">Three Uniques:</div>
-                                        <ol>
-                                            <li ng-repeat="uniques in (model.Strategy.Uniques) | filter:{Deleted:false}">
-                                                <div>{{uniques.Data}}</div>
-                                            </li>
-                                        </ol>
-                                    </div>
-                                    <div class="proven-process">
-                                        <span class="title">Proven Process:</span>
-                                        <div class="data">{{(model.Strategy).ProvenProcess}}</div>
-                                    </div>
-                                    <div class="guarantee">
-                                        <span class="title">Guarantee:</span>
-                                        <div class="data">{{(model.Strategy).Guarantee}}</div>
-                                    </div>
-                                </td>
-                            </tr>
+									<div class="target-market">
+										<span class="title">Target Market/"The List":</span>
+										<div class="data">{{(model.Strategy).TargetMarket}}</div>
+									</div>
+									<div class="three-uniques">
+										<div class="title">Three Uniques:</div>
+										<ol>
+											<li ng-repeat="uniques in (model.Strategy.Uniques) | filter:{Deleted:false}">
+												<div>{{uniques.Data}}</div>
+											</li>
+										</ol>
+									</div>
+									<div class="proven-process">
+										<span class="title">Proven Process:</span>
+										<div class="data">{{(model.Strategy).ProvenProcess}}</div>
+									</div>
+									<div class="guarantee">
+										<span class="title">Guarantee:</span>
+										<div class="data">{{(model.Strategy).Guarantee}}</div>
+									</div>
+								</td>
+							</tr>
 
-                        </table>
-                    </div>
-                    <div class="column-2 column-container">
-                        <div class="cell-title-container">
-                            <div class="cell-title cell-border">{{(model).ThreeYearPicture.ThreeYearPictureTitle}}</div>
-                        </div>
-                        <div class="column-data cell-border">
-                            <div class="line-item"><span class="line-label">Future Date:</span> <span class="drm">{{(model.ThreeYearPicture).FutureDate | date: "MMMM dd, yyyy"}}</span></div>
-                            <div class="line-item"><span class="line-label">Revenue:</span> <span class="drm">{{(model.ThreeYearPicture).Revenue }}</span></div>
-                            <div class="line-item"><span class="line-label">Profit:</span> <span class="drm">{{(model.ThreeYearPicture).Profit }}</span></div>
-                            <div class="line-item"><span class="line-label">Measurables:</span><span class="drm">{{(model.ThreeYearPicture).Measurables}}</span></div>
-                            <br />
-                            <div class="looks-like">What does that look like?</div>
-                            <div class="resize-group">
-                                <ul class="resize-item">
-                                    <li ng-repeat="item in (model.ThreeYearPicture).LooksLike | filter:{Deleted:false}"><div class="">{{item.Data}}</div></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-        @if (!ViewBag.HideTraction)
-        {
-            <div class="page">
-                <div class="top">
-                    <div class="eos-icon"><div class="eos-model">The EOS Model™</div><img src="https://s3.amazonaws.com/Radial/base/Vto/EOS_Wheel.png"></div>
-                    <div class="eos-title">
-                        <div>THE VISION/TRACTION ORGANIZER™</div>
-                        <div class="page-title">Organization Name:<span class="page-title-text">{{(model).Name}}</span></div>
-                        <div class="page-name">@ViewBag.TractionPageTitle</div>
-                    </div>
-                </div>
-                <div class="body">
+						</table>
+					</div>
+					<div class="column-2 column-container">
+						<div class="cell-title-container">
+							<div class="cell-title cell-border">{{(model).ThreeYearPicture.ThreeYearPictureTitle}}</div>
+						</div>
+						<div class="column-data cell-border">
+							<div class="line-item"><span class="line-label">Future Date:</span> <span class="drm">{{(model.ThreeYearPicture).FutureDate | date: "MMMM dd, yyyy"}}</span></div>
+							<div class="line-item"><span class="line-label">Revenue:</span> <span class="drm">{{(model.ThreeYearPicture).Revenue }}</span></div>
+							<div class="line-item"><span class="line-label">Profit:</span> <span class="drm">{{(model.ThreeYearPicture).Profit }}</span></div>
+							<div class="line-item"><span class="line-label">Measurables:</span><span class="drm">{{(model.ThreeYearPicture).Measurables}}</span></div>
+							<br />
+							<div class="looks-like">What does that look like?</div>
+							<div class="resize-group">
+								<ul class="resize-item">
+									<li ng-repeat="item in (model.ThreeYearPicture).LooksLike | filter:{Deleted:false}"><div class="">{{item.Data}}</div></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+		@if (!ViewBag.HideTraction) {
+			<div class="page">
+				<div class="top">
+					<div class="eos-icon"><div class="eos-model">The EOS Model™</div><img src="https://s3.amazonaws.com/Radial/base/Vto/EOS_Wheel.png"></div>
+					<div class="eos-title">
+						<div>THE VISION/TRACTION ORGANIZER™</div>
+						<div class="page-title">Organization Name:<span class="page-title-text">{{(model).Name}}</span></div>
+						<div class="page-name">@ViewBag.TractionPageTitle</div>
+					</div>
+				</div>
+				<div class="body">
 
-                    <div class="column-3 column-container">
-                        <div class="cell-title-container">
-                            <div class="cell-title cell-border">{{(model).OneYearPlan.OneYearPlanTitle}}</div>
-                        </div>
-                        <div class="column-data cell-border">
-                            <div class="line-item"><span class="line-label">Future Date:</span> <span class="drm">{{(model.OneYearPlan).FutureDate | date: "MMMM dd, yyyy"}}</span></div>
-                            <div class="line-item"><span class="line-label">Revenue:</span> <span class="drm">{{(model.OneYearPlan).Revenue}}</span></div>
-                            <div class="line-item"><span class="line-label">Profit:</span> <span class="drm">{{(model.OneYearPlan).Profit }}</span></div>
-                            <div class="line-item"><span class="line-label">Measurables:</span><span class="drm">{{(model.OneYearPlan).Measurables}}</span></div>
-                            <br />
-                            <div class="resize-group">
-                                <table class="table-bordered resize-item ">
-                                    <tbody class="">
-                                        <tr><th colspan=2>Goals for the year:</th></tr>
-                                        <tr ng-repeat="item in (model.OneYearPlan).GoalsForYear | filter:{Deleted:false}">
-                                            <td class="number">{{$index+1}}.</td>
-                                            <td>{{item.Data}}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+					<div class="column-3 column-container">
+						<div class="cell-title-container">
+							<div class="cell-title cell-border">{{(model).OneYearPlan.OneYearPlanTitle}}</div>
+						</div>
+						<div class="column-data cell-border">
+							<div class="line-item"><span class="line-label">Future Date:</span> <span class="drm">{{(model.OneYearPlan).FutureDate | date: "MMMM dd, yyyy"}}</span></div>
+							<div class="line-item"><span class="line-label">Revenue:</span> <span class="drm">{{(model.OneYearPlan).Revenue}}</span></div>
+							<div class="line-item"><span class="line-label">Profit:</span> <span class="drm">{{(model.OneYearPlan).Profit }}</span></div>
+							<div class="line-item"><span class="line-label">Measurables:</span><span class="drm">{{(model.OneYearPlan).Measurables}}</span></div>
+							<br />
+							<div class="resize-group">
+								<table class="table-bordered resize-item ">
+									<tbody class="">
+										<tr><th colspan=2>Goals for the year:</th></tr>
+										<tr ng-repeat="item in (model.OneYearPlan).GoalsForYear | filter:{Deleted:false}">
+											<td class="number">{{$index+1}}.</td>
+											<td>{{item.Data}}</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
 
-                    <div class="column-4 column-container">
-                        <div class="cell-title-container">
-                            <div class="cell-title cell-border">{{(model).QuarterlyRocks.RocksTitle}}</div>
-                        </div>
-                        <div class="resize-group column-data cell-border">
-                            <div class="line-item"><span class="line-label">Future Date:</span> <span class="drm">{{(model.QuarterlyRocks).FutureDate | date: "MMMM dd, yyyy"}}</span></div>
-                            <div class="line-item"><span class="line-label">Revenue:</span> <span class="drm">{{(model.QuarterlyRocks).Revenue}}</span></div>
-                            <div class="line-item"><span class="line-label">Profit:</span> <span class="drm">{{(model.QuarterlyRocks).Profit}}</span></div>
-                            <div class="line-item"><span class="line-label">Measurables:</span><span class="drm">{{(model.QuarterlyRocks).Measurables}}</span></div>
-                            <br />
-                            <div class="resize-group">
-                                <table class="table-bordered resize-item ">
-                                    <tr><th colspan=2>Rocks for the Quarter:</th><th>Who:</th></tr>
-                                    @*@{
-                                        var rockFilter = Model.OnlyCompanyWideRocks ? ",Rock.CompanyRock:true" : "";                                    
-                                    }*@
+					<div class="column-4 column-container">
+						<div class="cell-title-container">
+							<div class="cell-title cell-border">{{(model).QuarterlyRocks.RocksTitle}}</div>
+						</div>
+						<div class="resize-group column-data cell-border">
+							<div class="line-item"><span class="line-label">Future Date:</span> <span class="drm">{{(model.QuarterlyRocks).FutureDate | date: "MMMM dd, yyyy"}}</span></div>
+							<div class="line-item"><span class="line-label">Revenue:</span> <span class="drm">{{(model.QuarterlyRocks).Revenue}}</span></div>
+							<div class="line-item"><span class="line-label">Profit:</span> <span class="drm">{{(model.QuarterlyRocks).Profit}}</span></div>
+							<div class="line-item"><span class="line-label">Measurables:</span><span class="drm">{{(model.QuarterlyRocks).Measurables}}</span></div>
+							<br />
+							<div class="resize-group">
+								<table class="table-bordered resize-item ">
+									<tr><th colspan=2>Rocks for the Quarter:</th><th>Who:</th></tr>
+									@*@{
+											var rockFilter = Model.OnlyCompanyWideRocks ? ",Rock.CompanyRock:true" : "";
+										}*@
 
-                                    <tr ng-repeat="item in (model.QuarterlyRocks).Rocks | filter:{Deleted:false}">
-                                        <td class="number">{{$index+1}}.</td>
-                                        <td style="width: 80%;">{{item.Rock.Name}}</td>
-                                        <td style="white-space: nowrap;padding: 0 10px;">
-                                            {{(item.Rock.Owner).Name}}
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+									<tr ng-repeat="item in (model.QuarterlyRocks).Rocks | filter:{Deleted:false}">
+										<td class="number">{{$index+1}}.</td>
+										<td style="width: 80%;">{{item.Rock.Name}}</td>
+										<td style="white-space: nowrap;padding: 0 10px;">
+											{{(item.Rock.Owner).Name}}
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
 
-                    <div class="column-5 column-container">
-                        <div class="cell-title-container">
-                            <div class="cell-title cell-border">{{(model).IssuesListTitle}}</div>
-                        </div>
-                        <div class="resize-group column-data cell-border">
-                            <br />
-                            <div class="resize-group">
-                                <table class="table-bordered resize-item ">
-                                    <tr ng-repeat="item in (model).Issues | filter:{Deleted:false}">
-                                        <td class="number">{{$index+1}}.</td>
-                                        <td>{{item.Data}}</td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
+					<div class="column-5 column-container">
+						<div class="cell-title-container">
+							<div class="cell-title cell-border">{{(model).IssuesListTitle}}</div>
+						</div>
+						<div class="resize-group column-data cell-border">
+							<br />
+							<div class="resize-group">
+								<table class="table-bordered resize-item ">
+									<tr ng-repeat="item in (model).Issues | filter:{Deleted:false}">
+										<td class="number">{{$index+1}}.</td>
+										<td>{{item.Data}}</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
 </div>
 </div>
 }
 
-@using (Html.BeginStyles())
-{
-    <link href="~/Content/VTO/VtoPrint.css" rel="stylesheet" />
-    <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
-    <style>
-        .vto textarea {
-            /*padding: 0px 2px;
-            margin: 0;
-            margin-bottom: -4px;*/
-        }
+@using (Html.BeginStyles()) {
+	<link href="~/Content/VTO/VtoPrint.css" rel="stylesheet" />
+	<link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
+	<style>
+		.vto textarea {
+			/*padding: 0px 2px;
+			margin: 0;
+			margin-bottom: -4px;*/
+		}
 
-        .datepicker2 {
-            width: inherit !important;
-        }
+		.datepicker2 {
+			width: inherit !important;
+		}
 
-        span.lbl {
-            width: 100px;
-            display: inline-block;
-            text-align: left;
-        }
+		span.lbl {
+			width: 100px;
+			display: inline-block;
+			text-align: left;
+		}
 
-        span.input input {
-            width: 250px;
-            display: inline-block;
-            text-align: left;
-            padding: 0;
-        }
+		span.input input {
+			width: 250px;
+			display: inline-block;
+			text-align: left;
+			padding: 0;
+		}
 
 
-        .dollar:before {
-            content: "$";
-            display: inline-block;
-            color: #565656;
-            font-size: 80%;
-            bottom: 3px;
-            position: relative;
-        }
-    </style>
-    if (ViewBag.HideVision || ViewBag.HideTraction)
-    {
+		.dollar:before {
+			content: "$";
+			display: inline-block;
+			color: #565656;
+			font-size: 80%;
+			bottom: 3px;
+			position: relative;
+		}
+	</style>
+	if (ViewBag.HideVision || ViewBag.HideTraction) {
         <style>
-            @@media print {
-                body {
-                    height: 100% !important;
-                }
+	@@media print {
+		body {
+			height: 100% !important;
+		}
 
-                .vto-print .page {
-                    height: 100% !important;
-                }
-            }
+		.vto-print .page {
+			height: 100% !important;
+		}
+	}
         </style>
     }
 }
@@ -774,117 +775,91 @@
 {
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
     <script>
-        $.fn.editable.defaults.ajaxOptions = { type: "POST" };
-        $.fn.editable.defaults.mode = 'popup';
+        $.fn.editable.defaults.ajaxOptions = { type: "POST" };$.fn.editable.defaults.mod
+	<script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+	<script>
+		$.fn.editable.defaults.ajaxOptions = { type: "POST" };
+		$.fn.editable.defaults.mode = 'popup';
 
-        /*$(".datepicker").datepickerX({
-		    format: 'mm/dd/yyyy',
-		    todayBtn: true
-	    }).on('changeDate',function(ev) {
-		    angular.element(this).triggerHandler('change');
-		    $(this).datepickerX("hide");
-	    });*/
-        //$( ".datepicker" ).datepicker( "setDate", $.datepicker.parseDate( "yy-mm-dd", $(".datepicker").val() ));
 
-        //$("textarea").autoResize({});
+		$("body").on('click', ".inlineEdit", function() {
+			if (!$(this).attr("editable")) {
+				$(this).editable({
+					savenochange: true,
+					validate: function(value) {
+						if ($.trim(value) == '') {
+							return 'This field is required';
+						}
+					},
+					success: function(data) {
 
-        $("body").on('click', ".inlineEdit", function() {
-            if (!$(this).attr("editable")) {
-                $(this).editable({
-                    savenochange: true,
-                    validate: function(value) {
-                        if ($.trim(value) == '') {
-                            return 'This field is required';
-                        }
-                    },
-                    success: function(data) {
-
-                        /*var items = $(".grid[data-measurable=" + $(this).data("measurable") + "]");
-
-					if ($(this).data("name") == "direction") {
-						$(items).attr("data-goal-dir", $(this).attr("data-value"));
-					} else if ($(this).data("name") == "target") {
-						$(items).attr("data-goal", $(this).attr("data-value"));
 					}
-					$(items).each(function (d) {
-						updateScore(this);
-					});
-					debugger;*/
-                    }
-                });
-                $(this).attr("editable", "1");
-                $(this).click();
-            }
-        });
-    </script>
-    <script>
+				});
+				$(this).attr("editable", "1");
+				$(this).click();
+			}
+		});
 
-        function addRowEnter() {
+		function addRowEnter() {
+		}
 
-        }
+		$(function() {
+			$(".add-row-container").on("keypress", ".add-row-row:last input", function(e) {
+				if(e.which == 13) {
+					e.preventDefault();
+					angular.element($(this).parents(".add-row-container").find(".add-row")).triggerHandler('click');
+					var self = this;
+					setTimeout(function() {
+						$(self).parents(".add-row-container").find(".add-row-row:last input").focus();
+					}, 450);
+				}
+			});
+		});
 
-        $(function() {
-            $(".add-row-container").on("keypress", ".add-row-row:last input", function(e) {
-                if(e.which == 13) {
-                    e.preventDefault();
-                    angular.element($(this).parents(".add-row-container").find(".add-row")).triggerHandler('click');
-                    var self = this;
-                    setTimeout(function() {
-                        $(self).parents(".add-row-container").find(".add-row-row:last input").focus();
-                    }, 450);
-                }
-            });
-        });
+		function shrink(self) {
+			var count = 0;
+			var noskip = 0;
+			$(self).find(".resize-item").each(function() {
+				var newSize = parseInt($(this).css("font-size")) - 1;
+				count++;
+				if (newSize == 0) {
+					return;
+				}
+				noskip++;
 
+				$(this).css("font-size", newSize + "px");
+			});
+			return count == noskip;
+		}
 
-        function shrink(self) {
-            var count = 0;
-            var noskip = 0;
-            $(self).find(".resize-item").each(function() {
-                var newSize = parseInt($(this).css("font-size")) - 1;
-                count++;
-                if (newSize == 0) {
-                    return;
-                }
-                noskip++;
+		function resizeGroup(self) {
+			$(self).find(".resize-item").css("font-size", "13px");
+			while ($(self).children().height() > $(self).height()) {
+				var keepGoing = shrink(self);
+				if (!keepGoing)
+					return;
+			}
+			shrink(self);
+		}
 
-                $(this).css("font-size", newSize + "px");
-            });
+		refreshDocHeight = function() {
+			$(".resize-group").each(function() {
+				resizeGroup($(this));
+			});
+		};
 
-            return count == noskip;
-        }
+		$(window).resize(refreshDocHeight);
+		setTimeout(refreshDocHeight, 1);
 
-        function resizeGroup(self) {
-            $(self).find(".resize-item").css("font-size", "13px");
-            while ($(self).children().height() > $(self).height()) {
-                var keepGoing = shrink(self);
-                if (!keepGoing)
-                    return;
-            }
-            shrink(self);
-        }
+		$(window).bind("keyup keydown", function(e){
+			if((e.ctrlKey || e.metaKey) && e.keyCode == 80){
 
-        refreshDocHeight = function() {
-            $(".resize-group").each(function() {
-                resizeGroup($(this));
-            });
-        };
+				var w = window.open("/Quarterly/PrintVTO/@Model.Id");
+				w.print();
 
-        $(window).resize(refreshDocHeight);
-
-        setTimeout(refreshDocHeight, 1);
-
-        $(window).bind("keyup keydown", function(e){
-            if((e.ctrlKey || e.metaKey) && e.keyCode == 80){
-                //refreshDocHeight();
-                //window.print();
-                
-                var w = window.open("/Quarterly/PrintVTO/@Model.Id");
-                w.print();
-
-                e.preventDefault();
-            }
-        });
-    </script>
+				e.preventDefault();
+			}
+		});
+	</script>
 
 }

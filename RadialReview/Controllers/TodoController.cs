@@ -18,6 +18,7 @@ using RadialReview.Models.Scorecard;
 using RadialReview.Models.Todo;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Models.Angular.Meeting;
+using RadialReview.Utilities;
 
 namespace RadialReview.Controllers {
     public class TodoController : BaseController {
@@ -53,8 +54,26 @@ namespace RadialReview.Controllers {
             ViewBag.PossibleMeetings = meetings;
 
             return PartialView("CreateTodoRecurrence", model);
-        }
-        [HttpPost]
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<ActionResult> Pad(long id) {
+			try {
+				var todo = TodoAccessor.GetTodo(GetUser(), id);
+				var padId = todo.PadId;
+				if (!_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTodo(id))) {
+					padId = await PadAccessor.GetReadonlyPad(todo.PadId);
+				}
+				return Redirect(Config.NotesUrl("p/" + padId+ "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
+			} catch (Exception e) {
+				return RedirectToAction("Index", "Error");
+			}			
+		}
+
+
+
+
+		[HttpPost]
         [Access(AccessLevel.UserOrganization)]
         public async Task<JsonResult> CreateTodoRecurrence(TodoVM model) {
             ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.AccountabilityId);

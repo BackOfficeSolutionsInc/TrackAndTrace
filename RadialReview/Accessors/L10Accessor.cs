@@ -1589,7 +1589,7 @@ namespace RadialReview.Accessors {
 					s.Save(note);
 					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 					var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
-					group.createNote(note.Id, name, note.PadId);
+					group.createNote(note.Id, name);
 					var rec = new AngularRecurrence(recurrenceId) {
 						Notes = new List<AngularMeetingNotes>(){
 							new AngularMeetingNotes(note)
@@ -1735,22 +1735,7 @@ namespace RadialReview.Accessors {
 					L10Meeting = current,
 					ForRock = rock,
 				};
-				s.Save(mm);
-
-				/*
-
-                 @if (Model.Rocks.Where(x => x.ForRock.CompanyRock).Any()) {
-                    <div class="company-rock-container">
-                        @Html.Partial("partial/CompanyRockGroup", Model.Rocks.Where(x => x.ForRock.CompanyRock).ToList())
-                        <hr /> 
-                    </div>
-                }
-
-                @Html.Partial("partial/RockGroup", Model.Rocks)
-
-
-                 */
-
+				s.Save(mm);			
 
 				var rocks = L10Accessor.GetRocksForMeeting(s, perm, recurrenceId, current.Id);
 				var builder = "";
@@ -3398,7 +3383,7 @@ namespace RadialReview.Accessors {
 						perm.EditTodo(todoId);//EditL10Recurrence(todo.ForRecurrenceId.Value);
 						group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(todo.ForRecurrenceId.Value), connectionId);
 					} else if (todo.TodoType == TodoType.Personal) {
-						perm.EditTodo(todo.AccountableUserId);
+						perm.EditTodo(todoId);
 						group = hub.Clients.Group(MeetingHub.GenerateUserId(todo.AccountableUserId), connectionId);
 					} else {
 						throw new PermissionsException("unhandled TodoType");

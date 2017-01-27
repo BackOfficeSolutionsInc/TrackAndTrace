@@ -256,14 +256,14 @@ h3 {
 .agenda:hover .page-item .page-time {
   opacity: 1;
 }
-.alert {
-  padding: 5px 30px 5px 10px;
-}
 .agenda a:not(.clickable) {
   cursor: default;
 }
 .agenda a:not(.clickable):hover {
   color: #767F99;
+}
+.alert {
+  padding: 5px 30px 5px 10px;
 }
 .issuesButton,
 .todoButton,
@@ -289,15 +289,15 @@ h3 {
 .todo-row .fontastic-icon-pinboard.issuesButton:before {
   top: 9px !important;
 }
-.todoButton:after {
-  opacity: 0;
-  transition: all .4s ease;
-}
 .issuesButton.glyphicon-pushpin:hover {
   left: -1px;
   top: 4px;
   opacity: 1;
   transform: rotate(-8deg);
+}
+.todoButton:after {
+  opacity: 0;
+  transition: all .4s ease;
 }
 .todoButton:hover {
   opacity: 1;
@@ -346,8 +346,6 @@ profile-image .picture-container {
   text-align: center;
   font-weight: bold;
   color: #444444;
-  /* font-size: 14px; */
-  /* white-space: nowrap; */
   overflow: hidden;
 }
 profile-image .picture {
@@ -500,25 +498,16 @@ iframe:not([src="about:blank"]) {
   background-repeat: no-repeat;
   background-position: 50% 100px;
 }
-/*.component.additional-pages{
-    position:fixed;
-    bottom:0;
-}*/
 .stats {
   color: #1F98C7;
   font-family: 'Lato', sans-serif;
   border: 1px solid #E4E4E4;
   border-top: 2px solid #E4E4E4;
-  /* border: 1px; */
   margin-bottom: 50px;
   background-color: #F8F8F8;
-  /* margin: 40px 120px; */
-  /*width: 70%;*/
   height: 160px;
   margin: 30px auto;
   text-align: center;
-  /*min-width: 300px;*/
-  /* vertical-align: middle; */
 }
 .video-overlay {
   background-color: rgba(0, 0, 0, 0.25);
@@ -710,28 +699,6 @@ a.editable-click:hover {
   -webkit-animation-direction: alternate;
   animation-direction: alternate;
 }
-.clock-container.overtime.extra-overtime {
-  /*.component {
-				-moz-animation-name: timerbarFlashing;
-				-o-animation-name: timerbarFlashing;
-				-webkit-animation-name: timerbarFlashing;
-				animation-name: timerbarFlashing;
-				-moz-animation-duration: 1.5s;
-				-o-animation-duration: 1.5s;
-				-webkit-animation-duration: 1.5s;
-				animation-duration: 1.5s;
-				-moz-animation-timing-function: ease-in-out;
-				-o-animation-timing-function: ease-in-out;
-				-webkit-animation-timing-function: ease-in-out;
-				animation-timing-function: ease-in-out;
-				-moz-animation-iteration-count: infinite;
-				-o-animation-iteration-count: infinite;
-				-webkit-animation-iteration-count: infinite;
-				animation-iteration-count: infinite;
-				animation-direction: alternate;
-				color:white;
-			}*/
-}
 .clock-container.overtime.extra-overtime .timer-bar {
   animation-duration: .5s;
 }
@@ -763,7 +730,35 @@ a.editable-click:hover {
   }
 }
 .issuesButton.disabled,
-.todoButton.disabled {
+.todoButton.disabled,
+.vtoButton.disabled {
   cursor: not-allowed;
   opacity: .15;
+}
+.edit-disabled input[type='checkbox'].on-edit-enabled {
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+}
+.edit-disabled .on-edit-enabled {
+  pointer-events: none;
+  touch-action: none;
+}
+.edit-disabled .on-edit-enabled,
+.edit-disabled .on-edit-enabled:hover {
+  cursor: default;
+}
+.edit-disabled .on-edit-enabled input[type='checkbox'] {
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+}
+.edit-disabled .on-edit-enabled.btn,
+.edit-disabled .on-edit-enabled .btn {
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.edit-disabled .on-edit-enabled.btn:hover,
+.edit-disabled .on-edit-enabled .btn:hover {
+  cursor: not-allowed !important;
 }

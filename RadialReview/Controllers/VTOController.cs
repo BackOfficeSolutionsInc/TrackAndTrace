@@ -68,7 +68,11 @@ namespace RadialReview.Controllers
             ViewBag.HideVision = !(vision ?? defaultVision);
             ViewBag.HideTraction = !(traction ?? defaultTraction);
 
-            var vm = new VTOViewModel() { Id = model.Id, IsPartial = noheading };
+
+			ViewBag.CanEditCoreValues = _PermissionsAccessor.IsPermitted(GetUser(), x =>x.EditCompanyValues(model.Organization.Id));
+			ViewBag.CanEditVTO = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditVTO(model.Id));
+
+			var vm = new VTOViewModel() { Id = model.Id, IsPartial = noheading };
             if (noheading)
                 return PartialView(vm);
             return View(vm);
