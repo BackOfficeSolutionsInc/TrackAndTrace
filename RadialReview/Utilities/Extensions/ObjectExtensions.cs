@@ -77,11 +77,13 @@ namespace RadialReview
 	    {
 		    var input=s.ToString();
 		    var phone = "";
-			if (input.Length==11)
+			if (input.Length == 11 && input.Substring(0, 1) == "1")
 				phone = input.Substring(0, 1) + "-" + input.Substring(1, 3) + "-" + input.Substring(4, 3) + "-" + input.Substring(7, 4);
-            else if (input.Length == 12) {
-                phone = "+"+input.Substring(0, 2) + " " + input.Substring(2, 4) + " " + input.Substring(6, 6)+" (UK only)";
-            }else
+			else if (input.Length == 11 && input.Substring(0, 1) == "6") {
+				phone = "+"+input.Substring(0, 2) +  " " + input.Substring(2, 3) + " "  + input.Substring(5, 3) + " " + input.Substring(8, 3);
+			} else if (input.Length == 12) {
+				phone = "+" + input.Substring(0, 2) + " " + input.Substring(2, 4) + " " + input.Substring(6, 6) + " (UK only)";
+			} else
 				phone = "(" + input.Substring(0, 3) + ") " + input.Substring(3, 3) + "-" + input.Substring(6, 4);
 		    return phone;
 	    }
