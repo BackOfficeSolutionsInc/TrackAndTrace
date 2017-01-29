@@ -1,16 +1,18 @@
 ﻿angular.module("tree", []).directive("tree", ["$timeout", function ($timeout) {
 	return {
 		templateNamespace: 'svg',
-		restrict: "E",
+		restrict: "A",
 		scope: {
 			graph: "=graph", ttEnter: "=?ttEnter", ttUpdate: "=?ttUpdate", ttExit: "=?ttExit", ttWatch: "=?ttWatch", ttPostExit: "=?ttPostExit",
 			ttDragStart: "=?ttDragStart", ttDragEnd: "=?ttDragEnd",
 			ttCollapse: "=?ttCollapse", ttExpand: "=?ttExpand",
 			compact: "=?ttCompact"
 		},
-		transclude: true,
+		//transclude: true,
 		replace: true,
-		template: '<g class="tt-tree"></g>',
+		template: '<g><g class="pz-zoom"> <rect class="pz-rect" width="100%" height="100%" style="width:100%;height:100%;fill:transparent;"></rect>' +
+                  '<g class="pz-pan"><g class="tt-tree"></g></g>' +
+                  '</g></g>',
 		controller: ["$element", "$scope", "$rootScope", "$timeout", "$q", function ($element, $scope, $rootScope, $timeout, $q) {
 
 			var svg = $element.closest("svg");
@@ -140,7 +142,7 @@
 						try {
 							var scale = 1;
 							var pz3;
-							var pz = $element.closest('.pz-pan');
+							var pz = $element.find('.pz-pan');
 							if (pz) {
 								var panzoom = pz.scope().panzoom;
 								if (panzoom)
@@ -314,6 +316,34 @@
 		}],
 		link: function (scope, element, attr, ctrl, transclude) {
 
+			var svg = element.closest("svg");
+			////BEGIN PAN ZOOM 
+
+			var viewerWidth = 1000;
+			var viewerHeight = 1000;
+
+			svg.attr("height", "100%");
+			svg.attr("width", "100%");
+			svg.attr("viewBox", "0 0 " + viewerWidth + " " + viewerHeight);
+			var pzZoom = element.find(".pz-zoom");
+			var pzZoomRect = element.find(".pz-zoom rect");
+			var pzPan = pzZoom.find(".pz-pan");
+			var canZoom = true;
+			function zoomed() {
+				if (canZoom) {
+					pzPan.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+				}
+			}
+			scope.panzoom = d3.behavior.zoom().scaleExtent([.001, 10]).on("zoom", zoomed);
+			scope.panzoom.zoomed = zoomed;
+
+			d3.select(pzZoom[0]).call(scope.panzoom);
+			////END PAN ZOOM
+
+
+
+
+
 			var minHeight = 20;
 			var minWidth = 20;
 
@@ -362,11 +392,11 @@
 					var tw = d.target.width;
 					var lx;
 					if (d.target.side == "left")
-						lx = tx -tw/2- hSeparation/2;
+						lx = tx - tw / 2 - hSeparation / 2;
 					else
-						lx = tx +tw/2+ hSeparation/2;
+						lx = tx + tw / 2 + hSeparation / 2;
 
-					var tyy = ty + Math.min(30,d.target.height / 2);
+					var tyy = ty + Math.min(30, d.target.height / 2);
 					var points = [];
 					if (!d.source.isLeaf) {
 						points.push({ x: sx, y: sy });
@@ -374,7 +404,7 @@
 						points.push({ x: lx, y: my });
 					} else {
 						var ax = sx;// - d.source.width / 2;
-						var ay = (sy -d.source.height) + Math.min(30, d.source.height / 2);//d.source.height / 2;
+						var ay = (sy - d.source.height) + Math.min(30, d.source.height / 2);//d.source.height / 2;
 						points.push({ x: ax, y: ay });
 						points.push({ x: lx, y: ay });
 					}
@@ -393,9 +423,9 @@
 				}
 			};
 
-			var svg = element.closest("svg");
-			var self = d3.select(element[0]);
-			var selfSvg = d3.select(element[0]);
+			var treeElement = element.find(".tt-tree");
+			var self = d3.select(treeElement[0]);
+			var selfSvg = d3.select(treeElement[0]);
 
 			var expandSource = scope.root;
 
@@ -435,7 +465,7 @@
 				//		}
 				//	}
 				//}
-				
+
 
 
 
@@ -518,10 +548,19 @@
 					nodeEnter.append("rect").attr("width", 20).attr("height", 20).attr("x", -10).attr("y", 0);
 				}
 
-				var ghost = nodeEnter.append("g").attr('class', 'ghost');
+				var ghost = nodeEnter.append("g").attr('class', 'ghost acc-fallback-ignore');
 				ghost.append("circle").on("mouseover", overCircle).on("mouseout", outCircle);
 				ghost.append("text").text("").on("mouseover", overCircle).on("mouseout", outCircle);
 
+				var fallback = false;
+				if (msieversion()) {
+					var v = msieversion();
+					if (v >= 11) {
+						fallback = true; //Edge
+					} else {
+						fallback = true; //IE
+					}
+				}
 				// Transition nodes to their new position.
 				var nodeUpdate = node
                     .attr("data-id", function (d) { return d.Id })
@@ -531,17 +570,27 @@
                     		if ($(parent).css("display") == "none")
                     			return;
 
-                    		var oh = $(parent).outerHeight();
-                    		var ow = $(parent).outerWidth();
+                    		//if ($(parent).prop("tagName").toLowerCase() !== "foreignobject") {
+                    		var bb = { width: 0, height: 0 };
+                    		if (fallback && !$(parent).hasClass("acc-fallback-ignore")) {
+                    			bb = $(parent)[0].getBoundingClientRect();
+                    		}
+                    		
+                    		var oh = Math.max($(parent).outerHeight(),bb.height);
+                    		var ow = Math.max($(parent).outerWidth(),bb.width);
                     		if (ow > 0)
                     			maxH = Math.max(maxH, oh);
                     		if (oh > 0)
                     			maxW = Math.max(maxW, ow);
+                    		
+                    		//}
                     		$(parent).children().each(function () {
                     			dive(this);
                     		});
                     	}
+                    	d3.selectAll(".acc-fallback-ignore").classed("acc-fallback-hidden", true);
                     	dive(this);
+                    	d3.selectAll(".acc-fallback-ignore").classed("acc-fallback-hidden", false);
                     	d.height = maxH;
                     	d.width = maxW;
                     	return d.height;
@@ -644,8 +693,6 @@
 						scope.updater(scope.root, false);
 					}, 1);
 				}
-
-
 			}
 
 			var nestWatch = function (node) {
@@ -806,7 +853,7 @@
 			};
 			function pan(domNode, direction) {
 				var speed = panSpeed;
-				var pz = element.closest('.pz-pan');
+				var pz = element.find('.pz-pan');
 				var svgGroup = d3.select(pz[0]);
 				var zoomListener = pz.scope().panzoom;
 				if (panTimer) {
@@ -894,6 +941,7 @@
 			var skipDrag = false;
 			dragListener = d3.behavior.drag()
                 .on("dragstart", function (d) {
+                	debugger;
                 	skipDrag = false;
                 	if (d == scope.root)
                 		skipDrag = true;
@@ -928,7 +976,7 @@
                 		domNode = this;
                 		initiateDrag(d, domNode);
                 	}
-                	var pz = element.closest('.pz-pan');
+                	var pz = element.find('.pz-pan');
 
                 	// get coords of mouseEvent relative to svg container to allow for panning
                 	relCoords = d3.mouse(svg.get(0));

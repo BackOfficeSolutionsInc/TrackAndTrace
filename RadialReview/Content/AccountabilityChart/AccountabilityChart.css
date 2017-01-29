@@ -600,3 +600,44 @@ body {
 		color: white;
 	}
 }*/
+.acc-fallback-hidden {
+  display: none !important;
+}
+.acc-fallback.root-node {
+  display: none;
+}
+.acc-fallback .acc-fallback-hide {
+  display: none;
+}
+.acc-fallback .acc-fallback-placeholder {
+  fill: transparent !important;
+  stroke: none !important;
+  pointer-events: none;
+}
+.acc-fallback .delete-role-row {
+  font-family: sans-serif;
+  stroke: none;
+  fill: rgba(0, 0, 0, 0.2);
+}
+.acc-fallback .acc-buttons rect {
+  stroke: none;
+  fill: #EF7622;
+  cursor: move;
+  pointer-events: all;
+}
+.acc-fallback.collapsed .acc-buttons rect {
+  stroke: none;
+  fill: #ad9a8d;
+}
+.acc-fallback .acc-owner text {
+  font-family: 'Roboto', sans-serif;
+}
+.acc-fallback .acc-position text {
+  font-size: 18px;
+  text-shadow: 0 0 #000;
+  font-family: 'Roboto', sans-serif;
+}
+.acc-fallback text {
+  fill: black;
+  stroke: none;
+}

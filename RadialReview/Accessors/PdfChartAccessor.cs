@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace RadialReview.Accessors {
 	public class PdfChartAccessor {
-		private static bool DEBUG = true && Config.IsLocal();
+		private static bool DEBUG = false && Config.IsLocal();
 
 		private static XFont _FontLargeBold = new XFont("Verdana", 20, XFontStyle.Bold);
 		private static XFont _Font = new XFont("Verdana", 10, XFontStyle.Regular);

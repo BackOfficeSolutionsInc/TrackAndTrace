@@ -125,7 +125,17 @@ namespace RadialReview.Accessors {
 				sr.StartTime = DateTime.UtcNow;
 				try {
 					if (task.Url != null) {
-						sr.Response =  await execute(Config.BaseUrl(null),task, now);
+						try {
+							sr.Response = await execute(Config.BaseUrl(null), task, now);
+						} catch (WebException webEx) {
+							var response = webEx.Response as HttpWebResponse;
+							if (response != null && response.StatusCode==HttpStatusCode.NotImplemented) {
+								//Fallthrough Exception...
+								log.Info("Task Fallthrough [OK] (taskId:"+task.Id+") (url:"+ task.Url + ")");
+							} else {
+								throw webEx;
+							}
+						}
 					}
 					sr.EndTime = DateTime.UtcNow;
 					sr.DurationMs = (sr.EndTime.Value - sr.StartTime.Value).TotalMilliseconds;

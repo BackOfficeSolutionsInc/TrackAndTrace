@@ -53,8 +53,8 @@
 			<md-checkbox ng-model="compact"></md-checkbox>
 		</div>*@
 
-		<svg panzoom id="svg" graph="model">
-			<tree graph="model"
+		<svg @*panzoom*@ id="svg" graph="model">
+			<g tree graph="model"
 				  tt-compact="compact"
 				  tt-enter="nodeEnter"
 				  tt-update="nodeUpdate"
@@ -64,7 +64,7 @@
 				  tt-drag-start="dragStart"
 				  tt-drag-end="dragEnd"
 				  tt-collapse="collapseExpand"
-				  tt-expand="collapseExpand"></tree>
+				  tt-expand="collapseExpand"></g>
 		</svg>
 	</div>
 </div>
@@ -80,9 +80,9 @@
 		if (msieversion()){
 			var v = msieversion();
 			if (v>=11){
-				showAlert("Accountability Chart is unsupported on Edge. Please use Chrome or Firefox.");
+				showAlert("Accountability Chart is not fully supported on Edge. Please use Chrome or Firefox.");
 			}else{
-				showAlert("Accountability Chart is unsupported on Internet Explorer. Please use Chrome or Firefox.");
+				showAlert("Accountability Chart is not fully on Internet Explorer. Please use Chrome or Firefox.");
 			}
 		}
 

@@ -75,11 +75,9 @@ acapp.directive('rolegroups', function () {
 					.error(function (data) {
 						showJsonAlert(data, true, true);
 					});
-
 			};
 
 			$scope.newRoleButton = function (group) {
-
 				var origLength = group.Roles.length;
 				$scope.addRoleToNode(group);
 				depth = 0;
@@ -101,25 +99,18 @@ acapp.directive('rolegroups', function () {
 				$timeout(setFocus, 20);
 			}
 
-
 			$scope.updating = function (r) {
 				$scope.onUpdate()(r);
 			};
 			$scope.deleting = function (r) {
 				$scope.onDeleteRole()(r);
 			};
-
 			$scope.focusing = function () {
 				$rootScope.$emit("RoleFocused");
 			}
 			$scope.blurring = function () {
 				$rootScope.$emit("RoleBlurred");
 			}
-
-			//$($element).on("keydown","input", function () {
-			//    console.log("faster");
-			//});
-
 			$scope.checkCreateRole = function (evt, r, group, index) {
 				$timeout(function () {
 					var origLength = group.Roles.length;
@@ -127,9 +118,7 @@ acapp.directive('rolegroups', function () {
 					if (evt.which === 13) {
 						//var isLast = index === origLength - 1
 						if (/*isLast &&*/ group.Editable != false) {
-
 							$scope.addRoleToNode(group);
-
 							depth = 0;
 							var setFocus = function () {
 								try {
@@ -147,7 +136,6 @@ acapp.directive('rolegroups', function () {
 								}
 							}
 							$timeout(setFocus, 20);
-
 						}
 					} else if (evt.which == 8) {
 						if (r.Name == "" || typeof (r.Name) === "undefined" || r.Name == null) {
@@ -221,6 +209,158 @@ acapp.directive('rolegroups', function () {
 	};
 	return directive;
 });
+acapp.directive('rolegroupsfallback', function () {
+	var directive = {
+		restrict: 'A',
+		replace: true,
+		templateNamespace: 'svg',
+		scope: {
+			groups: '=groups',
+			onUpdate: '&onUpdate',
+			onDeleteRole: '&onDeleteRole',
+		},
+		controller: ["$scope", "$http", "$timeout", "$element", "$rootScope", function ($scope, $http, $timeout, $element, $rootScope) {
+			$scope.addRoleToNode = function (group) {
+				var attachType = group.AttachType;
+				var attachId = group.AttachId;
+				var _clientTimestamp = new Date().getTime();
+				$http.post("/Accountability/AddRole/?aid=" + attachId + "&atype=" + attachType + "&_clientTimestamp=" + _clientTimestamp, {})
+					.error(function (data) {
+						showJsonAlert(data, true, true);
+					});
+
+			};
+
+			$scope.newRoleButton = function (group) {
+				var origLength = group.Roles.length;
+				$scope.addRoleToNode(group);
+				depth = 0;
+				var setFocus = function () {
+					try {
+						if (depth == 100)
+							return;
+						if (origLength < group.Roles.length) {
+							console.log("focusing");
+							var res = $($($element).find("[data-group=" + group.Id + "] input").last()).focus();
+						} else {
+							depth += 1;
+							$timeout(setFocus, 20);
+						}
+					} catch (e) {
+						console.error(e);
+					}
+				}
+				$timeout(setFocus, 20);
+			}
+
+
+			$scope.updating = function (r) {
+				$scope.onUpdate()(r);
+			};
+			$scope.deleting = function (r) {
+				$scope.onDeleteRole()(r);
+			};
+
+			$scope.focusing = function () {
+				$rootScope.$emit("RoleFocused");
+			}
+			$scope.blurring = function () {
+				$rootScope.$emit("RoleBlurred");
+			}
+			$scope.checkCreateRole = function (evt, r, group, index) {
+				$timeout(function () {
+					var origLength = group.Roles.length;
+					var depth = 0;
+					if (evt.which === 13) {
+						if (group.Editable != false) {
+							$scope.addRoleToNode(group);
+							depth = 0;
+							var setFocus = function () {
+								try {
+									if (depth == 100)
+										return;
+									if (origLength < group.Roles.length) {
+										console.log("focusing");
+										$($($element).find("[data-group=" + group.Id + "] input")[index + 1]).focus();
+									} else {
+										depth += 1;
+										$timeout(setFocus, 20);
+									}
+								} catch (e) {
+									console.error(e);
+								}
+							}
+							$timeout(setFocus, 20);
+						}
+					} else if (evt.which == 8) {
+						if (r.Name == "" || typeof (r.Name) === "undefined" || r.Name == null) {
+							$scope.deleting(r);
+							if (origLength != 1) {
+								var setFocus = function () {
+									try {
+										if (depth == 100)
+											return;
+										if (origLength > group.Roles.length) {
+											console.log("focusing");
+											$($($element).find("[data-group=" + group.Id + "] input")[index - 1]).focus();
+										} else {
+											depth += 1;
+											$timeout(setFocus, 20);
+										}
+									} catch (e) {
+										console.error(e);
+									}
+								}
+								$timeout(setFocus, 20);
+							} else {
+								$($element).find("[data-group=" + group.Id + "] .add-role-row").focus();
+							}
+						}
+					} else if (evt.which == 38) {
+						if (index > 0) {
+							var that = $($($element).find("[data-group=" + group.Id + "] input")[index - 1]);
+							$(that).focus();
+							$timeout(function () {
+								var len = $(that).val().length * 2;
+								$(that)[0].setSelectionRange(len, len);
+							}, 0);
+						}
+					} else if (evt.which == 40) {
+						if (index < origLength - 1) {
+							var that = $($($element).find("[data-group=" + group.Id + "] input")[index + 1]);
+							$(that).focus();
+							$timeout(function () {
+								var len = $(that).val().length * 2;
+								$(that)[0].setSelectionRange(len, len);
+							}, 0);
+						} else {
+							var id = $($($element).find("[data-group=" + group.Id + "] input")).closest("g.node").attr("data-id");
+							$scope.$emit("ExpandNode", id);
+						}
+					}
+				}, 1);
+			}
+		}],
+		template: "<g class='role-groups'>" +
+						"<g ng-repeat='group in groups' class='role-group' ng-if='::group.Editable!=false || group.Roles.length>0' data-group='{{group.Id}}'>" +
+							"<g class='role-group-title' ><text ng-if='!(groups.length==1 && group.AttachType==\"Position\")'>{{::group.AttachName}} Roles </text>" +
+								"<g ng-if='::group.Editable!=false' transform='translate(200,0)' class='add-role-row acc-fallback-ignore' ng-class='{tinyRow:(groups.length==1 && group.AttachType==\"Position\")}' ng-click='newRoleButton(group)' style='opacity:1;'> <circle class='acc-fallback-ignore' cx='3' cy='-4' fill='#ff0000' r='6'></circle><text>+</text> </g>" +
+							"</g>" +
+							"<g>" +
+								"<g ng-repeat='role in group.Roles'  class='role-row' ng-init='rolesIndex=$index'>" +
+									"<text title='{{role.Name}}' class='role' transform='translate(0,{{($index*16)}})'>{{role.Name}}</text>" +
+									"<text ng-if='::group.Editable!=false' transform='translate(-20,{{($index*16)}})' class='delete-role-row' ng-click=\"deleting(role)\" tabindex='-1'>x</text>" +
+								"</g>" +
+							"</g>" +
+							"<g ng-if='group.Roles.length==0' class='gray no-roles-placeholder'>" +
+								"<text>No roles.</text><text dx='35' ng-if='::group.Editable!=false'>Use the + button to add some.</text>" +
+							"</g>" +
+						"</g>" +
+				  "</g>"
+	};
+	return directive;
+});
+
 
 acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'radial', 'orgId', 'chartId', 'dataUrl', "$compile", "$sce", "$q", "$window", "$rootScope",
 function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $compile, $sce, $q, $window, $rootScope) {
@@ -609,11 +749,22 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		self.dirtyList[id] = true;
 	}
 
-	$scope.nodeEnter = function (nodeEnter) {
+	var fallback = false;
+	if (msieversion()) {
+		var v = msieversion();
+		if (v >= 11) {
+			fallback = true; //Edge
+		} else {
+			fallback = true; //IE
+		}
+	}
+
+	var standardNodeEnter = function (nodeEnter) {
 		var rect = nodeEnter.append("rect").attr("class", "acc-rect")
             .attr("width", 0).attr("height", 0).attr("x", 0).attr("rx", 2).attr("ry", 2);
 
 		var node = nodeEnter.append("foreignObject")
+			.classed("foreignObject", true)
             .append("xhtml:div").classed("acc-node", true)
             .style("font", "14px 'Helvetica Neue'");
 
@@ -641,43 +792,23 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 			.attr("md-blur", function (d) {
 				return "clearIfNull(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,\"search.searchPos_" + d.Id + "\",\"model.Lookup['AngularAccountabilityNode_" + d.Id + "']\")";
 			})
-			//.attr("md-blur", function (d) {
-			//	return "functions.clearI";
-			//})
 			.attr("md-selected-item", function (d) {
 				return "model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position";
 			}).attr("md-item-text", function (d) {
 				return "pitem.Name";
 			}).attr("md-items", function (d) { return "pitem in search.queryPositions(search.searchPos_" + d.Id + ")"; })
             .attr("md-search-text", function (d) { return "search.searchPos_" + d.Id; })
-            /*.attr("md-selected-item-change", function (d) {
-            	return "functions.selectedItemChange_UpdateNode(" + d.Id + ")";
-            })*/
-			//.attr("md-require-match", "")
 			.attr("ng-class", function (d) {
-				return "{'no-match':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position ==null && search.searchPos_" + d.Id+" }";
+				return "{'no-match':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position ==null && search.searchPos_" + d.Id + " }";
 			}).attr("ng-attr-title", function (d) {
 				return "{{(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position ==null)?'Invalid: Position does not exist.':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position.Name}}";
 			})
-			////.attr("md-search-text-change", function (d) {
-			//	return "functions.markDirty('pos-" + d.Id + "')";
-			//})
 			.attr("md-selected-item-change", function (d) {
 				return "functions.fixName(" + d.Id + ",'search.searchPos_" + d.Id + "',model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,this)";
-			}).attr("md-no-cache", "true");//.attr("md-delay", "300");
+			}).attr("md-no-cache", "true");
 
 		//Is this even used? vvv
 		posAutoComplete.append("md-item-template").append("span").attr("md-highlight-text", function (d) { return "search.searchPos_" + d.Id; }).attr("md-highlight-flags", "^i").text("{{pitem.Name}}{{pitem.Create}}");
-		//posAutoComplete.append("md-not-found").text(function (d) { return "No matches were found."; });
-		/*posAutoComplete.append("div").attr("ng-messages", function (d) {
-			return "";//"{'md-require-match':searchPosName_" + d.Id + ".$error}";
-		}).attr("ng-if", function (d) {
-			return "searchPosName_" + d.Id + ".$touched";
-		//})*.append("div").attr("ng-message", "md-require-match")
-		//	.text(function () { return "Could not find function"; });
-		//posAutoComplete.append("md-require-match")
-		//	.text(function () { return "Could not find function"; });
-		*/
 
 
 		var owner = contents.append("xhtml:div").classed("acc-owner", true);
@@ -702,10 +833,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 				return null;
 			}).attr("md-selected-item-change", function (d) {
 				return "functions.fixName(" + d.Id + ",'search.searchText_" + d.Id + "',model.Lookup['AngularAccountabilityNode_" + d.Id + "'].User,this)";
-			})
-		/*.attr("md-selected-item-change", function (d) {
-			return "functions.selectedItemChange_UpdateUser(" + d.Id + ")";
-		})*/;
+			});
 		autoComplete.append("md-item-template")
             .append("span")
             .attr("md-highlight-text", function (d) { return "search.searchText_" + d.Id; })
@@ -724,10 +852,10 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 
 
 		nodeEnter.on('mouseover', function (d) {
-			d3.select(this).selectAll(".add-role-row")/*.transition()*/.style("opacity", 1);
+			d3.select(this).selectAll(".add-role-row").style("opacity", 1);
 			d3.select(this).selectAll(".node-button").transition().style("opacity", 1);
 		}).on('mouseout', function (d) {
-			d3.select(this).selectAll(".add-role-row")/*.transition()*/.style("opacity", 0);
+			d3.select(this).selectAll(".add-role-row").style("opacity", 0);
 			d3.select(this).selectAll(".node-button").transition().style("opacity", 0);
 		});
 
@@ -787,8 +915,8 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 				if (d3.event.keyCode == 13 || d3.event.keyCode == 32)
 					expandNode(d);
 			});
-		minimizeNodeBtn.append("circle").attr("r", 10).attr("title", "Collapse node").on("click", expandNode);//.on("keydown", onClickKey(expandNode));
-		minimizeNodeBtn.append("text").classed("glyphicon", true).attr("title", "Remove node").on("click", expandNode);//.on("keydown", onClickKey(expandNode));
+		minimizeNodeBtn.append("circle").attr("r", 10).attr("title", "Collapse node").on("click", expandNode);
+		minimizeNodeBtn.append("text").classed("glyphicon", true).attr("title", "Remove node").on("click", expandNode);
 
 		var addNodeBtn = nodeEnter.append("g").classed("button add node-button", true).attr("tabindex", 0).style("opacity", 0)
 			.on("click", clickAddNode)
@@ -811,13 +939,176 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		nodeEnter.call(function (d3Selection) {
 			d3Selection.each(function (d, i) {
 				// this is the actual DOM element
-				//console.log("ac-node: create scope");
 				var newScope = $scope.$new();
 				$compile(this)(newScope);
 			});
 		});
+	};
+
+
+	///////////////////////////////FALLBACK START///////////////////////////////
+
+	var fallbackNodeEnter = function (nodeEnter) {
+		nodeEnter.classed("acc-fallback", true);
+
+		var rect = nodeEnter.append("rect").attr("class", "acc-rect acc-fallback-ignore")
+            .attr("width", 0).attr("height", 0).attr("x", 0).attr("rx", 2).attr("ry", 2);
+
+		var node = nodeEnter.append("g")
+			.classed("foreignObject", true)
+            .append("g").classed("acc-node", true)
+            .style("font", "14px 'Helvetica Neue'");
+
+		var buttonsTop = node.append("g").classed("acc-buttons top-bar acc-fallback-ignore", true);
+
+		buttonsTop.text(function (d) {
+			return d.Name;
+		});
+		buttonsTop.append("rect").classed("move-icon", function (d) {
+				return d.Editable != false;
+			});
+		////
+
+		var contents = node.append("g").classed("acc-contents", true);
+		contents.append("rect").classed("acc-fallback-placeholder", true).attr("width", "175").attr("height", "20");
+
+		var position = contents.append("g").classed("acc-position", true).attr("width", "200px");//.style("width", "100px").style("height", "100px");
+
+		var posAutoComplete = position.append("text").classed("acc-fallback-hide", true).attr("dy", "23").attr("dx", "6").append("tspan").text(function (d) {
+			return "{{model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position.Name}}";
+		});
+		//.attr("placeholder", "Function")
+		//.attr("md-input-name", function (d) {
+		//	return "searchPosName_" + d.Id;
+		//}).attr("ng-disabled", function (d) {
+		//	if (d.Editable == false)
+		//		return "true";
+		//	return null;
+		//})
+		//.attr("md-blur", function (d) {
+		//	return "clearIfNull(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,\"search.searchPos_" + d.Id + "\",\"model.Lookup['AngularAccountabilityNode_" + d.Id + "']\")";
+		//})
+		//.attr("md-selected-item", function (d) {
+		//	return "model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position";
+		//}).attr("md-item-text", function (d) {
+		//	return "pitem.Name";
+		//}).attr("md-items", function (d) { return "pitem in search.queryPositions(search.searchPos_" + d.Id + ")"; })
+		//.attr("md-search-text", function (d) { return "search.searchPos_" + d.Id; })
+		//.attr("ng-class", function (d) {
+		//	return "{'no-match':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position ==null && search.searchPos_" + d.Id + " }";
+		//}).attr("ng-attr-title", function (d) {
+		//	return "{{(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position ==null)?'Invalid: Position does not exist.':model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position.Name}}";
+		//})
+		//.attr("md-selected-item-change", function (d) {
+		//	return "functions.fixName(" + d.Id + ",'search.searchPos_" + d.Id + "',model.Lookup['AngularAccountabilityNode_" + d.Id + "'].Group.Position,this)";
+		//}).attr("md-no-cache", "true");
+
+
+		var owner = contents.append("g").classed("acc-owner", true).attr("transform", "translate(0,25)");
+		var autoComplete = owner.append("text").classed("acc-fallback-hide", true).attr("dy", "18").attr("dx", "6").append("tspan").text(function (d) {
+			return "{{model.Lookup['AngularAccountabilityNode_" + d.Id + "'].User.Name}}";
+		});
+
+		//ROLES
+
+		contents.append("g").attr("rolegroupsfallback", "").attr("transform", "translate(6,65)").attr("groups", function (d) {
+			return "model.Lookup['" + d.Group.Key + "'].RoleGroups";
+		}).attr("on-update", "functions.sendUpdate").attr("on-delete-role", "functions.removeRow");
+
+
+		//nodeEnter.on('mouseover', function (d) {
+		//	d3.select(this).selectAll(".add-role-row").style("opacity", 1);
+		//	d3.select(this).selectAll(".node-button").transition().style("opacity", 1);
+		//}).on('mouseout', function (d) {
+		//	d3.select(this).selectAll(".add-role-row").style("opacity", 0);
+		//	d3.select(this).selectAll(".node-button").transition().style("opacity", 0);
+		//});
+
+		var buttonsBottom = node.append("g")
+		    .classed("acc-buttons bottom-bar acc-fallback-ignore", true);
+		var clickAddNode = function (d) {
+			if (d.Id) {
+				addNode(d.Id);
+				d3.event.stopPropagation();
+			} else {
+				throw "Add node requires Id"
+			}
+		};
+		var clickRemoveNode = function (d) {
+			if (d.Id) {
+				if ((d._children && d._children.length) || (d.children && d.children.length)) {
+					showModal({
+						title: "Cannot delete accountability node that has direct reports.",
+						noCancel: true,
+						icon: "warning",
+					});
+				} else {
+					var fields = [];
+					if (d.User)
+						fields.push({ type: "h6", value: "*Deleting this node DOES NOT remove this user from the organization." });
+					var id = d.Id;
+					showModal({
+						title: "Are you sure you want to delete this accountability node?",
+						icon: "danger",
+						fields: fields,
+						success: function () {
+							$.ajax({ url: "/Accountability/Remove/" + id });
+						}
+					});
+				}
+				d3.event.stopPropagation();
+			} else {
+				throw "Add node requires Id"
+			}
+		};
+
+		function onClickKey(func) {
+			debugger;
+			if (d3.event && (d3.event.keyCode == 13 || d3.event.keyCode == 32))
+				return func;
+			return function (d) { };
+		}
+
+		var expandNode = function (d) {
+		};
+		nodeEnter.append("rect").classed("bounding-box acc-fallback-ignore", true);
+		var minimizeNodeBtn = nodeEnter.append("g").classed("button minimize minimize-icon node-button acc-fallback-ignore", true).style("opacity", 1).attr("tabindex", 0)
+			.on("click", expandNode)
+			.on("keydown", function (d) {
+				if (d3.event.keyCode == 13 || d3.event.keyCode == 32)
+					expandNode(d);
+			});
+		minimizeNodeBtn.append("circle").classed("acc-fallback-ignore", true).attr("r", 10).attr("title", "Collapse node").on("click", expandNode);
+		minimizeNodeBtn.append("text").classed("glyphicon acc-fallback-ignore", true).attr("transform", "translate(-4.5,4.5)").attr("title", "Remove node").on("click", expandNode);
+		var addNodeBtn = nodeEnter.append("g").classed("button add node-button acc-fallback-ignore", true).attr("tabindex", 0).style("opacity", 1)
+			.on("click", clickAddNode)
+			.on("keydown", function (d) {
+				if (d3.event.keyCode == 13 || d3.event.keyCode == 32)
+					clickAddNode(d);
+			});
+		addNodeBtn.append("circle").classed("acc-fallback-ignore", true).attr("r", 10).attr("title", "Add direct report").on("click", clickAddNode);
+		addNodeBtn.append("text").attr("transform", "translate(-4.5,4.5)").classed("acc-fallback-ignore", true).text("+").attr("title", "Add direct report").on("click", clickAddNode);
+
+		var deleteNodeBtn = nodeEnter.append("g").classed("button remove node-button acc-fallback-ignore", true).attr("tabindex", 0).style("opacity", 1).on("click", clickRemoveNode).on("keyup", function (d) {
+			if (d3.event.keyCode == 13 || d3.event.keyCode == 32)
+				clickRemoveNode(d);
+		});
+		deleteNodeBtn.append("circle").classed("acc-fallback-ignore", true).attr("r", 10).attr("title", "Remove node").on("click", clickRemoveNode);
+		deleteNodeBtn.append("text").attr("transform", "translate(-4.5,4.5)").classed("glyphicon glyphicon-trash acc-fallback-ignore", true).attr("title", "Remove node").text("").on("click", clickRemoveNode);
+
+		nodeEnter.call(function (d3Selection) {
+			d3Selection.each(function (d, i) {
+				// this is the actual DOM element
+				var newScope = $scope.$new();
+				$compile(this)(newScope);
+			});
+			$timeout(function () {
+				d3.selectAll(".acc-fallback-hide").classed("acc-fallback-hide", false);
+			}, 100);
+		});
 	}
-	$scope.nodeUpdate = function (nodeUpdate) {
+
+	var standardNodeUpdate = function (nodeUpdate) {
 		nodeUpdate.select(".acc-rect").attr("width", function (d) {
 			//console.log("update called");
 			return d.width;
@@ -878,12 +1169,12 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		});
 
 		var isFirefox = typeof InstallTrigger !== 'undefined';
-		var fo = nodeUpdate.select("foreignObject")
-		.attr("width", function (d) {
-			if (isFirefox)
-				return d.width + 20;
-			return d.width;
-		});
+		var fo = nodeUpdate.select(".foreignObject")
+			.attr("width", function (d) {
+				if (isFirefox)
+					return d.width + 20;
+				return d.width;
+			});
 		if (isFirefox) {
 			fo.attr("height", function (d) {
 				return d.height;
@@ -891,6 +1182,21 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		}
 
 	};
+
+	var fallbackNodeUpdate = function (nodeUpdate) {
+		standardNodeUpdate(nodeUpdate);
+
+		nodeUpdate.select(".add-role-row").attr("transform", function (d) {
+			return "translate(" + (d.width - 11) + ",0)";
+		});
+
+		nodeUpdate.select(".acc-buttons rect").attr("width", function (d) {
+			return d.width;
+		}).attr("height", function (d) {
+			return (8);
+		});
+	};
+
 	$scope.nodeExit = function (nodeExit) {
 		nodeExit.each(function (d, i) {
 			var s = angular.element(this).scope();
@@ -900,6 +1206,15 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 			}
 		});
 	};
+	if (fallback) {
+		console.info("fallback used");
+		$scope.nodeEnter = fallbackNodeEnter;
+		$scope.nodeUpdate = fallbackNodeUpdate;
+	} else {
+		$scope.nodeEnter = standardNodeEnter;
+		$scope.nodeUpdate = standardNodeUpdate;
+	}
+
 
 	var addNode = function (parentId) {
 		var _clientTimestamp = new Date().getTime();

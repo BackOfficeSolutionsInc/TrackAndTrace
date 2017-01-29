@@ -645,22 +645,29 @@ namespace RadialReview.Accessors {
 #pragma warning restore CS0618 // Type or member is obsolete
                         UpdatePosition_Unsafe(s, do_not_use, perms, node.Id, null, now);
 
-                        ////REMOVE MANAGER
-                        //Handled in set user i think...
-                        //if (node.UserId != null && node.ParentNode != null && node.ParentNode.UserId != null) {
-                        //	var found = s.QueryOver<ManagerDuration>().Where(x => x.DeleteTime == null && x.ManagerId == node.ParentNode.UserId && x.SubordinateId == node.UserId).Take(1).SingleOrDefault();
-                        //	if (found != null) {
-                        //		found.DeleteTime = now;
-                        //		s.Update(found);
+						////REMOVE MANAGER
+						//Handled in set user i think...
+						//if (node.UserId != null && node.ParentNode != null && node.ParentNode.UserId != null) {
+						//	var found = s.QueryOver<ManagerDuration>().Where(x => x.DeleteTime == null && x.ManagerId == node.ParentNode.UserId && x.SubordinateId == node.UserId).Take(1).SingleOrDefault();
+						//	if (found != null) {
+						//		found.DeleteTime = now;
+						//		s.Update(found);
 
-                        //		s.GetFresh<UserOrganizationModel>(found.SubordinateId).UpdateCache(s);
-                        //		s.GetFresh<UserOrganizationModel>(found.ManagerId).UpdateCache(s);
+						//		s.GetFresh<UserOrganizationModel>(found.SubordinateId).UpdateCache(s);
+						//		s.GetFresh<UserOrganizationModel>(found.ManagerId).UpdateCache(s);
 
-                        //	} else {
-                        //		log.Error("Removing manager. ManagerDuration not found. " + node.ParentNode.UserId + " " + node.UserId);
-                        //	}
-                        //}
-                        tx.Commit();
+						//	} else {
+						//		log.Error("Removing manager. ManagerDuration not found. " + node.ParentNode.UserId + " " + node.UserId);
+						//	}
+						//}
+
+						if (node.ParentNode.User != null && node.ParentNode.User.IsManager() && !DeepAccessor.HasChildren(s, node.ParentNode.Id)) {
+							UserAccessor.EditUser(s, perms, node.ParentNode.User.Id, false);
+							node.ParentNode.User.ManagerAtOrganization = false;
+						}
+
+
+						tx.Commit();
                         s.Flush();
 
                         var hub = GlobalHost.ConnectionManager.GetHubContext<OrganizationHub>();
@@ -736,10 +743,10 @@ namespace RadialReview.Accessors {
                                 }
                             }
 
-                            //if (oldNode.User != null && oldNode.User.IsManager() && !DeepAccessor.HasChildren(s, oldNode.Id)){
-                            //	UserAccessor.EditUser(s, perms, oldNode.User.Id, false);
-                            //	oldNode.User.ManagerAtOrganization = false;
-                            //}
+                            if (oldParentNode.User != null && oldParentNode.User.IsManager() && !DeepAccessor.HasChildren(s, oldParentNode.Id)){
+                            	UserAccessor.EditUser(s, perms, oldParentNode.User.Id, false);
+                            	oldParentNode.User.ManagerAtOrganization = false;
+                            }
                         }
 
                         var newParentNode = s.Get<AccountabilityNode>(newParentId);

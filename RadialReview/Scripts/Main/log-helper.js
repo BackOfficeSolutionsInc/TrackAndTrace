@@ -45,6 +45,8 @@ function interceptLogger(name, oldLogger) {
         }
     }
 }
+
+
 console.log = interceptLogger("log", oldConsoleLog);
 console.error = interceptLogger("error", oldConsoleError);
 console.info = interceptLogger("info", oldConsoleInfo);

@@ -54,8 +54,8 @@ html, body {
 		}
 	}
 
-	&.no-edit:not(.is-me) .ghost{
-		display:none !important;
+	&.no-edit:not(.is-me) .ghost {
+		display: none !important;
 	}
 
 	&.root-node {
@@ -72,15 +72,15 @@ html, body {
 		.acc-buttons.top-bar {
 			height: 30px !important;
 			line-height: 15px;
-			display:table-cell;
-			vertical-align:middle;
-			text-align:center;
+			display: table-cell;
+			vertical-align: middle;
+			text-align: center;
 			width: 200px;
 		}
 
 		.acc-rect {
 			stroke-width: 20px;
-            fill: @traction-orange;
+			fill: @traction-orange;
 		}
 
 		.node-button.remove {
@@ -307,7 +307,7 @@ html, body {
 					li.role-row {
 						margin-right: -3px;
 
-						.role{
+						.role {
 							text-overflow: ellipsis;
 							font-size: 10px;
 							margin-left: -15px;
@@ -318,7 +318,7 @@ html, body {
 							}
 						}
 
-						input.role  {
+						input.role {
 							margin-left: -8px;
 						}
 						/*.role-row .role {
@@ -575,11 +575,11 @@ html, body {
 
 	.is-dragging .bounding-box,
 	.is-dragging .node-button,
-	.is-dragging .node-button *{
+	.is-dragging .node-button * {
 		display: none;
 		pointer-events: none;
 	}
-	
+
 	.is-dragging input {
 		pointer-events: none;
 	}
@@ -701,3 +701,58 @@ html, body {
 		color: white;
 	}
 }*/
+
+.acc-fallback-hidden{
+	display: none !important;
+}
+.acc-fallback {
+
+	&.root-node {
+		display: none;
+	}
+	
+	.acc-fallback-hide {
+		display: none;
+	}
+
+	.acc-fallback-placeholder {
+		fill: transparent !important;
+		stroke: none !important;
+		pointer-events:none;
+	}
+
+	.delete-role-row{		
+		font-family: sans-serif;	
+		stroke:none;
+		fill:rgba(0,0,0,.2);	
+	}
+
+	.acc-buttons rect {
+		stroke: none;
+		fill: @border-color;
+		cursor:move;
+		pointer-events:all;
+	}
+
+	&.collapsed {
+		.acc-buttons rect {
+			stroke: none;
+			fill: @collapsed-border-color;
+		}
+	}
+
+	.acc-owner text {
+		font-family: 'Roboto', sans-serif;
+	}
+
+	.acc-position text {
+		font-size: 18px;
+		text-shadow: 0 0 #000;
+		font-family: 'Roboto', sans-serif;
+	}
+
+	text {
+		fill: black;
+		stroke: none;
+	}
+}
