@@ -1016,7 +1016,7 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 
 	var builder = '<div class="form-horizontal modal-builder">';
 	var runAfter = [];
-	var genInput = function (type, name, placeholder, value, others, classes) {
+	var genInput = function (type, name, eid, placeholder, value, others, classes) {
 		others = others || "";
 		if (type == "number")
 			others += " step=\"any\"";
@@ -1025,7 +1025,7 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 			others += "checked";
 
 		return '<input type="' + escapeString(type) + '" class="form-control blend ' + classes + '"' +
-                      ' name="' + escapeString(name) + '" id="' + escapeString(name) + '" ' +
+                      ' name="' + escapeString(name) + '" id="' + eid + '" ' +
                       placeholder + ' value="' + escapeString(value) + '" ' + others + '/>';
 	}
 
@@ -1045,6 +1045,8 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 				var placeholder = field.placeholder;
 				var type = (field.type || "text").toLowerCase();
 				var classes = field.classes || "";
+				var onchange = field.onchange;
+				var eid = escapeString(name);
 
 				var labelColumnClass = field.labelColumnClass || defaultLabelColumnClass;
 				var valueColumnClass = field.valueColumnClass || defaultValueColumnClass;
@@ -1075,30 +1077,30 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 
 				if (tags.indexOf(type) != -1) {
 					var txt = value || text;
-					input = "<" + type + " name=" + escapeString(name) + '" id="' + escapeString(name) + '" class="' + classes + '">' + txt + '</' + type + '>';
+					input = "<" + type + " name=" + escapeString(name) + '" id="' + eid + '" class="' + classes + '">' + txt + '</' + type + '>';
 				} else if (type == "textarea") {
-					input = '<textarea class="form-control blend verticalOnly ' + classes + '" rows=5 name="' + escapeString(name) + '" id="' + escapeString(name) + '" ' + escapeString(placeholder) + '>' + value + '</textarea>';
+					input = '<textarea class="form-control blend verticalOnly ' + classes + '" rows=5 name="' + escapeString(name) + '" id="' + eid + '" ' + escapeString(placeholder) + '>' + value + '</textarea>';
 				} else if (type == "date") {
 					var guid = generateGuid();
 					var curName = name;
 					var curVal = originalValue;
-					input = '<div class="date-container date-' + guid + ' ' + classes + '"></div>';
+					input = '<div class="date-container date-' + guid + ' ' + classes + '" id="'+ eid+'"></div>';
 					runAfter.push(function () {
-						generateDatepicker('.date-' + guid, curVal, curName, curName);
+						generateDatepicker('.date-' + guid, curVal, curName, eid);
 					});
 				} else if (type == "yesno") {
 					var selectedYes = (value == true) ? 'checked="checked"' : "";
 					var selectedNo = (value == true) ? "" : 'checked="checked"';
 					input = '<div class="form-group input-yesno ' + classes + '">' +
 								'<label for="true" class="col-xs-4 control-label"> Yes </label>' +
-								'<div class="col-xs-2">' + genInput("radio", name, placeholder, "true", selectedYes) + '</div>' +
+								'<div class="col-xs-2">' + genInput("radio", name,eid, placeholder, "true", selectedYes) + '</div>' +
 								'<label for="false" class="col-xs-1 control-label"> No </label>' +
-								'<div class="col-xs-2">' + genInput("radio", name, placeholder, "false", selectedNo) + '</div>' +
+								'<div class="col-xs-2">' + genInput("radio", name,eid, placeholder, "false", selectedNo) + '</div>' +
 							'</div>';
 				} else if (type == "img") {
 					input = "<img src='" + field.src + "' class='" + classes + "'/>";
 				} else {
-					input = genInput(type, name, placeholder, value, null, classes);
+					input = genInput(type, name,eid, placeholder, value, null, classes);
 				}
 
 				if (addLabel.indexOf(type) != -1 && label) {
@@ -1106,6 +1108,19 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 				} else {
 					builder += input;
 				}
+
+				if (onchange) {
+					if (typeof (onchange) === "function") {
+						var ocf = onchange;
+						var mname = name;
+						runAfter.push(function () {
+							$("[name=" + mname).on("change", ocf);
+						});
+					} else {
+						console.warn("Unhandled onchange type:"+typeof(onchange) + " for "+eid );
+					}
+				}
+
 			} catch (e) {
 				console.error(e);
 			}
@@ -1115,9 +1130,11 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 		builder = $(obj.contents);
 	}
 	_bindModal(builder, obj.title, undefined, undefined, onSuccess, onCancel, reformat, onClose, contentType);
-	for (var i = 0; i < runAfter.length; i++) {
-		runAfter[i]();
-	}
+	setTimeout(function () {
+		for (var i = 0; i < runAfter.length; i++) {
+			runAfter[i]();
+		}
+	}, 1);
 }
 
 function _bindModal(html, title, callback, validation, onSuccess, onCancel, reformat, onClose, contentType) {

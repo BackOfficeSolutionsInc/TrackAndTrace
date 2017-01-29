@@ -32,6 +32,9 @@ namespace RadialReview.Models.Scorecard
 		public virtual DayOfWeek DueDate { get; set; }
 		public virtual TimeSpan DueTime { get; set; }
 
+		public virtual DateTime? CumulativeRange { get; set; }
+		public virtual bool ShowCumulative { get; set; }
+
 		[DataMember]
 		public virtual UnitType UnitType { get; set; }
 
@@ -52,7 +55,8 @@ namespace RadialReview.Models.Scorecard
 		{
             _Editable = true;
             CreateTime = DateTime.UtcNow;
-            NextGeneration = CreateTime - TimeSpan.FromDays(7);
+			CumulativeRange = DateTime.UtcNow;
+			NextGeneration = CreateTime - TimeSpan.FromDays(7);
             DueDate = DayOfWeek.Friday;
 		}
 
@@ -98,6 +102,9 @@ namespace RadialReview.Models.Scorecard
 				Map(x => x.Archived);
 
 				Map(x => x.FromTemplateItemId);
+
+				Map(x => x.ShowCumulative);
+				Map(x => x.CumulativeRange);
 			} 
 		}
 		

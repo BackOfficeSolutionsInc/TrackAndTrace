@@ -491,20 +491,37 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 
 	$scope.functions.checkFutureAndSend = function (self) {
 		var m = self;
-		var icon = { title: "Update historical goals?" };
-		var fields = [
-            {
+		var icon = { title: "Update options" };
+		var fields = [{
+				type: "label",
+				value: "Update historical goals?"
+			},{
             	name: "history",
             	value: "false",
             	type: "yesno"
-            }];
+			},{
+				type: "label",
+				value: "Show Cumulative?"
+			}, {
+				name: "showCumulative",
+				value: self.ShowCumulative || "false",
+				type: "yesno",
+				onchange: function () {
+					$("#cumulativeRange").toggleClass("hidden",$(this).val()!="true");
+				}
+			}, {
+				classes: self.ShowCumulative==true?"":"hidden",
+				name: "cumulativeRange",
+				value: self.CumulativeRange || new Date(),
+				type: "date"
+			}]
 
 		if (self.Direction == "Between" || self.Direction == -3) {
 			icon = "info";
-			fields.unshift({
-				type: "label",
-				value: "Update historical goals?"
-			});
+			//fields.unshift({
+			//	type: "label",
+			//	value: "Update historical goals?"
+			//});
 			fields.push({
 				type: "number",
 				text: "Lower-Boundary",
@@ -535,7 +552,9 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 					"historical": model.history,
 					"Lower": low,
 					"Upper": high,
-					"connectionId": null
+					"connectionId": null,
+					"CumulativeRange": model.cumulativeRange,
+					"ShowCumulative": model.showCumulative
 				});
 			},
 			cancel: function () {
@@ -613,10 +632,10 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 
 	$scope.functions.blurSearch = function (self) {
 		//$timeout(function () {
-			angular.element(".searchresultspopup").addClass("ng-hide");
-			self.visible = false;
-			$scope.ShowSearch = false;
-			$scope.model.Search = '';
+		angular.element(".searchresultspopup").addClass("ng-hide");
+		self.visible = false;
+		$scope.ShowSearch = false;
+		$scope.model.Search = '';
 		//}, 300);
 	}
 

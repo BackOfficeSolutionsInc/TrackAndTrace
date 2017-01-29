@@ -83,7 +83,7 @@ namespace RadialReview.Controllers {
 
         [HttpPost]
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult UpdateAngularMeasurable(AngularMeasurable model, string connectionId = null, bool historical = false, decimal? lower = null, decimal? upper = null)
+        public JsonResult UpdateAngularMeasurable(AngularMeasurable model, string connectionId = null, bool historical = false, decimal? lower = null, decimal? upper = null,bool? showCumulative=null, DateTime? cumulativeRange = null)
         {
             var target = model.Target;
             var altTarget = (decimal?)null;
@@ -96,7 +96,7 @@ namespace RadialReview.Controllers {
             L10Accessor.UpdateArchiveMeasurable(GetUser(),
                 model.Id,model.Name,model.Direction,target,
                 model.Owner.NotNull(x => x.Id), model.Admin.NotNull(x => x.Id),
-                connectionId,!historical, altTarget);
+                connectionId,!historical, altTarget, showCumulative, cumulativeRange);
             return Json(ResultObject.SilentSuccess());
         }
         

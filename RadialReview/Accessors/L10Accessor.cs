@@ -2426,7 +2426,11 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		public static void UpdateArchiveMeasurable(UserOrganizationModel caller, long measurableId, string name = null, LessGreater? direction = null, decimal? target = null, long? accountableId = null, long? adminId = null, string connectionId = null, bool updateFutureOnly = true, decimal? altTarget = null) {
+		public static void UpdateArchiveMeasurable(UserOrganizationModel caller, long measurableId, string name = null, 
+			LessGreater? direction = null, decimal? target = null, long? accountableId = null, long? adminId = null, 
+			string connectionId = null, bool updateFutureOnly = true, decimal? altTarget = null, bool? showCumulative = null, 
+			DateTime? cumulativeRange = null)
+		{
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					using (var rt = RealTimeUtility.Create(connectionId)) {
@@ -2448,19 +2452,7 @@ namespace RadialReview.Accessors {
 
 						checkEither.AddRange(recurrenceIds.Select<long, Func<PermissionsUtility, PermissionsUtility>>(recurrenceId => (x => x.EditL10Recurrence(recurrenceId))));
 						var perms = PermissionsUtility.Create(s, caller).Or(checkEither.ToArray());
-
-						//if (s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.DeleteTime == null && x.Measurable.Id == measurableId && x.L10Recurrence.Id == recurrenceId).Take(1).SingleOrDefault() == null)
-						//    throw new PermissionsException("Cannot edit this measurable.");
-
-						//var recurrenceId = measurable.L10Meeting.L10RecurrenceId;
-						//if (recurrenceId == 0)
-						//    throw new PermissionsException("Meeting does not exist.");
-						//var perms = PermissionsUtility.Create(s, caller).EditL10Recurrence(recurrenceId);
-
-						//var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-						//var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
-
-
+						
 						var updateText = new List<String>();
 
 						var meetingMeasurableIds = s.QueryOver<L10Meeting.L10Meeting_Measurable>()
@@ -2474,6 +2466,18 @@ namespace RadialReview.Accessors {
 							updateText.Add("Title: " + measurable.Title);
 							foreach (var mmid in meetingMeasurableIds)
 								rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "title", name));
+						}
+						if (showCumulative != null && measurable.ShowCumulative != showCumulative) {
+							measurable.ShowCumulative = showCumulative.Value;
+							updateText.Add("Cumulative: " + showCumulative);
+							foreach (var mmid in meetingMeasurableIds)
+								rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "showCumulative", showCumulative));
+						}
+						if (cumulativeRange != null && measurable.CumulativeRange != cumulativeRange) {
+							measurable.CumulativeRange = cumulativeRange.Value;
+							updateText.Add("Cumulative Start: " + cumulativeRange);
+							foreach (var mmid in meetingMeasurableIds)
+								rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "cumulativeRange", cumulativeRange));
 						}
 						if ((direction != null && measurable.GoalDirection != direction.Value) || !updateFutureOnly) {
 							measurable.GoalDirection = direction.Value;
