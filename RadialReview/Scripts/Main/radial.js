@@ -1170,6 +1170,11 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 		$("#modalForm").find("input:checkbox").each(function () {
 			formData[$(this).prop("name")] = $(this).is(":checked") ? "True" : "False";
 		});
+		$("#modalForm").find(".input-yesno").each(function () {
+			var name = $(this).find("input").attr("name");
+			var v = $(this).find("[name=" + name + "]:checked").val();
+			formData[name] = v=="true" ? "True" : "False";
+		});
 
 		if (typeof (reformatArg) === "function") {
 			var o = reformatArg(formData);

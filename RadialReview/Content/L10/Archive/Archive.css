@@ -742,6 +742,31 @@ html {
 .meeting-archive .scorecard-list-container table .picture-container {
   margin: 1px;
 }
+.meeting-archive .scorecard-list-container table .goal-column.direction {
+  text-align: center;
+}
+.meeting-archive .scorecard-list-container table .cumulative-column {
+  text-align: center;
+  padding-right: 4px;
+  cursor: pointer;
+}
+.meeting-archive .scorecard-list-container table .cumulative-column:active,
+.meeting-archive .scorecard-list-container table .cumulative-column:focus {
+  outline: none;
+}
+.meeting-archive .scorecard-list-container table .cumulative-column input {
+  padding-right: 0px !important;
+  padding-left: 0px !important;
+  padding-top: 10px;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+.meeting-archive .scorecard-list-container table .cumulative-column input:active,
+.meeting-archive .scorecard-list-container table .cumulative-column input:focus {
+  outline: none;
+}
 .meeting-archive .todo-list-container .empty-cell,
 .meeting-archive .todo-list-container .delete-column,
 .meeting-archive .todo-list-container .todotype-column,

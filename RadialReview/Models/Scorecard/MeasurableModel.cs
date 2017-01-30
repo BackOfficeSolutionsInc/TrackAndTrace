@@ -34,6 +34,7 @@ namespace RadialReview.Models.Scorecard
 
 		public virtual DateTime? CumulativeRange { get; set; }
 		public virtual bool ShowCumulative { get; set; }
+		public virtual decimal? _Cumulative { get; set; }
 
 		[DataMember]
 		public virtual UnitType UnitType { get; set; }
@@ -58,6 +59,7 @@ namespace RadialReview.Models.Scorecard
 			CumulativeRange = DateTime.UtcNow;
 			NextGeneration = CreateTime - TimeSpan.FromDays(7);
             DueDate = DayOfWeek.Friday;
+			
 		}
 
 		public MeasurableModel(OrganizationModel forOrganization):this()

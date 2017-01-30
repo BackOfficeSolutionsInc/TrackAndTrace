@@ -65,14 +65,7 @@ namespace RadialReview.Controllers {
             L10Accessor.Remove(GetUser(), model, recurrenceId, connectionId);
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
-
-        //[HttpPost]
-        //[Access(AccessLevel.UserOrganization)]
-        //public JsonResult UpdateAngularMeasurablePast(long id)
-        //{
-        //    L10Accessor.UpdateMeasurablePast(GetUser(),id);
-        //    return Json(ResultObject.SilentSuccess());
-        //}
+		
         [HttpPost]
         [Access(AccessLevel.UserOrganization)]
         public JsonResult OrderAngularMeasurable(long id, long recurrence, int oldOrder, int newOrder) {
@@ -80,10 +73,9 @@ namespace RadialReview.Controllers {
             return Json(ResultObject.SilentSuccess());
         }
 
-
         [HttpPost]
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult UpdateAngularMeasurable(AngularMeasurable model, string connectionId = null, bool historical = false, decimal? lower = null, decimal? upper = null,bool? showCumulative=null, DateTime? cumulativeRange = null)
+        public JsonResult UpdateAngularMeasurable(AngularMeasurable model, string connectionId = null, bool historical = false, decimal? lower = null, decimal? upper = null,bool? enableCumulative = null, DateTime? cumulativeStart = null)
         {
             var target = model.Target;
             var altTarget = (decimal?)null;
@@ -91,12 +83,14 @@ namespace RadialReview.Controllers {
             {
                 target = lower;
                 altTarget = upper;
-
             }
+
+			//cumulativeRange = cumulativeRange==null?(DateTime?)null:GetUser().Organization.ConvertToUTC(cumulativeRange.Value);
+
             L10Accessor.UpdateArchiveMeasurable(GetUser(),
                 model.Id,model.Name,model.Direction,target,
                 model.Owner.NotNull(x => x.Id), model.Admin.NotNull(x => x.Id),
-                connectionId,!historical, altTarget, showCumulative, cumulativeRange);
+                connectionId,!historical, altTarget, enableCumulative, cumulativeStart);
             return Json(ResultObject.SilentSuccess());
         }
         

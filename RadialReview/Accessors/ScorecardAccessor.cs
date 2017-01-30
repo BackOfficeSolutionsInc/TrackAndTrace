@@ -251,16 +251,13 @@ namespace RadialReview.Accessors {
 		public static List<MeasurableModel> GetUserMeasurables(ISession s, PermissionsUtility perms, long userId, bool loadUsers, bool ordered, bool includeAdmin) {
 			perms.ViewUserOrganization(userId, false);
 			var foundQuery = s.QueryOver<MeasurableModel>().Where(x => x.DeleteTime == null);
-
 			if (includeAdmin)
 				foundQuery = foundQuery.Where(x => x.AdminUserId == userId || x.AccountableUserId == userId);
 			else
 				foundQuery = foundQuery.Where(x => x.AccountableUserId == userId);
-
 			var found = foundQuery.List().ToList();
 
 			if (ordered) {
-
 				var order = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
 					.Where(x => x.DeleteTime == null)
 					.WhereRestrictionOn(x => x.Measurable.Id)
@@ -273,7 +270,6 @@ namespace RadialReview.Accessors {
 						Order = (int?)x[2]
 					}).ToList();
 
-
 				order = order.GroupBy(x => x.Meeting)
 					.OrderByDescending(x => x.Count())
 					.ThenBy(x => x.First().Meeting)
@@ -282,18 +278,17 @@ namespace RadialReview.Accessors {
 					.Distinct(x => x.Measurable)
 					.ToList();
 
-
 				var lookup = order.Select((x, i) => Tuple.Create(x, i))
 					.ToDictionary(x => x.Item1.Measurable, x => x.Item2);
-
 
 				foreach (var o in found) {
 					if (lookup.ContainsKey(o.Id))
 						o._Ordering = lookup[o.Id];
 				}
 				found = found.OrderBy(x => x._Ordering).ToList();
-
 			}
+
+			L10Accessor._RecalculateCumulative_Unsafe(s, null, found, null, null);
 
 
 			if (loadUsers) {
@@ -504,9 +499,7 @@ namespace RadialReview.Accessors {
 					sc.DateEntered = (value == null) ? null : (DateTime?)now;
 					s.Update(sc);
 				}
-				//score.Measured = value;
-				//score.DateEntered = (value == null) ? null : nowQ;
-				//s.Update(score);
+				//L10Accessor._RecalculateCumulative_Unsafe(s, score.Measurable, score);
 			} else {
 				var meetingMeasurables = s.QueryOver<L10Meeting.L10Meeting_Measurable>()
 					.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id && x.Measurable.Id == measurableId)
@@ -515,9 +508,7 @@ namespace RadialReview.Accessors {
 				if (meetingMeasurables == null)
 					throw new PermissionsException("You do not have permission to edit this score.");
 				var m = meetingMeasurables.Measurable;
-
-				//var SoW = m.Organization.Settings.WeekStart;
-
+				
 				var existingScores = s.QueryOver<ScoreModel>()
 					.Where(x => x.DeleteTime == null && x.Measurable.Id == measurableId)
 					.List().ToList();
@@ -539,6 +530,7 @@ namespace RadialReview.Accessors {
 						}
 						score = sc;
 					}
+					//L10Accessor._RecalculateCumulative_Unsafe(s, score.Measurable, score);
 				} else {
 					var ordered = existingScores.OrderBy(x => x.DateDue);
 					var minDate = ordered.FirstOrDefault().NotNull(x => (DateTime?)x.ForWeek) ?? now;
@@ -579,6 +571,7 @@ namespace RadialReview.Accessors {
 						curr.Measured = value;
 						curr.Measurable = s.Get<MeasurableModel>(curr.MeasurableId);
 						score = curr;
+						//L10Accessor._RecalculateCumulative_Unsafe(s, curr.Measurable, curr);
 						TestUtilities.Log("Scores created: " + scoresCreated);
 					} else if (week < minDate) {
 						TestUtilities.Log("Score not found. Score below boundry. Creating scores down to value.");
@@ -606,6 +599,7 @@ namespace RadialReview.Accessors {
 								s.Save(curr);
 								scoresCreated++;
 								score = curr;
+								//L10Accessor._RecalculateCumulative_Unsafe(s, curr.Measurable, curr);
 							}
 
 							//m.NextGeneration = nextDue;
@@ -631,6 +625,8 @@ namespace RadialReview.Accessors {
 							OriginalGoalDirection = measurable.GoalDirection
 						};
 						s.Save(curr);
+						//L10Accessor._RecalculateCumulative_Unsafe(s, curr.Measurable, curr);
+
 						curr.Measurable = s.Get<MeasurableModel>(curr.MeasurableId);
 						score = curr;
 						TestUtilities.Log("Scores created: 1");
@@ -638,105 +634,17 @@ namespace RadialReview.Accessors {
 					s.Update(m);
 
 				}
-				#region comments
-				//if (score != null && score.Measured != value)
-				//{
-				//    //Found it with false id
-				//    SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateScore(score.Id));
-				//    score.Measured = value;
-				//    score.DateEntered = (value == null) ? null : nowQ;
-				//    s.Update(score);
-				//}
-				//else
-				//{
-				//    var ordered = existingScores.OrderBy(x => x.DateDue);
-				//    var minDate = ordered.FirstOrDefault().NotNull(x => (DateTime?)x.ForWeek) ?? now;
-				//    var maxDate = ordered.LastOrDefault().NotNull(x => (DateTime?)x.ForWeek) ?? now;
-
-				//    minDate = minDate.StartOfWeek(DayOfWeek.Sunday);
-				//    maxDate = maxDate.StartOfWeek(DayOfWeek.Sunday);
-
-
-				//    DateTime start, end;
-
-				//    if (week > maxDate)
-				//    {
-				//        //Create going up until sufficient
-				//        var n = maxDate;
-				//        ScoreModel curr = null;
-				//        while (n < week)
-				//        {
-				//            var nextDue = n.StartOfWeek(DayOfWeek.Sunday).AddDays(7).AddDays((int)m.DueDate).Add(m.DueTime);
-				//            curr = new ScoreModel()
-				//            {
-				//                AccountableUserId = m.AccountableUserId,
-				//                DateDue = nextDue,
-				//                MeasurableId = m.Id,
-				//                OrganizationId = m.OrganizationId,
-				//                ForWeek = nextDue.StartOfWeek(DayOfWeek.Sunday)
-				//            };
-				//            s.Save(curr);
-				//            m.NextGeneration = nextDue;
-				//            n = nextDue.StartOfWeek(DayOfWeek.Sunday);
-				//        }
-				//        curr.DateEntered = (value == null) ? null : nowQ;
-				//        curr.Measured = value;
-				//        score = curr;
-				//    }
-				//    else if (week < minDate)
-				//    {
-				//        var n = week;
-				//        var first = true;
-				//        while (n < minDate)
-				//        {
-				//            var nextDue = n.StartOfWeek(DayOfWeek.Sunday).AddDays((int)m.DueDate).Add(m.DueTime);
-				//            var curr = new ScoreModel()
-				//            {
-				//                AccountableUserId = m.AccountableUserId,
-				//                DateDue = nextDue,
-				//                MeasurableId = m.Id,
-				//                OrganizationId = m.OrganizationId,
-				//                ForWeek = nextDue.StartOfWeek(DayOfWeek.Sunday)
-				//            };
-				//            if (first)
-				//            {
-				//                curr.Measured = value;
-				//                curr.DateEntered = (value == null) ? null : nowQ;
-				//                first = false;
-				//                s.Save(curr);
-				//            }
-
-				//            //m.NextGeneration = nextDue;
-				//            n = nextDue.AddDays(7).StartOfWeek(DayOfWeek.Sunday);
-				//            score = curr;
-				//        }
-				//    }
-				//    else
-				//    {
-				//        // cant create scores between these dates..
-				//        var curr = new ScoreModel()
-				//        {
-				//            AccountableUserId = m.AccountableUserId,
-				//            DateDue = week.StartOfWeek(DayOfWeek.Sunday).AddDays((int)m.DueDate).Add(m.DueTime),
-				//            MeasurableId = m.Id,
-				//            OrganizationId = m.OrganizationId,
-				//            ForWeek = week.StartOfWeek(DayOfWeek.Sunday),
-				//            Measured = value,
-				//            DateEntered = (value == null) ? null : nowQ
-				//        };
-				//        s.Save(curr);
-				//        score = curr;
-				//    }
-				//    s.Update(m);
-				//}
-				#endregion
-
 			}
 			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 			var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting), connectionId);
 			group.updateTextContents(dom, value);
 
 			if (score != null) {
+				using (var rt = RealTimeUtility.Create()) {
+					L10Accessor._RecalculateCumulative_Unsafe(s,rt, score.Measurable, recurrenceId.AsList(), score);
+					rt.UpdateRecurrences(recurrenceId).AddLowLevelAction(x=>x.updateCumulative(score.Measurable.Id, score.Measurable._Cumulative.NotNull(y=>y.Value.ToString("0.#####"))));					
+				}
+
 				var toUpdate = new AngularScore(score, false);
 				toUpdate.DateEntered = score.Measured == null ? Removed.Date() : DateTime.UtcNow;
 				toUpdate.Measured = toUpdate.Measured ?? Removed.Decimal();

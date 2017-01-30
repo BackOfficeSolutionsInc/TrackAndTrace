@@ -102,7 +102,7 @@ $(function () {
 	meetingHub.client.joinVideoConference = joinVideoConference;
 	//meetingHub.client.setLeader = setLeader;
 	meetingHub.client.disableItem = disableItem;
-
+	meetingHub.client.updateCumulative = updateCumulative;
 
 	console.log("StartingHub ");
 

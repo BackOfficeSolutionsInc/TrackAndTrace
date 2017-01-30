@@ -492,29 +492,40 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 	$scope.functions.checkFutureAndSend = function (self) {
 		var m = self;
 		var icon = { title: "Update options" };
+
 		var fields = [{
-				type: "label",
-				value: "Update historical goals?"
-			},{
-            	name: "history",
-            	value: "false",
-            	type: "yesno"
-			},{
-				type: "label",
-				value: "Show Cumulative?"
-			}, {
-				name: "showCumulative",
-				value: self.ShowCumulative || "false",
-				type: "yesno",
-				onchange: function () {
-					$("#cumulativeRange").toggleClass("hidden",$(this).val()!="true");
-				}
-			}, {
-				classes: self.ShowCumulative==true?"":"hidden",
-				name: "cumulativeRange",
-				value: self.CumulativeRange || new Date(),
-				type: "date"
-			}]
+			type: "label",
+			value: "Update historical goals?"
+		}, {
+			name: "history",
+			value: "false",
+			type: "yesno"
+		}, {
+			type: "label",
+			value: "Show Cumulative?"
+		}, {
+			name: "showCumulative",
+			value: self.ShowCumulative || false,
+			type: "yesno",
+			onchange: function () {
+				$("#cumulativeRange").toggleClass("hidden", $(this).val() != "true");
+			}
+		}, {
+			classes: self.ShowCumulative == true ? "" : "hidden",
+			name: "cumulativeRange",
+			value: self.CumulativeRange || new Date(),
+			type: "date"
+		}/*, {
+			type: "label",
+			value: "Show Cumulative?"
+		}, {
+			name: "showCumulative",
+			value: self.ShowCumulative || false,
+			type: "yesno",
+			onchange: function () {
+				$("#cumulativeRange").toggleClass("hidden", $(this).val() != "true");
+			}
+		}*/]
 
 		if (self.Direction == "Between" || self.Direction == -3) {
 			icon = "info";
@@ -553,8 +564,8 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 					"Lower": low,
 					"Upper": high,
 					"connectionId": null,
-					"CumulativeRange": model.cumulativeRange,
-					"ShowCumulative": model.showCumulative
+					"cumulativeStart": model.cumulativeRange,
+					"enableCumulative": model.showCumulative
 				});
 			},
 			cancel: function () {

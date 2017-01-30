@@ -24,9 +24,9 @@ namespace RadialReview.Utilities.RealTime {
                 this.rt = rt;
             }
 
-            protected void UpdateAll(Func<long, IAngularItem> itemGenerater) {
+            protected void UpdateAll(Func<long, IAngularItem> itemGenerater,bool forceNoSkip =false) {
                 foreach (var r in _recurrenceIds) {
-                    var updater = rt.GetUpdater<MeetingHub>(MeetingHub.GenerateMeetingGroupId(r));
+                    var updater = rt.GetUpdater<MeetingHub>(MeetingHub.GenerateMeetingGroupId(r), !forceNoSkip);
                     updater.Add(itemGenerater(r));
                 }
             }
@@ -41,9 +41,9 @@ namespace RadialReview.Utilities.RealTime {
                 return this;
             }
 
-            public RTRecurrenceUpdater UpdateMeasurable(MeasurableModel measurable, AngularListType type = AngularListType.ReplaceIfNewer) {
+			public RTRecurrenceUpdater UpdateMeasurable(MeasurableModel measurable, AngularListType type = AngularListType.ReplaceIfNewer, bool forceNoSkip = false) {
                 rt.AddAction(() => {
-                    UpdateAll(rid => new AngularMeasurable(measurable));
+                    UpdateAll(rid => new AngularMeasurable(measurable), forceNoSkip);
                 });
                 return this;
             }

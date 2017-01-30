@@ -38,6 +38,9 @@ namespace RadialReview.Models.Angular.Scorecard
 				Disabled = true;
 			Ordering = measurable._Ordering;
 			IsDivider = false;
+			ShowCumulative = measurable.ShowCumulative;
+			CumulativeRange = measurable.CumulativeRange;
+			Cumulative = measurable._Cumulative;
 		}
 
 		public static AngularMeasurable CreateDivider(int ordering,long id)
@@ -55,6 +58,10 @@ namespace RadialReview.Models.Angular.Scorecard
 
 		public bool IsDivider { get; set; }
 
+		public bool? ShowCumulative { get; set; }
+		public decimal? Cumulative { get; set; }
+		public DateTime? CumulativeRange { get; set; }
+
 		public AngularUser Owner { get; set; }
 		public AngularUser Admin { get; set; }
 		public string Name { get; set; }
@@ -69,6 +76,5 @@ namespace RadialReview.Models.Angular.Scorecard
         public long? RecurrenceId { get; set; }
         public long? RecurrenceMeasurableId { get; set; }
         public AngularMeasurableGroup Grouping { get; set; }
-
 	}
 }

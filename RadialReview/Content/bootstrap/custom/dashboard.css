@@ -866,6 +866,28 @@ body.resizing .notes-tile:after,
   margin-right: 0px !important;
   margin-left: 0px;
 }
+.dashboard .scorecard table .cumulative-column {
+  text-align: center;
+  padding-right: 4px;
+  cursor: pointer;
+}
+.dashboard .scorecard table .cumulative-column:active,
+.dashboard .scorecard table .cumulative-column:focus {
+  outline: none;
+}
+.dashboard .scorecard table .cumulative-column input {
+  padding-right: 0px !important;
+  padding-left: 0px !important;
+  padding-top: 0px;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+.dashboard .scorecard table .cumulative-column input:active,
+.dashboard .scorecard table .cumulative-column input:focus {
+  outline: none;
+}
 .dashboard .scorecard .row {
   margin-bottom: 0px;
 }

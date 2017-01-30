@@ -280,7 +280,7 @@ namespace RadialReview.Controllers {
                         var scores = sam.Scores;
                         var measurables = sam.Measurables;
 
-                        var orders = L10Accessor.GetMeasurableOrdering(GetUser(), l10Id);
+                       // var orders = L10Accessor.GetMeasurableOrdering(GetUser(), l10Id);
                         var ts = GetUser().GetTimeSettings();
 						var recur = L10Accessor.GetL10Recurrence(GetUser(), l10Id, false);
                         ts.WeekStart = recur.StartOfWeekOverride ?? ts.WeekStart;

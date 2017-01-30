@@ -76,14 +76,15 @@ body, html {
 				height: 24px;
 			}
 
+
 			input {
 				padding-left: 0px !important;
 				padding-right: 10px;
 				font-size: 12px;
 			}
 
-			score input{
-				height:31px !important;
+			score input {
+				height: 31px !important;
 			}
 
 			.goal-column.value {
@@ -104,6 +105,36 @@ body, html {
 
 			.picture-container {
 				margin: 1px;
+			}
+
+			.goal-column.direction {
+				text-align: center;
+			}
+
+			.cumulative-column {
+				text-align: center;
+				padding-right: 4px;
+				cursor: pointer;
+
+				&:active,
+				&:focus {
+					outline: none;
+				}
+
+				input {
+					padding-right: 0px !important;
+					padding-left: 0px !important;
+					padding-top: 10px;
+					background-color: transparent;
+					border: none;
+					outline: none;
+					cursor: pointer;
+
+					&:active,
+					&:focus {
+						outline: none;
+					}
+				}
 			}
 		}
 	}

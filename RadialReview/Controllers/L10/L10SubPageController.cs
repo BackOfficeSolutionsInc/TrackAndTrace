@@ -167,7 +167,9 @@ namespace RadialReview.Controllers
 		#region ScoreCard
 		private PartialViewResult ScoreCard(L10MeetingVM model)
 		{
-			model.Scores = L10Accessor.GetScoresForRecurrence(GetUser(), model.Recurrence.Id);
+			var sm = L10Accessor.GetScoresAndMeasurablesForRecurrence(GetUser(), model.Recurrence.Id, true, model.MeetingStart, getMeasurables: true);
+
+			model.Scores = sm.Scores;//L10Accessor.GetScoresForRecurrence(GetUser(), model.Recurrence.Id);
 
 			var sow = GetUser().Organization.Settings.WeekStart;
 			var offset = GetUser().Organization.GetTimezoneOffset();

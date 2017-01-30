@@ -36,6 +36,7 @@
                                         }
                                         <th class="measurable-column text-column">&nbsp;</th>
                                         <th class="goal-column data-column" colspan="2">&nbsp;</th>
+										<th class="cumulative-column"></th>
                                         <th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin)) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="date score-column  data-column" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
                                             {{functions.subtractDays(week.DisplayDate,0) | date: (@(selector)).DateFormat1}}
                                         </th>
@@ -51,6 +52,7 @@
                                         }
                                         <th class="measurable measurable-column text-column">Measurable</th>
                                         <th class="target goal-column data-column" colspan="2">Goal</th>
+										<th class="cumulative-column"></th>
                                         <th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin)) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="date  data-column score-column" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
                                             {{functions.subtractDays(week.DisplayDate,-6) | date: (@(selector)).DateFormat2}}
                                         </th>
@@ -108,7 +110,7 @@
                                             <input ng-if="measurable.Direction!='Between'"
                                                    ng-disabled="measurable.Disabled"
                                                    @(elastic)
-                                                   class="blend  modifiers {{measurable.Modifiers}}"
+                                                   class="blend modifiers {{measurable.Modifiers}}"
                                                    fcsa-number="{{functions.getFcsa(measurable)}}"
                                                    ng-model-options="{ debounce: 75 }"
                                                    ng-model="measurable.Target"
@@ -117,6 +119,9 @@
                                             <span ng-if="measurable.Direction=='Between'" ng-click="functions.checkFutureAndSend(measurable)">{{measurable.Target}}-{{measurable.AltTarget}}</span>
                                             <span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{::measurable.Id}}" data-pk="{{::measurable.Id}}_{{::recurrenceId}}" data-url="/L10/UpdateMeasurable"></span>
                                         </td>
+										<td class="cumulative-column" ng-click="functions.checkFutureAndSend(measurable)">
+											<input ng-show="measurable.ShowCumulative==true" pu-elastic-input fcsa-number="{{functions.getFcsa(measurable)}}" ng-model="measurable.Cumulative"  disabled/>
+										</td>
                                         <td ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin)) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="score score-column data-column" ng-class="{current:week.IsCurrentWeek}">
                                             <score week="week"
                                                    @(new HtmlString(localization))
@@ -143,6 +148,7 @@
                                     }
                                     <th class="measurable-column  text-column">&nbsp;</th>
                                     <th class="goal-column  dta-column" colspan="2">&nbsp;</th>
+									<th class="cumulative-column"></th>
                                 </tr>
                                 <tr>
                                     @if (reorderable) {
@@ -154,6 +160,7 @@
                                     }
                                     <th class="measurable measurable-column text-column">Measurable</th>
                                     <th class="target  goal-column data-column" colspan="2">Goal</th>
+									<th class="cumulative-column"></th>
                                 </tr>
                             </thead>
                             <tbody as-sortable="scorecardSortListener" ng-model="measurableGroupItems" ng-repeat="(measurableGroup,measurableGroupItems) in (@(selector)).Measurables | groupBy: 'Grouping'">
@@ -213,6 +220,9 @@
                                         <span ng-if="measurable.Direction=='Between'" ng-click="functions.checkFutureAndSend(measurable)">{{measurable.Target}}-{{measurable.AltTarget}}</span>
                                         <span class="inlineEdit1 gray modifiers-{{measurable.Modifiers}}" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="{{::measurable.Id}}" data-pk="{{::measurable.Id}}_{{::recurrenceId}}" data-url="/L10/UpdateMeasurable"></span>
                                     </td>
+									<td class="cumulative-column" ng-click="functions.checkFutureAndSend(measurable)">
+										<input ng-show="measurable.ShowCumulative==true" pu-elastic-input fcsa-number="{{functions.getFcsa(measurable)}}" ng-model="measurable.Cumulative" disabled />
+									</td>
                                 </tr>
                             </tbody>
                         </table>

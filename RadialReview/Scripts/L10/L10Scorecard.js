@@ -41,6 +41,10 @@ function blurChangeTimeout(key, self, d, i, executeNow) {
 	}
 }
 
+function updateCumulative(measurableId, value) {
+	$("[data-measurable='" + measurableId + "'] .cumulative-column span").text(value);
+}
+
 function blurChange(e, d) {
 	var self = this;
 	var key = $(self).attr("id");
@@ -678,9 +682,95 @@ function removeMeasurable(id) {
 
 $(window).on("page-scorecard", function () {
 	scrollRight();
-	
+
 	if (isIOS()) {
 		$('input').css("pointer-events", "none");
 	}
 });
 
+
+//function showScorecardOptions(me) {
+//	var self = $(me).closest("tr").data();
+//	var icon = { title: "Update options" };
+//	var fields = [{
+//		type: "label",
+//		value: "Update historical goals?"
+//	}, {
+//		name: "history",
+//		value: "false",
+//		type: "yesno"
+//	}, {
+//		type: "label",
+//		value: "Show Cumulative?"
+//	}, {
+//		name: "showCumulative",
+//		value: self.showcumulative || false,
+//		type: "yesno",
+//		onchange: function () {
+//			$("#cumulativeRange").toggleClass("hidden", $(this).val() != "true");
+//		}
+//	}, {
+//		classes: self.showcumulative == true ? "" : "hidden",
+//		name: "cumulativeRange",
+//		value: self.cumulativerange || new Date(),
+//		type: "date"
+//	}/*, {
+//			type: "label",
+//			value: "Show Cumulative?"
+//		}, {
+//			name: "showCumulative",
+//			value: self.ShowCumulative || false,
+//			type: "yesno",
+//			onchange: function () {
+//				$("#cumulativeRange").toggleClass("hidden", $(this).val() != "true");
+//			}
+//		}*/]
+
+//	var direction = $(me).closest("tr").find("[data-name='direction']").attr("data-value");
+//	//var target = $(me).closest("tr").find("[data-name='direction']").attr("data-value");
+
+//	if (direction == "Between" || direction == -3) {
+//		icon = "info";
+//		//fields.unshift({
+//		//	type: "label",
+//		//	value: "Update historical goals?"
+//		//});
+//		fields.push({
+//			type: "number",
+//			text: "Lower-Boundary",
+//			name: "Lower",
+//			value: self.target,
+//		});
+//		fields.push({
+//			type: "number",
+//			text: "Upper-Boundary",
+//			name: "Upper",
+//			value: self.alttarget || self.target,
+//		});
+//	}
+
+//	showModal({
+//		icon: icon,
+//		noCancel: true,
+//		fields: fields,
+//		success: function (model) {
+//			var low = Math.min(+model.Lower, +model.Upper);
+//			var high = Math.max(+model.Lower, +model.Upper);
+//			if (isNaN(low))
+//				low = null;
+//			if (isNaN(high))
+//				high = null;
+
+//			$.ajax({
+//				url: "/L10/UpdateAngularMeasurable?historical=" + model.history + "&Lower=" + low + "&Upper=" + high + "connectionId=null&cumulativeStart=" + model.cumulativeRange + "&enableCumulative=" + model.showCumulative,
+//				method: "post",
+//				data: {id:self.measurable}
+//			});
+
+
+//		},
+//		cancel: function () {
+
+//		}
+//	});
+//}
