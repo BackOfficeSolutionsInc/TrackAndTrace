@@ -68,6 +68,24 @@ namespace RadialReview.Models.Angular.VTO {
 		public long? L10Recurrence { get; set; }
 	}
 	#region DataTypes
+	//public class AngularVtoIssue : AngularVtoString {
+	//	public string Owner { get; set; }
+	//	public string OwnerInitials { get; set; }
+		
+	//	public static AngularVtoIssue Create(VtoIssue strs) {
+	//		return new AngularVtoIssue() {
+	//			Data = strs.Data,
+	//			Id = strs.Id,
+	//			Deleted = strs.DeleteTime != null,
+	//			Owner = strs.Owner,
+	//			OwnerInitials = strs.OwnerInitials
+	//		};
+	//	}
+	//	public static List<AngularVtoIssue> Create(IEnumerable<VtoIssue> strs) {
+	//		return strs.Select(AngularVtoIssue.Create).ToList();
+	//	}
+	//}
+
 	public class AngularVtoString : Base.BaseAngular {
 		public AngularVtoString(long id) : base(id) {
 		}
@@ -83,7 +101,8 @@ namespace RadialReview.Models.Angular.VTO {
 			return new AngularVtoString() {
 				Data = strs.Data,
 				Id = strs.Id,
-				Deleted = strs.DeleteTime != null
+				Deleted = strs.DeleteTime != null,
+				_ExtraProperties = strs._Extras
 			};
 		}
 		public static List<AngularVtoString> Create(IEnumerable<VtoItem_String> strs) {

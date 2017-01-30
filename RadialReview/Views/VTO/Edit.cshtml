@@ -511,8 +511,9 @@
 													<td>
 														<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddIssue?vto='+vtoId,'model.Issues')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
 														@*</td>
-															<td class="delete-column">*@
+			<td class="delete-column">*@
 														<div class="pull-right" style="width:25px;margin-top: -4px;margin-bottom: -5px;">
+															<span class="issue-owner">{{item.OwnerInitials}}</span>
 															<span class="ids-button glyphicon glyphicon-ids gray clickable" ng-click="functions.Get('/L10/MoveIssueFromVto/'+item.Id)" @(ViewBag.CanEditVTO ? "" : "disabled")></span>
 															<span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteString?value='+item.Id)" @(ViewBag.CanEditVTO ? "" : "disabled")></span>
 														</div>

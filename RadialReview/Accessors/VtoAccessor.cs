@@ -74,13 +74,17 @@ namespace RadialReview.Accessors {
 			perms.ViewVTO(vtoId);
 			var model = s.Get<VtoModel>(vtoId);
 			model._Values = OrganizationAccessor.GetCompanyValues(s.ToQueryProvider(true), perms, model.Organization.Id, null);
-			model.MarketingStrategy._Uniques = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Uniques && x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList();
-			model.ThreeYearPicture._LooksLike = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_LookLike && x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList();
-			model.OneYearPlan._GoalsForYear = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_YearGoals && x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList();
-			//model.._GoalsForYear = s.QueryOver<VtoModel.VtoItem_String>().Where(x => x.Type == VtoItemType.List_Issues && x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList();
-			model.QuarterlyRocks._Rocks = s.QueryOver<Vto_Rocks>()
-				.Where(x => x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList()
-				.Where(x => x.Rock.DeleteTime == null && x.Rock.CompanyRock).ToList();
+			var uniquesQ= s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Uniques && x.Vto.Id == vtoId && x.DeleteTime == null).Future();//.List().ToList();
+			var looksLikeQ= s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_LookLike && x.Vto.Id == vtoId && x.DeleteTime == null).Future();//.List().ToList();
+			var goalsQ = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_YearGoals && x.Vto.Id == vtoId && x.DeleteTime == null).Future();//.List().ToList();
+																																							  //model.._GoalsForYear = s.QueryOver<VtoModel.VtoItem_String>().Where(x => x.Type == VtoItemType.List_Issues && x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList();
+			var rocksQ= s.QueryOver<Vto_Rocks>()
+				.Where(x => x.Vto.Id == vtoId && x.DeleteTime == null).Future();
+
+
+
+
+
 
 			model._Issues = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Issues && x.Vto.Id == vtoId && x.DeleteTime == null).List().Select(x=>new VtoIssue() {
 				Id = x.Id,
@@ -92,8 +96,13 @@ namespace RadialReview.Accessors {
 				ForModel = x.ForModel,
 				Ordering = x.Ordering,
 				Type = x.Type,
-				Vto = x.Vto,			
+				Vto = x.Vto,
 			}).ToList();
+
+			model.MarketingStrategy._Uniques = uniquesQ.ToList();
+			model.ThreeYearPicture._LooksLike = looksLikeQ.ToList();
+			model.OneYearPlan._GoalsForYear = goalsQ.ToList();
+			model.QuarterlyRocks._Rocks  = rocksQ.ToList().Where(x => x.Rock.DeleteTime == null && x.Rock.CompanyRock).ToList();
 
 			var issuesAttachedToRecur = model._Issues
 				.Where(x => x.ForModel != null && x.ForModel.ModelType == ForModel.GetModelType<IssueModel.IssueModel_Recurrence>())
@@ -104,7 +113,9 @@ namespace RadialReview.Accessors {
 				var foundIssues = s.QueryOver<IssueModel.IssueModel_Recurrence>().WhereRestrictionOn(x => x.Id).IsIn(issuesAttachedToRecur).List().ToList();
 				foreach (var i in model._Issues) {
 					if (i.ForModel!=null && i.ForModel.ModelType == ForModel.GetModelType<IssueModel.IssueModel_Recurrence>()) {
-						i.Issue = foundIssues.FirstOrDefault(x => x.Id == i.ForModel.ModelId);
+						i.Issue = foundIssues.FirstOrDefault(x => x.Id == i.ForModel.ModelId);						
+						i._Extras["Owner"] = i.Issue.NotNull(x => x.Owner.NotNull(y => y.GetName()));
+						i._Extras["OwnerInitials"] = i.Issue.NotNull(x => x.Owner.NotNull(y => y.GetInitials()));
 					}
 				}
 			}

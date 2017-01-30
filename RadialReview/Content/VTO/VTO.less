@@ -26,9 +26,6 @@ html, body {
 		width: 100%;
 	}
 
-
-
-
 	.table-list {
 		tr td {
 			vertical-align: top;
@@ -58,7 +55,7 @@ html, body {
 		color: lightgray;
 		pointer-events: all;
 	}
-	
+
 	.add-row:after {
 		content: "Add row";
 		color: transparent;
@@ -81,16 +78,16 @@ html, body {
 		border: 1px dotted #ef7622;
 	}
 
-	textarea[disabled]{
-		border:1px solid transparent;
-		background-color:transparent;
-		cursor:default;
+	textarea[disabled] {
+		border: 1px solid transparent;
+		background-color: transparent;
+		cursor: default;
 	}
-	
+
 	.add-row[disabled],
 	.ids-button[disabled],
-	.delete[disabled]{
-		display:none; 
+	.delete[disabled] {
+		display: none;
 	}
 
 
@@ -106,6 +103,7 @@ html, body {
 		border: 1px dotted #dadada;
 		resize: vertical;
 	}
+
 	.boxed.content:hover textarea[disabled] {
 		border: 1px solid transparent;
 	}
@@ -116,14 +114,14 @@ html, body {
 		width: 90%;
 	}
 
-	input[disabled]{
-		background-color:transparent;
+	input[disabled] {
+		background-color: transparent;
 	}
-	
+
 	a[disabled],
-	a[disabled]:hover{
-		cursor:default;
-		text-decoration:none;
+	a[disabled]:hover {
+		cursor: default;
+		text-decoration: none;
 	}
 
 
@@ -133,18 +131,20 @@ html, body {
 		border-bottom: 1px dotted #ef7622;
 		outline: none;
 	}
-	
+
 	input:hover {
 		border: 0px;
 		border-bottom: 1px dotted #ef7622;
 	}
+
 	input[disabled]:hover {
 		border-bottom: 1px solid transparent;
 	}
-	
+
 	.boxed.content:hover input {
 		border-bottom: 1px dotted #dadada;
 	}
+
 	.boxed.content:hover input[disabled] {
 		border-bottom: 1px solid transparent;
 	}
@@ -252,7 +252,7 @@ html, body {
 		margin-left: 0px;
 		margin-right: 0px;
 	}
-	
+
 	tr .delete,
 	li .delete,
 	tr .ids-button {
@@ -355,6 +355,18 @@ html, body {
 		position: relative;
 		top: -1px;
 		left: -2px;
+	}
+
+	.issue-owner {
+		color: rgba(51, 51, 51, 0.5);
+		padding-top: 4px;
+		font-size: 10px;
+		position: absolute;
+		right: 11px;
+	}
+	
+	tr:hover .issue-owner {
+		opacity: 0;
 	}
 }
 
