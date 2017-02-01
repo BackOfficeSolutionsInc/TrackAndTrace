@@ -105,6 +105,7 @@ $(function () {
 	meetingHub.client.updateCumulative = updateCumulative;
 
 	meetingHub.client.updateIssueAwaitingSolve = updateIssueAwaitingSolve;
+	meetingHub.client.updateModedIssueSolve = updateModedIssueSolve;
 
 	console.log("StartingHub ");
 

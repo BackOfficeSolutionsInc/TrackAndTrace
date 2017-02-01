@@ -23,6 +23,7 @@ namespace RadialReview.Models.L10.VM
         public int priority { get; set; }
         public int rank { get; set; }
 		public bool awaitingsolve { get; set; }
+		public bool markedforclose { get; set; }
 
 		public static IssuesData FromIssueRecurrence(IssueModel.IssueModel_Recurrence issueRecur)
 		{
@@ -39,7 +40,8 @@ namespace RadialReview.Models.L10.VM
 				imageUrl	= issueRecur.Owner.NotNull(x=>x.ImageUrl(true,ImageSize._64))??"/i/placeholder",
 				createdDuringMeetingId = issueRecur.Issue.CreatedDuringMeetingId,
                 rank = issueRecur.Rank,
-				awaitingsolve = issueRecur.AwaitingSolve
+				awaitingsolve = issueRecur.AwaitingSolve,
+				markedforclose = issueRecur.MarkedForClose,
 			};
 			if (issueRecur.Owner!=null){
 				issue.accountable = issueRecur.Owner.Id;

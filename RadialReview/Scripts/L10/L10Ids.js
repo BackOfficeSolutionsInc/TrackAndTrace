@@ -433,7 +433,7 @@ function constructRow(issue) {
 	if (issue.details)
 		details = issue.details;
 
-	return '<li class="issue-row dd-item arrowkey undoable-stripped"  data-createtime="' + issue.createtime + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-issue="' + issue.issue + '" data-checked="' + issue.checked + '"  data-message="' + issue.message + '"  data-details="' + issue.details + '"  data-owner="' + issue.owner + '" data-accountable="' + issue.accountable + '"  data-priority="' + issue.priority + '"  data-rank="' + issue.rank + '" data-awaitingsolve="'+issue.awaitingsolve+'">\n'
+	return '<li class="issue-row dd-item arrowkey undoable-stripped"  data-createtime="' + issue.createtime + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-issue="' + issue.issue + '" data-checked="' + issue.checked + '"  data-message="' + issue.message + '"  data-details="' + issue.details + '"  data-owner="' + issue.owner + '" data-accountable="' + issue.accountable + '"  data-priority="' + issue.priority + '"  data-rank="' + issue.rank + '" data-awaitingsolve="' + issue.awaitingsolve + ' data-markedforclose="' + issue.markedforclose + '">\n'
         + '<span class="undo-button">Undo</span>'
         + '<input data-recurrence_issue="' + issue.recurrence_issue + '" class="issue-checkbox" type="checkbox" ' + (issue.checked ? "checked" : "") + '/>\n'
 		+ '<div class="move-icon noselect dd-handle">\n'
@@ -512,6 +512,10 @@ function getIssueOrder() {
 
 function updateIssueAwaitingSolve(issueRecurId,status) {
 	$(".issue-row[data-recurrence_issue='" + issueRecurId + "']").attr("data-awaitingsolve", status);
+}
+
+function updateModedIssueSolve(issueRecurId, status) {
+	$(".issue-row[data-recurrence_issue='" + issueRecurId + "']").attr("data-markedforclose", status);
 }
 
 function updateIssuesList(recurId, issueRow, orderby) {

@@ -1,3 +1,4 @@
+@import (reference) "../bootstrap/variables";
 
 .issueDetails .number-priority {
 	display: none;
@@ -192,6 +193,64 @@
 		position: relative;
 		width: 100%;
 	}
+
+
+	[data-awaitingsolve='true'],
+	[data-awaitingsolve='True'] {
+		line-height: 12px !important;
+		
+		.todoButton,
+		.vtoButton,
+		.number-priority,
+		.profile-picture {
+			display: none !important;
+		}
+
+		.message {
+			font-size: 13px;
+			padding-top: 0px;
+			padding-left: 70px;
+			color: #aaa;
+			min-height: 13px;
+		}
+		
+		&[data-markedforclose='true'],
+		&[data-markedforclose='True']{			
+			&:not([data-checked="true"]):not([data-checked="True"]):before{
+				content: "Solved";
+				background-color:fade(@brand-success,50%);
+			}
+		}
+
+		&:not([data-checked="true"]):not([data-checked="True"]):before {
+			content: "Moved";
+			position: absolute;
+			font-weight: bold;
+			left: 42px;
+			width: 64px;
+			height: 14px;
+			background-color: fade(@traction-orange,50%);
+			padding: 1px 0px;
+			text-align: center;
+			font-size: 10px;
+			color: white;
+			margin-top: 3px;
+			border-radius: 2px;
+		}
+
+		.issue-checkbox {
+			top: 0px !important;
+		}
+
+		.btn-group {
+			padding-top: 1px !important;
+		}
+
+		.issuesModal:before {
+			color: @traction-orange;
+			pointer-events:none;
+		}
+	}
 }
 
 .sortable {
@@ -236,7 +295,7 @@ ol.sortable li {
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
-		width: calc(100% - 166px);
+		width: ~"calc(100% - 166px)";
 		font-size: 18px;
 		min-height: 19px;
 	}
@@ -661,7 +720,7 @@ body.dragging, body.dragging * {
 	}
 
 	.issues-list .message {
-		width: calc(100% - 70px);
+		width: ~"calc(100% - 70px)";
 	}
 }
 
@@ -810,7 +869,6 @@ body.dragging, body.dragging * {
 		padding-right: 2px;
 		height: 24px;
 	}
-
 }
 
 

@@ -443,6 +443,18 @@ namespace RadialReview.Accessors {
 						}
 					}
 
+
+					var issuesToClose = s.QueryOver<IssueModel.IssueModel_Recurrence>()
+											.Where(x => x.DeleteTime == null && x.MarkedForClose && x.Recurrence.Id == recurrenceId)
+											.List().ToList();
+
+					foreach (var i in issuesToClose) {
+						i.CloseTime = now;
+						s.Update(i);
+					}
+						
+
+
 					meeting.CompleteTime = now;
 					meeting.TodoCompletion = todoRatio;
 
@@ -829,6 +841,9 @@ namespace RadialReview.Accessors {
 				.List().ToList();
 			foreach (var c in children) {
 				c.CloseTime = now;
+
+				//Needs updating for RealTime
+
 				s.Update(c);
 			}
 			_RecursiveCloseIssues(s, children.Select(x => x.Id).ToList(), now);
@@ -3695,8 +3710,6 @@ namespace RadialReview.Accessors {
 				added = true;
 			}
 
-
-
 			if (added != null) {
 				s.Update(issue);
 				var others = s.QueryOver<IssueModel.IssueModel_Recurrence>().Where(x => x.DeleteTime == null && x.Issue.Id == issue.Issue.Id).List().ToList();
@@ -3706,7 +3719,7 @@ namespace RadialReview.Accessors {
 						o.MarkedForClose = complete;
 						s.Update(o);
 					}
-					rt.UpdateRecurrences(o.Recurrence.Id).AddLowLevelAction(x => x.updateIssueCompletion(o.Id, complete));
+					rt.UpdateRecurrences(o.Recurrence.Id).AddLowLevelAction(x => x.updateModedIssueSolve(o.Id, complete));
 
 					var recur = new AngularRecurrence(o.Recurrence.Id);
 					recur.IssuesList.Issues = AngularList.CreateFrom(added.Value?AngularListType.Add:AngularListType.Remove, new AngularIssue(issue));

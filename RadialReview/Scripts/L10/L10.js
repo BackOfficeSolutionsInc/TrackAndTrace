@@ -84,6 +84,8 @@ function resetClickables() {
 			$(".agenda .agenda-items a").addClass("lockedPointer");
 		}
 	}
+
+	$(".timer-bar").hide();
 }
 
 function ms2Time(ms) {
@@ -123,7 +125,7 @@ function updateTime() {
 			$(".elapsed-time .minute").html(elapsed.hours * 60 + elapsed.minutes);
 			$(".elapsed-time .second").html(pad(elapsed.seconds, 2));
 			$(".elapsed-time").show();
-
+			$(".timer-bar").show();
 			updateTimebar(elapsed.totalMinutes);
 
 		} else {
@@ -157,6 +159,7 @@ function updateTimebar(elapsedMin) {
 
 		var percentage = Math.round(Math.min(1, Math.max(0.01, (elapsedMin) / expectedMeetingDuration)) * 100);
 		if (lastTimeBarPercentage != percentage) {
+			//$(".timer-bar").show();
 			$(".timer-bar").css("width", percentage + "%");
 			lastTimeBarPercentage = percentage;
 		}
@@ -240,6 +243,7 @@ function concludeMeeting() {
 	resetClickables();
 	delete startTime;// = undefined;
 	loadPage("stats");
+	$(".timer-bar").hide();
 }
 
 function setCurrentPage(pageName, startTime, baseMinutes) {

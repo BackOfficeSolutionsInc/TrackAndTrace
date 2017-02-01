@@ -14,6 +14,7 @@
     data-rank="@Model.Rank"
     data-rank-time="0"
 	data-awaitingsolve ="@Model.AwaitingSolve"
+	data-markedforclose ="@Model.MarkedForClose"
     @*data-padid="@Model.Issue.PadId"*@>
     <span class="undo-button">Undo</span>
     <input data-recurrence_issue="@Model.Id" class="issue-checkbox on-edit-enabled" type="checkbox" @(Model.CloseTime == null ? "" : "checked") />

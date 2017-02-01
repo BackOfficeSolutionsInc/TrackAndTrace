@@ -162,6 +162,64 @@
   position: relative;
   width: 100%;
 }
+.ids [data-awaitingsolve='true'],
+.ids [data-awaitingsolve='True'] {
+  line-height: 12px !important;
+}
+.ids [data-awaitingsolve='true'] .todoButton,
+.ids [data-awaitingsolve='True'] .todoButton,
+.ids [data-awaitingsolve='true'] .vtoButton,
+.ids [data-awaitingsolve='True'] .vtoButton,
+.ids [data-awaitingsolve='true'] .number-priority,
+.ids [data-awaitingsolve='True'] .number-priority,
+.ids [data-awaitingsolve='true'] .profile-picture,
+.ids [data-awaitingsolve='True'] .profile-picture {
+  display: none !important;
+}
+.ids [data-awaitingsolve='true'] .message,
+.ids [data-awaitingsolve='True'] .message {
+  font-size: 13px;
+  padding-top: 0px;
+  padding-left: 70px;
+  color: #aaa;
+  min-height: 13px;
+}
+.ids [data-awaitingsolve='true'][data-markedforclose='true']:not([data-checked="true"]):not([data-checked="True"]):before,
+.ids [data-awaitingsolve='True'][data-markedforclose='true']:not([data-checked="true"]):not([data-checked="True"]):before,
+.ids [data-awaitingsolve='true'][data-markedforclose='True']:not([data-checked="true"]):not([data-checked="True"]):before,
+.ids [data-awaitingsolve='True'][data-markedforclose='True']:not([data-checked="true"]):not([data-checked="True"]):before {
+  content: "Solved";
+  background-color: rgba(92, 184, 92, 0.5);
+}
+.ids [data-awaitingsolve='true']:not([data-checked="true"]):not([data-checked="True"]):before,
+.ids [data-awaitingsolve='True']:not([data-checked="true"]):not([data-checked="True"]):before {
+  content: "Moved";
+  position: absolute;
+  font-weight: bold;
+  left: 42px;
+  width: 64px;
+  height: 14px;
+  background-color: rgba(239, 118, 34, 0.5);
+  padding: 1px 0px;
+  text-align: center;
+  font-size: 10px;
+  color: white;
+  margin-top: 3px;
+  border-radius: 2px;
+}
+.ids [data-awaitingsolve='true'] .issue-checkbox,
+.ids [data-awaitingsolve='True'] .issue-checkbox {
+  top: 0px !important;
+}
+.ids [data-awaitingsolve='true'] .btn-group,
+.ids [data-awaitingsolve='True'] .btn-group {
+  padding-top: 1px !important;
+}
+.ids [data-awaitingsolve='true'] .issuesModal:before,
+.ids [data-awaitingsolve='True'] .issuesModal:before {
+  color: #EF7622;
+  pointer-events: none;
+}
 .sortable {
   margin: 0 0 9px 0;
   min-height: 10px;
@@ -200,7 +258,7 @@ ol.sortable li {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  width: calc(-66%);
+  width: calc(100% - 166px);
   font-size: 18px;
   min-height: 19px;
 }
@@ -535,7 +593,7 @@ body.dragging * {
   display: none;
 }
 .ids .issues-container.columns .issues-list .message {
-  width: calc(30%);
+  width: calc(100% - 70px);
 }
 .page-header small {
   white-space: nowrap;
