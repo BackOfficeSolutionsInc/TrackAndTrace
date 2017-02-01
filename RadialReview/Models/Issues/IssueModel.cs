@@ -114,6 +114,7 @@ namespace RadialReview.Models.Issues
 
             public virtual int Rank { get; set; }
 			public virtual bool AwaitingSolve { get; set; }
+			public virtual bool MarkedForClose { get; set; }
 
 			public IssueModel_Recurrence()
 			{
@@ -133,7 +134,9 @@ namespace RadialReview.Models.Issues
                     Map(x => x.Priority);
                     Map(x => x.Ordering);
 					Map(x => x.Rank);
+
 					Map(x => x.AwaitingSolve);
+					Map(x => x.MarkedForClose);
 
 
 					References(x => x.CreatedBy).Column("CreatedById");

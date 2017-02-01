@@ -3682,8 +3682,41 @@ namespace RadialReview.Accessors {
 			return _PopulateChildrenIssues(issues);
 		}
 
+		public static void _UpdateIssueCompletion_Unsafe(ISession s, RealTimeUtility rt, IssueModel.IssueModel_Recurrence issue,bool complete,DateTime? now = null) {
 
-		public static void UpdateIssue(UserOrganizationModel caller, long issueRecurrenceId, DateTime updateTime, string message = null, string details = null, bool? complete = null, string connectionId = null, long? owner = null, int? priority = null, int? rank = null, bool? delete = null) {
+			now = now ?? DateTime.UtcNow;
+
+			bool? added = null;
+			if (complete && issue.CloseTime == null) {
+				issue.CloseTime = now;
+				added = false;
+			} else if (!complete && issue.CloseTime != null) {
+				issue.CloseTime = null;
+				added = true;
+			}
+
+
+
+			if (added != null) {
+				s.Update(issue);
+				var others = s.QueryOver<IssueModel.IssueModel_Recurrence>().Where(x => x.DeleteTime == null && x.Issue.Id == issue.Issue.Id).List().ToList();
+
+				foreach (var o in others) {
+					if (o.Id != issue.Id) {
+						o.MarkedForClose = complete;
+						s.Update(o);
+					}
+					rt.UpdateRecurrences(o.Recurrence.Id).AddLowLevelAction(x => x.updateIssueCompletion(o.Id, complete));
+
+					var recur = new AngularRecurrence(o.Recurrence.Id);
+					recur.IssuesList.Issues = AngularList.CreateFrom(added.Value?AngularListType.Add:AngularListType.Remove, new AngularIssue(issue));
+					rt.UpdateRecurrences(o.Recurrence.Id).Update(recur);
+				}
+			}
+		}
+
+
+		public static void UpdateIssue(UserOrganizationModel caller, long issueRecurrenceId, DateTime updateTime, string message = null, string details = null, bool? complete = null, string connectionId = null, long? owner = null, int? priority = null, int? rank = null, bool? delete = null, bool? awaitingSolve = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					updateTime = Math2.Min(DateTime.UtcNow.AddSeconds(3), updateTime);
@@ -3736,28 +3769,7 @@ namespace RadialReview.Accessors {
 						issue.Rank = rank.Value;
 						group.updateIssueRank(issueRecurrenceId, issue.Rank, true);
 						updatesText.Add("Rank from " + old + " to " + issue.Rank);
-						s.Update(issue);
-						//if (rank.Value == 0) {
-						//    var current = _GetCurrentL10Meeting(s, perms, recurrenceId, true, false, false);
-						//    var q = s.QueryOver<IssueModel.IssueModel_Recurrence>();
-						//    if (current == null)
-						//        q = q.Where(x => x.CloseTime == null);
-						//    else
-						//        q = q.Where(x => x.CloseTime == null || x.CloseTime > current.StartTime);
-
-						//    var ranks = q.Where(x => x.Rank != 0).List().OrderBy(x => x.Rank).ToList();
-						//    var last = 0;
-
-						//    foreach (var r in ranks) {
-						//        var cur = r.Rank;
-						//        if (cur != last + 1) {
-						//            r.Rank = last + 1;
-						//            cur = last + 1;
-						//            s.Update(r);
-						//        }
-						//        last = cur;
-						//    }
-						//}
+						s.Update(issue);						
 					}
 
 
@@ -3765,16 +3777,24 @@ namespace RadialReview.Accessors {
 
 					var now = DateTime.UtcNow;
 					if (complete != null) {
+						using (var rt = RealTimeUtility.Create()) {
+							_UpdateIssueCompletion_Unsafe(s, rt,issue,complete.Value,now);
+						}
 						if (complete.Value && issue.CloseTime == null) {
-							issue.CloseTime = now;
 							updatesText.Add("Marked Closed");
 						} else if (!complete.Value && issue.CloseTime != null) {
-							issue.CloseTime = null;
 							updatesText.Add("Marked Open");
 						}
-						group.updateIssueCompletion(issueRecurrenceId, complete);
 					}
 
+
+					if (awaitingSolve != null && awaitingSolve != issue.AwaitingSolve) {
+						issue.AwaitingSolve= awaitingSolve.Value;
+						s.Update(issue);
+
+						group.updateIssueAwaitingSolve(issue.Id, awaitingSolve.Value);
+
+					}
 					group.update(new AngularUpdate() { new AngularIssue(issue) });
 
 
@@ -3794,12 +3814,8 @@ namespace RadialReview.Accessors {
 				throw new PermissionsException("You cannot edit this meeting.");
 			if (issue.CloseTime != null)
 				throw new PermissionsException("Issue already deleted.");
-			issue.CloseTime = DateTime.UtcNow;
-			s.Update(issue);
 
-			var recur = new AngularRecurrence(recurrenceId);
-			recur.IssuesList.Issues = AngularList.CreateFrom(AngularListType.Remove, new AngularIssue(issue));
-			rt.UpdateRecurrences(recurrenceId).Update(recur);
+			_UpdateIssueCompletion_Unsafe(s, rt, issue, true);		
 		}
 		public static void UpdateIssues(UserOrganizationModel caller, long recurrenceId, /*IssuesDataList*/L10Controller.IssuesListVm model) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -3879,7 +3895,6 @@ namespace RadialReview.Accessors {
 					var perm = PermissionsUtility.Create(s, caller);
 					var recurIssue = s.Get<IssueModel.IssueModel_Recurrence>(issue_recurrence);
 
-
 					perm.EditL10Recurrence(recurIssue.Recurrence.Id);
 
 					recurIssue.DeleteTime = DateTime.UtcNow;
@@ -3940,9 +3955,6 @@ namespace RadialReview.Accessors {
 						var recur = s.Get<L10Recurrence>(vto.L10Recurrence.Value);
 
 						issueRecur = issue.IssueRecurrenceModel;
-						//var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-						//var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(issueRecur.Recurrence.Id));
-						//meetingHub.appendIssue(".issues-list", IssuesData.FromIssueRecurrence(issueRecur), recur.OrderIssueBy);
 					}
 					//Remove from vto
 					var vtoHub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
