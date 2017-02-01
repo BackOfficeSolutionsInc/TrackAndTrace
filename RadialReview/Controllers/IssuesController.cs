@@ -62,7 +62,8 @@ namespace RadialReview.Controllers {
             };
             return PartialView("CreateIssueModal", model);
         }
-        [HttpPost]
+
+		[HttpPost]
         [Access(AccessLevel.UserOrganization)]
         public async Task<JsonResult> IssueFromTodo(IssueVM model) {
             ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.RecurrenceId, x => x.ForId);
@@ -111,7 +112,7 @@ namespace RadialReview.Controllers {
                 Details = details,//i.Issue.Description,
                 ParentIssue_RecurrenceId = i.Id,
                 CopyIntoRecurrenceId = copyto.Value,
-                PossibleRecurrences = L10Accessor.GetAllL10RecurrenceAtOrganization(GetUser(), GetUser().Organization.Id)
+                PossibleRecurrences = L10Accessor.GetAllConnectedL10Recurrence(GetUser(), i.Recurrence.Id)
             };
             return PartialView("CopyIssueModal", model);
         }
@@ -119,10 +120,10 @@ namespace RadialReview.Controllers {
         [Access(AccessLevel.UserOrganization)]
         public JsonResult CopyModal(CopyIssueVM model) {
             ValidateValues(model, x => x.ParentIssue_RecurrenceId, x => x.IssueId);
-            IssuesAccessor.CopyIssue(GetUser(), model.ParentIssue_RecurrenceId, model.CopyIntoRecurrenceId);
-            model.PossibleRecurrences = L10Accessor.GetAllL10RecurrenceAtOrganization(GetUser(), GetUser().Organization.Id);
+            var issue = IssuesAccessor.CopyIssue(GetUser(), model.ParentIssue_RecurrenceId, model.CopyIntoRecurrenceId);
+            model.PossibleRecurrences = L10Accessor.GetAllConnectedL10Recurrence(GetUser(), issue.Recurrence.Id);
 
-            L10Accessor.UpdateIssue(GetUser(), model.ParentIssue_RecurrenceId, DateTime.UtcNow, complete: true, connectionId: "");
+            L10Accessor.UpdateIssue(GetUser(), model.ParentIssue_RecurrenceId, DateTime.UtcNow, awaitingSolve: true, connectionId: "");
             return Json(ResultObject.SilentSuccess().NoRefresh());
         }
 

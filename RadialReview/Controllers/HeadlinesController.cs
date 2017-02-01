@@ -102,5 +102,46 @@ namespace RadialReview.Controllers
 			}
 			return Json(ResultObject.SilentSuccess());
 		}
+
+		public class CopyHeadlineVM {
+			public long HeadlineId { get; set; }
+			public long CopyIntoRecurrenceId { get; set; }
+
+			public List<L10Recurrence> PossibleRecurrences { get; set; }
+
+			public String Message { get; set; }
+			public string Details { get; set; }
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<PartialViewResult> CopyModal(long headlineid, long? copyto = null) {
+			var i = HeadlineAccessor.GetHeadline(GetUser(), headlineid);
+
+			copyto = copyto ?? i.RecurrenceId;
+			var details = "";
+			try {
+				details = await PadAccessor.GetText(i.HeadlinePadId);
+			} catch (Exception e) {
+			}
+
+			var model = new CopyHeadlineVM() {
+				HeadlineId = i.Id,
+				Message = i.Message,
+				Details = details,				
+				CopyIntoRecurrenceId = copyto.Value,
+				PossibleRecurrences = L10Accessor.GetAllConnectedL10Recurrence(GetUser(), i.RecurrenceId)
+			};
+			return PartialView("CopyHeadline", model);
+		}
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> CopyModal(CopyHeadlineVM model) {
+			var copied = await HeadlineAccessor.CopyHeadline(GetUser(), model.HeadlineId, model.CopyIntoRecurrenceId);
+			model.PossibleRecurrences = L10Accessor.GetAllConnectedL10Recurrence(GetUser(), copied.RecurrenceId);
+
+			//L10Accessor.UpdateHeadline(GetUser(), model.ParentIssue_RecurrenceId, DateTime.UtcNow, complete: true, connectionId: "");
+			return Json(ResultObject.Success("Copied People Headline").NoRefresh());
+		}
+
 	}
 }

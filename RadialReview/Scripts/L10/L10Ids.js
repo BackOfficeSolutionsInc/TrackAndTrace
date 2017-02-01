@@ -433,7 +433,7 @@ function constructRow(issue) {
 	if (issue.details)
 		details = issue.details;
 
-	return '<li class="issue-row dd-item arrowkey undoable-stripped"  data-createtime="' + issue.createtime + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-issue="' + issue.issue + '" data-checked="' + issue.checked + '"  data-message="' + issue.message + '"  data-details="' + issue.details + '"  data-owner="' + issue.owner + '" data-accountable="' + issue.accountable + '"  data-priority="' + issue.priority + '"  data-rank="' + issue.rank + '">\n'
+	return '<li class="issue-row dd-item arrowkey undoable-stripped"  data-createtime="' + issue.createtime + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-issue="' + issue.issue + '" data-checked="' + issue.checked + '"  data-message="' + issue.message + '"  data-details="' + issue.details + '"  data-owner="' + issue.owner + '" data-accountable="' + issue.accountable + '"  data-priority="' + issue.priority + '"  data-rank="' + issue.rank + '" data-awaitingsolve="'+issue.awaitingsolve+'">\n'
         + '<span class="undo-button">Undo</span>'
         + '<input data-recurrence_issue="' + issue.recurrence_issue + '" class="issue-checkbox" type="checkbox" ' + (issue.checked ? "checked" : "") + '/>\n'
 		+ '<div class="move-icon noselect dd-handle">\n'
@@ -510,6 +510,10 @@ function getIssueOrder() {
 	return output;
 }
 
+function updateIssueAwaitingSolve(issueRecurId,status) {
+	$(".issue-row[data-recurrence_issue='" + issueRecurId + "']").attr("data-awaitingsolve", status);
+}
+
 function updateIssuesList(recurId, issueRow, orderby) {
 	var order = getIssueOrder();
 	var d = { issues: order, connectionId: $.connection.hub.id, orderby: orderby };
@@ -542,9 +546,7 @@ function updateIssuesList(recurId, issueRow, orderby) {
 	});
 }
 
-
 function refreshPriority(priorityDom) {
-
 	var p = $(priorityDom).data("priority");
 	$(priorityDom).removeClass("multiple");
 	$(priorityDom).removeClass("none");
@@ -575,8 +577,6 @@ function refreshPriority(priorityDom) {
 }
 
 function refreshCurrentIssueDetails() {
-
-
 	console.log("called refreshCurrentIssueDetails")
 	if ($(window).width() > modalWidth) {
 		$(".issue-row[data-recurrence_issue=" + currentIssuesDetailsId + "]")
@@ -584,12 +584,9 @@ function refreshCurrentIssueDetails() {
 			.trigger("click");
 	}
 	$(".issue-row[data-recurrence_issue=" + currentIssuesDetailsId + "]").addClass("selected");
-
-
 	$(".issues-list > .issue-row:not(.undoable):not([data-checked='True']):not([data-checked='true']):not(.skipNumber) > .number-priority > .number").each(function (i) {
 		$(this).html(i + 1);
 	});
-
 	$(".issues-list > .issue-row > .number-priority > .priority").each(function (i) {
 		refreshPriority(this);
 	});

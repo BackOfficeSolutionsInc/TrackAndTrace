@@ -18,6 +18,12 @@
 			<span class="inner icon fontastic-icon-primitive-square"></span>
 		</div>*@
 	<div class="btn-group pull-right">
+		<span class='issuesButton icon fontastic-icon-forward-1  @((ViewBag.CanEdit??true)?"headlineModal":"disabled")' style="padding-right: 5px"
+			  title="Send to another L10"
+			  data-copyto="@Model.RecurrenceId"
+			  data-headlineid="@Model.Id"
+			  data-title="Copy Headline"
+			  data-method='copymodal'></span>
 		<span class="icon fontastic-icon-pinboard issuesModal issuesButton"
 			  data-method="CreateHeadlineIssue"
 			  data-headline="@Model.Id"

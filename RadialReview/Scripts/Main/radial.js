@@ -1401,10 +1401,12 @@ function showAlert(message, alertType, preface, duration) {
 	$("#alerts").prepend(alert);
 	setTimeout(function () { alert.removeClass("start"); }, 1);
 
-	if (typeof (duration) === "number")
-		setTimeout(function () {
-			$(alert).remove();
-		}, duration);
+	if (typeof (duration) !== "number") {
+		duration = 3000;
+	}
+	setTimeout(function () {
+		$(alert).remove();
+	}, duration);
 }
 
 var alertsTimer = null;

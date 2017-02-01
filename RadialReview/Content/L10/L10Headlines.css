@@ -64,7 +64,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 70%;
-  width: calc(100% - 122px);
+  width: calc(100% - 140px);
   font-size: 18px;
   min-height: 19px;
 }

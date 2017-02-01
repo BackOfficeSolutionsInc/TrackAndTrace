@@ -981,6 +981,9 @@
     <Content Include="Content\L10\L10Headlines.min.css">
       <DependentUpon>L10Headlines.css</DependentUpon>
     </Content>
+    <Content Include="Content\L10\L10IDS.V2.css">
+      <DependentUpon>L10IDS.V2.less</DependentUpon>
+    </Content>
     <Content Include="Content\Manage\Manage.css">
       <DependentUpon>Manage.less</DependentUpon>
     </Content>
@@ -1164,6 +1167,7 @@
     <Content Include="Content\Reports\ReportDetails.less" />
     <Content Include="Content\Reports\ClientDetails.less" />
     <Content Include="Content\VTO\VTO.less" />
+    <Content Include="Content\L10\L10IDS.V2.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1598,7 +1602,7 @@
     <Content Include="Content\fonts\fontastic.woff">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\L10\l10IDS.v2.css" />
+    <Content Include="Content\L10\l10IDS.v2.old.css" />
     <Content Include="Content\L10\L10Rocks.css" />
     <Content Include="Content\L10\L10Todo.css" />
     <Content Include="Scripts\L10\jquery-ui.color.js" />
@@ -2087,6 +2091,7 @@
     <Content Include="Views\Responsibilities\EditSection.cshtml" />
     <Content Include="Views\Review\Details\BarCharts.cshtml" />
     <Content Include="Views\Admin\UserInfo.cshtml" />
+    <Content Include="Views\Headlines\CopyHeadline.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

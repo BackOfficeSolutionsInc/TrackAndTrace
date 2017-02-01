@@ -150,5 +150,67 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+
+		public static async Task<PeopleHeadline> CopyHeadline(UserOrganizationModel caller, long headlineId, long childRecurrenceId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var now = DateTime.UtcNow;
+
+					var parent = s.Get<PeopleHeadline>(headlineId);
+
+					var perms =PermissionsUtility.Create(s, caller)
+						.ViewL10Recurrence(parent.RecurrenceId)
+						.ViewHeadline(parent.Id);
+
+					var  parentMeeting= L10Accessor._GetCurrentL10Meeting(s, perms, parent.RecurrenceId, true, false, false);
+
+					var childRecur = s.Get<L10Recurrence>(childRecurrenceId);
+
+					if (childRecur.Organization.Id != caller.Organization.Id)
+						throw new PermissionsException("You cannot copy an issue into this meeting.");
+					if (parent.DeleteTime != null)
+						throw new PermissionsException("Issue does not exist.");
+
+					var possible = L10Accessor._GetAllConnectedL10Recurrence(s, caller, parent.RecurrenceId);
+					if (possible.All(x => x.Id != childRecurrenceId)) {
+						throw new PermissionsException("You do not have permission to copy this issue.");
+					}
+
+					var details = await PadAccessor.GetText(parent.HeadlinePadId);
+
+					var newHeadline = new PeopleHeadline() {
+						About = parent.About,
+						AboutId = parent.AboutId,
+						AboutName = parent.AboutName,
+						CloseDuringMeetingId = null,
+						CloseTime = null,
+						CreatedDuringMeetingId = parentMeeting.NotNull(x=>x.Id),
+						Message = parent.Message,
+						_Details = details,
+						OrganizationId = childRecur.OrganizationId,
+						Owner =parent.Owner,
+						OwnerId = parent.OwnerId,
+						RecurrenceId = childRecur.Id,						
+						CreateTime = now,
+						CreatedBy = caller.Id,						
+					};
+
+					await CreateHeadline(s, perms, newHeadline);
+					
+					Audit.L10Log(s, caller, parent.RecurrenceId, "CopyHeadline", ForModel.Create(newHeadline), newHeadline.NotNull(x => x.Message) + " copied " + childRecur.NotNull(x => "into"+ x.Name));
+
+
+					tx.Commit();
+					s.Flush();
+
+					return newHeadline;
+					//var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+					//var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(childRecurrenceId));
+
+					//meetingHub.appendIssue(".issues-list", viewModel);
+					//var issue = s.Get<IssueModel>(parent.Issue.Id);
+				}
+			}
+		}
 	}
 }

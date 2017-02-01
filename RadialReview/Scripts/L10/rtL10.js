@@ -104,6 +104,8 @@ $(function () {
 	meetingHub.client.disableItem = disableItem;
 	meetingHub.client.updateCumulative = updateCumulative;
 
+	meetingHub.client.updateIssueAwaitingSolve = updateIssueAwaitingSolve;
+
 	console.log("StartingHub ");
 
 	$.connection.hub.start(Constants.StartHubSettings).done(initConnection);

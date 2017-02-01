@@ -29,10 +29,10 @@
 
 		constructor() {
 			this.top = 10;
-			this.bottom = 30;
-			this.left = 30;
+			this.bottom = 30; 
+			this.left = 30; 
 			this.right = 30;
-		}
+		} 
 
 	}
 

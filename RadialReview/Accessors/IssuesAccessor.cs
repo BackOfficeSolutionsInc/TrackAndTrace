@@ -219,16 +219,12 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-
-
-
-		public static void CopyIssue(UserOrganizationModel caller, long parentIssue_RecurrenceId, long childRecurrenceId) {
+		public static IssueModel.IssueModel_Recurrence CopyIssue(UserOrganizationModel caller, long parentIssue_RecurrenceId, long childRecurrenceId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var now = DateTime.UtcNow;
 
 					var parent = s.Get<IssueModel.IssueModel_Recurrence>(parentIssue_RecurrenceId);
-
 
 					PermissionsUtility.Create(s, caller)
 						.ViewL10Recurrence(parent.Recurrence.Id)
@@ -238,23 +234,13 @@ namespace RadialReview.Accessors {
 
 					if (childRecur.Organization.Id != caller.Organization.Id)
 						throw new PermissionsException("You cannot copy an issue into this meeting.");
-
-					/*var parent = s.QueryOver<IssueModel.IssueModel_Recurrence>()
-                        .Where(x => x.DeleteTime == null && x.Issue.Id == issueId && x.Recurrence.Id == parentRecurrenceId)
-                        .SingleOrDefault();*/
-
 					if (parent.DeleteTime != null)
 						throw new PermissionsException("Issue does not exist.");
 
-					//var issue = s.Get<IssueModel>(issueId);
-					//var parentRecurrence = s.Get<L10Recurrence>(parentRecurrenceId);
-
 					var possible = L10Accessor._GetAllL10RecurrenceAtOrganization(s, caller, caller.Organization.Id);
-
 					if (possible.All(x => x.Id != childRecurrenceId)) {
 						throw new PermissionsException("You do not have permission to copy this issue.");
 					}
-
 
 					var issue_recur = new IssueModel.IssueModel_Recurrence() {
 						ParentRecurrenceIssue = null,
@@ -277,7 +263,7 @@ namespace RadialReview.Accessors {
 					meetingHub.appendIssue(".issues-list", viewModel);
 					var issue = s.Get<IssueModel>(parent.Issue.Id);
 					Audit.L10Log(s, caller, parent.Recurrence.Id, "CopyIssue", ForModel.Create(issue_recur), issue.NotNull(x => x.Message) + " copied into " + childRecur.NotNull(x => x.Name));
-
+					return issue_recur;
 				}
 			}
 		}

@@ -22,25 +22,27 @@ namespace RadialReview.Models.L10.VM
         public long? createdDuringMeetingId { get; set; }
         public int priority { get; set; }
         public int rank { get; set; }
+		public bool awaitingsolve { get; set; }
 
-		public static IssuesData FromIssueRecurrence(IssueModel.IssueModel_Recurrence recur)
+		public static IssuesData FromIssueRecurrence(IssueModel.IssueModel_Recurrence issueRecur)
 		{
 			var issue = new IssuesData(){
-                priority = recur.Priority,
-				@checked = recur.CloseTime != null,
-				createtime = recur.CreateTime.NotNull(x=>x.ToJavascriptMilliseconds()),
-				details = recur.Issue.Description,
-				message = recur.Issue.Message,
-				recurrence_issue = recur.Id,
-				issue = recur.Issue.Id,
+                priority = issueRecur.Priority,
+				@checked = issueRecur.CloseTime != null,
+				createtime = issueRecur.CreateTime.NotNull(x=>x.ToJavascriptMilliseconds()),
+				details = issueRecur.Issue.Description,
+				message = issueRecur.Issue.Message,
+				recurrence_issue = issueRecur.Id,
+				issue = issueRecur.Issue.Id,
 				//padid = recur.Issue.PadId,
-				owner = recur.Owner.NotNull(x => x.GetName()),
-				imageUrl	= recur.Owner.NotNull(x=>x.ImageUrl(true,ImageSize._64))??"/i/placeholder",
-				createdDuringMeetingId = recur.Issue.CreatedDuringMeetingId,
-                rank = recur.Rank
+				owner = issueRecur.Owner.NotNull(x => x.GetName()),
+				imageUrl	= issueRecur.Owner.NotNull(x=>x.ImageUrl(true,ImageSize._64))??"/i/placeholder",
+				createdDuringMeetingId = issueRecur.Issue.CreatedDuringMeetingId,
+                rank = issueRecur.Rank,
+				awaitingsolve = issueRecur.AwaitingSolve
 			};
-			if (recur.Owner!=null){
-				issue.accountable = recur.Owner.Id;
+			if (issueRecur.Owner!=null){
+				issue.accountable = issueRecur.Owner.Id;
 			}
 			return issue;
 		}

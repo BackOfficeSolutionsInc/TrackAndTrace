@@ -82,5 +82,9 @@
   {
     "outputFile": "Content/VTO/VTO.css",
     "inputFile": "Content/VTO/VTO.less"
+  },
+  {
+    "outputFile": "Content/L10/L10IDS.V2.css",
+    "inputFile": "Content/L10/L10IDS.V2.less"
   }
 ]

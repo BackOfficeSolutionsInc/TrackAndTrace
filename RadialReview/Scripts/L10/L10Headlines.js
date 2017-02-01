@@ -65,8 +65,9 @@ var clickHeadlineRow = function (evt) {
 			"<span class='btn-group pull-right'>" +
 			"</span>" +
 			"<span class='expandContract btn-group'>" +
-			"<span class='btn btn-default btn-xs issuesModal' data-method='CreateHeadlineIssue'   data-headline='" + headline + "' data-recurrence='" + window.recurrenceId + "' data-meeting='" + window.meetingId + "' title='Create a Context-Aware Issue™'><span class='icon fontastic-icon-pinboard'></span> New Issue</span>" +
-			"<span class='btn btn-default btn-xs todoModal' data-method='CreateTodoFromHeadline'  data-headline='" + headline + "' data-recurrence='" + window.recurrenceId + "' data-meeting='" + window.meetingId + "' title='Create a Context-Aware To-do™'><span class='glyphicon glyphicon-unchecked'></span> New To-do</span>" +
+			"<span class='btn btn-default btn-xs issuesModal on-edit-enabled' data-method='CreateHeadlineIssue'   data-headline='" + headline + "' data-recurrence='" + window.recurrenceId + "' data-meeting='" + window.meetingId + "' title='Create a Context-Aware Issue™'><span class='icon fontastic-icon-pinboard'></span> New Issue</span>" +
+			"<span class='btn btn-default btn-xs todoModal on-edit-enabled' data-method='CreateTodoFromHeadline'  data-headline='" + headline + "' data-recurrence='" + window.recurrenceId + "' data-meeting='" + window.meetingId + "' title='Create a Context-Aware To-do™'><span class='glyphicon glyphicon-unchecked'></span> New To-do</span>" +
+			"<span class='btn btn-default btn-xs headlineModal on-edit-enabled' data-method='copymodal'   data-headlineid='" + headline + "' data-copyto='" + window.recurrenceId + "' data-meeting='" + window.meetingId + "' title='Copy Headline'><span class='icon fontastic-icon-forward-1'></span> Copy to</span>" +
 			"</span>" +
 			"</div>" +
 			"<span class='clearfix'></span>" +
@@ -186,6 +187,12 @@ function constructHeadlineRow(headline) {
 		'data-aboutname="' + escapeString(Model.About.Name) + '"' +
 		'data-aboutimage="' + Model.About.ImageUrl + '">' +
 		'<div class="btn-group pull-right">     ' +
+		'<span class="issuesButton icon fontastic-icon-forward-1 headlineModal" style="padding-right: 5px"'+
+			  'title="Send to another L10"'+
+			  'data-copyto="' + Model.RecurrenceId + '"' +
+			  'data-headlineid="' + Model.Id + '"' +
+			  'data-title="Copy Headline"'+
+			  'data-method="copymodal"></span> '+
 			'<span class="icon fontastic-icon-pinboard issuesModal issuesButton"' +
 				'data-method="CreateHeadlineIssue"' +
 				'data-headline="' + Model.Id + '"' +

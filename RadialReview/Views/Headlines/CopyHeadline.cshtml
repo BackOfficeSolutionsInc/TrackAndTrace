@@ -1,0 +1,15 @@
+﻿@model RadialReview.Controllers.HeadlinesController.CopyHeadlineVM
+
+@Html.HiddenFor(x => x.HeadlineId)
+
+<div style="padding: 0px 15px;margin:5px;background-color:#FCFCFC;border:1px solid #ccc;">
+	<h4>@Model.Message</h4>
+	<h5 style="white-space: pre">@Model.Details</h5>
+</div>
+
+<div class="form-group">
+	<label>Copy into:</label>
+	@Html.DropDownListFor(x => x.CopyIntoRecurrenceId, Model.PossibleRecurrences.ToSelectList(x => x.Name, x => x.Id), new {
+	@class = "form-control"
+})
+</div>
