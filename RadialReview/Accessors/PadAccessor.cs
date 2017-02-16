@@ -67,8 +67,18 @@ namespace RadialReview.Accessors
 				}
 			} catch (Exception e) {
 				log.Error("Error PadAccessor.GetReadOnlyID", e);
-				return "r.0a198a5362822f17b4690e5e66a6fba3"; // https://notes.traction.tools/p/undefined-1657717875444
+				return "r.0a198a5362822f17b4690e5e66a6fba3"; //readonly pad for https://notes.traction.tools/p/undefined-1657717875444
 			}
+		}
+
+		public static async Task<Dictionary<string, HtmlString>> GetHtmls(List<string> padIds) {			
+			var results = await Task.WhenAll(padIds.Distinct().Select(x => _GetHtml(x)));
+			return results.ToDictionary(x => x.Item1, x => x.Item2);
+		}
+
+		private static async Task<Tuple<string,HtmlString>> _GetHtml(string padid) {
+			var result = await GetHtml(padid);
+			return Tuple.Create(padid, result);
 		}
 
 		public static async Task<HtmlString> GetHtml(string padid)

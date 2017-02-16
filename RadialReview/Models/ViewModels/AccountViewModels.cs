@@ -99,6 +99,8 @@ namespace RadialReview.Models
 
         public string ReturnUrl { get; set; }
 
-	    public string OrganizationName { get; set; }
-    }
+		public string OrganizationName { get; set; }
+
+		public string ProfileImageUrl { get; set; }
+	}
 }

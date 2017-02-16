@@ -119,18 +119,23 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.UserOrganization)]
         public string Delete()
         {
-            return "Are you sure you want to delete this meeting?";
+            return "You are about to delete this meeting. Are you sure you want to continue?";
         }
 
-        [HttpPost]
-        [Access(AccessLevel.UserOrganization)]
-        public JsonResult Delete(long id)
-        {
-            L10Accessor.DeleteL10(GetUser(), id);
-            return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
-        }
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult Delete(long id) {
+			L10Accessor.DeleteL10(GetUser(), id);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
 
-        private L10EditVM AddExtras(long recurrenceId, L10EditVM model)
+		[Access(AccessLevel.Radial)]
+		public JsonResult Undelete(long id) {
+			L10Accessor.UndeleteL10(GetUser(), id);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+
+		private L10EditVM AddExtras(long recurrenceId, L10EditVM model)
         {
             var allMeasurables = ScorecardAccessor.GetVisibleMeasurables(GetUser(), GetUser().Organization.Id, true);
             var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);

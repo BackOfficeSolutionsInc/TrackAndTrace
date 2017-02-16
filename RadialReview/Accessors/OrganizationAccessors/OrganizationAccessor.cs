@@ -285,6 +285,9 @@ namespace RadialReview.Accessors {
 					newArray.Add(userOrg.Id);
 					user.UserOrganizationIds = newArray.ToArray();
 
+					if (user.ImageGuid == null && userOrg.TempUser.ImageGuid != null)
+						user.ImageGuid = userOrg.TempUser.ImageGuid;
+
 					db.Delete(userOrg.TempUser);
 
 					if (user.SendTodoTime == -1) {

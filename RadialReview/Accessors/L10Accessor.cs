@@ -452,7 +452,7 @@ namespace RadialReview.Accessors {
 						i.CloseTime = now;
 						s.Update(i);
 					}
-						
+
 
 
 					meeting.CompleteTime = now;
@@ -470,7 +470,7 @@ namespace RadialReview.Accessors {
 						.IsIn(ids)
 						.List().ToList();
 					foreach (var a in attendees) {
-						a.Rating = ratingValues.FirstOrDefault(x => x.Item1 == a.User.Id).NotNull(x => x.Item2);
+						a.Rating = ratingValues.FirstOrDefault(x => x.Item1 == a.UserId).NotNull(x => x.Item2);
 						s.Update(a);
 					}
 					//End all logs 
@@ -498,25 +498,60 @@ namespace RadialReview.Accessors {
 					//send emails
 					if (sendEmail) {
 						try {
+
+
 							var todoList = s.QueryOver<TodoModel>().Where(x =>
 								x.DeleteTime == null &&
 								x.ForRecurrenceId == recurrenceId &&
 								x.CompleteTime == null
 								).List().ToList();
-							var issueTable = await IssuesAccessor.BuildIssuesSolvedTable(issue_recurParents.ToList(), "Issues Solved", recurrenceId);
-							foreach (var personTodos in todoList.GroupBy(x => x.AccountableUser.GetEmail())) {
-								var user = personTodos.First().AccountableUser;
-								var email = user.GetEmail();
 
-								var todoTable = await TodoAccessor.BuildTodoTable(personTodos.ToList());
+							//All awaitables 
+
+							var issuesForTable = issue_recurParents.Where(x => !x.AwaitingSolve);
+							var pads = issuesForTable.Select(x => x.Issue.PadId).ToList();
+							pads.AddRange(todoList.Select(x => x.PadId));
+							var padTexts = await PadAccessor.GetHtmls(pads);
+
+							/////
+
+
+							var issueTable = await IssuesAccessor.BuildIssuesSolvedTable(issuesForTable.ToList(), "Issues Solved", recurrenceId, true, padTexts);
+							var todosTable = new DefaultDictionary<long, string>(x => "");
+
+							var allUserIds = todoList.Select(x => x.AccountableUserId).ToList();
+							allUserIds.AddRange(attendees.Select(x => x.User.Id));
+							allUserIds = allUserIds.Distinct().ToList();
+							var allUsers = s.QueryOver<UserOrganizationModel>().WhereRestrictionOn(x => x.Id).IsIn(allUserIds).List().ToList();
+
+							var auLu = new DefaultDictionary<long, UserOrganizationModel>(x => null);
+							foreach (var u in allUsers) {
+								auLu[u.Id] = u;
+							}
+
+							foreach (var personTodos in todoList.GroupBy(x => x.AccountableUserId)) {
+								var user = auLu[personTodos.First().AccountableUserId];
+								//var email = user.GetEmail();
+
+								var todoTable = await TodoAccessor.BuildTodoTable(personTodos.ToList(), "Outstanding To-dos", true, padLookup: padTexts);
 
 								var output = new StringBuilder();
 
 								output.Append(todoTable.ToString());
 								output.Append("<br/>");
+
+								todosTable[user.Id] = output.ToString();
+
+							}
+
+							foreach (var userAttendee in attendees) {
+								var output = new StringBuilder();
+								var user = auLu[userAttendee.User.Id];
+								var email = user.GetEmail();
+
+								output.Append(todosTable[user.Id]);
+
 								output.Append(issueTable.ToString());
-
-
 								var mail = Mail.To(EmailTypes.L10Summary, email)
 									.Subject(EmailStrings.MeetingSummary_Subject, recurrence.Name)
 									.Body(EmailStrings.MeetingSummary_Body, user.GetName(), output.ToString(), Config.ProductName(meeting.Organization));
@@ -1448,6 +1483,23 @@ namespace RadialReview.Accessors {
 					EventUtil.Trigger(x => x.Create(s, EventType.DeleteMeeting, caller, r, message: r.Name + "(Deleted)"));
 
 					Audit.L10Log(s, caller, recurrenceId, "DeleteL10", ForModel.Create(r), r.Name);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+		public static void UndeleteL10(UserOrganizationModel caller, long recurrenceId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					PermissionsUtility.Create(s, caller).AdminL10Recurrence(recurrenceId);
+					var r = s.Get<L10Recurrence>(recurrenceId);
+					r.DeleteTime = null;
+
+					s.Update(r);
+
+					EventUtil.Trigger(x => x.Create(s, EventType.UndeleteMeeting, caller, r, message: r.Name + "(Undeleted)"));
+
+					Audit.L10Log(s, caller, recurrenceId, "UndeleteL10", ForModel.Create(r), r.Name);
 					tx.Commit();
 					s.Flush();
 				}
@@ -3285,7 +3337,15 @@ namespace RadialReview.Accessors {
 			else {
 				todoList = todoList.Where(x => x.CloseTime == null || x.CloseTime > everythingAfter);//todoList.Where(x => x.CompleteTime == null || x.CompleteTime > everythingAfter);
 			}
-			return todoList.Fetch(x => x.AccountableUser).Eager.List().ToList();
+			var output = todoList.Fetch(x => x.AccountableUser).Eager.List().ToList();
+			//var users = s.QueryOver<UserOrganizationModel>().WhereRestrictionOn(x => x.Id).IsIn(output.Select(x => x.AccountableUserId).Distinct().ToArray()).List().ToList();
+
+			//foreach (var o in output) {
+			//	o.AccountableUser = users.First(x=>x.Id==o.AccountableUserId
+			//}
+			return output;
+
+
 		}
 		public static MeasurableModel TodoMeasurable = new MeasurableModel() {
 			Id = -10001,
@@ -3697,7 +3757,7 @@ namespace RadialReview.Accessors {
 			return _PopulateChildrenIssues(issues);
 		}
 
-		public static void _UpdateIssueCompletion_Unsafe(ISession s, RealTimeUtility rt, IssueModel.IssueModel_Recurrence issue,bool complete,DateTime? now = null) {
+		public static void _UpdateIssueCompletion_Unsafe(ISession s, RealTimeUtility rt, IssueModel.IssueModel_Recurrence issue, bool complete, DateTime? now = null) {
 
 			now = now ?? DateTime.UtcNow;
 
@@ -3722,7 +3782,7 @@ namespace RadialReview.Accessors {
 					rt.UpdateRecurrences(o.Recurrence.Id).AddLowLevelAction(x => x.updateModedIssueSolve(o.Id, complete));
 
 					var recur = new AngularRecurrence(o.Recurrence.Id);
-					recur.IssuesList.Issues = AngularList.CreateFrom(added.Value?AngularListType.Add:AngularListType.Remove, new AngularIssue(issue));
+					recur.IssuesList.Issues = AngularList.CreateFrom(added.Value ? AngularListType.Add : AngularListType.Remove, new AngularIssue(issue));
 					rt.UpdateRecurrences(o.Recurrence.Id).Update(recur);
 				}
 			}
@@ -3782,7 +3842,7 @@ namespace RadialReview.Accessors {
 						issue.Rank = rank.Value;
 						group.updateIssueRank(issueRecurrenceId, issue.Rank, true);
 						updatesText.Add("Rank from " + old + " to " + issue.Rank);
-						s.Update(issue);						
+						s.Update(issue);
 					}
 
 
@@ -3791,7 +3851,7 @@ namespace RadialReview.Accessors {
 					var now = DateTime.UtcNow;
 					if (complete != null) {
 						using (var rt = RealTimeUtility.Create()) {
-							_UpdateIssueCompletion_Unsafe(s, rt,issue,complete.Value,now);
+							_UpdateIssueCompletion_Unsafe(s, rt, issue, complete.Value, now);
 						}
 						if (complete.Value && issue.CloseTime == null) {
 							updatesText.Add("Marked Closed");
@@ -3802,7 +3862,7 @@ namespace RadialReview.Accessors {
 
 
 					if (awaitingSolve != null && awaitingSolve != issue.AwaitingSolve) {
-						issue.AwaitingSolve= awaitingSolve.Value;
+						issue.AwaitingSolve = awaitingSolve.Value;
 						s.Update(issue);
 
 						group.updateIssueAwaitingSolve(issue.Id, awaitingSolve.Value);
@@ -3828,7 +3888,7 @@ namespace RadialReview.Accessors {
 			if (issue.CloseTime != null)
 				throw new PermissionsException("Issue already deleted.");
 
-			_UpdateIssueCompletion_Unsafe(s, rt, issue, true);		
+			_UpdateIssueCompletion_Unsafe(s, rt, issue, true);
 		}
 		public static void UpdateIssues(UserOrganizationModel caller, long recurrenceId, /*IssuesDataList*/L10Controller.IssuesListVm model) {
 			using (var s = HibernateSession.GetCurrentSession()) {

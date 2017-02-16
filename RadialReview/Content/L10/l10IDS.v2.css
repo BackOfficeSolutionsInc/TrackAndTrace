@@ -218,7 +218,10 @@
 .ids [data-awaitingsolve='true'] .issuesModal:before,
 .ids [data-awaitingsolve='True'] .issuesModal:before {
   color: #EF7622;
-  pointer-events: none;
+}
+.ids [data-awaitingsolve='true'] .issuesModal,
+.ids [data-awaitingsolve='True'] .issuesModal {
+  pointer-events: none !important;
 }
 .sortable {
   margin: 0 0 9px 0;

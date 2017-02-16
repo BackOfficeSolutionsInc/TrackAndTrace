@@ -198,7 +198,7 @@
 	[data-awaitingsolve='true'],
 	[data-awaitingsolve='True'] {
 		line-height: 12px !important;
-		
+
 		.todoButton,
 		.vtoButton,
 		.number-priority,
@@ -213,12 +213,12 @@
 			color: #aaa;
 			min-height: 13px;
 		}
-		
+
 		&[data-markedforclose='true'],
-		&[data-markedforclose='True']{			
-			&:not([data-checked="true"]):not([data-checked="True"]):before{
+		&[data-markedforclose='True'] {
+			&:not([data-checked="true"]):not([data-checked="True"]):before {
 				content: "Solved";
-				background-color:fade(@brand-success,50%);
+				background-color: fade(@brand-success,50%);
 			}
 		}
 
@@ -248,7 +248,10 @@
 
 		.issuesModal:before {
 			color: @traction-orange;
-			pointer-events:none;
+		}
+
+		.issuesModal {
+			pointer-events: none !important;
 		}
 	}
 }

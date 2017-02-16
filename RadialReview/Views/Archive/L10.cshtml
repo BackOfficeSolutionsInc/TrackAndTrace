@@ -1,0 +1,37 @@
+﻿@model IEnumerable<object>
+@{
+    ViewBag.Title = "L10";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Deleted L10</h2>
+
+
+<div id="container"></div>
+
+@using (Html.BeginScripts()) {
+	<script>
+
+		var datas = @Html.ArrayToString(Model);
+
+		var table =DataTable({
+			container: "#container",
+			title:"Section",
+			data:datas,
+			table:{removeText :"Undelete"},
+			//clickAdd: "/Responsibilities/EditSection/",
+			//clickEdit: "/Responsibilities/EditSection/{0}",
+			//clickReorder:"/Responsibilities/ReorderSection/{0}?oldOrder={1}&newOrder={2}",
+			clickRemove:"/L10/Undelete/{0}",
+			cells:[
+				{rowNum:true},
+				{classes:"fullWidth",contents:function(r){return r.Name;}},
+				{contents:function(r){return r.DeleteTime;}},
+				{remove:true}
+				//{contents:function(r){"<a href='/L10/Undelete/"+r.Id+"'>Undelete</a>";}},
+			]
+		});
+
+		//table.setData(datas);
+	</script>
+}

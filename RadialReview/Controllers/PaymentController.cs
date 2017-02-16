@@ -33,6 +33,13 @@ namespace RadialReview.Controllers {
 			return View();
 		}
 
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult SetACH() {
+			_PermissionsAccessor.Permitted(GetUser(), x => x.EditCompanyPayment(GetUser().Organization.Id));
+
+			return View();
+		}
+
 
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Plan() {
@@ -200,9 +207,7 @@ namespace RadialReview.Controllers {
 			}
 		}
 
-
-
-
+		
 		[Access(AccessLevel.Radial)]
 		public ActionResult Errors(int id = 7) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -316,6 +321,33 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
 		public async Task<ActionResult> SetCard(bool submit) {
+			await PaymentAccessor.SetCard(
+				GetUser(),
+				GetUser().Organization.Id,
+				Request.Form["id"],
+				Request.Form["class"],
+				Request.Form["card_type"],
+				Request.Form["card_owner_name"],
+				Request.Form["last_4"],
+				Request.Form["card_exp_month"].ToInt(),
+				Request.Form["card_exp_year"].ToInt(),
+				Request.Form["address_1"],
+				Request.Form["address_2"],
+				Request.Form["city"],
+				Request.Form["state"],
+				Request.Form["zip"],
+				Request.Form["phone"],
+				Request.Form["website"],
+				Request.Form["country"],
+				Request.Form["email"],
+				true);
+
+			return RedirectToAction("Advanced", "Manage");
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public async Task<ActionResult> SetACH(bool submit) {
 			await PaymentAccessor.SetCard(
 				GetUser(),
 				GetUser().Organization.Id,

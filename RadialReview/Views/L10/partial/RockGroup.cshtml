@@ -1,6 +1,6 @@
 ﻿@model List<RadialReview.Models.L10.L10Meeting.L10Meeting_Rock>
 
-@foreach (var person in Model.GroupBy(x => x.ForRock.ForUserId))
+@foreach (var person in Model.GroupBy(x => x.ForRock.ForUserId).OrderBy(x=>x.First().ForRock.AccountableUser.GetName()))
 {
     <div class="component rock-group rock-group-user-id-@person.First().ForRock.AccountableUser.Id">
         <div class="top-bar">

@@ -1,0 +1,184 @@
+﻿@{
+    ViewBag.Title = "Add Payment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="panel panel-primary">
+    <div class="panel-heading">Setup ACH</div>
+    <div class="panel-body">
+        <form>
+
+			<input type="hidden" name="username" value="@RadialReview.Utilities.Config.PaymentSpring_PublicKey()" />
+			<input type="hidden" name="token_type" value="bank_account" />
+
+
+            <fieldset>
+				<div class="row smallBreak2">
+					<div class="col-md-3">
+						<label for="ccName">Account Number</label>
+					</div>
+					<div class="col-md-8">
+						<input class="form-control" id="bank_account_number" name="bank_account_number" type="text" placeholder="Your bank account number">
+					</div>
+				</div>
+				<div class="row smallBreak2">
+					<div class="col-md-3">
+						<label for="ccName">Routing Number</label>
+					</div>
+					<div class="col-md-8">
+						<input class="form-control" id="bank_routing_number" name="bank_routing_number" type="text" placeholder="Your bank's routing number">
+					</div>
+				</div>
+				<div class="row smallBreak2">
+					<div class="col-md-3">
+						<label for="ccName">Account Holder's Name</label>
+					</div>
+					<div class="col-md-4">
+						<input class="form-control" id="bank_account_holder_first_name" name="bank_account_holder_first_name" type="text" placeholder="First Name">
+					</div>
+					<div class="col-md-4">
+						<input class="form-control" id="bank_account_holder_last_name" name="bank_account_holder_last_name" type="text" placeholder="Last Name">
+					</div>
+				</div>
+				<div class="row smallBreak2">
+					<div class="col-md-3">
+						<label for="ccName">Account Type</label>
+					</div>
+					<div class="col-md-8">
+						<select class="form-control" id="bank_account_type" name="bank_account_type">
+							<option value="checking">Checking</option>
+							<option value="savings">Savings</option>
+						</select>
+					</div>
+				</div>
+	            <div class="row smallBreak2">
+		            <div class="col-md-3">
+			            <label for="website">Website</label>
+		            </div>
+		            <div class="col-md-8">
+			            <input class="form-control" id="website" name="website" type="text" placeholder="Website">
+		            </div>
+	            </div>
+				   <div class="row smallBreak2">
+                    <div class="col-md-3">
+                        <label for="email">Email Receipt To</label>
+                    </div>
+                    <div class="col-md-8">
+                        <input class="form-control" id="email" name="email" type="email" placeholder="Email Address" value="@Html.UserOrganization().NotNull(x=>x.GetEmail())">
+                    </div>
+                </div>
+                <div class="row smallBreak2 alignCenter">
+                    <button id="submit" class="btn btn-success submit" type="submit"> Submit </button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+<div id="result" class="hidden"></div>
+@using (Html.BeginStyles())
+{
+    <style>
+        label {
+            top: 6px;
+            position: relative;
+        }
+
+		 .cardImg {
+            height: 30px;
+        }
+    </style>
+}
+
+@using (Html.BeginScripts())
+{
+    @*<script src="~/Scripts/jquery/jquery.redirect.js"></script>*@
+    @Scripts.Render("~/bundles/SetCard")
+    <script>
+        function AddResponse(code, msg, selector) {
+            errorResponses[code] = { message: msg, selector: selector };
+        }
+
+        var errorResponses = {};
+
+        AddResponse(11112, "Invalid card number or improper format", "#cc_number");
+        AddResponse(11301, "Invalid Visa number.", "#cc_number");
+        AddResponse(11303, "Invalid American Express number.", "#cc_number");
+        AddResponse(11306, "Invalid Discover number.", "#cc_number");
+        AddResponse(11305, "Invalid Diners Club number.", "#cc_number");
+        AddResponse(11302, "Invalid Mastercard number.", "#cc_number");
+        AddResponse(38501, "Amount must be sent as a number of cents greater than zero.", "");
+        AddResponse(11111, null, "#cardExpirationYear, #cardExpirationMonth");
+        AddResponse(234722, "Card security code (also called CVV on some cards) is either missing or invalid.", "#csc_number");
+
+        AddResponse(11102, "Card number is invalid.", "#cc_number");
+        AddResponse(91611, "Invalid card number.", "#cc_number");
+        AddResponse(21111, null, "#cardExpirationYear, #cardExpirationMonth");
+
+
+        $("button.submit").on("click", function (e) {
+            e.preventDefault();
+            $("#submit").attr("disabled", true);
+            $("#submit").html("Validating...");
+            $(".has-error").removeClass("has-error");
+
+
+            $.ajax({
+                url: "https://api.paymentspring.com/api/v1/tokens",
+                dataType: "json",
+                data: {
+                    public_api_key: "@RadialReview.Utilities.Config.PaymentSpring_PublicKey()",
+                	bank_account_number: $("#bank_account_number").val(),
+                	bank_routing_number: $("#bank_routing_number").val(),
+                	bank_account_holder_first_name: $("#bank_account_holder_first_name").val(),
+                	bank_account_holder_last_name: $("#bank_account_holder_last_name").val(),
+                	bank_account_type: $("#bank_account_type").val(),
+                },
+                success: function (data) {
+                    console.log(data);
+                    if (typeof (data["errors"]) !== "undefined") {
+                        $("#submit").html("Submit");
+                        $("#submit").attr("disabled", false);
+
+                        var builder = [];
+                        var selector = [];
+                        for (var e in data["errors"]) {
+                            var code = data["errors"][e].code;
+                            var msg = data["errors"][e].message;
+                            if (code in errorResponses) {
+                                if (errorResponses[code].message != null) {
+                                    msg = errorResponses[code].message;
+                                }
+                                selector.push(errorResponses[code].selector);
+                            }
+                            builder.push(msg);
+                        }
+                        clearAlerts();
+                        showAlert(builder);
+                        $(selector.join(",")).parent("div").addClass("has-error");
+
+                    } else {
+                        $("#submit").html("Validated!");
+                        //data.address_1 = $("#address_1").val();
+                        //data.address_2 = $("#address_2").val();
+                        //data.city = $("#city").val();
+                        //data.state = $("#state").val();
+                        //data.zip = $("#zip").val();
+                        //data.country = $("#country").val();
+                        data.website = $("#website").val();
+                        data.email = $("#email").val();
+                        debugger;
+                        $.redirect('/payment/setcard?submit=true', data);
+                        $("#result").html(JSON.stringify(data));
+                    }
+                },
+                error: function (data) {
+                    clearAlerts();
+                    showAlert("An error has occurred. Please try again later. If the problem persists, please contact us.");
+                    console.log(data);
+                    $("#submit").html("Submit");
+                    $("#submit").attr("disabled", false);
+                }
+            });
+        });
+    </script>
+}

@@ -85,6 +85,7 @@ namespace RadialReview.Utilities {
 		PaymentReceived,
 		PaymentFailed,
 
+		UndeleteMeeting,
 		//AccountAge_SemiYearlyAnniversary,
 	}
 

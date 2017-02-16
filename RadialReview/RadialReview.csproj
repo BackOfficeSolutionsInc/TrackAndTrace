@@ -2092,6 +2092,8 @@
     <Content Include="Views\Review\Details\BarCharts.cshtml" />
     <Content Include="Views\Admin\UserInfo.cshtml" />
     <Content Include="Views\Headlines\CopyHeadline.cshtml" />
+    <Content Include="Views\Archive\L10.cshtml" />
+    <Content Include="Views\Payment\SetACH.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -1151,7 +1151,7 @@ namespace RadialReview.Accessors {
 			row.Cells[4].VerticalAlignment = VerticalAlignment.Center;
 			//table.Format.Font.Size = Unit.FromInch(.1); // --- 1/16"
 			mn = 1;
-			foreach (var m in recur.Rocks.OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)) {
+			foreach (var m in recur.Rocks.OrderBy(x => x.Owner.Name).ThenByDescending(x => x.CompanyRock).ThenBy(x => x.DueDate)) {
 
 				row = table.AddRow();
 				row.HeadingFormat = false;

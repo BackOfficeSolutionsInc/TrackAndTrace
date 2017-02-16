@@ -82,12 +82,12 @@ namespace RadialReview.Controllers {
 		}
 
 
-		[Access(AccessLevel.User)]
+		[Access(AccessLevel.Radial)]
 		public ActionResult List(bool open = true, bool closed = false, bool backlog = false, bool nofix = false, bool all = false, bool js = false) {
 			return View(SupportAccessor.List(open || all, closed || all, backlog || all, nofix || all, js || all));
 		}
 
-		[Access(AccessLevel.User)]
+		[Access(AccessLevel.Radial)]
 		public ActionResult Details(string id = null) {
 			if (GetUserModel().IsRadialAdmin) {
 				if (string.IsNullOrWhiteSpace(id))

@@ -355,8 +355,21 @@ namespace RadialReview.Controllers {
 				zip.AddEntry(String.Format("Rocks.csv", time, recur.Name), ExportAccessor.Rocks(GetUser(), id));
 				zip.AddEntry(String.Format("MeetingSummary.csv", time, recur.Name), ExportAccessor.MeetingSummary(GetUser(), id));
 
-				foreach (var note in await ExportAccessor.Notes(GetUser(), id))
-					zip.AddEntry(String.Format("{2}", time, recur.Name, note.Item1.Replace("/", "_")), note.Item2);
+				var names = new DefaultDictionary<string, int>(x => 0);
+				foreach (var note in await ExportAccessor.Notes(GetUser(), id)) {
+					var name = String.Format("{2}", time, recur.Name, note.Item1.Replace("/", "_"));
+					var addition = "";
+					var count = 0;
+					while (true) {
+						try {
+							zip.AddEntry(name+addition, note.Item2);
+							break;
+						} catch (ArgumentException) {
+							count += 1;
+							addition = "(" + count + ").txt";
+						}
+					}
+				}
 
 				zip.Save(memoryStream);
 				memoryStream.Seek(0, SeekOrigin.Begin);

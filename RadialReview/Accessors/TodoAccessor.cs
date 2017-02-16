@@ -39,7 +39,7 @@ namespace RadialReview.Accessors {
 		}
 
 
-		public static async Task<StringBuilder> BuildTodoTable(List<TodoModel> todos, string title = null) {
+		public static async Task<StringBuilder> BuildTodoTable(List<TodoModel> todos, string title = null,bool showDetails=false,Dictionary<string,HtmlString> padLookup=null) {
 			title = title.NotNull(x => x.Trim()) ?? "To-do";
 			var table = new StringBuilder();
 			try {
@@ -64,10 +64,20 @@ namespace RadialReview.Accessors {
 							.Append(todo.Message).Append(@"</a></b></td><td  align=""right"" valign=""top"" style=""" + color + @""">")
 							.Append(duedate.ToString(format)).Append("</td></tr>");
 
-						var details = await PadAccessor.GetHtml(todo.PadId);
+						if (showDetails) {
 
-						if (false && !String.IsNullOrWhiteSpace(details.ToHtmlString())) {
-							table.Append(@"<tr><td colspan=""2""></td><td><i style=""font-size:12px;"">&nbsp;&nbsp;<a style=""color:#333333;text-decoration: none;"" href=""" + Config.BaseUrl(org) + @"Todo/List"">").Append(details.ToHtmlString()).Append("</a></i></td><td></td></tr>");
+							HtmlString details = null;
+							if (padLookup == null || !padLookup.ContainsKey(todo.PadId)) {
+								details = await PadAccessor.GetHtml(todo.PadId);
+							} else {
+								details = padLookup[todo.PadId];
+							}
+
+							//var details = await PadAccessor.GetHtml(todo.PadId);
+
+							if (!String.IsNullOrWhiteSpace(details.ToHtmlString())) {
+								table.Append(@"<tr><td colspan=""2""></td><td><i style=""font-size:12px;"">&nbsp;&nbsp;<a style=""color:#333333;text-decoration: none;"" href=""" + Config.BaseUrl(org) + @"Todo/List"">").Append(details.ToHtmlString()).Append("</a></i></td><td></td></tr>");
+							}
 						}
 
 						i++;

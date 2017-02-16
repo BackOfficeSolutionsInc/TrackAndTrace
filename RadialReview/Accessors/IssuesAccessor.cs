@@ -17,12 +17,13 @@ using RadialReview.Utilities;
 using RadialReview.Models.Angular.Base;
 using RadialReview.Utilities.DataTypes;
 using System.Text;
+using System.Web;
 
 namespace RadialReview.Accessors {
 	public class IssuesAccessor : BaseAccessor {
 
 
-		public static async Task<StringBuilder> BuildIssuesSolvedTable(List<IssueModel.IssueModel_Recurrence> issues, string title = null, long? recurrenceId = null) {
+		public static async Task<StringBuilder> BuildIssuesSolvedTable(List<IssueModel.IssueModel_Recurrence> issues, string title = null, long? recurrenceId = null,bool showDetails=false,Dictionary<string,HtmlString> padLookup=null) {
 			title = title.NotNull(x => x.Trim()) ?? "Issues";
 			var table = new StringBuilder();
 			try {
@@ -43,10 +44,17 @@ namespace RadialReview.Accessors {
 							.Append(i).Append(@". </a></b></td><td align=""left""><b><a style=""color:#333333;text-decoration:none;"" href=""" + url + @""">")
 							.Append(issue.Issue.Message).Append(@"</a></b></td></tr>");
 
-						var details = await PadAccessor.GetHtml(issue.Issue.PadId);
+						if (showDetails) {
+							HtmlString details = null;
+							if (padLookup == null || !padLookup.ContainsKey(issue.Issue.PadId)) {
+								details = await PadAccessor.GetHtml(issue.Issue.PadId);
+							} else {
+								details = padLookup[issue.Issue.PadId];
+							}
 
-						if (!String.IsNullOrWhiteSpace(details.ToHtmlString())) {
-							table.Append(@"<tr><td></td><td><i style=""font-size:12px;"">&nbsp;&nbsp;<a style=""color:#333333;text-decoration: none;"" href=""" + url + @""">").Append(details.ToHtmlString()).Append("</a></i></td></tr>");
+							if (!String.IsNullOrWhiteSpace(details.ToHtmlString())) {
+								table.Append(@"<tr><td></td><td><i style=""font-size:12px;"">&nbsp;&nbsp;<a style=""color:#333333;text-decoration: none;"" href=""" + url + @""">").Append(details.ToHtmlString()).Append("</a></i></td></tr>");
+							}
 						}
 
 						i++;
