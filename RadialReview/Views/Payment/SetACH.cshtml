@@ -123,10 +123,12 @@
 
 
             $.ajax({
-                url: "https://api.paymentspring.com/api/v1/tokens",
+            	url: "https://api.paymentspring.com/api/v1/tokens/jsonp",
+				method:"get",
                 dataType: "json",
                 data: {
-                    public_api_key: "@RadialReview.Utilities.Config.PaymentSpring_PublicKey()",
+                	public_api_key/*public_api_key*/: "@RadialReview.Utilities.Config.PaymentSpring_PublicKey()",
+					token_type: "bank_account",
                 	bank_account_number: $("#bank_account_number").val(),
                 	bank_routing_number: $("#bank_routing_number").val(),
                 	bank_account_holder_first_name: $("#bank_account_holder_first_name").val(),
@@ -167,7 +169,7 @@
                         data.website = $("#website").val();
                         data.email = $("#email").val();
                         debugger;
-                        $.redirect('/payment/setcard?submit=true', data);
+                        $.redirect('/payment/SetACH?submit=true', data);
                         $("#result").html(JSON.stringify(data));
                     }
                 },

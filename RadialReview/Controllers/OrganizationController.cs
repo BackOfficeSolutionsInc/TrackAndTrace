@@ -114,7 +114,7 @@ namespace RadialReview.Controllers {
 							Status = x.NotNull(y => y.AccountType),
 							LastMeeting = meetingLastLU.GetOrDefault(x.NotNull(y => y.Id), null),
 							TrialEnd = trialEnd,
-							CreditCardExp = !tokens.ContainsKey(x.Id) ? (DateTime?)null : new DateTime(tokens[x.Id].YearExpire, tokens[x.Id].MonthExpire, 1)
+							CreditCardExp = !tokens.ContainsKey(x.Id)||tokens[x.Id].TokenType!=PaymentSpringTokenType.CreditCard ? (DateTime?)null : new DateTime(tokens[x.Id].YearExpire, tokens[x.Id].MonthExpire, 1)
 						};
 					}).OrderByDescending(x=>x.OrgId).ToList();
 
@@ -151,6 +151,14 @@ namespace RadialReview.Controllers {
 			}
 		}
 
+		[Access(AccessLevel.Radial)]
+		public ActionResult Invites() {
+			var members = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails);
+
+			var temps = members.Where(x => x.HasJoined == false).Select(x =>_UserAccessor.GetUserOrganization(GetUser(), x.UserId, true, false, PermissionType.EditEmployeeDetails).TempUser).Where(x=>x!=null).ToList();
+
+			return View(temps);
+		}
 
 		//[Access(AccessLevel.Radial)]
 		//public ActionResult StatsExport() {

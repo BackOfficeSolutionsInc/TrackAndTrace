@@ -298,7 +298,7 @@ namespace RadialReview.Accessors {
 						IsClient = (bool)x[2],
 						UserId = (string)x[3],
 						IsRegistered = x[3] != null,
-						EvalOnly = (bool?)x[4]??false
+						EvalOnly = (bool?)x[4] ?? false
 					})
 					.Where(x => x.IsRadialAdmin == null || (bool)x.IsRadialAdmin == false)
 					.ToList();
@@ -393,16 +393,16 @@ namespace RadialReview.Accessors {
 			var token = PaymentSpringUtil.GetToken(s, organizationId);
 
 			var org2 = s.Get<OrganizationModel>(organizationId);
-            if (org2 != null && org2.AccountType == AccountType.Implementer) {
-                EventUtil.Trigger(x => x.Create(s, EventType.PaymentFree, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "Implementer", arg1: 0));
-                throw new FallthroughException("Failed to charge implementer account (" + org2.Id + ") " + org2.GetName());
-            }
-            if (org2 != null && org2.AccountType == AccountType.Dormant) {
-                EventUtil.Trigger(x => x.Create(s, EventType.PaymentFailed, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "Dormant", arg1: 0));
-                throw new FallthroughException("Failed to charge dormant account (" + org2.Id + ") " + org2.GetName());
-            }
+			if (org2 != null && org2.AccountType == AccountType.Implementer) {
+				EventUtil.Trigger(x => x.Create(s, EventType.PaymentFree, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "Implementer", arg1: 0));
+				throw new FallthroughException("Failed to charge implementer account (" + org2.Id + ") " + org2.GetName());
+			}
+			if (org2 != null && org2.AccountType == AccountType.Dormant) {
+				EventUtil.Trigger(x => x.Create(s, EventType.PaymentFailed, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "Dormant", arg1: 0));
+				throw new FallthroughException("Failed to charge dormant account (" + org2.Id + ") " + org2.GetName());
+			}
 
-            if (token == null) {
+			if (token == null) {
 				EventUtil.Trigger(x => x.Create(s, EventType.PaymentFailed, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "MissingToken", arg1: amount));
 				throw new PaymentException(s.Get<OrganizationModel>(organizationId), amount, PaymentExceptionType.MissingToken);
 			}
@@ -411,7 +411,7 @@ namespace RadialReview.Accessors {
 				pr = await PaymentSpringUtil.ChargeToken(org2, token, amount, forceTest);
 				EventUtil.Trigger(x => x.Create(s, EventType.PaymentReceived, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "Charged", arg1: amount));
 			} catch (PaymentException e) {
-				EventUtil.Trigger(x => x.Create(s, EventType.PaymentFailed, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: ""+e.Type, arg1: amount));
+				EventUtil.Trigger(x => x.Create(s, EventType.PaymentFailed, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "" + e.Type, arg1: amount));
 				throw e;
 			} catch (Exception e) {
 				EventUtil.Trigger(x => x.Create(s, EventType.PaymentFailed, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "Unhandled:" + e.Message, arg1: amount));
@@ -441,7 +441,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static List<CreditCardVM> GetCards(UserOrganizationModel caller, long organizationId) {
+		public static List<PaymentMethodVM> GetCards(UserOrganizationModel caller, long organizationId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					if (organizationId != caller.Organization.Id)
@@ -451,13 +451,9 @@ namespace RadialReview.Accessors {
 					PermissionsUtility.Create(s, caller).EditCompanyPayment(organizationId);
 					var cards = s.QueryOver<PaymentSpringsToken>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null).List().ToList();
 
-					return cards.Select(x => new CreditCardVM() {
-						Active = x.Active,
-						CardId = x.Id,
-						Created = x.CreateTime,
-						Last4 = x.CardLast4,
-						Owner = x.CardOwner
-					}).ToList();
+
+
+					return cards.Select(x => new PaymentMethodVM(x)).ToList();
 				}
 			}
 		}
@@ -537,13 +533,33 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static async Task<CreditCardVM> SetCard(UserOrganizationModel caller, long orgId, PaymentTokenVM token) {
+		public static async Task<PaymentMethodVM> SetCard(UserOrganizationModel caller, long orgId, PaymentTokenVM token) {
 			return await SetCard(caller, orgId, token.id, token.@class, token.card_type, token.card_owner_name, token.last_4, token.card_exp_month, token.card_exp_year, null, null, null, null, null, null, null, null, null, true);
 		}
 
-		public static async Task<CreditCardVM> SetCard(UserOrganizationModel caller, long organizationId, string tokenId, string @class,
+		public static async Task<PaymentMethodVM> SetACH(UserOrganizationModel caller, long organizationId, string tokenId, string @class,
+			string token_type, string account_type, string firstName, string lastName, string accountLast4, string routingNumber, String address_1, String address_2,
+			String city, String state, string zip, string phone, string website, string country, string email, bool active) {
+			if (token_type != "bank_account")
+				throw new PermissionsException("ACH requires token_type = 'bank_account'");
+
+			return await SetToken(caller, organizationId, tokenId, @class, null, null, null, 0, 0, address_1, address_2, city, state, zip, phone, website, country, email, active, accountLast4, routingNumber, firstName, lastName, account_type, PaymentSpringTokenType.BankAccount);
+		}
+
+		public static async Task<PaymentMethodVM> SetCard(UserOrganizationModel caller, long organizationId, string tokenId, string @class,
 			string cardType, string cardOwnerName, string last4, int expireMonth, int expireYear, String address_1, String address_2,
 			String city, String state, string zip, string phone, string website, string country, string email, bool active) {
+			
+			return await SetToken(caller, organizationId, tokenId, @class, cardType, cardOwnerName, last4, expireMonth, expireYear, address_1, address_2, city, state, zip, phone, website, country, email, active, null, null, null, null, null, PaymentSpringTokenType.CreditCard);
+
+		}
+
+
+		private static async Task<PaymentMethodVM> SetToken(UserOrganizationModel caller, long organizationId, string tokenId, string @class,
+			string cardType, string cardOwnerName, string cardLast4, int cardExpireMonth, int cardExpireYear, String address_1, String address_2,
+			String city, String state, string zip, string phone, string website, string country, string email, bool active,
+			string bankLast4, string bankRouting, string bankFirstName, string bankLastName, string bankAccountType, PaymentSpringTokenType tokenType) {
+
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					if (@class != "token")
@@ -562,7 +578,6 @@ namespace RadialReview.Accessors {
 							s.Update(p);
 						}
 					}
-
 
 					//CURL
 					var client = new HttpClient();
@@ -621,27 +636,29 @@ namespace RadialReview.Accessors {
 
 						var token = new PaymentSpringsToken() {
 							CustomerToken = Json.Decode(result).id,
-							CardLast4 = last4,
+							CardLast4 = cardLast4,
 							CardOwner = cardOwnerName,
 							CardType = cardType,
-							MonthExpire = expireMonth,
-							YearExpire = expireYear,
+							MonthExpire = cardExpireMonth,
+							YearExpire = cardExpireYear,
 							OrganizationId = organizationId,
 							Active = active,
 							ReceiptEmail = email,
 							CreatedBy = caller.Id,
+
+							TokenType = tokenType,
+							BankAccountLast4 = bankLast4,
+							BankRouting = bankRouting,
+							BankFirstName = bankFirstName,
+							BankLastName = bankLastName,
+							BankAccountType = bankAccountType
+
 						};
 						s.Save(token);
 						tx.Commit();
 						s.Flush();
-
-						return new CreditCardVM() {
-							Active = active,
-							CardId = token.Id,
-							Created = token.CreateTime,
-							Last4 = token.CardLast4,
-							Owner = token.CardOwner
-						};
+																	
+						return new PaymentMethodVM(token);
 					}
 
 				}

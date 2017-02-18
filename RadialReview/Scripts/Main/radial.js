@@ -93,19 +93,6 @@ function toTitleCase(str) {
 
 })(jQuery);
 
-/*(function () {
-  function CustomEvent ( event, params ) {
-    params = params || { bubbles: false, cancelable: false, detail: undefined };
-    var evt = document.createEvent( 'CustomEvent' );
-    evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
-    return evt;
-   }
-
-  CustomEvent.prototype = window.Event.prototype;
-
-  window.CustomEvent = CustomEvent;
-})();*/
-
 function qtip() {
 	$('[title]').qtip({
 		position: {
@@ -664,8 +651,14 @@ var DataTable = function (settings) {
 				
 			}
 
+			var html = resolve(contents, row, i, settings);
 
-			cell.html(resolve(contents, row, i, settings));
+			if (contents == null)
+				console.warn("Contents null for " + s);
+			if (typeof(html)==="undefined")
+				console.warn("Cell was undefined for " + s +" (Did you forget to 'return'?)");
+
+			cell.html(html);
 
 			results.push(cell);
 			i++;

@@ -561,6 +561,10 @@ button.anno-btn.right-anno-overlay {
 	top: 34px;
 	height: 70px !important;
 }
+html,
+body {
+  background-color: #eee;
+}
 tr.grayRow {
   background-image: url("/Content/img/graystripe-light.png");
   background-color: rgba(62, 57, 53, 0.13);

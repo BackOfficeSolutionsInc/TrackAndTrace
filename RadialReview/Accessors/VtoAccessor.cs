@@ -73,18 +73,14 @@ namespace RadialReview.Accessors {
 		public static VtoModel GetVTO(ISession s, PermissionsUtility perms, long vtoId) {
 			perms.ViewVTO(vtoId);
 			var model = s.Get<VtoModel>(vtoId);
-			model._Values = OrganizationAccessor.GetCompanyValues(s.ToQueryProvider(true), perms, model.Organization.Id, null);
+			model._Values = OrganizationAccessor.GetCompanyValues_Unsafe(s.ToQueryProvider(true), model.Organization.Id, null);
 			var uniquesQ= s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Uniques && x.Vto.Id == vtoId && x.DeleteTime == null).Future();//.List().ToList();
 			var looksLikeQ= s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_LookLike && x.Vto.Id == vtoId && x.DeleteTime == null).Future();//.List().ToList();
 			var goalsQ = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_YearGoals && x.Vto.Id == vtoId && x.DeleteTime == null).Future();//.List().ToList();
 																																							  //model.._GoalsForYear = s.QueryOver<VtoModel.VtoItem_String>().Where(x => x.Type == VtoItemType.List_Issues && x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList();
 			var rocksQ= s.QueryOver<Vto_Rocks>()
 				.Where(x => x.Vto.Id == vtoId && x.DeleteTime == null).Future();
-
-
-
-
-
+			
 
 			model._Issues = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Issues && x.Vto.Id == vtoId && x.DeleteTime == null).List().Select(x=>new VtoIssue() {
 				Id = x.Id,

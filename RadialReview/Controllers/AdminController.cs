@@ -416,6 +416,7 @@ namespace RadialReview.Controllers {
 							About = h.About,
 							Owner = s.Load<UserOrganizationModel>(owner),
 
+							_Details = h.Details,
 
 							OrganizationId = caller.Organization.Id,
 							CreateTime = createTime,

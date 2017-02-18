@@ -1,0 +1,41 @@
+﻿@model List<RadialReview.Models.UserModels.TempUserModel>
+
+
+<div id="container"></div>
+
+@using (Html.BeginScripts()) {
+	<script>
+
+		DataTable({
+			container:"#container",
+			data: @Html.ArrayToString(Model),
+			cells: [
+				{title:"First",contents: function (r) { return r["FirstName"]; }},
+				{title:"Last",contents: function (r) { return r.LastName; }},
+				{title:"Email",contents: function (r) { return r.Email; }},
+				//{title:"Guid",contents: function (r) { return r.Guid; }},
+				{title:"Link",classes:"link",contents: function (r) { return "https://traction.tools/Account/Register?returnUrl=%2FOrganization%2FJoin%2F"+r.Guid; }},
+				{title:"Send",contents: function (r) { return "<a href='#' onclick='openEmail("+JSON.stringify(r)+")'>Email</a>" }},
+			],
+			nodataText:"Everyone has joined."
+		});
+
+		function openEmail(r){
+			console.log(r);
+			var text = "Hi "+r.FirstName+",\n\n"+
+			"Please use the following link to activate your account:\n"+
+			"https://traction.tools/Account/Register?returnUrl=%2FOrganization%2FJoin%2F"+r.Guid+"\n\n"+			
+			"Thanks!\n\n";
+
+			text = encodeURI(text);
+
+			window.open("mailto:"+r.Email+"?subject=Register%20for%20@(Url.Encode(RadialReview.Utilities.Config.ProductName()))&body="+text);
+
+		}
+	</script>
+	<style>
+		td.link {
+			font-size:8px;
+		}
+	</style>
+}

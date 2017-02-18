@@ -784,6 +784,10 @@ namespace RadialReview.Accessors {
 
 		public static List<CompanyValueModel> GetCompanyValues(AbstractQuery query, PermissionsUtility perms, long organizationId, DateRange range) {
 			perms.ViewOrganization(organizationId);
+			return GetCompanyValues_Unsafe(query, organizationId, range);
+		}
+
+		public static List<CompanyValueModel> GetCompanyValues_Unsafe(AbstractQuery query, long organizationId, DateRange range) {
 			return query.Where<CompanyValueModel>(x => x.OrganizationId == organizationId).FilterRange(range).ToList();
 		}
 

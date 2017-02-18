@@ -348,16 +348,18 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
 		public async Task<ActionResult> SetACH(bool submit) {
-			await PaymentAccessor.SetCard(
+			await PaymentAccessor.SetACH(
 				GetUser(),
 				GetUser().Organization.Id,
 				Request.Form["id"],
 				Request.Form["class"],
-				Request.Form["card_type"],
-				Request.Form["card_owner_name"],
-				Request.Form["last_4"],
-				Request.Form["card_exp_month"].ToInt(),
-				Request.Form["card_exp_year"].ToInt(),
+				Request.Form["token_type"],
+
+				Request.Form["bank_account_type"],
+				Request.Form["bank_account_holder_first_name"],
+				Request.Form["bank_account_holder_last_name"],
+				Request.Form["bank_account_number_last_4"],
+				Request.Form["bank_routing_number"],
 				Request.Form["address_1"],
 				Request.Form["address_2"],
 				Request.Form["city"],

@@ -51,7 +51,7 @@ namespace RadialReview.Models.ViewModels
 		public List<RockModel> CompanyRocks { get; set; }
 		public List<AboutCompanyAskable> CompanyQuestions { get; set; }
         public String RockName { get; set; }
-        public List<CreditCardVM> Cards { get; set; }
+        public List<PaymentMethodVM> Cards { get; set; }
 		public PaymentPlanModel PaymentPlan { get; set; }
 		public bool LimitFiveState { get; set; }
 

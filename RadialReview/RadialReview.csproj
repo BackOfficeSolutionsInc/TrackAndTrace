@@ -547,7 +547,7 @@
     <Compile Include="Models\L10\Transcript.cs" />
     <Compile Include="Models\Log\LogItem.cs" />
     <Compile Include="Models\Onboard\OnboardingUser.cs" />
-    <Compile Include="Models\Payments\CreditCardVM.cs" />
+    <Compile Include="Models\Payments\PaymentMethodVM.cs" />
     <Compile Include="Models\Payments\Itemized.cs" />
     <Compile Include="Models\Payments\PaymentErrorLog.cs" />
     <Compile Include="Models\Payments\PaymentOptions.cs" />
@@ -954,6 +954,9 @@
     </Content>
     <Content Include="Content\bootstrap\custom\XEditable.min.css">
       <DependentUpon>XEditable.css</DependentUpon>
+    </Content>
+    <Content Include="Content\creditcard_icon\bank.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\favicon-local.ico" />
     <Content Include="Content\GettingStarted\GettingStarted.css">
@@ -2094,6 +2097,7 @@
     <Content Include="Views\Headlines\CopyHeadline.cshtml" />
     <Content Include="Views\Archive\L10.cshtml" />
     <Content Include="Views\Payment\SetACH.cshtml" />
+    <Content Include="Views\Organization\Invites.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

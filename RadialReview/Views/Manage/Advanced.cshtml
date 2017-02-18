@@ -37,14 +37,18 @@
 	</div>
 } else {
 	<div style="text-align: right;margin-bottom: 3px;">
-		<a class="btn btn-primary btn-invert" href="/Payment/SetCard">Add Credit Card</a>
+		<div class="">
+			<a class="btn btn-primary btn-invert" href="/Payment/SetACH">Add Bank Account</a>
+			<a class="btn btn-primary btn-invert" href="/Payment/SetCard">Add Credit Card</a> 
+		</div>
 	</div>
 	<div class="panel panel-primary">
 		@if (Model.Cards.Any()) {
 			<table class="table table-condensed table-hover">
 				<thead>
 					<tr>
-						<th>Card Owner</th>
+						<th></th>
+						<th>Owner</th>
 						<th class="alignCenter">Number</th>
 						<th class="alignCenter">Entered</th>
 						<th class="alignCenter">Status</th>
@@ -53,6 +57,7 @@
 				<tbody>
 					@foreach (var card in Model.Cards) {
 						<tr>
+							<td style="width:40px"><img style="height: 23px;" src="@card.ImageUrl" /></td>
 							<td>@card.Owner</td>
 							<td class="alignCenter" style="width:150px;">************@card.Last4</td>
 							<td class="alignCenter" style="width:90px;" title="@Html.Organization().ConvertFromUTC(card.Created).ToString()">@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", Html.Organization().ConvertFromUTC(card.Created))</td>
@@ -331,7 +336,7 @@
 						</div>
 						<div class="col-xs-3">
 							@Html.CheckBoxFor(x => x.LimitFiveState, new { @class = "checkbox inlineBlock" })
-							<abbr style="top: -5px;position: relative;"class="info" title="When checked, users evaluate GWC with Yes and No. Unchecked, users evaluated with Always, Mostly, Rarely and Never"></abbr>
+							<abbr style="top: -5px;position: relative;" class="info" title="When checked, users evaluate GWC with Yes and No. Unchecked, users evaluated with Always, Mostly, Rarely and Never"></abbr>
 						</div>
 					</div>
 

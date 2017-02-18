@@ -1025,7 +1025,7 @@ namespace RadialReview.Accessors {
 				.WhereRestrictionOn(x => x.Id).IsIn(additionalRecurrenceIdsFromPerms.Select(x => x.ResId).ToArray())
 				.Select(x => x.Name, x => x.Id)
 				.List<object[]>().Select(x => new NameId((string)x[0], (long)x[1])).ToList();
-			recurrencesPersonallyAttending.AddRange(allViewPerms.Select(x => x.ResId));
+			//recurrencesPersonallyAttending.AddRange(allViewPerms.Select(x => x.ResId));
 
 
 			allRecurrenceIds.AddRange(additionalRecurrenceFromViewPerms);
@@ -1072,7 +1072,7 @@ namespace RadialReview.Accessors {
 					//var attending = attendee_recurrences.Where(x => userId == x.User.Id).Select(x => x.L10Recurrence.Id).ToArray();
 					return allRecurrences.Select(x => new L10VM(x) {
 						IsAttendee = attendee_recurrences.Any(y => y == x.Id),
-						EditMeeting = perms.IsPermitted(y => y.AdminL10Recurrence(x.Id))
+						AdminMeeting = perms.IsPermitted(y => y.AdminL10Recurrence(x.Id))
 					}).ToList();
 				}
 			}
