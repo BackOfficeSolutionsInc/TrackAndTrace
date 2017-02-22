@@ -7,8 +7,10 @@ using System.Web.Mvc;
 
 namespace RadialReview.Models.Issues
 {
-	public class IssueVM
-	{
+	public class IssueVM {
+		public long IssueId { get; set; }
+		public long IssueRecurrenceId { get; set; }
+
 		[Required]
 		public long MeetingId { get; set; }
 		[Required]

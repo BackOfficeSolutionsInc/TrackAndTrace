@@ -191,15 +191,15 @@ namespace RadialReview.Controllers {
 						long l10Id = 0;
 						if (long.TryParse(issue.KeyId, out l10Id)) {
 							try {
-								var tile = new AngularTileId<AngularIssuesList>(issue.Id, l10Id, l10Lookup[l10Id].Name + " recently solved issues");
+								var tile = new AngularTileId<AngularIssuesSolved>(issue.Id, l10Id, l10Lookup[l10Id].Name + " recently solved issues");
 								var recent = new DateRange(DateTime.UtcNow.AddDays(-7), DateTime.UtcNow);
-								tile.Contents = new AngularIssuesList(l10Id) {
+								tile.Contents = new AngularIssuesSolved(l10Id) {
 									Issues = L10Accessor.GetSolvedIssuesForRecurrence(s, perms, l10Id, recent).Select(x => new AngularIssue(x)).ToList(),
 									Prioritization = l10Lookup[l10Id].Prioritization,
 								};
 								output.L10SolvedIssues.Add(tile);
 							} catch (Exception e) {
-								output.L10SolvedIssues.Add(AngularTileId<AngularIssuesList>.Error(issue.Id, l10Id, e));
+								output.L10SolvedIssues.Add(AngularTileId<AngularIssuesSolved>.Error(issue.Id, l10Id, e));
 							}
 						}
 					}

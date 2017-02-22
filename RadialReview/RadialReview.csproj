@@ -224,6 +224,7 @@
     <Compile Include="Models\Angular\Dashboard\AngularDashboard.cs" />
     <Compile Include="Models\Angular\DataType\AngularString.cs" />
     <Compile Include="Models\Angular\Headlines\AngularHeadline.cs" />
+    <Compile Include="Models\Angular\Meeting\AngularIssuesSolved.cs" />
     <Compile Include="Models\Angular\Notifications\AngularNotification.cs" />
     <Compile Include="Models\Angular\Scorecard\AngularMeasurableGroup.cs" />
     <Compile Include="Models\Enums\RGMType.cs" />
@@ -921,6 +922,7 @@
       <DependentUpon>LineChart.css</DependentUpon>
     </Content>
     <Content Include="Content\Angular\livesearch.css" />
+    <None Include="bundleconfig.json" />
     <None Include="Content\Angular\ngsortable.less" />
     <Content Include="Content\Angular\ngsortable.css">
       <DependentUpon>ngsortable.less</DependentUpon>
@@ -1222,6 +1224,9 @@
     <Content Include="Scripts\home\screenshot.js" />
     <Content Include="Scripts\home\landscape.js" />
     <Content Include="Scripts\home\pretty-json.min.js" />
+    <Content Include="Scripts\jquery\jquery.autoresize.min.js">
+      <DependentUpon>jquery.autoresize.js</DependentUpon>
+    </Content>
     <Content Include="Scripts\jquery\jquery.tabbable.js" />
     <Content Include="Scripts\jquery\jquery.attrchange.js" />
     <Content Include="Scripts\jquery\jquery.autoNumeric.min.js" />
@@ -1652,6 +1657,7 @@
     <Content Include="Views\TileData\UserNotifications.cshtml" />
     <Content Include="Views\Review\Take\Radio.cshtml" />
     <Content Include="Views\TileData\L10SolvedIssues.cshtml" />
+    <Content Include="Views\Todo\EditModal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-responsive.css" />
@@ -2098,6 +2104,7 @@
     <Content Include="Views\Archive\L10.cshtml" />
     <Content Include="Views\Payment\SetACH.cshtml" />
     <Content Include="Views\Organization\Invites.cshtml" />
+    <Content Include="Views\Issues\EditModal.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

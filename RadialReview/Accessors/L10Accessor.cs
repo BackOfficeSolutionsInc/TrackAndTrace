@@ -998,10 +998,7 @@ namespace RadialReview.Accessors {
 				.Left.JoinQueryOver(x => x.L10Recurrence, () => alias)
 				.Where(x => alias.DeleteTime == null)
 				.Select(x => alias.Name, x => alias.Id, x => x.User.Id)
-				.List<object[]>().ToList();
-			var attendee_recurrences = attendee_ReccurenceIds.Select(x => new NameId((string)x[0], (long)x[1])).ToList();
-			//var uniqueL10Ids = attendee_recurrences.Distinct(x => x.Id).ToList();
-			allRecurrenceIds.AddRange(attendee_recurrences);
+				.Future<object[]>();
 
 			recurrencesPersonallyAttending = attendee_ReccurenceIds.Where(x => (long)x[2] == userId).Select(x => (long)x[1]).ToList();
 			//Actually load the Recurrences
@@ -1033,6 +1030,11 @@ namespace RadialReview.Accessors {
 			var available = new List<NameId>();
 
 			recurrencesPersonallyAttending = recurrencesPersonallyAttending.Distinct().ToList();
+
+			//From future
+			var attendee_recurrences = attendee_ReccurenceIds.ToList().Select(x => new NameId((string)x[0], (long)x[1])).ToList();
+			allRecurrenceIds.AddRange(attendee_recurrences);
+
 
 			if (caller.ManagingOrganization) {
 				return allRecurrenceIds;

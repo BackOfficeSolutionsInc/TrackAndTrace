@@ -18,6 +18,7 @@ using RadialReview.Models.Angular.Base;
 using RadialReview.Utilities.DataTypes;
 using System.Text;
 using System.Web;
+using RadialReview.Utilities.RealTime;
 
 namespace RadialReview.Accessors {
 	public class IssuesAccessor : BaseAccessor {
@@ -185,6 +186,39 @@ namespace RadialReview.Accessors {
 
 		}
 
+		public static object EditIssue(UserOrganizationModel caller, long issueRecurrenceId, string message, long? accountableUserId=null, int? priority=null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					using (var rt = RealTimeUtility.Create()) {
+
+						var perm = PermissionsUtility.Create(s, caller).EditIssueRecurrence(issueRecurrenceId);
+
+						var found = s.Get<IssueModel.IssueModel_Recurrence>(issueRecurrenceId);
+
+						if (message != null)
+							found.Issue.Message = message;
+						if (accountableUserId > 0) {
+							perm.EditIssueRecurrence(found.Id).ViewUserOrganization(accountableUserId.Value,false);
+							found.Owner = s.Load<UserOrganizationModel>(accountableUserId.Value);
+						}
+						if (priority != null) {
+							found.Priority = priority.Value;
+						}
+
+						s.Update(found);
+
+						if (found.Recurrence!=null && found.Recurrence.Id > 0)
+							rt.UpdateRecurrences(found.Recurrence.Id).Update(new AngularIssue(found));
+
+
+						tx.Commit();
+						s.Flush();
+						return found;
+
+					}
+				}
+			}
+		}
 
 		public static async Task<bool> CreateIssue(UserOrganizationModel caller, long recurrenceId, long ownerId, IssueModel issue) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -358,5 +392,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+
+
 	}
 }

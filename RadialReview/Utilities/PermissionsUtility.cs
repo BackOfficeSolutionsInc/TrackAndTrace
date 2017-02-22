@@ -1242,6 +1242,10 @@ namespace RadialReview.Utilities {
 				});
 			});
 		}
+		public PermissionsUtility EditIssueRecurrence(long issueRecurrenceId) {
+			var issueRecurrence = session.Get<IssueModel.IssueModel_Recurrence>(issueRecurrenceId);
+			return EditIssue(issueRecurrence.Issue.Id);
+		}
 
 		public PermissionsUtility EditIssue(long issueId) {
 			if (IsRadialAdmin(caller))
@@ -1310,6 +1314,31 @@ namespace RadialReview.Utilities {
 			});
 
 		}
+		public PermissionsUtility AssignTodoTo(long userId,long? todoId=null) {
+			if (userId <= 0)
+				throw new PermissionsException("UserId was negative");
+
+			if (IsRadialAdmin(caller))
+				return this;
+			if (userId == caller.Id)
+				return this;
+			var user = session.Get<UserOrganizationModel>(userId);
+
+			var toCheck = new List<Func<PermissionsUtility>> {
+				()=>ManagingOrganization(user.Organization.Id),
+				()=>ManagesUserOrganization(userId, false, PermissionType.EditEmployeeDetails),
+			};
+
+			if (todoId != null) {
+				var todo = session.Get<TodoModel>(todoId.Value);
+				if (todo.ForRecurrenceId != null && todo.ForRecurrenceId != 0) {
+					toCheck.Insert(0,()=>EditL10Recurrence(todo.ForRecurrenceId.Value));
+				}
+			}
+
+			return Or(toCheck.ToArray());			
+		}
+
 
 		public PermissionsUtility EditTodo(long todoId) {
 			if (IsRadialAdmin(caller))

@@ -280,7 +280,7 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
                   " data-row='{{$parent.$index}}' data-col='{{$index}}'" +
                   " type='text' placeholder='' ng1-model-options='{debounce:{\"default\":75,\"blur\":0}}' ng-disabled='measurable.Disabled'" +
                   " ng-model='score.Measured'" +
-                  " class='grid rt1 ww_{{::week.ForWeekNumber}} {{scoreColor}}'" +
+                  " class='grid rt1 ww_{{::week.ForWeekNumber}} {{scoreColor}} scrollOver'" +
                   " data-scoreid='{{::Id}}' data-measurable='{{::measurable.Id}}' data-week='{{::week.ForWeekNumber}}'" +
                   " fcsa-number='{{fcsa}}'" +
                   " ng-change='changeFunc(\"change\")'" +

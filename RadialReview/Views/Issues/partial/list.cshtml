@@ -43,7 +43,7 @@
             <div class="col-md-12 priority-{{@(selector).Prioritization}}">
                 <md-table-container class="repeater-container">
                     <table md-table @*ts-wrapper*@ width="100%" class="component "
-                           click-anywhere-but-here="model.Selected = -1"
+                           @*click-anywhere-but-here="model.Selected = -1"*@
                            ng-show="((@(selector)).Issues @(filter)).length">
                         <thead md-head md-order="@(orderVariable)" ng-init="@(orderVariable) =@(orderVariable) || @(defaultSort)">
                             <tr md-row>
@@ -86,10 +86,11 @@
                                     </span>
                                 </td>
                                 <td md-cell class="issue-column message-column" style="width:100%;padding-left:2px" ng-click="@(detailsCode)">
-                                    <input class="blend" placeholder="Enter issue here" ng-model-options="{debounce: 75}" type="text" ng-model="issue.Name" class="fullWidth" ng-change="functions.sendUpdate(issue)" title="{{issue.Name}}" />
+									<div class="issuesModal" data-method="EditModal" data-title="Edit issue" data-Id="{{::issue.Id}}">{{issue.Name}}</div>
+                                    @*<input class="blend" placeholder="Enter issue here" ng-model-options="{debounce: 75}" type="text" ng-model="issue.Name" class="fullWidth" ng-change="functions.sendUpdate(issue)" title="{{issue.Name}}" />
                                     <div class="iframe-container" ng-if="model.Selected==issue.Key+'@guid'">
                                         <iframe class="details-row keep-background" style="background-color: white" width="100%" ng-src="{{::trustAsResourceUrl(issue.DetailsUrl_Src)}}" ng-data-src="{{::issue.DetailsUrl}}"></iframe>
-                                    </div>
+                                    </div>*@
                                     <table class="sub-issue-column">
                                         <tr ng-repeat="sub in issue.Children" class="gray">
                                             <td style="width:20px;"></td>

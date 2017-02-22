@@ -36,7 +36,7 @@
 				<div id="Todo" class="tab-pane todo-pane scrollbox pull-left fullWidth scroller">
 					<div></div>
 					<md-table-container class="repeater-container">
-						<table class="@(orderVariable)" md-table width="100%" class="component table-hover" ng-if="(@(selector) @(filter)).length" click-anywhere-but-here="model.Selected = -1">
+						<table class="@(orderVariable)" md-table width="100%" class="component table-hover" ng-if="(@(selector) @(filter)).length" @*click-anywhere-but-here="model.Selected = -1"*@>
 							<thead md-head md-order="@(orderVariable)" ng-init="functions.setValue('@(orderVariable)',@(orderVariable) || @(defaultSort))">
 								<tr class="table-header" md-row>
 									<th md-column @(attrLookup["todotype-column"]) class="todotype-column" style="width: 25px;" md-order-by="TodoType">&nbsp;</th>
@@ -73,12 +73,13 @@
 											</span>
 										</span>
 									</td>
-									<td class="todo-text message-column" style="width:100%" ng-click="@(detailsCode)" md-cell>
-										<input class="blend" placeholder="Enter to-do here" ng-model-options="{debounce: 75}" type="text" ng-model="todo.Name" ng-change="functions.sendUpdate(todo)" title="{{todo.Name}}" />
-										<div class="todo-text" ng-if="model.Selected==todo.Key+'@guid'">
+									<td class="todo-text message-column" style="width:100%" @*ng-click="@(detailsCode)"*@  md-cell>
+										@*<input class="blend" placeholder="Enter to-do here" ng-model-options="{debounce: 75}" type="text" ng-model="todo.Name" ng-change="functions.sendUpdate(todo)" title="{{todo.Name}}" />*@
+										<div class="todoModal" data-method="EditModal" data-title="Edit to-do" data-Id="{{todo.Id}}">{{todo.Name}}</div>
+										@*<div class="todo-text" ng-if="model.Selected==todo.Key+'@guid'">
 											<a class="pull-right timeline-button" ng-if="todo.Link!=null" target="_blank" href="{{todo.Link}}" style="margin-top: 4px;margin-right: 2px;"><span class="glyphicon glyphicon-comment"></span></a>
 											<iframe class="keep-background" style="background-color: white" width="100%" ng-src="{{trustAsResourceUrl(todo.DetailsUrl_Src)}}" ng-data-src="{{todo.DetailsUrl}}"></iframe>
-										</div>
+										</div>*@
 									</td>
 									<td class="alignCenter createtime-column date-column" style=";" md-cell>
 										{{todo.CreateTime | date:dateFormat}}

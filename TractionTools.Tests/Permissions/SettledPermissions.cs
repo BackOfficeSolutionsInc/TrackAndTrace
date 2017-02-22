@@ -153,6 +153,13 @@ namespace TractionTools.Tests.Permissions {
 		}
 		[TestMethod]
 		[TestCategory("Unset")]
+		public void AssignTodoTo() {
+			Assert.Fail("Unimplemented");
+		}
+		
+
+		[TestMethod]
+		[TestCategory("Unset")]
 		public void EditL10Note() {
 			Assert.Fail("Unimplemented");
 		}

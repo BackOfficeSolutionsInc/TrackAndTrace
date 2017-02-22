@@ -30,6 +30,7 @@ using static RadialReview.Controllers.DashboardController;
 using RadialReview.Models.Angular.Dashboard;
 using RadialReview.Models.Dashboard;
 using NHibernate.Criterion;
+using RadialReview.Utilities.RealTime;
 
 namespace RadialReview.Accessors {
 	public class TodoAccessor : BaseAccessor {
@@ -39,7 +40,7 @@ namespace RadialReview.Accessors {
 		}
 
 
-		public static async Task<StringBuilder> BuildTodoTable(List<TodoModel> todos, string title = null,bool showDetails=false,Dictionary<string,HtmlString> padLookup=null) {
+		public static async Task<StringBuilder> BuildTodoTable(List<TodoModel> todos, string title = null, bool showDetails = false, Dictionary<string, HtmlString> padLookup = null) {
 			title = title.NotNull(x => x.Trim()) ?? "To-do";
 			var table = new StringBuilder();
 			try {
@@ -240,7 +241,7 @@ namespace RadialReview.Accessors {
 								var tile = new AngularTileId<IEnumerable<AngularTodo>>(d.TileId, recurrenceId, null) {
 									Contents = AngularList.Create(AngularListType.Add, new[] { new AngularTodo(todo) })
 								};
-								meetingHub.update(new AngularUpdate(){tile});
+								meetingHub.update(new AngularUpdate() { tile });
 							}
 						}
 					}
@@ -251,7 +252,7 @@ namespace RadialReview.Accessors {
 				#endregion
 				Audit.L10Log(s, perms.GetCaller(), recurrenceId, "CreateTodo", ForModel.Create(todo), todo.NotNull(x => x.Message));
 			}
-			
+
 			return true;
 		}
 
@@ -364,6 +365,52 @@ namespace RadialReview.Accessors {
 
 					csv.SetTitle("Todos");
 					return csv;
+				}
+			}
+		}
+
+
+		public static TodoModel EditTodo(UserOrganizationModel caller, long todoId, String message = null, DateTime? due = null, long? accountableUser = null,bool? completed=null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					using (var rt = RealTimeUtility.Create()) {
+						var perm = PermissionsUtility.Create(s, caller).EditTodo(todoId);
+						var found = s.Get<TodoModel>(todoId);
+
+						if (message != null)
+							found.Message = message;
+						if (due != null)
+							found.DueDate = due.Value;
+						if (accountableUser > 0) {
+							perm.AssignTodoTo(accountableUser.Value, found.Id);
+							found.AccountableUserId = accountableUser.Value;
+						}
+						if (completed != null) {
+							if (found.CompleteTime == null && completed == true) {
+								found.CompleteTime = DateTime.UtcNow;
+							} else if (found.CompleteTime != null && completed == false) {
+								found.CompleteTime = null;
+							}
+						}
+
+						s.Update(found);
+
+						if (found.ForRecurrenceId > 0)
+							rt.UpdateRecurrences(found.ForRecurrenceId.Value).Update(new AngularTodo(found));
+						else if (found.TodoType == TodoType.Personal) {
+							var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+							var group = hub.Clients.Group(MeetingHub.GenerateUserId(accountableUser.Value));
+							group.update(new AngularUpdate() { new AngularTodo(found) });
+						}
+
+
+
+
+						tx.Commit();
+						s.Flush();
+						return found;
+
+					}
 				}
 			}
 		}

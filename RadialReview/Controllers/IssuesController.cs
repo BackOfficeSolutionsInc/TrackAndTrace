@@ -116,7 +116,41 @@ namespace RadialReview.Controllers {
             };
             return PartialView("CopyIssueModal", model);
         }
-        [HttpPost]
+
+
+		//[Access(AccessLevel.UserOrganization)]
+		//public PartialViewResult EditModal(long id) {
+		//	var todo = TodoAccessor.GetTodo(GetUser(), id);
+
+		//	ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTodo(id));
+		//	return PartialView(todo);
+		//}
+
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult EditModal(long id) {
+
+			var issueRecurrence = IssuesAccessor.GetIssue_Recurrence(GetUser(), id);
+
+			ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditIssueRecurrence(id));
+			return PartialView(new IssueVM() {
+				Priority = issueRecurrence.Priority,
+				Message = issueRecurrence.Issue.Message,
+				OwnerId = issueRecurrence.Owner.Id,
+				IssueId = issueRecurrence.Issue.Id,
+				IssueRecurrenceId = issueRecurrence.Id,
+			});
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public JsonResult EditModal(IssueVM model) {
+			var todo = IssuesAccessor.EditIssue(GetUser(), model.IssueRecurrenceId, model.Message, model.OwnerId,model.Priority);
+			return Json(ResultObject.SilentSuccess());
+		}
+
+
+
+		[HttpPost]
         [Access(AccessLevel.UserOrganization)]
         public JsonResult CopyModal(CopyIssueVM model) {
             ValidateValues(model, x => x.ParentIssue_RecurrenceId, x => x.IssueId);

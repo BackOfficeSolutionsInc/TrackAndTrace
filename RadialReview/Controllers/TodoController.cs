@@ -70,7 +70,20 @@ namespace RadialReview.Controllers {
 			}			
 		}
 
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult EditModal(long id) {
+			var todo = TodoAccessor.GetTodo(GetUser(), id);
 
+			ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTodo(id));
+			return PartialView(todo);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public JsonResult EditModal(TodoModel model,string completed=null) {
+			var todo = TodoAccessor.EditTodo(GetUser(), model.Id,model.Message,model.DueDate,model.AccountableUserId,completed.ToBooleanJS());
+			return Json(ResultObject.SilentSuccess());
+		}
 
 
 		[HttpPost]
@@ -324,7 +337,8 @@ namespace RadialReview.Controllers {
             };
             return PartialView("HeadlineTodoModal", model);
         }
-        [HttpPost]
+
+		[HttpPost]
         [Access(AccessLevel.UserOrganization)]
         public async Task<JsonResult> CreateTodoFromHeadline(HeadlineTodoVm model) {
             ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.HeadlineId, x => x.RecurrenceId);
@@ -488,6 +502,8 @@ namespace RadialReview.Controllers {
             return Json(angular, JsonRequestBehavior.AllowGet);
         }
 
+
+		
         
     }
 }

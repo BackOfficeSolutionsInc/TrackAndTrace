@@ -2229,8 +2229,11 @@ body.resizing .notes-tile:after,
     }*/
 }
 .dashboard .grid-tile .inner *:not(.keep-background):not(.background-color):not(.heading):not(.date.current) {
-  background-color: transparent !important;
-  color: #656565;
+  /*background-color: transparent !important;
+		color: #656565;
+			Removed for safari
+
+		*/
 }
 .dashboard .resize-control {
   display: none;

@@ -241,6 +241,31 @@
     </div>
 </div>
 
+<script>
+
+	if (typeof (scrollRight) === "undefined")
+		scrollRight = false;
+
+	scrollRight = scrollRight || function scrollRight() {
+
+		if ($(".scroll-right:not(.scroll-once)").length > 0) {
+			setTimeout(function () {
+				$(".scroll-right:not(.scroll-once)").each(function () {
+					var that = this;
+					var dist = Math.max(4000, $(that).prop("scrollWidth"));
+					console.log("dist", dist);
+					$(that).addClass("scroll-once").animate({ scrollLeft: dist }, 500);
+				});
+			}, 1);
+		} else {
+			setTimeout(scrollRight, 50);
+		}
+	}
+
+	scrollRight();
+
+</script>
+
 @using (Html.BeginStyles()) {
     <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet" />
     <style>
@@ -255,26 +280,6 @@
     @Scripts.Render("~/bundles/MeasurableList")
     <script>
 
-        if (typeof (scrollRight) === "undefined")
-            scrollRight = false;
-
-        scrollRight = scrollRight || function scrollRight() {
-
-            if ($(".scroll-right:not(.scroll-once)").length > 0) {
-                setTimeout(function () {
-                    $(".scroll-right:not(.scroll-once)").each(function () {
-                        var that = this;
-                        var dist = Math.max(4000, $(that).prop("scrollWidth"));
-                        console.log("dist", dist);
-                        $(that).addClass("scroll-once").animate({ scrollLeft: dist }, 500);
-                    });
-                }, 1);
-            } else {
-                setTimeout(scrollRight, 50);
-            }
-        }
-
-        scrollRight();
 
         $(function () {
             fixHelperModified = function (e, tr) {

@@ -1,0 +1,66 @@
+﻿@model RadialReview.Models.Issues.IssueVM
+
+@Html.HiddenFor(x => x.IssueRecurrenceId)
+
+<div class="form-group">
+	@*@Html.LabelFor(x => x.Message)*@
+	@Html.TextAreaFor(x => x.Message, new {
+	@class = "form-control autoResize",
+	placeholder = "Enter Issue message",
+	autocomplete = "off",
+	style = "-webkit-appearance: none;",
+	disable = ViewBag.CanEdit == false,
+	
+})
+</div>
+<div class="form-group">
+	<iframe src="/Issues/Pad/@Model.IssueId" width="99.8%"></iframe>
+</div>
+
+<div class="row">
+	@if (ViewBag.PossibleUsers != null) {
+		<div class="col-sm-6">
+			<div class="form-group">
+				@Html.LabelFor(x => x.OwnerId)
+				<select name="@Html.NameFor(x => x.OwnerId)" class="select-user form-control" style="width: 100%;height:64px;" @(ViewBag.CanEdit == false ? "disable" : "")>
+					@foreach (var u in ViewBag.PossibleUsers) {
+						<option data-img="@u.imageUrl" value="@u.id" @(Model.OwnerId == u.Id ? "selected" : "")>@u.GetName()</option>
+				}
+				</select>
+			</div>
+		</div>
+	}
+	@*<div class="col-sm-5">
+			<div class="form-group">
+				<label>Due Date:</label>
+				@Html.Partial("~/Views/Shared/" + (ViewBag.CanEdit == false ? "DisplayTemplates" : "EditorTemplates") + "/DateTime.cshtml", Model.DueDate,
+					new ViewDataDictionary() { { "name", "DueDate" }, { "localize", true } })
+			</div>
+		</div>*@
+</div>
+
+<script>
+	//function formatState(state) {
+	//	if (!state.id) {
+	//		return state.text;
+	//	}
+	//	var $state = $('<span><img style="max-width:32;max-height:32px" src="' + $(state.element).data("img") + '" class="img-flag" /> ' + state.text + '</span>');
+	//	return $state;
+	//};
+
+	$(".select-user").select2({
+		templateResult: imageListFormat,
+		templateSelection: imageListFormat,
+	});
+
+	$(".autoResize").autoResize();
+
+	@*var now = new Date();
+	now = Date.UTC(now.getYear()+1900, now.getMonth(), now.getDate(),0,0,0);
+	$('#TodoDueDate').datepickerX({
+	    format: '@Html.Organization().Settings.GetDateFormat().ToLower()',
+		onRender: function(date) {
+			return date.valueOf() < now.valueOf() ? 'disabled' : '';
+		}
+	});*@
+</script>

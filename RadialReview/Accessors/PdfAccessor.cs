@@ -2553,7 +2553,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 			me.height = /*Math.Max(me.height,*/ h + 2 * pad/*)*/;
-			gfx.DrawRectangle(pageProps.pen, pageProps.brush, x, y, (int)me.width, (int)me.height);
+			gfx.DrawRectangle(pageProps.pen, pageProps.brush, x, y, (int)Math.Max(0, me.width), (int)Math.Max(0,me.height));
 		}
 
 		private static void DrawLine(XGraphics gfx, PageProp pageProps, List<Tuple<double, double>> points) {

@@ -16,6 +16,8 @@
 		ViewData["endDate"] = "new Date(" + ViewData["endDate"] + ")";
 	}
 
+	bool localize = ViewData["localize"] as bool? == true;
+
 
 	var startDate = ViewData["startDate"]??"-Infinity";
 	var endDate = ViewData["endDate"]??"Infinity";
@@ -38,8 +40,13 @@
 	}
 	var options = "{startDate:" + startDate + ",endDate:" + endDate + "}";
 
-	var generater = new MvcHtmlString("generateDatepicker('." + guid + "'," + jsDate + ",'" + name + "','" + id + "',"+options+");");
+	var method = "generateDatepicker";
+	if (localize) {
+		method = "generateDatepickerLocalize";
 	}
+
+	var generater = new MvcHtmlString(method+"('." + guid + "'," + jsDate + ",'" + name + "','" + id + "',"+options+");");
+}
 <div class="date-container @guid" id="@guid"></div>
 
 <script type="text/javascript">
