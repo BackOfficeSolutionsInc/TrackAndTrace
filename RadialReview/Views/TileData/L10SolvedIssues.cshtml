@@ -11,6 +11,6 @@
 		{"AllowEditOwner", false},
 		{"RecurrenceId", Model},
 		{"Selector", "((model.L10SolvedIssues )| filter:{KeyId:"+Model+"})[0].Contents "},
-	}); }<div ng-show="(model.L10SolvedIssues  | filter:{KeyId:@(Model)}).length==0" class="gray alignCenter" elem-ready="functions.reload((model.L10SolvedIssues | filter:{KeyId:@(Model)}).length==0)">Please wait</div><div ng-if="(model.L10SolvedIssues  | filter:{KeyId:@(Model)})[0].HasError" class="gray alignCenter">{{(model.L10SolvedIssues  | filter:{KeyId:@(Model)})[0].Message}}</div>
+	}); }<div ng-show="(model.L10SolvedIssues  | filter:{KeyId:@(Model)}).length==0" class="gray alignCenter"  style="padding:16px;" elem-ready="functions.reload((model.L10SolvedIssues | filter:{KeyId:@(Model)}).length==0)">Please wait</div><div ng-if="(model.L10SolvedIssues  | filter:{KeyId:@(Model)})[0].HasError" class="gray alignCenter" style="padding:16px;">{{(model.L10SolvedIssues  | filter:{KeyId:@(Model)})[0].Message}}</div>
 </div>
 </div>

@@ -2125,6 +2125,12 @@ body.resizing .notes-tile:after,
   width: 308px !important;
 }
 @media (max-width: 768px) {
+  .add-tile {
+    display: none;
+  }
+  .add-pages {
+    left: 0px!important;
+  }
   #grid {
     width: 100%;
     padding: 10px;
