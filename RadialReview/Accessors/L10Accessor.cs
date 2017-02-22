@@ -3439,7 +3439,7 @@ namespace RadialReview.Accessors {
 						group.updateTodoDueDate(todoId, dueDate.Value.ToJavascriptMilliseconds());
 						updatesText.Add("Due-Date: " + dueDate.Value.ToShortDateString());
 					}
-					if (accountableUser != null && todo.AccountableUserId != accountableUser.Value) {
+					if (accountableUser != null && todo.AccountableUserId != accountableUser.Value && accountableUser>0) {
 						todo.AccountableUserId = accountableUser.Value;
 						todo.AccountableUser = s.Get<UserOrganizationModel>(accountableUser.Value);
 						group.updateTodoAccountableUser(todoId, accountableUser.Value, todo.AccountableUser.GetName(), todo.AccountableUser.ImageUrl(true, ImageSize._32));
@@ -3827,7 +3827,7 @@ namespace RadialReview.Accessors {
 						group.updateIssueDetails(issueRecurrenceId, details);
 						updatesText.Add("Description: " + issue.Issue.Description);
 					}
-					if (owner != null && (issue.Owner == null || owner != issue.Owner.Id)) {
+					if (owner != null && (issue.Owner == null || owner != issue.Owner.Id) && owner>0) {
 						var any = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x => x.DeleteTime == null && x.L10Recurrence.Id == issue.Recurrence.Id && x.User.Id == owner).Take(1).List().ToList();
 						if (!any.Any())
 							throw new PermissionsException("Specified Owner cannot see meeting");
