@@ -32,7 +32,7 @@
 				<label class="control-label" style="padding-top: 6px;">@Html.ReviewName()s are due:</label>
 			</div>
 			<div class="col-xs-6 ">
-				@Html.Partial("~/Views/Shared/EditorTemplates/DateTime.cshtml", DateTime.Now, new ViewDataDictionary { { "name", "DueDate" }, { "startDate", Html.ConvertFromUtc(DateTime.UtcNow) } })
+				@Html.Partial("~/Views/Shared/EditorTemplates/DateTime.cshtml", DateTime.Now.AddDays(7), new ViewDataDictionary { { "name", "DueDate" }, { "startDate", Html.ConvertFromUtc(DateTime.UtcNow) } })
 				@*<div class="date" data-date="@DateTime.Now.ToString("MM-dd-yyyy")" data-date-format="mm-dd-yyyy">
 						@Html.TextBox("DueDate", null, new { @class = "form-control datePicker", id = "DueDate" })
 						<!--input name="date" id="date" class="form-control col-xs-2" size="30" type="text" value=""-->

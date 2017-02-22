@@ -12,10 +12,11 @@
 								   {"AddController", false},
 								   {"AddCompletion", false},
 								   {"AddDatePicker", false},
+								   {"UsePopup",true},
 								   {"RecurrenceId", Model},
 								   {"Selector","(model.L10Todos | filter:{KeyId:"+(Model)+"})[0].Contents"},
 								   {"DefaultSort","'DueDate'"}
 
-							   }); }<div ng-show="(model.L10Todos | filter:{KeyId:@(Model)}).length==0" class="gray alignCenter" elem-ready="functions.reload((model.L10Todos | filter:{KeyId:@(Model)}).length==0)">Please wait</div>
+							   }); }<div ng-show="(model.L10Todos | filter:{KeyId:@(Model)}).length==0" class="gray alignCenter" style="padding-bottom: 16px;" elem-ready="functions.reload((model.L10Todos | filter:{KeyId:@(Model)}).length==0)">Please wait</div>
     </div>
 </div>

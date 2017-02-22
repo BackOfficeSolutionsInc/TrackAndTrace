@@ -657,6 +657,10 @@ body.modal-open {
 .body-notitlebar #wrap #main {
   top: 0px;
 }
+.body-notitlebar .body-full-width .body-content {
+  padding: 0;
+  max-width: 100%;
+}
 .body-full-width .jumbotron .video-container .volume {
   position: absolute;
   top: 0;
@@ -731,43 +735,6 @@ body.modal-open {
   display: block;
   color: transparent;
 }
-/*
-.footer-bar .footer-bar-item {
-	background-color: red;
-	position: absolute;
-	left:0;
-	right:0;
-}
-
-.footer-bar .footer-bar-tab {
-	position: absolute;
-	height: 20px;
-	top: -20px;
-	text-align: center;
-	background: #0F0F0F;
-	border-top-left-radius: 7px;
-	border-top-right-radius: 7px;
-	color: #777;
-	cursor: pointer;
-	border-color: #444;
-	border-width: 1px 0px 0px 1px;
-	border-style: solid;
-	-webkit-transition: bottom 0.25s;
-	transition: bottom 0.25s;
-	z-index: 10001;
-	display: inline-block;
-	padding: 0 20px;
-	float: right;
-}
-
-.footer-bar .videoconference-container .footer-bar-tab {
-	right: 0px;
-}
-
-.footer-bar .transcript-container .footer-bar-tab {
-	right: -214px;
-}
-	*/
 /* http://www.bootply.com/86684 */
 .dropdown-submenu {
   position: relative;
@@ -812,13 +779,6 @@ body.modal-open {
   -webkit-border-radius: 6px 0 6px 6px;
   -moz-border-radius: 6px 0 6px 6px;
   border-radius: 6px 0 6px 6px;
-}
-.md-button.md-icon-button {
-  /*/
-/fill: currentColor;/
-/vertical-align: middle;/
-/display: inline-block;*/
-  /*padding:0px !important;*/
 }
 md-toolbar.md-table-toolbar .md-toolbar-tools md-icon {
   color: inherit;
@@ -903,6 +863,9 @@ body.resizing *::-moz-selection {
   margin-left: -25px;
 }
 @media (max-width: 767px) {
+  .navbar-inverse .navbar-nav > li > a:active {
+    color: #EF7622;
+  }
   .navbar-icon-container {
     padding-top: 11px;
   }

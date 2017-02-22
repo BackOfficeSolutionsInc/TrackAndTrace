@@ -565,6 +565,9 @@ html {
 .meeting-archive .meeting-name {
   font-family: 'Roboto', 'Lato', sans-serif;
 }
+.meeting-archive .message-column {
+  min-width: 400px;
+}
 .meeting-archive .owner-column {
   vertical-align: middle !important;
   padding-right: 24px !important;

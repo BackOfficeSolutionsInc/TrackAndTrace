@@ -1323,7 +1323,7 @@ namespace RadialReview.Utilities {
 			if (userId == caller.Id)
 				return this;
 			var user = session.Get<UserOrganizationModel>(userId);
-
+			
 			var toCheck = new List<Func<PermissionsUtility>> {
 				()=>ManagingOrganization(user.Organization.Id),
 				()=>ManagesUserOrganization(userId, false, PermissionType.EditEmployeeDetails),
@@ -1336,7 +1336,7 @@ namespace RadialReview.Utilities {
 				}
 			}
 
-			return Or(toCheck.ToArray());			
+			return ViewUserOrganization(userId, false,PermissionType.EditEmployeeDetails).Or(toCheck.ToArray());			
 		}
 
 

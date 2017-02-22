@@ -911,6 +911,9 @@ body.resizing .notes-tile:after,
   margin-bottom: 0px;
   min-height: 0px !important;
 }
+.dashboard .scorecard .empty-search.gray {
+  opacity: 1;
+}
 .dashboard .scorecard-table {
   display: block !important;
 }
@@ -1176,6 +1179,11 @@ body.resizing .notes-tile:after,
   text-align: left;
   display: inline-block;
   width: 100%;
+  /*@media(max-width:500px){
+			.date-column{
+				display:none;
+			}
+		}*/
 }
 .dashboard .todo-list-container th {
   font-size: 12px;
