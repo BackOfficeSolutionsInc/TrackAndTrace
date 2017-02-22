@@ -977,21 +977,23 @@ namespace RadialReview.Accessors {
 
 			var caller = perms.GetCaller();
 			perms.ViewUsersL10Meetings(userId);
-
-			L10Recurrence alias = null;
-			//var allRecurrences = new List<L10Recurrence>();
-			var allRecurrenceIds = new List<NameId>();
-			if (caller.ManagingOrganization) {
-				var orgRecurrences = s.QueryOver<L10Recurrence>().Where(x => x.OrganizationId == caller.Organization.Id && x.DeleteTime == null && !x.Pristine)
-					.Select(x => x.Name, x => x.Id).List<object[]>().ToList();
-				allRecurrenceIds.AddRange(orgRecurrences.Select(x => new NameId((string)x[0], (long)x[1])));
-			}
+			
 			//Who should we get this data for? Just Self, or also subordiantes?
 			var accessibleUserIds = new[] { userId };
 			var user = s.Get<UserOrganizationModel>(userId);
 			if (user.Organization.Settings.ManagersCanViewSubordinateL10)
 				accessibleUserIds = DeepAccessor.Users.GetSubordinatesAndSelf(s, caller, userId).ToArray(); //DeepSubordianteAccessor.GetSubordinatesAndSelf(s, caller, userId).ToArray();
 
+			L10Recurrence alias = null;
+			//var allRecurrences = new List<L10Recurrence>();
+			var allRecurrenceIds = new List<NameId>();
+			IEnumerable<object[]> orgRecurrences = null ;
+			if (caller.ManagingOrganization) {
+				orgRecurrences = s.QueryOver<L10Recurrence>().Where(x => x.OrganizationId == caller.Organization.Id && x.DeleteTime == null && !x.Pristine)
+					.Select(x => x.Name, x => x.Id)
+					.Future<object[]>();
+			}
+			
 			var attendee_ReccurenceIds = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
 				.Where(x => x.DeleteTime == null)
 				.WhereRestrictionOn(x => x.User.Id).IsIn(accessibleUserIds)
@@ -1000,19 +1002,31 @@ namespace RadialReview.Accessors {
 				.Select(x => alias.Name, x => alias.Id, x => x.User.Id)
 				.Future<object[]>();
 
-			recurrencesPersonallyAttending = attendee_ReccurenceIds.Where(x => (long)x[2] == userId).Select(x => (long)x[1]).ToList();
 			//Actually load the Recurrences
 
 			var admin_MeasurableIds = s.QueryOver<MeasurableModel>().Where(x => x.AdminUserId == userId && x.DeleteTime == null).Select(x => x.Id).List<long>().ToList();
-
 			var admin_RecurrenceIds = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.DeleteTime == null)
 				.WhereRestrictionOn(x => x.Measurable.Id).IsIn(admin_MeasurableIds)
 				.Left.JoinQueryOver(x => x.L10Recurrence, () => alias)
 				.Where(x => alias.DeleteTime == null)
 				.Select(x => alias.Name, x => alias.Id)
 				.List<object[]>().Select(x => new NameId((string)x[0], (long)x[1])).ToList();
-			allRecurrenceIds.AddRange(admin_RecurrenceIds);
 
+			
+
+
+
+			//From future
+			var attendee_recurrences = attendee_ReccurenceIds.ToList().Select(x => new NameId((string)x[0], (long)x[1])).ToList();
+			recurrencesPersonallyAttending = attendee_ReccurenceIds.Where(x => (long)x[2] == userId).Select(x => (long)x[1]).ToList();
+			recurrencesPersonallyAttending = recurrencesPersonallyAttending.Distinct().ToList();
+
+			if (orgRecurrences != null) {
+				allRecurrenceIds.AddRange(orgRecurrences.ToList().Select(x => new NameId((string)x[0], (long)x[1])));
+			}
+			allRecurrenceIds.AddRange(attendee_recurrences);
+			allRecurrenceIds.AddRange(admin_RecurrenceIds);
+			
 
 			var allViewPerms = PermissionsAccessor.GetPermItemsForUser(s, perms, userId, PermItem.ResourceType.L10Recurrence).Where(x => x.CanView);
 			//Outside the company
@@ -1022,23 +1036,15 @@ namespace RadialReview.Accessors {
 				.WhereRestrictionOn(x => x.Id).IsIn(additionalRecurrenceIdsFromPerms.Select(x => x.ResId).ToArray())
 				.Select(x => x.Name, x => x.Id)
 				.List<object[]>().Select(x => new NameId((string)x[0], (long)x[1])).ToList();
-			//recurrencesPersonallyAttending.AddRange(allViewPerms.Select(x => x.ResId));
-
-
 			allRecurrenceIds.AddRange(additionalRecurrenceFromViewPerms);
+			
 			allRecurrenceIds = allRecurrenceIds.Distinct(x => x.Id).ToList();
-			var available = new List<NameId>();
-
-			recurrencesPersonallyAttending = recurrencesPersonallyAttending.Distinct().ToList();
-
-			//From future
-			var attendee_recurrences = attendee_ReccurenceIds.ToList().Select(x => new NameId((string)x[0], (long)x[1])).ToList();
-			allRecurrenceIds.AddRange(attendee_recurrences);
-
-
+			
 			if (caller.ManagingOrganization) {
 				return allRecurrenceIds;
 			}
+
+			var available = new List<NameId>();
 			foreach (var r in allRecurrenceIds) {
 
 				try {
