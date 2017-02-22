@@ -2348,6 +2348,17 @@ if (isIOS()) {
 	});
 }
 
+function isSafari() {
+	var ua = navigator.userAgent.toLowerCase();
+	if (ua.indexOf('safari') != -1) {
+		if (ua.indexOf('chrome') > -1) {
+		} else {
+			return true;
+		}
+	}
+	return false;
+}
+
 function msieversion() {
 	var ua = window.navigator.userAgent;
 

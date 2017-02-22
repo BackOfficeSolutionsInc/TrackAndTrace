@@ -905,21 +905,11 @@
       <DependentUpon>AccountabilityChart.less</DependentUpon>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\AccountabilityChart\AccountabilityChart.min.css">
-      <DependentUpon>AccountabilityChart.css</DependentUpon>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Content\Angular\Issues.css">
       <DependentUpon>Issues.less</DependentUpon>
     </Content>
-    <Content Include="Content\Angular\Issues.min.css">
-      <DependentUpon>Issues.css</DependentUpon>
-    </Content>
     <Content Include="Content\Angular\LineChart.css">
       <DependentUpon>LineChart.less</DependentUpon>
-    </Content>
-    <Content Include="Content\Angular\LineChart.min.css">
-      <DependentUpon>LineChart.css</DependentUpon>
     </Content>
     <Content Include="Content\Angular\livesearch.css" />
     <None Include="bundleconfig.json" />
@@ -927,20 +917,11 @@
     <Content Include="Content\Angular\ngsortable.css">
       <DependentUpon>ngsortable.less</DependentUpon>
     </Content>
-    <Content Include="Content\Angular\ngsortable.min.css">
-      <DependentUpon>ngsortable.css</DependentUpon>
-    </Content>
     <Content Include="Content\Angular\ProfilePicture.css">
       <DependentUpon>ProfilePicture.less</DependentUpon>
     </Content>
-    <Content Include="Content\Angular\ProfilePicture.min.css">
-      <DependentUpon>ProfilePicture.css</DependentUpon>
-    </Content>
     <Content Include="Content\Angular\Rocks.css">
       <DependentUpon>Rocks.less</DependentUpon>
-    </Content>
-    <Content Include="Content\Angular\Rocks.min.css">
-      <DependentUpon>Rocks.css</DependentUpon>
     </Content>
     <Content Include="Content\Angular\tablesort.css" />
     <Content Include="Content\Angular\xeditable.min.css" />
@@ -948,14 +929,8 @@
     <Content Include="Content\bootstrap\buttons.css">
       <DependentUpon>buttons.less</DependentUpon>
     </Content>
-    <Content Include="Content\bootstrap\buttons.min.css">
-      <DependentUpon>buttons.css</DependentUpon>
-    </Content>
     <Content Include="Content\bootstrap\custom\XEditable.css">
       <DependentUpon>XEditable.less</DependentUpon>
-    </Content>
-    <Content Include="Content\bootstrap\custom\XEditable.min.css">
-      <DependentUpon>XEditable.css</DependentUpon>
     </Content>
     <Content Include="Content\creditcard_icon\bank.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -963,9 +938,6 @@
     <Content Include="Content\favicon-local.ico" />
     <Content Include="Content\GettingStarted\GettingStarted.css">
       <DependentUpon>GettingStarted.less</DependentUpon>
-    </Content>
-    <Content Include="Content\GettingStarted\GettingStarted.min.css">
-      <DependentUpon>GettingStarted.css</DependentUpon>
     </Content>
     <Content Include="Content\img\graystripe-light.png" />
     <Content Include="Content\L10\Archive\Archive.css">
@@ -977,14 +949,8 @@
     <Content Include="Content\L10\L10.css">
       <DependentUpon>L10.less</DependentUpon>
     </Content>
-    <Content Include="Content\L10\L10.min.css">
-      <DependentUpon>L10.css</DependentUpon>
-    </Content>
     <Content Include="Content\L10\L10Headlines.css">
       <DependentUpon>L10Headlines.less</DependentUpon>
-    </Content>
-    <Content Include="Content\L10\L10Headlines.min.css">
-      <DependentUpon>L10Headlines.css</DependentUpon>
     </Content>
     <Content Include="Content\L10\L10IDS.V2.css">
       <DependentUpon>L10IDS.V2.less</DependentUpon>
@@ -992,56 +958,29 @@
     <Content Include="Content\Manage\Manage.css">
       <DependentUpon>Manage.less</DependentUpon>
     </Content>
-    <Content Include="Content\Manage\Manage.min.css">
-      <DependentUpon>Manage.css</DependentUpon>
-    </Content>
     <Content Include="Content\MaterialDesign\Components\Animations.css">
       <DependentUpon>Animations.less</DependentUpon>
-    </Content>
-    <Content Include="Content\MaterialDesign\Components\Animations.min.css">
-      <DependentUpon>Animations.css</DependentUpon>
     </Content>
     <Content Include="Content\MaterialDesign\Components\Buttons.css">
       <DependentUpon>Buttons.less</DependentUpon>
     </Content>
-    <Content Include="Content\MaterialDesign\Components\Buttons.min.css">
-      <DependentUpon>Buttons.css</DependentUpon>
-    </Content>
     <Content Include="Content\MaterialDesign\Components\DataTable.css">
       <DependentUpon>DataTable.less</DependentUpon>
-    </Content>
-    <Content Include="Content\MaterialDesign\Components\DataTable.min.css">
-      <DependentUpon>DataTable.css</DependentUpon>
     </Content>
     <Content Include="Content\MaterialDesign\Components\MaterialDesign.css">
       <DependentUpon>MaterialDesign.less</DependentUpon>
     </Content>
-    <Content Include="Content\MaterialDesign\Components\MaterialDesign.min.css">
-      <DependentUpon>MaterialDesign.css</DependentUpon>
-    </Content>
     <Content Include="Content\MaterialDesign\Components\Shading.css">
       <DependentUpon>Shading.less</DependentUpon>
-    </Content>
-    <Content Include="Content\MaterialDesign\Components\Shading.min.css">
-      <DependentUpon>Shading.css</DependentUpon>
     </Content>
     <Content Include="Content\MaterialDesign\Components\Inputs.css">
       <DependentUpon>Inputs.less</DependentUpon>
     </Content>
-    <Content Include="Content\MaterialDesign\Components\Inputs.min.css">
-      <DependentUpon>Inputs.css</DependentUpon>
-    </Content>
     <Content Include="Content\MaterialDesign\Components\Progress.css">
       <DependentUpon>Progress.less</DependentUpon>
     </Content>
-    <Content Include="Content\MaterialDesign\Components\Progress.min.css">
-      <DependentUpon>Progress.css</DependentUpon>
-    </Content>
     <Content Include="Content\bootstrap\custom\modal.css">
       <DependentUpon>modal.less</DependentUpon>
-    </Content>
-    <Content Include="Content\bootstrap\custom\modal.min.css">
-      <DependentUpon>modal.css</DependentUpon>
     </Content>
     <Content Include="Content\creditcard_icon\amex.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1080,49 +1019,28 @@
     <Content Include="Content\L10\L10ChatLog.css">
       <DependentUpon>L10ChatLog.less</DependentUpon>
     </Content>
-    <Content Include="Content\L10\L10ChatLog.min.css">
-      <DependentUpon>L10ChatLog.css</DependentUpon>
-    </Content>
     <Content Include="Content\L10\L10Transcribe.css" />
     <Content Include="Content\L10\L10Wizard.css">
       <DependentUpon>L10Wizard.less</DependentUpon>
     </Content>
-    <Content Include="Content\L10\L10Wizard.min.css">
-      <DependentUpon>L10Wizard.css</DependentUpon>
-    </Content>
     <Content Include="Content\MaterialDesign\Components\Snackbar.css">
       <DependentUpon>Snackbar.less</DependentUpon>
-    </Content>
-    <Content Include="Content\MaterialDesign\Components\Snackbar.min.css">
-      <DependentUpon>Snackbar.css</DependentUpon>
     </Content>
     <Content Include="Content\MaterialDesign\Libraries\lf-ng-md-file-input.css" />
     <Content Include="Content\MaterialDesign\Libraries\md-stepper.css" />
     <Content Include="Content\Reports\ClientDetails.css">
       <DependentUpon>ClientDetails.less</DependentUpon>
     </Content>
-    <Content Include="Content\Reports\ClientDetails.min.css">
-      <DependentUpon>ClientDetails.css</DependentUpon>
-    </Content>
     <Content Include="Content\Reports\ReportDetails.css">
       <DependentUpon>ReportDetails.less</DependentUpon>
     </Content>
-    <Content Include="Content\Reports\ReportDetails.min.css">
-      <DependentUpon>ReportDetails.css</DependentUpon>
-    </Content>
     <Content Include="Content\Reports\Reports.css">
       <DependentUpon>Reports.less</DependentUpon>
-    </Content>
-    <Content Include="Content\Reports\Reports.min.css">
-      <DependentUpon>Reports.css</DependentUpon>
     </Content>
     <Content Include="Content\Tour\anno.css" />
     <Content Include="Content\Upload.css" />
     <Content Include="Content\Upload\Upload.css">
       <DependentUpon>Upload.less</DependentUpon>
-    </Content>
-    <Content Include="Content\Upload\Upload.min.css">
-      <DependentUpon>Upload.css</DependentUpon>
     </Content>
     <Content Include="Content\VTO\VTO.css">
       <DependentUpon>VTO.less</DependentUpon>
@@ -1282,26 +1200,14 @@
     <Content Include="Content\bootstrap\bootstrap.css">
       <DependentUpon>bootstrap.less</DependentUpon>
     </Content>
-    <Content Include="Content\bootstrap\bootstrap.min.css">
-      <DependentUpon>bootstrap.css</DependentUpon>
-    </Content>
     <Content Include="Content\bootstrap\custom\dashboard.css">
       <DependentUpon>dashboard.less</DependentUpon>
-    </Content>
-    <Content Include="Content\bootstrap\custom\dashboard.min.css">
-      <DependentUpon>dashboard.css</DependentUpon>
     </Content>
     <Content Include="Content\bootstrap\media.css">
       <DependentUpon>media.less</DependentUpon>
     </Content>
-    <Content Include="Content\bootstrap\media.min.css">
-      <DependentUpon>media.css</DependentUpon>
-    </Content>
     <Content Include="Content\bootstrap\mixins.css">
       <DependentUpon>mixins.less</DependentUpon>
-    </Content>
-    <Content Include="Content\bootstrap\mixins.min.css">
-      <DependentUpon>mixins.css</DependentUpon>
     </Content>
     <Content Include="Content\bootstrap\mixins\alerts.css">
       <DependentUpon>alerts.less</DependentUpon>
@@ -1486,9 +1392,6 @@
     <Content Include="Content\bootstrap\custom\Site.css">
       <DependentUpon>Site.less</DependentUpon>
     </Content>
-    <Content Include="Content\bootstrap\custom\Site.min.css">
-      <DependentUpon>Site.css</DependentUpon>
-    </Content>
     <Content Include="Content\bootstrap\mixins\vendor-prefixes.css">
       <DependentUpon>vendor-prefixes.less</DependentUpon>
     </Content>
@@ -1498,32 +1401,17 @@
     <Content Include="Content\bootstrap\normalize.css">
       <DependentUpon>normalize.less</DependentUpon>
     </Content>
-    <Content Include="Content\bootstrap\normalize.min.css">
-      <DependentUpon>normalize.css</DependentUpon>
-    </Content>
     <Content Include="Content\bootstrap\print.css">
       <DependentUpon>print.less</DependentUpon>
-    </Content>
-    <Content Include="Content\bootstrap\print.min.css">
-      <DependentUpon>print.css</DependentUpon>
     </Content>
     <Content Include="Content\bootstrap\responsive-embed.css">
       <DependentUpon>responsive-embed.less</DependentUpon>
     </Content>
-    <Content Include="Content\bootstrap\responsive-embed.min.css">
-      <DependentUpon>responsive-embed.css</DependentUpon>
-    </Content>
     <Content Include="Content\bootstrap\theme.css">
       <DependentUpon>theme.less</DependentUpon>
     </Content>
-    <Content Include="Content\bootstrap\theme.min.css">
-      <DependentUpon>theme.css</DependentUpon>
-    </Content>
     <Content Include="Content\bootstrap\variables.css">
       <DependentUpon>variables.less</DependentUpon>
-    </Content>
-    <Content Include="Content\bootstrap\variables.min.css">
-      <DependentUpon>variables.css</DependentUpon>
     </Content>
     <Content Include="Content\components\daterangepicker-bs3.css" />
     <Content Include="Content\components\fivestate.css" />
@@ -1537,9 +1425,6 @@
       <DependentUpon>Theme.less</DependentUpon>
     </Content>
     <Content Include="Content\Theme.less" />
-    <Content Include="Content\Theme.min.css">
-      <DependentUpon>Theme.css</DependentUpon>
-    </Content>
     <Content Include="Content\VTO\VtoPrint.css" />
     <Content Include="Content\_dashboard_OLD.css" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />

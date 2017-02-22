@@ -941,7 +941,7 @@
 			var skipDrag = false;
 			dragListener = d3.behavior.drag()
                 .on("dragstart", function (d) {
-                	debugger;
+                	//debugger;
                 	skipDrag = false;
                 	if (d == scope.root)
                 		skipDrag = true;

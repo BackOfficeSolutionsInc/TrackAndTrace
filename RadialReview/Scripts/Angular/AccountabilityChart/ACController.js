@@ -1169,13 +1169,14 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		});
 
 		var isFirefox = typeof InstallTrigger !== 'undefined';
+		var safari = isSafari();
 		var fo = nodeUpdate.select(".foreignObject")
 			.attr("width", function (d) {
 				if (isFirefox)
 					return d.width + 20;
 				return d.width;
 			});
-		if (isFirefox) {
+		if (isFirefox || safari) {
 			fo.attr("height", function (d) {
 				return d.height;
 			});
