@@ -370,49 +370,42 @@ namespace RadialReview.Accessors {
 		}
 
 
-		public static TodoModel EditTodo(UserOrganizationModel caller, long todoId, String message = null, DateTime? due = null, long? accountableUser = null,bool? completed=null) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					using (var rt = RealTimeUtility.Create()) {
-						var perm = PermissionsUtility.Create(s, caller).EditTodo(todoId);
-						var found = s.Get<TodoModel>(todoId);
+		//public static TodoModel EditTodo(UserOrganizationModel caller, long todoId, String message = null, DateTime? due = null, long? accountableUser = null,bool? completed=null) {
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
+		//			using (var rt = RealTimeUtility.Create()) {
+		//				var perm = PermissionsUtility.Create(s, caller).EditTodo(todoId);
+		//				var found = s.Get<TodoModel>(todoId);
 
-						if (message != null)
-							found.Message = message;
-						if (due != null)
-							found.DueDate = due.Value;
-						if (accountableUser > 0) {
-							perm.AssignTodoTo(accountableUser.Value, found.Id);
-							found.AccountableUserId = accountableUser.Value;
-						}
-						if (completed != null) {
-							if (found.CompleteTime == null && completed == true) {
-								found.CompleteTime = DateTime.UtcNow;
-							} else if (found.CompleteTime != null && completed == false) {
-								found.CompleteTime = null;
-							}
-						}
-
-						s.Update(found);
-
-						if (found.ForRecurrenceId > 0)
-							rt.UpdateRecurrences(found.ForRecurrenceId.Value).Update(new AngularTodo(found));
-						else if (found.TodoType == TodoType.Personal) {
-							var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-							var group = hub.Clients.Group(MeetingHub.GenerateUserId(accountableUser.Value));
-							group.update(new AngularUpdate() { new AngularTodo(found) });
-						}
-
-
-
-
-						tx.Commit();
-						s.Flush();
-						return found;
-
-					}
-				}
-			}
-		}
+		//				if (message != null)
+		//					found.Message = message;
+		//				if (due != null)
+		//					found.DueDate = due.Value;
+		//				if (accountableUser > 0) {
+		//					perm.AssignTodoTo(accountableUser.Value, found.Id);
+		//					found.AccountableUserId = accountableUser.Value;
+		//				}
+		//				if (completed != null) {
+		//					if (found.CompleteTime == null && completed == true) {
+		//						found.CompleteTime = DateTime.UtcNow;
+		//					} else if (found.CompleteTime != null && completed == false) {
+		//						found.CompleteTime = null;
+		//					}
+		//				}
+		//				s.Update(found);
+		//				if (found.ForRecurrenceId > 0)
+		//					rt.UpdateRecurrences(found.ForRecurrenceId.Value).Update(new AngularTodo(found));
+		//				else if (found.TodoType == TodoType.Personal) {
+		//					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+		//					var group = hub.Clients.Group(MeetingHub.GenerateUserId(accountableUser.Value));
+		//					group.update(new AngularUpdate() { new AngularTodo(found) });
+		//				}
+		//				tx.Commit();
+		//				s.Flush();
+		//				return found;
+		//			}
+		//		}
+		//	}
+		//}
 	}
 }

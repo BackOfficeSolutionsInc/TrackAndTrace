@@ -144,7 +144,10 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
 		public JsonResult EditModal(IssueVM model) {
-			var todo = IssuesAccessor.EditIssue(GetUser(), model.IssueRecurrenceId, model.Message, model.OwnerId,model.Priority);
+
+			L10Accessor.UpdateIssue(GetUser(), model.IssueRecurrenceId, DateTime.UtcNow, model.Message, null, null, null, model.OwnerId, model.Priority);
+
+			//var todo = IssuesAccessor.EditIssue(GetUser(), model.IssueRecurrenceId, model.Message, model.OwnerId,model.Priority);
 			return Json(ResultObject.SilentSuccess());
 		}
 

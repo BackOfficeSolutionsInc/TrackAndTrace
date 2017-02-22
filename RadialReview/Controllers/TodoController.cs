@@ -81,7 +81,8 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
 		public JsonResult EditModal(TodoModel model,string completed=null) {
-			var todo = TodoAccessor.EditTodo(GetUser(), model.Id,model.Message,model.DueDate,model.AccountableUserId,completed.ToBooleanJS());
+			L10Accessor.UpdateTodo(GetUser(), model.Id, model.Message, null, model.DueDate, model.AccountableUserId, completed.ToBooleanJS());
+			//var todo = TodoAccessor.EditTodo(GetUser(), model.Id,model.Message,model.DueDate,model.AccountableUserId,completed.ToBooleanJS());
 			return Json(ResultObject.SilentSuccess());
 		}
 
