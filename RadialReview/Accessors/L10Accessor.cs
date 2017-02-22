@@ -445,7 +445,7 @@ namespace RadialReview.Accessors {
 
 
 					var issuesToClose = s.QueryOver<IssueModel.IssueModel_Recurrence>()
-											.Where(x => x.DeleteTime == null && x.MarkedForClose && x.Recurrence.Id == recurrenceId)
+											.Where(x => x.DeleteTime == null && x.MarkedForClose && x.Recurrence.Id == recurrenceId && x.CloseTime == null)
 											.List().ToList();
 
 					foreach (var i in issuesToClose) {
@@ -550,8 +550,9 @@ namespace RadialReview.Accessors {
 								var email = user.GetEmail();
 
 								output.Append(todosTable[user.Id]);
-
-								output.Append(issueTable.ToString());
+								if (issuesForTable.Any()) {
+									output.Append(issueTable.ToString());
+								}
 								var mail = Mail.To(EmailTypes.L10Summary, email)
 									.Subject(EmailStrings.MeetingSummary_Subject, recurrence.Name)
 									.Body(EmailStrings.MeetingSummary_Body, user.GetName(), output.ToString(), Config.ProductName(meeting.Organization));
