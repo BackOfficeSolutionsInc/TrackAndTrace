@@ -200,183 +200,187 @@
 			}
 			var chatContainer = document.querySelector('.chat-output');
 
-			var connection = new RTCMultiConnection("@MM.RoomId");
+			try{
+				var connection = new RTCMultiConnection("@MM.RoomId");
 
-			//var browser = (connection.DetectRTC.browser.name||"").toLowerCase();
+				//var browser = (connection.DetectRTC.browser.name||"").toLowerCase();
 
-			//if(!(browser=="chrome" || browser=="firefox")) {
-			//    //cant use browser
-			//    $(".videoconference-container").addClass("disabled");
-			//    console.log("browser not compatible with video");
-			//}
-			var iceServers = [];
+				//if(!(browser=="chrome" || browser=="firefox")) {
+				//    //cant use browser
+				//    $(".videoconference-container").addClass("disabled");
+				//    console.log("browser not compatible with video");
+				//}
+				var iceServers = [];
 
-			connection.getExternalIceServers = false;
-			//connection.candidates = {
-			//    relay:     true,
-			//    reflexive: false,
-			//    host:      false
-			//};
+				connection.getExternalIceServers = false;
+				//connection.candidates = {
+				//    relay:     true,
+				//    reflexive: false,
+				//    host:      false
+				//};
 
-			var coturn = "52.33.4.211";
-			var u1 ="turn";
-			var p1 ="turn";
+				var coturn = "52.33.4.211";
+				var u1 ="turn";
+				var p1 ="turn";
 
-			// STUN servers
-			iceServers.push({urls: 'stun:'+coturn+':3478'});
-			iceServers.push({urls: 'stun:'+coturn+':5349'});
-			iceServers.push({urls: 'stun:'+coturn+':3479'})
-			// TURN servers
-			iceServers.push({
-				urls: 'turn:'+coturn+':3478',
-				credential: p1,
-				username: u1
-			});
-			iceServers.push({
-				urls: 'turn:'+coturn+':5349',
-				credential: p1,
-				username: u1
-			});
-			iceServers.push({
-				urls: 'turn:'+coturn+':3479',
-				credential: p1,
-				username: u1
-			});
-
-			connection.iceServers = iceServers;
-
-			connection.socketURL = "@Html.VideoConferenceUrl():443";
-			connection.enableFileSharing = true; // by default, it is "false".
-
-			connection.extra = {name: "@ViewBag.UsersName"};
-			connection.session = {
-				audio: true, video: true, data: true};
-			connection.sdpConstraints.mandatory = {
-				OfferToReceiveAudio: true,OfferToReceiveVideo: true
-			};
-
-			connection.bandwidth = {
-				video: 256,    // 256kbps
-				audio: 128,
-			};
-
-			var localConnected=false;
-
-			connection.onstream = function(event) {
-				console.log("adding stream!");
-				console.log(event.mediaElement);
-				event.mediaElement.controls = false;
-				var streamId = event.streamid;
-				var name = "";
-				if (event.extra && event.extra.name){
-					name = event.extra.name;
-				}
-				var container = $("<div class='video-container streamid_" + streamId + "'>"+/*"<video src='' height='116px' autoplay/>"+*/"<div class='video-name'>" + name + "</div><div class='volume'></div><div class='no-mic-icon icon fontastic-icon-mic-no'></div></div>");
-				$(".video-bar").append(container);
-
-				var otherVideo = $(".video-container.streamid_" + streamId + " video")[0];
-				$(event.mediaElement).css({"height":"116px","max-width":"154px;"});
-				if (event.type == "local") {
-					container.prepend(event.mediaElement);
-					container.addClass("mine");
-					container.find(".video-name").html("You");
-					$(".videoconference-container .sendVideo").removeClass("fontastic-icon-eye-slash-close");
-					$(".videoconference-container .sendAudio").removeClass("fontastic-icon-mic-no");
-					$(".videoconference-container .sendVideo").addClass("fontastic-icon-eye-2");
-					$(".videoconference-container .sendAudio").addClass("fontastic-icon-mic");
-					$(".start-video").addClass("hidden");
-					localConnected=true;
-				}else{
-					container.append(event.mediaElement);
-				}
-			};
-
-			connection.onstreamended = function(event) {
-				var streamId = event.streamid;
-				$(".streamid_" + streamId).remove();
-				if (event.type=="local"){
-					localConnected=false;
-				}
-			};
-			connection.onspeaking = function(e) {
-				$(e.mediaElement).parent(".video-container").addClass("speaking");
-				connection.send({
-					speaking: true,
-					streamid: e.streamid
+				// STUN servers
+				iceServers.push({urls: 'stun:'+coturn+':3478'});
+				iceServers.push({urls: 'stun:'+coturn+':5349'});
+				iceServers.push({urls: 'stun:'+coturn+':3479'})
+				// TURN servers
+				iceServers.push({
+					urls: 'turn:'+coturn+':3478',
+					credential: p1,
+					username: u1
 				});
-			};
-			connection.onsilence = function(e) {
-				$(e.mediaElement).parent(".video-container").removeClass("speaking");
-				connection.send({
-					silent: true,
-					streamid: e.streamid
+				iceServers.push({
+					urls: 'turn:'+coturn+':5349',
+					credential: p1,
+					username: u1
 				});
-			};
-			function appendDIV(event) {
-				var div = document.createElement('div');
-				div.innerHTML = event.data || event;
-				chatContainer.insertBefore(div, chatContainer.firstChild);
-				div.tabIndex = 0; div.focus();
-				document.getElementById('input-text-chat').focus();
-			}
+				iceServers.push({
+					urls: 'turn:'+coturn+':3479',
+					credential: p1,
+					username: u1
+				});
 
-			connection.onmessage = function(event) {
-				if(event.data.speaking || event.data.silent) {
-					//var streamObject = connection.streams[event.data.streamid];
-					if(event.data.speaking)
-						$(".video-container.streamid_"+event.data.streamid).addClass("speaking");
-					else
-						$(".video-container.streamid_"+event.data.streamid).removeClass("speaking");
-				}else{
-					appendDIV(event);
-				}
+				connection.iceServers = iceServers;
 
-			};
-			connection.filesContainer = $('.file-container');
+				connection.socketURL = "@Html.VideoConferenceUrl():443";
+				connection.enableFileSharing = true; // by default, it is "false".
 
-			connection.onopen = function() {
-				//$('.share-file').disabled = false;
-				//$('.input-text-chat').disabled = false;
-			};
+				connection.extra = {name: "@ViewBag.UsersName"};
+				connection.session = {
+					audio: true, video: true, data: true};
+				connection.sdpConstraints.mandatory = {
+					OfferToReceiveAudio: true,OfferToReceiveVideo: true
+				};
 
-			$(function() {
-				setTimeout(function() {
-					try {
-						connection.session.oneway = true;
-						// connection.join();
-						connection.join(false, {
-							localPeerSdpConstraints: {
-								OfferToReceiveAudio: true,
-								OfferToReceiveVideo: true
-							},
-							remotePeerSdpConstraints: {
-								OfferToReceiveAudio: true,
-								OfferToReceiveVideo: true
-							},
-							isOneWay: true,
-							isDataOnly: false
-						});
-						// connection.session.oneway = true;
-						//connection.session.audio=false;
-						//connection.session.video=false;
-						//connection.session.data=true;
-						//connection.sdpConstraints.mandatory = {
-						//    OfferToReceiveAudio: true,
-						//    OfferToReceiveVideo: true
-						//};
-						//connection.sdpConstraints = {
-						//    OfferToReceiveAudio: false,
-						//    OfferToReceiveVideo: false
-						//};
-						//connection.openOrJoin();
+				connection.bandwidth = {
+					video: 256,    // 256kbps
+					audio: 128,
+				};
 
-					} catch(e) {
-						showAlert("Could not connect to video conferencing server.");
-						console.error(e);
+				var localConnected=false;
+
+				connection.onstream = function(event) {
+					console.log("adding stream!");
+					console.log(event.mediaElement);
+					event.mediaElement.controls = false;
+					var streamId = event.streamid;
+					var name = "";
+					if (event.extra && event.extra.name){
+						name = event.extra.name;
 					}
-				},100);
-			});
+					var container = $("<div class='video-container streamid_" + streamId + "'>"+/*"<video src='' height='116px' autoplay/>"+*/"<div class='video-name'>" + name + "</div><div class='volume'></div><div class='no-mic-icon icon fontastic-icon-mic-no'></div></div>");
+					$(".video-bar").append(container);
 
+					var otherVideo = $(".video-container.streamid_" + streamId + " video")[0];
+					$(event.mediaElement).css({"height":"116px","max-width":"154px;"});
+					if (event.type == "local") {
+						container.prepend(event.mediaElement);
+						container.addClass("mine");
+						container.find(".video-name").html("You");
+						$(".videoconference-container .sendVideo").removeClass("fontastic-icon-eye-slash-close");
+						$(".videoconference-container .sendAudio").removeClass("fontastic-icon-mic-no");
+						$(".videoconference-container .sendVideo").addClass("fontastic-icon-eye-2");
+						$(".videoconference-container .sendAudio").addClass("fontastic-icon-mic");
+						$(".start-video").addClass("hidden");
+						localConnected=true;
+					}else{
+						container.append(event.mediaElement);
+					}
+				};
+
+				connection.onstreamended = function(event) {
+					var streamId = event.streamid;
+					$(".streamid_" + streamId).remove();
+					if (event.type=="local"){
+						localConnected=false;
+					}
+				};
+				connection.onspeaking = function(e) {
+					$(e.mediaElement).parent(".video-container").addClass("speaking");
+					connection.send({
+						speaking: true,
+						streamid: e.streamid
+					});
+				};
+				connection.onsilence = function(e) {
+					$(e.mediaElement).parent(".video-container").removeClass("speaking");
+					connection.send({
+						silent: true,
+						streamid: e.streamid
+					});
+				};
+				function appendDIV(event) {
+					var div = document.createElement('div');
+					div.innerHTML = event.data || event;
+					chatContainer.insertBefore(div, chatContainer.firstChild);
+					div.tabIndex = 0; div.focus();
+					document.getElementById('input-text-chat').focus();
+				}
+
+				connection.onmessage = function(event) {
+					if(event.data.speaking || event.data.silent) {
+						//var streamObject = connection.streams[event.data.streamid];
+						if(event.data.speaking)
+							$(".video-container.streamid_"+event.data.streamid).addClass("speaking");
+						else
+							$(".video-container.streamid_"+event.data.streamid).removeClass("speaking");
+					}else{
+						appendDIV(event);
+					}
+
+				};
+				connection.filesContainer = $('.file-container');
+
+				connection.onopen = function() {
+					//$('.share-file').disabled = false;
+					//$('.input-text-chat').disabled = false;
+				};
+
+				$(function() {
+					setTimeout(function() {
+						try {
+							connection.session.oneway = true;
+							// connection.join();
+							connection.join(false, {
+								localPeerSdpConstraints: {
+									OfferToReceiveAudio: true,
+									OfferToReceiveVideo: true
+								},
+								remotePeerSdpConstraints: {
+									OfferToReceiveAudio: true,
+									OfferToReceiveVideo: true
+								},
+								isOneWay: true,
+								isDataOnly: false
+							});
+							// connection.session.oneway = true;
+							//connection.session.audio=false;
+							//connection.session.video=false;
+							//connection.session.data=true;
+							//connection.sdpConstraints.mandatory = {
+							//    OfferToReceiveAudio: true,
+							//    OfferToReceiveVideo: true
+							//};
+							//connection.sdpConstraints = {
+							//    OfferToReceiveAudio: false,
+							//    OfferToReceiveVideo: false
+							//};
+							//connection.openOrJoin();
+
+						} catch(e) {
+							showAlert("Could not connect to video conferencing server.");
+							console.error(e);
+						}
+					},100);
+				});
+			}catch(e){
+				console.error("Error with video conference.")
+				console.error(e);
+			}
 
 		</script>
 	}

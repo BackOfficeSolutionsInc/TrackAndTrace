@@ -3,7 +3,7 @@
 // ______________________________
 // RTCMultiConnection-v3.0 (Beta)
 
-'use strict';
+//'use strict';
 
 (function() {
 

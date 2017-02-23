@@ -258,7 +258,6 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 	};
 
 	$scope.functions.setPage = function (page) {
-		debugger
 		console.info("should we be here?")
 		$http.get("/meeting/SetPage/" + $scope.model.RecurrenceId + "?page=" + page + "&connection=" + $scope.connectionId);
 		if (!$scope.model.FollowLeader || $scope.model.IsLeader) {

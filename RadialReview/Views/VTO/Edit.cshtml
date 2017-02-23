@@ -22,8 +22,17 @@
 	Html.RenderPartial("~/Views/CDN/Angular.cshtml");
 }
 @using (Html.BeginStyles()) {
-	@*<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.min.js"></script>*@
 	<link href="~/Content/VTO/VTO.css" rel="stylesheet" />
+	
+	<!--vvvv  DO NOT DELETE THIS  vvvv-->
+	<!--[if IE]>
+	<style>
+		.vto-print{
+			display:none;
+		}
+	</style>
+	<![endif]-->
+	<!--^^^^  DO NOT DELETE THIS  ^^^^-->
 }
 @using (Html.BeginScripts()) {
 	<script src="~/Scripts/VTO/vto.js"></script>

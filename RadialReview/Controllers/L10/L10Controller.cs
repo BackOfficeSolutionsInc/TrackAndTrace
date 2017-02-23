@@ -212,16 +212,16 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.UserOrganization)]
         public ActionResult Edit(L10EditVM model)
         {
-            ValidateValues(model,
-                x => x.Recurrence.Id,
-                x => x.Recurrence.CreateTime,
-                x => x.Recurrence.OrganizationId,
-                x => x.Recurrence.MeetingInProgress,
-                x => x.Recurrence.CreatedById,
-                x => x.Recurrence.VideoId,
-                x => x.Recurrence.HeadlinesId,
-                x => x.Recurrence.OrderIssueBy,
-                x => x.Recurrence.VtoId);
+            //ValidateValues(model,
+            //    x => x.Recurrence.Id,
+            //    x => x.Recurrence.CreateTime,
+            //    x => x.Recurrence.OrganizationId,
+            //    x => x.Recurrence.MeetingInProgress,
+            //    x => x.Recurrence.CreatedById,
+            //    x => x.Recurrence.VideoId,
+            //    x => x.Recurrence.HeadlinesId,
+            //    x => x.Recurrence.OrderIssueBy,
+            //    x => x.Recurrence.VtoId);
 
             if (model.Recurrence == null)
                 throw new PermissionsException("Recurrence was null");

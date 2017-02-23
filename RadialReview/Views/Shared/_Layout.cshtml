@@ -47,7 +47,6 @@
 	<link rel="icon" type="image/png" href="https://s3.amazonaws.com/Radial/icons/TractionTools/res/android-chrome-192x192.png" sizes="192x192">
 	<meta name="msapplication-square70x70logo" content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/smalltile.png" />
 	<meta name="msapplication-square150x150logo" content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/mediumtile.png" />
-	@*<meta name="msapplication-wide310x150logo" content="/widetile.png" />*@
 	<meta name="msapplication-square310x310logo" content="https://s3.amazonaws.com/Radial/icons/TractionTools/res/largetile.png" />
 
 	@if (ViewBag.IsLocal ?? false) {
@@ -69,7 +68,6 @@
 	} else {
 		<title>@ViewBag.Title - @Html.ProductName()</title>
 	}
-	@*<link href="" rel="stylesheet" />*@
 	@Styles.Render("~/Content/css")
 	@RenderSection("styles", required: false)
 	@Html.PageStyles()
@@ -77,13 +75,12 @@
 		<link href="~/Content/L10/L10Conference.css" rel="stylesheet" />
 	}
 	<link href="/User/styles" rel="stylesheet" type="text/css" />
-	@*<script>
-		</script>*@
 </head>
 @if (ViewBag.HasBaseController == null) {
 	throw new Exception("You must extend from the base controller.");
 }
 <body id="body" class="@(ViewBag.FullWidth ?? false ? "body-full-width" : "body-normal-width")  @(ViewBag.LayoutClass??"")  @(limitFiveState?"fivestate-limit-true":"")">
+	@Scripts.Render("~/bundles/compatability")
 	<script>
 		window.UserId = @(ViewBag.UserId??-1);
 		window.OrgId = @(ViewBag.OrganizationId ?? -1);
@@ -103,6 +100,8 @@
 
 		window.LimitFiveState = @((""+limitFiveState).ToLower());
 
+
+		//Date Formatting
 		function getFormattedDate(date,format) {
 			if (typeof (date) === "undefined") {date = new Date();}
 			else if (typeof (date) === "number") {date = new Date(date);}
@@ -118,6 +117,8 @@
 			return _userFormat;
 		}
 
+		
+
 	</script>
 
 
@@ -125,7 +126,7 @@
 
 	@if (ViewBag.IsLocal ?? false) {
 		<div id="local"></div>
-			<div class="debugger"></div>
+		<div class="debugger"></div>
 	}
 	<div class="statusContainer"><div id="status">No status</div></div>
 	<div id="wrap">
@@ -164,7 +165,7 @@
 								@if (((int?)ViewBag.Organizations ?? 0) > 0) {
 									if (ViewBag.ShowL10) {
 										<span id="header-tab-new-headline" class="navbar-icon-button icon fontastic-icon-bookmark headlineModal" title="New People Headline"></span>
-											<span id="header-tab-new-issue" class="navbar-icon-button glyphicon1 glyphicon-pushpi1n icon fontastic-icon-pinboard issuesModal" data-method="CreateIssueRecurrence" title="New Issue"></span>
+										<span id="header-tab-new-issue" class="navbar-icon-button glyphicon1 glyphicon-pushpi1n icon fontastic-icon-pinboard issuesModal" data-method="CreateIssueRecurrence" title="New Issue"></span>
 									}
 									<span id="header-tab-new-todo" class="navbar-icon-button glyphicon glyphicon-check todoModal" data-method="CreateTodoRecurrence" title="New To-do"></span>
 								}
@@ -232,18 +233,18 @@
 						</div>
 					</div>
 				</div>
-					<script>
-						//Test for IOS
-						if ((/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream)) {
-							document.getElementById("body").className += " is-ios";
-							var allowBack = document.referrer != "" && document.referrer.toLowerCase().lastIndexOf("/account/login") == -1;
+				<script>
+					//Test for IOS
+					if ((/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream)) {
+						document.getElementById("body").className += " is-ios";
+						var allowBack = document.referrer != "" && document.referrer.toLowerCase().lastIndexOf("/account/login") == -1;
 
-							var link = allowBack ?"javascript:history.back()":"#";
-							var disabled = allowBack ?"":"disabled";
-							var newLogo = "<span class='link'><a class='"+disabled+"' href='"+link+"'>Back</a></span>";
-							document.getElementById("logo").innerHTML =newLogo
-						}
-					</script>
+						var link = allowBack ?"javascript:history.back()":"#";
+						var disabled = allowBack ?"":"disabled";
+						var newLogo = "<span class='link'><a class='"+disabled+"' href='"+link+"'>Back</a></span>";
+						document.getElementById("logo").innerHTML =newLogo
+					}
+				</script>
 
 			}
 			@RenderSection("top", false)
@@ -269,16 +270,16 @@
 					ForceUnhide();
 					@if (ViewBag.Alert!=null){
 							@:showAlert("@ViewBag.Alert");
-																																				                                        }
+																																									                                        }
 					@if(ViewBag.Success!=null){
                       @: showAlert("@ViewBag.Success", "alert-success" , "Success!" );
 
                     }
 					@if(ViewBag.InfoAlert!=null){
                         @: showAlert("@ViewBag.InfoAlert", "alert-info" , "Info!" );
-																																				                                        }
+																																									                                        }
 					UnstoreJsonAlert();
-					
+
 					try{
 						if (typeof(window.meetingId)!=="undefined"){
 							$(".populateMeetingData").attr("data-meetingId",window.meetingId);
@@ -289,7 +290,7 @@
 					}catch(e){
 						console.error(e);
 					}
-				
+
 				});  var statusTimeout;
 
 
@@ -342,7 +343,7 @@
 				})();
 
 			</script>
-				<ul class="JSError" style="position:fixed;top:0px;right:0px;opacity:.5;pointer-events:none;"></ul>
+			<ul class="JSError" style="position:fixed;top:0px;right:0px;opacity:.5;pointer-events:none;"></ul>
 			}
 
 

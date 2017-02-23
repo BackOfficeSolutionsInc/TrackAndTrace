@@ -11,23 +11,28 @@
     }
 }
 
-setInterval(fixTileHeight, 750);
+if (msieversion() == false) {
+	setInterval(fixTileHeight, 750);
+}
 
 function fixTileHeight() {
-    $(".tile-height-resize").each(function () {
-        var tile = $(this).closest(".tile");
-        var scrollHeight = Math.max(Math.max($(this).children().height(), $(this).height()), tile[0].scrollHeight);
 
-        if (tile.height() >= scrollHeight) {
-            var self = $(this);
-            var position = self.position();
-            var a = tile.height() - position.top - (self.outerHeight() - self.innerHeight());
-            var diff = +(self.data("tile-resize-diff")||0);
-            $(this).height((a - diff));
-        } else {
-            $(this).height("");
-        }
-    });
+	if (msieversion() == false) {
+		$(".tile-height-resize").each(function () {
+			var tile = $(this).closest(".tile");
+			var scrollHeight = Math.max(Math.max($(this).children().height(), $(this).height()), tile[0].scrollHeight);
+
+			if (tile.height() >= scrollHeight) {
+				var self = $(this);
+				var position = self.position();
+				var a = tile.height() - position.top - (self.outerHeight() - self.innerHeight());
+				var diff = +(self.data("tile-resize-diff") || 0);
+				$(this).height((a - diff));
+			} else {
+				$(this).height("");
+			}
+		});
+	}
 }
 
 function zoomScorecards() {

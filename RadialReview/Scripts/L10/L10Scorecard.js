@@ -375,7 +375,7 @@ function updateScore(self, skipChart) {
 		var r2 = "";
 		//Empty?
 
-		var parentCell = self.closest("td");
+		var parentCell = $(self).closest("td");
 
 		$(parentCell).removeClass("error");
 		$(parentCell).removeClass("success");

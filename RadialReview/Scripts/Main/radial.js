@@ -1209,7 +1209,8 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 		if (validationArg) {
 			var message = undefined;
 			if (typeof (validationArg) === "string") {
-				message = eval(validationArg + '()');
+				message = window[validationArg]();
+				//message = eval(validationArg + '()');
 			} else if (typeof (validationArg) === "function") {
 				message = validationArg();
 			}
@@ -1230,14 +1231,16 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 
 		if (onSuccessArg) {
 			if (typeof onSuccessArg === "string") {
-				eval(onSuccessArg + "(formData," + contentTypeArg + ")");
+				window[onSuccessArg](formData, contentTypeArg);
+				//eval(onSuccessArg + "(formData," + contentTypeArg + ")");
 			} else if (typeof onSuccessArg === "function") {
 				onSuccessArg(formData, contentTypeArg);
 			}
 		}
 		if (onCloseArg) {
 			if (typeof onCloseArg === "string") {
-				eval(onCloseArg + "()");
+				window[onCloseArg]();
+				//eval(onCloseArg + "()");
 			} else if (typeof onCloseArg === "function") {
 				onCloseArg();
 			}
@@ -1249,18 +1252,21 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 
 	$("#modal button[data-dismiss='modal']").on("click.radialModal", function () {
 		if (typeof onCancelArg === "string") {
-			eval(onCancelArg + "()");
+			window[onCancelArg]();
+		//	eval(onCancelArg + "()");
 		} else if (typeof onCancelArg === "function") {
 			onCancelArg();
 		}
 		if (typeof onCancelArg === "string") {
-			eval(onCancelArg + "()");
+			//eval(onCancelArg + "()");
+			window[onCancelArg]();
 		} else if (typeof onCancelArg === "function") {
 			onCancelArg();
 		}
 		if (onCloseArg) {
 			if (typeof onCloseArg === "string") {
-				eval(onCloseArg + "()");
+				//eval(onCloseArg + "()");
+				window[onCloseArg]();
 			} else if (typeof onCloseArg === "function") {
 				onCloseArg();
 			}
@@ -1272,9 +1278,10 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 	var count = 0;
 	setTimeout(function () {
 		if (callbackArg) {
-			if (typeof (callbackArg) === "string")
-				eval(callbackArg + '()');
-			else if (typeof (callbackArg) === "function")
+			if (typeof (callbackArg) === "string") {
+				//eval(callbackArg + '()');
+				window[callbackArg]();
+			}else if (typeof (callbackArg) === "function")
 				callbackArg();
 		} else {
 			//$('#modal input:not([type=hidden]):not(.disable):first').focus();
@@ -1320,7 +1327,8 @@ function _submitModal(formData, pushUrl, onSuccess, onComplete, useJson, content
 			} else {
 				if (onSuccessArg) {
 					if (typeof onSuccessArg === "string") {
-						eval(onSuccessArg + "(data,formData)");
+						window[onSuccessArg](data, formData);
+						//eval(onSuccessArg + "(data,formData)");
 					} else if (typeof onSuccessArg === "function") {
 						onSuccessArg(data, formData);
 					}
@@ -1334,7 +1342,8 @@ function _submitModal(formData, pushUrl, onSuccess, onComplete, useJson, content
 				if (data) {
 					if (onCompleteArg) {
 						if (typeof onCompleteArg === "string") {
-							eval(onCompleteArg + "(data,formData)");
+							window[onCompleteArg](data, formData);
+							//eval(onCompleteArg + "(data,formData)");
 						} else if (typeof onCompleteArg === "function") {
 							onCompleteArg(data, formData);
 						}
@@ -1475,8 +1484,9 @@ function showJsonAlert(data, showSuccess, clearOthers) {
 		} else if (typeof (data) === "string") {
 			if (data.trim().length < 300)
 				showAlert(data.trim(), "alert-danger", "Error");
-			else
+			else {
 				showAlert(stdError);
+			}
 		} else {
 			var showDetails = typeof (data.NoErrorReport) === "undefined" || !data.NoErrorReport;
 			var message = data.Message;
@@ -1493,7 +1503,6 @@ function showJsonAlert(data, showSuccess, clearOthers) {
 			}
 			if (data.Error) {
 				if (showDetails) {
-					debugger;
 					sendErrorReport();
 				}
 			}
@@ -2359,53 +2368,10 @@ function isSafari() {
 	return false;
 }
 
-function msieversion() {
-	var ua = window.navigator.userAgent;
-
-	var msie = ua.indexOf('MSIE ');
-	if (msie > 0) {
-		// IE 10 or older => return version number
-		return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
-	}
-
-	var trident = ua.indexOf('Trident/');
-	if (trident > 0) {
-		// IE 11 => return version number
-		var rv = ua.indexOf('rv:');
-		return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
-	}
-
-	var edge = ua.indexOf('Edge/');
-	if (edge > 0) {
-		// Edge (IE 12+) => return version number
-		return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
-	}
-
-	// other browser
-	return false;
-}
-
 
 //Debounce
 (function (n, t) { var $ = n.jQuery || n.Cowboy || (n.Cowboy = {}), i; $.throttle = i = function (n, i, r, u) { function o() { function o() { e = +new Date; r.apply(h, c) } function l() { f = t } var h = this, s = +new Date - e, c = arguments; u && !f && o(); f && clearTimeout(f); u === t && s > n ? o() : i !== !0 && (f = setTimeout(u ? l : o, u === t ? n - s : n)) } var f, e = 0; return typeof i != "boolean" && (u = r, r = i, i = t), $.guid && (o.guid = r.guid = r.guid || $.guid++), o }; $.debounce = function (n, r, u) { return u === t ? i(n, r, !1) : i(n, u, r !== !1) } })(this);
 
-
-///POLYFILLS
-Error.captureStackTrace = Error.captureStackTrace || function (obj) {
-	if (Error.prepareStackTrace) {
-		var frame = {
-			isEval: function () { return false; },
-			getFileName: function () { return "filename"; },
-			getLineNumber: function () { return 1; },
-			getColumnNumber: function () { return 1; },
-			getFunctionName: function () { return "functionName" }
-		};
-
-		obj.stack = Error.prepareStackTrace(obj, [frame, frame, frame]);
-	} else {
-		obj.stack = obj.stack || obj.name || "Error";
-	}
-};
 
 
 

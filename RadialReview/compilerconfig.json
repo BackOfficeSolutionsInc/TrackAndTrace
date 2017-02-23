@@ -86,5 +86,9 @@
   {
     "outputFile": "Content/L10/L10IDS.V2.css",
     "inputFile": "Content/L10/L10IDS.V2.less"
+  },
+  {
+    "outputFile": "Content/L10/l10-ie-only.css",
+    "inputFile": "Content/L10/l10-ie-only.less"
   }
 ]

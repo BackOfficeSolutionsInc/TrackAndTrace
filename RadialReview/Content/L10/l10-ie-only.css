@@ -1,0 +1,11 @@
+﻿#ScorecardTable_Over tbody tr td {
+  height: 30.25px !important;
+}
+.ids [data-awaitingsolve='true']:not([data-checked="true"]):not([data-checked="True"]):before,
+.ids [data-awaitingsolve='True']:not([data-checked="true"]):not([data-checked="True"]):before {
+  margin-top: 1px !important;
+}
+.ids [data-awaitingsolve='true'] .issuesModal,
+.ids [data-awaitingsolve='True'] .issuesModal {
+  top: -2px !important;
+}

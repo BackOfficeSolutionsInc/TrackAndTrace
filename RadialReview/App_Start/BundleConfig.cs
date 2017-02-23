@@ -28,8 +28,8 @@ namespace RadialReview {
 				"~/Scripts/Angular/Helpers/Directives/fcsaNumber.js",
 				"~/Scripts/Angular/Helpers/Directives/vsRepeat.js",
 				"~/Scripts/Angular/Helpers/angular-timer.min.js",
-                "~/Scripts/Angular/Helpers/angular-elastic-input.js",
-                "~/Scripts/Angular/Helpers/Libraries/ngsortable.js",
+				"~/Scripts/Angular/Helpers/angular-elastic-input.js",
+				"~/Scripts/Angular/Helpers/Libraries/ngsortable.js",
                // "~/Scripts/Angular/Helpers/Libraries/ngfittext.js",
                      
                 //"~/bower_components/angular-animate/angular-animate.js",           
@@ -41,8 +41,8 @@ namespace RadialReview {
 			var angularHelpers_Styles = new[]{
 				"~/Content/components/daterangepicker-bs3.css",
 				"~/Content/Angular/tablesort.css",
-                "~/Content/Angular/xeditable.min.css",
-                "~/Content/Angular/ngsortable.css",
+				"~/Content/Angular/xeditable.min.css",
+				"~/Content/Angular/ngsortable.css",
                 
                 //"~/bower_components/angular-material/angular-material.css"
 			};
@@ -298,6 +298,10 @@ namespace RadialReview {
 			bundles.Add(new StyleBundle("~/styles/meeting").Include(angularHelpers_Styles));
 			bundles.Add(new StyleBundle("~/styles/archive").Include("~/Content/L10/Archive/Archive.css"));
 
+			bundles.Add(new ScriptBundle("~/bundles/compatability").Include(
+					  "~/Scripts/Main/iefixes.js"
+			));
+
 			bundles.Add(new ScriptBundle("~/bundles/main").Include(
 					  "~/Scripts/Main/radial.js",
 					  "~/Scripts/Main/log-helper.js",
@@ -307,8 +311,8 @@ namespace RadialReview {
 					  "~/Scripts/Main/intercom.min.js",
 					  "~/Scripts/L10/jquery-ui.color.js",
 					  "~/Scripts/jquery/jquery.tabbable.js"
-					  /*,
-					  "~/Scripts/Main/realtime.js"*/
+			/*,
+			"~/Scripts/Main/realtime.js"*/
 			));
 
 			bundles.Add(new StyleBundle("~/styles/Dashboard").Include(
@@ -381,7 +385,8 @@ namespace RadialReview {
 
 
 			bundles.Add(new ScriptBundle("~/bundles/Angular").Include(
-			//"~/bower_components/angular-material-data-table/dist/md-data-table.min.js"
+				//"~/bower_components/angular-material-data-table/dist/md-data-table.min.js"
+				"~/Scripts/Angular/MaterialDesign/md-data-table.js"
 			));
 
 			bundles.Add(new StyleBundle("~/styles/Angular").Include(

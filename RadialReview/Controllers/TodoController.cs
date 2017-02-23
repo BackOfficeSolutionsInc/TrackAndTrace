@@ -74,6 +74,13 @@ namespace RadialReview.Controllers {
 		public PartialViewResult EditModal(long id) {
 			var todo = TodoAccessor.GetTodo(GetUser(), id);
 
+			ViewBag.Originating = "";
+			if (todo.TodoType == TodoType.Personal)
+				ViewBag.Originating = "Personal To-do List";
+			else {
+				ViewBag.Originating = todo.ForRecurrence.Name;
+			}
+
 			ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTodo(id));
 			return PartialView(todo);
 		}

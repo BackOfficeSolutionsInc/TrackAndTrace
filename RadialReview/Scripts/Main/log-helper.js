@@ -14,9 +14,12 @@ function interceptLogger(name, oldLogger) {
         try {
             try {
                 try {
-                    var f = getStackTrace();
-                    line = f.split("\n")[2].split("/");
-                    lineNum = line[line.length - 1].split(")")[0];//substr(0,line[line.length-1].length-1)
+                	var f = getStackTrace();
+					var p1 =  f.split("\n")[2];
+					if (typeof(p1)!=="undefined"){
+						line =p1.split("/");
+						lineNum = line[line.length - 1].split(")")[0];//substr(0,line[line.length-1].length-1)
+					}
                 } catch (e) {
                     //debugger;
                 }
@@ -45,8 +48,6 @@ function interceptLogger(name, oldLogger) {
         }
     }
 }
-
-
 console.log = interceptLogger("log", oldConsoleLog);
 console.error = interceptLogger("error", oldConsoleError);
 console.info = interceptLogger("info", oldConsoleInfo);

@@ -10,7 +10,6 @@
 }
 @using (Html.BeginStyles()) {
 	@Styles.Render("~/styles/L10")
-	@*<link href="~/Content/bootstrap-switch.css" rel="stylesheet" />*@
 	<style>
 		.bootstrap-switch.bootstrap-switch-small {
 			min-width: 120px;
@@ -20,6 +19,12 @@
 			color: #999;
 		}
 	</style>
+
+	<!--vvvv  DO NOT DELETE THIS  vvvv-->
+	<!--[if IE]>
+		<link rel="stylesheet" type="text/css" href="/content/l10/l10-ie-only.css" />
+	<![endif]-->
+	<!--^^^^  DO NOT DELETE THIS  ^^^^-->
 }
 @using (Html.BeginScripts()) {
 	<script>

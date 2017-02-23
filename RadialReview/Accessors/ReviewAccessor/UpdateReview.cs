@@ -59,9 +59,12 @@ namespace RadialReview.Accessors {
 						throw new ArgumentException("Unrecognized questionType(" + q.Askable.GetQuestionType() + ")");
 				}
 			}
+			if (reviewModel.QuestionCompletion == null) {
+				reviewModel.QuestionCompletion = new Models.Components.Completion();
+			}
 			reviewModel.QuestionCompletion.NumRequired += askables.Count(x => x.Askable.Required);
 			reviewModel.QuestionCompletion.NumOptional += askables.Count(x => !x.Askable.Required);
-
+			
 
 			s.Merge(reviewModel);
 		}

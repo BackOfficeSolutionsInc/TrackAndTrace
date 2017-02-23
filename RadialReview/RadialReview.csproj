@@ -946,6 +946,9 @@
     <Content Include="Content\L10\Archive\Archive.min.css">
       <DependentUpon>Archive.css</DependentUpon>
     </Content>
+    <Content Include="Content\L10\l10-ie-only.css">
+      <DependentUpon>l10-ie-only.less</DependentUpon>
+    </Content>
     <Content Include="Content\L10\L10.css">
       <DependentUpon>L10.less</DependentUpon>
     </Content>
@@ -1091,6 +1094,7 @@
     <Content Include="Content\Reports\ClientDetails.less" />
     <Content Include="Content\VTO\VTO.less" />
     <Content Include="Content\L10\L10IDS.V2.less" />
+    <Content Include="Content\L10\l10-ie-only.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1129,6 +1133,7 @@
     <Content Include="Scripts\Angular\MaterialDesign\lf-ng-md-file-input.min.js">
       <DependentUpon>lf-ng-md-file-input.js</DependentUpon>
     </Content>
+    <Content Include="Scripts\Angular\MaterialDesign\md-data-table.js" />
     <Content Include="Scripts\Angular\MaterialDesign\md-stepper.js" />
     <Content Include="Scripts\Angular\Tiles\L10StatsTile.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
@@ -1160,6 +1165,7 @@
     <Content Include="Scripts\L10\L10Headlines.js" />
     <Content Include="Scripts\L10\L10Transcribe.js" />
     <Content Include="Scripts\L10\L10Wizard.js" />
+    <Content Include="Scripts\Main\iefixes.js" />
     <Content Include="Scripts\Main\intercom.min.js" />
     <Content Include="Scripts\Main\log-helper.js" />
     <Content Include="Scripts\speechrecog.js" />

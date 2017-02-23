@@ -340,15 +340,15 @@
 				</div>*@
 
 			<br />
-			@Html.SecuredHiddenFor(x => x.Recurrence.Id)
-			@Html.SecuredHiddenFor(x => x.Recurrence.CreateTime)
-			@Html.SecuredHiddenFor(x => x.Recurrence.OrganizationId)
-			@Html.SecuredHiddenFor(x => x.Recurrence.MeetingInProgress)
-			@Html.SecuredHiddenFor(x => x.Recurrence.CreatedById)
-			@Html.SecuredHiddenFor(x => x.Recurrence.VideoId)
-			@Html.SecuredHiddenFor(x => x.Recurrence.HeadlinesId)
-			@Html.SecuredHiddenFor(x => x.Recurrence.OrderIssueBy)
-			@Html.SecuredHiddenFor(x => x.Recurrence.VtoId)
+			@Html.HiddenFor(x => x.Recurrence.Id)					@*SecuredHiddenFor*@
+			@Html.HiddenFor(x => x.Recurrence.CreateTime)			@*SecuredHiddenFor*@
+			@Html.HiddenFor(x => x.Recurrence.OrganizationId)		@*SecuredHiddenFor*@
+			@Html.HiddenFor(x => x.Recurrence.MeetingInProgress)	@*SecuredHiddenFor*@
+			@Html.HiddenFor(x => x.Recurrence.CreatedById)			@*SecuredHiddenFor*@
+			@Html.HiddenFor(x => x.Recurrence.VideoId)				@*SecuredHiddenFor*@
+			@Html.HiddenFor(x => x.Recurrence.HeadlinesId)			@*SecuredHiddenFor*@
+			@Html.HiddenFor(x => x.Recurrence.OrderIssueBy)			@*SecuredHiddenFor*@
+			@Html.HiddenFor(x => x.Recurrence.VtoId)				@*SecuredHiddenFor*@
 
 			@Html.HiddenFor(x => x.Return)
 

@@ -2518,8 +2518,8 @@ namespace RadialReview.Accessors {
 			tf.Alignment = XParagraphAlignment.Center;
 			XFont bold = new XFont("Times New Roman", 14 * pageProps.scale, XFontStyle.Bold);
 			XFont norm = new XFont("Times New Roman", 14 * pageProps.scale, XFontStyle.Regular);
-			tf.DrawString(me.Position ?? "", bold, XBrushes.Black, new XRect(x, y + 12 * pageProps.scale / 3.0, me.width, top / 2.0));
-			tf.DrawString(me.Name ?? "", norm, XBrushes.Black, new XRect(x, y + top / 2.0 + 12 * pageProps.scale / 3.0, me.width, top / 2.0));
+			tf.DrawString(me.Position ?? "", bold, XBrushes.Black, new XRect(x, y + 12 * pageProps.scale / 3.0, Math.Max(0, me.width), top / 2.0));
+			tf.DrawString(me.Name ?? "", norm, XBrushes.Black, new XRect(x, y + top / 2.0 + 12 * pageProps.scale / 3.0, Math.Max(0, me.width), top / 2.0));
 
 			if (me.height > top) {
 				gfx.DrawLine(XPens.Black, x + pad, y + top, x + (me.width - 2 * pad), y + top);
@@ -2540,9 +2540,9 @@ namespace RadialReview.Accessors {
 						text = text.TrimStart(' ', '•', '*');
 						//text = "• " + r;
 					}
-					var dotWidth = pad;
+					var dotWidth = Math.Max(0,pad);
 
-					tf.DrawString("•", norm, XBrushes.Black, new XRect(x + pad, y + h, dotWidth, rheight));
+					tf.DrawString("•", norm, XBrushes.Black, new XRect(x + pad, y + h, dotWidth, Math.Max(0, rheight)));
 					//var myHeight = tf.meas
 					var wrapper = new PdfWordWrapper(gfx, Unit.FromPoint(me.width - (pad * 2+ dotWidth)));
 					wrapper.Add(text ?? "", norm, XBrushes.Black);
