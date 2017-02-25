@@ -432,7 +432,7 @@ namespace RadialReview.Controllers {
             }
 
             var tiles = DashboardAccessor.GetTiles(GetUser(), id.Value);
-            var l10s = L10Accessor.GetVisibleL10Meetings_Tiny(GetUser(), GetUser().Id, true);
+            var l10s = L10Accessor.GetVisibleL10Meetings_Tiny(GetUser(), GetUser().Id,onlyDashboardRecurrences:true);
             var notes = L10Accessor.GetVisibleL10Notes_Unsafe(l10s.Select(x => x.Id).ToList());
 
             var jsonTiles = Json(ResultObject.SilentSuccess(tiles), JsonRequestBehavior.AllowGet);
