@@ -136,8 +136,9 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					List<long> attendee_recurrences;
-					var uniqueL10NameIds = L10Accessor.GetVisibleL10Meetings_Tiny(s, perms, userId, out attendee_recurrences);
+                    List<long> attendee_recurrences;
+                    List<long> _nil;
+                    var uniqueL10NameIds = L10Accessor.GetVisibleL10Meetings_Tiny(s, perms, userId, out attendee_recurrences,out _nil);
 					var uniqueL10Ids = uniqueL10NameIds.Select(x => x.Id).ToList();
 
 

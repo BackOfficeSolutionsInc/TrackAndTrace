@@ -470,7 +470,7 @@ namespace RadialReview.Accessors {
 						.IsIn(ids)
 						.List().ToList();
 					foreach (var a in attendees) {
-						a.Rating = ratingValues.FirstOrDefault(x => x.Item1 == a.UserId).NotNull(x => x.Item2);
+						a.Rating = ratingValues.FirstOrDefault(x => x.Item1 == a.User.Id).NotNull(x => x.Item2);
 						s.Update(a);
 					}
 					//End all logs 
@@ -956,23 +956,27 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static List<NameId> GetVisibleL10Meetings_Tiny(UserOrganizationModel caller, long userId, bool onlyPersonallyAttending = false) {
+		public static List<NameId> GetVisibleL10Meetings_Tiny(UserOrganizationModel caller, long userId, bool onlyPersonallyAttending = false,bool onlyDashboardRecurrences=false) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					return GetVisibleL10Meetings_Tiny(s, perms, userId, onlyPersonallyAttending);
+					return GetVisibleL10Meetings_Tiny(s, perms, userId, onlyPersonallyAttending,onlyDashboardRecurrences);
 				}
 			}
 		}
-		public static List<NameId> GetVisibleL10Meetings_Tiny(ISession s, PermissionsUtility perms, long userId, bool onlyPersonallyAttending = false) {
-			List<long> nil;
-			var meetings = GetVisibleL10Meetings_Tiny(s, perms, userId, out nil);
-			if (onlyPersonallyAttending) {
-				meetings = meetings.Where(x => nil.Contains(x.Id)).ToList();
-			}
-			return meetings;
+		public static List<NameId> GetVisibleL10Meetings_Tiny(ISession s, PermissionsUtility perms, long userId, bool onlyPersonallyAttending = false, bool onlyDashboardRecurrences = false) {
+            List<long> personallyAttending;
+            List<long> dashRecurs;
+            var meetings = GetVisibleL10Meetings_Tiny(s, perms, userId, out personallyAttending,out dashRecurs);
+            if (onlyPersonallyAttending) {
+                meetings = meetings.Where(x => personallyAttending.Contains(x.Id)).ToList();
+            }
+            if (onlyDashboardRecurrences) {
+                meetings = meetings.Where(x => dashRecurs.Contains(x.Id)).ToList();
+            }
+            return meetings;
 		}
-		public static List<NameId> GetVisibleL10Meetings_Tiny(ISession s, PermissionsUtility perms, long userId, out List<long> recurrencesPersonallyAttending) {
+		public static List<NameId> GetVisibleL10Meetings_Tiny(ISession s, PermissionsUtility perms, long userId, out List<long> recurrencesPersonallyAttending, out List<long> recurrencesVisibleOnDashboard) {
 
 			//IMPORTANT. Make sure the pristine flag is being set correctly on L10Recurrence.
 
@@ -1021,6 +1025,9 @@ namespace RadialReview.Accessors {
 			var attendee_recurrences = attendee_ReccurenceIds.ToList().Select(x => new NameId((string)x[0], (long)x[1])).ToList();
 			recurrencesPersonallyAttending = attendee_ReccurenceIds.Where(x => (long)x[2] == userId).Select(x => (long)x[1]).ToList();
 			recurrencesPersonallyAttending = recurrencesPersonallyAttending.Distinct().ToList();
+            recurrencesVisibleOnDashboard = recurrencesPersonallyAttending.ToList();
+            
+
 
 			if (orgRecurrences != null) {
 				allRecurrenceIds.AddRange(orgRecurrences.ToList().Select(x => new NameId((string)x[0], (long)x[1])));
@@ -1038,7 +1045,8 @@ namespace RadialReview.Accessors {
 				.Select(x => x.Name, x => x.Id)
 				.List<object[]>().Select(x => new NameId((string)x[0], (long)x[1])).ToList();
 			allRecurrenceIds.AddRange(additionalRecurrenceFromViewPerms);
-			
+            recurrencesVisibleOnDashboard.AddRange(additionalRecurrenceFromViewPerms.Select(x => x.Id));
+
 			allRecurrenceIds = allRecurrenceIds.Distinct(x => x.Id).ToList();
 			
 			if (caller.ManagingOrganization) {
@@ -1061,8 +1069,8 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					List<long> attendee_recurrences;
-					var uniqueL10NameIds = GetVisibleL10Meetings_Tiny(s, perms, userId, out attendee_recurrences);
+					List<long> attendee_recurrences; List<long> _nil;
+                    var uniqueL10NameIds = GetVisibleL10Meetings_Tiny(s, perms, userId, out attendee_recurrences,out _nil);
 					var uniqueL10Ids = uniqueL10NameIds.Select(x => x.Id).ToList();
 
 
