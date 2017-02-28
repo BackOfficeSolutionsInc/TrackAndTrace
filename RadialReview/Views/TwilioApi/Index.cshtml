@@ -35,7 +35,7 @@
 								<tr class="startHiddenn">
 									<td>@map.CallerNumber.ToPhoneNumber()</td>
 									<td>@map.SystemNumber.ToPhoneNumber()</td>
-									<td class="ForId_@map.ForId">@map._Recurrence.Name</td>
+									<td class="ForId_@map.ForId">@map._Recurrence.NotNull(x=>x.Name)</td>
 									<td>Create @map.Action.ToUpper()</td>
 									<td class="alignCenter">
 										<a href="/TwilioApi/Delete/@(map.Id)">Delete</a>

@@ -9,7 +9,8 @@ namespace RadialReview.Models.Enums
 	public enum AccountType
 	{
 		Paying=-20,
-		Implementer=-10,
+		UserGroup = -11,
+		Implementer = -10,
 		Invalid = -5,
         [Display(Name="Trial")]
 		Demo=0,
