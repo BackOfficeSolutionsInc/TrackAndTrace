@@ -173,12 +173,28 @@ namespace RadialReview.Accessors {
 
         }
 
-        public static List<PermItem> GetPermItemsForUser(ISession s, PermissionsUtility perms, long forUserId, PermItem.ResourceType resourceType)
+		/// <summary>
+		/// Only grabs perm items for explicitly specified permissions (No Creator, Admin, Members)
+		/// </summary>
+		/// <param name="s"></param>
+		/// <param name="callerPerms"></param>
+		/// <param name="forUserId"></param>
+		/// <param name="resourceType"></param>
+		/// <returns></returns>
+        public static List<PermItem> GetExplicitPermItemsForUser(ISession s, PermissionsUtility callerPerms, long forUserId, PermItem.ResourceType resourceType)
         {
-            var groups = ResponsibilitiesAccessor.GetResponsibilityGroupsForUser(s.ToQueryProvider(true), perms, forUserId).ToList();
-            var permList = s.QueryOver<PermItem>().Where(x => x.DeleteTime == null && x.ResType == resourceType && x.AccessorType == PermItem.AccessType.RGM)
+            var groups = ResponsibilitiesAccessor.GetResponsibilityGroupsForUser(s.ToQueryProvider(true), callerPerms, forUserId).ToList();
+
+			List<PermItem> permList = new List<PermItem>();
+
+
+            var RgmPermList = s.QueryOver<PermItem>().Where(x => x.DeleteTime == null && x.ResType == resourceType && x.AccessorType == PermItem.AccessType.RGM)
                 .WhereRestrictionOn(x => x.AccessorId).IsIn(groups.Select(x => x.Id).ToList())
-                .List().ToList();
+                .Future();
+
+			var forUserPerms = PermissionsUtility.Create(s, s.Get<UserOrganizationModel>(forUserId));
+			
+			permList.AddRange(RgmPermList.ToList());
             
             var user = s.Get<UserOrganizationModel>(forUserId);
             var emailAccessorIds = new List<long>();
@@ -188,7 +204,7 @@ namespace RadialReview.Accessors {
                     var emailPermList = s.QueryOver<PermItem>().Where(x => x.DeleteTime == null && x.ResType == resourceType && x.AccessorType == PermItem.AccessType.Email)
                         .WhereRestrictionOn(x => x.AccessorId).IsIn(emailPermsAccessorIds)
                         .List().ToList();
-                    permList.AddRange(emailPermList);
+					permList.AddRange(emailPermList);
                 }
             }
 

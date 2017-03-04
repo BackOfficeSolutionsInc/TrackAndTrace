@@ -103,7 +103,7 @@ namespace RadialReview.Controllers {
 
 			return View(new ResetPasswordWithTokenViewModel() { Token = id });
 		}
-
+				
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[AllowAnonymous]

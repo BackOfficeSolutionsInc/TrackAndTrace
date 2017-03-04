@@ -147,7 +147,7 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.UserOrganization)]
         [HttpGet]
-        public ActionResult UploadVTO(long recurrenceId)
+        public ActionResult UploadVTO2(long recurrenceId)
         {
             ViewBag.RecurrenceId = recurrenceId;
             return View();
@@ -160,7 +160,7 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
-        public async Task<ActionResult> UploadVTO(long recurrenceId, HttpPostedFileBase file)
+        public async Task<ActionResult> UploadVTO2(long recurrenceId, HttpPostedFileBase file)
         {
             using (var ms = new MemoryStream()) {
                 await file.InputStream.CopyToAsync(ms);

@@ -4,7 +4,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace RadialReview.Models
 {
-    public class ResetPasswordViewModel
+	public class PasswordConstants {
+		public const string PasswordRegex = @"^(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$";
+		public const string PasswordRegexError = "Must have 1 capital letter, 1 lowercase letter, and one special character from @#$%^&+=";
+		public const string PasswordLengthError = "The {0} must be at least {2} characters long.";
+		public const int PasswordMin = 8;
+		public const int PasswordMax = 24;
+
+	}
+
+	public class ResetPasswordViewModel
     {
         [Required]
         [DataType(DataType.EmailAddress)]
@@ -14,11 +23,15 @@ namespace RadialReview.Models
 
     public class ResetPasswordWithTokenViewModel
     {
-        public String Token { get; set; }
+
+
+		public String Token { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
-        public String Password { get; set; }
+		[StringLength(PasswordConstants.PasswordMax, ErrorMessage = PasswordConstants.PasswordLengthError, MinimumLength = PasswordConstants.PasswordMin)]
+		[RegularExpression(PasswordConstants.PasswordRegex, ErrorMessage = PasswordConstants.PasswordRegexError)]
+		public String Password { get; set; }
     }
 
 
@@ -37,8 +50,9 @@ namespace RadialReview.Models
         public string OldPassword { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessageResourceName = "minCharLength", ErrorMessageResourceType=typeof(ErrorMessageStrings), MinimumLength = 6)]
-        [DataType(DataType.Password)]
+		[StringLength(PasswordConstants.PasswordMax, ErrorMessage = PasswordConstants.PasswordLengthError, MinimumLength = PasswordConstants.PasswordMin)]
+		[RegularExpression(PasswordConstants.PasswordRegex, ErrorMessage = PasswordConstants.PasswordRegexError)]
+		[DataType(DataType.Password)]
         [Display(Name = "newPassword", ResourceType = typeof(DisplayNameStrings))]
         public string NewPassword { get; set; }
 
@@ -77,8 +91,9 @@ namespace RadialReview.Models
         public string Email { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessageResourceName = "minCharLength",ErrorMessageResourceType=typeof(ErrorMessageStrings), MinimumLength = 6)]
-        [DataType(DataType.Password)]
+		[StringLength(PasswordConstants.PasswordMax, ErrorMessage = PasswordConstants.PasswordLengthError, MinimumLength = PasswordConstants.PasswordMin)]
+		[RegularExpression(PasswordConstants.PasswordRegex, ErrorMessage = PasswordConstants.PasswordRegexError)]
+		[DataType(DataType.Password)]
         [Display(Name = "password", ResourceType = typeof(DisplayNameStrings))]
         public string Password { get; set; }
         

@@ -295,6 +295,13 @@ namespace RadialReview.Utilities {
 			throw new PermissionsException();
 		}
 
+		//public static bool IsManagingOrganization(long userId,bool allowManagers=false) {
+		//	if (caller.Organization.Id == orgId_DoNotUse_callerOrganizationId)
+		//		return caller.ManagingOrganization || (allowManagers && caller.ManagerAtOrganization && caller.Organization.ManagersCanEdit);
+		//	return false;
+		//}
+		
+
 		//[Obsolete("should never be caller.organization.id", false)]
 		private bool IsManagingOrganization(long orgId_DoNotUse_callerOrganizationId, bool allowManagers = false) {
 			if (caller.Organization.Id == orgId_DoNotUse_callerOrganizationId)

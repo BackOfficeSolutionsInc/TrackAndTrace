@@ -1029,14 +1029,14 @@ namespace RadialReview.Accessors {
             
 
 
-			if (orgRecurrences != null) {
-				allRecurrenceIds.AddRange(orgRecurrences.ToList().Select(x => new NameId((string)x[0], (long)x[1])));
-			}
 			allRecurrenceIds.AddRange(attendee_recurrences);
 			allRecurrenceIds.AddRange(admin_RecurrenceIds);
 			
 
-			var allViewPerms = PermissionsAccessor.GetPermItemsForUser(s, perms, userId, PermItem.ResourceType.L10Recurrence).Where(x => x.CanView);
+			var allViewPerms = PermissionsAccessor.GetExplicitPermItemsForUser(s, perms, userId, PermItem.ResourceType.L10Recurrence).Where(x => x.CanView);
+			var allViewPermsRecurrences = allRecurrenceIds.Where(allRecurrenceId => allViewPerms.Any(y => allRecurrenceId.Id == y.ResId)).ToList();
+			recurrencesVisibleOnDashboard.AddRange(allViewPermsRecurrences.Select(x=> x.Id));
+
 			//Outside the company
 			var additionalRecurrenceIdsFromPerms = allViewPerms.Where(allViewPermId => !allRecurrenceIds.Any(y => y.Id == allViewPermId.ResId)).ToList();
 			var additionalRecurrenceFromViewPerms = s.QueryOver<L10Recurrence>()
@@ -1047,8 +1047,17 @@ namespace RadialReview.Accessors {
 			allRecurrenceIds.AddRange(additionalRecurrenceFromViewPerms);
             recurrencesVisibleOnDashboard.AddRange(additionalRecurrenceFromViewPerms.Select(x => x.Id));
 
+
+
+
+			if (orgRecurrences != null) {
+				allRecurrenceIds.AddRange(orgRecurrences.ToList().Select(x => new NameId((string)x[0], (long)x[1])));
+			}
+
 			allRecurrenceIds = allRecurrenceIds.Distinct(x => x.Id).ToList();
-			
+			recurrencesVisibleOnDashboard = recurrencesVisibleOnDashboard.Distinct().ToList();
+
+
 			if (caller.ManagingOrganization) {
 				return allRecurrenceIds;
 			}

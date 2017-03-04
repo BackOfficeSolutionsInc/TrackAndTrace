@@ -355,8 +355,10 @@ namespace RadialReview.Utilities
             enversConf.Audit<VtoItem_Bool>().ExcludeRelationData(x => x.Vto);
             enversConf.Audit<VtoItem_String>().ExcludeRelationData(x => x.Vto);
             enversConf.Audit<VtoItem_DateTime>().ExcludeRelationData(x => x.Vto);
-            enversConf.Audit<VtoItem_Decimal>().ExcludeRelationData(x => x.Vto);
-            enversConf.Audit<CoreFocusModel>();//.ExcludeRelationData(x => x.Vto);
+			enversConf.Audit<VtoItem_Decimal>().ExcludeRelationData(x => x.Vto);
+			enversConf.Audit<Vto_Rocks>().ExcludeRelationData(x => x.Vto);
+
+			enversConf.Audit<CoreFocusModel>();//.ExcludeRelationData(x => x.Vto);
             enversConf.Audit<MarketingStrategyModel>();//.ExcludeRelationData(x => x.Vto);
             enversConf.Audit<OneYearPlanModel>();//.ExcludeRelationData(x => x.Vto);
             enversConf.Audit<QuarterlyRocksModel>();//.ExcludeRelationData(x => x.Vto);
