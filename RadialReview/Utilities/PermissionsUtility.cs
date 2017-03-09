@@ -163,6 +163,8 @@ namespace RadialReview.Utilities {
 					if (IsRadialAdmin(caller))
 						return this;
 					var userOrg = session.Get<UserOrganizationModel>(userOrganizationId);
+					if (userOrg == null)
+						throw new PermissionsException("User does not exist.");
 
 					if (IsManagingOrganization(userOrg.Organization.Id))
 						return this;
@@ -193,6 +195,9 @@ namespace RadialReview.Utilities {
 				//return TryWithOverrides(y =>
 				//{
 				var user = session.Get<UserOrganizationModel>(userOrganizationId);
+
+				if (user == null)
+					throw new PermissionsException("User does not exist.");
 
 				if (IsManagingOrganization(user.Organization.Id, true))
 					return this;

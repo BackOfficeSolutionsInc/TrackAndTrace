@@ -221,9 +221,10 @@ namespace RadialReview.Controllers
 		#endregion
 		
 		#region Rocks
-		private PartialViewResult Rocks(L10MeetingVM model)
-		{
-			model.Rocks = L10Accessor.GetRocksForMeeting(GetUser(), model.Recurrence.Id, model.Meeting.Id);
+		private PartialViewResult Rocks(L10MeetingVM model) {
+			var milestonesAndRocks = L10Accessor.GetRocksForMeeting(GetUser(), model.Recurrence.Id, model.Meeting.Id);
+			model.Rocks = milestonesAndRocks.Select(x => x.Rock).ToList();
+			model.Milestones = milestonesAndRocks.SelectMany(x => x.Milestones).ToList();//L10Accessor.GetMilestonesForMeeting(GetUser(), model.Recurrence.Id, model.Meeting.Id);
 			return PartialView("Rocks", model);
 		}
 		#endregion

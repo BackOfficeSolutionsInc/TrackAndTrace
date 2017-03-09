@@ -216,6 +216,7 @@
     <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="Controllers\Ac\AngularAccountabilityController.cs" />
     <Compile Include="Controllers\HeadlinesController.cs" />
+    <Compile Include="Controllers\MilestoneController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\PdfController.cs" />
     <Compile Include="Hooks\UpdateRoles_Notifications.cs" />
@@ -232,9 +233,11 @@
     <Compile Include="Models\Events\Event.cs" />
     <Compile Include="Models\Issues\HeadlineIssueVM.cs" />
     <Compile Include="Models\L10\PeopleHeadline.cs" />
+    <Compile Include="Models\L10\L10RockType.cs" />
     <Compile Include="Models\L10\PeopleHeadlineType.cs" />
     <Compile Include="Models\Askables\AskableSectionModel.cs" />
     <Compile Include="Models\Reviews\WhoReviewsWho.cs" />
+    <Compile Include="Models\Rocks\Milestone.cs" />
     <Compile Include="Notifications\Notification.cs" />
     <Compile Include="Models\Reviews\ValueBar.cs" />
     <Compile Include="Models\Todo\HeadlineTodoVm.cs" />
@@ -958,6 +961,9 @@
     <Content Include="Content\L10\L10IDS.V2.css">
       <DependentUpon>L10IDS.V2.less</DependentUpon>
     </Content>
+    <Content Include="Content\L10\L10Rocks.css">
+      <DependentUpon>L10Rocks.less</DependentUpon>
+    </Content>
     <Content Include="Content\Manage\Manage.css">
       <DependentUpon>Manage.less</DependentUpon>
     </Content>
@@ -1095,6 +1101,7 @@
     <Content Include="Content\VTO\VTO.less" />
     <Content Include="Content\L10\L10IDS.V2.less" />
     <Content Include="Content\L10\l10-ie-only.less" />
+    <Content Include="Content\L10\L10Rocks.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1502,7 +1509,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\L10\l10IDS.v2.old.css" />
-    <Content Include="Content\L10\L10Rocks.css" />
+    <Content Include="Content\L10\L10Rocks.old.css" />
     <Content Include="Content\L10\L10Todo.css" />
     <Content Include="Scripts\L10\jquery-ui.color.js" />
     <Content Include="Scripts\L10\jquery-ui.sortable.min.js" />
@@ -2286,7 +2293,6 @@
     <Folder Include="External\" />
     <Folder Include="logs\" />
     <Folder Include="Models\Notifications\" />
-    <Folder Include="Models\Rocks\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
     <Folder Include="Utilities\Migradoc\XYScatter\" />
     <Folder Include="Utilities\NewFolder1\" />
@@ -2301,6 +2307,7 @@
     <Folder Include="Views\MeetingData\" />
     <Folder Include="Views\Members\" />
     <Folder Include="Views\Migration\" />
+    <Folder Include="Views\Milestone\" />
     <Folder Include="Views\Onboard\" />
     <Folder Include="Views\Scheduler\" />
     <Folder Include="Views\Session\" />

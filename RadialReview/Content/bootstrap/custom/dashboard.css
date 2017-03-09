@@ -1395,6 +1395,9 @@ body.resizing .notes-tile:after,
 .dashboard .l10-todo-list-container .todotype-column {
   display: none;
 }
+.dashboard .l10-todo-list-container .no-todos {
+  font-size: 14px;
+}
 .dashboard .todo-checkbox-container input {
   margin-top: 4px !important;
 }

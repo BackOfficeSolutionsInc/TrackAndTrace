@@ -22,6 +22,8 @@ using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Query;
 using RadialReview.Models.Reviews;
+using RadialReview.Models.Rocks;
+using RadialReview.Utilities.RealTime;
 
 namespace RadialReview.Accessors
 {
@@ -38,6 +40,38 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
+
+		public static Milestone AddMilestone(UserOrganizationModel caller, long rockId, string milestone, DateTime dueDate) {
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					using (var rt = RealTimeUtility.Create()) {
+						var perm = PermissionsUtility.Create(s, caller);
+						perm.EditRock(rockId);
+						var ms = new Milestone() {
+							DueDate = dueDate,
+							Name = milestone,
+							Required = true,
+							RockId = rockId,							
+
+						};
+						s.Save(ms);
+
+						var recurrenceIds = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
+							.Where(x => x.DeleteTime == null && x.ForRock.Id == rockId)
+							.Select(x => x.L10Recurrence.Id).List<long>();
+
+						tx.Commit();
+						s.Flush();
+
+						rt.UpdateRecurrences(recurrenceIds).AddLowLevelAction(x => x.setMilestone(ms));
+
+						return ms;
+					}
+				}
+			}
+		}
+
 		public static List<RockModel> GetRocks(AbstractQuery queryProvider, PermissionsUtility perms, long forUserId, /*long? periodId,*/ DateRange range)
 		{
 			perms.ViewUserOrganization(forUserId, false);
@@ -184,10 +218,9 @@ namespace RadialReview.Accessors
 		{
 			using (var s = HibernateSession.GetCurrentSession())
 			{
-				using (var tx = s.BeginTransaction())
-				{
+				using (var tx = s.BeginTransaction()) {
+					var perm = PermissionsUtility.Create(s, caller).ViewRock(rockId);
 					var rock = s.Get<RockModel>(rockId);
-					var perm = PermissionsUtility.Create(s, caller).ViewUserOrganization(rock.ForUserId, false);
 					return rock;
 				}
 			}

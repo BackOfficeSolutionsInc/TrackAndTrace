@@ -83,7 +83,7 @@ namespace RadialReview.Controllers
 			model.Start = meeting.StartTime.Value;
 
 			model.Attendees= meeting._MeetingAttendees.Select(x=>AngularUser.CreateUser(x.User)).ToList();
-			var aRocks = rocks.Select(x => new AngularMeetingRock(x)).ToList();
+			var aRocks = rocks.Select(x => new AngularMeetingRock(x.Rock)).ToList();
 		    var rockPage = new AngularAgendaItem_Rocks(1,"Rock Review");
 		    rockPage.Rocks = aRocks;
 
@@ -168,7 +168,7 @@ namespace RadialReview.Controllers
 			var meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrenceId, load: true);
 			var rocks = L10Accessor.GetRocksForMeeting(GetUser(), recurrenceId, meeting.Id);
 			
-			var aRocks = rocks.Select(x => new AngularMeetingRock(x)).ToList();
+			var aRocks = rocks.Select(x => new AngularMeetingRock(x.Rock)).ToList();
 			
 			
 			var rock =aRocks.First();

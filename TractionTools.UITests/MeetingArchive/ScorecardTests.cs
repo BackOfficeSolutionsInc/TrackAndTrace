@@ -125,7 +125,7 @@ namespace TractionTools.UITests.Selenium {
                 //Assert.AreEqual(auc.User.GetFirstName()[0] + " " + auc.User.GetLastName()[0], row.Find(".who",d,5).Text);
                 Assert.AreEqual("LessThan", row.Find(".target.direction span").Data("value"));
                 Assert.AreEqual("<", row.Find(".target.direction").Text);
-                Assert.AreEqual("$101", row.Find(".target.value").Text);
+				row.Find(".target.value").WaitForText(d,"$101", 5);
                 Assert.AreEqual("Dollar", row.Find(".target.value span").Data("value"));
 
                 BaseSelenium.ConcludeMeeting(d);

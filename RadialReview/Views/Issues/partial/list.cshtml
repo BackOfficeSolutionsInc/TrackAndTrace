@@ -44,7 +44,11 @@
             <div class="col-md-12 priority-{{@(selector).Prioritization}}">
                 <md-table-container class="repeater-container">
                     <table md-table @*ts-wrapper*@ width="100%" class="component "
-                           @*click-anywhere-but-here="model.Selected = -1"*@
+						   
+							@if(!usePopup) { 
+								@:click-anywhere-but-here="model.Selected = -1"
+							}
+
                            ng-show="((@(selector)).Issues @(filter)).length">
                         <thead md-head md-order="@(orderVariable)" ng-init="@(orderVariable) =@(orderVariable) || @(defaultSort)">
                             <tr md-row>

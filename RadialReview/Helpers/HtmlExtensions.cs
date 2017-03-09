@@ -10,6 +10,7 @@ using RadialReview.Utilities;
 using RadialReview;
 using RadialReview.Models.Interfaces;
 using static RadialReview.Utilities.NHibernateHelper;
+using Newtonsoft.Json;
 
 namespace System.Web {
 	public static class HtmlExtensions {
@@ -237,7 +238,8 @@ namespace System.Web {
 		public static MvcHtmlString ArrayToString<T>(this HtmlHelper html, IEnumerable<T> items) {
 		//	var unproxied = items.Select(x => NHibernateProxyRemover.From(x));
 
-			return new MvcHtmlString(Json.Encode(items));
+			return new MvcHtmlString(JsonConvert.SerializeObject(items));
+			//Json.Encode());
 		}
 
 

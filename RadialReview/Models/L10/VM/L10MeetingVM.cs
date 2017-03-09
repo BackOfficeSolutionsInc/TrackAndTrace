@@ -10,6 +10,7 @@ using System.Runtime.Serialization;
 using RadialReview.Utilities;
 using RadialReview.Models.UserModels;
 using RadialReview.Model.Enums;
+using RadialReview.Models.Rocks;
 
 namespace RadialReview.Models.L10.VM
 {
@@ -22,6 +23,8 @@ namespace RadialReview.Models.L10.VM
         public List<TodoModel> Todos { get; set; }
         public List<L10Meeting.L10Meeting_Rock> Rocks { get; set; }
         public List<ProfilePictureVM> MemberPictures { get; set; }
+
+		public List<Milestone> Milestones { get; set; }
 
 		public ScorecardPeriod ScorecardType { get; set; }
 		public PeopleHeadlineType HeadlineType { get; set; }
@@ -92,6 +95,7 @@ namespace RadialReview.Models.L10.VM
 			Weeks = new List<WeekVM>();
 			CurrentTranscript=new List<MeetingTranscriptVM>();
 			Headlines = new List<PeopleHeadline>();
+			Milestones = new List<Milestone>();
 		}
 
 		//public bool AutoPrioritize { get; set; }

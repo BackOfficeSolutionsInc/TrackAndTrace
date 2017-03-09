@@ -90,5 +90,9 @@
   {
     "outputFile": "Content/L10/l10-ie-only.css",
     "inputFile": "Content/L10/l10-ie-only.less"
+  },
+  {
+    "outputFile": "Content/L10/L10Rocks.css",
+    "inputFile": "Content/L10/L10Rocks.less"
   }
 ]

@@ -179,6 +179,12 @@ function updateTimebar(elapsedMin) {
 
 }
 
+function fixPageName(pageName) {
+	if (pageName.length && pageName[0] == "/")
+		pageName = pageName.substring(1);
+	return pageName;
+}
+
 
 var firstSetPageTime = true;
 var pausePageTimer = false;
@@ -187,6 +193,9 @@ function setPageTime(pageName, minutes) {
 	//	console.warn("Page timer paused (" + pageName + ")");
 	//	return;
 	//}
+
+	
+	pageName = fixPageName(pageName);
 
 	try {
 		if (typeof (meetingStart) !== "undefined" && meetingStart == true) {
@@ -247,6 +256,9 @@ function concludeMeeting() {
 }
 
 function setCurrentPage(pageName, startTime, baseMinutes) {
+
+	pageName = fixPageName(pageName);
+
 	if (pageName == "") {
 		pageName = "segue";
 	}
@@ -286,6 +298,9 @@ function loadPage(location) {
 }
 var locationLoading = null;
 function loadPageForce(location) {
+
+	location = fixPageName(location);
+
 	console.log("Loading:" + location);
 	$(".issues-list").sortable("destroy");
 	$(".todo-list").sortable("destroy");

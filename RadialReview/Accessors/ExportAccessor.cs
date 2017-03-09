@@ -162,10 +162,11 @@ namespace RadialReview.Accessors
 		public static byte[] Rocks(UserOrganizationModel caller, long recurrenceId)
 		{
 			var meetingId = L10Accessor.GetLatestMeetingId(caller, recurrenceId);
-			var rocks = L10Accessor.GetRocksForMeeting(caller, recurrenceId, meetingId);
+			var rocksAndMilestones = L10Accessor.GetRocksForMeeting(caller, recurrenceId, meetingId);
 			var csv = new Csv();
-			foreach (var t in rocks)
+			foreach (var rockMilestones in rocksAndMilestones)
 			{
+				var t = rockMilestones.Rock;
 				csv.Add("" + t.Id, "Owner", t.ForRock.Rock);
 				csv.Add("" + t.Id, "Created", t.CreateTime.ToShortDateString());
 				var time = "";

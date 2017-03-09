@@ -9,6 +9,8 @@ using RadialReview.Models.Enums;
 using RadialReview.Models.Json;
 using RadialReview.Models.UserTemplate;
 using RadialReview.Utilities.DataTypes;
+using System.Threading.Tasks;
+using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
 {
@@ -30,10 +32,24 @@ namespace RadialReview.Controllers
 				CurrentTime= DateTime.UtcNow;
                 UpdateAllL10s = true;
 			}
-
 		}
 
-        [Access(AccessLevel.UserOrganization)]
+
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<ActionResult> Pad(long id) {
+			try {
+				var rock = RockAccessor.GetRock(GetUser(), id);
+				var padId = rock.PadId;
+				if (!_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditRock(id))) {
+					padId = await PadAccessor.GetReadonlyPad(rock.PadId);
+				}
+				return Redirect(Config.NotesUrl("p/" + padId + "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
+			} catch (Exception e) {
+				return RedirectToAction("Index", "Error");
+			}
+		}
+
+		[Access(AccessLevel.UserOrganization)]
         public ActionResult Archive(long id)
         {
             var userId = id;
@@ -106,6 +122,7 @@ namespace RadialReview.Controllers
 			ViewBag.PossibleUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id,false,false);
 			return PartialView(new RocksController.RockVM { Rocks = rocks, UserId = id });
 		}
+
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
 		public JsonResult CompanyRockModal(RocksController.RockVM model)
@@ -146,7 +163,7 @@ namespace RadialReview.Controllers
             return File(csv.ToBytes(), "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + csv.Title + ".csv");
         }
 
-	    public class RockTable
+		public class RockTable
 	    {
 			public List<RockModel> Rocks { get; set; }
 			public List<long> Editables { get; set; }

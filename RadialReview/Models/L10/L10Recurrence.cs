@@ -89,6 +89,7 @@ namespace RadialReview.Models.L10 {
 		[Obsolete("Do not use", false)]
 		public virtual bool ShowHeadlinesBox { get; set; }
 		public virtual PeopleHeadlineType HeadlineType { get; set; }
+		public virtual L10RockType RockType { get; set; }
 
 		public virtual L10TeamType TeamType { get; set; }
 		public virtual bool IsLeadershipTeam { get; set; }
@@ -115,6 +116,7 @@ namespace RadialReview.Models.L10 {
 			Prioritization = PrioritizationType.Rank;
 			ShowHeadlinesBox = false;
 			HeadlineType = PeopleHeadlineType.HeadlinesList;
+			RockType = L10RockType.Original;
 			TeamType = L10TeamType.LeadershipTeam;
 			CombineRocks = false;
 			CurrentWeekHighlightShift = 0;
@@ -131,6 +133,7 @@ namespace RadialReview.Models.L10 {
 				Map(x => x.CurrentWeekHighlightShift);
 				Map(x => x.ShowHeadlinesBox);
 				Map(x => x.HeadlineType);
+				Map(x => x.RockType);
 				Map(x => x.HeadlinesId);
 				Map(x => x.CreateTime);
 				Map(x => x.MeetingInProgress);

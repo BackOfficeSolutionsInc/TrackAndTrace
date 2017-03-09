@@ -107,6 +107,9 @@ $(function () {
 	meetingHub.client.updateIssueAwaitingSolve = updateIssueAwaitingSolve;
 	meetingHub.client.updateModedIssueSolve = updateModedIssueSolve;
 
+
+	meetingHub.client.setMilestone = setMilestone;
+
 	console.log("StartingHub ");
 
 	$.connection.hub.start(Constants.StartHubSettings).done(initConnection);

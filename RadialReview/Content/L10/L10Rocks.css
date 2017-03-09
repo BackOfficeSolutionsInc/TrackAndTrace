@@ -1,284 +1,326 @@
-﻿
-.rocks-container {
-	/* We first create a flex layout context */
-	/*display: flex;*/
-	/* Then we define the flow direction and if we allow the items to wrap 
-   * Remember this is the same as:
-   * flex-direction: row;
-   * flex-wrap: wrap;
-   */
-	/*flex-flow: row wrap;
-  */
-	/* Then we define how is distributed the remaining space */
-	/*justify-content: space-around;*/
-	margin-bottom: 24px;
+﻿.rocks-container {
+  margin-bottom: 24px;
 }
-
-	.rocks-container.rocks-combine .company-rock-container {
-		display: none;
-	}
-
-	.rocks-container .rock-row.rock-type-company .message {
-		/*color:#B8860B;*/
-		text-shadow: 0px 0px 0px hsl(43, 100%, 50%);
-	}
-
-	/*.rocks-container .rock-row.rock-type-company .message:before {
-            content: "\e415";
-            font-family: "fontastic" !important;
-            font-style: normal !important;
-            font-weight: normal !important;
-            font-variant: normal !important;
-            text-transform: none !important;
-            speak: none;
-            line-height: 1;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            display: inline;
-            position: relative;
-            top: 5px;
-            left: -30px;
-            float: left;
-            width: 0px;
-            color:#B8860B;
-            text-shadow:none;
-            /*color: #897000;*
+.rocks-container.rocks-combine .company-rock-container {
+  display: none;
 }
-*/
-	.rocks-container .rocks-item {
-		padding: 5px;
-		width: 400px;
-		height: 220px;
-		margin-top: 10px;
-		text-align: center;
-		position: relative;
-	}
-
-	.rocks-container .message {
-		/*font-weight: bold;*/
-		font-size: 16px;
-		padding-left: 42px;
-		padding-bottom: 6px;
-		text-shadow: 0px 0px 0px hsl(27, 8%, 23%);
-		/*height: 90px;*/
-		/*overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;*/
-	}
-
-	.rocks-container .rocks-item .owner {
-		text-align: right;
-		color: #B2B2B2;
-		/* width: 100%; */
-		position: absolute;
-		left: 0;
-		right: 10px;
-		bottom: 5px;
-		font-size: 12px;
-	}
-
-		.rocks-container .rocks-item .owner .lbl {
-			color: lightgray;
-		}
-
-	.rocks-container .owner {
-		font-size: 14px;
-		position: relative;
-		top: -7px;
-		text-transform: uppercase;
-		/* margin-top: 2px; */
-		left: -4px;
-	}
-
+.rocks-container .rock-row.rock-type-company .message {
+  text-shadow: 0px 0px 0px #ffb700;
+}
+.rocks-container .rocks-item {
+  padding: 5px;
+  width: 400px;
+  height: 220px;
+  margin-top: 10px;
+  text-align: center;
+  position: relative;
+}
+.rocks-container .message {
+  font-size: 16px;
+  padding-left: 42px;
+  padding-bottom: 6px;
+  text-shadow: 0px 0px 0px #3f3a36;
+}
+.rocks-container .rocks-item .owner {
+  text-align: right;
+  color: #B2B2B2;
+  position: absolute;
+  left: 0;
+  right: 10px;
+  bottom: 5px;
+  font-size: 12px;
+}
+.rocks-container .rocks-item .owner .lbl {
+  color: lightgray;
+}
+.rocks-container .owner {
+  font-size: 14px;
+  position: relative;
+  top: -7px;
+  text-transform: uppercase;
+  left: -4px;
+}
 .company-rock-container .owner {
-	font-size: 17px;
+  font-size: 17px;
 }
-
 .company-rock-container .message {
-	padding-left: 0px;
-	width: 100%;
-	padding-bottom: 0px;
+  padding-left: 0px;
+  width: 100%;
+  padding-bottom: 0px;
 }
-
 .company-rock-container td.picture {
-	width: 42px;
+  width: 42px;
 }
-
 .rocks-container .picture-container {
-	width: 30px;
-	height: 30px;
-	border: 1px solid #DDD;
-	padding: 1px;
-	margin: 0px 6px;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #DDD;
+  padding: 1px;
+  margin: 0px 6px;
 }
-
 .rocks-container tr:first-child {
-	border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
 }
-
 .rocks-container tr:not(:last-child) td {
-	border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
 }
-
-	.rocks-container tr:not(:last-child) td:last-child {
-		border-bottom: 1px solid #2C77BA;
-	}
-
+.rocks-container tr:not(:last-child) td:last-child {
+  border-bottom: 1px solid #2C77BA;
+}
 .rocks-container tr:nth-child(2) td.currentBlue {
-	border-top-left-radius: 6px;
-	border-top-right-radius: 6px;
-	border-top: none;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-top: none;
 }
-
 .rocks-container tr:last-child td.currentBlue {
-	border-bottom-left-radius: 6px;
-	border-bottom-right-radius: 6px;
-	border-bottom: none;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  border-bottom: none;
 }
-
 .rocks-container td.currentBlue {
-	background-color: #2C77BA;
-	border-bottom: 1px solid #2C77BA;
-	text-align: center;
-	width: 46px;
-	min-width: 46px;
-	/*display: block;*/
-	padding: 6px;
-	vertical-align: top;
-	padding-top: 3px;
+  background-color: #2C77BA;
+  border-bottom: 1px solid #2C77BA;
+  text-align: center;
+  width: 46px;
+  min-width: 46px;
+  padding: 6px;
+  vertical-align: top;
+  padding-top: 3px;
 }
-
 .rocks-container .rock-state-holder {
-	vertical-align: top;
-	line-height: 0.5;
+  vertical-align: top;
+  line-height: 0.5;
 }
-
 .rocks-container .component {
-	margin-bottom: 12px;
-	padding: 6px 6px 6px 1px;
-	/*box-shadow: 0px 3px 6px -1px rgba(0, 0, 0, 0.2);*/
-	box-shadow: 0px 3px 6px -1px rgba(0, 0, 0, 0.2);
-	border: 1px solid rgb(208, 208, 208);
-	margin: 5px;
+  margin-bottom: 12px;
+  padding: 6px 6px 6px 1px;
+  box-shadow: 0px 3px 6px -1px rgba(0, 0, 0, 0.2);
+  border: 1px solid #d0d0d0;
+  margin: 5px;
 }
-
+.rocks-container .rock-row .rock-title {
+  cursor: pointer;
+}
+.rocks-container .rock-row.selected .rock-title {
+  font-weight: bold;
+}
+.rock-details h4 {
+  margin-top: 0px;
+  margin-bottom: 10px;
+  min-height: 30px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #eee;
+}
+.rock-details .component:empty:after {
+  color: #ddd;
+  content: "Click a Rock to see its details.";
+}
+.rock-details .details {
+  border: 1px solid #E8E8E8;
+  padding: 0 1px 0 0;
+  color: #666;
+  font-size: 12px;
+  background-color: #FcFcFc;
+  width: 100%;
+  resize: vertical;
+  height: 116px;
+  min-height: 116px;
+}
+.rock-details .button-bar .todoButton {
+  color: #5E5E5E;
+  top: 1px;
+  opacity: 1;
+  transition: all .4s ease;
+}
+.rock-details .milestone-heading {
+  padding-top: 18px;
+}
+.rock-details .milestone-details {
+  min-height: 40px;
+}
+.rock-details .milestone-details:empty:after {
+  content: "No milestones.";
+  padding: 10px;
+  color: #ddd;
+}
+.rock-details .add-milestone-button {
+  float: right;
+  margin-top: 16px;
+}
 .rock-empty-holder:after {
-	content: "Click 'Add Rock' to create a rock";
+  content: "Click 'Add Rock' to create a rock";
 }
-
 .completion-percentage {
-	padding-right: 1px;
-	padding-top: 4px;
+  padding-right: 1px;
+  padding-top: 4px;
 }
-
-	.completion-percentage .ratio,
-	.completion-percentage .percentage {
-		/* width: 48px; */
-		font-size: 16px;
-		display: inline-block;
-		font-weight: bold;
-		color: #444;
-		text-align: right;
-		padding-right: 11px;
-	}
-
+.completion-percentage .ratio,
+.completion-percentage .percentage {
+  font-size: 16px;
+  display: inline-block;
+  font-weight: bold;
+  color: #444;
+  text-align: right;
+  padding-right: 11px;
+}
+.completion-percentage .percentage {
+  text-align: right;
+}
 .company-rocks-heading {
-	/*font-weight: bold;*/
-	text-transform: uppercase;
-	font-size: 20px;
-	height: 22px;
-	position: relative;
-	top: -4px;
-	left: 4px;
-	color: rgba(137, 112, 0, 0.9);
+  /*font-weight: bold;*/
+  text-transform: uppercase;
+  font-size: 20px;
+  height: 22px;
+  position: relative;
+  top: -4px;
+  left: 4px;
+  color: rgba(137, 112, 0, 0.9);
 }
-
 .company-rock-container .completion-percentage .ratio,
 .company-rock-container .completion-percentage .percentage {
-	color: rgba(137, 112, 0, 0.9);
+  color: rgba(137, 112, 0, 0.9);
 }
-
 .company-rocks-heading-container {
-	height: 28px;
+  height: 28px;
 }
-
-.completion-percentage .percentage {
-	text-align: right;
-}
-
 .company-rock-container .component {
-	background-color: #F7EFD5;
-	/* border-color: #69A779; */
-	color: #897000;
-	border: 1px solid #8A7104;
-	border-top-color: #B3A77F;
-	border-left-color: #A29051;
-	border-style: solid;
-	border-right-color: #A29051;
-	border-radius: 3px;
-	padding: 3px;
-	padding-bottom: 6px;
-	box-shadow: 0px 9px 22px -8px rgba(0, 0, 0, 0.42);
+  background-color: #F7EFD5;
+  /* border-color: #69A779; */
+  color: #897000;
+  border: 1px solid #8A7104;
+  border-top-color: #B3A77F;
+  border-left-color: #A29051;
+  border-style: solid;
+  border-right-color: #A29051;
+  border-radius: 3px;
+  padding: 3px;
+  padding-bottom: 6px;
+  box-shadow: 0px 9px 22px -8px rgba(0, 0, 0, 0.42);
 }
-
 .rocks .page-header.listing {
-	margin-top: -28px;
-	padding-top: 26px;
-	/*background-color: #F7F7F7;*/
-	background-color: #eee;
-	z-index: 11;
-	box-shadow: 0 4px 2px -2px rgba(128, 128, 128, 0.2);
+  margin-top: -28px;
+  padding-top: 26px;
+  background-color: #eee;
+  z-index: 11;
+  box-shadow: 0 4px 2px -2px rgba(128, 128, 128, 0.2);
 }
-
 .rocks .fixed-pos {
-	position: relative;
-	width: 100%;
+  position: relative;
+  width: 100%;
 }
-
 .rocks .page-header {
-	margin-top: 0px;
-	margin: 5px 0;
+  margin-top: 0px;
+  margin: 5px 0;
 }
-
-/*.company-rock-container {
-	padding-left: 35px;
-	padding-right:35px;
-}*/
-
-
-/*.rock-list-container .rock-name{
-    width:100%;
-    border:0;
-    cursor:pointer;
-
-}
-
-
-.rock-list-container .rock-name:focus{
-    border-bottom: 1px dotted 	#EF7622;
-    outline:none;
-}*/
-
 .rocks .rock-group .message {
-	max-width: calc(100% - 275px);
+  max-width: calc(100% - 275px);
 }
-
-
-@media(max-width:767px) {
-	.rocks-container .message {
-		font-size: 13px;
-		padding-top: 0px;
-		padding-bottom: 0px;
-		padding-left: 9px;
-		padding-bottom:7px;
-	}
-
-	.company-rock-container .message{		
-		padding-left: 0px;
-	}
-
-	.rocks .l10-page-title {
-		color: rgba(0, 0, 0, 0);
-		height: 15px;
-	}
+.rock-title {
+  z-index: 1;
+  position: relative;
+}
+.milestone-marker-container {
+  position: relative;
+  margin-bottom: 7px;
+  /*.milestone-date-container, .milestone-date-marker {
+		position: absolute;
+		height: 34px;
+		border: 1px solid #d6d6d6;
+		border-radius: 0px;
+		top: -3px;
+		z-index:0;
+	}*/
+}
+.milestone-marker-container .pre-line,
+.milestone-marker-container .post-line {
+  height: 1px;
+  position: absolute;
+  background-color: #d6d6d6;
+  top: 4px;
+}
+.milestone-marker-container .milestone-date-container,
+.milestone-marker-container .milestone-date-marker {
+  position: absolute;
+  height: 5px;
+  border: 1px solid #d6d6d6;
+  border-radius: 3px;
+  left: 5%;
+  top: 2px;
+}
+.milestone-marker-container .milestone-date-container {
+  background-color: #f7f7f7;
+}
+.milestone-marker-container .milestone-date-marker {
+  background-color: #e8e8ff;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-color: #c2cbdc;
+}
+.milestone-marker-container .milestone-date-marker.past-due.status-NotDone,
+.milestone-marker-container .milestone-date-marker.past-due.status-0 {
+  background-color: #f1d9d8;
+  border-color: #D9534F;
+}
+.milestone-marker-container .milestone-date-marker.status-Done,
+.milestone-marker-container .milestone-date-marker.status-8 {
+  background-color: #e2f7e6;
+}
+.milestone-marker-container .milestone-marker {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 7px;
+  background-color: #f7f7f7;
+  border: 1px solid #d6d6d6;
+  top: 0px;
+  display: inline-block;
+  cursor: pointer;
+  z-index: 1;
+}
+.milestone-marker-container .milestone-marker:hover {
+  width: 12px;
+  height: 12px;
+  border: 1px solid #d6d6d6;
+  margin-top: -1px;
+  margin-left: -1px;
+  z-index: 2;
+}
+.milestone-marker-container .milestone-marker.status-8,
+.milestone-marker-container .milestone-marker.status-Done {
+  background-color: #e2f7e6;
+  border: 1px solid #449D44;
+}
+.milestone-marker-container .milestone-marker.status-8:hover,
+.milestone-marker-container .milestone-marker.status-Done:hover {
+  border: 1px solid #449D44;
+}
+.milestone-marker-container .milestone-marker.past-due.status-NotDone,
+.milestone-marker-container .milestone-marker.past-due.status-0 {
+  background-color: #f1d9d8;
+  border: 1px solid #D9534F;
+}
+.milestone-marker-container .milestone-marker.past-due.status-NotDone:hover,
+.milestone-marker-container .milestone-marker.past-due.status-0:hover {
+  border: 1px solid #D9534F;
+}
+.milestone-marker-container .milestone-marker.rock-duedate-marker {
+  width: 6px;
+  height: 12px;
+  border-radius: 0px;
+}
+@media (max-width: 767px) {
+  .rocks-container .message {
+    font-size: 13px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 9px;
+    padding-bottom: 7px;
+  }
+  .company-rock-container .message {
+    padding-left: 0px;
+  }
+  .rocks .l10-page-title {
+    color: rgba(0, 0, 0, 0);
+    height: 15px;
+  }
 }

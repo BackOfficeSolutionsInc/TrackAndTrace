@@ -58,6 +58,7 @@ using RadialReview.Models.Angular.Headlines;
 using RadialReview.Models.VideoConference;
 using System.Linq.Expressions;
 using NHibernate.SqlCommand;
+using RadialReview.Models.Rocks;
 
 namespace RadialReview.Accessors {
 	public class L10Accessor : BaseAccessor {
@@ -1616,6 +1617,8 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+
+
 		public static List<L10Recurrence.L10Recurrence_Rocks> GetRocksForRecurrence(UserOrganizationModel caller, long recurrenceId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -1640,22 +1643,45 @@ namespace RadialReview.Accessors {
 			}
 			return found;
 		}
-		public static List<L10Meeting.L10Meeting_Rock> GetRocksForMeeting(ISession s, PermissionsUtility perms, long recurrenceId, long meetingId) {
+
+		public class MeetingRockAndMilestones {
+			public L10Meeting.L10Meeting_Rock Rock { get; set; }
+			public List<Milestone> Milestones { get; set; }
+
+			public MeetingRockAndMilestones() {
+				Milestones = new List<Milestone>();
+			}
+		}
+		public static List<MeetingRockAndMilestones> GetRocksForMeeting(ISession s, PermissionsUtility perms, long recurrenceId, long meetingId) {
 			perms.ViewL10Recurrence(recurrenceId).ViewL10Meeting(meetingId);
-			var found = s.QueryOver<L10Meeting.L10Meeting_Rock>()
+			var meetingRocks = s.QueryOver<L10Meeting.L10Meeting_Rock>()
 				.Where(x => x.DeleteTime == null && x.ForRecurrence.Id == recurrenceId && x.L10Meeting.Id == meetingId)
 				.Fetch(x => x.ForRock).Eager
 				.List().ToList();
-			foreach (var f in found) {
+
+			var rockIds = meetingRocks.Select(x => x.ForRock.Id).ToList();
+
+			//var rocks = s.QueryOver<RockModel>().WhereRestrictionOn(x => x.Id).IsIn(rockIds).Future();
+			var milestones = s.QueryOver<Milestone>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.RockId).IsIn(rockIds).Future();
+
+
+			var found = new List<MeetingRockAndMilestones>();
+
+			foreach (var f in meetingRocks) {
+				var toAdd = new MeetingRockAndMilestones();
+
 				if (f.ForRock.AccountableUser == null)
 					f.ForRock.AccountableUser = s.Load<UserOrganizationModel>(f.ForRock.ForUserId);
 				var a = f.ForRock.AccountableUser.NotNull(x => x.GetName());
 				var b = f.ForRock.AccountableUser.NotNull(x => x.ImageUrl(true, ImageSize._32));
+				toAdd.Rock = f;
+				toAdd.Milestones = milestones.Where(x => x.RockId == f.ForRock.Id).ToList();
+				found.Add(toAdd);
 			}
 			return found;
 		}
 
-		public static List<L10Meeting.L10Meeting_Rock> GetRocksForMeeting(UserOrganizationModel caller, long recurrenceId, long meetingId) {
+		public static List<MeetingRockAndMilestones> GetRocksForMeeting(UserOrganizationModel caller, long recurrenceId, long meetingId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
@@ -1663,6 +1689,8 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+		
+
 
 		public static void CreateRock(UserOrganizationModel caller, long recurrenceId, L10Controller.AddRockVm model) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -1701,15 +1729,15 @@ namespace RadialReview.Accessors {
 				};
 				s.Save(mm);
 
-				var rocks = L10Accessor.GetRocksForMeeting(s, perm, recurrenceId, current.Id);
+				var rocksAndMilestones = L10Accessor.GetRocksForMeeting(s, perm, recurrenceId, current.Id);
 				var builder = "";
-				if (!recur.CombineRocks && rocks.Where(x => x.ForRock.CompanyRock).Any()) {
-					var crow = ViewUtility.RenderPartial("~/Views/L10/partial/CompanyRockGroup.cshtml", rocks.Where(x => x.ForRock.CompanyRock).ToList());
+				if (!recur.CombineRocks && rocksAndMilestones.Where(x => x.Rock.ForRock.CompanyRock).Any()) {
+					var crow = ViewUtility.RenderPartial("~/Views/L10/partial/CompanyRockGroup.cshtml", rocksAndMilestones.Select(x=>x.Rock).Where(x => x.ForRock.CompanyRock).ToList());
 					builder += " <div class='company-rock-container'> " + crow.Execute() + " <hr/> </div> ";
 				}
 
 				//Update L10 meeting
-				var row = ViewUtility.RenderPartial("~/Views/L10/partial/RockGroup.cshtml", rocks);
+				var row = ViewUtility.RenderPartial("~/Views/L10/partial/RockGroup.cshtml", rocksAndMilestones.Select(x=>x.Rock).ToList());
 				builder = builder + row.Execute();
 				group.updateRocks(builder);
 

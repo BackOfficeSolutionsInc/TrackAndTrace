@@ -16,7 +16,7 @@
             <tr></tr>
 			@foreach (var i in Model)
 			{
-				<tr class="user-id-@i.ForRock.AccountableUser.Id">
+				<tr class="user-id-@i.ForRock.AccountableUser.Id rock-id-@i.ForRock.Id">
                     <td class="picture">
                         @Html.Partial("_ProfilePicture", i.ForRock.AccountableUser)
                     </td>

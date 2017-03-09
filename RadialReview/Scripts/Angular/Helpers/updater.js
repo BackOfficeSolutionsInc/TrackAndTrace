@@ -279,30 +279,38 @@
 		for (var key in obj) {
 			var value = obj[key];
 			var type = typeof (value);
+
 			if (obj[key] == null) {
 				//Do nothing
-			} else if (type == 'string' && dateRegex1.test(value)) {
-				//obj[key] = new Date(parseInt(value.substr(6)));
-				obj[key] = new Date(new Date(parseInt(value.substr(6))).getTime() - new Date().getTimezoneOffset() * 60000)
-			} else if (type == 'string' && dateRegex2.test(value)) {
-				obj[key] = new Date(obj[key]);
-			} else if (obj[key].getDate !== undefined) {
-				obj[key] = new Date(obj[key].getTime() /*- obj[key].getTimezoneOffset() * 60000*/);
-			} else if (type == 'object') {
+			} else {
+				var isDate = parseJsonDate(value);
 
-				//_continueIfUnseen(value, seen, function () {
+				//if (type == 'string' && dateRegex1.test(value)) {
+				//	//obj[key] = new Date(parseInt(value.substr(6)));
+				//	obj[key] = new Date(new Date(parseInt(value.substr(6))).getTime() - new Date().getTimezoneOffset() * 60000)
+				//} else if (type == 'string' && dateRegex2.test(value)) {
+				//	obj[key] = new Date(obj[key]);
+				//} else if (obj[key].getDate !== undefined) {
+				//	obj[key] = new Date(obj[key].getTime() /*- obj[key].getTimezoneOffset() * 60000*/);
+				//}
+				if (isDate != false) {
+					obj[key] = isDate;
+				}else if (type == 'object') {
+
+					//_continueIfUnseen(value, seen, function () {
 					_convertDates(value, seen);
-				//});
-				//var alreadyParsed = false;
-				//if (value in seen) {
-				//	alreadyParsed = true;
-				//	continue;
-				//}
-				//if (!alreadyParsed) {
-				//	seen[value]=true;
-				//	_convertDates(value, seen);
-				//}
+					//});
+					//var alreadyParsed = false;
+					//if (value in seen) {
+					//	alreadyParsed = true;
+					//	continue;
+					//}
+					//if (!alreadyParsed) {
+					//	seen[value]=true;
+					//	_convertDates(value, seen);
+					//}
 
+				}
 			}
 		}
 	}

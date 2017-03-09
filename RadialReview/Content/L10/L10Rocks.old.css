@@ -1,0 +1,309 @@
+﻿
+.rocks-container {
+	/* We first create a flex layout context */
+	/*display: flex;*/
+	/* Then we define the flow direction and if we allow the items to wrap 
+   * Remember this is the same as:
+   * flex-direction: row;
+   * flex-wrap: wrap;
+   */
+	/*flex-flow: row wrap;
+  */
+	/* Then we define how is distributed the remaining space */
+	/*justify-content: space-around;*/
+	margin-bottom: 24px;
+}
+
+	.rocks-container.rocks-combine .company-rock-container {
+		display: none;
+	}
+
+	.rocks-container .rock-row.rock-type-company .message {
+		/*color:#B8860B;*/
+		text-shadow: 0px 0px 0px hsl(43, 100%, 50%);
+	}
+
+	/*.rocks-container .rock-row.rock-type-company .message:before {
+            content: "\e415";
+            font-family: "fontastic" !important;
+            font-style: normal !important;
+            font-weight: normal !important;
+            font-variant: normal !important;
+            text-transform: none !important;
+            speak: none;
+            line-height: 1;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            display: inline;
+            position: relative;
+            top: 5px;
+            left: -30px;
+            float: left;
+            width: 0px;
+            color:#B8860B;
+            text-shadow:none;
+            /*color: #897000;*
+}
+*/
+	.rocks-container .rocks-item {
+		padding: 5px;
+		width: 400px;
+		height: 220px;
+		margin-top: 10px;
+		text-align: center;
+		position: relative;
+	}
+
+	.rocks-container .message {
+		/*font-weight: bold;*/
+		font-size: 16px;
+		padding-left: 42px;
+		padding-bottom: 6px;
+		text-shadow: 0px 0px 0px hsl(27, 8%, 23%);
+		/*height: 90px;*/
+		/*overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;*/
+	}
+
+	.rocks-container .rocks-item .owner {
+		text-align: right;
+		color: #B2B2B2;
+		/* width: 100%; */
+		position: absolute;
+		left: 0;
+		right: 10px;
+		bottom: 5px;
+		font-size: 12px;
+	}
+
+		.rocks-container .rocks-item .owner .lbl {
+			color: lightgray;
+		}
+
+	.rocks-container .owner {
+		font-size: 14px;
+		position: relative;
+		top: -7px;
+		text-transform: uppercase;
+		/* margin-top: 2px; */
+		left: -4px;
+	}
+
+.company-rock-container .owner {
+	font-size: 17px;
+}
+
+.company-rock-container .message {
+	padding-left: 0px;
+	width: 100%;
+	padding-bottom: 0px;
+}
+
+.company-rock-container td.picture {
+	width: 42px;
+}
+
+.rocks-container .picture-container {
+	width: 30px;
+	height: 30px;
+	border: 1px solid #DDD;
+	padding: 1px;
+	margin: 0px 6px;
+}
+
+.rocks-container tr:first-child {
+	border-bottom: 1px solid #f0f0f0;
+}
+
+.rocks-container tr:not(:last-child) td {
+	border-bottom: 1px solid #f0f0f0;
+}
+
+	.rocks-container tr:not(:last-child) td:last-child {
+		border-bottom: 1px solid #2C77BA;
+	}
+
+.rocks-container tr:nth-child(2) td.currentBlue {
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+	border-top: none;
+}
+
+.rocks-container tr:last-child td.currentBlue {
+	border-bottom-left-radius: 6px;
+	border-bottom-right-radius: 6px;
+	border-bottom: none;
+}
+
+.rocks-container td.currentBlue {
+	background-color: #2C77BA;
+	border-bottom: 1px solid #2C77BA;
+	text-align: center;
+	width: 46px;
+	min-width: 46px;
+	/*display: block;*/
+	padding: 6px;
+	vertical-align: top;
+	padding-top: 3px;
+}
+
+.rocks-container .rock-state-holder {
+	vertical-align: top;
+	line-height: 0.5;
+}
+
+.rocks-container .component {
+	margin-bottom: 12px;
+	padding: 6px 6px 6px 1px;
+	/*box-shadow: 0px 3px 6px -1px rgba(0, 0, 0, 0.2);*/
+	box-shadow: 0px 3px 6px -1px rgba(0, 0, 0, 0.2);
+	border: 1px solid rgb(208, 208, 208);
+	margin: 5px;
+}
+
+.rock-empty-holder:after {
+	content: "Click 'Add Rock' to create a rock";
+}
+
+.completion-percentage {
+	padding-right: 1px;
+	padding-top: 4px;
+}
+
+	.completion-percentage .ratio,
+	.completion-percentage .percentage {
+		/* width: 48px; */
+		font-size: 16px;
+		display: inline-block;
+		font-weight: bold;
+		color: #444;
+		text-align: right;
+		padding-right: 11px;
+	}
+
+.company-rocks-heading {
+	/*font-weight: bold;*/
+	text-transform: uppercase;
+	font-size: 20px;
+	height: 22px;
+	position: relative;
+	top: -4px;
+	left: 4px;
+	color: rgba(137, 112, 0, 0.9);
+}
+
+.company-rock-container .completion-percentage .ratio,
+.company-rock-container .completion-percentage .percentage {
+	color: rgba(137, 112, 0, 0.9);
+}
+
+.company-rocks-heading-container {
+	height: 28px;
+}
+
+.completion-percentage .percentage {
+	text-align: right;
+}
+
+.company-rock-container .component {
+	background-color: #F7EFD5;
+	/* border-color: #69A779; */
+	color: #897000;
+	border: 1px solid #8A7104;
+	border-top-color: #B3A77F;
+	border-left-color: #A29051;
+	border-style: solid;
+	border-right-color: #A29051;
+	border-radius: 3px;
+	padding: 3px;
+	padding-bottom: 6px;
+	box-shadow: 0px 9px 22px -8px rgba(0, 0, 0, 0.42);
+}
+
+.rocks .page-header.listing {
+	margin-top: -28px;
+	padding-top: 26px;
+	/*background-color: #F7F7F7;*/
+	background-color: #eee;
+	z-index: 11;
+	box-shadow: 0 4px 2px -2px rgba(128, 128, 128, 0.2);
+}
+
+.rocks .fixed-pos {
+	position: relative;
+	width: 100%;
+}
+
+.rocks .page-header {
+	margin-top: 0px;
+	margin: 5px 0;
+}
+
+/*.company-rock-container {
+	padding-left: 35px;
+	padding-right:35px;
+}*/
+
+
+/*.rock-list-container .rock-name{
+    width:100%;
+    border:0;
+    cursor:pointer;
+
+}
+
+
+.rock-list-container .rock-name:focus{
+    border-bottom: 1px dotted 	#EF7622;
+    outline:none;
+}*/
+
+.rocks .rock-group .message {
+	max-width: calc(100% - 275px);
+}
+
+
+@media(max-width:767px) {
+	.rocks-container .message {
+		font-size: 13px;
+		padding-top: 0px;
+		padding-bottom: 0px;
+		padding-left: 9px;
+		padding-bottom: 7px;
+	}
+
+	.company-rock-container .message {
+		padding-left: 0px;
+	}
+
+	.rocks .l10-page-title {
+		color: rgba(0, 0, 0, 0);
+		height: 15px;
+	}
+}
+
+
+.rocks .milestone-marker {
+	position: absolute;
+	width: 12px;
+	height: 12px;
+	border-radius: 7px;
+	background-color: #e2f7e6;
+	border: 2px solid #449D44;
+	top: -9px;
+	display: inline-block;
+	cursor: pointer;
+}
+
+	.rocks .milestone-marker:hover {
+		width: 14px;
+		height: 14px;
+		border: 2px solid #449D44;
+		margin-top: -1px;
+		margin-left: -1px;
+	}
+
+.rocks .milestone-marker-container {
+	position: relative;
+}
