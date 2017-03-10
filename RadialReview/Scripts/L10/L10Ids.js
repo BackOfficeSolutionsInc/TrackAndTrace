@@ -705,7 +705,7 @@ function updateIssuePriority(id, priority) {
 var refreshRankTimer = null;
 var refreshRankArr = [];
 function refreshRanks(last) {
-	var ranks = $(".issues-list >.issue-row:not('.skipNumber'):not([data-checked='true']):not([data-checked='True']) > .number-priority > .rank123")
+	var ranks = $(".issues-list >.issue-row:not('.skipNumber'):not([data-checked='true']):not([data-checked='True']):not([data-awaitingsolve='True']):not([data-awaitingsolve='true']) > .number-priority > .rank123")
         .filter(function () { return $(this).data("rank") > 0 }).sort(function (a, b) {
         	return $(a).data("rank") - $(b).data("rank");
         });
@@ -841,7 +841,7 @@ $(function () {
 
 		currentRank = 0;
 		var last = undefined;
-		$(".issues-list > .issue-row:not(.skipNumber):not([data-checked='True']):not([data-checked='true']) .rank123").each(function () {
+		$(".issues-list > .issue-row:not(.skipNumber):not([data-checked='True']):not([data-checked='true']):not([data-awaitingsolve='True']):not([data-awaitingsolve='true']) .rank123").each(function () {
 			var d = $(this).data("rank");
 			currentRank = Math.max(currentRank, d);
 		});

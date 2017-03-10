@@ -41,6 +41,7 @@ using RadialReview.Models.Payments;
 using NHibernate.Driver;
 using RadialReview.Utilities.Productivity;
 using RadialReview.Models.VideoConference;
+using RadialReview.Models.Rocks;
 
 //using Microsoft.VisualStudio.Profiler;
 
@@ -392,8 +393,10 @@ namespace RadialReview.Utilities
             enversConf.Audit<PeriodModel>();
             enversConf.Audit<ReviewModel>();
             enversConf.Audit<ReviewsModel>();
-            enversConf.Audit<RockModel>();
-            enversConf.Audit<RoleModel>();
+			enversConf.Audit<RockModel>();
+			enversConf.Audit<Milestone>();
+
+			enversConf.Audit<RoleModel>();
             enversConf.Audit<UserOrganizationModel>()
                 .ExcludeRelationData(x => x.Groups)
                 .ExcludeRelationData(x => x.ManagingGroups)

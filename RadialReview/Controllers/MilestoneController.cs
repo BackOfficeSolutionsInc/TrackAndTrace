@@ -1,5 +1,6 @@
 ﻿using RadialReview.Accessors;
 using RadialReview.Models.Json;
+using RadialReview.Models.Rocks;
 using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
@@ -33,8 +34,15 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult Add(DateTime dueDate,string milestone,long rockId) {
+		public JsonResult Add(DateTime dueDate, string milestone, long rockId) {
 			RockAccessor.AddMilestone(GetUser(), rockId, milestone, dueDate);
+			return Json(ResultObject.SilentSuccess());
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public JsonResult Edit(Milestone milestone) {
+			RockAccessor.EditMilestone(GetUser(), milestone.Id, milestone.Name, milestone.DueDate, milestone.Required, milestone.Status);
 			return Json(ResultObject.SilentSuccess());
 		}
 

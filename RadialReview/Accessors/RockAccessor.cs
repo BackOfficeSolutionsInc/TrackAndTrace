@@ -29,18 +29,6 @@ namespace RadialReview.Accessors
 {
 	public class RockAccessor
 	{
-		public static List<RockModel> GetRocks(UserOrganizationModel caller, long forUserId,/* long? periodId,*/ DateRange range = null)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
-					var perm = PermissionsUtility.Create(s, caller);
-					return GetRocks(s.ToQueryProvider(true), perm, forUserId, /*periodId,*/ range);
-				}
-			}
-		}
-
 		public static Milestone AddMilestone(UserOrganizationModel caller, long rockId, string milestone, DateTime dueDate) {
 
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -72,6 +60,49 @@ namespace RadialReview.Accessors
 			}
 		}
 
+		public static void EditMilestone(UserOrganizationModel caller, long milestoneId,string name=null,DateTime? duedate=null,bool? required=null,MilestoneStatus? status=null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					using (var rt = RealTimeUtility.Create()) {
+
+						var ms = s.Get<Milestone>(milestoneId);
+
+						var perm = PermissionsUtility.Create(s, caller);
+						perm.EditRock(ms.RockId);
+
+						ms.Name = name ?? ms.Name;
+						ms.DueDate = duedate ?? ms.DueDate;
+						ms.Required = required ?? ms.Required;
+						ms.Status = status ?? ms.Status;
+
+						s.Update(ms);
+
+						var recurrenceIds = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
+							.Where(x => x.DeleteTime == null && x.ForRock.Id == ms.RockId)
+							.Select(x => x.L10Recurrence.Id).List<long>();
+
+						tx.Commit();
+						s.Flush();
+
+						rt.UpdateRecurrences(recurrenceIds).AddLowLevelAction(x => x.setMilestone(ms));						
+					}
+				}
+			}
+		}
+
+		public static List<RockModel> GetRocks(UserOrganizationModel caller, long forUserId,/* long? periodId,*/ DateRange range = null)
+		{
+			using (var s = HibernateSession.GetCurrentSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					var perm = PermissionsUtility.Create(s, caller);
+					return GetRocks(s.ToQueryProvider(true), perm, forUserId, /*periodId,*/ range);
+				}
+			}
+		}
+
+	
 		public static List<RockModel> GetRocks(AbstractQuery queryProvider, PermissionsUtility perms, long forUserId, /*long? periodId,*/ DateRange range)
 		{
 			perms.ViewUserOrganization(forUserId, false);
@@ -136,8 +167,7 @@ namespace RadialReview.Accessors
 				}
 			}
 		}
-
-
+		
 
 		public static List<PermissionsException> EditRocks(UserOrganizationModel caller, long userId, List<RockModel> rocks, bool updateOutstandingReviews,bool updateAllL10s)
 		{

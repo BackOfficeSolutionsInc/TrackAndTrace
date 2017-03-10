@@ -1844,7 +1844,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		public static void UpdateRock(UserOrganizationModel caller, long id, String rockMessage, RockState? state, long? ownerId, string connectionId, bool? delete = null, bool? companyRock = null) {
+		public static void UpdateRock(UserOrganizationModel caller, long id, String rockMessage, RockState? state, long? ownerId, string connectionId, bool? delete = null, bool? companyRock = null,DateTime? dueDate=null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					using (var rt = RealTimeUtility.Create(connectionId)) {
@@ -1887,6 +1887,12 @@ namespace RadialReview.Accessors {
 							s.Update(rock);
 							updated = true;
 
+						}
+
+						if (dueDate != null && dueDate != rock.DueDate) {
+							rock.DueDate = dueDate.Value;
+							s.Update(rock);
+							updated = true;
 						}
 
 						if (ownerId != null && ownerId != rock.ForUserId) {

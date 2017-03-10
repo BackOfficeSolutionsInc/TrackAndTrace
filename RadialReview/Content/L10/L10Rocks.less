@@ -135,62 +135,6 @@
 	}
 }
 
-.rock-details {
-	h4 {
-		margin-top: 0px;
-		margin-bottom: 10px;
-		min-height: 30px;
-		padding-bottom: 6px;
-		border-bottom: 1px solid #eee;
-	}
-
-	.component:empty:after {
-		color: #ddd;
-		content: "Click a Rock to see its details.";
-	}
-
-	.details {
-		border: 1px solid #E8E8E8;
-		padding: 0 1px 0 0;
-		color: #666;
-		font-size: 12px;
-		background-color: #FcFcFc;
-		width: 100%;
-		resize: vertical;
-		height: 116px;
-		min-height: 116px;
-	}
-
-	.button-bar .todoButton {
-		color: #5E5E5E;
-		top: 1px;
-		opacity: 1;
-		transition: all .4s ease;
-	}
-
-	.milestone-heading {
-		padding-top: 18px;
-	}
-
-	.milestone-details {
-		min-height: 40px;
-
-		&:empty:after {
-			content: "No milestones.";
-			padding: 10px;
-			color: #ddd;
-		}
-	}
-
-	.add-milestone-button {
-		float: right;
-		margin-top: 16px;
-	}
-}
-
-.rock-empty-holder:after {
-	content: "Click 'Add Rock' to create a rock";
-}
 
 .completion-percentage {
 	padding-right: 1px;
@@ -268,6 +212,10 @@
 	.rock-group .message {
 		max-width: ~"calc(100% - 275px)";
 	}
+
+	.page-header.details > h4 {
+		margin-bottom: -7px;
+	}
 }
 
 .rock-title {
@@ -280,7 +228,7 @@
 	//top: -5px;
 	margin-bottom: 7px;
 
-	.pre-line,.post-line {
+	.pre-line, .post-line {
 		height: 1px;
 		position: absolute;
 		background-color: #d6d6d6;
@@ -297,7 +245,6 @@
 	}
 
 	.milestone-date-container {
-		//width: 90%;
 		background-color: #f7f7f7;
 	}
 
@@ -316,7 +263,6 @@
 		&.status-Done,
 		&.status-8 {
 			background-color: #e2f7e6;
-			//border-color: #449D44;
 		}
 	}
 
@@ -331,20 +277,23 @@
 		display: inline-block;
 		cursor: pointer;
 		z-index: 1;
+		margin-left: -5px; // half width
+		z-index: 3;
 
 		&:hover {
 			width: 12px;
 			height: 12px;
 			border: 1px solid #d6d6d6;
 			margin-top: -1px;
-			margin-left: -1px;
-			z-index: 2;
+			margin-left: -6px; // half width
+			z-index: 4;
 		}
 
 		&.status-8,
 		&.status-Done {
 			background-color: #e2f7e6;
 			border: 1px solid #449D44;
+			z-index: 1;
 
 			&:hover {
 				border: 1px solid #449D44;
@@ -355,6 +304,7 @@
 		&.past-due.status-0 {
 			background-color: #f1d9d8;
 			border: 1px solid #D9534F;
+			z-index: 2;
 
 			&:hover {
 				border: 1px solid #D9534F;
@@ -367,14 +317,113 @@
 			border-radius: 0px;
 		}
 	}
-	/*.milestone-date-container, .milestone-date-marker {
-		position: absolute;
-		height: 34px;
-		border: 1px solid #d6d6d6;
-		border-radius: 0px;
-		top: -3px;
-		z-index:0;
-	}*/
+}
+
+.rock-details {
+	h4 {
+		margin-top: 0px;
+		margin-bottom: 10px;
+		min-height: 30px;
+		padding-bottom: 6px;
+		border-bottom: 1px solid #eee;
+	}
+
+	.component {
+		margin-bottom: 10px;
+
+		&:empty:after {
+			color: #ddd;
+			content: "Click a Rock to see its details.";
+		}
+	}
+
+	.details {
+		border: 1px solid #E8E8E8;
+		padding: 0 1px 0 0;
+		color: #666;
+		font-size: 12px;
+		background-color: #FcFcFc;
+		width: 100%;
+		resize: vertical;
+		height: 116px;
+		min-height: 116px;
+	}
+
+	.button-bar .todoButton {
+		color: #5E5E5E;
+		top: 1px;
+		opacity: 1;
+		transition: all .4s ease;
+	}
+
+	.milestone-heading {
+	}
+
+	.milestone-table {
+		min-height: 40px;
+		width: 100%;
+		margin-left: 8px;
+
+		&:empty:after {
+			content: "No milestones.";
+			padding: 10px;
+			color: #ddd;
+		}
+
+		.milestone-status-cell {
+			width: 20px;
+		}
+
+		.milestone-name {
+			color: #666;
+		}
+
+		.milestone-duedate-cell {
+			width: 100px;
+
+			input {
+				text-align: right;
+				padding-right: 10px;
+			}
+		}
+	}
+
+	.add-milestone-button {
+		float: right;
+		//margin-top: 16px;
+	}
+
+	.add-on {
+		display: none;
+	}
+
+	.rock-duedate .date {
+		width: 100px;
+		display: inline-block;
+
+		input {
+			text-align: left;
+			padding-left: 12px;
+		}
+	}
+
+	.client-date {
+		border: none;
+		padding: 0px;
+		box-shadow: none;
+		//text-align: right;
+		color: #767F99;
+		cursor: pointer;
+		height: inherit;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+}
+
+.rock-empty-holder:after {
+	content: "Click 'Add Rock' to create a rock";
 }
 
 @media(max-width:767px) {

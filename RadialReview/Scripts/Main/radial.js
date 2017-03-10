@@ -199,12 +199,18 @@ function generateDatepickerLocalize(selector, date, name, id, options) {
 	var offset = new Date().getTimezoneOffset();
 	if (typeof (date) === "undefined") {
 		date = new Date();
-	} else if (typeof (date) === "string") {
-		console.error("Could not determine format from date string: " + date)
+	} else {
+		var pdate = parseJsonDate(date);
+		if (!pdate) {
+			console.error("Could not determine format from date: " + date);
+			$(selector).html("ERR");
+			return false;
+		}
+		date = pdate;
 	}
 
 	var newDate = new Date(date.getTime() + offset * 60000);
-	generateDatepicker(selector, newDate, name, id, options, offset);
+	return generateDatepicker(selector, newDate, name, id, options, offset);
 }
 
 function generateDatepicker(selector, date, name, id, options, offsetMinutes) {
@@ -272,12 +278,24 @@ function generateDatepicker(selector, date, name, id, options, offsetMinutes) {
 		}
 	}
 	var _offsetMin = offsetMinutes;
+	var eventHolder = $("[name='" + name + "']");
+
 	$('.' + guid + ' .client-date').datepickerX(dpOptions).on('changeDate', function (e) {
 		var edate = new Date(e.date.getTime() + _offsetMin * 60000);
 		var formatted = formatDate(edate);
 		$('.' + guid + ' .server-date').val(formatted);
-		$("[name='" + name + "']").trigger("change")
+		$(eventHolder).trigger("change", [{
+			clientDate: edate,
+			serverDate: formatted,
+			containerElement: $(selector),
+			clientDateElement: $(this),
+			serverDateElement: $(eventHolder)
+		}]);
+		$(this).datepickerX("hide");
+	}).on("hide", function () {
+		$(eventHolder).trigger("close");
 	});
+	return eventHolder;
 }
 
 function metGoal(direction, goal, measured, alternate) {
@@ -1779,6 +1797,10 @@ function parseJsonDate(value) {
 	var type = typeof (value);
 	var dateRegex1 = /\/Date\([+-]?\d{13,14}\)\//;
 	var dateRegex2 = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{0,7})?/;
+	if (type === "undefined")
+		return false;
+	if (type === "number")
+		return new Date(value);
 	if (type == 'string' && dateRegex1.test(value)) {
 		return new Date(new Date(parseInt(value.substr(6))).getTime() - new Date().getTimezoneOffset() * 60000)
 	} else if (type == 'string' && dateRegex2.test(value)) {

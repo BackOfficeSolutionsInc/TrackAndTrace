@@ -104,52 +104,6 @@
 .rocks-container .rock-row.selected .rock-title {
   font-weight: bold;
 }
-.rock-details h4 {
-  margin-top: 0px;
-  margin-bottom: 10px;
-  min-height: 30px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid #eee;
-}
-.rock-details .component:empty:after {
-  color: #ddd;
-  content: "Click a Rock to see its details.";
-}
-.rock-details .details {
-  border: 1px solid #E8E8E8;
-  padding: 0 1px 0 0;
-  color: #666;
-  font-size: 12px;
-  background-color: #FcFcFc;
-  width: 100%;
-  resize: vertical;
-  height: 116px;
-  min-height: 116px;
-}
-.rock-details .button-bar .todoButton {
-  color: #5E5E5E;
-  top: 1px;
-  opacity: 1;
-  transition: all .4s ease;
-}
-.rock-details .milestone-heading {
-  padding-top: 18px;
-}
-.rock-details .milestone-details {
-  min-height: 40px;
-}
-.rock-details .milestone-details:empty:after {
-  content: "No milestones.";
-  padding: 10px;
-  color: #ddd;
-}
-.rock-details .add-milestone-button {
-  float: right;
-  margin-top: 16px;
-}
-.rock-empty-holder:after {
-  content: "Click 'Add Rock' to create a rock";
-}
 .completion-percentage {
   padding-right: 1px;
   padding-top: 4px;
@@ -215,6 +169,9 @@
 .rocks .rock-group .message {
   max-width: calc(100% - 275px);
 }
+.rocks .page-header.details > h4 {
+  margin-bottom: -7px;
+}
 .rock-title {
   z-index: 1;
   position: relative;
@@ -222,14 +179,6 @@
 .milestone-marker-container {
   position: relative;
   margin-bottom: 7px;
-  /*.milestone-date-container, .milestone-date-marker {
-		position: absolute;
-		height: 34px;
-		border: 1px solid #d6d6d6;
-		border-radius: 0px;
-		top: -3px;
-		z-index:0;
-	}*/
 }
 .milestone-marker-container .pre-line,
 .milestone-marker-container .post-line {
@@ -276,19 +225,22 @@
   display: inline-block;
   cursor: pointer;
   z-index: 1;
+  margin-left: -5px;
+  z-index: 3;
 }
 .milestone-marker-container .milestone-marker:hover {
   width: 12px;
   height: 12px;
   border: 1px solid #d6d6d6;
   margin-top: -1px;
-  margin-left: -1px;
-  z-index: 2;
+  margin-left: -6px;
+  z-index: 4;
 }
 .milestone-marker-container .milestone-marker.status-8,
 .milestone-marker-container .milestone-marker.status-Done {
   background-color: #e2f7e6;
   border: 1px solid #449D44;
+  z-index: 1;
 }
 .milestone-marker-container .milestone-marker.status-8:hover,
 .milestone-marker-container .milestone-marker.status-Done:hover {
@@ -298,6 +250,7 @@
 .milestone-marker-container .milestone-marker.past-due.status-0 {
   background-color: #f1d9d8;
   border: 1px solid #D9534F;
+  z-index: 2;
 }
 .milestone-marker-container .milestone-marker.past-due.status-NotDone:hover,
 .milestone-marker-container .milestone-marker.past-due.status-0:hover {
@@ -307,6 +260,88 @@
   width: 6px;
   height: 12px;
   border-radius: 0px;
+}
+.rock-details h4 {
+  margin-top: 0px;
+  margin-bottom: 10px;
+  min-height: 30px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #eee;
+}
+.rock-details .component {
+  margin-bottom: 10px;
+}
+.rock-details .component:empty:after {
+  color: #ddd;
+  content: "Click a Rock to see its details.";
+}
+.rock-details .details {
+  border: 1px solid #E8E8E8;
+  padding: 0 1px 0 0;
+  color: #666;
+  font-size: 12px;
+  background-color: #FcFcFc;
+  width: 100%;
+  resize: vertical;
+  height: 116px;
+  min-height: 116px;
+}
+.rock-details .button-bar .todoButton {
+  color: #5E5E5E;
+  top: 1px;
+  opacity: 1;
+  transition: all .4s ease;
+}
+.rock-details .milestone-table {
+  min-height: 40px;
+  width: 100%;
+  margin-left: 8px;
+}
+.rock-details .milestone-table:empty:after {
+  content: "No milestones.";
+  padding: 10px;
+  color: #ddd;
+}
+.rock-details .milestone-table .milestone-status-cell {
+  width: 20px;
+}
+.rock-details .milestone-table .milestone-name {
+  color: #666;
+}
+.rock-details .milestone-table .milestone-duedate-cell {
+  width: 100px;
+}
+.rock-details .milestone-table .milestone-duedate-cell input {
+  text-align: right;
+  padding-right: 10px;
+}
+.rock-details .add-milestone-button {
+  float: right;
+}
+.rock-details .add-on {
+  display: none;
+}
+.rock-details .rock-duedate .date {
+  width: 100px;
+  display: inline-block;
+}
+.rock-details .rock-duedate .date input {
+  text-align: left;
+  padding-left: 12px;
+}
+.rock-details .client-date {
+  border: none;
+  padding: 0px;
+  box-shadow: none;
+  color: #767F99;
+  cursor: pointer;
+  height: inherit;
+}
+.rock-details .client-date:hover {
+  text-decoration: underline;
+}
+.rock-empty-holder:after {
+  content: "Click 'Add Rock' to create a rock";
 }
 @media (max-width: 767px) {
   .rocks-container .message {
