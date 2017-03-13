@@ -195,29 +195,107 @@ function generateGuid() {
 //	return _userFormat;
 //}
 
+//Date stuff
+function parseJsonDate(value, allowNumbers) {
+	var type = typeof (value);
+	var dateRegex1 = /\/Date\([+-]?\d{13,14}\)\//;
+	var dateRegex2 = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{0,7})?/;
+	var dateRegex3 = /^(\d{2})-(\d{2})-(\d{4}) (\d{2}):(\d{2}):(\d{2})$/;
+	if (type === "undefined")
+		return false;
+	if (allowNumbers == true && type === "number")
+		return new Date(value);
+	if (type == 'string' && dateRegex1.test(value)) {
+		return new Date(new Date(parseInt(value.substr(6))).getTime() - new Date().getTimezoneOffset() * 60000)
+	} else if (type == 'string' && dateRegex2.test(value)) {
+		return new Date(value);
+	} else if (type == 'string' && dateRegex3.test(value)) {
+		return new Date(value);
+	} else if (value.getDate !== undefined) {
+		return new Date(value.getTime());
+	}
+	if (allowNumbers == true && type === "string" && !isNaN(value)) {
+		return new Date(+value);
+	}
+
+	return false;
+}
+
+function dateFormatter(date) {
+	return [date.getMonth() + 1, date.getDate(), date.getFullYear()].join('/');
+}
+
+function clientDateFormat(date) {
+	if (date == false)
+		return "";
+	var _d = date.getDate(),
+		dd = _d > 9 ? _d : '0' + _d,
+		_m = date.getMonth() + 1,
+		mm = _m > 9 ? _m : '0' + _m,
+		yyyy = date.getFullYear();
+	return window.dateFormat
+	   .replace(/mm/gi, mm).replace(/m/gi, _m)
+	   .replace(/dd/gi, dd).replace(/d/gi, _d)
+	   .replace(/yyyy/gi, yyyy).replace(/yy/gi, (yyyy - 2000));
+}
+
+function serverDateFormat(edate) {
+	if (edate == false)
+		return "";
+	var _d = edate.getDate(),
+	_m = edate.getMonth() + 1,
+	_mm = edate.getMinutes(),
+	_h = edate.getHours(),
+	_s = edate.getSeconds(),
+	d = _d > 9 ? _d : '0' + _d,
+	m = _m > 9 ? _m : '0' + _m,
+	h = _h > 9 ? _h : '0' + _h,
+	mm = _mm > 9 ? _mm : '0' + _mm,
+	s = _s > 9 ? _s : '0' + _s;
+	return m + '-' + d + '-' + (edate.getFullYear()) + " " + h + ":" + mm + ":" + s;
+}
+
 function generateDatepickerLocalize(selector, date, name, id, options) {
-	var offset = new Date().getTimezoneOffset();
 	if (typeof (date) === "undefined") {
 		date = new Date();
+	} else if (date == false) {
+
 	} else {
-		var pdate = parseJsonDate(date);
+		var pdate = parseJsonDate(date, true);
 		if (!pdate) {
 			console.error("Could not determine format from date: " + date);
-			$(selector).html("ERR");
-			return false;
+			var err = $("<span style='color:rgba(255,0,0,.5)' >DateErr</span>");
+			$(selector).html(err);
+			return err;
 		}
 		date = pdate;
 	}
-
-	var newDate = new Date(date.getTime() + offset * 60000);
+	var offset;
+	if (date == false)
+		offset = new Date().getTimezoneOffset();
+	else
+		offset = date.getTimezoneOffset();
+	var newDate = date;
+	if (date!=false)
+		newDate = new Date(date.getTime() + offset * 60000);
 	return generateDatepicker(selector, newDate, name, id, options, offset);
 }
+
 
 function generateDatepicker(selector, date, name, id, options, offsetMinutes) {
 	if (typeof (date) === "undefined") {
 		date = new Date();
-	} else if (typeof (date) === "string") {
-		console.error("Could not determine format from date string: " + date)
+	} else if (date == false) {
+		//do nothing.
+	} else {
+		var pdate = parseJsonDate(date, true);
+		if (!pdate) {
+			console.error("Could not determine format from date: " + date);
+			var err = $("<span style='color:rgba(255,0,0,.5)' >DateErr</span>");
+			$(selector).html(err);
+			return err;
+		}
+		date = pdate;
 	}
 
 	if (typeof (name) === "undefined")
@@ -227,43 +305,19 @@ function generateDatepicker(selector, date, name, id, options, offsetMinutes) {
 	if (typeof (offsetMinutes) === "undefined")
 		offsetMinutes = 0;
 
-
-	date = new Date(date.getTime() - offsetMinutes * 60000);
-
-	function formatDate(edate) {
-		var _d = edate.getDate(),
-		_m = edate.getMonth() + 1,
-		_mm = edate.getMinutes(),
-		_h = edate.getHours(),
-		_s = edate.getSeconds(),
-		d = _d > 9 ? _d : '0' + _d,
-		m = _m > 9 ? _m : '0' + _m,
-		h = _h > 9 ? _h : '0' + _h,
-		mm = _mm > 9 ? _mm : '0' + _mm,
-		s = _s > 9 ? _s : '0' + _s;
-		return m + '-' + d + '-' + (edate.getFullYear()) +" "+h+":"+mm+":"+s;
-	}
-
-	var _d = date.getDate(),
-        dd = _d > 9 ? _d : '0' + _d,
-        _m = date.getMonth() + 1,
-        mm = _m > 9 ? _m : '0' + _m,
-        yyyy = date.getFullYear();
-        //formatted = mm + '-' + dd + '-' + (yyyy);
-
-	var formatted = formatDate(date);
+	if (date != false)
+		date = new Date(date.getTime() - offsetMinutes * 60000);
 
 
-	var _userFormat = window.dateFormat
-        .replace(/mm/gi, mm).replace(/m/gi, _m)
-        .replace(/dd/gi, dd).replace(/d/gi, _d)
-        .replace(/yyyy/gi, yyyy).replace(/yy/gi, (yyyy - 2000));
+	var formatted = serverDateFormat(date);
+	var _userFormat = clientDateFormat(date);
+
 
 	var guid = generateGuid();
 	var builder = '<div class="input-append date ' + guid + '">';
 	builder += '<input class="form-control client-date" data-val="true"' +
                ' data-val-date="The field Model must be a date." type="text" ' +
-               'value="' + _userFormat + '">';
+               'value="' + _userFormat + '" placeholder="not set">';
 	builder += '<span class="add-on"><i class="icon-th"></i></span>';
 	builder += '<input type="hidden" class="server-date" id="' + id + '" name="' + name + '" value="' + formatted + '" />';
 	builder += '</div>';
@@ -282,7 +336,7 @@ function generateDatepicker(selector, date, name, id, options, offsetMinutes) {
 
 	$('.' + guid + ' .client-date').datepickerX(dpOptions).on('changeDate', function (e) {
 		var edate = new Date(e.date.getTime() + _offsetMin * 60000);
-		var formatted = formatDate(edate);
+		var formatted = serverDateFormat(edate);
 		$('.' + guid + ' .server-date').val(formatted);
 		$(eventHolder).trigger("change", [{
 			clientDate: edate,
@@ -303,8 +357,8 @@ function metGoal(direction, goal, measured, alternate) {
 	if (!$.trim(measured)) {
 		return undefined;
 	} else if ($.isNumeric(measured)) {
-		var m = +((measured+ "").replace(/,/gi, "."));
-		var g = +((goal+ "").replace(/,/gi, "."));
+		var m = +((measured + "").replace(/,/gi, "."));
+		var g = +((goal + "").replace(/,/gi, "."));
 		if (direction == "GreaterThan" || direction == 1) {
 			return m >= g;
 		} else if (direction == "LessThan" || direction == -1) {
@@ -697,15 +751,15 @@ var DataTable = function (settings) {
 				contents = function (row, i, settings) {
 					return "<span class='reorder-handle icon fontastic-icon-three-bars icon-rotate gray' style='margin-left: -5px;margin-right: -5px;cursor:move;'></span>";
 				};
-				
+
 			}
 
 			var html = resolve(contents, row, i, settings);
 
 			if (contents == null)
 				console.warn("Contents null for " + s);
-			if (typeof(html)==="undefined")
-				console.warn("Cell was undefined for " + s +" (Did you forget to 'return'?)");
+			if (typeof (html) === "undefined")
+				console.warn("Cell was undefined for " + s + " (Did you forget to 'return'?)");
 
 			cell.html(html);
 
@@ -905,7 +959,7 @@ var DataTable = function (settings) {
 ///      },...],																												///
 ///		 contents: jquery object (optional, overrides fields)																	///
 ///      pushUrl:"",                                                                                                            ///
-///      success:function,                                                                                                      ///
+///      success:function(formData,contentType),																				///
 ///      complete:function,                                                                                                     ///
 ///      cancel:function,                                                                                                       ///  
 ///      reformat: function,																									///
@@ -1126,23 +1180,27 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 					var guid = generateGuid();
 					var curName = name;
 					var curVal = originalValue;
-					input = '<div class="date-container date-' + guid + ' ' + classes + '" id="'+ eid+'"></div>';
+					var localize = field.localize;
+					input = '<div class="date-container date-' + guid + ' ' + classes + '" id="' + eid + '"></div>';
 					runAfter.push(function () {
-						generateDatepicker('.date-' + guid, curVal, curName, eid);
+						var dateGenFunc = generateDatepicker;
+						if (localize == true)
+							dateGenFunc = generateDatepickerLocalize;
+						dateGenFunc('.date-' + guid, curVal, curName, eid);
 					});
 				} else if (type == "yesno") {
 					var selectedYes = (value == true) ? 'checked="checked"' : "";
 					var selectedNo = (value == true) ? "" : 'checked="checked"';
 					input = '<div class="form-group input-yesno ' + classes + '">' +
 								'<label for="true" class="col-xs-4 control-label"> Yes </label>' +
-								'<div class="col-xs-2">' + genInput("radio", name,eid, placeholder, "true", selectedYes) + '</div>' +
+								'<div class="col-xs-2">' + genInput("radio", name, eid, placeholder, "true", selectedYes) + '</div>' +
 								'<label for="false" class="col-xs-1 control-label"> No </label>' +
-								'<div class="col-xs-2">' + genInput("radio", name,eid, placeholder, "false", selectedNo) + '</div>' +
+								'<div class="col-xs-2">' + genInput("radio", name, eid, placeholder, "false", selectedNo) + '</div>' +
 							'</div>';
 				} else if (type == "img") {
 					input = "<img src='" + field.src + "' class='" + classes + "'/>";
 				} else {
-					input = genInput(type, name,eid, placeholder, value, null, classes);
+					input = genInput(type, name, eid, placeholder, value, null, classes);
 				}
 
 				if (addLabel.indexOf(type) != -1 && label) {
@@ -1159,7 +1217,7 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 							$("[name=" + mname).on("change", ocf);
 						});
 					} else {
-						console.warn("Unhandled onchange type:"+typeof(onchange) + " for "+eid );
+						console.warn("Unhandled onchange type:" + typeof (onchange) + " for " + eid);
 					}
 				}
 
@@ -1215,7 +1273,7 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 		$("#modalForm").find(".input-yesno").each(function () {
 			var name = $(this).find("input").attr("name");
 			var v = $(this).find("[name=" + name + "]:checked").val();
-			formData[name] = v=="true" ? "True" : "False";
+			formData[name] = v == "true" ? "True" : "False";
 		});
 
 		if (typeof (reformatArg) === "function") {
@@ -1271,7 +1329,7 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 	$("#modal button[data-dismiss='modal']").on("click.radialModal", function () {
 		if (typeof onCancelArg === "string") {
 			window[onCancelArg]();
-		//	eval(onCancelArg + "()");
+			//	eval(onCancelArg + "()");
 		} else if (typeof onCancelArg === "function") {
 			onCancelArg();
 		}
@@ -1299,7 +1357,7 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 			if (typeof (callbackArg) === "string") {
 				//eval(callbackArg + '()');
 				window[callbackArg]();
-			}else if (typeof (callbackArg) === "function")
+			} else if (typeof (callbackArg) === "function")
 				callbackArg();
 		} else {
 			//$('#modal input:not([type=hidden]):not(.disable):first').focus();
@@ -1791,33 +1849,6 @@ $(document).ajaxSend(function (event, jqX, ajaxOptions) {
 }(jQuery));
 
 
-//var dateRegex2 = /^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/;
-
-function parseJsonDate(value) {
-	var type = typeof (value);
-	var dateRegex1 = /\/Date\([+-]?\d{13,14}\)\//;
-	var dateRegex2 = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{0,7})?/;
-	if (type === "undefined")
-		return false;
-	if (type === "number")
-		return new Date(value);
-	if (type == 'string' && dateRegex1.test(value)) {
-		return new Date(new Date(parseInt(value.substr(6))).getTime() - new Date().getTimezoneOffset() * 60000)
-	} else if (type == 'string' && dateRegex2.test(value)) {
-		return new Date(value);
-	} else if (value.getDate !== undefined) {
-		return new Date(value.getTime());
-	}
-	return false;
-	//return new Date(parseInt(jsonDateString.replace('/Date(', '')));
-}
-
-function dateFormatter(date) {
-	/*if(Date.parse('2/6/2009')=== 1233896400000){
-        return [date.getMonth()+1, date.getDate(), date.getFullYear()].join('/');
-    }*/
-	return [date.getMonth() + 1, date.getDate(), date.getFullYear()].join('/');
-}
 
 $(function () {
 	$(window).bind('beforeunload', function () {
@@ -2042,7 +2073,7 @@ function supportEmail(title, nil, defaultSubject, defaultBody) {
 	];
 
 	if (typeof (window.UserId) === "undefined" || window.UserId == -1)
-		fields.push({ name: "Email", text: "Email", type: "text",placeholder:"Your e-mail here" });
+		fields.push({ name: "Email", text: "Email", type: "text", placeholder: "Your e-mail here" });
 
 	var image = null;
 	var show = function () {

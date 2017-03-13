@@ -109,6 +109,7 @@ $(function () {
 
 
 	meetingHub.client.setMilestone = setMilestone;
+	meetingHub.client.deleteMilestone = deleteMilestone;
 
 	console.log("StartingHub ");
 

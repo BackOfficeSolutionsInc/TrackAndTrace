@@ -280,7 +280,7 @@
 		margin-left: -5px; // half width
 		z-index: 3;
 
-		&:hover {
+		&:hover, &.mouseover {
 			width: 12px;
 			height: 12px;
 			border: 1px solid #d6d6d6;
@@ -295,8 +295,9 @@
 			border: 1px solid #449D44;
 			z-index: 1;
 
-			&:hover {
+			&:hover, &.mouseover {
 				border: 1px solid #449D44;
+				z-index: 4;
 			}
 		}
 
@@ -306,8 +307,9 @@
 			border: 1px solid #D9534F;
 			z-index: 2;
 
-			&:hover {
+			&:hover, &.mouseover {
 				border: 1px solid #D9534F;
+				z-index: 4;
 			}
 		}
 
@@ -358,7 +360,7 @@
 
 	.milestone-heading {
 	}
-
+	
 	.milestone-table {
 		min-height: 40px;
 		width: 100%;
@@ -369,13 +371,26 @@
 			padding: 10px;
 			color: #ddd;
 		}
-
+		
 		.milestone-status-cell {
+			width: 20px;
+		}
+
+		.milestone-duedate-cell .milestone-duedate.overdue input{
+			color:#D9534F;
+		}
+		
+		.milestone-delete-cell {
 			width: 20px;
 		}
 
 		.milestone-name {
 			color: #666;
+			cursor: pointer;
+		}
+
+		.milestone.mouseover .milestone-name {
+			text-decoration: underline;
 		}
 
 		.milestone-duedate-cell {

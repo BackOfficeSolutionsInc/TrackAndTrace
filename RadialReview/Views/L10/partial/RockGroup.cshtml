@@ -22,7 +22,9 @@
 						class="rock-row user-id-@i.ForRock.AccountableUser.Id rock-id-@i.ForRock.Id rock-type-@(i.ForRock.CompanyRock ? "company" : "personal")"
 						data-rockid="@(i.ForRock.Id)"
 						data-message="@(i.ForRock.Rock)"
-						data-duedate="@(i.ForRock.DueDate.NotNull(x=>x.Value.ToJavascriptMilliseconds()))"						
+						@if (i.ForRock.DueDate != null) {
+							@:data-duedate="@(i.ForRock.DueDate.NotNull(x=>x.Value.ToJavascriptMilliseconds()))"
+						}
 						data-accountable="@(i.ForRock.AccountableUser.Id)"
 						data-name="@(i.ForRock.AccountableUser.GetName())"
 					>

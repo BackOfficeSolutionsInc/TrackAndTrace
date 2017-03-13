@@ -90,6 +90,34 @@ namespace RadialReview.Accessors
 			}
 		}
 
+
+		public static void DeleteMilestone(UserOrganizationModel caller, long milestoneId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					using (var rt = RealTimeUtility.Create()) {
+
+						var ms = s.Get<Milestone>(milestoneId);
+
+						var perm = PermissionsUtility.Create(s, caller);
+						perm.EditRock(ms.RockId);
+
+						ms.DeleteTime = ms.DeleteTime ?? DateTime.UtcNow;
+
+						s.Update(ms);
+
+						var recurrenceIds = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
+							.Where(x => x.DeleteTime == null && x.ForRock.Id == ms.RockId)
+							.Select(x => x.L10Recurrence.Id).List<long>();
+
+						tx.Commit();
+						s.Flush();
+
+						rt.UpdateRecurrences(recurrenceIds).AddLowLevelAction(x => x.deleteMilestone(milestoneId));
+					}
+				}
+			}
+		}
+
 		public static List<RockModel> GetRocks(UserOrganizationModel caller, long forUserId,/* long? periodId,*/ DateRange range = null)
 		{
 			using (var s = HibernateSession.GetCurrentSession())
