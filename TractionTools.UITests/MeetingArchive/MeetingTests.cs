@@ -203,7 +203,7 @@ namespace TractionTools.UITests.MeetingArchive {
                 Assert.AreEqual(EDITED_ISSUE, d.Find(".message-holder span", 2).Text);
                 Assert.AreEqual(EDITED_ISSUE, idsPage.Find(".issue-row .message").Text);
 
-                var etherPad = d.SwitchTo().Frame(d.SwitchTo().Frame(d.SwitchTo().Frame(d.Find(".issueDetails iframe")).Find("iframe")).Find("iframe"));
+                var etherPad = d.SwitchTo().Frame(d.SwitchTo().Frame(d.SwitchTo().Frame(d.Find(".issueDetails iframe",15)).Find("iframe",15)).Find("iframe",15));
                 Assert.AreEqual(ISSUE_DETAILS, etherPad.Find("body").Text);
                 d.SwitchTo().DefaultContent();
 
