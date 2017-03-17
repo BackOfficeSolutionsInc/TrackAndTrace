@@ -2425,6 +2425,9 @@ if (isIOS()) {
 			setTextareaPointerEvents('none');
 		}, 0);
 	});
+
+	var b = document.getElementsByTagName('body')[0];
+	b.className += ' is-ios';
 }
 
 function isSafari() {

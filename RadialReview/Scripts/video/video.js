@@ -156,8 +156,6 @@ function createZoom() {
 	//})
 }
 
-
-
 function joinVideoConference(url, type, friendlyName, providerId) {
 	console.log("joinVideoConference");
 	if (typeof (url) === "object") {
@@ -167,10 +165,24 @@ function joinVideoConference(url, type, friendlyName, providerId) {
 		friendlyName = friendlyName || o.FriendlyName;
 		providerId = providerId || o.Id;
 	}
-
+	$(window).off(".videoprovider");
 	if (type == "Zoom") {
 		$.ajax("/l10/SetJoinedVideo?recur=" + window.recurrenceId + "&provider=" + providerId);
 		$("body").append("<iframe style='width:1px;height:1px;position:absolute;bottom:0;right:0;' width='1' height='1' src='" + url + "'></iframe>");
+
+		var vidUrl = url;
+		$(window).on("console-log.videoprovider", function (e,text) {
+			if (text.indexOf("timeout, hidden: false, success: false") !== -1) {
+				var newWindow = window.open(vidUrl, "_blank");
+				newWindow.blur();
+				setTimeout(function () {
+					newWindow.close();
+					window.focus();
+				}, 5000);
+				$(window).off(".videoprovider");
+			}
+		});
+
 	} else if (type == "TractionTools") {
 		$(".videoconference-container .start-internal-video").trigger("click");
 	} else {

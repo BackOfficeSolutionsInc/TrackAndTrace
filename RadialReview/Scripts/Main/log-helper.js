@@ -36,6 +36,15 @@ function interceptLogger(name, oldLogger) {
                     ln: lineNum,
                     dt: +new Date()
                 });
+
+                for (var a in args) {
+                	try {
+                		$(window).trigger("console-" + name, [args[a]])
+                	} catch (e) {
+                		debugger;
+                	}
+                }
+
             } catch (e) {
                 debugger;
             }

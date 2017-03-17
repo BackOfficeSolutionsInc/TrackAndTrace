@@ -1103,3 +1103,6 @@ body.resizing *::-moz-selection {
 textarea {
   white-space: pre-wrap;
 }
+.is-ios .no-ios {
+  display: none;
+}

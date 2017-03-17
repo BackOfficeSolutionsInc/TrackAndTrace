@@ -6,7 +6,7 @@ namespace RadialReview.Models
 {
 	public class PasswordConstants {
 		public const string PasswordRegex = @"^(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$";
-		public const string PasswordRegexError = "Must have 1 capital letter, 1 lowercase letter, and one special character from @#$%^&+=";
+		public const string PasswordRegexError = "Password must have 1 capital letter, 1 lowercase letter, and 1 special character from @#$%^&+=";
 		public const string PasswordLengthError = "The {0} must be at least {2} characters long.";
 		public const int PasswordMin = 8;
 		public const int PasswordMax = 24;
