@@ -197,6 +197,7 @@
     <Compile Include="L10Wizard\L10Wizard.cs" />
     <Compile Include="MeetingArchive\MeetingTests.cs" />
     <Compile Include="MeetingArchive\VideoConferenceTest.cs" />
+    <Compile Include="PDF\AccountabilityChartPdfTest.cs" />
     <Compile Include="Selenium\BaseSelenium.cs" />
     <Compile Include="MeetingArchive\ScorecardTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

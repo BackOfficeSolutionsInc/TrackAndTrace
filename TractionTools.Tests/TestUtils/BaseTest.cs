@@ -13,6 +13,7 @@ using RadialReview.Utilities;
 using RadialReview.Utilities.Productivity;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -25,6 +26,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.SessionState;
+using TractionTools.Tests.Utilities;
 
 namespace TractionTools.Tests.TestUtils {
     public static class TestObjectExtensions {
@@ -354,5 +356,99 @@ namespace TractionTools.Tests.TestUtils {
 
 
 		}
+
+		#region Directory Lookup
+		public static long Timestamp = DateTime.UtcNow.ToJavascriptMilliseconds() / (1000 * 60);
+		public static string ApplicationName { get; protected set; }
+		public static string TestName { get; protected set; }
+		protected static string TempFolder;
+
+		public static string GetTempFile() {
+			return Path.Combine(Path.GetTempPath(), "TractionTools");
+		}
+
+		public static string GetTestSolutionPath() {
+			//var solutionFolder = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)));
+			//var testPath = Path.Combine(solutionFolder, TestName);
+
+			var solutionFolder = "c:\\TractionTools\\";// Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)));
+			var testPath = Path.Combine(solutionFolder, TestName);
+			return testPath;
+		}
+
+		public static string GetTractionToolsSolutionPath() {
+			var solutionFolder = "c:\\TractionTools\\";// Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)));
+			var solutionPath = Path.Combine(solutionFolder, ApplicationName);
+			return solutionPath;
+		}
+
+		public static string GetShortTestId() {
+			var n = ("" + Timestamp);
+			return n.Substring(0, 4) + "-" + n.Substring(4);
+		}
+		public static string GetPdfFolder(string subdir = null) {
+			var folder = Path.Combine(GetTempFile(), "pdfs");
+
+			folder = Path.Combine(folder, GetShortTestId());
+
+			if (subdir != null) {
+				folder = Path.Combine(folder, subdir);
+			}
+			Directory.CreateDirectory(folder);
+
+			return folder;
+		}
+
+		public static string GetScreenshotFolder(string subdir = null) {
+			var folder = Path.Combine(GetTempFile(), "screenshots");
+
+			folder = Path.Combine(folder, GetShortTestId());
+
+			if (subdir != null) {
+				folder = Path.Combine(folder, subdir);
+			}
+			Directory.CreateDirectory(folder);
+
+			return folder;
+		}
+
+		protected static string GetApplicationPath() {
+			//var solutionFolder = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)));
+			var solutionPath = GetTractionToolsSolutionPath();// Path.Combine(solutionFolder, applicationName);
+			var testPath = GetTestSolutionPath();// Path.Combine(solutionFolder, testName);
+
+			var temp = Path.Combine(Path.Combine(GetTempFile(), "ServerFiles"), Guid.NewGuid().ToString());
+			Directory.CreateDirectory(temp);
+
+			FileUtility.DirectoryCopy(solutionPath, temp, true, new string[] { "\\obj\\" });
+
+			var testConfigFileMap = new ExeConfigurationFileMap() { ExeConfigFilename = Path.Combine(testPath, "app.config") };
+			var testConfig = ConfigurationManager.OpenMappedExeConfiguration(testConfigFileMap, ConfigurationUserLevel.None);
+			var testSettings = (AppSettingsSection)testConfig.GetSection("appSettings");
+
+			if (!testSettings.Settings.AllKeys.Any())
+				throw new Exception("App.config was empty. Cannot correctly remap Web.config.");
+
+			var webConfigPaths = new string[] { Path.Combine(Path.Combine(temp, "bin"), "web.config"), Path.Combine(temp, "web.config") };
+
+			foreach (var p in webConfigPaths) {
+				var tempConfigFileMap = new ExeConfigurationFileMap() { ExeConfigFilename = p };
+				var tempConfig = ConfigurationManager.OpenMappedExeConfiguration(tempConfigFileMap, ConfigurationUserLevel.None);
+				var tempSettings = (AppSettingsSection)tempConfig.GetSection("appSettings");
+
+				foreach (var k in testSettings.Settings.AllKeys) {
+					if (tempSettings.Settings.AllKeys.Any(x => x == k)) {
+						tempSettings.Settings.Remove(k);
+					}
+
+					tempSettings.Settings.Add(k, testSettings.Settings[k].Value);
+				}
+				tempConfig.Save();
+			}
+
+			TempFolder = temp;
+			return temp;
+		}
+		#endregion
 	}
 }

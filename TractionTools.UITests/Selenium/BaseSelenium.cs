@@ -39,7 +39,6 @@ namespace TractionTools.UITests.Selenium {
 		Chrome = 1,
 		Firefox = 2,
 		IE = 4,
-
 		All = 7
 	}
 
@@ -51,7 +50,6 @@ namespace TractionTools.UITests.Selenium {
 		//private static string _applicationName;
 		//private static string _testName;
 		private static Process _iisProcess;
-		private static string TempFolder;
 		private WithBrowsers? _RequiredBrowsers = null;
 		private Dictionary<IWebDriver, Credentials> currentDriverUser = new Dictionary<IWebDriver, Credentials>();
 		private static Dictionary<Guid, Credentials> _AdminCredentials = new Dictionary<Guid, Credentials>();
@@ -60,10 +58,7 @@ namespace TractionTools.UITests.Selenium {
 		public static FirefoxDriver _FirefoxDriver;
 		public static ChromeDriver _ChromeDriver;
 		public static InternetExplorerDriver _InternetExplorerDriver;
-		public static long Timestamp = DateTime.UtcNow.ToJavascriptMilliseconds() / (1000 * 60);
 
-		public static string ApplicationName { get; private set; }
-		public static string TestName { get; private set; }
 		public WithBrowsers RequiredBrowsers {
 			get {
 				_RequiredBrowsers = _RequiredBrowsers ?? (WithBrowsers)Config.GetAppSetting("RequiredBrowsers", "0").ToInt();
@@ -294,8 +289,6 @@ namespace TractionTools.UITests.Selenium {
 
 		}
 
-
-
 		public static string GetAbsoluteUrl(string relativeUrl) {
 			if (!relativeUrl.StartsWith("/")) {
 				relativeUrl = "/" + relativeUrl;
@@ -421,81 +414,7 @@ namespace TractionTools.UITests.Selenium {
 		}
 		#endregion
 
-		#region Directory Lookup
-		public static string GetTempFile() {
-			return Path.Combine(Path.GetTempPath(), "TractionTools");
-		}
-
-		public static string GetTestSolutionPath() {
-			//var solutionFolder = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)));
-			//var testPath = Path.Combine(solutionFolder, TestName);
-
-			var solutionFolder = "c:\\TractionTools\\";// Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)));
-			var testPath = Path.Combine(solutionFolder, TestName);
-			return testPath;
-		}
-
-		public static string GetTractionToolsSolutionPath() {
-			var solutionFolder = "c:\\TractionTools\\";// Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)));
-			var solutionPath = Path.Combine(solutionFolder, ApplicationName);
-			return solutionPath;
-		}
-
-		public static string GetShortTestId() {
-			var n = ("" + Timestamp);
-			return n.Substring(0, 4) + "-" + n.Substring(4);
-		}
-
-		public static string GetScreenshotFolder(string subdir = null) {
-			var folder = Path.Combine(GetTempFile(), "screenshots");
-
-			folder = Path.Combine(folder, GetShortTestId());
-
-			if (subdir != null) {
-				folder = Path.Combine(folder, subdir);
-			}
-			Directory.CreateDirectory(folder);
-
-			return folder;
-		}
-		protected static string GetApplicationPath() {
-			//var solutionFolder = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)));
-			var solutionPath = GetTractionToolsSolutionPath();// Path.Combine(solutionFolder, applicationName);
-			var testPath = GetTestSolutionPath();// Path.Combine(solutionFolder, testName);
-
-			var temp = Path.Combine(Path.Combine(GetTempFile(), "ServerFiles"), Guid.NewGuid().ToString());
-			Directory.CreateDirectory(temp);
-
-			FileUtility.DirectoryCopy(solutionPath, temp, true, new string[] { "\\obj\\" });
-
-			var testConfigFileMap = new ExeConfigurationFileMap() { ExeConfigFilename = Path.Combine(testPath, "app.config") };
-			var testConfig = ConfigurationManager.OpenMappedExeConfiguration(testConfigFileMap, ConfigurationUserLevel.None);
-			var testSettings = (AppSettingsSection)testConfig.GetSection("appSettings");
-
-			if (!testSettings.Settings.AllKeys.Any())
-				throw new Exception("App.config was empty. Cannot correctly remap Web.config.");
-
-			var webConfigPaths = new string[] { Path.Combine(Path.Combine(temp, "bin"), "web.config"), Path.Combine(temp, "web.config") };
-
-			foreach (var p in webConfigPaths) {
-				var tempConfigFileMap = new ExeConfigurationFileMap() { ExeConfigFilename = p };
-				var tempConfig = ConfigurationManager.OpenMappedExeConfiguration(tempConfigFileMap, ConfigurationUserLevel.None);
-				var tempSettings = (AppSettingsSection)tempConfig.GetSection("appSettings");
-
-				foreach (var k in testSettings.Settings.AllKeys) {
-					if (tempSettings.Settings.AllKeys.Any(x => x == k)) {
-						tempSettings.Settings.Remove(k);
-					}
-
-					tempSettings.Settings.Add(k, testSettings.Settings[k].Value);
-				}
-				tempConfig.Save();
-			}
-
-			TempFolder = temp;
-			return temp;
-		}
-		#endregion
+		
 
 		protected static void ConcludeMeeting(TestCtx d) {
 			d.TestScreenshot("BeforeConclude");

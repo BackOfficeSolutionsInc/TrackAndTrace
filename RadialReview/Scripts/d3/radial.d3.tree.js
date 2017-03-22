@@ -22,12 +22,9 @@
 		}
 
 		function tree(d, i) {
-			//console.log("===================\ndebugTree 1");debugTree(d);
 			decompactify(d);
-			//console.log("===================\ndebugTree 2");debugTree(d);
 			if (compactify) {
 				compactifyTree(d);
-				//console.log("===================\ndebugTree 3");debugTree(d);
 			}
 			var nodes = hierarchy.call(this, d, i),
 			  root0 = nodes[0];
