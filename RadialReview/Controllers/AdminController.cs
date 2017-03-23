@@ -74,7 +74,7 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Radial)]
-		public ActionResult UserInfo(long id=0) {
+		public ActionResult UserInfo(long id = 0) {
 			return View(_UserAccessor.GetUserOrganizationUnsafe(id));
 		}
 
@@ -229,10 +229,10 @@ namespace RadialReview.Controllers {
 					var recent = DateTime.UtcNow.AddDays(-weeks * 7);
 					var notRecent = DateTime.UtcNow.AddDays(-weeks * 7 - 1);
 					var measurables = s.QueryOver<L10Meeting>().Where(x => x.DeleteTime == null && (x.CompleteTime == null || x.CompleteTime >= recent) && x.CreateTime > notRecent)
-                        .List().ToList()
-                        .Where(x=>x.Organization.AccountType!=AccountType.SwanServices)
-                        .ToList();
-                    return View(measurables);
+						.List().ToList()
+						.Where(x => x.Organization.AccountType != AccountType.SwanServices)
+						.ToList();
+					return View(measurables);
 				}
 			}
 		}
@@ -458,6 +458,84 @@ namespace RadialReview.Controllers {
 
 			return Content("Todos: +" + addedTodos + "/-" + deletedTodos + " <br/>Issues: +" + addedIssues + "/-" + deletedIssues + " <br/>Scores: +" + addedScores + "/-" + deletedScores + " <br/>Duration: " + duration + "s");
 		}
+
+		public class AllUserEmail {
+			public String	UserName		{ get; set; }
+			public String	UserEmail	{ get; set; }
+			public String	OrgName		{ get; set; }
+			public long		UserId		{ get; set; }
+			public long		OrgId			{ get; set; }
+			public DateTime UserCreateTime { get; set; }
+			public string	AccountType { get; set; }
+			public DateTime? OrgCreateTime { get;  set; }
+		}
+
+		[Access(AccessLevel.Radial)]
+		public ActionResult AllEmails() {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var allUsersF = s.QueryOver<UserLookup>().Where(x => x.DeleteTime == null && x.HasJoined).Future();
+					var allOrgsF = s.QueryOver<OrganizationModel>().Select(x => x.Id, x => x.Name.Id, x => x.DeleteTime, x => x.CreationTime, x => x.AccountType).Future<object[]>();
+					var localizedStringF = s.QueryOver<LocalizedStringModel>().Select(x => x.Id, x => x.Standard).Future<object[]>();
+
+					var allUsers = allUsersF.ToList();
+					var allLocalizedStrings = localizedStringF.Select(x => new {
+						Id = (long)x[0],
+						Name = (string)x[1]
+					}).ToDictionary(x => x.Id, x => x.Name);
+
+					var allOrgs = allOrgsF.Select(x => new {
+						Id = (long)x[0],
+						NameId = (long)x[1],
+						Name = (string)allLocalizedStrings.GetOrDefault((long)x[1],""),
+						DeleteTime = (DateTime?)x[2],
+						CreateTime = (DateTime)x[3],
+						AccountType = (AccountType)x[4],
+					}).ToDictionary(x => x.Id, x => x);
+					
+
+					var items = allUsers.Select(x => {
+						var org = allOrgs.GetOrDefault(x.OrganizationId, null);
+						if (org.DeleteTime != null)
+							return null;
+						return new AllUserEmail() {
+							UserName = x.Name,
+							UserEmail = x.Email,
+							UserId = x.UserId,
+							OrgId = x.OrganizationId,
+							OrgName = org.NotNull(y => y.Name),
+							AccountType = "" + org.NotNull(y => y.AccountType),
+							OrgCreateTime = org.NotNull(y => y.CreateTime),
+							UserCreateTime = x.CreateTime
+
+						};
+					}).Where(x=>x!=null).ToList();
+
+					var csv = new Csv();
+					csv.Title = "UserId";
+					foreach (var o in items) {
+						csv.Add("" + o.UserId,"UserName",			o.UserName);
+						csv.Add("" + o.UserId,"UserEmail"         ,o.UserEmail         );
+						csv.Add("" + o.UserId,"OrgName"           ,o.OrgName           );
+						csv.Add("" + o.UserId,"UserId"            ,""+o.UserId            );
+						csv.Add("" + o.UserId,"OrgId"             , "" + o.OrgId             );
+						csv.Add("" + o.UserId,"UserCreateTime"    , "" + o.UserCreateTime    );
+						csv.Add("" + o.UserId,"AccountType"       ,o.AccountType       );
+						csv.Add("" + o.UserId,"OrgCreateTime"     , "" + o.OrgCreateTime     );
+					}
+
+					return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllValidUsers.csv");
+					
+
+				}
+			}
+		}
+
+
+
+
+
+
 
 
 
@@ -685,7 +763,7 @@ namespace RadialReview.Controllers {
 
 
 		[Access(AccessLevel.Radial)]
-		public ActionResult Subscribe(long org,NotificationKind kind) {
+		public ActionResult Subscribe(long org, NotificationKind kind) {
 
 			PubSub.Subscribe(GetUser(), GetUser().Id, ForModel.Create<OrganizationModel>(org), kind);
 

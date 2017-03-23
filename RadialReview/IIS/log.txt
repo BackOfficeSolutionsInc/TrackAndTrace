@@ -22,3 +22,29 @@ Compressing  install\Scripts\UrlRewrite.bat
 
 Everything is Ok
 upload: .\install.zip to s3://Radial/Installer/install.zip
+ 
+'======================Tue 03-21-2017 19-31-59.73======================' 
+
+7-Zip [64] 9.20  Copyright (c) 1999-2010 Igor Pavlov  2010-11-18
+Scanning
+
+Creating archive install.zip
+
+Compressing  install\ec2service.log
+Compressing  install\Files\ec2service\AWS.EC2.Windows.CloudWatch.json
+Compressing  install\Files\ec2service\config.xml
+Compressing  install\fonts.log
+Compressing  install\Fonts\Arial Narrow Bold.TTF
+Compressing  install\Fonts\Arial Narrow.TTF
+Compressing  install\Fonts\Arial.ttf
+Compressing  install\Installers\installEC2Service.bat
+Compressing  install\Installers\installFonts.bat
+Compressing  install\Installers\installSendEmail.ps1
+Compressing  install\installSendEmail.log
+Compressing  install\README.txt
+Compressing  install\Scripts\SendEmail.ps1
+Compressing  install\Scripts\UrlRewrite.bat
+Compressing  install\urlRewrite.log
+
+Everything is Ok
+upload: .\install.zip to s3://Radial/Installer/install.zip

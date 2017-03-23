@@ -362,7 +362,10 @@ namespace RadialReview.Controllers {
 			try {
 				var uo = GetUser();
 				model.LoggedIn = true;
-				model.PersonalTextNumber =  ""+PhoneAccessor.GetPersonalTextATodo(uo,uo.Id).CallerNumber;
+				var personal = PhoneAccessor.GetPersonalTextATodo(uo, uo.Id);
+				model.PersonalTextNumber = "" + personal.CallerNumber.ToPhoneNumber();
+				model.ServerTextNumber = "" + personal.SystemNumber.ToPhoneNumber();
+				model.PhoneActionId = personal.Id;
 			} catch (Exception) {
 
 			}

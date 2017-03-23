@@ -68,6 +68,24 @@ namespace RadialReview.Accessors
 			}
 		}
 
+		public bool RemoveImage(UserModel caller,string userId) {
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+
+					if (caller.Id != userId)
+						throw new PermissionsException("Cannot remove image");
+
+					var user = s.Get<UserModel>(userId);
+					user.ImageGuid = null;
+					s.Save(user);
+					tx.Commit();
+					s.Flush();
+					return true;
+				}
+			}
+		}
+
 		public async Task<String> UploadImage(UserModel user, HttpServerUtilityBase server, HttpPostedFileBase file, UploadType uploadType)
 		{
 			var img = new ImageModel()

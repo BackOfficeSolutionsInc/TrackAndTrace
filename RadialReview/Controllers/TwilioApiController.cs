@@ -69,6 +69,13 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.UserOrganization)]
+		public JsonResult RemoveAction(long id) {
+			PhoneAccessor.DeleteAction(GetUser(), id);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+
+
+		[Access(AccessLevel.UserOrganization)]
         public PartialViewResult ModalRecurrence()
 		{
 			var meetings = L10Accessor.GetVisibleL10Recurrences(GetUser(), GetUser().Id, false);

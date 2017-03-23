@@ -30,8 +30,26 @@ namespace RadialReview.Controllers {
         {
             return View();
         }
-        #region Images
-        [HttpPost]
+		#region Images
+		[Access(AccessLevel.User)]
+		public JsonResult DeleteUserImage(string id) {
+			var userModel = GetUserModel();
+			if (userModel == null)
+				throw new PermissionsException();
+
+			if (userModel.Id != id && !userModel.IsRadialAdmin)
+				throw new PermissionsException("Id is not correct");
+
+			if (userModel.IsRadialAdmin) {
+				userModel = GetUser().User;
+			}
+			
+			//you can put your existing save code here
+			var url = _ImageAccessor.RemoveImage(userModel,id);
+			return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
+		}
+
+		[HttpPost]
         [Access(AccessLevel.User)]
         public async Task<JsonResult> Image(string id, HttpPostedFileBase file, String forType)
         {

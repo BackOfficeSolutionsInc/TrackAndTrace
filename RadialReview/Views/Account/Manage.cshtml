@@ -80,7 +80,8 @@
 				@Html.Partial("~/Views/Upload/Image.cshtml", new RadialReview.Models.ViewModels.ImageUploadViewModel() {
 			   ForType = RadialReview.Models.Enums.UploadType.ProfileImage.ToString(),
 			   ImageUrl = Model.ImageUrl,
-			   UploadUrl = "/upload/image/" + Model.UserId
+			   UploadUrl = "/upload/image/" + Model.UserId,
+			   DeleteUrl = "/upload/deleteUserImage/" + Model.UserId
 			   /*Width = 200,
 			   Height = 200,*/
 		   })
@@ -94,11 +95,13 @@
 					<h3 class="panel-title">Personal Text-a-Todo™ </h3>
 
 				</div>
-				<div class="panel-body alignCenter">
+				<div class="panel-body alignCenter" id="personalTodo">
 					@if (Model.PersonalTextNumber == null) {
-						<div class="btn btn-success" onclick="@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId=-2&todoOnly=true","/TwilioApi/Modal")"><span style="top: 2px;" class="glyphicon glyphicon-phone l10-texting-actions"></span> Set Up</div>
+						<div class="btn btn-success" onclick="@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId=-2&todoOnly=true","/TwilioApi/Modal",null,null,"textingModal")"><span style="top: 2px;" class="glyphicon glyphicon-phone l10-texting-actions"></span> Set Up</div>
 					} else {
-						<h3>@Model.PersonalTextNumber</h3>
+						<h3 title="Personal Text-a-Todo™ Number">@Model.ServerTextNumber</h3>
+						<h5 class="" title="Your phone number">@Model.PersonalTextNumber <span class="clickable gray" style="width:0px;display:inline-block;font-size:80%" onclick="deleteNumber(@Model.PhoneActionId)">Delete</span></h5>
+
 					}
 				</div>
 			</div>
@@ -121,5 +124,30 @@
 
 
 @section Scripts {
+	<script>
+		function deleteNumber(id) {
+			if (!id) {
+				showAlert("Unknown action");
+			} else {
+				$.ajax({
+					url: "/twilioApi/RemoveAction/" + id,
+					success: function (d) {
+						$("#personalTodo").html("<div class=\"btn btn-success\" onclick=\"@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId=-2&todoOnly=true","/TwilioApi/Modal")\"><span style=\"top: 2px;\" class=\"glyphicon glyphicon-phone l10-texting-actions\"></span> Set Up</div>")
+					}
+				});
+			}
+		}
+
+		function textingModal(data){
+			if (!data.Error){
+				var message = data.Message.replace(" '"," '<b>").replace("' to ","</b>' to ");//.replace(" to activate.","</b> to activate.");
+
+				showModal({
+					icon:"info",
+					title: message
+				});
+			}
+		}
+	</script>
 	@Scripts.Render("~/bundles/jqueryval")
 }

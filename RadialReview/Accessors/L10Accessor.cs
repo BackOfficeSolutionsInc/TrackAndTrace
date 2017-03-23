@@ -4507,7 +4507,7 @@ namespace RadialReview.Accessors {
 											return new List<KeyValuePair<DateTime, decimal>>();
 										var num = x.Sum(y => y.TodoCompletion.Numerator);
 
-										return (new KeyValuePair<DateTime, decimal>(x.Key, num / den * 100)).AsList();
+										return (new KeyValuePair<DateTime, decimal>(x.First().StartTime.Value, num / den * 100)).AsList();
 									})
 					};
 
@@ -4520,7 +4520,7 @@ namespace RadialReview.Accessors {
 										var count = x.Count();
 										if (count == 0)
 											return new List<KeyValuePair<DateTime, decimal>>();
-										return (new KeyValuePair<DateTime, decimal>(x.Key, count)).AsList();
+										return (new KeyValuePair<DateTime, decimal>(x.First().CloseTime.Value, count)).AsList();
 									})
 					};
 
@@ -4532,7 +4532,7 @@ namespace RadialReview.Accessors {
 									.SelectMany(x => {
 										//if (count == 0)
 										//	return new List<KeyValuePair<DateTime, decimal>>();
-										return (new KeyValuePair<DateTime, decimal>(x.Key, x.Average(y => y.Rating.Value))).AsList();
+										return (new KeyValuePair<DateTime, decimal>(x.First().L10Meeting.StartTime.Value, x.Average(y => y.Rating.Value))).AsList();
 									})
 					};
 
