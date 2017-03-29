@@ -17,7 +17,7 @@ using RadialReview.Models.Askables;
 namespace TractionTools.Tests.Permissions {
 	[TestClass]
 	public class SettledPermissions : BasePermissionsTest {
-		#region Blank 1
+	/*	#region Blank 1
 
 		[TestMethod]
 		[TestCategory("Unset")]
@@ -326,6 +326,6 @@ namespace TractionTools.Tests.Permissions {
 		public void ViewForModel() { 
 			Assert.Fail("Unimplemented");
 		}
-		#endregion
+		#endregion*/
 	}
 }
