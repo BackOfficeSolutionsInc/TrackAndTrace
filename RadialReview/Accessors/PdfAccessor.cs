@@ -2843,7 +2843,7 @@ namespace RadialReview.Accessors {
 		//  }
 		[Obsolete("Use AccountabilityChartPDf.cs instead.")]
 		public static PdfDocument GenerateAccountabilityChart(AccNodeJs root, double width, double height, bool restrictSize = false) {
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
 			// Create new PDF document
 			PdfDocument document = new PdfDocument();
 			// Create new page

@@ -14,6 +14,7 @@ namespace RadialReview.Accessors
 	{
 		public const String Segue_Subheading = "Segue_Subheading";
 		public const String CustomerEmployeeHeadlines_Subheading = "CustomerEmployeeHeadlines_Subheading";
+		public const String CustomerEmployeeHeadlines_Heading = "CustomerEmployeeHeadlines_Heading";
 	}
 	public class CustomizeAccessor
 	{
@@ -24,7 +25,8 @@ namespace RadialReview.Accessors
 		{
 			return new List<SelectListItem>(){
 				new SelectListItem(){Text = "Customer Employee Headlines Subheading",Value = CUSTOMIZABLE.CustomerEmployeeHeadlines_Subheading},
-				new SelectListItem(){Text = "Segue Subheading",Value =CUSTOMIZABLE.Segue_Subheading}
+				new SelectListItem(){Text = "Segue Subheading",Value =CUSTOMIZABLE.Segue_Subheading},
+				new SelectListItem(){Text = "Customer Employee Headlines Heading",Value =CUSTOMIZABLE.CustomerEmployeeHeadlines_Heading}
 			};
 		} 
 

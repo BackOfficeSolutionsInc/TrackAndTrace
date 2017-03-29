@@ -469,6 +469,47 @@ namespace RadialReview.Controllers {
 			public string	AccountType { get; set; }
 			public DateTime? OrgCreateTime { get;  set; }
 		}
+		[Access(AccessLevel.Radial)]
+		public ActionResult AllUsers(long id) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var org = s.Get<OrganizationModel>(id);
+
+					var allUsers = s.QueryOver<UserLookup>().Where(x => x.OrganizationId == id).List().ToList();
+
+					var items = allUsers.Select(x => {
+						return new AllUserEmail() {
+							UserName = x.Name,
+							UserEmail = x.Email,
+							UserId = x.UserId,
+							OrgId = x.OrganizationId,
+							OrgName = org.GetName(),
+							AccountType = "" + org.NotNull(y => y.AccountType),
+							OrgCreateTime = org.CreationTime,
+							UserCreateTime = x.CreateTime
+
+						};
+					}).ToList();
+
+					var csv = new Csv();
+					csv.Title = "UserId";
+					foreach (var o in items) {
+						csv.Add("" + o.UserId, "UserName", o.UserName);
+						csv.Add("" + o.UserId, "UserEmail", o.UserEmail);
+						csv.Add("" + o.UserId, "OrgName", o.OrgName);
+						csv.Add("" + o.UserId, "UserId", "" + o.UserId);
+						csv.Add("" + o.UserId, "OrgId", "" + o.OrgId);
+						csv.Add("" + o.UserId, "UserCreateTime", "" + o.UserCreateTime);
+						csv.Add("" + o.UserId, "AccountType", o.AccountType);
+						csv.Add("" + o.UserId, "OrgCreateTime", "" + o.OrgCreateTime);
+					}
+
+					return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllUsers_"+org.GetName()+".csv");
+
+
+				}
+			}
+		}
 
 		[Access(AccessLevel.Radial)]
 		public ActionResult AllEmails() {

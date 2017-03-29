@@ -1535,7 +1535,7 @@
     <Content Include="Views\Upload\UploadIssuesSelected.cshtml" />
     <Content Include="Views\Upload\UploadTodosSelected.cshtml" />
     <Content Include="Views\Upload\UploadRocksSelected.cshtml" />
-    <Content Include="Views\Upload\UploadVTO.cshtml" />
+    <Content Include="Views\Upload\UploadVTO2.cshtml" />
     <Content Include="Views\Shared\Partial\MaterialIndefiniteLoader.cshtml" />
     <Content Include="Views\User\partial\list.cshtml" />
     <Content Include="Views\Upload\UploadUsers.cshtml" />
