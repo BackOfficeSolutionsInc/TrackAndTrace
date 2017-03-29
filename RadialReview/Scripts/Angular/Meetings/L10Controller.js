@@ -23,7 +23,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 					}
 					if ($scope.disconnected) {
 						clearAlerts();
-						showAlert("Reconnected.", "alert-success", "Success");
+						showAlert("Reconnected.", "alert-success", "Success",1000);
 					}
 					$scope.disconnected = false;
 				});

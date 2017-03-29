@@ -16,7 +16,7 @@ function ($scope, $http, $timeout, radial, signalR, vtoDataUrlBase, vtoId, vtoCa
                     }
                     if ($scope.disconnected) {
                         clearAlerts();
-                        showAlert("Reconnected.", "alert-success", "Success");
+                        showAlert("Reconnected.", "alert-success", "Success", 1000);
                     }
                     $scope.disconnected = false;
                 });

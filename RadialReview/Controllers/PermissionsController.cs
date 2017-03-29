@@ -9,6 +9,7 @@ using RadialReview.Accessors;
 using RadialReview.Models.Json;
 using RadialReview.Models.Permissions;
 using RadialReview.Models;
+using RadialReview.Exceptions;
 
 namespace RadialReview.Controllers {
 	public class PermissionsController : BaseController {
@@ -97,11 +98,16 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult Dropdown(long id, PermItem.ResourceType type, string buttonClass = null) {
-			var model = PermissionsAccessor.GetPermItems(GetUser(), id, type);
-
 			ViewBag.ButtonClass = buttonClass;
+
+			try {
+				var model = PermissionsAccessor.GetPermItems(GetUser(), id, type);
+				return PartialView(model);
+			} catch (PermissionsException e) {
+				return PartialView(PermissionDropdownVM.NotPermitted);
+			}
+
 			
-			return PartialView(model);
 		}
 
 		[Access(AccessLevel.UserOrganization)]

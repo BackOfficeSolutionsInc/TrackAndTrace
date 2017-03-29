@@ -678,10 +678,10 @@ namespace RadialReview.Controllers {
 
 
 					var headlines = new[] {
-						new {Message ="Just had a baby", AboutId = (long?)604, AboutName = "Irene Bunn", About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(604L)},
-						new {Message ="Congratulations on retirement", AboutId = (long?)615, AboutName = "Don Barber", About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(615L)},
-						new {Message ="Supplier just raised shipping rates", AboutId = (long?)null, AboutName = "Maurice Sporting Goods", About=(ResponsibilityGroupModel)null},
-						new {Message ="Team pulled together after a customer shipment was lost", AboutId = (long?)644, AboutName = "Fulfillment Team", About=(ResponsibilityGroupModel)s.Load<OrganizationTeamModel>(644L)}
+						new {Message ="Just had a baby", AboutId = (long?)604, AboutName = "Irene Bunn", About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(604L), Details="Her baby was 17lbs!!! she broke the state record!!" },
+						new {Message ="Congratulations on retirement", AboutId = (long?)615, AboutName = "Don Barber", About=(ResponsibilityGroupModel)s.Load<UserOrganizationModel>(615L), Details=(string)null},
+						new {Message ="Supplier just raised shipping rates", AboutId = (long?)null, AboutName = "Maurice Sporting Goods", About=(ResponsibilityGroupModel)null, Details=(string)null},
+						new {Message ="Team pulled together after a customer shipment was lost", AboutId = (long?)644, AboutName = "Fulfillment Team", About=(ResponsibilityGroupModel)s.Load<OrganizationTeamModel>(644L), Details=(string)null}
 					};
 
 
@@ -696,7 +696,7 @@ namespace RadialReview.Controllers {
 							RecurrenceId = recurId,
 							About = h.About,
 							Owner = s.Load<UserOrganizationModel>(owner),
-
+							_Details = h.Details,
 
 							OrganizationId = caller.Organization.Id,
 							CreateTime = createTime,

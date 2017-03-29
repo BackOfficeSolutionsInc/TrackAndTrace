@@ -383,7 +383,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 					}
 					if ($scope.disconnected) {
 						clearAlerts();
-						showAlert("Reconnected.", "alert-success", "Success");
+						showAlert("Reconnected.", "alert-success", "Success",1000);
 					}
 					$scope.disconnected = false;
 				});
