@@ -21,6 +21,7 @@
     "Microsoft.AspNet.SignalR.Core": "2.2.1",
     "Microsoft.AspNet.SignalR.Redis": "2.2.1",
     "Microsoft.AspNet.SignalR.SystemWeb": "2.2.1",
+    "Microsoft.AspNet.Web.Optimization": "1.1.3",
     "Microsoft.AspNet.WebPages": "3.2.3",
     "Microsoft.Identity.Client": "1.0.304142221-alpha",
     "Microsoft.Office365.OutlookServices-V2.0": "2.0.1",
@@ -47,7 +48,7 @@
     "Twilio": "5.1.1",
     "TypeLite": "1.8.4",
     "Unofficial.Ionic.Zip": "1.9.1.8",
-    "WebGrease": "1.5.1"
+    "WebGrease": "1.5.2"
   },
   "frameworks": {
     "net452": {}

@@ -278,6 +278,19 @@
           "lib/net45/Microsoft.AspNet.SignalR.SystemWeb.dll": {}
         }
       },
+      "Microsoft.AspNet.Web.Optimization/1.1.3": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Web.Infrastructure": "1.0.0",
+          "WebGrease": "1.5.2"
+        },
+        "compile": {
+          "lib/net40/System.Web.Optimization.dll": {}
+        },
+        "runtime": {
+          "lib/net40/System.Web.Optimization.dll": {}
+        }
+      },
       "Microsoft.AspNet.WebPages/3.2.3": {
         "type": "package",
         "dependencies": {
@@ -846,7 +859,7 @@
           "lib/Ionic.Zip.dll": {}
         }
       },
-      "WebGrease/1.5.1": {
+      "WebGrease/1.5.2": {
         "type": "package",
         "dependencies": {
           "Antlr": "3.4.1.9004",
@@ -1136,6 +1149,19 @@
           "lib/net45/Microsoft.AspNet.SignalR.SystemWeb.dll": {}
         }
       },
+      "Microsoft.AspNet.Web.Optimization/1.1.3": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Web.Infrastructure": "1.0.0",
+          "WebGrease": "1.5.2"
+        },
+        "compile": {
+          "lib/net40/System.Web.Optimization.dll": {}
+        },
+        "runtime": {
+          "lib/net40/System.Web.Optimization.dll": {}
+        }
+      },
       "Microsoft.AspNet.WebPages/3.2.3": {
         "type": "package",
         "dependencies": {
@@ -1704,7 +1730,7 @@
           "lib/Ionic.Zip.dll": {}
         }
       },
-      "WebGrease/1.5.1": {
+      "WebGrease/1.5.2": {
         "type": "package",
         "dependencies": {
           "Antlr": "3.4.1.9004",
@@ -2084,6 +2110,16 @@
         "Microsoft.AspNet.SignalR.SystemWeb.nuspec",
         "lib/net45/Microsoft.AspNet.SignalR.SystemWeb.XML",
         "lib/net45/Microsoft.AspNet.SignalR.SystemWeb.dll"
+      ]
+    },
+    "Microsoft.AspNet.Web.Optimization/1.1.3": {
+      "sha512": "TWKKpTWEdB8jXp2Vl2TXNKW30GBQg6nnh0y8iZWmGY5c1XY4f649vfDslNHsCsvk9JZxc1Rkm/UGDdfq4gjWRQ==",
+      "type": "package",
+      "files": [
+        "Microsoft.AspNet.Web.Optimization.1.1.3.nupkg.sha512",
+        "Microsoft.AspNet.Web.Optimization.nuspec",
+        "lib/net40/System.Web.Optimization.dll",
+        "lib/net40/system.web.optimization.xml"
       ]
     },
     "Microsoft.AspNet.WebPages/3.2.3": {
@@ -2877,11 +2913,11 @@
         "lib/Ionic.Zip.dll"
       ]
     },
-    "WebGrease/1.5.1": {
-      "sha512": "tyHdlZk9Csw5qey/AKnck51zpyN3yGeAhHfbI3GDydxcREwcKPRlQa1YUgKRQKjQnPKpvuuAE2nYC4dtbSAJhg==",
+    "WebGrease/1.5.2": {
+      "sha512": "VoyDSOOugLx3q5IyOgEcjeYZQOqV9VWZQT57UtN4szlYhAmOcEjVfKWXbtRqBuX43pgyL9E7nMSIPoryC8Cu1Q==",
       "type": "package",
       "files": [
-        "WebGrease.1.5.1.nupkg.sha512",
+        "WebGrease.1.5.2.nupkg.sha512",
         "WebGrease.nuspec",
         "lib/WebGrease.dll",
         "tools/WG.exe",
@@ -2912,6 +2948,7 @@
       "Microsoft.AspNet.SignalR.Core >= 2.2.1",
       "Microsoft.AspNet.SignalR.Redis >= 2.2.1",
       "Microsoft.AspNet.SignalR.SystemWeb >= 2.2.1",
+      "Microsoft.AspNet.Web.Optimization >= 1.1.3",
       "Microsoft.AspNet.WebPages >= 3.2.3",
       "Microsoft.Identity.Client >= 1.0.304142221-alpha",
       "Microsoft.Office365.OutlookServices-V2.0 >= 2.0.1",
@@ -2938,7 +2975,7 @@
       "Twilio >= 5.1.1",
       "TypeLite >= 1.8.4",
       "Unofficial.Ionic.Zip >= 1.9.1.8",
-      "WebGrease >= 1.5.1",
+      "WebGrease >= 1.5.2",
       "log4net >= 2.0.8"
     ],
     ".NETFramework,Version=v4.5.2": []
