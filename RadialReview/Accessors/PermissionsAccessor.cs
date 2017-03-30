@@ -15,7 +15,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using WebGrease.Css.Extensions;
 
 namespace RadialReview.Accessors {
     public class PermissionsAccessor {
@@ -137,7 +136,7 @@ namespace RadialReview.Accessors {
             if (permItems.Any(x => x.AccessorId > 0)) {
                 var found = s.QueryOver<ResponsibilityGroupModel>().Where(x => x.DeleteTime == null).AndRestrictionOn(x => x.Id).IsIn(permItems.Where(x => x.AccessorType == PermItem.AccessType.RGM || x.AccessorType == PermItem.AccessType.Creator).Select(x => x.AccessorId).Distinct().ToList()).List().ToList();
                 foreach (var f in found) {
-                    permItems.Where(x => x.AccessorId == f.Id && (x.AccessorType == PermItem.AccessType.RGM || x.AccessorType == PermItem.AccessType.Creator)).ForEach(x => {
+                    permItems.Where(x => x.AccessorId == f.Id && (x.AccessorType == PermItem.AccessType.RGM || x.AccessorType == PermItem.AccessType.Creator)).ToList().ForEach(x => {
                         x._DisplayText = f.GetName();
                         x._ImageUrl = f.GetImageUrl();
                         x._DisplayInitials = (f as UserOrganizationModel).NotNull(y => y.GetInitials());
@@ -146,15 +145,15 @@ namespace RadialReview.Accessors {
                 }
             }
 
-            permItems.Where(x => x.AccessorType == PermItem.AccessType.Members).ForEach(x => {
+            permItems.Where(x => x.AccessorType == PermItem.AccessType.Members).ToList().ForEach(x => {
                 x._DisplayText = "Members";
                 x._ImageUrl = ConstantStrings.AmazonS3Location + ConstantStrings.ImageGroupPlaceholder;
             });
-            permItems.Where(x => x.AccessorType == PermItem.AccessType.Creator).ForEach(x => {
+            permItems.Where(x => x.AccessorType == PermItem.AccessType.Creator).ToList().ForEach(x => {
                 x._DisplayText = "Creator";
                 x._ImageUrl = x._ImageUrl ?? (ConstantStrings.AmazonS3Location + ConstantStrings.ImageUserPlaceholder);
             });
-            permItems.Where(x => x.AccessorType == PermItem.AccessType.Admins).ForEach(x => {
+            permItems.Where(x => x.AccessorType == PermItem.AccessType.Admins).ToList().ForEach(x => {
                 x._DisplayText = "Admins";
                 x._ImageUrl = (ConstantStrings.AmazonS3Location + "placeholder/Star.png");
             });
@@ -165,7 +164,7 @@ namespace RadialReview.Accessors {
                      .Where(x=>x.DeleteTime==null)
                      .WhereRestrictionOn(x => x.Id).IsIn(emailPerms.Select(x=>x.AccessorId).ToArray())
                      .List().ToList();
-                 emailPerms.ForEach(x => {
+                 emailPerms.ToList().ForEach(x => {
                      x._DisplayText = emails.FirstOrDefault(y => y.Id == x.AccessorId).NotNull(y => y.Email);
                      x._ImageUrl = (ConstantStrings.AmazonS3Location + ConstantStrings.ImageUserPlaceholder);
                  });

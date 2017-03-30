@@ -208,7 +208,7 @@ namespace RadialReview.Models {
 			time = time ?? DateTime.UtcNow;
 			var id = Settings.TimeZoneId ?? "Central Standard Time";
 			var tz = TimeZoneInfo.FindSystemTimeZoneById(id);
-			var abb = TimeZoneNames.TimeZoneNames.GetAbbreviationsForTimeZone(id, "en-us");
+			var abb = TZNames.GetAbbreviationsForTimeZone(id, "en-us");
 			if (tz.IsDaylightSavingTime(time.Value)) {
 				return abb.Daylight;
 			}

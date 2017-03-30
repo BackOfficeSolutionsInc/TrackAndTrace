@@ -7,6 +7,7 @@ using Mandrill;
 using RadialReview.Models;
 using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
+using Mandrill.Models;
 
 namespace RadialReview.Accessors
 {

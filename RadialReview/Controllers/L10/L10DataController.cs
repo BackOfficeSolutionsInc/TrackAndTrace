@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Ionic.Zip;
 using Microsoft.AspNet.SignalR;
 using RadialReview.Accessors;
 using RadialReview.Exceptions;
@@ -26,6 +25,7 @@ using RadialReview.Utilities.DataTypes;
 using System.Dynamic;
 using Newtonsoft.Json;
 using RadialReview.Accessors.VideoConferenceProviders;
+using Ionic.Zip;
 
 namespace RadialReview.Controllers {
 	public partial class L10Controller : BaseController {

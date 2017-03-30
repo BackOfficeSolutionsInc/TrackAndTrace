@@ -1,5 +1,6 @@
 ﻿using FluentNHibernate.Mapping;
 using Mandrill;
+using Mandrill.Models;
 using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;

@@ -6,6 +6,7 @@ using FluentNHibernate.Mapping;
 using RadialReview.Models.Interfaces;
 using RadialReview.Properties;
 using Mandrill;
+using Mandrill.Models;
 
 namespace RadialReview.Models.UserModels
 {

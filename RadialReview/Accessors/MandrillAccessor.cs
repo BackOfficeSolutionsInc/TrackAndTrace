@@ -15,6 +15,7 @@ using RadialReview.Properties;
 using RadialReview.Utilities;
 using RadialReview.Utilities.RealTime;
 using NHibernate.Criterion;
+using Mandrill.Models;
 
 namespace RadialReview.Accessors {
     public class MandrillAccessor {

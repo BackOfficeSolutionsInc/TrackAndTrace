@@ -4,7 +4,6 @@ using System.Data.Entity.Core.Metadata.Edm;
 using System.Linq;
 using System.Web;
 using Microsoft.Owin.Security.Provider;
-using Moq;
 using RadialReview.Models.Angular.CompanyValue;
 using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.VTO;

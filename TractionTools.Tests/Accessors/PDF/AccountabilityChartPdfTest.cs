@@ -14,7 +14,7 @@ namespace TractionTools.UITests.PDF {
 		public void FullTreeDiagram() {
 			var c= new Ctx();
 			var tree = AccountabilityAccessor.GetTree(c.Manager, c.Org.Organization.AccountabilityChartId);
-			Tree.Update(tree.Root, false);
+			//Tree.Update(tree.Root, false);
 
 			var pdf = AccountabilityChartPDF.GenerateAccountabilityChart(tree.Root, 8.5, 10, false);
 

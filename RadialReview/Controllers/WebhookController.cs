@@ -7,6 +7,7 @@ using System.Web;
 using Newtonsoft.Json;
 using RadialReview.Accessors;
 using RadialReview.Controllers;
+using Mandrill.Models;
 
 namespace RadialReview.Controllers 
 {

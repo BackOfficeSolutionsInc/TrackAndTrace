@@ -6,6 +6,7 @@ using FluentNHibernate.Conventions.AcceptanceCriteria;
 using Mandrill;
 using RadialReview.Accessors;
 using RadialReview.Models.UserModels;
+using Mandrill.Models;
 
 namespace RadialReview.Models.ViewModels
 {

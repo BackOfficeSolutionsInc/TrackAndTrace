@@ -3,6 +3,77 @@
   "version": 2,
   "targets": {
     ".NETFramework,Version=v4.5.2": {
+      "Antlr/3.4.1.9004": {
+        "type": "package",
+        "compile": {
+          "lib/Antlr3.Runtime.dll": {}
+        },
+        "runtime": {
+          "lib/Antlr3.Runtime.dll": {}
+        }
+      },
+      "AWSSDK/2.3.55.2": {
+        "type": "package",
+        "compile": {
+          "lib/net45/AWSSDK.dll": {}
+        },
+        "runtime": {
+          "lib/net45/AWSSDK.dll": {}
+        }
+      },
+      "BCXAPI/1.0.4554.21216": {
+        "type": "package",
+        "compile": {
+          "lib/net40/BCXAPI.dll": {}
+        },
+        "runtime": {
+          "lib/net40/BCXAPI.dll": {}
+        }
+      },
+      "Common.Logging/3.3.1": {
+        "type": "package",
+        "dependencies": {
+          "Common.Logging.Core": "3.3.1"
+        },
+        "compile": {
+          "lib/net40/Common.Logging.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Common.Logging.dll": {}
+        }
+      },
+      "Common.Logging.Core/3.3.1": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Common.Logging.Core.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Common.Logging.Core.dll": {}
+        }
+      },
+      "CommonMark.NET/0.15.1": {
+        "type": "package",
+        "compile": {
+          "lib/net45/CommonMark.dll": {}
+        },
+        "runtime": {
+          "lib/net45/CommonMark.dll": {}
+        }
+      },
+      "CsvHelper/2.16.3": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System",
+          "System.Core",
+          "mscorlib"
+        ],
+        "compile": {
+          "lib/net45/CsvHelper.dll": {}
+        },
+        "runtime": {
+          "lib/net45/CsvHelper.dll": {}
+        }
+      },
       "DocX/1.0.0.22": {
         "type": "package",
         "compile": {
@@ -26,6 +97,45 @@
           "lib/net45/EntityFramework.dll": {}
         }
       },
+      "FluentNHibernate/2.0.3": {
+        "type": "package",
+        "dependencies": {
+          "NHibernate": "4.0.0"
+        },
+        "compile": {
+          "lib/net40/FluentNHibernate.dll": {}
+        },
+        "runtime": {
+          "lib/net40/FluentNHibernate.dll": {}
+        }
+      },
+      "Iesi.Collections/4.0.1.4000": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Iesi.Collections.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Iesi.Collections.dll": {}
+        }
+      },
+      "ImageResizer/4.0.5": {
+        "type": "package",
+        "compile": {
+          "lib/net45/ImageResizer.dll": {}
+        },
+        "runtime": {
+          "lib/net45/ImageResizer.dll": {}
+        }
+      },
+      "log4net/2.0.8": {
+        "type": "package",
+        "compile": {
+          "lib/net45-full/log4net.dll": {}
+        },
+        "runtime": {
+          "lib/net45-full/log4net.dll": {}
+        }
+      },
       "LumenWorks.Framework.IO/3.8.0": {
         "type": "package",
         "compile": {
@@ -42,6 +152,27 @@
         },
         "runtime": {
           "lib/net45/Manatee.Trello.dll": {}
+        }
+      },
+      "Mandrill/2.4.181": {
+        "type": "package",
+        "dependencies": {
+          "Newtonsoft.Json": "6.0.6"
+        },
+        "compile": {
+          "lib/net45/Mandrill.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Mandrill.dll": {}
+        }
+      },
+      "MathNet.Numerics/3.17.0": {
+        "type": "package",
+        "compile": {
+          "lib/net40/MathNet.Numerics.dll": {}
+        },
+        "runtime": {
+          "lib/net40/MathNet.Numerics.dll": {}
         }
       },
       "Microsoft.AspNet.Identity.Core/2.2.1": {
@@ -131,6 +262,22 @@
           "lib/net45/Microsoft.AspNet.SignalR.Redis.dll": {}
         }
       },
+      "Microsoft.AspNet.SignalR.SystemWeb/2.2.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNet.SignalR.Core": "2.2.1",
+          "Microsoft.Owin.Host.SystemWeb": "2.1.0"
+        },
+        "frameworkAssemblies": [
+          "System"
+        ],
+        "compile": {
+          "lib/net45/Microsoft.AspNet.SignalR.SystemWeb.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.AspNet.SignalR.SystemWeb.dll": {}
+        }
+      },
       "Microsoft.AspNet.WebPages/3.2.3": {
         "type": "package",
         "dependencies": {
@@ -159,6 +306,31 @@
         "runtime": {
           "lib/net45/Microsoft.Identity.Client.Platform.dll": {},
           "lib/net45/Microsoft.Identity.Client.dll": {}
+        }
+      },
+      "Microsoft.IdentityModel.Logging/1.1.2": {
+        "type": "package",
+        "compile": {
+          "lib/net451/Microsoft.IdentityModel.Logging.dll": {}
+        },
+        "runtime": {
+          "lib/net451/Microsoft.IdentityModel.Logging.dll": {}
+        }
+      },
+      "Microsoft.IdentityModel.Tokens/5.1.2": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.IdentityModel.Logging": "1.1.2",
+          "Newtonsoft.Json": "9.0.1"
+        },
+        "frameworkAssemblies": [
+          "System.Xml"
+        ],
+        "compile": {
+          "lib/net451/Microsoft.IdentityModel.Tokens.dll": {}
+        },
+        "runtime": {
+          "lib/net451/Microsoft.IdentityModel.Tokens.dll": {}
         }
       },
       "Microsoft.OData.Client/6.13.0": {
@@ -421,6 +593,15 @@
           "lib/net40/Microsoft.Web.Infrastructure.dll": {}
         }
       },
+      "MySql.Data/6.9.9": {
+        "type": "package",
+        "compile": {
+          "lib/net45/MySql.Data.dll": {}
+        },
+        "runtime": {
+          "lib/net45/MySql.Data.dll": {}
+        }
+      },
       "Newtonsoft.Json/9.0.1": {
         "type": "package",
         "compile": {
@@ -428,6 +609,30 @@
         },
         "runtime": {
           "lib/net45/Newtonsoft.Json.dll": {}
+        }
+      },
+      "NHibernate/4.0.0.4000": {
+        "type": "package",
+        "dependencies": {
+          "Iesi.Collections": "[4.0.0, 5.0.0)"
+        },
+        "compile": {
+          "lib/net40/NHibernate.dll": {}
+        },
+        "runtime": {
+          "lib/net40/NHibernate.dll": {}
+        }
+      },
+      "NHibernate.Envers/2.1.0": {
+        "type": "package",
+        "dependencies": {
+          "NHibernate": "[4.0.0, 4.1.0)"
+        },
+        "compile": {
+          "lib/Net40/NHibernate.Envers.dll": {}
+        },
+        "runtime": {
+          "lib/Net40/NHibernate.Envers.dll": {}
         }
       },
       "NReco.PhantomJS/1.0.3": {
@@ -444,6 +649,15 @@
       },
       "OpenCover/4.6.519": {
         "type": "package"
+      },
+      "OpenPop.NET/2.0.6.1120": {
+        "type": "package",
+        "compile": {
+          "lib/net40/OpenPop.dll": {}
+        },
+        "runtime": {
+          "lib/net40/OpenPop.dll": {}
+        }
       },
       "Owin/1.0.0": {
         "type": "package",
@@ -533,6 +747,24 @@
       "PhantomJS/2.1.1": {
         "type": "package"
       },
+      "protobuf-net/2.0.0.668": {
+        "type": "package",
+        "compile": {
+          "lib/net40/protobuf-net.dll": {}
+        },
+        "runtime": {
+          "lib/net40/protobuf-net.dll": {}
+        }
+      },
+      "RestSharp/105.2.3": {
+        "type": "package",
+        "compile": {
+          "lib/net452/RestSharp.dll": {}
+        },
+        "runtime": {
+          "lib/net452/RestSharp.dll": {}
+        }
+      },
       "StackExchange.Redis.StrongName/1.0.322": {
         "type": "package",
         "compile": {
@@ -540,10 +772,166 @@
         },
         "runtime": {
           "lib/net45/StackExchange.Redis.StrongName.dll": {}
+        }
+      },
+      "System.IdentityModel.Tokens.Jwt/5.1.2": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.IdentityModel.Tokens": "5.1.2"
+        },
+        "compile": {
+          "lib/net451/System.IdentityModel.Tokens.Jwt.dll": {}
+        },
+        "runtime": {
+          "lib/net451/System.IdentityModel.Tokens.Jwt.dll": {}
+        }
+      },
+      "TimeZoneNames/2.1.0": {
+        "type": "package",
+        "dependencies": {
+          "protobuf-net": "2.0.0.668"
+        },
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/TimeZoneNames.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/TimeZoneNames.dll": {}
+        }
+      },
+      "TrelloNet/0.6.2": {
+        "type": "package",
+        "dependencies": {
+          "Newtonsoft.Json": "4.5.0",
+          "RestSharp": "104.1.0"
+        },
+        "compile": {
+          "lib/net40-Client/TrelloNet.dll": {}
+        },
+        "runtime": {
+          "lib/net40-Client/TrelloNet.dll": {}
+        }
+      },
+      "Twilio/5.1.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.IdentityModel.Logging": "1.1.2",
+          "Microsoft.IdentityModel.Tokens": "5.1.2",
+          "Newtonsoft.Json": "9.0.1",
+          "System.IdentityModel.Tokens.Jwt": "5.1.2"
+        },
+        "compile": {
+          "lib/net451/Twilio.dll": {}
+        },
+        "runtime": {
+          "lib/net451/Twilio.dll": {}
+        }
+      },
+      "TypeLite/1.8.4": {
+        "type": "package",
+        "compile": {
+          "lib/net4/TypeLite.Net4.dll": {},
+          "lib/net4/TypeLite.dll": {}
+        },
+        "runtime": {
+          "lib/net4/TypeLite.Net4.dll": {},
+          "lib/net4/TypeLite.dll": {}
+        }
+      },
+      "Unofficial.Ionic.Zip/1.9.1.8": {
+        "type": "package",
+        "compile": {
+          "lib/Ionic.Zip.dll": {}
+        },
+        "runtime": {
+          "lib/Ionic.Zip.dll": {}
+        }
+      },
+      "WebGrease/1.5.1": {
+        "type": "package",
+        "dependencies": {
+          "Antlr": "3.4.1.9004",
+          "Newtonsoft.Json": "5.0.4"
+        },
+        "compile": {
+          "lib/WebGrease.dll": {}
+        },
+        "runtime": {
+          "lib/WebGrease.dll": {}
         }
       }
     },
     ".NETFramework,Version=v4.5.2/win-x86": {
+      "Antlr/3.4.1.9004": {
+        "type": "package",
+        "compile": {
+          "lib/Antlr3.Runtime.dll": {}
+        },
+        "runtime": {
+          "lib/Antlr3.Runtime.dll": {}
+        }
+      },
+      "AWSSDK/2.3.55.2": {
+        "type": "package",
+        "compile": {
+          "lib/net45/AWSSDK.dll": {}
+        },
+        "runtime": {
+          "lib/net45/AWSSDK.dll": {}
+        }
+      },
+      "BCXAPI/1.0.4554.21216": {
+        "type": "package",
+        "compile": {
+          "lib/net40/BCXAPI.dll": {}
+        },
+        "runtime": {
+          "lib/net40/BCXAPI.dll": {}
+        }
+      },
+      "Common.Logging/3.3.1": {
+        "type": "package",
+        "dependencies": {
+          "Common.Logging.Core": "3.3.1"
+        },
+        "compile": {
+          "lib/net40/Common.Logging.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Common.Logging.dll": {}
+        }
+      },
+      "Common.Logging.Core/3.3.1": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Common.Logging.Core.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Common.Logging.Core.dll": {}
+        }
+      },
+      "CommonMark.NET/0.15.1": {
+        "type": "package",
+        "compile": {
+          "lib/net45/CommonMark.dll": {}
+        },
+        "runtime": {
+          "lib/net45/CommonMark.dll": {}
+        }
+      },
+      "CsvHelper/2.16.3": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System",
+          "System.Core",
+          "mscorlib"
+        ],
+        "compile": {
+          "lib/net45/CsvHelper.dll": {}
+        },
+        "runtime": {
+          "lib/net45/CsvHelper.dll": {}
+        }
+      },
       "DocX/1.0.0.22": {
         "type": "package",
         "compile": {
@@ -567,6 +955,45 @@
           "lib/net45/EntityFramework.dll": {}
         }
       },
+      "FluentNHibernate/2.0.3": {
+        "type": "package",
+        "dependencies": {
+          "NHibernate": "4.0.0"
+        },
+        "compile": {
+          "lib/net40/FluentNHibernate.dll": {}
+        },
+        "runtime": {
+          "lib/net40/FluentNHibernate.dll": {}
+        }
+      },
+      "Iesi.Collections/4.0.1.4000": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Iesi.Collections.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Iesi.Collections.dll": {}
+        }
+      },
+      "ImageResizer/4.0.5": {
+        "type": "package",
+        "compile": {
+          "lib/net45/ImageResizer.dll": {}
+        },
+        "runtime": {
+          "lib/net45/ImageResizer.dll": {}
+        }
+      },
+      "log4net/2.0.8": {
+        "type": "package",
+        "compile": {
+          "lib/net45-full/log4net.dll": {}
+        },
+        "runtime": {
+          "lib/net45-full/log4net.dll": {}
+        }
+      },
       "LumenWorks.Framework.IO/3.8.0": {
         "type": "package",
         "compile": {
@@ -583,6 +1010,27 @@
         },
         "runtime": {
           "lib/net45/Manatee.Trello.dll": {}
+        }
+      },
+      "Mandrill/2.4.181": {
+        "type": "package",
+        "dependencies": {
+          "Newtonsoft.Json": "6.0.6"
+        },
+        "compile": {
+          "lib/net45/Mandrill.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Mandrill.dll": {}
+        }
+      },
+      "MathNet.Numerics/3.17.0": {
+        "type": "package",
+        "compile": {
+          "lib/net40/MathNet.Numerics.dll": {}
+        },
+        "runtime": {
+          "lib/net40/MathNet.Numerics.dll": {}
         }
       },
       "Microsoft.AspNet.Identity.Core/2.2.1": {
@@ -672,6 +1120,22 @@
           "lib/net45/Microsoft.AspNet.SignalR.Redis.dll": {}
         }
       },
+      "Microsoft.AspNet.SignalR.SystemWeb/2.2.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNet.SignalR.Core": "2.2.1",
+          "Microsoft.Owin.Host.SystemWeb": "2.1.0"
+        },
+        "frameworkAssemblies": [
+          "System"
+        ],
+        "compile": {
+          "lib/net45/Microsoft.AspNet.SignalR.SystemWeb.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.AspNet.SignalR.SystemWeb.dll": {}
+        }
+      },
       "Microsoft.AspNet.WebPages/3.2.3": {
         "type": "package",
         "dependencies": {
@@ -700,6 +1164,31 @@
         "runtime": {
           "lib/net45/Microsoft.Identity.Client.Platform.dll": {},
           "lib/net45/Microsoft.Identity.Client.dll": {}
+        }
+      },
+      "Microsoft.IdentityModel.Logging/1.1.2": {
+        "type": "package",
+        "compile": {
+          "lib/net451/Microsoft.IdentityModel.Logging.dll": {}
+        },
+        "runtime": {
+          "lib/net451/Microsoft.IdentityModel.Logging.dll": {}
+        }
+      },
+      "Microsoft.IdentityModel.Tokens/5.1.2": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.IdentityModel.Logging": "1.1.2",
+          "Newtonsoft.Json": "9.0.1"
+        },
+        "frameworkAssemblies": [
+          "System.Xml"
+        ],
+        "compile": {
+          "lib/net451/Microsoft.IdentityModel.Tokens.dll": {}
+        },
+        "runtime": {
+          "lib/net451/Microsoft.IdentityModel.Tokens.dll": {}
         }
       },
       "Microsoft.OData.Client/6.13.0": {
@@ -962,6 +1451,15 @@
           "lib/net40/Microsoft.Web.Infrastructure.dll": {}
         }
       },
+      "MySql.Data/6.9.9": {
+        "type": "package",
+        "compile": {
+          "lib/net45/MySql.Data.dll": {}
+        },
+        "runtime": {
+          "lib/net45/MySql.Data.dll": {}
+        }
+      },
       "Newtonsoft.Json/9.0.1": {
         "type": "package",
         "compile": {
@@ -969,6 +1467,30 @@
         },
         "runtime": {
           "lib/net45/Newtonsoft.Json.dll": {}
+        }
+      },
+      "NHibernate/4.0.0.4000": {
+        "type": "package",
+        "dependencies": {
+          "Iesi.Collections": "[4.0.0, 5.0.0)"
+        },
+        "compile": {
+          "lib/net40/NHibernate.dll": {}
+        },
+        "runtime": {
+          "lib/net40/NHibernate.dll": {}
+        }
+      },
+      "NHibernate.Envers/2.1.0": {
+        "type": "package",
+        "dependencies": {
+          "NHibernate": "[4.0.0, 4.1.0)"
+        },
+        "compile": {
+          "lib/Net40/NHibernate.Envers.dll": {}
+        },
+        "runtime": {
+          "lib/Net40/NHibernate.Envers.dll": {}
         }
       },
       "NReco.PhantomJS/1.0.3": {
@@ -985,6 +1507,15 @@
       },
       "OpenCover/4.6.519": {
         "type": "package"
+      },
+      "OpenPop.NET/2.0.6.1120": {
+        "type": "package",
+        "compile": {
+          "lib/net40/OpenPop.dll": {}
+        },
+        "runtime": {
+          "lib/net40/OpenPop.dll": {}
+        }
       },
       "Owin/1.0.0": {
         "type": "package",
@@ -1074,6 +1605,24 @@
       "PhantomJS/2.1.1": {
         "type": "package"
       },
+      "protobuf-net/2.0.0.668": {
+        "type": "package",
+        "compile": {
+          "lib/net40/protobuf-net.dll": {}
+        },
+        "runtime": {
+          "lib/net40/protobuf-net.dll": {}
+        }
+      },
+      "RestSharp/105.2.3": {
+        "type": "package",
+        "compile": {
+          "lib/net452/RestSharp.dll": {}
+        },
+        "runtime": {
+          "lib/net452/RestSharp.dll": {}
+        }
+      },
       "StackExchange.Redis.StrongName/1.0.322": {
         "type": "package",
         "compile": {
@@ -1081,11 +1630,216 @@
         },
         "runtime": {
           "lib/net45/StackExchange.Redis.StrongName.dll": {}
+        }
+      },
+      "System.IdentityModel.Tokens.Jwt/5.1.2": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.IdentityModel.Tokens": "5.1.2"
+        },
+        "compile": {
+          "lib/net451/System.IdentityModel.Tokens.Jwt.dll": {}
+        },
+        "runtime": {
+          "lib/net451/System.IdentityModel.Tokens.Jwt.dll": {}
+        }
+      },
+      "TimeZoneNames/2.1.0": {
+        "type": "package",
+        "dependencies": {
+          "protobuf-net": "2.0.0.668"
+        },
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/TimeZoneNames.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/TimeZoneNames.dll": {}
+        }
+      },
+      "TrelloNet/0.6.2": {
+        "type": "package",
+        "dependencies": {
+          "Newtonsoft.Json": "4.5.0",
+          "RestSharp": "104.1.0"
+        },
+        "compile": {
+          "lib/net40-Client/TrelloNet.dll": {}
+        },
+        "runtime": {
+          "lib/net40-Client/TrelloNet.dll": {}
+        }
+      },
+      "Twilio/5.1.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.IdentityModel.Logging": "1.1.2",
+          "Microsoft.IdentityModel.Tokens": "5.1.2",
+          "Newtonsoft.Json": "9.0.1",
+          "System.IdentityModel.Tokens.Jwt": "5.1.2"
+        },
+        "compile": {
+          "lib/net451/Twilio.dll": {}
+        },
+        "runtime": {
+          "lib/net451/Twilio.dll": {}
+        }
+      },
+      "TypeLite/1.8.4": {
+        "type": "package",
+        "compile": {
+          "lib/net4/TypeLite.Net4.dll": {},
+          "lib/net4/TypeLite.dll": {}
+        },
+        "runtime": {
+          "lib/net4/TypeLite.Net4.dll": {},
+          "lib/net4/TypeLite.dll": {}
+        }
+      },
+      "Unofficial.Ionic.Zip/1.9.1.8": {
+        "type": "package",
+        "compile": {
+          "lib/Ionic.Zip.dll": {}
+        },
+        "runtime": {
+          "lib/Ionic.Zip.dll": {}
+        }
+      },
+      "WebGrease/1.5.1": {
+        "type": "package",
+        "dependencies": {
+          "Antlr": "3.4.1.9004",
+          "Newtonsoft.Json": "5.0.4"
+        },
+        "compile": {
+          "lib/WebGrease.dll": {}
+        },
+        "runtime": {
+          "lib/WebGrease.dll": {}
         }
       }
     }
   },
   "libraries": {
+    "Antlr/3.4.1.9004": {
+      "sha512": "c1S+HBE+KYA5EBxtn25LEK02hHPH/tDQ6RviUTTCJpZIPoputtn8ArsQJy9lVJWZOnw37ufByO2Fmf1M8wpr8Q==",
+      "type": "package",
+      "files": [
+        "Antlr.3.4.1.9004.nupkg.sha512",
+        "Antlr.nuspec",
+        "lib/Antlr3.Runtime.dll",
+        "lib/Antlr3.Runtime.pdb"
+      ]
+    },
+    "AWSSDK/2.3.55.2": {
+      "sha512": "zy/6psTOx9c8LaZqL1tUtiGKMpd35b16TNRctz/N6Qc6hqFeOjyZ5WVhn89szJkkZtotcMFyfq58Y2RfyRxxUg==",
+      "type": "package",
+      "files": [
+        "AWSSDK.2.3.55.2.nupkg.sha512",
+        "AWSSDK.nuspec",
+        "lib/net35/AWSSDK.dll",
+        "lib/net35/AWSSDK.pdb",
+        "lib/net45/AWSSDK.dll",
+        "lib/net45/AWSSDK.pdb",
+        "lib/portable-wpa+netcore45/AWSSDK.dll",
+        "lib/windows8/AWSSDK.dll",
+        "lib/windowsphone8/AWSSDK.dll",
+        "tools/account-management.ps1",
+        "tools/net35/install.ps1",
+        "tools/net45/install.ps1"
+      ]
+    },
+    "BCXAPI/1.0.4554.21216": {
+      "sha512": "Q1XESdYHSzaf4Gdsf8qMUGpG7ceVvRfC5zRscb7ejMR6kBroYwwLRdL3iIU6YO7ySCknvQwvWANVDzMtdF/rQA==",
+      "type": "package",
+      "files": [
+        "BCXAPI.1.0.4554.21216.nupkg.sha512",
+        "BCXAPI.nuspec",
+        "lib/net40/BCXAPI.dll"
+      ]
+    },
+    "Common.Logging/3.3.1": {
+      "sha512": "Wv07G5iQ+yUHI3RWqXGFys3N7Gd7vx+OYFGw4kcqfCSoWMJJLNVZqB/zyqPC8kqxE7Ezcj1YrU7zGC3/gUXF3A==",
+      "type": "package",
+      "files": [
+        "Common.Logging.3.3.1.nupkg.sha512",
+        "Common.Logging.nuspec",
+        "lib/net35/Common.Logging.dll",
+        "lib/net35/Common.Logging.pdb",
+        "lib/net35/Common.Logging.xml",
+        "lib/net40/Common.Logging.dll",
+        "lib/net40/Common.Logging.pdb",
+        "lib/net40/Common.Logging.xml"
+      ]
+    },
+    "Common.Logging.Core/3.3.1": {
+      "sha512": "geJ4X7mjL/KDXNMfJbq6TnZfZ0bbEFi1HpS3Ayv09ZKxBgKaL0KysAw4k8w7DSE/nk0nDwkQEmStRxBIpBlsAQ==",
+      "type": "package",
+      "files": [
+        "Common.Logging.Core.3.3.1.nupkg.sha512",
+        "Common.Logging.Core.nuspec",
+        "lib/net35/Common.Logging.Core.dll",
+        "lib/net35/Common.Logging.Core.pdb",
+        "lib/net35/Common.Logging.Core.xml",
+        "lib/net40/Common.Logging.Core.dll",
+        "lib/net40/Common.Logging.Core.pdb",
+        "lib/net40/Common.Logging.Core.xml",
+        "lib/portable-win+net40+sl40+wp7/Common.Logging.Core.XML",
+        "lib/portable-win+net40+sl40+wp7/Common.Logging.Core.dll",
+        "lib/portable-win+net40+sl40+wp7/Common.Logging.Core.pdb"
+      ]
+    },
+    "CommonMark.NET/0.15.1": {
+      "sha512": "xgAvZ0tNcupiabTcOOvNYRzU7h9dZ28xIFh/CHiNgCI6GUu/ME2hmZP3abLgRFrnXyNBfVxfL4ZNmqkRnBSLEg==",
+      "type": "package",
+      "files": [
+        "CommonMark.NET.0.15.1.nupkg.sha512",
+        "CommonMark.NET.nuspec",
+        "LICENSE.md",
+        "lib/net20/CommonMark.dll",
+        "lib/net20/CommonMark.pdb",
+        "lib/net20/CommonMark.xml",
+        "lib/net35-client/CommonMark.dll",
+        "lib/net35-client/CommonMark.pdb",
+        "lib/net35-client/CommonMark.xml",
+        "lib/net40-client/CommonMark.dll",
+        "lib/net40-client/CommonMark.pdb",
+        "lib/net40-client/CommonMark.xml",
+        "lib/net45/CommonMark.dll",
+        "lib/net45/CommonMark.pdb",
+        "lib/net45/CommonMark.xml",
+        "lib/netstandard1.0/CommonMark.dll",
+        "lib/netstandard1.0/CommonMark.pdb",
+        "lib/netstandard1.0/CommonMark.xml",
+        "lib/portable-net40+sl50+wp80+win+wpa81+MonoAndroid10+MonoTouch10/CommonMark.dll",
+        "lib/portable-net40+sl50+wp80+win+wpa81+MonoAndroid10+MonoTouch10/CommonMark.pdb",
+        "lib/portable-net40+sl50+wp80+win+wpa81+MonoAndroid10+MonoTouch10/CommonMark.xml",
+        "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll",
+        "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.pdb",
+        "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.xml",
+        "tools/cmark.exe",
+        "tools/cmark.exe.config"
+      ]
+    },
+    "CsvHelper/2.16.3": {
+      "sha512": "RTxNM9Q6MDg3WpGorrK7E9eXsjGhtDLYx5dBuHol5kHDpu7kND2NveHDVCFQgGxowuDB57ettaOEn3EJqiJ1oQ==",
+      "type": "package",
+      "files": [
+        "CsvHelper.2.16.3.nupkg.sha512",
+        "CsvHelper.nuspec",
+        "lib/net20/CsvHelper.dll",
+        "lib/net20/CsvHelper.xml",
+        "lib/net35/CsvHelper.dll",
+        "lib/net35/CsvHelper.xml",
+        "lib/net40/CsvHelper.dll",
+        "lib/net40/CsvHelper.xml",
+        "lib/net45/CsvHelper.dll",
+        "lib/net45/CsvHelper.xml",
+        "lib/netstandard1.3/CsvHelper.dll",
+        "lib/netstandard1.3/CsvHelper.xml",
+        "lib/portable40-net40+sl5+win8+wp8+wpa81/CsvHelper.dll",
+        "lib/portable40-net40+sl5+win8+wp8+wpa81/CsvHelper.xml"
+      ]
+    },
     "DocX/1.0.0.22": {
       "sha512": "F2h7b4BU3rVlscSGClU7HpE3KQPHGjDDFOh0oPY5ZcZEMfvIwUxFTZu8VcFrgS9NPdK8VhUeSLjTupPUNfjTMA==",
       "type": "package",
@@ -1119,6 +1873,58 @@
         "tools/init.ps1",
         "tools/install.ps1",
         "tools/migrate.exe"
+      ]
+    },
+    "FluentNHibernate/2.0.3": {
+      "sha512": "qlnjj/a2ClTVWLw0uESCBsmd5r+LaeNXoaUiVyeGzpXmqTs/mfcgZP+GO63xp3VTq4ydNBHKBuWMFMndW/uzOQ==",
+      "type": "package",
+      "files": [
+        "FluentNHibernate.2.0.3.nupkg.sha512",
+        "FluentNHibernate.nuspec",
+        "lib/net40/FluentNHibernate.XML",
+        "lib/net40/FluentNHibernate.dll",
+        "lib/net40/FluentNHibernate.pdb"
+      ]
+    },
+    "Iesi.Collections/4.0.1.4000": {
+      "sha512": "77x4RfYcgQyQIfvmz3WUDGmzJf7CHl1++ArQz+7ZyrxuGSULkczQlbX140FKJY42YpTpbwLqr5fsQxAZ5AB5qg==",
+      "type": "package",
+      "files": [
+        "Iesi.Collections.4.0.1.4000.nupkg.sha512",
+        "Iesi.Collections.nuspec",
+        "lib/net40/Iesi.Collections.dll",
+        "lib/net40/Iesi.Collections.xml"
+      ]
+    },
+    "ImageResizer/4.0.5": {
+      "sha512": "BaNFH/1CUHOF39wO5O91sm3biH6mhbt2QoQnjSK2wNX1RP841gZTJOO3X7XQY25RlwjSIGSnzh1OUouow9uyjA==",
+      "type": "package",
+      "files": [
+        "ImageResizer.4.0.5.nupkg.sha512",
+        "ImageResizer.nuspec",
+        "lib/net45/ImageResizer.XML",
+        "lib/net45/ImageResizer.dll"
+      ]
+    },
+    "log4net/2.0.8": {
+      "sha512": "N41MQGHZImiCfn0cUuSBjZxrcNfIQCuCgQP0rpgB3J/NWponEh3lc1LxJEuIsPAR9Oc1jVvfkNNFCY1C5hf9LA==",
+      "type": "package",
+      "files": [
+        "lib/net20-full/log4net.dll",
+        "lib/net20-full/log4net.xml",
+        "lib/net35-client/log4net.dll",
+        "lib/net35-client/log4net.xml",
+        "lib/net35-full/log4net.dll",
+        "lib/net35-full/log4net.xml",
+        "lib/net40-client/log4net.dll",
+        "lib/net40-client/log4net.xml",
+        "lib/net40-full/log4net.dll",
+        "lib/net40-full/log4net.xml",
+        "lib/net45-full/log4net.dll",
+        "lib/net45-full/log4net.xml",
+        "lib/netstandard1.3/log4net.dll",
+        "log4net.2.0.8.nupkg.sha512",
+        "log4net.nuspec"
       ]
     },
     "LumenWorks.Framework.IO/3.8.0": {
@@ -1162,6 +1968,40 @@
         "lib/net45/Manatee.Trello.XML",
         "lib/net45/Manatee.Trello.dll",
         "lib/net45/Manatee.Trello.pdb"
+      ]
+    },
+    "Mandrill/2.4.181": {
+      "sha512": "KJRoGix1T/Erczibl3R3+Al07282ZW72c1LOaM2rcfRCCDO+SKYrDVE1rxFTNBX+y1LNWqTo4EEIszAfKwfVtw==",
+      "type": "package",
+      "files": [
+        "Mandrill.2.4.181.nupkg.sha512",
+        "Mandrill.nuspec",
+        "lib/net45/Mandrill.XML",
+        "lib/net45/Mandrill.dll"
+      ]
+    },
+    "MathNet.Numerics/3.17.0": {
+      "sha512": "1nMX81xGwfkAVx/5AZMFXK4sxFXz1GxUsd+qIRs36NeVfO3YSwcTNcpFEZaj6/iSVOnenDF/HzvJ9ykczvq3+A==",
+      "type": "package",
+      "files": [
+        "MathNet.Numerics.3.17.0.nupkg.sha512",
+        "MathNet.Numerics.nuspec",
+        "lib/net35/MathNet.Numerics.dll",
+        "lib/net35/MathNet.Numerics.xml",
+        "lib/net40/MathNet.Numerics.dll",
+        "lib/net40/MathNet.Numerics.xml",
+        "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/MathNet.Numerics.XML",
+        "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/MathNet.Numerics.dll",
+        "lib/portable-net45+netcore45+MonoAndroid1+MonoTouch1/MathNet.Numerics.XML",
+        "lib/portable-net45+netcore45+MonoAndroid1+MonoTouch1/MathNet.Numerics.dll",
+        "lib/portable-net45+netcore45+wp8+MonoAndroid1+MonoTouch1/MathNet.Numerics.XML",
+        "lib/portable-net45+netcore45+wp8+MonoAndroid1+MonoTouch1/MathNet.Numerics.dll",
+        "lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/MathNet.Numerics.XML",
+        "lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/MathNet.Numerics.dll",
+        "lib/portable-net45+sl5+netcore45+MonoAndroid1+MonoTouch1/MathNet.Numerics.XML",
+        "lib/portable-net45+sl5+netcore45+MonoAndroid1+MonoTouch1/MathNet.Numerics.dll",
+        "license.txt",
+        "readme.txt"
       ]
     },
     "Microsoft.AspNet.Identity.Core/2.2.1": {
@@ -1236,6 +2076,16 @@
         "lib/net45/Microsoft.AspNet.SignalR.Redis.dll"
       ]
     },
+    "Microsoft.AspNet.SignalR.SystemWeb/2.2.1": {
+      "sha512": "7R9oUxOjs3LOYqf2NslgGTEzsLWI5mzsPGWgjBP512Afde5qBhtlLxMO/gUIvVwGC+pvC6PNuYXMklkaPoP+/g==",
+      "type": "package",
+      "files": [
+        "Microsoft.AspNet.SignalR.SystemWeb.2.2.1.nupkg.sha512",
+        "Microsoft.AspNet.SignalR.SystemWeb.nuspec",
+        "lib/net45/Microsoft.AspNet.SignalR.SystemWeb.XML",
+        "lib/net45/Microsoft.AspNet.SignalR.SystemWeb.dll"
+      ]
+    },
     "Microsoft.AspNet.WebPages/3.2.3": {
       "sha512": "zbtxBERla5RE/mhftwbrXOzc0r6lh8WcnjpGW7QQe+PvSDDx1BgsTUGzfCXO/vJznHNpY5oCSYLt8Q5vUu7F0g==",
       "type": "package",
@@ -1282,6 +2132,28 @@
         "lib/netcore45/Microsoft.Identity.Client.xml",
         "lib/portable-net45+win/Microsoft.Identity.Client.dll",
         "lib/portable-net45+win/Microsoft.Identity.Client.xml"
+      ]
+    },
+    "Microsoft.IdentityModel.Logging/1.1.2": {
+      "sha512": "QPMFfRVnRkCzGpEQz/YEPsbwUjAp5R1W2dpaXHlJJNA7fp9gV4m4TDKvvXhQnqdEL0a0luNrYFZrbz7NRI1rXQ==",
+      "type": "package",
+      "files": [
+        "Microsoft.IdentityModel.Logging.1.1.2.nupkg.sha512",
+        "Microsoft.IdentityModel.Logging.nuspec",
+        "lib/net451/Microsoft.IdentityModel.Logging.dll",
+        "lib/netstandard1.4/Microsoft.IdentityModel.Logging.dll"
+      ]
+    },
+    "Microsoft.IdentityModel.Tokens/5.1.2": {
+      "sha512": "m7UP4iY/dWfVwDNNSVGvZV6r4PwflaK++sYQsTTGAMILYb5IJ4Z4rKJRCA0uKjo6jTcdWlQxyPsxoEVwjqPKqQ==",
+      "type": "package",
+      "files": [
+        "Microsoft.IdentityModel.Tokens.5.1.2.nupkg.sha512",
+        "Microsoft.IdentityModel.Tokens.nuspec",
+        "lib/net451/Microsoft.IdentityModel.Tokens.dll",
+        "lib/net451/Microsoft.IdentityModel.Tokens.xml",
+        "lib/netstandard1.4/Microsoft.IdentityModel.Tokens.dll",
+        "lib/netstandard1.4/Microsoft.IdentityModel.Tokens.xml"
       ]
     },
     "Microsoft.OData.Client/6.13.0": {
@@ -1515,6 +2387,20 @@
         "lib/net40/Microsoft.Web.Infrastructure.dll"
       ]
     },
+    "MySql.Data/6.9.9": {
+      "sha512": "rhpv2iJBqvvHU9gkhn/OZfhanQT/jZpfovyO9TEbJl5jLKMvABgxSkIPQbubrvR04M2/ZtdTeI9fC9WSkBe2wA==",
+      "type": "package",
+      "files": [
+        "CHANGES",
+        "MySql.Data.6.9.9.nupkg.sha512",
+        "MySql.Data.nuspec",
+        "Readme.txt",
+        "content/app.config.transform",
+        "content/web.config.transform",
+        "lib/net40/MySql.Data.dll",
+        "lib/net45/MySql.Data.dll"
+      ]
+    },
     "Newtonsoft.Json/9.0.1": {
       "sha512": "U82mHQSKaIk+lpSVCbWYKNavmNH1i5xrExDEquU1i6I5pV6UMOqRnJRSlKO3cMPfcpp0RgDY+8jUXHdQ4IfXvw==",
       "type": "package",
@@ -1536,6 +2422,40 @@
         "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll",
         "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.xml",
         "tools/install.ps1"
+      ]
+    },
+    "NHibernate/4.0.0.4000": {
+      "sha512": "zHwxTNHQM+ilc6/vKuFYjmRms+Iw6wCL0LsOiR9Imu+Z1sK0MO0gmSlaeR6gTy4cUNjqPZrU8ym5KPBwTp4Ebg==",
+      "type": "package",
+      "files": [
+        "ConfigurationTemplates/FireBird.cfg.xml",
+        "ConfigurationTemplates/MSSQL.cfg.xml",
+        "ConfigurationTemplates/MySql.cfg.xml",
+        "ConfigurationTemplates/Oracle.cfg.xml",
+        "ConfigurationTemplates/PostgreSQL.cfg.xml",
+        "ConfigurationTemplates/SQLite.cfg.xml",
+        "ConfigurationTemplates/SybaseASE.cfg.xml",
+        "ConfigurationTemplates/SybaseSQLAnywhere.cfg.xml",
+        "NHibernate.4.0.0.4000.nupkg.sha512",
+        "NHibernate.license.txt",
+        "NHibernate.nuspec",
+        "NHibernate.readme.html",
+        "NHibernate.releasenotes.txt",
+        "lib/net40/NHibernate.dll",
+        "lib/net40/NHibernate.xml",
+        "nhibernate-configuration.xsd",
+        "nhibernate-mapping.xsd"
+      ]
+    },
+    "NHibernate.Envers/2.1.0": {
+      "sha512": "ji8zG/SP/3KT5JZv6SsfzOOGOYJPMbAhepkFCl+lFDd6Fhc/7bJcOvqm/g+9IpSOMHwDccgMPZNwGjJjnkgNSQ==",
+      "type": "package",
+      "files": [
+        "NHibernate.Envers.2.1.0.nupkg.sha512",
+        "NHibernate.Envers.nuspec",
+        "lib/Net40/NHibernate.Envers.XML",
+        "lib/Net40/NHibernate.Envers.dll",
+        "readme.txt"
       ]
     },
     "NReco.PhantomJS/1.0.3": {
@@ -1597,6 +2517,16 @@
         "tools/x86/OpenCover.Profiler.dll",
         "transform/simple_report.xslt",
         "transform/transform.ps1"
+      ]
+    },
+    "OpenPop.NET/2.0.6.1120": {
+      "sha512": "NKgNRQAMJOTSnefCt3yfoQ8fPYml46Mwzq6m9OPwzmtKbXLXptUKaMnUjOoISpSowv8EclRVuv6DJXtZPJfcKQ==",
+      "type": "package",
+      "files": [
+        "OpenPop.NET.2.0.6.1120.nupkg.sha512",
+        "OpenPop.NET.nuspec",
+        "lib/net20/OpenPop.dll",
+        "lib/net40/OpenPop.dll"
       ]
     },
     "Owin/1.0.0": {
@@ -1776,6 +2706,89 @@
         "tools/uninstall.ps1"
       ]
     },
+    "protobuf-net/2.0.0.668": {
+      "sha512": "Lgj+Kf1+RV0utKxX9u1WEcymPGrbWrj/AwFmFADFLLa/LLdc1ji2MIGcecFRAGUu6UO8BRbdjZAIYWvLlN1B/A==",
+      "type": "package",
+      "files": [
+        "lib/net20-cf/protobuf-net.dll",
+        "lib/net20-cf/protobuf-net.pdb",
+        "lib/net20-cf/protobuf-net.xml",
+        "lib/net20/protobuf-net.dll",
+        "lib/net20/protobuf-net.pdb",
+        "lib/net20/protobuf-net.xml",
+        "lib/net30/protobuf-net.dll",
+        "lib/net30/protobuf-net.pdb",
+        "lib/net30/protobuf-net.xml",
+        "lib/net35-cf/protobuf-net.dll",
+        "lib/net35-cf/protobuf-net.pdb",
+        "lib/net35-cf/protobuf-net.xml",
+        "lib/net35/protobuf-net.dll",
+        "lib/net35/protobuf-net.pdb",
+        "lib/net35/protobuf-net.xml",
+        "lib/net40-cf/protobuf-net.dll",
+        "lib/net40-cf/protobuf-net.pdb",
+        "lib/net40-cf/protobuf-net.xml",
+        "lib/net40/protobuf-net.dll",
+        "lib/net40/protobuf-net.pdb",
+        "lib/net40/protobuf-net.xml",
+        "lib/netcore45/protobuf-net.XML",
+        "lib/netcore45/protobuf-net.dll",
+        "lib/netcore45/protobuf-net.pdb",
+        "lib/netcore45/protobuf-net.pri",
+        "lib/portable-sl4+net40+wp7+windows8/protobuf-net.dll",
+        "lib/portable-sl4+net40+wp7+windows8/protobuf-net.pdb",
+        "lib/portable-sl4+net40+wp7+windows8/protobuf-net.xml",
+        "lib/sl3-wp/protobuf-net.dll",
+        "lib/sl3-wp/protobuf-net.pdb",
+        "lib/sl3-wp/protobuf-net.xml",
+        "lib/sl4-windowsphone71/protobuf-net.dll",
+        "lib/sl4-windowsphone71/protobuf-net.pdb",
+        "lib/sl4-windowsphone71/protobuf-net.xml",
+        "lib/sl4/protobuf-net.dll",
+        "lib/sl4/protobuf-net.pdb",
+        "lib/sl4/protobuf-net.xml",
+        "lib/windowsphone8/protobuf-net.dll",
+        "lib/windowsphone8/protobuf-net.pdb",
+        "lib/windowsphone8/protobuf-net.xml",
+        "protobuf-net.2.0.0.668.nupkg.sha512",
+        "protobuf-net.nuspec"
+      ]
+    },
+    "RestSharp/105.2.3": {
+      "sha512": "50LkciOclb7Lza9QXqR9reKeUoPlDQiFD4iBdOmd6twOBmTtqEFIOXQgdDdsTHQg4HcGh6EvrM6gN1X72vkJLA==",
+      "type": "package",
+      "files": [
+        "RestSharp.105.2.3.nupkg.sha512",
+        "RestSharp.nuspec",
+        "lib/MonoAndroid10/RestSharp.dll",
+        "lib/MonoAndroid10/RestSharp.xml",
+        "lib/MonoTouch10/RestSharp.dll",
+        "lib/MonoTouch10/RestSharp.xml",
+        "lib/Xamarin.iOS10/RestSharp.dll",
+        "lib/Xamarin.iOS10/RestSharp.xml",
+        "lib/net35/RestSharp.dll",
+        "lib/net35/RestSharp.xml",
+        "lib/net4-client/RestSharp.dll",
+        "lib/net4-client/RestSharp.xml",
+        "lib/net4/RestSharp.dll",
+        "lib/net4/RestSharp.xml",
+        "lib/net45/RestSharp.dll",
+        "lib/net45/RestSharp.xml",
+        "lib/net451/RestSharp.dll",
+        "lib/net451/RestSharp.xml",
+        "lib/net452/RestSharp.dll",
+        "lib/net452/RestSharp.xml",
+        "lib/net46/RestSharp.dll",
+        "lib/net46/RestSharp.xml",
+        "lib/sl5/RestSharp.dll",
+        "lib/sl5/RestSharp.xml",
+        "lib/windowsphone8/RestSharp.dll",
+        "lib/windowsphone8/RestSharp.xml",
+        "lib/windowsphone81/RestSharp.dll",
+        "lib/windowsphone81/RestSharp.xml",
+        "readme.txt"
+      ]
+    },
     "StackExchange.Redis.StrongName/1.0.322": {
       "sha512": "W+7E6VPqD7NnllYiJ1s6GzbzHyK/OON/eB+ryljMRbmFZrTQEqwP3rNY8HfUlKIh9OeuodEjAiRc/k5b++wwdQ==",
       "type": "package",
@@ -1790,19 +2803,115 @@
         "lib/net45/StackExchange.Redis.StrongName.pdb",
         "lib/net45/StackExchange.Redis.StrongName.xml"
       ]
+    },
+    "System.IdentityModel.Tokens.Jwt/5.1.2": {
+      "sha512": "wneX9Rv1p8zXNQ8v3mzKPlja3dP0dQY0Ea/0KUtCtlyqB9WtYoEWxTidqgq5iBHGvG5p/yuFKfedgvt2y68HpA==",
+      "type": "package",
+      "files": [
+        "System.IdentityModel.Tokens.Jwt.5.1.2.nupkg.sha512",
+        "System.IdentityModel.Tokens.Jwt.nuspec",
+        "lib/net451/System.IdentityModel.Tokens.Jwt.dll",
+        "lib/net451/System.IdentityModel.Tokens.Jwt.xml",
+        "lib/netstandard1.4/System.IdentityModel.Tokens.Jwt.dll",
+        "lib/netstandard1.4/System.IdentityModel.Tokens.Jwt.xml"
+      ]
+    },
+    "TimeZoneNames/2.1.0": {
+      "sha512": "XvQ/sYADuL72g76VqBw7neMoHryxFS8aUdAKNvQUaIrUdyca3hIUcnu6CgOUE4Ypegh28uhkN7iFFXl2cXzG5w==",
+      "type": "package",
+      "files": [
+        "TimeZoneNames.2.1.0.nupkg.sha512",
+        "TimeZoneNames.nuspec",
+        "lib/portable-net40+sl50+win+wpa81+wp80/TimeZoneNames.dll"
+      ]
+    },
+    "TrelloNet/0.6.2": {
+      "sha512": "pcy0Ud0tsDxGyRQuon2gdfiInwiQ43BLlpavnEvz1qOXjCDDGECh7RzsVzz++PfrxdwibjCVxqs8bj7OsxY3FA==",
+      "type": "package",
+      "files": [
+        "TrelloNet.0.6.2.nupkg.sha512",
+        "TrelloNet.nuspec",
+        "lib/net40-Client/TrelloNet.XML",
+        "lib/net40-Client/TrelloNet.dll"
+      ]
+    },
+    "Twilio/5.1.1": {
+      "sha512": "08y9Ik6diROoriuQF/gU8MUsqQYfDcQbpBB12Jo8u5HY6rs+5hQdQdpeuqxNkc4TxEvItLw+YR+MZ0IMhToTZg==",
+      "type": "package",
+      "files": [
+        "Twilio.5.1.1.nupkg.sha512",
+        "Twilio.nuspec",
+        "lib/net35/Twilio.dll",
+        "lib/net35/Twilio.xml",
+        "lib/net451/Twilio.dll",
+        "lib/net451/Twilio.xml",
+        "lib/netstandard1.4/Twilio.dll",
+        "lib/netstandard1.4/Twilio.xml"
+      ]
+    },
+    "TypeLite/1.8.4": {
+      "sha512": "OJT3FFuHIACV2gR1cR1HqYD4pbnT6PBku/Se+yCCNcTnRePVuurquUQDAufbqF8cR+7ggh7IHClC07P/sXRF+g==",
+      "type": "package",
+      "files": [
+        "TypeLite.1.8.4.nupkg.sha512",
+        "TypeLite.nuspec",
+        "content/net4/Scripts/Manager.ttinclude",
+        "content/net4/Scripts/TypeLite.Net4.tt",
+        "content/portable-net4+sl4+wp8+win8/Scripts/Manager.ttinclude",
+        "content/portable-net4+sl4+wp8+win8/Scripts/TypeLite.tt",
+        "lib/net4/TypeLite.Net4.dll",
+        "lib/net4/TypeLite.Net4.pdb",
+        "lib/net4/TypeLite.dll",
+        "lib/net4/TypeLite.pdb",
+        "lib/portable-net4+sl4+wp8+win8/TypeLite.dll",
+        "lib/portable-net4+sl4+wp8+win8/TypeLite.pdb"
+      ]
+    },
+    "Unofficial.Ionic.Zip/1.9.1.8": {
+      "sha512": "D4+IoUljoBXFmVrMACeFH0G0+MX/P/3tBvK1B6B5mtEu6zfKJ0eEnvhp+XaH0hEGtRalUWGHnQHNHcKci5480w==",
+      "type": "package",
+      "files": [
+        "Unofficial.Ionic.Zip.1.9.1.8.nupkg.sha512",
+        "Unofficial.Ionic.Zip.nuspec",
+        "content/Ionic.Zip.xml",
+        "lib/Ionic.Zip.dll"
+      ]
+    },
+    "WebGrease/1.5.1": {
+      "sha512": "tyHdlZk9Csw5qey/AKnck51zpyN3yGeAhHfbI3GDydxcREwcKPRlQa1YUgKRQKjQnPKpvuuAE2nYC4dtbSAJhg==",
+      "type": "package",
+      "files": [
+        "WebGrease.1.5.1.nupkg.sha512",
+        "WebGrease.nuspec",
+        "lib/WebGrease.dll",
+        "tools/WG.exe",
+        "tools/install.ps1",
+        "tools/uninstall.ps1"
+      ]
     }
   },
   "projectFileDependencyGroups": {
     "": [
+      "AWSSDK >= 2.3.55.2",
+      "BCXAPI >= 1.0.4554.21216",
+      "Common.Logging >= 3.3.1",
+      "CommonMark.NET >= 0.15.1",
+      "CsvHelper >= 2.16.3",
       "DocX >= 1.0.0.22",
+      "FluentNHibernate >= 2.0.3",
+      "Iesi.Collections >= 4.0.1.4000",
+      "ImageResizer >= 4.0.5",
       "LumenWorks.Framework.IO >= 3.8.0",
       "Manatee.Trello >= 1.12.0",
+      "Mandrill >= 2.4.181",
+      "MathNet.Numerics >= 3.17.0",
       "Microsoft.AspNet.Identity.Core >= 2.2.1",
       "Microsoft.AspNet.Identity.EntityFramework >= 2.2.1",
       "Microsoft.AspNet.Identity.Owin >= 2.2.1",
       "Microsoft.AspNet.Mvc >= 5.2.3",
       "Microsoft.AspNet.SignalR.Core >= 2.2.1",
       "Microsoft.AspNet.SignalR.Redis >= 2.2.1",
+      "Microsoft.AspNet.SignalR.SystemWeb >= 2.2.1",
       "Microsoft.AspNet.WebPages >= 3.2.3",
       "Microsoft.Identity.Client >= 1.0.304142221-alpha",
       "Microsoft.Office365.OutlookServices-V2.0 >= 2.0.1",
@@ -1812,13 +2921,25 @@
       "Microsoft.Owin.Security.Cookies >= 3.0.1",
       "Microsoft.Owin.Security.OAuth >= 3.0.1",
       "Microsoft.Web.Infrastructure >= 1.0.0",
+      "MySql.Data >= 6.9.9",
+      "NHibernate >= 4.0.0.4000",
+      "NHibernate.Envers >= 2.1.0",
       "NReco.PhantomJS >= 1.0.3",
       "Newtonsoft.Json >= 9.0.1",
       "OpenCover >= 4.6.519",
+      "OpenPop.NET >= 2.0.6.1120",
       "OxyPlot >= 1.0.0-unstable2100",
       "OxyPlot.Core >= 1.0.0-unstable2100",
       "OxyPlot.Wpf >= 1.0.0-unstable2100",
-      "PDFsharp-MigraDoc-GDI >= 1.50.4000-beta3b"
+      "PDFsharp-MigraDoc-GDI >= 1.50.4000-beta3b",
+      "RestSharp >= 105.2.3",
+      "TimeZoneNames >= 2.1.0",
+      "TrelloNet >= 0.6.2",
+      "Twilio >= 5.1.1",
+      "TypeLite >= 1.8.4",
+      "Unofficial.Ionic.Zip >= 1.9.1.8",
+      "WebGrease >= 1.5.1",
+      "log4net >= 2.0.8"
     ],
     ".NETFramework,Version=v4.5.2": []
   }

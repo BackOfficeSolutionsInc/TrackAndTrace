@@ -17,8 +17,10 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Collections.Concurrent;
 using RadialReview.Utilities.DataTypes;
-using Mandrill;
+using Mandrill.Models;
 using System.Text.RegularExpressions;
+using Mandrill;
+using Mandrill.Requests.Messages;
 
 namespace RadialReview.Accessors {
 	public class EmailResult {
@@ -326,6 +328,11 @@ namespace RadialReview.Accessors {
 			return Config.IsLocal() ? "clay.upton+test_" + email.Replace("@", "_at_") + "@radialreview.com" : email;
 		}
 
+		private static SendMessageRequest CreateMandrillMessageRequest(EmailModel email) {
+			var message = CreateMandrillMessage(email);
+			return new SendMessageRequest(message);
+		}
+
 		private static EmailMessage CreateMandrillMessage(EmailModel email) {
 			var toAddress = FixEmail(email.ToAddress);
 
@@ -333,21 +340,21 @@ namespace RadialReview.Accessors {
 			if (email.Bcc != null) {
 				foreach (var bcc in email.Bcc.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)) {
 					var fixedBcc = FixEmail(bcc);
-					toAddresses.Add(new EmailAddress(fixedBcc) { type = "bcc" });
+					toAddresses.Add(new EmailAddress(fixedBcc) { Type = "bcc" });
 				}
 			}
 
 
 			var oEmail = new EmailMessage() {
-
-				from_email = MandrillStrings.FromAddress,
-				from_name = email._ReplyToName ?? MandrillStrings.FromName,
-				html = email.Body,
-				subject = email.Subject,
-				to = toAddresses,
-				track_opens = true,
-				track_clicks = true,
-				google_analytics_domains = Config.GetMandrillGoogleAnalyticsDomain().NotNull(x => x.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList())
+				
+				FromEmail = MandrillStrings.FromAddress,
+				FromName = email._ReplyToName ?? MandrillStrings.FromName,
+				Html = email.Body,
+				Subject = email.Subject,
+				To  = toAddresses,
+				TrackOpens = true,
+				TrackClicks = true,
+				GoogleAnalyticsDomains = Config.GetMandrillGoogleAnalyticsDomain().NotNull(x => x.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList())
 			};
 
 			if (!string.IsNullOrWhiteSpace(email._ReplyToEmail)) {
@@ -358,8 +365,8 @@ namespace RadialReview.Accessors {
 			return oEmail;
 		}
 
-		private static async Task<List<Mandrill.EmailResult>> SendMessage(MandrillApi api, EmailModel email) {
-			var result = await api.SendMessageAsync(CreateMandrillMessage(email));
+		private static async Task<List<Mandrill.Models.EmailResult>> SendMessage(MandrillApi api, EmailModel email) {
+			var result = await api.SendMessage(CreateMandrillMessageRequest(email));
 			email.MandrillId = result.FirstOrDefault().NotNull(x => x.Id);
 			return result;
 		}
@@ -367,14 +374,14 @@ namespace RadialReview.Accessors {
 		public static async Task<int> SendMandrillEmails(List<EmailModel> emails, EmailResult result, bool forceSend = false) {
 
 			var api = new MandrillApi(ConstantStrings.MandrillApiKey, true);
-			var results = new List<Mandrill.EmailResult>();
+			var results = new List<Mandrill.Models.EmailResult>();
 
 			if (!emails.Any())
 				return 1;
 			if (Config.SendEmails() || forceSend) {
 				results = (await Task.WhenAll(emails.Select(email => SendMessage(api, email)))).SelectMany(x => x).ToList();
 			} else {
-				results = emails.Select(x => new Mandrill.EmailResult() {
+				results = emails.Select(x => new Mandrill.Models.EmailResult() {
 					Status = EmailResultStatus.Sent,
 					Email = x.ToAddress,
 				}).ToList();

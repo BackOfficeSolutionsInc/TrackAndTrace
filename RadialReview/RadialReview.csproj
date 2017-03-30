@@ -44,82 +44,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AWSSDK, Version=2.0.3.0, Culture=neutral, PublicKeyToken=9f476d3089b52be3, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\AWSSDK.2.0.3.0\lib\net45\AWSSDK.dll</HintPath>
-    </Reference>
-    <Reference Include="BCXAPI">
-      <HintPath>..\packages\BCXAPI.1.0.4554.21216\lib\net40\BCXAPI.dll</HintPath>
-    </Reference>
-    <Reference Include="Common.Logging">
-      <HintPath>..\packages\Common.Logging.2.1.1\lib\net40\Common.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="CommonMark">
-      <HintPath>..\packages\CommonMark.NET.0.10.0\lib\net45\CommonMark.dll</HintPath>
-    </Reference>
-    <Reference Include="CsvHelper">
-      <HintPath>..\packages\CsvHelper.2.8.2\lib\net40-client\CsvHelper.dll</HintPath>
-    </Reference>
-    <Reference Include="FluentNHibernate, Version=1.4.0.0, Culture=neutral, PublicKeyToken=8aa435e3cb308880, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\FluentNHibernate.1.4.0.0\lib\net35\FluentNHibernate.dll</HintPath>
-    </Reference>
-    <Reference Include="Iesi.Collections, Version=4.0.0.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Iesi.Collections.4.0.0.4000\lib\net40\Iesi.Collections.dll</HintPath>
-    </Reference>
-    <Reference Include="ImageResizer">
-      <HintPath>..\packages\ImageResizer.3.4.1\lib\ImageResizer.dll</HintPath>
-    </Reference>
-    <Reference Include="Ionic.Zip">
-      <HintPath>..\packages\DotNetZip.1.9.3\lib\net20\Ionic.Zip.dll</HintPath>
-    </Reference>
-    <Reference Include="log4net">
-      <HintPath>..\packages\log4net.2.0.2\lib\net40-full\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="Mandrill">
-      <HintPath>..\packages\Mandrill.1.0.74\lib\net40\Mandrill.dll</HintPath>
-    </Reference>
-    <Reference Include="MathNet.Numerics">
-      <HintPath>..\packages\MathNet.Numerics.3.6.0\lib\net40\MathNet.Numerics.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.2.0\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="MigraDoc.RtfRendering">
       <HintPath>..\packages\PDFsharp-MigraDoc-GDI.1.32.4334.0\lib\net20\MigraDoc.RtfRendering.dll</HintPath>
     </Reference>
-    <Reference Include="Moq">
-      <HintPath>..\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
-    </Reference>
-    <Reference Include="MySql.Data">
-      <HintPath>..\packages\MySql.Data.6.7.4\lib\net40\MySql.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="NHibernate, Version=4.0.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NHibernate.4.0.0.4000\lib\net40\NHibernate.dll</HintPath>
-    </Reference>
-    <Reference Include="NHibernate.Envers">
-      <HintPath>..\packages\NHibernate.Envers.2.0.0\lib\Net40\NHibernate.Envers.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenPop">
-      <HintPath>..\packages\OpenPop.NET.2.0.4.369\lib\net20\OpenPop.dll</HintPath>
-    </Reference>
-    <Reference Include="PdfSharp.Charting, Version=1.32.3057.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\PDFsharp-MigraDoc-GDI.1.32.4334.0\lib\net20\PdfSharp.Charting.dll</HintPath>
-    </Reference>
-    <Reference Include="protobuf-net">
-      <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
-    </Reference>
-    <Reference Include="RestSharp, Version=105.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RestSharp.105.0.1\lib\net4\RestSharp.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Data.SQLite">
       <HintPath>..\packages\System.Data.SQLite.1.0.88.0\lib\net45\System.Data.SQLite.dll</HintPath>
     </Reference>
@@ -162,32 +93,6 @@
     <Reference Include="System.Net.Http.WebRequest">
     </Reference>
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="TimeZoneNames">
-      <HintPath>..\packages\TimeZoneNames.1.2.1\lib\portable-net40+sl50+win+wpa81+wp80\TimeZoneNames.dll</HintPath>
-    </Reference>
-    <Reference Include="TrelloNet">
-      <HintPath>..\packages\TrelloNet.0.6.2\lib\net40-Client\TrelloNet.dll</HintPath>
-    </Reference>
-    <Reference Include="Twilio.Api">
-      <HintPath>..\packages\Twilio.4.0.3\lib\3.5\Twilio.Api.dll</HintPath>
-    </Reference>
-    <Reference Include="TypeLite">
-      <HintPath>..\packages\TypeLite.1.1.0.0\lib\net4\TypeLite.dll</HintPath>
-    </Reference>
-    <Reference Include="TypeLite.Net4">
-      <HintPath>..\packages\TypeLite.1.1.0.0\lib\net4\TypeLite.Net4.dll</HintPath>
-    </Reference>
-    <Reference Include="VortexSoft.Bootstrap">
-      <HintPath>..\packages\VortexSoft.Bootstrap.1.0.0\lib\VortexSoft.Bootstrap.dll</HintPath>
-    </Reference>
-    <Reference Include="WebGrease">
-      <Private>True</Private>
-      <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
-    </Reference>
-    <Reference Include="Antlr3.Runtime">
-      <Private>True</Private>
-      <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Accessors\AccountabilityAccessor.cs" />
@@ -918,6 +823,7 @@
       <DependentUpon>LineChart.less</DependentUpon>
     </Content>
     <Content Include="Content\Angular\livesearch.css" />
+    <Content Include=".ebextensions\Autoscaling.config" />
     <None Include="bundleconfig.json" />
     <None Include="Content\Angular\ngsortable.less" />
     <Content Include="Content\Angular\ngsortable.css">

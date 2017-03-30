@@ -1,47 +1,33 @@
-﻿using System.Net;
-using System.Net.Sockets;
-using System.Reflection;
-using FluentNHibernate.Utils;
-using Microsoft.Ajax.Utilities;
-using Microsoft.AspNet.SignalR;
-using NHibernate.Criterion;
-using NHibernate.Hql.Ast.ANTLR;
+﻿using Microsoft.AspNet.SignalR;
 using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Hubs;
 using RadialReview.Models;
+using RadialReview.Models.Application;
+using RadialReview.Models.Askables;
+using RadialReview.Models.Components;
+using RadialReview.Models.Enums;
+using RadialReview.Models.Events;
+using RadialReview.Models.Issues;
+using RadialReview.Models.L10;
+using RadialReview.Models.Onboard;
+using RadialReview.Models.Reviews;
+using RadialReview.Models.Scorecard;
+using RadialReview.Models.Tasks;
+using RadialReview.Models.Todo;
+using RadialReview.Models.UserModels;
+using RadialReview.Notifications;
+using RadialReview.Properties;
+using RadialReview.Utilities;
+using RadialReview.Utilities.DataTypes;
+using RadialReview.Utilities.Productivity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.IO;
-using System.Web.Mvc;
+using System.Reflection;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
-using RadialReview.Models.Askables;
-using RadialReview.Models.Enums;
-using RadialReview.Models.Log;
-using RadialReview.Models.Payments;
-using RadialReview.Models.Responsibilities;
-using RadialReview.Models.Reviews;
-using RadialReview.Models.Tasks;
-using RadialReview.Models.Application;
-using RadialReview.Properties;
-using RadialReview.Utilities;
-using RadialReview.Utilities.Query;
-using RadialReview.Models.UserModels;
-using WebGrease.Css.Extensions;
-using RadialReview.Utilities.Productivity;
-using RadialReview.Models.Todo;
-using RadialReview.Models.Issues;
-using RadialReview.Models.Scorecard;
-using RadialReview.Models.L10;
-using OxyPlot;
-using RadialReview.Models.Onboard;
-using RadialReview.Models.Events;
-using RadialReview.Utilities.DataTypes;
-using RadialReview.Notifications;
-using RadialReview.Models.Components;
+using System.Web;
+using System.Web.Mvc;
 
 namespace RadialReview.Controllers {
 
@@ -989,8 +975,8 @@ namespace RadialReview.Controllers {
 					var feebacks = s.QueryOver<FeedbackAnswer>().Where(x => x.ForReviewContainerId == id).List().ToList();
 
 					var about2 = new HashSet<long>(values.Select(x => x.RevieweeUserId));
-					roles.Select(x => x.RevieweeUserId).ForEach(x => about2.Add(x));
-					rocks.Select(x => x.RevieweeUserId).ForEach(x => about2.Add(x));
+					roles.Select(x => x.RevieweeUserId).ToList().ForEach(x => about2.Add(x));
+					rocks.Select(x => x.RevieweeUserId).ToList().ForEach(x => about2.Add(x));
 
 					var reviewIds = new HashSet<long>();
 
