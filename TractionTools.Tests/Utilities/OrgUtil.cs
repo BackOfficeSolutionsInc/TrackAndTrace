@@ -118,9 +118,11 @@ namespace TractionTools.Tests.Utilities {
 				
 			}
 		}
+
+
+
 	}
-
-
+	
 	public class FullOrg : Org {
 
 		public UserOrganizationModel Client { get; set; }
@@ -179,12 +181,7 @@ namespace TractionTools.Tests.Utilities {
 			UserOrganizationModel manager = null;
 			AccountabilityNode managerNode = null;
 			OrganizationModel o = null;
-
-			//UserModel _nilUserModel = null;
-
-			//BaseTest.DbCommit(s => {
-			//	s.Save(_nilUserModel);
-			//});
+			
 			var managerUser = new UserModel() {
 				UserName = "manager@test_" + org.UID + ".com",
 				FirstName = "manager",
@@ -192,35 +189,14 @@ namespace TractionTools.Tests.Utilities {
 			};
 			var password = Guid.NewGuid().ToString();
 			new AccountController().UserManager.Create(managerUser, password);
-
-			//var u = new UserModel() { UserName = "manager@test_"+org.Id+, FirstName = user.TempUser.FirstName, LastName = user.TempUser.LastName };
-			//var result = await UserAccessor.CreateUser(UserManager, u, password);
+			
 
 			BaseTest.MockHttpContext();
 			var organization = new OrganizationAccessor().CreateOrganization(managerUser, name,
 				PaymentPlanType.Professional_Monthly_March2016, time1, out manager, out managerNode, true, true);
 			org.Organization = organization;
 			org.AddCredentials(manager, managerUser.UserName, password);
-
-			//Now make them an actual user
-			//UserModel managerUser = null;
-			//BaseTest.DbCommit(s => {
-			//	s.Evict(_nilUserModel);
-			//	var u = s.Get<UserModel>(_nilUserModel.Id);
-			//	u.UserName = "manager@test_" + org.Id + ".com";
-			//	u.FirstName = "manager";
-			//	u.LastName = "" + nowMs;
-			//	s.Merge(u);
-			//	managerUser = u;
-			//});
-			//var password = Guid.NewGuid().ToString();
-			//var result = await new UserAccessor().CreateUser(new AccountController().UserManager, _nilUserModel, password);///.AddLogin(_nilUserModel.UserName, new UserLoginInfo() {
-			//new AccountController().UserManager.Create(managerUser, password);
-			//org.AddCredentials(manager, _nilUserModel.UserName, password);
-			//Registration Complete
-
-
-
+			
 			org.ManagerNode = managerNode;
 			org.ManagerNode._Name = "manager " + nowMs;
 
@@ -255,11 +231,7 @@ namespace TractionTools.Tests.Utilities {
 
 			var ms = org.CreateTime.ToJavascriptMilliseconds() / 10000;
 			UserOrganizationModel user = null;
-			//UserOrganizationModel manager = null;
-			//if (managerNode != null) {
-			//	manager = org.AllUsers.First(x => x.Id == managerNode.UserId);
-			//}
-
+			
 			var settings = new CreateUserOrganizationViewModel() {
 				ManagerNodeId = null,
 				IsManager = false,
@@ -282,6 +254,31 @@ namespace TractionTools.Tests.Utilities {
 				org.Set(nodeSelector, userNode);
 				org.AllUserNodes.Add(userNode);
 			}
+		}
+
+		public static AccountabilityNode AddUserToOrg(Org org, AccountabilityNode managerNode, string uname) {
+			var ms = org.CreateTime.ToJavascriptMilliseconds() / 10000;
+			UserOrganizationModel user = null;
+
+			var settings = new CreateUserOrganizationViewModel() {
+				ManagerNodeId = null,
+				IsManager = false,
+				OrgPositionId = -2,
+				Email = uname.ToLower() + "@test_" + org.UID + ".com",
+				FirstName = uname,
+				LastName = "" + ms,
+			};
+
+			var temp = JoinOrganizationAccessor.CreateUserUnderManager(org.Manager, settings, out user);// null, false, -2, uname.ToLower() + "@test_" + org.UID + ".com", uname, "" + ms, out user, isClient, isClient ? "ClientOrg" : "");
+			org.AllUsers.Add(user);
+
+			if (managerNode != null) {
+				var userNode = AccountabilityAccessor.AppendNode(org.Manager, managerNode.Id, userId: user.Id);
+				userNode._Name = user.GetName();
+				org.AllUserNodes.Add(userNode);
+				return userNode;
+			}
+			return null;
 		}
 
 
@@ -323,20 +320,10 @@ namespace TractionTools.Tests.Utilities {
 			org.AllManagersTeam = allTeams.First(x => x.Type == TeamType.Managers);
 			org.MiddleSubordinatesTeam = allTeams.First(x => x.Type == TeamType.Subordinates && x.ManagedBy == org.Middle.Id);
 
-			//Register E3
-			//UserModel e3User = null;
-			//BaseTest.DbCommit(s => {
-			//	e3User = new UserModel() {
-			//		FirstName = org.E3.TempUser.FirstName,
-			//		LastName = org.E3.TempUser.FirstName,
-			//	};
-			//	s.Save(e3User);
-			//});
-			//OrganizationAccessor.JoinOrganization(e3User, org.Middle.Id, org.E3.Id);
-
 			org.RegisterUser(org.E3);
 
 			return org;
 		}
+		
 	}
 }

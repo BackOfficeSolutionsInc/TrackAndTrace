@@ -174,6 +174,7 @@ app.controller('GSCtrl', ["$scope", "$q", "$timeout", "$http", function ($scope,
                 if ($scope.profilePicture && Array === $scope.profilePicture.constructor && $scope.profilePicture.length > 0 && $scope.profilePicture[0].lfFile!=null) {
                     stepData.file = $scope.profilePicture[0].lfFile;
                     var formData = new FormData();
+                    console.warn("Using FormData will not work on IE9");
                     angular.forEach(stepData, function (v, k) {
                         formData.append(k, v);
                     });

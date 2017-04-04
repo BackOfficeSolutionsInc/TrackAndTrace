@@ -1379,6 +1379,7 @@ function _submitModal(formData, pushUrl, onSuccess, onComplete, useJson, content
 		serialized = JSON.stringify(formData);
 		contentType = "application/json; charset=utf-8";
 	} else if (contentType == 'enctype="multipart/form-data"') {
+		console.warn("Using FormData will not work on IE9");
 		serialized = new FormData($('#modalForm')[0]);
 		processData = false;
 		contentType = false;
@@ -1976,6 +1977,7 @@ window.addEventListener("submit", function (e) {
 					}
 				}
 			};
+			console.warn("Using FormData will not work on IE9");
 			xhr.send(new FormData(form));
 		}
 	}

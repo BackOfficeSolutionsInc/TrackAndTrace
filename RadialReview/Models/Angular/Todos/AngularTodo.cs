@@ -25,6 +25,7 @@ namespace RadialReview.Models.Angular.Todos
 			CreateTime = todo.CreateTime;
 			Complete = todo.CompleteTime != null;
             TodoType = todo.TodoType;
+			Ordering = todo.Ordering;
 
 			if (todo.ForRecurrenceId != null){
 				var id = todo.ForModelId == -1 ? todo.Id : todo.ForModelId;
@@ -49,5 +50,6 @@ namespace RadialReview.Models.Angular.Todos
 		public bool? Complete { get; set; }
 		public string Link { get; set; }
         public TodoType? TodoType { get; set; }
+		public long Ordering { get; set; }
 	}
 }

@@ -68,6 +68,16 @@ namespace RadialReview.Accessors {
 
 		protected List<object> docs { get; set; }
 
+		public void AddDocs(IEnumerable<PdfDocument> docList) {
+			foreach (var doc in docList) {
+				docs.Add(doc);
+			}
+		}
+		public void AddDocs(IEnumerable<Document> docList) {
+			foreach (var doc in docList) {
+				docs.Add(doc);
+			}
+		}
 		public void AddDoc(PdfDocument doc) {
 			docs.Add(doc);
 		}
@@ -79,18 +89,38 @@ namespace RadialReview.Accessors {
 			docs = new List<object>();
 		}
 
-		protected void DrawNumber(XGraphics gfx, XFont font, int number) {
+		protected void DrawNumber(XGraphics gfx, XFont font, int? number, DateTime? date, string dateFormat) {
 
 			var wmargin = 35;
 			var hmargin = 22;
 
 			var size = new XSize(gfx.PageSize.Width - wmargin * 2, gfx.PageSize.Height - hmargin * 2);
 
-			gfx.DrawString(number.ToString(), font, XBrushes.Black, new XRect(new XPoint(wmargin, hmargin), size), XStringFormats.BottomRight);
+			//var text = "";
+			if (number != null) {
+				gfx.DrawString(number.ToString(), font, XBrushes.Black, new XRect(new XPoint(wmargin, hmargin), size), XStringFormats.BottomRight);
+
+				//text += number.ToString();
+			}
+			if (date != null) {
+			//	if (number != null) {
+			//		text += " | ";
+			//	};
+				var text = ""+ date.Value.ToString(dateFormat ?? "MM-dd-yyyy");
+				var gray = new XSolidBrush(XColor.FromArgb(100, 100, 100, 100) );
+				var dateFont = new XFont("Arial Narrow", 9, XFontStyle.Regular);
+				
+				gfx.DrawString(text, dateFont, gray, new XRect(new XPoint(wmargin/*22*/, hmargin), size), XStringFormats.BottomLeft);
+				//gfx.DrawString(text, font, XBrushes.Black, new XRect(new XPoint(wmargin, hmargin), size), XStringFormats.BottomRight);
+
+			}
+
+
+			//gfx.DrawString(text, font, XBrushes.Black, new XRect(new XPoint(wmargin, hmargin), size), XStringFormats.BottomRight);
 		}
 
 
-		public PdfDocument Flatten(string title, bool includeNumber) {
+		public PdfDocument Flatten(string title, bool includeNumber, bool includeDate = true,string dateFormat = null) {
 			DateTime now = DateTime.Now;
 			//  filename = filename.ToLower().EndsWith(".pdf")?filename:filename+".pdf";
 			PdfDocument document = new PdfDocument();
@@ -101,6 +131,19 @@ namespace RadialReview.Accessors {
 
 			var pages = 0;
 			XFont font = new XFont("Verdana", 10, XFontStyle.Regular);
+
+			if (!docs.Any()) {
+				//Cannot save empty document
+				var doc = new Document();
+				var section = new Section();
+				var paragraph = new Paragraph();
+				var text = paragraph.AddFormattedText("Page intentionally left blank.",new Font("Verdana",10));
+				text.Color = Colors.Gray;
+				paragraph.Format.Alignment = ParagraphAlignment.Center;				
+				section.Add(paragraph);
+				doc.Add(section);
+				AddDoc(doc);
+			}
 
 			foreach (var doc in docs) {
 				if (doc is PdfDocument) {
@@ -118,9 +161,9 @@ namespace RadialReview.Accessors {
 						page.Height = p.Height;
 						page.Orientation = p.Orientation;
 						XGraphics gfx = XGraphics.FromPdfPage(page, XGraphicsPdfPageOptions.Append);
-						if (includeNumber)
-							DrawNumber(gfx, font, pages + 1);
 
+						DrawNumber(gfx, font,includeNumber?(int?)(pages + 1):null, now, dateFormat);
+					
 						pages += 1;
 					}
 				}
@@ -142,12 +185,14 @@ namespace RadialReview.Accessors {
 						XGraphics gfx = XGraphics.FromPdfPage(page);
 						gfx.MUH = PdfFontEncoding.Unicode;
 						docRenderer.RenderPage(gfx, idx + 1);
-						if (includeNumber)
-							DrawNumber(gfx, font, pages + 1);
+						DrawNumber(gfx, font, includeNumber ? (int?)(pages + 1) : null, now, dateFormat);
 						pages += 1;
 					}
 				}
 			}
+
+
+
 			return document;
 
 		}
@@ -486,7 +531,7 @@ namespace RadialReview.Accessors {
 					AddPageNum(gfxPage3, pageSize);
 				}
 				var rect = PdfChartAccessor.DrawFeedback(gfxPage3, availableRect, feedbackAnswers, review.ReviewContainer.AnonymousByDefault, margin: margin);
-				availableRect = new XRect(pageSize.Left, rect.Bottom, pageSize.Width, Math.Max(pageSize.Height - rect.Bottom,1));
+				availableRect = new XRect(pageSize.Left, rect.Bottom, pageSize.Width, Math.Max(pageSize.Height - rect.Bottom, 1));
 			}
 
 			var addedPage4 = false;
@@ -548,7 +593,7 @@ namespace RadialReview.Accessors {
 				} else {
 					var rect = PdfChartAccessor.DrawBarChart(currentGfx, availableRect, radioAnswers, margin: margin);
 					availableRect = new XRect(pageSize.Left, rect.Bottom, pageSize.Width, Math.Max(pageSize.Height - rect.Bottom, 1));
-				}				
+				}
 			}
 
 		}
@@ -566,9 +611,9 @@ namespace RadialReview.Accessors {
 
 		}
 
-		private static Color TableGray = new Color(100, 100, 100, 100);
-		private static Color TableDark = new Color(50, 50, 50);
-		private static Color TableBlack = new Color(0, 0, 0);
+		public static Color TableGray = new Color(100, 100, 100, 100);
+		public static Color TableDark = new Color(50, 50, 50);
+		public static Color TableBlack = new Color(0, 0, 0);
 
 		protected static Section AddTitledPage(Document document, string pageTitle, Orientation orientation = Orientation.Portrait, bool addSection = true, bool addPageNumber = true) {
 			Section section;
@@ -579,15 +624,27 @@ namespace RadialReview.Accessors {
 			} else {
 				section = document.LastSection;
 			}
-			if (addPageNumber) {
+			if (addPageNumber ) {
+				//paragraph.AddTab();
 				var paragraph = new Paragraph();
-				paragraph.AddTab();
+				paragraph.Format.Alignment = ParagraphAlignment.Right;
 
-				paragraph.AddPageField();
-				// Add paragraph to footer for odd pages.
+				//if (addDate) {
+				///	//paragraph.AddTab();
+				//	paragraph.AddDateField("MM-dd-yyyy");
+					// Add paragraph to footer for odd pages.
+					//section.Footers.Primary.Format.SpaceBefore = Unit.FromInch(-0.2);
+				////}
+				//if (addPageNumber && addDate) {
+				//	paragraph.AddText(" | ");
+				//}
+				if (addPageNumber) {
+					paragraph.AddPageField();
+				}
 				section.Footers.Primary.Add(paragraph);
-				section.Footers.Primary.Format.SpaceBefore = Unit.FromInch(-0.2);
+
 			}
+
 
 
 			var frame = section.AddTextFrame();
@@ -630,6 +687,7 @@ namespace RadialReview.Accessors {
 			var p = section.Footers.Primary.AddParagraph("© 2003 - " + DateTime.UtcNow.Year + " EOS. All Rights Reserved.");
 			p.Format.Font.Size = 8;
 			p.Format.Font.Color = TableGray;
+			p.Format.LeftIndent = Unit.FromPoint(35);
 
 			//p =section.AddParagraph();
 			//var f = p.AddFormattedText("The Weekly Agenda",TextFormat.Bold);
@@ -684,7 +742,7 @@ namespace RadialReview.Accessors {
 			r.Cells[1].AddParagraph((int)recurr.TodoListMinutes + " Minutes");
 			r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
 
-			var todos = recur.Todos.Where(x => x.Complete == false || x.CompleteTime > lastMeeting).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate).ToList();
+			var todos = recur.Todos.Where(x => x.Complete == false || x.CompleteTime > lastMeeting).OrderBy(x => x.Ordering)/*.OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)*/.ToList();
 			var issues = recur.IssuesList.Issues.Where(x => x.Complete == false).OrderByDescending(x => x.Priority).ThenBy(x => x.Name).ToList();
 
 
@@ -1755,10 +1813,14 @@ namespace RadialReview.Accessors {
 			//paragraph.AddTab();
 			//paragraph.AddPageField();
 			//Add paragraph to footer for odd pages.
-			section.Footers.Primary.AddParagraph("© 2003 - " + DateTime.UtcNow.AddMonths(3).Year + " EOS. All Rights Reserved.");
+			var p=section.Footers.Primary.AddParagraph("© 2003 - " + DateTime.UtcNow.AddMonths(3).Year + " EOS. All Rights Reserved.");
+			p.Format.LeftIndent = Unit.FromPoint(35);
 
 			section.Footers.Primary.Format.Font.Size = 10;
 			section.Footers.Primary.Format.Font.Name = "Arial Narrow";
+			section.Footers.Primary.Format.Font.Size = 8;
+			section.Footers.Primary.Format.Font.Color = TableGray;
+			
 			//section.Footers.Primary.Format.SpaceBefore = Unit.FromInch(0.25);
 
 			section.PageSetup.LeftMargin = Unit.FromInch(.3);
@@ -1835,7 +1897,7 @@ namespace RadialReview.Accessors {
 			frame.MarginTop = Unit.FromInch(.05);
 			//frame.LineFormat.Color = TableGray;
 
-			var p = frame.AddParagraph();
+			p = frame.AddParagraph();
 			p.Format.Alignment = ParagraphAlignment.Center;
 			p.Format.LeftIndent = Unit.FromInch(2);
 			p.Format.SpaceBefore = Unit.FromInch(.11);
@@ -2540,11 +2602,11 @@ namespace RadialReview.Accessors {
 						text = text.TrimStart(' ', '•', '*');
 						//text = "• " + r;
 					}
-					var dotWidth = Math.Max(0,pad);
+					var dotWidth = Math.Max(0, pad);
 
 					tf.DrawString("•", norm, XBrushes.Black, new XRect(x + pad, y + h, dotWidth, Math.Max(0, rheight)));
 					//var myHeight = tf.meas
-					var wrapper = new PdfWordWrapper(gfx, Unit.FromPoint(me.width - (pad * 2+ dotWidth)));
+					var wrapper = new PdfWordWrapper(gfx, Unit.FromPoint(me.width - (pad * 2 + dotWidth)));
 					wrapper.Add(text ?? "", norm, XBrushes.Black);
 					var size = wrapper.Size;
 					wrapper.Draw(gfx, x + pad + dotWidth, y + h, PdfWordWrapper.Alignment.Left);
@@ -2553,7 +2615,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 			me.height = /*Math.Max(me.height,*/ h + 2 * pad/*)*/;
-			gfx.DrawRectangle(pageProps.pen, pageProps.brush, x, y, (int)Math.Max(0, me.width), (int)Math.Max(0,me.height));
+			gfx.DrawRectangle(pageProps.pen, pageProps.brush, x, y, (int)Math.Max(0, me.width), (int)Math.Max(0, me.height));
 		}
 
 		private static void DrawLine(XGraphics gfx, PageProp pageProps, List<Tuple<double, double>> points) {
@@ -2618,7 +2680,7 @@ namespace RadialReview.Accessors {
 
 
 					var ay = (sy - parent.height) + Math.Min(10, parent.height / 2) /*- origin[1]*/ - adjS;//d.source.height / 2;
-																									  //points.Add(Tuple.Create(ax, ay));
+																										   //points.Add(Tuple.Create(ax, ay));
 					points.Add(Tuple.Create(lx, ay));
 				}
 				points.Add(Tuple.Create(lx, tyy));

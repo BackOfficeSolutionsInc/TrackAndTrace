@@ -202,9 +202,11 @@ namespace RadialReview.Accessors {
                 collapsed = !expandAll,
                 Editable = isEditable,
                 Me = isMe,
-                order = me.Ordering
+                order = me.Ordering,
             };
-            if (isEditable && me.UserId.HasValue)
+			aan.Name = aan.User.NotNull(x => x.Name);
+
+			if (isEditable && me.UserId.HasValue)
                 allManagingUserIds.Add(me.UserId.Value);
 
             var parentsCopy = parents.ToList();

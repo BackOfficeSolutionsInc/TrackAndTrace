@@ -22,6 +22,7 @@
 
 
 		function uploadImage() {
+			console.warn("Using FormData will not work on IE9");
 			var oOutput = document.getElementById("output"),
 				oData = new FormData(document.forms.namedItem("fileinfo"));
 

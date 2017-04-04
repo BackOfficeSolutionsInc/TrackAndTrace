@@ -23,7 +23,7 @@ namespace RadialReview.Models.Angular.Accountability {
 		public IEnumerable<AngularUser> AllUsers { get; set; }
 		public long? CenterNode { get; set; }
 		public long? ShowNode { get; set; }
-		public long? ExpandNode { get; set; }		
+		public long? ExpandNode { get; set; }
 	}
 
     public class AngularAccountabilityNode : AngularTreeNode<AngularAccountabilityNode> {
@@ -47,13 +47,17 @@ namespace RadialReview.Models.Angular.Accountability {
 
 			__children = childrens;
 			collapsed = collapse;
-			Name = node._Name;
+			Name = node._Name?? User.NotNull(x=>x.Name);
 
 			//         if (collapse)
 			//             _children = childrens;
 			//         else
 			//             children = childrens;
 
+		}
+
+		public bool HasChildren() {
+			return __children != null && __children.Any();
 		}
 
 		private AngularUser _User;

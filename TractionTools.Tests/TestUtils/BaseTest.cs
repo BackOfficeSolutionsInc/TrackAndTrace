@@ -387,8 +387,7 @@ namespace TractionTools.Tests.TestUtils {
 			return n.Substring(0, 4) + "-" + n.Substring(4);
 		}
 		public static string GetPdfFolder(string subdir = null) {
-			var folder = Path.Combine(GetTempFile(), "pdfs");
-
+			var folder = GetBasePdfFolder();
 			folder = Path.Combine(folder, GetShortTestId());
 
 			if (subdir != null) {
@@ -398,6 +397,18 @@ namespace TractionTools.Tests.TestUtils {
 
 			return folder;
 		}
+		public static string GetBasePdfFolder() {
+			var folder = Path.Combine(GetTempFile(), "pdfs");
+			Directory.CreateDirectory(folder);
+			return folder;
+		}
+		public static string GetCurrentPdfFolder() {
+			var folder = GetBasePdfFolder();
+			folder = Path.Combine(folder, "current");
+			Directory.CreateDirectory(folder);
+			return folder;
+		}
+
 
 		public static string GetScreenshotFolder(string subdir = null) {
 			var folder = Path.Combine(GetTempFile(), "screenshots");

@@ -60,6 +60,7 @@ namespace RadialReview.Accessors.PDF {
 				public List<N> children { get; set; }
 
 				public compact _compact { get; set; }
+				public string side { get; set; }
 
 				public node() {
 					children = new List<N>();
@@ -603,8 +604,10 @@ namespace RadialReview.Accessors.PDF {
 							child._compact.isLeaf = true;
 							if (i % 2 == oddEven) {
 								child._compact.side = "left";
+								child.side = "left";//added
 							} else {
 								child._compact.side = "right";
+								child.side = "right";//added
 							}
 							currentColumnHeads[i] = child;
 							child._compact.originalChildren = new List<N>();
