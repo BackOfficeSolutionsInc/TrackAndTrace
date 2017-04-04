@@ -166,10 +166,6 @@
       <HintPath>..\packages\RestSharp.105.2.3\lib\net452\RestSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Smocks, Version=0.7.3.0, Culture=neutral, PublicKeyToken=8fd36cb3814cff51, processorArchitecture=MSIL">
-      <HintPath>..\packages\Smocks.0.7.3\lib\net45\Smocks.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System">
       <Private>True</Private>
     </Reference>

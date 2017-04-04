@@ -2921,7 +2921,7 @@ namespace RadialReview.Accessors
             }
             return score;
         }
-        public static void UpdateScore(UserOrganizationModel caller, long measurableId, long weekNumber, decimal? measured, string connectionId, bool noSyncException = false)
+        public static ScoreModel UpdateScore(UserOrganizationModel caller, long measurableId, long weekNumber, decimal? measured, string connectionId, bool noSyncException = false)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -2930,11 +2930,13 @@ namespace RadialReview.Accessors
                     using (var rt = RealTimeUtility.Create(connectionId))
                     {
                         var perms = PermissionsUtility.Create(s, caller);
-                        _UpdateScore(s, perms, rt, measurableId, weekNumber, measured, connectionId, noSyncException);
+                        var score= _UpdateScore(s, perms, rt, measurableId, weekNumber, measured, connectionId, noSyncException);
 
                         tx.Commit();
                         s.Flush();
-                    }
+
+						return score;
+					}
                 }
             }
         }

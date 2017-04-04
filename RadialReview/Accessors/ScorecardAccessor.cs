@@ -508,7 +508,7 @@ namespace RadialReview.Accessors {
 				if (meetingMeasurables == null)
 					throw new PermissionsException("You do not have permission to edit this score.");
 				var m = meetingMeasurables.Measurable;
-				
+
 				var existingScores = s.QueryOver<ScoreModel>()
 					.Where(x => x.DeleteTime == null && x.Measurable.Id == measurableId)
 					.List().ToList();
@@ -641,8 +641,8 @@ namespace RadialReview.Accessors {
 
 			if (score != null) {
 				using (var rt = RealTimeUtility.Create()) {
-					L10Accessor._RecalculateCumulative_Unsafe(s,rt, score.Measurable, recurrenceId.AsList(), score);
-					rt.UpdateRecurrences(recurrenceId).AddLowLevelAction(x=>x.updateCumulative(score.Measurable.Id, score.Measurable._Cumulative.NotNull(y=>y.Value.ToString("0.#####"))));					
+					L10Accessor._RecalculateCumulative_Unsafe(s, rt, score.Measurable, recurrenceId.AsList(), score);
+					rt.UpdateRecurrences(recurrenceId).AddLowLevelAction(x => x.updateCumulative(score.Measurable.Id, score.Measurable._Cumulative.NotNull(y => y.Value.ToString("0.#####"))));
 				}
 
 				var toUpdate = new AngularScore(score, false);
@@ -705,12 +705,35 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+
+		public static ScoreModel GetScore(UserOrganizationModel caller, long measurableId,long weekId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var week = TimingUtility.GetDateSinceEpoch(weekId);
+					PermissionsUtility.Create(s, caller).ViewMeasurable(measurableId);
+					var found = s.QueryOver<ScoreModel>().Where(x=>x.DeleteTime==null && x.ForWeek== week && x.MeasurableId == measurableId).List().ToList();
+					return found.FirstOrDefault();
+				}
+			}
+		}
 		public static ScoreModel GetScore(UserOrganizationModel caller, long id) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var found = s.Get<ScoreModel>(id);
 					PermissionsUtility.Create(s, caller).ViewMeasurable(found.MeasurableId);
 					return found;
+				}
+			}
+		}
+
+		public static void CreateMeasurable(UserOrganizationModel caller, MeasurableModel measurable, bool checkEditDetails) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {					
+					var perms = PermissionsUtility.Create(s, caller);
+					CreateMeasurable(s, perms, measurable, checkEditDetails);
+
+					tx.Commit();
+					s.Flush();
 				}
 			}
 		}
