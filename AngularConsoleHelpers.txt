@@ -1,4 +1,0 @@
-
-Get Angular Filter
-===========================
-$filter = angular.element($("[ng-controller]")).injector().get("$filter")

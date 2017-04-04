@@ -16,6 +16,7 @@ namespace RadialReview.Api.V0
 	{
 	
 		private UserOrganizationModel _CurrentUser = null;
+		private UserOrganizationModel MockUser = null;
 		//private string _CurrentUserOrganizationId = null;
 
 		protected static PermissionsAccessor _PermissionsAccessor = new PermissionsAccessor();
@@ -63,6 +64,8 @@ namespace RadialReview.Api.V0
 
 		protected UserOrganizationModel GetUser()//long? organizationId, Boolean full = false)
 		{
+			if (MockUser != null)
+				return MockUser;
 			if (_CurrentUser != null)
 				return _CurrentUser;
 			var userId = User.Identity.GetUserId();
@@ -77,11 +80,11 @@ namespace RadialReview.Api.V0
 				}
 			}
 		}
-
-
-
+		
 		protected UserOrganizationModel GetUser(ISession s)//long? organizationId, Boolean full = false)
 		{
+			if (MockUser != null)
+				return MockUser;
 			if (_CurrentUser != null)
 				return _CurrentUser;
 

@@ -1,5 +1,6 @@
 ﻿using Moq;
 using RadialReview;
+using RadialReview.Api.V0;
 using RadialReview.Controllers;
 using RadialReview.Models;
 using System;
@@ -15,8 +16,12 @@ namespace TractionTools.Tests.TestUtils
 {
     public static class ControllerExtensions
     {
-        public static void MockUser(this BaseController controller, UserOrganizationModel user)
-        {
+
+		public static void MockUser(this BaseApiController controller, UserOrganizationModel user) {
+			controller.SetValue("MockUser", user);
+		}
+
+		public static void MockUser(this BaseController controller, UserOrganizationModel user){
             controller.SetValue("MockUser", user);
         }
 
