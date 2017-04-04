@@ -117,15 +117,15 @@ namespace TractionTools.Tests.API.v0 {
 
 			c.Put(score.Id, 3.14m);
 			s = ScorecardAccessor.GetScore(ctx.Manager, m1.Id, 2000L);
-			Assert.AreEqual(score.Measured, 3.14m);
+			Assert.AreEqual(s.Measured, 3.14m);
 
 
 			var score2 = L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2001L, (decimal?)6.14, null);
 			
 			s = ScorecardAccessor.GetScore(ctx.Manager, score.Id);
-			Assert.AreEqual(score.Measured, 3.14m);
+			Assert.AreEqual(s.Measured, 3.14m);
 			s = ScorecardAccessor.GetScore(ctx.Manager, score2.Id);
-			Assert.AreEqual(score.Measured, 6.14m);
+			Assert.AreEqual(s.Measured, 6.14m);
 
 		}
 
