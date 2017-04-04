@@ -258,7 +258,7 @@ namespace RadialReview.Controllers
 
 		private PartialViewResult IDS(L10MeetingVM model)
 		{
-			var issues = L10Accessor.GetIssuesForRecurrence(GetUser(), model.Meeting.Id, true);
+			var issues = L10Accessor.GetIssuesForMeeting(GetUser(), model.Meeting.Id, true);
 			model.Issues = issues;
 
 			return PartialView("IDS", model);

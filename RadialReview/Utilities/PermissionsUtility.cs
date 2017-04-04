@@ -1766,10 +1766,25 @@ namespace RadialReview.Utilities {
 		}
 
 
-		#endregion
+        #endregion
+
+        #region Issues
+
+        public PermissionsUtility ViewRecurrenceIssuesForUser(long userId, long recurrenceId) // recurrence
+        {
+            if (IsRadialAdmin(caller))
+                return this;
+            if (userId == caller.Id)
+                return this;
+            if (IsOwnedBelowOrEqual(caller, userId))
+                return this;
+            return ViewL10Recurrence(recurrenceId);            
+        }
+
+        #endregion
 
 
-		public PermissionsUtility Or(params Func<PermissionsUtility>[] or) {
+        public PermissionsUtility Or(params Func<PermissionsUtility>[] or) {
 			foreach (var o in or) {
 				try {
 					return o();
