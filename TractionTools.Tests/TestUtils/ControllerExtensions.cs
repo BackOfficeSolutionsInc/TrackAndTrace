@@ -18,6 +18,7 @@ namespace TractionTools.Tests.TestUtils
     {
 
 		public static void MockUser(this BaseApiController controller, UserOrganizationModel user) {
+            user._ClientTimestamp = DateTime.UtcNow.ToJavascriptMilliseconds();
 			controller.SetValue("MockUser", user);
 		}
 

@@ -54,8 +54,8 @@ namespace RadialReview.Api.V0
         }
 
         // GET: api/Todo/mine
-        [Route("todo/user/{recurrenceId}/{meetingId}")]
-        public IEnumerable<AngularTodo> GetRecurrenceTodos(long recurrenceId, long meetingId)
+        [Route("todo/user/{recurrenceId}")]
+        public IEnumerable<AngularTodo> GetRecurrenceTodos(long recurrenceId)
         {
             return L10Accessor.GetAllTodosForRecurrence(GetUser(), recurrenceId, false).Select(x => new AngularTodo(x));
         }

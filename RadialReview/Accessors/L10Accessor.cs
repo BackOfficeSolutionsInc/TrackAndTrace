@@ -4507,13 +4507,13 @@ namespace RadialReview.Accessors
         }
 
 
-        public static void UpdateIssue(UserOrganizationModel caller, long issueRecurrenceId, DateTime updateTime, string message = null, string details = null, bool? complete = null, string connectionId = null, long? owner = null, int? priority = null, int? rank = null, bool? delete = null, bool? awaitingSolve = null)
+        public static void UpdateIssue(UserOrganizationModel caller, long issueRecurrenceId, DateTime now, string message = null, string details = null, bool? complete = null, string connectionId = null, long? owner = null, int? priority = null, int? rank = null, bool? delete = null, bool? awaitingSolve = null)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    updateTime = Math2.Min(DateTime.UtcNow.AddSeconds(3), updateTime);
+                    now = Math2.Min(DateTime.UtcNow.AddSeconds(3), now);
 
                     var issue = s.Get<IssueModel.IssueModel_Recurrence>(issueRecurrenceId);
                     if (issue == null)
@@ -4552,18 +4552,18 @@ namespace RadialReview.Accessors
                         group.updateIssueOwner(issueRecurrenceId, owner, issue.Owner.GetName(), issue.Owner.ImageUrl(true, ImageSize._32));
                         updatesText.Add("Owner: " + issue.Owner.GetName());
                     }
-                    if (priority != null && priority != issue.Priority && issue.LastUpdate_Priority < updateTime)
+                    if (priority != null && priority != issue.Priority && issue.LastUpdate_Priority < now)
                     {
-                        issue.LastUpdate_Priority = updateTime;
+                        issue.LastUpdate_Priority = now;
                         var old = issue.Priority;
                         issue.Priority = priority.Value;
                         group.updateIssuePriority(issueRecurrenceId, issue.Priority);
                         updatesText.Add("Priority from " + old + " to " + issue.Priority);
                         s.Update(issue);
                     }
-                    if (rank != null && rank != issue.Rank && issue.LastUpdate_Priority < updateTime)
+                    if (rank != null && rank != issue.Rank && issue.LastUpdate_Priority < now)
                     {
-                        issue.LastUpdate_Priority = updateTime;
+                        issue.LastUpdate_Priority = now;
                         var old = issue.Rank;
                         issue.Rank = rank.Value;
                         group.updateIssueRank(issueRecurrenceId, issue.Rank, true);
@@ -4574,12 +4574,12 @@ namespace RadialReview.Accessors
 
                     _ProcessDeleted(s, issue, delete);
 
-                    var now = DateTime.UtcNow;
+                    var now1 = DateTime.UtcNow;
                     if (complete != null)
                     {
                         using (var rt = RealTimeUtility.Create())
                         {
-                            _UpdateIssueCompletion_Unsafe(s, rt, issue, complete.Value, now);
+                            _UpdateIssueCompletion_Unsafe(s, rt, issue, complete.Value, now1);
                         }
                         if (complete.Value && issue.CloseTime == null)
                         {

@@ -36,7 +36,8 @@ namespace RadialReview.Api.V0
         [Route("issue/mine")]
         public IEnumerable<AngularIssue> GetMineIssues()
         {
-            return IssuesAccessor.GetMyIssues(GetUser(), GetUser().Id).Select(x => new AngularIssue(x));
+            List<IssueModel.IssueModel_Recurrence> list = IssuesAccessor.GetMyIssues(GetUser(), GetUser().Id);
+            return list.Select(x => new AngularIssue(x));
         }
 
         // GET: api/Issue/mine
@@ -56,9 +57,9 @@ namespace RadialReview.Api.V0
         // PUT: api/Todo/5
         [Route("issue/{id}")]
         [HttpPut]
-        public void EditIssue(long id, [FromBody]string message, [FromBody]DateTime dueDate)
+        public void EditIssue(long id, [FromBody]string message)
         {
-            L10Accessor.UpdateIssue(GetUser(), id, dueDate, message);
+            L10Accessor.UpdateIssue(GetUser(), id, DateTime.UtcNow, message);
         }
     }
 }

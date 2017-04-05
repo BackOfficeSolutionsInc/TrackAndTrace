@@ -284,7 +284,7 @@ namespace RadialReview.Accessors
 
                     return s.QueryOver<IssueModel.IssueModel_Recurrence>()
                         .Where(x => x.DeleteTime == null
-                        && x.Owner.Id == userId).List().ToList();
+                        && x.Owner.Id == userId).Fetch(x => x.Issue).Eager.List().ToList();
                 }
             }
         }
@@ -299,7 +299,7 @@ namespace RadialReview.Accessors
 
                     return s.QueryOver<IssueModel.IssueModel_Recurrence>()
                         .Where(x => x.DeleteTime == null
-                        && x.Owner.Id == userId).List().ToList();
+                        && x.Owner.Id == userId).Fetch(x => x.Issue).Eager.List().ToList();
                 }
             }
         }
