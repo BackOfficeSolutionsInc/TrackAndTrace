@@ -2125,6 +2125,28 @@ namespace RadialReview.Accessors
             AddRock(s, perm, recurrenceId, rock, now);
         }
 
+        public static void AttachRock(UserOrganizationModel caller, long recurrenceId, long rockId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    using (var rt = RealTimeUtility.Create())
+                    {
+                        var perms = PermissionsUtility.Create(s, caller);
+
+                        AddRock(s, perms, recurrenceId, new L10Controller.AddRockVm()
+                        {
+                            SelectedRock = rockId
+                        });
+
+                        tx.Commit();
+                        s.Flush();
+                    }
+                }
+            }
+        }
+
         public static void UpdateRockCompletion(UserOrganizationModel caller, long recurrenceId, long meetingRockId, RockState state, string connectionId)
         {
             using (var s = HibernateSession.GetCurrentSession())
@@ -2930,13 +2952,13 @@ namespace RadialReview.Accessors
                     using (var rt = RealTimeUtility.Create(connectionId))
                     {
                         var perms = PermissionsUtility.Create(s, caller);
-                        var score= _UpdateScore(s, perms, rt, measurableId, weekNumber, measured, connectionId, noSyncException);
+                        var score = _UpdateScore(s, perms, rt, measurableId, weekNumber, measured, connectionId, noSyncException);
 
                         tx.Commit();
                         s.Flush();
 
-						return score;
-					}
+                        return score;
+                    }
                 }
             }
         }
@@ -3631,6 +3653,28 @@ namespace RadialReview.Accessors
                     {
                         var perm = PermissionsUtility.Create(s, caller);
                         AddMeasurable(s, perm, rt, recurrenceId, model);
+                        tx.Commit();
+                        s.Flush();
+                    }
+                }
+            }
+        }
+
+        public static void AttachMeasurable(UserOrganizationModel caller, long recurrenceId, long measurableId, bool skipRealTime = false, int? rowNum = null)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    using (var rt = RealTimeUtility.Create())
+                    {
+                        var perms = PermissionsUtility.Create(s, caller);
+
+                        AddMeasurable(s, perms, rt, recurrenceId, new L10Controller.AddMeasurableVm()
+                        {
+                            SelectedMeasurable = measurableId
+                        }, skipRealTime, rowNum);
+
                         tx.Commit();
                         s.Flush();
                     }
@@ -4884,6 +4928,48 @@ namespace RadialReview.Accessors
                 }
             );
         }
+
+        public static void AttachHeadline(UserOrganizationModel caller, long recurrenceId, long headlineId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    using (var rt = RealTimeUtility.Create())
+                    {
+                        var perms = PermissionsUtility.Create(s, caller);
+
+                        AddPeopleHeadline(s, perms, rt, recurrenceId, headlineId);
+
+                        tx.Commit();
+                        s.Flush();
+                    }
+                }
+            }
+        }
+
+        public static void AddPeopleHeadline(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceId, long headlineId)
+        {
+            perm.EditL10Recurrence(recurrenceId);
+
+            perm.ViewHeadline(headlineId);
+
+            var r1 = s.Get<L10Recurrence>(recurrenceId);
+            var r = s.Get<PeopleHeadline>(headlineId);
+
+            r1.HeadlinesId = r.HeadlinePadId;
+                        
+            s.Update(r1); // update recurrence
+
+            // need to confirm
+            rt.UpdateRecurrences(recurrenceId).Update(
+                new AngularRecurrence(recurrenceId)
+                {
+                    Headlines = AngularList.CreateFrom(AngularListType.Remove, new AngularHeadline(r.Id))
+                }
+            );
+        }
+
         #endregion
 
         #region Angular
