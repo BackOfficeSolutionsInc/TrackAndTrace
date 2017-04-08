@@ -110,6 +110,7 @@
     <Compile Include="Api\V0\Todo.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="Controllers\Ac\AngularAccountabilityController.cs" />
+    <Compile Include="Controllers\AuditController.cs" />
     <Compile Include="Controllers\HeadlinesController.cs" />
     <Compile Include="Controllers\MilestoneController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
@@ -717,6 +718,7 @@
     <Compile Include="Utilities\NHibernate\AuditEventListener.cs" />
     <Compile Include="Utilities\NHibernate\Context.cs" />
     <Compile Include="Utilities\NHibernate\CustomAuditStrategy.cs" />
+    <Compile Include="Utilities\NHibernate\NHibernateProxyJsonConvert.cs" />
     <Compile Include="Utilities\NHibernate\SingleRequestSession.cs" />
     <Compile Include="Utilities\NumberUtility.cs" />
     <Compile Include="Utilities\PaymentSpringUtil.cs" />
@@ -1900,6 +1902,7 @@
     <Content Include="Views\Payment\SetACH.cshtml" />
     <Content Include="Views\Organization\Invites.cshtml" />
     <Content Include="Views\Issues\EditModal.cshtml" />
+    <Content Include="Views\Audit\Rocks.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

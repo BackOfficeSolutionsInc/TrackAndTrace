@@ -25,6 +25,9 @@ namespace RadialReview.Models.Angular.Scorecard
             Target = score.OriginalGoal ?? Measurable.Target;
             AltTarget = score.AlternateOriginalGoal ?? Measurable.AltTarget;
             Direction = score.OriginalGoalDirection??Measurable.Direction;
+
+			if (score._Editable == false)
+				Disabled = true;
 		}
 
 		public AngularScore(){

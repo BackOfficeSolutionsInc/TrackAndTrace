@@ -419,6 +419,8 @@ function getWeekSinceEpoch(day) {
 ///			{1} = oldIndex																										///
 ///			{2} = newIndex																										///
 ///																																///
+///		 idSelector:<function(cell,settings)>(optional, default: "Id"),																					///
+///																																///
 ///      panel:{	(optional)																									///
 ///			id:(optional, default: "panel-{id}"),																				///
 ///			classes:(optional, default: "panel panel-primary"),																	///
@@ -469,6 +471,7 @@ function getWeekSinceEpoch(day) {
 ///          edit:<bool,function(settings)>(optional, false),																	///
 ///          remove:<bool,function(settings)>(optional, false),																	///
 ///          reorder:<bool,function(settings)>(optional, false),																///
+///          name:<bool,function(settings)>(optional, null),																	///
 ///		 },...,																													///
 ///			...function(row,i) ,...																								///
 ///      },...],																												///
@@ -515,6 +518,10 @@ var DataTable = function (settings) {
 			settings.addButton.text = settings.addButton.text || "New " + settings.title;
 		}
 	}
+
+
+	//IdSelector
+	settings.idSelector = settings.idSelector || "Id";
 
 	//Panel
 	settings.panel = settings.panel || {};
@@ -644,6 +651,39 @@ var DataTable = function (settings) {
 		}
 		table = $(settings.table.element).clone();
 		$(panel).append(table);
+		var headers = [];
+		var anyHeaders = false;
+		for (var c in settings.cells) {
+			var cellName = resolve(settings.cells[c].name, settings);
+			if (cellName != null) {
+				anyHeaders = true;
+			}
+			headers.push(cellName);
+		}
+
+		if (anyHeaders) {
+			var headerRow = $(settings.table.rows.element).clone();
+			try{
+				$(headerRow).attr("id", resolve(settings.table.rows.id, null, settings));
+			} catch (e) {
+				console.warn("HeaderRow id failed to resolve");
+			}
+			try{
+				$(headerRow).attr("class", resolve(settings.table.rows.classes, null, settings));
+			} catch (e) {
+				console.warn("HeaderRow class failed to resolve");
+			}
+
+			for (var c in headers) {
+				var headerCell = $(settings.table.cells.element).clone();
+				if (headers[c] != null) {
+					headerCell.text(headers[c]);
+				}
+				$(headerRow).append(headerCell);
+			}
+			$(table).append(headerRow);
+		}
+
 
 		nodata = $(settings.panel.nodata.element).clone();
 		$(panel).append(nodata);
@@ -770,10 +810,17 @@ var DataTable = function (settings) {
 	};
 
 	//Update Function
+	var idError = false;
 	var getIds = function (data) {
 		var res = [];
-		for (var d in data)
-			res.push(data[d].Id);
+		for (var d in data) {
+			var selector = resolve(settings.IdSelector, data[d], settings);
+			var id = data[d][selector];
+			if (typeof (id) === "undefined") {
+				console.error("Id resolved to undefined for data[" + d + "].");
+			}
+			res.push(id);
+		}
 		return res;
 	};
 	var diffIds = function (a, b) {

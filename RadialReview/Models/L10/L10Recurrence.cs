@@ -84,6 +84,7 @@ namespace RadialReview.Models.L10 {
 		public virtual long VtoId { get; set; }
 		public virtual string OrderIssueBy { get; set; }
 		public virtual bool EnableTranscription { get; set; }
+		public virtual bool PreventEditingUnownedMeasurables { get; set; }
 
 		public virtual string HeadlinesId { get; set; }
 		[Obsolete("Do not use", false)]
@@ -120,6 +121,7 @@ namespace RadialReview.Models.L10 {
 			TeamType = L10TeamType.LeadershipTeam;
 			CombineRocks = false;
 			CurrentWeekHighlightShift = 0;
+			PreventEditingUnownedMeasurables = false;
 
 		}
 
@@ -159,6 +161,8 @@ namespace RadialReview.Models.L10 {
 				Map(x => x.IncludeAggregateTodoCompletion);
 				Map(x => x.TeamType).CustomType<L10TeamType>();
 				Map(x => x.Prioritization).CustomType<PrioritizationType>();
+
+				Map(x => x.PreventEditingUnownedMeasurables);
 				Map(x => x.OrganizationId).Column("OrganizationId");
 				References(x => x.Organization).Column("OrganizationId").LazyLoad().ReadOnly();
 				Map(x => x.SelectedVideoProviderId).Column("SelectedVideoProviderId");

@@ -22,6 +22,7 @@ using System.Runtime.InteropServices;
 using RadialReview.App_Start;
 using System.Reflection;
 using PdfSharp.Drawing;
+using RadialReview.Utilities.NHibernate;
 
 namespace RadialReview
 {
@@ -99,8 +100,13 @@ namespace RadialReview
 			serializerSettings.Converters.Add(new AngularSerialization());
 			var serializer = JsonSerializer.Create(serializerSettings);
 			GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), ()=>serializer);
-   
-            new ApplicationAccessor().EnsureApplicationExists();
+
+			//NHibernate ignore proxy
+			JsonConvert.DefaultSettings = () => new JsonSerializerSettings {
+				Converters = new List<JsonConverter> { new NHibernateProxyJsonConvert() }
+			};
+
+			new ApplicationAccessor().EnsureApplicationExists();
 
 			ViewEngines.Engines.Clear(); 
 			IViewEngine razorEngine = new RazorViewEngine() { FileExtensions = new [] { "cshtml" } };

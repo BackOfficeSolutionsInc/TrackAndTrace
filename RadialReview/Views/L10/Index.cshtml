@@ -73,14 +73,12 @@
 												<li><a class="l10-texting-actions" href="#" onclick="@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId="+meeting.Recurrence.Id,"/TwilioApi/Modal",null,null,"textingModal")"><span style="top: 2px;" class="glyphicon glyphicon-phone l10-texting-actions"></span> Texting Actions</a></li>
 												@*<li><a href="/L10/External/@meeting.Recurrence.Id"><span style="top: 2px;" class="icon fontastic-icon-share-1" title=""></span> Link to external services</a></li>*@
 												<li role="separator" class="divider"></li>
-												<li>
-													<a @if (meeting.AdminMeeting) { @: href="/L10/Wizard/@meeting.Recurrence.Id"
-													} class="@*btn btn-default btn-sm*@ @(meeting.AdminMeeting?"":"disable")"><span style="top: 2px;" class="glyphicon glyphicon-edit"></span>Edit meeting</a>
-												</li>
 
 												@if (meeting.AdminMeeting) {
+													<li><a href="/L10/Wizard/@meeting.Recurrence.Id" @*href="#" onclick="getAdmins(@meeting.Recurrence.Id)"*@  class="btn btn-link alignLeft"><span style="top: 2px;" class="glyphicon glyphicon-edit"></span> Edit meeting</a></li>
 													<li><a href="/L10/Edit/@meeting.Recurrence.Id" style="color:#AB3333"><span style="top: 2px;" class="glyphicon glyphicon-cog"></span>Advanced Settings</a></li>
 												} else {
+													<li><a href="#" onclick="getAdmins(@meeting.Recurrence.Id)" class="btn btn-link alignLeft disable"><span style="top: 2px;" class="glyphicon glyphicon-edit"></span> Edit meeting</a></li>
 													<li><a href="#" class="clickable" onclick="getAdmins(@meeting.Recurrence.Id)" style="color:#AB3333"><span style="top: 2px;" class="glyphicon glyphicon-cog"></span> Advanced Settings</a></li>
 												}
 											</ul>

@@ -41,6 +41,8 @@ namespace RadialReview.Models.Angular.Scorecard
 			ShowCumulative = measurable.ShowCumulative;
 			CumulativeRange = measurable.CumulativeRange;
 			Cumulative = measurable._Cumulative;
+			if (measurable._Editable == false)
+				Disabled = true;
 		}
 
 		public static AngularMeasurable CreateDivider(int ordering,long id)

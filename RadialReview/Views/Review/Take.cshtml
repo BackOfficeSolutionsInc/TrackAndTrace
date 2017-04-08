@@ -344,18 +344,21 @@
 					}
 				};
 
+				var isOnIOS = navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPhone/i);
+				var unloadEventName = isOnIOS ? "pagehide" : "beforeunload";
+
 				$(document).ready(function () {
 					$('.submitButton').on('mousedown', stopNavigate);
 					$('.submitButton').on('mouseleave', function () {
-						$(window).on('beforeunload', onleaving);
+						$(window).on(unloadEventName, onleaving);
 					});
 				});
 
-				$(window).on('beforeunload', onleaving);
+				$(window).on(unloadEventName, onleaving);
 
 
 				function stopNavigate() {
-					$(window).off('beforeunload');
+					$(window).off(unloadEventName);
 				}
 			});
 

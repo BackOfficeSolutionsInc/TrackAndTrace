@@ -123,6 +123,10 @@ body {
 .acc-chart svg md-autocomplete * {
   position: inherit;
 }
+.acc-chart svg md-autocomplete[ng-disabled],
+.acc-chart svg md-autocomplete[ng-disabled] * {
+  cursor: not-allowed;
+}
 .acc-chart svg .templink {
   fill: none;
   stroke: #ccc;

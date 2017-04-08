@@ -1,8 +1,9 @@
 ﻿var currentIssuesDetailsId;
 
 var modalWidth = 991;
+var CheckOffIssue;
 $(function () {
-	var CheckOffIssue = Undo.Command.extend({
+	CheckOffIssue = Undo.Command.extend({
 		constructor: function (row) {
 			this.row = row;
 			this.issueRow = $(row).closest(".issue-row");
@@ -515,7 +516,12 @@ function updateIssueAwaitingSolve(issueRecurId,status) {
 }
 
 function updateModedIssueSolve(issueRecurId, status) {
-	$(".issue-row[data-recurrence_issue='" + issueRecurId + "']").attr("data-markedforclose", status);
+	var row = $(".issue-row[data-recurrence_issue='" + issueRecurId + "']");
+	row.attr("data-markedforclose", status);
+	row.attr("data-checked", status);
+	console.log("checked:" + issueRecurId);
+
+	//undoStack.execute(new CheckOffIssue(this, status));
 }
 
 function updateIssuesList(recurId, issueRow, orderby) {

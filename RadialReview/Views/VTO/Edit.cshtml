@@ -204,7 +204,7 @@
 									<div class="col-lg-9">
 										<div class="boxed content">
 											<div class="target">
-												<textarea textarea-resize ng-model="(model).TenYearTarget" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model))" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+												<textarea  ng-model="(model).TenYearTarget" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model))" @(ViewBag.CanEditVTO ? "" : "disabled") textarea-resize></textarea>
 											</div>
 										</div>
 									</div>
@@ -784,9 +784,9 @@
 @using (Html.BeginScripts())
 {
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
-    <script>
-        $.fn.editable.defaults.ajaxOptions = { type: "POST" };$.fn.editable.defaults.mod
-	<script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+    @*<script>
+	$.fn.editable.defaults.ajaxOptions = { type: "POST" };$.fn.editable.defaults.mod
+	<script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>*@
 	<script>
 		$.fn.editable.defaults.ajaxOptions = { type: "POST" };
 		$.fn.editable.defaults.mode = 'popup';

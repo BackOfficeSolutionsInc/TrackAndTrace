@@ -186,9 +186,41 @@
 		var id = $(this).data("milestoneid");
 		$(".milestone[data-milestoneid=" + id + "]").addClass("mouseover");
 	});
+
+
+	$("body").on("click", "#rock-details .message-holder .message", function () {
+		var input = $("<textarea class='message-input' value='" + escapeString($(this).html()) + "' data-old='" + escapeString($(this).html()) + "' onblur='sendRockMessage(this," + $(this).parent().data("rockid") + ")'>" + ($(this).html()) + "</textarea>");
+		$(this).parent().html(input);
+		input.focusTextToEnd();
+	});
 });
 
 
+function sendRockMessage(self, id) {
+	var val = $(self).val();
+	$(self).closest(".form-control").removeClass("focus");
+	if (val.trim() == "") {
+		$("#rock-details .message-holder[data-rockid=" + id + "]").html("<span data-rockid='" + id + "' class='message editable-text'>" + $(self).data("old") + "</span>");
+		return;
+	}
+
+	$(".rocks .message-holder[data-rockid=" + id + "] input").prop("disabled", true);
+	var data = {
+		message: val
+	};
+
+	$.ajax({
+		method: "POST",
+		data: data,
+		url: "/L10/UpdateRock/" + id,
+		success: function (data) {
+			showJsonAlert(data, false, true);
+			if (!data.Error) {
+				$("#rock-details .message-holder[data-rockid=" + id + "]").html("<span data-rockid='" + id + "' class='message'>" + val + "</span>");
+			}
+		}
+	});
+}
 
 function fixRocksDetailsBoxSize() {
 	if ($(".details.rock-details").length) {

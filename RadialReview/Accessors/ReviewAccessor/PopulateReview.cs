@@ -79,7 +79,7 @@ namespace RadialReview.Accessors {
 						).Select(
 							Projections.Group<AnswerModel>(x => x.RevieweeUserId),
 							Projections.Group<AnswerModel>(x => x.ReviewerUserId),
-							Projections.Min<AnswerModel>(x => x.Complete)
+							Projections.Max<AnswerModel>(x => x.Complete)
 						).Future<object[]>();
 					}
 

@@ -29,7 +29,7 @@ using Ionic.Zip;
 
 namespace RadialReview.Controllers {
 	public partial class L10Controller : BaseController {
-		#region AddRock
+		#region Rock
 		public class AddRockVm {
 			public long RecurrenceId { get; set; }
 			public List<SelectListItem> AvailableRocks { get; set; }
@@ -101,6 +101,15 @@ namespace RadialReview.Controllers {
 			L10Accessor.CreateRock(GetUser(), model.RecurrenceId, model);
 			return Json(ResultObject.SilentSuccess());
 		}
+
+
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public JsonResult UpdateRock(long id, string message = null) {
+			L10Accessor.UpdateRock(GetUser(), id, message,null,null, null);
+			return Json(ResultObject.SilentSuccess());
+		}
+
 		#endregion
 
 		#region Scorecard

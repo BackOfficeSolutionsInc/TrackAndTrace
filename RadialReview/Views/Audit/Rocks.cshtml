@@ -1,0 +1,33 @@
+﻿@model List<KeyValuePair<long, RadialReview.Models.Askables.RockModel>>
+@{
+	ViewBag.Title = "Rocks";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Rock @*(@Model.FirstOrDefault().NotNull(x => x.Value.Id))*@</h2>
+
+<div id="model-container"></div>
+
+@using (Html.BeginScripts()) {
+	<script>
+
+		var data = @Html.ArrayToString(Model);
+
+		DataTable({
+			container: "#model-container",
+			data: data,
+			idSelector:"Askable_id",
+			cells: [
+				{ name: "REVID", contents: function (r) { return r.Key; } },
+				{ name: "Rock", contents: function (r) { debugger;return r.Value.Rock; }, classes: "fullWidth" },
+				{ name: "CompanyRock", contents: function (r) { return r.Value.CompanyRock; } },
+				{ name: "DueDate", contents: function (r) { return r.Value.DueDate; } },
+				{ name: "Completion", contents: function (r) { return r.Value.Completion; } },
+				{ name: "OwnerId", contents: function (r) { return r.Value.ForUserId; } },
+				{ name: "Archived", contents: function (r) { return r.Value.Archived; } },
+				{ name: "DeleteTime", contents: function (r) { return r.Value.DeleteTime; } }
+			]
+		});
+
+	</script>
+}

@@ -192,12 +192,12 @@
                                             </span>
                                         </td>
                                     }
-                                    <td class="measurable first1 measurable-column  text-column" title="{{measurable.Name}}" ng-class="{handle: measurable.IsDivider}">
+                                    <td class="measurable first1 measurable-column text-column" title="{{measurable.Name}}" ng-class="{handle: measurable.IsDivider}">
                                         <span ng-class="{'inlineEdit': measurable.Disabled!=true}">
                                             <input ng-disabled="measurable.Disabled" class="blend" @(elastic) ng-model="measurable.Name" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(measurable)" title="{{measurable.Name}}" />
                                         </span>
                                     </td>
-                                    <td class="target direction  goal-column data-column" data-measurable="{{::measurable.Id}}" ng-class="{handle: measurable.IsDivider}">
+                                    <td class="target direction goal-column data-column" data-measurable="{{::measurable.Id}}" ng-class="{handle: measurable.IsDivider}">
                                         <span class="item-wrapper place-left">
                                             <span class="direction direction_{{measurable.Direction}}"
                                                   onaftersave="functions.checkFutureAndSend(measurable)"
@@ -212,7 +212,7 @@
                                                ng-disabled="measurable.Disabled"
                                                @(elastic)
                                                ng-model-options="{ debounce: 75 }"
-                                               class="blend  modifiers {{measurable.Modifiers}}"
+                                               class="blend modifiers {{measurable.Modifiers}}"
                                                fcsa-number="{{functions.getFcsa(measurable)}}"
                                                ng-model="measurable.Target"
                                                ng-change="functions.sendUpdate(measurable)"
