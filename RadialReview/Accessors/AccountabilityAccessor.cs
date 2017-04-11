@@ -94,13 +94,29 @@ namespace RadialReview.Accessors {
             }
         }
 
-
-        public static List<AccountabilityNode> GetNodesForUser(ISession s, PermissionsUtility perms, long userId) {
+        public static List<AccountabilityNode> GetNodesForUser(ISession s, PermissionsUtility perms, long userId) {           
             perms.ViewUserOrganization(userId, false);
             return s.QueryOver<AccountabilityNode>().Where(x => x.DeleteTime == null && x.UserId == userId).List().ToList();
         }
 
+        public static AccountabilityNode GetNodeById(UserOrganizationModel caller, long seatId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    return GetNodeById(s, perms, seatId);
+                }
+            }
+        }
 
+        public static AccountabilityNode GetNodeById(ISession s, PermissionsUtility perms, long seatId)
+        {
+            var node = s.QueryOver<AccountabilityNode>().Where(x => x.DeleteTime == null && x.Id == seatId).List().FirstOrDefault();
+            perms.CanView(ResourceType.AccountabilityHierarchy, node.AccountabilityChartId);
+            return node;
+        }
 
         [Obsolete("Do not use", true)]
         public static AccountabilityTree GetTreeOld(UserOrganizationModel caller, long organizationId, long? parentId) {

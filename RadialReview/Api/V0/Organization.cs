@@ -20,6 +20,8 @@ using RadialReview.Models;
 using RadialReview.Models.UserModels;
 using static RadialReview.Accessors.DeepAccessor;
 using RadialReview.Models.Json;
+using RadialReview.Models.Accountability;
+using RadialReview.Models.ViewModels;
 
 namespace RadialReview.Api.V0
 {
@@ -28,8 +30,22 @@ namespace RadialReview.Api.V0
     {
         [Route("users/")]
         [HttpPut]
-        public void CreateUsers([FromBody]string name)
+        public void CreateUsers([FromBody]string firstName)
         {
+            //            CreateUserOrganizationViewModel
+            //FirstName
+            //LastName
+            //Email
+            //OrgId
+
+            //Optional Params
+            //ManagerNodeId = null
+            //SendEmail = null(default: GetUser().Organization.SendEmailImmediately)
+
+            var outParam = new UserOrganizationModel();
+            var model = new Models.ViewModels.CreateUserOrganizationViewModel();
+
+            JoinOrganizationAccessor.CreateUserUnderManager(GetUser(), model, out outParam);
             //need to discuss?
         }
 
@@ -37,35 +53,33 @@ namespace RadialReview.Api.V0
         //[GET/DELETE] /users/{userId}
         [Route("users/{userId}")]
         [HttpGet]
-        public UserModel GetUsers(string userId)
+        public UserOrganizationModel GetUsers(long userId)
         {
-            return new UserAccessor().GetUserById(userId);
+            return new UserAccessor().GetUserOrganization(GetUser(), userId, false, false);
         }
 
         [Route("users/{userId}")]
         [HttpDelete]
         public ResultObject DeleteUsers(long userId)
         {
-            return new UserAccessor().RemoveUser(GetUser(), userId, DateTime.Now);
-
+            return new UserAccessor().RemoveUser(GetUser(), userId, DateTime.UtcNow);
         }
-
 
         //[GET] /users/{userid}/roles/
         [Route("users/{userId}/roles")]
         [HttpGet]
-        public IEnumerable<UserRoleModel> GetRoles(string userId)
+        public IEnumerable<Models.Askables.RoleModel> GetRoles(long userId)
         {
-            return new UserAccessor().GetUserById(userId).Roles.ToList();
+            RoleAccessor obj = new Accessors.RoleAccessor();
+            return obj.GetRoles(GetUser(), userId);
         }
-
 
         // [GET] /users/{userid}/positions/
         [Route("users/{userId}/positions")]
         [HttpGet]
-        public void GetPositions(string userId)
+        public IEnumerable<Models.Angular.Positions.AngularPosition> GetPositions(long userId)
         {
-            //need to discuss?
+            return PositionAccessor.GetPositionModelForUser(GetUser(), userId).Select(x => new Models.Angular.Positions.AngularPosition(x));
         }
 
         //[GET/PUT] /users/{userid}/directreports/
@@ -76,11 +90,11 @@ namespace RadialReview.Api.V0
             return new UserAccessor().GetDirectSubordinates(GetUser(), userId);
         }
 
-        [Route("users/{organizationId}/directreports")]
+        [Route("seats/{seatId}/directreport")]
         [HttpPut]
-        public int CreateDirectReports(long organizationId)
+        public AccountabilityNode AttachDirectReport(long seatId, [FromBody]long userId)
         {
-            return new UserAccessor().CreateDeepSubordinateTree(GetUser(), organizationId, DateTime.Now);
+            return AccountabilityAccessor.AppendNode(GetUser(), seatId, null, userId);
         }
 
         //[GET] /users/{userid}/supervisors/

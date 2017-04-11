@@ -89,7 +89,7 @@ namespace RadialReview.Api.V0
             {
                 Message = name,
                 DueDate = duedate.Value,
-                AccountableUserId = ownerId ?? 0, // need to confirm
+                AccountableUserId = ownerId ?? GetUser().Id,
                 ForRecurrenceId = recurrenceId
             };
 
@@ -100,7 +100,7 @@ namespace RadialReview.Api.V0
         [HttpPut]
         public async Task<bool> AttachIssueL10(long recurrenceId, [FromBody]string name, [FromBody]long? ownerId = null, [FromBody]string details = null)
         {
-            return await IssuesAccessor.CreateIssue(GetUser(), recurrenceId, ownerId ?? 0, new IssueModel() { Message = name, Description = details });
+            return await IssuesAccessor.CreateIssue(GetUser(), recurrenceId, ownerId ?? GetUser().Id, new IssueModel() { Message = name, Description = details });
         }
 
         [Route("L10/{recurrenceId}/issue/{issueId}")]
