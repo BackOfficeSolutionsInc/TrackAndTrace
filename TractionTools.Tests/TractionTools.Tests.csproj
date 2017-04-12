@@ -278,7 +278,6 @@
     <Compile Include="Accessors\Payment\PaymentAccessorTests.cs" />
     <Compile Include="API\v0\IssueApiTests_v0.cs" />
     <Compile Include="API\v0\L10ApiTests_v0.cs" />
-    <Compile Include="API\v0\OrganizationApiTests_v0.cs" />
     <Compile Include="API\v0\ScorecardApiTests_v0.cs" />
     <Compile Include="API\v0\TodoApiTests_v0.cs" />
     <Compile Include="API\v0\UsersApiTests_v0.cs" />
