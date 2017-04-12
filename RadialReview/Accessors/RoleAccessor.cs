@@ -191,10 +191,33 @@ namespace RadialReview.Accessors {
 			return roles;
 
 		}
-		#endregion
+
+        public static RoleModel GetRolesById(UserOrganizationModel caller, long roleId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                var perms = PermissionsUtility.Create(s, caller);
+                return GetRolesById(s, caller, perms, roleId);
+            }
+        }
+
+        public static RoleModel GetRolesById(ISession s, UserOrganizationModel caller, PermissionsUtility perms, long roleId)
+        {                       
+            var roles = s.Get<RoleModel>(roleId);
+            perms.ViewOrganization(roles.OrganizationId);
+
+            if(roles.DeleteTime != null)
+            {
+                throw new PermissionsException("Cannot view role.");
+            }
+
+            return roles;
+        }
+
+        #endregion
 
 
-		public void EditRoles(UserOrganizationModel caller, long userId, List<RoleModel> roles, bool updateOutstanding) {
+        public void EditRoles(UserOrganizationModel caller, long userId, List<RoleModel> roles, bool updateOutstanding) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 

@@ -113,7 +113,13 @@ namespace RadialReview.Accessors {
 
         public static AccountabilityNode GetNodeById(ISession s, PermissionsUtility perms, long seatId)
         {
-            var node = s.QueryOver<AccountabilityNode>().Where(x => x.DeleteTime == null && x.Id == seatId).List().FirstOrDefault();
+            var node = s.Get<AccountabilityNode>(seatId);
+
+            if(node.DeleteTime != null)
+            {
+                throw new PermissionsException("Seat is not accessible.");
+            }
+
             perms.CanView(ResourceType.AccountabilityHierarchy, node.AccountabilityChartId);
             return node;
         }
@@ -329,6 +335,19 @@ namespace RadialReview.Accessors {
             UpdatePosition_Unsafe(s, rt, perms, nodeId, positionId, now);
 
         }
+
+        public static void SetPosition(UserOrganizationModel caller, long seatId, long? positionId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var rt = RealTimeUtility.Create())
+                {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    SetPosition(s, perms, rt, seatId, positionId);
+                }
+            }
+        }
+
         public static void SetUser(UserOrganizationModel caller, long nodeId, long? userId, string connectionId = null) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -933,21 +952,23 @@ namespace RadialReview.Accessors {
             }
         }
 
-        public static void AddRole(UserOrganizationModel caller, Attach attach) {
+        public static RoleModel AddRole(UserOrganizationModel caller, Attach attach, string name = null) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     using (var rt = RealTimeUtility.Create()) {
                         var perms = PermissionsUtility.Create(s, caller);
-                        AddRole(s, perms, rt, attach);
+                        var model = AddRole(s, perms, rt, attach, name);
 
                         tx.Commit();
                         s.Flush();
+
+                        return model;
                     }
                 }
             }
         }
 
-        public static void AddRole(ISession s, PermissionsUtility perms, RealTimeUtility rt, Attach attachTo) {
+        public static RoleModel AddRole(ISession s, PermissionsUtility perms, RealTimeUtility rt, Attach attachTo, string name = null) {
 
             perms.EditAttach(attachTo);
 
@@ -962,7 +983,9 @@ namespace RadialReview.Accessors {
                 OrganizationId = orgId,
                 Category = category,
                 CreateTime = now,
+                Role = name
             };
+
             s.Save(r);
             HooksRegistry.Each<IRolesHook>(x => x.CreateRole(s, r));
 
@@ -970,6 +993,8 @@ namespace RadialReview.Accessors {
 
             var updatedRoles = AngularList.CreateFrom(AngularListType.Add, new AngularRole(r));
             rt.UpdateOrganization(orgId).Update(new AngularRoleGroup(attachTo, updatedRoles));
+
+            return r;
         }
 
 
