@@ -109,6 +109,9 @@
     <Compile Include="Api\V0\Issue.cs" />
     <Compile Include="Api\V0\Organization.cs" />
     <Compile Include="Api\V0\L10.cs" />
+    <Compile Include="Api\V0\Positions.cs" />
+    <Compile Include="Api\V0\Roles.cs" />
+    <Compile Include="Api\V0\Seats.cs" />
     <Compile Include="Api\V0\Todo.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="Controllers\Ac\AngularAccountabilityController.cs" />
