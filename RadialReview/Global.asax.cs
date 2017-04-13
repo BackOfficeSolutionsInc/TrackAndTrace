@@ -106,7 +106,7 @@ namespace RadialReview
 				Converters = new List<JsonConverter> { new NHibernateProxyJsonConvert() }
 			};
 
-			new ApplicationAccessor().EnsureApplicationExists();
+			ApplicationAccessor.EnsureApplicationExists();
 
 			ViewEngines.Engines.Clear(); 
 			IViewEngine razorEngine = new RazorViewEngine() { FileExtensions = new [] { "cshtml" } };

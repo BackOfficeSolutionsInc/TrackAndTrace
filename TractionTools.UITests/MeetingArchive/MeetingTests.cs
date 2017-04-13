@@ -42,7 +42,7 @@ namespace TractionTools.UITests.MeetingArchive {
                 d.WaitUntil(x=>x.Finds("#modalBody .checkbox").Count==5);
                 d.EnsureDifferent(x => x.Find("#modalCancel").Click());
 
-                d.Find(".button-bar", 10);
+                d.Find(".button-bar", 15);
 
                 d.Find(".notesButton", 10).Click();
 
@@ -97,7 +97,7 @@ namespace TractionTools.UITests.MeetingArchive {
                 TODO_TEXT = "A new todo!!";
                 TODO_DETAILS = "todo details!!";
 
-                d.WaitUntil(15,x => x.Find("#modal #Message").Displayed);
+                d.WaitUntil(35,x => x.Find("#modal #Message").Displayed);
 
                 d.Find("#modal #Message", 6).SendKeys(TODO_TEXT);
                 d.Find("#modal textarea", 6).SendKeys(TODO_DETAILS);

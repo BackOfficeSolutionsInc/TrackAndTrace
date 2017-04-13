@@ -18,7 +18,7 @@
 				}
 			</span>
 
-			<span class="hidden-sm hidden-xs" id="header-tab-profile-picture">
+			<span class="hidden-sm hidden-xs test-ignore" id="header-tab-profile-picture">
 				@Html.Partial("_Picture", (string)ViewBag.UserImage, new ViewDataDictionary(){
 					{ "ImageTitle", ((string)ViewBag.UsersName) },
 					{ "Initials", ViewBag.UserInitials },
@@ -29,7 +29,7 @@
 				<li>
 
 
-					<div class="btn-group heading" style="padding:8px;" id="header-tab-dropdown">
+					<div class="btn-group heading test-ignore" style="padding:8px;" id="header-tab-dropdown">
 						<button type="button" href="@Url.Action("Details", "User", new { id = ViewBag.UserId })"
 								style="overflow-x: hidden;text-overflow: ellipsis;white-space: nowrap; max-width:256px;padding-right:11px;"
 								class="btn btn-default heading " data-toggle="dropdown">
@@ -77,7 +77,7 @@
 							<li>@Html.ActionLink("My Settings", "Manage", "Account")</li>
 
 							<li class="divider"></li>
-							<li><a href="#" onclick="supportEmail('@ViewBag.Title','@ProductStrings.SupportEmail')"><span class="icon fontastic-icon-lifebuoy pull-right" style="color:#EF7622"></span>Contact Support</a></li>
+							<li><a href="#" onclick="supportEmail('@Html.Encode(ViewBag.Title)','@ProductStrings.SupportEmail')"><span class="icon fontastic-icon-lifebuoy pull-right" style="color:#EF7622"></span>Contact Support</a></li>
 							<li class="divider"></li>
 							@if (((int?)ViewBag.Organizations ?? 0) > 1) {
 								<li class="@(((int?)ViewBag.Organizations ?? 0 )> 1?"":"disabled")" id="header-tab-dropdown-changeorganization">

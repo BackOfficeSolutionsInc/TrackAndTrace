@@ -795,7 +795,6 @@
     <Compile Include="Models\Audit\LogModel.cs" />
     <Content Include="Areas\RouteDebugger\Content\rdstyle.css" />
     <Content Include="Areas\RouteDebugger\Scripts\detect.js" />
-    <Content Include="x86\SQLite.Interop.dll" />
     <None Include=".bin\bower.cmd" />
     <None Include=".bin\git.cmd" />
     <None Include=".bin\node.cmd" />
@@ -1903,11 +1902,13 @@
     <Content Include="Views\Organization\Invites.cshtml" />
     <Content Include="Views\Issues\EditModal.cshtml" />
     <Content Include="Views\Audit\Rocks.cshtml" />
+    <Content Include="Views\Audit\Scores.cshtml" />
+    <Content Include="Views\Audit\Measurables.cshtml" />
+    <Content Include="Views\Audit\Roles.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="x64\SQLite.Interop.dll" />
     <Content Include="Scripts\bootstrap.min.js.map">
       <DependentUpon>bootstrap.js</DependentUpon>
     </Content>
@@ -2216,6 +2217,8 @@
     <Folder Include="Views\WebRtc\" />
     <Folder Include="Views\Wizard\" />
     <Folder Include="Views\_Angular\" />
+    <Folder Include="x64\" />
+    <Folder Include="x86\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

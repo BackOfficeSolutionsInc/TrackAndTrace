@@ -27,7 +27,9 @@
             $http.get(url).success(function (data) {
                 $scope.loadedOptions[url] = data;
                 for (var i in data) {
-                    rtn.push(data[i]);
+                	if (arrayHasOwnIndex(data, i)) {
+                		rtn.push(data[i]);
+                	}
                 }
             });
             return rtn;

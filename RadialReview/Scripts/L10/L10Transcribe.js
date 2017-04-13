@@ -86,15 +86,17 @@ function addTranscription(text, name, order, id, nofade) {
 
     var tt = text;
     for (var i in lookup) {
-        var ind = tt.indexOf(i);
-        var len = i.length;
-        if (ind > 0) {
-            var selectedText = tt.substring(ind + len);
-            if (selectedText.length > 0)
-                selectedText = selectedText.replace(/^./, selectedText[0].toUpperCase());
-            tt = tt.substring(0, ind + len) + "<span  class='" + lookup[i] + "' >" + selectedText + "</span>";
-            break;
-        }
+    	if (arrayHasOwnIndex(lookup, i)) {
+    		var ind = tt.indexOf(i);
+    		var len = i.length;
+    		if (ind > 0) {
+    			var selectedText = tt.substring(ind + len);
+    			if (selectedText.length > 0)
+    				selectedText = selectedText.replace(/^./, selectedText[0].toUpperCase());
+    			tt = tt.substring(0, ind + len) + "<span  class='" + lookup[i] + "' >" + selectedText + "</span>";
+    			break;
+    		}
+    	}
     }
 
     var newLi = $("<li data-transcript-id='" + id + "' title='" + escapeString(name) + "' data-order='" + order + "'>" + tt + "</li>");

@@ -1,6 +1,6 @@
-﻿@model List<KeyValuePair<long, RadialReview.Models.Askables.RockModel>>
+﻿@model List<Tuple<long,DateTime, RadialReview.Models.Askables.RockModel>>
 @{
-	ViewBag.Title = "Rocks";
+	ViewBag.Title = "Audit - Rocks";
 	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -16,16 +16,20 @@
 		DataTable({
 			container: "#model-container",
 			data: data,
-			idSelector:"Askable_id",
+			cellId:function(cell){
+				debugger;
+				return cell.Item1;
+			},
 			cells: [
-				{ name: "REVID", contents: function (r) { return r.Key; } },
-				{ name: "Rock", contents: function (r) { debugger;return r.Value.Rock; }, classes: "fullWidth" },
-				{ name: "CompanyRock", contents: function (r) { return r.Value.CompanyRock; } },
-				{ name: "DueDate", contents: function (r) { return r.Value.DueDate; } },
-				{ name: "Completion", contents: function (r) { return r.Value.Completion; } },
-				{ name: "OwnerId", contents: function (r) { return r.Value.ForUserId; } },
-				{ name: "Archived", contents: function (r) { return r.Value.Archived; } },
-				{ name: "DeleteTime", contents: function (r) { return r.Value.DeleteTime; } }
+				{ name: "REV_DATE", contents: function (r) { return dateFormatter(parseJsonDate(r.Item2,true)); } },
+				{ name: "REVID", contents: function (r) { return r.Item1; } },
+				{ name: "Rock", contents: function (r) { return r.Item3.Rock; }, classes: "fullWidth" },
+				{ name: "CompanyRock", contents: function (r) { return r.Item3.CompanyRock; } },
+				{ name: "DueDate", contents: function (r) { return r.Item3.DueDate; } },
+				{ name: "Completion", contents: function (r) { return r.Item3.Completion; } },
+				{ name: "OwnerId", contents: function (r) { return r.Item3.ForUserId; } },
+				{ name: "Archived", contents: function (r) { return r.Item3.Archived; } },
+				{ name: "DeleteTime", contents: function (r) { return r.Item3.DeleteTime; } }
 			]
 		});
 

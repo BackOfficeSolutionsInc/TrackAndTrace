@@ -125,7 +125,7 @@ namespace TractionTools.UITests.Selenium {
 			// Start Selenium drivers
 
 			ChromeOptions options = new ChromeOptions();
-			options.AddArgument("--headless");
+			//options.AddArgument("--headless");
 
 			_ChromeDriver = new ChromeDriver(options);
 			_ChromeDriver.Navigate().GoToUrl(GetAbsoluteUrl("/Account/login"));
@@ -169,7 +169,7 @@ namespace TractionTools.UITests.Selenium {
 						if (_ChromeDriver == null) {
 							_ChromeDriver = new ChromeDriver();
 						}
-						_ChromeDriver.Manage().Window.Size = new Size(1022, 767);
+						_ChromeDriver.Manage().Window.Size = new Size(1022, 806/*767*/);
 						return _ChromeDriver;
 					}
 				case WithBrowsers.Firefox: {

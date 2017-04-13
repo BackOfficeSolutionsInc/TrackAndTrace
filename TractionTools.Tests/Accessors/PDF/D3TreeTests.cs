@@ -29,14 +29,14 @@ namespace TractionTools.Tests.Accessors.PDF {
 			d.children.Add(h);
 			
 
-			var tree = Tree.Update(a, false);
+			var tree = Tree.Update(a, null);
 
-			Assert.IsTrue(b.x > c.x);
-			Assert.IsTrue(c.x > d.x);
+			Assert.IsTrue(b.x < c.x);
+			Assert.IsTrue(c.x < d.x);
 
-			Assert.IsTrue(e.x > f.x);
-			Assert.IsTrue(f.x > g.x);
-			Assert.IsTrue(g.x > h.x);
+			Assert.IsTrue(e.x < f.x);
+			Assert.IsTrue(f.x < g.x);
+			Assert.IsTrue(g.x < h.x);
 
 			Assert.IsTrue(b.y == c.y);
 			Assert.IsTrue(b.y == d.y);

@@ -21,7 +21,7 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 	var rafID = null;
 	var zeroGain = {};
 
-	var updateAnalysers = function(time) {
+	var updateAnalysers = function (time) {
 		//debugger;
 		// analyzer draw code here
 		//var SPACING = 3;
@@ -30,30 +30,30 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 
 		var maxId = null;
 		var max = 200;
-		
+
 		$(".loudest").removeClass("loudest");
 		for (var k in analyserNode) {
-			var freqByteData = new Uint8Array(analyserNode[k].frequencyBinCount);
-			analyserNode[k].getByteFrequencyData(freqByteData);
-			var sum = freqByteData.reduce(function(pv, cv) { return pv + cv; }, 0);
-			var html = "";
+			if (arrayHasOwnIndex(analyserNode, k)) {
+				var freqByteData = new Uint8Array(analyserNode[k].frequencyBinCount);
+				analyserNode[k].getByteFrequencyData(freqByteData);
+				var sum = freqByteData.reduce(function (pv, cv) { return pv + cv; }, 0);
+				var html = "";
 
-			if (sum > max) {
-				max = sum;
-				maxId = k;
+				if (sum > max) {
+					max = sum;
+					maxId = k;
+				}
+
+				for (var i = 0; i < Math.min(5, sum / 300) ; i++) {
+					html += "<div class='volume-bar'></div>";
+				}
+
+
+				$("." + k + " .volume").html(html);
+				if (sum > 300) {
+					$("." + k).addClass("loudest");
+				}
 			}
-
-			for(var i=0;i<Math.min(5,sum/300);i++)
-			{
-				html += "<div class='volume-bar'></div>";
-			}
-			
-
-			$("." + k + " .volume").html(html);
-			if (sum > 300) {
-				$("." + k).addClass("loudest");
-			}
-
 			//console.log(freqByteData);
 		}
 
@@ -138,12 +138,12 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 			_startSession(username);
 		},
 
-		_addStreamGain = function(stream,id) {
+		_addStreamGain = function (stream, id) {
 			audioContext[id] = new AudioContext();
 			analyserNode[id] = audioContext[id].createAnalyser();
 			analyserNode[id].fftSize = 32;
 			//inputPoint[id] = audioContext[id].createGain();
-				// Create an AudioNode from the stream.
+			// Create an AudioNode from the stream.
 			sourceI[id] = audioContext[id].createMediaStreamSource(stream);
 			sourceI[id].connect(analyserNode[id]);
 			//analyserNode[id].connect(audioContext[id].destination);
@@ -169,8 +169,8 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 
 				//==========Volume========== 
 
-				_addStreamGain(stream, "streamid_"+viewModel.MyConnectionId );
-				
+				_addStreamGain(stream, "streamid_" + viewModel.MyConnectionId);
+
 
 				//========End-Volume========
 
@@ -438,10 +438,10 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 			// The connection manager needs our stream
 			// todo: not sure I like this
 			if (_mediaStream) {
-				
+
 				console.log("ZERO");
 				connection.addStream(_mediaStream);
-				
+
 				console.log("SIX");
 			}
 		},
@@ -457,7 +457,7 @@ WebRtcDemo.App = (function (viewModel, connectionManager) {
 			console.log("ONE");
 			var timer = 1000;
 
-			var tryAttachVideo = function() {
+			var tryAttachVideo = function () {
 				console.log("TWO");
 				console.log(ConnectionEstablished[streamId]);
 				if (!(streamId in ConnectionEstablished) || ConnectionEstablished[streamId] <= 0) {

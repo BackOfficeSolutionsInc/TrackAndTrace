@@ -1,4 +1,5 @@
-﻿//Version #
+﻿
+//Version #
 function msieversion() {
 	var ua = window.navigator.userAgent;
 	var msie = ua.indexOf('MSIE ');
@@ -35,7 +36,9 @@ var awaitJquery = {
 		if (typeof ($) !== "undefined") {
 			clearTimeout(awaitJquery.timeout);
 			for (var f in awaitJquery.functions) {
-				awaitJquery.functions[f]();
+				if (arrayHasOwnIndex(awaitJquery.functions, f)) {
+					awaitJquery.functions[f]();
+				}
 			}
 			awaitJquery.functions = [];
 		} else {
@@ -108,3 +111,4 @@ Error.captureStackTrace = Error.captureStackTrace || function (obj) {
 		obj.stack = obj.stack || obj.name || "Error";
 	}
 };
+

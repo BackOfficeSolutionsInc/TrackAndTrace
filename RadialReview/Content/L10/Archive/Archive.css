@@ -815,6 +815,28 @@ html {
 .meeting-archive .rock-list-container .due-column {
   display: none;
 }
+.meeting-archive .rock-list-container .rock-completion-status {
+  font-weight: bold;
+  color: #fff;
+  padding: 0px 4px 3px 5px;
+  border-radius: 3px;
+}
+.meeting-archive .rock-list-container .rock-completion-status ._md-select-value {
+  border-bottom-color: transparent !important;
+}
+.meeting-archive .rock-list-container .rock-completion-status:focus *,
+.meeting-archive .rock-list-container .rock-completion-status:active * {
+  color: white !important;
+}
+.meeting-archive .rock-list-container .rock-completion-status.OnTrack {
+  background-color: #1F68EC;
+}
+.meeting-archive .rock-list-container .rock-completion-status.AtRisk {
+  background-color: #d8524f;
+}
+.meeting-archive .rock-list-container .rock-completion-status.Complete {
+  background-color: #449D44;
+}
 .meeting-archive .headline-list-container .owner-column {
   filter: gray;
   filter: grayscale(0.7);

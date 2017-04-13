@@ -72,7 +72,7 @@ namespace TractionTools.UITests.Evals {
 				Assert.AreEqual(1, rows.Count);
 				var row = rows[0];
 				row.Find(".review-extra-options").Click();
-				d.TestScreenshot("Dropdown");
+				d.TestScreenshot("CreateNoSupervisor_Dropdown");
 
 				d.Find(".advanced-link");
 
@@ -100,7 +100,7 @@ namespace TractionTools.UITests.Evals {
 				var row = rows[0];
 
 				row.Find(".review-extra-options").Click();
-				d.TestScreenshot("DropdownEmployee");
+				d.TestScreenshot("CreateNoSupervisor_DropdownEmployee");
 				d.NotFind(".advanced-link", 1);
 
 				var take = row.Find("td > a");
@@ -165,7 +165,7 @@ namespace TractionTools.UITests.Evals {
 				Assert.AreEqual(1, rows.Count);
 				var row = rows[0];
 				row.Find(".review-extra-options").Click();
-				d.TestScreenshot("Dropdown");
+				d.TestScreenshot("CreateSupervisor_Dropdown1");
 
 				d.Find(".advanced-link");
 
@@ -192,7 +192,7 @@ namespace TractionTools.UITests.Evals {
 				d.Find(".issue-immediately").Click();
 				d.Find("#modalOk").Click();
 
-				d.TestScreenshot("CreatingReview");
+				d.TestScreenshot("CreateSupervisor_CreatingReview");
 
 				d.Find("#header-tab-reviews").Click();
 
@@ -203,7 +203,7 @@ namespace TractionTools.UITests.Evals {
 				Assert.AreEqual(1, rows.Count);
 				row = rows[0];
 				row.Find(".review-extra-options").Click();
-				d.TestScreenshot("Dropdown");
+				d.TestScreenshot("CreateSupervisor_Dropdown2");
 
 				d.Find(".advanced-link");
 				take = row.Find("td > a");
@@ -230,7 +230,7 @@ namespace TractionTools.UITests.Evals {
 				var row = rows[0];
 
 				row.Find(".review-extra-options").Click();
-				d.TestScreenshot("DropdownEmployee");
+				d.TestScreenshot("CreateSupervisor_DropdownEmployee");
 				d.NotFind(".advanced-link", 1);
 
 				var take = row.Find("td > a");

@@ -132,7 +132,9 @@ function UpdateChart() {
 
 		extraClasses.push($(this).data("addclass"));
 		for (var i in split) {
-			groups.push(split[i]);
+			if (arrayHasOwnIndex(split, i)) {
+				groups.push(split[i]);
+			}
 		}
 	});
 

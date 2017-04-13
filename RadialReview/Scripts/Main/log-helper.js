@@ -38,10 +38,12 @@ function interceptLogger(name, oldLogger) {
                 });
 
                 for (var a in args) {
-                	try {
-                		$(window).trigger("console-" + name, [args[a]])
-                	} catch (e) {
-                		debugger;
+                	if (arrayHasOwnIndex(args, a)) {
+                		try {
+                			$(window).trigger("console-" + name, [args[a]])
+                		} catch (e) {
+                			debugger;
+                		}
                 	}
                 }
 

@@ -20,6 +20,8 @@ namespace RadialReview.Accessors.PDF.JS {
 			public double vSeparation = 40;
 			public double hSeparation = 25;
 
+			public bool compact { get; set; }
+
 
 			public TreeSettings() {
 
@@ -32,6 +34,7 @@ namespace RadialReview.Accessors.PDF.JS {
 
 				vSeparation = 40;
 				hSeparation = 25;
+				compact = false;
 			}
 		}
 
@@ -51,9 +54,10 @@ namespace RadialReview.Accessors.PDF.JS {
 		//}
 
 
-		public static CompactTree<N>.tree Update<N>(N root, Func<N, double> heightFunc, TreeSettings settings) where N : node<N>, new() {
+		public static CompactTree<N>.tree Update<N>(N root, Func<N, double> heightFunc=null, TreeSettings settings = null) where N : node<N>, new() {
 			var Settings = settings ?? new TreeSettings();
 			var tree = CompactTree<N>.call();
+			tree.compactify(Settings.compact);//added
 			tree.sort((a, b) => {
 				if (b != null && a != null) {
 					var diff = a.order - b.order;
@@ -67,8 +71,8 @@ namespace RadialReview.Accessors.PDF.JS {
 			
 			var maxDepth = 0;
 			var maxWidth = Settings.baseWidth;
-
-			//tree.compactify(compact);
+			
+			//Heavy lifting here:
 			var nodes = tree.nodes(root);
 			var links = tree.links(nodes);
 
@@ -115,16 +119,15 @@ namespace RadialReview.Accessors.PDF.JS {
 				}
 				d.ddx = shift;
 			}
-			//tree.compactify(compact);
 			return tree;
 		}
 
 
-		public static CompactTree<N>.tree Update<N>(N root, bool compact, Func<N, double> heightFunc = null,TreeSettings settings=null) where N : node<N>,new() {
+		/*public static CompactTree<N>.tree Update<N>(N root, bool compact, Func<N, double> heightFunc = null,TreeSettings settings=null) where N : node<N>,new() {
 			var tree = Update(root, heightFunc, settings);
-			tree.compactify(compact);
-			tree = Update(root, heightFunc, settings);
+			//tree.compactify(compact);
+			//tree = Update(root, heightFunc, settings);
 			return tree;
-		}
+		}*/
 	}
 }

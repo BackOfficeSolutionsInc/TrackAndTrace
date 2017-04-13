@@ -202,7 +202,7 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
 	//setup x
 	var xValue = function (scatterDataPoint) {
 		try {
-			if (scatterDataPoint.Dimensions[options.xDimensionId]===undefined || scatterDataPoint.Dimensions[options.xDimensionId].Denominator == 0)
+			if (scatterDataPoint.Dimensions[options.xDimensionId] === undefined || scatterDataPoint.Dimensions[options.xDimensionId].Denominator == 0)
 				return 0;
 			return scatterDataPoint.Dimensions[options.xDimensionId].Value / scatterDataPoint.Dimensions[options.xDimensionId].Denominator;
 		} catch (e) {
@@ -454,19 +454,20 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
 			var availableDims = {};
 
 			for (var d in point.Dimensions) {
-				var dim = point.Dimensions[d];
-				var classes = point.Class + " " + dim.Class;
-				var classList = getClasses(classes);
+				if (arrayHasOwnIndex(point.Dimensions, d)) {
+					var dim = point.Dimensions[d];
+					var classes = point.Class + " " + dim.Class;
+					var classList = getClasses(classes);
 
-				//var comparableWildcards=containsAll(classList, requiredClasses);
+					//var comparableWildcards=containsAll(classList, requiredClasses);
 
-				if (
-                    (requireAll && containsAll(classList, requiredClasses)) ||
-                    (!requireAll && containsAny(classList, requiredClasses))
-                   ) {
-					availableDims[dim.DimensionId] = dim;
+					if (
+						(requireAll && containsAll(classList, requiredClasses)) ||
+						(!requireAll && containsAny(classList, requiredClasses))
+					   ) {
+						availableDims[dim.DimensionId] = dim;
+					}
 				}
-
 			}
 
 			if (Object.keys(availableDims).length > 0) {
@@ -509,26 +510,29 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
 			merged[key].Title = jqueryIntersection(getTitles(merged[key].Title), getTitles(point.Title)).join(" ");
 
 			for (var d in point.Dimensions) {
-				var dim = point.Dimensions[d];
-				if (!(d in merged[key].Dimensions)) {
-					merged[key].Dimensions[d] = {
-						DimensionId: dim.DimensionId,
-						Value: 0,
-						Denominator: 0,
-						Class: dim.Class,
-					};
-				}
+				if (arrayHasOwnIndex(point.Dimensions, d)) {
+					var dim = point.Dimensions[d];
+					if (!(d in merged[key].Dimensions)) {
+						merged[key].Dimensions[d] = {
+							DimensionId: dim.DimensionId,
+							Value: 0,
+							Denominator: 0,
+							Class: dim.Class,
+						};
+					}
 
-				merged[key].Dimensions[d].Value += dim.Value;
-				merged[key].Dimensions[d].Denominator += dim.Denominator;
-				merged[key].Dimensions[d].Class = intersection(getClasses(merged[key].Dimensions[d].Class), getClasses(dim.Class)).join(" ");
+					merged[key].Dimensions[d].Value += dim.Value;
+					merged[key].Dimensions[d].Denominator += dim.Denominator;
+					merged[key].Dimensions[d].Class = intersection(getClasses(merged[key].Dimensions[d].Class), getClasses(dim.Class)).join(" ");
+				}
 			}
 		}
 
 		var output = [];
 		for (var m in merged) {
-			//merged[m].groupId = m.;
-			output.push(merged[m]);
+			if (arrayHasOwnIndex(merged, m)) {
+				output.push(merged[m]);
+			}
 		}
 		return output;
 	}
@@ -538,7 +542,9 @@ ScatterChart.prototype.Plot = function Plot(scatterData, options) {
             return points;*/
 		if (groups == "none") {
 			for (var key in points) {
-				points[key].GroupId = points[key].OtherData.GroupId;
+				if (arrayHasOwnIndex(points, key)) {
+					points[key].GroupId = points[key].OtherData.GroupId;
+				}
 			}
 			return points;
 		}

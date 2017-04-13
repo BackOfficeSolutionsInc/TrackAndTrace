@@ -2547,7 +2547,11 @@ namespace RadialReview.Accessors {
 			public XUnit pageWidth { get; set; }
 			public XUnit pageHeight { get; set; }
 			public XUnit margin { get; set; }
-			public XPen pen = new XPen(XColors.Black, 1);
+			public XPen pen = new XPen(XColors.Black, 1) {
+				LineJoin = XLineJoin.Miter,
+				MiterLimit = 10,
+				LineCap = XLineCap.Square
+			};
 			public XBrush brush = new XSolidBrush(XColors.Transparent);
 
 			public double scale = 1;

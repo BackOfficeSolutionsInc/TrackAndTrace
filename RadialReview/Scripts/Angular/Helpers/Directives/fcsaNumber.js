@@ -64,24 +64,7 @@
       			return validRegex.test(val);
       		};
       	};
-      	//localize = function (localization) {
-      	//    var functions = [];
-      	//    if (localization.radix == ",") {
-      	//        functions.push(function (val) {
-      	//            var validRegex = new RegExp("^-?\\d{0," + maxDigits + "}(\\.\\d*)?$");
-      	//            return validRegex.test(val);
-      	//        });
-      	//    }
-      	//    return function (val) {
-      	//        for (var f in functions) {
-      	//            if (!functions[f](val))
-      	//                return false;
-      	//        }
-      	//        return true;
-      	//    }
-      	//}
-
-      	makeIsValid = function (options) {
+       	makeIsValid = function (options) {
       		var validations;
       		validations = [];
       		if (options.maxDecimals != null) {

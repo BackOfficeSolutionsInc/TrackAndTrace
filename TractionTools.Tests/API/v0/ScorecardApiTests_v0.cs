@@ -97,7 +97,9 @@ namespace TractionTools.Tests.API.v0 {
 		[TestMethod]
 		[TestCategory("Api_V0")]
 		public void PutScore() {
+			MockHttpContext();
 			var ctx = new Ctx();
+
 			var m1 = new MeasurableModel() {
 				AccountableUserId = ctx.E1.Id,
 				AdminUserId = ctx.E1.Id,
@@ -109,12 +111,13 @@ namespace TractionTools.Tests.API.v0 {
 			var score = L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2000L, (decimal?)null, null);
 
 			var c = new ScoresController();
-			c.MockUser(ctx.E1);
 
+			c.MockUser(ctx.E1);
 			c.Put(score.Id,null);
 			var s = ScorecardAccessor.GetScore(ctx.Manager, score.Id);
 			Assert.AreEqual(score.Measured, null);
 
+			c.MockUser(ctx.E1);
 			c.Put(score.Id, 3.14m);
 			s = ScorecardAccessor.GetScore(ctx.Manager, m1.Id, 2000L);
 			Assert.AreEqual(s.Measured, 3.14m);

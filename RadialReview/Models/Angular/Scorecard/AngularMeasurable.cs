@@ -23,9 +23,18 @@ namespace RadialReview.Models.Angular.Scorecard
         public AngularMeasurable(long id) : base(id) {
         }
 
+		public static AngularMeasurable Create(L10Recurrence.L10Recurrence_Measurable meetingMeasurable) {
+			if (meetingMeasurable.IsDivider) {
+				return CreateDivider(meetingMeasurable._Ordering, meetingMeasurable.Id);
+			} else {
+				return new AngularMeasurable(meetingMeasurable.Measurable) {
+					Ordering = meetingMeasurable._Ordering
+				};
+			}
+		}
 
-        public AngularMeasurable(MeasurableModel measurable,bool skipUser=false):base(measurable.Id)
-		{
+
+		public AngularMeasurable(MeasurableModel measurable,bool skipUser=false):base(measurable.Id){
 
 			Owner = AngularUser.CreateUser(skipUser?null : measurable.AccountableUser);
 			Admin = AngularUser.CreateUser(skipUser ? null : measurable.AdminUser);

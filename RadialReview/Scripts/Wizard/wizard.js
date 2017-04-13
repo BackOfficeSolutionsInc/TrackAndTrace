@@ -53,9 +53,11 @@ function changePage(page,first) {
                 var total = $(".wizard-page");
                 var i = 1;
                 for (var t in total) {
-                    if ($(total[t]).attr("data-page") == pg)
-                        break;
-                    i=i + 1;
+                	if (arrayHasOwnIndex(total, t)) {
+                		if ($(total[t]).attr("data-page") == pg)
+                			break;
+                		i = i + 1;
+                	}
                 }
                 var completion = i / (total.length+1);
 

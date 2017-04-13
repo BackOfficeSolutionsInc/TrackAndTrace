@@ -38,17 +38,19 @@ app.directive('l10StatsTile', function() {
 						var year = date.getFullYear();
 
 						for (var r in rows) {
-							s = rows[r];
-							var suffix = "";
-							if (s.series.label.indexOf("To-do") >= 0)
-								suffix = "%";
+							if (arrayHasOwnIndex(rows, r)) {
+								s = rows[r];
+								var suffix = "";
+								if (s.series.label.indexOf("To-do") >= 0)
+									suffix = "%";
 
-							o.push({
-								label: s.series.label+":",
-								value: s.row.y1+suffix,
-								color: s.series.color,
-								id: s.series.id
-							});
+								o.push({
+									label: s.series.label+":",
+									value: s.row.y1+suffix,
+									color: s.series.color,
+									id: s.series.id
+								});
+							}
 						}
 
 						return {

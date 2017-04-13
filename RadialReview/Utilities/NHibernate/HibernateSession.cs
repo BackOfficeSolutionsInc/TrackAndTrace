@@ -293,7 +293,10 @@ namespace RadialReview.Utilities
                     //var a = "Error";
                 }
             }
-            return new SessionPerRequest(GetDatabaseSessionFactory().OpenSession(),true);
+			if (!(HttpContext.Current == null || HttpContext.Current.Items == null) && HttpContext.Current.Items["IsTest"] != null)
+				return GetDatabaseSessionFactory().OpenSession();
+
+			return new SessionPerRequest(GetDatabaseSessionFactory().OpenSession(),true);
 			//GetDatabaseSessionFactory().OpenSession();
             /*while(true)
             {

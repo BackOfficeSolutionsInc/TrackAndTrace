@@ -46,9 +46,9 @@
                                         <div class="label label-primary hoverable" style="width: 80px;display: inline-block">Go!</div>
                                     }
                                 </td>
-                                <td style="vertical-align:top" class="table-hover-underline" onclick="gotoMeeting(@(meeting.Recurrence.Id))"><a href="@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})">@meeting.Recurrence.Name</a></td>
+                                <td style="vertical-align:top" class="table-hover-underline test-ignore" onclick="gotoMeeting(@(meeting.Recurrence.Id))"><a href="@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})">@meeting.Recurrence.Name</a></td>
                                 @*<td class=""><a href="/Todo/Previous/@meeting.Recurrence.Id"><span class="glyphicon glyphicon-check" title="All Todos"></span></a></td>*@
-                                <td class="alignRight hidden-xs" onclick="gotoMeeting(@(meeting.Recurrence.Id))">
+                                <td class="alignRight hidden-xs test-ignore" onclick="gotoMeeting(@(meeting.Recurrence.Id))">
                                     @foreach (var a in meeting.Recurrence._DefaultAttendees) {
                                         @Html.Partial("_ProfilePicture", a.User)
                                     }

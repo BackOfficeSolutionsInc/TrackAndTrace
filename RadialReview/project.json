@@ -45,6 +45,8 @@
     "OxyPlot.Wpf": "1.0.0-unstable2100",
     "PDFsharp-MigraDoc-GDI": "1.50.4000-beta3b",
     "RestSharp": "105.2.3",
+    "System.Data.SQLite": "1.0.105",
+    "System.Data.SQLite.Core": "1.0.105",
     "TimeZoneNames": "2.1.0",
     "TrelloNet": "0.6.2",
     "Twilio": "5.1.1",

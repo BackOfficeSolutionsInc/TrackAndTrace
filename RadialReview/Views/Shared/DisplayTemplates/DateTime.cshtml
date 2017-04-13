@@ -25,7 +25,7 @@
 
 @*<div class="input-append date form-group" data-date="@(Model == null ? "" : Model.Value.ToString(format))" data-date-format="@(format.ToLower())">
     @Html.TextBoxFor(x => Model, new { @class = "form-control col-xs-2", id = "Date", name = ViewData["name"]??"Date" })*@
-<span class="display-date @guid" id="@guid"><span class="gray">
+<span class="display-date test-ignore @guid" id="@guid"><span class="gray">
 @if (Model != null) { 
     @:. . .
 }</span></span>
