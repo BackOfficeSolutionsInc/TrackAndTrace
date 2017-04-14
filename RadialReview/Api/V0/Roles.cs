@@ -25,6 +25,7 @@ using RadialReview.Models.ViewModels;
 using RadialReview.Models.Angular.Accountability;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Angular.Users;
+using RadialReview.Models.Angular.Roles;
 
 namespace RadialReview.Api.V0
 {
@@ -35,9 +36,9 @@ namespace RadialReview.Api.V0
         //[GET/POST/DELETE] /roles/{id}
         [Route("roles/{id}")]
         [HttpGet]
-        public RoleModel GetRoles(long id)
+        public AngularRole GetRoles(long id) // Angular
         {
-            return RoleAccessor.GetRolesById(GetUser(), id);
+            return new AngularRole(RoleAccessor.GetRoleById(GetUser(), id));
         }
 
         [Route("roles/{id}")]

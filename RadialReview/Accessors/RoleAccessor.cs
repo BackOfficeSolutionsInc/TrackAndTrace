@@ -192,7 +192,7 @@ namespace RadialReview.Accessors {
 
 		}
 
-        public static RoleModel GetRolesById(UserOrganizationModel caller, long roleId)
+        public static RoleModel GetRoleById(UserOrganizationModel caller, long roleId)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {

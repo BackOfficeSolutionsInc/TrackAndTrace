@@ -25,6 +25,8 @@ using RadialReview.Models.ViewModels;
 using RadialReview.Models.Angular.Accountability;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Angular.Users;
+using RadialReview.Models.Angular.Positions;
+using RadialReview.Models.Angular.Roles;
 
 namespace RadialReview.Api.V0
 {
@@ -35,50 +37,51 @@ namespace RadialReview.Api.V0
         //[GET] /positions/mine
         [Route("positions/mine")]
         [HttpGet]
-        public IEnumerable<OrganizationPositionModel> GetMinePosition()
+        public IEnumerable<AngularPosition> GetMinePosition()
         {
-            return PositionAccessor.GetPositionModelForUser(GetUser(), GetUser().Id);
+            return PositionAccessor.GetPositionModelForUser(GetUser(), GetUser().Id).Select(x => new AngularPosition(x));
+
         }
 
         //[GET/PUT] /positions/{id}/roles/
         [Route("positions/{id}/roles")]
         [HttpGet]
-        public void GetPositionRoles(long id, [FromBody]long seatId)
+        public void GetPositionRoles(long id)
         {
             // do it later.
         }
 
         [Route("positions/{id}/roles")]
         [HttpPut]
-        public RoleModel UpdatePositionRoles(long id, [FromBody]string name) // Angular
+        public AngularRole AddPositionRoles(long id, [FromBody]string name) // Angular
         {
-            return AccountabilityAccessor.AddRole(GetUser(), new Models.Enums.Attach(Models.Enums.AttachType.Position, id), name);
+            return new AngularRole(AccountabilityAccessor.AddRole(GetUser(), new Models.Enums.Attach(Models.Enums.AttachType.Position, id), name));
         }
 
         //[PUT] /positions/
         [Route("positions/")]
         [HttpPut]
-        public OrganizationPositionModel CreatePosition([FromBody] string name)
+        public AngularPosition CreatePosition([FromBody] string name)
         {
             //need to discuss?
             OrganizationAccessor _accessor = new OrganizationAccessor();
-            return _accessor.EditOrganizationPosition(GetUser(), 0, GetUser().Organization.Id, name);
+            return new AngularPosition(_accessor.EditOrganizationPosition(GetUser(), 0, GetUser().Organization.Id, name));
         }
 
         //[GET/POST] /positions/{id}
         [Route("positions/{id}")]
         [HttpGet]
-        public OrganizationPositionModel GetPositions(long id)
+        public AngularPosition GetPositions(long id)
         {
-            return new OrganizationAccessor().GetOrganizationPosition(GetUser(), id);
+            return new AngularPosition(new OrganizationAccessor().GetOrganizationPosition(GetUser(), id));
         }
 
         [Route("positions/{id}")]
         [HttpPost]
-        public OrganizationPositionModel UpdatePositions([FromBody] string name, long id)
+        public AngularPosition UpdatePositions([FromBody] string name, long id)
         {
             OrganizationAccessor _accessor = new OrganizationAccessor();
-            return _accessor.EditOrganizationPosition(GetUser(), id, GetUser().Organization.Id, name);
+            return new AngularPosition(_accessor.EditOrganizationPosition(GetUser(), id, GetUser().Organization.Id, name));
         }
 
 

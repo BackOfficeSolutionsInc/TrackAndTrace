@@ -62,8 +62,6 @@ namespace RadialReview.Api.V0
             return DeepAccessor.Users.GetSubordinatesAndSelfModels(GetUser(), GetUser().Id).Select(x => x.GetUserDataContract());
         }
 
-
-
         //--
         [Route("users/")]
         [HttpPut]
@@ -117,17 +115,17 @@ namespace RadialReview.Api.V0
         //[GET/PUT] /users/{userid}/directreports/
         [Route("users/{userId}/directreports")]
         [HttpGet]
-        public IEnumerable<UserOrganizationModel> GetDirectReports(long userId) // wrap AngularUser
+        public IEnumerable<AngularUser> GetDirectReports(long userId) // wrap AngularUser
         {
-            return new UserAccessor().GetDirectSubordinates(GetUser(), userId);
+            return new UserAccessor().GetDirectSubordinates(GetUser(), userId).Select(x => AngularUser.CreateUser(x));
         }
 
         //[GET] /users/{userid}/supervisors/
         [Route("users/{userId}/supervisors")]
         [HttpGet]
-        public IEnumerable<UserOrganizationModel> GetSupervisors(long userId)
+        public IEnumerable<AngularUser> GetSupervisors(long userId)
         {
-            return new UserAccessor().GetManagers(GetUser(), userId);
+            return new UserAccessor().GetManagers(GetUser(), userId).Select(x => AngularUser.CreateUser(x));
         }
 
         //[GET] /users/{userid}/seats/

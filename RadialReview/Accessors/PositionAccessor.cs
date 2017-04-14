@@ -183,7 +183,21 @@ namespace RadialReview.Accessors
                 }
             }
         }
+        public static List<RoleModel> GetPositionRoles(UserOrganizationModel caller, long positionId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller).ViewOrganizationPosition(positionId);
 
-
+                    var roleLinks = s.QueryOver<RoleLink>().Where(x => x.AttachType == AttachType.Position 
+                    && x.AttachId == positionId
+                    && x.DeleteTime == null).Select(x => x.RoleId).List<long>().ToList();
+                    
+                    return s.QueryOver<RoleModel>().WhereRestrictionOn(x => x.Id).IsIn(roleLinks).List().ToList();                    
+                }
+            }
+        }
     }
 }

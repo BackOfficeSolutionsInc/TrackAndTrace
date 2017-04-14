@@ -58,10 +58,9 @@ namespace TractionTools.Tests.Api
         public void TestDeleteUsers()
         {
             var c = new Ctx();
-            c.E1.Organization.ManagersCanRemoveUsers = true;
 
             UsersController userController = new UsersController();
-            userController.MockUser(c.E1);
+            userController.MockUser(c.Manager);
             var firstName = "Test1";
             var lastName = "Test2";
 
@@ -69,8 +68,8 @@ namespace TractionTools.Tests.Api
 
             var getDeletedUser = userController.DeleteUsers(getResult.Id);
 
-            var userModel = new UserAccessor().GetUserOrganization(c.E1, getResult.Id, false, false);
-            
+            var userModel = new UserAccessor().GetUserOrganization(c.Manager, getResult.Id, false, false);
+
             Assert.IsNotNull(userModel.DeleteTime);
         }
 
@@ -116,23 +115,38 @@ namespace TractionTools.Tests.Api
             var c = new Ctx();
             UsersController userController = new UsersController();
             userController.MockUser(c.E1);
-            var firstName = "Test1";
-            var lastName = "Test2";
-            var getResult = userController.CreateUser(firstName, lastName, "test@test.com", c.Org.Id);
 
-            AccountabilityAccessor.Update(c.E1, new AngularAccountabilityNode() { Id = 0, Name = "Test Node" }, null);
+            var getDirectReport = userController.GetDirectReports(c.E1.Id);
 
-            var resu = AccountabilityAccessor.GetNodesForUser(c.E1, getResult.Id);
-
-            AccountabilityAccessor.AppendNode(c.E1, resu[0].Id, null, c.E1.Id);
-
-            var getDirectReport = userController.GetDirectReports(getResult.Id);
-
-
-            //Assert.AreEqual(1, getPosition.Count());
+            Assert.AreEqual(2, getDirectReport.Count());
         }
 
 
 
+        [TestMethod]
+        [TestCategory("Api_V0")]
+        public void TestGetSupervisors()
+        {
+            var c = new Ctx();
+            UsersController userController = new UsersController();
+            userController.MockUser(c.E1);
+
+            var getSupervisors = userController.GetSupervisors(c.E1.Id);
+
+            Assert.AreEqual(2, getSupervisors.Count());
+        }
+
+        [TestMethod]
+        [TestCategory("Api_V0")]
+        public void TestGetSeats()
+        {
+            var c = new Ctx();
+            UsersController userController = new UsersController();
+            userController.MockUser(c.E1);
+
+            var getSeats = userController.GetSeats(c.E1.Id);
+
+            Assert.AreEqual(2, getSeats.Count());
+        }
     }
 }

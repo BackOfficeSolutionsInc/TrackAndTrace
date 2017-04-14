@@ -25,6 +25,7 @@ using RadialReview.Models.ViewModels;
 using RadialReview.Models.Angular.Accountability;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Angular.Users;
+using RadialReview.Models.Angular.Positions;
 
 namespace RadialReview.Api.V0
 {
@@ -42,9 +43,9 @@ namespace RadialReview.Api.V0
         // [GET/POST/(DELETE?)] /seats/{seatId}
         [Route("seats/{seatId}")]
         [HttpGet]
-        public AccountabilityNode GetSeat(long seatId) // Angular
+        public AngularAccountabilityNode GetSeat(long seatId) // Angular
         {
-            return AccountabilityAccessor.GetNodeById(GetUser(), seatId);
+            return new Models.Angular.Accountability.AngularAccountabilityNode(AccountabilityAccessor.GetNodeById(GetUser(), seatId));
         }
 
         //[Route("seats/{seatId}")]
@@ -64,9 +65,9 @@ namespace RadialReview.Api.V0
         //[GET/PUT/DELETE] /seats/{seatId}/position
         [Route("seats/{seatId}/position")]
         [HttpGet]
-        public OrganizationPositionModel GetPosition(long seatId) // Angular
+        public AngularPosition GetPosition(long seatId) // Angular
         {
-            return AccountabilityAccessor.GetNodeById(GetUser(), seatId).AccountabilityRolesGroup.NotNull(x => x.Position); // null check for AccountabilityRolesGroup
+            return new AngularPosition(AccountabilityAccessor.GetNodeById(GetUser(), seatId).AccountabilityRolesGroup.NotNull(x => x.Position)); // null check for AccountabilityRolesGroup
         }
 
         [Route("seats/{seatId}/position/{positionId}")]
@@ -88,9 +89,10 @@ namespace RadialReview.Api.V0
 
         [Route("seats/{seatId}/user")]
         [HttpGet]
-        public UserOrganizationModel GetSeatUser(long seatId) // Angular
+        public AngularUser GetSeatUser(long seatId) // Angular
         {
-            return AccountabilityAccessor.GetNodeById(GetUser(), seatId).User;
+            var getUser = AccountabilityAccessor.GetNodeById(GetUser(), seatId).User;
+            return AngularUser.CreateUser(getUser);
         }
 
         [Route("seats/{seatId}/user")]
