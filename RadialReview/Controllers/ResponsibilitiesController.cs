@@ -75,7 +75,7 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Manager)]
-		public JsonResult ReorderSection(long id,int oldOrder,int newOrder) {
+		public JsonResult ReorderSection(long id, int oldOrder, int newOrder) {
 			ResponsibilitiesAccessor.ReorderSection(GetUser(), id, oldOrder, newOrder);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}

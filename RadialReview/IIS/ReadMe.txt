@@ -6,3 +6,6 @@ Run CompressAndUpload.bat to upload the files to S3.
 New servers will pull the "install" directory from S3 and execute the code on install.
 
 log.txt contains a log of the CompressAndUpload program
+
+
+CLOUDWATCH NOTE: You must cycle out all instances if you update the cloudwatch settings.

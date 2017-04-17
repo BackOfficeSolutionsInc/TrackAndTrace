@@ -107,7 +107,7 @@ namespace RadialReview.Accessors {
 						recurMeasureables = recurMeasureables.Where(x => x.Measurable == null || x.Measurable.DeleteTime == null).ToList();
 
 						var ctx = Reordering.Create(recurMeasureables, measurableId, recurrenceId, oldOrder, newOrder, x => x._Ordering, x => (x.Measurable == null) ? x.Id : x.Measurable.Id);
-						ctx.ApplyReorder(rt, s, (id, order,item) => AngularMeasurable.Create(item));
+						ctx.ApplyReorder(rt, s, (id, order, item) => AngularMeasurable.Create(item));
 
 						tx.Commit();
 						s.Flush();
@@ -239,7 +239,115 @@ namespace RadialReview.Accessors {
 		#endregion
 
 		#region Meeting Actions
-		public static L10Recurrence CreateBlankRecurrence(UserOrganizationModel caller, long orgId) {
+
+		private static IEnumerable<L10Recurrence.L10Recurrence_Page> GenerateMeetingPages(long recurrenceId,MeetingType meetingType,DateTime createTime) {
+
+			if (meetingType == MeetingType.L10) {
+				yield return new L10Recurrence.L10Recurrence_Page() {
+					CreateTime = createTime,
+					L10RecurrenceId = recurrenceId,
+					Minutes = 5,
+					Title = "Segue",
+					Subheading = "Share good news from the last 7 days.<br/> One personal and one professional.",
+					PageType = L10Recurrence.L10PageType.Segue,
+					_Ordering = 0,
+					AutoGen = true
+				};
+				yield return new L10Recurrence.L10Recurrence_Page() {
+					CreateTime = createTime,
+					L10RecurrenceId = recurrenceId,
+					Minutes = 5,
+					Title = "Scorecard",
+					Subheading = "",
+					PageType = L10Recurrence.L10PageType.Scorecard,
+					_Ordering = 1,
+					AutoGen = true
+				};
+				yield return new L10Recurrence.L10Recurrence_Page() {
+					CreateTime = createTime,
+					L10RecurrenceId = recurrenceId,
+					Minutes = 5,
+					Title = "Scorecard",
+					Subheading = "",
+					PageType = L10Recurrence.L10PageType.Rocks,
+					_Ordering = 2,
+					AutoGen = true
+				};
+				yield return new L10Recurrence.L10Recurrence_Page() {
+					CreateTime = createTime,
+					L10RecurrenceId = recurrenceId,
+					Minutes = 5,
+					Title = "People Headlines",
+					Subheading = "Share headlines about customers/clients and people in the company.<br/> Good and bad. Drop down (to the issues list) anything that needs discussion.",
+					PageType = L10Recurrence.L10PageType.Headlines,
+					_Ordering = 3,
+					AutoGen = true
+				};
+				yield return new L10Recurrence.L10Recurrence_Page() {
+					CreateTime = createTime,
+					L10RecurrenceId = recurrenceId,
+					Minutes = 5,
+					Title = "To-do List",
+					Subheading = "",
+					PageType = L10Recurrence.L10PageType.Todo,
+					_Ordering = 4,
+					AutoGen = true
+				};
+				yield return new L10Recurrence.L10Recurrence_Page() {
+					CreateTime = createTime,
+					L10RecurrenceId = recurrenceId,
+					Minutes = 60,
+					Title = "IDS",
+					Subheading = "",
+					PageType = L10Recurrence.L10PageType.IDS,
+					_Ordering = 5,
+					AutoGen = true
+				};
+				yield return new L10Recurrence.L10Recurrence_Page() {
+					CreateTime = createTime,
+					L10RecurrenceId = recurrenceId,
+					Minutes = 5,
+					Title = "Conclude",
+					Subheading = "",
+					PageType = L10Recurrence.L10PageType.Conclude,
+					_Ordering = 6,
+					AutoGen = true
+				};
+			} else if (meetingType == MeetingType.SamePage) {
+				yield return new L10Recurrence.L10Recurrence_Page() {
+					CreateTime = createTime,
+					L10RecurrenceId = recurrenceId,
+					Minutes = 5,
+					Title = "Clear your head",
+					Subheading = "Share what's going on in your life.",
+					PageType = L10Recurrence.L10PageType.Empty,
+					_Ordering = 0,
+					AutoGen = true
+				};
+				yield return new L10Recurrence.L10Recurrence_Page() {
+					CreateTime = createTime,
+					L10RecurrenceId = recurrenceId,
+					Minutes = 5,
+					Title = "Gather Issues",
+					Subheading = "",
+					PageType = L10Recurrence.L10PageType.Empty,
+					_Ordering = 1,
+					AutoGen = true
+				};
+				yield return new L10Recurrence.L10Recurrence_Page() {
+					CreateTime = createTime,
+					L10RecurrenceId = recurrenceId,
+					Minutes = 50,
+					Title = "IDS",
+					Subheading = "",
+					PageType = L10Recurrence.L10PageType.IDS,
+					_Ordering = 2,
+					AutoGen = true
+				};
+			}
+		}
+
+		public static L10Recurrence CreateBlankRecurrence(UserOrganizationModel caller, long orgId,MeetingType meetingType = MeetingType.L10) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
@@ -255,6 +363,12 @@ namespace RadialReview.Accessors {
 						CreateTime = DateTime.UtcNow
 					};
 					s.Save(recur);
+
+					foreach (var page in GenerateMeetingPages(recur.Id,meetingType,recur.CreateTime)) {
+						s.Save(page);
+					}
+
+
 					var vto = VtoAccessor.CreateRecurrenceVTO(s, perms, recur.Id);
 					s.Save(new PermItem() {
 						CanAdmin = true,
@@ -300,6 +414,14 @@ namespace RadialReview.Accessors {
 		}
 
 		public static string GetDefaultStartPage(L10Recurrence recurrence) {
+
+			var page = recurrence._Pages.FirstOrDefault();
+			if (page != null) {
+				return "page-" + page.Id;
+			} else {
+				return "nopage";
+			}
+
 			var p = "segue";
 			if (recurrence.SegueMinutes > 0)
 				p = "segue";
@@ -641,6 +763,7 @@ namespace RadialReview.Accessors {
 
 					if (curPage != null) {
 						m._MeetingLeaderCurrentPage = curPage.Page;
+						//m._MeetingLeaderCurrentPageType = GetPageType_Unsafe(s, curPage.Page);
 						m._MeetingLeaderCurrentPageStartTime = curPage.StartTime;
 						m._MeetingLeaderCurrentPageBaseMinutes = m._MeetingLeaderPageDurations.Where(x => x.Item1 == curPage.Page).Sum(x => x.Item2);
 					}
@@ -745,6 +868,10 @@ namespace RadialReview.Accessors {
 					.Where(x => x.DeleteTime == null)
 					.WhereRestrictionOn(x => x.Recurrence.Id).IsIn(recurrenceIds)
 					.Future<L10Note>();
+				var allPages = s.QueryOver<L10Recurrence.L10Recurrence_Page>()
+					.Where(x => x.DeleteTime == null)
+					.WhereRestrictionOn(x => x.L10Recurrence.Id).IsIn(recurrenceIds)
+					.Future<L10Recurrence.L10Recurrence_Page>();
 				var allVCP = s.QueryOver<L10Recurrence.L10Recurrence_VideoConferenceProvider>()
 					.Where(x => x.DeleteTime == null)
 					.WhereRestrictionOn(x => x.L10Recurrence.Id).IsIn(recurrenceIds)
@@ -756,6 +883,7 @@ namespace RadialReview.Accessors {
 					a._DefaultRocks = allRocks.Where(x => a.Id == x.L10Recurrence.Id && x.ForRock.DeleteTime == null).ToList();
 					a._MeetingNotes = allNotes.Where(x => a.Id == x.Recurrence.Id && x.DeleteTime == null).ToList();
 					a._VideoConferenceProviders = allVCP.Where(x => a.Id == x.L10Recurrence.Id && x.DeleteTime == null).ToList();
+					a._Pages = allPages.Where(x => a.Id == x.L10Recurrence.Id && x.DeleteTime == null).OrderBy(x => x._Ordering).ToList();
 
 					if (a.IncludeIndividualTodos) {
 						foreach (var u in a._DefaultAttendees) {
@@ -803,6 +931,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+
 
 		private static List<IssueModel.IssueModel_Recurrence> _PopulateChildrenIssues(List<IssueModel.IssueModel_Recurrence> list) {
 			var output = list.Where(x => x.ParentRecurrenceIssue == null).ToList();
@@ -1477,7 +1606,7 @@ namespace RadialReview.Accessors {
 							var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 							var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting));
 							var baseMins = meeting._MeetingLeaderPageDurations.SingleOrDefault(x => x.Item1 == pageName).NotNull(x => x.Item2);
-							meetingHub.setCurrentPage(pageName.ToLower(), now.ToJavascriptMilliseconds(), baseMins);
+							meetingHub.setCurrentPage(pageName.ToLower(), now.ToJavascriptMilliseconds(), baseMins/*, pageType*/);
 
 							meetingHub.update(new AngularMeeting(recurrenceId) { CurrentPage = pageName });
 
@@ -4247,6 +4376,17 @@ namespace RadialReview.Accessors {
 					recur.Headlines = GetAllHeadlinesForRecurrence(s, perms, recurrenceId, includeClosed: includeHistorical, range: range).Select(x => new AngularHeadline(x)).OrderByDescending(x => x.CloseTime ?? DateTime.MaxValue).ToList();
 					recur.Notes = recurrence._MeetingNotes.Select(x => new AngularMeetingNotes(x)).ToList();
 
+					recur.ShowSegue = recurrence._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Segue);
+					recur.ShowScorecard = recurrence._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Scorecard);
+					recur.ShowRockReview = recurrence._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Rocks);
+					recur.ShowHeadlines = recurrence._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Headlines);
+					recur.ShowTodos = recurrence._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Todo);
+					recur.ShowIDS = recurrence._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.IDS);
+					recur.ShowConclude = recurrence._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Conclude);
+
+					recur.MeetingType = recurrence.MeetingType;
+
+
 					if (range == null) {
 						recur.date = new AngularDateRange() {
 							startDate = DateTime.UtcNow.Date.AddDays(-9),
@@ -4760,6 +4900,100 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+
+		#endregion
+
+		#region Pages
+
+
+		public static L10Recurrence.L10Recurrence_Page GetPageInRecurrence(UserOrganizationModel caller, long pageId, long recurrenceId) {
+			var page = GetPage(caller, pageId);
+			if (page.L10RecurrenceId != recurrenceId)
+				throw new PermissionsException("Page does not exist.");
+			return page;
+		}
+
+		[Obsolete("Should you use GetPageInRecurrence?")]
+		public static L10Recurrence.L10Recurrence_Page GetPage(UserOrganizationModel caller, long pageId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					var page = s.Get<L10Recurrence.L10Recurrence_Page>(pageId);
+					perms.ViewL10Recurrence(page.L10Recurrence.Id);
+					if (page.DeleteTime != null)
+						throw new PermissionsException("Page does not exist.");
+
+
+					return page;
+				}
+			}
+		}
+
+
+		public static L10Recurrence.L10Recurrence_Page EditOrCreatePage(UserOrganizationModel caller, L10Recurrence.L10Recurrence_Page page) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					var existingPage = s.Get<L10Recurrence.L10Recurrence_Page>(page.Id);
+
+					if (existingPage == null) {
+						var ordering = s.QueryOver<L10Recurrence.L10Recurrence_Page>().Where(x => x.DeleteTime == null && x.L10RecurrenceId == page.L10RecurrenceId).RowCount();
+						existingPage = new L10Recurrence.L10Recurrence_Page() {
+							L10RecurrenceId = page.L10RecurrenceId,
+							_Ordering = ordering
+						};
+					}
+
+					perms.AdminL10Recurrence(existingPage.L10RecurrenceId);
+					if (existingPage.L10RecurrenceId != page.L10RecurrenceId)
+						throw new PermissionsException("RecurrenceIds do not match");
+
+					existingPage.PageType = page.PageType;
+					existingPage.Minutes = page.Minutes;
+					existingPage.Title = page.Title;
+					existingPage.Subheading = page.Subheading;
+					existingPage.DeleteTime = page.DeleteTime;
+
+					s.SaveOrUpdate(existingPage);
+
+					tx.Commit();
+					s.Flush();
+
+					return page;
+				}
+			}
+		}
+
+		/*public static string GetPageType_Unsafe(ISession s, string pageName) {
+			long pageId;
+			if (pageName!=null && long.TryParse(pageName.SubstringAfter("-"), out pageId)) {
+
+				var page = s.Get<L10Recurrence.L10Recurrence_Page>(pageId);
+				if (page!=null && page.PageTypeStr!=null)
+					return page.PageTypeStr.ToLower();
+			}
+			return (pageName??"").ToLower();
+		}
+		*/
+
+		public static void ReorderPage(UserOrganizationModel caller, long pageId, int oldOrder, int newOrder) {
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var found = s.Get<L10Recurrence.L10Recurrence_Page>(pageId);
+					PermissionsUtility.Create(s, caller).AdminL10Recurrence(found.L10RecurrenceId);
+
+					var items = s.QueryOver<L10Recurrence.L10Recurrence_Page>().Where(x => x.DeleteTime == null && x.L10RecurrenceId == found.L10RecurrenceId).List().ToList();
+
+					Reordering.Create(items, pageId, found.L10RecurrenceId, oldOrder, newOrder, x => x._Ordering, x => x.Id)
+							  .ApplyReorder(s);
+
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
 
 		#endregion
 	}

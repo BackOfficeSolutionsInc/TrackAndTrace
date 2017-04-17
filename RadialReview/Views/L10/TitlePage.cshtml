@@ -1,0 +1,25 @@
+﻿@model RadialReview.Models.L10.VM.L10MeetingVM
+@{
+	Layout = "~/Views/L10/BasePage.cshtml";
+	var heading = ViewBag.Heading;
+	var subheading = ViewBag.Subheading;
+}
+
+<div class="titlepage meeting-page">
+	<div class="row">
+		<div class="col-md-12">
+			<hgroup class="page-header">
+				<div class="pull-right">
+					@Html.Partial("partial/ButtonBar", Model)
+				</div>
+				<h2>&nbsp;</h2>
+			</hgroup>
+			<div class="centered">
+				<div class="component" >
+					<h2>@(heading)</h2>
+					<h4>@(new MvcHtmlString(subheading))</h4>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -42,6 +42,13 @@
                 }
             },
 			{
+				"Id": "LogFourNet",
+				"FullName": "AWS.EC2.Windows.CloudWatch.CustomLog.CustomLogInputComponent,AWS.EC2.Windows.CloudWatch",
+				"Parameters": {
+					"LogDirectoryPath": "C:\\logs"					
+				}
+			},
+			{
 				"Id": "IISLogs",
 				"FullName": "AWS.EC2.Windows.CloudWatch.CustomLog.CustomLogInputComponent,AWS.EC2.Windows.CloudWatch",
 				"Parameters": {
@@ -54,6 +61,7 @@
 					"LineCount": "5"
 				}
 			},
+			
             {
                 "Id": "CustomLogs",
                 "FullName": "AWS.EC2.Windows.CloudWatch.CustomLog.CustomLogInputComponent,AWS.EC2.Windows.CloudWatch",
@@ -102,6 +110,17 @@
                 }
             },
 			{
+                "Id": "CloudWatchLogFourNet",
+                "FullName": "AWS.EC2.Windows.CloudWatch.CloudWatchLogsOutput,AWS.EC2.Windows.CloudWatch",
+                "Parameters": {
+                    "AccessKey": "AKIAJW57Y43FCAIGGS5A",
+                    "SecretKey": "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",
+                    "Region": "us-west-2",
+                    "LogGroup": "TractionTools.log.group",
+                    "LogStream": "TractionTools.instance.log4net"
+                }
+            },
+			{
                 "Id": "CloudWatchPerf",
                 "FullName": "AWS.EC2.Windows.CloudWatch.CloudWatchLogsOutput,AWS.EC2.Windows.CloudWatch",
                 "Parameters": {
@@ -128,6 +147,7 @@
             "Flows": 
             [
                 "(IISLogs),CloudWatchLogs",
+                "(LogFourNet),CloudWatchLogFourNet",
                 "(ApplicationEventLog,SystemEventLog,SecurityEventLog),CloudWatchEvents"
             ]
         }

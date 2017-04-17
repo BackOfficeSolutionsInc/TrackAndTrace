@@ -22,8 +22,8 @@ namespace RadialReview.Exceptions
         public PaymentExceptionType Type {get;set;}
         public PaymentException(OrganizationModel organization,decimal chargeAmount,PaymentExceptionType type,String message=null):base(message ?? "An error occurred in making a payment.")
         {
-            OrganizationId = organization.Id;
-	        OrganizationName = organization.GetName();
+            OrganizationId = organization.NotNull(x=>x.Id);
+	        OrganizationName = organization.NotNull(x => x.GetName());
             OccurredAt = DateTime.UtcNow;
             ChargeAmount = chargeAmount;
             Type = type;

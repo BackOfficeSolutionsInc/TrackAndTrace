@@ -28,8 +28,16 @@ namespace RadialReview.Models.L10 {
 		[Display(Name = "Other")]
 		Other = 100
 	}
+	public enum MeetingType {
+		// Invalid =0,
 
-	public class L10Recurrence : ILongIdentifiable, IDeletable {
+		[Display(Name = "Level 10 Meeting")]
+		L10 = 0,
+		[Display(Name = "Same Page Meeting")]
+		SamePage = 1
+	}
+
+	public partial class L10Recurrence : ILongIdentifiable, IDeletable {
 
 		public virtual long Id { get; set; }
 		public virtual String Name { get; set; }
@@ -54,6 +62,8 @@ namespace RadialReview.Models.L10 {
 		public virtual IList<L10Recurrence_Measurable> _DefaultMeasurables { get; set; }
 		public virtual IList<L10Recurrence_Rocks> _DefaultRocks { get; set; }
 		public virtual IList<L10Recurrence_VideoConferenceProvider> _VideoConferenceProviders { get; set; }
+		public virtual IList<L10Recurrence_Page> _Pages { get; set; }
+
 		//public virtual IList<L10AgendaItem> _AgendaItems { get; set; }
 
 		public virtual List<L10Note> _MeetingNotes { get; set; }
@@ -91,6 +101,7 @@ namespace RadialReview.Models.L10 {
 		public virtual bool ShowHeadlinesBox { get; set; }
 		public virtual PeopleHeadlineType HeadlineType { get; set; }
 		public virtual L10RockType RockType { get; set; }
+		public virtual MeetingType MeetingType { get; set; }
 
 		public virtual L10TeamType TeamType { get; set; }
 		public virtual bool IsLeadershipTeam { get; set; }
@@ -112,6 +123,7 @@ namespace RadialReview.Models.L10 {
 			IncludeIndividualTodos = false;
 			IncludeAggregateTodoCompletion = false;
 			EnableTranscription = false;
+			MeetingType = MeetingType.L10;
 			CountDown = true;
 			IsLeadershipTeam = true;
 			Prioritization = PrioritizationType.Rank;
@@ -135,6 +147,7 @@ namespace RadialReview.Models.L10 {
 				Map(x => x.CurrentWeekHighlightShift);
 				Map(x => x.ShowHeadlinesBox);
 				Map(x => x.HeadlineType);
+				Map(x => x.MeetingType);
 				Map(x => x.RockType);
 				Map(x => x.HeadlinesId);
 				Map(x => x.CreateTime);
@@ -247,6 +260,8 @@ namespace RadialReview.Models.L10 {
 			public virtual bool _WasModified { get; set; }
 			public virtual bool _Used { get; set; }
 		}
+
+
 
 		public class L10Recurrence_VideoConferenceProvider : ILongIdentifiable, IDeletable, IOneToMany {
 			public virtual long Id { get; set; }

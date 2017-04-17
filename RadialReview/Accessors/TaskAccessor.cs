@@ -71,14 +71,14 @@ namespace RadialReview.Accessors {
 			var toCreate = new List<ScheduledTask>();
 			var emails = new List<Mail>();
 			var res = new List<ExecutionResult>();
-
+			log.Info("ExecuteTasks - Starting Execute Tasks (" + tasks.Count+") " + DateTime.UtcNow);
 			try {
 				MarkStarted(tasks, now);
 				var results = await Task.WhenAll(tasks.Select(task => {
 					try {
 						return ExecuteTask_Internal(task, now, executeTaskFunc);
 					} catch (Exception e) {
-						log.Error("Task execution exception.", e);
+						log.Error("ExecuteTasks - Task execution exception.", e);
 						return null;
 					}
 				}));
@@ -91,6 +91,7 @@ namespace RadialReview.Accessors {
 			} finally {
 				MarkStarted(tasks, null);
 			}
+			log.Info("ExecuteTasks - Ending Execute Task " + DateTime.UtcNow);
 
 			//Sessions Must be separated.
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -105,12 +106,15 @@ namespace RadialReview.Accessors {
 				}
 			}
 
+			log.Info("ExecuteTasks - UpdateScorecard " + DateTime.UtcNow);
 			UpdateScorecard(now);
+			log.Info("ExecuteTasks - Sending (" + emails.Count+") emails " + DateTime.UtcNow);
 			try {
 				await Emailer.SendEmails(emails);
 			} catch (Exception e) {
-				log.Error("Task execution exception. Email failed (2).", e);
+				log.Error("ExecuteTasks - Task execution exception. Email failed (2).", e);
 			}
+			log.Info("ExecuteTasks - Done sending emails " + DateTime.UtcNow);
 			return res;
 		}
 
@@ -152,6 +156,7 @@ namespace RadialReview.Accessors {
 							MaxException = task.MaxException,
 							OriginalTaskId = task.OriginalTaskId,
 							CreatedFromTaskId = task.Id,
+							EmailOnException = task.EmailOnException,
 						};
 						while (nt.Fire < DateTime.UtcNow) {
 							nt.Fire = nt.Fire.AddTimespan(task.NextSchedule.Value);
@@ -420,37 +425,37 @@ namespace RadialReview.Accessors {
 		}
 
 		public static void UpdateScorecard(DateTime now) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var measurables = s.QueryOver<MeasurableModel>().Where(x => x.DeleteTime == null && x.NextGeneration <= now).List().ToList();
+			//using (var s = HibernateSession.GetCurrentSession()) {
+			//	using (var tx = s.BeginTransaction()) {
+			//		var measurables = s.QueryOver<MeasurableModel>().Where(x => x.DeleteTime == null && x.NextGeneration <= now).List().ToList();
 
-					//var weekLookup = new Dictionary<long, DayOfWeek>();
+			//		//var weekLookup = new Dictionary<long, DayOfWeek>();
 
-					//Next Thursday
-					foreach (var m in measurables) {
+			//		//Next Thursday
+			//		foreach (var m in measurables) {
 
-						//var startOfWeek =weekLookup.GetOrAddDefault(m.OrganizationId, x => m.Organization.Settings.WeekStart);
+			//			//var startOfWeek =weekLookup.GetOrAddDefault(m.OrganizationId, x => m.Organization.Settings.WeekStart);
 
-						var nextDue = m.NextGeneration.StartOfWeek(DayOfWeek.Sunday).AddDays(7).AddDays((int)m.DueDate).Add(m.DueTime);
+			//			var nextDue = m.NextGeneration.StartOfWeek(DayOfWeek.Sunday).AddDays(7).AddDays((int)m.DueDate).Add(m.DueTime);
 
-						var score = new ScoreModel() {
-							AccountableUserId = m.AccountableUserId,
-							DateDue = nextDue,
-							MeasurableId = m.Id,
-							Measurable = m,
-							OrganizationId = m.OrganizationId,
-							ForWeek = nextDue.StartOfWeek(DayOfWeek.Sunday),
-							OriginalGoal = m.Goal,
-							OriginalGoalDirection = m.GoalDirection
-						};
-						s.Save(score);
-						m.NextGeneration = nextDue;
-						s.Update(m);
-					}
-					tx.Commit();
-					s.Flush();
-				}
-			}
+			//			var score = new ScoreModel() {
+			//				AccountableUserId = m.AccountableUserId,
+			//				DateDue = nextDue,
+			//				MeasurableId = m.Id,
+			//				Measurable = m,
+			//				OrganizationId = m.OrganizationId,
+			//				ForWeek = nextDue.StartOfWeek(DayOfWeek.Sunday),
+			//				OriginalGoal = m.Goal,
+			//				OriginalGoalDirection = m.GoalDirection
+			//			};
+			//			s.Save(score);
+			//			m.NextGeneration = nextDue;
+			//			s.Update(m);
+			//		}
+			//		tx.Commit();
+			//		s.Flush();
+			//	}
+			//}
 		}
 	}
 }

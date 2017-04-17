@@ -399,6 +399,9 @@ namespace RadialReview.Utilities
 			enversConf.Audit<RockModel>();
 			enversConf.Audit<Milestone>();
 
+			enversConf.Audit<L10Recurrence.L10Recurrence_Page>()
+				.ExcludeRelationData(x => x.L10Recurrence);
+
 			enversConf.Audit<RoleModel>();
             enversConf.Audit<UserOrganizationModel>()
                 .ExcludeRelationData(x => x.Groups)
