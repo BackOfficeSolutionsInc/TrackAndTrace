@@ -106,11 +106,16 @@
     <Compile Include="Accessors\SearchAccessor.cs" />
     <Compile Include="Accessors\TinyUserAccessor.cs" />
     <Compile Include="Accessors\VideoConferenceProviders\VideoProviderAccessor.cs" />
+    <Compile Include="Api\V0\Headlines.cs" />
     <Compile Include="Api\V0\Issue.cs" />
     <Compile Include="Api\V0\L10.cs" />
+    <Compile Include="Api\V0\Milestones.cs" />
     <Compile Include="Api\V0\Positions.cs" />
+    <Compile Include="Api\V0\Rocks.cs" />
     <Compile Include="Api\V0\Roles.cs" />
+    <Compile Include="Api\V0\Search.cs" />
     <Compile Include="Api\V0\Seats.cs" />
+    <Compile Include="Api\V0\Teams.cs" />
     <Compile Include="Api\V0\Todo.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="Controllers\Ac\AngularAccountabilityController.cs" />
@@ -126,7 +131,9 @@
     <Compile Include="Models\Angular\Headlines\AngularHeadline.cs" />
     <Compile Include="Models\Angular\Meeting\AngularIssuesSolved.cs" />
     <Compile Include="Models\Angular\Notifications\AngularNotification.cs" />
+    <Compile Include="Models\Angular\Rocks\AngularMilestone.cs" />
     <Compile Include="Models\Angular\Scorecard\AngularMeasurableGroup.cs" />
+    <Compile Include="Models\Angular\Team\AngularTeam.cs" />
     <Compile Include="Models\Enums\RGMType.cs" />
     <Compile Include="Models\Enums\VideoConferenceType.cs" />
     <Compile Include="Models\Events\Event.cs" />
@@ -2390,7 +2397,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>3751</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://localhost:44300/</IISUrl>
+          <IISUrl>http://localhost:44300/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>http://radial.elasticbeanstalk.com/</CustomServerUrl>

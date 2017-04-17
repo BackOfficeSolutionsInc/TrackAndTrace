@@ -16,6 +16,7 @@ using RadialReview.Models.Angular.Todos;
 using RadialReview.Models.Issues;
 using RadialReview.Models.Angular.Issues;
 using RadialReview.Models.Angular.Headlines;
+using RadialReview.Models.Angular.Rocks;
 
 namespace RadialReview.Api.V0
 {
@@ -112,9 +113,14 @@ namespace RadialReview.Api.V0
 
         [Route("L10/attachheadline/{recurrenceId}")]
         [HttpPut]
-        public async Task<bool> AttachHeadlineL10([FromBody]PeopleHeadline headline)
+        public async Task<bool> AttachHeadlineL10(long recurrenceId, [FromBody]string name = null, [FromBody]long? OwnerId = null, [FromBody]string Details = null)
         {
-            return await HeadlineAccessor.CreateHeadline(GetUser(), headline);            
+            if (OwnerId == null)
+            {
+                OwnerId = GetUser().Id;
+            }
+
+            return await HeadlineAccessor.CreateHeadline(GetUser(), new PeopleHeadline() { Message = name, OwnerId = OwnerId.Value, _Details = Details, RecurrenceId = recurrenceId });
         }
 
         [Route("L10/{recurrenceId}/headline/{headlineId}")]

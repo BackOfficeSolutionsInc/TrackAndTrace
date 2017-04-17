@@ -1,4 +1,5 @@
 ﻿using RadialReview.Models.Angular.Base;
+using RadialReview.Models.Angular.Rocks;
 using RadialReview.Models.L10;
 
 namespace RadialReview.Models.Angular.Meeting

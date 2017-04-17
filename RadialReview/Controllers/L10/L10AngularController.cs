@@ -22,6 +22,7 @@ using RadialReview.Models.L10;
 using RadialReview.Models.Angular.Headlines;
 using RadialReview.Models.Angular.Notifications;
 using RadialReview.Notifications;
+using RadialReview.Models.Angular.Rocks;
 
 namespace RadialReview.Controllers {
     public partial class L10Controller :BaseController {

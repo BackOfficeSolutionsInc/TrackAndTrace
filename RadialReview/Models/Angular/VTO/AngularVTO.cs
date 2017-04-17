@@ -7,6 +7,7 @@ using Microsoft.Owin.Security.Provider;
 using RadialReview.Models.Angular.CompanyValue;
 using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.VTO;
+using RadialReview.Models.Angular.Rocks;
 
 namespace RadialReview.Models.Angular.VTO {
 	public interface IVtoSectionHeader {

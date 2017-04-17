@@ -13,6 +13,7 @@ using RadialReview.Models.Angular.Users;
 using RadialReview.Models.ViewModels;
 using RadialReview.Models.Json;
 using RadialReview.Models.Accountability;
+using RadialReview.Models.UserModels;
 
 namespace RadialReview.Api.V0
 {
@@ -134,6 +135,23 @@ namespace RadialReview.Api.V0
         public IEnumerable<Models.Angular.Accountability.AngularAccountabilityNode> GetSeats(long userId) // Angular
         {
             return AccountabilityAccessor.GetNodesForUser(GetUser(), userId).Select(x => new Models.Angular.Accountability.AngularAccountabilityNode(x));
+        }
+
+        //[GET] /user/mine/teams
+        [Route("users/mine/teams")]
+        [HttpGet]
+        public IEnumerable<TeamDurationModel> GetMineTeam()
+        {
+            return TeamAccessor.GetUsersTeams(GetUser(), GetUser().Id);
+        }
+
+
+        //[GET] /user/{userId}/teams
+        [Route("users/{userId}/teams")]
+        [HttpGet]
+        public IEnumerable<TeamDurationModel> GetUserTeams(long userId)
+        {
+            return TeamAccessor.GetAllTeammembersAssociatedWithUser(GetUser(), userId);
         }
 
     }

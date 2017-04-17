@@ -59,6 +59,7 @@ using RadialReview.Models.VideoConference;
 using System.Linq.Expressions;
 using NHibernate.SqlCommand;
 using RadialReview.Models.Rocks;
+using RadialReview.Models.Angular.Rocks;
 
 namespace RadialReview.Accessors
 {
