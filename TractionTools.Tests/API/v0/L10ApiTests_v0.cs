@@ -243,19 +243,18 @@ namespace TractionTools.Tests.Api
 
             L10_Controller L10 = new L10_Controller();
 
-            L10.MockUser(c.E1);
+            L10.MockUser(c.Manager);
 
             var recurrenceId = L10.CreateL10("Test L10");
 
             var headlineModel = new PeopleHeadline()
             {
                 Message = "Test Head Line",
-                OrganizationId = c.Org.Id,
+                OwnerId = c.E1.Id,
                 RecurrenceId = recurrenceId,
                 _Details = "Test details"
             };
-
-            var getHeadline = await L10.AttachHeadlineL10(headlineModel);
+            var getHeadline = await L10.AttachHeadlineL10(recurrenceId, headlineModel.Message, headlineModel.OwnerId, headlineModel._Details);
 
             var getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
 
@@ -279,15 +278,17 @@ namespace TractionTools.Tests.Api
             var headlineModel = new PeopleHeadline()
             {
                 Message = "Test Head Line",
-                OrganizationId = c.Org.Id,
+                OwnerId = c.E1.Id,
                 RecurrenceId = recurrenceId,
                 _Details = "Test details"
             };
 
             //create headline
-            await L10.AttachHeadlineL10(headlineModel);
+            var getHeadline = await L10.AttachHeadlineL10(recurrenceId, headlineModel.Message, headlineModel.OwnerId, headlineModel._Details);
 
-            L10.RemoveHeadlineL10(recurrenceId, headlineModel.Id);
+            var getIdAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
+
+            L10.RemoveHeadlineL10(recurrenceId, getIdAttachHeadline.FirstOrDefault().Id);
 
             var getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
 

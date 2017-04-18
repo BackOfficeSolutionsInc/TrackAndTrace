@@ -120,7 +120,7 @@ namespace RadialReview.Api.V0
                 OwnerId = GetUser().Id;
             }
 
-            return await HeadlineAccessor.CreateHeadline(GetUser(), new PeopleHeadline() { Message = name, OwnerId = OwnerId.Value, _Details = Details, RecurrenceId = recurrenceId });
+            return await HeadlineAccessor.CreateHeadline(GetUser(), new PeopleHeadline() { Message = name, OwnerId = OwnerId.Value, OrganizationId = GetUser().Organization.Id, _Details = Details, RecurrenceId = recurrenceId });
         }
 
         [Route("L10/{recurrenceId}/headline/{headlineId}")]
