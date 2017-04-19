@@ -127,7 +127,7 @@ namespace RadialReview.Utilities
                                        {
                                            m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
                                                .Conventions.Add<StringColumnLengthConvention>();
-                                           // m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
+                                            m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
                                            ////m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
                                            ////m.AutoMappings.Add(CreateAutomappings);
                                            ////m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");

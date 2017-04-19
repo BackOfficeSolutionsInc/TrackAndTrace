@@ -1097,6 +1097,7 @@
     <Content Include="SoftwareUpdates\20160401.txt" />
     <Content Include="SoftwareUpdates\20160201.txt" />
     <Content Include="SoftwareUpdates\20160613.txt" />
+    <Content Include="SoftwareUpdates\20170417.txt" />
     <Content Include="SoftwareUpdates\20161113.txt" />
     <Content Include="SoftwareUpdates\20161017.txt" />
     <Content Include="SoftwareUpdates\20160927.txt" />
@@ -1906,6 +1907,9 @@
     <Content Include="Views\L10\EditL10Page.cshtml" />
     <Content Include="Views\L10\TitlePage.cshtml" />
     <Content Include="Views\L10\NotesBox.cshtml" />
+    <Content Include="Views\Archive\Table.cshtml" />
+    <Content Include="Views\Archive\Index.cshtml" />
+    <Content Include="Views\Dashboard\_L10TileList.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

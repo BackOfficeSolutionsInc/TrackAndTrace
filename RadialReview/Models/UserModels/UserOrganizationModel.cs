@@ -414,10 +414,12 @@ namespace RadialReview.Models
         }
 
 
-        public virtual string ClientOrganizationName { get; set; }
+		public virtual string ClientOrganizationName { get; set; }
+
+		public virtual string UserModelId { get { return User.NotNull(x => x.Id); } set { } }
 
 
-        public virtual DataContract GetUserDataContract()
+		public virtual DataContract GetUserDataContract()
         {
             return new DataContract(this);
         }
@@ -463,6 +465,8 @@ namespace RadialReview.Models
             Map(x => x.DeleteTime);
             Map(x => x.EmailAtOrganization);
 			Map(x => x.IsClient);
+
+			Map(x => x.UserModelId).Column("UserModel_id");
 
 			Map(x => x.EvalOnly);
 

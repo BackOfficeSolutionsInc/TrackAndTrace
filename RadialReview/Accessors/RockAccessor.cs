@@ -284,15 +284,24 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public static void DeleteRock(UserOrganizationModel caller, long rockId)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+		public static void DeleteRock(UserOrganizationModel caller, long rockId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					var rock = s.Get<RockModel>(rockId);
 					var perm = PermissionsUtility.Create(s, caller).EditRock(rock.Id);
 					rock.DeleteTime = DateTime.UtcNow;
+					s.Update(rock);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+		public static void UndeleteRock(UserOrganizationModel caller, long rockId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var rock = s.Get<RockModel>(rockId);
+					var perm = PermissionsUtility.Create(s, caller).EditRock(rock.Id);
+					rock.DeleteTime = null;
 					s.Update(rock);
 					tx.Commit();
 					s.Flush();

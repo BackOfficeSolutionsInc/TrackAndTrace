@@ -43,6 +43,12 @@ namespace RadialReview.Controllers
 				AdminUserId = admin ?? 0,
 			});
 		}
+		[Access(AccessLevel.Radial)]
+		public JsonResult Undelete(long id) {
+			ScorecardAccessor.UndeleteMeasurable(GetUser(), id);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+
 
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult Modal(long id)

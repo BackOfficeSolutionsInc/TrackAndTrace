@@ -1,0 +1,43 @@
+﻿@model RadialReview.Controllers.ArchiveController.ArchiveVM
+@{
+    ViewBag.Title = Model.Title+" Archive";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Deleted @Model.Title</h2>
+
+
+<div id="container" class="editFirst"></div>
+
+@using (Html.BeginScripts()) {
+	<script>
+
+		var datas = @Html.ArrayToString(Model.Objects);
+
+		var table =DataTable({
+			container: "#container",
+			title:"@Model.Title",
+			data:datas,
+			table:{removeText :"Undelete"},
+			//clickAdd: "/Responsibilities/EditSection/",
+			//clickEdit: "/Responsibilities/EditSection/{0}",
+			//clickReorder:"/Responsibilities/ReorderSection/{0}?oldOrder={1}&newOrder={2}",
+			clickRemove:"@Model.UndeleteUrl",
+			cells:[
+				{rowNum:true},
+				{title:"Id",contents:function(r){return r.Id;}},
+				{title:"Name",classes:"fullWidth",contents:function(r){
+					var auditUrl = "@Model.AuditUrl";
+					auditUrl = auditUrl.replace("{0}",r.Id);
+					return "<a href='"+auditUrl+"'>"+r.Name+"</a>";
+				}},
+				{title:"DeleteTime",classes:"",contents:function(r){return "<span class='collapsable'>"+r.DeleteTime+"</span>";}},
+				{title:"Owner",classes:"",contents:function(r){return "<span class='collapsable'>"+r.Owner+"</span>";}},
+				{remove:true}
+				//{contents:function(r){"<a href='/L10/Undelete/"+r.Id+"'>Undelete</a>";}},
+			]
+		});
+
+		//table.setData(datas);
+	</script>
+}

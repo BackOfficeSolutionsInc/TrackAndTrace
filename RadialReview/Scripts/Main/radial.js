@@ -2407,7 +2407,9 @@ function startTour(name, method) {
 							} else {
 								if (typeof (anno.action) === "function")
 									anno.action();
-								an.switchToChainNext();
+								setTimeout(function () {
+									an.switchToChainNext();
+								}, 1);
 							}
 						}
 

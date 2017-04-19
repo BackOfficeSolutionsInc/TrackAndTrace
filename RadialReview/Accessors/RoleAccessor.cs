@@ -64,6 +64,19 @@ namespace RadialReview.Accessors {
 			return allLinks;
 		}
 
+		public static void UndeleteRole(UserOrganizationModel caller, long id) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					PermissionsUtility.Create(s, caller).EditRole(id);
+					var r = s.Get<RoleModel>(id);
+					r.DeleteTime = null;
+					s.Update(r);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
 		public static List<RoleModel> GetRolesForAttach_Unsafe(ISession s, Attach attach, DateRange range = null) {
 
 			var roleIds = s.QueryOver<RoleLink>()
@@ -345,7 +358,7 @@ namespace RadialReview.Accessors {
 			}).ToList();
 
 
-			return ConstructRolesForNode(node.UserId, node.AccountabilityRolesGroup.PositionId, roleLU, allRoleLinks, pd, td).SelectMany(x=>x.Roles).ToList();
+			return ConstructRolesForNode(node.UserId, node.AccountabilityRolesGroup.PositionId, roleLU, allRoleLinks, pd, td).SelectMany(x => x.Roles).ToList();
 
 
 			//return queryProvider.WhereRestrictionOn<RoleModel>(null, x => x.Id, allLinks.Select(x => x.RoleId).Distinct().Cast<object>())

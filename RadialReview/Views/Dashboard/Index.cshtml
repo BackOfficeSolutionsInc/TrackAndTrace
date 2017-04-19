@@ -25,7 +25,7 @@
 		dataDateRange = {
 			startDate : new Date().setDate(new Date().getDate() - 1)
 		};
-		function buildGrid(data) {			
+		function buildGrid(data) {
 			if (showJsonAlert(data, true, true)) {
 				Grid.buildElements($('#grid'), data.Object, function(changed) {
 					if (changed.length == 0)
@@ -166,34 +166,17 @@
 			</ul>
 		</li>
 		@if (Model.L10s.Any()) {
-			<li class="dropdown-submenu">
-				<a tabindex="-1">L10s</a>
-				<ul class="dropdown-menu" style="">
-					@foreach (var i in Model.L10s) {
-						<li class="dropdown-submenu">
-							<a tabindex="-1" href="#">@i.Text</a>
-							<ul class="dropdown-menu">
-								<li><a onclick="createTile('/TileData/L10Scorecard/@i.Value','Url',@i.Value)">Scorecard</a></li>
-								<li><a onclick="createTile('/TileData/L10Rocks/@i.Value','Url',@i.Value)">Rocks</a></li>
-								<li><a onclick="createTile('/TileData/L10Todos/@i.Value','Url',@i.Value)">To-do list</a></li>
-								<li><a onclick="createTile('/TileData/L10Issues/@i.Value','Url',@i.Value)">Issues</a></li>
-								<li><a onclick="createTile('/TileData/L10SolvedIssues/@i.Value','Url',@i.Value)">Recently Solved Issues</a></li>
-								<li class="dropdown-submenu">
-									<a tabindex="-1" href="#" @(i.Notes.Any() ? "" : "disabled")>Notes</a>
-									@if (i.Notes.Any()) {
-										<ul class="dropdown-menu" style="">
-											@foreach (var n in i.Notes) {
-												<li><a onclick="createTile('/TileData/L10Notes/@n.Value','Url',@n.Value)">@n.Text</a></li>
-											}
-										</ul>
-									}
-								</li>
-								<li><a onclick="createTile('/TileData/L10Stats/@i.Value','Url',@i.Value)">Stats</a></li>
-							</ul>
-						</li>
-					}
-				</ul>
-			</li>
+			if (Model.L10s.Count > 8) {
+				<li class="dropdown-submenu">
+					<a tabindex="-1">L10s</a>
+					<ul class="dropdown-menu" style="">
+						@{Html.RenderPartial("_L10TileList", Model.L10s);}
+					</ul>
+				</li>
+			} else {
+				<li class="divider"></li>
+				Html.RenderPartial("_L10TileList", Model.L10s);
+			}
 		}
 		<li class="divider"></li>
 		<li class="dropdown-submenu">
@@ -204,6 +187,7 @@
 			</ul>
 		</li>
 	</ul>
+
 </div>
 
 <div class="btn-group add-pages" style="position: fixed;top: 25px;left:90px;z-index: 1001;color:white">
@@ -214,7 +198,7 @@
 		@foreach (var dashboard in Model.Dashboards) {
 			<li>
 				<a href="#">
-					<span class="dashboard_txt_@dashboard.Value dashtitle" onclick="window.location='/Dashboard/Index/@dashboard.Value'" >@dashboard.Text</span>
+					<span class="dashboard_txt_@dashboard.Value dashtitle" onclick="window.location='/Dashboard/Index/@dashboard.Value'">@dashboard.Text</span>
 					<span class="glyphicon glyphicon-edit gray clickable" onclick="renamePage(@dashboard.Value,'@Html.Encode(dashboard.Text)',@((""+dashboard.Selected).ToLower()))"></span>
 				</a>
 			</li>

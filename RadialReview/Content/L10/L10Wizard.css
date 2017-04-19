@@ -1236,6 +1236,7 @@ body,
 .wizard .scorecard-list-container .admin-column,
 .wizard .scorecard-list-container .IsDivider,
 .wizard .scorecard-list-container .top-row,
+.wizard .scorecard-list-container .cumulative-column,
 .wizard .scorecard-list-container thead {
   display: none;
 }

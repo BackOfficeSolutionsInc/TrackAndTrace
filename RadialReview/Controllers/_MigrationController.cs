@@ -1923,6 +1923,7 @@ namespace RadialReview.Controllers {
 						(recur,pageDur,type,subheading,order)=> new L10Recurrence.L10Recurrence_Page() {
 								AutoGen = true,
 								L10Recurrence = recur,
+								L10RecurrenceId = recur.Id,
 								Minutes = ObjectExtensions.Get(recur,pageDur),
 								PageType = type,
 								Title = type.GetDisplayName(),
@@ -1950,22 +1951,23 @@ namespace RadialReview.Controllers {
 						}
 						if (recur.HeadlinesMinutes > 0) {
 							L10Recurrence.L10Recurrence_Page page;
-							switch (recur.HeadlineType) {
-								case PeopleHeadlineType.None:
-									page = pageFunc(recur, x => x.HeadlinesMinutes, L10Recurrence.L10PageType.Empty, "Share headlines about customers/clients and people in the company.<br/> Good and bad. Drop down (to the issues list) anything that needs discussion.", order);
-									page.Title = "People Headlines";
-									break;
-								case PeopleHeadlineType.HeadlinesBox:
-									page = pageFunc(recur, x => x.HeadlinesMinutes, L10Recurrence.L10PageType.NotesBox, null, order);
-									page.Title = "People Headlines";
-									break;
-								case PeopleHeadlineType.HeadlinesList:
-									page = pageFunc(recur, x => x.HeadlinesMinutes, L10Recurrence.L10PageType.Headlines, null, order);
-									break;
-								default:
-									throw new Exception(recur.HeadlineType + "");
-							}
-							s.Insert(page);
+							s.Insert(pageFunc(recur, x => x.HeadlinesMinutes, L10Recurrence.L10PageType.Headlines, "Share headlines about customers/clients and people in the company.<br/> Good and bad. Drop down (to the issues list) anything that needs discussion.", order));
+							//switch (recur.HeadlineType) {
+							//	case PeopleHeadlineType.None:
+							//		page = pageFunc(recur, x => x.HeadlinesMinutes, L10Recurrence.L10PageType.Empty, "Share headlines about customers/clients and people in the company.<br/> Good and bad. Drop down (to the issues list) anything that needs discussion.", order);
+							//		page.Title = "People Headlines";
+							//		break;
+							//	case PeopleHeadlineType.HeadlinesBox:
+							//		page = pageFunc(recur, x => x.HeadlinesMinutes, L10Recurrence.L10PageType.NotesBox, null, order);
+							//		page.Title = "People Headlines";
+							//		break;
+							//	case PeopleHeadlineType.HeadlinesList:
+							//		page = pageFunc(recur, x => x.HeadlinesMinutes, L10Recurrence.L10PageType.Headlines, null, order);
+							//		break;
+							//	default:
+							//		throw new Exception(recur.HeadlineType + "");
+							//}
+							//s.Insert(page);
 							order += 1;
 							pageCount += 1;
 						}
