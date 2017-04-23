@@ -97,9 +97,9 @@ namespace RadialReview.Utilities
                                     factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
                                     .Mappings(m =>
                                     {
-                                        m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
-                                           .Conventions.Add<StringColumnLengthConvention>();
-                                        m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\sqlite\");
+                                        //m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+                                        //   .Conventions.Add<StringColumnLengthConvention>();
+                                       // m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\sqlite\");
                                         //m.AutoMappings.Add(CreateAutomappings);
                                         //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 

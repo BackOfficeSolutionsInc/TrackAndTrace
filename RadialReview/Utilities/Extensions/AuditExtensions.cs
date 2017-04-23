@@ -65,6 +65,9 @@ namespace RadialReview.Utilities.Extensions {
 			long s;
 			long e;
 
+			start= start.AddSeconds(-1);
+			end= end.AddSeconds(1);
+
 			try {
 				s = self.GetRevisionNumberForDate(start);
 			} catch (RevisionDoesNotExistException) {

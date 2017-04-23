@@ -42,7 +42,7 @@ namespace TractionTools.UITests.FAQ {
 
 				d.Find(".anno-content").WaitForText(d,"Click this button to create a new Level 10 meeting",1000.0);
 				d.Find("#l10-create-meeting").Click();
-				d.Wait(500);
+				d.Wait(1000);
 				d.Find("#l10-create-new-meeting").Click();
 
 				var text = d.Find(".anno-content").Wait(400).Text;
