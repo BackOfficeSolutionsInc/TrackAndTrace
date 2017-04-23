@@ -5,7 +5,7 @@ using RadialReview.Models.Angular.Base;
 using RadialReview.Models.Enums;
 using RadialReview.Models.L10;
 
-namespace RadialReview.Models.Angular.Meeting
+namespace RadialReview.Models.Angular.Rocks
 {
 	public class AngularRock : BaseAngular
     {

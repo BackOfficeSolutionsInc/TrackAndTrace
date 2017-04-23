@@ -113,3 +113,9 @@ TractionTools.UITests/_Log/*
 TractionTools.UITests/_Log/current/NoMatch.txt
 GeneratedReports/*
 .vs/*
+.gitconfig
+*.orig
+*_BACKUP_*
+*_BASE_*
+*_LOCAL_*
+*_REMOTE_*

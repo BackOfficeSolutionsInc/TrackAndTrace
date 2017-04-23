@@ -28,6 +28,7 @@ using RadialReview.Notifications;
 using RadialReview.Models.Angular.Notifications;
 using RadialReview.Models.Angular.DataType;
 using RadialReview.Models.Angular.Dashboard;
+using RadialReview.Models.Angular.Rocks;
 
 namespace RadialReview.Controllers {
     [SessionState(SessionStateBehavior.ReadOnly)]

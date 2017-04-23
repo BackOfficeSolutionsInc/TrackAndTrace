@@ -16,6 +16,7 @@ using RadialReview.Model.Enums;
 using Newtonsoft.Json;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Models.Angular.DataType;
+using RadialReview.Models.Angular.Rocks;
 
 namespace RadialReview.Models.Angular.Meeting
 {

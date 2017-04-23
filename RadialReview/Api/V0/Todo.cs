@@ -15,11 +15,11 @@ namespace RadialReview.Api.V0
     public class TodoController : BaseApiController
     {
         // PUT: api/Todo/5
-        [Route("todo/{id}")]
+        [Route("todo/create/{id}")]
         [HttpPut]
-        public async Task<bool> CreateTodo(long recurrenceId, [FromBody]TodoModel todo)
+        public async Task<bool> CreateTodo(long id, [FromBody]TodoModel todo)
         {
-            return await TodoAccessor.CreateTodo(GetUser(), recurrenceId, todo);
+            return await TodoAccessor.CreateTodo(GetUser(), id, todo);
         }
 
         // GET: api/Todo/5
@@ -40,13 +40,14 @@ namespace RadialReview.Api.V0
 
         // GET: api/Todo/mine
         [Route("todo/user/{id}")]
+        [HttpGet]
         public IEnumerable<AngularTodo> GetUserTodos(long id)
         {
             return TodoAccessor.GetTodosForUser(GetUser(), id, true).Select(x => new AngularTodo(x));
         }
 
         // PUT: api/Todo/5
-        [Route("todo/{id}")]
+        [Route("todo/edit/{id}")]
         [HttpPut]
         public void EditTodo(long id, [FromBody]string message, [FromBody]DateTime dueDate)
         {
@@ -54,14 +55,16 @@ namespace RadialReview.Api.V0
         }
 
         // GET: api/Todo/mine
-        [Route("todo/user/{recurrenceId}")]
+        [Route("todo/recurrence/{recurrenceId}")]
+        [HttpGet]
         public IEnumerable<AngularTodo> GetRecurrenceTodos(long recurrenceId)
         {
+            //L10Accessor.CreateBlankRecurrence()
             return L10Accessor.GetAllTodosForRecurrence(GetUser(), recurrenceId, false).Select(x => new AngularTodo(x));
         }
 
         // PUT: api/Todo/5
-        [Route("todo/{id}")]
+        [Route("todo/complete/{id}")]
         [HttpPut]
         public AngularTodo MarkComplete(long id, [FromBody]DateTime completeTime)
         {

@@ -31,6 +31,7 @@ using System.Globalization;
 using System.Threading;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Synchronize;
+using RadialReview.Models.Angular.Rocks;
 
 namespace RadialReview.Accessors {
 	public class VtoAccessor : BaseAccessor {

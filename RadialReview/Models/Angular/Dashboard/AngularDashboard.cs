@@ -4,6 +4,7 @@ using RadialReview.Models.Angular.CompanyValue;
 using RadialReview.Models.Angular.DataType;
 using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.Angular.Notifications;
+using RadialReview.Models.Angular.Rocks;
 using RadialReview.Models.Angular.Roles;
 using RadialReview.Models.Angular.Scorecard;
 using RadialReview.Models.Angular.Todos;
