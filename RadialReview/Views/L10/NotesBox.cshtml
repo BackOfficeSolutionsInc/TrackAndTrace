@@ -1,0 +1,39 @@
+﻿@model RadialReview.Models.L10.VM.L10MeetingVM
+
+@{
+	var heading = ViewBag.Heading;
+	var subheading = ViewBag.Subheading;
+	string notesUrl = null;
+	if (ViewBag.PadId != null) {
+		notesUrl = "https://notes.traction.tools/p/" + (ViewBag.PadId) + "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + (HttpContext.Current.Server.UrlEncode(Html.UserOrganization().GetName()));
+	}
+	var guid = Guid.NewGuid().ToString();
+	ViewBag.Title = heading;
+	Layout = "~/Views/L10/BasePage.cshtml";
+}
+
+<div class="notesBox meeting-page">
+	<div class="row">
+		<div class="col-md-12">
+			<hgroup class="page-header">
+				<div class="pull-right">
+					@Html.Partial("partial/ButtonBar", Model)
+				</div>
+				<h2 class="l10-page-title">@(heading)</h2>
+			</hgroup>			
+			<div class="centered" style="width:90%;">
+				<div class="component">
+					<div style="padding: 20px 70px 20px 70px">
+						<h2>@(heading)</h2>
+						<h4>@(new MvcHtmlString(subheading))</h4>
+					</div>
+					@if (notesUrl != null) {
+						<div class="headlines-notes">
+							<iframe style="width: 100%;height: 100%; border: 1px solid #CCCCCC;width:calc(100% - 2px);" src="@(notesUrl)"></iframe>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

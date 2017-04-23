@@ -21,7 +21,11 @@ namespace TractionTools.Tests.Accessors {
 		[TestMethod]
 		public async Task ChargeOrganization() {
 
-			var org = OrgUtil.CreateOrganization(time: new DateTime(2016, 1, 1));
+			var now = DateTime.UtcNow;
+			var orgCreateTime = now;
+			var executeTime = orgCreateTime.AddDays(60);
+
+			var org = OrgUtil.CreateOrganization(time: orgCreateTime);
 
 			var caller = org.Manager;
 
@@ -30,7 +34,6 @@ namespace TractionTools.Tests.Accessors {
 			//}			
 			ScheduledTask task = null;
 
-			var executeTime = new DateTime(2016, 3, 1);
 
 			DbCommit(s => {
 				var o = s.Get<OrganizationModel>(org.Id);
@@ -94,7 +97,7 @@ namespace TractionTools.Tests.Accessors {
 
 			//Try it again. Fails: already executed
 			await ThrowsAsync<PermissionsException>(async () => {
-				await PaymentAccessor.ChargeOrganization(org.Id, task.Id, true, true, new DateTime(2016, 01, 01));
+				await PaymentAccessor.ChargeOrganization(org.Id, task.Id, true, true, orgCreateTime);
 			}, e => {
 				Assert.AreEqual("Task was already executed.", e.Message);
 			});
@@ -137,7 +140,7 @@ namespace TractionTools.Tests.Accessors {
 
 			//Try it again. Fails: already executed
 			await ThrowsAsync<PermissionsException>(async () => {
-				await PaymentAccessor.ChargeOrganization(org.Id, task.Id, true, true, new DateTime(2016, 01, 01));
+				await PaymentAccessor.ChargeOrganization(org.Id, task.Id, true, true, orgCreateTime);
 			}, e => {
 				Assert.AreEqual("Task was already executed.", e.Message);
 			});

@@ -17,19 +17,22 @@ namespace RadialReview.Api.V0
         // Put: api/Issue/mine
         [Route("issue/create")]
         [HttpPut]
-        public async Task<bool> CreateIssue(long recurrenceId, long ownerId, [FromBody]IssueModel issueModel)
+        public async Task<AngularIssue> CreateIssue(long recurrenceId, [FromBody]string name, [FromBody]long? ownerId = null, [FromBody]string details = null)
         {
-            return await IssuesAccessor.CreateIssue(GetUser(), recurrenceId, ownerId, issueModel);
-        }
+			ownerId = ownerId ?? GetUser().Id;
+			var issue = new IssueModel() { Message = name, Description = details };
+			var success = await IssuesAccessor.CreateIssue(GetUser(), recurrenceId, ownerId.Value, issue);
+			return new AngularIssue(success.IssueRecurrenceModel);
+		}
 
         // GET: api/Issue/5
         [Route("issue/{id}")]
         [HttpGet]
         public AngularIssue Get(long id)
         {
-            IssueModel.IssueModel_Recurrence model = new IssueModel.IssueModel_Recurrence();
-            model.Issue = IssuesAccessor.GetIssue(GetUser(), id);
-            return new Models.Angular.Issues.AngularIssue(model);
+            //IssueModel.IssueModel_Recurrence model = new IssueModel.IssueModel_Recurrence();
+            var model = IssuesAccessor.GetIssue_Recurrence(GetUser(), id);
+            return new AngularIssue(model);
         }
 
         // GET: api/Issue/mine

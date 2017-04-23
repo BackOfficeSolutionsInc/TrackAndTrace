@@ -53,6 +53,12 @@ namespace RadialReview.Controllers
 			return Json(ResultObject.SilentSuccess());
 		}
 
+		[Access(AccessLevel.Radial)]
+		public JsonResult Undelete(long id) {
+			RoleAccessor.UndeleteRole(GetUser(), id);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+
 		#region Template
 		[Access(AccessLevel.Manager)]
 		public PartialViewResult TemplateModal(long id)

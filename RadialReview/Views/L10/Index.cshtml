@@ -19,7 +19,21 @@
     <div class="col-sm-8 col-sm-offset-2">
         @if (ViewBag.IsManager ?? false) {
             <div style="text-align: right;margin-bottom: 3px;">
-                <a class="btn btn-primary btn-invert" href="/L10/Wizard" id="l10-create-meeting">Create New L10 Meeting</a>
+                @*<a class="btn btn-primary btn-invert" href="/L10/Wizard" id="l10-create-meeting">Create New L10 Meeting</a>*@
+
+				<div class="btn-group">
+					<button type="button" id="l10-create-meeting" class="btn btn-primary btn-invert dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						Create New Meeting <span class="caret"></span>
+					</button>
+					@*<button type="button" class="btn btn-primary btn-invert dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<span class="caret"></span>
+						<span class="sr-only">Toggle Dropdown</span>
+					</button>*@
+					<ul class="dropdown-menu dropdown-menu-right" id="l10-create-meeting-dropdown">
+						<li><a href="/L10/Wizard?type=L10" id="l10-create-new-meeting">Create New L10 Meeting</a></li>
+						<li><a href="/L10/Wizard?type=SamePage" id="samepage-create-new-meeting">Create New Same Page Meeting</a></li>
+					</ul>
+				</div>
             </div>
         }
         <div class="panel panel-primary" id="l10-meeting-list">

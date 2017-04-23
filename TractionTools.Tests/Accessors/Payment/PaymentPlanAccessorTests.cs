@@ -76,7 +76,7 @@ namespace TractionTools.Tests.Accessors {
             MockHttpContext();
 			UserOrganizationModel user;
 			AccountabilityNode userNode;
-			var now = new DateTime(2016, 3, 9);
+			var now = DateTime.UtcNow;
 
             var org = new OrganizationAccessor().CreateOrganization(userModel,"PaymentPlanTest " + plan + " Org",plan,
                 now, out user,out userNode, true, true);

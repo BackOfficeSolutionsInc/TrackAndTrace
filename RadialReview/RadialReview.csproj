@@ -139,6 +139,7 @@
     <Compile Include="Models\Enums\VideoConferenceType.cs" />
     <Compile Include="Models\Events\Event.cs" />
     <Compile Include="Models\Issues\HeadlineIssueVM.cs" />
+    <Compile Include="Models\L10\L10Page.cs" />
     <Compile Include="Models\L10\PeopleHeadline.cs" />
     <Compile Include="Models\L10\L10RockType.cs" />
     <Compile Include="Models\L10\PeopleHeadlineType.cs" />
@@ -855,9 +856,6 @@
     <Content Include="Content\L10\Archive\Archive.css">
       <DependentUpon>Archive.less</DependentUpon>
     </Content>
-    <Content Include="Content\L10\Archive\Archive.min.css">
-      <DependentUpon>Archive.css</DependentUpon>
-    </Content>
     <Content Include="Content\L10\l10-ie-only.css">
       <DependentUpon>l10-ie-only.less</DependentUpon>
     </Content>
@@ -1110,6 +1108,7 @@
     <Content Include="SoftwareUpdates\20160401.txt" />
     <Content Include="SoftwareUpdates\20160201.txt" />
     <Content Include="SoftwareUpdates\20160613.txt" />
+    <Content Include="SoftwareUpdates\20170417.txt" />
     <Content Include="SoftwareUpdates\20161113.txt" />
     <Content Include="SoftwareUpdates\20161017.txt" />
     <Content Include="SoftwareUpdates\20160927.txt" />
@@ -1916,6 +1915,12 @@
     <Content Include="Views\Audit\Scores.cshtml" />
     <Content Include="Views\Audit\Measurables.cshtml" />
     <Content Include="Views\Audit\Roles.cshtml" />
+    <Content Include="Views\L10\EditL10Page.cshtml" />
+    <Content Include="Views\L10\TitlePage.cshtml" />
+    <Content Include="Views\L10\NotesBox.cshtml" />
+    <Content Include="Views\Archive\Table.cshtml" />
+    <Content Include="Views\Archive\Index.cshtml" />
+    <Content Include="Views\Dashboard\_L10TileList.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

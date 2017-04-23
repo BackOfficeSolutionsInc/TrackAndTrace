@@ -61,7 +61,7 @@
 																}
 				@:isLeader = @(Model.Meeting.MeetingLeaderId == ViewBag.UserId ? "true" : "false");
 				@:var bmin = (@(Math.Round((Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0)*1000))/1000) + (@((DateTime.UtcNow.ToJavascriptMilliseconds()-(Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds())))))/(60*1000);
-				@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),bmin);
+				@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),bmin@*,Model.Meeting._MeetingLeaderCurrentPageType*@);
 				foreach (var i in Model.Meeting._MeetingLeaderPageDurations.Where(x => x.Item1 != Model.Meeting._MeetingLeaderCurrentPage)){
 						@:setPageTime("@i.Item1",@(Math.Round(i.Item2*10000))/10000);
 				}
@@ -95,7 +95,7 @@
 			$('#Follow').on('switchChange', function(e, data) {
 				setFollowLeader(data.value);
 			});
-			
+
 			$(".back-button").hide();
 			$(".print-vto-button").hide();
 			var page = "main";
@@ -222,7 +222,11 @@
 						</div>
 						<div class="title">Agenda</div>
 						<ol class="agenda-items">
-							@if (Model.Recurrence.SegueMinutes > 0) {
+							@foreach (var p in Model.Recurrence._Pages) {
+								<li class="page-item page-@p.Id pagetype-@(p.PageTypeStr.ToLower())" data-pagetype="@(p.PageTypeStr.ToLower())"><a data-location="page-@p.Id" href="#page-@p.Id">@p.Title</a><span title="Spend @String.Format("{0:0.##}", p.Minutes) minutes on your @Html.Encode(p.Title)" data-over="@p.Minutes" class="page-time"><span class="gray">@(String.Format("{0:0.##}", p.Minutes))m</span></span></li>
+							}
+
+							@*@if (Model.Recurrence.SegueMinutes > 0) {
 								<li class="page-item page-segue">		<a data-location="Segue" href="#Segue">Segue</a><span title="Spend @String.Format("{0:0.##}", Model.Recurrence.SegueMinutes) minutes on your Segue" data-over="@Model.Recurrence.SegueMinutes" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.SegueMinutes))m</span></span></li>
 							}
 							@if (Model.Recurrence.ScorecardMinutes > 0) {
@@ -240,7 +244,7 @@
 							@if (Model.Recurrence.IDSMinutes > 0) {
 								<li class="page-item page-ids">			<a data-location="IDS" href="#IDS">IDS</a><span data-over="@Model.Recurrence.IDSMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.IDSMinutes) minutes on IDS" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.IDSMinutes))m</span></span></li>
 							}
-							<li class="page-item page-conclusion">		<a data-location="Conclusion" href="#Conclusion">Conclude</a><span data-over="@Model.Recurrence.ConclusionMinutes" title="Spend @String.Format("{0:0.##}",Model.Recurrence.ConclusionMinutes) minutes on your Conclusion" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.ConclusionMinutes))m</span></span></li>
+							<li class="page-item page-conclusion">		<a data-location="Conclusion" href="#Conclusion">Conclude</a><span data-over="@Model.Recurrence.ConclusionMinutes" title="Spend @String.Format("{0:0.##}",Model.Recurrence.ConclusionMinutes) minutes on your Conclusion" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.ConclusionMinutes))m</span></span></li>*@
 						</ol>
 
 						@if (Model.Meeting.NotNull(x => x.MeetingLeaderId) != ViewBag.UserId) {
@@ -267,7 +271,7 @@
 						@*<b class="title">Additional Pages</b>*@
 						<div>
 							@if (Model.VtoId != 0) {
-								<div class="alignRight" style1="padding-left:24px;"><div class="vto-button clickable gray" data-location="Scorecard" href="#vto">View V/TO <span class="glyphicon glyphicon-chevron-right"></span></div></div>
+								<div class="alignRight" style1="padding-left:24px;"><div class="vto-button clickable gray" data-location="vto" href="#vto">View V/TO <span class="glyphicon glyphicon-chevron-right"></span></div></div>
 							}
 						</div>
 					</div>
@@ -275,7 +279,7 @@
 					@if (ViewBag.ViewAccountabilityChart ?? false) {
 						<div class="component additional-pages">
 							<div>
-								<div class="alignRight" style1="padding-left:24px;"><div class="ac-button clickable gray" data-location="Scorecard" href="#ac">View Accountability Chart <span class="glyphicon glyphicon-chevron-right"></span></div></div>
+								<div class="alignRight" style1="padding-left:24px;"><div class="ac-button clickable gray" data-location="ac" href="#ac">View Accountability Chart <span class="glyphicon glyphicon-chevron-right"></span></div></div>
 
 							</div>
 							@*<div class="alignCenter">

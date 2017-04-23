@@ -12,6 +12,7 @@ using RadialReview.Models.Json;
 using RadialReview.Models.Askables;
 using RadialReview.Utilities;
 using RadialReview.Models.Angular.Meeting;
+using RadialReview.Models.Angular.Rocks;
 
 namespace TractionTools.Tests.Accessors {
     [TestClass]

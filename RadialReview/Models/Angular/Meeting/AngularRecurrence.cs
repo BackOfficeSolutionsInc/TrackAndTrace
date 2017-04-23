@@ -31,6 +31,16 @@ namespace RadialReview.Models.Angular.Meeting
             VtoId = recurrence.VtoId;
 			HeadlineType = recurrence.HeadlineType;
 			_Recurrence = AngularIgnore.Create(recurrence);
+
+
+			ShowSegue		 =true;
+			ShowScorecard	 =true;
+			ShowRockReview	 =true;
+			ShowHeadlines	 =true;
+			ShowTodos		 =true;
+			ShowIDS			 =true;
+			ShowConclude	 =true;
+
 		}
 
 		public AngularRecurrence(long id):base(id){
@@ -54,7 +64,17 @@ namespace RadialReview.Models.Angular.Meeting
         public string HeadlinesUrl { get; set; }
 		public PeopleHeadlineType? HeadlineType { get; set; }
         public long? VtoId { get; set; }
-		
+
+		public bool? ShowSegue			{ get; set; }
+		public bool? ShowScorecard		{ get; set; }
+		public bool? ShowRockReview		{ get; set; }
+		public bool? ShowHeadlines		{ get; set; }
+		public bool? ShowTodos			{ get; set; }
+		public bool? ShowIDS			{ get; set; }
+		public bool? ShowConclude		{ get; set; }
+
+		public MeetingType? MeetingType { get; set; }
+
 		public AngularIgnore<L10Recurrence> _Recurrence { get; set; }
         public string Focus { get; set; }
 		public List<AngularString> LoadUrls { get; set; }

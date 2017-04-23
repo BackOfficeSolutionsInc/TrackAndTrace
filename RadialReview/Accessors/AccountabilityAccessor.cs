@@ -341,7 +341,21 @@ namespace RadialReview.Accessors {
                 }
             }
         }
-        public static void SetPosition(ISession s, PermissionsUtility perms, RealTimeUtility rt, long nodeId, long? positionId) {
+
+		public static void SetPosition(UserOrganizationModel caller, long seatId, long? positionId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					using (var rt = RealTimeUtility.Create()) {
+						var perms = PermissionsUtility.Create(s, caller);
+						SetPosition(s, perms, rt, seatId, positionId);
+
+						tx.Commit();
+						s.Flush();
+					}
+				}
+			}
+		}
+		public static void SetPosition(ISession s, PermissionsUtility perms, RealTimeUtility rt, long nodeId, long? positionId) {
             perms.ManagesAccountabilityNodeOrSelf(nodeId);
             var now = DateTime.UtcNow;
             UpdatePosition_Unsafe(s, rt, perms, nodeId, positionId, now);
@@ -951,12 +965,12 @@ namespace RadialReview.Accessors {
             }
         }
 
-        public static RoleModel AddRole(UserOrganizationModel caller, Attach attach) {
+        public static RoleModel AddRole(UserOrganizationModel caller, Attach attach, string name = null) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     using (var rt = RealTimeUtility.Create()) {
                         var perms = PermissionsUtility.Create(s, caller);
-                        AddRole(s, perms, rt, attach);
+                        var model = AddRole(s, perms, rt, attach, name);
 
                         tx.Commit();
                         s.Flush();

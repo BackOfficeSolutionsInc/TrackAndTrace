@@ -199,7 +199,7 @@ function setPageTime(pageName, minutes) {
 
 	try {
 		if (typeof (meetingStart) !== "undefined" && meetingStart == true) {
-			var over = $(".page-" + pageName + " .page-time").data("over")
+			var over = $(".page-" + pageName + " .page-time,.page-item." + pageName + " .page-time").data("over")
 			if (typeof (over) === "string")
 				over = over.replace(",", ".");
 			var sec = Math.floor(60 * (minutes - Math.floor(minutes)));
@@ -208,9 +208,9 @@ function setPageTime(pageName, minutes) {
 				displayMinutes = over - Math.floor(minutes);
 			}
 
-			$(".page-" + pageName + " .page-time").html(displayMinutes + "m<span class='second'>" + sec + "s</span>");
+			$(".page-" + pageName + " .page-time,.page-item." + pageName + " .page-time").html(displayMinutes + "m<span class='second'>" + sec + "s</span>");
 			if (minutes >= over) {
-				var p = $(".current.page-" + pageName + " .page-time");
+				var p = $(".current.page-" + pageName + " .page-time,.current.page-item." + pageName + " .page-time");
 				if (!firstSetPageTime && p.length && !p.hasClass("over")) {
 					var audio1 = new Audio('https://s3.amazonaws.com/Radial/audio/pop+pop.mp3');
 					audio1.play();
@@ -219,12 +219,12 @@ function setPageTime(pageName, minutes) {
 					//    //audio.currentTime = 0;
 					//    audio2.play();
 					//}, 250);
-				} else if ($(".page-" + pageName + " .page-time").length) {
+				} else if ($(".page-" + pageName + " .page-time,.page-item." + pageName + " .page-time").length) {
 					firstSetPageTime = false;
 				}
-				$(".page-" + pageName + " .page-time").addClass("over");
+				$(".page-" + pageName + " .page-time,.page-item." + pageName + " .page-time").addClass("over");
 			} else {
-				$(".page-" + pageName + " .page-time").removeClass("over");
+				$(".page-" + pageName + " .page-time,.page-item." + pageName + " .page-time").removeClass("over");
 			}
 		}
 	} catch (e) {
@@ -268,7 +268,7 @@ function setCurrentPage(pageName, startTime, baseMinutes) {
 	currentPageBaseMinutes = baseMinutes;
 	console.log("setCurrentPage:" + pageName + " " + currentPageStartTime + " " + baseMinutes);
 	$(".page-item.current").removeClass("current");
-	$(".page-item.page-" + pageName).addClass("current");
+	$(".page-item.page-" + pageName + ",.page-item." + pageName).addClass("current");
 	if (followLeader && !isLeader) {
 		loadPageForce(pageName);
 	}
@@ -309,6 +309,7 @@ function loadPageForce(location) {
 	setHash(location);
 	//window.location.hash = location;
 	location = location.toLowerCase();
+
 	//if (location != myPage) {
 	showLoader();
 	myPage = location;
@@ -324,7 +325,11 @@ function loadPageForce(location) {
 			url: "/L10/Load/" + window.recurrenceId + "?page=" + location + "&connection=" + $.connection.hub.id,
 			success: function (data) {
 				replaceMainWindow(data, function () {
-					$(window).trigger("page-" + location.toLowerCase());
+					var type = $(".page-item." + location).data("pagetype");
+					if (typeof (type) === "undefined")
+						type = location;
+
+					$(window).trigger("page-" + /*location*/type.toLowerCase());
 					fixSidebar();
 				});
 

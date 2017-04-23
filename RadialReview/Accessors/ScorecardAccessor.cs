@@ -45,6 +45,19 @@ namespace RadialReview.Accessors {
 			}), scores.ToList(), now, range, includeNextWeek, now);
 		}
 
+		public static void UndeleteMeasurable(UserOrganizationModel caller, long measurableId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					PermissionsUtility.Create(s, caller).EditMeasurable(measurableId);
+					var m = s.Get<MeasurableModel>(measurableId);
+					m.DeleteTime = null;
+					s.Update(m);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
 		public static List<ScoreModel> GetScores(UserOrganizationModel caller, long organizationId, DateTime start, DateTime end, bool loadUsers) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -165,13 +178,14 @@ namespace RadialReview.Accessors {
 					csv.SetTitle("Measurable");
 					foreach (var sss in scores.GroupBy(x => x.MeasurableId)) {
 						var ss = sss.First();
-						csv.Add(ss.Measurable.Title, "Owner", ss.Measurable.AccountableUser.NotNull(x => x.GetName()));
-						csv.Add(ss.Measurable.Title, "Admin", ss.Measurable.AdminUser.NotNull(x => x.GetName()));
-						csv.Add(ss.Measurable.Title, "Goal", "" + ss.Measurable.Goal);
-						csv.Add(ss.Measurable.Title, "GoalDirection", "" + ss.Measurable.GoalDirection);
+						csv.Add(""+ss.Measurable.Id, "Title", ""+ss.Measurable.Title);
+						csv.Add(""+ss.Measurable.Id, "Owner", ss.Measurable.AccountableUser.NotNull(x => x.GetName()));
+						csv.Add(""+ss.Measurable.Id, "Admin", ss.Measurable.AdminUser.NotNull(x => x.GetName()));
+						csv.Add(""+ss.Measurable.Id, "Goal", "" + ss.Measurable.Goal);
+						csv.Add(""+ss.Measurable.Id, "GoalDirection", "" + ss.Measurable.GoalDirection);
 					}
 					foreach (var ss in scores.OrderBy(x => x.ForWeek)) {
-						csv.Add(ss.Measurable.Title, ss.ForWeek.ToShortDateString(), ss.Measured.NotNull(x => x.Value.ToString()) ?? "");
+						csv.Add("" + ss.Measurable.Id, ss.ForWeek.ToShortDateString(), ss.Measured.NotNull(x => x.Value.ToString()) ?? "");
 					}
 					return csv;
 

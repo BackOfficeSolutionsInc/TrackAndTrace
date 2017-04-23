@@ -417,13 +417,15 @@ function getWeekSinceEpoch(day) {
 ///		 title:(optional, default: ""),																							///
 ///		 nodataText:(optional, default: "No data available."),																	///
 ///																																///
-///		 clickAdd:<url,function(row,settings)>(optional, default: null),														///
-///		 clickEdit:<url,function(row,settings)>(optional, default: null),														///
-///		 clickRemove:<url,function(row,settings)>(optional, default: null),														///
-///		 clickReorder:<url,function(row,oldIndex,newIndex,settings)>(optional, default: null),									///
+///		 clickAdd:<url||function,function(row,settings)>(optional, default: null),												///
+///		 clickEdit:<url||function,function(row,settings)>(optional, default: null),												///
+///		 clickRemove:<url||function,function(row,settings)>(optional, default: null),											///
+///		 clickReorder:<url||function,function(row,oldIndex,newIndex,settings)>(optional, default: null),						///
 ///			{0} = row.Id																										///
 ///			{1} = oldIndex																										///
 ///			{2} = newIndex																										///
+///		 postAdd:<url>																											///
+///		 postEdit:<url>																											///
 ///																																///
 ///		 cellId:<function(cell,settings)>(optional, default: cell=>cell.Id),													///
 ///																																///
@@ -590,28 +592,33 @@ var DataTable = function (settings) {
 
 	//Complex Updates
 	if (typeof (settings.clickEdit) === "string") {
-		settings._.onEditUrl = settings.clickEdit;
+		settings._.onEditAction = settings.clickEdit;
+		settings._.onEditActionPost = settings.postEdit || settings.clickEdit;
 		settings.clickEdit = function (row, settings) {
 			var title = settings.clickEditTitle || function (settings) { return "Edit " + resolve(settings.title, settings); };
 			var rid = resolve(settings.cellId, row, settings);
-			showModal(resolve(title, settings), settings._.onEditUrl.replace("{0}", rid), settings._.onEditUrl.replace("{0}", ""), null, null, function (d) {
-				try {
-					var ids = getIds(settings.data);
-					var rid = resolve(settings.cellId, d.Object, settings);
-					var index = ids.indexOf(rid);
-					settings.data[index] = d.Object;
-				} catch (e) {
-					console.error(e);
-				}
-				editRow(d.Object);
-			});
+			var actionType = typeof(settings._.onEditAction);
+			if (actionType == "string") {
+				showModal(resolve(title, settings), settings._.onEditAction.replace("{0}", rid), settings._.onEditActionPost.replace("{0}", ""), null, null, function (d) {
+					try {
+						var ids = getIds(settings.data);
+						var rid = resolve(settings.cellId, d.Object, settings);
+						var index = ids.indexOf(rid);
+						settings.data[index] = d.Object;
+					} catch (e) {
+						console.error(e);
+					}
+					editRow(d.Object);
+				});
+			}
 		};
 	}
 	if (typeof (settings.clickAdd) === "string") {
 		settings._.onAddUrl = settings.clickAdd;
+		settings._.onAddUrlPost = settings.postAdd || settings.clickAdd;
 		settings.clickAdd = function (settings) {
 			var title = settings.clickAddTitle || function (settings) { return "Add " + resolve(settings.title, settings); }
-			showModal(resolve(title, settings), settings._.onAddUrl, settings._.onAddUrl, null, null, function (d) {
+			showModal(resolve(title, settings), settings._.onAddUrl, settings._.onAddUrlPost, null, null, function (d) {
 				addRow(d.Object);
 			});
 		};
@@ -655,6 +662,7 @@ var DataTable = function (settings) {
 	}
 
 	//Generator Functions
+	var rowIndexShift = 0;
 	var generateContainer = function () {
 		container = $("<div/>");
 		panel = $(settings.panel.element).clone();
@@ -695,12 +703,18 @@ var DataTable = function (settings) {
 				if (arrayHasOwnIndex(headers, c)) {
 					var headerCell = $(settings.table.cells.element).clone();
 					if (headers[c] != null) {
+						if (headerCell.is("td")) {
+							headerCell = $("<th/>");
+						}
 						headerCell.text(headers[c]);
 					}
 					$(headerRow).append(headerCell);
 				}
 			}
-			$(table).append(headerRow);
+			rowIndexShift -= 1;
+			var head = $("<thead/>");
+			head.append(headerRow);
+			$(table).append(head);
 		}
 
 
@@ -720,39 +734,64 @@ var DataTable = function (settings) {
 		for (var c in settings.cells) {
 			if (arrayHasOwnIndex(settings.cells, c)) {
 				if (resolve(settings.cells[c].reorder, settings) == true) {
-					anyReorder = true;
-					break;
+					if (!settings.clickReorder) {
+						console.warn("Cannot use cell.reorder if clickReorder is not defined. To disable this warning remove reordable cells contents.");
+						//settings.addButton = false;
+						//delete (settings.cells[c]);
+					} else {
+						try {
+							$.getScript("/Scripts/jquery/jquery.ui.sortable.js").done(function () {
+								$("#" + settings.table.id + " tbody").xsortable({
+									items: ">.row",
+									handle: ".reorder-handle",
+									start: function (e, ui) {
+										$(this).attr('data-previndex', ui.item.index() + rowIndexShift);
+									},
+									update: function (e, ui) {
+										var newIndex = ui.item.index() + rowIndexShift;
+										var oldIndex = +$(this).attr('data-previndex');
+										$(this).removeAttr('data-previndex');
+										var row = settings.data[oldIndex];
+										resolve(settings.clickReorder, row, oldIndex, newIndex, settings);
+										refreshRowNum();
+									}
+								}).disableSelection();
+							});
+						} catch (e) {
+							console.warn("xsortable not loaded.");
+						}
+					}
 				}
 			}
 		}
-		if (anyReorder) {
-			if (!settings.clickReorder) {
-				console.warn("Cannot use cell.reorder if clickReorder is not defined. To disable this warning set 'addButton: false'");
-				settings.addButton = false;
-			} else {
-				try {
-					$.getScript("/Scripts/jquery/jquery.ui.sortable.js").done(function () {
-						$("#" + settings.table.id + " tbody").xsortable({
-							items: ">.row",
-							handle: ".reorder-handle",
-							start: function (e, ui) {
-								$(this).attr('data-previndex', ui.item.index());
-							},
-							update: function (e, ui) {
-								var newIndex = ui.item.index();
-								var oldIndex = +$(this).attr('data-previndex');
-								$(this).removeAttr('data-previndex');
-								var row = settings.data[oldIndex];
-								resolve(settings.clickReorder, row, oldIndex, newIndex, settings);
-								refreshRowNum();
-							}
-						}).disableSelection();
-					});
-				} catch (e) {
-					console.warn("xsortable not loaded.");
-				}
-			}
-		}
+		//if (anyReorder) {
+		//	if (!settings.clickReorder) {
+		//		console.warn("Cannot use cell.reorder if clickReorder is not defined. To disable this warning set 'addButton: false'");
+		//		//settings.addButton = false;
+		//	} else {
+		//		try {
+		//			$.getScript("/Scripts/jquery/jquery.ui.sortable.js").done(function () {
+		//				$("#" + settings.table.id + " tbody").xsortable({
+		//					items: ">.row",
+		//					handle: ".reorder-handle",
+		//					start: function (e, ui) {
+		//						$(this).attr('data-previndex', ui.item.index());
+		//					},
+		//					update: function (e, ui) {
+		//						var newIndex = ui.item.index();
+		//						var oldIndex = +$(this).attr('data-previndex');
+		//						$(this).removeAttr('data-previndex');
+		//						var row = settings.data[oldIndex];
+		//						resolve(settings.clickReorder, row, oldIndex, newIndex, settings);
+		//						refreshRowNum();
+		//					}
+		//				}).disableSelection();
+		//			});
+		//		} catch (e) {
+		//			console.warn("xsortable not loaded.");
+		//		}
+		//	}
+		//}
 	}
 	var generateRow = function (rowData) {
 		var row = $(settings.table.rows.element).clone();
@@ -942,7 +981,10 @@ var DataTable = function (settings) {
 			$(panelHeader).attr("class", resolve(settings.panel.header.classes, settings));
 			$(panelTitle).attr("id", resolve(settings.panel.header.title.id, settings));
 			$(panelTitle).attr("class", resolve(settings.panel.header.title.classes, settings));
-			$(panelTitle).html(resolve(settings.title, settings));
+			var title = resolve(settings.title, settings);			
+			$(panelTitle).html(title);
+			$(panelHeader).toggleClass("hidden", title == null || title == "" || typeof (title) === "undefined");
+
 		}
 
 		$(table).attr("id", resolve(settings.table.id, settings));
@@ -2365,7 +2407,9 @@ function startTour(name, method) {
 							} else {
 								if (typeof (anno.action) === "function")
 									anno.action();
-								an.switchToChainNext();
+								setTimeout(function () {
+									an.switchToChainNext();
+								}, 1);
 							}
 						}
 

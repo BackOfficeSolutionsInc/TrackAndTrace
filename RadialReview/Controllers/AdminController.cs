@@ -1291,9 +1291,17 @@ namespace RadialReview.Controllers {
 
 
 		[Access(AccessLevel.Radial)]
-		public async Task<JsonResult> ChargeToken(long id, decimal amt) {
+		public async Task<JsonResult> TestChargeOrg(long id, decimal amt) {
 #pragma warning disable CS0618 // Type or member is obsolete
 			return Json(await PaymentAccessor.ChargeOrganizationAmount(id, amt, true), JsonRequestBehavior.AllowGet);
+#pragma warning restore CS0618 // Type or member is obsolete
+		}
+
+		[Access(AccessLevel.Radial)]
+		public async Task<JsonResult> TestChargeToken(string token, decimal amt,bool bank=false) {
+#pragma warning disable CS0618 // Type or member is obsolete
+			var pr = await PaymentSpringUtil.ChargeToken(null, token, amt, true, bank);
+			return Json(pr, JsonRequestBehavior.AllowGet);
 #pragma warning restore CS0618 // Type or member is obsolete
 		}
 

@@ -716,6 +716,45 @@ namespace RadialReview.Controllers {
 
 		#endregion
 
+
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult CreateL10Page(long id) {
+			var recurrenceId = id;
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrenceId, true);
+			var page = new L10Recurrence.L10Recurrence_Page() {
+				L10RecurrenceId = recurrenceId
+			};
+			return PartialView("EditL10Page",page);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult EditL10Page(long id) {
+			var page = L10Accessor.GetPage(GetUser(), id);
+			return PartialView(page);
+		}
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public JsonResult EditL10Page(L10Recurrence.L10Recurrence_Page model) {
+			var page = L10Accessor.EditOrCreatePage(GetUser(), model);
+			return Json(ResultObject.SilentSuccess(page));
+		}
+		
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult ReorderL10Page(long id, int oldOrder, int newOrder) {
+			L10Accessor.ReorderPage(GetUser(), id, oldOrder, newOrder);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult DeleteL10Page(long id) {
+			var page = L10Accessor.GetPage(GetUser(), id);
+			page.DeleteTime = DateTime.UtcNow;
+			var model = L10Accessor.EditOrCreatePage(GetUser(), page);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+
+
+
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult Members(long id) {
 			var recurrenceId = id;

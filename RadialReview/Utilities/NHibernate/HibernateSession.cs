@@ -97,9 +97,9 @@ namespace RadialReview.Utilities
                                     factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
                                     .Mappings(m =>
                                     {
-                                        m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
-                                           .Conventions.Add<StringColumnLengthConvention>();
-                                        m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\sqlite\");
+                                        //m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+                                        //   .Conventions.Add<StringColumnLengthConvention>();
+                                       // m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\sqlite\");
                                         //m.AutoMappings.Add(CreateAutomappings);
                                         //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 
@@ -125,9 +125,9 @@ namespace RadialReview.Utilities
                                                 MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionLocalMysql"].ConnectionString).ShowSql())
                                        .Mappings(m =>
                                        {
-                                           m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
-                                               .Conventions.Add<StringColumnLengthConvention>();
-                                           // m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
+                                           //m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+                                           //    .Conventions.Add<StringColumnLengthConvention>();
+                                           //  m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
                                            ////m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
                                            ////m.AutoMappings.Add(CreateAutomappings);
                                            ////m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
@@ -398,6 +398,9 @@ namespace RadialReview.Utilities
             enversConf.Audit<ReviewsModel>();
 			enversConf.Audit<RockModel>();
 			enversConf.Audit<Milestone>();
+
+			enversConf.Audit<L10Recurrence.L10Recurrence_Page>()
+				.ExcludeRelationData(x => x.L10Recurrence);
 
 			enversConf.Audit<RoleModel>();
             enversConf.Audit<UserOrganizationModel>()

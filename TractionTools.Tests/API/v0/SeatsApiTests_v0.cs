@@ -158,7 +158,7 @@ namespace TractionTools.Tests.Api
 
             var getUserPosition = PositionAccessor.GetPositionModelForUser(c.E1, outParam.Id);
 
-            Assert.IsNotNull(getUserPosition.FirstOrDefault().DeleteTime);
+            Assert.AreEqual(0,getUserPosition.Count());
         } // breaking
 
         [TestMethod]
