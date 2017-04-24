@@ -119,3 +119,5 @@ GeneratedReports/*
 *_BASE_*
 *_LOCAL_*
 *_REMOTE_*
+RadialReview/Web.config
+RadialReview/Web.*.config
