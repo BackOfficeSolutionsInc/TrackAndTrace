@@ -139,7 +139,112 @@ namespace TractionTools.Tests.PDF {
 			OrgUtil.AddUserToOrg(org, L10, "L17");
 
 		}
+
+		private void diffSizeTree(FullOrg org) {
+
+
+			var L1 = OrgUtil.AddUserToOrg(org, org.E1BottomNode, "L1");
+			var LL = OrgUtil.AddUserToOrg(org, L1, "LL");
+
+			var L2 = OrgUtil.AddUserToOrg(org, LL, "L2");
+			var L3 = OrgUtil.AddUserToOrg(org, LL, "L3");
+			var L4 = OrgUtil.AddUserToOrg(org, LL, "L4");
+			var L5 = OrgUtil.AddUserToOrg(org, LL, "L5");
+			var L6 = OrgUtil.AddUserToOrg(org, LL, "L6");
+			var L7 = OrgUtil.AddUserToOrg(org, LL, "L7");
+			var L8 = OrgUtil.AddUserToOrg(org, LL, "L8");
+			var L9 = OrgUtil.AddUserToOrg(org, LL, "L9");
+			var L16 = OrgUtil.AddUserToOrg(org, LL, "L12");
+
+
+			OrgUtil.AddUserToOrg(org, L2, "L2a");
+			OrgUtil.AddUserToOrg(org, L2, "L2b");
+
+			OrgUtil.AddUserToOrg(org, L3, "L3");
+			OrgUtil.AddUserToOrg(org, L3, "L3");
+			OrgUtil.AddUserToOrg(org, L3, "L3");
+
+			OrgUtil.AddUserToOrg(org, L4, "L4a");
+			OrgUtil.AddUserToOrg(org, L4, "L4b");
+			OrgUtil.AddUserToOrg(org, L4, "L4c");
+			OrgUtil.AddUserToOrg(org, L4, "L4d");
+
+			OrgUtil.AddUserToOrg(org, L5, "L5a");
+			OrgUtil.AddUserToOrg(org, L5, "L5b");
+			OrgUtil.AddUserToOrg(org, L5, "L5c");
+			OrgUtil.AddUserToOrg(org, L5, "L5d");
+			OrgUtil.AddUserToOrg(org, L5, "L5e");
+
+			OrgUtil.AddUserToOrg(org, L6, "L6a");
+			OrgUtil.AddUserToOrg(org, L6, "L6b");
+			OrgUtil.AddUserToOrg(org, L6, "L6c");
+			OrgUtil.AddUserToOrg(org, L6, "L6d");
+			OrgUtil.AddUserToOrg(org, L6, "L6e");
+			OrgUtil.AddUserToOrg(org, L6, "L6f");
+
+			OrgUtil.AddUserToOrg(org, L7, "L7a");
+			OrgUtil.AddUserToOrg(org, L7, "L7b");
+			OrgUtil.AddUserToOrg(org, L7, "L7c");
+			OrgUtil.AddUserToOrg(org, L7, "L7d");
+			OrgUtil.AddUserToOrg(org, L7, "L7e");
+			OrgUtil.AddUserToOrg(org, L7, "L7f");
+			OrgUtil.AddUserToOrg(org, L7, "L7g");
+
+			OrgUtil.AddUserToOrg(org, L8, "L8a");
+			OrgUtil.AddUserToOrg(org, L8, "L8b");
+			OrgUtil.AddUserToOrg(org, L8, "L8c");
+			OrgUtil.AddUserToOrg(org, L8, "L8d");
+			OrgUtil.AddUserToOrg(org, L8, "L8e");
+			OrgUtil.AddUserToOrg(org, L8, "L8f");
+			OrgUtil.AddUserToOrg(org, L8, "L8g");
+			OrgUtil.AddUserToOrg(org, L8, "L8h");
+
+			OrgUtil.AddUserToOrg(org, L9, "L9a");
+			OrgUtil.AddUserToOrg(org, L9, "L9b");
+			OrgUtil.AddUserToOrg(org, L9, "L9c");
+			OrgUtil.AddUserToOrg(org, L9, "L9d");
+			OrgUtil.AddUserToOrg(org, L9, "L9e");
+			OrgUtil.AddUserToOrg(org, L9, "L9f");
+			OrgUtil.AddUserToOrg(org, L9, "L9g");
+			OrgUtil.AddUserToOrg(org, L9, "L9h");
+			OrgUtil.AddUserToOrg(org, L9, "L9i");
+
+			OrgUtil.AddUserToOrg(org, L16, "L16a");
+			OrgUtil.AddUserToOrg(org, L16, "L16b");
+			OrgUtil.AddUserToOrg(org, L16, "L16c");
+			OrgUtil.AddUserToOrg(org, L16, "L16d");
+			OrgUtil.AddUserToOrg(org, L16, "L16e");
+			OrgUtil.AddUserToOrg(org, L16, "L16f");
+			OrgUtil.AddUserToOrg(org, L16, "L16g");
+			OrgUtil.AddUserToOrg(org, L16, "L16h");
+			OrgUtil.AddUserToOrg(org, L16, "L16i");
+			OrgUtil.AddUserToOrg(org, L16, "L16j");
+			OrgUtil.AddUserToOrg(org, L16, "L16k");
+			OrgUtil.AddUserToOrg(org, L16, "L16l");
+			OrgUtil.AddUserToOrg(org, L16, "L16m");
+			OrgUtil.AddUserToOrg(org, L16, "L16n");
+
+		}
 		#endregion
+
+
+		[TestMethod]
+		[TestCategory("PDF")]
+		public void DiffTreeDiagram() {
+			var c = new Ctx();
+			diffSizeTree(c.Org);
+
+			var tree = AccountabilityAccessor.GetTree(c.Manager, c.Org.Organization.AccountabilityChartId, expandAll: true);
+
+			var root = adjTree(tree);
+
+			var ts = new TreeSettings() { compact = true };
+
+			var pdf = AccountabilityChartPDF.GenerateAccountabilityChart(root, 44, 11, true, ts);
+
+			pdf.Save(Path.Combine(GetCurrentPdfFolder(), "DiffTreeDiagram.pdf"));
+			pdf.Save(Path.Combine(GetPdfFolder(), "DiffTreeDiagram.pdf"));
+		}
 
 		[TestMethod]
 		[TestCategory("PDF")]

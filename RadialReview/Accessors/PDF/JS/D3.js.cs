@@ -565,8 +565,10 @@ namespace RadialReview.Accessors.PDF {
 						//# Rows and Columns
 						var n = leafs.Count;
 						var sqrtn = Math.Sqrt(n);
-						var rows = Math.Floor(sqrtn);
-						var cols = (int)Math.Ceiling(sqrtn);
+						//var rows = Math.Floor(sqrtn);
+						//var cols = (int)Math.Ceiling(sqrtn);
+						var cols = (int)Math.Floor(sqrtn);
+						var rows = (int)Math.Ceiling(sqrtn);
 						if (rows * cols < n)
 							cols += 1;
 

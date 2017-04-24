@@ -326,10 +326,13 @@ function loadPageForce(location) {
 			success: function (data) {
 				replaceMainWindow(data, function () {
 					var type = $(".page-item." + location).data("pagetype");
-					if (typeof (type) === "undefined")
+					if (typeof (type) === "undefined"|| type==null)
 						type = location;
-
-					$(window).trigger("page-" + /*location*/type.toLowerCase());
+					try{
+						$(window).trigger("page-" + /*location*/type.toLowerCase());
+					} catch (e) {
+						console.log(e);
+					}
 					fixSidebar();
 				});
 

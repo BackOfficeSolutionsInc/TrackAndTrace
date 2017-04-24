@@ -71,10 +71,16 @@ namespace RadialReview.Accessors.PDF.JS {
 			
 			var maxDepth = 0;
 			var maxWidth = Settings.baseWidth;
-			
-			//Heavy lifting here:
+
+			/////////////////////////////////////////////////////////
+			////HEY HEAVY LIFTING HERE:
+
 			var nodes = tree.nodes(root);
 			var links = tree.links(nodes);
+
+			////DONE WITH HEAVY LIFTING.
+			/////////////////////////////////////////////////////////
+
 
 			// Normalize for fixed-depth.
 			var maxHeightRow = new DefaultDictionary<int, double>(x => 0.0);
