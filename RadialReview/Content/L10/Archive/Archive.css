@@ -773,6 +773,10 @@ html {
 .meeting-archive .todo-list-container .empty-cell,
 .meeting-archive .todo-list-container .delete-column,
 .meeting-archive .todo-list-container .todotype-column,
+.meeting-archive .todo-list-container .origin-column,
+.meeting-archive .todo-list-container .todotype-column {
+  display: none;
+}
 .meeting-archive .todo-list-container .createtime-column {
   display: none;
 }

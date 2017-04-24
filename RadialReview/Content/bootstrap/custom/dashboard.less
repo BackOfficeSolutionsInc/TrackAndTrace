@@ -541,6 +541,18 @@ body.resizing .notes-tile,
 			font-weight: normal;
 		}
 
+
+		.origin-column {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		tbody .origin-column{
+			color:gray;
+		}
+
+
 		.name,
 		.empty-cell,
 		.height-placeholder,
@@ -592,7 +604,8 @@ body.resizing .notes-tile,
 
 	.width_1 .todo-list-container {
 		.todotype-column,
-		.picture-column {
+		.picture-column,
+		.origin-column {
 			display: none !important;
 		}
 	}
@@ -634,6 +647,7 @@ body.resizing .notes-tile,
 			display: inherit;
 		}
 
+		.owner-column,
 		.todotype-column {
 			display: none;
 		}

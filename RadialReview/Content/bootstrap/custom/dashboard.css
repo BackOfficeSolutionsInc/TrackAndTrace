@@ -1320,6 +1320,14 @@ body.resizing .notes-tile:after,
 .dashboard .todo-list-container .due-date.red {
   font-weight: normal;
 }
+.dashboard .todo-list-container .origin-column {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dashboard .todo-list-container tbody .origin-column {
+  color: gray;
+}
 .dashboard .todo-list-container .name,
 .dashboard .todo-list-container .empty-cell,
 .dashboard .todo-list-container .height-placeholder,
@@ -1363,7 +1371,8 @@ body.resizing .notes-tile:after,
   text-align: right;
 }
 .dashboard .width_1 .todo-list-container .todotype-column,
-.dashboard .width_1 .todo-list-container .picture-column {
+.dashboard .width_1 .todo-list-container .picture-column,
+.dashboard .width_1 .todo-list-container .origin-column {
   display: none !important;
 }
 .dashboard .todo-pane {
@@ -1394,6 +1403,7 @@ body.resizing .notes-tile:after,
 .dashboard .l10-todo-list-container .owner-column {
   display: inherit;
 }
+.dashboard .l10-todo-list-container .owner-column,
 .dashboard .l10-todo-list-container .todotype-column {
   display: none;
 }

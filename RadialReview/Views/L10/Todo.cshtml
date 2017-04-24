@@ -27,7 +27,7 @@
 
 					@Html.Partial("partial/ButtonBar", Model)
 				</div>
-				<h2 class="l10-page-title">To-do List <small class="todo-completion-percentage"></small></h2>
+				<h2 class="l10-page-title">@ViewBag.Heading <small class="todo-completion-percentage"></small></h2>
 			</hgroup>
             <div class="todo-container " style="margin-bottom:128px;">
                 <ol class="todo-list sortable init-@(guid)">

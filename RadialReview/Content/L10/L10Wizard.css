@@ -1612,6 +1612,7 @@ body,
 .wizard .todo-list-container .details-row,
 .wizard .todo-list-container .due-column,
 .wizard .todo-list-container .empty-cell,
+.wizard .todo-list-container .origin-column,
 .wizard .todo-list-container .createtime-column,
 .wizard .todo-list-container thead {
   display: none;

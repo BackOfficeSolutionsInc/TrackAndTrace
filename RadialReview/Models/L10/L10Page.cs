@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Web;
+using System.Web.Mvc;
 
 namespace RadialReview.Models.L10 {
 	public partial class L10Recurrence {
@@ -53,6 +54,7 @@ namespace RadialReview.Models.L10 {
 			public virtual string Url { get; set; }
 			[Required]
 			public virtual string Title { get; set; }
+			[AllowHtml]
 			public virtual string Subheading { get; set; }
 			[Range(typeof(decimal), "0", "500"), DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:0.##}")]
 			public virtual decimal Minutes { get; set; }

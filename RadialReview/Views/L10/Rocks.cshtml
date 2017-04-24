@@ -21,7 +21,7 @@
 					@Html.Partial("partial/ButtonBar", Model)
 
 				</div>
-				<h2 class="l10-page-title">Rock Review <small></small></h2>
+				<h2 class="l10-page-title">@ViewBag.Heading <small></small></h2>
 			</hgroup>
 			<div class="empty-holder rock-empty-holder @(Model.Meeting._MeetingRocks.Any() ? "hidden" : "")"></div>
 			<div class="rocks-container @(Model.Meeting.L10Recurrence.CombineRocks?"rocks-combine":"")  @(Model.Meeting._MeetingRocks.Any() ? "" : "hidden")" style="padding-bottom: 20px;margin-bottom:128px;">

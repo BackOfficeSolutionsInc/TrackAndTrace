@@ -76,7 +76,7 @@ namespace RadialReview.Controllers {
 
 			ViewBag.Originating = "";
 			if (todo.TodoType == TodoType.Personal)
-				ViewBag.Originating = "Personal To-do List";
+				ViewBag.Originating = "Individual To-do List";
 			else {
 				ViewBag.Originating = todo.ForRecurrence.Name;
 			}

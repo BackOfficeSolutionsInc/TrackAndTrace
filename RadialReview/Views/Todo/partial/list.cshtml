@@ -28,6 +28,7 @@
 		{"empty-column",""},
 		{"createtime-column",""},
 		{"complete-column",""},
+		{"origin-column",""},
 		{"delete-column",""}
 	};
 }
@@ -53,10 +54,11 @@
 									<th md-column @(attrLookup["checkbox-column"]) class="checkbox-column" style="width: 25px;" md-order-by="Complete">&nbsp;</th>
 									<th md-column @(attrLookup["picture-column"]) class="picture-column owner-column" style="width: 32px;" md-order-by="Owner.Name">&nbsp;</th>
 									<th md-column @(attrLookup["message-column"]) class="message-column" md-order-by="Name">To-Do</th>
+									<th md-column md-numeric @(attrLookup["origin-column"]) class="origin-column alignCenter hidden-width-1" md-order-by="Origin">Origin</th>
 									<th md-column md-numeric @(attrLookup["createtime-column"]) class="createtime-column" md-order-by="Created">Created</th>
 									<th md-column md-numeric @(attrLookup["due-column"]) class="due-column alignCenter hidden-width-1" md-order-by="DueDate">Due Date</th>
 									<th md-column md-numeric @(attrLookup["empty-column"]) class="empty-cell" style="width:1px;">&nbsp;</th>
-									@if (completion){
+									@if (completion) {
 										<th md-column md-numeric @(attrLookup["complete-column"]) class="complete-column alignCenter hidden-width-1" md-order-by="CompleteTime" style="width:90px;">Completed</th>
 									}
 									<th md-column md-numeric @(attrLookup["delete-column"]) class="delete-column"></th>
@@ -93,6 +95,9 @@
 												<iframe class="keep-background" style="background-color: white" width="100%" ng-src="{{trustAsResourceUrl(todo.DetailsUrl_Src)}}" ng-data-src="{{todo.DetailsUrl}}"></iframe>
 											</div>
 										}
+									</td>
+									<td class="alignCenter hidden-width-1 origin-column" md-cell>
+										<span class="origin-cell">{{todo.Origin}}</span>
 									</td>
 									<td class="alignCenter createtime-column date-column" style=";" md-cell>
 										{{todo.CreateTime | date:dateFormat}}

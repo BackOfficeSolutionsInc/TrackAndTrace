@@ -201,14 +201,18 @@ namespace RadialReview.Controllers {
 		
 		#region Segue
 		private PartialViewResult Segue(L10MeetingVM model) {
-			ViewBag.Segue_Subheading = CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.Segue_Subheading, "Share good news from the last 7 days.<br/> One personal and one professional.");
-
+			ViewBag.Subheading = ViewBag.Subheading ?? CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.Segue_Subheading, "Share good news from the last 7 days.<br/> One personal and one professional.");
+			ViewBag.Heading = ViewBag.Heading ?? "Segue";
 			return PartialView("Segue", model);
 		}
 		#endregion
 
 		#region ScoreCard
 		private PartialViewResult ScoreCard(L10MeetingVM model) {
+
+			ViewBag.Heading = ViewBag.Heading??"Scorecard";
+			ViewBag.Subheading = ViewBag.Subheading ?? "";
+
 			var sm = L10Accessor.GetScorecardDataForRecurrence(GetUser(), model.Recurrence.Id, true, model.MeetingStart, getMeasurables: true);
 
 			model.Scores = sm.Scores;//L10Accessor.GetScoresForRecurrence(GetUser(), model.Recurrence.Id);
@@ -264,6 +268,10 @@ namespace RadialReview.Controllers {
 
 		#region Rocks
 		private PartialViewResult Rocks(L10MeetingVM model) {
+
+			ViewBag.Heading = ViewBag.Heading ?? "Rock Review";
+			ViewBag.Subheading = ViewBag.Subheading ?? "";
+
 			var milestonesAndRocks = L10Accessor.GetRocksForMeeting(GetUser(), model.Recurrence.Id, model.Meeting.Id);
 			model.Rocks = milestonesAndRocks.Select(x => x.Rock).ToList();
 			model.Milestones = milestonesAndRocks.SelectMany(x => x.Milestones).ToList();//L10Accessor.GetMilestonesForMeeting(GetUser(), model.Recurrence.Id, model.Meeting.Id);
@@ -273,8 +281,13 @@ namespace RadialReview.Controllers {
 
 		#region Headlines
 		private PartialViewResult Headlines(L10MeetingVM model) {
-			ViewBag.CEH_Subheading = CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.CustomerEmployeeHeadlines_Subheading, "Share headlines about customers/clients and people in the company.<br/> Good and bad. Drop down (to the issues list) anything that needs discussion.");
-			ViewBag.CEH_Heading = CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.CustomerEmployeeHeadlines_Heading, "People Headlines");
+			//ViewBag.CEH_Subheading = ViewBag.Subheading ?? CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.CustomerEmployeeHeadlines_Subheading, "Share headlines about customers/clients and people in the company.<br/> Good and bad. Drop down (to the issues list) anything that needs discussion.");
+			//ViewBag.CEH_Heading = ViewBag.Heading ?? CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.CustomerEmployeeHeadlines_Heading, "People Headlines");
+
+
+			ViewBag.Heading = ViewBag.Heading ?? "People Headline";
+			ViewBag.Subheading = ViewBag.Subheading ?? CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.CustomerEmployeeHeadlines_Subheading, "Share headlines about customers/clients and people in the company.<br/> Good and bad. Drop down (to the issues list) anything that needs discussion.");
+
 			model.HeadlinesId = model.Recurrence.HeadlinesId;
 
 			model.Headlines = L10Accessor.GetHeadlinesForMeeting(GetUser(), model.Recurrence.Id);
@@ -285,6 +298,11 @@ namespace RadialReview.Controllers {
 
 		#region Todo
 		private async Task<PartialViewResult> Todo(L10MeetingVM model) {
+
+			ViewBag.Heading = ViewBag.Heading ?? "To-do List";
+			ViewBag.Subheading = ViewBag.Subheading ?? "";
+
+
 			model.Todos = L10Accessor.GetTodosForRecurrence(GetUser(), model.Recurrence.Id, model.Meeting.Id);
 
 			model.SeenTodoFireworks = model.Meeting._MeetingAttendees.NotNull(x => x.FirstOrDefault(yx => yx.User.Id == GetUser().Id).NotNull(z => z.SeenTodoFireworks));
@@ -296,6 +314,10 @@ namespace RadialReview.Controllers {
 
 		#region IDS
 		private PartialViewResult IDS(L10MeetingVM model) {
+
+			ViewBag.Heading = ViewBag.Heading ?? "IDS";
+			ViewBag.Subheading = ViewBag.Subheading ?? "Identify. Discuss. Solve.";
+
 			var issues = L10Accessor.GetIssuesForMeeting(GetUser(), model.Meeting.Id, true);
 			model.Issues = issues;
 
@@ -305,6 +327,10 @@ namespace RadialReview.Controllers {
 
 		#region Conclusion
 		private PartialViewResult Conclusion(L10MeetingVM model, FormCollection form, bool start) {
+
+			ViewBag.Heading = ViewBag.Heading ?? "Conclude";
+			ViewBag.Subheading = ViewBag.Subheading ?? "";
+
 			model.SendEmail = true;
 			model.CloseTodos = true;
 			model.CloseHeadlines = true;

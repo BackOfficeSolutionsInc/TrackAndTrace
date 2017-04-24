@@ -232,7 +232,7 @@ namespace RadialReview.Accessors {
                 Me = isMe,
                 order = me.Ordering,
             };
-			aan.Name = aan.User.NotNull(x => x.Name);
+			//aan.Name = aan.User.NotNull(x => x.Name);
 
 			if (isEditable && me.UserId.HasValue)
                 allManagingUserIds.Add(me.UserId.Value);
