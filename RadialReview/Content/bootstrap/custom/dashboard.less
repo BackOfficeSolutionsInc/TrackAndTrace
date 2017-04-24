@@ -546,6 +546,8 @@ body.resizing .notes-tile,
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
+			max-width:120px;
+			vertical-align:top;
 		}
 
 		tbody .origin-column{
@@ -610,6 +612,12 @@ body.resizing .notes-tile,
 		}
 	}
 
+	.width_2 .todo-list-container {
+		.origin-column {
+			display: none !important;
+		}
+	}
+
 	.todo-pane {
 		max-height: 360px;
 		max-height: ~"calc(50vh - 250px)";
@@ -647,7 +655,7 @@ body.resizing .notes-tile,
 			display: inherit;
 		}
 
-		.owner-column,
+		.origin-column,
 		.todotype-column {
 			display: none;
 		}

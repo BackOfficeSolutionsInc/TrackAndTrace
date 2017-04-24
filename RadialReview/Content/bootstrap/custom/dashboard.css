@@ -1324,6 +1324,8 @@ body.resizing .notes-tile:after,
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  max-width: 120px;
+  vertical-align: top;
 }
 .dashboard .todo-list-container tbody .origin-column {
   color: gray;
@@ -1375,6 +1377,9 @@ body.resizing .notes-tile:after,
 .dashboard .width_1 .todo-list-container .origin-column {
   display: none !important;
 }
+.dashboard .width_2 .todo-list-container .origin-column {
+  display: none !important;
+}
 .dashboard .todo-pane {
   max-height: 360px;
   max-height: calc(50vh - 250px);
@@ -1403,7 +1408,7 @@ body.resizing .notes-tile:after,
 .dashboard .l10-todo-list-container .owner-column {
   display: inherit;
 }
-.dashboard .l10-todo-list-container .owner-column,
+.dashboard .l10-todo-list-container .origin-column,
 .dashboard .l10-todo-list-container .todotype-column {
   display: none;
 }
