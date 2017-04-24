@@ -29,31 +29,33 @@ namespace TractionTools.Tests.Api
     {
         [TestMethod]
         [TestCategory("Api_V0")]
+        public void TestSearchUser()
+        {
+            var c = new Ctx();
+            RadialReview.Api.V0.SearchController searchController = new RadialReview.Api.V0.SearchController();
+            searchController.MockUser(c.E1);
+
+            string searchStr = "mana";
+            var search = searchController.SearchUser(searchStr);
+
+            Assert.AreEqual(1, search.Count());
+            Assert.AreEqual(true, search.FirstOrDefault().Name.StartsWith("manager"));
+        }
+
+        [TestMethod]
+        [TestCategory("Api_V0")]
         public void TestSearch()
         {
             var c = new Ctx();
             RadialReview.Api.V0.SearchController searchController = new RadialReview.Api.V0.SearchController();
             searchController.MockUser(c.E1);
 
-            var search= searchController.Search(c.E1.Name);
+            string searchStr = "team";
+            var search = searchController.Search(searchStr);
 
-            Assert.IsTrue(search.Count() > 0);
+            Assert.AreEqual(2, search.Count());
+            Assert.AreEqual(true, search.Any(x => x.Name.Contains("interreviewing-team")));
+            Assert.AreEqual(true, search.Any(x => x.Name.Contains("non-interreviewing-team")));
         }
-
-
-        [TestMethod]
-        [TestCategory("Api_V0")]
-        public void SearchUser()
-        {
-            var c = new Ctx();
-            RadialReview.Api.V0.SearchController searchController = new RadialReview.Api.V0.SearchController();
-            searchController.MockUser(c.E1);
-
-            var search = searchController.SearchUser(c.E1.Name);
-
-            Assert.IsTrue(search.Count() > 0);
-        }
-
-
     }
 }

@@ -50,7 +50,7 @@ namespace RadialReview.Api.V0
         //[GET/PUT] /teams/{teamId}/members
         [Route("teams/{teamId}/members")]
         [HttpGet]
-        public IEnumerable<AngularUser> GetTeamMember(long teamId)
+        public IEnumerable<AngularUser> GetTeamMembers(long teamId)
         {
             return ResponsibilitiesAccessor.GetResponsibilityGroupMembers(GetUser(), teamId).Select(x => AngularUser.CreateUser(x));            
         }
