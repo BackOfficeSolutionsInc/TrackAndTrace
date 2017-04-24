@@ -34,6 +34,8 @@ namespace RadialReview.Models.L10 {
 			Empty = 0,
 			[Display(Name = "Notes Box"), EnumMember(Value = "Notes Box")]
 			NotesBox = 8,
+			[Display(Name = "External Page"), EnumMember(Value = "External Page")]
+			ExternalPage = 9,
 		}
 
 
@@ -48,6 +50,7 @@ namespace RadialReview.Models.L10 {
 			public virtual bool AutoGen { get; set; }
 			[JsonIgnore]
 			public virtual string PadId { get; set; }
+			public virtual string Url { get; set; }
 			[Required]
 			public virtual string Title { get; set; }
 			public virtual string Subheading { get; set; }
@@ -69,6 +72,7 @@ namespace RadialReview.Models.L10 {
 					Id(x => x.Id);
 					Map(x => x.PageType);
 					Map(x => x.PadId);
+					Map(x => x.Url);
 					Map(x => x.Title);
 					Map(x => x.AutoGen);
 					Map(x => x.Minutes);

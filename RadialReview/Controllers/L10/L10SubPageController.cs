@@ -72,9 +72,11 @@ namespace RadialReview.Controllers {
 
 						switch (page) {
 							case "notesbox":
-								return NotesBox(model);
+								return NotesBox(model, l10Page);
 							case "empty":
 								return TitlePage(model);
+							case "externalpage":
+								return ExternalPage(model, l10Page);
 							default:
 								break;
 						}
@@ -183,18 +185,20 @@ namespace RadialReview.Controllers {
 		#endregion
 
 		#region NonEOS
-
 		private PartialViewResult TitlePage(L10MeetingVM model) {
 
 			return PartialView("TitlePage", model);
 		}
-		private PartialViewResult NotesBox(L10MeetingVM model) {
-
+		private PartialViewResult NotesBox(L10MeetingVM model,L10Recurrence.L10Recurrence_Page page) {
+			ViewBag.PadId = page.PadId;
 			return PartialView("NotesBox", model);
 		}
+		private PartialViewResult ExternalPage(L10MeetingVM model, L10Recurrence.L10Recurrence_Page page) {
+			ViewBag.Url = page.Url;
+			return PartialView("ExternalPage", model);
+		}
 		#endregion
-
-
+		
 		#region Segue
 		private PartialViewResult Segue(L10MeetingVM model) {
 			ViewBag.Segue_Subheading = CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.Segue_Subheading, "Share good news from the last 7 days.<br/> One personal and one professional.");
@@ -291,7 +295,6 @@ namespace RadialReview.Controllers {
 		#endregion
 
 		#region IDS
-
 		private PartialViewResult IDS(L10MeetingVM model) {
 			var issues = L10Accessor.GetIssuesForMeeting(GetUser(), model.Meeting.Id, true);
 			model.Issues = issues;
@@ -381,7 +384,6 @@ namespace RadialReview.Controllers {
 		#endregion
 
 		#region Meeting Stats
-
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult MeetingStats(long recurrenceId) {
 			var model = L10Accessor.GetStats(GetUser(), recurrenceId);
@@ -415,11 +417,8 @@ namespace RadialReview.Controllers {
 
 			return PartialView("MeetingStats", model);
 		}
-
 		#endregion
-
-
-
+		
 
 	}
 }

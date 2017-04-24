@@ -125,8 +125,8 @@ namespace RadialReview.Utilities
                                                 MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionLocalMysql"].ConnectionString).ShowSql())
                                        .Mappings(m =>
                                        {
-                                           //m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
-                                           //    .Conventions.Add<StringColumnLengthConvention>();
+                                           m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+                                               .Conventions.Add<StringColumnLengthConvention>();
                                            //  m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
                                            ////m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
                                            ////m.AutoMappings.Add(CreateAutomappings);

@@ -138,8 +138,6 @@ body {
   margin: -7px;
 }
 .component .gray {
-  -ms-opacity: .50;
-  opacity: .50;
   color: inherit;
 }
 .main-window-container .component {
@@ -766,4 +764,12 @@ a.editable-click:hover {
 .edit-disabled .on-edit-enabled.btn:hover,
 .edit-disabled .on-edit-enabled .btn:hover {
   cursor: not-allowed !important;
+}
+.meeting-page.externalPage .component {
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+}
+.meeting-page.externalPage .externalpage-box {
+  margin-bottom: -5px;
 }

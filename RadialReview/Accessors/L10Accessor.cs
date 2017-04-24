@@ -4703,7 +4703,7 @@ namespace RadialReview.Accessors {
 											return new List<KeyValuePair<DateTime, decimal>>();
 										var num = x.Sum(y => y.TodoCompletion.Numerator);
 
-										return (new KeyValuePair<DateTime, decimal>(x.First().StartTime.Value, num / den * 100)).AsList();
+										return (new KeyValuePair<DateTime, decimal>(x.First().StartTime.Value.Date, num / den * 100)).AsList();
 									})
 					};
 
@@ -4716,7 +4716,7 @@ namespace RadialReview.Accessors {
 										var count = x.Count();
 										if (count == 0)
 											return new List<KeyValuePair<DateTime, decimal>>();
-										return (new KeyValuePair<DateTime, decimal>(x.First().CloseTime.Value, count)).AsList();
+										return (new KeyValuePair<DateTime, decimal>(x.First().CloseTime.Value.Date, count)).AsList();
 									})
 					};
 
@@ -4728,7 +4728,7 @@ namespace RadialReview.Accessors {
 									.SelectMany(x => {
 										//if (count == 0)
 										//	return new List<KeyValuePair<DateTime, decimal>>();
-										return (new KeyValuePair<DateTime, decimal>(x.First().L10Meeting.StartTime.Value, x.Average(y => y.Rating.Value))).AsList();
+										return (new KeyValuePair<DateTime, decimal>(x.First().L10Meeting.StartTime.Value.Date, x.Average(y => y.Rating.Value))).AsList();
 									})
 					};
 
@@ -5020,6 +5020,7 @@ namespace RadialReview.Accessors {
 					existingPage.Title = page.Title;
 					existingPage.Subheading = page.Subheading;
 					existingPage.DeleteTime = page.DeleteTime;
+					existingPage.Url = page.Url;
 
 					s.SaveOrUpdate(existingPage);
 

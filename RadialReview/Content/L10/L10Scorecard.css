@@ -367,7 +367,7 @@
 }
 
 	#ScorecardTable_Over tr:not(.divider):not(.IsDivider) td {
-		height: 25px;
+		height: 30px;
 	}
 
 .direction_1:empty:before,

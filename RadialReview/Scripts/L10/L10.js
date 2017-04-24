@@ -541,6 +541,29 @@ function lockConcludeButton() {
 }
 
 
+
+function fixExternalPageBoxSize() {
+	if ($(".externalpage-box").length) {
+		var wh = $(window).height();
+		var pos = $(".externalpage-box").offset();
+		var st = $(window).scrollTop();
+		var footerH = wh;
+		try {
+			footerH = $(".footer-bar .footer-bar-container:not(.hidden)").last().offset().top;
+		} catch (e) { }
+
+		$(".externalpage-box").height(Math.max(200, footerH /*- 20 */- 50 - pos.top));
+	}
+}
+
+$(window).resize(fixExternalPageBoxSize);
+$(window).on("page-externalpage", fixExternalPageBoxSize);
+$(window).on("footer-resize", function () {
+	setTimeout(fixExternalPageBoxSize, 250);
+});
+
+
+
 $(window).on("page-segue", function () {
 	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting");
 });

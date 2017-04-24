@@ -4,6 +4,6 @@
 		@(ViewBag.Name??"Level 10") - Stats
 	</div>
     <div style="min-height:166px!important;">
-        <l10-stats-tile class="" tt-url="/L10/StatsLine/@Model"></l10-stats-tile>
+        <l10-stats-tile class="" tt-url="/L10/StatsLine/@Model" on-click="click(row, index, series, options)"></l10-stats-tile>
     </div>
 </div>

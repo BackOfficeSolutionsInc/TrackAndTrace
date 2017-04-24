@@ -1921,6 +1921,7 @@
     <Content Include="Views\Archive\Table.cshtml" />
     <Content Include="Views\Archive\Index.cshtml" />
     <Content Include="Views\Dashboard\_L10TileList.cshtml" />
+    <Content Include="Views\L10\ExternalPage.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -2408,7 +2409,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>3751</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:44300/</IISUrl>
+          <IISUrl>https://localhost:44300/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>http://radial.elasticbeanstalk.com/</CustomServerUrl>

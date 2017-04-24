@@ -561,17 +561,6 @@ fieldset[disabled] .editable-wrap button[type="button"].active {
 html {
   background-color: #F7F7F7;
 }
-/*#alerts {
-    position: fixed;
-    top: 40px;
-    left: 30px;
-    right: 30px;
-    z-index: 10000000;
-
-    .alert {
-        box-shadow: 0 2px 14px 0px rgba(0,0,0,.5);
-    }
-}*/
 .tiny {
   /* color: red !important; */
   padding: 0px;
@@ -641,6 +630,19 @@ body.resizing .notes-tile:after,
 }
 .ui-draggable-dragging .notes-tile:after {
   content: "Moving";
+}
+.dashboard .series-selector {
+  padding: 2px 7px;
+}
+.dashboard .series-selector.selected {
+  text-decoration: underline;
+}
+.dashboard .empty-search {
+  width: 100%;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  color: rgba(0, 0, 0, 0.25) !important;
+  font-size: 12px !important;
+  text-align: center;
 }
 .dashboard ._md-select-menu-container {
   z-index: 2000 !important;
@@ -2132,7 +2134,7 @@ body.resizing .notes-tile:after,
     display: none;
   }
   .add-pages {
-    left: 0px!important;
+    left: 0px !important;
   }
   #grid {
     width: 100%;
@@ -2267,7 +2269,7 @@ body.resizing .notes-tile:after,
   background: none;
 }
 .dashboard .gray {
-  color: rgba(51, 51, 51, 0.5) !important;
+  color: rgba(51, 51, 51, 0.5);
 }
 #modal input[type=checkbox] {
   outline: none !important;
