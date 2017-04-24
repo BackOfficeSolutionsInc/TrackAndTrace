@@ -42,12 +42,15 @@ namespace TractionTools.Tests.Api
                 ForUserId = c.E1.Id,
             };
             L10Accessor.CreateRock(c.E1, _recurrence.Id, AddRockVm.CreateRock(_recurrence.Id, rock, true));
+
             var getRocks = RockAccessor.GetRocks(c.E1, c.E1.Id);
 
+            Assert.AreEqual(1, getRocks.Count);
+           
             var addRocksMilestones = rocksController.AddRocksMilestones(getRocks.FirstOrDefault().Id, "TestMilestone", DateTime.Now.AddDays(7));
             var getRocksMilestones = rocksController.GetRocksMilestones(getRocks.FirstOrDefault().Id);
 
-            Assert.IsTrue(getRocksMilestones.Count() > 0);
+            Assert.AreEqual(1, getRocksMilestones.Count());
         }
 
 
@@ -66,9 +69,18 @@ namespace TractionTools.Tests.Api
                 OrganizationId = c.E1.Organization.Id,
                 ForUserId = c.E1.Id,
             };
+
             L10Accessor.CreateRock(c.E1, _recurrence.Id, AddRockVm.CreateRock(_recurrence.Id, rock, true));
             var getRocks = RockAccessor.GetRocks(c.E1, c.E1.Id);
-            Assert.IsTrue(getRocks.Count() > 0);
+
+            string name = "TestMilestone";
+            DateTime date = DateTime.UtcNow.AddDays(7);
+            var addRocksMilestones = rocksController.AddRocksMilestones(getRocks.FirstOrDefault().Id, name, date);
+
+            Assert.AreEqual(name, addRocksMilestones.Name);
+            Assert.AreEqual(date, addRocksMilestones.DueDate);
+
+            Assert.AreEqual(1, getRocks.Count());
         }
 
     }

@@ -44,10 +44,15 @@ namespace TractionTools.Tests.Api
             L10Accessor.CreateRock(c.E1, _recurrence.Id, AddRockVm.CreateRock(_recurrence.Id, rock, true));
             var getRocks = RockAccessor.GetRocks(c.E1, c.E1.Id);
 
-            var addRocksMilestones = RockAccessor.AddMilestone(c.E1, getRocks.FirstOrDefault().Id, "TestMilestone", DateTime.Now.AddDays(7));
-            var getRocksMilestones = milestonesController.GetMilestones(addRocksMilestones.Id);
+            string name = "TestMilestone";
+            DateTime date = DateTime.UtcNow.AddDays(7);
+            var milestone = RockAccessor.AddMilestone(c.E1, getRocks.FirstOrDefault().Id, name, date);
 
-            Assert.AreEqual(addRocksMilestones.Id, getRocksMilestones.Id);
+            var getRocksMilestones = milestonesController.GetMilestones(milestone.Id);
+
+            Assert.AreEqual(name, getRocksMilestones.Name);
+            Assert.AreEqual(date, getRocksMilestones.DueDate);
+            Assert.AreEqual(milestone.Id, getRocksMilestones.Id);
         }
 
         [TestMethod]
@@ -109,6 +114,5 @@ namespace TractionTools.Tests.Api
 
             Assert.IsNotNull(getRocksMilestones.DeleteTime);
         }
-
     }
 }
