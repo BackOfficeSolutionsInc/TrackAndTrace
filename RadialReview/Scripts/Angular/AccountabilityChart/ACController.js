@@ -545,9 +545,11 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 
 		var possible = [];
 		for (var i in $scope.model.Lookup) {
-			var n = $scope.model.Lookup[i];
-			if (i.indexOf("AngularAccountabilityNode_") == 0 && n.User) {
-				possible.push(n);
+			if (arrayHasOwnIndex($scope.model.Lookup, i)) {
+				var n = $scope.model.Lookup[i];
+				if (i.indexOf("AngularAccountabilityNode_") == 0 && n.User) {
+					possible.push(n);
+				}
 			}
 		}
 		return possible.filter(createFilterFor(query));

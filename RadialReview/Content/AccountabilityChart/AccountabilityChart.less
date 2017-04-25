@@ -120,6 +120,12 @@ html, body {
 		position: inherit;
 	}
 
+	md-autocomplete[ng-disabled],
+	md-autocomplete[ng-disabled] * {
+		cursor: not-allowed;
+	}
+
+
 	.templink {
 		fill: none;
 		stroke: #ccc;
@@ -702,15 +708,16 @@ html, body {
 	}
 }*/
 
-.acc-fallback-hidden{
+.acc-fallback-hidden {
 	display: none !important;
 }
+
 .acc-fallback {
 
 	&.root-node {
 		display: none;
 	}
-	
+
 	.acc-fallback-hide {
 		display: none;
 	}
@@ -718,20 +725,20 @@ html, body {
 	.acc-fallback-placeholder {
 		fill: transparent !important;
 		stroke: none !important;
-		pointer-events:none;
+		pointer-events: none;
 	}
 
-	.delete-role-row{		
-		font-family: sans-serif;	
-		stroke:none;
-		fill:rgba(0,0,0,.2);	
+	.delete-role-row {
+		font-family: sans-serif;
+		stroke: none;
+		fill: rgba(0,0,0,.2);
 	}
 
 	.acc-buttons rect {
 		stroke: none;
 		fill: @border-color;
-		cursor:move;
-		pointer-events:all;
+		cursor: move;
+		pointer-events: all;
 	}
 
 	&.collapsed {

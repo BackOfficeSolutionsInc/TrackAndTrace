@@ -314,10 +314,12 @@ namespace RadialReview.Accessors {
 				var l10UserCount = l10Users.Count();
 
 				var people = Math.Max(0, l10UserCount - plan.FirstN_Users_Free);
-				var allRevisions = s.AuditReader().GetRevisionsBetween<OrganizationModel>(org.Id, rangeStart, rangeEnd).ToList();
+				var allRevisions = s.AuditReader().GetRevisionsBetween<OrganizationModel>(s, org.Id, rangeStart, rangeEnd).ToList();
 
-				var reviewEnabled = allRevisions.Any(x => x.Object.Settings.EnableReview);
-				var l10Enabled = allRevisions.Any(x => x.Object.Settings.EnableL10);
+				//s.Auditer().GetRevisionNumberForDate(<OrganizationModel>(org.Id,);
+
+				var reviewEnabled = /*org.Settings.EnableReview;//*/allRevisions.Any(x => x.Object.Settings.EnableReview);
+				var l10Enabled = /*org.Settings.EnableL10; //*/allRevisions.Any(x => x.Object.Settings.EnableL10);
 
 
 				//In case clocks are off.

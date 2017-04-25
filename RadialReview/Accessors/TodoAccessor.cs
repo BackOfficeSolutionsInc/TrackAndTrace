@@ -376,14 +376,18 @@ namespace RadialReview.Accessors
 
             found = q.List().ToList();
 
+			
 
-            foreach (var f in found)
-            {
-                var a = f.ForRecurrence.NotNull(x => x.Id);
-                var b = f.AccountableUser.NotNull(x => x.GetName());
+
+
+
+            foreach (var f in found) {
+				var a = f.ForRecurrence.NotNull(x => x.Id);
+				var b = f.AccountableUser.NotNull(x => x.GetName());
                 var c = f.AccountableUser.NotNull(x => x.ImageUrl(true, ImageSize._32));
                 var d = f.CreatedDuringMeeting.NotNull(x => x.Id);
-            }
+				var e = f.ForRecurrence.NotNull(x => x.Name);
+			}
 
             return found;
         }

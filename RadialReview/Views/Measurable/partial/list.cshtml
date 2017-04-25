@@ -37,7 +37,7 @@
                                         <th class="measurable-column text-column">&nbsp;</th>
                                         <th class="goal-column data-column" colspan="2">&nbsp;</th>
 										<th class="cumulative-column"></th>
-                                        <th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin)) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="date score-column  data-column" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
+                                        <th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin)) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="date score-column data-column test-ignore" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
                                             {{functions.subtractDays(week.DisplayDate,0) | date: (@(selector)).DateFormat1}}
                                         </th>
                                         <th class="delete-column"></th>
@@ -53,7 +53,7 @@
                                         <th class="measurable measurable-column text-column">Measurable</th>
                                         <th class="target goal-column data-column" colspan="2">Goal</th>
 										<th class="cumulative-column"></th>
-                                        <th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin)) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="date  data-column score-column" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
+                                        <th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin)) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="date  data-column score-column test-ignore" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
                                             {{functions.subtractDays(week.DisplayDate,-6) | date: (@(selector)).DateFormat2}}
                                         </th>
                                         <th class="delete-column button-column"></th>
@@ -192,12 +192,12 @@
                                             </span>
                                         </td>
                                     }
-                                    <td class="measurable first1 measurable-column  text-column" title="{{measurable.Name}}" ng-class="{handle: measurable.IsDivider}">
+                                    <td class="measurable first1 measurable-column text-column" title="{{measurable.Name}}" ng-class="{handle: measurable.IsDivider}">
                                         <span ng-class="{'inlineEdit': measurable.Disabled!=true}">
                                             <input ng-disabled="measurable.Disabled" class="blend" @(elastic) ng-model="measurable.Name" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(measurable)" title="{{measurable.Name}}" />
                                         </span>
                                     </td>
-                                    <td class="target direction  goal-column data-column" data-measurable="{{::measurable.Id}}" ng-class="{handle: measurable.IsDivider}">
+                                    <td class="target direction goal-column data-column" data-measurable="{{::measurable.Id}}" ng-class="{handle: measurable.IsDivider}">
                                         <span class="item-wrapper place-left">
                                             <span class="direction direction_{{measurable.Direction}}"
                                                   onaftersave="functions.checkFutureAndSend(measurable)"
@@ -212,7 +212,7 @@
                                                ng-disabled="measurable.Disabled"
                                                @(elastic)
                                                ng-model-options="{ debounce: 75 }"
-                                               class="blend  modifiers {{measurable.Modifiers}}"
+                                               class="blend modifiers {{measurable.Modifiers}}"
                                                fcsa-number="{{functions.getFcsa(measurable)}}"
                                                ng-model="measurable.Target"
                                                ng-change="functions.sendUpdate(measurable)"

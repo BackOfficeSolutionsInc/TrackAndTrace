@@ -97,9 +97,9 @@ namespace RadialReview.Utilities
                                     factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
                                     .Mappings(m =>
                                     {
-                                        m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
-                                           .Conventions.Add<StringColumnLengthConvention>();
-                                        m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\sqlite\");
+                                        //m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+                                        //   .Conventions.Add<StringColumnLengthConvention>();
+                                       // m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\sqlite\");
                                         //m.AutoMappings.Add(CreateAutomappings);
                                         //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 
@@ -127,7 +127,7 @@ namespace RadialReview.Utilities
                                        {
                                            m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
                                                .Conventions.Add<StringColumnLengthConvention>();
-                                           // m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
+                                           //  m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
                                            ////m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
                                            ////m.AutoMappings.Add(CreateAutomappings);
                                            ////m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
@@ -293,7 +293,10 @@ namespace RadialReview.Utilities
                     //var a = "Error";
                 }
             }
-            return new SessionPerRequest(GetDatabaseSessionFactory().OpenSession(),true);
+			if (!(HttpContext.Current == null || HttpContext.Current.Items == null) && HttpContext.Current.Items["IsTest"] != null)
+				return GetDatabaseSessionFactory().OpenSession();
+
+			return new SessionPerRequest(GetDatabaseSessionFactory().OpenSession(),true);
 			//GetDatabaseSessionFactory().OpenSession();
             /*while(true)
             {
@@ -395,6 +398,9 @@ namespace RadialReview.Utilities
             enversConf.Audit<ReviewsModel>();
 			enversConf.Audit<RockModel>();
 			enversConf.Audit<Milestone>();
+
+			enversConf.Audit<L10Recurrence.L10Recurrence_Page>()
+				.ExcludeRelationData(x => x.L10Recurrence);
 
 			enversConf.Audit<RoleModel>();
             enversConf.Audit<UserOrganizationModel>()

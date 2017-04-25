@@ -46,6 +46,7 @@ namespace RadialReview.Models.L10
 		//public virtual IList<L10Note> _MeetingNotes { get; set; }
 
 		public virtual String _MeetingLeaderCurrentPage { get; set; }
+		//public virtual String _MeetingLeaderCurrentPageType { get; set; }
 		public virtual DateTime? _MeetingLeaderCurrentPageStartTime { get; set; }
 		public virtual double? _MeetingLeaderCurrentPageBaseMinutes { get; set; }
 
@@ -289,13 +290,8 @@ namespace RadialReview.Models.L10
 					References(x => x.L10Meeting).Column("L10MeetingId");//.LazyLoad().ReadOnly();
 					//Map(x => x.UserId).Column("UserId");
 					//Map(x => x.L10MeetingId).Column("L10MeetingId");
-
-
 				}
 			}
-
-		}
-
-
+		}		
 	}
 }

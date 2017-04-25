@@ -63,11 +63,11 @@
                         <ol>
                             <li><a href="#Basics">Basics</a></li>
                             <li><span id="l10-wizard-attendees-btn"><a href="#Attendees">Attendees</a></span></li>
-                            <li><a href="#Scorecard">Scorecard</a></li>
-                            <li><a href="#Rocks">Rocks</a></li>
-							<li ng-show="model.HeadlineType=='HeadlinesList'"><a href="#Headlines">People Headlines</a></li>
-                            <li><a href="#Todos">To-dos</a></li>
-                            <li><a href="#Issues">Issues</a></li>
+                            <li ng-show="model.ShowScorecard"><a href="#Scorecard">Scorecard</a></li>
+                            <li ng-show="model.ShowRockReview"><a href="#Rocks">Rocks</a></li>
+							<li ng-show="model.HeadlineType=='HeadlinesList' && model.ShowHeadlines"><a href="#Headlines">People Headlines</a></li>
+                            <li ng-show="model.ShowTodos"><a href="#Todos">To-dos</a></li>
+                            <li ng-show="model.ShowIDS"><a href="#Issues">Issues</a></li>
                             @*<li><a href="#VTO">V/TO</a></li>*@
                         </ol>
 
@@ -87,7 +87,7 @@
                                     <input class="blend" type="text" ng-model-options="{ debounce: 300 }" ng-model="model.Basics.Name" ng-change="functions.sendUpdate(model.Basics)" />
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" ng-show="model.MeetingType =='L10'">
                                 <label class="col-md-3 control-label">Type of team:</label>
                                 <div class="col-md-9" id="l10-wizard-teamtype">
                                     <select class="blend" ng-model="model.Basics.TeamType" ng-change="functions.sendUpdate(model.Basics)" ng-options=" s.value as s.text for s in options.l10teamtypes"></select>

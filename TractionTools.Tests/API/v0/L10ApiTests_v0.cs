@@ -20,381 +20,358 @@ using RadialReview.Models.Scorecard;
 using static RadialReview.Controllers.L10Controller;
 using RadialReview.Models.Askables;
 
-namespace TractionTools.Tests.Api
-{
-    [TestClass]
-    public class L10ApiTests_v0 : BaseTest
-    {
-        [TestMethod]
-        [TestCategory("Api_V0")]
-        public void TestCreateL10()
-        {
-            var c = new Ctx();
+namespace TractionTools.Tests.Api {
+	[TestClass]
+	public class L10ApiTests_v0 : BaseTest {
+		[TestMethod]
+		[TestCategory("Api_V0")]
+		public void TestCreateL10() {
+			var c = new Ctx();
 
-            L10_Controller L10 = new L10_Controller();
+			L10_Controller L10 = new L10_Controller();
 
-            L10.MockUser(c.E1);
+			L10.MockUser(c.E1);
 
-            var recurrenceId = L10.CreateL10("Test L10");
+			var recurrenceId = L10.CreateL10("Test L10");
 
-            var getAllL10RecurrenceAtOrganization = L10Accessor.GetAllL10RecurrenceAtOrganization(c.E1, c.Org.Id);
+			var getAllL10RecurrenceAtOrganization = L10Accessor.GetAllL10RecurrenceAtOrganization(c.E1, c.Org.Id);
 
-            Assert.AreEqual(recurrenceId, getAllL10RecurrenceAtOrganization.FirstOrDefault().Id);
-        }
+			Assert.AreEqual(recurrenceId, getAllL10RecurrenceAtOrganization.FirstOrDefault().Id);
+		}
 
 
-        [TestMethod]
-        [TestCategory("Api_V0")]
-        public void TestEditL10()
-        {
-            var c = new Ctx();
+		[TestMethod]
+		[TestCategory("Api_V0")]
+		public void TestEditL10() {
+			var c = new Ctx();
 
-            L10_Controller L10 = new L10_Controller();
+			L10_Controller L10 = new L10_Controller();
 
-            L10.MockUser(c.E1);
+			L10.MockUser(c.E1);
 
-            var name = "Test L10 Updated";
+			var name = "Test L10 Updated";
 
-            var recurrenceId = L10.CreateL10("Test L10");
+			var recurrenceId = L10.CreateL10("Test L10");
 
-            L10.EditL10(recurrenceId, name);
+			L10.EditL10(recurrenceId, name);
 
-            var getAllL10RecurrenceAtOrganization = L10Accessor.GetAllL10RecurrenceAtOrganization(c.E1, c.Org.Id);
+			var getAllL10RecurrenceAtOrganization = L10Accessor.GetAllL10RecurrenceAtOrganization(c.E1, c.Org.Id);
 
-            Assert.AreEqual(name, getAllL10RecurrenceAtOrganization.FirstOrDefault().Name);
-        }
+			Assert.AreEqual(name, getAllL10RecurrenceAtOrganization.FirstOrDefault().Name);
+		}
 
 
-        [TestMethod]
-        [TestCategory("Api_V0")]
-        public void TestAttachMeasurableL10()
-        {
-            var c = new Ctx();
+		[TestMethod]
+		[TestCategory("Api_V0")]
+		public void TestAttachMeasurableL10() {
+			var c = new Ctx();
 
-            L10_Controller L10 = new L10_Controller();
+			L10_Controller L10 = new L10_Controller();
 
-            L10.MockUser(c.E1);
+			L10.MockUser(c.E1);
 
-            var recurrenceId = L10.CreateL10("Test L10");
-            var m1 = new MeasurableModel()
-            {
-                AccountableUserId = c.E1.Id,
-                AdminUserId = c.E1.Id,
-                Title = "Meas1",
-                OrganizationId = c.Org.Organization.Id
-            };
+			var recurrenceId = L10.CreateL10("Test L10");
+			var m1 = new MeasurableModel() {
+				AccountableUserId = c.E1.Id,
+				AdminUserId = c.E1.Id,
+				Title = "Meas1",
+				OrganizationId = c.Org.Organization.Id
+			};
 
-            var measurable = AddMeasurableVm.CreateNewMeasurable(recurrenceId, m1, true);
+			var measurable = AddMeasurableVm.CreateNewMeasurable(recurrenceId, m1, true);
 
-            L10Accessor.CreateMeasurable(c.E1, recurrenceId, measurable);
+			L10Accessor.CreateMeasurable(c.E1, recurrenceId, measurable);
 
-            L10.AttachMeasurableL10(recurrenceId, m1.Id);
+			L10.AttachMeasurableL10(recurrenceId, m1.Id);
 
-            var getMeasurablesForRecurrence = L10Accessor.GetScoresAndMeasurablesForRecurrence(c.E1, recurrenceId);
+			var getMeasurablesForRecurrence = L10Accessor.GetScorecardDataForRecurrence(c.E1, recurrenceId);
 
-            Assert.AreEqual(2, getMeasurablesForRecurrence.MeasurablesAndDividers.Count());
+			Assert.AreEqual(2, getMeasurablesForRecurrence.MeasurablesAndDividers.Count());
 
-        }
+		}
 
 
 
-        [TestMethod]
-        [TestCategory("Api_V0")]
-        public void TestRemoveMeasurableL10()
-        {
-            var c = new Ctx();
+		[TestMethod]
+		[TestCategory("Api_V0")]
+		public void TestRemoveMeasurableL10() {
+			var c = new Ctx();
 
-            L10_Controller L10 = new L10_Controller();
+			L10_Controller L10 = new L10_Controller();
 
-            L10.MockUser(c.E1);
+			L10.MockUser(c.E1);
 
-            var recurrenceId = L10.CreateL10("Test L10");
-            var m1 = new MeasurableModel()
-            {
-                AccountableUserId = c.E1.Id,
-                AdminUserId = c.E1.Id,
-                Title = "Meas1",
-                OrganizationId = c.Org.Organization.Id
-            };
+			var recurrenceId = L10.CreateL10("Test L10");
+			var m1 = new MeasurableModel() {
+				AccountableUserId = c.E1.Id,
+				AdminUserId = c.E1.Id,
+				Title = "Meas1",
+				OrganizationId = c.Org.Organization.Id
+			};
 
-            var measurable = AddMeasurableVm.CreateNewMeasurable(recurrenceId, m1, true);
+			var measurable = AddMeasurableVm.CreateNewMeasurable(recurrenceId, m1, true);
 
-            L10Accessor.CreateMeasurable(c.E1, recurrenceId, measurable);
+			L10Accessor.CreateMeasurable(c.E1, recurrenceId, measurable);
 
-            L10.AttachMeasurableL10(recurrenceId, measurable.Measurables.FirstOrDefault().Id);
+			L10.AttachMeasurableL10(recurrenceId, measurable.Measurables.FirstOrDefault().Id);
 
-            L10.RemoveMeasurableL10(recurrenceId, measurable.Measurables.FirstOrDefault().Id);
+			L10.RemoveMeasurableL10(recurrenceId, measurable.Measurables.FirstOrDefault().Id);
 
-            var getMeasurablesForRecurrence = L10Accessor.GetScoresAndMeasurablesForRecurrence(c.E1, recurrenceId);
+			var getMeasurablesForRecurrence = L10Accessor.GetScorecardDataForRecurrence(c.E1, recurrenceId);
 
-            Assert.AreEqual(0, getMeasurablesForRecurrence.MeasurablesAndDividers.Count());
+			Assert.AreEqual(0, getMeasurablesForRecurrence.MeasurablesAndDividers.Count());
 
-        }
+		}
 
 
-        [TestMethod]
-        [TestCategory("Api_V0")]
-        public void TestAttachRockMeetingL10()
-        {
-            var c = new Ctx();
+		[TestMethod]
+		[TestCategory("Api_V0")]
+		public void TestAttachRockMeetingL10() {
+			var c = new Ctx();
 
-            L10_Controller L10 = new L10_Controller();
+			L10_Controller L10 = new L10_Controller();
 
-            L10.MockUser(c.E1);
+			L10.MockUser(c.E1);
 
-            var recurrenceId = L10.CreateL10("Test L10");
-            var rock = new RockModel()
-            {
-                OrganizationId = c.E1.Organization.Id,
-                ForUserId = c.E1.Id,
-            };
+			var recurrenceId = L10.CreateL10("Test L10");
+			var rock = new RockModel() {
+				OrganizationId = c.E1.Organization.Id,
+				ForUserId = c.E1.Id,
+			};
 
-            var rockModel = AddRockVm.CreateRock(recurrenceId, rock, true);
+			var rockModel = AddRockVm.CreateRock(recurrenceId, rock, true);
 
-            L10Accessor.CreateRock(c.E1, recurrenceId, rockModel);
+			L10Accessor.CreateRock(c.E1, recurrenceId, rockModel);
 
-            L10.AttachRockMeetingL10(recurrenceId, rock.Id);
+			L10.AttachRockMeetingL10(recurrenceId, rock.Id);
 
-            var getRocksForRecurrence = L10Accessor.GetRocksForRecurrence(c.E1, recurrenceId);
+			var getRocksForRecurrence = L10Accessor.GetRocksForRecurrence(c.E1, recurrenceId);
 
-            Assert.AreEqual(2, getRocksForRecurrence.Count());
+			Assert.AreEqual(2, getRocksForRecurrence.Count());
 
-        }
+		}
 
 
-        [TestMethod]
-        [TestCategory("Api_V0")]
-        public void TestRemoveRockL10()
-        {
-            var c = new Ctx();
+		[TestMethod]
+		[TestCategory("Api_V0")]
+		public void TestRemoveRockL10() {
+			var c = new Ctx();
 
-            L10_Controller L10 = new L10_Controller();
+			L10_Controller L10 = new L10_Controller();
 
-            L10.MockUser(c.E1);
+			L10.MockUser(c.E1);
 
-            var reccurenceId = L10.CreateL10("Test L10");
-            var rock = new RockModel()
-            {
-                OrganizationId = c.E1.Organization.Id,
-                ForUserId = c.E1.Id,
-            };
+			var reccurenceId = L10.CreateL10("Test L10");
+			var rock = new RockModel() {
+				OrganizationId = c.E1.Organization.Id,
+				ForUserId = c.E1.Id,
+			};
 
-            var rockModel = AddRockVm.CreateRock(reccurenceId, rock, true);
+			var rockModel = AddRockVm.CreateRock(reccurenceId, rock, true);
 
-            L10Accessor.CreateRock(c.E1, reccurenceId, rockModel);
+			L10Accessor.CreateRock(c.E1, reccurenceId, rockModel);
 
-            L10.AttachRockMeetingL10(reccurenceId, rock.Id);
+			L10.AttachRockMeetingL10(reccurenceId, rock.Id);
 
-            L10.RemoveRockL10(reccurenceId, rock.Id);
+			L10.RemoveRockL10(reccurenceId, rock.Id);
 
-            var getRocksForRecurrence = L10Accessor.GetRocksForRecurrence(c.E1, reccurenceId);
+			var getRocksForRecurrence = L10Accessor.GetRocksForRecurrence(c.E1, reccurenceId);
 
-            Assert.AreEqual(0, getRocksForRecurrence.Count());
+			Assert.AreEqual(0, getRocksForRecurrence.Count());
 
-        }
+		}
 
 
-        [TestMethod]
-        [TestCategory("Api_V0")]
-        public void TestGetMeetingsL10()
-        {
-            var c = new Ctx();
+		[TestMethod]
+		[TestCategory("Api_V0")]
+		public void TestGetMeetingsL10() {
+			var c = new Ctx();
 
-            L10_Controller L10 = new L10_Controller();
+			L10_Controller L10 = new L10_Controller();
 
-            L10.MockUser(c.E1);
+			L10.MockUser(c.E1);
 
-            var recurrenceId = L10.CreateL10("Test L10");
+			var recurrenceId = L10.CreateL10("Test L10");
 
-            var getMeetingsL10 = L10.GetL10(recurrenceId);
+			var getMeetingsL10 = L10.GetL10(recurrenceId);
 
-            Assert.AreEqual(recurrenceId, getMeetingsL10.Id);
+			Assert.AreEqual(recurrenceId, getMeetingsL10.Id);
 
-        }
+		}
 
 
 
-        [TestMethod]
-        [TestCategory("Api_V0")]
-        public void TestGetL10Attendess()
-        {
-            var c = new Ctx();
+		[TestMethod]
+		[TestCategory("Api_V0")]
+		public void TestGetL10Attendess() {
+			var c = new Ctx();
 
-            L10_Controller L10 = new L10_Controller();
+			L10_Controller L10 = new L10_Controller();
 
-            L10.MockUser(c.E1);
+			L10.MockUser(c.E1);
 
-            var recurrenceId = L10.CreateL10("Test L10");
+			var recurrenceId = L10.CreateL10("Test L10");
 
-            L10Accessor.AddAttendee(c.E1, recurrenceId, c.E1.Id);
+			L10Accessor.AddAttendee(c.E1, recurrenceId, c.E1.Id);
 
-            var GetL10Attendess = L10.GetL10Attendees(recurrenceId);
+			var GetL10Attendess = L10.GetL10Attendees(recurrenceId);
 
-            Assert.AreEqual(1, GetL10Attendess.Count());
+			Assert.AreEqual(1, GetL10Attendess.Count());
 
-        }
+		}
 
 
-        [TestMethod]
-        [TestCategory("Api_V0")]
-        public async Task TestAttachHeadlineMeetingL10()
-        {
-            var c = new Ctx();
+		[TestMethod]
+		[TestCategory("Api_V0")]
+		public async Task TestAttachHeadlineMeetingL10() {
+			var c = new Ctx();
 
-            L10_Controller L10 = new L10_Controller();
+			L10_Controller L10 = new L10_Controller();
 
-            L10.MockUser(c.Manager);
+			L10.MockUser(c.E1);
 
-            var recurrenceId = L10.CreateL10("Test L10");
+			var recurrenceId = L10.CreateL10("Test L10");
 
-            var headlineModel = new PeopleHeadline()
-            {
-                Message = "Test Head Line",
-                OwnerId = c.E1.Id,
-                RecurrenceId = recurrenceId,
-                _Details = "Test details"
-            };
-            var getHeadline = await L10.AttachHeadlineL10(recurrenceId, headlineModel.Message, headlineModel.OwnerId, headlineModel._Details);
+			var headlineModel = new PeopleHeadline() {
+				Message = "Test Head Line",
+				OrganizationId = c.Org.Id,
+				RecurrenceId = recurrenceId,
+				_Details = "Test details"
+			};
 
-            var getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
+			var getHeadline = await L10.CreateHeadlineL10(headlineModel.RecurrenceId, headlineModel.Message, null, headlineModel._Details);
 
-            Assert.AreEqual(1, getAttachHeadline.Count());
+			var getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
 
-        }
+			Assert.AreEqual(1, getAttachHeadline.Count());
 
+		}
 
-        [TestMethod]
-        [TestCategory("Api_V0")]
-        public async Task TestRemoveHeadlineMeetingL10()
-        {
-            var c = new Ctx();
 
-            L10_Controller L10 = new L10_Controller();
+		[TestMethod]
+		[TestCategory("Api_V0")]
+		public async Task TestRemoveHeadlineMeetingL10() {
+			var c = new Ctx();
+			L10_Controller L10 = new L10_Controller();
+			L10.MockUser(c.E1);
 
-            L10.MockUser(c.E1);
+			var recurrenceId = L10.CreateL10("Test L10");
+			var headlineModel = new PeopleHeadline() {
+				Message = "Test Head Line",
+				OrganizationId = c.Org.Id,
+				RecurrenceId = recurrenceId,
+				_Details = "Test details",
+			};
 
-            var recurrenceId = L10.CreateL10("Test L10");
+			//create headline
+			var headline = await L10.CreateHeadlineL10(headlineModel.RecurrenceId, headlineModel.Message, null, headlineModel._Details);
 
-            var headlineModel = new PeopleHeadline()
-            {
-                Message = "Test Head Line",
-                OwnerId = c.E1.Id,
-                RecurrenceId = recurrenceId,
-                _Details = "Test details"
-            };
+			//Get headlines
+			var getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
+			Assert.AreEqual(1, getAttachHeadline.Count());
 
-            //create headline
-            var getHeadline = await L10.AttachHeadlineL10(recurrenceId, headlineModel.Message, headlineModel.OwnerId, headlineModel._Details);
+			//Remove headline
+			L10.RemoveHeadlineL10(recurrenceId, headline.Id);
+			//Get headlines
+			getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
+			Assert.AreEqual(0, getAttachHeadline.Count());
 
-            var getIdAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
+		}
 
-            L10.RemoveHeadlineL10(recurrenceId, getIdAttachHeadline.FirstOrDefault().Id);
 
-            var getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
+		[TestMethod]
+		[TestCategory("Api_V0")]
+		public async Task TestAttachtodoMeetingL10() {
+			var c = new Ctx();
 
-            Assert.AreEqual(0, getAttachHeadline.Count());
+			L10_Controller L10 = new L10_Controller();
 
-        }
+			L10.MockUser(c.E1);
 
+			var reccurenceId = L10.CreateL10("Test L10");
 
-        [TestMethod]
-        [TestCategory("Api_V0")]
-        public async Task TestAttachtodoMeetingL10()
-        {
-            var c = new Ctx();
+			var name = "Test To Do Meeting";
 
-            L10_Controller L10 = new L10_Controller();
+			await L10.AttachTodoL10(reccurenceId, name, c.E1.Id);
 
-            L10.MockUser(c.E1);
+			var getToDoList = L10Accessor.GetAllTodosForRecurrence(c.E1, reccurenceId);
 
-            var reccurenceId = L10.CreateL10("Test L10");
+			Assert.AreEqual(1, getToDoList.Count());
+		}
 
-            var name = "Test To Do Meeting";
 
-            await L10.AttachTodoL10(reccurenceId, name, c.E1.Id);
+		[TestMethod]
+		[TestCategory("Api_V0")]
+		public void TestGetList() {
+			var c = new Ctx();
+			L10_Controller L10 = new L10_Controller();
 
-            var getToDoList = L10Accessor.GetAllTodosForRecurrence(c.E1, reccurenceId);
+			L10.MockUser(c.E1);
+			var recurrenceId = L10.CreateL10("Test L10");
+			var m1 = new MeasurableModel() {
+				AccountableUserId = c.E1.Id,
+				AdminUserId = c.E1.Id,
+				Title = "Meas1",
+				OrganizationId = c.Org.Organization.Id
+			};
 
-            Assert.AreEqual(1, getToDoList.Count());
-        }
+			var measurable = AddMeasurableVm.CreateNewMeasurable(recurrenceId, m1, true);
+			L10Accessor.CreateMeasurable(c.E1, recurrenceId, measurable);
 
+			var getlist = L10.GetL10List();
+			Assert.AreEqual(1, getlist.Count());
+		}
 
-        [TestMethod]
-        [TestCategory("Api_V0")]
-        public void TestGetList()
-        {
-            var c = new Ctx();
-            L10_Controller L10 = new L10_Controller();
 
-            L10.MockUser(c.E1);
-            var recurrenceId = L10.CreateL10("Test L10");
-            var m1 = new MeasurableModel()
-            {
-                AccountableUserId = c.E1.Id,
-                AdminUserId = c.E1.Id,
-                Title = "Meas1",
-                OrganizationId = c.Org.Organization.Id
-            };
+		[TestMethod]
+		[TestCategory("Api_V0")]
+		public async Task TestAttachIssueMeetingL10() {
+			var c = new Ctx();
 
-            var measurable = AddMeasurableVm.CreateNewMeasurable(recurrenceId, m1, true);
-            L10Accessor.CreateMeasurable(c.E1, recurrenceId, measurable);
+			L10_Controller L10 = new L10_Controller();
 
-            var getlist = L10.GetL10List();
-            Assert.AreEqual(1, getlist.Count());
-        }
+			L10.MockUser(c.E1);
 
+			var recurrenceId = L10.CreateL10("Test L10");
 
-        [TestMethod]
-        [TestCategory("Api_V0")]
-        public async Task TestAttachIssueMeetingL10()
-        {
-            var c = new Ctx();
+			var name = "Test Name For Issue Meeting L10";
 
-            L10_Controller L10 = new L10_Controller();
+			var details = "Test detail For Issue Meeting L10";
 
-            L10.MockUser(c.E1);
+			await L10.CreateIssueL10(recurrenceId, name, c.E1.Id, details);
 
-            var recurrenceId = L10.CreateL10("Test L10");
+			var getIssueMeetingL10 = L10Accessor.GetIssuesForRecurrence(c.E1, recurrenceId, false);
 
-            var name = "Test Name For Issue Meeting L10";
+			Assert.AreEqual(1, getIssueMeetingL10.Count());
 
-            var details = "Test detail For Issue Meeting L10";
+		}
 
-            await L10.AttachIssueL10(recurrenceId, name, c.E1.Id, details);
+		[TestMethod]
+		[TestCategory("Api_V0")]
+		public async Task TestRemoveIssueL10() {
+			var c = new Ctx();
 
-            var getIssueMeetingL10 = L10Accessor.GetIssuesForRecurrence(c.E1, recurrenceId, false);
+			L10_Controller L10 = new L10_Controller();
 
-            Assert.AreEqual(1, getIssueMeetingL10.Count());
+			L10.MockUser(c.E1);
 
-        }
+			var recurrenceId = L10.CreateL10("Test L10");
 
-        [TestMethod]
-        [TestCategory("Api_V0")]
-        public async Task TestRemoveIssueL10()
-        {
-            var c = new Ctx();
+			var name = "Test Name For Issue Meeting L10";
 
-            L10_Controller L10 = new L10_Controller();
+			var details = "Test detail For Issue Meeting L10";
 
-            L10.MockUser(c.E1);
+			await L10.CreateIssueL10(recurrenceId, name, c.E1.Id, details);
 
-            var recurrenceId = L10.CreateL10("Test L10");
+			var getIssueMeetingL10 = L10Accessor.GetIssuesForRecurrence(c.E1, recurrenceId, false);
 
-            var name = "Test Name For Issue Meeting L10";
+			L10.RemoveIssueL10(recurrenceId, getIssueMeetingL10.FirstOrDefault().Id);
 
-            var details = "Test detail For Issue Meeting L10";
+			var getIssueMeetingList = L10Accessor.GetIssuesForRecurrence(c.E1, recurrenceId, false);
 
-            await L10.AttachIssueL10(recurrenceId, name, c.E1.Id, details);
+			Assert.AreEqual(0, getIssueMeetingList.Count());
 
-            var getIssueMeetingL10 = L10Accessor.GetIssuesForRecurrence(c.E1, recurrenceId, false);
+		}
 
-            L10.RemoveIssueL10(recurrenceId, getIssueMeetingL10.FirstOrDefault().Id);
-
-            var getIssueMeetingList = L10Accessor.GetIssuesForRecurrence(c.E1, recurrenceId, false);
-
-            Assert.AreEqual(0, getIssueMeetingList.Count());
-
-        }
-
-    }
+	}
 }

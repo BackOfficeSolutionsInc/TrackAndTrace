@@ -104,7 +104,6 @@ namespace RadialReview.Controllers {
                 try {
                     var now = DateTime.UtcNow;
                     var rocks = L10Accessor.GetAllMyL10Rocks(GetUser(), GetUser().Id).Select(x => new AngularRock(x));
-
                     output.Rocks = rocks;
                 } catch (Exception e) {
                     ProcessDeadTile(e);
@@ -277,17 +276,17 @@ namespace RadialReview.Controllers {
                 using (var s = HibernateSession.GetCurrentSession()) {
                     using (var tx = s.BeginTransaction()) {
                         var perms = PermissionsUtility.Create(s, GetUser());
-                        var sam = L10Accessor.GetScoresAndMeasurablesForRecurrence(s, perms, l10Id, false, getMeasurables: true);
-                        var scores = sam.Scores;
-                        var measurables = sam.Measurables;
+                        var scoredata = L10Accessor.GetScorecardDataForRecurrence(s, perms, l10Id, false, getMeasurables: true);
+                        var scores = scoredata.Scores;
+                        var measurables = scoredata.Measurables;
 
                        // var orders = L10Accessor.GetMeasurableOrdering(GetUser(), l10Id);
-                        var ts = GetUser().GetTimeSettings();
-						var recur = L10Accessor.GetL10Recurrence(GetUser(), l10Id, false);
-                        ts.WeekStart = recur.StartOfWeekOverride ?? ts.WeekStart;
-                        tile.Contents = AngularScorecard.Create(scorecardTileId, ts,
-                            sam.MeasurablesAndDividers,
-                            scores.ToList(), DateTime.UtcNow, reverseScorecard: recur.ReverseScorecard);
+                       // var ts = GetUser().GetTimeSettings();
+						//var recur = L10Accessor.GetL10Recurrence(GetUser(), l10Id, false);
+                       // ts.WeekStart = recur.StartOfWeekOverride ?? ts.WeekStart;
+                        tile.Contents = AngularScorecard.Create(scorecardTileId, scoredata.TimeSettings,
+                            scoredata.MeasurablesAndDividers,
+                            scores.ToList(), DateTime.UtcNow, reverseScorecard: scoredata.TimeSettings.Descending);
                         output.L10Scorecards.Add(tile);
                     }
                 }

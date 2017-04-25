@@ -104,10 +104,10 @@
 						<td class="alignCenter hidden-xs1">
 							@Model.CreateLabel(review)
 						</td>
-						<td>
+						<td class="test-ignore">
 							@review.GetTitle()
 						</td>
-						<td class="alignCenter hidden-xs1">
+						<td class="alignCenter hidden-xs1 test-ignore">
 							@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", review.GetDueDate())
 						</td>
 

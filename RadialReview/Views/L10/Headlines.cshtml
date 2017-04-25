@@ -23,7 +23,7 @@
 					@Html.Partial("partial/ButtonBar", Model)
 				</div>
 				@if (isList) {
-					<h2 class="l10-page-title">@(new MvcHtmlString(ViewBag.CEH_Heading))</h2>
+					<h2 class="l10-page-title">@(new MvcHtmlString(ViewBag.Heading))</h2>
 				}
 			</hgroup>
 			@*<div style="height:60px;"></div>*@
@@ -32,8 +32,8 @@
 					<div class="component">
 
 						<div style="padding: 20px 70px 20px 70px">
-							<h2>@(new MvcHtmlString(ViewBag.CEH_Heading))</h2>
-							<h4>@(new MvcHtmlString(ViewBag.CEH_Subheading))</h4>
+							<h2>@(new MvcHtmlString(ViewBag.Heading))</h2>
+							<h4>@(new MvcHtmlString(ViewBag.Subheading))</h4>
 						</div>
 
 						@if (Model.Recurrence.HeadlineType == RadialReview.Model.Enums.PeopleHeadlineType.HeadlinesBox) {

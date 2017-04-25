@@ -357,6 +357,20 @@
 .rock-details .client-date:hover {
   text-decoration: underline;
 }
+.rock-details .message-input {
+  width: 100%;
+  outline: none;
+  border: none;
+  border-bottom: 2px solid #EF7622;
+  margin-top: -1px;
+  color: black !important;
+  resize: vertical;
+  overflow: auto;
+}
+.rock-details .message:hover {
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid #EF7622;
+}
 .rock-empty-holder:after {
   content: "Click 'Add Rock' to create a rock";
 }

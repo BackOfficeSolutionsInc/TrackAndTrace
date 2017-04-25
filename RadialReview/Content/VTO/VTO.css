@@ -77,6 +77,8 @@ body {
   border: 0px;
   border: 1px dotted #ef7622;
   outline: none;
+  z-index: 1000;
+  position: relative;
 }
 .vto .boxed.content:hover textarea {
   border: 0px;
@@ -104,6 +106,8 @@ body {
   border: 0px;
   border-bottom: 1px dotted #ef7622;
   outline: none;
+  z-index: 1000;
+  position: relative;
 }
 .vto input:hover {
   border: 0px;

@@ -44,7 +44,7 @@
 					</div>					
 					@Html.Partial("partial/ButtonBar", Model)
 				</div>
-				<h2 class="l10-page-title">IDS <small class="hidden-md hidden-sm">Identify. Discuss. Solve.</small></h2>
+				<h2 class="l10-page-title">@ViewBag.Heading<small class="hidden-md hidden-sm">@(new MvcHtmlString(ViewBag.Subheading))</small></h2>
 			</hgroup>
 			<div class="issues-container prioritization-@Model.Recurrence.Prioritization" style="margin-bottom:128px;">
 				<ol class="issues-list sortable init-@(guid)">

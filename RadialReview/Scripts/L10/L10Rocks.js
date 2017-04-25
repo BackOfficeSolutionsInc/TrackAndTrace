@@ -119,7 +119,7 @@
 				data: {
 					rockId: data.containerElement.data("rockid"),
 					dueDate: data.serverDate
-				},error: function () {
+				}, error: function () {
 					recalculateMilestones();
 				}
 			});
@@ -158,7 +158,7 @@
 		$.ajax({
 			url: "/milestone/delete/" + id,
 			success: function () {
-			//	milestones.remove();
+				//	milestones.remove();
 			}
 		});
 
@@ -186,9 +186,41 @@
 		var id = $(this).data("milestoneid");
 		$(".milestone[data-milestoneid=" + id + "]").addClass("mouseover");
 	});
+
+
+	$("body").on("click", "#rock-details .message-holder .message", function () {
+		var input = $("<textarea class='message-input' value='" + escapeString($(this).html()) + "' data-old='" + escapeString($(this).html()) + "' onblur='sendRockMessage(this," + $(this).parent().data("rockid") + ")'>" + ($(this).html()) + "</textarea>");
+		$(this).parent().html(input);
+		input.focusTextToEnd();
+	});
 });
 
 
+function sendRockMessage(self, id) {
+	var val = $(self).val();
+	$(self).closest(".form-control").removeClass("focus");
+	if (val.trim() == "") {
+		$("#rock-details .message-holder[data-rockid=" + id + "]").html("<span data-rockid='" + id + "' class='message editable-text'>" + $(self).data("old") + "</span>");
+		return;
+	}
+
+	$(".rocks .message-holder[data-rockid=" + id + "] input").prop("disabled", true);
+	var data = {
+		message: val
+	};
+
+	$.ajax({
+		method: "POST",
+		data: data,
+		url: "/L10/UpdateRock/" + id,
+		success: function (data) {
+			showJsonAlert(data, false, true);
+			if (!data.Error) {
+				$("#rock-details .message-holder[data-rockid=" + id + "]").html("<span data-rockid='" + id + "' class='message'>" + val + "</span>");
+			}
+		}
+	});
+}
 
 function fixRocksDetailsBoxSize() {
 	if ($(".details.rock-details").length) {
@@ -233,7 +265,7 @@ function setMilestone(milestone) {
 function deleteMilestone(milestoneId) {
 	$(".milestone[data-milestoneid='" + milestoneId + "']").remove();
 	var ms = window.milestones;
-	for (var i = 0; i < ms.length;i++) {
+	for (var i = 0; i < ms.length; i++) {
 		var mm = ms[i];
 		if (mm.Id == milestoneId) {
 			window.milestones.splice(i, 1);
@@ -246,9 +278,11 @@ function deleteMilestone(milestoneId) {
 
 function getMilestone(milestoneId) {
 	for (var i in window.milestones) {
-		var milestone = window.milestones[i];
-		if (milestone.Id == milestoneId)
-			return milestone;
+		if (arrayHasOwnIndex(window.milestones, i)) {
+			var milestone = window.milestones[i];
+			if (milestone.Id == milestoneId)
+				return milestone;
+		}
 	}
 	return false;
 }
@@ -257,9 +291,11 @@ function getMilestones(rockId) {
 	var results = [];
 	var allResults = typeof (rockId) === "undefined";
 	for (var i in window.milestones) {
-		var milestone = window.milestones[i];
-		if (allResults || milestone.RockId == rockId)
-			results.push(milestone);
+		if (arrayHasOwnIndex(window.milestones, i)) {
+			var milestone = window.milestones[i];
+			if (allResults || milestone.RockId == rockId)
+				results.push(milestone);
+		}
 	}
 	results.sort(function (a, b) {
 		return parseJsonDate(a.DueDate) - parseJsonDate(b.DueDate);
@@ -278,9 +314,11 @@ function recalculateMilestones(recreateTable) {
 	var maximumDate = now;
 
 	for (var m in ms) {
-		var mm = ms[m];
-		minimumDate = Math.min(parseJsonDate(mm.DueDate, true), minimumDate);
-		maximumDate = Math.max(parseJsonDate(mm.DueDate, true), maximumDate);
+		if (arrayHasOwnIndex(ms, m)) {
+			var mm = ms[m];
+			minimumDate = Math.min(parseJsonDate(mm.DueDate, true), minimumDate);
+			maximumDate = Math.max(parseJsonDate(mm.DueDate, true), maximumDate);
+		}
 	}
 
 	$(".rock-row").each(function () {
@@ -353,58 +391,22 @@ function recalculateMilestones(recreateTable) {
 		}
 		//Markers
 		for (var m in ms) {
-			var mm = ms[m];
-			var marker = $("<div class='milestone-marker milestone' title='" + escapeString(mm.Name) + "' data-milestoneid='" + mm.Id + "'></div>");
-			var dueDate = parseJsonDate(mm.DueDate, true);
-			placeMarker(marker, dueDate, mm.Status);
+			if (arrayHasOwnIndex(ms, m)) {
+				var mm = ms[m];
+				var marker = $("<div class='milestone-marker milestone' title='" + escapeString(mm.Name) + "' data-milestoneid='" + mm.Id + "'></div>");
+				var dueDate = parseJsonDate(mm.DueDate, true);
+				placeMarker(marker, dueDate, mm.Status);
 
-			if (recreateTable) {
-				var row = $("<tr class='milestone' data-milestoneid='" + mm.Id + "'></tr>");
-				var statusBox = $("<input name type='checkbox'" + (mm.Status == "Done" ? "checked" : "") + " data-milestoneid='" + mm.Id + "'/>");
+				if (recreateTable) {
+					var row = $("<tr class='milestone' data-milestoneid='" + mm.Id + "'></tr>");
+					var statusBox = $("<input name type='checkbox'" + (mm.Status == "Done" ? "checked" : "") + " data-milestoneid='" + mm.Id + "'/>");
 
-				$(statusBox).on("change", function () {
-					var newVal = this.checked;
-					var mid = $(this).data("milestoneid");
-					var mmm = getMilestone(mid);
-					mmm.Status = (newVal ? "Done" : "NotDone");
-					recalculateMilestones();
-					$.ajax({
-						url: "/milestone/edit",
-						method: "post",
-						data: mmm,
-						success: function () {
-						},
-						error: function () {
-							mmm.Status = (!newVal ? "Done" : "NotDone");
-							recalculateMilestones();
-						},
-						complete: function () {
-						}
-					});
-				});
-
-				var statusCell = $("<td class='milestone-status-cell'></td>");
-				statusCell.append(statusBox);
-				row.append(statusCell);
-				row.append($("<td><div class='milestone-name'>" + mm.Name + "</div></td>"));
-
-				var dateCell = $("<td class='milestone-duedate-cell'><div class='milestone-duedate'></div></td>");
-				if (dueDate < now && mm.Status!="Done") {
-					dateCell.find(".milestone-duedate").addClass("overdue");
-				}
-
-				row.append(dateCell);
-
-				row.append("<td class='milestone-delete-cell'><span class='glyphicon glyphicon-trash gray clickable delete-milestone' data-milestoneid='"+mm.Id+"'></span></td>");
-
-				$(detailsBox).append(row);
-				var dateElement = dateCell.find('.milestone-duedate');
-				dateElement.data("milestoneid", mm.Id);
-				generateDatepickerLocalize(dateElement, dueDate, "milestone-date-" + mm.Id)
-					.on("change", function (e, data) {
-						var mmm = getMilestone(data.containerElement.data("milestoneid"));
-						var old = mmm.DueDate;
-						mmm.DueDate = data.serverDate;
+					$(statusBox).on("change", function () {
+						var newVal = this.checked;
+						var mid = $(this).data("milestoneid");
+						var mmm = getMilestone(mid);
+						mmm.Status = (newVal ? "Done" : "NotDone");
+						recalculateMilestones();
 						$.ajax({
 							url: "/milestone/edit",
 							method: "post",
@@ -412,13 +414,51 @@ function recalculateMilestones(recreateTable) {
 							success: function () {
 							},
 							error: function () {
-								mmm.DueDate = old;
+								mmm.Status = (!newVal ? "Done" : "NotDone");
+								recalculateMilestones();
 							},
 							complete: function () {
-								recalculateMilestones();
 							}
 						});
 					});
+
+					var statusCell = $("<td class='milestone-status-cell'></td>");
+					statusCell.append(statusBox);
+					row.append(statusCell);
+					row.append($("<td><div class='milestone-name'>" + mm.Name + "</div></td>"));
+
+					var dateCell = $("<td class='milestone-duedate-cell'><div class='milestone-duedate'></div></td>");
+					if (dueDate < now && mm.Status != "Done") {
+						dateCell.find(".milestone-duedate").addClass("overdue");
+					}
+
+					row.append(dateCell);
+
+					row.append("<td class='milestone-delete-cell'><span class='glyphicon glyphicon-trash gray clickable delete-milestone' data-milestoneid='" + mm.Id + "'></span></td>");
+
+					$(detailsBox).append(row);
+					var dateElement = dateCell.find('.milestone-duedate');
+					dateElement.data("milestoneid", mm.Id);
+					generateDatepickerLocalize(dateElement, dueDate, "milestone-date-" + mm.Id)
+						.on("change", function (e, data) {
+							var mmm = getMilestone(data.containerElement.data("milestoneid"));
+							var old = mmm.DueDate;
+							mmm.DueDate = data.serverDate;
+							$.ajax({
+								url: "/milestone/edit",
+								method: "post",
+								data: mmm,
+								success: function () {
+								},
+								error: function () {
+									mmm.DueDate = old;
+								},
+								complete: function () {
+									recalculateMilestones();
+								}
+							});
+						});
+				}
 			}
 		}
 
@@ -465,7 +505,7 @@ function recalculateMilestones(recreateTable) {
 			var postline = $("<div class='post-line'></div>");
 			postline.css("width", postW);
 			postline.css("left", dueP * 100 + "%");
-			
+
 
 			container.prepend(dateEllapseMarker);
 			container.prepend(dateRangeContainer);

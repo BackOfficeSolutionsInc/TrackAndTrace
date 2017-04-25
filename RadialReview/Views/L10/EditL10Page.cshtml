@@ -1,0 +1,48 @@
+﻿@model RadialReview.Models.L10.L10Recurrence.L10Recurrence_Page
+
+<input type="hidden" name ="Id" id="Id" value="@Model.Id" />
+@Html.Hidden("L10RecurrenceId", Model.L10RecurrenceId)
+@Html.HiddenFor(x => x.DeleteTime)
+
+
+
+
+<div class="row smallBreak2">
+	<div class="col-sm-3"><label>Page Type:</label></div>
+	<div class="col-sm-9">@Html.EnumDropDownListFor(x => x.PageType, new { @class = "fullWidth form-control blend page-type" })</div>
+</div>
+<div class="row smallBreak2">
+	<div class="col-sm-3"><label>Title:</label></div>
+	<div class="col-sm-9">@Html.TextBoxFor(x => x.Title, new { @class = "fullWidth form-control blend" })</div>
+</div>
+<div class="row smallBreak2 hidden sub-heading">
+	<div class="col-sm-3"><label>Subheading:</label></div>
+	<div class="col-sm-9">@Html.TextBoxFor(x => x.Subheading, new { @class = "fullWidth form-control blend" })</div>
+</div>
+<div class="row smallBreak2 url-holder hidden" >
+	<div class="col-sm-3"><label>Url:</label></div>
+	<div class="col-sm-9">@Html.TextBoxFor(x => x.Url, new { @class = "fullWidth form-control blend" })</div>
+</div>
+<div class="row smallBreak2">
+	<div class="col-sm-3"><label>Duration (Minutes):</label></div>
+	<div class="col-sm-9">@Html.TextBoxFor(x => x.Minutes, new { @class = "fullWidth form-control blend" })</div>
+</div>
+
+
+<script>
+
+	var urlHideFunc = function () {
+		var EXTERNALPAGE = "@(""+RadialReview.Models.L10.L10Recurrence.L10PageType.ExternalPage.GetDisplayName())";
+		var SEGUEPAGE = "@(""+RadialReview.Models.L10.L10Recurrence.L10PageType.Segue.GetDisplayName())";
+		var EMPTYPAGE = "@(""+RadialReview.Models.L10.L10Recurrence.L10PageType.Empty.GetDisplayName())";
+
+		var selected = $(this).find("option:checked").text();
+
+		$(".url-holder").toggleClass("hidden", selected != EXTERNALPAGE);
+		$(".sub-heading").toggleClass("hidden", /*selected != SEGUEPAGE &&*/ selected != EMPTYPAGE);
+	};
+
+	urlHideFunc.call($(".page-type"));
+	$(".page-type").on("change",urlHideFunc);
+
+</script>

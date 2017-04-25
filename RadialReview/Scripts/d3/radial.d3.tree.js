@@ -17,7 +17,9 @@
 
 			console.log(b + node.Key);
 			for (var c in node.children) {
-				debugTree(node.children[c], d + 1);
+				if (arrayHasOwnIndex(node.children, c)) {
+					debugTree(node.children[c], d + 1);
+				}
 			}
 		}
 
@@ -123,8 +125,10 @@
 				node.children = newChildren;
 
 				for (var c in node.children) {
-					if (node.children[c].children && node.children[c].children.length) {
-						compactifyTree(node.children[c]);
+					if (arrayHasOwnIndex(node.children, c)) {
+						if (node.children[c].children && node.children[c].children.length) {
+							compactifyTree(node.children[c]);
+						}
 					}
 				}
 				//calculate how to divide up leafs
@@ -199,7 +203,9 @@
 			}
 			if (node.children) {
 				for (var c in node.children) {
-					decompactify(node.children[c]);
+					if (arrayHasOwnIndex(node.children, c)) {
+						decompactify(node.children[c]);
+					}
 				}
 			}
 			if (node._compact && node._compact.originalParent) {

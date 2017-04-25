@@ -189,7 +189,7 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public ActionResult Wizard(long? id = null, string @return = null)
+        public ActionResult Wizard(long? id = null, string @return = null,MeetingType? type=null)
         {
             if (id == null) {
                 //var m = new L10Recurrence();
@@ -197,7 +197,7 @@ namespace RadialReview.Controllers
                 //AddExtras(0, model);
                 //ViewBag.InfoAlert = "You can use the same L10 meeting each week. No need to create a new on each week.";
 
-                var l10 = L10Accessor.CreateBlankRecurrence(GetUser(),GetUser().Organization.Id);
+                var l10 = L10Accessor.CreateBlankRecurrence(GetUser(),GetUser().Organization.Id, type??MeetingType.L10);
                 return RedirectToAction("Wizard", new { id = l10.Id, tname = Request["tname"], tmethod = Request["tmethod"] });
             } else {
                 //var recurrenceId = id.Value;

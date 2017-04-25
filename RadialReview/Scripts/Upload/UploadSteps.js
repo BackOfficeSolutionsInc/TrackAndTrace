@@ -67,7 +67,9 @@ function UploadSteps(args) {
 
 		var dataStr = "";
 		for (var d in data) {
-			dataStr += "<input type=hidden name='" + d + "' value='" + data[d] + "'/>";
+			if (arrayHasOwnIndex(data, d)) {
+				dataStr += "<input type=hidden name='" + d + "' value='" + data[d] + "'/>";
+			}
 		}
 		//var submit = $("<input class='btn btn-primary'/>");
 		// 

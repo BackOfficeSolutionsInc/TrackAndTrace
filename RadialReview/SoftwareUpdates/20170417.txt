@@ -1,0 +1,9 @@
+﻿Same Page Meeting
+---------------
+Create a Same Page meeting on the L10 page.
+* Click "Create New Meeting"
+
+Milestones
+---------------
+Add milestones to your rocks.
+* Turn on milestones in the L10 Advanced Settings page

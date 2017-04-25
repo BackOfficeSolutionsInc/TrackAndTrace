@@ -237,7 +237,7 @@ namespace TractionTools.Tests.TestUtils {
         protected void MockApplication()
         {
             if (!ApplicationCreated)
-                new ApplicationAccessor().EnsureApplicationExists();
+                ApplicationAccessor.EnsureApplicationExists();
             ApplicationCreated = true;
         }
 

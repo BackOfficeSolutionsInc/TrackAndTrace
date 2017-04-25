@@ -27,7 +27,7 @@
 						{"class","glyphicon glyphicon-save"}
 					}.AsList()}})
                 </div>
-                <h2 class="l10-page-title">Scorecard<small></small></h2>
+                <h2 class="l10-page-title">@ViewBag.Heading<small></small></h2>
             </hgroup>
 				<div class="empty-holder scorecard-empty-holder @(Model.Meeting._MeetingMeasurables.Any() ? "hidden" : "")"></div>
 			<div class="component zoomable" style="margin-bottom:128px;">
@@ -70,7 +70,7 @@
 									{
 										foreach (var r in Model.Weeks)
 										{
-											<th class="date @(r.IsCurrentWeek ? "current" : "")" colspan="@(r.IsCurrentWeek ? "2" : "1")">
+											<th class="date @(r.IsCurrentWeek ? "current" : "") test-ignore" colspan="@(r.IsCurrentWeek ? "2" : "1")">
                                                 @TimingUtility.ScorecardRangeStart( Html.UserOrganization().GetTimeSettings().TimezoneOffset, Model.ScorecardType, r.DisplayDate).ToString(TimingUtility.ScorecardFormat1(Model.ScorecardType))
 
 											</th>
@@ -93,7 +93,7 @@
 									@if (i == 0){
 										foreach (var r in Model.Weeks)
 										{
-											<th class="date @(r.IsCurrentWeek ? "current" : "")" colspan="@(r.IsCurrentWeek ? "2" : "1")">
+											<th class="date @(r.IsCurrentWeek ? "current" : "") test-ignore" colspan="@(r.IsCurrentWeek ? "2" : "1")">
 												@TimingUtility.ScorecardRangeEnd( Html.UserOrganization().GetTimeSettings().TimezoneOffset, Model.ScorecardType, r.DisplayDate).ToString(TimingUtility.ScorecardFormat2(Model.ScorecardType))
 											</th>
 										}

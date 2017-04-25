@@ -199,8 +199,10 @@ ScatterImage.prototype.PullPlot = function PullPlot(url, args, callback, options
 
     function callback2(data) {
         if (opts !== undefined) {
-            for (var attrname in opts) {
-                data[attrname] = opts[attrname];
+        	for (var attrname in opts) {
+        		if (arrayHasOwnIndex(opts, attrname)) {
+        			data[attrname] = opts[attrname];
+        		}
             }
         }
         this.Plot(data.Points, data);

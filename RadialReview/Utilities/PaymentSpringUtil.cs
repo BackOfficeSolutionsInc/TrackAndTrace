@@ -39,13 +39,22 @@ namespace RadialReview.Utilities {
 		}
 
 		public static async Task<PaymentResult> ChargeToken(OrganizationModel org, PaymentSpringsToken token, decimal amount, bool forceTest = false) {
+			return await ChargeToken(org, token.CustomerToken, amount, forceTest, token.TokenType == PaymentSpringTokenType.BankAccount);
+		}
+
+		[Obsolete("Unsafe")]
+		public static async Task<PaymentResult> ChargeToken(OrganizationModel org, string token, decimal amount, bool forceTest,bool bankAccount) {
 			//CURL 
 			var client = new HttpClient();
 			// Create the HttpContent for the form to be posted.
+
 			var requestContent = new FormUrlEncodedContent(new[] {
-				new KeyValuePair<string, string>("customer_id", token.CustomerToken),
+				new KeyValuePair<string, string>("customer_id", token),
 				new KeyValuePair<string, string>("amount", ""+((int)(amount*100))),
+				new KeyValuePair<string, string>("charge_bank_account",bankAccount?"true":"false")
 			});
+
+
 
 			var privateApi = Config.PaymentSpring_PrivateKey(forceTest);
 			var byteArray = new UTF8Encoding().GetBytes(privateApi + ":");

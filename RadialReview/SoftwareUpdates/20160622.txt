@@ -1,5 +1,5 @@
-﻿Personal To-do List
+﻿Individual To-do List
 ---------------
-Add to-dos to your personal to-do list.
-* Use the to-do icon in the black title bar at the top and choose "Personal To-do List"
+Add to-dos to your individual to-do list.
+* Use the to-do icon in the black title bar at the top and choose "Individual To-do List"
 * To-dos show up on your dashboard's to-do list in blue.

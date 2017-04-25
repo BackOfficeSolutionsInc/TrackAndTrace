@@ -134,10 +134,12 @@ WebRtcDemo.ConnectionManager = (function () {
 							//ConnectionEstablished[partnerClientId] = true;
         					if (partnerClientId in onicecandidateQueue) {
         						for (var cc in onicecandidateQueue[partnerClientId]) {
-							        //debugger;
-							        var candidate = onicecandidateQueue[partnerClientId][cc];
-							        console.log("A");
-									my_onicecandiate(connection, candidate, partnerClientId);
+        							if (arrayHasOwnIndex(onicecandidateQueue[partnerClientId], cc)) {
+        								//debugger;
+        								var candidate = onicecandidateQueue[partnerClientId][cc];
+        								console.log("A");
+        								my_onicecandiate(connection, candidate, partnerClientId);
+        							}
         						}
         						//Clear out queue
         						onicecandidateQueue[partnerClientId] = [];
@@ -201,7 +203,9 @@ WebRtcDemo.ConnectionManager = (function () {
         // Close all of our connections
         _closeAllConnections = function () {
         	for (var connectionId in _connections) {
-        		_closeConnection(connectionId);
+        		if (arrayHasOwnIndex(_connections,connectionId)) {
+        			_closeConnection(connectionId);
+        		}
         	}
         },
 

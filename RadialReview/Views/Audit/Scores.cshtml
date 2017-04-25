@@ -1,0 +1,37 @@
+﻿@model List<Tuple<long,DateTime, RadialReview.Models.Scorecard.ScoreModel>>
+@{
+	ViewBag.Title = "Audit - Scores";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Score (@Model.FirstOrDefault().NotNull(x => x.Item3.Id))</h2>
+
+<div id="model-container"></div>
+
+@using (Html.BeginScripts()) {
+	<script>
+
+		var data = @Html.ArrayToString(Model);
+
+		DataTable({
+			container: "#model-container",
+			data: data,
+			cellId:function(cell){
+				debugger;
+				return cell.Item1;
+			},
+			cells: [
+				{ name: "REV_DATE", contents: function (r) { return dateFormatter(parseJsonDate(r.Item2,true)); } },
+				{ name: "REVID", contents: function (r) { return r.Item1; } },
+				{ name: "Value", contents: function (r) { return r.Item3.Value; }, classes: "fullWidth" },
+				//{ name: "OriginalGoal", contents: function (r) { return r.Item3.OriginalGoal; } },
+				//{ name: "AlternateGoal", contents: function (r) { return r.Item3.AlternateOriginalGoal; } },
+				//{ name: "OriginalGoalDirection", contents: function (r) { return r.Item3.OriginalGoalDirection; } },
+				//{ name: "OwnerId", contents: function (r) { return r.Item3.AccountableUserId; } },
+				{ name: "MeasurableId", contents: function (r) { return r.Item3.MeasurableId; } },
+				//{ name: "DeleteTime", contents: function (r) { return r.Item3.DeleteTime; } }
+			]
+		});
+
+	</script>
+}

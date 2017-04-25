@@ -55,7 +55,7 @@
 												<span class="progress-bar @(Model.OrderedPeople[i].Item2 ? "progress-bar-success" : "progress-bar-primary progress-bar-striped")" style="width:@(Model.OrderedPeople[i].Item3)%"></span>
 											</span>
 										</span>
-										<a class="@(i == Model.Page ? "currentPage" : "")" href="@Url.Action("take", new{id = Model.Id, page = i} )">@Model.OrderedPeople[i].Item1</a>
+										<a class="@(i == Model.Page ? "currentPage" : "") test-ignore" href="@Url.Action("take", new{id = Model.Id, page = i} )">@Model.OrderedPeople[i].Item1</a>
 
 									</li>
 								}
@@ -344,18 +344,21 @@
 					}
 				};
 
+				var isOnIOS = navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPhone/i);
+				var unloadEventName = isOnIOS ? "pagehide" : "beforeunload";
+
 				$(document).ready(function () {
 					$('.submitButton').on('mousedown', stopNavigate);
 					$('.submitButton').on('mouseleave', function () {
-						$(window).on('beforeunload', onleaving);
+						$(window).on(unloadEventName, onleaving);
 					});
 				});
 
-				$(window).on('beforeunload', onleaving);
+				$(window).on(unloadEventName, onleaving);
 
 
 				function stopNavigate() {
-					$(window).off('beforeunload');
+					$(window).off(unloadEventName);
 				}
 			});
 

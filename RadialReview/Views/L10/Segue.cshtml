@@ -4,14 +4,6 @@
 }
 
 
-@*<div class="centered" style="width:65%;max-width:550px;">
-	<div class="component" style="padding: 20px 70px 30px 70px">
-		
-		
-		
-	</div>
-</div>*@
-
 <div class="segue meeting-page">
 	<div class="row">
 		<div class="col-md-12">
@@ -23,8 +15,8 @@
 			</hgroup>
 			<div class="centered">
 				<div class="component" >
-					<h2>Segue</h2>
-					<h4>@(new MvcHtmlString(ViewBag.Segue_Subheading))</h4>
+					<h2>@ViewBag.Heading</h2>
+					<h4>@(new MvcHtmlString(ViewBag.Subheading))</h4>
 				</div>
 			</div>
 		</div>

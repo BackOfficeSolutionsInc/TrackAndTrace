@@ -31,6 +31,7 @@ using RadialReview.Models.Scorecard;
 using System.Web.Routing;
 using RadialReview.Utilities.RealTime;
 using RadialReview.Model.Enums;
+using System.Linq.Expressions;
 
 #pragma warning disable CS0219 // Variable is assigned but its value is never used
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -1907,6 +1908,91 @@ namespace RadialReview.Controllers {
 
 
 			return "Updated " + a + " org permissions";
+
+		}
+
+		[Access(Controllers.AccessLevel.Radial)]
+		public String M04_14_2017() {
+			var a = 0;
+			var pageCount = 0;
+			using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
+				using (var tx = s.BeginTransaction()) {
+
+					var recurs = s.QueryOver<L10Recurrence>().List().ToList();
+					var pageFunc = new Func<L10Recurrence,Expression<Func<L10Recurrence, decimal>>, L10Recurrence.L10PageType,string,int, L10Recurrence.L10Recurrence_Page>(
+						(recur,pageDur,type,subheading,order)=> new L10Recurrence.L10Recurrence_Page() {
+								AutoGen = true,
+								L10Recurrence = recur,
+								L10RecurrenceId = recur.Id,
+								Minutes = ObjectExtensions.Get(recur,pageDur),
+								PageType = type,
+								Title = type.GetDisplayName(),
+								Subheading = subheading,
+								_Ordering = order
+						});
+
+					foreach (var recur in recurs) {
+						var order = 0;
+						if (recur.SegueMinutes > 0) {
+							var page = pageFunc(recur, x => x.SegueMinutes, L10Recurrence.L10PageType.Segue, "Share good news from the last 7 days.<br/> One personal and one professional.", order);
+							s.Insert(page);
+							order += 1;
+							pageCount += 1;
+						}
+						if (recur.ScorecardMinutes > 0) {
+							s.Insert(pageFunc(recur, x => x.ScorecardMinutes, L10Recurrence.L10PageType.Scorecard, null,order));
+							order += 1;
+							pageCount += 1;
+						}
+						if (recur.RockReviewMinutes > 0) {
+							s.Insert(pageFunc(recur, x => x.RockReviewMinutes, L10Recurrence.L10PageType.Rocks, null, order));
+							order += 1;
+							pageCount += 1;
+						}
+						if (recur.HeadlinesMinutes > 0) {
+							L10Recurrence.L10Recurrence_Page page;
+							s.Insert(pageFunc(recur, x => x.HeadlinesMinutes, L10Recurrence.L10PageType.Headlines, "Share headlines about customers/clients and people in the company.<br/> Good and bad. Drop down (to the issues list) anything that needs discussion.", order));
+							//switch (recur.HeadlineType) {
+							//	case PeopleHeadlineType.None:
+							//		page = pageFunc(recur, x => x.HeadlinesMinutes, L10Recurrence.L10PageType.Empty, "Share headlines about customers/clients and people in the company.<br/> Good and bad. Drop down (to the issues list) anything that needs discussion.", order);
+							//		page.Title = "People Headlines";
+							//		break;
+							//	case PeopleHeadlineType.HeadlinesBox:
+							//		page = pageFunc(recur, x => x.HeadlinesMinutes, L10Recurrence.L10PageType.NotesBox, null, order);
+							//		page.Title = "People Headlines";
+							//		break;
+							//	case PeopleHeadlineType.HeadlinesList:
+							//		page = pageFunc(recur, x => x.HeadlinesMinutes, L10Recurrence.L10PageType.Headlines, null, order);
+							//		break;
+							//	default:
+							//		throw new Exception(recur.HeadlineType + "");
+							//}
+							//s.Insert(page);
+							order += 1;
+							pageCount += 1;
+						}
+						if (recur.TodoListMinutes > 0) {
+							s.Insert(pageFunc(recur, x => x.TodoListMinutes, L10Recurrence.L10PageType.Todo, null, order));
+							order += 1;
+							pageCount += 1;
+						}
+						if (recur.IDSMinutes > 0) {
+							s.Insert(pageFunc(recur, x => x.IDSMinutes, L10Recurrence.L10PageType.IDS, null, order));
+							order += 1;
+							pageCount += 1;
+						}
+						s.Insert(pageFunc(recur, x => x.ConclusionMinutes, L10Recurrence.L10PageType.Conclude, null, order));
+						pageCount += 1;
+						order += 1;
+					}
+					
+					tx.Commit();
+					//s.Flush();
+				}
+			}
+
+
+			return "Added " + pageCount + " pages";
 
 		}
 	}

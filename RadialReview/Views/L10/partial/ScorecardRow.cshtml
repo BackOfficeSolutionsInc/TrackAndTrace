@@ -58,7 +58,7 @@
 			}
 		</td>
 		<td><div class="number header-cell"></div></td>
-		<td class="who first1 alignRight @inlineEdit accountable header-cell" data-accountable="@Model.MeetingMeasurable.Measurable.AccountableUserId"
+		<td class="who first1 alignRight @inlineEdit accountable header-cell test-ignore" data-accountable="@Model.MeetingMeasurable.Measurable.AccountableUserId"
 			@*data-accountable-name="@Model.MeetingMeasurable.Measurable.AccountableUser.GetName()"
             data-accountable-initals="@Model.MeetingMeasurable.Measurable.AccountableUser.GetInitials()"
             data-accountable-url="@Model.MeetingMeasurable.Measurable.AccountableUser.ImageUrl(true,ImageSize._32)"*@
@@ -69,7 +69,7 @@
 			}
 		</td>
 		@if (showAdmin) {
-			<td class="who first1 alignLeft header-cell">
+			<td class="who first1 alignLeft header-cell test-ignore">
 				<span class="newLine gray @inlineEdit adminSelection" data-placement="right" data-source="/Dropdown/MeetingMembers/@(Model.RecurrenceId)?userId=true" data-type="select" data-name="admin" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable" title="@(Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetName()) ?? "Auto-Generated")">/@(Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetInitials()) ?? "Auto")</span>
 			</td>
 		}

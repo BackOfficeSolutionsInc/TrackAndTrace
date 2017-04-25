@@ -82,7 +82,13 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult Delete(long id) {
 			RockAccessor.DeleteRock(GetUser(), id);
-			return Json(ResultObject.SilentSuccess());
+			return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
+		}
+
+		[Access(AccessLevel.Radial)]
+		public JsonResult Undelete(long id) {
+			RockAccessor.UndeleteRock(GetUser(), id);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
 		[Access(AccessLevel.UserOrganization)]

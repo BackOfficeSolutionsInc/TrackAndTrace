@@ -119,6 +119,7 @@
     <Compile Include="Api\V0\Todo.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="Controllers\Ac\AngularAccountabilityController.cs" />
+    <Compile Include="Controllers\AuditController.cs" />
     <Compile Include="Controllers\HeadlinesController.cs" />
     <Compile Include="Controllers\MilestoneController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
@@ -138,6 +139,7 @@
     <Compile Include="Models\Enums\VideoConferenceType.cs" />
     <Compile Include="Models\Events\Event.cs" />
     <Compile Include="Models\Issues\HeadlineIssueVM.cs" />
+    <Compile Include="Models\L10\L10Page.cs" />
     <Compile Include="Models\L10\PeopleHeadline.cs" />
     <Compile Include="Models\L10\L10RockType.cs" />
     <Compile Include="Models\L10\PeopleHeadlineType.cs" />
@@ -728,6 +730,7 @@
     <Compile Include="Utilities\NHibernate\AuditEventListener.cs" />
     <Compile Include="Utilities\NHibernate\Context.cs" />
     <Compile Include="Utilities\NHibernate\CustomAuditStrategy.cs" />
+    <Compile Include="Utilities\NHibernate\NHibernateProxyJsonConvert.cs" />
     <Compile Include="Utilities\NHibernate\SingleRequestSession.cs" />
     <Compile Include="Utilities\NumberUtility.cs" />
     <Compile Include="Utilities\PaymentSpringUtil.cs" />
@@ -804,7 +807,6 @@
     <Compile Include="Models\Audit\LogModel.cs" />
     <Content Include="Areas\RouteDebugger\Content\rdstyle.css" />
     <Content Include="Areas\RouteDebugger\Scripts\detect.js" />
-    <Content Include="x86\SQLite.Interop.dll" />
     <None Include=".bin\bower.cmd" />
     <None Include=".bin\git.cmd" />
     <None Include=".bin\node.cmd" />
@@ -853,9 +855,6 @@
     <Content Include="Content\img\graystripe-light.png" />
     <Content Include="Content\L10\Archive\Archive.css">
       <DependentUpon>Archive.less</DependentUpon>
-    </Content>
-    <Content Include="Content\L10\Archive\Archive.min.css">
-      <DependentUpon>Archive.css</DependentUpon>
     </Content>
     <Content Include="Content\L10\l10-ie-only.css">
       <DependentUpon>l10-ie-only.less</DependentUpon>
@@ -1109,6 +1108,7 @@
     <Content Include="SoftwareUpdates\20160401.txt" />
     <Content Include="SoftwareUpdates\20160201.txt" />
     <Content Include="SoftwareUpdates\20160613.txt" />
+    <Content Include="SoftwareUpdates\20170417.txt" />
     <Content Include="SoftwareUpdates\20161113.txt" />
     <Content Include="SoftwareUpdates\20161017.txt" />
     <Content Include="SoftwareUpdates\20160927.txt" />
@@ -1464,6 +1464,15 @@
     <Content Include="Views\Review\Take\Radio.cshtml" />
     <Content Include="Views\TileData\L10SolvedIssues.cshtml" />
     <Content Include="Views\Todo\EditModal.cshtml" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.UPDATE DATABSE.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-responsive.css" />
@@ -1911,11 +1920,24 @@
     <Content Include="Views\Payment\SetACH.cshtml" />
     <Content Include="Views\Organization\Invites.cshtml" />
     <Content Include="Views\Issues\EditModal.cshtml" />
+    <Content Include="Views\Audit\Rocks.cshtml" />
+    <Content Include="Views\Audit\Scores.cshtml" />
+    <Content Include="Views\Audit\Measurables.cshtml" />
+    <Content Include="Views\Audit\Roles.cshtml" />
+    <Content Include="Views\L10\EditL10Page.cshtml" />
+    <Content Include="Views\L10\TitlePage.cshtml" />
+    <Content Include="Views\L10\NotesBox.cshtml" />
+    <Content Include="Views\Archive\Table.cshtml" />
+    <Content Include="Views\Archive\Index.cshtml" />
+    <Content Include="Views\Dashboard\_L10TileList.cshtml" />
+    <Content Include="Views\L10\ExternalPage.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="wkhtmltox0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="x64\SQLite.Interop.dll" />
     <Content Include="Scripts\bootstrap.min.js.map">
       <DependentUpon>bootstrap.js</DependentUpon>
     </Content>
@@ -1945,10 +1967,6 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Web.config">
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Views\Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -2224,6 +2242,8 @@
     <Folder Include="Views\WebRtc\" />
     <Folder Include="Views\Wizard\" />
     <Folder Include="Views\_Angular\" />
+    <Folder Include="x64\" />
+    <Folder Include="x86\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -2397,7 +2417,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>3751</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:44300/</IISUrl>
+          <IISUrl>https://localhost:44300/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>http://radial.elasticbeanstalk.com/</CustomServerUrl>

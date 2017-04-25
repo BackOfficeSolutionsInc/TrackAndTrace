@@ -19,20 +19,22 @@
 	}
 
 
-	function search(find, model,arr, str) {
-		if (typeof (str) === "undefined"){
-			find=find.toLowerCase();
+	function search(find, model, arr, str) {
+		if (typeof (str) === "undefined") {
+			find = find.toLowerCase();
 			str = "";
 		}
 
 		for (var i in model) {
-			var builder = str + "." + i;
-			if ((model[i] + "").toLowerCase() == find) {
-				console.log(builder)
-				arr.push(model);
+			if (arrayHasOwnIndex(model, i)) {
+				var builder = str + "." + i;
+				if ((model[i] + "").toLowerCase() == find) {
+					console.log(builder)
+					arr.push(model);
+				}
+				if (typeof (model[i]) === "object" && i != "parent")
+					search(find, model[i], arr, builder);
 			}
-			if (typeof(model[i])==="object" && i!="parent")
-				search(find, model[i],arr, builder);
 		}
 
 	}
@@ -45,53 +47,28 @@
 					seen[item.Key] = true;
 					onUnseen();
 				} else {
-					//console.log("Skipping " + item.Key);
 				}
 			} else {
-				//console.log("No key " + item);
 				onUnseen();
 			}
-			/*} else {
-				if (item && !(item in seen)) {
-					seen[item] = true;
-					onUnseen();
-				} else {
-					console.log("skipping " + item);
-				}*/
-			//}
 		} else {
-			//console.log("No item " + item);
 			onUnseen();
 		}
 
 	}
 
 	function _removeDeleted(model, seen) {
-
 		for (var key in model) {
-			if (model[key] == "`delete`")
-				model[key] = null;
-			else if (typeof (model[key]) == 'object') {
+			if (arrayHasOwnIndex(model, key)) {
+				if (model[key] == "`delete`")
+					model[key] = null;
+				else if (typeof (model[key]) == 'object') {
 
-				var value = model[key];
-				_continueIfUnseen(value, seen, function () {
-					_removeDeleted(value, seen);
-				});
-
-				//var alreadyParsed = false;
-				//var k = null;
-				//if (value.Key) {
-				//	k = value.key
-				//	if (k in seen) {
-				//		alreadyParsed = true;
-				//		continue;
-				//	}
-				//}				
-				//if (!alreadyParsed) {
-				//	if (k!=null)
-				//		seen[k] = true;
-				//}
-
+					var value = model[key];
+					_continueIfUnseen(value, seen, function () {
+						_removeDeleted(value, seen);
+					});				
+				}
 			}
 		}
 	}
@@ -108,18 +85,19 @@
 					lookthrough = [objs];
 				}
 				for (var k in objs) {
-					var o = objs[k];
-					if ("Lookup" in o) {
-						if (dst["Key"] in o["Lookup"]) {
-							var baseObj = o["Lookup"][dst["Key"]];
-							baseExtend(objs[k], [baseObj], deep, true, true);
-							o["Lookup"][dst["Key"]] = null;
+					if (arrayHasOwnIndex(objs, k)) {
+						var o = objs[k];
+						if ("Lookup" in o) {
+							if (dst["Key"] in o["Lookup"]) {
+								var baseObj = o["Lookup"][dst["Key"]];
+								baseExtend(objs[k], [baseObj], deep, true, true);
+								o["Lookup"][dst["Key"]] = null;
+							}
 						}
 					}
 				}
 			}
 		}
-
 
 		for (var i = 0, ii = objs.length; i < ii; ++i) {
 			var obj = objs[i];
@@ -145,32 +123,40 @@
 							} else if (src.UpdateMethod == "ReplaceIfNewer") {
 								var keysList = [];
 								for (var entry in dst[key]) {
-									keysList.push(dst[key][entry]["Key"]);
+									if (arrayHasOwnIndex(dst[key], entry)) {
+										keysList.push(dst[key][entry]["Key"]);
+									}
 								}
 								for (var entry in src.AngularList) { //Foreach element in src
-									var loc = keysList.indexOf(src.AngularList[entry]["Key"]);
-									if (loc != -1) {
-										dst[key][loc] = src.AngularList[entry];
-									} else {
-										if (typeof (dst[key]) === "undefined") {
-											dst[key] = [];
+									if (arrayHasOwnIndex(src.AngularList, entry)) {
+										var loc = keysList.indexOf(src.AngularList[entry]["Key"]);
+										if (loc != -1) {
+											dst[key][loc] = src.AngularList[entry];
+										} else {
+											if (typeof (dst[key]) === "undefined") {
+												dst[key] = [];
+											}
+											dst[key].push(src.AngularList[entry]);
+											keysList.push(src.AngularList[entry]["Key"]);
 										}
-										dst[key].push(src.AngularList[entry]);
-										keysList.push(src.AngularList[entry]["Key"]);
 									}
 								}
 							} else if (src.UpdateMethod == "Remove") {
 								var keysList = [];
 								for (var entry in dst[key]) {
-									keysList.push(dst[key][entry]["Key"]);
+									if (arrayHasOwnIndex(dst[key], entry)) {
+										keysList.push(dst[key][entry]["Key"]);
+									}
 								}
 
 								for (var entry in src.AngularList) {
-									var entryKey = src.AngularList[entry]["Key"];
-									var index = keysList.indexOf(entryKey);
-									if (index != -1) {
-										dst[key].splice(index, 1);
-										keysList.splice(index, 1);
+									if (arrayHasOwnIndex(src.AngularList, entry)) {
+										var entryKey = src.AngularList[entry]["Key"];
+										var index = keysList.indexOf(entryKey);
+										if (index != -1) {
+											dst[key].splice(index, 1);
+											keysList.splice(index, 1);
+										}
 									}
 								}
 							} else {
@@ -185,15 +171,19 @@
 							if (src.length > 0 && "Key" in src[0]) {
 								var keysList = [];
 								for (var e in dst[key]) {
-									keysList.push(dst[key][e]["Key"]);
+									if (arrayHasOwnIndex(dst[key], e)) {
+										keysList.push(dst[key][e]["Key"]);
+									}
 								}
 								for (var e in src) { //Foreach element in src
-									var loc = keysList.indexOf(src[e]["Key"]);
-									if (loc != -1) {
-										dst[key][loc] = src[e];
-									} else {
-										dst[key].push(src[e]);
-										keysList.push(src[e]["Key"]);
+									if (arrayHasOwnIndex(src, e)) {
+										var loc = keysList.indexOf(src[e]["Key"]);
+										if (loc != -1) {
+											dst[key][loc] = src[e];
+										} else {
+											dst[key].push(src[e]);
+											keysList.push(src[e]["Key"]);
+										}
 									}
 								}
 							} else {
@@ -238,30 +228,18 @@
 		if (typeof (obj) === "undefined" || obj == null)
 			return obj;
 		for (var key in obj) {
-			var value = obj[key];
-			var type = typeof (value);
-			if (obj[key] == null) {
-				//Do nothing
-			} else if (obj[key].getDate !== undefined) {
-				obj[key] = new Date(obj[key].getTime() + tzoffset() * 60 * 1000); //obj[key].getTimezoneOffset() * 60000);
-			} else if (type == 'object') {
-
-				_continueIfUnseen(value, seen, function () {
-					_convertDatesForServer(value, seen);
-				});
-
-				//var alreadyParsed = false;
-				//for (var i in seen) {
-				//	if (seen[i] == value) {
-				//		alreadyParsed = true;
-				//		break;
-				//	}
-				//}
-				//if (!alreadyParsed) {
-				//	seen.push(value);
-				//	_convertDatesForServer(value, seen);
-				//}
-
+			if (arrayHasOwnIndex(obj, key)) {
+				var value = obj[key];
+				var type = typeof (value);
+				if (obj[key] == null) {
+					//Do nothing
+				} else if (obj[key].getDate !== undefined) {
+					obj[key] = new Date(obj[key].getTime() + tzoffset() * 60 * 1000);
+				} else if (type == 'object') {
+					_continueIfUnseen(value, seen, function () {
+						_convertDatesForServer(value, seen);
+					});
+				}
 			}
 		}
 	}
@@ -277,46 +255,26 @@
 		//var dateRegex2 = /^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/;
 		var dateRegex2 = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{0,7})?/;
 		for (var key in obj) {
-			var value = obj[key];
-			var type = typeof (value);
+			if (arrayHasOwnIndex(obj, key)) {
+				var value = obj[key];
+				var type = typeof (value);
 
-			if (obj[key] == null) {
-				//Do nothing
-			} else {
-				var isDate = parseJsonDate(value);
+				if (obj[key] == null) {
+					//Do nothing
+				} else {
+					var isDate = parseJsonDate(value);
 
-				//if (type == 'string' && dateRegex1.test(value)) {
-				//	//obj[key] = new Date(parseInt(value.substr(6)));
-				//	obj[key] = new Date(new Date(parseInt(value.substr(6))).getTime() - new Date().getTimezoneOffset() * 60000)
-				//} else if (type == 'string' && dateRegex2.test(value)) {
-				//	obj[key] = new Date(obj[key]);
-				//} else if (obj[key].getDate !== undefined) {
-				//	obj[key] = new Date(obj[key].getTime() /*- obj[key].getTimezoneOffset() * 60000*/);
-				//}
-				if (isDate != false) {
-					obj[key] = isDate;
-				}else if (type == 'object') {
-
-					//_continueIfUnseen(value, seen, function () {
-					_convertDates(value, seen);
-					//});
-					//var alreadyParsed = false;
-					//if (value in seen) {
-					//	alreadyParsed = true;
-					//	continue;
-					//}
-					//if (!alreadyParsed) {
-					//	seen[value]=true;
-					//	_convertDates(value, seen);
-					//}
-
+					if (isDate != false) {
+						obj[key] = isDate;
+					} else if (type == 'object') {
+						_convertDates(value, seen);
+					}
 				}
 			}
 		}
 	}
 
 	function clearAndApply(data, status) {
-		// this.scope._model = {};
 		this.scope.model = {};
 		this.applyUpdate(data, status);
 	}
@@ -333,50 +291,46 @@
 				var out = [];
 				var keysList = [];
 				for (var e in m) {
-					keysList.push(m[e]["Key"]);
+					if (arrayHasOwnIndex(m, e)) {
+						keysList.push(m[e]["Key"]);
+					}
 				}
 
-				if (u.AngularList && (u.AngularList.length == 0 || u.AngularList[0].Key) && (/*(m.AngularList && (m.AngularList.length==0 || m.AngularList[0].Key))||*/(m.length == 0 || m[0].Key))) {
-
-					//if (m.AngularList) {
-					//    //means that the item was not found in list... cant update a list that doesnt exist.
-					//    if (m.UpdateMethod == "Remove") {
-					//        //skip
-					//    }else if (m.UpdateMethod == "ReplaceIfNewer")                        {
-
-					//    }
-
-					//}
-
+				if (u.AngularList && (u.AngularList.length == 0 || u.AngularList[0].Key) && (m.length == 0 || m[0].Key)) {
 					for (var k in u.AngularList) { //Foreach element in src
-						var loc = keysList.indexOf(u.AngularList[k]["Key"]);
-						if (loc != -1) {
-							m[loc] = populate(m[loc], u.AngularList[k], false);
-						} else {
-							if (u.UpdateMethod != "Remove") {
-								m.push(populate(null, u.AngularList[k], false));
-								keysList.push(u.AngularList[k]["Key"]);
+						if (arrayHasOwnIndex(u.AngularList, k)) {
+							var loc = keysList.indexOf(u.AngularList[k]["Key"]);
+							if (loc != -1) {
+								m[loc] = populate(m[loc], u.AngularList[k], false);
+							} else {
+								if (u.UpdateMethod != "Remove") {
+									m.push(populate(null, u.AngularList[k], false));
+									keysList.push(u.AngularList[k]["Key"]);
+								}
 							}
 						}
 					}
 				} else if ((u.length == 0 || u[0].Key) && (m.length == 0 || m[0].Key)) {
 					for (var k in u) { //Foreach element in src
-						var loc = keysList.indexOf(u[k]["Key"]);
-						if (loc != -1) {
-							try {
-								m[loc] = populate(m[loc], u[k], false);
-							} catch (e) {
-								debugger;
+						if (arrayHasOwnIndex(u, k)) {
+							var loc = keysList.indexOf(u[k]["Key"]);
+							if (loc != -1) {
+								try {
+									m[loc] = populate(m[loc], u[k], false);
+								} catch (e) {
+									debugger;
+								}
+							} else {
+								m.push(populate(null, u[k], false));
+								keysList.push(u[k]["Key"]);
 							}
-						} else {
-
-							m.push(populate(null, u[k], false));
-							keysList.push(u[k]["Key"]);
 						}
 					}
 				} else {
 					for (var k in u) {
-						populate(m[k], u[k], false);
+						if (arrayHasOwnIndex(u, k)) {
+							populate(m[k], u[k], false);
+						}
 					}
 					console.warn("List items should have keys.");
 				}
@@ -385,46 +339,34 @@
 			}
 			else if (u && u._Pointer) {
 				return model.Lookup[m.Key];
-				////var o = {};
-				//for (var k in out) {
-				//    out[k] = populate(out[k], u[k], false);
-				//}
-				//return out;
-			} else if (angular.isObject(u) /*&& topLevel*/) {
-				//var o = {};
+			} else if (angular.isObject(u)) {
 				for (var k in u) {
-					//if (k == "AngularList")
-					//    m = populate(m, u[k], false);
-					//else
-					if (m[k] !== null && m[k].AngularList) {
-						//model had an angular list (probably from Lookup merge with Main container)
-						//Fix m[k]
-						if (m[k].UpdateMethod == "Remove") {
-							m[k] = [];
-						} else if (m[k].UpdateMethod == "Replace" || m[k].UpdateMethod == "ReplaceIfNewer" || m[k].UpdateMethod == "Add") {
-							m[k] = m[k].AngularList;
-						} else {
-							console.error("Unknown update type:" + m[k].UpdateMethod);
+					if (arrayHasOwnIndex(u, k)) {
+						if (m[k] !== null && m[k].AngularList) {
+							//model had an angular list (probably from Lookup merge with Main container)
+							//Fix m[k]
+							if (m[k].UpdateMethod == "Remove") {
+								m[k] = [];
+							} else if (m[k].UpdateMethod == "Replace" || m[k].UpdateMethod == "ReplaceIfNewer" || m[k].UpdateMethod == "Add") {
+								m[k] = m[k].AngularList;
+							} else {
+								console.error("Unknown update type:" + m[k].UpdateMethod);
+							}
 						}
+						m[k] = populate(m[k], u[k], false);
 					}
-					m[k] = populate(m[k], u[k], false);
 				}
 				return m;
 			} else {
 				return u;
 			}
 		}
-		//if (typeof (backingModel) === "undefined")
-		//    backingModel = {}
-
-
 
 		return populate(model, update);
 	}
 
 	function updaterFactory($scope, hub) {
 		var o = {
-			// _model:{},
 			scope: $scope,
 			preExtend: function (data, status) {    /*console.log("preExtend update:", data); */ },
 			postExtend: function (data, status) {   /*console.log("postExtend update");       */ },
@@ -432,12 +374,9 @@
 			postDelete: function (data, status) { },
 			preResolve: function (data, status) { },
 			postResolve: function (data, status) { },
-			//interceptExtend: function (data, status) { },
 			convertDates: convertDates,
 			convertDatesForServer: convertDatesForServer,
 			tzoffset: tzoffset
-
-			//transform:transform,
 		};
 
 		o.applyUpdate = function (d, s) { applyUpdate.call(o, d, s); };
@@ -448,7 +387,6 @@
 		o._postDelete = function (d, s) { o.postDelete && o.postDelete.call(o, d, s); };
 		o._preResolve = function (d, s) { o.preResolve && o.preResolve.call(o, d, s); };
 		o._postResolve = function (m, d, s) { o.postResolve && o.postResolve.call(o, m, d, s); };
-		//o._interceptExtend = function (m, d, s) {  };
 		if (typeof (hub) !== "undefined") {
 			hub.on('update', o.applyUpdate);
 		}

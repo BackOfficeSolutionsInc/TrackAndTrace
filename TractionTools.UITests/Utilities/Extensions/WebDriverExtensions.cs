@@ -29,8 +29,10 @@ namespace TractionTools.UITests {
 		public static bool TestScreenshot(this TestCtx ctx, string identifier = null) {
 			ctx.CurrentIdentifier = identifier ?? ctx.CurrentIdentifier;
 			var screenshotDriver = ctx as ITakesScreenshot;
+			ctx.ExecuteScript("$('.test-ignore').css('opacity',0)");
 			Thread.Sleep(200);
 			var screenshot = screenshotDriver.GetScreenshot();
+			ctx.ExecuteScript("$('.test-ignore').css('opacity',1)");
 			Thread.Sleep(200);
 			using (var ms = new MemoryStream(screenshot.AsByteArray)) {
 				var curScreen = new Bitmap(Image.FromStream(ms));

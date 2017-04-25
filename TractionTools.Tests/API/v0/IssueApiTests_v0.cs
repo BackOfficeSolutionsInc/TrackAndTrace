@@ -35,7 +35,7 @@ namespace TractionTools.Tests.Api
 
             var _recurrence = L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
 
-            bool result = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E1.Id, issue);
+            var result = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E1.Id, issue);
 
             IssueController iss = new IssueController();
             iss.MockUser(c.E1);
@@ -66,15 +66,15 @@ namespace TractionTools.Tests.Api
             IssueController iss = new IssueController();
             iss.MockUser(c.E1);
 
-            var result = await iss.CreateIssue(_recurrence.Id, c.E1.Id, issue);
+            var result = await iss.CreateIssue(_recurrence.Id,issue.Message,null,null);
 
-            AngularIssue _angularIssue = iss.Get(issue.Id);
+            AngularIssue _angularIssue = iss.Get(result.Id);
 
             Assert.IsNotNull(_angularIssue);
 
             Assert.AreEqual(_angularIssue.Name, issue.Message);
 
-            Assert.IsTrue(result);
+           // Assert.IsTrue(result);
         }
 
         [TestMethod]
@@ -90,7 +90,7 @@ namespace TractionTools.Tests.Api
 
             var _recurrence = L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
 
-            bool result = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E1.Id, issue);
+            var result = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E1.Id, issue);
 
             IssueController iss = new IssueController();
             iss.MockUser(c.E1);
@@ -115,7 +115,7 @@ namespace TractionTools.Tests.Api
 
             var _recurrence = L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
 
-            bool result = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E1.Id, issue);
+            var result = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E1.Id, issue);
 
             var issue1 = new IssueModel()
             {
@@ -123,7 +123,7 @@ namespace TractionTools.Tests.Api
             };
 
             // creating issue with different owner
-            bool result1 = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E2.Id, issue1);
+            var result1 = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E2.Id, issue1);
 
             IssueController iss = new IssueController();
             iss.MockUser(c.E1);
@@ -148,7 +148,7 @@ namespace TractionTools.Tests.Api
 
             var _recurrence = L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
 
-            bool result = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E1.Id, issue);
+            var result = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E1.Id, issue);
 
             var issue1 = new IssueModel()
             {
@@ -156,7 +156,7 @@ namespace TractionTools.Tests.Api
             };
 
             // creating issue with different owner
-            bool result1 = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E2.Id, issue1);
+            var result1 = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E2.Id, issue1);
 
             IssueController iss = new IssueController();
             iss.MockUser(c.E1);
@@ -179,7 +179,7 @@ namespace TractionTools.Tests.Api
 
             var _recurrence = L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
 
-            bool result = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E1.Id, issue);
+            var result = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E1.Id, issue);
 
             IssueController iss = new IssueController();
             iss.MockUser(c.E1);

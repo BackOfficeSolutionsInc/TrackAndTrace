@@ -109,8 +109,8 @@ body {
 }
 
 .component .gray {
-	-ms-opacity: .50;
-	opacity: .50;
+	//-ms-opacity: .50;
+	//opacity: .50;
 	color: inherit;
 }
 
@@ -667,7 +667,7 @@ profile-image.desaturate:hover {
 	transition: ease .16s background-color;
 }
 
-.segue {
+.segue, .titlepage {
 	.centered {
 		width: 65%;
 		max-width: 600px;
@@ -851,35 +851,35 @@ profile-image.desaturate:hover {
 
 @keyframes timerbarFlashing {
 	0% {
-		background-color: #EF7622; 
+		background-color: #EF7622;
 	}
 
-	100% { 
+	100% {
 		background-color: #e23737;
 	}
 }
 
 .issuesButton.disabled,
-.todoButton.disabled, 
+.todoButton.disabled,
 .vtoButton.disabled {
 	cursor: not-allowed;
 	opacity: .15;
 }
 
 .edit-disabled {
-	input[type='checkbox'].on-edit-enabled{
+	input[type='checkbox'].on-edit-enabled {
 		.opacity(.65);
 	}
 
 	.on-edit-enabled {
 		pointer-events: none;
-		touch-action:none;
+		touch-action: none;
 
 		&, &:hover {
 			cursor: default;
 		}
 
-		input[type='checkbox']{
+		input[type='checkbox'] {
 			.opacity(.65);
 		}
 
@@ -892,5 +892,18 @@ profile-image.desaturate:hover {
 				cursor: @cursor-disabled !important;
 			}
 		}
+	}
+}
+
+.meeting-page.externalPage {
+
+	.component {
+		height: 100%;
+		margin: 0px;
+		padding: 0px;
+	}
+
+	.externalpage-box {
+		margin-bottom: -5px;
 	}
 }

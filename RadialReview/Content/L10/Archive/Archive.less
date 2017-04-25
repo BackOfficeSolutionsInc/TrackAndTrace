@@ -16,8 +16,8 @@ body, html {
 		font-family: 'Roboto','Lato',sans-serif;
 	}
 
-	.message-column{
-		min-width:400px;
+	.message-column {
+		min-width: 400px;
 	}
 
 	.owner-column {
@@ -147,6 +147,11 @@ body, html {
 		.empty-cell,
 		.delete-column,
 		.todotype-column,
+		.origin-column,
+		.todotype-column {
+			display: none;
+		}
+
 		.createtime-column {
 			display: none;
 		}
@@ -198,6 +203,34 @@ body, html {
 		.company-rock-column,
 		.due-column {
 			display: none;
+		}
+
+		.rock-completion-status {
+			font-weight: bold;
+			color: #fff;
+			padding: 0px 4px 3px 5px;
+			border-radius: 3px;
+			._md-select-value{
+					border-bottom-color:transparent !important;
+
+			}
+
+			&:focus *, &:active * {
+				color: white !important;
+			}
+
+
+			&.OnTrack {
+				background-color: #1F68EC;
+			}
+
+			&.AtRisk {
+				background-color: #d8524f;
+			}
+
+			&.Complete {
+				background-color: #449D44;
+			}
 		}
 	}
 

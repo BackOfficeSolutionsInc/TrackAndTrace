@@ -1,4 +1,5 @@
-﻿angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', '$location',
+﻿
+angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', '$location',
     'radial', 'meetingDataUrlBase'/*, 'dateFormat'*/, 'recurrenceId', "meetingCallback", "$compile", "$sce", "$q", "$window",
 function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurrenceId, meetingCallback, $compile, $sce, $q, $window) {
 
@@ -23,7 +24,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 					}
 					if ($scope.disconnected) {
 						clearAlerts();
-						showAlert("Reconnected.", "alert-success", "Success",1000);
+						showAlert("Reconnected.", "alert-success", "Success", 1000);
 					}
 					$scope.disconnected = false;
 				});
@@ -44,21 +45,27 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 
 		if (typeof (data.L10Scorecards) !== "undefined") {
 			for (var sc in data.L10Scorecards) {
-				var i = data.L10Scorecards[sc];
-				if (typeof (i.Contents) !== "undefined" && typeof (i.Contents.Scores) !== "undefined") {
-					luArr.push(i.Contents.Scores);
+				if (arrayHasOwnIndex(data.L10Scorecards, sc)) {
+					var i = data.L10Scorecards[sc];
+					if (typeof (i.Contents) !== "undefined" && typeof (i.Contents.Scores) !== "undefined") {
+						luArr.push(i.Contents.Scores);
+					}
 				}
 			}
 		}
 
 		for (var luidx in luArr) {
-			var lu = luArr[luidx];
-			for (var key in lu) {
-				var value = lu[key];
-				if (!(value.ForWeek in $scope.ScoreLookup))
-					$scope.ScoreLookup[value.ForWeek] = {};
-				if (value.Measurable) {
-					$scope.ScoreLookup[value.ForWeek][value.Measurable.Id] = value.Key;
+			if (arrayHasOwnIndex(luArr, luidx)) {
+				var lu = luArr[luidx];
+				for (var key in lu) {
+					if (arrayHasOwnIndex(lu, key)) {
+						var value = lu[key];
+						if (!(value.ForWeek in $scope.ScoreLookup))
+							$scope.ScoreLookup[value.ForWeek] = {};
+						if (value.Measurable) {
+							$scope.ScoreLookup[value.ForWeek][value.Measurable.Id] = value.Key;
+						}
+					}
 				}
 			}
 		}
@@ -128,15 +135,19 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 		if (newValue != 0 && $scope.model && $scope.model.LoadUrls && $scope.model.LoadUrls.length) {
 			var urls = [];
 			for (var u in $scope.model.LoadUrls) {
-				if ($scope.model.LoadUrls[u].Data != null) {
-					urls.push($scope.model.LoadUrls[u].Data);
+				if (arrayHasOwnIndex($scope.model.LoadUrls, u)) {
+					if ($scope.model.LoadUrls[u].Data != null) {
+						urls.push($scope.model.LoadUrls[u].Data);
+					}
+					$scope.model.LoadUrls[u].Data = null;
 				}
-				$scope.model.LoadUrls[u].Data = null;
 			}
 			$scope.model.LoadUrls = [];
 			$timeout(function () {
 				for (var u in urls) {
-					loadDataFromUrl(urls[u]);
+					if (arrayHasOwnIndex(urls, u)) {
+						loadDataFromUrl(urls[u]);
+					}
 				}
 			}, 10);
 		}
@@ -335,13 +346,15 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 		var scorecard = $scope.model.Lookup[scorecardKey];
 		var scores = scorecard.Scores;
 		for (var s in scores) {
-			var score = $scope.model.Lookup[scores[s].Key];
-			if (score.ForWeek == week && score.Measurable.Id == measurableId) {
-				if (!(week in $scope.ScoreLookup))
-					$scope.ScoreLookup[week] = {};
-				$scope.ScoreLookup[week][measurableId] = scores[s].Key;
+			if (arrayHasOwnIndex(scores, s)) {
+				var score = $scope.model.Lookup[scores[s].Key];
+				if (score.ForWeek == week && score.Measurable.Id == measurableId) {
+					if (!(week in $scope.ScoreLookup))
+						$scope.ScoreLookup[week] = {};
+					$scope.ScoreLookup[week][measurableId] = scores[s].Key;
 
-				return scores[s].Key;
+					return scores[s].Key;
+				}
 			}
 		}
 		return null;
@@ -353,11 +366,15 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 			$scope.ScoreLookup = {};
 			var scorecard = $scope.model.Lookup[scorecardKey];
 			for (var w in scorecard.Weeks) {
-				var wn = scorecard.Weeks[w].ForWeekNumber;
-				$scope.ScoreLookup[wn] = {};
-				for (var m in scorecard.Measurables) {
-					var mn = scorecard.Measurables[m].Id;
-					$scope.ScoreLookup[wn][mn] = $scope.functions.lookupScoreFull(wn, mn, scorecardKey);
+				if (arrayHasOwnIndex(scorecard.Weeks, w)) {
+					var wn = scorecard.Weeks[w].ForWeekNumber;
+					$scope.ScoreLookup[wn] = {};
+					for (var m in scorecard.Measurables) {
+						if (arrayHasOwnIndex(scorecard.Measurables, m)) {
+							var mn = scorecard.Measurables[m].Id;
+							$scope.ScoreLookup[wn][mn] = $scope.functions.lookupScoreFull(wn, mn, scorecardKey);
+						}
+					}
 				}
 			}
 		}
@@ -481,7 +498,9 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 			args["connectionId"] = $scope.connectionId;
 
 		for (var i in args) {
-			builder += "&" + i + "=" + args[i];
+			if (arrayHasOwnIndex(args, i)) {
+				builder += "&" + i + "=" + args[i];
+			}
 		}
 
 		$http.post("/L10/Update" + self.Type + "?_clientTimestamp=" + _clientTimestamp + builder, dat)
@@ -610,9 +629,11 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 		var items = $scope.model.Notifications;
 		if (items) {
 			for (var i in items) {
-				var item = items[i];
-				item.Seen = true;
-				$scope.functions.sendUpdate(item);
+				if (arrayHasOwnIndex(items, i)) {
+					var item = items[i];
+					item.Seen = true;
+					$scope.functions.sendUpdate(item);
+				}
 			}
 		}
 	};

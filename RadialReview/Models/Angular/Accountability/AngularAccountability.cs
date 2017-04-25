@@ -24,6 +24,23 @@ namespace RadialReview.Models.Angular.Accountability {
 		public long? CenterNode { get; set; }
 		public long? ShowNode { get; set; }
 		public long? ExpandNode { get; set; }
+
+
+		public void Dive(Action<AngularAccountabilityNode> action) {
+			Dive(action, Root);
+		}
+		protected void Dive(Action<AngularAccountabilityNode> action, AngularAccountabilityNode node) {
+			if (node != null) {
+				action(node);
+
+				var children = node.GetDirectChildren();
+				if (children != null) {
+					foreach (var c in children) {
+						Dive(action, c);
+					}
+				}
+			}
+		}
 	}
 
     public class AngularAccountabilityNode : AngularTreeNode<AngularAccountabilityNode> {
@@ -61,6 +78,9 @@ namespace RadialReview.Models.Angular.Accountability {
 		}
 
 		private AngularUser _User;
+
+		public bool? _hasParent;
+
 		public AngularUser User
 		{
 			get {

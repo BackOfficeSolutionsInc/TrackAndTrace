@@ -13,15 +13,15 @@
 		<div class="@(hasSidebar?"col-md-8":"col-md-12")">
 			<hgroup class="page-header listing fixed-pos fader">
 				<div class="pull-right">
-					<div class="btn-group smallBreak">
+					@*<div class="btn-group smallBreak">
 						<div class="btn btn-default btn-xs @(Model.CanEdit?"":"disabled")" onclick="@(Model.CanEdit?Html.ShowModal("Add Rock", "/L10/AddRock/" + Model.Recurrence.Id, "/L10/AddRock/"):new HtmlString(""))">
 							<span class="icon fontastic-icon-plus-3"></span> Add Rock
 						</div>
-					</div>
+					</div>*@
 					@Html.Partial("partial/ButtonBar", Model)
 
 				</div>
-				<h2 class="l10-page-title">Rock Review <small></small></h2>
+				<h2 class="l10-page-title">@ViewBag.Heading <small></small></h2>
 			</hgroup>
 			<div class="empty-holder rock-empty-holder @(Model.Meeting._MeetingRocks.Any() ? "hidden" : "")"></div>
 			<div class="rocks-container @(Model.Meeting.L10Recurrence.CombineRocks?"rocks-combine":"")  @(Model.Meeting._MeetingRocks.Any() ? "" : "hidden")" style="padding-bottom: 20px;margin-bottom:128px;">

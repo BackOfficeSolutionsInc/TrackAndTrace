@@ -143,7 +143,7 @@ namespace RadialReview.Accessors
 
             };
 
-        public Boolean EnsureApplicationExists()
+        public static Boolean EnsureApplicationExists()
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -210,7 +210,7 @@ namespace RadialReview.Accessors
 		public const string DAILY_TASK = "DAILY_TASK";
 		//public const string HOURLY_TASK = "DAILY_TASK";
 
-		public void ConstructApplicationTasks(ISession s)
+		public static void ConstructApplicationTasks(ISession s)
 	    {
 		    var found =s.QueryOver<ScheduledTask>().Where(x => x.DeleteTime == null && x.Executed == null && x.TaskName == DAILY_EMAIL_TODO_TASK).List().ToList();
 		    for (var i = 0; i < 24; i++){
@@ -259,7 +259,7 @@ namespace RadialReview.Accessors
 			}
 	    }
 
-		public List<long> AllowedPhoneNumbers = new List<long>(){
+		public static List<long> AllowedPhoneNumbers = new List<long>(){
 			6467599497, 6467599498, 6467599499,
 			6467603167, 6467603168, 6467603169,
             441234480162L, 441234480352L,
@@ -267,7 +267,7 @@ namespace RadialReview.Accessors
 			61427681100L, 61439187501L
 
 		};
-		public void ConstructPhoneNumbers(ISession s)
+		public static void ConstructPhoneNumbers(ISession s)
 		{
 			var found = s.QueryOver<CallablePhoneNumber>().Where(x => x.DeleteTime == null).List().ToList();
 			var set = SetUtility.AddRemove(found.Select(x => x.Number), AllowedPhoneNumbers);
@@ -349,7 +349,7 @@ namespace RadialReview.Accessors
             return ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
         }
 
-        public static QuestionCategoryModel GetApplicationCategory(ISession session, String category)
+        public static QuestionCategoryModel GetApplicationCategory(ISession session, String category,bool hadError =false)
         {
             var found = ApplicationCategories.FirstOrDefault(x => x.ToLower() == category.ToLower());
             if (found == null)
@@ -359,8 +359,13 @@ namespace RadialReview.Accessors
                     x.OriginType == OriginType.Application
                 ).List().ToList();
             var foundCat = foundCatList.Where(x=>x.Category.Standard == found).FirstOrDefault();
-            if (foundCat == null)
-                throw new PermissionsException("Application was not initialized. Category was missing. " + category);
+		
+			if (foundCat == null) {
+				if (hadError)
+					throw new PermissionsException("Application was not initialized. Category was missing. " + category);
+				EnsureApplicationExists();
+				return GetApplicationCategory(session, category, true);
+			}
             return foundCat;
         }
 
@@ -379,7 +384,7 @@ namespace RadialReview.Accessors
         }
 
 
-        private List<QuestionCategoryModel> ConstructApplicationCategories(ISession session)
+		private static List<QuestionCategoryModel> ConstructApplicationCategories(ISession session)
         {
             var found = session.QueryOver<QuestionCategoryModel>().List().ToList();
 
@@ -403,7 +408,7 @@ namespace RadialReview.Accessors
             return complete;
         }
 
-        private void ConstructPositions(ISession session)
+		private static void ConstructPositions(ISession session)
         {
             var found = session.QueryOver<PositionModel>().List().ToList();
             foreach (var p in ApplicationPositions)

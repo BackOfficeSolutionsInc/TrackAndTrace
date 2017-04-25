@@ -19,7 +19,21 @@
     <div class="col-sm-8 col-sm-offset-2">
         @if (ViewBag.IsManager ?? false) {
             <div style="text-align: right;margin-bottom: 3px;">
-                <a class="btn btn-primary btn-invert" href="/L10/Wizard" id="l10-create-meeting">Create New L10 Meeting</a>
+                @*<a class="btn btn-primary btn-invert" href="/L10/Wizard" id="l10-create-meeting">Create New L10 Meeting</a>*@
+
+				<div class="btn-group">
+					<button type="button" id="l10-create-meeting" class="btn btn-primary btn-invert dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						Create New Meeting <span class="caret"></span>
+					</button>
+					@*<button type="button" class="btn btn-primary btn-invert dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<span class="caret"></span>
+						<span class="sr-only">Toggle Dropdown</span>
+					</button>*@
+					<ul class="dropdown-menu dropdown-menu-right" id="l10-create-meeting-dropdown">
+						<li><a href="/L10/Wizard?type=L10" id="l10-create-new-meeting">New L10 Meeting</a></li>
+						<li><a href="/L10/Wizard?type=SamePage" id="samepage-create-new-meeting">New Same Page Meeting</a></li>
+					</ul>
+				</div>
             </div>
         }
         <div class="panel panel-primary" id="l10-meeting-list">
@@ -46,9 +60,9 @@
                                         <div class="label label-primary hoverable" style="width: 80px;display: inline-block">Go!</div>
                                     }
                                 </td>
-                                <td style="vertical-align:top" class="table-hover-underline" onclick="gotoMeeting(@(meeting.Recurrence.Id))"><a href="@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})">@meeting.Recurrence.Name</a></td>
+                                <td style="vertical-align:top" class="table-hover-underline test-ignore" onclick="gotoMeeting(@(meeting.Recurrence.Id))"><a href="@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})">@meeting.Recurrence.Name</a></td>
                                 @*<td class=""><a href="/Todo/Previous/@meeting.Recurrence.Id"><span class="glyphicon glyphicon-check" title="All Todos"></span></a></td>*@
-                                <td class="alignRight hidden-xs" onclick="gotoMeeting(@(meeting.Recurrence.Id))">
+                                <td class="alignRight hidden-xs test-ignore" onclick="gotoMeeting(@(meeting.Recurrence.Id))">
                                     @foreach (var a in meeting.Recurrence._DefaultAttendees) {
                                         @Html.Partial("_ProfilePicture", a.User)
                                     }
@@ -73,14 +87,12 @@
 												<li><a class="l10-texting-actions" href="#" onclick="@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId="+meeting.Recurrence.Id,"/TwilioApi/Modal",null,null,"textingModal")"><span style="top: 2px;" class="glyphicon glyphicon-phone l10-texting-actions"></span> Texting Actions</a></li>
 												@*<li><a href="/L10/External/@meeting.Recurrence.Id"><span style="top: 2px;" class="icon fontastic-icon-share-1" title=""></span> Link to external services</a></li>*@
 												<li role="separator" class="divider"></li>
-												<li>
-													<a @if (meeting.AdminMeeting) { @: href="/L10/Wizard/@meeting.Recurrence.Id"
-													} class="@*btn btn-default btn-sm*@ @(meeting.AdminMeeting?"":"disable")"><span style="top: 2px;" class="glyphicon glyphicon-edit"></span>Edit meeting</a>
-												</li>
 
 												@if (meeting.AdminMeeting) {
+													<li><a href="/L10/Wizard/@meeting.Recurrence.Id" @*href="#" onclick="getAdmins(@meeting.Recurrence.Id)"*@  class="btn btn-link alignLeft"><span style="top: 2px;" class="glyphicon glyphicon-edit"></span> Edit meeting</a></li>
 													<li><a href="/L10/Edit/@meeting.Recurrence.Id" style="color:#AB3333"><span style="top: 2px;" class="glyphicon glyphicon-cog"></span>Advanced Settings</a></li>
 												} else {
+													<li><a href="#" onclick="getAdmins(@meeting.Recurrence.Id)" class="btn btn-link alignLeft disable"><span style="top: 2px;" class="glyphicon glyphicon-edit"></span> Edit meeting</a></li>
 													<li><a href="#" class="clickable" onclick="getAdmins(@meeting.Recurrence.Id)" style="color:#AB3333"><span style="top: 2px;" class="glyphicon glyphicon-cog"></span> Advanced Settings</a></li>
 												}
 											</ul>

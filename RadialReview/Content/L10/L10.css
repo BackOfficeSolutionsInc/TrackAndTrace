@@ -138,8 +138,6 @@ body {
   margin: -7px;
 }
 .component .gray {
-  -ms-opacity: .50;
-  opacity: .50;
   color: inherit;
 }
 .main-window-container .component {
@@ -590,24 +588,29 @@ a.editable-click:hover {
   -webkit-transition: ease 0.16s background-color;
   transition: ease 0.16s background-color;
 }
-.segue .centered {
+.segue .centered,
+.titlepage .centered {
   width: 65%;
   max-width: 600px;
   margin-top: -22px;
 }
-.segue .component {
+.segue .component,
+.titlepage .component {
   padding: 20px 70px 30px 70px;
 }
 @media (max-width: 767px) {
-  .segue .centered {
+  .segue .centered,
+  .titlepage .centered {
     width: 100%;
     max-width: 600px;
     margin-top: -22px;
   }
-  .segue .component {
+  .segue .component,
+  .titlepage .component {
     padding: 10px 35px 15px 35px;
   }
-  .segue .component h4 {
+  .segue .component h4,
+  .titlepage .component h4 {
     font-size: 15px;
   }
 }
@@ -761,4 +764,12 @@ a.editable-click:hover {
 .edit-disabled .on-edit-enabled.btn:hover,
 .edit-disabled .on-edit-enabled .btn:hover {
   cursor: not-allowed !important;
+}
+.meeting-page.externalPage .component {
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+}
+.meeting-page.externalPage .externalpage-box {
+  margin-bottom: -5px;
 }

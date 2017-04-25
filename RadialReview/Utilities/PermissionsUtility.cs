@@ -110,8 +110,7 @@ namespace RadialReview.Utilities {
 			var attached = caller;
 			if (!session.Contains(caller) && caller.Id != UserOrganizationModel.ADMIN_ID) {
 				attached = session.Load<UserOrganizationModel>(caller.Id);
-				attached._ClientTimestamp = caller._ClientTimestamp;
-                attached.ManagingOrganization = true; //Kunal
+				attached._ClientTimestamp = caller._ClientTimestamp;               
             }
 			return new PermissionsUtility(session, attached);
 		}

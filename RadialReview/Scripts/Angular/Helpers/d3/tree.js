@@ -87,7 +87,8 @@
 					}
 					if (d.children) {
 						for (var i in d.children)
-							dive(d.children[i]);
+							if (arrayHasOwnIndex(d.children, i))
+								dive(d.children[i]);
 					}
 				}
 				var d = $scope.root;
@@ -97,7 +98,8 @@
 				var dive = function (d) {
 					if (d.children) {
 						for (var i in d.children)
-							dive(d.children[i]);
+							if (arrayHasOwnIndex(d.children, i))
+								dive(d.children[i]);
 					}
 					if (d && d.children) {
 						d._children = d.children;
@@ -253,11 +255,13 @@
 				var selectedNode = null;
 				var nodes = $scope.tree.nodes($scope.root);
 				for (var nid in nodes) {
-					var n = nodes[nid];
-					if (n.Id == nodeId)
-						draggingNode = n;
-					if (n.Id == parentId)
-						selectedNode = n;
+					if (arrayHasOwnIndex(nodes, nid)) {
+						var n = nodes[nid];
+						if (n.Id == nodeId)
+							draggingNode = n;
+						if (n.Id == parentId)
+							selectedNode = n;
+					}
 				}
 				if (draggingNode == null)
 					throw "Node not found";
@@ -575,14 +579,14 @@
                     		if (fallback && !$(parent).hasClass("acc-fallback-ignore")) {
                     			bb = $(parent)[0].getBoundingClientRect();
                     		}
-                    		
-                    		var oh = Math.max($(parent).outerHeight(),bb.height);
-                    		var ow = Math.max($(parent).outerWidth(),bb.width);
+
+                    		var oh = Math.max($(parent).outerHeight(), bb.height);
+                    		var ow = Math.max($(parent).outerWidth(), bb.width);
                     		if (ow > 0)
                     			maxH = Math.max(maxH, oh);
                     		if (oh > 0)
                     			maxW = Math.max(maxW, ow);
-                    		
+
                     		//}
                     		$(parent).children().each(function () {
                     			dive(this);
@@ -702,7 +706,9 @@
 						var flatChilds = (node.children || node._children);
 						var dict = {};
 						for (var i in flatChilds) {
-							dict[flatChilds[i].Key] = nestWatch(flatChilds[i]);
+							if (arrayHasOwnIndex(flatChilds, i)) {
+								dict[flatChilds[i].Key] = nestWatch(flatChilds[i]);
+							}
 						}
 						children = dict;
 					}

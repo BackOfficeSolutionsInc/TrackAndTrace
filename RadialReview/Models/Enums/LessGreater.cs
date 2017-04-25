@@ -89,7 +89,7 @@ namespace RadialReview
                 case LessGreater.LessThanOrEqual:
                     return "≤";
                 case LessGreater.Between:
-                    return "<->";
+                    return "⇔";
                 default:                    
 					throw new ArgumentOutOfRangeException();
 			}

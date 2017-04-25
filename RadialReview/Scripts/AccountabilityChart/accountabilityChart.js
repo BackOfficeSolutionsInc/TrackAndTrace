@@ -38,10 +38,14 @@ function generateAccNodes() {
 		if (parent.Group && parent.Group.RoleGroups) {
 			//Roles
 			for (var i in parent.Group.RoleGroups) {
-				if (parent.Group.RoleGroups[i].Roles) {
-					for (var j in parent.Group.RoleGroups[i].Roles) {
-						if (parent.Group.RoleGroups[i].Roles[j])
-							output.Roles.push(parent.Group.RoleGroups[i].Roles[j].Name)
+				if (arrayHasOwnIndex(parent.Group.RoleGroups, i)) {
+					if (parent.Group.RoleGroups[i].Roles) {
+						for (var j in parent.Group.RoleGroups[i].Roles) {
+							if (arrayHasOwnIndex(parent.Group.RoleGroups[i].Roles, j)) {
+								if (parent.Group.RoleGroups[i].Roles[j])
+									output.Roles.push(parent.Group.RoleGroups[i].Roles[j].Name)
+							}
+						}
 					}
 				}
 			}
@@ -51,9 +55,11 @@ function generateAccNodes() {
 		var pc = parent.children;
 		if (pc) {
 			for (var i in pc) {
-				var oc = {};
-				dive(pc[i], oc);
-				output.children.push(oc);
+				if (arrayHasOwnIndex(pc, i)) {
+					var oc = {};
+					dive(pc[i], oc);
+					output.children.push(oc);
+				}
 			}
 		}
 
@@ -69,51 +75,83 @@ function generateAccNodes() {
 
 var genPdf = function () {
 
-	function compactify(shouldCompact){
+	function compactify(shouldCompact) {
 		angular.element($("[ng-controller]")).scope().$apply(function () {
 			angular.element($("[ng-controller]")).scope().compact = shouldCompact;
 		});
 	}
-	compactify(true);
+	compactify(false);
 
-	showModal({
-		title: "Generate PDF",
-		fields: [
+	var fields = [
 			{ text: "Width (inches)", name: "pw", type: "text", value: 11 },
 			{ text: "Height (inches)", name: "ph", type: "text", value: 8.5 },
 			{ text: "Scale to one page", name: "fit", type: "checkbox", value: false },
-			{ text: "Compact", name: "compact", type: "checkbox", value: true, onchange: function () { compactify($(this).is(":checked")); } }
-	],
-	success: function (d) {
-		var copy = generateAccNodes();
-		$.ajax({
-			url: "/pdf/ac?fit=" + d.fit + "&pw=" + d.pw + "&ph=" + d.ph,
-			method: "POST",
-			data: JSON.stringify(copy),
-			dataType: 'native',
-			xhrFields: {
-				responseType: 'blob'
-			},
-			contentType: "application/json; charset=utf-8",
-			//processData: true,
-			success: function (blob) {
-				console.log(blob.size);
-				var link = document.createElement('a');
-				link.href = window.URL.createObjectURL(blob);
-				link.download = "Accountability Chart.pdf";
-				link.click();
-			}, error: function (D) {
-				showAlert("An error occurred");
-			}
-		});
-	},
-	close: function () {
+			{ text: "Compress Chart", name: "compact", type: "checkbox", value: false, onchange: function () { compactify($(this).is(":checked")); } },
+	];
 
-		angular.element($("[ng-controller]")).scope().$apply(function () {
-			angular.element($("[ng-controller]")).scope().compact = false;
+	var selected = null;
+	var scope = angular.element($("[ng-controller]")).scope();
+	if (scope != null && scope.search != null && scope.search.selected != null) {
+		selected = scope.search.selected.Id;
+		fields.push({
+			text: " ", name: "which", type: "radio", options: [
+				{ value: "full", text: "Full chart", checked: true },
+				{ value: "visible", text: "Only visible" },
+				{ value: "selected", text: "Selected" }
+			]
 		});
+	} else {
+		fields.push({
+			text: " ", name: "which", type: "radio", options: [
+				{ value: "full", text: "Full chart", checked: true },
+				{ value: "visible", text: "Only visible" }
+			]
+		});
+		fields.push({
+			type: "span",
+			classes:"gray",
+			text: "Use the search box to create a chart for one person."
+		})
 	}
-});
+
+	showModal({
+		title: "Generate PDF",
+		fields: fields,
+		success: function (d) {
+			var ajax = {
+				url: "/pdf/ac?fit=" + d.fit + "&pw=" + d.pw + "&ph=" + d.ph+"&compact="+d.compact,
+				method: "POST",
+				dataType: 'native',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				contentType: "application/json; charset=utf-8",
+				//processData: true,
+				success: function (blob) {
+					console.log(blob.size);
+					var link = document.createElement('a');
+					link.href = window.URL.createObjectURL(blob);
+					link.download = "Accountability Chart.pdf";
+					link.click();
+				}, error: function (D) {
+					showAlert("An error occurred");
+				}
+			};
+			if (d.which == "visible") {
+				ajax.data = JSON.stringify(generateAccNodes());
+			}
+			if (d.which == "selected") {
+				ajax.url += "&selected=" + selected;
+			}
+
+			$.ajax(ajax);
+		},
+		close: function () {
+			angular.element($("[ng-controller]")).scope().$apply(function () {
+				angular.element($("[ng-controller]")).scope().compact = false;
+			});
+		}
+	});
 };
 
 
@@ -154,7 +192,9 @@ var genPdf = function () {
 	if (window.ActiveXObject) {
 		$(window).on("unload", function () {
 			for (var key in xhrCallbacks) {
-				xhrCallbacks[key]();
+				if (arrayHasOwnIndex(xhrCallbacks, key)) {
+					xhrCallbacks[key]();
+				}
 			}
 		});
 	}
@@ -178,7 +218,9 @@ var genPdf = function () {
 					// Apply custom fields if provided
 					if (options.xhrFields) {
 						for (i in options.xhrFields) {
-							xhr[i] = options.xhrFields[i];
+							if (arrayHasOwnIndex(options.xhrFields, i)) {
+								xhr[i] = options.xhrFields[i];
+							}
 						}
 					}
 
@@ -198,7 +240,9 @@ var genPdf = function () {
 
 					// Set headers
 					for (i in headers) {
-						xhr.setRequestHeader(i, headers[i]);
+						if (arrayHasOwnIndex(headers, i)) {
+							xhr.setRequestHeader(i, headers[i]);
+						}
 					}
 
 					// Callback

@@ -101,15 +101,15 @@ namespace TractionTools.UITests.Utilities.Extensions {
 
             if (v.Verify(difference) == VerificationResult.Fail) {
                 if (diffFile != null) {
-                    b.ToFile(diffFile.Replace(".png", "") + ".base.png", ImageFormat.Png);
-                    n.ToFile(diffFile.Replace(".png", "") + ".curr.png", ImageFormat.Png);
+                    b.ToFile(diffFile.Replace(".png", "") + ".curr.png", ImageFormat.Png);
+                    n.ToFile(diffFile.Replace(".png", "") + ".base.png", ImageFormat.Png);
                     difference.ToFile(diffFile.Replace(".png", "") + ".diff.png", ImageFormat.Png);
                 }
                 return false;
             }
             if (forceSaveDiff && diffFile != null) {
-                b.ToFile(diffFile.Replace(".png", "") + ".base.png", ImageFormat.Png);
-                n.ToFile(diffFile.Replace(".png", "") + ".curr.png", ImageFormat.Png);
+                b.ToFile(diffFile.Replace(".png", "") + ".curr.png", ImageFormat.Png);
+                n.ToFile(diffFile.Replace(".png", "") + ".base.png", ImageFormat.Png);
                 difference.ToFile(diffFile.Replace(".png", "") + ".diff.png", ImageFormat.Png);
             }
             return true;

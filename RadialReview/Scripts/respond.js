@@ -236,57 +236,63 @@ window.matchMedia = window.matchMedia || (function(doc, undefined){
 			}
 										
 			for( var i in mediastyles ){
-				var thisstyle = mediastyles[ i ],
-					min = thisstyle.minw,
-					max = thisstyle.maxw,
-					minnull = min === null,
-					maxnull = max === null,
-					em = "em";
-				
-				if( !!min ){
-					min = parseFloat( min ) * ( min.indexOf( em ) > -1 ? ( eminpx || getEmValue() ) : 1 );
-				}
-				if( !!max ){
-					max = parseFloat( max ) * ( max.indexOf( em ) > -1 ? ( eminpx || getEmValue() ) : 1 );
-				}
-				
-				// if there's no media query at all (the () part), or min or max is not null, and if either is present, they're true
-				if( !thisstyle.hasquery || ( !minnull || !maxnull ) && ( minnull || currWidth >= min ) && ( maxnull || currWidth <= max ) ){
-						if( !styleBlocks[ thisstyle.media ] ){
-							styleBlocks[ thisstyle.media ] = [];
+				if (arrayHasOwnIndex(mediastyles, i)) {
+					var thisstyle = mediastyles[i],
+						min = thisstyle.minw,
+						max = thisstyle.maxw,
+						minnull = min === null,
+						maxnull = max === null,
+						em = "em";
+
+					if (!!min) {
+						min = parseFloat(min) * (min.indexOf(em) > -1 ? (eminpx || getEmValue()) : 1);
+					}
+					if (!!max) {
+						max = parseFloat(max) * (max.indexOf(em) > -1 ? (eminpx || getEmValue()) : 1);
+					}
+
+					// if there's no media query at all (the () part), or min or max is not null, and if either is present, they're true
+					if (!thisstyle.hasquery || (!minnull || !maxnull) && (minnull || currWidth >= min) && (maxnull || currWidth <= max)) {
+						if (!styleBlocks[thisstyle.media]) {
+							styleBlocks[thisstyle.media] = [];
 						}
-						styleBlocks[ thisstyle.media ].push( rules[ thisstyle.rules ] );
+						styleBlocks[thisstyle.media].push(rules[thisstyle.rules]);
+					}
 				}
 			}
 			
 			//remove any existing respond style element(s)
 			for( var i in appendedEls ){
-				if( appendedEls[ i ] && appendedEls[ i ].parentNode === head ){
-					head.removeChild( appendedEls[ i ] );
+				if (arrayHasOwnIndex(appendedEls, i)) {
+					if (appendedEls[i] && appendedEls[i].parentNode === head) {
+						head.removeChild(appendedEls[i]);
+					}
 				}
 			}
 			
 			//inject active styles, grouped by media type
 			for( var i in styleBlocks ){
-				var ss		= doc.createElement( "style" ),
-					css		= styleBlocks[ i ].join( "\n" );
-				
-				ss.type = "text/css";	
-				ss.media	= i;
-				
-				//originally, ss was appended to a documentFragment and sheets were appended in bulk.
-				//this caused crashes in IE in a number of circumstances, such as when the HTML element had a bg image set, so appending beforehand seems best. Thanks to @dvelyk for the initial research on this one!
-				head.insertBefore( ss, lastLink.nextSibling );
-				
-				if ( ss.styleSheet ){ 
-		        	ss.styleSheet.cssText = css;
-		        } 
-		        else {
-					ss.appendChild( doc.createTextNode( css ) );
-		        }
-		        
-				//push to appendedEls to track for later removal
-				appendedEls.push( ss );
+				if (arrayHasOwnIndex(styleBlocks, i)) {
+					var ss = doc.createElement("style"),
+						css = styleBlocks[i].join("\n");
+
+					ss.type = "text/css";
+					ss.media = i;
+
+					//originally, ss was appended to a documentFragment and sheets were appended in bulk.
+					//this caused crashes in IE in a number of circumstances, such as when the HTML element had a bg image set, so appending beforehand seems best. Thanks to @dvelyk for the initial research on this one!
+					head.insertBefore(ss, lastLink.nextSibling);
+
+					if (ss.styleSheet) {
+						ss.styleSheet.cssText = css;
+					}
+					else {
+						ss.appendChild(doc.createTextNode(css));
+					}
+
+					//push to appendedEls to track for later removal
+					appendedEls.push(ss);
+				}
 			}
 		},
 		//tweaked Ajax functions from Quirksmode

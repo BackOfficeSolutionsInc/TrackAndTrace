@@ -27,6 +27,11 @@ namespace RadialReview.Models.Angular.Todos
             TodoType = todo.TodoType;
 			Ordering = todo.Ordering;
 
+			Origin = todo.ForRecurrence.NotNull(x => x.Name);
+			if (Origin == null && todo.TodoType == Todo.TodoType.Personal) {
+				Origin = "Individual";
+			}
+
 			if (todo.ForRecurrenceId != null){
 				var id = todo.ForModelId == -1 ? todo.Id : todo.ForModelId;
 				var mod = (todo.ForModel == "Transcript") ? "Transcript" : "TodoModel";
@@ -43,6 +48,7 @@ namespace RadialReview.Models.Angular.Todos
 		public string Name { get; set; }
 		//public string Details { get; set; }
 		public string DetailsUrl { get; set; }
+		public string Origin { get; set; }
 		public DateTime? DueDate { get; set; }
 		public AngularUser Owner { get; set; }
 		public DateTime? CompleteTime { get; set; }

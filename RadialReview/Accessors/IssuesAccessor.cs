@@ -244,7 +244,7 @@ namespace RadialReview.Accessors
         //	}
         //}
 
-        public static async Task<bool> CreateIssue(UserOrganizationModel caller, long recurrenceId, long ownerId, IssueModel issue)
+        public static async Task<IssueOutput> CreateIssue(UserOrganizationModel caller, long recurrenceId, long ownerId, IssueModel issue)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -257,7 +257,7 @@ namespace RadialReview.Accessors
                     tx.Commit();
                     s.Flush();
 
-                    return true;
+                    return o;
                 }
             }
         }
