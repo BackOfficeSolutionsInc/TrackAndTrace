@@ -51,7 +51,9 @@ namespace TractionTools.Tests.Api
             var getRocksMilestones = milestonesController.GetMilestones(milestone.Id);
 
             Assert.AreEqual(name, getRocksMilestones.Name);
-            Assert.AreEqual(date, getRocksMilestones.DueDate);
+
+            Assert.IsTrue(Math.Abs((getRocksMilestones.DueDate - date).Value.TotalSeconds) <= 1);
+ 
             Assert.AreEqual(milestone.Id, getRocksMilestones.Id);
         }
 

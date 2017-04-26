@@ -93,7 +93,13 @@ namespace TractionTools.Tests.Api
             var getTeamMember = teamController.GetTeamMembers(addTeam.Id);
 
             Assert.AreEqual(1, getTeamMember.Count());
-        }
+
+			var add = TeamAccessor.AddMember(c.E1, addTeam.Id, c.E2.Id);
+
+			getTeamMember = teamController.GetTeamMembers(addTeam.Id);
+
+			Assert.AreEqual(2, getTeamMember.Count());
+		}
 
         [TestMethod]
         [TestCategory("Api_V0")]
@@ -117,19 +123,19 @@ namespace TractionTools.Tests.Api
         {
             var c = new Ctx();
             TeamsController teamController = new TeamsController();
-            teamController.MockUser(c.E1);
+            teamController.MockUser(c.Manager);
 
             var name = "TestTeam";
             var addTeam = teamController.AddTeam(name);
             var addMember = teamController.AddTeamMember(addTeam.Id, c.E1.Id);
 
             var getTeamMember = teamController.GetTeamMembers(addTeam.Id);
-            Assert.AreEqual(1, getTeamMember.Count());
+            Assert.AreEqual(2, getTeamMember.Count()); 
 
             var removeTeamMember = teamController.RemoveTeamMember(addTeam.Id, c.E1.Id);
             var member = teamController.GetTeamMembers(addTeam.Id);
 
-            Assert.AreEqual(0, member.Count());
+            Assert.AreEqual(1, member.Count());
         }
     }
 }
