@@ -161,13 +161,14 @@ namespace RadialReview.Accessors
 
 		public static byte[] Rocks(UserOrganizationModel caller, long recurrenceId)
 		{
-			var meetingId = L10Accessor.GetLatestMeetingId(caller, recurrenceId);
-			var rocksAndMilestones = L10Accessor.GetRocksForMeeting(caller, recurrenceId, meetingId);
+			//var meetingId = L10Accessor.GetLatestMeetingId(caller, recurrenceId);
+			var rocks = L10Accessor.GetRocksForRecurrence(caller, recurrenceId);
 			var csv = new Csv();
-			foreach (var rockMilestones in rocksAndMilestones)
+			foreach (var rockMilestones in rocks)
 			{
-				var t = rockMilestones.Rock;
-				csv.Add("" + t.Id, "Owner", t.ForRock.Rock);
+				var t = rockMilestones.ForRock;
+				csv.Add("" + t.Id, "Owner", t.AccountableUser.NotNull(x=>x.GetName()));
+				csv.Add("" + t.Id, "Rock", t.Rock);
 				csv.Add("" + t.Id, "Created", t.CreateTime.ToShortDateString());
 				var time = "";
 				if (t.CompleteTime != null)
@@ -225,7 +226,7 @@ namespace RadialReview.Accessors
 			if (parent.CloseTime != null)
 				time = parent.CloseTime.Value.ToShortDateString();
 			cells.Add("" + index);
-			cells.Add("" + depth);
+			//cells.Add("" + depth);
 			cells.Add("" + Csv.CsvQuote(parent.Owner.NotNull(x => x.GetName())));
 			cells.Add("" + parent.CreateTime.ToShortDateString());
 			cells.Add("" + time);

@@ -5027,7 +5027,7 @@ namespace RadialReview.Accessors {
 					tx.Commit();
 					s.Flush();
 
-					return page;
+					return existingPage;
 				}
 			}
 		}

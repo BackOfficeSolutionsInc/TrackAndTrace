@@ -743,16 +743,18 @@ namespace RadialReview.Accessors {
 			gfx.DrawLine(XPens.LightGray, placement.Left, placement.Top + totalHeight, placement.Right, placement.Top + totalHeight);
 
 			//totalHeight +=lineMargin;
+			if (false) {
+				//Turn off job description
+				var jd = review.ReviewerUser.JobDescription;
+				if (!string.IsNullOrWhiteSpace(jd)) {
+					var jdW = Unit.FromInch(1.1);
+					var jdh = GetTextHeight(gfx, jd, placement.Width - jdW, _Font8);
+					gfx.DrawString("Job Description:", _Font8Bold, _BlackText, new XRect(placement.Left, placement.Top + totalHeight, jdW, jdh), XStringFormats.TopLeft);
+					var tf = new XTextFormatter(gfx) { Alignment = XParagraphAlignment.Left };
+					tf.DrawString(jd ?? "", _Font8, _BlackText, new XRect(placement.Left + jdW, placement.Top + totalHeight, placement.Width - jdW, jdh), XStringFormats.TopLeft);
 
-			var jd = review.ReviewerUser.JobDescription;
-			if (!string.IsNullOrWhiteSpace(jd)) {
-				var jdW = Unit.FromInch(1.1);
-				var jdh = GetTextHeight(gfx, jd, placement.Width- jdW, _Font8);
-				gfx.DrawString("Job Description:", _Font8Bold, _BlackText, new XRect(placement.Left, placement.Top + totalHeight, jdW, jdh),XStringFormats.TopLeft);
-				var tf = new XTextFormatter(gfx) { Alignment = XParagraphAlignment.Left };
-				tf.DrawString(jd ?? "", _Font8, _BlackText, new XRect(placement.Left+ jdW, placement.Top + totalHeight, placement.Width - jdW, jdh), XStringFormats.TopLeft);
-
-				totalHeight += jdh;
+					totalHeight += jdh;
+				}
 			}
 
 

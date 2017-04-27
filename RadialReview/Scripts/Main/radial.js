@@ -711,7 +711,7 @@ var DataTable = function (settings) {
 					$(headerRow).append(headerCell);
 				}
 			}
-			rowIndexShift -= 1;
+			//rowIndexShift -= 1;
 			var head = $("<thead/>");
 			head.append(headerRow);
 			$(table).append(head);
