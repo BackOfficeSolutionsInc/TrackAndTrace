@@ -805,6 +805,8 @@
     <Compile Include="Utilities\TimingUtility.cs" />
     <Compile Include="Utilities\ViewUtility.cs" />
     <Compile Include="Models\Audit\LogModel.cs" />
+    <Compile Include="WebHooks\RadialWebHookStore.cs" />
+    <Compile Include="WebHooks\TestHandler.cs" />
     <Content Include="Areas\RouteDebugger\Content\rdstyle.css" />
     <Content Include="Areas\RouteDebugger\Scripts\detect.js" />
     <None Include=".bin\bower.cmd" />

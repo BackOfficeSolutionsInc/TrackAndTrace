@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using RadialReview.Accessors;
 using RadialReview.Models.ViewModels;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace RadialReview.Controllers
 {
@@ -88,6 +89,15 @@ namespace RadialReview.Controllers
 			ViewBag.Message = "Your contact page.";
 
 			return View();
+		}
+
+		[Access(AccessLevel.Any)]
+		[HttpPost]
+		public async Task<ActionResult> Submit() {
+			// Create an event with action 'event1' and additional data
+			await this.NotifyAsync("event1", new { P1 = "p1" });
+
+			return new EmptyResult();
 		}
 	}
 }

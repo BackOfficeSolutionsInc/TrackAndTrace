@@ -24,33 +24,30 @@ using System.Reflection;
 using PdfSharp.Drawing;
 using RadialReview.Utilities.NHibernate;
 
-namespace RadialReview
-{
+namespace RadialReview {
 
-    public class MvcApplication : System.Web.HttpApplication
-    {
-        // protected async void App
+	public class MvcApplication : System.Web.HttpApplication {
+		// protected async void App
 
-        protected async Task Application_End(){
-            var wasKilled=await ChromeExtensionComms.SendCommandAndWait("appEnd");
-            var inte = 0;
-            inte += 1;
-        }
-        [DllImport("gdi32.dll", EntryPoint="AddFontResourceW", SetLastError=true)]
-        public static extern int AddFontResource([In][MarshalAs(UnmanagedType.LPWStr)]string lpFileName);
-        protected int InstallFonts()
-        {
+		protected async Task Application_End() {
+			var wasKilled = await ChromeExtensionComms.SendCommandAndWait("appEnd");
+			var inte = 0;
+			inte += 1;
+		}
+		[DllImport("gdi32.dll", EntryPoint = "AddFontResourceW", SetLastError = true)]
+		public static extern int AddFontResource([In][MarshalAs(UnmanagedType.LPWStr)]string lpFileName);
+		protected int InstallFonts() {
 			if (!Config.IsLocal()) {
-                var fonts = new[] { "Arial Narrow Bold.TTF", "Arial Narrow.TTF", "arial.ttf" };
-                var installed = 0;
-                foreach (var f in fonts) {
-                    try {
-                        var result = AddFontResource(@"c:\\Windows\\Fonts\\" + f);
-                        var error = Marshal.GetLastWin32Error();
-                        installed = installed + (error == 0 ? 1 : 0);
-                    } catch (Exception) {
-                    }
-                }
+				var fonts = new[] { "Arial Narrow Bold.TTF", "Arial Narrow.TTF", "arial.ttf" };
+				var installed = 0;
+				foreach (var f in fonts) {
+					try {
+						var result = AddFontResource(@"c:\\Windows\\Fonts\\" + f);
+						var error = Marshal.GetLastWin32Error();
+						installed = installed + (error == 0 ? 1 : 0);
+					} catch (Exception) {
+					}
+				}
 
 				var assembly = Assembly.GetExecutingAssembly();
 
@@ -67,39 +64,39 @@ namespace RadialReview
 				}
 
 				return installed;
-            }
-            return 0;
-        }
+			}
+			return 0;
+		}
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-		protected async void Application_Start()
-		{
+		protected async void Application_Start() {
 
 			ChromeExtensionComms.SendCommand("appStart");
 			//GlobalConfiguration.Configure(WebApiConfig.Register);
 			//AntiForgeryConfig.RequireSsl = true;
-            AntiForgeryConfig.SuppressXFrameOptionsHeader = true;
+			AntiForgeryConfig.SuppressXFrameOptionsHeader = true;
 
 			//AreaRegistration.RegisterAllAreas();
-            //AreaRegistration.RegisterAllAreas();
+			//AreaRegistration.RegisterAllAreas();
+			GlobalConfiguration.Configure(WebApiConfig.Register);
 
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 			RouteConfig.RegisterRoutes(RouteTable.Routes);
-	        GlobalConfiguration.Configure(WebApiConfig.Register);
-            BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            HookConfig.RegisterHooks();
+			BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-           // ValueProviderFactories.Factories.Add(new JsonValueProviderFactory());
+			HookConfig.RegisterHooks();
 
-            //ServerUtility.RegisterCacheEntry();
-            //ServerUtility.Reschedule();
-			
+			// ValueProviderFactories.Factories.Add(new JsonValueProviderFactory());
+
+			//ServerUtility.RegisterCacheEntry();
+			//ServerUtility.Reschedule();
+
 			//Add Angular serializer to SignalR
 			var serializerSettings = new JsonSerializerSettings();
 			serializerSettings.Converters.Add(new AngularSerialization());
 			var serializer = JsonSerializer.Create(serializerSettings);
-			GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), ()=>serializer);
+			GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), () => serializer);
 
 			//NHibernate ignore proxy
 			JsonConvert.DefaultSettings = () => new JsonSerializerSettings {
@@ -108,36 +105,34 @@ namespace RadialReview
 
 			ApplicationAccessor.EnsureApplicationExists();
 
-			ViewEngines.Engines.Clear(); 
-			IViewEngine razorEngine = new RazorViewEngine() { FileExtensions = new [] { "cshtml" } };
+			ViewEngines.Engines.Clear();
+			IViewEngine razorEngine = new RazorViewEngine() { FileExtensions = new[] { "cshtml" } };
 			ViewEngines.Engines.Add(razorEngine);
 
 
-            //install fonts
-            InstallFonts();            
-        }
+			//install fonts
+			InstallFonts();
+		}
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
 
 
-		void Application_EndRequest(Object Sender, EventArgs e)
-		{
-			if ("POST" == Request.HttpMethod){
-				try{
+		void Application_EndRequest(Object Sender, EventArgs e) {
+			if ("POST" == Request.HttpMethod) {
+				try {
 					Request.InputStream.Seek(0, SeekOrigin.Begin);
 					var bytes = Request.BinaryRead(Request.TotalBytes);
 					var s = Encoding.UTF8.GetString(bytes);
-					if (!String.IsNullOrEmpty(s) && !s.ToLower().Contains("password")){
+					if (!String.IsNullOrEmpty(s) && !s.ToLower().Contains("password")) {
 						var QueryStringLength = 0;
-						if (0 < Request.QueryString.Count){
+						if (0 < Request.QueryString.Count) {
 							QueryStringLength = Request.ServerVariables["QUERY_STRING"].Length;
 							Response.AppendToLog("&");
 						}
 
-						if (4100 > (QueryStringLength + s.Length)){
+						if (4100 > (QueryStringLength + s.Length)) {
 							Response.AppendToLog(s);
-						}
-						else{
+						} else {
 							// append only the first 4090 the limit is a total of 4100 char.
 							Response.AppendToLog(s.Substring(0, (4090 - QueryStringLength)));
 							// indicate buffer exceeded
@@ -146,12 +141,11 @@ namespace RadialReview
 						}
 					}
 					Request.InputStream.Seek(0, SeekOrigin.Begin);
-				}
-				catch (Exception){
+				} catch (Exception) {
 					Response.AppendToLog("~Error~");
 				}
 			}
 		}
 
-    }
+	}
 }
