@@ -436,6 +436,7 @@ namespace RadialReview.Utilities
 
 			enversConf.Audit<AbstractVCProvider>();
 			enversConf.Audit<ZoomUserLink>();
+			enversConf.Audit<WebhooksDetails>();
 
 			nhConf.IntegrateWithEnvers(enversConf);
         }

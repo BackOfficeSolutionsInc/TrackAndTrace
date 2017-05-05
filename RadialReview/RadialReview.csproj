@@ -106,6 +106,7 @@
     <Compile Include="Accessors\SearchAccessor.cs" />
     <Compile Include="Accessors\TinyUserAccessor.cs" />
     <Compile Include="Accessors\VideoConferenceProviders\VideoProviderAccessor.cs" />
+    <Compile Include="Accessors\WebhooksAccessor.cs" />
     <Compile Include="Api\V0\Headlines.cs" />
     <Compile Include="Api\V0\Issue.cs" />
     <Compile Include="Api\V0\L10.cs" />
@@ -135,6 +136,7 @@
     <Compile Include="Models\Angular\Rocks\AngularMilestone.cs" />
     <Compile Include="Models\Angular\Scorecard\AngularMeasurableGroup.cs" />
     <Compile Include="Models\Angular\Team\AngularTeam.cs" />
+    <Compile Include="Models\Application\WebhooksModel.cs" />
     <Compile Include="Models\Enums\RGMType.cs" />
     <Compile Include="Models\Enums\VideoConferenceType.cs" />
     <Compile Include="Models\Events\Event.cs" />
@@ -805,6 +807,7 @@
     <Compile Include="Utilities\TimingUtility.cs" />
     <Compile Include="Utilities\ViewUtility.cs" />
     <Compile Include="Models\Audit\LogModel.cs" />
+    <Compile Include="WebHooks\DataSecurity.cs" />
     <Compile Include="WebHooks\RadialWebHookStore.cs" />
     <Compile Include="WebHooks\TestHandler.cs" />
     <Content Include="Areas\RouteDebugger\Content\rdstyle.css" />

@@ -1,10 +1,14 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using Microsoft.AspNetCore.DataProtection;
+using RadialReview.Accessors;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data.Common;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,7 +23,7 @@ namespace Microsoft.AspNet.WebHooks
     public class RadialWebHookStore : WebHookStore
     {
         private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, WebHook>> _store =
-            new ConcurrentDictionary<string, ConcurrentDictionary<string, WebHook>>();
+        new ConcurrentDictionary<string, ConcurrentDictionary<string, WebHook>>();
 
         /// <inheritdoc />
         public override Task<ICollection<WebHook>> GetAllWebHooksAsync(string user)
@@ -30,10 +34,17 @@ namespace Microsoft.AspNet.WebHooks
             }
 
             user = NormalizeKey(user);
-
-            ConcurrentDictionary<string, WebHook> userHooks;
-            ICollection<WebHook> result = _store.TryGetValue(user, out userHooks) ? userHooks.Values : new Collection<WebHook>();
-            return Task.FromResult(result);
+            try
+            {
+                WebhooksAccessor webHookAcc = new WebhooksAccessor();
+                var result = webHookAcc.GetAllWebHook();
+                return Task.FromResult(result);
+            }
+            catch (Exception ex)
+            {
+                string msg = string.Format(CultureInfo.CurrentCulture, "General error during '{0}' operation: '{1}'.", "Get", ex.Message);
+                throw new InvalidOperationException(msg, ex);
+            }
         }
 
         /// <inheritdoc />
@@ -51,16 +62,20 @@ namespace Microsoft.AspNet.WebHooks
             user = NormalizeKey(user);
 
             predicate = predicate ?? DefaultPredicate;
-
-            ConcurrentDictionary<string, WebHook> userHooks;
-            if (_store.TryGetValue(user, out userHooks))
+            try
             {
-                ICollection<WebHook> matches = userHooks.Values.Where(w => MatchesAnyAction(w, actions) && predicate(w, user))
+                WebhooksAccessor webHookAcc = new WebhooksAccessor();
+                var result = webHookAcc.GetAllWebHook();
+                ICollection<WebHook> matches = result
+                    .Where(w => MatchesAnyAction(w, actions) && predicate(w, user))
                     .ToArray();
                 return Task.FromResult(matches);
             }
-
-            return Task.FromResult<ICollection<WebHook>>(new WebHook[0]);
+            catch (Exception ex)
+            {
+                string msg = string.Format(CultureInfo.CurrentCulture, "General error during '{0}' operation: '{1}'.", "Get", ex.Message);
+                throw new InvalidOperationException(msg, ex);
+            }
         }
 
         /// <inheritdoc />
@@ -78,11 +93,15 @@ namespace Microsoft.AspNet.WebHooks
             user = NormalizeKey(user);
 
             WebHook result = null;
-            ConcurrentDictionary<string, WebHook> userHooks;
-            if (_store.TryGetValue(user, out userHooks))
+            try
             {
-                id = NormalizeKey(id);
-                userHooks.TryGetValue(id, out result);
+                WebhooksAccessor webHookAcc = new WebhooksAccessor();
+                result = webHookAcc.LookupWebHook(user, id);
+            }
+            catch (Exception ex)
+            {
+                string msg = string.Format(CultureInfo.CurrentCulture, "General error during '{0}' operation: '{1}'.", "Lookup", ex.Message);
+                throw new InvalidOperationException(msg, ex);
             }
 
             return Task.FromResult(result);
@@ -101,13 +120,9 @@ namespace Microsoft.AspNet.WebHooks
             }
 
             user = NormalizeKey(user);
+            WebhooksAccessor webHookAcc = new WebhooksAccessor();
+            return Task.FromResult(webHookAcc.InsertWebHook(user, webHook));
 
-            ConcurrentDictionary<string, WebHook> userHooks = _store.GetOrAdd(user, key => new ConcurrentDictionary<string, WebHook>());
-
-            string id = NormalizeKey(webHook.Id);
-            bool inserted = userHooks.TryAdd(id, webHook);
-            StoreResult result = inserted ? StoreResult.Success : StoreResult.Conflict;
-            return Task.FromResult(result);
         }
 
         /// <inheritdoc />
@@ -123,19 +138,16 @@ namespace Microsoft.AspNet.WebHooks
             }
 
             user = NormalizeKey(user);
-
-            ConcurrentDictionary<string, WebHook> userHooks;
             StoreResult result = StoreResult.NotFound;
-            if (_store.TryGetValue(user, out userHooks))
+            try
             {
-                string id = NormalizeKey(webHook.Id);
-
-                WebHook current;
-                if (userHooks.TryGetValue(id, out current))
-                {
-                    bool updated = userHooks.TryUpdate(id, webHook, current);
-                    result = updated ? StoreResult.Success : StoreResult.Conflict;
-                }
+                WebhooksAccessor webHookAcc = new WebhooksAccessor();
+                result = webHookAcc.UpdateWebHook(user, webHook);
+            }
+            catch (Exception ex)
+            {
+                string msg = string.Format(CultureInfo.CurrentCulture, "General error during '{0}' operation: '{1}'.", "Lookup", ex.Message);
+                throw new InvalidOperationException(msg, ex);
             }
             return Task.FromResult(result);
         }
@@ -153,16 +165,16 @@ namespace Microsoft.AspNet.WebHooks
             }
 
             user = NormalizeKey(user);
-
-            ConcurrentDictionary<string, WebHook> userHooks;
-            StoreResult result = StoreResult.NotFound;
-            if (_store.TryGetValue(user, out userHooks))
+            StoreResult result;
+            try
             {
-                id = NormalizeKey(id);
-
-                WebHook current;
-                bool deleted = userHooks.TryRemove(id, out current);
-                result = deleted ? StoreResult.Success : StoreResult.NotFound;
+                WebhooksAccessor webHookAcc = new WebhooksAccessor();
+                result = webHookAcc.DeleteWebHook(user, id);
+            }
+            catch (Exception ex)
+            {
+                string msg = string.Format(CultureInfo.CurrentCulture, "General error during '{0}' operation: '{1}'.", "Lookup", ex.Message);
+                throw new InvalidOperationException(msg, ex);
             }
             return Task.FromResult(result);
         }
@@ -176,13 +188,17 @@ namespace Microsoft.AspNet.WebHooks
             }
 
             user = NormalizeKey(user);
-
-            ConcurrentDictionary<string, WebHook> userHooks;
-            if (_store.TryGetValue(user, out userHooks))
+            StoreResult result;
+            try
             {
-                userHooks.Clear();
+                WebhooksAccessor webHookAcc = new WebhooksAccessor();
+                result = webHookAcc.DeleteAllWebHook(user);
             }
-
+            catch (Exception ex)
+            {
+                string msg = string.Format(CultureInfo.CurrentCulture, "General error during '{0}' operation: '{1}'.", "Lookup", ex.Message);
+                throw new InvalidOperationException(msg, ex);
+            }
             return Task.FromResult(true);
         }
 
