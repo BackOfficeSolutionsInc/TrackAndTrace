@@ -136,7 +136,7 @@
     <Compile Include="Models\Angular\Rocks\AngularMilestone.cs" />
     <Compile Include="Models\Angular\Scorecard\AngularMeasurableGroup.cs" />
     <Compile Include="Models\Angular\Team\AngularTeam.cs" />
-    <Compile Include="Models\Application\WebhooksModel.cs" />
+    <Compile Include="Models\Application\WebhookModel.cs" />
     <Compile Include="Models\Enums\RGMType.cs" />
     <Compile Include="Models\Enums\VideoConferenceType.cs" />
     <Compile Include="Models\Events\Event.cs" />
@@ -148,6 +148,8 @@
     <Compile Include="Models\Askables\AskableSectionModel.cs" />
     <Compile Include="Models\Reviews\WhoReviewsWho.cs" />
     <Compile Include="Models\Rocks\Milestone.cs" />
+    <Compile Include="Models\ViewModels\WebhooksEventSubscriptionViewModel.cs" />
+    <Compile Include="Models\ViewModels\WebHookViewModel.cs" />
     <Compile Include="Notifications\Notification.cs" />
     <Compile Include="Models\Reviews\ValueBar.cs" />
     <Compile Include="Models\Todo\HeadlineTodoVm.cs" />
@@ -1469,6 +1471,8 @@
     <Content Include="Views\Review\Take\Radio.cshtml" />
     <Content Include="Views\TileData\L10SolvedIssues.cshtml" />
     <Content Include="Views\Todo\EditModal.cshtml" />
+    <Content Include="Views\Webhook\Create.cshtml" />
+    <Content Include="Views\Webhook\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -2243,7 +2247,6 @@
     <Folder Include="Views\Transcript\" />
     <Folder Include="Views\Url\" />
     <Folder Include="Views\VtoData\" />
-    <Folder Include="Views\Webhook\" />
     <Folder Include="Views\WebRtc\" />
     <Folder Include="Views\Wizard\" />
     <Folder Include="Views\_Angular\" />

@@ -27,7 +27,7 @@ namespace Microsoft.AspNet.WebHooks
 
         /// <inheritdoc />
         public override Task<ICollection<WebHook>> GetAllWebHooksAsync(string user)
-        {
+        {			
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));

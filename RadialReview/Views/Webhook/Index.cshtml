@@ -1,0 +1,57 @@
+﻿@model List<RadialReview.Models.ViewModels.WebHookViewModel>
+@{
+	ViewBag.Title = "List Of WebHook";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="container"></div>
+
+
+@using (Html.BeginScripts()) {
+	<script>
+		var datas = @Html.ArrayToString(Model);
+
+		var table =DataTable({
+			container: "#container",
+			title:"WebHook",
+			//addButton: [
+			//	{ text: "New Webhook" }
+			//],
+			data:datas,
+			clickAdd: "/Webhook/Create/",
+			clickEdit: "/Webhook/Create/{0}",
+			clickRemove:"/Webhook/Delete/{0}",
+			cells: [
+				{ reorder: true },
+                { rowNum: true },
+                { name:"WebHookUri",classes: "fullWidth", contents: function (r) { return r.WebHookUri; } },
+                { name:"Description",classes: "fullWidth", contents: function (r) { return r.Description; } },
+				{edit:true},
+				{remove:true},
+			],
+			nodataText:"No Webhooks found."
+		});
+
+		table.setData(datas);
+	</script>
+}
+@using (Html.BeginStyles()) {
+	<style>
+		.fullWidth {
+			width: 50%;
+		}
+
+		.color-box {
+			border: 1px solid #333;
+			padding: 2px;
+			margin: 2px;
+			width: 16px;
+			height: 16px;
+		}
+
+		html, body {
+			background-color: #eee;
+		}
+	</style>
+}
+
