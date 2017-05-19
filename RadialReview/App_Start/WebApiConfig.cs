@@ -51,7 +51,7 @@ namespace RadialReview {
 			//Database.SetInitializer<WebHookStoreContext>(null);
 
 			IWebHookStore store = new RadialWebHookStore();
-			CustomServices.SetStore(store);
+			CustomServices.SetStore(store);			
 		}
 	}
 

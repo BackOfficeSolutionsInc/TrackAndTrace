@@ -33,12 +33,20 @@ namespace RadialReview.Accessors {
 			_protector = DataSecurity.GetDataProtector();
 		}
 
-		public StoreResult InsertWebHook(ISession s, string email, WebHook webHook, string userId) {
+		public StoreResult InsertWebHook(ISession s, string email, WebHook webHook, string userId, List<long> eventIds) {
 			try {
-				var webhookDetails = ConvertFromWebHook(email, webHook);
+				var webhookDetails = ConvertToWebHook(email, webHook);
+
 				webhookDetails.UserId = userId;
 				s.Save(webhookDetails);
-				// Audit.Log(s, perms.GetCaller());
+				if (eventIds != null) {
+					foreach (var item in eventIds) {
+						WebhookEventsSubscription webhookEventsSubscription = new WebhookEventsSubscription();
+						webhookEventsSubscription.EventId = item;
+						webhookEventsSubscription.WebhookId = webhookDetails.Id;
+						s.Save(webhookEventsSubscription);
+					}
+				}
 				return StoreResult.Success;
 			} catch (Exception ex) {
 				string msg = string.Format(CultureInfo.CurrentCulture, "Operation'{0}' failed with error: '{1}'.", "Insert", ex.Message);
@@ -47,17 +55,18 @@ namespace RadialReview.Accessors {
 		}
 
 
-		public StoreResult InsertWebHook(string email, WebHook webHook) {
+		public StoreResult InsertWebHook(string email, WebHook webHook, List<long> eventIds) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var getUser = s.QueryOver<UserModel>().Where(t => t.UserName == email).SingleOrDefault();
-					var o = InsertWebHook(s, email, webHook, getUser.Id);
+					var o = InsertWebHook(s, email, webHook, getUser.Id, eventIds);
 					tx.Commit();
 					s.Flush();
 					return o;
 				}
 			}
 		}
+
 
 		public StoreResult UpdateWebHook(string user, WebHook webHook) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -115,6 +124,13 @@ namespace RadialReview.Accessors {
 		public StoreResult DeleteWebHook(string user, string id) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
+					var deleteWebHookSubscription = s.QueryOver<WebhookEventsSubscription>().Where(m => m.WebhookId == id).List().ToList();
+					if (deleteWebHookSubscription.Count() > 0) {
+						foreach (var item in deleteWebHookSubscription) {
+							s.Delete(item);
+						}
+
+					}
 					var deleteWebHook = s.QueryOver<WebhookDetails>().Where(m => m.Email == user && m.Id == id).SingleOrDefault();
 					if (deleteWebHook != null) {
 						s.Delete(deleteWebHook);
@@ -153,11 +169,12 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public WebhookDetails GetWebhookEventSubscriptions(string userId, string webhookId) {
+		public WebhookDetails GetWebhookEventSubscriptions(string email, string webhookId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
+				var getUser = s.QueryOver<UserModel>().Where(t => t.UserName == email).SingleOrDefault();
 				var getSubscriptionList =
 					  s.QueryOver<WebhookDetails>()
-					  .Where(t => t.UserId == userId && t.Id == webhookId)
+					  .Where(t => t.UserId == getUser.Id && t.Id == webhookId)
 					  .Fetch(t => t.WebhookEventsSubscription).Eager.SingleOrDefault();
 
 				s.Flush();
@@ -165,15 +182,64 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public void CreateWebhookEvents(WebhookEvents webhookEvents) {
+		#region WebHook Events methods
+
+		public void DeleteWebHookEvents(long id) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					s.Save(webhookEvents);
-					tx.Commit();
-					s.Flush();
+					//var deleteWebHookEvents = s.QueryOver<WebhookEvents>().Where(m => m.Id == id).SingleOrDefault();
+					//if (deleteWebHookEvents != null) {
+					//	s.Delete(deleteWebHookEvents);
+					//	tx.Commit();
+					//	s.Flush();
+					//}
+
 				}
 			}
 		}
+
+		//public void UpdateWebHookEvents(WebhookEvents webhookEvents) {
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
+		//			var updateWebHookEvents = s.QueryOver<WebhookEvents>().Where(m => m.Id == webhookEvents.Id).SingleOrDefault();
+		//			if (updateWebHookEvents != null) {
+		//				s.Clear();
+		//				s.Update(webhookEvents);
+		//				tx.Commit();
+		//				s.Flush();
+		//			}
+		//		}
+		//	}
+		//}
+
+		//public void CreateWebhookEvents(WebhookEvents webhookEvents) {
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
+		//			s.Save(webhookEvents);
+		//			tx.Commit();
+		//			s.Flush();
+		//		}
+		//	}
+		//}
+		//public WebhookEvents LookupWebHookEvents(long id) {
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
+		//			var lookupWebHookEvents = s.QueryOver<WebhookEvents>().Where(m => m.Id == id).SingleOrDefault();
+		//			return lookupWebHookEvents;
+		//		}
+		//	}
+		//}
+		//public ICollection<WebhookEvents> GetWebHookEvents() {
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
+		//			var allWebhook = s.QueryOver<WebhookEvents>().List().ToList();
+		//			return allWebhook;
+		//		}
+		//	}
+		//}
+		#endregion
+
+
 
 		#region Helper methods
 
@@ -191,7 +257,8 @@ namespace RadialReview.Accessors {
 			string protectedData = _protector != null ? _protector.Protect(content) : content;
 			webhooksDetails.ProtectedData = protectedData;
 		}
-		protected virtual WebhookDetails ConvertFromWebHook(string user, WebHook webHook) {
+
+		protected virtual WebhookDetails ConvertToWebHook(string user, WebHook webHook) {
 			if (webHook == null) {
 				throw new ArgumentNullException(nameof(webHook));
 			}

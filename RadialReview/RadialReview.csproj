@@ -127,6 +127,7 @@
     <Compile Include="Controllers\PdfController.cs" />
     <Compile Include="Hooks\UpdateRoles_Notifications.cs" />
     <Compile Include="Hooks\UpdateUserModel_TeamNames.cs" />
+    <Compile Include="Hooks\Webhook\TodoWebhook.cs" />
     <Compile Include="Models\Angular\Base\AngularPicture.cs" />
     <Compile Include="Models\Angular\Dashboard\AngularDashboard.cs" />
     <Compile Include="Models\Angular\DataType\AngularString.cs" />
@@ -1473,6 +1474,8 @@
     <Content Include="Views\Todo\EditModal.cshtml" />
     <Content Include="Views\Webhook\Create.cshtml" />
     <Content Include="Views\Webhook\Index.cshtml" />
+    <Content Include="Views\Webhook\CreateEvents.cshtml" />
+    <Content Include="Views\Webhook\Events.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

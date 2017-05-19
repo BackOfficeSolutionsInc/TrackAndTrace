@@ -88,7 +88,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Any)]
 		[HttpPost]
 		public async Task<ActionResult> Submit() {
-			// Create an event with action 'event1' and additional data
+			// Create an event with action 'event1' and additional data			
 			await this.NotifyAsync("event1", new { P1 = "p1" });
 
 			return new EmptyResult();
@@ -118,7 +118,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Any)]
 		public ActionResult CreateWebhookEvents() {
 			WebhooksAccessor acc = new WebhooksAccessor();
-			acc.CreateWebhookEvents(new WebhookEvents() { Name = "Create To Do", Description = "To Do" });
+			//acc.CreateWebhookEvents(new WebhookEvents() { Name = "Create To Do", Description = "To Do" });
 			return new EmptyResult();
 		}
 

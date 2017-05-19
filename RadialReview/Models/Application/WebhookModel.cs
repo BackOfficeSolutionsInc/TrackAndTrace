@@ -42,35 +42,43 @@ namespace RadialReview.Models {
 		}
 	}
 
+	//public class WebhookEvents {
+	//	public virtual long Id { get; set; }
+	//	public virtual string Name { get; set; }
+	//	public virtual string Description { get; set; }
 
-	public class WebhookEvents {
-		public virtual long Id { get; set; }
-		public virtual string Name { get; set; }
-		public virtual string Description { get; set; }
-		public class Map : ClassMap<WebhookEvents> {
-			public Map() {
-				Id(x => x.Id);
-				Map(x => x.Name).Length(256);
-				Map(x => x.Description).Length(256);
-			}
-		}
+	//	public virtual WebhookEventType EventType { get; set; }
+	//	public virtual long KeyColumn { get; set; } // either L10, UserId, OrganizationID
+	//	public class Map : ClassMap<WebhookEvents> {
+	//		public Map() {
+	//			Id(x => x.Id);
+	//			Map(x => x.Name).Length(256);
+	//			//Map(x => x.EventType).CustomType<WebhookEventType>();
+	//			//Map(x => x.KeyColumn);
+	//			Map(x => x.Description).Length(256);
+	//		}
+	//	}
+	//}
+
+	public enum WebhookEventType {
+		Invalid = 0, // Add TODO to L10_
+		ParticularL10 = 1, // Add TODO to Organization_
 	}
 
 	public class WebhookEventsSubscription {
 		public virtual long Id { get; set; }
 		public virtual string WebhookId { get; set; }
+
 		public virtual long EventId { get; set; }
-		public virtual WebhookDetails Webhook { get; set; }
-		public virtual WebhookEvents WebhookEvent { get; set; }
+		public virtual string EventName { get; set; }
+		public virtual WebhookDetails Webhook { get; set; }		
 		public class Map : ClassMap<WebhookEventsSubscription> {
 			public Map() {
 				Id(x => x.Id);
 				Map(x => x.WebhookId);
-				Map(x => x.EventId);
+				Map(x => x.EventName);
 				References(x => x.Webhook).Column("WebhookId").LazyLoad().ReadOnly();
-				References(x => x.WebhookEvent).Column("EventId").LazyLoad().ReadOnly();
 			}
 		}
 	}
-
 }

@@ -1,14 +1,20 @@
 ﻿@model List<RadialReview.Models.ViewModels.WebHookViewModel>
 @{
-	ViewBag.Title = "List Of WebHook";
-	Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "List Of WebHook";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div id="container"></div>
 
 
-@using (Html.BeginScripts()) {
-	<script>
+@using (Html.BeginScripts())
+{
+
+    @*<script src="~/Radial_files/jquery.js"></script>*@
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+        <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+        <script>
 		var datas = @Html.ArrayToString(Model);
 
 		var table =DataTable({
@@ -20,38 +26,41 @@
 			data:datas,
 			clickAdd: "/Webhook/Create/",
 			clickEdit: "/Webhook/Create/{0}",
-			clickRemove:"/Webhook/Delete/{0}",
-			cells: [
+            clickRemove: "/Webhook/Delete/{0}",
+            cells: [
 				{ reorder: true },
                 { rowNum: true },
-                { name:"WebHookUri",classes: "fullWidth", contents: function (r) { return r.WebHookUri; } },
-                { name:"Description",classes: "fullWidth", contents: function (r) { return r.Description; } },
-				{edit:true},
+                { name: "WebHookUri", classes: "fullWidth half", contents: function (r) { return r.WebHookUri; } },
+                { name: "Description", classes: "fullWidth half", contents: function (r) { return r.Description; } },
+                { edit: true },
 				{remove:true},
 			],
 			nodataText:"No Webhooks found."
 		});
 
-		table.setData(datas);
-	</script>
+        table.setData(datas);
+
+
+        </script>
 }
-@using (Html.BeginStyles()) {
-	<style>
-		.fullWidth {
-			width: 50%;
-		}
+@using (Html.BeginStyles())
+{
+    <style>
+        .fullWidth {
+            width: 50%;
+        }
 
-		.color-box {
-			border: 1px solid #333;
-			padding: 2px;
-			margin: 2px;
-			width: 16px;
-			height: 16px;
-		}
+        .color-box {
+            border: 1px solid #333;
+            padding: 2px;
+            margin: 2px;
+            width: 16px;
+            height: 16px;
+        }
 
-		html, body {
-			background-color: #eee;
-		}
-	</style>
+        html, body {
+            background-color: #eee;
+        }
+    </style>
 }
 
