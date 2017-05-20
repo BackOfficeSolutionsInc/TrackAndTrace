@@ -116,7 +116,7 @@ namespace Microsoft.AspNet.WebHooks {
 			StoreResult result = StoreResult.NotFound;
 			try {
 				WebhooksAccessor webHookAcc = new WebhooksAccessor();
-				result = webHookAcc.UpdateWebHook(user, webHook);
+				result = webHookAcc.UpdateWebHook(user, webHook, null);
 			} catch (Exception ex) {
 				string msg = string.Format(CultureInfo.CurrentCulture, "General error during '{0}' operation: '{1}'.", "Lookup", ex.Message);
 				throw new InvalidOperationException(msg, ex);
@@ -172,9 +172,9 @@ namespace Microsoft.AspNet.WebHooks {
 			predicate = predicate ?? DefaultPredicate;
 
 			var matches = new List<WebHook>();
-			foreach (var user in _store) {
-				matches.AddRange(user.Value.Where(w => MatchesAnyAction(w.Value, actions) && predicate(w.Value, user.Key)).Select(w => w.Value));
-			}
+			WebhooksAccessor webHookAcc = new WebhooksAccessor();
+			matches = webHookAcc.GetQueryWebHooksAcrossAllUsers(actions);
+
 			return Task.FromResult<ICollection<WebHook>>(matches);
 		}
 

@@ -23,6 +23,8 @@ using Microsoft.AspNet.WebHooks;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.DataProtection;
 using System.Globalization;
+using System.ComponentModel;
+using System.Reflection;
 
 namespace RadialReview.Accessors {
 	public class WebhooksAccessor : BaseAccessor {
@@ -33,20 +35,14 @@ namespace RadialReview.Accessors {
 			_protector = DataSecurity.GetDataProtector();
 		}
 
-		public StoreResult InsertWebHook(ISession s, string email, WebHook webHook, string userId, List<long> eventIds) {
+		public StoreResult InsertWebHook(ISession s, string email, WebHook webHook, string userId, List<string> events) {
 			try {
 				var webhookDetails = ConvertToWebHook(email, webHook);
 
 				webhookDetails.UserId = userId;
 				s.Save(webhookDetails);
-				if (eventIds != null) {
-					foreach (var item in eventIds) {
-						WebhookEventsSubscription webhookEventsSubscription = new WebhookEventsSubscription();
-						webhookEventsSubscription.EventId = item;
-						webhookEventsSubscription.WebhookId = webhookDetails.Id;
-						s.Save(webhookEventsSubscription);
-					}
-				}
+				AddSubscribeEvents(s, events, webhookDetails.Id);
+
 				return StoreResult.Success;
 			} catch (Exception ex) {
 				string msg = string.Format(CultureInfo.CurrentCulture, "Operation'{0}' failed with error: '{1}'.", "Insert", ex.Message);
@@ -55,11 +51,11 @@ namespace RadialReview.Accessors {
 		}
 
 
-		public StoreResult InsertWebHook(string email, WebHook webHook, List<long> eventIds) {
+		public StoreResult InsertWebHook(string email, WebHook webHook, List<string> events) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var getUser = s.QueryOver<UserModel>().Where(t => t.UserName == email).SingleOrDefault();
-					var o = InsertWebHook(s, email, webHook, getUser.Id, eventIds);
+					var o = InsertWebHook(s, email, webHook, getUser.Id, events);
 					tx.Commit();
 					s.Flush();
 					return o;
@@ -68,18 +64,41 @@ namespace RadialReview.Accessors {
 		}
 
 
-		public StoreResult UpdateWebHook(string user, WebHook webHook) {
+		public StoreResult UpdateWebHook(string user, WebHook webHook, List<string> events) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var updateWebHook = s.QueryOver<WebhookDetails>().Where(m => m.Email == user && m.Id == webHook.Id).SingleOrDefault();
 					if (updateWebHook != null) {
 						UpdateRegistrationFromWebHook(user, webHook, updateWebHook);
 						s.Update(updateWebHook);
+						AddSubscribeEvents(s, events, webHook.Id, true);
 						tx.Commit();
 						s.Flush();
 						return StoreResult.Success;
 					}
 					return StoreResult.NotFound;
+				}
+			}
+		}
+
+
+
+		public void AddSubscribeEvents(ISession s, List<string> events, string webhookId, bool isRemove = false) {
+			if (events != null) {
+				if (isRemove) {
+					var getEvents = s.QueryOver<WebhookEventsSubscription>().Where(m => m.WebhookId == webhookId).List().ToList();
+					for (int i = 0; i < getEvents.Count; i++) {
+						s.Delete(getEvents[i]);
+					}
+				}
+
+				if (events != null) {
+					foreach (var item in events) {
+						WebhookEventsSubscription webhookEventsSubscription = new WebhookEventsSubscription();
+						webhookEventsSubscription.EventName = item;
+						webhookEventsSubscription.WebhookId = webhookId;
+						s.Save(webhookEventsSubscription);
+					}
 				}
 			}
 		}
@@ -93,8 +112,23 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+		public List<WebHook> GetQueryWebHooksAcrossAllUsers(IEnumerable<string> actions) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 
+					var matches = new List<WebHook>();
+					var allEventSubscriptions = s.QueryOver<WebhookEventsSubscription>()
+						.Where(x => actions.Contains(x.EventName))
+						.List().ToArray();
 
+					foreach (var item in allEventSubscriptions) {
+						matches.Add(ConvertToWebHook(item.Webhook));
+					}
+					
+					return matches;
+				}
+			}
+		}
 
 		public ICollection<WebHook> GetQueryWebHooks(string userId) {
 			using (var s = HibernateSession.GetCurrentSession()) {

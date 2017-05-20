@@ -18,6 +18,7 @@ namespace RadialReview.App_Start {
 
 			HooksRegistry.RegisterHook(new UpdateUserModel_TeamNames());
 			HooksRegistry.RegisterHook(new UpdateRoles_Notifications());
+			HooksRegistry.RegisterHook(new TodoWebhook());
 
 			//HooksRegistry.RegisterHook(new TodoEdit())
 		}

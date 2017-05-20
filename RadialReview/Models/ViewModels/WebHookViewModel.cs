@@ -20,9 +20,9 @@ namespace RadialReview.Models.ViewModels {
 		// [DisplayName("WEbhookEvent")]
 		//public List<WebhookEvents> WEbhookEvent { get; set; }
 
-		public SelectList Events { get; set; }
+		public List<SelectListItem> Events { get; set; }
 
-		public List<long> selected { get; set; }
+		public List<string> selected { get; set; }
 	}
 
 

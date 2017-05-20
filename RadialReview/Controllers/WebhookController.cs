@@ -14,9 +14,14 @@ using RadialReview.Models.Json;
 using Microsoft.AspNet.WebHooks;
 using RadialReview.Models.Webhook;
 using RadialReview.Models.ViewModels;
+using System.Net.Http;
 
 namespace RadialReview.Controllers {
 	public class WebhookController : BaseController {
+		private IWebHookStore _store;
+		public WebhookController() {
+			_store = new RadialWebHookStore();
+		}
 		public class MandrillWebHookBindingModel {
 			[AllowHtml]
 			public string mandrill_events { get; set; }
@@ -45,6 +50,7 @@ namespace RadialReview.Controllers {
 
 			return Content("ok");
 		}
+
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Index() {
 
@@ -58,23 +64,17 @@ namespace RadialReview.Controllers {
 				webHookViewModel.WebHookUri = item.WebHookUri;
 				webHook.Add(webHookViewModel);
 			}
-
 			//var getwebhookEvents = webhookAccessor.GetWebHookEvents();
-
-
-
-
-
 			return View(webHook);
 		}
+
 
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult Create(string id = "") {
 			WebHookViewModel webHook = new WebHookViewModel();
-
 			WebhooksAccessor webhookAccessor = new WebhooksAccessor();
-			//string s = Convert.ToString(id);
-			if (id != "") {
+
+			if (!string.IsNullOrEmpty(id)) {
 				var editWebHook = webhookAccessor.LookupWebHook(GetUser().GetEmail(), id);
 				var getEventsSubscribe = webhookAccessor.GetWebhookEventSubscriptions(GetUser().GetEmail(), editWebHook.Id);
 
@@ -83,10 +83,9 @@ namespace RadialReview.Controllers {
 				webHook.Description = editWebHook.Description;
 
 				if (getEventsSubscribe.WebhookEventsSubscription.Count > 0) {
-					var selectedEvents = new List<long>();
+					var selectedEvents = new List<string>();
 					foreach (var item in getEventsSubscribe.WebhookEventsSubscription) {
-						selectedEvents.Add(item.EventId);
-
+						selectedEvents.Add(item.EventName);
 					}
 					webHook.selected = selectedEvents;
 				} else {
@@ -94,11 +93,23 @@ namespace RadialReview.Controllers {
 				}
 			}
 
-			//var getwebhookEvents = new WebHookEvent(); //webhookAccessor.GetWebHookEvents();
+			webHook.Events = new List<SelectListItem>();
 
-			//webHook.Events = new SelectList(getwebhookEvents, "ID", "Name", "Description");
-			//ViewBag.Events = new SelectList(getwebhookEvents, "ID", "Name", "Description");
+			//L10 Events
+			var getAllL10RecurrenceAtOrganization = L10Accessor.GetAllL10RecurrenceAtOrganization(GetUser(), GetUser().Organization.Id);
+			for (int i = 0; i < getAllL10RecurrenceAtOrganization.Count; i++) {
+				string val = WebhookEventType.AddTODOtoL10.GetDescription() + getAllL10RecurrenceAtOrganization[i].Id;
+				webHook.Events.Add(new SelectListItem() { Text = val, Value = val });
+			}
 
+			//Organization Events
+			var getUserOrg = GetUserOrganizations("");
+			for (int i = 0; i < getUserOrg.Count; i++) {
+				webHook.Events.Add(new SelectListItem() {
+					Text = WebhookEventType.AddTODOtoOrganization.GetDescription() + getUserOrg[i].Id,
+					Value = WebhookEventType.AddTODOtoOrganization.GetDescription() + getUserOrg[i].Id
+				});
+			}
 			return PartialView("Create", webHook);
 		}
 
@@ -107,23 +118,24 @@ namespace RadialReview.Controllers {
 		public JsonResult Create(WebHookViewModel webHook) {
 
 			string email = GetUser().GetEmail();
+
 			WebHook webhook = new WebHook() {
-				Id = webHook.Id,
 				WebHookUri = webHook.WebHookUri,
 				Secret = "12345678901234567890123456789012",
 				Description = webHook.Description,
 			};
+			webhook.Filters.Add("*");
 
-			List<long> selectedEventsIDs = webHook.selected;
+			List<string> selectedEvents = webHook.selected;
 
 			WebhooksAccessor webhookAccessor = new WebhooksAccessor();
-			//var getwebhookevents = webhookAccessor.GetWebHookEvents();
 
 			if (webHook.Id != null) {
-				var updateWebHook = webhookAccessor.UpdateWebHook(email, webhook);
-			} else {
 
-				var insertWebHook = webhookAccessor.InsertWebHook(email, webhook, selectedEventsIDs);
+				var updateWebHook = webhookAccessor.UpdateWebHook(email, webhook, selectedEvents);
+			} else {
+				webhookAccessor.InsertWebHook(email, webhook, selectedEvents);
+
 			}
 			return Json(ResultObject.SilentSuccess(webhook));
 		}

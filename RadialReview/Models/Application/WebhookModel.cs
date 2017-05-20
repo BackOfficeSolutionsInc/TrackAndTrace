@@ -9,6 +9,7 @@ using RadialReview.Models.Interfaces;
 using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
@@ -61,9 +62,13 @@ namespace RadialReview.Models {
 	//}
 
 	public enum WebhookEventType {
-		Invalid = 0, // Add TODO to L10_
-		ParticularL10 = 1, // Add TODO to Organization_
+		[Description("Add TODO to L10_")]
+		AddTODOtoL10,
+		[Description("Add TODO to Organization_")]
+		AddTODOtoOrganization
 	}
+
+
 
 	public class WebhookEventsSubscription {
 		public virtual long Id { get; set; }
@@ -71,7 +76,7 @@ namespace RadialReview.Models {
 
 		public virtual long EventId { get; set; }
 		public virtual string EventName { get; set; }
-		public virtual WebhookDetails Webhook { get; set; }		
+		public virtual WebhookDetails Webhook { get; set; }
 		public class Map : ClassMap<WebhookEventsSubscription> {
 			public Map() {
 				Id(x => x.Id);

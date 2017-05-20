@@ -10,7 +10,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNet.WebHooks;
+using Microsoft.AspNet.WebHooks.Diagnostics;
 using RadialReview.Models.Angular.Todos;
+using System.Web.Mvc;
 
 namespace RadialReview.Hooks {
 	public class TodoWebhook : ITodoHook {
@@ -22,14 +24,16 @@ namespace RadialReview.Hooks {
 			string _event = "Add TODO to L10_" + L10Id;
 			string _event1 = "Add TODO to Organization_" + orgId;
 
-			var _store = CustomServices.GetStore();
+			//var _store = CustomServices.GetStore();
 
-			WebHookManager _manager = new WebHookManager(_store, null, null);
+			//WebHookManager _manager = new WebHookManager(_store, null, null);
+
+			IWebHookManager manager = DependencyResolver.Current.GetManager();
 
 			var notifications = new List<NotificationDictionary> { new NotificationDictionary(_event, new AngularTodo(todo)) };
 			notifications.Add(new NotificationDictionary(_event1, new AngularTodo(todo)));
 
-			var _y = await _manager.NotifyAllAsync(notifications, (x, y) => true);
+			var _y = await manager.NotifyAllAsync(notifications, (x, y) => true);
 
 			//throw new NotImplementedException();
 		}
