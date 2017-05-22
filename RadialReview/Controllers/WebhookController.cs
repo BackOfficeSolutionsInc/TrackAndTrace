@@ -103,13 +103,18 @@ namespace RadialReview.Controllers {
 			}
 
 			//Organization Events
-			var getUserOrg = GetUserOrganizations("");
+			webHook.Events.Add(new SelectListItem() { Text = GetUser().Organization.GetName(),
+				Value = WebhookEventType.AddTODOtoOrganization.GetDescription() + GetUser().Organization.Id });
+
+			//User Events
+			var getUserOrg = TinyUserAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id);
 			for (int i = 0; i < getUserOrg.Count; i++) {
 				webHook.Events.Add(new SelectListItem() {
-					Text = WebhookEventType.AddTODOtoOrganization.GetDescription() + getUserOrg[i].Id,
-					Value = WebhookEventType.AddTODOtoOrganization.GetDescription() + getUserOrg[i].Id
+					Text = WebhookEventType.AddTODOforUser.GetDescription() + getUserOrg[i].UserOrgId,
+					Value = WebhookEventType.AddTODOforUser.GetDescription() + getUserOrg[i].UserOrgId
 				});
 			}
+
 			return PartialView("Create", webHook);
 		}
 

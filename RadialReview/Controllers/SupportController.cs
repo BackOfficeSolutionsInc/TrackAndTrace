@@ -64,8 +64,9 @@ namespace RadialReview.Controllers {
 			mail.ReplyToAddress = email;
 			mail.ReplyToName = name;
 
-
-			await Emailer.SendEmail(mail);
+			if (!Config.IsLocal()) {
+				await Emailer.SendEmail(mail);
+			}
 
 			var result = ResultObject.Success("A message has been sent to support. We'll be contacting you shortly.");
 

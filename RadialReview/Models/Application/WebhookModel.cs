@@ -65,7 +65,9 @@ namespace RadialReview.Models {
 		[Description("Add TODO to L10_")]
 		AddTODOtoL10,
 		[Description("Add TODO to Organization_")]
-		AddTODOtoOrganization
+		AddTODOtoOrganization,
+	    [Description("Add TODO for User_")]
+		AddTODOforUser
 	}
 
 

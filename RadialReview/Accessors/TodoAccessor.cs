@@ -179,7 +179,7 @@ namespace RadialReview.Accessors
             todo.Ordering = -todo.Id;
             s.Update(todo);
 
-            //HooksRegistry.Each<ITodoHook>(x => x.CreateTodo(s, todo));
+            HooksRegistry.Each<ITodoHook>(x => x.CreateTodo(s, todo));
 
             if (todo.TodoType == TodoType.Personal)
             {
@@ -307,8 +307,6 @@ namespace RadialReview.Accessors
 
                     tx.Commit();
                     s.Flush();
-
-					HooksRegistry.Each<ITodoHook>(x => x.CreateTodo(s, todo));
 
 					return created;
                 }

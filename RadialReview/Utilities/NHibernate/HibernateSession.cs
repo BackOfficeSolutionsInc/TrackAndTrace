@@ -253,7 +253,7 @@ namespace RadialReview.Utilities
 
         public static bool CloseCurrentSession()
         {
-            var session = (SessionPerRequest)HttpContext.Current.Items["NHibernateSession"];
+            var session = (SingleRequestSession)HttpContext.Current.Items["NHibernateSession"];
             if (session != null)
             {
                 if (session.IsOpen)
@@ -279,10 +279,10 @@ namespace RadialReview.Utilities
             {
                 try
                 {
-                    var session = (SessionPerRequest)HttpContext.Current.Items["NHibernateSession"];
+                    var session = (SingleRequestSession)HttpContext.Current.Items["NHibernateSession"];
                     if (session == null)
                     {
-                        session = new SessionPerRequest(GetDatabaseSessionFactory().OpenSession()); // Create session, like SessionFactory.createSession()...
+                        session = new SingleRequestSession(GetDatabaseSessionFactory().OpenSession()); // Create session, like SessionFactory.createSession()...
                         HttpContext.Current.Items.Add("NHibernateSession", session);
                     }
                     return session;
@@ -296,7 +296,7 @@ namespace RadialReview.Utilities
 			if (!(HttpContext.Current == null || HttpContext.Current.Items == null) && HttpContext.Current.Items["IsTest"] != null)
 				return GetDatabaseSessionFactory().OpenSession();
 
-			return new SessionPerRequest(GetDatabaseSessionFactory().OpenSession(),true);
+			return new SingleRequestSession(GetDatabaseSessionFactory().OpenSession(),true);
 			//GetDatabaseSessionFactory().OpenSession();
             /*while(true)
             {

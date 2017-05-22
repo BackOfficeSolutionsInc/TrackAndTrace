@@ -118,11 +118,14 @@ namespace RadialReview.Accessors {
 
 					var matches = new List<WebHook>();
 					var allEventSubscriptions = s.QueryOver<WebhookEventsSubscription>()
-						.Where(x => actions.Contains(x.EventName))
+						.WhereRestrictionOn(x => x.EventName).IsIn(actions.ToList()).Where(x => x.EventName != null)
 						.List().ToArray();
 
 					foreach (var item in allEventSubscriptions) {
-						matches.Add(ConvertToWebHook(item.Webhook));
+						var match = ConvertToWebHook(item.Webhook);
+						if (match != null) {
+							matches.Add(match);
+						}
 					}
 					
 					return matches;

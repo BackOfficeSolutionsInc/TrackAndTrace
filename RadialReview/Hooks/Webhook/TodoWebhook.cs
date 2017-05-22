@@ -13,29 +13,36 @@ using Microsoft.AspNet.WebHooks;
 using Microsoft.AspNet.WebHooks.Diagnostics;
 using RadialReview.Models.Angular.Todos;
 using System.Web.Mvc;
+using RadialReview.Models;
 
 namespace RadialReview.Hooks {
 	public class TodoWebhook : ITodoHook {
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 		public async Task CreateTodo(ISession s, TodoModel todo) {
-			var L10Id = todo.ForRecurrenceId;
-			var orgId = todo.OrganizationId;
+			try {
+				var L10Id = todo.ForRecurrenceId;
+				var orgId = todo.OrganizationId;
+				var userId = todo.AccountableUserId;
 
-			string _event = "Add TODO to L10_" + L10Id;
-			string _event1 = "Add TODO to Organization_" + orgId;
+				// setup events
+				string _event = WebhookEventType.AddTODOtoL10.GetDescription() + L10Id;
+				string _event1 = WebhookEventType.AddTODOtoOrganization.GetDescription() + orgId;
+				string _event2 = WebhookEventType.AddTODOforUser.GetDescription() + userId;
 
-			//var _store = CustomServices.GetStore();
+				IWebHookManager manager = DependencyResolver.Current.GetManager();
 
-			//WebHookManager _manager = new WebHookManager(_store, null, null);
+				var notifications = new List<NotificationDictionary> { new NotificationDictionary(_event, new AngularTodo(todo)) };
+				await manager.NotifyAllAsync(notifications, (x, y) => true);
 
-			IWebHookManager manager = DependencyResolver.Current.GetManager();
+				notifications = new List<NotificationDictionary> { new NotificationDictionary(_event1, new AngularTodo(todo)) };
+				await manager.NotifyAllAsync(notifications, (x, y) => true);
 
-			var notifications = new List<NotificationDictionary> { new NotificationDictionary(_event, new AngularTodo(todo)) };
-			notifications.Add(new NotificationDictionary(_event1, new AngularTodo(todo)));
+				notifications = new List<NotificationDictionary> { new NotificationDictionary(_event2, new AngularTodo(todo)) };
+				await manager.NotifyAllAsync(notifications, (x, y) => true);
 
-			var _y = await manager.NotifyAllAsync(notifications, (x, y) => true);
-
-			//throw new NotImplementedException();
+			} catch (Exception ex) {
+				throw;
+			}
 		}
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
