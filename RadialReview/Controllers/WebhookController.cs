@@ -59,6 +59,13 @@ namespace RadialReview.Controllers {
 			var getallwebhook = webhookAccessor.GetAllWebHook();
 			foreach (var item in getallwebhook) {
 				WebHookViewModel webHookViewModel = new WebHookViewModel();
+				var getWebhookEventSubscriptions = webhookAccessor.GetWebhookEventSubscriptions(GetUser().GetEmail(), item.Id);
+				List<string> name = new List<string>();
+				foreach (var item1 in getWebhookEventSubscriptions.WebhookEventsSubscription.Select(x => x.EventName)) {
+					name.Add(item1);
+				}
+				string nameOfString = (string.Join(" , ", name.Select(x => x.ToString()).ToArray()));
+				webHookViewModel.Eventnames = nameOfString;
 				webHookViewModel.Id = item.Id;
 				webHookViewModel.Description = item.Description;
 				webHookViewModel.WebHookUri = item.WebHookUri;
@@ -98,51 +105,175 @@ namespace RadialReview.Controllers {
 			//L10 Events
 			var getAllL10RecurrenceAtOrganization = L10Accessor.GetAllL10RecurrenceAtOrganization(GetUser(), GetUser().Organization.Id);
 			for (int i = 0; i < getAllL10RecurrenceAtOrganization.Count; i++) {
+				//L10 Add TODO Events
 				string val = WebhookEventType.AddTODOtoL10.GetDescription() + getAllL10RecurrenceAtOrganization[i].Id;
 				webHook.Events.Add(new SelectListItem() { Text = val, Value = val });
+
+				//L10 Checking/Unchecking/Closing TODO Events
+				string checking_Unchecking_Closing_Events = WebhookEventType.Checking_Unchecking_Closing_TODOtoL10.GetDescription() + getAllL10RecurrenceAtOrganization[i].Id;
+				webHook.Events.Add(new SelectListItem() { Text = checking_Unchecking_Closing_Events, Value = checking_Unchecking_Closing_Events });
+
+				//L10 Changing TODO Events
+				string Changing_Events = WebhookEventType.ChangingToDotoL10.GetDescription() + getAllL10RecurrenceAtOrganization[i].Id;
+				webHook.Events.Add(new SelectListItem() { Text = Changing_Events, Value = Changing_Events });
+
+
+				//L10 Add Issue Events
+				webHook.Events.Add(new SelectListItem() {
+					Text = WebhookEventType.AddIssuetoL10.GetDescription() + getAllL10RecurrenceAtOrganization[i].Id,
+					Value = WebhookEventType.AddIssuetoL10.GetDescription() + getAllL10RecurrenceAtOrganization[i].Id
+				});
+
+				//L10 Checking/Unchecking/Closing Issue Events
+				webHook.Events.Add(new SelectListItem() {
+					Text = WebhookEventType.Checking_Unchecking_Closing_IssuetoL10.GetDescription() + getAllL10RecurrenceAtOrganization[i].Id,
+					Value = WebhookEventType.Checking_Unchecking_Closing_IssuetoL10.GetDescription() + getAllL10RecurrenceAtOrganization[i].Id
+				});
+
+				//L10 Changing Issue Events
+				webHook.Events.Add(new SelectListItem() {
+					Text = WebhookEventType.ChangingIssuetoL10.GetDescription() + getAllL10RecurrenceAtOrganization[i].Id,
+					Value = WebhookEventType.ChangingIssuetoL10.GetDescription() + getAllL10RecurrenceAtOrganization[i].Id
+				});
+
 			}
 
-			//Organization Events
-			webHook.Events.Add(new SelectListItem() { Text = GetUser().Organization.GetName(),
-				Value = WebhookEventType.AddTODOtoOrganization.GetDescription() + GetUser().Organization.Id });
+			#region Organization Todo Event
+
+			//Organization Event
+			webHook.Events.Add(new SelectListItem() {
+				Text = WebhookEventType.AddTODOtoOrganization.GetDescription() + GetUser().Organization.GetName(),
+				Value = WebhookEventType.AddTODOtoOrganization.GetDescription() + GetUser().Organization.Id
+			});
+
+			//Organization Checking/Unchecking/Closing TODO Event
+			webHook.Events.Add(new SelectListItem() {
+				Text = WebhookEventType.Checking_Unchecking_Closing_TODOtoOrganization.GetDescription() + GetUser().Organization.GetName(),
+				Value = WebhookEventType.Checking_Unchecking_Closing_TODOtoOrganization.GetDescription() + GetUser().Organization.Id
+			});
+
+
+			//Organization Changing TODO Event
+			webHook.Events.Add(new SelectListItem() {
+				Text = WebhookEventType.ChangingTODOtoOrganization.GetDescription() + GetUser().Organization.GetName(),
+				Value = WebhookEventType.ChangingTODOtoOrganization.GetDescription() + GetUser().Organization.Id
+			});
+
+			#endregion
+
+
+			#region Organization Issue Event
+
+			//Organization Event
+			webHook.Events.Add(new SelectListItem() {
+				Text = WebhookEventType.AddIssuetoOrganization.GetDescription() + GetUser().Organization.GetName(),
+				Value = WebhookEventType.AddIssuetoOrganization.GetDescription() + GetUser().Organization.Id
+			});
+
+			//Organization Checking/Unchecking/Closing TODO Event
+			webHook.Events.Add(new SelectListItem() {
+				Text = WebhookEventType.Checking_Unchecking_Closing_IssuetoOrganization.GetDescription() + GetUser().Organization.GetName(),
+				Value = WebhookEventType.Checking_Unchecking_Closing_IssuetoOrganization.GetDescription() + GetUser().Organization.Id
+			});
+
+
+			//Organization Changing TODO Event
+			webHook.Events.Add(new SelectListItem() {
+				Text = WebhookEventType.ChangingIssuetoOrganization.GetDescription() + GetUser().Organization.GetName(),
+				Value = WebhookEventType.ChangingIssuetoOrganization.GetDescription() + GetUser().Organization.Id
+			});
+
+			#endregion
+
+
 
 			//User Events
 			var getUserOrg = TinyUserAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id);
 			for (int i = 0; i < getUserOrg.Count; i++) {
+				//User Add TODO Event
 				webHook.Events.Add(new SelectListItem() {
 					Text = WebhookEventType.AddTODOforUser.GetDescription() + getUserOrg[i].UserOrgId,
 					Value = WebhookEventType.AddTODOforUser.GetDescription() + getUserOrg[i].UserOrgId
 				});
+
+
+				//User Checking/Unchecking/Closing TODO Event
+				webHook.Events.Add(new SelectListItem() {
+					Text = WebhookEventType.Checking_Unchecking_Closing_TODOforUser.GetDescription() + getUserOrg[i].UserOrgId,
+					Value = WebhookEventType.Checking_Unchecking_Closing_TODOforUser.GetDescription() + getUserOrg[i].UserOrgId
+				});
+
+				//User Changing TODO Event
+				webHook.Events.Add(new SelectListItem() {
+					Text = WebhookEventType.ChangingToDoforUser.GetDescription() + getUserOrg[i].UserOrgId,
+					Value = WebhookEventType.ChangingToDoforUser.GetDescription() + getUserOrg[i].UserOrgId
+				});
+
+
+				//User Add Issue Event
+				webHook.Events.Add(new SelectListItem() {
+					Text = WebhookEventType.AddIssueforUser.GetDescription() + getUserOrg[i].UserOrgId,
+					Value = WebhookEventType.AddIssueforUser.GetDescription() + getUserOrg[i].UserOrgId
+				});
+
+
+				//User Checking/Unchecking/Closing Issue Event
+				webHook.Events.Add(new SelectListItem() {
+					Text = WebhookEventType.Checking_Unchecking_Closing_IssueforUser.GetDescription() + getUserOrg[i].UserOrgId,
+					Value = WebhookEventType.Checking_Unchecking_Closing_IssueforUser.GetDescription() + getUserOrg[i].UserOrgId
+				});
+
+				//User Changing Issue Event
+				webHook.Events.Add(new SelectListItem() {
+					Text = WebhookEventType.ChangingIssueforUser.GetDescription() + getUserOrg[i].UserOrgId,
+					Value = WebhookEventType.ChangingIssueforUser.GetDescription() + getUserOrg[i].UserOrgId
+				});
+
 			}
+
+			webHook.Events = webHook.Events.OrderBy(o => o.Text).ToList();
 
 			return PartialView("Create", webHook);
 		}
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult Create(WebHookViewModel webHook) {
+		public JsonResult Create(WebHookViewModel webhookModel) {
 
 			string email = GetUser().GetEmail();
 
 			WebHook webhook = new WebHook() {
-				WebHookUri = webHook.WebHookUri,
+				WebHookUri = webhookModel.WebHookUri,
 				Secret = "12345678901234567890123456789012",
-				Description = webHook.Description,
+				Description = webhookModel.Description,
 			};
 			webhook.Filters.Add("*");
 
-			List<string> selectedEvents = webHook.selected;
+			List<string> selectedEvents = webhookModel.selected;
 
 			WebhooksAccessor webhookAccessor = new WebhooksAccessor();
 
-			if (webHook.Id != null) {
-
+			if (webhookModel.Id != null) {
+				webhook.Id = webhookModel.Id;
 				var updateWebHook = webhookAccessor.UpdateWebHook(email, webhook, selectedEvents);
 			} else {
 				webhookAccessor.InsertWebHook(email, webhook, selectedEvents);
 
 			}
-			return Json(ResultObject.SilentSuccess(webhook));
+
+
+			//get subscription events
+			var getWebhookEventSubscriptions = webhookAccessor.GetWebhookEventSubscriptions(GetUser().GetEmail(), webhook.Id);
+			List<string> name = new List<string>();
+			if (getWebhookEventSubscriptions.WebhookEventsSubscription != null) {
+				foreach (var item1 in getWebhookEventSubscriptions.WebhookEventsSubscription.Select(x => x.EventName)) {
+					name.Add(item1);
+				}
+				string nameOfString = (string.Join(" , ", name.Select(x => x.ToString()).ToArray()));
+				webhookModel.Eventnames = nameOfString;
+			}
+
+			return Json(ResultObject.SilentSuccess(webhookModel));
 		}
 
 		[Access(AccessLevel.UserOrganization)]

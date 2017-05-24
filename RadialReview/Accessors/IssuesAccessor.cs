@@ -19,6 +19,8 @@ using RadialReview.Utilities.DataTypes;
 using System.Text;
 using System.Web;
 using RadialReview.Utilities.RealTime;
+using RadialReview.Hooks;
+using RadialReview.Utilities.Hooks;
 
 namespace RadialReview.Accessors
 {
@@ -206,7 +208,11 @@ namespace RadialReview.Accessors
             //rt.UpdateRecurrences(recurrenceId).SetFocus("");
 
             Audit.L10Log(s, perms.GetCaller(), recurrenceId, "CreateIssue", ForModel.Create(issue), issue.NotNull(x => x.Message));
-            return o;
+
+			// Trigger webhook events
+			HooksRegistry.Each<IIssueHook>(x => x.CreateIssue(s, o.IssueRecurrenceModel));
+
+			return o;
 
         }
 
@@ -252,9 +258,9 @@ namespace RadialReview.Accessors
                 {
                     var perms = PermissionsUtility.Create(s, caller);
 
-                    var o = await CreateIssue(s, perms, recurrenceId, ownerId, issue);
+                    var o = await CreateIssue(s, perms, recurrenceId, ownerId, issue);					
 
-                    tx.Commit();
+					tx.Commit();
                     s.Flush();
 
                     return o;

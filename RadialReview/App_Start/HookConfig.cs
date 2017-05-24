@@ -20,6 +20,8 @@ namespace RadialReview.App_Start {
 			HooksRegistry.RegisterHook(new UpdateRoles_Notifications());
 			HooksRegistry.RegisterHook(new TodoWebhook());
 
+			HooksRegistry.RegisterHook(new IssueWebhook());
+
 			//HooksRegistry.RegisterHook(new TodoEdit())
 		}
     }

@@ -127,6 +127,7 @@
     <Compile Include="Controllers\PdfController.cs" />
     <Compile Include="Hooks\UpdateRoles_Notifications.cs" />
     <Compile Include="Hooks\UpdateUserModel_TeamNames.cs" />
+    <Compile Include="Hooks\Webhook\IssueWebhook.cs" />
     <Compile Include="Hooks\Webhook\TodoWebhook.cs" />
     <Compile Include="Models\Angular\Base\AngularPicture.cs" />
     <Compile Include="Models\Angular\Dashboard\AngularDashboard.cs" />
@@ -723,6 +724,7 @@
     <Compile Include="Utilities\GraphUtility.cs" />
     <Compile Include="Utilities\HashUtil.cs" />
     <Compile Include="Utilities\Hooks\IAccountEvent.cs" />
+    <Compile Include="Utilities\Hooks\ICreateIssue.cs" />
     <Compile Include="Utilities\Hooks\IHeadlineHook.cs" />
     <Compile Include="Utilities\Hooks\ICreateTodo.cs" />
     <Compile Include="Utilities\Hooks\ICreateUserOrganization.cs" />

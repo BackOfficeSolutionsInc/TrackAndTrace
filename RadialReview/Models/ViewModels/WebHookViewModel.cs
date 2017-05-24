@@ -21,7 +21,7 @@ namespace RadialReview.Models.ViewModels {
 		//public List<WebhookEvents> WEbhookEvent { get; set; }
 
 		public List<SelectListItem> Events { get; set; }
-
+		public string Eventnames { get; set; }
 		public List<string> selected { get; set; }
 	}
 

@@ -66,8 +66,52 @@ namespace RadialReview.Models {
 		AddTODOtoL10,
 		[Description("Add TODO to Organization_")]
 		AddTODOtoOrganization,
-	    [Description("Add TODO for User_")]
-		AddTODOforUser
+		[Description("Add TODO for User_")]
+		AddTODOforUser,
+
+		[Description("Checking/Unchecking/Closing TODO to L10_")]
+		Checking_Unchecking_Closing_TODOtoL10,
+
+		[Description("Checking/Unchecking/Closing TODO for User_")]
+		Checking_Unchecking_Closing_TODOforUser,
+
+		[Description("Changing TODO to L10_")]
+		ChangingToDotoL10,
+
+		[Description("Changing TODO for User_")]
+		ChangingToDoforUser,
+
+		[Description("Checking/Unchecking/Closing TODO to Organization_")]
+		Checking_Unchecking_Closing_TODOtoOrganization,
+
+		[Description("Changing TODO to Organization_")]
+		ChangingTODOtoOrganization,
+
+		[Description("Add Issue to L10_")]
+		AddIssuetoL10,
+		[Description("Add Issue to Organization_")]
+		AddIssuetoOrganization,
+		[Description("Add Issue for User_")]
+		AddIssueforUser,
+
+		[Description("Checking/Unchecking/Closing Issue to L10_")]
+		Checking_Unchecking_Closing_IssuetoL10,
+
+		[Description("Checking/Unchecking/Closing Issue for User_")]
+		Checking_Unchecking_Closing_IssueforUser,
+
+		[Description("Changing Issue to L10_")]
+		ChangingIssuetoL10,
+
+		[Description("Changing Issue for User_")]
+		ChangingIssueforUser,
+
+		[Description("Checking/Unchecking/Closing Issue to Organization_")]
+		Checking_Unchecking_Closing_IssuetoOrganization,
+
+		[Description("Changing Issue to Organization_")]
+		ChangingIssuetoOrganization
+
 	}
 
 

@@ -280,7 +280,7 @@ function generateDatepickerLocalize(selector, date, name, id, options) {
 	else
 		offset = date.getTimezoneOffset();
 	var newDate = date;
-	if (date!=false)
+	if (date != false)
 		newDate = new Date(date.getTime() + offset * 60000);
 	return generateDatepicker(selector, newDate, name, id, options, offset);
 }
@@ -593,13 +593,14 @@ var DataTable = function (settings) {
 	//Complex Updates
 	if (typeof (settings.clickEdit) === "string") {
 		settings._.onEditAction = settings.clickEdit;
+		settings._.onEditValidation = settings.clickEditValidation || null;
 		settings._.onEditActionPost = settings.postEdit || settings.clickEdit;
 		settings.clickEdit = function (row, settings) {
 			var title = settings.clickEditTitle || function (settings) { return "Edit " + resolve(settings.title, settings); };
 			var rid = resolve(settings.cellId, row, settings);
-			var actionType = typeof(settings._.onEditAction);
+			var actionType = typeof (settings._.onEditAction);
 			if (actionType == "string") {
-				showModal(resolve(title, settings), settings._.onEditAction.replace("{0}", rid), settings._.onEditActionPost.replace("{0}", ""), null, null, function (d) {
+				showModal(resolve(title, settings), settings._.onEditAction.replace("{0}", rid), settings._.onEditActionPost.replace("{0}", ""), null, settings.clickEditValidation, function (d) {
 					try {
 						var ids = getIds(settings.data);
 						var rid = resolve(settings.cellId, d.Object, settings);
@@ -615,10 +616,11 @@ var DataTable = function (settings) {
 	}
 	if (typeof (settings.clickAdd) === "string") {
 		settings._.onAddUrl = settings.clickAdd;
+		settings._.onAddValidation = settings.clickAddValidation || null;
 		settings._.onAddUrlPost = settings.postAdd || settings.clickAdd;
 		settings.clickAdd = function (settings) {
 			var title = settings.clickAddTitle || function (settings) { return "Add " + resolve(settings.title, settings); }
-			showModal(resolve(title, settings), settings._.onAddUrl, settings._.onAddUrlPost, null, null, function (d) {
+			showModal(resolve(title, settings), settings._.onAddUrl, settings._.onAddUrlPost, null, settings._.onAddValidation, function (d) {
 				addRow(d.Object);
 			});
 		};
@@ -688,12 +690,12 @@ var DataTable = function (settings) {
 
 		if (anyHeaders) {
 			var headerRow = $(settings.table.rows.element).clone();
-			try{
+			try {
 				$(headerRow).attr("id", resolve(settings.table.rows.id, null, settings));
 			} catch (e) {
 				console.warn("HeaderRow id failed to resolve");
 			}
-			try{
+			try {
 				$(headerRow).attr("class", resolve(settings.table.rows.classes, null, settings));
 			} catch (e) {
 				console.warn("HeaderRow class failed to resolve");
@@ -981,7 +983,7 @@ var DataTable = function (settings) {
 			$(panelHeader).attr("class", resolve(settings.panel.header.classes, settings));
 			$(panelTitle).attr("id", resolve(settings.panel.header.title.id, settings));
 			$(panelTitle).attr("class", resolve(settings.panel.header.title.classes, settings));
-			var title = resolve(settings.title, settings);			
+			var title = resolve(settings.title, settings);
 			$(panelTitle).html(title);
 			$(panelHeader).toggleClass("hidden", title == null || title == "" || typeof (title) === "undefined");
 
@@ -1342,9 +1344,9 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 								var selected = option.checked || false;
 								if (selected)
 									selected = "checked";
-								var radio = genInput("radio", fieldName, radioId, null, option.value, selected, option.classes||" ");
+								var radio = genInput("radio", fieldName, radioId, null, option.value, selected, option.classes || " ");
 								var optionText = option.text || option.value;
-								
+
 								input += '<tr class="form-group">' +
 											'<td><label for="' + radioId + '" class="pull-right ' + (option.labelColumnClass || "") + ' control-label" style="padding-right:10px;">' + optionText + '</label></td>' +
 											'<td><div class="' + (option.valueColumnClass || "") + '" style="padding-top: 5px;">' + radio + '</div></td>' +
@@ -1439,10 +1441,10 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 		if (validationArg) {
 			var message = undefined;
 			if (typeof (validationArg) === "string") {
-				message = window[validationArg]();
+				message = window[validationArg](formData);
 				//message = eval(validationArg + '()');
 			} else if (typeof (validationArg) === "function") {
-				message = validationArg();
+				message = validationArg(formData);
 			}
 			if (message !== undefined && message != true) {
 				if (message == false) {
