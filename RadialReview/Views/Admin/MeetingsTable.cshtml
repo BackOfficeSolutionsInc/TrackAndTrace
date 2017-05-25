@@ -28,7 +28,7 @@
         @foreach (var d in Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>()) {
             var val = Model.Where(x => x.CreateTime.Hour >= h && x.CompleteTime != null && x.CompleteTime.Value.Hour <= h && (x.CreateTime.DayOfWeek == d || x.CompleteTime.Value.DayOfWeek == d) && x.CompleteTime.Value - x.StartTime.Value < TimeSpan.FromMinutes(200) && x.OrganizationId != 592 && x.OrganizationId != 1634).Count();
             var percent = val / (double)total;
-            <td title="Avg @(Math.Round(10.0*val/ViewBag.Weeks)/10.0) meetings/week" class="@((now.DayOfWeek==d && now.Hour==h)?"now":"")" style="background-color:rgba(255,0,0,@(percent * 20))">@(Math.Round((double)percent * 10000.0) / 100.0)</td>
+            <td title="Avg @(Math.Round(10.0*val/ViewBag.Weeks)/10.0) meetings/week" class="@((now.DayOfWeek==d && now.Hour==h)?"now":"")" style="background-color:rgba(255,0,0,@(percent * 20))">@(Math.Round((double)percent * 10000.0) / 100.0)%</td>
         }
     </tr>
 

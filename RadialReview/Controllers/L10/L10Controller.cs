@@ -361,6 +361,13 @@ namespace RadialReview.Controllers
 			return PartialView(model);
 		}
 
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult DeleteMeeting(long id) {
+			//Deletes the meeting not the recurrence
+			L10Accessor.DeleteMeeting(GetUser(), id);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+
 		#region Error
 		[Access(AccessLevel.Any)]
         public PartialViewResult Error(MeetingException e)

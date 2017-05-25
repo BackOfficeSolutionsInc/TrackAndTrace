@@ -6,11 +6,12 @@
 	var scoreOrder = new Dictionary<AccountType, int>() {
 		{AccountType.Demo, 1},
 		{AccountType.Implementer, 2},
-		{AccountType.Dormant, 3},
-		{AccountType.Cancelled, 4},
-		{AccountType.SwanServices, 5},
-		{AccountType.Other, 6},
-		{AccountType.Paying, 7},
+		{AccountType.Coach, 3},
+		{AccountType.Dormant, 4},
+		{AccountType.Cancelled, 5},
+		{AccountType.SwanServices, 6},
+		{AccountType.Other, 7},
+		{AccountType.Paying, 8},
 	};
 
 	var creditCardTxt = new Func<RadialReview.Controllers.OrganizationController.OrgStats, string>(x => {

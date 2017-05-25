@@ -244,6 +244,7 @@ namespace RadialReview.Accessors {
 		private static IEnumerable<L10Recurrence.L10Recurrence_Page> GenerateMeetingPages(long recurrenceId, MeetingType meetingType, DateTime createTime) {
 
 			if (meetingType == MeetingType.L10) {
+				#region L10 Pages
 				yield return new L10Recurrence.L10Recurrence_Page() {
 					CreateTime = createTime,
 					L10RecurrenceId = recurrenceId,
@@ -314,7 +315,9 @@ namespace RadialReview.Accessors {
 					_Ordering = 6,
 					AutoGen = true
 				};
+				#endregion
 			} else if (meetingType == MeetingType.SamePage) {
+				#region Same Page Meeting pages
 				yield return new L10Recurrence.L10Recurrence_Page() {
 					CreateTime = createTime,
 					L10RecurrenceId = recurrenceId,
@@ -345,6 +348,17 @@ namespace RadialReview.Accessors {
 					_Ordering = 2,
 					AutoGen = true
 				};
+				yield return new L10Recurrence.L10Recurrence_Page() {
+					CreateTime = createTime,
+					L10RecurrenceId = recurrenceId,
+					Minutes = 5,
+					Title = "Conclude",
+					Subheading = "",
+					PageType = L10Recurrence.L10PageType.Conclude,
+					_Ordering = 3,
+					AutoGen = true
+				};
+				#endregion
 			}
 		}
 
@@ -399,7 +413,6 @@ namespace RadialReview.Accessors {
 						CanAdmin = true,
 						CanEdit = true,
 						CanView = true,
-						AccessorType = PermItem.AccessType.Admins,
 						AccessorId = -1,
 						ResType = PermItem.ResourceType.L10Recurrence,
 						ResId = recur.Id,
@@ -1623,7 +1636,19 @@ namespace RadialReview.Accessors {
 					if (!string.IsNullOrEmpty(p))
 						p = p.ToUpper()[0] + p.Substring(1);
 
-					Audit.L10Log(s, caller, recurrenceId, "UpdatePage", ForModel.Create(meeting), p);
+					long pageId;
+					var friendlyPageName = p;
+					if (long.TryParse(pageName.SubstringAfter("-"), out pageId)) {
+						try {
+							var l10Page = L10Accessor.GetPage(s,perms, pageId);
+							friendlyPageName = l10Page.Title;
+						} catch (Exception e) {
+
+						}
+					}
+
+
+					Audit.L10Log(s, caller, recurrenceId, "UpdatePage", ForModel.Create(meeting), friendlyPageName);
 					tx.Commit();
 					s.Flush();
 				}
@@ -1658,6 +1683,24 @@ namespace RadialReview.Accessors {
 					EventUtil.Trigger(x => x.Create(s, EventType.UndeleteMeeting, caller, r, message: r.Name + "(Undeleted)"));
 
 					Audit.L10Log(s, caller, recurrenceId, "UndeleteL10", ForModel.Create(r), r.Name);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+		public static void DeleteMeeting(UserOrganizationModel caller, long meetingId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var meeting = s.Get<L10Meeting>(meetingId);
+					PermissionsUtility.Create(s, caller).AdminL10Recurrence(meeting.L10RecurrenceId);
+					meeting.DeleteTime = DateTime.UtcNow;
+
+					s.Update(meeting);
+
+					//EventUtil.Trigger(x => x.Create(s, EventType.DeleteMeeting, caller, r, message: r.Name + "(Deleted)"));
+					//Audit.L10Log(s, caller, recurrenceId, "DeleteL10", ForModel.Create(r), r.Name);
+
 					tx.Commit();
 					s.Flush();
 				}
@@ -3080,7 +3123,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		
+
 		public static void AttachMeasurable(UserOrganizationModel caller, long recurrenceId, long measurableId, bool skipRealTime = false, int? rowNum = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -4985,15 +5028,19 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					var page = s.Get<L10Recurrence.L10Recurrence_Page>(pageId);
-					perms.ViewL10Recurrence(page.L10Recurrence.Id);
-					if (page.DeleteTime != null)
-						throw new PermissionsException("Page does not exist.");
-
-
+					var page = GetPage(s, perms, pageId);
 					return page;
 				}
 			}
+		}
+		[Obsolete("Should you use GetPageInRecurrence?")]
+		public static L10Recurrence.L10Recurrence_Page GetPage(ISession s, PermissionsUtility perms, long pageId) {
+			var page = s.Get<L10Recurrence.L10Recurrence_Page>(pageId);
+			perms.ViewL10Recurrence(page.L10Recurrence.Id);
+			if (page.DeleteTime != null)
+				throw new PermissionsException("Page does not exist.");
+
+			return page;
 		}
 
 
