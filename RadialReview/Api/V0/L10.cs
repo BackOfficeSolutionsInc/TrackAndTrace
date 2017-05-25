@@ -66,7 +66,7 @@ namespace RadialReview.Api.V0 {
 		[Route("L10/{recurrenceId}")]
 		[HttpDelete]
 		public void RemoveL10(long recurrenceId) {
-			L10Accessor.DeleteL10(GetUser(), recurrenceId);
+			L10Accessor.DeleteL10Recurrence(GetUser(), recurrenceId);
 		}
 
 		[Route("L10/attachtodo/{recurrenceId}")]

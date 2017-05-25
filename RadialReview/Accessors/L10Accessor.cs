@@ -414,6 +414,7 @@ namespace RadialReview.Accessors {
 						CanEdit = true,
 						CanView = true,
 						AccessorId = -1,
+						AccessorType = PermItem.AccessType.Admins,
 						ResType = PermItem.ResourceType.L10Recurrence,
 						ResId = recur.Id,
 						CreatorId = caller.Id,
@@ -1654,7 +1655,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		public static void DeleteL10(UserOrganizationModel caller, long recurrenceId) {
+		public static void DeleteL10Recurrence(UserOrganizationModel caller, long recurrenceId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).AdminL10Recurrence(recurrenceId);
@@ -1671,7 +1672,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		public static void UndeleteL10(UserOrganizationModel caller, long recurrenceId) {
+		public static void UndeleteL10Recurrence(UserOrganizationModel caller, long recurrenceId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).AdminL10Recurrence(recurrenceId);
@@ -1689,7 +1690,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static void DeleteMeeting(UserOrganizationModel caller, long meetingId) {
+		public static void DeleteL10Meeting(UserOrganizationModel caller, long meetingId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var meeting = s.Get<L10Meeting>(meetingId);
@@ -1703,6 +1704,34 @@ namespace RadialReview.Accessors {
 
 					tx.Commit();
 					s.Flush();
+				}
+			}
+		}
+		public static L10Meeting EditMeetingTimes(UserOrganizationModel caller, long meetingId,string startOrEnd,DateTime? time) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var meeting = s.Get<L10Meeting>(meetingId);
+					PermissionsUtility.Create(s, caller).AdminL10Recurrence(meeting.L10RecurrenceId);
+					switch (startOrEnd.ToLower()) {
+						case "start": { meeting.StartTime = time ?? meeting.StartTime; break; }
+						case "end": {
+								if (meeting.CompleteTime == null)
+									throw new PermissionsException("Meeting has not been concluded.");
+								if (time == null)
+									throw new PermissionsException("You must specify an end time.");
+								meeting.CompleteTime = time ; break;
+							}
+						default:
+							break;
+					}
+					s.Update(meeting);
+
+					//EventUtil.Trigger(x => x.Create(s, EventType.DeleteMeeting, caller, r, message: r.Name + "(Deleted)"));
+					//Audit.L10Log(s, caller, recurrenceId, "DeleteL10", ForModel.Create(r), r.Name);
+
+					tx.Commit();
+					s.Flush();
+					return meeting;
 				}
 			}
 		}
@@ -2389,7 +2418,9 @@ namespace RadialReview.Accessors {
 						x._Editable = x.Measurable.AccountableUserId == userId || x.Measurable.AdminUserId == userId;
 					}
 				});
-				measurableModels.ForEach(x => x._Editable = x.AccountableUserId == userId || x.AdminUserId == userId);
+				if (getMeasurables) {
+					measurableModels.ForEach(x => x._Editable = x.AccountableUserId == userId || x.AdminUserId == userId);
+				}
 				recurrenceMeasurables.ForEach(x => {
 					if (x.Measurable != null) {
 						x.Measurable._Editable = x.Measurable.AccountableUserId == userId || x.Measurable.AdminUserId == userId;

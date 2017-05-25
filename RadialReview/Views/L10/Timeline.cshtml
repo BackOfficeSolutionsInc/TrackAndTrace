@@ -44,15 +44,17 @@
 						<div class="clearfix">
 							<span class="pull-left">
 								<b>Meeting:</b>
-								<span style="width:100px;text-align: center">@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", Html.Organization().ConvertFromUTC(meeting.Meeting.CreateTime))</span>
+								<span class="startDate" style="width:100px;text-align: center">@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", Html.Organization().ConvertFromUTC(meeting.Meeting.CreateTime))</span>
 							</span>
 							<span class="pull-right">
-								<span style="width:75px;text-align: right">@Html.Organization().ConvertFromUTC(meeting.Meeting.CreateTime).ToShortTimeString()</span>
-								<span> - </span>
 								@{
+									var startTime = meeting.Meeting.CreateTime;
 									var endTime = meeting.Meeting.CompleteTime.NotNull(x => Html.Organization().ConvertFromUTC(x.Value));
+
 								}
-								<span style="width:75px" onclick="changeEndTime(@meeting.Meeting.Id,'@endTime')">@( endTime.NotNull(x=>x.ToShortTimeString()) ?? "On-going")</span>
+								<span class="startTime" @*onclick="changeTime(@meeting.Meeting.Id,'start',this)" data-time="@startTime.ToJavascriptMilliseconds()"*@ style="width:75px;text-align: right">@Html.Organization().ConvertFromUTC(startTime).ToShortTimeString()</span>
+								<span> - </span>
+								<span class="endTime" style="width:75px" @*onclick="changeTime(@meeting.Meeting.Id,'end',this)" data-time="@endTime.NotNull(x=>x.ToJavascriptMilliseconds())"*@>@( endTime.NotNull(x=>x.ToShortTimeString()) ?? "On-going")</span>
 							</span>
 							&nbsp;
 						</div>
@@ -156,19 +158,34 @@
 			});
 		}
 
-		function changeEndTime(id,val) {
-
+		function changeTime(id, type, self) {
+			debugger;
+			var val = parseJsonDate($(self).data("time"),true);
 			showModal({
-				title: "Change the meeting end time?",
+				title: "Change the meeting "+type+" time?",
 				fields: [{name:"date",type:"datetime",value:val}],
-				success: function () {
+				success: function (data) {
 					var mid = id;
-					//$.ajax({
-					//	url: "/l10/deletemeeting/" + id,
-					//	success: function () {
-					//		$(".meeting_" + mid).slideUp();
-					//	}
-					//});
+					$.ajax({
+						url: "/l10/EditMeetingTime/" + id+"?type="+type+"&time="+(+parseJsonDate(data.date)),
+						success: function (data) {
+							
+							var start = parseJsonDate(data.Object.start);
+							var end = parseJsonDate(data.Object.end);
+
+							$(".meeting_" + mid + " .startDate").data("time", +start);
+							$(".meeting_" + mid + " .endDate").data("time", +end);
+
+							$(".meeting_" + mid + " .startDate").html(start.toLocaleDateString());
+							$(".meeting_" + mid+" .startTime").html(start.toLocaleTimeString());
+							if (end){
+								$(".meeting_" + mid+" .endTime").html(end.toLocaleTimeString());
+							}else{
+								$(".meeting_" + mid+" .endTime").html("err");
+
+							}
+						}
+					});
 				}
 			});
 

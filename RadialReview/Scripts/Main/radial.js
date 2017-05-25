@@ -1070,28 +1070,28 @@ var DataTable = function (settings) {
 
 
 /*
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///  obj ={                                                                                                                     ///
-///      title:,                                                                                                                ///
-///      icon : <success,warning,danger,info,primary,default> or {icon:"css icon name",title:"Title Text!",color:"Hex-Color"}   ///
-///      fields: [{                                                                                                             ///
-///          name: (optional)                                                                                                   ///
-///          text: (optional)                                                                                                   ///
-///          type: <text,textarea,checkbox,radio,span,div,header,h1,h2,h3,h4,h5,h6,number,date,time,file,yesno,label>(optional) ///
-///				   (if type=radio) options:[{text,value},...]																	///
-///          value: (optional)                                                                                                  ///
-///          placeholder: (optional)                                                                                            ///
-///          classes: (optional)																								///
-///      },...],																												///
-///		 contents: jquery object (optional, overrides fields)																	///
-///      pushUrl:"",                                                                                                            ///
-///      success:function(formData,contentType),																				///
-///      complete:function,                                                                                                     ///
-///      cancel:function,                                                                                                       ///  
-///      reformat: function,																									///
-///      noCancel: bool																											///
-///  }                                                                                                                          ///
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///  obj ={																																	///
+///      title:,																															///
+///      icon : <success,warning,danger,info,primary,default> or {icon:"css icon name",title:"Title Text!",color:"Hex-Color"}				///
+///      fields: [{																															///
+///          name: (optional)																												///
+///          text: (optional)																												///
+///          type: <text,textarea,checkbox,radio,span,div,header,h1,h2,h3,h4,h5,h6,number,date,datetime,time,file,yesno,label>(optional)	///
+///				   (if type=radio) options:[{text,value},...]																				///
+///          value: (optional)																												///
+///          placeholder: (optional)																										///
+///          classes: (optional)																											///
+///      },...],																															///
+///		 contents: jquery object (optional, overrides fields)																				///
+///      pushUrl:"",																														///
+///      success:function(formData,contentType),																							///
+///      complete:function,																													///
+///      cancel:function,																													///  
+///      reformat: function,																												///
+///      noCancel: bool																														///
+///  }																																		///
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 */
 function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onCancel) {
 	$("#modal").modal("hide");
@@ -1206,8 +1206,8 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 	$("#modal").addClass("loading");
 	$('#modal').modal('show');
 
-	var allowed = ["text", "hidden", "textarea", "checkbox", "radio", "number", "date", "time", "header", "span", "div", "h1", "h2", "h3", "h4", "h5", "h6", "file", "yesno", "label", "img"];
-	var addLabel = ["text", "textarea", "checkbox", "radio", "number", "date", "time", "file"];
+	var allowed = ["text", "hidden", "textarea", "checkbox", "radio", "number", "date", "time", "datetime", "header", "span", "div", "h1", "h2", "h3", "h4", "h5", "h6", "file", "yesno", "label", "img"];
+	var addLabel = ["text", "textarea", "checkbox", "radio", "number", "date", "time", "datetime", "file"];
 	var tags = ["span", "h1", "h2", "h3", "h4", "h5", "h6", "label", "div"];
 	var anyFields = ""
 
@@ -1248,6 +1248,13 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 
 		if (type == "checkbox" && ((typeof (value) === "string" && (value.toLowerCase() === 'true')) || (typeof (value) === "boolean" && value)))
 			others += "checked";
+
+		if (type == "datetime") {
+			var newVal = parseJsonDate(value, true).toISOString().substring(0, 19);
+			type = "datetime-local";
+			if (newVal)
+				value = newVal;
+		}
 
 		return '<input type="' + escapeString(type) + '" class="' + classes + '"' +
                       ' name="' + escapeString(name) + '" id="' + eid + '" ' +
@@ -1294,7 +1301,7 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 						console.warn("Input type not allowed:" + type);
 						continue;
 					}
-					if (Object.prototype.toString.call(value) === '[object Date]' && type == "date") {
+					if (Object.prototype.toString.call(value) === '[object Date]' && (/*type == "datetime" ||*/ type == "date")) {
 						value = value.toISOString().substring(0, 10);
 					}
 
@@ -1306,7 +1313,7 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 						input = "<" + type + " name=" + escapeString(name) + '" id="' + eid + '" class="' + classes + '">' + txt + '</' + type + '>';
 					} else if (type == "textarea") {
 						input = '<textarea class="form-control blend verticalOnly ' + classes + '" rows=5 name="' + escapeString(name) + '" id="' + eid + '" ' + escapeString(placeholder) + '>' + value + '</textarea>';
-					} else if (type == "date") {
+					} else if (type == "date" /*|| type=="datetime"*/) {
 						var guid = generateGuid();
 						var curName = name;
 						var curVal = originalValue;

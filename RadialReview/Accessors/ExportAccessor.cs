@@ -179,19 +179,17 @@ namespace RadialReview.Accessors
 
 			return new System.Text.UTF8Encoding().GetBytes(csv.ToCsv(false));
 		}
-		public static byte[] MeetingSummary(UserOrganizationModel caller, long recurrenceId)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction()){
+		public static byte[] MeetingSummary(UserOrganizationModel caller, long recurrenceId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					var ratings = s.QueryOver<L10Meeting.L10Meeting_Attendee>().Where(x => x.DeleteTime == null)
-						.JoinQueryOver(x=>x.L10Meeting)
-						.Where(x=>x.L10RecurrenceId == recurrenceId)
-						.Fetch(x=>x.L10Meeting).Eager
+						.JoinQueryOver(x => x.L10Meeting)
+						.Where(x => x.L10RecurrenceId == recurrenceId)
+						.Fetch(x => x.L10Meeting).Eager
 						.List().ToList();
 
 					var csv = new Csv();
-					foreach (var t in ratings.OrderBy(x => x.L10Meeting.CompleteTime).GroupBy(x => x.L10Meeting.Id)){
+					foreach (var t in ratings.OrderBy(x => x.L10Meeting.CompleteTime).GroupBy(x => x.L10Meeting.Id)) {
 						var sum = t.Where(x => x.Rating.HasValue).Select(x => x.Rating.Value).Sum();
 						decimal count = t.Where(x => x.Rating.HasValue).Select(x => x.Rating.Value).Count();
 
@@ -203,21 +201,52 @@ namespace RadialReview.Accessors
 						csv.Add("" + first.L10Meeting.Id, "End Time", time);
 						var avg = "";
 						if (count > 0)
-							avg = String.Format("{0:##.###}", sum/count);
+							avg = String.Format("{0:##.###}", sum / count);
 						csv.Add("" + first.L10Meeting.Id, "Average Rating", avg);
 					}
 
-					foreach (var t in ratings){
-						csv.Add("" + t.L10Meeting.Id, t.User.GetName(), ""+t.Rating);
+					foreach (var t in ratings) {
+						csv.Add("" + t.L10Meeting.Id, t.User.GetName(), "" + t.Rating);
 					}
 
 					return new System.Text.UTF8Encoding().GetBytes(csv.ToCsv(false));
 				}
 			}
-		
-			
 		}
-        public static async Task RecurseIssue(List<Tuple<long,List<string>>> rows, int index, IssueModel.IssueModel_Recurrence parent, int depth, bool includeDetails)
+		public static byte[] Ratings(UserOrganizationModel caller, long recurrenceId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var ratings = s.QueryOver<L10Meeting.L10Meeting_Attendee>().Where(x => x.DeleteTime == null)
+						.JoinQueryOver(x => x.L10Meeting)
+						.Where(x => x.L10RecurrenceId == recurrenceId)
+						.Fetch(x => x.L10Meeting).Eager
+						.List().ToList();
+
+					var csv = new Csv();
+					foreach (var t in ratings.OrderBy(x => x.L10Meeting.CompleteTime).GroupBy(x => x.L10Meeting.Id)) {
+						foreach (var u in t) {
+							if (u.L10Meeting.CompleteTime != null) {
+								csv.Add(u.User.GetName(), u.L10Meeting.CompleteTime.Value.ToString(), u.Rating.NotNull(x=>""+x)??"NR");
+							}
+						}
+					}
+
+					foreach (var t in ratings.OrderBy(x => x.L10Meeting.CompleteTime).GroupBy(x => x.L10Meeting.Id)) {
+						var sum = t.Where(x => x.Rating.HasValue).Select(x => x.Rating.Value).Sum();
+						decimal count = t.Where(x => x.Rating.HasValue).Select(x => x.Rating.Value).Count();
+						var avg = "";
+						if (count > 0)
+							avg = String.Format("{0:##.###}", sum / count);
+						if (t.First().L10Meeting.CompleteTime != null) {
+							csv.Add("Average Rating", t.First().L10Meeting.CompleteTime.Value.ToString(), "" + avg);
+						}											
+					}
+					
+					return new System.Text.UTF8Encoding().GetBytes(csv.ToCsv(true));
+				}
+			}
+		}
+		public static async Task RecurseIssue(List<Tuple<long,List<string>>> rows, int index, IssueModel.IssueModel_Recurrence parent, int depth, bool includeDetails)
 		{
 			var cells = new List<string>();
 			var row = Tuple.Create((long)index, cells);

@@ -125,13 +125,13 @@ namespace RadialReview.Controllers
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult Delete(long id) {
-			L10Accessor.DeleteL10(GetUser(), id);
+			L10Accessor.DeleteL10Recurrence(GetUser(), id);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
 		[Access(AccessLevel.Radial)]
 		public JsonResult Undelete(long id) {
-			L10Accessor.UndeleteL10(GetUser(), id);
+			L10Accessor.UndeleteL10Recurrence(GetUser(), id);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
@@ -364,8 +364,18 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult DeleteMeeting(long id) {
 			//Deletes the meeting not the recurrence
-			L10Accessor.DeleteMeeting(GetUser(), id);
+			L10Accessor.DeleteL10Meeting(GetUser(), id);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult EditMeetingTime(long id,string type, long? time) {
+			//Deletes the meeting not the recurrence
+			var meeting = L10Accessor.EditMeetingTimes(GetUser(), id, type, time.NotNull(x=>x.Value.ToDateTime()));
+			return Json(ResultObject.SilentSuccess(new {
+				start=meeting.StartTime,
+				end = meeting.CompleteTime,					
+			}), JsonRequestBehavior.AllowGet);
 		}
 
 		#region Error

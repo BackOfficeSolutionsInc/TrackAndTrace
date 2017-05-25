@@ -363,6 +363,7 @@ namespace RadialReview.Controllers {
 				zip.AddEntry(String.Format("Issues.csv", time, recur.Name), await ExportAccessor.IssuesList(GetUser(), id, includeDetails));
 				zip.AddEntry(String.Format("Rocks.csv", time, recur.Name), ExportAccessor.Rocks(GetUser(), id));
 				zip.AddEntry(String.Format("MeetingSummary.csv", time, recur.Name), ExportAccessor.MeetingSummary(GetUser(), id));
+				zip.AddEntry(String.Format("MeetingRatings.csv", time, recur.Name), ExportAccessor.Ratings(GetUser(), id));
 
 				var names = new DefaultDictionary<string, int>(x => 0);
 				foreach (var note in await ExportAccessor.Notes(GetUser(), id)) {
