@@ -34,8 +34,8 @@ namespace RadialReview.Api.V0
         [Route("todo/mine")]
         public IEnumerable<AngularTodo> GetMineTodos()
         {
-            // need to ask for method GetMyTodos() in TodoAccessor
-            return TodoAccessor.GetMyTodos(GetUser(), GetUser().Id, true).Select(x => new AngularTodo(x));
+			// need to ask for method GetMyTodos() in TodoAccessor
+			return TodoAccessor.GetMyTodos(GetUser(), GetUser().Id, true);//.Select(x => new AngularTodo(x));
         }
 
         // GET: api/Todo/mine
@@ -43,7 +43,7 @@ namespace RadialReview.Api.V0
         [HttpGet]
         public IEnumerable<AngularTodo> GetUserTodos(long id)
         {
-            return TodoAccessor.GetTodosForUser(GetUser(), id, true).Select(x => new AngularTodo(x));
+			return TodoAccessor.GetTodosForUser(GetUser(), id, true);//.Select(x => new AngularTodo(x));
         }
 
         // PUT: api/Todo/5

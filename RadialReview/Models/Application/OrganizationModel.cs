@@ -1,5 +1,6 @@
 ﻿using FluentNHibernate.Conventions.AcceptanceCriteria;
 using FluentNHibernate.Mapping;
+using Newtonsoft.Json;
 using NHibernate.Mapping;
 using RadialReview.Models.Application;
 using RadialReview.Models.Askables;
@@ -258,12 +259,18 @@ namespace RadialReview.Models {
 		}
 
 		public virtual AccountType AccountType { get; set; }
+		[JsonIgnore]
 		public virtual IList<UserOrganizationModel> Members { get; set; }
+		[JsonIgnore]
 		public virtual IList<PaymentModel> Payments { get; set; }
+		[JsonIgnore]
 		public virtual IList<InvoiceModel> Invoices { get; set; }
+		[JsonIgnore]
 		public virtual IList<QuestionModel> CustomQuestions { get; set; }
+		[JsonIgnore]
 		public virtual IList<QuestionCategoryModel> QuestionCategories { get; set; }
 		//public virtual IList<IndustryModel> Industries { get; set; }
+		[JsonIgnore]
 		public virtual IList<GroupModel> Groups { get; set; }
 #pragma warning disable CS0114 // Member hides inherited member; missing override keyword
 		public virtual DateTime? DeleteTime { get; set; }
@@ -273,6 +280,7 @@ namespace RadialReview.Models {
 		public virtual String ImageUrl { get; set; }
 		public virtual long AccountabilityChartId { get; set; }
 
+		[JsonIgnore]
 		public virtual IList<ReviewsModel> Reviews { get; set; }
 
 		public override OriginType GetOrigin() {

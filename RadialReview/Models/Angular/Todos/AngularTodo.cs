@@ -8,6 +8,7 @@ using System.Web;
 using RadialReview.Models.Angular.Users;
 using RadialReview.Models.Todo;
 using Config = RadialReview.Utilities.Config;
+using RadialReview.Models.Rocks;
 
 namespace RadialReview.Models.Angular.Todos
 {
@@ -38,7 +39,23 @@ namespace RadialReview.Models.Angular.Todos
 
 				Link = "/L10/Timeline/" + todo.ForRecurrenceId + "#" + mod + "-" + id;
 			}
+		}
 
+		public AngularTodo(Milestone milestone,UserOrganizationModel owner) : base(-milestone.Id) {
+			Name = milestone.Name;
+			//DetailsUrl = Config.NotesUrl() + "p/" + todo.PadId + "?showControls=true&showChat=false";
+
+			//Details = todo.Details;
+			DueDate = milestone.DueDate;
+			Owner = AngularUser.CreateUser(owner);
+			CompleteTime = milestone.CompleteTime;
+			CreateTime = milestone.CreateTime;
+			Complete = milestone.Status == MilestoneStatus.Done;
+			TodoType = Todo.TodoType.Milestone;
+			Ordering = -10;
+
+			Origin = "Milestone";
+			
 		}
 
 		public AngularTodo(){

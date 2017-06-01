@@ -20,6 +20,7 @@ using RadialReview.Utilities;
 using RadialReview.Exceptions;
 using RadialReview.Models.UserModels;
 using static RadialReview.Models.PermItem;
+using System.Threading.Tasks;
 
 namespace RadialReview.Controllers
 {
@@ -309,6 +310,12 @@ namespace RadialReview.Controllers
             ViewBag.Recurrence = recurrence;
             return View(links);
         }
+
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<ActionResult> MeetingSummary(long id) {
+			var summary = await L10Accessor.GetMeetingSummary(GetUser(), id);
+			return PartialView(summary);
+		}
 
 		[Access(AccessLevel.UserOrganization)]
         public ActionResult Timeline(long id)

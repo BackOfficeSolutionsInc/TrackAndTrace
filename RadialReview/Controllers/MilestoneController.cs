@@ -30,6 +30,17 @@ namespace RadialReview.Controllers {
 		//		return RedirectToAction("Index", "Error");
 		//	}
 		//}
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult EditModal(long id) {
+			var ms = RockAccessor.GetMilestone(GetUser(), id);
+			return PartialView(ms);
+		}
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public JsonResult EditModal(Milestone model) {
+			RockAccessor.EditMilestone(GetUser(),model.Id,model.Name );
+			return Json(ResultObject.SilentSuccess());
+		}
 
 
 		[Access(AccessLevel.UserOrganization)]

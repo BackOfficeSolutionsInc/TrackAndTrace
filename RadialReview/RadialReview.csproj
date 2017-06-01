@@ -1053,6 +1053,7 @@
     <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\components\jquery.bootstrap-duallistbox.js" />
     <Content Include="Scripts\AccountabilityChart\accountabilityChart.js" />
+    <Content Include="Scripts\components\milestones.js" />
     <Content Include="Scripts\d3\d3.v4.js" />
     <Content Include="Scripts\d3\radial.d3.tree.js" />
     <Content Include="Scripts\Dashboard\dashboard.js" />
@@ -1464,6 +1465,9 @@
     <Content Include="Views\Review\Take\Radio.cshtml" />
     <Content Include="Views\TileData\L10SolvedIssues.cshtml" />
     <Content Include="Views\Todo\EditModal.cshtml" />
+    <Content Include="Views\L10\MeetingSummary.cshtml" />
+    <Content Include="Views\Rocks\EditModal.cshtml" />
+    <Content Include="Views\Milestone\EditModal.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -2230,7 +2234,6 @@
     <Folder Include="Views\MeetingData\" />
     <Folder Include="Views\Members\" />
     <Folder Include="Views\Migration\" />
-    <Folder Include="Views\Milestone\" />
     <Folder Include="Views\Onboard\" />
     <Folder Include="Views\Scheduler\" />
     <Folder Include="Views\Session\" />

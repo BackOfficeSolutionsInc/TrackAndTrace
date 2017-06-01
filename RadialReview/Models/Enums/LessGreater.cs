@@ -74,6 +74,15 @@ namespace RadialReview
             }
         }
 
+		public static string ToPdfSymbol(this LessGreater self) {
+			switch (self) {
+				case LessGreater.Between:
+					return "<=>";
+				default:
+					return ToSymbol(self);
+			}
+		}
+
 		public static string ToSymbol(this LessGreater self)
 		{
 			switch (self)

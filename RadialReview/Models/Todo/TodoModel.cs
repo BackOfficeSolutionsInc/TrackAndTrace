@@ -13,8 +13,9 @@ namespace RadialReview.Models.Todo
 {
     public enum TodoType {
         Recurrence = 0,
-        Personal = 1,
-    }
+		Personal = 1,
+		Milestone = 2,
+	}
 
 
 	[DebuggerDisplay("Message = {Message}, Owner={AccountableUser}")]

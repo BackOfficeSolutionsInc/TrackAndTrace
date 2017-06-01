@@ -310,7 +310,8 @@ namespace RadialReview {
 					  "~/Scripts/Main/finally.js",
 					  "~/Scripts/Main/intercom.min.js",
 					  "~/Scripts/L10/jquery-ui.color.js",
-					  "~/Scripts/jquery/jquery.tabbable.js"
+					  "~/Scripts/jquery/jquery.tabbable.js",
+					  "~/Scripts/components/milestones.js"
 			/*,
 			"~/Scripts/Main/realtime.js"*/
 			));

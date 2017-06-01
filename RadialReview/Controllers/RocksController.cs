@@ -11,6 +11,7 @@ using RadialReview.Models.UserTemplate;
 using RadialReview.Utilities.DataTypes;
 using System.Threading.Tasks;
 using RadialReview.Utilities;
+using RadialReview.Models.Angular.Rocks;
 
 namespace RadialReview.Controllers {
 	public class RocksController : BaseController {
@@ -193,6 +194,35 @@ namespace RadialReview.Controllers {
 
 
 		}
+
+		public class RockAndMilestonesVM {
+			public List<AngularMilestone> Milestones { get; set; }
+			public AngularRock Rock { get; set; }
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult EditModal(long id) {
+			var rockAndMs = RockAccessor.GetRockAndMilestones(GetUser(), id);
+
+			var model = new RockAndMilestonesVM() {
+				Rock = new AngularRock(rockAndMs.Rock),
+				Milestones = rockAndMs.Milestones.Select(x => new AngularMilestone(x)).ToList()
+			};
+
+			ViewBag.AnyL10sWithMilestones = rockAndMs.AnyMilestoneMeetings;
+
+			return PartialView(model);
+
+		}
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult EditModal(RocksController.RockAndMilestonesVM model) {
+			var rock = model.Rock;
+			L10Accessor.Update(GetUser(), rock, null);
+			return Json(ResultObject.SilentSuccess());
+		}
+
 
 		//public ActionResult Assessment()
 		#region Template

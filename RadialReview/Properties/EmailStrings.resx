@@ -260,7 +260,7 @@ The {5} Team</value>
   </data>
   <data name="MeetingSummary_Body" xml:space="preserve">
     <value>&lt;p&gt;{0},&lt;/p&gt;
-&lt;p&gt;Here are your meeting summary for this week:&lt;/p&gt;
+&lt;p&gt;Here is your meeting summary for this week:&lt;/p&gt;
 {1}
 &lt;br /&gt;
 &lt;br /&gt;

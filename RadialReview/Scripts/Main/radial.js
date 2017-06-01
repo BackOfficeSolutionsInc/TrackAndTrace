@@ -178,20 +178,17 @@ function generateGuid() {
 }
 
 //function getFormattedDate(date) {
-
 //	if (typeof (date) === "undefined") {
 //		date = new Date();
 //	} else if (typeof (date) === "string") {
 //		console.error("Could not determine format from date string: " + date)
 //	}
-
 //	var _d = date.getDate(),
 //                dd = _d > 9 ? _d : '0' + _d,
 //                _m = date.getMonth() + 1,
 //                mm = _m > 9 ? _m : '0' + _m,
 //                yyyy = date.getFullYear(),
 //                formatted = mm + '-' + dd + '-' + (yyyy);
-
 //	var _userFormat = window.dateFormat
 //        .replace(/mm/gi, mm).replace(/m/gi, _m)
 //        .replace(/dd/gi, dd).replace(/d/gi, _d)
@@ -205,7 +202,7 @@ function parseJsonDate(value, allowNumbers) {
 	var dateRegex1 = /\/Date\([+-]?\d{13,14}\)\//;
 	var dateRegex2 = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{0,7})?/;
 	var dateRegex3 = /^(\d{2})-(\d{2})-(\d{4}) (\d{2}):(\d{2}):(\d{2})$/;
-	if (type === "undefined")
+	if (type === "undefined" || value === null)
 		return false;
 	if (allowNumbers == true && type === "number")
 		return new Date(value);
@@ -1952,8 +1949,6 @@ var interceptAjax = function (event, request, settings) {
 $(document).ajaxSuccess(interceptAjax);
 $(document).ajaxError(interceptAjax);
 
-
-
 $(document).ajaxSend(function (event, jqX, ajaxOptions) {
 	if (ajaxOptions.url == null) {
 		ajaxOptions.url = "";
@@ -2342,6 +2337,35 @@ $("body").on("click", ".headlineModal:not(.disabled)", function () {
 	var title = dat.title || "Add a people headline";
 	showModal(title, "/Headlines/" + m + "?" + parm, "/Headlines/" + m, null, function () {
 		var found = $('#modalBody').find(".select-user");
+		//if (found.length && found.val() == null)
+		//	return "You must select at least one to-do owner.";
+		return true;
+	});
+});
+
+$("body").on("click", ".rockModal:not(.disabled)", function () {
+	var dat = getDataValues(this);
+	var parm = $.param(dat);
+	var m = dat.method;
+	if (!m)
+		m = "EditModal";
+	var title = dat.title || "Add a rock";
+	showModal(title, "/Rocks/" + m + "?" + parm, "/Rocks/" + m, null, function () {
+		var found = $('#modalBody').find(".select-user");
+		//if (found.length && found.val() == null)
+		//	return "You must select at least one to-do owner.";
+		return true;
+	});
+});
+$("body").on("click", ".milestoneModal:not(.disabled)", function () {
+	var dat = getDataValues(this);
+	var parm = $.param(dat);
+	var m = dat.method;
+	if (!m)
+		m = "Modal";
+	var title = dat.title || "Add a milestone";
+	showModal(title, "/Milestone/" + m + "?" + parm, "/Milestone/" + m, null, function () {
+		//var found = $('#modalBody').find(".select-user");
 		//if (found.length && found.val() == null)
 		//	return "You must select at least one to-do owner.";
 		return true;

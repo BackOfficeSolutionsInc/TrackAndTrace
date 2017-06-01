@@ -631,6 +631,9 @@ body.resizing .notes-tile:after,
 .ui-draggable-dragging .notes-tile:after {
   content: "Moving";
 }
+.dashboard tbody {
+  position: initial;
+}
 .dashboard .series-selector {
   padding: 2px 7px;
 }
@@ -1130,6 +1133,9 @@ body.resizing .notes-tile:after,
 .dashboard .rock-list-container tr.Indeterminate .icon-column:before {
   content: "\e203";
 }
+.dashboard .rock-list-container div.rock-name {
+  font-size: 14px;
+}
 .dashboard .rock-list-container .table-header,
 .dashboard .rock-list-container .picture-column,
 .dashboard .rock-list-container .createtime-column,
@@ -1304,6 +1310,9 @@ body.resizing .notes-tile:after,
 .dashboard .todo-list-container .message-column {
   padding-right: 12px !important;
 }
+.dashboard .todo-list-container .message-column .todoModal {
+  margin-top: 4px;
+}
 .dashboard .todo-list-container tbody .due-column {
   padding: 6px 12px 0 0 !important;
   vertical-align: top;
@@ -1327,6 +1336,10 @@ body.resizing .notes-tile:after,
   max-width: 120px;
   vertical-align: top;
 }
+.dashboard .todo-list-container .origin-column .origin-cell {
+  margin-top: 4px;
+  display: inline-block;
+}
 .dashboard .todo-list-container tbody .origin-column {
   color: gray;
 }
@@ -1338,7 +1351,8 @@ body.resizing .notes-tile:after,
 .dashboard .todo-list-container .delete-column {
   display: none;
 }
-.dashboard .todo-list-container tr.todotype-Personal .message-column input {
+.dashboard .todo-list-container tr.todotype-Personal .message-column input,
+.dashboard .todo-list-container tr.todotype-Personal .message-column .todoModal {
   text-shadow: 0 0 0 #00e7ff;
   color: #7383d6;
 }
@@ -1361,6 +1375,38 @@ body.resizing .notes-tile:after,
 }
 .dashboard .todo-list-container tr.todotype-Personal .todotype-column .type-icon:before {
   content: "\e008";
+}
+.dashboard .todo-list-container tr.todotype-Milestone .message-column input,
+.dashboard .todo-list-container tr.todotype-Milestone .message-column .milestoneModal {
+  text-shadow: 0 0 0 #d67384;
+  color: #bb5b6b;
+}
+.dashboard .todo-list-container tr.todotype-Milestone .todotype-column {
+  vertical-align: top;
+}
+.dashboard .todo-list-container tr.todotype-Milestone .todotype-column .type-icon {
+  position: relative;
+  left: 3px;
+  top: 2px;
+  color: #d67384;
+  overflow: hidden;
+  font-size: 20px;
+}
+.dashboard .todo-list-container tr.todotype-Milestone .todotype-column .type-icon:before {
+  content: "\e193";
+  font-family: "fontastic" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: inline-block;
+  position: relative;
+  top: 2px;
+  /* left: -2px; */
 }
 .dashboard .todo-list-container .timeline-button {
   position: absolute;

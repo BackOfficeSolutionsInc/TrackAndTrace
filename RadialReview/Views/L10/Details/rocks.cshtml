@@ -1,28 +1,35 @@
 ﻿<md-toolbar class="md-table-toolbar md-default" ng-hide="filter.show == true">
-    <div class="md-toolbar-tools">
-        <span>Rocks</span>
-        <span flex></span>
-        <md-button class="md-icon-button rockModal" aria-label="Add Rock" data-recurrence="{{::recurrenceId}}">
-            <md-tooltip md-direction="left">
-                Add Rock
-            </md-tooltip>
-            <md-icon>add</md-icon>
-        </md-button>       
-    </div>
+	<div class="md-toolbar-tools">
+		<span>Rocks</span>
+		<span flex></span>
+		<md-button class="md-icon-button addRockModal" aria-label="Add Rock" data-recurrence="{{::recurrenceId}}">
+			<md-tooltip md-direction="left">
+				Add Rock
+			</md-tooltip>
+			<md-icon>add</md-icon>
+		</md-button>
+	</div>
 </md-toolbar>
 
 @{Html.RenderPartial("~/Views/Rocks/partial/list.cshtml", new ViewDataDictionary(){
-		        {"AddHeaders", false},
-                {"AddController", false},
-                {"AddDatePicker", false},
-                {"RockName", Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName.NotNull(z => z.ToLower())))},
-                {"Filter",""}
-                });}
+				{"AddHeaders", false},
+				{"AddController", false},
+				{"AddDatePicker", false},
+				{"UsePopup", true},
+				{"RockName", Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName.NotNull(z => z.ToLower())))},
+				{"Filter",""}
+				});}
 @using (Html.BeginScripts()) {
-    <script>
-        $("body").on("click", ".rockModal", function () {
-            var m = $(this).data("recurrence");
-            showModal('Add Rock', '/L10/AddRock/' + m, '/L10/AddRock/');
-        });
-    </script>
+	<script>
+		$("body").on("click", ".addRockModal", function () {
+			var m = $(this).data("recurrence");
+			showModal('Add Rock', '/L10/AddRock/' + m, '/L10/AddRock/');
+		});
+	</script>
 }
+
+<style>
+	.milestone-duedate .add-on {
+		display: none;
+	}
+</style>

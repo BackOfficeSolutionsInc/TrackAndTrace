@@ -352,7 +352,8 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 					if (!(week in $scope.ScoreLookup))
 						$scope.ScoreLookup[week] = {};
 					$scope.ScoreLookup[week][measurableId] = scores[s].Key;
-
+					//if (week==2471 && measurableId==595)
+					//	debugger;
 					return scores[s].Key;
 				}
 			}

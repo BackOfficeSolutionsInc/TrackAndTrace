@@ -33,6 +33,7 @@ using RadialReview.Models.VTO;
 using Twilio;
 using RadialReview.Models.Accountability;
 using System.Threading;
+using RadialReview.Models.Rocks;
 
 namespace RadialReview.Utilities {
 	//[Obsolete("Not really obsolete. I just want this to stick out.", false)]
@@ -97,6 +98,7 @@ namespace RadialReview.Utilities {
 			}
 			return false;
 		}
+
 
 		#region Construction
 		protected PermissionsUtility(ISession session, UserOrganizationModel caller) {
@@ -1502,6 +1504,12 @@ namespace RadialReview.Utilities {
 			var editSelf = caller.Organization.Settings.ManagersCanEditSelf;
 			return ManagesUserOrganization(rock.ForUserId, !editSelf, PermissionType.EditEmployeeDetails);
 		}
+
+		public PermissionsUtility EditMilestone(long milestoneId) {
+			var rockId = session.Get<Milestone>(milestoneId).RockId;
+			return EditRock(rockId);
+		}
+
 		public PermissionsUtility CanViewUserRocks(long userId) {
 			if (IsRadialAdmin(caller))
 				return this;

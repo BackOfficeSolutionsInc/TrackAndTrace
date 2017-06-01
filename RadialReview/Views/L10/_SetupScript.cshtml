@@ -16,7 +16,7 @@
 		window.meetingId = -1;
 
 		var UserName = "@Html.UserOrganization().GetName()";
-		
+
 		@if (Model.Meeting != null){
 			@:var isLeader = @(Model.Meeting.MeetingLeaderId == ViewBag.UserId ? "true" : "false");
 			@:var currentPage = "@Model.Meeting._MeetingLeaderCurrentPage";
@@ -31,6 +31,16 @@
 			@:console.log("Setting meetingid="+window.meetingId);
 
 			@:$("body").toggleClass("edit-disabled",@(Model.CanEdit?"false":"true"))
+
+			var pageType = Model.Recurrence._Pages.FirstOrDefault(x => Model.Meeting._MeetingLeaderCurrentPage == "page-" + x.Id).NotNull(x => x.PageTypeStr);
+			if (pageType != null) 
+			{
+			@:try{
+				@:$(window).trigger("page-" + "@(pageType)".toLowerCase());				
+			@:}catch(e){
+				@:console.error(e);
+			@:}
+			}
 
 		}else{
 			@:var meetingStart = false;

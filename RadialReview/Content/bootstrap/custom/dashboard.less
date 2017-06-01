@@ -95,6 +95,10 @@ body.resizing .notes-tile,
 
 .dashboard {
 
+	tbody {
+		position: initial;
+	}
+
 	.series-selector {
 		padding: 2px 7px;
 
@@ -442,6 +446,10 @@ body.resizing .notes-tile,
 			content: "\e203";
 		}
 
+		div.rock-name{
+			font-size:14px;
+		}
+
 		.table-header,
 		.picture-column,
 		.createtime-column,
@@ -520,7 +528,13 @@ body.resizing .notes-tile,
 
 		.message-column {
 			padding-right: 12px !important;
+
+			.todoModal {
+				margin-top: 4px;
+			}
 		}
+
+
 
 		tbody .due-column {
 			padding: 6px 12px 0 0 !important;
@@ -546,12 +560,16 @@ body.resizing .notes-tile,
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
-			max-width:120px;
-			vertical-align:top;
+			max-width: 120px;
+			vertical-align: top;
+
+			.origin-cell {
+				margin-top: 4px;    display: inline-block;
+			}
 		}
 
-		tbody .origin-column{
-			color:gray;
+		tbody .origin-column {
+			color: gray;
 		}
 
 
@@ -565,7 +583,8 @@ body.resizing .notes-tile,
 		}
 
 		tr.todotype-Personal {
-			.message-column input {
+			.message-column input,
+			.message-column .todoModal {
 				text-shadow: 0 0 0 #00e7ff;
 				color: #7383d6;
 			}
@@ -579,6 +598,44 @@ body.resizing .notes-tile,
 					top: 9px;
 					left: 7px;
 					color: #7383d6;
+				}
+			}
+		}
+
+		tr.todotype-Milestone {
+			.message-column input,
+			.message-column .milestoneModal {
+				text-shadow: 0 0 0 #d67384;
+				color: #bb5b6b;
+			}
+
+			.todotype-column {
+				vertical-align: top;
+
+				.type-icon {
+					&:before {
+						content: "\e193";
+						font-family: "fontastic" !important;
+						font-style: normal !important;
+						font-weight: normal !important;
+						font-variant: normal !important;
+						text-transform: none !important;
+						speak: none;
+						line-height: 1;
+						-webkit-font-smoothing: antialiased;
+						-moz-osx-font-smoothing: grayscale;
+						display: inline-block;
+						position: relative;
+						top: 2px;
+						/* left: -2px; */
+					}
+
+					position: relative;
+					left: 3px;
+					top: 2px;
+					color: #d67384;
+					overflow: hidden;
+					font-size: 20px;
 				}
 			}
 		}

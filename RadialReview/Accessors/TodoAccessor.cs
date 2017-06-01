@@ -31,6 +31,8 @@ using RadialReview.Models.Angular.Dashboard;
 using RadialReview.Models.Dashboard;
 using NHibernate.Criterion;
 using RadialReview.Utilities.RealTime;
+using RadialReview.Models.Rocks;
+using RadialReview.Models.Askables;
 
 namespace RadialReview.Accessors
 {
@@ -330,14 +332,16 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static List<TodoModel> GetMyTodos(UserOrganizationModel caller, long userId, bool excludeCompleteDuringMeeting = false, DateRange range = null)
+        public static List<AngularTodo> GetMyTodos(UserOrganizationModel caller, long userId, bool excludeCompleteDuringMeeting = false, DateRange range = null)
         {
 
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).Self(userId);
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.Self(userId);
+
                     var allSelf = s.QueryOver<UserOrganizationModel>()
                         .Where(x => x.DeleteTime == null && x.User.Id == caller.User.Id)
                         .Select(x => x.Id)
@@ -348,48 +352,84 @@ namespace RadialReview.Accessors
         }
 
 
-        public static List<TodoModel> GetTodosForUser(UserOrganizationModel caller, long userId, bool excludeCompleteDuringMeeting = false, DateRange range = null)
+        public static List<AngularTodo> GetTodosForUser(UserOrganizationModel caller, long userId, bool excludeCompleteDuringMeeting = false, DateRange range = null)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
                     PermissionsUtility.Create(s, caller).ManagesUserOrganizationOrSelf(userId);
-                    List<TodoModel> found = GetTodosForUsers_Unsafe(s, new[] { userId }, excludeCompleteDuringMeeting, range);
+                    var found = GetTodosForUsers_Unsafe(s, new[] { userId }, excludeCompleteDuringMeeting, range);
                     return found;
                 }
             }
         }
 
-        private static List<TodoModel> GetTodosForUsers_Unsafe(ISession s, long[] userIds, bool excludeCompleteDuringMeeting, DateRange range)
-        {
-            List<TodoModel> found;
-            var weekAgo = DateTime.UtcNow.StartOfWeek(DayOfWeek.Sunday).AddDays(-7);
-            var q = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null)
-                .WhereRestrictionOn(x => x.AccountableUserId)
-                .IsIn(userIds);
-            if (excludeCompleteDuringMeeting)
-                q = q.Where(x => ((x.CompleteTime != null && x.CompleteTime > weekAgo && x.CompleteDuringMeetingId == null) || x.CompleteTime == null));
+		private static List<AngularTodo> GetTodosForUsers_Unsafe(ISession s, long[] userIds, bool excludeCompleteDuringMeeting, DateRange range) {
+			// List<TodoModel> found;
+			var weekAgo = DateTime.UtcNow.StartOfWeek(DayOfWeek.Sunday).AddDays(-7);
+			var q = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null)
+				.WhereRestrictionOn(x => x.AccountableUserId)
+				.IsIn(userIds);
+			if (excludeCompleteDuringMeeting)
+				q = q.Where(x => ((x.CompleteTime != null && x.CompleteTime > weekAgo && x.CompleteDuringMeetingId == null) || x.CompleteTime == null));
 
-            if (range != null)
-                q = q.Where(x => x.CompleteTime == null || (x.CompleteTime != null && x.CompleteTime >= range.StartTime && x.CompleteTime <= range.EndTime));
+			if (range != null)
+				q = q.Where(x => x.CompleteTime == null || (x.CompleteTime != null && x.CompleteTime >= range.StartTime && x.CompleteTime <= range.EndTime));
 
-            found = q.List().ToList();
+			var todos = q.Future();
 
-			
+			var rockAndOwnerIds = s.QueryOver<RockModel>()
+				.Where(x => x.DeleteTime == null)
+				.WhereRestrictionOn(x => x.AccountableUser.Id).IsIn(userIds)
+				.Select(x => x.Id, x => x.AccountableUser.Id)
+				.Future<object[]>()
+				.Select(x => new {
+					RockId = (long)x[0],
+					UserId = (long)x[1]
+				}).ToList();
 
+			var rockIds = rockAndOwnerIds.Select(x => x.RockId).ToArray();
+			var rockOwnerLookup = rockAndOwnerIds.ToDictionary(x => x.RockId, x => x.UserId);
 
+			//Add milestones
+			var mq = s.QueryOver<Milestone>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.RockId).IsIn(rockIds);			
+			if (range != null) {
+				mq = mq.Where(x => x.CompleteTime == null || (x.CompleteTime != null && x.CompleteTime >= range.StartTime && x.CompleteTime <= range.EndTime));
+			}
 
-
-            foreach (var f in found) {
+			foreach (var f in todos) {
 				var a = f.ForRecurrence.NotNull(x => x.Id);
 				var b = f.AccountableUser.NotNull(x => x.GetName());
-                var c = f.AccountableUser.NotNull(x => x.ImageUrl(true, ImageSize._32));
-                var d = f.CreatedDuringMeeting.NotNull(x => x.Id);
+				var c = f.AccountableUser.NotNull(x => x.ImageUrl(true, ImageSize._32));
+				var d = f.CreatedDuringMeeting.NotNull(x => x.Id);
 				var e = f.ForRecurrence.NotNull(x => x.Name);
 			}
 
-            return found;
+			var milestones = mq.List().ToList();
+
+			var angular = new List<AngularTodo>();
+
+			var ownerLookup = new DefaultDictionary<long, UserOrganizationModel>(x => {
+				var user = s.Get<UserOrganizationModel>(x);
+				var a = user.GetName();
+				var b = user.ImageUrl(true, ImageSize._32);
+				return user;
+			});
+			//Populate dictionary
+			foreach (var u in todos.Select(x => x.AccountableUser)) {
+				ownerLookup[u.Id] = u;
+			}
+			
+			angular.AddRange(todos.Select(x => new AngularTodo(x)));
+			angular.AddRange(milestones.Select(milestone => {
+				var rockId = milestone.RockId;
+				var ownerId = rockOwnerLookup[rockId];
+				var owner = ownerLookup[ownerId];
+				return new AngularTodo(milestone, owner);
+			}));
+
+			return angular;
         }
 
 

@@ -161,9 +161,8 @@
 				//	milestones.remove();
 			}
 		});
-
-
 	});
+
 	$("body").on("click", ".rocks-container .rock-row", clickRockRow);
 	$("body").on("click", ".milestone-table .milestone .milestone-name", clickMilestoneRow);
 	$("body").on("click", ".milestone-marker", clickMilestoneRow);
@@ -252,198 +251,83 @@ function updateRockName(rockId, message) {
 	$(".message[data-rock='" + rockId + "']").html(message);
 }
 
-function setMilestone(milestone) {
-	var found = getMilestone(milestone.Id);
-	if (found) {
-		$.extend(found, milestone);
-	} else {
-		window.milestones.push(milestone);
-	}
-	recalculateMilestones();
-}
 
-function deleteMilestone(milestoneId) {
-	$(".milestone[data-milestoneid='" + milestoneId + "']").remove();
-	var ms = window.milestones;
-	for (var i = 0; i < ms.length; i++) {
-		var mm = ms[i];
-		if (mm.Id == milestoneId) {
-			window.milestones.splice(i, 1);
-			break;
-		}
-	}
 
-	recalculateMilestones(true);
-}
-
-function getMilestone(milestoneId) {
-	for (var i in window.milestones) {
-		if (arrayHasOwnIndex(window.milestones, i)) {
-			var milestone = window.milestones[i];
-			if (milestone.Id == milestoneId)
-				return milestone;
-		}
-	}
-	return false;
-}
-
-function getMilestones(rockId) {
-	var results = [];
-	var allResults = typeof (rockId) === "undefined";
-	for (var i in window.milestones) {
-		if (arrayHasOwnIndex(window.milestones, i)) {
-			var milestone = window.milestones[i];
-			if (allResults || milestone.RockId == rockId)
-				results.push(milestone);
-		}
-	}
-	results.sort(function (a, b) {
-		return parseJsonDate(a.DueDate) - parseJsonDate(b.DueDate);
-	});
-	return results;
-}
-
-function recalculateMilestones(recreateTable) {
-	if (typeof (recreateTable) === "undefined")
-		recreateTable = true;
-
-	var rockIds = [];
-	var ms = getMilestones();
-	var now = new Date();
-	var minimumDate = now;
-	var maximumDate = now;
-
-	for (var m in ms) {
-		if (arrayHasOwnIndex(ms, m)) {
-			var mm = ms[m];
-			minimumDate = Math.min(parseJsonDate(mm.DueDate, true), minimumDate);
-			maximumDate = Math.max(parseJsonDate(mm.DueDate, true), maximumDate);
-		}
-	}
-
+var rockGetter = function () {
+	var rocks = [];
 	$(".rock-row").each(function () {
-		var dueDateStr = $(this).data("duedate");
-		if (typeof (dueDateStr) !== "undefined") {
-			var dueDate = parseJsonDate(dueDateStr, true);
-			minimumDate = Math.min(dueDate, minimumDate);
-			maximumDate = Math.max(dueDate, maximumDate);
-		}
+		rocks.push({
+			DueDate: $(this).data("duedate"),
+			Id: $(this).data("rockid")
+		});
 	});
+	return rocks;
+}
 
-	var extra = (maximumDate - minimumDate) * .02;
-	minimumDate = minimumDate - extra;
+window.milestoneAccessor = new MilestoneAccessor(function () { return window.milestones }, rockGetter, {
+	callbacks: {
+		remove: function (milestoneId) { $(".milestone[data-milestoneid='" + milestoneId + "']").remove(); },
+		recalculateRock: function (rock, model) {
 
-	var sliderPaddingLeft = .1;
-	var sliderPaddingRight = .1;
-	var sliderPaddingSkipRight = .05;
+			var sliderPaddingLeft = .1;
+			var sliderPaddingRight = .1;
+			var sliderPaddingSkipRight = .05;
 
-	function calculateMarkerPercentage(date) {
-		var percentage = (1 - sliderPaddingSkipRight) * .5;//default percentage
-		if (maximumDate != minimumDate) {
-			percentage = (date - minimumDate) / (maximumDate - minimumDate);
-		}
-		//percentage to pad
-		percentage = percentage * (1 - (sliderPaddingLeft + sliderPaddingRight + sliderPaddingSkipRight));
-		percentage += sliderPaddingLeft;
-		return percentage;
-	}
+			var startP = sliderPaddingLeft;
+			var nowP = rock.nowPercentage;
+			var endP = 1 - sliderPaddingRight - sliderPaddingSkipRight; //Default dueP
+			var dueP = endP;
 
-	$(".rock-row").each(function () {
-		var rockId = $(this).attr("data-rockid");
-		var container = $(this).find(".milestone-marker-container");
-
-		var ms = getMilestones(rockId);
-		container.find(".milestone-marker").remove();
-		container.find(".milestone-date-marker").remove();
-		container.find(".milestone-date-container").remove();
-		container.find(".pre-line,.post-line").remove();
-
-		var allPastDueDone = true;
-		var allDone = true;
-		var anyPastDue = false;
-
-		function placeMarker(marker, dueDate, status) {
-			var statusUndefined = typeof (status) === "undefined";
-			var percentage = calculateMarkerPercentage(dueDate);
-			$(marker).css("left", (percentage * 100) + "%");
-			if (dueDate < now) {
-				anyPastDue = true;
-				$(marker).addClass("past-due");
-				if (!statusUndefined && status != "Done") {
-					allPastDueDone = false;
-				}
-			} else {
-				$(marker).addClass("future-due");
+			function shiftPercent(p) {
+				//percentage to pad
+				var percent = p * (1 - (sliderPaddingLeft + sliderPaddingRight + sliderPaddingSkipRight)) + sliderPaddingLeft;
+				return (percent * 100) + "%";
 			}
-			if (!statusUndefined && status != "Done")
-				allDone = false;
 
-			if (!statusUndefined) {
-				$(marker).addClass("status-" + status);
+
+			var r = $(".rock-row[data-rockid=" + rock.rockId + "]");
+
+			var now = new Date();
+
+			var container = $(r).find(".milestone-marker-container");
+
+			container.find(".milestone-marker").remove();
+			container.find(".milestone-date-marker").remove();
+			container.find(".milestone-date-container").remove();
+			container.find(".pre-line,.post-line").remove();
+
+			var detailsBox = $(".milestone-table[data-rockid=" + rock.rockId + "]");
+
+			if (model.recreate) {
+				detailsBox.html("");
 			}
-			container.append(marker);
-		}
-		var anyMilestones = ms.length > 0;
-		var detailsBox = $(".milestone-table[data-rockid=" + rockId + "]");
+			for (var m in rock.markers) {
+				if (arrayHasOwnIndex(rock.markers, m)) {
+					var mm = rock.markers[m];
+					var marker = $("<div class='milestone-marker milestone' title='" + escapeString(mm.name) + "' data-milestoneid='" + mm.milestoneId + "'></div>");
+					var p = shiftPercent(mm.percentage)
+					$(marker).css("left", p);
+					
 
-		if (recreateTable) {
-			detailsBox.html("");
-		}
-		//Markers
-		for (var m in ms) {
-			if (arrayHasOwnIndex(ms, m)) {
-				var mm = ms[m];
-				var marker = $("<div class='milestone-marker milestone' title='" + escapeString(mm.Name) + "' data-milestoneid='" + mm.Id + "'></div>");
-				var dueDate = parseJsonDate(mm.DueDate, true);
-				placeMarker(marker, dueDate, mm.Status);
-
-				if (recreateTable) {
-					var row = $("<tr class='milestone' data-milestoneid='" + mm.Id + "'></tr>");
-					var statusBox = $("<input name type='checkbox'" + (mm.Status == "Done" ? "checked" : "") + " data-milestoneid='" + mm.Id + "'/>");
-
-					$(statusBox).on("change", function () {
-						var newVal = this.checked;
-						var mid = $(this).data("milestoneid");
-						var mmm = getMilestone(mid);
-						mmm.Status = (newVal ? "Done" : "NotDone");
-						recalculateMilestones();
-						$.ajax({
-							url: "/milestone/edit",
-							method: "post",
-							data: mmm,
-							success: function () {
-							},
-							error: function () {
-								mmm.Status = (!newVal ? "Done" : "NotDone");
-								recalculateMilestones();
-							},
-							complete: function () {
-							}
-						});
-					});
-
-					var statusCell = $("<td class='milestone-status-cell'></td>");
-					statusCell.append(statusBox);
-					row.append(statusCell);
-					row.append($("<td><div class='milestone-name'>" + mm.Name + "</div></td>"));
-
-					var dateCell = $("<td class='milestone-duedate-cell'><div class='milestone-duedate'></div></td>");
-					if (dueDate < now && mm.Status != "Done") {
-						dateCell.find(".milestone-duedate").addClass("overdue");
+					$(marker).toggleClass("past-due", mm.dueDate < now);
+					$(marker).toggleClass("future-due", mm.dueDate >= now);
+					if (typeof(mm.status)!=="undefined") {
+						$(marker).addClass("status-" + mm.status);
 					}
 
-					row.append(dateCell);
+					container.append(marker);
 
-					row.append("<td class='milestone-delete-cell'><span class='glyphicon glyphicon-trash gray clickable delete-milestone' data-milestoneid='" + mm.Id + "'></span></td>");
 
-					$(detailsBox).append(row);
-					var dateElement = dateCell.find('.milestone-duedate');
-					dateElement.data("milestoneid", mm.Id);
-					generateDatepickerLocalize(dateElement, dueDate, "milestone-date-" + mm.Id)
-						.on("change", function (e, data) {
-							var mmm = getMilestone(data.containerElement.data("milestoneid"));
-							var old = mmm.DueDate;
-							mmm.DueDate = data.serverDate;
+					if (model.recreate) {
+						var row = $("<tr class='milestone' data-milestoneid='" + mm.milestoneId + "'></tr>");
+						var statusBox = $("<input name type='checkbox'" + (mm.status == "Done" ? "checked" : "") + " data-milestoneid='" + mm.milestoneId + "'/>");
+
+						$(statusBox).on("change", function () {
+							var newVal = this.checked;
+							var mid = $(this).data("milestoneid");
+							var mmm = getMilestone(mid);
+							mmm.Status = (newVal ? "Done" : "NotDone");
+							recalculateMilestones();
 							$.ajax({
 								url: "/milestone/edit",
 								method: "post",
@@ -451,73 +335,107 @@ function recalculateMilestones(recreateTable) {
 								success: function () {
 								},
 								error: function () {
-									mmm.DueDate = old;
+									mmm.Status = (!newVal ? "Done" : "NotDone");
+									recalculateMilestones();
 								},
 								complete: function () {
-									recalculateMilestones();
 								}
 							});
 						});
+
+						var statusCell = $("<td class='milestone-status-cell'></td>");
+						statusCell.append(statusBox);
+						row.append(statusCell);
+						row.append($("<td><div class='milestone-name'>" + mm.name + "</div></td>"));
+
+						var dateCell = $("<td class='milestone-duedate-cell'><div class='milestone-duedate'></div></td>");
+						if (mm.dueDate < now && mm.status != "Done") {
+							dateCell.find(".milestone-duedate").addClass("overdue");
+						}
+						row.append(dateCell);
+						row.append("<td class='milestone-delete-cell'><span class='glyphicon glyphicon-trash gray clickable delete-milestone' data-milestoneid='" + mm.milestoneId + "'></span></td>");
+
+						$(detailsBox).append(row);
+						var dateElement = dateCell.find('.milestone-duedate');
+						dateElement.data("milestoneid", mm.milestoneId);
+						generateDatepickerLocalize(dateElement, mm.dueDate, "milestone-date-" + mm.milestoneId)
+							.on("change", function (e, data) {
+								var mmm = getMilestone(data.containerElement.data("milestoneid"));
+								var old = mmm.DueDate;
+								mmm.DueDate = data.serverDate;
+								$.ajax({
+									url: "/milestone/edit",
+									method: "post",
+									data: mmm,
+									success: function () {
+									},
+									error: function () {
+										mmm.DueDate = old;
+									},
+									complete: function () {
+										recalculateMilestones();
+									}
+								});
+							});
+					}
 				}
 			}
-		}
 
-
-		if (anyMilestones) {
-			var dateEllapseMarker = $("<div class='milestone-date-marker'></div>");
-			if (anyPastDue) {
-				dateEllapseMarker.addClass("past-due");
-				if (!allPastDueDone) {
-					dateEllapseMarker.addClass("status-NotDone");
+			var anyMilestones = rock.markers.length > 0;
+			if (anyMilestones) {
+				var dateEllapseMarker = $("<div class='milestone-date-marker'></div>");
+				if (rock.anyPastDue) {
+					dateEllapseMarker.addClass("past-due");
+					if (!rock.allPastDueDone) {
+						dateEllapseMarker.addClass("status-NotDone");
+					}
 				}
+				if (anyMilestones && rock.allDone) {
+					dateEllapseMarker.addClass("status-Done");
+				}
+
+				var dueMarkerW = (dueP - startP) * 100 + "%";
+				var ellapseMarkerW = (Math.min(dueP, nowP) - startP) * 100 + "%";
+
+				var preW = (startP) * 100 + "%";
+				var postW = (1 - dueP - sliderPaddingSkipRight) * 100 + "%";
+
+				var dateRangeContainer = $("<div class='milestone-date-container'></div>");
+				$(dateRangeContainer).css("width", dueMarkerW);
+				$(dateRangeContainer).css("left", startP * 100 + "%");
+
+				$(dateEllapseMarker).css("width", ellapseMarkerW);
+				$(dateEllapseMarker).css("left", startP * 100 + "%");
+
+				var preline = $("<div class='pre-line'></div>");
+				preline.css("width", (sliderPaddingLeft) * 100 + "%");
+				preline.css("left", "0%");
+
+				var postline = $("<div class='post-line'></div>");
+				postline.css("width", postW);
+				postline.css("left", dueP * 100 + "%");
+
+
+				container.prepend(dateEllapseMarker);
+				container.prepend(dateRangeContainer);
+				container.prepend(preline);
+				container.append(postline);
+
 			}
-			if (anyMilestones && allDone) {
-				dateEllapseMarker.addClass("status-Done");
-			}
-			var startP = sliderPaddingLeft;
-			var nowP = calculateMarkerPercentage(now);
-			var endP = 1 - sliderPaddingRight - sliderPaddingSkipRight; //Default dueP
-			var dueP = endP;
-
-			var dueDateStr = $(this).data("duedate");
-			if (typeof (dueDateStr) !== "undefined") {
-				var dueDate = parseJsonDate(dueDateStr, true);
-				dueP = calculateMarkerPercentage(dueDate);
-			}
-
-			var dueMarkerW = (dueP - startP) * 100 + "%";
-			var ellapseMarkerW = (Math.min(dueP, nowP) - startP) * 100 + "%";
-
-			var preW = (startP) * 100 + "%";
-			var postW = (1 - dueP - sliderPaddingSkipRight) * 100 + "%";
-
-			var dateRangeContainer = $("<div class='milestone-date-container'></div>");
-			$(dateRangeContainer).css("width", dueMarkerW);
-			$(dateRangeContainer).css("left", startP * 100 + "%");
-
-			$(dateEllapseMarker).css("width", ellapseMarkerW);
-			$(dateEllapseMarker).css("left", startP * 100 + "%");
-
-			var preline = $("<div class='pre-line'></div>");
-			preline.css("width", (sliderPaddingLeft) * 100 + "%");
-			preline.css("left", "0%");
-
-			var postline = $("<div class='post-line'></div>");
-			postline.css("width", postW);
-			postline.css("left", dueP * 100 + "%");
 
 
-			container.prepend(dateEllapseMarker);
-			container.prepend(dateRangeContainer);
-			container.prepend(preline);
-			container.append(postline);
+
+			fixRocksDetailsBoxSize();
+			setTimeout(fixRocksDetailsBoxSize, 1);
 		}
+	}
+});
 
-	});
-	fixRocksDetailsBoxSize();
-	setTimeout(fixRocksDetailsBoxSize, 1);
-}
-
+setMilestone = window.milestoneAccessor.setMilestone;
+deleteMilestone = window.milestoneAccessor.deleteMilestone;
+getMilestone = window.milestoneAccessor.getMilestone;
+getMilestones = window.milestoneAccessor.getMilestones;
+recalculateMilestones = window.milestoneAccessor.recalculateMarkers;
 
 function updateRocks(html) {
 	$(".rocks-container").html(html);

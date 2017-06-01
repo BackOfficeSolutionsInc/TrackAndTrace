@@ -737,7 +737,8 @@ namespace RadialReview.Controllers {
 		[HttpPost]
 		public JsonResult EditL10Page(L10Recurrence.L10Recurrence_Page model) {
 			var page = L10Accessor.EditOrCreatePage(GetUser(), model);
-			return Json(ResultObject.SilentSuccess(page));
+			var result = Json(ResultObject.SilentSuccess(page));
+			return result;
 		}
 		
 		[Access(AccessLevel.UserOrganization)]

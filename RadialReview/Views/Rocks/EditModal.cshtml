@@ -1,0 +1,175 @@
+﻿@model RadialReview.Controllers.RocksController.RockAndMilestonesVM
+@{
+	var guid = Guid.NewGuid().ToString().Replace("-", "");
+}
+<div class="rock-modal-@guid">
+	<div class="row">
+		<div class="col-md-2 alignRight">
+			<label class="control-label">@Html.Organization().Settings.RockName:</label>
+		</div>
+		<div class="col-md-10">
+			@Html.TextBoxFor(x => x.Rock.Name, new { @class = "form-control" })
+			@Html.HiddenFor(x => x.Rock.Id)
+
+		</div>
+	</div>
+	@if (ViewBag.AnyL10sWithMilestones) {
+		<hr />
+		<div class="row">
+			<div class="col-md-2 alignRight">
+				<label class="control-label">Milestones:</label>
+			</div>
+			<div class="col-md-10">
+				<div class="btn btn-default pull-right btn-sm" style="margin-top:2px" onclick="addMilestone@(guid)()">Add Milestone</div>
+				<table class="milestones-@guid milestone-table-modal"></table>
+			</div>
+		</div>
+
+
+		<script>
+			(function () {
+				var milestones = @Html.ArrayToString(Model.Milestones);
+				var rock = @Html.ArrayToString(new[] { Model.Rock });
+				var ma = new MilestoneAccessor(milestones,rock,{
+					callbacks:{
+						remove:function(ms){
+							debugger;
+							$.ajax({
+								url: "/milestone/delete/" + ms,
+								success: function () {
+									$("tr[data-milestoneid="+ms+"]").remove();
+								}
+							});
+						},
+						recalculateRock:function(rock,model){
+
+							var detailsBox = $(".milestones-@guid");
+							if (model.recreate){
+								detailsBox.html("");
+							}
+
+							if (model.recreate) {
+								detailsBox.html("");
+							}
+							var now = new Date();
+							for (var m in rock.markers) {
+								if (arrayHasOwnIndex(rock.markers, m)) {
+									var mm = rock.markers[m];
+
+									if (model.recreate) {
+										var row = $("<tr class='milestone' data-milestoneid='" + mm.milestoneId + "'></tr>");
+										var statusBox = $("<input name type='checkbox'" + (mm.status == "Done" ? "checked" : "") + " data-milestoneid='" + mm.milestoneId + "'/>");
+
+										$(statusBox).on("change", function () {
+											var newVal = this.checked;
+											var mid = $(this).data("milestoneid");
+											var mmm = ma.getMilestone(mid);
+											mmm.Status = (newVal ? "Done" : "NotDone");
+											ma.recalculateMarkers();
+											$.ajax({
+												url: "/milestone/edit",
+												method: "post",
+												data: mmm,
+												success: function () {
+												},
+												error: function () {
+													mmm.Status = (!newVal ? "Done" : "NotDone");
+													ma.recalculateMarkers();
+												},
+												complete: function () {
+												}
+											});
+										});
+
+										var statusCell = $("<td class='milestone-status-cell'></td>");
+										statusCell.append(statusBox);
+										row.append(statusCell);
+										row.append($("<td><div class='milestone-name'>" + mm.name + "</div></td>"));
+
+										var dateCell = $("<td class='milestone-duedate-cell'><div class='milestone-duedate'></div></td>");
+										if (mm.dueDate < now && mm.status != "Done") {
+											dateCell.find(".milestone-duedate").addClass("overdue");
+										}
+
+										row.append(dateCell);
+
+										var deleteButton = $("<span class='glyphicon glyphicon-trash gray clickable delete-milestone' data-milestoneid='" + mm.milestoneId + "'></span>");
+										var deleteCell = $("<td class='milestone-delete-cell'></td>");
+										deleteCell.append(deleteButton);
+										row.append(deleteCell);
+
+										deleteButton.click(function(){
+											debugger;
+											ma.deleteMilestone($(this).data("milestoneid"));
+										});
+
+										$(detailsBox).append(row);
+										var dateElement = dateCell.find('.milestone-duedate');
+										dateElement.data("milestoneid", mm.milestoneId);
+										generateDatepickerLocalize(dateElement, mm.dueDate, "milestone-date-" + mm.milestoneId)
+											.on("change", function (e, data) {
+												var mmm = ma.getMilestone(data.containerElement.data("milestoneid"));
+												var old = mmm.DueDate;
+												mmm.DueDate = data.serverDate;
+												$.ajax({
+													url: "/milestone/edit",
+													method: "post",
+													data: mmm,
+													success: function () {
+													},
+													error: function () {
+														mmm.DueDate = old;
+													},
+													complete: function () {
+														ma.recalculateMarkers();
+													}
+												});
+											});
+									}
+								}
+							}
+						}
+					}
+				});
+				ma.recalculateMarkers();
+			})();
+
+			function addMilestone@(guid)(){
+				var rockid = @Model.Rock.Id;
+				showModal({
+					title: "Add milestone",
+					fields: [
+						{ text: "Milestone", name: "milestone", placeholder: "Enter milestone" },
+						{ text: "Due Date", name: "duedate", type: "date", value: new Date() },
+						{ name: "rockId", type: "hidden", value: rockid }
+					],
+					push: "/Milestone/Add",
+					close: function(){
+						setTimeout(function(){
+							showModal("Edit rock","/Rocks/EditModal/@Model.Rock.Id","/Rocks/EditModal/");
+						},100);
+					}
+				});
+			}
+		</script>
+	}
+</div>
+<style>
+	#modal .milestone-table-modal tr {
+		height: 40px;
+	}
+
+	#modal .milestone-table-modal .milestone-name {
+		margin-right: 30px;
+	}
+
+	#modal .milestone-table-modal input[type=checkbox] {
+		width: 19px;
+		height: 19px;
+		margin-top: 6px;
+	}
+
+	#modal .milestone-table-modal .milestone-status-cell {
+		width: 25px;
+	}
+</style>

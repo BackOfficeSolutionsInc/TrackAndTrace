@@ -98,9 +98,15 @@ namespace RadialReview.Accessors.PDF {
 
 			var docs = new List<PdfDocument>();
 			roots = roots.Where(x => x != null).Distinct(x => x.Id).ToList();
+			var seen = new List<long>();
 			foreach (var r in roots) {
 				_collapser(r);
-				docs.Add(GenerateAccountabilityChart(r, width, height, restrictSize, settings, r._hasParent??false));
+				if (r.HasChildren() || !seen.Contains(r.Id)) {
+					docs.Add(GenerateAccountabilityChart(r, width, height, restrictSize, settings, r._hasParent ?? false));
+
+					seen.Add(r.Id);
+					seen.AddRange(r.children.Select(x => x.Id));
+				}
 			}
 			return docs;
 		}
@@ -459,11 +465,16 @@ namespace RadialReview.Accessors.PDF {
 				mult = -1;
 			}
 
-			for (var ii = 0; ii < 3; ii += 1) {
-				var i = (3 + 6 * ii) * pageProps.scale;
-				var d = (3.0) * pageProps.scale;
-				gfx.DrawEllipse(new XPen(XColors.Black, 0.5), x - (d / 2.0), y + mult * i - (d / 2.0), d, d);
-			}
+			var d = (3.0) * pageProps.scale;
+			var i = (3 + 6 * 2/*ii*/) * pageProps.scale;
+			var adj = pageProps.linePen.Width * .5;
+			gfx.DrawLine(pageProps.linePen, x - (d / 2.0), y - (d / 2.0)+adj, x - (d / 2.0), y + mult * i - (d / 2.0) + adj);
+
+			//for (var ii = 0; ii < 3; ii += 1) {
+			//	var i = (3 + 6 * ii) * pageProps.scale;
+			//	var d = (3.0) * pageProps.scale;
+			//	gfx.DrawEllipse(new XPen(XColors.Black, 0.5), x - (d / 2.0), y + mult * i - (d / 2.0), d, d);
+			//}
 		}
 
 		private static double[] ACRanges(ACNode root) {

@@ -80,8 +80,8 @@ namespace RadialReview.Controllers {
 
             if (tiles.Any(x => x.Type == TileType.Todo || (x.DataUrl ?? "").Contains("UserTodo"))) {
                 try {
-                    //Todos
-                    var todos = TodoAccessor.GetMyTodos(GetUser(), id, !completed, dateRange).Select(x => new AngularTodo(x));
+					//Todos
+					var todos = TodoAccessor.GetMyTodos(GetUser(), id, !completed, dateRange);//.Select(x => new AngularTodo(x));
                     var m = _UserAccessor.GetUserOrganization(GetUser(), id, false, true, PermissionType.ViewTodos);
                     output.Todos = todos.OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ThenBy(x => x.DueDate);
                 } catch (Exception e) {

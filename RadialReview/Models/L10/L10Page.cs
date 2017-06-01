@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
 
 namespace RadialReview.Models.L10 {
 	public partial class L10Recurrence {
@@ -43,6 +44,7 @@ namespace RadialReview.Models.L10 {
 		public class L10Recurrence_Page : ILongIdentifiable, IDeletable {
 			public virtual long Id { get; set; }
 			[JsonIgnore]
+			[ScriptIgnore]
 			public virtual DateTime CreateTime { get; set; }
 			public virtual DateTime? DeleteTime { get; set; }
 			[JsonConverter(typeof(StringEnumConverter))]
@@ -50,6 +52,7 @@ namespace RadialReview.Models.L10 {
 			public virtual string PageTypeStr { get { return PageType.ToString(); } }
 			public virtual bool AutoGen { get; set; }
 			[JsonIgnore]
+			[ScriptIgnore]
 			public virtual string PadId { get; set; }
 			public virtual string Url { get; set; }
 			[Required]
@@ -60,8 +63,10 @@ namespace RadialReview.Models.L10 {
 			public virtual decimal Minutes { get; set; }
 			public virtual long L10RecurrenceId { get; set; }
 			[JsonIgnore]
+			[ScriptIgnore]
 			public virtual L10Recurrence L10Recurrence { get; set; }
 			public virtual int _Ordering { get; set; }
+
 			public L10Recurrence_Page() {
 				CreateTime = DateTime.UtcNow;
 				PadId = Guid.NewGuid().ToString();

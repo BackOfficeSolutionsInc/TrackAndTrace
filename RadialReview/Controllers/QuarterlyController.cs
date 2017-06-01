@@ -75,7 +75,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		[HttpGet]
 		public ActionResult Printout(long id, bool issues = false, bool todos = false, bool scorecard = true, bool rocks = true, bool vto = true, bool l10 = true, bool acc = true, bool print = false/*, PdfAccessor.AccNodeJs root = null*/) {
-			var recur = L10Accessor.GetAngularRecurrence(GetUser(), id);
+			var recur = L10Accessor.GetAngularRecurrence(GetUser(), id,forceIncludeTodoCompletion:true);
 			var merger = new DocumentMerger();
 
 			//

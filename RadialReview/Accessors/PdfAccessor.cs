@@ -684,10 +684,10 @@ namespace RadialReview.Accessors {
 		public static Document AddL10(Document doc, AngularRecurrence recur, DateTime? lastMeeting, bool addPageNumber = false) {
 			//CreateDoc(caller,"THE LEVEL 10 MEETING");
 			var section = AddTitledPage(doc, "THE LEVEL 10 MEETING™", addPageNumber: addPageNumber);
-			var p = section.Footers.Primary.AddParagraph("© 2003 - " + DateTime.UtcNow.Year + " EOS. All Rights Reserved.");
+			var p = section.Footers.Primary.AddParagraph("© 2003 - " + DateTime.UtcNow.AddMonths(3).Year + " EOS. All Rights Reserved.");
 			p.Format.Font.Size = 8;
 			p.Format.Font.Color = TableGray;
-			p.Format.LeftIndent = Unit.FromPoint(35);
+			p.Format.LeftIndent = Unit.FromPoint(0);
 
 			//p =section.AddParagraph();
 			//var f = p.AddFormattedText("The Weekly Agenda",TextFormat.Bold);
@@ -1351,10 +1351,14 @@ namespace RadialReview.Accessors {
 
 				var modifier = m.Modifiers ?? (RadialReview.Models.Enums.UnitType.None);
 
-				row.Cells[3].AddParagraph((m.Direction ?? LessGreater.LessThan).ToSymbol() + " " + modifier.Format(m.Target ?? 0));
+				row.Cells[3].AddParagraph((m.Direction ?? LessGreater.LessThan).ToPdfSymbol() + " " + modifier.Format(m.Target ?? 0));
 				ii = 0;
 				foreach (var w in weeks) {
-					var found = recur.Scorecard.Scores.FirstOrDefault(x => x.ForWeek == w.ForWeekNumber && x.Measurable.Id == m.Id);
+					var founds = recur.Scorecard.Scores.Where(x => x.ForWeek == w.ForWeekNumber && x.Measurable.Id == m.Id);
+					if (founds.Count() > 1) {
+						var a = 1;
+					}
+					var found = founds.LastOrDefault();
 					if (found != null && found.Measured.HasValue) {
 						var val = found.Measured ?? 0;
 						var cell = row.Cells[4 + ii];
@@ -1386,7 +1390,7 @@ namespace RadialReview.Accessors {
 				var section = AddTitledPage(doc, "Scorecard", Orientation.Landscape, addPageNumber: addPageNumber);
 				var TableGray = new Color(100, 100, 100, 100);
 				var TableBlack = new Color(0, 0, 0);
-				var table = GenerateScorecard(recur);
+				var table = GenerateScorecard(recur,true);
 				section.Add(table);
 				return true;
 			}
@@ -1814,7 +1818,7 @@ namespace RadialReview.Accessors {
 			//paragraph.AddPageField();
 			//Add paragraph to footer for odd pages.
 			var p=section.Footers.Primary.AddParagraph("© 2003 - " + DateTime.UtcNow.AddMonths(3).Year + " EOS. All Rights Reserved.");
-			p.Format.LeftIndent = Unit.FromPoint(35);
+			p.Format.LeftIndent = Unit.FromPoint(14);
 
 			section.Footers.Primary.Format.Font.Size = 10;
 			section.Footers.Primary.Format.Font.Name = "Arial Narrow";

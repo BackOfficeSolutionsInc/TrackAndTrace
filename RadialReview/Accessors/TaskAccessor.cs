@@ -359,7 +359,7 @@ namespace RadialReview.Accessors {
 					});
 					tasks.AddRange(prereviewTasks);
 					var todos = TodoAccessor.GetTodosForUser(caller, caller.Id).Where(x =>
-						x.DeleteTime == null &&
+						//x.DeleteTime == null &&
 						(x.CompleteTime == null && x.DueDate < DateTime.UtcNow.AddDays(7)) //|| 
 																						   //(x.DueDate > DateTime.UtcNow.AddDays(-1) && x.DueDate< DateTime.UtcNow.AddDays(1))
 					).ToList();
@@ -367,8 +367,8 @@ namespace RadialReview.Accessors {
 					var todoTasks = todos.Select(x => new TaskModel() {
 						Id = x.Id,
 						Type = TaskType.Todo,
-						DueDate = x.DueDate,
-						Name = x.Message,
+						DueDate = x.DueDate??DateTime.UtcNow.AddDays(7),
+						Name = x.Name,
 					});
 					tasks.AddRange(todoTasks);
 

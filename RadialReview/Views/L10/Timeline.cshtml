@@ -36,7 +36,6 @@
 
 @foreach (var meeting in Model.OrderByDescending(x => x.Meeting.StartTime)) {
 	<div class="panel-group smallBreak2 meeting_@(meeting.Meeting.Id)" id="accordion" role="tablist" aria-multiselectable="true">
-		<div class="panel-delete"><span class="glyphicon glyphicon-trash" onclick="deleteMeeting(@(meeting.Meeting.Id))"></span></div>
 		<div class="panel panel-default">
 			<div class="panel-heading" role="tab" id="heading_@(meeting.Meeting.Id)">
 				<h4 class="panel-title">
@@ -54,14 +53,15 @@
 								}
 								<span class="startTime" @*onclick="changeTime(@meeting.Meeting.Id,'start',this)" data-time="@startTime.ToJavascriptMilliseconds()"*@ style="width:75px;text-align: right">@Html.Organization().ConvertFromUTC(startTime).ToShortTimeString()</span>
 								<span> - </span>
-								<span class="endTime" style="width:75px" @*onclick="changeTime(@meeting.Meeting.Id,'end',this)" data-time="@endTime.NotNull(x=>x.ToJavascriptMilliseconds())"*@>@( endTime.NotNull(x=>x.ToShortTimeString()) ?? "On-going")</span>
-							</span>
-							&nbsp;
+								<span class="endTime" style="width:75px" @*onclick="changeTime(@meeting.Meeting.Id,'end',this)" data-time="@endTime.NotNull(x=>x.ToJavascriptMilliseconds())"*@>@( endTime.NotNull(x => x.ToShortTimeString()) ?? "On-going")</span>
+							</span>&nbsp;
 						</div>
 					</a>
 				</h4>
 			</div>
 			<div id="collapse_@(meeting.Meeting.Id)" class="panel-collapse collapse @(first?"in":"")" role="tabpanel" aria-labelledby="headingOne">
+				<div class="panel-summary" title="Meeting Summary"><span class="glyphicon glyphicon-list" onclick="meetingSummary(@(meeting.Meeting.Id))"></span></div>
+				<div class="panel-delete" title="Delete Meeting"><span class="glyphicon glyphicon-trash" onclick="deleteMeeting(@(meeting.Meeting.Id))"></span></div>
 				<div class="panel-body">
 					@if (meeting.Items.Any()) {
 						<table class="fullWidth table table-condensed tablefilter">
@@ -158,8 +158,25 @@
 			});
 		}
 
+		function meetingSummary(id){
+
+			showModal("Meeting Summary","/l10/meetingsummary/" + id,null);
+
+			//$.ajax({
+			//	url: "/l10/meetingsummary/" + id,
+			//	success: function (data) {
+			//		showModal({
+			//			icon: "danger",
+			//			title: "Meeting Summary",
+			//			fields: [{type:"span",value:]
+			//		});
+			//	}
+			//});
+
+
+		}
+
 		function changeTime(id, type, self) {
-			debugger;
 			var val = parseJsonDate($(self).data("time"),true);
 			showModal({
 				title: "Change the meeting "+type+" time?",
@@ -169,7 +186,7 @@
 					$.ajax({
 						url: "/l10/EditMeetingTime/" + id+"?type="+type+"&time="+(+parseJsonDate(data.date)),
 						success: function (data) {
-							
+
 							var start = parseJsonDate(data.Object.start);
 							var end = parseJsonDate(data.Object.end);
 
@@ -254,21 +271,33 @@
 			background-color: rgba(255, 255, 0, 0.2);
 		}
 
-		.panel-delete{
-			float: right;
-			top: 12px;
-			position: relative;
+		.panel-summary {
+			top: -25px;
 			right: -20px;
+			float: right;
+			position: relative;
 			opacity: .3;
 			transition: ease .2s opacity;
 		}
-		
-		.panel-group:hover .panel-delete{
-			opacity:.6;
+
+		.panel-delete {
+			top: 6px;
+			right: -33px;
+			float: right;
+			position: relative;
+			opacity: .3;
+			transition: ease .2s opacity;
 		}
-		.panel-group .panel-delete:hover {
-			opacity:.8;
-			cursor:pointer;
+
+		.panel-group:hover .panel-delete,
+		.panel-group:hover .panel-summary {
+			opacity: .6;
+		}
+
+		.panel-group .panel-delete:hover,
+		.panel-group .panel-summary:hover {
+			opacity: .8;
+			cursor: pointer;
 		}
 	</style>
 }

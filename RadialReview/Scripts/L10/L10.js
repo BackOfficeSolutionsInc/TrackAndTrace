@@ -325,11 +325,15 @@ function loadPageForce(location) {
 			url: "/L10/Load/" + window.recurrenceId + "?page=" + location + "&connection=" + $.connection.hub.id,
 			success: function (data) {
 				replaceMainWindow(data, function () {
-					var type = $(".page-item." + location).data("pagetype");
+					var modloc = location;
+					if (modloc === "") {
+						modloc = currentPage || "";
+					}
+					var type = $(".page-item." + modloc).data("pagetype");
 					if (typeof (type) === "undefined"|| type==null)
-						type = location;
+						type = modloc;
 					try{
-						$(window).trigger("page-" + /*location*/type.toLowerCase());
+						$(window).trigger("page-" + type.toLowerCase());
 					} catch (e) {
 						console.log(e);
 					}
@@ -563,6 +567,27 @@ $(window).resize(fixExternalPageBoxSize);
 $(window).on("page-externalpage", fixExternalPageBoxSize);
 $(window).on("footer-resize", function () {
 	setTimeout(fixExternalPageBoxSize, 250);
+});
+
+
+function fixNotesBoxSize() {
+	if ($(".notes-box").length) {
+		var wh = $(window).height();
+		var pos = $(".notes-box").offset();
+		var st = $(window).scrollTop();
+		var footerH = wh;
+		try {
+			footerH = $(".footer-bar .footer-bar-container:not(.hidden)").last().offset().top;
+		} catch (e) { }
+
+		$(".notes-box").height(Math.max(200, footerH - 20 - 50 - pos.top));
+	}
+}
+
+$(window).resize(fixNotesBoxSize);
+$(window).on("page-notesbox", fixNotesBoxSize);
+$(window).on("footer-resize", function () {
+	setTimeout(fixNotesBoxSize, 250);
 });
 
 

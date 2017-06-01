@@ -71,18 +71,22 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public PartialViewResult EditModal(long id) {
-			var todo = TodoAccessor.GetTodo(GetUser(), id);
+		public ActionResult EditModal(long id) {
 
-			ViewBag.Originating = "";
-			if (todo.TodoType == TodoType.Personal)
-				ViewBag.Originating = "Individual To-do List";
-			else {
-				ViewBag.Originating = todo.ForRecurrence.Name;
+			if (id > 0) {
+				var todo = TodoAccessor.GetTodo(GetUser(), id);
+				ViewBag.Originating = "";
+				if (todo.TodoType == TodoType.Personal)
+					ViewBag.Originating = "Individual To-do List";
+				else {
+					ViewBag.Originating = todo.ForRecurrence.Name;
+				}
+
+				ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTodo(id));
+				return PartialView(todo);
+			} else {
+				return RedirectToAction("Modal", "Milestone", new { id = -id });					
 			}
-
-			ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTodo(id));
-			return PartialView(todo);
 		}
 
 		[Access(AccessLevel.UserOrganization)]
@@ -498,9 +502,9 @@ namespace RadialReview.Controllers {
             }
             IEnumerable<AngularTodo> todos;
             if (id == null) {
-                todos = TodoAccessor.GetMyTodos(GetUser(), id ?? GetUser().Id, range: range).Select(x => new AngularTodo(x));
-            } else { 
-                todos = TodoAccessor.GetTodosForUser(GetUser(), id ?? GetUser().Id, range: range).Select(x => new AngularTodo(x));
+				todos = TodoAccessor.GetMyTodos(GetUser(), id ?? GetUser().Id, range: range);//.Select(x => new AngularTodo(x));
+            } else {
+				todos = TodoAccessor.GetTodosForUser(GetUser(), id ?? GetUser().Id, range: range);//.Select(x => new AngularTodo(x));
             }
 
             var angular = new AngularRecurrence(-1) {
