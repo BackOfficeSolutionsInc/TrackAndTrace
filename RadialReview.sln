@@ -30,6 +30,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTestMetrics", "UnitTest
 		GenerateMetrics.bat = GenerateMetrics.bat
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TractionTools.PeopleTools.Tests", "TractionTools.PeopleTools.Tests\TractionTools.PeopleTools.Tests.csproj", "{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -108,6 +110,30 @@ Global
 		{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}.UPDATE DATABSE|Mixed Platforms.Build.0 = Release|Any CPU
 		{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}.UPDATE DATABSE|x64.ActiveCfg = Release|Any CPU
 		{37106BE5-0395-4BE6-9AD1-9A0E28B135A3}.UPDATE DATABSE|x86.ActiveCfg = Release|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.Debug|x64.Build.0 = Debug|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.Debug|x86.Build.0 = Debug|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.Release|x64.ActiveCfg = Release|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.Release|x64.Build.0 = Release|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.Release|x86.ActiveCfg = Release|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.Release|x86.Build.0 = Release|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.UPDATE DATABSE|Any CPU.ActiveCfg = Release|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.UPDATE DATABSE|Any CPU.Build.0 = Release|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.UPDATE DATABSE|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.UPDATE DATABSE|Mixed Platforms.Build.0 = Release|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.UPDATE DATABSE|x64.ActiveCfg = Release|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.UPDATE DATABSE|x64.Build.0 = Release|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.UPDATE DATABSE|x86.ActiveCfg = Release|Any CPU
+		{3B0AA3D9-C84A-4141-B623-0FEDE06C81EE}.UPDATE DATABSE|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

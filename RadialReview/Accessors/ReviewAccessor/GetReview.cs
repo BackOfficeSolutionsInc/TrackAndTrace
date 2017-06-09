@@ -200,6 +200,7 @@ namespace RadialReview.Accessors {
 				var allAnswers = s.QueryOver<AnswerModel>()
 									.Where(x => x.ForReviewId == reviewId && x.DeleteTime == null)
 									.List().ToListAlive();
+
 				var allAlive = UserAccessor.WasAliveAt(s, allAnswers.Select(x => x.RevieweeUserId).Distinct().ToList(), reviewPopulated.DueDate);
 				allAnswers = allAnswers.Where(x => allAlive.Contains(x.RevieweeUserId)).ToList();
 				PopulateAnswers(/*s,*/ reviewPopulated, allAnswers);
@@ -316,6 +317,8 @@ namespace RadialReview.Accessors {
 										.Where(x => x.RevieweeUserId == userOrgId && x.ForReviewContainerId == reviewContainerId && x.DeleteTime == null)
 										.List()
 										.ToListAlive();
+                    answers = FilterOutDuplicates(answers).ToList();
+
 					return answers;
 				}
 			}
@@ -346,6 +349,8 @@ namespace RadialReview.Accessors {
 										.Where(x => x.ForReviewContainerId == reviewContainerId && x.DeleteTime == null)
 										.List()
 										.ToListAlive();
+                    answers = FilterOutDuplicates(answers).ToList();
+
 					return answers;
 				}
 			}

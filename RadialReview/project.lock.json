@@ -2622,8 +2622,9 @@
       ]
     },
     "Microsoft.Web.Infrastructure/1.0.0": {
-      "sha512": "RKFGbWdso8unJPFctEFEcjWuq7Ccf/QmHvuJNLuAV8js1HuBwfHo5SlVm0DdDBY4LTgpxvCDyqJeCYMU0Bwrtw==",
+      "sha512": "FNmvLn5m2LTU/Rs2KWVo0SIIh9Ek+U0ojex7xeDaSHw/zgEP77A8vY5cVWgUtBGS8MJfDGNn8rpXJWEIQaPwTg==",
       "type": "package",
+      "path": "Microsoft.Web.Infrastructure/1.0.0",
       "files": [
         "Microsoft.Web.Infrastructure.1.0.0.nupkg.sha512",
         "Microsoft.Web.Infrastructure.nuspec",
@@ -3292,5 +3293,7 @@
       "log4net >= 2.0.8"
     ],
     ".NETFramework,Version=v4.5.2": []
-  }
+  },
+  "tools": {},
+  "projectFileToolGroups": {}
 }

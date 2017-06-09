@@ -609,7 +609,7 @@ namespace RadialReview.Accessors {
 			var valueFont = _Font8Bold;
 
 			foreach (var v in theValues) {
-				var value = v.GetQuestion();
+				var value = v.GetQuestion()??"";
 				maxWidth_Value = Math.Max(maxWidth_Value, gfx.MeasureString(value, valueFont).Width);
 			}
 			var titleHeight = Math.Sin(angle * Math.PI / 180) * maxWidth_Value;

@@ -6,6 +6,7 @@ using TractionTools.Tests.Utilities;
 using OpenQA.Selenium.Support.UI;
 using System.Linq;
 using System.Threading;
+using OpenQA.Selenium;
 
 namespace TractionTools.UITests.Evals {
 	[TestClass]
@@ -79,6 +80,8 @@ namespace TractionTools.UITests.Evals {
 				var take = row.Find("td > a");
 				Assert.AreEqual(reviewName, take.Text);
 
+                d.Keyboard.SendKeys(Keys.Escape);
+
 				take.Click();
 
 				d.WaitUntil(10, x => x.Finds("#nameList")[0].Finds("li a").Count == 4);
@@ -105,7 +108,9 @@ namespace TractionTools.UITests.Evals {
 
 				var take = row.Find("td > a");
 				Assert.AreEqual(reviewName, take.Text);
-				take.Click();
+
+                d.Keyboard.SendKeys(Keys.Escape);
+                take.Click();
 				d.WaitUntil(10, x => x.Finds("#nameList")[0].Finds("li a").Count > 0);
 				Thread.Sleep(2000);
 				var links = d.Finds("#nameList")[0].Finds("li a");
@@ -119,7 +124,8 @@ namespace TractionTools.UITests.Evals {
 
 				var take = d.Finds(".reviews-table tbody tr")[0].Find("td > a");
 				Assert.AreEqual(reviewName, take.Text);
-				take.Click();
+                d.Keyboard.SendKeys(Keys.Escape);
+                take.Click();
 				d.WaitUntil(10, x => x.Finds("#nameList")[0].Finds("li a").Count > 0);
 				Thread.Sleep(2000);
 				var links = d.Finds("#nameList")[0].Finds("li a");
@@ -172,7 +178,9 @@ namespace TractionTools.UITests.Evals {
 				var take = row.Find("td > a");
 				Assert.AreEqual(reviewName, take.Text);
 
-				take.Click();
+                d.Keyboard.SendKeys(Keys.Escape);
+
+                take.Click();
 
 				d.Find("[href='#advanced']").Click();
 
@@ -209,7 +217,8 @@ namespace TractionTools.UITests.Evals {
 				take = row.Find("td > a");
 				Assert.AreEqual(reviewName, take.Text);
 
-				take.Click();
+                d.Keyboard.SendKeys(Keys.Escape);
+                take.Click();
 
 				d.WaitUntil(10, x => x.Finds("#nameList")[0].Finds("li a").Count == 4);
 				
@@ -235,7 +244,8 @@ namespace TractionTools.UITests.Evals {
 
 				var take = row.Find("td > a");
 				Assert.AreEqual(reviewName, take.Text);
-				take.Click();
+                d.Keyboard.SendKeys(Keys.Escape);
+                take.Click();
 				d.WaitUntil(10, x => x.Finds("#nameList")[0].Finds("li a").Count > 0);
 				Thread.Sleep(2000);
 				var links = d.Finds("#nameList")[0].Finds("li a");
@@ -249,7 +259,8 @@ namespace TractionTools.UITests.Evals {
 
 				var take = d.Finds(".reviews-table tbody tr")[0].Find("td > a");
 				Assert.AreEqual(reviewName, take.Text);
-				take.Click();
+                d.Keyboard.SendKeys(Keys.Escape);
+                take.Click();
 				d.WaitUntil(10, x => x.Finds("#nameList")[0].Finds("li a").Count > 0);
 				Thread.Sleep(2000);
 				var links = d.Finds("#nameList")[0].Finds("li a");

@@ -816,7 +816,12 @@ namespace RadialReview.Controllers {
 			public Table CompanyValuesTable(long reviewId) {
 				var dictionary = new DefaultDictionary<long, decimal[]>(x => new decimal[] { 0, 0, 0, 0, 0 });
 
-				var values = AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.CompanyValue).Cast<CompanyValueAnswer>();
+				var values = AnswersAbout
+                    .Where(x => x.Askable.GetQuestionType() == QuestionType.CompanyValue)
+                    .Cast<CompanyValueAnswer>()
+                    .GroupBy(x=>x.RevieweeUserId+"_"+x.ReviewerUserId+"_"+x.Askable.Id)
+                    .Select(x=>x.OrderByDescending(y=>y.CompleteTime ?? DateTime.MinValue).First())
+                    .ToList();
 
 
 				var dictionaryPerson = new DefaultDictionary<string, decimal>(x => 0);
