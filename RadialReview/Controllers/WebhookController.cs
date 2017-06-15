@@ -75,6 +75,10 @@ namespace RadialReview.Controllers {
 			return View(webHook);
 		}
 
+		[Access(AccessLevel.Any)]
+		public ActionResult API() {			
+			return View();
+		}
 
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult Create(string id = "") {

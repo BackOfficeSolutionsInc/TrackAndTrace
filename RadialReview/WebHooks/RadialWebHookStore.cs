@@ -173,9 +173,7 @@ namespace Microsoft.AspNet.WebHooks {
 
 			var matches = new List<WebHook>();
 			WebhooksAccessor webHookAcc = new WebhooksAccessor();
-			matches = webHookAcc.GetQueryWebHooksAcrossAllUsers(actions);
-
-
+			matches = webHookAcc.GetQueryWebHooksAcrossAllUsers(actions, predicate);
 
 			return Task.FromResult<ICollection<WebHook>>(matches);
 		}

@@ -1479,6 +1479,7 @@
     <Content Include="Views\Webhook\Index.cshtml" />
     <Content Include="Views\Webhook\CreateEvents.cshtml" />
     <Content Include="Views\Webhook\Events.cshtml" />
+    <Content Include="Views\Webhook\API.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

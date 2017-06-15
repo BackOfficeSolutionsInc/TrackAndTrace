@@ -16,9 +16,14 @@
 	<script>
 		var datas = @Html.ArrayToString(Model);
 
-		function ValidateForm(d){
+		function ValidateForm(d) {
 			console.log(d.WebHookUri);
-			return "URL is invalid";
+			if (d.WebHookUri == "") {
+				return "URL is required.";
+			}
+			if (d.selected == undefined) {
+				return "You must select at least one event.";
+			}
 		}
 
 		var table =DataTable({

@@ -22,14 +22,10 @@ namespace RadialReview.Controllers {
 			OutstandingReview = new List<OutstandingReviewViewModel>();
 		}
 	}
-
 	public class OutstandingReviewViewModel {
 		public String Name { get; set; }
 		public long ReviewContainerId { get; set; }
-
 	}
-
-
 	public class HomeController : BaseController {
 
 		[Access(AccessLevel.Any)]
@@ -68,13 +64,9 @@ namespace RadialReview.Controllers {
 			return RedirectToAction("Login", "Account");
 		}
 
-
-
-
-		[Access(AccessLevel.Any)]
+		[Access(AccessLevel.Radial)]
 		public ActionResult About() {
 			ViewBag.Message = "Your application description page.";
-
 			return View();
 		}
 

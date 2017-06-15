@@ -14,6 +14,7 @@ using Microsoft.AspNet.WebHooks.Diagnostics;
 using RadialReview.Models.Angular.Todos;
 using System.Web.Mvc;
 using RadialReview.Models;
+using RadialReview.Accessors;
 
 namespace RadialReview.Hooks {
 	public class TodoWebhook : ITodoHook {
@@ -32,17 +33,21 @@ namespace RadialReview.Hooks {
 				IWebHookManager manager = DependencyResolver.Current.GetManager();
 
 				var notifications = new List<NotificationDictionary> { new NotificationDictionary(_event, new AngularTodo(todo)) };
-				await manager.NotifyAllAsync(notifications, (x, y) => true);
+				await manager.NotifyAllAsync(notifications, TodoPermissions(s, todo));
 
 				notifications = new List<NotificationDictionary> { new NotificationDictionary(_event1, new AngularTodo(todo)) };
-				await manager.NotifyAllAsync(notifications, (x, y) => true);
+				await manager.NotifyAllAsync(notifications, TodoPermissions(s, todo));
 
 				notifications = new List<NotificationDictionary> { new NotificationDictionary(_event2, new AngularTodo(todo)) };
-				await manager.NotifyAllAsync(notifications, (x, y) => true);
+				await manager.NotifyAllAsync(notifications, TodoPermissions(s, todo));
 
 			} catch (Exception ex) {
 				throw;
 			}
+		}
+
+		private static Func<WebHook, string, bool> TodoPermissions(ISession s, TodoModel todo) {
+			return WebhooksAccessor.PermissionsPredicate(s, x => x.ViewTodo(todo.Id));
 		}
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
@@ -62,13 +67,13 @@ namespace RadialReview.Hooks {
 				IWebHookManager manager = DependencyResolver.Current.GetManager();
 
 				var notifications = new List<NotificationDictionary> { new NotificationDictionary(_event, new AngularTodo(todo)) };
-				await manager.NotifyAllAsync(notifications, (x, y) => true);
+				await manager.NotifyAllAsync(notifications, TodoPermissions(s, todo));
 
 				notifications = new List<NotificationDictionary> { new NotificationDictionary(_event1, new AngularTodo(todo)) };
-				await manager.NotifyAllAsync(notifications, (x, y) => true);
+				await manager.NotifyAllAsync(notifications, TodoPermissions(s, todo));
 
 				notifications = new List<NotificationDictionary> { new NotificationDictionary(_event2, new AngularTodo(todo)) };
-				await manager.NotifyAllAsync(notifications, (x, y) => true);
+				await manager.NotifyAllAsync(notifications, TodoPermissions(s, todo));
 
 			} catch (Exception ex) {
 				throw;
@@ -92,21 +97,17 @@ namespace RadialReview.Hooks {
 				IWebHookManager manager = DependencyResolver.Current.GetManager();
 
 				var notifications = new List<NotificationDictionary> { new NotificationDictionary(_event, new AngularTodo(todo)) };
-				await manager.NotifyAllAsync(notifications, (x, y) => true);
+				await manager.NotifyAllAsync(notifications, TodoPermissions(s, todo));
 
 				notifications = new List<NotificationDictionary> { new NotificationDictionary(_event1, new AngularTodo(todo)) };
-				await manager.NotifyAllAsync(notifications, (x, y) => true);
+				await manager.NotifyAllAsync(notifications, TodoPermissions(s, todo));
 
 				notifications = new List<NotificationDictionary> { new NotificationDictionary(_event2, new AngularTodo(todo)) };
-				await manager.NotifyAllAsync(notifications, (x, y) => true);
+				await manager.NotifyAllAsync(notifications, TodoPermissions(s, todo));
 
 			} catch (Exception ex) {
 				throw;
 			}
-		}
-
-		public Task UpdateDueDate(ISession s, TodoModel todo) {
-			throw new NotImplementedException();
-		}
+		}		
 	}
 }

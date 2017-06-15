@@ -1,0 +1,388 @@
+﻿
+@{
+	ViewBag.Title = "WEBHOOK - Docs";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+	<div class="col-md-9">
+		<h1 id="Overview">TODO</h1>
+		<div class="doc-section">
+			<h2 id="Basic-API-Info">Add TODO to L10</h2>
+
+			<p>To use the API you must first authenticate yourself. You will not be able to edit information you do not control when logged in to the standard web application.</p>
+			<p>The API is in <b>early beta</b>. It is recommended that you upgrade to the latest verison when it comes out.</p>
+
+
+			<h3 id="Current-Version">Current Version</h3>
+			<figure class="highlight">
+				<div>
+					<b>v0</b>
+					<br />
+					<i>12/28/2015</i>
+				</div>
+			</figure>
+
+			<h3 id="Guarantee">Guarantee</h3>
+			<p>We make no guarantee about the stability of v0. Your applications may break at any time in the future. Use at your own risk. If you find any errors please contact us at <a href="mailto:support@mytractiontools.com">support@mytractiontools.com</a></p>
+		</div>
+
+
+
+
+		<h1 id="Anchor">Issues</h1>
+
+		<div class="doc-section">
+			<h2 id="funcAnchor">Add Issue.</h2>			
+			@*<p>This function gets a list of scorecard measurable.</p>*@
+
+			<div class="panel-group" id="accordion-funcAnchor" role="tablist" aria-multiselectable="true">
+
+
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="funcAnchor-parameters-heading">
+						<h4 class="panel-title">
+							<a role="button" data-toggle="collapse" data-parent="#accordion-funcAnchor" href="#10funcAnchor-parameters-collapse" aria-controls="10funcAnchor-parameters-collapse">
+								Add an Issue to L10
+							</a>
+						</h4>
+					</div>
+					<div id="10funcAnchor-parameters-collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="funcAnchor-parameters-heading">
+						<div class="panel-body">
+							<table class="table table-condensed table-striped">
+								<tr><td class="monospace">row Name</td><td>row Details</td></tr>
+								<tr><td class="monospace">row Name</td><td>row Details</td></tr>
+								<tr><td class="monospace">row Name</td><td>row Details</td></tr>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="6-request-heading">
+						<h4 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion-6" href="#6-request-collapse" aria-expanded="false" aria-controls="6-request-collapse">
+								Add an Issue to Organization
+							</a>
+						</h4>
+					</div>
+					<div id="6-request-collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="6-request-heading">
+						<div class="panel-body">
+							<code>Request</code>
+						</div>
+					</div>
+				</div>
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="1-response-heading">
+						<h4 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion-6" href="#6-response-collapse" aria-expanded="false" aria-controls="6-response-collapse">
+								Add an Issue for User
+							</a>
+						</h4>
+					</div>
+					<div id="6-response-collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="6-response-heading">
+						<div class="panel-body">
+							<pre>[{Id:5,Title:"A measurable",GoalDirection:"GreaterThan",Goal:1,UnitType:"None",AccountableUser:{Id:123,Name:"John Doe",Username:"john.doe@organization.com"},AdminUser:{Id:345,Name:"Han Solo",Username:"han.solo@organization.com"}},{Id:7,Title:"Anothermeasurable",GoalDirection:"GreaterThan",Goal:10,UnitType:"Dollars",AccountableUser:{Id:123,Name:"JohnDoe",Username:"john.doe@organization.com"},AdminUser:{Id:123,Name:"JohnDoe",Username:"john.doe@organization.com"}},{...}]</pre>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="doc-section">
+			<h2 id="funcAnchor">Update Issue.</h2>
+			<div class="panel-group" id="accordion-funcAnchor" role="tablist" aria-multiselectable="true">
+
+
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="funcAnchor-parameters-heading">
+						<h4 class="panel-title">
+							<a role="button" data-toggle="collapse" data-parent="#accordion-funcAnchor" href="#10funcAnchor-parameters-collapse" aria-controls="10funcAnchor-parameters-collapse">
+								Update an Issue to L10
+							</a>
+						</h4>
+					</div>
+					<div id="10funcAnchor-parameters-collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="funcAnchor-parameters-heading">
+						<div class="panel-body">
+							<table class="table table-condensed table-striped">
+								<tr><td class="monospace">row Name</td><td>row Details</td></tr>
+								<tr><td class="monospace">row Name</td><td>row Details</td></tr>
+								<tr><td class="monospace">row Name</td><td>row Details</td></tr>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="6-request-heading">
+						<h4 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion-6" href="#6-request-collapse" aria-expanded="false" aria-controls="6-request-collapse">
+								Update an Issue to Organization
+							</a>
+						</h4>
+					</div>
+					<div id="6-request-collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="6-request-heading">
+						<div class="panel-body">
+							<code>Request</code>
+						</div>
+					</div>
+				</div>
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="1-response-heading">
+						<h4 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion-6" href="#6-response-collapse" aria-expanded="false" aria-controls="6-response-collapse">
+								Update an Issue for User
+							</a>
+						</h4>
+					</div>
+					<div id="6-response-collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="6-response-heading">
+						<div class="panel-body">
+							<pre>[{Id:5,Title:"A measurable",GoalDirection:"GreaterThan",Goal:1,UnitType:"None",AccountableUser:{Id:123,Name:"John Doe",Username:"john.doe@organization.com"},AdminUser:{Id:345,Name:"Han Solo",Username:"han.solo@organization.com"}},{Id:7,Title:"Anothermeasurable",GoalDirection:"GreaterThan",Goal:10,UnitType:"Dollars",AccountableUser:{Id:123,Name:"JohnDoe",Username:"john.doe@organization.com"},AdminUser:{Id:123,Name:"JohnDoe",Username:"john.doe@organization.com"}},{...}]</pre>
+						</div>
+					</div>
+				</div>			
+			</div>
+		</div>
+
+		<div class="doc-section">
+			<h2 id="funcAnchor">Checking/Unchecking Issue.</h2>
+			<div class="panel-group" id="accordion-funcAnchor" role="tablist" aria-multiselectable="true">
+
+
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="funcAnchor-parameters-heading">
+						<h4 class="panel-title">
+							<a role="button" data-toggle="collapse" data-parent="#accordion-funcAnchor" href="#10funcAnchor-parameters-collapse" aria-controls="10funcAnchor-parameters-collapse">
+								Checking/Unchecking an Issue for L10
+							</a>
+						</h4>
+					</div>
+					<div id="10funcAnchor-parameters-collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="funcAnchor-parameters-heading">
+						<div class="panel-body">
+							<table class="table table-condensed table-striped">
+								<tr><td class="monospace">row Name</td><td>row Details</td></tr>
+								<tr><td class="monospace">row Name</td><td>row Details</td></tr>
+								<tr><td class="monospace">row Name</td><td>row Details</td></tr>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="6-request-heading">
+						<h4 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion-6" href="#6-request-collapse" aria-expanded="false" aria-controls="6-request-collapse">
+								Checking/Unchecking an Issue for Organization
+							</a>
+						</h4>
+					</div>
+					<div id="6-request-collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="6-request-heading">
+						<div class="panel-body">
+							<code>Request</code>
+						</div>
+					</div>
+				</div>
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="1-response-heading">
+						<h4 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion-6" href="#6-response-collapse" aria-expanded="false" aria-controls="6-response-collapse">
+								Checking/Unchecking an Issue for User
+							</a>
+						</h4>
+					</div>
+					<div id="6-response-collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="6-response-heading">
+						<div class="panel-body">
+							<pre>[{Id:5,Title:"A measurable",GoalDirection:"GreaterThan",Goal:1,UnitType:"None",AccountableUser:{Id:123,Name:"John Doe",Username:"john.doe@organization.com"},AdminUser:{Id:345,Name:"Han Solo",Username:"han.solo@organization.com"}},{Id:7,Title:"Anothermeasurable",GoalDirection:"GreaterThan",Goal:10,UnitType:"Dollars",AccountableUser:{Id:123,Name:"JohnDoe",Username:"john.doe@organization.com"},AdminUser:{Id:123,Name:"JohnDoe",Username:"john.doe@organization.com"}},{...}]</pre>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>		
+		
+		<div style="height:500px;"></div>
+	</div>
+
+	<div class="col-md-3">
+		<nav class="doc-sidebar hidden-print hidden-xs hidden-sm affix">
+			<ul class="nav doc-sidenav">
+				<li>
+					<a href="#Overview">Overview</a>
+					<ul class="nav">
+						<li><a href="#Basic-API-Info">Basic API Information</a></li>
+						<li><a href="#Current-Version">Current Version</a></li>
+						<li><a href="#Guarantee">Guarantee</a></li>
+					</ul>
+				</li>
+
+				<li>
+					<a href="#Anchor">ScoreCard</a>
+					<ul class="nav">
+						<li><a href="#funcAnchor">List Of Score Card Measurables</a></li>
+						<li><a href="#docsection">Get a Score Card Measurables</a></li>
+						<li><a href="#Listscores">List Score</a></li>
+						<li><a href="#EDITscores">Edit a Score</a></li>
+
+						<li><a href="#currentweek">Current Week</a></li>
+					</ul>
+				</li>
+
+
+			</ul> <a class="back-to-top" href="#top"> Back to top </a>
+		</nav>
+	</div>
+</div>
+@using (Html.BeginScripts()) {
+	<script>
+		$('.affix').affix({
+			offset: {
+				top: -10,
+				bottom: function () {
+					return (this.bottom = $('.footer').outerHeight(true));
+				}
+			}
+		});
+		$('body').scrollspy({ target: '.doc-sidenav' });
+
+	</script>
+}
+
+<style>
+	.monospace {
+		font-family: monospace;
+	}
+
+	pre {
+		overflow-x: auto;
+		word-wrap: normal;
+	}
+
+	.table {
+		margin-bottom: 0px;
+	}
+
+	h1[id]:before,
+	h2[id]:before,
+	h3[id]:before,
+	h4[id]:before,
+	h5[id]:before,
+	h6[id]:before {
+		display: block;
+		content: " ";
+		margin-top: -55px;
+		height: 55px;
+		visibility: hidden;
+	}
+
+	h1 {
+		margin-left: -60px;
+		margin-right: -20px;
+		padding-bottom: 6px;
+		font-weight: bold;
+		background-color: #ef7622;
+		color: #FFF;
+		padding-left: 15px;
+		padding-top: 10px;
+		text-transform: uppercase;
+	}
+
+	h3 {
+		margin: 0px;
+		margin-bottom: 5px;
+		font-size: 18px;
+	}
+
+		h3 code {
+			color: #424242;
+			background-color: transparent;
+		}
+
+	.doc-section > h3:last-of-type {
+		margin-bottom: 20px;
+	}
+
+	.doc-section {
+		margin-bottom: 40px;
+		border: 1px solid #E4E4E4;
+		padding: 5px 20px;
+		border-radius: 7px;
+		background-color: #fff;
+	}
+
+	.doc-sidenav {
+		margin-top: 20px;
+		margin-bottom: 20px;
+	}
+
+	.highlight {
+		padding: 9px 14px;
+		margin-bottom: 14px;
+		background-color: #f7f7f9;
+		border: 1px solid #e1e1e8;
+		border-radius: 4px;
+	}
+
+	.doc-sidebar .nav > .active > ul {
+		display: block;
+	}
+
+	.doc-sidebar .nav .nav {
+		display: none;
+		padding-bottom: 10px;
+	}
+
+	.doc-sidebar .nav > li > a {
+		display: block;
+		padding: 4px 20px;
+		font-size: 13px;
+		font-weight: 500;
+		color: #767676;
+	}
+
+	.doc-sidebar .nav .nav > li > a:focus,
+	.doc-sidebar .nav .nav > li > a:hover {
+		padding-left: 29px;
+	}
+
+	.doc-sidebar .nav > li > a {
+		display: block;
+		padding: 4px 20px;
+		font-size: 13px;
+		font-weight: 500;
+		color: #767676;
+	}
+
+	.doc-sidebar .nav .nav > li > a {
+		padding-top: 1px;
+		padding-bottom: 1px;
+		padding-left: 30px;
+		font-size: 12px;
+		font-weight: 400;
+	}
+
+	.doc-sidebar .nav .nav > .active:focus > a,
+	.doc-sidebar .nav .nav > .active:hover > a,
+	.doc-sidebar .nav .nav > .active > a {
+		padding-left: 28px;
+		font-weight: 500;
+	}
+
+	.doc-sidebar .nav > li > a:focus,
+	.doc-sidebar .nav > li > a:hover {
+		padding-left: 19px;
+		color: #EF7622;
+		text-decoration: none;
+		background-color: rgba(0, 0, 0, 0);
+		border-left: 1px solid #EF7622;
+	}
+
+	.doc-sidebar .nav > .active:focus > a,
+	.doc-sidebar .nav > .active:hover > a,
+	.doc-sidebar .nav > .active > a {
+		padding-left: 18px;
+		font-weight: 700;
+		color: #EF7622;
+		background-color: rgba(0, 0, 0, 0);
+		border-left: 2px solid #EF7622;
+	}
+</style>
+
