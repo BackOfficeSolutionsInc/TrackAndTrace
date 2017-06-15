@@ -17,7 +17,7 @@ namespace RadialReview.Areas.People
             context.MapRoute(
                 "People_default",
                 "People/{controller}/{action}/{id}",
-                new { action = "Index", id = UrlParameter.Optional }
+                new { controller = "Main", action = "Index", id = UrlParameter.Optional }
             );
         }
     }

@@ -1,0 +1,23 @@
+﻿
+@{
+    ViewBag.Title = "Quarterly Conversation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Subheading = "";
+}
+
+@section top{
+    <div class="jumbotron">
+        <h1>Quarterly Conversation</h1>
+    </div>
+}
+
+<div id="qc-archive"></div>
+
+@using (Html.BeginScripts()) {
+    <script>
+        DataTable({
+            container: "#qc-archive",
+             
+        })
+    </script>
+}

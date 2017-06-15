@@ -284,6 +284,7 @@
     <Compile Include="API\v0\SeatsApiTests_v0.cs" />
     <Compile Include="API\v0\TodoApiTests_v0.cs" />
     <Compile Include="API\v0\UsersApiTests_v0.cs" />
+    <Compile Include="Engines\SurveyEngineTests.cs" />
     <Compile Include="PDF\AccountabilityChartPdfTest.cs" />
     <Compile Include="Permissions\ManagerPermissions.cs" />
     <Compile Include="Permissions\L10Permissions.cs" />
@@ -297,10 +298,18 @@
     <Compile Include="Permissions\OrganizationPermissions.cs" />
     <Compile Include="Permissions\AccountabilityPermissions.cs" />
     <Compile Include="Permissions\UserPermissions.cs" />
+    <Compile Include="Properties\SurveyResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SurveyResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Startup\SetupAssemblyInitializer.cs" />
+    <Compile Include="TestUtils\MockSession.cs" />
+    <Compile Include="Utilities\CompareUtil.cs" />
     <Compile Include="Utilities\Credentials.cs" />
     <Compile Include="Utilities\EventUtilTests.cs" />
     <Compile Include="TestUtils\RouteHandler.cs" />
+    <Compile Include="Utilities\Extensions\ObjectExtensions.cs" />
     <Compile Include="Utilities\L10Utility.cs" />
     <Compile Include="Utilities\DistanceUtility_User.cs" />
     <Compile Include="TestUtils\BaseTest.cs" />
@@ -311,6 +320,7 @@
     <Compile Include="Utilities\FileUtility.cs" />
     <Compile Include="Utilities\OrgUtil.cs" />
     <Compile Include="Utilities\TimingUtilityTests.cs" />
+    <Compile Include="Utilities\LazyCollectionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
@@ -327,6 +337,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Utilities\FullOrganization.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\SurveyResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SurveyResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

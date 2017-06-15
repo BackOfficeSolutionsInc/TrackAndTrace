@@ -45,6 +45,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
@@ -118,14 +119,46 @@
     <Compile Include="Api\V0\Teams.cs" />
     <Compile Include="Api\V0\Todo.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
+    <Compile Include="Areas\People\Accessors\QuarterlyConversationAccessor.cs" />
+    <Compile Include="Areas\People\Angular\Survey\AngularForModel.cs" />
+    <Compile Include="Areas\People\Angular\Survey\AngularSurveyContainer.cs" />
+    <Compile Include="Areas\People\Angular\Survey\AngularSurvey.cs" />
+    <Compile Include="Areas\People\Angular\Survey\AngularSurveyItem.cs" />
     <Compile Include="Areas\People\Controllers\MainController.cs" />
+    <Compile Include="Areas\People\Controllers\QuarterlyConversationController.cs" />
+    <Compile Include="Areas\People\Models\Survey\ByAbout.cs" />
+    <Compile Include="Areas\People\Models\Survey\SurveyItemFormat.cs" />
+    <Compile Include="Areas\People\Models\Survey\SurveyItemResponse.cs" />
+    <Compile Include="Areas\People\Models\Survey\SurveyResponse.cs" />
+    <Compile Include="Areas\People\Models\Survey\SurveyItem.cs" />
+    <Compile Include="Areas\People\Models\Survey\SurveySection.cs" />
+    <Compile Include="Areas\People\Models\Survey\Survey.cs" />
+    <Compile Include="Areas\People\Models\Survey\SurveyContainer.cs" />
+    <Compile Include="Areas\People\Models\Survey\SurveyEnums.cs" />
     <Compile Include="Areas\People\PeopleAreaRegistration.cs" />
+    <Compile Include="Areas\People\ViewModels\QuarterlyConversationVM.cs" />
     <Compile Include="Controllers\Ac\AngularAccountabilityController.cs" />
     <Compile Include="Controllers\AuditController.cs" />
     <Compile Include="Controllers\HeadlinesController.cs" />
     <Compile Include="Controllers\MilestoneController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\PdfController.cs" />
+    <Compile Include="Engines\Surveys\Strategies\Events\SurveyReconstructionEventsNoOp.cs" />
+    <Compile Include="Engines\Surveys\Strategies\OuterLookup.cs" />
+    <Compile Include="Engines\Surveys\Impl\QuarterlyConversation\QuarterlyConversationClasses.cs" />
+    <Compile Include="Engines\Surveys\Impl\QuarterlyConversation\Sections\RockSection.cs" />
+    <Compile Include="Engines\Surveys\Impl\QuarterlyConversation\Sections\RoleSection.cs" />
+    <Compile Include="Engines\Surveys\Impl\QuarterlyConversation\Sections\ValueSection.cs" />
+    <Compile Include="Engines\Surveys\Interfaces\SurveyReconstructionInterfaces.cs" />
+    <Compile Include="Engines\Surveys\Strategies\Reconstructor\DatabaseAggregator.cs" />
+    <Compile Include="Areas\People\Angular\Survey\AngularSurveySection.cs" />
+    <Compile Include="Engines\Surveys\Strategies\Traverse\TraverseBuild.cs" />
+    <Compile Include="Engines\Surveys\Strategies\Traverse\TraverseBuildAngular.cs" />
+    <Compile Include="Engines\Surveys\SurveyBuilderEngine.cs" />
+    <Compile Include="Engines\Surveys\Interfaces\SurveyBuilderInterfaces.cs" />
+    <Compile Include="Engines\Surveys\Strategies\Events\SurveyBuilderEventsNoOp.cs" />
+    <Compile Include="Engines\Surveys\Strategies\Events\SurveyBuilderEventsSaveStrategy.cs" />
+    <Compile Include="Engines\Surveys\SurveyReconstructionEngine.cs" />
     <Compile Include="Hooks\UpdateRoles_Notifications.cs" />
     <Compile Include="Hooks\UpdateUserModel_TeamNames.cs" />
     <Compile Include="Models\Angular\Base\AngularPicture.cs" />
@@ -140,6 +173,7 @@
     <Compile Include="Models\Enums\RGMType.cs" />
     <Compile Include="Models\Enums\VideoConferenceType.cs" />
     <Compile Include="Models\Events\Event.cs" />
+    <Compile Include="Models\Interfaces\IByAbout.cs" />
     <Compile Include="Models\Issues\HeadlineIssueVM.cs" />
     <Compile Include="Models\L10\L10Page.cs" />
     <Compile Include="Models\L10\PeopleHeadline.cs" />
@@ -156,6 +190,7 @@
     <Compile Include="Models\VideoConference\ZoomUserLink.cs" />
     <Compile Include="Notifications\PubSub.cs" />
     <Compile Include="Utilities\AngularTreeUtil.cs" />
+    <Compile Include="Utilities\DataTypes\LazyCollection.cs" />
     <Compile Include="Utilities\EmailUtil.cs" />
     <Compile Include="Controllers\IntegrationsController.cs" />
     <Compile Include="Hooks\BasecampTodoHook.cs" />
@@ -229,25 +264,6 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Api\V0\Scorecard.cs" />
     <Compile Include="Api\V0\BaseApiController.cs" />
-    <Compile Include="Areas\RouteDebugger\Components\ActionSelectSimulator.cs" />
-    <Compile Include="Areas\RouteDebugger\Components\DictionaryExtensions.cs" />
-    <Compile Include="Areas\RouteDebugger\Components\HttpParameterBindingExtensions.cs" />
-    <Compile Include="Areas\RouteDebugger\Components\TypeHelper.cs" />
-    <Compile Include="Areas\RouteDebugger\Controllers\RouteDebuggerController.cs" />
-    <Compile Include="Areas\RouteDebugger\InspectActionInvoker.cs" />
-    <Compile Include="Areas\RouteDebugger\InspectActionSelector.cs" />
-    <Compile Include="Areas\RouteDebugger\InspectControllerSelector.cs" />
-    <Compile Include="Areas\RouteDebugger\InspectHandler.cs" />
-    <Compile Include="Areas\RouteDebugger\Models\ActionSelectionInfo.cs" />
-    <Compile Include="Areas\RouteDebugger\Models\ActionSelectionLog.cs" />
-    <Compile Include="Areas\RouteDebugger\Models\ControllerSelectionInfo.cs" />
-    <Compile Include="Areas\RouteDebugger\Models\HttpParameterDescriptionInfo.cs" />
-    <Compile Include="Areas\RouteDebugger\Models\InspectData.cs" />
-    <Compile Include="Areas\RouteDebugger\Models\RouteDataInfo.cs" />
-    <Compile Include="Areas\RouteDebugger\Models\RouteInfo.cs" />
-    <Compile Include="Areas\RouteDebugger\RequestHelper.cs" />
-    <Compile Include="Areas\RouteDebugger\RouteDebuggerAreaRegistration.cs" />
-    <Compile Include="Areas\RouteDebugger\RouteDebuggerConfig.cs" />
     <Compile Include="Controllers\ArchiveController.cs" />
     <Compile Include="Controllers\CustomizeController.cs" />
     <Compile Include="Controllers\HealthCheckController.cs" />
@@ -473,9 +489,9 @@
     <Compile Include="Models\Permissions\PermissionOverride.cs" />
     <Compile Include="Models\PhoneModel.cs" />
     <Compile Include="Models\Scorecard\ScorecardType.cs" />
-    <Compile Include="Models\Survey\SurveyContainerModel.cs" />
-    <Compile Include="Models\Survey\SurveyResultVMs.cs" />
-    <Compile Include="Models\Survey\SurveyTake.cs" />
+    <Compile Include="Models\Survey_OLD\SurveyContainerModel.cs" />
+    <Compile Include="Models\Survey_OLD\SurveyResultVMs.cs" />
+    <Compile Include="Models\Survey_OLD\SurveyTake.cs" />
     <Compile Include="Models\Synchronize\Sync.cs" />
     <Compile Include="Models\Tests\TestUrl.cs" />
     <Compile Include="Models\Timeline\MeetingTimeline.cs" />
@@ -807,8 +823,6 @@
     <Compile Include="Utilities\TimingUtility.cs" />
     <Compile Include="Utilities\ViewUtility.cs" />
     <Compile Include="Models\Audit\LogModel.cs" />
-    <Content Include="Areas\RouteDebugger\Content\rdstyle.css" />
-    <Content Include="Areas\RouteDebugger\Scripts\detect.js" />
     <None Include=".bin\bower.cmd" />
     <None Include=".bin\git.cmd" />
     <None Include=".bin\node.cmd" />
@@ -829,6 +843,7 @@
     <Content Include=".ebextensions\Autoscaling.config" />
     <Content Include="Areas\People\Views\web.config" />
     <Content Include="Areas\People\Views\Main\Index.cshtml" />
+    <Content Include="Areas\People\Views\QuarterlyConversation\Index.cshtml" />
     <None Include="bundleconfig.json" />
     <None Include="Content\Angular\ngsortable.less" />
     <Content Include="Content\Angular\ngsortable.css">
@@ -1876,8 +1891,6 @@
     <Content Include="Views\L10\partial\CompanyRockGroup.cshtml" />
     <Content Include="Views\Measurable\partial\list.cshtml" />
     <Content Include="Views\Faq\API.cshtml" />
-    <Content Include="Areas\RouteDebugger\Views\RouteDebugger\Index.cshtml" />
-    <Content Include="Areas\RouteDebugger\Views\Web.config" />
     <Content Include="Views\Log\Row.cshtml" />
     <Content Include="Views\Log\Index.cshtml" />
     <Content Include="Views\Account\FixEmail.cshtml" />
@@ -2220,9 +2233,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Areas\People\Models\" />
     <Folder Include="Areas\People\Views\Shared\" />
     <Folder Include="Content\fonts\fonts\" />
+    <Folder Include="Engines\Surveys\Abstract\" />
     <Folder Include="External\" />
     <Folder Include="logs\" />
     <Folder Include="Models\Notifications\" />

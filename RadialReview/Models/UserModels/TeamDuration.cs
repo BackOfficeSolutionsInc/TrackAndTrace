@@ -11,7 +11,8 @@ using System.Web;
 namespace RadialReview.Models.UserModels
 {
 	public class TeamDurationModel : IDeletable, ILongIdentifiable, IHistorical {
-		public virtual long Id { get; set; }
+        [Obsolete("Did you mean TeamId?")]
+        public virtual long Id { get; set; }
 		public virtual long UserId { get; set; }
 		public virtual long TeamId { get; set; }
 		public virtual long OrganizationId { get; set; }

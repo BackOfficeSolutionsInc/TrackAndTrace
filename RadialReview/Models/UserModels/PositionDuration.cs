@@ -10,9 +10,11 @@ using System.Web;
 namespace RadialReview.Models.UserModels
 {
 	public class PositionDurationModel : IHistorical, ILongIdentifiable {
+        [Obsolete("Did you mean Position.Id?")]
 		public virtual long Id { get; set; }
 		public virtual long UserId { get; set; }
 		public virtual OrganizationPositionModel Position { get; set; }
+        //public virtual long PositionId { get; set;}                       /// Issues with the Map(PositionId) and Reference(Position). Use caution.
 		public virtual DateTime CreateTime { get; set; }
 		public virtual DateTime? DeleteTime { get; set; }
 		public virtual long? DeletedBy { get; set; }

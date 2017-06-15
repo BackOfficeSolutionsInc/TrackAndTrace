@@ -18,6 +18,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
 using RadialReview.Models.ViewModels;
+using RadialReview.Reflection;
 
 namespace TractionTools.Tests.Utilities {
 	public class Org {

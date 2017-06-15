@@ -38,7 +38,13 @@ namespace RadialReview.Utilities.DataTypes
 	}
 	public static class DateRangeExtensions {
 
-		public static Expression<Func<T, bool>> FilterRestricted<T>(this DateRange range) where T : IDeletable {
+        /// <summary>
+        /// Filters IDeletable. Use Filter.Compile() for Linq
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="range"></param>
+        /// <returns></returns>
+        public static Expression<Func<T, bool>> FilterRestricted<T>(this DateRange range) where T : IDeletable {
 			if (range == null) {
 				return (T x) => x.DeleteTime == null; /// x => true
 			}
@@ -46,6 +52,12 @@ namespace RadialReview.Utilities.DataTypes
 
 		}
 
+        /// <summary>
+        /// Filters IHistoricals. Use Filter.Compile() for Linq
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="range"></param>
+        /// <returns></returns>
 		public static Expression<Func<T, bool>> Filter<T>(this DateRange range) where T : IHistorical
 		{
 			if (range == null) {

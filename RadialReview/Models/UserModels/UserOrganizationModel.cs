@@ -18,12 +18,13 @@ using System.Collections.Generic;
 using System.Linq;
 using RadialReview.Utilities.DataTypes;
 using log4net;
+using RadialReview.Models.Components;
 
 namespace RadialReview.Models
 {
     [DebuggerDisplay("User {User}")]
     [DataContract]
-    public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IHistorical, TimeSettings/*, IAngularizer<UserOrganizationModel>*/
+    public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IHistorical, TimeSettings,IForModel/*, IAngularizer<UserOrganizationModel>*/
     {
         protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -418,8 +419,11 @@ namespace RadialReview.Models
 
 		public virtual string UserModelId { get { return User.NotNull(x => x.Id); } set { } }
 
+        public virtual long ModelId {get { return Id; }}
 
-		public virtual DataContract GetUserDataContract()
+        public virtual string ModelType {get {return ForModel.GetModelType<UserOrganizationModel>();}}
+
+        public virtual DataContract GetUserDataContract()
         {
             return new DataContract(this);
         }
@@ -445,6 +449,10 @@ namespace RadialReview.Models
         public virtual int GetTimezoneOffset()
         {
             return _ClientOffset ?? GetOrganizationSettings().GetTimezoneOffset();
+        }
+
+        public virtual bool Is<T>() {
+            return typeof(UserOrganizationModel).IsAssignableFrom(typeof(T));
         }
     }
 

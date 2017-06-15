@@ -1344,7 +1344,7 @@ namespace RadialReview.Accessors {
 				row.Height = Unit.FromInch((6 * 8 + 5.0) / (8 * 16.0) / 2);
 				//row.Cells[0].AddParagraph("" + mn + ".");
 				//row.Cells[0].Format.Alignment = ParagraphAlignment.Right;
-				row.Cells[1].AddParagraph(m.Owner.Name + "");
+				row.Cells[1].AddParagraph(m.Owner.NotNull(x=>x.Name) + "");
 				row.Cells[2].AddParagraph(m.Name + "");
 				row.Cells[2].Format.LeftIndent = Unit.FromInch(.1);
 				row.Cells[2].Format.Alignment = ParagraphAlignment.Left;

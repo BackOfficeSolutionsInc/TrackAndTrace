@@ -21,7 +21,20 @@ namespace RadialReview
 			}
 		}
 
-		public static AddedRemoved<T> AddRemove<T>(IEnumerable<T> oldValues, IEnumerable<T> newValues)
+
+        public static void AssertEqual<T>(IEnumerable<T> expected, IEnumerable<T> found) {
+            var res = AddRemove(found, expected);
+            if (res.AddedValues.Any()) {
+                throw new Exception("Found " + res.AddedValues.Count() + " additional items.");
+            }
+            if (res.RemovedValues.Any()) {
+                throw new Exception("Expected " + res.RemovedValues.Count() + " additional items.");
+            }
+        }
+
+
+
+        public static AddedRemoved<T> AddRemove<T>(IEnumerable<T> oldValues, IEnumerable<T> newValues)
 		{
 			return AddRemove(oldValues, newValues, x => x);
 		}

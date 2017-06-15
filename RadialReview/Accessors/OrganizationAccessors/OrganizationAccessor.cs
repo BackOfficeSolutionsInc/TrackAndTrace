@@ -782,6 +782,10 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+        public static IEnumerable<CompanyValueModel> GetCompanyValues_Unsafe(ISession s, long organizationId) {
+            return s.QueryOver<CompanyValueModel>().Where(x => x.DeleteTime == null && x.OrganizationId == organizationId).Future();
+        }
+
 		public static List<CompanyValueModel> GetCompanyValues(AbstractQuery query, PermissionsUtility perms, long organizationId, DateRange range) {
 			perms.ViewOrganization(organizationId);
 			return GetCompanyValues_Unsafe(query, organizationId, range);

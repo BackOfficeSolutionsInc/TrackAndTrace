@@ -81,7 +81,7 @@ namespace RadialReview
             AntiForgeryConfig.SuppressXFrameOptionsHeader = true;
 
 			//AreaRegistration.RegisterAllAreas();
-            //AreaRegistration.RegisterAllAreas();
+            AreaRegistration.RegisterAllAreas();
 
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 			RouteConfig.RegisterRoutes(RouteTable.Routes);

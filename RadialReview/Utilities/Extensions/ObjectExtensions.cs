@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web;
+using RadialReview.Models.L10;
 
 namespace RadialReview
 {
@@ -129,16 +130,6 @@ namespace RadialReview
             return true;
         }
 
-		public static TRef Get<T, TRef>(this T obj, Expression<Func<T, TRef>> selector)
-		{
-			return selector.Compile()(obj);
-		}
-		public static void Set<T, TRef>(this T obj, Expression<Func<T, TRef>> selector,TRef value)
-		{
-			var prop = (PropertyInfo)((MemberExpression)selector.Body).Member;
-			prop.SetValue(obj, value, null);
-		}
-
 		public static T Touch<T>(this T self) where T : IEnumerable
 	    {
 			foreach (var o in self){
@@ -148,6 +139,23 @@ namespace RadialReview
 			}
 			return self;
 	    }
-    }
 
+        internal static decimal Get(L10Recurrence recur, Expression<Func<L10Recurrence, decimal>> pageDur) {
+            throw new NotImplementedException();
+        }
+    }
+}
+
+
+namespace RadialReview.Reflection {
+
+    public static class ObjectExtensions {
+        public static TRef Get<T, TRef>(this T obj, Expression<Func<T, TRef>> selector) {
+            return selector.Compile()(obj);
+        }
+        public static void Set<T, TRef>(this T obj, Expression<Func<T, TRef>> selector, TRef value) {
+            var prop = (PropertyInfo)((MemberExpression)selector.Body).Member;
+            prop.SetValue(obj, value, null);
+        }
+    }
 }
