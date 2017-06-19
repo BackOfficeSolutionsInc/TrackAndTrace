@@ -15,10 +15,10 @@ namespace RadialReview.Areas.People.Angular.Survey {
 
         public long? SurveyContainerId { get; set; }
 
-        public ICollection<ISection> Sections { get; set; }
+        public ICollection<AngularSurveySection> Sections { get; set; }
         public void AppendSection(ISection item) {
-            Sections = Sections ?? new List<ISection>();
-            Sections.Add(item);
+            Sections = Sections ?? new List<AngularSurveySection>();
+            Sections.Add((AngularSurveySection)item);
         }
         public IEnumerable<ISection> GetSections() {
             return Sections;

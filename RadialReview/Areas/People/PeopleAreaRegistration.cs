@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using RadialReview.Utilities;
+using System.Web.Mvc;
 
 namespace RadialReview.Areas.People
 {
@@ -19,6 +20,13 @@ namespace RadialReview.Areas.People
                 "People/{controller}/{action}/{id}",
                 new { controller = "Main", action = "Index", id = UrlParameter.Optional }
             );
+            
+            //context.MapRoute(
+            //    name: "staticFileRoute",
+            //    url: "People/AngularTemplates/{*file}",
+            //    defaults: new { controller = "Home", action = "HandleStatic" }
+            //);
+
         }
     }
 }

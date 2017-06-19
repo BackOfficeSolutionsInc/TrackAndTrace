@@ -6,6 +6,8 @@ using RadialReview.Models.Angular.Base;
 using System.Linq;
 using RadialReview.Models.Interfaces;
 using RadialReview.Areas.People.Angular.Survey;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json;
 
 namespace RadialReview.Areas.People.Angular.Survey {
     public class AngularSurveyItemContainer : BaseAngular, IItemContainer {
@@ -63,8 +65,10 @@ namespace RadialReview.Areas.People.Angular.Survey {
         public string Name { get; set; }
         public string Help { get; set; }
         public int? Ordering { get; set; }
-
+        [JsonConverter(typeof(StringEnumConverter))]
         public SurveyItemType? ItemType { get; set; }
+
+        public string TemplateModifier { get; set; }
 
         public IDictionary<string,object> Settings { get; set; }
 

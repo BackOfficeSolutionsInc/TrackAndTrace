@@ -19,7 +19,7 @@
 }@using (Html.BeginScripts()) {
     <!--Begin Angular Scripts-->
     if (RadialReview.Utilities.Config.IsLocal()) {
-       <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.js"></script>
+       <script src="~/Scripts/Angular/angular.js"@*"https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.js"*@></script>
     }else{
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
     }

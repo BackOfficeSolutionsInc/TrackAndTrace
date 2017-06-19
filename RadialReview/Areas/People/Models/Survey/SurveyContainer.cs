@@ -7,6 +7,8 @@ using System.Linq;
 using System.Web;
 using System.Collections;
 using FluentNHibernate.Mapping;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace RadialReview.Areas.People.Models.Survey {
     public class SurveyContainer : ILongIdentifiable, IHistorical, ISurveyContainer {

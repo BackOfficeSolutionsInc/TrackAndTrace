@@ -3,6 +3,8 @@
     ViewBag.Title = "Quarterly Conversation";
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Subheading = "";
+
+    Html.RenderPartial("~/Views/CDN/Angular.cshtml");
 }
 
 @section top{
@@ -12,8 +14,21 @@
 }
 
 <div id="qc-archive"></div>
+<div ng-app="people">
+    <survey-container survey-container-id="6"></survey-container>
+</div>
 
+@using (Html.BeginStyles()) {
+
+    @Styles.Render("~/styles/people")
+    <style>
+        .survey-component{
+            margin-left: 10px;
+        }
+    </style>
+}
 @using (Html.BeginScripts()) {
+    @Scripts.Render("~/bundles/people")
     <script>
         DataTable({
             container: "#qc-archive",

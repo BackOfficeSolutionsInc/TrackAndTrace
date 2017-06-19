@@ -63,13 +63,17 @@ namespace RadialReview.Engines.Surveys {
             var allItemFormats = CacheData.AllItemFormats;//Aggregator.GetAllItemFormats(data);
             var allResponses = CacheData.AllResponses;//Aggregator.GetAllResponses(data);
 
+            //Start at the container
             traverse.AtSurveyContainer(surveyContainer);
+            //Traverse surveys
             foreach (var survey in surveys) {
                 traverse.SurveyContainerToSurvey(surveyContainer,survey);
                 var surveySections = allSections.Where(x => x.GetSurveyId() == survey.Id);
+                //Compile sections
                 foreach (var section in surveySections) {
                     traverse.SurveyToSection(survey, section);
                     var sectionItems = allItems.Where(x => x.GetSectionId() == section.Id);
+                    //Add Items
                     foreach (var item in sectionItems) {
                         var format = allItemFormats.FirstOrDefault(fmat => fmat.Id == item.GetItemFormatId());
                         var response = allResponses.FirstOrDefault(resp => resp.GetItemId() == item.Id);

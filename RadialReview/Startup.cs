@@ -10,6 +10,7 @@ namespace RadialReview
     {
         public void Configuration(IAppBuilder app)
         {
+
             ConfigureAuth(app);
 	        
 			var redis = Config.Redis("Radial-SignalR");

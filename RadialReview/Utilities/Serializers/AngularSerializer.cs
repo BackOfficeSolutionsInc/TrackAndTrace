@@ -18,6 +18,7 @@ using NHibernate.Proxy;
 using RadialReview.Models.Angular;
 using RadialReview.Models.Angular.Base;
 using System.Linq.Expressions;
+using Newtonsoft.Json.Converters;
 
 namespace RadialReview.Utilities.Serializers {
 	/**
@@ -88,13 +89,13 @@ namespace RadialReview.Utilities.Serializers {
 				if (name == "_ExtraProperties" && value != null) {
 					var dict = (Dictionary<string, object>)value;
 					foreach (var k in dict.Keys) {
-						var serialized = _SerializeProperty(k, dict[k], parent, lookup, now);
+						var serialized = _SerializeProperty(k, dict[k], parent, lookup, now, item);
 						if (serialized != null) {
 							parent[k] = serialized;
 						}
 					}
 				} else {
-					var serialized = _SerializeProperty(name, value, parent, lookup, now);
+					var serialized = _SerializeProperty(name, value, parent, lookup, now, item);
 					if (serialized != null) {
 						parent[name] = serialized;
 					}
@@ -111,7 +112,7 @@ namespace RadialReview.Utilities.Serializers {
 			}
 		}
 
-		private static object _SerializeProperty(string name, object value, Dictionary<string, object> parent, Dictionary<string, object> lookup, DateTime now) {
+		private static object _SerializeProperty(string name, object value, Dictionary<string, object> parent, Dictionary<string, object> lookup, DateTime now, object owner) {
 			/*if (value != null && value.GetType().GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof (IAngularizer<>))){
 				var output = new Dictionary<string, object>();
 				_Serialize(value, output, lookup, now);
@@ -129,6 +130,10 @@ namespace RadialReview.Utilities.Serializers {
 			if (value is IAngularIgnore) {
 				return null;
 			}
+
+            if (value is Enum && GetAttributeFrom<JsonConverterAttribute>(owner, name).NotNull(x => x.ConverterType) == typeof(StringEnumConverter)) {
+                return value + "";
+            }
 
 			if (value is IAngularItem) {
 				var sub = new Dictionary<string, object>();
@@ -256,8 +261,13 @@ namespace RadialReview.Utilities.Serializers {
 			return false;
 		}
 
+        private static T GetAttributeFrom<T>(object instance, string propertyName) where T : Attribute {
+            var attrType = typeof(T);
+            var property = instance.GetType().GetProperty(propertyName);
+            return (T)property.GetCustomAttributes(attrType, false).FirstOrDefault();
+        }
 
-		private static IEnumerable<PropertyInfo> GetProperties(object obj) {
+        private static IEnumerable<PropertyInfo> GetProperties(object obj) {
 			return obj.GetType().GetProperties();
 		}
 

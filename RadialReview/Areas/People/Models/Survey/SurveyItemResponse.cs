@@ -6,7 +6,8 @@ using System.Web;
 
 namespace RadialReview.Areas.People.Models.Survey {
     public class SurveyItemContainer : IItemContainer {
-        public long Id { get; set; }
+        [Obsolete("Uses the Item.Id")]
+        public long Id { get { return Item.Id;  } }
 
         public IItem Item { get; set; }
         public IResponse Response { get; set; }

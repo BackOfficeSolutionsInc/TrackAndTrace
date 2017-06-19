@@ -52,7 +52,10 @@ namespace RadialReview.Models {
             VTO = 3,
             AccountabilityHierarchy= 4,
 			UpgradeUsersForOrganization = 5,
-		}
+            SurveyContainer = 6,
+            Survey = 7,
+            //Survey = 7,
+        }
 		[Flags]
 		public enum AccessLevel
 		{

@@ -570,13 +570,13 @@ namespace RadialReview.Controllers {
                     if (redirectUrl == null)
                         redirectUrl = Request.Url.PathAndQuery;
                     log.Info("Login: [" + Request.Url.PathAndQuery + "] --> [" + redirectUrl + "]");
-                    filterContext.Result = RedirectToAction("Login", "Account", new { message = filterContext.Exception.Message, returnUrl = redirectUrl });
+                    filterContext.Result = RedirectToAction("Login", "Account", new { area="", message = filterContext.Exception.Message, returnUrl = redirectUrl });
                     filterContext.ExceptionHandled = true;
                     filterContext.HttpContext.Response.Clear();
                 } else if (filterContext.Exception is OrganizationIdException) {
                     var redirectUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
                     log.Info("Organization: [" + Request.Url.PathAndQuery + "] --> [" + redirectUrl + "]");
-                    filterContext.Result = RedirectToAction("Role", "Account", new { message = filterContext.Exception.Message, returnUrl = redirectUrl });
+                    filterContext.Result = RedirectToAction("Role", "Account", new { area = "", message = filterContext.Exception.Message, returnUrl = redirectUrl });
                     filterContext.ExceptionHandled = true;
                     filterContext.HttpContext.Response.Clear();
                 } else if (filterContext.Exception is PermissionsException) {
@@ -593,18 +593,18 @@ namespace RadialReview.Controllers {
                 } else if (filterContext.Exception is MeetingException) {
                     var type = ((MeetingException)filterContext.Exception).MeetingExceptionType;
                     log.Info("MeetingException: [" + Request.Url.PathAndQuery + "] --> [" + type + "]");
-                    filterContext.Result = RedirectToAction("ErrorMessage", "L10", new { message = filterContext.Exception.Message, type });
+                    filterContext.Result = RedirectToAction("ErrorMessage", "L10", new { area = "", message = filterContext.Exception.Message, type });
                     filterContext.ExceptionHandled = true;
                     filterContext.HttpContext.Response.Clear();
                 } else if (filterContext.Exception is RedirectException) {
                     var returnUrl = ((RedirectException)filterContext.Exception).RedirectUrl;
                     log.Info("Redirect: [" + Request.Url.PathAndQuery + "] --> [" + returnUrl + "]");
-                    filterContext.Result = RedirectToAction("Index", "Error", new { message = filterContext.Exception.Message, returnUrl = returnUrl });
+                    filterContext.Result = RedirectToAction("Index", "Error", new { area = "", message = filterContext.Exception.Message, returnUrl = returnUrl });
                     filterContext.ExceptionHandled = true;
                     filterContext.HttpContext.Response.Clear();
                 } else if (filterContext.Exception is HttpAntiForgeryException) {
                     log.Info("AntiForgery: [" + Request.Url.PathAndQuery + "] --> []");
-                    filterContext.Result = RedirectToAction("Login", "Account", new { message = filterContext.Exception.Message });
+                    filterContext.Result = RedirectToAction("Login", "Account", new { area = "", message = filterContext.Exception.Message });
                     filterContext.ExceptionHandled = true;
                     filterContext.HttpContext.Response.Clear();
                 } else {
@@ -815,13 +815,14 @@ namespace RadialReview.Controllers {
                 SignOut();
                 var redirectUrl = Request.Url.PathAndQuery;
                 log.Info("Login: [" + Request.Url.PathAndQuery + "] --> [" + redirectUrl + "]");
-                filterContext.Result = RedirectToAction("Login", "Account", new { returnUrl = redirectUrl });
+                filterContext.Result = RedirectToAction("Login", "Account", new { area = "", returnUrl = redirectUrl });
                 //filterContext.ExceptionHandled = true;
                 filterContext.HttpContext.Response.Clear();
             } catch (PermissionsException e) {
                 var f = filterContext.HttpContext.Response.Filter;
                 filterContext.HttpContext.Response.Filter = null;
                 filterContext.Result = RedirectToAction("Index", "Error", new {
+                    area = "",
                     message = e.Message,
                     redirectUrl = e.RedirectUrl
                 });

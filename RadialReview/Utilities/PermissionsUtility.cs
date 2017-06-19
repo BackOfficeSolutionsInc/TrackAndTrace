@@ -35,6 +35,7 @@ using RadialReview.Models.Accountability;
 using System.Threading;
 using RadialReview.Models.Rocks;
 using RadialReview.Reflection;
+using RadialReview.Areas.People.Models.Survey;
 
 namespace RadialReview.Utilities {
 	//[Obsolete("Not really obsolete. I just want this to stick out.", false)]
@@ -1530,10 +1531,35 @@ namespace RadialReview.Utilities {
 				return ManagesUserOrganizationOrSelf(userId);
 			throw new PermissionsException();
 		}
-		#endregion
+        #endregion
+        #region NewSurvey
 
-		#region Survey
-		public PermissionsUtility ViewSurveyContainer(long surveyId) {
+
+        public PermissionsUtility ViewSurvey(long surveyId) {
+            if (IsRadialAdmin(caller))
+                return this;
+            var survey = session.Get<Survey>(surveyId);
+            ViewSurveyContainer(survey.SurveyContainerId);
+            return CanView(PermItem.ResourceType.Survey, surveyId);
+        }
+
+        public PermissionsUtility ViewSurveyContainer(long surveyContainerId) {
+            if (IsRadialAdmin(caller))
+                return this;
+
+            return CanView(PermItem.ResourceType.SurveyContainer, surveyContainerId);
+
+            //var survey = session.Get<SurveyContainerModel>(surveyId);
+
+            //if (IsManagingOrganization(survey.OrgId))
+            //    return this;
+            //if (survey.CreatorId == caller.Id)
+            //    return this;
+            //throw new PermissionsException("Cannot view this survey");
+        }
+        #endregion
+        #region OldSurvey
+        public PermissionsUtility ViewOldSurveyContainer(long surveyId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -1546,7 +1572,7 @@ namespace RadialReview.Utilities {
 			throw new PermissionsException("Cannot view this survey");
 		}
 
-		public PermissionsUtility CreateSurvey() {
+		public PermissionsUtility CreateOldSurvey() {
 			if (IsManagingOrganization(caller.Organization.Id)) {
 				return this;
 			}
@@ -1563,7 +1589,7 @@ namespace RadialReview.Utilities {
 		}
 
 
-		public PermissionsUtility EditSurvey(long surveyId) {
+		public PermissionsUtility EditOldSurvey(long surveyId) {
 			var survey = session.Get<SurveyContainerModel>(surveyId);
 
 			if (survey != null) {
@@ -1574,7 +1600,7 @@ namespace RadialReview.Utilities {
 					session.Evict(survey.RespondentGroup);
 			}
 			if (surveyId == 0)
-				return CreateSurvey();
+				return CreateOldSurvey();
 
 
 			if (IsRadialAdmin(caller))

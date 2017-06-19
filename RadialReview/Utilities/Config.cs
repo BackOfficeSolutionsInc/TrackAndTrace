@@ -27,6 +27,10 @@ namespace RadialReview.Utilities {
             File.WriteAllText(file, version);
         }
 
+        //public static string PeopleAreaName() {
+        //    return "People";
+        //}
+
         public static bool ShouldUpdateDB()
         {
             var version = GetAppSetting("dbVersion", "0");
@@ -149,8 +153,17 @@ namespace RadialReview.Utilities {
 			return "Supervisor";
 		}
 
+        public static bool RunChromeExt() {
+            switch (GetEnv()) {
+                case Env.local_test_sqlite: return true;
+                case Env.local_sqlite: return false;
+                case Env.local_mysql: return GetAppSetting("RunExt", "false").ToBooleanJS();
+                case Env.production: return false;
+                default: throw new ArgumentOutOfRangeException();
+            }
+        }
 
-		public static bool IsLocal()
+        public static bool IsLocal()
         {
             switch (GetEnv()) {
                 case Env.local_test_sqlite: return true;

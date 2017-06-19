@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Web;
+using System.Web.Script.Serialization;
 
 namespace RadialReview.Areas.People.Models.Survey {
     public class KV {
@@ -83,20 +84,36 @@ namespace RadialReview.Areas.People.Models.Survey {
         #endregion
 
         public virtual IItemFormat AddSetting(string key, object value) {
-            var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(Settings);
+            //var dict = JavaScriptSerializer.DeserializeObject<Dictionary<string, object>>(Settings);
+            var serializer = new JavaScriptSerializer();
+            var dict = serializer.Deserialize<Dictionary<string, object>>(Settings);
             dict[key] = value;
-            Settings = JsonConvert.SerializeObject(dict, Formatting.None);
+            //Settings = JsonConvert.SerializeObject(dict, Formatting.None);
+            Settings = serializer.Serialize(dict);
             return this;
         }
         public virtual T GetSetting<T>(string key) {
-            JObject json = JObject.Parse(Settings);
+            //JObject json = JObject.Parse(Settings);
+            //try {
+            //    var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(Settings);
+            //    if (dict.ContainsKey(key) && dict[key] is T) {
+            //        return (T)dict[key];
+            //    }
+            //    return default(T);
+            //} catch (JsonSerializationException e) {
+            //    return default(T);
+            //}
+            var serializer = new JavaScriptSerializer();
+
+
+
             try {
-                var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(Settings);
+                var dict = serializer.Deserialize<Dictionary<string, object>>(Settings);
                 if (dict.ContainsKey(key) && dict[key] is T) {
                     return (T)dict[key];
                 }
                 return default(T);
-            } catch (JsonSerializationException e) {
+            } catch (Exception e) {
                 return default(T);
             }
         }
@@ -120,7 +137,10 @@ namespace RadialReview.Areas.People.Models.Survey {
         }
 
         public virtual IDictionary<string, object> GetSettings() {
-            return JsonConvert.DeserializeObject<Dictionary<string, object>>(Settings);
+            var serializer = new JavaScriptSerializer();
+            var dict = serializer.Deserialize<Dictionary<string, object>>(Settings);
+            return dict;
+            //return JsonConvert.DeserializeObject<Dictionary<string, object>>(Settings);
         }
 
         public class Map : ClassMap<SurveyItemFormat> {

@@ -208,15 +208,20 @@ namespace TractionTools.Tests.Engines {
             ConstructSurveyEnv(org);
             var container = ConstructSurvey(org);
 
+            var angularContainer = new AngularSurveyContainer();
             DbExecute(s => {
                 var engine = new SurveyReconstructionEngine(container.Id, org.Id, new DatabaseAggregator(s), null);
                 var sc = engine.ReconstructSurveyContainer();
 
-                var angularModel = new AngularSurveyContainer();
-                engine.Traverse(new TraverseBuildAngular(angularModel));
-
-                //var a=result.Id;
+                engine.Traverse(new TraverseBuildAngular(angularContainer));
             });
+
+            Assert.AreEqual(container.Id, angularContainer.Id);
+            Assert.AreEqual(container.GetSurveys().ElementAt(2).Id, angularContainer.GetSurveys().ElementAt(2).Id);
+            Assert.AreEqual(container.GetSurveys().ElementAt(2).GetSections().ElementAt(1).Id, angularContainer.GetSurveys().ElementAt(2).GetSections().ElementAt(1).Id);
+
+            Assert.IsInstanceOfType(container, typeof(SurveyContainer));
+            Assert.IsInstanceOfType(angularContainer, typeof(AngularSurveyContainer));
         }
 
         [TestMethod]

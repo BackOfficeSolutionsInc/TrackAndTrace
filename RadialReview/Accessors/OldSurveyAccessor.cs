@@ -12,12 +12,12 @@ using RadialReview.Utilities;
 using System.Threading.Tasks;
 
 namespace RadialReview.Accessors {
-	public class SurveyAccessor : BaseAccessor {
+	public class OldSurveyAccessor : BaseAccessor {
 
 		public static SurveyContainerModel GetSurveyContainer(UserOrganizationModel caller, long surveyId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					PermissionsUtility.Create(s, caller).ViewSurveyContainer(surveyId);
+					PermissionsUtility.Create(s, caller).ViewOldSurveyContainer(surveyId);
 					var survey = s.Get<SurveyContainerModel>(surveyId);
 
 					survey.QuestionGroup._Questions = s.QueryOver<SurveyQuestionModel>()
@@ -36,7 +36,7 @@ namespace RadialReview.Accessors {
 		public static SurveyResultVM GetResults(UserOrganizationModel caller, long surveyId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					PermissionsUtility.Create(s, caller).ViewSurveyContainer(surveyId);
+					PermissionsUtility.Create(s, caller).ViewOldSurveyContainer(surveyId);
 
 					var survey = s.Get<SurveyContainerModel>(surveyId);
 					var results = s.QueryOver<SurveyTakeAnswer>().Where(x => x.SurveyContainerId == surveyId && x.DeleteTime == null).List().ToList();
@@ -242,7 +242,7 @@ namespace RadialReview.Accessors {
 		public static SurveyContainerModel EditSurvey(UserOrganizationModel caller, SurveyContainerModel model) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					PermissionsUtility.Create(s, caller).EditSurvey(model.Id);
+					PermissionsUtility.Create(s, caller).EditOldSurvey(model.Id);
 
 					model._Organization = s.Load<OrganizationModel>(model.OrgId);
 					model._Creator = s.Load<UserOrganizationModel>(model.CreatorId);
@@ -282,7 +282,7 @@ namespace RadialReview.Accessors {
 			var emails = new List<Mail>();
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					PermissionsUtility.Create(s, caller).EditSurvey(surveyContainerModelId);
+					PermissionsUtility.Create(s, caller).EditOldSurvey(surveyContainerModelId);
 
 					var surveyContainer = s.Get<SurveyContainerModel>(surveyContainerModelId);
 					if (surveyContainer == null || surveyContainer.DeleteTime != null)

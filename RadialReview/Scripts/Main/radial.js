@@ -1,137 +1,140 @@
 ﻿//hasOwnIndex
 function arrayHasOwnIndex(array, prop) {
-	return array.hasOwnProperty(prop);// && /^0$|^[1-9]\d*$/.test(prop) && prop <= 4294967294; // 2^32 - 2
+    return array.hasOwnProperty(prop);// && /^0$|^[1-9]\d*$/.test(prop) && prop <= 4294967294; // 2^32 - 2
 }
 
+function showDebug(show) {
+    $("body").toggleClass("show-debug",show);
+}
 
 $(window).bind('beforeunload', function (event) {
-	if ($(".unsaved").length > 0)
-		return "There are items you have not saved.";
-	return;
+    if ($(".unsaved").length > 0)
+        return "There are items you have not saved.";
+    return;
 });
 
 $(".modifiable").change(modify);
 $(".modifiable").bind('input', modify);
 
 function modify() {
-	$(this).addClass("unsaved");
-	$(".saveButton").addClass("unsaved");
+    $(this).addClass("unsaved");
+    $(".saveButton").addClass("unsaved");
 }
 
 function clearUnsaved() {
-	$(".unsaved").removeClass("unsaved");
+    $(".unsaved").removeClass("unsaved");
 }
 
 function UrlEncodingFix(str) {
-	str = replaceAll("%26%2339%3B", "%27", str);
-	str = replaceAll("%26%2334%3B", "%22", str);
-	str = replaceAll("%26%2313%3B", "%0A", str);
-	str = replaceAll("%26%2310%3B", "%0D", str);
-	return str;
+    str = replaceAll("%26%2339%3B", "%27", str);
+    str = replaceAll("%26%2334%3B", "%22", str);
+    str = replaceAll("%26%2313%3B", "%0A", str);
+    str = replaceAll("%26%2310%3B", "%0D", str);
+    return str;
 }
 
 function escapeString(str) {
-	if (typeof (str) !== "string")
-		return str;
-	str = str.replace(/"/g, "&quot;");
-	str = str.replace(/'/g, "&#39;");
-	return str;
+    if (typeof (str) !== "string")
+        return str;
+    str = str.replace(/"/g, "&quot;");
+    str = str.replace(/'/g, "&#39;");
+    return str;
 }
 //Index of for IE
 if (!Array.prototype.indexOf) {
-	Array.prototype.indexOf = function (elt /*, from*/) {
-		var len = this.length >>> 0;
+    Array.prototype.indexOf = function (elt /*, from*/) {
+        var len = this.length >>> 0;
 
-		var from = Number(arguments[1]) || 0;
-		from = (from < 0) ? Math.ceil(from) : Math.floor(from);
-		if (from < 0)
-			from += len;
+        var from = Number(arguments[1]) || 0;
+        from = (from < 0) ? Math.ceil(from) : Math.floor(from);
+        if (from < 0)
+            from += len;
 
-		for (; from < len; from++) {
-			if (from in this && this[from] === elt)
-				return from;
-		}
-		return -1;
-	};
+        for (; from < len; from++) {
+            if (from in this && this[from] === elt)
+                return from;
+        }
+        return -1;
+    };
 }
 function toTitleCase(str) {
-	return str.replace(/\w\S*/g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
+    return str.replace(/\w\S*/g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
 }
 
 
 (function ($) {
-	$.fn.valList = function () {
-		return $.map(this, function (elem) {
-			return elem.value || "";
-		}).join(",");
-	};
-	$.fn.nameList = function () {
-		return $.map(this, function (elem) {
-			return elem.name || "";
-		}).join(",");
-	};
-	$.fn.asString = function () {
-		if (Object.prototype.toString.call(this) === '[object Array]') {
-			return $.map(this, function (elem) {
-				return elem || "";
-			}).join(",");
-		}
-		return this;
-	};
+    $.fn.valList = function () {
+        return $.map(this, function (elem) {
+            return elem.value || "";
+        }).join(",");
+    };
+    $.fn.nameList = function () {
+        return $.map(this, function (elem) {
+            return elem.name || "";
+        }).join(",");
+    };
+    $.fn.asString = function () {
+        if (Object.prototype.toString.call(this) === '[object Array]') {
+            return $.map(this, function (elem) {
+                return elem || "";
+            }).join(",");
+        }
+        return this;
+    };
 
-	$.fn.serializeObject = function () {
-		var o = {};
-		var a = this.serializeArray();
-		$.each(a, function () {
-			if (o[this.name] !== undefined) {
-				if (!o[this.name].push) {
-					o[this.name] = [o[this.name]];
-				}
-				o[this.name].push(this.value || '');
-			} else {
-				o[this.name] = this.value || '';
-			}
-		});
-		return o;
-	};
+    $.fn.serializeObject = function () {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function () {
+            if (o[this.name] !== undefined) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
 
 })(jQuery);
 
 function qtip() {
-	$('[title]').qtip({
-		position: {
-			my: 'bottom left',  // Position my top left...
-			at: 'top center', // at the bottom right of...
-			target: 'mouse'
-		}
-	});
+    $('[title]').qtip({
+        position: {
+            my: 'bottom left',  // Position my top left...
+            at: 'top center', // at the bottom right of...
+            target: 'mouse'
+        }
+    });
 }
 
 function save(key, value) {
-	if ('localStorage' in window && window['localStorage'] !== null) {
-		window.localStorage[key] = value;
-	} else {
-		console.log("Could not save");
-	}
+    if ('localStorage' in window && window['localStorage'] !== null) {
+        window.localStorage[key] = value;
+    } else {
+        console.log("Could not save");
+    }
 }
 
 function load(key) {
-	if ('localStorage' in window && window['localStorage'] !== null) {
-		return window.localStorage[key];
-	} else {
-		console.log("Could not load");
-	}
+    if ('localStorage' in window && window['localStorage'] !== null) {
+        return window.localStorage[key];
+    } else {
+        console.log("Could not load");
+    }
 }
 
 function ForceUnhide() {
-	var speed = 40;
-	$(".startHiddenGroup").each(function (i, e) {
-		$(e).find(".startHidden").each(function (i, e2) {
-			setTimeout(function () {
-				$(e2).addClass("unhide");
-			}, speed * i);
-		});
-	});
+    var speed = 40;
+    $(".startHiddenGroup").each(function (i, e) {
+        $(e).find(".startHidden").each(function (i, e2) {
+            setTimeout(function () {
+                $(e2).addClass("unhide");
+            }, speed * i);
+        });
+    });
 }
 
 function ForceHide() { $(".startHidden").removeClass("startHidden").removeClass("unhide").addClass("startHidden"); }
@@ -142,39 +145,39 @@ function refresh() { location.reload(); }
 if callback returns text or bool, there is an error
 */
 function showTextAreaModal(title, callback, defaultText) {
-	$("#modalMessage").html("");
-	$("#modalMessage").addClass("hidden");
-	if (typeof defaultText === "undefined")
-		defaultText = "";
+    $("#modalMessage").html("");
+    $("#modalMessage").addClass("hidden");
+    if (typeof defaultText === "undefined")
+        defaultText = "";
 
-	$('#modalBody').html("<div class='error' style='color:red;font-weight:bold'></div><textarea class='form-control verticalOnly' rows=5>" + defaultText + "</textarea>");
-	$("#modalTitle").html(title);
-	$("#modalForm").unbind('submit');
-	$("#modal").modal("show");
+    $('#modalBody').html("<div class='error' style='color:red;font-weight:bold'></div><textarea class='form-control verticalOnly' rows=5>" + defaultText + "</textarea>");
+    $("#modalTitle").html(title);
+    $("#modalForm").unbind('submit');
+    $("#modal").modal("show");
 
-	$("#modalForm").submit(function (e) {
-		e.preventDefault();
-		var result = callback($('#modalBody').find("textarea").val());
-		if (result) {
-			if (typeof result !== "string") {
-				result = "An error has occurred. Please check your input.";
-			}
-			$("#modalBody .error").html(result);
-		} else {
-			$("#modal").modal("hide");
-		}
-	});
+    $("#modalForm").submit(function (e) {
+        e.preventDefault();
+        var result = callback($('#modalBody').find("textarea").val());
+        if (result) {
+            if (typeof result !== "string") {
+                result = "An error has occurred. Please check your input.";
+            }
+            $("#modalBody .error").html(result);
+        } else {
+            $("#modal").modal("hide");
+        }
+    });
 }
 function generateGuid() {
-	var result, i, j;
-	result = '';
-	for (j = 0; j < 32; j++) {
-		if (j == 8 || j == 12 || j == 16 || j == 20)
-			result = result + '-';
-		i = Math.floor(Math.random() * 16).toString(16).toUpperCase();
-		result = result + i;
-	}
-	return result;
+    var result, i, j;
+    result = '';
+    for (j = 0; j < 32; j++) {
+        if (j == 8 || j == 12 || j == 16 || j == 20)
+            result = result + '-';
+        i = Math.floor(Math.random() * 16).toString(16).toUpperCase();
+        result = result + i;
+    }
+    return result;
 }
 
 //function getFormattedDate(date) {
@@ -198,52 +201,52 @@ function generateGuid() {
 
 //Date stuff
 function parseJsonDate(value, allowNumbers) {
-	var type = typeof (value);
-	var dateRegex1 = /\/Date\([+-]?\d{13,14}\)\//;
-	var dateRegex2 = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{0,7})?/;
-	var dateRegex3 = /^(\d{2})-(\d{2})-(\d{4}) (\d{2}):(\d{2}):(\d{2})$/;
-	if (type === "undefined" || value === null)
-		return false;
-	if (allowNumbers == true && type === "number")
-		return new Date(value);
-	if (type == 'string' && dateRegex1.test(value)) {
-		return new Date(new Date(parseInt(value.substr(6))).getTime() - new Date().getTimezoneOffset() * 60000)
-	} else if (type == 'string' && dateRegex2.test(value)) {
-		return new Date(value);
-	} else if (type == 'string' && dateRegex3.test(value)) {
-		return new Date(value);
-	} else if (value.getDate !== undefined) {
-		return new Date(value.getTime());
-	}
-	if (allowNumbers == true && type === "string" && !isNaN(value)) {
-		return new Date(+value);
-	}
+    var type = typeof (value);
+    var dateRegex1 = /\/Date\([+-]?\d{13,14}\)\//;
+    var dateRegex2 = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{0,7})?/;
+    var dateRegex3 = /^(\d{2})-(\d{2})-(\d{4}) (\d{2}):(\d{2}):(\d{2})$/;
+    if (type === "undefined" || value === null)
+        return false;
+    if (allowNumbers == true && type === "number")
+        return new Date(value);
+    if (type == 'string' && dateRegex1.test(value)) {
+        return new Date(new Date(parseInt(value.substr(6))).getTime() - new Date().getTimezoneOffset() * 60000)
+    } else if (type == 'string' && dateRegex2.test(value)) {
+        return new Date(value);
+    } else if (type == 'string' && dateRegex3.test(value)) {
+        return new Date(value);
+    } else if (value.getDate !== undefined) {
+        return new Date(value.getTime());
+    }
+    if (allowNumbers == true && type === "string" && !isNaN(value)) {
+        return new Date(+value);
+    }
 
-	return false;
+    return false;
 }
 
 function dateFormatter(date) {
-	return [date.getMonth() + 1, date.getDate(), date.getFullYear()].join('/');
+    return [date.getMonth() + 1, date.getDate(), date.getFullYear()].join('/');
 }
 
 function clientDateFormat(date) {
-	if (date == false)
-		return "";
-	var _d = date.getDate(),
+    if (date == false)
+        return "";
+    var _d = date.getDate(),
 		dd = _d > 9 ? _d : '0' + _d,
 		_m = date.getMonth() + 1,
 		mm = _m > 9 ? _m : '0' + _m,
 		yyyy = date.getFullYear();
-	return window.dateFormat
+    return window.dateFormat
 	   .replace(/mm/gi, mm).replace(/m/gi, _m)
 	   .replace(/dd/gi, dd).replace(/d/gi, _d)
 	   .replace(/yyyy/gi, yyyy).replace(/yy/gi, (yyyy - 2000));
 }
 
 function serverDateFormat(edate) {
-	if (edate == false)
-		return "";
-	var _d = edate.getDate(),
+    if (edate == false)
+        return "";
+    var _d = edate.getDate(),
 	_m = edate.getMonth() + 1,
 	_mm = edate.getMinutes(),
 	_h = edate.getHours(),
@@ -253,156 +256,156 @@ function serverDateFormat(edate) {
 	h = _h > 9 ? _h : '0' + _h,
 	mm = _mm > 9 ? _mm : '0' + _mm,
 	s = _s > 9 ? _s : '0' + _s;
-	return m + '-' + d + '-' + (edate.getFullYear()) + " " + h + ":" + mm + ":" + s;
+    return m + '-' + d + '-' + (edate.getFullYear()) + " " + h + ":" + mm + ":" + s;
 }
 
 function generateDatepickerLocalize(selector, date, name, id, options) {
-	if (typeof (date) === "undefined") {
-		date = new Date();
-	} else if (date == false) {
+    if (typeof (date) === "undefined") {
+        date = new Date();
+    } else if (date == false) {
 
-	} else {
-		var pdate = parseJsonDate(date, true);
-		if (!pdate) {
-			console.error("Could not determine format from date: " + date);
-			var err = $("<span style='color:rgba(255,0,0,.5)' >DateErr</span>");
-			$(selector).html(err);
-			return err;
-		}
-		date = pdate;
-	}
-	var offset;
-	if (date == false)
-		offset = new Date().getTimezoneOffset();
-	else
-		offset = date.getTimezoneOffset();
-	var newDate = date;
-	if (date!=false)
-		newDate = new Date(date.getTime() + offset * 60000);
-	return generateDatepicker(selector, newDate, name, id, options, offset);
+    } else {
+        var pdate = parseJsonDate(date, true);
+        if (!pdate) {
+            console.error("Could not determine format from date: " + date);
+            var err = $("<span style='color:rgba(255,0,0,.5)' >DateErr</span>");
+            $(selector).html(err);
+            return err;
+        }
+        date = pdate;
+    }
+    var offset;
+    if (date == false)
+        offset = new Date().getTimezoneOffset();
+    else
+        offset = date.getTimezoneOffset();
+    var newDate = date;
+    if (date != false)
+        newDate = new Date(date.getTime() + offset * 60000);
+    return generateDatepicker(selector, newDate, name, id, options, offset);
 }
 
 
 function generateDatepicker(selector, date, name, id, options, offsetMinutes) {
-	if (typeof (date) === "undefined") {
-		date = new Date();
-	} else if (date == false) {
-		//do nothing.
-	} else {
-		var pdate = parseJsonDate(date, true);
-		if (!pdate) {
-			console.error("Could not determine format from date: " + date);
-			var err = $("<span style='color:rgba(255,0,0,.5)' >DateErr</span>");
-			$(selector).html(err);
-			return err;
-		}
-		date = pdate;
-	}
+    if (typeof (date) === "undefined") {
+        date = new Date();
+    } else if (date == false) {
+        //do nothing.
+    } else {
+        var pdate = parseJsonDate(date, true);
+        if (!pdate) {
+            console.error("Could not determine format from date: " + date);
+            var err = $("<span style='color:rgba(255,0,0,.5)' >DateErr</span>");
+            $(selector).html(err);
+            return err;
+        }
+        date = pdate;
+    }
 
-	if (typeof (name) === "undefined")
-		name = "Date";
-	if (typeof (id) === "undefined")
-		id = name;
-	if (typeof (offsetMinutes) === "undefined")
-		offsetMinutes = 0;
+    if (typeof (name) === "undefined")
+        name = "Date";
+    if (typeof (id) === "undefined")
+        id = name;
+    if (typeof (offsetMinutes) === "undefined")
+        offsetMinutes = 0;
 
-	if (date != false)
-		date = new Date(date.getTime() - offsetMinutes * 60000);
-
-
-	var formatted = serverDateFormat(date);
-	var _userFormat = clientDateFormat(date);
+    if (date != false)
+        date = new Date(date.getTime() - offsetMinutes * 60000);
 
 
-	var guid = generateGuid();
-	var builder = '<div class="input-append date ' + guid + '">';
-	builder += '<input class="form-control client-date" data-val="true"' +
+    var formatted = serverDateFormat(date);
+    var _userFormat = clientDateFormat(date);
+
+
+    var guid = generateGuid();
+    var builder = '<div class="input-append date ' + guid + '">';
+    builder += '<input class="form-control client-date" data-val="true"' +
                ' data-val-date="The field Model must be a date." type="text" ' +
                'value="' + _userFormat + '" placeholder="not set">';
-	builder += '<span class="add-on"><i class="icon-th"></i></span>';
-	builder += '<input type="hidden" class="server-date" id="' + id + '" name="' + name + '" value="' + formatted + '" />';
-	builder += '</div>';
-	var dp = $(builder);
-	$(selector).append(dp);
-	var dpOptions = {
-		format: window.dateFormat.toLowerCase(),
-	};
-	if (options) {
-		for (var k in options) {
-			if (arrayHasOwnIndex(options, k)) {
-				dpOptions[k] = options[k];
-			}
-		}
-	}
-	var _offsetMin = offsetMinutes;
-	var eventHolder = $("[name='" + name + "']");
+    builder += '<span class="add-on"><i class="icon-th"></i></span>';
+    builder += '<input type="hidden" class="server-date" id="' + id + '" name="' + name + '" value="' + formatted + '" />';
+    builder += '</div>';
+    var dp = $(builder);
+    $(selector).append(dp);
+    var dpOptions = {
+        format: window.dateFormat.toLowerCase(),
+    };
+    if (options) {
+        for (var k in options) {
+            if (arrayHasOwnIndex(options, k)) {
+                dpOptions[k] = options[k];
+            }
+        }
+    }
+    var _offsetMin = offsetMinutes;
+    var eventHolder = $("[name='" + name + "']");
 
-	$('.' + guid + ' .client-date').datepickerX(dpOptions).on('changeDate', function (e) {
-		var edate = new Date(e.date.getTime() + _offsetMin * 60000);
-		var formatted = serverDateFormat(edate);
-		$('.' + guid + ' .server-date').val(formatted);
-		$(eventHolder).trigger("change", [{
-			clientDate: edate,
-			serverDate: formatted,
-			containerElement: $(selector),
-			clientDateElement: $(this),
-			serverDateElement: $(eventHolder)
-		}]);
-		$(this).datepickerX("hide");
-	}).on("hide", function () {
-		$(eventHolder).trigger("close");
-	});
-	return eventHolder;
+    $('.' + guid + ' .client-date').datepickerX(dpOptions).on('changeDate', function (e) {
+        var edate = new Date(e.date.getTime() + _offsetMin * 60000);
+        var formatted = serverDateFormat(edate);
+        $('.' + guid + ' .server-date').val(formatted);
+        $(eventHolder).trigger("change", [{
+            clientDate: edate,
+            serverDate: formatted,
+            containerElement: $(selector),
+            clientDateElement: $(this),
+            serverDateElement: $(eventHolder)
+        }]);
+        $(this).datepickerX("hide");
+    }).on("hide", function () {
+        $(eventHolder).trigger("close");
+    });
+    return eventHolder;
 }
 
 function metGoal(direction, goal, measured, alternate) {
 
-	if (!$.trim(measured)) {
-		return undefined;
-	} else if ($.isNumeric(measured)) {
-		var m = +((measured + "").replace(/,/gi, "."));
-		var g = +((goal + "").replace(/,/gi, "."));
-		if (direction == "GreaterThan" || direction == 1) {
-			return m >= g;
-		} else if (direction == "LessThan" || direction == -1) {
-			return m < g;
-		} else if (direction == "LessThanOrEqual" || direction == -2) {
-			return m <= g;
-		} else if (direction == "GreaterThanNotEqual" || direction == 2) {
-			return m > g;
-		} else if (direction == "EqualTo" || direction == 0) {
-			return m == g;
-		} else if (direction == "Between" || direction == -3) {
-			var ag = +((alternate + "").replace(/,/gi, "."));
-			return g <= m && m <= ag;
-		} else {
-			console.log("Error: goal met could not be calculated. Unhandled direction: " + direction);
-			return undefined;
-		}
-	} else {
-		return undefined;
-	}
+    if (!$.trim(measured)) {
+        return undefined;
+    } else if ($.isNumeric(measured)) {
+        var m = +((measured + "").replace(/,/gi, "."));
+        var g = +((goal + "").replace(/,/gi, "."));
+        if (direction == "GreaterThan" || direction == 1) {
+            return m >= g;
+        } else if (direction == "LessThan" || direction == -1) {
+            return m < g;
+        } else if (direction == "LessThanOrEqual" || direction == -2) {
+            return m <= g;
+        } else if (direction == "GreaterThanNotEqual" || direction == 2) {
+            return m > g;
+        } else if (direction == "EqualTo" || direction == 0) {
+            return m == g;
+        } else if (direction == "Between" || direction == -3) {
+            var ag = +((alternate + "").replace(/,/gi, "."));
+            return g <= m && m <= ag;
+        } else {
+            console.log("Error: goal met could not be calculated. Unhandled direction: " + direction);
+            return undefined;
+        }
+    } else {
+        return undefined;
+    }
 }
 
 Date.prototype.addDays = function (pDays) {
-	var mDate = new Date(this.valueOf());
-	mDate.setDate(mDate.getDate() + pDays);
-	return mDate;
+    var mDate = new Date(this.valueOf());
+    mDate.setDate(mDate.getDate() + pDays);
+    return mDate;
 };
 Date.prototype.startOfWeek = function (pStartOfWeek) {
-	var mDifference = this.getDay() - pStartOfWeek;
+    var mDifference = this.getDay() - pStartOfWeek;
 
-	if (mDifference < 0) {
-		mDifference += 7;
-	}
+    if (mDifference < 0) {
+        mDifference += 7;
+    }
 
-	return new Date(this.addDays(mDifference * -1));
+    return new Date(this.addDays(mDifference * -1));
 }
 
 function getWeekSinceEpoch(day) {
-	var oneDay = 24 * 60 * 60 * 1000;
-	var span = day.startOfWeek(0);
-	return Math.floor((span.getTime() / oneDay) / 7);
+    var oneDay = 24 * 60 * 60 * 1000;
+    var span = day.startOfWeek(0);
+    return Math.floor((span.getTime() / oneDay) / 7);
 }
 
 /*
@@ -486,583 +489,583 @@ function getWeekSinceEpoch(day) {
 */
 var DataTable = function (settings) {
 
-	//Helpers
-	var resolve = function (strFunc, args) {
-		if (typeof (strFunc) === "string")
-			return strFunc;
-		else if (typeof (strFunc) === "function")
-			return strFunc.apply(settings, [].splice.call(arguments, 1));
-		else if (typeof (strFunc) === "boolean")
-			return strFunc;
-		return null;
-	}
+    //Helpers
+    var resolve = function (strFunc, args) {
+        if (typeof (strFunc) === "string")
+            return strFunc;
+        else if (typeof (strFunc) === "function")
+            return strFunc.apply(settings, [].splice.call(arguments, 1));
+        else if (typeof (strFunc) === "boolean")
+            return strFunc;
+        return null;
+    }
 
-	if (!settings.container) {
-		console.warn("Container not set for data-table.");
-	}
+    if (!settings.container) {
+        console.warn("Container not set for data-table.");
+    }
 
-	settings.id = settings.id || generateGuid();
-	var id = settings.id;
+    settings.id = settings.id || generateGuid();
+    var id = settings.id;
 
-	if (typeof (data) === "undefined" || data === null || data === false)
-		data = [];
+    if (typeof (data) === "undefined" || data === null || data === false)
+        data = [];
 
-	settings.title = resolve(settings.title, settings) || "";
-	settings.nodataText = resolve(settings.nodataText, settings) || "No data available.";
+    settings.title = resolve(settings.title, settings) || "";
+    settings.nodataText = resolve(settings.nodataText, settings) || "No data available.";
 
-	//AddButton
-	if (settings.addButton != false) {
-		if (!settings.clickAdd) {
-			console.warn("Cannot generate AddButton if clickAdd is null. To disable this warning set 'addButton: false'");
-			settings.addButton = false;
-		} else {
-			settings.addButton = settings.addButton || {};
-			settings.addButton.id = settings.addButton.id || "add-" + settings.id;
-			settings.addButton.element = settings.addButton.element || $("<div/>");
-			settings.addButton.classes = settings.addButton.classes || "btn btn-primary btn-invert";
-			settings.addButton.text = settings.addButton.text || "New " + settings.title;
-		}
-	}
-
-
-	//IdSelector
-	settings.cellId = settings.cellId || function (cell) { return cell.Id; };
-
-	//Panel
-	settings.panel = settings.panel || {};
-	settings.panel.id = settings.panel.id || "panel-" + settings.id;
-	settings.panel.element = settings.panel.element || $("<div/>");
-	settings.panel.classes = settings.panel.classes || "panel panel-primary";
-
-	//Panel - Header
-	if (settings.panel.header != false) {
-		settings.panel.header = settings.panel.header || {};
-		settings.panel.header.id = settings.panel.header.id || null;
-		settings.panel.header.classes = settings.panel.header.classes || "panel-heading";
-		settings.panel.header.element = settings.panel.header.element || $("<div/>");
-
-		settings.panel.header.title = settings.panel.header.title || {};
-		settings.panel.header.title.classes = settings.panel.header.title.classes || "panel-title";
-		settings.panel.header.title.element = settings.panel.header.title.element || $("<h2/>");
-	}
-
-	//Panel - No Data
-	settings.panel.nodata = settings.panel.nodata || {};
-	settings.panel.nodata.id = settings.panel.nodata.id || function (_settings) { return "panel-nodata-" + _settings.id; };
-	settings.panel.nodata.classes = settings.panel.nodata.classes || "panel-body gray";
-	settings.panel.nodata.element = settings.panel.nodata.element || $("<div/>");
-
-	//Table
-	settings.table = settings.table || {};
-	settings.table.id = settings.table.id || "table-" + settings.id;
-	settings.table.element = settings.table.element || $("<table/>");
-	settings.table.classes = settings.table.classes || "table table-hover";
-
-	//Table - Rows
-	settings.table.rows = settings.table.rows || {};
-	settings.table.rows.id = settings.table.rows.id || function (row, _settings) {
-		var rid = resolve(settings.cellId, row, settings);
-		return "row-" + _settings.id + "-" + rid;
-	};
-
-	settings.table.rows.element = settings.table.rows.element || $("<tr/>");
-	settings.table.rows.classes = settings.table.rows.classes || "row";
-
-	//Table - Cells
-	settings.table.cells = settings.table.cells || {};
-	settings.table.cells.id = settings.table.cells.id || function (row, _settings) { return null; };
-	settings.table.cells.element = settings.table.cells.element || $("<td/>");
-	settings.table.cells.classes = settings.table.cells.classes || "";
-
-	settings.table.editText = settings.table.editText || "Edit";
-	settings.table.removeText = settings.table.removeText || "Delete";
-
-	//Cell Selectors
-	settings.cells = settings.cells || [];
-
-	//Internal
-	settings._ = settings._ || {};
-	settings._.olddata = settings._.olddata || [];
-
-	//Variables
-	var container, addButton, panel, panelTitle, panelHeader, table, nodata;
-
-	//Complex Updates
-	if (typeof (settings.clickEdit) === "string") {
-		settings._.onEditAction = settings.clickEdit;
-		settings._.onEditActionPost = settings.postEdit || settings.clickEdit;
-		settings.clickEdit = function (row, settings) {
-			var title = settings.clickEditTitle || function (settings) { return "Edit " + resolve(settings.title, settings); };
-			var rid = resolve(settings.cellId, row, settings);
-			var actionType = typeof(settings._.onEditAction);
-			if (actionType == "string") {
-				showModal(resolve(title, settings), settings._.onEditAction.replace("{0}", rid), settings._.onEditActionPost.replace("{0}", ""), null, null, function (d) {
-					try {
-						var ids = getIds(settings.data);
-						var rid = resolve(settings.cellId, d.Object, settings);
-						var index = ids.indexOf(rid);
-						settings.data[index] = d.Object;
-					} catch (e) {
-						console.error(e);
-					}
-					editRow(d.Object);
-				});
-			}
-		};
-	}
-	if (typeof (settings.clickAdd) === "string") {
-		settings._.onAddUrl = settings.clickAdd;
-		settings._.onAddUrlPost = settings.postAdd || settings.clickAdd;
-		settings.clickAdd = function (settings) {
-			var title = settings.clickAddTitle || function (settings) { return "Add " + resolve(settings.title, settings); }
-			showModal(resolve(title, settings), settings._.onAddUrl, settings._.onAddUrlPost, null, null, function (d) {
-				addRow(d.Object);
-			});
-		};
-	}
-	if (typeof (settings.clickReorder) === "string") {
-		settings._.clickReorderUrl = settings.clickReorder;
-		settings.clickReorder = function (row, oldIndex, newIndex, settings) {
-			var rid = resolve(settings.cellId, row, settings);
-
-			$.ajax({
-				url: settings._.clickReorderUrl.replace("{0}", rid).replace("{1}", oldIndex).replace("{2}", newIndex),
-				error: function (e) {
-					if (oldIndex > newIndex)
-						oldIndex -= 1;
-					var item = settings.data.splice(newIndex, 1);
-					settings.data.splice(oldIndex, 0, item);
-					update();
-					refreshRowNum();
-				}
-			})
-		};
-	}
-	if (typeof (settings.clickRemove) === "string") {
-		settings._.onRemoveUrl = settings.clickRemove;
-		settings.clickRemove = function (row, settings) {
-			var title = settings.clickRemoveTitle || function (settings) { return "Are you sure you want to remove " + (resolve(settings.title, settings) || "").toLowerCase(); };
-			var rid = resolve(settings.cellId, row, settings);
-			showModal({
-				icon: "warning",
-				title: resolve(title, settings),
-				success: function (d) {
-					$.ajax({
-						url: settings._.onRemoveUrl.replace("{0}", rid),
-						success: function () {
-							removeRow(row);
-						}
-					});
-				}
-			});
-		};
-	}
-
-	//Generator Functions
-	var rowIndexShift = 0;
-	var generateContainer = function () {
-		container = $("<div/>");
-		panel = $(settings.panel.element).clone();
-		if (settings.panel.header != false) {
-			panelHeader = $(settings.panel.header.element).clone();
-			panelTitle = $(settings.panel.header.title.element).clone();
-			panelHeader.append(panelTitle);
-			panel.append(panelHeader);
-		}
-		table = $(settings.table.element).clone();
-		$(panel).append(table);
-		var headers = [];
-		var anyHeaders = false;
-		for (var c in settings.cells) {
-			if (arrayHasOwnIndex(settings.cells, c)) {
-				var cellName = resolve(settings.cells[c].name, settings);
-				if (cellName != null) {
-					anyHeaders = true;
-				}
-				headers.push(cellName);
-			}
-		}
-
-		if (anyHeaders) {
-			var headerRow = $(settings.table.rows.element).clone();
-			try{
-				$(headerRow).attr("id", resolve(settings.table.rows.id, null, settings));
-			} catch (e) {
-				console.warn("HeaderRow id failed to resolve");
-			}
-			try{
-				$(headerRow).attr("class", resolve(settings.table.rows.classes, null, settings));
-			} catch (e) {
-				console.warn("HeaderRow class failed to resolve");
-			}
-
-			for (var c in headers) {
-				if (arrayHasOwnIndex(headers, c)) {
-					var headerCell = $(settings.table.cells.element).clone();
-					if (headers[c] != null) {
-						if (headerCell.is("td")) {
-							headerCell = $("<th/>");
-						}
-						headerCell.text(headers[c]);
-					}
-					$(headerRow).append(headerCell);
-				}
-			}
-			//rowIndexShift -= 1;
-			var head = $("<thead/>");
-			head.append(headerRow);
-			$(table).append(head);
-		}
+    //AddButton
+    if (settings.addButton != false) {
+        if (!settings.clickAdd) {
+            console.warn("Cannot generate AddButton if clickAdd is null. To disable this warning set 'addButton: false'");
+            settings.addButton = false;
+        } else {
+            settings.addButton = settings.addButton || {};
+            settings.addButton.id = settings.addButton.id || "add-" + settings.id;
+            settings.addButton.element = settings.addButton.element || $("<div/>");
+            settings.addButton.classes = settings.addButton.classes || "btn btn-primary btn-invert";
+            settings.addButton.text = settings.addButton.text || "New " + settings.title;
+        }
+    }
 
 
-		nodata = $(settings.panel.nodata.element).clone();
-		$(panel).append(nodata);
+    //IdSelector
+    settings.cellId = settings.cellId || function (cell) { return cell.Id; };
 
-		if (settings.addButton != false) {
-			var btnHolder = $("<div style='text-align: right;margin-bottom: 3px;'/>");
-			addButton = $(settings.addButton.element).clone();
-			btnHolder.append(addButton);
-			container.append(btnHolder);
-			$(addButton).on("click", function () { resolve(settings.clickAdd, settings); });
-		}
-		container.append(panel);
+    //Panel
+    settings.panel = settings.panel || {};
+    settings.panel.id = settings.panel.id || "panel-" + settings.id;
+    settings.panel.element = settings.panel.element || $("<div/>");
+    settings.panel.classes = settings.panel.classes || "panel panel-primary";
 
-		var anyReorder = false;
-		for (var c in settings.cells) {
-			if (arrayHasOwnIndex(settings.cells, c)) {
-				if (resolve(settings.cells[c].reorder, settings) == true) {
-					if (!settings.clickReorder) {
-						console.warn("Cannot use cell.reorder if clickReorder is not defined. To disable this warning remove reordable cells contents.");
-						//settings.addButton = false;
-						//delete (settings.cells[c]);
-					} else {
-						try {
-							$.getScript("/Scripts/jquery/jquery.ui.sortable.js").done(function () {
-								$("#" + settings.table.id + " tbody").xsortable({
-									items: ">.row",
-									handle: ".reorder-handle",
-									start: function (e, ui) {
-										$(this).attr('data-previndex', ui.item.index() + rowIndexShift);
-									},
-									update: function (e, ui) {
-										var newIndex = ui.item.index() + rowIndexShift;
-										var oldIndex = +$(this).attr('data-previndex');
-										$(this).removeAttr('data-previndex');
-										var row = settings.data[oldIndex];
-										resolve(settings.clickReorder, row, oldIndex, newIndex, settings);
-										refreshRowNum();
-									}
-								}).disableSelection();
-							});
-						} catch (e) {
-							console.warn("xsortable not loaded.");
-						}
-					}
-				}
-			}
-		}
-		//if (anyReorder) {
-		//	if (!settings.clickReorder) {
-		//		console.warn("Cannot use cell.reorder if clickReorder is not defined. To disable this warning set 'addButton: false'");
-		//		//settings.addButton = false;
-		//	} else {
-		//		try {
-		//			$.getScript("/Scripts/jquery/jquery.ui.sortable.js").done(function () {
-		//				$("#" + settings.table.id + " tbody").xsortable({
-		//					items: ">.row",
-		//					handle: ".reorder-handle",
-		//					start: function (e, ui) {
-		//						$(this).attr('data-previndex', ui.item.index());
-		//					},
-		//					update: function (e, ui) {
-		//						var newIndex = ui.item.index();
-		//						var oldIndex = +$(this).attr('data-previndex');
-		//						$(this).removeAttr('data-previndex');
-		//						var row = settings.data[oldIndex];
-		//						resolve(settings.clickReorder, row, oldIndex, newIndex, settings);
-		//						refreshRowNum();
-		//					}
-		//				}).disableSelection();
-		//			});
-		//		} catch (e) {
-		//			console.warn("xsortable not loaded.");
-		//		}
-		//	}
-		//}
-	}
-	var generateRow = function (rowData) {
-		var row = $(settings.table.rows.element).clone();
-		$(row).attr("id", resolve(settings.table.rows.id, rowData, settings));
-		$(row).attr("class", resolve(settings.table.rows.classes, rowData, settings));
-		row.append(generateRowCells(rowData));
-		return row;
-	};
-	var generateRowCells = function (row) {
-		var i = 0;
-		var results = [];
-		for (var s in settings.cells) {
-			if (arrayHasOwnIndex(settings.cells, s)) {
-				var cellSelector = settings.cells[s];
-				var cell = $(settings.table.cells.element).clone();
+    //Panel - Header
+    if (settings.panel.header != false) {
+        settings.panel.header = settings.panel.header || {};
+        settings.panel.header.id = settings.panel.header.id || null;
+        settings.panel.header.classes = settings.panel.header.classes || "panel-heading";
+        settings.panel.header.element = settings.panel.header.element || $("<div/>");
 
-				var contents = null;
-				var cellSelectorId = settings.table.cells.id;
-				var cellSelectorClasses = settings.table.cells.classes;
+        settings.panel.header.title = settings.panel.header.title || {};
+        settings.panel.header.title.classes = settings.panel.header.title.classes || "panel-title";
+        settings.panel.header.title.element = settings.panel.header.title.element || $("<h2/>");
+    }
 
-				if (typeof (cellSelector) === "object") {
-					cellSelectorId = cellSelector.id || cellSelectorId;
-					cellSelectorClasses = cellSelector.classes || cellSelectorId;
-					contents = cellSelector.contents;
-				} else if (typeof (cellSelector) === "function") {
-					contents = cellSelector;
-				}
+    //Panel - No Data
+    settings.panel.nodata = settings.panel.nodata || {};
+    settings.panel.nodata.id = settings.panel.nodata.id || function (_settings) { return "panel-nodata-" + _settings.id; };
+    settings.panel.nodata.classes = settings.panel.nodata.classes || "panel-body gray";
+    settings.panel.nodata.element = settings.panel.nodata.element || $("<div/>");
 
-				cell.attr("id", resolve(cellSelectorId, row, settings));
-				cell.attr("class", resolve(cellSelectorClasses, row, settings));
+    //Table
+    settings.table = settings.table || {};
+    settings.table.id = settings.table.id || "table-" + settings.id;
+    settings.table.element = settings.table.element || $("<table/>");
+    settings.table.classes = settings.table.classes || "table table-hover";
 
-				//Is edit button?
-				if (resolve(cellSelector.edit, settings) == true) {
-					cell.on("click", function () { resolve(settings.clickEdit, row, settings); });
-					if (!contents)
-						contents = settings.table.editText;
-					cell.addClass("clickable");
-				}
+    //Table - Rows
+    settings.table.rows = settings.table.rows || {};
+    settings.table.rows.id = settings.table.rows.id || function (row, _settings) {
+        var rid = resolve(settings.cellId, row, settings);
+        return "row-" + _settings.id + "-" + rid;
+    };
 
-				//Is remove button?
-				if (resolve(cellSelector.remove, settings) == true) {
-					cell.on("click", function () { resolve(settings.clickRemove, row, settings); });
-					if (!contents)
-						contents = settings.table.removeText;
-					cell.addClass("clickable");
-				}
+    settings.table.rows.element = settings.table.rows.element || $("<tr/>");
+    settings.table.rows.classes = settings.table.rows.classes || "row";
 
-				//Is row number?
-				if (resolve(cellSelector.rowNum, settings) == true) {
-					var oldContents = contents;
-					contents = function (row, i, settings) {
-						return "<span class='rowNum'>" + (i + 1) + ". </span>" + (resolve(oldContents, row, i, settings) || "");
-					};
-				}
+    //Table - Cells
+    settings.table.cells = settings.table.cells || {};
+    settings.table.cells.id = settings.table.cells.id || function (row, _settings) { return null; };
+    settings.table.cells.element = settings.table.cells.element || $("<td/>");
+    settings.table.cells.classes = settings.table.cells.classes || "";
 
-				//Is draggable?
-				if (resolve(cellSelector.reorder, settings) == true) {
-					contents = function (row, i, settings) {
-						return "<span class='reorder-handle icon fontastic-icon-three-bars icon-rotate gray' style='margin-left: -5px;margin-right: -5px;cursor:move;'></span>";
-					};
+    settings.table.editText = settings.table.editText || "Edit";
+    settings.table.removeText = settings.table.removeText || "Delete";
 
-				}
+    //Cell Selectors
+    settings.cells = settings.cells || [];
 
-				var html = resolve(contents, row, i, settings);
+    //Internal
+    settings._ = settings._ || {};
+    settings._.olddata = settings._.olddata || [];
 
-				if (contents == null)
-					console.warn("Contents null for " + s);
-				if (typeof (html) === "undefined")
-					console.warn("Cell was undefined for " + s + " (Did you forget to 'return'?)");
+    //Variables
+    var container, addButton, panel, panelTitle, panelHeader, table, nodata;
 
-				cell.html(html);
+    //Complex Updates
+    if (typeof (settings.clickEdit) === "string") {
+        settings._.onEditAction = settings.clickEdit;
+        settings._.onEditActionPost = settings.postEdit || settings.clickEdit;
+        settings.clickEdit = function (row, settings) {
+            var title = settings.clickEditTitle || function (settings) { return "Edit " + resolve(settings.title, settings); };
+            var rid = resolve(settings.cellId, row, settings);
+            var actionType = typeof (settings._.onEditAction);
+            if (actionType == "string") {
+                showModal(resolve(title, settings), settings._.onEditAction.replace("{0}", rid), settings._.onEditActionPost.replace("{0}", ""), null, null, function (d) {
+                    try {
+                        var ids = getIds(settings.data);
+                        var rid = resolve(settings.cellId, d.Object, settings);
+                        var index = ids.indexOf(rid);
+                        settings.data[index] = d.Object;
+                    } catch (e) {
+                        console.error(e);
+                    }
+                    editRow(d.Object);
+                });
+            }
+        };
+    }
+    if (typeof (settings.clickAdd) === "string") {
+        settings._.onAddUrl = settings.clickAdd;
+        settings._.onAddUrlPost = settings.postAdd || settings.clickAdd;
+        settings.clickAdd = function (settings) {
+            var title = settings.clickAddTitle || function (settings) { return "Add " + resolve(settings.title, settings); }
+            showModal(resolve(title, settings), settings._.onAddUrl, settings._.onAddUrlPost, null, null, function (d) {
+                addRow(d.Object);
+            });
+        };
+    }
+    if (typeof (settings.clickReorder) === "string") {
+        settings._.clickReorderUrl = settings.clickReorder;
+        settings.clickReorder = function (row, oldIndex, newIndex, settings) {
+            var rid = resolve(settings.cellId, row, settings);
 
-				results.push(cell);
-				i++;
-			}
-		}
-		return results;
-	};
+            $.ajax({
+                url: settings._.clickReorderUrl.replace("{0}", rid).replace("{1}", oldIndex).replace("{2}", newIndex),
+                error: function (e) {
+                    if (oldIndex > newIndex)
+                        oldIndex -= 1;
+                    var item = settings.data.splice(newIndex, 1);
+                    settings.data.splice(oldIndex, 0, item);
+                    update();
+                    refreshRowNum();
+                }
+            })
+        };
+    }
+    if (typeof (settings.clickRemove) === "string") {
+        settings._.onRemoveUrl = settings.clickRemove;
+        settings.clickRemove = function (row, settings) {
+            var title = settings.clickRemoveTitle || function (settings) { return "Are you sure you want to remove " + (resolve(settings.title, settings) || "").toLowerCase(); };
+            var rid = resolve(settings.cellId, row, settings);
+            showModal({
+                icon: "warning",
+                title: resolve(title, settings),
+                success: function (d) {
+                    $.ajax({
+                        url: settings._.onRemoveUrl.replace("{0}", rid),
+                        success: function () {
+                            removeRow(row);
+                        }
+                    });
+                }
+            });
+        };
+    }
 
-	//Update Function
-	var idError = false;
-	var getIds = function (data) {
-		var res = [];
-		for (var d in data) {
-			if (arrayHasOwnIndex(data, d)) {
-				var rid = resolve(settings.cellId, data[d], settings);
-				//var  = data[d][selector];
-				if (typeof (rid) === "undefined") {
-					console.error("Id resolved to undefined for data[" + d + "].");
-				}
-				res.push(rid);
-			}
-		}
-		return res;
-	};
-	var diffIds = function (a, b) {
-		return a.filter(function (i) { return b.indexOf(i) < 0; });
-	};
-	var getRowById = function (data, id) {
-		for (var r in data) {
-			if (arrayHasOwnIndex(data, r)) {
-				var rid = resolve(settings.cellId, data[r], settings);
-				if (rid == id)
-					return data[r];
-			}
-		}
-		return null;
-	};
-	var insertAt = function (self, index, element) {
-		var lastIndex = self.children().size()
-		if (index < 0) {
-			index = Math.max(0, lastIndex + 1 + index)
-		}
-		self.append(element)
-		if (index < lastIndex) {
-			self.children().eq(index).before(self.children().last())
-		}
-		return self;
-	}
+    //Generator Functions
+    var rowIndexShift = 0;
+    var generateContainer = function () {
+        container = $("<div/>");
+        panel = $(settings.panel.element).clone();
+        if (settings.panel.header != false) {
+            panelHeader = $(settings.panel.header.element).clone();
+            panelTitle = $(settings.panel.header.title.element).clone();
+            panelHeader.append(panelTitle);
+            panel.append(panelHeader);
+        }
+        table = $(settings.table.element).clone();
+        $(panel).append(table);
+        var headers = [];
+        var anyHeaders = false;
+        for (var c in settings.cells) {
+            if (arrayHasOwnIndex(settings.cells, c)) {
+                var cellName = resolve(settings.cells[c].name, settings);
+                if (cellName != null) {
+                    anyHeaders = true;
+                }
+                headers.push(cellName);
+            }
+        }
 
-	var refreshRowNum = function () {
-		$(".rowNum").each(function (i, x) {
-			$(this).html("" + (i + 1) + ". ");
-		});
-	};
-	var updateRowsUI = function (settings) {
-		settings.data = settings.data || [];
+        if (anyHeaders) {
+            var headerRow = $(settings.table.rows.element).clone();
+            try {
+                $(headerRow).attr("id", resolve(settings.table.rows.id, null, settings));
+            } catch (e) {
+                console.warn("HeaderRow id failed to resolve");
+            }
+            try {
+                $(headerRow).attr("class", resolve(settings.table.rows.classes, null, settings));
+            } catch (e) {
+                console.warn("HeaderRow class failed to resolve");
+            }
 
-		var dataIds = getIds(settings.data);
-		var oldIds = getIds(settings._.olddata);
+            for (var c in headers) {
+                if (arrayHasOwnIndex(headers, c)) {
+                    var headerCell = $(settings.table.cells.element).clone();
+                    if (headers[c] != null) {
+                        if (headerCell.is("td")) {
+                            headerCell = $("<th/>");
+                        }
+                        headerCell.text(headers[c]);
+                    }
+                    $(headerRow).append(headerCell);
+                }
+            }
+            //rowIndexShift -= 1;
+            var head = $("<thead/>");
+            head.append(headerRow);
+            $(table).append(head);
+        }
 
-		var added = diffIds(dataIds, oldIds);
-		var removed = diffIds(oldIds, dataIds);
-		var checkEdit = diffIds(dataIds, added);
 
-		for (var a in added) {
-			if (arrayHasOwnIndex(added, a)) {
-				var row = getRowById(settings.data, added[a]);
-				var tableId = resolve(settings.table.id, settings);
-				var tableElement = $("#" + tableId);
-				insertAt(tableElement, dataIds.indexOf(added[a]), generateRow(row));
-			}
-		}
+        nodata = $(settings.panel.nodata.element).clone();
+        $(panel).append(nodata);
 
-		for (var a in removed) {
-			if (arrayHasOwnIndex(removed, a)) {
-				var row = getRowById(settings._.olddata, removed[a])
-				var rowId = settings.table.rows.id(row, settings);
-				var rowElement = $("#" + rowId);
-				rowElement.children().off();
-				rowElement.off();
-				rowElement.remove();
-			}
-		}
+        if (settings.addButton != false) {
+            var btnHolder = $("<div style='text-align: right;margin-bottom: 3px;'/>");
+            addButton = $(settings.addButton.element).clone();
+            btnHolder.append(addButton);
+            container.append(btnHolder);
+            $(addButton).on("click", function () { resolve(settings.clickAdd, settings); });
+        }
+        container.append(panel);
 
-		for (var a in checkEdit) {
-			if (arrayHasOwnIndex(checkEdit, a)) {
-				var newRow = getRowById(settings.data, checkEdit[a]);
-				var oldRow = getRowById(settings._.olddata, checkEdit[a]);
-				if (JSON.stringify(newRow) != JSON.stringify(oldRow)) {
-					console.log("edit row " + checkEdit[a]);
-					var rowId = settings.table.rows.id(newRow, settings);
-					var rowElement = $("#" + rowId);
-					rowElement.children().off();
-					rowElement.children().remove();
-					rowElement.append(generateRowCells(newRow));
-				}
-			}
-		}
+        var anyReorder = false;
+        for (var c in settings.cells) {
+            if (arrayHasOwnIndex(settings.cells, c)) {
+                if (resolve(settings.cells[c].reorder, settings) == true) {
+                    if (!settings.clickReorder) {
+                        console.warn("Cannot use cell.reorder if clickReorder is not defined. To disable this warning remove reordable cells contents.");
+                        //settings.addButton = false;
+                        //delete (settings.cells[c]);
+                    } else {
+                        try {
+                            $.getScript("/Scripts/jquery/jquery.ui.sortable.js").done(function () {
+                                $("#" + settings.table.id + " tbody").xsortable({
+                                    items: ">.row",
+                                    handle: ".reorder-handle",
+                                    start: function (e, ui) {
+                                        $(this).attr('data-previndex', ui.item.index() + rowIndexShift);
+                                    },
+                                    update: function (e, ui) {
+                                        var newIndex = ui.item.index() + rowIndexShift;
+                                        var oldIndex = +$(this).attr('data-previndex');
+                                        $(this).removeAttr('data-previndex');
+                                        var row = settings.data[oldIndex];
+                                        resolve(settings.clickReorder, row, oldIndex, newIndex, settings);
+                                        refreshRowNum();
+                                    }
+                                }).disableSelection();
+                            });
+                        } catch (e) {
+                            console.warn("xsortable not loaded.");
+                        }
+                    }
+                }
+            }
+        }
+        //if (anyReorder) {
+        //	if (!settings.clickReorder) {
+        //		console.warn("Cannot use cell.reorder if clickReorder is not defined. To disable this warning set 'addButton: false'");
+        //		//settings.addButton = false;
+        //	} else {
+        //		try {
+        //			$.getScript("/Scripts/jquery/jquery.ui.sortable.js").done(function () {
+        //				$("#" + settings.table.id + " tbody").xsortable({
+        //					items: ">.row",
+        //					handle: ".reorder-handle",
+        //					start: function (e, ui) {
+        //						$(this).attr('data-previndex', ui.item.index());
+        //					},
+        //					update: function (e, ui) {
+        //						var newIndex = ui.item.index();
+        //						var oldIndex = +$(this).attr('data-previndex');
+        //						$(this).removeAttr('data-previndex');
+        //						var row = settings.data[oldIndex];
+        //						resolve(settings.clickReorder, row, oldIndex, newIndex, settings);
+        //						refreshRowNum();
+        //					}
+        //				}).disableSelection();
+        //			});
+        //		} catch (e) {
+        //			console.warn("xsortable not loaded.");
+        //		}
+        //	}
+        //}
+    }
+    var generateRow = function (rowData) {
+        var row = $(settings.table.rows.element).clone();
+        $(row).attr("id", resolve(settings.table.rows.id, rowData, settings));
+        $(row).attr("class", resolve(settings.table.rows.classes, rowData, settings));
+        row.append(generateRowCells(rowData));
+        return row;
+    };
+    var generateRowCells = function (row) {
+        var i = 0;
+        var results = [];
+        for (var s in settings.cells) {
+            if (arrayHasOwnIndex(settings.cells, s)) {
+                var cellSelector = settings.cells[s];
+                var cell = $(settings.table.cells.element).clone();
 
-		if (!settings.data || !settings.data.length) {
-			$(table).hide();
-			$(nodata).show();
-		} else {
-			$(table).show();
-			$(nodata).hide();
-		}
-		refreshRowNum();
-		settings._.olddata = JSON.parse(JSON.stringify(settings.data));
-	}
-	var updateProperties = function (settings) {
-		$(panel).attr("id", resolve(settings.panel.id, settings));
-		$(panel).attr("class", resolve(settings.panel.classes, settings));
+                var contents = null;
+                var cellSelectorId = settings.table.cells.id;
+                var cellSelectorClasses = settings.table.cells.classes;
 
-		if (settings.panel.header != false) {
-			$(panelHeader).attr("id", resolve(settings.panel.header.id, settings));
-			$(panelHeader).attr("class", resolve(settings.panel.header.classes, settings));
-			$(panelTitle).attr("id", resolve(settings.panel.header.title.id, settings));
-			$(panelTitle).attr("class", resolve(settings.panel.header.title.classes, settings));
-			var title = resolve(settings.title, settings);			
-			$(panelTitle).html(title);
-			$(panelHeader).toggleClass("hidden", title == null || title == "" || typeof (title) === "undefined");
+                if (typeof (cellSelector) === "object") {
+                    cellSelectorId = cellSelector.id || cellSelectorId;
+                    cellSelectorClasses = cellSelector.classes || cellSelectorId;
+                    contents = cellSelector.contents;
+                } else if (typeof (cellSelector) === "function") {
+                    contents = cellSelector;
+                }
 
-		}
+                cell.attr("id", resolve(cellSelectorId, row, settings));
+                cell.attr("class", resolve(cellSelectorClasses, row, settings));
 
-		$(table).attr("id", resolve(settings.table.id, settings));
-		$(table).attr("class", resolve(settings.table.classes, settings));
+                //Is edit button?
+                if (resolve(cellSelector.edit, settings) == true) {
+                    cell.on("click", function () { resolve(settings.clickEdit, row, settings); });
+                    if (!contents)
+                        contents = settings.table.editText;
+                    cell.addClass("clickable");
+                }
 
-		$(nodata).attr("id", resolve(settings.panel.nodata.id, settings));
-		$(nodata).attr("class", resolve(settings.panel.nodata.classes, settings));
-		$(nodata).html(resolve(settings.nodataText, settings));
+                //Is remove button?
+                if (resolve(cellSelector.remove, settings) == true) {
+                    cell.on("click", function () { resolve(settings.clickRemove, row, settings); });
+                    if (!contents)
+                        contents = settings.table.removeText;
+                    cell.addClass("clickable");
+                }
 
-		if (settings.addButton != false) {
-			$(addButton).attr("id", resolve(settings.addButton.id, settings));
-			$(addButton).attr("class", resolve(settings.addButton.classes, settings));
-			$(addButton).html(resolve(settings.addButton.text, settings));
-		}
-	};
+                //Is row number?
+                if (resolve(cellSelector.rowNum, settings) == true) {
+                    var oldContents = contents;
+                    contents = function (row, i, settings) {
+                        return "<span class='rowNum'>" + (i + 1) + ". </span>" + (resolve(oldContents, row, i, settings) || "");
+                    };
+                }
 
-	var addRow = function (row) {
-		console.info("add row");
-		if (row) {
-			settings.data.push(row);
-			update();
-		} else {
-			showAlert("Row could not be added.");
-			console.warn("row was " + row);
-		}
-	};
-	var editRow = function (row) {
-		console.info("edit row");
-		if (row) {
-			update();
-		} else {
-			showAlert("Row could not be edited.");
-			console.warn("row was " + row);
-		}
-	};
-	var removeRow = function (row, skipUpdate) {
-		console.info("remove row");
-		if (row) {
-			var rid = resolve(settings.cellId, row, settings);
-			for (var i = settings.data.length - 1; i >= 0; i--) {
-				var did = resolve(settings.cellId, settings.data[i], settings);
-				if (did == rid)
-					settings.data.splice(i, 1);
-			}
-			update();
-		} else {
-			showAlert("Row could not be removed.");
-			console.warn("row was " + row);
-		}
-	};
+                //Is draggable?
+                if (resolve(cellSelector.reorder, settings) == true) {
+                    contents = function (row, i, settings) {
+                        return "<span class='reorder-handle icon fontastic-icon-three-bars icon-rotate gray' style='margin-left: -5px;margin-right: -5px;cursor:move;'></span>";
+                    };
 
-	var update = function () {
-		updateProperties(settings);
-		updateRowsUI(settings);
-	};
+                }
 
-	generateContainer();
+                var html = resolve(contents, row, i, settings);
 
-	if (settings.container) {
-		$(settings.container).append(container);
-		update();
-	} else {
-		console.warn("container was not specified.")
-	}
+                if (contents == null)
+                    console.warn("Contents null for " + s);
+                if (typeof (html) === "undefined")
+                    console.warn("Cell was undefined for " + s + " (Did you forget to 'return'?)");
 
-	return {
-		update: update,
-		settings: settings,
+                cell.html(html);
 
-		setData: function (data) {
-			settings.data = data;
-			update();
-		},
-		addRow: addRow,
-		editRow: editRow,
-		removeRow: removeRow,
+                results.push(cell);
+                i++;
+            }
+        }
+        return results;
+    };
 
-		container: container,
+    //Update Function
+    var idError = false;
+    var getIds = function (data) {
+        var res = [];
+        for (var d in data) {
+            if (arrayHasOwnIndex(data, d)) {
+                var rid = resolve(settings.cellId, data[d], settings);
+                //var  = data[d][selector];
+                if (typeof (rid) === "undefined") {
+                    console.error("Id resolved to undefined for data[" + d + "].");
+                }
+                res.push(rid);
+            }
+        }
+        return res;
+    };
+    var diffIds = function (a, b) {
+        return a.filter(function (i) { return b.indexOf(i) < 0; });
+    };
+    var getRowById = function (data, id) {
+        for (var r in data) {
+            if (arrayHasOwnIndex(data, r)) {
+                var rid = resolve(settings.cellId, data[r], settings);
+                if (rid == id)
+                    return data[r];
+            }
+        }
+        return null;
+    };
+    var insertAt = function (self, index, element) {
+        var lastIndex = self.children().size()
+        if (index < 0) {
+            index = Math.max(0, lastIndex + 1 + index)
+        }
+        self.append(element)
+        if (index < lastIndex) {
+            self.children().eq(index).before(self.children().last())
+        }
+        return self;
+    }
 
-		//data: settings.data,
-	};
+    var refreshRowNum = function () {
+        $(".rowNum").each(function (i, x) {
+            $(this).html("" + (i + 1) + ". ");
+        });
+    };
+    var updateRowsUI = function (settings) {
+        settings.data = settings.data || [];
+
+        var dataIds = getIds(settings.data);
+        var oldIds = getIds(settings._.olddata);
+
+        var added = diffIds(dataIds, oldIds);
+        var removed = diffIds(oldIds, dataIds);
+        var checkEdit = diffIds(dataIds, added);
+
+        for (var a in added) {
+            if (arrayHasOwnIndex(added, a)) {
+                var row = getRowById(settings.data, added[a]);
+                var tableId = resolve(settings.table.id, settings);
+                var tableElement = $("#" + tableId);
+                insertAt(tableElement, dataIds.indexOf(added[a]), generateRow(row));
+            }
+        }
+
+        for (var a in removed) {
+            if (arrayHasOwnIndex(removed, a)) {
+                var row = getRowById(settings._.olddata, removed[a])
+                var rowId = settings.table.rows.id(row, settings);
+                var rowElement = $("#" + rowId);
+                rowElement.children().off();
+                rowElement.off();
+                rowElement.remove();
+            }
+        }
+
+        for (var a in checkEdit) {
+            if (arrayHasOwnIndex(checkEdit, a)) {
+                var newRow = getRowById(settings.data, checkEdit[a]);
+                var oldRow = getRowById(settings._.olddata, checkEdit[a]);
+                if (JSON.stringify(newRow) != JSON.stringify(oldRow)) {
+                    console.log("edit row " + checkEdit[a]);
+                    var rowId = settings.table.rows.id(newRow, settings);
+                    var rowElement = $("#" + rowId);
+                    rowElement.children().off();
+                    rowElement.children().remove();
+                    rowElement.append(generateRowCells(newRow));
+                }
+            }
+        }
+
+        if (!settings.data || !settings.data.length) {
+            $(table).hide();
+            $(nodata).show();
+        } else {
+            $(table).show();
+            $(nodata).hide();
+        }
+        refreshRowNum();
+        settings._.olddata = JSON.parse(JSON.stringify(settings.data));
+    }
+    var updateProperties = function (settings) {
+        $(panel).attr("id", resolve(settings.panel.id, settings));
+        $(panel).attr("class", resolve(settings.panel.classes, settings));
+
+        if (settings.panel.header != false) {
+            $(panelHeader).attr("id", resolve(settings.panel.header.id, settings));
+            $(panelHeader).attr("class", resolve(settings.panel.header.classes, settings));
+            $(panelTitle).attr("id", resolve(settings.panel.header.title.id, settings));
+            $(panelTitle).attr("class", resolve(settings.panel.header.title.classes, settings));
+            var title = resolve(settings.title, settings);
+            $(panelTitle).html(title);
+            $(panelHeader).toggleClass("hidden", title == null || title == "" || typeof (title) === "undefined");
+
+        }
+
+        $(table).attr("id", resolve(settings.table.id, settings));
+        $(table).attr("class", resolve(settings.table.classes, settings));
+
+        $(nodata).attr("id", resolve(settings.panel.nodata.id, settings));
+        $(nodata).attr("class", resolve(settings.panel.nodata.classes, settings));
+        $(nodata).html(resolve(settings.nodataText, settings));
+
+        if (settings.addButton != false) {
+            $(addButton).attr("id", resolve(settings.addButton.id, settings));
+            $(addButton).attr("class", resolve(settings.addButton.classes, settings));
+            $(addButton).html(resolve(settings.addButton.text, settings));
+        }
+    };
+
+    var addRow = function (row) {
+        console.info("add row");
+        if (row) {
+            settings.data.push(row);
+            update();
+        } else {
+            showAlert("Row could not be added.");
+            console.warn("row was " + row);
+        }
+    };
+    var editRow = function (row) {
+        console.info("edit row");
+        if (row) {
+            update();
+        } else {
+            showAlert("Row could not be edited.");
+            console.warn("row was " + row);
+        }
+    };
+    var removeRow = function (row, skipUpdate) {
+        console.info("remove row");
+        if (row) {
+            var rid = resolve(settings.cellId, row, settings);
+            for (var i = settings.data.length - 1; i >= 0; i--) {
+                var did = resolve(settings.cellId, settings.data[i], settings);
+                if (did == rid)
+                    settings.data.splice(i, 1);
+            }
+            update();
+        } else {
+            showAlert("Row could not be removed.");
+            console.warn("row was " + row);
+        }
+    };
+
+    var update = function () {
+        updateProperties(settings);
+        updateRowsUI(settings);
+    };
+
+    generateContainer();
+
+    if (settings.container) {
+        $(settings.container).append(container);
+        update();
+    } else {
+        console.warn("container was not specified.")
+    }
+
+    return {
+        update: update,
+        settings: settings,
+
+        setData: function (data) {
+            settings.data = data;
+            update();
+        },
+        addRow: addRow,
+        editRow: editRow,
+        removeRow: removeRow,
+
+        container: container,
+
+        //data: settings.data,
+    };
 }
 
 
@@ -1091,598 +1094,598 @@ var DataTable = function (settings) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 */
 function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onCancel) {
-	$("#modal").modal("hide");
-	$("#modal-icon").attr("class", "");
-	$("#modal #class-container").attr("class", "");
-	$("#modalCancel").removeClass("hidden");
+    $("#modal").modal("hide");
+    $("#modal-icon").attr("class", "");
+    $("#modal #class-container").attr("class", "");
+    $("#modalCancel").removeClass("hidden");
 
-	if (typeof (title) === "object") {
-		var obj = title;
-		var push = pullUrl;
-		var cback = pushUrl;
-		return showModalObject(obj, push, cback);
-	}
+    if (typeof (title) === "object") {
+        var obj = title;
+        var push = pullUrl;
+        var cback = pushUrl;
+        return showModalObject(obj, push, cback);
+    }
 
-	$("#modalMessage").html("");
-	$("#modalMessage").addClass("hidden");
-	$("#modal").addClass("loading");
-	$('#modal').modal('show');
+    $("#modalMessage").html("");
+    $("#modalMessage").addClass("hidden");
+    $("#modal").addClass("loading");
+    $('#modal').modal('show');
 
-	$.ajax({
-		url: pullUrl,
-		type: "GET",
-		//Couldnt retrieve modal partial view
-		error: function (jqxhr, status, error) {
-			$('#modal').modal('hide');
-			$("#modal").removeClass("loading");
-			$("#modalForm").unbind('submit');
-			if (status == "timeout")
-				showAlert("The request has timed out. If the problem persists, please contact us.");
-			else
-				showAlert("Something went wrong. If the problem persists, please contact us.");
-		},
-		//Retrieved Partial Modal
-		success: function (modal) {
-			if (!modal) {
-				$('#modal').modal('hide');
-				$("#modal").removeClass("loading");
-				showAlert("Something went wrong. If the problem persists, please contact us.");
-				return;
-			}
-			_bindModal(modal, title, callback, validation, function (formData) {
-				_submitModal(formData, pushUrl, onSuccess, null, false);
-			});
-		}
-	});
+    $.ajax({
+        url: pullUrl,
+        type: "GET",
+        //Couldnt retrieve modal partial view
+        error: function (jqxhr, status, error) {
+            $('#modal').modal('hide');
+            $("#modal").removeClass("loading");
+            $("#modalForm").unbind('submit');
+            if (status == "timeout")
+                showAlert("The request has timed out. If the problem persists, please contact us.");
+            else
+                showAlert("Something went wrong. If the problem persists, please contact us.");
+        },
+        //Retrieved Partial Modal
+        success: function (modal) {
+            if (!modal) {
+                $('#modal').modal('hide');
+                $("#modal").removeClass("loading");
+                showAlert("Something went wrong. If the problem persists, please contact us.");
+                return;
+            }
+            _bindModal(modal, title, callback, validation, function (formData) {
+                _submitModal(formData, pushUrl, onSuccess, null, false);
+            });
+        }
+    });
 }
 function showModalObject(obj, pushUrl, onSuccess, onCancel) {
-	$("#modal").modal("hide");
-	$("#modalCancel").toggleClass("hidden", obj.noCancel || false);
-	if (typeof (pushUrl) === "undefined")
-		pushUrl = obj["push"] || obj["pushUrl"];
-	if (typeof (onSuccess) === "undefined")
-		onSuccess = obj["success"];
-	if (typeof (onSuccess) !== "undefined" && typeof (pushUrl) !== "undefined") {
-		var oldSuccess = onSuccess;
-		onSuccess = function (formData, contentType) { _submitModal(formData, pushUrl, oldSuccess, obj.complete, true, contentType); };
-	}
-	if (typeof (onSuccess) === "undefined" && typeof (pushUrl) !== "undefined")
-		onSuccess = function (formData, contentType) { _submitModal(formData, pushUrl, null, obj.complete, true, contentType); };
+    $("#modal").modal("hide");
+    $("#modalCancel").toggleClass("hidden", obj.noCancel || false);
+    if (typeof (pushUrl) === "undefined")
+        pushUrl = obj["push"] || obj["pushUrl"];
+    if (typeof (onSuccess) === "undefined")
+        onSuccess = obj["success"];
+    if (typeof (onSuccess) !== "undefined" && typeof (pushUrl) !== "undefined") {
+        var oldSuccess = onSuccess;
+        onSuccess = function (formData, contentType) { _submitModal(formData, pushUrl, oldSuccess, obj.complete, true, contentType); };
+    }
+    if (typeof (onSuccess) === "undefined" && typeof (pushUrl) !== "undefined")
+        onSuccess = function (formData, contentType) { _submitModal(formData, pushUrl, null, obj.complete, true, contentType); };
 
-	var onClose = obj.close;
+    var onClose = obj.close;
 
-	if (typeof (onCancel) === "undefined")
-		onCancel = obj["cancel"];
+    if (typeof (onCancel) === "undefined")
+        onCancel = obj["cancel"];
 
-	if (!obj.fields && obj.pullUrl && obj.title && pushUrl)
-		return showModal(obj.title, obj.pullUrl, pushUrl, onSuccess, obj.validation, obj.success);
+    if (!obj.fields && obj.pullUrl && obj.title && pushUrl)
+        return showModal(obj.title, obj.pullUrl, pushUrl, onSuccess, obj.validation, obj.success);
 
-	if (typeof (obj.title) === "undefined") {
-		obj.title = "";
-		console.warn("No title supplied");
-	}
+    if (typeof (obj.title) === "undefined") {
+        obj.title = "";
+        console.warn("No title supplied");
+    }
 
-	obj.modalClass = obj.modalClass || "";
+    obj.modalClass = obj.modalClass || "";
 
-	var reformat = obj.reformat;
+    var reformat = obj.reformat;
 
-	var iconType = typeof (obj.icon);
-	if (iconType !== "undefined") {
-		obj.modalClass += " modal-icon";
-		$("#modal-icon").attr("class", "modal-icon");
-		if (iconType === "string") {
-			obj.modalClass += " modal-icon-" + obj.icon;
-			//obj.title = iconType.toLowerCase() + "!";
-		} else if (iconType === "object") {
-			var time = +new Date();
-			var custom = "modal-icon-custom" + time;
-			obj.modalClass += " " + custom;
-			if (!obj.icon.icon)
-				obj.modalClass += " modal-icon-info";
+    var iconType = typeof (obj.icon);
+    if (iconType !== "undefined") {
+        obj.modalClass += " modal-icon";
+        $("#modal-icon").attr("class", "modal-icon");
+        if (iconType === "string") {
+            obj.modalClass += " modal-icon-" + obj.icon;
+            //obj.title = iconType.toLowerCase() + "!";
+        } else if (iconType === "object") {
+            var time = +new Date();
+            var custom = "modal-icon-custom" + time;
+            obj.modalClass += " " + custom;
+            if (!obj.icon.icon)
+                obj.modalClass += " modal-icon-info";
 
-			var icon = (obj.icon.icon || ("icon-" + custom)).replace(".", "");
-			var title = escapeString(obj.icon.title || "Hey!");
-			var color = escapeString(obj.icon.color || "#5bc0de");
-			$("#modal-icon").addClass(icon);
-			icon = icon.replace(" ", ".")
-			try {
-				document.styleSheets[0].insertRule("." + custom + " ." + icon + ":after{content: '" + title + "' !important;}", 0);
-				document.styleSheets[0].insertRule("." + custom + " ." + icon + ":before{ background-color: " + color + ";}", 0);
-				document.styleSheets[0].insertRule("." + custom + " #modalOk{ background-color: " + color + ";}", 0);
-			} catch (e) {
-				console.error(e);
-			}
-		}
+            var icon = (obj.icon.icon || ("icon-" + custom)).replace(".", "");
+            var title = escapeString(obj.icon.title || "Hey!");
+            var color = escapeString(obj.icon.color || "#5bc0de");
+            $("#modal-icon").addClass(icon);
+            icon = icon.replace(" ", ".")
+            try {
+                document.styleSheets[0].insertRule("." + custom + " ." + icon + ":after{content: '" + title + "' !important;}", 0);
+                document.styleSheets[0].insertRule("." + custom + " ." + icon + ":before{ background-color: " + color + ";}", 0);
+                document.styleSheets[0].insertRule("." + custom + " #modalOk{ background-color: " + color + ";}", 0);
+            } catch (e) {
+                console.error(e);
+            }
+        }
 
-	}
+    }
 
-	$("#modal #class-container").attr("class", obj.modalClass);
+    $("#modal #class-container").attr("class", obj.modalClass);
 
-	$("#modalMessage").html("");
-	$("#modalMessage").addClass("hidden");
-	$("#modal").addClass("loading");
-	$('#modal').modal('show');
+    $("#modalMessage").html("");
+    $("#modalMessage").addClass("hidden");
+    $("#modal").addClass("loading");
+    $('#modal').modal('show');
 
-	var allowed = ["text", "hidden", "textarea", "checkbox", "radio", "number", "date", "time", "datetime", "header", "span", "div", "h1", "h2", "h3", "h4", "h5", "h6", "file", "yesno", "label", "img"];
-	var addLabel = ["text", "textarea", "checkbox", "radio", "number", "date", "time", "datetime", "file"];
-	var tags = ["span", "h1", "h2", "h3", "h4", "h5", "h6", "label", "div"];
-	var anyFields = ""
+    var allowed = ["text", "hidden", "textarea", "checkbox", "radio", "number", "date", "time", "datetime", "header", "span", "div", "h1", "h2", "h3", "h4", "h5", "h6", "file", "yesno", "label", "img"];
+    var addLabel = ["text", "textarea", "checkbox", "radio", "number", "date", "time", "datetime", "file"];
+    var tags = ["span", "h1", "h2", "h3", "h4", "h5", "h6", "label", "div"];
+    var anyFields = ""
 
-	if (typeof (obj.field) !== "undefined") {
-		if (typeof (obj.fields) !== "undefined") {
-			throw "A 'field' and a 'fields' property exists";
-		} else {
-			obj.fields = obj.field;
-		}
-	}
+    if (typeof (obj.field) !== "undefined") {
+        if (typeof (obj.fields) !== "undefined") {
+            throw "A 'field' and a 'fields' property exists";
+        } else {
+            obj.fields = obj.field;
+        }
+    }
 
-	if (typeof (obj.fields) === "object") {
-		var allDeep = true;
-		for (var f in obj.fields) {
-			if (arrayHasOwnIndex(obj.fields, f)) {
-				if (typeof (obj.fields[f]) !== "object") {
-					allDeep = false;
-					break;
-				}
-			}
-		}
-		if (!allDeep) {
-			obj.fields = [obj.fields];
-		}
-	}
+    if (typeof (obj.fields) === "object") {
+        var allDeep = true;
+        for (var f in obj.fields) {
+            if (arrayHasOwnIndex(obj.fields, f)) {
+                if (typeof (obj.fields[f]) !== "object") {
+                    allDeep = false;
+                    break;
+                }
+            }
+        }
+        if (!allDeep) {
+            obj.fields = [obj.fields];
+        }
+    }
 
-	var fieldsTypeIsArray = Array.isArray(obj.fields);//typeof (obj.fields);
+    var fieldsTypeIsArray = Array.isArray(obj.fields);//typeof (obj.fields);
 
-	var contentType = null;
+    var contentType = null;
 
-	var builder = '<div class="form-horizontal modal-builder">';
-	var runAfter = [];
-	var genInput = function (type, name, eid, placeholder, value, others, classes) {
-		others = others || "";
-		classes = classes || "form-control blend";
-		if (type == "number")
-			others += " step=\"any\"";
+    var builder = '<div class="form-horizontal modal-builder">';
+    var runAfter = [];
+    var genInput = function (type, name, eid, placeholder, value, others, classes) {
+        others = others || "";
+        classes = classes || "form-control blend";
+        if (type == "number")
+            others += " step=\"any\"";
 
-		if (type == "checkbox" && ((typeof (value) === "string" && (value.toLowerCase() === 'true')) || (typeof (value) === "boolean" && value)))
-			others += "checked";
+        if (type == "checkbox" && ((typeof (value) === "string" && (value.toLowerCase() === 'true')) || (typeof (value) === "boolean" && value)))
+            others += "checked";
 
-		if (type == "datetime") {
-			var newVal = parseJsonDate(value, true).toISOString().substring(0, 19);
-			type = "datetime-local";
-			if (newVal)
-				value = newVal;
-		}
+        if (type == "datetime") {
+            var newVal = parseJsonDate(value, true).toISOString().substring(0, 19);
+            type = "datetime-local";
+            if (newVal)
+                value = newVal;
+        }
 
-		return '<input type="' + escapeString(type) + '" class="' + classes + '"' +
+        return '<input type="' + escapeString(type) + '" class="' + classes + '"' +
                       ' name="' + escapeString(name) + '" id="' + eid + '" ' +
                       placeholder + ' value="' + escapeString(value) + '" ' + others + '/>';
-	}
+    }
 
-	var defaultLabelColumnClass = obj.labelColumnClass || "col-sm-2";
-	var defaultValueColumnClass = obj.valueColumnClass || "col-sm-10";
-
-
-	if (!obj.contents) {
-		for (var f in obj.fields) {
-			if (arrayHasOwnIndex(obj.fields, f)) {
-				try {
-					var field = obj.fields[f];
-					var name = field.name || f;
-					var label = typeof (field.text) !== "undefined" || !fieldsTypeIsArray;
-					var text = field.text || name;
-					var originalValue = field.value;
-					var value = field.value || "";
-					var placeholder = field.placeholder;
-					var type = (field.type || "text").toLowerCase();
-					var classes = field.classes || "";
-					var onchange = field.onchange;
-					var eid = escapeString(name);
-
-					var labelColumnClass = field.labelColumnClass || defaultLabelColumnClass;
-					var valueColumnClass = field.valueColumnClass || defaultValueColumnClass;
-
-					if (typeof (classes) === "string" && (classes.indexOf('\'') != -1 || classes.indexOf('\"') != -1))
-						throw "Classes cannot contain a quote character.";
+    var defaultLabelColumnClass = obj.labelColumnClass || "col-sm-2";
+    var defaultValueColumnClass = obj.valueColumnClass || "col-sm-10";
 
 
-					if (type == "header")
-						type = "h4";
+    if (!obj.contents) {
+        for (var f in obj.fields) {
+            if (arrayHasOwnIndex(obj.fields, f)) {
+                try {
+                    var field = obj.fields[f];
+                    var name = field.name || f;
+                    var label = typeof (field.text) !== "undefined" || !fieldsTypeIsArray;
+                    var text = field.text || name;
+                    var originalValue = field.value;
+                    var value = field.value || "";
+                    var placeholder = field.placeholder;
+                    var type = (field.type || "text").toLowerCase();
+                    var classes = field.classes || "";
+                    var onchange = field.onchange;
+                    var eid = escapeString(name);
 
-					if (typeof (placeholder) !== "undefined")
-						placeholder = "placeholder='" + escapeString(placeholder) + "'";
-					else
-						placeholder = "";
-					var input = "";
-					var inputIndex = allowed.indexOf(type);
-					if (inputIndex == -1) {
-						console.warn("Input type not allowed:" + type);
-						continue;
-					}
-					if (Object.prototype.toString.call(value) === '[object Date]' && (/*type == "datetime" ||*/ type == "date")) {
-						value = value.toISOString().substring(0, 10);
-					}
+                    var labelColumnClass = field.labelColumnClass || defaultLabelColumnClass;
+                    var valueColumnClass = field.valueColumnClass || defaultValueColumnClass;
 
-					if (type == "file")
-						contentType = 'enctype="multipart/form-data"';
+                    if (typeof (classes) === "string" && (classes.indexOf('\'') != -1 || classes.indexOf('\"') != -1))
+                        throw "Classes cannot contain a quote character.";
 
-					if (tags.indexOf(type) != -1) {
-						var txt = value || text;
-						input = "<" + type + " name=" + escapeString(name) + '" id="' + eid + '" class="' + classes + '">' + txt + '</' + type + '>';
-					} else if (type == "textarea") {
-						input = '<textarea class="form-control blend verticalOnly ' + classes + '" rows=5 name="' + escapeString(name) + '" id="' + eid + '" ' + escapeString(placeholder) + '>' + value + '</textarea>';
-					} else if (type == "date" /*|| type=="datetime"*/) {
-						var guid = generateGuid();
-						var curName = name;
-						var curVal = originalValue;
-						var localize = field.localize;
-						input = '<div class="date-container date-' + guid + ' ' + classes + '" id="' + eid + '"></div>';
-						runAfter.push(function () {
-							var dateGenFunc = generateDatepicker;
-							if (localize == true)
-								dateGenFunc = generateDatepickerLocalize;
-							dateGenFunc('.date-' + guid, curVal, curName, eid);
-						});
-					} else if (type == "yesno") {
-						var selectedYes = (value == true) ? 'checked="checked"' : "";
-						var selectedNo = (value == true) ? "" : 'checked="checked"';
-						input = '<div class="form-group input-yesno ' + classes + '">' +
+
+                    if (type == "header")
+                        type = "h4";
+
+                    if (typeof (placeholder) !== "undefined")
+                        placeholder = "placeholder='" + escapeString(placeholder) + "'";
+                    else
+                        placeholder = "";
+                    var input = "";
+                    var inputIndex = allowed.indexOf(type);
+                    if (inputIndex == -1) {
+                        console.warn("Input type not allowed:" + type);
+                        continue;
+                    }
+                    if (Object.prototype.toString.call(value) === '[object Date]' && (/*type == "datetime" ||*/ type == "date")) {
+                        value = value.toISOString().substring(0, 10);
+                    }
+
+                    if (type == "file")
+                        contentType = 'enctype="multipart/form-data"';
+
+                    if (tags.indexOf(type) != -1) {
+                        var txt = value || text;
+                        input = "<" + type + " name=" + escapeString(name) + '" id="' + eid + '" class="' + classes + '">' + txt + '</' + type + '>';
+                    } else if (type == "textarea") {
+                        input = '<textarea class="form-control blend verticalOnly ' + classes + '" rows=5 name="' + escapeString(name) + '" id="' + eid + '" ' + escapeString(placeholder) + '>' + value + '</textarea>';
+                    } else if (type == "date" /*|| type=="datetime"*/) {
+                        var guid = generateGuid();
+                        var curName = name;
+                        var curVal = originalValue;
+                        var localize = field.localize;
+                        input = '<div class="date-container date-' + guid + ' ' + classes + '" id="' + eid + '"></div>';
+                        runAfter.push(function () {
+                            var dateGenFunc = generateDatepicker;
+                            if (localize == true)
+                                dateGenFunc = generateDatepickerLocalize;
+                            dateGenFunc('.date-' + guid, curVal, curName, eid);
+                        });
+                    } else if (type == "yesno") {
+                        var selectedYes = (value == true) ? 'checked="checked"' : "";
+                        var selectedNo = (value == true) ? "" : 'checked="checked"';
+                        input = '<div class="form-group input-yesno ' + classes + '">' +
 									'<label for="true" class="col-xs-4 control-label"> Yes </label>' +
 									'<div class="col-xs-2">' + genInput("radio", name, eid, placeholder, "true", selectedYes) + '</div>' +
 									'<label for="false" class="col-xs-1 control-label"> No </label>' +
 									'<div class="col-xs-2">' + genInput("radio", name, eid, placeholder, "false", selectedNo) + '</div>' +
 								'</div>';
-					} else if (type == "img") {
-						input = "<img src='" + field.src + "' class='" + classes + "'/>";
-					} else if (type == "radio" && field.options != null && field.options.length > 0) {
-						var fieldName = name;
-						input = "<fieldset id='group_" + fieldName + "'><table>";
-						for (var oid in field.options) {
-							if (arrayHasOwnIndex(field.options, oid)) {
-								var option = field.options[oid];
-								if (!option.value) {
-									console.warn("option has no value " + fieldName + "," + oid);
-								}
-								var radioId = eid + "_" + oid;
-								var selected = option.checked || false;
-								if (selected)
-									selected = "checked";
-								var radio = genInput("radio", fieldName, radioId, null, option.value, selected, option.classes||" ");
-								var optionText = option.text || option.value;
-								
-								input += '<tr class="form-group">' +
+                    } else if (type == "img") {
+                        input = "<img src='" + field.src + "' class='" + classes + "'/>";
+                    } else if (type == "radio" && field.options != null && field.options.length > 0) {
+                        var fieldName = name;
+                        input = "<fieldset id='group_" + fieldName + "'><table>";
+                        for (var oid in field.options) {
+                            if (arrayHasOwnIndex(field.options, oid)) {
+                                var option = field.options[oid];
+                                if (!option.value) {
+                                    console.warn("option has no value " + fieldName + "," + oid);
+                                }
+                                var radioId = eid + "_" + oid;
+                                var selected = option.checked || false;
+                                if (selected)
+                                    selected = "checked";
+                                var radio = genInput("radio", fieldName, radioId, null, option.value, selected, option.classes || " ");
+                                var optionText = option.text || option.value;
+
+                                input += '<tr class="form-group">' +
 											'<td><label for="' + radioId + '" class="pull-right ' + (option.labelColumnClass || "") + ' control-label" style="padding-right:10px;">' + optionText + '</label></td>' +
 											'<td><div class="' + (option.valueColumnClass || "") + '" style="padding-top: 5px;">' + radio + '</div></td>' +
 										 '</tr>';
-							}
-						}
-						input += "</table></fieldset>";
-					} else {
-						input = genInput(type, name, eid, placeholder, value, null, classes);
-					}
+                            }
+                        }
+                        input += "</table></fieldset>";
+                    } else {
+                        input = genInput(type, name, eid, placeholder, value, null, classes);
+                    }
 
-					if (addLabel.indexOf(type) != -1 && label) {
-						builder += '<div class="form-group"><label for="' + name + '" class="' + labelColumnClass + ' control-label">' + text + '</label><div class="' + valueColumnClass + '">' + input + '</div></div>';
-					} else {
-						builder += input;
-					}
+                    if (addLabel.indexOf(type) != -1 && label) {
+                        builder += '<div class="form-group"><label for="' + name + '" class="' + labelColumnClass + ' control-label">' + text + '</label><div class="' + valueColumnClass + '">' + input + '</div></div>';
+                    } else {
+                        builder += input;
+                    }
 
-					if (onchange) {
-						if (typeof (onchange) === "function") {
-							var ocf = onchange;
-							var mname = name;
-							runAfter.push(function () {
-								$("[name=" + mname).on("change", ocf);
-							});
-						} else {
-							console.warn("Unhandled onchange type:" + typeof (onchange) + " for " + eid);
-						}
-					}
+                    if (onchange) {
+                        if (typeof (onchange) === "function") {
+                            var ocf = onchange;
+                            var mname = name;
+                            runAfter.push(function () {
+                                $("[name=" + mname).on("change", ocf);
+                            });
+                        } else {
+                            console.warn("Unhandled onchange type:" + typeof (onchange) + " for " + eid);
+                        }
+                    }
 
-				} catch (e) {
-					console.error(e);
-				}
-			}
-		}
-		builder += "</div>";
-	} else {
-		builder = $(obj.contents);
-	}
-	_bindModal(builder, obj.title, undefined, undefined, onSuccess, onCancel, reformat, onClose, contentType);
-	setTimeout(function () {
-		for (var i = 0; i < runAfter.length; i++) {
-			runAfter[i]();
-		}
-	}, 1);
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+        builder += "</div>";
+    } else {
+        builder = $(obj.contents);
+    }
+    _bindModal(builder, obj.title, undefined, undefined, onSuccess, onCancel, reformat, onClose, contentType);
+    setTimeout(function () {
+        for (var i = 0; i < runAfter.length; i++) {
+            runAfter[i]();
+        }
+    }, 1);
 }
 
 function _bindModal(html, title, callback, validation, onSuccess, onCancel, reformat, onClose, contentType) {
-	$('#modalBody').html("");
-	setTimeout(function () {
-		$('#modalBody').append(html);
-	}, 0);
+    $('#modalBody').html("");
+    setTimeout(function () {
+        $('#modalBody').append(html);
+    }, 0);
 
-	$("#modalTitle").html(title);
-	$("#modal").removeClass("loading");
-	//Reregister submit button
-	$("#modalForm").unbind('submit');
+    $("#modalTitle").html(title);
+    $("#modal").removeClass("loading");
+    //Reregister submit button
+    $("#modalForm").unbind('submit');
 
-	var onCloseArg = onClose;
-	var onCancelArg = onCancel;
-	var onSuccessArg = onSuccess;
-	var contentTypeArg = contentType;
-	var validationArg = validation;
-	var reformatArg = reformat;
-	var callbackArg = callback;
+    var onCloseArg = onClose;
+    var onCancelArg = onCancel;
+    var onSuccessArg = onSuccess;
+    var contentTypeArg = contentType;
+    var validationArg = validation;
+    var reformatArg = reformat;
+    var callbackArg = callback;
 
-	var dur = 1;
-	if ($("#modalBody :focusable").first().is("select"))
-		dur = 360;
+    var dur = 1;
+    if ($("#modalBody :focusable").first().is("select"))
+        dur = 360;
 
-	setTimeout(function () { $("#modalBody :focusable").first().focus(); }, dur);
-	//$("#modalForm input:visible,#modalForm textarea:visible,#modalForm button:not(.close):visible").first().focus();
+    setTimeout(function () { $("#modalBody :focusable").first().focus(); }, dur);
+    //$("#modalForm input:visible,#modalForm textarea:visible,#modalForm button:not(.close):visible").first().focus();
 
-	$("#modalForm").submit(function (ev) {
-		ev.preventDefault();
+    $("#modalForm").submit(function (ev) {
+        ev.preventDefault();
 
-		var formData = $("#modalForm").serializeObject();
-		$("#modalForm").find("input:checkbox").each(function () {
-			formData[$(this).prop("name")] = $(this).is(":checked") ? "True" : "False";
-		});
-		$("#modalForm").find(".input-yesno").each(function () {
-			var name = $(this).find("input").attr("name");
-			var v = $(this).find("[name=" + name + "]:checked").val();
-			formData[name] = v == "true" ? "True" : "False";
-		});
+        var formData = $("#modalForm").serializeObject();
+        $("#modalForm").find("input:checkbox").each(function () {
+            formData[$(this).prop("name")] = $(this).is(":checked") ? "True" : "False";
+        });
+        $("#modalForm").find(".input-yesno").each(function () {
+            var name = $(this).find("input").attr("name");
+            var v = $(this).find("[name=" + name + "]:checked").val();
+            formData[name] = v == "true" ? "True" : "False";
+        });
 
-		if (typeof (reformatArg) === "function") {
-			var o = reformatArg(formData);
-			if (typeof (o) !== "undefined" && o != null)
-				formData = o;//Data was returned, otherwise formdata was manipulated
-		}
+        if (typeof (reformatArg) === "function") {
+            var o = reformatArg(formData);
+            if (typeof (o) !== "undefined" && o != null)
+                formData = o;//Data was returned, otherwise formdata was manipulated
+        }
 
-		if (validationArg) {
-			var message = undefined;
-			if (typeof (validationArg) === "string") {
-				message = window[validationArg]();
-				//message = eval(validationArg + '()');
-			} else if (typeof (validationArg) === "function") {
-				message = validationArg();
-			}
-			if (message !== undefined && message != true) {
-				if (message == false) {
-					$("#modalMessage").html("Error");
-				}
-				else {
-					$("#modalMessage").html(message);
-				}
-				$("#modalMessage").removeClass("hidden");
-				return;
-			}
-		}
-		$("#modal").modal("hide");
-		$("#modal").removeClass("loading");
-		//onSuccess(formData);
+        if (validationArg) {
+            var message = undefined;
+            if (typeof (validationArg) === "string") {
+                message = window[validationArg]();
+                //message = eval(validationArg + '()');
+            } else if (typeof (validationArg) === "function") {
+                message = validationArg();
+            }
+            if (message !== undefined && message != true) {
+                if (message == false) {
+                    $("#modalMessage").html("Error");
+                }
+                else {
+                    $("#modalMessage").html(message);
+                }
+                $("#modalMessage").removeClass("hidden");
+                return;
+            }
+        }
+        $("#modal").modal("hide");
+        $("#modal").removeClass("loading");
+        //onSuccess(formData);
 
-		if (onSuccessArg) {
-			if (typeof onSuccessArg === "string") {
-				window[onSuccessArg](formData, contentTypeArg);
-				//eval(onSuccessArg + "(formData," + contentTypeArg + ")");
-			} else if (typeof onSuccessArg === "function") {
-				onSuccessArg(formData, contentTypeArg);
-			}
-		}
-		if (onCloseArg) {
-			if (typeof onCloseArg === "string") {
-				window[onCloseArg]();
-				//eval(onCloseArg + "()");
-			} else if (typeof onCloseArg === "function") {
-				onCloseArg();
-			}
-		}
-	});
+        if (onSuccessArg) {
+            if (typeof onSuccessArg === "string") {
+                window[onSuccessArg](formData, contentTypeArg);
+                //eval(onSuccessArg + "(formData," + contentTypeArg + ")");
+            } else if (typeof onSuccessArg === "function") {
+                onSuccessArg(formData, contentTypeArg);
+            }
+        }
+        if (onCloseArg) {
+            if (typeof onCloseArg === "string") {
+                window[onCloseArg]();
+                //eval(onCloseArg + "()");
+            } else if (typeof onCloseArg === "function") {
+                onCloseArg();
+            }
+        }
+    });
 
-	$("#modal button[data-dismiss='modal']").unbind('click.radialModal');
+    $("#modal button[data-dismiss='modal']").unbind('click.radialModal');
 
 
-	$("#modal button[data-dismiss='modal']").on("click.radialModal", function () {
-		if (typeof onCancelArg === "string") {
-			window[onCancelArg]();
-			//	eval(onCancelArg + "()");
-		} else if (typeof onCancelArg === "function") {
-			onCancelArg();
-		}
-		if (typeof onCancelArg === "string") {
-			//eval(onCancelArg + "()");
-			window[onCancelArg]();
-		} else if (typeof onCancelArg === "function") {
-			onCancelArg();
-		}
-		if (onCloseArg) {
-			if (typeof onCloseArg === "string") {
-				//eval(onCloseArg + "()");
-				window[onCloseArg]();
-			} else if (typeof onCloseArg === "function") {
-				onCloseArg();
-			}
-		}
-	});
+    $("#modal button[data-dismiss='modal']").on("click.radialModal", function () {
+        if (typeof onCancelArg === "string") {
+            window[onCancelArg]();
+            //	eval(onCancelArg + "()");
+        } else if (typeof onCancelArg === "function") {
+            onCancelArg();
+        }
+        if (typeof onCancelArg === "string") {
+            //eval(onCancelArg + "()");
+            window[onCancelArg]();
+        } else if (typeof onCancelArg === "function") {
+            onCancelArg();
+        }
+        if (onCloseArg) {
+            if (typeof onCloseArg === "string") {
+                //eval(onCloseArg + "()");
+                window[onCloseArg]();
+            } else if (typeof onCloseArg === "function") {
+                onCloseArg();
+            }
+        }
+    });
 
-	$("#modal").removeClass("loading");
-	$('#modal').modal('show');
-	var count = 0;
-	setTimeout(function () {
-		if (callbackArg) {
-			if (typeof (callbackArg) === "string") {
-				//eval(callbackArg + '()');
-				window[callbackArg]();
-			} else if (typeof (callbackArg) === "function")
-				callbackArg();
-		} else {
-			//$('#modal input:not([type=hidden]):not(.disable):first').focus();
-		}
-	}, 50);
+    $("#modal").removeClass("loading");
+    $('#modal').modal('show');
+    var count = 0;
+    setTimeout(function () {
+        if (callbackArg) {
+            if (typeof (callbackArg) === "string") {
+                //eval(callbackArg + '()');
+                window[callbackArg]();
+            } else if (typeof (callbackArg) === "function")
+                callbackArg();
+        } else {
+            //$('#modal input:not([type=hidden]):not(.disable):first').focus();
+        }
+    }, 50);
 }
 
 function _submitModal(formData, pushUrl, onSuccess, onComplete, useJson, contentType) {
-	///FORM DATA IS NOT USED
-	///TODO use form data;
-	var serialized
-	//var serialized = $.param(formData);
-	//var contentType = null;
+    ///FORM DATA IS NOT USED
+    ///TODO use form data;
+    var serialized
+    //var serialized = $.param(formData);
+    //var contentType = null;
 
-	if (typeof (contentType) === "undefined")
-		contentType = null;
-	var processData = null;
-	if (useJson && contentType == null) {
-		serialized = JSON.stringify(formData);
-		contentType = "application/json; charset=utf-8";
-	} else if (contentType == 'enctype="multipart/form-data"') {
-		console.warn("Using FormData will not work on IE9");
-		serialized = new FormData($('#modalForm')[0]);
-		processData = false;
-		contentType = false;
-	} else {
-		serialized = $("#modalForm").serialize();
-		contentType = contentType || "application/x-www-form-urlencoded";
-	}
-	var onSuccessArg = onSuccess;
-	var onCompleteArg = onComplete;
+    if (typeof (contentType) === "undefined")
+        contentType = null;
+    var processData = null;
+    if (useJson && contentType == null) {
+        serialized = JSON.stringify(formData);
+        contentType = "application/json; charset=utf-8";
+    } else if (contentType == 'enctype="multipart/form-data"') {
+        console.warn("Using FormData will not work on IE9");
+        serialized = new FormData($('#modalForm')[0]);
+        processData = false;
+        contentType = false;
+    } else {
+        serialized = $("#modalForm").serialize();
+        contentType = contentType || "application/x-www-form-urlencoded";
+    }
+    var onSuccessArg = onSuccess;
+    var onCompleteArg = onComplete;
 
-	$.ajax({
-		url: pushUrl,
-		type: "POST",
-		contentType: contentType,
-		data: serialized,// JSON.stringify(formData),
-		processData: processData,
-		success: function (data, status, jqxhr) {
-			if (!data) {
-				$("#modal").modal("hide");
-				$("#modal").removeClass("loading");
-				showAlert("Something went wrong. If the problem persists, please contact us.");
-			} else {
-				if (onSuccessArg) {
-					if (typeof onSuccessArg === "string") {
-						window[onSuccessArg](data, formData);
-						//eval(onSuccessArg + "(data,formData)");
-					} else if (typeof onSuccessArg === "function") {
-						onSuccessArg(data, formData);
-					}
-				} else {
-				}
-			}
-		},
-		complete: function (dd) {
-			if (dd) {
-				var data = dd.responseJSON;
-				if (data) {
-					if (onCompleteArg) {
-						if (typeof onCompleteArg === "string") {
-							window[onCompleteArg](data, formData);
-							//eval(onCompleteArg + "(data,formData)");
-						} else if (typeof onCompleteArg === "function") {
-							onCompleteArg(data, formData);
-						}
-					}
-				}
-			}
-		},
-		error: function (jqxhr, status, error) {
-			if (error == "timeout") {
-				showAlert("The request has timed out. If the problem persists, please contact us.");
-			} else {
-				showAlert("Something went wrong. If the problem persists, please contact us.");
-			}
-			$("#modal").modal("hide");
-			$("#modal").removeClass("loading");
-		}
-	});
+    $.ajax({
+        url: pushUrl,
+        type: "POST",
+        contentType: contentType,
+        data: serialized,// JSON.stringify(formData),
+        processData: processData,
+        success: function (data, status, jqxhr) {
+            if (!data) {
+                $("#modal").modal("hide");
+                $("#modal").removeClass("loading");
+                showAlert("Something went wrong. If the problem persists, please contact us.");
+            } else {
+                if (onSuccessArg) {
+                    if (typeof onSuccessArg === "string") {
+                        window[onSuccessArg](data, formData);
+                        //eval(onSuccessArg + "(data,formData)");
+                    } else if (typeof onSuccessArg === "function") {
+                        onSuccessArg(data, formData);
+                    }
+                } else {
+                }
+            }
+        },
+        complete: function (dd) {
+            if (dd) {
+                var data = dd.responseJSON;
+                if (data) {
+                    if (onCompleteArg) {
+                        if (typeof onCompleteArg === "string") {
+                            window[onCompleteArg](data, formData);
+                            //eval(onCompleteArg + "(data,formData)");
+                        } else if (typeof onCompleteArg === "function") {
+                            onCompleteArg(data, formData);
+                        }
+                    }
+                }
+            }
+        },
+        error: function (jqxhr, status, error) {
+            if (error == "timeout") {
+                showAlert("The request has timed out. If the problem persists, please contact us.");
+            } else {
+                showAlert("Something went wrong. If the problem persists, please contact us.");
+            }
+            $("#modal").modal("hide");
+            $("#modal").removeClass("loading");
+        }
+    });
 }
 function UnstoreJsonAlert() {
-	var data = localStorage.getItem("Alert");
-	localStorage.setItem("Alert", null);
+    var data = localStorage.getItem("Alert");
+    localStorage.setItem("Alert", null);
 
-	var alert = JSON.parse(data);
-	if (alert !== undefined && alert != null && alert != "null") {
-		clearAlerts();
-		var type = alert.type;
-		var title = alert.title;
-		var message = alert.message;
-		if (type === undefined) type = "alert-success";
-		if (title === undefined) title = "Success!";
-		if (message === undefined) message = "";
-		showAlert(message, type, title);
-	}
+    var alert = JSON.parse(data);
+    if (alert !== undefined && alert != null && alert != "null") {
+        clearAlerts();
+        var type = alert.type;
+        var title = alert.title;
+        var message = alert.message;
+        if (type === undefined) type = "alert-success";
+        if (title === undefined) title = "Success!";
+        if (message === undefined) message = "";
+        showAlert(message, type, title);
+    }
 }
 
 function StoreJsonAlert(json) {
-	var alert = new Object();
-	alert.message = json.Message;
-	if (!json.MessageType)
-		json.MessageType = "danger";
-	alert.type = "alert-" + json.MessageType.toLowerCase();
-	alert.title = json.Heading;
-	localStorage.setItem("Alert", JSON.stringify(alert));
+    var alert = new Object();
+    alert.message = json.Message;
+    if (!json.MessageType)
+        json.MessageType = "danger";
+    alert.type = "alert-" + json.MessageType.toLowerCase();
+    alert.title = json.Heading;
+    localStorage.setItem("Alert", JSON.stringify(alert));
 }
 
 function showHtmlErrorAlert(html, defaultMessage) {
-	var message = defaultMessage;
-	debugger;
-	if (typeof (html) === "object" && typeof (html.responseText) === "string") {
-		var ele = $($(html.responseText)[1]);
-		if (ele.is("title")) {
-			message = ele.text();
-		}
-	} else if (typeof (html) === "string") {
-		message = $(html).text();
-	}
+    var message = defaultMessage;
+    debugger;
+    if (typeof (html) === "object" && typeof (html.responseText) === "string") {
+        var ele = $($(html.responseText)[1]);
+        if (ele.is("title")) {
+            message = ele.text();
+        }
+    } else if (typeof (html) === "string") {
+        message = $(html).text();
+    }
 
-	if (typeof (message) === "undefined" || message == null || message == "") {
-		message = "An error occurred.";
-	}
-	showAlert(message);
+    if (typeof (message) === "undefined" || message == null || message == "") {
+        message = "An error occurred.";
+    }
+    showAlert(message);
 }
 
 function showAlert(message, alertType, preface, duration) {
-	if (typeof (alertType) === "number" && typeof (preface) === "undefined" && typeof (duration) === "undefined")
-		duration = alertType;
-	else if (typeof (preface) === "number" && typeof (duration) === "undefined")
-		duration = preface;
+    if (typeof (alertType) === "number" && typeof (preface) === "undefined" && typeof (duration) === "undefined")
+        duration = alertType;
+    else if (typeof (preface) === "number" && typeof (duration) === "undefined")
+        duration = preface;
 
 
-	if (alertType === undefined)
-		alertType = "alert-danger";
-	if (preface === undefined)
-		preface = "Warning!";
-	if (Object.prototype.toString.call(message) === '[object Array]') {
-		if (message.length > 1) {
-			var msg = "<ul style='margin-bottom:0px;'>";
-			for (var i in message) {
-				if (arrayHasOwnIndex(message, i)) {
-					msg += "<li>" + message[i] + "</li>";
-				}
-			}
-			message = msg + "</ul>"
-		} else {
-			message = message.join("");
-		}
-	}
+    if (alertType === undefined)
+        alertType = "alert-danger";
+    if (preface === undefined)
+        preface = "Warning!";
+    if (Object.prototype.toString.call(message) === '[object Array]') {
+        if (message.length > 1) {
+            var msg = "<ul style='margin-bottom:0px;'>";
+            for (var i in message) {
+                if (arrayHasOwnIndex(message, i)) {
+                    msg += "<li>" + message[i] + "</li>";
+                }
+            }
+            message = msg + "</ul>"
+        } else {
+            message = message.join("");
+        }
+    }
 
-	var alert = $("<div class=\"alert " + alertType + " alert-dismissable start\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button><strong>" + preface + "</strong> <span class=\"message\">" + message + "</span></div>");
-	$("#alerts").prepend(alert);
-	setTimeout(function () { alert.removeClass("start"); }, 1);
+    var alert = $("<div class=\"alert " + alertType + " alert-dismissable start\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button><strong>" + preface + "</strong> <span class=\"message\">" + message + "</span></div>");
+    $("#alerts").prepend(alert);
+    setTimeout(function () { alert.removeClass("start"); }, 1);
 
-	if (typeof (duration) !== "number") {
-		duration = 3000;
-	}
-	setTimeout(function () {
-		$(alert).remove();
-	}, duration);
+    if (typeof (duration) !== "number") {
+        duration = 3000;
+    }
+    setTimeout(function () {
+        $(alert).remove();
+    }, duration);
 }
 
 var alertsTimer = null;
 function clearAlerts() {
-	var found = $("#alerts .alert").remove();
-	/*found.css({ height: "0px", opacity: 0.0, padding: "0px", border: "0px", margin: "0px" });
+    var found = $("#alerts .alert").remove();
+    /*found.css({ height: "0px", opacity: 0.0, padding: "0px", border: "0px", margin: "0px" });
     if (alertsTimer) {
         clearTimeout(alertsTimer);
     }
@@ -1692,163 +1695,170 @@ function clearAlerts() {
 }
 
 function showAngularError(d, status, headers, config, statusTxt) {
-	if (typeof (d) === "undefined") {
-		showJsonAlert();
-		return;
-	}
-	if (typeof (d.Message) !== "undefined" && d.Message != null) {
-		showJsonAlert(d);
-	} else if (typeof (d.data) !== "undefined" && d.data != null) {
-		showJsonAlert(d.data);
-	} else {
-		if (typeof (d.statusText) !== "undefined" && d.statusText !== "") {
-			showAlert(d.statusText);
-		} else {
-			showJsonAlert();
-		}
-	}
+    if (typeof (d) === "undefined") {
+        showJsonAlert();
+        return;
+    }
+
+    if (typeof (d.Message) !== "undefined" && d.Message != null) {
+        showJsonAlert(d);
+    } else if (typeof (d.data) !== "undefined" && d.data != null) {
+        showJsonAlert(d.data);
+    } else {
+        if (typeof (d.statusText) !== "undefined" && d.statusText !== "") {
+            showAlert(d.statusText);
+        } else {
+            if (typeof (d) === "string" && d.indexOf("<body")==-1) {
+                showAlert(d);
+            } else {
+                console.warn("No suitable option for showAngularError");
+                debugger;
+                showJsonAlert();
+            }
+        }
+    }
 }
 
 function showJsonAlert(data, showSuccess, clearOthers) {
-	try {
-		if (clearOthers) {
-			clearAlerts();
-		}
-		var stdError = "Something went wrong.";
+    try {
+        if (clearOthers) {
+            clearAlerts();
+        }
+        var stdError = "Something went wrong.";
 
-		if (!data) {
-			showAlert(stdError);
-		} else if (typeof (data) === "string") {
-			if (data.trim().length < 300)
-				showAlert(data.trim(), "alert-danger", "Error");
-			else {
-				showAlert(stdError);
-			}
-		} else {
-			var showDetails = typeof (data.NoErrorReport) === "undefined" || !data.NoErrorReport;
-			var message = data.Message;
-			if (message === undefined)
-				message = "";
-			if (data.Trace && showDetails) {
-				console.error(data.TraceMessage);
-				console.error(data.Trace);
-			}
-			console.log(data.Message);
-			if (!data.Silent && (data.MessageType !== undefined && data.MessageType != "Success" || showSuccess)) {
-				var mType = data.MessageType || "danger";
-				showAlert(message, "alert-" + mType.toLowerCase(), data.Heading);
-			}
-			if (data.Error) {
-				if (showDetails) {
-					sendErrorReport();
-				}
-			}
+        if (!data) {
+            showAlert(stdError);
+        } else if (typeof (data) === "string") {
+            if (data.trim().length < 300)
+                showAlert(data.trim(), "alert-danger", "Error");
+            else {
+                showAlert(stdError);
+            }
+        } else {
+            var showDetails = typeof (data.NoErrorReport) === "undefined" || !data.NoErrorReport;
+            var message = data.Message;
+            if (message === undefined)
+                message = "";
+            if (data.Trace && showDetails) {
+                console.error(data.TraceMessage);
+                console.error(data.Trace);
+            }
+            console.log(data.Message);
+            if (!data.Silent && (data.MessageType !== undefined && data.MessageType != "Success" || showSuccess)) {
+                var mType = data.MessageType || "danger";
+                showAlert(message, "alert-" + mType.toLowerCase(), data.Heading);
+            }
+            if (data.Error) {
+                if (showDetails) {
+                    sendErrorReport();
+                }
+            }
 
-		}
-	} catch (e) {
-		console.error(e);
-	}
-	if (!data)
-		return false;
-	return !data.Error;
+        }
+    } catch (e) {
+        console.error(e);
+    }
+    if (!data)
+        return false;
+    return !data.Error;
 }
 
 function getKeySelector(selector, prefix) {
-	prefix = prefix || "";
-	var output = { selector: selector, key: false };
+    prefix = prefix || "";
+    var output = { selector: selector, key: false };
 
-	if ($(selector).data("key")) {
-		output.key = prefix + $(selector).data("key");
-	} else if ($(selector).attr("name")) {
-		output.key = prefix + $(selector).attr("name");
-		output.selector = "[name=" + $(selector).attr("name") + "]";
-		/*if ($(selector).is("[type='radio']")) {
+    if ($(selector).data("key")) {
+        output.key = prefix + $(selector).data("key");
+    } else if ($(selector).attr("name")) {
+        output.key = prefix + $(selector).attr("name");
+        output.selector = "[name=" + $(selector).attr("name") + "]";
+        /*if ($(selector).is("[type='radio']")) {
             output.selector += ":checked";
         }*/
-	} else if ($(selector).attr("id")) {
-		output.key = prefix + $(selector).attr("id");
-		output.selector = "#" + $(selector).attr("id");
-	}
+    } else if ($(selector).attr("id")) {
+        output.key = prefix + $(selector).attr("id");
+        output.selector = "#" + $(selector).attr("id");
+    }
 
-	return output;
+    return output;
 }
 
 function getVal(selector) {
-	var self = $(selector);
-	if (self.is("[type='checkbox']")) {
-		return self.is(':checked');
-	}
-	if (self.is("[type='radio']")) {
-		return self.filter(":checked").val();
-	}
-	else if (self.hasClass("panel-collapse")) {
-		return self.hasClass("in");
-	} else {
-		return self.val();
-	}
+    var self = $(selector);
+    if (self.is("[type='checkbox']")) {
+        return self.is(':checked');
+    }
+    if (self.is("[type='radio']")) {
+        return self.filter(":checked").val();
+    }
+    else if (self.hasClass("panel-collapse")) {
+        return self.hasClass("in");
+    } else {
+        return self.val();
+    }
 }
 
 function setVal(selector, val) {
-	var self = $(selector);
-	if (self.is("[type='checkbox']")) {
-		self.prop('checked', val == "true");
-	} else if (self.is("[type='radio']")) {
-		self.prop('checked', function () {
-			return $(this).attr("value") == val;
-		});
-	} else if (self.hasClass("panel-collapse")) {
-		self.collapse(val == "true" ? "show" : "hide");
-	} else {
-		self.val(val);
-	}
-	self.change();
+    var self = $(selector);
+    if (self.is("[type='checkbox']")) {
+        self.prop('checked', val == "true");
+    } else if (self.is("[type='radio']")) {
+        self.prop('checked', function () {
+            return $(this).attr("value") == val;
+        });
+    } else if (self.hasClass("panel-collapse")) {
+        self.collapse(val == "true" ? "show" : "hide");
+    } else {
+        self.val(val);
+    }
+    self.change();
 }
 
 function getInitials(name, initials) {
-	if (typeof (name) === "undefined" || name == null) {
-		name = "";
-	}
+    if (typeof (name) === "undefined" || name == null) {
+        name = "";
+    }
 
-	if (typeof (initials) === "undefined") {
-		var m = name.match(/\b\w/g) || [];
-		var arr = [];
-		if (m.length > 0)
-			arr.push(m[0]);
-		if (m.length > 1)
-			arr.push(m[1]);
-		initials = arr.join(' ');
-	}
-	return initials;
+    if (typeof (initials) === "undefined") {
+        var m = name.match(/\b\w/g) || [];
+        var arr = [];
+        if (m.length > 0)
+            arr.push(m[0]);
+        if (m.length > 1)
+            arr.push(m[1]);
+        initials = arr.join(' ');
+    }
+    return initials;
 }
 
 function profilePicture(url, name, initials) {
-	var picture = "";
-	var hash = 0;
-	if (typeof (name) !== "string") {
-		name = "";
-	}
-	if (name.length != 0) {
-		for (var i = 0; i < name.length; i++) {
-			{
-				var chr = name.charCodeAt(i);
-				hash = ((hash << 5) - hash) + chr;
-				hash |= 0; // Convert to 32bit integer
-			}
-		}
-		//console.log(name + ": " + hash + " = " + Math.abs(hash) % 360);
-		hash = Math.abs(hash) % 360;
-	}
-	if (url !== "/i/userplaceholder" && url !== null) {
-		picture = "<span class='picture' style='background: url(" + url + ") no-repeat center center;'></span>";
-	} else {
-		if (name == "")
-			name = "n/a";
+    var picture = "";
+    var hash = 0;
+    if (typeof (name) !== "string") {
+        name = "";
+    }
+    if (name.length != 0) {
+        for (var i = 0; i < name.length; i++) {
+            {
+                var chr = name.charCodeAt(i);
+                hash = ((hash << 5) - hash) + chr;
+                hash |= 0; // Convert to 32bit integer
+            }
+        }
+        //console.log(name + ": " + hash + " = " + Math.abs(hash) % 360);
+        hash = Math.abs(hash) % 360;
+    }
+    if (url !== "/i/userplaceholder" && url !== null) {
+        picture = "<span class='picture' style='background: url(" + url + ") no-repeat center center;'></span>";
+    } else {
+        if (name == "")
+            name = "n/a";
 
-		initials = getInitials(name, initials).toUpperCase();
-		picture = "<span class='picture' style='background-color:hsla(" + hash + ", 36%, 49%, 1);color:hsla(" + hash + ", 36%, 72%, 1)'><span class='initials'>" + initials + "</span></span>";
-	}
+        initials = getInitials(name, initials).toUpperCase();
+        picture = "<span class='picture' style='background-color:hsla(" + hash + ", 36%, 49%, 1);color:hsla(" + hash + ", 36%, 72%, 1)'><span class='initials'>" + initials + "</span></span>";
+    }
 
-	return "<span class='profile-picture'>" +
+    return "<span class='profile-picture'>" +
 		      "<span class='picture-container' title='" + escapeString(name) + "'>" +
 					picture +
 			  "</span>" +
@@ -1858,55 +1868,55 @@ function profilePicture(url, name, initials) {
 
 
 (function ($) {
-	$.fn.setCursorToTextEnd = function () {
-		var $initialVal = this.val();
-		this.val($initialVal);
-	};
+    $.fn.setCursorToTextEnd = function () {
+        var $initialVal = this.val();
+        this.val($initialVal);
+    };
 
-	$(".panel-collapse").collapse({
-		toggle: false
-	});
+    $(".panel-collapse").collapse({
+        toggle: false
+    });
 
-	$(".autoheight").each(function (index) {
-		var maxHeight = 0;
-		$(this).children().each(function () {
-			maxHeight = Math.max(maxHeight, $(this).height());
-		});
-		$(this).height(maxHeight);
-	});
+    $(".autoheight").each(function (index) {
+        var maxHeight = 0;
+        $(this).children().each(function () {
+            maxHeight = Math.max(maxHeight, $(this).height());
+        });
+        $(this).height(maxHeight);
+    });
 
-	var scrollTopModal = 0;
+    var scrollTopModal = 0;
 
-	$("#modalForm").on("show.bs.modal", function () {
-		scrollTopModal = $("body").scrollTop();
-	}).on("hidden.bs.modal", function () {
-		setTimeout(function () { $("body").scrollTop(scrollTopModal); }, 1);
-	}).on("shown.bs.modal", function () {
-		setTimeout(function () { $("body").scrollTop(scrollTopModal); }, 1000);
-	});
+    $("#modalForm").on("show.bs.modal", function () {
+        scrollTopModal = $("body").scrollTop();
+    }).on("hidden.bs.modal", function () {
+        setTimeout(function () { $("body").scrollTop(scrollTopModal); }, 1);
+    }).on("shown.bs.modal", function () {
+        setTimeout(function () { $("body").scrollTop(scrollTopModal); }, 1000);
+    });
 
 
 })(jQuery);
 
 $.fn.flash = function (ms, backgroundColor, borderColor, color) {
-	ms = ms || 1000;
-	color = color || '#3C763D';
-	borderColor = borderColor || '#D6E9C6';
-	backgroundColor = backgroundColor || '#DFF0D8';
+    ms = ms || 1000;
+    color = color || '#3C763D';
+    borderColor = borderColor || '#D6E9C6';
+    backgroundColor = backgroundColor || '#DFF0D8';
 
 
-	var originalBackgroundColor = this.css('background-color');
-	var originalBorderColor = this.css('border-color');
-	var originalBoxColor = this.css('boxShadow');
-	var originalColor = this.css('color');
+    var originalBackgroundColor = this.css('background-color');
+    var originalBorderColor = this.css('border-color');
+    var originalBoxColor = this.css('boxShadow');
+    var originalColor = this.css('color');
 
-	this.css({ 'border-color': borderColor, 'background-color': backgroundColor, "boxShadow": "0px 0px 5px 3px " + borderColor, "color": color })
+    this.css({ 'border-color': borderColor, 'background-color': backgroundColor, "boxShadow": "0px 0px 5px 3px " + borderColor, "color": color })
     .animate({ 'border-color': originalBorderColor, 'background-color': originalBackgroundColor, "boxShadow": "0px 0px 0px 0px " + borderColor, "color": originalColor }, ms, function () {
-    	$(this).css("boxShadow", originalBoxColor);
-    	$(this).css("background-color", "");
-    	$(this).css("border-color", "");
-    	$(this).css("color", "");
-    	$(this).css("boxShadow", "");
+        $(this).css("boxShadow", originalBoxColor);
+        $(this).css("background-color", "");
+        $(this).css("border-color", "");
+        $(this).css("color", "");
+        $(this).css("boxShadow", "");
     });
 
 
@@ -1915,368 +1925,368 @@ $.fn.flash = function (ms, backgroundColor, borderColor, color) {
 //Ajax Interceptors
 
 var interceptAjax = function (event, request, settings) {
-	//console.log(event);
-	//console.log(settings);
-	try {
-		var result = $.parseJSON(request.responseText);
-		try {
-			if (result.Refresh) {
-				if (result.Silent !== undefined && !result.Silent) {
-					result.Refresh = false;
-					StoreJsonAlert(result);
-				}
-				location.reload();
-			} else if (result.Redirect) {
-				var url = result.Redirect;
-				if (result.Silent !== undefined && !result.Silent) {
-					result.Refresh = false;
-					result.Redirect = false;
-					StoreJsonAlert(result);
-				}
-				window.location.href = url;
-			} else {
-				if (result.Silent !== undefined && !result.Silent) {
-					showJsonAlert(result, true, true);
-				}
-			}
-		} catch (e) {
-			console.log(e);
-		}
-	} catch (e) {
-	}
+    //console.log(event);
+    //console.log(settings);
+    try {
+        var result = $.parseJSON(request.responseText);
+        try {
+            if (result.Refresh) {
+                if (result.Silent !== undefined && !result.Silent) {
+                    result.Refresh = false;
+                    StoreJsonAlert(result);
+                }
+                location.reload();
+            } else if (result.Redirect) {
+                var url = result.Redirect;
+                if (result.Silent !== undefined && !result.Silent) {
+                    result.Refresh = false;
+                    result.Redirect = false;
+                    StoreJsonAlert(result);
+                }
+                window.location.href = url;
+            } else {
+                if (result.Silent !== undefined && !result.Silent) {
+                    showJsonAlert(result, true, true);
+                }
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    } catch (e) {
+    }
 };
 
 $(document).ajaxSuccess(interceptAjax);
 $(document).ajaxError(interceptAjax);
 
 $(document).ajaxSend(function (event, jqX, ajaxOptions) {
-	if (ajaxOptions.url == null) {
-		ajaxOptions.url = "";
-	}
+    if (ajaxOptions.url == null) {
+        ajaxOptions.url = "";
+    }
 
 
 
-	if (typeof (ajaxOptions.data) === "string" && ajaxOptions.data.indexOf("_clientTimestamp") != -1) {
-		return;
-		/*var start = ajaxOptions.data.indexOf("_clientTimestamp")+17;
+    if (typeof (ajaxOptions.data) === "string" && ajaxOptions.data.indexOf("_clientTimestamp") != -1) {
+        return;
+        /*var start = ajaxOptions.data.indexOf("_clientTimestamp")+17;
         debugger;
         date = ajaxOptions.data.substr(start).split("&")[0];*/
-	}
+    }
 
-	//var date = (new Date().getTime());
+    //var date = (new Date().getTime());
 
 
-	if (ajaxOptions.url.indexOf("_clientTimestamp") == -1) {
-		if (!window.tzoffset) {
-			var jan = new Date(new Date().getYear() + 1900, 0, 1, 2, 0, 0), jul = new Date(new Date().getYear() + 1900, 6, 1, 2, 0, 0);
-			window.tzoffset = (jan.getTime() % 24 * 60 * 60 * 1000) >
+    if (ajaxOptions.url.indexOf("_clientTimestamp") == -1) {
+        if (!window.tzoffset) {
+            var jan = new Date(new Date().getYear() + 1900, 0, 1, 2, 0, 0), jul = new Date(new Date().getYear() + 1900, 6, 1, 2, 0, 0);
+            window.tzoffset = (jan.getTime() % 24 * 60 * 60 * 1000) >
                          (jul.getTime() % 24 * 60 * 60 * 1000)
                          ? jan.getTimezoneOffset() : jul.getTimezoneOffset();
-		}
-		if (ajaxOptions.url.indexOf("?") == -1)
-			ajaxOptions.url += "?";
-		else
-			ajaxOptions.url += "&";
+        }
+        if (ajaxOptions.url.indexOf("?") == -1)
+            ajaxOptions.url += "?";
+        else
+            ajaxOptions.url += "&";
 
-		ajaxOptions.url += "_clientTimestamp=" + ((+new Date()) + (window.tzoffset * 60 * 1000));
-	}
-	console.info(ajaxOptions.type + " " + ajaxOptions.url);
-	if (typeof (ajaxOptions.type) === "string" && ajaxOptions.type.toUpperCase() == "POST" && !(ajaxOptions.url.indexOf("/support/email") == 0)) {
-		//debugger;
-		console.info(ajaxOptions.data);
-	}
+        ajaxOptions.url += "_clientTimestamp=" + ((+new Date()) + (window.tzoffset * 60 * 1000));
+    }
+    console.info(ajaxOptions.type + " " + ajaxOptions.url);
+    if (typeof (ajaxOptions.type) === "string" && ajaxOptions.type.toUpperCase() == "POST" && !(ajaxOptions.url.indexOf("/support/email") == 0)) {
+        //debugger;
+        console.info(ajaxOptions.data);
+    }
 });
 /////////////////////////////////////////////////////////////////
 
 (function ($) {
-	$.fn.focusTextToEnd = function () {
-		this.focus();
-		var $thisVal = this.val();
-		this.val('').val($thisVal);
-		return this;
-	};
-	$.fn.insertAt = function (elements, index) {
-		var children = this.children();
-		if (index >= children.size()) {
-			this.append(elements);
-			return this;
-		}
-		var before = children.eq(index);
-		$(elements).insertBefore(before);
-		return this;
-	};
+    $.fn.focusTextToEnd = function () {
+        this.focus();
+        var $thisVal = this.val();
+        this.val('').val($thisVal);
+        return this;
+    };
+    $.fn.insertAt = function (elements, index) {
+        var children = this.children();
+        if (index >= children.size()) {
+            this.append(elements);
+            return this;
+        }
+        var before = children.eq(index);
+        $(elements).insertBefore(before);
+        return this;
+    };
 }(jQuery));
 
 
 
 $(function () {
-	$(window).bind('beforeunload', function () {
-		if (document.activeElement) $(document.activeElement).blur();
+    $(window).bind('beforeunload', function () {
+        if (document.activeElement) $(document.activeElement).blur();
 
-	});
+    });
 
-	$('.navbar-collapse .dropdown-menu').parent().on('hidden.bs.dropdown', function () {
-		console.info("collapse", this);
-		$('.navbar-collapse').collapse('hide');
-	});
+    $('.navbar-collapse .dropdown-menu').parent().on('hidden.bs.dropdown', function () {
+        console.info("collapse", this);
+        $('.navbar-collapse').collapse('hide');
+    });
 
-	$(".footer-bar-container").each(function () {
-		var h = parseInt($(this).attr("data-height"));
-		$(this).find(".footer-bar-contents").css("bottom",/*-h+*/"0px");
-		$(this).css("bottom", -h + "px");
-		$(this).find(".footer-bar-contents").css("height", h + "px");
-	});
+    $(".footer-bar-container").each(function () {
+        var h = parseInt($(this).attr("data-height"));
+        $(this).find(".footer-bar-contents").css("bottom",/*-h+*/"0px");
+        $(this).css("bottom", -h + "px");
+        $(this).find(".footer-bar-contents").css("height", h + "px");
+    });
 
-	$("body").on("click", ".footer-bar-tab .clicker", function () {
-		var tab = $(this).parent(".footer-bar-tab");
-		var on = !$(tab).hasClass("shifted");
-		$(tab).toggleClass("shifted", on);
-		var parent = $(tab).parent(".footer-bar-container");
-		parent.toggleClass("shifted", on);
-		parent.find(".footer-bar-contents").toggleClass("shifted", on);
+    $("body").on("click", ".footer-bar-tab .clicker", function () {
+        var tab = $(this).parent(".footer-bar-tab");
+        var on = !$(tab).hasClass("shifted");
+        $(tab).toggleClass("shifted", on);
+        var parent = $(tab).parent(".footer-bar-container");
+        parent.toggleClass("shifted", on);
+        parent.find(".footer-bar-contents").toggleClass("shifted", on);
 
-		var curHeight = 0;
-		$(".footer-bar-container").each(function () {
-			var isShift = $(this).hasClass("shifted");
-			var selfH = parseInt($(this).attr("data-height"));
-			if (isShift) {
-				curHeight += selfH;
-			}
-			$(this).css("bottom", -(-curHeight + selfH) + "px");
-		});
+        var curHeight = 0;
+        $(".footer-bar-container").each(function () {
+            var isShift = $(this).hasClass("shifted");
+            var selfH = parseInt($(this).attr("data-height"));
+            if (isShift) {
+                curHeight += selfH;
+            }
+            $(this).css("bottom", -(-curHeight + selfH) + "px");
+        });
 
-		$(".body-full-width #main").css("padding-bottom", Math.max(20, curHeight) + "px");
+        $(".body-full-width #main").css("padding-bottom", Math.max(20, curHeight) + "px");
 
-		$(window).trigger("footer-resize", on);
-	});
+        $(window).trigger("footer-resize", on);
+    });
 
-	$('.picture').each(function () {
-		var picture = $(this);
-		var bg = $(picture).css('background-image');
-		if (bg && bg != "none") {
-			$(picture).fadeToggle();
-			var src = bg.replace(/(^url\()|(\)$|[\"\'])/g, '');
-			var $img = $('<img>').attr('src', src).on('load', function () {
-				// do something, maybe:
-				$(picture).fadeIn();
-			});
-		}
-	});
+    $('.picture').each(function () {
+        var picture = $(this);
+        var bg = $(picture).css('background-image');
+        if (bg && bg != "none") {
+            $(picture).fadeToggle();
+            var src = bg.replace(/(^url\()|(\)$|[\"\'])/g, '');
+            var $img = $('<img>').attr('src', src).on('load', function () {
+                // do something, maybe:
+                $(picture).fadeIn();
+            });
+        }
+    });
 });
 
 
 $(document).ready(function () {
-	var e = new CustomEvent("jquery-loaded", {});
-	document.dispatchEvent(e);
+    var e = new CustomEvent("jquery-loaded", {});
+    document.dispatchEvent(e);
 });
 
 $(function () {
-	//Adds links to hash nav buttons
-	var updateFromHash = function () {
-		var hash = window.location.hash;
-		hash && $('ul.nav a[href="' + hash + '"]').tab('show');
-	};
-	updateFromHash();
-	window.addEventListener("hashchange", updateFromHash, false);
+    //Adds links to hash nav buttons
+    var updateFromHash = function () {
+        var hash = window.location.hash;
+        hash && $('ul.nav a[href="' + hash + '"]').tab('show');
+    };
+    updateFromHash();
+    window.addEventListener("hashchange", updateFromHash, false);
 
-	$(document).on("click", '.nav a', function (e) {
-		$(this).tab('show');
-		var scrollmem = $('body').scrollTop();
-		window.location.hash = this.hash;
-		$('html,body').scrollTop(scrollmem);
-	});
+    $(document).on("click", '.nav a', function (e) {
+        $(this).tab('show');
+        var scrollmem = $('body').scrollTop();
+        window.location.hash = this.hash;
+        $('html,body').scrollTop(scrollmem);
+    });
 });
 
 
 $(function () {
-	$(document).on("click", ".undoable .undo-button", function () {
-		var undoable = $(this).closest(".undoable");
-		var url = undoable.data("undo-url");
-		var action = undoable.data("undo-action");
-		if (typeof (url) !== "undefined") {
-			$.ajax({
-				url: url,
-				success: function (data) {
-					if (showJsonAlert(data)) {
-						if (("" + action).indexOf("unclass") != -1) {
-							$(undoable).removeClass("undoable");
-						}
-						if (("" + action).indexOf("remove") != -1) {
-							$(undoable).remove();
-						}
-						if (("" + action).indexOf("unhide") != -1) {
-							$(undoable).show();
-						}
-					}
-				}
-			});
-		} else {
-			showAlert("No action for undoable.", "Error!");
-		}
-	});
+    $(document).on("click", ".undoable .undo-button", function () {
+        var undoable = $(this).closest(".undoable");
+        var url = undoable.data("undo-url");
+        var action = undoable.data("undo-action");
+        if (typeof (url) !== "undefined") {
+            $.ajax({
+                url: url,
+                success: function (data) {
+                    if (showJsonAlert(data)) {
+                        if (("" + action).indexOf("unclass") != -1) {
+                            $(undoable).removeClass("undoable");
+                        }
+                        if (("" + action).indexOf("remove") != -1) {
+                            $(undoable).remove();
+                        }
+                        if (("" + action).indexOf("unhide") != -1) {
+                            $(undoable).show();
+                        }
+                    }
+                }
+            });
+        } else {
+            showAlert("No action for undoable.", "Error!");
+        }
+    });
 });
 
 
 window.addEventListener("submit", function (e) {
-	var form = e.target;
-	if (form.getAttribute("enctype") === "multipart/form-data") {
-		if (form.dataset.ajax) {
-			e.preventDefault();
-			e.stopImmediatePropagation();
-			var xhr = new XMLHttpRequest();
-			xhr.open(form.method, form.action);
-			xhr.onreadystatechange = function () {
-				if (xhr.readyState == 4 && xhr.status == 200) {
-					if (form.dataset.ajaxUpdate) {
-						var updateTarget = document.querySelector(form.dataset.ajaxUpdate);
-						if (updateTarget) {
-							updateTarget.innerHTML = xhr.responseText;
-						}
-					}
-				}
-			};
-			console.warn("Using FormData will not work on IE9");
-			xhr.send(new FormData(form));
-		}
-	}
+    var form = e.target;
+    if (form.getAttribute("enctype") === "multipart/form-data") {
+        if (form.dataset.ajax) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            var xhr = new XMLHttpRequest();
+            xhr.open(form.method, form.action);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    if (form.dataset.ajaxUpdate) {
+                        var updateTarget = document.querySelector(form.dataset.ajaxUpdate);
+                        if (updateTarget) {
+                            updateTarget.innerHTML = xhr.responseText;
+                        }
+                    }
+                }
+            };
+            console.warn("Using FormData will not work on IE9");
+            xhr.send(new FormData(form));
+        }
+    }
 }, true);
 
 function debounce(func, wait, immediate) {
-	var timeout;
-	return function () {
-		var context = this, args = arguments;
-		var later = function () {
-			timeout = null;
-			if (!immediate) func.apply(context, args);
-		};
-		var callNow = immediate && !timeout;
-		clearTimeout(timeout);
-		timeout = setTimeout(later, wait);
-		if (callNow) func.apply(context, args);
-	};
+    var timeout;
+    return function () {
+        var context = this, args = arguments;
+        var later = function () {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+        };
+        var callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+    };
 };
 
 Constants = {
-	StartHubSettings: { transport: ['webSockets', 'longPolling'] }
+    StartHubSettings: { transport: ['webSockets', 'longPolling'] }
 };
 
 
 function sendErrorReport() {
-	try {
-		console.log("Sending Error Report...");
-		var message = "[";
-		var mArray = [];
-		for (var i in consoleStore) {
-			if (arrayHasOwnIndex(consoleStore, i)) {
-				mArray.push(JSON.stringify(consoleStore[i]));
-			}
-		}
-		message = "[" + mArray.join(",\n") + "]";
-		function _send() {
-			data = {};
-			data.Console = message;
-			data.Url = window.location.href;
-			data.User = window.UserId;
-			data.Org = window.OrgId;
-			data.PageTitle = window.Title;
-			data.Status = "JavascriptError";
-			data.Subject = "Javascript Error - " + data.PageTitle;
-			if (image != null) {
-				data.ImageData = image;
-			}
-			$.ajax({
-				method: "POST",
-				url: "/support/email",
-				data: data,
-				success: function (d) {
-					console.log("Report was sent.");
-				},
-				error: function (a, b, c) {
-					console.error("Error sending report:");
-					console.error(b, c);
-				}
-			});
-		}
-		try {
-			$.getScript("/Scripts/home/screenshot.js").done(function () {
-				try {
-					console.log("...begin render");
-					screenshotPage(function (res) {
-						image = res;
-						console.log("...end render");
-						_send();
-					});
-				} catch (e) {
-					_send();
-				}
-			}).error(function () {
-				_send();
-			});
-		} catch (e) {
-			_send();
-		}
-	} catch (e) {
-		console.error("Error sending report:");
-		console.error(e);
-	}
+    try {
+        console.log("Sending Error Report...");
+        var message = "[";
+        var mArray = [];
+        for (var i in consoleStore) {
+            if (arrayHasOwnIndex(consoleStore, i)) {
+                mArray.push(JSON.stringify(consoleStore[i]));
+            }
+        }
+        message = "[" + mArray.join(",\n") + "]";
+        function _send() {
+            data = {};
+            data.Console = message;
+            data.Url = window.location.href;
+            data.User = window.UserId;
+            data.Org = window.OrgId;
+            data.PageTitle = window.Title;
+            data.Status = "JavascriptError";
+            data.Subject = "Javascript Error - " + data.PageTitle;
+            if (image != null) {
+                data.ImageData = image;
+            }
+            $.ajax({
+                method: "POST",
+                url: "/support/email",
+                data: data,
+                success: function (d) {
+                    console.log("Report was sent.");
+                },
+                error: function (a, b, c) {
+                    console.error("Error sending report:");
+                    console.error(b, c);
+                }
+            });
+        }
+        try {
+            $.getScript("/Scripts/home/screenshot.js").done(function () {
+                try {
+                    console.log("...begin render");
+                    screenshotPage(function (res) {
+                        image = res;
+                        console.log("...end render");
+                        _send();
+                    });
+                } catch (e) {
+                    _send();
+                }
+            }).error(function () {
+                _send();
+            });
+        } catch (e) {
+            _send();
+        }
+    } catch (e) {
+        console.error("Error sending report:");
+        console.error(e);
+    }
 
 }
 
 function supportEmail(title, nil, defaultSubject, defaultBody) {
-	var message = "[";
-	var mArray = [];
-	for (var i in consoleStore) {
-		if (arrayHasOwnIndex(consoleStore, i)) {
-			mArray.push(JSON.stringify(consoleStore[i]));
-		}
-	}
-	message = "[" + mArray.join(",\n") + "]";
-	var fields = [
+    var message = "[";
+    var mArray = [];
+    for (var i in consoleStore) {
+        if (arrayHasOwnIndex(consoleStore, i)) {
+            mArray.push(JSON.stringify(consoleStore[i]));
+        }
+    }
+    message = "[" + mArray.join(",\n") + "]";
+    var fields = [
             { name: "Subject", text: "Subject", type: "text", value: defaultSubject },
             { name: "Body", text: "Body", type: "textarea", value: defaultBody }
-	];
+    ];
 
-	if (typeof (window.UserId) === "undefined" || window.UserId == -1)
-		fields.push({ name: "Email", text: "Email", type: "text", placeholder: "Your e-mail here" });
+    if (typeof (window.UserId) === "undefined" || window.UserId == -1)
+        fields.push({ name: "Email", text: "Email", type: "text", placeholder: "Your e-mail here" });
 
-	var image = null;
-	var show = function () {
-		showModal({
-			title: "How can we help you?",
-			icon: "default",//{ icon: "modal-icon-default", title: "Contact Support", color: "#ef7622" },
-			fields: fields,
-			pushUrl: "/support/email",
-			reformat: function (data) {
-				data.Console = message;
-				data.Url = window.location.href;
-				data.User = window.UserId;
-				data.Org = window.OrgId;
-				data.PageTitle = title;
+    var image = null;
+    var show = function () {
+        showModal({
+            title: "How can we help you?",
+            icon: "default",//{ icon: "modal-icon-default", title: "Contact Support", color: "#ef7622" },
+            fields: fields,
+            pushUrl: "/support/email",
+            reformat: function (data) {
+                data.Console = message;
+                data.Url = window.location.href;
+                data.User = window.UserId;
+                data.Org = window.OrgId;
+                data.PageTitle = title;
 
-				if (image != null) {
-					data.ImageData = image;
-				}
-			}
-		});
-	};
-	try {
-		$.getScript("/Scripts/home/screenshot.js").done(function () {
-			try {
-				console.log("begin render");
-				screenshotPage(function (res) {
-					image = res;
-					console.log("end render");
-				});
-				show();
-			} catch (e) {
-				show();
-			}
-		}).error(function () {
-			show();
-		});
-	} catch (e) {
-		show();
-	}
+                if (image != null) {
+                    data.ImageData = image;
+                }
+            }
+        });
+    };
+    try {
+        $.getScript("/Scripts/home/screenshot.js").done(function () {
+            try {
+                console.log("begin render");
+                screenshotPage(function (res) {
+                    image = res;
+                    console.log("end render");
+                });
+                show();
+            } catch (e) {
+                show();
+            }
+        }).error(function () {
+            show();
+        });
+    } catch (e) {
+        show();
+    }
 
 }
 
@@ -2285,247 +2295,247 @@ function supportEmail(title, nil, defaultSubject, defaultBody) {
 //Create issues or todos or headlines
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function imageListFormat(state) {
-	if (!state.id) {
-		return state.text;
-	}
-	var $state = $('<span><img style="max-width:32;max-height:32px"  src="' + $(state.element).data("img") + '" class="img-flag" /> ' + state.text + '</span>');
-	return $state;
+    if (!state.id) {
+        return state.text;
+    }
+    var $state = $('<span><img style="max-width:32;max-height:32px"  src="' + $(state.element).data("img") + '" class="img-flag" /> ' + state.text + '</span>');
+    return $state;
 };
 
 function getDataValues(self) {
-	var data = {};
-	[].forEach.call(self.attributes, function (attr) {
-		if (/^data-/.test(attr.name)) {
-			var camelCaseName = attr.name.substr(5).replace(/-(.)/g, function ($0, $1) {
-				return $1.toUpperCase();
-			});
-			data[camelCaseName] = attr.value;
-		}
-	});
-	return data;
+    var data = {};
+    [].forEach.call(self.attributes, function (attr) {
+        if (/^data-/.test(attr.name)) {
+            var camelCaseName = attr.name.substr(5).replace(/-(.)/g, function ($0, $1) {
+                return $1.toUpperCase();
+            });
+            data[camelCaseName] = attr.value;
+        }
+    });
+    return data;
 }
 
 $("body").on("click", ".issuesModal:not(.disabled)", function () {
-	var dat = getDataValues(this);
-	var parm = $.param(dat);
-	var m = dat.method;
-	if (!m)
-		m = "Modal";
-	var title = dat.title || "Add an issue";
-	showModal(title, "/Issues/" + m + "?" + parm, "/Issues/" + m);
+    var dat = getDataValues(this);
+    var parm = $.param(dat);
+    var m = dat.method;
+    if (!m)
+        m = "Modal";
+    var title = dat.title || "Add an issue";
+    showModal(title, "/Issues/" + m + "?" + parm, "/Issues/" + m);
 });
 $("body").on("click", ".todoModal:not(.disabled)", function () {
-	var dat = getDataValues(this);
-	var parm = $.param(dat);
-	var m = dat.method;
-	if (!m)
-		m = "Modal";
-	var title = dat.title || "Add a to-do";
-	showModal(title, "/Todo/" + m + "?" + parm, "/Todo/" + m, null, function () {
-		var found = $('#modalBody').find(".select-user");
-		if (found.length && found.val() == null)
-			return "You must select at least one to-do owner.";
-		return true;
-	});
+    var dat = getDataValues(this);
+    var parm = $.param(dat);
+    var m = dat.method;
+    if (!m)
+        m = "Modal";
+    var title = dat.title || "Add a to-do";
+    showModal(title, "/Todo/" + m + "?" + parm, "/Todo/" + m, null, function () {
+        var found = $('#modalBody').find(".select-user");
+        if (found.length && found.val() == null)
+            return "You must select at least one to-do owner.";
+        return true;
+    });
 });
 $("body").on("click", ".headlineModal:not(.disabled)", function () {
-	var dat = getDataValues(this);
-	var parm = $.param(dat);
-	var m = dat.method;
-	if (!m)
-		m = "Modal";
-	var title = dat.title || "Add a people headline";
-	showModal(title, "/Headlines/" + m + "?" + parm, "/Headlines/" + m, null, function () {
-		var found = $('#modalBody').find(".select-user");
-		//if (found.length && found.val() == null)
-		//	return "You must select at least one to-do owner.";
-		return true;
-	});
+    var dat = getDataValues(this);
+    var parm = $.param(dat);
+    var m = dat.method;
+    if (!m)
+        m = "Modal";
+    var title = dat.title || "Add a people headline";
+    showModal(title, "/Headlines/" + m + "?" + parm, "/Headlines/" + m, null, function () {
+        var found = $('#modalBody').find(".select-user");
+        //if (found.length && found.val() == null)
+        //	return "You must select at least one to-do owner.";
+        return true;
+    });
 });
 
 $("body").on("click", ".rockModal:not(.disabled)", function () {
-	var dat = getDataValues(this);
-	var parm = $.param(dat);
-	var m = dat.method;
-	if (!m)
-		m = "EditModal";
-	var title = dat.title || "Add a rock";
-	showModal(title, "/Rocks/" + m + "?" + parm, "/Rocks/" + m, null, function () {
-		var found = $('#modalBody').find(".select-user");
-		//if (found.length && found.val() == null)
-		//	return "You must select at least one to-do owner.";
-		return true;
-	});
+    var dat = getDataValues(this);
+    var parm = $.param(dat);
+    var m = dat.method;
+    if (!m)
+        m = "EditModal";
+    var title = dat.title || "Add a rock";
+    showModal(title, "/Rocks/" + m + "?" + parm, "/Rocks/" + m, null, function () {
+        var found = $('#modalBody').find(".select-user");
+        //if (found.length && found.val() == null)
+        //	return "You must select at least one to-do owner.";
+        return true;
+    });
 });
 $("body").on("click", ".milestoneModal:not(.disabled)", function () {
-	var dat = getDataValues(this);
-	var parm = $.param(dat);
-	var m = dat.method;
-	if (!m)
-		m = "Modal";
-	var title = dat.title || "Add a milestone";
-	showModal(title, "/Milestone/" + m + "?" + parm, "/Milestone/" + m, null, function () {
-		//var found = $('#modalBody').find(".select-user");
-		//if (found.length && found.val() == null)
-		//	return "You must select at least one to-do owner.";
-		return true;
-	});
+    var dat = getDataValues(this);
+    var parm = $.param(dat);
+    var m = dat.method;
+    if (!m)
+        m = "Modal";
+    var title = dat.title || "Add a milestone";
+    showModal(title, "/Milestone/" + m + "?" + parm, "/Milestone/" + m, null, function () {
+        //var found = $('#modalBody').find(".select-user");
+        //if (found.length && found.val() == null)
+        //	return "You must select at least one to-do owner.";
+        return true;
+    });
 });
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function getParameterByName(name, url) {
-	if (!url) url = window.location.href;
-	name = name.replace(/[\[\]]/g, "\\$&");
-	var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
         results = regex.exec(url);
-	if (!results) return null;
-	if (!results[2]) return '';
-	return decodeURIComponent(results[2].replace(/\+/g, " "));
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
 
 jQuery.cachedScript = function (url, options) {
-	options = $.extend(options || {}, {
-		dataType: "script",
-		cache: true,
-		url: url
-	});
-	return jQuery.ajax(options);
+    options = $.extend(options || {}, {
+        dataType: "script",
+        cache: true,
+        url: url
+    });
+    return jQuery.ajax(options);
 };
 
 var tname = "";
 var tmethod = ""
 function startTour(name, method) {
-	if (typeof (method) === "undefined" || method == null || (typeof (method) === "string" && method.trim() == ""))
-		method = "start";
-	$.getScript("/Scripts/Tour/lib/anno.js").done(function () {
-		//ensureLoaded("/Scripts/Tour/lib/jquery.scrollintoview.min.js");
-		//ensureLoaded("/Content/Tour/lib/anno.css");
-		if (typeof (Tours) === "undefined") {
-			Tours = {
-				NextButton: function () {
-					return {
-						text: "Next",
-						click: function (a, e) {
-							var anno = a;
-							$(anno.target).click();
-							e.preventDefault();
-						}
-					};
-				},
-				clickToAdvance: function (anno) {
+    if (typeof (method) === "undefined" || method == null || (typeof (method) === "string" && method.trim() == ""))
+        method = "start";
+    $.getScript("/Scripts/Tour/lib/anno.js").done(function () {
+        //ensureLoaded("/Scripts/Tour/lib/jquery.scrollintoview.min.js");
+        //ensureLoaded("/Content/Tour/lib/anno.css");
+        if (typeof (Tours) === "undefined") {
+            Tours = {
+                NextButton: function () {
+                    return {
+                        text: "Next",
+                        click: function (a, e) {
+                            var anno = a;
+                            $(anno.target).click();
+                            e.preventDefault();
+                        }
+                    };
+                },
+                clickToAdvance: function (anno) {
 
-					var existingShow = anno.onShow;
-					var existingHide = anno.onHide;
+                    var existingShow = anno.onShow;
+                    var existingHide = anno.onHide;
 
-					anno.onShow = function (anno, $target, $annoElem) {
-						var an = anno;
-						if (typeof (existingShow) !== "undefined")
-							existingShow(anno, $target, $annoElem);
-						var handler = function (e) {
-							console.log("c2a handler");
-							if (anno._chainNext != null) {
-								waitUntil(function () { return $(anno._chainNext.target).length > 0; }, function () {
-									setTimeout(function () {
-										if (typeof (anno.action) === "function")
-											anno.action();
-										an.switchToChainNext();
-									}, 250);
-								}, function () {
-									showAlert("Could not load tour.");
-								});
-							} else {
-								if (typeof (anno.action) === "function")
-									anno.action();
-								setTimeout(function () {
-									an.switchToChainNext();
-								}, 1);
-							}
-						}
+                    anno.onShow = function (anno, $target, $annoElem) {
+                        var an = anno;
+                        if (typeof (existingShow) !== "undefined")
+                            existingShow(anno, $target, $annoElem);
+                        var handler = function (e) {
+                            console.log("c2a handler");
+                            if (anno._chainNext != null) {
+                                waitUntil(function () { return $(anno._chainNext.target).length > 0; }, function () {
+                                    setTimeout(function () {
+                                        if (typeof (anno.action) === "function")
+                                            anno.action();
+                                        an.switchToChainNext();
+                                    }, 250);
+                                }, function () {
+                                    showAlert("Could not load tour.");
+                                });
+                            } else {
+                                if (typeof (anno.action) === "function")
+                                    anno.action();
+                                setTimeout(function () {
+                                    an.switchToChainNext();
+                                }, 1);
+                            }
+                        }
 
-						$target[0].addEventListener('click', handler, true) // `true` is essential                   
-						return handler
-					};
-					anno.onHide = function (anno, $target, $annoElem, handler) {
-						if (typeof (existingHide) !== "undefined")
-							existingHide(anno, $target, $annoElem);
-						if ($target.length > 0) {
-							$target[0].removeEventListener('click', handler, true);
-						}
-					}
-					return anno;
-				},
-				appendParams: function (anno, selector, tourName, tourMethod) {
-					var existingShow = anno.onShow;
-					var existingHide = anno.onHide;
+                        $target[0].addEventListener('click', handler, true) // `true` is essential                   
+                        return handler
+                    };
+                    anno.onHide = function (anno, $target, $annoElem, handler) {
+                        if (typeof (existingHide) !== "undefined")
+                            existingHide(anno, $target, $annoElem);
+                        if ($target.length > 0) {
+                            $target[0].removeEventListener('click', handler, true);
+                        }
+                    }
+                    return anno;
+                },
+                appendParams: function (anno, selector, tourName, tourMethod) {
+                    var existingShow = anno.onShow;
+                    var existingHide = anno.onHide;
 
-					anno.onShow = function (anno, $target, $annoElem) {
-						if (typeof (existingShow) !== "undefined")
-							existingShow(anno, $target, $annoElem);
-						tname = tourName;
-						tmethod = tourMethod;
-						var handler = function (e) {
-							if (typeof (e.target.href) !== "undefined" && $(e.target).is(selector)) {
-								e.preventDefault();
-								if (e.target.href.indexOf("?") != -1) window.location.href = e.target.href + '&tname=' + tourName + "&tmethod=" + tourMethod;
-								else window.location.href = e.target.href + '?tname=' + tourName + "&tmethod=" + tourMethod;
-							}
-							if (typeof (e.target.onclick) !== "undefined" && $(e.target).is(selector)) {
-								e.preventDefault();
-								var str = "" + e.target.onclick;
-								var findQ = "'";
-								var idx = str.indexOf("location.href='");
-								if (idx == -1) {
-									idx = str.indexOf('location.href="');
-									var findQ = '"';
-								}
-								if (idx != -1) {
-									idx += 14;
-									var endQ = str.indexOf(findQ, idx + 1);
-									var query = (str.substr(idx, endQ - idx).indexOf("?") == -1) ? "?" : "&";
-									str = str.substr(0, endQ) + query + 'tname=' + tourName + "&tmethod=" + tourMethod + str.substr(endQ);
-									e.target.onclick = eval(str);
-								}
-							}
-						}
-						$target[0].addEventListener('click', handler, true) // `true` is essential
-						return handler
-					};
+                    anno.onShow = function (anno, $target, $annoElem) {
+                        if (typeof (existingShow) !== "undefined")
+                            existingShow(anno, $target, $annoElem);
+                        tname = tourName;
+                        tmethod = tourMethod;
+                        var handler = function (e) {
+                            if (typeof (e.target.href) !== "undefined" && $(e.target).is(selector)) {
+                                e.preventDefault();
+                                if (e.target.href.indexOf("?") != -1) window.location.href = e.target.href + '&tname=' + tourName + "&tmethod=" + tourMethod;
+                                else window.location.href = e.target.href + '?tname=' + tourName + "&tmethod=" + tourMethod;
+                            }
+                            if (typeof (e.target.onclick) !== "undefined" && $(e.target).is(selector)) {
+                                e.preventDefault();
+                                var str = "" + e.target.onclick;
+                                var findQ = "'";
+                                var idx = str.indexOf("location.href='");
+                                if (idx == -1) {
+                                    idx = str.indexOf('location.href="');
+                                    var findQ = '"';
+                                }
+                                if (idx != -1) {
+                                    idx += 14;
+                                    var endQ = str.indexOf(findQ, idx + 1);
+                                    var query = (str.substr(idx, endQ - idx).indexOf("?") == -1) ? "?" : "&";
+                                    str = str.substr(0, endQ) + query + 'tname=' + tourName + "&tmethod=" + tourMethod + str.substr(endQ);
+                                    e.target.onclick = eval(str);
+                                }
+                            }
+                        }
+                        $target[0].addEventListener('click', handler, true) // `true` is essential
+                        return handler
+                    };
 
-					anno.onHide = function (anno, $target, $annoElem, handler) {
-						if (typeof (existingHide) !== "undefined")
-							existingHide(anno, $target, $annoElem, handler);
-						$target[0].removeEventListener('click', handler, true);
-						tname = "";
-						tmethod = "";
-					}
-					return anno;
-				}
-			}
-		};
-		try {
-			Anno.prototype.overlayClick = function () {
-				console.log("overlay clicked");
-			};
-			$.getScript("/Scripts/Tour/" + name + ".js").done(function () {
-				//debugger;
-				Tours[name][method]();
-			}, function () {
-				//debugger;
-				// showAlert("Something went wrong.");
-			});
-		} catch (e) {
-			showAlert("Tour could not be loaded.");
-		}
-	});
+                    anno.onHide = function (anno, $target, $annoElem, handler) {
+                        if (typeof (existingHide) !== "undefined")
+                            existingHide(anno, $target, $annoElem, handler);
+                        $target[0].removeEventListener('click', handler, true);
+                        tname = "";
+                        tmethod = "";
+                    }
+                    return anno;
+                }
+            }
+        };
+        try {
+            Anno.prototype.overlayClick = function () {
+                console.log("overlay clicked");
+            };
+            $.getScript("/Scripts/Tour/" + name + ".js").done(function () {
+                //debugger;
+                Tours[name][method]();
+            }, function () {
+                //debugger;
+                // showAlert("Something went wrong.");
+            });
+        } catch (e) {
+            showAlert("Tour could not be loaded.");
+        }
+    });
 }
 
 function shouldBeginTour() {
-	var tourName = getParameterByName("tname");
-	if (typeof (tourName) !== "undefined" && tourName != null && (typeof (tourName) === "string" && tourName.trim() != "")) {
-		startTour(tourName, getParameterByName("tmethod"));
-	}
+    var tourName = getParameterByName("tname");
+    if (typeof (tourName) !== "undefined" && tourName != null && (typeof (tourName) === "string" && tourName.trim() != "")) {
+        startTour(tourName, getParameterByName("tmethod"));
+    }
 }
 shouldBeginTour();
 
@@ -2539,34 +2549,34 @@ shouldBeginTour();
  * @param {int} interval Number of milliseconds to wait between attempts (default 20ms)
 // */
 function waitUntil(isready, success, error, count, interval) {
-	if (count === undefined) {
-		count = 300;
-	}
-	if (interval === undefined) {
-		interval = 20;
-	}
-	if (isready()) {
-		success();
-		return;
-	}
-	// The call back isn't ready. We need to wait for it
-	setTimeout(function () {
-		if (!count) {
-			// We have run out of retries
-			if (error !== undefined) {
-				error();
-			}
-		} else {
-			// Try again
-			waitUntil(isready, success, error, count - 1, interval);
-		}
-	}, interval);
+    if (count === undefined) {
+        count = 300;
+    }
+    if (interval === undefined) {
+        interval = 20;
+    }
+    if (isready()) {
+        success();
+        return;
+    }
+    // The call back isn't ready. We need to wait for it
+    setTimeout(function () {
+        if (!count) {
+            // We have run out of retries
+            if (error !== undefined) {
+                error();
+            }
+        } else {
+            // Try again
+            waitUntil(isready, success, error, count - 1, interval);
+        }
+    }, interval);
 }
 
 function waitUntilVisible(selector, onVisible) {
-	waitUntil(function () {
-		return $(selector).is(":visible");
-	}, onVisible, function () { }, 60, 50);
+    waitUntil(function () {
+        return $(selector).is(":visible");
+    }, onVisible, function () { }, 60, 50);
 }
 
 
@@ -2589,51 +2599,51 @@ function waitUntilVisible(selector, onVisible) {
 //}
 
 function isIOS() {
-	var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-	return iOS;
+    var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    return iOS;
 }
 
 if (isIOS()) {
 
-	function setTextareaPointerEvents(value) {
-		var nodes = document.getElementsByClassName('scrollOver');
-		for (var i = 0; i < nodes.length; i++) {
-			nodes[i].style.pointerEvents = value;
-		}
-	}
+    function setTextareaPointerEvents(value) {
+        var nodes = document.getElementsByClassName('scrollOver');
+        for (var i = 0; i < nodes.length; i++) {
+            nodes[i].style.pointerEvents = value;
+        }
+    }
 
-	document.addEventListener('DOMContentLoaded', function () {
-		setTextareaPointerEvents('none');
-	});
+    document.addEventListener('DOMContentLoaded', function () {
+        setTextareaPointerEvents('none');
+    });
 
-	document.addEventListener('touchstart', function () {
-		setTextareaPointerEvents('auto');
-	});
+    document.addEventListener('touchstart', function () {
+        setTextareaPointerEvents('auto');
+    });
 
-	document.addEventListener('touchmove', function () {
-		e.preventDefault();
-		setTextareaPointerEvents('none');
-	});
+    document.addEventListener('touchmove', function () {
+        e.preventDefault();
+        setTextareaPointerEvents('none');
+    });
 
-	document.addEventListener('touchend', function () {
-		setTimeout(function () {
-			setTextareaPointerEvents('none');
-		}, 0);
-	});
+    document.addEventListener('touchend', function () {
+        setTimeout(function () {
+            setTextareaPointerEvents('none');
+        }, 0);
+    });
 
-	var b = document.getElementsByTagName('body')[0];
-	b.className += ' is-ios';
+    var b = document.getElementsByTagName('body')[0];
+    b.className += ' is-ios';
 }
 
 function isSafari() {
-	var ua = navigator.userAgent.toLowerCase();
-	if (ua.indexOf('safari') != -1) {
-		if (ua.indexOf('chrome') > -1) {
-		} else {
-			return true;
-		}
-	}
-	return false;
+    var ua = navigator.userAgent.toLowerCase();
+    if (ua.indexOf('safari') != -1) {
+        if (ua.indexOf('chrome') > -1) {
+        } else {
+            return true;
+        }
+    }
+    return false;
 }
 
 

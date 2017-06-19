@@ -15,6 +15,7 @@ using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.L10;
 using RadialReview.Models.Accountability;
+using RadialReview.Areas.People.Models.Survey;
 
 namespace RadialReview.Utilities {
     public partial class PermissionsUtility {
@@ -257,9 +258,12 @@ namespace RadialReview.Utilities {
             switch (resourceType) {
 				case PermItem.ResourceType.L10Recurrence:
 					return (session.Get<L10Recurrence>(resourceId).CreatedById == caller.Id);
-				case PermItem.ResourceType.AccountabilityHierarchy:
-					return false;
-				default:
+                case PermItem.ResourceType.AccountabilityHierarchy:
+                    return false;
+                case PermItem.ResourceType.SurveyContainer:
+                    var creator = session.Get<SurveyContainer>(resourceId).CreatedBy;
+                    return creator.Is<UserOrganizationModel>() && creator.ModelId == caller.Id;
+                default:
                     throw new ArgumentOutOfRangeException("resourceType");
             }
            // return false;

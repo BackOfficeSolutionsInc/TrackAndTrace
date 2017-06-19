@@ -8,6 +8,7 @@ var getStackTrace = function () {
     Error.captureStackTrace(obj, getStackTrace);
     return obj.stack;
 };
+
 function interceptLogger(name, oldLogger) {
     return function () {
         var lineNum = "na";

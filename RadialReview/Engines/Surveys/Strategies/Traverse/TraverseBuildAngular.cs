@@ -12,9 +12,12 @@ namespace RadialReview.Engines.Surveys.Strategies.Traverse {
         private Dictionary<long, AngularSurvey> Surveys = new Dictionary<long, AngularSurvey>();
         private Dictionary<long, AngularSurveySection> Sections = new Dictionary<long, AngularSurveySection>();
         //private Dictionary<long, AngularSurveyItem> Items = new Dictionary<long, AngularSurveyItem>();
+        public string TemplateModifier { get; set; }
 
-        public TraverseBuildAngular(AngularSurveyContainer qc) {
+
+        public TraverseBuildAngular(AngularSurveyContainer qc,string templateModifier="bs") {
             SurveyContainer = qc;
+            TemplateModifier = templateModifier;
         }
         public void AtSurveyContainer(ISurveyContainer child) {
             SurveyContainer.Id = child.Id;
@@ -31,7 +34,7 @@ namespace RadialReview.Engines.Surveys.Strategies.Traverse {
                 Ordering = child.GetOrdering(),
                 SurveyContainerId = parent.Id,
                 Help = child.GetHelp(),
-                Sections = new List<ISection>()
+                Sections = new List<AngularSurveySection>()
             };
 
             SurveyContainer.AppendSurvey(survey);
@@ -45,7 +48,7 @@ namespace RadialReview.Engines.Surveys.Strategies.Traverse {
                 Name = child.GetName(),
                 Ordering = child.GetOrdering(),
                 Help = child.GetHelp(),
-                Items = new List<IItemContainer>(),
+                Items = new List<AngularSurveyItemContainer>(),
                 SectionType = child.GetSectionType(),
                 SurveyId = survey.Id,
             };
@@ -75,6 +78,7 @@ namespace RadialReview.Engines.Surveys.Strategies.Traverse {
                 Help = cFormat.GetHelp(),
                 ItemType = cFormat.GetItemType(),
                 Settings = cFormat.GetSettings(),
+                TemplateModifier = TemplateModifier,
             };
 
             var cResponse = child.GetResponse();
@@ -91,7 +95,7 @@ namespace RadialReview.Engines.Surveys.Strategies.Traverse {
             }
             
             var itemContainer = new AngularSurveyItemContainer() {
-                Id = child.Id,
+                Id = child.GetItem().Id,
                 Name = child.GetName(),
                 Ordering = child.GetOrdering(),
                 Help = child.GetHelp(),

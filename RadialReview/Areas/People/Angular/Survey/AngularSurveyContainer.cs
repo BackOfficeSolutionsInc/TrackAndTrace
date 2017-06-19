@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using RadialReview.Areas.People.Models.Survey;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json;
 
 namespace RadialReview.Areas.People.Angular.Survey {
     public class AngularSurveyContainer : BaseAngular, ISurveyContainer {
@@ -13,18 +15,21 @@ namespace RadialReview.Areas.People.Angular.Survey {
 
         public String Name { get; set; }
         public DateTime? CreateTime { get; set; }
+
+
+        [JsonConverter(typeof(StringEnumConverter))]
         public SurveyType? SurveyType { get; set; }
         public string Help { get; set; }
         public int? Ordering { get; set; }
 
-        public ICollection<ISurvey> Surveys { get; set; }
+        public ICollection<AngularSurvey> Surveys { get; set; }
         public IEnumerable<ISurvey> GetSurveys() {
             return Surveys;
         }
 
         public void AppendSurvey(ISurvey survey) {
-            Surveys = Surveys ?? new List<ISurvey>();
-            Surveys.Add(survey);
+            Surveys = Surveys ?? new List<AngularSurvey>();
+            Surveys.Add((AngularSurvey)survey);
         }
 
         public string ToPrettyString() {

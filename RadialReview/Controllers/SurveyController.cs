@@ -29,9 +29,9 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.UserOrganization)]
         public ActionResult Index()
 		{
-			var s = SurveyAccessor.GetAllSurveyContainersForOrganization(GetUser(),GetUser().Organization.Id);
-	        var q = SurveyAccessor.GetAllSurveyQuestionGroupsForOrganization(GetUser(), GetUser().Organization.Id);
-	        var r = SurveyAccessor.GetAllSurveyRespondentGroupsForOrganization(GetUser(), GetUser().Organization.Id);
+			var s = OldSurveyAccessor.GetAllSurveyContainersForOrganization(GetUser(),GetUser().Organization.Id);
+	        var q = OldSurveyAccessor.GetAllSurveyQuestionGroupsForOrganization(GetUser(), GetUser().Organization.Id);
+	        var r = OldSurveyAccessor.GetAllSurveyRespondentGroupsForOrganization(GetUser(), GetUser().Organization.Id);
             return View(new SurveyListing(){
 				Issued = s,
 				RespondentGroups =r,
@@ -49,8 +49,8 @@ namespace RadialReview.Controllers
 					CreatorId = GetUser().Id
 		        };
 	        }else{
-		        container = SurveyAccessor.GetSurveyContainer(GetUser(), id);
-				_PermissionsAccessor.Permitted(GetUser(),x=>x.EditSurvey(id));
+		        container = OldSurveyAccessor.GetSurveyContainer(GetUser(), id);
+				_PermissionsAccessor.Permitted(GetUser(),x=>x.EditOldSurvey(id));
 	        }
 
 			return View(container);
@@ -64,7 +64,7 @@ namespace RadialReview.Controllers
 				throw new PermissionsException("This id does not exist.");
 			}
 
-			var takeSurvey = SurveyAccessor.LoadSurvey(id,Request.UserAgent,Request.UserHostAddress,Request.UrlReferrer.NotNull(x=>x.ToString()));
+			var takeSurvey = OldSurveyAccessor.LoadSurvey(id,Request.UserAgent,Request.UserHostAddress,Request.UrlReferrer.NotNull(x=>x.ToString()));
 
 			return View(takeSurvey);
 		}
@@ -73,7 +73,7 @@ namespace RadialReview.Controllers
 	    [Access(AccessLevel.Any)]
 	    public ActionResult OpenEnded(string id,string respondent=null,bool embedded=false)
 	    {
-			var takeSurvey = SurveyAccessor.LoadOpenEndedSurvey(respondent, id, Request.UserAgent, Request.UserHostAddress, Request.UrlReferrer.NotNull(x=>x.ToString()));
+			var takeSurvey = OldSurveyAccessor.LoadOpenEndedSurvey(respondent, id, Request.UserAgent, Request.UserHostAddress, Request.UrlReferrer.NotNull(x=>x.ToString()));
 		    if (embedded){
 			    return PartialView("Embedded", takeSurvey);
 			}
@@ -84,7 +84,7 @@ namespace RadialReview.Controllers
 		
 		public JsonResult Set(string id,int? value=null,string str=null)
 		{
-			SurveyAccessor.SetValue(id,value,str);
+			OldSurveyAccessor.SetValue(id,value,str);
 			return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
 		}
 
@@ -93,7 +93,7 @@ namespace RadialReview.Controllers
 	    {
 			//_PermissionsAccessor.Permitted(GetUser(),x=>x.ViewSurveyContainer(id));
 			//var survey= SurveyAccessor.GetSurveyContainer(GetUser(), id);
-			var results = SurveyAccessor.GetResults(GetUser(), id);
+			var results = OldSurveyAccessor.GetResults(GetUser(), id);
 			return View(results);
 	    }
 
@@ -103,7 +103,7 @@ namespace RadialReview.Controllers
 		{
 			ValidateValues(model, x => x.Id, x => x.OrgId, x => x.CreateTime, x => x.DeleteTime, x => x.CreatorId);
 			if (ModelState.IsValid){
-				SurveyAccessor.EditSurvey(GetUser(), model);
+				OldSurveyAccessor.EditSurvey(GetUser(), model);
 				if (Request.Form["Submit"].Contains("Issue"))
 				{
 					if (!model.QuestionGroup._Questions.Any())
@@ -112,7 +112,7 @@ namespace RadialReview.Controllers
 						ModelState.AddModelError("Questions", "You must add at least one respondent or it must be embeddable.");
 
 					if (ModelState.IsValid)
-						await SurveyAccessor.IssueSurvey(GetUser(), model.Id);
+						await OldSurveyAccessor.IssueSurvey(GetUser(), model.Id);
 					else
 						return View(model);
 				}

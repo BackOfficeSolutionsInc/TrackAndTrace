@@ -120,12 +120,15 @@
     <Compile Include="Api\V0\Todo.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="Areas\People\Accessors\QuarterlyConversationAccessor.cs" />
+    <Compile Include="Areas\People\Accessors\SurveyAccessor.cs" />
     <Compile Include="Areas\People\Angular\Survey\AngularForModel.cs" />
     <Compile Include="Areas\People\Angular\Survey\AngularSurveyContainer.cs" />
     <Compile Include="Areas\People\Angular\Survey\AngularSurvey.cs" />
     <Compile Include="Areas\People\Angular\Survey\AngularSurveyItem.cs" />
+    <Compile Include="Areas\People\Controllers\AngularTemplatesController.cs" />
     <Compile Include="Areas\People\Controllers\MainController.cs" />
     <Compile Include="Areas\People\Controllers\QuarterlyConversationController.cs" />
+    <Compile Include="Areas\People\Controllers\SurveyController.cs" />
     <Compile Include="Areas\People\Models\Survey\ByAbout.cs" />
     <Compile Include="Areas\People\Models\Survey\SurveyItemFormat.cs" />
     <Compile Include="Areas\People\Models\Survey\SurveyItemResponse.cs" />
@@ -137,6 +140,11 @@
     <Compile Include="Areas\People\Models\Survey\SurveyEnums.cs" />
     <Compile Include="Areas\People\PeopleAreaRegistration.cs" />
     <Compile Include="Areas\People\ViewModels\QuarterlyConversationVM.cs" />
+    <Content Include="Content\AngularTemplates\People\Items\bs\bs-radio-item.html" />
+    <Content Include="Content\AngularTemplates\People\surveyItemContainer.html" />
+    <Content Include="Content\AngularTemplates\People\Items\radio-item.html" />
+    <Content Include="Content\AngularTemplates\People\survey.html" />
+    <Content Include="Content\AngularTemplates\People\surveySection.html" />
     <Compile Include="Controllers\Ac\AngularAccountabilityController.cs" />
     <Compile Include="Controllers\AuditController.cs" />
     <Compile Include="Controllers\HeadlinesController.cs" />
@@ -161,6 +169,7 @@
     <Compile Include="Engines\Surveys\SurveyReconstructionEngine.cs" />
     <Compile Include="Hooks\UpdateRoles_Notifications.cs" />
     <Compile Include="Hooks\UpdateUserModel_TeamNames.cs" />
+    <Compile Include="Hubs\PeopleHub.cs" />
     <Compile Include="Models\Angular\Base\AngularPicture.cs" />
     <Compile Include="Models\Angular\Dashboard\AngularDashboard.cs" />
     <Compile Include="Models\Angular\DataType\AngularString.cs" />
@@ -240,7 +249,7 @@
     <Compile Include="Accessors\ScorecardAccessor.cs" />
     <Compile Include="Accessors\SettingsAccessor.cs" />
     <Compile Include="Accessors\SupportAccessor.cs" />
-    <Compile Include="Accessors\SurveyAccessor.cs" />
+    <Compile Include="Accessors\OldSurveyAccessor.cs" />
     <Compile Include="Accessors\TaskAccessor.cs" />
     <Compile Include="Accessors\TeamAccessor.cs" />
     <Compile Include="Accessors\TestAccessor.cs" />
@@ -844,6 +853,7 @@
     <Content Include="Areas\People\Views\web.config" />
     <Content Include="Areas\People\Views\Main\Index.cshtml" />
     <Content Include="Areas\People\Views\QuarterlyConversation\Index.cshtml" />
+    <Content Include="Content\AngularTemplates\People\surveyContainer.html" />
     <None Include="bundleconfig.json" />
     <None Include="Content\Angular\ngsortable.less" />
     <Content Include="Content\Angular\ngsortable.css">
@@ -871,6 +881,10 @@
     <Content Include="Content\GettingStarted\GettingStarted.css">
       <DependentUpon>GettingStarted.less</DependentUpon>
     </Content>
+    <Content Include="Content\SnackbarAlerts.css">
+      <DependentUpon>SnackbarAlerts.less</DependentUpon>
+    </Content>
+    <Content Include="Content\test.html" />
     <Content Include="Content\img\graystripe-light.png" />
     <Content Include="Content\L10\Archive\Archive.css">
       <DependentUpon>Archive.less</DependentUpon>
@@ -1028,6 +1042,7 @@
     <Content Include="Content\L10\L10IDS.V2.less" />
     <Content Include="Content\L10\l10-ie-only.less" />
     <Content Include="Content\L10\L10Rocks.less" />
+    <Content Include="Content\SnackbarAlerts.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1068,6 +1083,7 @@
     </Content>
     <Content Include="Scripts\Angular\MaterialDesign\md-data-table.js" />
     <Content Include="Scripts\Angular\MaterialDesign\md-stepper.js" />
+    <Content Include="Scripts\Angular\People\Survey\SurveyComponents.js" />
     <Content Include="Scripts\Angular\Tiles\L10StatsTile.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\components\jquery.bootstrap-duallistbox.js" />
@@ -1606,37 +1622,6 @@
     <Content Include="Content\img\titlebarTiles.png" />
     <Content Include="orgPlaceholder.png" />
     <Content Include="placeholder.png" />
-    <Content Include="Radial_files\analytics.js" />
-    <Content Include="Radial_files\application.js" />
-    <Content Include="Radial_files\bootstrap.js" />
-    <Content Include="Radial_files\bootstrap.min.js" />
-    <Content Include="Radial_files\features1.png" />
-    <Content Include="Radial_files\features2.png" />
-    <Content Include="Radial_files\features3.png" />
-    <Content Include="Radial_files\features4.png" />
-    <Content Include="Radial_files\features5.png" />
-    <Content Include="Radial_files\features6.png" />
-    <Content Include="Radial_files\fluidvids.js" />
-    <Content Include="Radial_files\holder.js" />
-    <Content Include="Radial_files\jQuery.equalHeights.js" />
-    <Content Include="Radial_files\jquery.js" />
-    <Content Include="Radial_files\jquery.magnific-popup.js" />
-    <Content Include="Radial_files\logo1.png" />
-    <Content Include="Radial_files\logo2.png" />
-    <Content Include="Radial_files\logo3.png" />
-    <Content Include="Radial_files\logo4.png" />
-    <Content Include="Radial_files\placelogo1.png" />
-    <Content Include="Radial_files\placelogo2.png" />
-    <Content Include="Radial_files\placelogo3.png" />
-    <Content Include="Radial_files\placelogo4.png" />
-    <Content Include="Radial_files\placelogo5.png" />
-    <Content Include="Radial_files\placelogo6.png" />
-    <Content Include="Radial_files\placelogo7.png" />
-    <Content Include="Radial_files\placelogo8.png" />
-    <Content Include="Radial_files\prettify.js" />
-    <Content Include="Radial_files\radial.png" />
-    <Content Include="Radial_files\radial2.png" />
-    <Content Include="Radial_files\widgets.js" />
     <Content Include="Scripts\animations\circles.js" />
     <Content Include="Scripts\bootstrap-datepicker-old.js" />
     <Content Include="Scripts\bootstrap-slider.js" />
@@ -1965,7 +1950,6 @@
     <Content Include="Data\people.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Radial_files\imgs\Thumbs.db" />
     <Content Include="Scripts\d3\d3.v3.min.js.map">
       <DependentUpon>d3.v3.js</DependentUpon>
     </Content>

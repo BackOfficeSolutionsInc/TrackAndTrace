@@ -94,5 +94,9 @@
   {
     "outputFile": "Content/L10/L10Rocks.css",
     "inputFile": "Content/L10/L10Rocks.less"
+  },
+  {
+    "outputFile": "Content/SnackbarAlerts.css",
+    "inputFile": "Content/SnackbarAlerts.less"
   }
 ]
