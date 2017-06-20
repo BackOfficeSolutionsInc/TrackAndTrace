@@ -42,6 +42,7 @@ using NHibernate.Driver;
 using RadialReview.Utilities.Productivity;
 using RadialReview.Models.VideoConference;
 using RadialReview.Models.Rocks;
+using RadialReview.Areas.CoreProcess.Models.MapModel;
 
 //using Microsoft.VisualStudio.Profiler;
 
@@ -438,8 +439,11 @@ namespace RadialReview.Utilities
 			enversConf.Audit<ZoomUserLink>();
 			enversConf.Audit<WebhookDetails>();
 			enversConf.Audit<WebhookEventsSubscription>();
+            enversConf.Audit<Task_Camunda>();
+            enversConf.Audit<ProcessDef_Camunda>();
+           
 
-			nhConf.IntegrateWithEnvers(enversConf);
+            nhConf.IntegrateWithEnvers(enversConf);
         }
 
 

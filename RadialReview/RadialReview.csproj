@@ -118,9 +118,10 @@
     <Compile Include="Api\V0\Seats.cs" />
     <Compile Include="Api\V0\Teams.cs" />
     <Compile Include="Api\V0\Todo.cs" />
-    <Compile Include="App_Start\HookConfig.cs" />    
+    <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="Areas\CoreProcess\Controllers\HomeController.cs" />
     <Compile Include="Areas\CoreProcess\CoreProcessAreaRegistration.cs" />
+    <Compile Include="Areas\CoreProcess\Models\MapModel\ComundaModelMap.cs" />
     <Compile Include="Controllers\Ac\AngularAccountabilityController.cs" />
     <Compile Include="Controllers\AuditController.cs" />
     <Compile Include="Controllers\HeadlinesController.cs" />
@@ -144,6 +145,7 @@
     <Compile Include="Models\Enums\RGMType.cs" />
     <Compile Include="Models\Enums\VideoConferenceType.cs" />
     <Compile Include="Models\Events\Event.cs" />
+    <Compile Include="Areas\CoreProcess\Interfaces\IProcessId.cs" />
     <Compile Include="Models\Issues\HeadlineIssueVM.cs" />
     <Compile Include="Models\L10\L10Page.cs" />
     <Compile Include="Models\L10\PeopleHeadline.cs" />
@@ -2235,7 +2237,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Areas\CoreProcess\Models\" />
     <Folder Include="Content\fonts\fonts\" />
     <Folder Include="External\" />
     <Folder Include="logs\" />
@@ -2351,6 +2352,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CamundaCSharpClient\CamundaCSharpClient.csproj">
+      <Project>{220d5704-6b65-4f39-abe2-e3786114f2fd}</Project>
+      <Name>CamundaCSharpClient</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
