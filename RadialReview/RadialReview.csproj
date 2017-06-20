@@ -118,8 +118,7 @@
     <Compile Include="Api\V0\Seats.cs" />
     <Compile Include="Api\V0\Teams.cs" />
     <Compile Include="Api\V0\Todo.cs" />
-    <Compile Include="App_Start\HookConfig.cs" />
-    <Compile Include="Areas\CoreProcess\Controllers\AreaCustomController.cs" />
+    <Compile Include="App_Start\HookConfig.cs" />    
     <Compile Include="Areas\CoreProcess\Controllers\HomeController.cs" />
     <Compile Include="Areas\CoreProcess\CoreProcessAreaRegistration.cs" />
     <Compile Include="Controllers\Ac\AngularAccountabilityController.cs" />
