@@ -119,6 +119,9 @@
     <Compile Include="Api\V0\Teams.cs" />
     <Compile Include="Api\V0\Todo.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
+    <Compile Include="Areas\CoreProcess\Controllers\AreaCustomController.cs" />
+    <Compile Include="Areas\CoreProcess\Controllers\HomeController.cs" />
+    <Compile Include="Areas\CoreProcess\CoreProcessAreaRegistration.cs" />
     <Compile Include="Controllers\Ac\AngularAccountabilityController.cs" />
     <Compile Include="Controllers\AuditController.cs" />
     <Compile Include="Controllers\HeadlinesController.cs" />
@@ -836,6 +839,11 @@
     </Content>
     <Content Include="Content\Angular\livesearch.css" />
     <Content Include=".ebextensions\Autoscaling.config" />
+    <Content Include="Areas\CoreProcess\Views\web.config" />
+    <Content Include="Areas\CoreProcess\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\CoreProcess\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\CoreProcess\Views\Home\Index.cshtml" />
+    <Content Include="Areas\CoreProcess\Views\AreaCustom\Index.cshtml" />
     <None Include="bundleconfig.json" />
     <None Include="Content\Angular\ngsortable.less" />
     <Content Include="Content\Angular\ngsortable.css">
@@ -2228,6 +2236,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\CoreProcess\Models\" />
     <Folder Include="Content\fonts\fonts\" />
     <Folder Include="External\" />
     <Folder Include="logs\" />
