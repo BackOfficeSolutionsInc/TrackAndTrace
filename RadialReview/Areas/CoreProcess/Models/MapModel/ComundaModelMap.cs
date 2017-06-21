@@ -3,6 +3,7 @@ using FluentNHibernate.Mapping;
 using Newtonsoft.Json;
 using RadialReview.Areas.CoreProcess.Interfaces;
 using RadialReview.Models;
+using RadialReview.Models.Components;
 using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,6 @@ namespace RadialReview.Areas.CoreProcess.Models.MapModel
         public virtual string CamundaId { get; set; }
         public virtual DateTime CreateTime { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
-        public virtual OrganizationModel Organization { get; set; }
     }
 
     public class ProcessDef_CamundaMap : ClassMap<ProcessDef_Camunda>
@@ -37,7 +37,6 @@ namespace RadialReview.Areas.CoreProcess.Models.MapModel
             Map(x => x.CamundaId).Length(256);
             Map(x => x.CreateTime);
             Map(x => x.DeleteTime);
-            References(x => x.Organization).Column("OrgId").LazyLoad().ReadOnly();
         }
     }
 
@@ -48,12 +47,10 @@ namespace RadialReview.Areas.CoreProcess.Models.MapModel
         public virtual string DueDate { get; set; }
         public virtual long OrgId { get; set; }
         public virtual long OwnerId { get; set; }
-        public virtual string ProcessDefId { get; set; }
+		public virtual ForModel Owner { get; set; }
+		public virtual string ProcessDefId { get; set; }
         public virtual DateTime CreateTime { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
-        [JsonIgnore]
-        public virtual UserModel User { get; set; }
-        public virtual OrganizationModel Organization { get; set; }
     }
 
     public class Task_CamundaMap : ClassMap<Task_Camunda>
@@ -64,9 +61,7 @@ namespace RadialReview.Areas.CoreProcess.Models.MapModel
             Map(x => x.Name);
             Map(x => x.DueDate);
             Map(x => x.OrgId);
-            References(x => x.Organization).Column("OrgId").LazyLoad().ReadOnly();
-            Map(x => x.OwnerId);
-            References(x => x.User).Column("OwnerId").LazyLoad().ReadOnly();
+            Component(x => x.Owner).ColumnPrefix("Owner_");
             Map(x => x.ProcessDefId);
             Map(x => x.CreateTime);
             Map(x => x.DeleteTime);

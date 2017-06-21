@@ -119,8 +119,14 @@
     <Compile Include="Api\V0\Teams.cs" />
     <Compile Include="Api\V0\Todo.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
+    <Compile Include="Areas\CoreProcess\Accessors\ProcessDefAccessor.cs" />
+    <Compile Include="Areas\CoreProcess\CamundaComm\CommClass.cs" />
+    <Compile Include="Areas\CoreProcess\CamundaComm\ICommClass.cs" />
+    <Compile Include="Areas\CoreProcess\Controllers\Api_V0\ProcessDef.cs" />
     <Compile Include="Areas\CoreProcess\Controllers\HomeController.cs" />
     <Compile Include="Areas\CoreProcess\CoreProcessAreaRegistration.cs" />
+    <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
+    <Compile Include="Areas\CoreProcess\Models\Interfaces\IProcessDef.cs" />
     <Compile Include="Areas\CoreProcess\Models\MapModel\ComundaModelMap.cs" />
     <Compile Include="Controllers\Ac\AngularAccountabilityController.cs" />
     <Compile Include="Controllers\AuditController.cs" />
