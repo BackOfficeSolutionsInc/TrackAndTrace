@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using RadialReview.Areas.People.Models.Survey;
-using RadialReview.Engines.Surveys.Interfaces;
+using RadialReview.Areas.People.Engines.Surveys.Interfaces;
 using RadialReview.Models.Angular.Base;
 using System.Linq;
 using RadialReview.Models.Interfaces;
@@ -9,11 +9,17 @@ using RadialReview.Models.Interfaces;
 namespace RadialReview.Areas.People.Angular.Survey {
     public class AngularSurvey : BaseAngular, ISurvey {
 
-        public AngularSurvey() {  }
+		public AngularSurvey() {  }
         public AngularSurvey(long id) : base(id) {  }
-  
+		public AngularSurvey(ISurvey survey) :base(survey.Id){
+			Name = survey.GetName();
+			Ordering = survey.GetOrdering();
+			Help = survey.GetHelp();
+			SurveyContainerId = survey.GetSurveyContainerId();
+			Sections = survey.GetSections().NotNull(y => y.Select(x => new AngularSurveySection(x)).ToList());
+		}
 
-        public long? SurveyContainerId { get; set; }
+		public long? SurveyContainerId { get; set; }
 
         public ICollection<AngularSurveySection> Sections { get; set; }
         public void AppendSection(ISection item) {

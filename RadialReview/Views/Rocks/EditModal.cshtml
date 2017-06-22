@@ -3,18 +3,27 @@
 	var guid = Guid.NewGuid().ToString().Replace("-", "");
 }
 <div class="rock-modal-@guid">
-	<div class="row">
-		<div class="col-md-2 alignRight">
+	<div class="row smallBreak2">
+		@*<div class="col-md-2 alignRight">
 			<label class="control-label">@Html.Organization().Settings.RockName:</label>
-		</div>
-		<div class="col-md-10">
+		</div>*@
+		<div class="col-md-12">
 			@Html.TextBoxFor(x => x.Rock.Name, new { @class = "form-control" })
 			@Html.HiddenFor(x => x.Rock.Id)
-
 		</div>
 	</div>
+	<div class="row">
+		@*<div class="col-md-2 alignRight">
+		</div>*@
+		<div class="col-md-12">
+			<div class="form-group">
+				<iframe src="/Rocks/Pad/@Model.Rock.Id" width="99.6%"></iframe>
+			</div>
+		</div>
+	</div>
+
 	@if (ViewBag.AnyL10sWithMilestones) {
-		<hr />
+		@*<hr />*@
 		<div class="row">
 			<div class="col-md-2 alignRight">
 				<label class="control-label">Milestones:</label>
@@ -147,7 +156,7 @@
 					close: function(){
 						setTimeout(function(){
 							showModal("Edit rock","/Rocks/EditModal/@Model.Rock.Id","/Rocks/EditModal/");
-						},100);
+						},500);
 					}
 				});
 			}

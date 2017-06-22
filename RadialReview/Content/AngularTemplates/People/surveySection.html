@@ -1,5 +1,8 @@
-﻿<div class="survey-component section">
-    <span class="debug-info"><i>--Section--</i></span>
-    <span>{{model.Name}}</span>
-    <survey-item-container ng-repeat="itemContainer in model.Items" item-container="itemContainer"></survey-item-container>
+﻿<!--<div class="survey-component section">-->
+<!--<a class="anchor" id="section-{{::model.Id}}" href="#" data-scrollspy-broadcast></a>-->
+<div class="section" id="section-{{::model.Id}}" data-scrollspy-broadcast>
+	<span class="debug-info"><i>--Section--</i></span>
+	<div class="title">{{model.Name}}</div>
+	<survey-item-container ng-repeat="itemContainer in model.Items" item-container="itemContainer" class="survey-component item-container-{{itemContainer.ItemFormat.ItemType}}" on-change-response="changeResponse"></survey-item-container>
 </div>
+<!--</div>-->

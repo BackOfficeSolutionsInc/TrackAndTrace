@@ -1,38 +1,38 @@
-﻿
+﻿@model IEnumerable<RadialReview.Areas.People.Angular.Survey.AngularSurveyContainer>
 @{
-    ViewBag.Title = "Quarterly Conversation";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.Subheading = "";
+	ViewBag.Title = "Quarterly Conversation";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Subheading = "";
 
-    Html.RenderPartial("~/Views/CDN/Angular.cshtml");
+	Html.RenderPartial("~/Views/CDN/Angular.cshtml");
 }
 
 @section top{
-    <div class="jumbotron">
-        <h1>Quarterly Conversation</h1>
-    </div>
+	<div class="jumbotron">
+		<h1>Quarterly Conversation</h1>
+	</div>
 }
 
 <div id="qc-archive"></div>
-<div ng-app="people">
-    <survey-container survey-container-id="6"></survey-container>
-</div>
 
 @using (Html.BeginStyles()) {
-
-    @Styles.Render("~/styles/people")
-    <style>
-        .survey-component{
-            margin-left: 10px;
-        }
-    </style>
+	@Styles.Render("~/styles/people")
 }
 @using (Html.BeginScripts()) {
-    @Scripts.Render("~/bundles/people")
-    <script>
-        DataTable({
-            container: "#qc-archive",
-             
-        })
-    </script>
+	@Scripts.Render("~/bundles/people")
+	<script>
+		DataTable({
+			container: "#qc-archive",
+			data: @Html.ArrayToString(Model),
+			cells:[{
+				name: "Name",
+				contents:function(x){ return "<a href='/People/QuarterlyConversation/Questions/"+x.Id+"'>"+x.Name+"</a>"; }
+			}
+			//},{
+			//	name: "Name",
+			//	contents:function(x){ return x.Name; }
+			//}]
+			]
+		});
+	</script>
 }

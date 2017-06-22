@@ -9,11 +9,15 @@ namespace RadialReview.Areas.People.Controllers
 {
     public class MainController : BaseController
     {
-        // GET: People/Main
-        [Access(AccessLevel.UserOrganization)]
-        public ActionResult Index()
-        {
-            return View();
-        }
-    }
+		// GET: People/Main
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Index() {
+			return View();
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Diagonal() {
+			return View();
+		}
+	}
 }

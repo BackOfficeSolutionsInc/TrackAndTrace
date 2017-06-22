@@ -36,8 +36,9 @@ namespace RadialReview {
 
         private static void People(BundleCollection bundles, string[] ngStyles, string[] ngScripts) {
             bundles.Add(new ScriptBundle("~/bundles/people").Include(ngScripts).Include("~/Scripts/Angular/People/Survey/SurveyComponents.js"));
-            bundles.Add(new StyleBundle("~/styles/people").Include(ngStyles).Include("~/Content/SnackbarAlerts.css"));
-        }
+            bundles.Add(new StyleBundle("~/styles/people").Include(ngStyles).Include("~/Content/SnackbarAlerts.css", "~/Content/People/QuarterlyConversation.css"));
+
+		}
 
         private static void SetCard(BundleCollection bundles) {
             bundles.Add(new ScriptBundle("~/bundles/SetCard").Include("~/Scripts/jquery/jquery.redirect.js"));

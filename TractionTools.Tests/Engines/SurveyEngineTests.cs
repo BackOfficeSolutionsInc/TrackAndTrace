@@ -1,12 +1,12 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RadialReview.Engines.Surveys;
-using RadialReview.Engines.Surveys.Impl.QuarterlyConversation;
+using RadialReview.Areas.People.Engines.Surveys;
+using RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation;
 using RadialReview.Models.Components;
 using RadialReview.Models;
-using RadialReview.Engines.Surveys.Strategies.Events;
+using RadialReview.Areas.People.Engines.Surveys.Strategies.Events;
 using RadialReview.Areas.People.Models.Survey;
-using RadialReview.Engines.Surveys.Interfaces;
+using RadialReview.Areas.People.Engines.Surveys.Interfaces;
 using Moq;
 using NHibernate;
 using System.Collections.Generic;
@@ -14,8 +14,8 @@ using RadialReview.Models.Interfaces;
 using RadialReview.Models.Askables;
 using NHibernate.Criterion;
 using System.Linq.Expressions;
-using RadialReview.Engines.Surveys.Impl;
-using RadialReview.Engines.Surveys.Impl.QuarterlyConversation.Sections;
+using RadialReview.Areas.People.Engines.Surveys.Impl;
+using RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.Sections;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using TractionTools.Tests.Utilities;
@@ -26,8 +26,8 @@ using RadialReview.Models.Enums;
 using RadialReview.Models.UserModels;
 using RadialReview;
 using TractionTools.Tests.TestUtils;
-using RadialReview.Engines.Surveys.Strategies.Reconstructor;
-using RadialReview.Engines.Surveys.Strategies.Traverse;
+using RadialReview.Areas.People.Engines.Surveys.Strategies.Reconstructor;
+using RadialReview.Areas.People.Engines.Surveys.Strategies.Traverse;
 using RadialReview.Areas.People.Angular.Survey;
 
 namespace TractionTools.Tests.Engines {

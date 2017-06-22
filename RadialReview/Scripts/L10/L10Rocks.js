@@ -55,7 +55,7 @@
 			"<div class='button-bar'>" +
 				"<div style='height:28px'>" +
 				"<span class='expandContract btn-group'>" +
-					"<span class='btn btn-default btn-xs copyButton issuesModal on-edit-enabled' data-method='CreateRockIssue' data-rockid='" + rockId + "' data-recurrence='" + window.recurrenceId + "' data-meeting='" + window.meetingId + "'><span class='icon fontastic-icon-pinboard'></span> New Issue</span>" +
+					"<span class='btn btn-default btn-xs copyButton issuesModal on-edit-enabled' data-method='CreateRockIssue' data-rock='" + rockId + "' data-recurrence='" + window.recurrenceId + "' data-meeting='" + window.meetingId + "'><span class='icon fontastic-icon-pinboard'></span> New Issue</span>" +
 					"<span class='btn btn-default btn-xs createTodoButton todoModal on-edit-enabled' data-method='CreateRockTodo' data-meeting='" + window.meetingId + "' data-rockid='" + rockId + "' data-recurrence='" + window.recurrenceId + "' ><span class='glyphicon glyphicon-unchecked todoButton'></span> To-Do</span>" +
 				"</span>" +
 				"</div>" +

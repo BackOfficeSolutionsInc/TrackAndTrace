@@ -136,6 +136,7 @@ namespace RadialReview.Accessors {
 					var perm = PermissionsUtility.Create(s, caller);
 					var ms = s.Get<Milestone>(milestoneId);
 					perm.ViewRock(ms.RockId);
+					ms._Rock = s.Get<RockModel>(ms.RockId);
 					return ms;
 				}
 			}

@@ -431,7 +431,7 @@ namespace RadialReview.Accessors {
 
 		public static async Task<MvcHtmlString> GetMeetingSummary(UserOrganizationModel caller, long meetingId) {
 
-			
+
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
@@ -440,16 +440,16 @@ namespace RadialReview.Accessors {
 					var meeting = s.Get<L10Meeting>(meetingId);
 					var completeTime = meeting.CompleteTime;
 
-					
+
 					var completedIssues = s.QueryOver<IssueModel.IssueModel_Recurrence>()
-											.Where(x => x.DeleteTime == null && x.CloseTime==completeTime && x.Recurrence.Id == meeting.L10RecurrenceId )
+											.Where(x => x.DeleteTime == null && x.CloseTime == completeTime && x.Recurrence.Id == meeting.L10RecurrenceId)
 											.List().ToList();
 
 					var pads = completedIssues.Select(x => x.Issue.PadId).ToList();
 					var padTexts = await PadAccessor.GetHtmls(pads);
 
 
-					return new MvcHtmlString((await IssuesAccessor.BuildIssuesSolvedTable(completedIssues, showDetails: true,padLookup:padTexts)).ToString());
+					return new MvcHtmlString((await IssuesAccessor.BuildIssuesSolvedTable(completedIssues, showDetails: true, padLookup: padTexts)).ToString());
 
 				}
 			}
@@ -571,7 +571,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		public async static Task ConcludeMeeting(UserOrganizationModel caller, long recurrenceId, List<System.Tuple<long, decimal?>> ratingValues, bool sendEmail, bool closeTodos, bool closeHeadlines, string connectionId) {
+		public async static Task ConcludeMeeting(UserOrganizationModel caller, long recurrenceId, List<System.Tuple<long, decimal?>> ratingValues, ConcludeSendEmail sendEmail, bool closeTodos, bool closeHeadlines, string connectionId) {
 			var unsent = new List<Mail>();
 			L10Meeting meeting = null;
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -632,10 +632,10 @@ namespace RadialReview.Accessors {
 					//Set rating for attendees
 					var attendees = s.QueryOver<L10Meeting.L10Meeting_Attendee>()
 						.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id)
-						.WhereRestrictionOn(x => x.User.Id)
-						.IsIn(ids)
 						.List().ToList();
-					foreach (var a in attendees) {
+					var raters = attendees.Where(x => ids.Any(y => y == x.User.Id));
+
+					foreach (var a in raters) {
 						a.Rating = ratingValues.FirstOrDefault(x => x.Item1 == a.User.Id).NotNull(x => x.Item2);
 						s.Update(a);
 					}
@@ -662,9 +662,8 @@ namespace RadialReview.Accessors {
 					s.Update(recurrence);
 
 					//send emails
-					if (sendEmail) {
+					if (sendEmail != ConcludeSendEmail.None) {
 						try {
-
 
 							var todoList = s.QueryOver<TodoModel>().Where(x =>
 								x.DeleteTime == null &&
@@ -707,10 +706,24 @@ namespace RadialReview.Accessors {
 								output.Append("<br/>");
 
 								todosTable[user.Id] = output.ToString();
-
 							}
 
-							foreach (var userAttendee in attendees) {
+
+							IEnumerable<L10Meeting.L10Meeting_Attendee> sendEmailTo = new List<L10Meeting.L10Meeting_Attendee>();
+
+							switch (sendEmail) {
+								case ConcludeSendEmail.AllAttendees:
+									sendEmailTo = attendees;
+									break;
+								case ConcludeSendEmail.AllRaters:
+									sendEmailTo = raters;
+									break;
+								default:
+									break;
+							}
+
+
+							foreach (var userAttendee in sendEmailTo) {
 								var output = new StringBuilder();
 								var user = auLu[userAttendee.User.Id];
 								var email = user.GetEmail();
@@ -743,7 +756,7 @@ namespace RadialReview.Accessors {
 			}
 
 			try {
-				if (sendEmail && unsent != null) {
+				if (sendEmail != ConcludeSendEmail.None && unsent != null) {
 					await Emailer.SendEmails(unsent);
 				}
 			} catch (Exception e) {
@@ -3765,7 +3778,7 @@ namespace RadialReview.Accessors {
 					}
 
 					_ProcessDeleted(s, todo, delete);
-					
+
 					group.update(new AngularUpdate() { new AngularTodo(todo) });
 
 
@@ -4278,28 +4291,39 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static VtoItem_String MoveIssueToVto(UserOrganizationModel caller, long issue_recurrence) {
+		public static VtoItem_String MoveIssueToVto(UserOrganizationModel caller, long issue_recurrence,string connectionId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					var perm = PermissionsUtility.Create(s, caller);
-					var recurIssue = s.Get<IssueModel.IssueModel_Recurrence>(issue_recurrence);
+					using (var rt = RealTimeUtility.Create(connectionId)) {
+						var perm = PermissionsUtility.Create(s, caller);
+						var recurIssue = s.Get<IssueModel.IssueModel_Recurrence>(issue_recurrence);
 
-					perm.EditL10Recurrence(recurIssue.Recurrence.Id);
+						perm.EditL10Recurrence(recurIssue.Recurrence.Id);
 
-					recurIssue.DeleteTime = DateTime.UtcNow;
-					s.Update(recurIssue);
+						recurIssue.DeleteTime = DateTime.UtcNow;
+						s.Update(recurIssue);
 
-					var recur = s.Get<L10Recurrence>(recurIssue.Recurrence.Id);
-					perm.EditVTO(recur.VtoId);
-					var vto = s.Get<VtoModel>(recur.VtoId);
+						var recur = s.Get<L10Recurrence>(recurIssue.Recurrence.Id);
 
-					var str = VtoAccessor.AddString(s, perm, recur.VtoId, VtoItemType.List_Issues,
-						(v, list) => new AngularVTO(v.Id) { Issues = list },
-						true, forModel: ForModel.Create(recurIssue), value: recurIssue.Issue.Message);
+						//remove from list
+						rt.UpdateRecurrences(recur.Id).AddLowLevelAction(x => x.removeIssueRow(recurIssue.Id));
+						var arecur = new AngularRecurrence(recur.Id);
+						arecur.IssuesList.Issues = AngularList.CreateFrom( AngularListType.Remove, new AngularIssue(recurIssue));
+						rt.UpdateRecurrences(recur.Id).Update(arecur);
+						//
 
-					tx.Commit();
-					s.Flush();
-					return str;
+
+						perm.EditVTO(recur.VtoId);
+						var vto = s.Get<VtoModel>(recur.VtoId);
+
+						var str = VtoAccessor.AddString(s, perm, recur.VtoId, VtoItemType.List_Issues,
+							(v, list) => new AngularVTO(v.Id) { Issues = list },
+							true, forModel: ForModel.Create(recurIssue), value: recurIssue.Issue.Message);
+
+						tx.Commit();
+						s.Flush();
+						return str;
+					}
 				}
 			}
 		}
@@ -4642,7 +4666,7 @@ namespace RadialReview.Accessors {
 			} else if (model.Type == typeof(AngularTodo).Name) {
 				var m = (AngularTodo)model;
 				if (m.TodoType == TodoType.Milestone) {
-					RockAccessor.EditMilestone(caller, -m.Id, m.Name, m.DueDate, status: m.Complete==true ? MilestoneStatus.Done : MilestoneStatus.NotDone);
+					RockAccessor.EditMilestone(caller, -m.Id, m.Name, m.DueDate, status: m.Complete == true ? MilestoneStatus.Done : MilestoneStatus.NotDone);
 				} else {
 					UpdateTodo(caller, m.Id, m.Name ?? "", null, m.DueDate, m.Owner.NotNull(x => (long?)x.Id), m.Complete, connectionId);
 				}
@@ -4858,7 +4882,7 @@ namespace RadialReview.Accessors {
 		public static L10MeetingStatsVM GetStats(UserOrganizationModel caller, long recurrenceId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+					var perms = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
 					var recurrence = s.Get<L10Recurrence>(recurrenceId);
 					var o = s.QueryOver<L10Meeting>().Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId).List().ToList();
 					var meeting = o.OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).FirstOrDefault();
@@ -4905,11 +4929,18 @@ namespace RadialReview.Accessors {
 						todo.AccountableUser.NotNull(x => x.ImageUrl(true));
 					}
 					var completion = 0m;
+					//try {
+					//	var todosForRecur = L10Accessor.GetTodosForRecurrence(s, perms, recurrenceId, meeting.NotNull(x => x.Id));
+					//	todosForRecur.Where(x=>x.CreateTime<(meeting.NotNull(y=>y.StartTime)??DateTime.MaxValue)).Select(x=>x.CompleteTime==null?0:1)
+
+					//} catch (Exception e) {
+
 					if (oldTodos.Count() > 0) {
 						completion = (decimal)oldTodos.Count(x => x.CompleteTime != null) / (decimal)oldTodos.Count() * 100m;
 					}
 					if (meeting.TodoCompletion != null)
 						completion = meeting.TodoCompletion.GetValue(0) * 100m;
+					//}
 
 					var stats = new L10MeetingStatsVM() {
 						IssuesSolved = issuesSolved,

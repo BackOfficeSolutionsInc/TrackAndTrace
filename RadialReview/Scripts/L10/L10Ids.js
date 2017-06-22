@@ -520,8 +520,13 @@ function updateModedIssueSolve(issueRecurId, status) {
 	row.attr("data-markedforclose", status);
 	row.attr("data-checked", status);
 	console.log("checked:" + issueRecurId);
-
 	//undoStack.execute(new CheckOffIssue(this, status));
+}
+
+function removeIssueRow(issueRecurId) {
+	$(".issue-row[data-recurrence_issue='" + issueRecurId + "']").remove();
+	refreshCurrentIssueDetails();
+	refreshRanks();
 }
 
 function updateIssuesList(recurId, issueRow, orderby) {

@@ -1,5 +1,6 @@
 ﻿using FluentNHibernate.Mapping;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Components;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using System;
@@ -18,7 +19,8 @@ namespace RadialReview.Models.Accountability {
         public virtual string Name { get; set; }
         public virtual long RootId { get; set; }
 
-        public AccountabilityChart()
+
+		public AccountabilityChart()
         {
             CreateTime = DateTime.UtcNow;
         }
@@ -34,9 +36,10 @@ namespace RadialReview.Models.Accountability {
                 Map(x => x.OrganizationId);
             }
         }
-    }
 
-    public class AccountabilityNode : ILongIdentifiable, IHistorical {
+	}
+
+    public class AccountabilityNode : ILongIdentifiable, IHistorical, IForModel {
         public virtual long Id { get; set; }
         public virtual DateTime CreateTime { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
@@ -54,7 +57,17 @@ namespace RadialReview.Models.Accountability {
 		public virtual bool? _Editable { get; set; }
         public virtual int Ordering { get; set; }
 
-        public AccountabilityNode()
+
+		public virtual long ModelId { get { return Id; } }
+		public virtual string ModelType { get { return ForModel.GetModelType<AccountabilityNode>(); } }
+		public virtual bool Is<T>() {
+			return ModelType == ForModel.GetModelType(typeof(T));
+		}
+
+		public virtual string ToPrettyString() {
+			return _Name ?? string.Join(" - ", new[] { User.NotNull(x => x.GetName()), AccountabilityRolesGroup.NotNull(y => y.Position.GetName())}.Where(x=>x!=null));
+		}
+		public AccountabilityNode()
         {
             CreateTime = DateTime.UtcNow;
         }

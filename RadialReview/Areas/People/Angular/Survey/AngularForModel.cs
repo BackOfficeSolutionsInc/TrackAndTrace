@@ -21,5 +21,9 @@ namespace RadialReview.Areas.People.Angular.Survey {
         public bool Is<T>() {
             return ForModel.GetModelType(typeof(T))==ModelType;
         }
-    }
+
+		public string ToPrettyString() {
+			return "";
+		}
+	}
 }

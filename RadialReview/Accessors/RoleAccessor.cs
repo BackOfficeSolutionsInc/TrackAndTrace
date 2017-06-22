@@ -183,7 +183,23 @@ namespace RadialReview.Accessors {
                 return GetRoleDetailsForUser(forUserId).Select(x => x.Role);
             }
 
-            public class RoleDetails {
+			public IEnumerable<RoleDetails> GetRoleDetailsForNode(AccountabilityNode node) {
+				var nodeRoleLinks = new List<RoleDetails>();
+				var posId = node.AccountabilityRolesGroup.NotNull(x => x.PositionId);
+				if ( posId != null) {
+					nodeRoleLinks.AddRange(RoleLinks.Where(x => x.AttachType == AttachType.Position && x.AttachId == posId).SelectMany(ConstructRoleDetails));
+				}
+				
+				if (node.User != null) {
+					var userId = node.User.Id;
+					nodeRoleLinks.AddRange(RoleLinks.Where(x => x.AttachType == AttachType.User && x.AttachId == userId).SelectMany(ConstructRoleDetails));
+					var teamIds = Teams.Where(x => x.UserId == userId).Select(x => x.TeamId).ToArray();
+					nodeRoleLinks.AddRange(RoleLinks.Where(x => x.AttachType == AttachType.Team && teamIds.Any(y=>y == x.AttachId)).SelectMany(ConstructRoleDetails));
+				}
+				return nodeRoleLinks;
+			}
+
+			public class RoleDetails {
                 public RoleDetails(RoleModel role, RoleLink roleLink) {
                     Role = role;
                     RoleLink = roleLink;

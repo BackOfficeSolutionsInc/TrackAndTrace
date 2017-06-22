@@ -30,6 +30,9 @@
           "lib/net40/BCXAPI.dll": {}
         }
       },
+      "bootstrap/3.0.0": {
+        "type": "package"
+      },
       "Common.Logging/3.3.1": {
         "type": "package",
         "dependencies": {
@@ -669,6 +672,9 @@
         "runtime": {
           "lib/net40/Microsoft.Web.Infrastructure.dll": {}
         }
+      },
+      "Modernizr/2.6.2": {
+        "type": "package"
       },
       "MySql.Data/6.9.9": {
         "type": "package",
@@ -1003,6 +1009,9 @@
           "lib/net40/BCXAPI.dll": {}
         }
       },
+      "bootstrap/3.0.0": {
+        "type": "package"
+      },
       "Common.Logging/3.3.1": {
         "type": "package",
         "dependencies": {
@@ -1642,6 +1651,9 @@
         "runtime": {
           "lib/net40/Microsoft.Web.Infrastructure.dll": {}
         }
+      },
+      "Modernizr/2.6.2": {
+        "type": "package"
       },
       "MySql.Data/6.9.9": {
         "type": "package",
@@ -1987,6 +1999,22 @@
         "lib/net40/BCXAPI.dll"
       ]
     },
+    "bootstrap/3.0.0": {
+      "sha512": "DGR3x0naTbFwnfDXXBkmzyfnWcTFtA7HeSyIKAUGHAa9KyYLisa5+vvbMbOgiFuN55bGl7695NQ7bs65BZeopw==",
+      "type": "package",
+      "files": [
+        "bootstrap.3.0.0.nupkg.sha512",
+        "bootstrap.nuspec",
+        "content/Content/bootstrap.css",
+        "content/Content/bootstrap.min.css",
+        "content/Scripts/bootstrap.js",
+        "content/Scripts/bootstrap.min.js",
+        "content/fonts/glyphicons-halflings-regular.eot",
+        "content/fonts/glyphicons-halflings-regular.svg",
+        "content/fonts/glyphicons-halflings-regular.ttf",
+        "content/fonts/glyphicons-halflings-regular.woff"
+      ]
+    },
     "Common.Logging/3.3.1": {
       "sha512": "Wv07G5iQ+yUHI3RWqXGFys3N7Gd7vx+OYFGw4kcqfCSoWMJJLNVZqB/zyqPC8kqxE7Ezcj1YrU7zGC3/gUXF3A==",
       "type": "package",
@@ -2137,9 +2165,8 @@
       ]
     },
     "jQuery/1.10.2": {
-      "sha512": "V2k99hx8NNjC/Pkka367DksP1cXmP2WgtgLVGvwwbzf36Vhxekd35soIVUxI/WG/eqUlhUCUdTZYhwlECMXyBQ==",
+      "sha512": "uPspgAZqsXYOwLW+Kf3uRxdFAyX1EiEd6AWJhCsnZNVsUJmEbsZSxA0P+ku6oAhHI682TOSwkbmmJPwFgdY5cA==",
       "type": "package",
-      "path": "jQuery/1.10.2",
       "files": [
         "Content/Scripts/jquery-1.10.2-vsdoc.js",
         "Content/Scripts/jquery-1.10.2.js",
@@ -2324,9 +2351,8 @@
       ]
     },
     "Microsoft.AspNet.SignalR.JS/2.1.2": {
-      "sha512": "iNYGgBb59UK3X9q/XKgB/QtP7WlbMmDtmVxXgEwYsOFhNOnY/btJKq2DcJ5lgOJEwDJSjvN2GG8pDCSkg81ddQ==",
+      "sha512": "Jye3H7juPGYiyUk+egEZf0iS42nIAl3KF/e62pjYYKFZ73EigsMREZ0BC6KqDjWWkIiTP9aVg4bVhUjZmzANGw==",
       "type": "package",
-      "path": "Microsoft.AspNet.SignalR.JS/2.1.2",
       "files": [
         "Microsoft.AspNet.SignalR.JS.2.1.2.nupkg.sha512",
         "Microsoft.AspNet.SignalR.JS.nuspec",
@@ -2698,13 +2724,24 @@
       ]
     },
     "Microsoft.Web.Infrastructure/1.0.0": {
-      "sha512": "FNmvLn5m2LTU/Rs2KWVo0SIIh9Ek+U0ojex7xeDaSHw/zgEP77A8vY5cVWgUtBGS8MJfDGNn8rpXJWEIQaPwTg==",
+      "sha512": "RKFGbWdso8unJPFctEFEcjWuq7Ccf/QmHvuJNLuAV8js1HuBwfHo5SlVm0DdDBY4LTgpxvCDyqJeCYMU0Bwrtw==",
       "type": "package",
-      "path": "Microsoft.Web.Infrastructure/1.0.0",
       "files": [
         "Microsoft.Web.Infrastructure.1.0.0.nupkg.sha512",
         "Microsoft.Web.Infrastructure.nuspec",
         "lib/net40/Microsoft.Web.Infrastructure.dll"
+      ]
+    },
+    "Modernizr/2.6.2": {
+      "sha512": "IVaKsLm4+hDz5UOxHSYaaQXfaLYdFTYrMK049wkZRMYbTfJXQL55C7ztdjy1G/oC3EdNQcgSHrcDns49hXlSmg==",
+      "type": "package",
+      "files": [
+        "Content/Scripts/modernizr-2.6.2.js",
+        "Modernizr.2.6.2.nupkg.sha512",
+        "Modernizr.nuspec",
+        "Tools/common.ps1",
+        "Tools/install.ps1",
+        "Tools/uninstall.ps1"
       ]
     },
     "MySql.Data/6.9.9": {
@@ -3348,6 +3385,7 @@
       "Microsoft.Owin.Security.Cookies >= 3.0.1",
       "Microsoft.Owin.Security.OAuth >= 3.0.1",
       "Microsoft.Web.Infrastructure >= 1.0.0",
+      "Modernizr >= 2.6.2",
       "MySql.Data >= 6.9.9",
       "NHibernate >= 4.0.0.4000",
       "NHibernate.Envers >= 2.1.0",
@@ -3369,11 +3407,10 @@
       "TypeLite >= 1.8.4",
       "Unofficial.Ionic.Zip >= 1.9.1.8",
       "WebGrease >= 1.5.2",
+      "bootstrap >= 3.0.0",
       "jQuery >= 1.10.2",
       "log4net >= 2.0.8"
     ],
     ".NETFramework,Version=v4.5.2": []
-  },
-  "tools": {},
-  "projectFileToolGroups": {}
+  }
 }

@@ -44,7 +44,7 @@
 
 			<div class="centered" style="width:65%; max-width: 600px;margin-top:-22px;margin-bottom:128px;    min-width: 330px;">
 				<div class="component">
-					<div class="meeting-manager">
+					<div class="meeting-manager rating-section">
 						<div class="title" style="font-size: 20px;color: #444;">Ratings (1 to 10)<div style="font-size: 12px;font-weight: lighter;"><small>Ratings less than an 8? Drop it down to the issues list.</small></div></div>
 
 						@using (Ajax.BeginForm("Conclusion", new AjaxOptions() {
@@ -75,7 +75,8 @@
 								}
 								<tr>
 									<td colspan="3" class="alignRight"><label>Send e-mail summary:</label></td>
-									<td>@Html.CheckBoxFor(x => x.SendEmail, new { @class = "checkbox", style = "margin:auto;" })</td>
+									@*<td>@Html.CheckBoxFor(x => x.SendEmail, new { @class = "checkbox", style = "margin:auto;" })</td>*@
+									<td colspan="2" >@Html.DropDownListFor(x => x.SendEmailRich, Model.GenerateEmailOptions(), new { @class = "form-control", style = "margin:auto;max-width:222px;" })</td>
 								</tr>
 								<tr>
 									<td colspan="3" class="alignRight"><label>Close completed to-do:</label></td>
@@ -104,6 +105,16 @@
 
 
 <script>
+	function resetConcludeButton() {
+		$("#conclude_meeting_button").attr("disabled", !isLeader && followLeader ? "disabled" : false);
+	}
+
+	resetConcludeButton();
+
+	$(window).on("follow-leader", function () {
+		resetConcludeButton();
+	});
+
 	function gotoIndex(data) {
 		window.location.href = "/L10/MeetingStats/";
 	}
@@ -129,6 +140,10 @@
 
 
 <style>
+	.rating-section label{
+		padding-right:3px;
+	}
+
 	.todo-list:empty:after {
 		content: "No to-dos added.";
 		color: #C1C1C1;

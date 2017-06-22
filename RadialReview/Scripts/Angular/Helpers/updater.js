@@ -1,4 +1,4 @@
-﻿angular.module('updaterModule', []).factory('updater', [function () {
+﻿angular.module('updaterModule', []).factory('updater', ["$http",function ($http) {
 
     function applyUpdate(data, status) {
         convertDates(data);
@@ -397,12 +397,12 @@
             var dat = angular.copy(self);
             var _clientTimestamp = new Date().getTime();
 
-            updater.convertDatesForServer(dat, tzoffset());
+            this.updater.convertDatesForServer(dat, tzoffset());
             var builder = "";
             args = args || {};
 
             if (!("connectionId" in args))
-                args["connectionId"] = $scope.connectionId;
+            	args["connectionId"] = this.hub.connection.id;//$scope.connectionId;
 
             for (var i in args) {
                 if (arrayHasOwnIndex(args, i)) {

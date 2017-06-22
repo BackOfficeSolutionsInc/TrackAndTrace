@@ -1,4 +1,4 @@
-﻿using RadialReview.Engines.Surveys.Interfaces;
+﻿using RadialReview.Areas.People.Engines.Surveys.Interfaces;
 using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;

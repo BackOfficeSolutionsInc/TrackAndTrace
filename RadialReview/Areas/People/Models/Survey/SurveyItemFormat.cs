@@ -1,7 +1,7 @@
 ﻿using FluentNHibernate.Mapping;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RadialReview.Engines.Surveys.Interfaces;
+using RadialReview.Areas.People.Engines.Surveys.Interfaces;
 using RadialReview.Models.Interfaces;
 using RadialReview.Utilities;
 using System;
@@ -143,7 +143,7 @@ namespace RadialReview.Areas.People.Models.Survey {
             //return JsonConvert.DeserializeObject<Dictionary<string, object>>(Settings);
         }
 
-        public class Map : ClassMap<SurveyItemFormat> {
+		public class Map : ClassMap<SurveyItemFormat> {
             public Map() {
                 Id(x => x.Id);
                 Map(x => x.CreateTime);

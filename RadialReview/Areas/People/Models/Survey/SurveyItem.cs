@@ -1,5 +1,5 @@
 ﻿using FluentNHibernate.Mapping;
-using RadialReview.Engines.Surveys.Interfaces;
+using RadialReview.Areas.People.Engines.Surveys.Interfaces;
 using RadialReview.Models.Components;
 using RadialReview.Models.Interfaces;
 using System;

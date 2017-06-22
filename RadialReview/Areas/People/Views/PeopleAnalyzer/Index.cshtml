@@ -1,0 +1,46 @@
+﻿@model RadialReview.Areas.People.Angular.AngularPeopleAnalyzer
+@{
+	ViewBag.Title = "People Analyzer";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+
+	var values = Model.Values;// Rows.SelectMany(x => x.Values).Distinct(x => x.ValueId).ToList();
+
+}
+
+<div id="pa"></div>
+
+@using (Html.BeginStyles()) {
+	@Styles.Render("~/styles/people")
+}
+@using (Html.BeginScripts()) {
+	//@Scripts.Render("~/bundles/people")
+	<script>
+		DataTable({
+			container: "#pa",
+			data: @Html.ArrayToString(Model.Rows),
+			cells:[{},{
+				name: "Name",
+				contents:function(x){ return x.Name; }
+			},
+			@foreach(var v in values) {
+				@:{name:"@v.Value",contents:function(x){return x.Value[@(v.ValueId)];}},
+			}
+			{
+				name:"Get it",
+				contents:function(x){return x.Get;}
+			},{
+				name:"Want it",
+				contents:function(x){return x.Want;}
+			},{
+				name:"Capacity to Do It",
+				contents:function(x){return x.Capacity;}
+			},
+
+			//},{
+			//	name: "Name",
+			//	contents:function(x){ return x.Name; }
+			//}]
+			]
+		});
+	</script>
+}

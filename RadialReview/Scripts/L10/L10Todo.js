@@ -154,6 +154,7 @@ $(function () {
 		$(selector).prop("checked", checked);
 		$(selector2).data("checked", checked);
 		$(selector2).attr("data-checked", checked);
+		
 		$.ajax({
 			url: "/l10/UpdateTodoCompletion/" + window.recurrenceId,
 			method: "post",
@@ -421,12 +422,21 @@ function appendTodo(selector, issue) {
 function updateTodoCompletion(todoId, complete) {
 	var selector = ".todo-checkbox[data-todo='" + todoId + "']";
 	$(selector).prop("checked", complete);
+
+	///
+	var selector2 = ".todo-row[data-todo='" + todoId + "']";
+	$(selector2).data("checked", complete);
+	$(selector2).attr("data-checked", complete);
+	///
+	
 	checkFireworks();
 }
 
 function updateTodoMessage(id, message) {
 	$(" .message[data-todo=" + id + "]").html(message);
-	$(" .todo-row[data-todo=" + id + "]").data("message", escapeString(message));
+	var row = $(" .todo-row[data-todo=" + id + "]");
+	$(row).data("message", escapeString(message));
+	$(row).attr("data-message", escapeString(message));
 }
 function updateTodoDetails(id, details) {
 	$(".todo .todo-details[data-todo=" + id + "]").html(details);
@@ -439,9 +449,14 @@ function updateTodoAccountableUser(id, userId, name, image) {
 	$("[data-todo=" + id + "] .picture").css("background", "url(" + image + ") no-repeat center center");
 	$(".assignee .btn[data-todo=" + id + "]").html(name);
 	var row = $(".todo .todo-row[data-todo=" + id + "]");
+
 	$(row).data("name", name);
 	$(row).data("accountable", userId);
 	$(row).data("imageurl", image);
+
+	$(row).attr("data-name", name);
+	$(row).attr("data-accountable", userId);
+	$(row).attr("data-imageurl", image);
 }
 
 

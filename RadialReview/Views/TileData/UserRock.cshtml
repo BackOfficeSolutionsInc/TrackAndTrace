@@ -7,6 +7,7 @@
 								   {"AddController", false},
 								   {"AddCompletion", false},
 								   {"AddDatePicker", false},
+								   {"UsePopup", true},
 								   {"RecurrenceId", -1},
 								   {"RockName", Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName.NotNull(z => z.ToLower())))}
 							   }); }<div ng-show="(model.Rocks)===undefined" class="gray alignCenter" style="padding:16px;" elem-ready="functions.reload((model.Rocks)===undefined)">Please wait</div>

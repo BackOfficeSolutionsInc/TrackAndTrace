@@ -1,5 +1,22 @@
-﻿<div class="survey-component survey-container">
-    <span class="debug-info"><i>--Survey Container--</i></span>
-    <span>{{model.Name}}</span>
-    <survey ng-repeat="s in model.Surveys" survey="s"></survey>
+﻿<div class="current-section"><span class="title">{{CurrentSection}}</span><span class="decoration"></span></div>
+<div class="row">
+	<div class="col-md-9" >
+		<span class="debug-info"><i>--Survey Container--</i><span>{{model.Name}}</span></span>
+		<div class="title survey-container-title">{{model.Name}}</div>
+		<div class="surveys"  id="surveys">
+			<survey ng-repeat="survey in model.Surveys" survey="survey" class="survey-component" on-change-response="functions.sendUpdate"></survey>
+		</div>
+	</div>
+	<div class="col-md-3">
+		<nav  data-spy="affix" class="bs-docs-sidebar hidden-print hidden-sm hidden-xs affix-bottom"  data-offset-top="90" data-offset-bottom="200">
+			<ul class="nav bs-docs-sidenav">
+				<li ng-repeat="survey in model.Surveys" data-scrollspy-listen="{{getSections(survey)}}">
+					<a href="#survey-{{::survey.Id}}" target="_self" ng-click="anchorShift()">{{survey.Name}}</a>
+					<ul class="nav">
+						<li ng-repeat="section in survey.Sections" data-scrollspy-listen="section-{{::section.Id}}"><a href="#section-{{::section.Id}}" target="_self" ng-click="anchorShift()">{{section.Name}}</a></li>
+					</ul>
+				</li>
+			</ul>
+		</nav>
+	</div>
 </div>

@@ -1,4 +1,4 @@
-﻿using RadialReview.Engines.Surveys.Interfaces;
+﻿using RadialReview.Areas.People.Engines.Surveys.Interfaces;
 using RadialReview.Models.Angular.Base;
 using System;
 using System.Collections.Generic;
@@ -11,9 +11,15 @@ using Newtonsoft.Json;
 namespace RadialReview.Areas.People.Angular.Survey {
     public class AngularSurveyContainer : BaseAngular, ISurveyContainer {
         public AngularSurveyContainer() { }
-        public AngularSurveyContainer(long id) : base(id) { }
+		public AngularSurveyContainer(long id) : base(id) { }
+		public AngularSurveyContainer(ISurveyContainer container) : base(container.Id) {
+			Name = container.GetName();
+			Ordering = container.GetOrdering();
+			Surveys = container.GetSurveys().NotNull(y=>y.Select(x => new AngularSurvey(x)).ToList());			
 
-        public String Name { get; set; }
+		}
+
+		public String Name { get; set; }
         public DateTime? CreateTime { get; set; }
 
 

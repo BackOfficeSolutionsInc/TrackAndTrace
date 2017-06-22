@@ -42,6 +42,7 @@ using NHibernate.Driver;
 using RadialReview.Utilities.Productivity;
 using RadialReview.Models.VideoConference;
 using RadialReview.Models.Rocks;
+using RadialReview.Areas.People.Models.Survey;
 
 //using Microsoft.VisualStudio.Profiler;
 
@@ -391,9 +392,11 @@ namespace RadialReview.Utilities
             enversConf.Audit<QuestionCategoryModel>();
             enversConf.Audit<LocalizedStringModel>();
             enversConf.Audit<LocalizedStringPairModel>();
-            enversConf.Audit<ImageModel>();
+			enversConf.Audit<ImageModel>();
 
-            enversConf.Audit<PeriodModel>();
+			enversConf.Audit<SurveyResponse>();//.ExcludeRelationData(x=>x.Item);
+
+			enversConf.Audit<PeriodModel>();
             enversConf.Audit<ReviewModel>();
             enversConf.Audit<ReviewsModel>();
 			enversConf.Audit<RockModel>();

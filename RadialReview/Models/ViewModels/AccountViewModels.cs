@@ -95,12 +95,14 @@ namespace RadialReview.Models
 		[RegularExpression(PasswordConstants.PasswordRegex, ErrorMessage = PasswordConstants.PasswordRegexError)]
 		[DataType(DataType.Password)]
         [Display(Name = "password", ResourceType = typeof(DisplayNameStrings))]
-        public string Password { get; set; }
+		[System.Web.Mvc.AllowHtml]
+		public string Password { get; set; }
         
         [DataType(DataType.Password)]
         [Display(Name = "confirmPassword", ResourceType = typeof(DisplayNameStrings))]
         [Compare("Password", ErrorMessageResourceName = "passwordMatch", ErrorMessageResourceType = typeof(ErrorMessageStrings))]
-        public string ConfirmPassword { get; set; }
+		[System.Web.Mvc.AllowHtml]
+		public string ConfirmPassword { get; set; }
 
         [Display(Name = "firstName", ResourceType = typeof(DisplayNameStrings))]
         [Required]

@@ -52,6 +52,7 @@ namespace RadialReview.Models.L10 {
 
 		public virtual bool IncludeIndividualTodos { get; set; }
 		public virtual bool IncludeAggregateTodoCompletion { get; set; }
+		public virtual bool IncludeAggregateTodoCompletionOnPrintout { get; set; }
 
 		public virtual DayOfWeek? StartOfWeekOverride { get; set; }
 
@@ -126,6 +127,7 @@ namespace RadialReview.Models.L10 {
 			MeetingType = MeetingType.L10;
 			CountDown = true;
 			IsLeadershipTeam = true;
+			IncludeAggregateTodoCompletionOnPrintout = true;
 			Prioritization = PrioritizationType.Rank;
 			ShowHeadlinesBox = false;
 			HeadlineType = PeopleHeadlineType.HeadlinesList;
@@ -134,7 +136,7 @@ namespace RadialReview.Models.L10 {
 			CombineRocks = false;
 			CurrentWeekHighlightShift = 0;
 			PreventEditingUnownedMeasurables = false;
-
+			
 		}
 
 		public class L10RecurrenceMap : ClassMap<L10Recurrence> {
@@ -172,6 +174,7 @@ namespace RadialReview.Models.L10 {
 				Map(x => x.ReverseScorecard);
 				Map(x => x.IncludeIndividualTodos);
 				Map(x => x.IncludeAggregateTodoCompletion);
+				Map(x => x.IncludeAggregateTodoCompletionOnPrintout);
 				Map(x => x.TeamType).CustomType<L10TeamType>();
 				Map(x => x.Prioritization).CustomType<PrioritizationType>();
 

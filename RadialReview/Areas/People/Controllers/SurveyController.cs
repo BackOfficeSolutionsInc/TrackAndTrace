@@ -2,13 +2,16 @@
 using RadialReview.Areas.People.Angular.Survey;
 using RadialReview.Areas.People.Models.Survey;
 using RadialReview.Controllers;
-using RadialReview.Engines.Surveys;
+using RadialReview.Areas.People.Engines.Surveys;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Http.Results;
 using System.Web.Mvc;
+using RadialReview.Models.Json;
+using RadialReview.Accessors;
+using RadialReview.Models.Interfaces;
 
 namespace RadialReview.Areas.People.Controllers {
     public class SurveyController : BaseController {
@@ -25,7 +28,7 @@ namespace RadialReview.Areas.People.Controllers {
             //var output2 = new AngularSurveySection() {
             //    Items = new[] { output1 }
             //};
-            var output = SurveyAccessor.GetAngularSurveyContainer(GetUser(), 6,null);
+            var output = SurveyAccessor.GetAngularSurveyContainer(GetUser(),GetUser(), 6);
             var output2 = output.Surveys.First().Sections.First().Items.First().ItemFormat.Settings;
 
 
@@ -35,19 +38,31 @@ namespace RadialReview.Areas.People.Controllers {
         [Access(AccessLevel.Radial)]
         public JsonResult GenFakeSurvey() {
 
-            var byAbouts = new[] {
-                new ByAbout(GetUser(),GetUser()),
-            };
+			var subs = DeepAccessor.Tiny.GetSubordinatesAndSelf(GetUser(), GetUser().Id);
 
-            var output = SurveyAccessor.GenerateSurvey_Unsafe(GetUser(), "test" + (int)(DateTime.UtcNow.Ticks / 100000), byAbouts);
+			var byAbouts = new List<IByAbout>();
+
+			foreach (var sub in subs)
+				byAbouts.Add(new ByAbout(GetUser(), sub));
+						
+			var output = SurveyAccessor.GenerateSurveyContainer(GetUser(), "test" + (int)(DateTime.UtcNow.Ticks / 100000), byAbouts);
 
             return Json(output, JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult Data(long surveyContainerId, long? surveyId) {
-            var output =SurveyAccessor.GetAngularSurveyContainer(GetUser(), surveyContainerId, surveyId);
+        public JsonResult Data(long surveyContainerId) {
+            var output =SurveyAccessor.GetAngularSurveyContainer(GetUser(), GetUser(),surveyContainerId);
             return Json(output, JsonRequestBehavior.AllowGet);
         }
-    }
+		
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public JsonResult UpdateAngularSurveyResponse(AngularSurveyResponse response,string connectionId=null) {
+			var output = SurveyAccessor.UpdateAngularSurveyResponse(GetUser(), response.Id, response.Answer,connectionId);
+			return Json(ResultObject.SilentSuccess());
+		}
+
+
+	}
 }

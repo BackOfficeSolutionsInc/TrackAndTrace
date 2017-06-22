@@ -770,9 +770,9 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult MoveIssueToVTO(long id) {
+		public JsonResult MoveIssueToVTO(long id, string connectionId = null) {
 			var issue_recurrence = id;
-			var vto_issue = L10Accessor.MoveIssueToVto(GetUser(), issue_recurrence);
+			var vto_issue = L10Accessor.MoveIssueToVto(GetUser(), issue_recurrence, connectionId);
 			return Json(ResultObject.SilentSuccess(vto_issue.Id), JsonRequestBehavior.AllowGet);
 		}
 

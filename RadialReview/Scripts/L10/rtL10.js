@@ -106,6 +106,7 @@ $(function () {
 
 	meetingHub.client.updateIssueAwaitingSolve = updateIssueAwaitingSolve;
 	meetingHub.client.updateModedIssueSolve = updateModedIssueSolve;
+	meetingHub.client.removeIssueRow = removeIssueRow;
 
 
 	meetingHub.client.setMilestone = setMilestone;
@@ -171,6 +172,7 @@ function initConnection() {
 	$("body").on("keyup", ".rt", $.throttle(250, sendTextContents));
 	$("body").on("focus", ".rt", $.throttle(250, sendFocus));
 	$("body").on("blur", ".rt", $.throttle(250, sendUnfocus));
+	$("body").on("click", "[type='number'].rt", $.throttle(250, sendTextContents));
 
 	/*
 	$(".rt").keypress(function () { typed = typed + String.fromCharCode(event.charCode); });

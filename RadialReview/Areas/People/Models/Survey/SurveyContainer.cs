@@ -1,4 +1,4 @@
-﻿using RadialReview.Engines.Surveys.Interfaces;
+﻿using RadialReview.Areas.People.Engines.Surveys.Interfaces;
 using RadialReview.Models.Components;
 using RadialReview.Models.Interfaces;
 using System;
@@ -21,13 +21,15 @@ namespace RadialReview.Areas.People.Models.Survey {
         public virtual int Ordering { get; set; }
         public virtual long OrgId { get; set; }
 
-        public virtual ForModel CreatedBy { get; set; }
-        public virtual SurveyType SurveyType { get; set; }
+		public virtual ForModel CreatedBy { get; set; }
+		//public virtual ForModel By { get; set; }
+		public virtual SurveyType SurveyType { get; set; }
         
         public virtual ICollection<ISurvey> _Surveys { get; set; }
 
-        public SurveyContainer(IForModel createdBy,string name, long orgid, SurveyType type, string help) : this() {
-            CreatedBy = ForModel.From(createdBy);
+        public SurveyContainer(IForModel createdBy, /*IForModel by,*/ string name, long orgid, SurveyType type, string help) : this() {
+            //By = ForModel.From(by);
+			CreatedBy = ForModel.From(createdBy);
             Name = name;
             SurveyType = type;
             Help = help;

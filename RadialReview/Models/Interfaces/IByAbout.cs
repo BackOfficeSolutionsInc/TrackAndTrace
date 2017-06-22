@@ -9,6 +9,7 @@ namespace RadialReview.Models.Interfaces {
         long ModelId { get; }
         string ModelType { get; }
         bool Is<T>();
+		string ToPrettyString();
     }
     public interface IByAbout {
         IForModel GetBy();

@@ -1,4 +1,4 @@
-﻿using RadialReview.Engines.Surveys.Interfaces;
+﻿using RadialReview.Areas.People.Engines.Surveys.Interfaces;
 using RadialReview.Models.Components;
 using RadialReview.Models.Interfaces;
 using System;
@@ -17,6 +17,8 @@ namespace RadialReview.Areas.People.Models.Survey {
         public virtual string Name { get; set; }
         public virtual string Help { get; set; }
         public virtual int Ordering { get; set; }
+
+		public virtual SurveyType SurveyType { get; set; }
 
         public virtual long SurveyContainerId { get; set; }
         public virtual long OrgId { get; set; }
@@ -38,6 +40,7 @@ namespace RadialReview.Areas.People.Models.Survey {
             About = ForModel.From(data.About);
             OrgId = data.OrgId;
             SurveyContainerId = data.SurveyContainer.Id;
+			SurveyType = data.SurveyContainer.GetSurveyType();
         }
 
         public virtual IEnumerable<ISection> GetSections() {
@@ -83,7 +86,8 @@ namespace RadialReview.Areas.People.Models.Survey {
                 Map(x => x.Help).Length(2000);
                 Map(x => x.Ordering);
                 Map(x => x.SurveyContainerId);
-                Map(x => x.OrgId);
+				Map(x => x.SurveyType);
+				Map(x => x.OrgId);
                 Component(x => x.By).ColumnPrefix("By_");
                 Component(x => x.About).ColumnPrefix("About_");
             }

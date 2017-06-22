@@ -243,6 +243,15 @@ namespace RadialReview.Utilities {
 						var isMember_ids = isMember_idsQ.Select(x => x.Id).List<long>().ToList();
 						return isMember_ids;
 					}
+				case PermItem.ResourceType.SurveyContainer: {
+						var isMember_idsQ = session.QueryOver<Survey>()
+							.Where(x => x.SurveyContainerId ==resourceId && x.DeleteTime == null)
+							.Where(x => x.By.ModelType == ForModel.GetModelType<UserOrganizationModel>());
+						if (meOnly)
+							isMember_idsQ = isMember_idsQ.Where(x => x.By.ModelId == caller.Id);
+						var isMember_ids = isMember_idsQ.Select(x => x.By.ModelId).List<long>().ToList();
+						return isMember_ids;
+					}
 				default:
                     throw new ArgumentOutOfRangeException("resourceType");
             }
@@ -296,6 +305,8 @@ namespace RadialReview.Utilities {
 					return session.Get<AccountabilityChart>(resourceId).OrganizationId;
 				case PermItem.ResourceType.UpgradeUsersForOrganization:
 					return resourceId;
+				case PermItem.ResourceType.SurveyContainer:
+					return session.Get<SurveyContainer>(resourceId).OrgId;
 				default:
                     throw new ArgumentOutOfRangeException("resourceType");
             }

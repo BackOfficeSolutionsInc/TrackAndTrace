@@ -420,8 +420,13 @@ namespace RadialReview.Models
 		public virtual string UserModelId { get { return User.NotNull(x => x.Id); } set { } }
 
         public virtual long ModelId {get { return Id; }}
-
         public virtual string ModelType {get {return ForModel.GetModelType<UserOrganizationModel>();}}
+        public virtual bool Is<T>() {
+            return typeof(UserOrganizationModel).IsAssignableFrom(typeof(T));
+        }
+		public virtual string ToPrettyString() {
+			return GetName();
+		}
 
         public virtual DataContract GetUserDataContract()
         {
@@ -451,10 +456,7 @@ namespace RadialReview.Models
             return _ClientOffset ?? GetOrganizationSettings().GetTimezoneOffset();
         }
 
-        public virtual bool Is<T>() {
-            return typeof(UserOrganizationModel).IsAssignableFrom(typeof(T));
-        }
-    }
+	}
 
     public class UserOrganizationModelMap : SubclassMap<UserOrganizationModel>
     {

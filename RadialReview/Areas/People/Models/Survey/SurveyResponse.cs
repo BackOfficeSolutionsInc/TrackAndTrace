@@ -1,5 +1,5 @@
 ﻿using FluentNHibernate.Mapping;
-using RadialReview.Engines.Surveys.Interfaces;
+using RadialReview.Areas.People.Engines.Surveys.Interfaces;
 using RadialReview.Models.Components;
 using RadialReview.Models.Interfaces;
 using System;
@@ -29,14 +29,18 @@ namespace RadialReview.Areas.People.Models.Survey {
         public virtual ForModel About { get; set; }
 
         public virtual SurveyType SurveyType { get; set; }
+        public virtual long OrgId { get; set; }
         public virtual long SurveyContainerId { get; set; }
         public virtual long SurveyId { get; set; }
         public virtual long SectionId { get; set; }
 
-        public virtual string Answer { get; set; }
-        public virtual long ItemId { get; set; }
+		public virtual string Answer { get; set; }
+		public virtual DateTime? CompleteTime { get; set; }
+
+		//public virtual SurveyItem Item { get; set; }
+
+		public virtual long ItemId { get; set; }
         public virtual long ItemFormatId { get; set; }
-        public virtual long OrgId { get; set; }
 
         public virtual ISurveyContainer _SurveyContainer { get; set; }
         public virtual ISurvey _Survey { get; set; }
@@ -91,11 +95,16 @@ namespace RadialReview.Areas.People.Models.Survey {
             return Ordering;
         }
 
-        public class Map : ClassMap<SurveyResponse> {
+		public virtual string GetAnswer() {
+			return Answer;
+		}
+
+		public class Map : ClassMap<SurveyResponse> {
             public Map() {
                 Id(x => x.Id);
-                Map(x => x.CreateTime);
-                Map(x => x.DeleteTime);
+				Map(x => x.CreateTime);
+				Map(x => x.CompleteTime);
+				Map(x => x.DeleteTime);
                 Component(x => x.By).ColumnPrefix("By_");
                 Component(x => x.About).ColumnPrefix("About_");
                 Map(x => x.SurveyType);
@@ -106,6 +115,8 @@ namespace RadialReview.Areas.People.Models.Survey {
                 Map(x => x.ItemId);
                 Map(x => x.ItemFormatId);
                 Map(x => x.OrgId);
+
+				//References(x => x.Item).Column("ItemId").LazyLoad().ReadOnly();
             }
         }
     }

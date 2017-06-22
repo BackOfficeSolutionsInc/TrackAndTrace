@@ -1,0 +1,69 @@
+﻿@model IEnumerable<RadialReview.Models.Interfaces.IByAbout>
+@{
+	ViewBag.Title = "Issue Quarterly Conversation";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using (Html.BeginForm()) {
+	<div class="row smallBreak2">
+		<div class="col-sm-6 col-sm-offset-3">
+			<label class="control-label">Name:</label>
+			@Html.TextBox("name", null, new { @class = "form-control smallBreak2" })
+		</div>
+	</div>
+	<div class="row smallBreak2">
+		<div class="col-sm-6 col-sm-offset-3">
+			<label class="control-label">Add to Quarterly Conversation:</label>
+			<div id="qc-issue"></div>
+
+		</div>
+	</div>
+	<div class="row smallBreak2">
+		<div class="col-sm-6 col-sm-offset-3">
+			<label class="control-label">Evaluate Self:</label>
+
+			<div class="btn-group" style="display:block;" data-toggle="buttons">
+				<label class="btn btn-default active">
+					<input type="radio" name="self" value="true" autocomplete="off" checked> Yes
+				</label>
+				<label class="btn btn-default">
+					<input type="radio" name="self" value="false" autocomplete="off"> No
+				</label>
+			</div>
+
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-6 col-sm-offset-3">
+			<hr />
+			<button class="btn btn-primary" type="submit">Issue</button>
+		</div>
+	</div>
+}
+
+@using (Html.BeginStyles()) {
+	@Styles.Render("~/styles/people")
+}
+@using (Html.BeginScripts()) {
+	//@Scripts.Render("~/bundles/people")
+	<script>
+		DataTable({
+			container: "#qc-issue",
+			data: @Html.ArrayToString(Model, x => new { Name = x.GetAbout().ToPrettyString(), Id = x.ToKey() }),
+			//title
+			cells:[{
+				contents:function(x){ return "<input type='checkbox' checked name='selected' value ='"+x.Id+"'/>"; }
+
+			},{
+				//name: "Add to Quarterly Conversation",
+				contents:function(x){ return x.Name; },
+				classes:"fullWidth"
+			}
+			//,{
+			//	name: "Id",
+			//	contents:function(x){ return x.Id; }
+			//}
+
+			]
+		});
+	</script>
+}

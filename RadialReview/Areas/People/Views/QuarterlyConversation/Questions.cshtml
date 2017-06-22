@@ -1,0 +1,26 @@
+﻿@model long
+@{
+	ViewBag.Title = "Quarterly Conversation";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Subheading = "";
+
+	Html.RenderPartial("~/Views/CDN/Angular.cshtml");
+}
+
+@section top{
+	<div class="jumbotron">
+		<h1>Quarterly Conversation</h1>
+	</div>
+}
+
+<div ng-app="people" class="people quarterly-conversation ng-cloak">
+	<survey-container survey-container-id="@Model"></survey-container>
+</div>
+
+@using (Html.BeginStyles()) {
+
+	@Styles.Render("~/styles/people")
+}
+@using (Html.BeginScripts()) {
+	@Scripts.Render("~/bundles/people")	
+}

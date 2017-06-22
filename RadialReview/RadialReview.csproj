@@ -121,14 +121,18 @@
     <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="Areas\People\Accessors\QuarterlyConversationAccessor.cs" />
     <Compile Include="Areas\People\Accessors\SurveyAccessor.cs" />
+    <Compile Include="Areas\People\Angular\AngularPeopleAnalyzer.cs" />
     <Compile Include="Areas\People\Angular\Survey\AngularForModel.cs" />
     <Compile Include="Areas\People\Angular\Survey\AngularSurveyContainer.cs" />
     <Compile Include="Areas\People\Angular\Survey\AngularSurvey.cs" />
     <Compile Include="Areas\People\Angular\Survey\AngularSurveyItem.cs" />
     <Compile Include="Areas\People\Controllers\AngularTemplatesController.cs" />
     <Compile Include="Areas\People\Controllers\MainController.cs" />
+    <Compile Include="Areas\People\Controllers\PeopleAnalyzerController.cs" />
     <Compile Include="Areas\People\Controllers\QuarterlyConversationController.cs" />
     <Compile Include="Areas\People\Controllers\SurveyController.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Impl\TextAreaItemIntializer.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Impl\TextItemIntializer.cs" />
     <Compile Include="Areas\People\Models\Survey\ByAbout.cs" />
     <Compile Include="Areas\People\Models\Survey\SurveyItemFormat.cs" />
     <Compile Include="Areas\People\Models\Survey\SurveyItemResponse.cs" />
@@ -140,9 +144,11 @@
     <Compile Include="Areas\People\Models\Survey\SurveyEnums.cs" />
     <Compile Include="Areas\People\PeopleAreaRegistration.cs" />
     <Compile Include="Areas\People\ViewModels\QuarterlyConversationVM.cs" />
-    <Content Include="Content\AngularTemplates\People\Items\bs\bs-radio-item.html" />
+    <None Include="Areas\People\Views\Main\Diagonal.cshtml" />
+    <Content Include="Content\AngularTemplates\People\Items\bs\textarea-item.html" />
+    <Content Include="Content\AngularTemplates\People\Items\bs\text-item.html" />
+    <Content Include="Content\AngularTemplates\People\Items\bs\radio-item.html" />
     <Content Include="Content\AngularTemplates\People\surveyItemContainer.html" />
-    <Content Include="Content\AngularTemplates\People\Items\radio-item.html" />
     <Content Include="Content\AngularTemplates\People\survey.html" />
     <Content Include="Content\AngularTemplates\People\surveySection.html" />
     <Compile Include="Controllers\Ac\AngularAccountabilityController.cs" />
@@ -151,22 +157,22 @@
     <Compile Include="Controllers\MilestoneController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\PdfController.cs" />
-    <Compile Include="Engines\Surveys\Strategies\Events\SurveyReconstructionEventsNoOp.cs" />
-    <Compile Include="Engines\Surveys\Strategies\OuterLookup.cs" />
-    <Compile Include="Engines\Surveys\Impl\QuarterlyConversation\QuarterlyConversationClasses.cs" />
-    <Compile Include="Engines\Surveys\Impl\QuarterlyConversation\Sections\RockSection.cs" />
-    <Compile Include="Engines\Surveys\Impl\QuarterlyConversation\Sections\RoleSection.cs" />
-    <Compile Include="Engines\Surveys\Impl\QuarterlyConversation\Sections\ValueSection.cs" />
-    <Compile Include="Engines\Surveys\Interfaces\SurveyReconstructionInterfaces.cs" />
-    <Compile Include="Engines\Surveys\Strategies\Reconstructor\DatabaseAggregator.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\Events\SurveyReconstructionEventsNoOp.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\OuterLookup.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\QuarterlyConversationClasses.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\RockSection.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\RoleSection.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\ValueSection.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Interfaces\SurveyReconstructionInterfaces.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\Reconstructor\DatabaseAggregator.cs" />
     <Compile Include="Areas\People\Angular\Survey\AngularSurveySection.cs" />
-    <Compile Include="Engines\Surveys\Strategies\Traverse\TraverseBuild.cs" />
-    <Compile Include="Engines\Surveys\Strategies\Traverse\TraverseBuildAngular.cs" />
-    <Compile Include="Engines\Surveys\SurveyBuilderEngine.cs" />
-    <Compile Include="Engines\Surveys\Interfaces\SurveyBuilderInterfaces.cs" />
-    <Compile Include="Engines\Surveys\Strategies\Events\SurveyBuilderEventsNoOp.cs" />
-    <Compile Include="Engines\Surveys\Strategies\Events\SurveyBuilderEventsSaveStrategy.cs" />
-    <Compile Include="Engines\Surveys\SurveyReconstructionEngine.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\Traverse\TraverseBuild.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\Traverse\TraverseBuildAngular.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\SurveyBuilderEngine.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Interfaces\SurveyBuilderInterfaces.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\Events\SurveyBuilderEventsNoOp.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\Events\SurveyBuilderEventsSaveStrategy.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\SurveyReconstructionEngine.cs" />
     <Compile Include="Hooks\UpdateRoles_Notifications.cs" />
     <Compile Include="Hooks\UpdateUserModel_TeamNames.cs" />
     <Compile Include="Hubs\PeopleHub.cs" />
@@ -183,6 +189,7 @@
     <Compile Include="Models\Enums\VideoConferenceType.cs" />
     <Compile Include="Models\Events\Event.cs" />
     <Compile Include="Models\Interfaces\IByAbout.cs" />
+    <Compile Include="Models\Interfaces\ICaller.cs" />
     <Compile Include="Models\Issues\HeadlineIssueVM.cs" />
     <Compile Include="Models\L10\L10Page.cs" />
     <Compile Include="Models\L10\PeopleHeadline.cs" />
@@ -854,6 +861,11 @@
     <Content Include="Areas\People\Views\Main\Index.cshtml" />
     <Content Include="Areas\People\Views\QuarterlyConversation\Index.cshtml" />
     <Content Include="Content\AngularTemplates\People\surveyContainer.html" />
+    <Content Include="Areas\People\Views\QuarterlyConversation\Questions.cshtml" />
+    <Content Include="Areas\People\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\People\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\People\Views\QuarterlyConversation\Issue.cshtml" />
+    <Content Include="Areas\People\Views\PeopleAnalyzer\Index.cshtml" />
     <None Include="bundleconfig.json" />
     <None Include="Content\Angular\ngsortable.less" />
     <Content Include="Content\Angular\ngsortable.css">
@@ -880,6 +892,9 @@
     <Content Include="Content\favicon-local.ico" />
     <Content Include="Content\GettingStarted\GettingStarted.css">
       <DependentUpon>GettingStarted.less</DependentUpon>
+    </Content>
+    <Content Include="Content\People\QuarterlyConversation.css">
+      <DependentUpon>QuarterlyConversation.less</DependentUpon>
     </Content>
     <Content Include="Content\SnackbarAlerts.css">
       <DependentUpon>SnackbarAlerts.less</DependentUpon>
@@ -1043,6 +1058,7 @@
     <Content Include="Content\L10\l10-ie-only.less" />
     <Content Include="Content\L10\L10Rocks.less" />
     <Content Include="Content\SnackbarAlerts.less" />
+    <Content Include="Content\People\QuarterlyConversation.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -2217,9 +2233,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Areas\People\Views\Shared\" />
+    <Folder Include="Areas\People\Engines\Surveys\Abstract\" />
     <Folder Include="Content\fonts\fonts\" />
-    <Folder Include="Engines\Surveys\Abstract\" />
     <Folder Include="External\" />
     <Folder Include="logs\" />
     <Folder Include="Models\Notifications\" />

@@ -1011,8 +1011,12 @@ namespace RadialReview.Accessors {
             return r;
         }
 
+		[Obsolete("Use DeepAccessor.GetDirectReports",true)]
+		public static List<AccountabilityNode> GetDirectReports(UserOrganizationModel caller, long forNodeId) {
+			throw new NotImplementedException();
+		}
 
-        public static AccountabilityChart CreateChart(ISession s, PermissionsUtility perms, long organizationId, bool creatorCanAdmin = true) {
+		public static AccountabilityChart CreateChart(ISession s, PermissionsUtility perms, long organizationId, bool creatorCanAdmin = true) {
             perms.ViewOrganization(organizationId);
             var now = DateTime.UtcNow;
 
@@ -1192,10 +1196,7 @@ namespace RadialReview.Accessors {
                 SetUser(s, rt, perms, node.Id, userId);
             }
         }
-
-
-
-
+		
         public static void UpdateRole(ISession s, RealTimeUtility rt, PermissionsUtility perms, long roleId, string name) {
             perms.EditRole(roleId);
 

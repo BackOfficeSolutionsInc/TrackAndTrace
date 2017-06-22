@@ -1326,7 +1326,7 @@ namespace RadialReview.Accessors {
 			}
 			//var r = new Random();
 
-			var measurables = recur.Scorecard.Measurables.OrderBy(x => x.Ordering).Where(x => includeDisabled || !(x.Disabled ?? false) && !x.IsDivider);
+			var measurables = recur.Scorecard.Measurables.OrderBy(x => x.Ordering).Where(x => (includeDisabled || !(x.Disabled ?? false)) && !x.IsDivider);
 			var mn = 1;
 
 			//for (var k = 0; k < 2; k++){

@@ -118,6 +118,7 @@ namespace RadialReview.Utilities {
             }
 			return new PermissionsUtility(session, attached);
 		}
+
 		#endregion
 
 
@@ -1531,11 +1532,14 @@ namespace RadialReview.Utilities {
 				return ManagesUserOrganizationOrSelf(userId);
 			throw new PermissionsException();
 		}
-        #endregion
-        #region NewSurvey
+		#endregion
 
+		#region NewSurvey
 
-        public PermissionsUtility ViewSurvey(long surveyId) {
+		public PermissionsUtility CreateSurveyContainer(long orgId) {
+			return ManagerAtOrganization(caller.Id,orgId);
+		}
+		public PermissionsUtility ViewSurvey(long surveyId) {
             if (IsRadialAdmin(caller))
                 return this;
             var survey = session.Get<Survey>(surveyId);
@@ -1543,23 +1547,35 @@ namespace RadialReview.Utilities {
             return CanView(PermItem.ResourceType.Survey, surveyId);
         }
 
-        public PermissionsUtility ViewSurveyContainer(long surveyContainerId) {
-            if (IsRadialAdmin(caller))
-                return this;
+		public PermissionsUtility ViewSurveyContainer(long surveyContainerId) {
+			if (IsRadialAdmin(caller))
+				return this;
 
-            return CanView(PermItem.ResourceType.SurveyContainer, surveyContainerId);
+			return CanView(PermItem.ResourceType.SurveyContainer, surveyContainerId);
+		}
 
-            //var survey = session.Get<SurveyContainerModel>(surveyId);
+		public PermissionsUtility EditSurveyResponse(long surveyResponseId) {
+			if (IsRadialAdmin(caller))
+				return this;
 
-            //if (IsManagingOrganization(survey.OrgId))
-            //    return this;
-            //if (survey.CreatorId == caller.Id)
-            //    return this;
-            //throw new PermissionsException("Cannot view this survey");
-        }
-        #endregion
-        #region OldSurvey
-        public PermissionsUtility ViewOldSurveyContainer(long surveyId) {
+			var response = session.Get<SurveyResponse>(surveyResponseId);
+
+			if (response == null || response.DeleteTime!=null)
+				throw new PermissionsException("Response does not exist.");
+
+			if (response.By.Is<UserOrganizationModel>()) {
+				if (caller.Id == response.By.ModelId)
+					return this;
+				else
+					throw new PermissionsException("Cannot edit this response");
+			}
+			throw new PermissionsException("Unknown 'by' type");		
+		}
+
+		#endregion
+
+		#region OldSurvey
+		public PermissionsUtility ViewOldSurveyContainer(long surveyId) {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -1956,6 +1972,14 @@ namespace RadialReview.Utilities {
 
 		public PermissionsUtility ViewVideoL10Recurrence(long recurrenceId) {
 			return ViewL10Recurrence(recurrenceId);
+		}
+
+		public PermissionsUtility Self(IForModel forModel) {
+			if (IsRadialAdmin(caller))
+				return this;
+			if (forModel.ModelType == ForModel.GetModelType<UserOrganizationModel>())
+				return Self(forModel.ModelId);
+			throw new PermissionsException();
 		}
 
 		public PermissionsUtility Self(long userId) {

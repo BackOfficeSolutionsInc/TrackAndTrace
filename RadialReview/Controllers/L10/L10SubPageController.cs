@@ -172,7 +172,7 @@ namespace RadialReview.Controllers {
 				if (model.Attendees != null)
 					attendees = allMembers.Where(x => model.Attendees.Contains(x)).ToList();
 				L10Accessor.StartMeeting(GetUser(), GetUser(), model.Recurrence.Id, attendees);
-				var tempRecur = L10Accessor.GetL10Recurrence(GetUser(), model.Recurrence.Id, false);
+				var tempRecur = L10Accessor.GetL10Recurrence(GetUser(), model.Recurrence.Id, true);
 				var p = L10Accessor.GetDefaultStartPage(tempRecur);
 				return RedirectToAction("Load", new { id = model.Recurrence.Id, page = p });
 			}
@@ -332,6 +332,7 @@ namespace RadialReview.Controllers {
 			ViewBag.Subheading = ViewBag.Subheading ?? "";
 
 			model.SendEmail = true;
+			model.SendEmailRich = ConcludeSendEmail.AllAttendees;
 			model.CloseTodos = true;
 			model.CloseHeadlines = true;
 
@@ -346,7 +347,7 @@ namespace RadialReview.Controllers {
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<ActionResult> ForceConclude(long id) {
-			await L10Accessor.ConcludeMeeting(GetUser(), id, new List<Tuple<long, decimal?>>(), false, false, false, null);
+			await L10Accessor.ConcludeMeeting(GetUser(), id, new List<Tuple<long, decimal?>>(), ConcludeSendEmail.None, false, false, null);
 			return Content("Done");
 		}
 
@@ -384,7 +385,7 @@ namespace RadialReview.Controllers {
 
 
 				if (ModelState.IsValid) {
-					await L10Accessor.ConcludeMeeting(GetUser(), model.Recurrence.Id, ratingValues, model.SendEmail, model.CloseTodos, model.CloseHeadlines, connectionId);
+					await L10Accessor.ConcludeMeeting(GetUser(), model.Recurrence.Id, ratingValues, model.SendEmailRich, model.CloseTodos, model.CloseHeadlines, connectionId);
 
 
 					//var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();

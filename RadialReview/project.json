@@ -2,6 +2,7 @@
   "dependencies": {
     "AWSSDK": "2.3.55.2",
     "BCXAPI": "1.0.4554.21216",
+    "bootstrap": "3.0.0",
     "Common.Logging": "3.3.1",
     "CommonMark.NET": "0.15.1",
     "CsvHelper": "2.16.3",
@@ -37,6 +38,7 @@
     "Microsoft.Owin.Security.Cookies": "3.0.1",
     "Microsoft.Owin.Security.OAuth": "3.0.1",
     "Microsoft.Web.Infrastructure": "1.0.0",
+    "Modernizr": "2.6.2",
     "MySql.Data": "6.9.9",
     "Newtonsoft.Json": "9.0.1",
     "NHibernate": "4.0.0.4000",

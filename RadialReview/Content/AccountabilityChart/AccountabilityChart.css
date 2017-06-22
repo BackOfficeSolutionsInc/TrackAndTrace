@@ -116,6 +116,11 @@ body {
   overflow: hidden;
   font-family: 'Roboto', sans-serif;
 }
+.acc-chart svg .role-row div.role {
+  display: inline-block;
+  width: 100%;
+  margin-left: -8px;
+}
 .acc-chart svg button md-icon {
   display: none;
 }

@@ -63,6 +63,7 @@ function replaceAll(find, replace, str) {
 function setFollowLeader(val) {
 	followLeader = val;
 	resetClickables();
+	$(window).trigger("follow-leader");
 }
 
 function resetClickables() {

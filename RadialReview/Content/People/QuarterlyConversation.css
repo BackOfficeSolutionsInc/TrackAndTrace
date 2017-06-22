@@ -1,0 +1,593 @@
+﻿.jumbotron {
+  z-index: 4;
+  position: relative;
+}
+.jumbotron h1 {
+  font-size: 55px;
+  margin-top: -8px;
+}
+@media (max-width: 768px) {
+  .jumbotron h1 {
+    font-size: 6vw;
+    margin-top: calc(57.5px - 6vw);
+  }
+}
+.people.quarterly-conversation .anchor {
+  position: relative;
+  top: -60px;
+  display: block;
+}
+.people.quarterly-conversation .survey-component,
+.people.quarterly-conversation survey-container {
+  display: inline-block;
+  width: 100%;
+}
+.people.quarterly-conversation .survey-component {
+  display: block;
+}
+.people.quarterly-conversation .disabled {
+  color: rgba(0, 0, 0, 0.5);
+  font-style: italic;
+}
+.people.quarterly-conversation survey-container {
+  display: inline-block;
+  padding-bottom: 40px;
+  margin-top: 30px;
+  font-size: 14px;
+}
+@media (max-width: 992px) {
+  .people.quarterly-conversation survey-container {
+    font-size: 12px;
+  }
+}
+.people.quarterly-conversation survey-container .survey-container-title {
+  display: none;
+}
+.people.quarterly-conversation survey-container .current-section .decoration {
+  position: fixed;
+  top: 45px;
+  left: 0px;
+  background-color: #3E3935;
+  width: 100%;
+  z-index: 1000;
+  height: 16px;
+}
+.people.quarterly-conversation survey-container .current-section .title {
+  color: #fff;
+  text-transform: uppercase;
+  background-color: #EF7622;
+  font-weight: 900;
+  position: fixed;
+  top: 45px;
+  z-index: 10000;
+  display: block;
+  font-family: 'Lato', sans-serif;
+  font-size: 12px;
+  line-height: 14px;
+  height: 14px;
+  text-align: left;
+  padding-left: 15px;
+  padding-right: 15px;
+  margin-left: 1px;
+  border-radius: 3px;
+}
+.people.quarterly-conversation survey-container .current-section .title:empty {
+  display: none;
+}
+@media (max-width: 768px) {
+  .people.quarterly-conversation survey-container .current-section .title {
+    background-color: transparent;
+    position: fixed;
+    top: 18px;
+    left: 0;
+    z-index: 1030;
+    color: #fff;
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    text-transform: uppercase;
+    line-height: 17px;
+    height: 16px;
+    font-size: 20px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 900;
+    padding-left: 0px;
+  }
+}
+.people.quarterly-conversation survey-container .survey {
+  margin-bottom: 20px;
+  background-color: #fff;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  border-color: transparent;
+  border-color: #3E3935;
+}
+.people.quarterly-conversation survey-container .survey > .list-group,
+.people.quarterly-conversation survey-container .survey > .panel-collapse > .list-group {
+  margin-bottom: 0;
+}
+.people.quarterly-conversation survey-container .survey > .list-group .list-group-item,
+.people.quarterly-conversation survey-container .survey > .panel-collapse > .list-group .list-group-item {
+  border-width: 1px 0;
+  border-radius: 0;
+}
+.people.quarterly-conversation survey-container .survey > .list-group:first-child .list-group-item:first-child,
+.people.quarterly-conversation survey-container .survey > .panel-collapse > .list-group:first-child .list-group-item:first-child {
+  border-top: 0;
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+}
+.people.quarterly-conversation survey-container .survey > .list-group:last-child .list-group-item:last-child,
+.people.quarterly-conversation survey-container .survey > .panel-collapse > .list-group:last-child .list-group-item:last-child {
+  border-bottom: 0;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+.people.quarterly-conversation survey-container .survey > .panel-heading + .panel-collapse > .list-group .list-group-item:first-child {
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+}
+.people.quarterly-conversation survey-container .survey > .table,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table,
+.people.quarterly-conversation survey-container .survey > .panel-collapse > .table {
+  margin-bottom: 0;
+}
+.people.quarterly-conversation survey-container .survey > .table caption,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table caption,
+.people.quarterly-conversation survey-container .survey > .panel-collapse > .table caption {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.people.quarterly-conversation survey-container .survey > .table:first-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:first-child > .table:first-child {
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+}
+.people.quarterly-conversation survey-container .survey > .table:first-child > thead:first-child > tr:first-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child,
+.people.quarterly-conversation survey-container .survey > .table:first-child > tbody:first-child > tr:first-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child {
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+.people.quarterly-conversation survey-container .survey > .table:first-child > thead:first-child > tr:first-child td:first-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child td:first-child,
+.people.quarterly-conversation survey-container .survey > .table:first-child > tbody:first-child > tr:first-child td:first-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child td:first-child,
+.people.quarterly-conversation survey-container .survey > .table:first-child > thead:first-child > tr:first-child th:first-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child th:first-child,
+.people.quarterly-conversation survey-container .survey > .table:first-child > tbody:first-child > tr:first-child th:first-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child th:first-child {
+  border-top-left-radius: 3px;
+}
+.people.quarterly-conversation survey-container .survey > .table:first-child > thead:first-child > tr:first-child td:last-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child td:last-child,
+.people.quarterly-conversation survey-container .survey > .table:first-child > tbody:first-child > tr:first-child td:last-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child td:last-child,
+.people.quarterly-conversation survey-container .survey > .table:first-child > thead:first-child > tr:first-child th:last-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child th:last-child,
+.people.quarterly-conversation survey-container .survey > .table:first-child > tbody:first-child > tr:first-child th:last-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child th:last-child {
+  border-top-right-radius: 3px;
+}
+.people.quarterly-conversation survey-container .survey > .table:last-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:last-child > .table:last-child {
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+.people.quarterly-conversation survey-container .survey > .table:last-child > tbody:last-child > tr:last-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child,
+.people.quarterly-conversation survey-container .survey > .table:last-child > tfoot:last-child > tr:last-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child {
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+.people.quarterly-conversation survey-container .survey > .table:last-child > tbody:last-child > tr:last-child td:first-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child td:first-child,
+.people.quarterly-conversation survey-container .survey > .table:last-child > tfoot:last-child > tr:last-child td:first-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child td:first-child,
+.people.quarterly-conversation survey-container .survey > .table:last-child > tbody:last-child > tr:last-child th:first-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child th:first-child,
+.people.quarterly-conversation survey-container .survey > .table:last-child > tfoot:last-child > tr:last-child th:first-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child th:first-child {
+  border-bottom-left-radius: 3px;
+}
+.people.quarterly-conversation survey-container .survey > .table:last-child > tbody:last-child > tr:last-child td:last-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child td:last-child,
+.people.quarterly-conversation survey-container .survey > .table:last-child > tfoot:last-child > tr:last-child td:last-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child td:last-child,
+.people.quarterly-conversation survey-container .survey > .table:last-child > tbody:last-child > tr:last-child th:last-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child th:last-child,
+.people.quarterly-conversation survey-container .survey > .table:last-child > tfoot:last-child > tr:last-child th:last-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child th:last-child {
+  border-bottom-right-radius: 3px;
+}
+.people.quarterly-conversation survey-container .survey > .panel-body + .table,
+.people.quarterly-conversation survey-container .survey > .panel-body + .table-responsive,
+.people.quarterly-conversation survey-container .survey > .table + .panel-body,
+.people.quarterly-conversation survey-container .survey > .table-responsive + .panel-body {
+  border-top: 1px solid transparent;
+}
+.people.quarterly-conversation survey-container .survey > .table > tbody:first-child > tr:first-child th,
+.people.quarterly-conversation survey-container .survey > .table > tbody:first-child > tr:first-child td {
+  border-top: 0;
+}
+.people.quarterly-conversation survey-container .survey > .table-bordered,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table-bordered {
+  border: 0;
+}
+.people.quarterly-conversation survey-container .survey > .table-bordered > thead > tr > th:first-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table-bordered > thead > tr > th:first-child,
+.people.quarterly-conversation survey-container .survey > .table-bordered > tbody > tr > th:first-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table-bordered > tbody > tr > th:first-child,
+.people.quarterly-conversation survey-container .survey > .table-bordered > tfoot > tr > th:first-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table-bordered > tfoot > tr > th:first-child,
+.people.quarterly-conversation survey-container .survey > .table-bordered > thead > tr > td:first-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table-bordered > thead > tr > td:first-child,
+.people.quarterly-conversation survey-container .survey > .table-bordered > tbody > tr > td:first-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table-bordered > tbody > tr > td:first-child,
+.people.quarterly-conversation survey-container .survey > .table-bordered > tfoot > tr > td:first-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table-bordered > tfoot > tr > td:first-child {
+  border-left: 0;
+}
+.people.quarterly-conversation survey-container .survey > .table-bordered > thead > tr > th:last-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table-bordered > thead > tr > th:last-child,
+.people.quarterly-conversation survey-container .survey > .table-bordered > tbody > tr > th:last-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table-bordered > tbody > tr > th:last-child,
+.people.quarterly-conversation survey-container .survey > .table-bordered > tfoot > tr > th:last-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table-bordered > tfoot > tr > th:last-child,
+.people.quarterly-conversation survey-container .survey > .table-bordered > thead > tr > td:last-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table-bordered > thead > tr > td:last-child,
+.people.quarterly-conversation survey-container .survey > .table-bordered > tbody > tr > td:last-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table-bordered > tbody > tr > td:last-child,
+.people.quarterly-conversation survey-container .survey > .table-bordered > tfoot > tr > td:last-child,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table-bordered > tfoot > tr > td:last-child {
+  border-right: 0;
+}
+.people.quarterly-conversation survey-container .survey > .table-bordered > thead > tr:first-child > td,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table-bordered > thead > tr:first-child > td,
+.people.quarterly-conversation survey-container .survey > .table-bordered > tbody > tr:first-child > td,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table-bordered > tbody > tr:first-child > td,
+.people.quarterly-conversation survey-container .survey > .table-bordered > thead > tr:first-child > th,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table-bordered > thead > tr:first-child > th,
+.people.quarterly-conversation survey-container .survey > .table-bordered > tbody > tr:first-child > th,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table-bordered > tbody > tr:first-child > th {
+  border-bottom: 0;
+}
+.people.quarterly-conversation survey-container .survey > .table-bordered > tbody > tr:last-child > td,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table-bordered > tbody > tr:last-child > td,
+.people.quarterly-conversation survey-container .survey > .table-bordered > tfoot > tr:last-child > td,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table-bordered > tfoot > tr:last-child > td,
+.people.quarterly-conversation survey-container .survey > .table-bordered > tbody > tr:last-child > th,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table-bordered > tbody > tr:last-child > th,
+.people.quarterly-conversation survey-container .survey > .table-bordered > tfoot > tr:last-child > th,
+.people.quarterly-conversation survey-container .survey > .table-responsive > .table-bordered > tfoot > tr:last-child > th {
+  border-bottom: 0;
+}
+.people.quarterly-conversation survey-container .survey > .table-responsive {
+  border: 0;
+  margin-bottom: 0;
+}
+.people.quarterly-conversation survey-container .survey > .panel-heading {
+  color: #fff;
+  background-color: #EF7622;
+  border-color: transparent;
+}
+.people.quarterly-conversation survey-container .survey > .panel-heading + .panel-collapse > .panel-body {
+  border-top-color: transparent;
+}
+.people.quarterly-conversation survey-container .survey > .panel-heading .badge {
+  color: #EF7622;
+  background-color: #fff;
+}
+.people.quarterly-conversation survey-container .survey > .panel-footer + .panel-collapse > .panel-body {
+  border-bottom-color: transparent;
+}
+.people.quarterly-conversation survey-container .survey > table > thead,
+.people.quarterly-conversation survey-container .survey > .table-responsive > table > thead {
+  background-color: #EF7622;
+  color: #fff;
+}
+.people.quarterly-conversation survey-container .survey > .title {
+  color: #fff;
+  background-color: #EF7622;
+  border-color: transparent;
+  padding: 10px 15px;
+  background-color: #3E3935;
+  font-size: 14px;
+}
+.people.quarterly-conversation survey-container .survey > .title + .panel-collapse > .panel-body {
+  border-top-color: transparent;
+}
+.people.quarterly-conversation survey-container .survey > .title .badge {
+  color: #EF7622;
+  background-color: #fff;
+}
+.people.quarterly-conversation survey-container .survey .sections {
+  padding: 15px;
+}
+.people.quarterly-conversation survey-container .survey .sections.in {
+  margin-bottom: 50px;
+}
+.people.quarterly-conversation survey-container .survey .sections .section {
+  padding-bottom: 25px;
+}
+.people.quarterly-conversation survey-container .survey .sections .section > .title {
+  color: #EF7622;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: left;
+  border-bottom: 2px solid #EF7622;
+  margin-bottom: 15px;
+  min-width: 160px;
+  line-height: 12px;
+}
+.people.quarterly-conversation survey-container .survey .sections .section survey-item-container {
+  padding-left: 25px;
+}
+.people.quarterly-conversation survey-container .survey .sections .section survey-item-container survey-item {
+  display: inline-block;
+  width: 100%;
+}
+.people.quarterly-conversation survey-container .survey .sections .section survey-item-container .item-row {
+  margin-left: -15px;
+  margin-right: -15px;
+  display: inline-block;
+  width: 100%;
+}
+.people.quarterly-conversation survey-container .survey .sections .section survey-item-container .item-row .item .name,
+.people.quarterly-conversation survey-container .survey .sections .section survey-item-container .item-row .item .help {
+  text-align: right;
+}
+@media (max-width: 992px) {
+  .people.quarterly-conversation survey-container .survey .sections .section survey-item-container .item-row .item .name,
+  .people.quarterly-conversation survey-container .survey .sections .section survey-item-container .item-row .item .help {
+    text-align: left;
+  }
+}
+.people.quarterly-conversation survey-container .survey .sections .section survey-item-container .item-row .item .name {
+  padding: 5px 0;
+  font-weight: bold;
+  font-size: 130%;
+}
+@media (max-width: 992px) {
+  .people.quarterly-conversation survey-container .survey .sections .section survey-item-container .item-row .item .name:not(:empty) {
+    padding: 6px 0 0 0;
+  }
+}
+.people.quarterly-conversation survey-container .survey .sections .section survey-item-container .item-row .item .help {
+  font-weight: normal;
+}
+@media (max-width: 992px) {
+  .people.quarterly-conversation survey-container .survey .sections .section survey-item-container .item-row .item .help:not(:empty) {
+    padding: 0 0 5px 0;
+  }
+}
+.people.quarterly-conversation survey-container .survey .sections .section survey-item-container .item-row .responses {
+  padding-bottom: 10px;
+}
+.people.quarterly-conversation survey-container .survey .sections .section survey-item-container.item-container-Radio .item-row .item {
+  position: relative;
+  min-height: 1px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+@media (min-width: 992px) {
+  .people.quarterly-conversation survey-container .survey .sections .section survey-item-container.item-container-Radio .item-row .item {
+    float: left;
+    width: 50%;
+  }
+}
+.people.quarterly-conversation survey-container .survey .sections .section survey-item-container.item-container-Radio .item-row .responses {
+  position: relative;
+  min-height: 1px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+@media (min-width: 992px) {
+  .people.quarterly-conversation survey-container .survey .sections .section survey-item-container.item-container-Radio .item-row .responses {
+    float: left;
+    width: 50%;
+  }
+}
+.people.quarterly-conversation survey-container .survey .sections .section survey-item-container.item-container-TextArea .item-row .name,
+.people.quarterly-conversation survey-container .survey .sections .section survey-item-container.item-container-TextArea .item-row .help {
+  text-align: left;
+  font-size: 100%;
+}
+.people.quarterly-conversation survey-container .survey .sections .section survey-item-container.item-container-TextArea .item-row textarea {
+  min-height: 140px;
+}
+.people.quarterly-conversation survey-container .survey .sections .section survey-item-container.item-container-Text .item-row .item {
+  position: relative;
+  min-height: 1px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+@media (min-width: 992px) {
+  .people.quarterly-conversation survey-container .survey .sections .section survey-item-container.item-container-Text .item-row .item {
+    float: left;
+    width: 100%;
+  }
+}
+.people.quarterly-conversation survey-container .survey .sections .section survey-item-container.item-container-Text .item-row .item .name {
+  text-align: center;
+  padding: 0px;
+  font-weight: normal;
+}
+@media (max-width: 992px) {
+  .people.quarterly-conversation survey-container .survey .sections .section survey-item-container.item-container-Text .item-row .item .name {
+    text-align: left;
+  }
+}
+.people.quarterly-conversation survey-container .survey .sections .section-Values survey-item-container {
+  padding-bottom: 5px;
+}
+.people.quarterly-conversation survey-container .survey .sections .section-Roles .item-container-Text .item .name {
+  font-size: 14px !important;
+}
+.people.quarterly-conversation survey-container .survey .sections .section-Roles .item-container-Radio {
+  padding-top: 10px;
+}
+@media (max-width: 992px) {
+  .people.quarterly-conversation survey-container .survey .sections .section-Roles .item-container-Radio .item-row {
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+  .people.quarterly-conversation survey-container .survey .sections .section-Roles .item-container-Radio .item-row .item {
+    position: relative;
+    float: left;
+    width: 25%;
+    min-height: 1px;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  .people.quarterly-conversation survey-container .survey .sections .section-Roles .item-container-Radio .item-row .item .name {
+    text-align: right;
+  }
+  .people.quarterly-conversation survey-container .survey .sections .section-Roles .item-container-Radio .item-row .response {
+    position: relative;
+    float: left;
+    width: 50%;
+    min-height: 1px;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
+.people.quarterly-conversation survey-container .survey .sections .section-Roles .item-container-Radio ~ .item-container-Radio {
+  padding-top: 5px;
+}
+/*
+ * Side navigation
+ *
+ * Scrollspy and affixed enhanced navigation to highlight sections and secondary
+ * sections of docs content.
+ */
+/* By default it's not affixed in mobile views, so undo that */
+.bs-docs-sidebar.affix {
+  position: static;
+}
+@media (min-width: 768px) {
+  .bs-docs-sidebar {
+    padding-left: 20px;
+  }
+}
+/* First level of nav */
+.bs-docs-sidenav {
+  margin-top: 15px;
+  margin-bottom: 20px;
+}
+/* All levels of nav */
+.bs-docs-sidebar .nav > li > a {
+  display: block;
+  padding: 4px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #767676;
+}
+.bs-docs-sidebar .nav > li > a:hover,
+.bs-docs-sidebar .nav > li > a:focus {
+  padding-left: 19px;
+  color: #EF7622;
+  text-decoration: none;
+  background-color: transparent;
+  border-left: 1px solid #EF7622;
+}
+.bs-docs-sidebar .nav > .active > a,
+.bs-docs-sidebar .nav > .active:hover > a,
+.bs-docs-sidebar .nav > .active:focus > a,
+.bs-docs-sidebar .nav a.active,
+.bs-docs-sidebar .nav a.active:hover,
+.bs-docs-sidebar .nav a.active:focus {
+  padding-left: 18px;
+  font-weight: bold;
+  color: #EF7622;
+  background-color: transparent;
+  border-left: 2px solid #EF7622;
+}
+/* Nav: second level (shown on .active) */
+.bs-docs-sidebar .nav .nav {
+  display: none;
+  /* Hide by default, but at >768px, show it */
+  padding-bottom: 10px;
+}
+.bs-docs-sidebar .nav .nav > li > a {
+  padding-top: 1px;
+  padding-bottom: 1px;
+  padding-left: 30px;
+  font-size: 12px;
+  font-weight: normal;
+}
+.bs-docs-sidebar .nav .nav > li > a:hover,
+.bs-docs-sidebar .nav .nav > li > a:focus {
+  padding-left: 29px;
+}
+.bs-docs-sidebar .nav .nav > .active > a,
+.bs-docs-sidebar .nav .nav > .active:hover > a,
+.bs-docs-sidebar .nav .nav > .active:focus > a,
+.bs-docs-sidebar .nav .nav a,
+.bs-docs-sidebar .nav .nav a.active:hover,
+.bs-docs-sidebar .nav .nav a.active:focus {
+  padding-left: 28px;
+  font-weight: 500;
+}
+/* Back to top (hidden on mobile) */
+.back-to-top,
+.bs-docs-theme-toggle {
+  display: none;
+  padding: 4px 10px;
+  margin-top: 10px;
+  margin-left: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #999;
+}
+.back-to-top:hover,
+.bs-docs-theme-toggle:hover {
+  color: #EF7622;
+  text-decoration: none;
+}
+.bs-docs-theme-toggle {
+  margin-top: 0;
+}
+@media (min-width: 768px) {
+  .back-to-top,
+  .bs-docs-theme-toggle {
+    display: block;
+  }
+}
+/* Show and affix the side nav when space allows it */
+@media (min-width: 992px) {
+  .bs-docs-sidebar .nav > .active > ul,
+  .bs-docs-sidebar .nav > ul.active {
+    display: block;
+  }
+  /* Widen the fixed sidebar */
+  .bs-docs-sidebar.affix,
+  .bs-docs-sidebar.affix-bottom {
+    width: 213px;
+  }
+  .bs-docs-sidebar.affix {
+    position: fixed;
+    /* Undo the static from mobile first approach */
+    top: 50px;
+  }
+  .bs-docs-sidebar.affix-bottom {
+    position: absolute;
+    /* Undo the static from mobile first approach */
+  }
+  .bs-docs-sidebar.affix-bottom .bs-docs-sidenav,
+  .bs-docs-sidebar.affix .bs-docs-sidenav {
+    margin-top: 15px;
+    margin-bottom: 0;
+  }
+}
+@media (min-width: 1200px) {
+  /* Widen the fixed sidebar again */
+  .bs-docs-sidebar.affix-bottom,
+  .bs-docs-sidebar.affix {
+    width: 263px;
+  }
+}

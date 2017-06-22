@@ -57,6 +57,14 @@ namespace RadialReview {
                 return Convert.ToDouble(source.ElementAt(midpoint));
         }
 
+		public static DefaultDictionary<TKey, TVal> ToDefaultDictionary<TSource,TKey,TVal>(this IEnumerable<TSource> items,Func<TSource,TKey> keySelector,Func<TSource,TVal> valueSelector, Func<TKey,TVal> defaultVal) {
+			var dict = new DefaultDictionary<TKey, TVal>(defaultVal);
+			foreach (var i in items) {
+				dict[keySelector(i)] = valueSelector(i);
+			}
+			return dict;
+		}
+
 
         public static ILazyCollection ToLazyCollection<T>(this IEnumerable<T> self) {
             return new LazyCollection<T>(self);

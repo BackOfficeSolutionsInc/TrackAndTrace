@@ -75,13 +75,16 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		[HttpGet]
 		public ActionResult Printout(long id, bool issues = false, bool todos = false, bool scorecard = true, bool rocks = true, bool vto = true, bool l10 = true, bool acc = true, bool print = false/*, PdfAccessor.AccNodeJs root = null*/) {
-			var recur = L10Accessor.GetAngularRecurrence(GetUser(), id,forceIncludeTodoCompletion:true);
+
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), id,false);
+
+			var angRecur = L10Accessor.GetAngularRecurrence(GetUser(), id, forceIncludeTodoCompletion:recur.IncludeAggregateTodoCompletionOnPrintout);
 			var merger = new DocumentMerger();
 
 			//
 			var anyPages = false;
-			AngularVTO vtoModel = VtoAccessor.GetAngularVTO(GetUser(), recur.VtoId.Value);
-			if (vto && recur.VtoId.HasValue && recur.VtoId > 0) {
+			AngularVTO vtoModel = VtoAccessor.GetAngularVTO(GetUser(), angRecur.VtoId.Value);
+			if (vto && angRecur.VtoId.HasValue && angRecur.VtoId > 0) {
 				//vtoModel 
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout1");
 				PdfAccessor.AddVTO(doc, vtoModel, GetUser().GetOrganizationSettings().GetDateFormat());
@@ -90,26 +93,26 @@ namespace RadialReview.Controllers {
 			}
 			if (l10) {
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printou2t");
-				PdfAccessor.AddL10(doc, recur, L10Accessor.GetLastMeetingEndTime(GetUser(), id), addPageNumber: false);
+				PdfAccessor.AddL10(doc, angRecur, L10Accessor.GetLastMeetingEndTime(GetUser(), id), addPageNumber: false);
 				anyPages = true;
 				merger.AddDoc(doc);
 			}
 
 			if (todos) {
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout3");
-				PdfAccessor.AddTodos(GetUser(), doc, recur, addPageNumber: false);
+				PdfAccessor.AddTodos(GetUser(), doc, angRecur, addPageNumber: false);
 				merger.AddDoc(doc);
 				anyPages = true;
 			}
 			if (issues) {
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout4");
-				PdfAccessor.AddIssues(GetUser(), doc, recur, todos, addPageNumber: false);
+				PdfAccessor.AddIssues(GetUser(), doc, angRecur, todos, addPageNumber: false);
 				merger.AddDoc(doc);
 				anyPages = true;
 			}
 			if (scorecard) {
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printou5t");
-				var addedSC = PdfAccessor.AddScorecard(doc, recur, addPageNumber: false);
+				var addedSC = PdfAccessor.AddScorecard(doc, angRecur, addPageNumber: false);
 				anyPages = anyPages || addedSC;
 				if (addedSC) {
 					merger.AddDoc(doc);
@@ -117,7 +120,7 @@ namespace RadialReview.Controllers {
 			}
 			if (rocks) {
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout6");
-				PdfAccessor.AddRocks(GetUser(), doc, recur, vtoModel, addPageNumber: false);
+				PdfAccessor.AddRocks(GetUser(), doc, angRecur, vtoModel, addPageNumber: false);
 				merger.AddDoc(doc);
 				anyPages = true;
 			}
@@ -130,7 +133,7 @@ namespace RadialReview.Controllers {
 
 					//Add nodes from the tree.
 					tree.Dive(x => {
-						if (x.User != null && recur.Attendees.Any(a => a.Id == x.User.Id))
+						if (x.User != null && angRecur.Attendees.Any(a => a.Id == x.User.Id))
 							nodes.Add(x);
 					});
 
@@ -152,7 +155,7 @@ namespace RadialReview.Controllers {
 			var doc1 = merger.Flatten("Quarterly Printout", true, true, GetUser().Organization.Settings.GetDateFormat());
 
 
-			return Pdf(doc1, now + "_" + recur.Basics.Name + "_QuarterlyPrintout.pdf", true);
+			return Pdf(doc1, now + "_" + angRecur.Basics.Name + "_QuarterlyPrintout.pdf", true);
 		}
 	}
 }

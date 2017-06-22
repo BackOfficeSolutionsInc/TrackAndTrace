@@ -1,6 +1,7 @@
 ﻿using FluentNHibernate.Mapping;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -32,6 +33,8 @@ namespace RadialReview.Models.Rocks {
 		public virtual string PadId { get; set; }
 		public virtual long RockId { get; set; }
 		public virtual bool Required { get; set; }
+
+		public virtual RockModel _Rock { get; set; }
 
 		public Milestone() {
 			PadId = Guid.NewGuid().ToString();

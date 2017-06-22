@@ -98,5 +98,9 @@
   {
     "outputFile": "Content/SnackbarAlerts.css",
     "inputFile": "Content/SnackbarAlerts.less"
+  },
+  {
+    "outputFile": "Content/People/QuarterlyConversation.css",
+    "inputFile": "Content/People/QuarterlyConversation.less"
   }
 ]

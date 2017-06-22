@@ -32,6 +32,7 @@ using System.Web.Routing;
 using RadialReview.Utilities.RealTime;
 using RadialReview.Model.Enums;
 using System.Linq.Expressions;
+using RadialReview.Reflection;
 
 #pragma warning disable CS0219 // Variable is assigned but its value is never used
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -1924,7 +1925,7 @@ namespace RadialReview.Controllers {
 								AutoGen = true,
 								L10Recurrence = recur,
 								L10RecurrenceId = recur.Id,
-								Minutes = ObjectExtensions.Get(recur,pageDur),
+								Minutes  = recur.Get(pageDur),
 								PageType = type,
 								Title = type.GetDisplayName(),
 								Subheading = subheading,
