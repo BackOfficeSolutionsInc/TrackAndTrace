@@ -854,6 +854,7 @@
     <Content Include="Areas\CoreProcess\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\CoreProcess\Views\Home\Index.cshtml" />
     <Content Include="Areas\CoreProcess\Views\AreaCustom\Index.cshtml" />
+    <EmbeddedResource Include="Areas\CoreProcess\calculation.bpmn" />
     <None Include="bundleconfig.json" />
     <None Include="Content\Angular\ngsortable.less" />
     <Content Include="Content\Angular\ngsortable.css">

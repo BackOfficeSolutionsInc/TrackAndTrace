@@ -10,7 +10,7 @@ namespace RadialReview.Areas.CoreProcess.Interfaces
 {
     public interface IProcessDefAccessor
     {
-        string Deploy(UserOrganizationModel caller, string key);
+        string Deploy(UserOrganizationModel caller, string key, List<object> files);
         IProcessDef GetProcessDefByKey(UserOrganizationModel caller, string key);
         IEnumerable<IProcessDef> GetAllProcessDef(UserOrganizationModel caller); // get all
         IProcessDef GetProcessDefById(UserOrganizationModel caller, string processDefId); // get by id

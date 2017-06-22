@@ -12,11 +12,12 @@ using static RadialReview.Utilities.Config;
 
 namespace RadialReview.Areas.CoreProcess.CamundaComm
 {
-    public class CommClass : ICommClass {
+    public class CommClass : ICommClass
+    {
 
-		// create new camunda rest client
-		//"http://localhost:8080/engine-rest"		
-		CamundaRestClient client = new CamundaRestClient(Config.GetCamundaServer().Url);
+        // create new camunda rest client
+        //"http://localhost:8080/engine-rest"		
+        CamundaRestClient client = new CamundaRestClient(Config.GetCamundaServer().Url);
         public IProcessDef GetProcessDefByKey(string key)
         {
             // Call API and get JSON
@@ -25,9 +26,18 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
             return new ProcessDef();
         }
 
+        public string Deploy(string key, List<object> files)
+        {
+            // Call API and get JSON
+            // Serialize JSON into IProcessDef
+            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
+            var result = client.Deployment().Deploy(key, files);
+            return string.Empty;
+        }
+
         public IEnumerable<ITask> GetTaskList()
         {
-            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);            
+            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
             return client.Task().Get().list().Select(s => new Task(s));
         }
     }
