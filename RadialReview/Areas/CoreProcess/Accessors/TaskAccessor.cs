@@ -10,10 +10,19 @@ using System.Web;
 namespace RadialReview.Areas.CoreProcess.Accessors {
     public class TaskAccessor : ITaskAccessor
     {
-        public IEnumerable<ITask> GetAllTasks(UserOrganizationModel caller)
-        {
-            CommClass commClass = new CommClass();
+		ICommClass commClass = new CommClass();
+		public bool CompleteTask(UserOrganizationModel caller, string taskId) {
+			throw new NotImplementedException();
+		}
+		public IEnumerable<ITask> GetAllTasks(UserOrganizationModel caller)
+        {            
             return commClass.GetTaskList();
         }
-    }
+		public ITask GetTaskById(UserOrganizationModel caller, string taskId) {
+			throw new NotImplementedException();
+		}
+		public ITask GetTaskByProcessDefId(UserOrganizationModel caller, string processDefId) {
+			throw new NotImplementedException();
+		}
+	}
 }

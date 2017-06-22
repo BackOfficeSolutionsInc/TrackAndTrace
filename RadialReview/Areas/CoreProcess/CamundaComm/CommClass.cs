@@ -3,17 +3,20 @@ using CamundaCSharpClient.Model.Task;
 using RadialReview.Areas.CoreProcess.Interfaces;
 using RadialReview.Areas.CoreProcess.Models.Interfaces;
 using RadialReview.Models;
+using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using static RadialReview.Utilities.Config;
 
 namespace RadialReview.Areas.CoreProcess.CamundaComm
 {
-    public class CommClass : ICommClass
-    {
-        // create new camunda rest client
-        CamundaRestClient client = new CamundaRestClient("http://localhost:8080/engine-rest");
+    public class CommClass : ICommClass {
+
+		// create new camunda rest client
+		//"http://localhost:8080/engine-rest"		
+		CamundaRestClient client = new CamundaRestClient(Config.GetCamundaServer().Url);
         public IProcessDef GetProcessDefByKey(string key)
         {
             // Call API and get JSON
@@ -24,7 +27,7 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
 
         public IEnumerable<ITask> GetTaskList()
         {
-            client.Authenticator("demo", "demo");            
+            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);            
             return client.Task().Get().list().Select(s => new Task(s));
         }
     }

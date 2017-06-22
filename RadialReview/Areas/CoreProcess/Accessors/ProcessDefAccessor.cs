@@ -12,6 +12,15 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 			// call Comm Layer
 			return string.Empty;
 		}
+
+		public IEnumerable<IProcessDef> GetAllProcessDef(UserOrganizationModel caller) {
+			throw new NotImplementedException();
+		}
+
+		public IProcessDef GetProcessDefById(UserOrganizationModel caller, string processDefId) {
+			throw new NotImplementedException();
+		}
+
 		public IProcessDef GetProcessDefByKey(UserOrganizationModel caller, string key) {
 			throw new NotImplementedException();
 		}
