@@ -10,14 +10,9 @@ using CamundaCSharpClient.Model.Deployment;
 
 namespace CamundaCSharpClient.Query.Deployment
 {
-    public class DeploymentQuery:QueryBase
+    public class DeploymentQuery : QueryBase
     {
-        public static string DEFAULT_URL = "http://localhost:8080/engine-rest/engine/default/";
-        public static string COCKPIT_URL = "http://localhost:8080/camunda/app/cockpit/default/";
-        public static string Username = "demo";
-        public static string Password = "demo";
-
-        public DeploymentQuery(CamundaRestClient client):base(client)
+        public DeploymentQuery(CamundaRestClient client) : base(client)
         {
 
         }
@@ -31,8 +26,8 @@ namespace CamundaCSharpClient.Query.Deployment
 
             // Create request and receive response
             // string postURL = helper.RestUrl + "deployment/create";
-            string postURL = DEFAULT_URL + "deployment/create";
-            HttpWebResponse webResponse = FormUpload.MultipartFormDataPost(postURL, null, null, postParameters);
+            string postURL = CamundaConfig.GetCamundaServer().Url + "deployment/create";
+            HttpWebResponse webResponse = FormUpload.MultipartFormDataPost(postURL, CamundaConfig.GetCamundaServer().Username, CamundaConfig.GetCamundaServer().Password, postParameters);
 
             using (var reader = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
             {

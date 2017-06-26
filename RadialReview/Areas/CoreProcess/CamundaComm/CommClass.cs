@@ -1,4 +1,5 @@
 ﻿using CamundaCSharpClient;
+using CamundaCSharpClient.Model.ProcessDefinition;
 using CamundaCSharpClient.Model.Task;
 using RadialReview.Areas.CoreProcess.Interfaces;
 using RadialReview.Areas.CoreProcess.Models.Interfaces;
@@ -22,8 +23,9 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
         {
             // Call API and get JSON
             // Serialize JSON into IProcessDef
-
-            return new ProcessDef();
+            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
+            var getProcessDef = client.ProcessDefinition().Key(key).singleResult();
+            return new ProcessDef(getProcessDef);
         }
 
         public string Deploy(string key, List<object> files)
@@ -44,6 +46,17 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
 
     public class ProcessDef : IProcessDef
     {
+        public ProcessDef()
+        {
+
+        }
+        public ProcessDef(ProcessDefinitionModel processDef)
+        {
+            Id = processDef.Id;
+            description = processDef.Description!=null? processDef.Description.ToString():"";
+            key = processDef.Key;
+            name = processDef.Name;
+        }
         public string category
         {
             get

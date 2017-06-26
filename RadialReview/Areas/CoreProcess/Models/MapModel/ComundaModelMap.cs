@@ -47,7 +47,8 @@ namespace RadialReview.Areas.CoreProcess.Models.MapModel {
 		public virtual string LocalProcessDefId { get; set; } // reference with PRocessDef_Camunda
 		public virtual string DeploymentId { get; set; }
 		public virtual string Version { get; set; }
-		public virtual BPMN_FileType File { get; set; }
+        public virtual string FileKey { get; set; }
+        public virtual BPMN_FileType File { get; set; }
 		public virtual DateTime CreateTime { get; set; }
 		public virtual DateTime? DeleteTime { get; set; }
 	}
@@ -58,6 +59,7 @@ namespace RadialReview.Areas.CoreProcess.Models.MapModel {
 			Map(x => x.LocalProcessDefId);
 			Map(x => x.DeploymentId);
 			Map(x => x.Version);
+            Map(x => x.FileKey);
 			Map(x => x.File); // db will save integer for enum value
 			Map(x => x.CreateTime);
 			Map(x => x.DeleteTime);

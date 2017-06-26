@@ -854,7 +854,9 @@
     <Content Include="Areas\CoreProcess\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\CoreProcess\Views\Home\Index.cshtml" />
     <Content Include="Areas\CoreProcess\Views\AreaCustom\Index.cshtml" />
-    <EmbeddedResource Include="Areas\CoreProcess\calculation.bpmn" />
+    <EmbeddedResource Include="Areas\CoreProcess\calculation.bpmn">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <None Include="bundleconfig.json" />
     <None Include="Content\Angular\ngsortable.less" />
     <Content Include="Content\Angular\ngsortable.css">
@@ -2247,6 +2249,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\CoreProcess\CamundaFiles\" />
     <Folder Include="Content\fonts\fonts\" />
     <Folder Include="External\" />
     <Folder Include="logs\" />
