@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,11 +8,12 @@ using System.Threading.Tasks;
 namespace RadialReview.Areas.CoreProcess.Models.Process {
 	public class TaskViewModel {
 		public TaskViewModel() {
-			id = Guid.NewGuid();
+			Id = Guid.NewGuid();
 		}
 
-		public Guid id { get; set; }
-		public string name { get; set; }
+		public Guid Id { get; set; }
+        [Required(ErrorMessage = "field is required")]
+        public string name { get; set; }
 		public string description { get; set; }
 		public ProcessViewModel process { get; set; }
 	}

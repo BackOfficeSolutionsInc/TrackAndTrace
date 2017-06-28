@@ -1,0 +1,14 @@
+﻿@model RadialReview.Areas.CoreProcess.Models.Process.ProcessViewModel
+
+<input type="hidden" name="Id" id="Id" value="@Model.Id" />
+<input type="hidden" name="status" id="Status" value="undeployed" />
+@Html.Hidden("Id", Model.Id)
+<div class="row smallBreak2">
+	<div class="col-sm-3"><label>Name:</label></div>
+	<div class="col-sm-9">@Html.TextBoxFor(x => x.Name, new { @class = "fullWidth form-control blend" })</div>
+    @Html.ValidationMessageFor(m => m.Name)
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
