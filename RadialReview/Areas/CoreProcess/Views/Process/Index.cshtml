@@ -1,0 +1,73 @@
+﻿@model List<RadialReview.Areas.CoreProcess.Models.Process.ProcessViewModel>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section top{
+    <div class="jumbotron">
+        <h1>List of Process</h1>
+    </div>
+}
+
+@*<link href="~/Content/Theme.css" rel="stylesheet" />*@
+<br />
+<div class="row">
+    <div class="col-sm-8 col-lg-12">
+            <div style="text-align: right;margin-bottom: 3px;">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary btn-invert dropdown-toggle" aria-haspopup="true" aria-expanded="false" onclick="location.href='@Url.Action("Create", "Process")'">
+                        Create Process
+                    </button>
+                </div>
+            </div>
+        <div class="panel panel-primary" id="l10-meeting-list">
+            <table class="table startHiddenGroup2 table-condensed table-hover table-condensed tablesorter">
+                <thead>
+                    <tr>
+                        <th>Process Name</th>                        
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="center" style="padding:10px;height:50px">@item.Name</td>                            
+                            <td class="center" style="padding:10px;height:50px">@Html.ActionLink("Edit", "Edit",new {id = @item.Id })</td>
+                         </tr>
+                    }
+
+                </tbody>
+            </table>
+            </div>
+        </div>
+
+
+
+    </div>
+
+
+<style>
+    .table .btn-default {
+        color: #5e5e5e !important;
+    }
+
+    .body-full-width #alerts:not(:empty) {
+        margin-top: 20px;
+        margin-bottom: -15px;
+    }
+
+    html, body {
+        background-color: #eee;
+    }
+
+    .panel {
+        border: none;
+    }
+
+    .grayRow {
+        /*background-color: #f2f2f2;*/
+    }
+</style>
+

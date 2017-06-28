@@ -10,88 +10,84 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
-namespace RadialReview.Areas.CoreProcess.Controllers
-{
-    public class HomeController :   BaseController
-    {
-        [Access(AccessLevel.Any)]
-        // GET: CoreProcess/Home
-        public async Task<ActionResult> Index()
-        {
-            //TaskAccessor taskAccessor = new TaskAccessor();
-            //var getTaskList = taskAccessor.GetAllTasks(new RadialReview.Models.UserOrganizationModel());
+namespace RadialReview.Areas.CoreProcess.Controllers {
+	public class HomeController : BaseController {
+		[Access(AccessLevel.Any)]
+		// GET: CoreProcess/Home
+		public async Task<ActionResult> Index() {
+			//TaskAccessor taskAccessor = new TaskAccessor();
+			//var getTaskList = taskAccessor.GetAllTasks(new RadialReview.Models.UserOrganizationModel());
+
+			ProcessDefAccessor processDef = new ProcessDefAccessor();
+
+			if (true) {
+				processDef.DetachNode();
+			}
+
+			//get ProcessDef By Key
+			if (false) {
+				var getProcessDef = processDef.GetProcessDefByKey(new RadialReview.Models.UserOrganizationModel(), "calculate");
+			}
 
 
+			//deploy process
+			if (false) {
+				//ProcessDefAccessor processDefAccessor = new ProcessDefAccessor();
+				//string fileName = "calculation.bpmn";
+				//var filePath = string.Format("~/Areas/CoreProcess/{0}", fileName);
+				//var fullPath = HttpContext.Server.MapPath(filePath);
+				//List<object> fileObject = new List<object>();
+				//if (System.IO.File.Exists(fullPath))
+				//{
+				//    byte[] bytes = System.IO.File.ReadAllBytes(fullPath);
+				//    fileObject.Add(new FileParameter(bytes, fileName));
 
-            ProcessDefAccessor processDef = new ProcessDefAccessor();
-
-            //get ProcessDef By Key
-            if (false)
-            {
-                var getProcessDef = processDef.GetProcessDefByKey(new RadialReview.Models.UserOrganizationModel(), "calculate");
-            }
-
-
-            //deploy process
-            if (false)
-            {
-                //ProcessDefAccessor processDefAccessor = new ProcessDefAccessor();
-                //string fileName = "calculation.bpmn";
-                //var filePath = string.Format("~/Areas/CoreProcess/{0}", fileName);
-                //var fullPath = HttpContext.Server.MapPath(filePath);
-                //List<object> fileObject = new List<object>();
-                //if (System.IO.File.Exists(fullPath))
-                //{
-                //    byte[] bytes = System.IO.File.ReadAllBytes(fullPath);
-                //    fileObject.Add(new FileParameter(bytes, fileName));
-
-                //    //deploy file
-                //    processDefAccessor.Deploy(new RadialReview.Models.UserOrganizationModel(), "testDeploy", fileObject);
-                //}
-            }
+				//    //deploy file
+				//    processDefAccessor.Deploy(new RadialReview.Models.UserOrganizationModel(), "testDeploy", fileObject);
+				//}
+			}
 
 
-            //processDefAccessor.Deploy(new RadialReview.Models.UserOrganizationModel(), "testDeploy", new List<object> {
-            //    FileParameter.FromManifestResource(Assembly.GetExecutingAssembly(), "RadialReview.calculation.bpmn") });
-
-           
-            //Upload files to server
-            if (true)
-            {
-                //get processDef list
-                var getProcessDefList = processDef.GetList(GetUser());
+			//processDefAccessor.Deploy(new RadialReview.Models.UserOrganizationModel(), "testDeploy", new List<object> {
+			//    FileParameter.FromManifestResource(Assembly.GetExecutingAssembly(), "RadialReview.calculation.bpmn") });
 
 
-                //get processDef 
-                var getProcessDef = processDef.GetById(GetUser(), getProcessDefList.FirstOrDefault().Id);
+			//Upload files to server
+			if (true) {
+				//get processDef list
+				var getProcessDefList = processDef.GetList(GetUser());
 
-                //Create processDef
-                //var getResult = processDef.Create(GetUser(), "TestPorcess1");
 
-                //string guid = Guid.NewGuid().ToString();
-                //var path = "CoreProcess/" + guid + ".bpmn";
+				//get processDef 
+				var getProcessDef = processDef.GetById(GetUser(), getProcessDefList.FirstOrDefault().Id);
 
-                ////create blank bmpn file
+				//Create processDef
+				//var getResult = processDef.Create(GetUser(), "TestPorcess1");
 
-                //var getStream = processDef.CreateBmpnFile("testProcess");
+				//string guid = Guid.NewGuid().ToString();
+				//var path = "CoreProcess/" + guid + ".bpmn";
 
-                ////upload to server
-                //processDef.UploadCamundaFile(getStream, path);
+				////create blank bmpn file
 
-                ////get file from server
-                //processDef.GetCamundaFileFromServer(path);
+				//var getStream = processDef.CreateBmpnFile("testProcess");
 
-            }
+				////upload to server
+				//processDef.UploadCamundaFile(getStream, path);
+
+				////get file from server
+				//processDef.GetCamundaFileFromServer(path);
+
+			}
 
 
 
 
-            //upload files to server
+			//upload files to server
 
 
-            //Deploy if required--
+			//Deploy if required--
 
-            return View();
-        }
-    }
+			return View();
+		}
+	}
 }

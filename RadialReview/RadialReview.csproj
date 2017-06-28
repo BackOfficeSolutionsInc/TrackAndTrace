@@ -125,12 +125,15 @@
     <Compile Include="Areas\CoreProcess\CamundaComm\ICommClass.cs" />
     <Compile Include="Areas\CoreProcess\Controllers\Api_V0\ProcessDef.cs" />
     <Compile Include="Areas\CoreProcess\Controllers\HomeController.cs" />
+    <Compile Include="Areas\CoreProcess\Controllers\ProcessController.cs" />
     <Compile Include="Areas\CoreProcess\CoreProcessAreaRegistration.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\ITaskAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Models\Interfaces\ITask.cs" />
     <Compile Include="Areas\CoreProcess\Models\Interfaces\IProcessDef.cs" />
     <Compile Include="Areas\CoreProcess\Models\MapModel\ComundaModelMap.cs" />
+    <Compile Include="Areas\CoreProcess\Models\ViewModel\TaskViewModel.cs" />
+    <Compile Include="Areas\CoreProcess\Models\ViewModel\ProcessViewModel.cs" />
     <Compile Include="Controllers\Ac\AngularAccountabilityController.cs" />
     <Compile Include="Controllers\AuditController.cs" />
     <Compile Include="Controllers\HeadlinesController.cs" />
@@ -857,6 +860,10 @@
     <EmbeddedResource Include="Areas\CoreProcess\calculation.bpmn">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <Content Include="Areas\CoreProcess\d.bpmn" />
+    <Content Include="Areas\CoreProcess\Views\Process\Create.cshtml" />
+    <Content Include="Areas\CoreProcess\Views\Process\Index.cshtml" />
+    <Content Include="Areas\CoreProcess\Views\Shared\Partial\CreateTask.cshtml" />
     <None Include="bundleconfig.json" />
     <None Include="Content\Angular\ngsortable.less" />
     <Content Include="Content\Angular\ngsortable.css">
