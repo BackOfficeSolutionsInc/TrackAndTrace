@@ -17,7 +17,7 @@ namespace RadialReview.Areas.CoreProcess.Interfaces
         IProcessDef GetProcessDefByKey(UserOrganizationModel caller, string key);
         IEnumerable<IProcessDef> GetAllProcessDef(UserOrganizationModel caller); // get all
         IProcessDef GetProcessDefById(UserOrganizationModel caller, string processDefId); // get by id
-        bool Create(UserOrganizationModel caller, string processName);
+        long Create(UserOrganizationModel caller, string processName);
         bool Edit(UserOrganizationModel caller, string processDefId);
         Stream CreateBpmnFile(string processName);
         void UploadCamundaFile(Stream stream, string path);

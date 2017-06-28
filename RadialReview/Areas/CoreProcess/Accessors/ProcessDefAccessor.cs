@@ -29,7 +29,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return string.Empty;
         }
 
-        public bool Create(UserOrganizationModel caller, string processName)
+        public long Create(UserOrganizationModel caller, string processName)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -44,7 +44,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             }
         }
 
-        public bool CreateProcessDef(ISession s, PermissionsUtility perms, string processName)
+        public long CreateProcessDef(ISession s, PermissionsUtility perms, string processName)
         {
             bool result = false;
             try
@@ -72,13 +72,14 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
                 s.Save(processDef_File);
 
-                result = true;
+				return processDef.Id;
             }
             catch (Exception)
             {
                 throw;
             }
-            return result;
+
+            return 0;
         }
 
         public bool Edit(UserOrganizationModel caller, string processDefId)
@@ -422,7 +423,6 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
             return stream;
         }
-
 
         public void UploadCamundaFile(Stream stream, string path)
         {

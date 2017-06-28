@@ -27,15 +27,12 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 				ProcessViewModel process = new ProcessViewModel();
 				process.Id = item.Id;
 				process.Name = item.ProcessDefKey;
-                if(item.CamundaId == null)
-                {
-                    process.status = "undeployed";
-                }
-                else
-                {
-                    process.status = "deployed";
-                }
-                Process.Add(process);
+				if (item.CamundaId == null) {
+					process.status = "undeployed";
+				} else {
+					process.status = "deployed";
+				}
+				Process.Add(process);
 			}
 
 
@@ -45,40 +42,40 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
 		public JsonResult Create(ProcessViewModel Modal) {
-            var createprocess = processDefAccessor.Create(GetUser(), Modal.Name);
-            return Json(ResultObject.SilentSuccess(Modal));
+			var id = processDefAccessor.Create(GetUser(), Modal.Name);
+			Modal.Id = id;
+
+			return Json(ResultObject.SilentSuccess(Modal));
 		}
 
-        [Access(AccessLevel.UserOrganization)]
-        public ActionResult GetProcess(long id)
-        {
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult GetProcess(long id) {
 
-            List<TaskViewModel> str = new List<TaskViewModel>();
+			List<TaskViewModel> str = new List<TaskViewModel>();
 
-            str.Add(new TaskViewModel { Id = Guid.NewGuid(), name = "Task1", description = "Test Description1" });
-            str.Add(new TaskViewModel { Id = Guid.NewGuid(), name = "Task2", description = "Test Description2" });
-            str.Add(new TaskViewModel { Id = Guid.NewGuid(), name = "Task3", description = "Test Description3" });
+			str.Add(new TaskViewModel { Id = Guid.NewGuid(), name = "Task1", description = "Test Description1" });
+			str.Add(new TaskViewModel { Id = Guid.NewGuid(), name = "Task2", description = "Test Description2" });
+			str.Add(new TaskViewModel { Id = Guid.NewGuid(), name = "Task3", description = "Test Description3" });
 
-            var sstr = processDefAccessor.GetById(GetUser(),id);
-
-
-            ProcessViewModel process = new ProcessViewModel();
-            process.taskList = str;
-            process.Name = sstr.ProcessDefKey;
-            process.Id = sstr.Id;
-            return View("~/Areas/CoreProcess/Views/Process/Create.cshtml", process);
-        }
+			var sstr = processDefAccessor.GetById(GetUser(), id);
 
 
-        [Access(AccessLevel.UserOrganization)]
-        public PartialViewResult Create()
-        {
-            ProcessViewModel modal = new ProcessViewModel();
-            return PartialView("~/Areas/CoreProcess/Views/Shared/Partial/CreateProcess.cshtml", modal);
-        }
+			ProcessViewModel process = new ProcessViewModel();
+			process.taskList = str;
+			process.Name = sstr.ProcessDefKey;
+			process.Id = sstr.Id;
+			return View("~/Areas/CoreProcess/Views/Process/Create.cshtml", process);
+		}
 
-        [Access(AccessLevel.UserOrganization)]
-		public JsonResult ReorderTask(int oldOrder, int newOrder,long Id) {
+
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult Create() {
+			ProcessViewModel modal = new ProcessViewModel();
+			return PartialView("~/Areas/CoreProcess/Views/Shared/Partial/CreateProcess.cshtml", modal);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult ReorderTask(int oldOrder, int newOrder, long Id) {
 			//L10Accessor.ReorderPage(GetUser(),  oldOrder, newOrder);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
@@ -107,25 +104,22 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
 		public JsonResult CreateTask(TaskViewModel model) {
-            var getid = Convert.ToString(model.Id);
-            var create = processDefAccessor.CreateTask(GetUser(), getid, model);
-            return Json(ResultObject.SilentSuccess(model));
+			var getid = Convert.ToString(model.Id);
+			var create = processDefAccessor.CreateTask(GetUser(), getid, model);
+			return Json(ResultObject.SilentSuccess(model));
 		}
 
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult Edit(long id) {
-            ProcessViewModel process = new ProcessViewModel();
-            if (id != 0)
-            {
-                var EditProcess = processDefAccessor.GetById(GetUser(), id);
-                process.Name = EditProcess.ProcessDefKey;
-            }
-            else
-            {
-                //var UpdateProcess = processDefAccessor.u(GetUser(), id);
-                process.Name = "";
-            }
+			ProcessViewModel process = new ProcessViewModel();
+			if (id != 0) {
+				var EditProcess = processDefAccessor.GetById(GetUser(), id);
+				process.Name = EditProcess.ProcessDefKey;
+			} else {
+				//var UpdateProcess = processDefAccessor.u(GetUser(), id);
+				process.Name = "";
+			}
 			return PartialView("~/Areas/CoreProcess/Views/Shared/Partial/CreateProcess.cshtml", process);
-        }
-    }
+		}
+	}
 }
