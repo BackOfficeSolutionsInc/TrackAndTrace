@@ -1,5 +1,6 @@
 ﻿using RadialReview.Areas.CoreProcess.Models.Interfaces;
 using RadialReview.Areas.CoreProcess.Models.MapModel;
+using RadialReview.Areas.CoreProcess.Models.Process;
 using RadialReview.Models;
 using System;
 using System.Collections.Generic;
@@ -18,10 +19,11 @@ namespace RadialReview.Areas.CoreProcess.Interfaces
         IProcessDef GetProcessDefById(UserOrganizationModel caller, string processDefId); // get by id
         bool Create(UserOrganizationModel caller, string processName);
         bool Edit(UserOrganizationModel caller, string processDefId);
-        Stream CreateBmpnFile(string processName);
+        Stream CreateBpmnFile(string processName);
         void UploadCamundaFile(Stream stream, string path);
-        void GetCamundaFileFromServer(string keyName);
+        Stream GetCamundaFileFromServer(string keyName);
         IEnumerable<ProcessDef_Camunda> GetList(UserOrganizationModel caller);
         ProcessDef_Camunda GetById(UserOrganizationModel caller, long processId);
+        bool CreateTask(UserOrganizationModel caller, string processDefId, TaskViewModel model);
     }
 }

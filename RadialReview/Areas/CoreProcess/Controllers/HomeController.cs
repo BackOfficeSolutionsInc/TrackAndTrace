@@ -21,7 +21,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 			ProcessDefAccessor processDef = new ProcessDefAccessor();
 
 			if (true) {
-				processDef.DetachNode();
+				//processDef.DetachNode();
 			}
 
 			//get ProcessDef By Key
@@ -54,30 +54,34 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 
 			//Upload files to server
 			if (true) {
-				//get processDef list
-				var getProcessDefList = processDef.GetList(GetUser());
+                //get processDef list
+                //var getProcessDefList = processDef.GetList(GetUser());
 
 
-				//get processDef 
-				var getProcessDef = processDef.GetById(GetUser(), getProcessDefList.FirstOrDefault().Id);
+                //get processDef 
+                //var getProcessDef = processDef.GetById(GetUser(), getProcessDefList.FirstOrDefault().Id);
 
-				//Create processDef
-				//var getResult = processDef.Create(GetUser(), "TestPorcess1");
+                ////create processdef
+                //var getresult = processDef.Create(GetUser(), "testporcess2");
 
-				//string guid = Guid.NewGuid().ToString();
-				//var path = "CoreProcess/" + guid + ".bpmn";
+                //string guid = Guid.NewGuid().ToString();
+                //var path = "coreprocess/" + guid + ".bpmn";
 
-				////create blank bmpn file
+                //create blank bmpn file
 
-				//var getStream = processDef.CreateBmpnFile("testProcess");
+                //var getstream = processDef.CreateBpmnFile("testprocess2");
 
-				////upload to server
-				//processDef.UploadCamundaFile(getStream, path);
+                ////upload to server
+                ////processDef.UploadCamundaFile(getstream, path);
+                //processDef.UploadCamundaFile(getstream, "CoreProcess/42fcf2e7-db75-4ea9-883f-349443cfa5df.bpmn");
 
-				////get file from server
-				//processDef.GetCamundaFileFromServer(path);
+                ////get file from server
+                //processDef.GetCamundaFileFromServer("CoreProcess/42fcf2e7-db75-4ea9-883f-349443cfa5df.bpmn");
 
-			}
+                //create task
+                var task = processDef.CreateTask(GetUser(), "8cc02155-c3c0-4cfd-92be-2a93aa71fe23", new Models.Process.TaskViewModel() { name = "test task" });
+
+            }
 
 
 
