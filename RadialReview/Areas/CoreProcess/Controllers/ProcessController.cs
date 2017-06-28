@@ -106,8 +106,10 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 		}
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult CreateTask(TaskViewModel model) {			
-			return Json(ResultObject.SilentSuccess(model));
+		public JsonResult CreateTask(TaskViewModel model) {
+            var getid = Convert.ToString(model.Id);
+            var create = processDefAccessor.CreateTask(GetUser(), getid, model);
+            return Json(ResultObject.SilentSuccess(model));
 		}
 
 		[Access(AccessLevel.UserOrganization)]
