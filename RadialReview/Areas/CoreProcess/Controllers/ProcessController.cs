@@ -82,6 +82,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         [Access(AccessLevel.UserOrganization)]
         public JsonResult ReorderTask(string id, int oldOrder, int newOrder)
         {
+            processDefAccessor.ModifiyBpmnFile(GetUser(), id, oldOrder, newOrder);
             //L10Accessor.ReorderPage(GetUser(),  oldOrder, newOrder);
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }

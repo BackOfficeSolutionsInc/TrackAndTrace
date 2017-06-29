@@ -63,7 +63,7 @@
                                 data: datas,
                                 clickAddValidation: ValidateForm,
                                 clickEditValidation: ValidateForm,
-								clickReorder: "/Process/ReorderTask/{0}?oldOrder={1}&newOrder={2}",
+                                clickReorder: "/Process/ReorderTask?id=@Model.LocalID&oldOrder={1}&newOrder={2}",
 								clickRemove: "/Process/Delete/{0}",
 								clickEdit: "/Process/EditTask/{0}?localid=@Model.LocalID",
 								addButton:{text: "New Task"},
