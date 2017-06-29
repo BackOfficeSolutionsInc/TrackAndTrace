@@ -97,8 +97,12 @@ namespace RadialReview.Areas.CoreProcess.Controllers
                 //get element
                 //var getTaskList = processDef.EditTask(GetUser(), "8cc02155-c3c0-4cfd-92be-2a93aa71fe23");
 
-                //edit process
-                var edit = processDef.Edit(GetUser(), "8cc02155-c3c0-4cfd-92be-2a93aa71fe23", "final test");
+                ////edit process
+                //var edit = processDef.Edit(GetUser(), "8cc02155-c3c0-4cfd-92be-2a93aa71fe23", "final test");
+
+                //Modifiy
+                //var res = processDef.ModifiyBpmnFile(GetUser(), "8cc02155-c3c0-4cfd-92be-2a93aa71fe23", "ce41ad72-121f-4ee4-9f67-4afe310fde49", "5f06e352-5c95-455d-b27a-253bb4472308");
+
             }
 
 
