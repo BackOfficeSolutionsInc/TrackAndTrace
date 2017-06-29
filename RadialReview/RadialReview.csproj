@@ -132,6 +132,7 @@
     <Compile Include="Areas\CoreProcess\Models\Interfaces\ITask.cs" />
     <Compile Include="Areas\CoreProcess\Models\Interfaces\IProcessDef.cs" />
     <Compile Include="Areas\CoreProcess\Models\MapModel\ComundaModelMap.cs" />
+    <Compile Include="Areas\CoreProcess\Models\ViewModel\BpmnXmlFileModel.cs" />
     <Compile Include="Areas\CoreProcess\Models\ViewModel\TaskViewModel.cs" />
     <Compile Include="Areas\CoreProcess\Models\ViewModel\ProcessViewModel.cs" />
     <Compile Include="Controllers\Ac\AngularAccountabilityController.cs" />

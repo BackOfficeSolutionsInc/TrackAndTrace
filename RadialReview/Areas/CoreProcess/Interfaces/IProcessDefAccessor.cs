@@ -18,12 +18,14 @@ namespace RadialReview.Areas.CoreProcess.Interfaces
         IEnumerable<IProcessDef> GetAllProcessDef(UserOrganizationModel caller); // get all
         IProcessDef GetProcessDefById(UserOrganizationModel caller, string processDefId); // get by id
         long Create(UserOrganizationModel caller, string processName);
-        bool Edit(UserOrganizationModel caller, string processDefId);
+        bool Edit(UserOrganizationModel caller, string processDefId, string processName);
         Stream CreateBpmnFile(string processName);
         void UploadCamundaFile(Stream stream, string path);
         Stream GetCamundaFileFromServer(string keyName);
         IEnumerable<ProcessDef_Camunda> GetList(UserOrganizationModel caller);
         ProcessDef_Camunda GetById(UserOrganizationModel caller, long processId);
         bool CreateTask(UserOrganizationModel caller, string processDefId, TaskViewModel model);
+        bool UpdateTask(UserOrganizationModel caller, string processDefId, TaskViewModel model);
+        List<TaskViewModel> GetAllTask(UserOrganizationModel caller, string processDefId);
     }
 }
