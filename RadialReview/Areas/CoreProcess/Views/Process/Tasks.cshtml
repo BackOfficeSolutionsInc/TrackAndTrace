@@ -1,60 +1,74 @@
 ﻿@model RadialReview.Areas.CoreProcess.Models.Process.ProcessViewModel
 @{
-	ViewBag.Title = "CreateTask";
-	Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "CreateTask";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @section top{
-	<div class="jumbotron">
-		<h1>List Of Task</h1>
-	</div>
+    <div class="jumbotron">
+        <h1>List Of Task</h1>
+    </div>
 }
 <div class="row">
-	<div class="col-sm-8 col-lg-12">
+    <div class="col-sm-8 col-lg-12">
 
-		<div class="panel panel-default">
-			<div class="panel-heading" role="tab" id="headingFour">
-				<h4 class="panel-title">
-					<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-						Task
-					</a>
-				</h4>
-			</div>
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="headingFour">
+                <h4 class="panel-title">
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                        Task
+                    </a>
+                </h4>
+            </div>
 
-			<div class="panel-body durations">
-				@using (Html.BeginForm("Create", "Process", FormMethod.Post)) {
-					@Html.HiddenFor(m => m.Id);
-					@Html.HiddenFor(m => m.Name);
-					@Html.AntiForgeryToken()
-					@Html.ValidationSummary(true)
-					<div class="form-group">
-						<label class="col-sm-3 control-label">Process Name:</label>
-						<div class="col-sm-5">
-							@Model.Name
-						</div>
-					</div>
-					<div style="clear:both">
+            <div class="panel-body durations">
+                @using (Html.BeginForm("Create", "Process", FormMethod.Post))
+                {
+                    @Html.HiddenFor(m => m.Id);
+                    @Html.HiddenFor(m => m.Name);
+                    @Html.HiddenFor(m => m.LocalID);
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Process Name:</label>
+                        <div class="col-sm-5">
+                            @Model.Name
+                        </div>
+                    </div>
+                    <div style="clear:both">
 
-					</div>
-				if (Model.taskList != null) {
-					for (int i = 0; i < Model.taskList.Count; i++) {
-							@Html.HiddenFor(m => m.taskList[i].Id);
-							@Html.HiddenFor(m => m.taskList[i].description);
-							@Html.HiddenFor(m => m.taskList[i].name);
-					}
-				}
-					<div id="duration-table"></div>
-					using (Html.BeginScripts()) {
-						<script>
+                    </div>
+                    if (Model.taskList != null)
+                    {
+                        for (int i = 0; i < Model.taskList.Count; i++)
+                        {
+                            @Html.HiddenFor(m => m.taskList[i].Id);
+                            @Html.HiddenFor(m => m.taskList[i].description);
+                            @Html.HiddenFor(m => m.taskList[i].name);
+                        }
+                    }
+                    <div id="duration-table"></div>
+                    using (Html.BeginScripts())
+                    {
+                        <script>
+
+                            function ValidateForm(d) {
+                                if (d.name == "") {
+                                    return "Name is required.";
+                                }
+                            }
+
 							var datas = @Html.ArrayToString(Model.taskList);
 							DataTable({
 								container: "#duration-table",
-								data: datas,
+                                data: datas,
+                                clickAddValidation: ValidateForm,
+                                clickEditValidation: ValidateForm,
 								clickReorder: "/Process/ReorderTask/{0}?oldOrder={1}&newOrder={2}",
 								clickRemove: "/Process/Delete/{0}",
-								clickEdit: "/Process/EditTask/{0}",
+								clickEdit: "/Process/EditTask/{0}?localid=@Model.LocalID",
 								addButton:{text: "New Task"},
 								nodataText: "No Process. Click add to create one.",
-								clickAdd: "/Process/CreateTask",
+								clickAdd: "/Process/CreateTask/@Model.LocalID",
 								postAdd: "/Process/CreateTask",
 								cells:[
                                     { reorder: true },
@@ -70,39 +84,36 @@
 
 							});
 							//table.setData(datas);
-						</script>
-					}
-					<div class="col-lg-12 col-md-7 col-sm-4 col-xs-2">
-						<div class="alignCenter">
-							<input type="submit" value="Submit" class="btn btn-danger" />
-						</div>
-					</div>
-				}
-			</div>
+                        </script>
+                    }
+
+                }
+            </div>
 
 
-		</div>
-	</div>
+        </div>
+    </div>
 </div>
-@using (Html.BeginStyles()) {
-	@Styles.Render("~/Content/MeetingEdit")
-	<style>
-		.durations .form-group {
-			margin-bottom: 4px;
-		}
+@using (Html.BeginStyles())
+{
+    @Styles.Render("~/Content/MeetingEdit")
+    <style>
+        .durations .form-group {
+            margin-bottom: 4px;
+        }
 
-		html, body {
-			background-color: #eee;
-		}
+        html, body {
+            background-color: #eee;
+        }
 
-		.width80 {
-			width: 80px;
-		}
-	</style>
+        .width80 {
+            width: 80px;
+        }
+    </style>
 }
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script>
-	$(window).on('load', function () {
-		$("table thead tr th").next().next().attr("colspan", "3");;
-	});
+                            $(window).on('load', function () {
+                                $("table thead tr th").next().next().attr("colspan", "3");;
+                            });
 </script>
