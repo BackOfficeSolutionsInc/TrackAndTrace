@@ -9,10 +9,18 @@ namespace RadialReview.Areas.CoreProcess {
 		}
 
 		public override void RegisterArea(AreaRegistrationContext context) {
+
+			//context.MapRoute(
+			//"Tasks",
+			//"CoreProcess/{action}/{id}",
+			//new { controller = "Process", action = "Tasks", id = UrlParameter.Optional },
+			//namespaces: new[] { "RadialReview.Areas.CoreProcess.Controllers" }
+			//);
+
 			context.MapRoute(
 				"CoreProcess_default",
 				"CoreProcess/{controller}/{action}/{id}",
-				new { action = "Index", id = UrlParameter.Optional },
+				new { controller = "Process", action = "Index", id = UrlParameter.Optional },
 				namespaces: new[] { "RadialReview.Areas.CoreProcess.Controllers" }
 			);
 		}

@@ -861,7 +861,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <Content Include="Areas\CoreProcess\d.bpmn" />
-    <Content Include="Areas\CoreProcess\Views\Process\Create.cshtml" />
+    <Content Include="Areas\CoreProcess\Views\Process\Tasks.cshtml" />
     <Content Include="Areas\CoreProcess\Views\Process\Index.cshtml" />
     <Content Include="Areas\CoreProcess\Views\Shared\Partial\CreateTask.cshtml" />
     <Content Include="Areas\CoreProcess\Views\Shared\Partial\CreateProcess.cshtml" />
