@@ -7,11 +7,8 @@ using System.Threading.Tasks;
 
 namespace RadialReview.Areas.CoreProcess.Models.Process {
 	public class TaskViewModel {
-		public TaskViewModel() {
-			Id = Guid.NewGuid();
-		}
-
-		public Guid Id { get; set; }
+		
+		public string Id { get; set; }
         [Required(ErrorMessage = "field is required")]
         public string name { get; set; }
 		public string description { get; set; }

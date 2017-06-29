@@ -51,9 +51,9 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             try
             {
                 string localProcessDefId = Guid.NewGuid().ToString();
-                
+
                 //create empty bpmn file
-                var getStream = CreateBpmnFile(processName,localProcessDefId);
+                var getStream = CreateBpmnFile(processName, localProcessDefId);
                 string guid = Guid.NewGuid().ToString();
                 var path = "CoreProcess/" + guid + ".bpmn";
 
@@ -136,7 +136,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return result;
         }
 
-        public bool CreateTask(UserOrganizationModel caller, string localId, TaskViewModel model)
+        public TaskViewModel CreateTask(UserOrganizationModel caller, string localId, TaskViewModel model)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -147,9 +147,10 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
         }
 
-        public bool CreateTask(ISession s, string localId, TaskViewModel model)
+        public TaskViewModel CreateTask(ISession s, string localId, TaskViewModel model)
         {
-            bool result = true;
+            TaskViewModel modelObj = new TaskViewModel();
+            modelObj = model;
             try
             {
                 var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
@@ -249,16 +250,17 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     fileStream.Position = 0;
 
                     UploadCamundaFile(fileStream, getProcessDefFileDetails.FileKey);
+
+                    modelObj.Id = userTaskId;
                 }
             }
             catch (Exception ex)
             {
-                result = false;
                 throw ex;
             }
-
-            return result;
+            return modelObj;
         }
+
 
         public List<TaskViewModel> GetAllTask(UserOrganizationModel caller, string localId)
         {
@@ -283,7 +285,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                             {
                                 description = (item.Attribute("description") != null ? item.Attribute("description").Value : ""),
                                 name = item.Attribute("name").Value,
-                                Id = Guid.Parse(item.Attribute("id").Value)
+                                Id = item.Attribute("id").Value
                             });
                         }
                     }
@@ -297,7 +299,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return taskList;
         }
 
-        public bool UpdateTask(UserOrganizationModel caller, string localId, TaskViewModel model)
+        public TaskViewModel UpdateTask(UserOrganizationModel caller, string localId, TaskViewModel model)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -307,9 +309,10 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             }
         }
 
-        public bool UpdateTask(ISession s, string localId, TaskViewModel model)
+        public TaskViewModel UpdateTask(ISession s, string localId, TaskViewModel model)
         {
-            bool result = true;
+            TaskViewModel modelObj = new TaskViewModel();
+            modelObj = model;
             try
             {
                 var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
@@ -334,15 +337,15 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     fileStream.Position = 0;
 
                     UploadCamundaFile(fileStream, getProcessDefFileDetails.FileKey);
+
                 }
             }
             catch (Exception ex)
             {
-                result = false;
                 throw ex;
             }
 
-            return result;
+            return modelObj;
         }
 
 
@@ -389,7 +392,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             //throw new NotImplementedException();
         }
 
-        public Stream CreateBpmnFile(string processName,string localId)
+        public Stream CreateBpmnFile(string processName, string localId)
         {
             var fileStm = new MemoryStream();
             try
@@ -422,7 +425,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return fileStm;
         }
 
-        public bool ModifiyBpmnFile(UserOrganizationModel caller, string localId, string oldOrder, string newOrder)
+        public bool ModifiyBpmnFile(UserOrganizationModel caller, string localId, int oldOrder, int newOrder)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -436,22 +439,24 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
         }
 
-        public bool ModifyBpmnFile(ISession s,string localId, string oldOrder, string newOrder)
+        public bool ModifyBpmnFile(ISession s, string localId, int oldOrder, int newOrder)
         {
             bool result = true;
             try
             {
+                string oldOrderId = string.Empty;
+                string newOrderId = string.Empty;
                 var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
                 if (getProcessDefFileDetails != null)
                 {
                     var getStream = GetCamundaFileFromServer(getProcessDefFileDetails.FileKey);
 
                     //Remove all elements under root node
-                    var de_stream = DetachNode(getStream, oldOrder, newOrder);
+                    var de_stream = DetachNode(getStream, oldOrder, newOrder, out oldOrderId, out newOrderId);
 
                     //Insert element
 
-                    var ins_stream = InsertNode(de_stream, oldOrder, newOrder);
+                    var ins_stream = InsertNode(de_stream, oldOrderId, newOrderId);
 
                     //stream upload
                     UploadCamundaFile(ins_stream, getProcessDefFileDetails.FileKey);
@@ -466,17 +471,22 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return result;
         }
 
-        public Stream DetachNode(Stream stream, string oldOrder, string newOrder)
+        public Stream DetachNode(Stream stream, int oldOrder, int newOrder, out string oldOrderId, out string newOrderId)
         {
-            string deletenodeid = oldOrder;
-            string afterNode = newOrder;
-
             MemoryStream fileStream = new MemoryStream();
 
             stream.Seek(0, SeekOrigin.Begin);
             XNamespace bpmn = "http://www.omg.org/spec/BPMN/20100524/MODEL";
             XDocument xmlDocument = XDocument.Load(stream);
 
+            //get user task
+            var getAlltask = xmlDocument.Root.Element(bpmn + "process").Elements(bpmn + "userTask").ToList();
+
+            string deletenodeid = getAlltask[oldOrder].Attribute("id").Value;
+            string afterNode = getAlltask[newOrder].Attribute("id").Value;
+
+            oldOrderId = deletenodeid;
+            newOrderId = afterNode;
             //get node
             var current = xmlDocument.Root.Element(bpmn + "process").Elements().Where(x => x.Attribute("id").Value == deletenodeid).ToList();
 
@@ -536,7 +546,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                 xmlDocument.Save(fileStream);
                 fileStream.Seek(0, SeekOrigin.Begin);
                 fileStream.Position = 0;
-               
+
             }
             catch (Exception ex)
             {

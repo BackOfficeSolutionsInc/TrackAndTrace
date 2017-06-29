@@ -24,9 +24,9 @@ namespace RadialReview.Areas.CoreProcess.Interfaces
         Stream GetCamundaFileFromServer(string keyName);
         IEnumerable<ProcessDef_Camunda> GetList(UserOrganizationModel caller);
         ProcessDef_Camunda GetById(UserOrganizationModel caller, long processId);
-        bool CreateTask(UserOrganizationModel caller, string localId, TaskViewModel model);
-        bool UpdateTask(UserOrganizationModel caller, string localId, TaskViewModel model);
+        TaskViewModel CreateTask(UserOrganizationModel caller, string localId, TaskViewModel model);
+        TaskViewModel UpdateTask(UserOrganizationModel caller, string localId, TaskViewModel model);
         List<TaskViewModel> GetAllTask(UserOrganizationModel caller, string localId);
-        bool ModifiyBpmnFile(UserOrganizationModel caller, string localId, string oldOrder, string newOrder);
+        bool ModifiyBpmnFile(UserOrganizationModel caller, string localId, int oldOrder, int newOrder);
     }
 }
