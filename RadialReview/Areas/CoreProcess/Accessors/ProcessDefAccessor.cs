@@ -536,8 +536,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                 xmlDocument.Save(fileStream);
                 fileStream.Seek(0, SeekOrigin.Begin);
                 fileStream.Position = 0;
-
-                XDocument x1 = XDocument.Load(fileStream);
+               
             }
             catch (Exception ex)
             {
@@ -582,8 +581,6 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                 xmlDocument.Save(fileStream);
                 fileStream.Seek(0, SeekOrigin.Begin);
                 fileStream.Position = 0;
-
-                XDocument x1 = XDocument.Load(fileStream);
             }
             catch (Exception ex)
             {
