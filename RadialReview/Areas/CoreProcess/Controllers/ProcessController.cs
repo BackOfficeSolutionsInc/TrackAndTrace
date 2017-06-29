@@ -49,7 +49,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult GetProcess(long id) {
+		public ActionResult Tasks(long id) {
 
 			List<TaskViewModel> str = new List<TaskViewModel>();
 
@@ -64,7 +64,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 			process.taskList = str;
 			process.Name = sstr.ProcessDefKey;
 			process.Id = sstr.Id;
-			return View("~/Areas/CoreProcess/Views/Process/Create.cshtml", process);
+			return View(process);
 		}
 
 
@@ -75,7 +75,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult ReorderTask(int oldOrder, int newOrder, long Id) {
+		public JsonResult ReorderTask(string id, int oldOrder, int newOrder) {
 			//L10Accessor.ReorderPage(GetUser(),  oldOrder, newOrder);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}

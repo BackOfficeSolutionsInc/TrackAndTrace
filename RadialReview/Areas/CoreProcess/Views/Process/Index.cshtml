@@ -1,145 +1,141 @@
 ﻿@model List<RadialReview.Areas.CoreProcess.Models.Process.ProcessViewModel>
 @{
-    ViewBag.Title = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Title = "Index";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @section top{
-    <div class="jumbotron">
-        <h1>List of Process</h1>
-    </div>
+	<div class="jumbotron">
+		<h1>List of Process</h1>
+	</div>
 }
 
 @*<link href="~/Content/Theme.css" rel="stylesheet" />*@
 <br />
 <div class="row">
-    <div class="col-sm-8 col-lg-12">
-            @*<div style="text-align: right;margin-bottom: 3px;">
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary btn-invert dropdown-toggle" aria-haspopup="true" aria-expanded="false" 
-                            
-                    >
-                        Create Process
-                    </button>
-                </div>
-            </div>*@
-        @*<div class="panel panel-primary" id="l10-meeting-list">
-            <table class="table startHiddenGroup2 table-condensed table-hover table-condensed tablesorter">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td class="center" style="padding:10px;height:50px">@item.Name</td>
-                            <td class="center" style="padding:10px;height:50px">@item.status</td>
-                            <td class="center" style="padding:10px;height:50px">@Html.ActionLink("Edit", "Edit",new {id = @item.Id })</td>
-                         </tr>
-                    }
+	<div class="col-sm-8 col-lg-12">
+		@*<div style="text-align: right;margin-bottom: 3px;">
+				<div class="btn-group">
+					<button type="button" class="btn btn-primary btn-invert dropdown-toggle" aria-haspopup="true" aria-expanded="false"
 
-                </tbody>
-            </table>
-            </div>*@
+					>
+						Create Process
+					</button>
+				</div>
+			</div>*@
+		@*<div class="panel panel-primary" id="l10-meeting-list">
+			<table class="table startHiddenGroup2 table-condensed table-hover table-condensed tablesorter">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Status</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var item in Model)
+					{
+						<tr>
+							<td class="center" style="padding:10px;height:50px">@item.Name</td>
+							<td class="center" style="padding:10px;height:50px">@item.status</td>
+							<td class="center" style="padding:10px;height:50px">@Html.ActionLink("Edit", "Edit",new {id = @item.Id })</td>
+						 </tr>
+					}
 
-       
-        <div class="panel panel-default">
-            <div class="panel-body durations">
-                <div id="duration-table"></div>
-                @using (Html.BeginScripts())
-                {
-                    <script>
-                      var datas = @Html.ArrayToString(Model);
-                        DataTable({
-                                 container: "#duration-table",
-                                 data: datas,
-								//clickReorder: "/Process/ReorderTask/{0}?oldOrder={1}&newOrder={2}",
-								clickRemove: "/Process/Delete/{0}",
-                                clickEdit: "/Process/Edit/{0}",
-								addButton:{text: "Create Process"},
-								nodataText: "No Process. Click add to create one.",
-                                clickAdd: "/Process/Create",
-                                postAdd: "/Process/Create",
-                                cells: [
-                                    //    { reorder: true },
-                                    { name: "Name", classes: "", contents: function (x) { console.log(x); return x.Name; } },
-                                    { name: "Status", classes: "", contents: function (x) { return x.status; } },
-                                    //{
-                                    //    name: "action", classes: "",
-                                    //    contents: [
-                                    //        { edit : true },
-                                    //        { remove : true },
-                                    //        { name: "", contents: function (x) { return "<a href='/Process/GetProcess/" + x.Id + "'>Task</a>" } },
-                                    //    ],
-                                    //},
-                                    { name: "Action", contents: function (x) { return "<a href='/Process/GetProcess/" + x.Id + "'>Task</a>" } },
-                                    { edit: true },
-                                    { remove : true },
-                                ],
-                                nodataText: "No Task found."
-								@*data: @Html.ArrayToString(Model.taskList),*@
+				</tbody>
+			</table>
+			</div>*@
 
-                            });
-                            table.setData(datas);
 
-                    </script>
-                }
-            </div>
-        </div>
+		@*<div class="panel panel-default">
+			<div class="panel-body durations">*@
+		<div id="duration-table"></div>
+		@using (Html.BeginScripts()) {
+			<script>
+				var datas = @Html.ArrayToString(Model);
+				DataTable({
+					container: "#duration-table",
+					data: datas,
+					//clickReorder: "/Process/ReorderTask/{0}?oldOrder={1}&newOrder={2}",
+					clickRemove: "/Process/Delete/{0}",
+					clickEdit: "/Process/Edit/{0}",
+					addButton:{text: "Create Process"},
+					nodataText: "No Process. Click add to create one.",
+					clickAdd: "/Process/Create",
+					postAdd: "/Process/Create",
+					cells: [
+						//    { reorder: true },
+						{ name: "Name", classes: "", contents: function (x) { console.log(x); return x.Name; } },
+						{ name: "Status", classes: "", contents: function (x) { return x.status; } },
+						//{
+						//    name: "action", classes: "",
+						//    contents: [
+						//        { edit : true },
+						//        { remove : true },
+						//        { name: "", contents: function (x) { return "<a href='/Process/GetProcess/" + x.Id + "'>Task</a>" } },
+						//    ],
+						//},
+						{ name: "Action", contents: function (x) { return "<a href='/Process/GetProcess/" + x.Id + "'>Task</a>" } },
+						{ edit: true },
+						{ remove : true },
+					],
+					nodataText: "No Task found."
+					@*data: @Html.ArrayToString(Model.taskList),*@
 
-        </div>
+				});
+				table.setData(datas);
 
-    @using (Html.BeginStyles())
-    {
-        @Styles.Render("~/Content/MeetingEdit")
-        <style>
-            .durations .form-group {
-                margin-bottom: 4px;
-            }
-            a:hover {
-                text-decoration: none;
-            }
-            html, body {
-                background-color: #eee;
-            }
+			</script>
+		}
+	</div>
+</div>
 
-            .width80 {
-                width: 80px;
-            }
-            .table .btn-default {
-                color: #5e5e5e !important;
-            }
+@using (Html.BeginStyles()) {
+	@Styles.Render("~/Content/MeetingEdit")
+	<style>
+		.durations .form-group {
+			margin-bottom: 4px;
+		}
+		a:hover {
+			text-decoration: none;
+		}
+		html, body {
+			background-color: #eee;
+		}
 
-            .body-full-width #alerts:not(:empty) {
-                margin-top: 20px;
-                margin-bottom: -15px;
-            }
+		.width80 {
+			width: 80px;
+		}
+		.table .btn-default {
+			color: #5e5e5e !important;
+		}
 
-            html, body {
-                background-color: #eee;
-            }
+		.body-full-width #alerts:not(:empty) {
+			margin-top: 20px;
+			margin-bottom: -15px;
+		}
 
-            .panel {
-                border: none;
-            }
+		html, body {
+			background-color: #eee;
+		}
 
-            .grayRow {
-                /*background-color: #f2f2f2;*/
-            }
-        </style>
-    }
+		.panel {
+			border: none;
+		}
 
-    
-    
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script>
-     $(window).on('load', function () {
-    $("table thead tr th").next().next().attr("colspan", "3");;
-   });
-     
-    </script>
+		.grayRow {
+			/*background-color: #f2f2f2;*/
+		}
+	</style>
+}
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+	$(window).on('load', function () {
+		$("table thead tr th").next().next().attr("colspan", "3");;
+	});
+
+</script>
 
