@@ -10,7 +10,6 @@
     </div>
 }
 
-@*<link href="~/Content/Theme.css" rel="stylesheet" />*@
 <br />
 <div class="row">
     <div class="col-sm-8 col-lg-12">
@@ -18,7 +17,7 @@
         @using (Html.BeginScripts())
         {
             <script>
-                function ValidateForm(d) {                    
+                function ValidateForm(d) {
                     if (d.Name == "") {
                         return "Name is required.";
                     }
@@ -30,34 +29,33 @@
                     data: datas,
                     clickAddValidation: ValidateForm,
                     clickEditValidation: ValidateForm,
-					//clickReorder: "/Process/ReorderTask/{0}?oldOrder={1}&newOrder={2}",
-					clickRemove: "/Process/Delete/{0}",
+                    clickRemove: "/Process/Delete/{0}",
 					clickEdit: "/Process/Edit/{0}",
 					addButton:{text: "Create Process"},
 					nodataText: "No Process. Click add to create one.",
 					clickAdd: "/Process/Create",
 					postAdd: "/Process/Create",
-					cells: [
-
-						{ name: "Name", classes: "", contents: function (x) { console.log(x); return x.Name; } },
-						{ name: "Status", classes: "", contents: function (x) { return x.status; } },
-                        { name: "Action", contents: function (x) { return "<a href='/CoreProcess/Process/Tasks/" + x.Id + "'>Task</a>" } },
+                    cells: [
+                        { name: "Name", classes: "", contents: function (x) { return x.Name; } },
+                        { name: "Deployed", classes: "", contents: function (x) { return x.status; } },
+                        { name: "Action", classes: "", contents: function (x) { return "<a href='/CoreProcess/Process/Tasks/" + x.Id + "'>Task</a>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" + "<a href='/CoreProcess/Process/StartProcess/" + x.Id + "'>" + x.Action+"</a>" }},
 						{ edit: true },
 						{ remove : true },
-					],
+                    ],
 					nodataText: "No Task found."
-					@*data: @Html.ArrayToString(Model.taskList),*@
 
 				});
 				table.setData(datas);
 
             </script>}
+        
     </div>
 </div>
 
 @using (Html.BeginStyles())
 {
     @Styles.Render("~/Content/MeetingEdit")
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet" />
     <style>
         .durations .form-group {
             margin-bottom: 4px;
@@ -103,7 +101,9 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script>
                 $(window).on('load', function () {
-                    $("table thead tr th").next().next().attr("colspan", "3");;
+                    $("table thead tr th").next().next().attr("colspan", "3");
+                    $("table tbody tr td").next().next().attr("width", "50px");
+                    $("table tbody tr td").next().next().next().attr("width", "50px");
                 });
 
 </script>

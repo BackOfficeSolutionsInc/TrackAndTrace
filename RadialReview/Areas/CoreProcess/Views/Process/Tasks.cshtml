@@ -15,7 +15,7 @@
             <div class="panel-heading" role="tab" id="headingFour">
                 <h4 class="panel-title">
                     <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                        Task
+                        Edit Process
                     </a>
                 </h4>
             </div>
@@ -64,12 +64,14 @@
                                 clickAddValidation: ValidateForm,
                                 clickEditValidation: ValidateForm,
                                 clickReorder: "/Process/ReorderTask?id=@Model.LocalID&oldOrder={1}&newOrder={2}",
-								clickRemove: "/Process/Delete/{0}",
+                                clickRemove: "/Process/DeleteTask/{0}?localid=@Model.LocalID",
 								clickEdit: "/Process/EditTask/{0}?localid=@Model.LocalID",
-								addButton:{text: "New Task"},
+								addButton:{text: "Publish"},
 								nodataText: "No Process. Click add to create one.",
-								clickAdd: "/Process/CreateTask/@Model.LocalID",
-								postAdd: "/Process/CreateTask",
+								@*clickAdd: "/Process/CreateTask/@Model.LocalID",
+								postAdd: "/Process/CreateTask",*@
+                                clickAdd: "/Process/Publish/@Model.LocalID",
+                                //postAdd: "/Process/Publish",
 								cells:[
                                     { reorder: true },
                                     //{ id: "id", classes: "hidden", contents: function (x) { return x.Id;}},
@@ -88,7 +90,12 @@
                     }
 
                 }
+                <div class="alignCenter">
+                    <input class="btn btn-primary" type="submit" onclick="@Html.ShowModal("New Task", "/Process/CreateTask/" + @Model.LocalID, "/Process/CreateTask", onCompleteFunction: "reloadGrid")" value="New Task" />
+                </div>
             </div>
+
+
 
 
         </div>
@@ -113,7 +120,13 @@
 }
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script>
-                            $(window).on('load', function () {
-                                $("table thead tr th").next().next().attr("colspan", "3");;
-                            });
+    $(window).on('load', function () {
+        $("table thead tr th").next().next().attr("colspan", "3");;
+    });
+
+    function reloadGrid(model) {
+        //console.log(model.object);
+        //datas.push(model.Object);
+        window.location = "/CoreProcess/Process/Tasks/" + @Model.Id;
+    }
 </script>
