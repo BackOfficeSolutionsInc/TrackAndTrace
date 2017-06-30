@@ -37,7 +37,7 @@
 					postAdd: "/Process/Create",
                     cells: [
                         { name: "Name", classes: "", contents: function (x) { return x.Name; } },
-                        { name: "Deployed", classes: "", contents: function (x) { return x.status; } },
+                        { name: "Deploy", classes: "", contents: function (x) { return x.status; } },
                         { name: "Action", classes: "", contents: function (x) { return "<a href='/CoreProcess/Process/Tasks/" + x.Id + "'>Task</a>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" + "<a href='/CoreProcess/Process/StartProcess/" + x.Id + "'>" + x.Action+"</a>" }},
 						{ edit: true },
 						{ remove : true },

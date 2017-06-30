@@ -14,7 +14,7 @@ namespace RadialReview.Areas.CoreProcess.Models.Process {
         public string LocalID { get; set; }
         public string Description { get; set; }
         public string status { get; set; }
-        public string IsDelete { get; set; }
+        public bool IsStarted { get; set; }
         public string Action { get; set; }
         public List<TaskViewModel> taskList { get; set; }
 

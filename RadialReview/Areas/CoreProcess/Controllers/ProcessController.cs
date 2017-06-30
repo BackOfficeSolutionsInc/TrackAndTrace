@@ -23,28 +23,28 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         [Access(AccessLevel.UserOrganization)]
         public ActionResult Index()
         {
-            
+
             List<ProcessViewModel> Process = new List<ProcessViewModel>();
-            var status = "True";
+
             var sstr = processDefAccessor.GetList(GetUser());
-            
+
             foreach (var item in sstr)
             {
-                
                 ProcessViewModel process = new ProcessViewModel();
                 process.Id = item.Id;
                 process.Name = item.ProcessDefKey;
-                
+                //process.IsStarted = status;
                 if (item.CamundaId == null)
                 {
-                    //process.status = "<div style='color:green'>✔</div>
-                    process.status = "<div style='color:red'><i class='fa fa-plus-circle'></i></ div>";
+                    process.status = "<div style='color:red'><i class='fa fa-2x fa-times-circle'></i></ div>";
                 }
                 else
                 {
-                    process.status = "<div style='color:green'><i class='fa fa-check-circle'></i></ div>";
+                    process.status = "<div style='color:green'><i class='fa fa-2x fa-check-circle'></i></ div>";
                 }
-                if (status == "True")
+
+                // add logic for Process Start status
+                if (process.IsStarted)
                 {
                     process.Action = "Stop";
                 }
@@ -52,9 +52,9 @@ namespace RadialReview.Areas.CoreProcess.Controllers
                 {
                     process.Action = "Start";
                 }
+
                 Process.Add(process);
             }
-            
 
             return View(Process);
         }
@@ -104,18 +104,18 @@ namespace RadialReview.Areas.CoreProcess.Controllers
             processDefAccessor.ModifiyBpmnFile(GetUser(), id, oldOrder, newOrder);
             //L10Accessor.ReorderPage(GetUser(),  oldOrder, newOrder);
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
-        }       
-        
+        }
+
         [Access(AccessLevel.UserOrganization)]
         public JsonResult DeleteTask(string id, string localid) // id is taskId
         {
-            processDefAccessor.DeletTask(GetUser(), id, localid);
+            //processDefAccessor.DeletTask(GetUser(), id, localid);
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.UserOrganization)]
         public JsonResult Delete(string id) // id is processid
-        {            
+        {
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
 

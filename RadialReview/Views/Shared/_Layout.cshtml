@@ -143,7 +143,7 @@
 							@if (ViewBag.FullLogo as bool? != true) {
 								<div id="logo">
 									<div class="link">
-										<a href="@Url.Action("Index", "Home")" class="navbar-brand">
+										<a href="@Url.Action("Index", "Home", new { area = "" })" class="navbar-brand">
 											<span style="z-index: 1000001; position: relative; top: -2px;">
 												<img src="/Content/img/TRACTION-TOOLS_large_icon_wh.png" height="54" width="54" style="opacity: .95;">
 											</span>
@@ -153,7 +153,7 @@
 							} else {
 								<div id="logo">
 									<div class="link">
-										<a href="@Url.Action("Index", "Home")" class="navbar-brand">
+										<a href="@Url.Action("Index", "Home", new { area = "" })" class="navbar-brand">
 											<span style="z-index: 1000001; position: relative; top: -2px;">
 												<img src="/Content/img/TRACTION-TOOLS_small_horizontal_wh.png" height="54" style="opacity: .95;">
 											</span>
@@ -177,7 +177,7 @@
 								@if (Request.IsAuthenticated) {
 									if (((int?)ViewBag.Organizations ?? 0) == 0) {
 										<li>
-											<a href="@Url.Action("Index", "Home")" class="@(ViewBag.TaskCount == 0?"":"flashing")">
+											<a href="@Url.Action("Index", "Home", new { area = "" })" class="@(ViewBag.TaskCount == 0?"":"flashing")">
 												Access Code
 												<span id="TasksNotification" style="display:none;" class="glyphicon glyphicon glyphicon-flag"></span>
 											</a>
@@ -185,7 +185,7 @@
 									}
 									if (((int?)ViewBag.Organizations ?? 0) > 0) {
 										<li>
-											<a href="@Url.Action("Index", "Home")" id="header-tab-workspace">
+											<a href="@Url.Action("Index", "Home", new { area = "" })" id="header-tab-workspace">
 												Workspace
 												<span id="DashboardNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
 											</a>
@@ -193,7 +193,7 @@
 
 										if (ViewBag.ShowL10 ?? false) {
 											<li>
-												<a href="@Url.Action("Index", "L10")" id="header-tab-l10">
+												<a href="@Url.Action("Index", "L10", new { area = "" })" id="header-tab-l10">
 													L10
 													<span id="L10Notification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
 												</a>
@@ -201,7 +201,7 @@
 										}
 										if (ViewBag.ShowReview ?? false) {
 											<li>
-												<a href="@Url.Action("Index", "Reviews")" id="header-tab-reviews">
+												<a href="@Url.Action("Index", "Reviews", new { area = "" })" id="header-tab-reviews">
 													@(Html.ReviewName())s
 													<span id="ReviewsNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
 												</a>
@@ -209,7 +209,7 @@
 										}
 										if (ViewBag.ShowAC ?? false) {
 											<li>
-												<a href="@Url.Action("Chart", "Accountability")" id="header-tab-ac">
+												<a href="@Url.Action("Chart", "Accountability", new { area = "" })" id="header-tab-ac">
 													AC
 													<span id="AcNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
 												</a>
@@ -217,7 +217,7 @@
 										}
 										if (ViewBag.ShowSurvey ?? false) {
 											<li>
-												<a href="@Url.Action("Index", "Survey")" id="header-tab-survey">
+												<a href="@Url.Action("Index", "Survey", new { area = "" })" id="header-tab-survey">
 													Surveys
 													<span id="SurveyNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
 												</a>
