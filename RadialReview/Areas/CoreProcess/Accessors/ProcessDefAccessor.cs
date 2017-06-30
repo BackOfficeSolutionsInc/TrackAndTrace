@@ -446,17 +446,19 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             {
                 string oldOrderId = string.Empty;
                 string newOrderId = string.Empty;
+                string name = string.Empty;
+                string description = string.Empty;
                 var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
                 if (getProcessDefFileDetails != null)
                 {
                     var getStream = GetCamundaFileFromServer(getProcessDefFileDetails.FileKey);
 
                     //Remove all elements under root node
-                    var de_stream = DetachNode(getStream, oldOrder, newOrder, out oldOrderId, out newOrderId);
+                    var de_stream = DetachNode(getStream, oldOrder, newOrder, out oldOrderId, out newOrderId, out name, out description);
 
                     //Insert element
 
-                    var ins_stream = InsertNode(de_stream, oldOrderId, newOrderId);
+                    var ins_stream = InsertNode(de_stream, oldOrder, newOrder, oldOrderId, newOrderId, name, description);
 
                     //stream upload
                     UploadCamundaFile(ins_stream, getProcessDefFileDetails.FileKey);
@@ -471,7 +473,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return result;
         }
 
-        public Stream DetachNode(Stream stream, int oldOrder, int newOrder, out string oldOrderId, out string newOrderId)
+        public Stream DetachNode(Stream stream, int oldOrder, int newOrder, out string oldOrderId, out string newOrderId, out string name, out string description)
         {
             MemoryStream fileStream = new MemoryStream();
 
@@ -485,10 +487,16 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             string deletenodeid = getAlltask[oldOrder].Attribute("id").Value;
             string afterNode = getAlltask[newOrder].Attribute("id").Value;
 
+            //get name and description of deleted node
+            name = (getAlltask[oldOrder].Attribute("name") != null ? getAlltask[oldOrder].Attribute("name").Value : "");
+            description = (getAlltask[oldOrder].Attribute("description") != null ? getAlltask[oldOrder].Attribute("description").Value : "");
+
             oldOrderId = deletenodeid;
             newOrderId = afterNode;
             //get node
             var current = xmlDocument.Root.Element(bpmn + "process").Elements().Where(x => x.Attribute("id").Value == deletenodeid).ToList();
+
+           
 
             var deleteNode = current.FirstOrDefault();
             string attrId = deleteNode.Attribute("id").Value;
@@ -537,12 +545,13 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                 deleteNode.Remove();
 
                 //get target element
-                var getTargetElement = xmlDocument.Root.Element(bpmn + "process").Elements().Where(x => (x.Attribute("id") != null ? x.Attribute("id").Value : "") == target).FirstOrDefault();
+                var getTargetElement = elements.Where(x => (x.Attribute("id") != null ? x.Attribute("id").Value : "") == target).FirstOrDefault();
 
                 //apppend element
                 elements.Where(m => m.Attribute("id").Value == getTargetElement.Attribute("id").Value).FirstOrDefault().AddBeforeSelf(
                           new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString()), new XAttribute("sourceRef", source), new XAttribute("targetRef", target))
                           );
+
                 xmlDocument.Save(fileStream);
                 fileStream.Seek(0, SeekOrigin.Begin);
                 fileStream.Position = 0;
@@ -556,7 +565,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return fileStream;
         }
 
-        public Stream InsertNode(Stream stream, string oldOrder, string newOrder)
+        public Stream InsertNode(Stream stream,int oldOrder,int newOrder, string oldOrderId, string newOrderId, string name, string description)
         {
 
             MemoryStream fileStream = new MemoryStream();
@@ -564,8 +573,8 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
             try
             {
-                string deletenodeId = oldOrder;
-                string afterNode = newOrder;
+                string deletenodeId = oldOrderId;
+                string afterNode = newOrderId;
 
                 //file initilaize
 
@@ -579,14 +588,30 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
                 var getAllElement = xmlDocument.Root.Element(bpmn + "process").Elements();
 
-                getAllElement.Where(t => t.Attribute("id").Value == getBeforeNode.Attribute("id").Value).FirstOrDefault().AddAfterSelf(
-                        new XElement(bpmn + "userTask", new XAttribute("id", deletenodeId), new XAttribute("name", "Review result")),
-                       new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString()), new XAttribute("sourceRef", deletenodeId), new XAttribute("targetRef", afterNode))
-                    );
+                if (newOrder > oldOrder) {
 
-                //update target element attr
+                    var getSequenceNode = xmlDocument.Root.Element(bpmn + "process").Elements().Where(x => (x.Attribute("sourceRef") != null ? x.Attribute("sourceRef").Value : "") == afterNode).FirstOrDefault();
 
-                getAllElement.Where(t => t.Attribute("id").Value == getBeforeNode.Attribute("id").Value).FirstOrDefault().SetAttributeValue("targetRef", deletenodeId);
+                    getAllElement.Where(t => t.Attribute("id").Value == getSequenceNode.Attribute("id").Value).FirstOrDefault().AddAfterSelf(
+                           new XElement(bpmn + "userTask", new XAttribute("id", deletenodeId), new XAttribute("name", name), new XAttribute("description", description)),
+                          new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString()), new XAttribute("sourceRef", deletenodeId), new XAttribute("targetRef", getSequenceNode.Attribute("targetRef").Value))
+                       );
+
+                    getAllElement.Where(t => t.Attribute("id").Value == getSequenceNode.Attribute("id").Value).FirstOrDefault().SetAttributeValue("targetRef", deletenodeId);
+                }
+                else
+                {
+                    getAllElement.Where(t => t.Attribute("id").Value == getBeforeNode.Attribute("id").Value).FirstOrDefault().AddAfterSelf(
+                            new XElement(bpmn + "userTask", new XAttribute("id", deletenodeId), new XAttribute("name", name), new XAttribute("description", description)),
+                           new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString()), new XAttribute("sourceRef", deletenodeId), new XAttribute("targetRef", afterNode))
+                        );
+                    
+                    //update target element attr
+
+                    getAllElement.Where(t => t.Attribute("id").Value == getBeforeNode.Attribute("id").Value).FirstOrDefault().SetAttributeValue("targetRef", deletenodeId);
+                }
+
+                
 
                 xmlDocument.Save(fileStream);
                 fileStream.Seek(0, SeekOrigin.Begin);
