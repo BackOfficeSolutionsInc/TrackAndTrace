@@ -112,11 +112,11 @@ namespace RadialReview.Controllers {
 
             if (tiles.Any(x => x.Type == TileType.Manage || (x.DataUrl ?? "").Contains("UserManage"))) {
                 try {
-                    var directReports = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails)
-                        .Select(x => AngularUser.CreateUser(x, managing: true)).ToList();
-                    var managingIds = DeepAccessor.Users.GetSubordinatesAndSelf(GetUser(), GetUser().Id);
-                    directReports = directReports.Where(x => managingIds.Contains(x.Id)).ToList();
-                    output.Members = directReports;
+                    //var directReports = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails)
+                    //    .Select(x => AngularUser.CreateUser(x, managing: true)).ToList();
+                    //var managingIds = DeepAccessor.Users.GetSubordinatesAndSelf(GetUser(), GetUser().Id);
+                    //directReports = directReports.Where(x => managingIds.Contains(x.Id)).ToList();
+					output.Members = DeepAccessor.Users.GetDirectReportsAndSelfModels(GetUser(), GetUser().Id).Select(x=>AngularUser.CreateUser(x,managing:true));
                 } catch (Exception e) {
                     ProcessDeadTile(e);
                 }

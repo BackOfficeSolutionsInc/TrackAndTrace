@@ -37,7 +37,9 @@ namespace RadialReview.Models.UserModels
 		}
 		public class PositionDurationMap : ClassMap<PositionDurationModel> {
 			public PositionDurationMap() {
+#pragma warning disable CS0618 // Type or member is obsolete
 				Id(x => x.Id);
+#pragma warning restore CS0618 // Type or member is obsolete
 				Map(x => x.CreateTime).Column("Start");
 				Map(x => x.UserId);
 				Map(x => x.DeletedBy);

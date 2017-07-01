@@ -76,7 +76,7 @@ namespace RadialReview.Accessors {
 			
 			headline.Owner = s.Get<UserOrganizationModel>(headline.OwnerId);
 
-			HooksRegistry.Each<IHeadlineHook>(x => x.CreateHeadline(s, headline));
+			await HooksRegistry.Each<IHeadlineHook>(x => x.CreateHeadline(s, headline));
 
 			if (recurrenceId > 0) {
 				var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();

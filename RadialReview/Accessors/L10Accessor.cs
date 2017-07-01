@@ -61,6 +61,9 @@ using NHibernate.SqlCommand;
 using RadialReview.Models.Rocks;
 using RadialReview.Models.Angular.Rocks;
 using System.Web.Mvc;
+using RadialReview.Utilities.Hooks;
+using RadialReview.Hooks;
+using static RadialReview.Utilities.EventUtil;
 
 namespace RadialReview.Accessors {
 	public class L10Accessor : BaseAccessor {
@@ -363,12 +366,13 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static L10Recurrence CreateBlankRecurrence(UserOrganizationModel caller, long orgId, MeetingType meetingType = MeetingType.L10) {
+		public static async Task<L10Recurrence> CreateBlankRecurrence(UserOrganizationModel caller, long orgId, MeetingType meetingType = MeetingType.L10) {
+			L10Recurrence recur;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
 					perms.CreateL10Recurrence(orgId);
-					var recur = new L10Recurrence() {
+					recur = new L10Recurrence() {
 						OrganizationId = orgId,
 						Pristine = true,
 						VideoId = Guid.NewGuid().ToString(),
@@ -424,14 +428,26 @@ namespace RadialReview.Accessors {
 					});
 					tx.Commit();
 					s.Flush();
-					return recur;
 				}
 			}
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					await Trigger(x => x.Create(s, EventType.CreateMeeting, caller, recur, message: recur.Name + "(" + DateTime.UtcNow.Date.ToShortDateString() + ")"));
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					await HooksRegistry.Each<IMeetingEvents>(x => x.CreateRecurrence(s, recur));					
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return recur;
 		}
 
 		public static async Task<MvcHtmlString> GetMeetingSummary(UserOrganizationModel caller, long meetingId) {
-
-
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
@@ -440,7 +456,6 @@ namespace RadialReview.Accessors {
 					var meeting = s.Get<L10Meeting>(meetingId);
 					var completeTime = meeting.CompleteTime;
 
-
 					var completedIssues = s.QueryOver<IssueModel.IssueModel_Recurrence>()
 											.Where(x => x.DeleteTime == null && x.CloseTime == completeTime && x.Recurrence.Id == meeting.L10RecurrenceId)
 											.List().ToList();
@@ -448,9 +463,7 @@ namespace RadialReview.Accessors {
 					var pads = completedIssues.Select(x => x.Issue.PadId).ToList();
 					var padTexts = await PadAccessor.GetHtmls(pads);
 
-
 					return new MvcHtmlString((await IssuesAccessor.BuildIssuesSolvedTable(completedIssues, showDetails: true, padLookup: padTexts)).ToString());
-
 				}
 			}
 		}
@@ -482,7 +495,10 @@ namespace RadialReview.Accessors {
 			return p;
 		}
 
-		public static L10Meeting StartMeeting(UserOrganizationModel caller, UserOrganizationModel meetingLeader, long recurrenceId, List<long> attendees) {
+		public static async Task<L10Meeting> StartMeeting(UserOrganizationModel caller, UserOrganizationModel meetingLeader, long recurrenceId, List<long> attendees) {
+			L10Recurrence recurrence;
+			L10Meeting meeting;
+
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
@@ -501,9 +517,9 @@ namespace RadialReview.Accessors {
 						}
 
 						var now = DateTime.UtcNow;
-						var recurrence = s.Get<L10Recurrence>(recurrenceId);
+						recurrence = s.Get<L10Recurrence>(recurrenceId);
 
-						var meeting = new L10Meeting {
+						meeting = new L10Meeting {
 							CreateTime = now,
 							StartTime = now,
 							L10RecurrenceId = recurrenceId,
@@ -566,13 +582,23 @@ namespace RadialReview.Accessors {
 						s.Flush();
 						var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 						hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(meeting)).setupMeeting(meeting.CreateTime.ToJavascriptMilliseconds(), meetingLeader.Id);
-						return meeting;
 					}
 				}
 			}
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					await HooksRegistry.Each<IMeetingEvents>(x => x.StartMeeting(s,recurrence,meeting));
+					tx.Commit();
+					s.Flush();
+				}
+			}
+
+			return meeting;
 		}
 		public async static Task ConcludeMeeting(UserOrganizationModel caller, long recurrenceId, List<System.Tuple<long, decimal?>> ratingValues, ConcludeSendEmail sendEmail, bool closeTodos, bool closeHeadlines, string connectionId) {
 			var unsent = new List<Mail>();
+			L10Recurrence recurrence = null;
 			L10Meeting meeting = null;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -609,6 +635,12 @@ namespace RadialReview.Accessors {
 						}
 					}
 
+					//CONNECTIONS AUTOMATICALLY CLOSE with the DeleteTime var
+					//var connectionsToClose = s.QueryOver<L10Recurrence.L10Recurrence_Connection>().Where(x => x.DeleteTime <= DateTime.UtcNow.Add(MeetingHub.PingTimeout).AddMinutes(5) && x.RecurrenceId == recurrenceId).List().ToList();
+					//foreach (var c in connectionsToClose) {
+					//	c.DeleteTime = now.AddMinutes(5);
+					//}
+
 
 					var issuesToClose = s.QueryOver<IssueModel.IssueModel_Recurrence>()
 											.Where(x => x.DeleteTime == null && x.MarkedForClose && x.Recurrence.Id == recurrenceId && x.CloseTime == null)
@@ -624,7 +656,7 @@ namespace RadialReview.Accessors {
 					meeting.CompleteTime = now;
 					meeting.TodoCompletion = todoRatio;
 
-					var recurrence = s.Get<L10Recurrence>(recurrenceId);
+					recurrence = s.Get<L10Recurrence>(recurrenceId);
 					s.Update(meeting);
 
 					var ids = ratingValues.Select(x => x.Item1).ToArray();
@@ -722,7 +754,6 @@ namespace RadialReview.Accessors {
 									break;
 							}
 
-
 							foreach (var userAttendee in sendEmailTo) {
 								var output = new StringBuilder();
 								var user = auLu[userAttendee.User.Id];
@@ -743,7 +774,7 @@ namespace RadialReview.Accessors {
 						}
 					}
 
-					EventUtil.Trigger(x => x.Create(s, EventType.ConcludeMeeting, caller, recurrence, message: recurrence.Name + "(" + DateTime.UtcNow.Date.ToShortDateString() + ")"));
+					await Trigger(x => x.Create(s, EventType.ConcludeMeeting, caller, recurrence, message: recurrence.Name + "(" + DateTime.UtcNow.Date.ToShortDateString() + ")"));
 
 					Audit.L10Log(s, caller, recurrenceId, "ConcludeMeeting", ForModel.Create(meeting));
 					tx.Commit();
@@ -761,6 +792,31 @@ namespace RadialReview.Accessors {
 				}
 			} catch (Exception e) {
 				log.Error("Emailer issue(2):" + recurrenceId, e);
+			}
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					await HooksRegistry.Each<IMeetingEvents>(x => x.ConcludeMeeting(s, recurrence, meeting));
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+		public static IEnumerable<L10Recurrence.L10Recurrence_Connection> GetConnected(UserOrganizationModel caller, long recurrenceId, bool load = false) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
+					var connections = s.QueryOver<L10Recurrence.L10Recurrence_Connection>().Where(x => x.DeleteTime >= DateTime.UtcNow && x.RecurrenceId == recurrenceId).List().ToList();
+					if (load) {
+						var userIds = connections.Select(x => x.UserId).Distinct().ToArray();
+						var tiny = TinyUserAccessor.GetUsers_Unsafe(s, userIds).ToDefaultDictionary(x => x.UserOrgId, x => x, null);
+						foreach (var c in connections) {
+							c._User = tiny[c.UserId];
+						}
+					}
+					return connections;
+				}
 			}
 		}
 
@@ -780,8 +836,36 @@ namespace RadialReview.Accessors {
 						new PermissionsAccessor().Permitted(caller, x => x.ViewL10Recurrence(recurrenceId));
 						hub.Groups.Add(connectionId, MeetingHub.GenerateMeetingGroupId(recurrenceId));
 						Audit.L10Log(s, caller, recurrenceId, "JoinL10Meeting", ForModel.Create(caller));
+
+						//s.QueryOver<L10Recurrence.L10Recurrence_Connection>().where
+#pragma warning disable CS0618 // Type or member is obsolete
+						var connection = new L10Recurrence.L10Recurrence_Connection() { Id = connectionId, RecurrenceId = recurrenceId, UserId = caller.Id };
+#pragma warning restore CS0618 // Type or member is obsolete
+
+						s.SaveOrUpdate(connection);
+
+						connection._User = TinyUser.FromUserOrganization(caller);
+
+						var perms = PermissionsUtility.Create(s, caller);
+						var currentMeeting = _GetCurrentL10Meeting(s, perms, recurrenceId, true, false, false);
+						if (currentMeeting != null) {
+							var isAttendee = s.QueryOver<L10Meeting.L10Meeting_Attendee>().Where(x => x.L10Meeting.Id == currentMeeting.Id && x.User.Id == caller.Id && x.DeleteTime == null).RowCount() > 0;
+							if (!isAttendee) {
+								var potentialAttendee = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x => x.DeleteTime == null && x.User.Id == caller.Id && x.L10Recurrence.Id == recurrenceId).RowCount() > 0;
+								if (potentialAttendee) {
+									s.Save(new L10Meeting.L10Meeting_Attendee() {
+										L10Meeting = currentMeeting,
+										User = caller,
+									});
+								}
+							}
+						}
+
+						tx.Commit();
+						s.Flush();
+
 						var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
-						meetingHub.userEnterMeeting(caller.Id, connectionId, caller.GetName(), caller.ImageUrl(true));
+						meetingHub.userEnterMeeting(connection);
 					}
 				}
 			}
@@ -1366,7 +1450,7 @@ namespace RadialReview.Accessors {
 		#endregion
 
 		#region Edit Meeting
-		public static void EditL10Recurrence(UserOrganizationModel caller, L10Recurrence l10Recurrence) {
+		public static async Task EditL10Recurrence(UserOrganizationModel caller, L10Recurrence l10Recurrence) {
 			bool wasCreated = false;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -1376,10 +1460,12 @@ namespace RadialReview.Accessors {
 						l10Recurrence.CreatedById = caller.Id;
 						wasCreated = true;
 						if (l10Recurrence.TeamType == L10TeamType.LeadershipTeam) {
-							EventUtil.Trigger(x => x.Create(s, EventType.CreateLeadershipMeeting, caller, l10Recurrence, message: l10Recurrence.Name));
+							await Trigger(x => x.Create(s, EventType.CreateLeadershipMeeting, caller, l10Recurrence, message: l10Recurrence.Name));
 						} else if (l10Recurrence.TeamType == L10TeamType.DepartmentalTeam) {
-							EventUtil.Trigger(x => x.Create(s, EventType.CreateDepartmentMeeting, caller, l10Recurrence, message: l10Recurrence.Name));
+							await Trigger(x => x.Create(s, EventType.CreateDepartmentMeeting, caller, l10Recurrence, message: l10Recurrence.Name));
 						}
+						await Trigger(x => x.Create(s, EventType.CreateMeeting, caller, l10Recurrence, message: l10Recurrence.Name));
+
 					} else
 						perm.AdminL10Recurrence(l10Recurrence.Id);
 
@@ -1681,13 +1767,14 @@ namespace RadialReview.Accessors {
 					var friendlyPageName = p;
 					if (long.TryParse(pageName.SubstringAfter("-"), out pageId)) {
 						try {
-							var l10Page = L10Accessor.GetPage(s, perms, pageId);
+#pragma warning disable CS0618 // Type or member is obsolete
+							var l10Page = GetPage(s, perms, pageId);
+#pragma warning restore CS0618 // Type or member is obsolete
 							friendlyPageName = l10Page.Title;
-						} catch (Exception e) {
+						} catch (Exception) {
 
 						}
 					}
-
 
 					Audit.L10Log(s, caller, recurrenceId, "UpdatePage", ForModel.Create(meeting), friendlyPageName);
 					tx.Commit();
@@ -1695,53 +1782,70 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		public static void DeleteL10Recurrence(UserOrganizationModel caller, long recurrenceId) {
+		public static async Task DeleteL10Recurrence(UserOrganizationModel caller, long recurrenceId) {
+			L10Recurrence r;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).AdminL10Recurrence(recurrenceId);
-					var r = s.Get<L10Recurrence>(recurrenceId);
+					r = s.Get<L10Recurrence>(recurrenceId);
 					r.DeleteTime = DateTime.UtcNow;
 
 					s.Update(r);
 
-					EventUtil.Trigger(x => x.Create(s, EventType.DeleteMeeting, caller, r, message: r.Name + "(Deleted)"));
 
 					Audit.L10Log(s, caller, recurrenceId, "DeleteL10", ForModel.Create(r), r.Name);
 					tx.Commit();
 					s.Flush();
 				}
 			}
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					await EventUtil.Trigger(x => x.Create(s, EventType.DeleteMeeting, caller, r, message: r.Name + "(Deleted)"));
+					await HooksRegistry.Each<IMeetingEvents>(x => x.DeleteRecurrence(s,r));
+					tx.Commit();
+					s.Flush();
+				}
+			}
+
 		}
-		public static void UndeleteL10Recurrence(UserOrganizationModel caller, long recurrenceId) {
+		public static async Task UndeleteL10Recurrence(UserOrganizationModel caller, long recurrenceId) {
+			L10Recurrence r;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).AdminL10Recurrence(recurrenceId);
-					var r = s.Get<L10Recurrence>(recurrenceId);
+					r = s.Get<L10Recurrence>(recurrenceId);
 					r.DeleteTime = null;
-
 					s.Update(r);
-
-					EventUtil.Trigger(x => x.Create(s, EventType.UndeleteMeeting, caller, r, message: r.Name + "(Undeleted)"));
-
 					Audit.L10Log(s, caller, recurrenceId, "UndeleteL10", ForModel.Create(r), r.Name);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					await EventUtil.Trigger(x => x.Create(s, EventType.UndeleteMeeting, caller, r, message: r.Name + "(Undeleted)"));
+					await HooksRegistry.Each<IMeetingEvents>(x => x.UndeleteRecurrence(s, r));
 					tx.Commit();
 					s.Flush();
 				}
 			}
 		}
 
-		public static void DeleteL10Meeting(UserOrganizationModel caller, long meetingId) {
+		public static async Task DeleteL10Meeting(UserOrganizationModel caller, long meetingId) {
+			L10Meeting meeting;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					var meeting = s.Get<L10Meeting>(meetingId);
+					meeting = s.Get<L10Meeting>(meetingId);
 					PermissionsUtility.Create(s, caller).AdminL10Recurrence(meeting.L10RecurrenceId);
 					meeting.DeleteTime = DateTime.UtcNow;
-
 					s.Update(meeting);
-
-					//EventUtil.Trigger(x => x.Create(s, EventType.DeleteMeeting, caller, r, message: r.Name + "(Deleted)"));
-					//Audit.L10Log(s, caller, recurrenceId, "DeleteL10", ForModel.Create(r), r.Name);
-
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					await HooksRegistry.Each<IMeetingEvents>(x => x.DeleteMeeting(s, meeting));
 					tx.Commit();
 					s.Flush();
 				}
@@ -3144,20 +3248,7 @@ namespace RadialReview.Accessors {
 
 						};
 						s.Save(mm);
-
-						//var serial=new{
-						//	id=measurable.Id,
-						//	accountableId=measurable.AccountableUserId,
-						//	accountableName=measurable.AccountableUser.GetName(),
-						//	adminName = measurable.AdminUser.GetName(),
-						//	title=measurable.Title,
-						//	direction = measurable.GoalDirection.ToString(),
-						//	directionName = measurable.GoalDirection.ToSymbol(),
-						//	target = measurable.Goal,
-						//	measurable.AdminUserId,
-						//	scores=weekData
-						//};
-
+						
 						var settings = current.Organization.Settings;
 						var sow = settings.WeekStart;
 						var offset = current.Organization.GetTimezoneOffset();
@@ -3421,8 +3512,6 @@ namespace RadialReview.Accessors {
 						}
 					}
 					group.update(updates);
-
-
 				}
 			}
 		}
@@ -4291,7 +4380,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static VtoItem_String MoveIssueToVto(UserOrganizationModel caller, long issue_recurrence,string connectionId) {
+		public static VtoItem_String MoveIssueToVto(UserOrganizationModel caller, long issue_recurrence, string connectionId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					using (var rt = RealTimeUtility.Create(connectionId)) {
@@ -4308,7 +4397,7 @@ namespace RadialReview.Accessors {
 						//remove from list
 						rt.UpdateRecurrences(recur.Id).AddLowLevelAction(x => x.removeIssueRow(recurIssue.Id));
 						var arecur = new AngularRecurrence(recur.Id);
-						arecur.IssuesList.Issues = AngularList.CreateFrom( AngularListType.Remove, new AngularIssue(recurIssue));
+						arecur.IssuesList.Issues = AngularList.CreateFrom(AngularListType.Remove, new AngularIssue(recurIssue));
 						rt.UpdateRecurrences(recur.Id).Update(arecur);
 						//
 
@@ -4720,7 +4809,6 @@ namespace RadialReview.Accessors {
 						}
 
 						s.Update(recurrence);
-
 						rt.UpdateRecurrences(recurrenceId).Update(angular);
 
 						tx.Commit();
@@ -5116,7 +5204,9 @@ namespace RadialReview.Accessors {
 
 
 		public static L10Recurrence.L10Recurrence_Page GetPageInRecurrence(UserOrganizationModel caller, long pageId, long recurrenceId) {
+#pragma warning disable CS0618 // Type or member is obsolete
 			var page = GetPage(caller, pageId);
+#pragma warning restore CS0618 // Type or member is obsolete
 			if (page.L10RecurrenceId != recurrenceId)
 				throw new PermissionsException("Page does not exist.");
 			return page;

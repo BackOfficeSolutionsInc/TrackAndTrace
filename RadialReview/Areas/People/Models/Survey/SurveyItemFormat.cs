@@ -32,37 +32,40 @@ namespace RadialReview.Areas.People.Models.Survey {
         public virtual long SurveyContainerId { get; set; }
         public virtual long OrgId { get; set; }
         public virtual String Settings { get; set; }
-        public virtual SurveyItemType ItemType { get; set; }
+		public virtual SurveyItemType ItemType { get; set; }
+		public virtual SurveyQuestionIdentifier QuestionIdentifier { get; set; }
 
-        //#region Do not use
-        //[Obsolete("Do not use. Not Saved.")]
-        //public virtual string Name { get; set; }
-        //[Obsolete("Do not use. Not Saved.")]
-        //public virtual string Help { get; set; }
-        //[Obsolete("Do not use. Not Saved.")]
-        //public virtual int Ordering { get; set; }
-        //[Obsolete("For SurveyEngine. Not Saved.")]
-        //public virtual bool ShouldInitialize { get; set; }
-        //#endregion
+		//#region Do not use
+		//[Obsolete("Do not use. Not Saved.")]
+		//public virtual string Name { get; set; }
+		//[Obsolete("Do not use. Not Saved.")]
+		//public virtual string Help { get; set; }
+		//[Obsolete("Do not use. Not Saved.")]
+		//public virtual int Ordering { get; set; }
+		//[Obsolete("For SurveyEngine. Not Saved.")]
+		//public virtual bool ShouldInitialize { get; set; }
+		//#endregion
 
-        #region Static Initializers
-        public static SurveyItemFormat GenerateRadio(IItemFormatInitializerCtx ctx, IDictionary<string, string> options, params KV[] settings) {
-            var format = new SurveyItemFormat(ctx, SurveyItemType.Radio, settings);
+		#region Static Initializers
+		public static SurveyItemFormat GenerateRadio(IItemFormatInitializerCtx ctx,SurveyQuestionIdentifier questionIdentifier, IDictionary<string, string> options, params KV[] settings) {
+            var format = new SurveyItemFormat(ctx, questionIdentifier, SurveyItemType.Radio, settings);
             format.AddSetting("options", options);
             return format;
         }
-        public static SurveyItemFormat GenerateText(IItemFormatInitializerCtx ctx, params KV[] settings) {
-            var format = new SurveyItemFormat(ctx, SurveyItemType.Text, settings);
+        public static SurveyItemFormat GenerateText(IItemFormatInitializerCtx ctx, SurveyQuestionIdentifier questionIdentifier, params KV[] settings) {
+            var format = new SurveyItemFormat(ctx, questionIdentifier, SurveyItemType.Text, settings);
             return format;
         }
         #endregion
 
         #region Constructors
-        public SurveyItemFormat(IItemFormatInitializerCtx ctx, SurveyItemType type, params KV[] settings) : this(ctx, type, settings.ToList()) {
+        public SurveyItemFormat(IItemFormatInitializerCtx ctx, SurveyQuestionIdentifier questionIdentifier, SurveyItemType type, params KV[] settings) : this(ctx, questionIdentifier, type, settings.ToList()) {
         }
 
-        public SurveyItemFormat(IItemFormatInitializerCtx ctx, SurveyItemType type, IEnumerable<KV> settings) : this() {
-            ItemType = type;
+#pragma warning disable CS0618 // Type or member is obsolete
+		public SurveyItemFormat(IItemFormatInitializerCtx ctx, SurveyQuestionIdentifier questionIdentifier, SurveyItemType type, IEnumerable<KV> settings) : this() {
+#pragma warning restore CS0618 // Type or member is obsolete
+			ItemType = type;
             foreach (var kv in settings) {
                 var key = kv.Key;
                 var value = kv.Value;
@@ -70,6 +73,7 @@ namespace RadialReview.Areas.People.Models.Survey {
                     AddSetting(key, value);
                 }
             }
+			QuestionIdentifier = questionIdentifier;
             SurveyContainerId = ctx.SurveyContainer.Id;
             OrgId = ctx.OrgId;
         }
@@ -84,36 +88,21 @@ namespace RadialReview.Areas.People.Models.Survey {
         #endregion
 
         public virtual IItemFormat AddSetting(string key, object value) {
-            //var dict = JavaScriptSerializer.DeserializeObject<Dictionary<string, object>>(Settings);
             var serializer = new JavaScriptSerializer();
             var dict = serializer.Deserialize<Dictionary<string, object>>(Settings);
             dict[key] = value;
-            //Settings = JsonConvert.SerializeObject(dict, Formatting.None);
             Settings = serializer.Serialize(dict);
             return this;
         }
         public virtual T GetSetting<T>(string key) {
-            //JObject json = JObject.Parse(Settings);
-            //try {
-            //    var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(Settings);
-            //    if (dict.ContainsKey(key) && dict[key] is T) {
-            //        return (T)dict[key];
-            //    }
-            //    return default(T);
-            //} catch (JsonSerializationException e) {
-            //    return default(T);
-            //}
             var serializer = new JavaScriptSerializer();
-
-
-
             try {
                 var dict = serializer.Deserialize<Dictionary<string, object>>(Settings);
                 if (dict.ContainsKey(key) && dict[key] is T) {
                     return (T)dict[key];
                 }
                 return default(T);
-            } catch (Exception e) {
+            } catch (Exception) {
                 return default(T);
             }
         }
@@ -140,8 +129,11 @@ namespace RadialReview.Areas.People.Models.Survey {
             var serializer = new JavaScriptSerializer();
             var dict = serializer.Deserialize<Dictionary<string, object>>(Settings);
             return dict;
-            //return JsonConvert.DeserializeObject<Dictionary<string, object>>(Settings);
         }
+
+		public virtual SurveyQuestionIdentifier GetQuestionIdentifier() {
+			return QuestionIdentifier;
+		}
 
 		public class Map : ClassMap<SurveyItemFormat> {
             public Map() {
@@ -152,7 +144,9 @@ namespace RadialReview.Areas.People.Models.Survey {
                 Map(x => x.OrgId);
                 Map(x => x.Settings).Length(8000);
                 Map(x => x.ItemType);
-            }
+				Map(x => x.QuestionIdentifier);
+
+			}
         }
     }
 }

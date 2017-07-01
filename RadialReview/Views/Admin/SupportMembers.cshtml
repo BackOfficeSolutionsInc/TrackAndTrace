@@ -1,0 +1,23 @@
+﻿@model IEnumerable<RadialReview.Models.Application.SupportMember>
+
+<div id="impl"></div>
+
+@using (Html.BeginScripts()) {
+	<script>
+		var data =@Html.ArrayToString(Model);
+		DataTable({
+			container:"#impl",
+			clickAdd: "/admin/EditSupportMember",
+			clickEdit: "/admin/EditSupportMember/{0}",
+			clickRemove: "/admin/DeleteSupportMember/{0}",
+			data: data,
+			cells: [
+				{name:"Name",contents:function(x){return x.User.Name;}, classes:"nowrap"},
+				{name:"Email",contents:function(x){return x.User.UserName;}, classes:"fullWidth"},
+				{edit:true},
+				{remove:true}
+			]
+		});
+
+	</script>
+}

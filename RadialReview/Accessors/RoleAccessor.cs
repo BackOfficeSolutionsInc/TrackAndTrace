@@ -18,6 +18,7 @@ using RadialReview.Models.Accountability;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
 using RadialReview.Models.Reviews;
+using System.Threading.Tasks;
 
 namespace RadialReview.Accessors {
 
@@ -106,7 +107,7 @@ namespace RadialReview.Accessors {
 			//return allLinks;
 		}
 
-		public static void EditRole(UserOrganizationModel caller, long id, string role, DateTime? deleteTime = null) {
+		public static async Task EditRole(UserOrganizationModel caller, long id, string role, DateTime? deleteTime = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).EditRole(id);
@@ -117,15 +118,15 @@ namespace RadialReview.Accessors {
 					if (r.DeleteTime != deleteTime) {
 						r.DeleteTime = deleteTime;
 						if (deleteTime == null) {
-							HooksRegistry.Each<IRolesHook>(x => x.CreateRole(s, r));
+							await HooksRegistry.Each<IRolesHook>(x => x.CreateRole(s, r));
 						} else {
-							HooksRegistry.Each<IRolesHook>(x => x.DeleteRole(s, r));
+							await HooksRegistry.Each<IRolesHook>(x => x.DeleteRole(s, r));
 						}
 						updateSent = true;
 					}
 					s.Update(r);
 					if (!updateSent)
-						HooksRegistry.Each<IRolesHook>(x => x.UpdateRole(s, r));
+						await HooksRegistry.Each<IRolesHook>(x => x.UpdateRole(s, r));
 
 
 
@@ -320,7 +321,7 @@ namespace RadialReview.Accessors {
         #endregion
 
 
-        public void EditRoles(UserOrganizationModel caller, long userId, List<RoleModel> roles, bool updateOutstanding) {
+        public async Task EditRoles(UserOrganizationModel caller, long userId, List<RoleModel> roles, bool updateOutstanding) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 
@@ -388,9 +389,9 @@ namespace RadialReview.Accessors {
 								CreateTime = r.CreateTime
 							};
 							s.Save(link);
-							HooksRegistry.Each<IRolesHook>(x => x.CreateRole(s, r));
+							await HooksRegistry.Each<IRolesHook>(x => x.CreateRole(s, r));
 						} else {
-							HooksRegistry.Each<IRolesHook>(x => x.UpdateRole(s, r));
+							await HooksRegistry.Each<IRolesHook>(x => x.UpdateRole(s, r));
 						}
 
 						if (updateOutstanding && added) {

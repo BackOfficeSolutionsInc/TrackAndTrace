@@ -31,7 +31,7 @@ namespace TractionTools.Tests.Accessors
             var testId = Guid.NewGuid();
             MockApplication();
             MockHttpContext();
-			var org = OrgUtil.CreateOrganization(time: new DateTime(2016, 1, 1));
+			var org = await OrgUtil.CreateOrganization(time: new DateTime(2016, 1, 1));
             UserOrganizationModel employee = org.Employee;
             UserOrganizationModel manager = org.Manager;
 
@@ -109,7 +109,7 @@ namespace TractionTools.Tests.Accessors
             recur._DefaultMeasurables = new List<L10Recurrence.L10Recurrence_Measurable>();
             recur._DefaultRocks = new List<L10Recurrence.L10Recurrence_Rocks>();
 
-            L10Accessor.EditL10Recurrence(manager, recur);
+            await L10Accessor.EditL10Recurrence(manager, recur);
             Assert.AreNotEqual(0, recur.Id);
 
             //Try to add rocks without adding to L10

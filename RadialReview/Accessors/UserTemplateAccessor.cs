@@ -22,6 +22,7 @@ using WebGrease.Css.Extensions;
 using NHibernate;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
+using System.Threading.Tasks;
 
 namespace RadialReview.Accessors {
 	public class UserTemplateAccessor {
@@ -200,7 +201,7 @@ namespace RadialReview.Accessors {
 
 		}
 
-		public static void AddRoleToTemplate(ISession s, PermissionsUtility p, long templateId, long orgId, String role) {
+		public static async Task AddRoleToTemplate(ISession s, PermissionsUtility p, long templateId, long orgId, String role) {
 			var utm = new UserTemplate.UT_Role() {
 				//Role = role,
 				TemplateId = templateId,
@@ -227,7 +228,7 @@ namespace RadialReview.Accessors {
 				Category = category,
 			};
 			s.Save(rm);
-			HooksRegistry.Each<IRolesHook>(x => x.CreateRole(s, rm));
+			await HooksRegistry.Each<IRolesHook>(x => x.CreateRole(s, rm));
 
 			s.Save(new RoleLink() {
 				AttachId = template.AttachId,
@@ -251,18 +252,13 @@ namespace RadialReview.Accessors {
 			}
 
 		}
-		public static void AddRoleToTemplate(UserOrganizationModel caller, long templateId, String role) {
+		public static async Task AddRoleToTemplate(UserOrganizationModel caller, long templateId, String role) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var p = PermissionsUtility.Create(s, caller);
 
-					AddRoleToTemplate(s, p, templateId, caller.Organization.Id, role);
-
-					//
-					//
-					//
-					//}
-
+					await AddRoleToTemplate(s, p, templateId, caller.Organization.Id, role);
+					
 					tx.Commit();
 					s.Flush();
 				}
@@ -367,57 +363,32 @@ namespace RadialReview.Accessors {
 		}
 
 
-		public static void UpdateRoleTemplate(UserOrganizationModel caller, long utRoleId, string role, DateTime? deleteTime) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var p = PermissionsUtility.Create(s, caller);
+		//public static async Task UpdateRoleTemplate(UserOrganizationModel caller, long utRoleId, string role, DateTime? deleteTime) {
+		//	RoleModel r;
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
+		//			var p = PermissionsUtility.Create(s, caller);
+		//			var utRole = s.Get<UserTemplate.UT_Role>(utRoleId);
+		//			p.EditTemplate(utRole.TemplateId);
+		//			utRole.DeleteTime = deleteTime;
+		//			s.Update(utRole);
+		//			r = s.Get<RoleModel>(utRole.RoleId);
+		//			r.Role = role;
+		//			r.DeleteTime = deleteTime;
+		//			s.Update(r);					
+		//			tx.Commit();
+		//			s.Flush();
+		//		}
+		//	}
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
+		//			await HooksRegistry.Each<IRolesHook>(x => x.UpdateRole(s, r));
+		//			tx.Commit();
+		//			s.Flush();
+		//		}
+		//	}
+		//}
 
-
-					var utRole = s.Get<UserTemplate.UT_Role>(utRoleId);//.Where(x=>x.DeleteTime==null && x.TemplateId==templateId)
-					p.EditTemplate(utRole.TemplateId);
-
-
-					//utRole.Role = role;
-					utRole.DeleteTime = deleteTime;
-					s.Update(utRole);
-
-					//var template = s.Get<UserTemplate>(utRole.TemplateId);
-
-					//var links = s.QueryOver<RoleModelLink>().Where(x => x.AttachType == template.AttachType && x.AttachId == template.AttachId && x.RoleId == utRole.Id);
-
-					//var roles = s.QueryOver<RoleModel>()
-					//	.Where(x => x.DeleteTime == null && x.FromTemplateItemId == utRole.Id)
-					//	.List().ToList();
-
-					var r = s.Get<RoleModel>(utRole.RoleId);
-
-					r.Role = role;
-					r.DeleteTime = deleteTime;
-					s.Update(r);
-
-					HooksRegistry.Each<IRolesHook>(x => x.UpdateRole(s, r));
-					//foreach (var r in roles) {
-					//	r.Role = role;
-					//	r.DeleteTime = deleteTime;
-					//	s.Update(r);
-					//	if (deleteTime.HasValue) {
-					//		var u = s.Get<UserOrganizationModel>(r.ForUserId);
-					//		//u.NumRoles -= 1;
-					//		if (u != null) {
-					//			s.Update(u);
-					//			s.Flush();
-					//			u.UpdateCache(s);
-					//		}
-					//	}
-					//}
-
-
-
-					tx.Commit();
-					s.Flush();
-				}
-			}
-		}
 		public static void UpdateMeasurableTemplate(UserOrganizationModel caller, long utMeasurableId, String measurable, LessGreater goalDirection, decimal goal, DateTime? deleteTime) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {

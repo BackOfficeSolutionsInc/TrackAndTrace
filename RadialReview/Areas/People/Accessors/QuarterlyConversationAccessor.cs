@@ -42,10 +42,11 @@ namespace RadialReview.Areas.People.Accessors {
 					var perms = PermissionsUtility.Create(s, caller);
 					perms.Self(userId);
 					var nodes = AccountabilityAccessor.GetNodesForUser(s, perms, userId);
+#pragma warning disable CS0618 // Type or member is obsolete
 					var childrens =nodes.SelectMany(node => DeepAccessor.GetChildrenAndSelf(s, caller, node.Id));
+#pragma warning restore CS0618 // Type or member is obsolete
 
 					SurveyItem item=null;
-
 					var accountabiliyNodeResults = s.QueryOver<SurveyResponse>()
 						.Where(x => x.SurveyType == SurveyType.QuarterlyConversation && x.OrgId == caller.Organization.Id && x.About.ModelType == ForModel.GetModelType<AccountabilityNode>())
 						.Where(range.Filter<SurveyResponse>())

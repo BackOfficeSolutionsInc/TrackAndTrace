@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace RadialReview.Controllers
 {
-    public class SurveyController : BaseController
+    public class SurveysController : BaseController
     {
 	    public class SurveyListing
 	    {

@@ -13,7 +13,7 @@ namespace TractionTools.UITests.FAQ {
 		public static void Setup(TestContext ctx) {
 
 			//MeetingName = "WizardMeeting";
-			//Recur = L10Utility.CreateRecurrence(MeetingName);
+			//Recur = await L10Utility.CreateRecurrence(MeetingName);
 		}
 
 		[TestMethod]

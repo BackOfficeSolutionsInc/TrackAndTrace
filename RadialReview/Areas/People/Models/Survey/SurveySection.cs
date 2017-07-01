@@ -28,9 +28,11 @@ namespace RadialReview.Areas.People.Models.Survey {
         public virtual ISurvey _Survey { get; set; }
         public virtual ICollection<IItemContainer> _Items { get; set; }
 
-        #region Constructor
-        public SurveySection(ISectionInitializerData data, String name, SurveySectionType sectionType) : this() {
-            Name = name;
+		#region Constructor
+#pragma warning disable CS0618 // Type or member is obsolete
+		public SurveySection(ISectionInitializerData data, string name, SurveySectionType sectionType) : this() {
+#pragma warning restore CS0618 // Type or member is obsolete
+			Name = name;
             OrgId = data.OrgId;
             SectionType = "" + sectionType;
             SurveyContainerId = data.SurveyContainer.Id;

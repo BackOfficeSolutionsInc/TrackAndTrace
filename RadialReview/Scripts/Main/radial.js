@@ -2573,10 +2573,16 @@ function waitUntil(isready, success, error, count, interval) {
     }, interval);
 }
 
-function waitUntilVisible(selector, onVisible) {
+function waitUntilVisible(selector, onVisible, duration) {
+	if (typeof (duration) === "undefined")
+		duration = 60 * 50;
+
+	var interval = 50;
+	var count = Math.max(duration / interval,1);
+
     waitUntil(function () {
         return $(selector).is(":visible");
-    }, onVisible, function () { }, 60, 50);
+    }, onVisible, function () { }, count, interval);
 }
 
 

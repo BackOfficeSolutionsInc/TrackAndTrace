@@ -47,7 +47,9 @@ namespace RadialReview.Areas.People.Accessors {
 			var nodes = AccountabilityAccessor.GetNodesForUser(caller, caller.Id);
 			var possible = new List<IByAbout>();
 			foreach (var node in nodes) {
+#pragma warning disable CS0618 // Type or member is obsolete
 				var reports = DeepAccessor.GetDirectReportsAndSelf(caller, node.Id);
+#pragma warning restore CS0618 // Type or member is obsolete
 				foreach (var report in reports) {
 					possible.Add(new ByAbout(caller, report));
 
@@ -61,7 +63,7 @@ namespace RadialReview.Areas.People.Accessors {
 			return possible;
 		}
 
-		public static AngularSurveyContainer GenerateSurveyContainer(UserOrganizationModel caller, string name, IEnumerable<IByAbout> byAbout) {
+		public static long GenerateSurveyContainer(UserOrganizationModel caller, string name, IEnumerable<IByAbout> byAbout) {
 
 			var possible = AvailableByAbouts(caller, true);
 			if (!byAbout.All(x => possible.Any(y => y.ToKey() == x.ToKey())))
@@ -77,10 +79,10 @@ namespace RadialReview.Areas.People.Accessors {
 
 					tx.Commit();
 					s.Flush();
-
+					return containerId;
 				}
 			}
-			return GetAngularSurveyContainer(caller, caller, containerId);
+			//return GetAngularSurveyContainerBy(caller, caller, containerId);
 		}
 
 		public static long GenerateSurvey_Unsafe(ISession s, PermissionsUtility perms, string name, IEnumerable<IByAbout> byAbout) {
@@ -135,8 +137,27 @@ namespace RadialReview.Areas.People.Accessors {
 
 
 		}
+		public static AngularSurveyContainer GetAngularSurveyContainerAbout(UserOrganizationModel caller, IForModel about, long surveyContainerId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.ViewSurveyContainer(surveyContainerId);
+					perms.ManagesForModel(about,true);//TODO make this less restrictive
 
-		public static AngularSurveyContainer GetAngularSurveyContainer(UserOrganizationModel caller, IForModel by, long surveyContainerId) {
+					var container = s.Get<SurveyContainer>(surveyContainerId);
+					if (container.OrgId != caller.Organization.Id)
+						throw new PermissionsException();
+
+					var engine = new SurveyReconstructionEngine(surveyContainerId, container.OrgId, new DatabaseAggregator(s, about: about), new SurveyReconstructionEventsNoOp());
+					var output = new AngularSurveyContainer();
+					engine.Traverse(new TraverseBuildAngular(output));
+					return output;
+
+				}
+			}
+		}
+
+		public static AngularSurveyContainer GetAngularSurveyContainerBy(UserOrganizationModel caller, IForModel by, long surveyContainerId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);

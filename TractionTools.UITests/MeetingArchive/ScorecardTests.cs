@@ -30,7 +30,7 @@ namespace TractionTools.UITests.Selenium {
         {
             var testId = Guid.NewGuid();
             //Ensure correct week
-            var recur = L10Utility.CreateRecurrence(MEETING_NAME);
+            var recur = await L10Utility.CreateRecurrence(MEETING_NAME);
             var auc = await GetAdminCredentials(testId);
             var au = auc.User;
             var m101 = new MeasurableModel {
@@ -117,7 +117,7 @@ namespace TractionTools.UITests.Selenium {
 
                 d.Find(".scorecard", 5);
 
-                var element = d.FindElementByText("TestMeasurable101");
+                var element = d.FindElementByText("TestMeasurable101",20);
                 var row = element.Closest(By.TagName("tr"));
 
                 row.Find(".who").WaitForText(d, auc.User.GetFirstName()[0] + " " + auc.User.GetLastName()[0], 1);

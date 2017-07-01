@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Linq;
 using System.Web;
 using RadialReview.Models.L10;
+using NHibernate;
 
 namespace RadialReview {
 	public static class ObjectExtensions {
@@ -55,7 +56,7 @@ namespace RadialReview {
 				if (obj != null) {
 					try {
 						return f(obj);
-					} catch (NullReferenceException e) {
+					} catch (NullReferenceException ) {
 						return default(R);
 					}
 				} else {
@@ -133,6 +134,13 @@ namespace RadialReview {
 	}
 }
 
+namespace RadialReview.Nhibernate {
+	public static class ObjectExtensions {
+		public static T Unproxy<T>(this ISession s, T obj) {
+			return (T)s.GetSessionImplementation().PersistenceContext.Unproxy(obj);
+		}
+	}
+}
 
 namespace RadialReview.Reflection {
 

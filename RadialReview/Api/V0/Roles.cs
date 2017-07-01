@@ -43,9 +43,9 @@ namespace RadialReview.Api.V0
 
         [Route("roles/{id}")]
         [HttpPost]
-        public void UpdateRoles([FromBody]string name, long id)
+        public async Task UpdateRoles([FromBody]string name, long id)
         {
-            RoleAccessor.EditRole(GetUser(), id, name);
+            await RoleAccessor.EditRole(GetUser(), id, name);
         }
 
         [Route("roles/{id}")]

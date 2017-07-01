@@ -39,7 +39,9 @@ namespace RadialReview.Utilities.RealTime {
 					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 					var group = hub.Clients.Users(usernames.ToList());
 					var updates = new {
+#pragma warning disable CS0618 // Type or member is obsolete
 						Notifications = AngularList.CreateFrom(AngularListType.Add, new AngularNotification(notification))
+#pragma warning restore CS0618 // Type or member is obsolete
 					};
 					group.update(updates);
 				});

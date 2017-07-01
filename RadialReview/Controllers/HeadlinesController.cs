@@ -121,7 +121,7 @@ namespace RadialReview.Controllers
 			var details = "";
 			try {
 				details = await PadAccessor.GetText(i.HeadlinePadId);
-			} catch (Exception e) {
+			} catch (Exception) {
 			}
 
 			var model = new CopyHeadlineVM() {

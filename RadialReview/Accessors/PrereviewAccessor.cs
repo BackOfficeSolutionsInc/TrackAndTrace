@@ -73,7 +73,8 @@ namespace RadialReview.Accessors {
 				throw new PermissionsException("The pre-review due date must be before the review due date.");
 
 			var unsentEmails = new List<Mail>();
-			using (var s = HibernateSession.GetCurrentSession()) {
+			ReviewsModel reviewContainer;
+			using (var s = HibernateSession.GetCurrentSession(singleSession: false)) {
 				var createReviewGuid = Guid.NewGuid();
 				var perms = PermissionsUtility.Create(s, caller);
 				bool reviewManagers = false,
@@ -82,7 +83,7 @@ namespace RadialReview.Accessors {
 					 reviewSubordinates = true,
 					 reviewTeammates = false;
 
-				var reviewContainer = new ReviewsModel() {
+				reviewContainer = new ReviewsModel() {
 					//PeriodId = periodId,
 					//NextPeriodId = nextPeriodId,
 					AnonymousByDefault = anonFeedback,
@@ -164,8 +165,13 @@ namespace RadialReview.Accessors {
 						}
 					}
 
-					EventUtil.Trigger(x => x.Create(s, EventType.IssueReview, caller, reviewContainer, message: reviewContainer.ReviewName));
-
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					await EventUtil.Trigger(x => x.Create(s, EventType.IssueReview, caller, reviewContainer, message: reviewContainer.ReviewName));
 					tx.Commit();
 					s.Flush();
 				}
@@ -214,7 +220,7 @@ namespace RadialReview.Accessors {
 						if (prereview.Started) {
 							all.AddRange(s.QueryOver<PrereviewMatchModel>().Where(x => x.PrereviewId == prereview.Id && x.DeleteTime == null).List()
 								.Select(x => new WhoReviewsWho(
-									new Reviewer(x.FirstUserId), 
+									new Reviewer(x.FirstUserId),
 									new Reviewee(x.SecondUserId, x.Second_ACNodeId)
 								)).ToList());
 						} else {
@@ -229,10 +235,10 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		public static List<PrereviewModel> GetPrereviewsForUser(UserOrganizationModel caller, long userOrgId, DateTime dueAfter,bool includeReview=false,bool excludeExecuted=false) {
+		public static List<PrereviewModel> GetPrereviewsForUser(UserOrganizationModel caller, long userOrgId, DateTime dueAfter, bool includeReview = false, bool excludeExecuted = false) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					var perms = PermissionsUtility.Create(s,caller);
+					var perms = PermissionsUtility.Create(s, caller);
 					var prereviews = GetPrereviewsForUser(s.ToQueryProvider(true), perms, userOrgId, dueAfter, includeReview);
 
 					if (excludeExecuted) {
@@ -246,9 +252,9 @@ namespace RadialReview.Accessors {
 
 		public static List<PrereviewModel> GetPrereviewsForUser(AbstractQuery s, PermissionsUtility perms, long userOrgId, DateTime dueAfter, bool includeReview = false) {
 			perms.ViewUserOrganization(userOrgId, false);
-			var prereviews =  s.Where<PrereviewModel>(x => x.ManagerId == userOrgId && x.DeleteTime == null && x.PrereviewDue > dueAfter).ToList();
+			var prereviews = s.Where<PrereviewModel>(x => x.ManagerId == userOrgId && x.DeleteTime == null && x.PrereviewDue > dueAfter).ToList();
 			if (includeReview) {
-				var reviewContainerIds = prereviews.Select(x => x.ReviewContainerId).Distinct().Select(x=>(object)x).ToList();
+				var reviewContainerIds = prereviews.Select(x => x.ReviewContainerId).Distinct().Select(x => (object)x).ToList();
 				var reviewContainers = s.WhereRestrictionOn<ReviewsModel>(null, x => x.Id, reviewContainerIds).ToList();
 				foreach (var p in prereviews) {
 					p._ReviewContainer = reviewContainers.FirstOrDefault(x => x.Id == p.ReviewContainerId);

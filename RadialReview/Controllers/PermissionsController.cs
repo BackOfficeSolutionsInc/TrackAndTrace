@@ -103,7 +103,7 @@ namespace RadialReview.Controllers {
 			try {
 				var model = PermissionsAccessor.GetPermItems(GetUser(), id, type);
 				return PartialView(model);
-			} catch (PermissionsException e) {
+			} catch (PermissionsException ) {
 				return PartialView(PermissionDropdownVM.NotPermitted);
 			}
 

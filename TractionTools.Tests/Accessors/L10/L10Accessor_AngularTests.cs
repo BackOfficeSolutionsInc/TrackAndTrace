@@ -13,6 +13,7 @@ using RadialReview.Models.Askables;
 using RadialReview.Utilities;
 using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.Angular.Rocks;
+using System.Threading.Tasks;
 
 namespace TractionTools.Tests.Accessors {
     [TestClass]
@@ -20,9 +21,9 @@ namespace TractionTools.Tests.Accessors {
        
 
         [TestMethod]
-        public void RemoveRockAlsoArchives()
+        public async Task RemoveRockAlsoArchives()
         {
-            var r=L10Utility.CreateRecurrence();
+            var r=await L10Utility.CreateRecurrence();
             var rocks = L10Accessor.GetRocksForRecurrence(r.Creator, r.Id);
             Assert.AreEqual(0, rocks.Count);
             var ctrl = new L10Controller();
@@ -39,7 +40,7 @@ namespace TractionTools.Tests.Accessors {
             Assert.AreEqual(null, rocks[0].ForRock.Rock);
 
 
-            var r2 = L10Utility.CreateRecurrence(r);
+            var r2 = await L10Utility.CreateRecurrence(r);
 
             Assert.AreNotEqual(r.Id, r2.Id);
             DbCommit(s=>{

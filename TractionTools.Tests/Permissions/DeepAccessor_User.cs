@@ -4,14 +4,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RadialReview.Accessors;
 using RadialReview.Utilities;
 using RadialReview.Exceptions;
+using System.Threading.Tasks;
 
 namespace TractionTools.Tests.Permissions {
 	[TestClass]
 	public class RecursionsPermissions : BasePermissionsTest {
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void OwnedBelowOrEqual() {
-			var c = new Ctx();
+		public async Task OwnedBelowOrEqual() {
+			var c = await Ctx.Build();
 
 			foreach(var u in c.Org.AllUsers)
 				PermissionsAccessor.EnsurePermitted(c.Manager, p => p.OwnedBelowOrEqual(u.Id));

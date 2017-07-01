@@ -49,7 +49,7 @@ namespace TractionTools.UITests.MeetingArchive {
                 var notes = d.Find(".notes", 5);
 
                 Assert.AreEqual("about:blank", notes.Find("iframe").Attr("src"));
-                Assert.IsTrue(d.Find(".notes-instruction").Displayed);
+                Assert.IsTrue(d.Find(".notes-instruction",15).Displayed);
 
                 d.TestScreenshot("notes");
 
@@ -229,7 +229,7 @@ namespace TractionTools.UITests.MeetingArchive {
         {
             var testId = Guid.NewGuid();
             var auc = await GetAdminCredentials(testId);
-            var recur = L10Utility.CreateRecurrence("Meeting");
+            var recur = await L10Utility.CreateRecurrence("Meeting");
 
             TestView(auc, "/l10/meeting/" + recur.Id, d => {
 
@@ -259,7 +259,7 @@ namespace TractionTools.UITests.MeetingArchive {
             var testId = Guid.NewGuid();
             var auc = await GetAdminCredentials(testId);
             var au = auc.User;
-            var recur = L10Utility.CreateRecurrence("Scorecard");
+            var recur = await L10Utility.CreateRecurrence("Scorecard");
             var measurables = new[] { 
                 new MM{name="TestM1",value=10,owner=au,dir=LessGreater.LessThan} ,
                 new MM{name="TestM2",value=12,owner=au,dir=LessGreater.GreaterThan} ,

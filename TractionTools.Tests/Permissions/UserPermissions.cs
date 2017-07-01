@@ -17,18 +17,18 @@ namespace TractionTools.Tests.Permissions {
 	public class UserPermissions : BasePermissionsTest {
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void EditUserModel() {
-			var c = new Ctx();
+		public async Task EditUserModel() {
+			var c = await Ctx.Build();
 
-			c.Org.RegisterUser(c.Employee);
+			await c.Org.RegisterUser(c.Employee);
 			c.AssertAll(p => p.EditUserModel(c.Employee.User.Id), c.Employee);
 
 		}
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void EditUserOrganization() {
-			var c = new Ctx();
+		public async Task EditUserOrganization() {
+			var c = await Ctx.Build();
 
 			c.AssertAll(p => p.EditUserOrganization(c.Manager.Id), c.Manager);
 			c.AssertAll(p => p.EditUserOrganization(c.Employee.Id), c.Employee, c.Manager);
@@ -46,8 +46,8 @@ namespace TractionTools.Tests.Permissions {
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void ViewUserOrganization() {
-			var c = new Ctx();
+		public async Task ViewUserOrganization() {
+			var c = await Ctx.Build();
 			foreach (var user in c.AllUsers) {
 				c.AssertAll(p => p.ViewUserOrganization(user.Id, false), c.AllUsers);
 			}
@@ -62,8 +62,8 @@ namespace TractionTools.Tests.Permissions {
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void ManagesUserOrganization() {
-			var c = new Ctx();
+		public async Task ManagesUserOrganization() {
+			var c = await Ctx.Build();
 
 			c.AssertAll(p => p.ManagesUserOrganization(c.Manager.Id, false), c.Manager);
 			//Only admins manage themselves when self is disabled
@@ -94,8 +94,8 @@ namespace TractionTools.Tests.Permissions {
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void RemoveUser() {
-			var c = new Ctx();
+		public async Task RemoveUser() {
+			var c = await Ctx.Build();
 			//Admins only by default
 			foreach (var user in c.AllUsers) {
 				c.AssertAll(p => p.RemoveUser(user.Id), c.AllAdmins);
@@ -118,8 +118,8 @@ namespace TractionTools.Tests.Permissions {
 		 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void XXX() {
-			var c = new Ctx();
+		public async Task XXX() {
+			var c = await Ctx.Build();
 			c.AssertAll(p => p.XXX(YYY), c.Manager);
 		}
 

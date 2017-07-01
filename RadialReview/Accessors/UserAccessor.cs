@@ -431,7 +431,7 @@ namespace RadialReview.Accessors {
 						found.EvalOnly = evalOnly.Value;
 					} else {
 						o.OverrideEvalOnly = found.EvalOnly;
-						o.Errors.Add("Could not convert to "+Config.ReviewName()+" only. Remove user from L10 meetings first.");
+						o.Errors.Add("Could not convert to " + Config.ReviewName() + " only. Remove user from L10 meetings first.");
 					}
 				}
 
@@ -453,7 +453,7 @@ namespace RadialReview.Accessors {
 			}
 			return o;
 		}
-				
+
 		public int CreateDeepSubordinateTree(UserOrganizationModel caller, long organizationId, DateTime now) {
 			var count = 0;
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -651,12 +651,13 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public void EditUserModel(UserModel caller, string userId, string firstName, string lastName, string imageGuid, bool? sendTodoEmails, int? sendTodoTime, bool? showScorecardColors) {
+		public async Task EditUserModel(UserModel caller, string userId, string firstName, string lastName, string imageGuid, bool? sendTodoEmails, int? sendTodoTime, bool? showScorecardColors) {
+			UserModel userOrg;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					if (caller.Id != userId)
 						throw new PermissionsException();
-					var userOrg = s.Get<UserModel>(userId);
+					userOrg = s.Get<UserModel>(userId);
 					if (firstName != null)
 						userOrg.FirstName = firstName;
 					if (lastName != null)
@@ -682,13 +683,18 @@ namespace RadialReview.Accessors {
 								u.UpdateCache(s);
 						}
 					}
-
-					HooksRegistry.Each<IUpdateUserModelHook>(x => x.UpdateUserModel(s, userOrg));
-
 					tx.Commit();
 					s.Flush();
 				}
 			}
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					await HooksRegistry.Each<IUpdateUserModelHook>(x => x.UpdateUserModel(s, userOrg));
+					tx.Commit();
+					s.Flush();
+				}
+			}
+
 		}
 		public List<String> SideEffectRemove(UserOrganizationModel caller, long userId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -713,7 +719,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public ResultObject UndeleteUser(UserOrganizationModel caller, long userId) {
+		public async Task<ResultObject> UndeleteUser(UserOrganizationModel caller, long userId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).RemoveUser(userId);
@@ -814,7 +820,7 @@ namespace RadialReview.Accessors {
 					s.Update(user);
 					user.UpdateCache(s);
 
-					HooksRegistry.Each<IDeleteUserOrganizationHook>(x => x.UndeleteUser(s, user));
+					await HooksRegistry.Each<IDeleteUserOrganizationHook>(x => x.UndeleteUser(s, user));
 					tx.Commit();
 					s.Flush();
 
@@ -827,11 +833,13 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public ResultObject RemoveUser(UserOrganizationModel caller, long userId, DateTime now) {
+		public async Task<ResultObject> RemoveUser(UserOrganizationModel caller, long userId, DateTime now) {
+			UserOrganizationModel user;
+			var warnings = new List<String>();
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).RemoveUser(userId);
-					var user = s.Get<UserOrganizationModel>(userId);
+					user = s.Get<UserOrganizationModel>(userId);
 					user.DetachTime = now;
 					user.DeleteTime = now;
 
@@ -848,7 +856,6 @@ namespace RadialReview.Accessors {
 						//s.Delete(tempUser);
 					}
 
-					var warnings = new List<String>();
 					//new management structure
 					DeepAccessor.Users.DeleteAll(s, user, now);
 					//old management structure
@@ -919,17 +926,21 @@ namespace RadialReview.Accessors {
 					s.Update(user);
 					user.UpdateCache(s);
 
-					HooksRegistry.Each<IDeleteUserOrganizationHook>(x => x.DeleteUser(s, user));
-
 					tx.Commit();
 					s.Flush();
-
-					if (warnings.Count() == 0) {
-						return ResultObject.CreateMessage(StatusType.Success, "Successfully removed " + user.GetFirstName() + ".");
-					} else {
-						return ResultObject.CreateMessage(StatusType.Warning, "Successfully removed " + user.GetFirstName() + ".<br/><b>Warning:</b><br/>" + string.Join("<br/>", warnings));
-					}
 				}
+			}
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					await HooksRegistry.Each<IDeleteUserOrganizationHook>(x => x.DeleteUser(s, user));
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			if (warnings.Count() == 0) {
+				return ResultObject.CreateMessage(StatusType.Success, "Successfully removed " + user.GetFirstName() + ".");
+			} else {
+				return ResultObject.CreateMessage(StatusType.Warning, "Successfully removed " + user.GetFirstName() + ".<br/><b>Warning:</b><br/>" + string.Join("<br/>", warnings));
 			}
 		}
 
@@ -1080,6 +1091,14 @@ namespace RadialReview.Accessors {
 			user.UserName = user.UserName.NotNull(x => x.ToLower());
 			var resultx = await UserManager.CreateAsync(user, password);
 			AddSettings(resultx, user);
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					await HooksRegistry.Each<ICreateUserOrganizationHook>(x => x.OnUserRegister(s, user));
+					tx.Commit();
+					s.Flush();
+				}
+			}
+
 			return resultx;
 		}
 

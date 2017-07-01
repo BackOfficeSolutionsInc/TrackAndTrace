@@ -20,7 +20,7 @@ namespace TractionTools.Tests.Accessors {
 
 
 
-
+#pragma warning disable CS0618 // Type or member is obsolete
         [TestMethod]
         public void PaymentPlanTypesTests()
         {
@@ -34,9 +34,7 @@ namespace TractionTools.Tests.Accessors {
             Assert.AreEqual(PaymentPlanType.Enterprise_Monthly_March2016, PaymentAccessor.GetPlanType("ENTERPRISE"));
             Assert.AreEqual(PaymentPlanType.Professional_Monthly_March2016, PaymentAccessor.GetPlanType("professional"));
 
-#pragma warning disable CS0618 // Type or member is obsolete
 			var plan = PaymentAccessor.GeneratePlan(PaymentPlanType.SelfImplementer_Monthly_March2016);
-#pragma warning restore CS0618 // Type or member is obsolete
 
 			Assert.AreEqual(0, plan.Id);
             Assert.AreEqual(0, plan.OrgId);
@@ -45,9 +43,7 @@ namespace TractionTools.Tests.Accessors {
             Assert.AreEqual(12, plan.L10PricePerPerson);
             Assert.AreEqual(3, plan.ReviewPricePerPerson);
 
-#pragma warning disable CS0618 // Type or member is obsolete
 			plan = PaymentAccessor.GeneratePlan(PaymentPlanType.Enterprise_Monthly_March2016);
-#pragma warning restore CS0618 // Type or member is obsolete
 
 			Assert.AreEqual(0, plan.Id);
             Assert.AreEqual(0, plan.OrgId);
@@ -57,9 +53,7 @@ namespace TractionTools.Tests.Accessors {
             Assert.AreEqual(2, plan.ReviewPricePerPerson);
 
 
-#pragma warning disable CS0618 // Type or member is obsolete
 			plan = PaymentAccessor.GeneratePlan(PaymentPlanType.Professional_Monthly_March2016);
-#pragma warning restore CS0618 // Type or member is obsolete
 
 			Assert.AreEqual(0, plan.Id);
             Assert.AreEqual(0, plan.OrgId);
@@ -68,7 +62,9 @@ namespace TractionTools.Tests.Accessors {
             Assert.AreEqual(10, plan.L10PricePerPerson);
             Assert.AreEqual(2, plan.ReviewPricePerPerson);
         }
+#pragma warning restore CS0618 // Type or member is obsolete
 
+#pragma warning disable CS0618 // Type or member is obsolete
         private async Task TestPlan(UserModel userModel,PaymentPlanType plan,int baseCharge,
             int chargeAnd19Users_L10, int chargeAnd19Users_L10_Review, int chargeAnd17Users_L10, int chargeAnd17Users_L10_Review,
             int chargeAnd107Users_L10_Review)
@@ -78,10 +74,16 @@ namespace TractionTools.Tests.Accessors {
 			AccountabilityNode userNode;
 			var now = DateTime.UtcNow;
 
-            var org = new OrganizationAccessor().CreateOrganization(userModel,"PaymentPlanTest " + plan + " Org",plan,
-                now, out user,out userNode, true, true);
+
+			var data = new OrgCreationData() {
+				Name = "PaymentPlanTest " + plan + " Org",				
+				EnableL10 = true,
+				EnableReview = true,
+			};
+
+            var res = await new OrganizationAccessor().CreateOrganization(userModel, plan, now, data);
 			DbCommit(s => {
-				var o = s.Get<PaymentPlan_Monthly>(org.PaymentPlan.Id);
+				var o = s.Get<PaymentPlan_Monthly>(res.organization.PaymentPlan.Id);
 				o.NoChargeForUnregisteredUsers = false;
 				s.Update(o);
 			});
@@ -89,16 +91,16 @@ namespace TractionTools.Tests.Accessors {
 
 				var token = await PaymentAccessor.GenerateFakeCard(plan+" " + DateTime.UtcNow.ToJavascriptMilliseconds());
 
-            await PaymentAccessor.SetCard(user, org.Id, token.id, token.@class, token.card_type,
+            await PaymentAccessor.SetCard(res.NewUser, res.organization.Id, token.id, token.@class, token.card_type,
                 token.card_owner_name, token.last_4, token.card_exp_month, token.card_exp_year,
                 "", "", "", "", "", "", "", "", "", true);
 
-            Assert.IsNotNull(org.PaymentPlan);
-            Assert.IsNotNull(org.PaymentPlan.Task);
-            Assert.IsNotNull(org.PaymentPlan.Description);
+            Assert.IsNotNull(res.organization.PaymentPlan);
+            Assert.IsNotNull(res.organization.PaymentPlan.Task);
+            Assert.IsNotNull(res.organization.PaymentPlan.Description);
 
-			
-			var result =await TaskAccessor.ExecuteTask_Test(org.PaymentPlan.Task, now);
+
+			var result =await TaskAccessor.ExecuteTask_Test(res.organization.PaymentPlan.Task, now);
 			Assert.AreEqual(0, result.Response.amount_settled);
 			
 			var nextTask = result.NewTasks.Single();
@@ -112,7 +114,7 @@ namespace TractionTools.Tests.Accessors {
             var ids = new List<long>();
             DbCommit(s => {
                 for (var i = 0; i < 9; i++) {
-                    var u = new UserOrganizationModel() { Organization = org, CreateTime = now.AddDays(32 + i) };
+                    var u = new UserOrganizationModel() { Organization = res.organization, CreateTime = now.AddDays(32 + i) };
                     s.Save(u);
                     ids.Add(u.Id);
                 }
@@ -125,7 +127,7 @@ namespace TractionTools.Tests.Accessors {
             DbCommit(s => {
                 for (var i = 0; i < 9; i++) {
                     s.Save(new UserOrganizationModel() {
-						Organization = org, CreateTime = now.AddDays(62 + i)
+						Organization = res.organization, CreateTime = now.AddDays(62 + i)
 					});
                 }
             });
@@ -158,7 +160,7 @@ namespace TractionTools.Tests.Accessors {
 
 			DbCommit(s => {
                 for (var i = 0; i < 90; i++) {
-                    s.Save(new UserOrganizationModel() { Organization = org, CreateTime = now.AddDays(62) });
+                    s.Save(new UserOrganizationModel() { Organization = res.organization, CreateTime = now.AddDays(62) });
                 }
             });
 			
@@ -168,6 +170,7 @@ namespace TractionTools.Tests.Accessors {
 
 			Assert.Inconclusive("Also test Eval Only");
 		}
+#pragma warning restore CS0618 // Type or member is obsolete
 
         [TestMethod]
         public async Task ChargeOrgs()

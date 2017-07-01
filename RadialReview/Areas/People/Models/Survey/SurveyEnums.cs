@@ -17,11 +17,20 @@ namespace RadialReview.Areas.People.Models.Survey {
         Values = 3,
     }
 
-    public enum SurveyItemType {
-        Invalid = 0,
-        TextArea = 1,
-        TextBox = 2,
-        Radio = 3,
-        Text = 4,
-    }
+	public enum SurveyItemType {
+		Invalid = 0,
+		TextArea = 1,
+		TextBox = 2,
+		Radio = 3,
+		Text = 4,
+	}
+	public enum SurveyQuestionIdentifier {
+		None = 0,
+
+		Values = 1,
+		GWC = 2,
+		Rocks = 3,
+
+		GeneralComments = 100,
+	}
 }

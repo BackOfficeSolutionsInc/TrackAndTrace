@@ -534,7 +534,9 @@ namespace RadialReview.Accessors {
 				availableRect = new XRect(pageSize.Left, rect.Bottom, pageSize.Width, Math.Max(pageSize.Height - rect.Bottom, 1));
 			}
 
+#pragma warning disable CS0219 // Variable is assigned but its value is never used
 			var addedPage4 = false;
+#pragma warning restore CS0219 // Variable is assigned but its value is never used
 			PdfPage page4;
 			XGraphics gfxPage4 = null;
 
@@ -1355,9 +1357,9 @@ namespace RadialReview.Accessors {
 				ii = 0;
 				foreach (var w in weeks) {
 					var founds = recur.Scorecard.Scores.Where(x => x.ForWeek == w.ForWeekNumber && x.Measurable.Id == m.Id);
-					if (founds.Count() > 1) {
-						var a = 1;
-					}
+					//if (founds.Count() > 1) {
+					//	var a = 1;
+					//}
 					var found = founds.LastOrDefault();
 					if (found != null && found.Measured.HasValue) {
 						var val = found.Measured ?? 0;
@@ -1548,8 +1550,8 @@ namespace RadialReview.Accessors {
 			} else if (o is Cell) {
 				var cell = (Cell)o;
 				var family = cell.Format.Font.Name;
-				var h = 0.0;
-				var w = 0.0;
+				//var h = 0.0;
+				//var w = 0.0;
 				var maxH = new Unit(0.0);
 				var rowMin = new Unit(0.0);
 				if (cell.Row != null && cell.Row.HeightRule == RowHeightRule.AtLeast) {
@@ -1695,7 +1697,7 @@ namespace RadialReview.Accessors {
 						if (adj != null)
 							ho = adj;
 
-					} catch (Exception e) {
+					} catch (Exception) {
 						//fall back
 					}
 				}
@@ -1917,7 +1919,7 @@ namespace RadialReview.Accessors {
 		private static void AddVtoVision(Document doc, AngularVTO vto, string dateformat) {
 
 			Cell coreValuesPanel, coreFocusPanel, tenYearPanel, marketingStrategyPanel, threeYearPanel;
-			Table issueTable, rockTable, goalTable;
+			//Table issueTable, rockTable, goalTable;
 			Unit baseHeight = Unit.FromInch(5.1);//5.15
 
 

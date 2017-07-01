@@ -1,0 +1,24 @@
+﻿@model IEnumerable<RadialReview.Models.Application.Coach>
+
+<div id="impl"></div>
+
+@using (Html.BeginScripts()) {
+	<script>
+		var data =@Html.ArrayToString(Model);
+		DataTable({
+			container:"#impl",
+			clickAdd: "/admin/EditImplementers",
+			clickEdit: "/admin/EditImplementers/{0}",
+			clickRemove: "/admin/DeleteImplementers/{0}",
+			data: data,
+			cells: [
+				{name:"Name",contents:function(x){return x.Name;}, classes:"nowrap"},
+				{name:"Email",contents:function(x){return x.Email;}, classes:"fullWidth"},
+				{name:"Type",contents:function(x){return x.CoachType;}, classes:"nowrap"},
+				{edit:true},
+				{remove:true}
+			]
+		});
+
+	</script>
+}

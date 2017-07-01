@@ -8,36 +8,34 @@ using RadialReview.Accessors;
 using RadialReview.Models.Scorecard;
 using System.Linq;
 using RadialReview;
+using System.Threading.Tasks;
 
 namespace TractionTools.Tests.API.v0 {
 	[TestClass]
 	public class ScorecardApiTests_v0 : BaseTest {
 		[TestMethod]
 		[TestCategory("Api_V0")]
-		public void TestCurrentWeek() {
-			var ctx = new Ctx();
+		public async Task TestCurrentWeek() {
+			var ctx = await Ctx.Build();
 			var c = new WeekController();
 			c.MockUser(ctx.E1);
-
 			var week = c.Get();
-
 			var actualWeek = TimingUtility.GetWeekSinceEpoch(DateTime.UtcNow) + 1;
-
 			Assert.AreEqual(week.DataContract_Weeks, actualWeek);
-
 		}
 
 
 		[TestMethod]
 		[TestCategory("Api_V0")]
-		public void GetScore() {
-			var ctx = new Ctx();
+		public async Task GetScore() {
+			var ctx = await Ctx.Build();
 			var m1 = new MeasurableModel() {
 				AccountableUserId = ctx.E1.Id,
 				AdminUserId = ctx.E1.Id,
 				Title = "Meas1",
 				OrganizationId = ctx.Org.Organization.Id
 			};
+			MockHttpContext();
 			ScorecardAccessor.CreateMeasurable(ctx.Manager, m1 , false);
 
 			var score = L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2000L, (decimal?)null,null);
@@ -64,14 +62,15 @@ namespace TractionTools.Tests.API.v0 {
 
 		[TestMethod]
 		[TestCategory("Api_V0")]
-		public void PutScoreWeek() {
-			var ctx = new Ctx();
+		public async Task PutScoreWeek() {
+			var ctx = await Ctx.Build();
 			var m1 = new MeasurableModel() {
 				AccountableUserId = ctx.E1.Id,
 				AdminUserId = ctx.E1.Id,
 				Title = "Meas1",
 				OrganizationId = ctx.Org.Organization.Id
 			};
+			MockHttpContext();
 			ScorecardAccessor.CreateMeasurable(ctx.Manager, m1, false);
 			
 
@@ -96,9 +95,9 @@ namespace TractionTools.Tests.API.v0 {
 
 		[TestMethod]
 		[TestCategory("Api_V0")]
-		public void PutScore() {
+		public async Task PutScore() {
 			MockHttpContext();
-			var ctx = new Ctx();
+			var ctx = await Ctx.Build();
 
 			var m1 = new MeasurableModel() {
 				AccountableUserId = ctx.E1.Id,
@@ -107,11 +106,9 @@ namespace TractionTools.Tests.API.v0 {
 				OrganizationId = ctx.Org.Organization.Id
 			};
 			ScorecardAccessor.CreateMeasurable(ctx.Manager, m1, false);
-
 			var score = L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2000L, (decimal?)null, null);
 
 			var c = new ScoresController();
-
 			c.MockUser(ctx.E1);
 			c.Put(score.Id,null);
 			var s = ScorecardAccessor.GetScore(ctx.Manager, score.Id);
@@ -122,9 +119,7 @@ namespace TractionTools.Tests.API.v0 {
 			s = ScorecardAccessor.GetScore(ctx.Manager, m1.Id, 2000L);
 			Assert.AreEqual(s.Measured, 3.14m);
 
-
-			var score2 = L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2001L, (decimal?)6.14, null);
-			
+			var score2 = L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2001L, (decimal?)6.14, null);			
 			s = ScorecardAccessor.GetScore(ctx.Manager, score.Id);
 			Assert.AreEqual(s.Measured, 3.14m);
 			s = ScorecardAccessor.GetScore(ctx.Manager, score2.Id);

@@ -9,6 +9,7 @@ using RadialReview.Models.Components;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Events;
 using RadialReview.Models.Issues;
+using RadialReview.Models.Json;
 using RadialReview.Models.L10;
 using RadialReview.Models.Onboard;
 using RadialReview.Models.Reviews;
@@ -33,19 +34,74 @@ namespace RadialReview.Controllers {
 
 	public class AdminController : BaseController {
 
-		//[Access(AccessLevel.Radial)]
-		//public async Task<ActionResult> Plot()
-		//{
-		//    //var stream = new MemoryStream();
-		//    //var pngExporter = new PdfExporter { Width = 400, Height = 400, Background = OxyColors.White };
-		//    //var s=_ChartsEngine.ReviewScatter2(GetUser(), 797, 198, "about-*", true, false);
-		//    //var chart = OxyplotAccessor.ScatterPlot(s);
-		//    //pngExporter.Export(chart, stream);
-
-		//    return Pdf(PdfAccessor.GenerateReviewPrintout(GetUser(),))
-
-		//    return new FileStreamResult(new MemoryStream(stream.ToArray()), "application/pdf");
-		//}
+		#region Implementers
+		[Access(AccessLevel.Radial)]
+		public ActionResult Implementers() {
+			return View(ApplicationAccessor.GetCoaches(GetUser()));
+		}
+		[Access(AccessLevel.Radial)]
+		public PartialViewResult EditImplementers(long id=0) {
+			return PartialView(ApplicationAccessor.GetCoach(GetUser(), id));
+		}
+		[Access(AccessLevel.Radial)]
+		[HttpPost]
+		public JsonResult EditImplementers(Coach model) {
+			ApplicationAccessor.EditCoach(GetUser(), model);
+			return Json(ResultObject.SilentSuccess(model));
+		}
+		[Access(AccessLevel.Radial)]
+		[HttpPost]
+		public JsonResult DeleteImplementers(long id) {
+			var model = ApplicationAccessor.GetCoach(GetUser(), id);
+			model.DeleteTime = DateTime.UtcNow;
+			ApplicationAccessor.EditCoach(GetUser(), model);
+			return Json(ResultObject.SilentSuccess(model));
+		}
+		[Access(AccessLevel.Radial)]
+		public ActionResult SupportMembers() {
+			return View(ApplicationAccessor.GetSupportMembers(GetUser()));
+		}
+		[Access(AccessLevel.Radial)]
+		public PartialViewResult EditSupportMember(long id = 0) {
+			return PartialView(ApplicationAccessor.GetSupportMember(GetUser(), id));
+		}
+		[Access(AccessLevel.Radial)]
+		[HttpPost]
+		public JsonResult EditSupportMember(SupportMember model) {
+			ApplicationAccessor.EditSupportMember(GetUser(), model);
+			return Json(ResultObject.SilentSuccess(model));
+		}
+		[Access(AccessLevel.Radial)]
+		[HttpPost]
+		public JsonResult DeleteSupportMember(long id) {
+			var model = ApplicationAccessor.GetSupportMember(GetUser(), id);
+			model.DeleteTime = DateTime.UtcNow;
+			ApplicationAccessor.EditSupportMember(GetUser(), model);
+			return Json(ResultObject.SilentSuccess(model));
+		}
+		[Access(AccessLevel.Radial)]
+		public ActionResult Campaigns() {
+			return View(ApplicationAccessor.GetCampaigns(GetUser(),false));
+		}
+		[Access(AccessLevel.Radial)]
+		public PartialViewResult EditCampaign(long id = 0) {
+			return PartialView(ApplicationAccessor.GetCampaign(GetUser(), id));
+		}
+		[Access(AccessLevel.Radial)]
+		[HttpPost]
+		public JsonResult EditCampaign(Campaign model) {
+			ApplicationAccessor.EditCampaign(GetUser(), model);
+			return Json(ResultObject.SilentSuccess(model));
+		}
+		[Access(AccessLevel.Radial)]
+		[HttpPost]
+		public JsonResult DeleteCampaign(long id) {
+			var model = ApplicationAccessor.GetCampaign(GetUser(), id);
+			model.DeleteTime = DateTime.UtcNow;
+			ApplicationAccessor.EditCampaign(GetUser(), model);
+			return Json(ResultObject.SilentSuccess(model));
+		}
+		#endregion
 
 		[Access(AccessLevel.Radial)]
 		public ActionResult Signups(int days = 14) {
@@ -61,7 +117,9 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Radial)]
 		public ActionResult UserInfo(long id = 0) {
+#pragma warning disable CS0618 // Type or member is obsolete
 			return View(_UserAccessor.GetUserOrganizationUnsafe(id));
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 
@@ -203,6 +261,38 @@ namespace RadialReview.Controllers {
 					ViewBag.OrgLookup = new DefaultDictionary<long?, string>(x => org.FirstOrDefault(y => y.Id == x).NotNull(y => y.GetName()) ?? "" + x);
 					ViewBag.OrgStatusLookup = new DefaultDictionary<long?, AccountType>(x => org.FirstOrDefault(y => y.Id == x).NotNull(y => (AccountType?)y.AccountType) ?? AccountType.Invalid);
 					return View(evts);
+				}
+			}
+		}
+		[Access(AccessLevel.Radial)]
+		public ActionResult EventsCsv(int days = 30, long? orgId = null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var evtsQ = s.QueryOver<AccountEvent>().Where(x => x.DeleteTime == null && x.CreateTime > DateTime.UtcNow.AddDays(-days));
+					if (orgId != null) {
+						evtsQ = evtsQ.Where(x => x.OrgId == orgId.Value);
+						ViewBag.FixSidebar = false;
+					}
+
+					var evts = evtsQ.List().ToList();
+					var org = s.QueryOver<OrganizationModel>().WhereRestrictionOn(x => x.Id).IsIn(evts.Select(x => x.OrgId).ToArray()).List().ToList();
+					var OrgLookup = new DefaultDictionary<long?, string>(x => org.FirstOrDefault(y => y.Id == x).NotNull(y => y.GetName()) ?? "" + x);
+					var OrgStatusLookup = new DefaultDictionary<long?, AccountType>(x => org.FirstOrDefault(y => y.Id == x).NotNull(y => (AccountType?)y.AccountType) ?? AccountType.Invalid);
+
+					var csv = new Csv();
+					foreach (var evt in evts) {
+						csv.Add("" + evt.Id, "eid", "" + evt.Id);
+						csv.Add("" + evt.Id, "CreateTime", "" + evt.CreateTime);
+						csv.Add("" + evt.Id, "OrgId", "" + evt.OrgId);
+						csv.Add("" + evt.Id, "Org", "" + OrgLookup[evt.OrgId]);
+						csv.Add("" + evt.Id, "Status", "" + OrgStatusLookup[evt.OrgId]);
+						csv.Add("" + evt.Id, "Type", "" + evt.Type.Kind());
+						csv.Add("" + evt.Id, "Duration", "" + evt.Type.Duration());
+						csv.Add("" + evt.Id, "ByUser", "" + evt.TriggeredBy);
+						csv.Add("" + evt.Id, "Arg1", "" + evt.Argument1);
+					}
+
+					return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_Events"+orgId.NotNull(x=>"_"+x)+ ".csv");
 				}
 			}
 		}

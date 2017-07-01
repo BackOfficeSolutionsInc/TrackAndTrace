@@ -1718,6 +1718,10 @@ body.resizing .notes-tile:after,
 .dashboard .role-list-container td {
   padding: 6px 8px;
 }
+.dashboard .value-list-container .click-column,
+.dashboard .role-list-container .click-column {
+  color: rgba(62, 57, 53, 0.56);
+}
 .dashboard .value-list-container .number-column,
 .dashboard .role-list-container .number-column {
   width: 1px;

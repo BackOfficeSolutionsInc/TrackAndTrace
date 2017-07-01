@@ -53,9 +53,9 @@ namespace RadialReview.Api.V0
 
         [Route("positions/{id}/roles")]
         [HttpPut]
-        public AngularRole AddPositionRoles(long id, [FromBody]string name) // Angular
+        public async Task<AngularRole> AddPositionRoles(long id, [FromBody]string name) // Angular
         {
-            return new AngularRole(AccountabilityAccessor.AddRole(GetUser(), new Models.Enums.Attach(Models.Enums.AttachType.Position, id), name));
+            return new AngularRole(await AccountabilityAccessor.AddRole(GetUser(), new Models.Enums.Attach(Models.Enums.AttachType.Position, id), name));
         }
 
         //[PUT] /positions/

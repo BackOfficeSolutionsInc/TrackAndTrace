@@ -192,6 +192,28 @@ namespace RadialReview.Utilities {
 				});
 			}, alsoCheck);
 		}
+
+		public PermissionsUtility ManagesForModel(IForModel forModel, bool disableIfSelf) {
+			if (IsRadialAdmin(caller))
+				return this;
+
+			if (forModel.Is<UserOrganizationModel>()) {
+				return ManagesUserOrganization(forModel.ModelId, disableIfSelf);
+			} else if (forModel.Is<AccountabilityNode>()) {
+				if (disableIfSelf) {
+					var ac = session.Get<AccountabilityNode>(forModel.ModelId);
+					if (ac.NotNull(x => x.User.Id == caller.Id))
+						throw new PermissionsException("Cannot access. You do not manage this.");
+				}
+				return ManagesAccountabilityNodeOrSelf(forModel.ModelId);
+			} else if (forModel.Is<OrganizationModel>()) {
+				return ManagingOrganization(forModel.ModelId);
+			}
+
+			throw new PermissionsException("Unrecognized ForModel type.");
+
+		}
+
 		public PermissionsUtility ManagesUserOrganization(long userOrganizationId, bool disableIfSelf, params PermissionType[] alsoCheck) {
 			return TryWithOverrides(p => {
 				if (IsRadialAdmin(caller))
@@ -409,7 +431,7 @@ namespace RadialReview.Utilities {
 					}
 					throw new PermissionsException("You do not manage this node.");
 				}, alsoTry);
-			} catch (PermissionsException e) {
+			} catch (PermissionsException ) {
 				throw new PermissionsException("You do not manage this node.") {
 					NoErrorReport = true
 				};

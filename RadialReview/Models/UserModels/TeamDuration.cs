@@ -48,7 +48,9 @@ namespace RadialReview.Models.UserModels
 
 		public class TeamDurationMap : ClassMap<TeamDurationModel> {
 			public TeamDurationMap() {
+#pragma warning disable CS0618 // Type or member is obsolete
 				Id(x => x.Id);
+#pragma warning restore CS0618 // Type or member is obsolete
 				Map(x => x.CreateTime).Column("Start");
 				Map(x => x.AddedBy);
 				Map(x => x.DeletedBy);

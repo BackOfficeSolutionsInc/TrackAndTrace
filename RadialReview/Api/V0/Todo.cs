@@ -59,8 +59,8 @@ namespace RadialReview.Api.V0
         [HttpGet]
         public IEnumerable<AngularTodo> GetRecurrenceTodos(long recurrenceId)
         {
-            //L10Accessor.CreateBlankRecurrence()
-            return L10Accessor.GetAllTodosForRecurrence(GetUser(), recurrenceId, false).Select(x => new AngularTodo(x));
+			//await L10Accessor.CreateBlankRecurrence()
+			return L10Accessor.GetAllTodosForRecurrence(GetUser(), recurrenceId, false).Select(x => new AngularTodo(x));
         }
 
         // PUT: api/Todo/5

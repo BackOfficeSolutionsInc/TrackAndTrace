@@ -34,8 +34,10 @@ namespace RadialReview.Areas.People.Models.Survey {
             _Sections = new List<ISection>();
         }
 
-        public Survey(string name, ISurveyInitializerData data) : this(){
-            Name = name;
+#pragma warning disable CS0618 // Type or member is obsolete
+		public Survey(string name, ISurveyInitializerData data) : this() {
+#pragma warning restore CS0618 // Type or member is obsolete
+			Name = name;
             By = ForModel.From(data.By);
             About = ForModel.From(data.About);
             OrgId = data.OrgId;

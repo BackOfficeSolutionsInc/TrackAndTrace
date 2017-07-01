@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TractionTools.UITests.Selenium;
 using System.Threading.Tasks;
@@ -7,6 +7,8 @@ using OpenQA.Selenium.Support.UI;
 using System.Linq;
 using System.Threading;
 using OpenQA.Selenium;
+using RadialReview.Utilities;
+using RadialReview;
 
 namespace TractionTools.UITests.Evals {
 	[TestClass]
@@ -14,26 +16,33 @@ namespace TractionTools.UITests.Evals {
 
 		[TestMethod]
 		[TestCategory("Visual")]
+		public void ImageRegenerationIsFalse() {
+			Assert.IsFalse(Config.GetAppSetting("RegenerateImages", "false").ToBooleanJS(),"Turn off RegenerateImages in the app.config. All visual tests are incorrect until you do.");
+		}
+
+
+		[TestMethod]
+		[TestCategory("Visual")]
 		public async Task CanCreateEval() {
 			var testId = Guid.NewGuid();
 			//var AUC = await GetAdminCredentials(testId);
 			var AUC = await GetAdminCredentials(testId);
-			var org = OrgUtil.CreateFullOrganization("CanCreateEval");
+			var org = await OrgUtil.CreateFullOrganization("CanCreateEval");
 			//Visible for admin and managers
-			TestView(org.GetCredentials(org.Manager), "/", d => {
+			TestView(await org.GetCredentials(org.Manager), "/", d => {
 				d.DefaultTimeout(TimeSpan.FromSeconds(2));
 
 				d.Find("#header-tab-reviews").Click();
 				Assert.IsTrue(d.Find("#issue-eval-btn").Displayed);
 			});
-			TestView(org.GetCredentials(org.Middle), "/", d => {
+			TestView(await org.GetCredentials(org.Middle), "/", d => {
 				d.DefaultTimeout(TimeSpan.FromSeconds(2));
 				d.Find("#header-tab-reviews").Click();
 				Assert.IsTrue(d.Find("#issue-eval-btn").Displayed);
 			});
 
 			//Not visible for employee
-			TestView(org.GetCredentials(org.Employee), "/", d => {
+			TestView(await org.GetCredentials(org.Employee), "/", d => {
 				d.DefaultTimeout(TimeSpan.FromSeconds(2));
 				d.Find("#header-tab-reviews").Click();
 				d.NotFind("#issue-eval-btn");
@@ -47,10 +56,10 @@ namespace TractionTools.UITests.Evals {
 			//var AUC = await GetAdminCredentials(testId);
 			var AUC = await GetAdminCredentials(testId);
 			var orgName = "CreateNoSupervisor";
-			var org = OrgUtil.CreateFullOrganization(orgName);
+			var org = await OrgUtil.CreateFullOrganization(orgName);
 			string reviewName = null;
 			//Visible for admin and managers
-			TestView(org.GetCredentials(org.Manager), "/", d => {
+			TestView(await org.GetCredentials(org.Manager), "/", d => {
 				d.DefaultTimeout(TimeSpan.FromSeconds(15));
 
 				d.Find("#header-tab-reviews").Click();
@@ -94,7 +103,7 @@ namespace TractionTools.UITests.Evals {
 			});
 
 
-			TestView(org.GetCredentials(org.Employee), "/", d => {
+			TestView(await org.GetCredentials(org.Employee), "/", d => {
 				d.DefaultTimeout(TimeSpan.FromSeconds(15));
 				d.Find("#header-tab-reviews").Click();
 
@@ -118,7 +127,7 @@ namespace TractionTools.UITests.Evals {
 				org.AssertAllUsers(u => links.Any(x => x.Text == u.GetName()), org.Employee);
 			});
 
-			TestView(org.GetCredentials(org.Middle), "/", d => {
+			TestView(await org.GetCredentials(org.Middle), "/", d => {
 				d.DefaultTimeout(TimeSpan.FromSeconds(15));
 				d.Find("#header-tab-reviews").Click();
 
@@ -142,10 +151,10 @@ namespace TractionTools.UITests.Evals {
 			//var AUC = await GetAdminCredentials(testId);
 			var AUC = await GetAdminCredentials(testId);
 			var orgName = "CreateSupervisor";
-			var org = OrgUtil.CreateFullOrganization(orgName);
+			var org = await OrgUtil.CreateFullOrganization(orgName);
 			string reviewName = null;
 			//Visible for admin and managers
-			TestView(org.GetCredentials(org.Manager), "/", d => {
+			TestView(await org.GetCredentials(org.Manager), "/", d => {
 				d.DefaultTimeout(TimeSpan.FromSeconds(15));
 
 				d.Find("#header-tab-reviews").Click();
@@ -230,7 +239,7 @@ namespace TractionTools.UITests.Evals {
 				
 			});
 
-			TestView(org.GetCredentials(org.Employee), "/", d => {
+			TestView(await org.GetCredentials(org.Employee), "/", d => {
 				d.DefaultTimeout(TimeSpan.FromSeconds(15));
 				d.Find("#header-tab-reviews").Click();
 
@@ -253,7 +262,7 @@ namespace TractionTools.UITests.Evals {
 				org.AssertAllUsers(u => links.Any(x => x.Text == u.GetName()), org.Employee, org.E6);
 			});
 
-			TestView(org.GetCredentials(org.Middle), "/", d => {
+			TestView(await org.GetCredentials(org.Middle), "/", d => {
 				d.DefaultTimeout(TimeSpan.FromSeconds(15));
 				d.Find("#header-tab-reviews").Click();
 
@@ -267,9 +276,6 @@ namespace TractionTools.UITests.Evals {
 				//Make sure we're reviewing only these users
 				org.AssertAllUsers(u => links.Any(x => x.Text == u.GetName()), org.Middle, org.E1, org.E2, org.E3);
 			});
-
-
-
 		}
 	}
-}
+}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    

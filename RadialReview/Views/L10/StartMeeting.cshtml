@@ -27,17 +27,23 @@
 
                 @Html.ValidationSummary()
                 @Html.SecuredHiddenFor(x => x.Recurrence.Id)
-                <table style="width:100%">
-                    @foreach (var a in Model.Recurrence._DefaultAttendees) {
-                        <tr>
-                            <td style="width: 50%;"><span class="user-status-container user-status-container-@a.User.Id"></span></td>
-                            <td style="width: 1px;" class="check"><input type="checkbox" checked name="Attendees" value="@a.User.Id" /></td>
-                            <td style="width: 1px;" class="pix">@Html.Partial("_ProfilePicture", a.User)</td>
-                            <td style="width: 1px;white-space: nowrap;padding: 0 25px 0 5px;" class="name">@a.User.GetName()</td>
-                            <td style="width: 50%;"></td>
-                        </tr>
-                    }
-                </table>
+				<table style="width:100%">
+					@foreach (var a in Model.Recurrence._DefaultAttendees) {
+
+						var isChecked = Model.Recurrence.AttendingOffByDefault;
+						if (Model.Recurrence.AttendingOffByDefault && Model.Connected.Any(x => x.UserId == a.User.Id)) {
+							isChecked = true;
+						}
+
+						<tr>
+							<td style="width: 50%;" class="alignRight"><span class="user-status-container user-status-container1-@a.User.Id"></span></td>
+							<td style="width: 1px;" class="check"><input class="user-attendence-box user-attendence-box-@a.User.Id" type="checkbox" @(isChecked? "" : "checked") name="Attendees" value="@a.User.Id" /></td>
+							<td style="width: 1px;" class="pix">@Html.Partial("_ProfilePicture", a.User)</td>
+							<td style="width: 1px;white-space: nowrap;padding: 0 25px 0 5px;" class="name">@a.User.GetName()</td>
+							<td style="width: 50%;"></td>
+						</tr>
+					}
+				</table>
                 <div class="alignCenter">
                     <input type="submit" class="btn btn-primary center startButton" value="Start Meeting as Leader" id="l10-meeting-startbutton" />
                 </div>

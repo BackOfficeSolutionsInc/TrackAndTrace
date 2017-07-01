@@ -59,8 +59,8 @@ namespace RadialReview.Models.Pdf
 			Finalized = true;
 		}
 
-		public class Map : SubclassMap<ReportPdfModel> {
-			public Map() {
+		public class SubMap : SubclassMap<ReportPdfModel> {
+			public SubMap() {
 				Map(x => x.ForUserId);
 				Map(x => x.ForReviewId);
 				Map(x => x.ForReviewContainerId);

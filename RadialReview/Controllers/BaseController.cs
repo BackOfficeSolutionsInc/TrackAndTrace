@@ -429,62 +429,13 @@ namespace RadialReview.Controllers {
         }
 
         protected FileResult Pdf(Document document, string name = null, bool inline = true) {
-
-            //XPrivateFontCollection privateFontCollection = XPrivateFontCollection.;
-
-            //  Uri fontUri = new Uri(MappedAppPath() + "Content\\ttf\\");
-            //  //Uri fontUri = new Uri(Config.BaseUrl(caller.Organization) + "//");
-            //  privateFontCollection.AddFont("./#Arial");
-
-
-            //  // Render the document
-            //  DocumentRenderer documentRenderer = new DocumentRenderer(document);
-            //  documentRenderer.PrivateFonts = privateFontCollection;
-            //  documentRenderer.PrepareDocument();
-
-            //PrivateFontCollection pfc = new PrivateFontCollection();
-
-            //pfc.AddFontFile(Server.MapPath(@"~\Content\ttf\arial.ttf"));
-            //pfc.AddFontFile(Server.MapPath(@"~\Content\ttf\ARIALN.TTF"));
-            //pfc.AddFontFile(Server.MapPath(@"~\Content\ttf\ARIALNB.TTF"));
-
-            //XPrivateFontCollection globalFontCollection = XPrivateFontCollection.Global;
-            //new System.Windows.Application();
-
-            //// Add the 3 type faces of 'FrutigerLight' from the resources
-            //Uri uri = new Uri("pack://application:,,,/");
-            ////const string name = "./FrutigerFonts/#FrutigerLight";
-            ////const string name = "./Fonts/#Early Tickertape";
-            //const string n = "./#Arial Narrow";
-            //globalFontCollection.AddFont(uri, n);
-
-
-            ////XPdfFontOptions opt = new XPdfFontOptions(PdfFontEmbedding.Default);
-
-
-            //var assembly = Assembly.GetExecutingAssembly();
-
-            //foreach (var resourceName in assembly.GetManifestResourceNames()) {
-            //	try {
-            //		if (resourceName.ToLower().EndsWith(".ttf")) {
-            //			using (var resourceStream = assembly.GetManifestResourceStream(resourceName)) {
-            //				XPrivateFontCollection.Add(resourceStream);//, resourceName.Substring(0, resourceName.Length - 4).Split('.').Last());
-            //			}
-            //		}
-            //	} catch (Exception e) {
-            //		throw e;
-            //	}
-            //}
-
             var pdfRenderer = new PdfDocumentRenderer(true, PdfFontEmbedding.None);
             pdfRenderer.Document = document;
-            // pdfRenderer.DocumentRenderer = new DocumentRenderer(document) { PrivateFonts = pfc };
             pdfRenderer.RenderDocument();
 
             var stream = new MemoryStream();
             pdfRenderer.Save(stream, false);
             name = name ?? (Guid.NewGuid() + ".pdf");
-            //var file = File(stream, System.Net.Mime.MediaTypeNames.Application.Pdf, name);
             if (inline) {
                 //Response.Headers.Remove("Content-Disposition");
                 //var f = Response.Filter;

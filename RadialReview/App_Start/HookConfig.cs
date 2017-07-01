@@ -1,5 +1,6 @@
 ﻿using RadialReview.Accessors.Hooks;
 using RadialReview.Hooks;
+using RadialReview.Utilities;
 using RadialReview.Utilities.Hooks;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,8 @@ namespace RadialReview.App_Start {
 
 			HooksRegistry.RegisterHook(new UpdateUserModel_TeamNames());
 			HooksRegistry.RegisterHook(new UpdateRoles_Notifications());
+			HooksRegistry.RegisterHook(new ActiveCampaignEventHooks());
+			HooksRegistry.RegisterHook(new EnterpriseHook(Config.EnterpriseAboveUserCount()));
 
 			//HooksRegistry.RegisterHook(new TodoEdit())
 		}

@@ -39,7 +39,9 @@ namespace RadialReview.Utilities {
 		}
 
 		public static async Task<PaymentResult> ChargeToken(OrganizationModel org, PaymentSpringsToken token, decimal amount, bool forceTest = false) {
+#pragma warning disable CS0618 // Type or member is obsolete
 			return await ChargeToken(org, token.CustomerToken, amount, forceTest, token.TokenType == PaymentSpringTokenType.BankAccount);
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		[Obsolete("Unsafe")]

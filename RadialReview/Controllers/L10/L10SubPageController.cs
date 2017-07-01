@@ -80,7 +80,7 @@ namespace RadialReview.Controllers {
 							default:
 								break;
 						}
-					} catch (PermissionsException e) {
+					} catch (PermissionsException ) {
 						//Wrong page?
 						page = "default";//L10Accessor.GetDefaultStartPage(recurrence);
 
@@ -156,7 +156,7 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult StartMeeting(L10MeetingVM model) {
+		public async Task<ActionResult> StartMeeting(L10MeetingVM model) {
 			ValidateValues(model, x => x.Recurrence.Id);
 
 			/*if (model.Attendees == null || model.Attendees.Count() == 0)
@@ -171,7 +171,7 @@ namespace RadialReview.Controllers {
 				List<long> attendees = new List<long>();
 				if (model.Attendees != null)
 					attendees = allMembers.Where(x => model.Attendees.Contains(x)).ToList();
-				L10Accessor.StartMeeting(GetUser(), GetUser(), model.Recurrence.Id, attendees);
+				await L10Accessor.StartMeeting(GetUser(), GetUser(), model.Recurrence.Id, attendees);
 				var tempRecur = L10Accessor.GetL10Recurrence(GetUser(), model.Recurrence.Id, true);
 				var p = L10Accessor.GetDefaultStartPage(tempRecur);
 				return RedirectToAction("Load", new { id = model.Recurrence.Id, page = p });

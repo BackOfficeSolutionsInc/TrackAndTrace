@@ -8,12 +8,14 @@ using System.Web;
 namespace RadialReview.Areas.People.Engines.Surveys.Impl {
 	public class TextAreaItemIntializer : IItemInitializer {
 		public string Name { get; set; }
-		public TextAreaItemIntializer(string name) {
+		public SurveyQuestionIdentifier QuestionIdentifier { get; set; }
+		public TextAreaItemIntializer(string name, SurveyQuestionIdentifier questionIdentifier) {
 			Name = name;
+			QuestionIdentifier = questionIdentifier;
 		}
 
 		public IItemFormatRegistry GetItemFormat(IItemFormatInitializerCtx ctx) {
-			return ctx.RegistrationItemFormat(false, () => new SurveyItemFormat(ctx, SurveyItemType.TextArea));
+			return ctx.RegistrationItemFormat(false, () => new SurveyItemFormat(ctx, QuestionIdentifier, SurveyItemType.TextArea));
 		}
 
 		public bool HasResponse(IResponseInitializerCtx ctx) {

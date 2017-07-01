@@ -121,6 +121,7 @@
     <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="Areas\People\Accessors\QuarterlyConversationAccessor.cs" />
     <Compile Include="Areas\People\Accessors\SurveyAccessor.cs" />
+    <Compile Include="Areas\People\Accessors\PDF\SurveyPdfAccessor.cs" />
     <Compile Include="Areas\People\Angular\AngularPeopleAnalyzer.cs" />
     <Compile Include="Areas\People\Angular\Survey\AngularForModel.cs" />
     <Compile Include="Areas\People\Angular\Survey\AngularSurveyContainer.cs" />
@@ -173,6 +174,8 @@
     <Compile Include="Areas\People\Engines\Surveys\Strategies\Events\SurveyBuilderEventsNoOp.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Strategies\Events\SurveyBuilderEventsSaveStrategy.cs" />
     <Compile Include="Areas\People\Engines\Surveys\SurveyReconstructionEngine.cs" />
+    <Compile Include="Hooks\ActiveCampaignEventHooks.cs" />
+    <Compile Include="Hooks\EnterpriseHook.cs" />
     <Compile Include="Hooks\UpdateRoles_Notifications.cs" />
     <Compile Include="Hooks\UpdateUserModel_TeamNames.cs" />
     <Compile Include="Hubs\PeopleHub.cs" />
@@ -185,6 +188,9 @@
     <Compile Include="Models\Angular\Rocks\AngularMilestone.cs" />
     <Compile Include="Models\Angular\Scorecard\AngularMeasurableGroup.cs" />
     <Compile Include="Models\Angular\Team\AngularTeam.cs" />
+    <Compile Include="Models\Application\Campaign.cs" />
+    <Compile Include="Models\Application\SupportMember.cs" />
+    <Compile Include="Models\Application\Coach.cs" />
     <Compile Include="Models\Enums\RGMType.cs" />
     <Compile Include="Models\Enums\VideoConferenceType.cs" />
     <Compile Include="Models\Events\Event.cs" />
@@ -363,7 +369,7 @@
     <Compile Include="Controllers\ResponsibilitiesController.cs" />
     <Compile Include="Controllers\ReviewController.cs" />
     <Compile Include="Controllers\ReviewsController.cs" />
-    <Compile Include="Controllers\SurveyController.cs" />
+    <Compile Include="Controllers\SurveysController.cs" />
     <Compile Include="Controllers\TeamController.cs" />
     <Compile Include="Controllers\TemplateController.cs" />
     <Compile Include="Controllers\Upload\UploadController.cs" />
@@ -749,17 +755,18 @@
     <Compile Include="Utilities\Extensions\ViewBagExtensions.cs" />
     <Compile Include="Utilities\FileUtilities.cs" />
     <Compile Include="Utilities\DistanceUtility.cs" />
+    <Compile Include="Utilities\ForModelUtil.cs" />
     <Compile Include="Utilities\GraphUtility.cs" />
     <Compile Include="Utilities\HashUtil.cs" />
     <Compile Include="Utilities\Hooks\IAccountEvent.cs" />
     <Compile Include="Utilities\Hooks\IHeadlineHook.cs" />
-    <Compile Include="Utilities\Hooks\ICreateTodo.cs" />
-    <Compile Include="Utilities\Hooks\ICreateUserOrganization.cs" />
-    <Compile Include="Utilities\Hooks\IDeleteUserOrganizationHook.cs" />
+    <Compile Include="Utilities\Hooks\IMeetingEvents.cs" />
+    <Compile Include="Utilities\Hooks\ITodoHook.cs" />
+    <Compile Include="Utilities\Hooks\IUserHooks.cs" />
     <Compile Include="Utilities\Hooks\IHook.cs" />
     <Compile Include="Utilities\Hooks\IRolesHook.cs" />
-    <Compile Include="Utilities\Hooks\IUpdateUserModelHook.cs" />
     <Compile Include="Utilities\HtmlUtility.cs" />
+    <Compile Include="Utilities\Integrations\ActiveCampaign.cs" />
     <Compile Include="Utilities\NHibernateHelper.cs" />
     <Compile Include="Utilities\NHibernate\AuditEventListener.cs" />
     <Compile Include="Utilities\NHibernate\Context.cs" />
@@ -831,6 +838,7 @@
     <Compile Include="Utilities\Query\SessionUpdate.cs" />
     <Compile Include="Utilities\RandomUtility.cs" />
     <Compile Include="Utilities\ShortenerUtility.cs" />
+    <Compile Include="Utilities\NHibernate\SingleRequestTransaction.cs" />
     <Compile Include="Utilities\StreamUtil.cs" />
     <Compile Include="Utilities\SubordinateUtility.cs" />
     <Compile Include="Utilities\Synchronize\SyncAction.cs" />
@@ -1133,6 +1141,7 @@
     <Content Include="Scripts\L10\L10Wizard.js" />
     <Content Include="Scripts\Main\iefixes.js" />
     <Content Include="Scripts\Main\intercom.min.js" />
+    <Content Include="Scripts\Main\linq.js" />
     <Content Include="Scripts\Main\log-helper.js" />
     <Content Include="Scripts\speechrecog.js" />
     <Content Include="Scripts\Tour\startL10.js" />
@@ -1519,6 +1528,12 @@
     <Content Include="Views\L10\MeetingSummary.cshtml" />
     <Content Include="Views\Rocks\EditModal.cshtml" />
     <Content Include="Views\Milestone\EditModal.cshtml" />
+    <Content Include="Views\Admin\Implementers.cshtml" />
+    <Content Include="Views\Admin\EditImplementers.cshtml" />
+    <Content Include="Views\Admin\EditSupportMember.cshtml" />
+    <Content Include="Views\Admin\SupportMembers.cshtml" />
+    <Content Include="Views\Admin\EditCampaign.cshtml" />
+    <Content Include="Views\Admin\Campaigns.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -2240,7 +2255,6 @@
     <Folder Include="Models\Notifications\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
     <Folder Include="Utilities\Migradoc\XYScatter\" />
-    <Folder Include="Utilities\NewFolder1\" />
     <Folder Include="Views\AngularAccountability\" />
     <Folder Include="Views\Console\" />
     <Folder Include="Views\Data\" />

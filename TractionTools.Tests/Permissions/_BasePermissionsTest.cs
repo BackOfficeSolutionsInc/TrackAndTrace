@@ -4,11 +4,12 @@ using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TractionTools.Tests.TestUtils;
 using TractionTools.Tests.Utilities;
 
 namespace TractionTools.Tests.Permissions {
-	public class BasePermissionsTest : BaseTest{
+	public class BasePermissionsTest : BaseTest {
 		public class Ctx {
 			public FullOrg Org { get; set; }
 			public Org OtherOrg { get; set; }
@@ -33,11 +34,44 @@ namespace TractionTools.Tests.Permissions {
 
 
 			public PermissionsAccessor Perms { get; set; }
+			private Ctx() { }
 
-			public Ctx() {
-				Org = OrgUtil.CreateFullOrganization();
-				OtherOrg = OrgUtil.CreateOrganization();
-				Perms = new PermissionsAccessor();
+			public static async Task<Ctx> Build() {
+				var ctx = new Ctx();
+				RemoveIsTest();
+				SessionTransaction stx= new SessionTransaction();
+				stx.s = HibernateSession.GetCurrentSession();
+				try {
+					stx.tx = stx.s.BeginTransaction();
+					try {
+						//stx = new SessionTransaction() { s = s, tx = tx };
+						ctx.Org = await OrgUtil.CreateFullOrganization(stx);
+						stx.tx.Commit();
+						stx.s.Flush();
+					} finally {
+						stx.tx.Dispose();
+					}
+				} finally {
+					stx.s.Dispose();
+				}
+				RemoveIsTest();
+				stx.s = HibernateSession.GetCurrentSession();
+				try {
+					stx.tx = stx.s.BeginTransaction();
+					try {
+						//stx = new SessionTransaction() { s = s, tx = tx };
+						ctx.OtherOrg = await OrgUtil.CreateOrganization(stx);
+						ctx.Perms = new PermissionsAccessor();
+						stx.tx.Commit();
+						stx.s.Flush();
+					} finally {
+						stx.tx.Dispose();
+					}
+				} finally {
+					stx.s.Dispose();
+				}
+				ctx.Perms = new PermissionsAccessor();
+				return ctx;
 			}
 
 			public void AssertAll(Action<PermissionsUtility> ensurePermitted, IEnumerable<UserOrganizationModel> trueFor) {
@@ -46,10 +80,14 @@ namespace TractionTools.Tests.Permissions {
 			public void AssertAll(Action<PermissionsUtility> ensurePermitted, params UserOrganizationModel[] trueFor) {
 				var myOrgUsers = Org.AllUsers.Where(x => trueFor.Any(y => y.Id == x.Id));
 				var otherOrgUsers = OtherOrg.AllUsers.Where(x => trueFor.Any(y => y.Id == x.Id));
-				
+
 				Org.AssertAllUsers(user => Perms.IsPermitted(user, ensurePermitted), myOrgUsers);
 				OtherOrg.AssertAllUsers(user => Perms.IsPermitted(user, ensurePermitted), otherOrgUsers);
 
+			}
+
+			public async Task RegisterUser(UserOrganizationModel user) {
+				await Org.RegisterUser(user);
 			}
 
 		}

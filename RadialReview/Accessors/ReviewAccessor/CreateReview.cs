@@ -118,8 +118,8 @@ namespace RadialReview.Accessors {
 			UserOrganizationModel caller, long forTeamId, DateTime dueDate, String reviewName, bool emails, bool anonFeedback,
 			List<WhoReviewsWho> whoReviewsWho/*, long periodId, long nextPeriodId*/) {
 			var unsentEmails = new List<Mail>();
-			using (var s = HibernateSession.GetCurrentSession()) {
-				ReviewsModel reviewContainer;
+			ReviewsModel reviewContainer;
+			using (var s = HibernateSession.GetCurrentSession(singleSession: false)) {
 				var hub = GlobalHost.ConnectionManager.GetHubContext<AlertHub>();
 				var userId = caller.User.UserName;
 
@@ -183,16 +183,20 @@ namespace RadialReview.Accessors {
 					////////////////////////////////////////////
 					unsentEmails.AddRange(clientReviews);
 
-					EventUtil.Trigger(x => x.Create(s, EventType.IssueReview, caller, reviewContainer, message: reviewContainer.ReviewName));
 
 					tx.Commit();
 					s.Flush();
 					hub.Clients.User(userId).status("Done!");
-
-
-
 				}
 			}
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					await EventUtil.Trigger(x => x.Create(s, EventType.IssueReview, caller, reviewContainer, message: reviewContainer.ReviewName));
+					tx.Commit();
+					s.Flush();
+				}
+			}
+
 			var emailResult = new EmailResult();
 			if (emails) {
 				emailResult = await Emailer.SendEmails(unsentEmails);
@@ -264,6 +268,7 @@ namespace RadialReview.Accessors {
 
 				s.SaveOrUpdate(reviewContainer);
 				tx.Commit();
+				s.Flush(); //ADDED
 			}
 		}
 
@@ -347,7 +352,7 @@ namespace RadialReview.Accessors {
 
 							if (revieweeReview == null) {
 								var u = dataInteraction.Get<UserOrganizationModel>(user.RGMId);
-								QuestionAccessor.GenerateReviewForUser(context, dataInteraction, perms,u, reviewContainer, new AskableCollection());
+								QuestionAccessor.GenerateReviewForUser(context, dataInteraction, perms, u, reviewContainer, new AskableCollection());
 							}
 
 						} catch (Exception e) {

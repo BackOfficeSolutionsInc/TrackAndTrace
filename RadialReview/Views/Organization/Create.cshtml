@@ -1,56 +1,186 @@
-﻿@{
-    ViewBag.Title = RadialReview.Properties.DisplayNameStrings.createOrganization;
-    Layout = "~/Views/Shared/_Layout.cshtml";
+﻿@model RadialReview.Models.OrgCreationData
+
+@{
+	ViewBag.Title = RadialReview.Properties.DisplayNameStrings.createOrganization;
+	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="row">
-    <div class="col-md-12 jumbotron" style="height:300px;">
-        <div class="container">
+	<div class="col-md-12">
+		<div class="container">
 
-            <h2 class="text-center">@RadialReview.Properties.DisplayNameStrings.createOrganization</h2>
-            <div class="smallBreak"></div>
-            <div class="smallBreak"></div>
-            <div class="smallBreak"></div>
+			@Html.ValidationSummary()
 
-            @using (Html.BeginForm())
-            {
-                @Html.AntiForgeryToken()
-                @Html.ValidationSummary(true)
+			@using (Html.BeginForm()) {
+				@Html.AntiForgeryToken()
+				@Html.ValidationSummary(true)
+
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						Create Organization
+					</div>
+					<div class="panel-body form-horizontal">
+
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="name">Organization Name</label>
+							<div class="col-sm-10">
+								@Html.TextBoxFor(x => x.Name, new { @class = "form-control", placeholder = "Organization Name" })
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="name">Account Type</label>
+									<div class="col-sm-8">
+										@Html.EnumDropDownListFor(x => x.AccountType, new { @class = "form-control" })
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="name">Referral Source</label>
+									<div class="col-sm-8">
+										@Html.DropDownListFor(x => x.ReferralSource, (IEnumerable<SelectListItem>)ViewBag.Campaigns, new { @class = "form-control" })
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-4 control-label" for="name">Assigned To</label>
+									<div class="col-sm-8">
+										@Html.DropDownListFor(x => x.AssignedTo, (IEnumerable<SelectListItem>)ViewBag.SupportTeam, new { @class = "form-control" })
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="form-group">
+									<div class="col-sm-offset-4 col-sm-8">
+										<div class="checkbox">
+											<label>
+												@Html.CheckBoxFor(x => x.EnableL10) Enable L10
+											</label>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-sm-offset-4 col-sm-8">
+										<div class="checkbox">
+											<label>
+												@Html.CheckBoxFor(x => x.EnableAC) Enable Accountability Chart
+											</label>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-sm-offset-4 col-sm-8">
+										<div class="checkbox">
+											<label>
+												@Html.CheckBoxFor(x => x.EnableReview) Enable Old Review Software
+											</label>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						Primary Contact
+					</div>
+					<div class="panel-body form-horizontal">
+
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="contactFN">Name</label>
+							<div class="col-sm-5">
+								@Html.TextBoxFor(x => x.ContactFN, new { @class = "form-control" , placeholder="First name"})
+							</div>
+						@*</div>
+
+						<div class="form-group">*@
+							<div class="col-sm-5">
+								@Html.TextBoxFor(x => x.ContactLN, new { @class = "form-control", placeholder = "First name" })
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="contactEmail">Email</label>
+							<div class="col-sm-10">
+								@Html.TextBoxFor(x => x.ContactEmail, new { @class = "form-control", placeholder = "Email" })
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="contactEmail">Position</label>
+							<div class="col-sm-10">
+								@Html.TextBoxFor(x => x.ContactPosition, new { @class = "form-control", placeholder = "Position (optional)" })
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							Implementer/Coach
+						</div>
+						<div class="panel-body form-horizontal">
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="implementer">Has Coach</label>
+								<div class="col-sm-10">
+									@Html.EnumDropDownListFor(x => x.HasCoach, new { @class = "form-control coach-control", style = "width:calc(100% - 100px)" })
+								</div>
+							</div>
+							@*<div class="form-group has-coach hidden">
+									<label class="col-sm-2 control-label" for="implementer">Coach Type</label>
+									<div class="col-sm-10">
+										@Html.EnumDropDownListFor(x => x.CoachType, new { @class = "form-control", style = "width:calc(100% - 100px)" })
+									</div>
+								</div>*@
+							<div class="form-group has-coach hidden">
+								<label class="col-sm-2 control-label" for="implementer">Coach</label>
+								<div class="col-sm-10">
+									<span class="clickable" style="font-size:90%;float:right" onclick="@Html.ShowModal("Add","/admin/editimplementers","/admin/editimplementers",onCompleteFunction:"addToList")">Add coach</span>
+									@Html.DropDownListFor(x => x.CoachId, ((IEnumerable<SelectListItem>)ViewBag.Implementers).ToList(), new { @class = "form-control implementerList", style = "width:calc(100% - 100px)" })
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="alignCenter">
+						<button class="btn btn-success">@RadialReview.Properties.DisplayNameStrings.create</button>
+					</div>
 
 
-                <div class="row col-md-6 col-md-offset-3">
-                    <div class="col-md-12">
-						<input type="text" class="form-control" name="name" placeholder="@RadialReview.Properties.DisplayNameStrings.organizationName" />
-	                    <label>Enable L10 Meeting Software:</label> 						@Html.CheckBox("enableL10")
-						<label>Enable @Html.ReviewName() Software:</label> @Html.CheckBox("enableReview")
-                    </div>
-                    @*<div class="col-md-12">
-                        @Html.CheckBox("managersCanEdit")
-                        @Html.Label(RadialReview.Properties.DisplayNameStrings.managerCanAddQuestions)
-                    </div>*@
-                    <div class="smallBreak"></div>
-                    <div class="row col-md-12" >
-                        <button class="btn btn-success col-xs-12 col-sm-8 col-sm-offset-2">@RadialReview.Properties.DisplayNameStrings.create</button>
-                    </div>
-                </div>
-                <div class="row">
-                </div>
+						@*<fieldset class="form-horizontal">
+								<div class="control-group">
+									@Html.LabelFor(model => model.Name, new { @class = "control-label" })
+									<div class="controls">
 
-                @*<fieldset class="form-horizontal">
-                        <div class="control-group">
-                            @Html.LabelFor(model => model.Name, new { @class = "control-label" })
-                            <div class="controls">
+										<div class="input-group">
+											@Html.EditorFor(model => model.Name, new { @class = "form-control" })
+											<span class="input-group-btn">
+												<button class="btn btn-default" type="submit">Go!</button>
+											</span>
+										</div>
+									</div>
+								</div>
+							</fieldset>*@
+			}
+		</div>
 
-                                <div class="input-group">
-                                    @Html.EditorFor(model => model.Name, new { @class = "form-control" })
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-default" type="submit">Go!</button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </fieldset>*@
-            }
-        </div>
-    </div>
+	</div>
 </div>
+@using (Html.BeginScripts()) {
+	<script>
+		function addToList(res) {
+			var data = res.Object;
+
+			$(".implementerList").append("<option value='" + data.Id + "'>" + data.Name + "</option>")
+			$(".implementerList").val(data.Id);
+		}
+
+		$(".coach-control").on("change", function () {
+			var isYes = $(this).val() == 1;
+			$(".has-coach").toggleClass("hidden", !isYes);
+		});
+
+	</script>
+			}

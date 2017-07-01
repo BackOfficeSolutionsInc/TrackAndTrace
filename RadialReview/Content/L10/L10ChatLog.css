@@ -23,3 +23,87 @@
   list-style-type: none;
   padding-left: 5px;
 }
+.online-component-container {
+  padding-bottom: 15px;
+  z-index: -10;
+}
+.online-component-container .online-component {
+  z-index: 1;
+  margin-bottom: 15px;
+}
+.online-component-container .online-component .options {
+  display: none;
+}
+.online-component-container .online-component .toggle {
+  transition: 0.25s margin-bottom ease-in-out;
+}
+.online-component-container .online-component .user-picture-container {
+  padding-left: 8px;
+  padding-right: 8px;
+  max-height: 0px;
+  overflow: hidden;
+  -webkit-transition: 0.25s max-height ease-in-out;
+  -moz-transition: 0.25s max-height ease-in-out;
+  -o-transition: 0.25s max-height ease-in-out;
+  transition: 0.25s max-height ease-in-out;
+}
+.online-component-container .online-component .user-picture-container .picture-container {
+  height: 34px;
+  width: 34px;
+  margin: 1px;
+  padding: 1px;
+  border: 1px solid #ccc;
+}
+.online-component-container .online-component.on .user-picture-container {
+  display: block;
+  max-height: 150px;
+}
+.online-component-container .online-component.on .toggle {
+  border-bottom: 2px solid #F7F7F7;
+  margin-bottom: 6px;
+}
+.online-component-container .online-component.on .toggle .glyphicon-chevron-down {
+  top: 4px;
+  padding-left: 2px;
+}
+.online-component-container .online-component.on .options {
+  display: block;
+  float: right;
+  font-size: 10px;
+  top: -10px;
+  position: relative;
+  z-index: -10;
+  -webkit-transition: 0.2s top ease-in-out, 0.2s opacity ease-in-out;
+  -moz-transition: 0.2s top ease-in-out, 0.2s opacity ease-in-out;
+  -o-transition: 0.2s top ease-in-out, 0.2s opacity ease-in-out;
+  transition: 0.2s top ease-in-out, 0.2s opacity ease-in-out;
+  opacity: 0;
+}
+.online-component-container .online-component.on .options .option {
+  padding: 0 2px;
+  cursor: pointer;
+}
+.online-component-container .online-component .user-picture {
+  cursor: pointer;
+}
+.online-component-container .online-component .user-picture .notification-icon .checkmark {
+  position: relative;
+  left: -12px;
+  top: -19px;
+  font-size: 14px;
+  width: 13px;
+  height: 13px;
+  border-radius: 7px;
+  margin-right: -13px;
+  padding-left: 0px;
+  border: 0px;
+  color: #3c763d;
+  background: #a8ffa8;
+  background-color: #dff0d8;
+  border-color: #d6e9c6;
+}
+.online-component-container:hover .online-component.on .options {
+  top: 6px;
+  z-index: 5;
+  opacity: 1;
+}

@@ -13,6 +13,7 @@ using System.Web;
 using static RadialReview.Accessors.PDF.D3.Layout;
 using static RadialReview.Accessors.PDF.JS.Tree;
 
+#pragma warning disable CS0162 // Unreachable code detected
 namespace RadialReview.Accessors.PDF {
 	public class AccountabilityChartPDF {
 
@@ -266,6 +267,7 @@ namespace RadialReview.Accessors.PDF {
 
 			if (DEBUG) {
 				gfx.DrawRectangle(new XPen(XPens.Blue) { DashStyle = XDashStyle.Dot }, x + PAGE_MARGIN, y + PAGE_MARGIN, me.width - PAGE_MARGIN * 2, me.height - PAGE_MARGIN * 2);
+
 				gfx.DrawRectangle(XPens.Blue, x, y, me.width, me.height);
 			}
 		}
@@ -666,3 +668,4 @@ namespace RadialReview.Accessors.PDF {
 		}
 	}
 }
+#pragma warning restore CS0162 // Unreachable code detected

@@ -18,6 +18,7 @@ namespace TractionTools.Tests.Accessors {
 	public class PaymentAccessorTests : BaseTest {
 
 
+#pragma warning disable CS0618 // Type or member is obsolete
 		[TestMethod]
 		public async Task ChargeOrganization() {
 
@@ -25,7 +26,7 @@ namespace TractionTools.Tests.Accessors {
 			var orgCreateTime = now;
 			var executeTime = orgCreateTime.AddDays(60);
 
-			var org = OrgUtil.CreateOrganization(time: orgCreateTime);
+			var org = await OrgUtil.CreateOrganization(time: orgCreateTime);
 
 			var caller = org.Manager;
 
@@ -77,7 +78,7 @@ namespace TractionTools.Tests.Accessors {
 			Assert.IsNotNull(result);
 			Assert.IsTrue(result.Executed);
 			Assert.IsFalse(result.Error);
-			DbExecute(s => task = s.Get<ScheduledTask>(task.Id));
+			DbQuery(s => task = s.Get<ScheduledTask>(task.Id));
 			Assert.IsNull(task.Started);
 			Assert.IsNotNull(task.Executed);
 			Assert.AreEqual(0, task.ExceptionCount);
@@ -111,7 +112,7 @@ namespace TractionTools.Tests.Accessors {
 				ManagerNodeId = org.ManagerNode.Id
 			};
 
-			JoinOrganizationAccessor.AddUser(caller, settings);
+			await JoinOrganizationAccessor.AddUser(caller, settings);
 
 
 			//Try with newly created task
@@ -121,7 +122,7 @@ namespace TractionTools.Tests.Accessors {
 			Assert.IsNotNull(result);
 			Assert.IsTrue(result.Executed);
 			Assert.IsFalse(result.Error);
-			DbExecute(s => task = s.Get<ScheduledTask>(task.Id));
+			DbQuery(s => task = s.Get<ScheduledTask>(task.Id));
 			Assert.IsNull(task.Started);
 			Assert.IsNotNull(task.Executed);
 			Assert.AreEqual(0, task.ExceptionCount);
@@ -149,3 +150,4 @@ namespace TractionTools.Tests.Accessors {
 		}
 	}
 }
+#pragma warning restore CS0618 // Type or member is obsolete

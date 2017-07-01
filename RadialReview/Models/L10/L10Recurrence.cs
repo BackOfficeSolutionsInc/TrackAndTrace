@@ -9,6 +9,10 @@ using RadialReview.Models.Interfaces;
 using RadialReview.Models.Scorecard;
 using RadialReview.Model.Enums;
 using RadialReview.Models.VideoConference;
+using RadialReview.Utilities.DataTypes;
+using RadialReview.Hubs;
+using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace RadialReview.Models.L10 {
 	public enum PrioritizationType {
@@ -48,6 +52,7 @@ namespace RadialReview.Models.L10 {
 		public virtual bool Pristine { get; set; }
 
 		public virtual bool CountDown { get; set; }
+		public virtual bool AttendingOffByDefault { get; set; }
 		public virtual int CurrentWeekHighlightShift { get; set; }
 
 		public virtual bool IncludeIndividualTodos { get; set; }
@@ -121,6 +126,7 @@ namespace RadialReview.Models.L10 {
 			TodoListMinutes = 5;
 			IDSMinutes = 60;
 			ConclusionMinutes = 5;
+			AttendingOffByDefault = false;
 			IncludeIndividualTodos = false;
 			IncludeAggregateTodoCompletion = false;
 			EnableTranscription = false;
@@ -129,14 +135,16 @@ namespace RadialReview.Models.L10 {
 			IsLeadershipTeam = true;
 			IncludeAggregateTodoCompletionOnPrintout = true;
 			Prioritization = PrioritizationType.Rank;
-			ShowHeadlinesBox = false;
 			HeadlineType = PeopleHeadlineType.HeadlinesList;
 			RockType = L10RockType.Original;
 			TeamType = L10TeamType.LeadershipTeam;
 			CombineRocks = false;
 			CurrentWeekHighlightShift = 0;
 			PreventEditingUnownedMeasurables = false;
-			
+
+#pragma warning disable CS0618 // Type or member is obsolete
+			ShowHeadlinesBox = false;
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		public class L10RecurrenceMap : ClassMap<L10Recurrence> {
@@ -147,11 +155,11 @@ namespace RadialReview.Models.L10 {
 				Map(x => x.CombineRocks);
 				Map(x => x.Pristine);
 				Map(x => x.CurrentWeekHighlightShift);
-				Map(x => x.ShowHeadlinesBox);
 				Map(x => x.HeadlineType);
 				Map(x => x.MeetingType);
 				Map(x => x.RockType);
 				Map(x => x.HeadlinesId);
+				Map(x => x.AttendingOffByDefault);
 				Map(x => x.CreateTime);
 				Map(x => x.MeetingInProgress);
 				Map(x => x.DeleteTime);
@@ -183,6 +191,10 @@ namespace RadialReview.Models.L10 {
 				References(x => x.Organization).Column("OrganizationId").LazyLoad().ReadOnly();
 				Map(x => x.SelectedVideoProviderId).Column("SelectedVideoProviderId");
 				References(x => x.SelectedVideoProvider).Column("SelectedVideoProviderId").LazyLoad().Nullable().ReadOnly();
+
+#pragma warning disable CS0618 // Type or member is obsolete
+				Map(x => x.ShowHeadlinesBox);
+#pragma warning restore CS0618 // Type or member is obsolete
 			}
 		}
 
@@ -264,7 +276,37 @@ namespace RadialReview.Models.L10 {
 			public virtual bool _Used { get; set; }
 		}
 
+		[DataContract]
+		public class L10Recurrence_Connection : IHistorical {
+			[DataMember]
+			public virtual string Id { get; set; }
+			public virtual DateTime CreateTime { get; set; }
+			[DataMember]
+			public virtual DateTime? DeleteTime { get; set; }
+			public virtual long UserId { get; set; }
+			public virtual long RecurrenceId { get; set; }
+			//public virtual string ConnectionId { get; set; }
+			[JsonProperty("User")]
+			[DataMember]
+			public virtual TinyUser _User { get; set; }
 
+			[Obsolete("DeleteTime is automatically set to the ping timeout.")]
+			public L10Recurrence_Connection() {
+				CreateTime = DateTime.UtcNow;
+				DeleteTime = MeetingHub.NowPlusPingTimeout();
+			}
+
+
+			public class Map : ClassMap<L10Recurrence_Connection> {
+				public Map() {
+					Id(x => x.Id).GeneratedBy.Assigned();
+					Map(x => x.CreateTime);
+					Map(x => x.DeleteTime);
+					Map(x => x.UserId);
+					Map(x => x.RecurrenceId);
+				}
+			}
+		}
 
 		public class L10Recurrence_VideoConferenceProvider : ILongIdentifiable, IDeletable, IOneToMany {
 			public virtual long Id { get; set; }

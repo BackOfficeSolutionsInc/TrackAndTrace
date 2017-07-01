@@ -31,7 +31,9 @@ namespace RadialReview.Models.Angular.Notifications {
 			var output = new List<AngularNotification>();
 
 			foreach (var n in orderedNotifications) {
+#pragma warning disable CS0618 // Type or member is obsolete
 				var an = new AngularNotification(n);
+#pragma warning restore CS0618 // Type or member is obsolete
 				switch (n.Grouping) {
 					case NotificationGroupType.Individual: {
 							//an.Details = an.Details.Union(an.AsList());

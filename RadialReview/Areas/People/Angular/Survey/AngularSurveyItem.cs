@@ -83,6 +83,7 @@ namespace RadialReview.Areas.People.Angular.Survey {
 			TemplateModifier = DEFAULT_TEMPLATE_MODIFIER;
 			Ordering = itemFormat.GetOrdering();
 			Settings = itemFormat.GetSettings();
+			QuestionIdentifier = itemFormat.GetQuestionIdentifier();
 		}
 
 		public string Name { get; set; }
@@ -90,7 +91,9 @@ namespace RadialReview.Areas.People.Angular.Survey {
 		public int? Ordering { get; set; }
 		[JsonConverter(typeof(StringEnumConverter))]
 		public SurveyItemType? ItemType { get; set; }
-
+		[JsonConverter(typeof(StringEnumConverter))]
+		public SurveyQuestionIdentifier? QuestionIdentifier { get; set; }
+		
 		public string TemplateModifier { get; set; }
 
 		public IDictionary<string, object> Settings { get; set; }
@@ -127,6 +130,10 @@ namespace RadialReview.Areas.People.Angular.Survey {
 				return (T)found;
 			return default(T);
 		}
+
+		public SurveyQuestionIdentifier GetQuestionIdentifier() {
+			return QuestionIdentifier ?? SurveyQuestionIdentifier.None;
+		}
 	}
 
 	public class AngularSurveyResponse : BaseAngular, IResponse {
@@ -141,6 +148,10 @@ namespace RadialReview.Areas.People.Angular.Survey {
 			Answer = response.GetAnswer();
 			Ordering = response.GetOrdering();
 			ItemFormatId = response.GetItemFormatId();
+			var byAbout = response.GetByAbout();
+			By = new AngularForModel(byAbout.GetBy());
+			About = new AngularForModel(byAbout.GetAbout());
+			
 		}
 
 		public string Name { get; set; }
@@ -148,6 +159,9 @@ namespace RadialReview.Areas.People.Angular.Survey {
 		public int? Ordering { get; set; }
 		public long? ItemFormatId { get; set; }
 		public long? ItemId { get; set; }
+
+		public AngularForModel By { get; set; }
+		public AngularForModel About { get; set; }
 
 		public string Answer { get; set; }
 
@@ -171,6 +185,10 @@ namespace RadialReview.Areas.People.Angular.Survey {
 		}
 		public string GetAnswer() {
 			return Answer;
+		}
+
+		public IByAbout GetByAbout() {
+			return new ByAbout(By, About);
 		}
 	}
 

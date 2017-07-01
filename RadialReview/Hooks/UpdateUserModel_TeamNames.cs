@@ -6,11 +6,12 @@ using System.Web;
 using NHibernate;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
+using System.Threading.Tasks;
 
 namespace RadialReview.Hooks {
 	public class UpdateUserModel_TeamNames : IUpdateUserModelHook {
 
-		public void UpdateUserModel(ISession s, UserModel user) {
+		public async Task UpdateUserModel(ISession s, UserModel user) {
 			var uos = s.QueryOver<UserOrganizationModel>().Where(x => x.User.Id == user.Id && x.ManagerAtOrganization).List().ToList();
 			var uoIds = uos.Select(y => y.Id).Distinct().ToArray();
 			if (uoIds.Any()) {

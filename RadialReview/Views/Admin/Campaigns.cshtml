@@ -1,0 +1,23 @@
+﻿@model IEnumerable<RadialReview.Models.Application.Campaign>
+
+<div id="impl"></div>
+
+@using (Html.BeginScripts()) {
+	<script>
+		var data =@Html.ArrayToString(Model);
+		DataTable({
+			container:"#impl",
+			clickAdd: "/admin/EditCampaign",
+			clickEdit: "/admin/EditCampaign/{0}",
+			clickRemove: "/admin/DeleteCampaign/{0}",
+			data: data,
+			cells: [
+				{name:"",contents:function(x){return "<input disabled type='checkbox'"+(!x.HideFromList?"checked":"")+"/>";}, classes:"nowrap"},
+				{name:"Name",contents:function(x){return x.Name;}, classes:"fullWidth"},
+				{edit:true},
+				{remove:true}
+			]
+		});
+
+	</script>
+}

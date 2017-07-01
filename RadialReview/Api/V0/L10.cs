@@ -25,11 +25,9 @@ namespace RadialReview.Api.V0 {
 		// PUT: api/L10
 		[Route("L10/Create")]
 		[HttpPut]
-		public long CreateL10([FromBody]string name) {
-			var _recurrence = L10Accessor.CreateBlankRecurrence(GetUser(), GetUser().Organization.Id);
-
+		public async Task<long> CreateL10([FromBody]string name) {
+			var _recurrence = await L10Accessor.CreateBlankRecurrence(GetUser(), GetUser().Organization.Id);
 			L10Accessor.UpdateRecurrence(GetUser(), _recurrence.Id, name);
-
 			return _recurrence.Id;
 		}
 
@@ -65,8 +63,8 @@ namespace RadialReview.Api.V0 {
 
 		[Route("L10/{recurrenceId}")]
 		[HttpDelete]
-		public void RemoveL10(long recurrenceId) {
-			L10Accessor.DeleteL10Recurrence(GetUser(), recurrenceId);
+		public async Task RemoveL10(long recurrenceId) {
+			await L10Accessor.DeleteL10Recurrence(GetUser(), recurrenceId);
 		}
 
 		[Route("L10/attachtodo/{recurrenceId}")]

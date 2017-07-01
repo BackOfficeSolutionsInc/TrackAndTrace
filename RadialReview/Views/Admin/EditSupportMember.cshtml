@@ -1,0 +1,22 @@
+﻿@model RadialReview.Models.Application.SupportMember
+
+@{
+	Layout = null;
+}
+
+
+@Html.HiddenFor(x => x.Id)
+@Html.HiddenFor(x => x.CreateTime)
+@Html.HiddenFor(x => x.DeleteTime)
+
+<div class="form-horizontal">
+	<div class="form-group">
+		<label class="col-sm-2 control-label" for="UserId">User</label>
+		<div class="col-sm-10">
+			@Html.Partial("~/Views/Shared/EditorTemplates/SearchUsers.cshtml", new ViewDataDictionary() {
+				{ "SearchUrl","/Search/AdminAllUsers" },
+				{"Name","UserOrgId" }
+			})
+		</div>
+	</div>
+</div>

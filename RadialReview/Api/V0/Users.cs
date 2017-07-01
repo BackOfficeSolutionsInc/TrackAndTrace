@@ -14,6 +14,7 @@ using RadialReview.Models.ViewModels;
 using RadialReview.Models.Json;
 using RadialReview.Models.Accountability;
 using RadialReview.Models.UserModels;
+using System.Threading.Tasks;
 
 namespace RadialReview.Api.V0
 {
@@ -66,17 +67,17 @@ namespace RadialReview.Api.V0
         //--
         [Route("users/")]
         [HttpPut]
-        public AngularUser CreateUser([FromBody]string firstName, [FromBody]string lastName, [FromBody]string email, [FromBody]long? managerNodeId = null, [FromBody]bool? SendEmail = null)
+        public async Task<AngularUser> CreateUser([FromBody]string firstName, [FromBody]string lastName, [FromBody]string email, [FromBody]long? managerNodeId = null, [FromBody]bool? SendEmail = null)
         {
-            var outParam = new UserOrganizationModel();
+            //var outParam = new UserOrganizationModel();
             if (!SendEmail.HasValue)
             {
                 SendEmail = GetUser().Organization.SendEmailImmediately;
             }
-            JoinOrganizationAccessor.CreateUserUnderManager(GetUser(), new CreateUserOrganizationViewModel()
-            { FirstName = firstName, LastName = lastName, Email = email, OrgId = GetUser().Organization.Id, SendEmail = SendEmail.Value }, out outParam);
+			var model = new CreateUserOrganizationViewModel() { FirstName = firstName, LastName = lastName, Email = email, OrgId = GetUser().Organization.Id, SendEmail = SendEmail.Value };
+            var result = await JoinOrganizationAccessor.CreateUserUnderManager(GetUser(), model);
 
-            return AngularUser.CreateUser(outParam);
+            return AngularUser.CreateUser(result.User);
         }
 
 
@@ -91,9 +92,9 @@ namespace RadialReview.Api.V0
 
         [Route("users/{userId}")]
         [HttpDelete]
-        public ResultObject DeleteUsers(long userId)
+        public async Task<ResultObject> DeleteUsers(long userId)
         {
-            return new UserAccessor().RemoveUser(GetUser(), userId, DateTime.UtcNow);
+            return await new UserAccessor().RemoveUser(GetUser(), userId, DateTime.UtcNow);
         }
 
         //[GET] /users/{userid}/roles/

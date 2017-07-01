@@ -34,6 +34,10 @@ namespace RadialReview.Utilities.DataTypes
 			EndTime = DateTime.MaxValue;
 		}
 
+		public static DateRange Instant(DateTime time) {
+			return new DateRange(time, time);
+		}
+
 
 	}
 	public static class DateRangeExtensions {

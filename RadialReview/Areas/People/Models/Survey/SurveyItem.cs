@@ -33,8 +33,10 @@ namespace RadialReview.Areas.People.Models.Survey {
             CreateTime = DateTime.UtcNow;
         }
 
-        public SurveyItem(IItemInitializerData data, string name, IForModel source) : this() {
-            Name = name;
+#pragma warning disable CS0618 // Type or member is obsolete
+		public SurveyItem(IItemInitializerData data, string name, IForModel source) : this() {
+#pragma warning restore CS0618 // Type or member is obsolete
+			Name = name;
             OrgId = data.OrgId;
             SurveyContainerId = data.SurveyContainer.Id;
             SurveyId = data.Survey.Id;

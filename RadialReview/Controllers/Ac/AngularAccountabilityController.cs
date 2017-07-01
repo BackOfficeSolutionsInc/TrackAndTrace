@@ -7,6 +7,7 @@ using RadialReview.Utilities.DataTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -17,17 +18,17 @@ namespace RadialReview.Controllers
 		// GET: AngularAccountability
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult UpdateAngularAccountabilityNode(AngularAccountabilityNode model, string connectionId = null)
+		public async Task<JsonResult> UpdateAngularAccountabilityNode(AngularAccountabilityNode model, string connectionId = null)
 		{
-			AccountabilityAccessor.Update(GetUser(), model, connectionId);
+			await AccountabilityAccessor.Update(GetUser(), model, connectionId);
 			return Json(ResultObject.SilentSuccess());
 		}
 
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult UpdateAngularRole(AngularRole model, string connectionId = null) {
-			AccountabilityAccessor.Update(GetUser(), model, connectionId);
+		public async Task<JsonResult> UpdateAngularRole(AngularRole model, string connectionId = null) {
+			await AccountabilityAccessor.Update(GetUser(), model, connectionId);
 			return Json(ResultObject.SilentSuccess());
 		}
 		[HttpPost]
@@ -64,8 +65,8 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult AddRole(long aid,AttachType atype) {
-			AccountabilityAccessor.AddRole(GetUser(), new Attach(atype,aid));
+		public async Task<JsonResult> AddRole(long aid,AttachType atype) {
+			await AccountabilityAccessor.AddRole(GetUser(), new Attach(atype,aid));
 			return Json(ResultObject.SilentSuccess());
 		}
 

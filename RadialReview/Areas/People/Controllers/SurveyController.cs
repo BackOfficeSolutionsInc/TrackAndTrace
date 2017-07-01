@@ -28,7 +28,7 @@ namespace RadialReview.Areas.People.Controllers {
             //var output2 = new AngularSurveySection() {
             //    Items = new[] { output1 }
             //};
-            var output = SurveyAccessor.GetAngularSurveyContainer(GetUser(),GetUser(), 6);
+            var output = SurveyAccessor.GetAngularSurveyContainerBy(GetUser(),GetUser(), 6);
             var output2 = output.Surveys.First().Sections.First().Items.First().ItemFormat.Settings;
 
 
@@ -52,7 +52,7 @@ namespace RadialReview.Areas.People.Controllers {
 
         [Access(AccessLevel.UserOrganization)]
         public JsonResult Data(long surveyContainerId) {
-            var output =SurveyAccessor.GetAngularSurveyContainer(GetUser(), GetUser(),surveyContainerId);
+            var output =SurveyAccessor.GetAngularSurveyContainerBy(GetUser(), GetUser(),surveyContainerId);
             return Json(output, JsonRequestBehavior.AllowGet);
         }
 		

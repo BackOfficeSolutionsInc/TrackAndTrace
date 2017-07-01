@@ -24,6 +24,7 @@ using RadialReview.Utilities.Synchronize;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using static RadialReview.Models.PermItem;
 using static RadialReview.Utilities.RealTime.RealTimeUtility;
@@ -32,7 +33,7 @@ namespace RadialReview.Accessors {
 	public class AccountabilityAccessor : BaseAccessor {
 
         #region Single call
-        public static void Update(UserOrganizationModel caller, IAngularItem model, string connectionId) {
+        public static async Task Update(UserOrganizationModel caller, IAngularItem model, string connectionId) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     using (var rt = RealTimeUtility.Create(connectionId)) {
@@ -45,7 +46,7 @@ namespace RadialReview.Accessors {
                         } else if (model.Type == typeof(AngularRole).Name) {
                             var m = (AngularRole)model;
                             //UpdateIssue(caller, (long)model.GetOrDefault("Id", null), (string)model.GetOrDefault("Name", null), (string)model.GetOrDefault("Details", null), (bool?)model.GetOrDefault("Complete", null), connectionId);
-                            UpdateRole(s, rt, perms, m.Id, m.Name);
+                            await UpdateRole(s, rt, perms, m.Id, m.Name);
                         } else {
                             throw new PermissionsException("Unhandled type: " + model.Type);
                         }
@@ -888,7 +889,9 @@ namespace RadialReview.Accessors {
 
         [Obsolete("Use the other AppendNode")]
         public static AccountabilityNode AppendNode(ISession s, PermissionsUtility perms, RealTimeUtility rt, long parentNodeId, long? rolesGroupId, long? userId, bool skipAddManager) {
-            var now = DateTime.UtcNow;
+			rt = rt ?? RealTimeUtility.Create(false);
+
+			var now = DateTime.UtcNow;
             var parent = s.Get<AccountabilityNode>(parentNodeId);
             if (parent == null)
                 throw new PermissionsException("Parent does not exist");
@@ -949,7 +952,7 @@ namespace RadialReview.Accessors {
 
         }
 
-        public static AccountabilityNode AppendNode(UserOrganizationModel caller, long parentNodeId, long? rolesGroupId = null, long? userId = null) {
+		public static AccountabilityNode AppendNode(UserOrganizationModel caller, long parentNodeId, long? rolesGroupId = null, long? userId = null) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     using (var rt = RealTimeUtility.Create()) {
@@ -965,12 +968,12 @@ namespace RadialReview.Accessors {
             }
         }
 
-        public static RoleModel AddRole(UserOrganizationModel caller, Attach attach, string name = null) {
+        public static async Task<RoleModel> AddRole(UserOrganizationModel caller, Attach attach, string name = null) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     using (var rt = RealTimeUtility.Create()) {
                         var perms = PermissionsUtility.Create(s, caller);
-                        var model = AddRole(s, perms, rt, attach, name);
+                        var model = await AddRole(s, perms, rt, attach, name);
 
                         tx.Commit();
                         s.Flush();
@@ -981,7 +984,7 @@ namespace RadialReview.Accessors {
             }
         }
 
-        public static RoleModel AddRole(ISession s, PermissionsUtility perms, RealTimeUtility rt, Attach attachTo, string name = null)
+        public static async Task<RoleModel> AddRole(ISession s, PermissionsUtility perms, RealTimeUtility rt, Attach attachTo, string name = null)
         {
 
             perms.EditAttach(attachTo);
@@ -1001,7 +1004,7 @@ namespace RadialReview.Accessors {
             };
 
             s.Save(r);
-            HooksRegistry.Each<IRolesHook>(x => x.CreateRole(s, r));
+            await HooksRegistry.Each<IRolesHook>(x => x.CreateRole(s, r));
 
             UserTemplateAccessor.AddRoleToAttach_Unsafe(s, perms, orgId, attachTo, r);
 
@@ -1197,7 +1200,7 @@ namespace RadialReview.Accessors {
             }
         }
 		
-        public static void UpdateRole(ISession s, RealTimeUtility rt, PermissionsUtility perms, long roleId, string name) {
+        public static async Task UpdateRole(ISession s, RealTimeUtility rt, PermissionsUtility perms, long roleId, string name) {
             perms.EditRole(roleId);
 
             SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateRole(roleId));
@@ -1206,7 +1209,7 @@ namespace RadialReview.Accessors {
 
             role.Role = name;
             s.Update(role);
-            HooksRegistry.Each<IRolesHook>(x => x.UpdateRole(s, role));
+            await HooksRegistry.Each<IRolesHook>(x => x.UpdateRole(s, role));
 
             rt.UpdateOrganization(role.OrganizationId).Update(new AngularRole(roleId) {
                 Name = name ?? Removed.String()

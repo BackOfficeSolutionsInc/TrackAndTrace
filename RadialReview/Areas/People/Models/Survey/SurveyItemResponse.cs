@@ -17,8 +17,10 @@ namespace RadialReview.Areas.People.Models.Survey {
         [Obsolete("Use other constructor")]
         private SurveyItemContainer() {
         }
-        public SurveyItemContainer(IItem item, IResponse response, IItemFormat format) : this() {
-            Item = item;
+#pragma warning disable CS0618 // Type or member is obsolete
+		public SurveyItemContainer(IItem item, IResponse response, IItemFormat format) : this() {
+#pragma warning restore CS0618 // Type or member is obsolete
+			Item = item;
             Response = response;
             Format = format;
         }

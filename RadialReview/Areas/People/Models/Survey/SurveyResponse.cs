@@ -47,10 +47,12 @@ namespace RadialReview.Areas.People.Models.Survey {
         public virtual ISection _Section { get; set; }
         public virtual IItem _Item { get; set; }
         public virtual IItemFormat _ItemFormat { get; set; }
-        
 
-        public SurveyResponse(IResponseInitializerCtx ctx,IItemFormat format,string defaultAnswer =null) :this(){
-            OrgId = ctx.OrgId;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+		public SurveyResponse(IResponseInitializerCtx ctx,IItemFormat format,string defaultAnswer =null) :this() {
+#pragma warning restore CS0618 // Type or member is obsolete
+			OrgId = ctx.OrgId;
             By = ForModel.From(ctx.Survey.GetBy());
             About = ForModel.From(ctx.Survey.GetAbout());
             SurveyType = ctx.SurveyContainer.GetSurveyType();
@@ -85,18 +87,24 @@ namespace RadialReview.Areas.People.Models.Survey {
             return ItemFormatId;
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         public virtual string GetName() {
             return Name;
         }
         public virtual string GetHelp() {
-            return Help;
-        }
+			return Help;
+		}
         public virtual int GetOrdering() {
             return Ordering;
         }
+#pragma warning restore CS0618 // Type or member is obsolete
 
 		public virtual string GetAnswer() {
 			return Answer;
+		}
+
+		public virtual IByAbout GetByAbout() {
+			return new ByAbout(By, About);
 		}
 
 		public class Map : ClassMap<SurveyResponse> {

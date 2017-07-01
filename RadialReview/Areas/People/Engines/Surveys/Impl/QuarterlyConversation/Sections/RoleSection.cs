@@ -16,14 +16,16 @@ using RadialReview.Models.Accountability;
 namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.Sections {
 	public class RoleSection : ISectionInitializer {
 		public IEnumerable<IItemInitializer> GetAllPossibleItemBuilders(IEnumerable<IByAbout> byAbouts) {
+#pragma warning disable CS0618 // Type or member is obsolete
 			yield return new RoleListItem();
 			yield return new RoleResponseItem();
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		public IEnumerable<IItemInitializer> GetItemBuilders(IItemInitializerData data) {
 			var modelType = data.Survey.GetAbout().ModelType;
 
-			var genComments = new TextAreaItemIntializer("General Comments");
+			var genComments = new TextAreaItemIntializer("General Comments", SurveyQuestionIdentifier.GeneralComments);
 
 			if (modelType == ForModel.GetModelType<UserOrganizationModel>()) {
 				var query = data.Lookup.Get<RoleLinksQuery>("RoleQuery");
@@ -99,7 +101,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 				{"no",  "No" },
 			};
 
-			return data.RegistrationItemFormat(true, () => SurveyItemFormat.GenerateRadio(data, options, new KV("gwc",Value.ToLower())), Value);
+			return data.RegistrationItemFormat(true, () => SurveyItemFormat.GenerateRadio(data,SurveyQuestionIdentifier.GWC, options), Value);
 		}
 
 		public bool HasResponse(IResponseInitializerCtx data) {
@@ -131,7 +133,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		}
 
 		public IItemFormatRegistry GetItemFormat(IItemFormatInitializerCtx ctx) {
-			return ctx.RegistrationItemFormat(true, () => SurveyItemFormat.GenerateText(ctx));
+			return ctx.RegistrationItemFormat(true, () => SurveyItemFormat.GenerateText(ctx,SurveyQuestionIdentifier.None));
 		}
 
 		public bool HasResponse(IResponseInitializerCtx data) {

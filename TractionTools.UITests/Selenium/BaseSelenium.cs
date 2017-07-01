@@ -29,6 +29,12 @@ using TractionTools.UITests.Utilities.Extensions;
 using System.Drawing;
 using OpenQA.Selenium.Remote;
 using System.Reflection;
+using OpenQA.Selenium.Support.UI;
+using System.Data.SQLite;
+using FluentNHibernate.Cfg;
+using FluentNHibernate.Cfg.Db;
+using NHibernate.Tool.hbm2ddl;
+using RadialReview.Accessors;
 
 namespace TractionTools.UITests.Selenium {
 	//http://stephenwalther.com/archive/2011/12/22/asp-net-mvc-selenium-iisexpress
@@ -39,7 +45,8 @@ namespace TractionTools.UITests.Selenium {
 		Chrome = 1,
 		Firefox = 2,
 		IE = 4,
-		All = 7
+		All = 7,
+		Headless = 8,
 	}
 
 	[TestClass]
@@ -58,6 +65,7 @@ namespace TractionTools.UITests.Selenium {
 		public static FirefoxDriver _FirefoxDriver;
 		public static ChromeDriver _ChromeDriver;
 		public static InternetExplorerDriver _InternetExplorerDriver;
+		public static RemoteWebDriver _Headless;
 
 		public WithBrowsers RequiredBrowsers {
 			get {
@@ -116,6 +124,9 @@ namespace TractionTools.UITests.Selenium {
 			}
 		}
 
+		private const string ConnectionString = "FullUri=file:memorydb.db?mode=memory&cache=shared";
+		//private static SQLiteConnection _connection;
+
 		[AssemblyInitialize]
 		public static void AssemblyInitialize(TestContext ctx) {
 			// Start IISExpress
@@ -131,9 +142,37 @@ namespace TractionTools.UITests.Selenium {
 			_ChromeDriver.Navigate().GoToUrl(GetAbsoluteUrl("/Account/login"));
 			//_FirefoxDriver.Navigate().GoToUrl(GetAbsoluteUrl("/Account/login"));
 			//_InternetExplorerDriver.Navigate().GoToUrl(GetAbsoluteUrl("/Account/login"));
+
+			///////CONFIGURE DB/////
+			/*For in memory database... cant be used, db cannot be accessed across processes (ISS, TestRunner)*/
+			//var configuration = Fluently.Configure()
+			//						   .Database(SQLiteConfiguration.Standard.ConnectionString(ConnectionString))
+			//						   .Mappings(m => m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>())
+			//						   .ExposeConfiguration(x => x.SetProperty("current_session_context_class", "call"))
+			//						   .ExposeConfiguration(x => x.SetProperty("release_mode", "on_close"))
+			//						   .BuildConfiguration();
+
+			//// Create the schema in the database
+			//// Because it's an in-memory database, we hold this connection open until all the tests are finished
+			//var schemaExport = new SchemaExport(configuration);
+			//_connection = new SQLiteConnection(ConnectionString);
+			//_connection.Open();
+			//schemaExport.Execute(false, true, false, _connection, null);
+
+			//ApplicationAccessor.EnsureApplicationExists();
+			///////CONFIGURE DB END/////
+
 		}
 		[AssemblyCleanup]
 		public static void AssemblyCleanup() {
+			///////DE-CONFIGURE DB/////
+			//if (_connection != null) {
+			//	_connection.Dispose();
+			//	_connection = null;
+			//}
+			///////DE-CONFIGURE DB END/////
+
+
 			// Ensure IISExpress is stopped
 			KillAllISSExpress();
 			// Stop all Selenium drivers
@@ -185,6 +224,11 @@ namespace TractionTools.UITests.Selenium {
 						if (_InternetExplorerDriver == null)
 							_InternetExplorerDriver = new InternetExplorerDriver();
 						return _InternetExplorerDriver;
+					}
+				case WithBrowsers.Headless: {
+						if (_Headless == null)
+							_Headless = new RemoteWebDriver(DesiredCapabilities.HtmlUnit());
+						return _Headless;
 					}
 			}
 			throw new ArgumentOutOfRangeException("Unhandled Browser: " + flag);
@@ -420,7 +464,7 @@ namespace TractionTools.UITests.Selenium {
 			d.TestScreenshot("BeforeConclude");
 
 			d.FindElement(By.PartialLinkText("Conclude"), 10).Click();
-			d.FindElement(By.Id("SendEmail"), 10).Uncheck();
+			new SelectElement(d.FindElement(By.Id("SendEmailRich"), 10)).SelectByValue("None");
 			d.FindElement(By.Id("form0"), 10).Submit();
 			d.FindElement(By.ClassName("meeting-stats"), 15);
 		}

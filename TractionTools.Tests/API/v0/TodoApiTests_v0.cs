@@ -24,7 +24,7 @@ namespace TractionTools.Tests.Api
         [TestCategory("Api_V0")]
         public async Task TestGetMineTodos()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
 
             var todo = new TodoModel()
             {
@@ -38,7 +38,7 @@ namespace TractionTools.Tests.Api
             TodoController cnt = new TodoController();
             cnt.MockUser(c.E1);
 
-            c.Org.RegisterUser(c.E1);
+			await c.Org.RegisterUser(c.E1);
 
             var _model = cnt.GetMineTodos();
 
@@ -52,7 +52,7 @@ namespace TractionTools.Tests.Api
         [TestCategory("Api_V0")]
         public async Task TestCreateTodo()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
 
             var todo = new TodoModel()
             {
@@ -70,7 +70,7 @@ namespace TractionTools.Tests.Api
         [TestCategory("Api_V0")]
         public async Task TestGetTodo()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
 
             var todo = new TodoModel()
             {
@@ -93,7 +93,7 @@ namespace TractionTools.Tests.Api
         [TestCategory("Api_V0")]
         public async Task TestGetUserTodos()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             var todo = new TodoModel()
             {
                 AccountableUser = c.E1,
@@ -113,7 +113,7 @@ namespace TractionTools.Tests.Api
         [TestCategory("Api_V0")]
         public async Task TestGetRecurrenceTodos()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             var todo = new TodoModel()
             {
                 AccountableUser = c.E1,
@@ -124,7 +124,7 @@ namespace TractionTools.Tests.Api
             TodoController cnt = new TodoController();
             cnt.MockUser(c.E1);
 
-            var _recurrence = L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
+            var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
 
             todo.ForRecurrenceId = _recurrence.Id;
             bool result = await TodoAccessor.CreateTodo(c.E1, _recurrence.Id, todo);
@@ -138,7 +138,7 @@ namespace TractionTools.Tests.Api
         [TestCategory("Api_V0")]
         public async Task TestMarkComplete()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             var now = DateTime.UtcNow;
             var todo = new TodoModel()
             {
@@ -160,7 +160,7 @@ namespace TractionTools.Tests.Api
         [TestCategory("Api_V0")]
         public async Task TestEditTodo()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             var now = DateTime.UtcNow;
             var todo = new TodoModel()
             {

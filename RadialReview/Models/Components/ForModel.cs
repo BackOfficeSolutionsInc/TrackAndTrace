@@ -20,6 +20,7 @@ namespace RadialReview {
 			return new ForModel {
 				ModelId = ModelId,
 				ModelType = ModelType,
+				_PrettyString= _PrettyString
 			};
 		}
 
@@ -76,7 +77,9 @@ namespace RadialReview {
 			return HibernateSession.GetDatabaseSessionFactory().GetClassMetadata(creator.GetType()).EntityName;
 		}
 		public static string GetModelType<T>() where T : ILongIdentifiable {
+#pragma warning disable CS0618 // Type or member is obsolete
 			return GetModelType(typeof(T));
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 		[Obsolete("Use other methods")]
 		public static string GetModelType(Type t) {
@@ -85,7 +88,9 @@ namespace RadialReview {
 		}
 
 		public bool Is<T>() {
+#pragma warning disable CS0618 // Type or member is obsolete
 			return ModelType == GetModelType(typeof(T));
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		public string ToPrettyString() {
@@ -99,7 +104,7 @@ namespace RadialReview {
 		}
 
 		public static string ToKey(this IForModel obj) {
-			return obj.ModelType + "_" + obj.ModelId;
+			return obj.NotNull(x=>x.ModelType + "_" + x.ModelId);
 		}
 
 		public static string ToKey(this IByAbout byAbout) {

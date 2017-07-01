@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -99,8 +100,8 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Manager)]
-		public JsonResult Undelete(long id) {
-			var result = _UserAccessor.UndeleteUser(GetUser(), id);
+		public async Task<JsonResult> Undelete(long id) {
+			var result = await _UserAccessor.UndeleteUser(GetUser(), id);
 			return Json(result, JsonRequestBehavior.AllowGet);
 		}
 
@@ -123,9 +124,9 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
-		public JsonResult Remove(RemoveUserVM model) {
+		public async Task<JsonResult> Remove(RemoveUserVM model) {
 			//var user = _UserAccessor.GetUserOrganization(GetUser(), , true, true);
-			var result = _UserAccessor.RemoveUser(GetUser(), model.UserId, DateTime.UtcNow);
+			var result = await _UserAccessor.RemoveUser(GetUser(), model.UserId, DateTime.UtcNow);
 			return Json(result);
 		}
 
@@ -318,7 +319,9 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
 		public PartialViewResult PositionModal(long userId, long id = 0) {
 			var user = _UserAccessor.GetUserOrganization(GetUser(), userId, false, false);
+#pragma warning disable CS0618 // Type or member is obsolete
 			var pos = user.Positions.FirstOrDefault(x => x.Id == id);
+#pragma warning restore CS0618 // Type or member is obsolete
 			var orgId = GetUser().Organization.Id;
 #pragma warning disable CS0618 // Type or member is obsolete
 			var orgPos = _OrganizationAccessor
@@ -401,7 +404,9 @@ namespace RadialReview.Controllers {
 			var teams = TeamAccessor.GetUsersTeams(GetUser(), userId);
 			var aliveTeams = teams.ToListAlive();
 			var user = _UserAccessor.GetUserOrganization(GetUser(), userId, false, false).Hydrate().SetTeams(teams).Execute();
+#pragma warning disable CS0618 // Type or member is obsolete
 			var team = user.Teams.FirstOrDefault(x => x.Id == id);
+#pragma warning restore CS0618 // Type or member is obsolete
 			var orgTeam = TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id)
 							.Where(x => aliveTeams.All(y => y.Team.Id != x.Id))//TeamAccessor.GetTeamsDirectlyManaged(GetUser(), GetUser().Id)
 							.Where(x => x.Type == TeamType.Standard)

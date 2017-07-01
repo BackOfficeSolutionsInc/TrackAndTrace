@@ -37,7 +37,7 @@ namespace RadialReview.Api.V0
         [HttpPut]
         public AngularAccountabilityNode AttachDirectReport(long seatId, [FromBody]long userId) // wrap AngularAccountabilityNode
         {
-            return new Models.Angular.Accountability.AngularAccountabilityNode(AccountabilityAccessor.AppendNode(GetUser(), seatId, null, userId));
+            return new AngularAccountabilityNode(AccountabilityAccessor.AppendNode(GetUser(), seatId, null, userId));
         }
 
         // [GET/POST/(DELETE?)] /seats/{seatId}
@@ -45,7 +45,7 @@ namespace RadialReview.Api.V0
         [HttpGet]
         public AngularAccountabilityNode GetSeat(long seatId) // Angular
         {
-            return new Models.Angular.Accountability.AngularAccountabilityNode(AccountabilityAccessor.GetNodeById(GetUser(), seatId));
+            return new AngularAccountabilityNode(AccountabilityAccessor.GetNodeById(GetUser(), seatId));
         }
 
         //[Route("seats/{seatId}")]

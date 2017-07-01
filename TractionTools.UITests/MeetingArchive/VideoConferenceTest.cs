@@ -19,7 +19,7 @@ namespace TractionTools.UITests.MeetingArchive {
         //{
         //    var testId = Guid.NewGuid();
         //    var auc = await GetAdminCredentials(testId);
-        //    var recur = L10Utility.CreateRecurrence("VideoRecur");
+        //    var recur = await L10Utility.CreateRecurrence("VideoRecur");
 
         //    TestView(auc, "/l10/meeting/" + recur.Id, d => {
         //        d.FindElement(By.Id("form0"), 10).Submit();

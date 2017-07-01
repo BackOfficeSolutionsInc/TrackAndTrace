@@ -12,12 +12,14 @@ using RadialReview.Models.Components;
 namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.Sections {
     public class ValueSection : ISectionInitializer {
         public IEnumerable<IItemInitializer> GetAllPossibleItemBuilders(IEnumerable<IByAbout> byAbouts) {
-            yield return new ValueItem();
-        }
+#pragma warning disable CS0618 // Type or member is obsolete
+			yield return new ValueItem();
+#pragma warning restore CS0618 // Type or member is obsolete
+		}
 
         public IEnumerable<IItemInitializer> GetItemBuilders(IItemInitializerData data) {
             var values = data.Lookup.GetList<CompanyValueModel>();
-			var genComments = new TextAreaItemIntializer("General Comments");
+			var genComments = new TextAreaItemIntializer("General Comments", SurveyQuestionIdentifier.GeneralComments);
 			var items = values.Select(x => (IItemInitializer) new ValueItem(x)).ToList();
 			items.Add(genComments);
 			return items;
@@ -49,7 +51,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
                 {"sometimes","Sometimes" },
 				{"not-often","Not often" },
 			};
-            return ctx.RegistrationItemFormat(true, () => SurveyItemFormat.GenerateRadio(ctx,options));
+            return ctx.RegistrationItemFormat(true, () => SurveyItemFormat.GenerateRadio(ctx, SurveyQuestionIdentifier.Values, options));
         }
 
         public bool HasResponse(IResponseInitializerCtx data) {

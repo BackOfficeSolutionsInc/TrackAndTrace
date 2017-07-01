@@ -8,6 +8,6 @@ using System.Threading.Tasks;
 
 namespace RadialReview.Utilities.Hooks {
 	public interface IAccountEvent : IHook{
-		void CreateEvent(ISession s, AccountEvent evt);
+		Task CreateEvent(ISession s, AccountEvent evt);
 	}
 }

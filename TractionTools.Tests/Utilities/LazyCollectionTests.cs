@@ -17,6 +17,7 @@ using RadialReview.Models.Askables;
 using TractionTools.Tests.TestUtils;
 using System.Dynamic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace TractionTools.Tests.Utilities {
 	[TestClass]
@@ -53,12 +54,12 @@ namespace TractionTools.Tests.Utilities {
 		//}
 
 		[TestMethod]
-		public void TestRoleLinksLazyResolved() {
+		public async Task TestRoleLinksLazyResolved() {
 			//var mockSession = new MockSession();
 			//mockSession.AddQueryOver<TeamDurationModel>().AddFuture();
 			//mockSession.AddQueryOver<PositionDurationModel>().AddFuture();
 			//mockSession.AddQueryOver<RoleLink>().AddFuture();
-			var org = OrgUtil.CreateOrganization("RoleLinks");
+			var org = await OrgUtil.CreateOrganization("RoleLinks");
 			using (CompareUtil.StaticComparer<RoleLink, int>("CtorCalls", x => x + 1)) {
 				DbCommit(s => {
 					var roleLink = new RoleLink() {
@@ -70,7 +71,7 @@ namespace TractionTools.Tests.Utilities {
 			}
 
 
-			DbExecute(s => {
+			DbQuery(s => {
 				using (var comp = CompareUtil.StaticComparer<RoleLink, int>("CtorCalls", x => x + 1)) {
 					var model = RoleAccessor.GetRolesForOrganization_Unsafe(s, org.Id, new DateRange(new DateTime(2017, 6, 12), new DateTime(2017, 6, 14)));
 					comp.Assert(x => x);

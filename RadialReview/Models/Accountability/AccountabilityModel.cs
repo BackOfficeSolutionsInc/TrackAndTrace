@@ -61,7 +61,9 @@ namespace RadialReview.Models.Accountability {
 		public virtual long ModelId { get { return Id; } }
 		public virtual string ModelType { get { return ForModel.GetModelType<AccountabilityNode>(); } }
 		public virtual bool Is<T>() {
+#pragma warning disable CS0618 // Type or member is obsolete
 			return ModelType == ForModel.GetModelType(typeof(T));
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		public virtual string ToPrettyString() {

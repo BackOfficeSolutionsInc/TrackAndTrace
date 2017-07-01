@@ -30,17 +30,16 @@ namespace TractionTools.Tests.Api
 
         [TestMethod]
         [TestCategory("Api_V0")]
-        public void TestGetRoles()
-        {
-            var c = new Ctx();
+        public async Task TestGetRoles() {
+			var c = await Ctx.Build();
 
-            RoleController roleController = new RoleController();
+			RoleController roleController = new RoleController();
             roleController.MockUser(c.E1);
             OrganizationAccessor _accessor = new OrganizationAccessor();
             PositionAccessor posAccessor = new PositionAccessor();
             var createPosition = _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition");
 
-            var addRole = AccountabilityAccessor.AddRole(c.E1, new Attach(AttachType.Position, createPosition.Id), "TestRole");
+            var addRole = await AccountabilityAccessor.AddRole(c.E1, new Attach(AttachType.Position, createPosition.Id), "TestRole");
 
             var getRole = roleController.GetRoles(addRole.Id);
 
@@ -50,11 +49,10 @@ namespace TractionTools.Tests.Api
 
         [TestMethod]
         [TestCategory("Api_V0")]
-        public void TestUpdateRoles()
-        {
-            var c = new Ctx();
+        public async Task TestUpdateRoles() {
+			var c = await Ctx.Build();
 
-            RoleController roleController = new RoleController();
+			RoleController roleController = new RoleController();
             roleController.MockUser(c.E1);
             OrganizationAccessor _accessor = new OrganizationAccessor();
             PositionAccessor posAccessor = new PositionAccessor();
@@ -62,10 +60,10 @@ namespace TractionTools.Tests.Api
             var name = "TestRoleUpdated";
 
             var createPosition = _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition"); // create wropper for this method with CreatePosition
-            var addRole = AccountabilityAccessor.AddRole(c.E1, new Attach(AttachType.Position, createPosition.Id), "TestRole");
+            var addRole = await AccountabilityAccessor.AddRole(c.E1, new Attach(AttachType.Position, createPosition.Id), "TestRole");
 
             //Updated
-            roleController.UpdateRoles(name, addRole.Id);
+            await roleController.UpdateRoles(name, addRole.Id);
 
             var getRole = roleController.GetRoles(addRole.Id);
 
@@ -74,17 +72,16 @@ namespace TractionTools.Tests.Api
 
         [TestMethod]
         [TestCategory("Api_V0")]
-        public void TestRemoveRoles()
-        {
-            var c = new Ctx();
+        public async Task TestRemoveRoles() {
+			var c = await Ctx.Build();
 
-            RoleController roleController = new RoleController();
+			RoleController roleController = new RoleController();
             roleController.MockUser(c.E1);
             OrganizationAccessor _accessor = new OrganizationAccessor();
             PositionAccessor posAccessor = new PositionAccessor();
 
             var createPosition = _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition");
-            var addRole = AccountabilityAccessor.AddRole(c.E1, new Attach(AttachType.Position, createPosition.Id), "TestRole");
+            var addRole = await AccountabilityAccessor.AddRole(c.E1, new Attach(AttachType.Position, createPosition.Id), "TestRole");
 
             var roleList = PositionAccessor.GetPositionRoles(c.E1, createPosition.Id);
 

@@ -40,6 +40,86 @@ namespace RadialReview.Models {
 		}
 	}
 
+	public enum CoachType {
+		Unknown=0,
+		CertifiedOrProfessionalEOSi=1,
+		BaseCamp=2,
+		BusinessCoach=3,
+		Other=4,		
+	}
+
+	public enum HasCoach {
+		Unknown=0,
+		Yes=1,
+		No=2,
+		Other=3
+	}
+
+	public class OrgCreationData : ILongIdentifiable {
+		public virtual long Id { get; set; }
+
+		[Required(AllowEmptyStrings = false)]
+		public virtual string Name { get; set; }
+
+		[Required]
+		public virtual bool EnableL10 { get; set; }
+		[Required]
+		public virtual bool EnableReview { get; set; }
+		[Required]
+		public virtual bool EnableAC { get; set; }
+		public virtual AccountType AccountType { get; set; }
+
+		public virtual bool StartDeactivated { get; set; }
+		
+		public virtual long? AssignedTo { get; set; }
+		public virtual string ReferralSource { get; set; }
+
+		//public virtual string CoachName { get; set; }
+		//public virtual CoachType CoachType { get; set; }
+		public virtual HasCoach HasCoach { get; set; }
+		public virtual long? CoachId { get; set; }
+
+		public virtual string ContactFN { get; set; }
+		public virtual string ContactLN { get; set; }
+		public virtual string ContactPosition { get; set; }
+		[EmailAddress]
+		public virtual string ContactEmail { get; set; }
+
+		public virtual long OrgId { get; set; }
+
+		public OrgCreationData() {
+			AccountType = AccountType.Demo;
+			EnableL10 = true;
+			EnableAC = true;
+			EnableReview = false;
+		}
+
+		public class Map : ClassMap<OrgCreationData> {
+			public Map() {
+				Id(x => x.Id);
+				Map(x => x.Name);
+				Map(x => x.EnableL10);
+				Map(x => x.EnableReview);
+				Map(x => x.EnableAC);
+				Map(x => x.AccountType);
+				Map(x => x.StartDeactivated);
+
+				Map(x => x.AssignedTo);
+				Map(x => x.ReferralSource);
+				//Map(x => x.CoachType);
+				//Map(x => x.CoachName);
+				Map(x => x.HasCoach);
+
+				Map(x => x.ContactFN);
+				Map(x => x.ContactLN);
+				Map(x => x.ContactEmail);
+				Map(x => x.CoachId);
+
+				Map(x => x.OrgId);
+			}
+
+		}
+	}
 
 	public class OrganizationModel : ResponsibilityGroupModel, IOrigin, IDeletable, TimeSettings {
 		[Obsolete("Use the user if possible.")]
@@ -58,6 +138,7 @@ namespace RadialReview.Models {
 			public virtual BrandingType Branding { get; set; }
 
 			public virtual string TimeZoneId { get; set; }
+			public virtual bool AutoUpgradePayment { get; set; }
 			public virtual bool EmployeesCanViewScorecard { get; set; }
 			public virtual bool ManagersCanViewScorecard { get; set; }
 			public virtual bool EmployeeCanCreateL10 { get; set; }
@@ -67,9 +148,10 @@ namespace RadialReview.Models {
 			public virtual bool ManagersCanEditSelf { get; set; }
 			public virtual bool EmployeesCanEditSelf { get; set; }
 			public virtual bool OnlySeeRocksAndScorecardBelowYou { get; set; }
-
+			
 			public virtual bool EnableL10 { get; set; }
 			public virtual bool EnableReview { get; set; }
+			public virtual bool DisableAC { get; set; }
 
 			public virtual int? DefaultSendTodoTime { get; set; }
 
@@ -99,6 +181,8 @@ namespace RadialReview.Models {
 				EmployeeCanCreateL10 = false;
 				ManagersCanCreateL10 = true;
 
+				AutoUpgradePayment = true;
+
 				ManagersCanViewSubordinateL10 = true;
 				ManagersCanEditSubordinateL10 = false;
 
@@ -111,6 +195,7 @@ namespace RadialReview.Models {
 
 				EnableL10 = false;
 				EnableReview = false;
+				DisableAC = false;
 
 				LimitFiveState = true;
 
@@ -129,6 +214,7 @@ namespace RadialReview.Models {
 					Map(x => x.EmployeesCanViewScorecard);
 					Map(x => x.ManagersCanViewScorecard);
 
+					Map(x => x.AutoUpgradePayment);
 
 					Map(x => x.EmployeeCanCreateL10);
 					Map(x => x.ManagersCanCreateL10);
@@ -184,9 +270,8 @@ namespace RadialReview.Models {
 			}
 		}
 
-
-
-
+		
+		public virtual long? PrimaryContactUserId { get; set; }
 
 		/// <summary>
 		/// In minutes

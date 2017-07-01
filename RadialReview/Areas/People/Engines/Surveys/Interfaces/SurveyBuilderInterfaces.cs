@@ -173,11 +173,13 @@ namespace RadialReview.Areas.People.Engines.Surveys.Interfaces {
         long GetItemId();
 		long GetItemFormatId();
 		string GetAnswer();
+		IByAbout GetByAbout();
 	}
 
     public interface IItemFormat : IComponent {
-        SurveyItemType GetItemType();
-        IItemFormat AddSetting(string key, object value);
+		SurveyItemType GetItemType();
+		SurveyQuestionIdentifier GetQuestionIdentifier();
+		IItemFormat AddSetting(string key, object value);
         T GetSetting<T>(string key);
         IDictionary<string, object> GetSettings();
     }
@@ -190,12 +192,26 @@ namespace RadialReview.Areas.People.Engines.Surveys.Interfaces {
         IItemFormat GetItemFormat();
     }
 
+	#region SurveyAbout
 
-    #endregion
+	//public interface ISurveyAboutContainer : ISurveyContainer {
+	//	new IEnumerable<ISurveyAbout> GetSurveys();
+	//	new void AppendSurvey(ISurveyAbout survey);
+	//}
+
+	//public interface ISurveyAbout : ISurvey {
+	//	new IEnumerable<ISurveyAbout> GetSections();
+	//}
 
 
-    #region Events
-    public interface ISurveyBuilderEvents {
+	#endregion
+
+
+	#endregion
+
+
+	#region Events
+	public interface ISurveyBuilderEvents {
         void OnBegin(ISurveyInitializer builder,long orgId, IOuterLookup outerLookup, IEnumerable<IByAbout> byAbouts);
         void OnEnd(ISurveyContainer container);
         void OnInitialize(IComponent compontent);

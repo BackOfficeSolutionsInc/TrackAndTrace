@@ -21,7 +21,7 @@ namespace TractionTools.UITests.L10Wizard {
             AUC = GetAdminCredentials(testId).GetAwaiter().GetResult();
 
             MeetingName = "WizardMeeting";
-            Recur = L10Utility.CreateRecurrence(MeetingName);
+            Recur = L10Utility.CreateRecurrence(MeetingName).GetAwaiter().GetResult();
         }
 
         [TestMethod]
@@ -115,7 +115,7 @@ namespace TractionTools.UITests.L10Wizard {
 
                 page.Find(".create-row").Click();
 
-                var rows = d.WaitUntil(x => {
+                var rows = d.WaitUntil(15,x => {
                     var f = x.Finds("#ScorecardTable tbody tr");
                     if (f.Count == 0)
                         return null;

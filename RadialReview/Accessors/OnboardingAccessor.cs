@@ -13,6 +13,7 @@ using RadialReview.Utilities.Hooks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace RadialReview.Accessors {
@@ -60,7 +61,7 @@ namespace RadialReview.Accessors {
 
         }
 
-        public static OnboardingUser Update(BaseController ctrl, Action<OnboardingUser> update, bool overrideDisable = false)
+        public static async Task<OnboardingUser> Update(BaseController ctrl, Action<OnboardingUser> update, bool overrideDisable = false)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -68,7 +69,7 @@ namespace RadialReview.Accessors {
                     update(found);
                     s.Update(found);
 
-					EventUtil.Trigger(x => x.Create(s,EventType.SignupStep,null,found,found.CurrentPage));
+					await EventUtil.Trigger(x => x.Create(s,EventType.SignupStep,null,found,found.CurrentPage));
 
 					tx.Commit();
                     s.Flush();
@@ -133,7 +134,7 @@ namespace RadialReview.Accessors {
 
         }
 
-        public static void TryUpdateUser(OnboardingUser o)
+        public static async Task TryUpdateUser(OnboardingUser o)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -151,7 +152,7 @@ namespace RadialReview.Accessors {
                             u.User.FirstName = o.FirstName;
                             u.User.LastName = o.LastName;
 
-							HooksRegistry.Each<IUpdateUserModelHook>(x=>x.UpdateUserModel(s,u.User));
+							await HooksRegistry.Each<IUpdateUserModelHook>(x=>x.UpdateUserModel(s,u.User));
 
                         }
 

@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace RadialReview.Utilities {
@@ -50,7 +51,7 @@ namespace RadialReview.Utilities {
 			}
 			public TriggerOptions() { }
 		}
-		public static void Trigger(Action<TriggerOptions> options) {
+		public static async Task Trigger(Action<TriggerOptions> options) {
 			try {
 				var o = new TriggerOptions();
 				options(o);
@@ -64,7 +65,7 @@ namespace RadialReview.Utilities {
 				};
 				evt.CreateTime = o.Now ?? evt.CreateTime;
 				o.S.Save(evt);
-				HooksRegistry.Each<IAccountEvent>(x => x.CreateEvent(o.S, evt));
+				await HooksRegistry.Each<IAccountEvent>(x => x.CreateEvent(o.S, evt));
 			} catch (Exception e) {
 				log.Error("Error triggering event:", e);
 			}
@@ -102,7 +103,7 @@ namespace RadialReview.Utilities {
 
 
 		}
-		public static void GenerateAllDailyEvents(ISession s, DateTime now) {
+		public static async Task GenerateAllDailyEvents(ISession s, DateTime now) {
 			var orgsQ = s.QueryOver<OrganizationModel>()
 							.Where(x => x.DeleteTime == null &&
 								x.AccountType != AccountType.Cancelled &&
@@ -166,10 +167,10 @@ namespace RadialReview.Utilities {
 
 			foreach (var e in potentialEvents) {
 				if (e.Item2 != null)
-					AddIfNew(s, e.Item1, e.Item2.Value, now, events);
+					await AddIfNew(s, e.Item1, e.Item2.Value, now, events);
 			}
 		}
-		
+
 		public static EventType? _MaxDurEvent(DateTime now, DateTime orgStart, EventType likeType, IEnumerable<DateTime> list) {
 			var minTimes = GetEventOffsets(likeType).ToList().OrderByDescending(x => x.Value).Where(x => x.Value < (now - orgStart)).ToList();
 			foreach (var m in minTimes) {
@@ -209,9 +210,9 @@ namespace RadialReview.Utilities {
 			public long OrgId { get; set; }
 		}
 
-		protected static void AddIfNew(ISession s, long orgId, EventType type, DateTime now, List<TinyEvent> events) {
+		protected static async Task AddIfNew(ISession s, long orgId, EventType type, DateTime now, List<TinyEvent> events) {
 			if (ShouldAdd(orgId, type, events)) {
-				Trigger(x => {
+				await Trigger(x => {
 					x.Create(s, type, null, orgId, ForModel.Create<OrganizationModel>(orgId));
 					x.Now = now;
 				});

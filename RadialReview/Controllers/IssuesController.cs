@@ -24,7 +24,7 @@ namespace RadialReview.Controllers {
 					padId = await PadAccessor.GetReadonlyPad(issue.PadId);
 				}
 				return Redirect(Config.NotesUrl("p/" + padId + "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
-			} catch (Exception e) {
+			} catch (Exception) {
 				return RedirectToAction("Index", "Error");
 			}
 		}
@@ -103,7 +103,7 @@ namespace RadialReview.Controllers {
 			var details = "";
 			try {
 				details = await PadAccessor.GetText(i.Issue.PadId);
-			} catch (Exception e) {
+			} catch (Exception ) {
 			}
 
             var model = new CopyIssueVM() {
@@ -271,10 +271,13 @@ namespace RadialReview.Controllers {
             _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
             ScoreModel s = null;
+            var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
 
             try {
                 if (score == 0 && userid.HasValue) {
-                    var week = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrence, true, false, false).CreateTime.StartOfWeek(DayOfWeek.Sunday);
+					var shift = System.TimeSpan.FromDays((recur.CurrentWeekHighlightShift+1)*7-.0001);
+
+                    var week = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrence, true, false, false).CreateTime.Add(shift).StartOfWeek(DayOfWeek.Sunday);
                     if (measurable > 0) {
                         var scores = L10Accessor.GetScoresForRecurrence(GetUser(), recurrence).Where(x => x.MeasurableId == measurable && x.AccountableUserId == userid.Value && x.ForWeek == week);
                         s = scores.FirstOrDefault();
@@ -293,7 +296,6 @@ namespace RadialReview.Controllers {
                 log.Error("Issues/Modal", e);
             }
 
-            var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
             // var possibleUsers = recur._DefaultAttendees.Select(x => x.User).ToList();
 
             var people = recur._DefaultAttendees.Select(x => x.User).ToList();

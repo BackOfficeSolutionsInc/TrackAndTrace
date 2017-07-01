@@ -102,5 +102,9 @@
   {
     "outputFile": "Content/People/QuarterlyConversation.css",
     "inputFile": "Content/People/QuarterlyConversation.less"
+  },
+  {
+    "outputFile": "Content/L10/L10ChatLog.css",
+    "inputFile": "Content/L10/L10ChatLog.less"
   }
 ]

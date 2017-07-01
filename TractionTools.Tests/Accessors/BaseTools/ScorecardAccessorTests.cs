@@ -29,7 +29,7 @@ namespace TractionTools.Tests.Accessors
             var testId = Guid.NewGuid();
             MockApplication();
             MockHttpContext();
-			var org = OrgUtil.CreateOrganization(time: new DateTime(2016, 1, 1));
+			var org = await OrgUtil.CreateOrganization(time: new DateTime(2016, 1, 1));
             UserOrganizationModel employee = org.Employee;
             UserOrganizationModel manager = org.Manager;
             //DbCommit(s =>
@@ -98,7 +98,7 @@ namespace TractionTools.Tests.Accessors
             recur._DefaultAttendees = new List<L10Recurrence.L10Recurrence_Attendee>() { new L10Recurrence.L10Recurrence_Attendee(){ User= employee , L10Recurrence=recur}};
             recur._DefaultMeasurables = new List<L10Recurrence.L10Recurrence_Measurable>();
             recur._DefaultRocks = new List<L10Recurrence.L10Recurrence_Rocks>();
-            L10Accessor.EditL10Recurrence(manager, recur);
+			await L10Accessor.EditL10Recurrence(manager, recur);
             Assert.AreNotEqual(0, recur.Id);
 
             //Add measurables skip l10s
@@ -149,9 +149,9 @@ namespace TractionTools.Tests.Accessors
 
         
         [TestMethod]
-        public void UpdateScoreInMeeting_CreateScores()
+        public async Task UpdateScoreInMeeting_CreateScores()
         {
-            var r = L10Utility.CreateRecurrence();
+            var r = await L10Utility.CreateRecurrence();
             MeasurableModel m=null;
             DbCommit(s=>{
                 var perms = PermissionsUtility.Create(s,r.Creator);
@@ -166,7 +166,7 @@ namespace TractionTools.Tests.Accessors
                 L10Accessor.AddMeasurable(s, perms, null, r.Id, mvm, skipRealTime: true);
             });
 
-            L10Accessor.StartMeeting(r.Creator, r.Creator, r.Id, r.Creator.Id.AsList());
+            await L10Accessor.StartMeeting(r.Creator, r.Creator, r.Id, r.Creator.Id.AsList());
 
             var week = DateTime.UtcNow.AddDays(-7*16);
             using (var frame = TestUtilities.CreateFrame()) {

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>Nhibernate Class Map</Title>
+			<Shortcut>map</Shortcut>
+			<Description>Code snippet for constructor</Description>
+			<Author>Microsoft Corporation</Author>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+		</Header>		
+		<Snippet>
+			<Imports>
+                <Import>
+                    <Namespace>FluentNHibernate.Mapping</Namespace>
+                </Import>
+            </Imports>
+			<Declarations>
+				<Literal>
+					<ID>class</ID>
+					<ToolTip>Class name</ToolTip>
+					<Default>ClassNamePlaceholder</Default>
+				</Literal>
+				<Literal>
+					<ID>id</ID>
+					<ToolTip>Id Property</ToolTip>
+					<Default>Id</Default>
+				</Literal>
+				<Literal>
+					<ID>mapped1</ID>
+					<ToolTip>First Mapped Property</ToolTip>
+					<Default>CreateTime</Default>
+				</Literal>
+				<Literal>
+					<ID>mapped2</ID>
+					<ToolTip>Second Mapped Property</ToolTip>
+					<Default>DeleteTime</Default>
+				</Literal>
+				<Literal>
+					<ID>mapped3</ID>
+					<ToolTip>Third Mapped Property</ToolTip>
+					<Default>prop</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp"><![CDATA[public class Map : ClassMap<$class$>
+	{
+		public Map(){
+			Id(x=>x.$id$);
+			Map(x=>x.$mapped1$);
+			Map(x=>x.$mapped2$);
+			Map(x=>x.$mapped3$);
+		}
+		$end$
+	}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

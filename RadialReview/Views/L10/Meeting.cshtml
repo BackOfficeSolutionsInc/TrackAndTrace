@@ -35,12 +35,12 @@
 		window.RecurrenceId = @Model.Recurrence.Id;
 		@if (Model.MeetingStart != null){
 			@:var startTime = new Date(@(Model.MeetingStart.Value.ToJavascriptMilliseconds()));
-		}
+														}
 
 
 	</script>
 	@Scripts.Render("~/bundles/MeetingPage")
-		
+
 	@Scripts.Render("~/bundles/L10")
 	@Html.Partial("_SetupScript", Model)
 	<script>
@@ -58,16 +58,16 @@
 			@if (Model.Meeting != null){
 				foreach (var m in Model.MemberPictures.ToList()) {
 					@:addToPictureLookup(@m.UserId,"@m.Url","@m.Name","@m.Initials");
-																}
+																																		}
 				@:isLeader = @(Model.Meeting.MeetingLeaderId == ViewBag.UserId ? "true" : "false");
-				@:var bmin = (@(Math.Round((Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0)*1000))/1000) + (@((DateTime.UtcNow.ToJavascriptMilliseconds()-(Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds())))))/(60*1000);
-				@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),bmin@*,Model.Meeting._MeetingLeaderCurrentPageType*@);
-				foreach (var i in Model.Meeting._MeetingLeaderPageDurations.Where(x => x.Item1 != Model.Meeting._MeetingLeaderCurrentPage)){
+																						@:var bmin = (@(Math.Round((Model.Meeting._MeetingLeaderCurrentPageBaseMinutes ?? 0)*1000))/1000) + (@((DateTime.UtcNow.ToJavascriptMilliseconds()-(Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds())))))/(60*1000);
+																						@:setCurrentPage("@Model.Meeting._MeetingLeaderCurrentPage",@Model.Meeting._MeetingLeaderCurrentPageStartTime.NotNull(x => x.Value.ToJavascriptMilliseconds()),bmin@*,Model.Meeting._MeetingLeaderCurrentPageType*@);
+																						foreach (var i in Model.Meeting._MeetingLeaderPageDurations.Where(x => x.Item1 != Model.Meeting._MeetingLeaderCurrentPage)){
 						@:setPageTime("@i.Item1",@(Math.Round(i.Item2*10000))/10000);
-				}
+																						}
 			}else{
 					@:isLeader =false;
-			}
+																					}
 			initL10();
 			try {
 				resetClickables();
@@ -157,7 +157,7 @@
 <div class="slider-container level-10">
 	<div class="slider">
 		<div class="row full left-panel">
-			<div class="col-sm-3 col-md-2 full fixed-pos" style="padding-bottom: 30px;">
+			<div class="col-sm-3 col-md-2 full fixed-pos" style="padding-bottom: 15px;">
 				<div class="clock-container">
 					<div class="timer-bar"></div>
 					<div class="component clocks hidden">
@@ -227,24 +227,24 @@
 							}
 
 							@*@if (Model.Recurrence.SegueMinutes > 0) {
-								<li class="page-item page-segue">		<a data-location="Segue" href="#Segue">Segue</a><span title="Spend @String.Format("{0:0.##}", Model.Recurrence.SegueMinutes) minutes on your Segue" data-over="@Model.Recurrence.SegueMinutes" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.SegueMinutes))m</span></span></li>
-							}
-							@if (Model.Recurrence.ScorecardMinutes > 0) {
-								<li class="page-item page-scorecard">	<a data-location="Scorecard" href="#Scorecard">Scorecard</a><span data-over="@Model.Recurrence.ScorecardMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.ScorecardMinutes) minutes on your Scorecard" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.ScorecardMinutes))m</span></span></li>
-							}
-							@if (Model.Recurrence.RockReviewMinutes > 0) {
-								<li class="page-item page-rocks">		<a data-location="Rocks" href="#Rocks">Rock Review</a><span data-over="@Model.Recurrence.RockReviewMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.RockReviewMinutes) minutes on your @Html.Organization().Settings.RockName Review" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.RockReviewMinutes))m</span></span></li>
-							}
-							@if (Model.Recurrence.HeadlinesMinutes > 0) {
-								<li class="page-item page-headlines">	<a data-location="Headlines" href="#Headlines">People Headlines</a><span data-over="@Model.Recurrence.HeadlinesMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.HeadlinesMinutes) minutes on Headlines" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.HeadlinesMinutes))m</span></span></li>
-							}
-							@if (Model.Recurrence.TodoListMinutes > 0) {
-								<li class="page-item page-todo">		<a data-location="Todo" href="#Todo">To-do List</a><span title="Spend @String.Format("{0:0.##}", Model.Recurrence.TodoListMinutes) minutes on your Todo List" data-over="@Model.Recurrence.TodoListMinutes" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.TodoListMinutes))m</span></span></li>
-							}
-							@if (Model.Recurrence.IDSMinutes > 0) {
-								<li class="page-item page-ids">			<a data-location="IDS" href="#IDS">IDS</a><span data-over="@Model.Recurrence.IDSMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.IDSMinutes) minutes on IDS" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.IDSMinutes))m</span></span></li>
-							}
-							<li class="page-item page-conclusion">		<a data-location="Conclusion" href="#Conclusion">Conclude</a><span data-over="@Model.Recurrence.ConclusionMinutes" title="Spend @String.Format("{0:0.##}",Model.Recurrence.ConclusionMinutes) minutes on your Conclusion" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.ConclusionMinutes))m</span></span></li>*@
+									<li class="page-item page-segue">		<a data-location="Segue" href="#Segue">Segue</a><span title="Spend @String.Format("{0:0.##}", Model.Recurrence.SegueMinutes) minutes on your Segue" data-over="@Model.Recurrence.SegueMinutes" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.SegueMinutes))m</span></span></li>
+								}
+								@if (Model.Recurrence.ScorecardMinutes > 0) {
+									<li class="page-item page-scorecard">	<a data-location="Scorecard" href="#Scorecard">Scorecard</a><span data-over="@Model.Recurrence.ScorecardMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.ScorecardMinutes) minutes on your Scorecard" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.ScorecardMinutes))m</span></span></li>
+								}
+								@if (Model.Recurrence.RockReviewMinutes > 0) {
+									<li class="page-item page-rocks">		<a data-location="Rocks" href="#Rocks">Rock Review</a><span data-over="@Model.Recurrence.RockReviewMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.RockReviewMinutes) minutes on your @Html.Organization().Settings.RockName Review" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.RockReviewMinutes))m</span></span></li>
+								}
+								@if (Model.Recurrence.HeadlinesMinutes > 0) {
+									<li class="page-item page-headlines">	<a data-location="Headlines" href="#Headlines">People Headlines</a><span data-over="@Model.Recurrence.HeadlinesMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.HeadlinesMinutes) minutes on Headlines" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.HeadlinesMinutes))m</span></span></li>
+								}
+								@if (Model.Recurrence.TodoListMinutes > 0) {
+									<li class="page-item page-todo">		<a data-location="Todo" href="#Todo">To-do List</a><span title="Spend @String.Format("{0:0.##}", Model.Recurrence.TodoListMinutes) minutes on your Todo List" data-over="@Model.Recurrence.TodoListMinutes" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.TodoListMinutes))m</span></span></li>
+								}
+								@if (Model.Recurrence.IDSMinutes > 0) {
+									<li class="page-item page-ids">			<a data-location="IDS" href="#IDS">IDS</a><span data-over="@Model.Recurrence.IDSMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.IDSMinutes) minutes on IDS" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.IDSMinutes))m</span></span></li>
+								}
+								<li class="page-item page-conclusion">		<a data-location="Conclusion" href="#Conclusion">Conclude</a><span data-over="@Model.Recurrence.ConclusionMinutes" title="Spend @String.Format("{0:0.##}",Model.Recurrence.ConclusionMinutes) minutes on your Conclusion" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.ConclusionMinutes))m</span></span></li>*@
 						</ol>
 
 						@if (Model.Meeting.NotNull(x => x.MeetingLeaderId) != ViewBag.UserId) {
@@ -299,6 +299,27 @@
 								<div class="text log">log</div>*@
 						</div>
 					</div>
+					<div class="online-component-container">
+						<div class="component additional-pages online-component">
+							<div class="toggle alignRight" style="padding-left: 7px;"><div class="clickable gray">Online <span class="glyphicon glyphicon-chevron-right pull-right"></span></div></div>
+							<div class="user-picture-container"></div>
+							@using (Html.BeginScripts()) {
+								<!--enter meetings-->
+								<script>
+									(function(){
+										var existingUsers = @Html.ArrayToString(Model.Connected);
+
+										Enumerable.from(existingUsers).forEach(function(c){
+											userEnterMeeting(c);
+										});
+
+									})();
+								</script>
+							}
+							<div class="options noselect"><span class="option clickable uncheck">Uncheck All</span> <span class="option clickable randomize">Randomize</span></div>
+						</div>
+					</div>
+					<div style="margin-bottom: 10px;width:100%;clear:both"></div>
 
 				</div>
 			</div>
@@ -337,7 +358,7 @@
 				<div class="tab add"><span class="pull-right glyphicon glyphicon-plus-sign"></span> Add Page</div>
 				@if (Model.Recurrence != null) {
 					foreach (var t in Model.Recurrence._MeetingNotes) {
-						<div data-id="@t.Id"  class="tab">@t.Name</div>
+						<div data-id="@t.Id" class="tab">@t.Name</div>
 					}
 				}
 			</div>
@@ -354,7 +375,7 @@
 		@if (Model.EnableTranscript)
 		{
 		@:shouldStartTranscribe = true;
-		}
+														}
 
 
 

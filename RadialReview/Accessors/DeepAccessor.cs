@@ -271,6 +271,30 @@ namespace RadialReview.Accessors {
 				return subordinates.Distinct();
 			}
 
+			public static List<UserOrganizationModel> GetDirectReportsAndSelfModels(UserOrganizationModel caller, long userId) {
+				using (var s = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
+						var perms = PermissionsUtility.Create(s, caller);
+						return GetDirectReportsAndSelfModels(s, perms, userId);
+					}
+				}
+			}
+#pragma warning disable CS0618 // Type or member is obsolete
+			public static List<UserOrganizationModel> GetDirectReportsAndSelfModels(ISession s, PermissionsUtility perms, long userId) {
+				var myNodeIds =AccountabilityAccessor.GetNodesForUser(s, perms, userId);
+
+				var users = myNodeIds.SelectMany(node=> DeepAccessor.GetDirectReportsAndSelf(s,perms,node.Id))
+					.Distinct(x=>x.Id)
+					.Distinct(x=>x.User.Id)
+					.Select(x=>x.User)
+					.Where(x=>x!=null && x.DeleteTime==null)
+					.ToList();
+
+				//resolve all
+				users.ForEach(x => x.GetName());
+				return users;
+			}
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			public static bool ManagesUser(ISession s, PermissionsUtility perms, long managerId, long subordinateId) {
 				perms.ViewUserOrganization(managerId, false).ViewUserOrganization(subordinateId, false);
@@ -380,25 +404,6 @@ namespace RadialReview.Accessors {
 			return subordinates;
 		}
 
-		public static List<AccountabilityNode> GetDirectReportsAndSelf(UserOrganizationModel caller, long forNodeId) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var perms = PermissionsUtility.Create(s, caller);
-					var forNode = s.Get<AccountabilityNode>(forNodeId);
-					perms.ViewHierarchy(forNode.AccountabilityChartId);
-
-					var list= s.QueryOver<AccountabilityNode>().Where(x => x.ParentNodeId == forNodeId && x.DeleteTime == null && x.AccountabilityChartId == forNode.AccountabilityChartId).List().ToList();
-					list.Insert(0, forNode);
-
-					foreach (var i in list) {
-						var a = i.User.NotNull(x => x.GetName());
-						var b = i.AccountabilityRolesGroup.NotNull(x => x.Position.GetName());
-					}
-
-					return list;
-				}
-			}
-		}
 
 		[Obsolete("Did you mean DeepAccessor.Users.GetSubordinatesAndSelf")]
 		public static List<long> GetChildrenAndSelf(ISession s, UserOrganizationModel caller, long nodeId, PermissionType? type = null) {
@@ -430,6 +435,32 @@ namespace RadialReview.Accessors {
 			subordinates.Add(nodeId);
 
 			return subordinates.Distinct().ToList();
+		}
+
+		[Obsolete("Did you mean DeepAccessor.Users.GetDirectReportsAndSelfModels")]
+		public static List<AccountabilityNode> GetDirectReportsAndSelf(UserOrganizationModel caller, long forNodeId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					return GetDirectReportsAndSelf(s, perms, forNodeId);
+				}
+			}
+		}
+
+		[Obsolete("Did you mean DeepAccessor.Users.GetDirectReportsAndSelfModels")]
+		public static List<AccountabilityNode> GetDirectReportsAndSelf(ISession s,PermissionsUtility perms, long forNodeId) {
+			var forNode = s.Get<AccountabilityNode>(forNodeId);
+			perms.ViewHierarchy(forNode.AccountabilityChartId);
+
+			var list= s.QueryOver<AccountabilityNode>().Where(x => x.ParentNodeId == forNodeId && x.DeleteTime == null && x.AccountabilityChartId == forNode.AccountabilityChartId).List().ToList();
+			list.Insert(0, forNode);
+
+			foreach (var i in list) {
+				var a = i.User.NotNull(x => x.GetName());
+				var b = i.AccountabilityRolesGroup.NotNull(x => x.Position.GetName());
+			}
+
+			return list;
 		}
 
 		public static bool HasChildren(ISession s, long nodeId) {

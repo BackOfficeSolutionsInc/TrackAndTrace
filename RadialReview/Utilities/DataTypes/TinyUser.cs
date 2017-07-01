@@ -1,21 +1,37 @@
-﻿using NHibernate.Criterion;
+﻿using Newtonsoft.Json;
+using NHibernate.Criterion;
 using RadialReview.Models;
 using RadialReview.Models.Components;
 using RadialReview.Models.Interfaces;
+using RadialReview.Models.UserModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Web;
 
 namespace RadialReview.Utilities.DataTypes {
+	[DataContract]
 	public class TinyUser : IForModel {
+		[DataMember]
+		[JsonProperty("Id")]
 		public long UserOrgId { get; set; }
+		[DataMember]
 		public string FirstName { get; set; }
+		[DataMember]
 		public string LastName { get; set; }
+		[DataMember]
 		public string Email { get; set; }
+		public string ImageGuid { get; set; }
+		[DataMember]
+		public string ImageUrl { get { return GetImageUrl(); } }
+		[DataMember]
+		public string Name { get { return GetName(); } }
+		[DataMember]
+		public string Initials { get { return GetInitials(); } }
 
-		public long ModelId {get {return UserOrgId;}}
-		public string ModelType {get {return ForModel.GetModelType<UserOrganizationModel>();}}
+		public long ModelId { get { return UserOrgId; } }
+		public string ModelType { get { return ForModel.GetModelType<UserOrganizationModel>(); } }
 
 		public Tuple<string, string, string, long> Tuplize() {
 			return Tuple.Create(FirstName, LastName, Email, UserOrgId);
@@ -30,6 +46,11 @@ namespace RadialReview.Utilities.DataTypes {
 
 		public override int GetHashCode() {
 			return this.Tuplize().GetHashCode();
+		}
+
+
+		public string GetImageUrl(ImageSize size = ImageSize._64) {
+			return UserLookup.TransformImageSuffix("/"+ImageGuid+".png", size);
 		}
 
 		public string GetName() {
@@ -63,12 +84,15 @@ namespace RadialReview.Utilities.DataTypes {
 				Email = x.GetEmail().NotNull(y => y.ToLower()),
 				FirstName = x.GetFirstName().NotNull(y => y.ToLower()),
 				LastName = x.GetLastName().NotNull(y => y.ToLower()),
-				UserOrgId = x.Id
+				UserOrgId = x.Id,
+				ImageGuid = x.User.NotNull(y=>y.ImageGuid)
 			};
 		}
 
 		public bool Is<T>() {
+#pragma warning disable CS0618 // Type or member is obsolete
 			return ForModel.GetModelType<UserOrganizationModel>() == ForModel.GetModelType(typeof(T));
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		public string ToPrettyString() {

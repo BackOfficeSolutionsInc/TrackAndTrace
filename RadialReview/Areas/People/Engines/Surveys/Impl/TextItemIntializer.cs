@@ -19,7 +19,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl {
 			if (Disabled)
 				objs.Add(new KV("disabled", true));
 
-			return ctx.RegistrationItemFormat(false, () => new SurveyItemFormat(ctx, SurveyItemType.Text,objs));
+			return ctx.RegistrationItemFormat(false, () => new SurveyItemFormat(ctx, SurveyQuestionIdentifier.None, SurveyItemType.Text, objs));
 		}
 
 		public bool HasResponse(IResponseInitializerCtx ctx) {

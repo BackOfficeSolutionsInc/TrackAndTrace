@@ -52,15 +52,16 @@ namespace RadialReview {
 
         private static void Main(BundleCollection bundles) {
             bundles.Add(new ScriptBundle("~/bundles/main").Include(
-                      "~/Scripts/Main/radial.js",
+					  "~/Scripts/Main/linq.js",
+					  "~/Scripts/Main/radial.js",
                       "~/Scripts/Main/log-helper.js",
                       /*"~/Scripts/jquery.signalR-{version}.js",Was deleted*/
                       "~/Scripts/jquery/jquery.tablesorter.js",
                       "~/Scripts/Main/finally.js",
                       "~/Scripts/Main/intercom.min.js",
                       "~/Scripts/L10/jquery-ui.color.js",
-                      "~/Scripts/jquery/jquery.tabbable.js",
-                      "~/Scripts/components/milestones.js"
+					  "~/Scripts/jquery/jquery.tabbable.js",
+					  "~/Scripts/components/milestones.js"
             /*,
 			"~/Scripts/Main/realtime.js"*/
             ));
@@ -209,8 +210,9 @@ namespace RadialReview {
                     "~/Scripts/L10/L10Rocks.js",
                     "~/Scripts/L10/L10Scorecard.js",
                     "~/Scripts/L10/L10Headlines.js",
-                    "~/Scripts/L10/L10Notes.js",
-                    "~/Scripts/L10/sortable.js",
+					"~/Scripts/L10/L10Notes.js",
+					"~/Scripts/L10/L10ChatLog.js",
+					"~/Scripts/L10/sortable.js",
                     "~/Scripts/speechrecog.js",
                     "~/Scripts/L10/L10Transcribe.js",
                     "~/Scripts/L10/L10ChatLog.js",

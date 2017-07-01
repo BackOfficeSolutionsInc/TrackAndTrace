@@ -159,7 +159,9 @@ namespace RadialReview.Controllers
 				var caller = GetUser();
 				var measurableLookup = new Dictionary<int, MeasurableModel>();
 
+#pragma warning disable CS0618 // Type or member is obsolete
 				var existingPositions = _OrganizationAccessor.GetOrganizationPositions(GetUser(), GetUser().Organization.Id);
+#pragma warning restore CS0618 // Type or member is obsolete
 				var existingUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
 				var managerLookup = new Dictionary<long, string[]>();
 

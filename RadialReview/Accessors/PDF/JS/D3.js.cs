@@ -670,7 +670,9 @@ namespace RadialReview.Accessors.PDF {
 				// SECOND WALK
 				// Computes all real x-coordinates by summing up the modifiers recursively.
 				private void secondWalk(nodeWrapper<N> v) {
+#pragma warning disable CS0219 // Variable is assigned but its value is never used
 					var adj = 1;
+#pragma warning restore CS0219 // Variable is assigned but its value is never used
 					if (compactify && v._self._compact != null /*&& v._._compact.isLeaf*/) {
 						adj = 2;
 						//if (v._._compact.side == "left") {

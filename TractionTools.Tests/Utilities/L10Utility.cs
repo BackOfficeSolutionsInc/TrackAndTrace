@@ -20,12 +20,12 @@ namespace TractionTools.Tests.Utilities {
     }
     public class L10Utility {
 
-        public static L10 CreateRecurrence(string name)
+        public static async Task<L10> CreateRecurrence(string name)
         {
-            return CreateRecurrence(existing:null,name: name);
+            return await CreateRecurrence(existing:null,name: name);
         }
 
-        public static L10 CreateRecurrence(L10 existing = null,string name =null)
+        public static async Task<L10> CreateRecurrence(L10 existing = null,string name =null)
         {
             UserOrganizationModel employee = null;
             UserOrganizationModel manager = null;
@@ -54,7 +54,7 @@ namespace TractionTools.Tests.Utilities {
                 manager = existing.Creator;
             }
 
-            var recur = L10Accessor.CreateBlankRecurrence(manager, o.Id);
+            var recur = await L10Accessor.CreateBlankRecurrence(manager, o.Id);
             if (name != null) {
                 BaseTest.DbCommit(s => {
                     recur = s.Get<L10Recurrence>(recur.Id);

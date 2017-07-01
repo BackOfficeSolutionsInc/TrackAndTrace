@@ -30,20 +30,20 @@ namespace RadialReview.Controllers {
 
         // GET: Onboard
         [Access(AccessLevel.SignedOut)]
-        public ActionResult Index(string id = "professional")
+        public async Task<ActionResult> Index(string id = "professional")
         {
             var type = id;
             var u = OnboardingAccessor.GetOrCreate(this, "TheBasics");
-            OnboardingAccessor.Update(this, x => { x.PaymentPlan = type; });
+            await OnboardingAccessor.Update(this, x => { x.PaymentPlan = type; });
             return View(u);
             //var u = OnboardingAccessor.GetOrCreate(this);
             //return RedirectToAction(u.CurrentPage);
         }
 
         [Access(AccessLevel.SignedOut)]
-        public ActionResult StartOver()
+        public async Task<ActionResult> StartOver()
         {
-            OnboardingAccessor.Update(this, x => { x.DeleteTime = DateTime.UtcNow; },true);
+			await OnboardingAccessor.Update(this, x => { x.DeleteTime = DateTime.UtcNow; },true);
             return RedirectToAction("Index");
         }
         
@@ -89,9 +89,9 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.Any)]
         [HttpPost]
-        public JsonResult Personal(string fname = null, string lname = null, string title = null, string phone = null)
+        public async Task<JsonResult> Personal(string fname = null, string lname = null, string title = null, string phone = null)
         {
-            var o =OnboardingAccessor.Update(this, x => {
+            var o = await OnboardingAccessor.Update(this, x => {
                 x.ContactCompleteTime = DateTime.UtcNow;
                 x.FirstName = fname ?? x.FirstName;
                 x.LastName = lname ?? x.LastName;
@@ -100,43 +100,42 @@ namespace RadialReview.Controllers {
 				x.CurrentPage = "Personal";
             });
 
-            OnboardingAccessor.TryUpdateUser(o);
+            await OnboardingAccessor.TryUpdateUser(o);
 
 
             return Json(ResultObject.SilentSuccess());
         }
 
 
-        [Access(AccessLevel.Any)]
-        [HttpPost]
-        public JsonResult Organization(string orgname = null, double? eosduration = null, string implementer = null, string website = null)
-        {
-            var o = OnboardingAccessor.Update(this, x => {
-                x.OrganizationCompleteTime = DateTime.UtcNow;
-                x.CompanyName = orgname ?? x.CompanyName;
-                if (eosduration != null) {
-                    if (eosduration >= 0) {
-                        var eos = DateTime.UtcNow.AddDays(eosduration.Value * -30);
-                        x.EosStartTime = eos;
-                        x.EosStartedAgo = eosduration.Value;
-                    } else {
-                        x.EosStartTime = null;
-                        x.EosStartedAgo = null;
-                    }
-                }
-                x.ImplementerName = implementer;
-                x.Website = website;
+		[Access(AccessLevel.Any)]
+		[HttpPost]
+		public async Task<JsonResult> Organization(string orgname = null, double? eosduration = null, string implementer = null, string website = null) {
+			var o = await OnboardingAccessor.Update(this, x => {
+				x.OrganizationCompleteTime = DateTime.UtcNow;
+				x.CompanyName = orgname ?? x.CompanyName;
+				if (eosduration != null) {
+					if (eosduration >= 0) {
+						var eos = DateTime.UtcNow.AddDays(eosduration.Value * -30);
+						x.EosStartTime = eos;
+						x.EosStartedAgo = eosduration.Value;
+					} else {
+						x.EosStartTime = null;
+						x.EosStartedAgo = null;
+					}
+				}
+				x.ImplementerName = implementer;
+				x.Website = website;
 				x.CurrentPage = "Organization";
 			});
 
 
-            OnboardingAccessor.TryUpdateOrganizatoin(o);
+			OnboardingAccessor.TryUpdateOrganizatoin(o);
 
-            return Json(ResultObject.SilentSuccess());
-        }
+			return Json(ResultObject.SilentSuccess());
+		}
 
 
-        [Access(AccessLevel.Any)]
+		[Access(AccessLevel.Any)]
         [HttpPost]
         public async Task<JsonResult> Login(string email, string password, HttpPostedFileBase file = null)
         {
@@ -172,11 +171,18 @@ namespace RadialReview.Controllers {
 				OrganizationModel organization=null;
                 if (o.OrganizationId == null) {
                     var paymentPlanType = PaymentAccessor.GetPlanType(o.PaymentPlan ?? "professional");
-                    organization = _OrganizationAccessor.CreateOrganization(user, o.CompanyName, paymentPlanType, now, out uOrg,out uNode, true, false,startDeactivated:true);
+					var data = new OrgCreationData() {
+						Name =o.CompanyName,
+						StartDeactivated = true,
+					};
 
-                }
+                    var result = await _OrganizationAccessor.CreateOrganization(user, paymentPlanType, now, data);
+					organization = result.organization;
+					uOrg = result.NewUser;
+					uNode = result.NewUserNode;
+				}
 
-                OnboardingAccessor.Update(this, x => {
+                await OnboardingAccessor.Update(this, x => {
                     x.Email = email ?? x.Email;
                     x.CreateOrganizationTime = now;
                     x.ProfilePicture = imageUrl ?? x.ProfilePicture;
@@ -200,7 +206,7 @@ namespace RadialReview.Controllers {
         [HttpPost]
         public async Task<JsonResult> Payment()//string address_1 = null, string address_2 = null, string city = null, string state = null, string zip = null, string country = null)
         {
-            var o=OnboardingAccessor.Update(this, x => {
+            var o=await OnboardingAccessor.Update(this, x => {
                 x.CreditCardCompleteTime = DateTime.UtcNow;
                 x.Address_1 = Request.Form["address_1"] ?? x.Address_1;
                 x.Address_2 = Request.Form["address_2"];

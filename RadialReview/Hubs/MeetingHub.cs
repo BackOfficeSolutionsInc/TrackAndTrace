@@ -271,6 +271,11 @@ namespace RadialReview.Hubs
 			{
 				using (var tx = s.BeginTransaction())
 				{
+					//	RecurrenceId = recurrenceId,
+					//	UserId = caller.Id
+					//});
+
+
 					_HangUp(s, DateTime.UtcNow);
 					tx.Commit();
 					s.Flush();
@@ -308,6 +313,35 @@ namespace RadialReview.Hubs
 			}
 		}
 
+		//Change in rtL10.js also
+		public static TimeSpan PingTimeout = TimeSpan.FromMinutes(1.5); 
+		public static DateTime NowPlusPingTimeout() {
+			return DateTime.UtcNow.Add(PingTimeout);
+		}
+
+		public void Ping() {
+			try {
+				using (var s = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
+						var found = s.QueryOver<L10Recurrence.L10Recurrence_Connection>().Where(x => x.Id == Context.ConnectionId).List().ToList();
+
+						foreach (var f in found) {
+							f.DeleteTime = NowPlusPingTimeout();
+							s.Update(f);
+							var meetingHub = Clients.Group(MeetingHub.GenerateMeetingGroupId(f.RecurrenceId));
+							f._User = TinyUserAccessor.GetUsers_Unsafe(s, new[] { f.UserId }).FirstOrDefault();
+							meetingHub.stillAlive(f);
+						}
+
+						tx.Commit();
+						s.Flush();
+
+					}
+				}
+			} catch (Exception e) {
+				log.Error("ping failed",e);
+			}
+		}
 
 		public override Task OnDisconnected(bool stopCalled)
 		{
@@ -317,8 +351,21 @@ namespace RadialReview.Hubs
 			{
 				using (var tx = s.BeginTransaction())
                 {
+					var found = s.QueryOver<L10Recurrence.L10Recurrence_Connection>()
+						.Where(x => x.Id == Context.ConnectionId && x.DeleteTime > DateTime.UtcNow && x.UserId == GetUser().Id)
+						.List().ToList();
 
-					_HangUp(s, DateTime.UtcNow);
+					var now = DateTime.UtcNow;
+					if (found.Any()) {
+						foreach (var f in found) {
+							f.DeleteTime = now;
+							s.Update(f);
+							var meetingHub = Clients.Group(MeetingHub.GenerateMeetingGroupId(f.RecurrenceId));
+							meetingHub.userExitMeeting(f.Id);
+						}
+					}
+
+					_HangUp(s, now);
 					tx.Commit();
 					s.Flush();
 				}
@@ -333,6 +380,7 @@ namespace RadialReview.Hubs
 
 			return base.OnDisconnected(stopCalled);
 		}
+
 
 		/*
 		public UserMeetingModel Join(String userId, String meetingId)

@@ -292,7 +292,7 @@ namespace RadialReview.Controllers {
 						var syncTable = "Sync";
 						s.CreateSQLQuery("delete from " + syncTable + " where CreateTime < \"" + DateTime.UtcNow.AddDays(-7).ToString("yyyy-MM-dd") + "\"")
 						 .ExecuteUpdate();
-						
+
 					} catch (Exception e) {
 						log.Error(e);
 					}
@@ -317,16 +317,24 @@ namespace RadialReview.Controllers {
 
 
 		[Access(AccessLevel.Any)]
-		public JsonResult Trigger(long id, EventType @event,decimal? arg1=null) {
+		public async Task<JsonResult> Trigger(long id, EventType @event, decimal? arg1 = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					if (arg1== null && @event == EventType.AccountAge_monthly) {
+					if (arg1 == null && @event == EventType.AccountAge_monthly) {
 						arg1 = (decimal)((DateTime.UtcNow - s.Get<OrganizationModel>(id).CreationTime).TotalDays / 30.4375);
 					}
-					EventUtil.Trigger(x => x.Create(s, @event, null, id, ForModel.Create<OrganizationModel>(id), arg1 : arg1));
-					return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+
+
 				}
 			}
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					await EventUtil.Trigger(x => x.Create(s, @event, null, id, ForModel.Create<OrganizationModel>(id), arg1: arg1));
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 	}
 }

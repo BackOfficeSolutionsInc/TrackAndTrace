@@ -18,16 +18,16 @@ namespace TractionTools.Tests.Permissions {
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void ViewHierarchy() {
-			var c = new Ctx();
+		public async Task ViewHierarchy() {
+			var c = await Ctx.Build();
 			//Everyone can see by default
 			c.AssertAll(p => p.ViewHierarchy(c.Org.Organization.AccountabilityChartId), c.AllUsers);
 		}
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void ManagesAccountabilityNode() {
-			var c = new Ctx();
+		public async Task ManagesAccountabilityNode() {
+			var c = await Ctx.Build();
 
 			c.AssertAll(p => p.ManagesAccountabilityNodeOrSelf(c.Org.ManagerNode.Id), c.Manager);
 			c.AssertAll(p => p.ManagesAccountabilityNodeOrSelf(c.Org.MiddleNode.Id), c.Manager,c.Middle);
@@ -45,8 +45,8 @@ namespace TractionTools.Tests.Permissions {
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void EditHierarchy() {
-			var c = new Ctx();
+		public async Task EditHierarchy() {
+			var c = await Ctx.Build();
 			c.AssertAll(p => p.EditHierarchy(c.Org.Organization.AccountabilityChartId), c.AllAdmins);
 		}
 		

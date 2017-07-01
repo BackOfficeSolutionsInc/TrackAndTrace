@@ -86,10 +86,11 @@ namespace RadialReview.Models.L10.VM {
 
 		public List<MeetingTranscriptVM> CurrentTranscript { get; set; }
 
-		public List<SelectListItem> GenerateEmailOptions() {
-			
+		public List<SelectListItem> GenerateEmailOptions() {			
 			return SelectExtensions.ToSelectList(typeof(ConcludeSendEmail), ""+ SendEmailRich);// (SendEmail ? ConcludeSendEmail.AllAttendees : ConcludeSendEmail.None));
 		}
+
+		public IEnumerable<L10Recurrence.L10Recurrence_Connection> Connected { get; set; }
 
 		public L10MeetingVM() {
 			StartDate = DateTime.UtcNow;
@@ -98,7 +99,7 @@ namespace RadialReview.Models.L10.VM {
 			CurrentTranscript = new List<MeetingTranscriptVM>();
 			Headlines = new List<PeopleHeadline>();
 			Milestones = new List<Milestone>();
-
+			Connected = new List<L10Recurrence.L10Recurrence_Connection>();
 			
 
 		}

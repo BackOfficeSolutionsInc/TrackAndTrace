@@ -640,7 +640,7 @@ namespace RadialReview.Controllers {
 					padId = await PadAccessor.GetReadonlyPad(note.PadId);
 				}
 				return Redirect(Config.NotesUrl("p/" + padId + "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
-			} catch (Exception e) {
+			} catch (Exception ) {
 				return RedirectToAction("Index", "Error");
 			}
 		}

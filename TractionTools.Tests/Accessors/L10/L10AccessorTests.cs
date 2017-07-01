@@ -387,7 +387,7 @@ namespace TractionTools.Tests.Accessors
                 s.Save(t);
             });
             #endregion
-            DbExecute(s =>
+            DbQuery(s =>
             {
                 var perms = PermissionsUtility.Create(s, user);
                 var now = meetingStart;

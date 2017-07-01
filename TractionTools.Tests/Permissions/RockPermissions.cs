@@ -21,16 +21,18 @@ namespace TractionTools.Tests.Permissions {
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void ViewRock() {
-			var c = new Ctx();
+		public async Task ViewRock() {
+			var c = await Ctx.Build();
 			
-			var l10=L10Accessor.CreateBlankRecurrence(c.Manager, c.Id);
+			var l10= await L10Accessor.CreateBlankRecurrence(c.Manager, c.Id);
 
 			var rock = new RockModel() {
 				ForUserId = c.Middle.Id,
 				OrganizationId = c.Id,
 				Rock = "rock"
 			};
+
+			MockHttpContext();
 			L10Accessor.CreateRock(c.Manager, l10.Id, L10Controller.AddRockVm.CreateRock(l10.Id, rock));
 
 			c.AssertAll(p => p.ViewRock(rock.Id), c.AllUsers);
@@ -39,14 +41,15 @@ namespace TractionTools.Tests.Permissions {
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void EditRock() {
-			var c = new Ctx();
-			var l10 = L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
+		public async Task EditRock() {
+			var c = await Ctx.Build();
+			var l10 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
 			var rock = new RockModel() {
 				ForUserId = c.E5.Id,
 				OrganizationId = c.Id,
 				Rock = "rock"
 			};
+			MockHttpContext();
 			//Make the rock, assign to L10
 			L10Accessor.CreateRock(c.Manager, l10.Id, L10Controller.AddRockVm.CreateRock(l10.Id, rock));
 
@@ -91,12 +94,13 @@ namespace TractionTools.Tests.Permissions {
 		}
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void EditRock_OutsideMeeting() {
-			var c = new Ctx();			
+		public async Task EditRock_OutsideMeeting() {
+			var c = await Ctx.Build();			
 			var rock = new RockModel() {
 				ForUserId = c.E2.Id,
 				Rock="Rock"
 			};
+			MockHttpContext();
 			RockAccessor.EditRocks(c.Middle, c.E2.Id, rock.AsList(), false, false);
 			var perm = new Action<PermissionsUtility>(p => p.EditRock(rock.Id));
 
@@ -128,7 +132,7 @@ namespace TractionTools.Tests.Permissions {
 		[TestMethod]
 		[TestCategory("Permissions")]
 		public void XXX() {
-			var c = new Ctx();
+			var c = await Ctx.Build();
 			c.AssertAll(p => p.XXX(YYY), c.Manager);
 		}
 

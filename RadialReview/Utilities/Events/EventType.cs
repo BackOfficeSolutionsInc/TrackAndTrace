@@ -86,15 +86,29 @@ namespace RadialReview.Utilities {
 		PaymentFailed,
 
 		UndeleteMeeting,
+		CreatePrimaryContact,
+
+		CreateMeeting,
 		//AccountAge_SemiYearlyAnniversary,
 	}
 
 	public static class EventTypeExtensions {
 
+		public static string Kind(this EventType t) {
+			return ("" + t).Split('_')[0];
+		}
+		public static string Duration(this EventType t) {
+			var split = ("" + t).Split('_');
+
+			if (split.Length>1)
+				return split[1];
+			return null;
+		}
+
 		public static bool SameKind(this EventType t1, EventType t2) {
-			var s1 = ("" + t1).Split('_')[0];
-			var s2 = ("" + t2).Split('_')[0];
-			return s1 == s2;
+			//var s1 = ("" + t1).Split('_')[0];
+			//var s2 = ("" + t2).Split('_')[0];
+			return Kind(t1) == Kind(t2);
 		}
 	}
 }

@@ -58,7 +58,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 			}
 			if (!items.Any())
 				items.Add(new TextItemIntializer("No rocks.",true));
-			items.Add(new TextAreaItemIntializer("General Comments"));
+			items.Add(new TextAreaItemIntializer("General Comments",SurveyQuestionIdentifier.GeneralComments));
 			return items;
         }
     }
@@ -79,7 +79,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
                     { "done","Done" },
                     { "not-done","Not Done" },
             };
-            return ctx.RegistrationItemFormat(true, () => SurveyItemFormat.GenerateRadio(ctx,options));
+            return ctx.RegistrationItemFormat(true, () => SurveyItemFormat.GenerateRadio(ctx, SurveyQuestionIdentifier.Rocks, options));
         }
 
         public bool HasResponse(IResponseInitializerCtx data) {

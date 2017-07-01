@@ -35,14 +35,6 @@ namespace RadialReview.Controllers {
 			return View();
 		}
 
-		[Access(AccessLevel.Any)]
-		public ActionResult Create(int? count) {
-			var user = GetUserModel();
-			if (count == null)
-				return RedirectToAction("Index");
-
-			return View();
-		}
 
 		public class OrgStats {
 			public long OrgId { get; set; }
@@ -246,28 +238,68 @@ namespace RadialReview.Controllers {
 				}
 			}
 		}
-		[HttpPost]
-		[Access(AccessLevel.Any)]
-		public ActionResult Create(String name, bool enableL10, bool enableReview, string planType = "professional") {
-			//Boolean managersCanEdit = false;
-			var user = GetUserModel();
-			//var basicPlan=_PaymentAccessor.BasicPaymentPlan();
-			UserOrganizationModel uOrg;
-			AccountabilityNode uNode = null;
 
-			//var plan = PaymentOptions.MonthlyPlan(12m, 4m, DateTime.UtcNow.AddMonths(1), 2);
-			var paymentPlanType = PaymentAccessor.GetPlanType(planType);
-			var organization = _OrganizationAccessor.CreateOrganization(
-				user,
-				name,
-				paymentPlanType,
-				DateTime.UtcNow,
-				out uOrg,
-				out uNode,
-				enableL10,
-				enableReview
-			);
-			return RedirectToAction("SetRole", "Account", new { id = uOrg.Id });
+		private void PrepareCreateOrgViewBag() {
+			var implementers = ApplicationAccessor.GetCoaches(GetUser()).OrderBy(x => x.Name).ToSelectList(x => x.Name, x => x.Id);
+			implementers.Insert(0, new SelectListItem() { Text = "<select coach>", Value = "-1" });
+			ViewBag.Implementers = implementers;
+
+			var support = ApplicationAccessor.GetSupportMembers(GetUser()).OrderBy(x => x.User.GetName());
+			var myIds = GetUser().User.UserOrganizationIds;
+			ViewBag.MySupportId = support.FirstOrDefault(x => myIds.Any(y=>y== x.UserOrgId)).NotNull(x => x.Id);
+			ViewBag.SupportTeam = support.ToSelectList(x => x.User.GetName(), x => x.Id);
+
+			var campaigns= ApplicationAccessor.GetCampaigns(GetUser(),true).OrderBy(x => x.Name).ToSelectList(x => x.Name, x => x.Name).ToList();
+			campaigns.Insert(0, new SelectListItem() { Text = "n/a", Value = null });
+			ViewBag.Campaigns = campaigns; 
+		}
+
+		[Access(AccessLevel.Radial)]
+		public ActionResult Create(int? count) {
+			var user = GetUserModel();
+
+			PrepareCreateOrgViewBag();
+
+			return View(new OrgCreationData() {
+				AssignedTo = ViewBag.MySupportId,
+				CoachId = -1				
+			});
+		}
+
+		[HttpPost]
+		[Access(AccessLevel.Radial)]
+		public async Task<ActionResult> Create(OrgCreationData data) {// String name, bool enableL10, bool enableReview, bool enableAC, string contactFN, string contactLN, string contactEmail,long implementer, ) {
+			var user = GetUserModel();
+			string planType = "professional";
+
+			if (data.AssignedTo == null)
+				ModelState.AddModelError("AssignedTo", "Organization must be assigned to someone in customer support.");
+			if (string.IsNullOrWhiteSpace(data.ContactEmail))
+				ModelState.AddModelError("ContactEmail", "Please select an email for the primary contact");
+			if (string.IsNullOrWhiteSpace(data.ContactFN))
+				ModelState.AddModelError("ContactFN", "Please select a first name for the primary contact");
+			if (string.IsNullOrWhiteSpace(data.ContactLN))
+				ModelState.AddModelError("ContactLN", "Please select a last name for the primary contact");
+
+			if (ModelState.IsValid) {
+				var paymentPlanType = PaymentAccessor.GetPlanType(planType);
+				var result = await _OrganizationAccessor.CreateOrganization(user, paymentPlanType, DateTime.UtcNow, data);
+				var uOrg = result.NewUser;
+
+				if (data.AccountType == AccountType.Implementer || data.AccountType == AccountType.Coach) {
+					ApplicationAccessor.EditCoach(GetUser(), new Models.Application.Coach() {
+						CoachType = data.AccountType == AccountType.Implementer ? CoachType.CertifiedOrProfessionalEOSi : CoachType.BusinessCoach,
+						Name = data.ContactFN+" "+data.ContactLN,
+						Email =data.ContactEmail,
+						UserOrgId = uOrg.Id,
+					});
+				}
+
+				return RedirectToAction("SetRole", "Account", new { id = uOrg.Id });
+			}
+
+			PrepareCreateOrgViewBag();
+			return View(data);			
 		}
 
 		[HttpGet]
@@ -279,16 +311,16 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Products(OrganizationModel model) {
+		public async Task<ActionResult> Products(OrganizationModel model) {
 			if (ModelState.IsValid) {
-				_OrganizationAccessor.UpdateProducts(GetUser(), model.Settings.EnableReview, model.Settings.EnableL10, model.Settings.EnableSurvey, model.Settings.Branding);
+				await _OrganizationAccessor.UpdateProducts(GetUser(), model.Settings.EnableReview, model.Settings.EnableL10, model.Settings.EnableSurvey, model.Settings.Branding);
 				return RedirectToAction("Index", "Manage");
 			}
 			return View(GetUser().Organization);
 		}
 
 		[Access(AccessLevel.Any)]
-		public ActionResult Join(String id = null) {
+		public async Task<ActionResult> Join(String id = null) {
 			if (String.IsNullOrWhiteSpace(id))
 				throw new PermissionsException("Id cannot be empty.");
 
@@ -315,7 +347,7 @@ namespace RadialReview.Controllers {
 				//We want to hit this exception.
 				new Cache().Invalidate(CacheKeys.ORGANIZATION_ID);
 				//Session["OrganizationId"] = null;
-				var org = OrganizationAccessor.JoinOrganization(user, nexus.ByUserId, placeholderUserId);
+				var org = await OrganizationAccessor.JoinOrganization(user, nexus.ByUserId, placeholderUserId);
 				_NexusAccessor.Execute(nexus);
 				return RedirectToAction("Index", "Home", new { message = String.Format(MessageStrings.SuccessfullyJoinedOrganization, org.Organization.Name) });
 			}

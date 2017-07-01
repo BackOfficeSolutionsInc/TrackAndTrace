@@ -55,7 +55,9 @@ namespace RadialReview.Controllers {
 
 			PdfDocument pdf=null;
 			if (root != null && (root.children!=null || root._children!=null)) {
+#pragma warning disable CS0618 // Type or member is obsolete
 				pdf = PdfAccessor.GenerateAccountabilityChart(root, pw.Value, ph.Value, restrictSize: fit);
+#pragma warning restore CS0618 // Type or member is obsolete
 			} else {
 				var settings = new Tree.TreeSettings() {
 					compact = compact ?? false

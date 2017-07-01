@@ -65,7 +65,7 @@ namespace RadialReview.Controllers {
 					padId = await PadAccessor.GetReadonlyPad(todo.PadId);
 				}
 				return Redirect(Config.NotesUrl("p/" + padId+ "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
-			} catch (Exception e) {
+			} catch (Exception ) {
 				return RedirectToAction("Index", "Error");
 			}			
 		}
@@ -185,11 +185,13 @@ namespace RadialReview.Controllers {
             _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
             ScoreModel s = null;
+            var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
 
             try {
                 if (score == 0 && accountable.HasValue) {
-                    var week = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrence, true, false, false).CreateTime.StartOfWeek(DayOfWeek.Sunday);
-                    var scores = L10Accessor.GetScoresForRecurrence(GetUser(), recurrence).Where(x => x.Id == score && x.AccountableUserId == accountable.Value && x.ForWeek == week);
+					var shift = System.TimeSpan.FromDays((recur.CurrentWeekHighlightShift + 1) * 7 - .0001);
+					var week = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrence, true, false, false).CreateTime.Add(shift).StartOfWeek(DayOfWeek.Sunday);
+                    var scores = L10Accessor.GetScoresForRecurrence(GetUser(), recurrence).Where(x => x.MeasurableId == measurable && x.AccountableUserId == accountable.Value && x.ForWeek == week);
                     s = scores.FirstOrDefault();
                     if (s == null) {
                         s = ScorecardAccessor.UpdateScoreInMeeting(GetUser(), recurrence, 0, week, measurable, null, null, null);
@@ -201,7 +203,6 @@ namespace RadialReview.Controllers {
             } catch (Exception e) {
                 log.Error("Todo/Modal", e);
             }
-            var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
 
             var people = recur._DefaultAttendees.Select(x => x.User).ToList();
             people.Add(GetUser());

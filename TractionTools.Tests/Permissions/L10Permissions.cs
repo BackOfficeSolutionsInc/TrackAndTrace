@@ -20,16 +20,16 @@ namespace TractionTools.Tests.Permissions {
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void CreateL10Recurrence() {
-			var c = new Ctx();
+		public async Task CreateL10Recurrence() {
+			var c = await Ctx.Build();
 			c.AssertAll(p => p.CreateL10Recurrence(c.Id), c.AllManagers);
 		}
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void ViewL10Recurrence() {
-			var c = new Ctx();
-			var l10 = L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
+		public async Task ViewL10Recurrence() {
+			var c = await Ctx.Build();
+			var l10 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
 			var perm = new Action<PermissionsUtility>(p => p.ViewL10Recurrence(l10.Id));
 			c.AssertAll(perm, c.Manager, c.Middle);
 
@@ -60,9 +60,9 @@ namespace TractionTools.Tests.Permissions {
 		}
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void EditL10Recurrence() {
-			var c = new Ctx();
-			var l10 = L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
+		public async Task EditL10Recurrence() {
+			var c = await Ctx.Build();
+			var l10 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
 			var perm = new Action<PermissionsUtility>(p => p.EditL10Recurrence(l10.Id));
 
 			c.AssertAll(perm, c.Middle, c.Manager);
@@ -95,9 +95,9 @@ namespace TractionTools.Tests.Permissions {
 		}
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void AdminL10Recurrence() {
-			var c = new Ctx();
-			var l10 = L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
+		public async Task AdminL10Recurrence() {
+			var c = await Ctx.Build();
+			var l10 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
 			var perm = new Action<PermissionsUtility>(p => p.AdminL10Recurrence(l10.Id));
 			//L10Accessor.AddAttendee(c.Manager, l10.Id, c.Manager.Id);
 			c.AssertAll(perm, c.Middle, c.Manager);
@@ -147,9 +147,9 @@ namespace TractionTools.Tests.Permissions {
 		[TestMethod]
 		[TestCategory("Permissions")]
 		public async Task ViewIssue() {
-			var c = new Ctx();
+			var c = await Ctx.Build();
 
-			var l101 = L10Accessor.CreateBlankRecurrence(c.Manager, c.Id);
+			var l101 = await L10Accessor.CreateBlankRecurrence(c.Manager, c.Id);
 			L10Accessor.AddAttendee(c.Manager, l101.Id, c.Employee.Id);
 			L10Accessor.AddAttendee(c.Manager, l101.Id, c.Org.E5.Id);
 
@@ -161,7 +161,7 @@ namespace TractionTools.Tests.Permissions {
 			await IssuesAccessor.CreateIssue(c.Manager, l101.Id, c.Manager.Id, issue);
 			c.AssertAll(perm1, c.Manager, c.Employee, c.Org.E5);
 
-			var l102 = L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
+			var l102 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
 			await IssuesAccessor.CreateIssue(c.Middle, l102.Id, c.Middle.Id, issue2);
 			c.AssertAll(perm2, c.Middle, c.Manager);
 
@@ -195,9 +195,9 @@ namespace TractionTools.Tests.Permissions {
 		[TestMethod]
 		[TestCategory("Permissions")]
 		public async Task EditIssue() {
-			var c = new Ctx();
+			var c = await Ctx.Build();
 
-			var l101 = L10Accessor.CreateBlankRecurrence(c.Manager, c.Id);
+			var l101 = await L10Accessor.CreateBlankRecurrence(c.Manager, c.Id);
 			L10Accessor.AddAttendee(c.Manager, l101.Id, c.Employee.Id);
 			L10Accessor.AddAttendee(c.Manager, l101.Id, c.Org.E5.Id);
 
@@ -233,7 +233,7 @@ namespace TractionTools.Tests.Permissions {
 			}
 			
 
-			var l102 = L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
+			var l102 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
 			await IssuesAccessor.CreateIssue(c.Middle, l102.Id, c.Middle.Id, issue2);
 			var perm2 = new Action<PermissionsUtility>(p => p.EditIssue(issue2.Id));
 			c.AssertAll(perm2, c.Middle, c.Manager);
@@ -245,8 +245,8 @@ namespace TractionTools.Tests.Permissions {
 		[TestMethod]
 		[TestCategory("Permissions")]
 		public async Task ViewTodo() {
-			var c = new Ctx();
-			var l101 = L10Accessor.CreateBlankRecurrence(c.Manager, c.Id);
+			var c = await Ctx.Build();
+			var l101 = await L10Accessor.CreateBlankRecurrence(c.Manager, c.Id);
 			L10Accessor.AddAttendee(c.Manager, l101.Id, c.Employee.Id);
 			L10Accessor.AddAttendee(c.Manager, l101.Id, c.Org.E5.Id);
 
@@ -255,7 +255,7 @@ namespace TractionTools.Tests.Permissions {
 			await TodoAccessor.CreateTodo(c.Manager, l101.Id, todo);
 			c.AssertAll(perm1, c.Manager, c.Employee, c.Org.E5);
 
-			var l102 = L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
+			var l102 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
 			var todo2 = new TodoModel() { ForRecurrenceId = l102.Id };
 			var perm2 = new Action<PermissionsUtility>(p => p.ViewTodo(todo2.Id));
 			await TodoAccessor.CreateTodo(c.Middle, l102.Id, todo2);
@@ -265,7 +265,7 @@ namespace TractionTools.Tests.Permissions {
 		[TestMethod]
 		[TestCategory("Permissions")]
 		public async Task ViewTodo_Personal() {
-			var c = new Ctx();
+			var c = await Ctx.Build();
 
 			var todo = new TodoModel() { TodoType = TodoType.Personal, AccountableUser = c.Org.E5 };
 			await TodoAccessor.CreateTodo(c.Manager, -2, todo);
@@ -277,9 +277,9 @@ namespace TractionTools.Tests.Permissions {
 		[TestMethod]
 		[TestCategory("Permissions")]
 		public async Task EditTodo() {
-			var c = new Ctx();
+			var c = await Ctx.Build();
 			{
-				var l101 = L10Accessor.CreateBlankRecurrence(c.Manager, c.Id);
+				var l101 = await L10Accessor.CreateBlankRecurrence(c.Manager, c.Id);
 				L10Accessor.AddAttendee(c.Manager, l101.Id, c.Employee.Id);
 				L10Accessor.AddAttendee(c.Manager, l101.Id, c.Org.E5.Id);
 
@@ -319,7 +319,7 @@ namespace TractionTools.Tests.Permissions {
 			}
 
 			{
-				var l101 = L10Accessor.CreateBlankRecurrence(c.Manager, c.Id);
+				var l101 = await L10Accessor.CreateBlankRecurrence(c.Manager, c.Id);
 				L10Accessor.AddAttendee(c.Manager, l101.Id, c.Employee.Id);
 				L10Accessor.AddAttendee(c.Manager, l101.Id, c.Org.E5.Id);
 
@@ -351,7 +351,7 @@ namespace TractionTools.Tests.Permissions {
 				}
 			}
 			{
-				var l102 = L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
+				var l102 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
 				var todo2 = new TodoModel() { ForRecurrenceId = l102.Id, AccountableUser = c.Org.E5 };
 				var perm = new Action<PermissionsUtility>(p => p.EditTodo(todo2.Id));
 				await TodoAccessor.CreateTodo(c.Middle, l102.Id, todo2);
@@ -384,10 +384,10 @@ namespace TractionTools.Tests.Permissions {
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void ViewL10Meeting() {
-			var c = new Ctx();
-			var l10 = L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
-			var meeting = L10Accessor.StartMeeting(c.Middle, c.Middle, l10.Id, new List<long>());
+		public async Task ViewL10Meeting() {
+			var c = await Ctx.Build();
+			var l10 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
+			var meeting = await L10Accessor.StartMeeting(c.Middle, c.Middle, l10.Id, new List<long>());
 			var perm = new Action<PermissionsUtility>(p => p.ViewL10Meeting(meeting.Id));
 
 			c.AssertAll(perm, c.Middle, c.Manager);
@@ -419,9 +419,9 @@ namespace TractionTools.Tests.Permissions {
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void ViewL10Note() {
-			var c = new Ctx();
-			var l10 = L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
+		public async Task ViewL10Note() {
+			var c = await Ctx.Build();
+			var l10 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
 
 			L10Accessor.CreateNote(c.Middle, l10.Id, "note");
 			var note = L10Accessor.GetVisibleL10Notes_Unsafe(new List<long> { l10.Id }).First();
@@ -460,8 +460,8 @@ namespace TractionTools.Tests.Permissions {
 		 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void XXX() {
-			var c = new Ctx();
+		public async Task XXX() {
+			var c = await Ctx.Build();
 			c.AssertAll(p => p.XXX(YYY), c.Manager);
 		}
 

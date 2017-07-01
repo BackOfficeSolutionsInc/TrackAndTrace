@@ -2,6 +2,7 @@
 using NHibernate.Linq;
 using RadialReview.Exceptions;
 using RadialReview.Models;
+using RadialReview.Models.Application;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Dashboard;
 using RadialReview.Models.Enums;
@@ -35,7 +36,116 @@ namespace RadialReview.Accessors
 		public const string COMPANY_VALUES = "Company Values";
 		public const string COMPANY_QUESTION = "Company Questions";
 
-        private static string[] ApplicationCategories ={ 
+		public static IEnumerable<Coach> GetCoaches(UserOrganizationModel caller) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.RadialAdmin(true);
+					return s.QueryOver<Coach>().Where(x=>x.DeleteTime==null).List().ToList();					
+				}
+			}
+		}
+
+		public static Coach GetCoach(UserOrganizationModel caller, long id) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.RadialAdmin(true);
+					return s.Get<Coach>(id);
+				}
+			}
+		}
+
+		public static void EditCoach(UserOrganizationModel caller, Coach model) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.RadialAdmin(true);
+					if (model.Id == 0) {
+
+					}
+
+
+					s.SaveOrUpdate(model);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+		/// 
+
+		public static IEnumerable<SupportMember> GetSupportMembers(UserOrganizationModel caller) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.RadialAdmin(true);
+					return s.QueryOver<SupportMember>().Where(x => x.DeleteTime == null).List().ToList();
+				}
+			}
+		}
+
+		public static SupportMember GetSupportMember(UserOrganizationModel caller, long id) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.RadialAdmin(true);
+					return s.Get<SupportMember>(id);
+				}
+			}
+		}
+
+		public static void EditSupportMember(UserOrganizationModel caller, SupportMember model) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.RadialAdmin(true);
+					s.SaveOrUpdate(model);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+		/// 
+
+
+		public static IEnumerable<Campaign> GetCampaigns(UserOrganizationModel caller,bool visibleOnly) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.RadialAdmin(true);
+					var q = s.QueryOver<Campaign>().Where(x => x.DeleteTime == null);
+					if (visibleOnly) {
+						q = q.Where(x => x.HideFromList == false);
+					}
+						
+					return q.List().ToList(); 
+					
+				}
+			}
+		}
+		public static Campaign GetCampaign(UserOrganizationModel caller, long id) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.RadialAdmin(true);
+					return s.Get<Campaign>(id);
+				}
+			}
+		}
+		public static void EditCampaign(UserOrganizationModel caller, Campaign model) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.RadialAdmin(true);
+					s.SaveOrUpdate(model);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+		private static string[] ApplicationCategories ={ 
                 "Performance",
                 "Culture",
                 FEEDBACK,
@@ -71,8 +181,13 @@ namespace RadialReview.Accessors
             //new Q(QuestionType.Thumbs,"Capacity to do it","Feedback",true),
         };
 
+		public static int GetTTQuarter(DateTime utcNow) {
+			var month = utcNow.Month;
+			var yearBegin = 11; //November
+			return (int)Math.Floor((month - yearBegin) / 4m + 40) % 4 + 1;
+		}
 
-        private static string[] ApplicationPositions = new String[]{
+		private static string[] ApplicationPositions = new String[]{
                 "Account Coordinator",
                 "Account Manager",
                 "Accountant",

@@ -3,6 +3,7 @@ using RadialReview.Utilities.Hooks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace RadialReview.Hooks {
@@ -34,17 +35,33 @@ namespace RadialReview.Hooks {
         }
 
 
+		public static async Task Each<T>(Func<T,Task> action)  where T : IHook {
+			var hooks = GetHooks<T>();			
+			foreach(var x in hooks) {
+				try {
+					await action(x);
+				} catch (Exception e) {
+					log.Error(e);
+					throw e;
+				}
+			};
+		}
+
         public static void Each<T>(Action<T> action) where T : IHook
         {
-            GetHooks<T>().ForEach(x=>{
-             try{
-                 action(x);
-             }catch(Exception e){
-                 log.Error(e);
-                 throw e;
-             }
-            });
+            GetHooks<T>().ForEach(x => {
+				try {
+					action(x);
+				} catch (Exception e) {
+					log.Error(e);
+					throw e;
+				}
+			});
         }
+
+		public static bool IsRegistered<T>() where T : IHook {
+			return GetSingleton()._Hooks.Where(x => x is T).Any();
+		}
 
         public static HooksRegistry GetSingleton()
         {
