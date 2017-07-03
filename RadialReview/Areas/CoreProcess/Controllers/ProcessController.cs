@@ -62,8 +62,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         [Access(AccessLevel.UserOrganization)]
         public JsonResult StartProcess(long id)
         {
-            //processDefAccessor.ModifiyBpmnFile(GetUser(), id, oldOrder, newOrder);
-            //L10Accessor.ReorderPage(GetUser(),  oldOrder, newOrder);
+            processDefAccessor.ProcessStart(GetUser(), id);
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
 
@@ -109,19 +108,21 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         [Access(AccessLevel.UserOrganization)]
         public JsonResult DeleteTask(string id, string localid) // id is taskId
         {
-            //processDefAccessor.DeletTask(GetUser(), id, localid);
+            processDefAccessor.DeleteTask(GetUser(), id, localid);
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.UserOrganization)]
         public JsonResult Delete(string id) // id is processid
         {
+            processDefAccessor.Delete(GetUser(), Convert.ToInt64(id));
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.UserOrganization)]
         public ActionResult Publish(string id)
         {
+            processDefAccessor.Deploy(GetUser(), id);
             //TaskViewModel task = new TaskViewModel();
             //task.process = new ProcessViewModel();
             //task.process.LocalID = id;
