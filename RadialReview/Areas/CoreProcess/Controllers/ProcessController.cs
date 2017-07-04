@@ -1,4 +1,5 @@
 ﻿using CamundaCSharpClient.Model.Deployment;
+using CamundaCSharpClient.Model.ProcessInstance;
 using RadialReview.Accessors;
 using RadialReview.Areas.CoreProcess.Accessors;
 using RadialReview.Areas.CoreProcess.Models.Interfaces;
@@ -36,10 +37,12 @@ namespace RadialReview.Areas.CoreProcess.Controllers
                 //process.IsStarted = status;
                 if (item.CamundaId == null)
                 {
+                    process.Count = "0";
                     process.status = "<div style='color:red'><i class='fa fa-2x fa-times-circle'></i></ div>";
                 }
                 else
                 {
+                    process.Count = "1";
                     process.status = "<div style='color:green'><i class='fa fa-2x fa-check-circle'></i></ div>";
                 }
 
@@ -52,7 +55,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers
                 {
                     process.Action = "Start";
                 }
-
+                process.CamundaId = item.CamundaId;
                 Process.Add(process);
             }
 
@@ -62,8 +65,8 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         [Access(AccessLevel.UserOrganization)]
         public JsonResult StartProcess(long id)
         {
-            //processDefAccessor.ModifiyBpmnFile(GetUser(), id, oldOrder, newOrder);
-            //L10Accessor.ReorderPage(GetUser(),  oldOrder, newOrder);
+            ProcessViewModel processviewmodal = new ProcessViewModel();
+            processviewmodal.status = "<div style='color:red'><i class='fa fa-2x fa-times-circle'></i></ div>";
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
 
@@ -73,6 +76,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         {
             var id = processDefAccessor.Create(GetUser(), Modal.Name);
             Modal.Id = id;
+            Modal.status = "<div style='color:red'><i class='fa fa-2x fa-times-circle'></i></ div>";
 
             return Json(ResultObject.SilentSuccess(Modal));
         }
@@ -189,6 +193,28 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         {
             var updateProcess = processDefAccessor.Edit(GetUser(), Model.LocalID, Model.Name);
             return Json(ResultObject.SilentSuccess(Model));
+        }
+
+        [Access(AccessLevel.UserOrganization)]
+        public ActionResult ProcessInstance(string id) // id is processid
+        {
+            List<ProcessInstanceViewModel> processInstance = new List<ProcessInstanceViewModel>();
+
+            processInstanceModel processinstance = new processInstanceModel();
+            processInstance.Add(new ProcessInstanceViewModel { Id = "1234", BusinessKey = "BussinessKey123", DefinitionId = "0001" });
+            processInstance.Add(new ProcessInstanceViewModel { Id = "5678", BusinessKey = "BussinessKey1234", DefinitionId = "00012" });
+            processInstance.Add(new ProcessInstanceViewModel { Id = "91011", BusinessKey = "BussinessKey1235", DefinitionId = "00013" });
+            processInstance.Add(new ProcessInstanceViewModel { Id = "111213", BusinessKey = "BussinessKey1236", DefinitionId = "00014" });
+            processInstance.Add(new ProcessInstanceViewModel { Id = "151617", BusinessKey = "BussinessKey1237", DefinitionId = "00015" });
+            processInstance.Add(new ProcessInstanceViewModel { Id = "181920", BusinessKey = "BussinessKey1238", DefinitionId = "00016" });
+
+            return View(processInstance);
+        }
+        [Access(AccessLevel.UserOrganization)]
+
+        public JsonResult Suspend(string id)
+        {
+            return Json(ResultObject.SilentSuccess());
         }
     }
 }

@@ -16,6 +16,9 @@ namespace RadialReview.Areas.CoreProcess.Models.Process {
         public string status { get; set; }
         public bool IsStarted { get; set; }
         public string Action { get; set; }
+        public string CamundaId { get; set; }
+        public string Count { get; set; }
+        
         public List<TaskViewModel> taskList { get; set; }
 
 	}

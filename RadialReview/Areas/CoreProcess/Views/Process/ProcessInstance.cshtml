@@ -1,15 +1,14 @@
-﻿@model List<RadialReview.Areas.CoreProcess.Models.Process.ProcessViewModel>
+﻿@model List<RadialReview.Areas.CoreProcess.Models.Process.ProcessInstanceViewModel>
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "ProcessInstance";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @section top{
     <div class="jumbotron">
-        <h1>List of Process</h1>
+        <h1>List of Process-Instance</h1>
     </div>
 }
-
 <br />
 <div class="row">
     <div class="col-sm-8 col-lg-12">
@@ -29,19 +28,19 @@
                     data: datas,
                     clickAddValidation: ValidateForm,
                     clickEditValidation: ValidateForm,
-                    clickRemove: "/Process/Delete/{0}",
-					clickEdit: "/Process/Edit/{0}",
-					addButton:{text: "Create Process"},
+                    //clickRemove: "/Process/Delete/{0}",
+					//clickEdit: "/Process/Edit/{0}",
+					//addButton:{text: "Create Process"},
 					nodataText: "No Process. Click add to create one.",
-					clickAdd: "/Process/Create",
-					postAdd: "/Process/Create",
+					//clickAdd: "/Process/Create",
+					//postAdd: "/Process/Create",
                     cells: [
-                        { name: "Name", classes: "", contents: function (x) { return x.Name; } },
-                        { name: "Deploy", classes: "", contents: function (x) { return x.status; } },
-                        { name: "PI-Count", classes: "", contents: function (x) { return x.Count; } },
-                        { name: "Action", classes: "", contents: function (x) { return "<a href='/CoreProcess/Process/Tasks/" + x.Id + "'>Task</a>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" + "<a href='/CoreProcess/Process/StartProcess/" + x.Id + "'>" + x.Action + "</a>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" + "<a href='/CoreProcess/Process/ProcessInstance/" + x.CamundaId + "'>ProcessInstance</a>"}},
-						{ edit: true },
-						{ remove : true },
+                        { name: "Id", classes: "", contents: function (x) { return x.Id; } },
+                        { name: "BusinessKey", classes: "", contents: function (x) { return x.BusinessKey; } },
+                        { name: "DefinitionId", classes: "", contents: function (x) { return x.DefinitionId } },
+                        { name: "Action", classes: "", contents: function (x) { return "<a href='/CoreProcess/Process/Suspend/" + x.Id + "'>Suspend</a>" } },
+						//{ edit: true },
+						//{ remove : true },
                     ],
 					nodataText: "No Task found."
 
@@ -49,10 +48,9 @@
 				table.setData(datas);
 
             </script>}
-        
+
     </div>
 </div>
-
 @using (Html.BeginStyles())
 {
     @Styles.Render("~/Content/MeetingEdit")
@@ -102,9 +100,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script>
                 $(window).on('load', function () {
-                    $("table thead tr th").next().next().attr("colspan", "3");
-                    $("table tbody tr td").next().next().attr("width", "50px");
-                    $("table tbody tr td").next().next().next().attr("width", "50px");
+                    
                 });
 
 </script>
