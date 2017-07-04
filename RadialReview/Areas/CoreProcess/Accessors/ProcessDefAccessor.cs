@@ -124,6 +124,42 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return result;
         }
 
+        public bool ProcessSuspend(UserOrganizationModel caller, string processInsId, bool isSuspend)
+        {
+            bool result = false;
+            try
+            {
+                using (var s = HibernateSession.GetCurrentSession())
+                {
+                    using (var tx = s.BeginTransaction())
+                    {
+                        PermissionsUtility.Create(s, caller);
+                        var getProcessInsDetail = s.QueryOver<ProcessInstance_Camunda>().Where(x => x.DeleteTime == null && x.CamundaProcessInstanceId == processInsId).SingleOrDefault();
+                        if (getProcessInsDetail != null)
+                        {
+                            // call Comm Layer
+                            CommClass commClass = new CommClass();
+                            var startProcess = commClass.ProcessSuspend(processInsId, isSuspend);
+                            if (startProcess.TNoContentStatus.ToString() == "Success")
+                            {
+                                getProcessInsDetail.Suspended = isSuspend;
+                                s.Update(getProcessInsDetail);
+
+                                tx.Commit();
+                                s.Flush();
+                                result = true;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return result;
+        }
+
 
         public List<ProcessInstanceViewModel> GetProcessInstanceList(string localId)
         {

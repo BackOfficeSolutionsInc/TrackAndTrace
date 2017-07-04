@@ -1,4 +1,5 @@
 ﻿using CamundaCSharpClient;
+using CamundaCSharpClient.Model;
 using CamundaCSharpClient.Model.ProcessDefinition;
 using CamundaCSharpClient.Model.ProcessInstance;
 using CamundaCSharpClient.Model.Task;
@@ -42,10 +43,15 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
 
         public processInstanceModel ProcessStart(string id)
         {
-            // Call API and get JSON
-            // Serialize JSON into IProcessDef
             client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
             var result = client.ProcessDefinition().Id(id).Start<object>(new object());
+            return result;
+        }
+
+        public NoContentStatus ProcessSuspend(string id,bool isSuspend)
+        {
+            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
+            var result = client.ProcessInstance().Id(id).Suspended(isSuspend).Suspend();
             return result;
         }
 

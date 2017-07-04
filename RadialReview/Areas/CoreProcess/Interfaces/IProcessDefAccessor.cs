@@ -32,6 +32,8 @@ namespace RadialReview.Areas.CoreProcess.Interfaces
         bool DeleteTask(UserOrganizationModel caller, string taskId, string localId);
         List<TaskViewModel> GetAllTask(UserOrganizationModel caller, string localId);
         bool ModifiyBpmnFile(UserOrganizationModel caller, string localId, int oldOrder, int newOrder);
+        bool ProcessSuspend(UserOrganizationModel caller, string processInsId, bool isSuspend);
+        bool ProcessStart(UserOrganizationModel caller, long processId);
 
     }
 }
