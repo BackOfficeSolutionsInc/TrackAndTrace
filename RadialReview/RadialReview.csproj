@@ -129,6 +129,7 @@
     <Compile Include="Areas\CoreProcess\CoreProcessAreaRegistration.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\ITaskAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
+    <Compile Include="Areas\CoreProcess\Models\Interfaces\IProcessInstance.cs" />
     <Compile Include="Areas\CoreProcess\Models\Interfaces\ITask.cs" />
     <Compile Include="Areas\CoreProcess\Models\Interfaces\IProcessDef.cs" />
     <Compile Include="Areas\CoreProcess\Models\MapModel\ComundaModelMap.cs" />

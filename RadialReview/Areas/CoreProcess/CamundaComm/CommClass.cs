@@ -29,6 +29,7 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
             return new ProcessDef(getProcessDef);
         }
 
+
         public string Deploy(string key, List<object> files)
         {
             // Call API and get JSON
@@ -39,12 +40,12 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
         }
 
 
-        public processInstanceModel ProcessStart(string key)
+        public processInstanceModel ProcessStart(string id)
         {
             // Call API and get JSON
             // Serialize JSON into IProcessDef
             client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
-            var result = client.ProcessDefinition().Key(key).Start<object>(new object());
+            var result = client.ProcessDefinition().Id(id).Start<object>(new object());
             return result;
         }
 
@@ -53,19 +54,27 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
             client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
             return client.Task().Get().list().Select(s => new Task(s));
         }
+
+        public int GetProcessInstanceCount(string processDefId)
+        {
+            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
+            return client.ProcessInstance().Id(processDefId).Get().list().Count();
+        }
+
+        public IEnumerable<IProcessInstance> GetProcessInstanceList(string processDefId)
+        {
+            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
+            return client.ProcessInstance().Id(processDefId).Get().list().Select(s => new ProcessInstance(s));
+        }
     }
 
     public class ProcessDef : IProcessDef
     {
-        public ProcessDef()
-        {
-
-        }
 
         public ProcessDef(ProcessDefinitionModel processDef)
         {
             Id = processDef.Id;
-            description = processDef.Description!=null? processDef.Description.ToString():"";
+            description = processDef.Description != null ? processDef.Description.ToString() : "";
             key = processDef.Key;
             name = processDef.Name;
         }
@@ -190,6 +199,61 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
         public string GetProcessInstanceId()
         {
             return processInstanceId;
+        }
+    }
+
+    public class ProcessInstance : IProcessInstance
+    {
+
+        public ProcessInstance(processInstanceModel processInstanceModel)
+        {
+            Id = processInstanceModel.Id;
+            DefinitionId = processInstanceModel.DefinitionId;
+            BusinessKey = processInstanceModel.BusinessKey ?? "";
+            CaseInstanceId = (processInstanceModel.CaseInstanceId != null ? processInstanceModel.CaseInstanceId.ToString() : "");
+            Ended = processInstanceModel.Ended;
+            Suspended = processInstanceModel.Suspended;
+        }
+        public string Id { get; set; }
+
+        public string DefinitionId { get; set; }
+
+        public string BusinessKey { get; set; }
+
+        public string CaseInstanceId { get; set; }
+
+        public bool Ended { get; set; }
+
+        public bool Suspended { get; set; }
+
+        public string GetId()
+        {
+            return Id;
+        }
+
+        public string GetDefinitionId()
+        {
+            return DefinitionId;
+        }
+
+        public string GetBusinessKey()
+        {
+            return BusinessKey;
+        }
+
+        public string GetCaseInstanceId()
+        {
+            return CaseInstanceId;
+        }
+
+        public bool GetEnded()
+        {
+            return Ended;
+        }
+
+        public bool GetSuspended()
+        {
+            return Suspended;
         }
     }
 }

@@ -120,14 +120,10 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public ActionResult Publish(string id)
+        public JsonResult Publish(string id)
         {
             processDefAccessor.Deploy(GetUser(), id);
-            //TaskViewModel task = new TaskViewModel();
-            //task.process = new ProcessViewModel();
-            //task.process.LocalID = id;
-            //return PartialView("~/Areas/CoreProcess/Views/Shared/Partial/CreateTask.cshtml", task);
-            return null;
+            return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.UserOrganization)]
