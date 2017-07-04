@@ -65,7 +65,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         [Access(AccessLevel.UserOrganization)]
         public JsonResult StartProcess(long id)
         {
-            //processDefAccessor.ModifiyBpmnFile(GetUser(), id, oldOrder, newOrder);
+            processDefAccessor.ProcessStart(GetUser(), id);
             //L10Accessor.ReorderPage(GetUser(),  oldOrder, newOrder);
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }

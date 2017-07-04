@@ -17,6 +17,7 @@ namespace RadialReview.Areas.CoreProcess.Interfaces
         IProcessDef GetProcessDefByKey(UserOrganizationModel caller, string key);
         IEnumerable<IProcessDef> GetAllProcessDef(UserOrganizationModel caller); // get all
         IProcessDef GetProcessDefById(UserOrganizationModel caller, string processDefId); // get by id
+        List<ProcessInstanceViewModel> GetProcessInstanceList(string localId);
         long Create(UserOrganizationModel caller, string processName);
         bool Edit(UserOrganizationModel caller, string localId, string processName);
         bool Delete(UserOrganizationModel caller, long processId);

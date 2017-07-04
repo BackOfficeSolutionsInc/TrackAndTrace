@@ -89,24 +89,59 @@ namespace RadialReview.Areas.CoreProcess.Accessors
         public bool ProcessStart(UserOrganizationModel caller, long processId)
         {
             bool result = false;
-            using (var s = HibernateSession.GetCurrentSession())
+            try
             {
-                PermissionsUtility.Create(s, caller);
-                var getProcessDefDetail = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.Id == processId).SingleOrDefault();
-                if (getProcessDefDetail != null)
+                using (var s = HibernateSession.GetCurrentSession())
                 {
-                    // call Comm Layer
-                    CommClass commClass = new CommClass();
-                    var startProcess = commClass.ProcessStart(getProcessDefDetail.CamundaId);
-                    if (!string.IsNullOrEmpty(startProcess.Id))
+                    using (var tx = s.BeginTransaction())
                     {
-                        result = true;
+                        PermissionsUtility.Create(s, caller);
+                        var getProcessDefDetail = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.Id == processId).SingleOrDefault();
+                        if (getProcessDefDetail != null)
+                        {
+                            // call Comm Layer
+                            CommClass commClass = new CommClass();
+                            var startProcess = commClass.ProcessStart(getProcessDefDetail.CamundaId);
+
+                            ProcessInstance_Camunda processIns = new ProcessInstance_Camunda();
+                            processIns.LocalProcessInstanceId = getProcessDefDetail.LocalId;
+                            processIns.ProcessDefId = startProcess.DefinitionId;
+                            processIns.Suspended = startProcess.Suspended;
+                            processIns.CamundaProcessInstanceId = startProcess.Id;
+                            s.Save(processIns);
+
+                            tx.Commit();
+                            s.Flush();
+                            result = true;
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
             return result;
         }
 
+
+        public List<ProcessInstanceViewModel> GetProcessInstanceList(string localId)
+        {
+            try
+            {
+                using (var s = HibernateSession.GetCurrentSession())
+                {
+                    return s.QueryOver<ProcessInstance_Camunda>().Where(x => x.DeleteTime == null && x.LocalProcessInstanceId == localId).List()
+                        .Select(x => new ProcessInstanceViewModel() { Id = x.CamundaProcessInstanceId, DefinitionId = x.ProcessDefId, Suspended = x.Suspended }).ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+        }
 
         public long Create(UserOrganizationModel caller, string processName)
         {
