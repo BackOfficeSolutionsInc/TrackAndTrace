@@ -1,5 +1,6 @@
 ﻿using CamundaCSharpClient.Model.Deployment;
 using RadialReview.Areas.CoreProcess.Accessors;
+using RadialReview.Areas.CoreProcess.CamundaComm;
 using RadialReview.Controllers;
 using System;
 using System.Collections.Generic;
@@ -36,21 +37,24 @@ namespace RadialReview.Areas.CoreProcess.Controllers
 
 
             //deploy process
-            if (false)
+            if (true)
             {
-                //ProcessDefAccessor processDefAccessor = new ProcessDefAccessor();
-                //string fileName = "calculation.bpmn";
-                //var filePath = string.Format("~/Areas/CoreProcess/{0}", fileName);
-                //var fullPath = HttpContext.Server.MapPath(filePath);
-                //List<object> fileObject = new List<object>();
-                //if (System.IO.File.Exists(fullPath))
-                //{
-                //    byte[] bytes = System.IO.File.ReadAllBytes(fullPath);
-                //    fileObject.Add(new FileParameter(bytes, fileName));
+                
+                string fileName = "calculation.bpmn";
+                var filePath = string.Format("~/Areas/CoreProcess/{0}", fileName);
+                var fullPath = HttpContext.Server.MapPath(filePath);
+                List<object> fileObject = new List<object>();
+                if (System.IO.File.Exists(fullPath))
+                {
+                    byte[] bytes = System.IO.File.ReadAllBytes(fullPath);
+                    fileObject.Add(new FileParameter(bytes, fileName));
 
-                //    //deploy file
-                //    processDefAccessor.Deploy(new RadialReview.Models.UserOrganizationModel(), "testDeploy", fileObject);
-                //}
+
+                    CommClass commClass = new CommClass();
+                    var getDeploymentId = commClass.Deploy("testDeploy1", fileObject);
+                    //deploy file
+                    //processDefAccessor.Deploy(new RadialReview.Models.UserOrganizationModel(), "testDeploy", fileObject);
+                }
             }
 
 
@@ -101,7 +105,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers
                 //var edit = processDef.Edit(GetUser(), "8cc02155-c3c0-4cfd-92be-2a93aa71fe23", "final test");
 
                 //Modifiy
-                var res = processDef.ModifiyBpmnFile(GetUser(), "8cc02155-c3c0-4cfd-92be-2a93aa71fe23", 1, 0);
+                //var res = processDef.ModifiyBpmnFile(GetUser(), "8cc02155-c3c0-4cfd-92be-2a93aa71fe23", 1, 0);
 
             }
 

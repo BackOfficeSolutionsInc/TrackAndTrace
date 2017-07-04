@@ -65,8 +65,8 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         [Access(AccessLevel.UserOrganization)]
         public JsonResult StartProcess(long id)
         {
-            ProcessViewModel processviewmodal = new ProcessViewModel();
-            processviewmodal.status = "<div style='color:red'><i class='fa fa-2x fa-times-circle'></i></ div>";
+            //processDefAccessor.ModifiyBpmnFile(GetUser(), id, oldOrder, newOrder);
+            //L10Accessor.ReorderPage(GetUser(),  oldOrder, newOrder);
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
 
@@ -113,24 +113,22 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         [Access(AccessLevel.UserOrganization)]
         public JsonResult DeleteTask(string id, string localid) // id is taskId
         {
-            //processDefAccessor.DeletTask(GetUser(), id, localid);
+            processDefAccessor.DeleteTask(GetUser(), id, localid);
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.UserOrganization)]
         public JsonResult Delete(string id) // id is processid
         {
+            processDefAccessor.Delete(GetUser(), Convert.ToInt64(id));
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public ActionResult Publish(string id)
+        public JsonResult Publish(string id)
         {
-            //TaskViewModel task = new TaskViewModel();
-            //task.process = new ProcessViewModel();
-            //task.process.LocalID = id;
-            //return PartialView("~/Areas/CoreProcess/Views/Shared/Partial/CreateTask.cshtml", task);
-            return null;
+            processDefAccessor.Deploy(GetUser(), id);
+            return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.UserOrganization)]

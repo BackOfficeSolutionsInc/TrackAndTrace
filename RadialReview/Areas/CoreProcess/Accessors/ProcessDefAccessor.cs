@@ -1,6 +1,7 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
+using CamundaCSharpClient.Model.Deployment;
 using NHibernate;
 using RadialReview.Areas.CoreProcess.CamundaComm;
 using RadialReview.Areas.CoreProcess.Interfaces;
@@ -22,14 +23,90 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 {
     public class ProcessDefAccessor : IProcessDefAccessor
     {
-        public string Deploy(UserOrganizationModel caller, string key, List<object> files)
+        public bool Deploy(UserOrganizationModel caller, string localId)
         {
-            // call Comm Layer
-            CommClass commClass = new CommClass();
-            var result = commClass.Deploy(key, files);
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    var deployed = Deploy(s, localId);
+                    tx.Commit();
+                    s.Flush();
+                    return deployed;
+                }
+            }
 
-            return string.Empty;
         }
+
+        public bool Deploy(ISession s, string localId)
+        {
+            bool result = true;
+            try
+            {
+                var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
+                if (getProcessDefFileDetails != null)
+                {
+                    var getfileStream = GetFileFromServer(getProcessDefFileDetails.FileKey);
+
+
+                    List<object> fileObject = new List<object>();
+                    byte[] bytes = ((MemoryStream)getfileStream).ToArray();
+                    fileObject.Add(new FileParameter(bytes, getProcessDefFileDetails.FileKey.Split('/')[1].Replace("-", "")));
+
+                    getfileStream.Seek(0, SeekOrigin.Begin);
+                    XDocument x1 = XDocument.Load(getfileStream);
+
+                    var getProcessDefDetail = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.LocalId == localId).SingleOrDefault();
+                    string key = getProcessDefDetail.ProcessDefKey;
+
+                    // call Comm Layer
+                    CommClass commClass = new CommClass();
+                    var getDeploymentId = commClass.Deploy(key, fileObject);
+
+                    getProcessDefFileDetails.DeploymentId = getDeploymentId;
+                    s.Update(getProcessDefFileDetails);
+
+                    //get process def
+                    var getProcessDef = commClass.GetProcessDefByKey(key.Replace(" ", "") + localId.Replace("-", ""));
+
+                    if (getProcessDefDetail != null)
+                    {
+                        getProcessDefDetail.CamundaId = getProcessDef.GetId();
+                        s.Update(getProcessDefFileDetails);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                throw ex;
+            }
+            return result;
+        }
+
+
+        public bool ProcessStart(UserOrganizationModel caller, long processId)
+        {
+            bool result = false;
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                PermissionsUtility.Create(s, caller);
+                var getProcessDefDetail = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.Id == processId).SingleOrDefault();
+                if (getProcessDefDetail != null)
+                {
+                    // call Comm Layer
+                    CommClass commClass = new CommClass();
+                    var startProcess = commClass.ProcessStart(getProcessDefDetail.CamundaId);
+                    if (!string.IsNullOrEmpty(startProcess.Id))
+                    {
+                        result = true;
+                    }
+                }
+            }
+            return result;
+        }
+
 
         public long Create(UserOrganizationModel caller, string processName)
         {
@@ -58,7 +135,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                 var path = "CoreProcess/" + guid + ".bpmn";
 
                 //upload to server
-                UploadCamundaFile(getStream, path);
+                UploadFileToServer(getStream, path);
 
 
                 ProcessDef_Camunda processDef = new ProcessDef_Camunda();
@@ -110,7 +187,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                 var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
                 if (getProcessDefFileDetails != null)
                 {
-                    var getfileStream = GetCamundaFileFromServer(getProcessDefFileDetails.FileKey);
+                    var getfileStream = GetFileFromServer(getProcessDefFileDetails.FileKey);
                     MemoryStream fileStream = new MemoryStream();
 
                     getfileStream.Seek(0, SeekOrigin.Begin);
@@ -123,8 +200,48 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     fileStream.Seek(0, SeekOrigin.Begin);
                     fileStream.Position = 0;
 
-                    UploadCamundaFile(fileStream, getProcessDefFileDetails.FileKey);
+                    UploadFileToServer(fileStream, getProcessDefFileDetails.FileKey);
 
+                }
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                throw ex;
+            }
+
+            return result;
+        }
+
+        public bool Delete(UserOrganizationModel caller, long processId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    PermissionsUtility.Create(s, caller);
+                    var deleted = Delete(s, processId);
+                    tx.Commit();
+                    s.Flush();
+                    return deleted;
+                }
+            }
+        }
+
+        public bool Delete(ISession s, long processId)
+        {
+            bool result = true;
+            try
+            {
+                var getProcessDefDetails = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.Id == processId).SingleOrDefault();
+                getProcessDefDetails.DeleteTime = DateTime.UtcNow;
+
+                s.Update(getProcessDefDetails);
+
+                var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == getProcessDefDetails.LocalId).SingleOrDefault();
+                if (getProcessDefFileDetails != null)
+                {
+                    DeleteFileFromServer(getProcessDefFileDetails.FileKey);
                 }
             }
             catch (Exception ex)
@@ -156,7 +273,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                 var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
                 if (getProcessDefFileDetails != null)
                 {
-                    var getfileStream = GetCamundaFileFromServer(getProcessDefFileDetails.FileKey);
+                    var getfileStream = GetFileFromServer(getProcessDefFileDetails.FileKey);
                     MemoryStream fileStream = new MemoryStream();
 
                     getfileStream.Seek(0, SeekOrigin.Begin);
@@ -189,20 +306,19 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                         }
                     }
 
-                    string userTaskId = Guid.NewGuid().ToString();
+                    string userTaskId = "Task" + Guid.NewGuid().ToString().Replace("-", "");
                     if (sourceCounter == 0)
                     {
                         getAllElement.Where(m => m.Attribute("id").Value == getStartProcessElement.Attribute("id").Value).FirstOrDefault().AddAfterSelf(
-                                  new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString()),
+                                  new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
                                   new XAttribute("sourceRef", getStartProcessElement.Attribute("id").Value), new XAttribute("targetRef", userTaskId))
                                   );
 
                         if (targetCounter == 0)
                         {
                             getAllElement.Where(m => m.Attribute("id").Value == getEndProcessElement.Attribute("id").Value).FirstOrDefault().AddBeforeSelf(
-                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name),
-                                        new XAttribute("description", model.description ?? "")),
-                                        new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString()),
+                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name)),
+                                        new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
                                         new XAttribute("sourceRef", userTaskId), new XAttribute("targetRef", getEndProcessElement.Attribute("id").Value))
                                       );
                         }
@@ -210,9 +326,8 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                         {
                             var getEndEventSrc = getAllElement.Where(x => (x.Attribute("sourceRef") != null ? x.Attribute("sourceRef").Value : "") == getEndProcessElement.Attribute("id").Value).FirstOrDefault();
                             getAllElement.Where(m => m.Attribute("id").Value == getEndEventSrc.Attribute("id").Value).FirstOrDefault().AddAfterSelf(
-                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name),
-                                        new XAttribute("description", model.description ?? "")),
-                                        new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString()),
+                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name)),
+                                        new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
                                         new XAttribute("sourceRef", getEndEventSrc.Attribute("id").Value), new XAttribute("targetRef", getEndProcessElement.Attribute("id").Value))
                                       );
                         }
@@ -223,11 +338,10 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                         if (targetCounter == 0)
                         {
                             getAllElement.Where(m => m.Attribute("id").Value == getStartProcessElement.Attribute("id").Value).FirstOrDefault().AddAfterSelf(
-                                      new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString()),
+                                      new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
                                       new XAttribute("sourceRef", getStartProcessElement.Attribute("id").Value), new XAttribute("targetRef", userTaskId)),
-                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name),
-                                        new XAttribute("description", model.description ?? "")),
-                                        new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString()),
+                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name)),
+                                        new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
                                         new XAttribute("sourceRef", userTaskId), new XAttribute("targetRef", getEndProcessElement.Attribute("id").Value))
                                       );
                         }
@@ -235,9 +349,8 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                         {
                             var getEndEventSrc = getAllElement.Where(x => (x.Attribute("targetRef") != null ? x.Attribute("targetRef").Value : "") == getEndProcessElement.Attribute("id").Value).FirstOrDefault();
                             getAllElement.Where(m => m.Attribute("id").Value == getEndEventSrc.Attribute("id").Value).FirstOrDefault().AddAfterSelf(
-                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name),
-                                        new XAttribute("description", model.description ?? "")),
-                                        new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString()),
+                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name)),
+                                        new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
                                         new XAttribute("sourceRef", userTaskId), new XAttribute("targetRef", getEndProcessElement.Attribute("id").Value))
                                       );
 
@@ -249,7 +362,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     fileStream.Seek(0, SeekOrigin.Begin);
                     fileStream.Position = 0;
 
-                    UploadCamundaFile(fileStream, getProcessDefFileDetails.FileKey);
+                    UploadFileToServer(fileStream, getProcessDefFileDetails.FileKey);
 
                     modelObj.Id = userTaskId;
                 }
@@ -273,7 +386,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
                     if (getProcessDefFileDetails != null)
                     {
-                        var getfileStream = GetCamundaFileFromServer(getProcessDefFileDetails.FileKey);
+                        var getfileStream = GetFileFromServer(getProcessDefFileDetails.FileKey);
                         getfileStream.Seek(0, SeekOrigin.Begin);
                         XNamespace bpmn = "http://www.omg.org/spec/BPMN/20100524/MODEL";
                         XDocument xmlDocument = XDocument.Load(getfileStream);
@@ -318,7 +431,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                 var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
                 if (getProcessDefFileDetails != null)
                 {
-                    var getfileStream = GetCamundaFileFromServer(getProcessDefFileDetails.FileKey);
+                    var getfileStream = GetFileFromServer(getProcessDefFileDetails.FileKey);
                     MemoryStream fileStream = new MemoryStream();
 
                     getfileStream.Seek(0, SeekOrigin.Begin);
@@ -330,13 +443,13 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     getAllElement.Where(x => x.Attribute("id").Value == model.Id.ToString()).FirstOrDefault().SetAttributeValue("name", model.name);
 
                     //update description element
-                    getAllElement.Where(x => x.Attribute("id").Value == model.Id.ToString()).FirstOrDefault().SetAttributeValue("description", model.description);
+                    //getAllElement.Where(x => x.Attribute("id").Value == model.Id.ToString()).FirstOrDefault().SetAttributeValue("description", model.description);
 
                     xmlDocument.Save(fileStream);
                     fileStream.Seek(0, SeekOrigin.Begin);
                     fileStream.Position = 0;
 
-                    UploadCamundaFile(fileStream, getProcessDefFileDetails.FileKey);
+                    UploadFileToServer(fileStream, getProcessDefFileDetails.FileKey);
 
                 }
             }
@@ -348,6 +461,50 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return modelObj;
         }
 
+        public bool DeleteTask(UserOrganizationModel caller, string taskId, string localId)
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                PermissionsUtility.Create(s, caller);
+                var result = DeleteTask(s, localId, taskId);
+                return result;
+            }
+        }
+
+        public bool DeleteTask(ISession s, string localId, string taskId)
+        {
+            bool result = true;
+            try
+            {
+                var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
+                if (getProcessDefFileDetails != null)
+                {
+                    var getfileStream = GetFileFromServer(getProcessDefFileDetails.FileKey);
+                    MemoryStream fileStream = new MemoryStream();
+
+                    //Detach Node
+                    var getModifiedStream = DetachNode(getfileStream, taskId);
+
+                    getModifiedStream.Seek(0, SeekOrigin.Begin);
+                    XNamespace bpmn = "http://www.omg.org/spec/BPMN/20100524/MODEL";
+                    XDocument xmlDocument = XDocument.Load(getModifiedStream);
+
+
+                    xmlDocument.Save(fileStream);
+                    fileStream.Seek(0, SeekOrigin.Begin);
+                    fileStream.Position = 0;
+
+                    UploadFileToServer(fileStream, getProcessDefFileDetails.FileKey);
+                }
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                throw ex;
+
+            }
+            return result;
+        }
 
         public IEnumerable<ProcessDef_Camunda> GetList(UserOrganizationModel caller)
         {
@@ -397,11 +554,12 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             var fileStm = new MemoryStream();
             try
             {
+                string id = localId.Replace("-", "");
                 XNamespace bpmn = "http://www.omg.org/spec/BPMN/20100524/MODEL";
                 XDocument xmldocument = new XDocument(
                     new XDeclaration("1.0", "utf-8", null),
                     new XElement(bpmn + "definitions", new XAttribute(XNamespace.Xmlns + "xsi", "http://www.w3.org/2001/XMLSchema-instance"), new XAttribute(XNamespace.Xmlns + "bpmn", "http://www.omg.org/spec/BPMN/20100524/MODEL"), new XAttribute(XNamespace.Xmlns + "bpmndi", "http://www.omg.org/spec/BPMN/20100524/DI"), new XAttribute(XNamespace.Xmlns + "dc", "http://www.omg.org/spec/DD/20100524/DC"), new XAttribute(XNamespace.Xmlns + "camunda", "http://camunda.org/schema/1.0/bpmn"), new XAttribute(XNamespace.Xmlns + "di", "http://www.omg.org/spec/DD/20100524/DI"), new XAttribute("id", "Definitions_1"), new XAttribute("targetNamespace", "http://bpmn.io/schema/bpmn"),
-                    new XElement(bpmn + "process", new XAttribute("id", localId), new XAttribute("name", processName), new XAttribute("isExecutable", "true"),
+                    new XElement(bpmn + "process", new XAttribute("id", processName.Replace(" ", "") + id), new XAttribute("name", processName), new XAttribute("isExecutable", "true"),
                     new XElement(bpmn + "startEvent", new XAttribute("id", "StartEvent"), new XAttribute("name", processName + "&#10;requested")),
                     new XElement(bpmn + "endEvent", new XAttribute("id", "EndEvent"), new XAttribute("name", processName + "&#10;finished")))));
 
@@ -451,17 +609,19 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                 var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
                 if (getProcessDefFileDetails != null)
                 {
-                    var getStream = GetCamundaFileFromServer(getProcessDefFileDetails.FileKey);
+                    var getStream = GetFileFromServer(getProcessDefFileDetails.FileKey);
+
+                    GetNodeDetail(getStream, oldOrder, newOrder, out oldOrderId, out newOrderId, out name, out description);
 
                     //Remove all elements under root node
-                    var de_stream = DetachNode(getStream, oldOrder, newOrder, out oldOrderId, out newOrderId, out name, out description);
+                    var de_stream = DetachNode(getStream, oldOrderId);
 
                     //Insert element
 
                     var ins_stream = InsertNode(de_stream, oldOrder, newOrder, oldOrderId, newOrderId, name, description);
 
                     //stream upload
-                    UploadCamundaFile(ins_stream, getProcessDefFileDetails.FileKey);
+                    UploadFileToServer(ins_stream, getProcessDefFileDetails.FileKey);
                 }
             }
             catch (Exception ex)
@@ -473,10 +633,8 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return result;
         }
 
-        public Stream DetachNode(Stream stream, int oldOrder, int newOrder, out string oldOrderId, out string newOrderId, out string name, out string description)
+        public void GetNodeDetail(Stream stream, int oldOrder, int newOrder, out string oldOrderId, out string newOrderId, out string name, out string description)
         {
-            MemoryStream fileStream = new MemoryStream();
-
             stream.Seek(0, SeekOrigin.Begin);
             XNamespace bpmn = "http://www.omg.org/spec/BPMN/20100524/MODEL";
             XDocument xmlDocument = XDocument.Load(stream);
@@ -493,10 +651,18 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
             oldOrderId = deletenodeid;
             newOrderId = afterNode;
-            //get node
-            var current = xmlDocument.Root.Element(bpmn + "process").Elements().Where(x => x.Attribute("id").Value == deletenodeid).ToList();
+        }
 
-           
+        public Stream DetachNode(Stream stream, string deletedNodeId)
+        {
+            MemoryStream fileStream = new MemoryStream();
+
+            stream.Seek(0, SeekOrigin.Begin);
+            XNamespace bpmn = "http://www.omg.org/spec/BPMN/20100524/MODEL";
+            XDocument xmlDocument = XDocument.Load(stream);
+
+            //get node
+            var current = xmlDocument.Root.Element(bpmn + "process").Elements().Where(x => x.Attribute("id").Value == deletedNodeId).ToList();
 
             var deleteNode = current.FirstOrDefault();
             string attrId = deleteNode.Attribute("id").Value;
@@ -549,7 +715,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
                 //apppend element
                 elements.Where(m => m.Attribute("id").Value == getTargetElement.Attribute("id").Value).FirstOrDefault().AddBeforeSelf(
-                          new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString()), new XAttribute("sourceRef", source), new XAttribute("targetRef", target))
+                          new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")), new XAttribute("sourceRef", source), new XAttribute("targetRef", target))
                           );
 
                 xmlDocument.Save(fileStream);
@@ -565,7 +731,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return fileStream;
         }
 
-        public Stream InsertNode(Stream stream,int oldOrder,int newOrder, string oldOrderId, string newOrderId, string name, string description)
+        public Stream InsertNode(Stream stream, int oldOrder, int newOrder, string oldOrderId, string newOrderId, string name, string description)
         {
 
             MemoryStream fileStream = new MemoryStream();
@@ -588,13 +754,14 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
                 var getAllElement = xmlDocument.Root.Element(bpmn + "process").Elements();
 
-                if (newOrder > oldOrder) {
+                if (newOrder > oldOrder)
+                {
 
                     var getSequenceNode = xmlDocument.Root.Element(bpmn + "process").Elements().Where(x => (x.Attribute("sourceRef") != null ? x.Attribute("sourceRef").Value : "") == afterNode).FirstOrDefault();
 
                     getAllElement.Where(t => t.Attribute("id").Value == getSequenceNode.Attribute("id").Value).FirstOrDefault().AddAfterSelf(
                            new XElement(bpmn + "userTask", new XAttribute("id", deletenodeId), new XAttribute("name", name), new XAttribute("description", description)),
-                          new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString()), new XAttribute("sourceRef", deletenodeId), new XAttribute("targetRef", getSequenceNode.Attribute("targetRef").Value))
+                          new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")), new XAttribute("sourceRef", deletenodeId), new XAttribute("targetRef", getSequenceNode.Attribute("targetRef").Value))
                        );
 
                     getAllElement.Where(t => t.Attribute("id").Value == getSequenceNode.Attribute("id").Value).FirstOrDefault().SetAttributeValue("targetRef", deletenodeId);
@@ -603,15 +770,15 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                 {
                     getAllElement.Where(t => t.Attribute("id").Value == getBeforeNode.Attribute("id").Value).FirstOrDefault().AddAfterSelf(
                             new XElement(bpmn + "userTask", new XAttribute("id", deletenodeId), new XAttribute("name", name), new XAttribute("description", description)),
-                           new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString()), new XAttribute("sourceRef", deletenodeId), new XAttribute("targetRef", afterNode))
+                           new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")), new XAttribute("sourceRef", deletenodeId), new XAttribute("targetRef", afterNode))
                         );
-                    
+
                     //update target element attr
 
                     getAllElement.Where(t => t.Attribute("id").Value == getBeforeNode.Attribute("id").Value).FirstOrDefault().SetAttributeValue("targetRef", deletenodeId);
                 }
 
-                
+
 
                 xmlDocument.Save(fileStream);
                 fileStream.Seek(0, SeekOrigin.Begin);
@@ -625,7 +792,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return fileStream;
         }
 
-        public void UploadCamundaFile(Stream stream, string path)
+        public void UploadFileToServer(Stream stream, string path)
         {
             try
             {
@@ -654,7 +821,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             }
         }
 
-        public Stream GetCamundaFileFromServer(string keyName)
+        public Stream GetFileFromServer(string keyName)
         {
             Stream stream = new MemoryStream();
             try
@@ -701,5 +868,38 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return stream;
 
         }
+
+
+        public void DeleteFileFromServer(string keyName)
+        {
+            IAmazonS3 client;
+            using (client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1))
+            {
+                DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest
+                {
+                    BucketName = "Radial",
+                    Key = keyName
+                };
+                try
+                {
+                    var response = client.DeleteObject(deleteObjectRequest);
+                    Console.WriteLine("Deleting an object");
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+        }
+
+        #region Helper method
+        //private static Random random = new Random();
+        //public static string RandomString(int length)
+        //{
+        //    const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        //    return new string(Enumerable.Repeat(chars, length)
+        //      .Select(s => s[random.Next(s.Length)]).ToArray());
+        //}
+        #endregion
     }
 }

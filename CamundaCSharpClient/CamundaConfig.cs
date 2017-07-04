@@ -23,10 +23,10 @@ namespace CamundaCSharpClient
             switch (GetEnv())
             {
                 case Env.local_test_sqlite:
-                    credentials.Url = "http://localhost:8080/engine-rest";
+                    credentials.Url = "http://localhost:8080/engine-rest/engine/default/";
                     return credentials;
                 case Env.local_mysql:
-                    credentials.Url = "http://localhost:8080/engine-rest";
+                    credentials.Url = "http://localhost:8080/engine-rest/engine/default/";
                     return credentials;
                 default:
                     throw new ArgumentOutOfRangeException();
