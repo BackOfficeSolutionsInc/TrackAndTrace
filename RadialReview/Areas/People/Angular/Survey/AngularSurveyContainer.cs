@@ -9,7 +9,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json;
 
 namespace RadialReview.Areas.People.Angular.Survey {
-    public class AngularSurveyContainer : BaseAngular, ISurveyContainer {
+    public class AngularSurveyContainer : BaseAngular,ISurveyContainer {
         public AngularSurveyContainer() { }
 		public AngularSurveyContainer(long id) : base(id) { }
 		public AngularSurveyContainer(ISurveyContainer container) : base(container.Id) {
@@ -57,5 +57,5 @@ namespace RadialReview.Areas.People.Angular.Survey {
         public int GetOrdering() {
             return Ordering??0;
         }
-    }
+	}
 }

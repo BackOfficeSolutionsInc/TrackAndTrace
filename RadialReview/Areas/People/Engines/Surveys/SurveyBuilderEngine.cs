@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using RadialReview.Areas.People.Engines.Surveys.Strategies.PostProcesses;
 
 namespace RadialReview.Areas.People.Engines.Surveys {
 
@@ -21,25 +22,31 @@ namespace RadialReview.Areas.People.Engines.Surveys {
         public ISurveyBuilderEvents EventHandler { get; protected set; }
         public ISurveyInitializer SurveyBuilder { get; protected set; }
         public IOuterLookup OuterLookup { get; protected set; }
-        public long OrgId { get { return SurveyBuilder.OrgId; } }
+		public ITransformByAbout Transformer { get; protected set; }
+//		public IPostProcessor Postprocessor { get; protected set; }
+
+		public long OrgId { get { return SurveyBuilder.OrgId; } }
 
         protected Data data;
 
-        public SurveyBuilderEngine(ISurveyInitializer builder, ISurveyBuilderEvents eventHandler, IOuterLookup outerLookup = null) {
+        public SurveyBuilderEngine(ISurveyInitializer builder, ISurveyBuilderEvents eventHandler, ITransformByAbout transformer, IOuterLookup outerLookup = null) {
             SurveyBuilder = builder;
             EventHandler = eventHandler ?? new SurveyBuilderEventsNoOp();
             OuterLookup = outerLookup ?? new OuterLookup();
-        }
+			Transformer = transformer;
+
+		}
 
         public ISurveyContainer BuildSurveyContainer(IEnumerable<IByAbout> byAbout) {
-            OnBegin(byAbout);
+			var byAboutTransformed = Transformer.TransformForCreation(byAbout);
+            OnBegin(byAboutTransformed);
 
             //Build Container
             var data = new Data(this);
             data.SurveyContainer = SurveyBuilder.BuildSurveyContainer();
             OnInitialize(data.SurveyContainer);
 
-            foreach (var surveyByAbouts in byAbout.GroupBy(x => UniqueKey(x.GetBy()))) {
+            foreach (var surveyByAbouts in byAboutTransformed.GroupBy(x => UniqueKey(x.GetBy()))) {
                 data.By = surveyByAbouts.First().GetBy();
                 var abouts = surveyByAbouts.Select(x => x.GetAbout());
                 foreach (var about in abouts) {

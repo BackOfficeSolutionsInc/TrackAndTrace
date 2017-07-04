@@ -90,11 +90,11 @@
 						<div class="form-group">
 							<label class="col-sm-2 control-label" for="contactFN">Name</label>
 							<div class="col-sm-5">
-								@Html.TextBoxFor(x => x.ContactFN, new { @class = "form-control" , placeholder="First name"})
+								@Html.TextBoxFor(x => x.ContactFN, new { @class = "form-control", placeholder = "First name" })
 							</div>
-						@*</div>
+							@*</div>
 
-						<div class="form-group">*@
+								<div class="form-group">*@
 							<div class="col-sm-5">
 								@Html.TextBoxFor(x => x.ContactLN, new { @class = "form-control", placeholder = "First name" })
 							</div>
@@ -106,63 +106,68 @@
 								@Html.TextBoxFor(x => x.ContactEmail, new { @class = "form-control", placeholder = "Email" })
 							</div>
 						</div>
-
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="contactEmail">User Type</label>
+							<div class="col-sm-10">
+								@Html.EnumDropDownListFor(x => x.ContactEosUserType, new { @class = "form-control eosUserType" })
+							</div>
+						</div>
 						<div class="form-group">
 							<label class="col-sm-2 control-label" for="contactEmail">Position</label>
 							<div class="col-sm-10">
-								@Html.TextBoxFor(x => x.ContactPosition, new { @class = "form-control", placeholder = "Position (optional)" })
+								@Html.TextBoxFor(x => x.ContactPosition, new { @class = "form-control contactPosition", placeholder = "Position (optional)" })
 							</div>
 						</div>
 
 					</div>
 				</div>
 
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							Implementer/Coach
-						</div>
-						<div class="panel-body form-horizontal">
-							<div class="form-group">
-								<label class="col-sm-2 control-label" for="implementer">Has Coach</label>
-								<div class="col-sm-10">
-									@Html.EnumDropDownListFor(x => x.HasCoach, new { @class = "form-control coach-control", style = "width:calc(100% - 100px)" })
-								</div>
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						Implementer/Coach
+					</div>
+					<div class="panel-body form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="implementer">Has Coach</label>
+							<div class="col-sm-10">
+								@Html.EnumDropDownListFor(x => x.HasCoach, new { @class = "form-control coach-control", style = "width:calc(100% - 100px)" })
 							</div>
-							@*<div class="form-group has-coach hidden">
-									<label class="col-sm-2 control-label" for="implementer">Coach Type</label>
-									<div class="col-sm-10">
-										@Html.EnumDropDownListFor(x => x.CoachType, new { @class = "form-control", style = "width:calc(100% - 100px)" })
-									</div>
-								</div>*@
-							<div class="form-group has-coach hidden">
-								<label class="col-sm-2 control-label" for="implementer">Coach</label>
+						</div>
+						@*<div class="form-group has-coach hidden">
+								<label class="col-sm-2 control-label" for="implementer">Coach Type</label>
 								<div class="col-sm-10">
-									<span class="clickable" style="font-size:90%;float:right" onclick="@Html.ShowModal("Add","/admin/editimplementers","/admin/editimplementers",onCompleteFunction:"addToList")">Add coach</span>
-									@Html.DropDownListFor(x => x.CoachId, ((IEnumerable<SelectListItem>)ViewBag.Implementers).ToList(), new { @class = "form-control implementerList", style = "width:calc(100% - 100px)" })
+									@Html.EnumDropDownListFor(x => x.CoachType, new { @class = "form-control", style = "width:calc(100% - 100px)" })
 								</div>
+							</div>*@
+						<div class="form-group has-coach hidden">
+							<label class="col-sm-2 control-label" for="implementer">Coach</label>
+							<div class="col-sm-10">
+								<span class="clickable" style="font-size:90%;float:right" onclick="@Html.ShowModal("Add","/admin/editimplementers","/admin/editimplementers",onCompleteFunction:"addToList")">Add coach</span>
+								@Html.DropDownListFor(x => x.CoachId, ((IEnumerable<SelectListItem>)ViewBag.Implementers).ToList(), new { @class = "form-control implementerList", style = "width:calc(100% - 100px)" })
 							</div>
 						</div>
 					</div>
+				</div>
 
 					<div class="alignCenter">
 						<button class="btn btn-success">@RadialReview.Properties.DisplayNameStrings.create</button>
 					</div>
 
 
-						@*<fieldset class="form-horizontal">
-								<div class="control-group">
-									@Html.LabelFor(model => model.Name, new { @class = "control-label" })
-									<div class="controls">
+					@*<fieldset class="form-horizontal">
+							<div class="control-group">
+								@Html.LabelFor(model => model.Name, new { @class = "control-label" })
+								<div class="controls">
 
-										<div class="input-group">
-											@Html.EditorFor(model => model.Name, new { @class = "form-control" })
-											<span class="input-group-btn">
-												<button class="btn btn-default" type="submit">Go!</button>
-											</span>
-										</div>
+									<div class="input-group">
+										@Html.EditorFor(model => model.Name, new { @class = "form-control" })
+										<span class="input-group-btn">
+											<button class="btn btn-default" type="submit">Go!</button>
+										</span>
 									</div>
 								</div>
-							</fieldset>*@
+							</div>
+						</fieldset>*@
 			}
 		</div>
 
@@ -180,6 +185,13 @@
 		$(".coach-control").on("change", function () {
 			var isYes = $(this).val() == 1;
 			$(".has-coach").toggleClass("hidden", !isYes);
+		});
+
+		$(".eosUserType").on("change", function () {
+			debugger;
+			if ($(".contactPosition").val()==""){
+				$(".contactPosition").val($(".eosUserType option:selected").text());
+			}
 		});
 
 	</script>

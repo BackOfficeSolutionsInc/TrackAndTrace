@@ -27,7 +27,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl {
 		}
 
 		public IItem InitializeItem(IItemInitializerData data) {
-			return new SurveyItem(data, Name, null);
+			return new SurveyItem(data, Name, null, Disabled+"-"+Name);
 		}
 
 		public IResponse InitializeResponse(IResponseInitializerCtx ctx, IItemFormat format) {

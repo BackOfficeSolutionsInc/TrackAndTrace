@@ -49,8 +49,8 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult SetDueDate(long rockId, DateTime duedate) {
-			L10Accessor.UpdateRock(GetUser(), rockId, null, null, null, null, dueDate: duedate);
+		public async Task<JsonResult> SetDueDate(long rockId, DateTime duedate) {
+			await L10Accessor.UpdateRock(GetUser(), rockId, null, null, null, null, dueDate: duedate);
 			return Json(ResultObject.SilentSuccess());
 		}
 
@@ -150,11 +150,11 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult Modal(RocksController.RockVM model) {
+		public async Task<JsonResult> Modal(RocksController.RockVM model) {
 			foreach (var r in model.Rocks) {
 				r.ForUserId = model.UserId;
 			}
-			RockAccessor.EditRocks(GetUser(), model.UserId, model.Rocks, model.UpdateOutstandingReviews, model.UpdateAllL10s);
+			await RockAccessor.EditRocks(GetUser(), model.UserId, model.Rocks, model.UpdateOutstandingReviews, model.UpdateAllL10s);
 			return Json(ResultObject.Create(model.Rocks.Select(x => new { Session = x.Period.Name, Rock = x.Rock, Id = x.Id }), status: StatusType.Success));
 		}
 
@@ -217,9 +217,9 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult EditModal(RocksController.RockAndMilestonesVM model) {
+		public async Task<JsonResult> EditModal(RocksController.RockAndMilestonesVM model) {
 			var rock = model.Rock;
-			L10Accessor.Update(GetUser(), rock, null);
+			await L10Accessor.Update(GetUser(), rock, null);
 			return Json(ResultObject.SilentSuccess());
 		}
 

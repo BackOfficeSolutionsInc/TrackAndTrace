@@ -15,6 +15,8 @@ namespace RadialReview.Areas.People.Angular.Survey {
 			Name = survey.GetName();
 			Ordering = survey.GetOrdering();
 			Help = survey.GetHelp();
+			By = survey.GetBy();
+			About = survey.GetAbout();
 			SurveyContainerId = survey.GetSurveyContainerId();
 			Sections = survey.GetSections().NotNull(y => y.Select(x => new AngularSurveySection(x)).ToList());
 		}
@@ -32,7 +34,8 @@ namespace RadialReview.Areas.People.Angular.Survey {
 
         public string Name { get; set; }
         public string Help { get; set; }
-        public int? Ordering { get; set; }      
+        public int? Ordering { get; set; }   
+				   
         public string GetName() {
             return Name;
         }
@@ -51,12 +54,16 @@ namespace RadialReview.Areas.People.Angular.Survey {
             return SurveyContainerId ?? 0;
         }
 
-        public IForModel GetBy() {
-            throw new NotImplementedException();
+		protected IForModel By;
+		protected IForModel About;
+
+
+		public IForModel GetBy() {
+			return By;
         }
 
         public IForModel GetAbout() {
-            throw new NotImplementedException();
+			return About;
         }
     }
 }

@@ -22,5 +22,9 @@ namespace RadialReview.Areas.People.Engines.Surveys.Strategies.Traverse {
         public void SectionToItem(ISection parent, IItemContainer child) {
             parent.AppendItem(child);
         }
-    }
+
+		public virtual void OnComplete(ISurveyContainer container) {
+			//Nothing to do
+		}
+	}
 }

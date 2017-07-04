@@ -22,7 +22,7 @@ using RadialReview.Models.Components;
 
 namespace RadialReview.Models
 {
-    [DebuggerDisplay("User {User}")]
+    [DebuggerDisplay("User: {EmailAtOrganization}")]
     [DataContract]
     public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IHistorical, TimeSettings,IForModel/*, IAngularizer<UserOrganizationModel>*/
     {

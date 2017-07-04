@@ -22,6 +22,7 @@ using RadialReview.Reflection;
 using NHibernate;
 using RadialReview.Utilities.RealTime;
 using System.Web;
+using RadialReview.Models.L10;
 
 namespace TractionTools.Tests.Utilities {
 	/*
@@ -83,7 +84,7 @@ namespace TractionTools.Tests.Utilities {
 
 
 		public async Task RegisterAllUsers() {
-			var stx = new SessionTransaction() ;
+			var stx = new SessionTransaction();
 			stx.s = HibernateSession.GetCurrentSession();
 			try {
 				stx.tx = stx.s.BeginTransaction();
@@ -174,11 +175,9 @@ namespace TractionTools.Tests.Utilities {
 		public void AddCredentials(UserOrganizationModel user, string username, string password) {
 			ExistingCreds[user.Id] = new Credentials(username, password, user);
 		}
-
 		public void AssertAllUsers(Predicate<UserOrganizationModel> testFunction, params UserOrganizationModel[] trueFor) {
 			AssertAllUsers(testFunction, trueFor.ToList());
 		}
-
 		public void AssertAllUsers(Predicate<UserOrganizationModel> testFunction, IEnumerable<UserOrganizationModel> trueFor) {
 			var exceptions = new List<AssertFailedException>();
 			foreach (var user in AllUsers) {
@@ -199,6 +198,19 @@ namespace TractionTools.Tests.Utilities {
 				throw new AssertFailedException("Assertion failed for " + exceptions.Count + " users.");
 
 			}
+		}
+
+
+		public async Task<L10> CreateL10(params UserOrganizationModel[] users) {
+			var l10= await L10Utility.CreateRecurrence(org: this);
+			foreach (var u in users) {
+				l10.AddAttendee(u);
+			}
+			return l10;
+		}
+
+		public async Task<L10> CreateL10(string name=null) {
+			return await L10Utility.CreateRecurrence(name:name,org: this);
 		}
 
 
@@ -300,7 +312,14 @@ namespace TractionTools.Tests.Utilities {
 			CreateUser(stx, managerUser, password);// Expensive
 
 			BaseTest.MockHttpContext();
-			var createdOrganization = await new OrganizationAccessor().CreateOrganization_Test(stx.s, managerUser, name, PaymentPlanType.Professional_Monthly_March2016, time1, true, true);//Very Expensive
+			var ocd = new OrgCreationData() {
+				Name = name,
+				EnableL10 = true,
+				EnableReview = true,
+			};
+
+			//var createdOrganization = await new OrganizationAccessor().CreateOrganization(stx.s, managerUser, name, PaymentPlanType.Professional_Monthly_March2016, time1, true, true);//Very Expensive
+			var createdOrganization = await new OrganizationAccessor().CreateOrganization(stx.s, managerUser, PaymentPlanType.Professional_Monthly_March2016, time1, ocd);//Very Expensive
 
 			var manager = createdOrganization.NewUser;
 			var managerNode = createdOrganization.NewUserNode;
@@ -312,7 +331,6 @@ namespace TractionTools.Tests.Utilities {
 			org.ManagerNode._Name = "manager " + nowMs;
 
 			org.Manager = manager;
-
 			var employeeName = "employee";
 
 			var settings = new CreateUserOrganizationViewModel() {
@@ -427,7 +445,7 @@ namespace TractionTools.Tests.Utilities {
 
 
 		public static async Task<FullOrg> CreateFullOrganization(string name = null, DateTime? time = null) {
-			var stx = new SessionTransaction() ;
+			var stx = new SessionTransaction();
 			stx.s = HibernateSession.GetCurrentSession();
 			try {
 				stx.tx = stx.s.BeginTransaction();

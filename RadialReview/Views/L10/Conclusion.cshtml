@@ -18,13 +18,13 @@
 
 
 
-			@if (ViewBag.TodosCreated is List<TodoModel>) {
+			@if (ViewBag.TodosForNextWeek is List<TodoModel>) {
 				<div class="centered" style="width: 75%; max-width: 700px; margin-bottom: 47px; margin-top: -22px; min-width: 320px;">
 					<div class="component meeting-stats">
 						<h3 style="font-size: 20px; color: #444;">Recap Our To-Dos</h3>
 						<div class="todo-container ">
 							<ol class="todo-list sortable">
-								@foreach (var i in ((List<TodoModel>)ViewBag.TodosCreated).OrderBy(x => x.Ordering).Where(x => x.CompleteTime == null).GroupBy(x => x.AccountableUser.NotNull(y => y.GetName())).SelectMany(x => x)) {@*<li class="todo-item">@Html.Partial("_ProfilePicture", i.AccountableUser)<span class="todo-due pull-right">@i.DueDate.ToShortDateString()</span><span class="todo-message">@i.Message</span></li>*@
+								@foreach (var i in ((List<TodoModel>)ViewBag.TodosForNextWeek).OrderBy(x => x.Ordering).Where(x => x.CompleteTime == null).GroupBy(x => x.AccountableUser.NotNull(y => y.GetName())).SelectMany(x => x)) {@*<li class="todo-item">@Html.Partial("_ProfilePicture", i.AccountableUser)<span class="todo-due pull-right">@i.DueDate.ToShortDateString()</span><span class="todo-message">@i.Message</span></li>*@
 									var vm = new ViewDataDictionary { { "MeetingId", Model.Meeting.Id }, { "CanEdit", Model.CanEdit } };
 									Html.RenderPartial("~/Views/L10/partial/TodoRow.cshtml", i, vm);
 								}

@@ -139,13 +139,14 @@ namespace RadialReview.Controllers {
 
             });
         }
-        #endregion
-        #region GetUser
-        //private long? _CurrentUserOrganizationId = null;
+		#endregion
+		#region GetUser
+		//private long? _CurrentUserOrganizationId = null;
 
-        private UserOrganizationModel MockUser = null;
+		private UserOrganizationModel MockUser = null;
+		private bool TransformAngular = true;
 
-        protected string[] AllAdmins = new[] {
+		protected string[] AllAdmins = new[] {
             ""
         };
 
@@ -800,45 +801,45 @@ namespace RadialReview.Controllers {
         }
         #region Angular Json Overrides
         protected new JsonResult Json(object data) {
-            if (data is IAngular && Request.Params["transform"] == null)
+            if (data is IAngular && (Request==null || Request.Params["transform"] == null))
                 return base.Json(AngularSerializer.Serialize((IAngular)data));
-            if (data is IEnumerable<IAngular> && Request.Params["transform"] == null)
+            if (data is IEnumerable<IAngular> && (Request == null || Request.Params["transform"] == null))
                 return base.Json(((IEnumerable<IAngular>)data).Select(x => AngularSerializer.Serialize(x)).ToArray());
             return base.Json(data);
         }
 
         protected new JsonResult Json(object data, JsonRequestBehavior behavior) {
-            if (data is IAngular && Request.Params["transform"] == null)
+            if (data is IAngular && TransformAngular && (Request == null || Request.Params["transform"] == null))
                 return base.Json(AngularSerializer.Serialize((IAngular)data), behavior);
-            if (data is IEnumerable<IAngular> && Request.Params["transform"] == null)
+            if (data is IEnumerable<IAngular> && TransformAngular && (Request == null || Request.Params["transform"] == null))
                 return base.Json(((IEnumerable<IAngular>)data).Select(x => AngularSerializer.Serialize(x)).ToArray(), behavior);
             return base.Json(data, behavior);
         }
         protected new JsonResult Json(object data, string contentType) {
-            if (data is IAngular && Request.Params["transform"] == null)
+            if (data is IAngular && TransformAngular && (Request == null || Request.Params["transform"] == null))
                 return base.Json(AngularSerializer.Serialize((IAngular)data), contentType);
-            if (data is IEnumerable<IAngular> && Request.Params["transform"] == null)
+            if (data is IEnumerable<IAngular> && TransformAngular && (Request == null || Request.Params["transform"] == null))
                 return base.Json(((IEnumerable<IAngular>)data).Select(x => AngularSerializer.Serialize(x)).ToArray(), contentType);
             return base.Json(data, contentType);
         }
         protected new JsonResult Json(object data, string contentType, JsonRequestBehavior behavior) {
-            if (data is IAngular && Request.Params["transform"] == null)
+            if (data is IAngular && TransformAngular && (Request == null || Request.Params["transform"] == null))
                 return base.Json(AngularSerializer.Serialize((IAngular)data), contentType, behavior);
-            if (data is IEnumerable<IAngular> && Request.Params["transform"] == null)
+            if (data is IEnumerable<IAngular> && TransformAngular && (Request == null || Request.Params["transform"] == null))
                 return base.Json(((IEnumerable<IAngular>)data).Select(x => AngularSerializer.Serialize(x)).ToArray(), contentType, behavior);
             return base.Json(data, contentType, behavior);
         }
         protected new JsonResult Json(object data, string contentType, Encoding encoding) {
-            if (data is IAngular && Request.Params["transform"] == null)
+            if (data is IAngular && TransformAngular && (Request == null || Request.Params["transform"] == null))
                 return base.Json(AngularSerializer.Serialize((IAngular)data), contentType, encoding);
-            if (data is IEnumerable<IAngular> && Request.Params["transform"] == null)
+            if (data is IEnumerable<IAngular> && TransformAngular && (Request == null || Request.Params["transform"] == null))
                 return base.Json(((IEnumerable<IAngular>)data).Select(x => AngularSerializer.Serialize(x)).ToArray(), contentType, encoding);
             return base.Json(data, contentType, encoding);
         }
         protected new JsonResult Json(object data, string contentType, Encoding encoding, JsonRequestBehavior behavior) {
-            if (data is IAngular && Request.Params["transform"] == null)
+            if (data is IAngular && TransformAngular && (Request == null || Request.Params["transform"] == null))
                 return base.Json(AngularSerializer.Serialize((IAngular)data), contentType, encoding, behavior);
-            if (data is IEnumerable<IAngular> && Request.Params["transform"] == null)
+            if (data is IEnumerable<IAngular> && TransformAngular && (Request == null || Request.Params["transform"] == null))
                 return base.Json(((IEnumerable<IAngular>)data).Select(x => AngularSerializer.Serialize(x)).ToArray(), contentType, encoding, behavior);
             return base.Json(data, contentType, encoding, behavior);
         }

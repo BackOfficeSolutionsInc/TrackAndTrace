@@ -8,9 +8,10 @@ using RadialReview.Utilities;
 using RadialReview;
 using RadialReview.Areas.People.Models.Survey;
 using System.Diagnostics;
+using NHibernate.Proxy;
 
 namespace RadialReview {
-	[DebuggerDisplay("{FriendlyType()}: {ModelId}")]
+	[DebuggerDisplay("ForModel: {FriendlyType()}[{ModelId}]")]
 	public class ForModel : IForModel {
 		public virtual long ModelId { get; set; }
 		public virtual string ModelType { get; set; }
@@ -73,8 +74,17 @@ namespace RadialReview {
 			return HashUtil.Merge(ModelId.GetHashCode(), ModelType.GetHashCode());
 		}
 
+		private static T Deproxy<T>(T model) {
+			if (model is INHibernateProxy) {
+				var lazyInitialiser = ((INHibernateProxy)model).HibernateLazyInitializer;
+				model = (T)lazyInitialiser.GetImplementation();
+			}
+			return model;
+		}
+
 		public static string GetModelType(ILongIdentifiable creator) {
-			return HibernateSession.GetDatabaseSessionFactory().GetClassMetadata(creator.GetType()).EntityName;
+
+			return HibernateSession.GetDatabaseSessionFactory().GetClassMetadata(Deproxy(creator).GetType()).EntityName;
 		}
 		public static string GetModelType<T>() where T : ILongIdentifiable {
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -109,6 +119,9 @@ namespace RadialReview {
 
 		public static string ToKey(this IByAbout byAbout) {
 			return byAbout.GetBy().ToKey() + "-" + byAbout.GetAbout().ToKey();
+		}
+		public static ByAbout ToImpl(this IByAbout obj) {
+			return new ByAbout(obj.GetBy(),obj.GetAbout());
 		}
 	}
 }

@@ -1,10 +1,13 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using NHibernate;
 using RadialReview;
 using RadialReview.Api.V0;
 using RadialReview.Controllers;
 using RadialReview.Models;
+using RadialReview.Models.Angular.Base;
 using RadialReview.Models.Json;
+using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +48,9 @@ namespace TractionTools.Tests.TestUtils {
 		public ControllerCtx(UserOrganizationModel caller) {
 			Caller = caller;
 		}
-		public CTRL Get() {
+
+		public bool TransformAngular = false;
+		protected CTRL Get() {
 			if (Controller != null) {
 				if (Controller is CTRL) {
 					return (CTRL)Controller;
@@ -55,19 +60,42 @@ namespace TractionTools.Tests.TestUtils {
 			} else {
 				Controller = new CTRL();
 				Controller.MockUser(Caller);
+				Controller.SetValue("TransformAngular", TransformAngular);
 				return (CTRL)Controller;
 			}
 		}
-
-		public AR Get<AR>(Func<CTRL, AR> method) where AR : ActionResult {
+		public async Task<AR> Get<AR>(Func<CTRL, Task<AR>> method) where AR : ActionResult {
 			var ctrl = Get();
-			var result = method(ctrl);
+			if (HttpContext.Current != null && HttpContext.Current.Items != null) {
+				HttpContext.Current.Items["NHibernateSession"] = null;
+			}
+			var result = await method(ctrl);
+			if (HttpContext.Current != null && HttpContext.Current.Items != null && HttpContext.Current.Items["NHibernateSession"] != null) {
+				HibernateSession.CloseCurrentSession();
+			}
 			if (result == null)
 				throw new ArgumentNullException("Output was null");
 			if (!(result is AR))
 				throw new TypeLoadException("Output was not of type " + typeof(AR).Name);
 			return result;
 		}
+
+		public AR Get<AR>(Func<CTRL, AR> method) where AR : ActionResult {
+			var ctrl = Get();
+			if (HttpContext.Current != null && HttpContext.Current.Items != null) {
+				HttpContext.Current.Items["NHibernateSession"] = null;
+			}
+			var result = method(ctrl);
+			if (HttpContext.Current != null && HttpContext.Current.Items != null && HttpContext.Current.Items["NHibernateSession"] != null) {
+				HibernateSession.CloseCurrentSession();
+			}
+			if (result == null)
+				throw new ArgumentNullException("Output was null");
+			if (!(result is AR))
+				throw new TypeLoadException("Output was not of type " + typeof(AR).Name);
+			return result;
+		}
+
 
 		public ViewResult GetView<AR>(Func<CTRL, AR> method) where AR : ActionResult {
 			return Get(x => method(x) as ViewResult);
@@ -81,6 +109,21 @@ namespace TractionTools.Tests.TestUtils {
 		public RedirectToRouteResult GetRedirect<AR>(Func<CTRL, AR> method) where AR : ActionResult {
 			return Get(x => method(x) as RedirectToRouteResult);
 		}
+
+		public async Task<ViewResult> GetView<AR>(Func<CTRL, Task<AR>> method) where AR : ActionResult {
+			return await Get(async x => (await method(x)) as ViewResult);
+		}
+		public async Task<JsonResult> GetJson<AR>(Func<CTRL, Task<AR>> method) where AR : ActionResult {
+			return await Get(async x => (await method(x)) as JsonResult);
+		}
+		public async Task<PartialViewResult> GetPartial<AR>(Func<CTRL, Task<AR>> method) where AR : ActionResult {
+			return await Get(async x => (await method(x)) as PartialViewResult);
+		}
+		public async Task<RedirectToRouteResult> GetRedirect<AR>(Func<CTRL, Task<AR>> method) where AR : ActionResult {
+			return await Get(async x => (await method(x)) as RedirectToRouteResult);
+		}
+
+
 
 		public void Dispose() {
 			Controller.MockUser(null);
@@ -111,7 +154,11 @@ namespace TractionTools.Tests.TestUtils {
 		}
 		public static T GetModel<T>(this JsonResult view) {
 			AssertModelType<T>(view);
-			return (T)((ResultObject)view.Data).Object;
+			if (view.Data is ResultObject)
+				return (T)((ResultObject)view.Data).Object;
+			if (view.Data is IAngular)
+				return (T)view.Data;
+			throw new ArgumentOutOfRangeException("Unknown model type");
 		}
 
 		public static void AssertModelType<T>(this ViewResultBase view) {
@@ -122,8 +169,14 @@ namespace TractionTools.Tests.TestUtils {
 		public static void AssertModelType<T>(this JsonResult view) {
 			Assert.IsNotNull(view, "Json was null");
 			Assert.IsNotNull(view.Data, "Model was null");
-			Assert.IsInstanceOfType(view.Data, typeof(ResultObject));
-			Assert.IsInstanceOfType(((ResultObject)view.Data).Object, typeof(T));
+			if (view.Data is ResultObject) {
+				Assert.IsInstanceOfType(view.Data, typeof(ResultObject));
+				Assert.IsInstanceOfType(((ResultObject)view.Data).Object, typeof(T));
+			} else if (view.Data is IAngular) {
+				Assert.IsInstanceOfType(view.Data, typeof(T));
+			} else {
+				throw new ArgumentOutOfRangeException("Unknown model type");
+			}
 		}
 	}
 

@@ -20,7 +20,7 @@ namespace TractionTools.Tests.API.v0 {
 			var c = new WeekController();
 			c.MockUser(ctx.E1);
 			var week = c.Get();
-			var actualWeek = TimingUtility.GetWeekSinceEpoch(DateTime.UtcNow) + 1;
+			var actualWeek = TimingUtility.GetWeekSinceEpoch(DateTime.UtcNow.AddMinutes(+ctx.Org.Organization.GetTimezoneOffset())) + 1;
 			Assert.AreEqual(week.DataContract_Weeks, actualWeek);
 		}
 
@@ -36,7 +36,7 @@ namespace TractionTools.Tests.API.v0 {
 				OrganizationId = ctx.Org.Organization.Id
 			};
 			MockHttpContext();
-			ScorecardAccessor.CreateMeasurable(ctx.Manager, m1 , false);
+			await ScorecardAccessor.CreateMeasurable(ctx.Manager, m1 , false);
 
 			var score = L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2000L, (decimal?)null,null);
 
@@ -71,7 +71,7 @@ namespace TractionTools.Tests.API.v0 {
 				OrganizationId = ctx.Org.Organization.Id
 			};
 			MockHttpContext();
-			ScorecardAccessor.CreateMeasurable(ctx.Manager, m1, false);
+			await ScorecardAccessor.CreateMeasurable(ctx.Manager, m1, false);
 			
 
 			var c = new ScoresController();
@@ -105,7 +105,7 @@ namespace TractionTools.Tests.API.v0 {
 				Title = "Meas1",
 				OrganizationId = ctx.Org.Organization.Id
 			};
-			ScorecardAccessor.CreateMeasurable(ctx.Manager, m1, false);
+			await ScorecardAccessor.CreateMeasurable(ctx.Manager, m1, false);
 			var score = L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2000L, (decimal?)null, null);
 
 			var c = new ScoresController();

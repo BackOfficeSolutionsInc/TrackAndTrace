@@ -28,6 +28,9 @@ using RadialReview.Model.Enums;
 using RadialReview.Models.Angular.Todos;
 using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.Dashboard;
+using System.Threading.Tasks;
+using RadialReview.Hooks;
+using RadialReview.Utilities.Hooks;
 
 namespace RadialReview.Accessors {
 	public class RockAndMilestones {
@@ -75,7 +78,7 @@ namespace RadialReview.Accessors {
 						//var todoData = TodoData.FromTodo(todo);
 						//userMeetingHub.appendTodo(".todo-list", todoData);
 						var updates = new AngularRecurrence(-2);
-						updates.Todos = AngularList.CreateFrom(AngularListType.Add, new AngularTodo(ms,rock.AccountableUser));
+						updates.Todos = AngularList.CreateFrom(AngularListType.Add, new AngularTodo(ms, rock.AccountableUser));
 						userMeetingHub.update(updates);
 
 
@@ -120,11 +123,11 @@ namespace RadialReview.Accessors {
 
 						rt.UpdateRecurrences(recurrenceIds).AddLowLevelAction(x => x.setMilestone(ms));
 
-						var rock = s.Get<RockModel>(ms.RockId);						
+						var rock = s.Get<RockModel>(ms.RockId);
 
 						var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 						var group = hub.Clients.Group(MeetingHub.GenerateUserId(rock.ForUserId));
-						group.update(new AngularUpdate() { new AngularTodo(ms,rock.AccountableUser) });
+						group.update(new AngularUpdate() { new AngularTodo(ms, rock.AccountableUser) });
 					}
 				}
 			}
@@ -308,7 +311,7 @@ namespace RadialReview.Accessors {
 		}
 
 
-		public static List<PermissionsException> EditRocks(UserOrganizationModel caller, long userId, List<RockModel> rocks, bool updateOutstandingReviews, bool updateAllL10s) {
+		public static async Task<List<PermissionsException>> EditRocks(UserOrganizationModel caller, long userId, List<RockModel> rocks, bool updateOutstandingReviews, bool updateAllL10s) {
 			var output = new List<PermissionsException>();
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -342,10 +345,13 @@ namespace RadialReview.Accessors {
 						r.OrganizationId = orgId;
 						r.Period = r.PeriodId == null ? null : s.Get<PeriodModel>(r.PeriodId);
 						var added = r.Id == 0;
-						if (added)
+						if (added) {
 							s.Save(r);
-						else
+							await HooksRegistry.Each<IRockHook>(x => x.CreateRock(s, r));
+						} else {
 							s.Merge(r);
+							await HooksRegistry.Each<IRockHook>(x => x.UpdateRock(s, r));
+						}
 
 						if (updateOutstandingReviews && added) {
 							var r1 = r;
@@ -360,7 +366,7 @@ namespace RadialReview.Accessors {
 									throw new PermissionsException("Cannot access the Level 10");
 								perm.UnsafeAllow(PermItem.AccessLevel.View, PermItem.ResourceType.L10Recurrence, o.Id);
 								perm.UnsafeAllow(PermItem.AccessLevel.Edit, PermItem.ResourceType.L10Recurrence, o.Id);
-								L10Accessor.AddRock(s, perm, o.Id, r1);
+								await L10Accessor.AddExistingRockToL10(s, perm, o.Id, r1);
 								r1._AddedToL10 = false;
 								r1._AddedToVTO = false;
 							}
@@ -371,6 +377,41 @@ namespace RadialReview.Accessors {
 					tx.Commit();
 					s.Flush();
 					return output;
+				}
+			}
+		}
+
+		public static async Task<RockModel> CreateRock(UserOrganizationModel caller, string name, long userId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+
+					var perm = PermissionsUtility.Create(s, caller);
+					var user = s.Get<UserOrganizationModel>(userId);
+
+					long orgId = -1;
+
+					perm.EditQuestionForUser(userId);
+					orgId = user.Organization.Id;
+
+
+
+					var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
+					var r = new RockModel() {
+						OnlyAsk = AboutType.Self,//|| AboutType.Manager; 
+						Category = category,
+						OrganizationId = orgId,
+						Period = null,
+						AccountableUser =user,
+						ForUserId = userId
+					};
+					s.Save(r);
+					await HooksRegistry.Each<IRockHook>(x => x.CreateRock(s, r));
+
+					user.UpdateCache(s);
+
+					tx.Commit();
+					s.Flush();
+					return r;
 				}
 			}
 		}

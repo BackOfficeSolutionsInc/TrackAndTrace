@@ -39,8 +39,8 @@ namespace RadialReview.Api.V0 {
 
 		[Route("L10/{recurrenceId}/attachmeasurable/{measurableId}")]
 		[HttpPut]
-		public void AttachMeasurableL10(long recurrenceId, long measurableId) {
-			L10Accessor.AttachMeasurable(GetUser(), recurrenceId, measurableId);
+		public async Task AttachMeasurableL10(long recurrenceId, long measurableId) {
+			await L10Accessor.AttachMeasurable(GetUser(), recurrenceId, measurableId);
 		}
 
 		[Route("L10/{recurrenceId}/measurable/{measurableId}")]
@@ -51,8 +51,8 @@ namespace RadialReview.Api.V0 {
 
 		[Route("L10/{recurrenceId}/attachrock/{rockId}")]
 		[HttpPut]
-		public void AttachRockMeetingL10(long recurrenceId, long rockId) {
-			L10Accessor.AttachRock(GetUser(), recurrenceId, rockId);
+		public async Task AttachRockMeetingL10(long recurrenceId, long rockId) {
+			await L10Accessor.AttachRock(GetUser(), recurrenceId, rockId);
 		}
 
 		[Route("L10/{recurrenceId}/rock/{rockId}")]

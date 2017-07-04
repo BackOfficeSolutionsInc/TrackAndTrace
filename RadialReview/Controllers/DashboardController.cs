@@ -152,11 +152,11 @@ namespace RadialReview.Controllers {
             var caller = GetUser();
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
-                    var l10Lookup = new DefaultDictionary<long, L10Recurrence>(x => L10Accessor.GetL10Recurrence(caller, x, false));
                     var perms = PermissionsUtility.Create(s, caller);
+					var l10Lookup = new DefaultDictionary<long, L10Recurrence>(x => L10Accessor.GetL10Recurrence(s, perms, x, false));
 
-                    //L10 Todos
-                    foreach (var todo in tiles.Where(x => x.Type == TileType.L10Todos || (x.DataUrl ?? "").Contains("L10Todos")).Distinct(x => x.KeyId)) {
+					//L10 Todos
+					foreach (var todo in tiles.Where(x => x.Type == TileType.L10Todos || (x.DataUrl ?? "").Contains("L10Todos")).Distinct(x => x.KeyId)) {
                         long l10Id = 0;
                         if (long.TryParse(todo.KeyId, out l10Id)) {
                             try {

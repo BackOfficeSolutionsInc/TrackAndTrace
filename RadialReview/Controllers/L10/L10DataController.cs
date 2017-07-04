@@ -96,17 +96,17 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult AddRock(AddRockVm model) {
+		public async Task<JsonResult> AddRock(AddRockVm model) {
 			ValidateValues(model, x => x.RecurrenceId);
-			L10Accessor.CreateRock(GetUser(), model.RecurrenceId, model);
+			await L10Accessor.CreateRock(GetUser(), model.RecurrenceId, model);
 			return Json(ResultObject.SilentSuccess());
 		}
 
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult UpdateRock(long id, string message = null) {
-			L10Accessor.UpdateRock(GetUser(), id, message,null,null, null);
+		public async Task<JsonResult> UpdateRock(long id, string message = null) {
+			await L10Accessor.UpdateRock(GetUser(), id, message, null, null, null);
 			return Json(ResultObject.SilentSuccess());
 		}
 
@@ -207,9 +207,9 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult AddMeasurable(AddMeasurableVm model) {
+		public async Task<JsonResult> AddMeasurable(AddMeasurableVm model) {
 			ValidateValues(model, x => x.RecurrenceId);
-			L10Accessor.CreateMeasurable(GetUser(), model.RecurrenceId, model);
+			await L10Accessor.CreateMeasurable(GetUser(), model.RecurrenceId, model);
 			return Json(ResultObject.SilentSuccess());
 		}
 

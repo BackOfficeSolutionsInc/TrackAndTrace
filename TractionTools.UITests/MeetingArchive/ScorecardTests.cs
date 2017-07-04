@@ -43,10 +43,10 @@ namespace TractionTools.UITests.Selenium {
                 UnitType = RadialReview.Models.Enums.UnitType.Dollar,
             };
             MockHttpContext();
-            DbCommit(s => {
-                L10Accessor.AddMeasurable(s, PermissionsUtility.Create(s, au), RealTimeUtility.Create(), recur.Id,
-                    RadialReview.Controllers.L10Controller.AddMeasurableVm.CreateNewMeasurable(recur.Id, m101));
-            });
+            DbCommit(async s => {
+				await L10Accessor.AddMeasurable(s, PermissionsUtility.Create(s, au), RealTimeUtility.Create(), recur.Id,
+					RadialReview.Controllers.L10Controller.AddMeasurableVm.CreateNewMeasurable(recur.Id, m101));
+			});
 
             foreach (var dow in new []{DayOfWeek.Sunday}){//Enum.GetValues(typeof(DayOfWeek))) {
                 var pType = (DayOfWeek)dow;

@@ -82,6 +82,7 @@ namespace RadialReview.Areas.People.Engines.Surveys {
                     }
                 }
             }
+			traverse.OnComplete(surveyContainer);
         }
 
         public class Cache {

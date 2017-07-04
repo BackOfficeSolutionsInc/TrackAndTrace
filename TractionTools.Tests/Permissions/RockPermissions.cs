@@ -33,7 +33,7 @@ namespace TractionTools.Tests.Permissions {
 			};
 
 			MockHttpContext();
-			L10Accessor.CreateRock(c.Manager, l10.Id, L10Controller.AddRockVm.CreateRock(l10.Id, rock));
+			await L10Accessor.CreateRock(c.Manager, l10.Id, L10Controller.AddRockVm.CreateRock(l10.Id, rock));
 
 			c.AssertAll(p => p.ViewRock(rock.Id), c.AllUsers);
 			Assert.Inconclusive("Are the view permissions restrictive enough");
@@ -51,7 +51,7 @@ namespace TractionTools.Tests.Permissions {
 			};
 			MockHttpContext();
 			//Make the rock, assign to L10
-			L10Accessor.CreateRock(c.Manager, l10.Id, L10Controller.AddRockVm.CreateRock(l10.Id, rock));
+			await L10Accessor.CreateRock(c.Manager, l10.Id, L10Controller.AddRockVm.CreateRock(l10.Id, rock));
 
 			var perm = new Action<PermissionsUtility>(p => p.EditRock(rock.Id));
 
@@ -101,7 +101,7 @@ namespace TractionTools.Tests.Permissions {
 				Rock="Rock"
 			};
 			MockHttpContext();
-			RockAccessor.EditRocks(c.Middle, c.E2.Id, rock.AsList(), false, false);
+			await RockAccessor.EditRocks(c.Middle, c.E2.Id, rock.AsList(), false, false);
 			var perm = new Action<PermissionsUtility>(p => p.EditRock(rock.Id));
 
 			OrganizationAccessor.Edit(c.Manager, c.Id, managersCanEditSelf: false, employeesCanEditSelf: false);
@@ -116,7 +116,7 @@ namespace TractionTools.Tests.Permissions {
 				ForUserId = c.E6.Id,
 				Rock = "Rock2"
 			};
-			RockAccessor.EditRocks(c.Middle, c.E6.Id, rock.AsList(), false, false);
+			await RockAccessor.EditRocks(c.Middle, c.E6.Id, rock.AsList(), false, false);
 
 			OrganizationAccessor.Edit(c.Manager, c.Id, managersCanEditSelf: false, employeesCanEditSelf: false);
 			c.AssertAll(perm, c.Manager, c.Middle, c.E2);

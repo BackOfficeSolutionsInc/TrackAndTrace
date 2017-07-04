@@ -22,8 +22,7 @@ using RadialReview.Models.Askables;
 using RadialReview.Models.Angular.Accountability;
 using RadialReview.Models.ViewModels;
 
-namespace TractionTools.Tests.Api
-{
+namespace TractionTools.Tests.API.v0 {
     [TestClass]
     public class RolesApiTests_v0 : BaseTest
     {

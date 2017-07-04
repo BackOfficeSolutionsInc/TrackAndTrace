@@ -95,6 +95,8 @@ namespace TractionTools.UITests.Selenium {
 		[TestCleanup]
 		[DebuggerHidden]
 		public void TestCleanup() {
+			HibernateSession.CloseCurrentSession();
+
 			if (Deferred.Any()) {
 				if (Deferred.All(x => x is AssertInconclusiveException)) {
 					var builder = "";

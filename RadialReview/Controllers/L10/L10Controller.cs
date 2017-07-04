@@ -211,7 +211,7 @@ namespace RadialReview.Controllers
 
         [HttpPost]
         [Access(AccessLevel.UserOrganization)]
-        public ActionResult Edit(L10EditVM model)
+        public async Task<ActionResult> Edit(L10EditVM model)
         {
             //ValidateValues(model,
             //    x => x.Recurrence.Id,
@@ -281,7 +281,7 @@ namespace RadialReview.Controllers
 
 
 
-                L10Accessor.EditL10Recurrence(GetUser(), model.Recurrence);
+                await L10Accessor.EditL10Recurrence(GetUser(), model.Recurrence);
 
 
                 if (model.Return == "meeting")

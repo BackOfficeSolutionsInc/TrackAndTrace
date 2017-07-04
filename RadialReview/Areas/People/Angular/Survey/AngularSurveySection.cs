@@ -25,8 +25,9 @@ namespace RadialReview.Areas.People.Angular.Survey {
         public string Help { get; set; }
         public int? Ordering { get; set; }
 
-        public string SectionType { get;  set; }
-        public long? SurveyId { get;  set; }
+		public string SectionType { get; set; }
+		public long? SurveyId { get;  set; }
+		public string SectionMergerKey { get; set; }
 
         public ICollection<AngularSurveyItemContainer> Items { get; set; }
         public void AppendItem(IItemContainer item) {
@@ -57,5 +58,9 @@ namespace RadialReview.Areas.People.Angular.Survey {
         public string ToPrettyString() {
             return "";
         }
-    }
+
+		public string GetSectionMergerKey() {
+			return SectionMergerKey;
+		}
+	}
 }

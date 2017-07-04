@@ -97,7 +97,7 @@ namespace TractionTools.Tests.Accessors
             rowVm.PeriodId = period.Id;
             newRocks.Add(rowVm);
 
-			RockAccessor.EditRocks(manager,employee.Id,newRocks,false,true);
+			await RockAccessor.EditRocks(manager,employee.Id,newRocks,false,true);
             rocks = RockAccessor.GetAllRocks(manager, employee.Id);
             Assert.AreEqual(2, rocks.Count);
 
@@ -121,7 +121,7 @@ namespace TractionTools.Tests.Accessors
             rowVm.Period = period;
             rowVm.PeriodId = period.Id;
             newRocks.Add(rowVm);
-			RockAccessor.EditRocks(manager, employee.Id, newRocks, false, false);
+			await RockAccessor.EditRocks(manager, employee.Id, newRocks, false, false);
 
                 //Test rock count
                 rocks = RockAccessor.GetAllRocks(manager, employee.Id);
@@ -138,7 +138,7 @@ namespace TractionTools.Tests.Accessors
             rowVm.Period = period;
             rowVm.PeriodId = period.Id;
             newRocks.Add(rowVm);
-			RockAccessor.EditRocks(manager, employee.Id, newRocks, false, true);
+			await RockAccessor.EditRocks(manager, employee.Id, newRocks, false, true);
 
             recurLoaded = L10Accessor.GetL10Recurrence(manager, recur.Id, true);
             Assert.AreEqual(1, recurLoaded._DefaultRocks.Count);

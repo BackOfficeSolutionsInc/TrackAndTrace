@@ -70,8 +70,8 @@ namespace TractionTools.Tests.Accessors {
             int chargeAnd107Users_L10_Review)
         {
             MockHttpContext();
-			UserOrganizationModel user;
-			AccountabilityNode userNode;
+			//UserOrganizationModel user;
+			//AccountabilityNode userNode;
 			var now = DateTime.UtcNow;
 
 

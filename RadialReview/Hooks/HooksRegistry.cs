@@ -42,7 +42,7 @@ namespace RadialReview.Hooks {
 					await action(x);
 				} catch (Exception e) {
 					log.Error(e);
-					throw e;
+					throw;
 				}
 			};
 		}
@@ -54,7 +54,7 @@ namespace RadialReview.Hooks {
 					action(x);
 				} catch (Exception e) {
 					log.Error(e);
-					throw e;
+					throw;
 				}
 			});
         }

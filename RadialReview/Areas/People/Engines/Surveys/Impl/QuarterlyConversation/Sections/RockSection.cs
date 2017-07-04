@@ -34,7 +34,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		}
 
         public ISection InitializeSection(ISectionInitializerData data) {
-            return new SurveySection(data, "Rocks", SurveySectionType.Rocks);
+            return new SurveySection(data, "Rocks", SurveySectionType.Rocks, "mk-rocks");
         }
 
         public IEnumerable<IItemInitializer> GetItemBuilders(IItemInitializerData data) {
@@ -58,7 +58,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 			}
 			if (!items.Any())
 				items.Add(new TextItemIntializer("No rocks.",true));
-			items.Add(new TextAreaItemIntializer("General Comments",SurveyQuestionIdentifier.GeneralComments));
+			items.Add(new TextAreaItemIntializer("General Comments",SurveyQuestionIdentifier.GeneralComment));
 			return items;
         }
     }
@@ -71,7 +71,8 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
         }
 
         public IItem InitializeItem(IItemInitializerData data) {
-            return new SurveyItem(data, Rock.Rock, ForModel.Create(Rock));
+			var forModel = ForModel.Create(Rock);
+            return new SurveyItem(data, Rock.Rock,forModel, forModel.ToKey() );
         }
 
         public IItemFormatRegistry GetItemFormat(IItemFormatInitializerCtx ctx) {
@@ -79,7 +80,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
                     { "done","Done" },
                     { "not-done","Not Done" },
             };
-            return ctx.RegistrationItemFormat(true, () => SurveyItemFormat.GenerateRadio(ctx, SurveyQuestionIdentifier.Rocks, options));
+            return ctx.RegistrationItemFormat(true, () => SurveyItemFormat.GenerateRadio(ctx, SurveyQuestionIdentifier.Rock, options));
         }
 
         public bool HasResponse(IResponseInitializerCtx data) {

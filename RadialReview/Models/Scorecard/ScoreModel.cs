@@ -112,7 +112,7 @@ namespace RadialReview.Models.Scorecard {
         }
         protected virtual string GetTodoHeading() {
             var name = "'" + Measurable.Title + "'";
-            var heading = "";
+            //var heading = "";
             if (!Measured.HasValue) {
                 return "Enter " + name;
             }

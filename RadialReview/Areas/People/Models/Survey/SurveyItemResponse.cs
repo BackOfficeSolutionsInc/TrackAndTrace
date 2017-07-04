@@ -46,13 +46,17 @@ namespace RadialReview.Areas.People.Models.Survey {
         }
 
         public virtual string GetName() {
-           return ToPrettyString(); 
+			return GetItem().NotNull(x => x.GetName());
         }
         public virtual string GetHelp() {
-            return null;
-        }
+			return GetItem().NotNull(x => x.GetHelp());
+		}
         public virtual int GetOrdering() {
-            return Item.GetOrdering();
+            return GetItem().NotNull(x => x.GetOrdering());
         }
-    }
+
+		public string GetItemMergerKey() {
+			return GetItem().NotNull(x => x.GetItemMergerKey());
+		}
+	}
 }

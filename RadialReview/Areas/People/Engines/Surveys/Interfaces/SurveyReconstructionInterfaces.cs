@@ -23,6 +23,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Interfaces {
         void SurveyContainerToSurvey(ISurveyContainer parent, ISurvey child);
         void SurveyToSection(ISurvey parent, ISection child);
         void SectionToItem(ISection parent, IItemContainer child);
+		void OnComplete(ISurveyContainer container);
     }
 
     public interface ISurveyContainerReconstructor : ISurveyContainerReconstructor<ISurveyContainer, ISurvey, ISection, IItem, IItemFormat, IResponse> {

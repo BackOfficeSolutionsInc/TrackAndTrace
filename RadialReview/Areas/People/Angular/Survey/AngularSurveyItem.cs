@@ -19,6 +19,7 @@ namespace RadialReview.Areas.People.Angular.Survey {
 			Name = container.GetName();
 			Ordering = container.GetOrdering();
 			Help = container.GetHelp();
+			ItemMergerKey = container.GetItemMergerKey();
 			if (container.GetItem() != null)
 				Item = new AngularSurveyItem(container.GetItem());
 			if (container.GetResponse() != null)
@@ -29,6 +30,7 @@ namespace RadialReview.Areas.People.Angular.Survey {
 
 		public string Name { get; set; }
 		public string Help { get; set; }
+		public string ItemMergerKey { get; set; }
 		public int? Ordering { get; set; }
 
 		public AngularSurveyItem Item { get; set; }
@@ -66,6 +68,10 @@ namespace RadialReview.Areas.People.Angular.Survey {
 
 		public string ToPrettyString() {
 			return "";
+		}
+
+		public string GetItemMergerKey() {
+			return ItemMergerKey;
 		}
 	}
 
@@ -205,7 +211,7 @@ namespace RadialReview.Areas.People.Angular.Survey {
 			ItemFormatId = item.GetItemFormatId();
 			SectionId = item.GetSectionId();
 			Source = new AngularForModel(item.GetSource());
-
+			ItemMergerKey = item.GetItemMergerKey();
 		}
 
 		public string Name { get; set; }
@@ -215,6 +221,7 @@ namespace RadialReview.Areas.People.Angular.Survey {
 		public long? SectionId { get; set; }
 
 		public AngularForModel Source { get; set; }
+		public string ItemMergerKey { get; set; }
 
 		public string GetName() {
 			return Name;
@@ -242,5 +249,8 @@ namespace RadialReview.Areas.People.Angular.Survey {
 			return Source;
 		}
 
+		public string GetItemMergerKey() {
+			return ItemMergerKey;
+		}
 	}
 }

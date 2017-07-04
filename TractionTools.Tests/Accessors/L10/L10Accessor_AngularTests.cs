@@ -30,7 +30,7 @@ namespace TractionTools.Tests.Accessors {
             //controller.SetValue("SkipValidation", true);
             ctrl.MockUser(r.Creator);
             MockHttpContext();
-            var result =ctrl.AddAngularRock(r.Id).Data as ResultObject;
+            var result =(await ctrl.AddAngularRock(r.Id)).Data as ResultObject;
             Assert.IsNotNull(result);
             var rock = result.Object as AngularRock;
             Assert.IsNotNull(rock);
@@ -43,15 +43,15 @@ namespace TractionTools.Tests.Accessors {
             var r2 = await L10Utility.CreateRecurrence(r);
 
             Assert.AreNotEqual(r.Id, r2.Id);
-            DbCommit(s=>{
-                //rock._AddedToL10 = false;
-                //rock._AddedToVTO = false;
-                var sameRock = s.Get<RockModel>(rock.Id);
-                sameRock._AddedToL10 = false;
-                sameRock._AddedToVTO = false;
+            DbCommit(async s => {
+				//rock._AddedToL10 = false;
+				//rock._AddedToVTO = false;
+				var sameRock = s.Get<RockModel>(rock.Id);
+				sameRock._AddedToL10 = false;
+				sameRock._AddedToVTO = false;
 
-                L10Accessor.AddRock(s, PermissionsUtility.Create(s, r2.Creator), r2.Id, sameRock);
-            });
+				await L10Accessor.AddExistingRockToL10(s, PermissionsUtility.Create(s, r2.Creator), r2.Id, sameRock);
+			});
             var rocks2 = L10Accessor.GetRocksForRecurrence(r2.Creator, r2.Id);
             Assert.AreEqual(1, rocks2.Count);
             Assert.AreEqual(null, rocks2[0].ForRock.Rock);

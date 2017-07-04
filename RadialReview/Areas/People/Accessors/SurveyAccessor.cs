@@ -20,10 +20,13 @@ using NHibernate.Criterion;
 using NHibernate;
 using RadialReview.Accessors;
 using RadialReview.Models.Accountability;
+using RadialReview.Areas.People.Engines.Surveys.Interfaces;
+using RadialReview.Areas.People.Angular.Survey.SurveyAbout;
 
 namespace RadialReview.Areas.People.Accessors {
 	public class SurveyAccessor {
 
+#pragma warning disable CS0618 // Type or member is obsolete
 		public static void JoinPeopleHub(UserOrganizationModel caller, long? surveyContainerId, long? surveyId, string connectionId) {
 			var hub = GlobalHost.ConnectionManager.GetHubContext<PeopleHub>();
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -43,114 +46,26 @@ namespace RadialReview.Areas.People.Accessors {
 			}
 		}
 
-		public static IEnumerable<IByAbout> AvailableByAbouts(UserOrganizationModel caller,bool includeSelf=false) {
-			var nodes = AccountabilityAccessor.GetNodesForUser(caller, caller.Id);
-			var possible = new List<IByAbout>();
-			foreach (var node in nodes) {
-#pragma warning disable CS0618 // Type or member is obsolete
-				var reports = DeepAccessor.GetDirectReportsAndSelf(caller, node.Id);
+		public static ISurvey GetSurvey(UserOrganizationModel caller, IForModel by, IForModel about, long surveyContainerId) {
+			return GetAngularSurveyContainerBy(caller, by, surveyContainerId).GetSurveys().SingleOrDefault(x => x.GetAbout().ToKey() == about.ToKey());
+		}
+
 #pragma warning restore CS0618 // Type or member is obsolete
-				foreach (var report in reports) {
-					possible.Add(new ByAbout(caller, report));
 
-					if (includeSelf) {
-						possible.Add(new ByAbout(report, report));
-					}
-				}
-			}
-			
-
-			return possible;
-		}
-
-		public static long GenerateSurveyContainer(UserOrganizationModel caller, string name, IEnumerable<IByAbout> byAbout) {
-
-			var possible = AvailableByAbouts(caller, true);
-			if (!byAbout.All(x => possible.Any(y => y.ToKey() == x.ToKey())))
-				throw new PermissionsException("Could not create Quarterly Conversation. You cannot view this item.");
-
-			long containerId;
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var perms = PermissionsUtility.Create(s, caller);
-					perms.CreateSurveyContainer(caller.Organization.Id);
-
-					containerId = GenerateSurvey_Unsafe(s, perms, name, byAbout);
-
-					tx.Commit();
-					s.Flush();
-					return containerId;
-				}
-			}
-			//return GetAngularSurveyContainerBy(caller, caller, containerId);
-		}
-
-		public static long GenerateSurvey_Unsafe(ISession s, PermissionsUtility perms, string name, IEnumerable<IByAbout> byAbout) {
-			var caller = perms.GetCaller();
-			var engine = new SurveyBuilderEngine(new QuarterlyConversationInitializer(caller, name, caller.Organization.Id), new SurveyBuilderEventsSaveStrategy(s));
-
-			byAbout = TransformByAbouts(s,byAbout);
-
-			var container = engine.BuildSurveyContainer(byAbout);
-			var containerId = container.Id;
-			var permItems = new[] {
-				PermTiny.Creator(),
-				PermTiny.Admins(),
-				PermTiny.Members(true, true, false)
-			};
-			PermissionsAccessor.CreatePermItems(s, caller, PermItem.ResourceType.SurveyContainer, containerId, permItems);
-
-			return containerId;
-
-		}
-		/// <summary>
-		/// Converts the By's to UserOrganizationModels
-		///  
-		/// </summary>
-		/// <param name="s"></param>
-		/// <param name="byAbout"></param>
-		/// <returns></returns>
-		private static IEnumerable<IByAbout> TransformByAbouts(ISession s, IEnumerable<IByAbout> byAbout) {
-			var bys = byAbout.Select(x => x.GetBy()).ToList();
-			var accNodeBys = bys.Where(x => x.Is<AccountabilityNode>());
-			var newByAbouts = new List<IByAbout>();
-			if (accNodeBys.Any()) {
-				var accNodeIds = accNodeBys.Select(x => x.ModelId).ToArray();
-				var accNodes = s.QueryOver<AccountabilityNode>().Where(x => x.DeleteTime == null)
-					.WhereRestrictionOn(x => x.Id).IsIn(accNodeIds)
-					.List().ToList();
-				foreach (var ba in byAbout) {
-					var toAdd = ba;
-					if (ba.GetBy().Is<AccountabilityNode>()) {
-						var foundUser = accNodes.FirstOrDefault(x => x.Id == ba.GetBy().ModelId).NotNull(x => x.User);
-						if (foundUser != null) {
-							toAdd = new ByAbout(foundUser, ba.GetAbout());
-						}
-					}
-					newByAbouts.Add(toAdd);
-
-				}
-			} else {
-				newByAbouts = byAbout.ToList();
-			}
-			return newByAbouts.Distinct(x=>x.ToKey()).ToList();
-
-
-		}
-		public static AngularSurveyContainer GetAngularSurveyContainerAbout(UserOrganizationModel caller, IForModel about, long surveyContainerId) {
+		public static ISurveyAboutContainer GetSurveyContainerAbout(UserOrganizationModel caller, IForModel about, long surveyContainerId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
 					perms.ViewSurveyContainer(surveyContainerId);
-					perms.ManagesForModel(about,true);//TODO make this less restrictive
+					perms.ManagesForModel(about, true);//TODO make this less restrictive
 
 					var container = s.Get<SurveyContainer>(surveyContainerId);
 					if (container.OrgId != caller.Organization.Id)
 						throw new PermissionsException();
 
 					var engine = new SurveyReconstructionEngine(surveyContainerId, container.OrgId, new DatabaseAggregator(s, about: about), new SurveyReconstructionEventsNoOp());
-					var output = new AngularSurveyContainer();
-					engine.Traverse(new TraverseBuildAngular(output));
+					var output = new AngularSurveyAboutContainer();
+					engine.Traverse(new TraverseBuildAboutAngular(s,x => { output = x;}));
 					return output;
 
 				}

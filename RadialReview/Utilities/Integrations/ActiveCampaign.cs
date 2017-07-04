@@ -12,6 +12,14 @@ namespace RadialReview.Utilities.Integrations {
 	public class ActiveCampaignConnector {
 		protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+		public class ActiveCampaignRequest{
+			public string Url { get; set; }
+			public string ApiAction { get; set; }
+			public Dictionary<string,string> Parameters { get; set; }
+		}
+
+		protected List<ActiveCampaignRequest> TestRequests { get; set; }
+
 		private ActiveCampaignConfig Configs;
 
 		public ActiveCampaignConnector(ActiveCampaignConfig config) {
@@ -79,6 +87,14 @@ namespace RadialReview.Utilities.Integrations {
 						}
 					}
 				} else {
+
+					TestRequests = TestRequests ?? new List<ActiveCampaignRequest>();
+					TestRequests.Add(new ActiveCampaignRequest() {
+						Url = uri,
+						ApiAction = apiAction,
+						Parameters = parameters
+					});
+
 					return new ApiResult() {
 						Message = "Active Campaign is in test mode",
 					}.SetTestSuccess();

@@ -15,8 +15,7 @@ using static TractionTools.Tests.Permissions.BasePermissionsTest;
 using System.Threading.Tasks;
 using RadialReview.Models.Angular.Todos;
 
-namespace TractionTools.Tests.Api
-{
+namespace TractionTools.Tests.API.v0 {
     [TestClass]
     public class TodoApiTests_v0 : BaseTest
     {

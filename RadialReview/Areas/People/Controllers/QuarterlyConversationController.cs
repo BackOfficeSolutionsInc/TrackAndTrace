@@ -29,7 +29,7 @@ namespace RadialReview.Areas.People.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Issue() {
-			var possible = SurveyAccessor.AvailableByAbouts(GetUser());
+			var possible = QuarterlyConversationAccessor.AvailableByAbouts(GetUser());
 			return View(possible);
 		}
 
@@ -49,7 +49,7 @@ namespace RadialReview.Areas.People.Controllers {
 
 			byAbouts = byAbouts.Distinct().ToList();
 
-			SurveyAccessor.GenerateSurveyContainer(GetUser(), form["name"], byAbouts);
+			QuarterlyConversationAccessor.GenerateQuarterlyConversation(GetUser(), form["name"], byAbouts);
 
 
 			return RedirectToAction("Index");

@@ -21,7 +21,7 @@ using static RadialReview.Controllers.L10Controller;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Angular.Accountability;
 
-namespace TractionTools.Tests.Api {
+namespace TractionTools.Tests.API.v0 {
 	[TestClass]
 	public class UsersApiTests_v0 : BaseTest {
 		[TestMethod]

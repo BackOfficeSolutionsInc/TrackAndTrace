@@ -32,6 +32,7 @@ using System.Threading;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Synchronize;
 using RadialReview.Models.Angular.Rocks;
+using System.Threading.Tasks;
 
 namespace RadialReview.Accessors {
 	public class VtoAccessor : BaseAccessor {
@@ -290,7 +291,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static void Update(UserOrganizationModel caller, BaseAngular model, string connectionId) {
+		public static async Task Update(UserOrganizationModel caller, BaseAngular model, string connectionId) {
 			if (model.Type == typeof(AngularVtoString).Name) {
 				var m = (AngularVtoString)model;
 				UpdateVtoString(caller, m.Id, m.Data, null, connectionId);
@@ -308,7 +309,7 @@ namespace RadialReview.Accessors {
 				UpdateStrategy(caller, m.Id, m.TargetMarket, m.ProvenProcess, m.Guarantee, m.MarketingStrategyTitle, connectionId);
 			} else if (model.Type == typeof(AngularVtoRock).Name) {
 				var m = (AngularVtoRock)model;
-				UpdateRock(caller, m.Id, m.Rock.Name, m.Rock.Owner.Id, null, connectionId);
+				await UpdateRock(caller, m.Id, m.Rock.Name, m.Rock.Owner.Id, null, connectionId);
 			} else if (model.Type == typeof(AngularOneYearPlan).Name) {
 				var m = (AngularOneYearPlan)model;
 				UpdateOneYearPlan(caller, m.Id, m.FutureDate, m.Revenue, m.Profit, m.Measurables, m.OneYearPlanTitle, connectionId);
@@ -545,7 +546,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static void UpdateRock(UserOrganizationModel caller, long rockId, string message, long? accountableUser, bool? deleted, string connectionId) {
+		public static async Task UpdateRock(UserOrganizationModel caller, long rockId, string message, long? accountableUser, bool? deleted, string connectionId) {
 			//var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -566,7 +567,7 @@ namespace RadialReview.Accessors {
 							rock.DeleteTime = null;
 							//rock.Rock.DeleteTime = null;
 							if (vto.L10Recurrence != null)
-								L10Accessor.AddRock(s, perm, vto.L10Recurrence.Value, rock.Rock);
+								await L10Accessor.AddExistingRockToL10(s, perm, vto.L10Recurrence.Value, rock.Rock);
 
 						} else if (rock.DeleteTime == null) {
 							rock.DeleteTime = DateTime.UtcNow;
@@ -731,7 +732,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static void AddRock(ISession s, PermissionsUtility perms, long vtoId, RockModel rock, DateTime? nowTime = null) {
+		public static async Task AddRock(ISession s, PermissionsUtility perms, long vtoId, RockModel rock, DateTime? nowTime = null) {
 			if (rock._AddedToVTO)
 				throw new PermissionsException("Already added to vto");
 			rock._AddedToVTO = true;
@@ -770,7 +771,7 @@ namespace RadialReview.Accessors {
 			s.Save(vtoRock);
 
 			if (vto.L10Recurrence != null && !rock._AddedToL10) {
-				L10Accessor.AddRock(s, perms, vto.L10Recurrence.Value, rock, now);
+				await L10Accessor.AddExistingRockToL10(s, perms, vto.L10Recurrence.Value, rock, now);
 			}
 
 			vtoRocks.Add(vtoRock);
@@ -796,18 +797,18 @@ namespace RadialReview.Accessors {
             }*/
 		}
 
-		public static void CreateNewRock(UserOrganizationModel caller, long vtoId, string message = null) {
+		public static async Task CreateNewRock(UserOrganizationModel caller, long vtoId, string message = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					CreateNewRock(s, perms, vtoId, caller.Id, message);
+					await CreateNewRock(s, perms, vtoId, caller.Id, message);
 					tx.Commit();
 					s.Flush();
 				}
 			}
 		}
 
-		public static void CreateNewRock(ISession s, PermissionsUtility perms, long vtoId, long owner, string message = null) {
+		public static async Task CreateNewRock(ISession s, PermissionsUtility perms, long vtoId, long owner, string message = null) {
 			var now = DateTime.UtcNow;
 			var vto = s.Get<VtoModel>(vtoId);
 			var organizationId = vto.Organization.Id;
@@ -826,7 +827,7 @@ namespace RadialReview.Accessors {
 				AccountableUser = s.Load<UserOrganizationModel>(owner),
 				Rock = message,
 			};
-			AddRock(s, perms, vtoId, rock, now);
+			await AddRock(s, perms, vtoId, rock, now);
 
 		}
 
@@ -843,7 +844,7 @@ namespace RadialReview.Accessors {
 			return found;
 		}
 
-		public static VtoModel UploadVtoForRecurrence(UserOrganizationModel caller, DocX doc, long recurrenceId, List<Exception> exceptions) {
+		public static async Task<VtoModel> UploadVtoForRecurrence(UserOrganizationModel caller, DocX doc, long recurrenceId, List<Exception> exceptions) {
 
 			exceptions = exceptions ?? new List<Exception>();
 
@@ -1241,7 +1242,7 @@ namespace RadialReview.Accessors {
 
 							var message = r.Cells.Reverse<Cell>().Skip(1).FirstOrDefault().NotNull(x => string.Join("\n", x.Paragraphs.Select(y => y.Text)));
 							if (!string.IsNullOrWhiteSpace(message)) {
-								CreateNewRock(s, perms, vtoId, owner, message);
+								await CreateNewRock(s, perms, vtoId, owner, message);
 							}
 						}
 					} catch (Exception e) {

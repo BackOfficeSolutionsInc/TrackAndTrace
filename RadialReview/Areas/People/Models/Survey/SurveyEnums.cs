@@ -27,10 +27,12 @@ namespace RadialReview.Areas.People.Models.Survey {
 	public enum SurveyQuestionIdentifier {
 		None = 0,
 
-		Values = 1,
+		Value = 1,
 		GWC = 2,
-		Rocks = 3,
+		Rock = 3,
+		Role = 4,
 
-		GeneralComments = 100,
+		GeneralComment = 100,
+		
 	}
 }

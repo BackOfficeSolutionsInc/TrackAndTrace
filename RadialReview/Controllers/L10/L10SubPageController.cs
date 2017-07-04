@@ -231,37 +231,7 @@ namespace RadialReview.Controllers {
 				highlight = model.MeetingStart.Value.AddDays(7 * model.Recurrence.NotNull(x => x.CurrentWeekHighlightShift));
 
 			model.Weeks = TimingUtility.GetPeriods(timeSettings, DateTime.UtcNow, highlight, /*model.Scores,*/ true);
-			return PartialView("Scorecard", model);
-			/*model.StartDate = ordered.FirstOrDefault().NotNull(x => DateTime.UtcNow);
-			model.EndDate = ordered.LastOrDefault().NotNull(x => DateTime.UtcNow).AddDays(7);
-
-			var s = model.StartDate.StartOfWeek(GetUser().Organization.Settings.WeekStart).AddDays(-7 * 4);
-			var e = model.EndDate.StartOfWeek(GetUser().Organization.Settings.WeekStart).AddDays(7 * 4);
-			e = Math2.Min(DateTime.UtcNow, e);
-			if (model.StartDate >= model.EndDate)
-				throw new PermissionsException("Date ordering incorrect");
-			while (true)
-			{
-				var currWeek = false;
-				var next = s.AddDays(7);
-				var s1 = s;
-				if (model.Meeting.StartTime.NotNull(x => s1 <= x.Value && x.Value < next))
-					currWeek = true;
-
-
-				var sow = model.Recurrence.Organization.Settings.WeekStart;
-
-				model.Weeks.Add(new L10MeetingVM.WeekVM()
-				{
-					DisplayDate = s.StartOfWeek(sow),
-					ForWeek = s.StartOfWeek(DayOfWeek.Sunday),
-					IsCurrentWeek = currWeek,
-				});
-
-				s = next;
-				if (s > e)
-					break;
-			 }*/
+			return PartialView("Scorecard", model);			
 
 		}
 		#endregion
@@ -281,10 +251,7 @@ namespace RadialReview.Controllers {
 
 		#region Headlines
 		private PartialViewResult Headlines(L10MeetingVM model) {
-			//ViewBag.CEH_Subheading = ViewBag.Subheading ?? CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.CustomerEmployeeHeadlines_Subheading, "Share headlines about customers/clients and people in the company.<br/> Good and bad. Drop down (to the issues list) anything that needs discussion.");
-			//ViewBag.CEH_Heading = ViewBag.Heading ?? CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.CustomerEmployeeHeadlines_Heading, "People Headlines");
-
-
+			
 			ViewBag.Heading = ViewBag.Heading ?? "People Headline";
 			ViewBag.Subheading = ViewBag.Subheading ?? CustomizeAccessor.GetSpecificCustomization(GetUser(), GetUser().Organization.Id, CUSTOMIZABLE.CustomerEmployeeHeadlines_Subheading, "Share headlines about customers/clients and people in the company.<br/> Good and bad. Drop down (to the issues list) anything that needs discussion.");
 
@@ -339,7 +306,7 @@ namespace RadialReview.Controllers {
 			//model.Meeting._MeetingAttendees.ForEach(x=>x.Rating=x.Rating??10);
 
 			var stats = L10Accessor.GetStats(GetUser(), model.Recurrence.Id);
-			ViewBag.TodosCreated = stats.AllTodos.Where(x => x.CompleteTime == null).ToList();
+			ViewBag.TodosForNextWeek = stats.AllTodos.Where(x => x.CompleteTime == null).ToList();
 
 			return PartialView("Conclusion", model);
 		}

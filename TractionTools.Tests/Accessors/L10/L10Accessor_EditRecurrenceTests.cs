@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using RadialReview.Models.L10;
 using System.Web.Mvc;
 using RadialReview.Exceptions;
+using System.Threading.Tasks;
 
 namespace TractionTools.Tests.Accessors
 {
@@ -16,7 +17,7 @@ namespace TractionTools.Tests.Accessors
     public class L10Accessor_EditRecurrenceTests : BaseTest
     {
         [TestMethod]
-        public void CreateL10Recurrence()
+        public async Task CreateL10Recurrence()
         {
             UserOrganizationModel employee = null;
             UserOrganizationModel manager = null;
@@ -59,14 +60,14 @@ namespace TractionTools.Tests.Accessors
             controller = new L10Controller();
             controller.SetValue("SkipValidation", true);
             controller.MockUser(employee);
-            Throws<PermissionsException>(() => controller.Edit(createVM));
+			await ThrowsAsync<PermissionsException>(async () => await controller.Edit(createVM));
            
 
             //Not Valid, no name, no users.
             controller = new L10Controller();
             controller.SetValue("SkipValidation", true);
             controller.MockUser(manager);
-            var edit = controller.Edit(createVM);
+            var edit = await controller.Edit(createVM);
             var editVR = edit as ViewResult;
             Assert.IsNotNull(editVR);
             var editVM = editVR.Model as L10EditVM;
@@ -87,7 +88,7 @@ namespace TractionTools.Tests.Accessors
             controller = new L10Controller();
             controller.SetValue("SkipValidation", true);
             controller.MockUser(manager);
-            edit = controller.Edit(createVM);
+            edit = await controller.Edit(createVM);
             editVR = edit as ViewResult;
             Assert.IsNotNull(editVR);
             editVM = editVR.Model as L10EditVM;
@@ -99,7 +100,7 @@ namespace TractionTools.Tests.Accessors
             controller = new L10Controller();
             controller.SetValue("SkipValidation", true);
             controller.MockUser(manager);
-            edit = controller.Edit(createVM);
+            edit = await controller.Edit(createVM);
             editVR = edit as ViewResult;
             Assert.IsNotNull(editVR);
             editVM = editVR.Model as L10EditVM;
@@ -113,10 +114,10 @@ namespace TractionTools.Tests.Accessors
             controller = new L10Controller();
             controller.SetValue("SkipValidation", true);
             controller.MockUser(managerOtherCompany);
-            Throws<PermissionsException>(()=> controller.Edit(editVM));
+            await ThrowsAsync<PermissionsException>(async ()=> await controller.Edit(editVM));
 
             controller.MockUser(manager);
-            create = controller.Edit(editVM);
+            create = await controller.Edit(editVM);
             var redirectVR = create as RedirectToRouteResult;
             Assert.IsNotNull(create);
             Assert.IsNotNull(redirectVR);
@@ -126,7 +127,7 @@ namespace TractionTools.Tests.Accessors
             //Assert.AreEqual(employee.Id, editVM.SelectedMembers[0]);
         }
         [TestMethod]
-        public void EditL10Recurrence()
+        public async Task EditL10Recurrence()
         {
             //UserOrganizationModel employee = null;
             OrganizationModel org = null;
@@ -156,7 +157,7 @@ namespace TractionTools.Tests.Accessors
             }};
             recur._DefaultMeasurables = new List<L10Recurrence.L10Recurrence_Measurable>();
             recur._DefaultRocks = new List<L10Recurrence.L10Recurrence_Rocks>();
-            L10Accessor.EditL10Recurrence(manager, recur);
+			await L10Accessor.EditL10Recurrence(manager, recur);
             
             var foundRecur = L10Accessor.GetL10Recurrence(manager, recur.Id, true);
 
@@ -172,11 +173,11 @@ namespace TractionTools.Tests.Accessors
                 Recurrence = foundRecur,
                 SelectedMembers = new[] { manager.Id, employee.Id }
             };
-            Throws<PermissionsException>(() => controller.Edit(editVM));
+			await ThrowsAsync<PermissionsException>(() => controller.Edit(editVM));
             
             controller.MockUser(manager);
             var edit = controller.Edit(editVM);
-            var editVR = edit as RedirectToRouteResult;
+            var editVR = await edit as RedirectToRouteResult;
             Assert.IsNotNull(editVR);
 
             var foundRecur1 = L10Accessor.GetL10Recurrence(manager, recur.Id, true);

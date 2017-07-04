@@ -22,15 +22,16 @@ namespace RadialReview.Areas.People.Models.Survey {
         public virtual long OrgId { get; set; }
         public virtual long SurveyContainerId { get; set; }
         public virtual long SurveyId { get; set; }
-        public virtual long? SectionTemplateId { get; set; }
-        
-        public virtual ISurveyContainer _SurveyContainer { get; set; }
+		public virtual long? SectionTemplateId { get; set; }
+		public virtual string SectionMergerKey { get; set; }
+
+		public virtual ISurveyContainer _SurveyContainer { get; set; }
         public virtual ISurvey _Survey { get; set; }
         public virtual ICollection<IItemContainer> _Items { get; set; }
 
 		#region Constructor
 #pragma warning disable CS0618 // Type or member is obsolete
-		public SurveySection(ISectionInitializerData data, string name, SurveySectionType sectionType) : this() {
+		public SurveySection(ISectionInitializerData data, string name, SurveySectionType sectionType,string mergerKey) : this() {
 #pragma warning restore CS0618 // Type or member is obsolete
 			Name = name;
             OrgId = data.OrgId;
@@ -38,6 +39,7 @@ namespace RadialReview.Areas.People.Models.Survey {
             SurveyContainerId = data.SurveyContainer.Id;
             SurveyId = data.Survey.Id;
             SectionTemplateId = null;
+			SectionMergerKey = mergerKey;
 
             _SurveyContainer = data.SurveyContainer;
             _Survey = data.Survey;
@@ -83,7 +85,11 @@ namespace RadialReview.Areas.People.Models.Survey {
             return Ordering;
         }
 
-        public class Map : ClassMap<SurveySection> {
+		public virtual string GetSectionMergerKey() {
+			return SectionMergerKey;
+		}
+
+		public class Map : ClassMap<SurveySection> {
             public Map() {
                 Id(x => x.Id);
                 Map(x => x.CreateTime);
@@ -95,8 +101,9 @@ namespace RadialReview.Areas.People.Models.Survey {
                 Map(x => x.OrgId);
                 Map(x => x.SurveyContainerId);
                 Map(x => x.SurveyId);
-                Map(x => x.SectionTemplateId);
-            }
+				Map(x => x.SectionTemplateId);
+				Map(x => x.SectionMergerKey);
+			}
         }
         //public IEnumerator<IComponent> GetEnumerator() {
         //    yield return this;

@@ -27,31 +27,29 @@ using RadialReview.Models.Angular.Rocks;
 namespace RadialReview.Controllers {
     public partial class L10Controller :BaseController {
 
-        #region Ancillary
-        [HttpPost]
-        [Access(AccessLevel.UserOrganization)]
-        public JsonResult UpdateAngularBasics(AngularBasics model, string connectionId = null)
-        {
-            L10Accessor.Update(GetUser(), model, connectionId);
-            return Json(ResultObject.SilentSuccess());
-        }
+		#region Ancillary
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> UpdateAngularBasics(AngularBasics model, string connectionId = null) {
+			await L10Accessor.Update(GetUser(), model, connectionId);
+			return Json(ResultObject.SilentSuccess());
+		}
 
-        [HttpPost]
-        [Access(AccessLevel.UserOrganization)]
-        public JsonResult UpdateAngularMeetingNotes(AngularMeetingNotes model, string connectionId = null)
-        {
-            L10Accessor.Update(GetUser(), model, connectionId);
-            return Json(ResultObject.SilentSuccess());
-        }
-        #endregion
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> UpdateAngularMeetingNotes(AngularMeetingNotes model, string connectionId = null) {
+			await L10Accessor.Update(GetUser(), model, connectionId);
+			return Json(ResultObject.SilentSuccess());
+		}
+		#endregion
 
-        #region Scorecard
-        [HttpGet]
+		#region Scorecard
+		[HttpGet]
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult AddAngularMeasurable(long id)
+        public async Task<JsonResult> AddAngularMeasurable(long id)
         {
             var recurrenceId = id;
-            L10Accessor.CreateMeasurable(GetUser(), recurrenceId, AddMeasurableVm.CreateNewMeasurable(recurrenceId, new MeasurableModel() {
+            await L10Accessor.CreateMeasurable(GetUser(), recurrenceId, AddMeasurableVm.CreateNewMeasurable(recurrenceId, new MeasurableModel() {
                 OrganizationId = GetUser().Organization.Id,
                 AdminUserId = GetUser().Id,
                 AccountableUserId = GetUser().Id,
@@ -94,37 +92,34 @@ namespace RadialReview.Controllers {
                 connectionId,!historical, altTarget, enableCumulative, cumulativeStart);
             return Json(ResultObject.SilentSuccess());
         }
-        
-        [HttpPost]
-        [Access(AccessLevel.UserOrganization)]
-        public JsonResult UpdateAngularScore(AngularScore model, string connectionId = null)
-        {
-            L10Accessor.Update(GetUser(), model, connectionId);
-            return Json(ResultObject.SilentSuccess());
-        }
-        #endregion
 
-        #region Rocks
-        [HttpGet]
-        [Access(AccessLevel.UserOrganization)]
-        public JsonResult AddAngularRock(long id)
-        {
-            var recurrenceId = id;
-            var rock = new RockModel() {
-                OrganizationId = GetUser().Organization.Id,
-                ForUserId = GetUser().Id,
-            };
-            L10Accessor.CreateRock(GetUser(), recurrenceId, AddRockVm.CreateRock(recurrenceId, rock, true));
-            return Json(ResultObject.SilentSuccess(new AngularRock(rock)), JsonRequestBehavior.AllowGet);
-        }
-        [HttpPost]
-        [Access(AccessLevel.UserOrganization)]
-        public JsonResult UpdateAngularRock(AngularRock model, string connectionId = null)
-        {
-            L10Accessor.Update(GetUser(), model, connectionId);
-            return Json(ResultObject.SilentSuccess());
-        } 
-        [HttpPost]
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> UpdateAngularScore(AngularScore model, string connectionId = null) {
+			await L10Accessor.Update(GetUser(), model, connectionId);
+			return Json(ResultObject.SilentSuccess());
+		}
+		#endregion
+
+		#region Rocks
+		[HttpGet]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> AddAngularRock(long id) {
+			var recurrenceId = id;
+			var rock = new RockModel() {
+				OrganizationId = GetUser().Organization.Id,
+				ForUserId = GetUser().Id,
+			};
+			await L10Accessor.CreateRock(GetUser(), recurrenceId, AddRockVm.CreateRock(recurrenceId, rock, true));
+			return Json(ResultObject.SilentSuccess(new AngularRock(rock)), JsonRequestBehavior.AllowGet);
+		}
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> UpdateAngularRock(AngularRock model, string connectionId = null) {
+			await L10Accessor.Update(GetUser(), model, connectionId);
+			return Json(ResultObject.SilentSuccess());
+		}
+		[HttpPost]
         [Access(AccessLevel.UserOrganization)]
         public JsonResult RemoveAngularRock(long recurrenceId, AngularRock model, string connectionId = null)
         {
@@ -145,15 +140,14 @@ namespace RadialReview.Controllers {
             });
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
-        [HttpPost]
-        [Access(AccessLevel.UserOrganization)]
-        public JsonResult UpdateAngularTodo(AngularTodo model, string connectionId = null)
-        {
-            L10Accessor.Update(GetUser(), model, connectionId);
-            return Json(ResultObject.SilentSuccess());
-        }
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> UpdateAngularTodo(AngularTodo model, string connectionId = null) {
+			await L10Accessor.Update(GetUser(), model, connectionId);
+			return Json(ResultObject.SilentSuccess());
+		}
 
-        [HttpPost]
+		[HttpPost]
         [Access(AccessLevel.UserOrganization)]
         public JsonResult RemoveAngularTodo(long recurrenceId, AngularTodo model, string connectionId = null)
         {
@@ -171,15 +165,14 @@ namespace RadialReview.Controllers {
             await IssuesAccessor.CreateIssue(GetUser(), recurrenceId, GetUser().Id, new IssueModel());
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
-        [HttpPost]
-        [Access(AccessLevel.UserOrganization)]
-        public JsonResult UpdateAngularIssue(AngularIssue model, string connectionId = null)
-        {
-            L10Accessor.Update(GetUser(), model, connectionId);
-            return Json(ResultObject.SilentSuccess());
-        }
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> UpdateAngularIssue(AngularIssue model, string connectionId = null) {
+			await L10Accessor.Update(GetUser(), model, connectionId);
+			return Json(ResultObject.SilentSuccess());
+		}
 
-        [HttpPost]
+		[HttpPost]
         [Access(AccessLevel.UserOrganization)]
         public JsonResult RemoveAngularIssue(long recurrenceId, AngularIssue model, string connectionId = null)
         {
@@ -193,8 +186,8 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult UpdateAngularHeadline(AngularHeadline model, string connectionId = null) {
-			L10Accessor.Update(GetUser(), model, connectionId);
+		public async Task<JsonResult> UpdateAngularHeadline(AngularHeadline model, string connectionId = null) {
+			await L10Accessor.Update(GetUser(), model, connectionId);
 			return Json(ResultObject.SilentSuccess());
 		}
 		[HttpPost]

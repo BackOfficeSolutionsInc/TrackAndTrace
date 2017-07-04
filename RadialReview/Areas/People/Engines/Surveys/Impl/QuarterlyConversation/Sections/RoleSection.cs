@@ -25,7 +25,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		public IEnumerable<IItemInitializer> GetItemBuilders(IItemInitializerData data) {
 			var modelType = data.Survey.GetAbout().ModelType;
 
-			var genComments = new TextAreaItemIntializer("General Comments", SurveyQuestionIdentifier.GeneralComments);
+			var genComments = new TextAreaItemIntializer("General Comments", SurveyQuestionIdentifier.GeneralComment);
 
 			if (modelType == ForModel.GetModelType<UserOrganizationModel>()) {
 				var query = data.Lookup.Get<RoleLinksQuery>("RoleQuery");
@@ -71,7 +71,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		}
 
 		public ISection InitializeSection(ISectionInitializerData data) {
-			return new SurveySection(data, "Roles", SurveySectionType.Roles);
+			return new SurveySection(data, "Roles", SurveySectionType.Roles,"mk-roles");
 		}
 
 		public void Prelookup(IInitializerLookupData data) {
@@ -101,7 +101,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 				{"no",  "No" },
 			};
 
-			return data.RegistrationItemFormat(true, () => SurveyItemFormat.GenerateRadio(data,SurveyQuestionIdentifier.GWC, options), Value);
+			return data.RegistrationItemFormat(true, () => SurveyItemFormat.GenerateRadio(data,SurveyQuestionIdentifier.GWC, options, new KV("gwc",Value)), Value);
 		}
 
 		public bool HasResponse(IResponseInitializerCtx data) {
@@ -109,7 +109,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		}
 
 		public IItem InitializeItem(IItemInitializerData data) {
-			return new SurveyItem(data, Title, null);
+			return new SurveyItem(data, Title, null,"role-"+Value);
 		}
 
 		public IResponse InitializeResponse(IResponseInitializerCtx ctx, IItemFormat format) {
@@ -133,7 +133,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		}
 
 		public IItemFormatRegistry GetItemFormat(IItemFormatInitializerCtx ctx) {
-			return ctx.RegistrationItemFormat(true, () => SurveyItemFormat.GenerateText(ctx,SurveyQuestionIdentifier.None));
+			return ctx.RegistrationItemFormat(true, () => SurveyItemFormat.GenerateText(ctx,SurveyQuestionIdentifier.Role));
 		}
 
 		public bool HasResponse(IResponseInitializerCtx data) {
@@ -141,7 +141,8 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		}
 
 		public IItem InitializeItem(IItemInitializerData data) {
-			return new SurveyItem(data, RoleDetails.Role.Role, ForModel.Create(RoleDetails.Role));
+			var forModel = ForModel.Create(RoleDetails.Role);
+			return new SurveyItem(data, RoleDetails.Role.Role, forModel, forModel.ToKey());
 		}
 
 		public IResponse InitializeResponse(IResponseInitializerCtx data, IItemFormat format) {

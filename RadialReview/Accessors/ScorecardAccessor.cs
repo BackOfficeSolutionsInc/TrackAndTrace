@@ -20,6 +20,9 @@ using RadialReview.Models.Angular.Scorecard;
 using RadialReview.Models.Angular.Base;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Models.Angular.Meeting;
+using System.Threading.Tasks;
+using RadialReview.Hooks;
+using RadialReview.Utilities.Hooks;
 
 namespace RadialReview.Accessors {
 	public class ScorecardAccessor {
@@ -349,7 +352,7 @@ namespace RadialReview.Accessors {
             }
         }*/
 
-		public static void EditMeasurables(UserOrganizationModel caller, long userId, List<MeasurableModel> measurables, bool updateAllL10s) {
+		public static async Task EditMeasurables(UserOrganizationModel caller, long userId, List<MeasurableModel> measurables, bool updateAllL10s) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					using (var rt = RealTimeUtility.Create()) {
@@ -393,7 +396,7 @@ namespace RadialReview.Accessors {
 										throw new PermissionsException("Cannot access the Level 10");
 									perm.UnsafeAllow(PermItem.AccessLevel.View, PermItem.ResourceType.L10Recurrence, o.Id);
 									perm.UnsafeAllow(PermItem.AccessLevel.Edit, PermItem.ResourceType.L10Recurrence, o.Id);
-									L10Accessor.AddMeasurable(s, perm, rt, o.Id, new Controllers.L10Controller.AddMeasurableVm() {
+									await L10Accessor.AddMeasurable(s, perm, rt, o.Id, new Controllers.L10Controller.AddMeasurableVm() {
 										RecurrenceId = o.Id,
 										SelectedMeasurable = r1.Id,
 									});
@@ -740,11 +743,11 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static void CreateMeasurable(UserOrganizationModel caller, MeasurableModel measurable, bool checkEditDetails) {
+		public static async Task CreateMeasurable(UserOrganizationModel caller, MeasurableModel measurable, bool checkEditDetails) {
 			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {					
+				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					CreateMeasurable(s, perms, measurable, checkEditDetails);
+					await CreateMeasurable(s, perms, measurable, checkEditDetails);
 
 					tx.Commit();
 					s.Flush();
@@ -752,7 +755,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static void CreateMeasurable(ISession s, PermissionsUtility perm, MeasurableModel measurable, bool checkEditDetails) {
+		public static async Task CreateMeasurable(ISession s, PermissionsUtility perm, MeasurableModel measurable, bool checkEditDetails) {
 			//Create new
 			if (measurable == null)
 				throw new PermissionsException("You must include a measurable to create.");
@@ -777,6 +780,8 @@ namespace RadialReview.Accessors {
 
 			measurable.AccountableUser.UpdateCache(s);
 			measurable.AdminUser.UpdateCache(s);
+
+			await HooksRegistry.Each<IMeasurableHook>(x => x.CreateMeasurable(s, measurable));
 
 		}
 		public static AngularRecurrence GetReview_Scorecard(UserOrganizationModel caller, long reviewId) {

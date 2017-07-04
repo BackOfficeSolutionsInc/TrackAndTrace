@@ -99,7 +99,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult SubmitRocks(FormCollection model) {
+		public async Task<JsonResult> SubmitRocks(FormCollection model) {
 			var path = model["Path"].ToString();
 			try {
 				//var useAws = model["UseAWS"].ToBoolean();
@@ -148,7 +148,7 @@ namespace RadialReview.Controllers {
 								dued = due[ident];
 
 
-							L10Accessor.AddRock(s, perms, recurrence, L10Controller.AddRockVm.CreateRock(recurrence, new RockModel() {
+							await L10Accessor.AddRock(s, perms, recurrence, L10Controller.AddRockVm.CreateRock(recurrence, new RockModel() {
 								CreateTime = now,
 								Rock = rocks[ident],
 								OrganizationId = org.Id,

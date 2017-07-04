@@ -5,6 +5,7 @@ using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using static RadialReview.Models.PermItem;
@@ -39,7 +40,8 @@ namespace RadialReview.Models.Accountability {
 
 	}
 
-    public class AccountabilityNode : ILongIdentifiable, IHistorical, IForModel {
+	[DebuggerDisplay("Node: {User.EmailAtOrganization}")]
+	public class AccountabilityNode : ILongIdentifiable, IHistorical, IForModel {
         public virtual long Id { get; set; }
         public virtual DateTime CreateTime { get; set; }
         public virtual DateTime? DeleteTime { get; set; }

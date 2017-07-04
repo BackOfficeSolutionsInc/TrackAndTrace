@@ -113,6 +113,9 @@ namespace RadialReview.Areas.People.Engines.Surveys.Strategies.Traverse {
 			section.AppendItem(itemContainer);
 		}
 
+		public void OnComplete(ISurveyContainer container) {
+			//Nothing to do
+		}
 	}
 
 

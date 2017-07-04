@@ -203,9 +203,9 @@ namespace TractionTools.UITests {
 			try {
 				Find(d, selector, timeoutSeconds);
 				throw new Exception("Item(" + selector + ") was not expected");
-			} catch (WebDriverTimeoutException e) {
+			} catch (WebDriverTimeoutException) {
 				return true;
-			} catch (NoSuchElementException e) {
+			} catch (NoSuchElementException) {
 				return true;
 			}
 		}

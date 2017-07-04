@@ -522,32 +522,32 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Any)]
 		public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl) {
 			throw new Exception("Fix Default Todo Send Time");
-			if (User.Identity.IsAuthenticated) {
-				return RedirectToAction("Manage");
-			}
+			//if (User.Identity.IsAuthenticated) {
+			//	return RedirectToAction("Manage");
+			//}
 
-			if (ModelState.IsValid) {
-				// Get the information about the user from the external login provider
-				var info = await AuthenticationManager.GetExternalLoginInfoAsync();
-				if (info == null) {
-					return View("ExternalLoginFailure");
-				}
-				var user = new UserModel() { UserName = model.UserName };
-				//var result = await UserManager.CreateAsync(user);
-				var result = await UserAccessor.CreateUser(UserManager, user, info);
-				if (result.Succeeded) {
-					//result = await UserManager.AddLoginAsync(user.Id, info.Login);
-					//if (result.Succeeded)
-					//{
-					await SignInAsync(user, isPersistent: false);
-					return RedirectToLocal(returnUrl);
-					//}
-				}
-				AddErrors(result);
-			}
+			//if (ModelState.IsValid) {
+			//	// Get the information about the user from the external login provider
+			//	var info = await AuthenticationManager.GetExternalLoginInfoAsync();
+			//	if (info == null) {
+			//		return View("ExternalLoginFailure");
+			//	}
+			//	var user = new UserModel() { UserName = model.UserName };
+			//	//var result = await UserManager.CreateAsync(user);
+			//	var result = await UserAccessor.CreateUser(UserManager, user, info);
+			//	if (result.Succeeded) {
+			//		//result = await UserManager.AddLoginAsync(user.Id, info.Login);
+			//		//if (result.Succeeded)
+			//		//{
+			//		await SignInAsync(user, isPersistent: false);
+			//		return RedirectToLocal(returnUrl);
+			//		//}
+			//	}
+			//	AddErrors(result);
+			//}
 
-			ViewBag.ReturnUrl = returnUrl;
-			return View(model);
+			//ViewBag.ReturnUrl = returnUrl;
+			//return View(model);
 		}
 
 		//

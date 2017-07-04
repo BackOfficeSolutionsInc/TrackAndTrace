@@ -14,35 +14,44 @@ using RadialReview.Models.Enums;
 using RadialReview.Accessors;
 using RadialReview.Models.Payments;
 using RadialReview.Models.Application;
+using static RadialReview.Utilities.Config;
 
 namespace RadialReview.Hooks {
 	public class ActiveCampaignEventHooks : IAccountEvent, ICreateUserOrganizationHook {
-		
+
+		public ActiveCampaignConfig Configs { get; protected set; }
+		public ActiveCampaignConnector Connector { get; protected set; }
+
+		public ActiveCampaignEventHooks() {
+			Configs = Config.GetActiveCampaignConfig();
+			Connector = new ActiveCampaignConnector(Configs);
+		}
+
 		public async Task CreateEvent(ISession s, AccountEvent evt) {
-			var configs = Config.GetActiveCampaignConfig();
-			var connector = new ActiveCampaignConnector(configs);
 			var type = evt.Type;
 
 			if (type == EventType.CreatePrimaryContact) {
-				await CreatePrimaryContact(s, evt, configs, connector);
+				await CreatePrimaryContact(s, evt, Configs, Connector);
 			} else {
 				string email = null;
 				//Custom actions here to select email
-				var emailToCallerWhen = new[] {
+				var eventToCallerWhen = new[] {
 					EventType.CreateLeadershipMeeting,
 					EventType.CreateDepartmentMeeting,
 					EventType.CreateMeeting,
 				};
-				if (emailToCallerWhen.Any(x => x == type) && evt.TriggeredBy != null) {
+				if (eventToCallerWhen.Any(x => x == type) && evt.TriggeredBy != null) {
 					email = s.Get<UserOrganizationModel>(evt.TriggeredBy.Value).NotNull(x => x.GetEmail());
 				}
-				var emailToBillingWhen = new[] {
+				var eventToBillingWhen = new[] {
 					EventType.PaymentFailed,
 					EventType.PaymentFree,
 					EventType.PaymentReceived,
 				};
-				if (emailToCallerWhen.Any(x => x == type) && evt.TriggeredBy != null) {
-					var tokens = s.QueryOver<PaymentSpringsToken>().Where(x => x.DeleteTime == null && x.OrganizationId == evt.OrgId && x.Active == true).List().SingleOrDefault();
+				if (eventToBillingWhen.Any(x => x == type) && evt.TriggeredBy != null) {
+					var tokens = s.QueryOver<PaymentSpringsToken>()
+						.Where(x => x.DeleteTime == null && x.OrganizationId == evt.OrgId && x.Active == true)
+						.List().SingleOrDefault();
 					email = tokens.NotNull(x => x.ReceiptEmail);
 				}
 
@@ -53,7 +62,7 @@ namespace RadialReview.Hooks {
 				}
 
 				if (email != null) {
-					await connector.EventAsync(evt.Type.Kind(), email, new Dictionary<string, string>() {
+					await Connector.EventAsync(evt.Type.Kind(), email, new Dictionary<string, string>() {
 						{ "eventdata", ""+evt.Id+"~"+evt.Message }
 					});
 				}
@@ -61,21 +70,21 @@ namespace RadialReview.Hooks {
 		}
 
 		public async Task CreateUserOrganization(ISession s, UserOrganizationModel user) {
-			var configs = Config.GetActiveCampaignConfig();
-			var connector = new ActiveCampaignConnector(configs);
-			await connector.SyncContact(configs, user, new List<long>());
+			//var configs = Config.GetActiveCampaignConfig();
+			//var connector = new ActiveCampaignConnector(configs);
+			await Connector.SyncContact(Configs, user, new List<long>());
 		}
 
 		public async Task OnUserRegister(ISession s, UserModel user) {
-			var configs = Config.GetActiveCampaignConfig();
-			var connector = new ActiveCampaignConnector(configs);
-			await connector.EventAsync("RegistrationComplete", user.UserName);
+			//var configs = Config.GetActiveCampaignConfig();
+			//var connector = new ActiveCampaignConnector(configs);
+			await Connector.EventAsync("RegistrationComplete", user.UserName);
 		}
 
 		public async Task OnUserOrganizationAttach(ISession s, UserOrganizationModel userOrganization) {
-			var configs = Config.GetActiveCampaignConfig();
-			var connector = new ActiveCampaignConnector(configs);
-			await connector.EventAsync("AttachComplete", userOrganization.GetEmail());
+			//var configs = Config.GetActiveCampaignConfig();
+			//var connector = new ActiveCampaignConnector(configs);
+			await Connector.EventAsync("AttachComplete", userOrganization.GetEmail());
 		}
 
 

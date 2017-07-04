@@ -149,7 +149,7 @@ namespace RadialReview.Utilities {
 		public List<PermItem> GetAdmins(PermItem.ResourceType resourceType, long resourceId) {
 			CanView(resourceType, resourceId);
 			CanViewPermissions(resourceType, resourceId);
-			var admin = false;
+			//var admin = false;
 			var items = session.QueryOver<PermItem>().Where(x => x.DeleteTime == null && x.ResId == resourceId && x.ResType == resourceType).List().ToList();
 			PermissionsAccessor.LoadPermItem(session, items);
 			return items.Where(x=>x.CanAdmin).ToList();

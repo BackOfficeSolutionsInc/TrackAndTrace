@@ -238,7 +238,7 @@ namespace RadialReview.Controllers {
 
 
 		[Access(AccessLevel.Any)]
-		public bool Daily() {
+		public async Task<bool> Daily() {
 			var any = false;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -298,7 +298,7 @@ namespace RadialReview.Controllers {
 					}
 					#endregion
 
-					EventUtil.GenerateAllDailyEvents(s, DateTime.UtcNow);
+					await EventUtil.GenerateAllDailyEvents(s, DateTime.UtcNow);
 
 					tx.Commit();
 					s.Flush();

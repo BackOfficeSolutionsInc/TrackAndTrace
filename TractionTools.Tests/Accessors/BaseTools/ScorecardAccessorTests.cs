@@ -87,7 +87,7 @@ namespace TractionTools.Tests.Accessors
             newMeasurables.Add(rowVm);
 
 
-            ScorecardAccessor.EditMeasurables(manager, employee.Id, newMeasurables, false);
+            await ScorecardAccessor.EditMeasurables(manager, employee.Id, newMeasurables, false);
 
             var addedMeasurables = ScorecardAccessor.GetOrganizationMeasurables(manager, org.Id, false);
             Assert.AreEqual(2, newMeasurables.Count);
@@ -114,7 +114,7 @@ namespace TractionTools.Tests.Accessors
             rowVm.UnitType = UnitType.Percent;
             newMeasurables.Add(rowVm);
 
-            ScorecardAccessor.EditMeasurables(manager, employee.Id, newMeasurables, false);
+            await ScorecardAccessor.EditMeasurables(manager, employee.Id, newMeasurables, false);
 
                 //Test rock count
                 measurables = ScorecardAccessor.GetOrganizationMeasurables(manager, org.Id, false);
@@ -136,7 +136,7 @@ namespace TractionTools.Tests.Accessors
             rowVm.UnitType = UnitType.Percent;
             newMeasurables.Add(rowVm);
 
-            ScorecardAccessor.EditMeasurables(manager, employee.Id, newMeasurables, true);
+            await ScorecardAccessor.EditMeasurables(manager, employee.Id, newMeasurables, true);
                 //Test rock count
                 measurables = ScorecardAccessor.GetOrganizationMeasurables(manager, org.Id, false);
                 Assert.AreEqual(4, measurables.Count);
@@ -153,18 +153,18 @@ namespace TractionTools.Tests.Accessors
         {
             var r = await L10Utility.CreateRecurrence();
             MeasurableModel m=null;
-            DbCommit(s=>{
-                var perms = PermissionsUtility.Create(s,r.Creator);
-                m = new MeasurableModel(){
-                    OrganizationId=r.Org.Id,
-                    Title = "UpdateScoreInMeeting_CreateScores",   
-                    AccountableUserId = r.Creator.Id,
-                    AdminUserId = r.Employee.Id
-                };
-                var mvm = L10Controller.AddMeasurableVm.CreateNewMeasurable(r.Id,m);
-                MockHttpContext();
-                L10Accessor.AddMeasurable(s, perms, null, r.Id, mvm, skipRealTime: true);
-            });
+            DbCommit(async s => {
+				var perms = PermissionsUtility.Create(s, r.Creator);
+				m = new MeasurableModel() {
+					OrganizationId = r.Org.Id,
+					Title = "UpdateScoreInMeeting_CreateScores",
+					AccountableUserId = r.Creator.Id,
+					AdminUserId = r.Employee.Id
+				};
+				var mvm = L10Controller.AddMeasurableVm.CreateNewMeasurable(r.Id, m);
+				MockHttpContext();
+				await L10Accessor.AddMeasurable(s, perms, null, r.Id, mvm, skipRealTime: true);
+			});
 
             await L10Accessor.StartMeeting(r.Creator, r.Creator, r.Id, r.Creator.Id.AsList());
 

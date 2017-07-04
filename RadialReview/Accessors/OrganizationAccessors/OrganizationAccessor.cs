@@ -47,7 +47,7 @@ namespace RadialReview.Accessors {
 			public AccountabilityNode NewUserNode { get; set; }
 		}
 
-		public async Task<CreateOrganizationOutput> CreateOrganization_Test(ISession s, UserModel user, string name, PaymentPlanType planType, DateTime now,
+		/*public async Task<CreateOrganizationOutput> CreateOrganization_Test(ISession s, UserModel user, string name, PaymentPlanType planType, DateTime now,
 			bool enableL10, bool enableReview, bool startDeactivated = false, string positionName = null) {
 			UserOrganizationModel userOrgModel;
 			//OrganizationModel organization;
@@ -256,218 +256,227 @@ namespace RadialReview.Accessors {
 			}
 			return output;
 		}
-
+		*/
 
 		//public async Task<CreateOrganizationOutput> CreateOrganization(UserModel user, string name, PaymentPlanType planType, DateTime now,
 		//		bool enableL10, bool enableReview, bool startDeactivated = false, string positionName = null, bool enableAC = true, AccountType accountType=AccountType.Demo,
 		//		OrgCreationData createData = null)			
-		public async Task<CreateOrganizationOutput> CreateOrganization(UserModel user, PaymentPlanType planType, DateTime now,	OrgCreationData data) {
+
+		public async Task<CreateOrganizationOutput> CreateOrganization(UserModel user, PaymentPlanType planType, DateTime now, OrgCreationData data) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				var result = await CreateOrganization(s, user, planType, now, data);
+				s.Flush();
+				return result;
+			}
+		}
+
+		public async Task<CreateOrganizationOutput> CreateOrganization(ISession s, UserModel user, PaymentPlanType planType, DateTime now, OrgCreationData data) {
 			UserOrganizationModel userOrgModel;
 			//OrganizationModel organization;
 			OrganizationTeamModel allMemberTeam;
 			PermissionsUtility perms;
 			AccountabilityChart acChart;
-			UserOrganizationModel primaryContact=null;
-			
-			var output = new CreateOrganizationOutput() {};
+			UserOrganizationModel primaryContact = null;
 
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
+			var output = new CreateOrganizationOutput() { };
 
-					output.organization = new OrganizationModel() {
-						CreationTime = now,
-						Name = new LocalizedStringModel() { Standard = data.Name },
-						ManagersCanEdit = false,
-						AccountType = data.AccountType
-					};
+			//using (var s = HibernateSession.GetCurrentSession()) {
+			using (var tx = s.BeginTransaction()) {
 
-					#region Set Settings
-					if (data.StartDeactivated)
-						output.organization.DeleteTime = new DateTime(1, 1, 1);
+				output.organization = new OrganizationModel() {
+					CreationTime = now,
+					Name = new LocalizedStringModel() { Standard = data.Name },
+					ManagersCanEdit = false,
+					AccountType = data.AccountType
+				};
 
-					output.organization.Settings.EnableL10 = data.EnableL10;
-					output.organization.Settings.EnableReview = data.EnableReview;
-					output.organization.Settings.DisableAC = !data.EnableAC;
-					s.Save(output.organization);
+				#region Set Settings
+				if (data.StartDeactivated)
+					output.organization.DeleteTime = new DateTime(1, 1, 1);
+
+				output.organization.Settings.EnableL10 = data.EnableL10;
+				output.organization.Settings.EnableReview = data.EnableReview;
+				output.organization.Settings.DisableAC = !data.EnableAC;
+				s.Save(output.organization);
 #pragma warning disable CS0618 // Type or member is obsolete
-					var paymentPlan = PaymentAccessor.GeneratePlan(planType, now);
+				var paymentPlan = PaymentAccessor.GeneratePlan(planType, now);
 #pragma warning restore CS0618 // Type or member is obsolete
-					PaymentAccessor.AttachPlan(s, output.organization, paymentPlan);
-					output.organization.PaymentPlan = paymentPlan;
-					output.organization.Organization = output.organization;
-					s.Update(output.organization);
-					#endregion
+				PaymentAccessor.AttachPlan(s, output.organization, paymentPlan);
+				output.organization.PaymentPlan = paymentPlan;
+				output.organization.Organization = output.organization;
+				s.Update(output.organization);
+				#endregion
 
-					#region AddUser to Organization
-					user = s.Get<UserModel>(user.Id);
+				#region AddUser to Organization
+				user = s.Get<UserModel>(user.Id);
 
-					userOrgModel = new UserOrganizationModel() {
-						Organization = output.organization,
-						User = user,
-						ManagerAtOrganization = true,
-						ManagingOrganization = true,
-						EmailAtOrganization = user.Email,
-						AttachTime = now,
-						CreateTime = now,
+				userOrgModel = new UserOrganizationModel() {
+					Organization = output.organization,
+					User = user,
+					ManagerAtOrganization = true,
+					ManagingOrganization = true,
+					EmailAtOrganization = user.Email,
+					AttachTime = now,
+					CreateTime = now,
+				};
+
+				s.Save(user);
+				s.SaveOrUpdate(userOrgModel);
+				#endregion
+
+				#region Set Role
+				user.UserOrganization.Add(userOrgModel);
+				user.UserOrganizationCount += 1;
+
+				var newArray = new List<long>();
+				if (user.UserOrganizationIds != null)
+					newArray = user.UserOrganizationIds.ToList();
+				newArray.Add(userOrgModel.Id);
+				user.UserOrganizationIds = newArray.ToArray();
+				user.CurrentRole = userOrgModel.Id;
+
+				output.organization.Members.Add(userOrgModel);
+				s.Update(user);
+				s.Save(output.organization);
+				#endregion
+
+				#region Update OrganizationLookup
+				s.Save(new OrganizationLookup() {
+					OrgId = output.organization.Id,
+					LastUserLogin = userOrgModel.Id,
+					LastUserLoginTime = DateTime.UtcNow,
+				});
+				#endregion
+
+				#region Create/Populate Accountability Chart
+				perms = PermissionsUtility.Create(s, userOrgModel);
+				acChart = AccountabilityAccessor.CreateChart(s, perms, output.organization.Id, false);
+				output.organization.AccountabilityChartId = acChart.Id;
+
+				if (data.ContactPosition != null) {
+					var orgPos = new OrganizationPositionModel() {
+						Organization = s.Load<OrganizationModel>(output.organization.Id),
+						CreatedBy = userOrgModel.Id,
+						CustomName = data.ContactPosition,
 					};
+					s.Save(orgPos);
+					var posDur = new PositionDurationModel() {
+						UserId = userOrgModel.Id,
+						Position = orgPos,
+						PromotedBy = userOrgModel.Id,
+						CreateTime = DateTime.UtcNow,
+						OrganizationId = output.organization.Id,
+					};
+					userOrgModel.Positions.Add(posDur);
+					s.Update(userOrgModel);
+				}
+				#endregion
 
-					s.Save(user);
-					s.SaveOrUpdate(userOrgModel);
-					#endregion
+				#region Create Teams
+				//Add team for every member
+				allMemberTeam = new OrganizationTeamModel() {
+					CreatedBy = userOrgModel.Id,
+					Name = output.organization.Name.Translate(),
+					OnlyManagersEdit = true,
+					Organization = output.organization,
+					InterReview = false,
+					Type = TeamType.AllMembers
+				};
+				s.Save(allMemberTeam);
+				//Add team for every manager
+				var managerTeam = new OrganizationTeamModel() {
+					CreatedBy = userOrgModel.Id,
+					Name = Config.ManagerName() + "s at " + output.organization.Name.Translate(),
+					OnlyManagersEdit = true,
+					Organization = output.organization,
+					InterReview = false,
+					Type = TeamType.Managers
+				};
+				s.Save(managerTeam);
+				#endregion
 
-					#region Set Role
-					user.UserOrganization.Add(userOrgModel);
-					user.UserOrganizationCount += 1;
+				#region Update UserLookup
+				if (userOrgModel != null)
+					userOrgModel.UpdateCache(s);
+				#endregion
 
-					var newArray = new List<long>();
-					if (user.UserOrganizationIds != null)
-						newArray = user.UserOrganizationIds.ToList();
-					newArray.Add(userOrgModel.Id);
-					user.UserOrganizationIds = newArray.ToArray();
-					user.CurrentRole = userOrgModel.Id;
+				#region Add Default Permissions
+				PermissionsAccessor.CreatePermItems(s, perms.GetCaller(), PermItem.ResourceType.UpgradeUsersForOrganization, output.organization.Id,
+					PermTiny.Admins(),
+					PermTiny.RGM(allMemberTeam.Id, admin: false)
+				);
 
-					output.organization.Members.Add(userOrgModel);
-					s.Update(user);
-					s.Save(output.organization);
-					#endregion
+				#endregion
 
-					#region Update OrganizationLookup
-					s.Save(new OrganizationLookup() {
-						OrgId = output.organization.Id,
-						LastUserLogin = userOrgModel.Id,
-						LastUserLoginTime = DateTime.UtcNow,
+
+				tx.Commit();
+			}
+
+
+			using (var tx = s.BeginTransaction()) {
+
+				var year = DateTime.UtcNow.Year;
+				foreach (var q in Enumerable.Range(1, 4)) {
+					s.Save(new PeriodModel() {
+						Name = year + " Q" + q,
+						StartTime = new DateTime(year, 1, 1).AddDays((q - 1) * 13 * 7).StartOfWeek(DayOfWeek.Sunday),
+						EndTime = new DateTime(year, 1, 1).AddDays(q * 13 * 7).StartOfWeek(DayOfWeek.Sunday),
+						OrganizationId = output.organization.Id,
 					});
-					#endregion
-
-					#region Create/Populate Accountability Chart
-					perms = PermissionsUtility.Create(s, userOrgModel);
-					acChart = AccountabilityAccessor.CreateChart(s, perms, output.organization.Id, false);
-					output.organization.AccountabilityChartId = acChart.Id;
-
-					if (data.ContactPosition != null) {
-						var orgPos = new OrganizationPositionModel() {
-							Organization = s.Load<OrganizationModel>(output.organization.Id),
-							CreatedBy = userOrgModel.Id,
-							CustomName = data.ContactPosition,
-						};
-						s.Save(orgPos);
-						var posDur = new PositionDurationModel() {
-							UserId = userOrgModel.Id,
-							Position = orgPos,
-							PromotedBy = userOrgModel.Id,
-							CreateTime = DateTime.UtcNow,
-							OrganizationId = output.organization.Id,
-						};
-						userOrgModel.Positions.Add(posDur);
-						s.Update(userOrgModel);
-					}
-					#endregion
-
-					#region Create Teams
-					//Add team for every member
-					allMemberTeam = new OrganizationTeamModel() {
-						CreatedBy = userOrgModel.Id,
-						Name = output.organization.Name.Translate(),
-						OnlyManagersEdit = true,
-						Organization = output.organization,
-						InterReview = false,
-						Type = TeamType.AllMembers
-					};
-					s.Save(allMemberTeam);
-					//Add team for every manager
-					var managerTeam = new OrganizationTeamModel() {
-						CreatedBy = userOrgModel.Id,
-						Name = Config.ManagerName() + "s at " + output.organization.Name.Translate(),
-						OnlyManagersEdit = true,
-						Organization = output.organization,
-						InterReview = false,
-						Type = TeamType.Managers
-					};
-					s.Save(managerTeam);
-					#endregion
-
-					#region Update UserLookup
-					if (userOrgModel != null)
-						userOrgModel.UpdateCache(s);
-					#endregion
-
-					#region Add Default Permissions
-					PermissionsAccessor.CreatePermItems(s, perms.GetCaller(), PermItem.ResourceType.UpgradeUsersForOrganization, output.organization.Id,
-						PermTiny.Admins(),
-						PermTiny.RGM(allMemberTeam.Id, admin: false)
-					);
-
-					#endregion
-
-
-					tx.Commit();
 				}
 
-
-				using (var tx = s.BeginTransaction()) {
-
-					var year = DateTime.UtcNow.Year;
-					foreach (var q in Enumerable.Range(1, 4)) {
-						s.Save(new PeriodModel() {
-							Name = year + " Q" + q,
-							StartTime = new DateTime(year, 1, 1).AddDays((q - 1) * 13 * 7).StartOfWeek(DayOfWeek.Sunday),
-							EndTime = new DateTime(year, 1, 1).AddDays(q * 13 * 7).StartOfWeek(DayOfWeek.Sunday),
-							OrganizationId = output.organization.Id,
-						});
-					}
-
-					foreach (var defaultQ in new[]{
+				foreach (var defaultQ in new[]{
 						"What is their greatest contribution to the team?",
 						"What should they start or stop doing?"
 					}) {
-						var r = new ResponsibilityModel() {
-							Category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.FEEDBACK),
-							ForOrganizationId = output.organization.Id,
-							ForResponsibilityGroup = allMemberTeam.Id,
-							CreateTime = now,
-							Weight = WeightType.Normal,
-							Required = true,
-							Responsibility = defaultQ
-						};
-						r.SetQuestionType(QuestionType.Feedback);
-						s.Save(r);
+					var r = new ResponsibilityModel() {
+						Category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.FEEDBACK),
+						ForOrganizationId = output.organization.Id,
+						ForResponsibilityGroup = allMemberTeam.Id,
+						CreateTime = now,
+						Weight = WeightType.Normal,
+						Required = true,
+						Responsibility = defaultQ
+					};
+					r.SetQuestionType(QuestionType.Feedback);
+					s.Save(r);
 
-						allMemberTeam.Responsibilities.Add(r);
-					}
-					s.Update(allMemberTeam);
-
-					output.NewUser = userOrgModel;
-					s.Flush();
-					userOrgModel.UpdateCache(s);
-
-					tx.Commit();
+					allMemberTeam.Responsibilities.Add(r);
 				}
+				s.Update(allMemberTeam);
 
-				
-				using (var tx = s.BeginTransaction()) {
-					data.OrgId = output.organization.Id;
-					s.Save(data);
-					tx.Commit();
+				output.NewUser = userOrgModel;
+				s.Flush();
+				userOrgModel.UpdateCache(s);
+
+				tx.Commit();
+			}
+
+
+			using (var tx = s.BeginTransaction()) {
+				data.OrgId = output.organization.Id;
+				s.Save(data);
+				tx.Commit();
+			}
+
+
+
+			s.Flush();
+			//}
+
+			//using (var s = HibernateSession.GetCurrentSession()) {
+			using (var tx = s.BeginTransaction()) {
+				s.Clear();
+				var permsAdmin = PermissionsUtility.Create(s, UserOrganizationModel.ADMIN);
+				using (var rt = RealTimeUtility.Create(false)) {
+					output.NewUserNode = AccountabilityAccessor.AppendNode(s, permsAdmin, rt, acChart.RootId, userId: userOrgModel.Id);
+					//AccountabilityAccessor.UpdateAccountabilityNode(s, RealTimeUtility.Create(false), permsAdmin, node.Id, null, );
 				}
-
-
-
+				tx.Commit();
 				s.Flush();
 			}
-
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					s.Clear();
-					var permsAdmin = PermissionsUtility.Create(s, UserOrganizationModel.ADMIN);
-					using (var rt = RealTimeUtility.Create(false)) {
-						output.NewUserNode = AccountabilityAccessor.AppendNode(s, permsAdmin, rt, acChart.RootId, userId: userOrgModel.Id);
-						//AccountabilityAccessor.UpdateAccountabilityNode(s, RealTimeUtility.Create(false), permsAdmin, node.Id, null, );
-					}
-					tx.Commit();
-					s.Flush();
-				}
-			}
-			if (data!=null && (data.ContactEmail != null || data.ContactFN != null || data.ContactLN != null)) {
+			//}
+			if (data != null && (data.ContactEmail != null || data.ContactFN != null || data.ContactLN != null)) {
 				//Add Primary contact
 				var ua = new UserAccessor();
 				var primContact = new CreateUserOrganizationViewModel() {
@@ -484,42 +493,42 @@ namespace RadialReview.Accessors {
 				};
 				var result = await ua.CreateUser(userOrgModel, primContact);
 				primaryContact = result.Item2;
-				using (var s = HibernateSession.GetCurrentSession()) {
-					using (var tx = s.BeginTransaction()) {
-						var org = s.Get<OrganizationModel>(output.organization.Id);
-						org.PrimaryContactUserId = primaryContact.Id;
-						s.Update(org);
+				//using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var org = s.Get<OrganizationModel>(output.organization.Id);
+					org.PrimaryContactUserId = primaryContact.Id;
+					s.Update(org);
 
-						await EventUtil.Trigger(x => x.Create(s, EventType.CreatePrimaryContact, userOrgModel, primaryContact, message: primaryContact.GetName()));
+					await EventUtil.Trigger(x => x.Create(s, EventType.CreatePrimaryContact, userOrgModel, primaryContact, message: primaryContact.GetName()));
 
-						tx.Commit();
-						s.Flush();
-					}
+					tx.Commit();
+					s.Flush();
 				}
+				//}
 			}
 
 #pragma warning disable CS0618 // Type or member is obsolete
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					await HooksRegistry.Each<ICreateUserOrganizationHook>(x => x.CreateUserOrganization(s, userOrgModel));
+			//using (var s = HibernateSession.GetCurrentSession()) {
+			using (var tx = s.BeginTransaction()) {
+				await HooksRegistry.Each<ICreateUserOrganizationHook>(x => x.CreateUserOrganization(s, userOrgModel));
 
-					if (primaryContact != null) {
-						await HooksRegistry.Each<ICreateUserOrganizationHook>(x => x.CreateUserOrganization(s, primaryContact));
-					}
-					tx.Commit();
+				if (primaryContact != null) {
+					await HooksRegistry.Each<ICreateUserOrganizationHook>(x => x.CreateUserOrganization(s, primaryContact));
 				}
-				using (var tx = s.BeginTransaction()) {
-					//Generate Account Age Events 
-					EventUtil.GenerateAccountAgeEvents(s, output.organization.Id, now);
-					await EventUtil.Trigger(x => x.Create(s, EventType.CreateOrganization, userOrgModel, output.organization, message: output.organization.GetName()));
-					if (data.EnableL10)
-						await EventUtil.Trigger(x => x.Create(s, EventType.EnableL10, userOrgModel, output.organization));
-					if (data.EnableReview)
-						await EventUtil.Trigger(x => x.Create(s, EventType.EnableReview, userOrgModel, output.organization));
-					tx.Commit();
-				}
-				s.Flush();
+				tx.Commit();
 			}
+			using (var tx = s.BeginTransaction()) {
+				//Generate Account Age Events 
+				EventUtil.GenerateAccountAgeEvents(s, output.organization.Id, now);
+				await EventUtil.Trigger(x => x.Create(s, EventType.CreateOrganization, userOrgModel, output.organization, message: output.organization.GetName()));
+				if (data.EnableL10)
+					await EventUtil.Trigger(x => x.Create(s, EventType.EnableL10, userOrgModel, output.organization));
+				if (data.EnableReview)
+					await EventUtil.Trigger(x => x.Create(s, EventType.EnableReview, userOrgModel, output.organization));
+				tx.Commit();
+			}
+			s.Flush();
+			//}
 #pragma warning restore CS0618 // Type or member is obsolete
 
 
@@ -570,7 +579,7 @@ namespace RadialReview.Accessors {
 			db.SaveOrUpdate(user);
 
 			userOrg.UpdateCache(db);
-			
+
 			await HooksRegistry.Each<ICreateUserOrganizationHook>(x => x.OnUserOrganizationAttach(db, userOrg));
 
 

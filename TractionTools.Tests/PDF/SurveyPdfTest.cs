@@ -189,6 +189,17 @@ namespace TractionTools.Tests.PDF {
 
 		#endregion
 
+		string longText1 = @"Jean shorts activated charcoal four dollar toast vaporware tumeric. Gastropub kinfolk church-key, chartreuse viral narwhal post-ironic chambray locavore fashion 
+axe polaroid offal messenger bag retro next level. YOLO etsy af listicle direct trade tousled, single-origin coffee swag poutine vinyl gochujang. Dreamcatcher VHS edison bulb lo-fi, helvetica
+heirloom post-ironic artisan sustainable succulents +1 try-hard master cleanse neutra. Lyft before they sold out pop-up tbh meggings williamsburg farm-to-table ethical shaman artisan gentrify 
+raw denim pickled. Roof party selvage yuccie kale chips actually authentic offal bicycle rights celiac man braid palo santo edison bulb mumblecore. Neutra bicycle rights prism chartreuse 
+williamsburg bitters, mixtape hexagon photo booth hot chicken poutine. Poutine chambray lomo hot chicken put a bird on it gluten-free. Synth semiotics normcore kombucha next level cold-pressed
+squid vape. Portland chia fixie raw denim paleo fingerstache banjo cornhole. Four dollar toast mixtape forage iceland retro selvage. Plaid food truck biodiesel chia four dollar toast cred hexagon
+irony man bun tousled prism. Cloud bread coloring book shoreditch hot chicken 8-bit ennui farm-to-table.";
+		string longText2 = @"Waistcoat cronut vaporware butcher, gluten-free yr iPhone kitsch YOLO lo-fi vexillologist. Dreamcatcher swag cold-pressed retro quinoa. Kitsch jean shorts drinking
+vinegar, lo-fi locavore vexillologist jianbing cornhole skateboard kombucha four loko. Photo booth austin food truck, pok pok godard tousled literally. Semiotics kogi selvage edison bulb. Copper
+mug disrupt wayfarers ethical cloud bread viral cornhole skateboard ";
+
 		[TestMethod]
 		[TestCategory("PDF")]
 		public async Task GenerateSurveyPdf() {
@@ -200,15 +211,66 @@ namespace TractionTools.Tests.PDF {
 			};
 
 			ConstructSurveyEnv(c.Org);
-			var surveyContainerId = SurveyAccessor.GenerateSurveyContainer(c.Middle, "Test", byAbouts);
+			var surveyContainerId = QuarterlyConversationAccessor.GenerateQuarterlyConversation(c.Middle, "Test", byAbouts);
 
-			var surveyContainer = SurveyAccessor.GetAngularSurveyContainerAbout(c.Middle, c.Org.E2Node, surveyContainerId);
 
+			{
+				var survey = SurveyAccessor.GetSurvey(c.Middle, c.Middle, c.Org.E2Node, surveyContainerId);
+				var valuesSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Values);
+				var value1 = valuesSection.GetItemContainers().First();
+				SurveyAccessor.UpdateAngularSurveyResponse(c.Middle, value1.GetResponse().Id, (string)value1.GetFormat().GetSetting<Dictionary<string, object>>("options").First().Key);
+			}
+			{
+				var survey = SurveyAccessor.GetSurvey(c.E2, c.E2, c.Org.E2Node, surveyContainerId);
+				var valuesSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Values);
+				var value1 = valuesSection.GetItemContainers().Skip(2).First();
+				SurveyAccessor.UpdateAngularSurveyResponse(c.E2, value1.GetResponse().Id, (string)value1.GetFormat().GetSetting<Dictionary<string, object>>("options").Last().Key);
+			}
+			{
+				var survey = SurveyAccessor.GetSurvey(c.E2, c.E2, c.Org.E2Node, surveyContainerId);
+				var valuesSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Values);
+				var value1 = valuesSection.GetItemContainers().Last();
+				SurveyAccessor.UpdateAngularSurveyResponse(c.E2, value1.GetResponse().Id, longText1);
+			}
+			{
+				var survey = SurveyAccessor.GetSurvey(c.Middle, c.Middle, c.Org.E2Node, surveyContainerId);
+				var valuesSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Values);
+				var value1 = valuesSection.GetItemContainers().Last();
+				SurveyAccessor.UpdateAngularSurveyResponse(c.Middle, value1.GetResponse().Id, longText2);
+			}
+			{
+				var survey = SurveyAccessor.GetSurvey(c.Middle, c.Middle, c.Org.E2Node, surveyContainerId);
+				var valuesSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Rocks);
+				var value1 = valuesSection.GetItemContainers().Skip(1).First();
+				SurveyAccessor.UpdateAngularSurveyResponse(c.Middle, value1.GetResponse().Id, (string)value1.GetFormat().GetSetting<Dictionary<string, object>>("options").Last().Key);
+			}
+			{
+				var survey = SurveyAccessor.GetSurvey(c.E2, c.E2, c.Org.E2Node, surveyContainerId);
+				var valuesSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Rocks);
+				var value1 = valuesSection.GetItemContainers().First();
+				SurveyAccessor.UpdateAngularSurveyResponse(c.E2, value1.GetResponse().Id, (string)value1.GetFormat().GetSetting<Dictionary<string, object>>("options").First().Key);
+			}
+			{
+				var survey = SurveyAccessor.GetSurvey(c.E2, c.E2, c.Org.E2Node, surveyContainerId);
+				var valuesSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Rocks);
+				var value1 = valuesSection.GetItemContainers().Last();
+				SurveyAccessor.UpdateAngularSurveyResponse(c.E2, value1.GetResponse().Id, longText1);
+			}
+
+
+			//{
+			//	var survey = SurveyAccessor.GetSurvey(c.Middle, c.Middle, c.Org.E2Node, surveyContainerId);
+			//	var valuesSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Values);
+			//	var value1 = valuesSection.GetItemContainers().Last();
+			//	SurveyAccessor.UpdateAngularSurveyResponse(c.Middle, value1.GetResponse().Id, longText2);
+			//}
+
+
+			var surveyContainer = SurveyAccessor.GetSurveyContainerAbout(c.Middle, c.Org.E2Node, surveyContainerId);
 			var doc = SurveyPdfAccessor.CreateDoc(c.Manager, "Generate_Survey_Pdf");
 			foreach (var survey in surveyContainer.GetSurveys()) {
-				SurveyPdfAccessor.AppendSurveyAbout(doc, surveyContainer,null);
+				SurveyPdfAccessor.AppendSurveyAbout(doc, survey);
 			}
-			
 			Save(doc, "GenerateSurveyPdf.pdf");
 		}
 

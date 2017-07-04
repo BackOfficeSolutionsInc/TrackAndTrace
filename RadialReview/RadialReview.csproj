@@ -124,9 +124,13 @@
     <Compile Include="Areas\People\Accessors\PDF\SurveyPdfAccessor.cs" />
     <Compile Include="Areas\People\Angular\AngularPeopleAnalyzer.cs" />
     <Compile Include="Areas\People\Angular\Survey\AngularForModel.cs" />
+    <Compile Include="Areas\People\Angular\Survey\SurveyAbout\AngularSurveyAbout.cs" />
     <Compile Include="Areas\People\Angular\Survey\AngularSurveyContainer.cs" />
     <Compile Include="Areas\People\Angular\Survey\AngularSurvey.cs" />
     <Compile Include="Areas\People\Angular\Survey\AngularSurveyItem.cs" />
+    <Compile Include="Areas\People\Angular\Survey\SurveyAbout\AngularSurveyAboutContainer.cs" />
+    <Compile Include="Areas\People\Angular\Survey\SurveyAbout\AngularSurveyAboutSection.cs" />
+    <Compile Include="Areas\People\Angular\Survey\SurveyAbout\AngularSurveyItemContainerAbout.cs" />
     <Compile Include="Areas\People\Controllers\AngularTemplatesController.cs" />
     <Compile Include="Areas\People\Controllers\MainController.cs" />
     <Compile Include="Areas\People\Controllers\PeopleAnalyzerController.cs" />
@@ -134,6 +138,11 @@
     <Compile Include="Areas\People\Controllers\SurveyController.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Impl\TextAreaItemIntializer.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Impl\TextItemIntializer.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\PostProcesses\PostProcessorFixPrettyNames.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\PostProcesses\PostProcessorNoOp.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\Transformers\TransformAboutAccountabilityNodes.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\Transformers\TransformByAboutNoop.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\Traverse\TraverseBuildAboutAngular.cs" />
     <Compile Include="Areas\People\Models\Survey\ByAbout.cs" />
     <Compile Include="Areas\People\Models\Survey\SurveyItemFormat.cs" />
     <Compile Include="Areas\People\Models\Survey\SurveyItemResponse.cs" />
@@ -212,6 +221,7 @@
     <Compile Include="Models\VideoConference\ZoomUserLink.cs" />
     <Compile Include="Notifications\PubSub.cs" />
     <Compile Include="Utilities\AngularTreeUtil.cs" />
+    <Compile Include="Utilities\Constants\PdfImageConst.cs" />
     <Compile Include="Utilities\DataTypes\LazyCollection.cs" />
     <Compile Include="Utilities\EmailUtil.cs" />
     <Compile Include="Controllers\IntegrationsController.cs" />
@@ -760,7 +770,9 @@
     <Compile Include="Utilities\HashUtil.cs" />
     <Compile Include="Utilities\Hooks\IAccountEvent.cs" />
     <Compile Include="Utilities\Hooks\IHeadlineHook.cs" />
+    <Compile Include="Utilities\Hooks\IMeasurableHook.cs" />
     <Compile Include="Utilities\Hooks\IMeetingEvents.cs" />
+    <Compile Include="Utilities\Hooks\IRockHook.cs" />
     <Compile Include="Utilities\Hooks\ITodoHook.cs" />
     <Compile Include="Utilities\Hooks\IUserHooks.cs" />
     <Compile Include="Utilities\Hooks\IHook.cs" />

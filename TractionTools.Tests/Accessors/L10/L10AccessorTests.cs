@@ -10,6 +10,9 @@ using TractionTools.Tests.TestUtils;
 using RadialReview.Models.L10;
 using RadialReview.Models;
 using System.Linq;
+using TractionTools.Tests.Utilities;
+using System.Threading.Tasks;
+using RadialReview.Model.Enums;
 
 namespace TractionTools.Tests.Accessors
 {
@@ -298,9 +301,7 @@ namespace TractionTools.Tests.Accessors
 
             
         }
-
-
-
+		
         [TestMethod]
         public void TestScorecardCreation()
         {
@@ -413,5 +414,93 @@ namespace TractionTools.Tests.Accessors
             });
 
         }
+
+		[TestMethod]
+		public async Task GetL10Recurrence() {
+			var org = await OrgUtil.CreateOrganization();
+			var l10 = await org.CreateL10(org.Manager);
+			
+			await l10.AddRock("rock1");
+			await l10.AddMeasurable("meas1");
+			await l10.AddTodo("todo1");
+			await l10.AddIssue("issue1");
+
+			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, true);
+			
+			Assert.IsFalse(recur.AttendingOffByDefault);
+			Assert.IsFalse(recur.CombineRocks);
+			Assert.AreEqual(5, recur.ConclusionMinutes);
+			Assert.IsTrue(recur.CountDown);
+			Assert.AreEqual(org.Manager.Id, recur.CreatedById);
+			Assert.IsNotNull(recur.CreateTime);
+			Assert.AreEqual(0, recur.CurrentWeekHighlightShift);
+			Assert.IsNull(recur.DefaultIssueOwner);
+			Assert.AreEqual(0, recur.DefaultTodoOwner);
+			Assert.IsNull(recur.DeleteTime);
+			Assert.IsFalse(recur.EnableTranscription);
+			Assert.IsNotNull(recur.HeadlinesId);
+			Assert.AreEqual(5, recur.HeadlinesMinutes);
+			Assert.AreEqual(PeopleHeadlineType.HeadlinesList, recur.HeadlineType);
+			Assert.AreEqual(60, recur.IDSMinutes);
+			Assert.IsFalse(recur.IncludeAggregateTodoCompletion);
+			Assert.IsTrue(recur.IncludeAggregateTodoCompletionOnPrintout);
+			Assert.IsFalse(recur.IncludeIndividualTodos);
+			Assert.IsTrue(recur.IsLeadershipTeam);
+			Assert.IsNull(recur.MeetingInProgress);
+			Assert.AreEqual(MeetingType.L10, recur.MeetingType);
+			Assert.IsNull(recur.Name);
+			Assert.IsNull(recur.OrderIssueBy);
+			Assert.IsNotNull(recur.Organization);
+			Assert.AreEqual(org.Id, recur.OrganizationId);
+			Assert.IsFalse(recur.PreventEditingUnownedMeasurables);
+			Assert.AreEqual(PrioritizationType.Rank, recur.Prioritization);
+			Assert.IsFalse(recur.Pristine);
+			Assert.IsFalse(recur.ReverseScorecard);
+			Assert.AreEqual(5, recur.RockReviewMinutes);
+			Assert.AreEqual(L10RockType.Original, recur.RockType);
+			Assert.AreEqual(5, recur.ScorecardMinutes);
+
+			Assert.AreEqual(5, recur.SegueMinutes);
+			Assert.IsNull(recur.SelectedVideoProvider);
+			Assert.IsNull(recur.SelectedVideoProviderId);
+			//Assert.AreEqual(recur.ShowHeadlinesBox); obsolete
+			Assert.IsNull(recur.StartOfWeekOverride);
+			Assert.AreEqual(L10TeamType.LeadershipTeam, recur.TeamType);
+			Assert.AreEqual(5, recur.TodoListMinutes);
+			Assert.IsNotNull(recur.VideoId);
+			Assert.IsNotNull(recur.VtoId);
+			Assert.IsNull(recur._WhoCanEdit);
+
+			Assert.IsNotNull(recur._DefaultAttendees);
+			Assert.IsTrue(recur._DefaultAttendees.Any(x => x.User.Id == org.Manager.Id));
+
+
+			Assert.IsNotNull(recur._DefaultMeasurables);
+			Assert.AreEqual(1, recur._DefaultMeasurables.Count());
+			Assert.AreEqual("meas1", recur._DefaultMeasurables.First().Measurable.Title);
+
+			Assert.IsNotNull(recur._DefaultRocks);
+			Assert.AreEqual(1, recur._DefaultRocks.Count());
+			Assert.AreEqual("rock1", recur._DefaultRocks.First().ForRock.Rock);
+
+			Assert.IsNotNull(recur._MeetingNotes);
+			Assert.AreEqual(0, recur._MeetingNotes.Count());
+
+			Assert.IsNotNull(recur._Pages);
+			Assert.AreEqual(7, recur._Pages.Count());
+			Assert.IsTrue(recur._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Segue));
+			Assert.IsTrue(recur._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Scorecard));
+			Assert.IsTrue(recur._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Rocks));
+			Assert.IsTrue(recur._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Headlines));
+			Assert.IsTrue(recur._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Todo));
+			Assert.IsTrue(recur._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.IDS));
+			Assert.IsTrue(recur._Pages.Any(x => x.PageType == L10Recurrence.L10PageType.Conclude));
+
+			Assert.IsNotNull(recur._VideoConferenceProviders);
+			Assert.AreEqual(0, recur._VideoConferenceProviders.Count());
+
+
+		}
+
     }
 }

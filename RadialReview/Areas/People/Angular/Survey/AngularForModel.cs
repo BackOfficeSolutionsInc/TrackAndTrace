@@ -30,5 +30,8 @@ namespace RadialReview.Areas.People.Angular.Survey {
 		public string ToPrettyString() {
 			return _PrettyString;
 		}
+		public void SetPrettyString(string str) {
+			_PrettyString=str;
+		}
 	}
 }

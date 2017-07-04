@@ -49,10 +49,20 @@ namespace RadialReview.Models {
 	}
 
 	public enum HasCoach {
-		Unknown=0,
-		Yes=1,
-		No=2,
-		Other=3
+		Unknown = 0,
+		Yes = 1,
+		No = 2,
+		Other = 3
+	}
+
+	public enum EosUserType {
+		Unknown = 0,
+		Visionary = 1,
+		Integrator = 2,
+		HR = 4,
+		Ops = 5,
+		SystemAdmin = 6,
+		Other = 7,
 	}
 
 	public class OrgCreationData : ILongIdentifiable {
@@ -82,6 +92,8 @@ namespace RadialReview.Models {
 		public virtual string ContactFN { get; set; }
 		public virtual string ContactLN { get; set; }
 		public virtual string ContactPosition { get; set; }
+		public virtual EosUserType ContactEosUserType { get; set; }
+
 		[EmailAddress]
 		public virtual string ContactEmail { get; set; }
 
@@ -113,6 +125,7 @@ namespace RadialReview.Models {
 				Map(x => x.ContactFN);
 				Map(x => x.ContactLN);
 				Map(x => x.ContactEmail);
+				Map(x => x.ContactEosUserType);
 				Map(x => x.CoachId);
 
 				Map(x => x.OrgId);

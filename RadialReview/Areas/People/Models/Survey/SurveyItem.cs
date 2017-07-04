@@ -25,22 +25,25 @@ namespace RadialReview.Areas.People.Models.Survey {
         public virtual long SurveyId { get; set; }
         public virtual long SectionId { get; set; }
 
-        public virtual long OrgId { get; set; }
+		public virtual long OrgId { get; set; }
+
+		public virtual string ItemMergerKey { get; set; }
 
 
-        [Obsolete("Use other constructor")]
+		[Obsolete("Use other constructor")]
         public SurveyItem() {
             CreateTime = DateTime.UtcNow;
         }
 
 #pragma warning disable CS0618 // Type or member is obsolete
-		public SurveyItem(IItemInitializerData data, string name, IForModel source) : this() {
+		public SurveyItem(IItemInitializerData data, string name, IForModel source,string itemMergerKey) : this() {
 #pragma warning restore CS0618 // Type or member is obsolete
 			Name = name;
             OrgId = data.OrgId;
             SurveyContainerId = data.SurveyContainer.Id;
             SurveyId = data.Survey.Id;
             SectionId = data.Section.Id;
+			ItemMergerKey = itemMergerKey;
 
             ItemFormatId = data.ItemFormat.Id;
 
@@ -73,7 +76,11 @@ namespace RadialReview.Areas.People.Models.Survey {
             return Ordering;
         }
 
-        public class Map : ClassMap<SurveyItem> {
+		public virtual string GetItemMergerKey() {
+			return ItemMergerKey;
+		}
+
+		public class Map : ClassMap<SurveyItem> {
             public Map() {
                 Id(x => x.Id);
                 Map(x => x.CreateTime);
@@ -85,8 +92,9 @@ namespace RadialReview.Areas.People.Models.Survey {
                 Map(x => x.SurveyContainerId);
                 Map(x => x.SurveyId);
                 Map(x => x.ItemFormatId);
-                Map(x => x.SectionId);
-                Component(x => x.Source).ColumnPrefix("Source_");
+				Map(x => x.ItemMergerKey);
+				Map(x => x.SectionId);
+				Component(x => x.Source).ColumnPrefix("Source_");
             }
         }
     }

@@ -215,7 +215,6 @@ namespace RadialReview.Utilities {
 								//                                }catch (Exception e){
 								//                                    throw e;
 								//                                }
-								break;
 							}
 						/*case "connectionString":
                             {
@@ -235,7 +234,7 @@ namespace RadialReview.Utilities {
 
 
 		public static bool CloseCurrentSession() {
-			var session = (SingleRequestSession)HttpContext.Current.Items["NHibernateSession"];
+			var session = (SingleRequestSession)HttpContext.Current.NotNull(x=>x.Items["NHibernateSession"]);
 			if (session != null) {
 				if (session.IsOpen) {
 					session.Close();

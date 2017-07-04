@@ -267,22 +267,22 @@ namespace TractionTools.UITests.MeetingArchive {
             };
 
             MockHttpContext();
-            DbCommit(s => {
-                foreach (var m in measurables) {
-                    var m101 = new MeasurableModel {
-                        AccountableUserId = m.owner.Id,
-                        AdminUserId = m.owner.Id,
-                        OrganizationId = au.Organization.Id,
-                        Goal = m.value,
-                        GoalDirection = m.dir,
-                        Title = m.name,
-                        UnitType = RadialReview.Models.Enums.UnitType.Dollar,
-                    };
-                    L10Accessor.AddMeasurable(s, PermissionsUtility.Create(s, au), RealTimeUtility.Create(), recur.Id,
-                        RadialReview.Controllers.L10Controller.AddMeasurableVm.CreateNewMeasurable(recur.Id, m101));
-                    m.measurable = m101;
-                }
-            });
+            DbCommit(async s => {
+				foreach (var m in measurables) {
+					var m101 = new MeasurableModel {
+						AccountableUserId = m.owner.Id,
+						AdminUserId = m.owner.Id,
+						OrganizationId = au.Organization.Id,
+						Goal = m.value,
+						GoalDirection = m.dir,
+						Title = m.name,
+						UnitType = RadialReview.Models.Enums.UnitType.Dollar,
+					};
+					await L10Accessor.AddMeasurable(s, PermissionsUtility.Create(s, au), RealTimeUtility.Create(), recur.Id,
+						 RadialReview.Controllers.L10Controller.AddMeasurableVm.CreateNewMeasurable(recur.Id, m101));
+					m.measurable = m101;
+				}
+			});
 
 
             TestView(auc, "/l10/meeting/" + recur.Id, d => {

@@ -28,9 +28,9 @@ namespace RadialReview.Areas.People.Engines.Surveys.Strategies.Reconstructor {
             var sections = PrequerySection(data, surveys);
             var items = PrequeryItem(data, surveys);
             var itemFormats = PrequeryItemFormat(data, surveys);
-            var responses = PrequeryResponse(data, surveys);
+			var responses = PrequeryResponse(data, surveys);
 
-            data.Lookup.Add("SurveyContainer", Session.Get<SurveyContainer>(data.SurveyContainerId));
+			data.Lookup.Add("SurveyContainer", Session.Get<SurveyContainer>(data.SurveyContainerId));
             data.Lookup.AddList(surveys);
             data.Lookup.AddList(sections);
             data.Lookup.AddList(items);
@@ -78,12 +78,12 @@ namespace RadialReview.Areas.People.Engines.Surveys.Strategies.Reconstructor {
 
             return q.Future();
         }
+		
 
+		#endregion
 
-        #endregion
-
-        #region Getters
-        public ISurveyContainer GetSurveysContainer(IReconstructionData data) {
+		#region Getters
+		public ISurveyContainer GetSurveysContainer(IReconstructionData data) {
             return data.Lookup.Get<SurveyContainer>("SurveyContainer");
         }
 

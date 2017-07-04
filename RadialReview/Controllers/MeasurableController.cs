@@ -8,6 +8,7 @@ using RadialReview.Exceptions;
 using RadialReview.Models.Json;
 using RadialReview.Models.Scorecard;
 using RadialReview.Models.UserTemplate;
+using System.Threading.Tasks;
 
 namespace RadialReview.Controllers
 {
@@ -78,20 +79,19 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult Modal(MeasurableController.MeasurableVM model)
-		{
-            var avail = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, false).Select(x => x.UserId).ToList();
+		public async Task<JsonResult> Modal(MeasurableController.MeasurableVM model) {
+			var avail = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, false).Select(x => x.UserId).ToList();
 
 			if (!avail.Contains(model.UserId))
 				throw new PermissionsException();
-			
 
-			foreach (var r in model.Measurables){
+
+			foreach (var r in model.Measurables) {
 				r.AccountableUserId = model.UserId;
 				if (!avail.Contains(r.AdminUserId))
 					throw new PermissionsException();
 			}
-			ScorecardAccessor.EditMeasurables(GetUser(), model.UserId, model.Measurables,model.UpdateAllL10s);
+			await ScorecardAccessor.EditMeasurables(GetUser(), model.UserId, model.Measurables, model.UpdateAllL10s);
 			return Json(ResultObject.SilentSuccess());
 		}
 

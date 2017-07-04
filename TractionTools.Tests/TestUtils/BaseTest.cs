@@ -30,6 +30,31 @@ using TractionTools.Tests.Utilities;
 
 namespace TractionTools.Tests.TestUtils {
 	public static class TestObjectExtensions {
+		public class Getter<T> {
+
+			private PropertyInfo prop;
+			private FieldInfo field;
+			private T obj;
+			public Getter(T obj, PropertyInfo prop) {
+				if (prop == null)
+					throw new ArgumentNullException("prop", "PropertyInfo was null");
+				this.prop = prop;
+				this.obj = obj;
+			}
+			public Getter(T obj, FieldInfo field) {
+				if (field == null)
+					throw new ArgumentNullException("field", "FieldInfo was null");
+				this.field = field;
+				this.obj = obj;
+			}
+			public TRef Get<TRef>() {
+				if (prop != null)
+					return (TRef)prop.GetValue(obj);
+				else if (field != null)
+					return (TRef)field.GetValue(obj);
+				throw new Exception("Both null?");
+			}
+		}
 		public class Setter<T> {
 
 			private PropertyInfo prop;
@@ -72,9 +97,31 @@ namespace TractionTools.Tests.TestUtils {
 			while (propInfo == null && type != null);
 			return propInfo;
 		}
+		private static Getter<T> GetGetter<T>(this T obj, string propertyName) {
+			Getter<T> propInfo = null;
+			var type = obj.GetType();
+			do {
+				var prop = type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+				if (prop != null)
+					propInfo = new Getter<T>(obj, prop);
+				else {
+					var field = type.GetField(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+					if (field != null)
+						propInfo = new Getter<T>(obj, field);
+				}
+				//propInfo = type.getfie
+				type = type.BaseType;
+			}
+			while (propInfo == null && type != null);
+			return propInfo;
+		}
 		public static void SetValue<T, TRef>(this T obj, string field, TRef value) {
 			var setter = GetSetter(obj, field);
 			setter.Set(value);
+		}
+		public static TRef GetValue<T, TRef>(this T obj, string field) {
+			var getter = GetGetter(obj, field);
+			return getter.Get<TRef>();
 		}
 
 	}

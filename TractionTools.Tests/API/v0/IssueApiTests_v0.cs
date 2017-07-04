@@ -17,7 +17,7 @@ using RadialReview.Models.Angular.Todos;
 using RadialReview.Models.Issues;
 using RadialReview.Models.Angular.Issues;
 
-namespace TractionTools.Tests.Api
+namespace TractionTools.Tests.API.v0
 {
     [TestClass]
     public class IssueApiTests_v0 : BaseTest

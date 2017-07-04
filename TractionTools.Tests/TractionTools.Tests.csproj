@@ -292,10 +292,12 @@
     <Compile Include="API\v0\TodoApiTests_v0.cs" />
     <Compile Include="API\v0\UsersApiTests_v0.cs" />
     <Compile Include="Controllers\DashboardControllerTests.cs" />
+    <Compile Include="Controllers\L10ControllerTests.cs" />
     <Compile Include="Engines\SurveyEngineTests.cs" />
     <Compile Include="Hooks\EnterpriseHookTest.cs" />
     <Compile Include="Integrations\ActiveCampaignTest.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="PDF\MigradocExtension.cs" />
     <Compile Include="PDF\SurveyPdfTest.cs" />
     <Compile Include="PDF\AccountabilityChartPdfTest.cs" />
     <Compile Include="Permissions\ManagerPermissions.cs" />
