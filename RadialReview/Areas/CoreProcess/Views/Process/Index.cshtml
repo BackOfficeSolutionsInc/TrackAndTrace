@@ -38,8 +38,8 @@
                     cells: [
                         { name: "Name", classes: "", contents: function (x) { return x.Name; } },
                         { name: "Deploy", classes: "", contents: function (x) { return x.status; } },
-                        { name: "PI-Count", classes: "", contents: function (x) { return x.Count; } },
-                        { name: "Action", classes: "", contents: function (x) { return "<a href='/CoreProcess/Process/Tasks/" + x.Id + "'>Task</a>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" + "<a href='/CoreProcess/Process/StartProcess/" + x.Id + "'>" + x.Action + "</a>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" + "<a href='/CoreProcess/Process/ProcessInstance/" + x.CamundaId + "'>ProcessInstance</a>"}},
+                        { name: "Instances", classes: "", contents: function (x) { return x.Count; } },
+                        { name: "Action", classes: "", contents: function (x) { return "<a href='/CoreProcess/Process/Tasks/" + x.Id + "'>Task</a>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" + "<a href='/CoreProcess/Process/StartProcess/" + x.Id + "'>" + x.Action + "</a>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" + "<a href='/CoreProcess/Process/ProcessInstance/" + x.LocalID + "'>Instances</a>"}},
 						{ edit: true },
 						{ remove : true },
                     ],
@@ -103,7 +103,7 @@
 <script>
                 $(window).on('load', function () {
                     $("table thead tr th").next().next().attr("colspan", "3");
-                    $("table tbody tr td").next().next().attr("width", "50px");
+                    //$("table tbody tr td").next().next().attr("colspan", "0");
                     $("table tbody tr td").next().next().next().attr("width", "50px");
                 });
 

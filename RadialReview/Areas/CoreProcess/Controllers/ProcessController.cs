@@ -37,12 +37,14 @@ namespace RadialReview.Areas.CoreProcess.Controllers
                 //process.IsStarted = status;
                 if (item.CamundaId == null)
                 {
-                    process.Count = "0";
+                    process.Count = 0;
                     process.status = "<div style='color:red'><i class='fa fa-2x fa-times-circle'></i></ div>";
                 }
                 else
                 {
-                    process.Count = "1";
+                    //process.Count = "1";
+                    var List = processDefAccessor.GetProcessInstanceList(item.LocalId);
+                    process.Count = List.Count();
                     process.status = "<div style='color:green'><i class='fa fa-2x fa-check-circle'></i></ div>";
                 }
 
@@ -55,7 +57,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers
                 {
                     process.Action = "Start";
                 }
-                process.CamundaId = item.CamundaId;
+                process.LocalID = item.LocalId;
                 Process.Add(process);
             }
 
@@ -63,11 +65,10 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult StartProcess(long id)
+        public ActionResult StartProcess(long id)
         {
-            processDefAccessor.ProcessStart(GetUser(), id);
-            //L10Accessor.ReorderPage(GetUser(),  oldOrder, newOrder);
-            return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+            var StartProcess = processDefAccessor.ProcessStart(GetUser(), id);
+            return null;
         }
 
         [Access(AccessLevel.UserOrganization)]
@@ -125,10 +126,10 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult Publish(string id)
+        public ActionResult Publish(string id)
         {
             processDefAccessor.Deploy(GetUser(), id);
-            return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+            return RedirectToAction("Index");
         }
 
         [Access(AccessLevel.UserOrganization)]
@@ -196,23 +197,15 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         [Access(AccessLevel.UserOrganization)]
         public ActionResult ProcessInstance(string id) // id is processid
         {
-            List<ProcessInstanceViewModel> processInstance = new List<ProcessInstanceViewModel>();
-
-            processInstanceModel processinstance = new processInstanceModel();
-            processInstance.Add(new ProcessInstanceViewModel { Id = "1234", BusinessKey = "BussinessKey123", DefinitionId = "0001" });
-            processInstance.Add(new ProcessInstanceViewModel { Id = "5678", BusinessKey = "BussinessKey1234", DefinitionId = "00012" });
-            processInstance.Add(new ProcessInstanceViewModel { Id = "91011", BusinessKey = "BussinessKey1235", DefinitionId = "00013" });
-            processInstance.Add(new ProcessInstanceViewModel { Id = "111213", BusinessKey = "BussinessKey1236", DefinitionId = "00014" });
-            processInstance.Add(new ProcessInstanceViewModel { Id = "151617", BusinessKey = "BussinessKey1237", DefinitionId = "00015" });
-            processInstance.Add(new ProcessInstanceViewModel { Id = "181920", BusinessKey = "BussinessKey1238", DefinitionId = "00016" });
-
-            return View(processInstance);
+            var List = processDefAccessor.GetProcessInstanceList(id);
+            return View(List);
         }
         [Access(AccessLevel.UserOrganization)]
 
         public JsonResult Suspend(string id)
         {
-            return Json(ResultObject.SilentSuccess());
+            var Suspend = processDefAccessor.ProcessSuspend(GetUser(),id,true);
+            return null;
         }
     }
 }
