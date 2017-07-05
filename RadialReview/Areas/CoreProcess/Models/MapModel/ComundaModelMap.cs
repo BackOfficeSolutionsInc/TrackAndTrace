@@ -47,26 +47,28 @@ namespace RadialReview.Areas.CoreProcess.Models.MapModel {
             CreateTime = DateTime.UtcNow;
         }
         public virtual long Id { get; set; }
-        public virtual string ProcessDefId { get; set; }
+        //public virtual string ProcessDefId { get; set; }
         public virtual string CamundaProcessInstanceId { get; set; }
         public virtual string LocalProcessInstanceId { get; set; }
         public virtual bool Suspended { get; set; } 
         public virtual DateTime CreateTime { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
-    }
+		public virtual DateTime? CompleteTime { get; set; }
+	}
 
     public class ProcessInstance_CamundaMap : ClassMap<ProcessInstance_Camunda>
     {
         public ProcessInstance_CamundaMap()
         {
             Id(x => x.Id);
-            Map(x => x.ProcessDefId).Length(256);
+            //Map(x => x.ProcessDefId).Length(256);
             Map(x => x.CamundaProcessInstanceId).Length(256);
             Map(x => x.LocalProcessInstanceId).Length(256);  // reference with PRocessDef_Camunda
             Map(x => x.Suspended);
             Map(x => x.CreateTime);
             Map(x => x.DeleteTime);
-        }
+			Map(x => x.CompleteTime);
+		}
     }
 
     public class ProcessDef_CamundaFile : IHistorical, ILongIdentifiable {

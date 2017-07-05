@@ -601,14 +601,14 @@ var DataTable = function (settings) {
 			var actionType = typeof (settings._.onEditAction);
 			if (actionType == "string") {
 				showModal(resolve(title, settings), settings._.onEditAction.replace("{0}", rid), settings._.onEditActionPost.replace("{0}", ""), null, settings.clickEditValidation, function (d) {
-					try {
-						var ids = getIds(settings.data);
-						var rid = resolve(settings.cellId, d.Object, settings);
-						var index = ids.indexOf(rid);
-						settings.data[index] = d.Object;
-					} catch (e) {
-						console.error(e);
-					}
+					//try {
+					//	var ids = getIds(settings.data);
+					//	var rid = resolve(settings.cellId, d.Object, settings);
+					//	var index = ids.indexOf(rid);
+					//	settings.data[index] = d.Object;
+					//} catch (e) {
+					//	console.error(e);
+					//}
 					editRow(d.Object);
 				});
 			}
@@ -927,8 +927,7 @@ var DataTable = function (settings) {
 
 		var added = diffIds(dataIds, oldIds);
 		var removed = diffIds(oldIds, dataIds);
-		var checkEdit = diffIds(dataIds, added);
-
+		var checkEdit = diffIds(dataIds, added);		
 		for (var a in added) {
 			if (arrayHasOwnIndex(added, a)) {
 				var row = getRowById(settings.data, added[a]);
@@ -1016,6 +1015,15 @@ var DataTable = function (settings) {
 	var editRow = function (row) {
 		console.info("edit row");
 		if (row) {
+			try {
+				var ids = getIds(settings.data);
+				var rid = resolve(settings.cellId, row, settings);
+				var index = ids.indexOf(rid);
+				settings.data[index] = row;
+			} catch (e) {
+				console.error(e);
+			}
+
 			update();
 		} else {
 			showAlert("Row could not be edited.");
