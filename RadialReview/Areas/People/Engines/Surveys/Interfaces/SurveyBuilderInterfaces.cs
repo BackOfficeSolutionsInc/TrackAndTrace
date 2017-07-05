@@ -155,6 +155,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Interfaces {
 		long GetSurveyContainerId();
 		IEnumerable<ISection> GetSections();
 		void AppendSection(ISection section);
+		DateTime GetIssueDate();
 	}
 
 	public interface ISection : IComponent {
@@ -230,6 +231,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Interfaces {
 		void AppendSection(ISectionAbout section);
 		//void MergeWith(ISurvey survey);
 		IForModel GetAbout();
+		DateTime GetIssueDate();
 	}
 
 	public interface ISectionAbout : IComponent {

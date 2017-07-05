@@ -1,4 +1,5 @@
 ﻿using RadialReview.Models.Angular.Base;
+using RadialReview.Models.Angular.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,9 +20,27 @@ namespace RadialReview.Areas.People.Angular {
 
 	public class AngularPeopleAnalyzerRow : BaseAngular {
 		public AngularPeopleAnalyzerRow() { }
-		public AngularPeopleAnalyzerRow(long id) : base(id) {
+		public AngularPeopleAnalyzerRow(AngularUser user) : base(user.Id) {
+			User = user;
+		}
+		public AngularUser User { get; set; }
+	}
+
+	public class AngularPeopleAnalyzerResponse : BaseAngular {
+
+		public AngularPeopleAnalyzerRow() { }
+		public AngularPeopleAnalyzerRow(string id) : base(id) {
+			User = user;
 		}
 
+	}
+
+
+	public class AngularPeopleAnalyzerRow : BaseAngular {
+		public AngularPeopleAnalyzerRow() { }
+		public AngularPeopleAnalyzerRow(long id) : base(id) {
+		}
+		
 		public Dictionary<long,string> Value { get; set; }
 
 		public string Name { get; set; }

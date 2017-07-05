@@ -240,14 +240,14 @@ mug disrupt wayfarers ethical cloud bread viral cornhole skateboard ";
 			}
 			{
 				var survey = SurveyAccessor.GetSurvey(c.Middle, c.Middle, c.Org.E2Node, surveyContainerId);
-				var valuesSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Rocks);
-				var value1 = valuesSection.GetItemContainers().Skip(1).First();
+				var rockSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Rocks);
+				var value1 = rockSection.GetItemContainers().Skip(1).First();
 				SurveyAccessor.UpdateAngularSurveyResponse(c.Middle, value1.GetResponse().Id, (string)value1.GetFormat().GetSetting<Dictionary<string, object>>("options").Last().Key);
 			}
 			{
 				var survey = SurveyAccessor.GetSurvey(c.E2, c.E2, c.Org.E2Node, surveyContainerId);
-				var valuesSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Rocks);
-				var value1 = valuesSection.GetItemContainers().First();
+				var rockSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Rocks);
+				var value1 = rockSection.GetItemContainers().First();
 				SurveyAccessor.UpdateAngularSurveyResponse(c.E2, value1.GetResponse().Id, (string)value1.GetFormat().GetSetting<Dictionary<string, object>>("options").First().Key);
 			}
 			{
@@ -255,6 +255,18 @@ mug disrupt wayfarers ethical cloud bread viral cornhole skateboard ";
 				var valuesSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Rocks);
 				var value1 = valuesSection.GetItemContainers().Last();
 				SurveyAccessor.UpdateAngularSurveyResponse(c.E2, value1.GetResponse().Id, longText1);
+			}
+			{
+				var survey = SurveyAccessor.GetSurvey(c.E2, c.E2, c.Org.E2Node, surveyContainerId);
+				var rolesSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Roles);
+				var value1 = rolesSection.GetItemContainers().Where(x=>x.HasResponse()).First();
+				SurveyAccessor.UpdateAngularSurveyResponse(c.E2, value1.GetResponse().Id, (string)value1.GetFormat().GetSetting<Dictionary<string, object>>("options").First().Key);
+			}
+			{
+				var survey = SurveyAccessor.GetSurvey(c.E2, c.E2, c.Org.E2Node, surveyContainerId);
+				var rolesSection = survey.GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Roles);
+				var value1 = rolesSection.GetItemContainers().Where(x => x.HasResponse()).Skip(1).First();
+				SurveyAccessor.UpdateAngularSurveyResponse(c.E2, value1.GetResponse().Id, (string)value1.GetFormat().GetSetting<Dictionary<string, object>>("options").Last().Key);
 			}
 
 
@@ -268,8 +280,9 @@ mug disrupt wayfarers ethical cloud bread viral cornhole skateboard ";
 
 			var surveyContainer = SurveyAccessor.GetSurveyContainerAbout(c.Middle, c.Org.E2Node, surveyContainerId);
 			var doc = SurveyPdfAccessor.CreateDoc(c.Manager, "Generate_Survey_Pdf");
+			var now = c.Middle.GetTimeSettings().ConvertFromServerTime(DateTime.UtcNow);
 			foreach (var survey in surveyContainer.GetSurveys()) {
-				SurveyPdfAccessor.AppendSurveyAbout(doc, survey);
+				SurveyPdfAccessor.AppendSurveyAbout(doc, now, survey);
 			}
 			Save(doc, "GenerateSurveyPdf.pdf");
 		}

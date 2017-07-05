@@ -19,6 +19,7 @@ namespace RadialReview.Areas.People.Angular.Survey {
 			About = survey.GetAbout();
 			SurveyContainerId = survey.GetSurveyContainerId();
 			Sections = survey.GetSections().NotNull(y => y.Select(x => new AngularSurveySection(x)).ToList());
+			IssueDate = survey.GetIssueDate();
 		}
 
 		public long? SurveyContainerId { get; set; }
@@ -34,9 +35,10 @@ namespace RadialReview.Areas.People.Angular.Survey {
 
         public string Name { get; set; }
         public string Help { get; set; }
-        public int? Ordering { get; set; }   
-				   
-        public string GetName() {
+        public int? Ordering { get; set; }
+		public DateTime? IssueDate { get; set; }
+
+		public string GetName() {
             return Name;
         }
         public string GetHelp() {
@@ -65,5 +67,9 @@ namespace RadialReview.Areas.People.Angular.Survey {
         public IForModel GetAbout() {
 			return About;
         }
-    }
+
+		public DateTime GetIssueDate() {
+			return IssueDate ?? DateTime.MinValue;
+		}
+	}
 }

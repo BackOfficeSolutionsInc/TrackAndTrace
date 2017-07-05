@@ -27,7 +27,8 @@ namespace RadialReview.Areas.People.Angular.Survey.SurveyAbout {
 				Help = survey.GetHelp(),
 				SurveyContainerId = survey.GetSurveyContainerId(),
 				About = new AngularForModel(survey.GetAbout()),
-				Sections = new List<AngularSurveyAboutSection>()
+				Sections = new List<AngularSurveyAboutSection>(),
+				IssueDate = survey.GetIssueDate(),
 			};			
 		}
 		public string Help { get; set; }
@@ -35,6 +36,7 @@ namespace RadialReview.Areas.People.Angular.Survey.SurveyAbout {
 		public string Name { get; set; }
 		public AngularForModel About { get; set; }
 		public ICollection<AngularSurveyAboutSection> Sections { get; set; }
+		public DateTime IssueDate { get; set; }
 
 
 		public void AppendSection(ISectionAbout section) {
@@ -84,6 +86,10 @@ namespace RadialReview.Areas.People.Angular.Survey.SurveyAbout {
 			return "";
 		}
 
+		public DateTime GetIssueDate() {
+			return IssueDate;
+		}
+		
 
 		public long? SurveyContainerId { get; set; }
 
