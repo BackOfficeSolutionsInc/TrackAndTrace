@@ -8,10 +8,10 @@
         <div class="col-sm-9">@Html.TextBoxFor(x => x.name, new { @class = "fullWidth form-control blend" })</div>
         @Html.ValidationMessageFor(m => m.name)
     </div>
-    <div class="row smallBreak2">
+    @*<div class="row smallBreak2">
         <div class="col-sm-3"><label>Description:</label></div>
         <div class="col-sm-9">@Html.TextAreaFor(x => x.description, new { @class = "fullWidth form-control blend" })</div>
-    </div>
+    </div>*@
 
     @section Scripts {
         @Scripts.Render("~/bundles/jqueryval")
