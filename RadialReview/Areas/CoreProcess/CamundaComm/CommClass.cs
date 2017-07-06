@@ -55,13 +55,18 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
             return result;
         }
 
-        public IEnumerable<TaskModel> GetTaskList()
+        public IEnumerable<TaskModel> GetTaskList(string processDefId)
         {
-            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
-            return client.Task().Get().list();
+            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);			
+            return client.Task().Get().ProcessDefinitionId(processDefId).list();
         }
 
-        public int GetProcessInstanceCount(string processDefId)
+		public IEnumerable<TaskModel> GetTaskList(List<string> processDefId) {
+			client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
+			return client.Task().Get().ProcessDefinitionKeyIn(processDefId).list();
+		}
+
+		public int GetProcessInstanceCount(string processDefId)
         {
             client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
             return client.ProcessInstance().Id(processDefId).Get().list().Count();
