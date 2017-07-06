@@ -14,7 +14,7 @@ namespace RadialReview.Areas.CoreProcess.Interfaces
     public interface IProcessDefAccessor
     {
         Task<bool> Deploy(UserOrganizationModel caller, string localId);
-        IProcessDef GetProcessDefByKey(UserOrganizationModel caller, string key);
+        Task<IProcessDef> GetProcessDefByKey(UserOrganizationModel caller, string key);
         IEnumerable<IProcessDef> GetAllProcessDef(UserOrganizationModel caller); // get all
         IProcessDef GetProcessDefById(UserOrganizationModel caller, string processDefId); // get by id
         List<ProcessInstanceViewModel> GetProcessInstanceList(string localId);
@@ -32,8 +32,9 @@ namespace RadialReview.Areas.CoreProcess.Interfaces
         Task<bool> DeleteTask(UserOrganizationModel caller, string taskId, string localId);
         Task<List<TaskViewModel>> GetAllTask(UserOrganizationModel caller, string localId);
         Task<bool> ModifiyBpmnFile(UserOrganizationModel caller, string localId, int oldOrder, int newOrder);
-        bool ProcessSuspend(UserOrganizationModel caller, string processInsId, bool isSuspend);
-		ProcessDef_Camunda ProcessStart(UserOrganizationModel caller, long processId);
-        List<TaskViewModel> GetTaskListByProcessDefId(UserOrganizationModel caller, List<string> processDefId);
+        Task<bool> ProcessSuspend(UserOrganizationModel caller, string processInsId, bool isSuspend);
+
+        Task<ProcessDef_Camunda> ProcessStart(UserOrganizationModel caller, long processId);
+        Task<List<TaskViewModel>> GetTaskListByProcessDefId(UserOrganizationModel caller, List<string> processDefId);
     }
 }
