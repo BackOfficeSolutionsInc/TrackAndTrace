@@ -29,7 +29,7 @@
 					clickAddValidation: ValidateForm,
 					clickEditValidation: ValidateForm,
 					clickRemove: "/Process/Delete/{0}",
-					//clickEdit: "/Process/Edit/{0}",
+					clickEdit: "/Process/Edit/{0}",
 					addButton:{text: "Create Process"},
 					nodataText: "No Process. Click add to create one.",
 					clickAdd: "/Process/Create",
@@ -41,7 +41,7 @@
                         { name: "Action", classes: "", contents: function (x) { return "<a href='/CoreProcess/Process/Tasks/" + x.Id + "'>Task</a>"
 							+ "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" + "<a href='javascript:void(0);' onclick='startProcess("+ x.Id +");'>Start</a>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp"
 							+ "<a href='/CoreProcess/Process/ProcessInstance/" + x.LocalID + "'>Instances</a>"}},
-						//{ edit: true },
+						{ edit: true },
 						{ remove : true },
 					],
 					nodataText: "No Task found."
@@ -60,7 +60,7 @@
 
 						}
 					});
-                }
+				}
 
 			</script>}
 

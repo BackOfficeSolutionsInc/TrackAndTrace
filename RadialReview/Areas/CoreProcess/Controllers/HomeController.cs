@@ -26,12 +26,6 @@ namespace RadialReview.Areas.CoreProcess.Controllers
 
             if (true)
             {
-
-
-                //processDef.GetTaskListByProcessDefId(GetUser(), new List<string>());
-
-                CommClass commClass = new CommClass();
-                var getTaskList = commClass.GetTaskByCandidateGroup("group_1");
                 //processDef.DetachNode();
             }
 
@@ -46,22 +40,21 @@ namespace RadialReview.Areas.CoreProcess.Controllers
             if (true)
             {
                 
+                string fileName = "calculation.bpmn";
+                var filePath = string.Format("~/Areas/CoreProcess/{0}", fileName);
+                var fullPath = HttpContext.Server.MapPath(filePath);
+                List<object> fileObject = new List<object>();
+                if (System.IO.File.Exists(fullPath))
+                {
+                    byte[] bytes = System.IO.File.ReadAllBytes(fullPath);
+                    fileObject.Add(new FileParameter(bytes, fileName));
 
-                //string fileName = "calculation.bpmn";
-                //var filePath = string.Format("~/Areas/CoreProcess/{0}", fileName);
-                //var fullPath = HttpContext.Server.MapPath(filePath);
-                //List<object> fileObject = new List<object>();
-                //if (System.IO.File.Exists(fullPath))
-                //{
-                //    byte[] bytes = System.IO.File.ReadAllBytes(fullPath);
-                //    fileObject.Add(new FileParameter(bytes, fileName));
 
-
-                //    CommClass commClass = new CommClass();
-                //    var getDeploymentId = commClass.Deploy("testDeploy1", fileObject);
-                //    //deploy file
-                //    //processDefAccessor.Deploy(new RadialReview.Models.UserOrganizationModel(), "testDeploy", fileObject);
-                //}
+                    CommClass commClass = new CommClass();
+                    var getDeploymentId = commClass.Deploy("testDeploy1", fileObject);
+                    //deploy file
+                    //processDefAccessor.Deploy(new RadialReview.Models.UserOrganizationModel(), "testDeploy", fileObject);
+                }
             }
 
 

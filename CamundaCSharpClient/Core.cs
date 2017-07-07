@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using RestSharp;
 using RestSharp.Authenticators;
 using CamundaCSharpClient.Helper;
-using System.Threading.Tasks;
 
 namespace CamundaCSharpClient
 {
@@ -33,7 +32,7 @@ namespace CamundaCSharpClient
 
         private string EngineName { get; set; }
 
-        public async virtual Task<T> Execute<T>(IRestRequest request) where T : new()
+        public virtual T Execute<T>(IRestRequest request) where T : new()
         {
             request.OnBeforeDeserialization = (resp) =>
             {
@@ -57,8 +56,8 @@ namespace CamundaCSharpClient
                         str = enc.GetString(resp.RawBytes);
                         newJson = string.Format(restException, ScrubHtml(str), (int)resp.StatusCode);
                     }
-                    else
-                    {
+                    else 
+                    { 
                         restException = "{{ \"RestException\" : {0}, \"StatusCode\" : {1} }}";
                         str = enc.GetString(resp.RawBytes);
                         newJson = string.Format(restException, str, (int)resp.StatusCode);
@@ -69,9 +68,8 @@ namespace CamundaCSharpClient
                 }
             };
 
-            var tcs = new TaskCompletionSource<T>();
-            this._client.ExecuteAsync<T>(request, restResponse => { tcs.SetResult(restResponse.Data); });
-            return await tcs.Task;
+            var response = this._client.Execute<T>(request);
+            return response.Data;
         }
 
         public void Authenticator()
@@ -90,13 +88,9 @@ namespace CamundaCSharpClient
             this._client.Authenticator = new HttpBasicAuthenticator(userName, password);
         }
 
-        public async virtual Task<IRestResponse> Execute(IRestRequest request)
+        public virtual IRestResponse Execute(IRestRequest request)
         {
-            //IRestResponse resp = this._client.Execute(request);
-            var tcs = new TaskCompletionSource<IRestResponse>();
-            this._client.ExecuteAsync(request, response => { tcs.TrySetResult(response); });
-            var resp = await tcs.Task as IRestResponse;
-
+            IRestResponse resp = this._client.Execute(request);
             if (((int)resp.StatusCode) >= 400)
             {
                 string restException;
@@ -112,8 +106,8 @@ namespace CamundaCSharpClient
                     str = enc.GetString(resp.RawBytes);
                     newJson = string.Format(restException, ScrubHtml(str), (int)resp.StatusCode);
                 }
-                else
-                {
+                else 
+                { 
                     restException = "{{ \"RestException\" : {0}, \"StatusCode\" : {1} }}";
                     str = enc.GetString(resp.RawBytes);
                     newJson = string.Format(restException, str, (int)resp.StatusCode);
@@ -122,7 +116,7 @@ namespace CamundaCSharpClient
                 resp.Content = newJson;
                 resp.RawBytes = Encoding.UTF8.GetBytes(newJson.ToString());
             }
-
+        
             return resp;
         }
 

@@ -7,7 +7,6 @@ using RestSharp;
 using CamundaCSharpClient.Model;
 using CamundaCSharpClient.Model.Task;
 using CamundaCSharpClient.Helper;
-using System.Threading.Tasks;
 
 namespace CamundaCSharpClient.Query.Task
 {
@@ -17,7 +16,7 @@ namespace CamundaCSharpClient.Query.Task
 
         public TaskQuery(CamundaRestClient client)
             : base(client)
-        {
+        { 
         }
 
         public TaskQuery Id(string id)
@@ -41,7 +40,7 @@ namespace CamundaCSharpClient.Query.Task
         /// var tsk1 = camundaCl.Task().Id("37ccd7fe-78c5-11e5-beb3-40a8f0a54b22").UserId("salajlan").Claim();
         /// </code>
         /// </example>
-        public async Task<NoContentStatus> Claim()
+        public NoContentStatus Claim()
         {
             EnsureHelper.NotNull("Id", this.model.id);
             EnsureHelper.NotNull("userId", this.model.userId);
@@ -52,7 +51,7 @@ namespace CamundaCSharpClient.Query.Task
             object obj = new { this.model.userId };
             string output = JsonConvert.SerializeObject(obj);
             request.AddParameter("application/json", output, ParameterType.RequestBody);
-            var resp = await this.client.Execute(request);
+            var resp = this.client.Execute(request);
             return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
         }
 
@@ -64,7 +63,7 @@ namespace CamundaCSharpClient.Query.Task
         /// var tsk7 = camundaCl.Task().Id("c4d3d6e8-78b1-11e5-a68d-40a8f0a54b22").UserId("salajlan").Delegate();
         /// </code>
         /// </example>
-        public async Task<NoContentStatus> Delegate()
+        public NoContentStatus Delegate()
         {
             EnsureHelper.NotNull("Id", this.model.id);
             EnsureHelper.NotNull("userId", this.model.userId);
@@ -75,7 +74,7 @@ namespace CamundaCSharpClient.Query.Task
             object obj = new { this.model.userId };
             string output = JsonConvert.SerializeObject(obj);
             request.AddParameter("application/json", output, ParameterType.RequestBody);
-            var resp = await this.client.Execute(request);
+            var resp = this.client.Execute(request);
             return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
         }
 
@@ -87,14 +86,14 @@ namespace CamundaCSharpClient.Query.Task
         /// var tsk5 = camundaCl.Task().Id("37ccd7fe-78c5-11e5-beb3-40a8f0a54b22").UnClaim();           
         /// </code>
         /// </example>
-        public async Task<NoContentStatus> UnClaim()
+        public NoContentStatus UnClaim()
         {
             EnsureHelper.NotNull("Id", this.model.id);
 
             var request = new RestRequest();
             request.Resource = "/task/" + this.model.id + "/unclaim";
             request.Method = Method.POST;
-            var resp = await this.client.Execute(request);
+            var resp = this.client.Execute(request);
             return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
         }
 
@@ -106,7 +105,7 @@ namespace CamundaCSharpClient.Query.Task
         /// var tsk5 = camundaCl.Task().Id("37ccd7fe-78c5-11e5-beb3-40a8f0a54b22").formKey();           
         /// </code>
         /// </example>
-        public async Task<TaskFormKeyModel> formKey()
+        public TaskFormKeyModel formKey()
         {
             EnsureHelper.NotNull("Id", this.model.id);
 
@@ -114,7 +113,7 @@ namespace CamundaCSharpClient.Query.Task
             request.Resource = "/task/" + this.model.id + "/form";
             request.Method = Method.GET;
             var resp = this.client.Execute(request);
-            return await this.client.Execute<TaskFormKeyModel>(request);
+            return this.client.Execute<TaskFormKeyModel>(request);
         }
 
         /// <summary> Complete a task and update process variables.
@@ -126,7 +125,7 @@ namespace CamundaCSharpClient.Query.Task
         /// var tsk6 = camundaCl.Task().Id("ebb5bc85-789e-11e5-ac86-40a8f0a54b22").Complete(obj);
         /// </code>
         /// </example>
-        public async Task<NoContentStatus> Complete(object variables)
+        public NoContentStatus Complete(object variables)
         {
             EnsureHelper.NotNull("Id", this.model.id);
 
@@ -136,7 +135,7 @@ namespace CamundaCSharpClient.Query.Task
             object obj = new { variables };
             string output = JsonConvert.SerializeObject(obj);
             request.AddParameter("application/json", output, ParameterType.RequestBody);
-            var resp = await this.client.Execute(request);
+            var resp = this.client.Execute(request);
             return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
         }
 
@@ -149,7 +148,7 @@ namespace CamundaCSharpClient.Query.Task
         /// var tsk9 = camundaCl.Task().Id("c4d3d6e8-78b1-11e5-a68d-40a8f0a54b22").Resolve(obj);
         /// </code>
         /// </example>
-        public async Task<NoContentStatus> Resolve(object variables)
+        public NoContentStatus Resolve(object variables)
         {
             EnsureHelper.NotNull("Id", this.model.id);
 
@@ -159,7 +158,7 @@ namespace CamundaCSharpClient.Query.Task
             object obj = new { variables };
             string output = JsonConvert.SerializeObject(obj);
             request.AddParameter("application/json", output, ParameterType.RequestBody);
-            var resp = await this.client.Execute(request);
+            var resp = this.client.Execute(request);
             return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
         }
 
@@ -172,7 +171,7 @@ namespace CamundaCSharpClient.Query.Task
         /// var tsk2 = camundaCl.Task().Id("37ccd7fe-78c5-11e5-beb3-40a8f0a54b22").UserId("salajlan").Assignee();
         /// </code>
         /// </example>
-        public async Task<NoContentStatus> Assignee()
+        public NoContentStatus Assignee()
         {
             EnsureHelper.NotNull("Id", this.model.id);
             EnsureHelper.NotNull("userId", this.model.userId);
@@ -183,7 +182,7 @@ namespace CamundaCSharpClient.Query.Task
             object obj = new { this.model.userId };
             string output = JsonConvert.SerializeObject(obj);
             request.AddParameter("application/json", output, ParameterType.RequestBody);
-            var resp = await this.client.Execute(request);
+            var resp = this.client.Execute(request);
             return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
         }
 
@@ -195,12 +194,12 @@ namespace CamundaCSharpClient.Query.Task
         /// var tsk12 = camundaCl.Task().Id("a3d0eeb5-78c4-11e5-beb3-40a8f0a54b22").Comment();
         /// </code>
         /// </example>
-        public async Task<List<TaskCommentModel>> Comment()
+        public List<TaskCommentModel> Comment()
         {
             EnsureHelper.NotNull("Id", this.model.id);
             var request = new RestRequest();
             request.Resource = "/task/" + this.model.id + "/comment";
-            return await this.client.Execute<List<TaskCommentModel>>(request);
+            return this.client.Execute<List<TaskCommentModel>>(request);
         }
 
         /// <summary> Retrieves a single task comment by task id and comment id.
@@ -211,13 +210,13 @@ namespace CamundaCSharpClient.Query.Task
         /// var tsk10 = camundaCl.Task().Id("a3d0eeb5-78c4-11e5-beb3-40a8f0a54b22").Comment("d7a2ea89-7cae-11e5-beb3-40a8f0a54b22");
         /// </code>
         /// </example>
-        public async Task<TaskCommentModel> Comment(string commentId)
+        public TaskCommentModel Comment(string commentId)
         {
             EnsureHelper.NotNull("Id", this.model.id);
             EnsureHelper.NotNull("ComemntId", commentId);
             var request = new RestRequest();
             request.Resource = "/task/" + this.model.id + "/comment/" + commentId;
-            return await this.client.Execute<TaskCommentModel>(request);
+            return this.client.Execute<TaskCommentModel>(request);
         }
 
         /// <summary> Create a comment for a task.
@@ -229,7 +228,7 @@ namespace CamundaCSharpClient.Query.Task
         /// var tsk11 = camundaCl.Task().Id("a3d0eeb5-78c4-11e5-beb3-40a8f0a54b22").Create("test Comment");
         /// </code>
         /// </example>
-        public async Task<TaskCommentModel> Create(string comment)
+        public TaskCommentModel Create(string comment)
         {
             EnsureHelper.NotNull("Id", this.model.id);
             EnsureHelper.NotNull("commentMessage", comment);
@@ -240,7 +239,7 @@ namespace CamundaCSharpClient.Query.Task
             object obj = new { message = comment };
             string output = JsonConvert.SerializeObject(obj);
             request.AddParameter("application/json", output, ParameterType.RequestBody);
-            return await this.client.Execute<TaskCommentModel>(request);
+            return this.client.Execute<TaskCommentModel>(request);
         }
 
         /// <summary> Query for tasks that fulfill a given filter.
@@ -264,12 +263,12 @@ namespace CamundaCSharpClient.Query.Task
         /// var tsk13 = camundaCl.Task().Id("37ccd7fe-78c5-11e5-beb3-40a8f0a54b22").singleResult();
         /// </code>
         /// </example>
-        public async Task<TaskModel> SingleResult()
+        public TaskModel SingleResult()
         {
             EnsureHelper.NotNull("Id", this.model.id);
             var request = new RestRequest();
             request.Resource = "/task/" + this.model.id;
-            return await this.SingleResult<TaskModel>(request);
+            return this.SingleResult<TaskModel>(request);
         }
     }
 }

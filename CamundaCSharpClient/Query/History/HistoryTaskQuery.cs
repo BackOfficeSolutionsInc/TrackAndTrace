@@ -6,7 +6,6 @@ using CamundaCSharpClient.Helper;
 using CamundaCSharpClient.Model;
 using CamundaCSharpClient.Model.History;
 using RestSharp;
-using System.Threading.Tasks;
 
 namespace CamundaCSharpClient.Query.History
 {
@@ -275,11 +274,11 @@ namespace CamundaCSharpClient.Query.History
         /// var hi7 = camundaCl.History().Task().Unfinished(true).TaskDueDateAfter(DateTime.Now).list();
         /// </code>
         /// </example>
-        public async Task<List<HistoryTaskModel>> List()
+        public List<HistoryTaskModel> List()
         {
             var request = new RestRequest();
             request.Resource = "/history/task";
-            return await this.List<HistoryTaskModel>(QueryHelper.BuildQuery<HistoryTaskQueryModel>(this.model, request));
+            return this.List<HistoryTaskModel>(QueryHelper.BuildQuery<HistoryTaskQueryModel>(this.model, request));
         }
 
         /// <summary>
@@ -291,11 +290,11 @@ namespace CamundaCSharpClient.Query.History
         /// var hi6 = camundaCl.History().Task().Finished(true).TaskDueDateAfter(DateTime.Now).count();
         /// </code>
         /// </example>
-        public async Task<Count> Count()
+        public Count Count()
         {
             var request = new RestRequest();
             request.Resource = "/history/task/count";
-            return await this.Count(QueryHelper.BuildQuery<HistoryTaskQueryModel>(this.model, request));
+            return this.Count(QueryHelper.BuildQuery<HistoryTaskQueryModel>(this.model, request));
         }
     }
 }
