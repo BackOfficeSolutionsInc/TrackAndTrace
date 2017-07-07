@@ -20,7 +20,7 @@ namespace CamundaCSharpClient.Query.History
 
         public HistoryVariableInstanceQuery VariableName(string variableName)
         {
-            this.model.variableName = variableName;
+            this.model.variableName = variableName; 
             return this;
         }
 

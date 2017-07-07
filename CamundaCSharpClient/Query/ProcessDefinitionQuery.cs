@@ -23,7 +23,7 @@ namespace CamundaCSharpClient.Query
 
         public ProcessDefinitionQuery Id(string id)
         {
-            this.model.id = id;
+            this.model.id = id; 
             return this;
         }
 

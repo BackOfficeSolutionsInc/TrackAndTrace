@@ -24,7 +24,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
             string processInstanceIdsExtract = null;
             foreach (var item in processInstanceIds)
             {
-                processInstanceIdsExtract += item + ",";
+                processInstanceIdsExtract += item + ","; 
             }
 
             this.model.processInstanceIds = processInstanceIdsExtract;

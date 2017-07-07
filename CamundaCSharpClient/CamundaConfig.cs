@@ -18,7 +18,7 @@ namespace CamundaCSharpClient
         {
             UrlCredentials credentials = new UrlCredentials();
             credentials.Username = "demo";
-            credentials.Password = "demo";
+            credentials.Password = "demo"; 
 
             switch (GetEnv())
             {

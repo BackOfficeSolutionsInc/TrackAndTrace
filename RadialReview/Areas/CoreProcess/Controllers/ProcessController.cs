@@ -74,7 +74,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         {
             var id = await processDefAccessor.Create(GetUser(), Modal.Name);
             Modal.Id = id;
-            Modal.status = "<div style='color:red'><i class='fa fa-2x fa-times-circle'></i></ div>";
+            Modal.status = "<div style='color:red'><i class='fa fa-2x fa-times-circle'></i></ div>"; 
 
             return Json(ResultObject.SilentSuccess(Modal));
         }

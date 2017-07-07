@@ -10,7 +10,7 @@ namespace CamundaCSharpClient
     {
         public HistoryQuery History()
         {
-            return new HistoryQuery(this);
+            return new HistoryQuery(this); 
         }
     }
 }

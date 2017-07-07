@@ -15,6 +15,6 @@ namespace CamundaCSharpClient.Model.Deployment
 
         public EngineException(string message, Exception innerException) : base(message, innerException) { }
 
-        protected EngineException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+        protected EngineException(SerializationInfo info, StreamingContext context) : base(info, context) { } 
     }
 }

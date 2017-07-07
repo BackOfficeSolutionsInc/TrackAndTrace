@@ -25,7 +25,7 @@ namespace CamundaCSharpClient
             this._client.AddDefaultHeader("Accept", "application/json");
             this._client.UserAgent = "camundaRestClient - .net";
 
-            this._client.BaseUrl = new Uri(baseUrl + "/engine/" + engineName);
+            this._client.BaseUrl = new Uri(baseUrl + "/engine/" + engineName); 
             this._client.Timeout = 30500;
         }
 

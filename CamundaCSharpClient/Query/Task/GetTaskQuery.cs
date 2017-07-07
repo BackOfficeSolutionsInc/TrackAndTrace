@@ -21,7 +21,7 @@ namespace CamundaCSharpClient.Query.Task
 
         public GetTaskQuery ProcessInstanceId(string processInstanceId)
         {
-            this.model.processInstanceId = processInstanceId;
+            this.model.processInstanceId = processInstanceId; 
             return this;
         }
 

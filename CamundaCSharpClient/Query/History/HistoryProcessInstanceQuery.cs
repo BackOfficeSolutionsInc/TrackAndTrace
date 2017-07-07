@@ -29,7 +29,7 @@ namespace CamundaCSharpClient.Query.History
             string processInstanceIdsExtract = null;
             foreach (var item in processInstanceIds)
             {
-                processInstanceIdsExtract += item + ",";
+                processInstanceIdsExtract += item + ","; 
             }
 
             this.model.processInstanceIds = processInstanceIdsExtract;

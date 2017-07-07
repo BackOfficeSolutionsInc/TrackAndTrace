@@ -14,7 +14,7 @@ namespace CamundaCSharpClient
     {
         public ProcessDefinitionQuery ProcessDefinition()
         {
-            return new ProcessDefinitionQuery(this);
+            return new ProcessDefinitionQuery(this); 
         }
     }
 }

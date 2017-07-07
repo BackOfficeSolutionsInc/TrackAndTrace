@@ -27,7 +27,7 @@ namespace CamundaCSharpClient.Query.History
         public DetailsQuery ActivityInstanceId(string activityInstanceId)
         {
             this.model.activityInstanceId = activityInstanceId;
-            return this;
+            return this; 
         }
 
         public DetailsQuery ExecutionId(string executionId)

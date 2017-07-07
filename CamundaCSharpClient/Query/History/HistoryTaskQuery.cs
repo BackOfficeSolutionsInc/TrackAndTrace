@@ -21,7 +21,7 @@ namespace CamundaCSharpClient.Query.History
 
         public HistoryTaskQuery TaskId(string taskId)
         {
-            this.model.taskId = taskId;
+            this.model.taskId = taskId; 
             return this;
         }
 

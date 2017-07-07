@@ -23,7 +23,7 @@ namespace CamundaCSharpClient.Model.Deployment
 
         public static FileParameter FromManifestResource(Assembly assembly, string resourcePath)
         {
-            Stream resourceAsStream = assembly.GetManifestResourceStream(resourcePath);
+            Stream resourceAsStream = assembly.GetManifestResourceStream(resourcePath); 
             byte[] resourceAsBytearray;
             using (MemoryStream ms = new MemoryStream())
             {
