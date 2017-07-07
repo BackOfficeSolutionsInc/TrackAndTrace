@@ -6,6 +6,7 @@ using CamundaCSharpClient.Helper;
 using CamundaCSharpClient.Model;
 using CamundaCSharpClient.Model.History;
 using RestSharp;
+using System.Threading.Tasks;
 
 namespace CamundaCSharpClient.Query.History
 {
@@ -28,7 +29,7 @@ namespace CamundaCSharpClient.Query.History
             string processInstanceIdsExtract = null;
             foreach (var item in processInstanceIds)
             {
-                processInstanceIdsExtract += item + ","; 
+                processInstanceIdsExtract += item + ",";
             }
 
             this.model.processInstanceIds = processInstanceIdsExtract;
@@ -189,11 +190,11 @@ namespace CamundaCSharpClient.Query.History
         /// var hi4 = camundaCl.History().ProcessInstance().ProcessDefinitionKey("invoice").StartedBy("salajlan").list();
         /// </code>
         /// </example>
-        public List<HistoryProcessInstanceModel> list()
+        public async Task<List<HistoryProcessInstanceModel>> list()
         {
             var request = new RestRequest();
             request.Resource = "/history/process-instance";
-            return this.List<HistoryProcessInstanceModel>(QueryHelper.BuildQuery<HistoryProcessInstanceQueryModel>(this.model, request));
+            return await this.List<HistoryProcessInstanceModel>(QueryHelper.BuildQuery<HistoryProcessInstanceQueryModel>(this.model, request));
         }
 
         /// <summary>
@@ -205,11 +206,11 @@ namespace CamundaCSharpClient.Query.History
         /// var hi3 = camundaCl.History().ProcessInstance().ProcessDefinitionKey("invoice").count();
         /// </code>
         /// </example>
-        public Count count()
+        public async Task<Count> count()
         {
             var request = new RestRequest();
             request.Resource = "/history/process-instance/count";
-            return this.Count(QueryHelper.BuildQuery<HistoryProcessInstanceQueryModel>(this.model, request));
+            return await this.Count(QueryHelper.BuildQuery<HistoryProcessInstanceQueryModel>(this.model, request));
         }
 
         /// <summary>
@@ -221,12 +222,12 @@ namespace CamundaCSharpClient.Query.History
         /// var hi5 = camundaCl.History().ProcessInstance().ProcessInstanceId("09ece517-77ee-11e5-8af1-40a8f0a54b22").singleResult();
         /// </code>
         /// </example>
-        public HistoryProcessInstanceModel singleResult()
+        public async Task<HistoryProcessInstanceModel> singleResult()
         {
             EnsureHelper.NotNull("ProcessInctanceId", this.model.processInstanceId);
             var request = new RestRequest();
             request.Resource = "/history/process-instance/" + this.model.processInstanceId;
-            return this.SingleResult<HistoryProcessInstanceModel>(request);
+            return await this.SingleResult<HistoryProcessInstanceModel>(request);
         }
     }
 }

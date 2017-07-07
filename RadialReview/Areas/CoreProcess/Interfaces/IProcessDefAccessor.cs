@@ -35,6 +35,6 @@ namespace RadialReview.Areas.CoreProcess.Interfaces
         Task<bool> ProcessSuspend(UserOrganizationModel caller, string processInsId, bool isSuspend);
 
         Task<ProcessDef_Camunda> ProcessStart(UserOrganizationModel caller, long processId);
-        Task<List<TaskViewModel>> GetTaskListByProcessDefId(UserOrganizationModel caller, List<string> processDefId); 
+        Task<List<TaskViewModel>> GetTaskListByProcessDefId(UserOrganizationModel caller, List<string> processDefId);
     }
 }

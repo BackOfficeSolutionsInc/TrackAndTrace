@@ -6,6 +6,7 @@ using CamundaCSharpClient.Model;
 using CamundaCSharpClient.Helper;
 using RestSharp;
 using CamundaCSharpClient.Model.Task;
+using System.Threading.Tasks;
 
 namespace CamundaCSharpClient.Query.Task
 {
@@ -16,11 +17,11 @@ namespace CamundaCSharpClient.Query.Task
         public GetTaskQuery(CamundaRestClient client)
             : base(client)
         {
-        }        
-        
+        }
+
         public GetTaskQuery ProcessInstanceId(string processInstanceId)
         {
-            this.model.processInstanceId = processInstanceId; 
+            this.model.processInstanceId = processInstanceId;
             return this;
         }
 
@@ -34,9 +35,9 @@ namespace CamundaCSharpClient.Query.Task
         {
             string processInstanceBusinessKeyInExtract = null;
             foreach (var item in processInstanceBusinessKeyIn)
-                {
-                    processInstanceBusinessKeyInExtract += item + ",";
-                }
+            {
+                processInstanceBusinessKeyInExtract += item + ",";
+            }
 
             this.model.processInstanceBusinessKeyIn = processInstanceBusinessKeyInExtract;
             return this;
@@ -64,9 +65,9 @@ namespace CamundaCSharpClient.Query.Task
         {
             string processDefinitionKeyInExtract = null;
             foreach (var item in processDefinitionKeyIn)
-                {
-                    processDefinitionKeyInExtract += item + ",";
-                }
+            {
+                processDefinitionKeyInExtract += item + ",";
+            }
 
             this.model.processDefinitionKeyIn = processDefinitionKeyInExtract;
             return this;
@@ -142,9 +143,9 @@ namespace CamundaCSharpClient.Query.Task
         {
             string activityInstanceIdInExtract = null;
             foreach (var item in activityInstanceIdIn)
-                {
-                    activityInstanceIdInExtract += item + ",";
-                }
+            {
+                activityInstanceIdInExtract += item + ",";
+            }
 
             this.model.activityInstanceIdIn = activityInstanceIdInExtract;
             return this;
@@ -214,9 +215,9 @@ namespace CamundaCSharpClient.Query.Task
         {
             string taskDefinitionKeyInExtract = null;
             foreach (var item in taskDefinitionKeyIn)
-                {
-                    taskDefinitionKeyInExtract += item + ",";
-                }
+            {
+                taskDefinitionKeyInExtract += item + ",";
+            }
 
             this.model.taskDefinitionKeyIn = taskDefinitionKeyInExtract;
             return this;
@@ -435,11 +436,11 @@ namespace CamundaCSharpClient.Query.Task
         /// var tsk3 = camundaCl.Task().Get().ProcessInstanceId("37ccd7f9-78c5-11e5-beb3-40a8f0a54b22").list();
         /// </code>
         /// </example>
-        public List<TaskModel> list()
+        public async Task<List<TaskModel>> list()
         {
             var request = new RestRequest();
             request.Resource = "/task";
-            return this.List<TaskModel>(QueryHelper.BuildQuery<GetTaskQueryModel>(this.model, request));
+            return await this.List<TaskModel>(QueryHelper.BuildQuery<GetTaskQueryModel>(this.model, request));
         }
 
         /// <summary> Get the number of tasks that fulfill a provided filter.
@@ -450,11 +451,11 @@ namespace CamundaCSharpClient.Query.Task
         /// var tsk4 = camundaCl.Task().Get().Active(true).CreatedBefore(DateTime.Now).CreatedAfter(DateTime.Parse("2015-10-20")).count();
         /// </code>
         /// </example>
-        public Count count()
+        public async Task<Count> count()
         {
             var request = new RestRequest();
             request.Resource = "/task/count";
-            return this.Count(QueryHelper.BuildQuery<GetTaskQueryModel>(this.model, request));
-        }        
+            return await this.Count(QueryHelper.BuildQuery<GetTaskQueryModel>(this.model, request));
+        }
     }
 }

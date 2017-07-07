@@ -15,8 +15,9 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 			throw new NotImplementedException();
 		}
 		public IEnumerable<ITask> GetAllTasks(UserOrganizationModel caller)
-        {            
-            return commClass.GetTaskList();
+        {
+            //return commClass.GetTaskList();
+            throw new NotImplementedException();
         }
 		public ITask GetTaskById(UserOrganizationModel caller, string taskId) {
 			throw new NotImplementedException();

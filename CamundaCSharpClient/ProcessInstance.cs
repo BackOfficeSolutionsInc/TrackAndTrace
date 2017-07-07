@@ -13,7 +13,7 @@ namespace CamundaCSharpClient
     {
         public ProcessInstanceQuery ProcessInstance()
         {
-            return new ProcessInstanceQuery(this); 
+            return new ProcessInstanceQuery(this);
         }
     }
 }

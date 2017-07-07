@@ -342,7 +342,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
         public async Task<TaskViewModel> CreateTask(UserOrganizationModel caller, string localId, TaskViewModel model)
         {
-            using (var s = HibernateSession.GetCurrentSession()) 
+            using (var s = HibernateSession.GetCurrentSession())
             {
                 PermissionsUtility.Create(s, caller);
                 var created = await CreateTask(s, localId, model);

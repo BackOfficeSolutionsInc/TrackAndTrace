@@ -8,6 +8,7 @@ using CamundaCSharpClient.Model;
 using Newtonsoft.Json;
 using CamundaCSharpClient.Helper;
 using CamundaCSharpClient.Model.Group;
+using System.Threading.Tasks;
 
 namespace CamundaCSharpClient.Query
 {
@@ -18,11 +19,11 @@ namespace CamundaCSharpClient.Query
         public GroupQuery(CamundaRestClient client)
             : base(client)
         {
-        }        
+        }
 
         public GroupQuery Id(string id)
         {
-            this.model.id = id; 
+            this.model.id = id;
             return this;
         }
 
@@ -77,11 +78,11 @@ namespace CamundaCSharpClient.Query
         /// var gr2 = camundaCl.group().list();
         /// </code>
         /// </example>
-        public List<GroupModel> list()
+        public async Task<List<GroupModel>> list()
         {
             var request = new RestRequest();
             request.Resource = "/group";
-            return this.List<GroupModel>(QueryHelper.BuildQuery<GroupQueryModel>(this.model, request));
+            return await this.List<GroupModel>(QueryHelper.BuildQuery<GroupQueryModel>(this.model, request));
         }
 
         /// <summary> Retrieves a single group.
@@ -92,12 +93,12 @@ namespace CamundaCSharpClient.Query
         /// var gr9 = camundaCl.group().Id("test").singleResult();
         /// </code>
         /// </example>
-        public GroupModel singleResult()
+        public async Task<GroupModel> singleResult()
         {
             EnsureHelper.NotNull("GroupId", this.model.id);
             var request = new RestRequest();
             request.Resource = "/group/" + this.model.id;
-            return this.SingleResult<GroupModel>(request);
+            return await this.SingleResult<GroupModel>(request);
         }
 
         /// <summary> Deletes a group by id. or Removes a member from a group.
@@ -109,7 +110,7 @@ namespace CamundaCSharpClient.Query
         /// var gr7 = camundaCl.group().Id("test").delete();
         /// </code>
         /// </example>
-        public NoContentStatus Delete()
+        public async Task<NoContentStatus> Delete()
         {
             EnsureHelper.NotNull("GroupId", this.model.id);
             var request = new RestRequest();
@@ -117,13 +118,13 @@ namespace CamundaCSharpClient.Query
             {
                 request.Resource = "/group/" + this.model.id + "/members/" + this.model.member;
             }
-            else 
+            else
             {
                 request.Resource = "/group/" + this.model.id;
             }
 
             request.Method = Method.DELETE;
-            var resp = this.client.Execute(request);
+            var resp = await this.client.Execute(request);
             return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
         }
 
@@ -137,7 +138,7 @@ namespace CamundaCSharpClient.Query
         /// var gr3 = camundaCl.group().create(m);
         /// </code>
         /// </example>
-        public NoContentStatus Create(GroupModel data)
+        public async Task<NoContentStatus> Create(GroupModel data)
         {
             EnsureHelper.NotNull("groupData", data);
             var request = new RestRequest();
@@ -145,7 +146,7 @@ namespace CamundaCSharpClient.Query
             request.Method = Method.POST;
             string output = JsonConvert.SerializeObject(data);
             request.AddParameter("application/json", output, ParameterType.RequestBody);
-            var resp = this.client.Execute(request);
+            var resp = await this.client.Execute(request);
             return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
         }
 
@@ -159,7 +160,7 @@ namespace CamundaCSharpClient.Query
         /// var gr8 = camundaCl.group().Id("test").update(m);
         /// </code>
         /// </example>
-        public NoContentStatus Update(GroupModel data)
+        public async Task<NoContentStatus> Update(GroupModel data)
         {
             EnsureHelper.NotNull("groupId", this.model.id);
             EnsureHelper.NotNull("groupData", data);
@@ -168,7 +169,7 @@ namespace CamundaCSharpClient.Query
             request.Method = Method.PUT;
             string output = JsonConvert.SerializeObject(data);
             request.AddParameter("application/json", output, ParameterType.RequestBody);
-            var resp = this.client.Execute(request);
+            var resp = await this.client.Execute(request);
             return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
         }
 
@@ -180,14 +181,14 @@ namespace CamundaCSharpClient.Query
         /// var gr6 = camundaCl.group().Id("test").Member("salajlan").create();
         /// </code>
         /// </example>
-        public NoContentStatus Create()
+        public async Task<NoContentStatus> Create()
         {
             EnsureHelper.NotNull("groupId", this.model.id);
             EnsureHelper.NotNull("groupMemeber", this.model.member);
             var request = new RestRequest();
             request.Resource = "/group/" + this.model.id + "/members/" + this.model.member;
             request.Method = Method.PUT;
-            var resp = this.client.Execute(request);
+            var resp =await this.client.Execute(request);
             return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
         }
 
@@ -199,11 +200,11 @@ namespace CamundaCSharpClient.Query
         /// var gr5 = camundaCl.group().Member("demo").count();
         /// </code>
         /// </example>
-        public Count Count()
+        public async Task<Count> Count()
         {
             var request = new RestRequest();
             request.Resource = "/group/count";
-            return this.Count(QueryHelper.BuildQuery<GroupQueryModel>(this.model, request));
+            return await this.Count(QueryHelper.BuildQuery<GroupQueryModel>(this.model, request));
         }
     }
 }

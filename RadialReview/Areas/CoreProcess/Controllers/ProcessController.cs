@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -60,29 +61,29 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult StartProcess(long id)
+        public async Task<JsonResult> StartProcess(long id)
         {
-            var StartProcess = processDefAccessor.ProcessStart(GetUser(), id);
+            var StartProcess = await processDefAccessor.ProcessStart(GetUser(), id);
             var result = ResultObject.Create(new ProcessViewModel(StartProcess, processDefAccessor.GetProcessInstanceList(StartProcess.LocalId).Count), "Process started successfully.");
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
-        public JsonResult Create(ProcessViewModel Modal)
+        public async Task<JsonResult> Create(ProcessViewModel Modal)
         {
-            var id = processDefAccessor.Create(GetUser(), Modal.Name);
+            var id = await processDefAccessor.Create(GetUser(), Modal.Name);
             Modal.Id = id;
-            Modal.status = "<div style='color:red'><i class='fa fa-2x fa-times-circle'></i></ div>"; 
+            Modal.status = "<div style='color:red'><i class='fa fa-2x fa-times-circle'></i></ div>";
 
             return Json(ResultObject.SilentSuccess(Modal));
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public ActionResult Tasks(long id)
+        public async Task<ActionResult> Tasks(long id)
         {
             var sstr = processDefAccessor.GetById(GetUser(), id);
-            var tasKList = processDefAccessor.GetAllTask(GetUser(), sstr.LocalId);
+            var tasKList = await processDefAccessor.GetAllTask(GetUser(), sstr.LocalId);
 
             ProcessViewModel process = new ProcessViewModel();
             process.taskList = tasKList;
@@ -100,34 +101,34 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult ReorderTask(string id, int oldOrder, int newOrder)
+        public async Task<JsonResult> ReorderTask(string id, int oldOrder, int newOrder)
         {
-            processDefAccessor.ModifiyBpmnFile(GetUser(), id, oldOrder, newOrder);
+            await processDefAccessor.ModifiyBpmnFile(GetUser(), id, oldOrder, newOrder);
             //L10Accessor.ReorderPage(GetUser(),  oldOrder, newOrder);
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult DeleteTask(string id, string localid) // id is taskId
+        public async Task<JsonResult> DeleteTask(string id, string localid) // id is taskId
         {
-            processDefAccessor.DeleteTask(GetUser(), id, localid);
+            await processDefAccessor.DeleteTask(GetUser(), id, localid);
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult Delete(string id) // id is processid
+        public async Task<JsonResult> Delete(string id) // id is processid
         {
             var Process = processDefAccessor.GetById(GetUser(), Convert.ToInt64(id));
-            processDefAccessor.Delete(GetUser(), Convert.ToInt64(id));
+            await processDefAccessor.Delete(GetUser(), Convert.ToInt64(id));
             return Json(ResultObject.SilentSuccess(Process), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public ActionResult Publish(string id)
+        public async Task<ActionResult> Publish(string id)
         {
             if (id != null)
             {
-                processDefAccessor.Deploy(GetUser(), id);
+                await processDefAccessor.Deploy(GetUser(), id);
                 return RedirectToAction("Index");
             }
             else
@@ -135,9 +136,6 @@ namespace RadialReview.Areas.CoreProcess.Controllers
                 var result = ResultObject.CreateError("Task Not Added", null);
                 return Json(result, JsonRequestBehavior.AllowGet);
             }
-
-
-            //return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.UserOrganization)]
@@ -150,9 +148,9 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public PartialViewResult EditTask(string id, string localid)
+        public async Task<PartialViewResult> EditTask(string id, string localid)
         {
-            var list = processDefAccessor.GetAllTask(GetUser(), localid);
+            var list = await processDefAccessor.GetAllTask(GetUser(), localid);
             var task = list.Where(m => m.Id == id).FirstOrDefault();
             task.process = new ProcessViewModel();
             task.process.LocalID = localid;
@@ -162,17 +160,17 @@ namespace RadialReview.Areas.CoreProcess.Controllers
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
-        public JsonResult EditTask(TaskViewModel model, string id, string localid)
+        public async Task<JsonResult> EditTask(TaskViewModel model, string id, string localid)
         {
-            var updatetask = processDefAccessor.UpdateTask(GetUser(), localid, model);
+            var updatetask = await processDefAccessor.UpdateTask(GetUser(), localid, model);
             return Json(ResultObject.SilentSuccess(updatetask));
         }
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
-        public JsonResult CreateTask(TaskViewModel model, string LocalID)
+        public async Task<JsonResult> CreateTask(TaskViewModel model, string LocalID)
         {
-            var create = processDefAccessor.CreateTask(GetUser(), LocalID, model);
+            var create = await processDefAccessor.CreateTask(GetUser(), LocalID, model);
 
             model.process = new ProcessViewModel();
             model.process.LocalID = LocalID;
@@ -196,9 +194,9 @@ namespace RadialReview.Areas.CoreProcess.Controllers
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
-        public JsonResult Edit(ProcessViewModel Model)
+        public async Task<JsonResult> Edit(ProcessViewModel Model)
         {
-            var updateProcess = processDefAccessor.Edit(GetUser(), Model.LocalID, Model.Name);
+            var updateProcess = await processDefAccessor.Edit(GetUser(), Model.LocalID, Model.Name);
             return Json(ResultObject.SilentSuccess(Model));
         }
 
@@ -206,40 +204,24 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         public ActionResult ProcessInstance(string id) // id is processid
         {
             ProcessInstanceViewModel processinstance = new ProcessInstanceViewModel();
-
             var List = processDefAccessor.GetProcessInstanceList(id);
-            //foreach (var item in List)
-            //{
-            //    if (item.Suspended == true)
-            //    {
-            //        item.suspend = "Activate";
-            //    }
-            //    else
-            //    {
-            //        item.suspend = "Suspend";
-            //    }
-            //}
-
             return View(List);
         }
 
         [Access(AccessLevel.UserOrganization)]
 
-        public ActionResult Suspend(string id, string status)
+        public async Task<ActionResult> Suspend(string id, string status)
         {
             ProcessInstanceViewModel processinstance = new ProcessInstanceViewModel();
             if (status == "true")
             {
-                var Suspend = processDefAccessor.ProcessSuspend(GetUser(), id, false);
-                //processinstance.suspend = "Activate";
+                var Suspend = await processDefAccessor.ProcessSuspend(GetUser(), id, false);
             }
             else
             {
-                var Suspend = processDefAccessor.ProcessSuspend(GetUser(), id, true);
-                //processinstance.suspend = "Suspend";
+                var Suspend = await processDefAccessor.ProcessSuspend(GetUser(), id, true);
             }
             return RedirectToAction("ProcessInstance");
-            //return Json(ResultObject.SilentSuccess(Suspend));
         }
     }
 }

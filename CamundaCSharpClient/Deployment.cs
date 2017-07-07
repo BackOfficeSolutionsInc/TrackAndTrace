@@ -15,7 +15,7 @@ namespace CamundaCSharpClient
     {        
         public DeploymentQuery Deployment()
         {
-            return new DeploymentQuery(this); 
+            return new DeploymentQuery(this);
         }
     }
 }

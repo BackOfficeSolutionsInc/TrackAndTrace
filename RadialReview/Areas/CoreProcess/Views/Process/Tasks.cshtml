@@ -1,57 +1,68 @@
 ﻿@model RadialReview.Areas.CoreProcess.Models.Process.ProcessViewModel
 @{
-	ViewBag.Title = "CreateTask";
-	Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "CreateTask";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @section top{
-	<div class="jumbotron">
-		<h1>List Of Task</h1>
-	</div>
+    <div class="jumbotron">
+        <h1>List Of Task</h1>
+    </div>
 }
 <div class="row">
-	<div class="col-sm-8 col-lg-12">
+    <div class="col-sm-8 col-lg-12">
 
-		<div class="panel panel-default">
-			<div class="panel-heading" role="tab" id="headingFour">
-				<h4 class="panel-title">
-					<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-						Edit Process
-					</a>
-				</h4>
-			</div>
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="headingFour">
+                <h4 class="panel-title">
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                        Edit Process
+                    </a>
+                </h4>
+            </div>
 
-			<div class="panel-body durations">
-				@using (Html.BeginForm("Create", "Process", FormMethod.Post)) {
-					@Html.HiddenFor(m => m.Id);
-					@Html.HiddenFor(m => m.Name);
-					@Html.HiddenFor(m => m.LocalID);
-					@Html.AntiForgeryToken()
-					@Html.ValidationSummary(true)
-					<div class="form-group">
-						<label class="col-sm-3 control-label">Process Name:</label>
-						<div class="col-sm-5">
-							@Model.Name
-						</div>
-					</div>
-					<div style="clear:both">
+            <div class="panel-body durations">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">Process Name:</label>
+                    <div class="col-sm-5">
+                        <span id="name">@Model.Name</span>
+                        <a href="#" onclick="@Html.ShowModal("Edit Process", "/Process/Edit/" + @Model.Id, "/Process/Edit/", onCompleteFunction: "reload")">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </a>
+                        @*<input class="btn btn-primary" type="submit" onclick="@Html.ShowModal("Edit Process", "/Process/Edit/" + @Model.Id, "/Process/Edit/")" value="Edit" />*@
+                    </div>
+                </div>
+                @using (Html.BeginForm("Create", "Process", FormMethod.Post))
+                {
+                    @Html.HiddenFor(m => m.Id);
+                    @Html.HiddenFor(m => m.Name);
+                    @Html.HiddenFor(m => m.LocalID);
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
 
-					</div>
-					if (Model.taskList != null) {
-						for (int i = 0; i < Model.taskList.Count; i++) {
-							@Html.HiddenFor(m => m.taskList[i].Id);
-							@Html.HiddenFor(m => m.taskList[i].description);
-							@Html.HiddenFor(m => m.taskList[i].name);
-						}
-					}
-					<div id="duration-table"></div>
-					using (Html.BeginScripts()) {
-						<script>
+                    <div style="clear:both">
+
+                    </div>
+                    if (Model.taskList != null)
+                    {
+                        for (int i = 0; i < Model.taskList.Count; i++)
+                        {
+                            @Html.HiddenFor(m => m.taskList[i].Id);
+                            @Html.HiddenFor(m => m.taskList[i].description);
+                            @Html.HiddenFor(m => m.taskList[i].name);
+                        }
+                    }
+                    <div id="duration-table"></div>
+                    using (Html.BeginScripts())
+                    {
+                        <script>
 
 							function ValidateForm(d) {
 								if (d.name == "") {
 									return "Name is required.";
 								}
-							}
+                            }
+
+
 
 							var datas = @Html.ArrayToString(Model.taskList);
 							var table = DataTable({
@@ -62,7 +73,8 @@
 								clickReorder: "/Process/ReorderTask?id=@Model.LocalID&oldOrder={1}&newOrder={2}",
 								clickRemove: "/Process/DeleteTask/{0}?localid=@Model.LocalID",
 								clickEdit: "/Process/EditTask/{0}?localid=@Model.LocalID",
-								addButton:{text: "Publish"},
+								//addButton:{text: "Publish"},
+                                addButton: { text: "Publish"},
 								nodataText: "No Process. Click add to create one.",
 								@*clickAdd: "/Process/CreateTask/@Model.LocalID",
 								postAdd: "/Process/CreateTask",*@
@@ -72,64 +84,80 @@
                                     { reorder: true },
                                     //{ id: "id", classes: "hidden", contents: function (x) { return x.Id;}},
                                     { name: "Name", classes: "nowrap", contents: function(x) { console.log(x); return x.name; } },
-                                    { name: "description", classes: "fullWidth", contents: function(x) { return x.description; } },
+                                    //{ name: "description", classes: "fullWidth", contents: function(x) { return x.description; } },
                                     { name: "action", classes: "nowrap", edit: true},
 									//{ edit: true ,},
-									{remove:true},
+									//{remove:true},
 								],
 								nodataText: "No Task found."
 								@*data: @Html.ArrayToString(Model.taskList),*@
-							});
-							//table.setData(datas);
+                            });
 
-							function PublishProcess(){
-								window.location = "/CoreProcess/Process/Publish/" + "@Model.LocalID";
+                            function PublishProcess(val) {
+                                if (val.data.length != 0) {
+
+                                    window.location = "/CoreProcess/Process/Publish/" + "@Model.LocalID";
+                                }
+                                else {
+                                    $.ajax({
+                                        url: "/CoreProcess/Process/Publish/",
+                                        success: function (data) {
+                                            console.log(data);
+                                            table.editRow(data.Object);
+                                        },
+                                        error: function (data) {
+
+                                        }
+                                    });
+                                }
+
 							}
-
+                            function reload(model) {
+                                var name = model.Object.Name;
+                                console.log(name);
+                                $('#name').html(name);
+							}
 							function reloadGrid(model) {
-								//console.log(model.Object);
 								datas.push(model.Object);
 								table.setData(datas);
-								//window.location = "/CoreProcess/Process/Tasks/" + @Model.Id;
 							}
-
-						</script>
-					}
-
-				}
-				<div class="alignCenter">
-					<input class="btn btn-primary" type="submit" onclick="@Html.ShowModal("New Task", "/Process/CreateTask/" + @Model.LocalID, "/Process/CreateTask", onCompleteFunction: "reloadGrid")" value="New Task" />
-				</div>
-			</div>
+                        </script>
+                    }
+                }
+                <div class="alignCenter">
+                    <input class="btn btn-primary" type="submit" onclick="@Html.ShowModal("New Task", "/Process/CreateTask/" + @Model.LocalID, "/Process/CreateTask", onCompleteFunction: "reloadGrid")" value="New Task" />
+                </div>
+            </div>
 
 
 
 
-		</div>
-	</div>
+        </div>
+    </div>
 </div>
-@using (Html.BeginStyles()) {
-	@Styles.Render("~/Content/MeetingEdit")
-	<style>
-		.durations .form-group {
-			margin-bottom: 4px;
-		}
+@using (Html.BeginStyles())
+{
+    @Styles.Render("~/Content/MeetingEdit")
+    <style>
+        .durations .form-group {
+            margin-bottom: 4px;
+        }
 
-		html, body {
-			background-color: #eee;
-		}
+        html, body {
+            background-color: #eee;
+        }
 
-		.width80 {
-			width: 80px;
-		}
-	</style>
+        .width80 {
+            width: 80px;
+        }
+    </style>
 }
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script>
-	$(window).on('load', function () {
-		$("table thead tr th").next().next().attr("colspan", "3");;
-		//add - BD2A1A4C - 77A1- A182 - B9F4 - DF9724E645EF
-	});
+                            $(window).on('load', function () {
+                                $("table thead tr th").next().next().attr("colspan", "3");;
+                                //add - BD2A1A4C - 77A1- A182 - B9F4 - DF9724E645EF
+                            });
 
 
 </script>

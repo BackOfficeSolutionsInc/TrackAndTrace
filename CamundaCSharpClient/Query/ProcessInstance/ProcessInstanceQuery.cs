@@ -7,6 +7,7 @@ using CamundaCSharpClient.Model;
 using RestSharp;
 using Newtonsoft.Json;
 using CamundaCSharpClient.Model.ProcessInstance;
+using System.Threading.Tasks;
 
 namespace CamundaCSharpClient.Query.ProcessInstance
 {
@@ -21,7 +22,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
 
         public ProcessInstanceQuery Id(string id)
         {
-            this.model.id = id; 
+            this.model.id = id;
             return this;
         }
 
@@ -80,12 +81,12 @@ namespace CamundaCSharpClient.Query.ProcessInstance
         /// var pi = camundaCl.ProcessInstance().Id("a0efef43-7d51-11e5-beb3-40a8f0a54b22").SingleResult();
         /// </code>
         /// </example>
-        public processInstanceModel SingleResult()
+        public async Task<processInstanceModel> SingleResult()
         {
             EnsureHelper.NotNull("ProcessInstanceId", this.model.id);
             var request = new RestRequest();
             request.Resource = "/process-instance/" + this.model.id;
-            return base.SingleResult<processInstanceModel>(request);
+            return await base.SingleResult<processInstanceModel>(request);
         }
 
         /// <summary>Deletes a running process instance. or Deletes a variable of a given process instance.
@@ -102,7 +103,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
         /// var pi3 = camundaCl.ProcessInstance().Id("182112c8-78c1-11e5-beb3-40a8f0a54b22").VarId("test varriable").Delete();
         /// </code>
         /// </example>
-        public NoContentStatus Delete()
+        public async Task<NoContentStatus> Delete()
         {
             EnsureHelper.NotNull("ProcessInstanceId", this.model.id);
             var request = new RestRequest();
@@ -116,7 +117,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
             }
 
             request.Method = Method.DELETE;
-            var resp = this.client.Execute(request);
+            var resp =await this.client.Execute(request);
             return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
         }
 
@@ -139,7 +140,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
         ///
         /// </code>
         /// </example>
-        public T Variables<T>() where T : new()
+        public async Task<T> Variables<T>() where T : new()
         {
             EnsureHelper.NotNull("ProcessInstanceId", this.model.id);
             var request = new RestRequest();
@@ -154,7 +155,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
 
             string output = JsonConvert.SerializeObject(this.model.deserializeValues);
             request.AddParameter("application/json", output, ParameterType.RequestBody);
-            return client.Execute<T>(request);
+            return await client.Execute<T>(request);
         }
 
         /// <summary>
@@ -169,7 +170,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
         /// <code>
         /// </code>
         /// </example>
-        public NoContentStatus Variables<T>(T modifications, string[] deletions)
+        public async Task<NoContentStatus> Variables<T>(T modifications, string[] deletions)
         {
             EnsureHelper.NotNull("ProcessInstanceId", this.model.id);
             var request = new RestRequest();
@@ -178,7 +179,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
             object obj = new { modifications, deletions };
             string output = JsonConvert.SerializeObject(obj);
             request.AddParameter("application/json", output, ParameterType.RequestBody);
-            var resp = this.client.Execute(request);
+            var resp =await this.client.Execute(request);
             return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
         }
 
@@ -191,7 +192,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
         /// var pi7 = camundaCl.ProcessInstance().Id("84b04b82-7cbc-11e5-beb3-40a8f0a54b22").VarId("DeptHead").Variables<invoice.DeptHead>(new invoice.DeptHead() { value = "salajlan" });
         /// </code>
         /// </example>
-        public NoContentStatus Variables<T>(T variable)
+        public async Task<NoContentStatus> Variables<T>(T variable)
         {
             EnsureHelper.NotNull("ProcessInstanceId", this.model.id);
             EnsureHelper.NotNull("variableData", variable);
@@ -201,7 +202,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
             request.Method = Method.PUT;
             string output = JsonConvert.SerializeObject(variable);
             request.AddParameter("application/json", output, ParameterType.RequestBody);
-            var resp = this.client.Execute(request);
+            var resp =await this.client.Execute(request);
             return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
         }
 
@@ -219,7 +220,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
         /// </code>
         /// </example>
         /// <returns>noContentStatus</returns>
-        public NoContentStatus Suspend()
+        public async Task<NoContentStatus> Suspend()
         {
             EnsureHelper.NotNull("Suspended", this.model.suspended);
             object obj;
@@ -244,7 +245,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
             request.Method = Method.PUT;
             string output = JsonConvert.SerializeObject(obj);
             request.AddParameter("application/json", output, ParameterType.RequestBody);
-            var resp = this.client.Execute(request);
+            var resp =await this.client.Execute(request);
             return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
         }
 
@@ -258,12 +259,12 @@ namespace CamundaCSharpClient.Query.ProcessInstance
         /// </code>
         /// </example>
         /// <returns>activityInstance</returns>
-        public ActivityInstanceModel ActivityInstance()
+        public async Task<ActivityInstanceModel> ActivityInstance()
         {
             EnsureHelper.NotNull("processInstanceId", this.model.id);
             var request = new RestRequest();
             request.Resource = "/process-instance/" + this.model.id + "/activity-instances";
-            return client.Execute<ActivityInstanceModel>(request);
+            return await client.Execute<ActivityInstanceModel>(request);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace CamundaCSharpClient
     {
         public GroupQuery Group()
         {
-            return new GroupQuery(this); 
+            return new GroupQuery(this);
         }
     }
 }

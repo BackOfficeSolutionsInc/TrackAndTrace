@@ -19,7 +19,7 @@ namespace CamundaCSharpClient.Query
 
         protected async Task<List<T>> List<T>(IRestRequest request)
         {
-            return await this.client.Execute<List<T>>(request); 
+            return await this.client.Execute<List<T>>(request);
         }
 
         protected async Task<T> SingleResult<T>(IRestRequest request) where T : new()

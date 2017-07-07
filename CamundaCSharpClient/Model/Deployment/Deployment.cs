@@ -11,6 +11,6 @@ namespace CamundaCSharpClient.Model.Deployment
         public string Name { get; set; }
         public string Source { get; set; }
 
-        public override string ToString() => $"Deployment [Id={Id}, Name={Name}]"; 
+        public override string ToString() => $"Deployment [Id={Id}, Name={Name}]";
     }
 }

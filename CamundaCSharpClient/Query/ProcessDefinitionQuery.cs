@@ -8,6 +8,7 @@ using RestSharp;
 using Newtonsoft.Json;
 using CamundaCSharpClient.Model.ProcessDefinition;
 using CamundaCSharpClient.Model.ProcessInstance;
+using System.Threading.Tasks;
 
 namespace CamundaCSharpClient.Query
 {
@@ -22,7 +23,7 @@ namespace CamundaCSharpClient.Query
 
         public ProcessDefinitionQuery Id(string id)
         {
-            this.model.id = id; 
+            this.model.id = id;
             return this;
         }
 
@@ -173,11 +174,11 @@ namespace CamundaCSharpClient.Query
         /// var pd1 = camundaCl.ProcessDefinition().Suspended(false).list();
         /// </code>
         /// </example>
-        public List<ProcessDefinitionModel> list()
+        public async Task<List<ProcessDefinitionModel>> list()
         {
             var request = new RestRequest();
             request.Resource = "/process-definition";
-            return this.List<ProcessDefinitionModel>(QueryHelper.BuildQuery<ProcessDefinitionQueryModel>(this.model, request));
+            return await this.List<ProcessDefinitionModel>(QueryHelper.BuildQuery<ProcessDefinitionQueryModel>(this.model, request));
         }
 
         /// <summary> Retrieves a single process definition according to the ProcessDefinition interface in the engine.
@@ -188,7 +189,7 @@ namespace CamundaCSharpClient.Query
         /// var pd7 = camundaCl.ProcessDefinition().Key("invoice").singleResult();
         /// </code>
         /// </example>
-        public ProcessDefinitionModel singleResult()
+        public async Task<ProcessDefinitionModel> singleResult()
         {
             var request = new RestRequest();
             if (this.model.id != null) 
@@ -201,7 +202,7 @@ namespace CamundaCSharpClient.Query
                 request.Resource = "/process-definition/key/" + this.model.key;
             }
 
-            return this.SingleResult<ProcessDefinitionModel>(request);
+            return await this.SingleResult<ProcessDefinitionModel>(request);
         }
 
         /// <summary> Request the number of process definitions that fulfill the query criteria
@@ -212,11 +213,11 @@ namespace CamundaCSharpClient.Query
         /// var pd2 = camundaCl.ProcessDefinition().Suspended(false).count();
         /// </code>
         /// </example>
-        public Count count()
+        public async Task<Count> count()
         {
             var request = new RestRequest();
             request.Resource = "/process-definition/count";
-            return this.Count(QueryHelper.BuildQuery<ProcessDefinitionQueryModel>(this.model, request));
+            return await this.Count(QueryHelper.BuildQuery<ProcessDefinitionQueryModel>(this.model, request));
         }
 
         /// <summary> Retrieves the BPMN 2.0 XML of this process definition.
@@ -228,7 +229,7 @@ namespace CamundaCSharpClient.Query
         /// var pd4 = camundaCl.ProcessDefinition().Id("invoice:1:54302a7a-7736-11e5-bc04-40a8f0a54b22").Xml();
         /// </code>
         /// </example>
-        public ProcessDefinitionXMLModel Xml()
+        public async Task<ProcessDefinitionXMLModel> Xml()
         {
             var request = new RestRequest();
             if (this.model.id != null) 
@@ -241,7 +242,7 @@ namespace CamundaCSharpClient.Query
                 request.Resource = "/process-definition/key/" + this.model.key + "/xml";
             }
 
-            return client.Execute<ProcessDefinitionXMLModel>(request);
+            return await client.Execute<ProcessDefinitionXMLModel>(request);
         }
 
         /// <summary> Instantiates a given process definition.
@@ -254,7 +255,7 @@ namespace CamundaCSharpClient.Query
         /// var pd5 = camundaCl.ProcessDefinition().Key("invoice").BusinessKey("hi").start<invoice.CommunicationRootObject>(d);
         /// </code>
         /// </example>
-        public processInstanceModel Start<T>(T variables)
+        public async Task<processInstanceModel> Start<T>(T variables)
         {
             EnsureHelper.NotNull("processDefinitionVariables", variables);
             var request = new RestRequest();
@@ -272,7 +273,7 @@ namespace CamundaCSharpClient.Query
             object obj = new { variables, this.model.businessKey, this.model.caseInstanceId };
             string output = JsonConvert.SerializeObject(obj, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
             request.AddParameter("application/json", output, ParameterType.RequestBody);
-            return client.Execute<processInstanceModel>(request);
+            return await client.Execute<processInstanceModel>(request);
         }
 
         /// <summary> Activate or suspend a given process definition
@@ -285,7 +286,7 @@ namespace CamundaCSharpClient.Query
         /// var pd6 = camundaCl.ProcessDefinition().Key("invoice").Suspend(pr);
         /// </code>
         /// </example>
-        public NoContentStatus Suspend(ProcessDefinitionSuspendModel data)
+        public async Task<NoContentStatus> Suspend(ProcessDefinitionSuspendModel data)
         {
             EnsureHelper.NotNull("processDefinitionSuspend data", data);
             var request = new RestRequest();
@@ -302,7 +303,7 @@ namespace CamundaCSharpClient.Query
             request.Method = Method.PUT;
             string output = JsonConvert.SerializeObject(data);
             request.AddParameter("application/json", output, ParameterType.RequestBody);
-            var resp = this.client.Execute(request);
+            var resp =await this.client.Execute(request);
             return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
         }
     }
