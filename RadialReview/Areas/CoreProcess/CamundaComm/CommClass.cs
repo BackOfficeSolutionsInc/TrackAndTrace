@@ -22,12 +22,15 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
         // create new camunda rest client
         //"http://localhost:8080/engine-rest"		
         CamundaRestClient client = new CamundaRestClient(Config.GetCamundaServer().Url);
+
+        #region -----Process-----
+
         public async Task<IProcessDef> GetProcessDefByKey(string key)
         {
             // Call API and get JSON
             // Serialize JSON into IProcessDef
             client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
-            var getProcessDef =await client.ProcessDefinition().Key(key).singleResult();
+            var getProcessDef = await client.ProcessDefinition().Key(key).singleResult();
             return new ProcessDef(getProcessDef);
         }
 
@@ -55,19 +58,6 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
             var result = await client.ProcessInstance().Id(id).Suspended(isSuspend).Suspend();
             return result;
         }
-
-        public async Task<IEnumerable<TaskModel>> GetTaskList(string processDefId)
-        {
-            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
-            return await client.Task().Get().ProcessDefinitionId(processDefId).list();
-        }
-
-        public async Task<IEnumerable<TaskModel>> GetTaskList(List<string> processDefId)
-        {
-            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
-            return await client.Task().Get().ProcessDefinitionKeyIn(processDefId).list();
-        }
-
         public async Task<int> GetProcessInstanceCount(string processDefId)
         {
             client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
@@ -82,6 +72,36 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
             var processInstances = getList.Select(s => new ProcessInstance(s));
             return processInstances;
         }
+        #endregion
+
+        #region ----Task------
+
+        public async Task<IEnumerable<TaskModel>> GetTaskByCandidateGroup(string candidateGroup)
+        {
+            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
+            var getList = await client.Task().Get().CandidateGroup(candidateGroup).list();
+            return getList;
+        }
+
+        public async Task<IEnumerable<TaskModel>> GetTaskList(string processDefId)
+        {
+            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
+            return await client.Task().Get().ProcessDefinitionId(processDefId).list();
+        }
+
+        public async Task<IEnumerable<TaskModel>> GetTaskList(List<string> processDefId)
+        {
+            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
+            return await client.Task().Get().ProcessDefinitionKeyIn(processDefId).list();
+        }
+
+        public async Task<IEnumerable<TaskModel>> GetTaskListByInstanceId(string InstanceId)
+        {
+            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
+            return await client.Task().Get().ProcessInstanceId(InstanceId).list();
+        }
+
+        #endregion
     }
 
     public class ProcessDef : IProcessDef

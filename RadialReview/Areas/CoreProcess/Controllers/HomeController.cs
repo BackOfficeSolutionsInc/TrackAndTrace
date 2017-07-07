@@ -26,10 +26,12 @@ namespace RadialReview.Areas.CoreProcess.Controllers
 
             if (true)
             {
-                processDef.GetTaskListByProcessDefId(GetUser(), new List<string>());
+
+
+                //processDef.GetTaskListByProcessDefId(GetUser(), new List<string>());
 
                 CommClass commClass = new CommClass();
-                var getTaskList = commClass.GetTaskList("");
+                var getTaskList = commClass.GetTaskByCandidateGroup("group_1");
                 //processDef.DetachNode();
             }
 

@@ -152,9 +152,9 @@ namespace RadialReview.Areas.CoreProcess.Controllers
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
-        public JsonResult EditTask(TaskViewModel model, string id, string localid)
+        public async Task<JsonResult> EditTask(TaskViewModel model, string id, string localid)
         {
-            var updatetask = processDefAccessor.UpdateTask(GetUser(), localid, model);
+            var updatetask = await processDefAccessor.UpdateTask(GetUser(), localid, model);
             return Json(ResultObject.SilentSuccess(updatetask));
         }
 
@@ -186,9 +186,9 @@ namespace RadialReview.Areas.CoreProcess.Controllers
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
-        public JsonResult Edit(ProcessViewModel Model)
+        public async Task<JsonResult> Edit(ProcessViewModel Model)
         {
-            var updateProcess = processDefAccessor.Edit(GetUser(), Model.LocalID, Model.Name);
+            var updateProcess = await processDefAccessor.Edit(GetUser(), Model.LocalID, Model.Name);
             return Json(ResultObject.SilentSuccess(Model));
         }
 
@@ -200,9 +200,9 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         }
         [Access(AccessLevel.UserOrganization)]
 
-        public JsonResult Suspend(string id)
+        public async Task<JsonResult> Suspend(string id)
         {
-            var Suspend = processDefAccessor.ProcessSuspend(GetUser(), id, true);
+            var Suspend = await processDefAccessor.ProcessSuspend(GetUser(), id, true);
             return null;
         }
     }
