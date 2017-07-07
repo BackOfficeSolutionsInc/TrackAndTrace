@@ -22,5 +22,8 @@ namespace RadialReview.Areas.CoreProcess.Models.Process {
         public bool Suspended { get; set; }
 
         public object Links { get; set; }
+
+        //public string suspend { get; set; }
+        public List<string> Process { get; set; }
     }
 }

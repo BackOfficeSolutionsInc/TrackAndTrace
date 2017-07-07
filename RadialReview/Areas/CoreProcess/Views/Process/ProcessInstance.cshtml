@@ -36,17 +36,30 @@
 					//postAdd: "/Process/Create",
                     cells: [
                         { name: "Id", classes: "", contents: function (x) { return x.Id; } },
-                        { name: "BusinessKey", classes: "", contents: function (x) { return x.BusinessKey; } },
+                        //{ name: "BusinessKey", classes: "", contents: function (x) { return x.BusinessKey; } },
                         { name: "DefinitionId", classes: "", contents: function (x) { return x.DefinitionId } },
-                        { name: "Action", classes: "", contents: function (x) { return "<a href='/CoreProcess/Process/Suspend/" + x.Id + "'>Suspend</a>" } },
+                        { name: "Action", classes: "", contents: function (x) { return "<a href='javascript:void(0);' onclick='suspend(\"" + x.Id + "," + x.Suspended + "\");'>" + (x.Suspended ? "Activate" : "Suspend") + "</a>" } },
 						//{ edit: true },
 						//{ remove : true },
                     ],
-					nodataText: "No Task found."
+					nodataText: "No Instance found."
 
 				});
-				table.setData(datas);
+                table.setData(datas);
+                function suspend(val) {
+                    $.ajax({
+                        url: "/CoreProcess/Process/Suspend/" + val.split(',')[0] +"?status="+ val.split(',')[1],
+                        success: function (data) {
+                            location.reload();
+                    //        table.editRow(data.Object);
 
+                            
+                        },
+                        error: function (data) {
+
+                        }
+                    });
+                }
             </script>}
 
     </div>
@@ -98,9 +111,4 @@
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script>
-                $(window).on('load', function () {
-                    
-                });
 
-</script>

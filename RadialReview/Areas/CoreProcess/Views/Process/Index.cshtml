@@ -1,21 +1,22 @@
 ﻿@model List<RadialReview.Areas.CoreProcess.Models.Process.ProcessViewModel>
 @{
-	ViewBag.Title = "Index";
-	Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @section top{
-	<div class="jumbotron">
-		<h1>List of Process</h1>
-	</div>
+    <div class="jumbotron">
+        <h1>List of Process</h1>
+    </div>
 }
 
 <br />
 <div class="row">
-	<div class="col-sm-8 col-lg-12">
-		<div id="duration-table"></div>
-		@using (Html.BeginScripts()) {
-			<script>
+    <div class="col-sm-8 col-lg-12">
+        <div id="duration-table"></div>
+        @using (Html.BeginScripts())
+        {
+            <script>
 				function ValidateForm(d) {
 					if (d.Name == "") {
 						return "Name is required.";
@@ -34,21 +35,51 @@
 					nodataText: "No Process. Click add to create one.",
 					clickAdd: "/Process/Create",
 					postAdd: "/Process/Create",
-					cells: [
+                    cells: [
                         { name: "Name", classes: "", contents: function (x) { return x.Name; } },
                         { name: "Deploy", classes: "", contents: function (x) { return x.status; } },
                         { name: "Instances", classes: "", contents: function (x) { return x.Count; } },
                         { name: "Action", classes: "", contents: function (x) { return "<a href='/CoreProcess/Process/Tasks/" + x.Id + "'>Task</a>"
 							+ "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" + "<a href='javascript:void(0);' onclick='startProcess("+ x.Id +");'>Start</a>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp"
-							+ "<a href='/CoreProcess/Process/ProcessInstance/" + x.LocalID + "'>Instances</a>"}},
-						//{ edit: true },
-						{ remove : true },
+                            + "<a onclick='startProcess(" + x.Id + ");' href='/CoreProcess/Process/ProcessInstance/" + x.LocalID + "'>Instances</a>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp"
+                            + "<a href='javascript:void(0);' onclick='deleteprocess(" + x.Id +","+ x.Count+ ");' >Delete</a>"
+                        }
+                        },
+                        //{ edit: true },
+                        //{ remove: true },
 					],
-					nodataText: "No Task found."
+					nodataText: "No Process found."
 
 				});
-				table.setData(datas);
+                table.setData(datas);
 
+                function deleteprocess(x,val)
+                {
+                    if (val != 0) {
+                        var title = "This will delete all running instances associated with this process.</br> Are you sure you want to delete!";
+                        show(x, title);
+                    }
+                    else
+                    {
+                        var title = "Are you sure you want to remove!";
+                        show(x, title);
+                    }
+                }
+                function show(x, title)
+                {
+                    showModal({
+                        icon: "warning",
+                        title: title,
+                        success: function (d) {
+                            $.ajax({
+                                url: '/CoreProcess/Process/Delete/' + x,
+                                success: function (data) {
+                                    table.removeRow(data.Object);
+                                }
+                            });
+                        }
+                    });
+                }
 				function startProcess(id){
 					$.ajax({
 						url: "/CoreProcess/Process/StartProcess/" + id,
@@ -62,62 +93,63 @@
 					});
                 }
 
-			</script>}
+            </script>}
 
-	</div>
+    </div>
 </div>
 
-@using (Html.BeginStyles()) {
-	@Styles.Render("~/Content/MeetingEdit")
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet" />
-	<style>
-		.durations .form-group {
-			margin-bottom: 4px;
-		}
+@using (Html.BeginStyles())
+{
+    @Styles.Render("~/Content/MeetingEdit")
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet" />
+    <style>
+        .durations .form-group {
+            margin-bottom: 4px;
+        }
 
-		a:hover {
-			text-decoration: none;
-		}
+        a:hover {
+            text-decoration: none;
+        }
 
-		html, body {
-			background-color: #eee;
-		}
+        html, body {
+            background-color: #eee;
+        }
 
-		.width80 {
-			width: 80px;
-		}
+        .width80 {
+            width: 80px;
+        }
 
-		.table .btn-default {
-			color: #5e5e5e !important;
-		}
+        .table .btn-default {
+            color: #5e5e5e !important;
+        }
 
-		.body-full-width #alerts:not(:empty) {
-			margin-top: 20px;
-			margin-bottom: -15px;
-		}
+        .body-full-width #alerts:not(:empty) {
+            margin-top: 20px;
+            margin-bottom: -15px;
+        }
 
-		html, body {
-			background-color: #eee;
-		}
+        html, body {
+            background-color: #eee;
+        }
 
-		.panel {
-			border: none;
-		}
+        .panel {
+            border: none;
+        }
 
-		.grayRow {
-			/*background-color: #f2f2f2;*/
-		}
-	</style>
+        .grayRow {
+            /*background-color: #f2f2f2;*/
+        }
+    </style>
 }
 
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script>
-	$(window).on('load', function () {
-		$("table thead tr th").next().next().attr("colspan", "3");
-		//$("table tbody tr td").next().next().attr("colspan", "0");
-		$("table tbody tr td").next().next().next().attr("width", "50px");
-	});
+                $(window).on('load', function () {
+                    $("table thead tr th").next().next().attr("colspan", "3");
+                    //$("table tbody tr td").next().next().attr("colspan", "0");
+                    $("table tbody tr td").next().next().next().attr("width", "50px");
+                });
 
 </script>

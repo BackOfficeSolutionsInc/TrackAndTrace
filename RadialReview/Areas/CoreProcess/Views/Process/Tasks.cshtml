@@ -56,7 +56,9 @@
 								if (d.name == "") {
 									return "Name is required.";
 								}
-							}
+                            }
+
+
 
 							var datas = @Html.ArrayToString(Model.taskList);
 							var table = DataTable({
@@ -67,7 +69,8 @@
 								clickReorder: "/Process/ReorderTask?id=@Model.LocalID&oldOrder={1}&newOrder={2}",
 								clickRemove: "/Process/DeleteTask/{0}?localid=@Model.LocalID",
 								clickEdit: "/Process/EditTask/{0}?localid=@Model.LocalID",
-								addButton:{text: "Publish"},
+								//addButton:{text: "Publish"},
+                                addButton: { text: "Publish"},
 								nodataText: "No Process. Click add to create one.",
 								@*clickAdd: "/Process/CreateTask/@Model.LocalID",
 								postAdd: "/Process/CreateTask",*@
@@ -80,14 +83,30 @@
                                     //{ name: "description", classes: "fullWidth", contents: function(x) { return x.description; } },
                                     { name: "action", classes: "nowrap", edit: true},
 									//{ edit: true ,},
-									{remove:true},
+									//{remove:true},
 								],
 								nodataText: "No Task found."
 								@*data: @Html.ArrayToString(Model.taskList),*@
-							});
+                            });
 
-							function PublishProcess(){
-								window.location = "/CoreProcess/Process/Publish/" + "@Model.LocalID";
+                            function PublishProcess(val) {
+                                if (val.data.length != 0) {
+
+                                    window.location = "/CoreProcess/Process/Publish/" + "@Model.LocalID";
+                                }
+                                else {
+                                    $.ajax({
+                                        url: "/CoreProcess/Process/Publish/",
+                                        success: function (data) {
+                                            console.log(data);
+                                            table.editRow(data.Object);
+                                        },
+                                        error: function (data) {
+
+                                        }
+                                    });
+                                }
+
 							}
                             function reload(model) {
                                 var name = model.Object.Name;
