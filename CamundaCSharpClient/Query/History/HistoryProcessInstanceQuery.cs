@@ -6,7 +6,6 @@ using CamundaCSharpClient.Helper;
 using CamundaCSharpClient.Model;
 using CamundaCSharpClient.Model.History;
 using RestSharp;
-using System.Threading.Tasks;
 
 namespace CamundaCSharpClient.Query.History
 {
@@ -190,11 +189,11 @@ namespace CamundaCSharpClient.Query.History
         /// var hi4 = camundaCl.History().ProcessInstance().ProcessDefinitionKey("invoice").StartedBy("salajlan").list();
         /// </code>
         /// </example>
-        public async Task<List<HistoryProcessInstanceModel>> list()
+        public List<HistoryProcessInstanceModel> list()
         {
             var request = new RestRequest();
             request.Resource = "/history/process-instance";
-            return await this.List<HistoryProcessInstanceModel>(QueryHelper.BuildQuery<HistoryProcessInstanceQueryModel>(this.model, request));
+            return this.List<HistoryProcessInstanceModel>(QueryHelper.BuildQuery<HistoryProcessInstanceQueryModel>(this.model, request));
         }
 
         /// <summary>
@@ -206,11 +205,11 @@ namespace CamundaCSharpClient.Query.History
         /// var hi3 = camundaCl.History().ProcessInstance().ProcessDefinitionKey("invoice").count();
         /// </code>
         /// </example>
-        public async Task<Count> count()
+        public Count count()
         {
             var request = new RestRequest();
             request.Resource = "/history/process-instance/count";
-            return await this.Count(QueryHelper.BuildQuery<HistoryProcessInstanceQueryModel>(this.model, request));
+            return this.Count(QueryHelper.BuildQuery<HistoryProcessInstanceQueryModel>(this.model, request));
         }
 
         /// <summary>
@@ -222,12 +221,12 @@ namespace CamundaCSharpClient.Query.History
         /// var hi5 = camundaCl.History().ProcessInstance().ProcessInstanceId("09ece517-77ee-11e5-8af1-40a8f0a54b22").singleResult();
         /// </code>
         /// </example>
-        public async Task<HistoryProcessInstanceModel> singleResult()
+        public HistoryProcessInstanceModel singleResult()
         {
             EnsureHelper.NotNull("ProcessInctanceId", this.model.processInstanceId);
             var request = new RestRequest();
             request.Resource = "/history/process-instance/" + this.model.processInstanceId;
-            return await this.SingleResult<HistoryProcessInstanceModel>(request);
+            return this.SingleResult<HistoryProcessInstanceModel>(request);
         }
     }
 }

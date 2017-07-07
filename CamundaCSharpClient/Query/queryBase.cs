@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using CamundaCSharpClient.Model;
 using RestSharp;
-using System.Threading.Tasks;
 
 namespace CamundaCSharpClient.Query
 {
@@ -15,21 +14,21 @@ namespace CamundaCSharpClient.Query
         public QueryBase(CamundaRestClient client)
         {
             this.client = client;
+        }        
+
+        protected List<T> List<T>(IRestRequest request)
+        {
+            return this.client.Execute<List<T>>(request);
+        }
+        
+        protected T SingleResult<T>(IRestRequest request) where T : new()
+        {
+            return this.client.Execute<T>(request);
         }
 
-        protected async Task<List<T>> List<T>(IRestRequest request)
+        protected Count Count(IRestRequest request)
         {
-            return await this.client.Execute<List<T>>(request);
-        }
-
-        protected async Task<T> SingleResult<T>(IRestRequest request) where T : new()
-        {
-            return await this.client.Execute<T>(request);
-        }
-
-        protected async Task<Count> Count(IRestRequest request)
-        {
-            return await this.client.Execute<Count>(request);
+            return this.client.Execute<Count>(request);
         }
     }
 }

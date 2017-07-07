@@ -6,7 +6,6 @@ using CamundaCSharpClient.Model;
 using CamundaCSharpClient.Helper;
 using RestSharp;
 using CamundaCSharpClient.Model.ProcessInstance;
-using System.Threading.Tasks;
 
 namespace CamundaCSharpClient.Query.ProcessInstance
 {
@@ -140,18 +139,18 @@ namespace CamundaCSharpClient.Query.ProcessInstance
             return this;
         }        
 
-        public async Task<List<processInstanceModel>> list()
+        public List<processInstanceModel> list()
         {
             var request = new RestRequest();
             request.Resource = "/process-instance";
-            return await this.List<processInstanceModel>(QueryHelper.BuildQuery<GetProcessInstanceQueryModel>(this.model, request));
+            return this.List<processInstanceModel>(QueryHelper.BuildQuery<GetProcessInstanceQueryModel>(this.model, request));
         }
 
-        public async Task<Count> count()
+        public Count count()
         {
             var request = new RestRequest();
             request.Resource = "/process-instance/count";
-            return await this.Count(QueryHelper.BuildQuery<GetProcessInstanceQueryModel>(this.model, request));
+            return this.Count(QueryHelper.BuildQuery<GetProcessInstanceQueryModel>(this.model, request));
         }        
     }
 }

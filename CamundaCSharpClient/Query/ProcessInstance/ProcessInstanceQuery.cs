@@ -7,7 +7,6 @@ using CamundaCSharpClient.Model;
 using RestSharp;
 using Newtonsoft.Json;
 using CamundaCSharpClient.Model.ProcessInstance;
-using System.Threading.Tasks;
 
 namespace CamundaCSharpClient.Query.ProcessInstance
 {
@@ -81,12 +80,12 @@ namespace CamundaCSharpClient.Query.ProcessInstance
         /// var pi = camundaCl.ProcessInstance().Id("a0efef43-7d51-11e5-beb3-40a8f0a54b22").SingleResult();
         /// </code>
         /// </example>
-        public async Task<processInstanceModel> SingleResult()
+        public processInstanceModel SingleResult()
         {
             EnsureHelper.NotNull("ProcessInstanceId", this.model.id);
             var request = new RestRequest();
             request.Resource = "/process-instance/" + this.model.id;
-            return await base.SingleResult<processInstanceModel>(request);
+            return base.SingleResult<processInstanceModel>(request);
         }
 
         /// <summary>Deletes a running process instance. or Deletes a variable of a given process instance.
@@ -103,7 +102,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
         /// var pi3 = camundaCl.ProcessInstance().Id("182112c8-78c1-11e5-beb3-40a8f0a54b22").VarId("test varriable").Delete();
         /// </code>
         /// </example>
-        public async Task<NoContentStatus> Delete()
+        public NoContentStatus Delete()
         {
             EnsureHelper.NotNull("ProcessInstanceId", this.model.id);
             var request = new RestRequest();
@@ -117,7 +116,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
             }
 
             request.Method = Method.DELETE;
-            var resp =await this.client.Execute(request);
+            var resp = this.client.Execute(request);
             return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
         }
 
@@ -140,7 +139,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
         ///
         /// </code>
         /// </example>
-        public async Task<T> Variables<T>() where T : new()
+        public T Variables<T>() where T : new()
         {
             EnsureHelper.NotNull("ProcessInstanceId", this.model.id);
             var request = new RestRequest();
@@ -155,7 +154,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
 
             string output = JsonConvert.SerializeObject(this.model.deserializeValues);
             request.AddParameter("application/json", output, ParameterType.RequestBody);
-            return await client.Execute<T>(request);
+            return client.Execute<T>(request);
         }
 
         /// <summary>
@@ -170,7 +169,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
         /// <code>
         /// </code>
         /// </example>
-        public async Task<NoContentStatus> Variables<T>(T modifications, string[] deletions)
+        public NoContentStatus Variables<T>(T modifications, string[] deletions)
         {
             EnsureHelper.NotNull("ProcessInstanceId", this.model.id);
             var request = new RestRequest();
@@ -179,7 +178,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
             object obj = new { modifications, deletions };
             string output = JsonConvert.SerializeObject(obj);
             request.AddParameter("application/json", output, ParameterType.RequestBody);
-            var resp =await this.client.Execute(request);
+            var resp = this.client.Execute(request);
             return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
         }
 
@@ -192,7 +191,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
         /// var pi7 = camundaCl.ProcessInstance().Id("84b04b82-7cbc-11e5-beb3-40a8f0a54b22").VarId("DeptHead").Variables<invoice.DeptHead>(new invoice.DeptHead() { value = "salajlan" });
         /// </code>
         /// </example>
-        public async Task<NoContentStatus> Variables<T>(T variable)
+        public NoContentStatus Variables<T>(T variable)
         {
             EnsureHelper.NotNull("ProcessInstanceId", this.model.id);
             EnsureHelper.NotNull("variableData", variable);
@@ -202,7 +201,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
             request.Method = Method.PUT;
             string output = JsonConvert.SerializeObject(variable);
             request.AddParameter("application/json", output, ParameterType.RequestBody);
-            var resp =await this.client.Execute(request);
+            var resp = this.client.Execute(request);
             return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
         }
 
@@ -220,7 +219,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
         /// </code>
         /// </example>
         /// <returns>noContentStatus</returns>
-        public async Task<NoContentStatus> Suspend()
+        public NoContentStatus Suspend()
         {
             EnsureHelper.NotNull("Suspended", this.model.suspended);
             object obj;
@@ -245,7 +244,7 @@ namespace CamundaCSharpClient.Query.ProcessInstance
             request.Method = Method.PUT;
             string output = JsonConvert.SerializeObject(obj);
             request.AddParameter("application/json", output, ParameterType.RequestBody);
-            var resp =await this.client.Execute(request);
+            var resp = this.client.Execute(request);
             return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
         }
 
@@ -259,12 +258,12 @@ namespace CamundaCSharpClient.Query.ProcessInstance
         /// </code>
         /// </example>
         /// <returns>activityInstance</returns>
-        public async Task<ActivityInstanceModel> ActivityInstance()
+        public ActivityInstanceModel ActivityInstance()
         {
             EnsureHelper.NotNull("processInstanceId", this.model.id);
             var request = new RestRequest();
             request.Resource = "/process-instance/" + this.model.id + "/activity-instances";
-            return await client.Execute<ActivityInstanceModel>(request);
+            return client.Execute<ActivityInstanceModel>(request);
         }
     }
 }

@@ -6,7 +6,6 @@ using CamundaCSharpClient.Model.History;
 using RestSharp;
 using CamundaCSharpClient.Helper;
 using CamundaCSharpClient.Model;
-using System.Threading.Tasks;
 
 namespace CamundaCSharpClient.Query.History
 {
@@ -124,11 +123,11 @@ namespace CamundaCSharpClient.Query.History
         /// camundaCl.History().VariableInstance().VariableName("scheduleDate").List()
         /// </code>
         /// </example>
-        public async Task<List<HistoryVariableInstanceModel>> List()
+        public List<HistoryVariableInstanceModel> List()
         {
             var request = new RestRequest();
             request.Resource = "/history/variable-instance";
-            return await this.List<HistoryVariableInstanceModel>(QueryHelper.BuildQuery<HistoryVariableInstanceQueryModel>(this.model, request));
+            return this.List<HistoryVariableInstanceModel>(QueryHelper.BuildQuery<HistoryVariableInstanceQueryModel>(this.model, request));
         }
 
         /// <summary>
@@ -140,11 +139,11 @@ namespace CamundaCSharpClient.Query.History
         /// camundaCl.History().VariableInstance().VariableName("scheduleDate").Count()
         /// </code>
         /// </example>
-        public async Task<Count> Count()
+        public Count Count()
         {
             var request = new RestRequest();
             request.Resource = "/history/variable-instance/count";
-            return await this.Count(QueryHelper.BuildQuery<HistoryVariableInstanceQueryModel>(this.model, request));
+            return this.Count(QueryHelper.BuildQuery<HistoryVariableInstanceQueryModel>(this.model, request));
         }
     }
 }
