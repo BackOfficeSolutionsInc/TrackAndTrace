@@ -395,6 +395,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
                     XNamespace camunda = "http://camunda.org/schema/1.0/bpmn";
                     string userTaskId = "Task" + Guid.NewGuid().ToString().Replace("-", "");
+                    string teamId = "rgm_" + model.TeamId;
                     if (sourceCounter == 0)
                     {
                         getAllElement.Where(m => m.Attribute("id").Value == getStartProcessElement.Attribute("id").Value).FirstOrDefault().AddAfterSelf(
@@ -405,7 +406,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                         if (targetCounter == 0)
                         {
                             getAllElement.Where(m => m.Attribute("id").Value == getEndProcessElement.Attribute("id").Value).FirstOrDefault().AddBeforeSelf(
-                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name), new XAttribute(camunda + "candidateGroups", "group_1")),
+                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name), new XAttribute(camunda + "candidateGroups", teamId)),
                                         new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
                                         new XAttribute("sourceRef", userTaskId), new XAttribute("targetRef", getEndProcessElement.Attribute("id").Value))
                                       );
@@ -414,7 +415,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                         {
                             var getEndEventSrc = getAllElement.Where(x => (x.Attribute("sourceRef") != null ? x.Attribute("sourceRef").Value : "") == getEndProcessElement.Attribute("id").Value).FirstOrDefault();
                             getAllElement.Where(m => m.Attribute("id").Value == getEndEventSrc.Attribute("id").Value).FirstOrDefault().AddAfterSelf(
-                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name), new XAttribute(camunda + "candidateGroups", "group_1")),
+                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name), new XAttribute(camunda + "candidateGroups", teamId)),
                                         new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
                                         new XAttribute("sourceRef", getEndEventSrc.Attribute("id").Value), new XAttribute("targetRef", getEndProcessElement.Attribute("id").Value))
                                       );
@@ -428,7 +429,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                             getAllElement.Where(m => m.Attribute("id").Value == getStartProcessElement.Attribute("id").Value).FirstOrDefault().AddAfterSelf(
                                       new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
                                       new XAttribute("sourceRef", getStartProcessElement.Attribute("id").Value), new XAttribute("targetRef", userTaskId)),
-                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name), new XAttribute(camunda + "candidateGroups", "group_1")),
+                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name), new XAttribute(camunda + "candidateGroups", teamId)),
                                         new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
                                         new XAttribute("sourceRef", userTaskId), new XAttribute("targetRef", getEndProcessElement.Attribute("id").Value))
                                       );
@@ -437,7 +438,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                         {
                             var getEndEventSrc = getAllElement.Where(x => (x.Attribute("targetRef") != null ? x.Attribute("targetRef").Value : "") == getEndProcessElement.Attribute("id").Value).FirstOrDefault();
                             getAllElement.Where(m => m.Attribute("id").Value == getEndEventSrc.Attribute("id").Value).FirstOrDefault().AddAfterSelf(
-                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name), new XAttribute(camunda + "candidateGroups", "group_1")),
+                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name), new XAttribute(camunda + "candidateGroups", teamId)),
                                         new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
                                         new XAttribute("sourceRef", userTaskId), new XAttribute("targetRef", getEndProcessElement.Attribute("id").Value))
                                       );
@@ -450,7 +451,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
                     xmlDocument.Save(fileStream);
                     fileStream.Seek(0, SeekOrigin.Begin);
-                    XDocument x1 = XDocument.Load(fileStream);
+                    //XDocument x1 = XDocument.Load(fileStream);
                     fileStream.Position = 0;
 
                     await UploadFileToServer(fileStream, getProcessDefFileDetails.FileKey);
@@ -480,6 +481,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                         var getfileStream = await GetFileFromServer(getProcessDefFileDetails.FileKey);
                         getfileStream.Seek(0, SeekOrigin.Begin);
                         XNamespace bpmn = "http://www.omg.org/spec/BPMN/20100524/MODEL";
+                        XNamespace camunda = "http://camunda.org/schema/1.0/bpmn";
                         XDocument xmlDocument = XDocument.Load(getfileStream);
                         var getAllElement = xmlDocument.Root.Element(bpmn + "process").Elements(bpmn + "userTask");
 
@@ -489,7 +491,8 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                             {
                                 description = (item.Attribute("description") != null ? item.Attribute("description").Value : ""),
                                 name = item.Attribute("name").Value,
-                                Id = item.Attribute("id").Value
+                                Id = item.Attribute("id").Value,
+                                TeamId = (item.Attribute(camunda + "candidateGroups").Value != null ? Convert.ToInt64(item.Attribute(camunda + "candidateGroups").Value.Split('_')[1]) : Convert.ToInt64(null)),
                             });
                         }
                     }
@@ -529,12 +532,15 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     XNamespace bpmn = "http://www.omg.org/spec/BPMN/20100524/MODEL";
                     XDocument xmlDocument = XDocument.Load(getfileStream);
                     var getAllElement = xmlDocument.Root.Element(bpmn + "process").Elements();
+                    XNamespace camunda = "http://camunda.org/schema/1.0/bpmn";
+                    string teamId = "rgm_" + model.TeamId;
 
                     //update name element
                     getAllElement.Where(x => x.Attribute("id").Value == model.Id.ToString()).FirstOrDefault().SetAttributeValue("name", model.name);
 
                     //update description element
-                    //getAllElement.Where(x => x.Attribute("id").Value == model.Id.ToString()).FirstOrDefault().SetAttributeValue("description", model.description);
+                    getAllElement.Where(x => x.Attribute("id").Value == model.Id.ToString()).FirstOrDefault().SetAttributeValue(camunda + "candidateGroups", teamId);
+
 
                     xmlDocument.Save(fileStream);
                     fileStream.Seek(0, SeekOrigin.Begin);
