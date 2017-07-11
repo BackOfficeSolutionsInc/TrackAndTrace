@@ -18,11 +18,17 @@
 		nameAttr = " name=" + new HtmlString(ViewBag.Name);
 	}
 
+	var multipleAttr = "";
+	if (ViewBag.multiple != null) {
+		multipleAttr = " multiple=" + new HtmlString("");
+	}
+
 	var searchUrl = ViewBag.SearchUrl ?? "/Search/OrganizationUsers";
 }
 
 
-<select id="selectusers-@guid" class="selectusers selectusers-@guid" @nameAttr style="width:100%;padding-right:1px;"></select>
+<select id="selectusers-@guid" class="selectusers selectusers-@guid" @nameAttr style="width:100%;padding-right:1px;" @multipleAttr></select>
+
 <input type="hidden" @(nameAttr + "Text") />
 <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet" />
 <style>

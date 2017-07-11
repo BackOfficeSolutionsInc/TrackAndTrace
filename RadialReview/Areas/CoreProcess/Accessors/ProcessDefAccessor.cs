@@ -492,7 +492,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                                 description = (item.Attribute("description") != null ? item.Attribute("description").Value : ""),
                                 name = item.Attribute("name").Value,
                                 Id = item.Attribute("id").Value,
-                                TeamId = (item.Attribute(camunda + "candidateGroups").Value != null ? Convert.ToInt64(item.Attribute(camunda + "candidateGroups").Value.Split('_')[1]) : Convert.ToInt64(null)),
+                                //TeamId = (item.Attribute(camunda + "candidateGroups") != null ? Convert.ToInt64(item.Attribute(camunda + "candidateGroups").Value.Split('_')[1]) : Convert.ToInt64(null)),
                             });
                         }
                     }
