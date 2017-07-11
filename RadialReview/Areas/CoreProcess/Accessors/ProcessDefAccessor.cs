@@ -4,6 +4,7 @@ using Amazon.S3.Transfer;
 using CamundaCSharpClient.Model.Deployment;
 using log4net;
 using NHibernate;
+using RadialReview.Accessors;
 using RadialReview.Areas.CoreProcess.CamundaComm;
 using RadialReview.Areas.CoreProcess.Interfaces;
 using RadialReview.Areas.CoreProcess.Models.Interfaces;
@@ -395,7 +396,21 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
                     XNamespace camunda = "http://camunda.org/schema/1.0/bpmn";
                     string userTaskId = "Task" + Guid.NewGuid().ToString().Replace("-", "");
-                    string teamId = "rgm_" + model.TeamId;
+                    string candidateGroups = string.Empty;
+                    if (model.SelectedMemberId != null)
+                    {
+                        if (model.SelectedMemberId.Any())
+                        {
+                            foreach (var item in model.SelectedMemberId)
+                            {
+                                if (string.IsNullOrEmpty(candidateGroups))
+                                    candidateGroups = "rgm_" + item;
+                                else
+                                    candidateGroups += ", rgm_" + item;
+                            }
+                        }
+                    }
+
                     if (sourceCounter == 0)
                     {
                         getAllElement.Where(m => m.Attribute("id").Value == getStartProcessElement.Attribute("id").Value).FirstOrDefault().AddAfterSelf(
@@ -406,7 +421,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                         if (targetCounter == 0)
                         {
                             getAllElement.Where(m => m.Attribute("id").Value == getEndProcessElement.Attribute("id").Value).FirstOrDefault().AddBeforeSelf(
-                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name), new XAttribute(camunda + "candidateGroups", teamId)),
+                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name), new XAttribute(camunda + "candidateGroups", candidateGroups)),
                                         new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
                                         new XAttribute("sourceRef", userTaskId), new XAttribute("targetRef", getEndProcessElement.Attribute("id").Value))
                                       );
@@ -415,7 +430,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                         {
                             var getEndEventSrc = getAllElement.Where(x => (x.Attribute("sourceRef") != null ? x.Attribute("sourceRef").Value : "") == getEndProcessElement.Attribute("id").Value).FirstOrDefault();
                             getAllElement.Where(m => m.Attribute("id").Value == getEndEventSrc.Attribute("id").Value).FirstOrDefault().AddAfterSelf(
-                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name), new XAttribute(camunda + "candidateGroups", teamId)),
+                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name), new XAttribute(camunda + "candidateGroups", candidateGroups)),
                                         new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
                                         new XAttribute("sourceRef", getEndEventSrc.Attribute("id").Value), new XAttribute("targetRef", getEndProcessElement.Attribute("id").Value))
                                       );
@@ -429,7 +444,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                             getAllElement.Where(m => m.Attribute("id").Value == getStartProcessElement.Attribute("id").Value).FirstOrDefault().AddAfterSelf(
                                       new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
                                       new XAttribute("sourceRef", getStartProcessElement.Attribute("id").Value), new XAttribute("targetRef", userTaskId)),
-                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name), new XAttribute(camunda + "candidateGroups", teamId)),
+                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name), new XAttribute(camunda + "candidateGroups", candidateGroups)),
                                         new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
                                         new XAttribute("sourceRef", userTaskId), new XAttribute("targetRef", getEndProcessElement.Attribute("id").Value))
                                       );
@@ -438,7 +453,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                         {
                             var getEndEventSrc = getAllElement.Where(x => (x.Attribute("targetRef") != null ? x.Attribute("targetRef").Value : "") == getEndProcessElement.Attribute("id").Value).FirstOrDefault();
                             getAllElement.Where(m => m.Attribute("id").Value == getEndEventSrc.Attribute("id").Value).FirstOrDefault().AddAfterSelf(
-                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name), new XAttribute(camunda + "candidateGroups", teamId)),
+                                        new XElement(bpmn + "userTask", new XAttribute("id", userTaskId), new XAttribute("name", model.name), new XAttribute(camunda + "candidateGroups", candidateGroups)),
                                         new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
                                         new XAttribute("sourceRef", userTaskId), new XAttribute("targetRef", getEndProcessElement.Attribute("id").Value))
                                       );
@@ -487,12 +502,15 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
                         foreach (var item in getAllElement)
                         {
+                            var getCandidateGroup = (item.Attribute(camunda + "candidateGroups") != null ? (item.Attribute(camunda + "candidateGroups").Value) : "");
                             taskList.Add(new TaskViewModel()
                             {
                                 description = (item.Attribute("description") != null ? item.Attribute("description").Value : ""),
                                 name = item.Attribute("name").Value,
                                 Id = item.Attribute("id").Value,
-                                //TeamId = (item.Attribute(camunda + "candidateGroups") != null ? Convert.ToInt64(item.Attribute(camunda + "candidateGroups").Value.Split('_')[1]) : Convert.ToInt64(null)),
+                                SelectedMemberId = GetMemberIds(getCandidateGroup),
+                                SelectedMemberName = GetMemberName(caller, getCandidateGroup,null),
+                                CandidateList = GetCandidateGroupList(caller, getCandidateGroup)
                             });
                         }
                     }
@@ -506,17 +524,100 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return taskList;
         }
 
+        public long[] GetMemberIds(string memberIds)
+        {
+            List<long> idList = new List<long>();
+            if (!string.IsNullOrEmpty(memberIds))
+            {
+                var getMemberIds = memberIds.Split(',');
+                if (getMemberIds != null)
+                {
+                    if (getMemberIds.Any())
+                    {
+                        foreach (var item in getMemberIds)
+                        {
+                            var getItem = item.Split('_');
+                            idList.Add(Convert.ToInt64(getItem[1]));
+                        }
+                    }
+                }
+            }
+            return idList.ToArray();
+        }
+
+        public string GetMemberName(UserOrganizationModel caller, string candidateGroupName, long[] memberIds)
+        {
+            long[] getMemberIds = null;
+            if (memberIds!=null && memberIds.Any())
+            {
+                getMemberIds = memberIds;
+            }
+            else
+            {
+                getMemberIds = GetMemberIds(candidateGroupName);
+            }
+
+            ResponsibilitiesAccessor respAccessor = new ResponsibilitiesAccessor();
+            string memberName = string.Empty;
+            if (getMemberIds != null)
+            {
+                if (getMemberIds.Any())
+                {
+                    foreach (var item in getMemberIds)
+                    {
+                        var getMemberName = respAccessor.GetResponsibilityGroup(caller, item).GetName();
+                        if (!string.IsNullOrEmpty(getMemberName))
+                        {
+                            if (string.IsNullOrEmpty(memberName))
+                                memberName = getMemberName;
+                            else
+                                memberName += ", " + getMemberName;
+                        }
+                    }
+                }
+            }
+            return memberName;
+        }
+
+        public List<CandidateGroupViewModel> GetCandidateGroupList(UserOrganizationModel caller, string candidateGroupName)
+        {
+            List<CandidateGroupViewModel> list = new List<CandidateGroupViewModel>();
+            var getMemberIds = GetMemberIds(candidateGroupName);
+            ResponsibilitiesAccessor respAccessor = new ResponsibilitiesAccessor();
+            string memberName = string.Empty;
+            if (getMemberIds != null)
+            {
+                if (getMemberIds.Any())
+                {
+                    foreach (var item in getMemberIds)
+                    {
+                        var getMemberName = respAccessor.GetResponsibilityGroup(caller, item).GetName();
+                        if (!string.IsNullOrEmpty(getMemberName))
+                        {
+                            list.Add(new CandidateGroupViewModel()
+                            {
+                                Id = item,
+                                Name = getMemberName
+                            });
+                        }
+                    }
+                }
+            }
+            return list;
+        }
+
+
         public async Task<TaskViewModel> UpdateTask(UserOrganizationModel caller, string localId, TaskViewModel model)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 PermissionsUtility.Create(s, caller);
-                var updated = await UpdateTask(s, localId, model);
+                var updated = await UpdateTask(s, localId, model,caller);
                 return updated;
             }
         }
 
-        public async Task<TaskViewModel> UpdateTask(ISession s, string localId, TaskViewModel model)
+        public async Task<TaskViewModel> UpdateTask(ISession s, string localId, TaskViewModel model, UserOrganizationModel caller)
         {
             TaskViewModel modelObj = new TaskViewModel();
             modelObj = model;
@@ -533,13 +634,26 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     XDocument xmlDocument = XDocument.Load(getfileStream);
                     var getAllElement = xmlDocument.Root.Element(bpmn + "process").Elements();
                     XNamespace camunda = "http://camunda.org/schema/1.0/bpmn";
-                    string teamId = "rgm_" + model.TeamId;
+                    string candidateGroups = string.Empty;
+                    if (model.SelectedMemberId != null)
+                    {
+                        if (model.SelectedMemberId.Any())
+                        {
+                            foreach (var item in model.SelectedMemberId)
+                            {
+                                if (string.IsNullOrEmpty(candidateGroups))
+                                    candidateGroups = "rgm_" + item;
+                                else
+                                    candidateGroups += ", rgm_" + item;
+                            }
+                        }
+                    }
 
                     //update name element
                     getAllElement.Where(x => x.Attribute("id").Value == model.Id.ToString()).FirstOrDefault().SetAttributeValue("name", model.name);
 
                     //update description element
-                    getAllElement.Where(x => x.Attribute("id").Value == model.Id.ToString()).FirstOrDefault().SetAttributeValue(camunda + "candidateGroups", teamId);
+                    getAllElement.Where(x => x.Attribute("id").Value == model.Id.ToString()).FirstOrDefault().SetAttributeValue(camunda + "candidateGroups", candidateGroups);
 
 
                     xmlDocument.Save(fileStream);
@@ -548,6 +662,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
                     await UploadFileToServer(fileStream, getProcessDefFileDetails.FileKey);
 
+                    modelObj.SelectedMemberName = GetMemberName(caller, "", model.SelectedMemberId);
                 }
             }
             catch (Exception ex)

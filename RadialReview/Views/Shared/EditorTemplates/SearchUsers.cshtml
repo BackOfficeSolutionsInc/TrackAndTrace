@@ -1,40 +1,64 @@
-﻿
+﻿@using RadialReview.Areas.CoreProcess.Models.Process
+@using System.Collections.Generic
+
 @{
-	var guid = Guid.NewGuid().ToString().Replace("-", "");
-	var href = ViewBag.Href; //"/Account/SetRole/{0}"
-	var onclick = ViewBag.OnClick;
-	var tag = new HtmlString("<div");
-	var tagEnd = "</div>";
-	if (href != null) {
-		onclick = (onclick ?? "") + ";window.location=\"" + string.Format(href, "\"+d.Id+\"") + "\";";
-	}
-	//if (onclick != null) {
-	//	tag = new HtmlString(tag + " onclick=\\\"" + string.Format(onclick, "\\\"+d.Id+\\\"") + "\\\" ");
-	//}
-	tag = new HtmlString(tag + ">");
+    var guid = Guid.NewGuid().ToString().Replace("-", "");
+    var href = ViewBag.Href; //"/Account/SetRole/{0}"
+    var onclick = ViewBag.OnClick;
+    var tag = new HtmlString("<div");
+    var tagEnd = "</div>";
+    var getCandidateList = ViewBag.SelectedItemList as List<CandidateGroupViewModel>;
+    if (href != null)
+    {
+        onclick = (onclick ?? "") + ";window.location=\"" + string.Format(href, "\"+d.Id+\"") + "\";";
+    }
+    //if (onclick != null) {
+    //	tag = new HtmlString(tag + " onclick=\\\"" + string.Format(onclick, "\\\"+d.Id+\\\"") + "\\\" ");
+    //}
+    tag = new HtmlString(tag + ">");
 
-	var nameAttr = "";
-	if (ViewBag.Name != null) {
-		nameAttr = " name=" + new HtmlString(ViewBag.Name);
-	}
+    var nameAttr = "";
+    if (ViewBag.Name != null)
+    {
+        nameAttr = " name=" + new HtmlString(ViewBag.Name);
 
-	var multipleAttr = "";
-	if (ViewBag.multiple != null) {
-		multipleAttr = " multiple=" + new HtmlString("");
-	}
+    }
 
-	var searchUrl = ViewBag.SearchUrl ?? "/Search/OrganizationUsers";
+    var multipleAttr = "";
+    if (ViewBag.multiple != null)
+    {
+        multipleAttr = " multiple=" + new HtmlString("");
+    }
+
+    var searchUrl = ViewBag.SearchUrl ?? "/Search/OrganizationUsers";
+
+
 }
 
 
-<select id="selectusers-@guid" class="selectusers selectusers-@guid" @nameAttr style="width:100%;padding-right:1px;" @multipleAttr></select>
+<select id="selectusers-@guid" class="selectusers selectusers-@guid" @nameAttr style="width:100%;padding-right:1px;" @multipleAttr>
+    @{
+
+        if (getCandidateList != null)
+        {
+            if (getCandidateList.Any())
+            {
+                foreach (var item in getCandidateList)
+                {
+                    <option value="@item.Id" selected="selected">@item.Name</option>
+                }
+            }
+        }
+    }
+
+</select>
 
 <input type="hidden" @(nameAttr + "Text") />
 <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet" />
 <style>
-	.select2-container .select2-selection--single {
-		/*height: 28px !important;*/
-	}
+    .select2-container .select2-selection--single {
+        /*height: 28px !important;*/
+    }
 </style>
 <script>
 	//$.fn.select2.amd.require(
@@ -76,13 +100,17 @@
 
 
 
-			var template = function (d) {
+            var template = function (d) {
 				var des = "";
 				var org = "";
 				var name = "";
 				var img = "";
 				if (typeof (d.Name) === "string")
-					name = d.Name;
+                    name = d.Name;
+                if (name == "") {
+                    if (typeof (d.text) === "string")
+                        name = d.text;
+                }
 				if (typeof (d.Description) === "string")
 					des = " " + d.Description;
 
@@ -99,46 +127,50 @@
 				  "</div>";
 
 				return markup;
-			};
+            };
+
+
 			var tid = setInterval(function () {
 				if (document.readyState !== 'complete') return;
 				clearInterval(tid);
 				// do your work
-				var select2 = $(".selectusers-@guid").select2({
-					closeOnSelect: true,
-					placeholder: { Name: "Who is this about?" },
-					//selectOnClose: true,
-					ajax: {
-						url: "@searchUrl",
-						dataType: 'json',
-						delay: 450,
-						data: function (params) {
-							return {
-								search: params.term,
-							};
-						},
-						processResults: function (data, page) {
-							data.forEach(function (d, i) {
-								d.id = d.Id;
-							});
-							return {
-								results: data
-							};
-						},
-						cache: true
-					},
-					escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
-					minimumInputLength: 1,
-					templateResult: function (d) {
-						return "@(tag)<div class='searchresult clearfix' data-id='" + d.Id + "'>" + template(d) + "</div>@(new HtmlString(tagEnd))";
-					},
-					templateSelection: function (d) {
-						return "<div class='searchresult searchresult-selected'>" + template(d) + "</div>";
-					}
-				}).on("change", function (e) {
-					//console.info($(this).select2('data')[0].Name);
-					$("[@(nameAttr + "Text")]").val($(this).select2('data')[0].Name);
-				});
+                var select2 = $(".selectusers-@guid").select2({
+                    closeOnSelect: true,
+                    placeholder: { Name: "Who is this about?" },
+                    //selectOnClose: true,
+                    ajax: {
+                        url: "@searchUrl",
+                        dataType: 'json',
+                        delay: 450,
+                        data: function (params) {
+                            return {
+                                search: params.term,
+                            };
+                        },
+                        processResults: function (data, page) {
+                            data.forEach(function (d, i) {
+                                d.id = d.Id;
+                            });
+                            return {
+                                results: data
+                            };
+                        },
+                        cache: true
+                    },
+                    escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+                    minimumInputLength: 1,
+                    templateResult: function (d) {
+                        return "@(tag)<div class='searchresult clearfix' data-id='" + d.Id + "'>" + template(d) + "</div>@(new HtmlString(tagEnd))";
+                    },
+                    templateSelection: function (d) {
+                        return "<div class='searchresult searchresult-selected'>" + template(d) + "</div>";
+                    }
+                }).on("change", function (e) {
+                    //console.info($(this).select2('data')[0].Name);
+                        $("[@(nameAttr + "Text")]").val($(this).select2('data')[0].Name);
+                    });
+
+
 				$(window).keyup(function (e) {
 					var code = (e.keyCode ? e.keyCode : e.which);
 					if (code == 9 && $('.selectusers-@guid + .select2-container .select2-selection:focus').length) {
@@ -156,6 +188,9 @@
 
 					@(new HtmlString(onclick))
 				});
+
+
+
 
 				var existing = false;
 				var tabOut = false;

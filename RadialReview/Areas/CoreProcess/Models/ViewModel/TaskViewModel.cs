@@ -14,6 +14,19 @@ namespace RadialReview.Areas.CoreProcess.Models.Process {
 		public string description { get; set; }
 		public ProcessViewModel process { get; set; }
 
-        public long[] TeamId { get; set; }
+        public long[] SelectedMemberId { get; set; }
+
+        public string SelectedMemberName { get; set; }
+        public string SelectedIds { get; set; }
+
+        public List<CandidateGroupViewModel> CandidateList { get; set; }
+
+
+    }
+
+   public class CandidateGroupViewModel
+    {
+        public long Id { get; set; }
+        public string Name { get; set; }
     }
 }

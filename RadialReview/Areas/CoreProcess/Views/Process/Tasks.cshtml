@@ -84,10 +84,10 @@
                                     { reorder: true },
                                     //{ id: "id", classes: "hidden", contents: function (x) { return x.Id;}},
                                     { name: "Name", classes: "nowrap", contents: function(x) { console.log(x); return x.name; } },
-                                    //{ name: "description", classes: "fullWidth", contents: function(x) { return x.description; } },
+                                    { name: "Candidate Group", classes: "fullWidth", contents: function (x) { return x.SelectedMemberName; } },
                                     { name: "action", classes: "nowrap", edit: true},
 									//{ edit: true ,},
-									//{remove:true},
+									{remove:true},
 								],
 								nodataText: "No Task found."
 								@*data: @Html.ArrayToString(Model.taskList),*@

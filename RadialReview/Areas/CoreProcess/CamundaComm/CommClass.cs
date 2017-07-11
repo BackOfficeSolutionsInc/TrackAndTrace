@@ -83,6 +83,14 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
             return getList;
         }
 
+
+        public async Task<IEnumerable<TaskModel>> GetTaskByCandidateGroups(string candidateGroups)
+        {
+            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
+            var getList = await client.Task().Get().CandidateGroups(candidateGroups).list();
+            return getList;
+        }
+
         public async Task<IEnumerable<TaskModel>> GetTaskList(string processDefId)
         {
             client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);

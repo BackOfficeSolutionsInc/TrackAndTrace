@@ -12,10 +12,11 @@
     <div class="col-sm-3"><label>Team :</label></div>
     <div class="col-sm-9">
         @Html.Partial("~/Views/Shared/EditorTemplates/SearchUsers.cshtml", new ViewDataDictionary() {
-	   { "Name","TeamId"}, { "multiple", true},
-			{"SearchUrl","/Search/RGM?includeTerm=true" }
-		})
-</div>
+       { "Name","SelectedMemberId"}, { "multiple", true},
+       {"SelectedItemList",Model.CandidateList},
+            {"SearchUrl","/Search/RGM?includeTerm=true" }
+        })
+    </div>
 </div>
 @*<div class="row smallBreak2">
         <div class="col-sm-3"><label>Description:</label></div>
