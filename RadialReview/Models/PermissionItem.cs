@@ -52,6 +52,7 @@ namespace RadialReview.Models {
             VTO = 3,
             AccountabilityHierarchy= 4,
 			UpgradeUsersForOrganization = 5,
+			CoreProcess = 6,
 		}
 		[Flags]
 		public enum AccessLevel

@@ -109,9 +109,9 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public async Task<JsonResult> DeleteTask(string id, string localid) // id is taskId
+        public async Task<JsonResult> DeleteTask(string id, long localId) // id is taskId
         {
-            await processDefAccessor.DeleteTask(GetUser(), id, localid);
+            await processDefAccessor.DeleteTask(GetUser(), id, localId);
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
 
@@ -149,7 +149,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public async Task<PartialViewResult> EditTask(string id, string localid)
+        public async Task<PartialViewResult> EditTask(string id, long localId)
         {
             var list = await processDefAccessor.GetAllTask(GetUser(), localid);
             var task = list.Where(m => m.Id == id).FirstOrDefault();
@@ -161,20 +161,20 @@ namespace RadialReview.Areas.CoreProcess.Controllers
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
-        public async Task<JsonResult> EditTask(TaskViewModel model, string id, string localid)
+        public async Task<JsonResult> EditTask(TaskViewModel model, string id, long localId)
         {
-            var updatetask = await processDefAccessor.UpdateTask(GetUser(), localid, model);
+            var updatetask = await processDefAccessor.UpdateTask(GetUser(), localId, model);
             return Json(ResultObject.SilentSuccess(updatetask));
         }
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
-        public async Task<JsonResult> CreateTask(TaskViewModel model, string LocalID)
+        public async Task<JsonResult> CreateTask(TaskViewModel model, long localId)
         {
-            var create = await processDefAccessor.CreateTask(GetUser(), LocalID, model);
+            var create = await processDefAccessor.CreateTask(GetUser(), localId, model);
 
             model.process = new ProcessViewModel();
-            model.process.LocalID = LocalID;
+            model.process.LocalID = localId;
 
             return Json(ResultObject.SilentSuccess(model));
         }

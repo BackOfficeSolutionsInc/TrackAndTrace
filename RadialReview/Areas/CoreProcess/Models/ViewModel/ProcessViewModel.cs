@@ -38,7 +38,7 @@ namespace RadialReview.Areas.CoreProcess.Models.Process {
 
 		[Required(ErrorMessage = "field is required")]
 		public string Name { get; set; }
-		public string LocalID { get; set; }
+		public long LocalID { get; set; }
 		public string Description { get; set; }
 		public string status { get; set; }
 		public bool IsStarted { get; set; }

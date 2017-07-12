@@ -8,7 +8,7 @@ namespace RadialReview.Areas.CoreProcess.Interfaces
 {
     public interface IProcessId
     {
-        string LocalId { get; set; }
+        long LocalId { get; set; }
         string CamundaId { get; set; }
     }
 }

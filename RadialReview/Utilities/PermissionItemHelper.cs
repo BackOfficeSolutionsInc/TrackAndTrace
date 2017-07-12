@@ -15,6 +15,8 @@ using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.L10;
 using RadialReview.Models.Accountability;
+using RadialReview.Areas.CoreProcess.Models.MapModel;
+using RadialReview.Models.Components;
 
 namespace RadialReview.Utilities {
     public partial class PermissionsUtility {
@@ -259,6 +261,9 @@ namespace RadialReview.Utilities {
 					return (session.Get<L10Recurrence>(resourceId).CreatedById == caller.Id);
 				case PermItem.ResourceType.AccountabilityHierarchy:
 					return false;
+				case PermItem.ResourceType.CoreProcess:
+					var r = session.Get<ProcessDef_Camunda>(resourceId).Creator;
+					return (r.ModelId == caller.Id && r.ModelType == ForModel.GetModelType<UserOrganizationModel>());
 				default:
                     throw new ArgumentOutOfRangeException("resourceType");
             }
@@ -292,6 +297,8 @@ namespace RadialReview.Utilities {
 					return session.Get<AccountabilityChart>(resourceId).OrganizationId;
 				case PermItem.ResourceType.UpgradeUsersForOrganization:
 					return resourceId;
+				case PermItem.ResourceType.CoreProcess:
+					return session.Get<ProcessDef_Camunda>(resourceId).OrgId;
 				default:
                     throw new ArgumentOutOfRangeException("resourceType");
             }
