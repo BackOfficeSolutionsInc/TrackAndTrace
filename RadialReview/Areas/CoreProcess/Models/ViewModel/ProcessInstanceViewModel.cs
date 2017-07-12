@@ -11,7 +11,7 @@ namespace RadialReview.Areas.CoreProcess.Models.Process {
     {
         public string Id { get; set; }
 
-        public string DefinitionId { get; set; }
+        public long DefinitionId { get; set; }
 
         public string BusinessKey { get; set; }
 

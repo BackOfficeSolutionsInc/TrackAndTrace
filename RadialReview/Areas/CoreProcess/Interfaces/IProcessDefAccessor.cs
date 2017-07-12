@@ -21,7 +21,7 @@ namespace RadialReview.Areas.CoreProcess.Interfaces
         Task<long> Create(UserOrganizationModel caller, string processName);
         Task<bool> Edit(UserOrganizationModel caller, long localId, string processName);
         Task<bool> Delete(UserOrganizationModel caller, long processId);
-        Stream CreateBpmnFile(string processName, long localId);
+        Stream CreateBpmnFile(string processName, string bpmnId);
         System.Threading.Tasks.Task UploadFileToServer(Stream stream, string path);
         Task<Stream> GetFileFromServer(string keyName);
         System.Threading.Tasks.Task DeleteFileFromServer(string keyName);

@@ -101,7 +101,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public async Task<JsonResult> ReorderTask(string id, int oldOrder, int newOrder)
+        public async Task<JsonResult> ReorderTask(long id, int oldOrder, int newOrder)
         {
             await processDefAccessor.ModifiyBpmnFile(GetUser(), id, oldOrder, newOrder);
             //L10Accessor.ReorderPage(GetUser(),  oldOrder, newOrder);
@@ -124,9 +124,9 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public async Task<ActionResult> Publish(string id)
+        public async Task<ActionResult> Publish(long id)
         {
-            if (id != null)
+            if (id > 0)
             {
                 await processDefAccessor.Deploy(GetUser(), id);
                 return RedirectToAction("Index");
@@ -139,7 +139,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public PartialViewResult CreateTask(string id)
+        public PartialViewResult CreateTask(long id)
         {
             TaskViewModel task = new TaskViewModel();
             task.process = new ProcessViewModel();
@@ -151,10 +151,10 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         [Access(AccessLevel.UserOrganization)]
         public async Task<PartialViewResult> EditTask(string id, long localId)
         {
-            var list = await processDefAccessor.GetAllTask(GetUser(), localid);
+            var list = await processDefAccessor.GetAllTask(GetUser(), localId);
             var task = list.Where(m => m.Id == id).FirstOrDefault();
             task.process = new ProcessViewModel();
-            task.process.LocalID = localid;
+            task.process.LocalID = localId;
             task.Id = id;
             return PartialView("~/Areas/CoreProcess/Views/Shared/Partial/CreateTask.cshtml", task);
         }
@@ -202,7 +202,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public ActionResult ProcessInstance(string id) // id is processid
+        public ActionResult ProcessInstance(long id) // id is processid
         {
             ProcessInstanceViewModel processinstance = new ProcessInstanceViewModel();
             var List = processDefAccessor.GetProcessInstanceList(id);

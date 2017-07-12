@@ -54,7 +54,7 @@ namespace RadialReview.Areas.CoreProcess.Models.MapModel {
 		public virtual long Id { get; set; }
 		//public virtual string ProcessDefId { get; set; }
 		public virtual string CamundaProcessInstanceId { get; set; }
-		public virtual string LocalProcessInstanceId { get; set; }
+		public virtual long LocalProcessInstanceId { get; set; }
 		public virtual bool Suspended { get; set; }
 		public virtual DateTime CreateTime { get; set; }
 		public virtual DateTime? DeleteTime { get; set; }

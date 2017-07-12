@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 namespace RadialReview.Areas.CoreProcess.CamundaComm {
 	public interface ICommClass {
         Task<IProcessDef> GetProcessDefByKey(string key);
-
         Task<processInstanceModel> ProcessStart(string id);
 
         Task<NoContentStatus> ProcessSuspend(string id, bool isSuspend);

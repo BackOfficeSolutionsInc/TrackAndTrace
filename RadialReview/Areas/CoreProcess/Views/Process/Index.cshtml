@@ -41,7 +41,7 @@
                         { name: "Instances", classes: "", contents: function (x) { return x.Count; } },
                         { name: "Action", classes: "", contents: function (x) { return "<a href='/CoreProcess/Process/Tasks/" + x.Id + "'>Task</a>"
 							+ "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" + "<a href='javascript:void(0);' onclick='startProcess("+ x.Id +");'>Start</a>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp"
-                            + "<a onclick='startProcess(" + x.Id + ");' href='/CoreProcess/Process/ProcessInstance/" + x.LocalID + "'>Instances</a>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp"
+                            + "<a href='/CoreProcess/Process/ProcessInstance/" + x.LocalID + "'>Instances</a>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp"
                             + "<a href='javascript:void(0);' onclick='deleteprocess(" + x.Id +","+ x.Count+ ");' >Delete</a>"
                         }
                         },
