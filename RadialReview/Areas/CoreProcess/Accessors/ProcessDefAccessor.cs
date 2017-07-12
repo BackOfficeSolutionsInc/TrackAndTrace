@@ -346,13 +346,13 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             using (var s = HibernateSession.GetCurrentSession())
             {
                 PermissionsUtility.Create(s, caller);
-                var created = await CreateTask(s, localId, model);
+                var created = await CreateTask(s, localId, model,caller);
                 return created;
             }
 
         }
 
-        public async Task<TaskViewModel> CreateTask(ISession s, string localId, TaskViewModel model)
+        public async Task<TaskViewModel> CreateTask(ISession s, string localId, TaskViewModel model, UserOrganizationModel caller)
         {
             TaskViewModel modelObj = new TaskViewModel();
             modelObj = model;
@@ -472,6 +472,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     await UploadFileToServer(fileStream, getProcessDefFileDetails.FileKey);
 
                     modelObj.Id = userTaskId;
+                    modelObj.SelectedMemberName = GetMemberName(caller, "", model.SelectedMemberId);
                 }
             }
             catch (Exception ex)
