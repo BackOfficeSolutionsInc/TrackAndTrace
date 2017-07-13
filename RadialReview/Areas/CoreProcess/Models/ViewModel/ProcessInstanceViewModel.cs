@@ -8,22 +8,20 @@ using System.Threading.Tasks;
 
 namespace RadialReview.Areas.CoreProcess.Models.Process {
     public class ProcessInstanceViewModel : CamundaBase
-    {
-        public string Id { get; set; }
-
+    {		
+		public string Id { get; set; }
         public long DefinitionId { get; set; }
-
         public string BusinessKey { get; set; }
-
         public object CaseInstanceId { get; set; }
-
         public bool Ended { get; set; }
-
         public bool Suspended { get; set; }
-
         public object Links { get; set; }
 
-        //public string suspend { get; set; }
-        public List<string> Process { get; set; }
+		public DateTime? CreateTime { get; set; }
+		public DateTime? CompleteTime { get; set; }
+
+
+		//public string suspend { get; set; }
+		public List<string> Process { get; set; }
     }
 }

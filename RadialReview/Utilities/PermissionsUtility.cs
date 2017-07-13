@@ -1781,10 +1781,18 @@ namespace RadialReview.Utilities {
             return ViewL10Recurrence(recurrenceId);            
         }
 
-        #endregion
+		#endregion
+
+		#region CoreProcess
+
+		public PermissionsUtility CreateProcessDef() {
+			return ManagerAtOrganization(caller.Id, caller.Organization.Id);			
+		}
+
+		#endregion
 
 
-        public PermissionsUtility Or(params Func<PermissionsUtility>[] or) {
+		public PermissionsUtility Or(params Func<PermissionsUtility>[] or) {
 			foreach (var o in or) {
 				try {
 					return o();

@@ -5,7 +5,7 @@
 
 @if (ViewBag.NoLogin != true) {
 	if (Request.IsAuthenticated) {
-		using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" })) {
+		using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { area = "", id = "logoutForm", @class = "navbar-right" })) {
 			@Html.AntiForgeryToken()
 
 			<span class="pull-left navbar-icon-container hidden-xs">

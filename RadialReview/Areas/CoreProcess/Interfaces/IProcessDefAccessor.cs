@@ -32,8 +32,7 @@ namespace RadialReview.Areas.CoreProcess.Interfaces
         Task<bool> DeleteTask(UserOrganizationModel caller, string taskId, long localId);
         Task<List<TaskViewModel>> GetAllTask(UserOrganizationModel caller, long localId);
         Task<bool> ModifiyBpmnFile(UserOrganizationModel caller, long localId, int oldOrder, int newOrder);
-        Task<bool> ProcessSuspend(UserOrganizationModel caller, string processInsId, bool isSuspend);
-
+        Task<bool> ProcessSuspend(UserOrganizationModel caller, long localId, bool isSuspend);
         Task<ProcessDef_Camunda> ProcessStart(UserOrganizationModel caller, long processId);
         Task<List<TaskViewModel>> GetTaskListByProcessDefId(UserOrganizationModel caller, List<string> processDefId);
     }

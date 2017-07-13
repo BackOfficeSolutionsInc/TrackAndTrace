@@ -35,10 +35,11 @@
 					//clickAdd: "/Process/Create",
 					//postAdd: "/Process/Create",
                     cells: [
-                        { name: "Id", classes: "", contents: function (x) { return x.Id; } },
+                        { name: "Create Time", classes: "", contents: function (x) { return x.CreateTime; } },
+						{ name: "Complete Time", classes: "", contents: function (x) { return x.CompleteTime; } },
                         //{ name: "BusinessKey", classes: "", contents: function (x) { return x.BusinessKey; } },
-                        { name: "DefinitionId", classes: "", contents: function (x) { return x.DefinitionId } },
-                        { name: "Action", classes: "", contents: function (x) { return "<a href='javascript:void(0);' onclick='suspend(\"" + x.Id + "," + x.Suspended + "\");'>" + (x.Suspended ? "Activate" : "Suspend") + "</a>" } },
+                        //{ name: "Process Id", classes: "", contents: function (x) { return x.DefinitionId } },
+                        { name: "Action", classes: "", contents: function (x) { return "<a href='javascript:void(0);' onclick='suspend(\"" + x.DefinitionId + "," + x.Suspended + "\");'>" + (x.Suspended ? "Activate" : "Suspend") + "</a>" } },
 						//{ edit: true },
 						//{ remove : true },
                     ],
@@ -50,13 +51,9 @@
                     $.ajax({
                         url: "/CoreProcess/Process/Suspend/" + val.split(',')[0] +"?status="+ val.split(',')[1],
                         success: function (data) {
-                            location.reload();
-                    //        table.editRow(data.Object);
-
-
+                            location.reload();                    
                         },
                         error: function (data) {
-
                         }
                     });
                 }
