@@ -282,9 +282,14 @@ mug disrupt wayfarers ethical cloud bread viral cornhole skateboard ";
 			var doc = SurveyPdfAccessor.CreateDoc(c.Manager, "Generate_Survey_Pdf");
 			var now = c.Middle.GetTimeSettings().ConvertFromServerTime(DateTime.UtcNow);
 			foreach (var survey in surveyContainer.GetSurveys()) {
-				SurveyPdfAccessor.AppendSurveyAbout(doc, now, survey);
+				SurveyPdfAccessor.AppendSurveyAbout(doc,surveyContainer.GetName(), now, survey);
 			}
 			Save(doc, "GenerateSurveyPdf.pdf");
+
+			var pa = QuarterlyConversationAccessor.GetPeopleAnalyzer(c.Middle, c.Middle.Id);
+
+			int a = 0;
+
 		}
 
 		//[TestMethod]

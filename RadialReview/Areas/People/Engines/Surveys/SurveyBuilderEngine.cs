@@ -40,6 +40,7 @@ namespace RadialReview.Areas.People.Engines.Surveys {
         public ISurveyContainer BuildSurveyContainer(IEnumerable<IByAbout> byAbout) {
 			var byAboutTransformed = Transformer.TransformForCreation(byAbout);
             OnBegin(byAboutTransformed);
+			
 
             //Build Container
             var data = new Data(this);
@@ -136,8 +137,9 @@ namespace RadialReview.Areas.People.Engines.Surveys {
             public Data(SurveyBuilderEngine engine) {
                 Engine = engine;
             }
-
-            public IInnerLookup Lookup { get; private set; }
+			
+			public DateTime Now { get { return SurveyContainer.GetIssueDate(); } }
+			public IInnerLookup Lookup { get; private set; }
             public ISurveyContainer SurveyContainer { get; set; }
             public ISurvey Survey { get; set; }
             public ISection Section { get; set; }

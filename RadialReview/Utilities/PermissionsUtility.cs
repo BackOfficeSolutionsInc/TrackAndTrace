@@ -1558,7 +1558,7 @@ namespace RadialReview.Utilities {
 
 		#region NewSurvey
 
-		public PermissionsUtility CreateSurveyContainer(long orgId) {
+		public PermissionsUtility CreateQuarterlyConversation(long orgId) {
 			return ManagerAtOrganization(caller.Id,orgId);
 		}
 		public PermissionsUtility ViewSurvey(long surveyId) {
@@ -1568,6 +1568,10 @@ namespace RadialReview.Utilities {
             ViewSurveyContainer(survey.SurveyContainerId);
             return CanView(PermItem.ResourceType.Survey, surveyId);
         }
+		public PermissionsUtility ViewSurveyResultsAbout(IForModel about,long orgId) {
+			var allowSelf = (IsManagingOrganization(orgId));
+			return ManagesForModel(about, !allowSelf);
+		}
 
 		public PermissionsUtility ViewSurveyContainer(long surveyContainerId) {
 			if (IsRadialAdmin(caller))

@@ -11,6 +11,7 @@ using System.Linq;
 using System.Web;
 using RadialReview.Models.L10;
 using NHibernate;
+using System.Text;
 
 namespace RadialReview {
 	public static class ObjectExtensions {
@@ -81,9 +82,13 @@ namespace RadialReview {
 			if (input.Length == 11 && input.Substring(0, 1) == "1")
 				phone = input.Substring(0, 1) + "-" + input.Substring(1, 3) + "-" + input.Substring(4, 3) + "-" + input.Substring(7, 4);
 			else if (input.Length == 11 && input.Substring(0, 1) == "6") {
-				phone = "+" + input.Substring(0, 2) + " " + input.Substring(2, 3) + " " + input.Substring(5, 3) + " " + input.Substring(8, 3);
-			} else if (input.Length == 12) {
+				phone = "+" + input.Substring(0, 2) + " " + input.Substring(2, 3) + " " + input.Substring(5, 3) + " " + input.Substring(8, 3) + " (AU only)";
+			} else if (input.Length == 12 && input.Substring(0, 2) == "44") {
 				phone = "+" + input.Substring(0, 2) + " " + input.Substring(2, 4) + " " + input.Substring(6, 6) + " (UK only)";
+			} else if (input.Length == 10 && input.Substring(0, 3) == "204") {
+				phone = "(" + input.Substring(0, 3) + ") " + input.Substring(3, 3) + "-" + input.Substring(6, 4) + " (Canada only)";
+			} else if (input.Length == 12) {
+				phone = "+" + input.Substring(0, 2) + " " + input.Substring(2, 4) + " " + input.Substring(6, 6);
 			} else
 				phone = "(" + input.Substring(0, 3) + ") " + input.Substring(3, 3) + "-" + input.Substring(6, 4);
 			return phone;
@@ -99,6 +104,10 @@ namespace RadialReview {
 		}
 		public static decimal ToDecimal(this String s) {
 			return decimal.Parse(s);
+		}
+
+		public static byte[] ToBytes(this String s) {
+			return new UTF8Encoding().GetBytes(s);
 		}
 
 		public static bool ToBoolean(this String s) {

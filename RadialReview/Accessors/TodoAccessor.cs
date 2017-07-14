@@ -154,8 +154,9 @@ namespace RadialReview.Accessors
             if (recurrenceId > 0)
             {
                 r = s.Get<L10Recurrence>(recurrenceId);
-                r.Pristine = false;
-                s.Update(r);
+				//r.Pristine = false;
+				await L10Accessor.Depristine_Unsafe(s, perms.GetCaller(), r);
+				s.Update(r);
             }
             if (todo.TodoType == TodoType.Recurrence)
                 ExternalTodoAccessor.AddLink(s, perms, ForModel.Create(r), todo.AccountableUserId, todo);

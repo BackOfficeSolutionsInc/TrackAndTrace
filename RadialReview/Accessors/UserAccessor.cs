@@ -408,6 +408,30 @@ namespace RadialReview.Accessors {
 
 				var deleteTime = DateTime.UtcNow;
 
+				if (manageringOrganization != null && manageringOrganization.Value != found.ManagingOrganization) {
+					if (found.Id == perm.GetCaller().Id) {
+						o.OverrideManageringOrganization = found.ManagingOrganization;
+						o.Errors.Add("You cannot unmanage this organization yourself.");
+					} else {
+						perm.ManagesUserOrganization(userOrganizationId, true).ManagingOrganization(perm.GetCaller().Organization.Id);
+						if (found.ManagingOrganization && !manageringOrganization.Value) {
+							//maybe set manager to false
+							if (!DeepAccessor.Users.HasChildren(s, perm, userOrganizationId)) {
+								isManager = false;
+								o.OverrideIsManager = false;
+							}
+						} else {
+							//maybe set manager to true
+							if (DeepAccessor.Users.HasChildren(s, perm, userOrganizationId)) {
+								isManager = true;
+								o.OverrideIsManager = true;
+							}
+						}
+
+						found.ManagingOrganization = manageringOrganization.Value;
+					}
+
+				}
 
 				if (isManager != null && (isManager.Value != found.ManagerAtOrganization)) {
 					perm.ManagesUserOrganization(userOrganizationId, false, PermissionType.ChangeEmployeePermissions);
@@ -435,16 +459,6 @@ namespace RadialReview.Accessors {
 					}
 				}
 
-				if (manageringOrganization != null && manageringOrganization.Value != found.ManagingOrganization) {
-					if (found.Id == perm.GetCaller().Id) {
-						o.OverrideManageringOrganization = found.ManagingOrganization;
-						o.Errors.Add("You cannot unmanage this organization yourself.");
-					} else {
-						perm.ManagesUserOrganization(userOrganizationId, true).ManagingOrganization(perm.GetCaller().Organization.Id);
-						found.ManagingOrganization = manageringOrganization.Value;
-					}
-
-				}
 
 				//rt.UpdateOrganization(found.Organization.Id).AddLowLevelAction(x => x.updatePermissionsIcon(userOrganizationId, isManager, manageringOrganization, evalOnly));
 

@@ -1,6 +1,6 @@
 ﻿angular.module('updaterModule', []).factory('updater', ["$http",function ($http) {
 
-    function applyUpdate(data, status) {
+	function applyUpdate(data, status) {
         convertDates(data);
         this._preExtend(data, status);
         baseExtend(this.scope.model, [data], true);

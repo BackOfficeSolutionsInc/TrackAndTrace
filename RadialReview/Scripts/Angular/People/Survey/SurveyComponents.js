@@ -1,9 +1,9 @@
 ﻿//SurveyContainer Controller
-angular.module('people', ['helpers', 'ngScrollSpy']).component('surveyContainer', {
-	templateUrl: function () { return '/Content/AngularTemplates/People/surveyContainer.html'; },
+angular.module('people').component('surveyContainer', {
+	templateUrl: function () { return '/Content/AngularTemplates/People/Survey/surveyContainer.html'; },
 	bindings: {
 		"surveyContainerId": "<?",
-		surveyId: "<?",
+		"surveyId": "<?",
 	},
 	controller: ["$scope", "$element", "$scope", "$http", 'radial', "$log", "$timeout", "$window", function ($scope, $element, $attrs, $http, radial, $log, $timeout, $window) {
 		var ctrl = this;
@@ -55,7 +55,7 @@ angular.module('people', ['helpers', 'ngScrollSpy']).component('surveyContainer'
 		});
 	}]
 }).component('survey', {
-	templateUrl: function () { return '/Content/AngularTemplates/People/survey.html'; },
+	templateUrl: function () { return '/Content/AngularTemplates/People/Survey/survey.html'; },
 	bindings: {
 		survey: "<",
 		onChangeResponse: "&?",
@@ -68,7 +68,7 @@ angular.module('people', ['helpers', 'ngScrollSpy']).component('surveyContainer'
 		};
 	}]
 }).component('surveySection', {
-	templateUrl: function () { return '/Content/AngularTemplates/People/surveySection.html'; },
+	templateUrl: function () { return '/Content/AngularTemplates/People/Survey/surveySection.html'; },
 	bindings: {
 		section: "<",
 		onChangeResponse: "&?",
@@ -82,7 +82,7 @@ angular.module('people', ['helpers', 'ngScrollSpy']).component('surveyContainer'
 		};
 	}]
 }).component('surveyItemContainer', {
-	templateUrl: function () { return '/Content/AngularTemplates/People/surveyItemContainer.html'; },
+	templateUrl: function () { return '/Content/AngularTemplates/People/Survey/surveyItemContainer.html'; },
 	bindings: {
 		itemContainer: "<",
 		onChangeResponse: "&?",
@@ -118,7 +118,7 @@ angular.module('people', ['helpers', 'ngScrollSpy']).component('surveyContainer'
 			$scope.onChangeResponse()(response);
 		};
 		$scope.getActualTemplateContent = function () {
-			return '/Content/AngularTemplates/People/Items/' + $scope.format.TemplateModifier + "/" + $scope.format.ItemType + '-item.html';
+			return '/Content/AngularTemplates/People/Survey/Items/' + $scope.format.TemplateModifier + "/" + $scope.format.ItemType + '-item.html';
 		};
 	}]
 });

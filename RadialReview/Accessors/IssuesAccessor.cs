@@ -134,8 +134,9 @@ namespace RadialReview.Accessors
             o.IssueModel = issue;
             var r = s.Get<L10Recurrence>(recurrenceId);
 
-            r.Pristine = false;
-            s.Update(r);
+           // r.Pristine = false;
+			await L10Accessor.Depristine_Unsafe(s, perms.GetCaller(), r);
+			s.Update(r);
 
             var recur = new IssueModel.IssueModel_Recurrence()
             {

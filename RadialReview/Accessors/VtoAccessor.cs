@@ -655,7 +655,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static VtoItem_String AddString(ISession s, PermissionsUtility perms, long vtoId, VtoItemType type, Func<VtoModel, BaseAngularList<AngularVtoString>, IAngularItem> updateFunc, bool skipUpdate = false, ForModel forModel = null, string value = null) {
+		public static VtoItem_String AddString(ISession s, PermissionsUtility perms, long vtoId, VtoItemType type, Func<VtoModel, BaseAngularList<AngularVtoString>, IAngularId> updateFunc, bool skipUpdate = false, ForModel forModel = null, string value = null) {
 			perms.EditVTO(vtoId);
 			var vto = s.Get<VtoModel>(vtoId);
 			var organizationId = vto.Organization.Id;
@@ -687,7 +687,7 @@ namespace RadialReview.Accessors {
 			return str;
 		}
 
-		public static void AddString(UserOrganizationModel caller, long vtoId, VtoItemType type, Func<VtoModel, BaseAngularList<AngularVtoString>, IAngularItem> updateFunc, bool skipUpdate = false, ForModel forModel = null) {
+		public static void AddString(UserOrganizationModel caller, long vtoId, VtoItemType type, Func<VtoModel, BaseAngularList<AngularVtoString>, IAngularId> updateFunc, bool skipUpdate = false, ForModel forModel = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);

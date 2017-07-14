@@ -50,11 +50,12 @@ namespace RadialReview.Utilities.DataTypes {
 
 
 		public string GetImageUrl(ImageSize size = ImageSize._64) {
-			return UserLookup.TransformImageSuffix("/"+ImageGuid+".png", size);
+			
+			return UserLookup.TransformImageSuffix(ImageGuid.NotNull(x=>"/"+x+".png"), size);
 		}
 
 		public string GetName() {
-			return ((FirstName ?? "") + " " + (LastName ?? "")).Trim();
+			return ((FirstName ?? "").Trim() + " " + (LastName ?? "").Trim()).Trim();
 		}
 
 		public string GetInitials() {
@@ -82,8 +83,8 @@ namespace RadialReview.Utilities.DataTypes {
 
 			return new TinyUser() {
 				Email = x.GetEmail().NotNull(y => y.ToLower()),
-				FirstName = x.GetFirstName().NotNull(y => y.ToLower()),
-				LastName = x.GetLastName().NotNull(y => y.ToLower()),
+				FirstName = x.GetFirstName(),
+				LastName = x.GetLastName(),
 				UserOrgId = x.Id,
 				ImageGuid = x.User.NotNull(y=>y.ImageGuid)
 			};

@@ -165,7 +165,7 @@ namespace RadialReview.Controllers
 
                 if (meeting != null) {
                     try {
-                        L10Accessor.AddAttendee(GetUser(), meeting.Value, createdUser.Id);
+						await L10Accessor.AddAttendee(GetUser(), meeting.Value, createdUser.Id);
                     } catch (Exception) {
                         throw new PermissionsException("Could not add to meeting.");
                     }

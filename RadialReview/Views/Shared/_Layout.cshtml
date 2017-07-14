@@ -8,6 +8,7 @@
 	var reviewEnabled = false;
 	var acEnabled = false;
 	var surveyEnabled = false;
+	var peopleEnabled = false;
 	if (((int?)ViewBag.Organizations ?? 0) > 0) {
 		if (ViewBag.ShowL10) {
 			l10Enabled = true;
@@ -20,6 +21,9 @@
 		}
 		if (ViewBag.ShowSurvey) {
 			surveyEnabled = true;
+		}
+		if (ViewBag.ShowPeople) {
+			peopleEnabled = true;
 		}
 	}
 }
@@ -223,7 +227,7 @@
 												</a>
 											</li>
 										}
-										if (ViewBag.ShowAC ?? false) {
+										if ((ViewBag.ShowAC ?? false) && !(ViewBag.ShowPeople ?? false)) {
 											<li>
 												<a href="@Url.Action("Chart", "Accountability",new { area = "" })" id="header-tab-ac">
 													AC
@@ -235,6 +239,14 @@
 											<li>
 												<a href="@Url.Action("Index", "Surveys",new { area = "" })" id="header-tab-survey">
 													Surveys
+													<span id="SurveyNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+												</a>
+											</li>
+										}
+										if (ViewBag.ShowPeople ?? false) {
+											<li>
+												<a href="@Url.Action("Index", "Main",new { area = "People" })" id="header-tab-survey">
+													People
 													<span id="SurveyNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
 												</a>
 											</li>

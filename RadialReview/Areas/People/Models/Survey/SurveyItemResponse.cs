@@ -23,7 +23,7 @@ namespace RadialReview.Areas.People.Models.Survey {
 			Item = item;
             Response = response;
             Format = format;
-        }
+		}
 
         public IItem GetItem() {
             return Item;

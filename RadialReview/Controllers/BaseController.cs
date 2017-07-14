@@ -699,8 +699,9 @@ namespace RadialReview.Controllers {
                             filterContext.Controller.ViewBag.IsManager = false;
                             filterContext.Controller.ViewBag.ShowL10 = false;
                             filterContext.Controller.ViewBag.ShowReview = false;
-                            filterContext.Controller.ViewBag.ShowSurvey = false;
-                            filterContext.Controller.ViewBag.Organizations = userOrgsCount;
+							filterContext.Controller.ViewBag.ShowSurvey = false;
+							filterContext.Controller.ViewBag.ShowPeople = false;
+							filterContext.Controller.ViewBag.Organizations = userOrgsCount;
                             filterContext.Controller.ViewBag.Hints = true;
                             filterContext.Controller.ViewBag.ManagingOrganization = false;
                             filterContext.Controller.ViewBag.Organization = null;
@@ -734,6 +735,7 @@ namespace RadialReview.Controllers {
                                 filterContext.Controller.ViewBag.ShowL10 = oneUser.Organization.Settings.EnableL10;
                                 filterContext.Controller.ViewBag.ShowReview = oneUser.Organization.Settings.EnableReview && !oneUser.IsClient;
 								filterContext.Controller.ViewBag.ShowSurvey = oneUser.Organization.Settings.EnableSurvey && oneUser.IsManager();
+								filterContext.Controller.ViewBag.ShowPeople = oneUser.Organization.Settings.EnablePeople;// && oneUser.IsManager();
 
 								filterContext.Controller.ViewBag.ShowAC = PermissionsAccessor.IsPermitted(s,oneUser, x => x.CanView(PermItem.ResourceType.AccountabilityHierarchy,oneUser.Organization.AccountabilityChartId)); // oneUser.Organization.acc && oneUser.IsManager();
 								

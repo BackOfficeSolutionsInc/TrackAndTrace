@@ -24,17 +24,13 @@ using RadialReview.Models.Todo;
 using RadialReview.Models.ViewModels;
 using RadialReview.Models.Accountability;
 
-namespace RadialReview.Controllers
-{
-	public partial class UploadController : BaseController
-	{
+namespace RadialReview.Controllers {
+	public partial class UploadController : BaseController {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public async Task<PartialViewResult> ProcessUserSelection(IEnumerable<int> fnames, IEnumerable<int> lnames, IEnumerable<int> emails, IEnumerable<int> positions, IEnumerable<int> mfnames, IEnumerable<int> mlnames, long recurrenceId, string path, FileType fileType)
-		{
-			try
-			{
+		public async Task<PartialViewResult> ProcessUserSelection(IEnumerable<int> fnames, IEnumerable<int> lnames, IEnumerable<int> emails, IEnumerable<int> positions, IEnumerable<int> mfnames, IEnumerable<int> mlnames, long recurrenceId, string path, FileType fileType) {
+			try {
 				var ui = await UploadAccessor.DownloadAndParse(GetUser(), path);
 
 				var fnameRect = new Rect(fnames);
@@ -48,8 +44,7 @@ namespace RadialReview.Controllers
 
 
 				var now = DateTime.UtcNow;
-				if (fileType == FileType.CSV)
-				{
+				if (fileType == FileType.CSV) {
 					var csvData = ui.Csv;
 
 					var lnamesRect = new Rect(lnames);
@@ -62,16 +57,14 @@ namespace RadialReview.Controllers
 					m.LNames = lnamesRect.GetArray1D(csvData);
 					m.Emails = emailRect.GetArray1D(csvData);
 
-					if (positions != null)
-					{
+					if (positions != null) {
 						var positionsRect = new Rect(positions);
 						positionsRect.EnsureSameRangeAs(fnameRect);
 						m.Positions = positionsRect.GetArray1D(csvData);
 						m.IncludePositions = true;
 					}
 
-					if (mfnames != null && mlnames != null)
-					{
+					if (mfnames != null && mlnames != null) {
 						var mfNamesRect = new Rect(mfnames);
 						var mlNamesRect = new Rect(mlnames);
 						mfNamesRect.EnsureSameRangeAs(fnameRect);
@@ -81,15 +74,12 @@ namespace RadialReview.Controllers
 						m.IncludeManagers = true;
 					}
 
-				}
-				else
-				{
+				} else {
 					throw new PermissionsException("Expecting a csv.");
 				}
 
 				var newNames = new List<string>();
-				for (var i = 0; i < m.FNames.Count; i++)
-				{
+				for (var i = 0; i < m.FNames.Count; i++) {
 					var name = m.FNames[i] + " " + m.LNames[i];
 					newNames.Add(name);
 				}
@@ -97,8 +87,7 @@ namespace RadialReview.Controllers
 				var userLookup = DistanceUtility.TryMatch(newNames, allUsers);
 
 
-				for (var i = 0; i < newNames.Count; i++)
-				{
+				for (var i = 0; i < newNames.Count; i++) {
 					var found = userLookup[newNames[i]].GetProbabilities().Where(x => x.Value > 0.4).Select(x => x.Key.FirstName + " " + x.Key.LastName);
 
 					if (!found.Any())
@@ -113,9 +102,7 @@ namespace RadialReview.Controllers
 				m.Path = path;
 
 				return PartialView("UploadUsersSelected", m);
-			}
-			catch (Exception e)
-			{
+			} catch (Exception e) {
 				//e.Data.Add("AWS_ID", path);
 				throw new Exception(e.Message + "[" + path + "]", e);
 			}
@@ -125,11 +112,9 @@ namespace RadialReview.Controllers
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public async Task<JsonResult> SubmitUsers(FormCollection model)
-		{
+		public async Task<JsonResult> SubmitUsers(FormCollection model) {
 			var path = model["Path"].ToString();
-			try
-			{
+			try {
 				//var useAws = model["UseAWS"].ToBoolean();
 				var recurrence = model["recurrenceId"].ToLong();
 
@@ -168,8 +153,7 @@ namespace RadialReview.Controllers
 				var errors = new CounterSet<String>();
 
 
-				foreach (var m in incs)
-				{
+				foreach (var m in incs) {
 					if (m.Value == false)
 						continue;
 					var k = m.Key;
@@ -180,70 +164,55 @@ namespace RadialReview.Controllers
 					var managerFirst = mfns.GetOrDefault(k, "").Trim();
 					var managerLast = mlns.GetOrDefault(k, "").Trim();
 
-					if ((new[] { email, firstName, lastName, position, managerFirst, managerLast }.All(string.IsNullOrWhiteSpace)))
-					{
+					if ((new[] { email, firstName, lastName, position, managerFirst, managerLast }.All(string.IsNullOrWhiteSpace))) {
 						//Empty row
 						continue;
 					}
 					var positionFound = existingPositions.FirstOrDefault(x => x.CustomName == position);
 
-					if (positionFound == null && !String.IsNullOrWhiteSpace(position))
-					{
+					if (positionFound == null && !String.IsNullOrWhiteSpace(position)) {
 						var newPosition = _OrganizationAccessor.EditOrganizationPosition(GetUser(), 0, GetUser().Organization.Id, /*pos.Id,*/ position);
 						existingPositions.Add(newPosition);
 						positionFound = newPosition;
 					}
 
-					var vm = new CreateUserOrganizationViewModel()
-					{
+					var vm = new CreateUserOrganizationViewModel() {
 						Email = email,
 						FirstName = firstName,
 						LastName = lastName,
 						OrgId = GetUser().Organization.Id,
 						ManagerNodeId = null,
-						Position = new UserPositionViewModel()
-						{
+						Position = new UserPositionViewModel() {
 							CustomPosition = null,
 							PositionId = positionFound != null ? positionFound.Id : -2
 						},
 					};
-					try
-					{
+					try {
 						var user = (await _UserAccessor.CreateUser(GetUser(), vm)).Item2;
 						existingUsers.Add(user);
 						managerLookup.Add(user.Id, new[] { managerFirst, managerLast });
-						try
-						{
-							L10Accessor.AddAttendee(GetUser(), recurrence, user.Id);
-						}
-						catch (PermissionsException)
-						{
+						try {
+							await L10Accessor.AddAttendee(GetUser(), recurrence, user.Id);
+						} catch (PermissionsException) {
 							throw new PermissionsException("Could not add " + vm.FirstName + " " + vm.LastName + " to meeting.");
 						}
-					}
-					catch (PermissionsException e)
-					{
+					} catch (PermissionsException e) {
 						errors.Add(e.Message);
-					}
-					catch (Exception)
-					{
+					} catch (Exception) {
 						errors.Add("An error has occurred.");
 					}
 				}
 
-				AccountabilityAccessor._FinishUploadAccountabilityChart(GetUser(),existingUsers, managerLookup, errors);		
+				AccountabilityAccessor._FinishUploadAccountabilityChart(GetUser(), existingUsers, managerLookup, errors);
 				return Json(ResultObject.CreateRedirect("/l10/wizard/" + recurrence + "#Attendees", "Uploaded Users"));
-			}
-			catch (Exception e)
-			{
+			} catch (Exception e) {
 				throw new Exception(e.Message + "[" + path + "]", e);
 			}
 		}
 
-		
 
-		public class UploadUsersSelectedDataVM
-		{
+
+		public class UploadUsersSelectedDataVM {
 			public List<string> FNames { get; set; }
 			public List<string> LNames { get; set; }
 			public List<string> Positions { get; set; }

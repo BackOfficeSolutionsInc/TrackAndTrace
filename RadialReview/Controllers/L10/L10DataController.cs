@@ -26,6 +26,7 @@ using System.Dynamic;
 using Newtonsoft.Json;
 using RadialReview.Accessors.VideoConferenceProviders;
 using Ionic.Zip;
+using System.Text;
 
 namespace RadialReview.Controllers {
 	public partial class L10Controller : BaseController {
@@ -297,7 +298,7 @@ namespace RadialReview.Controllers {
 		public FileContentResult ExportScorecard(long id, string type = "csv") {
 			var csv = ExportAccessor.Scorecard(GetUser(), id, type);
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, false);
-			return File(csv, "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + recur.Name + "_Scorecard.csv");
+			return File(csv.ToBytes(), "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + recur.Name + "_Scorecard.csv");
 		}
 
 
@@ -358,7 +359,7 @@ namespace RadialReview.Controllers {
 
 			var memoryStream = new MemoryStream();
 			using (var zip = new ZipFile()) {
-				zip.AddEntry(String.Format("Scorecard.csv", time, recur.Name), ExportAccessor.Scorecard(GetUser(), id));
+				zip.AddEntry(String.Format("Scorecard.csv", time, recur.Name), ExportAccessor.Scorecard(GetUser(), id),Encoding.UTF8);
 				zip.AddEntry(String.Format("To-Do.csv", time, recur.Name), await ExportAccessor.TodoList(GetUser(), id, includeDetails));
 				zip.AddEntry(String.Format("Issues.csv", time, recur.Name), await ExportAccessor.IssuesList(GetUser(), id, includeDetails));
 				zip.AddEntry(String.Format("Rocks.csv", time, recur.Name), ExportAccessor.Rocks(GetUser(), id));
@@ -367,7 +368,7 @@ namespace RadialReview.Controllers {
 
 				var names = new DefaultDictionary<string, int>(x => 0);
 				foreach (var note in await ExportAccessor.Notes(GetUser(), id)) {
-					var name = String.Format("{2}", time, recur.Name, note.Item1.Replace("/", "_"));
+					var name = "Notes/"+String.Format("{2}", time, recur.Name, note.Item1.Replace("/", "_"));
 					var addition = "";
 					var count = 0;
 					while (true) {

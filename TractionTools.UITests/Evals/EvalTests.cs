@@ -99,7 +99,7 @@ namespace TractionTools.UITests.Evals {
 
 				Thread.Sleep(2000);
 				//Make sure we're reviewing only these users
-				org.AssertAllUsers(u => links.Any(x => x.Text == u.GetName()), org.Manager, org.E1, org.Employee, org.Middle);
+				org.AssertAllUsers(u => links.Any(x => x.Text == u.GetNameAndTitle()), org.Manager, org.E1, org.Employee, org.Middle);
 			});
 
 
@@ -234,7 +234,7 @@ namespace TractionTools.UITests.Evals {
 				var links = d.Finds("#nameList")[0].Finds("li a");
 				Thread.Sleep(2000);
 				//Make sure we're reviewing only these users
-				org.AssertAllUsers(u => links.Any(x => x.Text == u.GetName()), org.Manager, org.E1, org.Employee, org.Middle);
+				org.AssertAllUsers(u => links.Any(x => x.Text == u.GetNameAndTitle()), org.Manager, org.E1, org.Employee, org.Middle);
 
 				
 			});
@@ -274,7 +274,7 @@ namespace TractionTools.UITests.Evals {
 				Thread.Sleep(2000);
 				var links = d.Finds("#nameList")[0].Finds("li a");
 				//Make sure we're reviewing only these users
-				org.AssertAllUsers(u => links.Any(x => x.Text == u.GetName()), org.Middle, org.E1, org.E2, org.E3);
+				org.AssertAllUsers(u => links.Any(x => x.Text == u.GetNameAndTitle()), org.Middle, org.E1, org.E2, org.E3);
 			});
 		}
 	}

@@ -177,19 +177,21 @@ namespace RadialReview.Accessors {
 						.Where(x => x.DeleteTime == null && x.OrganizationId == organizationId)
 						.List().ToList();
 
-					var csv = new Csv();
-					csv.SetTitle("Measurable");
-					foreach (var sss in scores.GroupBy(x => x.MeasurableId)) {
-						var ss = sss.First();
-						csv.Add(""+ss.Measurable.Id, "Title", ""+ss.Measurable.Title);
-						csv.Add(""+ss.Measurable.Id, "Owner", ss.Measurable.AccountableUser.NotNull(x => x.GetName()));
-						csv.Add(""+ss.Measurable.Id, "Admin", ss.Measurable.AdminUser.NotNull(x => x.GetName()));
-						csv.Add(""+ss.Measurable.Id, "Goal", "" + ss.Measurable.Goal);
-						csv.Add(""+ss.Measurable.Id, "GoalDirection", "" + ss.Measurable.GoalDirection);
-					}
-					foreach (var ss in scores.OrderBy(x => x.ForWeek)) {
-						csv.Add("" + ss.Measurable.Id, ss.ForWeek.ToShortDateString(), ss.Measured.NotNull(x => x.Value.ToString()) ?? "");
-					}
+					var csv = ExportAccessor.GenerateScorecardCsv("Measurable", scores);
+
+					//var csv = new Csv();
+					//csv.SetTitle("Measurable");
+					//foreach (var sss in scores.GroupBy(x => x.MeasurableId)) {
+					//	var ss = sss.First();
+					//	csv.Add(""+ss.Measurable.Id, "Title", ""+ss.Measurable.Title);
+					//	csv.Add(""+ss.Measurable.Id, "Owner", ss.Measurable.AccountableUser.NotNull(x => x.GetName()));
+					//	csv.Add(""+ss.Measurable.Id, "Admin", ss.Measurable.AdminUser.NotNull(x => x.GetName()));
+					//	csv.Add(""+ss.Measurable.Id, "Goal", "" + ss.Measurable.Goal);
+					//	csv.Add(""+ss.Measurable.Id, "GoalDirection", "" + ss.Measurable.GoalDirection);
+					//}
+					//foreach (var ss in scores.OrderBy(x => x.ForWeek)) {
+					//	csv.Add("" + ss.Measurable.Id, ss.ForWeek.ToShortDateString(), ss.Measured.NotNull(x => x.Value.ToString()) ?? "");
+					//}
 					return csv;
 
 					//var rocksQ = s.QueryOver<ScoreModel>()

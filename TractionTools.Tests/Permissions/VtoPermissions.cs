@@ -22,11 +22,11 @@ namespace TractionTools.Tests.Permissions {
 			var l10 = await L10Accessor.CreateBlankRecurrence(c.E2, c.Id);
 			c.AssertAll(p => p.ViewVTO(l10.VtoId), c.E2, c.Manager);
 
-			L10Accessor.AddAttendee(c.E2, l10.Id, c.E2.Id);
+			await L10Accessor.AddAttendee(c.E2, l10.Id, c.E2.Id);
 			c.AssertAll(p => p.ViewVTO(l10.VtoId), c.E2, c.Manager);
 
 
-			L10Accessor.AddAttendee(c.E2, l10.Id, c.E1.Id);
+			await L10Accessor.AddAttendee(c.E2, l10.Id, c.E1.Id);
 			c.AssertAll(p => p.ViewVTO(l10.VtoId), c.E2, c.Manager, c.E1);
 		}
 
@@ -40,11 +40,11 @@ namespace TractionTools.Tests.Permissions {
 
 			c.AssertAll(perm, c.E2, c.Manager);
 
-			L10Accessor.AddAttendee(c.E2, l10.Id, c.E2.Id);
+			await L10Accessor.AddAttendee(c.E2, l10.Id, c.E2.Id);
 			c.AssertAll(perm, c.E2, c.Manager);
 
 
-			L10Accessor.AddAttendee(c.E2, l10.Id, c.E1.Id);
+			await L10Accessor.AddAttendee(c.E2, l10.Id, c.E1.Id);
 			c.AssertAll(perm, c.E2, c.Manager, c.E1);
 		}
 

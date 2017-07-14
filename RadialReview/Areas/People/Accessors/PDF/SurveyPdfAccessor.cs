@@ -8,6 +8,7 @@ using RadialReview.Areas.People.Models.Survey;
 using RadialReview.Models;
 using RadialReview.Models.Interfaces;
 using RadialReview.Utilities.Constants;
+using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Pdf;
 using System;
 using System.Collections.Generic;
@@ -18,10 +19,17 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 	public class SurveyPdfAccessor {
 
 
+		public static Color DebugColor = Color.FromArgb(0, 0, 0, 0);
+		//public static Color DebugColor = Color.FromArgb(150, 150, 0, 0);
+
 		public static Color TableGray = new Color(100, 100, 100, 100);
 		public static Color TableDark = new Color(50, 50, 50);
-		public static Color TableBlack = new Color(0, 0, 0);
+		//public static Color TableBlack = new Color(0, 0, 0);
 
+		public static Color TractionOrange = new Color(239, 118, 34);
+		public static Color TableWhite = Colors.White;// new Color(255, 255, 255);
+		public static Color TractionBlack = new Color(62, 57, 53);// new Color(255, 255, 255);
+		public static Unit BottomPad = Unit.FromInch(.25);
 
 		public static Document CreateDoc(UserOrganizationModel caller, string docTitle) {
 			var document = new Document();
@@ -29,8 +37,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			document.Info.Title = docTitle;
 			document.Info.Author = caller.GetName();
 			document.Info.Comment = "Created with Traction® Tools";
-
-
+			
 			//document.DefaultPageSetup.PageFormat = PageFormat.Letter;
 			document.DefaultPageSetup.Orientation = Orientation.Portrait;
 
@@ -46,32 +53,51 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 		}
 
 
-		public static void AppendSurveyAbout(Document doc, DateTime localTime, ISurveyAbout survey) {
+		public static void AppendSurveyAbout(Document doc,string title, DateTime localTime, ISurveyAbout survey) {
+			doc.DefaultPageSetup.StartingNumber = 1;
 			var iSections = survey.GetSections().OrderBy(x => x.GetOrdering());
 			var section = doc.AddSection();
+
+			var usableWidth = doc.DefaultPageSetup.PageWidth - doc.DefaultPageSetup.LeftMargin - doc.DefaultPageSetup.RightMargin;
+			var topPara = section.AddParagraph();
+			topPara.AddTab();
+			topPara.Format.AddTabStop(usableWidth / 2, TabAlignment.Center);
+			topPara.Format.Font.Size = 16;
+			topPara.Format.Font.Color = TractionBlack;
+			topPara.AddFormattedText(survey.GetAbout().NotNull(x=>x.ToPrettyString().ToUpper())?? "",TextFormat.Bold);
+		
+			//topPara = section.AddParagraph();
+			topPara.Format.SpaceAfter = BottomPad*.5;
+
 
 			///
 			Style style;
 			style = doc.Styles[StyleNames.Footer];
 			style.ParagraphFormat.TabStops.Clear();
-			var usableWidth = doc.DefaultPageSetup.PageWidth - doc.DefaultPageSetup.LeftMargin - doc.DefaultPageSetup.RightMargin;
 
 			style.ParagraphFormat.AddTabStop(usableWidth/2, TabAlignment.Center);
 			style.ParagraphFormat.AddTabStop(usableWidth, TabAlignment.Right);
+			var headParagraph = section.Headers.Primary.AddParagraph();
+			var ftParagraph = section.Footers.Primary.AddParagraph();
 
-			var paragraph = section.Footers.Primary.AddParagraph();
-
-			FormattedText ft = paragraph.AddFormattedText(survey.GetAbout().ToPrettyString() + " - " + survey.GetIssueDate().ToString("MMMM yyyy"), TextFormat.Bold);
+			FormattedText ft = ftParagraph.AddFormattedText(survey.GetAbout().ToPrettyString() + " - " + survey.GetIssueDate().ToString("MMMM yyyy"), TextFormat.Bold);
 			ft.Font.Size = 6;
-			paragraph.AddTab();
-			paragraph.AddTab();
-			var pf = paragraph.AddPageField();
+			ftParagraph.AddTab();
+			ftParagraph.AddTab();
+			ftParagraph.Format.Font.Size =6;
+			ftParagraph.Format.KeepTogether = true;
+			ft = ftParagraph.AddFormattedText(title.NotNull(x => x + " | ") ?? "", TextFormat.NotBold);
 			
+			var pf = ftParagraph.AddPageField();
+			//pf.Font.Size = 8;
 
-			paragraph = section.Footers.Primary.AddParagraph();
-			ft = paragraph.AddFormattedText("Printed: "+localTime.Date.ToShortDateString(), TextFormat.NotBold);
+			ftParagraph = section.Footers.Primary.AddParagraph();
+			ft = ftParagraph.AddFormattedText("Printed: "+localTime.Date.ToShortDateString(), TextFormat.NotBold);
 			ft.Font.Size = 6;
-		
+
+			//FormattedText hd = headParagraph.AddFormattedText(title ?? "", TextFormat.Bold);
+			//headParagraph.Format.ver
+			//hd.Font.Size = 8;
 
 			foreach (var iSection in iSections) {
 				AddSurveySection(section, iSection);
@@ -92,7 +118,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 
 
 			var title = frame.AddTable();
-			title.Borders.Color = TableBlack;
+			title.Borders.Color = TractionOrange;//TableBlack;
 
 			var size = Unit.FromInch(5.5);
 			if (orientation == Orientation.Landscape)
@@ -100,11 +126,12 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			var c = title.AddColumn(size);
 			c.Format.Alignment = ParagraphAlignment.Center;
 			var rr = title.AddRow();
-			rr.Cells[0].AddParagraph(pageTitle);
+			rr.Cells[0].AddParagraph(pageTitle??"");
 			rr.Format.Font.Bold = true;
+			rr.Format.Font.Color = TableWhite;
 			//rr.Format.Font.Size = .4;
 			rr.Format.Font.Name = "Arial Narrow";
-			rr.Shading.Color = TableGray;
+			rr.Shading.Color = TractionOrange;// TableGray;
 			rr.HeightRule = RowHeightRule.AtLeast;
 			rr.VerticalAlignment = VerticalAlignment.Center;
 			rr.Height = Unit.FromInch(0.4);
@@ -115,7 +142,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 		protected static void AddSurveySection(Section section, ISectionAbout iSection) {
 			//var section = doc.AddSection();
 			var usableWidth = section.Document.DefaultPageSetup.PageWidth - section.Document.DefaultPageSetup.LeftMargin - section.Document.DefaultPageSetup.RightMargin;
-			var superTable = section.AddTable();
+			var superTable = new Table();//section.AddTable();
 			superTable.AddColumn(usableWidth);
 			var superRow = superTable.AddRow();
 			var cell = superRow.Cells[0];
@@ -123,35 +150,40 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 
 
 			AddSectionTitle(cell, iSection.GetName());
-			PdfSectionFactory.CreateSection(cell, iSection, usableWidth);
+			var shouldDraw = PdfSectionFactory.CreateSection(cell, iSection, usableWidth);
 
-			var p = cell.AddParagraph();
-			p.Format.SpaceAfter = Unit.FromInch(.15);
+			if (shouldDraw) {
+				section.Elements.Add(superTable);
+			}
+
+			//var p = cell.AddParagraph();
+			//p.Format.SpaceAfter = Unit.FromInch(.15);
 		}
 	}
 
 	public class PdfSectionFactory {
 
-		//private static Color DebugColor = Color.FromArgb(150, 150, 0, 0);
-		private static Color DebugColor = Color.FromArgb(0, 0, 0, 0);
+		private static Color DebugColor = SurveyPdfAccessor.DebugColor;
 
 		public static Color _Gray = Color.FromArgb((128 + 255) / 2, 51, 51, 51);
 		public static Unit _DefaultMargin = Unit.FromInch(0.3);
 
-		public static Unit BottomPad = Unit.FromInch(.25);
-
-		//public static XFont _FontLargeBold = new XFont("Verdana", 20, XFontStyle.Bold);
-		//public static XFont _Font = new XFont("Verdana", 10, XFontStyle.Regular);
-		//public static XFont _FontBold = new XFont("Verdana", 10, XFontStyle.Bold);
-		//public static XFont _Font8 = new XFont("Verdana", 8, XFontStyle.Regular);
-
-		//public static XFont _Font7 = new XFont("Verdana", 7, XFontStyle.Regular);
-		//public static XFont _Font7Bold = new XFont("Verdana", 7, XFontStyle.Bold);
-		////public static XFont _Font7Bold = new XFont("Verdana", 7, XFontStyle.Bold);
-		//public static Color _Black = Color.FromArgb(255, 51, 51, 51);
-		//public static XBrush _BlackText = new XSolidBrush(XColor.FromArgb((int)_Black.A, (int)_Black.R, (int)_Black.G, (int)_Black.B));
-		//public static XBrush _GrayText = new XSolidBrush(XColor.FromArgb((int)_Gray.A, (int)_Gray.R, (int)_Gray.G, (int)_Gray.B));
-		
+		public static Unit BottomPad = SurveyPdfAccessor.BottomPad;// Unit.FromInch(.25);
+				
+		public static bool CreateSection(Cell cell, ISectionAbout isection, Unit usableWidth) {
+			switch (isection.GetSectionType()) {
+				case "Rocks":
+					return AddRocksSection(cell, isection, usableWidth);
+				case "Roles":
+					return AddRolesSection(cell, isection, usableWidth);
+				case "Values":
+					return AddValuesSection(cell, isection, usableWidth);
+				case "GeneralComments":
+					return AddGeneralCommentsSection(cell, isection, usableWidth);
+				default:
+					throw new ArgumentOutOfRangeException("Unknown section type");
+			}
+		}
 
 
 
@@ -163,7 +195,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 
 
 		private static void DrawCheckX(Paragraph paragraph, string value, string valueWhenChecked, string valueWhenX) {
-			var iconSize = Unit.FromInch(.5);
+			var iconSize = Unit.FromInch(.4);
 			if (value == valueWhenChecked) {
 				var img = paragraph.AddImage(PdfImageConst.GreenCheck);
 				img.Width = iconSize;
@@ -179,21 +211,6 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			}
 		}
 		
-		public static void CreateSection(Cell cell, ISectionAbout isection, Unit usableWidth) {
-			switch (isection.GetSectionType()) {
-				case "Rocks":
-					AddRocksSection(cell, isection, usableWidth);
-					break;
-				case "Roles":
-					AddRolesSection(cell, isection, usableWidth);
-					break;
-				case "Values":
-					AddValuesSection(cell, isection, usableWidth);
-					break;
-				default:
-					throw new ArgumentOutOfRangeException("Unknown section type");
-			}
-		}
 
 		private class PdfTable {
 			public IEnumerable<IItemContainerAbout> ItemContainers { get; set; }
@@ -202,21 +219,21 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			public Action<Cell, IItem> ItemBuilder { get; set; }
 			public Action<Cell, IItemFormat, IResponse> ResponseBuilder { get; set; }
 
+			public static Unit DefaultHorizontalPadding = Unit.FromInch(.1);
+			public static Unit DefaultItemTitleWidth = Unit.FromInch(3);
+
 			protected Unit HorizontalPadding { get; set; }
 			protected Unit ItemTitleWidth { get; set; }
 			protected Unit TotalWidth { get; set; }
+			protected bool ShouldAddSpacerRow { get; set; }
 
-			public static Table Build(Unit totalWidth, IEnumerable<IItemContainerAbout> itemContainers, Action<Cell, IItemFormat, IResponse> responseBuilder, Action<Cell, IItem> itemBuilder = null, Action<Cell, IForModel> userBuilder = null) {
-				var builder = new PdfTable(totalWidth, itemContainers, responseBuilder, itemBuilder, userBuilder);
-				return builder.BuildTable();
-			}
-
-			private PdfTable(Unit totalWidth, IEnumerable<IItemContainerAbout> itemContainers, Action<Cell, IItemFormat, IResponse> responseBuilder, Action<Cell, IItem> itemBuilder = null, Action<Cell, IForModel> userBuilder = null) {
-				HorizontalPadding = Unit.FromInch(.1);
-				ItemTitleWidth = Unit.FromInch(2);
+			public PdfTable(Unit totalWidth, IEnumerable<IItemContainerAbout> itemContainers, Action<Cell, IItemFormat, IResponse> responseBuilder, Action<Cell, IItem> itemBuilder = null, Action<Cell, IForModel> userBuilder = null,bool addSpacerRow=true) {
+				HorizontalPadding = DefaultHorizontalPadding;
+				ItemTitleWidth = DefaultItemTitleWidth;
 				ItemContainers = itemContainers;
 				ResponseBuilder = responseBuilder;
 				TotalWidth = totalWidth;
+				ShouldAddSpacerRow = addSpacerRow;
 
 				UserBuilder = userBuilder ?? new Action<Cell, IForModel>((c, by) => {
 					var paragraph = c.AddParagraph();
@@ -227,19 +244,31 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 
 				ItemBuilder = itemBuilder ?? new Action<Cell, IItem>((c, item) => {
 					var valuePara = c.AddParagraph();
+					c.VerticalAlignment = VerticalAlignment.Top;
 					valuePara.Format.Alignment = ParagraphAlignment.Right;
 					valuePara.AddFormattedText(item.GetName() ?? "", TextFormat.Bold);
 					valuePara = c.AddParagraph();
 					valuePara.Format.Alignment = ParagraphAlignment.Right;
 					valuePara.AddFormattedText(item.GetHelp() ?? "");
-					valuePara.Format.SpaceAfter = BottomPad;
+					c.Row.Height = BottomPad;//*2.5;
+					c.Row.HeightRule = RowHeightRule.AtLeast;
+					valuePara.Format.SpaceAfter = BottomPad/2.0;
 				});
-
 			}
 
-			private Table BuildTable() {
+			public static Table Build(Unit totalWidth, IEnumerable<IItemContainerAbout> itemContainers, Action<Cell, IItemFormat, IResponse> responseBuilder, Action<Cell, IItem> itemBuilder = null, Action<Cell, IForModel> userBuilder = null) {
+				var builder = new PdfTable(totalWidth, itemContainers, responseBuilder, itemBuilder, userBuilder);
+				return builder.BuildTable();
+			}
+
+			public IEnumerable<IForModel> GetByOrdered() {
+				return ItemContainers.SelectMany(x => x.GetResponses().Select(y => y.GetByAbout().GetBy())).Distinct(x => x.ToKey());
+			}
+			
+
+			public Table BuildTable() {
 				var table = new Table();
-				var bys = ItemContainers.SelectMany(x => x.GetResponses().Select(y => y.GetByAbout().GetBy())).Distinct(x => x.ToKey());
+				var bys = GetByOrdered();
 
 				//COLUMNS
 				var usableWidth = TotalWidth - HorizontalPadding * 2 - ItemTitleWidth;
@@ -247,7 +276,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 				table.AddColumn(HorizontalPadding);
 				//Item Width
 				table.AddColumn(ItemTitleWidth);
-				var byWidth = usableWidth / Math.Max(1, bys.Count());
+				var byWidth = usableWidth / Math.Max(1, bys.Count() + 1);
 				//By width
 				foreach (var by in bys) {
 					table.AddColumn(byWidth);
@@ -257,7 +286,8 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 
 				//HEADERS
 				var headerRow = table.AddRow();
-				headerRow.Height = BottomPad * 1.5;
+				headerRow.Borders.Color = DebugColor;
+				headerRow.Height = BottomPad;//* 1.5;
 				headerRow.HeightRule = RowHeightRule.AtLeast;
 				for (var i = 0; i < bys.Count(); i++) {
 					//USER
@@ -304,11 +334,62 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 					}
 				}
 
+				if (ShouldAddSpacerRow) {
+					AddSpacerRow(table);
+				}
+
 				return table;
+			}
+
+			public static void AddSpacerRow(Table table) {
+				var r = table.AddRow();
+				r.Height = BottomPad * 1;
+				r.HeightRule = RowHeightRule.AtLeast;
 			}
 		}
 
-		private static void AddValuesSection(Cell cell, ISectionAbout iSection, Unit usableWidth) {
+		private static bool DrawComments(Cell c,string heading, IEnumerable<IItemContainerAbout> generalComments,Unit usableWidth) {
+
+			if (generalComments.SelectMany(x => x.GetResponses().Where(y => !string.IsNullOrWhiteSpace(y.GetAnswer()))).Any()) {
+
+				var table = new Table();
+				table.AddColumn(usableWidth * .05);
+				table.AddColumn(usableWidth * .9);
+				var row = table.AddRow();
+				c.Elements.Add(table);
+
+				var cell = row[1];
+
+				var genCommentsHeading = cell.AddParagraph();
+				genCommentsHeading.Format.SpaceAfter = BottomPad ;
+				genCommentsHeading.AddFormattedText(heading??"Comments", HeadingFont);
+				genCommentsHeading.Format.SpaceAfter = BottomPad *.5;
+
+				foreach (var generalCommentQuestion in generalComments) {
+					//Do we have a response?
+					foreach (var comment in generalCommentQuestion.GetResponses()) {
+						var answer = comment.GetAnswer();
+						var by = comment.GetByAbout().GetBy().ToPrettyString();
+						//Do we have an answer
+						if (!string.IsNullOrEmpty(answer)) {
+							var paragraph = cell.AddParagraph();
+							paragraph.AddFormattedText(by ?? "", TextFormat.Bold);
+							paragraph = cell.AddParagraph();
+							paragraph.AddText(answer ?? "");
+							paragraph.Format.SpaceAfter = BottomPad;
+						}
+					}
+				}
+
+				cell.AddParagraph();
+				//row.Format.SpaceAfter = BottomPad;
+				//cell.Format.SpaceBefore= BottomPad*2;
+				return true;
+			}
+			return false;
+		}
+
+		private static bool AddValuesSection(Cell cell, ISectionAbout iSection, Unit usableWidth) {
 
 			var valueQuestions = iSection.GetItemContainers().Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.Value).ToList();
 			var responseBuilder = new Action<Cell, IItemFormat, IResponse>((c, format, resp) => {
@@ -408,57 +489,43 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 
 			//ADD GENERAL COMMENTS
 			var generalComments = questions.Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.GeneralComment);
-			if (generalComments.SelectMany(x => x.GetResponses().Where(y => !string.IsNullOrWhiteSpace(y.GetAnswer()))).Any()) {
-				var genCommentsHeading = cell.AddParagraph();
-				genCommentsHeading.Format.SpaceBefore = BottomPad;
-				genCommentsHeading.AddFormattedText("General Comments", HeadingFont);
-				genCommentsHeading.Format.SpaceAfter = BottomPad;
+			DrawComments(cell,"Value Comments", generalComments,usableWidth);
+			return true;
+			//if (generalComments.SelectMany(x => x.GetResponses().Where(y => !string.IsNullOrWhiteSpace(y.GetAnswer()))).Any()) {
+			//	var genCommentsHeading = cell.AddParagraph();
+			//	//genCommentsHeading.Format.SpaceBefore = BottomPad;
+			//	genCommentsHeading.AddFormattedText("General Comments", HeadingFont);
+			//	genCommentsHeading.Format.SpaceAfter = BottomPad*2;
 
-				foreach (var generalCommentQuestion in generalComments) {
-					//Do we have a response?
-					foreach (var comment in generalCommentQuestion.GetResponses()) {
-						var answer = comment.GetAnswer();
-						var by = comment.GetByAbout().GetBy().ToPrettyString();
-						//Do we have an answer
-						if (!string.IsNullOrEmpty(answer)) {
-							var paragraph = cell.AddParagraph();
-							paragraph.AddFormattedText(by ?? "", TextFormat.Bold);
-							paragraph = cell.AddParagraph();
-							paragraph.AddText(answer ?? "");
-							paragraph.Format.SpaceAfter = BottomPad;
-						}
-					}
-				}
-			}
+			//	foreach (var generalCommentQuestion in generalComments) {
+			//		//Do we have a response?
+			//		foreach (var comment in generalCommentQuestion.GetResponses()) {
+			//			var answer = comment.GetAnswer();
+			//			var by = comment.GetByAbout().GetBy().ToPrettyString();
+			//			//Do we have an answer
+			//			if (!string.IsNullOrEmpty(answer)) {
+			//				var paragraph = cell.AddParagraph();
+			//				paragraph.AddFormattedText(by ?? "", TextFormat.Bold);
+			//				paragraph = cell.AddParagraph();
+			//				paragraph.AddText(answer ?? "");
+			//				paragraph.Format.SpaceAfter = BottomPad;
+			//			}
+			//		}
+			//	}
+			//}
 		}
 
-		private static void AddRolesSection(Cell cell, ISectionAbout iSection, Unit usableWidth) {
+		private static bool AddRolesSection(Cell cell, ISectionAbout iSection, Unit usableWidth) {
 			var questions = iSection.GetItemContainers();
-			//var roleQuestions = questions.Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.Role).ToList();
-
-
-			//var responseBuilder = new Action<Cell, IItemFormat, IResponse>((c, format, resp) => {
-			//	var paragraph = c.AddParagraph();
-			//	var options = format.GetSetting<Dictionary<string, object>>("options");
-			//	var rawResponse = resp.NotNull(x => x.GetAnswer());
-			//	c.VerticalAlignment = VerticalAlignment.Center;
-			//	c.Borders.Color = DebugColor;
-			//	var para = c.AddParagraph();
-			//	para.Format.Alignment = ParagraphAlignment.Center;
-			//	DrawCheckX(para, resp.GetAnswer(), "yes", "no");
-			//});
-
-			//var table = PdfTable.Build(usableWidth, roleQuestions, responseBuilder);
-			//cell.Elements.Add(table);
-
+			
 			var table = new Table();
 			cell.Elements.Add(table);
 
 			var bys = questions.SelectMany(x => x.GetResponses().Select(y => y.GetByAbout().GetBy())).Distinct(x => x.ToKey());
 
 			//ADD COLUMNS:
-			var paddingLeft = (usableWidth / 4.0) / 2.0;
-			var answerWidth = usableWidth * 3.0 / 4.0;
+			var paddingLeft = PdfTable.DefaultHorizontalPadding;// (usableWidth / 4.0) / 2.0;
+			var answerWidth = usableWidth - PdfTable.DefaultItemTitleWidth - PdfTable.DefaultHorizontalPadding;// * 3.0 / 4.0;
 			var responseColumn = table.AddColumn(usableWidth);
 
 			var rolesQuestions = questions.Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.Role).ToList();
@@ -482,101 +549,123 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			roleTable.AddColumn(Unit.FromInch(2));
 
 
-			//ROLES 
-			var ii = 1;
-			foreach (var roleItemContainer in rolesQuestions) {
+			//ROLES LIST
+			if (rolesQuestions.Any()) {
+				var ii = 1;
+				foreach (var roleItemContainer in rolesQuestions) {
+					var row = roleTable.AddRow();
+					var p = row.Cells[1].AddParagraph((roleItemContainer.GetName() ?? ""));
+					p.Format.Font.Bold = true;
+					p.Format.Alignment = ParagraphAlignment.Center;
+					ii++;
+				}
+			} else {
 				var row = roleTable.AddRow();
-				var p = row.Cells[1].AddParagraph((roleItemContainer.GetName() ?? ""));
-				p.Format.Font.Bold = true;
-				p.Format.Alignment = ParagraphAlignment.Center;
-				ii++;
+				var p = row.Cells[1].AddParagraph("No roles.");
+				p.Format.Font.Color = _Gray;
+				p.Format.Font.Italic = true;
+				p.Format.Alignment = ParagraphAlignment.Center;				
 			}
 			var spacer = roleTable.AddRow();
 			spacer.Height = BottomPad;
 			spacer.HeightRule = RowHeightRule.AtLeast;
 			rolesCell.Elements.Add(roleTable);
 
-			var gwcTable = new Table();
-			var titleWidth = Unit.FromInch(1.5);
-			gwcTable.AddColumn((usableWidth - answerWidth) / 2.0);
-			gwcTable.AddColumn(titleWidth);
-			answerWidth -= Unit.FromInch(1.5);
-			var colWidth = answerWidth / Math.Max(1, bys.Count());
-			for (var i = 0; i < bys.Count(); i++) {
-				gwcTable.AddColumn(colWidth);
-			}
-			//ADD HEADER
-			var headerRow = gwcTable.AddRow();
-			headerRow.Height = BottomPad * 1.5;
-			headerRow.HeightRule = RowHeightRule.AtLeast;
-			for (var i = 0; i < bys.Count(); i++) {
-				var c = headerRow.Cells[i + 2];
-				var paragraph = c.AddParagraph();
-				var p = paragraph.AddFormattedText(bys.ElementAt(i).ToPrettyString() ?? "err", TextFormat.Underline);
-				paragraph.Format.Alignment = ParagraphAlignment.Center;
-			}
-			var rolesAnswers = questions.Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.GWC).ToList();
-			var responseLookup = rolesAnswers.ToDictionary(
-										x => x.GetFormat().GetSetting<string>("gwc"),
-										y => y.GetResponses().ToDictionary(
-											x => x.GetByAbout().GetBy().ToKey(),
-											x => x
-										)
-									);
-			var gwc = new Dictionary<string, string> { { "get", "Get it" }, { "want", "Want it" }, { "cap", "Capacity to do it" } };
-			var order = new[] { "get", "want", "cap" };
-			//GWC RESPONSES
-			for (var i = 0; i < order.Count(); i++) {
-				var questionKey = order[i];
-				var gwcStr = gwc[questionKey];
+			//GWC Answers
 
-				var row = gwcTable.AddRow();
-				var ccc = row.Cells[1];
-				var p = ccc.AddParagraph(gwcStr);
-				ccc.VerticalAlignment = VerticalAlignment.Center;
-				ccc.Borders.Color = DebugColor;//Color.FromArgb(150, 150, 0, 0);
-				p.Format.Alignment = ParagraphAlignment.Right;
+			if (rolesQuestions.Any()) {
+				var gwcTable = new Table();
+				gwcTable.AddColumn(0);// paddingLeft);
+				gwcTable.AddColumn(PdfTable.DefaultItemTitleWidth);
 
-				for (var j = 0; j < bys.Count(); j++) {
-					var by = bys.ElementAt(j);
-					var userResponse = responseLookup[questionKey][by.ToKey()].NotNull(x => x.GetAnswer());
-					var cc = row.Cells[j + 2];
-					cc.VerticalAlignment = VerticalAlignment.Center;
-					cc.Borders.Color = DebugColor;// Color.FromArgb(150, 150, 0, 0);
-					var para = cc.AddParagraph();// userResponse.GetAnswer() ?? "na");
-					para.Format.Alignment = ParagraphAlignment.Center;
-					DrawCheckX(para, userResponse, "yes", "no");
+				var colWidth = answerWidth / Math.Max(1, bys.Count() + 1);
+				for (var i = 0; i < bys.Count(); i++) {
+					gwcTable.AddColumn(colWidth);
 				}
+				//ADD HEADER
+				var headerRow = gwcTable.AddRow();
+				headerRow.Height = BottomPad * 1.5;
+				headerRow.HeightRule = RowHeightRule.AtLeast;
+				for (var i = 0; i < bys.Count(); i++) {
+					var c = headerRow.Cells[i + 2];
+					var paragraph = c.AddParagraph();
+					var p = paragraph.AddFormattedText(bys.ElementAt(i).ToPrettyString() ?? "err", TextFormat.Underline);
+					paragraph.Format.Alignment = ParagraphAlignment.Center;
+				}
+				var rolesAnswers = questions.Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.GWC).ToList();
+				var responseLookup = rolesAnswers.ToDefaultDictionary(
+											x => x.GetFormat().GetSetting<string>("gwc"),
+											y => y.GetResponses().ToDefaultDictionary(
+												x => x.GetByAbout().GetBy().ToKey(),
+												x => x,
+												x => null
+											),
+											x => new DefaultDictionary<string, IResponse>(y => null)
+										);
+				var gwc = new Dictionary<string, string> { { "get", "Get it" }, { "want", "Want it" }, { "cap", "Capacity to do it" } };
+				var order = new[] { "get", "want", "cap" };
+				//GWC RESPONSES
+				for (var i = 0; i < order.Count(); i++) {
+					var questionKey = order[i];
+					var gwcStr = gwc[questionKey];
+
+					var row = gwcTable.AddRow();
+					var ccc = row.Cells[1];
+					var p = ccc.AddParagraph(gwcStr);
+					p.Format.Font.Bold = true;
+					//p.Format.Font.Size
+					ccc.VerticalAlignment = VerticalAlignment.Center;
+					ccc.Borders.Color = DebugColor;//Color.FromArgb(150, 150, 0, 0);
+					p.Format.Alignment = ParagraphAlignment.Right;
+
+					for (var j = 0; j < bys.Count(); j++) {
+						var by = bys.ElementAt(j);
+						var userResponse = responseLookup[questionKey][by.ToKey()].NotNull(x => x.GetAnswer());
+						var cc = row.Cells[j + 2];
+						cc.VerticalAlignment = VerticalAlignment.Center;
+						cc.Borders.Color = DebugColor;// Color.FromArgb(150, 150, 0, 0);
+						var para = cc.AddParagraph();// userResponse.GetAnswer() ?? "na");
+						para.Format.Alignment = ParagraphAlignment.Center;
+						DrawCheckX(para, userResponse, "yes", "no");
+					}
+				}
+
+				var r = gwcTable.AddRow();
+				r.Height = BottomPad * 1;
+				r.HeightRule = RowHeightRule.AtLeast;
+
+				gwcCell.Elements.Add(gwcTable);
 			}
-			gwcCell.Elements.Add(gwcTable);
 
 			//ADD GENERAL COMMENTS
 			var generalComments = questions.Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.GeneralComment);
-			if (generalComments.SelectMany(x => x.GetResponses().Where(y => !string.IsNullOrWhiteSpace(y.GetAnswer()))).Any()) {
-				var genCommentsHeading = cell.AddParagraph();
-				genCommentsHeading.Format.SpaceBefore = BottomPad;
-				genCommentsHeading.AddFormattedText("General Comments", HeadingFont);
-				genCommentsHeading.Format.SpaceAfter = BottomPad;
+			DrawComments(cell,"Role Comments", generalComments, usableWidth);
+			return true;
+			//if (generalComments.SelectMany(x => x.GetResponses().Where(y => !string.IsNullOrWhiteSpace(y.GetAnswer()))).Any()) {
+			//	var genCommentsHeading = cell.AddParagraph();
+			//	//genCommentsHeading.Format.SpaceBefore = BottomPad;
+			//	genCommentsHeading.AddFormattedText("General Comments", HeadingFont);
+			//	genCommentsHeading.Format.SpaceAfter = BottomPad*2;
 
-				foreach (var generalCommentQuestion in generalComments) {
-					//Do we have a response?
-					foreach (var comment in generalCommentQuestion.GetResponses()) {
-						var answer = comment.GetAnswer();
-						var by = comment.GetByAbout().GetBy().ToPrettyString();
-						//Do we have an answer
-						if (!string.IsNullOrEmpty(answer)) {
-							var paragraph = cell.AddParagraph();
-							paragraph.AddFormattedText(by ?? "", TextFormat.Bold);
-							paragraph = cell.AddParagraph();
-							paragraph.AddText(answer ?? "");
-							paragraph.Format.SpaceAfter = BottomPad;
-						}
-					}
-				}
-			}
+			//	foreach (var generalCommentQuestion in generalComments) {
+			//		//Do we have a response?
+			//		foreach (var comment in generalCommentQuestion.GetResponses()) {
+			//			var answer = comment.GetAnswer();
+			//			var by = comment.GetByAbout().GetBy().ToPrettyString();
+			//			//Do we have an answer
+			//			if (!string.IsNullOrEmpty(answer)) {
+			//				var paragraph = cell.AddParagraph();
+			//				paragraph.AddFormattedText(by ?? "", TextFormat.Bold);
+			//				paragraph = cell.AddParagraph();
+			//				paragraph.AddText(answer ?? "");
+			//				paragraph.Format.SpaceAfter = BottomPad;
+			//			}
+			//		}
+			//	}
+			//}
 		}
-
-		private static void AddRocksSection(Cell cell, ISectionAbout iSection, Unit usableWidth) {
+		
+		private static bool AddRocksSection(Cell cell, ISectionAbout iSection, Unit usableWidth) {
 			var questions = iSection.GetItemContainers();
 			var rockQuestions = questions.Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.Rock).ToList();
 			var responseBuilder = new Action<Cell, IItemFormat, IResponse>((c, format, resp) => {
@@ -588,8 +677,26 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 				DrawCheckX(paragraph, rawResponse, "done", "not-done");
 			});
 
-			var table = PdfTable.Build(usableWidth, rockQuestions, responseBuilder);
+			var tableBuilder = new PdfTable(usableWidth, rockQuestions, responseBuilder, addSpacerRow:false);
+			var table = tableBuilder.BuildTable();
+
+			//Add the rock completion percentage
+			table.Format.Borders.Color = DebugColor;
+			var percentRow = table.AddRow();
+			percentRow.TopPadding = BottomPad*.5;
+			var percentLookup = CalculateCompletionPercent(rockQuestions);
+			var bys = tableBuilder.GetByOrdered();
+			for (var i = 0; i < bys.Count(); i++) {
+				var by = bys.ElementAt(i);
+				var p = percentRow.Cells[i + 2].AddParagraph(percentLookup[by.ToKey()].ToPercentage("n/a"));
+				p.Format.Alignment = ParagraphAlignment.Center;
+			}
+
+			PdfTable.AddSpacerRow(table);
+			//Append table
 			cell.Elements.Add(table);
+
+
 
 			#region OLD
 			//var table = new Table();
@@ -658,28 +765,27 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			#endregion
 			//ADD GENERAL COMMENTS
 			var generalComments = questions.Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.GeneralComment);
-			if (generalComments.SelectMany(x => x.GetResponses().Where(y => !string.IsNullOrWhiteSpace(y.GetAnswer()))).Any()) {
-				var genCommentsHeading = cell.AddParagraph();
-				genCommentsHeading.Format.SpaceBefore = BottomPad;
-				genCommentsHeading.AddFormattedText("General Comments", HeadingFont);
-				genCommentsHeading.Format.SpaceAfter = BottomPad;
+			DrawComments(cell,"Rock Comments", generalComments, usableWidth);
 
-				foreach (var generalCommentQuestion in generalComments) {
-					//Do we have a response?
-					foreach (var comment in generalCommentQuestion.GetResponses()) {
-						var answer = comment.GetAnswer();
-						var by = comment.GetByAbout().GetBy().ToPrettyString();
-						//Do we have an answer
-						if (!string.IsNullOrEmpty(answer)) {
-							var paragraph = cell.AddParagraph();
-							paragraph.AddFormattedText(by ?? "", TextFormat.Bold);
-							paragraph = cell.AddParagraph();
-							paragraph.AddText(answer ?? "");
-							paragraph.Format.SpaceAfter = BottomPad;
-						}
-					}
-				}
-			}
+			return true;
 		}
+
+		private static bool AddGeneralCommentsSection(Cell cell, ISectionAbout iSection, Unit usableWidth) {
+
+			var questions = iSection.GetItemContainers();
+			var generalComments = questions.Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.GeneralComment);
+			
+			return DrawComments(cell, "General Comments", generalComments, usableWidth);
+			
+		}
+
+		private static DefaultDictionary<string, Ratio> CalculateCompletionPercent(List<IItemContainerAbout> items) {
+			var dict = new DefaultDictionary<string, Ratio>(x => new Ratio());
+			foreach (var i in items.SelectMany(x=>x.GetResponses())) {
+				dict[i.GetByAbout().GetBy().ToKey()].Add((i.GetAnswer() == "done").ToInt(), 1);
+			}
+			return dict;
+		}
+
 	}
 }

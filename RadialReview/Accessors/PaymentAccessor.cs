@@ -33,6 +33,7 @@ using NHibernate.Criterion;
 using static RadialReview.Utilities.PaymentSpringUtil;
 using RadialReview.Models.Components;
 using RadialReview.Utilities.DataTypes;
+using RadialReview.Hooks;
 
 namespace RadialReview.Accessors {
 	public class PaymentAccessor : BaseAccessor {
@@ -286,12 +287,12 @@ namespace RadialReview.Accessors {
 
 			public IEnumerable<UQ> AllPeopleList { get; protected set; }
 			public PaymentPlan_Monthly Plan { get; protected set; }
-			
+
 			public int NumberQCUsers { get { return AllPeopleList.Where(x => !x.IsClient).Count(); } }
 			public int NumberTotalUsers { get { return AllPeopleList.Count(); } }
 
 			public int NumberQCUsersToChargeFor { get { return NumberQCUsers; } }
-			public int NumberL10UsersToChargeFor {get {return Math.Max(0, NumberL10Users - Plan.FirstN_Users_Free);}}
+			public int NumberL10UsersToChargeFor { get { return Math.Max(0, NumberL10Users - Plan.FirstN_Users_Free); } }
 
 			public int NumberL10Users {
 				get {
@@ -317,7 +318,7 @@ namespace RadialReview.Accessors {
 				UserModel u = null;
 				UserOrganizationModel uo = null;
 				AllPeopleList = s.QueryOver<UserOrganizationModel>(() => uo)
-									.Left.JoinAlias(() => uo.User, () => u)					///Existed any time during this range.
+									.Left.JoinAlias(() => uo.User, () => u)                 ///Existed any time during this range.
 									.Where(() => uo.Organization.Id == orgId && uo.CreateTime <= rangeEnd && (uo.DeleteTime == null || uo.DeleteTime > rangeStart) && !uo.IsRadialAdmin)
 									.Select(x => x.Id, x => u.IsRadialAdmin, x => x.IsClient, x => x.User.Id, x => x.EvalOnly)
 									.List<object[]>()
@@ -597,6 +598,7 @@ namespace RadialReview.Accessors {
 			String city, String state, string zip, string phone, string website, string country, string email, bool active,
 			string bankLast4, string bankRouting, string bankFirstName, string bankLastName, string bankAccountType, PaymentSpringTokenType tokenType) {
 
+			PaymentSpringsToken token;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					if (@class != "token")
@@ -649,7 +651,6 @@ namespace RadialReview.Accessors {
 					// Create the HttpContent for the form to be posted.
 					var requestContent = new FormUrlEncodedContent(keys.ToArray());
 
-
 					//Do not supress
 					var privateApi = Config.PaymentSpring_PrivateKey();
 
@@ -671,7 +672,7 @@ namespace RadialReview.Accessors {
 							throw new PermissionsException("Expected class: 'Customer'");
 
 
-						var token = new PaymentSpringsToken() {
+						token = new PaymentSpringsToken() {
 							CustomerToken = Json.Decode(result).id,
 							CardLast4 = cardLast4,
 							CardOwner = cardOwnerName,
@@ -695,10 +696,17 @@ namespace RadialReview.Accessors {
 						tx.Commit();
 						s.Flush();
 
-						return new PaymentMethodVM(token);
 					}
-
 				}
+				using (var ss = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
+						await EventUtil.Trigger(x => x.Create(ss, EventType.PaymentEntered, caller, token, "Added " + tokenType));
+						tx.Commit();
+						s.Flush();
+					}
+				}
+
+				return new PaymentMethodVM(token);
 			}
 		}
 
@@ -828,14 +836,14 @@ namespace RadialReview.Accessors {
 
 
 		[Obsolete("Dont forget to attach to send this through AttachPlan")]
-		public static PaymentPlan_Monthly GeneratePlan(PaymentPlanType type, DateTime? now = null) {
+		public static PaymentPlan_Monthly GeneratePlan(PaymentPlanType type, DateTime? now = null,DateTime? trialEnd=null) {
 			var now1 = now ?? DateTime.UtcNow;
 			var day30 = now1.AddDays(30);
 			var day90 = now1.AddDays(90);
 			var basePlan = new PaymentPlan_Monthly() {
-				FreeUntil = day30,
-				L10FreeUntil = day30,
-				ReviewFreeUntil = day90,
+				FreeUntil = trialEnd??day30,
+				L10FreeUntil = trialEnd??day30,
+				ReviewFreeUntil = Math2.Max(day90, trialEnd??DateTime.MinValue),
 				PlanCreated = now1,
 				NoChargeForUnregisteredUsers = true,
 			};

@@ -81,6 +81,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Interfaces {
 
 	public interface IInitializerData {
 		long OrgId { get; }
+		DateTime Now { get; }
 	}
 
 	public interface IInitializerLookupData : IInitializerData {
@@ -149,6 +150,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Interfaces {
 		SurveyType GetSurveyType();
 		IEnumerable<ISurvey> GetSurveys();
 		void AppendSurvey(ISurvey survey);
+		DateTime GetIssueDate();
 	}
 
 	public interface ISurvey : IComponent, IByAbout {

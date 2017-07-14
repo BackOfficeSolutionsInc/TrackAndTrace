@@ -300,11 +300,11 @@ function updateTextContents(id, contents) {
 }
 
 var reping =function () {
-	console.log("Repinging");
+	console.log("Repinging - "+ new Date());
 	meetingHub.server.ping();
 };
 
-var myPing = setInterval(reping, pingTimeout - 1500);
+var myPing = setInterval(reping, pingTimeout - 5000);
 
 function removeOnTimeout(connectionId) {
 	return function () {

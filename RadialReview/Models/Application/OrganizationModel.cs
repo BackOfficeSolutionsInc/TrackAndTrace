@@ -76,6 +76,8 @@ namespace RadialReview.Models {
 		[Required]
 		public virtual bool EnableReview { get; set; }
 		[Required]
+		public virtual bool EnablePeople { get; set; }
+		[Required]
 		public virtual bool EnableAC { get; set; }
 		public virtual AccountType AccountType { get; set; }
 
@@ -93,6 +95,7 @@ namespace RadialReview.Models {
 		public virtual string ContactLN { get; set; }
 		public virtual string ContactPosition { get; set; }
 		public virtual EosUserType ContactEosUserType { get; set; }
+		public virtual DateTime? TrialEnd { get; set; }
 
 		[EmailAddress]
 		public virtual string ContactEmail { get; set; }
@@ -104,6 +107,8 @@ namespace RadialReview.Models {
 			EnableL10 = true;
 			EnableAC = true;
 			EnableReview = false;
+			EnablePeople = false;
+			TrialEnd = DateTime.UtcNow.Date.AddDays(30);
 		}
 
 		public class Map : ClassMap<OrgCreationData> {
@@ -127,6 +132,8 @@ namespace RadialReview.Models {
 				Map(x => x.ContactEmail);
 				Map(x => x.ContactEosUserType);
 				Map(x => x.CoachId);
+				Map(x => x.TrialEnd);
+				Map(x => x.EnablePeople);
 
 				Map(x => x.OrgId);
 			}
@@ -164,6 +171,7 @@ namespace RadialReview.Models {
 			
 			public virtual bool EnableL10 { get; set; }
 			public virtual bool EnableReview { get; set; }
+			public virtual bool EnablePeople { get; set; }
 			public virtual bool DisableAC { get; set; }
 
 			public virtual int? DefaultSendTodoTime { get; set; }
@@ -248,6 +256,7 @@ namespace RadialReview.Models {
 					Map(x => x.EnableL10);
 					Map(x => x.EnableReview);
 					Map(x => x.EnableSurvey);
+					Map(x => x.EnablePeople);
 
 					Map(x => x.DisableUpgradeUsers);
 
@@ -456,7 +465,7 @@ namespace RadialReview.Models {
 				Map(x => x.ManagersCanRemoveUsers);
 				Map(x => x.AccountabilityChartId);
 
-				
+				Map(x => x.PrimaryContactUserId);
 
 				//References(x => x.Lookup).LazyLoad().Cascade.SaveUpdate();
 

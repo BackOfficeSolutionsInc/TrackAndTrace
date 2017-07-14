@@ -168,7 +168,6 @@ namespace TractionTools.Tests.Accessors {
 			result = await TaskAccessor.ExecuteTask_Test(nextTask, now.AddDays(94));
 			Assert.AreEqual(chargeAnd107Users_L10_Review, result.Response.amount_settled);
 
-			Assert.Inconclusive("Also test Eval Only");
 		}
 #pragma warning restore CS0618 // Type or member is obsolete
 
@@ -245,6 +244,7 @@ namespace TractionTools.Tests.Accessors {
 				baseprice + Math.Max(0, 107 - numFreeUsers) * l10Price + 107 * reviewPrice
 			);
 
+			Assert.Inconclusive("Also test Eval Only");
 			Assert.Inconclusive("Also test Eval Only");
 
 		}

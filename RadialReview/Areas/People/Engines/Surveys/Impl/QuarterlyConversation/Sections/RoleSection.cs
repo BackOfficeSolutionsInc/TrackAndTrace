@@ -25,7 +25,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		public IEnumerable<IItemInitializer> GetItemBuilders(IItemInitializerData data) {
 			var modelType = data.Survey.GetAbout().ModelType;
 
-			var genComments = new TextAreaItemIntializer("General Comments", SurveyQuestionIdentifier.GeneralComment);
+			var genComments = new TextAreaItemIntializer("Role Comments", SurveyQuestionIdentifier.GeneralComment);
 
 			if (modelType == ForModel.GetModelType<UserOrganizationModel>()) {
 				var query = data.Lookup.Get<RoleLinksQuery>("RoleQuery");

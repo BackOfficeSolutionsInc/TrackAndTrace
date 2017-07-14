@@ -180,6 +180,8 @@ namespace RadialReview.Controllers {
 			GetUser(id);
 			if (ReturnUrl == null || ReturnUrl.StartsWith("/Account/Role"))
 				return RedirectToAction("Index", "Home");
+			if (ReturnUrl == null || ReturnUrl.StartsWith("/Error"))
+				return RedirectToAction("Index", "Home");
 			return RedirectToLocal(ReturnUrl);
 		}
 

@@ -5,7 +5,7 @@
 
 @if (ViewBag.NoLogin != true) {
 	if (Request.IsAuthenticated) {
-		using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" })) {
+		using (Html.BeginForm("LogOff", "Account",new { area = "" }, FormMethod.Post, new {  id = "logoutForm", @class = "navbar-right" })) {
 			@Html.AntiForgeryToken()
 
 			<span class="pull-left navbar-icon-container hidden-xs">
@@ -58,7 +58,7 @@
 							@if (ViewBag.ManagingOrganization ?? false) {
 								<li>
 									<a href="@Url.Action("Advanced", "Manage",new { area = "" })" title1="Add credit card information, edit advanced settings" id="header-tab-dropdown-advancedsettings">
-										@*@(Html.Organization().NotNull(x => x.GetName()) ?? "Organization")*@Advanced Settings
+										@*@(Html.Organization().NotNull(x => x.GetName()) ?? "Organization")*@Admin Settings
 									</a>
 								</li>
 								doDivider = true;

@@ -104,7 +104,7 @@ namespace TractionTools.Tests.Controllers {
 			}
 
 			var l10 = await org.CreateL10();
-			l10.AddAttendee(org.Employee);
+			await l10.AddAttendee(org.Employee);
 
 			var l10Other = await org.CreateL10();
 

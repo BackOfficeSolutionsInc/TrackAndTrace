@@ -13,6 +13,8 @@ using RadialReview.Utilities.DataTypes;
 using RadialReview.Hubs;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
+using NHibernate;
+using RadialReview.Accessors;
 
 namespace RadialReview.Models.L10 {
 	public enum PrioritizationType {
@@ -50,6 +52,7 @@ namespace RadialReview.Models.L10 {
 		public virtual long OrganizationId { get; set; }
 		public virtual OrganizationModel Organization { get; set; }
 		public virtual bool Pristine { get; set; }
+
 
 		public virtual bool CountDown { get; set; }
 		public virtual bool AttendingOffByDefault { get; set; }

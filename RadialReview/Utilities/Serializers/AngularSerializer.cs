@@ -135,24 +135,24 @@ namespace RadialReview.Utilities.Serializers {
                 return value + "";
             }
 
-			if (value is IAngularItem) {
+			if (value is IAngularId) {
 				var sub = new Dictionary<string, object>();
-				var resolved = (IAngularItem)value;
+				var resolved = (IAngularId)value;
 				_Serialize(value, sub, lookup, now);
 				Merge(lookup, resolved, sub); //lookup[resolved.GetKey()] = sub;
 				var output = new AngularPointer(resolved, now, false);
-				if (value is Removed || resolved.Id == Removed.Long()) {
+				if (value is Removed || resolved.GetAngularId() as long? == Removed.Long() || resolved.GetAngularId() as string == Removed.String() ) {
 					parent[name] = Removed.DELETED_KEY;
 					return parent[name];
 				}
 				return output;
-			} else if (value is IEnumerable && GenericImplementsType((IEnumerable)value, typeof(IAngularItem))) {
+			} else if (value is IEnumerable && GenericImplementsType((IEnumerable)value, typeof(IAngularId))) {
 				var keyList = new List<AngularPointer>();
 				var resolved = value as IEnumerable;
 
 				foreach (var v in resolved) {
 					var sub = new Dictionary<string, object>();
-					var vResolved = (IAngularItem)v;
+					var vResolved = (IAngularId)v;
 					_Serialize(v, sub, lookup, now);
 					Merge(lookup, vResolved, sub); //lookup[vResolved.GetKey()] = sub;
 					keyList.Add(new AngularPointer(vResolved, now, false));
@@ -162,13 +162,13 @@ namespace RadialReview.Utilities.Serializers {
 					return new { UpdateMethod = ((IAngularList)value).UpdateMethod.ToString(), AngularList = keyList };
 				}
 				return keyList;
-			} else if (value is IDictionary && GenericImplementsValueType((IDictionary)value, typeof(IAngularItem))) {
+			} else if (value is IDictionary && GenericImplementsValueType((IDictionary)value, typeof(IAngularId))) {
 				var keyList = new Dictionary<string, object>();
 				var resolved = value as IDictionary;
 				foreach (var vKey in resolved.Keys) {
 					var v = resolved[vKey];
 					var sub = new Dictionary<string, object>();
-					var vResolved = (IAngularItem)v;
+					var vResolved = (IAngularId)v;
 					_Serialize(v, sub, lookup, now);
 					Merge(lookup, vResolved, sub); //lookup[vResolved.GetKey()] = sub;
 					keyList.Add(vResolved.GetKey(), new AngularPointer(vResolved, now, false));
@@ -198,7 +198,7 @@ namespace RadialReview.Utilities.Serializers {
 					prop.SetValue(target, value, null);
 			}
 		}
-		private static void Merge(Dictionary<string, object> lookup, IAngularItem key, Dictionary<string, object> value) {
+		private static void Merge(Dictionary<string, object> lookup, IAngularId key, Dictionary<string, object> value) {
 			var keyStr = key.GetKey();
 			if (lookup.ContainsKey(keyStr)) {
 				var old = lookup[keyStr];

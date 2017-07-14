@@ -136,6 +136,7 @@
     <Compile Include="Areas\People\Controllers\PeopleAnalyzerController.cs" />
     <Compile Include="Areas\People\Controllers\QuarterlyConversationController.cs" />
     <Compile Include="Areas\People\Controllers\SurveyController.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\GeneralCommentsSection.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Impl\TextAreaItemIntializer.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Impl\TextItemIntializer.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Strategies\PostProcesses\PostProcessorFixPrettyNames.cs" />
@@ -155,12 +156,14 @@
     <Compile Include="Areas\People\PeopleAreaRegistration.cs" />
     <Compile Include="Areas\People\ViewModels\QuarterlyConversationVM.cs" />
     <None Include="Areas\People\Views\Main\Diagonal.cshtml" />
-    <Content Include="Content\AngularTemplates\People\Items\bs\textarea-item.html" />
-    <Content Include="Content\AngularTemplates\People\Items\bs\text-item.html" />
-    <Content Include="Content\AngularTemplates\People\Items\bs\radio-item.html" />
-    <Content Include="Content\AngularTemplates\People\surveyItemContainer.html" />
-    <Content Include="Content\AngularTemplates\People\survey.html" />
-    <Content Include="Content\AngularTemplates\People\surveySection.html" />
+    <Content Include="Content\AngularTemplates\People\PeopleAnalyzer\peopleAnalyzerTable.html" />
+    <Content Include="Content\AngularTemplates\People\PeopleAnalyzer\rzSliderTpl.html" />
+    <Content Include="Content\AngularTemplates\People\Survey\Items\bs\textarea-item.html" />
+    <Content Include="Content\AngularTemplates\People\Survey\Items\bs\text-item.html" />
+    <Content Include="Content\AngularTemplates\People\Survey\Items\bs\radio-item.html" />
+    <Content Include="Content\AngularTemplates\People\Survey\surveyItemContainer.html" />
+    <Content Include="Content\AngularTemplates\People\Survey\survey.html" />
+    <Content Include="Content\AngularTemplates\People\Survey\surveySection.html" />
     <Compile Include="Controllers\Ac\AngularAccountabilityController.cs" />
     <Compile Include="Controllers\AuditController.cs" />
     <Compile Include="Controllers\HeadlinesController.cs" />
@@ -880,7 +883,7 @@
     <Content Include="Areas\People\Views\web.config" />
     <Content Include="Areas\People\Views\Main\Index.cshtml" />
     <Content Include="Areas\People\Views\QuarterlyConversation\Index.cshtml" />
-    <Content Include="Content\AngularTemplates\People\surveyContainer.html" />
+    <Content Include="Content\AngularTemplates\People\Survey\surveyContainer.html" />
     <Content Include="Areas\People\Views\QuarterlyConversation\Questions.cshtml" />
     <Content Include="Areas\People\Views\_ViewStart.cshtml" />
     <Content Include="Areas\People\Views\Shared\_Layout.cshtml" />
@@ -913,8 +916,14 @@
     <Content Include="Content\GettingStarted\GettingStarted.css">
       <DependentUpon>GettingStarted.less</DependentUpon>
     </Content>
+    <Content Include="Content\People\PeopleAnalyzer.css">
+      <DependentUpon>PeopleAnalyzer.less</DependentUpon>
+    </Content>
     <Content Include="Content\People\QuarterlyConversation.css">
       <DependentUpon>QuarterlyConversation.less</DependentUpon>
+    </Content>
+    <Content Include="Content\People\rzslider.css">
+      <DependentUpon>rzslider.less</DependentUpon>
     </Content>
     <Content Include="Content\SnackbarAlerts.css">
       <DependentUpon>SnackbarAlerts.less</DependentUpon>
@@ -1079,6 +1088,8 @@
     <Content Include="Content\L10\L10Rocks.less" />
     <Content Include="Content\SnackbarAlerts.less" />
     <Content Include="Content\People\QuarterlyConversation.less" />
+    <Content Include="Content\People\PeopleAnalyzer.less" />
+    <Content Include="Content\People\rzslider.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1119,6 +1130,8 @@
     </Content>
     <Content Include="Scripts\Angular\MaterialDesign\md-data-table.js" />
     <Content Include="Scripts\Angular\MaterialDesign\md-stepper.js" />
+    <Content Include="Scripts\Angular\People\PeopleAnalyzer\PeopleAnalyzer.js" />
+    <Content Include="Scripts\Angular\People\init.js" />
     <Content Include="Scripts\Angular\People\Survey\SurveyComponents.js" />
     <Content Include="Scripts\Angular\Tiles\L10StatsTile.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
@@ -1151,10 +1164,24 @@
     <Content Include="Scripts\L10\L10Headlines.js" />
     <Content Include="Scripts\L10\L10Transcribe.js" />
     <Content Include="Scripts\L10\L10Wizard.js" />
+    <Content Include="Scripts\Main\ajaxintercepters.js" />
+    <Content Include="Scripts\Main\alerts.js" />
+    <Content Include="Scripts\Main\backwardcompatability.js" />
+    <Content Include="Scripts\Main\clickableclass.js" />
+    <Content Include="Scripts\Main\datatable.js" />
+    <Content Include="Scripts\Main\datepickers.js" />
     <Content Include="Scripts\Main\iefixes.js" />
     <Content Include="Scripts\Main\intercom.min.js" />
+    <Content Include="Scripts\Main\keyboard.js" />
+    <Content Include="Scripts\Main\libraries.js" />
     <Content Include="Scripts\Main\linq.js" />
     <Content Include="Scripts\Main\log-helper.js" />
+    <Content Include="Scripts\Main\modals.js" />
+    <Content Include="Scripts\Main\profilepicture.js" />
+    <Content Include="Scripts\Main\support.js" />
+    <Content Include="Scripts\Main\tours.js" />
+    <Content Include="Scripts\People\DiagonalTable.js" />
+    <Content Include="Scripts\People\rzslider.js" />
     <Content Include="Scripts\speechrecog.js" />
     <Content Include="Scripts\Tour\startL10.js" />
     <Content Include="Scripts\Tour\createL10.js" />
@@ -1546,6 +1573,7 @@
     <Content Include="Views\Admin\SupportMembers.cshtml" />
     <Content Include="Views\Admin\EditCampaign.cshtml" />
     <Content Include="Views\Admin\Campaigns.cshtml" />
+    <Content Include="Views\Phone\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -2041,7 +2069,6 @@
     <Content Include="Views\Organization\Begin.cshtml" />
     <Content Include="Views\Organization\Create.cshtml" />
     <Content Include="Views\Organization\Index.cshtml" />
-    <Content Include="Views\Organization\Manage.cshtml" />
     <Content Include="Views\Account\Role.cshtml" />
     <Content Include="Views\Partial\_DragDropItem.cshtml" />
     <Content Include="Views\Payment\Index.cshtml" />
@@ -2219,25 +2246,25 @@
     <Content Include="Views\Todo\partial\list.cshtml" />
     <Content Include="Views\VTO\Index.cshtml" />
     <Content Include="Views\VTO\Edit.cshtml" />
-    <Content Include="Views\Survey\Index.cshtml" />
-    <Content Include="Views\Survey\Edit.cshtml" />
+    <Content Include="Views\Surveys\Index.cshtml" />
+    <Content Include="Views\Surveys\Edit.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\SurveyQuestionGroupModel.cshtml" />
-    <Content Include="Views\Survey\_SurveyQuestionRow.cshtml" />
+    <Content Include="Views\Surveys\_SurveyQuestionRow.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\SurveyRespondentGroupModel.cshtml" />
-    <Content Include="Views\Survey\_SurveyRespondentRow.cshtml" />
-    <Content Include="Views\Survey\Take.cshtml" />
+    <Content Include="Views\Surveys\_SurveyRespondentRow.cshtml" />
+    <Content Include="Views\Surveys\Take.cshtml" />
     <Content Include="Views\TwilioApi\Modal.cshtml" />
     <Content Include="Views\TwilioApi\_PhoneRow.cshtml" />
     <Content Include="Views\TwilioApi\Index.cshtml" />
     <Content Include="Views\Scorecard\partial\listscripts.cshtml" />
     <Content Include="Views\Rocks\partial\list.cshtml" />
     <Content Include="Views\Todo\CreateTodoRecurrence.cshtml" />
-    <Content Include="Views\Survey\Results.cshtml" />
-    <Content Include="Views\Survey\partial\Radio5Result.cshtml" />
-    <Content Include="Views\Survey\partial\Radio5Take.cshtml" />
-    <Content Include="Views\Survey\partial\FeedbackTake.cshtml" />
-    <Content Include="Views\Survey\partial\FeedbackResult.cshtml" />
-    <Content Include="Views\Survey\Embedded.cshtml" />
+    <Content Include="Views\Surveys\Results.cshtml" />
+    <Content Include="Views\Surveys\partial\Radio5Result.cshtml" />
+    <Content Include="Views\Surveys\partial\Radio5Take.cshtml" />
+    <Content Include="Views\Surveys\partial\FeedbackTake.cshtml" />
+    <Content Include="Views\Surveys\partial\FeedbackResult.cshtml" />
+    <Content Include="Views\Surveys\Embedded.cshtml" />
     <Content Include="Views\UnitTest\Sync.cshtml" />
     <Content Include="Views\UnitTest\AllPages.cshtml" />
     <Content Include="Views\UnitTest\EditPage.cshtml" />

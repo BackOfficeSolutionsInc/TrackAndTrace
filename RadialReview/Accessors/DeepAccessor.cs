@@ -124,7 +124,7 @@ namespace RadialReview.Accessors {
 							.Left.JoinAlias(x => x.User, () => userAlias)
 							.Left.JoinAlias(x => x.TempUser, () => tempUserAlias)
 							.Where(x => x.DeleteTime == null)
-							.WhereRestrictionOn(x=>x.Id).IsIn(ids)
+							.WhereRestrictionOn(x => x.Id).IsIn(ids)
 							.Select(x => userAlias.FirstName, x => userAlias.LastName, x => x.Id, x => tempUserAlias.FirstName, x => tempUserAlias.LastName, x => userAlias.UserName, x => tempUserAlias.Email)
 							.List<object[]>()
 							.Select(Unpackage)
@@ -227,7 +227,7 @@ namespace RadialReview.Accessors {
 				return GetSubordinatesAndSelf(s, PermissionsUtility.Create(s, caller), userId, type).ToList();
 			}
 
-			public static IEnumerable<long> GetSubordinatesAndSelf(ISession s, PermissionsUtility perms, long userId, PermissionType? type = null) {
+			public static IEnumerable<long> GetSubordinatesAndSelf(ISession s, PermissionsUtility perms, long userId, PermissionType? type = null, bool excludeSelf = false) {
 				var user = s.Get<UserOrganizationModel>(userId);
 				if (user == null || user.DeleteTime != null)
 					throw new PermissionsException("User (" + userId + ") does not exist.");
@@ -252,12 +252,12 @@ namespace RadialReview.Accessors {
 					.Where(x => x.DeleteTime == null && x.OrganizationId == user.Organization.Id && x.UserId == userId)
 					.Select(x => x.Id)
 					.List<long>().ToList();
-				
+
 				if (type != null)
 					allPermitted.AddRange(s.QueryOver<PermissionOverride>()
 						.Where(x => x.DeleteTime == null && x.ForUser.Id == userId && x.Permissions == type)
 						.Select(x => x.AsUser.Id).List<long>().ToList());
-				
+
 				AccountabilityNode child = null;
 				var subordinates = s.QueryOver<DeepAccountability>()
 										.Where(x => x.DeleteTime == null)
@@ -267,8 +267,22 @@ namespace RadialReview.Accessors {
 											.Select(x => child.UserId)
 											.Future<long>();
 
-				subordinates= subordinates.Union(userId.AsList());
+				subordinates = subordinates.Union(userId.AsList());
 				return subordinates.Distinct();
+			}
+
+
+			public static bool HasChildren(ISession s, PermissionsUtility perms, long userId) {
+				var nodeIds = AccountabilityAccessor.GetNodeIdsForUser(s, perms, userId);
+				var futureVals = new List<IFutureValue<long>>();
+				foreach (var nodeId in nodeIds) {
+					futureVals.Add(s.QueryOver<DeepAccountability>().Where(x => x.DeleteTime == null && x.Links > 0 && x.ParentId == nodeId && x.ChildId != nodeId).ToRowCountInt64Query().FutureValue<long>());
+				}
+				foreach (var f in futureVals) {
+					if (f.Value > 0)
+						return true;
+				}
+				return false;
 			}
 
 			public static List<UserOrganizationModel> GetDirectReportsAndSelfModels(UserOrganizationModel caller, long userId) {
@@ -281,13 +295,13 @@ namespace RadialReview.Accessors {
 			}
 #pragma warning disable CS0618 // Type or member is obsolete
 			public static List<UserOrganizationModel> GetDirectReportsAndSelfModels(ISession s, PermissionsUtility perms, long userId) {
-				var myNodeIds =AccountabilityAccessor.GetNodesForUser(s, perms, userId);
+				var myNodeIds = AccountabilityAccessor.GetNodesForUser(s, perms, userId);
 
-				var users = myNodeIds.SelectMany(node=> DeepAccessor.GetDirectReportsAndSelf(s,perms,node.Id))
-					.Distinct(x=>x.Id)
-					.Distinct(x=>x.User.Id)
-					.Select(x=>x.User)
-					.Where(x=>x!=null && x.DeleteTime==null)
+				var users = myNodeIds.SelectMany(node => DeepAccessor.GetDirectReportsAndSelf(s, perms, node.Id))
+					.Distinct(x => x.Id)
+					.Distinct(x => x.User.Id)
+					.Select(x => x.User)
+					.Where(x => x != null && x.DeleteTime == null)
 					.ToList();
 
 				//resolve all
@@ -309,7 +323,7 @@ namespace RadialReview.Accessors {
 					return true;
 				if (m.ManagingOrganization && m.Organization.Id == sub.Organization.Id)
 					return true;
-				
+
 				AccountabilityNode manager = null;
 				AccountabilityNode subordinate = null;
 
@@ -318,7 +332,7 @@ namespace RadialReview.Accessors {
 					.JoinAlias(x => x.Parent, () => manager)
 					.JoinAlias(x => x.Child, () => subordinate)
 						.Where(x => manager.DeleteTime == null && subordinate.DeleteTime == null && manager.UserId == managerId && subordinate.UserId == subordinateId)
-						.Select(x=>x.Id)
+						.Select(x => x.Id)
 						.Take(1).SingleOrDefault<object>();
 
 				//&& x.ManagerId == managerId && x.SubordinateId == subordinateId &&).Take(1).SingleOrDefault();
@@ -448,11 +462,11 @@ namespace RadialReview.Accessors {
 		}
 
 		[Obsolete("Did you mean DeepAccessor.Users.GetDirectReportsAndSelfModels")]
-		public static List<AccountabilityNode> GetDirectReportsAndSelf(ISession s,PermissionsUtility perms, long forNodeId) {
+		public static List<AccountabilityNode> GetDirectReportsAndSelf(ISession s, PermissionsUtility perms, long forNodeId) {
 			var forNode = s.Get<AccountabilityNode>(forNodeId);
 			perms.ViewHierarchy(forNode.AccountabilityChartId);
 
-			var list= s.QueryOver<AccountabilityNode>().Where(x => x.ParentNodeId == forNodeId && x.DeleteTime == null && x.AccountabilityChartId == forNode.AccountabilityChartId).List().ToList();
+			var list = s.QueryOver<AccountabilityNode>().Where(x => x.ParentNodeId == forNodeId && x.DeleteTime == null && x.AccountabilityChartId == forNode.AccountabilityChartId).List().ToList();
 			list.Insert(0, forNode);
 
 			foreach (var i in list) {

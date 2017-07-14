@@ -592,6 +592,11 @@ tr.grayRow {
 .jumbotron h1 {
   color: white;
 }
+@media print {
+  .jumbotron {
+    display: none !important;
+  }
+}
 #alerts {
   margin-top: 0px;
   margin-bottom: 2px;
@@ -1104,5 +1109,21 @@ textarea {
   white-space: pre-wrap;
 }
 .is-ios .no-ios {
+  display: none;
+}
+@media print {
+  .body-content {
+    padding: 0px;
+  }
+  #local,
+  #footer {
+    display: none;
+  }
+  html,
+  body {
+    background-color: transparent;
+  }
+}
+.shift-visible:not(.visible) {
   display: none;
 }

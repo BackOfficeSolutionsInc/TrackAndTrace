@@ -46,6 +46,7 @@ namespace RadialReview.Utilities.Integrations {
 		private string CreateBaseUrl(string apiAction) {
 			return $"{Configs.BaseUrl}/admin/api.php?api_action={apiAction}&api_key={Configs.ApiKey}&api_output=json";
 		}
+			
 
 		public async Task<ApiResult> EventAsync(string eventName, string email, Dictionary<string, string> parameters = null, Dictionary<string, string> visit = null) {
 
@@ -56,7 +57,9 @@ namespace RadialReview.Utilities.Integrations {
 			parameters["actid"] = Configs.ActId;
 			parameters["key"] = Configs.TrackKey;
 			parameters["event"] = eventName;
-			parameters["email"] = email;
+			visit = visit ?? new Dictionary<string, string>();
+			email = Config.ModifyEmail(email);
+			visit["email"]=  email;
 
 			if (visit != null) {
 				parameters["visit"] = JsonConvert.SerializeObject(visit);
@@ -66,7 +69,7 @@ namespace RadialReview.Utilities.Integrations {
 
 		}
 
-		public async Task<ApiResult> ApiAsync(string apiAction, Dictionary<string, string> parameters = null, string uri = null) {
+		public async Task<ApiResult> ApiAsync(string apiAction, Dictionary<string, string> parameters = null, string uri = null)  {
 			try {
 				//var payload = PreparePayload(parameters);
 				parameters = parameters ?? new Dictionary<string, string>();
@@ -107,15 +110,53 @@ namespace RadialReview.Utilities.Integrations {
 			}
 		}
 
+		public async Task SyncContact(Config.ActiveCampaignConfig configs, string contactEmail,
+			List<long> listIds=null, List<string> tags = null, Dictionary<long, string> fieldVals = null) {
+
+			var connector = this;
+
+			var email = contactEmail;
+			if (Config.IsLocal()) {
+				email = "clay.upton+" + (email ?? "").Replace("@", "_") + "@mytractiontools.com";
+			}
+
+			var dict = new Dictionary<string, string>() {
+					{"email",email },			
+			};
+
+			if (Config.IsLocal()) {
+				dict["field[" + configs.Fields.IsTest + ",0]"] = "Yes";
+			}
+
+			if (fieldVals != null) {
+				foreach (var f in fieldVals) {
+					dict["field[" + f.Key + ",0]"] = f.Value;
+				}
+			}
+
+			if (tags != null) {
+				dict["tags"] = string.Join(",", tags);
+			}
+
+			if (listIds != null) {
+				listIds.Add(configs.Lists.ContactList);
+				foreach (var listId in listIds.Distinct(x => x)) {
+					dict["p[" + listId + "]"] = listId + "";
+					dict["status[" + listId + "]"] = "" + 1;        //Auto subscribe to primary (Is this right?)
+				}
+			}
+
+			await connector.ApiAsync("contact_sync", dict);
+		}
+
 		public async Task SyncContact(Config.ActiveCampaignConfig configs, UserOrganizationModel contact,
 			List<long> listIds, List<string> tags = null, Dictionary<long, string> fieldVals = null) {
 
 			var connector = this;
 
 			var email = contact.GetEmail();
-			if (Config.IsLocal()) {
-				email = "clay.upton+" + email.Replace("@", "_") + "@mytractiontools.com";
-			}
+			email = Config.ModifyEmail(email);
+		
 
 			var dict = new Dictionary<string, string>() {
 					{"email",email },
@@ -153,7 +194,11 @@ namespace RadialReview.Utilities.Integrations {
 			await connector.ApiAsync("contact_sync", dict);
 		}
 	}
+	
 	public class ApiResult {
+
+		[JsonProperty("message")]
+		public string EvtMessage { set { Message = value; } }
 
 		[JsonProperty("result_message")]
 		public string Message { get; set; }

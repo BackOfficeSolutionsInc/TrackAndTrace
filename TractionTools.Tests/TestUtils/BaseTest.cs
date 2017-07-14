@@ -4,6 +4,7 @@ using NHibernate;
 using RadialReview;
 using RadialReview.Accessors;
 using RadialReview.Controllers;
+using RadialReview.Hooks;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
@@ -503,6 +504,12 @@ namespace TractionTools.Tests.TestUtils {
 
 			TempFolder = temp;
 			return temp;
+		}
+
+		[TestInitialize]
+		public void BaseTestInitialize() {
+			HooksRegistry.Deregister();
+
 		}
 		#endregion
 	}

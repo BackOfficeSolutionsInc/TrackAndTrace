@@ -23,6 +23,7 @@ using RadialReview.Models.Angular.Headlines;
 using RadialReview.Models.Angular.Notifications;
 using RadialReview.Notifications;
 using RadialReview.Models.Angular.Rocks;
+using RadialReview.Models.Enums;
 
 namespace RadialReview.Controllers {
     public partial class L10Controller :BaseController {
@@ -74,7 +75,7 @@ namespace RadialReview.Controllers {
 
         [HttpPost]
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult UpdateAngularMeasurable(AngularMeasurable model, string connectionId = null, bool historical = false, decimal? lower = null, decimal? upper = null,bool? enableCumulative = null, DateTime? cumulativeStart = null)
+        public JsonResult UpdateAngularMeasurable(AngularMeasurable model, string connectionId = null, bool historical = false, decimal? lower = null, decimal? upper = null,bool? enableCumulative = null, DateTime? cumulativeStart = null/*, UnitType? Modifier=null*/)
         {
             var target = model.Target;
             var altTarget = (decimal?)null;
@@ -89,7 +90,7 @@ namespace RadialReview.Controllers {
             L10Accessor.UpdateArchiveMeasurable(GetUser(),
                 model.Id,model.Name,model.Direction,target,
                 model.Owner.NotNull(x => x.Id), model.Admin.NotNull(x => x.Id),
-                connectionId,!historical, altTarget, enableCumulative, cumulativeStart);
+                connectionId,!historical, altTarget, enableCumulative, cumulativeStart, model.Modifiers);
             return Json(ResultObject.SilentSuccess());
         }
 
@@ -212,10 +213,10 @@ namespace RadialReview.Controllers {
 
 		[HttpGet]
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult AddAngularUser(long id,long userid)
+        public async Task<JsonResult> AddAngularUser(long id,long userid)
         {
             var recurrenceId = id;
-            L10Accessor.AddAttendee(GetUser(), recurrenceId, userid);
+            await L10Accessor.AddAttendee(GetUser(), recurrenceId, userid);
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
 

@@ -40,8 +40,9 @@ namespace RadialReview.Areas.People.Models.Survey {
             SurveyId = data.Survey.Id;
             SectionTemplateId = null;
 			SectionMergerKey = mergerKey;
+			CreateTime = data.Now;
 
-            _SurveyContainer = data.SurveyContainer;
+			_SurveyContainer = data.SurveyContainer;
             _Survey = data.Survey;
         }
 

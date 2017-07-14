@@ -62,8 +62,9 @@ namespace RadialReview.Areas.People.Models.Survey {
             ItemId = ctx.Item.Id;
             Answer = defaultAnswer;
             ItemFormatId = format.Id;
-            
-            _SurveyContainer = ctx.SurveyContainer;
+			CreateTime = ctx.Now;
+
+			_SurveyContainer = ctx.SurveyContainer;
             _Survey = ctx.Survey;
             _Section = ctx.Section;
             _Item = ctx.Item;

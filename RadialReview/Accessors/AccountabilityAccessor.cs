@@ -33,22 +33,22 @@ namespace RadialReview.Accessors {
 	public class AccountabilityAccessor : BaseAccessor {
 
         #region Single call
-        public static async Task Update(UserOrganizationModel caller, IAngularItem model, string connectionId) {
+        public static async Task Update(UserOrganizationModel caller, IAngularId model, string connectionId) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     using (var rt = RealTimeUtility.Create(connectionId)) {
                         var perms = PermissionsUtility.Create(s, caller);
 
-                        if (model.Type == typeof(AngularAccountabilityNode).Name) {
+                        if (model.GetAngularType() == typeof(AngularAccountabilityNode).Name) {
                             var m = (AngularAccountabilityNode)model;
                             //UpdateIssue(caller, (long)model.GetOrDefault("Id", null), (string)model.GetOrDefault("Name", null), (string)model.GetOrDefault("Details", null), (bool?)model.GetOrDefault("Complete", null), connectionId);
                             UpdateAccountabilityNode(s, rt, perms, m.Id, m.Group, m.User.NotNull(x => (long?)x.Id));
-                        } else if (model.Type == typeof(AngularRole).Name) {
+                        } else if (model.GetAngularType() == typeof(AngularRole).Name) {
                             var m = (AngularRole)model;
                             //UpdateIssue(caller, (long)model.GetOrDefault("Id", null), (string)model.GetOrDefault("Name", null), (string)model.GetOrDefault("Details", null), (bool?)model.GetOrDefault("Complete", null), connectionId);
                             await UpdateRole(s, rt, perms, m.Id, m.Name);
                         } else {
-                            throw new PermissionsException("Unhandled type: " + model.Type);
+                            throw new PermissionsException("Unhandled type: " + model.GetAngularType());
                         }
 
                         tx.Commit();
@@ -84,49 +84,6 @@ namespace RadialReview.Accessors {
             //    collapsed = !links.Any(x => (x.Parent.UserId == caller || x.Child.UserId == caller) && x.Parent.UserId == parent)
             //};
         }
-
-        public static List<AccountabilityNode> GetNodesForUser(UserOrganizationModel caller, long userId) {
-
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var perms = PermissionsUtility.Create(s, caller);
-                    return GetNodesForUser(s, perms, userId);
-                }
-            }
-        }
-
-
-        public static List<AccountabilityNode> GetNodesForUser(ISession s, PermissionsUtility perms, long userId) {
-            perms.ViewUserOrganization(userId, false);
-            return s.QueryOver<AccountabilityNode>().Where(x => x.DeleteTime == null && x.UserId == userId).List().ToList();
-        }
-
-        public static AccountabilityNode GetNodeById(UserOrganizationModel caller, long seatId, bool checkDeleted = true) // checkDeleted with handle DeleteTime check
-        {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
-                    var perms = PermissionsUtility.Create(s, caller);
-                    return GetNodeById(s, perms, seatId, checkDeleted);
-                }
-            }
-        }
-
-        public static AccountabilityNode GetNodeById(ISession s, PermissionsUtility perms, long seatId, bool checkDeleted = true)
-        {            
-            var node = s.Get<AccountabilityNode>(seatId);
-            NHibernateUtil.Initialize(node.User);
-
-            if (node.DeleteTime != null && checkDeleted)
-            {
-                throw new PermissionsException("Seat is not accessible.");
-            }
-
-            perms.CanView(ResourceType.AccountabilityHierarchy, node.AccountabilityChartId);
-            return node;
-        }
-
         [Obsolete("Do not use", true)]
         public static AccountabilityTree GetTreeOld(UserOrganizationModel caller, long organizationId, long? parentId) {
             using (var s = HibernateSession.GetCurrentSession()) {
@@ -191,9 +148,53 @@ namespace RadialReview.Accessors {
                 }
             }
         }
+		#endregion
+		#region Getters
+		public static List<AccountabilityNode> GetNodesForUser(UserOrganizationModel caller, long userId) {
 
-        #endregion
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    return GetNodesForUser(s, perms, userId);
+                }
+            }
+        }
+		
+		public static List<AccountabilityNode> GetNodesForUser(ISession s, PermissionsUtility perms, long userId) {
+			perms.ViewUserOrganization(userId, false);
+			return s.QueryOver<AccountabilityNode>().Where(x => x.DeleteTime == null && x.UserId == userId).List().ToList();
+		}
+		public static List<long> GetNodeIdsForUser(ISession s, PermissionsUtility perms, long userId) {
+			perms.ViewUserOrganization(userId, false);
+			return s.QueryOver<AccountabilityNode>().Where(x => x.DeleteTime == null && x.UserId == userId).Select(x=>x.Id).List<long>().ToList();
+		}
+		#endregion
+		public static AccountabilityNode GetNodeById(UserOrganizationModel caller, long seatId, bool checkDeleted = true) // checkDeleted with handle DeleteTime check
+        {
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    return GetNodeById(s, perms, seatId, checkDeleted);
+                }
+            }
+        }
 
+        public static AccountabilityNode GetNodeById(ISession s, PermissionsUtility perms, long seatId, bool checkDeleted = true)
+        {            
+            var node = s.Get<AccountabilityNode>(seatId);
+            NHibernateUtil.Initialize(node.User);
+
+            if (node.DeleteTime != null && checkDeleted)
+            {
+                throw new PermissionsException("Seat is not accessible.");
+            }
+
+            perms.CanView(ResourceType.AccountabilityHierarchy, node.AccountabilityChartId);
+            return node;
+        }
+		
         protected static AngularAccountabilityNode Dive(UserOrganizationModel caller, long nodeId, List<AccountabilityNode> nodes,
             List<AccountabilityRolesGroup> groups, Dictionary<long, RoleModel> rolesLU, List<RoleLink> links, List<PosDur> positions,
             List<TeamDur> teams, List<AngularAccountabilityNode> parents, HashSet<long> allManagingUserIds, long? selectedNode = null,

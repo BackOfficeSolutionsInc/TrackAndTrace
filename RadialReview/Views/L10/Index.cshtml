@@ -1,4 +1,4 @@
-﻿@model RadialReview.Models.L10.VM.L10ListingVM
+?@model RadialReview.Models.L10.VM.L10ListingVM
 
 @{
     ViewBag.Title = "L10 Meetings";
@@ -79,7 +79,8 @@
 											<ul class="dropdown-menu alignLeft pull-right" role="menu">
 												<li><a href="/L10/Details/@meeting.Recurrence.Id" @*class="btn btn-default btn-sm"*@><span style="top: 2px;" class="icon fontastic-icon-archive-1" title=""></span> Meeting Archive</a></li>
 												<li><a href="#" onclick="showPrint(@(meeting.Recurrence.Id))" @*href="/Quarterly/Printout/@meeting.Recurrence.Id"*@><span style="top: 2px;" class="icon fontastic-icon-page-export-pdf"></span> Generate Quarterly Printout</a></li>
-												<li><a href="@Url.Action("ExportAll",new { id=meeting.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
+												<li class="shift-hidden"><a href="@Url.Action("ExportAll",new { id=meeting.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
+												<li class="shift-visible"><a href="@Url.Action("ExportAll",new { id=meeting.Recurrence.Id,includeDetails=true })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> <i>Export All <span class="gray">(include notes)</span></i></a></li>
 												<li><a href="/L10/Timeline/@meeting.Recurrence.Id"><span class="icon fontastic-icon-back-in-time"></span> Timeline</a></li>
 												<li role="separator" class="divider"></li>
 												<li><a href="/vto/edit/@meeting.Recurrence.VtoId" @*class="btn btn-default btn-sm"*@><span style="top: 2px;" class="glyphicon glyphicon-vto" title=""></span> View V/TO</a></li>

@@ -19,7 +19,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 
         public IEnumerable<IItemInitializer> GetItemBuilders(IItemInitializerData data) {
             var values = data.Lookup.GetList<CompanyValueModel>();
-			var genComments = new TextAreaItemIntializer("General Comments", SurveyQuestionIdentifier.GeneralComment);
+			var genComments = new TextAreaItemIntializer("Value Comments", SurveyQuestionIdentifier.GeneralComment);
 			var items = values.Select(x => (IItemInitializer) new ValueItem(x)).ToList();
 			items.Add(genComments);
 			return items;

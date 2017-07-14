@@ -5,58 +5,80 @@ using System.Runtime.Remoting.Proxies;
 using Amazon.SimpleDB.Model;
 using System.Collections.Generic;
 
-namespace RadialReview.Models.Angular.Base
-{
-	public class BaseAngular  : IAngularItem
-	{
+namespace RadialReview.Models.Angular.Base {
+	public class BaseStringAngular : IAngularItemString {
+		public string Id { get; set; }
+		public string Type {
+			get { return GetType().Name; }
+		}
+		public BaseStringAngular() { }
+		public BaseStringAngular(string id) {
+			Id = id;
+		}
+		public string Key { get { return this.GetKey(); } }
+		public bool CreateOnly { get; set; }
+		public bool Hide { get; set; }
+		public Dictionary<string, object> _ExtraProperties { get; set; }
+
+		public object GetAngularId() {
+			return Id;
+		}
+
+		public string GetAngularType() {
+			return Type;
+		}
+	}
+
+
+	public class BaseAngular : IAngularItem {
 		public long Id { get; set; }
-		public string Type
-		{
+		public string Type {
 			get { return GetType().Name; }
 		}
 
-		public BaseAngular(long id)
-		{
+		public BaseAngular() {}
+		public BaseAngular(long id) {
 			Id = id;
-			//Removed = false;
+			
 		}
-
-		//[Obsolete("Use BaseAngular(id) instead.")]
-		public BaseAngular()
-		{
-
-		}
-
+		
 		public string Key { get { return this.GetKey(); } }
-
 		public bool CreateOnly { get; set; }
-        
-        public bool Hide {get;set;}
+		public bool Hide { get; set; }
+		public Dictionary<string, object> _ExtraProperties { get; set; }
 
-		public Dictionary<string, object> _ExtraProperties { get; set;  }
-    }
+		public object GetAngularId() {
+			return Id;
+		}
 
-	public class Removed
-	{
+		public string GetAngularType() {
+			return Type;
+		}
+	}
 
-        //public static T Create<T>(T instance)
-        //{
-        //    return (T)new Removed<T>(instance).GetTransparentProxy();
-        //}
+	public class Removed {
 
-        public static long Long()
-        {
-            return long.MaxValue - 1;
-        }
-        public static T From<T>() where T : IAngularItem,new() 
-        {
-            var obj= (T)Activator.CreateInstance<T>();
-            obj.Id = Long();
-			//obj.Deleted = true;
-            return obj;
-        }
-		public static DateTime Date()
-		{
+		//public static T Create<T>(T instance)
+		//{
+		//    return (T)new Removed<T>(instance).GetTransparentProxy();
+		//}
+
+		public static long Long() {
+			return long.MaxValue - 1;
+		}
+		public static T From<T>() where T : IAngularItem, new() {
+			var obj = (T)Activator.CreateInstance<T>();
+			obj.Id = Long();// Long();
+							//obj.Deleted = true;
+			return obj;
+		}
+		public static T FromAngularString<T>() where T : IAngularItemString, new() {
+			var obj = (T)Activator.CreateInstance<T>();
+			obj.Id = String();// Long();
+							//obj.Deleted = true;
+			return obj;
+		}
+		public static DateTime Date() {
 			return DateTime.MaxValue - TimeSpan.FromSeconds(1);
 		}
 		public static decimal Decimal() {
@@ -108,12 +130,12 @@ namespace RadialReview.Models.Angular.Base
 	//		}
 	//	}
 
- //       public long Id { get { return 0; } set { } }
+	//       public long Id { get { return 0; } set { } }
 
 	//	public string Type{get { return "Removed"; }}
 
 
 
- //       public bool Hide { get; set; }
- //   }
+	//       public bool Hide { get; set; }
+	//   }
 }

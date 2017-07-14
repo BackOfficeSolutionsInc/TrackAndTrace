@@ -76,7 +76,8 @@ namespace RadialReview.Areas.People.Models.Survey {
 			QuestionIdentifier = questionIdentifier;
             SurveyContainerId = ctx.SurveyContainer.Id;
             OrgId = ctx.OrgId;
-        }
+			CreateTime = ctx.Now;
+		}
 
         private static int CtorCalls = 0;
         [Obsolete("Use other constructor.")]

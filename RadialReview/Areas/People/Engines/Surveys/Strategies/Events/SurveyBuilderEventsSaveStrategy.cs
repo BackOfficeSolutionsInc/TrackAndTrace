@@ -45,7 +45,10 @@ namespace RadialReview.Areas.People.Engines.Surveys.Strategies.Events {
             public ISession Session { get; private set; }
             protected IOuterLookup OuterLookup { get; private set; }
 
-            public PrelookupData(ISession session, long orgId, IOuterLookup outerLookup, IEnumerable<IByAbout> byAbouts) {
+			private DateTime _Now = DateTime.UtcNow;
+			public DateTime Now {get { return _Now; }}
+
+			public PrelookupData(ISession session, long orgId, IOuterLookup outerLookup, IEnumerable<IByAbout> byAbouts) {
                 ByAbouts = byAbouts;
                 OrgId = orgId;
                 Session = session;

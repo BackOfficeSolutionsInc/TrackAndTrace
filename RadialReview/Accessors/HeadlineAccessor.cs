@@ -57,7 +57,7 @@ namespace RadialReview.Accessors {
 
 			if (recurrenceId > 0) {
 				r = s.Get<L10Recurrence>(recurrenceId);
-				r.Pristine = false;
+				await L10Accessor.Depristine_Unsafe(s, perms.GetCaller(), r);
 				s.Update(r);
 			}
 

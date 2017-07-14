@@ -89,6 +89,13 @@ namespace RadialReview.Utilities {
 		CreatePrimaryContact,
 
 		CreateMeeting,
+
+		StartLeadershipMeeting,
+		StartDepartmentMeeting,
+		EnablePeople,
+		DisablePeople,
+
+		PaymentEntered,
 		//AccountAge_SemiYearlyAnniversary,
 	}
 

@@ -1,0 +1,31 @@
+﻿<div class="people-analyzer">
+	<div class="print-all-btn"><a href="/People/QuarterlyConversation/PrintAll?surveyContainerId={{functions.selectedSurveyContainer().Id}}" target="_blank" class="btn btn-primary btn-invert">Print All</a></div>
+	<div class="survey-title">{{functions.selectedSurveyContainer().Name}}</div>
+	<rzslider ng-show="model.Rows.length>0" rz-slider-model="slider.value" rz-slider-options="slider.options" rz-slider-tpl-url="/content/AngularTemplates/People/PeopleAnalyzer/rzSliderTpl.html"></rzslider>
+
+	<table class="people-analyzer-table">
+		<thead ng-show="model.Rows.length>0">
+			<tr>
+				<th class="header column person-column"></th>
+				<th class="header column value-column" ng-repeat="value in model.Values"><span>{{value.Source.PrettyString}}</span></th>
+				<th class="header column gwc-column get-column">Get it</th>
+				<th class="header column gwc-column want-column">Wants it</th>
+				<th class="header column gwc-column cap-column">Capacity to do it</th>
+				<th class="header column print-column"></th>
+			</tr>
+		</thead>
+		<tbody ng-show="model.Rows.length>0">
+			<tr ng-repeat="row in model.Rows">
+				<th class="column person-column"><span>{{row.About.PrettyString}}</span></th>
+				<td class="column value-column" ng-class="{'inactive':functions.inactive(row,value)}" ng-repeat="value in model.Values"><span class="resp resp-{{functions.lookup(row,value).Answer}}">{{functions.lookup(row,value).AnswerFormatted}}</span></td>
+				<td class="column gwc-column get-column" ng-class="{'inactive':functions.inactive(row,'get')}"><span class="resp resp-{{functions.lookup(row,'get').Answer}}">{{functions.lookup(row,"get").AnswerFormatted}}</span></td>
+				<td class="column gwc-column want-column" ng-class="{'inactive':functions.inactive(row,'want')}"><span class="resp resp-{{functions.lookup(row,'want').Answer}}">{{functions.lookup(row,"want").AnswerFormatted}}</span></td>
+				<td class="column gwc-column cap-column" ng-class="{'inactive':functions.inactive(row,'cap')}"><span class="resp resp-{{functions.lookup(row,'cap').Answer}}">{{functions.lookup(row,"cap").AnswerFormatted}}</span></td>
+				<td class="column print-column"><span class="print-btn" ng-click="functions.printRow(row)"></span></td>
+			</tr>
+		</tbody>
+		<tbody class="error-message" ng-show="model.Rows.length==0">
+			<tr><td>No People Analyzer to display.</td></tr>
+		</tbody>
+	</table>
+</div>

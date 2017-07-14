@@ -6,6 +6,9 @@ using FluentNHibernate.Mapping;
 using RadialReview.Models.Components;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.L10;
+using Newtonsoft.Json;
+using RadialReview.Utilities.DataTypes;
+using RadialReview.Accessors;
 
 namespace RadialReview.Models
 {
@@ -80,6 +83,16 @@ namespace RadialReview.Models
 		public virtual long CallerNumber { get; set; }
 		public virtual long SystemNumber { get; set; }
 
+
+		public virtual string _SystemNumberFormatted { get { return SystemNumber.ToPhoneNumber(); } }
+		public virtual string _CallerNumberFormatted { get { return CallerNumber.ToPhoneNumber(); } }
+		public virtual string _RecurrenceName { get { return _Recurrence.NotNull(x => x.Name); } }
+		public virtual string _ActionName { get { return PhoneAccessor.PossibleActions[Action]; } }
+
+
+
+
+		[JsonIgnore]
 		public virtual L10Recurrence _Recurrence { get; set; }
 
 		public virtual string Placeholder { get; set; }

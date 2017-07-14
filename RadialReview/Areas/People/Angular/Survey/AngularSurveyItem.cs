@@ -82,7 +82,7 @@ namespace RadialReview.Areas.People.Angular.Survey {
 		public AngularSurveyItemFormat() { }
 		public AngularSurveyItemFormat(long id) : base(id) { }
 
-		public AngularSurveyItemFormat(IItemFormat itemFormat) {
+		public AngularSurveyItemFormat(IItemFormat itemFormat) : base(itemFormat.Id) {
 			Name = itemFormat.GetName();
 			Help = itemFormat.GetHelp();
 			ItemType = itemFormat.GetItemType();

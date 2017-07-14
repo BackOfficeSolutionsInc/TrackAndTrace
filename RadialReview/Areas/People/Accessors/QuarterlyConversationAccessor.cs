@@ -1,6 +1,8 @@
-﻿using NHibernate;
+﻿using log4net;
+using NHibernate;
 using RadialReview.Accessors;
 using RadialReview.Areas.People.Angular;
+using RadialReview.Areas.People.Angular.Survey;
 using RadialReview.Areas.People.Engines.Surveys;
 using RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation;
 using RadialReview.Areas.People.Engines.Surveys.Strategies.Events;
@@ -9,6 +11,8 @@ using RadialReview.Areas.People.Models.Survey;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Accountability;
+using RadialReview.Models.Angular.Meeting;
+using RadialReview.Models.Angular.Users;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Interfaces;
 using RadialReview.Utilities;
@@ -20,7 +24,8 @@ using System.Web;
 
 namespace RadialReview.Areas.People.Accessors {
 	public class QuarterlyConversationAccessor {
-		
+		protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
 #pragma warning disable CS0618 // Type or member is obsolete
 		public static IEnumerable<IByAbout> AvailableByAbouts(UserOrganizationModel caller, bool includeSelf = false) {
 			var nodes = AccountabilityAccessor.GetNodesForUser(caller, caller.Id);
@@ -28,9 +33,11 @@ namespace RadialReview.Areas.People.Accessors {
 			foreach (var node in nodes) {
 				var reports = DeepAccessor.GetDirectReportsAndSelf(caller, node.Id);
 				foreach (var report in reports) {
-					possible.Add(new ByAbout(caller, report));
-					if (includeSelf) {
-						possible.Add(new ByAbout(report, report));
+					if (report.User != null) {
+						possible.Add(new ByAbout(caller, report));
+						if (includeSelf) {
+							possible.Add(new ByAbout(report, report));
+						}
 					}
 				}
 			}
@@ -46,7 +53,7 @@ namespace RadialReview.Areas.People.Accessors {
 		/// <param name="byAbout"></param>
 		/// <returns></returns>
 		//private static IEnumerable<IByAbout> TransformByAbouts(ISession s, IEnumerable<IByAbout> byAbout) {
-			
+
 		//}
 
 		public static long GenerateQuarterlyConversation(UserOrganizationModel caller, string name, IEnumerable<IByAbout> byAbout) {
@@ -56,7 +63,7 @@ namespace RadialReview.Areas.People.Accessors {
 			if (invalid.Any()) {
 				Console.WriteLine("Invalid");
 				foreach (var i in invalid) {
-					Console.WriteLine("\tby:"+i.GetBy().ToKey()+"  about:"+i.GetAbout().ToKey());
+					Console.WriteLine("\tby:" + i.GetBy().ToKey() + "  about:" + i.GetAbout().ToKey());
 				}
 				throw new PermissionsException("Could not create Quarterly Conversation. You cannot view these items.");
 			}
@@ -65,7 +72,7 @@ namespace RadialReview.Areas.People.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					perms.CreateSurveyContainer(caller.Organization.Id);
+					perms.CreateQuarterlyConversation(caller.Organization.Id);
 
 					containerId = GenerateQuarterlyConversation_Unsafe(s, perms, name, byAbout);
 
@@ -100,6 +107,17 @@ namespace RadialReview.Areas.People.Accessors {
 
 
 		public static AngularPeopleAnalyzer GetPeopleAnalyzer(UserOrganizationModel caller, long userId, DateRange range = null) {
+			//Determine if self should be included.
+			var includeSelf = caller.ManagingOrganization;
+			if (includeSelf == false) {
+				try {
+					var rootId = AccountabilityAccessor.GetRoot(caller, caller.Organization.AccountabilityChartId).Id;
+					includeSelf = includeSelf || AccountabilityAccessor.GetNodesForUser(caller, userId).Any(x => x.ParentNodeId == rootId);
+				} catch (Exception e) {
+					log.Error(e);
+				}
+			}
+
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
@@ -107,23 +125,38 @@ namespace RadialReview.Areas.People.Accessors {
 					var nodes = AccountabilityAccessor.GetNodesForUser(s, perms, userId);
 #pragma warning disable CS0618 // Type or member is obsolete
 					var childrens = nodes.SelectMany(node => DeepAccessor.GetChildrenAndSelf(s, caller, node.Id));
+					if (!includeSelf) {
+						childrens = childrens.Where(x => !nodes.Any(y => y.Id == x));
+					}
 #pragma warning restore CS0618 // Type or member is obsolete
 
 					SurveyItem item = null;
 					var accountabiliyNodeResults = s.QueryOver<SurveyResponse>()
-						.Where(x => x.SurveyType == SurveyType.QuarterlyConversation && x.OrgId == caller.Organization.Id && x.About.ModelType == ForModel.GetModelType<AccountabilityNode>())
+						.Where(x => x.SurveyType == SurveyType.QuarterlyConversation && x.OrgId == caller.Organization.Id && x.About.ModelType == ForModel.GetModelType<AccountabilityNode>() && x.DeleteTime==null && x.Answer!=null)
 						.Where(range.Filter<SurveyResponse>())
 						.WhereRestrictionOn(x => x.About.ModelId).IsIn(childrens.ToArray())
 						.List().ToList();
+					var users = s.QueryOver<AccountabilityNode>().Where(x=>x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(childrens.Distinct().ToArray()).Fetch(x => x.User).Eager.Future();
+					
 
-					var formats = s.QueryOver<SurveyItemFormat>().WhereRestrictionOn(x => x.Id).IsIn(accountabiliyNodeResults.Select(x => x.ItemFormatId).Distinct().ToArray()).Future();
-					var items = s.QueryOver<SurveyItem>().WhereRestrictionOn(x => x.Id).IsIn(accountabiliyNodeResults.Select(x => x.ItemId).Distinct().ToArray()).Future();
-					var users = s.QueryOver<AccountabilityNode>().WhereRestrictionOn(x => x.Id).IsIn(childrens.Distinct().ToArray()).Fetch(x => x.User).Eager.Future();
+					var formats = s.QueryOver<SurveyItemFormat>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(accountabiliyNodeResults.Select(x => x.ItemFormatId).Distinct().ToArray()).Future();
+					var items = s.QueryOver<SurveyItem>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(accountabiliyNodeResults.Select(x => x.ItemId).Distinct().ToArray()).Future();
+					var surveys = s.QueryOver<Survey>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(accountabiliyNodeResults.Select(x => x.SurveyId).Distinct().ToArray()).Future();
+					var surveyContainers = s.QueryOver<SurveyContainer>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(accountabiliyNodeResults.Select(x => x.SurveyContainerId).Distinct().ToArray()).Future();
 					//var users = s.QueryOver<Angular>().WhereRestrictionOn(x => x.Id).IsIn(accountabiliyNodeResults.Select(x => x.ItemId).Distinct().ToArray()).Future();
 
-					var formatsLu = formats.ToDefaultDictionary(x => x.Id, x => x, x => null);
+					var formatsList = formats.ToList();
+
+					var formatsLu = formatsList.ToDefaultDictionary(x => x.Id, x => x, x => null);
 					var itemsLu = items.ToDefaultDictionary(x => x.Id, x => x, x => null);
 					var userLu = users.ToDefaultDictionary(x => ForModel.From(x), x => x.User.NotNull(y => y.GetName()), x => "n/a");
+
+					foreach (var t in items) {
+						if (t.Source.NotNull(x => x.Is<CompanyValueModel>())) {
+							t.Source._PrettyString = t.GetName();
+						}
+					}
+
 
 					foreach (var result in accountabiliyNodeResults) {
 						result._Item = itemsLu[result.ItemId];
@@ -163,40 +196,93 @@ namespace RadialReview.Areas.People.Accessors {
 									return null;
 							}
 						});
-
-						var arow = new AngularPeopleAnalyzerRow(row.Key.ModelId);
-
-						arow.Name = userLu[row.Key];
-
-						arow.Value = new Dictionary<long, string>();
-
-						arow.Get = yesNo(get.NotNull(x => x.Answer));
-						arow.Want = yesNo(want.NotNull(x => x.Answer));
-						arow.Capacity = yesNo(capacity.NotNull(x => x.Answer));
-
-						var values = answersAbout.Where(x => x._Item.NotNull(y => y.GetSource().ModelType) == ForModel.GetModelType<CompanyValueModel>());
-						var valueIds = values.GroupBy(x => x._Item.NotNull(y => y.GetSource().ModelId));
-
-						var avalues = new List<PeopleAnalyzerValue>();
-
-						foreach (var value in valueIds) {
-							var v = value.OrderByDescending(x => x.CompleteTime ?? DateTime.MinValue).FirstOrDefault();
-							if (v != null) {
-								var vid = v._Item.GetSource().ModelId;
-								arow.Value[vid] = plusMinus(v.Answer);
-								allValueIds.Add(vid);
-							}
-						}
+						row.Key._PrettyString = userLu[row.Key];
+						var arow = new AngularPeopleAnalyzerRow(row.Key,!nodes.Any(x=>x.Id ==row.Key.ModelId));						
 						rows.Add(arow);
 					}
 
-					var dict = new Dictionary<long, string>();
-					foreach (var row in accountabiliyNodeResults.Where(x => x._Item.NotNull(y => y.GetSource().ModelType) == ForModel.GetModelType<CompanyValueModel>())) {
-						dict.GetOrAddDefault(row._Item.GetSource().ModelId, x => row._Item.GetName());
+					var overridePriority = new DefaultDictionary<string, int>(x => 0) {
+						{ "often", 1 },{ "sometimes", 2 },  { "not-often", 3 },
+						{ "done", 1 }, { "not-done", 2 },
+						{ "yes", 1 }, { "no", 2 }
+					};
+
+					var rewrite = new DefaultDictionary<string, string>(x => x) {
+						{ "often", "+" },{ "sometimes", "+/–" },  { "not-often","–" },
+						{ "done", "done" }, { "not-done", "not done" },
+						{ "yes", "Y" }, { "no", "N" }
+					};
+
+
+
+					var surveyIssueDateLookup = surveys.ToDictionary(x => x.Id, x => x.GetIssueDate());
+					var surveyItemLookup = items.ToDictionary(x => x.Id, x => x);
+					var surveyItemFormatLookup = formats.ToDictionary(x => x.Id, x => x);
+					
+					var responses = new List<AngularPeopleAnalyzerResponse>();
+					foreach (var result in accountabiliyNodeResults) {
+						if (!surveyContainers.Any(x => x.Id == result.SurveyContainerId))
+							continue;
+						if (!surveys.Any(x => x.Id == result.SurveyId))
+							continue;
+
+						var answerDate = result.CompleteTime;
+
+						var issueDate = surveyIssueDateLookup[result.SurveyId];
+						var questionSource = surveyItemLookup[result.ItemId].GetSource();
+
+						if (answerDate != null) {
+							var byUser = result.By;							
+							var aboutUser = result.About;
+							var answerFormatted = rewrite[result.Answer];
+							var overrideAnswer = overridePriority[result.Answer];
+							var format = surveyItemFormatLookup[result.ItemFormatId];
+							var gwc = format.GetSetting<string>("gwc");
+							var surveyContainerId = result.SurveyContainerId;
+
+							if ( gwc != null) {
+								questionSource = new ForModel() {
+									ModelId =-1,
+									ModelType = gwc
+								};
+							}
+
+							var response = new AngularPeopleAnalyzerResponse(
+												new ByAbout(byUser,aboutUser),
+												issueDate,
+												answerDate.Value,
+												questionSource,
+												answerFormatted,
+												result.Answer,
+												overrideAnswer,
+												surveyContainerId
+											);
+							responses.Add(response);
+						}
 					}
 
+
+					var values = accountabiliyNodeResults.Where(x => x._Item.NotNull(y => y.GetSource().ModelType) == ForModel.GetModelType<CompanyValueModel>());//new Dictionary<long, string>();
+					
+
+					//foreach (var row in accountabiliyNodeResults.Where(x => x._Item.NotNull(y => y.GetSource().ModelType) == ForModel.GetModelType<CompanyValueModel>())) {
+					//	values.GetOrAddDefault(row._Item.GetSource().ModelId, x => row._Item.GetName());
+					//}
+
 					analyzer.Rows = rows;
-					analyzer.Values = dict.Select(x => new PeopleAnalyzerValue() { ValueId = x.Key, Value = x.Value });
+					analyzer.Responses = responses;
+					analyzer.Values = values.Select(x => new PeopleAnalyzerValue(surveyItemLookup[x.GetItemId()].GetSource()));
+
+					analyzer.SurveyContainers = surveyContainers.Select(x=>new AngularSurveyContainer(x));
+
+					var issueDates = responses.Select(x => x.IssueDate.Value).ToList();
+
+					var dateRange = new DateRange();
+					if (issueDates.Any()) {
+						dateRange = new DateRange(issueDates.Min(), issueDates.Max());
+					}
+
+					analyzer.DateRange = new AngularDateRange(dateRange);
 
 					return analyzer;
 

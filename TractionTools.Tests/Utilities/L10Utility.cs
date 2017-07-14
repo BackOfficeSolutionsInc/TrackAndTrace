@@ -106,8 +106,8 @@ namespace TractionTools.Tests.Utilities {
 			}
 		}
 
-		public void AddAttendee(UserOrganizationModel employee) {
-			L10Accessor.AddAttendee(Creator, Id, employee.Id);
+		public async Task AddAttendee(UserOrganizationModel employee) {
+			await L10Accessor.AddAttendee(Creator, Id, employee.Id);
 		}
 
 		public async Task<PeopleHeadline> AddHeadline(string name="headline", UserOrganizationModel owner = null, UserOrganizationModel about = null) {

@@ -314,7 +314,7 @@ namespace RadialReview.Hubs
 		}
 
 		//Change in rtL10.js also
-		public static TimeSpan PingTimeout = TimeSpan.FromMinutes(1.5); 
+		public static TimeSpan PingTimeout = TimeSpan.FromMinutes(3); 
 		public static DateTime NowPlusPingTimeout() {
 			return DateTime.UtcNow.Add(PingTimeout);
 		}

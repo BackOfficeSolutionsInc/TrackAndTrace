@@ -58,11 +58,11 @@ namespace TractionTools.Tests.Permissions {
 			c.AssertAll(perm, c.Manager, c.Middle, c.E1);
 
 			//Add attendee E5
-			L10Accessor.AddAttendee(c.Manager, l10.Id, c.E5.Id);
+			await L10Accessor.AddAttendee(c.Manager, l10.Id, c.E5.Id);
 			c.AssertAll(perm, c.Manager, c.Middle, c.E5, c.E1);
 
 			//Add attendee E4
-			L10Accessor.AddAttendee(c.Manager, l10.Id, c.E4.Id);
+			await L10Accessor.AddAttendee(c.Manager, l10.Id, c.E4.Id);
 			c.AssertAll(perm, c.Manager, c.Middle, c.E5, c.E1, c.E4);
 
 

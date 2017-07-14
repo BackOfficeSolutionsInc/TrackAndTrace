@@ -58,7 +58,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 			}
 			if (!items.Any())
 				items.Add(new TextItemIntializer("No rocks.",true));
-			items.Add(new TextAreaItemIntializer("General Comments",SurveyQuestionIdentifier.GeneralComment));
+			items.Add(new TextAreaItemIntializer("Rock Comments",SurveyQuestionIdentifier.GeneralComment));
 			return items;
         }
     }

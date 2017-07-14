@@ -137,7 +137,7 @@ namespace TractionTools.UITests.L10Wizard {
 
 				d.TestScreenshot("Scorecard-AfterAdd");
 
-				rows = d.WaitUntil(x => {
+				rows = d.WaitUntil(15,x => {
 					var f = x.Finds("#ScorecardTable tbody tr");
 					if (f.Count == 0)
 						return null;

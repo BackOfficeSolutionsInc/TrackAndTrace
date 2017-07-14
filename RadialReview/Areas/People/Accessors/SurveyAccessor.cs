@@ -22,6 +22,7 @@ using RadialReview.Accessors;
 using RadialReview.Models.Accountability;
 using RadialReview.Areas.People.Engines.Surveys.Interfaces;
 using RadialReview.Areas.People.Angular.Survey.SurveyAbout;
+using static RadialReview.Models.PermItem;
 
 namespace RadialReview.Areas.People.Accessors {
 	public class SurveyAccessor {
@@ -57,17 +58,34 @@ namespace RadialReview.Areas.People.Accessors {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
 					perms.ViewSurveyContainer(surveyContainerId);
-					perms.ManagesForModel(about, true);//TODO make this less restrictive
-
 					var container = s.Get<SurveyContainer>(surveyContainerId);
+					perms.ViewSurveyResultsAbout(about, container.OrgId);
+
+					if (container.DeleteTime != null)
+						throw new PermissionsException("Does not exist");
+
 					if (container.OrgId != caller.Organization.Id)
 						throw new PermissionsException();
 
 					var engine = new SurveyReconstructionEngine(surveyContainerId, container.OrgId, new DatabaseAggregator(s, about: about), new SurveyReconstructionEventsNoOp());
 					var output = new AngularSurveyAboutContainer();
-					engine.Traverse(new TraverseBuildAboutAngular(s,x => { output = x;}));
+					engine.Traverse(new TraverseBuildAboutAngular(s, about, x => { output = x; }));
 					return output;
 
+				}
+			}
+		}
+
+		public static void RemoveSurveyContainer(UserOrganizationModel caller, long surveyContainerId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.CanAdmin(ResourceType.SurveyContainer, surveyContainerId);
+					var sc = s.Get<SurveyContainer>(surveyContainerId);
+					sc.DeleteTime = DateTime.UtcNow;
+					s.Update(sc);
+					tx.Commit();
+					s.Flush();
 				}
 			}
 		}
@@ -78,12 +96,15 @@ namespace RadialReview.Areas.People.Accessors {
 					var perms = PermissionsUtility.Create(s, caller);
 					perms.ViewSurveyContainer(surveyContainerId);
 					perms.Self(by);//TODO make this less restrictive
-					
+
 					var container = s.Get<SurveyContainer>(surveyContainerId);
+
+					if (container.DeleteTime != null)
+						throw new PermissionsException("Does not exist");
 					if (container.OrgId != caller.Organization.Id)
 						throw new PermissionsException();
-					
-					var engine = new SurveyReconstructionEngine(surveyContainerId, container.OrgId, new DatabaseAggregator(s,by), new SurveyReconstructionEventsNoOp());
+
+					var engine = new SurveyReconstructionEngine(surveyContainerId, container.OrgId, new DatabaseAggregator(s, by), new SurveyReconstructionEventsNoOp());
 					var output = new AngularSurveyContainer();
 					engine.Traverse(new TraverseBuildAngular(output));
 					return output;

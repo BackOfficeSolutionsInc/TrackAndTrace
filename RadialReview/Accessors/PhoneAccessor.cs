@@ -14,6 +14,7 @@ using RadialReview.Models.Issues;
 using RadialReview.Models.L10;
 using RadialReview.Models.Todo;
 using RadialReview.Utilities;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Accessors {
 	public class PhoneAccessor : BaseAccessor {
@@ -23,6 +24,11 @@ namespace RadialReview.Accessors {
 		public const string HEADLINE = "headline";
 		public const string ISSUE = "issue";
 
+		public static DefaultDictionary<string, string> PossibleActions = new DefaultDictionary<string, string>(x=>(x??"").ToTitleCase()){
+			{ PhoneAccessor.ISSUE, "Add an Issue"  },
+			{ PhoneAccessor.TODO, "Add a To-Do"},
+			{ PhoneAccessor.HEADLINE, "Add a People Headline" },
+		};
 
 		public static List<CallablePhoneNumber> GetUnusedCallablePhoneNumbersForUser(ISession s, PermissionsUtility perms, long userId) {
 			perms.Self(userId);

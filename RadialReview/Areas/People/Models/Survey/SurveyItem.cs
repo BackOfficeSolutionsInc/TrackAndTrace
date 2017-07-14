@@ -46,8 +46,9 @@ namespace RadialReview.Areas.People.Models.Survey {
 			ItemMergerKey = itemMergerKey;
 
             ItemFormatId = data.ItemFormat.Id;
+			CreateTime = data.Now;
 
-            if (source != null) {
+			if (source != null) {
                 Source = ForModel.From(source);
             }
         }

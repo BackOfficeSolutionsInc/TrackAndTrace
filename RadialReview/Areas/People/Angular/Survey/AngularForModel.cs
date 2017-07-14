@@ -12,13 +12,12 @@ namespace RadialReview.Areas.People.Angular.Survey {
         public AngularForModel(IForModel model) {
             ModelId = model.NotNull(x=>x.ModelId);
             ModelType = model.NotNull(x => x.ModelType);
-			_PrettyString = model.NotNull(x => x.ToPrettyString());
+			PrettyString = model.NotNull(x => x.ToPrettyString());
         }
 
         public long ModelId { get; set; }
         public string ModelType { get; set; }
-
-		private string _PrettyString;
+		public string PrettyString { get; set; }
 
 
         public bool Is<T>() {
@@ -28,10 +27,10 @@ namespace RadialReview.Areas.People.Angular.Survey {
 		}
 
 		public string ToPrettyString() {
-			return _PrettyString;
+			return PrettyString;
 		}
 		public void SetPrettyString(string str) {
-			_PrettyString=str;
+			PrettyString=str;
 		}
 	}
 }

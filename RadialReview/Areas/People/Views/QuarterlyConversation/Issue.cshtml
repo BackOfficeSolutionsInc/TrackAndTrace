@@ -8,6 +8,7 @@
 		<div class="col-sm-6 col-sm-offset-3">
 			<label class="control-label">Name:</label>
 			@Html.TextBox("name", null, new { @class = "form-control smallBreak2" })
+			@Html.ValidationMessage("name")
 		</div>
 	</div>
 	<div class="row smallBreak2">
@@ -44,8 +45,19 @@
 	@Styles.Render("~/styles/people")
 }
 @using (Html.BeginScripts()) {
-	//@Scripts.Render("~/bundles/people")
-	<script>
+
+	<script>		
+		$("form").submit(function validateForm(event) {
+			event = event || window.event || event.srcElement;
+			var name = $('#name').val();
+			if (!name) {
+				$("[data-valmsg-for=\"name\"]").removeClass("field-validation-valid").addClass("field-validation-error").text("Name is required");
+				$("#name").addClass("input-validation-error");//.text("Name is required");
+				event.preventDefault();
+			}
+		});
+
+
 		DataTable({
 			container: "#qc-issue",
 			data: @Html.ArrayToString(Model, x => new { Name = x.GetAbout().ToPrettyString(), Id = x.ToKey() }),

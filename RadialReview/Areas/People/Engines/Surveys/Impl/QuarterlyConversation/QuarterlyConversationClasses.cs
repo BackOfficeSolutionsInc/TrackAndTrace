@@ -27,8 +27,9 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation {
         private IEnumerable<ISectionInitializer> _sectionBuilders() {
             yield return new ValueSection();
             yield return new RoleSection();
-            yield return new RockSection();
-        }
+			yield return new RockSection();
+			yield return new GeneralCommentsSection();
+		}
 
         #region Standard Customization
         public ISurveyContainer BuildSurveyContainer() {

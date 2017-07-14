@@ -19,11 +19,13 @@ namespace RadialReview.Areas.People.Engines.Surveys.Strategies.Traverse {
 		private Dictionary<long, AngularSurveySection> Sections = new Dictionary<long, AngularSurveySection>();
 		public string TemplateModifier { get; set; }
 		public ISession Session { get; set; }
+		public IForModel About { get; set; }
 
-		public TraverseBuildAboutAngular(ISession s,Action<AngularSurveyAboutContainer> setter, string templateModifier = AngularSurveyItemFormat.DEFAULT_TEMPLATE_MODIFIER) {
+		public TraverseBuildAboutAngular(ISession s,IForModel about,Action<AngularSurveyAboutContainer> setter, string templateModifier = AngularSurveyItemFormat.DEFAULT_TEMPLATE_MODIFIER) {
 			SetSurveyContainer = setter;
 			TemplateModifier = templateModifier;
 			Session = s;
+			About = about;
 		}
 
 		private Dictionary<string, string> GenLookups(ISurveyContainer surveyContainer) {
@@ -83,7 +85,9 @@ namespace RadialReview.Areas.People.Engines.Surveys.Strategies.Traverse {
 		public override void OnComplete(ISurveyContainer surveyContainer) {
 			var lookup = GenLookups(surveyContainer);
 			var allSurveys = surveyContainer.GetSurveys();
-			var surveysAbout = allSurveys.GroupBy(x => x.GetAbout()).ToList();
+			var surveysAbout = allSurveys.GroupBy(x => x.GetAbout())
+				.Where(x=>x.Key.ToKey()==About.ToKey()) // filter out extra surveys
+				.ToList();
 			var container = AngularSurveyAboutContainer.ConstructShallow(surveyContainer);
 			foreach (var surveyAbouts in surveysAbout) {
 				var allSectionsAbout = surveyAbouts.SelectMany(x => x.GetSections()).GroupBy(x=>x.GetSectionMergerKey()).ToList();

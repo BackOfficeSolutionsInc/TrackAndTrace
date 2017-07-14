@@ -180,7 +180,7 @@ namespace TractionTools.Tests.Controllers {
 			var otherOrg = await OrgUtil.CreateOrganization();
 			var l3 = await otherOrg.CreateL10("L3-Other");
 
-			l1.AddAttendee(org.Manager);
+			await l1.AddAttendee(org.Manager);
 
 			using (var ctrl = new ControllerCtx<L10Controller>(org.Manager)) {
 				var json = ctrl.GetView(x => x.Index());
@@ -198,7 +198,7 @@ namespace TractionTools.Tests.Controllers {
 				Assert.AreEqual(0, model.Recurrences.Count());
 			}
 
-			l1.AddAttendee(org.Employee);
+			await l1.AddAttendee(org.Employee);
 
 			using (var ctrl = new ControllerCtx<L10Controller>(org.Employee)) {
 				var json = ctrl.GetView(x => x.Index());
@@ -210,7 +210,7 @@ namespace TractionTools.Tests.Controllers {
 				Assert.IsTrue(model.Recurrences.First(x => x.Recurrence.Name == "L1").IsAttendee == true);
 			}
 
-			l2.AddAttendee(org.Employee);
+			await l2.AddAttendee(org.Employee);
 			using (var ctrl = new ControllerCtx<L10Controller>(org.Employee)) {
 				var json = ctrl.GetView(x => x.Index());
 				var model = json.GetModel<L10ListingVM>();
@@ -241,8 +241,8 @@ namespace TractionTools.Tests.Controllers {
 		public async Task L10Meeting() {
 			var org = await OrgUtil.CreateOrganization();
 			var l10 = await org.CreateL10("Test Meeting");
-			l10.AddAttendee(org.Manager);
-			l10.AddAttendee(org.Employee);
+			await l10.AddAttendee(org.Manager);
+			await l10.AddAttendee(org.Employee);
 
 			await l10.AddRock("rock1");
 			await l10.AddMeasurable("meas1");
@@ -271,8 +271,8 @@ namespace TractionTools.Tests.Controllers {
 		public async Task StartPage() {
 			var org = await OrgUtil.CreateOrganization();
 			var l10 = await org.CreateL10("Test Meeting");
-			l10.AddAttendee(org.Manager);
-			l10.AddAttendee(org.Employee);
+			await l10.AddAttendee(org.Manager);
+			await l10.AddAttendee(org.Employee);
 
 			await l10.AddRock("rock1");
 			await l10.AddMeasurable("meas1");
@@ -303,8 +303,8 @@ namespace TractionTools.Tests.Controllers {
 		public async Task SeguePage() {
 			var org = await OrgUtil.CreateOrganization();
 			var l10 = await org.CreateL10("Test Meeting");
-			l10.AddAttendee(org.Manager);
-			l10.AddAttendee(org.Employee);
+			await l10.AddAttendee(org.Manager);
+			await l10.AddAttendee(org.Employee);
 
 			await l10.AddRock("rock1");
 			await l10.AddMeasurable("meas1");
@@ -348,8 +348,8 @@ namespace TractionTools.Tests.Controllers {
 		public async Task ScorecardPage() {
 			var org = await OrgUtil.CreateOrganization();
 			var l10 = await org.CreateL10("Test Meeting");
-			l10.AddAttendee(org.Manager);
-			l10.AddAttendee(org.Employee);
+			await l10.AddAttendee(org.Manager);
+			await l10.AddAttendee(org.Employee);
 
 			await l10.AddRock("rock1");
 			await l10.AddMeasurable("meas1");
@@ -395,8 +395,8 @@ namespace TractionTools.Tests.Controllers {
 		public async Task RocksPage() {
 			var org = await OrgUtil.CreateOrganization();
 			var l10 = await org.CreateL10("Test Meeting");
-			l10.AddAttendee(org.Manager);
-			l10.AddAttendee(org.Employee);
+			await l10.AddAttendee(org.Manager);
+			await l10.AddAttendee(org.Employee);
 
 			await l10.AddRock("rock1");
 			await l10.AddMeasurable("meas1");
@@ -444,8 +444,8 @@ namespace TractionTools.Tests.Controllers {
 		public async Task HeadlinesPage() {
 			var org = await OrgUtil.CreateOrganization();
 			var l10 = await org.CreateL10("Test Meeting");
-			l10.AddAttendee(org.Manager);
-			l10.AddAttendee(org.Employee);
+			await l10.AddAttendee(org.Manager);
+			await l10.AddAttendee(org.Employee);
 
 			await l10.AddRock("rock1");
 			await l10.AddMeasurable("meas1");
@@ -493,8 +493,8 @@ namespace TractionTools.Tests.Controllers {
 		public async Task TodosPage() {
 			var org = await OrgUtil.CreateOrganization();
 			var l10 = await org.CreateL10("Test Meeting");
-			l10.AddAttendee(org.Manager);
-			l10.AddAttendee(org.Employee);
+			await l10.AddAttendee(org.Manager);
+			await l10.AddAttendee(org.Employee);
 
 			await l10.AddRock("rock1");
 			await l10.AddMeasurable("meas1");
@@ -543,8 +543,8 @@ namespace TractionTools.Tests.Controllers {
 		public async Task IdsPage() {
 			var org = await OrgUtil.CreateOrganization();
 			var l10 = await org.CreateL10("Test Meeting");
-			l10.AddAttendee(org.Manager);
-			l10.AddAttendee(org.Employee);
+			await l10.AddAttendee(org.Manager);
+			await l10.AddAttendee(org.Employee);
 
 			await l10.AddRock("rock1");
 			await l10.AddMeasurable("meas1");
@@ -593,8 +593,8 @@ namespace TractionTools.Tests.Controllers {
 		public async Task ConcludePage() {
 			var org = await OrgUtil.CreateOrganization();
 			var l10 = await org.CreateL10("Test Meeting");
-			l10.AddAttendee(org.Manager);
-			l10.AddAttendee(org.Employee);
+			await l10.AddAttendee(org.Manager);
+			await l10.AddAttendee(org.Employee);
 
 			await l10.AddRock("rock1");
 			await l10.AddMeasurable("meas1");

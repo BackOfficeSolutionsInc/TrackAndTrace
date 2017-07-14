@@ -32,7 +32,7 @@
 								<div class="form-group">
 									<label class="col-sm-4 control-label" for="name">Account Type</label>
 									<div class="col-sm-8">
-										@Html.EnumDropDownListFor(x => x.AccountType, new { @class = "form-control" })
+										@Html.EnumDropDownListFor(x => x.AccountType, new { @class = "form-control accType" })
 									</div>
 								</div>
 								<div class="form-group">
@@ -45,6 +45,16 @@
 									<label class="col-sm-4 control-label" for="name">Assigned To</label>
 									<div class="col-sm-8">
 										@Html.DropDownListFor(x => x.AssignedTo, (IEnumerable<SelectListItem>)ViewBag.SupportTeam, new { @class = "form-control" })
+									</div>
+								</div>
+								<div class="form-group trialEnd">
+									<label class="col-sm-4 control-label" for="name">Trial Ends</label>
+									<div class="col-sm-6">
+										@Html.EditorFor(x => x.TrialEnd, new { startDate = DateTime.UtcNow.Date })
+										@*@Html.DropDownListFor(x => x.AssignedTo, (IEnumerable<SelectListItem>)ViewBag.SupportTeam, new { @class = "form-control" })*@
+									</div>
+									<div class="col-sm-2">
+										<span class="numDays">30 days</span>
 									</div>
 								</div>
 							</div>
@@ -71,6 +81,15 @@
 									<div class="col-sm-offset-4 col-sm-8">
 										<div class="checkbox">
 											<label>
+												@Html.CheckBoxFor(x => x.EnablePeople) Enable People Tools
+											</label>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-sm-offset-4 col-sm-8">
+										<div class="checkbox">
+											<label>
 												@Html.CheckBoxFor(x => x.EnableReview) Enable Old Review Software
 											</label>
 										</div>
@@ -78,7 +97,6 @@
 								</div>
 							</div>
 						</div>
-
 					</div>
 				</div>
 				<div class="panel panel-primary">
@@ -96,7 +114,7 @@
 
 								<div class="form-group">*@
 							<div class="col-sm-5">
-								@Html.TextBoxFor(x => x.ContactLN, new { @class = "form-control", placeholder = "First name" })
+								@Html.TextBoxFor(x => x.ContactLN, new { @class = "form-control", placeholder = "Last name" })
 							</div>
 						</div>
 
@@ -149,25 +167,25 @@
 					</div>
 				</div>
 
-					<div class="alignCenter">
-						<button class="btn btn-success">@RadialReview.Properties.DisplayNameStrings.create</button>
-					</div>
+				<div class="alignCenter">
+					<button class="btn btn-success">@RadialReview.Properties.DisplayNameStrings.create</button>
+				</div>
 
 
-					@*<fieldset class="form-horizontal">
-							<div class="control-group">
-								@Html.LabelFor(model => model.Name, new { @class = "control-label" })
-								<div class="controls">
+				@*<fieldset class="form-horizontal">
+						<div class="control-group">
+							@Html.LabelFor(model => model.Name, new { @class = "control-label" })
+							<div class="controls">
 
-									<div class="input-group">
-										@Html.EditorFor(model => model.Name, new { @class = "form-control" })
-										<span class="input-group-btn">
-											<button class="btn btn-default" type="submit">Go!</button>
-										</span>
-									</div>
+								<div class="input-group">
+									@Html.EditorFor(model => model.Name, new { @class = "form-control" })
+									<span class="input-group-btn">
+										<button class="btn btn-default" type="submit">Go!</button>
+									</span>
 								</div>
 							</div>
-						</fieldset>*@
+						</div>
+					</fieldset>*@
 			}
 		</div>
 
@@ -189,10 +207,35 @@
 
 		$(".eosUserType").on("change", function () {
 			debugger;
-			if ($(".contactPosition").val()==""){
+			if ($(".contactPosition").val() == "") {
 				$(".contactPosition").val($(".eosUserType option:selected").text());
 			}
 		});
+		$(".accType").on("change", function () {
+			var isTrial = $(".accType").find(":selected").html() == "Trial";
+			$(".trialEnd").toggleClass("hidden", !isTrial);
+		});
+
+		$(document).ready(function () {
+			setTimeout(function () {
+				$("#TrialEnd").on("change", function (data) {
+					console.log(data);
+					var today = new Date();
+					var trialEnd = new Date($(this).val());
+
+					var oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+					var diffDays = Math.ceil(((trialEnd.getTime() - today.getTime()) / (oneDay)));
+					$(".numDays").html(diffDays + " days");
+				});
+			}, 1000);
+		});
+
+		$("form").on("submit", function () {
+			$("button").prop("disabled");
+			$("button").addClass("disabled");
+			$(this).parent().append("working...");
+			$(this).remove();
+		});
 
 	</script>
-			}
+}

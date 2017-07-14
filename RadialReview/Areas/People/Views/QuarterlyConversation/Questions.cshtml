@@ -9,7 +9,7 @@
 
 @section top{
 	<div class="jumbotron">
-		<h1>Quarterly Conversation</h1>
+		<h1 class="nowrap">Quarterly Conversation</h1>
 	</div>
 }
 
@@ -18,9 +18,34 @@
 </div>
 
 @using (Html.BeginStyles()) {
-
 	@Styles.Render("~/styles/people")
+
+<style>
+	.jumbotron {
+		z-index: 4;
+		position: relative;
+	}
+
+		.jumbotron h1 {
+			font-size: 55px;
+			margin-top: -8px;
+			
+		}
+
+	@@media (max-width:768px) {
+		.jumbotron h1 {
+			font-size: 6vw;
+			margin-top: calc(57.5px - 6vw);
+		}
+	}
+	/*@@media (min-width:768px) {
+		.jumbotron h1 {
+			font-size: 4vw;
+			margin-top: calc(57.5px - 6vw);
+		}
+	}*/
+</style>
 }
 @using (Html.BeginScripts()) {
-	@Scripts.Render("~/bundles/people")	
+	@Scripts.Render("~/bundles/people")
 }

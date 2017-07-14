@@ -297,9 +297,13 @@ namespace RadialReview.Accessors {
 				output.organization.Settings.EnableL10 = data.EnableL10;
 				output.organization.Settings.EnableReview = data.EnableReview;
 				output.organization.Settings.DisableAC = !data.EnableAC;
+				output.organization.Settings.EnablePeople = data.EnablePeople;
 				s.Save(output.organization);
+				#endregion
+
+				#region PaymentPlan
 #pragma warning disable CS0618 // Type or member is obsolete
-				var paymentPlan = PaymentAccessor.GeneratePlan(planType, now);
+				var paymentPlan = PaymentAccessor.GeneratePlan(planType, now, data.TrialEnd);
 #pragma warning restore CS0618 // Type or member is obsolete
 				PaymentAccessor.AttachPlan(s, output.organization, paymentPlan);
 				output.organization.PaymentPlan = paymentPlan;
@@ -353,23 +357,23 @@ namespace RadialReview.Accessors {
 				acChart = AccountabilityAccessor.CreateChart(s, perms, output.organization.Id, false);
 				output.organization.AccountabilityChartId = acChart.Id;
 
-				if (data.ContactPosition != null) {
-					var orgPos = new OrganizationPositionModel() {
+				//if (data.ContactPosition != null) {
+					var supportOrgPos = new OrganizationPositionModel() {
 						Organization = s.Load<OrganizationModel>(output.organization.Id),
 						CreatedBy = userOrgModel.Id,
-						CustomName = data.ContactPosition,
+						CustomName = "Traction Tools Support",
 					};
-					s.Save(orgPos);
+					s.Save(supportOrgPos);
 					var posDur = new PositionDurationModel() {
 						UserId = userOrgModel.Id,
-						Position = orgPos,
+						Position = supportOrgPos,
 						PromotedBy = userOrgModel.Id,
 						CreateTime = DateTime.UtcNow,
 						OrganizationId = output.organization.Id,
 					};
 					userOrgModel.Positions.Add(posDur);
 					s.Update(userOrgModel);
-				}
+				//}
 				#endregion
 
 				#region Create Teams
@@ -499,7 +503,7 @@ namespace RadialReview.Accessors {
 					org.PrimaryContactUserId = primaryContact.Id;
 					s.Update(org);
 
-					await EventUtil.Trigger(x => x.Create(s, EventType.CreatePrimaryContact, userOrgModel, primaryContact, message: primaryContact.GetName()));
+					await EventUtil.Trigger(x => x.Create(s, EventType.CreatePrimaryContact, primaryContact, primaryContact, message: primaryContact.GetName()));
 
 					tx.Commit();
 					s.Flush();
@@ -1221,7 +1225,7 @@ namespace RadialReview.Accessors {
 				.List().ToList();
 		}
 
-		public async Task UpdateProducts(UserOrganizationModel caller, bool enableReview, bool enableL10, bool enableSurvey, BrandingType branding) {
+		public async Task UpdateProducts(UserOrganizationModel caller, bool enableReview, bool enableL10, bool enableSurvey, bool enablePeople, BrandingType branding) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller).ManagingOrganization(caller.Organization.Id);
@@ -1233,9 +1237,12 @@ namespace RadialReview.Accessors {
 
 					if (org.Settings.EnableReview != enableReview)
 						await EventUtil.Trigger(x => x.Create(s, enableReview ? EventType.EnableReview : EventType.DisableReview, caller, org));
+					if (org.Settings.EnablePeople != enablePeople)
+						await EventUtil.Trigger(x => x.Create(s, enablePeople ? EventType.EnablePeople : EventType.DisablePeople, caller, org));
 
 					org.Settings.EnableL10 = enableL10;
 					org.Settings.EnableReview = enableReview;
+					org.Settings.EnablePeople = enablePeople;
 					org.Settings.Branding = branding;
 					org.Settings.EnableSurvey = enableSurvey;
 

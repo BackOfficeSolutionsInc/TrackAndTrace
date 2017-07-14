@@ -13,7 +13,11 @@
 	</div>
 }
 
-<div id="qc-archive"></div>
+<div class="row">
+	<div class="col-md-8 col-md-offset-2">
+		<div id="qc-archive"></div>
+	</div>
+</div>
 
 @using (Html.BeginStyles()) {
 	@Styles.Render("~/styles/people")
@@ -24,9 +28,33 @@
 		DataTable({
 			container: "#qc-archive",
 			data: @Html.ArrayToString(Model),
+			clickAdd: function(){
+				window.location="/people/quarterlyconversation/issue";
+			},
+			clickRemove: "/people/quarterlyconversation/remove/{0}",
+			addButton:{text: "Issue"},
 			cells:[{
 				name: "Name",
+				classes:"fullWidth",
 				contents:function(x){ return "<a href='/People/QuarterlyConversation/Questions/"+x.Id+"'>"+x.Name+"</a>"; }
+			},{
+				name: "Issued",
+				classes:"nowrap alignRight",
+				contents:function(x){
+					return getFormattedDate(new Date(x.IssueDate));//.toDateString(); 
+				}
+			},{
+				name: "",
+				classes:"nowrap alignRight",
+				contents:function(x){
+					return "<a href='/People/QuarterlyConversation/PrintAll?surveyContainerId="+x.Id+"' ><span class='gray clickable glyphicon glyphicon-print'></span></a>"; 
+				}
+			},{
+				remove:true,
+				classes:"nowrap alignRight",
+				contents:function(x){
+					return "<span class='gray clickable glyphicon glyphicon-trash'></span>"; 
+				}
 			}
 			//},{
 			//	name: "Name",

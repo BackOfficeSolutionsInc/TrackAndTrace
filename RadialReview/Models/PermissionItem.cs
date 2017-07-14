@@ -52,8 +52,8 @@ namespace RadialReview.Models {
             VTO = 3,
             AccountabilityHierarchy= 4,
 			UpgradeUsersForOrganization = 5,
-            SurveyContainer = 6,
-            Survey = 7,
+            SurveyContainer = 7,
+            Survey = 8,
             //Survey = 7,
         }
 		[Flags]

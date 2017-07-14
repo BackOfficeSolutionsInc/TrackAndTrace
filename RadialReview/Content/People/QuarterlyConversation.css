@@ -1,18 +1,4 @@
-﻿.jumbotron {
-  z-index: 4;
-  position: relative;
-}
-.jumbotron h1 {
-  font-size: 55px;
-  margin-top: -8px;
-}
-@media (max-width: 768px) {
-  .jumbotron h1 {
-    font-size: 6vw;
-    margin-top: calc(57.5px - 6vw);
-  }
-}
-.people.quarterly-conversation .anchor {
+﻿.people.quarterly-conversation .anchor {
   position: relative;
   top: -60px;
   display: block;
@@ -425,11 +411,20 @@
 .people.quarterly-conversation survey-container .survey .sections .section-Values survey-item-container {
   padding-bottom: 5px;
 }
+.people.quarterly-conversation survey-container .survey .sections .section-Roles .item-container-Text {
+  padding-top: 10px;
+}
 .people.quarterly-conversation survey-container .survey .sections .section-Roles .item-container-Text .item .name {
-  font-size: 14px !important;
+  font-size: 16px !important;
+}
+.people.quarterly-conversation survey-container .survey .sections .section-Roles .item-container-Text ~ .item-container-Text {
+  padding-top: 5px;
 }
 .people.quarterly-conversation survey-container .survey .sections .section-Roles .item-container-Radio {
-  padding-top: 10px;
+  padding-top: 30px;
+}
+.people.quarterly-conversation survey-container .survey .sections .section-Roles .item-container-Radio:first-of-type {
+  padding-top: 20px;
 }
 @media (max-width: 992px) {
   .people.quarterly-conversation survey-container .survey .sections .section-Roles .item-container-Radio .item-row {

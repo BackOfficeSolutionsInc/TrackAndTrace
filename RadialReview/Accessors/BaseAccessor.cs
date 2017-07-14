@@ -48,7 +48,7 @@ namespace RadialReview.Accessors {
 			/// <param name="s"></param>
 			/// <param name="ConstructAngularObject"> [Id,Order, new AngularItem(Id){Ordering=order}]</param>
 			/// <returns></returns>
-			public bool ApplyReorder(RealTimeUtility rt, ISession s, Func<long, int, T, IAngularItem> constructAngularObject) {
+			public bool ApplyReorder(RealTimeUtility rt, ISession s, Func<object, int, T, IAngularId> constructAngularObject) {
 
 				var allItems = Items.OrderBy(OrderVariable.Compile()).ToList();
 

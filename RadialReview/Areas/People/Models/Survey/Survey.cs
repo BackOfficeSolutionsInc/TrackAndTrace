@@ -43,6 +43,7 @@ namespace RadialReview.Areas.People.Models.Survey {
             OrgId = data.OrgId;
             SurveyContainerId = data.SurveyContainer.Id;
 			SurveyType = data.SurveyContainer.GetSurveyType();
+			CreateTime = data.Now;
         }
 
         public virtual IEnumerable<ISection> GetSections() {

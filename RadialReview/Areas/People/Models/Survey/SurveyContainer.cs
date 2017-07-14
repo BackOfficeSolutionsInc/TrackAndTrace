@@ -69,7 +69,11 @@ namespace RadialReview.Areas.People.Models.Survey {
             return Ordering;
         }
 
-        public class Map : ClassMap<SurveyContainer> {
+		public virtual DateTime GetIssueDate() {
+			return CreateTime;
+		}
+
+		public class Map : ClassMap<SurveyContainer> {
             public Map() {
                 Id(x => x.Id);
                 Map(x => x.CreateTime);

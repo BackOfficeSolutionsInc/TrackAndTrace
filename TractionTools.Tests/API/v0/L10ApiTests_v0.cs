@@ -196,7 +196,7 @@ namespace TractionTools.Tests.API.v0 {
 			var GetL10Attendess = L10.GetL10Attendees(recurrenceId);
 			Assert.AreEqual(0, GetL10Attendess.Count());
 
-			L10Accessor.AddAttendee(c.E1, recurrenceId, c.E1.Id);
+			await L10Accessor.AddAttendee(c.E1, recurrenceId, c.E1.Id);
 			GetL10Attendess = L10.GetL10Attendees(recurrenceId);
 			Assert.AreEqual(1, GetL10Attendess.Count());
 		}

@@ -15,9 +15,9 @@ namespace RadialReview.Models.Angular.Base
 
 		[ScriptIgnore]
         [JsonIgnore]
-		public IAngularItem Reference { get; set; }
+		public IAngularId Reference { get; set; }
 
-		public AngularPointer(IAngularItem reference,DateTime time,bool delete)
+		public AngularPointer(IAngularId reference, DateTime time,bool delete)
 		{
 			Reference = reference;
 			Delete = delete;

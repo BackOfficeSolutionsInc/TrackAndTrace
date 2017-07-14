@@ -13,6 +13,17 @@ using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
 {
+	public class PhoneController : BaseController {
+
+		// GET: TwilioApi
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Index() {
+			var actions = PhoneAccessor.GetAllPhoneActionsForUser(GetUser(), GetUser().Id);
+			return View(actions);
+		}
+	}
+
+
     public class TwilioApiController : BaseController
     {
 		// GET: TwilioApi
@@ -34,11 +45,15 @@ namespace RadialReview.Controllers
 			public bool TodoOnly { get; internal set; }
 		}
 
-		protected static List<SelectListItem> PossibleActions = new List<SelectListItem>(){
+		static TwilioApiController() {
+			PossibleActions = PhoneAccessor.PossibleActions.ToSelectList(x => x.Value, x => x.Key);
+		}
+
+		public static List<SelectListItem> PossibleActions;/* = new List<SelectListItem>(){
 			new SelectListItem(){Text = "Add an Issue", Value = PhoneAccessor.ISSUE },
 			new SelectListItem(){Text = "Add a To-Do", Value = PhoneAccessor.TODO },
 			new SelectListItem(){Text = "Add a People Headline", Value = PhoneAccessor.HEADLINE },
-		};
+		};*/
 
 		[Access(AccessLevel.UserOrganization)]
         public PartialViewResult Modal(long recurrenceId,bool todoOnly=false)

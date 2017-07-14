@@ -121,7 +121,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static void AddAttendee(UserOrganizationModel caller, long recurrenceId, long userorgid) {
+		public static async Task AddAttendee(UserOrganizationModel caller, long recurrenceId, long userorgid) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					using (var rt = RealTimeUtility.Create()) {
@@ -134,7 +134,8 @@ namespace RadialReview.Accessors {
 						if (existing.Any())
 							throw new PermissionsException("User is already an attendee.");
 						var recur = s.Get<L10Recurrence>(recurrenceId);
-						recur.Pristine = false;
+						//recur.Pristine = false;
+						await L10Accessor.Depristine_Unsafe(s, caller, recur);
 						s.Update(recur);
 
 						var attendee = new L10Recurrence.L10Recurrence_Attendee() {
@@ -430,21 +431,25 @@ namespace RadialReview.Accessors {
 					s.Flush();
 				}
 			}
+			//using (var s = HibernateSession.GetCurrentSession()) {
+			//}
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					await Trigger(x => x.Create(s, EventType.CreateMeeting, caller, recur, message: recur.Name + "(" + DateTime.UtcNow.Date.ToShortDateString() + ")"));
-					tx.Commit();
-					s.Flush();
-				}
-			}
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					await HooksRegistry.Each<IMeetingEvents>(x => x.CreateRecurrence(s, recur));					
+					await HooksRegistry.Each<IMeetingEvents>(x => x.CreateRecurrence(s, recur));
 					tx.Commit();
 					s.Flush();
 				}
 			}
 			return recur;
+		}
+
+
+		public static async Task Depristine_Unsafe(ISession s, UserOrganizationModel caller, L10Recurrence recur) {
+			if (recur.Pristine == true) {
+				recur.Pristine = false;
+				s.Update(recur);
+				await Trigger(x => x.Create(s, EventType.CreateMeeting, caller, recur, message: recur.Name + "(" + DateTime.UtcNow.Date.ToShortDateString() + ")"));
+			}
 		}
 
 		public static async Task<MvcHtmlString> GetMeetingSummary(UserOrganizationModel caller, long meetingId) {
@@ -588,7 +593,12 @@ namespace RadialReview.Accessors {
 
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					await HooksRegistry.Each<IMeetingEvents>(x => x.StartMeeting(s,recurrence,meeting));
+					await HooksRegistry.Each<IMeetingEvents>(x => x.StartMeeting(s, recurrence, meeting));
+					if (recurrence.TeamType == L10TeamType.LeadershipTeam)
+						await Trigger(x => x.Create(s, EventType.StartLeadershipMeeting, caller, recurrence, message: recurrence.Name));
+					if (recurrence.TeamType == L10TeamType.DepartmentalTeam)
+						await Trigger(x => x.Create(s, EventType.StartDepartmentMeeting, caller, recurrence, message: recurrence.Name));
+
 					tx.Commit();
 					s.Flush();
 				}
@@ -1799,7 +1809,7 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					await EventUtil.Trigger(x => x.Create(s, EventType.DeleteMeeting, caller, r, message: r.Name + "(Deleted)"));
-					await HooksRegistry.Each<IMeetingEvents>(x => x.DeleteRecurrence(s,r));
+					await HooksRegistry.Each<IMeetingEvents>(x => x.DeleteRecurrence(s, r));
 					tx.Commit();
 					s.Flush();
 				}
@@ -1981,22 +1991,25 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static List<L10Recurrence.L10Recurrence_Rocks> GetRocksForRecurrence(UserOrganizationModel caller, long recurrenceId) {
+		public static List<L10Recurrence.L10Recurrence_Rocks> GetRocksForRecurrence(UserOrganizationModel caller, long recurrenceId, bool includeArchives = false) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					return GetRocksForRecurrence(s, perms, recurrenceId);
+					return GetRocksForRecurrence(s, perms, recurrenceId, includeArchives);
 				}
 			}
 		}
-		public static List<L10Recurrence.L10Recurrence_Rocks> GetRocksForRecurrence(ISession s, PermissionsUtility perms, long recurrenceId) {
+		public static List<L10Recurrence.L10Recurrence_Rocks> GetRocksForRecurrence(ISession s, PermissionsUtility perms, long recurrenceId, bool includeArchives = false) {
 			perms.ViewL10Recurrence(recurrenceId);
 			RockModel rock = null;
-			var found = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
-				.JoinAlias(x => x.ForRock, () => rock)
-				.Where(x => x.DeleteTime == null && rock.DeleteTime == null && x.L10Recurrence.Id == recurrenceId)
-				.Fetch(x => x.ForRock).Eager
-				.List().ToList();
+			var q = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
+				.JoinAlias(x => x.ForRock, () => rock).Where(x => x.L10Recurrence.Id == recurrenceId);
+			if (includeArchives) {
+				q = q.Where(x => rock.DeleteTime == null || rock.Archived);
+			} else {
+				q = q.Where(x => x.DeleteTime == null && rock.DeleteTime == null);
+			}
+			var found = q.Fetch(x => x.ForRock).Eager.List().ToList();
 			foreach (var f in found) {
 				if (f.ForRock.AccountableUser != null) {
 					var a = f.ForRock.AccountableUser.GetName();
@@ -2132,7 +2145,7 @@ namespace RadialReview.Accessors {
 		}
 		public static async Task AddRock(ISession s, PermissionsUtility perm, long recurrenceId, L10Controller.AddRockVm model) {
 			var recur = s.Get<L10Recurrence>(recurrenceId);
-			recur.Pristine = false;
+			await L10Accessor.Depristine_Unsafe(s, perm.GetCaller(), recur);
 			s.Update(recur);
 			var now = DateTime.UtcNow;
 			RockModel rock;
@@ -2872,7 +2885,7 @@ namespace RadialReview.Accessors {
 		public static void UpdateArchiveMeasurable(UserOrganizationModel caller, long measurableId, string name = null,
 			LessGreater? direction = null, decimal? target = null, long? accountableId = null, long? adminId = null,
 			string connectionId = null, bool updateFutureOnly = true, decimal? altTarget = null, bool? showCumulative = null,
-			DateTime? cumulativeRange = null) {
+			DateTime? cumulativeRange = null, UnitType? modifiers = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					using (var rt = RealTimeUtility.Create(connectionId)) {
@@ -3032,7 +3045,29 @@ namespace RadialReview.Accessors {
 								rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "admin", user.NotNull(x => x.GetName()), adminId.Value));
 							//group.updateArchiveMeasurable(measurableId, "admin", user.NotNull(x => x.GetName()), adminId.Value);
 						}
+						var applySelf = false;
+						if (modifiers != null && measurable.UnitType != modifiers.Value) {
+							//perms.ViewUserOrganization(accountableId.Value, false);
+							//var user = s.Get<UserOrganizationModel>(accountableId.Value);
+							//if (user != null)
+							//	user.UpdateCache(s);
 
+							measurable.UnitType = modifiers.Value;
+							s.Update(measurable);
+
+							applySelf = true;
+							var scoresQ = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null && x.MeasurableId == measurable.Id);
+
+							var nowSunday = DateTime.UtcNow.StartOfWeek(DayOfWeek.Sunday);
+
+							scoresQ = scoresQ.Where(x => x.ForWeek > nowSunday);
+							var scores = scoresQ.List().ToList();
+							scoresToUpdate = scores;
+
+							foreach (var mmid in meetingMeasurableIds)
+								rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "unittype", measurable.UnitType.ToTypeString(), measurable.UnitType));
+							//group.updateArchiveMeasurable(measurableId, "accountable", user.NotNull(x => x.GetName()), accountableId.Value);
+						}
 						//var scorecard = new AngularScorecard();
 						//scorecard.Measurables = new List<AngularMeasurable>() { };
 						//var scoreList = new List<AngularScore>(); 
@@ -3045,7 +3080,7 @@ namespace RadialReview.Accessors {
 
 						//_ProcessDeleted(s, measurable, delete);
 
-						rtRecur.UpdateMeasurable(measurable, scoresToUpdate);
+						rtRecur.UpdateMeasurable(measurable, scoresToUpdate, forceNoSkip: applySelf);
 
 						var updatedText = "Updated Measurable: \"" + measurable.Title + "\" \n " + String.Join("\n", updateText);
 						foreach (var recurrenceId in recurrenceIds) {
@@ -3253,7 +3288,7 @@ namespace RadialReview.Accessors {
 
 						};
 						s.Save(mm);
-						
+
 						var settings = current.Organization.Settings;
 						var sow = settings.WeekStart;
 						var offset = current.Organization.GetTimezoneOffset();
@@ -3320,7 +3355,7 @@ namespace RadialReview.Accessors {
 
 			var recur = s.Get<L10Recurrence>(recurrenceId);
 
-			recur.Pristine = false;
+			await L10Accessor.Depristine_Unsafe(s, perm.GetCaller(), recur);
 			s.Update(recur);
 
 			var now = DateTime.UtcNow;
@@ -4783,7 +4818,7 @@ namespace RadialReview.Accessors {
 				UpdateArchiveMeasurable(caller, m.Id, m.Name, m.Direction, m.Target, m.Owner.NotNull(x => (long?)x.Id), m.Admin.NotNull(x => (long?)x.Id), connectionId);
 			} else if (model.Type == typeof(AngularBasics).Name) {
 				var m = (AngularBasics)model;
-				UpdateRecurrence(caller, m.Id, m.Name, m.TeamType, connectionId);
+				await UpdateRecurrence(caller, m.Id, m.Name, m.TeamType, connectionId);
 			} else if (model.Type == typeof(AngularHeadline).Name) {
 				var m = (AngularHeadline)model;
 				UpdateHeadline(caller, m.Id, m.Name, connectionId);
@@ -4791,7 +4826,7 @@ namespace RadialReview.Accessors {
 				throw new PermissionsException("Unhandled type: " + model.Type);
 			}
 		}
-		public static void UpdateRecurrence(UserOrganizationModel caller, long recurrenceId, string name = null, L10TeamType? teamType = null, string connectionId = null) {
+		public static async Task UpdateRecurrence(UserOrganizationModel caller, long recurrenceId, string name = null, L10TeamType? teamType = null, string connectionId = null) {
 			using (var rt = RealTimeUtility.Create(connectionId)) {
 				using (var s = HibernateSession.GetCurrentSession()) {
 					using (var tx = s.BeginTransaction()) {
@@ -4804,13 +4839,13 @@ namespace RadialReview.Accessors {
 						if (name != null && recurrence.Name != name) {
 							recurrence.Name = name;
 							angular.Name = name;
-							recurrence.Pristine = false;
+							await Depristine_Unsafe(s, caller, recurrence);
 						}
 
 						if (teamType != null && recurrence.TeamType != teamType) {
 							recurrence.TeamType = teamType.Value;
 							angular.TeamType = teamType;
-							recurrence.Pristine = false;
+							await Depristine_Unsafe(s, caller, recurrence);
 						}
 
 						s.Update(recurrence);

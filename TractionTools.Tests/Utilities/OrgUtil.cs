@@ -204,7 +204,7 @@ namespace TractionTools.Tests.Utilities {
 		public async Task<L10> CreateL10(params UserOrganizationModel[] users) {
 			var l10= await L10Utility.CreateRecurrence(org: this);
 			foreach (var u in users) {
-				l10.AddAttendee(u);
+				await l10.AddAttendee(u);
 			}
 			return l10;
 		}

@@ -27,14 +27,14 @@ namespace RadialReview.Api.V0 {
 		[HttpPut]
 		public async Task<long> CreateL10([FromBody]string name) {
 			var _recurrence = await L10Accessor.CreateBlankRecurrence(GetUser(), GetUser().Organization.Id);
-			L10Accessor.UpdateRecurrence(GetUser(), _recurrence.Id, name);
+			await L10Accessor.UpdateRecurrence(GetUser(), _recurrence.Id, name);
 			return _recurrence.Id;
 		}
 
 		[Route("L10/{recurrenceId}/edit")]
 		[HttpPut]
-		public void EditL10(long recurrenceId, [FromBody]string name) {
-			L10Accessor.UpdateRecurrence(GetUser(), recurrenceId, name);
+		public async Task EditL10(long recurrenceId, [FromBody]string name) {
+			await L10Accessor.UpdateRecurrence(GetUser(), recurrenceId, name);
 		}
 
 		[Route("L10/{recurrenceId}/attachmeasurable/{measurableId}")]

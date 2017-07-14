@@ -12,7 +12,8 @@ namespace RadialReview {
 
             JQuery(bundles);
             Bootstrap(bundles);
-            MaterialDesign(bundles); OldReview(bundles);
+            MaterialDesign(bundles);
+			OldReview(bundles);
             VideoChat(bundles);
             AccoutabilityChart(bundles, angularHelpers_Scripts);
             D3(bundles);
@@ -21,7 +22,9 @@ namespace RadialReview {
             L10Wizard(bundles, angularHelpers_Scripts, angularHelpers_Styles);
             SetCard(bundles);
             Compatability(bundles);
+
             Main(bundles);
+
             VTO(bundles, angularHelpers_Scripts);
             Dashboard(bundles);
             DashboardWidgets(bundles);
@@ -35,9 +38,9 @@ namespace RadialReview {
         }
 
         private static void People(BundleCollection bundles, string[] ngStyles, string[] ngScripts) {
-            bundles.Add(new ScriptBundle("~/bundles/people").Include(ngScripts).Include("~/Scripts/Angular/People/Survey/SurveyComponents.js"));
-            bundles.Add(new StyleBundle("~/styles/people").Include(ngStyles).Include("~/Content/SnackbarAlerts.css", "~/Content/People/QuarterlyConversation.css"));
-
+			bundles.Add(new ScriptBundle("~/bundles/people").Include(ngScripts)
+				.Include("~/Scripts/Angular/People/init.js","~/Scripts/Angular/People/Survey/SurveyComponents.js", "~/Scripts/Angular/People/PeopleAnalyzer/PeopleAnalyzer.js", "~/Scripts/People/*.js"));
+            bundles.Add(new StyleBundle("~/styles/people").Include(ngStyles).Include("~/Content/SnackbarAlerts.css", "~/Content/People/*.css"));
 		}
 
         private static void SetCard(BundleCollection bundles) {
@@ -54,17 +57,29 @@ namespace RadialReview {
             bundles.Add(new ScriptBundle("~/bundles/main").Include(
 					  "~/Scripts/Main/linq.js",
 					  "~/Scripts/Main/radial.js",
-                      "~/Scripts/Main/log-helper.js",
+					  "~/Scripts/Main/modals.js",
+					  "~/Scripts/Main/datepickers.js",
+					  "~/Scripts/Main/support.js",
+					  "~/Scripts/Main/backwardcompatability.js",
+					  "~/Scripts/Main/ajaxintercepters.js",
+					  "~/Scripts/Main/datatable.js",
+					  "~/Scripts/Main/tours.js",
+					  "~/Scripts/Main/alerts.js",
+					  "~/Scripts/Main/clickableclass.js",
+					  "~/Scripts/Main/profilepicture.js",
+					  "~/Scripts/Main/libraries.js",
+					  "~/Scripts/Main/log-helper.js",
                       /*"~/Scripts/jquery.signalR-{version}.js",Was deleted*/
                       "~/Scripts/jquery/jquery.tablesorter.js",
                       "~/Scripts/Main/finally.js",
                       "~/Scripts/Main/intercom.min.js",
                       "~/Scripts/L10/jquery-ui.color.js",
 					  "~/Scripts/jquery/jquery.tabbable.js",
-					  "~/Scripts/components/milestones.js"
-            /*,
+					  "~/Scripts/components/milestones.js",
+					  "~/Scripts/Main/keyboard.js"
+			/*,
 			"~/Scripts/Main/realtime.js"*/
-            ));
+			));
         }
 
         private static void Angular(BundleCollection bundles) {

@@ -512,6 +512,9 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 		var m = self;
 		var icon = { title: "Update options" };
 
+		var values = ["None", "Dollar", "Percent", "Pound", "Euros"];
+		var unitTypes = values.map(function (x) { return { text: x, value: x, checked: (x == m.Modifiers) } });
+
 		var fields = [{
 			type: "label",
 			value: "Update historical goals?"
@@ -534,6 +537,23 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 			name: "cumulativeRange",
 			value: self.CumulativeRange || new Date(),
 			type: "date"
+		}, {
+			type: "label",
+			value: "Unit type?"
+		}, {
+			name: "unitType",
+			value: self.UnitType,
+			type: "select",
+			options: unitTypes,
+			//	{ text: "None", value: "None" },
+			//	{ text: "Dollars", value: "Dollar" },
+			//	{ text: "Percent", value: "Percent" },
+			//	{ text: "Pounds", value: "Pound" },
+			//	{ text: "Euros", value: "Euros" }
+			//],
+			//onchange: function () {
+			//	$("#cumulativeRange").toggleClass("hidden", $(this).val() != "true");
+			//}
 		}/*, {
 			type: "label",
 			value: "Show Cumulative?"
@@ -578,13 +598,20 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 				if (isNaN(high))
 					high = null;
 
-				$scope.functions.sendUpdate(m, {
-					"historical": model.history,
-					"Lower": low,
-					"Upper": high,
-					"connectionId": null,
-					"cumulativeStart": model.cumulativeRange,
-					"enableCumulative": model.showCumulative
+				$scope.$apply(function () {
+					m.Modifiers = model.unitType;
+					//$scope.model.Lookup[m.Key].Modifiers = model.unitType;
+
+					//debugger;
+					$scope.functions.sendUpdate(m, {
+						"historical": model.history,
+						"Lower": low,
+						"Upper": high,
+						"connectionId": null,
+						"cumulativeStart": model.cumulativeRange,
+						"enableCumulative": model.showCumulative,
+						//"Modifier": model.unitType
+					});
 				});
 			},
 			cancel: function () {

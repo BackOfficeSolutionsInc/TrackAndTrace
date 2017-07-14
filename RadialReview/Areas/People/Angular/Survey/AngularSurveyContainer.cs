@@ -15,6 +15,7 @@ namespace RadialReview.Areas.People.Angular.Survey {
 		public AngularSurveyContainer(ISurveyContainer container) : base(container.Id) {
 			Name = container.GetName();
 			Ordering = container.GetOrdering();
+			IssueDate = container.GetIssueDate();
 			Surveys = container.GetSurveys().NotNull(y=>y.Select(x => new AngularSurvey(x)).ToList());			
 
 		}
@@ -29,7 +30,9 @@ namespace RadialReview.Areas.People.Angular.Survey {
         public int? Ordering { get; set; }
 
         public ICollection<AngularSurvey> Surveys { get; set; }
-        public IEnumerable<ISurvey> GetSurveys() {
+		public DateTime? IssueDate { get; set; }
+
+		public IEnumerable<ISurvey> GetSurveys() {
             return Surveys;
         }
 
@@ -57,5 +60,9 @@ namespace RadialReview.Areas.People.Angular.Survey {
         public int GetOrdering() {
             return Ordering??0;
         }
+
+		public DateTime GetIssueDate() {
+			return IssueDate ?? DateTime.MinValue;
+		}
 	}
 }

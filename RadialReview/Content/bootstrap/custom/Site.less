@@ -45,8 +45,14 @@ tr.grayRow {
 	color: @traction-orange;
 }
 
-.jumbotron h1 {
-	color: white;
+.jumbotron {
+	h1 {
+		color: white;
+	}
+
+	@media print {
+		display: none !important;
+	}
 }
 
 #alerts {
@@ -125,13 +131,13 @@ body.modal-open {
 			margin-top: -6px;
 		}
 	}
-
 }
 
 .body-notitlebar {
 	#wrap #main {
 		top: 0px;
 	}
+
 	.body-full-width .body-content {
 		padding: 0;
 		max-width: 100%;
@@ -634,8 +640,26 @@ textarea {
 }
 
 
-.is-ios{
-	.no-ios{
+.is-ios {
+	.no-ios {
+		display: none;
+	}
+}
+
+
+@media print{
+	.body-content{
+		padding:0px;
+	}
+	#local,#footer{
 		display:none;
 	}
+
+	html,body{
+	    background-color: transparent;
+	}
+}
+
+.shift-visible:not(.visible){
+	display:none;
 }

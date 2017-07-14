@@ -15,9 +15,11 @@ using RadialReview.Accessors;
 using RadialReview.Models.Payments;
 using RadialReview.Models.Application;
 using static RadialReview.Utilities.Config;
+using log4net;
 
 namespace RadialReview.Hooks {
 	public class ActiveCampaignEventHooks : IAccountEvent, ICreateUserOrganizationHook {
+		protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 		public ActiveCampaignConfig Configs { get; protected set; }
 		public ActiveCampaignConnector Connector { get; protected set; }
@@ -33,38 +35,86 @@ namespace RadialReview.Hooks {
 			if (type == EventType.CreatePrimaryContact) {
 				await CreatePrimaryContact(s, evt, Configs, Connector);
 			} else {
-				string email = null;
-				//Custom actions here to select email
+
+				var emails = new List<string>();
+				//Send event to primary contact when these events happen
+				var eventToPrimaryWhen = new[] {
+					EventType.StartDepartmentMeeting,
+					EventType.StartLeadershipMeeting,
+					EventType.CreateMeeting,
+					EventType.PaymentFailed,
+					EventType.PaymentEntered,
+				};
+				if (eventToPrimaryWhen.Any(x => x == type)) {
+					try {
+						var pid = s.Get<OrganizationModel>(evt.OrgId).PrimaryContactUserId;
+						if (pid != null) {
+							var e = pid.NotNull(x => s.Get<UserOrganizationModel>(x.Value).GetEmail());
+							if (e != null)
+								emails.Add(e);
+						}
+					} catch (Exception e) {
+						log.Error(e);
+					}
+				}
+
+				//Send event to trigger user when these events happen
 				var eventToCallerWhen = new[] {
 					EventType.CreateLeadershipMeeting,
 					EventType.CreateDepartmentMeeting,
 					EventType.CreateMeeting,
+					EventType.ConcludeMeeting,
 				};
 				if (eventToCallerWhen.Any(x => x == type) && evt.TriggeredBy != null) {
-					email = s.Get<UserOrganizationModel>(evt.TriggeredBy.Value).NotNull(x => x.GetEmail());
+					try {
+						var e = s.Get<UserOrganizationModel>(evt.TriggeredBy.Value).NotNull(x => x.GetEmail());
+						if (e != null)
+							emails.Add(e);
+					} catch (Exception e) {
+						log.Error(e);
+					}
 				}
+
+				//Send event to Billing user when these events happen
 				var eventToBillingWhen = new[] {
 					EventType.PaymentFailed,
 					EventType.PaymentFree,
 					EventType.PaymentReceived,
+					EventType.PaymentEntered,
 				};
 				if (eventToBillingWhen.Any(x => x == type) && evt.TriggeredBy != null) {
-					var tokens = s.QueryOver<PaymentSpringsToken>()
+					try {
+						var tokens = s.QueryOver<PaymentSpringsToken>()
 						.Where(x => x.DeleteTime == null && x.OrganizationId == evt.OrgId && x.Active == true)
 						.List().SingleOrDefault();
-					email = tokens.NotNull(x => x.ReceiptEmail);
+						var e = tokens.NotNull(x => x.ReceiptEmail);
+						if (e != null)
+							emails.Add(e);
+					} catch (Exception e) {
+						log.Error(e);
+					}
 				}
 
-				//Fallback to primary contact
-				if (email == null) {
-					var pid = s.Get<OrganizationModel>(evt.OrgId).PrimaryContactUserId;
-					email = pid.NotNull(x => s.Get<UserOrganizationModel>(x.Value).GetEmail());
+				//None set? Send to Primary contact just to be sure.
+				if (!emails.Any()) {
+					try {
+						var pid = s.Get<OrganizationModel>(evt.OrgId).PrimaryContactUserId;
+						if (pid != null) {
+							var e = pid.NotNull(x => s.Get<UserOrganizationModel>(x.Value).GetEmail());
+							if (e != null)
+								emails.Add(e);
+						}
+					} catch (Exception e) {
+						log.Error(e);
+					}
 				}
 
-				if (email != null) {
-					await Connector.EventAsync(evt.Type.Kind(), email, new Dictionary<string, string>() {
-						{ "eventdata", ""+evt.Id+"~"+evt.Message }
-					});
+				if (emails.Any()) {
+					foreach (var e in emails.Distinct()) {
+						await Connector.EventAsync(evt.Type.Kind(), e, new Dictionary<string, string>() {
+							{ "eventdata", "eid:"+evt.Id+" msg:"+evt.Message }
+						});
+					}
 				}
 			}
 		}
@@ -114,15 +164,30 @@ namespace RadialReview.Hooks {
 				fields[configs.Fields.HasEosImplementer] = "" + orgCreationData.NotNull(x => x.HasCoach);
 
 				fields[configs.Fields.ReferralSource] = orgCreationData.ReferralSource;
-				fields[configs.Fields.ReferralYear] = ""+DateTime.UtcNow.Year;
+				fields[configs.Fields.ReferralYear] = "" + DateTime.UtcNow.Year;
 				fields[configs.Fields.ReferralQuarter] = "Q" + ApplicationAccessor.GetTTQuarter(DateTime.UtcNow);
+
+				if (orgCreationData.AccountType == AccountType.Demo) {
+
+					fields[configs.Fields.TrialStart] = DateTime.UtcNow.Date.ToShortDateString();
+					if (orgCreationData.TrialEnd.HasValue) {
+						fields[configs.Fields.TrialEnd] = orgCreationData.TrialEnd.Value.ToShortDateString();
+					}
+				}
 
 				if (coach != null) {
 					await connector.EventAsync("AClientRegistered", coach.Email);
+					var updateCoach = new Dictionary<long, string>() {
+						{configs.Fields.CoachLastReferral, DateTime.UtcNow.ToShortDateString() },
+						{configs.Fields.CoachHasReferral, "Yes" }
+					};
+					var lists = configs.Lists.CoachThatReferred.AsList();
+
+					await connector.SyncContact(configs, coach.Email, listIds: lists, fieldVals: updateCoach);
 				}
 			}
 
 			await connector.SyncContact(configs, contact, listIds, tags, fields);
-		}		
+		}
 	}
 }

@@ -106,5 +106,13 @@
   {
     "outputFile": "Content/L10/L10ChatLog.css",
     "inputFile": "Content/L10/L10ChatLog.less"
+  },
+  {
+    "outputFile": "Content/People/PeopleAnalyzer.css",
+    "inputFile": "Content/People/PeopleAnalyzer.less"
+  },
+  {
+    "outputFile": "Content/People/rzslider.css",
+    "inputFile": "Content/People/rzslider.less"
   }
 ]

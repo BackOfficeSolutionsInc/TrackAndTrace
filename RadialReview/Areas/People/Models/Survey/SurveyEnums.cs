@@ -15,7 +15,8 @@ namespace RadialReview.Areas.People.Models.Survey {
         Rocks = 1,
         Roles = 2,
         Values = 3,
-    }
+		GeneralComments = 4,
+	}
 
 	public enum SurveyItemType {
 		Invalid = 0,
