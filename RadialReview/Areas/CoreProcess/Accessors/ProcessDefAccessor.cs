@@ -54,8 +54,14 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 					getfileStream.Seek(0, SeekOrigin.Begin);
 					XDocument x1 = XDocument.Load(getfileStream);
 
-					var getProcessDefDetail = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.Id == localId).SingleOrDefault();
-					string key = getProcessDefDetail.ProcessDefKey;
+					//var getProcessDefDetail = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.Id == localId).SingleOrDefault();
+                    var getProcessDefDetail = s.Get<ProcessDef_Camunda>(localId);
+                    if (getProcessDefDetail.DeleteTime != null)
+                    {
+                        throw new PermissionsException();
+                    }
+
+                    string key = getProcessDefDetail.ProcessDefKey;
 
 					// call Comm Layer
 					CommClass commClass = new CommClass();
@@ -87,8 +93,14 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 						// permissions
 						perms.CanEdit(PermItem.ResourceType.CoreProcess, processDefId);
 
-						var getProcessDefDetail = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.Id == processDefId).SingleOrDefault();
-						if (getProcessDefDetail != null) {
+						//var getProcessDefDetail = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.Id == processDefId).SingleOrDefault();
+                        var getProcessDefDetail = s.Get<ProcessDef_Camunda>(processDefId);
+                        if (getProcessDefDetail.DeleteTime != null)
+                        {
+                            throw new PermissionsException();
+                        }
+
+                        if (getProcessDefDetail != null) {
 							// call Comm Layer
 							CommClass commClass = new CommClass();
 							var startProcess = await commClass.ProcessStart(getProcessDefDetail.CamundaId);
@@ -125,7 +137,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 						var perms = PermissionsUtility.Create(s, caller);
 
 						// update 1 with long					
-						perms.CanEdit(PermItem.ResourceType.CoreProcess, 1);
+						perms.CanEdit(PermItem.ResourceType.CoreProcess, localId);
 
 						//var getProcessDefDetails = s.Get<ProcessDef_Camunda>(localId);
 						var getProcessInsDetail = s.QueryOver<ProcessInstance_Camunda>().Where(x => x.DeleteTime == null && x.LocalProcessInstanceId == localId).SingleOrDefault();
@@ -157,7 +169,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 					&& x.CompleteTime == null
 					).List()
 						.Select(x => new ProcessInstanceViewModel() {
-							Id = x.CamundaProcessInstanceId,
+							//Id = x.CamundaProcessInstanceId,
 							DefinitionId = x.LocalProcessInstanceId,
 							Suspended = x.Suspended,
 							CreateTime = x.CreateTime,

@@ -107,10 +107,10 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public async Task<JsonResult> Delete(string id) // id is processid
+		public async Task<JsonResult> Delete(long id) // id is processid
 		{
-			var Process = processDefAccessor.GetById(GetUser(), Convert.ToInt64(id));
-			await processDefAccessor.Delete(GetUser(), Convert.ToInt64(id));
+			var Process = processDefAccessor.GetById(GetUser(), id);
+			await processDefAccessor.Delete(GetUser(),id);
 			return Json(ResultObject.SilentSuccess(Process), JsonRequestBehavior.AllowGet);
 		}
 
