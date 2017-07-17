@@ -32,7 +32,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 			//ViewBag.CanAdmin = obj.IsPermitted(GetUser(), x => x.CanAdminProcessDef(id));
 
 			foreach (var item in sstr) {
-				var List = processDefAccessor.GetProcessInstanceList(item.LocalId);
+				var List = processDefAccessor.GetProcessInstanceList(GetUser(), item.LocalId);
 				ProcessViewModel process = new ProcessViewModel(item, List.Count);
 
 				//process.Id = item.Id;
@@ -64,7 +64,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<JsonResult> StartProcess(long id) {
 			var StartProcess = await processDefAccessor.ProcessStart(GetUser(), id);
-			var result = ResultObject.Create(new ProcessViewModel(StartProcess, processDefAccessor.GetProcessInstanceList(StartProcess.LocalId).Count), "Process started successfully.");
+			var result = ResultObject.Create(new ProcessViewModel(StartProcess, processDefAccessor.GetProcessInstanceList(GetUser(), StartProcess.LocalId).Count), "Process started successfully.");
 			return Json(result, JsonRequestBehavior.AllowGet);
 		}
 
