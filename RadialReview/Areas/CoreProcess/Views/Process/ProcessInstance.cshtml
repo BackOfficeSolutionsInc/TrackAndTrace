@@ -39,7 +39,9 @@
 						{ name: "Complete Time", classes: "", contents: function (x) { return x.CompleteTime; } },
                         //{ name: "BusinessKey", classes: "", contents: function (x) { return x.BusinessKey; } },
                         //{ name: "Process Id", classes: "", contents: function (x) { return x.DefinitionId } },
-                        { name: "Action", classes: "", contents: function (x) { return "<a href='javascript:void(0);' onclick='suspend(\"" + x.DefinitionId + "," + x.Suspended + "\");'>" + (x.Suspended ? "Activate" : "Suspend") + "</a>" } },
+						@if (ViewBag.CanEdit == true) {								
+                			@:{ name: "Action", classes: "", contents: function (x) { return "<a href='javascript:void(0);' onclick='suspend(\"" + x.DefinitionId + "," + x.Suspended + "\");'>" + (x.Suspended ? "Activate" : "Suspend") + "</a>" } },
+						}                        
 						//{ edit: true },
 						//{ remove : true },
                     ],

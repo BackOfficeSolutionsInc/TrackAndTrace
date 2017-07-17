@@ -31,18 +31,22 @@
 					clickEditValidation: ValidateForm,
 					clickRemove: "/Process/Delete/{0}",
 					//clickEdit: "/Process/Edit/{0}",
-					addButton:{text: "Create Process"},
+					@if (ViewBag.CanCreate == true) {
+							@:addButton: { text: "Create Process"},
+							@:clickAdd: "/Process/Create",
+					}
 					nodataText: "No Process. Click add to create one.",
-					clickAdd: "/Process/Create",
 					postAdd: "/Process/Create",
-                    cells: [
-                        { name: "Name", classes: "", contents: function (x) { return x.Name; } },
+					cells: [
+
+						{ name: "Name", classes: "", contents: function (x) { return x.Name; } },
                         { name: "Deploy", classes: "", contents: function (x) { return x.status; } },
                         { name: "Instances", classes: "", contents: function (x) { return x.Count; } },
                         { name: "Action", classes: "", contents: function (x) { return "<a href='/CoreProcess/Process/Tasks/" + x.Id + "'>Task</a>"
 							+ "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" + "<a href='javascript:void(0);' onclick='startProcess("+ x.Id +");'>Start</a>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp"
-                            + "<a href='/CoreProcess/Process/ProcessInstance/" + x.LocalID + "'>Instances</a>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp"
-                            + "<a href='javascript:void(0);' onclick='deleteprocess(" + x.Id +","+ x.Count+ ");' >Delete</a>"
+							+ "<a href='/CoreProcess/Process/ProcessInstance/" + x.LocalID + "'>Instances</a>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp"
+							+ "<a href='javascript:void(0);' onclick='deleteprocess(" + x.Id +","+ x.Count+ ");' >Delete</a>"
+
                         }
                         },
                         //{ edit: true },
@@ -51,35 +55,35 @@
 					nodataText: "No Process found."
 
 				});
-                table.setData(datas);
+				table.setData(datas);
 
-                function deleteprocess(x,val)
-                {
-                    if (val != 0) {
-                        var title = "This will delete all running instances associated with this process.</br>Are you sure you want to delete!";
-                        show(x, title);
-                    }
-                    else
-                    {
-                        var title = "Are you sure you want to remove!";
-                        show(x, title);
-                    }
-                }
-                function show(x, title)
-                {
-                    showModal({
-                        icon: "warning",
-                        title: title,
-                        success: function (d) {
-                            $.ajax({
-                                url: '/CoreProcess/Process/Delete/' + x,
-                                success: function (data) {
-                                    table.removeRow(data.Object);
-                                }
-                            });
-                        }
-                    });
-                }
+				function deleteprocess(x,val)
+				{
+					if (val != 0) {
+						var title = "This will delete all running instances associated with this process.</br>Are you sure you want to delete!";
+						show(x, title);
+					}
+					else
+					{
+						var title = "Are you sure you want to remove!";
+						show(x, title);
+					}
+				}
+				function show(x, title)
+				{
+					showModal({
+						icon: "warning",
+						title: title,
+						success: function (d) {
+							$.ajax({
+								url: '/CoreProcess/Process/Delete/' + x,
+								success: function (data) {
+									table.removeRow(data.Object);
+								}
+							});
+						}
+					});
+				}
 				function startProcess(id){
 					$.ajax({
 						url: "/CoreProcess/Process/StartProcess/" + id,
@@ -91,7 +95,7 @@
 
 						}
 					});
-                }
+				}
 
             </script>}
 

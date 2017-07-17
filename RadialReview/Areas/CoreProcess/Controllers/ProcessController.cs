@@ -24,7 +24,12 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 		public ActionResult Index() {
 			List<ProcessViewModel> Process = new List<ProcessViewModel>();
 
-			var sstr = processDefAccessor.GetList(GetUser());
+			var sstr = processDefAccessor.GetList(GetUser(), GetUser().Organization.Id);
+
+			PermissionsAccessor obj = new PermissionsAccessor();
+			ViewBag.CanCreate = obj.IsPermitted(GetUser(), x => x.CreateProcessDef());
+			//ViewBag.CanEdit = obj.IsPermitted(GetUser(), x => x.EditProcessDef(id));
+			//ViewBag.CanAdmin = obj.IsPermitted(GetUser(), x => x.CanAdminProcessDef(id));
 
 			foreach (var item in sstr) {
 				var List = processDefAccessor.GetProcessInstanceList(item.LocalId);
@@ -78,6 +83,10 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 			var sstr = processDefAccessor.GetById(GetUser(), id);
 			var tasKList = await processDefAccessor.GetAllTask(GetUser(), sstr.LocalId);
 
+			PermissionsAccessor obj = new PermissionsAccessor();
+			ViewBag.CanEdit = obj.IsPermitted(GetUser(), x => x.EditProcessDef(id));
+			ViewBag.CanAdmin = obj.IsPermitted(GetUser(), x => x.CanAdminProcessDef(id));
+
 			ProcessViewModel process = new ProcessViewModel();
 			process.taskList = tasKList;
 			process.Name = sstr.ProcessDefKey;
@@ -110,7 +119,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 		public async Task<JsonResult> Delete(long id) // id is processid
 		{
 			var Process = processDefAccessor.GetById(GetUser(), id);
-			await processDefAccessor.Delete(GetUser(),id);
+			await processDefAccessor.Delete(GetUser(), id);
 			return Json(ResultObject.SilentSuccess(Process), JsonRequestBehavior.AllowGet);
 		}
 
@@ -185,7 +194,11 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 		public ActionResult ProcessInstance(long id) // id is processid
 		{
 			ProcessInstanceViewModel processinstance = new ProcessInstanceViewModel();
-			var List = processDefAccessor.GetProcessInstanceList(id);
+			var List = processDefAccessor.GetProcessInstanceList(GetUser(), id);
+
+			PermissionsAccessor obj = new PermissionsAccessor();
+			ViewBag.CanEdit = obj.IsPermitted(GetUser(), x => x.EditProcessDef(id));
+
 			return View(List);
 		}
 

@@ -55,13 +55,12 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 					XDocument x1 = XDocument.Load(getfileStream);
 
 					//var getProcessDefDetail = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.Id == localId).SingleOrDefault();
-                    var getProcessDefDetail = s.Get<ProcessDef_Camunda>(localId);
-                    if (getProcessDefDetail.DeleteTime != null)
-                    {
-                        throw new PermissionsException();
-                    }
+					var getProcessDefDetail = s.Get<ProcessDef_Camunda>(localId);
+					if (getProcessDefDetail.DeleteTime != null) {
+						throw new PermissionsException();
+					}
 
-                    string key = getProcessDefDetail.ProcessDefKey;
+					string key = getProcessDefDetail.ProcessDefKey;
 
 					// call Comm Layer
 					CommClass commClass = new CommClass();
@@ -94,13 +93,12 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 						perms.CanEdit(PermItem.ResourceType.CoreProcess, processDefId);
 
 						//var getProcessDefDetail = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.Id == processDefId).SingleOrDefault();
-                        var getProcessDefDetail = s.Get<ProcessDef_Camunda>(processDefId);
-                        if (getProcessDefDetail.DeleteTime != null)
-                        {
-                            throw new PermissionsException();
-                        }
+						var getProcessDefDetail = s.Get<ProcessDef_Camunda>(processDefId);
+						if (getProcessDefDetail.DeleteTime != null) {
+							throw new PermissionsException();
+						}
 
-                        if (getProcessDefDetail != null) {
+						if (getProcessDefDetail != null) {
 							// call Comm Layer
 							CommClass commClass = new CommClass();
 							var startProcess = await commClass.ProcessStart(getProcessDefDetail.CamundaId);
@@ -134,9 +132,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 			try {
 				using (var s = HibernateSession.GetCurrentSession()) {
 					using (var tx = s.BeginTransaction()) {
-						var perms = PermissionsUtility.Create(s, caller);
-
-						// update 1 with long					
+						var perms = PermissionsUtility.Create(s, caller);										
 						perms.CanEdit(PermItem.ResourceType.CoreProcess, localId);
 
 						//var getProcessDefDetails = s.Get<ProcessDef_Camunda>(localId);
@@ -161,9 +157,13 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 			}
 			return result;
 		}
-		public List<ProcessInstanceViewModel> GetProcessInstanceList(long localId) {
+		public List<ProcessInstanceViewModel> GetProcessInstanceList(UserOrganizationModel caller, long localId) {
 			try {
 				using (var s = HibernateSession.GetCurrentSession()) {
+
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.CanView(PermItem.ResourceType.CoreProcess, localId);
+
 					return s.QueryOver<ProcessInstance_Camunda>().Where(x => x.DeleteTime == null
 					&& x.LocalProcessInstanceId == localId
 					&& x.CompleteTime == null
@@ -233,6 +233,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
+					perms.CanEdit(PermItem.ResourceType.CoreProcess, localId);
 					var updated = await Edit(s, perms, localId, processName);
 					tx.Commit();
 					s.Flush();
@@ -240,7 +241,6 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 				}
 			}
 		}
-
 		public async Task<bool> Edit(ISession s, PermissionsUtility perms, long localId, string processName) {
 			perms.CanEdit(PermItem.ResourceType.CoreProcess, localId);
 
@@ -280,7 +280,6 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 
 			return result;
 		}
-
 		public async Task<bool> Delete(UserOrganizationModel caller, long processId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -292,7 +291,6 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 				}
 			}
 		}
-
 		public async Task<bool> Delete(ISession s, long processId) {
 			bool result = true;
 			try {
@@ -312,7 +310,6 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 
 			return result;
 		}
-
 		public async Task<TaskViewModel> CreateTask(UserOrganizationModel caller, long localId, TaskViewModel model) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				var perm = PermissionsUtility.Create(s, caller);
@@ -320,7 +317,6 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 				return created;
 			}
 		}
-
 		public async Task<TaskViewModel> CreateTask(ISession s, PermissionsUtility perm, long localId, TaskViewModel model, UserOrganizationModel caller) {
 
 			// check permissions
@@ -484,7 +480,10 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 					if (getMemberIds.Any()) {
 						foreach (var item in getMemberIds) {
 							var getItem = item.Split('_');
-							idList.Add(Convert.ToInt64(getItem[1]));
+							var id = 0l;
+							if (getItem.Length > 1 && long.TryParse(getItem[1], out id)) {
+								idList.Add(id);
+							}
 						}
 					}
 				}
@@ -677,13 +676,25 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 			return result;
 		}
 
-		public IEnumerable<ProcessDef_Camunda> GetList(UserOrganizationModel caller) {
+		public IEnumerable<ProcessDef_Camunda> GetList(UserOrganizationModel caller, long orgId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					PermissionsUtility.Create(s, caller);
 
-					IEnumerable<ProcessDef_Camunda> processDefList = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.OrgId == caller.Organization.Id).List();
-					return processDefList;
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.ViewOrganization(orgId);
+					//PermissionsAccessor.GetExplicitPermItemsForUser(s, perms, caller.Id, PermItem.ResourceType.CoreProcess);
+
+					IEnumerable<ProcessDef_Camunda> processDefList = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.OrgId == orgId).List();
+					List<ProcessDef_Camunda> finalList = new List<ProcessDef_Camunda>();
+					foreach (var item in processDefList.ToList()) {
+						try {
+							perms.CanView(PermItem.ResourceType.CoreProcess, item.LocalId);
+							finalList.Add(item);
+						} catch (Exception ex) {
+						}
+					}
+
+					return finalList;
 				}
 			}
 		}

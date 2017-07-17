@@ -110,8 +110,8 @@ namespace RadialReview.Utilities {
 			var attached = caller;
 			if (!session.Contains(caller) && caller.Id != UserOrganizationModel.ADMIN_ID) {
 				attached = session.Load<UserOrganizationModel>(caller.Id);
-				attached._ClientTimestamp = caller._ClientTimestamp;               
-            }
+				attached._ClientTimestamp = caller._ClientTimestamp;
+			}
 			return new PermissionsUtility(session, attached);
 		}
 		#endregion
@@ -209,7 +209,7 @@ namespace RadialReview.Utilities {
 				}
 
 				if (disableIfSelf && caller.Id == userOrganizationId)
-					throw new PermissionsException("You cannot do this to yourself.") {NoErrorReport = true};
+					throw new PermissionsException("You cannot do this to yourself.") { NoErrorReport = true };
 
 				//..was here
 
@@ -219,7 +219,7 @@ namespace RadialReview.Utilities {
 
 				//if (caller.IsManager() && IsOwnedBelowOrEqual(caller, x => x.Id == userOrganizationId))
 				//	return this;
-				throw new PermissionsException("You do not manage this user.") {NoErrorReport = true};
+				throw new PermissionsException("You do not manage this user.") { NoErrorReport = true };
 
 			}, alsoCheck);
 			//}, PermissionType.ManageEmployees);
@@ -305,7 +305,7 @@ namespace RadialReview.Utilities {
 		//		return caller.ManagingOrganization || (allowManagers && caller.ManagerAtOrganization && caller.Organization.ManagersCanEdit);
 		//	return false;
 		//}
-		
+
 
 		//[Obsolete("should never be caller.organization.id", false)]
 		private bool IsManagingOrganization(long orgId_DoNotUse_callerOrganizationId, bool allowManagers = false) {
@@ -494,7 +494,7 @@ namespace RadialReview.Utilities {
 
 			var question = session.Get<QuestionModel>(questionId);
 			if (question.OriginType != OriginType.Invalid)
-				return EditOrigin(question.OriginType, question.OriginId,true);
+				return EditOrigin(question.OriginType, question.OriginId, true);
 
 			//var createdById = question.CreatedById;
 			//if (caller.IsManager() && IsOwnedBelowOrEqual(caller, createdById))
@@ -558,7 +558,7 @@ namespace RadialReview.Utilities {
 		#endregion
 
 		#region Origin
-		public PermissionsUtility EditOrigin(Origin origin,bool manageOnly =false) {
+		public PermissionsUtility EditOrigin(Origin origin, bool manageOnly = false) {
 			return EditOrigin(origin.OriginType, origin.OriginId, manageOnly);
 		}
 
@@ -985,7 +985,7 @@ namespace RadialReview.Utilities {
 
 			if (IsManagingOrganization(prereviewOrgId))
 				return this;
-			
+
 			if (IsOwnedBelowOrEqual(caller, prereview.ManagerId))
 				return this;
 
@@ -1326,7 +1326,7 @@ namespace RadialReview.Utilities {
 			});
 
 		}
-		public PermissionsUtility AssignTodoTo(long userId,long? todoId=null) {
+		public PermissionsUtility AssignTodoTo(long userId, long? todoId = null) {
 			if (userId <= 0)
 				throw new PermissionsException("UserId was negative");
 
@@ -1335,7 +1335,7 @@ namespace RadialReview.Utilities {
 			if (userId == caller.Id)
 				return this;
 			var user = session.Get<UserOrganizationModel>(userId);
-			
+
 			var toCheck = new List<Func<PermissionsUtility>> {
 				()=>ManagingOrganization(user.Organization.Id),
 				()=>ManagesUserOrganization(userId, false, PermissionType.EditEmployeeDetails),
@@ -1344,11 +1344,11 @@ namespace RadialReview.Utilities {
 			if (todoId != null) {
 				var todo = session.Get<TodoModel>(todoId.Value);
 				if (todo.ForRecurrenceId != null && todo.ForRecurrenceId != 0) {
-					toCheck.Insert(0,()=>EditL10Recurrence(todo.ForRecurrenceId.Value));
+					toCheck.Insert(0, () => EditL10Recurrence(todo.ForRecurrenceId.Value));
 				}
 			}
 
-			return ViewUserOrganization(userId, false,PermissionType.EditEmployeeDetails).Or(toCheck.ToArray());			
+			return ViewUserOrganization(userId, false, PermissionType.EditEmployeeDetails).Or(toCheck.ToArray());
 		}
 
 
@@ -1358,7 +1358,7 @@ namespace RadialReview.Utilities {
 			var todo = session.Get<TodoModel>(todoId);
 			if (todo.AccountableUserId == caller.Id)
 				return this;
-			
+
 			if (todo.ForRecurrenceId != null && todo.ForRecurrenceId != 0) {
 				try {
 					EditL10Recurrence(todo.ForRecurrenceId.Value);
@@ -1636,7 +1636,7 @@ namespace RadialReview.Utilities {
 			if (userId == caller.Id)
 				return true;
 
-			return DeepAccessor.Users.ManagesUser(session,this,caller.Id,userId);
+			return DeepAccessor.Users.ManagesUser(session, this, caller.Id, userId);
 		}
 
 		//protected bool IsOwnedBelowOrEqual(UserOrganizationModel caller, Predicate<UserOrganizationModel> visibility) {
@@ -1682,7 +1682,7 @@ namespace RadialReview.Utilities {
 		public PermissionsUtility CanUpgradeUser(long userId) {
 			ViewUserOrganization(userId, false);
 			var user = session.Get<UserOrganizationModel>(userId);
-			return CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, user.Organization.Id,exceptionMessage:"This user is '"+Config.ReviewName().ToLower()+" only' and cannot be added to an L10. You are not permitted to upgrade them.");
+			return CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, user.Organization.Id, exceptionMessage: "This user is '" + Config.ReviewName().ToLower() + " only' and cannot be added to an L10. You are not permitted to upgrade them.");
 		}
 		#endregion
 
@@ -1766,28 +1766,36 @@ namespace RadialReview.Utilities {
 		}
 
 
-        #endregion
+		#endregion
 
-        #region Issues
+		#region Issues
 
-        public PermissionsUtility ViewRecurrenceIssuesForUser(long userId, long recurrenceId) // recurrence
-        {
-            if (IsRadialAdmin(caller))
-                return this;
-            if (userId == caller.Id)
-                return this;
-            if (IsOwnedBelowOrEqual(caller, userId))
-                return this;
-            return ViewL10Recurrence(recurrenceId);            
-        }
+		public PermissionsUtility ViewRecurrenceIssuesForUser(long userId, long recurrenceId) // recurrence
+		{
+			if (IsRadialAdmin(caller))
+				return this;
+			if (userId == caller.Id)
+				return this;
+			if (IsOwnedBelowOrEqual(caller, userId))
+				return this;
+			return ViewL10Recurrence(recurrenceId);
+		}
 
 		#endregion
 
 		#region CoreProcess
 
 		public PermissionsUtility CreateProcessDef() {
-			return ManagerAtOrganization(caller.Id, caller.Organization.Id);			
+			return ManagerAtOrganization(caller.Id, caller.Organization.Id);
 		}
+
+		public PermissionsUtility EditProcessDef(long localId) {
+			return CanEdit(PermItem.ResourceType.CoreProcess, localId);
+		}
+		public PermissionsUtility CanAdminProcessDef(long localId) {
+			return CanAdmin(PermItem.ResourceType.CoreProcess, localId);
+		}
+
 
 		#endregion
 

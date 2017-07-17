@@ -9,8 +9,19 @@
 		<h1>List Of Task</h1>
 	</div>
 }
+
+<style>
+	@if (ViewBag.CanEdit == false) {
+	  @:.CanEdit{
+		@:	display: none;
+		@:}
+	}
+</style>
+
 @{
-Html.RenderAction("Dropdown", "Permissions", new { area = "", id = Model.Id, type = PermItem.ResourceType.CoreProcess });
+	if (ViewBag.CanAdmin == true) {
+		Html.RenderAction("Dropdown", "Permissions", new { area = "", id = Model.Id, type = PermItem.ResourceType.CoreProcess });
+	}
 }
 <div class="row">
 	<div class="col-sm-8 col-lg-12">
@@ -29,7 +40,7 @@ Html.RenderAction("Dropdown", "Permissions", new { area = "", id = Model.Id, typ
 					<label class="col-sm-3 control-label">Process Name:</label>
 					<div class="col-sm-5">
 						<span id="name">@Model.Name</span>
-						<a href="#" onclick="@Html.ShowModal("Edit Process", "/Process/Edit/" + @Model.Id, "/Process/Edit/", onCompleteFunction: "reload")">
+						<a class="CanEdit" href="#" onclick="@Html.ShowModal("Edit Process", "/Process/Edit/" + @Model.Id, "/Process/Edit/", onCompleteFunction: "reload")">
 							<span class="glyphicon glyphicon-pencil"></span>
 						</a>
 						@*<input class="btn btn-primary" type="submit" onclick="@Html.ShowModal("Edit Process", "/Process/Edit/" + @Model.Id, "/Process/Edit/")" value="Edit" />*@
@@ -55,14 +66,11 @@ Html.RenderAction("Dropdown", "Permissions", new { area = "", id = Model.Id, typ
 					<div id="duration-table"></div>
 					using (Html.BeginScripts()) {
 						<script>
-
 							function ValidateForm(d) {
 								if (d.name == "") {
 									return "Name is required.";
 								}
 							}
-
-
 
 							var datas = @Html.ArrayToString(Model.taskList);
 							var table = DataTable({
@@ -74,20 +82,28 @@ Html.RenderAction("Dropdown", "Permissions", new { area = "", id = Model.Id, typ
 								clickRemove: "/Process/DeleteTask/{0}?localid=@Model.LocalID",
 								clickEdit: "/Process/EditTask/{0}?localid=@Model.LocalID",
 								//addButton:{text: "Publish"},
-								addButton: { text: "Publish"},
+								@if (ViewBag.CanEdit == true) {
+										@:addButton: { text: "Publish"},
+																										@:clickAdd: PublishProcess,
+																								}
 								nodataText: "No Process. Click add to create one.",
 								@*clickAdd: "/Process/CreateTask/@Model.LocalID",
 								postAdd: "/Process/CreateTask",*@
-								clickAdd: PublishProcess,
 								//postAdd: "/Process/Publish",
 								cells:[
-                                    { reorder: true },
+									@if (ViewBag.CanEdit == true) {
+										@:{ reorder: true },										
+									}									
                                     //{ id: "id", classes: "hidden", contents: function (x) { return x.Id;}},
                                     { name: "Name", classes: "nowrap", contents: function(x) { console.log(x); return x.name; } },
                                     { name: "Candidate Group", classes: "fullWidth", contents: function (x) { return x.SelectedMemberName; } },
-                                    { name: "Action", classes: "nowrap", edit: true},
+									@if (ViewBag.CanEdit == true) {								
+										@:{ name: "Action", classes: "nowrap", edit: true},
+									}
+									@if (ViewBag.CanAdmin == true) {
+										@:{remove:true},
+									}
 									//{ edit: true ,},
-									{remove:true},
 								],
 								nodataText: "No Task found."
 								@*data: @Html.ArrayToString(Model.taskList),*@
@@ -125,7 +141,7 @@ Html.RenderAction("Dropdown", "Permissions", new { area = "", id = Model.Id, typ
 					}
 				}
 				<div class="alignCenter">
-					<input class="btn btn-primary" type="submit" onclick="@Html.ShowModal("New Task", "/Process/CreateTask/" + @Model.LocalID, "/Process/CreateTask", onCompleteFunction: "reloadGrid")" value="New Task" />
+					<input class="btn btn-primary CanEdit" type="submit" onclick="@Html.ShowModal("New Task", "/Process/CreateTask/" + @Model.LocalID, "/Process/CreateTask", onCompleteFunction: "reloadGrid")" value="New Task" />
 				</div>
 			</div>
 
