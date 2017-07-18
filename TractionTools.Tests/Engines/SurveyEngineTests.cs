@@ -179,7 +179,7 @@ namespace TractionTools.Tests.Engines {
 			//Construct Survey
 			DbCommit(s => {
 				var engine = new SurveyBuilderEngine(
-					new QuarterlyConversationInitializer(ForModel.Create(org.Manager), "TestSurvey", org.Id),
+					new QuarterlyConversationInitializer(ForModel.Create(org.Manager), "TestSurvey", org.Id,DateTime.MaxValue),
 					new SurveyBuilderEventsSaveStrategy(s),
 					new TransformAboutAccountabilityNodes(s)
 				);
@@ -267,7 +267,7 @@ namespace TractionTools.Tests.Engines {
 			outerLookup.GetInnerLookup<RockSection>().AddList(rockData);
 
 			var engine = new SurveyBuilderEngine(
-				new QuarterlyConversationInitializer(ForModel.Create<UserOrganizationModel>(2), "TestRocksSurvey", 1),
+				new QuarterlyConversationInitializer(ForModel.Create<UserOrganizationModel>(2), "TestRocksSurvey", 1,DateTime.MaxValue),
 				new SurveyBuilderEventsNoOp(),
 				new TransformByAboutNoop(),
 				outerLookup
@@ -330,7 +330,7 @@ namespace TractionTools.Tests.Engines {
 			outerLookup.GetInnerLookup<ValueSection>().AddList(valueData);
 
 			var engine = new SurveyBuilderEngine(
-				new QuarterlyConversationInitializer(ForModel.Create<UserOrganizationModel>(2), "TestValueSurvey", 1),
+				new QuarterlyConversationInitializer(ForModel.Create<UserOrganizationModel>(2), "TestValueSurvey", 1, DateTime.MaxValue),
 				new SurveyBuilderEventsNoOp(),
 				new TransformByAboutNoop(),
 				outerLookup
@@ -424,7 +424,7 @@ namespace TractionTools.Tests.Engines {
 			};
 
 			var engine = new SurveyBuilderEngine(
-				new QuarterlyConversationInitializer(ForModel.Create<UserOrganizationModel>(U2), "TestRoleSurvey", O1),
+				new QuarterlyConversationInitializer(ForModel.Create<UserOrganizationModel>(U2), "TestRoleSurvey", O1, DateTime.MaxValue),
 				new SurveyBuilderEventsNoOp(),
 				new TransformByAboutNoop(),// SurveyBuilderEventsSaveStrategy(mockSession.Object)
 				outerLookup
@@ -533,7 +533,7 @@ namespace TractionTools.Tests.Engines {
 					new ByAbout(org.EmployeeNode,org.EmployeeNode),
 				};
 
-			var containerId = QuarterlyConversationAccessor.GenerateQuarterlyConversation(org.Manager, "TestGetSurveyContainerAbout", byAbout);
+			var containerId = await QuarterlyConversationAccessor.GenerateQuarterlyConversation(org.Manager, "TestGetSurveyContainerAbout", byAbout,DateTime.MaxValue,false);
 			var about = SurveyAccessor.GetSurveyContainerAbout(org.Manager, org.EmployeeNode, containerId);
 
 			Assert.AreEqual(1,about.GetSurveys().Count());

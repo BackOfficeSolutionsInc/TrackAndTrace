@@ -13,13 +13,16 @@ using RadialReview.Models;
 using RadialReview.Models.Accountability;
 using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.Angular.Users;
+using RadialReview.Models.Application;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Interfaces;
+using RadialReview.Properties;
 using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace RadialReview.Areas.People.Accessors {
@@ -56,7 +59,18 @@ namespace RadialReview.Areas.People.Accessors {
 
 		//}
 
-		public static long GenerateQuarterlyConversation(UserOrganizationModel caller, string name, IEnumerable<IByAbout> byAbout) {
+		public class QuarterlyConversationGeneration {
+			public long SurveyContainerId { get; set; }
+			public IEnumerable<Mail> UnsentEmail { get; set; }
+			public List<String> Errors { get; set; }
+
+			public QuarterlyConversationGeneration() {
+				Errors = new List<string>();
+				UnsentEmail = new List<Mail>();
+			}
+		}
+
+		public static async Task<long> GenerateQuarterlyConversation(UserOrganizationModel caller, string name, IEnumerable<IByAbout> byAbout, DateTime dueDate, bool sendEmails) {
 
 			var possible = AvailableByAbouts(caller, true);
 			var invalid = byAbout.Where(selected => possible.All(avail => avail.ToKey() != selected.ToKey()));
@@ -68,31 +82,30 @@ namespace RadialReview.Areas.People.Accessors {
 				throw new PermissionsException("Could not create Quarterly Conversation. You cannot view these items.");
 			}
 
-			long containerId;
+
+			QuarterlyConversationGeneration qcResult;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
 					perms.CreateQuarterlyConversation(caller.Organization.Id);
-
-					containerId = GenerateQuarterlyConversation_Unsafe(s, perms, name, byAbout);
-
+					qcResult = GenerateQuarterlyConversation_Unsafe(s, perms, name, byAbout, dueDate,sendEmails);
 					tx.Commit();
 					s.Flush();
-					return containerId;
 				}
 			}
-			//return GetAngularSurveyContainerBy(caller, caller, containerId);
+			if (sendEmails) {
+				await Emailer.SendEmails(qcResult.UnsentEmail);
+			}
+			return qcResult.SurveyContainerId;
 		}
 
-		public static long GenerateQuarterlyConversation_Unsafe(ISession s, PermissionsUtility perms, string name, IEnumerable<IByAbout> byAbout) {
+		public static QuarterlyConversationGeneration GenerateQuarterlyConversation_Unsafe(ISession s, PermissionsUtility perms, string name, IEnumerable<IByAbout> byAbout,DateTime dueDate,bool generateEmails) {
 			var caller = perms.GetCaller();
 			var engine = new SurveyBuilderEngine(
-				new QuarterlyConversationInitializer(caller, name, caller.Organization.Id),
+				new QuarterlyConversationInitializer(caller, name, caller.Organization.Id,dueDate),
 				new SurveyBuilderEventsSaveStrategy(s),
 				new TransformAboutAccountabilityNodes(s)
 			);
-
-			//byAbout = TransformByAbouts(s, byAbout);
 
 			var container = engine.BuildSurveyContainer(byAbout);
 			var containerId = container.Id;
@@ -102,7 +115,37 @@ namespace RadialReview.Areas.People.Accessors {
 				PermTiny.Members(true, true, false)
 			};
 			PermissionsAccessor.CreatePermItems(s, caller, PermItem.ResourceType.SurveyContainer, containerId, permItems);
-			return containerId;
+
+			var emails = new List<Mail>();
+			var allBys = container.GetSurveys()
+							.Select(x => x.GetBy())
+							.Distinct(x => x.ToKey());
+
+			var linkUrl = Config.BaseUrl(null, "/People/QuarterlyConversation/");
+
+			var result = new QuarterlyConversationGeneration() {
+				SurveyContainerId = containerId,
+			};
+			if (generateEmails) {
+				foreach (var byUser in allBys) {
+					var user = ForModelAccessor.GetTinyUser_Unsafe(s, byUser);
+					if (user != null) {
+						if (user.Email != null) {
+							var email = Mail.To(EmailTypes.QuarterlyConversationIssued, user.Email)
+								.SubjectPlainText("You have a Quarterly Conversation to complete")
+								.Body(EmailStrings.QuarterlyConversation_Body, user.FirstName, dueDate.ToShortDateString(), linkUrl, linkUrl, Config.ProductName());
+							emails.Add(email);
+						} else {
+							result.Errors.Add("By (" + byUser.ToKey() + ") did not have an email.");
+						}
+					} else {
+						result.Errors.Add("By (" + byUser.ToKey() + ") was not a user.");
+					}
+				}
+				result.UnsentEmail = emails;
+			}
+
+			return result;
 		}
 
 
@@ -132,12 +175,12 @@ namespace RadialReview.Areas.People.Accessors {
 
 					SurveyItem item = null;
 					var accountabiliyNodeResults = s.QueryOver<SurveyResponse>()
-						.Where(x => x.SurveyType == SurveyType.QuarterlyConversation && x.OrgId == caller.Organization.Id && x.About.ModelType == ForModel.GetModelType<AccountabilityNode>() && x.DeleteTime==null && x.Answer!=null)
+						.Where(x => x.SurveyType == SurveyType.QuarterlyConversation && x.OrgId == caller.Organization.Id && x.About.ModelType == ForModel.GetModelType<AccountabilityNode>() && x.DeleteTime == null && x.Answer != null)
 						.Where(range.Filter<SurveyResponse>())
 						.WhereRestrictionOn(x => x.About.ModelId).IsIn(childrens.ToArray())
 						.List().ToList();
-					var users = s.QueryOver<AccountabilityNode>().Where(x=>x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(childrens.Distinct().ToArray()).Fetch(x => x.User).Eager.Future();
-					
+					var users = s.QueryOver<AccountabilityNode>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(childrens.Distinct().ToArray()).Fetch(x => x.User).Eager.Future();
+
 
 					var formats = s.QueryOver<SurveyItemFormat>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(accountabiliyNodeResults.Select(x => x.ItemFormatId).Distinct().ToArray()).Future();
 					var items = s.QueryOver<SurveyItem>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(accountabiliyNodeResults.Select(x => x.ItemId).Distinct().ToArray()).Future();
@@ -197,7 +240,7 @@ namespace RadialReview.Areas.People.Accessors {
 							}
 						});
 						row.Key._PrettyString = userLu[row.Key];
-						var arow = new AngularPeopleAnalyzerRow(row.Key,!nodes.Any(x=>x.Id ==row.Key.ModelId));						
+						var arow = new AngularPeopleAnalyzerRow(row.Key, !nodes.Any(x => x.Id == row.Key.ModelId));
 						rows.Add(arow);
 					}
 
@@ -218,7 +261,7 @@ namespace RadialReview.Areas.People.Accessors {
 					var surveyIssueDateLookup = surveys.ToDictionary(x => x.Id, x => x.GetIssueDate());
 					var surveyItemLookup = items.ToDictionary(x => x.Id, x => x);
 					var surveyItemFormatLookup = formats.ToDictionary(x => x.Id, x => x);
-					
+
 					var responses = new List<AngularPeopleAnalyzerResponse>();
 					foreach (var result in accountabiliyNodeResults) {
 						if (!surveyContainers.Any(x => x.Id == result.SurveyContainerId))
@@ -232,7 +275,7 @@ namespace RadialReview.Areas.People.Accessors {
 						var questionSource = surveyItemLookup[result.ItemId].GetSource();
 
 						if (answerDate != null) {
-							var byUser = result.By;							
+							var byUser = result.By;
 							var aboutUser = result.About;
 							var answerFormatted = rewrite[result.Answer];
 							var overrideAnswer = overridePriority[result.Answer];
@@ -240,15 +283,15 @@ namespace RadialReview.Areas.People.Accessors {
 							var gwc = format.GetSetting<string>("gwc");
 							var surveyContainerId = result.SurveyContainerId;
 
-							if ( gwc != null) {
+							if (gwc != null) {
 								questionSource = new ForModel() {
-									ModelId =-1,
+									ModelId = -1,
 									ModelType = gwc
 								};
 							}
 
 							var response = new AngularPeopleAnalyzerResponse(
-												new ByAbout(byUser,aboutUser),
+												new ByAbout(byUser, aboutUser),
 												issueDate,
 												answerDate.Value,
 												questionSource,
@@ -263,7 +306,7 @@ namespace RadialReview.Areas.People.Accessors {
 
 
 					var values = accountabiliyNodeResults.Where(x => x._Item.NotNull(y => y.GetSource().ModelType) == ForModel.GetModelType<CompanyValueModel>());//new Dictionary<long, string>();
-					
+
 
 					//foreach (var row in accountabiliyNodeResults.Where(x => x._Item.NotNull(y => y.GetSource().ModelType) == ForModel.GetModelType<CompanyValueModel>())) {
 					//	values.GetOrAddDefault(row._Item.GetSource().ModelId, x => row._Item.GetName());
@@ -273,7 +316,7 @@ namespace RadialReview.Areas.People.Accessors {
 					analyzer.Responses = responses;
 					analyzer.Values = values.Select(x => new PeopleAnalyzerValue(surveyItemLookup[x.GetItemId()].GetSource()));
 
-					analyzer.SurveyContainers = surveyContainers.Select(x=>new AngularSurveyContainer(x));
+					analyzer.SurveyContainers = surveyContainers.Select(x => new AngularSurveyContainer(x,false));
 
 					var issueDates = responses.Select(x => x.IssueDate.Value).ToList();
 

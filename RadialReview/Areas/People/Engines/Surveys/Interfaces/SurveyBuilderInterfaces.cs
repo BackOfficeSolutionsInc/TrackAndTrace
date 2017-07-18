@@ -151,6 +151,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Interfaces {
 		IEnumerable<ISurvey> GetSurveys();
 		void AppendSurvey(ISurvey survey);
 		DateTime GetIssueDate();
+		DateTime? GetDueDate();
 	}
 
 	public interface ISurvey : IComponent, IByAbout {
@@ -158,6 +159,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Interfaces {
 		IEnumerable<ISection> GetSections();
 		void AppendSection(ISection section);
 		DateTime GetIssueDate();
+		DateTime? GetDueDate();
 	}
 
 	public interface ISection : IComponent {

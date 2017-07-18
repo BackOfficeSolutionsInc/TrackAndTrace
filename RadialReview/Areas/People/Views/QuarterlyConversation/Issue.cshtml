@@ -1,4 +1,4 @@
-﻿@model IEnumerable<RadialReview.Models.Interfaces.IByAbout>
+﻿@model RadialReview.Areas.People.Controllers.QuarterlyConversationController.IssueViewModel
 @{
 	ViewBag.Title = "Issue Quarterly Conversation";
 	Layout = "~/Views/Shared/_Layout.cshtml";
@@ -7,8 +7,8 @@
 	<div class="row smallBreak2">
 		<div class="col-sm-6 col-sm-offset-3">
 			<label class="control-label">Name:</label>
-			@Html.TextBox("name", null, new { @class = "form-control smallBreak2" })
-			@Html.ValidationMessage("name")
+			@Html.TextBoxFor(x=>x.Name, new { @class = "form-control smallBreak2" })
+			@Html.ValidationMessageFor(x => x.Name)
 		</div>
 	</div>
 	<div class="row smallBreak2">
@@ -19,20 +19,42 @@
 		</div>
 	</div>
 	<div class="row smallBreak2">
-		<div class="col-sm-6 col-sm-offset-3">
-			<label class="control-label">Evaluate Self:</label>
-
-			<div class="btn-group" style="display:block;" data-toggle="buttons">
-				<label class="btn btn-default active">
-					<input type="radio" name="self" value="true" autocomplete="off" checked> Yes
-				</label>
-				<label class="btn btn-default">
-					<input type="radio" name="self" value="false" autocomplete="off"> No
-				</label>
+		<div class="col-sm-3 col-sm-offset-3">
+			<div class="row">
+				<div class="col-sm-6">
+					<label class="control-label">Evaluate Self:</label>
+					<div class="btn-group" style="display:block;" data-toggle="buttons">
+						<label class="btn btn-default active">
+							<input type="radio" name="@Html.NameFor(x=>x.EvalSelf)" value="true" autocomplete="off" checked> Yes
+						</label>
+						<label class="btn btn-default">
+							<input type="radio" name="@Html.NameFor(x=>x.EvalSelf)" value="false" autocomplete="off"> No
+						</label>
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<label class="control-label">Send Email:</label>
+					<div class="btn-group" style="display:block;" data-toggle="buttons">
+						<label class="btn btn-default active">
+							<input type="radio" name="@Html.NameFor(x=>x.Email)" value="true" autocomplete="off" checked> Yes
+						</label>
+						<label class="btn btn-default">
+							<input type="radio" name="@Html.NameFor(x=>x.Email)" value="false" autocomplete="off"> No
+						</label>
+					</div>
+				</div>
 			</div>
 
 		</div>
+		<div class="col-sm-3">
+			<label class="control-label">Due Date:</label>
+			<div class="btn-group" style="display:block;" data-toggle="buttons">
+				@Html.EditorFor(x => x.DueDate, new { startDate = "tomorrow" })
+			</div>
+		</div>
+
 	</div>
+
 	<div class="row">
 		<div class="col-sm-6 col-sm-offset-3">
 			<hr />
@@ -46,21 +68,30 @@
 }
 @using (Html.BeginScripts()) {
 
-	<script>		
+	<script>
+
 		$("form").submit(function validateForm(event) {
 			event = event || window.event || event.srcElement;
-			var name = $('#name').val();
+			var name = $('#Name').val();
 			if (!name) {
-				$("[data-valmsg-for=\"name\"]").removeClass("field-validation-valid").addClass("field-validation-error").text("Name is required");
-				$("#name").addClass("input-validation-error");//.text("Name is required");
+				$("[data-valmsg-for=\"Name\"]").removeClass("field-validation-valid").addClass("field-validation-error").text("Name is required");
+				$("#Name").addClass("input-validation-error");//.text("Name is required");
 				event.preventDefault();
+			}else{
+				$(this).find("button[type=submit]").addClass("noclick").prop("disabled","disabled").prop("title","Please wait.").html("Issuing...");
 			}
+		});
+
+		$("[name=self]").on("change",function(){
+			debugger;
+			var selected = $(this).val()=="true";
+			$("[name=email]").closest(".btn-group").find(".btn").toggleClass("disabled",!selected).toggleClass("noclick",!selected).replaceClass("active","was-active",!selected);
 		});
 
 
 		DataTable({
 			container: "#qc-issue",
-			data: @Html.ArrayToString(Model, x => new { Name = x.GetAbout().ToPrettyString(), Id = x.ToKey() }),
+			data: @Html.ArrayToString(Model.AvailableUsers, x => new { Name = x.GetAbout().ToPrettyString(), Id = x.ToKey() }),
 			//title
 			cells:[{
 				contents:function(x){ return "<input type='checkbox' checked name='selected' value ='"+x.Id+"'/>"; }

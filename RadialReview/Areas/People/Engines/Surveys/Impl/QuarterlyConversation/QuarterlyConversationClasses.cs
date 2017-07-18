@@ -15,11 +15,13 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation {
 		public IForModel CreatedBy { get; set; }
 		//public IForModel By { get; set; }
 		public String Name { get; set; }
-        public long OrgId { get; set; }
+		public DateTime DueDate { get; set; }
+		public long OrgId { get; set; }
 
-        public QuarterlyConversationInitializer(IForModel createdBy/*, IForModel by*/, string name, long orgId) {
+        public QuarterlyConversationInitializer(IForModel createdBy/*, IForModel by*/, string name, long orgId,DateTime dueDate) {
 			CreatedBy = createdBy;
-            //By = by;
+			//By = by;
+			DueDate = dueDate;
             Name = name;
             OrgId = orgId;
         }
@@ -33,7 +35,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation {
 
         #region Standard Customization
         public ISurveyContainer BuildSurveyContainer() {
-            return new SurveyContainer(CreatedBy, Name, OrgId, SurveyType.QuarterlyConversation, null);
+            return new SurveyContainer(CreatedBy, Name, OrgId, SurveyType.QuarterlyConversation, null,DueDate);
         }
 
         public IEnumerable<ISectionInitializer> GetAllPossibleSectionBuilders(IEnumerable<IByAbout> byAbouts) {
@@ -55,7 +57,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation {
 			if (name == null && data.About.ModelType == ForModel.GetModelType<AccountabilityNode>()) {
 				name = data.Lookup.GetList<AccountabilityNode>().FirstOrDefault(x => x.Id == data.About.ModelId).NotNull(x => x.User.GetName());
 			}
-            return new Survey(name, data);
+            return new Survey(name, DueDate, data);
         }
 
         public IEnumerable<ISectionInitializer> GetSectionBuilders(ISectionInitializerData data) {

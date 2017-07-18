@@ -1,6 +1,17 @@
 ﻿@model DateTime?
 
 @{
+	var lookups = new Dictionary<string, string>() {
+		{"today","new Date()" },
+		{"tomorrow",@" (function(){
+							var currentDate = new Date();
+							currentDate.setDate(currentDate.getDate() + 1);
+							return currentDate;
+						})()" }
+
+	};
+
+
 	if (ViewData["startDate"] is DateTime) {
 		ViewData["startDate"] = ((DateTime)ViewData["startDate"]).ToJavascriptMilliseconds();
 	}
@@ -16,9 +27,15 @@
 		ViewData["endDate"] = "new Date(" + ViewData["endDate"] + ")";
 	}
 
+	if (ViewData["startDate"] is string) {
+		ViewData["startDate"] = lookups.GetOrDefault((string)ViewData["startDate"], (string)ViewData["startDate"]);
+	}
+	if (ViewData["endDate"] is string) {
+		ViewData["endDate"] = lookups.GetOrDefault((string)ViewData["endDate"], (string)ViewData["endDate"]);
+	}
+
 	bool localize = ViewData["localize"] as bool? == true;
-
-
+	
 	var startDate = ViewData["startDate"]??"-Infinity";
 	var endDate = ViewData["endDate"]??"Infinity";
 
@@ -46,7 +63,7 @@
 	}
 
 	var generater = new MvcHtmlString(method+"('." + guid + "'," + jsDate + ",'" + name + "','" + id + "',"+options+");");
-}
+	}
 <div class="date-container test-ignore @guid" id="@guid"></div>
 
 <script type="text/javascript">

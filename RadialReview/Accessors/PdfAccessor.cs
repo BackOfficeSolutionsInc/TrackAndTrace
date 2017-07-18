@@ -103,13 +103,13 @@ namespace RadialReview.Accessors {
 				//text += number.ToString();
 			}
 			if (date != null) {
-			//	if (number != null) {
-			//		text += " | ";
-			//	};
-				var text = ""+ date.Value.ToString(dateFormat ?? "MM-dd-yyyy");
-				var gray = new XSolidBrush(XColor.FromArgb(100, 100, 100, 100) );
+				//	if (number != null) {
+				//		text += " | ";
+				//	};
+				var text = "" + date.Value.ToString(dateFormat ?? "MM-dd-yyyy");
+				var gray = new XSolidBrush(XColor.FromArgb(100, 100, 100, 100));
 				var dateFont = new XFont("Arial Narrow", 9, XFontStyle.Regular);
-				
+
 				gfx.DrawString(text, dateFont, gray, new XRect(new XPoint(wmargin/*22*/, hmargin), size), XStringFormats.BottomLeft);
 				//gfx.DrawString(text, font, XBrushes.Black, new XRect(new XPoint(wmargin, hmargin), size), XStringFormats.BottomRight);
 
@@ -120,7 +120,7 @@ namespace RadialReview.Accessors {
 		}
 
 
-		public PdfDocument Flatten(string title, bool includeNumber, bool includeDate = true,string dateFormat = null) {
+		public PdfDocument Flatten(string title, bool includeNumber, bool includeDate = true, string dateFormat = null) {
 			DateTime now = DateTime.Now;
 			//  filename = filename.ToLower().EndsWith(".pdf")?filename:filename+".pdf";
 			PdfDocument document = new PdfDocument();
@@ -137,9 +137,9 @@ namespace RadialReview.Accessors {
 				var doc = new Document();
 				var section = new Section();
 				var paragraph = new Paragraph();
-				var text = paragraph.AddFormattedText("Page intentionally left blank.",new Font("Verdana",10));
+				var text = paragraph.AddFormattedText("Page intentionally left blank.", new Font("Verdana", 10));
 				text.Color = Colors.Gray;
-				paragraph.Format.Alignment = ParagraphAlignment.Center;				
+				paragraph.Format.Alignment = ParagraphAlignment.Center;
 				section.Add(paragraph);
 				doc.Add(section);
 				AddDoc(doc);
@@ -162,8 +162,8 @@ namespace RadialReview.Accessors {
 						page.Orientation = p.Orientation;
 						XGraphics gfx = XGraphics.FromPdfPage(page, XGraphicsPdfPageOptions.Append);
 
-						DrawNumber(gfx, font,includeNumber?(int?)(pages + 1):null, now, dateFormat);
-					
+						DrawNumber(gfx, font, includeNumber ? (int?)(pages + 1) : null, now, dateFormat);
+
 						pages += 1;
 					}
 				}
@@ -626,7 +626,7 @@ namespace RadialReview.Accessors {
 			} else {
 				section = document.LastSection;
 			}
-			if (addPageNumber ) {
+			if (addPageNumber) {
 				//paragraph.AddTab();
 				var paragraph = new Paragraph();
 				paragraph.Format.Alignment = ParagraphAlignment.Right;
@@ -634,8 +634,8 @@ namespace RadialReview.Accessors {
 				//if (addDate) {
 				///	//paragraph.AddTab();
 				//	paragraph.AddDateField("MM-dd-yyyy");
-					// Add paragraph to footer for odd pages.
-					//section.Footers.Primary.Format.SpaceBefore = Unit.FromInch(-0.2);
+				// Add paragraph to footer for odd pages.
+				//section.Footers.Primary.Format.SpaceBefore = Unit.FromInch(-0.2);
 				////}
 				//if (addPageNumber && addDate) {
 				//	paragraph.AddText(" | ");
@@ -1004,7 +1004,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static void AddRocks(UserOrganizationModel caller, Document doc, AngularRecurrence recur, AngularVTO vto, bool addPageNumber = true) {
+		public static void AddRocks(UserOrganizationModel caller, Document doc, bool quarterlyPrintout, AngularRecurrence recur, AngularVTO vto, bool addPageNumber = true) {
 			//var recur = L10Accessor.GetAngularRecurrence(caller, recurrenceId);
 
 			//return SetupDoc(caller, caller.Organization.Settings.RockName);
@@ -1132,26 +1132,57 @@ namespace RadialReview.Accessors {
 					row.Height = Unit.FromInch((6 * 8 + 5.0) / (8 * 16.0) / 2);
 					//row.Cells[0].AddParagraph("" + mn + ".");
 					//row.Cells[1].AddParagraph(m.DueDate.NotNull(x => x.Value.ToString(format)) ?? "Not-set");
-					row.Cells[2].AddParagraph("" + m.Owner.NotNull(x => x.Name));
-					row.Cells[2].Format.Alignment = ParagraphAlignment.Center;
-					row.Cells[3].AddParagraph("" + m.Completion.NotNull(x => x.Value.GetDisplayName()));
-					row.Cells[3].Format.Font.Bold = m.Completion == RockState.AtRisk;
-
-
+					var status = m.Completion.NotNull(x => x.Value.GetDisplayName());
+					var bold = m.Completion == RockState.AtRisk;
+					Color statusColor = Colors.DarkRed;
 					//Update below also
 					switch (m.Completion) {
 						case RockState.OnTrack:
-							row.Cells[3].Format.Font.Color = Colors.DarkBlue;
+							statusColor = Colors.DarkBlue;
 							break;
 						case RockState.AtRisk:
-							row.Cells[3].Format.Font.Color = Colors.DarkRed;
+							statusColor = Colors.DarkRed;
 							break;
 						case RockState.Complete:
-							row.Cells[3].Format.Font.Color = Colors.DarkGreen;
+							statusColor = Colors.DarkGreen;
 							break;
 						default:
 							break;
 					}
+					if (quarterlyPrintout) {
+						switch (m.Completion ?? RockState.Indeterminate) {
+							case RockState.Indeterminate:
+								status = "Not Done";
+								bold = true;
+								statusColor = Colors.DarkRed;
+								break;
+							case RockState.AtRisk:
+								status = "Not Done";
+								bold = true;
+								statusColor = Colors.DarkRed;
+								break;
+							case RockState.OnTrack:
+								status = "Not Done";
+								statusColor = Colors.DarkRed;
+								bold = true;
+								break;
+							case RockState.Complete:
+								status = "Done";
+								statusColor = Colors.DarkGreen;
+								break;
+							default:
+								break;
+						}
+					}
+
+					row.Cells[2].AddParagraph("" + m.Owner.NotNull(x => x.Name));
+					row.Cells[2].Format.Alignment = ParagraphAlignment.Center;
+					row.Cells[3].AddParagraph("" + status);
+					row.Cells[3].Format.Font.Bold = bold;
+					row.Cells[3].Format.Font.Color = statusColor;
+
+
+
 
 
 					row.Cells[3].Format.Alignment = ParagraphAlignment.Center;
@@ -1227,28 +1258,81 @@ namespace RadialReview.Accessors {
 				// row.Cells[0].AddParagraph("" + mn + ".");
 				//row.Cells[1].AddParagraph(m.DueDate.NotNull(x => x.Value.ToString(format)) ?? "Not-set");
 				// row.Cells[1].Format.Font.Size = Unit.FromInch(.1);
+				//////row.Cells[2].AddParagraph("" + m.Owner.NotNull(x => x.Name));
+				//////row.Cells[2].Format.Alignment = ParagraphAlignment.Center;
+				////////row.Cells[2].Format.Font.Size = Unit.FromInch(.1);
+				//////row.Cells[3].AddParagraph("" + m.Completion.NotNull(x => x.Value.GetDisplayName()));
+				//////row.Cells[3].Format.Font.Bold = m.Completion == RockState.AtRisk;
+
+				var status = m.Completion.NotNull(x => x.Value.GetDisplayName()) ?? "";
+				var bold = false;
+				Color statusColor = Colors.Black;
+				//Update below also
+
+				if (quarterlyPrintout) {
+					switch (m.Completion ?? RockState.Indeterminate) {
+						case RockState.Indeterminate:
+							status = "Not Done";
+							bold = true;
+							statusColor = Colors.DarkRed;
+							break;
+						case RockState.AtRisk:
+							status = "Not Done";
+							bold = true;
+							statusColor = Colors.DarkRed;
+							break;
+						case RockState.OnTrack:
+							status = "Not Done";
+							statusColor = Colors.DarkRed;
+							bold = true;
+							break;
+						case RockState.Complete:
+							status = "Done";
+							statusColor = Colors.DarkGreen;
+							break;
+						default:
+							break;
+					}
+				} else {
+					switch (m.Completion) {
+						case RockState.OnTrack:
+							statusColor = Colors.DarkBlue;
+							break;
+						case RockState.AtRisk:
+							statusColor = Colors.DarkRed;
+							bold = true;
+							break;
+						case RockState.Complete:
+							statusColor = Colors.DarkGreen;
+							break;
+						default:
+							break;
+					}
+				}
+
 				row.Cells[2].AddParagraph("" + m.Owner.NotNull(x => x.Name));
 				row.Cells[2].Format.Alignment = ParagraphAlignment.Center;
-				//row.Cells[2].Format.Font.Size = Unit.FromInch(.1);
-				row.Cells[3].AddParagraph("" + m.Completion.NotNull(x => x.Value.GetDisplayName()));
-				row.Cells[3].Format.Font.Bold = m.Completion == RockState.AtRisk;
+				row.Cells[3].AddParagraph("" + status);
+				row.Cells[3].Format.Font.Bold = bold;
+				row.Cells[3].Format.Font.Color = statusColor;
 
 
 
-				//Update above also
-				switch (m.Completion) {
-					case RockState.OnTrack:
-						row.Cells[3].Format.Font.Color = Colors.DarkBlue;
-						break;
-					case RockState.AtRisk:
-						row.Cells[3].Format.Font.Color = Colors.DarkRed;
-						break;
-					case RockState.Complete:
-						row.Cells[3].Format.Font.Color = Colors.DarkGreen;
-						break;
-					default:
-						break;
-				}
+
+				////Update above also
+				//switch (m.Completion) {
+				//	case RockState.OnTrack:
+				//		row.Cells[3].Format.Font.Color = Colors.DarkBlue;
+				//		break;
+				//	case RockState.AtRisk:
+				//		row.Cells[3].Format.Font.Color = Colors.DarkRed;
+				//		break;
+				//	case RockState.Complete:
+				//		row.Cells[3].Format.Font.Color = Colors.DarkGreen;
+				//		break;
+				//	default:
+				//		break;
+				//}
 
 
 				row.Cells[3].Format.Alignment = ParagraphAlignment.Center;
@@ -1346,7 +1430,7 @@ namespace RadialReview.Accessors {
 				row.Height = Unit.FromInch((6 * 8 + 5.0) / (8 * 16.0) / 2);
 				//row.Cells[0].AddParagraph("" + mn + ".");
 				//row.Cells[0].Format.Alignment = ParagraphAlignment.Right;
-				row.Cells[1].AddParagraph(m.Owner.NotNull(x=>x.Name) + "");
+				row.Cells[1].AddParagraph(m.Owner.NotNull(x => x.Name) + "");
 				row.Cells[2].AddParagraph(m.Name + "");
 				row.Cells[2].Format.LeftIndent = Unit.FromInch(.1);
 				row.Cells[2].Format.Alignment = ParagraphAlignment.Left;
@@ -1392,7 +1476,7 @@ namespace RadialReview.Accessors {
 				var section = AddTitledPage(doc, "Scorecard", Orientation.Landscape, addPageNumber: addPageNumber);
 				var TableGray = new Color(100, 100, 100, 100);
 				var TableBlack = new Color(0, 0, 0);
-				var table = GenerateScorecard(recur,true);
+				var table = GenerateScorecard(recur, true);
 				section.Add(table);
 				return true;
 			}
@@ -1819,14 +1903,14 @@ namespace RadialReview.Accessors {
 			//paragraph.AddTab();
 			//paragraph.AddPageField();
 			//Add paragraph to footer for odd pages.
-			var p=section.Footers.Primary.AddParagraph("© 2003 - " + DateTime.UtcNow.AddMonths(3).Year + " EOS. All Rights Reserved.");
+			var p = section.Footers.Primary.AddParagraph("© 2003 - " + DateTime.UtcNow.AddMonths(3).Year + " EOS. All Rights Reserved.");
 			p.Format.LeftIndent = Unit.FromPoint(14);
 
 			section.Footers.Primary.Format.Font.Size = 10;
 			section.Footers.Primary.Format.Font.Name = "Arial Narrow";
 			section.Footers.Primary.Format.Font.Size = 8;
 			section.Footers.Primary.Format.Font.Color = TableGray;
-			
+
 			//section.Footers.Primary.Format.SpaceBefore = Unit.FromInch(0.25);
 
 			section.PageSetup.LeftMargin = Unit.FromInch(.3);

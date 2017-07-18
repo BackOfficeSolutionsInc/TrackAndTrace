@@ -27,15 +27,16 @@ namespace RadialReview.Areas.People.Models.Survey {
         public virtual ForModel About { get; set; }
 
         public virtual ICollection<ISection> _Sections { get; set; }
+		public virtual DateTime DueDate { get; set; }
 
-        [Obsolete("Use other constructor")]
+		[Obsolete("Use other constructor")]
         public Survey() {
             CreateTime = DateTime.UtcNow;
             _Sections = new List<ISection>();
         }
 
 #pragma warning disable CS0618 // Type or member is obsolete
-		public Survey(string name, ISurveyInitializerData data) : this() {
+		public Survey(string name,DateTime dueDate, ISurveyInitializerData data) : this() {
 #pragma warning restore CS0618 // Type or member is obsolete
 			Name = name;
             By = ForModel.From(data.By);
@@ -44,6 +45,7 @@ namespace RadialReview.Areas.People.Models.Survey {
             SurveyContainerId = data.SurveyContainer.Id;
 			SurveyType = data.SurveyContainer.GetSurveyType();
 			CreateTime = data.Now;
+			DueDate = dueDate;
         }
 
         public virtual IEnumerable<ISection> GetSections() {
@@ -83,6 +85,9 @@ namespace RadialReview.Areas.People.Models.Survey {
 		public virtual DateTime GetIssueDate() {
 			return CreateTime;
 		}
+		public virtual DateTime? GetDueDate() {
+			return DueDate;
+		}
 
 		public class Map : ClassMap<Survey> {
             public Map() {
@@ -92,7 +97,8 @@ namespace RadialReview.Areas.People.Models.Survey {
                 Map(x => x.Name).Length(512);
                 Map(x => x.Help).Length(2000);
                 Map(x => x.Ordering);
-                Map(x => x.SurveyContainerId);
+				Map(x => x.SurveyContainerId);
+				Map(x => x.DueDate);
 				Map(x => x.SurveyType);
 				Map(x => x.OrgId);
                 Component(x => x.By).ColumnPrefix("By_");

@@ -128,7 +128,7 @@ namespace RadialReview.Areas.People.Accessors {
 
 					return s.QueryOver<SurveyContainer>().Where(x => x.DeleteTime == null && x.SurveyType == type)
 						.WhereRestrictionOn(x => x.Id).IsIn(containerIds)
-						.List().Select(x => new AngularSurveyContainer(x));
+						.List().Select(x => new AngularSurveyContainer(x, x.DueDate<DateTime.UtcNow ));
 
 					//perms.ViewSurveyContainer(surveyContainerId);
 				}

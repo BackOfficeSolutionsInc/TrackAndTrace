@@ -339,4 +339,16 @@ The {2} Team</value>
 &lt;p style="font-size:11px"&gt;*This amount is approximate and may change if you add individuals before being charged.&lt;/p&gt;</value>
     <comment>[ProductName,SupportEmail,OrgName,Charged,CardLast4,TransactionId,ChargeTime,ServiceThroughDate,Address]</comment>
   </data>
+  <data name="QuarterlyConversation_Body" xml:space="preserve">
+    <value>&lt;p&gt;{0},&lt;/p&gt;
+&lt;p&gt;You have a new Quarterly Conversation due on {1}. You can complete it by clicking the following link:&lt;/p&gt;
+&lt;br&gt; 
+    &lt;a href="{2}"&gt;{3}&lt;/a&gt;
+&lt;br /&gt;&lt;br /&gt;If you have any questions, feedback, or concerns, you can reply to this e-mail address.
+&lt;br /&gt;
+&lt;br /&gt;
+Sincerely,&lt;br/&gt;
+The {4} Team</value>
+    <comment>[receiversName,dueDate,linkUrl,LinkDisplay,ProductName]</comment>
+  </data>
 </root>

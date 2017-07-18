@@ -387,3 +387,22 @@ window.addEventListener("submit", function (e) {
 function toTitleCase(str) {
 	return str.replace(/\w\S*/g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
 }
+
+(function ($) {
+	$.fn.replaceClass = function (pFromClass, pToClass, toggle) {
+		if (toggle === false){
+			var _tmp = pFromClass;
+			pFromClass = pToClass;
+			pToClass = _tmp;
+		}
+		var that = this;
+		that.each(function () {
+			if ($(this).hasClass(pFromClass)) {
+				return $(this).removeClass(pFromClass).addClass(pToClass);
+			} else {
+				return $(this);
+			}
+		});
+		return that;		
+	};
+}(jQuery));

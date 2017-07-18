@@ -3,7 +3,7 @@
 	<div class="col-md-9" >
 		<span class="debug-info"><i>--Survey Container--</i><span>{{model.Name}}</span></span>
 		<div class="title survey-container-title">{{model.Name}}</div>
-		<div class="surveys"  id="surveys">
+		<div class="surveys" ng-class="{'disabled':model.Locked}" id="surveys">
 			<survey ng-repeat="survey in model.Surveys" survey="survey" class="survey-component" on-change-response="functions.sendUpdate"></survey>
 		</div>
 	</div>

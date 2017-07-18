@@ -63,22 +63,22 @@
 		[ng\:cloak], [ng-cloak], .ng-cloak {
 			display: none !important;
 		}
-        .debuginfo,.debug-info{
-            display:none;
-            color:gray;
-            border: 1px solid red;
-            padding:4px;
-            margin:4px;
-            white-space:pre;    
-        }
-        
-        .show-debug .debug-info,
-        .show-debug .debuginfo,
-        .showdebug .debug-info,
-        .showdebug .debuginfo{
-            display:block;
-        }
 
+		.debuginfo, .debug-info {
+			display: none;
+			color: gray;
+			border: 1px solid red;
+			padding: 4px;
+			margin: 4px;
+			white-space: pre;
+		}
+
+		.show-debug .debug-info,
+		.show-debug .debuginfo,
+		.showdebug .debug-info,
+		.showdebug .debuginfo {
+			display: block;
+		}
 	</style>
 
 
@@ -122,22 +122,30 @@
 
 
 		//Date Formatting
-		function getFormattedDate(date,format) {
+		function getFormattedDate(date,format,onUnknown) {
+			if (date===null){
+				return onUnknown||"";
+			}
+
 			if (typeof (date) === "undefined") {date = new Date();}
 			else if (typeof (date) === "number") {date = new Date(date);}
-			else if (typeof (date) === "string") {console.error("unknown format: " + date)}
+			else if (typeof (date) === "string") {
+				date = new Date(date);
+				console.warn("potentially unknown format: " + date)
+			}
 
-			if (typeof(format)==="undefined") {format = window.dateFormat;}
+			if (typeof(format)==="undefined" || format===null) { format = window.dateFormat; }
 
 			var _d = date.getDate(),dd = _d > 9 ? _d : '0' + _d,_M = date.getMonth() + 1,MM = _M > 9 ? _M : '0' + _M,yyyy = date.getFullYear(),formatted = MM + '-' + dd + '-' + (yyyy),
 				H = date.getHours(),HH =H > 9 ? H : '0' + H,  h = H%12||12; hh =h > 9 ? h : '0' + h,m = date.getMinutes(),mm =m > 9 ? m : '0' + m,s = date.getSeconds(),ss =s > 9 ? s : '0' + s, t = H>=12?"p":"a", tt = t+"m";
 
 			var _userFormat = format.replace(/MM/g, MM).replace(/M/g, _M).replace(/dd/g, dd).replace(/d/g, _d).replace(/yyyy/g, yyyy).replace(/yy/g, (yyyy - 2000))
 				.replace(/HH/g, HH).replace(/H/g, H).replace(/hh/g, hh).replace(/h/g, h).replace(/mm/g, mm).replace(/m/g, m).replace(/ss/g, ss).replace(/s/g, s).replace(/tt/g, tt).replace(/t/g, t);
+
 			return _userFormat;
 		}
 
-		
+
 
 	</script>
 
@@ -298,14 +306,14 @@
 					ForceUnhide();
 					@if (ViewBag.Alert!=null){
 							@:showAlert("@ViewBag.Alert");
-																																									                                        }
+																																														                                        }
 					@if(ViewBag.Success!=null){
                       @: showAlert("@ViewBag.Success", "alert-success" , "Success!" );
 
                     }
 					@if(ViewBag.InfoAlert!=null){
                         @: showAlert("@ViewBag.InfoAlert", "alert-info" , "Info!" );
-																																									                                        }
+																																														                                        }
 					UnstoreJsonAlert();
 
 					try{

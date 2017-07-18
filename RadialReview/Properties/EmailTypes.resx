@@ -138,6 +138,12 @@
   <data name="PaymentException" xml:space="preserve">
     <value>PaymentException</value>
   </data>
+  <data name="QuarterlyConversationIssued" xml:space="preserve">
+    <value>QuarterlyConversationIssued</value>
+  </data>
+  <data name="QuarterlyConversationReminder" xml:space="preserve">
+    <value>QuarterlyConversationReminder</value>
+  </data>
   <data name="Receipt" xml:space="preserve">
     <value>Receipt</value>
   </data>

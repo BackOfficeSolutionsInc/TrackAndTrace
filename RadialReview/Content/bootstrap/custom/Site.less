@@ -594,6 +594,9 @@ body.resizing, body.resizing *::-moz-selection {
 
 .noclick {
 	cursor: pointer;
+	&:active{
+		pointer-events: none;
+	}
 }
 
 

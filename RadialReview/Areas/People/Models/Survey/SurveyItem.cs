@@ -36,7 +36,7 @@ namespace RadialReview.Areas.People.Models.Survey {
         }
 
 #pragma warning disable CS0618 // Type or member is obsolete
-		public SurveyItem(IItemInitializerData data, string name, IForModel source,string itemMergerKey) : this() {
+		public SurveyItem(IItemInitializerData data, string name, IForModel source,string itemMergerKey, string help=null) : this() {
 #pragma warning restore CS0618 // Type or member is obsolete
 			Name = name;
             OrgId = data.OrgId;
@@ -44,6 +44,8 @@ namespace RadialReview.Areas.People.Models.Survey {
             SurveyId = data.Survey.Id;
             SectionId = data.Section.Id;
 			ItemMergerKey = itemMergerKey;
+
+			Help = help;
 
             ItemFormatId = data.ItemFormat.Id;
 			CreateTime = data.Now;

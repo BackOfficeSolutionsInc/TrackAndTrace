@@ -96,14 +96,22 @@ namespace RadialReview.Accessors.PDF {
 		}
 
 		public static List<PdfDocument> GenerateAccountabilityChartSingleLevels(List<AngularAccountabilityNode> roots, double width, double height, bool restrictSize = false, TreeSettings settings = null) {
-
+			var settingsEmpty = settings == null;
 			var docs = new List<PdfDocument>();
 			roots = roots.Where(x => x != null).Distinct(x => x.Id).ToList();
 			var seen = new List<long>();
 			foreach (var r in roots) {
 				_collapser(r);
 				if (r.HasChildren() || !seen.Contains(r.Id)) {
-					docs.Add(GenerateAccountabilityChart(r, width, height, restrictSize, settings, r._hasParent ?? false));
+
+					var useCompact = r.GetDirectChildren().Count() >= 8;
+
+
+					var useSettings = settings ?? new TreeSettings() {
+						compact = useCompact
+					};
+
+					docs.Add(GenerateAccountabilityChart(r, width, height, restrictSize, useSettings, r._hasParent ?? false));
 
 					seen.Add(r.Id);
 					seen.AddRange(r.children.Select(x => x.Id));
@@ -117,7 +125,7 @@ namespace RadialReview.Accessors.PDF {
 			settings = settings ?? new TreeSettings();
 			var rootACNode = dive(root, settings);
 
-			var margin = XUnit.FromInch(.25);
+			var margin = XUnit.FromInch(.5);
 
 			var pageProp = new PageProp() {
 				pageWidth = XUnit.FromInch(width),
@@ -181,12 +189,14 @@ namespace RadialReview.Accessors.PDF {
 			var x = (int)me.x - origin[0];
 			var y = (int)me.y - origin[1];
 
-
+			
 			if (me.side == "left") {
 				x += me.width / 2;
 			} else if (me.side == "right") {
 				x -= me.width / 2;
 			}
+			
+
 
 			//var top = 50 * pageProps.scale;
 			var pad = 1.0 / 24.0 * me.width;
@@ -480,7 +490,16 @@ namespace RadialReview.Accessors.PDF {
 		}
 
 		private static double[] ACRanges(ACNode root) {
-			var range = new[] { root.x, root.y, root.x + root.width, root.y + root.height };
+			var x = root.x;
+			var y = root.y;
+			var me = root;
+			if (me.side == "left") {
+				x += me.width / 2;
+			} else if (me.side == "right") {
+				x -= me.width / 2;
+			}
+
+			var range = new[] { x, y, x + root.width, y + root.height };
 			if (root.children != null) {
 				foreach (var n in root.children) {
 					var n_range = ACRanges(n);
@@ -492,11 +511,27 @@ namespace RadialReview.Accessors.PDF {
 			}
 			return range;
 		}
+		private static double fixDivision(double val) {
+			var precision = 10000000;
+			return Math.Round(val * precision) / precision;
+		}
+
 		private static void ACNormalize(ACNode root, double[] range, PageProp pageProp, double? forceScale = null) {
 			root.x += -range[0];
 			root.y += -range[1];
+
+			//////Added
+			//if (root.side == "left") {
+			//	root.x += root.width / 2;
+			//} else if (root.side == "right") {
+			//	root.x -= root.width / 2;
+			//}
+			//////
 			var shouldScale = forceScale == null;
 			var scale = forceScale ?? 1.0;
+
+
+			
 
 			var width = (double)(range[2] - range[0]);
 			var height = (double)(range[3] - range[1]);
@@ -508,10 +543,12 @@ namespace RadialReview.Accessors.PDF {
 			}
 
 			//For centering
-			var numPagesWide = width * scale / pageProp.allowedWidth;
-			var numPagesTall = height * scale / pageProp.allowedHeight;
+			var numPagesWide = fixDivision(width * scale / pageProp.allowedWidth);
+			var numPagesTall = fixDivision(height * scale / pageProp.allowedHeight);
 
 			//Rescale
+			//root.x += -range[0]* scale;		 //added
+			//root.y += -range[1]* scale;		 //added
 			root.x *= scale;
 			root.y *= scale;
 			root.width *= scale;
@@ -606,8 +643,7 @@ namespace RadialReview.Accessors.PDF {
 
 			}
 		}
-
-
+		
 		private static void ACDrawOnAllPages_Dive(DefaultDictionary<Tuple<int, int>, PdfPage> pageLookup, DefaultDictionary<PdfPage, XGraphics> gfxLookup, ACNode me, PageProp pageProp, TreeSettings settings, ACNode parent = null, bool anyAboveRoot = false) {
 			ACDrawOnAllPages(pageLookup, gfxLookup, parent, me, pageProp, settings, anyAboveRoot);
 			if (me.children != null) {

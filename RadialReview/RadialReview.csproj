@@ -95,6 +95,7 @@
     <Compile Include="Accessors\DeepSubordianteAccessor.cs" />
     <Compile Include="Accessors\Emailer.cs" />
     <Compile Include="Accessors\ExportAccessor.cs" />
+    <Compile Include="Accessors\ForModelAccessor.cs" />
     <Compile Include="Accessors\GroupAccessor.cs" />
     <Compile Include="Accessors\HeadlineAccessor.cs" />
     <Compile Include="Accessors\OrganizationAccessors\JoinOrganizationAccessor.cs" />

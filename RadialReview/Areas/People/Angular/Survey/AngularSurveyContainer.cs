@@ -12,16 +12,20 @@ namespace RadialReview.Areas.People.Angular.Survey {
     public class AngularSurveyContainer : BaseAngular,ISurveyContainer {
         public AngularSurveyContainer() { }
 		public AngularSurveyContainer(long id) : base(id) { }
-		public AngularSurveyContainer(ISurveyContainer container) : base(container.Id) {
+		public AngularSurveyContainer(ISurveyContainer container,bool locked) : base(container.Id) {
 			Name = container.GetName();
 			Ordering = container.GetOrdering();
 			IssueDate = container.GetIssueDate();
-			Surveys = container.GetSurveys().NotNull(y=>y.Select(x => new AngularSurvey(x)).ToList());			
+			Surveys = container.GetSurveys().NotNull(y=>y.Select(x => new AngularSurvey(x)).ToList());
+			Locked = locked;
+			DueDate = container.GetDueDate();
 
 		}
 
 		public String Name { get; set; }
         public DateTime? CreateTime { get; set; }
+
+		public bool? Locked { get; set; }
 
 
         [JsonConverter(typeof(StringEnumConverter))]
@@ -31,6 +35,7 @@ namespace RadialReview.Areas.People.Angular.Survey {
 
         public ICollection<AngularSurvey> Surveys { get; set; }
 		public DateTime? IssueDate { get; set; }
+		public DateTime? DueDate { get; set; }
 
 		public IEnumerable<ISurvey> GetSurveys() {
             return Surveys;
@@ -63,6 +68,10 @@ namespace RadialReview.Areas.People.Angular.Survey {
 
 		public DateTime GetIssueDate() {
 			return IssueDate ?? DateTime.MinValue;
+		}
+
+		public DateTime? GetDueDate() {
+			return DueDate;
 		}
 	}
 }

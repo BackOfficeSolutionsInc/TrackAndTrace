@@ -14,6 +14,7 @@ using RadialReview.Exceptions;
 using RadialReview.Models.Accountability;
 using RadialReview.Areas.People.Accessors.PDF;
 using RadialReview.Models.Json;
+using System.Threading.Tasks;
 
 namespace RadialReview.Areas.People.Controllers {
 	public class QuarterlyConversationController : BaseController {
@@ -21,7 +22,7 @@ namespace RadialReview.Areas.People.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Index() {
 			ViewBag.CanCreate = new PermissionsAccessor().IsPermitted(GetUser(), x => x.CreateQuarterlyConversation(GetUser().Organization.Id));
-			var containers = SurveyAccessor.GetSurveyContainersBy(GetUser(), GetUser(), SurveyType.QuarterlyConversation).OrderByDescending(x=>x.IssueDate);
+			var containers = SurveyAccessor.GetSurveyContainersBy(GetUser(), GetUser(), SurveyType.QuarterlyConversation).OrderByDescending(x => x.IssueDate);
 			return View(containers);
 		}
 
@@ -47,9 +48,9 @@ namespace RadialReview.Areas.People.Controllers {
 			var doc = SurveyPdfAccessor.CreateDoc(GetUser(), "All Quarterly Conversations");
 
 			var allAbout = QuarterlyConversationAccessor.GetPeopleAnalyzer(GetUser(), GetUser().Id).Responses
-				.Where(x=>x.SurveyContainerId == surveyContainerId)
+				.Where(x => x.SurveyContainerId == surveyContainerId)
 				.Select(x => x.About)
-				.Distinct(x=>x.ToKey())
+				.Distinct(x => x.ToKey())
 				.ToList();
 			foreach (var about in allAbout) {
 				var surveyContainer = SurveyAccessor.GetSurveyContainerAbout(GetUser(), about, surveyContainerId);
@@ -63,35 +64,60 @@ namespace RadialReview.Areas.People.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult Remove(long id) {
-			SurveyAccessor.RemoveSurveyContainer(GetUser(),id);// QuarterlyConversationAccessor
-			return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
+			SurveyAccessor.RemoveSurveyContainer(GetUser(), id);// QuarterlyConversationAccessor
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+
+		public class IssueViewModel {
+			public IEnumerable<IByAbout> AvailableUsers { get; set; }
+			public DateTime DueDate { get; set; }
+			public bool Email { get; set; }
+			public bool EvalSelf { get; set; }
+			public string Name { get; set; }
+			public IssueViewModel() {
+				Email = true;
+				EvalSelf = true;
+			}
 		}
 
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Issue() {
 			var possible = QuarterlyConversationAccessor.AvailableByAbouts(GetUser());
-			return View(possible);
+			var vm = new IssueViewModel() {
+				AvailableUsers = possible,
+				DueDate = GetUser().GetTimeSettings().ConvertFromServerTime(DateTime.UtcNow.AddDays(7)),
+			};
+			return View(vm);
 		}
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public ActionResult Issue(FormCollection form) {
-			if (string.IsNullOrWhiteSpace(form["name"]))
+		public async Task<ActionResult> Issue(FormCollection form) {
+			var name = form["Name"];
+			var dueDate = (form["DueDate"]??"").ToDateTime("MM-dd-yyyy HH:mm:ss");
+
+			if (string.IsNullOrWhiteSpace(name))
 				ModelState.AddModelError("name", "Name is required");
 			if (ModelState.IsValid) {
 				var arr = form["selected"].NotNull(x => x.Split(',').ToList()) ?? new List<string>();
 				var byAbouts = arr.Select(x => x.ByAboutFromKey()).ToList();
-				var evalSelf = form["self"].ToBooleanJS();
+				var evalSelf = form["EvalSelf"].ToBooleanJS();
+				var email = evalSelf && form["Email"].ToBooleanJS(); //Sending email requires that EvaluateSelf is true
 				if (evalSelf) {
 					byAbouts.AddRange(byAbouts.Select(x => new ByAbout(x.GetAbout(), x.GetAbout())).ToList());
 				}
 				byAbouts = byAbouts.Distinct().ToList();
-
-				QuarterlyConversationAccessor.GenerateQuarterlyConversation(GetUser(), form["name"], byAbouts);
+				await QuarterlyConversationAccessor.GenerateQuarterlyConversation(GetUser(), name, byAbouts, dueDate, email);
 				return RedirectToAction("Index");
 			}
 			var possible = QuarterlyConversationAccessor.AvailableByAbouts(GetUser());
-			return View(possible);
+			return View(new IssueViewModel() {
+				AvailableUsers = possible,
+				DueDate = dueDate,
+				Name = form["Name"],
+				EvalSelf = (form["EvalSelf"] ?? "true").ToBooleanJS(),
+				Email = (form["Email"] ?? "true").ToBooleanJS(),
+			});
 		}
 	}
 }

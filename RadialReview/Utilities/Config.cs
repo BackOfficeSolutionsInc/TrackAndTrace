@@ -172,38 +172,41 @@ namespace RadialReview.Utilities {
             }
         }
 
-        public static string BaseUrl(OrganizationModel organization)
+        public static string BaseUrl(OrganizationModel organization,string append=null)
         {
-            if (HttpContext.Current != null) {
-                try {
-                    var strPathAndQuery = HttpContext.Current.Request.Url.PathAndQuery;
-                    return HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/");
-                } catch (Exception) {
-                    //Skip
-                }
-            }
-            switch (GetEnv()) {
-                case Env.local_sqlite:
-                    return "https://localhost:44300/";
-                case Env.local_mysql:
-                    return "https://localhost:44300/";
-                case Env.production:
-                    if (organization == null)
-                        return "https://traction.tools/";
+			var baseUrl = new Func<string>(() => {
+				if (HttpContext.Current != null) {
+					try {
+						var strPathAndQuery = HttpContext.Current.Request.Url.PathAndQuery;
+						return HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/");
+					} catch (Exception) {
+						//Skip
+					}
+				}
+				switch (GetEnv()) {
+					case Env.local_sqlite:
+						return "https://localhost:44300/";
+					case Env.local_mysql:
+						return "https://localhost:44300/";
+					case Env.production:
+						if (organization == null)
+							return "https://traction.tools/";
 
-                    switch (organization.Settings.Branding) {
-                        case BrandingType.RadialReview:
-                            return "https://traction.tools/";
-                        case BrandingType.RoundTable:
-                            return "https://traction.tools/";
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                case Env.local_test_sqlite:
-                    return "https://localhost:44300/";
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+						switch (organization.Settings.Branding) {
+							case BrandingType.RadialReview:
+								return "https://traction.tools/";
+							case BrandingType.RoundTable:
+								return "https://traction.tools/";
+							default:
+								throw new ArgumentOutOfRangeException();
+						}
+					case Env.local_test_sqlite:
+						return "https://localhost:44300/";
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+			});
+			return baseUrl() + (append ?? "").TrimStart('/');
         }
 
         public static string ProductName(OrganizationModel organization = null)
@@ -288,7 +291,11 @@ namespace RadialReview.Utilities {
             return config[key] ?? deflt;
         }
 
-        public static Env GetEnv()
+		public static string FixEmail(string email) {
+			return Config.IsLocal() ? "clay.upton+test_" + email.Replace("@", "_at_") + "@mytractiontools.com" : email;
+		}
+
+		public static Env GetEnv()
         {
             Env result;
             if (Enum.TryParse(GetAppSetting("Env").ToLower(), out result)) {

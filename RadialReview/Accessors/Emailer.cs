@@ -325,7 +325,9 @@ namespace RadialReview.Accessors {
 		}
 
 		private static string FixEmail(string email) {
-			return Config.IsLocal() ? "clay.upton+test_" + email.Replace("@", "_at_") + "@radialreview.com" : email;
+			return Config.FixEmail(email);
+
+			
 		}
 
 		private static SendMessageRequest CreateMandrillMessageRequest(EmailModel email) {

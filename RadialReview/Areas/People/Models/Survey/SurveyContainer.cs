@@ -19,7 +19,8 @@ namespace RadialReview.Areas.People.Models.Survey {
         public virtual string Name { get; set; }
         public virtual string Help { get; set; }
         public virtual int Ordering { get; set; }
-        public virtual long OrgId { get; set; }
+		public virtual long OrgId { get; set; }
+		public virtual DateTime? DueDate { get; set; }
 
 		public virtual ForModel CreatedBy { get; set; }
 		//public virtual ForModel By { get; set; }
@@ -27,13 +28,14 @@ namespace RadialReview.Areas.People.Models.Survey {
         
         public virtual ICollection<ISurvey> _Surveys { get; set; }
 
-        public SurveyContainer(IForModel createdBy, /*IForModel by,*/ string name, long orgid, SurveyType type, string help) : this() {
+        public SurveyContainer(IForModel createdBy, /*IForModel by,*/ string name, long orgid, SurveyType type, string help,DateTime? dueDate) : this() {
             //By = ForModel.From(by);
 			CreatedBy = ForModel.From(createdBy);
             Name = name;
             SurveyType = type;
             Help = help;
             OrgId = orgid;
+			DueDate = dueDate;
         }
 
         [Obsolete("Use other constructor")]
@@ -73,6 +75,10 @@ namespace RadialReview.Areas.People.Models.Survey {
 			return CreateTime;
 		}
 
+		public virtual DateTime? GetDueDate() {
+			return DueDate;
+		}
+
 		public class Map : ClassMap<SurveyContainer> {
             public Map() {
                 Id(x => x.Id);
@@ -82,8 +88,9 @@ namespace RadialReview.Areas.People.Models.Survey {
                 Map(x => x.Help).Length(2000);
                 Map(x => x.Ordering);
                 Map(x => x.OrgId);
-                Map(x => x.SurveyType);
-                Component(x => x.CreatedBy).ColumnPrefix("CreatedBy_");
+				Map(x => x.SurveyType);
+				Map(x => x.DueDate);
+				Component(x => x.CreatedBy).ColumnPrefix("CreatedBy_");
             }
         }
 

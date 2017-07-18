@@ -41,19 +41,25 @@
 				name: "Issued",
 				classes:"nowrap alignRight",
 				contents:function(x){
-					return getFormattedDate(new Date(x.IssueDate));//.toDateString(); 
+					return getFormattedDate(x.IssueDate);//.toDateString();
+				}
+			},{
+				name: "Due",
+				classes:"nowrap alignCenter",
+				contents:function(x){
+					return getFormattedDate(x.DueDate,null,"--");//.toDateString();
 				}
 			},{
 				name: "",
 				classes:"nowrap alignRight",
 				contents:function(x){
-					return "<a href='/People/QuarterlyConversation/PrintAll?surveyContainerId="+x.Id+"' ><span class='gray clickable glyphicon glyphicon-print'></span></a>"; 
+					return "<a href='/People/QuarterlyConversation/PrintAll?surveyContainerId="+x.Id+"' ><span class='gray clickable glyphicon glyphicon-print'></span></a>";
 				}
 			},{
 				remove:true,
 				classes:"nowrap alignRight",
 				contents:function(x){
-					return "<span class='gray clickable glyphicon glyphicon-trash'></span>"; 
+					return "<span class='gray clickable glyphicon glyphicon-trash'></span>";
 				}
 			}
 			//},{

@@ -72,7 +72,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 
         public IItem InitializeItem(IItemInitializerData data) {
 			var forModel = ForModel.Create(Rock);
-            return new SurveyItem(data, Rock.Rock,forModel, forModel.ToKey() );
+            return new SurveyItem(data, Rock.Rock, forModel, forModel.ToKey() );
         }
 
         public IItemFormatRegistry GetItemFormat(IItemFormatInitializerCtx ctx) {

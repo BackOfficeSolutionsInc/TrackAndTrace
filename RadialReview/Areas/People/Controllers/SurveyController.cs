@@ -45,7 +45,7 @@ namespace RadialReview.Areas.People.Controllers {
 			foreach (var sub in subs)
 				byAbouts.Add(new ByAbout(GetUser(), sub));
 						
-			var output = QuarterlyConversationAccessor.GenerateQuarterlyConversation(GetUser(), "test" + (int)(DateTime.UtcNow.Ticks / 100000), byAbouts);
+			var output = QuarterlyConversationAccessor.GenerateQuarterlyConversation(GetUser(), "test" + (int)(DateTime.UtcNow.Ticks / 100000), byAbouts, DateTime.UtcNow.AddDays(1), false);
 
             return Json(output, JsonRequestBehavior.AllowGet);
         }
