@@ -23,12 +23,12 @@ namespace RadialReview.Areas.CoreProcess.Controllers.Api_V0
             return await processDefAccessor.ProcessStart(GetUser(), processId);  
         }
 
-        [Route("ProcessDef/processId/UserTask/teamId")]
+        [Route("ProcessDef/UserTask")]
         [HttpPut]
-        public async Task<IEnumerable<TaskViewModel>> StartProcess(long processId, long teamId)
+        public async Task<IEnumerable<TaskViewModel>> GetUserTaskList([FromBody]long teamId)
         {
             ProcessDefAccessor processDefAccessor = new ProcessDefAccessor();
-            return await processDefAccessor.GetAllTaskByTeamId(GetUser(), processId, teamId);  
+            return await processDefAccessor.GetAllTaskByTeamId(GetUser(), teamId);  
         }
     }
 }

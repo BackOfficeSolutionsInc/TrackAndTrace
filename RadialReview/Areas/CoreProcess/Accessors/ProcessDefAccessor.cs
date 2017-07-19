@@ -564,41 +564,61 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return taskList;
         }
 
-        public async Task<List<TaskViewModel>> GetAllTaskByTeamId(UserOrganizationModel caller, long localId, long teamId)
+        public async Task<List<TaskViewModel>> GetAllTaskByTeamId(UserOrganizationModel caller, long teamId)
         {
             List<TaskViewModel> taskList = new List<TaskViewModel>();
             try
             {
                 using (var s = HibernateSession.GetCurrentSession())
                 {
-                    PermissionsUtility.Create(s, caller).CanView(PermItem.ResourceType.CoreProcess, localId);
-
-                    var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
-                    if (getProcessDefFileDetails != null)
+                    var getProcessList = s.QueryOver<ProcessDef_Camunda>().Where(t => t.DeleteTime == null && t.OrgId == caller.Organization.Id).List().ToList();
+                    foreach (var item in getProcessList)
                     {
-                        var getfileStream = await GetFileFromServer(getProcessDefFileDetails.FileKey);
-                        getfileStream.Seek(0, SeekOrigin.Begin);
-                        XNamespace bpmn = "http://www.omg.org/spec/BPMN/20100524/MODEL";
-                        XNamespace camunda = "http://camunda.org/schema/1.0/bpmn";
-                        XDocument xmlDocument = XDocument.Load(getfileStream);
-                        var getAllElement = xmlDocument.Root.Element(bpmn + "process").Elements(bpmn + "userTask");
+                        var getTaskList = await GetAllTaskByTeamId(s, caller, item.Id, teamId);
+                        if (getTaskList.Any())
+                            taskList.AddRange(getTaskList);
+                    }
 
-                        foreach (var item in getAllElement)
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return taskList;
+        }
+
+        public async Task<List<TaskViewModel>> GetAllTaskByTeamId(ISession s, UserOrganizationModel caller, long localId, long teamId)
+        {
+            List<TaskViewModel> taskList = new List<TaskViewModel>();
+            try
+            {
+                PermissionsUtility.Create(s, caller).CanView(PermItem.ResourceType.CoreProcess, localId);
+                var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
+                if (getProcessDefFileDetails != null)
+                {
+                    var getfileStream = await GetFileFromServer(getProcessDefFileDetails.FileKey);
+                    getfileStream.Seek(0, SeekOrigin.Begin);
+                    XNamespace bpmn = "http://www.omg.org/spec/BPMN/20100524/MODEL";
+                    XNamespace camunda = "http://camunda.org/schema/1.0/bpmn";
+                    XDocument xmlDocument = XDocument.Load(getfileStream);
+                    var getAllElement = xmlDocument.Root.Element(bpmn + "process").Elements(bpmn + "userTask");
+
+                    foreach (var item in getAllElement)
+                    {
+                        var getCandidateGroup = (item.Attribute(camunda + "candidateGroups") != null ? (item.Attribute(camunda + "candidateGroups").Value) : "");
+                        var memberIds = GetMemberIds(getCandidateGroup).ToList();
+                        if (memberIds.Contains(teamId))
                         {
-                            var getCandidateGroup = (item.Attribute(camunda + "candidateGroups") != null ? (item.Attribute(camunda + "candidateGroups").Value) : "");
-                            var memberIds = GetMemberIds(getCandidateGroup).ToList();
-                            if (memberIds.Contains(teamId))
+                            taskList.Add(new TaskViewModel()
                             {
-                                taskList.Add(new TaskViewModel()
-                                {
-                                    description = (item.Attribute("description") != null ? item.Attribute("description").Value : ""),
-                                    name = item.Attribute("name").Value,
-                                    Id = item.Attribute("id").Value,
-                                   // SelectedMemberId = GetMemberIds(getCandidateGroup),
-                                   // SelectedMemberName = GetMemberName(caller, getCandidateGroup, null),
-                                   // CandidateList = GetCandidateGroupList(caller, getCandidateGroup)
-                                });
-                            }
+                                description = (item.Attribute("description") != null ? item.Attribute("description").Value : ""),
+                                name = item.Attribute("name").Value,
+                                Id = item.Attribute("id").Value,
+                                // SelectedMemberId = GetMemberIds(getCandidateGroup),
+                                // SelectedMemberName = GetMemberName(caller, getCandidateGroup, null),
+                                // CandidateList = GetCandidateGroupList(caller, getCandidateGroup)
+                            });
                         }
                     }
                 }
