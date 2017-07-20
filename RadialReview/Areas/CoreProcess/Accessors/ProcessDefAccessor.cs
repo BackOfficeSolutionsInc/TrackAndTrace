@@ -631,6 +631,127 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return taskList;
         }
 
+        public async Task<List<TaskViewModel>> GetTaskListByUserId(UserOrganizationModel caller, string userId)
+        {
+            List<TaskViewModel> taskList = new List<TaskViewModel>();
+            try
+            {
+                using (var s = HibernateSession.GetCurrentSession())
+                {
+                    PermissionsUtility.Create(s, caller);
+                    string _userId = "u_" + userId;
+                    CommClass comClass = new CommClass();
+                    var getUsertaskList = await comClass.GetTaskListByAssignee(_userId);
+
+                    foreach (var item in getUsertaskList)
+                    {
+                        taskList.Add(new TaskViewModel()
+                        {
+                            name = item.Name,
+                            Id = item.Id
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return taskList;
+        }
+
+
+        public async Task<bool> TaskAssignee(UserOrganizationModel caller, string taskId, string userId)
+        {
+            try
+            {
+                using (var s = HibernateSession.GetCurrentSession())
+                {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    string _userId = "u_" + userId;
+                    CommClass commClass = new CommClass();
+                    var setAssignee = await commClass.SetAssignee(taskId, _userId);
+                    if (setAssignee.TNoContentStatus.ToString() == "Success")
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return false;
+        }
+
+        public async Task<bool> TaskClaim(UserOrganizationModel caller, string taskId, string userId)
+        {
+            try
+            {
+                using (var s = HibernateSession.GetCurrentSession())
+                {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    string _userId = "u_" + userId;
+                    CommClass commClass = new CommClass();
+                    var taskClaim = await commClass.TaskClaim(taskId, _userId);
+                    if (taskClaim.TNoContentStatus.ToString() == "Success")
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return false;
+        }
+
+        public async Task<bool> TaskUnClaim(UserOrganizationModel caller, string taskId, string userId)
+        {
+            try
+            {
+                using (var s = HibernateSession.GetCurrentSession())
+                {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    string _userId = "u_" + userId;
+                    CommClass commClass = new CommClass();
+                    var taskUnClaim = await commClass.TaskUnClaim(taskId, _userId);
+                    if (taskUnClaim.TNoContentStatus.ToString() == "Success")
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return false;
+        }
+
+        public async Task<bool> TaskComplete(UserOrganizationModel caller, string taskId, string userId)
+        {
+            try
+            {
+                using (var s = HibernateSession.GetCurrentSession())
+                {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    CommClass commClass = new CommClass();
+                    string _userId = "u_" + userId;
+                    var taskComplete = await commClass.TaskComplete(taskId, _userId);
+                    if (taskComplete.TNoContentStatus.ToString() == "Success")
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return false;
+        }
 
         public static long[] GetMemberIds(string memberIds)
         {

@@ -26,6 +26,19 @@ namespace RadialReview.Areas.CoreProcess.Controllers
 
             if (true)
             {
+
+
+                //CommClass commClass = new CommClass();
+                //var getTask =await commClass.GetTaskByCandidateGroups("rgm_5", "9b59a3e7-6d25-11e7-9d1c-38d5471b275d");
+
+                var claim = await processDef.TaskClaim(GetUser(), "9b59a3ea-6d25-11e7-9d1c-38d5471b275d", "Divya Test");
+                var taskList =await processDef.GetTaskListByUserId(GetUser(), "Divya Test");
+
+                //var unClaim = await commClass.TaskUnClaim("edf3c4fe-6d26-11e7-9d1c-38d5471b275d", "Divya Test");
+                //var setAssignee = await commClass.SetAssignee("edf3c4fe-6d26-11e7-9d1c-38d5471b275d", "Divya Test1");
+                //var complete = await commClass.TaskComplete("edf3c4fe-6d26-11e7-9d1c-38d5471b275d", "Divya Test");
+
+
                 //processDef.DetachNode();
             }
 
@@ -39,22 +52,22 @@ namespace RadialReview.Areas.CoreProcess.Controllers
             //deploy process
             if (true)
             {
-                
-                string fileName = "calculation.bpmn";
-                var filePath = string.Format("~/Areas/CoreProcess/{0}", fileName);
-                var fullPath = HttpContext.Server.MapPath(filePath);
-                List<object> fileObject = new List<object>();
-                if (System.IO.File.Exists(fullPath))
-                {
-                    byte[] bytes = System.IO.File.ReadAllBytes(fullPath);
-                    fileObject.Add(new FileParameter(bytes, fileName));
+
+                //string fileName = "calculation.bpmn";
+                //var filePath = string.Format("~/Areas/CoreProcess/{0}", fileName);
+                //var fullPath = HttpContext.Server.MapPath(filePath);
+                //List<object> fileObject = new List<object>();
+                //if (System.IO.File.Exists(fullPath))
+                //{
+                //    byte[] bytes = System.IO.File.ReadAllBytes(fullPath);
+                //    fileObject.Add(new FileParameter(bytes, fileName));
 
 
-                    CommClass commClass = new CommClass();
-                    var getDeploymentId = commClass.Deploy("testDeploy1", fileObject);
-                    //deploy file
-                    //processDefAccessor.Deploy(new RadialReview.Models.UserOrganizationModel(), "testDeploy", fileObject);
-                }
+                //    CommClass commClass = new CommClass();
+                //    var getDeploymentId = commClass.Deploy("testDeploy1", fileObject);
+                //    //deploy file
+                //    //processDefAccessor.Deploy(new RadialReview.Models.UserOrganizationModel(), "testDeploy", fileObject);
+                //}
             }
 
 
