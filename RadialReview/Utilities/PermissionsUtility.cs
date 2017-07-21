@@ -1797,10 +1797,20 @@ namespace RadialReview.Utilities {
 		}
 
 
-		#endregion
+        #endregion
+
+        public PermissionsUtility InValidPermission()
+        {
+            if (Config.IsLocal())
+            {
+                return this;
+            }
+
+            throw new PermissionsException("Invalid Permissions");
+        }
 
 
-		public PermissionsUtility Or(params Func<PermissionsUtility>[] or) {
+        public PermissionsUtility Or(params Func<PermissionsUtility>[] or) {
 			foreach (var o in or) {
 				try {
 					return o();

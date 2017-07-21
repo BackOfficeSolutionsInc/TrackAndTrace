@@ -26,17 +26,17 @@ namespace RadialReview.Areas.CoreProcess.Controllers
 
             if (true)
             {
-
+                var claim = await processDef.GetCandidateGroupByTaskId(GetUser(), "dd3114b2-6d28-11e7-9d1c-38d5471b275d");
 
                 //CommClass commClass = new CommClass();
                 //var getTask =await commClass.GetTaskByCandidateGroups("rgm_5", "9b59a3e7-6d25-11e7-9d1c-38d5471b275d");
 
-                var claim = await processDef.TaskClaim(GetUser(), "9b59a3ea-6d25-11e7-9d1c-38d5471b275d", "Divya Test");
-                var taskList =await processDef.GetTaskListByUserId(GetUser(), "Divya Test");
-
-                //var unClaim = await commClass.TaskUnClaim("edf3c4fe-6d26-11e7-9d1c-38d5471b275d", "Divya Test");
-                //var setAssignee = await commClass.SetAssignee("edf3c4fe-6d26-11e7-9d1c-38d5471b275d", "Divya Test1");
-                //var complete = await commClass.TaskComplete("edf3c4fe-6d26-11e7-9d1c-38d5471b275d", "Divya Test");
+                // var claim = await processDef.TaskClaim(GetUser(), "dd3114b2-6d28-11e7-9d1c-38d5471b275d", GetUser().Id.ToString());
+                // var taskList =await processDef.GetTaskListByUserId(GetUser(), GetUser().Id.ToString());
+                //
+                // var unClaim = await processDef.TaskUnClaim(GetUser(), "dd3114b2-6d28-11e7-9d1c-38d5471b275d", GetUser().Id.ToString());
+                // var setAssignee = await processDef.TaskAssignee(GetUser(), "dd3114b2-6d28-11e7-9d1c-38d5471b275d", GetUser().Id.ToString());
+                // var complete = await processDef.TaskComplete(GetUser(), "dd3114b2-6d28-11e7-9d1c-38d5471b275d", GetUser().Id.ToString());
 
 
                 //processDef.DetachNode();

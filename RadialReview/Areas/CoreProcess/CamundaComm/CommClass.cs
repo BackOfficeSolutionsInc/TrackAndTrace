@@ -107,8 +107,11 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
             return getList;
         }
 
-        public async Task<IEnumerable<TaskModel>> GetTaskByCandidateGroups(string candidateGroups, string processInstanceId="")
+        public async Task<IEnumerable<TaskModel>> GetTaskByCandidateGroups(string candidateGroups, string processInstanceId = "")
         {
+            // long[] candidateGroupIds
+            // pass array of candidate groups
+            // concatenate rgm with long ids String.Join
             client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
             if (!string.IsNullOrEmpty(processInstanceId))
                 return await client.Task().Get().CandidateGroups(candidateGroups).ProcessInstanceId(processInstanceId).list();
@@ -137,6 +140,12 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
         {
             client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
             return await client.Task().Get().ProcessInstanceId(InstanceId).list();
+        }
+
+        public async Task<TaskModel> GetTaskListById(string id)
+        {
+            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
+            return await client.Task().Id(id).SingleResult();
         }
 
         #endregion

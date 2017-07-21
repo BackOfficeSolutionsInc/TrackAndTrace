@@ -631,6 +631,35 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return taskList;
         }
 
+        public async Task<List<TaskViewModel>> GetTaskListByCandidateGroups(UserOrganizationModel caller, long[] candidateGroupIds, string processInstanceId = "")
+        {
+            List<TaskViewModel> taskList = new List<TaskViewModel>();
+            try
+            {
+                using (var s = HibernateSession.GetCurrentSession())
+                {
+                    PermissionsUtility.Create(s, caller);
+                    var candidateGroups = String.Join(",", candidateGroupIds.Select(x => "rgm_" + x));
+                    CommClass comClass = new CommClass();
+                    var getUsertaskList = await comClass.GetTaskByCandidateGroups(candidateGroups, processInstanceId);
+
+                    foreach (var item in getUsertaskList)
+                    {
+                        taskList.Add(new TaskViewModel()
+                        {
+                            name = item.Name,
+                            Id = item.Id
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return taskList;
+        }
+
         public async Task<List<TaskViewModel>> GetTaskListByUserId(UserOrganizationModel caller, string userId)
         {
             List<TaskViewModel> taskList = new List<TaskViewModel>();
@@ -660,14 +689,24 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return taskList;
         }
 
-
-        public async Task<bool> TaskAssignee(UserOrganizationModel caller, string taskId, string userId)
+        /// <summary>
+        /// Note: The difference with claim a task is that this method does not check if the task already has a user assigned to it.
+        /// </summary>
+        /// <param name="caller"></param>
+        /// <param name="taskId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<bool> TaskAssignee(UserOrganizationModel caller, string taskId, long userId)
         {
             try
             {
                 using (var s = HibernateSession.GetCurrentSession())
                 {
                     var perms = PermissionsUtility.Create(s, caller);
+                    perms.Self(userId);
+                    // check if user is member of candidategroup in task
+                    perms.InValidPermission();
+
                     string _userId = "u_" + userId;
                     CommClass commClass = new CommClass();
                     var setAssignee = await commClass.SetAssignee(taskId, _userId);
@@ -684,7 +723,14 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return false;
         }
 
-        public async Task<bool> TaskClaim(UserOrganizationModel caller, string taskId, string userId)
+        /// <summary>
+        /// Note: The difference with set a assignee is that here a check is performed to see if the task already has a user assigned to it.
+        /// </summary>
+        /// <param name="caller"></param>
+        /// <param name="taskId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>        
+        public async Task<bool> TaskClaim(UserOrganizationModel caller, string taskId, long userId)
         {
             try
             {
@@ -707,7 +753,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return false;
         }
 
-        public async Task<bool> TaskUnClaim(UserOrganizationModel caller, string taskId, string userId)
+        public async Task<bool> TaskUnClaim(UserOrganizationModel caller, string taskId, long userId)
         {
             try
             {
@@ -730,7 +776,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return false;
         }
 
-        public async Task<bool> TaskComplete(UserOrganizationModel caller, string taskId, string userId)
+        public async Task<bool> TaskComplete(UserOrganizationModel caller, string taskId, long userId)
         {
             try
             {
@@ -751,6 +797,47 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                 throw ex;
             }
             return false;
+        }
+
+        public async Task<string> GetCandidateGroupByTaskId(UserOrganizationModel caller, string taskId)
+        {
+            try
+            {
+                using (var s = HibernateSession.GetCurrentSession())
+                {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    CommClass comClass = new CommClass();
+                    var getTask = await comClass.GetTaskListById(taskId);
+                    if (!string.IsNullOrEmpty(getTask.ProcessDefinitionId))
+                    {
+                        var getProcessDefDetails = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.CamundaId == getTask.ProcessDefinitionId).SingleOrDefault();
+                        if (getProcessDefDetails == null)
+                        {
+                            throw new PermissionsException("process definition not found");
+                        }
+                        var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == getProcessDefDetails.Id).SingleOrDefault();
+                        if (getProcessDefFileDetails != null)
+                        {
+                            var getfileStream = await GetFileFromServer(getProcessDefFileDetails.FileKey);
+                            getfileStream.Seek(0, SeekOrigin.Begin);
+                            XNamespace bpmn = "http://www.omg.org/spec/BPMN/20100524/MODEL";
+                            XNamespace camunda = "http://camunda.org/schema/1.0/bpmn";
+                            XDocument xmlDocument = XDocument.Load(getfileStream);
+                            var getAllElement = xmlDocument.Root.Element(bpmn + "process").Elements(bpmn + "userTask");
+
+                            var getTaskDetail = getAllElement.Where(t => t.Attribute("name").Value == getTask.Name).FirstOrDefault();
+                            var getCandidateGroup = (getTaskDetail.Attribute(camunda + "candidateGroups") != null ? (getTaskDetail.Attribute(camunda + "candidateGroups").Value) : "");
+                            return GetMemberName(caller, getCandidateGroup, null);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            return "";
         }
 
         public static long[] GetMemberIds(string memberIds)
