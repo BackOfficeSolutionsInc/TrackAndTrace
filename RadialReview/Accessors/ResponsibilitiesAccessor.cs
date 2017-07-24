@@ -315,8 +315,7 @@ namespace RadialReview.Accessors
             output.Add(userId.AsList());
             output.Add(TeamAccessor.GetUsersTeamIds(s, perms, userId));
             output.Add(PositionAccessor.GetPositionIdsForUser(s, perms, userId));
-            output.Add(TeamAccessor.GetUsersTeamIds(s, perms, userId));
-
+            //output.Add(TeamAccessor.GetUsersTeamIds(s, perms, userId));
             return output.SelectMany(x => x);
         }
 

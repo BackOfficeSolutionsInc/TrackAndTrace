@@ -28,7 +28,7 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
         Task<IEnumerable<TaskModel>> GetTaskByCandidateGroup(string candidateGroup);
         Task<IEnumerable<TaskModel>> GetTaskByCandidateGroups(string candidateGroups, string processInstanceId = "");
         Task<IEnumerable<TaskModel>> GetTaskListByInstanceId(string InstanceId);
-       Task<TaskModel> GetTaskListById(string id);
+       Task<TaskModel> GetTaskById(string id);
 
     }
 }

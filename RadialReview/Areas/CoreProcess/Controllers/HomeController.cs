@@ -26,7 +26,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers
 
             if (true)
             {
-                var claim = await processDef.GetCandidateGroupByTaskId(GetUser(), "dd3114b2-6d28-11e7-9d1c-38d5471b275d");
+                var claim = await processDef.GetCandidateGroupIdsForTask(GetUser(), "dd3114b2-6d28-11e7-9d1c-38d5471b275d");
 
                 //CommClass commClass = new CommClass();
                 //var getTask =await commClass.GetTaskByCandidateGroups("rgm_5", "9b59a3e7-6d25-11e7-9d1c-38d5471b275d");

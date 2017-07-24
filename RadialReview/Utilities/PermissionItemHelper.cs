@@ -245,12 +245,12 @@ namespace RadialReview.Utilities {
 						return isMember_ids;
 					}
 				case PermItem.ResourceType.CoreProcess: {
-						// unsafe Method
-						// get rgmIds
-						// get bpmn file and get list of tasks and groups
-						// get list<long> rgmIds and pass
-						//return ResponsibilitiesAccessor.GetMemberIds(session, this, ids);						
-						var ids = ProcessDefAccessor.GetCandidateGroupIds_UnSafe(session, resourceId);
+                        // unsafe Method
+                        // get rgmIds
+                        // get bpmn file and get list of tasks and groups
+                        // get list<long> rgmIds and pass
+                        //return ResponsibilitiesAccessor.GetMemberIds(session, this, ids);						                        
+                        var ids = new ProcessDefAccessor().GetCandidateGroupIds_UnSafe(session, resourceId);
 						return ids;
 					}
 				default:

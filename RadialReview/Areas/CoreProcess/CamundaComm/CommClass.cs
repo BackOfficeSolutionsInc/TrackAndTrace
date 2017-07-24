@@ -142,7 +142,7 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
             return await client.Task().Get().ProcessInstanceId(InstanceId).list();
         }
 
-        public async Task<TaskModel> GetTaskListById(string id)
+        public async Task<TaskModel> GetTaskById(string id)
         {
             client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
             return await client.Task().Id(id).SingleResult();
@@ -222,9 +222,9 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
         }
     }
 
-    public class Task : ITask
+    public class TaskJsonModel : ITask
     {
-        public Task(TaskModel task)
+        public TaskJsonModel(TaskModel task)
         {
             assignee = task.Assignee ?? "";
             processInstanceId = task.ProcessInstanceId ?? "";

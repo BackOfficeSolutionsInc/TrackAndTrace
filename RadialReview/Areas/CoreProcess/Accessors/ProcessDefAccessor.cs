@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Linq;
@@ -638,7 +639,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             {
                 using (var s = HibernateSession.GetCurrentSession())
                 {
-                    PermissionsUtility.Create(s, caller);
+                    PermissionsUtility.Create(s, caller);                    
                     var candidateGroups = String.Join(",", candidateGroupIds.Select(x => "rgm_" + x));
                     CommClass comClass = new CommClass();
                     var getUsertaskList = await comClass.GetTaskByCandidateGroups(candidateGroups, processInstanceId);
@@ -705,7 +706,8 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     var perms = PermissionsUtility.Create(s, caller);
                     perms.Self(userId);
                     // check if user is member of candidategroup in task
-                    perms.InValidPermission();
+                    perms.CanEditTask(taskId);
+                    //perms.InValidPermission();
 
                     string _userId = "u_" + userId;
                     CommClass commClass = new CommClass();
@@ -799,7 +801,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return false;
         }
 
-        public async Task<string> GetCandidateGroupByTaskId(UserOrganizationModel caller, string taskId)
+        public async Task<long[]> GetCandidateGroupIdsForTask(UserOrganizationModel caller, string taskId)
         {
             try
             {
@@ -807,7 +809,8 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                 {
                     var perms = PermissionsUtility.Create(s, caller);
                     CommClass comClass = new CommClass();
-                    var getTask = await comClass.GetTaskListById(taskId);
+                    var getTask = await comClass.GetTaskById(taskId);
+
                     if (!string.IsNullOrEmpty(getTask.ProcessDefinitionId))
                     {
                         var getProcessDefDetails = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.CamundaId == getTask.ProcessDefinitionId).SingleOrDefault();
@@ -827,7 +830,9 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
                             var getTaskDetail = getAllElement.Where(t => t.Attribute("name").Value == getTask.Name).FirstOrDefault();
                             var getCandidateGroup = (getTaskDetail.Attribute(camunda + "candidateGroups") != null ? (getTaskDetail.Attribute(camunda + "candidateGroups").Value) : "");
-                            return GetMemberName(caller, getCandidateGroup, null);
+                            
+                            return GetMemberIds(getCandidateGroup);
+                            //return GetMemberName(caller, getCandidateGroup, null);
                         }
                     }
                 }
@@ -837,7 +842,8 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
                 throw ex;
             }
-            return "";
+
+            return null;
         }
 
         public static long[] GetMemberIds(string memberIds)
@@ -864,6 +870,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             }
             return idList.ToArray();
         }
+
         public string GetMemberName(UserOrganizationModel caller, string candidateGroupName, long[] memberIds)
         {
             long[] getMemberIds = null;
@@ -897,6 +904,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             }
             return memberName;
         }
+
         public List<CandidateGroupViewModel> GetCandidateGroupList(UserOrganizationModel caller, string candidateGroupName)
         {
             List<CandidateGroupViewModel> list = new List<CandidateGroupViewModel>();
@@ -923,39 +931,42 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             }
             return list;
         }
-        public static List<long> GetCandidateGroupIds_UnSafe(ISession s, long localId)
+
+        public List<long> GetCandidateGroupIds_UnSafe(ISession s, long localId)
         {
             List<long> candidateGroupIdList = new List<long>();
             try
             {
-                var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
+                var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();                
+
                 if (getProcessDefFileDetails != null)
                 {
-                    //var getfileStream = await GetFileFromServer(getProcessDefFileDetails.FileKey);
 
-                    Stream stream = new MemoryStream();
+                    var stream = AsyncHelper.RunSync<Stream>(() => GetFileFromServer(getProcessDefFileDetails.FileKey));
+                    //var stream = GetFileFromServer(getProcessDefFileDetails.FileKey);
+                    //Stream stream = new MemoryStream();
 
-                    IAmazonS3 client;
-                    using (client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1))
-                    {
-                        GetObjectRequest request = new GetObjectRequest
-                        {
-                            BucketName = "Radial",
-                            Key = getProcessDefFileDetails.FileKey
-                        };
+                    //IAmazonS3 client;
+                    //using (client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1))
+                    //{
+                    //    GetObjectRequest request = new GetObjectRequest
+                    //    {
+                    //        BucketName = "Radial",
+                    //        Key = getProcessDefFileDetails.FileKey
+                    //    };
 
-                        using (GetObjectResponse response = client.GetObject(request))
-                        {
-                            using (var ms = new MemoryStream())
-                            {
-                                response.ResponseStream.CopyTo(ms);
-                                ms.Seek(0, SeekOrigin.Begin);
-                                ms.CopyTo(stream);
-                                ms.Seek(0, SeekOrigin.Begin);
-                                stream.Seek(0, SeekOrigin.Begin);
-                            }
-                        }
-                    }
+                    //    using (GetObjectResponse response = client.GetObject(request))
+                    //    {
+                    //        using (var ms = new MemoryStream())
+                    //        {
+                    //            response.ResponseStream.CopyTo(ms);
+                    //            ms.Seek(0, SeekOrigin.Begin);
+                    //            ms.CopyTo(stream);
+                    //            ms.Seek(0, SeekOrigin.Begin);
+                    //            stream.Seek(0, SeekOrigin.Begin);
+                    //        }
+                    //    }
+                    //}
 
                     stream.Seek(0, SeekOrigin.Begin);
                     XNamespace bpmn = "http://www.omg.org/spec/BPMN/20100524/MODEL";
@@ -972,6 +983,10 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                             candidateGroupIdList.Add(item1);
                         }
                     }
+                }
+                else
+                {
+                    throw new PermissionsException();
                 }
             }
             catch (Exception ex)
@@ -1508,4 +1523,33 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return selectedList;
         }
     }
+
+    internal static class AsyncHelper
+    {
+        private static readonly TaskFactory _myTaskFactory = new
+          TaskFactory(CancellationToken.None,
+                      TaskCreationOptions.None,
+                      TaskContinuationOptions.None,
+                      TaskScheduler.Default);
+
+        public static TResult RunSync<TResult>(Func<Task<TResult>> func)
+        {
+            return AsyncHelper._myTaskFactory
+              .StartNew<Task<TResult>>(func)
+              .Unwrap<TResult>()
+              .GetAwaiter()
+              .GetResult();
+        }
+
+        public static void RunSync(Func<Task> func)
+        {
+            AsyncHelper._myTaskFactory
+              .StartNew<Task>(func)
+              .Unwrap()
+              .GetAwaiter()
+              .GetResult();
+        }
+    }
+
+
 }
