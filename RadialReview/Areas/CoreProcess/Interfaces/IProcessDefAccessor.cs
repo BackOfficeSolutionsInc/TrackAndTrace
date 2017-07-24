@@ -14,16 +14,13 @@ namespace RadialReview.Areas.CoreProcess.Interfaces
     public interface IProcessDefAccessor
     {
         Task<bool> Deploy(UserOrganizationModel caller, long localId);
-        Task<IProcessDef> GetProcessDefByKey(UserOrganizationModel caller, string key);
-        IEnumerable<IProcessDef> GetAllProcessDef(UserOrganizationModel caller); // get all
-        IProcessDef GetProcessDefById(UserOrganizationModel caller, string processDefId); // get by id
         List<ProcessInstanceViewModel> GetProcessInstanceList(UserOrganizationModel caller, long localId);
         Task<long> Create(UserOrganizationModel caller, string processName);
         Task<bool> Edit(UserOrganizationModel caller, long localId, string processName);
         Task<bool> Delete(UserOrganizationModel caller, long processId);
         Stream CreateBpmnFile(string processName, string bpmnId);
         System.Threading.Tasks.Task UploadFileToServer(Stream stream, string path);
-        Task<Stream> GetFileFromServer(string keyName);
+        //Task<Stream> GetFileFromServer(string keyName);
         System.Threading.Tasks.Task DeleteFileFromServer(string keyName);
         IEnumerable<ProcessDef_Camunda> GetList(UserOrganizationModel caller, long orgId);
         ProcessDef_Camunda GetById(UserOrganizationModel caller, long processId);

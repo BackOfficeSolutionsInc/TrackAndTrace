@@ -119,7 +119,7 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
                 return await client.Task().Get().CandidateGroups(candidateGroups).list();
         }
 
-        public async Task<IEnumerable<TaskModel>> GetTaskList(string processDefId)
+        public async Task<IEnumerable<TaskModel>> GetTaskListByProcessDefId(string processDefId)
         {
             client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
             return await client.Task().Get().ProcessDefinitionId(processDefId).list();
@@ -130,7 +130,7 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
             client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
             return await client.Task().Get().Assignee(assignee).list();
         }
-        public async Task<IEnumerable<TaskModel>> GetTaskList(List<string> processDefId)
+        public async Task<IEnumerable<TaskModel>> GetTaskListByProcessDefId(List<string> processDefId)
         {
             client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
             return await client.Task().Get().ProcessDefinitionKeyIn(processDefId).list();
