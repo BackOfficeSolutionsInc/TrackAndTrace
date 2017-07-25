@@ -212,5 +212,24 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 			}
 			return RedirectToAction("ProcessInstance", "Process", new { @id = id });
 		}
-	}
+
+        [Access(AccessLevel.UserOrganization)]
+        public async Task<ActionResult> UserTask()
+        {
+            List<TaskViewModel> model = new List<TaskViewModel>();
+            var usertask = await processDefAccessor.GetTaskListByUserId(GetUser(), Convert.ToString(GetUser().Id));
+
+            if (usertask.Count == 0)
+            {
+                // create task for user
+                string taskId = "5bb68dfa-7142-11e7-9964-54bef737c7d9";
+
+                var result = await processDefAccessor.TaskAssignee(GetUser(), taskId, GetUser().Id);
+
+                usertask = await processDefAccessor.GetTaskListByUserId(GetUser(), Convert.ToString(GetUser().Id));
+            }
+            return View(usertask);
+        }
+
+    }
 }

@@ -313,7 +313,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                 var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
 
                 MemoryStream fileStream = new MemoryStream();
-                XDocument xmlDocument =await BpmnUtility.GetBpmnFileXmlDoc(getProcessDefFileDetails.FileKey);
+                XDocument xmlDocument = await BpmnUtility.GetBpmnFileXmlDoc(getProcessDefFileDetails.FileKey);
                 var getElement = xmlDocument.Root.Element(bpmn + "process");
                 getElement.SetAttributeValue("name", processName);
 
@@ -338,17 +338,18 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                   var perms= PermissionsUtility.Create(s, caller);
-                    perms.CanAdmin(PermItem.ResourceType.CoreProcess, processId);
-                    var deleted = await Delete(s, processId);
+                    var perms = PermissionsUtility.Create(s, caller);                    
+                    var deleted = await Delete(s, processId, perms);
                     tx.Commit();
                     s.Flush();
                     return deleted;
                 }
             }
         }
-        public async Task<bool> Delete(ISession s, long processId)
+        public async Task<bool> Delete(ISession s, long processId, PermissionsUtility perms)
         {
+            perms.CanAdmin(PermItem.ResourceType.CoreProcess, processId);
+
             bool result = true;
             try
             {
@@ -507,7 +508,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     await UploadFileToServer(fileStream, getProcessDefFileDetails.FileKey);
 
                     modelObj.Id = userTaskId;
-                    modelObj.SelectedMemberName =BpmnUtility.GetMemberName(caller, "", model.SelectedMemberId);
+                    modelObj.SelectedMemberName = BpmnUtility.GetMemberName(caller, "", model.SelectedMemberId);
                 }
             }
             catch (Exception ex)
@@ -528,7 +529,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
                     if (getProcessDefFileDetails != null)
                     {
-                        XDocument xmlDocument =await BpmnUtility.GetBpmnFileXmlDoc(getProcessDefFileDetails.FileKey);
+                        XDocument xmlDocument = await BpmnUtility.GetBpmnFileXmlDoc(getProcessDefFileDetails.FileKey);
                         var getAllElement = xmlDocument.Root.Element(bpmn + "process").Elements(bpmn + "userTask");
 
                         foreach (var item in getAllElement)
@@ -539,7 +540,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                                 description = (item.Attribute("description") != null ? item.Attribute("description").Value : ""),
                                 name = item.Attribute("name").Value,
                                 Id = item.Attribute("id").Value,
-                                SelectedMemberId =BpmnUtility.GetMemberIds(getCandidateGroup),
+                                SelectedMemberId = BpmnUtility.GetMemberIds(getCandidateGroup),
                                 SelectedMemberName = BpmnUtility.GetMemberName(caller, getCandidateGroup, null),
                                 CandidateList = GetCandidateGroupList(caller, getCandidateGroup)
                             });
@@ -625,7 +626,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             {
                 using (var s = HibernateSession.GetCurrentSession())
                 {
-                    PermissionsUtility.Create(s, caller);                    
+                    PermissionsUtility.Create(s, caller);
                     var candidateGroups = String.Join(",", candidateGroupIds.Select(x => "rgm_" + x));
                     CommClass comClass = new CommClass();
                     var getUsertaskList = await comClass.GetTaskByCandidateGroups(candidateGroups, processInstanceId);
@@ -821,7 +822,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
                             var getTaskDetail = getAllElement.Where(t => t.Attribute("name").Value == getTask.Name).FirstOrDefault();
                             var getCandidateGroup = (getTaskDetail.Attribute(camunda + "candidateGroups") != null ? (getTaskDetail.Attribute(camunda + "candidateGroups").Value) : "");
-                            
+
                             return BpmnUtility.GetMemberIds(getCandidateGroup);
                             //return GetMemberName(caller, getCandidateGroup, null);
                         }
@@ -841,7 +842,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
         public List<CandidateGroupViewModel> GetCandidateGroupList(UserOrganizationModel caller, string candidateGroupName)
         {
             List<CandidateGroupViewModel> list = new List<CandidateGroupViewModel>();
-            var getMemberIds =BpmnUtility.GetMemberIds(candidateGroupName);
+            var getMemberIds = BpmnUtility.GetMemberIds(candidateGroupName);
             ResponsibilitiesAccessor respAccessor = new ResponsibilitiesAccessor();
             string memberName = string.Empty;
             if (getMemberIds != null)
@@ -870,7 +871,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             List<long> candidateGroupIdList = new List<long>();
             try
             {
-                var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();                
+                var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
 
                 if (getProcessDefFileDetails != null)
                 {
@@ -903,15 +904,16 @@ namespace RadialReview.Areas.CoreProcess.Accessors
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
-               var perms= PermissionsUtility.Create(s, caller);
-                perms.CanEdit(PermItem.ResourceType.CoreProcess, localId);
-                var updated = await UpdateTask(s, localId, model, caller);
+                var perms = PermissionsUtility.Create(s, caller);                
+                var updated = await UpdateTask(s, localId, model, caller, perms);
                 return updated;
             }
         }
 
-        public async Task<TaskViewModel> UpdateTask(ISession s, long localId, TaskViewModel model, UserOrganizationModel caller)
+        public async Task<TaskViewModel> UpdateTask(ISession s, long localId, TaskViewModel model, UserOrganizationModel caller, PermissionsUtility perms)
         {
+            perms.CanEdit(PermItem.ResourceType.CoreProcess, localId);
+
             TaskViewModel modelObj = new TaskViewModel();
             modelObj = model;
             try
@@ -920,7 +922,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                 if (getProcessDefFileDetails != null)
                 {
                     MemoryStream fileStream = new MemoryStream();
-                    XDocument xmlDocument =await BpmnUtility.GetBpmnFileXmlDoc(getProcessDefFileDetails.FileKey);
+                    XDocument xmlDocument = await BpmnUtility.GetBpmnFileXmlDoc(getProcessDefFileDetails.FileKey);
                     var getAllElement = xmlDocument.Root.Element(bpmn + "process").Elements();
                     string candidateGroups = string.Empty;
                     if (model.SelectedMemberId != null)
@@ -965,15 +967,16 @@ namespace RadialReview.Areas.CoreProcess.Accessors
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
-               var perms= PermissionsUtility.Create(s, caller);
-                perms.CanEdit(PermItem.ResourceType.CoreProcess, localId);
-                var result = await DeleteTask(s, localId, taskId);
+                var perms = PermissionsUtility.Create(s, caller);
+                var result = await DeleteTask(s, localId, taskId, perms);
                 return result;
             }
         }
 
-        public async Task<bool> DeleteTask(ISession s, long localId, string taskId)
+        public async Task<bool> DeleteTask(ISession s, long localId, string taskId, PermissionsUtility perms)
         {
+            perms.CanEdit(PermItem.ResourceType.CoreProcess, localId);
+
             bool result = true;
             try
             {
@@ -984,7 +987,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     MemoryStream fileStream = new MemoryStream();
 
                     //Detach Node
-                    var getModifiedStream =BpmnUtility.DetachNode(getfileStream, taskId);
+                    var getModifiedStream = BpmnUtility.DetachNode(getfileStream, taskId);
 
                     getModifiedStream.Seek(0, SeekOrigin.Begin);
                     XDocument xmlDocument = XDocument.Load(getModifiedStream);
@@ -1042,7 +1045,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                   var perms= PermissionsUtility.Create(s, caller);
+                    var perms = PermissionsUtility.Create(s, caller);
                     perms.CanEdit(PermItem.ResourceType.CoreProcess, processId);
                     ProcessDef_Camunda processDef = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.OrgId == caller.Organization.Id && x.Id == processId).SingleOrDefault();
                     return processDef;
@@ -1090,7 +1093,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                   var perms= PermissionsUtility.Create(s, caller);
+                    var perms = PermissionsUtility.Create(s, caller);
                     perms.CanEdit(PermItem.ResourceType.CoreProcess, localId);
                     var result = await ModifyBpmnFile(s, localId, oldOrder, newOrder);
                     return result;
@@ -1135,7 +1138,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return result;
         }
 
-     
+
 
         public async System.Threading.Tasks.Task UploadFileToServer(Stream stream, string path)
         {

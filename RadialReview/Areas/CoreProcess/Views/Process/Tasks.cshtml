@@ -92,12 +92,12 @@
 								//postAdd: "/Process/Publish",
 								cells:[
 									@if (ViewBag.CanEdit == true) {
-										@:{ reorder: true },										
-									}									
+										@:{ reorder: true },
+									}
                                     //{ id: "id", classes: "hidden", contents: function (x) { return x.Id;}},
                                     { name: "Name", classes: "nowrap", contents: function(x) { console.log(x); return x.name; } },
                                     { name: "Candidate Group", classes: "fullWidth", contents: function (x) { return x.SelectedMemberName; } },
-									@if (ViewBag.CanEdit == true) {								
+									@if (ViewBag.CanEdit == true) {
 										@:{ name: "Action", classes: "nowrap", edit: true},
 									}
 									@if (ViewBag.CanAdmin == true) {
@@ -128,6 +128,49 @@
 								}
 
 							}
+
+                            function deleteprocess(x,val)
+                            {
+                                if (val != 0) {
+                                    var title = "This will delete all running instances associated with this process.</br>Are you sure you want to delete!";
+                                    show(x, title);
+                                }
+                                else
+                                {
+                                    var title = "Are you sure you want to remove!";
+                                    show(x, title);
+                                }
+                            }
+                            function show(x, title)
+                            {
+                                showModal({
+                                    icon: "warning",
+                                    title: title,
+                                    success: function (d) {
+                                        $.ajax({
+                                            url: '/CoreProcess/Process/Delete/' + x,
+                                            success: function (data) {
+                                                window.location = "/CoreProcess/";
+                                                //table.removeRow(data.Object);
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                            function startProcess(id){
+                                $.ajax({
+                                    url: "/CoreProcess/Process/StartProcess/" + id,
+                                    success: function (data) {
+                                        window.location = "/CoreProcess/";
+                                        //console.log(data.Object);
+                                        //table.editRow(data.Object);
+                                    },
+                                    error: function (data) {
+
+                                    }
+                                });
+                            }
+
 							function reload(model) {
 								var name = model.Object.Name;
 								console.log(name);
@@ -142,6 +185,8 @@
 				}
 				<div class="alignCenter">
 					<input class="btn btn-primary CanEdit" type="submit" onclick="@Html.ShowModal("New Task", "/Process/CreateTask/" + @Model.LocalID, "/Process/CreateTask", onCompleteFunction: "reloadGrid")" value="New Task" />
+                    <input class="btn btn-primary CanEdit" type="submit" onclick="startProcess(@Model.LocalID)" value="Start Process" />
+                    <input class="btn btn-primary CanEdit" type="submit" onclick="deleteprocess(@Model.LocalID)" value="Delete Process" />                    
 				</div>
 			</div>
 

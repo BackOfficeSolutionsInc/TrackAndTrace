@@ -869,6 +869,7 @@
     <Content Include="Areas\CoreProcess\Views\Shared\Partial\CreateTask.cshtml" />
     <Content Include="Areas\CoreProcess\Views\Shared\Partial\CreateProcess.cshtml" />
     <Content Include="Areas\CoreProcess\Views\Process\ProcessInstance.cshtml" />
+    <Content Include="Areas\CoreProcess\Views\Process\UserTask.cshtml" />
     <None Include="bundleconfig.json" />
     <None Include="Content\Angular\ngsortable.less" />
     <Content Include="Content\Angular\ngsortable.css">
