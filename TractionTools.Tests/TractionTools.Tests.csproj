@@ -287,6 +287,7 @@
     <Compile Include="API\v0\SeatsApiTests_v0.cs" />
     <Compile Include="API\v0\TeamsApiTests_v0.cs" />
     <Compile Include="API\v0\TodoApiTests_v0.cs" />
+    <Compile Include="API\v0\ProcessDefApiTests_v0.cs" />
     <Compile Include="API\v0\UsersApiTests_v0.cs" />
     <Compile Include="PDF\AccountabilityChartPdfTest.cs" />
     <Compile Include="Permissions\ManagerPermissions.cs" />
