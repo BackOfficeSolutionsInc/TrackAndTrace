@@ -1,5 +1,6 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
+using Amazon.S3.Transfer;
 using RadialReview.Accessors;
 using RadialReview.Models;
 using RadialReview.Utilities;
@@ -248,22 +249,23 @@ namespace RadialReview.Areas.CoreProcess.Models
             {
                 if (Config.ShouldDeploy())
                 {
-                    return await GetFileFromAmazon(keyName, stream);
+                    stream = await GetFileFromAmazon(keyName);
                 }
                 else
                 {
-                    return await GetFileFromLocal(keyName, stream);
+                    stream = await Task.Run(() => GetFileFromLocal(keyName));
                 }
             }
             catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
             return stream;
         }
 
-        private static async Task<Stream> GetFileFromAmazon(string keyName, Stream stream)
+        private static async Task<Stream> GetFileFromAmazon(string keyName)
         {
+            Stream stream = new MemoryStream();
             IAmazonS3 client;
             using (client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1))
             {
@@ -289,34 +291,171 @@ namespace RadialReview.Areas.CoreProcess.Models
             }
         }
 
-        private static async Task<Stream> GetFileFromLocal(string keyName, Stream stream)
+        private static Stream GetFileFromLocal(string keyName)
+        {
+            Stream stream = new MemoryStream();
+            string dir = System.Web.Hosting.HostingEnvironment.MapPath("~/Areas/CoreProcess/CamundaFiles/");
+
+            if (string.IsNullOrEmpty(dir))
+                dir = UnitTestPath();
+            string fileName = keyName.Split('/')[1];
+            var fullPath = Path.Combine(dir, fileName);
+
+            try
+            {
+                if (System.IO.File.Exists(fullPath))
+                {
+                    byte[] bytes = System.IO.File.ReadAllBytes(fullPath);
+                    stream = new MemoryStream(bytes);
+                    stream.Seek(0, SeekOrigin.Begin);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return stream;
+        }
+
+        public static async System.Threading.Tasks.Task UploadFileToServer(Stream stream, string path)
+        {
+            try
+            {
+                if (Config.ShouldDeploy())
+                {
+                    await UploadFileToAmazon(stream, path);
+
+                }
+                else
+                {
+                    await Task.Run(() => UploadFileToLocal(stream, path));
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private static void UploadFileToLocal(Stream stream, string path)
+        {
+            string dir = System.Web.Hosting.HostingEnvironment.MapPath("~/Areas/CoreProcess/CamundaFiles/");
+            if (string.IsNullOrEmpty(dir))
+                dir = UnitTestPath();
+            string fileName = path.Split('/')[1];
+            string dest = Path.Combine(dir, fileName);
+            try
+            {
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+
+                if (System.IO.File.Exists(dest))
+                {
+                    byte[] bytes = ((MemoryStream)stream).ToArray(); ;
+                    stream = new MemoryStream(bytes);
+                    stream.Seek(0, SeekOrigin.Begin);
+                    File.WriteAllBytes(dest, bytes);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+        }
+
+        private static async System.Threading.Tasks.Task UploadFileToAmazon(Stream stream, string path)
+        {
+            var fileTransferUtilityRequest = new TransferUtilityUploadRequest
+            {
+                BucketName = "Radial",
+                InputStream = stream,
+                StorageClass = S3StorageClass.Standard,
+                Key = path,
+                CannedACL = S3CannedACL.PublicRead,
+            };
+            //var fileTransferUtility = new TransferUtility(new AmazonS3Client(Amazon.RegionEndpoint.USWest2));
+            var fileTransferUtility = new TransferUtility(new AmazonS3Client(Amazon.RegionEndpoint.USEast1));
+            await fileTransferUtility.UploadAsync(fileTransferUtilityRequest);
+        }
+
+        public static async System.Threading.Tasks.Task DeleteFileFromServer(string keyName)
+        {
+
+            try
+            {
+                if (Config.ShouldDeploy())
+                {
+                    await DeleteFileFromAmazon(keyName);
+
+                }
+                else
+                {
+                    await Task.Run(() => DeleteFileFromLocal(keyName));
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private static void DeleteFileFromLocal(string keyName)
+        {
+            string dir = System.Web.Hosting.HostingEnvironment.MapPath("~/Areas/CoreProcess/CamundaFiles/");
+            if (string.IsNullOrEmpty(dir))
+                dir = UnitTestPath();
+
+            string fileName = keyName.Split('/')[1];
+            string dest = Path.Combine(dir, fileName);
+            try
+            {
+                if (Directory.Exists(dir))
+                {
+                    if (System.IO.File.Exists(dest))
+                    {
+                        File.Delete(dest);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+        }
+
+        private static async System.Threading.Tasks.Task DeleteFileFromAmazon(string keyName)
         {
             IAmazonS3 client;
             using (client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1))
             {
-                GetObjectRequest request = new GetObjectRequest
+                DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest
                 {
                     BucketName = "Radial",
                     Key = keyName
                 };
-
-                using (GetObjectResponse response = await client.GetObjectAsync(request))
+                try
                 {
-                    using (var ms = new MemoryStream())
-                    {
-                        response.ResponseStream.CopyTo(ms);
-                        ms.Seek(0, SeekOrigin.Begin);
-                        ms.CopyTo(stream);
-                        ms.Seek(0, SeekOrigin.Begin);
-                        stream.Seek(0, SeekOrigin.Begin);
-                    }
+                    var response = await client.DeleteObjectAsync(deleteObjectRequest);
+                    //Console.WriteLine("Deleting an object");
                 }
-
-                return stream;
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
             }
+        }
+
+        public static string UnitTestPath()
+        {
+            return @"F:\Sanjeev_Projects\TractionTools\Code1\RadialReview\RadialReview\Areas\CoreProcess\CamundaFiles\";
         }
     }
-
 
 
     internal static class AsyncHelper

@@ -23,6 +23,7 @@ using RadialReview.Models.Angular.Accountability;
 using RadialReview.Areas.CoreProcess.Controllers;
 using RadialReview.Areas.CoreProcess.Accessors;
 using RadialReview.Areas.CoreProcess.Controllers.Api_V0;
+using RadialReview.Areas.CoreProcess.Models.Process;
 
 namespace TractionTools.Tests.Api
 {
@@ -31,15 +32,39 @@ namespace TractionTools.Tests.Api
     {
         [TestMethod]
         [TestCategory("Api_V0")]
-        public void TestEnsureApplicationExists()        
+        public void TestEnsureApplicationExists()
         {
             ApplicationAccessor.EnsureApplicationExists();
         }
 
         [TestMethod]
         [TestCategory("Api_V0")]
+        public async Task TestCreateProcessDef()
+        {
+            var c = new Ctx();
+            ProcessDefAccessor processDefAccessor = new ProcessDefAccessor();
+            var getResult = await processDefAccessor.Create(c.E1, "Test Process Def");
+            Assert.IsTrue(getResult > 0);
+        }
+
+        [TestMethod]
+        [TestCategory("Api_V0")]
+        public async Task TestCreateTask()
+        {
+            var c = new Ctx();
+            ProcessDefAccessor processDefAccessor = new ProcessDefAccessor();
+            var getProcessDef = await processDefAccessor.Create(c.AllAdmins[0], "Test Process Def");
+
+            TaskViewModel task = new TaskViewModel() { name = "Test Task", SelectedMemberId = new long[c.E1.Id] };
+            var createTask = await processDefAccessor.CreateTask(c.E1, getProcessDef, task);
+            Assert.IsTrue(!string.IsNullOrEmpty(createTask.Id));
+        }
+
+
+        [TestMethod]
+        [TestCategory("Api_V0")]
         public void TestProcessStart()
-        {            
+        {
             var c = new Ctx();
             ProcessDefAccessor processDefAccessor = new ProcessDefAccessor();
             ProcessDef processController = new ProcessDef();

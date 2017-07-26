@@ -39,7 +39,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var perms = PermissionsUtility.Create(s, caller);                    
+                    var perms = PermissionsUtility.Create(s, caller);
                     var deployed = await Deploy(s, localId, perms);
                     tx.Commit();
                     s.Flush();
@@ -246,7 +246,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
                 ProcessDef_Camunda processDef = new ProcessDef_Camunda();
                 processDef.OrgId = perms.GetCaller().Organization.Id;
-                processDef.Creator = ForModel.Create(perms.GetCaller());
+                processDef.Creator = ForModel.Create(perms.GetCaller());  // issue with Unit test
                 processDef.ProcessDefKey = processName;
                 //processDef.LocalId = localProcessDefId;
 
@@ -262,7 +262,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                 var path = "CoreProcess/" + guid + ".bpmn";
 
                 //upload to server
-                await UploadFileToServer(getStream, path);
+                await BpmnUtility.UploadFileToServer(getStream, path);
 
                 ProcessDef_CamundaFile processDef_File = new ProcessDef_CamundaFile();
                 processDef_File.FileKey = path;
@@ -272,7 +272,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
                 return processDef.Id;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }
@@ -322,7 +322,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                 fileStream.Seek(0, SeekOrigin.Begin);
                 fileStream.Position = 0;
 
-                await UploadFileToServer(fileStream, getProcessDefFileDetails.FileKey);
+                await BpmnUtility.UploadFileToServer(fileStream, getProcessDefFileDetails.FileKey);
 
             }
             catch (Exception ex)
@@ -339,7 +339,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var perms = PermissionsUtility.Create(s, caller);                    
+                    var perms = PermissionsUtility.Create(s, caller);
                     var deleted = await Delete(s, processId, perms);
                     tx.Commit();
                     s.Flush();
@@ -362,7 +362,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                 var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == getProcessDefDetails.LocalId).SingleOrDefault();
                 if (getProcessDefFileDetails != null)
                 {
-                    await DeleteFileFromServer(getProcessDefFileDetails.FileKey);
+                    await BpmnUtility.DeleteFileFromServer(getProcessDefFileDetails.FileKey);
                 }
             }
             catch (Exception ex)
@@ -506,7 +506,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     //XDocument x1 = XDocument.Load(fileStream);
                     fileStream.Position = 0;
 
-                    await UploadFileToServer(fileStream, getProcessDefFileDetails.FileKey);
+                    await BpmnUtility.UploadFileToServer(fileStream, getProcessDefFileDetails.FileKey);
 
                     modelObj.Id = userTaskId;
                     modelObj.SelectedMemberName = BpmnUtility.GetMemberName(caller, "", model.SelectedMemberId);
@@ -905,7 +905,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
-                var perms = PermissionsUtility.Create(s, caller);                
+                var perms = PermissionsUtility.Create(s, caller);
                 var updated = await UpdateTask(s, localId, model, caller, perms);
                 return updated;
             }
@@ -951,7 +951,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     fileStream.Seek(0, SeekOrigin.Begin);
                     fileStream.Position = 0;
 
-                    await UploadFileToServer(fileStream, getProcessDefFileDetails.FileKey);
+                    await BpmnUtility.UploadFileToServer(fileStream, getProcessDefFileDetails.FileKey);
 
                     modelObj.SelectedMemberName = BpmnUtility.GetMemberName(caller, "", model.SelectedMemberId);
                 }
@@ -998,7 +998,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     fileStream.Seek(0, SeekOrigin.Begin);
                     fileStream.Position = 0;
 
-                    await UploadFileToServer(fileStream, getProcessDefFileDetails.FileKey);
+                    await BpmnUtility.UploadFileToServer(fileStream, getProcessDefFileDetails.FileKey);
                 }
             }
             catch (Exception ex)
@@ -1069,8 +1069,13 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     new XElement(bpmn + "endEvent", new XAttribute("id", "EndEvent"), new XAttribute("name", processName + "&#10;finished")))));
 
                 string dir = System.Web.HttpContext.Current.Server.MapPath("~/Areas/CoreProcess/CamundaFiles/");
-                string dest = Path.Combine(dir, "blank.bpmn");
 
+                if (string.IsNullOrEmpty(dir))  //for Unit Test
+                {
+                    dir = BpmnUtility.UnitTestPath();
+                }
+
+                string dest = Path.Combine(dir, "blank.bpmn");
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
 
@@ -1126,7 +1131,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     var ins_stream = BpmnUtility.InsertNode(de_stream, oldOrder, newOrder, oldOrderId, newOrderId, name, candidateGroups);
 
                     //stream upload
-                    await UploadFileToServer(ins_stream, getProcessDefFileDetails.FileKey);
+                    await BpmnUtility.UploadFileToServer(ins_stream, getProcessDefFileDetails.FileKey);
                 }
             }
             catch (Exception ex)
@@ -1138,50 +1143,6 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return result;
         }
 
-        public async System.Threading.Tasks.Task UploadFileToServer(Stream stream, string path)
-        {
-            try
-            {
-                var fileTransferUtilityRequest = new TransferUtilityUploadRequest
-                {
-                    BucketName = "Radial",
-                    InputStream = stream,
-                    StorageClass = S3StorageClass.Standard,
-                    Key = path,
-                    CannedACL = S3CannedACL.PublicRead,
-                };
-                //var fileTransferUtility = new TransferUtility(new AmazonS3Client(Amazon.RegionEndpoint.USWest2));
-                var fileTransferUtility = new TransferUtility(new AmazonS3Client(Amazon.RegionEndpoint.USEast1));
-                await fileTransferUtility.UploadAsync(fileTransferUtilityRequest);
-
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-
-        public async System.Threading.Tasks.Task DeleteFileFromServer(string keyName)
-        {
-            IAmazonS3 client;
-            using (client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1))
-            {
-                DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest
-                {
-                    BucketName = "Radial",
-                    Key = keyName
-                };
-                try
-                {
-                    var response = await client.DeleteObjectAsync(deleteObjectRequest);
-                    //Console.WriteLine("Deleting an object");
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            }
-        }
 
         public async Task<List<TaskViewModel>> GetTaskListByProcessDefId(UserOrganizationModel caller, List<string> processDefId)
         {
