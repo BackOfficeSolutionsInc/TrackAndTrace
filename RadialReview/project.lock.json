@@ -1,9 +1,9 @@
 {
-  "version": 2,
+  "locked": false,
+  "version": 1,
   "targets": {
     ".NETFramework,Version=v4.5.2": {
       "Antlr/3.4.1.9004": {
-        "type": "package",
         "compile": {
           "lib/Antlr3.Runtime.dll": {}
         },
@@ -12,7 +12,6 @@
         }
       },
       "AWSSDK/2.3.55.2": {
-        "type": "package",
         "compile": {
           "lib/net45/AWSSDK.dll": {}
         },
@@ -21,7 +20,6 @@
         }
       },
       "BCXAPI/1.0.4554.21216": {
-        "type": "package",
         "compile": {
           "lib/net40/BCXAPI.dll": {}
         },
@@ -30,7 +28,6 @@
         }
       },
       "Common.Logging/3.3.1": {
-        "type": "package",
         "dependencies": {
           "Common.Logging.Core": "3.3.1"
         },
@@ -42,7 +39,6 @@
         }
       },
       "Common.Logging.Core/3.3.1": {
-        "type": "package",
         "compile": {
           "lib/net40/Common.Logging.Core.dll": {}
         },
@@ -51,7 +47,6 @@
         }
       },
       "CommonMark.NET/0.15.1": {
-        "type": "package",
         "compile": {
           "lib/net45/CommonMark.dll": {}
         },
@@ -60,7 +55,6 @@
         }
       },
       "CsvHelper/2.16.3": {
-        "type": "package",
         "frameworkAssemblies": [
           "System",
           "System.Core",
@@ -74,7 +68,6 @@
         }
       },
       "DocX/1.0.0.22": {
-        "type": "package",
         "compile": {
           "lib/net40/DocX.dll": {}
         },
@@ -83,7 +76,6 @@
         }
       },
       "EntityFramework/6.1.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.ComponentModel.DataAnnotations"
         ],
@@ -97,7 +89,6 @@
         }
       },
       "FluentNHibernate/2.0.3": {
-        "type": "package",
         "dependencies": {
           "NHibernate": "4.0.0"
         },
@@ -109,7 +100,6 @@
         }
       },
       "Iesi.Collections/4.0.1.4000": {
-        "type": "package",
         "compile": {
           "lib/net40/Iesi.Collections.dll": {}
         },
@@ -118,7 +108,6 @@
         }
       },
       "ImageResizer/4.0.5": {
-        "type": "package",
         "compile": {
           "lib/net45/ImageResizer.dll": {}
         },
@@ -127,7 +116,6 @@
         }
       },
       "log4net/2.0.8": {
-        "type": "package",
         "compile": {
           "lib/net45-full/log4net.dll": {}
         },
@@ -136,7 +124,6 @@
         }
       },
       "LumenWorks.Framework.IO/3.8.0": {
-        "type": "package",
         "compile": {
           "lib/net20/LumenWorks.Framework.IO.dll": {}
         },
@@ -145,7 +132,6 @@
         }
       },
       "Manatee.Trello/1.12.0": {
-        "type": "package",
         "compile": {
           "lib/net45/Manatee.Trello.dll": {}
         },
@@ -154,7 +140,6 @@
         }
       },
       "Mandrill/2.4.181": {
-        "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "6.0.6"
         },
@@ -166,7 +151,6 @@
         }
       },
       "MathNet.Numerics/3.17.0": {
-        "type": "package",
         "compile": {
           "lib/net40/MathNet.Numerics.dll": {}
         },
@@ -175,7 +159,6 @@
         }
       },
       "Microsoft.AspNet.Identity.Core/2.2.1": {
-        "type": "package",
         "compile": {
           "lib/net45/Microsoft.AspNet.Identity.Core.dll": {}
         },
@@ -184,7 +167,6 @@
         }
       },
       "Microsoft.AspNet.Identity.EntityFramework/2.2.1": {
-        "type": "package",
         "dependencies": {
           "EntityFramework": "6.1.0",
           "Microsoft.AspNet.Identity.Core": "2.2.1"
@@ -197,7 +179,6 @@
         }
       },
       "Microsoft.AspNet.Identity.Owin/2.2.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.Identity.Core": "2.2.1",
           "Microsoft.Owin.Security": "2.1.0",
@@ -212,7 +193,6 @@
         }
       },
       "Microsoft.AspNet.Mvc/5.2.3": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.Razor": "[3.2.3, 3.3.0)",
           "Microsoft.AspNet.WebPages": "[3.2.3, 3.3.0)"
@@ -225,7 +205,6 @@
         }
       },
       "Microsoft.AspNet.Razor/3.2.3": {
-        "type": "package",
         "compile": {
           "lib/net45/System.Web.Razor.dll": {}
         },
@@ -234,7 +213,6 @@
         }
       },
       "Microsoft.AspNet.SignalR.Core/2.2.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Owin": "2.1.0",
           "Microsoft.Owin.Security": "2.1.0",
@@ -249,7 +227,6 @@
         }
       },
       "Microsoft.AspNet.SignalR.Redis/2.2.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.SignalR.Core": "2.2.1",
           "StackExchange.Redis.StrongName": "1.0.322"
@@ -262,7 +239,6 @@
         }
       },
       "Microsoft.AspNet.SignalR.SystemWeb/2.2.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.SignalR.Core": "2.2.1",
           "Microsoft.Owin.Host.SystemWeb": "2.1.0"
@@ -278,7 +254,6 @@
         }
       },
       "Microsoft.AspNet.Web.Optimization/1.1.3": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Web.Infrastructure": "1.0.0",
           "WebGrease": "1.5.2"
@@ -290,14 +265,12 @@
           "lib/net40/System.Web.Optimization.dll": {}
         }
       },
-      "Microsoft.AspNet.WebApi/5.2.2": {
-        "type": "package",
+      "Microsoft.AspNet.WebApi/5.2.3": {
         "dependencies": {
-          "Microsoft.AspNet.WebApi.WebHost": "[5.2.2, 5.3.0)"
+          "Microsoft.AspNet.WebApi.WebHost": "[5.2.3, 5.3.0)"
         }
       },
-      "Microsoft.AspNet.WebApi.Client/5.2.2": {
-        "type": "package",
+      "Microsoft.AspNet.WebApi.Client/5.2.3": {
         "dependencies": {
           "Newtonsoft.Json": "6.0.4"
         },
@@ -311,10 +284,9 @@
           "lib/net45/System.Net.Http.Formatting.dll": {}
         }
       },
-      "Microsoft.AspNet.WebApi.Core/5.2.2": {
-        "type": "package",
+      "Microsoft.AspNet.WebApi.Core/5.2.3": {
         "dependencies": {
-          "Microsoft.AspNet.WebApi.Client": "5.2.2"
+          "Microsoft.AspNet.WebApi.Client": "5.2.3"
         },
         "compile": {
           "lib/net45/System.Web.Http.dll": {}
@@ -323,10 +295,9 @@
           "lib/net45/System.Web.Http.dll": {}
         }
       },
-      "Microsoft.AspNet.WebApi.WebHost/5.2.2": {
-        "type": "package",
+      "Microsoft.AspNet.WebApi.WebHost/5.2.3": {
         "dependencies": {
-          "Microsoft.AspNet.WebApi.Core": "[5.2.2, 5.3.0)"
+          "Microsoft.AspNet.WebApi.Core": "[5.2.3, 5.3.0)"
         },
         "compile": {
           "lib/net45/System.Web.Http.WebHost.dll": {}
@@ -336,7 +307,6 @@
         }
       },
       "Microsoft.AspNet.WebHooks.Common/1.2.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.WebApi.Core": "5.2.2"
         },
@@ -348,7 +318,6 @@
         }
       },
       "Microsoft.AspNet.WebHooks.Custom/1.2.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.WebApi.Core": "5.2.2",
           "Microsoft.AspNet.WebHooks.Common": "1.2.1",
@@ -362,7 +331,6 @@
         }
       },
       "Microsoft.AspNet.WebHooks.Custom.Api/1.2.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.WebApi.Core": "5.2.2",
           "Microsoft.AspNet.WebHooks.Common": "1.2.1",
@@ -376,7 +344,6 @@
         }
       },
       "Microsoft.AspNet.WebHooks.Custom.Mvc/1.2.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.Mvc": "5.2.2",
           "Microsoft.AspNet.WebApi.Core": "5.2.2",
@@ -391,7 +358,6 @@
         }
       },
       "Microsoft.AspNet.WebHooks.Receivers/1.2.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.WebApi.Core": "5.2.2",
           "Microsoft.AspNet.WebHooks.Common": "1.2.1"
@@ -404,7 +370,6 @@
         }
       },
       "Microsoft.AspNet.WebHooks.Receivers.Custom/1.2.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.WebApi.Core": "5.2.2",
           "Microsoft.AspNet.WebHooks.Common": "1.2.1",
@@ -418,7 +383,6 @@
         }
       },
       "Microsoft.AspNet.WebPages/3.2.3": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.Razor": "[3.2.3, 3.3.0)",
           "Microsoft.Web.Infrastructure": "1.0.0"
@@ -437,7 +401,6 @@
         }
       },
       "Microsoft.AspNetCore.Cryptography.Internal/1.1.1": {
-        "type": "package",
         "dependencies": {
           "NETStandard.Library": "1.6.1"
         },
@@ -449,7 +412,6 @@
         }
       },
       "Microsoft.AspNetCore.DataProtection/1.1.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNetCore.Cryptography.Internal": "1.1.1",
           "Microsoft.AspNetCore.DataProtection.Abstractions": "1.1.1",
@@ -472,7 +434,6 @@
         }
       },
       "Microsoft.AspNetCore.DataProtection.Abstractions/1.1.1": {
-        "type": "package",
         "dependencies": {
           "NETStandard.Library": "1.6.1"
         },
@@ -484,7 +445,6 @@
         }
       },
       "Microsoft.AspNetCore.Hosting.Abstractions/1.1.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNetCore.Hosting.Server.Abstractions": "1.1.1",
           "Microsoft.AspNetCore.Http.Abstractions": "1.1.1",
@@ -502,7 +462,6 @@
         }
       },
       "Microsoft.AspNetCore.Hosting.Server.Abstractions/1.1.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNetCore.Http.Features": "1.1.1",
           "Microsoft.Extensions.Configuration.Abstractions": "1.1.1",
@@ -516,7 +475,6 @@
         }
       },
       "Microsoft.AspNetCore.Http.Abstractions/1.1.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNetCore.Http.Features": "1.1.1",
           "Microsoft.Extensions.Primitives": "1.1.0",
@@ -531,7 +489,6 @@
         }
       },
       "Microsoft.AspNetCore.Http.Features/1.1.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Extensions.Primitives": "1.1.0",
           "NETStandard.Library": "1.6.1"
@@ -544,7 +501,6 @@
         }
       },
       "Microsoft.Extensions.Configuration.Abstractions/1.1.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Extensions.Primitives": "1.1.0",
           "NETStandard.Library": "1.6.1"
@@ -557,7 +513,6 @@
         }
       },
       "Microsoft.Extensions.DependencyInjection/1.1.0": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
           "NETStandard.Library": "1.6.1"
@@ -570,7 +525,6 @@
         }
       },
       "Microsoft.Extensions.DependencyInjection.Abstractions/1.1.0": {
-        "type": "package",
         "dependencies": {
           "NETStandard.Library": "1.6.1",
           "System.ComponentModel": "4.3.0"
@@ -583,7 +537,6 @@
         }
       },
       "Microsoft.Extensions.FileProviders.Abstractions/1.1.0": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Extensions.Primitives": "1.1.0",
           "NETStandard.Library": "1.6.1"
@@ -596,7 +549,6 @@
         }
       },
       "Microsoft.Extensions.Logging.Abstractions/1.1.1": {
-        "type": "package",
         "dependencies": {
           "NETStandard.Library": "1.6.1"
         },
@@ -608,7 +560,6 @@
         }
       },
       "Microsoft.Extensions.Options/1.1.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
           "Microsoft.Extensions.Primitives": "1.1.0",
@@ -623,7 +574,6 @@
         }
       },
       "Microsoft.Extensions.Primitives/1.1.0": {
-        "type": "package",
         "dependencies": {
           "NETStandard.Library": "1.6.1",
           "System.Runtime.CompilerServices.Unsafe": "4.3.0"
@@ -636,7 +586,6 @@
         }
       },
       "Microsoft.Identity.Client/1.0.304142221-alpha": {
-        "type": "package",
         "compile": {
           "lib/net45/Microsoft.Identity.Client.Platform.dll": {},
           "lib/net45/Microsoft.Identity.Client.dll": {}
@@ -647,7 +596,6 @@
         }
       },
       "Microsoft.IdentityModel.Logging/1.1.2": {
-        "type": "package",
         "compile": {
           "lib/net451/Microsoft.IdentityModel.Logging.dll": {}
         },
@@ -656,7 +604,6 @@
         }
       },
       "Microsoft.IdentityModel.Tokens/5.1.2": {
-        "type": "package",
         "dependencies": {
           "Microsoft.IdentityModel.Logging": "1.1.2",
           "Newtonsoft.Json": "9.0.1"
@@ -672,7 +619,6 @@
         }
       },
       "Microsoft.NETCore.Platforms/1.1.0": {
-        "type": "package",
         "compile": {
           "lib/netstandard1.0/_._": {}
         },
@@ -681,7 +627,6 @@
         }
       },
       "Microsoft.OData.Client/6.13.0": {
-        "type": "package",
         "dependencies": {
           "Microsoft.OData.Core": "[6.13.0]"
         },
@@ -722,7 +667,6 @@
         }
       },
       "Microsoft.OData.Core/6.13.0": {
-        "type": "package",
         "dependencies": {
           "Microsoft.OData.Edm": "[6.13.0]",
           "Microsoft.Spatial": "[6.13.0]"
@@ -764,7 +708,6 @@
         }
       },
       "Microsoft.OData.Edm/6.13.0": {
-        "type": "package",
         "compile": {
           "lib/portable-net40+sl5+wp8+win8+wpa/Microsoft.OData.Edm.dll": {}
         },
@@ -802,7 +745,6 @@
         }
       },
       "Microsoft.OData.ProxyExtensions/1.0.35": {
-        "type": "package",
         "dependencies": {
           "Microsoft.OData.Client": "6.11.0"
         },
@@ -814,7 +756,6 @@
         }
       },
       "Microsoft.Office365.OutlookServices-V2.0/2.0.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.OData.Client": "6.13.0",
           "Microsoft.OData.ProxyExtensions": "1.0.35"
@@ -827,7 +768,6 @@
         }
       },
       "Microsoft.Owin/3.0.1": {
-        "type": "package",
         "dependencies": {
           "Owin": "1.0.0"
         },
@@ -839,7 +779,6 @@
         }
       },
       "Microsoft.Owin.Host.SystemWeb/3.0.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Owin": "3.0.1",
           "Owin": "1.0.0"
@@ -852,7 +791,6 @@
         }
       },
       "Microsoft.Owin.Security/3.0.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Owin": "3.0.1",
           "Owin": "1.0.0"
@@ -865,7 +803,6 @@
         }
       },
       "Microsoft.Owin.Security.Cookies/3.0.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Owin": "3.0.1",
           "Microsoft.Owin.Security": "3.0.1",
@@ -879,7 +816,6 @@
         }
       },
       "Microsoft.Owin.Security.OAuth/3.0.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Owin": "3.0.1",
           "Microsoft.Owin.Security": "3.0.1",
@@ -894,7 +830,6 @@
         }
       },
       "Microsoft.Spatial/6.13.0": {
-        "type": "package",
         "compile": {
           "lib/portable-net40+sl5+wp8+win8+wpa/Microsoft.Spatial.dll": {}
         },
@@ -932,7 +867,6 @@
         }
       },
       "Microsoft.Tpl.Dataflow/4.5.24": {
-        "type": "package",
         "compile": {
           "lib/portable-net45+win8+wpa81/System.Threading.Tasks.Dataflow.dll": {}
         },
@@ -941,7 +875,6 @@
         }
       },
       "Microsoft.Web.Infrastructure/1.0.0": {
-        "type": "package",
         "compile": {
           "lib/net40/Microsoft.Web.Infrastructure.dll": {}
         },
@@ -950,7 +883,6 @@
         }
       },
       "MySql.Data/6.9.9": {
-        "type": "package",
         "compile": {
           "lib/net45/MySql.Data.dll": {}
         },
@@ -959,7 +891,6 @@
         }
       },
       "NETStandard.Library/1.6.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.1.0",
           "System.Collections": "4.3.0",
@@ -995,7 +926,6 @@
         }
       },
       "Newtonsoft.Json/9.0.1": {
-        "type": "package",
         "compile": {
           "lib/net45/Newtonsoft.Json.dll": {}
         },
@@ -1004,7 +934,6 @@
         }
       },
       "NHibernate/4.0.0.4000": {
-        "type": "package",
         "dependencies": {
           "Iesi.Collections": "[4.0.0, 5.0.0)"
         },
@@ -1016,7 +945,6 @@
         }
       },
       "NHibernate.Envers/2.1.0": {
-        "type": "package",
         "dependencies": {
           "NHibernate": "[4.0.0, 4.1.0)"
         },
@@ -1028,7 +956,6 @@
         }
       },
       "NReco.PhantomJS/1.0.3": {
-        "type": "package",
         "dependencies": {
           "PhantomJS": "2.1.1"
         },
@@ -1039,11 +966,8 @@
           "lib/net40-Client/NReco.PhantomJS.dll": {}
         }
       },
-      "OpenCover/4.6.519": {
-        "type": "package"
-      },
+      "OpenCover/4.6.519": {},
       "OpenPop.NET/2.0.6.1120": {
-        "type": "package",
         "compile": {
           "lib/net40/OpenPop.dll": {}
         },
@@ -1052,7 +976,6 @@
         }
       },
       "Owin/1.0.0": {
-        "type": "package",
         "compile": {
           "lib/net40/Owin.dll": {}
         },
@@ -1061,14 +984,12 @@
         }
       },
       "OxyPlot/1.0.0-unstable2100": {
-        "type": "package",
         "dependencies": {
           "OxyPlot.WindowsForms": "[1.0.0-unstable2100]",
           "OxyPlot.Wpf": "[1.0.0-unstable2100]"
         }
       },
       "OxyPlot.Core/1.0.0-unstable2100": {
-        "type": "package",
         "compile": {
           "lib/net45/OxyPlot.dll": {}
         },
@@ -1077,7 +998,6 @@
         }
       },
       "OxyPlot.WindowsForms/1.0.0-unstable2100": {
-        "type": "package",
         "dependencies": {
           "OxyPlot.Core": "[1.0.0-unstable2100]"
         },
@@ -1089,7 +1009,6 @@
         }
       },
       "OxyPlot.Wpf/1.0.0-unstable2100": {
-        "type": "package",
         "dependencies": {
           "OxyPlot.Core": "[1.0.0-unstable2100]"
         },
@@ -1102,8 +1021,7 @@
           "lib/net45/OxyPlot.Xps.dll": {}
         }
       },
-      "PDFsharp-MigraDoc-gdi/1.50.4000-beta3b": {
-        "type": "package",
+      "PDFsharp-MigraDoc-GDI/1.50.4000-beta3b": {
         "frameworkAssemblies": [
           "System.Drawing"
         ],
@@ -1136,11 +1054,8 @@
           }
         }
       },
-      "PhantomJS/2.1.1": {
-        "type": "package"
-      },
+      "PhantomJS/2.1.1": {},
       "protobuf-net/2.0.0.668": {
-        "type": "package",
         "compile": {
           "lib/net40/protobuf-net.dll": {}
         },
@@ -1149,7 +1064,6 @@
         }
       },
       "RestSharp/105.2.3": {
-        "type": "package",
         "compile": {
           "lib/net452/RestSharp.dll": {}
         },
@@ -1158,7 +1072,6 @@
         }
       },
       "StackExchange.Redis.StrongName/1.0.322": {
-        "type": "package",
         "compile": {
           "lib/net45/StackExchange.Redis.StrongName.dll": {}
         },
@@ -1167,7 +1080,6 @@
         }
       },
       "System.Collections/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System",
           "System.Core"
@@ -1180,7 +1092,6 @@
         }
       },
       "System.Collections.Concurrent/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -1192,7 +1103,6 @@
         }
       },
       "System.ComponentModel/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -1204,7 +1114,6 @@
         }
       },
       "System.Data.SQLite/1.0.105": {
-        "type": "package",
         "dependencies": {
           "System.Data.SQLite.Core": "1.0.105",
           "System.Data.SQLite.EF6": "1.0.105",
@@ -1212,19 +1121,14 @@
         }
       },
       "System.Data.SQLite.Core/1.0.105": {
-        "type": "package",
         "compile": {
           "lib/net451/System.Data.SQLite.dll": {}
         },
         "runtime": {
           "lib/net451/System.Data.SQLite.dll": {}
-        },
-        "build": {
-          "build/net451/System.Data.SQLite.Core.targets": {}
         }
       },
       "System.Data.SQLite.EF6/1.0.105": {
-        "type": "package",
         "dependencies": {
           "EntityFramework": "6.0.0"
         },
@@ -1236,7 +1140,6 @@
         }
       },
       "System.Data.SQLite.Linq/1.0.105": {
-        "type": "package",
         "compile": {
           "lib/net451/System.Data.SQLite.Linq.dll": {}
         },
@@ -1245,7 +1148,6 @@
         }
       },
       "System.Diagnostics.Debug/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -1257,7 +1159,6 @@
         }
       },
       "System.Diagnostics.Tools/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -1269,7 +1170,6 @@
         }
       },
       "System.Diagnostics.Tracing/4.3.0": {
-        "type": "package",
         "compile": {
           "ref/net45/_._": {}
         },
@@ -1278,7 +1178,6 @@
         }
       },
       "System.Globalization/4.3.0": {
-        "type": "package",
         "compile": {
           "ref/net45/_._": {}
         },
@@ -1287,7 +1186,6 @@
         }
       },
       "System.IdentityModel.Tokens.Jwt/5.1.2": {
-        "type": "package",
         "dependencies": {
           "Microsoft.IdentityModel.Tokens": "5.1.2"
         },
@@ -1299,7 +1197,6 @@
         }
       },
       "System.IO/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -1311,7 +1208,6 @@
         }
       },
       "System.IO.Compression/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.IO.Compression"
         ],
@@ -1323,7 +1219,6 @@
         }
       },
       "System.Linq/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.Core"
         ],
@@ -1335,7 +1230,6 @@
         }
       },
       "System.Linq.Expressions/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.Core"
         ],
@@ -1347,7 +1241,6 @@
         }
       },
       "System.Net.Http/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.Net.Http"
         ],
@@ -1359,7 +1252,6 @@
         }
       },
       "System.Net.Primitives/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -1371,7 +1263,6 @@
         }
       },
       "System.ObjectModel/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -1383,7 +1274,6 @@
         }
       },
       "System.Reflection/4.3.0": {
-        "type": "package",
         "compile": {
           "ref/net45/_._": {}
         },
@@ -1392,7 +1282,6 @@
         }
       },
       "System.Reflection.Extensions/4.3.0": {
-        "type": "package",
         "compile": {
           "ref/net45/_._": {}
         },
@@ -1401,7 +1290,6 @@
         }
       },
       "System.Reflection.Primitives/4.3.0": {
-        "type": "package",
         "compile": {
           "ref/net45/_._": {}
         },
@@ -1410,7 +1298,6 @@
         }
       },
       "System.Resources.ResourceManager/4.3.0": {
-        "type": "package",
         "compile": {
           "ref/net45/_._": {}
         },
@@ -1419,7 +1306,6 @@
         }
       },
       "System.Runtime/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System",
           "System.ComponentModel.Composition",
@@ -1433,7 +1319,6 @@
         }
       },
       "System.Runtime.CompilerServices.Unsafe/4.3.0": {
-        "type": "package",
         "compile": {
           "lib/netstandard1.0/System.Runtime.CompilerServices.Unsafe.dll": {}
         },
@@ -1442,7 +1327,6 @@
         }
       },
       "System.Runtime.Extensions/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -1454,7 +1338,6 @@
         }
       },
       "System.Runtime.InteropServices/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System",
           "System.Core"
@@ -1467,7 +1350,6 @@
         }
       },
       "System.Runtime.InteropServices.RuntimeInformation/4.3.0": {
-        "type": "package",
         "compile": {
           "ref/netstandard1.1/System.Runtime.InteropServices.RuntimeInformation.dll": {}
         },
@@ -1486,7 +1368,6 @@
         }
       },
       "System.Runtime.Numerics/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.Numerics"
         ],
@@ -1498,7 +1379,6 @@
         }
       },
       "System.Text.Encoding/4.3.0": {
-        "type": "package",
         "compile": {
           "ref/net45/_._": {}
         },
@@ -1507,7 +1387,6 @@
         }
       },
       "System.Text.Encoding.Extensions/4.3.0": {
-        "type": "package",
         "compile": {
           "ref/net45/_._": {}
         },
@@ -1516,7 +1395,6 @@
         }
       },
       "System.Text.Encodings.Web/4.3.0": {
-        "type": "package",
         "compile": {
           "lib/netstandard1.0/System.Text.Encodings.Web.dll": {}
         },
@@ -1525,7 +1403,6 @@
         }
       },
       "System.Text.RegularExpressions/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -1537,7 +1414,6 @@
         }
       },
       "System.Threading/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System",
           "System.Core"
@@ -1550,7 +1426,6 @@
         }
       },
       "System.Threading.Tasks/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.Core"
         ],
@@ -1562,7 +1437,6 @@
         }
       },
       "System.Threading.Timer/4.3.0": {
-        "type": "package",
         "compile": {
           "ref/net451/_._": {}
         },
@@ -1571,7 +1445,6 @@
         }
       },
       "System.Xml.ReaderWriter/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.Xml"
         ],
@@ -1583,7 +1456,6 @@
         }
       },
       "System.Xml.XDocument/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.Xml.Linq"
         ],
@@ -1595,7 +1467,6 @@
         }
       },
       "TimeZoneNames/2.1.0": {
-        "type": "package",
         "dependencies": {
           "protobuf-net": "2.0.0.668"
         },
@@ -1607,7 +1478,6 @@
         }
       },
       "TrelloNet/0.6.2": {
-        "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "4.5.0",
           "RestSharp": "104.1.0"
@@ -1620,7 +1490,6 @@
         }
       },
       "Twilio/5.1.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.IdentityModel.Logging": "1.1.2",
           "Microsoft.IdentityModel.Tokens": "5.1.2",
@@ -1635,7 +1504,6 @@
         }
       },
       "TypeLite/1.8.4": {
-        "type": "package",
         "compile": {
           "lib/net4/TypeLite.Net4.dll": {},
           "lib/net4/TypeLite.dll": {}
@@ -1646,7 +1514,6 @@
         }
       },
       "Unofficial.Ionic.Zip/1.9.1.8": {
-        "type": "package",
         "compile": {
           "lib/Ionic.Zip.dll": {}
         },
@@ -1655,7 +1522,6 @@
         }
       },
       "WebGrease/1.5.2": {
-        "type": "package",
         "dependencies": {
           "Antlr": "3.4.1.9004",
           "Newtonsoft.Json": "5.0.4"
@@ -1666,14 +1532,10 @@
         "runtime": {
           "lib/WebGrease.dll": {}
         }
-      },
-      "CamundaCSharpClient/1.0.0": {
-        "type": "project"
       }
     },
     ".NETFramework,Version=v4.5.2/win-x86": {
       "Antlr/3.4.1.9004": {
-        "type": "package",
         "compile": {
           "lib/Antlr3.Runtime.dll": {}
         },
@@ -1682,7 +1544,6 @@
         }
       },
       "AWSSDK/2.3.55.2": {
-        "type": "package",
         "compile": {
           "lib/net45/AWSSDK.dll": {}
         },
@@ -1691,7 +1552,6 @@
         }
       },
       "BCXAPI/1.0.4554.21216": {
-        "type": "package",
         "compile": {
           "lib/net40/BCXAPI.dll": {}
         },
@@ -1700,7 +1560,6 @@
         }
       },
       "Common.Logging/3.3.1": {
-        "type": "package",
         "dependencies": {
           "Common.Logging.Core": "3.3.1"
         },
@@ -1712,7 +1571,6 @@
         }
       },
       "Common.Logging.Core/3.3.1": {
-        "type": "package",
         "compile": {
           "lib/net40/Common.Logging.Core.dll": {}
         },
@@ -1721,7 +1579,6 @@
         }
       },
       "CommonMark.NET/0.15.1": {
-        "type": "package",
         "compile": {
           "lib/net45/CommonMark.dll": {}
         },
@@ -1730,7 +1587,6 @@
         }
       },
       "CsvHelper/2.16.3": {
-        "type": "package",
         "frameworkAssemblies": [
           "System",
           "System.Core",
@@ -1744,7 +1600,6 @@
         }
       },
       "DocX/1.0.0.22": {
-        "type": "package",
         "compile": {
           "lib/net40/DocX.dll": {}
         },
@@ -1753,7 +1608,6 @@
         }
       },
       "EntityFramework/6.1.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.ComponentModel.DataAnnotations"
         ],
@@ -1767,7 +1621,6 @@
         }
       },
       "FluentNHibernate/2.0.3": {
-        "type": "package",
         "dependencies": {
           "NHibernate": "4.0.0"
         },
@@ -1779,7 +1632,6 @@
         }
       },
       "Iesi.Collections/4.0.1.4000": {
-        "type": "package",
         "compile": {
           "lib/net40/Iesi.Collections.dll": {}
         },
@@ -1788,7 +1640,6 @@
         }
       },
       "ImageResizer/4.0.5": {
-        "type": "package",
         "compile": {
           "lib/net45/ImageResizer.dll": {}
         },
@@ -1797,7 +1648,6 @@
         }
       },
       "log4net/2.0.8": {
-        "type": "package",
         "compile": {
           "lib/net45-full/log4net.dll": {}
         },
@@ -1806,7 +1656,6 @@
         }
       },
       "LumenWorks.Framework.IO/3.8.0": {
-        "type": "package",
         "compile": {
           "lib/net20/LumenWorks.Framework.IO.dll": {}
         },
@@ -1815,7 +1664,6 @@
         }
       },
       "Manatee.Trello/1.12.0": {
-        "type": "package",
         "compile": {
           "lib/net45/Manatee.Trello.dll": {}
         },
@@ -1824,7 +1672,6 @@
         }
       },
       "Mandrill/2.4.181": {
-        "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "6.0.6"
         },
@@ -1836,7 +1683,6 @@
         }
       },
       "MathNet.Numerics/3.17.0": {
-        "type": "package",
         "compile": {
           "lib/net40/MathNet.Numerics.dll": {}
         },
@@ -1845,7 +1691,6 @@
         }
       },
       "Microsoft.AspNet.Identity.Core/2.2.1": {
-        "type": "package",
         "compile": {
           "lib/net45/Microsoft.AspNet.Identity.Core.dll": {}
         },
@@ -1854,7 +1699,6 @@
         }
       },
       "Microsoft.AspNet.Identity.EntityFramework/2.2.1": {
-        "type": "package",
         "dependencies": {
           "EntityFramework": "6.1.0",
           "Microsoft.AspNet.Identity.Core": "2.2.1"
@@ -1867,7 +1711,6 @@
         }
       },
       "Microsoft.AspNet.Identity.Owin/2.2.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.Identity.Core": "2.2.1",
           "Microsoft.Owin.Security": "2.1.0",
@@ -1882,7 +1725,6 @@
         }
       },
       "Microsoft.AspNet.Mvc/5.2.3": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.Razor": "[3.2.3, 3.3.0)",
           "Microsoft.AspNet.WebPages": "[3.2.3, 3.3.0)"
@@ -1895,7 +1737,6 @@
         }
       },
       "Microsoft.AspNet.Razor/3.2.3": {
-        "type": "package",
         "compile": {
           "lib/net45/System.Web.Razor.dll": {}
         },
@@ -1904,7 +1745,6 @@
         }
       },
       "Microsoft.AspNet.SignalR.Core/2.2.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Owin": "2.1.0",
           "Microsoft.Owin.Security": "2.1.0",
@@ -1919,7 +1759,6 @@
         }
       },
       "Microsoft.AspNet.SignalR.Redis/2.2.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.SignalR.Core": "2.2.1",
           "StackExchange.Redis.StrongName": "1.0.322"
@@ -1932,7 +1771,6 @@
         }
       },
       "Microsoft.AspNet.SignalR.SystemWeb/2.2.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.SignalR.Core": "2.2.1",
           "Microsoft.Owin.Host.SystemWeb": "2.1.0"
@@ -1948,7 +1786,6 @@
         }
       },
       "Microsoft.AspNet.Web.Optimization/1.1.3": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Web.Infrastructure": "1.0.0",
           "WebGrease": "1.5.2"
@@ -1960,14 +1797,12 @@
           "lib/net40/System.Web.Optimization.dll": {}
         }
       },
-      "Microsoft.AspNet.WebApi/5.2.2": {
-        "type": "package",
+      "Microsoft.AspNet.WebApi/5.2.3": {
         "dependencies": {
-          "Microsoft.AspNet.WebApi.WebHost": "[5.2.2, 5.3.0)"
+          "Microsoft.AspNet.WebApi.WebHost": "[5.2.3, 5.3.0)"
         }
       },
-      "Microsoft.AspNet.WebApi.Client/5.2.2": {
-        "type": "package",
+      "Microsoft.AspNet.WebApi.Client/5.2.3": {
         "dependencies": {
           "Newtonsoft.Json": "6.0.4"
         },
@@ -1981,10 +1816,9 @@
           "lib/net45/System.Net.Http.Formatting.dll": {}
         }
       },
-      "Microsoft.AspNet.WebApi.Core/5.2.2": {
-        "type": "package",
+      "Microsoft.AspNet.WebApi.Core/5.2.3": {
         "dependencies": {
-          "Microsoft.AspNet.WebApi.Client": "5.2.2"
+          "Microsoft.AspNet.WebApi.Client": "5.2.3"
         },
         "compile": {
           "lib/net45/System.Web.Http.dll": {}
@@ -1993,10 +1827,9 @@
           "lib/net45/System.Web.Http.dll": {}
         }
       },
-      "Microsoft.AspNet.WebApi.WebHost/5.2.2": {
-        "type": "package",
+      "Microsoft.AspNet.WebApi.WebHost/5.2.3": {
         "dependencies": {
-          "Microsoft.AspNet.WebApi.Core": "[5.2.2, 5.3.0)"
+          "Microsoft.AspNet.WebApi.Core": "[5.2.3, 5.3.0)"
         },
         "compile": {
           "lib/net45/System.Web.Http.WebHost.dll": {}
@@ -2006,7 +1839,6 @@
         }
       },
       "Microsoft.AspNet.WebHooks.Common/1.2.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.WebApi.Core": "5.2.2"
         },
@@ -2018,7 +1850,6 @@
         }
       },
       "Microsoft.AspNet.WebHooks.Custom/1.2.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.WebApi.Core": "5.2.2",
           "Microsoft.AspNet.WebHooks.Common": "1.2.1",
@@ -2032,7 +1863,6 @@
         }
       },
       "Microsoft.AspNet.WebHooks.Custom.Api/1.2.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.WebApi.Core": "5.2.2",
           "Microsoft.AspNet.WebHooks.Common": "1.2.1",
@@ -2046,7 +1876,6 @@
         }
       },
       "Microsoft.AspNet.WebHooks.Custom.Mvc/1.2.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.Mvc": "5.2.2",
           "Microsoft.AspNet.WebApi.Core": "5.2.2",
@@ -2061,7 +1890,6 @@
         }
       },
       "Microsoft.AspNet.WebHooks.Receivers/1.2.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.WebApi.Core": "5.2.2",
           "Microsoft.AspNet.WebHooks.Common": "1.2.1"
@@ -2074,7 +1902,6 @@
         }
       },
       "Microsoft.AspNet.WebHooks.Receivers.Custom/1.2.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.WebApi.Core": "5.2.2",
           "Microsoft.AspNet.WebHooks.Common": "1.2.1",
@@ -2088,7 +1915,6 @@
         }
       },
       "Microsoft.AspNet.WebPages/3.2.3": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNet.Razor": "[3.2.3, 3.3.0)",
           "Microsoft.Web.Infrastructure": "1.0.0"
@@ -2107,7 +1933,6 @@
         }
       },
       "Microsoft.AspNetCore.Cryptography.Internal/1.1.1": {
-        "type": "package",
         "dependencies": {
           "NETStandard.Library": "1.6.1"
         },
@@ -2119,7 +1944,6 @@
         }
       },
       "Microsoft.AspNetCore.DataProtection/1.1.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNetCore.Cryptography.Internal": "1.1.1",
           "Microsoft.AspNetCore.DataProtection.Abstractions": "1.1.1",
@@ -2142,7 +1966,6 @@
         }
       },
       "Microsoft.AspNetCore.DataProtection.Abstractions/1.1.1": {
-        "type": "package",
         "dependencies": {
           "NETStandard.Library": "1.6.1"
         },
@@ -2154,7 +1977,6 @@
         }
       },
       "Microsoft.AspNetCore.Hosting.Abstractions/1.1.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNetCore.Hosting.Server.Abstractions": "1.1.1",
           "Microsoft.AspNetCore.Http.Abstractions": "1.1.1",
@@ -2172,7 +1994,6 @@
         }
       },
       "Microsoft.AspNetCore.Hosting.Server.Abstractions/1.1.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNetCore.Http.Features": "1.1.1",
           "Microsoft.Extensions.Configuration.Abstractions": "1.1.1",
@@ -2186,7 +2007,6 @@
         }
       },
       "Microsoft.AspNetCore.Http.Abstractions/1.1.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.AspNetCore.Http.Features": "1.1.1",
           "Microsoft.Extensions.Primitives": "1.1.0",
@@ -2201,7 +2021,6 @@
         }
       },
       "Microsoft.AspNetCore.Http.Features/1.1.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Extensions.Primitives": "1.1.0",
           "NETStandard.Library": "1.6.1"
@@ -2214,7 +2033,6 @@
         }
       },
       "Microsoft.Extensions.Configuration.Abstractions/1.1.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Extensions.Primitives": "1.1.0",
           "NETStandard.Library": "1.6.1"
@@ -2227,7 +2045,6 @@
         }
       },
       "Microsoft.Extensions.DependencyInjection/1.1.0": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
           "NETStandard.Library": "1.6.1"
@@ -2240,7 +2057,6 @@
         }
       },
       "Microsoft.Extensions.DependencyInjection.Abstractions/1.1.0": {
-        "type": "package",
         "dependencies": {
           "NETStandard.Library": "1.6.1",
           "System.ComponentModel": "4.3.0"
@@ -2253,7 +2069,6 @@
         }
       },
       "Microsoft.Extensions.FileProviders.Abstractions/1.1.0": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Extensions.Primitives": "1.1.0",
           "NETStandard.Library": "1.6.1"
@@ -2266,7 +2081,6 @@
         }
       },
       "Microsoft.Extensions.Logging.Abstractions/1.1.1": {
-        "type": "package",
         "dependencies": {
           "NETStandard.Library": "1.6.1"
         },
@@ -2278,7 +2092,6 @@
         }
       },
       "Microsoft.Extensions.Options/1.1.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
           "Microsoft.Extensions.Primitives": "1.1.0",
@@ -2293,7 +2106,6 @@
         }
       },
       "Microsoft.Extensions.Primitives/1.1.0": {
-        "type": "package",
         "dependencies": {
           "NETStandard.Library": "1.6.1",
           "System.Runtime.CompilerServices.Unsafe": "4.3.0"
@@ -2306,7 +2118,6 @@
         }
       },
       "Microsoft.Identity.Client/1.0.304142221-alpha": {
-        "type": "package",
         "compile": {
           "lib/net45/Microsoft.Identity.Client.Platform.dll": {},
           "lib/net45/Microsoft.Identity.Client.dll": {}
@@ -2317,7 +2128,6 @@
         }
       },
       "Microsoft.IdentityModel.Logging/1.1.2": {
-        "type": "package",
         "compile": {
           "lib/net451/Microsoft.IdentityModel.Logging.dll": {}
         },
@@ -2326,7 +2136,6 @@
         }
       },
       "Microsoft.IdentityModel.Tokens/5.1.2": {
-        "type": "package",
         "dependencies": {
           "Microsoft.IdentityModel.Logging": "1.1.2",
           "Newtonsoft.Json": "9.0.1"
@@ -2342,7 +2151,6 @@
         }
       },
       "Microsoft.NETCore.Platforms/1.1.0": {
-        "type": "package",
         "compile": {
           "lib/netstandard1.0/_._": {}
         },
@@ -2351,7 +2159,6 @@
         }
       },
       "Microsoft.OData.Client/6.13.0": {
-        "type": "package",
         "dependencies": {
           "Microsoft.OData.Core": "[6.13.0]"
         },
@@ -2392,7 +2199,6 @@
         }
       },
       "Microsoft.OData.Core/6.13.0": {
-        "type": "package",
         "dependencies": {
           "Microsoft.OData.Edm": "[6.13.0]",
           "Microsoft.Spatial": "[6.13.0]"
@@ -2434,7 +2240,6 @@
         }
       },
       "Microsoft.OData.Edm/6.13.0": {
-        "type": "package",
         "compile": {
           "lib/portable-net40+sl5+wp8+win8+wpa/Microsoft.OData.Edm.dll": {}
         },
@@ -2472,7 +2277,6 @@
         }
       },
       "Microsoft.OData.ProxyExtensions/1.0.35": {
-        "type": "package",
         "dependencies": {
           "Microsoft.OData.Client": "6.11.0"
         },
@@ -2484,7 +2288,6 @@
         }
       },
       "Microsoft.Office365.OutlookServices-V2.0/2.0.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.OData.Client": "6.13.0",
           "Microsoft.OData.ProxyExtensions": "1.0.35"
@@ -2497,7 +2300,6 @@
         }
       },
       "Microsoft.Owin/3.0.1": {
-        "type": "package",
         "dependencies": {
           "Owin": "1.0.0"
         },
@@ -2509,7 +2311,6 @@
         }
       },
       "Microsoft.Owin.Host.SystemWeb/3.0.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Owin": "3.0.1",
           "Owin": "1.0.0"
@@ -2522,7 +2323,6 @@
         }
       },
       "Microsoft.Owin.Security/3.0.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Owin": "3.0.1",
           "Owin": "1.0.0"
@@ -2535,7 +2335,6 @@
         }
       },
       "Microsoft.Owin.Security.Cookies/3.0.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Owin": "3.0.1",
           "Microsoft.Owin.Security": "3.0.1",
@@ -2549,7 +2348,6 @@
         }
       },
       "Microsoft.Owin.Security.OAuth/3.0.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.Owin": "3.0.1",
           "Microsoft.Owin.Security": "3.0.1",
@@ -2564,7 +2362,6 @@
         }
       },
       "Microsoft.Spatial/6.13.0": {
-        "type": "package",
         "compile": {
           "lib/portable-net40+sl5+wp8+win8+wpa/Microsoft.Spatial.dll": {}
         },
@@ -2602,7 +2399,6 @@
         }
       },
       "Microsoft.Tpl.Dataflow/4.5.24": {
-        "type": "package",
         "compile": {
           "lib/portable-net45+win8+wpa81/System.Threading.Tasks.Dataflow.dll": {}
         },
@@ -2611,7 +2407,6 @@
         }
       },
       "Microsoft.Web.Infrastructure/1.0.0": {
-        "type": "package",
         "compile": {
           "lib/net40/Microsoft.Web.Infrastructure.dll": {}
         },
@@ -2620,7 +2415,6 @@
         }
       },
       "MySql.Data/6.9.9": {
-        "type": "package",
         "compile": {
           "lib/net45/MySql.Data.dll": {}
         },
@@ -2629,7 +2423,6 @@
         }
       },
       "NETStandard.Library/1.6.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.1.0",
           "System.Collections": "4.3.0",
@@ -2665,7 +2458,6 @@
         }
       },
       "Newtonsoft.Json/9.0.1": {
-        "type": "package",
         "compile": {
           "lib/net45/Newtonsoft.Json.dll": {}
         },
@@ -2674,7 +2466,6 @@
         }
       },
       "NHibernate/4.0.0.4000": {
-        "type": "package",
         "dependencies": {
           "Iesi.Collections": "[4.0.0, 5.0.0)"
         },
@@ -2686,7 +2477,6 @@
         }
       },
       "NHibernate.Envers/2.1.0": {
-        "type": "package",
         "dependencies": {
           "NHibernate": "[4.0.0, 4.1.0)"
         },
@@ -2698,7 +2488,6 @@
         }
       },
       "NReco.PhantomJS/1.0.3": {
-        "type": "package",
         "dependencies": {
           "PhantomJS": "2.1.1"
         },
@@ -2709,11 +2498,8 @@
           "lib/net40-Client/NReco.PhantomJS.dll": {}
         }
       },
-      "OpenCover/4.6.519": {
-        "type": "package"
-      },
+      "OpenCover/4.6.519": {},
       "OpenPop.NET/2.0.6.1120": {
-        "type": "package",
         "compile": {
           "lib/net40/OpenPop.dll": {}
         },
@@ -2722,7 +2508,6 @@
         }
       },
       "Owin/1.0.0": {
-        "type": "package",
         "compile": {
           "lib/net40/Owin.dll": {}
         },
@@ -2731,14 +2516,12 @@
         }
       },
       "OxyPlot/1.0.0-unstable2100": {
-        "type": "package",
         "dependencies": {
           "OxyPlot.WindowsForms": "[1.0.0-unstable2100]",
           "OxyPlot.Wpf": "[1.0.0-unstable2100]"
         }
       },
       "OxyPlot.Core/1.0.0-unstable2100": {
-        "type": "package",
         "compile": {
           "lib/net45/OxyPlot.dll": {}
         },
@@ -2747,7 +2530,6 @@
         }
       },
       "OxyPlot.WindowsForms/1.0.0-unstable2100": {
-        "type": "package",
         "dependencies": {
           "OxyPlot.Core": "[1.0.0-unstable2100]"
         },
@@ -2759,7 +2541,6 @@
         }
       },
       "OxyPlot.Wpf/1.0.0-unstable2100": {
-        "type": "package",
         "dependencies": {
           "OxyPlot.Core": "[1.0.0-unstable2100]"
         },
@@ -2772,8 +2553,7 @@
           "lib/net45/OxyPlot.Xps.dll": {}
         }
       },
-      "PDFsharp-MigraDoc-gdi/1.50.4000-beta3b": {
-        "type": "package",
+      "PDFsharp-MigraDoc-GDI/1.50.4000-beta3b": {
         "frameworkAssemblies": [
           "System.Drawing"
         ],
@@ -2806,11 +2586,8 @@
           }
         }
       },
-      "PhantomJS/2.1.1": {
-        "type": "package"
-      },
+      "PhantomJS/2.1.1": {},
       "protobuf-net/2.0.0.668": {
-        "type": "package",
         "compile": {
           "lib/net40/protobuf-net.dll": {}
         },
@@ -2819,7 +2596,6 @@
         }
       },
       "RestSharp/105.2.3": {
-        "type": "package",
         "compile": {
           "lib/net452/RestSharp.dll": {}
         },
@@ -2828,7 +2604,6 @@
         }
       },
       "StackExchange.Redis.StrongName/1.0.322": {
-        "type": "package",
         "compile": {
           "lib/net45/StackExchange.Redis.StrongName.dll": {}
         },
@@ -2837,7 +2612,6 @@
         }
       },
       "System.Collections/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System",
           "System.Core"
@@ -2850,7 +2624,6 @@
         }
       },
       "System.Collections.Concurrent/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -2862,7 +2635,6 @@
         }
       },
       "System.ComponentModel/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -2874,7 +2646,6 @@
         }
       },
       "System.Data.SQLite/1.0.105": {
-        "type": "package",
         "dependencies": {
           "System.Data.SQLite.Core": "1.0.105",
           "System.Data.SQLite.EF6": "1.0.105",
@@ -2882,19 +2653,14 @@
         }
       },
       "System.Data.SQLite.Core/1.0.105": {
-        "type": "package",
         "compile": {
           "lib/net451/System.Data.SQLite.dll": {}
         },
         "runtime": {
           "lib/net451/System.Data.SQLite.dll": {}
-        },
-        "build": {
-          "build/net451/System.Data.SQLite.Core.targets": {}
         }
       },
       "System.Data.SQLite.EF6/1.0.105": {
-        "type": "package",
         "dependencies": {
           "EntityFramework": "6.0.0"
         },
@@ -2906,7 +2672,6 @@
         }
       },
       "System.Data.SQLite.Linq/1.0.105": {
-        "type": "package",
         "compile": {
           "lib/net451/System.Data.SQLite.Linq.dll": {}
         },
@@ -2915,7 +2680,6 @@
         }
       },
       "System.Diagnostics.Debug/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -2927,7 +2691,6 @@
         }
       },
       "System.Diagnostics.Tools/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -2939,7 +2702,6 @@
         }
       },
       "System.Diagnostics.Tracing/4.3.0": {
-        "type": "package",
         "compile": {
           "ref/net45/_._": {}
         },
@@ -2948,7 +2710,6 @@
         }
       },
       "System.Globalization/4.3.0": {
-        "type": "package",
         "compile": {
           "ref/net45/_._": {}
         },
@@ -2957,7 +2718,6 @@
         }
       },
       "System.IdentityModel.Tokens.Jwt/5.1.2": {
-        "type": "package",
         "dependencies": {
           "Microsoft.IdentityModel.Tokens": "5.1.2"
         },
@@ -2969,7 +2729,6 @@
         }
       },
       "System.IO/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -2981,7 +2740,6 @@
         }
       },
       "System.IO.Compression/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.IO.Compression"
         ],
@@ -2993,7 +2751,6 @@
         }
       },
       "System.Linq/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.Core"
         ],
@@ -3005,7 +2762,6 @@
         }
       },
       "System.Linq.Expressions/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.Core"
         ],
@@ -3017,7 +2773,6 @@
         }
       },
       "System.Net.Http/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.Net.Http"
         ],
@@ -3029,7 +2784,6 @@
         }
       },
       "System.Net.Primitives/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -3041,7 +2795,6 @@
         }
       },
       "System.ObjectModel/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -3053,7 +2806,6 @@
         }
       },
       "System.Reflection/4.3.0": {
-        "type": "package",
         "compile": {
           "ref/net45/_._": {}
         },
@@ -3062,7 +2814,6 @@
         }
       },
       "System.Reflection.Extensions/4.3.0": {
-        "type": "package",
         "compile": {
           "ref/net45/_._": {}
         },
@@ -3071,7 +2822,6 @@
         }
       },
       "System.Reflection.Primitives/4.3.0": {
-        "type": "package",
         "compile": {
           "ref/net45/_._": {}
         },
@@ -3080,7 +2830,6 @@
         }
       },
       "System.Resources.ResourceManager/4.3.0": {
-        "type": "package",
         "compile": {
           "ref/net45/_._": {}
         },
@@ -3089,7 +2838,6 @@
         }
       },
       "System.Runtime/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System",
           "System.ComponentModel.Composition",
@@ -3103,7 +2851,6 @@
         }
       },
       "System.Runtime.CompilerServices.Unsafe/4.3.0": {
-        "type": "package",
         "compile": {
           "lib/netstandard1.0/System.Runtime.CompilerServices.Unsafe.dll": {}
         },
@@ -3112,7 +2859,6 @@
         }
       },
       "System.Runtime.Extensions/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -3124,7 +2870,6 @@
         }
       },
       "System.Runtime.InteropServices/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System",
           "System.Core"
@@ -3137,7 +2882,6 @@
         }
       },
       "System.Runtime.InteropServices.RuntimeInformation/4.3.0": {
-        "type": "package",
         "compile": {
           "ref/netstandard1.1/System.Runtime.InteropServices.RuntimeInformation.dll": {}
         },
@@ -3146,7 +2890,6 @@
         }
       },
       "System.Runtime.Numerics/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.Numerics"
         ],
@@ -3158,7 +2901,6 @@
         }
       },
       "System.Text.Encoding/4.3.0": {
-        "type": "package",
         "compile": {
           "ref/net45/_._": {}
         },
@@ -3167,7 +2909,6 @@
         }
       },
       "System.Text.Encoding.Extensions/4.3.0": {
-        "type": "package",
         "compile": {
           "ref/net45/_._": {}
         },
@@ -3176,7 +2917,6 @@
         }
       },
       "System.Text.Encodings.Web/4.3.0": {
-        "type": "package",
         "compile": {
           "lib/netstandard1.0/System.Text.Encodings.Web.dll": {}
         },
@@ -3185,7 +2925,6 @@
         }
       },
       "System.Text.RegularExpressions/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System"
         ],
@@ -3197,7 +2936,6 @@
         }
       },
       "System.Threading/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System",
           "System.Core"
@@ -3210,7 +2948,6 @@
         }
       },
       "System.Threading.Tasks/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.Core"
         ],
@@ -3222,7 +2959,6 @@
         }
       },
       "System.Threading.Timer/4.3.0": {
-        "type": "package",
         "compile": {
           "ref/net451/_._": {}
         },
@@ -3231,7 +2967,6 @@
         }
       },
       "System.Xml.ReaderWriter/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.Xml"
         ],
@@ -3243,7 +2978,6 @@
         }
       },
       "System.Xml.XDocument/4.3.0": {
-        "type": "package",
         "frameworkAssemblies": [
           "System.Xml.Linq"
         ],
@@ -3255,7 +2989,6 @@
         }
       },
       "TimeZoneNames/2.1.0": {
-        "type": "package",
         "dependencies": {
           "protobuf-net": "2.0.0.668"
         },
@@ -3267,7 +3000,6 @@
         }
       },
       "TrelloNet/0.6.2": {
-        "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "4.5.0",
           "RestSharp": "104.1.0"
@@ -3280,7 +3012,6 @@
         }
       },
       "Twilio/5.1.1": {
-        "type": "package",
         "dependencies": {
           "Microsoft.IdentityModel.Logging": "1.1.2",
           "Microsoft.IdentityModel.Tokens": "5.1.2",
@@ -3295,7 +3026,6 @@
         }
       },
       "TypeLite/1.8.4": {
-        "type": "package",
         "compile": {
           "lib/net4/TypeLite.Net4.dll": {},
           "lib/net4/TypeLite.dll": {}
@@ -3306,7 +3036,6 @@
         }
       },
       "Unofficial.Ionic.Zip/1.9.1.8": {
-        "type": "package",
         "compile": {
           "lib/Ionic.Zip.dll": {}
         },
@@ -3315,7 +3044,6 @@
         }
       },
       "WebGrease/1.5.2": {
-        "type": "package",
         "dependencies": {
           "Antlr": "3.4.1.9004",
           "Newtonsoft.Json": "5.0.4"
@@ -3326,9 +3054,6 @@
         "runtime": {
           "lib/WebGrease.dll": {}
         }
-      },
-      "CamundaCSharpClient/1.0.0": {
-        "type": "project"
       }
     }
   },
@@ -3735,21 +3460,19 @@
         "lib/net40/system.web.optimization.xml"
       ]
     },
-    "Microsoft.AspNet.WebApi/5.2.2": {
-      "sha512": "WhPHHrUoWP6VDTAYVMKZhlk0z4XJv4AABQLkgCJD69Uv2OslcbBTUq41GPXZa3U0tSRSgDnEazUheN/HgqsF4Q==",
+    "Microsoft.AspNet.WebApi/5.2.3": {
+      "sha512": "mGBfSy61+2dIdPwgguW8EaCVsbYTwwVHeCc/pVq1PhlZS87ColgJ++Hve40TrX6Dtqde0fo9M1Tt19rXlHC5GA==",
       "type": "package",
-      "path": "microsoft.aspnet.webapi/5.2.2",
       "files": [
-        "Microsoft.AspNet.WebApi.5.2.2.nupkg.sha512",
+        "Microsoft.AspNet.WebApi.5.2.3.nupkg.sha512",
         "Microsoft.AspNet.WebApi.nuspec"
       ]
     },
-    "Microsoft.AspNet.WebApi.Client/5.2.2": {
-      "sha512": "YVq+s0WeXrPxJk57CoElbtMYf95j76uJcW6nue3Cs4eIer9sgUp4rasSo0gALX3ls1Zf2jMceOLik9X/sJyrwA==",
+    "Microsoft.AspNet.WebApi.Client/5.2.3": {
+      "sha512": "3kiI8peSXbXHDDrRuo+QaX0iCEVRe0nvn2dBDRw656uPX32UalbBlSIDUDlJxu05eau4tnuhsikiUuugvvoUoQ==",
       "type": "package",
-      "path": "microsoft.aspnet.webapi.client/5.2.2",
       "files": [
-        "Microsoft.AspNet.WebApi.Client.5.2.2.nupkg.sha512",
+        "Microsoft.AspNet.WebApi.Client.5.2.3.nupkg.sha512",
         "Microsoft.AspNet.WebApi.Client.nuspec",
         "lib/net45/System.Net.Http.Formatting.dll",
         "lib/net45/System.Net.Http.Formatting.xml",
@@ -3757,24 +3480,22 @@
         "lib/portable-wp8+netcore45+net45+wp81+wpa81/System.Net.Http.Formatting.xml"
       ]
     },
-    "Microsoft.AspNet.WebApi.Core/5.2.2": {
-      "sha512": "P5boFqqGDq1XF7PVz1U4ju85wQLT0Pb5BbuiWy72cOmWXJKCCNqL+av6omi30knp62hpmfw+3rSCm+Nmt5zRgQ==",
+    "Microsoft.AspNet.WebApi.Core/5.2.3": {
+      "sha512": "o90QYlRV8VKR1S7+EcJw9w8WSyVFLl+IIzN8ILZ+n2t6rsc/KS8kBxRzA7wCFPRUHhebCfLqilBk39phvanx3g==",
       "type": "package",
-      "path": "microsoft.aspnet.webapi.core/5.2.2",
       "files": [
         "Content/web.config.transform",
-        "Microsoft.AspNet.WebApi.Core.5.2.2.nupkg.sha512",
+        "Microsoft.AspNet.WebApi.Core.5.2.3.nupkg.sha512",
         "Microsoft.AspNet.WebApi.Core.nuspec",
         "lib/net45/System.Web.Http.dll",
         "lib/net45/System.Web.Http.xml"
       ]
     },
-    "Microsoft.AspNet.WebApi.WebHost/5.2.2": {
-      "sha512": "uZOW06SXoDBbD2Ytx+cWoxnetdCvl9QgJos/9KwN8ckNmtrT3yIc9NCerVsDHrMufYmqA1S+zAyUL34RPlnktg==",
+    "Microsoft.AspNet.WebApi.WebHost/5.2.3": {
+      "sha512": "bhm4/BKdS3t6nK2R3NjCpxulcwtMFiHqVBDLuN3W5So1PhZfE+RBs7eVazGOhsEKCk7PoSmiSnl9DG0cpyfHtA==",
       "type": "package",
-      "path": "microsoft.aspnet.webapi.webhost/5.2.2",
       "files": [
-        "Microsoft.AspNet.WebApi.WebHost.5.2.2.nupkg.sha512",
+        "Microsoft.AspNet.WebApi.WebHost.5.2.3.nupkg.sha512",
         "Microsoft.AspNet.WebApi.WebHost.nuspec",
         "lib/net45/System.Web.Http.WebHost.dll",
         "lib/net45/System.Web.Http.WebHost.xml"
@@ -4445,9 +4166,8 @@
       ]
     },
     "NReco.PhantomJS/1.0.3": {
-      "sha512": "GAfeSIb6g5azm8j0xBd0jbpb8JBKdCp09Z9ruLQJErN69MUbEY+M+EkrkPWxK1POrC7JzPGLPDlGl3awQqT9LQ==",
+      "sha512": "1b86/rHN2BulfnLuhvT6v5cknF0Kfhji94AjQAosQ7FNvBmEWgQgIgp7ZdbGbS+W+lyFVwLGh+qnnKED0+9Iug==",
       "type": "package",
-      "path": "nreco.phantomjs/1.0.3",
       "files": [
         "NReco.PhantomJS.1.0.3.nupkg.sha512",
         "NReco.PhantomJS.nuspec",
@@ -4617,10 +4337,9 @@
         "lib/net45/OxyPlot.Xps.pdb"
       ]
     },
-    "PDFsharp-MigraDoc-gdi/1.50.4000-beta3b": {
+    "PDFsharp-MigraDoc-GDI/1.50.4000-beta3b": {
       "sha512": "/IkMTri6INDMCIQfhg2yYFghbqDtPU68LIp/Jc+BROg8DPGUMNJT34DH6uF6JXoJhL6JBSHqTEMF2HJsGCMXWw==",
       "type": "package",
-      "path": "pdfsharp-migradoc-gdi/1.50.4000-beta3b",
       "files": [
         "PDFsharp-MigraDoc-gdi.1.50.4000-beta3b.nupkg.sha512",
         "PDFsharp-MigraDoc-gdi.nuspec",
@@ -7146,11 +6865,6 @@
         "tools/install.ps1",
         "tools/uninstall.ps1"
       ]
-    },
-    "CamundaCSharpClient/1.0.0": {
-      "type": "project",
-      "path": "../CamundaCSharpClient/CamundaCSharpClient.csproj",
-      "msbuildProject": "../CamundaCSharpClient/CamundaCSharpClient.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -7177,8 +6891,8 @@
       "Microsoft.AspNet.SignalR.Redis >= 2.2.1",
       "Microsoft.AspNet.SignalR.SystemWeb >= 2.2.1",
       "Microsoft.AspNet.Web.Optimization >= 1.1.3",
-      "Microsoft.AspNet.WebApi >= 5.2.2",
-      "Microsoft.AspNet.WebApi.Core >= 5.2.2",
+      "Microsoft.AspNet.WebApi >= 5.2.3",
+      "Microsoft.AspNet.WebApi.Core >= 5.2.3",
       "Microsoft.AspNet.WebHooks.Common >= 1.2.1",
       "Microsoft.AspNet.WebHooks.Custom >= 1.2.1",
       "Microsoft.AspNet.WebHooks.Custom.Api >= 1.2.1",
@@ -7219,101 +6933,5 @@
       "log4net >= 2.0.8"
     ],
     ".NETFramework,Version=v4.5.2": []
-  },
-  "packageFolders": {
-    "C:\\Users\\admin\\.nuget\\packages\\": {}
-  },
-  "project": {
-    "restore": {
-      "projectUniqueName": "G:\\Projects\\Radial\\Code\\RadialReview\\RadialReview\\RadialReview.csproj",
-      "projectName": "RadialReview",
-      "projectPath": "G:\\Projects\\Radial\\Code\\RadialReview\\RadialReview\\RadialReview.csproj",
-      "projectJsonPath": "G:\\Projects\\Radial\\Code\\RadialReview\\RadialReview\\project.json",
-      "projectStyle": "ProjectJson",
-      "frameworks": {
-        "net452": {
-          "projectReferences": {
-            "G:\\Projects\\Radial\\Code\\RadialReview\\CamundaCSharpClient\\CamundaCSharpClient.csproj": {
-              "projectPath": "G:\\Projects\\Radial\\Code\\RadialReview\\CamundaCSharpClient\\CamundaCSharpClient.csproj"
-            }
-          }
-        }
-      }
-    },
-    "dependencies": {
-      "AWSSDK": "2.3.55.2",
-      "BCXAPI": "1.0.4554.21216",
-      "Common.Logging": "3.3.1",
-      "CommonMark.NET": "0.15.1",
-      "CsvHelper": "2.16.3",
-      "DocX": "1.0.0.22",
-      "FluentNHibernate": "2.0.3",
-      "Iesi.Collections": "4.0.1.4000",
-      "ImageResizer": "4.0.5",
-      "log4net": "2.0.8",
-      "LumenWorks.Framework.IO": "3.8.0",
-      "Manatee.Trello": "1.12.0",
-      "Mandrill": "2.4.181",
-      "MathNet.Numerics": "3.17.0",
-      "Microsoft.AspNet.Identity.Core": "2.2.1",
-      "Microsoft.AspNet.Identity.EntityFramework": "2.2.1",
-      "Microsoft.AspNet.Identity.Owin": "2.2.1",
-      "Microsoft.AspNet.Mvc": "5.2.3",
-      "Microsoft.AspNet.Razor": "3.2.3",
-      "Microsoft.AspNet.SignalR.Core": "2.2.1",
-      "Microsoft.AspNet.SignalR.Redis": "2.2.1",
-      "Microsoft.AspNet.SignalR.SystemWeb": "2.2.1",
-      "Microsoft.AspNet.Web.Optimization": "1.1.3",
-      "Microsoft.AspNet.WebApi": "5.2.2",
-      "Microsoft.AspNet.WebApi.Core": "5.2.2",
-      "Microsoft.AspNet.WebHooks.Common": "1.2.1",
-      "Microsoft.AspNet.WebHooks.Custom": "1.2.1",
-      "Microsoft.AspNet.WebHooks.Custom.Api": "1.2.1",
-      "Microsoft.AspNet.WebHooks.Custom.Mvc": "1.2.1",
-      "Microsoft.AspNet.WebHooks.Receivers": "1.2.1",
-      "Microsoft.AspNet.WebHooks.Receivers.Custom": "1.2.1",
-      "Microsoft.AspNetCore.DataProtection": "1.1.1",
-      "Microsoft.Extensions.DependencyInjection": "1.1.0",
-      "Microsoft.AspNet.WebPages": "3.2.3",
-      "Microsoft.Identity.Client": "1.0.304142221-alpha",
-      "Microsoft.Office365.OutlookServices-V2.0": "2.0.1",
-      "Microsoft.Owin": "3.0.1",
-      "Microsoft.Owin.Host.SystemWeb": "3.0.1",
-      "Microsoft.Owin.Security": "3.0.1",
-      "Microsoft.Owin.Security.Cookies": "3.0.1",
-      "Microsoft.Owin.Security.OAuth": "3.0.1",
-      "Microsoft.Web.Infrastructure": "1.0.0",
-      "MySql.Data": "6.9.9",
-      "Newtonsoft.Json": "9.0.1",
-      "NHibernate": "4.0.0.4000",
-      "NHibernate.Envers": "2.1.0",
-      "NReco.PhantomJS": "1.0.3",
-      "OpenCover": "4.6.519",
-      "OpenPop.NET": "2.0.6.1120",
-      "OxyPlot": "1.0.0-unstable2100",
-      "OxyPlot.Core": "1.0.0-unstable2100",
-      "OxyPlot.Wpf": "1.0.0-unstable2100",
-      "PDFsharp-MigraDoc-GDI": "1.50.4000-beta3b",
-      "RestSharp": "105.2.3",
-      "System.Data.SQLite": "1.0.105",
-      "System.Data.SQLite.Core": "1.0.105",
-      "TimeZoneNames": "2.1.0",
-      "TrelloNet": "0.6.2",
-      "Twilio": "5.1.1",
-      "TypeLite": "1.8.4",
-      "Unofficial.Ionic.Zip": "1.9.1.8",
-      "WebGrease": "1.5.2"
-    },
-    "frameworks": {
-      "net452": {}
-    },
-    "runtimes": {
-      "win-x86": {
-        "#import": []
-      }
-    },
-    "supports": {
-      "CompatibilityProfile": {}
-    }
   }
 }

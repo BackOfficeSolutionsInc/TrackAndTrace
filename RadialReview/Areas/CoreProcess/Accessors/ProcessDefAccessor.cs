@@ -39,17 +39,18 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    var perms = PermissionsUtility.Create(s, caller);
-                    perms.CanEdit(PermItem.ResourceType.CoreProcess, localId);
-                    var deployed = await Deploy(s, localId);
+                    var perms = PermissionsUtility.Create(s, caller);                    
+                    var deployed = await Deploy(s, localId, perms);
                     tx.Commit();
                     s.Flush();
                     return deployed;
                 }
             }
         }
-        public async Task<bool> Deploy(ISession s, long localId)
+        public async Task<bool> Deploy(ISession s, long localId, PermissionsUtility perms)
         {
+            perms.CanEdit(PermItem.ResourceType.CoreProcess, localId);
+
             bool result = true;
             try
             {
@@ -1099,7 +1100,6 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     return result;
                 }
             }
-
         }
 
         public async Task<bool> ModifyBpmnFile(ISession s, long localId, int oldOrder, int newOrder)
@@ -1137,8 +1137,6 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
             return result;
         }
-
-
 
         public async System.Threading.Tasks.Task UploadFileToServer(Stream stream, string path)
         {

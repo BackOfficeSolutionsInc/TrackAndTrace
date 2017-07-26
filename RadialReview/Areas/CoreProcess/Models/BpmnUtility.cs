@@ -2,6 +2,7 @@
 using Amazon.S3.Model;
 using RadialReview.Accessors;
 using RadialReview.Models;
+using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -88,7 +89,7 @@ namespace RadialReview.Areas.CoreProcess.Models
             MemoryStream fileStream = new MemoryStream();
 
             stream.Seek(0, SeekOrigin.Begin);
-          
+
             XDocument xmlDocument = XDocument.Load(stream);
 
             //get node
@@ -220,7 +221,7 @@ namespace RadialReview.Areas.CoreProcess.Models
             return fileStream;
         }
 
-        public static void  GetNodeDetail(Stream stream, int oldOrder, int newOrder, out string oldOrderId, out string newOrderId, out string name, out string candidateGroups)
+        public static void GetNodeDetail(Stream stream, int oldOrder, int newOrder, out string oldOrderId, out string newOrderId, out string name, out string candidateGroups)
         {
             stream.Seek(0, SeekOrigin.Begin);
             XDocument xmlDocument = XDocument.Load(stream);
@@ -245,26 +246,13 @@ namespace RadialReview.Areas.CoreProcess.Models
             Stream stream = new MemoryStream();
             try
             {
-                IAmazonS3 client;
-                using (client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1))
+                if (Config.ShouldDeploy())
                 {
-                    GetObjectRequest request = new GetObjectRequest
-                    {
-                        BucketName = "Radial",
-                        Key = keyName
-                    };
-
-                    using (GetObjectResponse response = await client.GetObjectAsync(request))
-                    {
-                        using (var ms = new MemoryStream())
-                        {
-                            response.ResponseStream.CopyTo(ms);
-                            ms.Seek(0, SeekOrigin.Begin);
-                            ms.CopyTo(stream);
-                            ms.Seek(0, SeekOrigin.Begin);
-                            stream.Seek(0, SeekOrigin.Begin);
-                        }
-                    }
+                    return await GetFileFromAmazon(keyName, stream);
+                }
+                else
+                {
+                    return await GetFileFromLocal(keyName, stream);
                 }
             }
             catch (Exception ex)
@@ -274,7 +262,62 @@ namespace RadialReview.Areas.CoreProcess.Models
             return stream;
         }
 
+        private static async Task<Stream> GetFileFromAmazon(string keyName, Stream stream)
+        {
+            IAmazonS3 client;
+            using (client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1))
+            {
+                GetObjectRequest request = new GetObjectRequest
+                {
+                    BucketName = "Radial",
+                    Key = keyName
+                };
+
+                using (GetObjectResponse response = await client.GetObjectAsync(request))
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        response.ResponseStream.CopyTo(ms);
+                        ms.Seek(0, SeekOrigin.Begin);
+                        ms.CopyTo(stream);
+                        ms.Seek(0, SeekOrigin.Begin);
+                        stream.Seek(0, SeekOrigin.Begin);
+                    }
+                }
+
+                return stream;
+            }
+        }
+
+        private static async Task<Stream> GetFileFromLocal(string keyName, Stream stream)
+        {
+            IAmazonS3 client;
+            using (client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1))
+            {
+                GetObjectRequest request = new GetObjectRequest
+                {
+                    BucketName = "Radial",
+                    Key = keyName
+                };
+
+                using (GetObjectResponse response = await client.GetObjectAsync(request))
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        response.ResponseStream.CopyTo(ms);
+                        ms.Seek(0, SeekOrigin.Begin);
+                        ms.CopyTo(stream);
+                        ms.Seek(0, SeekOrigin.Begin);
+                        stream.Seek(0, SeekOrigin.Begin);
+                    }
+                }
+
+                return stream;
+            }
+        }
     }
+
+
 
     internal static class AsyncHelper
     {

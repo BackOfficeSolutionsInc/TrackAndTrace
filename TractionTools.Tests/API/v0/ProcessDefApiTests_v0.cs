@@ -31,19 +31,27 @@ namespace TractionTools.Tests.Api
     {
         [TestMethod]
         [TestCategory("Api_V0")]
-        public void TestProcessStart()
+        public void TestEnsureApplicationExists()        
         {
+            ApplicationAccessor.EnsureApplicationExists();
+        }
+
+        [TestMethod]
+        [TestCategory("Api_V0")]
+        public void TestProcessStart()
+        {            
             var c = new Ctx();
             ProcessDefAccessor processDefAccessor = new ProcessDefAccessor();
             ProcessDef processController = new ProcessDef();
             processController.MockUser(c.E1);
-            var getprocessDefList = processDefAccessor.GetList(c.E1, c.E1.Id);
+            var getprocessDefList = processDefAccessor.GetList(c.E1, c.Id);
+
             var getProcessInstanceList = processDefAccessor.GetProcessInstanceList(c.E1, getprocessDefList.FirstOrDefault().Id);
             var getResult = Task.Run(async () => await processController.StartProcess(getprocessDefList.FirstOrDefault().Id)).GetAwaiter().GetResult();
+
             //var getResult = processController.StartProcess(getprocessDefList.FirstOrDefault().Id);
             Assert.AreEqual(getprocessDefList.FirstOrDefault().Id, getResult.LocalId);
             //Assert.AreEqual(0,0);
         }
-
     }
 }

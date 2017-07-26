@@ -184,6 +184,11 @@ namespace RadialReview.Utilities {
 			}
 		}
 
+        public static bool ShouldDeploy()
+        {
+            return !IsLocal();
+        }
+
 		public static string GetAppSetting(string key, string deflt = null) {
 			var config = System.Configuration.ConfigurationManager.AppSettings;
 			return config[key] ?? deflt;
