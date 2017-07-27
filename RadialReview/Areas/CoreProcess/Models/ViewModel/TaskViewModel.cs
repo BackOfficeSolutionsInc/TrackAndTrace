@@ -18,7 +18,7 @@ namespace RadialReview.Areas.CoreProcess.Models.Process {
 
         public string SelectedMemberName { get; set; }
         public string SelectedIds { get; set; }
-
+        public string Assignee { get; set; }
         public List<CandidateGroupViewModel> CandidateList { get; set; }
 
 

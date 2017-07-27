@@ -208,7 +208,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     ).List()
                         .Select(x => new ProcessInstanceViewModel()
                         {
-                            //Id = x.CamundaProcessInstanceId,
+                            Id = x.CamundaProcessInstanceId,
                             DefinitionId = x.LocalProcessInstanceId,
                             Suspended = x.Suspended,
                             CreateTime = x.CreateTime,
@@ -620,7 +620,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return taskList;
         }
 
-        public async Task<List<TaskViewModel>> GetTaskListByCandidateGroups(UserOrganizationModel caller, long[] candidateGroupIds, string processInstanceId = "")
+        public async Task<List<TaskViewModel>> GetTaskListByCandidateGroups(UserOrganizationModel caller, long[] candidateGroupIds, string processInstanceId = "",bool unassigned = false)
         {
             List<TaskViewModel> taskList = new List<TaskViewModel>();
             try
@@ -628,16 +628,17 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                 using (var s = HibernateSession.GetCurrentSession())
                 {
                     PermissionsUtility.Create(s, caller);
-                    var candidateGroups = String.Join(",", candidateGroupIds.Select(x => "rgm_" + x));
+                    //var candidateGroups = String.Join(",", candidateGroupIds.Select(x => "rgm_" + x));
                     CommClass comClass = new CommClass();
-                    var getUsertaskList = await comClass.GetTaskByCandidateGroups(candidateGroups, processInstanceId);
+                    var getUsertaskList = await comClass.GetTaskByCandidateGroups(candidateGroupIds, processInstanceId,unassigned);
 
                     foreach (var item in getUsertaskList)
                     {
                         taskList.Add(new TaskViewModel()
                         {
                             name = item.Name,
-                            Id = item.Id
+                            Id = item.Id,
+                            Assignee = item.Assignee,
                         });
                     }
                 }
@@ -666,6 +667,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                         taskList.Add(new TaskViewModel()
                         {
                             name = item.Name,
+                            Assignee = ((!string.IsNullOrEmpty(item.Assignee)) ? item.Assignee : ""),
                             Id = item.Id
                         });
                     }
@@ -677,6 +679,64 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             }
             return taskList;
         }
+
+
+        public async Task<List<TaskViewModel>> GetTaskListByProcessInstanceId(UserOrganizationModel caller, string processInstanceId)
+        {
+            List<TaskViewModel> taskList = new List<TaskViewModel>();
+            try
+            {
+                using (var s = HibernateSession.GetCurrentSession())
+                {
+                    PermissionsUtility.Create(s, caller);
+                    CommClass comClass = new CommClass();
+                    var getUsertaskList = await comClass.GetTaskListByInstanceId(processInstanceId);
+
+                    foreach (var item in getUsertaskList)
+                    {
+                        taskList.Add(new TaskViewModel()
+                        {
+                            name = item.Name,
+                            Id = item.Id,
+                            Assignee = ((!string.IsNullOrEmpty(item.Assignee)) ? item.Assignee : ""),
+                    });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return taskList;
+        }
+
+
+        public async Task<TaskViewModel> GetTaskById(UserOrganizationModel caller, string taskId)
+        {
+            TaskViewModel task = new TaskViewModel();
+            try
+            {
+                using (var s = HibernateSession.GetCurrentSession())
+                {
+                    PermissionsUtility.Create(s, caller);
+                    CommClass comClass = new CommClass();
+                    var getUsertask = await comClass.GetTaskById(taskId);
+
+                    if (getUsertask != null)
+                    {
+                        task.name = getUsertask.Name;
+                        task.Id = getUsertask.Id;
+                        task.Assignee = ((!string.IsNullOrEmpty(getUsertask.Assignee)) ? getUsertask.Assignee : "");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return task;
+        }
+
 
         /// <summary>
         /// Note: The difference with claim a task is that this method does not check if the task already has a user assigned to it.
@@ -1056,7 +1116,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
         public Stream CreateBpmnFile(string processName, string bpmnId)
         {
-            var fileStm = new MemoryStream();
+            Stream fileStm = new MemoryStream();
             try
             {
                 string id = bpmnId.Replace("-", "");
@@ -1068,26 +1128,27 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     new XElement(bpmn + "startEvent", new XAttribute("id", "StartEvent"), new XAttribute("name", processName + "&#10;requested")),
                     new XElement(bpmn + "endEvent", new XAttribute("id", "EndEvent"), new XAttribute("name", processName + "&#10;finished")))));
 
-                string dir = System.Web.HttpContext.Current.Server.MapPath("~/Areas/CoreProcess/CamundaFiles/");
+                //string dir = System.Web.HttpContext.Current.Server.MapPath("~/Areas/CoreProcess/CamundaFiles/");
 
-                if (string.IsNullOrEmpty(dir))  //for Unit Test
-                {
-                    dir = BpmnUtility.UnitTestPath();
-                }
+                //if (string.IsNullOrEmpty(dir))  //for Unit Test
+                //{
+                //    dir = BpmnUtility.UnitTestPath();
+                //}
 
-                string dest = Path.Combine(dir, "blank.bpmn");
-                if (!Directory.Exists(dir))
-                    Directory.CreateDirectory(dir);
+                //string dest = Path.Combine(dir, "blank.bpmn");
+                //if (!Directory.Exists(dir))
+                //    Directory.CreateDirectory(dir);
 
                 //Stream stream = new MemoryStream();  // Create a stream
-                //xmldocument.Save(stream);      // Save XDocument into the stream
-                //stream.Position = 0;
-
-                xmldocument.Save(dest);
-                FileStream fileStream = new FileStream(dest, FileMode.Open);
-                fileStream.CopyTo(fileStm);
+                xmldocument.Save(fileStm);      // Save XDocument into the stream
                 fileStm.Seek(0, SeekOrigin.Begin);
-                fileStream.Close();
+                fileStm.Position = 0;
+
+                //xmldocument.Save(dest);
+                //FileStream fileStream = new FileStream(dest, FileMode.Open);
+                //fileStream.CopyTo(fileStm);
+                //fileStm.Seek(0, SeekOrigin.Begin);
+                //fileStream.Close();
 
             }
             catch (Exception)

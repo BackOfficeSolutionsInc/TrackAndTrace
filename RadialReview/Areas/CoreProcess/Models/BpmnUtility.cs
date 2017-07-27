@@ -294,10 +294,7 @@ namespace RadialReview.Areas.CoreProcess.Models
         private static Stream GetFileFromLocal(string keyName)
         {
             Stream stream = new MemoryStream();
-            string dir = System.Web.Hosting.HostingEnvironment.MapPath("~/Areas/CoreProcess/CamundaFiles/");
-
-            if (string.IsNullOrEmpty(dir))
-                dir = UnitTestPath();
+            string dir = GetBpmnFilesLocalPath();
             string fileName = keyName.Split('/')[1];
             var fullPath = Path.Combine(dir, fileName);
 
@@ -341,23 +338,13 @@ namespace RadialReview.Areas.CoreProcess.Models
 
         private static void UploadFileToLocal(Stream stream, string path)
         {
-            string dir = System.Web.Hosting.HostingEnvironment.MapPath("~/Areas/CoreProcess/CamundaFiles/");
-            if (string.IsNullOrEmpty(dir))
-                dir = UnitTestPath();
+            string dir = GetBpmnFilesLocalPath();
             string fileName = path.Split('/')[1];
             string dest = Path.Combine(dir, fileName);
             try
             {
-                if (!Directory.Exists(dir))
-                    Directory.CreateDirectory(dir);
-
-                if (System.IO.File.Exists(dest))
-                {
-                    byte[] bytes = ((MemoryStream)stream).ToArray(); ;
-                    stream = new MemoryStream(bytes);
-                    stream.Seek(0, SeekOrigin.Begin);
-                    File.WriteAllBytes(dest, bytes);
-                }
+                byte[] bytes = ((MemoryStream)stream).ToArray(); 
+                File.WriteAllBytes(dest, bytes);
             }
             catch (Exception ex)
             {
@@ -405,20 +392,14 @@ namespace RadialReview.Areas.CoreProcess.Models
 
         private static void DeleteFileFromLocal(string keyName)
         {
-            string dir = System.Web.Hosting.HostingEnvironment.MapPath("~/Areas/CoreProcess/CamundaFiles/");
-            if (string.IsNullOrEmpty(dir))
-                dir = UnitTestPath();
-
+            string dir = GetBpmnFilesLocalPath();
             string fileName = keyName.Split('/')[1];
             string dest = Path.Combine(dir, fileName);
             try
             {
-                if (Directory.Exists(dir))
+                if (System.IO.File.Exists(dest))
                 {
-                    if (System.IO.File.Exists(dest))
-                    {
-                        File.Delete(dest);
-                    }
+                    File.Delete(dest);
                 }
             }
             catch (Exception ex)
@@ -451,9 +432,14 @@ namespace RadialReview.Areas.CoreProcess.Models
             }
         }
 
-        public static string UnitTestPath()
-        {            
-            return @"E:\Installations\Odesk\Clay\Code\RadialReview\RadialReview\Areas\CoreProcess\CamundaFiles";
+        public static string GetBpmnFilesLocalPath()
+        {
+            var dir = Path.Combine(Path.GetTempPath(), "CoreProcess");
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+            return dir;
         }
     }
 

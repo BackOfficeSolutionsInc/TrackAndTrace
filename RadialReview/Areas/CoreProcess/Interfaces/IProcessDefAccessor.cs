@@ -26,9 +26,11 @@ namespace RadialReview.Areas.CoreProcess.Interfaces
         Task<TaskViewModel> UpdateTask(UserOrganizationModel caller, long localId, TaskViewModel model);
         Task<bool> DeleteTask(UserOrganizationModel caller, string taskId, long localId);
         Task<List<TaskViewModel>> GetAllTask(UserOrganizationModel caller, long localId);
-        Task<List<TaskViewModel>> GetTaskListByCandidateGroups(UserOrganizationModel caller, long[] candidateGroupIds, string processInstanceId = "");
+        Task<List<TaskViewModel>> GetTaskListByCandidateGroups(UserOrganizationModel caller, long[] candidateGroupIds, string processInstanceId = "", bool unassigned = false);
         Task<List<TaskViewModel>> GetAllTaskByTeamId(UserOrganizationModel caller, long teamId);
         Task<List<TaskViewModel>> GetTaskListByUserId(UserOrganizationModel caller, string userId);
+        Task<List<TaskViewModel>> GetTaskListByProcessInstanceId(UserOrganizationModel caller, string processInstanceId);
+        Task<TaskViewModel> GetTaskById(UserOrganizationModel caller, string taskId);
         Task<long[]> GetCandidateGroupIdsForTask(UserOrganizationModel caller, string taskId);
         Task<bool> TaskAssignee(UserOrganizationModel caller, string taskId, long userId);
         Task<bool> TaskClaim(UserOrganizationModel caller, string taskId, long userId);

@@ -107,11 +107,13 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
             return getList;
         }
 
-        public async Task<IEnumerable<TaskModel>> GetTaskByCandidateGroups(string candidateGroups, string processInstanceId = "", bool unassigned = false)
+        public async Task<IEnumerable<TaskModel>> GetTaskByCandidateGroups(long[] candidateGroupIds, string processInstanceId = "", bool unassigned = false)
         {
             // long[] candidateGroupIds
             // pass array of candidate groups
             // concatenate rgm with long ids String.Join
+
+            var candidateGroups = String.Join(",", candidateGroupIds.Select(x => "rgm_" + x));
             client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
             if (!string.IsNullOrEmpty(processInstanceId))
                 return await client.Task().Get().CandidateGroups(candidateGroups).Unassigned(unassigned).ProcessInstanceId(processInstanceId).list();
