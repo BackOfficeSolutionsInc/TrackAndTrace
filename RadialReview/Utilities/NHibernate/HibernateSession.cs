@@ -43,6 +43,7 @@ using RadialReview.Utilities.Productivity;
 using RadialReview.Models.VideoConference;
 using RadialReview.Models.Rocks;
 using RadialReview.Areas.People.Models.Survey;
+using static RadialReview.Models.Issues.IssueModel;
 
 //using Microsoft.VisualStudio.Profiler;
 
@@ -354,6 +355,9 @@ namespace RadialReview.Utilities {
 			enversConf.Audit<MeasurableModel>();
 			enversConf.Audit<L10Meeting>();
 			enversConf.Audit<L10Recurrence>();
+			enversConf.Audit<IssueModel_Recurrence>()
+				.ExcludeRelationData(x => x.CopiedFrom)
+				.ExcludeRelationData(x => x.ParentRecurrenceIssue);
 
 			enversConf.Audit<ClientReviewModel>();
 			enversConf.Audit<LongModel>();

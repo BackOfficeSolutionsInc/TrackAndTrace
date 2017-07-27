@@ -11,6 +11,8 @@ namespace RadialReview.Areas.People.Engines.Surveys.Strategies.Events {
 
         public void OnEnd(ISurveyContainer container) {}
 
-        public void OnInitialize(IComponent compontent) {}
+		public void AfterInitialized(IComponent compontent,bool anyElements) {}
+
+		public void OnInitialize(IComponent compontent) {}
     }
 }

@@ -8,6 +8,7 @@ using RadialReview.Accessors;
 using RadialReview.Models.Askables;
 using RadialReview.Areas.People.Models.Survey;
 using RadialReview.Models.Components;
+using RadialReview.Models.Enums;
 
 namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.Sections {
     public class ValueSection : ISectionInitializer {
@@ -18,7 +19,14 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		}
 
         public IEnumerable<IItemInitializer> GetItemBuilders(IItemInitializerData data) {
-            var values = data.Lookup.GetList<CompanyValueModel>();
+			//only ask if they are not our manager
+			if (data.SurveyContainer.GetSurveyType() == SurveyType.QuarterlyConversation && data.About.Is<SurveyUserNode>()) {
+				if ((data.About as SurveyUserNode)._Relationship[data.By.ToKey()] == AboutType.Manager) {
+					return new List<IItemInitializer>();
+				}
+			}
+
+			var values = data.Lookup.GetList<CompanyValueModel>();
 			var genComments = new TextAreaItemIntializer("Value Comments", SurveyQuestionIdentifier.GeneralComment);
 			var items = values.Select(x => (IItemInitializer) new ValueItem(x)).ToList();
 			items.Add(genComments);

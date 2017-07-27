@@ -112,6 +112,9 @@
 .people-analyzer .people-analyzer-table tbody th {
   min-width: 200px;
 }
+.people-analyzer .people-analyzer-table tbody .person-column {
+  padding: 8px;
+}
 .people-analyzer .people-analyzer-table tbody .value-column {
   font-size: 28px;
 }

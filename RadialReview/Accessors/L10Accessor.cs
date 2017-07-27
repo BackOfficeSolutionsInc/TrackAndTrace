@@ -725,6 +725,7 @@ namespace RadialReview.Accessors {
 
 							var issueTable = await IssuesAccessor.BuildIssuesSolvedTable(issuesForTable.ToList(), "Issues Solved", recurrenceId, true, padTexts);
 							var todosTable = new DefaultDictionary<long, string>(x => "");
+							var hasTodos = new DefaultDictionary<long, bool>(x => false);
 
 							var allUserIds = todoList.Select(x => x.AccountableUserId).ToList();
 							allUserIds.AddRange(attendees.Select(x => x.User.Id));
@@ -739,6 +740,9 @@ namespace RadialReview.Accessors {
 							foreach (var personTodos in todoList.GroupBy(x => x.AccountableUserId)) {
 								var user = auLu[personTodos.First().AccountableUserId];
 								//var email = user.GetEmail();
+
+								if (personTodos.Any())
+									hasTodos[personTodos.First().AccountableUserId] = true;
 
 								var todoTable = await TodoAccessor.BuildTodoTable(personTodos.ToList(), "Outstanding To-dos", true, padLookup: padTexts);
 
@@ -768,15 +772,26 @@ namespace RadialReview.Accessors {
 								var output = new StringBuilder();
 								var user = auLu[userAttendee.User.Id];
 								var email = user.GetEmail();
+								var toSend = false;
+
+								if (hasTodos[userAttendee.User.Id]) {
+									toSend = true;
+								}
 
 								output.Append(todosTable[user.Id]);
 								if (issuesForTable.Any()) {
 									output.Append(issueTable.ToString());
+									toSend = true;
 								}
+								
+
+
 								var mail = Mail.To(EmailTypes.L10Summary, email)
 									.Subject(EmailStrings.MeetingSummary_Subject, recurrence.Name)
 									.Body(EmailStrings.MeetingSummary_Body, user.GetName(), output.ToString(), Config.ProductName(meeting.Organization));
-								unsent.Add(mail);
+								if (toSend) {
+									unsent.Add(mail);
+								}
 							}
 
 						} catch (Exception e) {

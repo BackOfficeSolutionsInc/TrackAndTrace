@@ -415,6 +415,11 @@ namespace RadialReview.Accessors {
 										.Where(d => d.ChildId == alias.Id)
 										.Select(d => d.Id))
 										.List().ToList();
+			
+			if (node != null && !subordinates.Any(x=>x.Id==nodeId)) {
+				subordinates.Add(node);
+			}
+
 			return subordinates;
 		}
 

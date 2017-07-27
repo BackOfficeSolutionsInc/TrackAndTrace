@@ -12,6 +12,7 @@ using System.Web.Mvc;
 using RadialReview.Models.Json;
 using RadialReview.Accessors;
 using RadialReview.Models.Interfaces;
+using RadialReview.Models.Enums;
 
 namespace RadialReview.Areas.People.Controllers {
     public class SurveyController : BaseController {
@@ -40,10 +41,14 @@ namespace RadialReview.Areas.People.Controllers {
 
 			var subs = DeepAccessor.Tiny.GetSubordinatesAndSelf(GetUser(), GetUser().Id);
 
-			var byAbouts = new List<IByAbout>();
+			var byAbouts = new List<ByAboutSurveyUserNode>();
 
 			foreach (var sub in subs)
-				byAbouts.Add(new ByAbout(GetUser(), sub));
+				byAbouts.Add(new ByAboutSurveyUserNode(
+					new SurveyUserNode() { UserOrganizationId = GetUser().Id },
+					new SurveyUserNode() { UserOrganizationId = sub.ModelId },
+					AboutType.Subordinate
+				));
 						
 			var output = QuarterlyConversationAccessor.GenerateQuarterlyConversation(GetUser(), "test" + (int)(DateTime.UtcNow.Ticks / 100000), byAbouts, DateTime.UtcNow.AddDays(1), false);
 
@@ -52,7 +57,7 @@ namespace RadialReview.Areas.People.Controllers {
 
         [Access(AccessLevel.UserOrganization)]
         public JsonResult Data(long surveyContainerId) {
-            var output =SurveyAccessor.GetAngularSurveyContainerBy(GetUser(), GetUser(),surveyContainerId);
+            var output =SurveyAccessor.GetAngularSurveyContainerBy(GetUser(), GetUser() ,surveyContainerId);
             return Json(output, JsonRequestBehavior.AllowGet);
         }
 		

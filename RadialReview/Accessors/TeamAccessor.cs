@@ -46,12 +46,12 @@ namespace RadialReview.Accessors {
 						try {
 							PermissionsUtility.Create(s, caller).OwnedBelowOrEqual(userOrganizationId);
 							var directlyManaging = s.QueryOver<OrganizationTeamModel>()
-								.Where(x => x.ManagedBy == userOrganizationId)
+								.Where(x => x.ManagedBy == userOrganizationId && x.DeleteTime == null)
 								.List().ToList();
 							var user = s.Get<UserOrganizationModel>(userOrganizationId);
 							if (caller.ManagingOrganization) {
 								var orgId = caller.Organization.Id;
-								directlyManaging.AddRange(s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId && x.Type != TeamType.Standard).List().ToList());
+								directlyManaging.AddRange(s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId && x.Type != TeamType.Standard && x.DeleteTime == null).List().ToList());
 							}
 							managingTeams.AddRange(directlyManaging);
 						} catch (Exception) {
@@ -379,11 +379,11 @@ namespace RadialReview.Accessors {
 			output.Add(s.QueryOver<OrganizationTeamModel>().Where(x => x.DeleteTime == null && x.ManagedBy == forUserId).Select(x => x.Id).Future<long>());
 
 			if (forUser.IsManager()) {
-				var managerTeam = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == forUser.Organization.Id && x.Type == TeamType.Managers).Select(x => x.Id).Take(1).SingleOrDefault<long?>();
+				var managerTeam = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == forUser.Organization.Id && x.Type == TeamType.Managers && x.DeleteTime == null).Select(x => x.Id).Take(1).SingleOrDefault<long?>();
 				if (managerTeam != null)
 					output.Add(managerTeam.Value.AsList());
 			}
-			var allMembersTeam = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == forUser.Organization.Id && x.Type == TeamType.AllMembers).Select(x => x.Id).Take(1).SingleOrDefault<long?>();
+			var allMembersTeam = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == forUser.Organization.Id && x.Type == TeamType.AllMembers && x.DeleteTime == null).Select(x => x.Id).Take(1).SingleOrDefault<long?>();
 			if (allMembersTeam != null)
 				output.Add(allMembersTeam.Value.AsList());
 

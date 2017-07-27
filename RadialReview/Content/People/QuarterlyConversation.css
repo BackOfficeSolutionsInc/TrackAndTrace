@@ -64,7 +64,7 @@
   .people.quarterly-conversation survey-container .current-section .title {
     background-color: transparent;
     position: fixed;
-    top: 18px;
+    top: 8px;
     left: 0;
     z-index: 1030;
     color: #fff;
@@ -78,6 +78,8 @@
     font-family: 'Lato', sans-serif;
     font-weight: 900;
     padding-left: 0px;
+    padding-left: 53px;
+    padding-right: 188px;
   }
 }
 .people.quarterly-conversation survey-container .survey {
@@ -453,6 +455,31 @@
 }
 .people.quarterly-conversation survey-container .survey .sections .section-Roles .item-container-Radio ~ .item-container-Radio {
   padding-top: 5px;
+}
+.people.quarterly-conversation survey-container .survey .sections .section-Rocks .disabled .item-row .item .name {
+  font-size: 16px !important;
+}
+.people.quarterly-conversation survey-container .survey .sections .section-LeadershipAssessment survey-item-container .item-row .item .name,
+.people.quarterly-conversation survey-container .survey .sections .section-ManagementAssessment survey-item-container .item-row .item .name,
+.people.quarterly-conversation survey-container .survey .sections .section-LeadershipAssessment survey-item-container .item-row .item .help,
+.people.quarterly-conversation survey-container .survey .sections .section-ManagementAssessment survey-item-container .item-row .item .help {
+  text-align: left;
+}
+.people.quarterly-conversation survey-container .survey .sections .section-LeadershipAssessment survey-item-container .item-row .item .help,
+.people.quarterly-conversation survey-container .survey .sections .section-ManagementAssessment survey-item-container .item-row .item .help {
+  white-space: pre;
+  padding-bottom: 15px;
+}
+@media (max-width: 992px) {
+  .people.quarterly-conversation survey-container .survey .sections .section-LeadershipAssessment survey-item-container .item-row .item .help,
+  .people.quarterly-conversation survey-container .survey .sections .section-ManagementAssessment survey-item-container .item-row .item .help {
+    text-align: left;
+    white-space: pre-line;
+  }
+}
+.people.quarterly-conversation survey-container .survey .sections .section-LeadershipAssessment survey-item-container .item-row .responses,
+.people.quarterly-conversation survey-container .survey .sections .section-ManagementAssessment survey-item-container .item-row .responses {
+  padding-top: 4px;
 }
 /*
  * Side navigation

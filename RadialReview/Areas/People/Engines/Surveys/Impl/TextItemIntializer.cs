@@ -8,10 +8,12 @@ using System.Web;
 namespace RadialReview.Areas.People.Engines.Surveys.Impl {
 	public class TextItemIntializer : IItemInitializer {
 		public string Name { get; set; }
+		public string Help { get; set; }
 		public bool Disabled { get; set; }
-		public TextItemIntializer(string name,bool disabled) {
+		public TextItemIntializer(string name,bool disabled,string help=null) {
 			Name = name;
 			Disabled = disabled;
+			Help = help;
 		}
 
 		public IItemFormatRegistry GetItemFormat(IItemFormatInitializerCtx ctx) {
@@ -27,7 +29,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl {
 		}
 
 		public IItem InitializeItem(IItemInitializerData data) {
-			return new SurveyItem(data, Name, null, Disabled+"-"+Name);
+			return new SurveyItem(data, Name, null, Disabled+"-"+Name, Help);
 		}
 
 		public IResponse InitializeResponse(IResponseInitializerCtx ctx, IItemFormat format) {

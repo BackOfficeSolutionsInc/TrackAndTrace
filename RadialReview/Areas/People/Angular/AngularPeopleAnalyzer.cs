@@ -41,7 +41,7 @@ namespace RadialReview.Areas.People.Angular {
 			return byAbout.ToKey() + "__" + source.ToKey() + "__" + issueDate.ToJavascriptMilliseconds();
 		}
 
-		public AngularPeopleAnalyzerResponse(IByAbout byAbout, DateTime issueDate, DateTime answerDate, IForModel source, string answerFormatted, string answer, int overridePriority, long surveyContainerId) : base(ToUID(byAbout, source, issueDate)) {
+		public AngularPeopleAnalyzerResponse(IByAbout byAbout, DateTime issueDate, DateTime answerDate, IForModel source, string answerFormatted, string answer, int overridePriority, long surveyContainerId,long sunId) : base(ToUID(byAbout, source, issueDate)) {
 			Answer = answer;
 			AnswerFormatted = answerFormatted;
 			IssueDate = issueDate;
@@ -51,10 +51,12 @@ namespace RadialReview.Areas.People.Angular {
 			About = new AngularForModel(byAbout.GetAbout());
 			Source = new AngularForModel(source);
 			SurveyContainerId = surveyContainerId;
+			SunId = sunId;
 		}
 		public AngularForModel About { get; set; }
 		public AngularForModel By { get; set; }
 		public AngularForModel Source { get; set; }
+		public long? SunId { get; set; }
 		public string Answer { get; set; }
 		public string AnswerFormatted { get; set; }
 

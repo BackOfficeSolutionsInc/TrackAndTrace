@@ -1,5 +1,5 @@
 ﻿<div class="people-analyzer">
-	<div class="print-all-btn"><a href="/People/QuarterlyConversation/PrintAll?surveyContainerId={{functions.selectedSurveyContainer().Id}}" target="_blank" class="btn btn-primary btn-invert">Print All</a></div>
+	<div class="print-all-btn" ng-hide="model.Rows.length==0"><a href="/People/QuarterlyConversation/PrintAll?surveyContainerId={{functions.selectedSurveyContainer().Id}}" target="_blank" class="btn btn-primary btn-invert">Print All</a></div>
 	<div class="survey-title">{{functions.selectedSurveyContainer().Name}}</div>
 	<rzslider ng-show="model.Rows.length>0" rz-slider-model="slider.value" rz-slider-options="slider.options" rz-slider-tpl-url="/content/AngularTemplates/People/PeopleAnalyzer/rzSliderTpl.html"></rzslider>
 
@@ -21,11 +21,11 @@
 				<td class="column gwc-column get-column" ng-class="{'inactive':functions.inactive(row,'get')}"><span class="resp resp-{{functions.lookup(row,'get').Answer}}">{{functions.lookup(row,"get").AnswerFormatted}}</span></td>
 				<td class="column gwc-column want-column" ng-class="{'inactive':functions.inactive(row,'want')}"><span class="resp resp-{{functions.lookup(row,'want').Answer}}">{{functions.lookup(row,"want").AnswerFormatted}}</span></td>
 				<td class="column gwc-column cap-column" ng-class="{'inactive':functions.inactive(row,'cap')}"><span class="resp resp-{{functions.lookup(row,'cap').Answer}}">{{functions.lookup(row,"cap").AnswerFormatted}}</span></td>
-				<td class="column print-column"><span class="print-btn" ng-click="functions.printRow(row)"></span></td>
+				<td class="column print-column"><span class="print-btn" ng-if="functions.canPrint(row)" ng-click="functions.printRow(row)"></span></td>
 			</tr>
 		</tbody>
 		<tbody class="error-message" ng-show="model.Rows.length==0">
-			<tr><td>No People Analyzer to display.</td></tr>
+			<tr><td>No People Analyzer to display.<br/> Click the <a href="/people" style="font-weight:bold">People</a> tab to issue a Quarterly Conversation and begin collecting data.</td></tr>
 		</tbody>
 	</table>
 </div>

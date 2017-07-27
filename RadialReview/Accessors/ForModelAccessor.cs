@@ -1,4 +1,5 @@
 ﻿using NHibernate;
+using RadialReview.Areas.People.Models.Survey;
 using RadialReview.Models;
 using RadialReview.Models.Accountability;
 using RadialReview.Models.Interfaces;
@@ -35,6 +36,8 @@ namespace RadialReview.Accessors {
 				return s.Get<UserOrganizationModel>(forModel.ModelId).NotNull(x => x.GetEmail());
 			} else if (forModel.Is<AccountabilityNode>()) {
 				return s.Get<AccountabilityNode>(forModel.ModelId).NotNull(x => x.User.GetEmail());
+			} else if (forModel.Is<SurveyUserNode>()) {
+				return s.Get<SurveyUserNode>(forModel.ModelId).NotNull(x => s.Get<UserOrganizationModel>(x.UserOrganizationId)).GetEmail();
 			} else {
 				Console.WriteLine("Unhandled type:" + forModel.ModelType);
 			}
@@ -46,6 +49,8 @@ namespace RadialReview.Accessors {
 				return s.Get<UserOrganizationModel>(forModel.ModelId).NotNull(x => TinyUser.FromUserOrganization(x));
 			} else if (forModel.Is<AccountabilityNode>()) {
 				return s.Get<AccountabilityNode>(forModel.ModelId).NotNull(x => TinyUser.FromUserOrganization(s.Get<UserOrganizationModel>(x.User)));
+			} else if (forModel.Is<SurveyUserNode>()) {
+				return s.Get<SurveyUserNode>(forModel.ModelId).NotNull(x => TinyUser.FromUserOrganization(s.Get<UserOrganizationModel>(x.UserOrganizationId)));
 			} else {
 				Console.WriteLine("Unhandled type:" + forModel.ModelType);
 			}

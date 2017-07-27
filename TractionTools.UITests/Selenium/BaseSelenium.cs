@@ -468,7 +468,8 @@ namespace TractionTools.UITests.Selenium {
 			d.FindElement(By.PartialLinkText("Conclude"), 10).Click();
 			new SelectElement(d.FindElement(By.Id("SendEmailRich"), 10)).SelectByValue("None");
 			d.FindElement(By.Id("form0"), 10).Submit();
-			d.FindElement(By.ClassName("meeting-stats"), 15);
+			d.WaitForVisible(".meeting-stats");
+			d.Wait(1000);
 		}
 	}
 }

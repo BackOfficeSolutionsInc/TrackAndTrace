@@ -107,6 +107,9 @@ namespace RadialReview.Areas.People.Engines.Surveys.Interfaces {
 		ISurvey Survey { get; }
 		ISection Section { get; }
 		IItemFormat ItemFormat { get; set; } //Added
+
+		IForModel By { get; }
+		IForModel About { get; }
 	}
 	public interface IResponseInitializerCtx : IInitializerData {
 		IInnerLookup Lookup { get; }
@@ -276,6 +279,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Interfaces {
 		void OnBegin(ISurveyInitializer builder, long orgId, IOuterLookup outerLookup, IEnumerable<IByAbout> byAbouts);
 		void OnEnd(ISurveyContainer container);
 		void OnInitialize(IComponent compontent);
+		void AfterInitialized(IComponent compontent,bool hasElements);
 	}
 	#endregion
 }

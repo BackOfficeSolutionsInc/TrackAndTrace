@@ -48,10 +48,24 @@ namespace RadialReview.Areas.People.Accessors {
 		}
 
 		public static ISurvey GetSurvey(UserOrganizationModel caller, IForModel by, IForModel about, long surveyContainerId) {
-			return GetAngularSurveyContainerBy(caller, by, surveyContainerId).GetSurveys().SingleOrDefault(x => x.GetAbout().ToKey() == about.ToKey());
+			return GetAngularSurveyContainerBy(caller, by, surveyContainerId)
+				.GetSurveys()
+				.SingleOrDefault(x => x.GetAbout().ToKey() == about.ToKey());
 		}
 
 #pragma warning restore CS0618 // Type or member is obsolete
+
+		//private static IForModel StandardizeAbout(ISession s, IForModel about) {
+
+		//	if (about.Is<AccountabilityNode>()) {
+		//		return about;
+		//	} else if (about.Is<SurveyUserNode>()) {
+		//		var node = s.Get<SurveyUserNode>(about.ModelId);
+		//		return StandardizeAbout(s, node.AccountabilityNode);
+		//	} else {
+		//		throw new ArgumentOutOfRangeException("About type:" + about.ModelType);
+		//	}
+		//}
 
 		public static ISurveyAboutContainer GetSurveyContainerAbout(UserOrganizationModel caller, IForModel about, long surveyContainerId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -67,9 +81,11 @@ namespace RadialReview.Areas.People.Accessors {
 					if (container.OrgId != caller.Organization.Id)
 						throw new PermissionsException();
 
-					var engine = new SurveyReconstructionEngine(surveyContainerId, container.OrgId, new DatabaseAggregator(s, about: about), new SurveyReconstructionEventsNoOp());
+					var aboutTransformed =/* StandardizeAbout(s,*/(about);
+
+					var engine = new SurveyReconstructionEngine(surveyContainerId, container.OrgId, new DatabaseAggregator(s, about: aboutTransformed), new SurveyReconstructionEventsNoOp());
 					var output = new AngularSurveyAboutContainer();
-					engine.Traverse(new TraverseBuildAboutAngular(s, about, x => { output = x; }));
+					engine.Traverse(new TraverseBuildAboutAngular(s, aboutTransformed, x => { output = x; }));
 					return output;
 
 				}
@@ -99,7 +115,7 @@ namespace RadialReview.Areas.People.Accessors {
 
 					var container = s.Get<SurveyContainer>(surveyContainerId);
 
-					if (container.DeleteTime != null)
+					if (container.DeleteTime != null) 
 						throw new PermissionsException("Does not exist");
 					if (container.OrgId != caller.Organization.Id)
 						throw new PermissionsException();
@@ -117,11 +133,15 @@ namespace RadialReview.Areas.People.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-
 					perms.Self(byModel);
+
+					//var sunIds =s.QueryOver<SurveyUserNode>().Where(x => x.DeleteTime==null && x.UserOrganizationId == byUserId).Select(x=>x.Id).List<long>().ToList();
 
 					var containerIds = s.QueryOver<Survey>().Where(x => x.DeleteTime == null && x.SurveyType == type)
 						.Where(x => x.By.ModelId == byModel.ModelId && x.By.ModelType == byModel.ModelType)
+						//.Where(x=>x.By.ModelType == ForModel.GetModelType<SurveyUserNode>())
+						//.WhereRestrictionOn(x => x.By.ModelId).IsIn(sunIds)
+						
 						.Select(x => Projections.Group<Survey>(y => y.SurveyContainerId))
 						.Select(x => x.SurveyContainerId)
 						.List<long>().ToArray();

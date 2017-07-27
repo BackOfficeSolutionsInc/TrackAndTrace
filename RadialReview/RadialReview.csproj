@@ -138,6 +138,8 @@
     <Compile Include="Areas\People\Controllers\QuarterlyConversationController.cs" />
     <Compile Include="Areas\People\Controllers\SurveyController.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\GeneralCommentsSection.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\LeadershipAssessmentSection.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\ManagementAssessmentSection.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Impl\TextAreaItemIntializer.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Impl\TextItemIntializer.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Strategies\PostProcesses\PostProcessorFixPrettyNames.cs" />
@@ -154,6 +156,7 @@
     <Compile Include="Areas\People\Models\Survey\Survey.cs" />
     <Compile Include="Areas\People\Models\Survey\SurveyContainer.cs" />
     <Compile Include="Areas\People\Models\Survey\SurveyEnums.cs" />
+    <Compile Include="Areas\People\Models\Survey\SurveyUserNode.cs" />
     <Compile Include="Areas\People\PeopleAreaRegistration.cs" />
     <Compile Include="Areas\People\ViewModels\QuarterlyConversationVM.cs" />
     <None Include="Areas\People\Views\Main\Diagonal.cshtml" />

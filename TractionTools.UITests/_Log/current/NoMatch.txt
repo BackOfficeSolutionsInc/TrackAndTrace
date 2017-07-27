@@ -1,1 +1,2 @@
-Chrome~CreateSupervisor~_~Complete.png
+Chrome~L10_Archive_TestScorecard_2~_L10_meeting_{id}~BeforeConclude.png
+Chrome~L10_Archive_TestScorecard_2~_L10_meeting_{id}~Complete.png

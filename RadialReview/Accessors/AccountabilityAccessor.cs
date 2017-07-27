@@ -335,7 +335,7 @@ namespace RadialReview.Accessors {
                     var nodes = s.QueryOver<AccountabilityNode>()
                         .Where(x => x.DeleteTime == null && x.OrganizationId == orgId && x.UserId != null)
                         .JoinAlias(x => x.User, () => user)
-                            .Where(x => user.DeleteTime == null && user.ManagerAtOrganization || user.ManagingOrganization)
+                            .Where(x => user.DeleteTime == null && (user.ManagerAtOrganization || user.ManagingOrganization))
                         .List().ToList();
 
                     return nodes;
@@ -408,8 +408,6 @@ namespace RadialReview.Accessors {
                 if (n.UserId != null) {
                     //REMOVING USER FROM NODE
 
-
-
                     //REMOVE MANAGER
                     if (n.ParentNode != null && n.ParentNode.UserId != null) {
                         var found = s.QueryOver<ManagerDuration>().Where(x => x.DeleteTime == null && x.ManagerId == n.ParentNode.UserId && x.SubordinateId == n.UserId).Take(1).SingleOrDefault();
@@ -453,17 +451,31 @@ namespace RadialReview.Accessors {
                                 }
                             }
                         }
+
                         updateUsers.Add(n.UserId.Value);
-                        //s.GetFresh<UserOrganizationModel>(n.UserId).UpdateCache(s);
-                    }
+
+						//s.GetFresh<UserOrganizationModel>(n.UserId).UpdateCache(s);
+					}
                     //User is removed from updater below...
                     updater.ForceUpdate(new AngularAccountabilityGroup(n.AccountabilityRolesGroupId) {
                         RoleGroups = AngularList.CreateFrom(AngularListType.Remove, new AngularRoleGroup(new Attach(AttachType.User, n.UserId.Value), null))
                     });
+					var oldUserId = n.UserId;
 
                     n.UserId = null;
                     s.Update(n);
-                }
+
+					if (oldUserId != null) {
+						//Remove Manager status
+						if (!DeepAccessor.Users.HasChildren(s, perms, oldUserId.Value)) {// !DeepAccessor.HasChildren(s, node.ParentNode.Id)) {
+							UserAccessor.EditUser(s, perms, oldUserId.Value, false);
+							s.Flush();
+							var u = s.Get<UserOrganizationModel>(oldUserId.Value);
+							u.ManagerAtOrganization = false;
+							s.Update(u);
+						}
+					}
+				}
 
 
                 //The new user
@@ -476,7 +488,7 @@ namespace RadialReview.Accessors {
 
                     if (DeepAccessor.HasChildren(s, n.Id)) {
                         //UPDATE MANAGER STATUS,
-                        if (!n.User.IsManager()) {
+                        if (!n.User.ManagerAtOrganization) {
                             UserAccessor.EditUser(s, perms, n.User.Id, true);
                             n.User.ManagerAtOrganization = true;
                         }
@@ -687,10 +699,10 @@ namespace RadialReview.Accessors {
 
 
                         var now = DateTime.UtcNow;
-                        
+						var didntHaveChildren = false;
 
 #pragma warning disable CS0618 // Type or member is obsolete
-                        SetUser(s, do_not_use, perms, node.Id, null, false, false, now);
+						SetUser(s, do_not_use, perms, node.Id, null, false, false, now);
 #pragma warning restore CS0618 // Type or member is obsolete
                         UpdatePosition_Unsafe(s, do_not_use, perms, node.Id, null, now);
 
@@ -709,15 +721,26 @@ namespace RadialReview.Accessors {
 						//		log.Error("Removing manager. ManagerDuration not found. " + node.ParentNode.UserId + " " + node.UserId);
 						//	}
 						//}
-
-						if (node.ParentNode.User != null && node.ParentNode.User.IsManager() && !DeepAccessor.HasChildren(s, node.ParentNode.Id)) {
-							UserAccessor.EditUser(s, perms, node.ParentNode.User.Id, false);
-							node.ParentNode.User.ManagerAtOrganization = false;
-						}
+						//if (didntHaveChildren) {
+						//	//if (node.ParentNode.User != null && node.ParentNode.User.IsManager()) {
+						//	//	if (!DeepAccessor.Users.HasChildren(s, perms, node.ParentNode.User.Id)) {// !DeepAccessor.HasChildren(s, node.ParentNode.Id)) {
+							
+						//	//	}
+						//	//}
+						//}
 						DeepAccessor.RemoveAll(s, node, now);
 
 						node.DeleteTime = now;
 						s.Update(node);
+
+
+						if (node.ParentNode.User != null && node.ParentNode.User.ManagerAtOrganization) {
+							if (!DeepAccessor.Users.HasChildren(s, perms, node.ParentNode.User.Id)) {
+								UserAccessor.EditUser(s, perms, node.ParentNode.User.Id, false);
+								node.ParentNode.User.ManagerAtOrganization = false;
+							}
+						}
+
 
 						tx.Commit();
                         s.Flush();
@@ -795,7 +818,7 @@ namespace RadialReview.Accessors {
                                 }
                             }
 
-                            if (oldParentNode.User != null && oldParentNode.User.IsManager() && !DeepAccessor.HasChildren(s, oldParentNode.Id)){
+                            if (oldParentNode.User != null && oldParentNode.User.ManagerAtOrganization && !DeepAccessor.HasChildren(s, oldParentNode.Id)){
                             	UserAccessor.EditUser(s, perms, oldParentNode.User.Id, false);
                             	oldParentNode.User.ManagerAtOrganization = false;
                             }
@@ -805,7 +828,7 @@ namespace RadialReview.Accessors {
 #pragma warning disable CS0618 // Type or member is obsolete
                         DeepAccessor.Add(s, newParentNode, node, node.OrganizationId, now);
 #pragma warning restore CS0618 // Type or member is obsolete
-                        if (newParent.User != null && !newParentNode.User.IsManager()) {
+                        if (newParent.User != null && !newParentNode.User.ManagerAtOrganization) {
                             UserAccessor.EditUser(s, perms, newParentNode.User.Id, true);
                             newParentNode.User.ManagerAtOrganization = true;
                         }
@@ -911,7 +934,7 @@ namespace RadialReview.Accessors {
                 s.Save(group);
             }
 
-            if (parent.User != null && !parent.User.IsManager()) {
+            if (parent.User != null && !parent.User.ManagerAtOrganization) {
                 UserAccessor.EditUser(s, perms, parent.User.Id, true);
                 parent.User.ManagerAtOrganization = true;
             }
@@ -1252,7 +1275,7 @@ namespace RadialReview.Accessors {
                     if (toAddNodes.Any(x => x == subId)) {
                         toAddNodes.Remove(subId);
                         var foundManager = existingUsers.FirstOrDefault(x => x.Id == managerId);
-                        if (!foundManager.IsManager()) {
+                        if (!foundManager.ManagerAtOrganization) {
                             new UserAccessor().EditUser(caller, foundManager.Id, true);
                             foundManager.ManagerAtOrganization = true;
                         }

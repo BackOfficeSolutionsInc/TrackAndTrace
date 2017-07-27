@@ -16,6 +16,8 @@ namespace RadialReview.Areas.People.Models.Survey {
         Roles = 2,
         Values = 3,
 		GeneralComments = 4,
+		LeadershipAssessment = 5,
+		ManagementAssessment = 6,
 	}
 
 	public enum SurveyItemType {
@@ -32,8 +34,9 @@ namespace RadialReview.Areas.People.Models.Survey {
 		GWC = 2,
 		Rock = 3,
 		Role = 4,
+		LeadershipAssessment = 5,
+		ManagementAssessment = 6,
 
 		GeneralComment = 100,
-		
 	}
 }

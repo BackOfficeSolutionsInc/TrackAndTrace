@@ -15,11 +15,20 @@ namespace RadialReview.Areas.People.Engines.Surveys.Strategies.Events {
             Session = session;
         }
 
-        public void OnInitialize(IComponent component) {
-            Session.Save(component);
-        }
+		public void OnInitialize(IComponent component) {
+			//Only save if has elements
+			Session.Save(component);
+		}
+		public void AfterInitialized(IComponent component,bool anyElements) {
+			//if (anyElements) {
+			//	//Session.Save(component);
+			//} else {
+			//	//component.DeleteTime
+			//	int a = 0; // Can get here
+			//}
+		}
 
-        public void OnBegin(ISurveyInitializer builder,long orgId,IOuterLookup outerLookup, IEnumerable<IByAbout> byAbouts) {
+		public void OnBegin(ISurveyInitializer builder,long orgId,IOuterLookup outerLookup, IEnumerable<IByAbout> byAbouts) {
             var surveyBuilder = builder;
 
             var data = new PrelookupData(Session, orgId, outerLookup, byAbouts);

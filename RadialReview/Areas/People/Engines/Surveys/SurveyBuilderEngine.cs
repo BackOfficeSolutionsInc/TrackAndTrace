@@ -47,6 +47,7 @@ namespace RadialReview.Areas.People.Engines.Surveys {
             data.SurveyContainer = SurveyBuilder.BuildSurveyContainer();
             OnInitialize(data.SurveyContainer);
 
+			var any = false;
             foreach (var surveyByAbouts in byAboutTransformed.GroupBy(x => UniqueKey(x.GetBy()))) {
                 data.By = surveyByAbouts.First().GetBy();
                 var abouts = surveyByAbouts.Select(x => x.GetAbout());
@@ -54,9 +55,15 @@ namespace RadialReview.Areas.People.Engines.Surveys {
                     data.About = about;
                     //Build individual surveys , About = about };
                     data.Survey = BuildSurvey(SurveyBuilder, data);
-                    data.SurveyContainer.AppendSurvey(data.Survey);
+					if (data.Survey.GetSections().Any()) {
+						data.SurveyContainer.AppendSurvey(data.Survey);
+						any = true;
+					}
                 }
             }
+			AfterInitialized(data.SurveyContainer, any);
+
+
             OnEnd(data.SurveyContainer);
             return data.SurveyContainer;
 
@@ -68,14 +75,17 @@ namespace RadialReview.Areas.People.Engines.Surveys {
         }
         protected void OnEnd(ISurveyContainer container) {
             EventHandler.OnEnd(container);
-        }
-        protected void OnInitialize(IComponent component) {
-            EventHandler.OnInitialize(component);
-        }
-        #endregion
+		}
+		protected void OnInitialize(IComponent component) {
+			EventHandler.OnInitialize(component);
+		}
+		protected void AfterInitialized(IComponent component,bool hasElements) {
+			EventHandler.AfterInitialized(component, hasElements);
+		}
+		#endregion
 
-        #region Build Survey
-        protected Tuple<long, string> UniqueKey(IForModel forModel) {
+		#region Build Survey
+		protected Tuple<long, string> UniqueKey(IForModel forModel) {
             return Tuple.Create(forModel.ModelId, forModel.ModelType);
         }
 
@@ -87,12 +97,18 @@ namespace RadialReview.Areas.People.Engines.Surveys {
             OnInitialize(data.Survey);
 
             var sectionBuilders = surveyBuilder.GetSectionBuilders(data);
+			var any = false;
             foreach (var sectionBuilder in sectionBuilders) {
                 data.Section = BuildSection(sectionBuilder, data);
-                data.Survey.AppendSection(data.Section);
+				if (data.Section.GetItemContainers().Any()) {
+					data.Survey.AppendSection(data.Section);
+					any = true;
+				}
             }
 
-            return data.Survey;
+			AfterInitialized(data.Survey, any);
+
+			return data.Survey;
         }
         protected ISection BuildSection(ISectionInitializer sectionBuilder, Data data) {
             data.SetLookup(sectionBuilder.GetType());
@@ -100,14 +116,17 @@ namespace RadialReview.Areas.People.Engines.Surveys {
             OnInitialize(data.Section);
 
             var itemBuilders = sectionBuilder.GetItemBuilders(data);
+			var any = false;
             foreach (var itemBuilder in itemBuilders) {
                 var itemResponse = BuildItemResponse(itemBuilder, data);
                 data.Item = itemResponse.GetItem();
                 data.Response = itemResponse.GetResponse();
                 data.Section.AppendItem(itemResponse);
-            }
+				any = true;
+			}
+			AfterInitialized(data.Section, any);
 
-            return data.Section;
+			return data.Section;
         }
         protected IItemContainer BuildItemResponse(IItemInitializer itemBuilder, Data data) {
             data.SetLookup(itemBuilder.GetType());
@@ -117,17 +136,20 @@ namespace RadialReview.Areas.People.Engines.Surveys {
             data.ItemFormat = formatRegistry.GetItemFormat();
 
             if (formatRegistry.ShouldInitialize()) {
-                OnInitialize(data.ItemFormat);
-            }
+				OnInitialize(data.ItemFormat);
+				AfterInitialized(data.ItemFormat,true);
+			}
             //Item
             data.Item = itemBuilder.InitializeItem(data);
             OnInitialize(data.Item);
+			AfterInitialized(data.Item, true);
 
-            //Response
-            if (itemBuilder.HasResponse(data)) {
+			//Response
+			if (itemBuilder.HasResponse(data)) {
                 data.Response = itemBuilder.InitializeResponse(data, data.ItemFormat);
                 OnInitialize(data.Response);
-            }
+				AfterInitialized(data.Response, true);
+			}
 
             return new SurveyItemContainer(data.Item, data.Response, data.ItemFormat);
         }

@@ -32,6 +32,7 @@ using RadialReview.Areas.People.Angular.Survey;
 using System.Threading.Tasks;
 using RadialReview.Areas.People.Accessors;
 using RadialReview.Areas.People.Engines.Surveys.Strategies.Transformers;
+using RadialReview.Utilities;
 
 namespace TractionTools.Tests.Engines {
 	[TestClass]
@@ -179,7 +180,7 @@ namespace TractionTools.Tests.Engines {
 			//Construct Survey
 			DbCommit(s => {
 				var engine = new SurveyBuilderEngine(
-					new QuarterlyConversationInitializer(ForModel.Create(org.Manager), "TestSurvey", org.Id,DateTime.MaxValue),
+					new QuarterlyConversationInitializer(ForModel.Create(org.Manager), "TestSurvey", org.Id, DateTime.MaxValue),
 					new SurveyBuilderEventsSaveStrategy(s),
 					new TransformAboutAccountabilityNodes(s)
 				);
@@ -267,7 +268,7 @@ namespace TractionTools.Tests.Engines {
 			outerLookup.GetInnerLookup<RockSection>().AddList(rockData);
 
 			var engine = new SurveyBuilderEngine(
-				new QuarterlyConversationInitializer(ForModel.Create<UserOrganizationModel>(2), "TestRocksSurvey", 1,DateTime.MaxValue),
+				new QuarterlyConversationInitializer(ForModel.Create<UserOrganizationModel>(2), "TestRocksSurvey", 1, DateTime.MaxValue),
 				new SurveyBuilderEventsNoOp(),
 				new TransformByAboutNoop(),
 				outerLookup
@@ -523,24 +524,39 @@ namespace TractionTools.Tests.Engines {
 				});
 			});
 
-			
+
 
 
 			//var container = ConstructSurvey(org);
+			//var byAbout = new[] {
+			//		new ByAboutSurveyUserNode(SurveyUserNode.Create(org.ManagerNode{UserOrganizationId= org.Manager.Id, },new SurveyUserNode() {AccountabilityNodeId= org.ManagerNode.Id }, AboutType.Self),
+			//		new ByAboutSurveyUserNode(new SurveyUserNode() {UserOrganizationId=org.Manager.Id },new SurveyUserNode() {AccountabilityNodeId=org.EmployeeNode.Id }, AboutType.Subordinate),
+			//		new ByAboutSurveyUserNode(new SurveyUserNode() {AccountabilityNodeId= org.EmployeeNode.Id },new SurveyUserNode() {AccountabilityNodeId=org.EmployeeNode.Id }, AboutType.Self),
+			//	};
+			var manager = SurveyUserNode.Create(org.ManagerNode);
+			var empl = SurveyUserNode.Create(org.EmployeeNode);
 			var byAbout = new[] {
-					new ByAbout(org.Manager,org.ManagerNode),
-					new ByAbout(org.Manager,org.EmployeeNode),
-					new ByAbout(org.EmployeeNode,org.EmployeeNode),
+					new ByAboutSurveyUserNode(manager,manager, AboutType.Self),
+					new ByAboutSurveyUserNode(manager, empl, AboutType.Subordinate),
+					new ByAboutSurveyUserNode(empl,empl, AboutType.Self),
 				};
+		long containerId;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, org.Manager);
+					var result = QuarterlyConversationAccessor.GenerateQuarterlyConversation_Unsafe(s,perms, "TestGetSurveyContainerAbout", byAbout, DateTime.MaxValue, false);
+					containerId = result.SurveyContainerId;
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			var about = SurveyAccessor.GetSurveyContainerAbout(org.Manager,empl, containerId);
 
-			var containerId = await QuarterlyConversationAccessor.GenerateQuarterlyConversation(org.Manager, "TestGetSurveyContainerAbout", byAbout,DateTime.MaxValue,false);
-			var about = SurveyAccessor.GetSurveyContainerAbout(org.Manager, org.EmployeeNode, containerId);
-
-			Assert.AreEqual(1,about.GetSurveys().Count());
-			Assert.AreEqual(3,about.GetSurveys().First().GetSections().Count());
+			Assert.AreEqual(1, about.GetSurveys().Count());
+			Assert.AreEqual(6, about.GetSurveys().First().GetSections().Count());
 			{
 				var rockItemContainers = about.GetSurveys().First().GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Rocks).GetItemContainers();
-				Assert.AreEqual(5,rockItemContainers.Count());
+				Assert.AreEqual(5, rockItemContainers.Count());
 				Assert.IsTrue(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -0"));
 				Assert.IsTrue(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -1"));
 				Assert.IsTrue(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -2"));
@@ -548,21 +564,21 @@ namespace TractionTools.Tests.Engines {
 				Assert.IsFalse(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -4"));
 				Assert.IsFalse(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -5"));
 				Assert.IsTrue(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -6"));
-				Assert.IsTrue(rockItemContainers.Any(x => x.GetItem().GetName() == "General Comments"));
+				Assert.IsTrue(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock Comments"));
 
 
 			}
 			{
 
 				var roleItemContainers = about.GetSurveys().First().GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Roles).GetItemContainers();
-				Assert.AreEqual(7, roleItemContainers.Count());				
+				Assert.AreEqual(7, roleItemContainers.Count());
 				Assert.IsTrue(roleItemContainers.Any(x => x.GetItem().GetName() == "Role 0"));
 				Assert.IsTrue(roleItemContainers.Any(x => x.GetItem().GetName() == "Role 1"));
 				Assert.IsTrue(roleItemContainers.Any(x => x.GetItem().GetName() == "Role 2"));
 				Assert.IsFalse(roleItemContainers.Any(x => x.GetItem().GetName() == "Role 3"));
 				Assert.IsFalse(roleItemContainers.Any(x => x.GetItem().GetName() == "Role 4"));
 				Assert.IsFalse(roleItemContainers.Any(x => x.GetItem().GetName() == "Role 5"));
-				Assert.IsTrue(roleItemContainers.Any(x => x.GetItem().GetName() == "General Comments"));
+				Assert.IsTrue(roleItemContainers.Any(x => x.GetItem().GetName() == "Role Comments"));
 
 				var a = roleItemContainers.Select(x => x.GetItem().GetName()).ToList();
 
@@ -579,7 +595,7 @@ namespace TractionTools.Tests.Engines {
 				Assert.IsTrue(valueItemContainers.Any(x => x.GetItem().GetHelp() == "Value Details 0"));
 				Assert.IsTrue(valueItemContainers.Any(x => x.GetItem().GetHelp() == "Value Details 1"));
 				Assert.IsTrue(valueItemContainers.Any(x => x.GetItem().GetHelp() == "Value Details 2"));
-				Assert.IsTrue(valueItemContainers.Any(x => x.GetItem().GetName() == "General Comments"));
+				Assert.IsTrue(valueItemContainers.Any(x => x.GetItem().GetName() == "Value Comments"));
 			}
 			var j = 0;
 		}

@@ -80,7 +80,7 @@
 				@media(max-width:@screen-sm) {
 					background-color: transparent;
 					position: fixed;
-					top: 18px;
+					top: 8px;
 					left: 0;
 					z-index: 1030;
 					color: #fff;
@@ -94,6 +94,9 @@
 					font-family: 'Lato',sans-serif;
 					font-weight: 900;
 					padding-left: 0px;
+					padding-left: 53px;
+					padding-right: 188px;
+					
 				}
 			}
 		}
@@ -199,8 +202,8 @@
 								font-size: 100%;
 							}
 
-							textarea{								
-								min-height:140px;
+							textarea {
+								min-height: 140px;
 							}
 						}
 
@@ -233,10 +236,12 @@
 
 					.item-container-Text {
 						padding-top: 10px;
+
 						.item .name {
 							font-size: 16px !important;
 						}
 					}
+
 					.item-container-Text ~ .item-container-Text {
 						padding-top: 5px;
 					}
@@ -246,8 +251,8 @@
 					.item-container-Radio {
 						padding-top: 30px;
 
-						&:first-of-type{
-							padding-top:20px;
+						&:first-of-type {
+							padding-top: 20px;
 						}
 
 						@media (max-width: 992px) {
@@ -273,19 +278,51 @@
 						padding-top: 5px;
 					}
 				}
+
+				.section-Rocks {
+					.disabled .item-row .item .name {
+						font-size: 16px !important;
+					}
+				}
+
+
+				.section-LeadershipAssessment,
+				.section-ManagementAssessment {
+
+					survey-item-container {
+						.item-row {
+							.item {
+								.name, .help {
+									text-align: left;
+								}
+
+								.help {
+									white-space: pre;
+									padding-bottom: 15px;
+
+									@media (max-width: 992px) {
+										text-align: left;
+										white-space: pre-line;
+									}
+								}
+							}
+
+							.responses {
+								padding-top: 4px;
+							}
+						}
+					}
+				}
 			}
 		}
 	}
 }
-
-
 /*
  * Side navigation
  *
  * Scrollspy and affixed enhanced navigation to highlight sections and secondary
  * sections of docs content.
  */
-
 /* By default it's not affixed in mobile views, so undo that */
 .bs-docs-sidebar.affix {
 	position: static;
@@ -296,13 +333,11 @@
 		padding-left: 20px;
 	}
 }
-
 /* First level of nav */
 .bs-docs-sidenav {
 	margin-top: 15px;
 	margin-bottom: 20px;
 }
-
 /* All levels of nav */
 .bs-docs-sidebar .nav > li > a {
 	display: block;
@@ -333,7 +368,6 @@
 	background-color: transparent;
 	border-left: 2px solid @traction-orange;
 }
-
 /* Nav: second level (shown on .active) */
 .bs-docs-sidebar .nav .nav {
 	display: none; /* Hide by default, but at >768px, show it */
@@ -362,7 +396,6 @@
 	padding-left: 28px;
 	font-weight: 500;
 }
-
 /* Back to top (hidden on mobile) */
 .back-to-top,
 .bs-docs-theme-toggle {
@@ -391,7 +424,6 @@
 		display: block;
 	}
 }
-
 /* Show and affix the side nav when space allows it */
 @media (min-width: 992px) {
 	.bs-docs-sidebar .nav > .active > ul,

@@ -12,6 +12,8 @@ using RadialReview.Accessors;
 using static RadialReview.Accessors.RoleAccessor;
 using RadialReview.Areas.People.Models.Survey;
 using RadialReview.Models.Accountability;
+using static RadialReview.Accessors.RoleAccessor.RoleLinksQuery;
+using RadialReview.Models.Enums;
 
 namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.Sections {
 	public class RoleSection : ISectionInitializer {
@@ -23,6 +25,13 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		}
 
 		public IEnumerable<IItemInitializer> GetItemBuilders(IItemInitializerData data) {
+			//only ask if they are not our manager
+			if (data.SurveyContainer.GetSurveyType() == SurveyType.QuarterlyConversation && data.About.Is<SurveyUserNode>()) {
+				if ((data.About as SurveyUserNode)._Relationship[data.By.ToKey()] == AboutType.Manager) {
+					return new List<IItemInitializer>();
+				}
+			}
+
 			var modelType = data.Survey.GetAbout().ModelType;
 
 			var genComments = new TextAreaItemIntializer("Role Comments", SurveyQuestionIdentifier.GeneralComment);
@@ -62,6 +71,34 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 						}
 					}
 				}
+			} else if (modelType == ForModel.GetModelType<SurveyUserNode>()) {
+				var query = data.Lookup.Get<RoleLinksQuery>("RoleQuery");
+				var surveyUserNodes = data.Lookup.GetList<SurveyUserNode>().ToDefaultDictionary(x => x.Id, x => x, x => null);
+				if (query != null) {
+					var suNode = surveyUserNodes[data.Survey.GetAbout().ModelId];
+					if (suNode != null) {
+						IEnumerable<RoleDetails> roles;
+						if (suNode.AccountabilityNode != null) {
+							roles = query.GetRoleDetailsForNode(suNode.AccountabilityNode);
+						} else if (suNode.User != null) {
+							roles = query.GetRoleDetailsForUser(suNode.UserOrganizationId);
+						} else {
+							throw new Exception("unhandled");
+						}
+						var roleItems = roles.Select(x => (IItemInitializer)new RoleListItem(x));
+
+						if (roleItems.Any()) {
+							var roleReponses = new[] {
+								new RoleResponseItem("Gets it",             "get"   ),
+								new RoleResponseItem("Wants it",            "want"  ),
+								new RoleResponseItem("Capacity to do it",   "cap"   ),
+							};
+							return roleItems.Union(roleReponses).Union(genComments.AsList());
+						}
+					}
+				}
+			} else {
+				throw new ArgumentOutOfRangeException(modelType);
 			}
 
 			return new List<IItemInitializer>() {
@@ -76,9 +113,21 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 
 		public void Prelookup(IInitializerLookupData data) {
 			data.Lookup.Add("RoleQuery", RoleAccessor.GetRolesForOrganization_Unsafe(data.Session, data.OrgId));
+
 			var nodeIds = data.ByAbouts.SelectMany(x => new[] { x.GetBy(), x.GetAbout() }).Where(x => x.Is<AccountabilityNode>()).Select(x => x.ModelId).ToArray();
 			if (nodeIds.Any()) {
 				data.Lookup.Add("Nodes", data.Session.QueryOver<AccountabilityNode>().WhereRestrictionOn(x => x.Id).IsIn(nodeIds).Future());
+			}
+
+			var surveyUserNodeIds = data.ByAbouts.SelectMany(x => new[] { x.GetBy(), x.GetAbout() }).Where(x => x.Is<SurveyUserNode>()).Select(x => x.ModelId).ToArray();
+			if (surveyUserNodeIds.Any()) {
+				data.Lookup.AddList(
+					data.Session.QueryOver<SurveyUserNode>()
+						.WhereRestrictionOn(x => x.Id).IsIn(surveyUserNodeIds)
+						.Fetch(x => x.AccountabilityNode).Eager
+						.Fetch(x => x.User).Eager
+						.Future()
+				);
 			}
 		}
 	}

@@ -107,22 +107,22 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 		protected static void AddSectionTitle(Cell section, string pageTitle, Orientation orientation = Orientation.Portrait) {
 			var frame = section.Elements.AddTextFrame();
 			frame.Height = Unit.FromInch(.75);
-			frame.Width = Unit.FromInch(7.5);
+			frame.Width = Unit.FromInch(8);
 			if (orientation == Orientation.Landscape)
-				frame.Width = Unit.FromInch(10);
+				frame.Width = Unit.FromInch(10.5);
 			// frame.LineFormat.Color = TableGray;
 			//frame.Left = ShapePosition.Center;
 
-			frame.MarginRight = Unit.FromInch(1);
-			frame.MarginLeft = Unit.FromInch(1);
+			frame.MarginRight = Unit.FromInch(.25);
+			frame.MarginLeft = Unit.FromInch(.25);
 
 
 			var title = frame.AddTable();
 			title.Borders.Color = TractionOrange;//TableBlack;
 
-			var size = Unit.FromInch(5.5);
+			var size = Unit.FromInch(7);
 			if (orientation == Orientation.Landscape)
-				size = Unit.FromInch(8);
+				size = Unit.FromInch(9);
 			var c = title.AddColumn(size);
 			c.Format.Alignment = ParagraphAlignment.Center;
 			var rr = title.AddRow();
@@ -163,13 +163,6 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 
 	public class PdfSectionFactory {
 
-		private static Color DebugColor = SurveyPdfAccessor.DebugColor;
-
-		public static Color _Gray = Color.FromArgb((128 + 255) / 2, 51, 51, 51);
-		public static Unit _DefaultMargin = Unit.FromInch(0.3);
-
-		public static Unit BottomPad = SurveyPdfAccessor.BottomPad;// Unit.FromInch(.25);
-				
 		public static bool CreateSection(Cell cell, ISectionAbout isection, Unit usableWidth) {
 			switch (isection.GetSectionType()) {
 				case "Rocks":
@@ -180,10 +173,23 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 					return AddValuesSection(cell, isection, usableWidth);
 				case "GeneralComments":
 					return AddGeneralCommentsSection(cell, isection, usableWidth);
+				case "LeadershipAssessment":
+					return AddLeadershipAssessmentSection(cell, isection, usableWidth);
+				case "ManagementAssessment":
+					return AddManagementAssessmentSection(cell, isection, usableWidth);
 				default:
 					throw new ArgumentOutOfRangeException("Unknown section type");
 			}
 		}
+
+		private static Color DebugColor = SurveyPdfAccessor.DebugColor;
+
+		public static Color _Gray = Color.FromArgb((128 + 255) / 2, 51, 51, 51);
+		public static Unit _DefaultMargin = Unit.FromInch(0.3);
+
+		public static Unit BottomPad = SurveyPdfAccessor.BottomPad;// Unit.FromInch(.25);
+				
+	
 
 
 
@@ -227,6 +233,22 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			protected Unit TotalWidth { get; set; }
 			protected bool ShouldAddSpacerRow { get; set; }
 
+			public static Action<Cell, IItem> DefaultItemBuilder(ParagraphAlignment alignment= ParagraphAlignment.Right) {
+				return new Action<Cell, IItem>((c, item) => {
+					var para = c.AddParagraph();
+					c.VerticalAlignment = VerticalAlignment.Top;
+					para.Format.Alignment = alignment;
+					para.AddFormattedText(item.GetName() ?? "", TextFormat.Bold);
+					para = c.AddParagraph();
+					para.Format.Alignment = alignment;
+					para.AddFormattedText(item.GetHelp() ?? "");
+					para.Format.LeftIndent = Unit.FromInch(0.0375);
+					c.Row.Height = BottomPad;//*2.5;
+					c.Row.HeightRule = RowHeightRule.AtLeast;
+					para.Format.SpaceAfter = BottomPad / 2.0;
+				});
+			}
+
 			public PdfTable(Unit totalWidth, IEnumerable<IItemContainerAbout> itemContainers, Action<Cell, IItemFormat, IResponse> responseBuilder, Action<Cell, IItem> itemBuilder = null, Action<Cell, IForModel> userBuilder = null,bool addSpacerRow=true) {
 				HorizontalPadding = DefaultHorizontalPadding;
 				ItemTitleWidth = DefaultItemTitleWidth;
@@ -242,18 +264,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 					c.VerticalAlignment = VerticalAlignment.Center;
 				});
 
-				ItemBuilder = itemBuilder ?? new Action<Cell, IItem>((c, item) => {
-					var valuePara = c.AddParagraph();
-					c.VerticalAlignment = VerticalAlignment.Top;
-					valuePara.Format.Alignment = ParagraphAlignment.Right;
-					valuePara.AddFormattedText(item.GetName() ?? "", TextFormat.Bold);
-					valuePara = c.AddParagraph();
-					valuePara.Format.Alignment = ParagraphAlignment.Right;
-					valuePara.AddFormattedText(item.GetHelp() ?? "");
-					c.Row.Height = BottomPad;//*2.5;
-					c.Row.HeightRule = RowHeightRule.AtLeast;
-					valuePara.Format.SpaceAfter = BottomPad/2.0;
-				});
+				ItemBuilder = itemBuilder ?? DefaultItemBuilder();
 			}
 
 			public static Table Build(Unit totalWidth, IEnumerable<IItemContainerAbout> itemContainers, Action<Cell, IItemFormat, IResponse> responseBuilder, Action<Cell, IItem> itemBuilder = null, Action<Cell, IForModel> userBuilder = null) {
@@ -777,6 +788,50 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			
 			return DrawComments(cell, "General Comments", generalComments, usableWidth);
 			
+		}
+
+		private static Action<Cell, IItemFormat, IResponse> LmaTable() {
+			return new Action<Cell, IItemFormat, IResponse>((c, format, resp) => {
+				var paragraph = c.AddParagraph();
+				//var options = format.GetSetting<Dictionary<string, object>>("options");
+				var rawResponse = resp.NotNull(x => x.GetAnswer());
+
+				//if (rawResponse != null) {
+				//	//	var response = (string)options.GetOrDefault(rawResponse, rawResponse);
+				//	paragraph.AddFormattedText(rawResponse ?? "");
+				//} else {
+				//	paragraph.Format.Font.Color = _Gray;
+				//	paragraph.Format.Font.Italic = true;
+				//	paragraph.AddFormattedText("No response");
+				//}
+
+				DrawCheckX(paragraph, rawResponse, "yes", "no");
+			});
+		}
+
+
+
+
+		private static bool AddLeadershipAssessmentSection(Cell cell, ISectionAbout iSection, Unit usableWidth) {
+
+			var questions = iSection.GetItemContainers();
+			var leadershipQuestions = iSection.GetItemContainers().Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.LeadershipAssessment).ToList();
+			var table = PdfTable.Build(usableWidth, leadershipQuestions, LmaTable(),PdfTable.DefaultItemBuilder(ParagraphAlignment.Left));
+			cell.Elements.Add(table);
+
+			//return DrawComments(cell, "General Comments", generalComments, usableWidth);
+			return leadershipQuestions.Any();			
+
+		}
+		private static bool AddManagementAssessmentSection(Cell cell, ISectionAbout iSection, Unit usableWidth) {
+
+			var questions = iSection.GetItemContainers();
+			var managementQuestions = iSection.GetItemContainers().Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.ManagementAssessment).ToList();
+			var table = PdfTable.Build(usableWidth, managementQuestions, LmaTable(), PdfTable.DefaultItemBuilder(ParagraphAlignment.Left));
+			cell.Elements.Add(table);
+
+			return managementQuestions.Any();
+
 		}
 
 		private static DefaultDictionary<string, Ratio> CalculateCompletionPercent(List<IItemContainerAbout> items) {

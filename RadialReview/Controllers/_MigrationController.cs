@@ -1868,7 +1868,7 @@ namespace RadialReview.Controllers {
 				using (var tx = s.BeginTransaction()) {
 
 					var orgs = s.QueryOver<OrganizationModel>().List().ToList();
-					var teams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Type == TeamType.Managers).List().ToList();
+					var teams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Type == TeamType.Managers && x.DeleteTime==null).List().ToList();
 
 					foreach (var org in orgs) {
 

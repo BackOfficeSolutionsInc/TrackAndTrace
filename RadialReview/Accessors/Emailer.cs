@@ -115,6 +115,8 @@ namespace RadialReview.Accessors {
 		}
 
 		public static bool IsValid(string emailaddress) {
+			if (emailaddress == null)
+				return false;
 			try {
 				MailAddress m = new MailAddress(emailaddress);
 				return true;

@@ -19,9 +19,9 @@
 		</div>
 	</div>
 	<div class="row smallBreak2">
-		<div class="col-sm-3 col-sm-offset-3">
-			<div class="row">
-				<div class="col-sm-6">
+		<div class="col-sm-6 col-sm-offset-3">
+			<div class="row smallBreak2">
+				<div class="col-sm-4 smallBreak2">
 					<label class="control-label">Evaluate Self:</label>
 					<div class="btn-group" style="display:block;" data-toggle="buttons">
 						<label class="btn btn-default active">
@@ -32,7 +32,18 @@
 						</label>
 					</div>
 				</div>
-				<div class="col-sm-6">
+				<div class="col-sm-4">
+					<label class="control-label">Evaluate Manager:</label>
+					<div class="btn-group" style="display:block;" data-toggle="buttons">
+						<label class="btn btn-default active">
+							<input type="radio" name="@Html.NameFor(x=>x.EvalManager)" value="true" autocomplete="off" checked> Yes
+						</label>
+						<label class="btn btn-default">
+							<input type="radio" name="@Html.NameFor(x=>x.EvalManager)" value="false" autocomplete="off"> No
+						</label>
+					</div>
+				</div>
+				<div class="col-sm-4">
 					<label class="control-label">Send Email:</label>
 					<div class="btn-group" style="display:block;" data-toggle="buttons">
 						<label class="btn btn-default active">
@@ -46,7 +57,9 @@
 			</div>
 
 		</div>
-		<div class="col-sm-3">
+	</div>
+	<div class="row ">
+		<div class="col-sm-3 col-sm-offset-3">
 			<label class="control-label">Due Date:</label>
 			<div class="btn-group" style="display:block;" data-toggle="buttons">
 				@Html.EditorFor(x => x.DueDate, new { startDate = "tomorrow" })
@@ -91,8 +104,8 @@
 
 		DataTable({
 			container: "#qc-issue",
-			data: @Html.ArrayToString(Model.AvailableUsers, x => new { Name = x.GetAbout().ToPrettyString(), Id = x.ToKey() }),
-			//title
+			data: @Html.ArrayToString(Model.AvailableUsers, x => new { Name = x.ToPrettyString(), Id = x.ToViewModelKey() }),
+			//title			
 			cells:[{
 				contents:function(x){ return "<input type='checkbox' checked name='selected' value ='"+x.Id+"'/>"; }
 

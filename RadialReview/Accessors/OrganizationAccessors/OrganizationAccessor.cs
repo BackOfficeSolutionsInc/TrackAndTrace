@@ -705,7 +705,7 @@ namespace RadialReview.Accessors {
 					}
 
 					if (teams) {
-						var allTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == organizationId).List().ToList();
+						var allTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == organizationId && x.DeleteTime==null).List().ToList();
 						var allTeamDurations = s.QueryOver<TeamDurationModel>().JoinQueryOver(x => x.Team).Where(x => x.Organization.Id == organizationId).List().ToList();
 						foreach (var user in users) {
 							user.PopulateTeams(allTeams, allTeamDurations);
@@ -849,12 +849,12 @@ namespace RadialReview.Accessors {
 					}
 					if (!String.IsNullOrWhiteSpace(organizationName) && org.Name.Standard != organizationName) {
 						org.Name.UpdateDefault(organizationName);
-						var managers = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == org.Id && x.Type == TeamType.Managers).List().FirstOrDefault();
+						var managers = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == org.Id && x.Type == TeamType.Managers && x.DeleteTime==null).List().FirstOrDefault();
 						if (managers != null) {
 							managers.Name = Config.ManagerName() + "s at " + organizationName;
 							s.Update(managers);
 						}
-						var allTeam = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == org.Id && x.Type == TeamType.AllMembers).List().FirstOrDefault();
+						var allTeam = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == org.Id && x.Type == TeamType.AllMembers && x.DeleteTime == null).List().FirstOrDefault();
 						if (allTeam != null) {
 							allTeam.Name = organizationName;
 							s.Update(allTeam);

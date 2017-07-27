@@ -55,6 +55,9 @@ namespace RadialReview.Models.Accountability {
         public virtual AccountabilityRolesGroup AccountabilityRolesGroup { get; set; }
         public virtual List<AccountabilityNode> _Children { get; set; }
 
+
+		public virtual string PositionName { get { return AccountabilityRolesGroup.NotNull(x => x.Position.GetName()); } }
+
 		public virtual string _Name { get; set; }
 		public virtual bool? _Editable { get; set; }
         public virtual int Ordering { get; set; }

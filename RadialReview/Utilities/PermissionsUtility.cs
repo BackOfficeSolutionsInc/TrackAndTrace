@@ -208,6 +208,9 @@ namespace RadialReview.Utilities {
 				return ManagesAccountabilityNodeOrSelf(forModel.ModelId);
 			} else if (forModel.Is<OrganizationModel>()) {
 				return ManagingOrganization(forModel.ModelId);
+			} else if (forModel.Is<SurveyUserNode>()) {
+				var sun = session.Get<SurveyUserNode>(forModel.ModelId);
+				return ManagesForModel(sun.AccountabilityNode, disableIfSelf);
 			}
 
 			throw new PermissionsException("Unrecognized ForModel type.");
@@ -1569,7 +1572,7 @@ namespace RadialReview.Utilities {
             return CanView(PermItem.ResourceType.Survey, surveyId);
         }
 		public PermissionsUtility ViewSurveyResultsAbout(IForModel about,long orgId) {
-			var allowSelf = (IsManagingOrganization(orgId));
+			var allowSelf = (IsManager(orgId));
 			return ManagesForModel(about, !allowSelf);
 		}
 
@@ -2004,7 +2007,7 @@ namespace RadialReview.Utilities {
 			if (IsRadialAdmin(caller))
 				return this;
 			if (forModel.ModelType == ForModel.GetModelType<UserOrganizationModel>())
-				return Self(forModel.ModelId);
+				return Self(forModel.ModelId);			
 			throw new PermissionsException();
 		}
 

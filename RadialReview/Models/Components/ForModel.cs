@@ -136,8 +136,12 @@ namespace RadialReview.Extensions {
 			if (split.Length < 2)
 				throw new ArgumentOutOfRangeException("Requires a string in the format <ModelType>_<ModelId>");
 
+			var mid = split.Last().ToLong();
+			if (mid == 0)
+				throw new Exception("Id should not be 0");
+
 			return new ForModel() {
-				ModelId = split.Last().ToLong(),
+				ModelId = mid,
 				ModelType = string.Join("_", split.Take(split.Length - 1))
 			};
 		}

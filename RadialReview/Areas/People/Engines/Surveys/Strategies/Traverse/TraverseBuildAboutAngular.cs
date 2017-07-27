@@ -2,6 +2,7 @@
 using RadialReview.Areas.People.Angular.Survey;
 using RadialReview.Areas.People.Angular.Survey.SurveyAbout;
 using RadialReview.Areas.People.Engines.Surveys.Interfaces;
+using RadialReview.Areas.People.Models.Survey;
 using RadialReview.Models;
 using RadialReview.Models.Accountability;
 using RadialReview.Models.Components;
@@ -44,6 +45,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Strategies.Traverse {
 
 			var userIds = allForModels.Where(x => x.Is<UserOrganizationModel>()).Select(x => x.ModelId).ToArray();
 			var nodeIds = allForModels.Where(x => x.Is<AccountabilityNode>()).Select(x => x.ModelId).ToArray();
+			var surveyIds = allForModels.Where(x => x.Is<SurveyUserNode>()).Select(x => x.ModelId).ToArray();
 
 			var users = Session.QueryOver<UserOrganizationModel>()
 				.Where(x => x.DeleteTime == null)
@@ -56,13 +58,22 @@ namespace RadialReview.Areas.People.Engines.Surveys.Strategies.Traverse {
 				.Fetch(x => x.User).Eager
 				.Future();
 
+			var suns = Session.QueryOver<SurveyUserNode>()
+				.Where(x => x.DeleteTime == null)
+				.WhereRestrictionOn(x => x.Id).IsIn(surveyIds)
+				.Future();
+
 			var output = new Dictionary<string, string>();
 			foreach (var u in users) {
 				var name = u.GetName();
 				output[ForModel.Create(u).ToKey()] = name;
 			}
 			foreach (var u in nodes) {
-				var name = u.User.NotNull(x=>x.GetName());
+				var name = u.User.NotNull(x => x.GetName());
+				output[ForModel.Create(u).ToKey()] = name;
+			}
+			foreach (var u in suns) {
+				var name = u.ToPrettyString();
 				output[ForModel.Create(u).ToKey()] = name;
 			}
 
@@ -72,7 +83,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Strategies.Traverse {
 
 			//output.AddRange(userNames, x => x.Key, x => x.Value);
 			//output.AddRange(nodeNames, x => x.Key, x => x.Value);
-			
+
 			return output;
 		}
 

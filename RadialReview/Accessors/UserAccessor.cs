@@ -438,12 +438,15 @@ namespace RadialReview.Accessors {
 					found.ManagerAtOrganization = isManager.Value;
 					if (isManager == false) {
 						var subordinatesTeam = s.QueryOver<OrganizationTeamModel>()
-							.Where(x => x.Type == TeamType.Subordinates && x.ManagedBy == userOrganizationId)
+							.Where(x => x.Type == TeamType.Subordinates && x.ManagedBy == userOrganizationId && x.DeleteTime == null)
 							.SingleOrDefault();
-						if (subordinatesTeam != null)
-							s.Delete(subordinatesTeam);
+						if (subordinatesTeam != null) {
+							subordinatesTeam.DeleteTime = DateTime.UtcNow;
+							s.Update(subordinatesTeam);
+						}
 					} else {
 						s.Save(OrganizationTeamModel.SubordinateTeam(perm.GetCaller(), found));
+						s.Flush();
 					}
 				}
 
@@ -717,7 +720,7 @@ namespace RadialReview.Accessors {
 					var user = s.Get<UserOrganizationModel>(userId);
 					var warnings = new List<String>();
 					//managed teams
-					var managedTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.ManagedBy == userId).List().ToList();
+					var managedTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.ManagedBy == userId && x.DeleteTime == null).List().ToList();
 					foreach (var m in managedTeams) {
 						if (m.Type != TeamType.Subordinates) {
 							warnings.Add("The team, " + m.GetName() + " is managed by" + user.GetFirstName() + ". You will be promoted to " + Config.ManagerName() + " of this team.");
@@ -794,24 +797,25 @@ namespace RadialReview.Accessors {
 						//subordinate.Manager.UpdateCache(s);
 					}
 					//managed teams
-					var managedTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.ManagedBy == userId).List().ToList();
+					var managedTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.ManagedBy == userId && x.DeleteTime == deleteTime).List().ToList();
 					foreach (var m in managedTeams) {
-						if (m.Type != TeamType.Subordinates) {
-							m.ManagedBy = caller.Id;
-							s.Update(m);
-							warnings.Add("You now manage the team: " + m.GetName() + ".");
-						} else {
-							//teams
-							var subordinateTeam = s.QueryOver<TeamDurationModel>().Where(x => x.TeamId == m.Id && x.DeleteTime == deleteTime).List().ToList();
-							foreach (var t in subordinateTeam) {
-								t.DeletedBy = caller.Id;
-								t.DeleteTime = null;
-								s.Update(t);
-							}
-
-							m.DeleteTime = null;
-							s.Update(m);
+						//if (m.Type != TeamType.Subordinates) {
+						//	m.ManagedBy = caller.Id;
+						//	m.DeleteTime = null;
+						//	s.Update(m);
+						//	warnings.Add("You now manage the team: " + m.GetName() + ".");
+						//} else {
+						//teams
+						var subordinateTeam = s.QueryOver<TeamDurationModel>().Where(x => x.TeamId == m.Id && x.DeleteTime == deleteTime).List().ToList();
+						foreach (var t in subordinateTeam) {
+							t.DeletedBy = caller.Id;
+							t.DeleteTime = null;
+							s.Update(t);
 						}
+
+						m.DeleteTime = null;
+						s.Update(m);
+						//}
 					}
 
 					var attendees = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
@@ -903,7 +907,7 @@ namespace RadialReview.Accessors {
 						//subordinate.Manager.UpdateCache(s);
 					}
 					//managed teams
-					var managedTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.ManagedBy == userId).List().ToList();
+					var managedTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.ManagedBy == userId && x.DeleteTime == null).List().ToList();
 					foreach (var m in managedTeams) {
 						if (m.Type != TeamType.Subordinates) {
 							m.ManagedBy = caller.Id;
@@ -1128,7 +1132,7 @@ namespace RadialReview.Accessors {
 
 			if (styles != null) {
 				if (styles.ShowScorecardColors == false) {
-					builder.AppendLine(".scorecard-table .score .success,.scorecard-table .score .danger{color: inherit !important;background-color: inherit !important;}");
+					builder.AppendLine(".scorecard-table .score .success,.scorecard-table .score .danger,.scorecard-table .score.success input, .scorecard-table .score input.success, .scorecard-table .score.success{color: inherit !important;background-color: inherit !important;}");
 				}
 			}
 

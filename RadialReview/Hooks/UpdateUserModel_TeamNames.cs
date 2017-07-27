@@ -15,7 +15,7 @@ namespace RadialReview.Hooks {
 			var uos = s.QueryOver<UserOrganizationModel>().Where(x => x.User.Id == user.Id && x.ManagerAtOrganization).List().ToList();
 			var uoIds = uos.Select(y => y.Id).Distinct().ToArray();
 			if (uoIds.Any()) {
-				var teams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Type == Models.Enums.TeamType.Subordinates)
+				var teams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Type == Models.Enums.TeamType.Subordinates && x.DeleteTime == null)
 					.WhereRestrictionOn(x => x.ManagedBy).IsIn(uoIds)
 					.List().ToList();
 

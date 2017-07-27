@@ -70,7 +70,7 @@ namespace TractionTools.Tests.Integrations {
 			Assert.AreEqual(1, TestRequests.Count());
 			Assert.AreEqual("contact_sync", TestRequests.First().ApiAction);
 			var dict = TestRequests.First().Parameters;
-			Assert.AreEqual(21, dict.Keys.Count);
+			Assert.AreEqual(23, dict.Keys.Count);
 			var f = aceh.Configs.Fields;
 			var lists = aceh.Configs.Lists;
 			//Assert.AreEqual("{\"email\":\"clay.upton+" + org.Manager.GetUsername().Replace("@", "_") + "@mytractiontools.com\"}", dict["visit"]);
