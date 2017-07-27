@@ -1079,6 +1079,10 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
 
+                //Stream stream = new MemoryStream();  // Create a stream
+                //xmldocument.Save(stream);      // Save XDocument into the stream
+                //stream.Position = 0;
+
                 xmldocument.Save(dest);
                 FileStream fileStream = new FileStream(dest, FileMode.Open);
                 fileStream.CopyTo(fileStm);

@@ -5,6 +5,7 @@ using System.Web;
 using FluentNHibernate.Mapping;
 using RadialReview.Models.Interfaces;
 using RadialReview.Utilities;
+using NHibernate.Proxy;
 
 namespace RadialReview.Models.Components
 {
@@ -54,9 +55,20 @@ namespace RadialReview.Models.Components
 
 		public static string GetModelType(ILongIdentifiable creator)
 		{
-			return HibernateSession.GetDatabaseSessionFactory().GetClassMetadata(creator.GetType()).EntityName;
+			return HibernateSession.GetDatabaseSessionFactory().GetClassMetadata(Deproxy(creator).GetType()).EntityName;
 		}
-		public static string GetModelType<T>() where T : ILongIdentifiable
+
+        private static T Deproxy<T>(T model)
+        {
+            if (model is INHibernateProxy)
+            {
+                var lazyInitialiser = ((INHibernateProxy)model).HibernateLazyInitializer;
+                model = (T)lazyInitialiser.GetImplementation();
+            }
+            return model;
+        }
+
+        public static string GetModelType<T>() where T : ILongIdentifiable
 		{
 			return HibernateSession.GetDatabaseSessionFactory().GetClassMetadata(typeof(T)).EntityName;
 		}

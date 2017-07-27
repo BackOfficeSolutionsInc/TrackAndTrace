@@ -21,7 +21,7 @@ using log4net;
 
 namespace RadialReview.Models
 {
-    [DebuggerDisplay("User {User}")]
+    [DebuggerDisplay("User {Name}")]
     [DataContract]
     public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IHistorical, TimeSettings/*, IAngularizer<UserOrganizationModel>*/
     {

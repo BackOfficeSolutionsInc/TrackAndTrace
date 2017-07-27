@@ -452,8 +452,8 @@ namespace RadialReview.Areas.CoreProcess.Models
         }
 
         public static string UnitTestPath()
-        {
-            return @"F:\Sanjeev_Projects\TractionTools\Code1\RadialReview\RadialReview\Areas\CoreProcess\CamundaFiles\";
+        {            
+            return @"E:\Installations\Odesk\Clay\Code\RadialReview\RadialReview\Areas\CoreProcess\CamundaFiles";
         }
     }
 

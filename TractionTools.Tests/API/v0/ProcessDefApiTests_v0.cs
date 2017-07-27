@@ -53,9 +53,9 @@ namespace TractionTools.Tests.Api
         {
             var c = new Ctx();
             ProcessDefAccessor processDefAccessor = new ProcessDefAccessor();
-            var getProcessDef = await processDefAccessor.Create(c.AllAdmins[0], "Test Process Def");
+            var getProcessDef = await processDefAccessor.Create(c.E1, "Test Process Def");
 
-            TaskViewModel task = new TaskViewModel() { name = "Test Task", SelectedMemberId = new long[c.E1.Id] };
+            TaskViewModel task = new TaskViewModel() { name = "Test Task", SelectedMemberId = new long[] { c.E1.Id } };
             var createTask = await processDefAccessor.CreateTask(c.E1, getProcessDef, task);
             Assert.IsTrue(!string.IsNullOrEmpty(createTask.Id));
         }
