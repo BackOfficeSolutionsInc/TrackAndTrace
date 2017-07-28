@@ -115,6 +115,8 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
 
             var candidateGroups = String.Join(",", candidateGroupIds.Select(x => "rgm_" + x));
             client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
+            var tasks = await client.Task().Get().CandidateGroups(candidateGroups).list();
+
             if (!string.IsNullOrEmpty(processInstanceId))
                 return await client.Task().Get().CandidateGroups(candidateGroups).Unassigned(unassigned).ProcessInstanceId(processInstanceId).list();
             else
