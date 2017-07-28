@@ -97,12 +97,12 @@ namespace TractionTools.Tests.Api
             processDefAccessor = new ProcessDefAccessor();
             var getProcessInstance = processDefAccessor.GetProcessInstanceList(c.E1, getProcessDef);
             var getTaskList = await processDefAccessor.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
+
             await processDefAccessor.TaskClaim(c.E1, getTaskList[0].Id, c.E1.Id);
             var getTask = await processDefAccessor.GetTaskById(c.E1, getTaskList[0].Id);
             var getClaim = getTask.Assignee;
             Assert.AreEqual(getClaim, "u_" + c.E1.Id);
         }
-
 
         [TestMethod]
         [TestCategory("Api_V0")]

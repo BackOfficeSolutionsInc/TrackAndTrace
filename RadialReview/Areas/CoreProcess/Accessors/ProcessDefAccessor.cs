@@ -620,7 +620,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
             return taskList;
         }
 
-        public async Task<List<TaskViewModel>> GetTaskListByCandidateGroups(UserOrganizationModel caller, long[] candidateGroupIds, string processInstanceId = "",bool unassigned = false)
+        public async Task<List<TaskViewModel>> GetTaskListByCandidateGroups(UserOrganizationModel caller, long[] candidateGroupIds, string processInstanceId = "", bool unassigned = false)
         {
             List<TaskViewModel> taskList = new List<TaskViewModel>();
             try
@@ -630,7 +630,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     PermissionsUtility.Create(s, caller);
                     //var candidateGroups = String.Join(",", candidateGroupIds.Select(x => "rgm_" + x));
                     CommClass comClass = new CommClass();
-                    var getUsertaskList = await comClass.GetTaskByCandidateGroups(candidateGroupIds, processInstanceId,unassigned);
+                    var getUsertaskList = await comClass.GetTaskByCandidateGroups(candidateGroupIds, processInstanceId, unassigned);
 
                     foreach (var item in getUsertaskList)
                     {
@@ -699,7 +699,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                             name = item.Name,
                             Id = item.Id,
                             Assignee = ((!string.IsNullOrEmpty(item.Assignee)) ? item.Assignee : ""),
-                    });
+                        });
                     }
                 }
             }
@@ -1128,28 +1128,10 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                     new XElement(bpmn + "startEvent", new XAttribute("id", "StartEvent"), new XAttribute("name", processName + "&#10;requested")),
                     new XElement(bpmn + "endEvent", new XAttribute("id", "EndEvent"), new XAttribute("name", processName + "&#10;finished")))));
 
-                //string dir = System.Web.HttpContext.Current.Server.MapPath("~/Areas/CoreProcess/CamundaFiles/");
-
-                //if (string.IsNullOrEmpty(dir))  //for Unit Test
-                //{
-                //    dir = BpmnUtility.UnitTestPath();
-                //}
-
-                //string dest = Path.Combine(dir, "blank.bpmn");
-                //if (!Directory.Exists(dir))
-                //    Directory.CreateDirectory(dir);
-
-                //Stream stream = new MemoryStream();  // Create a stream
-                xmldocument.Save(fileStm);      // Save XDocument into the stream
+                // Save XDocument into the stream
+                xmldocument.Save(fileStm);
                 fileStm.Seek(0, SeekOrigin.Begin);
                 fileStm.Position = 0;
-
-                //xmldocument.Save(dest);
-                //FileStream fileStream = new FileStream(dest, FileMode.Open);
-                //fileStream.CopyTo(fileStm);
-                //fileStm.Seek(0, SeekOrigin.Begin);
-                //fileStream.Close();
-
             }
             catch (Exception)
             {
