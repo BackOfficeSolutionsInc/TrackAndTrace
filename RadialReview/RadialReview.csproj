@@ -129,6 +129,7 @@
     <Compile Include="Areas\CoreProcess\CoreProcessAreaRegistration.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\ITaskAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
+    <Compile Include="Areas\CoreProcess\Models\AmazonSQSUtility.cs" />
     <Compile Include="Areas\CoreProcess\Models\BpmnUtility.cs" />
     <Compile Include="Areas\CoreProcess\Models\Interfaces\IProcessInstance.cs" />
     <Compile Include="Areas\CoreProcess\Models\Interfaces\ITask.cs" />
@@ -2380,6 +2381,10 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AmazonSDK\AmazonSDK.csproj">
+      <Project>{d82e94bd-80cf-4697-b72b-877998571809}</Project>
+      <Name>AmazonSDK</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CamundaCSharpClient\CamundaCSharpClient.csproj">
       <Project>{220d5704-6b65-4f39-abe2-e3786114f2fd}</Project>
       <Name>CamundaCSharpClient</Name>
