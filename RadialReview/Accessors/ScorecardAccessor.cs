@@ -23,6 +23,7 @@ using RadialReview.Models.Angular.Meeting;
 using System.Threading.Tasks;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
+using static RadialReview.Accessors.L10Accessor;
 
 namespace RadialReview.Accessors {
 	public class ScorecardAccessor {
@@ -177,7 +178,9 @@ namespace RadialReview.Accessors {
 						.Where(x => x.DeleteTime == null && x.OrganizationId == organizationId)
 						.List().ToList();
 
-					var csv = ExportAccessor.GenerateScorecardCsv("Measurable", scores);
+					var data = ScorecardData.FromScores(scores);
+
+					var csv = ExportAccessor.GenerateScorecardCsv("Measurable", data);
 
 					//var csv = new Csv();
 					//csv.SetTitle("Measurable");

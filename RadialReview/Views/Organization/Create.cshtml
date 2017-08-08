@@ -233,8 +233,8 @@
 		$("form").on("submit", function () {
 			$("button").prop("disabled");
 			$("button").addClass("disabled");
-			$(this).parent().append("working...");
-			$(this).remove();
+			$(this).append("working...");
+			$("button").remove();
 		});
 
 	</script>

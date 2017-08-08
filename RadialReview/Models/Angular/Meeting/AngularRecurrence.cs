@@ -73,6 +73,14 @@ namespace RadialReview.Models.Angular.Meeting
 		public bool? ShowIDS			{ get; set; }
 		public bool? ShowConclude		{ get; set; }
 
+		public decimal? SegueMinutes { get; set; }
+		public decimal? ScorecardMinutes { get; set; }
+		public decimal? RockReviewMinutes { get; set; }
+		public decimal? HeadlinesMinutes { get; set; }
+		public decimal? TodosMinutes { get; set; }
+		public decimal? IDSMinutes { get; set; }
+		public decimal? ConcludeMinutes { get; set; }
+
 		public MeetingType? MeetingType { get; set; }
 
 		public AngularIgnore<L10Recurrence> _Recurrence { get; set; }

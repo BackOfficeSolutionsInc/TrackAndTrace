@@ -376,6 +376,7 @@ namespace RadialReview.Controllers {
 				"Make sure entire team is following Marketing Core Process",
 				"Call Amber to schedule meeting",
 				"Meet with Carol in Finance",
+				"Give credit to Mike Paton",
 			};
 
 

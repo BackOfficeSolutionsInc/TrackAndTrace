@@ -289,7 +289,8 @@ namespace RadialReview.Accessors {
 						if (template != null)
 							UserTemplateAccessor._AddUserToTemplateUnsafe(db, template.Organization, template.Id, newUser.Id, false);
 
-						newUser.Positions.Add(positionDuration);
+						//REMOVED, CAUSES DUPLICATE POSITION
+						//newUser.Positions.Add(positionDuration);
 					}
 
 					db.Update(newUser);

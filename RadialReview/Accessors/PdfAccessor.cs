@@ -690,24 +690,7 @@ namespace RadialReview.Accessors {
 			p.Format.Font.Size = 8;
 			p.Format.Font.Color = TableGray;
 			p.Format.LeftIndent = Unit.FromPoint(0);
-
-			//p =section.AddParagraph();
-			//var f = p.AddFormattedText("The Weekly Agenda",TextFormat.Bold);
-			//f.Font.Name = "Arial Narrow";
-			//f.Font.Size = 16;
-			//p.Format.LeftIndent = Unit.FromInch(.5);
-			//p.Format.SpaceAfter =Unit.FromInch(.25);
-			//var p = section.AddParagraph();
-			//var t = section.AddTable();
-			//t.AddColumn(Unit.FromInch(3.75));
-			//t.AddColumn(Unit.FromInch(3.75));
-
-			//var r = t.AddRow();
-			//p = r.Cells[0].AddParagraph("Day: _____________________________ ");
-			//p.Format.Alignment = ParagraphAlignment.Right;
-			//p = r.Cells[1].AddParagraph(" Time: ________________");
-			//p.Format.Alignment = ParagraphAlignment.Left;
-
+			
 			p = section.AddParagraph();
 			p.Format.SpaceAfter = Unit.FromInch(.25 / 2);
 			p.Format.SpaceBefore = Unit.FromInch(0);
@@ -723,117 +706,112 @@ namespace RadialReview.Accessors {
 
 			var recurr = recur._Recurrence.Item;
 
-			var r = t.AddRow();
-			r.Cells[0].AddParagraph("Segue");
-			r.Cells[1].AddParagraph((int)recurr.SegueMinutes + " Minutes");
-			r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
-			r = t.AddRow();
-			r.Cells[0].AddParagraph("Scorecard");
-			r.Cells[1].AddParagraph((int)recurr.ScorecardMinutes + " Minutes");
-			r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
-			r = t.AddRow();
-			r.Cells[0].AddParagraph("Rock Review");
-			r.Cells[1].AddParagraph((int)recurr.RockReviewMinutes + " Minutes");
-			r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
-			r = t.AddRow();
-			r.Cells[0].AddParagraph("Customer/Employee Headlines");
-			r.Cells[1].AddParagraph((int)recurr.HeadlinesMinutes + " Minutes");
-			r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
-			r = t.AddRow();
-			r.Cells[0].AddParagraph("To-Do List");
-			r.Cells[1].AddParagraph((int)recurr.TodoListMinutes + " Minutes");
-			r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
+			Row r;
+			if (recur.ShowSegue == true) {
+				r = t.AddRow();
+				r.Cells[0].AddParagraph("Segue");
+				r.Cells[1].AddParagraph((int)(recur.SegueMinutes ?? recurr.SegueMinutes) + " Minutes");
+				r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
+			}
+			if (recur.ShowScorecard == true) {
+				r = t.AddRow();
+				r.Cells[0].AddParagraph("Scorecard");
+				r.Cells[1].AddParagraph((int)(recur.ScorecardMinutes ?? recurr.ScorecardMinutes) + " Minutes");
+				r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
+			}
+			if (recur.ShowRockReview == true) {
+				r = t.AddRow();
+				r.Cells[0].AddParagraph("Rock Review");
+				r.Cells[1].AddParagraph((int)(recur.RockReviewMinutes ?? recurr.RockReviewMinutes) + " Minutes");
+				r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
+			}
+			if (recur.ShowHeadlines == true) {
+				r = t.AddRow();
+				r.Cells[0].AddParagraph("Customer/Employee Headlines");
+				r.Cells[1].AddParagraph((int)(recur.HeadlinesMinutes ?? recurr.HeadlinesMinutes) + " Minutes");
+				r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
+			}
+			if (recur.ShowTodos == true) {
+				r = t.AddRow();
+				r.Cells[0].AddParagraph("To-Do List");
+				r.Cells[1].AddParagraph((int)(recur.TodosMinutes ?? recurr.TodoListMinutes) + " Minutes");
+				r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
+			}
 
 			var todos = recur.Todos.Where(x => x.Complete == false || x.CompleteTime > lastMeeting).OrderBy(x => x.Ordering)/*.OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)*/.ToList();
 			var issues = recur.IssuesList.Issues.Where(x => x.Complete == false).OrderByDescending(x => x.Priority).ThenBy(x => x.Name).ToList();
 
 
-			//var fs = ResizeToFit(new Section(), Unit.FromInch(4.5), Unit.FromInch(5.23), (Cell, ffss) => {
-			//	var o = new List<Paragraph>();
-			//	for (var i = 0; i < todos.Count; i++) {
-			//		var pp = new Paragraph();
-			//		pp.Format.LeftIndent = Unit.FromInch(1.25);
-			//		pp.AddText(todos[i].Name ?? "");
-			//		pp.Format.TabStops.ClearAll();
-			//		pp.Format.TabStops.AddTabStop(Unit.FromInch(6), TabAlignment.Right);
-			//		pp.AddTab();
-			//		pp.AddText(todos[i].Owner.NotNull(x => x.Initials) ?? "");
-			//		o.Add(pp);
-			//	}
-
-			//	for (var i = 0; i < issues.Count; i++) {
-			//		var pp = new Paragraph();
-			//		pp.AddText(issues[i].Name ?? "");
-			//		pp.Format.TabStops.ClearAll();
-			//		pp.Format.TabStops.AddTabStop(Unit.FromInch(6), TabAlignment.Right);
-			//		pp.AddTab();
-			//		pp.AddText(issues[i].Owner.NotNull(x => x.Initials) ?? "");
-			//		o.Add(pp);
-			//	}
-			//	return o;
-			//}, maxFontSize: 12, minFontSize: 8);
 			var fs = 10;
 
-			for (var i = 0; i < todos.Count; i++) {
-				var pp = new Table();
-				pp.Format.SpaceAfter = 0;
-				pp.AddColumn(Unit.FromInch(1.25));
-				pp.AddColumn(Unit.FromInch(4.75 - .36));
-				pp.AddColumn(Unit.FromInch(0.36));
-				pp.Format.Font.Color = TableDark;
-				var rr = pp.AddRow();
-				pp.Format.Font.Size = fs;
-				p = rr.Cells[1].AddParagraph(todos[i].Name ?? "");
-				p.Format.FirstLineIndent = Unit.FromInch(-.1);
-				p.Format.LeftIndent = Unit.FromInch(.1);
-				rr.Cells[2].AddParagraph(todos[i].Owner.NotNull(x => x.Initials) ?? "");
-				rr.Cells[2].Format.Alignment = ParagraphAlignment.Right;
-				section.Add(pp);
+			if (recur.ShowTodos == true) {
+				for (var i = 0; i < todos.Count; i++) {
+					var pp = new Table();
+					pp.Format.SpaceAfter = 0;
+					pp.AddColumn(Unit.FromInch(1.25));
+					pp.AddColumn(Unit.FromInch(4.75 - .36));
+					pp.AddColumn(Unit.FromInch(0.36));
+					pp.Format.Font.Color = TableDark;
+					var rr = pp.AddRow();
+					pp.Format.Font.Size = fs;
+					p = rr.Cells[1].AddParagraph(todos[i].Name ?? "");
+					p.Format.FirstLineIndent = Unit.FromInch(-.1);
+					p.Format.LeftIndent = Unit.FromInch(.1);
+					rr.Cells[2].AddParagraph(todos[i].Owner.NotNull(x => x.Initials) ?? "");
+					rr.Cells[2].Format.Alignment = ParagraphAlignment.Right;
+					section.Add(pp);
+				}
 			}
 
-			t = section.AddTable();
-			t.Format.LeftIndent = Unit.FromInch(1);
-			t.AddColumn(Unit.FromInch(3.75));
-			t.AddColumn(Unit.FromInch(2.25));
-			t.Format.SpaceBefore = Unit.FromInch(.05);
-			r = t.AddRow();
-			r.Cells[0].AddParagraph("IDS");
-			r.Cells[1].AddParagraph((int)recurr.IDSMinutes + " Minutes");
-			r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
+			if (recur.ShowIDS == true) {
+				t = section.AddTable();
+				t.Format.LeftIndent = Unit.FromInch(1);
+				t.AddColumn(Unit.FromInch(3.75));
+				t.AddColumn(Unit.FromInch(2.25));
+				t.Format.SpaceBefore = Unit.FromInch(.05);
+				r = t.AddRow();
+				r.Cells[0].AddParagraph("IDS");
+				r.Cells[1].AddParagraph((int)(recur.IDSMinutes ?? recurr.IDSMinutes) + " Minutes");
+				r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
 
-			for (var i = 0; i < issues.Count; i++) {
-				var pp = new Table();
+				for (var i = 0; i < issues.Count; i++) {
+					var pp = new Table();
 
-				pp.Format.SpaceAfter = 0;
-				pp.AddColumn(Unit.FromInch(1.25));
-				pp.AddColumn(Unit.FromInch(4.75 - .35));
-				pp.AddColumn(Unit.FromInch(0.35));
-				var rr = pp.AddRow();
-				//pp.Format.LeftIndent = Unit.FromInch(1.25);
-				pp.Format.Font.Size = fs;
-				pp.Format.Font.Color = TableDark;
-				p = rr.Cells[1].AddParagraph(issues[i].Name ?? "");
-				p.Format.FirstLineIndent = Unit.FromInch(-.1);
-				p.Format.LeftIndent = Unit.FromInch(.1);
-				rr.Cells[2].AddParagraph(issues[i].Owner.NotNull(x => x.Initials) ?? "");
-				rr.Cells[2].Format.Alignment = ParagraphAlignment.Right;
-				section.Add(pp);
+					pp.Format.SpaceAfter = 0;
+					pp.AddColumn(Unit.FromInch(1.25));
+					pp.AddColumn(Unit.FromInch(4.75 - .35));
+					pp.AddColumn(Unit.FromInch(0.35));
+					var rr = pp.AddRow();
+					//pp.Format.LeftIndent = Unit.FromInch(1.25);
+					pp.Format.Font.Size = fs;
+					pp.Format.Font.Color = TableDark;
+					p = rr.Cells[1].AddParagraph(issues[i].Name ?? "");
+					p.Format.FirstLineIndent = Unit.FromInch(-.1);
+					p.Format.LeftIndent = Unit.FromInch(.1);
+					rr.Cells[2].AddParagraph(issues[i].Owner.NotNull(x => x.Initials) ?? "");
+					rr.Cells[2].Format.Alignment = ParagraphAlignment.Right;
+					section.Add(pp);
+				}
 			}
-			t = section.AddTable();
-			t.TopPadding = Unit.FromInch(.05);
-			t.Format.LeftIndent = Unit.FromInch(1);
-			t.AddColumn(Unit.FromInch(3.75));
-			t.AddColumn(Unit.FromInch(2.25));
-			r = t.AddRow();
-			r.Cells[0].AddParagraph("Conclude");
-			r.Cells[1].AddParagraph((int)recurr.ConclusionMinutes + " Minutes");
-			r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
-			p = r.Cells[0].AddParagraph("Recap To-Do List");
-			p.Format.LeftIndent = Unit.FromInch(1 + 3 / 8.0);
-			p = r.Cells[0].AddParagraph("Cascading messages");
-			p.Format.LeftIndent = Unit.FromInch(1 + 3 / 8.0);
-			p = r.Cells[0].AddParagraph("Rating 1-10");
-			p.Format.LeftIndent = Unit.FromInch(1 + 3 / 8.0);
+
+			if (recur.ShowConclude == true) {
+				t = section.AddTable();
+				t.TopPadding = Unit.FromInch(.05);
+				t.Format.LeftIndent = Unit.FromInch(1);
+				t.AddColumn(Unit.FromInch(3.75));
+				t.AddColumn(Unit.FromInch(2.25));
+				r = t.AddRow();
+				r.Cells[0].AddParagraph("Conclude");
+
+				r.Cells[1].AddParagraph((int)(recur.ConcludeMinutes ?? recurr.ConclusionMinutes) + " Minutes");
+				r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
+				p = r.Cells[0].AddParagraph("Recap To-Do List");
+				p.Format.LeftIndent = Unit.FromInch(1 + 3 / 8.0);
+				p = r.Cells[0].AddParagraph("Cascading messages");
+				p.Format.LeftIndent = Unit.FromInch(1 + 3 / 8.0);
+				p = r.Cells[0].AddParagraph("Rating 1-10");
+				p.Format.LeftIndent = Unit.FromInch(1 + 3 / 8.0);
+			}
 
 			return doc;
 		}

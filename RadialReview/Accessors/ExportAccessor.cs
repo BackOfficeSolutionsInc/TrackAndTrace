@@ -12,15 +12,16 @@ using RadialReview.Models.L10;
 using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Models.Scorecard;
+using static RadialReview.Accessors.L10Accessor;
 
 namespace RadialReview.Accessors {
 	public class ExportAccessor : BaseAccessor{
 		public static string Scorecard(UserOrganizationModel caller, long recurrenceId, string type = "csv") {
-			var scores = L10Accessor.GetScoresForRecurrence(caller, recurrenceId);
-
+			//var scores = L10Accessor.GetScoresForRecurrence(caller, recurrenceId);
+			var data = L10Accessor.GetScorecardDataForRecurrence(caller, recurrenceId);
 			switch (type.ToLower()) {
 				case "csv": {
-						return GenerateScorecardCsv("Measurable", scores).ToCsv();
+						return GenerateScorecardCsv("Measurable", data).ToCsv();
 						//var csv = new Csv();
 						//csv.SetTitle("Measurable");
 						//foreach (var s in scores.GroupBy(x => x.MeasurableId))
@@ -45,17 +46,21 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static Csv GenerateScorecardCsv(string title, List<ScoreModel> scores) {
+		public static Csv GenerateScorecardCsv(string title, ScorecardData data) {
 			var csv = new Csv();
 			csv.SetTitle("Measurable");
-			foreach (var s in scores.GroupBy(x => x.MeasurableId)) {
-				var ss = s.First();
-				csv.Add(ss.Measurable.Title, "Owner", ss.Measurable.AccountableUser.NotNull(x => x.GetName()));
-				csv.Add(ss.Measurable.Title, "Admin", ss.Measurable.AdminUser.NotNull(x => x.GetName()));
-				csv.Add(ss.Measurable.Title, "Goal", "" + ss.Measurable.Goal.NotNull(x => ss.Measurable.UnitType.Format(x)));
-				csv.Add(ss.Measurable.Title, "GoalDirection", "" + ss.Measurable.GoalDirection);
+			
+
+			 
+			foreach (var s in data.MeasurablesAndDividers.OrderBy(x => x._Ordering)) {// scores.GroupBy(x => x.MeasurableId).OrderBy(x=>x.First().Measurable._Ordering)) {
+				var measurable = s.Measurable;
+				//var ss = s.First();
+				csv.Add(measurable.Title, "Owner", measurable.AccountableUser.NotNull(x => x.GetName()));
+				csv.Add(measurable.Title, "Admin", measurable.AdminUser.NotNull(x => x.GetName()));
+				csv.Add(measurable.Title, "Goal", "" + measurable.Goal.NotNull(x => measurable.UnitType.Format(x)));
+				csv.Add(measurable.Title, "GoalDirection", "" + measurable.GoalDirection);
 			}
-			foreach (var s in scores.OrderBy(x => x.ForWeek)) {
+			foreach (var s in data.Scores.OrderBy(x => x.ForWeek)) {
 				csv.Add(s.Measurable.Title, s.ForWeek.ToShortDateString(), s.Measured.NotNull(x => s.Measurable.UnitType.Format(x.Value)) ?? "");
 			}
 			return csv;
