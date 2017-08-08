@@ -1,6 +1,9 @@
-﻿using CamundaCSharpClient.Model.Deployment;
+﻿
+using CamundaCSharpClient.Model.Deployment;
 using RadialReview.Areas.CoreProcess.Accessors;
 using RadialReview.Areas.CoreProcess.CamundaComm;
+using RadialReview.Areas.CoreProcess.Models;
+using RadialReview.Areas.CoreProcess.Models.Process;
 using RadialReview.Controllers;
 using System;
 using System.Collections.Generic;
@@ -26,7 +29,33 @@ namespace RadialReview.Areas.CoreProcess.Controllers
 
             if (true)
             {
-                var claim = await processDef.GetCandidateGroupIdsForTask(GetUser(), "dd3114b2-6d28-11e7-9d1c-38d5471b275d");
+                TaskViewModel tskView = new TaskViewModel();
+                tskView.Assignee = "Test1";
+                tskView.description = "DescTest1";
+                tskView.name = "NameTest1";
+                tskView.Id = "Test1";
+
+                MessageQueueModel t1 = new MessageQueueModel();
+                t1.Id = Guid.NewGuid();
+                t1.Model = tskView;
+                t1.ModelType = "TaskViewModel";
+                var result = await AmazonSQSUtility.SendMessage(t1);
+
+                //AmazonSQS sqs = new AmazonSQS();
+                //var msgRec = await sqs.ReceiveMessage();
+                //string message = Newtonsoft.Json.JsonConvert.SerializeObject(t1);
+                //string recieptHandler = "";
+                //for (int i = 0; i < msgRec.Count; i++)
+                //{
+                //    if (msgRec[i].Body == message)
+                //    {
+                //        recieptHandler = msgRec[i].ReceiptHandle;
+                //    }
+                //}
+
+                //var delResult = sqs.DeleteMessage(recieptHandler);
+
+                //var claim = await processDef.GetCandidateGroupIdsForTask(GetUser(), "dd3114b2-6d28-11e7-9d1c-38d5471b275d");
 
                 //CommClass commClass = new CommClass();
                 //var getTask =await commClass.GetTaskByCandidateGroups("rgm_5", "9b59a3e7-6d25-11e7-9d1c-38d5471b275d");
@@ -45,7 +74,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers
             //get ProcessDef By Key
             if (false)
             {
-               // var getProcessDef = processDef.GetProcessDefByKey(new RadialReview.Models.UserOrganizationModel(), "calculate");
+                // var getProcessDef = processDef.GetProcessDefByKey(new RadialReview.Models.UserOrganizationModel(), "calculate");
             }
 
 

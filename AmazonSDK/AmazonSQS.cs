@@ -23,26 +23,6 @@ namespace AmazonSDK
             amazonSQSClient = new AmazonSQSClient(accessKey, secretKey, RegionEndpoint.USWest2);
         }
 
-        public async Task<bool>  SendMessage(string message)
-        {
-            bool result = false;
-            try
-            {
-                //string msg = "This is test message new.";
-                SendMessageRequest messageRequest = new SendMessageRequest(queueURL, message);
-                SendMessageResponse sendMessageResponse =await amazonSQSClient.SendMessageAsync(messageRequest);
-                if (sendMessageResponse.HttpStatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    result = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return result;
-        }
-
         public async Task<List<MessageModel>> ReceiveMessage()
         {
             string msg = string.Empty;

@@ -1,5 +1,6 @@
-﻿using Amazon.SQS.Model;
-using AmazonSDK;
+﻿using Amazon;
+using Amazon.SQS;
+using Amazon.SQS.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,47 +11,40 @@ namespace RadialReview.Areas.CoreProcess.Models
 {
     public class AmazonSQSUtility
     {
-        public async static Task SendMessage()
-        {
-            TestModel t1 = new TestModel();
-            t1.Id = 2;
-            t1.Name = "Test";
-            string message = Newtonsoft.Json.JsonConvert.SerializeObject(t1);
-            AmazonSQS amazonSQS = new AmazonSQS();
-            var result = await amazonSQS.SendMessage(message);
-        }
+        //private string profileName = "development";
+        private static string accessKey = "AKIAIT7AXO7YMDBNMNRA";
+        private static string secretKey = "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";
+        //private string region = "us-west-2";
+        private static string queueURL = "https://sqs.us-west-2.amazonaws.com/812229332029/TractionToolsQueue";
 
-        public async static Task ReceiveMessage()
+        public static async Task<bool> SendMessage(MessageQueueModel model)
         {
-            TestModel t1 = new TestModel();
-            t1.Id = 2;
-            t1.Name = "Test";
-            string message = Newtonsoft.Json.JsonConvert.SerializeObject(t1);
-
-            AmazonSQS amazonSQS = new AmazonSQS();
-            var result = await amazonSQS.ReceiveMessage();
-            if (result.Count != 0)
+            bool result = false;
+            try
             {
-                for (int i = 0; i < result.Count; i++)
+                //string msg = "This is test message new.";
+                string message = Newtonsoft.Json.JsonConvert.SerializeObject(model);
+                SendMessageRequest messageRequest = new SendMessageRequest(queueURL, message);
+                AmazonSQSClient amazonSQSClient= new AmazonSQSClient(accessKey, secretKey, RegionEndpoint.USWest2);
+                SendMessageResponse sendMessageResponse = await amazonSQSClient.SendMessageAsync(messageRequest);
+                if (sendMessageResponse.HttpStatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    if (result[i].Body == message)
-                    {
-                        var res = Newtonsoft.Json.JsonConvert.DeserializeObject<TestModel>(result[i].Body);
-                    }
+                    result = true;
                 }
             }
-        }
-
-        public async static Task DeleteMessage(string receiptHandle)
-        {
-            AmazonSQS amazonSQS = new AmazonSQS();
-            var resp = await amazonSQS.DeleteMessage(receiptHandle);
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return result;
         }
     }
 
-    public class TestModel
+    public class MessageQueueModel
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
+        public Guid Id { get; set; }
+        public object Model { get; set; }
+        public string ModelType { get; set; } // name of model
+        public string ReceiptHandle { get; set; }
     }
 }
