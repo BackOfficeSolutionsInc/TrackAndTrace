@@ -93,8 +93,9 @@ namespace RadialReview.Models
 
         public virtual DateTime? DeleteTime { get; set; }
 
+		public virtual bool ReverseScorecard { get; set; }
 
-        public virtual bool IsRadialAdmin { get; set; }
+		public virtual bool IsRadialAdmin { get; set; }
 		public virtual long[] UserOrganizationIds
 		{
 		    get { return _UserOrganizationIds == null ? null : _UserOrganizationIds.Split(new[]{'~'}, StringSplitOptions.RemoveEmptyEntries).Select(x => x.ToLong()).ToArray(); }
@@ -121,8 +122,9 @@ namespace RadialReview.Models
                 Map(x => x.ImageGuid);
                 Map(x => x.Gender);
                 Map(x => x.CreateTime);
-                Map(x => x.UserOrganizationCount);
-                Map(x => x.ConsoleLog);
+				Map(x => x.UserOrganizationCount);
+				Map(x => x.ReverseScorecard);
+				Map(x => x.ConsoleLog);
 				HasMany(x => x.UserOrganization).LazyLoad().Cascade.SaveUpdate();
 				HasMany(x => x.Logins).Cascade.SaveUpdate();
 				HasMany(x => x.Roles).Cascade.SaveUpdate();
@@ -133,7 +135,7 @@ namespace RadialReview.Models
 
 
         public virtual DateTime CreateTime { get; set; }
-    }
+	}
 
     
 

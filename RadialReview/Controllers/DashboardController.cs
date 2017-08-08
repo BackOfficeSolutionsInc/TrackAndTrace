@@ -287,7 +287,15 @@ namespace RadialReview.Controllers {
                         tile.Contents = AngularScorecard.Create(scorecardTileId, scoredata.TimeSettings,
                             scoredata.MeasurablesAndDividers,
                             scores.ToList(), DateTime.UtcNow, reverseScorecard: scoredata.TimeSettings.Descending);
-                        output.L10Scorecards.Add(tile);
+
+						//if (scoredata.TimeSettings.Period == ScorecardPeriod.Monthly || scoredata.TimeSettings.Period == ScorecardPeriod.Quarterly) {
+						//	output.date = new AngularDateRange() {
+						//		startDate = Math2.Min(TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod), startRange),
+						//		endDate = endRange
+						//	};
+						//}
+
+						output.L10Scorecards.Add(tile);
                     }
                 }
             } catch (Exception e) {
@@ -326,6 +334,8 @@ namespace RadialReview.Controllers {
                 var scorecardStart = fullScorecard ? TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod) : startRange;
                 var scorecardEnd = fullScorecard ? DateTime.UtcNow.AddDays(14) : endRange;
                 output.Scorecard = ScorecardAccessor.GetAngularScorecardForUser(GetUser(), userId, new DateRange(scorecardStart, scorecardEnd), true, now: DateTime.UtcNow);
+				output.Scorecard.ReverseScorecard = GetUser().NotNull(x => x.User.ReverseScorecard);
+
             } catch (Exception e) {
                 ProcessDeadTile(e);
             }

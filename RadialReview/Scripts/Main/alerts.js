@@ -84,7 +84,7 @@ function clearAlerts() {
 }
 
 function showAngularError(d, status, headers, config, statusTxt) {
-	if (typeof (d) === "undefined") {
+	if (typeof (d) === "undefined" || d == null) {
 		showJsonAlert();
 		return;
 	}

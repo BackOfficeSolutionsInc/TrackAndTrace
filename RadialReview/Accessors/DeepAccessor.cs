@@ -299,7 +299,7 @@ namespace RadialReview.Accessors {
 
 				var users = myNodeIds.SelectMany(node => DeepAccessor.GetDirectReportsAndSelf(s, perms, node.Id))
 					.Distinct(x => x.Id)
-					.Distinct(x => x.User.Id)
+					.Distinct(x => x.UserId)
 					.Select(x => x.User)
 					.Where(x => x != null && x.DeleteTime == null)
 					.ToList();

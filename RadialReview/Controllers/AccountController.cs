@@ -388,6 +388,7 @@ namespace RadialReview.Controllers {
 				PossibleTimes = TimingUtility.GetPossibleTimes(user.SendTodoTime),
 				UserId = user.Id,
 				ShowScorecardColors = user._StylesSettings.ShowScorecardColors,
+				ReverseScorecard = user.ReverseScorecard,
 			};
 		}
 
@@ -403,7 +404,8 @@ namespace RadialReview.Controllers {
 				null,
 				model.SendTodoTime != null,
 				model.SendTodoTime,
-				model.ShowScorecardColors);
+				model.ShowScorecardColors,
+				model.ReverseScorecard);
 			return RedirectToAction("Index", "Home");
 		}
 

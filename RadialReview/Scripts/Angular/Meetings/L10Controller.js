@@ -1,7 +1,7 @@
 ﻿
 angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', '$location',
-    'radial', 'meetingDataUrlBase'/*, 'dateFormat'*/, 'recurrenceId', "meetingCallback", "$compile", "$sce", "$q", "$window",
-function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurrenceId, meetingCallback, $compile, $sce, $q, $window) {
+    'radial', 'meetingDataUrlBase'/*, 'dateFormat'*/, 'recurrenceId', "meetingCallback", "$compile", "$sce", "$q", "$window","$filter",
+function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurrenceId, meetingCallback, $compile, $sce, $q, $window, $filter) {
 
 	$scope.trustAsResourceUrl = $sce.trustAsResourceUrl;
 	if (recurrenceId == null)
@@ -457,11 +457,19 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 		opens: 'left'
 	};
 
-	$scope.filters.byRange = function (fieldName, minValue, maxValue, forceMin) {
+	$scope.filters.byRange = function (fieldName, minValue, maxValue, forceMin, period) {
 		if (minValue === undefined) minValue = -Number.MAX_VALUE;
 		if (maxValue === undefined) maxValue = Number.MAX_VALUE;
+
+
 		if (typeof (forceMin) !== "undefined") {
 			minValue = Math.min(minValue, maxValue - forceMin * 24 * 60 * 60 * 1000);
+		}
+
+		if (typeof (period) !== "undefined") {
+			if (period == "Monthly" || period == "Quarterly") {
+				minValue = Math.min(minValue, maxValue - (366) * 24 * 60 * 60 * 1000);
+			}
 		}
 
 		return function predicateFunc(item) {
@@ -751,6 +759,18 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 		// containment: '#board',//optional param.
 		clone: false,//optional param for clone feature.
 		allowDuplicates: false, //optional param allows duplicates to be dropped.
+	};
+
+	$scope.functions.topDate = function (week, selector) {
+		var date = $scope.functions.subtractDays(week.DisplayDate, 0);
+		return $filter('date')(date, selector.DateFormat1);
+	};
+	$scope.functions.bottomDate = function (week, selector) {
+		var date = $scope.functions.subtractDays(week.DisplayDate, -6);
+		if (selector.Period == "Monthly" || selector.Period == "Quarterly") {
+			date = $scope.functions.subtractDays(week.DisplayDate, 0);
+		}
+		return $filter('date')(date, selector.DateFormat2);
 	};
 
 }])

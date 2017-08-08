@@ -1,7 +1,7 @@
 ﻿@{
     var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
     var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
-    var forceMin = ViewBag.ForceMin == null ? "" : "," + ((int)ViewBag.ForceMin);
+    var forceMin = ViewBag.ForceMin == null ? ",undefined" : "," + ((int)ViewBag.ForceMin);
     var reorderable = (ViewBag.Reorderable != null && ((bool)ViewBag.Reorderable) == true);
     var disableName = ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false;
     var editOwner = ViewBag.EditOwner != null && ((bool)ViewBag.EditOwner) == true;
@@ -37,8 +37,9 @@
                                         <th class="measurable-column text-column">&nbsp;</th>
                                         <th class="goal-column data-column" colspan="2">&nbsp;</th>
 										<th class="cumulative-column"></th>
-                                        <th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin)) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="date score-column data-column test-ignore" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
-                                            {{functions.subtractDays(week.DisplayDate,0) | date: (@(selector)).DateFormat1}}
+                                        <th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin),(@(selector)).Period) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="date score-column data-column test-ignore" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
+                                            @*{{functions.subtractDays(week.DisplayDate,0) | date: (@(selector)).DateFormat1}}*@
+											{{functions.topDate(week,@(selector))}}
                                         </th>
                                         <th class="delete-column"></th>
                                     </tr>
@@ -53,8 +54,9 @@
                                         <th class="measurable measurable-column text-column">Measurable</th>
                                         <th class="target goal-column data-column" colspan="2">Goal</th>
 										<th class="cumulative-column"></th>
-                                        <th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin)) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="date  data-column score-column test-ignore" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
-                                            {{functions.subtractDays(week.DisplayDate,-6) | date: (@(selector)).DateFormat2}}
+                                        <th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin),(@(selector)).Period) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="date  data-column score-column test-ignore" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
+                                            @*{{functions.subtractDays(week.DisplayDate,-6) | date: (@(selector)).DateFormat2}}*@
+											{{functions.bottomDate(week,@(selector))}}
                                         </th>
                                         <th class="delete-column button-column"></th>
                                     </tr>
@@ -122,7 +124,7 @@
 										<td class="cumulative-column" ng-click="functions.checkFutureAndSend(measurable)">
 											<input ng-show="measurable.ShowCumulative==true" pu-elastic-input fcsa-number="{{functions.getFcsa(measurable)}}" ng-model="measurable.Cumulative"  disabled/>
 										</td>
-                                        <td ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin)) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="score score-column data-column" ng-class="{current:week.IsCurrentWeek}">
+                                        <td ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin),(@(selector)).Period) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="score score-column data-column" ng-class="{current:week.IsCurrentWeek}">
                                             <score week="week"
                                                    @(new HtmlString(localization))
                                                    score="functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey))"

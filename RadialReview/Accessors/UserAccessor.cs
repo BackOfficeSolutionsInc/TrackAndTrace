@@ -668,7 +668,8 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public async Task EditUserModel(UserModel caller, string userId, string firstName, string lastName, string imageGuid, bool? sendTodoEmails, int? sendTodoTime, bool? showScorecardColors) {
+		public async Task EditUserModel(UserModel caller, string userId, string firstName, string lastName, string imageGuid, bool? sendTodoEmails, int? sendTodoTime,
+			bool? showScorecardColors, bool? reverseScorecard) {
 			UserModel userOrg;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -689,6 +690,9 @@ namespace RadialReview.Accessors {
 						var us = s.Get<UserStyleSettings>(userId);
 						us.ShowScorecardColors = showScorecardColors.Value;
 						s.Update(us);
+					}
+					if (reverseScorecard != null) {
+						userOrg.ReverseScorecard = reverseScorecard.Value;
 					}
 
 

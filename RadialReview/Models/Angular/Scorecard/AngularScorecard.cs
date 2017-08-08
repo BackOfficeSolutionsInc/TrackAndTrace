@@ -53,6 +53,8 @@ namespace RadialReview.Models.Angular.Scorecard
                     s.Measurable.RecurrenceId = found.RecurrenceId;
                 }
             }
+
+			Period = ""+settings.GetTimeSettings().Period;
         }
 
         public static AngularScorecard Create(long id, TimeSettings settings, IEnumerable<L10Recurrence_Measurable> measurables, List<ScoreModel> scores, DateTime? currentWeek, DateRange range = null, bool includeNextWeek = true, DateTime? now = null,bool reverseScorecard=false) {
@@ -80,6 +82,8 @@ namespace RadialReview.Models.Angular.Scorecard
         public IEnumerable<AngularWeek> Weeks { get; set; }
 		
 		public bool? ReverseScorecard { get; set; }
+
+		public string Period { get; set; }
 
 		public string DateFormat1 { get; set; }
 		public string DateFormat2 { get; set; }
