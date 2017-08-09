@@ -36,7 +36,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers
                 tskView.Id = "Test1";
 
                 MessageQueueModel t1 = new MessageQueueModel();
-                t1.Id = Guid.NewGuid();
+                t1.Identifier = Guid.NewGuid();
                 t1.Model = tskView;
                 t1.ModelType = "TaskViewModel";
                 var result = await AmazonSQSUtility.SendMessage(t1);

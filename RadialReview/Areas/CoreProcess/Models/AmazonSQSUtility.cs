@@ -42,7 +42,7 @@ namespace RadialReview.Areas.CoreProcess.Models
 
     public class MessageQueueModel
     {
-        public Guid Id { get; set; }
+        public Guid Identifier { get; set; }
         public object Model { get; set; }
         public string ModelType { get; set; } // name of model
         public string ReceiptHandle { get; set; }
