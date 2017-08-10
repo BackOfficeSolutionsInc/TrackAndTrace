@@ -3,7 +3,9 @@ using RadialReview.Areas.CoreProcess.Models;
 using RadialReview.Areas.CoreProcess.Models.Process;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,32 +24,67 @@ namespace AmazonSDK
             //tskView.Id = "Test1";
 
             //MessageQueueModel t1 = new MessageQueueModel();
-            //t1.Identifier = Guid.NewGuid();
+            //t1.Identifier = Guid.NewGuid().ToString();
             //t1.Model = tskView;
             //t1.ModelType = "TaskViewModel";
+            // t1.ApiUrl=Config.BaseUrl
+
             //var result = AsyncHelper.RunSync<bool>(() => AmazonSQSUtility.SendMessage(t1));
             List<string> receiptHandleList = new List<string>();
             List<MessageQueueModel> getMessages = AsyncHelper.RunSync<List<MessageQueueModel>>(() => GetMessages());  //get List of Messages
-            using (var s = HibernateSession.GetCurrentSession())
+
+            foreach (var item in getMessages)
             {
-                foreach (var item in getMessages)
+                using (var s = HibernateSession.GetCurrentSession())
                 {
-                    var getMessage = s.QueryOver<MessageQueue>().Where(x => x.Identifier == item.Identifier).SingleOrDefault();
-                    if (getMessage == null)
+                    using (var tx = s.BeginTransaction(System.Data.IsolationLevel.Serializable))
                     {
-                        MessageQueue messageQueue = new MessageQueue();
-                        messageQueue.Identifier = item.Identifier;
-                        messageQueue.ReceiptHandle = item.ReceiptHandle;
-                        messageQueue.Status = MessageQueueStatus.Start.ToString();
-                        s.Save(messageQueue);
+                        var getMessage = s.QueryOver<MessageQueue>().Where(x => x.IdentifierId == item.Identifier).SingleOrDefault();
+
+                        if (getMessage == null)
+                        {
+                            MessageQueue messageQueue = new MessageQueue();
+                            messageQueue.IdentifierId = item.Identifier;
+                            messageQueue.ReceiptHandle = item.ReceiptHandle;
+                            messageQueue.Status = MessageQueueStatus.Start.ToString();
+                            s.Save(messageQueue);
+
+                            tx.Commit();
+                            s.Flush();
+
+                            // if true while Process Message
+                            // run API methods in Radial
+
+                            try
+                            {
+                                var apiUrl = item.ApiUrl?? "http://localhost:44300/api/v0/todo/mine";
+                                if (!string.IsNullOrEmpty(apiUrl))
+                                {
+                                    var client = new HttpClient();
+                                    HttpResponseMessage response = AsyncHelper.RunSync<HttpResponseMessage>(() => client.GetAsync(apiUrl));
+                                    HttpContent responseContent = response.Content;
+                                    using (var reader = new StreamReader(AsyncHelper.RunSync<Stream>(() => responseContent.ReadAsStreamAsync())))
+                                    {
+                                        var result1 = reader.ReadToEnd();
+                                    }
+                                }
+                            }
+                            catch (Exception)
+                            {
+                                throw;
+                            }
+
+
+                            //Update Status
+
+                           
+                        }
+                        else
+                        {
+
+                        }
                     }
                 }
-
-
-                //Process Message
-
-                //Update Status
-
             }
 
             // delete message
@@ -57,7 +94,7 @@ namespace AmazonSDK
             //    receiptHandleList.Add(item.ReceiptHandle);
             //}
 
-            AsyncHelper.RunSync(() => DeleteMessage(receiptHandleList));
+            //AsyncHelper.RunSync(() => DeleteMessage(receiptHandleList));
 
             Console.Write("");
             Console.ReadLine();
