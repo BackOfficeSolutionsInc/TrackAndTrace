@@ -22,10 +22,44 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		public IEnumerable<IItemInitializer> GetItemBuildersSupervisorAssessment(IItemInitializerData data) {
 
 			yield return new AssessmentItem(SurveyQuestionIdentifier.LeadershipAssessment,
+				"They are giving clear direction",
+					"They are creating the opening",
+					"They have shared a compelling vision that they are honestly excited about",
+					"The V/TO™ is clear and their actions are aligned with it"
+			);
+			yield return new AssessmentItem(SurveyQuestionIdentifier.LeadershipAssessment,
+				"They are providing the necessary tools",
+					"Resources",
+					"Training",
+					"Technology",
+					"People",
+					"Time and attention"
+			);
+			yield return new AssessmentItem(SurveyQuestionIdentifier.LeadershipAssessment,
+				"They are letting go of the vine",
+					"They are delegating work appropriately",
+					"They are not micromanaging",
+					"Our team members Get, Want, and have the Capacity to perform their roles well"
+			);
+			yield return new AssessmentItem(SurveyQuestionIdentifier.LeadershipAssessment,
+				"They act with the greater good in mind",
+					"Their actions and decisions are aligned with the company vision",
+					"They walk the talk",
+					"They put the company’s needs first"
+			);
+			yield return new AssessmentItem(SurveyQuestionIdentifier.LeadershipAssessment,
+				"They are taking Clarity Breaks™",
+					"They're focused \"On\" the business"
+				);
+		}
+
+		public IEnumerable<IItemInitializer> GetItemBuildersSupervisorSelfAssessment(IItemInitializerData data) {
+
+			yield return new AssessmentItem(SurveyQuestionIdentifier.LeadershipAssessment,
 				"I am giving clear direction",
-					"Creating the opening",
-					"I have shared a compelling vision that you are honestly excited about",
-					"Our V/TO™ is clear and my actions are aligned with it"
+					"I am creating the opening",
+					"I have a compelling vision",
+					"The V/TO™ is clear and my actions are aligned with it"
 			);
 			yield return new AssessmentItem(SurveyQuestionIdentifier.LeadershipAssessment,
 				"I am providing the necessary tools",
@@ -37,22 +71,27 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 			);
 			yield return new AssessmentItem(SurveyQuestionIdentifier.LeadershipAssessment,
 				"I am letting go of the vine",
-					"I am delegating work appropriately",
-					"I am not micromanaging",
-					"Our team members Get, Want, and have the Capacity to perform their roles well"
+					"I Delegate and Elevate™",
+					"GWC™"
+					//"Our team members Get, Want, and have the Capacity to perform their roles well"
 			);
 			yield return new AssessmentItem(SurveyQuestionIdentifier.LeadershipAssessment,
 				"I act with the greater good in mind",
-					"My actions and decisions are aligned with the company vision",
+					"Company vision (V/TO™)",
+					"My actions",
+					"My decisions",
 					"I walk the talk",
-					"I put the company’s needs first"
+					"I put the company's needs first"
+
 			);
-			//yield return new AssessmentItem(SurveyQuestionIdentifier.LeadershipAssessment,
-			//	"I act with the greater good in mind",
-			//		"My actions and decisions are aligned with the company vision",
-			//		"I walk the talk",
-			//		"I put the companies needs first"
-			//);
+			yield return new AssessmentItem(SurveyQuestionIdentifier.LeadershipAssessment,
+				"I am taking Clarity Breaks™",
+					"Focused \"On\" the business",
+					"Creating clarity",
+					"Protecting my confidence",
+					"With the right frequency (daily, weekly, or monthly)",
+					"Using a blank legal pad"
+				);
 		}
 
 		public IEnumerable<IItemInitializer> GetItemBuilders(IItemInitializerData data) {
@@ -66,6 +105,8 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 			if (SelfAssessment) {
 				throw new NotImplementedException();
 			} else {
+				if ((data.About as SurveyUserNode)._Relationship[data.By.ToKey()].HasFlag(AboutType.Self))
+					return GetItemBuildersSupervisorSelfAssessment(data);
 				return GetItemBuildersSupervisorAssessment(data);
 			}
 		}
@@ -95,7 +136,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		}
 
 		public IItem InitializeItem(IItemInitializerData data) {
-			return new SurveyItem(data, Name, null, Name,Help);
+			return new SurveyItem(data, Name, null, Name, Help);
 		}
 
 		public IItemFormatRegistry GetItemFormat(IItemFormatInitializerCtx ctx) {
@@ -103,7 +144,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 					{ "yes","Yes" },
 					{ "no","No" },
 			};
-			return ctx.RegistrationItemFormat(true, () => SurveyItemFormat.GenerateRadio(ctx, QuestionIdentifier, options),Name);
+			return ctx.RegistrationItemFormat(true, () => SurveyItemFormat.GenerateRadio(ctx, QuestionIdentifier, options), Name);
 		}
 
 		public bool HasResponse(IResponseInitializerCtx data) {

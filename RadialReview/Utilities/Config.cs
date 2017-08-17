@@ -85,6 +85,10 @@ namespace RadialReview.Utilities {
 
 		}
 
+		public static long TextInNumber() {
+			return 13217665599;
+		}
+
 		public static string ModifyEmail(string email) {
 			if (IsLocal()) {
 				return "clay.upton+" + (email ?? "").Replace("@", "_") + "@mytractiontools.com";
@@ -504,5 +508,20 @@ namespace RadialReview.Utilities {
                 default: throw new ArgumentOutOfRangeException();
             }*/
         }
-    }
+
+		public class TwilioData {
+			public string Sid { get; set; }
+			public string AuthToken { get; set; }
+			public bool ShouldSendText { get; set; }
+		}
+
+		public static TwilioData Twilio() {
+			return new TwilioData() {
+				Sid = Config.GetAppSetting("TwilioSid"),
+				AuthToken = Config.GetAppSetting("TwilioToken"),
+				ShouldSendText = !Config.IsLocal()
+			};
+
+		}
+	}
 }

@@ -27,8 +27,9 @@ namespace RadialReview.Areas.People.Models.Survey {
 		public virtual SurveyType SurveyType { get; set; }
         
         public virtual ICollection<ISurvey> _Surveys { get; set; }
+		//public virtual long IssuedBy { get; set; }
 
-        public SurveyContainer(IForModel createdBy, /*IForModel by,*/ string name, long orgid, SurveyType type, string help,DateTime? dueDate) : this() {
+		public SurveyContainer(IForModel createdBy, /*IForModel by,*/ string name, long orgid, SurveyType type, string help,DateTime? dueDate) : this() {
             //By = ForModel.From(by);
 			CreatedBy = ForModel.From(createdBy);
             Name = name;
@@ -77,6 +78,10 @@ namespace RadialReview.Areas.People.Models.Survey {
 
 		public virtual DateTime? GetDueDate() {
 			return DueDate;
+		}
+
+		public virtual IForModel GetCreator() {
+			return CreatedBy;
 		}
 
 		public class Map : ClassMap<SurveyContainer> {

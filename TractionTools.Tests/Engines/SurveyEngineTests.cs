@@ -564,7 +564,7 @@ namespace TractionTools.Tests.Engines {
 				Assert.IsFalse(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -4"));
 				Assert.IsFalse(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -5"));
 				Assert.IsTrue(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock -6"));
-				Assert.IsTrue(rockItemContainers.Any(x => x.GetItem().GetName() == "Rock Comments"));
+				Assert.IsTrue(rockItemContainers.Any(x => x.GetItem().GetName() == RockSection.RockCommentHeading));
 
 
 			}
@@ -578,7 +578,7 @@ namespace TractionTools.Tests.Engines {
 				Assert.IsFalse(roleItemContainers.Any(x => x.GetItem().GetName() == "Role 3"));
 				Assert.IsFalse(roleItemContainers.Any(x => x.GetItem().GetName() == "Role 4"));
 				Assert.IsFalse(roleItemContainers.Any(x => x.GetItem().GetName() == "Role 5"));
-				Assert.IsTrue(roleItemContainers.Any(x => x.GetItem().GetName() == "Role Comments"));
+				Assert.IsTrue(roleItemContainers.Any(x => x.GetItem().GetName() == RoleSection.RoleCommentHeading));
 
 				var a = roleItemContainers.Select(x => x.GetItem().GetName()).ToList();
 
@@ -595,7 +595,7 @@ namespace TractionTools.Tests.Engines {
 				Assert.IsTrue(valueItemContainers.Any(x => x.GetItem().GetHelp() == "Value Details 0"));
 				Assert.IsTrue(valueItemContainers.Any(x => x.GetItem().GetHelp() == "Value Details 1"));
 				Assert.IsTrue(valueItemContainers.Any(x => x.GetItem().GetHelp() == "Value Details 2"));
-				Assert.IsTrue(valueItemContainers.Any(x => x.GetItem().GetName() == "Value Comments"));
+				Assert.IsTrue(valueItemContainers.Any(x => x.GetItem().GetName() == ValueSection.ValueCommentHeading));
 			}
 			var j = 0;
 		}

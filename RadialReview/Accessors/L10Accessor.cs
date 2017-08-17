@@ -64,6 +64,9 @@ using System.Web.Mvc;
 using RadialReview.Utilities.Hooks;
 using RadialReview.Hooks;
 using static RadialReview.Utilities.EventUtil;
+using Twilio;
+using Twilio.Types;
+using Twilio.Rest.Api.V2010.Account;
 
 namespace RadialReview.Accessors {
 	public class L10Accessor : BaseAccessor {
@@ -645,6 +648,48 @@ namespace RadialReview.Accessors {
 						}
 					}
 
+
+					//Conclude the forum
+
+
+					recurrence = s.Get<L10Recurrence>(recurrenceId);
+
+					var externalForumNumbers = s.QueryOver<ExternalUserPhone>()
+											.Where(x => x.DeleteTime > now && x.ForModel.ModelId == recurrenceId && x.ForModel.ModelType == ForModel.GetModelType<L10Recurrence>())
+											.List().ToList();
+					if (externalForumNumbers.Any()) {
+						try {
+							var twilioData = Config.Twilio();
+							TwilioClient.Init(twilioData.Sid, twilioData.AuthToken);
+
+							var allMessages = new List<Task<MessageResource>>();
+							foreach (var number in externalForumNumbers) {
+								try {
+									if (twilioData.ShouldSendText) {
+
+										var to = new PhoneNumber(number.UserNumber);
+										var from = new PhoneNumber(number.SystemNumber);
+
+										var url = Config.BaseUrl(null,"/su?id=" + number.LookupGuid);
+										var message = MessageResource.CreateAsync(to, from: from,
+											body: "Thanks for participating in the " + recurrence.Name + "!\nWant a demo of Traction Tools? Click here\n" + url
+										);
+										allMessages.Add(message);
+									}
+								} catch (Exception e) {
+									log.Error("Particular Forum text was not sent", e);
+								}
+
+								number.DeleteTime = now;
+								s.Update(number);
+							}
+							await Task.WhenAll(allMessages);
+							
+						} catch (Exception e) {
+							log.Error("Forum texts were not sent", e);
+						}
+					}
+
 					//CONNECTIONS AUTOMATICALLY CLOSE with the DeleteTime var
 					//var connectionsToClose = s.QueryOver<L10Recurrence.L10Recurrence_Connection>().Where(x => x.DeleteTime <= DateTime.UtcNow.Add(MeetingHub.PingTimeout).AddMinutes(5) && x.RecurrenceId == recurrenceId).List().ToList();
 					//foreach (var c in connectionsToClose) {
@@ -666,7 +711,6 @@ namespace RadialReview.Accessors {
 					meeting.CompleteTime = now;
 					meeting.TodoCompletion = todoRatio;
 
-					recurrence = s.Get<L10Recurrence>(recurrenceId);
 					s.Update(meeting);
 
 					var ids = ratingValues.Select(x => x.Item1).ToArray();
@@ -783,7 +827,7 @@ namespace RadialReview.Accessors {
 									output.Append(issueTable.ToString());
 									toSend = true;
 								}
-								
+
 
 
 								var mail = Mail.To(EmailTypes.L10Summary, email)
@@ -1600,6 +1644,15 @@ namespace RadialReview.Accessors {
 
 
 					s.Evict(oldRecur);
+
+					if (l10Recurrence.ForumCode != null) {
+						l10Recurrence.ForumCode = l10Recurrence.ForumCode.ToLower();
+						var any = 0 != s.QueryOver<L10Recurrence>().Where(x => x.DeleteTime == null && l10Recurrence.ForumCode == x.ForumCode && x.Id != l10Recurrence.Id).RowCount();
+						if (any) {
+							l10Recurrence.ForumCode = null;
+						}
+					}
+
 
 					s.SaveOrUpdate(l10Recurrence);
 
@@ -2438,8 +2491,8 @@ namespace RadialReview.Accessors {
 			public static ScorecardData FromScores(List<ScoreModel> scores) {
 				return new ScorecardData() {
 					Scores = scores,
-					Measurables = scores.GroupBy(x => x.MeasurableId).Select(x =>x.First().Measurable).ToList(),
-					MeasurablesAndDividers = scores.GroupBy(x=>x.MeasurableId).Select(x => new L10Recurrence.L10Recurrence_Measurable() {
+					Measurables = scores.GroupBy(x => x.MeasurableId).Select(x => x.First().Measurable).ToList(),
+					MeasurablesAndDividers = scores.GroupBy(x => x.MeasurableId).Select(x => new L10Recurrence.L10Recurrence_Measurable() {
 						Measurable = x.First().Measurable
 					}).ToList(),
 
@@ -4693,7 +4746,7 @@ namespace RadialReview.Accessors {
 							return m;
 						}
 					}).ToList();
-					
+
 					if (recurrence.IncludeAggregateTodoCompletion || forceIncludeTodoCompletion) {
 						measurables.Add(new AngularMeasurable(TodoMeasurable) {
 							Ordering = -2

@@ -86,7 +86,7 @@ namespace RadialReview.Areas.People.Angular.Survey {
 			Name = itemFormat.GetName();
 			Help = itemFormat.GetHelp();
 			ItemType = itemFormat.GetItemType();
-			TemplateModifier = DEFAULT_TEMPLATE_MODIFIER;
+			TemplateModifier = ItemType==SurveyItemType.Radio? "md" :DEFAULT_TEMPLATE_MODIFIER;
 			Ordering = itemFormat.GetOrdering();
 			Settings = itemFormat.GetSettings();
 			QuestionIdentifier = itemFormat.GetQuestionIdentifier();

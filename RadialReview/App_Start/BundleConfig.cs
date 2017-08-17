@@ -30,8 +30,9 @@ namespace RadialReview {
             DashboardWidgets(bundles);
             MeetingEdit(bundles);
             Manage(bundles);
-            Angular(bundles);
-            People(bundles, angularHelpers_Styles, angularHelpers_Scripts);
+			Angular(bundles);
+			AngularMaterial(bundles);
+			People(bundles, angularHelpers_Styles, angularHelpers_Scripts);
 
             BundleTable.EnableOptimizations = Config.OptimizationEnabled();
 
@@ -39,8 +40,14 @@ namespace RadialReview {
 
         private static void People(BundleCollection bundles, string[] ngStyles, string[] ngScripts) {
 			bundles.Add(new ScriptBundle("~/bundles/people").Include(ngScripts)
-				.Include("~/Scripts/Angular/People/init.js","~/Scripts/Angular/People/Survey/SurveyComponents.js", "~/Scripts/Angular/People/PeopleAnalyzer/PeopleAnalyzer.js", "~/Scripts/People/*.js"));
-            bundles.Add(new StyleBundle("~/styles/people").Include(ngStyles).Include("~/Content/SnackbarAlerts.css", "~/Content/People/*.css"));
+				.Include(
+					"~/Scripts/Angular/People/init.js",
+					"~/Scripts/Angular/People/Survey/SurveyComponents.js",
+					"~/Scripts/Angular/People/PeopleAnalyzer/PeopleAnalyzer.js",
+					"~/Scripts/People/*.js"
+				));
+            bundles.Add(new StyleBundle("~/styles/people").Include(ngStyles).Include(
+				"~/Content/SnackbarAlerts.css", "~/Content/People/*.css"));
 		}
 
         private static void SetCard(BundleCollection bundles) {
@@ -82,7 +89,15 @@ namespace RadialReview {
 			));
         }
 
-        private static void Angular(BundleCollection bundles) {
+		private static void AngularMaterial(BundleCollection bundles) {
+			bundles.Add(new ScriptBundle("~/bundles/AngularMaterial").Include(
+				//"~/bower_components/angular-material-data-table/dist/md-data-table.min.js"
+				//S:\repos\Radial\RadialReview\RadialReview\Scripts\Angular\Helpers\Libraries\angular-material-custom.js
+				"~/Scripts/Angular/Helpers/Libraries/angular-material-custom.js"
+			));
+		}
+
+		private static void Angular(BundleCollection bundles) {
             bundles.Add(new ScriptBundle("~/bundles/Angular").Include(
                 //"~/bower_components/angular-material-data-table/dist/md-data-table.min.js"
                 "~/Scripts/Angular/MaterialDesign/md-data-table.js"

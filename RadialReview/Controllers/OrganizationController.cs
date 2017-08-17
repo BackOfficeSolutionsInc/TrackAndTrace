@@ -48,6 +48,9 @@ namespace RadialReview.Controllers {
 			public DateTime? CreditCardExp { get; set; }
 
 			public AccountType Status { get; set; }
+			public bool L10Enabled { get; internal set; }
+			public bool EvalEnabled { get; internal set; }
+			public bool PeopleEnabled { get; internal set; }
 		}
 
 		private static string[] supportNames = new[] { "Clay Upton", "Kathy Mayfield", "Maggie Marques", "Mike Miller", "Isaiah Nolte" };
@@ -99,6 +102,9 @@ namespace RadialReview.Controllers {
 						return new OrgStats() {
 							OrgId = x.NotNull(y => y.Id),
 							OrgName = x.NotNull(y => y.GetName()),
+							L10Enabled = x.NotNull(y => y.Settings.EnableL10),
+							EvalEnabled = x.NotNull(y => y.Settings.EnableReview),
+							PeopleEnabled = x.NotNull(y => y.Settings.EnablePeople),
 							Username = user.NotNull(y => y.Name),
 							Position = user.NotNull(y => y.Positions),
 							LastLogin = user.NotNull(y => y.LastLogin),
@@ -137,6 +143,9 @@ namespace RadialReview.Controllers {
 					csv.Add("" + o.OrgId, "TrialEnd", o.TrialEnd.ToString());
 					csv.Add("" + o.OrgId, "LastMeeting", o.LastMeeting.NotNull(x => x.Value.ToString()));
 					csv.Add("" + o.OrgId, "CreditCardExp", o.CreditCardExp.ToString());
+					csv.Add("" + o.OrgId, "L10_Enabled", o.L10Enabled.ToString());
+					csv.Add("" + o.OrgId, "Eval_Enabled", o.EvalEnabled.ToString());
+					csv.Add("" + o.OrgId, "People_Enabled", o.PeopleEnabled.ToString());
 				}
 
 				return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_OrgStats.csv");

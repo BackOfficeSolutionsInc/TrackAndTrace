@@ -5,6 +5,11 @@
 @import (reference) "../bootstrap/buttons.less";
 
 .people-analyzer {
+
+	.btn[disabled] {
+		pointer-events: none;
+	}
+
 	@media print {
 		.rz-bubble {
 			text-align: center;
@@ -12,12 +17,14 @@
 			left: 0 !important;
 			width: 100%;
 		}
-		.rz-limit{			
-			display:none !important;
+
+		.rz-limit {
+			display: none !important;
 		}
+
 		.rz-bar-wrapper,
-		.rz-pointer{
-			display:none !important;
+		.rz-pointer {
+			display: none !important;
 		}
 	}
 
@@ -101,6 +108,11 @@
 			.resp {
 				opacity: .75;
 				filter: grayscale(25%);
+				@media print{
+					//opacity:1;
+					filter:none;
+
+				}
 			}
 		}
 
@@ -116,11 +128,15 @@
 			.value-column > span {
 			}
 
-			.print-column {
+			.print-column, .completion-column {
 
 				.diagonal-bar-bottom, .diagonal-bar-cap, .diagonal-fill {
 					display: none;
 				}
+			}
+
+			.print-column .diagonal-bar {
+				display: none;
 			}
 		}
 
@@ -150,7 +166,7 @@
 			}
 
 			.person-column {
-				padding:8px;
+				padding: 8px;
 			}
 
 			.value-column {
@@ -164,23 +180,23 @@
 
 			.resp {
 				&.resp-yes {
-					color: @brand-success;
+					color: @brand-success !important;
 				}
 
 				&.resp-no {
-					color: @brand-danger;
+					color: @brand-danger!important;
 				}
 
 				&.resp-often {
-					color: @brand-success;
+					color: @brand-success!important;
 				}
 
 				&.resp-not-often {
-					color: @brand-danger;
+					color: @brand-danger!important;
 				}
 
 				&.resp-sometimes {
-					color: @brand-warning;
+					color: @brand-warning!important;
 				}
 
 
@@ -189,10 +205,16 @@
 				}
 			}
 
-			.print-column {
+			.print-column, .completion-column {
 				background-color: transparent;
 				border: none;
 				text-align: left;
+
+				@media print {
+					.btn {
+						display: none;
+					}
+				}
 
 				.print-btn {
 					padding: 10px;
@@ -208,6 +230,16 @@
 
 					@media print {
 						display: none !important;
+					}
+				}
+
+				.btn {
+					margin: 5px;
+					width: 95px;
+
+					&.disabled {
+						background-color: transparent;
+						pointer-events: none;
 					}
 				}
 			}

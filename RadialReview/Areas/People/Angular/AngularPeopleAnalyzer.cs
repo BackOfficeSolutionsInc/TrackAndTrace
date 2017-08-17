@@ -21,16 +21,25 @@ namespace RadialReview.Areas.People.Angular {
 		public IEnumerable<PeopleAnalyzerValue> Values { get; set; }
 		public AngularDateRange DateRange { get; set; }
 		public IEnumerable<AngularSurveyContainer> SurveyContainers { get; set; }
+		public IEnumerable<AngularLockedIn> LockedIn { get; set; }
+
+	}
+
+	public class AngularLockedIn {
+		public AngularForModel By { get; set; }
+		public long SurveyContainerId { get; set; }
+		public bool LockedIn { get; set; }
+		public DateTime IssueDate { get; set; }
 	}
 
 	public class AngularPeopleAnalyzerRow : BaseStringAngular {
 		public AngularPeopleAnalyzerRow() { }
-		public AngularPeopleAnalyzerRow(IForModel user,bool canPrint) : base(user.ToKey()) {
+		public AngularPeopleAnalyzerRow(IForModel user, bool personallyOwning) : base(user.ToKey()) {
 			About = new AngularForModel(user);
-			CanPrint = canPrint;
+			PersonallyOwning = personallyOwning;
 		}
 
-		public bool? CanPrint { get; set; }
+		public bool? PersonallyOwning { get; set; }
 		public AngularForModel About { get; set; }
 	}
 
@@ -41,7 +50,7 @@ namespace RadialReview.Areas.People.Angular {
 			return byAbout.ToKey() + "__" + source.ToKey() + "__" + issueDate.ToJavascriptMilliseconds();
 		}
 
-		public AngularPeopleAnalyzerResponse(IByAbout byAbout, DateTime issueDate, DateTime answerDate, IForModel source, string answerFormatted, string answer, int overridePriority, long surveyContainerId,long sunId) : base(ToUID(byAbout, source, issueDate)) {
+		public AngularPeopleAnalyzerResponse(IByAbout byAbout, DateTime issueDate, DateTime answerDate, IForModel source, string answerFormatted, string answer, int overridePriority, long surveyContainerId, long sunId) : base(ToUID(byAbout, source, issueDate)) {
 			Answer = answer;
 			AnswerFormatted = answerFormatted;
 			IssueDate = issueDate;
@@ -59,6 +68,7 @@ namespace RadialReview.Areas.People.Angular {
 		public long? SunId { get; set; }
 		public string Answer { get; set; }
 		public string AnswerFormatted { get; set; }
+
 
 		public DateTime? IssueDate { get; set; }
 		public DateTime? AnswerDate { get; set; }

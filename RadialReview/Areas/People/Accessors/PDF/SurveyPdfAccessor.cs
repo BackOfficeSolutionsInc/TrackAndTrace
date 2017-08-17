@@ -3,6 +3,7 @@ using MigraDoc.DocumentObjectModel.Tables;
 using PdfSharp.Drawing;
 using RadialReview.Accessors;
 using RadialReview.Areas.People.Angular.Survey;
+using RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.Sections;
 using RadialReview.Areas.People.Engines.Surveys.Interfaces;
 using RadialReview.Areas.People.Models.Survey;
 using RadialReview.Models;
@@ -68,8 +69,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 		
 			//topPara = section.AddParagraph();
 			topPara.Format.SpaceAfter = BottomPad*.5;
-
-
+			
 			///
 			Style style;
 			style = doc.Styles[StyleNames.Footer];
@@ -233,7 +233,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			protected Unit TotalWidth { get; set; }
 			protected bool ShouldAddSpacerRow { get; set; }
 
-			public static Action<Cell, IItem> DefaultItemBuilder(ParagraphAlignment alignment= ParagraphAlignment.Right) {
+			public static Action<Cell, IItem> DefaultItemBuilder(ParagraphAlignment alignment= ParagraphAlignment.Right, Unit? firstLineIndent=null) {
 				return new Action<Cell, IItem>((c, item) => {
 					var para = c.AddParagraph();
 					c.VerticalAlignment = VerticalAlignment.Top;
@@ -246,6 +246,10 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 					c.Row.Height = BottomPad;//*2.5;
 					c.Row.HeightRule = RowHeightRule.AtLeast;
 					para.Format.SpaceAfter = BottomPad / 2.0;
+					if (firstLineIndent != null) {
+						para.Format.FirstLineIndent = firstLineIndent.Value;
+					}
+
 				});
 			}
 
@@ -410,6 +414,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 
 				if (rawResponse != null) {
 					var response = (string)options.GetOrDefault(rawResponse, rawResponse);
+					response = QuarterlyConversationAccessor.TransformValueAnswer[response];
 					paragraph.AddFormattedText(response ?? "");
 				} else {
 					paragraph.Format.Font.Color = _Gray;
@@ -500,7 +505,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 
 			//ADD GENERAL COMMENTS
 			var generalComments = questions.Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.GeneralComment);
-			DrawComments(cell,"Value Comments", generalComments,usableWidth);
+			DrawComments(cell, ValueSection.ValueCommentHeading, generalComments,usableWidth);
 			return true;
 			//if (generalComments.SelectMany(x => x.GetResponses().Where(y => !string.IsNullOrWhiteSpace(y.GetAnswer()))).Any()) {
 			//	var genCommentsHeading = cell.AddParagraph();
@@ -530,6 +535,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			var questions = iSection.GetItemContainers();
 			
 			var table = new Table();
+			//table.Borders.Color = Colors.Red;
 			cell.Elements.Add(table);
 
 			var bys = questions.SelectMany(x => x.GetResponses().Select(y => y.GetByAbout().GetBy())).Distinct(x => x.ToKey());
@@ -553,11 +559,13 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			gwcCell.Format.Alignment = ParagraphAlignment.Center;
 
 			var roleTable = new Table();
+			//roleTable.Borders.Color = Colors.Red;
 
-			var tableWidth = Unit.FromInch(.2) + Unit.FromInch(2);
+			var tableWidth = usableWidth * .8;//		Unit.FromInch(5);// + Unit.FromInch(2);
 			var leftPadWidth = (usableWidth - tableWidth) / 2.0;
 			roleTable.AddColumn(leftPadWidth);
-			roleTable.AddColumn(Unit.FromInch(2));
+			roleTable.AddColumn(tableWidth);
+			roleTable.AddColumn(leftPadWidth);
 
 
 			//ROLES LIST
@@ -650,7 +658,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 
 			//ADD GENERAL COMMENTS
 			var generalComments = questions.Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.GeneralComment);
-			DrawComments(cell,"Role Comments", generalComments, usableWidth);
+			DrawComments(cell, RoleSection.RoleCommentHeading, generalComments, usableWidth);
 			return true;
 			//if (generalComments.SelectMany(x => x.GetResponses().Where(y => !string.IsNullOrWhiteSpace(y.GetAnswer()))).Any()) {
 			//	var genCommentsHeading = cell.AddParagraph();
@@ -776,7 +784,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			#endregion
 			//ADD GENERAL COMMENTS
 			var generalComments = questions.Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.GeneralComment);
-			DrawComments(cell,"Rock Comments", generalComments, usableWidth);
+			DrawComments(cell,RockSection.RockCommentHeading, generalComments, usableWidth);
 
 			return true;
 		}
@@ -808,21 +816,19 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 				DrawCheckX(paragraph, rawResponse, "yes", "no");
 			});
 		}
-
-
-
-
+		
 		private static bool AddLeadershipAssessmentSection(Cell cell, ISectionAbout iSection, Unit usableWidth) {
 
 			var questions = iSection.GetItemContainers();
 			var leadershipQuestions = iSection.GetItemContainers().Where(x => x.GetFormat().GetQuestionIdentifier() == SurveyQuestionIdentifier.LeadershipAssessment).ToList();
-			var table = PdfTable.Build(usableWidth, leadershipQuestions, LmaTable(),PdfTable.DefaultItemBuilder(ParagraphAlignment.Left));
+			var table = PdfTable.Build(usableWidth, leadershipQuestions, LmaTable(), PdfTable.DefaultItemBuilder(ParagraphAlignment.Left));
 			cell.Elements.Add(table);
 
 			//return DrawComments(cell, "General Comments", generalComments, usableWidth);
 			return leadershipQuestions.Any();			
 
 		}
+
 		private static bool AddManagementAssessmentSection(Cell cell, ISectionAbout iSection, Unit usableWidth) {
 
 			var questions = iSection.GetItemContainers();
@@ -841,6 +847,10 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 			}
 			return dict;
 		}
+
+
+
+
 
 	}
 }

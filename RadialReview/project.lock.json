@@ -112,6 +112,63 @@
           "lib/net40/FluentNHibernate.dll": {}
         }
       },
+      "Google.Apis/1.28.0": {
+        "type": "package",
+        "dependencies": {
+          "Google.Apis.Core": "1.28.0",
+          "Newtonsoft.Json": "10.0.2",
+          "System.Net.Http": "4.3.1"
+        },
+        "compile": {
+          "lib/net45/Google.Apis.PlatformServices.dll": {},
+          "lib/net45/Google.Apis.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Google.Apis.PlatformServices.dll": {},
+          "lib/net45/Google.Apis.dll": {}
+        }
+      },
+      "Google.Apis.Auth/1.28.0": {
+        "type": "package",
+        "dependencies": {
+          "Google.Apis": "1.28.0",
+          "Google.Apis.Core": "1.28.0"
+        },
+        "compile": {
+          "lib/net45/Google.Apis.Auth.PlatformServices.dll": {},
+          "lib/net45/Google.Apis.Auth.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Google.Apis.Auth.PlatformServices.dll": {},
+          "lib/net45/Google.Apis.Auth.dll": {}
+        }
+      },
+      "Google.Apis.Core/1.28.0": {
+        "type": "package",
+        "dependencies": {
+          "Newtonsoft.Json": "10.0.2",
+          "System.Net.Http": "4.3.1"
+        },
+        "compile": {
+          "lib/net45/Google.Apis.Core.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Google.Apis.Core.dll": {}
+        }
+      },
+      "Google.Apis.Urlshortener.v1/1.28.0.138": {
+        "type": "package",
+        "dependencies": {
+          "Google.Apis": "1.28.0",
+          "Google.Apis.Auth": "1.28.0"
+        },
+        "compile": {
+          "lib/net45/Google.Apis.Urlshortener.v1.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Google.Apis.Urlshortener.v1.dll": {}
+        }
+      },
       "Iesi.Collections/4.0.1.4000": {
         "type": "package",
         "compile": {
@@ -907,6 +964,18 @@
           "lib/net451/System.IdentityModel.Tokens.Jwt.dll": {}
         }
       },
+      "System.Net.Http/4.3.1": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.Net.Http"
+        ],
+        "compile": {
+          "ref/net45/_._": {}
+        },
+        "runtime": {
+          "lib/net45/_._": {}
+        }
+      },
       "TimeZoneNames/2.1.0": {
         "type": "package",
         "dependencies": {
@@ -932,7 +1001,7 @@
           "lib/net40-Client/TrelloNet.dll": {}
         }
       },
-      "Twilio/5.1.1": {
+      "Twilio/5.6.0": {
         "type": "package",
         "dependencies": {
           "Microsoft.IdentityModel.Logging": "1.1.2",
@@ -1091,6 +1160,63 @@
           "lib/net40/FluentNHibernate.dll": {}
         }
       },
+      "Google.Apis/1.28.0": {
+        "type": "package",
+        "dependencies": {
+          "Google.Apis.Core": "1.28.0",
+          "Newtonsoft.Json": "10.0.2",
+          "System.Net.Http": "4.3.1"
+        },
+        "compile": {
+          "lib/net45/Google.Apis.PlatformServices.dll": {},
+          "lib/net45/Google.Apis.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Google.Apis.PlatformServices.dll": {},
+          "lib/net45/Google.Apis.dll": {}
+        }
+      },
+      "Google.Apis.Auth/1.28.0": {
+        "type": "package",
+        "dependencies": {
+          "Google.Apis": "1.28.0",
+          "Google.Apis.Core": "1.28.0"
+        },
+        "compile": {
+          "lib/net45/Google.Apis.Auth.PlatformServices.dll": {},
+          "lib/net45/Google.Apis.Auth.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Google.Apis.Auth.PlatformServices.dll": {},
+          "lib/net45/Google.Apis.Auth.dll": {}
+        }
+      },
+      "Google.Apis.Core/1.28.0": {
+        "type": "package",
+        "dependencies": {
+          "Newtonsoft.Json": "10.0.2",
+          "System.Net.Http": "4.3.1"
+        },
+        "compile": {
+          "lib/net45/Google.Apis.Core.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Google.Apis.Core.dll": {}
+        }
+      },
+      "Google.Apis.Urlshortener.v1/1.28.0.138": {
+        "type": "package",
+        "dependencies": {
+          "Google.Apis": "1.28.0",
+          "Google.Apis.Auth": "1.28.0"
+        },
+        "compile": {
+          "lib/net45/Google.Apis.Urlshortener.v1.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Google.Apis.Urlshortener.v1.dll": {}
+        }
+      },
       "Iesi.Collections/4.0.1.4000": {
         "type": "package",
         "compile": {
@@ -1886,6 +2012,18 @@
           "lib/net451/System.IdentityModel.Tokens.Jwt.dll": {}
         }
       },
+      "System.Net.Http/4.3.1": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.Net.Http"
+        ],
+        "compile": {
+          "ref/net45/_._": {}
+        },
+        "runtime": {
+          "lib/net45/_._": {}
+        }
+      },
       "TimeZoneNames/2.1.0": {
         "type": "package",
         "dependencies": {
@@ -1911,7 +2049,7 @@
           "lib/net40-Client/TrelloNet.dll": {}
         }
       },
-      "Twilio/5.1.1": {
+      "Twilio/5.6.0": {
         "type": "package",
         "dependencies": {
           "Microsoft.IdentityModel.Logging": "1.1.2",
@@ -2142,6 +2280,61 @@
         "lib/net40/FluentNHibernate.XML",
         "lib/net40/FluentNHibernate.dll",
         "lib/net40/FluentNHibernate.pdb"
+      ]
+    },
+    "Google.Apis/1.28.0": {
+      "sha512": "2Hy0evlOnejdbY3o3H7QE0GVnF/dmLQ+Xoy/dfp0smGXDKSNEJhhBPB7LPBF9Ur+QTMvqriY1eifmpC0lr79WQ==",
+      "type": "package",
+      "files": [
+        "Google.Apis.1.28.0.nupkg.sha512",
+        "Google.Apis.nuspec",
+        "lib/net45/Google.Apis.PlatformServices.dll",
+        "lib/net45/Google.Apis.dll",
+        "lib/net45/Google.Apis.xml",
+        "lib/netstandard1.3/Google.Apis.dll",
+        "lib/netstandard1.3/Google.Apis.xml"
+      ]
+    },
+    "Google.Apis.Auth/1.28.0": {
+      "sha512": "v5tdjhTY6Up2YG4fF2U/E81ksyfmNK9UzRTBHWoNb9p6/QLSk5g/pLnOkWtCEOEZ/ByaPdiFybz/0Ucghzw6Uw==",
+      "type": "package",
+      "files": [
+        "Google.Apis.Auth.1.28.0.nupkg.sha512",
+        "Google.Apis.Auth.nuspec",
+        "lib/net45/Google.Apis.Auth.PlatformServices.dll",
+        "lib/net45/Google.Apis.Auth.dll",
+        "lib/net45/Google.Apis.Auth.xml",
+        "lib/netstandard1.3/Google.Apis.Auth.PlatformServices.dll",
+        "lib/netstandard1.3/Google.Apis.Auth.dll",
+        "lib/netstandard1.3/Google.Apis.Auth.xml"
+      ]
+    },
+    "Google.Apis.Core/1.28.0": {
+      "sha512": "klkKHqZLAcGMBiXE9FIlQG8MeXYSQo7m6PqRC15tHpok0V3A6W48mumvr9B2Klgau6gq0XZKOnJ5nJuVVj+h2Q==",
+      "type": "package",
+      "files": [
+        "Google.Apis.Core.1.28.0.nupkg.sha512",
+        "Google.Apis.Core.nuspec",
+        "lib/net45/Google.Apis.Core.dll",
+        "lib/net45/Google.Apis.Core.xml",
+        "lib/netstandard1.3/Google.Apis.Core.dll",
+        "lib/netstandard1.3/Google.Apis.Core.xml"
+      ]
+    },
+    "Google.Apis.Urlshortener.v1/1.28.0.138": {
+      "sha512": "OPC2ah9iSvBWBwXFpJ0b+PBJx+yX+cPkQ5+qm2JEtqvA/nVxVGRDQsgHMx0jk4doo/PJ90Tpy20oVwFqWzmz8A==",
+      "type": "package",
+      "files": [
+        "Google.Apis.Urlshortener.v1.1.28.0.138.nupkg.sha512",
+        "Google.Apis.Urlshortener.v1.nuspec",
+        "lib/net40/Google.Apis.Urlshortener.v1.dll",
+        "lib/net40/Google.Apis.Urlshortener.v1.xml",
+        "lib/net45/Google.Apis.Urlshortener.v1.dll",
+        "lib/net45/Google.Apis.Urlshortener.v1.xml",
+        "lib/netstandard1.0/Google.Apis.Urlshortener.v1.dll",
+        "lib/netstandard1.0/Google.Apis.Urlshortener.v1.xml",
+        "lib/netstandard1.3/Google.Apis.Urlshortener.v1.dll",
+        "lib/netstandard1.3/Google.Apis.Urlshortener.v1.xml"
       ]
     },
     "Iesi.Collections/4.0.1.4000": {
@@ -3274,6 +3467,85 @@
         "lib/netstandard1.4/System.IdentityModel.Tokens.Jwt.xml"
       ]
     },
+    "System.Net.Http/4.3.1": {
+      "sha512": "UrTyRczM3ZvNk6oetBuwlu67MFKKRva+r7bw4JDVZ6Y2IukyZ24td5ppsieu/4yZlogVAIuZul9GIQ3hoiz0yA==",
+      "type": "package",
+      "files": [
+        "System.Net.Http.4.3.1.nupkg.sha512",
+        "System.Net.Http.nuspec",
+        "ThirdPartyNotices.txt",
+        "dotnet_library_license.txt",
+        "lib/Xamarinmac20/_._",
+        "lib/monoandroid10/_._",
+        "lib/monotouch10/_._",
+        "lib/net45/_._",
+        "lib/net46/System.Net.Http.dll",
+        "lib/portable-net45+win8+wpa81/_._",
+        "lib/win8/_._",
+        "lib/wpa81/_._",
+        "lib/xamarinios10/_._",
+        "lib/xamarintvos10/_._",
+        "lib/xamarinwatchos10/_._",
+        "ref/Xamarinmac20/_._",
+        "ref/monoandroid10/_._",
+        "ref/monotouch10/_._",
+        "ref/net45/_._",
+        "ref/net46/System.Net.Http.dll",
+        "ref/net46/System.Net.Http.xml",
+        "ref/net46/de/System.Net.Http.xml",
+        "ref/net46/es/System.Net.Http.xml",
+        "ref/net46/fr/System.Net.Http.xml",
+        "ref/net46/it/System.Net.Http.xml",
+        "ref/net46/ja/System.Net.Http.xml",
+        "ref/net46/ko/System.Net.Http.xml",
+        "ref/net46/ru/System.Net.Http.xml",
+        "ref/net46/zh-hans/System.Net.Http.xml",
+        "ref/net46/zh-hant/System.Net.Http.xml",
+        "ref/netcore50/System.Net.Http.dll",
+        "ref/netcore50/System.Net.Http.xml",
+        "ref/netcore50/de/System.Net.Http.xml",
+        "ref/netcore50/es/System.Net.Http.xml",
+        "ref/netcore50/fr/System.Net.Http.xml",
+        "ref/netcore50/it/System.Net.Http.xml",
+        "ref/netcore50/ja/System.Net.Http.xml",
+        "ref/netcore50/ko/System.Net.Http.xml",
+        "ref/netcore50/ru/System.Net.Http.xml",
+        "ref/netcore50/zh-hans/System.Net.Http.xml",
+        "ref/netcore50/zh-hant/System.Net.Http.xml",
+        "ref/netstandard1.1/System.Net.Http.dll",
+        "ref/netstandard1.1/System.Net.Http.xml",
+        "ref/netstandard1.1/de/System.Net.Http.xml",
+        "ref/netstandard1.1/es/System.Net.Http.xml",
+        "ref/netstandard1.1/fr/System.Net.Http.xml",
+        "ref/netstandard1.1/it/System.Net.Http.xml",
+        "ref/netstandard1.1/ja/System.Net.Http.xml",
+        "ref/netstandard1.1/ko/System.Net.Http.xml",
+        "ref/netstandard1.1/ru/System.Net.Http.xml",
+        "ref/netstandard1.1/zh-hans/System.Net.Http.xml",
+        "ref/netstandard1.1/zh-hant/System.Net.Http.xml",
+        "ref/netstandard1.3/System.Net.Http.dll",
+        "ref/netstandard1.3/System.Net.Http.xml",
+        "ref/netstandard1.3/de/System.Net.Http.xml",
+        "ref/netstandard1.3/es/System.Net.Http.xml",
+        "ref/netstandard1.3/fr/System.Net.Http.xml",
+        "ref/netstandard1.3/it/System.Net.Http.xml",
+        "ref/netstandard1.3/ja/System.Net.Http.xml",
+        "ref/netstandard1.3/ko/System.Net.Http.xml",
+        "ref/netstandard1.3/ru/System.Net.Http.xml",
+        "ref/netstandard1.3/zh-hans/System.Net.Http.xml",
+        "ref/netstandard1.3/zh-hant/System.Net.Http.xml",
+        "ref/portable-net45+win8+wpa81/_._",
+        "ref/win8/_._",
+        "ref/wpa81/_._",
+        "ref/xamarinios10/_._",
+        "ref/xamarintvos10/_._",
+        "ref/xamarinwatchos10/_._",
+        "runtimes/unix/lib/netstandard1.6/System.Net.Http.dll",
+        "runtimes/win/lib/net46/System.Net.Http.dll",
+        "runtimes/win/lib/netcore50/System.Net.Http.dll",
+        "runtimes/win/lib/netstandard1.3/System.Net.Http.dll"
+      ]
+    },
     "TimeZoneNames/2.1.0": {
       "sha512": "XvQ/sYADuL72g76VqBw7neMoHryxFS8aUdAKNvQUaIrUdyca3hIUcnu6CgOUE4Ypegh28uhkN7iFFXl2cXzG5w==",
       "type": "package",
@@ -3293,11 +3565,11 @@
         "lib/net40-Client/TrelloNet.dll"
       ]
     },
-    "Twilio/5.1.1": {
-      "sha512": "08y9Ik6diROoriuQF/gU8MUsqQYfDcQbpBB12Jo8u5HY6rs+5hQdQdpeuqxNkc4TxEvItLw+YR+MZ0IMhToTZg==",
+    "Twilio/5.6.0": {
+      "sha512": "9p1aQ10iTiDKfXOHUNfRrNkKilAGn4bmI7YlZ/DwkjoSO8S07pw/PGB5zXEwz55OwDJxnRre+RMVxIBH4+3Edg==",
       "type": "package",
       "files": [
-        "Twilio.5.1.1.nupkg.sha512",
+        "Twilio.5.6.0.nupkg.sha512",
         "Twilio.nuspec",
         "lib/net35/Twilio.dll",
         "lib/net35/Twilio.xml",
@@ -3357,6 +3629,7 @@
       "CsvHelper >= 2.16.3",
       "DocX >= 1.0.0.22",
       "FluentNHibernate >= 2.0.3",
+      "Google.Apis.Urlshortener.v1 >= 1.28.0.138",
       "Iesi.Collections >= 4.0.1.4000",
       "ImageResizer >= 4.0.5",
       "LumenWorks.Framework.IO >= 3.8.0",
@@ -3403,7 +3676,7 @@
       "System.Data.SQLite.Core >= 1.0.105",
       "TimeZoneNames >= 2.1.0",
       "TrelloNet >= 0.6.2",
-      "Twilio >= 5.1.1",
+      "Twilio >= 5.6.0",
       "TypeLite >= 1.8.4",
       "Unofficial.Ionic.Zip >= 1.9.1.8",
       "WebGrease >= 1.5.2",

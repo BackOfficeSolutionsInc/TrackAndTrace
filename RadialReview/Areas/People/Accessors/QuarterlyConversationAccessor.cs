@@ -33,16 +33,22 @@ namespace RadialReview.Areas.People.Accessors {
 #pragma warning disable CS0618 // Type or member is obsolete
 
 		public static IEnumerable<SurveyUserNode> AvailableAboutsForMe(UserOrganizationModel caller) {
-			var nodes = AvailableByAboutsForMe(caller, false, false);
-			return nodes.Select(x => x.About).Distinct(x => x.ToViewModelKey());
+			var nodes = AvailableByAboutsForMe(caller, true, false);
+			//if (removeManager) {
+			//	foreach (var n in nodes.Where(x => (x.About.UserOrganizationId == caller.Id && x.By.UserOrganizationId == caller.Id))) {
+			//		n._Hidden = true;
+			//	}
+			//}
+
+			return nodes.Select(x => {
+				x.About._Hidden = x.About.UserOrganizationId == caller.Id;
+				return x.About;
+			}).Distinct(x => x._Hidden + "_" + x.ToViewModelKey());
 		}
 
 		public static IEnumerable<ByAboutSurveyUserNode> AvailableByAboutsFiltered(UserOrganizationModel caller, IEnumerable<SurveyUserNode> abouts, bool includeSelf, bool supervisorLMA) {
 			var allAvailable = AvailableByAboutsForMe(caller, includeSelf, supervisorLMA);
-
 			return allAvailable.Where(aa => abouts.Any(about => about.ToViewModelKey() == aa.About.ToViewModelKey()));
-
-
 		}
 
 		private static SurveyUserNode SunGetter(Dictionary<string, SurveyUserNode> existingItems, AccountabilityNode toAdd) {
@@ -60,72 +66,34 @@ namespace RadialReview.Areas.People.Accessors {
 		}
 
 		public static IEnumerable<ByAboutSurveyUserNode> AvailableByAboutsForMe(UserOrganizationModel caller, bool includeSelf = false, bool supervisorLMA = false) {
-
 			var allModels = new List<SurveyUserNode>();
-
 			var sunDict = new Dictionary<string, SurveyUserNode>();
-
 			var nodes = AccountabilityAccessor.GetNodesForUser(caller, caller.Id);
 			var possible = new List<ByAboutSurveyUserNode>();
 			foreach (var node in nodes) {
 				var reports = DeepAccessor.GetDirectReportsAndSelf(caller, node.Id);
-				var callerUN = SunGetter(sunDict, node);//new SurveyUserNode() {
-				//	AccountabilityNodeId = node.Id,
-				//	User = node.User,
-				//	AccountabilityNode = node,
-				//	UserOrganizationId = node.UserId.Value,
-				//	UsersName = caller.GetName(),
-				//	PositionName = node.AccountabilityRolesGroup.NotNull(x => x.Position.GetName())
-				//};
+				if (!includeSelf) {	
+					reports = reports.Where(x => x.Id != node.Id).ToList();
+				}
+				var callerUN = SunGetter(sunDict, node);
+
 				allModels.Add(callerUN);
 
 				foreach (var report in reports) {
 					if (report.User != null) {
-						var reportUN = SunGetter(sunDict, report);//new SurveyUserNode() {
-						//	AccountabilityNodeId = report.Id,
-						//	UserOrganizationId = report.UserId.Value,
-						//	User = report.User,
-						//	AccountabilityNode = report,
-						//	UsersName = report.User.GetName(),
-						//	PositionName = report.AccountabilityRolesGroup.NotNull(x => x.Position.GetName())
-						//};
+						var reportUN = SunGetter(sunDict, report);
 						allModels.Add(reportUN);
 						possible.Add(new ByAboutSurveyUserNode(callerUN, reportUN, AboutType.Subordinate));
 
-						//if (reportUN.ToKey() == callerUN.ToKey()) {
-						//	var about = AboutType.NoRelationship;
-						//	if (includeSelf)
-						//		about = about | AboutType.Self;
-
-						//	if (supervisorLMA)
-						//		about = about | AboutType.Manager;
-
-						//	if (includeSelf || supervisorLMA)
-						//		possible.Add(new ByAboutSurveyUserNode(reportUN, callerUN, about));
-
-						//} else {
 						if (includeSelf) {
 							possible.Add(new ByAboutSurveyUserNode(reportUN, reportUN, AboutType.Self));
 						}
 						if (supervisorLMA) {
 							possible.Add(new ByAboutSurveyUserNode(reportUN, callerUN, AboutType.Manager));
 						}
-						//}
 					}
 				}
 			}
-			//if (save) {
-			//	using (var s = HibernateSession.GetCurrentSession()) {
-			//		using (var tx = s.BeginTransaction()) {
-			//			foreach (var m in allModels) {
-			//				s.Save(m);
-			//			}
-			//			tx.Commit();
-			//			s.Flush();
-			//		}
-			//	}
-			//}
-
 
 			var combined = possible.GroupBy(x => x.Key).Select(ba => {
 				var about = AboutType.NoRelationship;
@@ -136,8 +104,30 @@ namespace RadialReview.Areas.People.Accessors {
 				return new ByAboutSurveyUserNode(ba.First().By, ba.First().About, about);
 			});
 
+			return combined.OrderBy(x => x.GetBy().ToPrettyString());
+		}
 
-			 return combined.OrderBy(x => x.GetBy().ToPrettyString());
+		public static void LockinSurvey(UserOrganizationModel caller, long surveyContainerId) {
+			var output = SurveyAccessor.GetAngularSurveyContainerBy(caller, caller, surveyContainerId);
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+
+					var surveys = output.GetSurveys();
+					foreach (var survey in surveys) {
+						var surveyModel = s.Load<Survey>(survey.Id);
+
+						perms.Self(surveyModel.By);
+
+						surveyModel.LockedIn = true;
+						s.Update(surveyModel);
+					}
+
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
 		}
 #pragma warning restore CS0618 // Type or member is obsolete
 
@@ -148,9 +138,7 @@ namespace RadialReview.Areas.People.Accessors {
 		/// <param name="s"></param>
 		/// <param name="byAbout"></param>
 		/// <returns></returns>
-		//private static IEnumerable<IByAbout> TransformByAbouts(ISession s, IEnumerable<IByAbout> byAbout) {
 
-		//}
 
 		public class QuarterlyConversationGeneration {
 			public long SurveyContainerId { get; set; }
@@ -228,13 +216,6 @@ namespace RadialReview.Areas.People.Accessors {
 				}
 			}
 
-		//	var reconstructed = byAbout.Select(x => new ByAbout(x.By.User, x.About)).ToList();
-
-
-
-
-
-
 			var engine = new SurveyBuilderEngine(
 				new QuarterlyConversationInitializer(caller, name, caller.Organization.Id, dueDate),
 				new SurveyBuilderEventsSaveStrategy(s),
@@ -282,6 +263,15 @@ namespace RadialReview.Areas.People.Accessors {
 			return result;
 		}
 
+		public static DefaultDictionary<string, string> TransformValueAnswer = new DefaultDictionary<string, string>(x => x);
+
+		static QuarterlyConversationAccessor() {
+			TransformValueAnswer["often"] = "+";
+			TransformValueAnswer["sometimes"] = "+/–";
+			TransformValueAnswer["not-often"] = "–";
+
+		}
+		
 
 		public static AngularPeopleAnalyzer GetPeopleAnalyzer(UserOrganizationModel caller, long userId, DateRange range = null) {
 			//Determine if self should be included.
@@ -311,7 +301,7 @@ namespace RadialReview.Areas.People.Accessors {
 					var allSurveyNodeItems = s.QueryOver<SurveyUserNode>().Where(x => x.DeleteTime == null)
 												.WhereRestrictionOn(x => x.User.Id)
 												.IsIn(acNodeChildrenModels.Select(x => x.UserId).Distinct().Where(x => x != null).ToArray())
-												.WhereRestrictionOn(x=>x.AccountabilityNodeId)
+												.WhereRestrictionOn(x => x.AccountabilityNodeId)
 												.IsIn(acNodeChildrenModels.Select(x => x.Id).Distinct().ToArray())
 												.Select(x => x.Id, x => x.AccountabilityNodeId, x => x.UserOrganizationId, x => x.UsersName, x => x.PositionName)
 												.List<object[]>()
@@ -365,7 +355,7 @@ namespace RadialReview.Areas.People.Accessors {
 
 					var formatsLu = formatsList.ToDefaultDictionary(x => x.Id, x => x, x => null);
 					var itemsLu = items.ToDefaultDictionary(x => x.Id, x => x, x => null);
-				//	var userLu = allSurveyNodeItems.ToDefaultDictionary(x => x.ToKey(), x => x.ToPrettyString(), x => "n/a");// .NotNull(y => y.GetName()), x => "n/a");
+					//	var userLu = allSurveyNodeItems.ToDefaultDictionary(x => x.ToKey(), x => x.ToPrettyString(), x => "n/a");// .NotNull(y => y.GetName()), x => "n/a");
 					foreach (var t in items) {
 						if (t.Source.NotNull(x => x.Is<CompanyValueModel>())) {
 							t.Source._PrettyString = t.GetName();
@@ -383,11 +373,11 @@ namespace RadialReview.Areas.People.Accessors {
 					var allValueIds = new List<long>();
 
 					var sunToDiscriminator = availableSurveyNodes.ToDefaultDictionary(x => x.ToKey, x => x.AccountabilityNodeId + "_" + x.UserOrganizationId, x => "unknown SUN");
-					var discriminatorToSun = availableSurveyNodes.ToDefaultDictionary(x => x.AccountabilityNodeId + "_" + x.UserOrganizationId, x => x, x =>null);
+					var discriminatorToSun = availableSurveyNodes.ToDefaultDictionary(x => x.AccountabilityNodeId + "_" + x.UserOrganizationId, x => x, x => null);
 
 					var sunToAccNode = availableSurveyNodes.ToDefaultDictionary(x => x.ToKey, x => x.AccountabilityNode, x => null);
 
-					foreach (var row in accountabiliyNodeResults.GroupBy(x => sunToDiscriminator[x.About.ToKey()] )) {
+					foreach (var row in accountabiliyNodeResults.GroupBy(x => sunToDiscriminator[x.About.ToKey()])) {
 						var answersAbout = row.OrderByDescending(x => x.CompleteTime ?? DateTime.MinValue);
 
 						var get = answersAbout.Where(x => x._ItemFormat.GetSetting<string>("gwc") == "get").FirstOrDefault();
@@ -404,18 +394,18 @@ namespace RadialReview.Areas.People.Accessors {
 									return null;
 							}
 						});
-						var plusMinus = new Func<string, string>(x => {
-							switch (x) {
-								case "often":
-									return "+";
-								case "sometimes":
-									return "+/–";
-								case "not-often":
-									return "–";
-								default:
-									return null;
-							}
-						});
+						//var plusMinus = new Func<string, string>(x => {
+						//	switch (x) {
+						//		case "often":
+						//			return "+";
+						//		case "sometimes":
+						//			return "+/–";
+						//		case "not-often":
+						//			return "–";
+						//		default:
+						//			return null;
+						//	}
+						//});
 						//row.Key._PrettyString = userLu[row.Key/*.ToKey()*/];
 						var sun = discriminatorToSun[row.Key];
 
@@ -430,7 +420,7 @@ namespace RadialReview.Areas.People.Accessors {
 					};
 
 					var rewrite = new DefaultDictionary<string, string>(x => x) {
-						{ "often", "+" },{ "sometimes", "+/–" },  { "not-often","–" },
+						{ "often", TransformValueAnswer["often"] },{ "sometimes", TransformValueAnswer["sometimes"] },  { "not-often",TransformValueAnswer["not-often"] },
 						{ "done", "done" }, { "not-done", "not done" },
 						{ "yes", "Y" }, { "no", "N" }
 					};
@@ -438,6 +428,7 @@ namespace RadialReview.Areas.People.Accessors {
 
 
 					var surveyIssueDateLookup = surveys.ToDictionary(x => x.Id, x => x.GetIssueDate());
+					var surveyLookup = surveys.ToDictionary(x => x.Id, x => x);
 					var surveyItemLookup = items.ToDictionary(x => x.Id, x => x);
 					var surveyItemFormatLookup = formats.ToDictionary(x => x.Id, x => x);
 
@@ -450,7 +441,9 @@ namespace RadialReview.Areas.People.Accessors {
 
 						var answerDate = result.CompleteTime;
 
-						var issueDate = surveyIssueDateLookup[result.SurveyId];
+						var survey = surveyLookup[result.SurveyId];
+						var issueDate = survey.GetIssueDate(); //surveyIssueDateLookup[result.SurveyId];
+															   //var lockedIn = survey.LockedIn;
 						var questionSource = surveyItemLookup[result.ItemId].GetSource();
 
 						if (answerDate != null) {
@@ -491,12 +484,50 @@ namespace RadialReview.Areas.People.Accessors {
 					//foreach (var row in accountabiliyNodeResults.Where(x => x._Item.NotNull(y => y.GetSource().ModelType) == ForModel.GetModelType<CompanyValueModel>())) {
 					//	values.GetOrAddDefault(row._Item.GetSource().ModelId, x => row._Item.GetName());
 					//}
+					var allLockedIn = new List<AngularLockedIn>();
+					var userOrgSurveyLockinLookup = new DefaultDictionary<string, bool>(x => false);
+					foreach (var survey in surveys) {
+						userOrgSurveyLockinLookup[survey.By.ToKey()] = survey.LockedIn;
+					}
+
+					var userToNodes = new DefaultDictionary<long, List<ForModel>>(x => new List<ForModel>());
+
+					foreach (var sun in allSurveyNodeItems) {
+						userToNodes[sun.UserOrganizationId].Add(ForModel.Create<AccountabilityNode>(sun.AccountabilityNodeId));
+						userToNodes[sun.UserOrganizationId] = userToNodes[sun.UserOrganizationId].Distinct(x => x.ToKey()).ToList();
+					}
+
+					foreach (var survey in surveys) {
+						if (survey.By.Is<UserOrganizationModel>()) {
+
+							var byUserOrgId = survey.By.ModelId;
+							var lockedIn = survey.LockedIn;  //userOrgSurveyLockinLookup[ForModel.Create<UserOrganizationModel>(sun.UserOrganizationId).ToKey()];
+							var surveyContainerId = survey.SurveyContainerId;
+
+							foreach (var node in userToNodes[byUserOrgId]) {
+								allLockedIn.Add(new AngularLockedIn() {
+									By = new AngularForModel(node),
+									LockedIn = lockedIn,
+									SurveyContainerId = surveyContainerId,
+									IssueDate = survey.GetIssueDate()
+								});
+
+							}
+						}
+					}
+					//var allLockedIn = surveys.Select(x => new AngularLockedIn() {
+					//	By = new AngularForModel(x.By),
+					//	LockedIn = x.LockedIn,
+					//	SurveyContainerId = x.SurveyContainerId,
+					//});
+
 
 					analyzer.Rows = rows;
 					analyzer.Responses = responses;
 					analyzer.Values = values.Select(x => new PeopleAnalyzerValue(surveyItemLookup[x.GetItemId()].GetSource()));
+					analyzer.LockedIn = allLockedIn;
 
-					analyzer.SurveyContainers = surveyContainers.Select(x => new AngularSurveyContainer(x, false));
+					analyzer.SurveyContainers = surveyContainers.Select(x => new AngularSurveyContainer(x, false, null));
 
 					var issueDates = responses.Select(x => x.IssueDate.Value).ToList();
 

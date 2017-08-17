@@ -155,6 +155,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Interfaces {
 		void AppendSurvey(ISurvey survey);
 		DateTime GetIssueDate();
 		DateTime? GetDueDate();
+		IForModel GetCreator();
 	}
 
 	public interface ISurvey : IComponent, IByAbout {

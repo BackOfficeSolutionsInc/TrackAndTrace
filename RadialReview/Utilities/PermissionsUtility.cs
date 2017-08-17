@@ -1579,9 +1579,15 @@ namespace RadialReview.Utilities {
 		public PermissionsUtility ViewSurveyContainer(long surveyContainerId) {
 			if (IsRadialAdmin(caller))
 				return this;
-
 			return CanView(PermItem.ResourceType.SurveyContainer, surveyContainerId);
 		}
+		//public PermissionsUtility EditSurveyContainer(long surveyContainerId) {
+		//	if (IsRadialAdmin(caller))
+		//		return this;
+		//	var container = session.Get<SurveyContainer>(surveyContainerId);
+		//	container
+		//	return CanView(PermItem.ResourceType.SurveyContainer, surveyContainerId);
+		//}
 
 		public PermissionsUtility EditSurveyResponse(long surveyResponseId) {
 			if (IsRadialAdmin(caller))

@@ -321,6 +321,19 @@
 					</div>
 					<div style="margin-bottom: 10px;width:100%;clear:both"></div>
 
+
+					@if (Model.Recurrence.ForumCode!=null) {
+						<div class="component">
+							<div>
+								<h4 class="alignCenter">Text <b>@Model.Recurrence.ForumCode.ToUpper()</b> to <nobr>@RadialReview.Utilities.Config.TextInNumber().ToPhoneNumber()</nobr></h4>
+
+							</div>
+						</div>
+					}
+					<div class="clearfix"></div>
+
+
+
 				</div>
 			</div>
 			<div class="col-sm-9 col-md-10  full">

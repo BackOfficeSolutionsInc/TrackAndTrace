@@ -8,6 +8,7 @@
     "CsvHelper": "2.16.3",
     "DocX": "1.0.0.22",
     "FluentNHibernate": "2.0.3",
+    "Google.Apis.Urlshortener.v1": "1.28.0.138",
     "Iesi.Collections": "4.0.1.4000",
     "ImageResizer": "4.0.5",
     "jQuery": "1.10.2",
@@ -56,7 +57,7 @@
     "System.Data.SQLite.Core": "1.0.105",
     "TimeZoneNames": "2.1.0",
     "TrelloNet": "0.6.2",
-    "Twilio": "5.1.1",
+    "Twilio": "5.6.0",
     "TypeLite": "1.8.4",
     "Unofficial.Ionic.Zip": "1.9.1.8",
     "WebGrease": "1.5.2"

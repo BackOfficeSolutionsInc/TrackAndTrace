@@ -131,13 +131,24 @@ namespace RadialReview.Controllers
 
 
 		[Access(AccessLevel.UserOrganization)]
-	    public JsonResult Delete(long id)
-	    {
+	    public JsonResult Delete(long id){
 		    PhoneAccessor.DeleteAction(GetUser(), id);
 			return Json(ResultObject.SilentSuccess());
 	    }
 
-	
+
+		[Access(AccessLevel.Any)]
+		public async Task<ContentResult> ReceiveForum_C4C187FFD1544290A05CB860EED6F2B0(string From,string Body,string To) {
+			try {
+				var response = await PhoneAccessor.ReceiveForumText(From, Body, To);
+				return PhoneContent(response);
+			} catch (PhoneException e) {
+				return PhoneContent(e.Message);
+			} catch (Exception e) {
+				return PhoneContent("Something went wrong");
+			}	
+		}
+
 		[Access(AccessLevel.Any)]
 		public async Task<ContentResult> ReceiveText_53B006C3B7ED45C58EE31DBFA85D75BA()
 		{
@@ -159,7 +170,9 @@ namespace RadialReview.Controllers
 		}
 
 	    protected ContentResult PhoneContent(string message){
-		    return Content("<Response><Sms>"+message+"</Sms></Response>");
+			if (string.IsNullOrWhiteSpace(message))
+				return Content("<Response></Response>");
+			return Content("<Response><Sms>"+message+"</Sms></Response>");
 	    }
     }
 }

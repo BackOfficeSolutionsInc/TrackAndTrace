@@ -1,4 +1,7 @@
-﻿@media print {
+﻿.people-analyzer .btn[disabled] {
+  pointer-events: none;
+}
+@media print {
   .people-analyzer .rz-bubble {
     text-align: center;
     position: absolute;
@@ -80,14 +83,25 @@
   opacity: .75;
   filter: grayscale(25%);
 }
+@media print {
+  .people-analyzer .people-analyzer-table td.inactive .resp {
+    filter: none;
+  }
+}
 .people-analyzer .people-analyzer-table thead .person-column .diagonal-bar,
 .people-analyzer .people-analyzer-table thead .person-column .diagonal-bar-cap,
 .people-analyzer .people-analyzer-table thead .person-column .diagonal-fill {
   display: none;
 }
 .people-analyzer .people-analyzer-table thead .print-column .diagonal-bar-bottom,
+.people-analyzer .people-analyzer-table thead .completion-column .diagonal-bar-bottom,
 .people-analyzer .people-analyzer-table thead .print-column .diagonal-bar-cap,
-.people-analyzer .people-analyzer-table thead .print-column .diagonal-fill {
+.people-analyzer .people-analyzer-table thead .completion-column .diagonal-bar-cap,
+.people-analyzer .people-analyzer-table thead .print-column .diagonal-fill,
+.people-analyzer .people-analyzer-table thead .completion-column .diagonal-fill {
+  display: none;
+}
+.people-analyzer .people-analyzer-table thead .print-column .diagonal-bar {
   display: none;
 }
 .people-analyzer .people-analyzer-table tbody th,
@@ -123,29 +137,37 @@
   font-weight: bold;
 }
 .people-analyzer .people-analyzer-table tbody .resp.resp-yes {
-  color: #5cb85c;
+  color: #5cb85c !important;
 }
 .people-analyzer .people-analyzer-table tbody .resp.resp-no {
-  color: #d9534f;
+  color: #d9534f !important;
 }
 .people-analyzer .people-analyzer-table tbody .resp.resp-often {
-  color: #5cb85c;
+  color: #5cb85c !important;
 }
 .people-analyzer .people-analyzer-table tbody .resp.resp-not-often {
-  color: #d9534f;
+  color: #d9534f !important;
 }
 .people-analyzer .people-analyzer-table tbody .resp.resp-sometimes {
-  color: #f0ad4e;
+  color: #f0ad4e !important;
 }
 .people-analyzer .people-analyzer-table tbody .resp.resp- {
   opacity: 0;
 }
-.people-analyzer .people-analyzer-table tbody .print-column {
+.people-analyzer .people-analyzer-table tbody .print-column,
+.people-analyzer .people-analyzer-table tbody .completion-column {
   background-color: transparent;
   border: none;
   text-align: left;
 }
-.people-analyzer .people-analyzer-table tbody .print-column .print-btn {
+@media print {
+  .people-analyzer .people-analyzer-table tbody .print-column .btn,
+  .people-analyzer .people-analyzer-table tbody .completion-column .btn {
+    display: none;
+  }
+}
+.people-analyzer .people-analyzer-table tbody .print-column .print-btn,
+.people-analyzer .people-analyzer-table tbody .completion-column .print-btn {
   padding: 10px;
   font-size: 15px;
   color: rgba(0, 0, 0, 0.25);
@@ -159,17 +181,30 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-.people-analyzer .people-analyzer-table tbody .print-column .print-btn:before {
+.people-analyzer .people-analyzer-table tbody .print-column .print-btn:before,
+.people-analyzer .people-analyzer-table tbody .completion-column .print-btn:before {
   content: "\e045";
 }
-.people-analyzer .people-analyzer-table tbody .print-column .print-btn:hover {
+.people-analyzer .people-analyzer-table tbody .print-column .print-btn:hover,
+.people-analyzer .people-analyzer-table tbody .completion-column .print-btn:hover {
   cursor: pointer;
   color: rgba(0, 0, 0, 0.5);
 }
 @media print {
-  .people-analyzer .people-analyzer-table tbody .print-column .print-btn {
+  .people-analyzer .people-analyzer-table tbody .print-column .print-btn,
+  .people-analyzer .people-analyzer-table tbody .completion-column .print-btn {
     display: none !important;
   }
+}
+.people-analyzer .people-analyzer-table tbody .print-column .btn,
+.people-analyzer .people-analyzer-table tbody .completion-column .btn {
+  margin: 5px;
+  width: 95px;
+}
+.people-analyzer .people-analyzer-table tbody .print-column .btn.disabled,
+.people-analyzer .people-analyzer-table tbody .completion-column .btn.disabled {
+  background-color: transparent;
+  pointer-events: none;
 }
 .people-analyzer .people-analyzer-table tbody.error-message * {
   background-color: transparent;

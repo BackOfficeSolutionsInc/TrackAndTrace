@@ -23,6 +23,7 @@ using RadialReview.Models.Accountability;
 using RadialReview.Areas.People.Engines.Surveys.Interfaces;
 using RadialReview.Areas.People.Angular.Survey.SurveyAbout;
 using static RadialReview.Models.PermItem;
+using RadialReview.Models.Angular.Users;
 
 namespace RadialReview.Areas.People.Accessors {
 	public class SurveyAccessor {
@@ -54,19 +55,7 @@ namespace RadialReview.Areas.People.Accessors {
 		}
 
 #pragma warning restore CS0618 // Type or member is obsolete
-
-		//private static IForModel StandardizeAbout(ISession s, IForModel about) {
-
-		//	if (about.Is<AccountabilityNode>()) {
-		//		return about;
-		//	} else if (about.Is<SurveyUserNode>()) {
-		//		var node = s.Get<SurveyUserNode>(about.ModelId);
-		//		return StandardizeAbout(s, node.AccountabilityNode);
-		//	} else {
-		//		throw new ArgumentOutOfRangeException("About type:" + about.ModelType);
-		//	}
-		//}
-
+		
 		public static ISurveyAboutContainer GetSurveyContainerAbout(UserOrganizationModel caller, IForModel about, long surveyContainerId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -146,9 +135,19 @@ namespace RadialReview.Areas.People.Accessors {
 						.Select(x => x.SurveyContainerId)
 						.List<long>().ToArray();
 
-					return s.QueryOver<SurveyContainer>().Where(x => x.DeleteTime == null && x.SurveyType == type)
+					var containers = s.QueryOver<SurveyContainer>().Where(x => x.DeleteTime == null && x.SurveyType == type)
 						.WhereRestrictionOn(x => x.Id).IsIn(containerIds)
-						.List().Select(x => new AngularSurveyContainer(x, x.DueDate<DateTime.UtcNow ));
+						.List();
+
+					var issuedBy = containers
+						.Select(x => x.CreatedBy)
+						.Where(x=>x.ModelType==ForModel.GetModelType<UserOrganizationModel>())
+						.Select(x => x.ModelId)
+						.Distinct().ToList();
+
+					var creatorLookup = TinyUserAccessor.GetUsers_Unsafe(s, issuedBy,false).ToDefaultDictionary(x=>x.ToKey(),x=>AngularUser.CreateUser(x),null);
+					
+					return containers.Select(x => new AngularSurveyContainer(x, x.DueDate<DateTime.UtcNow, creatorLookup[x.CreatedBy.ToKey()]));
 
 					//perms.ViewSurveyContainer(surveyContainerId);
 				}

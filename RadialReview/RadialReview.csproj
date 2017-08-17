@@ -165,6 +165,7 @@
     <Content Include="Content\AngularTemplates\People\Survey\Items\bs\textarea-item.html" />
     <Content Include="Content\AngularTemplates\People\Survey\Items\bs\text-item.html" />
     <Content Include="Content\AngularTemplates\People\Survey\Items\bs\radio-item.html" />
+    <Content Include="Content\AngularTemplates\People\Survey\Items\md\radio-item.html" />
     <Content Include="Content\AngularTemplates\People\Survey\surveyItemContainer.html" />
     <Content Include="Content\AngularTemplates\People\Survey\survey.html" />
     <Content Include="Content\AngularTemplates\People\Survey\surveySection.html" />
@@ -190,6 +191,7 @@
     <Compile Include="Areas\People\Engines\Surveys\Strategies\Events\SurveyBuilderEventsNoOp.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Strategies\Events\SurveyBuilderEventsSaveStrategy.cs" />
     <Compile Include="Areas\People\Engines\Surveys\SurveyReconstructionEngine.cs" />
+    <Compile Include="Controllers\SuController.cs" />
     <Compile Include="Hooks\ActiveCampaignEventHooks.cs" />
     <Compile Include="Hooks\EnterpriseHook.cs" />
     <Compile Include="Hooks\UpdateRoles_Notifications.cs" />
@@ -920,6 +922,9 @@
     <Content Include="Content\GettingStarted\GettingStarted.css">
       <DependentUpon>GettingStarted.less</DependentUpon>
     </Content>
+    <Content Include="Content\People\MaterialRadio.css">
+      <DependentUpon>MaterialRadio.less</DependentUpon>
+    </Content>
     <Content Include="Content\People\PeopleAnalyzer.css">
       <DependentUpon>PeopleAnalyzer.less</DependentUpon>
     </Content>
@@ -1094,6 +1099,7 @@
     <Content Include="Content\People\QuarterlyConversation.less" />
     <Content Include="Content\People\PeopleAnalyzer.less" />
     <Content Include="Content\People\rzslider.less" />
+    <Content Include="Content\People\MaterialRadio.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1123,6 +1129,7 @@
     <Content Include="Scripts\Angular\Helpers\Directives\ScoreTemplates.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\TableSort.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\vsRepeat.js" />
+    <Content Include="Scripts\Angular\Helpers\Libraries\angular-material-custom.js" />
     <Content Include="Scripts\Angular\Helpers\Libraries\angular-xeditable.js" />
     <Content Include="Scripts\Angular\Helpers\Libraries\ngfittext.js" />
     <Content Include="Scripts\Angular\Helpers\Libraries\ngsortable.js" />
@@ -2312,6 +2319,7 @@
     <Folder Include="Views\Onboard\" />
     <Folder Include="Views\Scheduler\" />
     <Folder Include="Views\Session\" />
+    <Folder Include="Views\Su\" />
     <Folder Include="Views\Svg\" />
     <Folder Include="Views\Transcript\" />
     <Folder Include="Views\Url\" />

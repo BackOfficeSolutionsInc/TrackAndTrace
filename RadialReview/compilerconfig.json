@@ -114,5 +114,9 @@
   {
     "outputFile": "Content/People/rzslider.css",
     "inputFile": "Content/People/rzslider.less"
+  },
+  {
+    "outputFile": "Content/People/MaterialRadio.css",
+    "inputFile": "Content/People/MaterialRadio.less"
   }
 ]

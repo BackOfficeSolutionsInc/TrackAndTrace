@@ -43,6 +43,14 @@ namespace RadialReview.Models.L10 {
 		SamePage = 1
 	}
 
+	public enum ForumStep {
+		// Invalid =0,
+		[Display(Name = "Add Issues")]
+		AddIssues = 0,
+		[Display(Name = "Rate the Meeting")]
+		RateMeeting = 1
+	}
+
 	public partial class L10Recurrence : ILongIdentifiable, IDeletable {
 
 		public virtual long Id { get; set; }
@@ -118,6 +126,8 @@ namespace RadialReview.Models.L10 {
 
 		public virtual PrioritizationType Prioritization { get; set; }
 
+		public virtual string ForumCode { get; set; }
+		public virtual ForumStep ForumStep { get; set; }
 
 		public L10Recurrence() {
 			VideoId = Guid.NewGuid().ToString();
@@ -143,7 +153,10 @@ namespace RadialReview.Models.L10 {
 			TeamType = L10TeamType.LeadershipTeam;
 			CombineRocks = false;
 			CurrentWeekHighlightShift = 0;
+			ForumStep = ForumStep.AddIssues;
 			PreventEditingUnownedMeasurables = false;
+
+			ForumCode = null;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 			ShowHeadlinesBox = false;
@@ -188,6 +201,9 @@ namespace RadialReview.Models.L10 {
 				Map(x => x.IncludeAggregateTodoCompletionOnPrintout);
 				Map(x => x.TeamType).CustomType<L10TeamType>();
 				Map(x => x.Prioritization).CustomType<PrioritizationType>();
+
+				Map(x => x.ForumStep);
+				Map(x => x.ForumCode);
 
 				Map(x => x.PreventEditingUnownedMeasurables);
 				Map(x => x.OrganizationId).Column("OrganizationId");

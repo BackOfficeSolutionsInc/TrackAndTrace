@@ -293,6 +293,7 @@
     <Compile Include="API\v0\UsersApiTests_v0.cs" />
     <Compile Include="Controllers\DashboardControllerTests.cs" />
     <Compile Include="Controllers\L10ControllerTests.cs" />
+    <Compile Include="Controllers\TwilioApi.cs" />
     <Compile Include="Engines\SurveyEngineTests.cs" />
     <Compile Include="Hooks\EnterpriseHookTest.cs" />
     <Compile Include="Integrations\ActiveCampaignTest.cs" />
@@ -300,6 +301,7 @@
     <Compile Include="PDF\MigradocExtension.cs" />
     <Compile Include="PDF\SurveyPdfTest.cs" />
     <Compile Include="PDF\AccountabilityChartPdfTest.cs" />
+    <Compile Include="PeopleTools\QcSettings.cs" />
     <Compile Include="Permissions\ManagerPermissions.cs" />
     <Compile Include="Permissions\L10Permissions.cs" />
     <Compile Include="Permissions\RockPermissions.cs" />

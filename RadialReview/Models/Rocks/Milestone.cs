@@ -55,6 +55,5 @@ namespace RadialReview.Models.Rocks {
 				Map(x => x.RockId);
 			}
 		}
-
 	}
 }

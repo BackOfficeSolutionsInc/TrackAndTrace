@@ -31,7 +31,7 @@
 						for (var i = 0; i < $scope.model.SurveyContainers.length; i++) {
 							var a = $scope.model.SurveyContainers[i];
 							$scope.surveyContainerLookup[+a.IssueDate] = a;
-						}						
+						}
 
 						$scope.slider = {
 							value: dates[dates.length - 1], // or new Date(2016, 7, 10) is you want to use different instances
@@ -61,12 +61,12 @@
 			//	return $scope.surveyContainerLookup[+$scope.slider.value];
 			//};
 
-			$scope.functions.getPrintId = function (row) {
+			$scope.functions.getSunId = function (row) {
 				return Enumerable.from($scope.model.Responses)
 					.where(function (x) {
-						return  x.About.ModelId == row.About.ModelId &&
+						return x.About.ModelId == row.About.ModelId &&
 								x.About.ModelType == row.About.ModelType &&
-								(x.IssueDate - $scope.slider.value== 0)
+								(x.IssueDate - $scope.slider.value == 0)
 					}).select(function (x) {
 						return x.SunId;
 					}).firstOrDefault();
@@ -74,7 +74,7 @@
 
 			$scope.functions.printRow = function (r) {
 				var scid = $scope.functions.selectedSurveyContainer().Id;
-				var pid = $scope.functions.getPrintId(r);
+				var pid = $scope.functions.getSunId(r);
 				$window.open('/people/quarterlyconversation/print?surveyContainerId=' + scid + '&sunId=' + pid + '', '_blank');
 			};
 
@@ -88,9 +88,45 @@
 					$scope.$broadcast('rzSliderForceRender');
 				});
 			};
-			$scope.functions.canPrint = function (row) {
-				var id = $scope.functions.getPrintId(row);
-				return typeof (id) !== "undefined" && id!=null;
+			$scope.functions.personallyOwning = function (row) {
+				var id = $scope.functions.getSunId(row);
+				return typeof (id) !== "undefined" && id != null;
+			};
+			$scope.functions.isLockedIn = function (row) {
+				var found = Enumerable.from($scope.model.LockedIn)
+					.where(function (x) {
+						return x.By.ModelId == row.About.ModelId &&
+								x.By.ModelType == row.About.ModelType &&
+								(x.IssueDate - $scope.slider.value == 0)
+					}).firstOrDefault();
+
+				if (typeof(found)!=="undefined" && found!==null){
+					return found.LockedIn;
+				}
+				return false;				
+			};
+			$scope.functions.sendReminder = function (r) {
+				var btn = $("[data-name='row_" + r.Id+"']").find(".btn-remind");
+				btn.attr("disabled", true);
+				var scid = $scope.functions.selectedSurveyContainer().Id;
+				var pid = $scope.functions.getSunId(r);
+				var send = true;
+				btn.find(".msg").text("Sending");
+				btn[0].blur();
+				debugger;
+				if (send) {
+					$http.get('/people/quarterlyconversation/remind?surveyContainerId=' + scid + '&sunId=' + pid).then(function () {
+						showAlert("Reminder sent.");
+						btn.find(".msg").text("Sent.")
+					}, function () {
+						showAlert("Something went wrong.");						
+						btn.find(".msg").text("Remind");
+						btn.attr("disabled",null);
+					});
+				}
+				//var scid = $scope.functions.selectedSurveyContainer().Id;
+				//var pid = $scope.functions.getSunId(r);
+				//$window.open('/people/quarterlyconversation/print?surveyContainerId=' + scid + '&sunId=' + pid + '', '_blank');
 			};
 
 			$scope.functions.inactive = function (row, question) {
@@ -121,7 +157,7 @@
 					});
 
 				if (avail.any()) {
-					var ordered= avail.groupBy(function (x) {
+					var ordered = avail.groupBy(function (x) {
 						return +x.IssueDate;
 					}).orderByDescending(function (x) {
 						return x.key();//.IssueDate.getTime();

@@ -103,6 +103,9 @@ namespace RadialReview.Models.Issues
 			public virtual DateTime CreateTime { get; set; }
 			public virtual DateTime? DeleteTime { get; set; }
 			public virtual DateTime? CloseTime { get; set; }
+
+			//public virtual string BackupOwner { get; set; }
+
 			public virtual UserOrganizationModel Owner { get; set; }
 			public virtual UserOrganizationModel CreatedBy { get; set; }
 			public virtual IssueModel_Recurrence CopiedFrom { get; set; }
@@ -134,6 +137,8 @@ namespace RadialReview.Models.Issues
                     Map(x => x.Priority);
                     Map(x => x.Ordering);
 					Map(x => x.Rank);
+
+					//Map(x => x.BackupOwner);
 
 					Map(x => x.AwaitingSolve);
 					Map(x => x.MarkedForClose);

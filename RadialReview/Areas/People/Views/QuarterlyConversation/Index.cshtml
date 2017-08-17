@@ -32,11 +32,17 @@
 				window.location="/people/quarterlyconversation/issue";
 			},
 			clickRemove: "/people/quarterlyconversation/remove/{0}",
-			addButton:{text: "Issue"},
+			addButton:{text: "Create New"},
 			cells:[{
 				name: "Name",
 				classes:"fullWidth",
 				contents:function(x){ return "<a href='/People/QuarterlyConversation/Questions/"+x.Id+"'>"+x.Name+"</a>"; }
+			},{
+				name: "Issued By",
+				classes:"nowrap alignRight",
+				contents:function(x){
+					return x.IssuedBy.Name;//.toDateString();
+				}
 			},{
 				name: "Issued",
 				classes:"nowrap alignRight",

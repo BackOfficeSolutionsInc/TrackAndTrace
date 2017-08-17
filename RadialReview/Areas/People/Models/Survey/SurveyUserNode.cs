@@ -1,4 +1,5 @@
 ﻿using FluentNHibernate.Mapping;
+using Newtonsoft.Json;
 using RadialReview.Models;
 using RadialReview.Models.Accountability;
 using RadialReview.Models.Enums;
@@ -30,6 +31,8 @@ namespace RadialReview.Areas.People.Models.Survey {
 
 		public virtual long ModelId { get { return Id; } }
 		public virtual string ModelType { get { return ForModel.GetModelType<SurveyUserNode>(); } }
+		[JsonProperty(PropertyName = "Hidden")]
+		public virtual bool _Hidden { get; set; }
 
 		public virtual bool Is<T>() {
 			return ForModel.GetModelType(typeof(T)) == ModelType;
@@ -139,6 +142,7 @@ namespace RadialReview.Areas.People.Models.Survey {
 
 	[DebuggerDisplay("BASUN: by:[ {By} ] about:[ {About} ]")]
 	public class ByAboutSurveyUserNode : IByAbout {
+		public bool _Hidden { get; set; }
 
 		public ByAboutSurveyUserNode(SurveyUserNode by, SurveyUserNode about, AboutType? aboutIsThe) {
 			About = about;

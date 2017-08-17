@@ -55,7 +55,7 @@ namespace RadialReview.Accessors {
             public Map()
             {
                 Id(x => x.Id);
-                Map(x => x.Lookup);
+                Map(x => x.Lookup).Index("supportdata_lookup_idx");
                 Map(x => x.Email);
                 Map(x => x.Subject);
                 Map(x => x.Body);

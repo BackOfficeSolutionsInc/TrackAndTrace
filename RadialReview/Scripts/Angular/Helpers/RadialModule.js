@@ -187,9 +187,11 @@
                         modRejoinArr.splice(0, 0, options.hubJoinMethod);
                         modRejoinArr.push(connection.id);
                         console.log("Rejoining.");
+						//debugger;
                         //proxy.invoke(modRejoinArr[0], modRejoinArr[1], modRejoinArr[2], modRejoinArr[3])
-                        proxy.invoke.apply(proxy, [modRejoinArr]).done(function () {
-                            console.log("Rejoined.");
+                        //proxy.invoke.apply(proxy, [modRejoinArr]).done(function () {
+                        proxy.invoke.apply(proxy, modRejoinArr).done(function () {
+                        		console.log("Rejoined.");
                             if (callback) {
                                 callback();
                             }

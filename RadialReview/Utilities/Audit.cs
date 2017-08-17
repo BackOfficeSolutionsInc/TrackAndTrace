@@ -127,9 +127,9 @@ namespace RadialReview.Utilities
 				meetingHub.addOrEditLogRow(type + "_" + forModel.ModelId, html, type);
 
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
-
+				int a = 0;
 			}
 		}
 

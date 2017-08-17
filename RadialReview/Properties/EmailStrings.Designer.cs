@@ -318,6 +318,23 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;p&gt;{0},&lt;/p&gt;
+        ///&lt;p&gt;You have a new Quarterly Conversation due on {1}. You can complete it by clicking the following link:&lt;/p&gt;
+        ///&lt;br&gt; 
+        ///    &lt;a href=&quot;{2}&quot;&gt;{3}&lt;/a&gt;
+        ///&lt;br /&gt;&lt;br /&gt;If you have any questions, feedback, or concerns, you can reply to this e-mail address.
+        ///&lt;br /&gt;
+        ///&lt;br /&gt;
+        ///Sincerely,&lt;br/&gt;
+        ///The {4} Team.
+        /// </summary>
+        public static string QuarterlyConversationReminder_Body {
+            get {
+                return ResourceManager.GetString("QuarterlyConversationReminder_Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reminder, you still have a review to complete..
         /// </summary>
         public static string ReminderReview_Subject {

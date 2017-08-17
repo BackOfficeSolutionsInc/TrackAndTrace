@@ -12,7 +12,10 @@ using RadialReview.Models.Enums;
 
 namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.Sections {
     public class ValueSection : ISectionInitializer {
-        public IEnumerable<IItemInitializer> GetAllPossibleItemBuilders(IEnumerable<IByAbout> byAbouts) {
+
+		public static string ValueCommentHeading = "Value Comments";
+
+		public IEnumerable<IItemInitializer> GetAllPossibleItemBuilders(IEnumerable<IByAbout> byAbouts) {
 #pragma warning disable CS0618 // Type or member is obsolete
 			yield return new ValueItem();
 #pragma warning restore CS0618 // Type or member is obsolete
@@ -21,13 +24,17 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
         public IEnumerable<IItemInitializer> GetItemBuilders(IItemInitializerData data) {
 			//only ask if they are not our manager
 			if (data.SurveyContainer.GetSurveyType() == SurveyType.QuarterlyConversation && data.About.Is<SurveyUserNode>()) {
-				if ((data.About as SurveyUserNode)._Relationship[data.By.ToKey()] == AboutType.Manager) {
+
+				if (data.SurveyContainer.GetCreator().ToKey() == ((SurveyUserNode)data.About).User.ToKey())
 					return new List<IItemInitializer>();
-				}
+
+				if ((data.About as SurveyUserNode)._Relationship[data.By.ToKey()] == AboutType.Manager)
+					return new List<IItemInitializer>();
+				
 			}
 
 			var values = data.Lookup.GetList<CompanyValueModel>();
-			var genComments = new TextAreaItemIntializer("Value Comments", SurveyQuestionIdentifier.GeneralComment);
+			var genComments = new TextAreaItemIntializer(ValueCommentHeading, SurveyQuestionIdentifier.GeneralComment);
 			var items = values.Select(x => (IItemInitializer) new ValueItem(x)).ToList();
 			items.Add(genComments);
 			return items;
@@ -55,9 +62,9 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 
         public IItemFormatRegistry GetItemFormat(IItemFormatInitializerCtx ctx) {
             var options = new Dictionary<string, string> {
-				{"often"    ,"Often"     },
-                {"sometimes","Sometimes" },
-				{"not-often","Not often" },
+				{"often"    ,"Most of the time they live this value"     },
+                {"sometimes","Some of the time they live this value" },
+				{"not-often","Most of the time they do not live this value" },
 			};
             return ctx.RegistrationItemFormat(true, () => SurveyItemFormat.GenerateRadio(ctx, SurveyQuestionIdentifier.Value, options));
         }

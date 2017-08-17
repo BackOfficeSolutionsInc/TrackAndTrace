@@ -1,5 +1,13 @@
 ﻿var acapp = angular.module('ACApp', ['helpers', 'panzoom', 'tree']);
 
+//EDIT THE MD-AUTOCOMPLETE
+
+//END EDIT THE MD-AUTOCOMPLETE
+
+
+
+
+
 acapp.directive('mdBlur', ["$timeout", "$rootScope", function ($timeout, $rootScope) {
 	var directive = {
 		restrict: 'A',
@@ -57,6 +65,132 @@ acapp.directive('mdBlur', ["$timeout", "$rootScope", function ($timeout, $rootSc
 	return directive;
 }]);
 
+//acapp.directive("ttRole", function () {
+//	return {
+//		restrict: "E",
+//		require: 'ngModel',
+//		scope:{
+//			ngModel:"=ngModel"
+//		},
+//		template: "<input ng-model-options='{debounce:75}'  ng-focus='focusing()' ng-blur='blurring()'" + " ng-keydown='checkCreateRole($event,ngModel,group,$index)'" + " title='{{ngModel.Name}}' class='role' ng-if='::group.Editable!=false' ng-model=\"ngModel.Name\" ng-change=\"updating(ngModel)\">" +
+//				 "<div title='{{ngModel.Name}}' class='role' ng-show='::group.Editable==false'>{{ngModel.Name}}</div>" +
+//				 "<span ng-if='::group.Editable!=false' class='delete-role-row' ng-click=\"deleting(ngModel)\" tabindex='-1'></span>"
+
+//	};
+//});
+
+acapp.directive("ttOverflow", function () {
+	//Maximum number of 'M's to show.
+
+	var letterLengthDictSarif = {
+		'': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '	': 250, ' ': 250, '': 750, '': 0, ' ': 250, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, ' ': 250,
+		'!': 333, '"': 408, '#': 500, '$': 500, '%': 833, '&': 778, '\'': 180, '(': 333, ')': 333, '*': 500, '+': 564, ',': 250, '-': 333, '.': 250, '/': 278, '0': 500, '1': 500, '2': 500, '3': 500, '4': 500, '5': 500, '6': 500, '7': 500, '8': 500, '9': 500, ':': 278, ';': 278, '<': 564, '=': 564, '>': 564, '?': 444, '@': 921,
+		'A': 722, 'B': 667, 'C': 667, 'D': 722, 'E': 611, 'F': 556, 'G': 722, 'H': 722, 'I': 333, 'J': 389, 'K': 722, 'L': 611, 'M': 889, 'N': 722, 'O': 722, 'P': 556, 'Q': 722, 'R': 667, 'S': 556, 'T': 611, 'U': 722, 'V': 722, 'W': 944, 'X': 722, 'Y': 722, 'Z': 611,
+		'[': 333, '\\': 278, ']': 333, '^': 469, '_': 500, '`': 333, 'a': 444, 'b': 500, 'c': 444, 'd': 500, 'e': 444, 'f': 333, 'g': 500, 'h': 500, 'i': 278, 'j': 278, 'k': 500, 'l': 278, 'm': 778, 'n': 500, 'o': 500, 'p': 500, 'q': 500, 'r': 333, 's': 389, 't': 278, 'u': 500, 'v': 500, 'w': 722, 'x': 500, 'y': 500, 'z': 444,
+		'{': 480, '|': 200, '}': 480, '~': 541, '': 500, '': 750, '': 750, '': 750, '': 750, '': 750, '\n': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750,
+		'': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, '': 750, ' ': 250, '¡': 333, '¢': 500, '£': 500, '¤': 500, '¥': 500, '¦': 200, '§': 500, '¨': 333, '©': 760, 'ª': 276, '«': 500, '¬': 564, '­': 0, '®': 760, '¯': 500, '°': 400, '±': 549, '²': 300, '³': 300, '´': 333, 'µ': 576, '¶': 453, '·': 333,
+		'¸': 333, '¹': 300, 'º': 310, '»': 500, '¼': 750, '½': 750, '¾': 750, '¿': 444, 'À': 722, 'Á': 722, 'Â': 722, 'Ã': 722, 'Ä': 722, 'Å': 722, 'Æ': 889, 'Ç': 667, 'È': 611, 'É': 611, 'Ê': 611, 'Ë': 611, 'Ì': 333, 'Í': 333, 'Î': 333, 'Ï': 333, 'Ð': 722, 'Ñ': 722, 'Ò': 722, 'Ó': 722, 'Ô': 722, 'Õ': 722, 'Ö': 722, '×': 564, 'Ø': 722, 'Ù': 722, 'Ú': 722,
+		'Û': 722, 'Ü': 722, 'Ý': 722, 'Þ': 556, 'ß': 500, 'à': 444, 'á': 444, 'â': 444, 'ã': 444, 'ä': 444, 'å': 444, 'æ': 667, 'ç': 444, 'è': 444, 'é': 444, 'ê': 444, 'ë': 444, 'ì': 278, 'í': 278, 'î': 278, 'ï': 278, 'ð': 500, 'ñ': 500, 'ò': 500, 'ó': 500, 'ô': 500, 'õ': 500, 'ö': 500, '÷': 549, 'ø': 500, 'ù': 500, 'ú': 500, 'û': 500, 'ü': 500, 'ý': 500, 'þ': 500
+	};
+	var letterLengthDictSanSarif = {'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'	':276,' ':276,'':748,'':0,' ':276,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,' ':276,'!':276,'"':352,'#':556,'$':556,'%':888,'&':664,'\'':188,'(':332,')':332,'*':388,'+':584,',':276,'-':332,'.':276,'/':276,'0':556,'1':556,'2':556,'3':556,'4':556,'5':556,'6':556,'7':556,'8':556,'9':556,':':276,';':276,'<':584,'=':584,'>':584,'?':556,'@':1016,'A':664,'B':664,'C':720,'D':720,'E':664,'F':608,'G':776,'H':720,'I':276,'J':500,'K':664,'L':556,'M':832,'N':720,'O':776,'P':664,'Q':776,'R':720,'S':664,'T':608,'U':720,'V':664,'W':944,'X':664,'Y':664,'Z':608,'[':276,'\\':276,']':276,'^':468,'_':556,'`':332,'a':556,'b':556,'c':500,'d':556,'e':556,'f':276,'g':556,'h':556,'i':220,'j':220,'k':500,'l':220,'m':832,'n':556,'o':556,'p':556,'q':556,'r':332,'s':500,'t':276,'u':556,'v':500,'w':720,'x':500,'y':500,'z':500,'{':332,'|':260,'}':332,'~':584,'':500,'':748,'':748,'':748,'':748,'':748,'\n':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,'':748,' ':276,'¡':332,'¢':556,'£':556,'¤':556,'¥':556,'¦':260,'§':556,'¨':332,'©':736,'ª':368,'«':556,'¬':584,'­':0,'®':736,'¯':552,'°':400,'±':548,'²':332,'³':332,'´':332,'µ':576,'¶':536,'·':332,'¸':332,'¹':332,'º':364,'»':556,'¼':832,'½':832,'¾':832,'¿':608,'À':664,'Á':664,'Â':664,'Ã':664,'Ä':664,'Å':664,'Æ':1000,'Ç':720,'È':664,'É':664,'Ê':664,'Ë':664,'Ì':276,'Í':276,'Î':276,'Ï':276,'Ð':720,'Ñ':720,'Ò':776,'Ó':776,'Ô':776,'Õ':776,'Ö':776,'×':584,'Ø':776,'Ù':720,'Ú':720,'Û':720,'Ü':720,'Ý':664,'Þ':664,'ß':608,'à':556,'á':556,'â':556,'ã':556,'ä':556,'å':556,'æ':888,'ç':500,'è':556,'é':556,'ê':556,'ë':556,'ì':276,'í':276,'î':276,'ï':276,'ð':556,'ñ':556,'ò':556,'ó':556,'ô':556,'õ':556,'ö':556,'÷':548,'ø':608,'ù':556,'ú':556,'û':556,'ü':556,'ý':500,'þ':556,};
+	var letterLengthDict = letterLengthDictSanSarif;
+	var maxLetter = 1;
+	for (var o in letterLengthDict) {
+		if (letterLengthDict.hasOwnProperty(o)) {
+			maxLetter = Math.max(maxLetter, letterLengthDict[o]);
+		}
+	}
+	function getCharWidth(char) {
+		try {
+			return letterLengthDict[char];
+		} catch (e) {
+			console.warn("letterLen[" + char + "]:" + e);
+			return maxLetter;
+		}
+
+	}
+
+	function calcMWidth(str) {
+		var w = 0;
+		for (var i = 0; i < str.length; i++) {
+			w+=getCharWidth(str[i]);
+		}
+		return w / (letterLengthDict["M"]);
+	}
+	function calcNumChars(str, Ms) {
+		var w = 0;
+		var c = 0;
+		var mLen = letterLengthDict["M"] * Ms;
+		for (var i = 0; i < str.length; i++) {
+			var thisW = getCharWidth(str[i]);
+			if (w + thisW > mLen) {
+				return c;
+			}
+			c += 1;
+			w += thisW;
+		}
+		return c;
+	}
+
+	return {
+		restrict: 'A',
+		require: 'ngModel',
+		link: function (scope, element, attrs, ngModel) {
+
+			if (typeof (ngModel) !== "undefined") {
+				function shorten() {
+					var numMs= +(attrs.ttOverflow || 17);
+					console.log("inshort");
+					var mv = ngModel.$modelValue;
+					if (typeof (mv) === "string" && calcMWidth(mv) > numMs) {
+						var length = calcNumChars(mv, numMs);
+						mv = mv.substring(0, length) + "...";
+
+						console.log(" - shorten");
+					}
+					ngModel.$viewValue = mv;
+					ngModel.$render();
+
+					return mv;
+				}
+				ngModel.$formatters.push(shorten);
+
+
+				element.on('blur', function () {
+					return shorten();
+				});
+				element.on('focus', function () {
+					ngModel.$viewValue = ngModel.$modelValue;
+					ngModel.$render();
+				});
+			}
+		}
+	};
+});
+
+acapp.filter('ttOverflowTxt', function () {
+	return function (value, wordwise, max, tail) {
+		if (!value) return '';
+
+		max = parseInt(max, 10);
+		if (!max) return value;
+		if (value.length <= max) return value;
+
+		value = value.substr(0, max);
+		if (wordwise) {
+			var lastspace = value.lastIndexOf(' ');
+			if (lastspace !== -1) {
+				//Also remove . and , so its gives a cleaner result.
+				if (value.charAt(lastspace - 1) === '.' || value.charAt(lastspace - 1) === ',') {
+					lastspace = lastspace - 1;
+				}
+				value = value.substr(0, lastspace);
+			}
+		}
+
+		return value + (tail || ' …');
+	};
+});
 
 acapp.directive('rolegroups', function () {
 	var directive = {
@@ -192,13 +326,14 @@ acapp.directive('rolegroups', function () {
 		template: "<div class='role-groups'>" +
 						"<div ng-repeat='group in groups' class='role-group' ng-if='::group.Editable!=false || group.Roles.length>0' data-group='{{group.Id}}'>" +
 							"<div class='role-group-title'><span ng-if='!(groups.length==1 && group.AttachType==\"Position\")'>{{::group.AttachName}} Roles </span>" +
-								"<div ng-if='::group.Editable!=false' class='add-role-row' ng-class='{tinyRow:(groups.length==1 && group.AttachType==\"Position\")}' ng-click='newRoleButton(group)' style='opacity:0;'> <div class='circle'>+</div> </div>" +
+								"<div ng-if='::group.Editable!=false' class='add-role-row' ng-class='{tinyRow:(groups.length==1 && group.AttachType==\"Position\")}' ng-click='newRoleButton(group)' style='opacity:0;'> <div class='circle' title='Add Role'>+</div> </div>" +
 							"</div>" +
 							"<ul>" +
 								"<li ng-repeat='role in group.Roles'  class='role-row' >" +
-									"<input ng-model-options='{debounce:75}'  ng-focus='focusing()' ng-blur='blurring()'" + " ng-keydown='checkCreateRole($event,role,group,$index)'" + " title='{{role.Name}}' class='role' ng-if='::group.Editable!=false' ng-model=\"role.Name\" ng-change=\"updating(role)\">" +
-									"<div title='{{role.Name}}' class='role' ng-show='::group.Editable==false'>{{role.Name}}</div>" +
-									"<span ng-if='::group.Editable!=false' class='delete-role-row' ng-click=\"deleting(role)\" tabindex='-1'></span>" +
+									//"<tt-role tt-overflow='18'  ng-model='role'></tt-role>" +
+									"<input tt-overflow='18' ng-model-options='{debounce:75}'  ng-focus='focusing()' ng-blur='blurring()'" + " ng-keydown='checkCreateRole($event,role,group,$index)'" + " title='{{role.Name}}' class='role' ng-if='::group.Editable!=false' ng-model=\"role.Name\" ng-change=\"updating(role)\">" +
+									"<div title='{{role.Name}}' class='role' ng-show='::group.Editable==false'>{{role.Name | ttOverflowTxt:false:18 }}</div>" +
+									"<span ng-if='::group.Editable!=false' class='delete-role-row' ng-click=\"deleting(role)\" title='Delete Role' tabindex='-1'></span>" +
 								"</li>" +
 							"</ul>" +
 							"<div ng-if='group.Roles.length==0' class='gray no-roles-placeholder'>" +
@@ -349,7 +484,7 @@ acapp.directive('rolegroupsfallback', function () {
 							"<g>" +
 								"<g ng-repeat='role in group.Roles'  class='role-row' ng-init='rolesIndex=$index'>" +
 									"<text title='{{role.Name}}' class='role' transform='translate(0,{{($index*16)}})'>{{role.Name}}</text>" +
-									"<text ng-if='::group.Editable!=false' transform='translate(-20,{{($index*16)}})' class='delete-role-row' ng-click=\"deleting(role)\" tabindex='-1'>x</text>" +
+									"<text ng-if='::group.Editable!=false' transform='translate(-20,{{($index*16)}})' class='delete-role-row' ng-click=\"deleting(role)\" title='Delete Role' tabindex='-1'>x</text>" +
 								"</g>" +
 							"</g>" +
 							"<g ng-if='group.Roles.length==0' class='gray no-roles-placeholder'>" +
@@ -383,7 +518,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 					}
 					if ($scope.disconnected) {
 						clearAlerts();
-						showAlert("Reconnected.", "alert-success", "Success",1000);
+						showAlert("Reconnected.", "alert-success", "Success", 1000);
 					}
 					$scope.disconnected = false;
 				});
@@ -784,6 +919,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 
 		var posAutoComplete = position.append("md-autocomplete")
 			.attr("placeholder", "Function")
+			.attr("tt-md-overflow", "14")
 			.attr("md-input-name", function (d) {
 				return "searchPosName_" + d.Id;
 			}).attr("ng-disabled", function (d) {
@@ -815,6 +951,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 
 		var owner = contents.append("xhtml:div").classed("acc-owner", true);
 		var autoComplete = owner.append("md-autocomplete")
+			.attr("tt-md-overflow","14")
 			.attr("md-blur", function (d) {
 				return "clearIfNull(model.Lookup['AngularAccountabilityNode_" + d.Id + "'].User,\"search.searchText_" + d.Id + "\",\"model.Lookup['AngularAccountabilityNode_" + d.Id + "']\")";
 			}).attr("md-selected-item", function (d) {
@@ -918,7 +1055,8 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 					expandNode(d);
 			});
 		minimizeNodeBtn.append("circle").attr("r", 10).attr("title", "Collapse node").on("click", expandNode);
-		minimizeNodeBtn.append("text").classed("glyphicon", true).attr("title", "Remove node").on("click", expandNode);
+		minimizeNodeBtn.append("title").text("Hide Direct Reports");
+		minimizeNodeBtn.append("text").classed("glyphicon", true).attr("title", "Hide Direct Reports").on("click", expandNode);
 
 		var addNodeBtn = nodeEnter.append("g").classed("button add node-button", true).attr("tabindex", 0).style("opacity", 0)
 			.on("click", clickAddNode)
@@ -927,6 +1065,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 					clickAddNode(d);
 			});
 		addNodeBtn.append("circle").attr("r", 10).attr("title", "Add direct report").on("click", clickAddNode);
+		addNodeBtn.append("title").text("Add direct report");
 		addNodeBtn.append("text").text("+").attr("title", "Add direct report").on("click", clickAddNode);
 
 
@@ -935,6 +1074,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 				clickRemoveNode(d);
 		});
 		deleteNodeBtn.append("circle").attr("r", 10).attr("title", "Remove node").on("click", clickRemoveNode);
+		deleteNodeBtn.append("title").text("Remove from Accountability Chart");
 		deleteNodeBtn.append("text").classed("glyphicon glyphicon-trash", true).attr("title", "Remove node").text("").on("click", clickRemoveNode);
 
 
@@ -967,8 +1107,8 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 			return d.Name;
 		});
 		buttonsTop.append("rect").classed("move-icon", function (d) {
-				return d.Editable != false;
-			});
+			return d.Editable != false;
+		});
 		////
 
 		var contents = node.append("g").classed("acc-contents", true);
@@ -1088,7 +1228,9 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 				if (d3.event.keyCode == 13 || d3.event.keyCode == 32)
 					clickAddNode(d);
 			});
-		addNodeBtn.append("circle").classed("acc-fallback-ignore", true).attr("r", 10).attr("title", "Add direct report").on("click", clickAddNode);
+		var ci = addNodeBtn.append("circle").classed("acc-fallback-ignore", true).attr("r", 10).attr("title", "Add direct report").on("click", clickAddNode);
+		debugger;
+		addNodeBtn.append("title").text("Add direct report");
 		addNodeBtn.append("text").attr("transform", "translate(-4.5,4.5)").classed("acc-fallback-ignore", true).text("+").attr("title", "Add direct report").on("click", clickAddNode);
 
 		var deleteNodeBtn = nodeEnter.append("g").classed("button remove node-button acc-fallback-ignore", true).attr("tabindex", 0).style("opacity", 1).on("click", clickRemoveNode).on("keyup", function (d) {

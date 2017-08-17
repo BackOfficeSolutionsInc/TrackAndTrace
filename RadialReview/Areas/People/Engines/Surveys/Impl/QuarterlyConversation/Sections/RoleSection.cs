@@ -17,6 +17,9 @@ using RadialReview.Models.Enums;
 
 namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.Sections {
 	public class RoleSection : ISectionInitializer {
+
+		public static String RoleCommentHeading = "Role Comments";
+
 		public IEnumerable<IItemInitializer> GetAllPossibleItemBuilders(IEnumerable<IByAbout> byAbouts) {
 #pragma warning disable CS0618 // Type or member is obsolete
 			yield return new RoleListItem();
@@ -27,14 +30,18 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		public IEnumerable<IItemInitializer> GetItemBuilders(IItemInitializerData data) {
 			//only ask if they are not our manager
 			if (data.SurveyContainer.GetSurveyType() == SurveyType.QuarterlyConversation && data.About.Is<SurveyUserNode>()) {
-				if ((data.About as SurveyUserNode)._Relationship[data.By.ToKey()] == AboutType.Manager) {
+
+				if (data.SurveyContainer.GetCreator().ToKey() == ((SurveyUserNode)data.About).User.ToKey())
 					return new List<IItemInitializer>();
-				}
+
+				if ((data.About as SurveyUserNode)._Relationship[data.By.ToKey()] == AboutType.Manager) 
+					return new List<IItemInitializer>();
+				
 			}
 
 			var modelType = data.Survey.GetAbout().ModelType;
 
-			var genComments = new TextAreaItemIntializer("Role Comments", SurveyQuestionIdentifier.GeneralComment);
+			var genComments = new TextAreaItemIntializer(RoleCommentHeading, SurveyQuestionIdentifier.GeneralComment);
 
 			if (modelType == ForModel.GetModelType<UserOrganizationModel>()) {
 				var query = data.Lookup.Get<RoleLinksQuery>("RoleQuery");

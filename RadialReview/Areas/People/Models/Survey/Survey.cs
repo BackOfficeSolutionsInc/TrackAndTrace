@@ -28,6 +28,7 @@ namespace RadialReview.Areas.People.Models.Survey {
 
         public virtual ICollection<ISection> _Sections { get; set; }
 		public virtual DateTime DueDate { get; set; }
+		public virtual bool LockedIn { get; set; }
 
 		[Obsolete("Use other constructor")]
         public Survey() {
@@ -99,6 +100,7 @@ namespace RadialReview.Areas.People.Models.Survey {
                 Map(x => x.Ordering);
 				Map(x => x.SurveyContainerId);
 				Map(x => x.DueDate);
+				Map(x => x.LockedIn);
 				Map(x => x.SurveyType);
 				Map(x => x.OrgId);
                 Component(x => x.By).ColumnPrefix("By_");

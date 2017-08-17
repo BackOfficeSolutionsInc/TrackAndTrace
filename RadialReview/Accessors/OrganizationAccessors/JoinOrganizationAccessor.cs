@@ -319,7 +319,10 @@ namespace RadialReview.Accessors {
 
 				using (var tx = db.BeginTransaction()) {
 					//Attach 
-					caller = db.Get<UserOrganizationModel>(caller.Id);
+					if (caller.Id != UserOrganizationModel.ADMIN_ID) {
+						caller = db.Get<UserOrganizationModel>(caller.Id);
+					}
+
 					var nexus = new NexusModel(nexusId) {
 						ActionCode = NexusActions.JoinOrganizationUnderManager,
 						ByUserId = caller.Id,
@@ -332,7 +335,9 @@ namespace RadialReview.Accessors {
 					//var newUser=db.Get<UserOrganizationModel>(newUserId);
 					//manager.ManagingUsers.Add(newUser);
 					//caller.CreatedNexuses.Add(nexus);
-					db.SaveOrUpdate(caller);
+					if (caller.Id != UserOrganizationModel.ADMIN_ID) {
+						db.SaveOrUpdate(caller);
+					}
 
 					tx.Commit();
 					db.Flush();

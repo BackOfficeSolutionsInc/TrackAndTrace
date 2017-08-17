@@ -17,7 +17,6 @@
 }
 .people.quarterly-conversation survey-container {
   display: inline-block;
-  padding-bottom: 40px;
   margin-top: 30px;
   font-size: 14px;
 }
@@ -31,21 +30,22 @@
 }
 .people.quarterly-conversation survey-container .current-section .decoration {
   position: fixed;
-  top: 45px;
+  /*top: 45px;*/
+  top: 54px;
   left: 0px;
-  background-color: #3E3935;
+  background-color: #EF7622;
   width: 100%;
-  z-index: 1000;
+  z-index: 999;
   height: 16px;
 }
 .people.quarterly-conversation survey-container .current-section .title {
   color: #fff;
-  text-transform: uppercase;
   background-color: #EF7622;
   font-weight: 900;
   position: fixed;
-  top: 45px;
-  z-index: 10000;
+  /*top: 45px;*/
+  top: 54px;
+  z-index: 1000;
   display: block;
   font-family: 'Lato', sans-serif;
   font-size: 12px;
@@ -56,6 +56,9 @@
   padding-right: 15px;
   margin-left: 1px;
   border-radius: 3px;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 0.8px;
 }
 .people.quarterly-conversation survey-container .current-section .title:empty {
   display: none;
@@ -91,6 +94,7 @@
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
   border-color: transparent;
   border-color: #3E3935;
+  margin-bottom: 70px;
 }
 .people.quarterly-conversation survey-container .survey > .list-group,
 .people.quarterly-conversation survey-container .survey > .panel-collapse > .list-group {
@@ -285,6 +289,8 @@
   padding: 10px 15px;
   background-color: #3E3935;
   font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 0.8px;
 }
 .people.quarterly-conversation survey-container .survey > .title + .panel-collapse > .panel-body {
   border-top-color: transparent;
@@ -355,6 +361,7 @@
 }
 .people.quarterly-conversation survey-container .survey .sections .section survey-item-container .item-row .responses {
   padding-bottom: 10px;
+  padding-top: 8px;
 }
 .people.quarterly-conversation survey-container .survey .sections .section survey-item-container.item-container-Radio .item-row .item {
   position: relative;
@@ -467,7 +474,7 @@
 }
 .people.quarterly-conversation survey-container .survey .sections .section-LeadershipAssessment survey-item-container .item-row .item .help,
 .people.quarterly-conversation survey-container .survey .sections .section-ManagementAssessment survey-item-container .item-row .item .help {
-  white-space: pre;
+  white-space: pre-line;
   padding-bottom: 15px;
 }
 @media (max-width: 992px) {

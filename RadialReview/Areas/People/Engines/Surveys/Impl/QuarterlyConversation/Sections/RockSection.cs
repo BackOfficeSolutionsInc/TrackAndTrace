@@ -15,7 +15,10 @@ using RadialReview.Models.Enums;
 namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.Sections {
 
     public class RockSection : ISectionInitializer {
-        //private IEnumerable<RockModel> rockLookup = new List<RockModel>();
+		//private IEnumerable<RockModel> rockLookup = new List<RockModel>();
+		public static String RockCommentHeading = "Rock Quality/Comments";
+
+
 
         public RockSection() {
         }
@@ -47,7 +50,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		}
 
         public ISection InitializeSection(ISectionInitializerData data) {
-            return new SurveySection(data, "Rocks", SurveySectionType.Rocks, "mk-rocks");
+			return new SurveySection(data, "Rocks", SurveySectionType.Rocks, "mk-rocks");
         }
 
 		private List<IItemInitializer> GetRocksForAccountabilityNode(IItemInitializerData data,AccountabilityNode about) {
@@ -69,9 +72,13 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		public IEnumerable<IItemInitializer> GetItemBuilders(IItemInitializerData data) {
 			//only ask if they are not our manager
 			if (data.SurveyContainer.GetSurveyType() == SurveyType.QuarterlyConversation && data.About.Is<SurveyUserNode>()) {
-				if ((data.About as SurveyUserNode)._Relationship[data.By.ToKey()] == AboutType.Manager) {
+
+				if (data.SurveyContainer.GetCreator().ToKey() == ((SurveyUserNode)data.About).User.ToKey())
 					return new List<IItemInitializer>();
-				}
+
+				if ((data.About as SurveyUserNode)._Relationship[data.By.ToKey()] == AboutType.Manager) 
+					return new List<IItemInitializer>();
+				
 			}
 
 			var items = new List<IItemInitializer>();
@@ -88,7 +95,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 			}
 			if (!items.Any())
 				items.Add(new TextItemIntializer("No rocks.",true));
-			items.Add(new TextAreaItemIntializer("Rock Comments",SurveyQuestionIdentifier.GeneralComment));
+			items.Add(new TextAreaItemIntializer(RockCommentHeading, SurveyQuestionIdentifier.GeneralComment));
 			return items;
         }
     }

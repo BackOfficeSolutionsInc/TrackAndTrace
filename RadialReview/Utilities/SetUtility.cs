@@ -25,10 +25,18 @@ namespace RadialReview
         public static void AssertEqual<T>(IEnumerable<T> expected, IEnumerable<T> found) {
             var res = AddRemove(found, expected);
             if (res.AddedValues.Any()) {
+				foreach (var i in res.AddedValues) {
+					Console.WriteLine(i.ToString());
+				}
+
                 throw new Exception("Found " + res.AddedValues.Count() + " additional items.");
             }
             if (res.RemovedValues.Any()) {
-                throw new Exception("Expected " + res.RemovedValues.Count() + " additional items.");
+
+				foreach (var i in res.RemovedValues) {
+					Console.WriteLine(i.ToString());
+				}
+				throw new Exception("Expected " + res.RemovedValues.Count() + " additional items.");
             }
         }
 

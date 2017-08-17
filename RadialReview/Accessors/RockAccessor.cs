@@ -555,7 +555,7 @@ namespace RadialReview.Accessors {
 
 
 					var rocksQ = s.QueryOver<RockModel>()
-						.Where(x => x.DeleteTime == null && x.OrganizationId == organizationId);
+						.Where(x => (x.DeleteTime == null || x.Archived) && x.OrganizationId == organizationId);
 					//if (!caller.ManagingOrganization && !caller.IsRadialAdmin){
 					//    var subs = DeepAccessor.Users.GetSubordinatesAndSelf(s, caller, caller.Id);
 					//    rocksQ= rocksQ.WhereRestrictionOn(x=>x.ForUserId).IsIn(subs);
@@ -571,6 +571,7 @@ namespace RadialReview.Accessors {
 						csv.Add(r.Rock, "Status", "" + r.Completion);
 						csv.Add(r.Rock, "CreateTime", "" + r.CreateTime);
 						csv.Add(r.Rock, "CompleteTime", "" + r.CompleteTime);
+						csv.Add(r.Rock, "Archived", "" + r.Archived);
 					}
 					return csv;
 				}

@@ -13,38 +13,60 @@
 	</div>
 }
 
+
 <div ng-app="people" class="people quarterly-conversation ng-cloak">
+	<div class="gray instructions">Your answers are saved automatically.</div>
 	<survey-container survey-container-id="@Model"></survey-container>
+	@using (Html.BeginForm("lockin", "QuarterlyConversation")) {
+		<input type="hidden" name="id" value="@Model" />
+		<button class="btn btn-primary" type="submit">Lock in my answers</button>
+	}
 </div>
+
+
+
 
 @using (Html.BeginStyles()) {
 	@Styles.Render("~/styles/people")
 
-<style>
-	.jumbotron {
-		z-index: 4;
-		position: relative;
-	}
-
-		.jumbotron h1 {
-			font-size: 55px;
-			margin-top: -8px;
-			
+	<style>
+		.instructions {
+			margin-top: -30px;
+			font-style: italic;
+			z-index: 100;
+			position: relative;
+			color: rgba(255,255,255,.6);
 		}
 
-	@@media (max-width:768px) {
-		.jumbotron h1 {
-			font-size: 6vw;
-			margin-top: calc(57.5px - 6vw);
+		.jumbotron {
+			z-index: 4;
+			position: relative;
+			z-index: 1002;
+			position: relative;
 		}
-	}
-	/*@@media (min-width:768px) {
-		.jumbotron h1 {
-			font-size: 4vw;
-			margin-top: calc(57.5px - 6vw);
+
+			.jumbotron h1 {
+				/*font-size: 55px;
+				margin-top: -8px;*/
+			}
+
+		@@media (max-width:1000px) {
+			.jumbotron {
+				padding-top: 30px;
+			}
+
+				.jumbotron h1 {
+					font-size: 6vw;
+					margin-top: calc(57.5px - 6vw);
+				}
 		}
-	}*/
-</style>
+		/*@@media (min-width:768px) {
+			.jumbotron h1 {
+				font-size: 4vw;
+				margin-top: calc(57.5px - 6vw);
+			}
+		}*/
+	</style>
 }
 @using (Html.BeginScripts()) {
 	@Scripts.Render("~/bundles/people")

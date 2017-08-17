@@ -81,12 +81,16 @@ var DataTable = function (settings) {
 
 	//Helpers
 	var resolve = function (strFunc, args) {
-		if (typeof (strFunc) === "string")
-			return strFunc;
-		else if (typeof (strFunc) === "function")
-			return strFunc.apply(settings, [].splice.call(arguments, 1));
-		else if (typeof (strFunc) === "boolean")
-			return strFunc;
+		try {
+			if (typeof (strFunc) === "string")
+				return strFunc;
+			else if (typeof (strFunc) === "function")
+				return strFunc.apply(settings, [].splice.call(arguments, 1));
+			else if (typeof (strFunc) === "boolean")
+				return strFunc;
+		} catch (e) {
+			console.warn("resolve error: " + e);
+		}
 		return null;
 	}
 

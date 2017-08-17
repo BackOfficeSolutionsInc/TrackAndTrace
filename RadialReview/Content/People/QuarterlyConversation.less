@@ -31,7 +31,7 @@
 
 	survey-container {
 		display: inline-block;
-		padding-bottom: 40px;
+		//padding-bottom: 40px;
 		margin-top: 30px;
 		font-size: 14px;
 
@@ -46,22 +46,22 @@
 		.current-section {
 			.decoration {
 				position: fixed;
-				top: 45px;
+				/*top: 45px;*/ top: 54px;
 				left: 0px;
-				background-color: @traction-black;
+				background-color: @traction-orange;
 				width: 100%;
-				z-index: 1000;
+				z-index: 999;
 				height: 16px;
 			}
 
 			.title {
 				color: #fff;
-				text-transform: uppercase;
+				//text-transform: uppercase;
 				background-color: @traction-orange;
 				font-weight: 900;
 				position: fixed;
-				top: 45px;
-				z-index: 10000;
+				/*top: 45px;*/ top: 54px;
+				z-index: 1000;
 				display: block;
 				font-family: 'Lato', sans-serif;
 				font-size: 12px;
@@ -72,6 +72,10 @@
 				padding-right: 15px;
 				margin-left: 1px;
 				border-radius: 3px;
+				//added
+				font-size: 14px;
+				font-weight: bold;
+				letter-spacing: 0.8px;
 
 				&:empty {
 					display: none;
@@ -96,7 +100,6 @@
 					padding-left: 0px;
 					padding-left: 53px;
 					padding-right: 188px;
-					
 				}
 			}
 		}
@@ -106,12 +109,15 @@
 			.panel();
 			.panel-primary();
 			border-color: @traction-black;
+			margin-bottom: 70px;
 
 			& > .title {
 				.panel-heading();
 				padding: @panel-heading-padding;
 				background-color: @traction-black;
 				font-size: 14px;
+				font-weight: bold;
+				letter-spacing: 0.8px;
 			}
 
 			.sections {
@@ -183,6 +189,7 @@
 
 							.responses {
 								padding-bottom: 10px;
+								padding-top: 8px;
 							}
 						}
 
@@ -297,7 +304,7 @@
 								}
 
 								.help {
-									white-space: pre;
+									white-space: pre-line;
 									padding-bottom: 15px;
 
 									@media (max-width: 992px) {

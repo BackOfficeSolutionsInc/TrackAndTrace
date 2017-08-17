@@ -90,6 +90,14 @@
 
         </div>
     </div>
+
+	@if (Model.Recurrence.ForumCode != null) {
+	<div class="component">
+
+		<h4>Text <b>@Model.Recurrence.ForumCode.ToUpper()</b> to <nobr>@RadialReview.Utilities.Config.TextInNumber().ToPhoneNumber()</nobr> to participate</h4>
+
+	</div>
+	}
 </div>
 <script>
     function showVideo(self) {

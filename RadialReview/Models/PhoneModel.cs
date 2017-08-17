@@ -38,17 +38,20 @@ namespace RadialReview.Models
 			}
 		}
 	}
-
+	public enum TextType {
+		Standard = 0,
+		Forum = 1,
+	}
 	public class PhoneTextModel : ILongIdentifiable
 	{
 		public virtual long Id { get; set; }
 		public virtual DateTime Date { get; set; }
 		public virtual String Message { get; set; }
 		public virtual long FromNumber { get; set; }
+		public virtual TextType TextType { get; set; }
 		public virtual UserOrganizationModel FromUser { get; set; }
 
-		public PhoneTextModel()
-		{
+		public PhoneTextModel(){
 			Date = DateTime.UtcNow;
 		}
 
@@ -60,8 +63,45 @@ namespace RadialReview.Models
 				Map(x => x.Date);
 				Map(x => x.Message);
 				Map(x => x.FromNumber);
+				Map(x => x.TextType);
 				References(x => x.FromUser).Nullable().ReadOnly();
 			}
+		}
+	}
+
+	public class ExternalUserPhone : ILongIdentifiable, IHistorical {
+		public virtual long Id { get; set; }
+		public virtual string LookupGuid { get; set; }
+		public virtual DateTime CreateTime { get; set; }
+		public virtual DateTime? DeleteTime { get; set; }
+		public virtual ForModel ForModel { get; set; }
+		public virtual string Name { get; set; }
+		public virtual string UserNumber { get; set; }
+		public virtual string SystemNumber { get; set; }
+		public virtual string Step { get; set; }
+		public virtual long UserId { get; set; }
+
+
+		public ExternalUserPhone() {
+			CreateTime = DateTime.UtcNow;
+			LookupGuid = Guid.NewGuid().ToString().Replace("-", "").Substring(0,10).ToUpper();
+			
+		}
+
+		public class Map : ClassMap<ExternalUserPhone> {
+			public Map() {
+				Id(x => x.Id);
+				Map(x => x.CreateTime);
+				Map(x => x.DeleteTime);
+				Component(x => x.ForModel);
+				Map(x => x.Step);
+				Map(x => x.LookupGuid);
+				Map(x => x.Name);
+				Map(x => x.UserId);
+				Map(x => x.UserNumber);
+				Map(x => x.SystemNumber);
+			}
+
 		}
 	}
 
