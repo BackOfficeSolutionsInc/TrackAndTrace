@@ -22,6 +22,16 @@ namespace AmazonSDK
         public virtual string Status { get; set; }
     }
 
+    public class TokenModel
+    {
+        public string access_token { get; set; }
+        public string token_type { get; set; }
+        public string issued { get; set; }
+        public string expires { get; set; }
+        public string error_description { get; set; }
+        public string error { get; set; }
+    }
+
     public enum MessageQueueStatus
     {
         Start,

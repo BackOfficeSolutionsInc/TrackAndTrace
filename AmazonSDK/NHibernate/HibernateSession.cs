@@ -44,8 +44,13 @@ namespace AmazonSDK.NHibernate
         private static object lck = new object();
         public static ISession Session { get; set; }
 
-        public static ISessionFactory GetDatabaseSessionFactory()
+        public static ISessionFactory GetDatabaseSessionFactory(string connectionNameExt = "")
         {
+            if (connectionNameExt != "")
+            {
+                factory = null;
+            }
+
             lock (lck)
             {
                 if (factory == null)
@@ -95,11 +100,18 @@ namespace AmazonSDK.NHibernate
                                     c.SetInterceptor(new NHSQLInterceptor());
                                     //SetupAudit(c);
                                     factory = Fluently.Configure(c).Database(
-                                                MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionLocalMysql"].ConnectionString).ShowSql())
+                                                MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionLocalMysql"+ connectionNameExt].ConnectionString).ShowSql())
                                        .Mappings(m =>
                                        {
-                                           m.FluentMappings.AddFromAssemblyOf<MessageQueueMap>()
-                                               .Conventions.Add<StringColumnLengthConvention>();
+                                           if (string.IsNullOrEmpty(connectionNameExt))
+                                           {
+                                               m.FluentMappings.AddFromAssemblyOf<MessageQueueMap>().Conventions.Add<StringColumnLengthConvention>();
+                                           }
+                                           else
+                                           {
+                                               m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+                                          .Conventions.Add<StringColumnLengthConvention>();
+                                           }
                                            //  m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
                                            ////m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
                                            ////m.AutoMappings.Add(CreateAutomappings);
@@ -125,7 +137,7 @@ namespace AmazonSDK.NHibernate
                                 var c = new Configuration();
                                 //SetupAudit(c);
                                 factory = Fluently.Configure(c).Database(
-                                            MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionProduction"].ConnectionString).ShowSql())
+                                            MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionProduction" + connectionNameExt].ConnectionString).ShowSql())
                                    .Mappings(m =>
                                    {
                                        m.FluentMappings.AddFromAssemblyOf<MessageQueueMap>()
@@ -247,9 +259,9 @@ namespace AmazonSDK.NHibernate
 
 
 
-        public static ISession GetCurrentSession(bool singleSession = true)
+        public static ISession GetCurrentSession(bool singleSession = true, string connectionName = "")
         {
-            return new SingleRequestSession(GetDatabaseSessionFactory().OpenSession(), true);
+            return new SingleRequestSession(GetDatabaseSessionFactory(connectionName).OpenSession(), true);
         }
         /*
         private static AutoPersistenceModel CreateAutomappings()
@@ -310,7 +322,7 @@ namespace AmazonSDK.NHibernate
             //if (Config.ShouldUpdateDB()) {
             var su = new SchemaUpdate(config);
             su.Execute(updates.Add, true);
-             // Config.DbUpdateSuccessful();
+            // Config.DbUpdateSuccessful();
             // }
             //Microsoft.VisualStudio.Profiler.DataCollection.MarkProfile(3);
 
