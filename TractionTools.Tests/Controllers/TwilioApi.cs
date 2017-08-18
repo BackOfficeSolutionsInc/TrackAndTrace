@@ -45,13 +45,13 @@ namespace TractionTools.Tests.Controllers {
 			//Send Code.
 			{
 				var res = await twilio.ReceiveForum_C4C187FFD1544290A05CB860EED6F2B0(from, "  ", to);
-				Assert.AreEqual(PhoneContent("Please send enter your meeting code"), res.Content);
+				Assert.AreEqual(PhoneContent("Please send your meeting code."), res.Content);
 
 				res = await twilio.ReceiveForum_C4C187FFD1544290A05CB860EED6F2B0(from, "ASDF", to);
-				Assert.AreEqual(PhoneContent("Meeting code was unrecognized. Please try again."), res.Content);
+				Assert.AreEqual(PhoneContent("Please send your meeting code."), res.Content);
 
 				res = await twilio.ReceiveForum_C4C187FFD1544290A05CB860EED6F2B0(from, "ABC", to);
-				Assert.AreEqual(PhoneContent("Welcome to " + forumName + "! Please send your name."), res.Content);
+				Assert.AreEqual(PhoneContent("Welcome to the " + forumName + "! Please send your name."), res.Content);
 			}
 			//Add Name
 			{
@@ -59,7 +59,7 @@ namespace TractionTools.Tests.Controllers {
 				Assert.AreEqual(PhoneContent("Sorry I didn't get that. Please text your name."), res.Content);
 
 				res = await twilio.ReceiveForum_C4C187FFD1544290A05CB860EED6F2B0(from, "FirstN Middle Last", to);
-				Assert.AreEqual(PhoneContent("Hi Firstn, what issues do you want to add? Try and keep them to 3 words. One issue per text."), res.Content);
+				Assert.AreEqual(PhoneContent("Hi Firstn, what issues do you want to add? Try and keep them to 3 words.\nOne issue per text."), res.Content);
 			}
 			//Add Issues
 			{

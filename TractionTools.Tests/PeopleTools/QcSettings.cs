@@ -74,6 +74,7 @@ namespace TractionTools.Tests.PeopleTools {
 
 
 		[TestMethod]
+		[TestCategory("Survey")]
 		public async Task ManagerIssues_SelfOn_ManagerOn() {
 			var org = await CreateOrg();
 
@@ -88,11 +89,19 @@ namespace TractionTools.Tests.PeopleTools {
 					"Rock Quality/Comments","Role Comments", "Value Comments",
 					"Gets it", "Wants it","Capacity to do it",
 					"Comments",
-					"They are rewarding and recognizing",
-					"They are having quarterly conversations",
-					"We have the right meeting pulse","They are communicating well","They are providing the necessary tools",
-					"They are giving clear direction","They are letting go of the vine","They are taking Clarity Breaks™",
-					"They act with the greater good in mind","They keep expectations clear"
+					//"They are rewarding and recognizing",
+					//"They are having quarterly conversations",
+					//"We have the right meeting pulse","They are communicating well","They are providing the necessary tools",
+					//"They are giving clear direction","They are letting go of the vine","They are taking Clarity Breaks™",
+					//"They act with the greater good in mind","They keep expectations clear",
+
+					"I am giving clear direction","I am providing the necessary tools","I am letting go of the vine",
+					"I act with the greater good in mind","I am taking Clarity Breaks™","I keep expectations clear",
+					"I am communicating well","I have the right meeting pulse","I am having quarterly conversations",
+					"I am rewarding and recognizing"
+
+
+
 				};
 
 				var managerQC = SurveyAccessor.GetAngularSurveyContainerBy(org.Manager, org.Manager, id);
@@ -111,7 +120,12 @@ namespace TractionTools.Tests.PeopleTools {
 					"They are having quarterly conversations",
 					"We have the right meeting pulse","They are communicating well","They are providing the necessary tools",
 					"They are giving clear direction","They are letting go of the vine","They are taking Clarity Breaks™",
-					"They act with the greater good in mind","They keep expectations clear"
+					"They act with the greater good in mind","They keep expectations clear",
+
+					//"I am giving clear direction","I am providing the necessary tools","I am letting go of the vine",
+					//"I act with the greater good in mind","I am taking Clarity Breaks™","I keep expectations clear",
+					//"I am communicating well","I have the right meeting pulse","I am having quarterly conversations",
+					//"I am rewarding and recognizing"
 				};
 
 				var employeeQC = SurveyAccessor.GetAngularSurveyContainerBy(org.Employee, org.Employee, id);
@@ -120,6 +134,7 @@ namespace TractionTools.Tests.PeopleTools {
 			}
 		}
 		[TestMethod]
+		[TestCategory("Survey")]
 		public async Task ManagerIssues_SelfOn_ManagerOff() {
 
 			var org = await CreateOrg();
@@ -135,11 +150,16 @@ namespace TractionTools.Tests.PeopleTools {
 					"Rock Quality/Comments","Role Comments", "Value Comments",
 					"Gets it", "Wants it","Capacity to do it",
 					"Comments",
-					"They are rewarding and recognizing",
-					"They are having quarterly conversations",
-					"We have the right meeting pulse","They are communicating well","They are providing the necessary tools",
-					"They are giving clear direction","They are letting go of the vine","They are taking Clarity Breaks™",
-					"They act with the greater good in mind","They keep expectations clear"
+
+					"I am giving clear direction","I am providing the necessary tools","I am letting go of the vine",
+					"I act with the greater good in mind","I am taking Clarity Breaks™","I keep expectations clear",
+					"I am communicating well","I have the right meeting pulse","I am having quarterly conversations",
+					"I am rewarding and recognizing"
+					//"They are rewarding and recognizing",
+					//"They are having quarterly conversations",
+					//"We have the right meeting pulse","They are communicating well","They are providing the necessary tools",
+					//"They are giving clear direction","They are letting go of the vine","They are taking Clarity Breaks™",
+					//"They act with the greater good in mind","They keep expectations clear"
 				};
 
 				var managerQC = SurveyAccessor.GetAngularSurveyContainerBy(org.Manager, org.Manager, id);
@@ -166,10 +186,8 @@ namespace TractionTools.Tests.PeopleTools {
 				SetUtility.AssertEqual(employeeQuestions, expectedEmployeeQ);
 			}
 		}
-
-
-
 		[TestMethod]
+		[TestCategory("Survey")]
 		public async Task ManagerIssues_SelfOff_ManagerOff() {
 
 			var org = await CreateOrg();
@@ -197,5 +215,26 @@ namespace TractionTools.Tests.PeopleTools {
 			});
 
 		}
+
+		[TestMethod]
+		[TestCategory("Survey")]
+		public async Task GuessRocks() {
+			var l = new DateTime(2017, 3, 1);
+			var n = new DateTime(2017, 6, 1);
+
+			var dates = new[] {
+				l.AddDays(3), l.AddDays(4), l.AddDays(2), l.AddDays(6), l.AddDays(4),
+				n.AddDays(3), n.AddDays(4), n.AddDays(2), n.AddDays(6), n.AddDays(4),
+			};
+
+			DbCommit(s => {
+
+			});
+			
+
+			
+
+		}
+
 	}
 }

@@ -11,10 +11,65 @@ using RadialReview.Exceptions;
 using RadialReview.Models.Todo;
 using System.Collections.Generic;
 using RadialReview.Models;
+using NHibernate;
 
 namespace TractionTools.Tests.Permissions {
 	[TestClass]
 	public class UserPermissions : BasePermissionsTest {
+
+		[TestMethod]
+		[TestCategory("Permissions")]
+		public void UserDeleted() {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var user = new UserOrganizationModel();
+					s.Save(user);
+					PermissionsUtility.Create(s, user);
+
+				}
+			}
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+
+					var user = new UserOrganizationModel();
+					user.DeleteTime = DateTime.MinValue;
+					s.Save(user);
+					Throws<PermissionsException>(() => PermissionsUtility.Create(s, user));
+
+				}
+			}
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+
+					var user = new UserOrganizationModel();
+					user.DeleteTime = DateTime.MaxValue;
+					s.Save(user);
+					PermissionsUtility.Create(s, user);
+				}
+			}
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+
+					var user = new UserOrganizationModel();
+					user.DeleteTime = DateTime.UtcNow.AddSeconds(2);
+					s.Save(user);
+					PermissionsUtility.Create(s, user);
+				}
+			}
+
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var user = new UserOrganizationModel();
+					user.DeleteTime = DateTime.UtcNow.AddSeconds(-2);
+					s.Save(user);
+					Throws<PermissionsException>(() => PermissionsUtility.Create(s, user));
+
+
+				}
+			}
+
+		}
+
 		[TestMethod]
 		[TestCategory("Permissions")]
 		public async Task EditUserModel() {

@@ -87,7 +87,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 
 		public IEnumerable<IItemInitializer> GetItemBuilders(IItemInitializerData data) {
 			//Not reviewing our manager
-			if (data.SurveyContainer.GetSurveyType()==SurveyType.QuarterlyConversation && data.About.Is<SurveyUserNode>()) {
+			if (data.SurveyContainer.GetSurveyType() == SurveyType.QuarterlyConversation && data.About.Is<SurveyUserNode>()) {
 				if (!(data.About as SurveyUserNode)._Relationship[data.By.ToKey()].HasFlag(AboutType.Manager)) {
 					return new List<IItemInitializer>();
 				}
@@ -96,7 +96,8 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 			if (SelfAssessment) {
 				throw new NotImplementedException();
 			} else {
-				if ((data.About as SurveyUserNode)._Relationship[data.By.ToKey()].HasFlag(AboutType.Self))
+				var sun = (data.About as SurveyUserNode);
+				if (sun != null && sun._Relationship != null && sun._Relationship[data.By.ToKey()].HasFlag(AboutType.Self))
 					return GetItemBuildersSupervisorSelfAssessment(data);
 				return GetItemBuildersSupervisorAssessment(data);
 			}

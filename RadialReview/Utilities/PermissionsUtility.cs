@@ -116,6 +116,10 @@ namespace RadialReview.Utilities {
 				attached = session.Load<UserOrganizationModel>(caller.Id);
 				attached._ClientTimestamp = caller._ClientTimestamp;               
             }
+			if (caller.DeleteTime != null && caller.DeleteTime < DateTime.UtcNow) {
+				throw new PermissionsException("User has been deleted");
+			}
+
 			return new PermissionsUtility(session, attached);
 		}
 
