@@ -16,8 +16,10 @@ namespace AmazonSDK
 
     public class MessageQueue
     {
-        public virtual int Id { get; set; }
+        public virtual long Id { get; set; }
         public virtual string IdentifierId { get; set; }
+        public virtual long? UserOrgId { get; set; } // orgId from radial
+        public virtual string UserName { get; set; }  // user name from radial
         public virtual string ReceiptHandle { get; set; }
         public virtual string Status { get; set; }
     }
@@ -43,6 +45,8 @@ namespace AmazonSDK
         {
             Id(x => x.Id);
             Map(x => x.IdentifierId).Length(256);
+            Map(x => x.UserOrgId);
+            Map(x => x.UserName);
             Map(x => x.ReceiptHandle);
             Map(x => x.Status);
         }

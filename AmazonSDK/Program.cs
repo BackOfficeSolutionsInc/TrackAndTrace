@@ -1,4 +1,5 @@
 ﻿using AmazonSDK.NHibernate;
+using NHibernate;
 using RadialReview.Accessors;
 using RadialReview.Areas.CoreProcess.Models;
 using RadialReview.Areas.CoreProcess.Models.Process;
@@ -21,155 +22,131 @@ namespace AmazonSDK
     {
         static void Main(string[] args)
         {
-            //var client1 = new HttpClient();
-            //var nvc = new List<KeyValuePair<string, string>>();
-            //nvc.Add(new KeyValuePair<string, string>("username", "kunal@mytractiontools.com"));
-            //nvc.Add(new KeyValuePair<string, string>("password", "Test123"));
-            //nvc.Add(new KeyValuePair<string, string>("grant_type", "password"));
-            //nvc.Add(new KeyValuePair<string, string>("client_id", "self"));
-            //var url = "http://localhost:44300/token";
-            //var req = new HttpRequestMessage(HttpMethod.Post, url) { Content = new FormUrlEncodedContent(nvc) };
+            LogDetails("Start", "INFO");
+            List<string> receiptHandleList = new List<string>();
+            List<MessageQueueModel> getMessages = AsyncHelper.RunSync<List<MessageQueueModel>>(() => GetMessages());  //get List of Messages
+            LogDetails("Get list of messages", "INFO");
 
-            //HttpResponseMessage response1 = AsyncHelper.RunSync<HttpResponseMessage>(() => client1.SendAsync(req));
-            //HttpContent responseContent1 = response1.Content;
-            //using (var reader = new StreamReader(AsyncHelper.RunSync<Stream>(() => responseContent1.ReadAsStreamAsync())))
-            //{
-            //    var result1 = reader.ReadToEnd();
-            //}
-
-
-            //AccountController accountController = new AccountController();
-            //var uId = "ecef4e68-81ab-4d8a-805d-a75600e8dfeb";
-            // AsyncHelper.RunSync(() => accountController.AuthenticateUser(uId));
-
-            //using (var s = HibernateSession.GetCurrentSession(true, "_RV"))
-            //{
-            //var s1 = HibernateSession.GetCurrentSession(true, "_RV");
-            //var resultp = s1.QueryOver<UserModel>().Where(x => x.DeleteTime == null && x.CurrentRole == 2).SingleOrDefault();
-            //AsyncHelper.RunSync(() => accountController.AuthenticateUser(resultp));
-            //Console.WriteLine("");
-            //Console.ReadLine();
-            // }
-
-
-            //TaskViewModel tskView = new TaskViewModel();
-            //tskView.Assignee = "Test1";
-            //tskView.description = "DescTest1";
-            //tskView.name = "NameTest1";
-            //tskView.Id = "Test1";
-
-            //MessageQueueModel t1 = new MessageQueueModel();
-            //t1.Identifier = Guid.NewGuid().ToString();
-            //t1.Model = tskView;
-            //t1.ModelType = "TaskViewModel";
-            // t1.ApiUrl=Config.BaseUrl
-
-            //var result = AsyncHelper.RunSync<bool>(() => AmazonSQSUtility.SendMessage(t1));
-            if (true)
+            foreach (var item in getMessages)
             {
-                List<string> receiptHandleList = new List<string>();
-                List<MessageQueueModel> getMessages = AsyncHelper.RunSync<List<MessageQueueModel>>(() => GetMessages());  //get List of Messages
-
-                foreach (var item in getMessages)
+                LogDetails("Loop start", "INFO");
+                using (var s = HibernateSession.GetCurrentSession())
                 {
-                    using (var s = HibernateSession.GetCurrentSession())
+                    LogDetails("session open", "INFO");
+                    using (var tx = s.BeginTransaction(System.Data.IsolationLevel.Serializable))
                     {
-                        using (var tx = s.BeginTransaction(System.Data.IsolationLevel.Serializable))
+                        LogDetails("transaction lock", "INFO");
+                        try
                         {
-
-                            var getMessage = s.QueryOver<MessageQueue>().Where(x => x.IdentifierId == item.Identifier).SingleOrDefault();
+                            var getMessage = s.QueryOver<MessageQueue>().Where(x => x.IdentifierId == item.Identifier
+                            && x.UserName == item.UserName
+                            && x.Status == MessageQueueStatus.Start.ToString()
+                            ).SingleOrDefault();
+                            LogDetails("Retreive data [MessageQueue] from DB", "INFO");
 
                             if (getMessage == null)
                             {
                                 MessageQueue messageQueue = new MessageQueue();
                                 messageQueue.IdentifierId = item.Identifier;
                                 messageQueue.ReceiptHandle = item.ReceiptHandle;
+                                messageQueue.UserOrgId = item.UserOrgId;
+                                messageQueue.UserName = item.UserName;
                                 messageQueue.Status = MessageQueueStatus.Start.ToString();
                                 s.Save(messageQueue);
 
+                                LogDetails("Save data [MessageQueue] to DB", "INFO");
                                 tx.Commit();
-                                s.Flush();
+                                //s.Flush();
 
                                 // if true while Process Message
                                 // run API methods in Radial
-
-                                try
-                                {
-
-                                    var session = HibernateSession.GetCurrentSession(true, "_RV");
-                                    var result = session.QueryOver<UserModel>().Where(x => x.DeleteTime == null && x.CurrentRole == item.UserId).SingleOrDefault();
-
-                                    //AsyncHelper.RunSync(() => accountController.AuthenticateUser(result));
-
-                                    session.Flush();
-                                    session.Dispose();
-
-                                    //get token
-                                    string pwd = RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString() + result.UserName;
-                                    string encrypt_key = Crypto.EncryptStringAES(pwd, RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString());
-
-                                    var client = new HttpClient();
-                                    var param = new List<KeyValuePair<string, string>>();
-                                    param.Add(new KeyValuePair<string, string>("username", result.UserName));
-                                    param.Add(new KeyValuePair<string, string>("password", encrypt_key));
-                                    param.Add(new KeyValuePair<string, string>("grant_type", "password"));
-                                    param.Add(new KeyValuePair<string, string>("client_id", "self"));
-                                    var url = "http://localhost:44300/token";
-                                    var req = new HttpRequestMessage(HttpMethod.Post, url) { Content = new FormUrlEncodedContent(param) };
-                                    TokenModel tokenModel = new TokenModel();
-                                    HttpResponseMessage response1 = AsyncHelper.RunSync<HttpResponseMessage>(() => client.SendAsync(req));
-                                    HttpContent responseContent1 = response1.Content;
-                                    using (var reader = new StreamReader(AsyncHelper.RunSync<Stream>(() => responseContent1.ReadAsStreamAsync())))
-                                    {
-                                        var result1 = reader.ReadToEnd();
-                                        tokenModel = Newtonsoft.Json.JsonConvert.DeserializeObject<TokenModel>(result1.ToString());
-                                    }
-
-
-                                    if (!string.IsNullOrEmpty(tokenModel.access_token))
-                                    {
-                                        var apiUrl = item.ApiUrl ?? "http://localhost:44300/api/v0/todo/mine";
-                                        if (!string.IsNullOrEmpty(apiUrl))
-                                        {
-                                           // string getAccessToken = "Px_gH-grY_zNAzAVPDQ-8hYoKeNNsZ51EQPON-OE6v4rjz0ZpCaIgnY6WkcVMW85RXP9hkZsgy-R0yMoTQtfjuS9evkzAffcYuZZDuHyhwYkgJ6yqxo3bIfnk_2dsLME10BxW2WZDT-wyxb3Qs7PFELx0isnbzkkCJ-jvN5xEjYKCJpYfgVJO_ZBpm1x6vv8fH0SqMlUT9VNyFEJ8EbyRhWWvLWMSMH4yA18GyKW-qGUtpLc4we2IM09tnACjJUoPaAQ_0x_NPXGystBMvyPXHNRIsMAg6hx9WJgCjYYOdu7VfPXoEzWcDT9pC2KU9pZ-wE7UI6TjktCHPsWc4_P8fTKWOgrbQEWHZYJJTQX-ElkSU9vGifFWDElBF4NR2ULeZ1k1WWRLoIbTr_orHEu0JGGiMLaaMVn0uwvrLTBUp1fs2NCNdqEF__TcjaSORoyZCU2nUqUc9FYGdQTo8Ao7O6R-e4wuchiuXHjKomcTOoIJ0Y3HzFExGKS8OoUXNJI";
-                                            client = new HttpClient();
-                                            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenModel.access_token);
-                                            HttpResponseMessage response = AsyncHelper.RunSync<HttpResponseMessage>(() => client.GetAsync(apiUrl));
-                                            HttpContent responseContent = response.Content;
-                                            using (var reader = new StreamReader(AsyncHelper.RunSync<Stream>(() => responseContent.ReadAsStreamAsync())))
-                                            {
-                                                var result1 = reader.ReadToEnd();
-                                            }
-                                        }
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    throw;
-                                }
-
-                                //Update Status
+                                AsyncHelper.RunSync(() => UpdateStatus(s, item));
                             }
                             else
                             {
+                                AsyncHelper.RunSync(() => UpdateStatus(s, item));
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            tx.Rollback();
+                            LogDetails(ex.Message, "ERROR");
+                        }
+                        s.Flush();
+                    }
+                }
+            }
+        }
 
+        private static async Task UpdateStatus(ISession s, MessageQueueModel model)
+        {
+            try
+            {
+                LogDetails("Generate token", "INFO");
+                //get token
+                string pwd = RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString() + model.UserName;
+                string encrypt_key = Crypto.EncryptStringAES(pwd, RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString());
+
+                var client = new HttpClient();
+                var param = new List<KeyValuePair<string, string>>();
+                param.Add(new KeyValuePair<string, string>("username", model.UserName));
+                param.Add(new KeyValuePair<string, string>("password", encrypt_key));
+                param.Add(new KeyValuePair<string, string>("grant_type", "password"));
+                param.Add(new KeyValuePair<string, string>("client_id", "self"));
+                var url = System.Configuration.ConfigurationManager.AppSettings["HostName"];
+                var req = new HttpRequestMessage(HttpMethod.Post, url) { Content = new FormUrlEncodedContent(param) };
+                TokenModel tokenModel = new TokenModel();
+                HttpResponseMessage response1 = await client.SendAsync(req);
+
+                LogDetails("Token process complete", "INFO");
+                HttpContent responseContent1 = response1.Content;
+                using (var reader = new StreamReader(await responseContent1.ReadAsStreamAsync()))
+                {
+                    var result1 = reader.ReadToEnd();
+                    tokenModel = Newtonsoft.Json.JsonConvert.DeserializeObject<TokenModel>(result1.ToString());
+                }
+
+
+                if (!string.IsNullOrEmpty(tokenModel.access_token))
+                {
+                    var apiUrl = model.ApiUrl ?? "";
+                    if (!string.IsNullOrEmpty(apiUrl))
+                    {
+                        LogDetails("Calling Api", "INFO");
+                        client = new HttpClient();
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenModel.access_token);
+                        HttpResponseMessage response = await client.GetAsync(apiUrl);
+                        LogDetails("Calling Api complete", "INFO");
+                        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            LogDetails("Update data [MessageQueue] to DB--start", "INFO");
+                            var getMessage = s.QueryOver<MessageQueue>().Where(x => x.IdentifierId == model.Identifier
+                           && x.UserName == model.UserName
+                           && x.Status == MessageQueueStatus.Start.ToString()
+                           ).SingleOrDefault();
+                            if (getMessage != null)
+                            {
+                                getMessage.Status = MessageQueueStatus.Complete.ToString();
+                                s.Update(getMessage);
+
+                                LogDetails("Update data [MessageQueue] to DB--start", "INFO");
+                                await DeleteMessage(model.ReceiptHandle);
+                                LogDetails("Delete MessageQueue from Amazon server", "INFO");
                             }
                         }
                     }
                 }
-
-                // delete message
-
-                //if (getMessage.Status == MessageQueueStatus.Complete.ToString())
-                //{
-                //    receiptHandleList.Add(item.ReceiptHandle);
-                //}
-
-                //AsyncHelper.RunSync(() => DeleteMessage(receiptHandleList));
-
-                Console.Write("");
-                Console.ReadLine();
             }
+            catch (Exception ex)
+            {
+                LogDetails(ex.Message, "ERROR");
+            }
+        }
+
+        private static void LogDetails(string message, string type)
+        {
+            string errorLogPath = @"c:\\TestFile\\AmzonSDK_err_log.txt";
+            File.AppendAllText(errorLogPath, Environment.NewLine + type + "==>:" + message + "_" + DateTime.Now.ToString("MM_dd_yyyy_HH_mm_ss"));
         }
 
         private static async Task<List<MessageQueueModel>> GetMessages()
@@ -186,13 +163,10 @@ namespace AmazonSDK
             return list;
         }
 
-        private static async Task DeleteMessage(List<string> ReceiptHandler)
+        private static async Task DeleteMessage(string ReceiptHandler)
         {
             AmazonSQS amazonSQS = new AmazonSQS();
-            foreach (var item in ReceiptHandler)
-            {
-                await amazonSQS.DeleteMessage(item);
-            }
+            await amazonSQS.DeleteMessage(ReceiptHandler);
         }
 
         internal static class AsyncHelper

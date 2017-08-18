@@ -47,7 +47,7 @@ namespace RadialReview.Areas.CoreProcess.Models
         public string ModelType { get; set; } // name of model
         public string ReceiptHandle { get; set; }
         public string ApiUrl { get; set; }
-
-        public long UserId { get; set; }
+        public long? UserOrgId { get; set; }
+        public string UserName { get; set; }
     }
 }
