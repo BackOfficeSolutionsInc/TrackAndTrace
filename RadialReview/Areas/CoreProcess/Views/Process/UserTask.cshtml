@@ -1,4 +1,6 @@
-﻿@model List<RadialReview.Areas.CoreProcess.Models.Process.TaskViewModel>
+﻿@using RadialReview.Areas.CoreProcess.Models.Process
+@model Tuple<List<TaskViewModel>, List<TaskViewModel>>
+@*@model List<RadialReview.Areas.CoreProcess.Models.Process.TaskViewModel>*@
 @{
     ViewBag.Title = "UserTask";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -13,12 +15,13 @@
 <br />
 <div class="row">
     <div class="col-sm-8 col-lg-12">
+        <h1>Assigned Tasks</h1>
         <div id="duration-table"></div>
         @using (Html.BeginScripts())
         {
             <script>
 
-                var datas = @Html.ArrayToString(Model);
+                var datas = @Html.ArrayToString(Model.Item1);
                 var table = DataTable({
                     container: "#duration-table",
                     data: datas,
@@ -28,7 +31,46 @@
                     cells: [
                         { name: "Id", classes: "", contents: function (x) { return x.Id; } },
                         { name: "Name", classes: "", contents: function (x) { return x.name; } },
-                        { name: "Action", classes: "", contents: function (x) { return "<a href='#' type='button' class='btn btn-warning'"  + x.Id + "'>Claim</a>"
+                        {
+                            name: "Action", classes: "", contents: function (x) {
+                                return "<a href='/CoreProcess/Process/UnclaimTask/" + x.Id +"' type='button' class='btn btn-warning'"  + x.Id + "'>Unclaim</a>"
+                            //+ "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" + "<a href='javascript:void(0);' type='button' class='btn btn-warning'>UnClaim</a>"
+                        }
+                        },
+                    ],
+                    nodataText: "No Task found."
+
+                });
+                table.setData(datas);
+
+
+
+            </script>}
+
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-8 col-lg-12">
+        <h1>All Tasks</h1>
+        <div id="groupTaskList-Table"></div>
+        @using (Html.BeginScripts())
+        {
+            <script>
+
+                var datas = @Html.ArrayToString(Model.Item2);
+                var table = DataTable({
+                    container: "#groupTaskList-Table",
+                    data: datas,
+                    //clickRemove: "/Process/Delete/{0}",
+                    //clickEdit: "/Process/Edit/{0}",
+                    nodataText: "No Process. Click add to create one.",
+                    cells: [
+                        { name: "Id", classes: "", contents: function (x) { return x.Id; } },
+                        { name: "Name", classes: "", contents: function (x) { return x.name; } },
+                        {
+                            name: "Action", classes: "", contents: function (x) {
+                                return "<a href='/CoreProcess/Process/AssignTask/" + x.Id+"' type='button' class='btn btn-warning'"  + x.Id + "'>Claim</a>"
                             //+ "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" + "<a href='javascript:void(0);' type='button' class='btn btn-warning'>UnClaim</a>"
                         }
                         },
