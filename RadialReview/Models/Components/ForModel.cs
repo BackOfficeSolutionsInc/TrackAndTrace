@@ -59,6 +59,10 @@ namespace RadialReview {
 
 			};
 		}
+		public static string GetModelType(ILongIdentifiable creator)
+		{
+			return HibernateSession.GetDatabaseSessionFactory().GetClassMetadata(Deproxy(creator).GetType()).EntityName;
+		}
 
 		// override object.Equals
 		public override bool Equals(object obj) {
@@ -66,7 +70,6 @@ namespace RadialReview {
 			if (found == null)
 				return false;
 			return found.ModelId == ModelId && found.ModelType == ModelType;
-
 		}
 
 		// override object.GetHashCode
@@ -82,10 +85,7 @@ namespace RadialReview {
 			return model;
 		}
 
-		public static string GetModelType(ILongIdentifiable creator) {
-
-			return HibernateSession.GetDatabaseSessionFactory().GetClassMetadata(Deproxy(creator).GetType()).EntityName;
-		}
+		
 		public static string GetModelType<T>() where T : ILongIdentifiable {
 #pragma warning disable CS0618 // Type or member is obsolete
 			return GetModelType(typeof(T));
@@ -101,13 +101,14 @@ namespace RadialReview {
 #pragma warning disable CS0618 // Type or member is obsolete
 			return ModelType == GetModelType(typeof(T));
 #pragma warning restore CS0618 // Type or member is obsolete
-		}
-
-		public string ToPrettyString() {
-			return _PrettyString;
-		}
 	}
 
+	public string ToPrettyString() {
+			return _PrettyString;
+		}
+	
+
+        
 	public static class ForModelExtensions {
 		public static ForModel ToImpl(this IForModel obj) {
 			return ForModel.From(obj);

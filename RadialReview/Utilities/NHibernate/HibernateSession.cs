@@ -44,6 +44,7 @@ using RadialReview.Models.VideoConference;
 using RadialReview.Models.Rocks;
 using RadialReview.Areas.People.Models.Survey;
 using static RadialReview.Models.Issues.IssueModel;
+using RadialReview.Areas.CoreProcess.Models.MapModel;
 
 //using Microsoft.VisualStudio.Profiler;
 
@@ -221,57 +222,55 @@ namespace RadialReview.Utilities {
                             {
                                 factory = Fluently.Configure().
                             }*/
-						default:
-							throw new Exception("No database type");
-					}
+                        default: throw new Exception("No database type");
+                    }
 
-					ChromeExtensionComms.SendCommand("dbComplete");
-
-				}
-				// DataCollection.MarkProfile(1);
-				return factory;
-			}
-		}
+                    ChromeExtensionComms.SendCommand("dbComplete");
+                     
+                }
+                // DataCollection.MarkProfile(1);
+                return factory;
+            }
+        }
 
 
 		public static bool CloseCurrentSession() {
 			var session = (SingleRequestSession)HttpContext.Current.NotNull(x=>x.Items["NHibernateSession"]);
 			if (session != null) {
 				if (session.IsOpen) {
-					session.Close();
-				}
+                    session.Close();
+                }
 
-				if (session.WasDisposed) {
-					session.GetBackingSession().Dispose();
-				}
-				HttpContext.Current.Items.Remove("NHibernateSession");
-				return true;
-			}
-			return false;
-		}
+		if (session.WasDisposed) {
+                    session.GetBackingSession().Dispose();
+                }
+                HttpContext.Current.Items.Remove("NHibernateSession");
+                return true;
+            }
+            return false;
+        }
 
 
 
-		public static ISession GetCurrentSession(bool singleSession = true) {
-
+        public static ISession GetCurrentSession(bool singleSession = true) {
+			
 			if (singleSession && !(HttpContext.Current == null || HttpContext.Current.Items == null) && HttpContext.Current.Items["IsTest"] == null) {
 				try {
 					var session = (SingleRequestSession)HttpContext.Current.Items["NHibernateSession"];
 					if (session == null) {
 						session = new SingleRequestSession(GetDatabaseSessionFactory().OpenSession()); // Create session, like SessionFactory.createSession()...
-						HttpContext.Current.Items.Add("NHibernateSession", session);
-					}
-					return session;
+                        HttpContext.Current.Items.Add("NHibernateSession", session);
+                    }
+                    return session;
 				} catch (Exception) {
-					//Something went wrong.. revert
-					//var a = "Error";
-				}
-			}
+                    //Something went wrong.. revert
+                    //var a = "Error";
+                }
+            }
 			if (!(HttpContext.Current == null || HttpContext.Current.Items == null) && HttpContext.Current.Items["IsTest"] != null)
 				return GetDatabaseSessionFactory().OpenSession();
 			if (singleSession == false)
 				return GetDatabaseSessionFactory().OpenSession();
-
 
 			return new SingleRequestSession(GetDatabaseSessionFactory().OpenSession(), true);
 			//GetDatabaseSessionFactory().OpenSession();
@@ -416,9 +415,13 @@ namespace RadialReview.Utilities {
 
 			enversConf.Audit<AbstractVCProvider>();
 			enversConf.Audit<ZoomUserLink>();
-
+			enversConf.Audit<WebhookDetails>();
+			enversConf.Audit<WebhookEventsSubscription>();
+            enversConf.Audit<Task_Camunda>();
+            enversConf.Audit<ProcessDef_Camunda>();
+           
 			nhConf.IntegrateWithEnvers(enversConf);
-		}
+        }
 
 
 		private static void BuildProductionMySqlSchema(Configuration config) {

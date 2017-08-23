@@ -69,11 +69,8 @@
 										<label class="col-sm-3 control-label">Default To-do Owner:</label>
 										<div class="col-sm-5"><select name='@Html.NameFor(x => x.Recurrence.DefaultTodoOwner).ToHtmlString()' class="select2 form-control default-todo-list editable"></select></div>
 									</div>
-									<div class="form-group">
-										<label class="col-sm-3 control-label">All attendees unchecked default:</label>
-										<div class="col-sm-5">@Html.CheckBoxFor(x => x.Recurrence.AttendingOffByDefault, new { @class = "editable", style = "margin-top: 11px;" })</div>
-									</div>
-
+									<div class="col-sm-"><select name='@Html.NameFor(x => x.Recurrence.DefaultTodoOwner).ToHtmlString()' class="select2 form-control default-todo-list editable"></select></div>
+									<br />
 									@*<div>
 											<label>Default Issue Owner:</label>
 										</div>

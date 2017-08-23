@@ -141,7 +141,6 @@
 
 			var _userFormat = format.replace(/MM/g, MM).replace(/M/g, _M).replace(/dd/g, dd).replace(/d/g, _d).replace(/yyyy/g, yyyy).replace(/yy/g, (yyyy - 2000))
 				.replace(/HH/g, HH).replace(/H/g, H).replace(/hh/g, hh).replace(/h/g, h).replace(/mm/g, mm).replace(/m/g, m).replace(/ss/g, ss).replace(/s/g, s).replace(/tt/g, tt).replace(/t/g, t);
-
 			return _userFormat;
 		}
 
@@ -181,7 +180,7 @@
 							} else {
 								<div id="logo">
 									<div class="link">
-										<a href="@Url.Action("Index", "Home",new {area=""})" class="navbar-brand">
+										<a href="@Url.Action("Index", "Home", new { area = "" })" class="navbar-brand">
 											<span style="z-index: 1000001; position: relative; top: -2px;">
 												<img src="/Content/img/TRACTION-TOOLS_small_horizontal_wh.png" height="54" style="opacity: .95;">
 											</span>
@@ -205,7 +204,7 @@
 								@if (Request.IsAuthenticated) {
 									if (((int?)ViewBag.Organizations ?? 0) == 0) {
 										<li>
-											<a href="@Url.Action("Index", "Home",new { area = "" })" class="@(ViewBag.TaskCount == 0?"":"flashing")">
+											<a href="@Url.Action("Index", "Home", new { area = "" })" class="@(ViewBag.TaskCount == 0?"":"flashing")">
 												Access Code
 												<span id="TasksNotification" style="display:none;" class="glyphicon glyphicon glyphicon-flag"></span>
 											</a>

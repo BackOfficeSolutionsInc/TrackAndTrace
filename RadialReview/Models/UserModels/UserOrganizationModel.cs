@@ -458,9 +458,9 @@ namespace RadialReview.Models
 
 	}
 
-    public class UserorganizationmodelMap : SubclassMap<UserOrganizationModel>
+    public class UserOrganizationModelMap : SubclassMap<UserOrganizationModel>
     {
-        public UserorganizationmodelMap()
+        public UserOrganizationModelMap()
         {
             //Map(x => x.Title);
 

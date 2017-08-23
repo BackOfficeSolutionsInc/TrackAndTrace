@@ -1,0 +1,112 @@
+﻿@model List<RadialReview.Areas.CoreProcess.Models.Process.ProcessInstanceViewModel>
+@{
+    ViewBag.Title = "ProcessInstance";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section top{
+    <div class="jumbotron">
+        <h1>List of Process-Instance</h1>
+    </div>
+}
+<br />
+<div class="row">
+    <div class="col-sm-8 col-lg-12">
+        <div id="duration-table"></div>
+        @using (Html.BeginScripts())
+        {
+            <script>
+                function ValidateForm(d) {
+                    if (d.Name == "") {
+                        return "Name is required.";
+                    }
+                }
+
+				var datas = @Html.ArrayToString(Model);
+                var table = DataTable({
+					container: "#duration-table",
+                    data: datas,
+                    clickAddValidation: ValidateForm,
+                    clickEditValidation: ValidateForm,
+                    //clickRemove: "/Process/Delete/{0}",
+					//clickEdit: "/Process/Edit/{0}",
+					//addButton:{text: "Create Process"},
+					nodataText: "No Process. Click add to create one.",
+					//clickAdd: "/Process/Create",
+					//postAdd: "/Process/Create",
+                    cells: [
+                        { name: "Create Time", classes: "", contents: function (x) { return x.CreateTime; } },
+						{ name: "Complete Time", classes: "", contents: function (x) { return x.CompleteTime; } },
+                        //{ name: "BusinessKey", classes: "", contents: function (x) { return x.BusinessKey; } },
+                        //{ name: "Process Id", classes: "", contents: function (x) { return x.DefinitionId } },
+						@if (ViewBag.CanEdit == true) {								
+                			@:{ name: "Action", classes: "", contents: function (x) { return "<a href='javascript:void(0);' onclick='suspend(\"" + x.DefinitionId + "," + x.Suspended + "\");'>" + (x.Suspended ? "Activate" : "Suspend") + "</a>" } },
+						}                        
+						//{ edit: true },
+						//{ remove : true },
+                    ],
+					nodataText: "No Instance found."
+
+				});
+                table.setData(datas);
+                function suspend(val) {
+                    $.ajax({
+                        url: "/CoreProcess/Process/Suspend/" + val.split(',')[0] +"?status="+ val.split(',')[1],
+                        success: function (data) {
+                            location.reload();                    
+                        },
+                        error: function (data) {
+                        }
+                    });
+                }
+            </script>}
+
+    </div>
+</div>
+@using (Html.BeginStyles())
+{
+    @Styles.Render("~/Content/MeetingEdit")
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet" />
+    <style>
+        .durations .form-group {
+            margin-bottom: 4px;
+        }
+
+        a:hover {
+            text-decoration: none;
+        }
+
+        html, body {
+            background-color: #eee;
+        }
+
+        .width80 {
+            width: 80px;
+        }
+
+        .table .btn-default {
+            color: #5e5e5e !important;
+        }
+
+        .body-full-width #alerts:not(:empty) {
+            margin-top: 20px;
+            margin-bottom: -15px;
+        }
+
+        html, body {
+            background-color: #eee;
+        }
+
+        .panel {
+            border: none;
+        }
+
+        .grayRow {
+            /*background-color: #f2f2f2;*/
+        }
+    </style>
+}
+
+
+
+@*<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>*@

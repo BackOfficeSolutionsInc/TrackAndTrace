@@ -1,0 +1,159 @@
+﻿@model List<RadialReview.Areas.CoreProcess.Models.Process.ProcessViewModel>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section top{
+    <div class="jumbotron">
+        <h1>List of Process</h1>
+    </div>
+}
+
+<br />
+<div class="row">
+    <div class="col-sm-8 col-lg-12">
+        <div id="duration-table"></div>
+        @using (Html.BeginScripts())
+        {
+            <script>
+				function ValidateForm(d) {
+					if (d.Name == "") {
+						return "Name is required.";
+					}
+				}
+
+				var datas = @Html.ArrayToString(Model);
+				var table = DataTable({
+					container: "#duration-table",
+					data: datas,
+					clickAddValidation: ValidateForm,
+					clickEditValidation: ValidateForm,
+					clickRemove: "/Process/Delete/{0}",
+					//clickEdit: "/Process/Edit/{0}",
+					@if (ViewBag.CanCreate == true) {
+							@:addButton: { text: "Create Process"},
+							@:clickAdd: "/Process/Create",
+					}
+					nodataText: "No Process. Click add to create one.",
+					postAdd: "/Process/Create",
+					cells: [
+
+						{ name: "Name", classes: "", contents: function (x) { return x.Name; } },
+                        { name: "Deploy", classes: "", contents: function (x) { return x.status; } },
+                        { name: "Instances", classes: "", contents: function (x) { return x.Count; } },
+                        { name: "Action", classes: "", contents: function (x) { return "<a href='/CoreProcess/Process/Tasks/" + x.Id + "'>Task</a>"
+							//+ "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" + "<a href='javascript:void(0);' onclick='startProcess("+ x.Id +");'>Start</a>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp"
+							+ "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp;<a href='/CoreProcess/Process/ProcessInstance/" + x.LocalID + "'>Instances</a>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp"
+							//+ "<a href='javascript:void(0);' onclick='deleteprocess(" + x.Id +","+ x.Count+ ");' >Delete</a>"
+
+                        }
+                        },
+                        //{ edit: true },
+                        //{ remove: true },
+					],
+					nodataText: "No Process found."
+
+				});
+				table.setData(datas);
+
+				function deleteprocess(x,val)
+				{
+					if (val != 0) {
+						var title = "This will delete all running instances associated with this process.</br>Are you sure you want to delete!";
+						show(x, title);
+					}
+					else
+					{
+						var title = "Are you sure you want to remove!";
+						show(x, title);
+					}
+				}
+				function show(x, title)
+				{
+					showModal({
+						icon: "warning",
+						title: title,
+						success: function (d) {
+							$.ajax({
+								url: '/CoreProcess/Process/Delete/' + x,
+								success: function (data) {
+									table.removeRow(data.Object);
+								}
+							});
+						}
+					});
+				}
+				function startProcess(id){
+					$.ajax({
+						url: "/CoreProcess/Process/StartProcess/" + id,
+						success: function (data) {
+							//console.log(data.Object);
+							table.editRow(data.Object);
+						},
+						error: function (data) {
+
+						}
+					});
+				}
+
+            </script>}
+
+    </div>
+</div>
+
+@using (Html.BeginStyles())
+{
+    @Styles.Render("~/Content/MeetingEdit")
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet" />
+    <style>
+        .durations .form-group {
+            margin-bottom: 4px;
+        }
+
+        a:hover {
+            text-decoration: none;
+        }
+
+        html, body {
+            background-color: #eee;
+        }
+
+        .width80 {
+            width: 80px;
+        }
+
+        .table .btn-default {
+            color: #5e5e5e !important;
+        }
+
+        .body-full-width #alerts:not(:empty) {
+            margin-top: 20px;
+            margin-bottom: -15px;
+        }
+
+        html, body {
+            background-color: #eee;
+        }
+
+        .panel {
+            border: none;
+        }
+
+        .grayRow {
+            /*background-color: #f2f2f2;*/
+        }
+    </style>
+}
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+                $(window).on('load', function () {
+                    $("table thead tr th").next().next().attr("colspan", "3");
+                    //$("table tbody tr td").next().next().attr("colspan", "0");
+                    $("table tbody tr td").next().next().next().attr("width", "50px");
+                });
+
+</script>

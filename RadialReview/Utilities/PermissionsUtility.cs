@@ -1615,6 +1615,7 @@ namespace RadialReview.Utilities {
 
 		#region OldSurvey
 		public PermissionsUtility ViewOldSurveyContainer(long surveyId) {
+
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -1656,6 +1657,7 @@ namespace RadialReview.Utilities {
 			}
 			if (surveyId == 0)
 				return CreateOldSurvey();
+
 
 
 			if (IsRadialAdmin(caller))
@@ -1871,7 +1873,52 @@ namespace RadialReview.Utilities {
             return ViewL10Recurrence(recurrenceId);            
         }
 
-        #endregion
+		#endregion
+
+		#region CoreProcess
+
+		public PermissionsUtility CreateProcessDef() {
+			return ManagerAtOrganization(caller.Id, caller.Organization.Id);
+		}
+
+		public PermissionsUtility EditProcessDef(long localId) {
+			return CanEdit(PermItem.ResourceType.CoreProcess, localId);
+		}
+
+		public PermissionsUtility CanAdminProcessDef(long localId) {
+			return CanAdmin(PermItem.ResourceType.CoreProcess, localId);
+		}
+
+		public PermissionsUtility CanEditTask(string taskId) {
+			if (IsRadialAdmin(caller))
+				return this;
+
+			ProcessDefAccessor accessor = new Areas.CoreProcess.Accessors.ProcessDefAccessor();
+			var arr = AsyncHelper.RunSync<long[]>(() => accessor.GetCandidateGroupIdsForTask(caller, taskId));
+
+			if (arr.Any(x => x == caller.Id)) {
+				return this;
+			}
+
+			var groupIds = ResponsibilitiesAccessor.GetGroupIdsForUser(session, this, caller.Id);
+
+			if (arr.Any(x => groupIds.Contains(x))) {
+				return this;
+			}
+
+			throw new PermissionsException();
+		}
+
+		#endregion
+
+		public PermissionsUtility InValidPermission() {
+			if (Config.IsLocal()) {
+				return this;
+			}
+
+			throw new PermissionsException("Invalid Permissions");
+		}
+
 
 
         public PermissionsUtility Or(params Func<PermissionsUtility>[] or) {

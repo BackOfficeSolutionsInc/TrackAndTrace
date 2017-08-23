@@ -285,11 +285,16 @@
     <Compile Include="Accessors\Payment\PaymentAccessorTests.cs" />
     <Compile Include="API\v0\IssueApiTests_v0.cs" />
     <Compile Include="API\v0\L10ApiTests_v0.cs" />
+    <Compile Include="API\v0\MilestonesApiTests_v0.cs" />
     <Compile Include="API\v0\PositionApiTests_v0.cs" />
+    <Compile Include="API\v0\RocksApiTests_v0.cs" />
     <Compile Include="API\v0\RolesApiTests_v0.cs" />
     <Compile Include="API\v0\ScorecardApiTests_v0.cs" />
+    <Compile Include="API\v0\SearchApiTests_v0.cs" />
     <Compile Include="API\v0\SeatsApiTests_v0.cs" />
+    <Compile Include="API\v0\TeamsApiTests_v0.cs" />
     <Compile Include="API\v0\TodoApiTests_v0.cs" />
+    <Compile Include="API\v0\ProcessDefApiTests_v0.cs" />
     <Compile Include="API\v0\UsersApiTests_v0.cs" />
     <Compile Include="Controllers\DashboardControllerTests.cs" />
     <Compile Include="Controllers\L10ControllerTests.cs" />

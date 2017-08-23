@@ -28,9 +28,11 @@ namespace TractionTools.Tests.API.v0 {
 		public async Task TestCreateL10() {
 			var c = await Ctx.Build();
 			L10_Controller L10 = new L10_Controller();
+
 			L10.MockUser(c.E1);
 			var recurrenceId = await L10.CreateL10("Test L10");
 			var getAllL10RecurrenceAtOrganization = L10Accessor.GetAllL10RecurrenceAtOrganization(c.E1, c.Org.Id);
+
 			Assert.AreEqual(recurrenceId, getAllL10RecurrenceAtOrganization.FirstOrDefault().Id);
 		}
 
@@ -40,11 +42,15 @@ namespace TractionTools.Tests.API.v0 {
 		public async Task TestEditL10() {
 			var c = await Ctx.Build();
 			L10_Controller L10 = new L10_Controller();
+
 			L10.MockUser(c.E1);
+
 			var name = "Test L10 Updated";
 			var recurrenceId = await L10.CreateL10("Test L10");
 			L10.EditL10(recurrenceId, name);
+
 			var getAllL10RecurrenceAtOrganization = L10Accessor.GetAllL10RecurrenceAtOrganization(c.E1, c.Org.Id);
+
 			Assert.AreEqual(name, getAllL10RecurrenceAtOrganization.FirstOrDefault().Name);
 		}
 
@@ -54,6 +60,7 @@ namespace TractionTools.Tests.API.v0 {
 		public async Task TestAttachMeasurableL10() {
 			var c = await Ctx.Build();
 			L10_Controller L10 = new L10_Controller();
+
 			L10.MockUser(c.E1);
 			var recurrenceId = await L10.CreateL10("Test L10");
 			var m1 = new MeasurableModel() {
@@ -84,13 +91,15 @@ namespace TractionTools.Tests.API.v0 {
 			var c = await Ctx.Build();
 			L10_Controller L10 = new L10_Controller();
 			L10.MockUser(c.E1);
-			var recurrenceId = await L10.CreateL10("Test L10");
+
+			var recurrenceId = L10.CreateL10("Test L10");
 			var m1 = new MeasurableModel() {
 				AccountableUserId = c.E1.Id,
 				AdminUserId = c.E1.Id,
 				Title = "Meas1",
 				OrganizationId = c.Org.Organization.Id
 			};
+
 			var measurable = AddMeasurableVm.CreateNewMeasurable(recurrenceId, m1, true);
 			MockHttpContext();
 			await L10Accessor.CreateMeasurable(c.E1, recurrenceId, measurable);
@@ -102,6 +111,7 @@ namespace TractionTools.Tests.API.v0 {
 			L10.RemoveMeasurableL10(recurrenceId, measurable.Measurables.FirstOrDefault().Id);
 			getMeasurablesForRecurrence = L10Accessor.GetScorecardDataForRecurrence(c.E1, recurrenceId);
 			Assert.AreEqual(0, getMeasurablesForRecurrence.MeasurablesAndDividers.Count());
+
 		}
 
 
@@ -110,6 +120,7 @@ namespace TractionTools.Tests.API.v0 {
 		public async Task TestAttachRockMeetingL10() {
 			var c = await Ctx.Build();
 			L10_Controller L10 = new L10_Controller();
+
 			L10.MockUser(c.E1);
 			var recurrenceId = await L10.CreateL10("Test L10");
 			var rock = new RockModel() {
@@ -120,11 +131,15 @@ namespace TractionTools.Tests.API.v0 {
 			var rockModel = AddRockVm.CreateRock(recurrenceId, rock, true);
 			await L10Accessor.CreateRock(c.E1, recurrenceId, rockModel);
 
+			L10Accessor.CreateRock(c.E1, recurrenceId, rockModel);
 
+			L10.AttachRockMeetingL10(recurrenceId, rock.Id);
 
 			await L10.AttachRockMeetingL10(recurrenceId, rock.Id);
 			var getRocksForRecurrence = L10Accessor.GetRocksForRecurrence(c.E1, recurrenceId);
+
 			Assert.AreEqual(2, getRocksForRecurrence.Count());
+
 		}
 
 
@@ -133,6 +148,7 @@ namespace TractionTools.Tests.API.v0 {
 		public async Task TestRemoveRockL10() {
 			var c = await Ctx.Build();
 			L10_Controller L10 = new L10_Controller();
+
 			L10.MockUser(c.E1);
 			var otherRecurrenceId = await L10.CreateL10("Other L10");
 			var recurrenceId = await L10.CreateL10("Test L10");
@@ -177,10 +193,13 @@ namespace TractionTools.Tests.API.v0 {
 		public async Task TestGetMeetingsL10() {
 			var c = await Ctx.Build();
 			L10_Controller L10 = new L10_Controller();
+
 			L10.MockUser(c.E1);
 			var recurrenceId = await L10.CreateL10("Test L10");
 			var getMeetingsL10 = L10.GetL10(recurrenceId);
+
 			Assert.AreEqual(recurrenceId, getMeetingsL10.Id);
+
 		}
 
 
@@ -190,6 +209,7 @@ namespace TractionTools.Tests.API.v0 {
 		public async Task TestGetL10Attendess() {
 			var c = await Ctx.Build();
 			L10_Controller L10 = new L10_Controller();
+
 			L10.MockUser(c.E1);
 			var recurrenceId = await L10.CreateL10("Test L10");
 
@@ -199,6 +219,7 @@ namespace TractionTools.Tests.API.v0 {
 			await L10Accessor.AddAttendee(c.E1, recurrenceId, c.E1.Id);
 			GetL10Attendess = L10.GetL10Attendees(recurrenceId);
 			Assert.AreEqual(1, GetL10Attendess.Count());
+
 		}
 
 
@@ -207,6 +228,7 @@ namespace TractionTools.Tests.API.v0 {
 		public async Task TestAttachHeadlineMeetingL10() {
 			var c = await Ctx.Build();
 			L10_Controller L10 = new L10_Controller();
+
 			L10.MockUser(c.E1);
 			var recurrenceId = await L10.CreateL10("Test L10");
 			var headlineModel = new PeopleHeadline() {
@@ -238,11 +260,14 @@ namespace TractionTools.Tests.API.v0 {
 				RecurrenceId = recurrenceId,
 				_Details = "Test details",
 			};
+
 			//create headline
 			var headline = await L10.CreateHeadlineL10(headlineModel.RecurrenceId, headlineModel.Message, null, headlineModel._Details);
+
 			//Get headlines
 			var getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
 			Assert.AreEqual(1, getAttachHeadline.Count());
+
 			//Remove headline
 			L10.RemoveHeadlineL10(recurrenceId, headline.Id);
 			//Get headlines
@@ -257,11 +282,15 @@ namespace TractionTools.Tests.API.v0 {
 		public async Task TestAttachtodoMeetingL10() {
 			var c = await Ctx.Build();
 			L10_Controller L10 = new L10_Controller();
+
 			L10.MockUser(c.E1);
 			var reccurenceId = await L10.CreateL10("Test L10");
 			var name = "Test To Do Meeting";
+
 			await L10.AttachTodoL10(reccurenceId, name, c.E1.Id);
+
 			var getToDoList = L10Accessor.GetAllTodosForRecurrence(c.E1, reccurenceId);
+
 			Assert.AreEqual(1, getToDoList.Count());
 		}
 
@@ -271,6 +300,7 @@ namespace TractionTools.Tests.API.v0 {
 		public async Task TestGetList() {
 			var c = await Ctx.Build();
 			L10_Controller L10 = new L10_Controller();
+
 			L10.MockUser(c.E1);
 			var recurrenceId = await L10.CreateL10("Test L10");
 			var m1 = new MeasurableModel() {
@@ -292,13 +322,19 @@ namespace TractionTools.Tests.API.v0 {
 		public async Task TestAttachIssueMeetingL10() {
 			var c = await Ctx.Build();
 			L10_Controller L10 = new L10_Controller();
+
 			L10.MockUser(c.E1);
 			var recurrenceId = await L10.CreateL10("Test L10");
 			var name = "Test Name For Issue Meeting L10";
+
 			var details = "Test detail For Issue Meeting L10";
+
 			await L10.CreateIssueL10(recurrenceId, name, c.E1.Id, details);
+
 			var getIssueMeetingL10 = L10Accessor.GetIssuesForRecurrence(c.E1, recurrenceId, false);
+
 			Assert.AreEqual(1, getIssueMeetingL10.Count());
+
 		}
 
 		[TestMethod]
@@ -306,15 +342,23 @@ namespace TractionTools.Tests.API.v0 {
 		public async Task TestRemoveIssueL10() {
 			var c = await Ctx.Build();
 			L10_Controller L10 = new L10_Controller();
+
 			L10.MockUser(c.E1);
 			var recurrenceId = await L10.CreateL10("Test L10");
 			var name = "Test Name For Issue Meeting L10";
+
 			var details = "Test detail For Issue Meeting L10";
+
 			await L10.CreateIssueL10(recurrenceId, name, c.E1.Id, details);
+
 			var getIssueMeetingL10 = L10Accessor.GetIssuesForRecurrence(c.E1, recurrenceId, false);
+
 			L10.RemoveIssueL10(recurrenceId, getIssueMeetingL10.FirstOrDefault().Id);
+
 			var getIssueMeetingList = L10Accessor.GetIssuesForRecurrence(c.E1, recurrenceId, false);
+
 			Assert.AreEqual(0, getIssueMeetingList.Count());
+
 		}
 	}
 }

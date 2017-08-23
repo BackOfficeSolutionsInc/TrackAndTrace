@@ -1042,6 +1042,17 @@ body.resizing *::-moz-selection {
 .select2-results__option--highlighted .searchresult .searchresult-meta .searchresult-description {
   color: white;
 }
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+  margin-top: 1px;
+  vertical-align: top;
+}
+.select2-container--default .select2-selection--multiple .searchresult.searchresult-selected {
+  display: inline-block;
+  line-height: 19px;
+}
+.select2-container--default .select2-selection--multiple .searchresult-image {
+  display: none;
+}
 #modal input[type=checkbox] {
   outline: none !important;
   border: none;

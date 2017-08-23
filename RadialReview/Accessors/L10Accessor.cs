@@ -61,6 +61,7 @@ using NHibernate.SqlCommand;
 using RadialReview.Models.Rocks;
 using RadialReview.Models.Angular.Rocks;
 using System.Web.Mvc;
+using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
 using RadialReview.Hooks;
 using static RadialReview.Utilities.EventUtil;
@@ -935,6 +936,7 @@ namespace RadialReview.Accessors {
 
 						var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
 						meetingHub.userEnterMeeting(connection);
+						//?meetingHub.userEnterMeeting(caller.Id, connectionId, caller.GetName(), caller.ImageUrl(true));
 					}
 				}
 			}
@@ -3935,11 +3937,13 @@ namespace RadialReview.Accessors {
 
 					var updatesText = new List<string>();
 
+					bool IsTodoUpdate = false;
 					if (message != null && todo.Message != message) {
 						SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateTodoMessage(todo.Id));
 						todo.Message = message;
 						group.updateTodoMessage(todoId, message);
 						updatesText.Add("Message: " + todo.Message);
+						IsTodoUpdate = true;
 					}
 					if (details != null && todo.Details != details) {
 						SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateTodoDetails(todo.Id));
@@ -3951,15 +3955,19 @@ namespace RadialReview.Accessors {
 						todo.DueDate = dueDate.Value;
 						group.updateTodoDueDate(todoId, dueDate.Value.ToJavascriptMilliseconds());
 						updatesText.Add("Due-Date: " + dueDate.Value.ToShortDateString());
+						IsTodoUpdate = true;
 					}
 					if (accountableUser != null && todo.AccountableUserId != accountableUser.Value && accountableUser > 0) {
 						todo.AccountableUserId = accountableUser.Value;
 						todo.AccountableUser = s.Get<UserOrganizationModel>(accountableUser.Value);
 						group.updateTodoAccountableUser(todoId, accountableUser.Value, todo.AccountableUser.GetName(), todo.AccountableUser.ImageUrl(true, ImageSize._32));
 						updatesText.Add("Accountable: " + todo.AccountableUser.GetName());
+						IsTodoUpdate = true;
 					}
 
+					bool IsTodoStatusUpdated = false;
 					if (complete != null) {
+						IsTodoStatusUpdated = true;
 						SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateTodoCompletion(todo.Id));
 						var now = DateTime.UtcNow;
 						if (complete.Value && todo.CompleteTime == null) {
@@ -3984,7 +3992,7 @@ namespace RadialReview.Accessors {
 							updatesText.Add("Marked Incomplete");
 							new Cache().InvalidateForUser(todo.AccountableUser, CacheKeys.UNSTARTED_TASKS);
 						}
-						group.updateTodoCompletion(todoId, complete);
+						group.updateTodoCompletion(todoId, complete);						
 					}
 
 					_ProcessDeleted(s, todo, delete);
@@ -3997,6 +4005,16 @@ namespace RadialReview.Accessors {
 						Audit.L10Log(s, caller, todo.ForRecurrenceId.Value, "UpdateTodo", ForModel.Create(todo), updatedText);
 					}
 
+					// Webhook event trigger
+					if (IsTodoUpdate) {
+						HooksRegistry.Each<ITodoHook>(x => x.UpdateMessage(s, todo));
+					}
+
+					// Webhook register Marking complete for TODO
+					if (IsTodoStatusUpdated) {
+						HooksRegistry.Each<ITodoHook>(x => x.UpdateCompletion(s, todo));
+					}
+
 					tx.Commit();
 					s.Flush();
 				}
@@ -4006,7 +4024,7 @@ namespace RadialReview.Accessors {
 			perm.EditTodo(todoModel);
 			var todo = s.Get<TodoModel>(todoModel);
 			if (todo.CompleteTime != null)
-				throw new PermissionsException("Issue already deleted.");
+				throw new PermissionsException("To-do already deleted.");
 			if (todo.ForRecurrence.Id != recurrenceId)
 				throw new PermissionsException("You cannot edit this meeting.");
 			todo.CompleteTime = DateTime.UtcNow;
@@ -4015,6 +4033,10 @@ namespace RadialReview.Accessors {
 			var recur = new AngularRecurrence(recurrenceId);
 			recur.Todos = AngularList.CreateFrom(AngularListType.Remove, new AngularTodo(todo));
 			rt.UpdateRecurrences(recurrenceId).Update(recur);
+
+			// Webhook register Marking complete for TODO
+//? added await
+			await HooksRegistry.Each<ITodoHook>(x => x.UpdateCompletion(s, todo));
 		}
 
 		public static void MarkFireworks(UserOrganizationModel caller, long recurrenceId) {
@@ -4161,7 +4183,7 @@ namespace RadialReview.Accessors {
 
 		}
 
-		public static void UpdateTodos(UserOrganizationModel caller, long recurrenceId, L10Controller.UpdateTodoVM model) {
+		public static void UpdateTodoOrder(UserOrganizationModel caller, long recurrenceId, L10Controller.UpdateTodoVM model) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perm = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
@@ -4326,8 +4348,6 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-
-
 		public static void UpdateIssue(UserOrganizationModel caller, long issueRecurrenceId, DateTime now, string message = null, string details = null, bool? complete = null, string connectionId = null, long? owner = null, int? priority = null, int? rank = null, bool? delete = null, bool? awaitingSolve = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -4346,11 +4366,14 @@ namespace RadialReview.Accessors {
 					var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId), connectionId);
 
 					var updatesText = new List<string>();
+
+					bool IsMessageChange = false;
 					if (message != null && message != issue.Issue.Message) {
 						SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateIssueMessage(issue.Issue.Id));
 						issue.Issue.Message = message;
 						group.updateIssueMessage(issueRecurrenceId, message);
 						updatesText.Add("Message: " + issue.Issue.Message);
+						IsMessageChange = true;
 					}
 					if (details != null && details != issue.Issue.Description) {
 						SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateIssueDetails(issue.Issue.Id));
@@ -4384,11 +4407,12 @@ namespace RadialReview.Accessors {
 						s.Update(issue);
 					}
 
-
 					_ProcessDeleted(s, issue, delete);
 
 					var now1 = DateTime.UtcNow;
+					bool IsIssueStatusUpdated = false;
 					if (complete != null) {
+						IsIssueStatusUpdated = true;
 						using (var rt = RealTimeUtility.Create(connectionId)) {
 							_UpdateIssueCompletion_Unsafe(s, rt, issue, complete.Value, now1);
 						}
@@ -4414,6 +4438,18 @@ namespace RadialReview.Accessors {
 
 					Audit.L10Log(s, caller, recurrenceId, "UpdateIssue", ForModel.Create(issue), updatedText);
 
+					if (IsMessageChange) {
+						// Webhook event trigger
+//?added await
+						await HooksRegistry.Each<IIssueHook>(x => x.UpdateMessage(s, issue));
+					}
+
+					// Webhook register Marking complete for TODO
+					if (IsIssueStatusUpdated) {
+//?added await
+						await HooksRegistry.Each<IIssueHook>(x => x.UpdateCompletion(s, issue));
+					}
+
 					tx.Commit();
 					s.Flush();
 				}
@@ -4428,7 +4464,12 @@ namespace RadialReview.Accessors {
 				throw new PermissionsException("Issue already deleted.");
 
 			_UpdateIssueCompletion_Unsafe(s, rt, issue, true);
+
+			// Webhook register Marking complete for Issue
+//?added await
+			await HooksRegistry.Each<IIssueHook>(x => x.UpdateCompletion(s, issue));
 		}
+
 		public static void UpdateIssues(UserOrganizationModel caller, long recurrenceId, /*IssuesDataList*/L10Controller.IssuesListVm model) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {

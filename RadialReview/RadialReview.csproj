@@ -108,6 +108,7 @@
     <Compile Include="Accessors\SearchAccessor.cs" />
     <Compile Include="Accessors\TinyUserAccessor.cs" />
     <Compile Include="Accessors\VideoConferenceProviders\VideoProviderAccessor.cs" />
+    <Compile Include="Accessors\WebhooksAccessor.cs" />
     <Compile Include="Api\V0\Headlines.cs" />
     <Compile Include="Api\V0\Issue.cs" />
     <Compile Include="Api\V0\L10.cs" />
@@ -120,6 +121,26 @@
     <Compile Include="Api\V0\Teams.cs" />
     <Compile Include="Api\V0\Todo.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
+    <Compile Include="Areas\CoreProcess\Accessors\TaskAccessor.cs" />
+    <Compile Include="Areas\CoreProcess\Accessors\ProcessDefAccessor.cs" />
+    <Compile Include="Areas\CoreProcess\CamundaComm\CommClass.cs" />
+    <Compile Include="Areas\CoreProcess\CamundaComm\ICommClass.cs" />
+    <Compile Include="Areas\CoreProcess\Controllers\Api_V0\ProcessDef.cs" />
+    <Compile Include="Areas\CoreProcess\Controllers\HomeController.cs" />
+    <Compile Include="Areas\CoreProcess\Controllers\ProcessController.cs" />
+    <Compile Include="Areas\CoreProcess\CoreProcessAreaRegistration.cs" />
+    <Compile Include="Areas\CoreProcess\Interfaces\ITaskAccessor.cs" />
+    <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
+    <Compile Include="Areas\CoreProcess\Models\AmazonSQSUtility.cs" />
+    <Compile Include="Areas\CoreProcess\Models\BpmnUtility.cs" />
+    <Compile Include="Areas\CoreProcess\Models\Interfaces\IProcessInstance.cs" />
+    <Compile Include="Areas\CoreProcess\Models\Interfaces\ITask.cs" />
+    <Compile Include="Areas\CoreProcess\Models\Interfaces\IProcessDef.cs" />
+    <Compile Include="Areas\CoreProcess\Models\MapModel\ComundaModelMap.cs" />
+    <Compile Include="Areas\CoreProcess\Models\ViewModel\BpmnXmlFileModel.cs" />
+    <Compile Include="Areas\CoreProcess\Models\ViewModel\ProcessInstanceViewModel.cs" />
+    <Compile Include="Areas\CoreProcess\Models\ViewModel\TaskViewModel.cs" />
+    <Compile Include="Areas\CoreProcess\Models\ViewModel\ProcessViewModel.cs" />
     <Compile Include="Areas\People\Accessors\QuarterlyConversationAccessor.cs" />
     <Compile Include="Areas\People\Accessors\SurveyAccessor.cs" />
     <Compile Include="Areas\People\Accessors\PDF\SurveyPdfAccessor.cs" />
@@ -196,6 +217,8 @@
     <Compile Include="Hooks\EnterpriseHook.cs" />
     <Compile Include="Hooks\UpdateRoles_Notifications.cs" />
     <Compile Include="Hooks\UpdateUserModel_TeamNames.cs" />
+    <Compile Include="Hooks\Webhook\IssueWebhook.cs" />
+    <Compile Include="Hooks\Webhook\TodoWebhook.cs" />
     <Compile Include="Hubs\PeopleHub.cs" />
     <Compile Include="Models\Angular\Base\AngularPicture.cs" />
     <Compile Include="Models\Angular\Dashboard\AngularDashboard.cs" />
@@ -209,9 +232,11 @@
     <Compile Include="Models\Application\Campaign.cs" />
     <Compile Include="Models\Application\SupportMember.cs" />
     <Compile Include="Models\Application\Coach.cs" />
+    <Compile Include="Models\Application\WebhookModel.cs" />
     <Compile Include="Models\Enums\RGMType.cs" />
     <Compile Include="Models\Enums\VideoConferenceType.cs" />
     <Compile Include="Models\Events\Event.cs" />
+    <Compile Include="Areas\CoreProcess\Interfaces\IProcessId.cs" />
     <Compile Include="Models\Interfaces\IByAbout.cs" />
     <Compile Include="Models\Interfaces\ICaller.cs" />
     <Compile Include="Models\Issues\HeadlineIssueVM.cs" />
@@ -222,6 +247,8 @@
     <Compile Include="Models\Askables\AskableSectionModel.cs" />
     <Compile Include="Models\Reviews\WhoReviewsWho.cs" />
     <Compile Include="Models\Rocks\Milestone.cs" />
+    <Compile Include="Models\ViewModels\WebhooksEventSubscriptionViewModel.cs" />
+    <Compile Include="Models\ViewModels\WebHookViewModel.cs" />
     <Compile Include="Notifications\Notification.cs" />
     <Compile Include="Models\Reviews\ValueBar.cs" />
     <Compile Include="Models\Todo\HeadlineTodoVm.cs" />
@@ -778,14 +805,19 @@
     <Compile Include="Utilities\GraphUtility.cs" />
     <Compile Include="Utilities\HashUtil.cs" />
     <Compile Include="Utilities\Hooks\IAccountEvent.cs" />
+    <Compile Include="Utilities\Hooks\ICreateIssue.cs" />
     <Compile Include="Utilities\Hooks\IHeadlineHook.cs" />
     <Compile Include="Utilities\Hooks\IMeasurableHook.cs" />
     <Compile Include="Utilities\Hooks\IMeetingEvents.cs" />
     <Compile Include="Utilities\Hooks\IRockHook.cs" />
     <Compile Include="Utilities\Hooks\ITodoHook.cs" />
     <Compile Include="Utilities\Hooks\IUserHooks.cs" />
+    <Compile Include="Utilities\Hooks\ICreateTodo.cs" />
+    <Compile Include="Utilities\Hooks\ICreateUserOrganization.cs" />
+    <Compile Include="Utilities\Hooks\IDeleteUserOrganizationHook.cs" />
     <Compile Include="Utilities\Hooks\IHook.cs" />
     <Compile Include="Utilities\Hooks\IRolesHook.cs" />
+    <Compile Include="Utilities\Hooks\IUpdateUserModelHook.cs" />
     <Compile Include="Utilities\HtmlUtility.cs" />
     <Compile Include="Utilities\Integrations\ActiveCampaign.cs" />
     <Compile Include="Utilities\NHibernateHelper.cs" />
@@ -793,6 +825,7 @@
     <Compile Include="Utilities\NHibernate\Context.cs" />
     <Compile Include="Utilities\NHibernate\CustomAuditStrategy.cs" />
     <Compile Include="Utilities\NHibernate\NHibernateProxyJsonConvert.cs" />
+    <Compile Include="Utilities\NHibernate\SingleRequestTransaction.cs" />
     <Compile Include="Utilities\NHibernate\SingleRequestSession.cs" />
     <Compile Include="Utilities\NumberUtility.cs" />
     <Compile Include="Utilities\PaymentSpringUtil.cs" />
@@ -868,6 +901,11 @@
     <Compile Include="Utilities\TimingUtility.cs" />
     <Compile Include="Utilities\ViewUtility.cs" />
     <Compile Include="Models\Audit\LogModel.cs" />
+    <Compile Include="WebHooks\DataSecurity.cs" />
+    <Compile Include="WebHooks\RadialWebHookStore.cs" />
+    <Compile Include="WebHooks\TestHandler.cs" />
+    <Content Include="Areas\RouteDebugger\Content\rdstyle.css" />
+    <Content Include="Areas\RouteDebugger\Scripts\detect.js" />
     <None Include=".bin\bower.cmd" />
     <None Include=".bin\git.cmd" />
     <None Include=".bin\node.cmd" />
@@ -886,6 +924,20 @@
     </Content>
     <Content Include="Content\Angular\livesearch.css" />
     <Content Include=".ebextensions\Autoscaling.config" />
+    <Content Include="Areas\CoreProcess\Views\web.config" />
+    <Content Include="Areas\CoreProcess\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\CoreProcess\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\CoreProcess\Views\Home\Index.cshtml" />
+    <EmbeddedResource Include="Areas\CoreProcess\calculation.bpmn">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Content Include="Areas\CoreProcess\d.bpmn" />
+    <Content Include="Areas\CoreProcess\Views\Process\Tasks.cshtml" />
+    <Content Include="Areas\CoreProcess\Views\Process\Index.cshtml" />
+    <Content Include="Areas\CoreProcess\Views\Shared\Partial\CreateTask.cshtml" />
+    <Content Include="Areas\CoreProcess\Views\Shared\Partial\CreateProcess.cshtml" />
+    <Content Include="Areas\CoreProcess\Views\Process\ProcessInstance.cshtml" />
+    <Content Include="Areas\CoreProcess\Views\Process\UserTask.cshtml" />
     <Content Include="Areas\People\Views\web.config" />
     <Content Include="Areas\People\Views\Main\Index.cshtml" />
     <Content Include="Areas\People\Views\QuarterlyConversation\Index.cshtml" />
@@ -1575,6 +1627,11 @@
     <Content Include="Views\Review\Take\Radio.cshtml" />
     <Content Include="Views\TileData\L10SolvedIssues.cshtml" />
     <Content Include="Views\Todo\EditModal.cshtml" />
+    <Content Include="Views\Webhook\Create.cshtml" />
+    <Content Include="Views\Webhook\Index.cshtml" />
+    <Content Include="Views\Webhook\CreateEvents.cshtml" />
+    <Content Include="Views\Webhook\Events.cshtml" />
+    <Content Include="Views\Webhook\API.cshtml" />
     <Content Include="Views\L10\MeetingSummary.cshtml" />
     <Content Include="Views\Rocks\EditModal.cshtml" />
     <Content Include="Views\Milestone\EditModal.cshtml" />
@@ -2080,6 +2137,7 @@
     <Content Include="Views\Organization\Begin.cshtml" />
     <Content Include="Views\Organization\Create.cshtml" />
     <Content Include="Views\Organization\Index.cshtml" />
+    <Content Include="Views\Organization\Manage.cshtml" />
     <Content Include="Views\Account\Role.cshtml" />
     <Content Include="Views\Partial\_DragDropItem.cshtml" />
     <Content Include="Views\Payment\Index.cshtml" />
@@ -2298,6 +2356,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\CoreProcess\CamundaFiles\" />
     <Folder Include="Areas\People\Engines\Surveys\Abstract\" />
     <Folder Include="Content\fonts\fonts\" />
     <Folder Include="External\" />
@@ -2305,6 +2364,7 @@
     <Folder Include="Models\Notifications\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
     <Folder Include="Utilities\Migradoc\XYScatter\" />
+    <Folder Include="Utilities\NewFolder1\" />
     <Folder Include="Views\AngularAccountability\" />
     <Folder Include="Views\Console\" />
     <Folder Include="Views\Data\" />
@@ -2316,6 +2376,7 @@
     <Folder Include="Views\MeetingData\" />
     <Folder Include="Views\Members\" />
     <Folder Include="Views\Migration\" />
+    <Folder Include="Views\Milestone\" />
     <Folder Include="Views\Onboard\" />
     <Folder Include="Views\Scheduler\" />
     <Folder Include="Views\Session\" />
@@ -2415,6 +2476,12 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CamundaCSharpClient\CamundaCSharpClient.csproj">
+      <Project>{220d5704-6b65-4f39-abe2-e3786114f2fd}</Project>
+      <Name>CamundaCSharpClient</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -2503,7 +2570,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>3751</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://localhost:44300/</IISUrl>
+          <IISUrl>http://localhost:44300/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>http://radial.elasticbeanstalk.com/</CustomServerUrl>

@@ -8,24 +8,23 @@ using System.IO;
 using System.Threading;
 
 namespace RadialReview.Utilities {
-    public class Config {
+	public class Config {
 
-        public static void DbUpdateSuccessful()
-        {
-            var env=GetEnv();
-            if (env==Env.production)
-                return;
+		public static void DbUpdateSuccessful() {
+			var env = GetEnv();
+			if (env == Env.production)
+				return;
 
-            var version = GetAppSetting("dbVersion", "0");
-            var dir = Path.Combine(Path.GetTempPath(), "TractionTools");
-            var file = Path.Combine(dir, "dbversion" + env + ".txt");
-            if (!File.Exists(file))
-                File.CreateText(file).Close();
-            while (FileUtilities.IsFileLocked(new FileInfo(file))) {
-                Thread.Sleep(100);
-            }
-            File.WriteAllText(file, version);
-        }
+			var version = GetAppSetting("dbVersion", "0");
+			var dir = Path.Combine(Path.GetTempPath(), "TractionTools");
+			var file = Path.Combine(dir, "dbversion" + env + ".txt");
+			if (!File.Exists(file))
+				File.CreateText(file).Close();
+			while (FileUtilities.IsFileLocked(new FileInfo(file))) {
+				Thread.Sleep(100);
+			}
+			File.WriteAllText(file, version);
+		}
 
 		public static int EnterpriseAboveUserCount() {
 			return 45;
@@ -143,7 +142,8 @@ namespace RadialReview.Utilities {
 		//    return "People";
 		//}
 
-		public static bool ShouldUpdateDB()
+		
+        public static bool ShouldUpdateDB()
         {
             var version = GetAppSetting("dbVersion", "0");
             if (version == "0")
@@ -179,128 +179,148 @@ namespace RadialReview.Utilities {
         public static string BaseUrl(OrganizationModel organization,string append=null)
         {
 			var baseUrl = new Func<string>(() => {
-				if (HttpContext.Current != null) {
-					try {
-						var strPathAndQuery = HttpContext.Current.Request.Url.PathAndQuery;
-						return HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/");
-					} catch (Exception) {
-						//Skip
-					}
-				}
-				switch (GetEnv()) {
-					case Env.local_sqlite:
-						return "https://localhost:44300/";
-					case Env.local_mysql:
-						return "https://localhost:44300/";
-					case Env.production:
-						if (organization == null)
-							return "https://traction.tools/";
+            if (HttpContext.Current != null) {
+                try {
+                    var strPathAndQuery = HttpContext.Current.Request.Url.PathAndQuery;
+                    return HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/");
+                } catch (Exception) {
+                    //Skip
+                }
+            }
+            switch (GetEnv()) {
+                case Env.local_sqlite:
+                    return "https://localhost:44300/";
+                case Env.local_mysql:
+                    return "https://localhost:44300/";
+                case Env.production:
+                    if (organization == null)
+                        return "https://traction.tools/";
 
-						switch (organization.Settings.Branding) {
-							case BrandingType.RadialReview:
-								return "https://traction.tools/";
-							case BrandingType.RoundTable:
-								return "https://traction.tools/";
-							default:
-								throw new ArgumentOutOfRangeException();
-						}
-					case Env.local_test_sqlite:
-						return "https://localhost:44300/";
-					default:
-						throw new ArgumentOutOfRangeException();
-				}
+                    switch (organization.Settings.Branding) {
+                        case BrandingType.RadialReview:
+                            return "https://traction.tools/";
+                        case BrandingType.RoundTable:
+                            return "https://traction.tools/";
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                case Env.local_test_sqlite:
+                    return "https://localhost:44300/";
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 			});
 			return baseUrl() + (append ?? "").TrimStart('/');
         }
 
-        public static string ProductName(OrganizationModel organization = null)
-        {
-            var org = organization.NotNull(x => x);
-            if (org != null) {
-                switch (org.Settings.Branding) {
-                    case BrandingType.RadialReview:
-                        return GetAppSetting("ProductName_Review", "Traction® Tools");
-                    case BrandingType.RoundTable:
-                        return GetAppSetting("ProductName_Roundtable", "Traction® Tools");
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-            try {
-                if (HttpContext.Current.Request.Url.Authority.ToLower().Contains("radialreview"))
-                    return GetAppSetting("ProductName_Review", "Traction Tools");
-                else if (HttpContext.Current.Request.Url.Authority.ToLower().Contains("radialroundtable"))
-                    return GetAppSetting("ProductName_Roundtable", "Traction Tools");
-            } catch (Exception) {
-                //Fall back...
-            }
-            return GetAppSetting("ProductName_Review", "Traction Tools");
-        }
+		public static string ProductName(OrganizationModel organization = null) {
+			var org = organization.NotNull(x => x);
+			if (org != null) {
+				switch (org.Settings.Branding) {
+					case BrandingType.RadialReview:
+						return GetAppSetting("ProductName_Review", "Traction® Tools");
+					case BrandingType.RoundTable:
+						return GetAppSetting("ProductName_Roundtable", "Traction® Tools");
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+			}
+			try {
+				if (HttpContext.Current.Request.Url.Authority.ToLower().Contains("radialreview"))
+					return GetAppSetting("ProductName_Review", "Traction Tools");
+				else if (HttpContext.Current.Request.Url.Authority.ToLower().Contains("radialroundtable"))
+					return GetAppSetting("ProductName_Roundtable", "Traction Tools");
+			} catch (Exception) {
+				//Fall back...
+			}
+			return GetAppSetting("ProductName_Review", "Traction Tools");
+		}
 
 		public static string DirectReportName() {
 			return "Direct Report";
 		}
 
-		public static string ReviewName(OrganizationModel organization = null)
-        {
-            if (organization != null) {
-                switch (organization.Settings.Branding) {
-                    case BrandingType.RadialReview:
-                        return GetAppSetting("ReviewName_Review", "Eval");
-                    case BrandingType.RoundTable:
-                        return GetAppSetting("ReviewName_Roundtable", "Eval");
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-            try {
-                if (HttpContext.Current.Request.Url.Authority.ToLower().Contains("radialreview"))
-                    return GetAppSetting("ReviewName_Review", "Eval");
-                else if (HttpContext.Current.Request.Url.Authority.ToLower().Contains("radialroundtable"))
-                    return GetAppSetting("ReviewName_Roundtable", "Eval");
-            } catch (Exception) {
-                //Fall back...
-            }
-            return GetAppSetting("ReviewName_Review", "Eval");
-        }
+		public static string ReviewName(OrganizationModel organization = null) {
+			if (organization != null) {
+				switch (organization.Settings.Branding) {
+					case BrandingType.RadialReview:
+						return GetAppSetting("ReviewName_Review", "Eval");
+					case BrandingType.RoundTable:
+						return GetAppSetting("ReviewName_Roundtable", "Eval");
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+			}
+			try {
+				if (HttpContext.Current.Request.Url.Authority.ToLower().Contains("radialreview"))
+					return GetAppSetting("ReviewName_Review", "Eval");
+				else if (HttpContext.Current.Request.Url.Authority.ToLower().Contains("radialroundtable"))
+					return GetAppSetting("ReviewName_Roundtable", "Eval");
+			} catch (Exception) {
+				//Fall back...
+			}
+			return GetAppSetting("ReviewName_Review", "Eval");
+		}
 
 		public static string ManagerName() {
 			return "Supervisor";
 		}
 
-        public static bool RunChromeExt() {
-            switch (GetEnv()) {
-                case Env.local_test_sqlite: return true;
-                case Env.local_sqlite: return false;
-                case Env.local_mysql: return GetAppSetting("RunExt", "false").ToBooleanJS();
-                case Env.production: return false;
-                default: throw new ArgumentOutOfRangeException();
-            }
+		public class UrlCredentials {
+			public string Url { get; set; }
+			public string Username { get; set; }
+			public string Password { get; set; }
+		}
+
+		public static UrlCredentials GetCamundaServer() {
+			UrlCredentials credentials = new UrlCredentials();
+			credentials.Username = "demo";
+			credentials.Password = "demo";
+
+			switch (GetEnv()) {
+				case Env.local_test_sqlite:
+					credentials.Url = "http://localhost:8080/engine-rest";
+					return credentials;
+				case Env.local_mysql:
+					credentials.Url = "http://localhost:8080/engine-rest";
+					return credentials;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+
+		public static bool IsLocal() {
+			switch (GetEnv()) {
+				case Env.local_test_sqlite:
+					return true;
+				case Env.local_sqlite:
+					return true;
+				case Env.local_mysql:
+					return true;
+				case Env.production:
+					return false;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+
+        public static bool ShouldDeploy()
+        {
+            return !IsLocal();
         }
 
-        public static bool IsLocal()
-        {
-            switch (GetEnv()) {
-                case Env.local_test_sqlite: return true;
-                case Env.local_sqlite: return true;
-                case Env.local_mysql: return true;
-                case Env.production: return false;
-                default: throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        public static string GetAppSetting(string key, string deflt = null)
-        {
-            var config = System.Configuration.ConfigurationManager.AppSettings;
-            return config[key] ?? deflt;
-        }
+		public static string GetAppSetting(string key, string deflt = null) {
+			var config = System.Configuration.ConfigurationManager.AppSettings;
+			return config[key] ?? deflt;
+		}
 
 		public static string FixEmail(string email) {
 			return Config.IsLocal() ? "clay.upton+test_" + email.Replace("@", "_at_") + "@mytractiontools.com" : email;
 		}
 
-		public static Env GetEnv()
+	public static Env GetEnv()
         {
+	
             Env result;
             if (Enum.TryParse(GetAppSetting("Env").ToLower(), out result)) {
                 return result;
@@ -308,114 +328,129 @@ namespace RadialReview.Utilities {
             throw new Exception("Invalid Environment");
         }
 
-        public static string GetSecret()
-        {
-            return GetAppSetting("sha_secret");
-        }
+		public static string GetSecret() {
+			return GetAppSetting("sha_secret");
+		}
 
-        public static bool OptimizationEnabled()
-        {
-            switch (GetEnv()) {
-                case Env.local_sqlite: return GetAppSetting("OptimizeBundles", "False").ToBoolean();
-                case Env.local_mysql: return GetAppSetting("OptimizeBundles", "False").ToBoolean();
-                case Env.production: return true;
-                case Env.local_test_sqlite: return GetAppSetting("OptimizeBundles", "True").ToBoolean();
-                default: throw new ArgumentOutOfRangeException();
-            }
-        }
+		public static bool OptimizationEnabled() {
+			switch (GetEnv()) {
+				case Env.local_sqlite:
+					return GetAppSetting("OptimizeBundles", "False").ToBoolean();
+				case Env.local_mysql:
+					return GetAppSetting("OptimizeBundles", "False").ToBoolean();
+				case Env.production:
+					return true;
+				case Env.local_test_sqlite:
+					return GetAppSetting("OptimizeBundles", "True").ToBoolean();
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
 
-        public static string GetTrelloKey()
-        {
-            return GetAppSetting("TrelloKey");
-        }
+		public static string GetTrelloKey() {
+			return GetAppSetting("TrelloKey");
+		}
 
-        public static class Basecamp {
-            /*public static string GetUrl()
+		public static class Basecamp {
+			/*public static string GetUrl()
             {
                 return GetAppSetting("BasecampUrl");
             }*/
 
-            public static string GetUserAgent()
-            {
-                switch (GetEnv()) {
-                    case Env.local_mysql: goto case Env.local_sqlite;
-                    case Env.local_sqlite: return GetAppSetting("BasecampTestApp");
-                    case Env.production: return GetAppSetting("BasecampApp");
-                    default: throw new ArgumentOutOfRangeException();
-                }
-            }
+			public static string GetUserAgent() {
+				switch (GetEnv()) {
+					case Env.local_mysql:
+						goto case Env.local_sqlite;
+					case Env.local_sqlite:
+						return GetAppSetting("BasecampTestApp");
+					case Env.production:
+						return GetAppSetting("BasecampApp");
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+			}
 
-            public static BCXAPI.Service GetService(OrganizationModel organization)
-            {
+			public static BCXAPI.Service GetService(OrganizationModel organization) {
 				string key, secret;//, app;
-                var redirect = BaseUrl(organization) + "Callback/Basecamp";
-                switch (GetEnv()) {
-                    case Env.local_mysql:
-                        goto case Env.local_sqlite;
-                    case Env.local_sqlite: {
-                            key = GetAppSetting("BasecampTestKey");
-                            secret = GetAppSetting("BasecampTestSecret");
-                            break;
-                        }
-                    case Env.production: {
-                            key = GetAppSetting("BasecampKey");
-                            secret = GetAppSetting("BasecampSecret");
-                            break;
-                        }
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-                return new BCXAPI.Service(key, secret, redirect, GetUserAgent());
-            }
-        }
+				var redirect = BaseUrl(organization) + "Callback/Basecamp";
+				switch (GetEnv()) {
+					case Env.local_mysql:
+						goto case Env.local_sqlite;
+					case Env.local_sqlite: {
+							key = GetAppSetting("BasecampTestKey");
+							secret = GetAppSetting("BasecampTestSecret");
+							break;
+						}
+					case Env.production: {
+							key = GetAppSetting("BasecampKey");
+							secret = GetAppSetting("BasecampSecret");
+							break;
+						}
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+				return new BCXAPI.Service(key, secret, redirect, GetUserAgent());
+			}
+		}
 
-        public static bool SendEmails()
-        {
-            switch (GetEnv()) {
-                case Env.local_mysql: return GetAppSetting("SendEmail_Debug", "false").ToBooleanJS();
-                case Env.local_sqlite: return GetAppSetting("SendEmail_Debug", "false").ToBooleanJS();
-                case Env.production: return true;
-                case Env.local_test_sqlite: return false;
-                default: throw new ArgumentOutOfRangeException();
-            }
-        }
+		public static bool SendEmails() {
+			switch (GetEnv()) {
+				case Env.local_mysql:
+					return GetAppSetting("SendEmail_Debug", "false").ToBooleanJS();
+				case Env.local_sqlite:
+					return GetAppSetting("SendEmail_Debug", "false").ToBooleanJS();
+				case Env.production:
+					return true;
+				case Env.local_test_sqlite:
+					return false;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
 
-        public static string PaymentSpring_PublicKey(bool forceUseTest = false)
-        {
-            if (forceUseTest)
-                return GetAppSetting("PaymentSpring_PublicKey_Test");
+		public static string PaymentSpring_PublicKey(bool forceUseTest = false) {
+			if (forceUseTest)
+				return GetAppSetting("PaymentSpring_PublicKey_Test");
 
-            switch (GetEnv()) {
-                case Env.local_test_sqlite: return GetAppSetting("PaymentSpring_PublicKey_Test");
-                case Env.local_mysql: return GetAppSetting("PaymentSpring_PublicKey_Test");
-                case Env.local_sqlite: return GetAppSetting("PaymentSpring_PublicKey_Test");
-                case Env.production: return GetAppSetting("PaymentSpring_PublicKey");
-                default: throw new ArgumentOutOfRangeException();
-            }
-        }
-        [Obsolete("Be careful with private keys")]
-        public static string PaymentSpring_PrivateKey(bool forceUseTest = false)
-        {
-            if (forceUseTest)
-                return GetAppSetting("PaymentSpring_PrivateKey_Test");
+			switch (GetEnv()) {
+				case Env.local_test_sqlite:
+					return GetAppSetting("PaymentSpring_PublicKey_Test");
+				case Env.local_mysql:
+					return GetAppSetting("PaymentSpring_PublicKey_Test");
+				case Env.local_sqlite:
+					return GetAppSetting("PaymentSpring_PublicKey_Test");
+				case Env.production:
+					return GetAppSetting("PaymentSpring_PublicKey");
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+		[Obsolete("Be careful with private keys")]
+		public static string PaymentSpring_PrivateKey(bool forceUseTest = false) {
+			if (forceUseTest)
+				return GetAppSetting("PaymentSpring_PrivateKey_Test");
 
-            switch (GetEnv()) {
-                case Env.local_test_sqlite: return GetAppSetting("PaymentSpring_PrivateKey_Test");
-                case Env.local_mysql: return GetAppSetting("PaymentSpring_PrivateKey_Test");
-                case Env.local_sqlite: return GetAppSetting("PaymentSpring_PrivateKey_Test");
-                case Env.production: return GetAppSetting("PaymentSpring_PrivateKey");
-                default: throw new ArgumentOutOfRangeException();
-            }
-        }
+			switch (GetEnv()) {
+				case Env.local_test_sqlite:
+					return GetAppSetting("PaymentSpring_PrivateKey_Test");
+				case Env.local_mysql:
+					return GetAppSetting("PaymentSpring_PrivateKey_Test");
+				case Env.local_sqlite:
+					return GetAppSetting("PaymentSpring_PrivateKey_Test");
+				case Env.production:
+					return GetAppSetting("PaymentSpring_PrivateKey");
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
 
-        public static string VideoConferenceUrl(string resource = null)
-        {
-            var server = GetAppSetting("VideoConferenceServer").TrimEnd('/');
-            if (resource != null) {
-                server = server + "/" + resource.TrimStart('/');
-            }
-            return server;
-            /*
+		public static string VideoConferenceUrl(string resource = null) {
+			var server = GetAppSetting("VideoConferenceServer").TrimEnd('/');
+			if (resource != null) {
+				server = server + "/" + resource.TrimStart('/');
+			}
+			return server;
+			/*
             switch (GetEnv())
             {
                 case Env.local_mysql:   return server;
@@ -423,40 +458,40 @@ namespace RadialReview.Utilities {
                 case Env.production:	return GetAppSetting("VideoConferenceServer");
                 default: throw new ArgumentOutOfRangeException();
             }*/
-        }
+		}
 
-        public static string GetMandrillGoogleAnalyticsDomain()
-        {
-            return GetAppSetting("Mandrill_GoogleAnalyticsDomain", null);
-        }
+		public static string GetMandrillGoogleAnalyticsDomain() {
+			return GetAppSetting("Mandrill_GoogleAnalyticsDomain", null);
+		}
 
-        /*internal static string PaymentEmail()
+		/*internal static string PaymentEmail()
         {
             throw new NotImplementedException();
         } */
-        public static string GetAccessLogDir()
-        {
-            switch (GetEnv()) {
-                case Env.local_mysql: return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\IISExpress\Logs\RadialReview\";
-                case Env.local_sqlite: return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\IISExpress\Logs\RadialReview\";
-                case Env.production: return @"C:\inetpub\logs\LogFiles\W3SVC1\";
-                default: throw new ArgumentOutOfRangeException();
-            }
-        }
+		public static string GetAccessLogDir() {
+			switch (GetEnv()) {
+				case Env.local_mysql:
+					return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\IISExpress\Logs\RadialReview\";
+				case Env.local_sqlite:
+					return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\IISExpress\Logs\RadialReview\";
+				case Env.production:
+					return @"C:\inetpub\logs\LogFiles\W3SVC1\";
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
 
-        public static string NotesUrl(string append="")
-        {
-            var server =  GetAppSetting("NotesServer", "https://notes.traction.tools");
-            if (!string.IsNullOrWhiteSpace(append)) {
-                server=server.TrimEnd('/') + "/" + append;
-            }
-            return server;
-        }
+		public static string NotesUrl(string append = "") {
+			var server = GetAppSetting("NotesServer", "https://notes.traction.tools");
+			if (!string.IsNullOrWhiteSpace(append)) {
+				server = server.TrimEnd('/') + "/" + append;
+			}
+			return server;
+		}
 
-        internal static string NoteApiKey()
-        {
-            return GetAppSetting("NotesServer_ApiKey");
-        }
+		internal static string NoteApiKey() {
+			return GetAppSetting("NotesServer_ApiKey");
+		}
 
 		public static class Office365 {
 			public static string AppId() {
@@ -475,31 +510,39 @@ namespace RadialReview.Utilities {
 		}
 
 
-        public class RedisConfig {
-            public string Server { get; set; }
-            public int Port { get; set; }
-            public string Password { get; set; }
-            public string ChannelName { get; set; }
-        }
+		public class RedisConfig {
+			public string Server { get; set; }
+			public int Port { get; set; }
+			public string Password { get; set; }
+			public string ChannelName { get; set; }
+		}
 
-        public static RedisConfig Redis(string channel)
-        {
-            string server;
-            switch (GetEnv()) {
-                case Env.local_mysql: server = "127.0.0.1"; break;
-                case Env.local_sqlite: server = "127.0.0.1"; break;
-                case Env.production: server = GetAppSetting("RedisSignalR_Server", null); break;
-                case Env.local_test_sqlite: server = "127.0.0.1"; break;
-                default: throw new ArgumentOutOfRangeException();
-            }
+		public static RedisConfig Redis(string channel) {
+			string server;
+			switch (GetEnv()) {
+				case Env.local_mysql:
+					server = "127.0.0.1";
+					break;
+				case Env.local_sqlite:
+					server = "127.0.0.1";
+					break;
+				case Env.production:
+					server = GetAppSetting("RedisSignalR_Server", null);
+					break;
+				case Env.local_test_sqlite:
+					server = "127.0.0.1";
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
 
-            return new RedisConfig() {
-                Server = server,
-                ChannelName = channel,
-                Password = GetAppSetting("RedisSignalR_Password", null),
-                Port = GetAppSetting("RedisSignalR_Port", "6379").ToInt()
-            };
-            /*
+			return new RedisConfig() {
+				Server = server,
+				ChannelName = channel,
+				Password = GetAppSetting("RedisSignalR_Password", null),
+				Port = GetAppSetting("RedisSignalR_Port", "6379").ToInt()
+			};
+			/*
             switch (GetEnv())
             {
                 case Env.local_mysql: return GetAppSetting("RedisSignalR-server",null);
@@ -513,7 +556,7 @@ namespace RadialReview.Utilities {
 			public string Sid { get; set; }
 			public string AuthToken { get; set; }
 			public bool ShouldSendText { get; set; }
-		}
+    }
 
 		public static TwilioData Twilio() {
 			return new TwilioData() {

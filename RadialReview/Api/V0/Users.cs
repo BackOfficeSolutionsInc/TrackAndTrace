@@ -14,6 +14,9 @@ using RadialReview.Models.ViewModels;
 using RadialReview.Models.Json;
 using RadialReview.Models.Accountability;
 using RadialReview.Models.UserModels;
+using RadialReview.Models.Angular.Roles;
+using RadialReview.Models.Angular.Positions;
+using RadialReview.Models.Angular.Accountability;
 using System.Threading.Tasks;
 
 namespace RadialReview.Api.V0
@@ -100,18 +103,18 @@ namespace RadialReview.Api.V0
         //[GET] /users/{userid}/roles/
         [Route("users/{userId}/roles")]
         [HttpGet]
-        public IEnumerable<Models.Askables.RoleModel> GetUserRoles(long userId)
-        {
+        public IEnumerable<AngularRole> GetUserRoles(long userId)
+        {            
             RoleAccessor obj = new Accessors.RoleAccessor();
-            return obj.GetRoles(GetUser(), userId);
+            return obj.GetRoles(GetUser(), userId).Select(x => new AngularRole(x));
         }
 
         // [GET] /users/{userid}/positions/
         [Route("users/{userId}/positions")]
         [HttpGet]
-        public IEnumerable<Models.Angular.Positions.AngularPosition> GetUserPositions(long userId)
+        public IEnumerable<AngularPosition> GetUserPositions(long userId)
         {
-            return PositionAccessor.GetPositionModelForUser(GetUser(), userId).Select(x => new Models.Angular.Positions.AngularPosition(x));
+            return PositionAccessor.GetPositionModelForUser(GetUser(), userId).Select(x => new AngularPosition(x));
         }
 
         //[GET/PUT] /users/{userid}/directreports/
@@ -133,9 +136,9 @@ namespace RadialReview.Api.V0
         //[GET] /users/{userid}/seats/
         [Route("users/{userId}/seats")]
         [HttpGet]
-        public IEnumerable<Models.Angular.Accountability.AngularAccountabilityNode> GetSeats(long userId) // Angular
+        public IEnumerable<AngularAccountabilityNode> GetSeats(long userId) // Angular
         {
-            return AccountabilityAccessor.GetNodesForUser(GetUser(), userId).Select(x => new Models.Angular.Accountability.AngularAccountabilityNode(x));
+            return AccountabilityAccessor.GetNodesForUser(GetUser(), userId).Select(x => new AngularAccountabilityNode(x));
         }
 
         //[GET] /user/mine/teams
@@ -143,17 +146,17 @@ namespace RadialReview.Api.V0
         [HttpGet]
         public IEnumerable<TeamDurationModel> GetMineTeam()
         {
+		throw new NotImplementedException("Obfuscate the TeamDurationModel");
             return TeamAccessor.GetUsersTeams(GetUser(), GetUser().Id);
         }
-
 
         //[GET] /user/{userId}/teams
         [Route("users/{userId}/teams")]
         [HttpGet]
         public IEnumerable<TeamDurationModel> GetUserTeams(long userId)
         {
-            return TeamAccessor.GetAllTeammembersAssociatedWithUser(GetUser(), userId);
+		throw new NotImplementedException("Obfuscate the TeamDurationModel");
+            return TeamAccessor.GetUsersTeams(GetUser(), userId);
         }
-
     }
 }

@@ -521,7 +521,7 @@ namespace RadialReview.Controllers {
 		[HttpPost]
 		public JsonResult UpdateTodos(long id, UpdateTodoVM model) {
 			var recurrenceId = id;
-			L10Accessor.UpdateTodos(GetUser(), recurrenceId, model);
+			L10Accessor.UpdateTodoOrder(GetUser(), recurrenceId, model);
 			return Json(ResultObject.SilentSuccess());
 		}
 

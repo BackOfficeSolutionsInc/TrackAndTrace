@@ -13,7 +13,7 @@ namespace RadialReview {
 
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-            routes.MapRoute(name: "url", url: "u/{id}", defaults: new { controller = "Url", action = "Index", id = "" });
+            routes.MapRoute(name: "url",url: "u/{id}",defaults: new { controller = "Url", action = "Index", id = "" });
             routes.MapRoute(name: "image", url: "i/{id}", defaults: new { controller = "Image", action = "Index", id = "" });
             routes.MapRoute(name: "nexus", url: "n/{id}", defaults: new { controller = "Nexus", action = "Index", id = "" });
             routes.MapRoute(name: "privacy", url: "privacy", defaults: new { controller = "Legal", action = "Privacy", id = "" });
@@ -22,7 +22,8 @@ namespace RadialReview {
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+				defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional },
+				namespaces: new[] { "RadialReview.Controllers" }
             );
         }
     }

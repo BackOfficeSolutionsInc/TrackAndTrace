@@ -248,12 +248,12 @@ namespace RadialReview.Utilities.NHibernate {
 		public ITransaction BeginTransaction() {
 			TransactionDepth += 1;
 			if (_backingSession != null && _backingSession.Transaction != null) {
-				if (_backingSession.Transaction.IsActive) {
-					return new SingleRequestTransaction(_backingSession.Transaction, this);
+				if (_backingSession.Transaction.IsActive) {					
+					return new SingleRequestTransaction(_backingSession.Transaction, this);					
 				}
 			}
 
-			return new SingleRequestTransaction(_backingSession.BeginTransaction(), this);
+			return new SingleRequestTransaction(_backingSession.BeginTransaction(), this);			
 		}
 
 		public ITransaction BeginTransaction(IsolationLevel isolationLevel) {

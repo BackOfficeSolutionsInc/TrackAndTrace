@@ -19,6 +19,8 @@ using RadialReview.Utilities.DataTypes;
 using System.Text;
 using System.Web;
 using RadialReview.Utilities.RealTime;
+using RadialReview.Hooks;
+using RadialReview.Utilities.Hooks;
 
 namespace RadialReview.Accessors {
 	public class IssuesAccessor : BaseAccessor {
@@ -108,316 +110,329 @@ namespace RadialReview.Accessors {
             issue.CreatedBy = s.Get<UserOrganizationModel>(issue.CreatedById);
             */
 
-			if (String.IsNullOrWhiteSpace(issue.PadId))
-				issue.PadId = Guid.NewGuid().ToString();
+            if (String.IsNullOrWhiteSpace(issue.PadId))
+                issue.PadId = Guid.NewGuid().ToString();
 
-			if (!string.IsNullOrWhiteSpace(issue.Description))
-				await PadAccessor.CreatePad(issue.PadId, issue.Description);
+            if (!string.IsNullOrWhiteSpace(issue.Description))
+                await PadAccessor.CreatePad(issue.PadId, issue.Description);
 
 
-			s.Save(issue);
-			o.IssueModel = issue;
-			var r = s.Get<L10Recurrence>(recurrenceId);
+            s.Save(issue);
+            o.IssueModel = issue;
+            var r = s.Get<L10Recurrence>(recurrenceId);
 
 			// r.Pristine = false;
 			await L10Accessor.Depristine_Unsafe(s, perms.GetCaller(), r);
-			s.Update(r);
+            s.Update(r);
 
-			var recur = new IssueModel.IssueModel_Recurrence() {
-				CopiedFrom = null,
-				Issue = issue,
-				CreatedBy = issue.CreatedBy,
-				Recurrence = r,
-				CreateTime = issue.CreateTime,
-				Owner = s.Load<UserOrganizationModel>(ownerId),
-				Priority = issue._Priority,
-				//BackupOwner = backupOwner
-			};
-			s.Save(recur);
-			o.IssueRecurrenceModel = recur;
-			if (r.OrderIssueBy == "data-priority") {
-				var order = s.QueryOver<IssueModel.IssueModel_Recurrence>()
-					.Where(x => x.Recurrence.Id == recurrenceId && x.DeleteTime == null && x.CloseTime == null && x.Priority > issue._Priority && x.ParentRecurrenceIssue == null)
-					.Select(x => x.Ordering).List<long?>().Where(x => x != null).ToList();
-				var max = -1L;
-				if (order.Any())
-					max = order.Max() ?? -1;
-				max += 1;
-				recur.Ordering = max;
-				s.Update(recur);
-			}
-			if (r.OrderIssueBy == "data-rank") {
-				var order = s.QueryOver<IssueModel.IssueModel_Recurrence>()
-					.Where(x => x.Recurrence.Id == recurrenceId && x.DeleteTime == null && x.CloseTime == null && x.Rank > issue._Rank && x.ParentRecurrenceIssue == null)
-					.Select(x => x.Ordering).List<long?>().Where(x => x != null).ToList();
-				var max = -1L;
-				if (order.Any())
-					max = order.Max() ?? -1;
-				max += 1;
-				recur.Ordering = max;
-				s.Update(recur);
-			}
-			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-			var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+            var recur = new IssueModel.IssueModel_Recurrence()
+            {
+                CopiedFrom = null,
+                Issue = issue,
+                CreatedBy = issue.CreatedBy,
+                Recurrence = r,
+                CreateTime = issue.CreateTime,
+                Owner = s.Load<UserOrganizationModel>(ownerId),
+                Priority = issue._Priority
 
-			meetingHub.appendIssue(".issues-list", IssuesData.FromIssueRecurrence(recur), r.OrderIssueBy);
-			var message = "Created issue.";
-			var showWhoCreatedDetails = true;
-			if (showWhoCreatedDetails) {
-				try {
-					if (perms.GetCaller() != null && perms.GetCaller().GetFirstName() != null) {
-						message = perms.GetCaller().GetFirstName() + " created an issue.";
-					}
-				} catch (Exception) {
-				}
-			}
+            };
+            s.Save(recur);
+            o.IssueRecurrenceModel = recur;
+            if (r.OrderIssueBy == "data-priority")
+            {
+                var order = s.QueryOver<IssueModel.IssueModel_Recurrence>()
+                    .Where(x => x.Recurrence.Id == recurrenceId && x.DeleteTime == null && x.CloseTime == null && x.Priority > issue._Priority && x.ParentRecurrenceIssue == null)
+                    .Select(x => x.Ordering).List<long?>().Where(x => x != null).ToList();
+                var max = -1L;
+                if (order.Any())
+                    max = order.Max() ?? -1;
+                max += 1;
+                recur.Ordering = max;
+                s.Update(recur);
+            }
+            if (r.OrderIssueBy == "data-rank")
+            {
+                var order = s.QueryOver<IssueModel.IssueModel_Recurrence>()
+                    .Where(x => x.Recurrence.Id == recurrenceId && x.DeleteTime == null && x.CloseTime == null && x.Rank > issue._Rank && x.ParentRecurrenceIssue == null)
+                    .Select(x => x.Ordering).List<long?>().Where(x => x != null).ToList();
+                var max = -1L;
+                if (order.Any())
+                    max = order.Max() ?? -1;
+                max += 1;
+                recur.Ordering = max;
+                s.Update(recur);
+            }
+            var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+            var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
 
-			meetingHub.showAlert(message, 1500);
+            meetingHub.appendIssue(".issues-list", IssuesData.FromIssueRecurrence(recur), r.OrderIssueBy);
+            var message = "Created issue.";
+            var showWhoCreatedDetails = true;
+            if (showWhoCreatedDetails)
+            {
+                try
+                {
+                    if (perms.GetCaller() != null && perms.GetCaller().GetFirstName() != null)
+                    {
+                        message = perms.GetCaller().GetFirstName() + " created an issue.";
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
 
-			var updates = new AngularRecurrence(recurrenceId) {
-				Focus = "[data-issue='" + recur.Id + "'] input:visible:first"
-			};
-			updates.IssuesList.Issues = AngularList.Create<AngularIssue>(AngularListType.Add, new[] { new AngularIssue(recur) });
-			meetingHub.update(updates);
+            meetingHub.showAlert(message, 1500);
 
-			//rt.UpdateRecurrences(recurrenceId).SetFocus("");
+            var updates = new AngularRecurrence(recurrenceId)
+            {
+                Focus = "[data-issue='" + recur.Id + "'] input:visible:first"
+            };
+            updates.IssuesList.Issues = AngularList.Create<AngularIssue>(AngularListType.Add, new[] { new AngularIssue(recur) });
+            meetingHub.update(updates);
 
-			Audit.L10Log(s, perms.GetCaller(), recurrenceId, "CreateIssue", ForModel.Create(issue), issue.NotNull(x => x.Message));
-			return o;
+            //rt.UpdateRecurrences(recurrenceId).SetFocus("");
 
-		}
+            Audit.L10Log(s, perms.GetCaller(), recurrenceId, "CreateIssue", ForModel.Create(issue), issue.NotNull(x => x.Message));
 
-		//public static object EditIssue(UserOrganizationModel caller, long issueRecurrenceId, string message, long? accountableUserId=null, int? priority=null) {
-		//	using (var s = HibernateSession.GetCurrentSession()) {
-		//		using (var tx = s.BeginTransaction()) {
-		//			using (var rt = RealTimeUtility.Create()) {
+			// Trigger webhook events
+			HooksRegistry.Each<IIssueHook>(x => x.CreateIssue(s, o.IssueRecurrenceModel));
 
-		//				var perm = PermissionsUtility.Create(s, caller).EditIssueRecurrence(issueRecurrenceId);
+            return o;
 
-		//				var found = s.Get<IssueModel.IssueModel_Recurrence>(issueRecurrenceId);
+        }
 
-		//				if (message != null)
-		//					found.Issue.Message = message;
-		//				if (accountableUserId > 0) {
-		//					perm.EditIssueRecurrence(found.Id).ViewUserOrganization(accountableUserId.Value,false);
-		//					found.Owner = s.Load<UserOrganizationModel>(accountableUserId.Value);
-		//				}
-		//				if (priority != null) {
-		//					found.Priority = priority.Value;
-		//				}
+        //public static object EditIssue(UserOrganizationModel caller, long issueRecurrenceId, string message, long? accountableUserId=null, int? priority=null) {
+        //	using (var s = HibernateSession.GetCurrentSession()) {
+        //		using (var tx = s.BeginTransaction()) {
+        //			using (var rt = RealTimeUtility.Create()) {
 
-		//				s.Update(found);
+        //				var perm = PermissionsUtility.Create(s, caller).EditIssueRecurrence(issueRecurrenceId);
 
-		//				if (found.Recurrence!=null && found.Recurrence.Id > 0)
-		//					rt.UpdateRecurrences(found.Recurrence.Id).Update(new AngularIssue(found));
+        //				var found = s.Get<IssueModel.IssueModel_Recurrence>(issueRecurrenceId);
+
+        //				if (message != null)
+        //					found.Issue.Message = message;
+        //				if (accountableUserId > 0) {
+        //					perm.EditIssueRecurrence(found.Id).ViewUserOrganization(accountableUserId.Value,false);
+        //					found.Owner = s.Load<UserOrganizationModel>(accountableUserId.Value);
+        //				}
+        //				if (priority != null) {
+        //					found.Priority = priority.Value;
+        //				}
+
+        //				s.Update(found);
+
+        //				if (found.Recurrence!=null && found.Recurrence.Id > 0)
+        //					rt.UpdateRecurrences(found.Recurrence.Id).Update(new AngularIssue(found));
 
 
-		//				tx.Commit();
-		//				s.Flush();
-		//				return found;
+        //				tx.Commit();
+        //				s.Flush();
+        //				return found;
 
-		//			}
-		//		}
-		//	}
-		//}
+        //			}
+        //		}
+        //	}
+        //}
 
 		public static async Task<IssueOutput> CreateIssue(UserOrganizationModel caller, long recurrenceId, long ownerId, IssueModel issue) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					var perms = PermissionsUtility.Create(s, caller);
+                    var perms = PermissionsUtility.Create(s, caller);
 
-					var o = await CreateIssue(s, perms, recurrenceId, ownerId, issue);
+                    var o = await CreateIssue(s, perms, recurrenceId, ownerId, issue);
 
-					tx.Commit();
-					s.Flush();
+                    tx.Commit();
+                    s.Flush();
 
-					return o;
-				}
-			}
-		}
+                    return o;
+                }
+            }
+        }
 
 		public static IssueModel GetIssue(UserOrganizationModel caller, long issueId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					PermissionsUtility.Create(s, caller).ViewIssue(issueId);
-					return s.Get<IssueModel>(issueId);
-				}
-			}
-		}
+                    PermissionsUtility.Create(s, caller).ViewIssue(issueId);
+                    return s.Get<IssueModel>(issueId);
+                }
+            }
+        }
 
 		public static List<IssueModel.IssueModel_Recurrence> GetMyIssues(UserOrganizationModel caller, long userId, bool excludeCompleteDuringMeeting = false, DateRange range = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					PermissionsUtility.Create(s, caller).Self(userId);
+                    PermissionsUtility.Create(s, caller).Self(userId);
 
-					return s.QueryOver<IssueModel.IssueModel_Recurrence>()
-						.Where(x => x.DeleteTime == null
-						&& x.Owner.Id == userId).Fetch(x => x.Issue).Eager.List().ToList();
-				}
-			}
-		}
+                    return s.QueryOver<IssueModel.IssueModel_Recurrence>()
+                        .Where(x => x.DeleteTime == null
+                        && x.Owner.Id == userId).Fetch(x => x.Issue).Eager.List().ToList();
+                }
+            }
+        }
 
 		public static List<IssueModel.IssueModel_Recurrence> GetUserIssues(UserOrganizationModel caller, long userId, long recurrenceId, bool excludeCompleteDuringMeeting = false, DateRange range = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					PermissionsUtility.Create(s, caller).ViewRecurrenceIssuesForUser(userId, recurrenceId);
+                    PermissionsUtility.Create(s, caller).ViewRecurrenceIssuesForUser(userId, recurrenceId);
 
-					return s.QueryOver<IssueModel.IssueModel_Recurrence>()
-						.Where(x => x.DeleteTime == null
-						&& x.Owner.Id == userId).Fetch(x => x.Issue).Eager.List().ToList();
-				}
-			}
-		}
+                    return s.QueryOver<IssueModel.IssueModel_Recurrence>()
+                        .Where(x => x.DeleteTime == null
+                        && x.Owner.Id == userId).Fetch(x => x.Issue).Eager.List().ToList();
+                }
+            }
+        }
 
 		public static IssueModel.IssueModel_Recurrence GetIssue_Recurrence(UserOrganizationModel caller, long recurrence_issue) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					var found = s.Get<IssueModel.IssueModel_Recurrence>(recurrence_issue);
+                    var found = s.Get<IssueModel.IssueModel_Recurrence>(recurrence_issue);
 
-					PermissionsUtility.Create(s, caller)
-						.ViewL10Recurrence(found.Recurrence.Id)
-						.ViewIssue(found.Issue.Id);
+                    PermissionsUtility.Create(s, caller)
+                        .ViewL10Recurrence(found.Recurrence.Id)
+                        .ViewIssue(found.Issue.Id);
 
-					found.Issue = s.Get<IssueModel>(found.Issue.Id);
-					found.Recurrence = s.Get<L10Recurrence>(found.Recurrence.Id);
+                    found.Issue = s.Get<IssueModel>(found.Issue.Id);
+                    found.Recurrence = s.Get<L10Recurrence>(found.Recurrence.Id);
 
-					return found;
-				}
-			}
-		}
+                    return found;
+                }
+            }
+        }
 
 		public static IssueModel.IssueModel_Recurrence CopyIssue(UserOrganizationModel caller, long parentIssue_RecurrenceId, long childRecurrenceId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					var now = DateTime.UtcNow;
+                    var now = DateTime.UtcNow;
 
-					var parent = s.Get<IssueModel.IssueModel_Recurrence>(parentIssue_RecurrenceId);
+                    var parent = s.Get<IssueModel.IssueModel_Recurrence>(parentIssue_RecurrenceId);
 
-					PermissionsUtility.Create(s, caller)
-						.ViewL10Recurrence(parent.Recurrence.Id)
-						.ViewIssue(parent.Issue.Id);
+                    PermissionsUtility.Create(s, caller)
+                        .ViewL10Recurrence(parent.Recurrence.Id)
+                        .ViewIssue(parent.Issue.Id);
 
-					var childRecur = s.Get<L10Recurrence>(childRecurrenceId);
+                    var childRecur = s.Get<L10Recurrence>(childRecurrenceId);
 
-					if (childRecur.Organization.Id != caller.Organization.Id)
-						throw new PermissionsException("You cannot copy an issue into this meeting.");
-					if (parent.DeleteTime != null)
-						throw new PermissionsException("Issue does not exist.");
+                    if (childRecur.Organization.Id != caller.Organization.Id)
+                        throw new PermissionsException("You cannot copy an issue into this meeting.");
+                    if (parent.DeleteTime != null)
+                        throw new PermissionsException("Issue does not exist.");
 
-					var possible = L10Accessor._GetAllL10RecurrenceAtOrganization(s, caller, caller.Organization.Id);
+                    var possible = L10Accessor._GetAllL10RecurrenceAtOrganization(s, caller, caller.Organization.Id);
 					if (possible.All(x => x.Id != childRecurrenceId)) {
-						throw new PermissionsException("You do not have permission to copy this issue.");
-					}
+                        throw new PermissionsException("You do not have permission to copy this issue.");
+                    }
 
 					var issue_recur = new IssueModel.IssueModel_Recurrence() {
-						ParentRecurrenceIssue = null,
-						CreateTime = now,
-						CopiedFrom = parent,
-						CreatedBy = caller,
-						Issue = s.Load<IssueModel>(parent.Issue.Id),
-						Recurrence = s.Load<L10Recurrence>(childRecurrenceId),
-						Owner = parent.Owner
-					};
-					s.Save(issue_recur);
-					var viewModel = IssuesData.FromIssueRecurrence(issue_recur);
-					_RecurseCopy(s, viewModel, caller, parent, issue_recur, now);
-					tx.Commit();
-					s.Flush();
+                        ParentRecurrenceIssue = null,
+                        CreateTime = now,
+                        CopiedFrom = parent,
+                        CreatedBy = caller,
+                        Issue = s.Load<IssueModel>(parent.Issue.Id),
+                        Recurrence = s.Load<L10Recurrence>(childRecurrenceId),
+                        Owner = parent.Owner
+                    };
+                    s.Save(issue_recur);
+                    var viewModel = IssuesData.FromIssueRecurrence(issue_recur);
+                    _RecurseCopy(s, viewModel, caller, parent, issue_recur, now);
+                    tx.Commit();
+                    s.Flush();
 
-					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-					var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(childRecurrenceId));
+                    var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+                    var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(childRecurrenceId));
 
-					meetingHub.appendIssue(".issues-list", viewModel);
-					var issue = s.Get<IssueModel>(parent.Issue.Id);
-					Audit.L10Log(s, caller, parent.Recurrence.Id, "CopyIssue", ForModel.Create(issue_recur), issue.NotNull(x => x.Message) + " copied into " + childRecur.NotNull(x => x.Name));
-					return issue_recur;
-				}
-			}
-		}
+                    meetingHub.appendIssue(".issues-list", viewModel);
+                    var issue = s.Get<IssueModel>(parent.Issue.Id);
+                    Audit.L10Log(s, caller, parent.Recurrence.Id, "CopyIssue", ForModel.Create(issue_recur), issue.NotNull(x => x.Message) + " copied into " + childRecur.NotNull(x => x.Name));
+                    return issue_recur;
+                }
+            }
+        }
 
 		private static void _RecurseCopy(ISession s, IssuesData viewModel, UserOrganizationModel caller, IssueModel.IssueModel_Recurrence copiedFrom, IssueModel.IssueModel_Recurrence parent, DateTime now) {
-			var children = s.QueryOver<IssueModel.IssueModel_Recurrence>()
-				.Where(x => x.DeleteTime == null && x.ParentRecurrenceIssue.Id == copiedFrom.Id)
-				.List();
-			var childrenVMs = new List<IssuesData>();
+            var children = s.QueryOver<IssueModel.IssueModel_Recurrence>()
+                .Where(x => x.DeleteTime == null && x.ParentRecurrenceIssue.Id == copiedFrom.Id)
+                .List();
+            var childrenVMs = new List<IssuesData>();
 			foreach (var child in children) {
 				var issue_recur = new IssueModel.IssueModel_Recurrence() {
-					ParentRecurrenceIssue = parent,
-					CreateTime = now,
-					CopiedFrom = child,
-					CreatedBy = caller,
-					Issue = s.Load<IssueModel>(child.Issue.Id),
-					Recurrence = s.Load<L10Recurrence>(parent.Recurrence.Id),
-					Owner = s.Load<UserOrganizationModel>(parent.Owner.Id)
-				};
-				s.Save(issue_recur);
-				var childVM = IssuesData.FromIssueRecurrence(issue_recur);
-				childrenVMs.Add(childVM);
-				_RecurseCopy(s, childVM, caller, child, issue_recur, now);
-			}
-			viewModel.children = childrenVMs.ToArray();
-		}
-		//private static void RecurseIssue(StringBuilder sb, int index, IssueModel.IssueModel_Recurrence parent, int depth, bool includeDetails) {
-		//	var time = "";
-		//	if (parent.CloseTime != null)
-		//		time = parent.CloseTime.Value.ToShortDateString();
-		//	sb.Append(index).Append(",")
-		//		.Append(depth).Append(",")
-		//		.Append(Csv.CsvQuote(parent.Owner.NotNull(x => x.GetName()))).Append(",")
-		//		.Append(parent.CreateTime.ToShortDateString()).Append(",")
-		//		.Append(time).Append(",");
-		//	sb.Append(Csv.CsvQuote(parent.Issue.Message)).Append(",");
+                    ParentRecurrenceIssue = parent,
+                    CreateTime = now,
+                    CopiedFrom = child,
+                    CreatedBy = caller,
+                    Issue = s.Load<IssueModel>(child.Issue.Id),
+                    Recurrence = s.Load<L10Recurrence>(parent.Recurrence.Id),
+                    Owner = s.Load<UserOrganizationModel>(parent.Owner.Id)
+                };
+                s.Save(issue_recur);
+                var childVM = IssuesData.FromIssueRecurrence(issue_recur);
+                childrenVMs.Add(childVM);
+                _RecurseCopy(s, childVM, caller, child, issue_recur, now);
+            }
+            viewModel.children = childrenVMs.ToArray();
+        }
+        //private static void RecurseIssue(StringBuilder sb, int index, IssueModel.IssueModel_Recurrence parent, int depth, bool includeDetails) {
+        //	var time = "";
+        //	if (parent.CloseTime != null)
+        //		time = parent.CloseTime.Value.ToShortDateString();
+        //	sb.Append(index).Append(",")
+        //		.Append(depth).Append(",")
+        //		.Append(Csv.CsvQuote(parent.Owner.NotNull(x => x.GetName()))).Append(",")
+        //		.Append(parent.CreateTime.ToShortDateString()).Append(",")
+        //		.Append(time).Append(",");
+        //	sb.Append(Csv.CsvQuote(parent.Issue.Message)).Append(",");
 
-		//	sb.AppendLine();
-		//	foreach (var child in parent._ChildIssues)
-		//		RecurseIssue(sb, index, child, depth + 1, includeDetails);
-		//}
+        //	sb.AppendLine();
+        //	foreach (var child in parent._ChildIssues)
+        //		RecurseIssue(sb, index, child, depth + 1, includeDetails);
+        //}
 		public static Csv Listing(UserOrganizationModel caller, long organizationId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					// var p = s.Get<PeriodModel>(period);
+                    // var p = s.Get<PeriodModel>(period);
 
-					PermissionsUtility.Create(s, caller).ManagingOrganization(organizationId);
+                    PermissionsUtility.Create(s, caller).ManagingOrganization(organizationId);
 
-					var sb = new StringBuilder();
+                    var sb = new StringBuilder();
 
-					sb.Append("Id,Depth,Owner,Created,Closed,Issue");
+                    sb.Append("Id,Depth,Owner,Created,Closed,Issue");
 
-					var csv = new Csv();
+                    var csv = new Csv();
 
-					IssueModel issueA = null;
+                    IssueModel issueA = null;
 
-					//var id = 0;
-					var issues = s.QueryOver<IssueModel.IssueModel_Recurrence>()
-						.JoinAlias(x => x.Issue, () => issueA)
-						.Where(x => x.DeleteTime == null)
-						.Where(x => issueA.OrganizationId == organizationId)
-						.Fetch(x => x.Issue).Eager
-						.List().ToList();
+                    //var id = 0;
+                    var issues = s.QueryOver<IssueModel.IssueModel_Recurrence>()
+                        .JoinAlias(x => x.Issue, () => issueA)
+                        .Where(x => x.DeleteTime == null)
+                        .Where(x => issueA.OrganizationId == organizationId)
+                        .Fetch(x => x.Issue).Eager
+                        .List().ToList();
 
 					foreach (var t in issues) {
-						var time = "";
-						csv.Add("" + t.Id, "Owner", t.Owner.NotNull(x => x.GetName()));
-						csv.Add("" + t.Id, "Created", t.CreateTime.ToShortDateString());
-						if (t.CloseTime != null)
-							time = t.CloseTime.Value.ToShortDateString();
-						csv.Add("" + t.Id, "Completed", time);
-						csv.Add("" + t.Id, "Issue", "" + t.Issue.Message);
+                        var time = "";
+                        csv.Add("" + t.Id, "Owner", t.Owner.NotNull(x => x.GetName()));
+                        csv.Add("" + t.Id, "Created", t.CreateTime.ToShortDateString());
+                        if (t.CloseTime != null)
+                            time = t.CloseTime.Value.ToShortDateString();
+                        csv.Add("" + t.Id, "Completed", time);
+                        csv.Add("" + t.Id, "Issue", "" + t.Issue.Message);
 
-						//if (false /*&& includeDetails*/) {
-						//	var padDetails = await PadAccessor.GetText(t.PadId);
-						//	csv.Add("" + t.Id, "Details", "" + padDetails);
-						//}
-					}
-
-
-					csv.SetTitle("Issues");
-
-					return csv;
-				}
-			}
-		}
+                        //if (false /*&& includeDetails*/) {
+                        //	var padDetails = await PadAccessor.GetText(t.PadId);
+                        //	csv.Add("" + t.Id, "Details", "" + padDetails);
+                        //}
+                    }
 
 
-	}
+                    csv.SetTitle("Issues");
+
+                    return csv;
+                }
+            }
+        }
+
+
+    }
 }
