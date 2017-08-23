@@ -101,8 +101,11 @@ acapp.directive("ttOverflow", function () {
 		}
 	}
 	function getCharWidth(char) {
-		try {
-			return letterLengthDict[char];
+	    try {
+            var oo = letterLengthDict[char];
+            if (typeof (oo) === "undefined")
+                return maxLetter;
+			return oo;
 		} catch (e) {
 			console.warn("letterLen[" + char + "]:" + e);
 			return maxLetter;

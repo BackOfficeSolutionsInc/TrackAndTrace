@@ -31,7 +31,10 @@
         }
       },
       "bootstrap/3.0.0": {
-        "type": "package"
+        "type": "package",
+        "dependencies": {
+          "jquery": "1.9.0"
+        }
       },
       "Common.Logging/3.3.1": {
         "type": "package",
@@ -1079,7 +1082,10 @@
         }
       },
       "bootstrap/3.0.0": {
-        "type": "package"
+        "type": "package",
+        "dependencies": {
+          "jquery": "1.9.0"
+        }
       },
       "Common.Logging/3.3.1": {
         "type": "package",
@@ -2138,19 +2144,22 @@
       ]
     },
     "bootstrap/3.0.0": {
-      "sha512": "DGR3x0naTbFwnfDXXBkmzyfnWcTFtA7HeSyIKAUGHAa9KyYLisa5+vvbMbOgiFuN55bGl7695NQ7bs65BZeopw==",
+      "sha512": "d1JUd1ZjfbhGGTxjBSjCLIV+O//hZDcvI0hnaeTL3VHAD+6Z89vgPwV0K/nmPM4hZKq172iPV55lCSpohT6WmA==",
       "type": "package",
+      "path": "bootstrap/3.0.0",
       "files": [
+        "Content/Content/bootstrap-theme.css",
+        "Content/Content/bootstrap-theme.min.css",
+        "Content/Content/bootstrap.css",
+        "Content/Content/bootstrap.min.css",
+        "Content/Scripts/bootstrap.js",
+        "Content/Scripts/bootstrap.min.js",
+        "Content/fonts/glyphicons-halflings-regular.eot",
+        "Content/fonts/glyphicons-halflings-regular.svg",
+        "Content/fonts/glyphicons-halflings-regular.ttf",
+        "Content/fonts/glyphicons-halflings-regular.woff",
         "bootstrap.3.0.0.nupkg.sha512",
-        "bootstrap.nuspec",
-        "content/Content/bootstrap.css",
-        "content/Content/bootstrap.min.css",
-        "content/Scripts/bootstrap.js",
-        "content/Scripts/bootstrap.min.js",
-        "content/fonts/glyphicons-halflings-regular.eot",
-        "content/fonts/glyphicons-halflings-regular.svg",
-        "content/fonts/glyphicons-halflings-regular.ttf",
-        "content/fonts/glyphicons-halflings-regular.woff"
+        "bootstrap.nuspec"
       ]
     },
     "Common.Logging/3.3.1": {
@@ -2358,8 +2367,9 @@
       ]
     },
     "jQuery/1.10.2": {
-      "sha512": "uPspgAZqsXYOwLW+Kf3uRxdFAyX1EiEd6AWJhCsnZNVsUJmEbsZSxA0P+ku6oAhHI682TOSwkbmmJPwFgdY5cA==",
+      "sha512": "V2k99hx8NNjC/Pkka367DksP1cXmP2WgtgLVGvwwbzf36Vhxekd35soIVUxI/WG/eqUlhUCUdTZYhwlECMXyBQ==",
       "type": "package",
+      "path": "jQuery/1.10.2",
       "files": [
         "Content/Scripts/jquery-1.10.2-vsdoc.js",
         "Content/Scripts/jquery-1.10.2.js",
@@ -2544,8 +2554,9 @@
       ]
     },
     "Microsoft.AspNet.SignalR.JS/2.1.2": {
-      "sha512": "Jye3H7juPGYiyUk+egEZf0iS42nIAl3KF/e62pjYYKFZ73EigsMREZ0BC6KqDjWWkIiTP9aVg4bVhUjZmzANGw==",
+      "sha512": "iNYGgBb59UK3X9q/XKgB/QtP7WlbMmDtmVxXgEwYsOFhNOnY/btJKq2DcJ5lgOJEwDJSjvN2GG8pDCSkg81ddQ==",
       "type": "package",
+      "path": "Microsoft.AspNet.SignalR.JS/2.1.2",
       "files": [
         "Microsoft.AspNet.SignalR.JS.2.1.2.nupkg.sha512",
         "Microsoft.AspNet.SignalR.JS.nuspec",
@@ -2917,8 +2928,9 @@
       ]
     },
     "Microsoft.Web.Infrastructure/1.0.0": {
-      "sha512": "RKFGbWdso8unJPFctEFEcjWuq7Ccf/QmHvuJNLuAV8js1HuBwfHo5SlVm0DdDBY4LTgpxvCDyqJeCYMU0Bwrtw==",
+      "sha512": "FNmvLn5m2LTU/Rs2KWVo0SIIh9Ek+U0ojex7xeDaSHw/zgEP77A8vY5cVWgUtBGS8MJfDGNn8rpXJWEIQaPwTg==",
       "type": "package",
+      "path": "Microsoft.Web.Infrastructure/1.0.0",
       "files": [
         "Microsoft.Web.Infrastructure.1.0.0.nupkg.sha512",
         "Microsoft.Web.Infrastructure.nuspec",
@@ -2926,8 +2938,9 @@
       ]
     },
     "Modernizr/2.6.2": {
-      "sha512": "IVaKsLm4+hDz5UOxHSYaaQXfaLYdFTYrMK049wkZRMYbTfJXQL55C7ztdjy1G/oC3EdNQcgSHrcDns49hXlSmg==",
+      "sha512": "3KcdGI/xNPSCqwazIlh+W9TFK9WH0v++qj6L2UXNAjt8FrXIz8QKR51XIzJwdIUVCOp8asdbyGaCcXTCT6ppFg==",
       "type": "package",
+      "path": "Modernizr/2.6.2",
       "files": [
         "Content/Scripts/modernizr-2.6.2.js",
         "Modernizr.2.6.2.nupkg.sha512",
@@ -3685,5 +3698,7 @@
       "log4net >= 2.0.8"
     ],
     ".NETFramework,Version=v4.5.2": []
-  }
+  },
+  "tools": {},
+  "projectFileToolGroups": {}
 }

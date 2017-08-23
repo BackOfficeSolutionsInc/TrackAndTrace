@@ -182,7 +182,7 @@ namespace TractionTools.UITests.L10Wizard {
 
                 page.Find(".create-row").Click();
 
-                var rows = d.WaitUntil(x => {
+                var rows = d.WaitUntil(20,x => {
                     var f = x.Finds(".rock-pane tbody tr[md-row]");
                     if (f.Count == 0)
                         return null;

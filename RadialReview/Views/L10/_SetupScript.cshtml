@@ -32,7 +32,7 @@
 
 			@:$("body").toggleClass("edit-disabled",@(Model.CanEdit?"false":"true"))
 
-			var pageType = Model.Recurrence._Pages.FirstOrDefault(x => Model.Meeting._MeetingLeaderCurrentPage == "page-" + x.Id).NotNull(x => x.PageTypeStr);
+			var pageType = Model.Recurrence._Pages.NotNull(y=>y.FirstOrDefault(x => Model.Meeting._MeetingLeaderCurrentPage == "page-" + x.Id).NotNull(x => x.PageTypeStr));
 			if (pageType != null) 
 			{
 			@:try{

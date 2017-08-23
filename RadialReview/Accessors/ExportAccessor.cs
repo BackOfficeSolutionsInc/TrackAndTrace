@@ -49,17 +49,19 @@ namespace RadialReview.Accessors {
 		public static Csv GenerateScorecardCsv(string title, ScorecardData data) {
 			var csv = new Csv();
 			csv.SetTitle("Measurable");
-			
 
-			 
-			foreach (var s in data.MeasurablesAndDividers.OrderBy(x => x._Ordering)) {// scores.GroupBy(x => x.MeasurableId).OrderBy(x=>x.First().Measurable._Ordering)) {
-				var measurable = s.Measurable;
-				//var ss = s.First();
-				csv.Add(measurable.Title, "Owner", measurable.AccountableUser.NotNull(x => x.GetName()));
-				csv.Add(measurable.Title, "Admin", measurable.AdminUser.NotNull(x => x.GetName()));
-				csv.Add(measurable.Title, "Goal", "" + measurable.Goal.NotNull(x => measurable.UnitType.Format(x)));
-				csv.Add(measurable.Title, "GoalDirection", "" + measurable.GoalDirection);
-			}
+
+
+            foreach (var s in data.MeasurablesAndDividers.OrderBy(x => x._Ordering)) {// scores.GroupBy(x => x.MeasurableId).OrderBy(x=>x.First().Measurable._Ordering)) {
+                var measurable = s.Measurable;
+                //var ss = s.First();
+                if (measurable != null) {
+                    csv.Add(measurable.Title, "Owner", measurable.AccountableUser.NotNull(x => x.GetName()));
+                    csv.Add(measurable.Title, "Admin", measurable.AdminUser.NotNull(x => x.GetName()));
+                    csv.Add(measurable.Title, "Goal", "" + measurable.Goal.NotNull(x => measurable.UnitType.Format(x)));
+                    csv.Add(measurable.Title, "GoalDirection", "" + measurable.GoalDirection);
+                }
+            }
 			foreach (var s in data.Scores.OrderBy(x => x.ForWeek)) {
 				csv.Add(s.Measurable.Title, s.ForWeek.ToShortDateString(), s.Measured.NotNull(x => s.Measurable.UnitType.Format(x.Value)) ?? "");
 			}

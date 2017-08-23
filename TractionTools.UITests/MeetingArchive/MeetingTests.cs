@@ -55,7 +55,7 @@ namespace TractionTools.UITests.MeetingArchive {
 
                 notes.Find(".tab.add").Click();
 
-                var name = d.Find("#modal #Name", 3);
+                var name = d.Find("#modal #Name", 6);
                 PAGENAME = "A new page!";
                 name.SendKeys(PAGENAME);
                 name.SendKeys(Keys.Return);
@@ -82,7 +82,7 @@ namespace TractionTools.UITests.MeetingArchive {
 
                 ISSUE_TEXT = "A new issue!!";
                 ISSUE_DETAILS = "issue details!!";
-                d.Find("#modal #Message", 4).SendKeys(ISSUE_TEXT);
+                d.Find("#modal #Message", 8).SendKeys(ISSUE_TEXT);
                 d.Find("#modal textarea", 4).SendKeys(ISSUE_DETAILS);
 
                 d.TestScreenshot("IssueModal");
