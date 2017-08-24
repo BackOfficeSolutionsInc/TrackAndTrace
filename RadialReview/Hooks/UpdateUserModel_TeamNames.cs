@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 namespace RadialReview.Hooks {
 	public class UpdateUserModel_TeamNames : IUpdateUserModelHook {
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 		public async Task UpdateUserModel(ISession s, UserModel user) {
 			var uos = s.QueryOver<UserOrganizationModel>().Where(x => x.User.Id == user.Id && x.ManagerAtOrganization).List().ToList();
 			var uoIds = uos.Select(y => y.Id).Distinct().ToArray();
@@ -25,7 +26,7 @@ namespace RadialReview.Hooks {
 					s.Update(t);
 				}
 			}
-
 		}
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 	}
 }

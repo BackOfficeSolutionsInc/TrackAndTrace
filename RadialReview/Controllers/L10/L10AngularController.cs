@@ -59,10 +59,10 @@ namespace RadialReview.Controllers {
         }
         [HttpPost]
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult RemoveAngularMeasurable(long recurrenceId, AngularMeasurable model, string connectionId = null)
+        public async Task<JsonResult> RemoveAngularMeasurable(long recurrenceId, AngularMeasurable model, string connectionId = null)
         {
             //var recurrenceId = id;
-            L10Accessor.Remove(GetUser(), model, recurrenceId, connectionId);
+           await L10Accessor.Remove(GetUser(), model, recurrenceId, connectionId);
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
 		
@@ -122,10 +122,10 @@ namespace RadialReview.Controllers {
 		}
 		[HttpPost]
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult RemoveAngularRock(long recurrenceId, AngularRock model, string connectionId = null)
+        public async Task<JsonResult> RemoveAngularRock(long recurrenceId, AngularRock model, string connectionId = null)
         {
             //var recurrenceId = id;
-            L10Accessor.Remove(GetUser(), model, recurrenceId, connectionId);
+            await L10Accessor.Remove(GetUser(), model, recurrenceId, connectionId);
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
         #endregion
@@ -150,9 +150,9 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult RemoveAngularTodo(long recurrenceId, AngularTodo model, string connectionId = null)
+        public async Task<JsonResult> RemoveAngularTodo(long recurrenceId, AngularTodo model, string connectionId = null)
         {
-            L10Accessor.Remove(GetUser(), model, recurrenceId, connectionId);
+            await L10Accessor.Remove(GetUser(), model, recurrenceId, connectionId);
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
         #endregion
@@ -175,10 +175,10 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult RemoveAngularIssue(long recurrenceId, AngularIssue model, string connectionId = null)
+        public async Task<JsonResult> RemoveAngularIssue(long recurrenceId, AngularIssue model, string connectionId = null)
         {
             //var recurrenceId = id;
-            L10Accessor.Remove(GetUser(), model, recurrenceId, connectionId);
+            await L10Accessor.Remove(GetUser(), model, recurrenceId, connectionId);
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
 		#endregion
@@ -193,9 +193,9 @@ namespace RadialReview.Controllers {
 		}
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult RemoveAngularHeadline(long recurrenceId, AngularHeadline model, string connectionId = null) {
+		public async Task<JsonResult> RemoveAngularHeadline(long recurrenceId, AngularHeadline model, string connectionId = null) {
 			//var recurrenceId = id;
-			L10Accessor.Remove(GetUser(), model, recurrenceId, connectionId);
+			await L10Accessor.Remove(GetUser(), model, recurrenceId, connectionId);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 		//[HttpGet]
@@ -222,10 +222,10 @@ namespace RadialReview.Controllers {
 
         [HttpPost]
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult RemoveAngularUser(long recurrenceId, AngularUser model, string connectionId = null)
+        public async Task<JsonResult> RemoveAngularUser(long recurrenceId, AngularUser model, string connectionId = null)
         {
             //var recurrenceId = id;
-            L10Accessor.Remove(GetUser(), model, recurrenceId, connectionId);
+            await L10Accessor.Remove(GetUser(), model, recurrenceId, connectionId);
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
 		#endregion

@@ -45,7 +45,7 @@ namespace TractionTools.Tests.Api
         [TestCategory("Api_V0")]
         public async Task TestCreateProcessDef()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             var getResult = await CreateProcess(c);
             Assert.IsTrue(getResult > 0);
         }
@@ -54,7 +54,7 @@ namespace TractionTools.Tests.Api
         [TestCategory("Api_V0")]
         public async Task TestCreateTask()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
             Assert.IsTrue(!string.IsNullOrEmpty(createTask.Id));
@@ -65,7 +65,7 @@ namespace TractionTools.Tests.Api
         [TestCategory("Api_V0")]
         public async Task TestPublishProcess()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
             var getResult = await PublishProcess(c, getProcessDef);
@@ -77,7 +77,7 @@ namespace TractionTools.Tests.Api
         [TestCategory("Api_V0")]
         public async Task TestProcessStart()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
             var publishProcess = await PublishProcess(c, getProcessDef);
@@ -89,7 +89,7 @@ namespace TractionTools.Tests.Api
         [TestCategory("Api_V0")]
         public async Task TestTaskClaim()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
             var publishProcess = await PublishProcess(c, getProcessDef);
@@ -108,7 +108,7 @@ namespace TractionTools.Tests.Api
         [TestCategory("Api_V0")]
         public async Task TestTaskUnClaim()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
             var publishProcess = await PublishProcess(c, getProcessDef);
@@ -130,7 +130,7 @@ namespace TractionTools.Tests.Api
         [TestCategory("Api_V0")]
         public async Task TestAttachTask()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
             Assert.IsTrue(!string.IsNullOrEmpty(createTask.Id));
@@ -140,7 +140,7 @@ namespace TractionTools.Tests.Api
         [TestCategory("Api_V0")]
         public async Task TestDetachTask()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
             processDefAccessor = new ProcessDefAccessor();
@@ -154,7 +154,7 @@ namespace TractionTools.Tests.Api
         [TestCategory("Api_V0")]
         public async Task TestGetListTaskForUser()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
             var publishProcess = await PublishProcess(c, getProcessDef);
@@ -173,7 +173,7 @@ namespace TractionTools.Tests.Api
         [TestCategory("Api_V0")]
         public async Task TestGetTasksForCandidateGroup()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
             //var createTask1 = await CreateTask(c, getProcessDef);
@@ -201,7 +201,7 @@ namespace TractionTools.Tests.Api
         [TestCategory("Api_V0")]
         public async Task TestTaskComplete()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
             var publishProcess = await PublishProcess(c, getProcessDef);

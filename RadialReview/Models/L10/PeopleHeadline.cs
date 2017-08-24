@@ -64,8 +64,9 @@ namespace RadialReview.Models.L10 {
 			}
 		}
 
-		public virtual async Task<string> GetIssueMessage() {
-			return Message;
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public virtual async Task<string> GetIssueMessage() {
+            return Message;
 		}
 
 		public virtual async Task<string> GetIssueDetails() {
@@ -82,6 +83,7 @@ namespace RadialReview.Models.L10 {
 			var aboutName = About.NotNull(x => x.GetName()) ?? AboutName ?? "n/a";
 			return "MESSAGE: "+Message+"\n\nABOUT: " + aboutName + "\n\nOwner: " + Owner.NotNull(x => x.GetName()) ?? "n/a";			
 		}
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
 		public virtual ExpandoObject ToRow() {
 			dynamic o = new ExpandoObject();

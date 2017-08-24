@@ -65,8 +65,9 @@ namespace RadialReview.Models.Todo
 		//public virtual string BoardId { get; set; }
 		public virtual string ListId { get; set; }
 
-		public override async Task<bool> AddTodo(ISession s, TodoModel todo)
-		{
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public override async Task<bool> AddTodo(ISession s, TodoModel todo)
+        {
 			var trello = new Trello(Config.GetTrelloKey());
 			trello.Authorize(Token);
 			var list = trello.Lists.WithId(ListId);
@@ -75,6 +76,7 @@ namespace RadialReview.Models.Todo
 			trello.Cards.Add(card);
 			return true;
 		}
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
 		public override String GetServiceName()
 		{

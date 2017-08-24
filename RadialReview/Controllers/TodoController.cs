@@ -89,16 +89,16 @@ namespace RadialReview.Controllers {
 			}
 		}
 
-		[Access(AccessLevel.UserOrganization)]
-		[HttpPost]
-		public JsonResult EditModal(TodoModel model,string completed=null) {
-			L10Accessor.UpdateTodo(GetUser(), model.Id, model.Message, null, model.DueDate, model.AccountableUserId, completed.ToBooleanJS());
-			//var todo = TodoAccessor.EditTodo(GetUser(), model.Id,model.Message,model.DueDate,model.AccountableUserId,completed.ToBooleanJS());
-			return Json(ResultObject.SilentSuccess());
-		}
+        [Access(AccessLevel.UserOrganization)]
+        [HttpPost]
+        public async Task<JsonResult> EditModal(TodoModel model, string completed = null) {
+            await L10Accessor.UpdateTodo(GetUser(), model.Id, model.Message, null, model.DueDate, model.AccountableUserId, completed.ToBooleanJS());
+            //var todo = TodoAccessor.EditTodo(GetUser(), model.Id,model.Message,model.DueDate,model.AccountableUserId,completed.ToBooleanJS());
+            return Json(ResultObject.SilentSuccess());
+        }
 
 
-		[HttpPost]
+        [HttpPost]
         [Access(AccessLevel.UserOrganization)]
         public async Task<JsonResult> CreateTodoRecurrence(TodoVM model) {
             ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.AccountabilityId);

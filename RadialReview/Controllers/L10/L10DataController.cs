@@ -468,51 +468,51 @@ namespace RadialReview.Controllers {
 			return Json(ResultObject.SilentSuccess());
 		}
 
-		[Access(AccessLevel.UserOrganization)]
-		[HttpPost]
-		public JsonResult UpdateIssueCompletion(long id, long issueId, bool @checked, DateTime? time = null, string connectionId = null) {
-			time = time ?? DateTime.UtcNow;
-			var recurrenceId = id;
-			L10Accessor.UpdateIssue(GetUser(), issueId, time.Value, complete: @checked, connectionId: connectionId);
-			return Json(ResultObject.SilentSuccess(@checked));
-		}
+        [Access(AccessLevel.UserOrganization)]
+        [HttpPost]
+        public async Task<JsonResult> UpdateIssueCompletion(long id, long issueId, bool @checked, DateTime? time = null, string connectionId = null) {
+            time = time ?? DateTime.UtcNow;
+            var recurrenceId = id;
+            await L10Accessor.UpdateIssue(GetUser(), issueId, time.Value, complete: @checked, connectionId: connectionId);
+            return Json(ResultObject.SilentSuccess(@checked));
+        }
 
-		[Access(AccessLevel.UserOrganization)]
-		[HttpGet]
-		public JsonResult UpdateIssueCompleted(long id, bool @checked, string connectionId = null) {
-			var time = DateTime.UtcNow;
-			var recurrenceId = id;
-			L10Accessor.UpdateIssue(GetUser(), id, time, complete: @checked, connectionId: connectionId);
-			return Json(ResultObject.SilentSuccess(@checked), JsonRequestBehavior.AllowGet);
-		}
+        [Access(AccessLevel.UserOrganization)]
+        [HttpGet]
+        public async Task<JsonResult> UpdateIssueCompleted(long id, bool @checked, string connectionId = null) {
+            var time = DateTime.UtcNow;
+            var recurrenceId = id;
+            await L10Accessor.UpdateIssue(GetUser(), id, time, complete: @checked, connectionId: connectionId);
+            return Json(ResultObject.SilentSuccess(@checked), JsonRequestBehavior.AllowGet);
+        }
 
-		[Access(AccessLevel.UserOrganization)]
-		[HttpPost]
-		public JsonResult UpdateIssue(long id, DateTime? time = null, string message = null, string details = null, long? owner = null, int? priority = null, int? rank = null) {
-			time = time ?? DateTime.UtcNow;
-			L10Accessor.UpdateIssue(GetUser(), id, time.Value, message, details, owner: owner, priority: priority, rank: rank);
-			return Json(ResultObject.SilentSuccess());
-		}
+        [Access(AccessLevel.UserOrganization)]
+        [HttpPost]
+        public async Task<JsonResult> UpdateIssue(long id, DateTime? time = null, string message = null, string details = null, long? owner = null, int? priority = null, int? rank = null) {
+            time = time ?? DateTime.UtcNow;
+            await L10Accessor.UpdateIssue(GetUser(), id, time.Value, message, details, owner: owner, priority: priority, rank: rank);
+            return Json(ResultObject.SilentSuccess());
+        }
 
-		public class IssueRankVM {
+        public class IssueRankVM {
 			public long id { get; set; }
 			public int rank { get; set; }
 			public DateTime time { get; set; }
 		}
 
-		[Access(AccessLevel.UserOrganization)]
-		[HttpPost]
-		public JsonResult UpdateIssuesRank(List<IssueRankVM> arr) {
-			foreach (var m in arr) {
-				L10Accessor.UpdateIssue(GetUser(), m.id, DateTime.UtcNow, rank: m.rank);
-			}
-			return Json(ResultObject.SilentSuccess());
-		}
+        [Access(AccessLevel.UserOrganization)]
+        [HttpPost]
+        public async Task<JsonResult> UpdateIssuesRank(List<IssueRankVM> arr) {
+            foreach (var m in arr) {
+                await L10Accessor.UpdateIssue(GetUser(), m.id, DateTime.UtcNow, rank: m.rank);
+            }
+            return Json(ResultObject.SilentSuccess());
+        }
 
-		#endregion
+        #endregion
 
-		#region Todos
-		public class UpdateTodoVM {
+        #region Todos
+        public class UpdateTodoVM {
 			public List<long> todos { get; set; }
 			public string connectionId { get; set; }
 		}
@@ -525,64 +525,64 @@ namespace RadialReview.Controllers {
 			return Json(ResultObject.SilentSuccess());
 		}
 
-		[Access(AccessLevel.UserOrganization)]
-		[HttpPost]
-		public JsonResult UpdateTodo(long id, string message, string details, DateTime? dueDate, long? accountableUser) {
-			L10Accessor.UpdateTodo(GetUser(), id, message, details, dueDate, accountableUser);
-			return Json(ResultObject.SilentSuccess());
-		}
+        [Access(AccessLevel.UserOrganization)]
+        [HttpPost]
+        public async Task<JsonResult> UpdateTodo(long id, string message, string details, DateTime? dueDate, long? accountableUser) {
+            await L10Accessor.UpdateTodo(GetUser(), id, message, details, dueDate, accountableUser);
+            return Json(ResultObject.SilentSuccess());
+        }
 
-		[HttpPost]
-		[Access(AccessLevel.UserOrganization)]
-		public JsonResult XUpdateTodo(string pk, string name, string value) {
-			var todoId = pk.ToLong();
-			switch (name) {
-				case "accountable":
-					return UpdateTodo(todoId, null, null, null, value.ToLong());
-				case "title":
-					return UpdateTodo(todoId, value, null, null, null);
-				case "details":
-					return UpdateTodo(todoId, null, value, null, null);
-				case "duedate":
-					return UpdateTodo(todoId, null, null, value.ToLong().ToDateTime(), null);
-				default:
-					throw new ArgumentOutOfRangeException("name");
-			}
-		}
-		[HttpPost]
-		[Access(AccessLevel.UserOrganization)]
-		public JsonResult XUpdateIssue(string pk, string name, string value) {
-			var issueId = pk.ToLong();
-			switch (name) {
-				case "title":
-					return UpdateIssue(issueId, DateTime.UtcNow, value, null, null);
-				case "details":
-					return UpdateIssue(issueId, DateTime.UtcNow, null, value, null);
-				case "owner":
-					return UpdateIssue(issueId, DateTime.UtcNow, null, null, value.ToLong());
-				default:
-					throw new ArgumentOutOfRangeException("name");
-			}
-		}
+        [HttpPost]
+        [Access(AccessLevel.UserOrganization)]
+        public async Task<JsonResult> XUpdateTodo(string pk, string name, string value) {
+            var todoId = pk.ToLong();
+            switch (name) {
+                case "accountable":
+                    return await UpdateTodo(todoId, null, null, null, value.ToLong());
+                case "title":
+                    return await UpdateTodo(todoId, value, null, null, null);
+                case "details":
+                    return await UpdateTodo(todoId, null, value, null, null);
+                case "duedate":
+                    return await UpdateTodo(todoId, null, null, value.ToLong().ToDateTime(), null);
+                default:
+                    throw new ArgumentOutOfRangeException("name");
+            }
+        }
+        [HttpPost]
+        [Access(AccessLevel.UserOrganization)]
+        public async Task<JsonResult> XUpdateIssue(string pk, string name, string value) {
+            var issueId = pk.ToLong();
+            switch (name) {
+                case "title":
+                    return await UpdateIssue(issueId, DateTime.UtcNow, value, null, null);
+                case "details":
+                    return await UpdateIssue(issueId, DateTime.UtcNow, null, value, null);
+                case "owner":
+                    return await UpdateIssue(issueId, DateTime.UtcNow, null, null, value.ToLong());
+                default:
+                    throw new ArgumentOutOfRangeException("name");
+            }
+        }
 
-		[Access(AccessLevel.UserOrganization)]
-		[HttpPost]
-		public JsonResult UpdateTodoCompletion(long id, long todoId, bool @checked, string connectionId = null) {
-			var recurrenceId = id;
-			L10Accessor.UpdateTodo(GetUser(), todoId, complete: @checked, connectionId: connectionId, duringMeeting: true);
-			return Json(ResultObject.SilentSuccess(@checked));
-		}
+        [Access(AccessLevel.UserOrganization)]
+        [HttpPost]
+        public async Task<JsonResult> UpdateTodoCompletion(long id, long todoId, bool @checked, string connectionId = null) {
+            var recurrenceId = id;
+            await L10Accessor.UpdateTodo(GetUser(), todoId, complete: @checked, connectionId: connectionId, duringMeeting: true);
+            return Json(ResultObject.SilentSuccess(@checked));
+        }
 
-		[Access(AccessLevel.UserOrganization)]
-		[HttpPost]
-		public JsonResult UpdateTodoDate(long id, long date) {
-			var todo = id;
-			var dateR = date.ToDateTime();
-			L10Accessor.UpdateTodo(GetUser(), id, dueDate: dateR);
-			return Json(ResultObject.SilentSuccess(date.ToString()));
-		}
+        [Access(AccessLevel.UserOrganization)]
+        [HttpPost]
+        public async Task<JsonResult> UpdateTodoDate(long id, long date) {
+            var todo = id;
+            var dateR = date.ToDateTime();
+            await L10Accessor.UpdateTodo(GetUser(), id, dueDate: dateR);
+            return Json(ResultObject.SilentSuccess(date.ToString()));
+        }
 
-		[Access(AccessLevel.UserOrganization)]
+        [Access(AccessLevel.UserOrganization)]
 		[HttpPost]
 		public JsonResult UpdateRockCompletion(long id, long rockId, RockState state, string connectionId = null) {
 			var recurrenceId = id;

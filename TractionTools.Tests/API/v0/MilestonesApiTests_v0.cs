@@ -28,20 +28,18 @@ namespace TractionTools.Tests.Api
     {
         [TestMethod]
         [TestCategory("Api_V0")]
-        public void TestGetMilestones()
-        {
-            var c = new Ctx();
+        public async Task TestGetMilestones() {
+            var c = await Ctx.Build();
             MilestonesController milestonesController = new MilestonesController();
             milestonesController.MockUser(c.E1);
 
             var _recurrence = L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id);
 
-            var rock = new RockModel()
-            {
+            var rock = new RockModel() {
                 OrganizationId = c.E1.Organization.Id,
                 ForUserId = c.E1.Id,
             };
-            L10Accessor.CreateRock(c.E1, _recurrence.Id, AddRockVm.CreateRock(_recurrence.Id, rock, true));
+            await L10Accessor.CreateRock(c.E1, _recurrence.Id, AddRockVm.CreateRock(_recurrence.Id, rock, true));
             var getRocks = RockAccessor.GetRocks(c.E1, c.E1.Id);
 
             string name = "TestMilestone";
@@ -53,15 +51,15 @@ namespace TractionTools.Tests.Api
             Assert.AreEqual(name, getRocksMilestones.Name);
 
             Assert.IsTrue(Math.Abs((getRocksMilestones.DueDate - date).Value.TotalSeconds) <= 1);
- 
+
             Assert.AreEqual(milestone.Id, getRocksMilestones.Id);
         }
 
         [TestMethod]
         [TestCategory("Api_V0")]
-        public void TestUpdateMilestones()
+        public async Task TestUpdateMilestones()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             MilestonesController milestonesController = new MilestonesController();
             milestonesController.MockUser(c.E1);
 
@@ -74,7 +72,7 @@ namespace TractionTools.Tests.Api
             };
 
             var name = "TestMilestone_updated";
-            L10Accessor.CreateRock(c.E1, _recurrence.Id, AddRockVm.CreateRock(_recurrence.Id, rock, true));
+            await L10Accessor.CreateRock(c.E1, _recurrence.Id, AddRockVm.CreateRock(_recurrence.Id, rock, true));
             var getRocks = RockAccessor.GetRocks(c.E1, c.E1.Id);
 
             var addRocksMilestones = RockAccessor.AddMilestone(c.E1, getRocks.FirstOrDefault().Id, "TestMilestone", DateTime.Now.AddDays(7));
@@ -90,9 +88,9 @@ namespace TractionTools.Tests.Api
 
         [TestMethod]
         [TestCategory("Api_V0")]
-        public void TestRemoveMilestones()
+        public async Task TestRemoveMilestones()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             MilestonesController milestonesController = new MilestonesController();
             milestonesController.MockUser(c.E1);
 
@@ -104,7 +102,7 @@ namespace TractionTools.Tests.Api
                 ForUserId = c.E1.Id,
             };
 
-            L10Accessor.CreateRock(c.E1, _recurrence.Id, AddRockVm.CreateRock(_recurrence.Id, rock, true));
+            await L10Accessor.CreateRock(c.E1, _recurrence.Id, AddRockVm.CreateRock(_recurrence.Id, rock, true));
             var getRocks = RockAccessor.GetRocks(c.E1, c.E1.Id);
 
             var addRocksMilestones = RockAccessor.AddMilestone(c.E1, getRocks.FirstOrDefault().Id, "TestMilestone", DateTime.Now.AddDays(7));

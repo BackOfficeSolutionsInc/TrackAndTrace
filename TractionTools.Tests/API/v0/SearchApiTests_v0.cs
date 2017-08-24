@@ -29,9 +29,9 @@ namespace TractionTools.Tests.Api
     {
         [TestMethod]
         [TestCategory("Api_V0")]
-        public void TestSearchUser()
+        public async Task TestSearchUser()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             RadialReview.Api.V0.SearchController searchController = new RadialReview.Api.V0.SearchController();
             searchController.MockUser(c.E1);
 
@@ -44,9 +44,9 @@ namespace TractionTools.Tests.Api
 
         [TestMethod]
         [TestCategory("Api_V0")]
-        public void TestSearch()
+        public async Task TestSearch()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             RadialReview.Api.V0.SearchController searchController = new RadialReview.Api.V0.SearchController();
             searchController.MockUser(c.E1);
 

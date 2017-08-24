@@ -144,7 +144,7 @@ namespace RadialReview.Controllers
 				return PhoneContent(response);
 			} catch (PhoneException e) {
 				return PhoneContent(e.Message);
-			} catch (Exception e) {
+			} catch (Exception) {
 				return PhoneContent("Something went wrong");
 			}	
 		}

@@ -196,7 +196,7 @@ namespace RadialReview.Accessors {
             Audit.L10Log(s, perms.GetCaller(), recurrenceId, "CreateIssue", ForModel.Create(issue), issue.NotNull(x => x.Message));
 
 			// Trigger webhook events
-			HooksRegistry.Each<IIssueHook>(x => x.CreateIssue(s, o.IssueRecurrenceModel));
+			await HooksRegistry.Each<IIssueHook>(x => x.CreateIssue(s, o.IssueRecurrenceModel));
 
             return o;
 

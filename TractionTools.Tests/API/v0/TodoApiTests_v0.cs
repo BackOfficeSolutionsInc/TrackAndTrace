@@ -177,7 +177,7 @@ namespace TractionTools.Tests.API.v0 {
             var newMessage = "New Todo message for Test Method.";
             var newDueDate = new DateTime(2017, 04, 04);
 
-            cnt.EditTodo(todo.Id, newMessage, newDueDate);
+            await cnt.EditTodo(todo.Id, newMessage, newDueDate);
 
             var _todo = cnt.Get(todo.Id);
 

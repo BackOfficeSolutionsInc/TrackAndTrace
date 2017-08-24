@@ -128,7 +128,7 @@ namespace TractionTools.Tests.API.v0
             IssueController iss = new IssueController();
             iss.MockUser(c.E1);
 			var newMessage = "New Issue message for Test Method.";
-            iss.EditIssue(issue.Id, newMessage);
+            await iss.EditIssue(issue.Id, newMessage);
             var _issue = iss.Get(issue.Id);
             Assert.AreNotEqual(issue.Message, _issue.Name);
             Assert.AreEqual(newMessage, _issue.Name);

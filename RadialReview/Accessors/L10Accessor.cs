@@ -63,7 +63,6 @@ using RadialReview.Models.Angular.Rocks;
 using System.Web.Mvc;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
-using RadialReview.Hooks;
 using static RadialReview.Utilities.EventUtil;
 using Twilio;
 using Twilio.Types;
@@ -180,7 +179,9 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		public static void RemoveAttendee(ISession s, PermissionsUtility perms, RealTimeUtility rt, long recurrenceId, long userorgid) {
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+		public static async Task RemoveAttendee(ISession s, PermissionsUtility perms, RealTimeUtility rt, long recurrenceId, long userorgid) {
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 			perms.AdminL10Recurrence(recurrenceId);
 			perms.ViewUserOrganization(userorgid, false);
 			var user = s.Get<UserOrganizationModel>(userorgid);
@@ -208,12 +209,12 @@ namespace RadialReview.Accessors {
 				Attendees = AngularList.CreateFrom(AngularListType.Remove, new AngularUser(userorgid))
 			});
 		}
-		public static void RemoveAttendee(UserOrganizationModel caller, long recurrenceId, long userorgid) {
+		public static async Task RemoveAttendee(UserOrganizationModel caller, long recurrenceId, long userorgid) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					using (var rt = RealTimeUtility.Create()) {
 						var perms = PermissionsUtility.Create(s, caller);
-						RemoveAttendee(s, perms, rt, recurrenceId, userorgid);
+						await RemoveAttendee(s, perms, rt, recurrenceId, userorgid);
 						tx.Commit();
 						s.Flush();
 					}
@@ -485,8 +486,8 @@ namespace RadialReview.Accessors {
 			} else {
 				return "nopage";
 			}
-
-			var p = "segue";
+            ////UNREACHABLE...
+			/*var p = "segue";
 			if (recurrence.SegueMinutes > 0)
 				p = "segue";
 			else if (recurrence.ScorecardMinutes > 0)
@@ -501,7 +502,7 @@ namespace RadialReview.Accessors {
 				p = "ids";
 			else
 				p = "conclusion";
-			return p;
+			return p;*/
 		}
 
 		public static async Task<L10Meeting> StartMeeting(UserOrganizationModel caller, UserOrganizationModel meetingLeader, long recurrenceId, List<long> attendees) {
@@ -2429,8 +2430,10 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static void RemoveRock(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceId, long rockId) {
-			perm.AdminL10Recurrence(recurrenceId);
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public static async Task RemoveRock(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceId, long rockId) {
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+            perm.AdminL10Recurrence(recurrenceId);
 			var rocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId && x.ForRock.Id == rockId).List().ToList();
 
 			if (!rocks.Any())
@@ -3376,8 +3379,10 @@ namespace RadialReview.Accessors {
 						var offset = current.Organization.GetTimezoneOffset();
 						var scorecardType = settings.ScorecardPeriod;
 
-						var ts = current.Organization.GetTimeSettings();
-						ts.Descending = recur.ReverseScorecard;
+#pragma warning disable CS0618 // Type or member is obsolete
+                        var ts = current.Organization.GetTimeSettings();
+#pragma warning restore CS0618 // Type or member is obsolete
+                        ts.Descending = recur.ReverseScorecard;
 
 						var weeks = TimingUtility.GetPeriods(ts, now, current.StartTime, true);
 
@@ -3495,8 +3500,10 @@ namespace RadialReview.Accessors {
 						var offset = current.Organization.GetTimezoneOffset();
 						var scorecardType = settings.ScorecardPeriod;
 
-						var ts = current.Organization.GetTimeSettings();
-						ts.Descending = recur.ReverseScorecard;
+#pragma warning disable CS0618 // Type or member is obsolete
+                        var ts = current.Organization.GetTimeSettings();
+#pragma warning restore CS0618 // Type or member is obsolete
+                        ts.Descending = recur.ReverseScorecard;
 
 						var weeks = TimingUtility.GetPeriods(ts, now, current.StartTime, false);
 
@@ -3756,8 +3763,10 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static void RemoveMeasurable(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceId, long measurableId) {
-			perm.AdminL10Recurrence(recurrenceId);
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public static async Task RemoveMeasurable(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceId, long measurableId) {
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+            perm.AdminL10Recurrence(recurrenceId);
 			var measurables = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId && x.Measurable.Id == measurableId).List().ToList();
 
 
@@ -3913,133 +3922,133 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		public static void UpdateTodo(UserOrganizationModel caller, long todoId, string message = null, string details = null, DateTime? dueDate = null, long? accountableUser = null, bool? complete = null, string connectionId = null, bool duringMeeting = false, bool? delete = null) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var todo = s.Get<TodoModel>(todoId);
-					if (todo == null)
-						throw new PermissionsException("To-do does not exist.");
-					PermissionsUtility perm = PermissionsUtility.Create(s, caller);
-					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-					dynamic group;
-					if (todo.TodoType == TodoType.Recurrence) {
-						if (todo.ForRecurrenceId == null || todo.ForRecurrenceId == 0)
-							throw new PermissionsException("Meeting does not exist.");
-						perm.EditTodo(todoId);//EditL10Recurrence(todo.ForRecurrenceId.Value);
+        public static async Task UpdateTodo(UserOrganizationModel caller, long todoId, string message = null, string details = null, DateTime? dueDate = null, long? accountableUser = null, bool? complete = null, string connectionId = null, bool duringMeeting = false, bool? delete = null) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var todo = s.Get<TodoModel>(todoId);
+                    if (todo == null)
+                        throw new PermissionsException("To-do does not exist.");
+                    PermissionsUtility perm = PermissionsUtility.Create(s, caller);
+                    var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+                    dynamic group;
+                    if (todo.TodoType == TodoType.Recurrence) {
+                        if (todo.ForRecurrenceId == null || todo.ForRecurrenceId == 0)
+                            throw new PermissionsException("Meeting does not exist.");
+                        perm.EditTodo(todoId);//EditL10Recurrence(todo.ForRecurrenceId.Value);
 
-						group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(todo.ForRecurrenceId.Value), connectionId);
-					} else if (todo.TodoType == TodoType.Personal) {
-						perm.EditTodo(todoId);
-						group = hub.Clients.Group(MeetingHub.GenerateUserId(todo.AccountableUserId), connectionId);
-					} else {
-						throw new PermissionsException("unhandled TodoType");
-					}
+                        group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(todo.ForRecurrenceId.Value), connectionId);
+                    } else if (todo.TodoType == TodoType.Personal) {
+                        perm.EditTodo(todoId);
+                        group = hub.Clients.Group(MeetingHub.GenerateUserId(todo.AccountableUserId), connectionId);
+                    } else {
+                        throw new PermissionsException("unhandled TodoType");
+                    }
 
-					var updatesText = new List<string>();
+                    var updatesText = new List<string>();
 
-					bool IsTodoUpdate = false;
-					if (message != null && todo.Message != message) {
-						SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateTodoMessage(todo.Id));
-						todo.Message = message;
-						group.updateTodoMessage(todoId, message);
-						updatesText.Add("Message: " + todo.Message);
-						IsTodoUpdate = true;
-					}
-					if (details != null && todo.Details != details) {
-						SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateTodoDetails(todo.Id));
-						todo.Details = details;
-						group.updateTodoDetails(todoId, details);
-						updatesText.Add("Details: " + details);
-					}
-					if (dueDate != null && todo.DueDate != dueDate.Value) {
-						todo.DueDate = dueDate.Value;
-						group.updateTodoDueDate(todoId, dueDate.Value.ToJavascriptMilliseconds());
-						updatesText.Add("Due-Date: " + dueDate.Value.ToShortDateString());
-						IsTodoUpdate = true;
-					}
-					if (accountableUser != null && todo.AccountableUserId != accountableUser.Value && accountableUser > 0) {
-						todo.AccountableUserId = accountableUser.Value;
-						todo.AccountableUser = s.Get<UserOrganizationModel>(accountableUser.Value);
-						group.updateTodoAccountableUser(todoId, accountableUser.Value, todo.AccountableUser.GetName(), todo.AccountableUser.ImageUrl(true, ImageSize._32));
-						updatesText.Add("Accountable: " + todo.AccountableUser.GetName());
-						IsTodoUpdate = true;
-					}
+                    bool IsTodoUpdate = false;
+                    if (message != null && todo.Message != message) {
+                        SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateTodoMessage(todo.Id));
+                        todo.Message = message;
+                        group.updateTodoMessage(todoId, message);
+                        updatesText.Add("Message: " + todo.Message);
+                        IsTodoUpdate = true;
+                    }
+                    if (details != null && todo.Details != details) {
+                        SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateTodoDetails(todo.Id));
+                        todo.Details = details;
+                        group.updateTodoDetails(todoId, details);
+                        updatesText.Add("Details: " + details);
+                    }
+                    if (dueDate != null && todo.DueDate != dueDate.Value) {
+                        todo.DueDate = dueDate.Value;
+                        group.updateTodoDueDate(todoId, dueDate.Value.ToJavascriptMilliseconds());
+                        updatesText.Add("Due-Date: " + dueDate.Value.ToShortDateString());
+                        IsTodoUpdate = true;
+                    }
+                    if (accountableUser != null && todo.AccountableUserId != accountableUser.Value && accountableUser > 0) {
+                        todo.AccountableUserId = accountableUser.Value;
+                        todo.AccountableUser = s.Get<UserOrganizationModel>(accountableUser.Value);
+                        group.updateTodoAccountableUser(todoId, accountableUser.Value, todo.AccountableUser.GetName(), todo.AccountableUser.ImageUrl(true, ImageSize._32));
+                        updatesText.Add("Accountable: " + todo.AccountableUser.GetName());
+                        IsTodoUpdate = true;
+                    }
 
-					bool IsTodoStatusUpdated = false;
-					if (complete != null) {
-						IsTodoStatusUpdated = true;
-						SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateTodoCompletion(todo.Id));
-						var now = DateTime.UtcNow;
-						if (complete.Value && todo.CompleteTime == null) {
-							if (duringMeeting && todo.ForRecurrenceId != null) {
-								try {
-									var meetingId = _GetCurrentL10Meeting(s, perm, todo.ForRecurrenceId.Value, true, false, false).NotNull(x => x.Id);
-									if (meetingId != 0)
-										todo.CompleteDuringMeetingId = meetingId;
-								} catch (Exception) {
+                    bool IsTodoStatusUpdated = false;
+                    if (complete != null) {
+                        IsTodoStatusUpdated = true;
+                        SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateTodoCompletion(todo.Id));
+                        var now = DateTime.UtcNow;
+                        if (complete.Value && todo.CompleteTime == null) {
+                            if (duringMeeting && todo.ForRecurrenceId != null) {
+                                try {
+                                    var meetingId = _GetCurrentL10Meeting(s, perm, todo.ForRecurrenceId.Value, true, false, false).NotNull(x => x.Id);
+                                    if (meetingId != 0)
+                                        todo.CompleteDuringMeetingId = meetingId;
+                                } catch (Exception) {
 
-								}
-							}
+                                }
+                            }
 
-							todo.CompleteTime = now;
-							s.Update(todo);
-							updatesText.Add("Marked Complete");
-							new Cache().InvalidateForUser(todo.AccountableUser, CacheKeys.UNSTARTED_TASKS);
-						} else if (!complete.Value && todo.CompleteTime != null) {
-							todo.CompleteTime = null;
-							todo.CompleteDuringMeetingId = null;
-							s.Update(todo);
-							updatesText.Add("Marked Incomplete");
-							new Cache().InvalidateForUser(todo.AccountableUser, CacheKeys.UNSTARTED_TASKS);
-						}
-						group.updateTodoCompletion(todoId, complete);						
-					}
+                            todo.CompleteTime = now;
+                            s.Update(todo);
+                            updatesText.Add("Marked Complete");
+                            new Cache().InvalidateForUser(todo.AccountableUser, CacheKeys.UNSTARTED_TASKS);
+                        } else if (!complete.Value && todo.CompleteTime != null) {
+                            todo.CompleteTime = null;
+                            todo.CompleteDuringMeetingId = null;
+                            s.Update(todo);
+                            updatesText.Add("Marked Incomplete");
+                            new Cache().InvalidateForUser(todo.AccountableUser, CacheKeys.UNSTARTED_TASKS);
+                        }
+                        group.updateTodoCompletion(todoId, complete);
+                    }
 
-					_ProcessDeleted(s, todo, delete);
+                    _ProcessDeleted(s, todo, delete);
 
-					group.update(new AngularUpdate() { new AngularTodo(todo) });
+                    group.update(new AngularUpdate() { new AngularTodo(todo) });
 
 
-					if (todo.ForRecurrenceId.HasValue) {
-						var updatedText = "Updated To-Do \"" + todo.Message + "\" \n " + String.Join("\n", updatesText);
-						Audit.L10Log(s, caller, todo.ForRecurrenceId.Value, "UpdateTodo", ForModel.Create(todo), updatedText);
-					}
+                    if (todo.ForRecurrenceId.HasValue) {
+                        var updatedText = "Updated To-Do \"" + todo.Message + "\" \n " + String.Join("\n", updatesText);
+                        Audit.L10Log(s, caller, todo.ForRecurrenceId.Value, "UpdateTodo", ForModel.Create(todo), updatedText);
+                    }
 
-					// Webhook event trigger
-					if (IsTodoUpdate) {
-						HooksRegistry.Each<ITodoHook>(x => x.UpdateMessage(s, todo));
-					}
+                    // Webhook event trigger
+                    if (IsTodoUpdate) {
+                        await HooksRegistry.Each<ITodoHook>(x => x.UpdateMessage(s, todo));
+                    }
 
-					// Webhook register Marking complete for TODO
-					if (IsTodoStatusUpdated) {
-						HooksRegistry.Each<ITodoHook>(x => x.UpdateCompletion(s, todo));
-					}
+                    // Webhook register Marking complete for TODO
+                    if (IsTodoStatusUpdated) {
+                        await HooksRegistry.Each<ITodoHook>(x => x.UpdateCompletion(s, todo));
+                    }
 
-					tx.Commit();
-					s.Flush();
-				}
-			}
-		}
-		public static void CompleteTodo(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceId, long todoModel) {
-			perm.EditTodo(todoModel);
-			var todo = s.Get<TodoModel>(todoModel);
-			if (todo.CompleteTime != null)
-				throw new PermissionsException("To-do already deleted.");
-			if (todo.ForRecurrence.Id != recurrenceId)
-				throw new PermissionsException("You cannot edit this meeting.");
-			todo.CompleteTime = DateTime.UtcNow;
-			s.Update(todo);
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
+        public static async Task CompleteTodo(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceId, long todoModel) {
+            perm.EditTodo(todoModel);
+            var todo = s.Get<TodoModel>(todoModel);
+            if (todo.CompleteTime != null)
+                throw new PermissionsException("To-do already deleted.");
+            if (todo.ForRecurrence.Id != recurrenceId)
+                throw new PermissionsException("You cannot edit this meeting.");
+            todo.CompleteTime = DateTime.UtcNow;
+            s.Update(todo);
 
-			var recur = new AngularRecurrence(recurrenceId);
-			recur.Todos = AngularList.CreateFrom(AngularListType.Remove, new AngularTodo(todo));
-			rt.UpdateRecurrences(recurrenceId).Update(recur);
+            var recur = new AngularRecurrence(recurrenceId);
+            recur.Todos = AngularList.CreateFrom(AngularListType.Remove, new AngularTodo(todo));
+            rt.UpdateRecurrences(recurrenceId).Update(recur);
 
-			// Webhook register Marking complete for TODO
-//? added await
-			await HooksRegistry.Each<ITodoHook>(x => x.UpdateCompletion(s, todo));
-		}
+            // Webhook register Marking complete for TODO
+            //? added await
+            await HooksRegistry.Each<ITodoHook>(x => x.UpdateCompletion(s, todo));
+        }
 
-		public static void MarkFireworks(UserOrganizationModel caller, long recurrenceId) {
+        public static void MarkFireworks(UserOrganizationModel caller, long recurrenceId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 
@@ -4348,7 +4357,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		public static void UpdateIssue(UserOrganizationModel caller, long issueRecurrenceId, DateTime now, string message = null, string details = null, bool? complete = null, string connectionId = null, long? owner = null, int? priority = null, int? rank = null, bool? delete = null, bool? awaitingSolve = null) {
+		public static async Task UpdateIssue(UserOrganizationModel caller, long issueRecurrenceId, DateTime now, string message = null, string details = null, bool? complete = null, string connectionId = null, long? owner = null, int? priority = null, int? rank = null, bool? delete = null, bool? awaitingSolve = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					now = Math2.Min(DateTime.UtcNow.AddSeconds(3), now);
@@ -4455,22 +4464,22 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		public static void CompleteIssue(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceId, long recurrenceIssue) {
-			perm.EditL10Recurrence(recurrenceId);
-			var issue = s.Get<IssueModel.IssueModel_Recurrence>(recurrenceIssue);
-			if (issue.Recurrence.Id != recurrenceId)
-				throw new PermissionsException("You cannot edit this meeting.");
-			if (issue.CloseTime != null)
-				throw new PermissionsException("Issue already deleted.");
+        public static async Task CompleteIssue(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceId, long recurrenceIssue) {
+            perm.EditL10Recurrence(recurrenceId);
+            var issue = s.Get<IssueModel.IssueModel_Recurrence>(recurrenceIssue);
+            if (issue.Recurrence.Id != recurrenceId)
+                throw new PermissionsException("You cannot edit this meeting.");
+            if (issue.CloseTime != null)
+                throw new PermissionsException("Issue already deleted.");
 
-			_UpdateIssueCompletion_Unsafe(s, rt, issue, true);
+            _UpdateIssueCompletion_Unsafe(s, rt, issue, true);
 
-			// Webhook register Marking complete for Issue
-//?added await
-			await HooksRegistry.Each<IIssueHook>(x => x.UpdateCompletion(s, issue));
-		}
+            // Webhook register Marking complete for Issue
+            //?added await
+            await HooksRegistry.Each<IIssueHook>(x => x.UpdateCompletion(s, issue));
+        }
 
-		public static void UpdateIssues(UserOrganizationModel caller, long recurrenceId, /*IssuesDataList*/L10Controller.IssuesListVm model) {
+        public static void UpdateIssues(UserOrganizationModel caller, long recurrenceId, /*IssuesDataList*/L10Controller.IssuesListVm model) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 
@@ -4695,8 +4704,10 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static void RemoveHeadline(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceId, long headlineId) {
-			perm.EditL10Recurrence(recurrenceId);
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public static async Task RemoveHeadline(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceId, long headlineId) {
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+            perm.EditL10Recurrence(recurrenceId);
 
 			perm.ViewHeadline(headlineId);
 
@@ -4874,7 +4885,7 @@ namespace RadialReview.Accessors {
 			}
 			return headlineList;
 		}
-		public static void Remove(UserOrganizationModel caller, BaseAngular model, long recurrenceId, string connectionId) {
+		public static async Task Remove(UserOrganizationModel caller, BaseAngular model, long recurrenceId, string connectionId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					using (var rt = RealTimeUtility.Create()) {
@@ -4882,17 +4893,17 @@ namespace RadialReview.Accessors {
 						perms.EditL10Recurrence(recurrenceId);
 
 						if (model.Type == typeof(AngularIssue).Name) {
-							CompleteIssue(s, perms, rt, recurrenceId, model.Id);
+							await CompleteIssue(s, perms, rt, recurrenceId, model.Id);
 						} else if (model.Type == typeof(AngularTodo).Name) {
-							CompleteTodo(s, perms, rt, recurrenceId, model.Id);
+							await CompleteTodo(s, perms, rt, recurrenceId, model.Id);
 						} else if (model.Type == typeof(AngularRock).Name) {
-							RemoveRock(s, perms, rt, recurrenceId, model.Id);
+							await RemoveRock(s, perms, rt, recurrenceId, model.Id);
 						} else if (model.Type == typeof(AngularMeasurable).Name) {
-							RemoveMeasurable(s, perms, rt, recurrenceId, model.Id);
+							await RemoveMeasurable(s, perms, rt, recurrenceId, model.Id);
 						} else if (model.Type == typeof(AngularUser).Name) {
-							RemoveAttendee(s, perms, rt, recurrenceId, model.Id);
+							await RemoveAttendee(s, perms, rt, recurrenceId, model.Id);
 						} else if (model.Type == typeof(AngularHeadline).Name) {
-							RemoveHeadline(s, perms, rt, recurrenceId, model.Id);
+							await RemoveHeadline(s, perms, rt, recurrenceId, model.Id);
 						} else {
 							throw new PermissionsException("Unhandled type: " + model.Type);
 						}
@@ -4908,13 +4919,13 @@ namespace RadialReview.Accessors {
 			if (model.Type == typeof(AngularIssue).Name) {
 				var m = (AngularIssue)model;
 				//UpdateIssue(caller, (long)model.GetOrDefault("Id", null), (string)model.GetOrDefault("Name", null), (string)model.GetOrDefault("Details", null), (bool?)model.GetOrDefault("Complete", null), connectionId);
-				UpdateIssue(caller, m.Id, DateTime.UtcNow, m.Name ?? "", m.Details ?? "", m.Complete, connectionId, priority: m.Priority, owner: m.Owner.NotNull(x => (long?)x.Id));
+				await UpdateIssue(caller, m.Id, DateTime.UtcNow, m.Name ?? "", m.Details ?? "", m.Complete, connectionId, priority: m.Priority, owner: m.Owner.NotNull(x => (long?)x.Id));
 			} else if (model.Type == typeof(AngularTodo).Name) {
 				var m = (AngularTodo)model;
 				if (m.TodoType == TodoType.Milestone) {
 					RockAccessor.EditMilestone(caller, -m.Id, m.Name, m.DueDate, status: m.Complete == true ? MilestoneStatus.Done : MilestoneStatus.NotDone);
 				} else {
-					UpdateTodo(caller, m.Id, m.Name ?? "", null, m.DueDate, m.Owner.NotNull(x => (long?)x.Id), m.Complete, connectionId);
+					await UpdateTodo(caller, m.Id, m.Name ?? "", null, m.DueDate, m.Owner.NotNull(x => (long?)x.Id), m.Complete, connectionId);
 				}
 			} else if (model.Type == typeof(AngularScore).Name) {
 				var m = (AngularScore)model;

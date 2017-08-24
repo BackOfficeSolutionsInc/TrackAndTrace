@@ -212,7 +212,7 @@ namespace RadialReview.Areas.People.Accessors {
 					about.User = s.Load<UserOrganizationModel>(about.UserOrganizationId);
 					s.Save(about);
 				} else {
-					int a = 0;//already saved. Should usually get here.
+					//int a = 0;//already saved. Should usually get here.
 				}
 			}
 

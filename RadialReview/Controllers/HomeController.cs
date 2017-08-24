@@ -64,55 +64,55 @@ namespace RadialReview.Controllers {
 			return RedirectToAction("Login", "Account");
 		}
 
-		[Access(AccessLevel.Radial)]
-		public ActionResult About() {
-			ViewBag.Message = "Your application description page.";
-			return View();
-		}
+		//[Access(AccessLevel.Radial)]
+		//public ActionResult About() {
+		//	ViewBag.Message = "Your application description page.";
+		//	return View();
+		//}
 
-		[Access(AccessLevel.Any)]
-		public ActionResult Contact() {
-			ViewBag.Message = "Your contact page.";
+		//[Access(AccessLevel.Any)]
+		//public ActionResult Contact() {
+		//	ViewBag.Message = "Your contact page.";
 
-			return View();
-		}
+		//	return View();
+		//}
 
-		[Access(AccessLevel.Any)]
-		[HttpPost]
-		public async Task<ActionResult> Submit() {
-			// Create an event with action 'event1' and additional data			
-			await this.NotifyAsync("event1", new { P1 = "p1" });
+		//[Access(AccessLevel.Any)]
+		//[HttpPost]
+		//public async Task<ActionResult> Submit() {
+		//	// Create an event with action 'event1' and additional data			
+		//	await this.NotifyAsync("event1", new { P1 = "p1" });
 
-			return new EmptyResult();
-		}
+		//	return new EmptyResult();
+		//}
 
-		[Access(AccessLevel.Any)]
-		[HttpPost]
-		public ActionResult AddEventSubscription(WebhookEventsSubscription model) {
-			WebhooksAccessor acc = new WebhooksAccessor();
-			model.WebhookId = acc.GetAllWebHook().FirstOrDefault().Id;
+		//[Access(AccessLevel.Any)]
+		//[HttpPost]
+		//public ActionResult AddEventSubscription(WebhookEventsSubscription model) {
+		//	WebhooksAccessor acc = new WebhooksAccessor();
+		//	model.WebhookId = acc.GetAllWebHook().FirstOrDefault().Id;
 
-			var list = acc.GetWebhookEventSubscriptions(User.Identity.GetUserId(), model.WebhookId);
+		//	var list = acc.GetWebhookEventSubscriptions(User.Identity.GetUserId(), model.WebhookId);
 
-			// fill viewModel
-			WebhooksEventSubscriptionViewModel webhooksEventSubscriptionViewModel = new WebhooksEventSubscriptionViewModel();
-			webhooksEventSubscriptionViewModel.Id = list.Id;
-			webhooksEventSubscriptionViewModel.Email = list.Email;
-			webhooksEventSubscriptionViewModel.UserId = list.UserId;
-			webhooksEventSubscriptionViewModel.angularUser = new Models.Angular.Users.AngularUser() {
-				Name = list.User.Name()
-			};
-			webhooksEventSubscriptionViewModel.ProtectedData = list.ProtectedData;
+		//	// fill viewModel
+		//	WebhooksEventSubscriptionViewModel webhooksEventSubscriptionViewModel = new WebhooksEventSubscriptionViewModel();
+		//	webhooksEventSubscriptionViewModel.Id = list.Id;
+		//	webhooksEventSubscriptionViewModel.Email = list.Email;
+		//	webhooksEventSubscriptionViewModel.UserId = list.UserId;
+		//	webhooksEventSubscriptionViewModel.angularUser = new Models.Angular.Users.AngularUser() {
+		//		Name = list.User.Name()
+		//	};
+		//	webhooksEventSubscriptionViewModel.ProtectedData = list.ProtectedData;
 
-			return Json(webhooksEventSubscriptionViewModel, JsonRequestBehavior.AllowGet);
-		}
+		//	return Json(webhooksEventSubscriptionViewModel, JsonRequestBehavior.AllowGet);
+		//}
 
-		[Access(AccessLevel.Any)]
-		public ActionResult CreateWebhookEvents() {
-			WebhooksAccessor acc = new WebhooksAccessor();
-			//acc.CreateWebhookEvents(new WebhookEvents() { Name = "Create To Do", Description = "To Do" });
-			return new EmptyResult();
-		}
+		//[Access(AccessLevel.Any)]
+		//public ActionResult CreateWebhookEvents() {
+		//	WebhooksAccessor acc = new WebhooksAccessor();
+		//	//acc.CreateWebhookEvents(new WebhookEvents() { Name = "Create To Do", Description = "To Do" });
+		//	return new EmptyResult();
+		//}
 
 	}
 }

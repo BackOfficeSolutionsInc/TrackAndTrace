@@ -236,7 +236,9 @@ namespace RadialReview.Accessors.PDF {
 				}
 
 
+#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
 				protected static void d3_layout_hierarchyVisitBefore<T>(T node, Action<T> callback) where T : IChildren<T> {
+#pragma warning restore CS0693 // Type parameter has the same name as the type parameter from outer type
 					var nodes = new Stack<T>();
 					nodes.Push(node);
 					while (nodes.Any()) {
@@ -250,8 +252,10 @@ namespace RadialReview.Accessors.PDF {
 						}
 					}
 				}
-				protected static void d3_layout_hierarchyVisitAfter<T>(T node, Action<T> callback) where T : IChildren<T> {
-					var nodes = new Stack<T>();
+#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
+                protected static void d3_layout_hierarchyVisitAfter<T>(T node, Action<T> callback) where T : IChildren<T> {
+#pragma warning restore CS0693 // Type parameter has the same name as the type parameter from outer type
+                    var nodes = new Stack<T>();
 					nodes.Push(node);
 					var nodes2 = new Stack<T>();
 					while (nodes.Any()) {

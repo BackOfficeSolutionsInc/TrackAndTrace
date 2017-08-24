@@ -27,11 +27,14 @@ namespace RadialReview.Areas.People.Models.Survey {
 		public virtual SurveyType SurveyType { get; set; }
         
         public virtual ICollection<ISurvey> _Surveys { get; set; }
-		//public virtual long IssuedBy { get; set; }
 
-		public SurveyContainer(IForModel createdBy, /*IForModel by,*/ string name, long orgid, SurveyType type, string help,DateTime? dueDate) : this() {
-            //By = ForModel.From(by);
-			CreatedBy = ForModel.From(createdBy);
+        //public virtual long IssuedBy { get; set; }
+
+#pragma warning disable CS0618 // Type or member is obsolete
+        public SurveyContainer(IForModel createdBy, /*IForModel by,*/ string name, long orgid, SurveyType type, string help,DateTime? dueDate) : this() {
+#pragma warning restore CS0618 // Type or member is obsolete
+                              //By = ForModel.From(by);
+            CreatedBy = ForModel.From(createdBy);
             Name = name;
             SurveyType = type;
             Help = help;

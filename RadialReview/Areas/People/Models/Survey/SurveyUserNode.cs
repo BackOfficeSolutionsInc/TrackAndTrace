@@ -35,8 +35,10 @@ namespace RadialReview.Areas.People.Models.Survey {
 		public virtual bool _Hidden { get; set; }
 
 		public virtual bool Is<T>() {
-			return ForModel.GetModelType(typeof(T)) == ModelType;
-		}
+#pragma warning disable CS0618 // Type or member is obsolete
+            return ForModel.GetModelType(typeof(T)) == ModelType;
+#pragma warning restore CS0618 // Type or member is obsolete
+        }
 
 		public static SurveyUserNode FromViewModelKey(string key) {
 			var split = key.Split('_');

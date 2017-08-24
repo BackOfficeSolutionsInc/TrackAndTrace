@@ -272,7 +272,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
 
                 return processDef.Id;
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 throw;
             }
@@ -1090,7 +1090,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors
                             perms.CanView(PermItem.ResourceType.CoreProcess, item.LocalId);
                             finalList.Add(item);
                         }
-                        catch (Exception ex)
+                        catch (Exception )
                         {
                         }
                     }

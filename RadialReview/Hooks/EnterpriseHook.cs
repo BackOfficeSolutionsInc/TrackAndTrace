@@ -10,6 +10,7 @@ using RadialReview.Nhibernate;
 using static RadialReview.Accessors.PaymentAccessor;
 using RadialReview.Utilities.DataTypes;
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 namespace RadialReview.Hooks {
 	public class EnterpriseHook : ICreateUserOrganizationHook, IDeleteUserOrganizationHook {
 		private int EnterpriseGreaterThanUsers;
@@ -18,8 +19,8 @@ namespace RadialReview.Hooks {
 			EnterpriseGreaterThanUsers = greaterThanN;
 		}
 
-		public async Task CreateUserOrganization(ISession s, UserOrganizationModel user) {
-			var calcOrg = UserCount(s, user);
+        public async Task CreateUserOrganization(ISession s, UserOrganizationModel user) {
+            var calcOrg = UserCount(s, user);
 			if (calcOrg != null) {
 				var calc = calcOrg.Item1;
 				var org = calcOrg.Item2;
@@ -72,3 +73,4 @@ namespace RadialReview.Hooks {
 		
 	}
 }
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously

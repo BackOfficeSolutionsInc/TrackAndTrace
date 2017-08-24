@@ -39,10 +39,11 @@
 					postAdd: "/Process/Create",
 					cells: [
 
-						{ name: "Name", classes: "", contents: function (x) { return x.Name; } },
                         { name: "Deploy", classes: "", contents: function (x) { return x.status; } },
+						{ name: "Name", classes: "fullWidth", contents: function (x) { return x.Name; } },
                         { name: "Instances", classes: "", contents: function (x) { return x.Count; } },
-                        { name: "Action", classes: "", contents: function (x) { return "<a href='/CoreProcess/Process/Tasks/" + x.Id + "'>Task</a>"
+                        { name: "Action", classes: "", contents: function (x) {
+                            return "<a href='/CoreProcess/Process/Tasks/" + x.Id + "'>Task</a>"
 							//+ "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" + "<a href='javascript:void(0);' onclick='startProcess("+ x.Id +");'>Start</a>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp"
 							+ "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp;<a href='/CoreProcess/Process/ProcessInstance/" + x.LocalID + "'>Instances</a>" + "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp"
 							//+ "<a href='javascript:void(0);' onclick='deleteprocess(" + x.Id +","+ x.Count+ ");' >Delete</a>"
@@ -150,10 +151,10 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script>
-                $(window).on('load', function () {
-                    $("table thead tr th").next().next().attr("colspan", "3");
-                    //$("table tbody tr td").next().next().attr("colspan", "0");
-                    $("table tbody tr td").next().next().next().attr("width", "50px");
-                });
+                //$(window).on('load', function () {
+                //    $("table thead tr th").next().next().attr("colspan", "3");
+                //    //$("table tbody tr td").next().next().attr("colspan", "0");
+                //    $("table tbody tr td").next().next().next().attr("width", "50px");
+                //});
 
 </script>

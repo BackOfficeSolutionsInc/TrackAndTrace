@@ -146,7 +146,7 @@ namespace RadialReview.Api.V0
         [HttpGet]
         public IEnumerable<TeamDurationModel> GetMineTeam()
         {
-		throw new NotImplementedException("Obfuscate the TeamDurationModel");
+		    throw new NotImplementedException("Obfuscate the TeamDurationModel");
             return TeamAccessor.GetUsersTeams(GetUser(), GetUser().Id);
         }
 
@@ -155,7 +155,7 @@ namespace RadialReview.Api.V0
         [HttpGet]
         public IEnumerable<TeamDurationModel> GetUserTeams(long userId)
         {
-		throw new NotImplementedException("Obfuscate the TeamDurationModel");
+		    throw new NotImplementedException("Obfuscate the TeamDurationModel");
             return TeamAccessor.GetUsersTeams(GetUser(), userId);
         }
     }

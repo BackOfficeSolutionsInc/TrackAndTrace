@@ -430,9 +430,11 @@ namespace RadialReview.Controllers {
 		}
 
 		protected FileResult Pdf(Document document, string name = null, bool inline = true) {
-			var pdfRenderer = new PdfDocumentRenderer(true, PdfFontEmbedding.None);
+#pragma warning disable CS0618 // Type or member is obsolete
+            var pdfRenderer = new PdfDocumentRenderer(true, PdfFontEmbedding.None);
+#pragma warning restore CS0618 // Type or member is obsolete
 
-			pdfRenderer.Document = document;
+            pdfRenderer.Document = document;
 
 			pdfRenderer.RenderDocument();
 			if (pdfRenderer.PageCount == 0) {

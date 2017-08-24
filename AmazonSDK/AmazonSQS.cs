@@ -1,4 +1,12 @@
 
+using Amazon;
+using Amazon.SQS;
+using Amazon.SQS.Model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
 namespace AmazonSDK
 {
 

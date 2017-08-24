@@ -597,7 +597,7 @@ namespace TractionTools.Tests.Engines {
 				Assert.IsTrue(valueItemContainers.Any(x => x.GetItem().GetHelp() == "Value Details 2"));
 				Assert.IsTrue(valueItemContainers.Any(x => x.GetItem().GetName() == ValueSection.ValueCommentHeading));
 			}
-			var j = 0;
+			//var j = 0;
 		}
 	}
 }

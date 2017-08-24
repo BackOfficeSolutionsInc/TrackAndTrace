@@ -261,12 +261,14 @@ namespace RadialReview.Controllers {
 
 			return PartialView("Headlines", model);
 		}
-		#endregion
+        #endregion
 
-		#region Todo
-		private async Task<PartialViewResult> Todo(L10MeetingVM model) {
+        #region Todo
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        private async Task<PartialViewResult> Todo(L10MeetingVM model) {
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
-			ViewBag.Heading = ViewBag.Heading ?? "To-do List";
+            ViewBag.Heading = ViewBag.Heading ?? "To-do List";
 			ViewBag.Subheading = ViewBag.Subheading ?? "";
 
 

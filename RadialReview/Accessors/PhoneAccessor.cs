@@ -188,8 +188,10 @@ namespace RadialReview.Accessors {
 			ExternalUserPhone found;
 			var now = DateTime.UtcNow;
 
-			Func<Task> afterward = new Func<Task>(async () => { });
-			try {
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+            Func<Task> afterward = new Func<Task>(async () => { });
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+            try {
 				using (var s = HibernateSession.GetCurrentSession()) {
 					using (var tx = s.BeginTransaction()) {
 						var text = new PhoneTextModel() {

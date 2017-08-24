@@ -305,7 +305,7 @@ mug disrupt wayfarers ethical cloud bread viral cornhole skateboard ";
 
 			var pa = QuarterlyConversationAccessor.GetPeopleAnalyzer(c.Middle, c.Middle.Id);
 
-			int a = 0;
+			//int a = 0;
 
 		}
 

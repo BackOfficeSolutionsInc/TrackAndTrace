@@ -50,7 +50,9 @@ namespace RadialReview.Utilities
             }
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public static async void CacheItemRemovedCallback(string key, object value, CacheItemRemovedReason reason)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             Reschedule();
         }

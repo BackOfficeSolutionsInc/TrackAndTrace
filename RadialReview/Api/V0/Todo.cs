@@ -49,9 +49,8 @@ namespace RadialReview.Api.V0
         // PUT: api/Todo/5
         [Route("todo/edit/{id}")]
         [HttpPut]
-        public void EditTodo(long id, [FromBody]string message, [FromBody]DateTime dueDate)
-        {
-            L10Accessor.UpdateTodo(GetUser(), id, message, null, dueDate);
+        public async Task EditTodo(long id, [FromBody]string message, [FromBody]DateTime dueDate) {
+            await L10Accessor.UpdateTodo(GetUser(), id, message, null, dueDate);
         }
 
         // GET: api/Todo/mine

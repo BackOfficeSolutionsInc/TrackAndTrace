@@ -41,13 +41,14 @@ namespace RadialReview.Hooks {
 				notifications = new List<NotificationDictionary> { new NotificationDictionary(_event2, new AngularTodo(todo)) };
 				await manager.NotifyAllAsync(notifications, TodoPermissions(s, todo));
 
-			} catch (Exception ex) {
+			} catch (Exception ) {
 				throw;
 			}
 		}
 
 		private static Func<WebHook, string, bool> TodoPermissions(ISession s, TodoModel todo) {
-			return WebhooksAccessor.PermissionsPredicate(s, x => x.ViewTodo(todo.Id));
+            return null;
+			//return WebhooksAccessor.PermissionsPredicate(s, x => x.ViewTodo(todo.Id));
 		}
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
@@ -75,7 +76,7 @@ namespace RadialReview.Hooks {
 				notifications = new List<NotificationDictionary> { new NotificationDictionary(_event2, new AngularTodo(todo)) };
 				await manager.NotifyAllAsync(notifications, TodoPermissions(s, todo));
 
-			} catch (Exception ex) {
+			} catch (Exception ) {
 				throw;
 			}
 		}
@@ -105,7 +106,7 @@ namespace RadialReview.Hooks {
 				notifications = new List<NotificationDictionary> { new NotificationDictionary(_event2, new AngularTodo(todo)) };
 				await manager.NotifyAllAsync(notifications, TodoPermissions(s, todo));
 
-			} catch (Exception ex) {
+			} catch (Exception ) {
 				throw;
 			}
 		}		

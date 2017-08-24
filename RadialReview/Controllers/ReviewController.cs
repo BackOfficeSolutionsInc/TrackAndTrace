@@ -31,7 +31,6 @@ using RadialReview.Models.Permissions;
 using RadialReview.Models.Angular.Scorecard;
 using RadialReview.Models.Angular.Meeting;
 using PdfSharp.Pdf;
-using RadialReview.Engines;
 using RadialReview.Models.Reviews;
 
 namespace RadialReview.Controllers {
@@ -1000,25 +999,25 @@ namespace RadialReview.Controllers {
 			return Json(ResultObject.Success("Saved report."), JsonRequestBehavior.AllowGet);
 		}
 
-		[Access(AccessLevel.UserOrganization)]
-		public async Task<ActionResult> Plot(long id) {
-			var review = _ReviewAccessor.GetReview(GetUser(), id);
-			var managesUser = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(review.ReviewerUserId, false, PermissionType.ViewReviews));
-			if (managesUser)
-				ViewBag.Reviewing = true;
-			ViewBag.ReviewId = id;
+        [Access(AccessLevel.UserOrganization)]
+        public ActionResult Plot(long id) {
+            var review = _ReviewAccessor.GetReview(GetUser(), id);
+            var managesUser = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(review.ReviewerUserId, false, PermissionType.ViewReviews));
+            if (managesUser)
+                ViewBag.Reviewing = true;
+            ViewBag.ReviewId = id;
 
-			if (review.ClientReview.Visible || managesUser || GetUser().ManagingOrganization) {
-				var model = GetReviewDetails(review, true);
-				return Pdf(PdfAccessor.GenerateReviewPrintout(GetUser(), model));
-			} else {
-				throw new PermissionsException("This report has not been shared with you. If you feel this is in error, please contact your supervisor.");
-			}
+            if (review.ClientReview.Visible || managesUser || GetUser().ManagingOrganization) {
+                var model = GetReviewDetails(review, true);
+                return Pdf(PdfAccessor.GenerateReviewPrintout(GetUser(), model));
+            } else {
+                throw new PermissionsException("This report has not been shared with you. If you feel this is in error, please contact your supervisor.");
+            }
 
 
-		}
+        }
 
-		private ReviewDetailsViewModel GetReviewDetails(ReviewModel review, bool includeScorecard = false) {
+        private ReviewDetailsViewModel GetReviewDetails(ReviewModel review, bool includeScorecard = false) {
 			var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id).OrderByDescending(x => x.Id);
 			var answers = _ReviewAccessor.GetAnswersForUserReview(GetUser(), review.ReviewerUserId, review.ForReviewContainerId).Alive().ToList();
 			var managers = _UserAccessor.GetManagers(GetUser(), review.ReviewerUserId, PermissionType.ViewReviews);

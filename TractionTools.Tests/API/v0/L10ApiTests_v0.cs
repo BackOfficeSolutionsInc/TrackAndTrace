@@ -47,7 +47,7 @@ namespace TractionTools.Tests.API.v0 {
 
 			var name = "Test L10 Updated";
 			var recurrenceId = await L10.CreateL10("Test L10");
-			L10.EditL10(recurrenceId, name);
+            await L10.EditL10(recurrenceId, name);
 
 			var getAllL10RecurrenceAtOrganization = L10Accessor.GetAllL10RecurrenceAtOrganization(c.E1, c.Org.Id);
 
@@ -92,7 +92,7 @@ namespace TractionTools.Tests.API.v0 {
 			L10_Controller L10 = new L10_Controller();
 			L10.MockUser(c.E1);
 
-			var recurrenceId = L10.CreateL10("Test L10");
+			var recurrenceId = await L10.CreateL10("Test L10");
 			var m1 = new MeasurableModel() {
 				AccountableUserId = c.E1.Id,
 				AdminUserId = c.E1.Id,
@@ -108,7 +108,7 @@ namespace TractionTools.Tests.API.v0 {
 			var getMeasurablesForRecurrence = L10Accessor.GetScorecardDataForRecurrence(c.E1, recurrenceId);
 			Assert.AreEqual(1, getMeasurablesForRecurrence.MeasurablesAndDividers.Count());
 
-			L10.RemoveMeasurableL10(recurrenceId, measurable.Measurables.FirstOrDefault().Id);
+			await L10.RemoveMeasurableL10(recurrenceId, measurable.Measurables.FirstOrDefault().Id);
 			getMeasurablesForRecurrence = L10Accessor.GetScorecardDataForRecurrence(c.E1, recurrenceId);
 			Assert.AreEqual(0, getMeasurablesForRecurrence.MeasurablesAndDividers.Count());
 
@@ -131,9 +131,9 @@ namespace TractionTools.Tests.API.v0 {
 			var rockModel = AddRockVm.CreateRock(recurrenceId, rock, true);
 			await L10Accessor.CreateRock(c.E1, recurrenceId, rockModel);
 
-			L10Accessor.CreateRock(c.E1, recurrenceId, rockModel);
+            await L10Accessor.CreateRock(c.E1, recurrenceId, rockModel);
 
-			L10.AttachRockMeetingL10(recurrenceId, rock.Id);
+            await L10.AttachRockMeetingL10(recurrenceId, rock.Id);
 
 			await L10.AttachRockMeetingL10(recurrenceId, rock.Id);
 			var getRocksForRecurrence = L10Accessor.GetRocksForRecurrence(c.E1, recurrenceId);
@@ -172,15 +172,15 @@ namespace TractionTools.Tests.API.v0 {
 			getRocksForOtherRecurrence = L10Accessor.GetRocksForRecurrence(c.E1, otherRecurrenceId);
 			Assert.AreEqual(1, getRocksForOtherRecurrence.Count());
 
-			//Remove from primary
-			L10.RemoveRockL10(recurrenceId, rock.Id);
+            //Remove from primary
+            await L10.RemoveRockL10(recurrenceId, rock.Id);
 			getRocksForRecurrence = L10Accessor.GetRocksForRecurrence(c.E1, recurrenceId);
 			Assert.AreEqual(0, getRocksForRecurrence.Count());
 			getRocksForOtherRecurrence = L10Accessor.GetRocksForRecurrence(c.E1, otherRecurrenceId);
 			Assert.AreEqual(1, getRocksForOtherRecurrence.Count());
 
-			//Remove from other
-			L10.RemoveRockL10(otherRecurrenceId, rock.Id);
+            //Remove from other
+            await L10.RemoveRockL10(otherRecurrenceId, rock.Id);
 			getRocksForRecurrence = L10Accessor.GetRocksForRecurrence(c.E1, recurrenceId);
 			Assert.AreEqual(0, getRocksForRecurrence.Count());
 			getRocksForOtherRecurrence = L10Accessor.GetRocksForRecurrence(c.E1, otherRecurrenceId);
@@ -268,8 +268,8 @@ namespace TractionTools.Tests.API.v0 {
 			var getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
 			Assert.AreEqual(1, getAttachHeadline.Count());
 
-			//Remove headline
-			L10.RemoveHeadlineL10(recurrenceId, headline.Id);
+            //Remove headline
+            await L10.RemoveHeadlineL10(recurrenceId, headline.Id);
 			//Get headlines
 			getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
 			Assert.AreEqual(0, getAttachHeadline.Count());
@@ -353,7 +353,7 @@ namespace TractionTools.Tests.API.v0 {
 
 			var getIssueMeetingL10 = L10Accessor.GetIssuesForRecurrence(c.E1, recurrenceId, false);
 
-			L10.RemoveIssueL10(recurrenceId, getIssueMeetingL10.FirstOrDefault().Id);
+            await L10.RemoveIssueL10(recurrenceId, getIssueMeetingL10.FirstOrDefault().Id);
 
 			var getIssueMeetingList = L10Accessor.GetIssuesForRecurrence(c.E1, recurrenceId, false);
 

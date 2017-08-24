@@ -100,9 +100,11 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		private static async Task GrabTodo(Csv csv, Models.Todo.TodoModel t, Dictionary<string,string> padLookup) {
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        private static async Task GrabTodo(Csv csv, Models.Todo.TodoModel t, Dictionary<string,string> padLookup) {
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
-			csv.Add("" + t.Id, "Owner", t.AccountableUser.NotNull(x => x.GetName()));
+            csv.Add("" + t.Id, "Owner", t.AccountableUser.NotNull(x => x.GetName()));
 			csv.Add("" + t.Id, "Created", t.CreateTime.ToShortDateString());
 			csv.Add("" + t.Id, "Due Date", t.DueDate.ToShortDateString());
 			var time = "";

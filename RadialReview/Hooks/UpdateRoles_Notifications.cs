@@ -52,8 +52,9 @@ namespace RadialReview.Hooks {
 			}
 		}
 
-		public async Task CreateRole(ISession s, RoleModel role) {
-			AddToNotification(s, role, "Role created");
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async Task CreateRole(ISession s, RoleModel role) {
+            AddToNotification(s, role, "Role created");
 		}
 
 		public async Task DeleteRole(ISession s, RoleModel role) {
@@ -63,5 +64,6 @@ namespace RadialReview.Hooks {
 		public async Task UpdateRole(ISession s, RoleModel role) {
 			AddToNotification(s, role, "Role updated");
 		}
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 	}
 }

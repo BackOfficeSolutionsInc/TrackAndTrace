@@ -45,8 +45,8 @@ namespace RadialReview.Api.V0 {
 
 		[Route("L10/{recurrenceId}/measurable/{measurableId}")]
 		[HttpDelete]
-		public void RemoveMeasurableL10(long recurrenceId, long measurableId) {
-			L10Accessor.Remove(GetUser(), new AngularMeasurable() { Id = measurableId }, recurrenceId, null);
+		public async Task RemoveMeasurableL10(long recurrenceId, long measurableId) {
+			await L10Accessor.Remove(GetUser(), new AngularMeasurable() { Id = measurableId }, recurrenceId, null);
 		}
 
 		[Route("L10/{recurrenceId}/attachrock/{rockId}")]
@@ -57,8 +57,8 @@ namespace RadialReview.Api.V0 {
 
 		[Route("L10/{recurrenceId}/rock/{rockId}")]
 		[HttpDelete]
-		public void RemoveRockL10(long recurrenceId, long rockId) {
-			L10Accessor.Remove(GetUser(), new AngularRock() { Id = rockId }, recurrenceId, null);
+		public async Task RemoveRockL10(long recurrenceId, long rockId) {
+			await L10Accessor.Remove(GetUser(), new AngularRock() { Id = rockId }, recurrenceId, null);
 		}
 
 		[Route("L10/{recurrenceId}")]
@@ -96,8 +96,8 @@ namespace RadialReview.Api.V0 {
 
 		[Route("L10/{recurrenceId}/issue/{issueId}")]
 		[HttpDelete]
-		public void RemoveIssueL10(long recurrenceId, long issueId) {
-			L10Accessor.Remove(GetUser(), new AngularIssue() { Id = issueId }, recurrenceId, null);
+		public async Task RemoveIssueL10(long recurrenceId, long issueId) {
+			await L10Accessor.Remove(GetUser(), new AngularIssue() { Id = issueId }, recurrenceId, null);
 		}
 
 		[Route("L10/headline/{recurrenceId}")]
@@ -120,13 +120,13 @@ namespace RadialReview.Api.V0 {
 			return new AngularHeadline(headline);
 		}
 
-		[Route("L10/{recurrenceId}/headline/{headlineId}")]
-		[HttpDelete]
-		public void RemoveHeadlineL10(long recurrenceId, long headlineId) {
-			L10Accessor.Remove(GetUser(), new AngularHeadline() { Id = headlineId }, recurrenceId, null);
-		}
+        [Route("L10/{recurrenceId}/headline/{headlineId}")]
+        [HttpDelete]
+        public async Task RemoveHeadlineL10(long recurrenceId, long headlineId) {
+            await L10Accessor.Remove(GetUser(), new AngularHeadline() { Id = headlineId }, recurrenceId, null);
+        }
 
-		[Route("L10/{recurrenceId}")]
+        [Route("L10/{recurrenceId}")]
 		[HttpGet]
 		public AngularRecurrence GetL10(long recurrenceId) {
 			return L10Accessor.GetAngularRecurrence(GetUser(), recurrenceId);

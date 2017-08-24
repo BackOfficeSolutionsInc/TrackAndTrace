@@ -66,7 +66,7 @@ namespace RadialReview.Areas.CoreProcess.Models
                         foreach (var item in getMemberIds)
                         {
                             var getItem = item.Split('_');
-                            var id = 0l;
+                            var id = 0L;
                             if (getItem.Length > 1 && long.TryParse(getItem[1], out id))
                             {
                                 idList.Add(id);

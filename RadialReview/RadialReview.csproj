@@ -56,10 +56,6 @@
       <HintPath>..\packages\System.Data.SQLite.1.0.88.0\lib\net45\System.Data.SQLite.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http.Formatting, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.0.0\lib\net45\System.Net.Http.Formatting.dll</HintPath>
-    </Reference>
     <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
@@ -812,12 +808,8 @@
     <Compile Include="Utilities\Hooks\IRockHook.cs" />
     <Compile Include="Utilities\Hooks\ITodoHook.cs" />
     <Compile Include="Utilities\Hooks\IUserHooks.cs" />
-    <Compile Include="Utilities\Hooks\ICreateTodo.cs" />
-    <Compile Include="Utilities\Hooks\ICreateUserOrganization.cs" />
-    <Compile Include="Utilities\Hooks\IDeleteUserOrganizationHook.cs" />
     <Compile Include="Utilities\Hooks\IHook.cs" />
     <Compile Include="Utilities\Hooks\IRolesHook.cs" />
-    <Compile Include="Utilities\Hooks\IUpdateUserModelHook.cs" />
     <Compile Include="Utilities\HtmlUtility.cs" />
     <Compile Include="Utilities\Integrations\ActiveCampaign.cs" />
     <Compile Include="Utilities\NHibernateHelper.cs" />
@@ -892,7 +884,7 @@
     <Compile Include="Utilities\Query\SessionUpdate.cs" />
     <Compile Include="Utilities\RandomUtility.cs" />
     <Compile Include="Utilities\ShortenerUtility.cs" />
-    <Compile Include="Utilities\NHibernate\SingleRequestTransaction.cs" />
+    <!--<Compile Include="Utilities\NHibernate\SingleRequestTransaction.cs" />-->
     <Compile Include="Utilities\StreamUtil.cs" />
     <Compile Include="Utilities\SubordinateUtility.cs" />
     <Compile Include="Utilities\Synchronize\SyncAction.cs" />
@@ -2376,7 +2368,6 @@
     <Folder Include="Views\MeetingData\" />
     <Folder Include="Views\Members\" />
     <Folder Include="Views\Migration\" />
-    <Folder Include="Views\Milestone\" />
     <Folder Include="Views\Onboard\" />
     <Folder Include="Views\Scheduler\" />
     <Folder Include="Views\Session\" />
@@ -2385,7 +2376,6 @@
     <Folder Include="Views\Transcript\" />
     <Folder Include="Views\Url\" />
     <Folder Include="Views\VtoData\" />
-    <Folder Include="Views\Webhook\" />
     <Folder Include="Views\WebRtc\" />
     <Folder Include="Views\Wizard\" />
     <Folder Include="Views\_Angular\" />

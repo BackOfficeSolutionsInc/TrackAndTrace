@@ -75,7 +75,7 @@ namespace TractionTools.UITests {
 		public static string TakeScreenshot(this IWebDriver driver, string file) {
 			var screenshotDriver = driver as ITakesScreenshot;
 			var screenshot = screenshotDriver.GetScreenshot();
-			screenshot.SaveAsFile(file, ImageFormat.Png);
+			screenshot.SaveAsFile(file, ScreenshotImageFormat.Png/* ImageFormat.Png*/);
 			return file;
 		}
 

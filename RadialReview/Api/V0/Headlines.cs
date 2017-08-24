@@ -4,6 +4,7 @@ using RadialReview.Accessors;
 using RadialReview.Models.Rocks;
 using RadialReview.Models.L10;
 using RadialReview.Models.Angular.Headlines;
+using System.Threading.Tasks;
 
 namespace RadialReview.Api.V0
 {
@@ -29,9 +30,9 @@ namespace RadialReview.Api.V0
 
         [Route("headline/{id}")]
         [HttpDelete]
-        public void RemoveHeadlines(long id, [FromBody]long recurrenceId)
+        public async Task RemoveHeadlines(long id, [FromBody]long recurrenceId)
         {
-            L10Accessor.Remove(GetUser(), new AngularHeadline() { Id = id }, recurrenceId, null);
+            await L10Accessor.Remove(GetUser(), new AngularHeadline() { Id = id }, recurrenceId, null);
         }
     }
 }

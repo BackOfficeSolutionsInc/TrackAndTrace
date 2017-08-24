@@ -60,9 +60,9 @@ namespace RadialReview.Api.V0
         // PUT: api/Todo/5
         [Route("issue/{id}")]
         [HttpPut]
-        public void EditIssue(long id, [FromBody]string message)
+        public async Task EditIssue(long id, [FromBody]string message)
         {
-            L10Accessor.UpdateIssue(GetUser(), id, DateTime.UtcNow, message);
+            await L10Accessor.UpdateIssue(GetUser(), id, DateTime.UtcNow, message);
         }
     }
 }

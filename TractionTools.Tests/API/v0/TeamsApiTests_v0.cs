@@ -28,9 +28,9 @@ namespace TractionTools.Tests.Api
     {
         [TestMethod]
         [TestCategory("Api_V0")]
-        public void TestCreateTeam()
+        public async Task TestCreateTeam()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             TeamsController teamController = new TeamsController();
             teamController.MockUser(c.E1);
 
@@ -45,9 +45,9 @@ namespace TractionTools.Tests.Api
 
         [TestMethod]
         [TestCategory("Api_V0")]
-        public void TestGetTeams()
+        public async Task TestGetTeams()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             TeamsController teamController = new TeamsController();
             teamController.MockUser(c.E1);
 
@@ -60,9 +60,9 @@ namespace TractionTools.Tests.Api
 
         [TestMethod]
         [TestCategory("Api_V0")]
-        public void TestUpdateTeam()
+        public async Task TestUpdateTeam()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             TeamsController teamController = new TeamsController();
             teamController.MockUser(c.E1);
 
@@ -78,9 +78,9 @@ namespace TractionTools.Tests.Api
 
         [TestMethod]
         [TestCategory("Api_V0")]
-        public void TestGetTeamMember()
+        public async Task TestGetTeamMember()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             TeamsController teamController = new TeamsController();
             teamController.MockUser(c.E1);
 
@@ -103,9 +103,9 @@ namespace TractionTools.Tests.Api
 
         [TestMethod]
         [TestCategory("Api_V0")]
-        public void TestAddTeamMember()
+        public async Task TestAddTeamMember()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             TeamsController teamController = new TeamsController();
             teamController.MockUser(c.E1);
 
@@ -119,9 +119,9 @@ namespace TractionTools.Tests.Api
 
         [TestMethod]
         [TestCategory("Api_V0")]
-        public void TestRemoveTeamMember()
+        public async Task TestRemoveTeamMember()
         {
-            var c = new Ctx();
+            var c = await Ctx.Build();
             TeamsController teamController = new TeamsController();
             teamController.MockUser(c.Manager);
 

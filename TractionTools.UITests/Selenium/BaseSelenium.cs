@@ -217,9 +217,11 @@ namespace TractionTools.UITests.Selenium {
 						if (_FirefoxDriver == null) {
 							FirefoxProfile Prof = new FirefoxProfile();
 							FirefoxBinary Bin = new FirefoxBinary(Config.GetAppSetting("FirefoxLocation"));
-							_FirefoxDriver = new FirefoxDriver(Bin, Prof);
-							// _FirefoxDriver = new FirefoxDriver();
-						}
+#pragma warning disable CS0618 // Type or member is obsolete
+                            _FirefoxDriver = new FirefoxDriver(Bin, Prof);
+#pragma warning restore CS0618 // Type or member is obsolete
+                              // _FirefoxDriver = new FirefoxDriver();
+                        }
 						return _FirefoxDriver;
 					}
 				case WithBrowsers.IE: {

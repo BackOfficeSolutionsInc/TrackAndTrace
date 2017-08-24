@@ -26,7 +26,17 @@ namespace RadialReview.Utilities {
 			File.WriteAllText(file, version);
 		}
 
-		public static int EnterpriseAboveUserCount() {
+        public static bool RunChromeExt() {
+            switch (GetEnv()) {
+                case Env.local_test_sqlite: return true;
+                case Env.local_sqlite: return false;
+                case Env.local_mysql: return GetAppSetting("RunExt", "false").ToBooleanJS();
+                case Env.production: return false;
+                default: throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public static int EnterpriseAboveUserCount() {
 			return 45;
 		}
 

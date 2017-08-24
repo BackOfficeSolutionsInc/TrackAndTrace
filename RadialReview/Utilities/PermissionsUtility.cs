@@ -36,6 +36,8 @@ using System.Threading;
 using RadialReview.Models.Rocks;
 using RadialReview.Reflection;
 using RadialReview.Areas.People.Models.Survey;
+using RadialReview.Areas.CoreProcess.Accessors;
+using RadialReview.Areas.CoreProcess.Models;
 
 namespace RadialReview.Utilities {
 	//[Obsolete("Not really obsolete. I just want this to stick out.", false)]
@@ -1893,7 +1895,7 @@ namespace RadialReview.Utilities {
 			if (IsRadialAdmin(caller))
 				return this;
 
-			ProcessDefAccessor accessor = new Areas.CoreProcess.Accessors.ProcessDefAccessor();
+			ProcessDefAccessor accessor = new ProcessDefAccessor();
 			var arr = AsyncHelper.RunSync<long[]>(() => accessor.GetCandidateGroupIdsForTask(caller, taskId));
 
 			if (arr.Any(x => x == caller.Id)) {
