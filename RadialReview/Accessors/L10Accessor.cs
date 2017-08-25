@@ -4885,10 +4885,10 @@ namespace RadialReview.Accessors {
 			}
 			return headlineList;
 		}
-		public static async Task Remove(UserOrganizationModel caller, BaseAngular model, long recurrenceId, string connectionId) {
+		public static async Task Remove(UserOrganizationModel caller, BaseAngular model, long recurrenceId, string connectionId=null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					using (var rt = RealTimeUtility.Create()) {
+					using (var rt = RealTimeUtility.Create(connectionId)) {
 						var perms = PermissionsUtility.Create(s, caller);
 						perms.EditL10Recurrence(recurrenceId);
 
