@@ -24,20 +24,20 @@ namespace RadialReview.Api.V0 {
 	public class L10_Controller : BaseApiController {
 		// PUT: api/L10
 		[Route("L10/Create")]
-		[HttpPut]
+		[HttpPost]
 		public async Task<long> CreateL10([FromBody]string name) {
 			var _recurrence = await L10Accessor.CreateBlankRecurrence(GetUser(), GetUser().Organization.Id);
 			await L10Accessor.UpdateRecurrence(GetUser(), _recurrence.Id, name);
 			return _recurrence.Id;
 		}
 
-		[Route("L10/{recurrenceId}/edit")]
-		[HttpPut]
+		[Route("L10/{recurrenceId}")]
+		[HttpPost]
 		public async Task EditL10(long recurrenceId, [FromBody]string name) {
 			await L10Accessor.UpdateRecurrence(GetUser(), recurrenceId, name);
 		}
 
-		[Route("L10/{recurrenceId}/attachmeasurable/{measurableId}")]
+		[Route("L10/{recurrenceId}/measurable/{measurableId}")]
 		[HttpPut]
 		public async Task AttachMeasurableL10(long recurrenceId, long measurableId) {
 			await L10Accessor.AttachMeasurable(GetUser(), recurrenceId, measurableId);
@@ -49,7 +49,7 @@ namespace RadialReview.Api.V0 {
 			await L10Accessor.Remove(GetUser(), new AngularMeasurable() { Id = measurableId }, recurrenceId, null);
 		}
 
-		[Route("L10/{recurrenceId}/attachrock/{rockId}")]
+		[Route("L10/{recurrenceId}/rock/{rockId}")]
 		[HttpPut]
 		public async Task AttachRockMeetingL10(long recurrenceId, long rockId) {
 			await L10Accessor.AttachRock(GetUser(), recurrenceId, rockId);
@@ -67,8 +67,8 @@ namespace RadialReview.Api.V0 {
 			await L10Accessor.DeleteL10Recurrence(GetUser(), recurrenceId);
 		}
 
-		[Route("L10/attachtodo/{recurrenceId}")]
-		[HttpPut]
+		[Route("L10/{recurrenceId}/todo")]
+		[HttpPost]
 		public async Task<bool> AttachTodoL10(long recurrenceId, [FromBody]string name, [FromBody]long? ownerId = null, [FromBody]DateTime? duedate = null) {
 			if (!duedate.HasValue) {
 				duedate = DateTime.Now.AddDays(7);
@@ -84,8 +84,8 @@ namespace RadialReview.Api.V0 {
 			return await TodoAccessor.CreateTodo(GetUser(), recurrenceId, model);
 		}
 
-		[Route("L10/issue/{recurrenceId}")]
-		[HttpPut]
+		[Route("L10/{recurrenceId}/issue")]
+		[HttpPost]
 		public async Task<AngularIssue> CreateIssueL10(long recurrenceId, [FromBody]string name, [FromBody]long? ownerId = null, [FromBody]string details = null) {
 			ownerId = ownerId ?? GetUser().Id;
 			var issue = new IssueModel() { Message = name, Description = details };
@@ -100,8 +100,8 @@ namespace RadialReview.Api.V0 {
 			await L10Accessor.Remove(GetUser(), new AngularIssue() { Id = issueId }, recurrenceId, null);
 		}
 
-		[Route("L10/headline/{recurrenceId}")]
-		[HttpPut]
+		[Route("L10/{recurrenceId}/headline")]
+		[HttpPost]
 		public async Task<AngularHeadline> CreateHeadlineL10(long recurrenceId, [FromBody]string name = null, [FromBody]long? OwnerId = null, [FromBody]string Details = null) {
 			if (OwnerId == null) {
 				OwnerId = GetUser().Id;
@@ -132,8 +132,8 @@ namespace RadialReview.Api.V0 {
 			return L10Accessor.GetAngularRecurrence(GetUser(), recurrenceId);
 		}
 
-		[Route("L10/attendees/{recurrenceId}")]
-		[HttpPut]
+		[Route("L10/{recurrenceId}/attendees")]
+		[HttpGet]
 		public IEnumerable<Models.UserOrganizationModel> GetL10Attendees(long recurrenceId) {
 			return L10Accessor.GetAttendees(GetUser(), recurrenceId);
 		}

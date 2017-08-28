@@ -34,7 +34,7 @@ namespace TractionTools.Tests.API.v0 {
 
             bool result = await TodoAccessor.CreateTodo(c.E1,-2, todo);
 
-            TodoController cnt = new TodoController();
+            TodosController cnt = new TodosController();
             cnt.MockUser(c.E1);
 
 			await c.Org.RegisterUser(c.E1);
@@ -80,7 +80,7 @@ namespace TractionTools.Tests.API.v0 {
 
             bool result = await TodoAccessor.CreateTodo(c.E1, -2, todo);
 
-            TodoController cnt = new TodoController();
+            TodosController cnt = new TodosController();
             cnt.MockUser(c.E1);
 
             var _todo = cnt.Get(todo.Id);
@@ -100,7 +100,7 @@ namespace TractionTools.Tests.API.v0 {
                 TodoType = TodoType.Personal
             };
             bool result = await TodoAccessor.CreateTodo(c.E1, -2, todo);
-            TodoController cnt = new TodoController();
+            TodosController cnt = new TodosController();
             cnt.MockUser(c.E1);
 
             var _model = cnt.GetUserTodos(c.E1.Id);
@@ -120,7 +120,7 @@ namespace TractionTools.Tests.API.v0 {
                 TodoType = TodoType.Recurrence
             };            
 
-            TodoController cnt = new TodoController();
+            TodosController cnt = new TodosController();
             cnt.MockUser(c.E1);
 
             var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
@@ -146,7 +146,7 @@ namespace TractionTools.Tests.API.v0 {
                 TodoType = TodoType.Personal
             };
             bool result = await TodoAccessor.CreateTodo(c.E1, -2, todo);
-            TodoController cnt = new TodoController();
+            TodosController cnt = new TodosController();
             cnt.MockUser(c.E1);
 
             var _model = cnt.MarkComplete(todo.Id, now);
@@ -171,7 +171,7 @@ namespace TractionTools.Tests.API.v0 {
 
             bool result = await TodoAccessor.CreateTodo(c.E1, -2, todo);
 
-            TodoController cnt = new TodoController();
+            TodosController cnt = new TodosController();
             cnt.MockUser(c.E1);
 
             var newMessage = "New Todo message for Test Method.";

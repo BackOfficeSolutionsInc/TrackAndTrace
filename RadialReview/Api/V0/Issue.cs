@@ -52,9 +52,9 @@ namespace RadialReview.Api.V0
 
         // GET: api/Issue/mine
         [Route("issue/user/{id}")]
-        public IEnumerable<IssueModel.IssueModel_Recurrence> GetRecurrenceIssues(long id)
+        public IEnumerable<AngularIssue> GetRecurrenceIssues(long id)
         {
-            return L10Accessor.GetIssuesForRecurrence(GetUser(), id, false);
+            return L10Accessor.GetIssuesForRecurrence(GetUser(), id, false).Select(x=>new AngularIssue(x));
         }
 
         // PUT: api/Todo/5

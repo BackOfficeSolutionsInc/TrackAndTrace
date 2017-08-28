@@ -419,7 +419,9 @@ namespace RadialReview.Utilities {
 			enversConf.Audit<WebhookEventsSubscription>();
             enversConf.Audit<Task_Camunda>();
             enversConf.Audit<ProcessDef_Camunda>();
-           
+			enversConf.Audit<ProcessDef_CamundaFile>();
+			enversConf.Audit<ProcessInstance_Camunda>();
+			enversConf.Audit<Task_Camunda>();
 			nhConf.IntegrateWithEnvers(enversConf);
         }
 

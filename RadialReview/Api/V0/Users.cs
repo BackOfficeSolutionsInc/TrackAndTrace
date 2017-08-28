@@ -69,7 +69,7 @@ namespace RadialReview.Api.V0
 
         //--
         [Route("users/")]
-        [HttpPut]
+        [HttpPost]
         public async Task<AngularUser> CreateUser([FromBody]string firstName, [FromBody]string lastName, [FromBody]string email, [FromBody]long? managerNodeId = null, [FromBody]bool? SendEmail = null)
         {
             //var outParam = new UserOrganizationModel();
