@@ -36,22 +36,30 @@ namespace RadialReview.Api.V0
         }
 
         // GET: api/Issue/mine
-        [Route("issue/mine")]
+        [Route("issue/user/mine")]
         public IEnumerable<AngularIssue> GetMineIssues()
         {
-            List<IssueModel.IssueModel_Recurrence> list = IssuesAccessor.GetMyIssues(GetUser(), GetUser().Id);
+            List<IssueModel.IssueModel_Recurrence> list = IssuesAccessor.GetVisibleIssuesForUser(GetUser(), GetUser().Id);
+            return list.Select(x => new AngularIssue(x));
+        }
+
+        // GET: api/Issue/user
+        [Route("issue/user/{userId}")]
+        public IEnumerable<AngularIssue> GetUserIssues(long userId)
+        {
+            List<IssueModel.IssueModel_Recurrence> list = IssuesAccessor.GetVisibleIssuesForUser(GetUser(), userId);
             return list.Select(x => new AngularIssue(x));
         }
 
         // GET: api/Issue/mine
-        [Route("issue/user/{userId}/{recurrenceId}")]
+        [Route("issue/user/{userId}/l10/{recurrenceId}")]
         public IEnumerable<AngularIssue> GetUserIssues(long userId, long recurrenceId)
         {
             return IssuesAccessor.GetUserIssues(GetUser(), userId, recurrenceId).Select(x => new AngularIssue(x));
         }
 
         // GET: api/Issue/mine
-        [Route("issue/user/{id}")]
+        [Route("issue/l10/{id}")]
         public IEnumerable<AngularIssue> GetRecurrenceIssues(long id)
         {
             return L10Accessor.GetIssuesForRecurrence(GetUser(), id, false).Select(x=>new AngularIssue(x));

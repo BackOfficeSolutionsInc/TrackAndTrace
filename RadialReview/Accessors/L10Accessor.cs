@@ -4711,7 +4711,7 @@ namespace RadialReview.Accessors {
 
 			perm.ViewHeadline(headlineId);
 
-			var r = s.Get<PeopleHeadline>(headlineId);
+			var r = s.Get<PeopleHeadline>(headlineId);            
 
 			var now = DateTime.UtcNow;
 			r.CloseTime = now;

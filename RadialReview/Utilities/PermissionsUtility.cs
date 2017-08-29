@@ -1868,11 +1868,12 @@ namespace RadialReview.Utilities {
         {
             if (IsRadialAdmin(caller))
                 return this;
-            if (userId == caller.Id)
-                return this;
-            if (IsOwnedBelowOrEqual(caller, userId))
-                return this;
-            return ViewL10Recurrence(recurrenceId);            
+            return ViewL10Recurrence(recurrenceId).OwnedBelowOrEqual(userId);
+            //if (userId == caller.Id)
+            //    return this;
+            //if (IsOwnedBelowOrEqual(caller, userId))
+            //    return this;
+            //return ViewL10Recurrence(recurrenceId);            
         }
 
 		#endregion
