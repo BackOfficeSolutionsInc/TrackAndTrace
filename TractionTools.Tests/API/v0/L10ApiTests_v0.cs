@@ -19,6 +19,7 @@ using RadialReview.Models.Angular.Base;
 using RadialReview.Models.Scorecard;
 using static RadialReview.Controllers.L10Controller;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Issues;
 
 namespace TractionTools.Tests.API.v0 {
 	[TestClass]
@@ -359,6 +360,30 @@ namespace TractionTools.Tests.API.v0 {
 
 			Assert.AreEqual(0, getIssueMeetingList.Count());
 
+		}
+
+
+		[TestMethod]
+		[TestCategory("Api_V0")]
+		public async Task TestGetUserIssues() {
+			var c = await Ctx.Build();
+			var issue = new IssueModel() {
+				Message = "Issue for Test Method",
+			};
+
+			var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
+			var result = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E1.Id, issue);
+			var issue1 = new IssueModel() {
+				Message = "Issue for Test Method",
+			};
+
+			// creating issue with different owner
+			var result1 = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E2.Id, issue1);
+			L10_Controller iss = new L10_Controller();
+			iss.MockUser(c.E1);
+			var _model = iss.GetUserIssues(c.E1.Id, _recurrence.Id);
+			Assert.AreEqual(1, _model.Count());
+			Assert.AreEqual(c.E1.Id, _model.First().Owner.Id);
 		}
 	}
 }

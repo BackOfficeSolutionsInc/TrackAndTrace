@@ -128,6 +128,7 @@
     <Compile Include="Areas\CoreProcess\Interfaces\ITaskAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Models\AmazonSQSUtility.cs" />
+    <Compile Include="Areas\CoreProcess\Models\AsyncUtility.cs" />
     <Compile Include="Areas\CoreProcess\Models\BpmnUtility.cs" />
     <Compile Include="Areas\CoreProcess\Models\Interfaces\IProcessInstance.cs" />
     <Compile Include="Areas\CoreProcess\Models\Interfaces\ITask.cs" />

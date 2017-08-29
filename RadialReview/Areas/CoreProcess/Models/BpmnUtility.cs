@@ -372,30 +372,25 @@ namespace RadialReview.Areas.CoreProcess.Models {
 			return fileStm;
 		}
 
-	}
-
-
-	internal static class AsyncHelper {
-		private static readonly TaskFactory _myTaskFactory = new
-		  TaskFactory(CancellationToken.None,
-					  TaskCreationOptions.None,
-					  TaskContinuationOptions.None,
-					  TaskScheduler.Default);
-
-		public static TResult RunSync<TResult>(Func<Task<TResult>> func) {
-			return AsyncHelper._myTaskFactory
-			  .StartNew<Task<TResult>>(func)
-			  .Unwrap<TResult>()
-			  .GetAwaiter()
-			  .GetResult();
+		public static IEnumerable<XElement> GetAllElement(XDocument xDoc) {
+			return xDoc.Root.Element(bpmn + "process").Elements();
 		}
 
-		public static void RunSync(Func<Task> func) {
-			AsyncHelper._myTaskFactory
-			  .StartNew<Task>(func)
-			  .Unwrap()
-			  .GetAwaiter()
-			  .GetResult();
+		public static XElement GetElement(IEnumerable<XElement> elments, string attrName, string attrValue) {
+			return elments.Where(t => (t.Attribute(attrName) != null ? t.Attribute(attrName).Value : "") == attrValue).FirstOrDefault();
 		}
+
+		public static string GetAttributeValue(XElement elments, string attrName, XNamespace nameSpace = null) {
+			if (nameSpace != null)
+				return (elments.Attribute(nameSpace + attrName) != null ? (elments.Attribute(nameSpace + attrName).Value) : "");
+			else
+				return (elments.Attribute(attrName) != null ? (elments.Attribute(attrName).Value) : "");
+		}
+
+		public static string ConcatedCandidateString(long[] list) {
+
+			return String.Join(",", list.Select(x => "rgm_" + x));
+		}
+
 	}
 }

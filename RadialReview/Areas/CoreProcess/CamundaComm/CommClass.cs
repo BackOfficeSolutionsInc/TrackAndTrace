@@ -4,6 +4,7 @@ using CamundaCSharpClient.Model.ProcessDefinition;
 using CamundaCSharpClient.Model.ProcessInstance;
 using CamundaCSharpClient.Model.Task;
 using RadialReview.Areas.CoreProcess.Interfaces;
+using RadialReview.Areas.CoreProcess.Models;
 using RadialReview.Areas.CoreProcess.Models.Interfaces;
 using RadialReview.Models;
 using RadialReview.Utilities;
@@ -109,11 +110,11 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
 
         public async Task<IEnumerable<TaskModel>> GetTaskByCandidateGroups(long[] candidateGroupIds, string processInstanceId = "", bool unassigned = false)
         {
-            // long[] candidateGroupIds
-            // pass array of candidate groups
-            // concatenate rgm with long ids String.Join
+			// long[] candidateGroupIds
+			// pass array of candidate groups
+			// concatenate rgm with long ids String.Join
 
-            var candidateGroups = String.Join(",", candidateGroupIds.Select(x => "rgm_" + x));
+			var candidateGroups = BpmnUtility.ConcatedCandidateString(candidateGroupIds);
             client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
             var tasks = await client.Task().Get().CandidateGroups(candidateGroups).list();
 

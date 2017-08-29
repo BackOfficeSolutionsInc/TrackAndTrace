@@ -16,15 +16,14 @@ namespace RadialReview.Areas.CoreProcess.Interfaces
         Task<bool> Deploy(UserOrganizationModel caller, long localId);
         List<ProcessInstanceViewModel> GetProcessInstanceList(UserOrganizationModel caller, long localId);
         Task<long> Create(UserOrganizationModel caller, string processName);
-        Task<bool> Edit(UserOrganizationModel caller, long localId, string processName);
-        bool Delete(UserOrganizationModel caller, long processId);
-        Stream CreateBpmnFile(string processName, string bpmnId);
+        Task<bool> EditProcess(UserOrganizationModel caller, long localId, string processName);
+        bool DeleteProcess(UserOrganizationModel caller, long processId);
    
         IEnumerable<ProcessDef_Camunda> GetProcessDefinitionList(UserOrganizationModel caller, long orgId);
         ProcessDef_Camunda GetProcessDefById(UserOrganizationModel caller, long processId);
-        Task<TaskViewModel> CreateTask(UserOrganizationModel caller, long localId, TaskViewModel model);
+        Task<TaskViewModel> CreateProcessDefTask(UserOrganizationModel caller, long localId, TaskViewModel model);
         Task<TaskViewModel> UpdateTask(UserOrganizationModel caller, long localId, TaskViewModel model);
-        Task<bool> DeleteTask(UserOrganizationModel caller, string taskId, long localId);
+        Task<bool> DeleteProcessDefTask(UserOrganizationModel caller, string taskId, long localId);
         Task<List<TaskViewModel>> GetAllTaskForProcessDefinition(UserOrganizationModel caller, long localId);
         Task<List<TaskViewModel>> GetTaskListByCandidateGroups(UserOrganizationModel caller, long[] candidateGroupIds, string processInstanceId = "", bool unassigned = false);
         Task<List<TaskViewModel>> GetAllTaskByRGM(UserOrganizationModel caller, long teamId);
@@ -37,7 +36,7 @@ namespace RadialReview.Areas.CoreProcess.Interfaces
         //Task<bool> TaskUnClaim(UserOrganizationModel caller, string taskId, long userId);
         Task<bool> TaskComplete(UserOrganizationModel caller, string taskId, long userId);
         Task<bool> ModifiyBpmnFile(UserOrganizationModel caller, long localId, int oldOrder, int newOrder);
-        Task<bool> ProcessSuspend(UserOrganizationModel caller, long localId, bool isSuspend);
+        Task<bool> SuspendProcess(UserOrganizationModel caller, long localId, bool shouldSuspend);
         Task<ProcessDef_Camunda> ProcessStart(UserOrganizationModel caller, long processId);
         Task<List<TaskViewModel>> GetTaskListByProcessDefId(UserOrganizationModel caller, List<string> processDefId);
     }

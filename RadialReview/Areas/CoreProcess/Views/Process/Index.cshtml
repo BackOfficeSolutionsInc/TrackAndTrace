@@ -62,15 +62,15 @@
 				{
 					if (val != 0) {
 						var title = "This will delete all running instances associated with this process.</br>Are you sure you want to delete!";
-						show(x, title);
+						show_message(x, title);
 					}
 					else
 					{
 						var title = "Are you sure you want to remove!";
-						show(x, title);
+						show_message(x, title);
 					}
 				}
-				function show(x, title)
+				function show_message(x, title)
 				{
 					showModal({
 						icon: "warning",

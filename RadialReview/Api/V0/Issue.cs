@@ -16,7 +16,7 @@ namespace RadialReview.Api.V0
     {
         // Put: api/Issue/mine
         [Route("issue/create")]
-        [HttpPut]
+        [HttpPost]
         public async Task<AngularIssue> CreateIssue(long recurrenceId, [FromBody]string name, [FromBody]long? ownerId = null, [FromBody]string details = null)
         {
 			ownerId = ownerId ?? GetUser().Id;
@@ -25,7 +25,6 @@ namespace RadialReview.Api.V0
 			return new AngularIssue(success.IssueRecurrenceModel);
 		}
 
-        // GET: api/Issue/5
         [Route("issue/{id}")]
         [HttpGet]
         public AngularIssue Get(long id)
@@ -35,37 +34,22 @@ namespace RadialReview.Api.V0
             return new AngularIssue(model);
         }
 
-        // GET: api/Issue/mine
         [Route("issue/user/mine")]
+		[HttpGet]
         public IEnumerable<AngularIssue> GetMineIssues()
         {
             List<IssueModel.IssueModel_Recurrence> list = IssuesAccessor.GetVisibleIssuesForUser(GetUser(), GetUser().Id);
             return list.Select(x => new AngularIssue(x));
         }
 
-        // GET: api/Issue/user
         [Route("issue/user/{userId}")]
+		[HttpGet]
         public IEnumerable<AngularIssue> GetUserIssues(long userId)
         {
             List<IssueModel.IssueModel_Recurrence> list = IssuesAccessor.GetVisibleIssuesForUser(GetUser(), userId);
             return list.Select(x => new AngularIssue(x));
         }
 
-        // GET: api/Issue/mine
-        [Route("issue/user/{userId}/l10/{recurrenceId}")]
-        public IEnumerable<AngularIssue> GetUserIssues(long userId, long recurrenceId)
-        {
-            return IssuesAccessor.GetUserIssues(GetUser(), userId, recurrenceId).Select(x => new AngularIssue(x));
-        }
-
-        // GET: api/Issue/mine
-        [Route("issue/l10/{id}")]
-        public IEnumerable<AngularIssue> GetRecurrenceIssues(long id)
-        {
-            return L10Accessor.GetIssuesForRecurrence(GetUser(), id, false).Select(x=>new AngularIssue(x));
-        }
-
-        // PUT: api/Todo/5
         [Route("issue/{id}")]
         [HttpPut]
         public async Task EditIssue(long id, [FromBody]string message)

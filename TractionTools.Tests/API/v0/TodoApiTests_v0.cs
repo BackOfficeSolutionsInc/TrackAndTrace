@@ -60,7 +60,8 @@ namespace TractionTools.Tests.API.v0 {
                 TodoType = TodoType.Personal
             };
 
-            bool result = await TodoAccessor.CreateTodo(c.E1, -2, todo);
+			TodosController cnt = new TodosController();
+			bool result = await cnt.CreateTodo(todo.Message,DateTime.Now);
 
             Assert.IsTrue(result);
         }

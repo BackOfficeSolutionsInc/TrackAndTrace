@@ -111,7 +111,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<JsonResult> DeleteTask(string id, long localId) // id is taskId
 		{
-			await processDefAccessor.DeleteTask(GetUser(), id, localId);
+			await processDefAccessor.DeleteProcessDefTask(GetUser(), id, localId);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
@@ -119,7 +119,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 		public JsonResult Delete(long id) // id is processid
 		{
 			var Process = processDefAccessor.GetProcessDefById(GetUser(), id);
-			processDefAccessor.Delete(GetUser(), id);
+			processDefAccessor.DeleteProcess(GetUser(), id);
 			return Json(ResultObject.SilentSuccess(Process), JsonRequestBehavior.AllowGet);
 		}
 
@@ -163,7 +163,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
 		public async Task<JsonResult> CreateTask(TaskViewModel model, long localId) {
-			var create = await processDefAccessor.CreateTask(GetUser(), localId, model);
+			var create = await processDefAccessor.CreateProcessDefTask(GetUser(), localId, model);
 
 			model.process = new ProcessViewModel();
 			model.process.LocalID = localId;
@@ -186,7 +186,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
 		public async Task<JsonResult> Edit(ProcessViewModel Model) {
-			var updateProcess = await processDefAccessor.Edit(GetUser(), Model.LocalID, Model.Name);
+			var updateProcess = await processDefAccessor.EditProcess(GetUser(), Model.LocalID, Model.Name);
 			return Json(ResultObject.SilentSuccess(Model));
 		}
 
@@ -206,9 +206,9 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 		public async Task<ActionResult> Suspend(long id, string status) {
 			ProcessInstanceViewModel processinstance = new ProcessInstanceViewModel();
 			if (status == "true") {
-				var Suspend = await processDefAccessor.ProcessSuspend(GetUser(), id, false);
+				var Suspend = await processDefAccessor.SuspendProcess(GetUser(), id, false);
 			} else {
-				var Suspend = await processDefAccessor.ProcessSuspend(GetUser(), id, true);
+				var Suspend = await processDefAccessor.SuspendProcess(GetUser(), id, true);
 			}
 			return RedirectToAction("ProcessInstance", "Process", new { @id = id });
 		}
