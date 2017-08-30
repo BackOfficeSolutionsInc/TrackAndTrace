@@ -17,33 +17,45 @@ namespace RadialReview.Areas.CoreProcess.Models {
 	public class BpmnUtility {
 		private static XNamespace bpmn = "http://www.omg.org/spec/BPMN/20100524/MODEL";
 		private static XNamespace camunda = "http://camunda.org/schema/1.0/bpmn";
-		public static string GetMemberNames(UserOrganizationModel caller, string candidateGroupName, long[] memberIds) {
-			long[] getMemberIds = null;
-			if (memberIds != null && memberIds.Any()) {
-				getMemberIds = memberIds;
-			} else {
-				getMemberIds = GetMemberIds(candidateGroupName);
-			}
-
+		public static string GetMemberNames(UserOrganizationModel caller, long[] memberIds) {
 			ResponsibilitiesAccessor respAccessor = new ResponsibilitiesAccessor();
 			string memberName = string.Empty;
-			if (getMemberIds != null) {
-				if (getMemberIds.Any()) {
-					foreach (var item in getMemberIds) {
-						var getMemberName = respAccessor.GetResponsibilityGroup(caller, item).GetName();
-						if (!string.IsNullOrEmpty(getMemberName)) {
-							if (string.IsNullOrEmpty(memberName))
-								memberName = getMemberName;
-							else
-								memberName += ", " + getMemberName;
-						}
-					}
-				}
+			if (memberIds != null) {
+				memberName = String.Join(",", memberIds.Select(x => respAccessor.GetResponsibilityGroup(caller, x).GetName()));
 			}
+			//if (getMemberIds != null) {
+			//	if (getMemberIds.Any()) {
+			//		foreach (var item in getMemberIds) {
+			//			var getMemberName = respAccessor.GetResponsibilityGroup(caller, item).GetName();
+			//			if (!string.IsNullOrEmpty(getMemberName)) {
+			//				if (string.IsNullOrEmpty(memberName))
+			//					memberName = getMemberName;
+			//				else
+			//					memberName += ", " + getMemberName;
+			//			}
+			//		}
+			//	}
+			//}
 			return memberName;
 		}
 
-		public static long[] GetMemberIds(string memberIds) {
+		public static string GetMemberNamesFromString(UserOrganizationModel caller, string candidateGroupName) {
+			long[] getMemberIds = null;
+			getMemberIds = GetParseMemberId(candidateGroupName);
+			string memberName = GetMemberNames(caller, getMemberIds);
+			return memberName;
+		}
+
+		public static string GetMemberNamesFromRGM(UserOrganizationModel caller, long[] memberIds) {
+			string memberName = GetMemberNames(caller, memberIds);
+			return memberName;
+		}
+
+
+
+
+
+		public static long[] GetParseMemberId(string memberIds) {
 			List<long> idList = new List<long>();
 			if (string.IsNullOrEmpty(memberIds)) {
 				return idList.ToArray();
@@ -83,54 +95,53 @@ namespace RadialReview.Areas.CoreProcess.Models {
 			string target = string.Empty;
 			var elements = xmlDocument.Root.Element(bpmn + "process").Elements();
 
-			try {
-				int targetCounter = 0;
-				int sourceCounter = 0;
-				foreach (var item in elements.ToList()) {
-					if (item.Attribute("targetRef") != null) {
-						if (item.Attribute("targetRef").Value == attrId) {
-							source = item.Attribute("sourceRef").Value;
-							item.Remove();
-							targetCounter++;
-						}
-					}
-
-					if (item.Attribute("sourceRef") != null) {
-						if (item.Attribute("sourceRef").Value == attrId) {
-							target = item.Attribute("targetRef").Value;
-							item.Remove();
-							sourceCounter++;
-						}
+			int targetCounter = 0;
+			int sourceCounter = 0;
+			foreach (var item in elements.ToList()) {
+				if (item.Attribute("targetRef") != null) {
+					if (item.Attribute("targetRef").Value == attrId) {
+						source = item.Attribute("sourceRef").Value;
+						item.Remove();
+						targetCounter++;
 					}
 				}
 
-				if (targetCounter != 1) {
-					throw new Exception("Could not detach node. As targetRef occurs more than once.");
+				if (item.Attribute("sourceRef") != null) {
+					if (item.Attribute("sourceRef").Value == attrId) {
+						target = item.Attribute("targetRef").Value;
+						item.Remove();
+						sourceCounter++;
+					}
 				}
-
-				if (sourceCounter != 1) {
-					throw new Exception("Could not detach node. As sourceRef occurs more than once.");
-				}
-
-				deleteNode.Remove();
-
-				//get target element
-				var getTargetElement = elements.Where(x => (x.Attribute("id") != null ? x.Attribute("id").Value : "") == target).FirstOrDefault();
-
-				//apppend element
-				elements.Where(m => m.Attribute("id").Value == getTargetElement.Attribute("id").Value).FirstOrDefault().AddBeforeSelf(
-						  new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")), new XAttribute("sourceRef", source), new XAttribute("targetRef", target))
-						  );
-
-				xmlDocument.Save(fileStream);
-				fileStream.Seek(0, SeekOrigin.Begin);
-				fileStream.Position = 0;
-
-			} catch (Exception ex) {
-				throw ex;
 			}
 
+			if (targetCounter != 1) {
+				throw new Exception("Could not detach node. As targetRef occurs more than once.");
+			}
+
+			if (sourceCounter != 1) {
+				throw new Exception("Could not detach node. As sourceRef occurs more than once.");
+			}
+
+			deleteNode.Remove();
+
+			//get target element
+			var getTargetElement = BpmnUtility.FindElementByAttribute(elements, "id", target);
+			//elements.Where(x => (x.Attribute("id") != null ? x.Attribute("id").Value : "") == target).FirstOrDefault();
+
+			//apppend element
+			elements.Where(m => m.Attribute("id").Value == getTargetElement.Attribute("id").Value).FirstOrDefault().AddBeforeSelf(
+					 AppendSequenceFlow(source, target));
+
+			xmlDocument.Save(fileStream);
+			fileStream.Seek(0, SeekOrigin.Begin);
+			fileStream.Position = 0;
+
 			return fileStream;
+		}
+
+		public static XElement AppendSequenceFlow(string source, string target) {
+			return new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + GenerateGuid()), new XAttribute("sourceRef", source), new XAttribute("targetRef", target));
 		}
 
 		public static Stream InsertNode(Stream stream, int oldOrder, int newOrder, string oldOrderId, string newOrderId, string name, string candidateGroups) {
@@ -376,7 +387,7 @@ namespace RadialReview.Areas.CoreProcess.Models {
 			return xDoc.Root.Element(bpmn + "process").Elements();
 		}
 
-		public static XElement GetElement(IEnumerable<XElement> elments, string attrName, string attrValue) {
+		public static XElement FindElementByAttribute(IEnumerable<XElement> elments, string attrName, string attrValue) {
 			return elments.Where(t => (t.Attribute(attrName) != null ? t.Attribute(attrName).Value : "") == attrValue).FirstOrDefault();
 		}
 
@@ -390,6 +401,10 @@ namespace RadialReview.Areas.CoreProcess.Models {
 		public static string ConcatedCandidateString(long[] list) {
 
 			return String.Join(",", list.Select(x => "rgm_" + x));
+		}
+
+		public static string GenerateGuid() {
+			return Guid.NewGuid().ToString().Replace("-", "");
 		}
 
 	}

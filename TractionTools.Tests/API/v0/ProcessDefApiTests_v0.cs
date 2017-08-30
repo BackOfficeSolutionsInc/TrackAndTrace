@@ -190,7 +190,7 @@ namespace TractionTools.Tests.Api
 
             await processDefAccessor.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id,true);
             var getTask = await processDefAccessor.GetTaskById(c.E1, getTaskList[0].Id);
-            var getTasksForCandidateGroup = await processDefAccessor.GetTaskListByCandidateGroups(c.E1, new long[] { c.E1.Id }, "", true);
+            var getTasksForCandidateGroup = await processDefAccessor.GetTaskListByCandidateGroups(c.E1, new long[] { c.E1.Id }, true);
            // getTasksForCandidateGroup = await processDefAccessor.GetTaskListByCandidateGroups(c.E1, new long[] { c.E1.Id }, "", false);
 
             Assert.IsTrue(getTasksForCandidateGroup.Count > 0);

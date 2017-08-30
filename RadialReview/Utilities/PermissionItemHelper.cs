@@ -252,7 +252,7 @@ namespace RadialReview.Utilities {
 						// get bpmn file and get list of tasks and groups
 						// get list<long> rgmIds and pass
 						//return ResponsibilitiesAccessor.GetMemberIds(session, this, ids);						                        
-						var ids = AsyncHelper.RunSync<List<long>>(() => new ProcessDefAccessor().GetCandidateGroupIds_UnSafe(session, resourceId));
+						var ids = AsyncHelper.RunSync<List<long>>(() => new ProcessDefAccessor().GetCandidateGroupIds_Unsafe(session, resourceId));
 						return ids;
 					}
 				case PermItem.ResourceType.SurveyContainer: {

@@ -159,7 +159,7 @@ namespace RadialReview.Api.V0 {
 		[Route("l10/{recurrenceId}/todo")]
 		[HttpPost]
 		public async Task<bool> CreateTodo(long recurrenceId, [FromBody]string message, [FromBody]DateTime dueDate) {
-			return await TodoAccessor.CreateTodo(GetUser(), recurrenceId, new TodoModel() { Message = message, DueDate = dueDate });  
+			return await TodoAccessor.CreateTodo(GetUser(), recurrenceId, new TodoModel() { Message = message, DueDate = dueDate });
 		}
 	}
 }
