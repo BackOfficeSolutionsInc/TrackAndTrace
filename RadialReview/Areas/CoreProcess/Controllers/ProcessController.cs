@@ -27,7 +27,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 			var sstr = processDefAccessor.GetProcessDefinitionList(GetUser(), GetUser().Organization.Id);
 
 			PermissionsAccessor obj = new PermissionsAccessor();
-			ViewBag.CanCreate = obj.IsPermitted(GetUser(), x => x.CreateProcessDef());
+			ViewBag.CanCreate = obj.IsPermitted(GetUser(), x => x.CanCreateProcessDef());
 			//ViewBag.CanEdit = obj.IsPermitted(GetUser(), x => x.EditProcessDef(id));
 			//ViewBag.CanAdmin = obj.IsPermitted(GetUser(), x => x.CanAdminProcessDef(id));
 
@@ -84,7 +84,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 			var tasKList = await processDefAccessor.GetAllTaskForProcessDefinition(GetUser(), sstr.LocalId);
 
 			PermissionsAccessor obj = new PermissionsAccessor();
-			ViewBag.CanEdit = obj.IsPermitted(GetUser(), x => x.EditProcessDef(id));
+			ViewBag.CanEdit = obj.IsPermitted(GetUser(), x => x.CanEditProcessDef(id));
 			ViewBag.CanAdmin = obj.IsPermitted(GetUser(), x => x.CanAdminProcessDef(id));
 
 			ProcessViewModel process = new ProcessViewModel();
@@ -197,7 +197,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 			var List = processDefAccessor.GetProcessInstanceList(GetUser(), id);
 
 			PermissionsAccessor obj = new PermissionsAccessor();
-			ViewBag.CanEdit = obj.IsPermitted(GetUser(), x => x.EditProcessDef(id));
+			ViewBag.CanEdit = obj.IsPermitted(GetUser(), x => x.CanEditProcessDef(id));
 
 			return View(List);
 		}

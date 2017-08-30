@@ -35,7 +35,6 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
             return new ProcessDef(getProcessDef);
         }
 
-
         public string Deploy(string key, List<object> files)
         {
             // Call API and get JSON
@@ -44,7 +43,6 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
             var result = client.Deployment().Deploy(key, files);
             return result;
         }
-
 
         public async Task<processInstanceModel> ProcessStart(string id)
         {

@@ -323,9 +323,9 @@ namespace RadialReview.Utilities {
 				default:
 					throw new ArgumentOutOfRangeException("resourceType");
 			}
-		}
+		}        
 
-		/*
+        /*
         protected List<PAccess> GetPAccess(PermItem.ResourceType resourceType, long resourceId)
         {
 
@@ -347,5 +347,5 @@ namespace RadialReview.Utilities {
 
 
 
-	}
+    }
 }
