@@ -795,8 +795,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
 					var updated = await UpdateTask(s, perms, localId, model, caller);
-
-					tx.Rollback();
+					tx.Commit();
 					s.Flush();
 					return updated;
 				}
