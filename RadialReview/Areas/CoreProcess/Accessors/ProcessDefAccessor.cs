@@ -466,6 +466,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 			return taskList;
 		}
 
+		// get all tasks of all processes under specific Organization
 		public async Task<List<TaskViewModel>> GetAllTaskByRGM(UserOrganizationModel caller, long rgmId) {
 			List<TaskViewModel> taskList = new List<TaskViewModel>();
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -576,22 +577,19 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 			return candidateGroupId.ToArray();
 		}
 
-
 		public List<CandidateGroupViewModel> GetCandidateGroupsMembersFromString(UserOrganizationModel caller, string rgmIds) {
 			List<CandidateGroupViewModel> list = new List<CandidateGroupViewModel>();
 			var getMemberIds = BpmnUtility.GetParseMemberId(rgmIds);
 			ResponsibilitiesAccessor respAccessor = new ResponsibilitiesAccessor();
 			string memberName = string.Empty;
 			if (getMemberIds != null) {
-				if (getMemberIds.Any()) {
-					foreach (var item in getMemberIds) {
-						var getMemberName = respAccessor.GetResponsibilityGroup(caller, item).GetName();
-						if (!string.IsNullOrEmpty(getMemberName)) {
-							list.Add(new CandidateGroupViewModel() {
-								Id = item,
-								Name = getMemberName
-							});
-						}
+				foreach (var item in getMemberIds) {
+					var getMemberName = respAccessor.GetResponsibilityGroup(caller, item).GetName();
+					if (!string.IsNullOrEmpty(getMemberName)) {
+						list.Add(new CandidateGroupViewModel() {
+							Id = item,
+							Name = getMemberName
+						});
 					}
 				}
 			}
@@ -643,7 +641,6 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 			return taskList;
 		}
 
-
 		public async Task<List<TaskViewModel>> GetTaskListByProcessInstanceId(UserOrganizationModel caller, string processInstanceId) {
 			List<TaskViewModel> taskList = new List<TaskViewModel>();
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -661,7 +658,6 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 			}
 			return taskList;
 		}
-
 
 		public async Task<TaskViewModel> GetTaskById(UserOrganizationModel caller, string taskId) {
 			TaskViewModel task = new TaskViewModel();

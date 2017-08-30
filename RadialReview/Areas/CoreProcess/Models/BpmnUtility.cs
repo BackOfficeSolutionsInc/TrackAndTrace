@@ -326,6 +326,7 @@ namespace RadialReview.Areas.CoreProcess.Models {
 			}
 		}
 
+		[Obsolete("never delete files", true)]
 		private static void DeleteFileFromLocal(string keyName) {
 			string dir = GetBpmnFilesLocalPath();
 			string fileName = keyName.Split('/')[1];
@@ -387,7 +388,7 @@ namespace RadialReview.Areas.CoreProcess.Models {
 			return xDoc.Root.Element(bpmn + "process").Elements();
 		}
 
-		public static IEnumerable<XElement> GetAllElementByAttr (XDocument xDoc,string attrName ) {
+		public static IEnumerable<XElement> GetAllElementByAttr(XDocument xDoc, string attrName) {
 			return xDoc.Root.Element(bpmn + "process").Elements(bpmn + attrName);
 		}
 
