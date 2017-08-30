@@ -203,12 +203,12 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public async Task<ActionResult> Suspend(long id, string status) {
+		public async Task<ActionResult> Suspend(long id, string status, string processInstanceId) {
 			ProcessInstanceViewModel processinstance = new ProcessInstanceViewModel();
 			if (status == "true") {
-				var Suspend = await processDefAccessor.SuspendProcess(GetUser(), id, false);
+				var Suspend = await processDefAccessor.SuspendProcess(GetUser(), id, processInstanceId, false);
 			} else {
-				var Suspend = await processDefAccessor.SuspendProcess(GetUser(), id, true);
+				var Suspend = await processDefAccessor.SuspendProcess(GetUser(), id, processInstanceId, true);
 			}
 			return RedirectToAction("ProcessInstance", "Process", new { @id = id });
 		}

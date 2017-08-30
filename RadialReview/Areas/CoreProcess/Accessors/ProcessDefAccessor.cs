@@ -127,7 +127,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 				throw new PermissionsException("Cannot start process.");
 			}
 		}
-		public async Task<bool> SuspendProcess(UserOrganizationModel caller, long localId, bool shouldSuspend) {
+		public async Task<bool> SuspendProcess(UserOrganizationModel caller, long localId, string processInstanceId, bool shouldSuspend) {
 			bool result = false;
 			try {
 				using (var s = HibernateSession.GetCurrentSession()) {
@@ -136,7 +136,8 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 						perms.CanEdit(PermItem.ResourceType.CoreProcess, localId);
 
 						//var getProcessDefDetails = s.Get<ProcessDef_Camunda>(localId);
-						var processInsDetail = s.QueryOver<ProcessInstance_Camunda>().Where(x => x.DeleteTime == null && x.LocalProcessInstanceId == localId).SingleOrDefault();
+						var processInsDetail = s.QueryOver<ProcessInstance_Camunda>().Where(x => x.DeleteTime == null &&
+					  x.LocalProcessInstanceId == localId && x.CamundaProcessInstanceId == processInstanceId).SingleOrDefault();
 						if (processInsDetail == null) {
 							throw new PermissionsException("Process doesn't exists.");
 						}

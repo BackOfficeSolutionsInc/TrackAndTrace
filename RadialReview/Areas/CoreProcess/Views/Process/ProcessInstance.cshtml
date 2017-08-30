@@ -16,49 +16,49 @@
         @using (Html.BeginScripts())
         {
             <script>
-                function ValidateForm(d) {
-                    if (d.Name == "") {
-                        return "Name is required.";
-                    }
-                }
+				function ValidateForm(d) {
+					if (d.Name == "") {
+						return "Name is required.";
+					}
+				}
 
 				var datas = @Html.ArrayToString(Model);
-                var table = DataTable({
+				var table = DataTable({
 					container: "#duration-table",
-                    data: datas,
-                    clickAddValidation: ValidateForm,
-                    clickEditValidation: ValidateForm,
-                    //clickRemove: "/Process/Delete/{0}",
+					data: datas,
+					clickAddValidation: ValidateForm,
+					clickEditValidation: ValidateForm,
+					//clickRemove: "/Process/Delete/{0}",
 					//clickEdit: "/Process/Edit/{0}",
 					//addButton:{text: "Create Process"},
 					nodataText: "No Process. Click add to create one.",
 					//clickAdd: "/Process/Create",
 					//postAdd: "/Process/Create",
-                    cells: [
+					cells: [
                         { name: "Create Time", classes: "", contents: function (x) { return x.CreateTime; } },
 						{ name: "Complete Time", classes: "", contents: function (x) { return x.CompleteTime; } },
                         //{ name: "BusinessKey", classes: "", contents: function (x) { return x.BusinessKey; } },
                         //{ name: "Process Id", classes: "", contents: function (x) { return x.DefinitionId } },
-						@if (ViewBag.CanEdit == true) {								
-                			@:{ name: "Action", classes: "", contents: function (x) { return "<a href='javascript:void(0);' onclick='suspend(\"" + x.DefinitionId + "," + x.Suspended + "\");'>" + (x.Suspended ? "Activate" : "Suspend") + "</a>" } },
-						}                        
+						@if (ViewBag.CanEdit == true) {
+                			@:{ name: "Action", classes: "", contents: function (x) { return "<a href='javascript:void(0);' onclick='suspend(\"" + x.DefinitionId +","+x.Id+ "," + x.Suspended + "\");'>" + (x.Suspended ? "Activate" : "Suspend") + "</a>" } },
+						}
 						//{ edit: true },
 						//{ remove : true },
-                    ],
+					],
 					nodataText: "No Instance found."
 
 				});
-                table.setData(datas);
-                function suspend(val) {
-                    $.ajax({
-                        url: "/CoreProcess/Process/Suspend/" + val.split(',')[0] +"?status="+ val.split(',')[1],
-                        success: function (data) {
-                            location.reload();                    
-                        },
-                        error: function (data) {
-                        }
-                    });
-                }
+				table.setData(datas);
+				function suspend(val) {
+					$.ajax({
+						url: "/CoreProcess/Process/Suspend/" + val.split(',')[0] + "?status=" + val.split(',')[2] + "&processInstanceId=" + val.split(',')[1],
+						success: function (data) {
+							location.reload();
+						},
+						error: function (data) {
+						}
+					});
+				}
             </script>}
 
     </div>
