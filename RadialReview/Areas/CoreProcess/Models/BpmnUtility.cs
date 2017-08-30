@@ -387,6 +387,10 @@ namespace RadialReview.Areas.CoreProcess.Models {
 			return xDoc.Root.Element(bpmn + "process").Elements();
 		}
 
+		public static IEnumerable<XElement> GetAllElementByAttr (XDocument xDoc,string attrName ) {
+			return xDoc.Root.Element(bpmn + "process").Elements(bpmn + attrName);
+		}
+
 		public static XElement FindElementByAttribute(IEnumerable<XElement> elments, string attrName, string attrValue) {
 			return elments.Where(t => (t.Attribute(attrName) != null ? t.Attribute(attrName).Value : "") == attrValue).FirstOrDefault();
 		}

@@ -446,7 +446,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 				var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
 				if (getProcessDefFileDetails != null) {
 					XDocument xmlDocument = await BpmnUtility.GetBpmnFileXmlDoc(getProcessDefFileDetails.FileKey);
-					var getAllElement = BpmnUtility.GetAllElement(xmlDocument).Elements(bpmn + "userTask");
+					var getAllElement = BpmnUtility.GetAllElementByAttr(xmlDocument, "userTask");
 
 					foreach (var item in getAllElement) {
 						//var getCandidateGroup = (item.Attribute(camunda + "candidateGroups") != null ? (item.Attribute(camunda + "candidateGroups").Value) : "");
@@ -490,7 +490,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 			var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
 			if (getProcessDefFileDetails != null) {
 				XDocument xmlDocument = await BpmnUtility.GetBpmnFileXmlDoc(getProcessDefFileDetails.FileKey);
-				var getAllElement = BpmnUtility.GetAllElement(xmlDocument).Elements(bpmn + "userTask");
+				var getAllElement = BpmnUtility.GetAllElementByAttr(xmlDocument, "userTask");
 
 				if (getAllElement == null) {
 					throw new PermissionsException("file does not exists");
@@ -562,7 +562,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 				}
 
 				XDocument xmlDocument = await BpmnUtility.GetBpmnFileXmlDoc(processDefFileDetails.FileKey);
-				var getAllElement = BpmnUtility.GetAllElement(xmlDocument).Elements(bpmn + "userTask");
+				var getAllElement = BpmnUtility.GetAllElementByAttr(xmlDocument, "userTask");
 
 				var getTaskDetail = BpmnUtility.FindElementByAttribute(getAllElement, "name", getTask.Name);
 				//getAllElement.Where(t => t.Attribute("name").Value == getTask.Name).FirstOrDefault();
@@ -606,7 +606,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 			}
 
 			XDocument xmlDocument = await BpmnUtility.GetBpmnFileXmlDoc(processDefFileDetails.FileKey);
-			var getAllElement = BpmnUtility.GetAllElement(xmlDocument).Elements(bpmn + "userTask");
+			var getAllElement = BpmnUtility.GetAllElementByAttr(xmlDocument, "userTask");
 
 			foreach (var item in getAllElement) {
 				var getCandidateGroup = BpmnUtility.GetAttributeValue(item, "candidateGroups", camunda);
