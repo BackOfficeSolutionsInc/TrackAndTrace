@@ -1201,7 +1201,7 @@
           "lib/net45/OxyPlot.Wpf.dll": {}
         }
       },
-      "PDFsharp-MigraDoc-gdi/1.50.4000-beta3b": {
+      "PDFsharp-MigraDoc-gdi/1.50.4589-beta4": {
         "type": "package",
         "frameworkAssemblies": [
           "System.Drawing"
@@ -1228,6 +1228,9 @@
             "locale": "de"
           },
           "lib/net20/de/MigraDoc.RtfRendering-gdi.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net20/de/PdfSharp-gdi.resources.dll": {
             "locale": "de"
           },
           "lib/net20/de/PdfSharp.Charting-gdi.resources.dll": {
@@ -2976,7 +2979,7 @@
           "lib/net45/OxyPlot.Wpf.dll": {}
         }
       },
-      "PDFsharp-MigraDoc-gdi/1.50.4000-beta3b": {
+      "PDFsharp-MigraDoc-gdi/1.50.4589-beta4": {
         "type": "package",
         "frameworkAssemblies": [
           "System.Drawing"
@@ -3003,6 +3006,9 @@
             "locale": "de"
           },
           "lib/net20/de/MigraDoc.RtfRendering-gdi.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net20/de/PdfSharp-gdi.resources.dll": {
             "locale": "de"
           },
           "lib/net20/de/PdfSharp.Charting-gdi.resources.dll": {
@@ -4299,7 +4305,7 @@
       ]
     },
     "Microsoft.CSharp/4.0.1": {
-      "sha512": "1pIywqbUSJA82mAwrLowhPY5GZRz93MGgEOW+gvop1uUMvpRoFjmztxtY0Q3b/2eKQaq7/YZFp3Y/YNcg+CNOQ==",
+      "sha512": "17h8b5mXa87XYKrrVqdgZ38JefSUqLChUQpXgSnpzsM0nDOhE40FTeNWOJ/YmySGV6tG6T8+hjz6vxbknHJr6A==",
       "type": "package",
       "path": "microsoft.csharp/4.0.1",
       "files": [
@@ -5022,11 +5028,13 @@
         "oxyplot.wpf.nuspec"
       ]
     },
-    "PDFsharp-MigraDoc-gdi/1.50.4000-beta3b": {
-      "sha512": "/IkMTri6INDMCIQfhg2yYFghbqDtPU68LIp/Jc+BROg8DPGUMNJT34DH6uF6JXoJhL6JBSHqTEMF2HJsGCMXWw==",
+    "PDFsharp-MigraDoc-gdi/1.50.4589-beta4": {
+      "sha512": "2Da4U4AuPkfYKPqWnS4Wg80I/MmSx5QUGj5bJklgWmZSGz9RFrc7QQnh8lohTIWHSNQrP7yo4kmwWldChfsR9A==",
       "type": "package",
-      "path": "pdfsharp-migradoc-gdi/1.50.4000-beta3b",
+      "path": "pdfsharp-migradoc-gdi/1.50.4589-beta4",
       "files": [
+        "PDFsharp-MigraDoc-gdi.1.50.4589-beta4.nupkg.sha512",
+        "PDFsharp-MigraDoc-gdi.nuspec",
         "lib/net20/MigraDoc.DocumentObjectModel-gdi.dll",
         "lib/net20/MigraDoc.DocumentObjectModel-gdi.xml",
         "lib/net20/MigraDoc.Rendering-gdi.dll",
@@ -5040,9 +5048,8 @@
         "lib/net20/de/MigraDoc.DocumentObjectModel-gdi.resources.dll",
         "lib/net20/de/MigraDoc.Rendering-gdi.resources.dll",
         "lib/net20/de/MigraDoc.RtfRendering-gdi.resources.dll",
-        "lib/net20/de/PdfSharp.Charting-gdi.resources.dll",
-        "pdfsharp-migradoc-gdi.1.50.4000-beta3b.nupkg.sha512",
-        "pdfsharp-migradoc-gdi.nuspec"
+        "lib/net20/de/PdfSharp-gdi.resources.dll",
+        "lib/net20/de/PdfSharp.Charting-gdi.resources.dll"
       ]
     },
     "PhantomJS/2.1.1": {
@@ -7617,7 +7624,7 @@
       "OxyPlot >= 1.0.0-unstable2100",
       "OxyPlot.Core >= 1.0.0",
       "OxyPlot.Wpf >= 1.0.0",
-      "PDFsharp-MigraDoc-GDI >= 1.50.4000-beta3b",
+      "PDFsharp-MigraDoc-GDI >= 1.50.4589-beta4",
       "RestSharp >= 105.2.3",
       "System.Data.SQLite >= 1.0.105.2",
       "System.Data.SQLite.Core >= 1.0.105.2",
@@ -7634,20 +7641,20 @@
     ".NETFramework,Version=v4.5.2": []
   },
   "packageFolders": {
-    "C:\\Users\\sd\\.nuget\\packages\\": {}
+    "C:\\Users\\AAR ESS\\.nuget\\packages\\": {}
   },
   "project": {
     "restore": {
-      "projectUniqueName": "F:\\Live_Projects\\TractionTools\\MergeDev\\RadialReview\\RadialReview\\RadialReview.csproj",
+      "projectUniqueName": "E:\\Installations\\Odesk\\Clay\\Code\\Merge\\RadialReview\\RadialReview\\RadialReview.csproj",
       "projectName": "RadialReview",
-      "projectPath": "F:\\Live_Projects\\TractionTools\\MergeDev\\RadialReview\\RadialReview\\RadialReview.csproj",
-      "projectJsonPath": "F:\\Live_Projects\\TractionTools\\MergeDev\\RadialReview\\RadialReview\\project.json",
+      "projectPath": "E:\\Installations\\Odesk\\Clay\\Code\\Merge\\RadialReview\\RadialReview\\RadialReview.csproj",
+      "projectJsonPath": "E:\\Installations\\Odesk\\Clay\\Code\\Merge\\RadialReview\\RadialReview\\project.json",
       "projectStyle": "ProjectJson",
       "frameworks": {
         "net452": {
           "projectReferences": {
-            "F:\\Live_Projects\\TractionTools\\MergeDev\\RadialReview\\CamundaCSharpClient\\CamundaCSharpClient.csproj": {
-              "projectPath": "F:\\Live_Projects\\TractionTools\\MergeDev\\RadialReview\\CamundaCSharpClient\\CamundaCSharpClient.csproj"
+            "E:\\Installations\\Odesk\\Clay\\Code\\Merge\\RadialReview\\CamundaCSharpClient\\CamundaCSharpClient.csproj": {
+              "projectPath": "E:\\Installations\\Odesk\\Clay\\Code\\Merge\\RadialReview\\CamundaCSharpClient\\CamundaCSharpClient.csproj"
             }
           }
         }
@@ -7713,7 +7720,7 @@
       "OxyPlot": "1.0.0-unstable2100",
       "OxyPlot.Core": "1.0.0",
       "OxyPlot.Wpf": "1.0.0",
-      "PDFsharp-MigraDoc-GDI": "1.50.4000-beta3b",
+      "PDFsharp-MigraDoc-GDI": "1.50.4589-beta4",
       "RestSharp": "105.2.3",
       "System.Data.SQLite": "1.0.105.2",
       "System.Data.SQLite.Core": "1.0.105.2",
