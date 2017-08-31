@@ -31,12 +31,13 @@ namespace TractionTools.Tests.Api {
             RadialReview.Api.V0.RocksController rocksController = new RadialReview.Api.V0.RocksController();
             rocksController.MockUser(c.E1);
 
-            var _recurrence = L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id);
+            var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id);
 
             var rock = new RockModel() {
                 OrganizationId = c.E1.Organization.Id,
                 ForUserId = c.E1.Id,
             };
+            MockHttpContext();
             await L10Accessor.CreateRock(c.E1, _recurrence.Id, AddRockVm.CreateRock(_recurrence.Id, rock, true));
 
             var getRocks = RockAccessor.GetRocks(c.E1, c.E1.Id);
@@ -57,13 +58,14 @@ namespace TractionTools.Tests.Api {
             RadialReview.Api.V0.RocksController rocksController = new RadialReview.Api.V0.RocksController();
             rocksController.MockUser(c.E1);
 
-            var _recurrence = L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id);
+            var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id);
 
             var rock = new RockModel() {
                 OrganizationId = c.E1.Organization.Id,
                 ForUserId = c.E1.Id,
             };
 
+            MockHttpContext();
             await L10Accessor.CreateRock(c.E1, _recurrence.Id, AddRockVm.CreateRock(_recurrence.Id, rock, true));
             var getRocks = RockAccessor.GetRocks(c.E1, c.E1.Id);
 

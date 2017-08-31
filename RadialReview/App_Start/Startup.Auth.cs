@@ -140,6 +140,8 @@ namespace RadialReview
 
             public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
             {
+                throw new NotImplementedException("");
+                
                 string encrypt_key = string.Empty;
                 try
                 {

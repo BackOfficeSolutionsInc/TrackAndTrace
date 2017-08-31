@@ -41,6 +41,7 @@
 				<table class="table startHiddenGroup2 table-condensed table-hover table-condensed tablesorter">
 					<thead>
 						<tr>
+                            @*<th></th>*@
 							<th style="width:30px;padding:0" class=""></th>
 							<th class="" style="padding:0;width:42%;">@*Meeting:*@</th>
 							@*<th style="width: 100px; text-align: center">@RadialReview.Properties.DisplayNameStrings.due</th><th style="width:150px;text-align:center">@RadialReview.Properties.DisplayNameStrings.completion</th>*@
@@ -52,6 +53,7 @@
 					<tbody>
 						@foreach (var meeting in Model.Recurrences.OrderByDescending(x => x.IsAttendee)) {
 							<tr class="startHidden2 clickable imageRow @(meeting.IsAttendee??false?"":"grayRow") l10-row">
+                                @*<td><span class='reorder-handle icon fontastic-icon-three-bars icon-rotate gray' style='margin-left: -5px;margin-right: -5px;cursor:move;'></span></td>*@
 								<td style="vertical-align:top" onclick="location.href='@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})';">
 									<span class="hidden">@(meeting.IsAttendee ?? false ? "1" : "2")@(meeting.Recurrence.MeetingInProgress != null ? "1" : "2")</span>
 									@if (meeting.Recurrence.MeetingInProgress != null) {
@@ -155,6 +157,7 @@
 </style>
 
 @using (Html.BeginScripts()) {
+    <script src="/Scripts/jquery/jquery.ui.sortable.js"></script>
 	<script>
 
 		function textingModal(data){
@@ -175,6 +178,33 @@
 
 			location.href = "/l10/meeting/" + id + additional;
 		}
+
+
+        ////
+
+		//$("#l10-meeting-list tbody").xsortable({
+		//    items: ">.l10-row",
+		//    handle: ".reorder-handle",
+		//    start: function (e, ui) {
+		//        $(this).attr('data-previndex', ui.item.index()/* + rowIndexShift*/);
+		//    },
+		//    update: function (e, ui) {
+		//        var newIndex = ui.item.index() /*+ rowIndexShift*/;
+		//        var oldIndex = +$(this).attr('data-previndex');
+		//        $(this).removeAttr('data-previndex');
+		//        //var row = settings.data[oldIndex];
+		//        debugger;
+    
+		//        $.ajax({
+		//            url: "/l10/reorder?rid=0&oldIndex=" + oldIndex + "&newIndex=" + newIndex,
+		//        });
+		//        //resolve(settings.clickReorder, row, oldIndex, newIndex, settings);
+		//        //refreshRowNum();
+		//    }
+		//}).disableSelection();
+
+        ////
+
 
 
 		$(".tablesorter").tablesorter({

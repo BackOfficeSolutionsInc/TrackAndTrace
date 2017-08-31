@@ -363,6 +363,15 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 function _bindModal(html, title, callback, validation, onSuccess, onCancel, reformat, onClose, contentType) {
 	$('#modalBody').html("");
 	setTimeout(function () {
+
+	    var error = $(html).find(".error-page");
+	    if (error.length >= 1) {
+	        $('#modal').modal('hide');
+	        var msg= error.find(".error-message").text() || "An error occurred.";
+	        showAlert(msg);
+	        return;
+	    }
+
 		$('#modalBody').append(html);
 	}, 0);
 

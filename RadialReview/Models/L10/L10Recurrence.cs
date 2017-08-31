@@ -248,6 +248,7 @@ namespace RadialReview.Models.L10 {
 			public virtual DateTime? DeleteTime { get; set; }
 			public virtual UserOrganizationModel User { get; set; }
 			public virtual L10Recurrence L10Recurrence { get; set; }
+           // public virtual int? Ordering { get; set;  }
 
 			public L10Recurrence_Attendee() {
 				CreateTime = DateTime.UtcNow;
@@ -256,8 +257,9 @@ namespace RadialReview.Models.L10 {
 				public L10Recurrence_AttendeeMap() {
 					Id(x => x.Id);
 					Map(x => x.CreateTime);
-					Map(x => x.DeleteTime);
-					References(x => x.L10Recurrence).Column("L10RecurrenceId");
+                    Map(x => x.DeleteTime);
+                    //Map(x => x.Ordering);
+                    References(x => x.L10Recurrence).Column("L10RecurrenceId");
 					References(x => x.User).Column("UserId");
 				}
 			}

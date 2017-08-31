@@ -133,7 +133,7 @@ namespace RadialReview.Controllers
         }
 
         [HttpPost]
-        [Access(AccessLevel.Manager)]
+        [Access(AccessLevel.UserOrganization)]
         public async Task<JsonResult> AddManagedUserToOrganization(CreateUserOrganizationViewModel model, long? meeting = null)
         {
            // UserOrganizationModel createdUser=null;
@@ -160,6 +160,8 @@ namespace RadialReview.Controllers
 				//createdUser=nexusIdandUser.Item2;
 				//var nexusId=nexusIdandUser.Item1;
 
+
+
 	            var result = await _UserAccessor.CreateUser(GetUser(), model);
 				var createdUser = result.Item2;
 
@@ -183,10 +185,10 @@ namespace RadialReview.Controllers
                 }
                 else
                 {
-                    message += " The invitation has NOT been sent.";
-                    if (meeting == null)
-                        message += " To send, click \"Send Invites\" below.";
-					res = ResultObject.Create(null, message, StatusType.Warning);
+     //               message += " The invitation has NOT been sent.";
+     //               if (meeting == null)
+     //                   message += " To send, click \"Send Invites\" below.";
+					res = ResultObject.Create(null, message, StatusType.Success);
                 }
 
 				if (model.NodeId == null) {

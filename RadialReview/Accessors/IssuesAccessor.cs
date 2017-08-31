@@ -272,9 +272,12 @@ namespace RadialReview.Accessors {
             }
         }
 
+
+        [Obsolete("Method is broken",true)]
 		public static List<IssueModel.IssueModel_Recurrence> GetUserIssues(UserOrganizationModel caller, long userId, long recurrenceId, bool excludeCompleteDuringMeeting = false, DateRange range = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
+                    throw new NotImplementedException("query is incorrect");
                     PermissionsUtility.Create(s, caller).ViewRecurrenceIssuesForUser(userId, recurrenceId);
 
                     return s.QueryOver<IssueModel.IssueModel_Recurrence>()

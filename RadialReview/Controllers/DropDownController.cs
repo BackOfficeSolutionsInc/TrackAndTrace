@@ -105,7 +105,7 @@ namespace RadialReview.Controllers {
             if (create && !apos.Any(x => x.Name == q)) {
 				var p = new AngularPosition(-DateTime.UtcNow.ToJavascriptMilliseconds()) {
 					Name = q,
-					_ExtraProperties = new Dictionary<string, object> { { "Create", " (Create)" } }
+					_ExtraProperties = new Dictionary<string, object> { { "Create", " (Create Function)" } }
 				};
                 apos.Add(p);
             }

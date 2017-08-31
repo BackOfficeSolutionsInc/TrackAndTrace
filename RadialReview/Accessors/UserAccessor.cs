@@ -399,12 +399,17 @@ namespace RadialReview.Accessors {
 		public static EditUserResult EditUser(ISession s, PermissionsUtility perm, long userOrganizationId, bool? isManager = null, bool? manageringOrganization = null, bool? evalOnly = null) {
 			var o = new EditUserResult();
 			using (var rt = RealTimeUtility.Create()) {
-				if (manageringOrganization != null)
-					perm.ManagesUserOrganization(userOrganizationId, false);
-				else
-					perm.ManagesUserOrganization(userOrganizationId, false, PermissionType.ChangeEmployeePermissions);
+
 
 				var found = s.Get<UserOrganizationModel>(userOrganizationId);
+                var acId = found.Organization.AccountabilityChartId;
+
+                perm.CanEdit(PermItem.ResourceType.AccountabilityHierarchy, acId);
+
+				//if (manageringOrganization != null)
+				//	perm.ManagesUserOrganization(userOrganizationId, false);
+				//else
+				//	perm.ManagesUserOrganization(userOrganizationId, false, PermissionType.ChangeEmployeePermissions);
 
 				var deleteTime = DateTime.UtcNow;
 
@@ -413,7 +418,7 @@ namespace RadialReview.Accessors {
 						o.OverrideManageringOrganization = found.ManagingOrganization;
 						o.Errors.Add("You cannot unmanage this organization yourself.");
 					} else {
-						perm.ManagesUserOrganization(userOrganizationId, true).ManagingOrganization(perm.GetCaller().Organization.Id);
+						perm/*.ManagesUserOrganization(userOrganizationId, true)*/.ManagingOrganization(perm.GetCaller().Organization.Id);
 						if (found.ManagingOrganization && !manageringOrganization.Value) {
 							//maybe set manager to false
 							if (!DeepAccessor.Users.HasChildren(s, perm, userOrganizationId)) {
@@ -434,19 +439,23 @@ namespace RadialReview.Accessors {
 				}
 
 				if (isManager != null && (isManager.Value != found.ManagerAtOrganization)) {
-					perm.ManagesUserOrganization(userOrganizationId, false, PermissionType.ChangeEmployeePermissions);
+					//perm.ManagesUserOrganization(userOrganizationId, false, PermissionType.ChangeEmployeePermissions);
 					found.ManagerAtOrganization = isManager.Value;
 					if (isManager == false) {
-						var subordinatesTeam = s.QueryOver<OrganizationTeamModel>()
+						var subordinatesTeams = s.QueryOver<OrganizationTeamModel>()
 							.Where(x => x.Type == TeamType.Subordinates && x.ManagedBy == userOrganizationId && x.DeleteTime == null)
-							.SingleOrDefault();
-						if (subordinatesTeam != null) {
+							.List();
+						foreach(var subordinatesTeam in subordinatesTeams) {
 							subordinatesTeam.DeleteTime = DateTime.UtcNow;
 							s.Update(subordinatesTeam);
 						}
 					} else {
-						s.Save(OrganizationTeamModel.SubordinateTeam(perm.GetCaller(), found));
-						s.Flush();
+                        var anyTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Type == TeamType.Subordinates && x.ManagedBy == userOrganizationId && x.DeleteTime == null).RowCount();
+
+                        if (anyTeams == 0) {
+                            s.Save(OrganizationTeamModel.SubordinateTeam(perm.GetCaller(), found));
+                            s.Flush();
+                        }
 					}
 				}
 

@@ -5,8 +5,12 @@ function sendErrorReport() {
 		var message = "[";
 		var mArray = [];
 		for (var i in consoleStore) {
-			if (arrayHasOwnIndex(consoleStore, i)) {
-				mArray.push(JSON.stringify(consoleStore[i]));
+		    if (arrayHasOwnIndex(consoleStore, i)) {
+		        try{
+		            mArray.push(JSON.stringify(consoleStore[i]));
+		        } catch (e) {
+		            mArray.push("---missing line--- "+e);
+		        }
 			}
 		}
 		message = "[" + mArray.join(",\n") + "]";

@@ -47,7 +47,8 @@ namespace RadialReview.Api.V0
         [Route("issue/user/{userId}/{recurrenceId}")]
         public IEnumerable<AngularIssue> GetUserIssues(long userId, long recurrenceId)
         {
-            return IssuesAccessor.GetUserIssues(GetUser(), userId, recurrenceId).Select(x => new AngularIssue(x));
+            throw new NotImplementedException();
+            //return IssuesAccessor.GetUserIssues(GetUser(), userId, recurrenceId).Select(x => new AngularIssue(x));
         }
 
         // GET: api/Issue/mine

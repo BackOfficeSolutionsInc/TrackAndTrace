@@ -16,6 +16,7 @@ using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -54,17 +55,20 @@ namespace RadialReview.Accessors {
 		}
 		public static async Task<List<ExecutionResult>> ExecuteTasks(DateTime? now = null) {
 			var nowV = now ?? DateTime.UtcNow;
-			var tasks = GetTasksToExecute(nowV);
+			var tasks = GetTasksToExecute(nowV,true);
 			return await _ExecuteTasks(tasks, nowV, d_ExecuteTaskFunc);
 		}
 
 		[Obsolete("Used only in testing")]
 		public static async Task<ExecutionResult> ExecuteTask_Test(ScheduledTask task, DateTime now) {
-			return (await _ExecuteTasks(task.AsList(), now, d_ExecuteTaskFunc_Test)).Single();
+
+            MarkStarted(task.AsList(), now);
+            return (await _ExecuteTasks(task.AsList(), now, d_ExecuteTaskFunc_Test)).Single();
 		}
 		[Obsolete("Used only in testing")]
-		public static async Task<List<ExecutionResult>> ExecuteTasks_Test(List<ScheduledTask> tasks, DateTime now) {
-			return await _ExecuteTasks(tasks, now, d_ExecuteTaskFunc_Test);
+		public static async Task<List<ExecutionResult>> ExecuteTasks_Test(List<ScheduledTask> tasks, DateTime now) { 
+            MarkStarted(tasks, now);
+            return await _ExecuteTasks(tasks, now, d_ExecuteTaskFunc_Test);
 		}
 		
 		protected static async Task<List<ExecutionResult>> _ExecuteTasks(List<ScheduledTask> tasks, DateTime now, ExecuteTaskFunc executeTaskFunc) {
@@ -73,7 +77,7 @@ namespace RadialReview.Accessors {
 			var res = new List<ExecutionResult>();
 			log.Info("ExecuteTasks - Starting Execute Tasks (" + tasks.Count+") " + DateTime.UtcNow);
 			try {
-				MarkStarted(tasks, now);
+				//MarkStarted(tasks, now);
 				var results = await Task.WhenAll(tasks.Select(task => {
 					try {
 						return ExecuteTask_Internal(task, now, executeTaskFunc);
@@ -89,7 +93,7 @@ namespace RadialReview.Accessors {
 					return x.Result;
 				}).ToList();
 			} finally {
-				MarkStarted(tasks, null);
+				UnmarkStarted(tasks);
 			}
 			log.Info("ExecuteTasks - Ending Execute Task " + DateTime.UtcNow);
 
@@ -259,13 +263,24 @@ namespace RadialReview.Accessors {
 		}
 
 
-		public static List<ScheduledTask> GetTasksToExecute(DateTime now) {
+		public static List<ScheduledTask> GetTasksToExecute(DateTime now,bool markStarted) {
 			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
+				using (var tx = s.BeginTransaction(IsolationLevel.Serializable)) {
 					//var all = s.QueryOver<ScheduledTask>().List().ToList();
-					return s.QueryOver<ScheduledTask>().Where(x => x.Executed == null && x.Started == null && now >= x.Fire && x.DeleteTime == null && x.ExceptionCount <= 11 && (x.MaxException == null || x.ExceptionCount < x.MaxException)).List()
+					var current = s.QueryOver<ScheduledTask>().Where(x => x.Executed == null && x.Started == null && now >= x.Fire && x.DeleteTime == null && x.ExceptionCount <= 11 && (x.MaxException == null || x.ExceptionCount < x.MaxException)).List()
 						.Where(x => x.ExceptionCount < (x.MaxException ?? 12))
 						.ToList();
+
+                    if (markStarted) {
+                        var d = DateTime.UtcNow;
+                        foreach(var c in current) {
+                            c.Started = d;
+                        }
+                    }
+                    tx.Commit();
+                    s.Flush();
+
+                    return current;
 				}
 			}
 		}
@@ -286,11 +301,23 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-
-
+        
+        public static void UnmarkStarted(List<ScheduledTask> tasks) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction(IsolationLevel.Serializable)) {
+                    foreach (var t in tasks) {
+                        t.Started = null;
+                        s.Update(t);
+                    }
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
+        [Obsolete("Do not use",true)]
 		public static void MarkStarted(List<ScheduledTask> tasks, DateTime? date) {
 			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
+				using (var tx = s.BeginTransaction()) { ////HEY ... IsolationLevel.Serializable ??
 					foreach (var t in tasks) {
 						t.Started = date;
 						s.Update(t);

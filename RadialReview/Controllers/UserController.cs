@@ -131,10 +131,11 @@ namespace RadialReview.Controllers {
 		}
 
 
-		[Access(AccessLevel.Manager)]
+		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult AddModal(
 			long? managerId = null, string name = null, bool isClient = false, long? managerNodeId = null, 
-			bool forceManager = false, bool hideIsManager = false,bool hidePosition=false,long? nodeId=null,bool hideEvalOnly=false)
+			bool forceManager = false, bool hideIsManager = false,bool hidePosition=false,long? nodeId=null,bool hideEvalOnly=false,
+            bool forceNoSend=false)
 		{
 			var sw = new Stopwatch();
 			sw.Start();
@@ -143,8 +144,10 @@ namespace RadialReview.Controllers {
 			var e1 = sw.ElapsedMilliseconds;
 
 
+            _PermissionsAccessor.Permitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, GetUser().Organization.Id));
+
 #pragma warning disable CS0618 // Type or member is obsolete
-			var orgPos = _OrganizationAccessor
+                var orgPos = _OrganizationAccessor
 							.GetOrganizationPositions(GetUser(), GetUser().Organization.Id)
 							.ToListAlive()
 							.OrderBy(x => x.CustomName)
@@ -198,8 +201,9 @@ namespace RadialReview.Controllers {
 			ViewBag.HideIsManager = hideIsManager;
 			ViewBag.HidePosition = hidePosition;
 			ViewBag.HideEvalOnly = hideEvalOnly;
+            ViewBag.HideSend = forceNoSend;
 
-			string fname = null;
+            string fname = null;
 			string lname = null;
 			string email = null;
 
@@ -224,7 +228,7 @@ namespace RadialReview.Controllers {
 				StrictlyHierarchical = strictHierarchy,
 				ManagerNodeId = managerNodeId,
 				PotentialManagers = managers,
-				SendEmail = caller.Organization.SendEmailImmediately,
+				SendEmail = forceNoSend?false:caller.Organization.SendEmailImmediately,
 				IsClient = isClient,
 				FirstName = fname,
 				LastName = lname,

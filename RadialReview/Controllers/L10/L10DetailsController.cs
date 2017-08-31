@@ -44,7 +44,18 @@ namespace RadialReview.Controllers
         {
             var startRange = Math2.Min(start.ToDateTime(), end.ToDateTime());
             var endRange   = Math2.Max(start.ToDateTime(), end.ToDateTime());
-			var range = new DateRange(startRange, endRange);
+            var period = GetUser().GetTimeSettings().Period;
+            if (period == ScorecardPeriod.Monthly) {
+                startRange = startRange.AddDays(-31);
+                endRange = endRange.AddDays(31);
+            }
+            if (period == ScorecardPeriod.Quarterly) {
+                startRange = startRange.AddDays(-100);
+                endRange = endRange.AddDays(100);
+            }
+
+
+            var range = new DateRange(startRange, endRange);
 
             var model = L10Accessor.GetAngularRecurrence(GetUser(), id, scores, historical, fullScorecard: fullScorecard,range: range);
 			//model.Name=null;
@@ -55,7 +66,7 @@ namespace RadialReview.Controllers
 
 			if (scores) {
 
-				if (model.Scorecard.Scores.Count() > 22*16 && GetUser().GetTimeSettings().Period == ScorecardPeriod.Weekly ) {
+				if (model.Scorecard.Scores.Count() > 22*16 && period == ScorecardPeriod.Weekly ) {
 					var min = TimingUtility.GetDateSinceEpoch(model.Scorecard.Scores.Min(x => x.ForWeek)).ToJavascriptMilliseconds();
 					var max = TimingUtility.GetDateSinceEpoch(model.Scorecard.Scores.Max(x => x.ForWeek)).ToJavascriptMilliseconds();
 					if (max != min) {

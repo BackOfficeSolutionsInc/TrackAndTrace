@@ -88,6 +88,7 @@ namespace TractionTools.Tests.Api
 
             var addTeam = teamController.AddTeam(name);
 
+            MockHttpContext();
             var addMember = TeamAccessor.AddMember(c.E1, addTeam.Id, c.E1.Id);
 
             var getTeamMember = teamController.GetTeamMembers(addTeam.Id);
@@ -107,14 +108,17 @@ namespace TractionTools.Tests.Api
         {
             var c = await Ctx.Build();
             TeamsController teamController = new TeamsController();
-            teamController.MockUser(c.E1);
+            teamController.MockUser(c.Manager);
 
             var name = "TestTeam";
             var addTeam = teamController.AddTeam(name);
+            MockHttpContext();
             var addMember = teamController.AddTeamMember(addTeam.Id, c.E1.Id);
             var getTeamMember = teamController.GetTeamMembers(addTeam.Id);
 
-            Assert.AreEqual(1, getTeamMember.Count());
+            Assert.AreEqual(2, getTeamMember.Count());
+            Assert.IsTrue(getTeamMember.Any(x => x.Id == c.E1.Id));
+            Assert.IsTrue(getTeamMember.Any(x => x.Id == c.Manager.Id));
         }
 
         [TestMethod]

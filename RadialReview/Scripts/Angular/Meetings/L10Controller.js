@@ -236,6 +236,8 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 				url += "?_clientTimestamp=" + date;
 			}
 
+			debugger;
+
 			if (typeof (range) !== "undefined" && typeof (range.startDate) !== "undefined")
 				url += "&start=" + dateToNumber(range.startDate);
 			if (typeof (range) !== "undefined" && typeof (range.endDate) !== "undefined")
@@ -461,7 +463,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 		if (minValue === undefined) minValue = -Number.MAX_VALUE;
 		if (maxValue === undefined) maxValue = Number.MAX_VALUE;
 
-
+		
 		if (typeof (forceMin) !== "undefined") {
 			minValue = Math.min(minValue, maxValue - forceMin * 24 * 60 * 60 * 1000);
 		}
@@ -761,14 +763,25 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 		allowDuplicates: false, //optional param allows duplicates to be dropped.
 	};
 
+	function decideOnDate(week, selector) {
+	    var dat = week.DisplayDate;
+	    if (selector.Period == "Monthly" || selector.Period == "Quarterly") {
+	        dat = new Date(70, 0, 4);
+	        dat.setDate(dat.getDate() + 7 * (week.ForWeekNumber - 1));
+	    }
+	    return dat;
+	}
+
 	$scope.functions.topDate = function (week, selector) {
-		var date = $scope.functions.subtractDays(week.DisplayDate, 0);
+	    var dat = decideOnDate(week, selector);
+		var date = $scope.functions.subtractDays(dat/*week.DisplayDate*/, 0);
 		return $filter('date')(date, selector.DateFormat1);
 	};
 	$scope.functions.bottomDate = function (week, selector) {
-		var date = $scope.functions.subtractDays(week.DisplayDate, -6);
-		if (selector.Period == "Monthly" || selector.Period == "Quarterly") {
-			date = $scope.functions.subtractDays(week.DisplayDate, 0);
+	    var dat = decideOnDate(week, selector);        
+	    var date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, -6);
+	    if (selector.Period == "Monthly" || selector.Period == "Quarterly") {
+		    date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, 0);
 		}
 		return $filter('date')(date, selector.DateFormat2);
 	};

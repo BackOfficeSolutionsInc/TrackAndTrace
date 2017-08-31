@@ -22,38 +22,100 @@ using RadialReview.Models.Askables;
 using RadialReview.Models.Angular.Accountability;
 using RadialReview.Areas.CoreProcess.Controllers;
 using RadialReview.Areas.CoreProcess.Accessors;
-using RadialReview.Areas.CoreProcess.Controllers.Api_V0;
+//using RadialReview.Areas.CoreProcess.Controllers.CoreProcess;
 using RadialReview.Areas.CoreProcess.Models.Process;
 using RadialReview.Areas.CoreProcess.Models.MapModel;
+using System.Diagnostics;
+using System.IO;
+using System.Management;
+using System.Runtime.InteropServices;
+using System.Threading;
 
-namespace TractionTools.Tests.Api
-{
+namespace TractionTools.Tests.Api {
     [TestClass]
-    public class ProcessDefApiTests_v0 : BaseTest
-    {
+    public class ProcessDefApiTests_v0 : BaseCoreProcessTest {
+
+        #region start server
+        private static Process Server;
+
+        [ClassInitialize()]
+        public static void Startup(TestContext ctx) {
+            int exitCode;
+            ProcessStartInfo processInfo;
+            // Process process;
+
+            var command = Config.GetAppSetting("CamundaServerBat");
+
+            processInfo = new ProcessStartInfo("cmd.exe", "/c " + command);
+            processInfo.WorkingDirectory = Directory.GetParent(command).FullName;
+            processInfo.CreateNoWindow = true;
+            processInfo.UseShellExecute = false;
+            // *** Redirect the output ***
+            processInfo.RedirectStandardError = true;
+            processInfo.RedirectStandardOutput = true;
+            processInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+            Server = Process.Start(processInfo);
+            Thread.Sleep(10);
+            
+            ActOnProcessAndChildren(Server, x => MinimizeWindow(x.MainWindowHandle));
+            Server.WaitForExit();
+            ActOnProcessAndChildren(Server, x => MinimizeWindow(x.MainWindowHandle));
+
+        }
+
+        private const int SW_MAXIMIZE = 3;
+        private const int SW_MINIMIZE = 6;
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        public static void MinimizeWindow(IntPtr hwnd) {
+            ShowWindow(hwnd, SW_MINIMIZE);
+        }
+
+        private static void ActOnProcessAndChildren(Process process,Action<Process> action) {
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("Select * From Win32_Process Where ParentProcessID=" + process.Id);
+            ManagementObjectCollection moc = searcher.Get();
+            foreach (ManagementObject mo in moc) {
+                ActOnProcessAndChildren(Process.GetProcessById(Convert.ToInt32(mo["ProcessID"])),action);
+            }
+            try {
+                action(process);
+            } catch (ArgumentException) {
+                // Process already exited.
+            } catch (InvalidOperationException) {
+                // Process already exited.
+            }
+        }
+
+        [ClassCleanup]
+        public static void Cleanup() {
+            ActOnProcessAndChildren(Server,x=>x.Kill());
+        }
+
+        #endregion
+
         private ProcessDefAccessor processDefAccessor;
 
 
         [TestMethod]
-        [TestCategory("Api_V0")]
-        public void TestEnsureApplicationExists()
-        {
+        [TestCategory("CoreProcess")]
+        public void TestEnsureApplicationExists() {
             ApplicationAccessor.EnsureApplicationExists();
         }
 
         [TestMethod]
-        [TestCategory("Api_V0")]
-        public async Task TestCreateProcessDef()
-        {
+        [TestCategory("CoreProcess")]
+        public async Task TestCreateProcessDef() {
             var c = await Ctx.Build();
             var getResult = await CreateProcess(c);
             Assert.IsTrue(getResult > 0);
         }
 
         [TestMethod]
-        [TestCategory("Api_V0")]
-        public async Task TestCreateTask()
-        {
+        [TestCategory("CoreProcess")]
+        public async Task TestCreateTask() {
             var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
@@ -62,9 +124,8 @@ namespace TractionTools.Tests.Api
 
 
         [TestMethod]
-        [TestCategory("Api_V0")]
-        public async Task TestPublishProcess()
-        {
+        [TestCategory("CoreProcess")]
+        public async Task TestPublishProcess() {
             var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
@@ -74,9 +135,8 @@ namespace TractionTools.Tests.Api
 
 
         [TestMethod]
-        [TestCategory("Api_V0")]
-        public async Task TestProcessStart()
-        {
+        [TestCategory("CoreProcess")]
+        public async Task TestProcessStart() {
             var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
@@ -86,9 +146,8 @@ namespace TractionTools.Tests.Api
         }
 
         [TestMethod]
-        [TestCategory("Api_V0")]
-        public async Task TestTaskClaim()
-        {
+        [TestCategory("CoreProcess")]
+        public async Task TestTaskClaim() {
             var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
@@ -105,9 +164,8 @@ namespace TractionTools.Tests.Api
         }
 
         [TestMethod]
-        [TestCategory("Api_V0")]
-        public async Task TestTaskUnClaim()
-        {
+        [TestCategory("CoreProcess")]
+        public async Task TestTaskUnClaim() {
             var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
@@ -127,9 +185,8 @@ namespace TractionTools.Tests.Api
 
 
         [TestMethod]
-        [TestCategory("Api_V0")]
-        public async Task TestAttachTask()
-        {
+        [TestCategory("CoreProcess")]
+        public async Task TestAttachTask() {
             var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
@@ -137,9 +194,8 @@ namespace TractionTools.Tests.Api
         }
 
         [TestMethod]
-        [TestCategory("Api_V0")]
-        public async Task TestDetachTask()
-        {
+        [TestCategory("CoreProcess")]
+        public async Task TestDetachTask() {
             var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
@@ -151,9 +207,8 @@ namespace TractionTools.Tests.Api
 
 
         [TestMethod]
-        [TestCategory("Api_V0")]
-        public async Task TestGetListTaskForUser()
-        {
+        [TestCategory("CoreProcess")]
+        public async Task TestGetListTaskForUser() {
             var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
@@ -170,9 +225,8 @@ namespace TractionTools.Tests.Api
 
 
         [TestMethod]
-        [TestCategory("Api_V0")]
-        public async Task TestGetTasksForCandidateGroup()
-        {
+        [TestCategory("CoreProcess")]
+        public async Task TestGetTasksForCandidateGroup() {
             var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
@@ -191,6 +245,8 @@ namespace TractionTools.Tests.Api
             await processDefAccessor.TaskClaim(c.E1, getTaskList[0].Id, c.E1.Id);
             var getTask = await processDefAccessor.GetTaskById(c.E1, getTaskList[0].Id);
             var getTasksForCandidateGroup = await processDefAccessor.GetTaskListByCandidateGroups(c.E1, new long[] { c.E1.Id }, "", true);
+            Assert.IsTrue(getTasksForCandidateGroup.Count > 0);
+
             getTasksForCandidateGroup = await processDefAccessor.GetTaskListByCandidateGroups(c.E1, new long[] { c.E1.Id }, "", false);
 
             Assert.IsTrue(getTasksForCandidateGroup.Count > 0);
@@ -198,9 +254,8 @@ namespace TractionTools.Tests.Api
 
 
         [TestMethod]
-        [TestCategory("Api_V0")]
-        public async Task TestTaskComplete()
-        {
+        [TestCategory("CoreProcess")]
+        public async Task TestTaskComplete() {
             var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
@@ -216,37 +271,32 @@ namespace TractionTools.Tests.Api
             Assert.IsTrue(string.IsNullOrEmpty(getTask.Id));
         }
 
-        private async Task<long> CreateProcess(Ctx ctx)
-        {
+        private async Task<long> CreateProcess(Ctx ctx) {
             processDefAccessor = new ProcessDefAccessor();
             var getResult = await processDefAccessor.Create(ctx.E1, "Test Process Def");
             return getResult;
         }
 
-        private async Task<TaskViewModel> CreateTask(Ctx ctx, long processDefId)
-        {
+        private async Task<TaskViewModel> CreateTask(Ctx ctx, long processDefId) {
             processDefAccessor = new ProcessDefAccessor();
             TaskViewModel task = new TaskViewModel() { name = "Test Task", SelectedMemberId = new long[] { ctx.E1.Id } };
             var createTask = await processDefAccessor.CreateTask(ctx.E1, processDefId, task);
             return createTask;
         }
 
-        private async Task<bool> PublishProcess(Ctx ctx, long processDefId)
-        {
+        private async Task<bool> PublishProcess(Ctx ctx, long processDefId) {
             processDefAccessor = new ProcessDefAccessor();
             var publishProcess = await processDefAccessor.Deploy(ctx.E1, processDefId);
             return publishProcess;
         }
 
-        private async Task<ProcessDef_Camunda> StartProcess(Ctx ctx, long processDefId)
-        {
+        private async Task<ProcessDef_Camunda> StartProcess(Ctx ctx, long processDefId) {
             processDefAccessor = new ProcessDefAccessor();
             var startProcess = await processDefAccessor.ProcessStart(ctx.E1, processDefId);
             return startProcess;
         }
 
-        private async Task<ProcessDef_Camunda> GetTaskList(Ctx ctx, long processDefId)
-        {
+        private async Task<ProcessDef_Camunda> GetTaskList(Ctx ctx, long processDefId) {
             processDefAccessor = new ProcessDefAccessor();
             var startProcess = await processDefAccessor.ProcessStart(ctx.E1, processDefId);
             return startProcess;

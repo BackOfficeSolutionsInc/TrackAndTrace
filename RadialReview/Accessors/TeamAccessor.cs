@@ -479,7 +479,7 @@ namespace RadialReview.Accessors {
 		}
 
 		public static bool AddMember(ISession s, PermissionsUtility perms, long teamId, long userOrgId) {
-			perms.EditTeam(teamId).EditUserDetails(userOrgId);//ManagesUserOrganization(userOrgId,false);
+			perms.EditTeam(teamId).ViewUserOrganization(userOrgId,false);//ManagesUserOrganization(userOrgId,false);
 			var team = s.Get<OrganizationTeamModel>(teamId);
 
 			if (team.Type != TeamType.Standard)

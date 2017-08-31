@@ -123,7 +123,13 @@ namespace RadialReview.Controllers
             return "You are about to delete this meeting. Are you sure you want to continue?";
         }
 
-		[HttpPost]
+        //[Access(AccessLevel.UserOrganization)]
+        //public async Task<JsonResult> Reorder(long id,int oldOrder,int newOrder) {
+        //    await L10Accessor.ReorderL10Recurrence(GetUser(), id,oldOrder,newOrder);
+        //    return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+        //}
+
+        [HttpPost]
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<JsonResult> Delete(long id) {
 			await L10Accessor.DeleteL10Recurrence(GetUser(), id);

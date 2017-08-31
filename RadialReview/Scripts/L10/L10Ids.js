@@ -814,7 +814,7 @@ $(function () {
 		if (e.button == 0) {
 			p += 1;
 
-			if (p > 6)
+			if (p > 9)
 				p = 0;
 		} else if (e.button == 2 || e.which == 3) {
 			p -= 1;

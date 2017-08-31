@@ -302,6 +302,7 @@
     <Compile Include="Controllers\DashboardControllerTests.cs" />
     <Compile Include="Controllers\L10ControllerTests.cs" />
     <Compile Include="Controllers\TwilioApi.cs" />
+    <Compile Include="Controllers\PasswordTests.cs" />
     <Compile Include="Engines\SurveyEngineTests.cs" />
     <Compile Include="Hooks\EnterpriseHookTest.cs" />
     <Compile Include="Integrations\ActiveCampaignTest.cs" />
@@ -328,6 +329,7 @@
       <DependentUpon>SurveyResources.resx</DependentUpon>
     </Compile>
     <Compile Include="Startup\SetupAssemblyInitializer.cs" />
+    <Compile Include="TestUtils\BaseCoreProcessTest.cs" />
     <Compile Include="TestUtils\MockSession.cs" />
     <Compile Include="Utilities\CompareUtil.cs" />
     <Compile Include="Utilities\Credentials.cs" />

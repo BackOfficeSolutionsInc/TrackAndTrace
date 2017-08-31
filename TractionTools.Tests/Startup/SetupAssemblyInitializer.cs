@@ -11,8 +11,9 @@ using RadialReview.Accessors;
 namespace TractionTools.Tests.Startup {
 	[TestClass]
 	public static class SetupAssemblyInitializer {
-		private const string ConnectionString = "FullUri=file:memorydb.db?mode=memory&cache=shared";
-		private static SQLiteConnection _connection;
+        private const string ConnectionString = "FullUri=file:memorydb.db?mode=memory&cache=shared";//"file::memory:?cache=shared";//;
+
+        private static SQLiteConnection _connection;
 
 		[AssemblyInitialize]
 		public static void AssemblyInit(TestContext context) {

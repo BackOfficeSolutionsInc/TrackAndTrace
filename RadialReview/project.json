@@ -15,7 +15,7 @@
     "log4net": "2.0.8",
     "LumenWorks.Framework.IO": "3.8.0",
     "Manatee.Trello": "1.18.3",
-    "Mandrill": "3.1.0",
+    "Mandrill": "2.4.181",
     "MathNet.Numerics": "3.20.0",
     "Microsoft.AspNet.Identity.Core": "2.2.1",
     "Microsoft.AspNet.Identity.EntityFramework": "2.2.1",
@@ -57,7 +57,7 @@
     "OxyPlot": "1.0.0-unstable2100",
     "OxyPlot.Core": "1.0.0",
     "OxyPlot.Wpf": "1.0.0",
-    "PDFsharp-MigraDoc-GDI": "1.50.4000-beta3b",
+    "PDFsharp-MigraDoc-GDI": "1.50.4589-beta4",
     "RestSharp": "105.2.3",
     "System.Data.SQLite": "1.0.105.2",
     "System.Data.SQLite.Core": "1.0.105.2",
@@ -69,7 +69,11 @@
     "WebGrease": "1.6.0"
   },
   "frameworks": {
-    "net452": {}
+    "net452": {
+      "frameworkAssemblies": {
+        "System.Runtime": ""
+      }
+    }
   },
   "runtimes": {
     "win-x86": {}

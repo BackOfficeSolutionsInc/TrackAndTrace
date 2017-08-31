@@ -119,7 +119,9 @@ namespace RadialReview.Utilities {
 				attached._ClientTimestamp = caller._ClientTimestamp;               
             }
 			if (caller.DeleteTime != null && caller.DeleteTime < DateTime.UtcNow) {
-				throw new PermissionsException("User has been deleted");
+				throw new PermissionsException("User has been deleted") {
+                    NoErrorReport = true
+                };
 			}
 
 			return new PermissionsUtility(session, attached);
@@ -1866,6 +1868,9 @@ namespace RadialReview.Utilities {
 
         public PermissionsUtility ViewRecurrenceIssuesForUser(long userId, long recurrenceId) // recurrence
         {
+
+            throw new NotImplementedException("does not confirm that user is part of l10");
+
             if (IsRadialAdmin(caller))
                 return this;
             if (userId == caller.Id)

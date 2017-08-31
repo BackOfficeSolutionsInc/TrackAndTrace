@@ -237,7 +237,7 @@ namespace RadialReview.Accessors {
                         DisplayText = new HtmlString("Permissions"),
                         ResId = resourceId,
                         ResType = resourceType,
-                        Items = items.Select(x=>PermItemVM.Create(x,admin)).ToList()
+                        Items = items.Select(x=>PermItemVM.Create(x,admin)).ToList(),
                     };
                 }
             }

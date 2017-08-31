@@ -12,10 +12,10 @@
 
 
 
-<div class="centered">
+<div class="centered error-page">
 	<div class="component">
 		<div class="">
-			<h2>@(String.IsNullOrWhiteSpace(ViewBag.Message) ? RadialReview.Properties.ExceptionStrings.AnErrorOccured : ViewBag.Message)</h2>
+			<h2 class="error-message">@(String.IsNullOrWhiteSpace(ViewBag.Message) ? RadialReview.Properties.ExceptionStrings.AnErrorOccured : ViewBag.Message)</h2>
 		</div>
 
 		@if (Context.IsDebuggingEnabled && Model != null && !String.IsNullOrWhiteSpace(Model.StackTrace)) {
