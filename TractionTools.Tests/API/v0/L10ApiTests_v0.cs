@@ -31,10 +31,12 @@ namespace TractionTools.Tests.API.v0 {
 			L10_Controller L10 = new L10_Controller();
 
 			L10.MockUser(c.E1);
-			var recurrenceId = await L10.CreateL10("Test L10");
+			string l10Name = "Test L10";
+			var recurrenceId = await L10.CreateL10(l10Name);
 			var getAllL10RecurrenceAtOrganization = L10Accessor.GetAllL10RecurrenceAtOrganization(c.E1, c.Org.Id);
 
 			Assert.AreEqual(recurrenceId, getAllL10RecurrenceAtOrganization.FirstOrDefault().Id);
+			Assert.AreEqual(l10Name, getAllL10RecurrenceAtOrganization.FirstOrDefault().Name);
 		}
 
 
@@ -81,7 +83,7 @@ namespace TractionTools.Tests.API.v0 {
 			await L10.AttachMeasurableL10(recurrenceId, m1.Id);
 			getMeasurablesForRecurrence = L10Accessor.GetScorecardDataForRecurrence(c.E1, recurrenceId);
 			Assert.AreEqual(1, getMeasurablesForRecurrence.MeasurablesAndDividers.Count());
-
+			Assert.AreEqual(m1.Title, getMeasurablesForRecurrence.MeasurablesAndDividers.FirstOrDefault().Measurable.Title);
 		}
 
 

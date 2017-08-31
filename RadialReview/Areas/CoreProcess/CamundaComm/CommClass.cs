@@ -106,7 +106,14 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
             return getList;
         }
 
-        public async Task<IEnumerable<TaskModel>> GetTaskByCandidateGroups(long[] candidateGroupIds, string processInstanceId = "", bool unassigned = false)
+		/// <summary>
+		/// Restrict to tasks that are offered to any of the given candidate groups.
+		/// </summary>
+		/// <param name="candidateGroupIds"></param>
+		/// <param name="processInstanceId"></param>
+		/// <param name="unassigned"></param>
+		/// <returns></returns>
+		public async Task<IEnumerable<TaskModel>> GetTaskByCandidateGroups(long[] candidateGroupIds, string processInstanceId = "", bool unassigned = false)
         {
 			// long[] candidateGroupIds
 			// pass array of candidate groups

@@ -370,17 +370,6 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 
                 string taskId = "Task" + Guid.NewGuid().ToString().Replace("-", "");
                 var candidateGroups = BpmnUtility.ConcatedCandidateString(model.SelectedMemberId);
-                //String.Join(",", model.SelectedMemberId.Select(x => "rgm_" + x));
-                //if (model.SelectedMemberId != null) {
-                //	if (model.SelectedMemberId.Any()) {
-                //		foreach (var item in model.SelectedMemberId) {
-                //			if (string.IsNullOrEmpty(candidateGroups))
-                //				candidateGroups = "rgm_" + item;
-                //			else
-                //				candidateGroups += ",rgm_" + item;
-                //		}
-                //	}
-                //}
 
                 if (sourceCounter == 0) {
                     getAllElement.Where(m => m.Attribute("id").Value == getStartProcessElement.Attribute("id").Value).FirstOrDefault().AddAfterSelf(

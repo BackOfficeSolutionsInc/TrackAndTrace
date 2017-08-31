@@ -144,7 +144,9 @@ namespace TractionTools.Tests.Api
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
             processDefAccessor = new ProcessDefAccessor();
-            var deleteTask = await processDefAccessor.DeleteProcessDefTask(c.E1, createTask.Id, getProcessDef);
+			//confirmation of task create
+			var getAllTaskList = await processDefAccessor.GetAllTaskForProcessDefinition(c.E1, getProcessDef);
+			var deleteTask = await processDefAccessor.DeleteProcessDefTask(c.E1, createTask.Id, getProcessDef);
             var getAllTask = await processDefAccessor.GetAllTaskForProcessDefinition(c.E1, getProcessDef);
             Assert.IsTrue(getAllTask.Count == 0);
         }
@@ -176,25 +178,15 @@ namespace TractionTools.Tests.Api
             var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c);
             var createTask = await CreateTask(c, getProcessDef);
-            //var createTask1 = await CreateTask(c, getProcessDef);
             var publishProcess = await PublishProcess(c, getProcessDef);
             await StartProcess(c, getProcessDef);
 
             processDefAccessor = new ProcessDefAccessor();
             var getProcessInstance = processDefAccessor.GetProcessInstanceList(c.E1, getProcessDef);
             var getTaskList = await processDefAccessor.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
-            //getTaskList = await processDefAccessor.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
-
-            //var getTasksForCandidateGroup = await processDefAccessor.GetTaskListByCandidateGroups(c.E1, new long[] { c.E1.Id }, "", true);
-            //getTasksForCandidateGroup = await processDefAccessor.GetTaskListByCandidateGroups(c.E1, new long[] { c.E1.Id }, "", false);
-
-            await processDefAccessor.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id,true);
-            var getTask = await processDefAccessor.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
             var getTasksForCandidateGroup = await processDefAccessor.GetTaskListByCandidateGroups(c.E1, new long[] { c.E1.Id }, true);
-           // getTasksForCandidateGroup = await processDefAccessor.GetTaskListByCandidateGroups(c.E1, new long[] { c.E1.Id }, "", false);
-
             Assert.IsTrue(getTasksForCandidateGroup.Count > 0);
-        }
+		}
 
 
         [TestMethod]
@@ -227,7 +219,7 @@ namespace TractionTools.Tests.Api
         private async Task<TaskViewModel> CreateTask(Ctx ctx, long processDefId)
         {
             processDefAccessor = new ProcessDefAccessor();
-            TaskViewModel task = new TaskViewModel() { name = "Test Task", SelectedMemberId = new long[] { ctx.E1.Id } };
+            TaskViewModel task = new TaskViewModel() { name = "Test Task", SelectedMemberId = new long[] { ctx.E1.Id,ctx.Manager.Id } };
             var createTask = await processDefAccessor.CreateProcessDefTask(ctx.E1, processDefId, task);
             return createTask;
         }
