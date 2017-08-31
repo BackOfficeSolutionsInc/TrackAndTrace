@@ -312,7 +312,8 @@ namespace RadialReview.Areas.CoreProcess.Models {
 			await fileTransferUtility.UploadAsync(fileTransferUtilityRequest);
 		}
 
-		public static async System.Threading.Tasks.Task DeleteFileFromServer(string keyName) {
+        [Obsolete("never delete files", true)]
+        public static async System.Threading.Tasks.Task DeleteFileFromServer(string keyName) {
 
 			try {
 				if (Config.ShouldDeploy()) {
@@ -326,7 +327,7 @@ namespace RadialReview.Areas.CoreProcess.Models {
 			}
 		}
 
-		[Obsolete("never delete files", true)]
+		//[Obsolete("never delete files", true)]
 		private static void DeleteFileFromLocal(string keyName) {
 			string dir = GetBpmnFilesLocalPath();
 			string fileName = keyName.Split('/')[1];
@@ -342,7 +343,8 @@ namespace RadialReview.Areas.CoreProcess.Models {
 
 		}
 
-		private static async System.Threading.Tasks.Task DeleteFileFromAmazon(string keyName) {
+        [Obsolete("never delete files", true)]
+        private static async System.Threading.Tasks.Task DeleteFileFromAmazon(string keyName) {
 			IAmazonS3 client;
 			using (client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1)) {
 				DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest {

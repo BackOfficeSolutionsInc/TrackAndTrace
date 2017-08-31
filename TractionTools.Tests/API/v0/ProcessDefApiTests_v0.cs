@@ -99,7 +99,7 @@ namespace TractionTools.Tests.Api
             var getTaskList = await processDefAccessor.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
 
             await processDefAccessor.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id,true);
-            var getTask = await processDefAccessor.GetTaskById(c.E1, getTaskList[0].Id);
+            var getTask = await processDefAccessor.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
             var getClaim = getTask.Assignee;
             Assert.AreEqual(getClaim, "u_" + c.E1.Id);
         }
@@ -117,10 +117,10 @@ namespace TractionTools.Tests.Api
             var getProcessInstance = processDefAccessor.GetProcessInstanceList(c.E1, getProcessDef);
             var getTaskList = await processDefAccessor.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
             await processDefAccessor.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id,true);
-            var getTask = await processDefAccessor.GetTaskById(c.E1, getTaskList[0].Id);
+            var getTask = await processDefAccessor.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
             var getClaim = getTask.Assignee;
             await processDefAccessor.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id,false);
-            var getTaskUnClaim = await processDefAccessor.GetTaskById(c.E1, getTaskList[0].Id);
+            var getTaskUnClaim = await processDefAccessor.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
             var getClaimUnclaim = getTaskUnClaim.Assignee;
             Assert.AreNotEqual(getClaim, getClaimUnclaim);
         }
@@ -163,8 +163,8 @@ namespace TractionTools.Tests.Api
             var getProcessInstance = processDefAccessor.GetProcessInstanceList(c.E1, getProcessDef);
             var getTaskList = await processDefAccessor.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
             await processDefAccessor.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id,true);
-            var getTask = await processDefAccessor.GetTaskById(c.E1, getTaskList[0].Id);
-            var getListTaskForUser = await processDefAccessor.GetTaskListByUserId(c.E1, c.E1.Id.ToString());
+            var getTask = await processDefAccessor.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
+            var getListTaskForUser = await processDefAccessor.GetTaskListByUserId(c.E1, c.E1.Id);
             Assert.IsTrue(getListTaskForUser.Count > 0);
         }
 
@@ -189,7 +189,7 @@ namespace TractionTools.Tests.Api
             //getTasksForCandidateGroup = await processDefAccessor.GetTaskListByCandidateGroups(c.E1, new long[] { c.E1.Id }, "", false);
 
             await processDefAccessor.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id,true);
-            var getTask = await processDefAccessor.GetTaskById(c.E1, getTaskList[0].Id);
+            var getTask = await processDefAccessor.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
             var getTasksForCandidateGroup = await processDefAccessor.GetTaskListByCandidateGroups(c.E1, new long[] { c.E1.Id }, true);
            // getTasksForCandidateGroup = await processDefAccessor.GetTaskListByCandidateGroups(c.E1, new long[] { c.E1.Id }, "", false);
 
@@ -211,9 +211,9 @@ namespace TractionTools.Tests.Api
             var getTaskList = await processDefAccessor.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
 
             await processDefAccessor.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id,true);
-			var getTaskforConfirmation = await processDefAccessor.GetTaskById(c.E1, getTaskList[0].Id);
+			var getTaskforConfirmation = await processDefAccessor.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
 			await processDefAccessor.TaskComplete(c.E1, getTaskList[0].Id, c.E1.Id);
-            var getTask = await processDefAccessor.GetTaskById(c.E1, getTaskList[0].Id);
+            var getTask = await processDefAccessor.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
             Assert.IsTrue(string.IsNullOrEmpty(getTask.Id));
         }
 

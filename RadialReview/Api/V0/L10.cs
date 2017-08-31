@@ -50,7 +50,7 @@ namespace RadialReview.Api.V0 {
 		}
 
 		[Route("L10/{recurrenceId}/rock/{rockId}")]
-		[HttpPut]
+		[HttpPost]
 		public async Task AttachRockMeetingL10(long recurrenceId, long rockId) {
 			await L10Accessor.AttachRock(GetUser(), recurrenceId, rockId);
 		}

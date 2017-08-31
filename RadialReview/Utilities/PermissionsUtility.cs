@@ -1918,6 +1918,7 @@ namespace RadialReview.Utilities {
             if (IsRadialAdmin(caller))
                 return this;
 
+            // groupId can be userId too.
             var ids = ResponsibilitiesAccessor.GetMemberIds(session, this, groupId);
 
             if (ids.Any(x => x == this.GetCaller().Id)) {
