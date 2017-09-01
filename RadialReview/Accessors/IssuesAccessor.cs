@@ -22,29 +22,23 @@ using RadialReview.Utilities.RealTime;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
 
-namespace RadialReview.Accessors
-{
-    public class IssuesAccessor : BaseAccessor
-    {
+namespace RadialReview.Accessors {
+    public class IssuesAccessor : BaseAccessor {
 
 
-        public static async Task<StringBuilder> BuildIssuesSolvedTable(List<IssueModel.IssueModel_Recurrence> issues, string title = null, long? recurrenceId = null, bool showDetails = false, Dictionary<string, HtmlString> padLookup = null)
-        {
+        public static async Task<StringBuilder> BuildIssuesSolvedTable(List<IssueModel.IssueModel_Recurrence> issues, string title = null, long? recurrenceId = null, bool showDetails = false, Dictionary<string, HtmlString> padLookup = null) {
             title = title.NotNull(x => x.Trim()) ?? "Issues";
             var table = new StringBuilder();
-            try
-            {
+            try {
 
                 table.Append(@"<table width=""100%""  border=""0"" cellpadding=""0"" cellspacing=""0"">");
                 table.Append(@"<tr><th colspan=""2"" align=""left"" style=""font-size:16px;border-bottom: 1px solid #D9DADB;"">" + title + @"</th></tr>");
                 var i = 1;
-                if (issues.Any())
-                {
+                if (issues.Any()) {
                     var org = issues.FirstOrDefault().NotNull(x => x.Issue.Organization);
                     var now = issues.FirstOrDefault().NotNull(x => x.Issue.Organization.ConvertFromUTC(DateTime.UtcNow).Date);
                     var format = org.NotNull(x => x.Settings.NotNull(y => y.GetDateFormat())) ?? "MM-dd-yyyy";
-                    foreach (var issue in issues.OrderBy(x => x.CloseTime))
-                    {
+                    foreach (var issue in issues.OrderBy(x => x.CloseTime)) {
                         var url = "#";
                         if (recurrenceId != null)
                             url = Config.BaseUrl(org) + @"L10/Details/" + recurrenceId + "#/Issues";
@@ -53,20 +47,15 @@ namespace RadialReview.Accessors
                             .Append(i).Append(@". </a></b></td><td align=""left""><b><a style=""color:#333333;text-decoration:none;"" href=""" + url + @""">")
                             .Append(issue.Issue.Message).Append(@"</a></b></td></tr>");
 
-                        if (showDetails)
-                        {
+                        if (showDetails) {
                             HtmlString details = null;
-                            if (padLookup == null || !padLookup.ContainsKey(issue.Issue.PadId))
-                            {
+                            if (padLookup == null || !padLookup.ContainsKey(issue.Issue.PadId)) {
                                 details = await PadAccessor.GetHtml(issue.Issue.PadId);
-                            }
-                            else
-                            {
+                            } else {
                                 details = padLookup[issue.Issue.PadId];
                             }
 
-                            if (!String.IsNullOrWhiteSpace(details.ToHtmlString()))
-                            {
+                            if (!String.IsNullOrWhiteSpace(details.ToHtmlString())) {
                                 table.Append(@"<tr><td></td><td><i style=""font-size:12px;"">&nbsp;&nbsp;<a style=""color:#333333;text-decoration: none;"" href=""" + url + @""">").Append(details.ToHtmlString()).Append("</a></i></td></tr>");
                             }
                         }
@@ -74,22 +63,18 @@ namespace RadialReview.Accessors
                         i++;
                     }
                 }
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 log.Error(e);
             }
             table.Append("</table>");
             return table;
         }
 
-        public class IssueOutput
-        {
+        public class IssueOutput {
             public IssueModel IssueModel { get; set; }
             public IssueModel.IssueModel_Recurrence IssueRecurrenceModel { get; set; }
         }
-        public static async Task<IssueOutput> CreateIssue(ISession s, PermissionsUtility perms, long recurrenceId, long ownerId, IssueModel issue)
-        {
+        public static async Task<IssueOutput> CreateIssue(ISession s, PermissionsUtility perms, long recurrenceId, long ownerId, IssueModel issue) {
             var o = new IssueOutput();
             perms.EditL10Recurrence(recurrenceId);
             //perms.ViewL10Recurrence(recurrenceId);
@@ -140,8 +125,7 @@ namespace RadialReview.Accessors
             await L10Accessor.Depristine_Unsafe(s, perms.GetCaller(), r);
             s.Update(r);
 
-            var recur = new IssueModel.IssueModel_Recurrence()
-            {
+            var recur = new IssueModel.IssueModel_Recurrence() {
                 CopiedFrom = null,
                 Issue = issue,
                 CreatedBy = issue.CreatedBy,
@@ -153,8 +137,7 @@ namespace RadialReview.Accessors
             };
             s.Save(recur);
             o.IssueRecurrenceModel = recur;
-            if (r.OrderIssueBy == "data-priority")
-            {
+            if (r.OrderIssueBy == "data-priority") {
                 var order = s.QueryOver<IssueModel.IssueModel_Recurrence>()
                     .Where(x => x.Recurrence.Id == recurrenceId && x.DeleteTime == null && x.CloseTime == null && x.Priority > issue._Priority && x.ParentRecurrenceIssue == null)
                     .Select(x => x.Ordering).List<long?>().Where(x => x != null).ToList();
@@ -165,8 +148,7 @@ namespace RadialReview.Accessors
                 recur.Ordering = max;
                 s.Update(recur);
             }
-            if (r.OrderIssueBy == "data-rank")
-            {
+            if (r.OrderIssueBy == "data-rank") {
                 var order = s.QueryOver<IssueModel.IssueModel_Recurrence>()
                     .Where(x => x.Recurrence.Id == recurrenceId && x.DeleteTime == null && x.CloseTime == null && x.Rank > issue._Rank && x.ParentRecurrenceIssue == null)
                     .Select(x => x.Ordering).List<long?>().Where(x => x != null).ToList();
@@ -183,24 +165,18 @@ namespace RadialReview.Accessors
             meetingHub.appendIssue(".issues-list", IssuesData.FromIssueRecurrence(recur), r.OrderIssueBy);
             var message = "Created issue.";
             var showWhoCreatedDetails = true;
-            if (showWhoCreatedDetails)
-            {
-                try
-                {
-                    if (perms.GetCaller() != null && perms.GetCaller().GetFirstName() != null)
-                    {
+            if (showWhoCreatedDetails) {
+                try {
+                    if (perms.GetCaller() != null && perms.GetCaller().GetFirstName() != null) {
                         message = perms.GetCaller().GetFirstName() + " created an issue.";
                     }
-                }
-                catch (Exception)
-                {
+                } catch (Exception) {
                 }
             }
 
             meetingHub.showAlert(message, 1500);
 
-            var updates = new AngularRecurrence(recurrenceId)
-            {
+            var updates = new AngularRecurrence(recurrenceId) {
                 Focus = "[data-issue='" + recur.Id + "'] input:visible:first"
             };
             updates.IssuesList.Issues = AngularList.Create<AngularIssue>(AngularListType.Add, new[] { new AngularIssue(recur) });
@@ -251,12 +227,9 @@ namespace RadialReview.Accessors
         //	}
         //}
 
-        public static async Task<IssueOutput> CreateIssue(UserOrganizationModel caller, long recurrenceId, long ownerId, IssueModel issue)
-        {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
+        public static async Task<IssueOutput> CreateIssue(UserOrganizationModel caller, long recurrenceId, long ownerId, IssueModel issue) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
                     var perms = PermissionsUtility.Create(s, caller);
 
                     var o = await CreateIssue(s, perms, recurrenceId, ownerId, issue);
@@ -269,27 +242,23 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static IssueModel GetIssue(UserOrganizationModel caller, long issueId)
-        {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
+        public static IssueModel GetIssue(UserOrganizationModel caller, long issueId) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
                     PermissionsUtility.Create(s, caller).ViewIssue(issueId);
                     return s.Get<IssueModel>(issueId);
                 }
             }
         }
 
-        public static List<IssueModel.IssueModel_Recurrence> GetVisibleIssuesForUser(UserOrganizationModel caller, long userId)
-        {
-            throw new NotImplementedException();
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
+        public static List<IssueModel.IssueModel_Recurrence> GetVisibleIssuesForUser(UserOrganizationModel caller, long userId) {
+            //throw new NotImplementedException();
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
                     var perms = PermissionsUtility.Create(s, caller).ViewUserOrganization(userId, false);
-                    var list = L10Accessor.GetVisibleL10Meetings_Tiny(s, perms, userId, true, false).Select(x => x.Id).ToList();                    
+
+                    // only get meetings visible to me.
+                    var list = L10Accessor.GetVisibleL10Meetings_Tiny(s, perms, caller.Id, true, false).Select(x => x.Id).ToList();
 
                     return s.QueryOver<IssueModel.IssueModel_Recurrence>()
                         .Where(x => x.DeleteTime == null
@@ -299,12 +268,9 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static List<IssueModel.IssueModel_Recurrence> GetUserIssues(UserOrganizationModel caller, long userId, long recurrenceId, bool excludeCompleteDuringMeeting = false, DateRange range = null)
-        {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
+        public static List<IssueModel.IssueModel_Recurrence> GetUserIssues(UserOrganizationModel caller, long userId, long recurrenceId, bool excludeCompleteDuringMeeting = false, DateRange range = null) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
                     PermissionsUtility.Create(s, caller).ViewRecurrenceIssuesForUser(userId, recurrenceId);
 
                     return s.QueryOver<IssueModel.IssueModel_Recurrence>()
@@ -315,12 +281,9 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static IssueModel.IssueModel_Recurrence GetIssue_Recurrence(UserOrganizationModel caller, long recurrence_issue)
-        {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
+        public static IssueModel.IssueModel_Recurrence GetIssue_Recurrence(UserOrganizationModel caller, long recurrence_issue) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
                     var found = s.Get<IssueModel.IssueModel_Recurrence>(recurrence_issue);
 
                     PermissionsUtility.Create(s, caller)
@@ -335,12 +298,9 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static IssueModel.IssueModel_Recurrence CopyIssue(UserOrganizationModel caller, long parentIssue_RecurrenceId, long childRecurrenceId)
-        {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
+        public static IssueModel.IssueModel_Recurrence CopyIssue(UserOrganizationModel caller, long parentIssue_RecurrenceId, long childRecurrenceId) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
                     var now = DateTime.UtcNow;
 
                     var parent = s.Get<IssueModel.IssueModel_Recurrence>(parentIssue_RecurrenceId);
@@ -357,13 +317,11 @@ namespace RadialReview.Accessors
                         throw new PermissionsException("Issue does not exist.");
 
                     var possible = L10Accessor._GetAllL10RecurrenceAtOrganization(s, caller, caller.Organization.Id);
-                    if (possible.All(x => x.Id != childRecurrenceId))
-                    {
+                    if (possible.All(x => x.Id != childRecurrenceId)) {
                         throw new PermissionsException("You do not have permission to copy this issue.");
                     }
 
-                    var issue_recur = new IssueModel.IssueModel_Recurrence()
-                    {
+                    var issue_recur = new IssueModel.IssueModel_Recurrence() {
                         ParentRecurrenceIssue = null,
                         CreateTime = now,
                         CopiedFrom = parent,
@@ -389,16 +347,13 @@ namespace RadialReview.Accessors
             }
         }
 
-        private static void _RecurseCopy(ISession s, IssuesData viewModel, UserOrganizationModel caller, IssueModel.IssueModel_Recurrence copiedFrom, IssueModel.IssueModel_Recurrence parent, DateTime now)
-        {
+        private static void _RecurseCopy(ISession s, IssuesData viewModel, UserOrganizationModel caller, IssueModel.IssueModel_Recurrence copiedFrom, IssueModel.IssueModel_Recurrence parent, DateTime now) {
             var children = s.QueryOver<IssueModel.IssueModel_Recurrence>()
                 .Where(x => x.DeleteTime == null && x.ParentRecurrenceIssue.Id == copiedFrom.Id)
                 .List();
             var childrenVMs = new List<IssuesData>();
-            foreach (var child in children)
-            {
-                var issue_recur = new IssueModel.IssueModel_Recurrence()
-                {
+            foreach (var child in children) {
+                var issue_recur = new IssueModel.IssueModel_Recurrence() {
                     ParentRecurrenceIssue = parent,
                     CreateTime = now,
                     CopiedFrom = child,
@@ -429,12 +384,9 @@ namespace RadialReview.Accessors
         //	foreach (var child in parent._ChildIssues)
         //		RecurseIssue(sb, index, child, depth + 1, includeDetails);
         //}
-        public static Csv Listing(UserOrganizationModel caller, long organizationId)
-        {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
+        public static Csv Listing(UserOrganizationModel caller, long organizationId) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
                     // var p = s.Get<PeriodModel>(period);
 
                     PermissionsUtility.Create(s, caller).ManagingOrganization(organizationId);
@@ -455,8 +407,7 @@ namespace RadialReview.Accessors
                         .Fetch(x => x.Issue).Eager
                         .List().ToList();
 
-                    foreach (var t in issues)
-                    {
+                    foreach (var t in issues) {
                         var time = "";
                         csv.Add("" + t.Id, "Owner", t.Owner.NotNull(x => x.GetName()));
                         csv.Add("" + t.Id, "Created", t.CreateTime.ToShortDateString());

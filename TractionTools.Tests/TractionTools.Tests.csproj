@@ -322,6 +322,11 @@
     <Compile Include="Permissions\OrganizationPermissions.cs" />
     <Compile Include="Permissions\AccountabilityPermissions.cs" />
     <Compile Include="Permissions\UserPermissions.cs" />
+    <Compile Include="Properties\APIResult.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>APIResult.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\SurveyResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -357,6 +362,10 @@
     <Content Include="Utilities\FullOrganization.png" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Properties\APIResult.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>APIResult.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\SurveyResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>SurveyResources.Designer.cs</LastGenOutput>
