@@ -21,6 +21,7 @@ using static RadialReview.Controllers.L10Controller;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Angular.Accountability;
 using RadialReview.Models.ViewModels;
+using TractionTools.Tests.Properties;
 
 namespace TractionTools.Tests.API.v0 {
 	[TestClass]
@@ -41,7 +42,8 @@ namespace TractionTools.Tests.API.v0 {
 			var result = await JoinOrganizationAccessor.CreateUserUnderManager(c.E1, model);
 
 			var attachSeat = seatController.AttachDirectReport(c.Org.E1MiddleNode.Id, result.User.Id); // nodeId is seatId
-			var getSeat = seatController.GetSeat(attachSeat.Id);
+            CompareModelProperties(APIResult.SeatsApiTests_v0_TestAttachDirectReport, attachSeat);
+            var getSeat = seatController.GetSeat(attachSeat.Id);
 			Assert.AreEqual(getSeat.Id, attachSeat.Id);
 		}
 
@@ -52,7 +54,8 @@ namespace TractionTools.Tests.API.v0 {
 			SeatsController seatController = new SeatsController();
 			seatController.MockUser(c.E1);
 			var getResult = seatController.GetSeat(c.Org.E1MiddleNode.Id); // nodeId is seatId
-			Assert.AreEqual(c.Org.E1MiddleNode.Id, getResult.Id);
+            CompareModelProperties(APIResult.SeatsApiTests_v0_TestGetSeat, getResult);
+            Assert.AreEqual(c.Org.E1MiddleNode.Id, getResult.Id);
 		}
 
 		[TestMethod]
@@ -80,8 +83,10 @@ namespace TractionTools.Tests.API.v0 {
 			var c = await Ctx.Build();
 			SeatsController seatController = new SeatsController();
 			seatController.MockUser(c.E1);
-			var getPosition = AccountabilityAccessor.GetNodeById(c.E1, c.Org.MiddleNode.Id);
-			Assert.IsNotNull(getPosition);
+			//var getPosition = AccountabilityAccessor.GetNodeById(c.E1, c.Org.MiddleNode.Id);
+            var getPosition = seatController.GetPosition(c.Org.MiddleNode.Id);
+            //CompareModelProperties(APIResult.SeatsApiTests_v0_TestGetSeat, getPosition);
+            Assert.IsNotNull(getPosition);
 		}
 
 		[TestMethod]
@@ -152,7 +157,8 @@ namespace TractionTools.Tests.API.v0 {
 			var result =await JoinOrganizationAccessor.CreateUserUnderManager(c.E1, model);
 			var attachSeat = seatController.AttachDirectReport(c.Org.E1MiddleNode.Id, result.User.Id);
 			var getUser = seatController.GetSeatUser(attachSeat.Id);
-			Assert.AreEqual(result.User.Id, getUser.Id);
+            CompareModelProperties(APIResult.SeatsApiTests_v0_TestGetSeatUser, getUser);
+            Assert.AreEqual(result.User.Id, getUser.Id);
 		}
 
 

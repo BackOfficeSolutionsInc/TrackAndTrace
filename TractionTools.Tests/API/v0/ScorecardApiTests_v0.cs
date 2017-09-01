@@ -9,6 +9,7 @@ using RadialReview.Models.Scorecard;
 using System.Linq;
 using RadialReview;
 using System.Threading.Tasks;
+using TractionTools.Tests.Properties;
 
 namespace TractionTools.Tests.API.v0 {
 	[TestClass]
@@ -47,8 +48,9 @@ namespace TractionTools.Tests.API.v0 {
 
 			
 			var s = c.Get(score.Id);
+            CompareModelProperties(APIResult.ScorecardApiTests_v0_GetScore, s);
 
-			Assert.AreEqual(s.Measurable.Title, m1.Title);
+            Assert.AreEqual(s.Measurable.Title, m1.Title);
 			Assert.AreEqual(s.Value, null);
 
 

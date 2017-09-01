@@ -18,6 +18,7 @@ using RadialReview.Models.Angular.Issues;
 using RadialReview.Models.Angular.Headlines;
 using RadialReview.Models.Angular.Rocks;
 using System.Net;
+using RadialReview.Models.Angular.Users;
 
 namespace RadialReview.Api.V0 {
 	[RoutePrefix("api/v0")]
@@ -133,8 +134,8 @@ namespace RadialReview.Api.V0 {
 
 		[Route("L10/{recurrenceId}/attendee")]
 		[HttpGet]
-		public IEnumerable<Models.UserOrganizationModel> GetL10Attendees(long recurrenceId) {
-			return L10Accessor.GetAttendees(GetUser(), recurrenceId);
+		public IEnumerable<AngularUser> GetL10Attendees(long recurrenceId) {
+			return L10Accessor.GetAttendees(GetUser(), recurrenceId).Select(x=>AngularUser.CreateUser(x));
 		}
 
 		[Route("L10/list")]

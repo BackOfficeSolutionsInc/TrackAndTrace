@@ -59,7 +59,7 @@ namespace TractionTools.Tests.API.v0 {
             var result = await iss.CreateIssue(_recurrence.Id, issue.Message, null, null);
             AngularIssue _angularIssue = iss.Get(result.Id);
 
-            CompareModelProperties(null, _angularIssue);
+            CompareModelProperties(APIResult.IssueApiTests_v0_TestCreateIssue, _angularIssue);
 
             Assert.IsNotNull(_angularIssue);
             Assert.AreEqual(_angularIssue.Name, issue.Message);
@@ -77,9 +77,11 @@ namespace TractionTools.Tests.API.v0 {
             var result = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E1.Id, issue);
             IssueController iss = new IssueController();
             iss.MockUser(c.E1);
-            var _todo = iss.Get(issue.Id);
-            Assert.IsNotNull(_todo);
-            Assert.AreEqual(issue.Message, _todo.Name);
+            AngularIssue _angularIssue = iss.Get(issue.Id);
+
+            CompareModelProperties(APIResult.IssueApiTests_v0_TestGetIssue, _angularIssue);
+            Assert.IsNotNull(_angularIssue);
+            Assert.AreEqual(issue.Message, _angularIssue.Name);
         }
 
 
@@ -123,8 +125,12 @@ namespace TractionTools.Tests.API.v0 {
             var result1 = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E2.Id, issue1);
             IssueController iss = new IssueController();
             iss.MockUser(c.E1);
-            var _model = iss.GetUserIssues(_recurrence.Id);
-            Assert.AreEqual(2, _model.Count());
+
+            // use GetUserIssues method instead of GetVisibleIssuesForUser method
+            IEnumerable<AngularIssue> _angularIssueList = iss.GetUserIssues(_recurrence.Id);
+            //CompareModelProperties(APIResult.IssueApiTests_v0_TestGetIssue, _angularIssueList);
+
+            Assert.AreEqual(2, _angularIssueList.Count());
         }
 
         [TestMethod]

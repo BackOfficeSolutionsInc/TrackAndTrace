@@ -20,6 +20,8 @@ using RadialReview.Models.Scorecard;
 using static RadialReview.Controllers.L10Controller;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Issues;
+using TractionTools.Tests.Properties;
+using RadialReview.Models.Angular.Meeting;
 
 namespace TractionTools.Tests.API.v0 {
 	[TestClass]
@@ -35,7 +37,7 @@ namespace TractionTools.Tests.API.v0 {
 			var recurrenceId = await L10.CreateL10(l10Name);
 			var getAllL10RecurrenceAtOrganization = L10Accessor.GetAllL10RecurrenceAtOrganization(c.E1, c.Org.Id);
 
-			Assert.AreEqual(recurrenceId, getAllL10RecurrenceAtOrganization.FirstOrDefault().Id);
+            Assert.AreEqual(recurrenceId, getAllL10RecurrenceAtOrganization.FirstOrDefault().Id);
 			Assert.AreEqual(l10Name, getAllL10RecurrenceAtOrganization.FirstOrDefault().Name);
 		}
 
@@ -199,9 +201,10 @@ namespace TractionTools.Tests.API.v0 {
 
 			L10.MockUser(c.E1);
 			var recurrenceId = await L10.CreateL10("Test L10");
-			var getMeetingsL10 = L10.GetL10(recurrenceId);
+            AngularRecurrence getMeetingsL10 = L10.GetL10(recurrenceId);
 
-			Assert.AreEqual(recurrenceId, getMeetingsL10.Id);
+            CompareModelProperties(APIResult.L10ApiTests_v0_TestGetMeetingsL10, getMeetingsL10);
+            Assert.AreEqual(recurrenceId, getMeetingsL10.Id);
 
 		}
 
@@ -221,7 +224,9 @@ namespace TractionTools.Tests.API.v0 {
 
 			await L10Accessor.AddAttendee(c.E1, recurrenceId, c.E1.Id);
 			GetL10Attendess = L10.GetL10Attendees(recurrenceId);
-			Assert.AreEqual(1, GetL10Attendess.Count());
+            CompareModelProperties(APIResult.L10ApiTests_v0_TestGetL10Attendess, GetL10Attendess);
+
+            Assert.AreEqual(1, GetL10Attendess.Count());
 
 		}
 
@@ -244,7 +249,9 @@ namespace TractionTools.Tests.API.v0 {
 			Assert.AreEqual(0, getAttachHeadline.Count());
 
 			var getHeadline = await L10.CreateHeadlineL10(headlineModel.RecurrenceId, headlineModel.Message, null, headlineModel._Details);
-			getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
+
+            CompareModelProperties(APIResult.L10ApiTests_v0_TestAttachHeadlineMeetingL10, getHeadline);
+            getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
 			Assert.AreEqual(1, getAttachHeadline.Count());
 			Assert.AreEqual("Test Head Line", getAttachHeadline.First().Message);
 		}
@@ -314,7 +321,7 @@ namespace TractionTools.Tests.API.v0 {
 			};
 			MockHttpContext();
 			var measurable = AddMeasurableVm.CreateNewMeasurable(recurrenceId, m1, true);
-			await L10Accessor.CreateMeasurable(c.E1, recurrenceId, measurable);
+			//await L10Accessor.CreateMeasurable(c.E1, recurrenceId, measurable);
 			var getlist = L10.GetL10List();
 			Assert.AreEqual(1, getlist.Count());
 		}
@@ -332,9 +339,9 @@ namespace TractionTools.Tests.API.v0 {
 
 			var details = "Test detail For Issue Meeting L10";
 
-			await L10.CreateIssueL10(recurrenceId, name, c.E1.Id, details);
-
-			var getIssueMeetingL10 = L10Accessor.GetIssuesForRecurrence(c.E1, recurrenceId, false);
+			var result= await L10.CreateIssueL10(recurrenceId, name, c.E1.Id, details);
+            CompareModelProperties(APIResult.L10ApiTests_v0_TestAttachIssueMeetingL10, result);
+            var getIssueMeetingL10 = L10Accessor.GetIssuesForRecurrence(c.E1, recurrenceId, false);
 
 			Assert.AreEqual(1, getIssueMeetingL10.Count());
 
@@ -384,7 +391,8 @@ namespace TractionTools.Tests.API.v0 {
 			L10_Controller iss = new L10_Controller();
 			iss.MockUser(c.E1);
 			var _model = iss.GetUserIssues(c.E1.Id, _recurrence.Id);
-			Assert.AreEqual(1, _model.Count());
+            CompareModelProperties(APIResult.L10ApiTests_v0_TestGetUserIssues, _model);
+            Assert.AreEqual(1, _model.Count());
 			Assert.AreEqual(c.E1.Id, _model.First().Owner.Id);
 		}
 	}

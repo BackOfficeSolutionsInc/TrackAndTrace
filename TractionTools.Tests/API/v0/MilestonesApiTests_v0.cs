@@ -20,6 +20,7 @@ using RadialReview.Models.Scorecard;
 using static RadialReview.Controllers.L10Controller;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Angular.Accountability;
+using TractionTools.Tests.Properties;
 
 namespace TractionTools.Tests.Api
 {
@@ -33,7 +34,7 @@ namespace TractionTools.Tests.Api
             MilestonesController milestonesController = new MilestonesController();
             milestonesController.MockUser(c.E1);
 
-            var _recurrence = L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id);
+            var _recurrence =await L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id);
 
             var rock = new RockModel() {
                 OrganizationId = c.E1.Organization.Id,
@@ -47,7 +48,7 @@ namespace TractionTools.Tests.Api
             var milestone = RockAccessor.AddMilestone(c.E1, getRocks.FirstOrDefault().Id, name, date);
 
             var getRocksMilestones = milestonesController.GetMilestones(milestone.Id);
-
+           // CompareModelProperties(APIResult.IssueApiTests_v0_TestGetIssue, getRocksMilestones);
             Assert.AreEqual(name, getRocksMilestones.Name);
 
             Assert.IsTrue(Math.Abs((getRocksMilestones.DueDate - date).Value.TotalSeconds) <= 1);

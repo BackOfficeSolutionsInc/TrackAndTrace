@@ -560,7 +560,8 @@ namespace TractionTools.Tests.TestUtils {
                     for (int i = 0; i < newVal.Count; i++) {
                         CompareModelProperties(newVal[i], actVal[i]);
                     }
-                } else if (item.Value is string) {
+                } else if (item.Value is string || item.Value is null || (item.Value.GetType() == typeof(DateTime))
+                    || item.Value is long || item.Value is bool || (item.Value.GetType() == typeof(double))) {
                     // we did this intentionally
                     // not required for test this case
                 } else {
