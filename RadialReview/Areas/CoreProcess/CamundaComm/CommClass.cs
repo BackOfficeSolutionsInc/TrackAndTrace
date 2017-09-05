@@ -6,6 +6,7 @@ using CamundaCSharpClient.Model.Task;
 using RadialReview.Areas.CoreProcess.Interfaces;
 using RadialReview.Areas.CoreProcess.Models;
 using RadialReview.Areas.CoreProcess.Models.Interfaces;
+using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Utilities;
 using System;
@@ -155,7 +156,13 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
         public async Task<TaskModel> GetTaskById(string id)
         {
             client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
-            return await client.Task().Id(id).SingleResult();
+            var task = await client.Task().Id(id).SingleResult();
+
+            if(task.Id == null || task.StatusCode == 404) {
+                throw new PermissionsException("This task does not exists.");
+            }
+
+            return task;
         }
 
         #endregion

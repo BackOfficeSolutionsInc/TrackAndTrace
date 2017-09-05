@@ -210,8 +210,10 @@ namespace TractionTools.Tests.Api {
             await processDefAccessor.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, true);
             var getTaskforConfirmation = await processDefAccessor.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
             await processDefAccessor.TaskComplete(c.E1, getTaskList[0].Id, c.E1.Id);
-            var getTask = await processDefAccessor.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
-            Assert.IsTrue(string.IsNullOrEmpty(getTask.Id));
+
+            //var getTask = await processDefAccessor.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
+            await ThrowsAsync<PermissionsException>(async () => await processDefAccessor.GetTaskById_Unsafe(c.E1, getTaskList[0].Id));
+            //Assert.IsTrue(string.IsNullOrEmpty(getTask.Id));
         }
 
         private async Task<long> CreateProcess(Ctx ctx) {

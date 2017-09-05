@@ -36,11 +36,20 @@ namespace TractionTools.Tests.Api
             RadialReview.Api.V0.SearchController searchController = new RadialReview.Api.V0.SearchController();
             searchController.MockUser(c.E1);
 
-            string searchStr = "mana";
-            var search = searchController.SearchUser(searchStr);
-            CompareModelProperties(APIResult.SearchApiTests_v0_TestSearchUser, search);
-            Assert.AreEqual(1, search.Count());
-            Assert.AreEqual(true, search.FirstOrDefault().Name.StartsWith("manager"));
+            {
+                string searchStr = "mana";
+                var search = searchController.SearchUser(searchStr);
+                CompareModelProperties(APIResult.SearchApiTests_v0_TestSearchUser, search);
+                Assert.AreEqual(1, search.Count());
+                Assert.AreEqual(true, search.FirstOrDefault().Name.StartsWith("manager"));
+            }
+
+            {
+                string searchStr = "sdsksds"; // random string
+                var search = searchController.SearchUser(searchStr);
+                CompareModelProperties("[]", search); // verify return json string 
+                Assert.AreEqual(0, search.Count());                
+            }
         }
 
         [TestMethod]

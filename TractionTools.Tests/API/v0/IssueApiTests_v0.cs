@@ -127,7 +127,7 @@ namespace TractionTools.Tests.API.v0 {
             iss.MockUser(c.E1);
 
             // use GetUserIssues method instead of GetVisibleIssuesForUser method
-            IEnumerable<AngularIssue> _angularIssueList = iss.GetUserIssues(_recurrence.Id);
+            IEnumerable<AngularIssue> _angularIssueList = iss.GetUserIssues(c.E1.Id);
             //CompareModelProperties(APIResult.IssueApiTests_v0_TestGetIssue, _angularIssueList);
 
             Assert.AreEqual(2, _angularIssueList.Count());
