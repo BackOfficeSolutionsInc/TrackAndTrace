@@ -97,7 +97,7 @@ namespace TractionTools.Tests.API.v0 {
             seatController.AttachPosition(c.Org.MiddleNode.Id, createPosition.Id);
 
             var getPosition = seatController.GetPosition(c.Org.MiddleNode.Id);
-            //CompareModelProperties(APIResult.SeatsApiTests_v0_TestGetSeat, getPosition);
+            CompareModelProperties(APIResult.SeatsApiTests_v0_TestGetPosition, getPosition);
 
             Assert.IsNotNull(getPosition);
 		}

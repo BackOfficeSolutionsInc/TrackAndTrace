@@ -49,7 +49,7 @@ namespace TractionTools.Tests.Api {
 
             var addRocksMilestones = rocksController.AddRocksMilestones(getRocks.FirstOrDefault().Id, "TestMilestone", DateTime.Now.AddDays(7));
             var getRocksMilestones = rocksController.GetRocksMilestones(getRocks.FirstOrDefault().Id);
-           // CompareModelProperties(APIResult.PositionApiTests_v0_TestGetMinePosition, getRocksMilestones);
+            CompareModelProperties(APIResult.RocksApiTests_v0_TestGetRocksMilestones, getRocksMilestones);
             Assert.AreEqual(1, getRocksMilestones.Count());
         }
 

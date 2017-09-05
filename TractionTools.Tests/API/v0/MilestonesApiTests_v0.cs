@@ -51,7 +51,7 @@ namespace TractionTools.Tests.Api
             var milestone = RockAccessor.AddMilestone(c.E1, getRocks.FirstOrDefault().Id, name, date);
 
             var getRocksMilestones = milestonesController.GetMilestones(milestone.Id);
-           // CompareModelProperties(APIResult.IssueApiTests_v0_TestGetIssue, getRocksMilestones);
+            CompareModelProperties(APIResult.MilestonesApiTests_v0_TestGetMilestones, getRocksMilestones);
             Assert.AreEqual(name, getRocksMilestones.Name);
 
             Assert.IsTrue(Math.Abs((getRocksMilestones.DueDate - date).Value.TotalSeconds) <= 1);
@@ -67,15 +67,16 @@ namespace TractionTools.Tests.Api
             MilestonesController milestonesController = new MilestonesController();
             milestonesController.MockUser(c.E1);
 
-            var _recurrence = L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id);
+            var _recurrence =await L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id);
 
             var rock = new RockModel()
             {
                 OrganizationId = c.E1.Organization.Id,
                 ForUserId = c.E1.Id,
             };
-
             var name = "TestMilestone_updated";
+
+            MockHttpContext();
             await L10Accessor.CreateRock(c.E1, _recurrence.Id, AddRockVm.CreateRock(_recurrence.Id, rock, true));
             var getRocks = RockAccessor.GetRocks(c.E1, c.E1.Id);
 
@@ -98,14 +99,14 @@ namespace TractionTools.Tests.Api
             MilestonesController milestonesController = new MilestonesController();
             milestonesController.MockUser(c.E1);
 
-            var _recurrence = L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id);
+            var _recurrence =await L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id);
 
             var rock = new RockModel()
             {
                 OrganizationId = c.E1.Organization.Id,
                 ForUserId = c.E1.Id,
             };
-
+            MockHttpContext();
             await L10Accessor.CreateRock(c.E1, _recurrence.Id, AddRockVm.CreateRock(_recurrence.Id, rock, true));
             var getRocks = RockAccessor.GetRocks(c.E1, c.E1.Id);
 

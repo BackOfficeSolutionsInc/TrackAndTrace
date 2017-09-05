@@ -64,7 +64,7 @@ namespace TractionTools.Tests.API.v0 {
                 await c.Org.RegisterUser(c.E1);
 
                 var _model = cnt.GetMineTodos();
-                CompareModelProperties(APIResult.TodoApiTests_v0_TestGetMineTodos, _model);
+                CompareModelProperties(APIResult.TodoApiTests_v0_TestGetMineTodos_list, _model);
                 Assert.AreEqual(2, _model.Count());
                 Assert.IsTrue(_model.Any(x => x.Name == todo.Message));
 

@@ -88,6 +88,15 @@ namespace TractionTools.Tests.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [{&quot;DetailsUrl&quot;:&quot;https://notes.traction.tools/p/0af8d29b-bf57-45e8-9fac-6b993e9ed665?showControls=true&amp;showChat=false&quot;,&quot;Owner&quot;:{&quot;Name&quot;:&quot;E2 150461923&quot;,&quot;ImageUrl&quot;:&quot;/i/userplaceholder&quot;,&quot;Initials&quot;:&quot;E 1&quot;,&quot;Managing&quot;:null,&quot;CreateTime&quot;:&quot;2017-09-05T13:47:14&quot;,&quot;Id&quot;:10,&quot;Type&quot;:&quot;AngularUser&quot;,&quot;Key&quot;:&quot;AngularUser_10&quot;,&quot;CreateOnly&quot;:false,&quot;Hide&quot;:false,&quot;_ExtraProperties&quot;:null},&quot;Name&quot;:&quot;Issue for Test Method&quot;,&quot;Details&quot;:null,&quot;Children&quot;:[],&quot;CompleteTime&quot;:null,&quot;CreateTime&quot;:&quot;2017-09-05T13:47:17&quot;,&quot;Complete&quot;:false,&quot;Priority&quot;:0,&quot;Id&quot;:2,&quot;T [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string IssueApiTests_v0_TestGetRecurrenceIssues {
+            get {
+                return ResourceManager.GetString("IssueApiTests_v0_TestGetRecurrenceIssues", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {&quot;Name&quot;:&quot;Test Head Line&quot;,&quot;DetailsUrl&quot;:&quot;https://notes.traction.tools/p/b72fe374-0ca3-440c-bd52-b6b6411fee7e?showControls=true&amp;showChat=false&quot;,&quot;Owner&quot;:{&quot;Name&quot;:&quot;E1 150426243&quot;,&quot;ImageUrl&quot;:&quot;/i/userplaceholder&quot;,&quot;Initials&quot;:&quot;E 1&quot;,&quot;Managing&quot;:null,&quot;CreateTime&quot;:&quot;2017-09-01T10:40:32&quot;,&quot;Id&quot;:9,&quot;Type&quot;:&quot;AngularUser&quot;,&quot;Key&quot;:&quot;AngularUser_9&quot;,&quot;CreateOnly&quot;:false,&quot;Hide&quot;:false,&quot;_ExtraProperties&quot;:null},&quot;CloseTime&quot;:null,&quot;CreateTime&quot;:&quot;2017-09-01T10:40:36.9200168Z&quot;,&quot;About&quot;:{&quot;ImageUrl&quot;:&quot;https://s3.amazonaws.com/Radial/placeholder/orgPlac [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string L10ApiTests_v0_TestAttachHeadlineMeetingL10 {
@@ -115,7 +124,16 @@ namespace TractionTools.Tests.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {&quot;Basics&quot;:{&quot;Name&quot;:&quot;Test L10&quot;,&quot;TeamType&quot;:1,&quot;Id&quot;:1,&quot;Type&quot;:&quot;AngularBasics&quot;,&quot;Key&quot;:&quot;AngularBasics_1&quot;,&quot;CreateOnly&quot;:false,&quot;Hide&quot;:false,&quot;_ExtraProperties&quot;:null},&quot;Attendees&quot;:[],&quot;Scorecard&quot;:{&quot;Measurables&quot;:[],&quot;Scores&quot;:[],&quot;Weeks&quot;:[{&quot;ForWeekNumber&quot;:2474,&quot;ForWeek&quot;:&quot;2017-05-28T00:00:00Z&quot;,&quot;DisplayDate&quot;:&quot;2017-05-21T06:00:00Z&quot;,&quot;IsCurrentWeek&quot;:false,&quot;Id&quot;:636315264000000000,&quot;Type&quot;:&quot;AngularWeek&quot;,&quot;Key&quot;:&quot;AngularWeek_636315264000000000&quot;,&quot;CreateOnly&quot;:false,&quot;Hide&quot;:false,&quot;_ExtraProperties&quot;:null},{&quot;ForWeekNumber&quot;:2475,&quot;ForWeek&quot;:&quot;2017- [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to [{&quot;Id&quot;:1,&quot;Name&quot;:&quot;Test L10&quot;}].
+        /// </summary>
+        internal static string L10ApiTests_v0_TestGetList {
+            get {
+                return ResourceManager.GetString("L10ApiTests_v0_TestGetList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {&quot;Basics&quot;:{&quot;Name&quot;:&quot;Test L10&quot;,&quot;TeamType&quot;:1,&quot;Id&quot;:1,&quot;Type&quot;:&quot;AngularBasics&quot;,&quot;Key&quot;:&quot;AngularBasics_1&quot;,&quot;CreateOnly&quot;:false,&quot;Hide&quot;:false,&quot;_ExtraProperties&quot;:null},&quot;Attendees&quot;:[],&quot;Scorecard&quot;:{&quot;Measurables&quot;:[],&quot;Scores&quot;:[],&quot;Weeks&quot;:[{&quot;ForWeekNumber&quot;:2475,&quot;ForWeek&quot;:&quot;2017-06-04T00:00:00Z&quot;,&quot;DisplayDate&quot;:&quot;2017-05-28T06:00:00Z&quot;,&quot;IsCurrentWeek&quot;:false,&quot;Id&quot;:636321312000000000,&quot;Type&quot;:&quot;AngularWeek&quot;,&quot;Key&quot;:&quot;AngularWeek_636321312000000000&quot;,&quot;CreateOnly&quot;:false,&quot;Hide&quot;:false,&quot;_ExtraProperties&quot;:null},{&quot;ForWeekNumber&quot;:2476,&quot;ForWeek&quot;:&quot;2017- [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string L10ApiTests_v0_TestGetMeetingsL10 {
             get {
@@ -129,6 +147,15 @@ namespace TractionTools.Tests.Properties {
         internal static string L10ApiTests_v0_TestGetUserIssues {
             get {
                 return ResourceManager.GetString("L10ApiTests_v0_TestGetUserIssues", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {&quot;DueDate&quot;:&quot;2017-09-12T13:28:41&quot;,&quot;Name&quot;:&quot;TestMilestone&quot;,&quot;Status&quot;:&quot;NotDone&quot;,&quot;RockId&quot;:5,&quot;Id&quot;:1,&quot;Type&quot;:&quot;AngularMilestone&quot;,&quot;Key&quot;:&quot;AngularMilestone_1&quot;,&quot;CreateOnly&quot;:false,&quot;Hide&quot;:false,&quot;_ExtraProperties&quot;:null}.
+        /// </summary>
+        internal static string MilestonesApiTests_v0_TestGetMilestones {
+            get {
+                return ResourceManager.GetString("MilestonesApiTests_v0_TestGetMilestones", resourceCulture);
             }
         }
         
@@ -178,6 +205,15 @@ namespace TractionTools.Tests.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [{&quot;DueDate&quot;:&quot;2017-09-12T19:01:20&quot;,&quot;Name&quot;:&quot;TestMilestone&quot;,&quot;Status&quot;:&quot;NotDone&quot;,&quot;RockId&quot;:5,&quot;Id&quot;:1,&quot;Type&quot;:&quot;AngularMilestone&quot;,&quot;Key&quot;:&quot;AngularMilestone_1&quot;,&quot;CreateOnly&quot;:false,&quot;Hide&quot;:false,&quot;_ExtraProperties&quot;:null}].
+        /// </summary>
+        internal static string RocksApiTests_v0_TestGetRocksMilestones {
+            get {
+                return ResourceManager.GetString("RocksApiTests_v0_TestGetRocksMilestones", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {&quot;Name&quot;:&quot;TestRole&quot;,&quot;CreateTime&quot;:&quot;2017-09-01T11:48:19&quot;,&quot;Id&quot;:5,&quot;Type&quot;:&quot;AngularRole&quot;,&quot;Key&quot;:&quot;AngularRole_5&quot;,&quot;CreateOnly&quot;:false,&quot;Hide&quot;:false,&quot;_ExtraProperties&quot;:null}.
         /// </summary>
         internal static string RolesApiTests_v0_TestGetRoles {
@@ -223,6 +259,15 @@ namespace TractionTools.Tests.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {&quot;Name&quot;:&quot;TestPosition&quot;,&quot;Id&quot;:27,&quot;Type&quot;:&quot;AngularPosition&quot;,&quot;Key&quot;:&quot;AngularPosition_27&quot;,&quot;CreateOnly&quot;:false,&quot;Hide&quot;:false,&quot;_ExtraProperties&quot;:null}.
+        /// </summary>
+        internal static string SeatsApiTests_v0_TestGetPosition {
+            get {
+                return ResourceManager.GetString("SeatsApiTests_v0_TestGetPosition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {&quot;_hasParent&quot;:null,&quot;User&quot;:{&quot;Name&quot;:&quot;E1 150426752&quot;,&quot;ImageUrl&quot;:&quot;/i/userplaceholder&quot;,&quot;Initials&quot;:&quot;E 1&quot;,&quot;Managing&quot;:null,&quot;CreateTime&quot;:&quot;2017-09-01T12:05:25&quot;,&quot;Id&quot;:9,&quot;Type&quot;:&quot;AngularUser&quot;,&quot;Key&quot;:&quot;AngularUser_9&quot;,&quot;CreateOnly&quot;:false,&quot;Hide&quot;:false,&quot;_ExtraProperties&quot;:null},&quot;Name&quot;:&quot;E1 150426752&quot;,&quot;Group&quot;:null,&quot;collapsed&quot;:false,&quot;order&quot;:2,&quot;Editable&quot;:null,&quot;Me&quot;:null,&quot;children&quot;:null,&quot;_children&quot;:null,&quot;Id&quot;:5,&quot;Type&quot;:&quot;AngularAccountabilityNode&quot;,&quot;Key&quot;:&quot;AngularAccountabilityNode_5&quot;,&quot;CreateOnly&quot;:false,&quot;Hide&quot;:false,&quot;_ExtraProperties&quot;:null}.
         /// </summary>
         internal static string SeatsApiTests_v0_TestGetSeat {
@@ -250,6 +295,15 @@ namespace TractionTools.Tests.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [{&quot;Name&quot;:&quot;E1 150461855&quot;,&quot;ImageUrl&quot;:&quot;/i/userplaceholder&quot;,&quot;Initials&quot;:&quot;E 1&quot;,&quot;Managing&quot;:null,&quot;CreateTime&quot;:&quot;2017-09-05T13:35:57&quot;,&quot;Id&quot;:9,&quot;Type&quot;:&quot;AngularUser&quot;,&quot;Key&quot;:&quot;AngularUser_9&quot;,&quot;CreateOnly&quot;:false,&quot;Hide&quot;:false,&quot;_ExtraProperties&quot;:null},{&quot;Name&quot;:&quot;manager 150461855&quot;,&quot;ImageUrl&quot;:&quot;/i/userplaceholder&quot;,&quot;Initials&quot;:&quot;M 1&quot;,&quot;Managing&quot;:null,&quot;CreateTime&quot;:&quot;2017-09-05T13:35:56&quot;,&quot;Id&quot;:2,&quot;Type&quot;:&quot;AngularUser&quot;,&quot;Key&quot;:&quot;AngularUser_2&quot;,&quot;CreateOnly&quot;:false,&quot;Hide&quot;:false,&quot;_ExtraProperties&quot;:null}].
+        /// </summary>
+        internal static string TeamsApiTests_v0_TestGetTeamMember {
+            get {
+                return ResourceManager.GetString("TeamsApiTests_v0_TestGetTeamMember", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {&quot;Name&quot;:&quot;TestTeam&quot;,&quot;ManagedBy&quot;:9,&quot;TeamType&quot;:0,&quot;Id&quot;:27,&quot;Type&quot;:&quot;AngularTeam&quot;,&quot;Key&quot;:&quot;AngularTeam_27&quot;,&quot;CreateOnly&quot;:false,&quot;Hide&quot;:false,&quot;_ExtraProperties&quot;:null}.
         /// </summary>
         internal static string TeamsApiTests_v0_TestGetTeams {
@@ -268,11 +322,20 @@ namespace TractionTools.Tests.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [{&quot;Name&quot;:&quot;Todo from Test Method&quot;,&quot;DetailsUrl&quot;:&quot;https://notes.traction.tools/p/46ea0c92-2c01-43aa-be42-7410d51cd917?showControls=true&amp;showChat=false&quot;,&quot;Origin&quot;:&quot;Individual&quot;,&quot;DueDate&quot;:&quot;2017-09-08T12:52:47&quot;,&quot;Owner&quot;:{&quot;Name&quot;:&quot;E1 150427035&quot;,&quot;ImageUrl&quot;:&quot;/i/userplaceholder&quot;,&quot;Initials&quot;:&quot;E 1&quot;,&quot;Managing&quot;:null,&quot;CreateTime&quot;:&quot;2017-09-01T12:52:43&quot;,&quot;Id&quot;:9,&quot;Type&quot;:&quot;AngularUser&quot;,&quot;Key&quot;:&quot;AngularUser_9&quot;,&quot;CreateOnly&quot;:false,&quot;Hide&quot;:false,&quot;_ExtraProperties&quot;:null},&quot;CompleteTime&quot;:null,&quot;CreateTime&quot;:&quot;2017-09-01T12:52:47&quot;,&quot;Complete&quot;:false [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to [{&quot;Name&quot;:&quot;Todo from Test Method&quot;,&quot;DetailsUrl&quot;:&quot;https://notes.traction.tools/p/4e688d33-11c4-4dad-9f00-bff027be8052?showControls=true&amp;showChat=false&quot;,&quot;Origin&quot;:&quot;Individual&quot;,&quot;DueDate&quot;:&quot;2017-09-12T08:39:26&quot;,&quot;Owner&quot;:{&quot;Name&quot;:&quot;E1 150460076&quot;,&quot;ImageUrl&quot;:&quot;/i/userplaceholder&quot;,&quot;Initials&quot;:&quot;E 1&quot;,&quot;Managing&quot;:null,&quot;CreateTime&quot;:&quot;2017-09-05T08:39:24&quot;,&quot;Id&quot;:9,&quot;Type&quot;:&quot;AngularUser&quot;,&quot;Key&quot;:&quot;AngularUser_9&quot;,&quot;CreateOnly&quot;:false,&quot;Hide&quot;:false,&quot;_ExtraProperties&quot;:null},&quot;CompleteTime&quot;:null,&quot;CreateTime&quot;:&quot;2017-09-05T08:39:26&quot;,&quot;Complete&quot;:false [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string TodoApiTests_v0_TestGetMineTodos {
             get {
                 return ResourceManager.GetString("TodoApiTests_v0_TestGetMineTodos", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{&quot;Name&quot;:&quot;Todo from Test Method&quot;,&quot;DetailsUrl&quot;:&quot;https://notes.traction.tools/p/4e688d33-11c4-4dad-9f00-bff027be8052?showControls=true&amp;showChat=false&quot;,&quot;Origin&quot;:&quot;Individual&quot;,&quot;DueDate&quot;:&quot;2017-09-12T08:39:26&quot;,&quot;Owner&quot;:{&quot;Name&quot;:&quot;E1 150460076&quot;,&quot;ImageUrl&quot;:&quot;/i/userplaceholder&quot;,&quot;Initials&quot;:&quot;E 1&quot;,&quot;Managing&quot;:null,&quot;CreateTime&quot;:&quot;2017-09-05T08:39:24&quot;,&quot;Id&quot;:9,&quot;Type&quot;:&quot;AngularUser&quot;,&quot;Key&quot;:&quot;AngularUser_9&quot;,&quot;CreateOnly&quot;:false,&quot;Hide&quot;:false,&quot;_ExtraProperties&quot;:null},&quot;CompleteTime&quot;:null,&quot;CreateTime&quot;:&quot;2017-09-05T08:39:26&quot;,&quot;Complete&quot;:false [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string TodoApiTests_v0_TestGetMineTodos_list {
+            get {
+                return ResourceManager.GetString("TodoApiTests_v0_TestGetMineTodos_list", resourceCulture);
             }
         }
         

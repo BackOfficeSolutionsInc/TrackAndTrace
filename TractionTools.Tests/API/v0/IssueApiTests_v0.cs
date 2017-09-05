@@ -131,7 +131,7 @@ namespace TractionTools.Tests.API.v0 {
             // use GetUserIssues method instead of GetVisibleIssuesForUser method
             IEnumerable<AngularIssue> _angularIssueList = l10.GetRecurrenceIssues(_recurrence.Id);
             
-            //CompareModelProperties(APIResult.IssueApiTests_v0_TestGetIssue, _angularIssueList);
+            CompareModelProperties(APIResult.IssueApiTests_v0_TestGetRecurrenceIssues, _angularIssueList);
 
             Assert.AreEqual(2, _angularIssueList.Count());
         }

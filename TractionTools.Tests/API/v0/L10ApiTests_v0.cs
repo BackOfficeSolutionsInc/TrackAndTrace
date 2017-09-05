@@ -317,7 +317,8 @@ namespace TractionTools.Tests.API.v0 {
             await L10.AddAttendee(recurrenceId, c.E1.Id);
 			
 			var getlist = L10.GetL10List();
-			Assert.AreEqual(1, getlist.Count());
+            CompareModelProperties(APIResult.L10ApiTests_v0_TestGetList, getlist);
+            Assert.AreEqual(1, getlist.Count());
 		}
 
 

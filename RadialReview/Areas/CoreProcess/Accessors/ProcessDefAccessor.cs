@@ -512,12 +512,12 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                 using (var tx = s.BeginTransaction()) {
                     var perms = PermissionsUtility.Create(s, caller);
 
-                    foreach (var item in candidateGroupIds) {
-                        perms.CanViewTasksForCandidateGroup(item);
-                    }
+					foreach (var item in candidateGroupIds) {
+						perms.CanViewTasksForCandidateGroup(item);
+					}
 
-                    //var candidateGroups = String.Join(",", candidateGroupIds.Select(x => "rgm_" + x));
-                    CommClass comClass = new CommClass();
+					//var candidateGroups = String.Join(",", candidateGroupIds.Select(x => "rgm_" + x));
+					CommClass comClass = new CommClass();
                     var getUsertaskList = await comClass.GetTaskByCandidateGroups(candidateGroupIds, unassigned: unassigned);
 
                     foreach (var item in getUsertaskList) {
@@ -600,6 +600,8 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
             List<TaskViewModel> taskList = new List<TaskViewModel>();
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
+
+					// Need to discuss this permission required or not?
                     PermissionsUtility.Create(s, caller).CanViewTasksForCandidateGroup(userId);
 
                     string _userId = "u_" + userId;

@@ -91,7 +91,7 @@ namespace TractionTools.Tests.Api {
             var addMember = TeamAccessor.AddMember(c.Manager, addTeam.Id, c.E1.Id);
 
             var getTeamMember = teamController.GetTeamMembers(addTeam.Id);
-
+            CompareModelProperties(APIResult.TeamsApiTests_v0_TestGetTeamMember, getTeamMember);
             Assert.AreEqual(2, getTeamMember.Count());
             
             Throws<PermissionsException>(() => TeamAccessor.AddMember(c.E1, addTeam.Id, c.E2.Id));
