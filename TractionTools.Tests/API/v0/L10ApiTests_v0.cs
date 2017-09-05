@@ -105,7 +105,7 @@ namespace TractionTools.Tests.API.v0 {
 				OrganizationId = c.Org.Organization.Id
 			};
 
-			var measurable = AddMeasurableVm.CreateNewMeasurable(recurrenceId, m1, true);
+			var measurable = AddMeasurableVm.CreateMeasurableViewModel(recurrenceId, m1, true);
 			MockHttpContext();
 			await L10Accessor.CreateMeasurable(c.E1, recurrenceId, measurable);
 			//await L10.AttachMeasurableL10(recurrenceId, measurable.Measurables.FirstOrDefault().Id);
@@ -313,15 +313,9 @@ namespace TractionTools.Tests.API.v0 {
 
 			L10.MockUser(c.E1);
 			var recurrenceId = await L10.CreateL10("Test L10");
-			var m1 = new MeasurableModel() {
-				AccountableUserId = c.E1.Id,
-				AdminUserId = c.E1.Id,
-				Title = "Meas1",
-				OrganizationId = c.Org.Organization.Id
-			};
-			MockHttpContext();
-			var measurable = AddMeasurableVm.CreateNewMeasurable(recurrenceId, m1, true);
-			//await L10Accessor.CreateMeasurable(c.E1, recurrenceId, measurable);
+
+            await L10.AddAttendee(recurrenceId, c.E1.Id);
+			
 			var getlist = L10.GetL10List();
 			Assert.AreEqual(1, getlist.Count());
 		}

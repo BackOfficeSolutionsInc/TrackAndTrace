@@ -38,6 +38,9 @@ namespace TractionTools.Tests.Api {
                 OrganizationId = c.E1.Organization.Id,
                 ForUserId = c.E1.Id,
             };
+
+            MockHttpContext();
+
             await L10Accessor.CreateRock(c.E1, _recurrence.Id, AddRockVm.CreateRock(_recurrence.Id, rock, true));
 
             var getRocks = RockAccessor.GetRocks(c.E1, c.E1.Id);

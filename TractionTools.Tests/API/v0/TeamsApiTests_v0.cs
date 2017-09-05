@@ -21,6 +21,7 @@ using static RadialReview.Controllers.L10Controller;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Angular.Accountability;
 using TractionTools.Tests.Properties;
+using RadialReview.Exceptions;
 
 namespace TractionTools.Tests.Api {
     [TestClass]
@@ -80,23 +81,24 @@ namespace TractionTools.Tests.Api {
         public async Task TestGetTeamMember() {
             var c = await Ctx.Build();
             TeamsController teamController = new TeamsController();
-            teamController.MockUser(c.E1);
+            teamController.MockUser(c.Manager);
 
             var name = "TestTeam";
 
             var addTeam = teamController.AddTeam(name);
 
-            var addMember = TeamAccessor.AddMember(c.E1, addTeam.Id, c.E1.Id);
+            MockHttpContext();
+            var addMember = TeamAccessor.AddMember(c.Manager, addTeam.Id, c.E1.Id);
 
             var getTeamMember = teamController.GetTeamMembers(addTeam.Id);
 
-            Assert.AreEqual(1, getTeamMember.Count());
-
-            var add = TeamAccessor.AddMember(c.E1, addTeam.Id, c.E2.Id);
-
-            getTeamMember = teamController.GetTeamMembers(addTeam.Id);
-            //CompareModelProperties(APIResult.TeamsApiTests_v0_TestUpdateTeam, getTeamMember);
             Assert.AreEqual(2, getTeamMember.Count());
+            
+            Throws<PermissionsException>(() => TeamAccessor.AddMember(c.E1, addTeam.Id, c.E2.Id));
+            //var add = TeamAccessor.AddMember(c.E1, addTeam.Id, c.E2.Id);
+            //getTeamMember = teamController.GetTeamMembers(addTeam.Id);
+            //CompareModelProperties(APIResult.TeamsApiTests_v0_TestUpdateTeam, getTeamMember);
+            //Assert.AreEqual(2, getTeamMember.Count());
         }
 
         [TestMethod]

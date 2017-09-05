@@ -22,6 +22,7 @@ using RadialReview.Models.Askables;
 using RadialReview.Models.Angular.Accountability;
 using RadialReview.Models.ViewModels;
 using TractionTools.Tests.Properties;
+using System.Web;
 
 namespace TractionTools.Tests.API.v0 {
 	[TestClass]
@@ -82,10 +83,22 @@ namespace TractionTools.Tests.API.v0 {
 		public async Task TestGetPosition() {
 			var c = await Ctx.Build();
 			SeatsController seatController = new SeatsController();
-			seatController.MockUser(c.E1);
-			//var getPosition = AccountabilityAccessor.GetNodeById(c.E1, c.Org.MiddleNode.Id);
+			seatController.MockUser(c.Manager);
+            
+            RadialReview.Api.V0.PositionController positionController = new RadialReview.Api.V0.PositionController();
+            positionController.MockUser(c.E1);
+            var createPosition = positionController.CreatePosition("TestPosition");
+
+            Throws<HttpException>(() => seatController.GetPosition(c.Org.MiddleNode.Id));
+            //var getPosition = seatController.GetPosition(c.Org.MiddleNode.Id);            
+            //Assert.IsNotNull(getPosition);
+
+            MockHttpContext();
+            seatController.AttachPosition(c.Org.MiddleNode.Id, createPosition.Id);
+
             var getPosition = seatController.GetPosition(c.Org.MiddleNode.Id);
             //CompareModelProperties(APIResult.SeatsApiTests_v0_TestGetSeat, getPosition);
+
             Assert.IsNotNull(getPosition);
 		}
 

@@ -50,7 +50,7 @@ namespace RadialReview.Controllers {
         public async Task<JsonResult> AddAngularMeasurable(long id)
         {
             var recurrenceId = id;
-            await L10Accessor.CreateMeasurable(GetUser(), recurrenceId, AddMeasurableVm.CreateNewMeasurable(recurrenceId, new MeasurableModel() {
+            await L10Accessor.CreateMeasurable(GetUser(), recurrenceId, AddMeasurableVm.CreateMeasurableViewModel(recurrenceId, new MeasurableModel() {
                 OrganizationId = GetUser().Organization.Id,
                 AdminUserId = GetUser().Id,
                 AccountableUserId = GetUser().Id,
