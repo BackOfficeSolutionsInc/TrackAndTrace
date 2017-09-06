@@ -2,6 +2,7 @@
 using Amazon;
 using Amazon.SQS;
 using Amazon.SQS.Model;
+using RadialReview.Areas.CoreProcess.Models;
 using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,23 @@ namespace AmazonSDK {
 			amazonSQSClient = new AmazonSQSClient(Config.GetAppSetting("SQS_AccessKey"), Config.GetAppSetting("SQS_SecretKey"), RegionEndpoint.USWest2);
 		}
 
+		public async Task<bool> SendMessage(MessageQueueModel model) {
+			bool result = false;
+			try {
+				//string msg = "This is test message new.";
+				string message = Newtonsoft.Json.JsonConvert.SerializeObject(model);
+				SendMessageRequest messageRequest = new SendMessageRequest(queueURL, message);
+				AmazonSQSClient amazonSQSClient = new AmazonSQSClient(Config.GetAppSetting("SQS_AccessKey"), Config.GetAppSetting("SQS_SecretKey"), RegionEndpoint.USWest2);
+				SendMessageResponse sendMessageResponse = await amazonSQSClient.SendMessageAsync(messageRequest);
+				if (sendMessageResponse.HttpStatusCode == System.Net.HttpStatusCode.OK) {
+					result = true;
+				}
+			} catch (Exception ex) {
+				throw ex;
+			}
+			return result;
+		}
+
 		public async Task<List<MessageModel>> ReceiveMessage() {
 			string msg = string.Empty;
 			try {
@@ -29,7 +47,7 @@ namespace AmazonSDK {
 				throw ex;
 			}
 		}
-		
+
 
 		public async Task<bool> DeleteMessage(string receiptHandler) {
 			bool result = false;
