@@ -15,6 +15,7 @@ using System.Linq;
 using System.Web;
 using NHibernate.Criterion;
 using RadialReview.Models.Reviews;
+using RadialReview.SessionExtension;
 
 namespace RadialReview.Accessors
 {
@@ -265,8 +266,9 @@ namespace RadialReview.Accessors
 
             var output = new List<IEnumerable<long>>();
 
-            foreach (var rgm in rgms)
+            foreach (var _rgm in rgms)
             {
+                var rgm = _rgm.Deproxy();
                 if (rgm.GetType() == typeof(UserOrganizationModel))
                 {
                     perm.ViewUserOrganization(rgm.Id, false);

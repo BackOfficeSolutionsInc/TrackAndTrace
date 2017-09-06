@@ -9,6 +9,7 @@ using RadialReview;
 using RadialReview.Areas.People.Models.Survey;
 using System.Diagnostics;
 using NHibernate.Proxy;
+using RadialReview.SessionExtension;
 
 namespace RadialReview {
     [DebuggerDisplay("ForModel: {FriendlyType()}[{ModelId}]")]
@@ -60,7 +61,7 @@ namespace RadialReview {
             };
         }
         public static string GetModelType(ILongIdentifiable creator) {
-            return HibernateSession.GetDatabaseSessionFactory().GetClassMetadata(Deproxy(creator).GetType()).EntityName;
+            return HibernateSession.GetDatabaseSessionFactory().GetClassMetadata(creator.Deproxy().GetType()).EntityName;
         }
 
         // override object.Equals
@@ -74,16 +75,7 @@ namespace RadialReview {
         // override object.GetHashCode
         public override int GetHashCode() {
             return HashUtil.Merge(ModelId.GetHashCode(), ModelType.GetHashCode());
-        }
-
-        private static T Deproxy<T>(T model) {
-            if (model is INHibernateProxy) {
-                var lazyInitialiser = ((INHibernateProxy)model).HibernateLazyInitializer;
-                model = (T)lazyInitialiser.GetImplementation();
-            }
-            return model;
-        }
-
+        }       
 
         public static string GetModelType<T>() where T : ILongIdentifiable {
 #pragma warning disable CS0618 // Type or member is obsolete
