@@ -66,7 +66,27 @@ namespace RadialReview.Models.Angular.VTO {
 		}
 
 		public long? L10Recurrence { get; set; }
-	}
+
+        public void ReplaceVision(VtoModel vto) {
+            // Id = vto.Id;
+            //L10Recurrence = vto.L10Recurrence,
+            //CreateTime = vto.CreateTime,
+            //CopiedFrom = vto.CopiedFrom,
+            TenYearTarget = vto.TenYearTarget;
+            //Name = vto.Name, //AngularVtoString.Create(vto.Name),
+            Values = AngularCompanyValue.Create(vto._Values);
+            CoreFocus = AngularCoreFocus.Create(vto.CoreFocus);
+            Strategy = AngularStrategy.Create(vto.MarketingStrategy);
+            //OneYearPlan = AngularOneYearPlan.Create(vto.OneYearPlan);
+            //QuarterlyRocks = AngularQuarterlyRocks.Create(vto.QuarterlyRocks),
+            ThreeYearPicture = AngularThreeYearPicture.Create(vto.ThreeYearPicture);
+            //Issues = AngularVtoString.Create(vto._Issues),
+            TenYearTargetTitle = vto.TenYearTargetTitle ?? "10-YEAR TARGET™";
+            CoreValueTitle = vto.CoreValueTitle ?? "CORE VALUES";
+            //IssuesListTitle = vto.IssuesListTitle ?? "ISSUES LIST",
+            IncludeVision = true;
+        }
+    }
 	#region DataTypes
 	//public class AngularVtoIssue : AngularVtoString {
 	//	public string Owner { get; set; }

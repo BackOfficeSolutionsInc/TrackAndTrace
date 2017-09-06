@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Models.Angular.DataType;
 using RadialReview.Models.Angular.Rocks;
+using static RadialReview.Models.L10.L10Recurrence;
 
 namespace RadialReview.Models.Angular.Meeting
 {
@@ -32,6 +33,8 @@ namespace RadialReview.Models.Angular.Meeting
 			HeadlineType = recurrence.HeadlineType;
 			_Recurrence = AngularIgnore.Create(recurrence);
 
+            if (recurrence._Pages!=null)
+                Pages = recurrence._Pages.Select(x => new AngularRecurrencePage(x));
 
 			ShowSegue		 =true;
 			ShowScorecard	 =true;
@@ -65,28 +68,64 @@ namespace RadialReview.Models.Angular.Meeting
 		public PeopleHeadlineType? HeadlineType { get; set; }
         public long? VtoId { get; set; }
 
-		public bool? ShowSegue			{ get; set; }
-		public bool? ShowScorecard		{ get; set; }
-		public bool? ShowRockReview		{ get; set; }
-		public bool? ShowHeadlines		{ get; set; }
-		public bool? ShowTodos			{ get; set; }
-		public bool? ShowIDS			{ get; set; }
-		public bool? ShowConclude		{ get; set; }
+        public IEnumerable<AngularRecurrencePage> Pages { get; set; }
 
-		public decimal? SegueMinutes { get; set; }
-		public decimal? ScorecardMinutes { get; set; }
-		public decimal? RockReviewMinutes { get; set; }
-		public decimal? HeadlinesMinutes { get; set; }
-		public decimal? TodosMinutes { get; set; }
-		public decimal? IDSMinutes { get; set; }
-		public decimal? ConcludeMinutes { get; set; }
+        #region Obsolete
+        [Obsolete("Avoid Using")]
+        public bool? ShowSegue			{ get; set; }
+        [Obsolete("Avoid Using")]
+        public bool? ShowScorecard		{ get; set; }
+        [Obsolete("Avoid Using")]
+        public bool? ShowRockReview		{ get; set; }
+        [Obsolete("Avoid Using")]
+        public bool? ShowHeadlines		{ get; set; }
+        [Obsolete("Avoid Using")]
+        public bool? ShowTodos			{ get; set; }
+        [Obsolete("Avoid Using")]
+        public bool? ShowIDS			{ get; set; }
+        [Obsolete("Avoid Using")]
+        public bool? ShowConclude		{ get; set; }
 
-		public MeetingType? MeetingType { get; set; }
+        [Obsolete("Avoid Using")]
+        public decimal? SegueMinutes { get; set; }
+        [Obsolete("Avoid Using")]
+        public decimal? ScorecardMinutes { get; set; }
+        [Obsolete("Avoid Using")]
+        public decimal? RockReviewMinutes { get; set; }
+        [Obsolete("Avoid Using")]
+        public decimal? HeadlinesMinutes { get; set; }
+        [Obsolete("Avoid Using")]
+        public decimal? TodosMinutes { get; set; }
+        [Obsolete("Avoid Using")]
+        public decimal? IDSMinutes { get; set; }
+        [Obsolete("Avoid Using")]
+        public decimal? ConcludeMinutes { get; set; }
+
+        #endregion
+
+        public MeetingType? MeetingType { get; set; }
 
 		public AngularIgnore<L10Recurrence> _Recurrence { get; set; }
         public string Focus { get; set; }
 		public List<AngularString> LoadUrls { get; set; }
 	}
+
+    public class AngularRecurrencePage {
+
+        public AngularRecurrencePage() {
+        }
+
+        public AngularRecurrencePage(L10Recurrence_Page x) {
+            Minutes = x.Minutes;
+            Title = x.Title;
+            Type = x.PageType;
+        }
+
+        public decimal? Minutes { get; set; }
+        public String Title { get; set; }
+        public L10PageType? Type { get; set;  }
+
+    }
 
     public class AngularBasics : BaseAngular {
         public AngularBasics(long recurrenceId): base(recurrenceId){

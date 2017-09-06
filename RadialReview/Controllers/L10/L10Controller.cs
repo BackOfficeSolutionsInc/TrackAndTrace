@@ -192,6 +192,8 @@ namespace RadialReview.Controllers
             _PermissionsAccessor.Permitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId));
 
             var model=AddExtras(recurrenceId, new L10EditVM(){Return = @return});
+            ViewBag.VtoSharable = L10Accessor.IsVtoSharable(GetUser(), id);
+
             return View("Edit", model);
         }
 

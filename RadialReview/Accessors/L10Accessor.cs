@@ -179,6 +179,32 @@ namespace RadialReview.Accessors {
                 }
             }
         }
+        public class VtoSharable {
+            public bool CanShareVto { get; set; }
+            public string ErrorMessage { get; set; }
+        }
+        public static VtoSharable IsVtoSharable(UserOrganizationModel caller,long? recurrenceId=null) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var orgId = caller.Organization.Id;
+                    var anySharable = s.QueryOver<L10Recurrence>()
+                                        .Where(x => x.DeleteTime == null && x.OrganizationId == orgId && x.Id!=recurrenceId)
+                                        .Select(x => x.ShareVto, x=>x.Name, x=>x.Id)
+                                        .List<object[]>()
+                                        .Select(x=>new {
+                                            Shared = ((bool?)x[0])??false,
+                                            Name = (string)x[1],
+                                            Id = (long)x[2]
+                                        }).ToList();
+                    var onlyShared = anySharable.FirstOrDefault(x => x.Shared);
+                    var output = new VtoSharable() {
+                        CanShareVto = onlyShared == null,
+                        ErrorMessage = onlyShared.NotNull(x=>"You can only share one V/TO. Unshare the V/TO associated with <a href='/l10/edit/"+x.Id+"'>"+x.Name+"</a>.")
+                    };
+                    return output;
+                }
+            }
+        }
 
         //public static Task<bool> ReorderL10Recurrence(UserOrganizationModel caller,long userId, long recurrenceId, int oldOrder, int newOrder) {
 
@@ -190,7 +216,7 @@ namespace RadialReview.Accessors {
         //            var existingl10s = GetVisibleL10Meetings_Tiny(s, perms, userId, false, false);
         //            var res = s.QueryOver<L10RecurrenceOrder>().Where(x => x.UserId == userId).List().ToList();
         //            var selected = res.FirstOrDefault(x => x.RecurrenceId == recurrenceId);
-                    
+
 
         //            Reordering.Create(res, pageId, found.L10RecurrenceId, oldOrder, newOrder, x => x._Ordering, x => x.Id)
         //                      .ApplyReorder(s);
@@ -4796,7 +4822,10 @@ namespace RadialReview.Accessors {
                     }).ToList();
 
                     var scorecardRange = range;
-                    var lookupRange = new DateRange(range.StartTime,range.EndTime);
+                    DateRange lookupRange = null;
+                    if (range != null) {
+                        lookupRange = new DateRange(range.StartTime, range.EndTime);
+                    }
 
                     if (fullScorecard) {
                         var period = caller.GetTimeSettings().Period;

@@ -41,8 +41,8 @@
 		var due = new Date(new Date(duedate).toUTCString().substr(0, 16));
 		//var checked = $(rockRow).find(".todo-checkbox").is(":checked");
 
-		var detailsContents = $("<div class='component'></div>");
-		var milestoneDetailsContents = $("<div class='component'></div>");
+		var detailsContents = $("<div class='component detail-component'></div>");
+		var milestoneDetailsContents = $("<div class='component milestone-component'></div>");
 
 		$(detailsContents).append("<span class='expandContract btn-group pull-right'></span>");
 		//$(detailsContents).append("<div class='createTime'>" + dateFormatter(new Date(createtime)) + "</div>");
@@ -231,7 +231,13 @@ function fixRocksDetailsBoxSize() {
 		try {
 			footerH = $(".footer-bar .footer-bar-container:not(.hidden)").last().offset().top;
 		} catch (e) { }
-		$(".details.rock-details").height(footerH - 20 - 140 - pos.top - (msHeight + 30) - 40);
+
+		var rockDetailsHeight = Math.max(116, footerH - 20 - 140 - pos.top - (msHeight + 30) - 40);
+		$(".details.rock-details").height(rockDetailsHeight);
+        
+		var detailHeight = $(".detail-component").height();
+
+		$(".milestone-table").css("max-height", wh - detailHeight - 160 - 72 - (wh-footerH));
 	}
 }
 
@@ -346,7 +352,7 @@ window.milestoneAccessor = new MilestoneAccessor(function () { return window.mil
 						var statusCell = $("<td class='milestone-status-cell'></td>");
 						statusCell.append(statusBox);
 						row.append(statusCell);
-						row.append($("<td><div class='milestone-name'>" + mm.name + "</div></td>"));
+						row.append($("<td class='milestone-name-cell'><div class='milestone-name'>" + mm.name + "</div></td>"));
 
 						var dateCell = $("<td class='milestone-duedate-cell'><div class='milestone-duedate'></div></td>");
 						if (mm.dueDate < now && mm.status != "Done") {

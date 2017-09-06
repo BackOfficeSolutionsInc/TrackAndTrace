@@ -108,8 +108,9 @@ namespace RadialReview.Models.L10 {
 		public virtual long CreatedById { get; set; }
 		public virtual List<long> _WhoCanEdit { get; set; }
 		public virtual string VideoId { get; set; }
-		public virtual long VtoId { get; set; }
-		public virtual string OrderIssueBy { get; set; }
+        public virtual long VtoId { get; set; }
+        public virtual bool ShareVto { get; set; }
+        public virtual string OrderIssueBy { get; set; }
 		public virtual bool EnableTranscription { get; set; }
 		public virtual bool PreventEditingUnownedMeasurables { get; set; }
 
@@ -195,8 +196,9 @@ namespace RadialReview.Models.L10 {
 				Map(x => x.ConclusionMinutes);
 				Map(x => x.DefaultTodoOwner);
 				Map(x => x.DefaultIssueOwner);
-				Map(x => x.ReverseScorecard);
-				Map(x => x.IncludeIndividualTodos);
+                Map(x => x.ReverseScorecard);
+                Map(x => x.ShareVto);
+                Map(x => x.IncludeIndividualTodos);
 				Map(x => x.IncludeAggregateTodoCompletion);
 				Map(x => x.IncludeAggregateTodoCompletionOnPrintout);
 				Map(x => x.TeamType).CustomType<L10TeamType>();

@@ -876,7 +876,7 @@ namespace RadialReview.Controllers {
 
 			//var server = NetworkAccessor.GetPublicIP();//Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
 			var server = Amazon.EC2.Util.EC2Metadata.InstanceId.ToString();
-			return Content(version.ToString() + " <br/> " + date.ToString("U") + " <br/><br/> " + server);
+			return Content(version.ToString() + " <br/> " + date.ToString("U") + " <br/><br/> " + server + " <br/> Server Time:" + DateTime.UtcNow.ToString("U") +" ["+ DateTime.UtcNow.Ticks+"]");
 		}
 
 

@@ -568,7 +568,7 @@ namespace RadialReview.Controllers {
 					filterContext.HttpContext.Response.Clear();
 				} else if (filterContext.Exception is HttpAntiForgeryException) {
 					log.Info("AntiForgery: [" + Request.Url.PathAndQuery + "] --> []");
-					filterContext.Result = RedirectToAction("Login", "Account", new { area = "", message = filterContext.Exception.Message });
+					filterContext.Result = RedirectToAction("Login", "Account", new { area = "", message = "Could not find your session. Please try again." /*filterContext.Exception.Message*/ });
 					filterContext.ExceptionHandled = true;
 					filterContext.HttpContext.Response.Clear();
 				} else {

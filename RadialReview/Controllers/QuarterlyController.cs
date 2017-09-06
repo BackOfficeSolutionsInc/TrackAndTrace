@@ -51,9 +51,11 @@ namespace RadialReview.Controllers {
 				model["rocks"].ToBooleanJS(),
 				model["vto"].ToBooleanJS(),
 				model["l10"].ToBooleanJS(),
-				model["acc"].ToBooleanJS()
-			// root:root
-			);
+                model["acc"].ToBooleanJS(),
+                model["print"].ToBooleanJS(),
+                model["quarterly"].ToBooleanJS()
+            // root:root
+            );
 		}
 
 		[Access(AccessLevel.UserOrganization)]
@@ -64,7 +66,14 @@ namespace RadialReview.Controllers {
 
 			PdfAccessor.AddVTO(doc, vto, GetUser().GetOrganizationSettings().GetDateFormat());
 			var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
-			return Pdf(doc, now + "_" + vto.Name + "_VTO.pdf", true);
+
+            var merger = new DocumentMerger();
+            merger.AddDoc(doc);
+            var merged  =merger.Flatten( now + "_" + vto.Name + "_VTO.pdf", false, true, GetUser().Organization.Settings.GetDateFormat());
+
+
+
+            return Pdf(merged, now + "_" + vto.Name + "_VTO.pdf", true);
 		}
 		[Access(AccessLevel.UserOrganization)]
 		[HttpGet]

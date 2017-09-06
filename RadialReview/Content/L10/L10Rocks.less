@@ -123,7 +123,7 @@
 		border: 1px solid rgb(208, 208, 208);
 		margin: 5px;
 	}
-
+    
 	.rock-row {
 		.rock-title {
 			cursor: pointer;
@@ -367,8 +367,10 @@
 		min-height: 40px;
 		width: 100%;
 		margin-left: 8px;
-
-		&:empty:after {
+        display:inline-block;
+        overflow-y: auto;
+        
+        &:empty:after {
 			content: "No milestones.";
 			padding: 10px;
 			color: #ddd;
@@ -386,6 +388,10 @@
 			width: 20px;
 		}
 
+        .milestone-name-cell{
+            width:60%;
+        }
+
 		.milestone-name {
 			color: #666;
 			cursor: pointer;
@@ -397,6 +403,7 @@
 
 		.milestone-duedate-cell {
 			width: 100px;
+			min-width: 100px;
 
 			input {
 				text-align: right;
