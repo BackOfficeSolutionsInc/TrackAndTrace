@@ -269,16 +269,17 @@ namespace RadialReview.Accessors {
         }
 
 
-        [Obsolete("Method is broken",true)]
-		public static List<IssueModel.IssueModel_Recurrence> GetUserIssues(UserOrganizationModel caller, long userId, long recurrenceId, bool excludeCompleteDuringMeeting = false, DateRange range = null) {
+       // [Obsolete("Method is broken",true)]
+		public static List<IssueModel.IssueModel_Recurrence> GetRecurrenceIssuesForUser(UserOrganizationModel caller, long userId, long recurrenceId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-                    throw new NotImplementedException("query is incorrect");
+                   // throw new NotImplementedException("query is incorrect");
                     PermissionsUtility.Create(s, caller).ViewRecurrenceIssuesForUser(userId, recurrenceId);
 
                     return s.QueryOver<IssueModel.IssueModel_Recurrence>()
                         .Where(x => x.DeleteTime == null
                         && x.Recurrence.Id == recurrenceId
+                        && x.CloseTime == null
                         && x.Owner.Id == userId).Fetch(x => x.Issue).Eager.List().ToList();
                 }
             }

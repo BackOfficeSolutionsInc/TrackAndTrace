@@ -308,8 +308,8 @@ var myPing = setInterval(reping, pingTimeout - 5000);
 
 function removeOnTimeout(connectionId) {
 	return function () {
-		console.warn("User timed out: " + connectionId);
-		userExitMeeting(connectionId);
+		console.warn("User timed out: " + connectionId +" (not removing)");
+		//userExitMeeting(connectionId);
 	};
 }
 

@@ -1154,6 +1154,7 @@
     <Content Include="Content\People\PeopleAnalyzer.less" />
     <Content Include="Content\People\rzslider.less" />
     <Content Include="Content\People\MaterialRadio.less" />
+    <Content Include="project.json" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

@@ -103,7 +103,7 @@ namespace RadialReview.Api.V0 {
 
         [Route("L10/{recurrenceId}/headline")]
         [HttpPost]
-        public async Task<AngularHeadline> CreateHeadlineL10(long recurrenceId, [FromBody]string name = null, [FromBody]long? OwnerId = null, [FromBody]string Details = null) {
+        public async Task<AngularHeadline> CreateHeadlineL10(long recurrenceId, [FromBody]string name , [FromBody]long? OwnerId = null, [FromBody]string Details = null) {
             OwnerId = OwnerId ?? GetUser().Id;
 
             var headline = new PeopleHeadline() {
@@ -152,22 +152,23 @@ namespace RadialReview.Api.V0 {
         }
 
 
-        [Route("l10/{id}/issue")]
+        [Route("l10/{recurrenceId}/issue")]
         [HttpGet]
-        public IEnumerable<AngularIssue> GetRecurrenceIssues(long id) {
-            return L10Accessor.GetIssuesForRecurrence(GetUser(), id, false).Select(x => new AngularIssue(x));
+        public IEnumerable<AngularIssue> GetRecurrenceIssues(long recurrenceId) {
+            return L10Accessor.GetIssuesForRecurrence(GetUser(), recurrenceId, false).Select(x => new AngularIssue(x));
         }
 
-        [Route("l10/{id}/user/{userId}/issue")]
+        [Route("l10/{recurrenceId}/user/{userId}/issue")]
         [HttpGet]
-        public IEnumerable<AngularIssue> GetUserIssues(long userId, long id) {
-            return IssuesAccessor.GetUserIssues(GetUser(), userId, id).Select(x => new AngularIssue(x));
+        public IEnumerable<AngularIssue> GetUserIssues(long userId, long recurrenceId) {
+            return IssuesAccessor.GetRecurrenceIssuesForUser(GetUser(), userId, recurrenceId).Select(x => new AngularIssue(x));
         }
 
         [Route("l10/{recurrenceId}/todo")]
         [HttpPost]
-        public async Task<bool> CreateTodo(long recurrenceId, [FromBody]string message, [FromBody]DateTime dueDate) {
-            return await TodoAccessor.CreateTodo(GetUser(), recurrenceId, new TodoModel() { Message = message, DueDate = dueDate });
+        public async Task<bool> CreateTodo(long recurrenceId, [FromBody]string message, [FromBody]DateTime? dueDate=null) {
+            dueDate = dueDate ?? DateTime.UtcNow.AddDays(7);
+            return await TodoAccessor.CreateTodo(GetUser(), recurrenceId, new TodoModel() { Message = message, DueDate = dueDate.Value });
         }
     }
 }

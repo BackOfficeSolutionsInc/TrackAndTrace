@@ -30,6 +30,7 @@ using System.IO;
 using System.Management;
 using System.Runtime.InteropServices;
 using System.Threading;
+using RadialReview.Exceptions;
 
 namespace TractionTools.Tests.Api {
     [TestClass]

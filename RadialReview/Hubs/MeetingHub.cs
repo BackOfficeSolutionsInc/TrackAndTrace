@@ -343,7 +343,13 @@ namespace RadialReview.Hubs
 			}
 		}
 
-		public override Task OnDisconnected(bool stopCalled)
+        public override Task OnConnected() {
+            return base.OnConnected();
+            //var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+            //meetingHub.userEnterMeeting(connection);
+        }
+
+        public override Task OnDisconnected(bool stopCalled)
 		{
 			//L10Accessor.UpdatePage(GetUser(),GetUser().Id,);
 			// Hang up any calls the user is in
