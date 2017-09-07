@@ -18,7 +18,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers
 {
     public class HomeController : BaseController
     {
-        [Access(AccessLevel.Any)]
+        [Access(AccessLevel.Radial)]
         // GET: CoreProcess/Home
         public async Task<ActionResult> Index()
         {
@@ -34,6 +34,8 @@ namespace RadialReview.Areas.CoreProcess.Controllers
                 tskView.description = "DescTest1";
                 tskView.name = "NameTest1";
                 tskView.Id = "Test1";
+
+                MessageQueueModel.Create(tskView, GetUser(), null);
 
                 MessageQueueModel t1 = new MessageQueueModel();
                 t1.Identifier = Guid.NewGuid().ToString();

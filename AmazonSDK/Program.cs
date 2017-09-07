@@ -184,6 +184,12 @@ namespace AmazonSDK {
 			foreach (var item in getMessages) {
 				var model = Newtonsoft.Json.JsonConvert.DeserializeObject<MessageQueueModel>(item.Body);
 				model.ReceiptHandle = item.ReceiptHandle;
+
+                //switch (model.ModelType) {
+
+                //    default:
+                //}                
+
 				list.Add(model);
 			}
 			return list;
