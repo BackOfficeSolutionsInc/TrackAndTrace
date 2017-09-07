@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Newtonsoft.Json.Linq;
 using NHibernate;
 using RadialReview;
 using RadialReview.Accessors;
@@ -417,8 +418,63 @@ namespace TractionTools.Tests.TestUtils {
 		}
 		#endregion
 	}
+        public void CompareModelProperties(string resourceVal, object actualObj) {
+            string actualVal = Newtonsoft.Json.JsonConvert.SerializeObject(actualObj);
 
-    public static class TestObjectExtensions {
+            if (String.IsNullOrEmpty(resourceVal)) {
+                Console.WriteLine(actualVal);
+                Assert.Inconclusive();
+            }
+
+            try {
+
+                var resurceDic = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(resourceVal);
+                var actualDic = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(actualVal);
+                CompareModelProperties(resurceDic, actualDic);
+
+            } catch (Newtonsoft.Json.JsonSerializationException ex) {
+                var resurceDic = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(resourceVal);
+                var actualDic = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(actualVal);
+
+                Assert.AreEqual(resurceDic.Count, actualDic.Count);
+
+                for (int i = 0; i < resurceDic.Count; i++) {
+                    CompareModelProperties(resurceDic[i], actualDic[i]);
+                }
+            }
+        }
+
+        private static void CompareModelProperties(Dictionary<string, object> resurceDic, Dictionary<string, object> actualDic) {
+            var result = SetUtility.AddRemove(resurceDic.Keys, actualDic.Keys);
+            Assert.IsTrue(result.AreSame());
+
+            foreach (var item in resurceDic) {
+                if (item.Value is JObject) {
+                    var newVal = ((JObject)item.Value).ToObject<Dictionary<string, object>>();
+                    var actVal = ((JObject)actualDic[item.Key]).ToObject<Dictionary<string, object>>();
+
+                    CompareModelProperties(newVal, actVal);
+
+                } else if (item.Value is JArray) { // check is json array
+                    var newVal = ((JArray)item.Value).ToObject<List<Dictionary<string, object>>>();
+                    var actVal = ((JArray)actualDic[item.Key]).ToObject<List<Dictionary<string, object>>>();
+
+                    Assert.AreEqual(newVal.Count, actVal.Count);
+
+                    for (int i = 0; i < newVal.Count; i++) {
+                        CompareModelProperties(newVal[i], actVal[i]);
+                    }
+                } else if (item.Value is string || item.Value is null || (item.Value.GetType() == typeof(DateTime))
+                    || item.Value is long || item.Value is bool || (item.Value.GetType() == typeof(double))) {
+                    // we did this intentionally
+                    // not required for test this case
+                } else {
+                    throw new NotImplementedException();
+                }
+            }
+        }
+    }
+ public static class TestObjectExtensions {
         public class Getter<T> {
 
             private PropertyInfo prop;
@@ -514,4 +570,5 @@ namespace TractionTools.Tests.TestUtils {
         }
 
     }
+}
 }

@@ -18,6 +18,7 @@ using RadialReview.Models.Angular.Roles;
 using RadialReview.Models.Angular.Positions;
 using RadialReview.Models.Angular.Accountability;
 using System.Threading.Tasks;
+using RadialReview.Models.Angular.Team;
 
 namespace RadialReview.Api.V0
 {
@@ -69,7 +70,7 @@ namespace RadialReview.Api.V0
 
         //--
         [Route("users/")]
-        [HttpPut]
+        [HttpPost]
         public async Task<AngularUser> CreateUser([FromBody]string firstName, [FromBody]string lastName, [FromBody]string email, [FromBody]long? managerNodeId = null, [FromBody]bool? SendEmail = null)
         {
             //var outParam = new UserOrganizationModel();
@@ -144,19 +145,19 @@ namespace RadialReview.Api.V0
         //[GET] /user/mine/teams
         [Route("users/mine/teams")]
         [HttpGet]
-        public IEnumerable<TeamDurationModel> GetMineTeam()
+        public IEnumerable<AngularTeam> GetMineTeam()
         {
-		    throw new NotImplementedException("Obfuscate the TeamDurationModel");
-            return TeamAccessor.GetUsersTeams(GetUser(), GetUser().Id);
+		    //throw new NotImplementedException("Obfuscate the TeamDurationModel");
+            return TeamAccessor.GetUsersTeams(GetUser(), GetUser().Id).Select(x=> new AngularTeam(x.Team));
         }
 
         //[GET] /user/{userId}/teams
         [Route("users/{userId}/teams")]
         [HttpGet]
-        public IEnumerable<TeamDurationModel> GetUserTeams(long userId)
+        public IEnumerable<AngularTeam> GetUserTeams(long userId)
         {
-		    throw new NotImplementedException("Obfuscate the TeamDurationModel");
-            return TeamAccessor.GetUsersTeams(GetUser(), userId);
+		    //throw new NotImplementedException("Obfuscate the TeamDurationModel");
+            return TeamAccessor.GetUsersTeams(GetUser(), userId).Select(x => new AngularTeam(x.Team));
         }
     }
 }

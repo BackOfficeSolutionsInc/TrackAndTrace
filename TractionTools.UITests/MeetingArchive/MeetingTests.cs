@@ -279,7 +279,7 @@ namespace TractionTools.UITests.MeetingArchive {
 						UnitType = RadialReview.Models.Enums.UnitType.Dollar,
 					};
 					await L10Accessor.AddMeasurable(s, PermissionsUtility.Create(s, au), RealTimeUtility.Create(), recur.Id,
-						 RadialReview.Controllers.L10Controller.AddMeasurableVm.CreateNewMeasurable(recur.Id, m101));
+						 RadialReview.Controllers.L10Controller.AddMeasurableVm.CreateMeasurableViewModel(recur.Id, m101));
 					m.measurable = m101;
 				}
 			});

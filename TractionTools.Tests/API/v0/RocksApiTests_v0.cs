@@ -20,6 +20,7 @@ using RadialReview.Models.Scorecard;
 using static RadialReview.Controllers.L10Controller;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Angular.Accountability;
+using TractionTools.Tests.Properties;
 
 namespace TractionTools.Tests.Api {
     [TestClass]
@@ -31,7 +32,7 @@ namespace TractionTools.Tests.Api {
             RadialReview.Api.V0.RocksController rocksController = new RadialReview.Api.V0.RocksController();
             rocksController.MockUser(c.E1);
 
-            var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id);
+            var _recurrence =await L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id);
 
             var rock = new RockModel() {
                 OrganizationId = c.E1.Organization.Id,
@@ -46,7 +47,7 @@ namespace TractionTools.Tests.Api {
 
             var addRocksMilestones = rocksController.AddRocksMilestones(getRocks.FirstOrDefault().Id, "TestMilestone", DateTime.Now.AddDays(7));
             var getRocksMilestones = rocksController.GetRocksMilestones(getRocks.FirstOrDefault().Id);
-
+            CompareModelProperties(APIResult.RocksApiTests_v0_TestGetRocksMilestones, getRocksMilestones);
             Assert.AreEqual(1, getRocksMilestones.Count());
         }
 
@@ -58,7 +59,7 @@ namespace TractionTools.Tests.Api {
             RadialReview.Api.V0.RocksController rocksController = new RadialReview.Api.V0.RocksController();
             rocksController.MockUser(c.E1);
 
-            var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id);
+            var _recurrence =await L10Accessor.CreateBlankRecurrence(c.E1, c.E1.Organization.Id);
 
             var rock = new RockModel() {
                 OrganizationId = c.E1.Organization.Id,

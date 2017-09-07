@@ -65,7 +65,7 @@ namespace TractionTools.Tests.Utilities {
 						OrganizationId = Org.Id,
 						Title = name
 					};
-					var m = AddMeasurableVm.CreateNewMeasurable(Id, mm);
+					var m = AddMeasurableVm.CreateMeasurableViewModel(Id, mm);
 					await L10Accessor.AddMeasurable(s, perms, null, Id, m);
 					tx.Commit();
 					s.Flush();

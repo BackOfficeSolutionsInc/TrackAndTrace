@@ -14,65 +14,87 @@ using RadialReview.Api.V0;
 using static TractionTools.Tests.Permissions.BasePermissionsTest;
 using System.Threading.Tasks;
 using RadialReview.Models.Angular.Todos;
+using TractionTools.Tests.Properties;
 
 namespace TractionTools.Tests.API.v0 {
     [TestClass]
-    public class TodoApiTests_v0 : BaseTest
-    {
+    public class TodoApiTests_v0 : BaseTest {
         [TestMethod]
         [TestCategory("Api_V0")]
-        public async Task TestGetMineTodos()
-        {
+        public async Task TestGetMineTodos() {
             var c = await Ctx.Build();
 
-            var todo = new TodoModel()
             {
-                AccountableUser = c.E1,
-                Message = "Todo from Test Method",
-                TodoType = TodoType.Personal
-            };
+                var todo = new TodoModel() {
+                    AccountableUser = c.E1,
+                    Message = "Todo from Test Method",
+                    TodoType = TodoType.Personal
+                };
 
-            bool result = await TodoAccessor.CreateTodo(c.E1,-2, todo);
+                // -2 for personal TODO
+                bool result = await TodoAccessor.CreateTodo(c.E1, -2, todo);
 
-            TodoController cnt = new TodoController();
-            cnt.MockUser(c.E1);
+                TodosController cnt = new TodosController();
+                cnt.MockUser(c.E1);
 
-			await c.Org.RegisterUser(c.E1);
+                await c.Org.RegisterUser(c.E1);
 
-            var _model = cnt.GetMineTodos();
+                var _model = cnt.GetMineTodos();
+                CompareModelProperties(APIResult.TodoApiTests_v0_TestGetMineTodos, _model);
+                Assert.AreEqual(1, _model.Count());
+                Assert.AreEqual(todo.Message, _model.FirstOrDefault().Name);
+            }
 
-            Assert.AreEqual(1, _model.Count());
+            {
+                // attach meeting to TODO
+                var todo = new TodoModel() {
+                    AccountableUser = c.E1,
+                    Message = "GetMineTodo from Test Method",
+                    TodoType = TodoType.Recurrence
+                };
 
-            Assert.AreEqual(todo.Message, _model.FirstOrDefault().Name);
+                var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
 
+                todo.ForRecurrenceId = _recurrence.Id;
+                bool result = await TodoAccessor.CreateTodo(c.E1, _recurrence.Id, todo);
+
+                TodosController cnt = new TodosController();
+                cnt.MockUser(c.E1);
+
+                await c.Org.RegisterUser(c.E1);
+
+                var _model = cnt.GetMineTodos();
+                CompareModelProperties(APIResult.TodoApiTests_v0_TestGetMineTodos_list, _model);
+                Assert.AreEqual(2, _model.Count());
+                Assert.IsTrue(_model.Any(x => x.Name == todo.Message));
+
+            }
         }
 
         [TestMethod]
         [TestCategory("Api_V0")]
-        public async Task TestCreateTodo()
-        {
+        public async Task TestCreateTodo() {
             var c = await Ctx.Build();
 
-            var todo = new TodoModel()
-            {
+            var todo = new TodoModel() {
                 AccountableUser = c.E1,
                 Message = "Create Todo from Test Method",
                 TodoType = TodoType.Personal
             };
 
-            bool result = await TodoAccessor.CreateTodo(c.E1, -2, todo);
+            TodosController cnt = new TodosController();
+            cnt.MockUser(c.E1);
+            bool result = await cnt.CreateTodo(todo.Message, DateTime.Now);
 
             Assert.IsTrue(result);
         }
 
         [TestMethod]
         [TestCategory("Api_V0")]
-        public async Task TestGetTodo()
-        {
+        public async Task TestGetTodo() {
             var c = await Ctx.Build();
 
-            var todo = new TodoModel()
-            {
+            var todo = new TodoModel() {
                 AccountableUser = c.E1,
                 Message = "Todo from Test Method",
                 TodoType = TodoType.Personal
@@ -80,47 +102,45 @@ namespace TractionTools.Tests.API.v0 {
 
             bool result = await TodoAccessor.CreateTodo(c.E1, -2, todo);
 
-            TodoController cnt = new TodoController();
+            TodosController cnt = new TodosController();
             cnt.MockUser(c.E1);
 
             var _todo = cnt.Get(todo.Id);
-
+            CompareModelProperties(APIResult.TodoApiTests_v0_TestGetTodo, _todo);
             Assert.IsNotNull(_todo);
+            Assert.AreEqual(todo.Message, _todo.Name);
         }
 
         [TestMethod]
         [TestCategory("Api_V0")]
-        public async Task TestGetUserTodos()
-        {
+        public async Task TestGetUserTodos() {
             var c = await Ctx.Build();
-            var todo = new TodoModel()
-            {
+            var todo = new TodoModel() {
                 AccountableUser = c.E1,
                 Message = "GetUserTodo from Test Method",
                 TodoType = TodoType.Personal
             };
             bool result = await TodoAccessor.CreateTodo(c.E1, -2, todo);
-            TodoController cnt = new TodoController();
+            TodosController cnt = new TodosController();
             cnt.MockUser(c.E1);
 
             var _model = cnt.GetUserTodos(c.E1.Id);
+            CompareModelProperties(APIResult.TodoApiTests_v0_TestGetUserTodos, _model);
             Assert.AreEqual(1, _model.Count());
 
         }
 
         [TestMethod]
         [TestCategory("Api_V0")]
-        public async Task TestGetRecurrenceTodos()
-        {
+        public async Task TestGetRecurrenceTodos() {
             var c = await Ctx.Build();
-            var todo = new TodoModel()
-            {
+            var todo = new TodoModel() {
                 AccountableUser = c.E1,
                 Message = "GetUserTodo from Test Method",
                 TodoType = TodoType.Recurrence
-            };            
+            };
 
-            TodoController cnt = new TodoController();
+            TodosController cnt = new TodosController();
             cnt.MockUser(c.E1);
 
             var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
@@ -129,49 +149,46 @@ namespace TractionTools.Tests.API.v0 {
             bool result = await TodoAccessor.CreateTodo(c.E1, _recurrence.Id, todo);
 
             var _model = cnt.GetRecurrenceTodos(_recurrence.Id);
-
+            CompareModelProperties(APIResult.TodoApiTests_v0_TestGetRecurrenceTodos, _model);
             Assert.AreEqual(1, _model.Count());
+            Assert.AreEqual(_model.FirstOrDefault().Owner.Id, c.E1.Id);
         }
 
         [TestMethod]
         [TestCategory("Api_V0")]
-        public async Task TestMarkComplete()
-        {
+        public async Task TestMarkComplete() {
             var c = await Ctx.Build();
             var now = DateTime.UtcNow;
-            var todo = new TodoModel()
-            {
+            var todo = new TodoModel() {
                 AccountableUser = c.E1,
                 Message = "GetUserTodo from Test Method",
                 TodoType = TodoType.Personal
             };
             bool result = await TodoAccessor.CreateTodo(c.E1, -2, todo);
-            TodoController cnt = new TodoController();
+            TodosController cnt = new TodosController();
             cnt.MockUser(c.E1);
 
             var _model = cnt.MarkComplete(todo.Id, now);
-
+            CompareModelProperties(APIResult.TodoApiTests_v0_TestMarkComplete, _model);
             Assert.AreEqual(_model.Id, todo.Id);
-
+            Assert.IsNotNull(_model.CompleteTime);
         }
 
         [TestMethod]
         [TestCategory("Api_V0")]
-        public async Task TestEditTodo()
-        {
+        public async Task TestEditTodo() {
             var c = await Ctx.Build();
             var now = DateTime.UtcNow;
-            var todo = new TodoModel()
-            {
+            var todo = new TodoModel() {
                 AccountableUser = c.E1,
                 Message = "Todo message for Test Method.",
-                DueDate = new DateTime(2017, 04, 03),                
+                DueDate = new DateTime(2017, 04, 03),
                 TodoType = TodoType.Personal
             };
 
             bool result = await TodoAccessor.CreateTodo(c.E1, -2, todo);
 
-            TodoController cnt = new TodoController();
+            TodosController cnt = new TodosController();
             cnt.MockUser(c.E1);
 
             var newMessage = "New Todo message for Test Method.";

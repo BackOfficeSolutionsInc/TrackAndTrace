@@ -15,6 +15,7 @@ using RadialReview.Models.Json;
 using RadialReview.Models.Accountability;
 using RadialReview.Models.UserModels;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Angular.Team;
 
 namespace RadialReview.Api.V0
 {
@@ -25,26 +26,26 @@ namespace RadialReview.Api.V0
         //[GET/PUT] /teams
         [Route("teams")]
         [HttpPut]
-        public OrganizationTeamModel AddTeam([FromBody]string name)
+        public AngularTeam AddTeam([FromBody]string name)
         {
             //in add case teamId=0
-            return TeamAccessor.EditTeam(GetUser(), 0, name, false, true, GetUser().Id);
+            return new AngularTeam(TeamAccessor.EditTeam(GetUser(), 0, name, false, true, GetUser().Id));
         }
 
         //[GET/POST] /teams/{teamId}
         [Route("teams/{teamId}")]
         [HttpGet]
-        public OrganizationTeamModel GetTeams(long teamId)
+        public AngularTeam GetTeams(long teamId)
         {
-            return TeamAccessor.GetTeam(GetUser(), teamId);
+            return new AngularTeam(TeamAccessor.GetTeam(GetUser(), teamId));
         }
 
 
         [Route("teams/{teamId}")]
         [HttpPost]
-        public OrganizationTeamModel UpdateTeam(long teamId, [FromBody]string name = null)
+        public AngularTeam UpdateTeam(long teamId, [FromBody]string name = null)
         {
-            return TeamAccessor.EditTeam(GetUser(), teamId, name, null, null, null); // null while update
+            return new AngularTeam(TeamAccessor.EditTeam(GetUser(), teamId, name, null, null, null)); // null while update
         }
 
         //[GET/PUT] /teams/{teamId}/members

@@ -39,6 +39,8 @@ namespace RadialReview.Areas.CoreProcess.Controllers
                 t1.Identifier = Guid.NewGuid().ToString();
                 t1.Model = tskView;
                 t1.ModelType = "TaskViewModel";
+                t1.UserName = GetUser().UserName;
+                t1.UserOrgId = GetUser().Id;
                 var result = await AmazonSQSUtility.SendMessage(t1);
 
                 //AmazonSQS sqs = new AmazonSQS();

@@ -35,30 +35,22 @@ namespace RadialReview.Api.V0
             return new AngularIssue(model);
         }
 
-        // GET: api/Issue/mine
-        [Route("issue/mine")]
+        [Route("issue/user/mine")]
+		[HttpGet]
         public IEnumerable<AngularIssue> GetMineIssues()
         {
-            List<IssueModel.IssueModel_Recurrence> list = IssuesAccessor.GetMyIssues(GetUser(), GetUser().Id);
+            List<IssueModel.IssueModel_Recurrence> list = IssuesAccessor.GetVisibleIssuesForUser(GetUser(), GetUser().Id);
             return list.Select(x => new AngularIssue(x));
         }
 
-        // GET: api/Issue/mine
-        [Route("issue/user/{userId}/{recurrenceId}")]
-        public IEnumerable<AngularIssue> GetUserIssues(long userId, long recurrenceId)
+        [Route("issue/user/{userId}")]
+		[HttpGet]
+        public IEnumerable<AngularIssue> GetUserIssues(long userId)
         {
-            throw new NotImplementedException();
-            //return IssuesAccessor.GetUserIssues(GetUser(), userId, recurrenceId).Select(x => new AngularIssue(x));
+            List<IssueModel.IssueModel_Recurrence> list = IssuesAccessor.GetVisibleIssuesForUser(GetUser(), userId);
+            return list.Select(x => new AngularIssue(x));
         }
 
-        // GET: api/Issue/mine
-        [Route("issue/user/{id}")]
-        public IEnumerable<IssueModel.IssueModel_Recurrence> GetRecurrenceIssues(long id)
-        {
-            return L10Accessor.GetIssuesForRecurrence(GetUser(), id, false);
-        }
-
-        // PUT: api/Todo/5
         [Route("issue/{id}")]
         [HttpPut]
         public async Task EditIssue(long id, [FromBody]string message)

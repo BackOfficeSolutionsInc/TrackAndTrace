@@ -161,7 +161,7 @@ namespace TractionTools.Tests.Accessors
 					AccountableUserId = r.Creator.Id,
 					AdminUserId = r.Employee.Id
 				};
-				var mvm = L10Controller.AddMeasurableVm.CreateNewMeasurable(r.Id, m);
+				var mvm = L10Controller.AddMeasurableVm.CreateMeasurableViewModel(r.Id, m);
 				MockHttpContext();
 				await L10Accessor.AddMeasurable(s, perms, null, r.Id, mvm, skipRealTime: true);
 			});

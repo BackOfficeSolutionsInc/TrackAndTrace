@@ -91,7 +91,7 @@ namespace RadialReview.Areas.CoreProcess.Models.MapModel {
 	public class ProcessDef_CamundaFileMap : ClassMap<ProcessDef_CamundaFile> {
 		public ProcessDef_CamundaFileMap() {
 			Id(x => x.Id);
-			Map(x => x.LocalProcessDefId);
+			Map(x => x.LocalProcessDefId).Index("idx_ProcessDef_CamundaFile_LocalProcessDefId");
 			Map(x => x.DeploymentId);
 			Map(x => x.Version);
 			Map(x => x.FileKey);

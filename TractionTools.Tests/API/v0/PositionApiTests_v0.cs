@@ -21,6 +21,7 @@ using static RadialReview.Controllers.L10Controller;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Angular.Accountability;
 using RadialReview.Models.ViewModels;
+using TractionTools.Tests.Properties;
 
 namespace TractionTools.Tests.API.v0 {
 	[TestClass]
@@ -39,7 +40,8 @@ namespace TractionTools.Tests.API.v0 {
 			MockHttpContext();
 			posAccessor.AddPositionToUser(c.E1, c.E1.Id, createPosition.Id);
 			var getMinePosition = positionController.GetMinePosition();
-			Assert.AreEqual(createPosition.Id, getMinePosition.FirstOrDefault().Id);
+            CompareModelProperties(APIResult.PositionApiTests_v0_TestGetMinePosition, getMinePosition);
+            Assert.AreEqual(createPosition.Id, getMinePosition.FirstOrDefault().Id);
 		}
 
 		[TestMethod]
@@ -51,9 +53,10 @@ namespace TractionTools.Tests.API.v0 {
 			OrganizationAccessor _accessor = new OrganizationAccessor();
 			PositionAccessor posAccessor = new PositionAccessor();
 			var createPosition = _accessor.EditOrganizationPosition(c.E1, 0, c.E1.Organization.Id, "TestPosition");
-			var addRole = await positionController.AddPositionRoles(createPosition.Id, "Test Position");
-			var getRole = RoleAccessor.GetRoleById(c.E1, addRole.Id);
-			Assert.AreEqual(addRole.Id, getRole.Id);
+			var result = await positionController.AddPositionRoles(createPosition.Id, "Test Position");
+            CompareModelProperties(APIResult.PositionApiTests_v0_TestUpdatePositionRoles, result);
+            var getRole = RoleAccessor.GetRoleById(c.E1, result.Id);
+			Assert.AreEqual(result.Id, getRole.Id);
 		}
 
 
@@ -66,7 +69,8 @@ namespace TractionTools.Tests.API.v0 {
 			OrganizationAccessor _accessor = new OrganizationAccessor();
 			PositionAccessor posAccessor = new PositionAccessor();
 			var createPosition = positionController.CreatePosition("TestPosition");
-			var getPosition = positionController.GetPositions(createPosition.Id);
+            CompareModelProperties(APIResult.PositionApiTests_v0_TestCreatePosition, createPosition);
+            var getPosition = positionController.GetPositions(createPosition.Id);
 			Assert.AreEqual(createPosition.Id, getPosition.Id);
 		}
 
@@ -81,7 +85,8 @@ namespace TractionTools.Tests.API.v0 {
 			PositionAccessor posAccessor = new PositionAccessor();
 			var createPosition = positionController.CreatePosition("TestPosition");
 			var getPosition = positionController.GetPositions(createPosition.Id);
-			Assert.AreEqual(createPosition.Id, getPosition.Id);
+            CompareModelProperties(APIResult.PositionApiTests_v0_TestGetPositions, getPosition);
+            Assert.AreEqual(createPosition.Id, getPosition.Id);
 		}
 
 
@@ -97,7 +102,8 @@ namespace TractionTools.Tests.API.v0 {
 			var nameUpdated = "TestPosition_Updated";
 			var createPosition = positionController.CreatePosition("TestPosition");
 			var UpdatePosition = positionController.UpdatePositions(nameUpdated, createPosition.Id);
-			var getPosition = positionController.GetPositions(createPosition.Id);
+            CompareModelProperties(APIResult.PositionApiTests_v0_TestUpdatePositions, UpdatePosition);
+            var getPosition = positionController.GetPositions(createPosition.Id);
 			Assert.AreEqual(nameUpdated, getPosition.Name);
 		}
 	}

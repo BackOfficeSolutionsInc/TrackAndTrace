@@ -47,8 +47,8 @@ namespace RadialReview.Hooks {
 		}
 
 		private static Func<WebHook, string, bool> TodoPermissions(ISession s, TodoModel todo) {
-            return null;
-			//return WebhooksAccessor.PermissionsPredicate(s, x => x.ViewTodo(todo.Id));
+            //return null;
+			return WebhooksAccessor.PermissionsPredicate(s, x => x.ViewTodo(todo.Id));
 		}
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously

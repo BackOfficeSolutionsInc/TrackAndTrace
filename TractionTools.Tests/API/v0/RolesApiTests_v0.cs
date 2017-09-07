@@ -21,6 +21,7 @@ using static RadialReview.Controllers.L10Controller;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Angular.Accountability;
 using RadialReview.Models.ViewModels;
+using TractionTools.Tests.Properties;
 
 namespace TractionTools.Tests.API.v0 {
     [TestClass]
@@ -41,7 +42,7 @@ namespace TractionTools.Tests.API.v0 {
             var addRole = await AccountabilityAccessor.AddRole(c.E1, new Attach(AttachType.Position, createPosition.Id), "TestRole");
 
             var getRole = roleController.GetRoles(addRole.Id);
-
+            CompareModelProperties(APIResult.RolesApiTests_v0_TestGetRoles, getRole);
             Assert.AreEqual(addRole.Id, getRole.Id);
         }
 

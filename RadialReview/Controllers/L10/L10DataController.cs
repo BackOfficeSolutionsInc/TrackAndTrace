@@ -143,7 +143,7 @@ namespace RadialReview.Controllers {
 			//public long SelectedAdminMember { get; set; }
 			public List<MeasurableModel> Measurables { get; set; }
 
-			public static AddMeasurableVm CreateNewMeasurable(long recurrenceId, MeasurableModel model, bool allowBlankMeasurable = false) {
+			public static AddMeasurableVm CreateMeasurableViewModel(long recurrenceId, MeasurableModel model, bool allowBlankMeasurable = false) {
 				if (model.AdminUserId <= 0)// && (model.AdminUser==null || model.AdminUser.Id<=0))
 					throw new ArgumentOutOfRangeException("You must specify an admin user id");
 				if (model.AccountableUserId <= 0)//&& (model.AccountableUser == null || model.AccountableUser.Id <= 0))

@@ -242,7 +242,7 @@ namespace RadialReview.Controllers {
 									}
 								}
 
-								await L10Accessor.AddMeasurable(s, perms, rt, recurrence, L10Controller.AddMeasurableVm.CreateNewMeasurable(recurrence, measurable), skipRealTime: true, rowNum: ii);
+								await L10Accessor.AddMeasurable(s, perms, rt, recurrence, L10Controller.AddMeasurableVm.CreateMeasurableViewModel(recurrence, measurable), skipRealTime: true, rowNum: ii);
 								ii += 1;
 								measurableLookup[ident] = measurable;
 

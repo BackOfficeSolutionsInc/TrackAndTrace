@@ -27,11 +27,9 @@ using RadialReview.Models.Askables;
 using RadialReview.Models.Angular.Users;
 using RadialReview.Models.Angular.Positions;
 
-namespace RadialReview.Api.V0
-{
+namespace RadialReview.Api.V0 {
     [RoutePrefix("api/v0")]
-    public class SeatsController : BaseApiController
-    {
+    public class SeatsController : BaseApiController {
 
         [Route("seats/{seatId}/directreport")]
         [HttpPut]
@@ -57,8 +55,7 @@ namespace RadialReview.Api.V0
 
         [Route("seats/{seatId}")]
         [HttpDelete]
-        public void RemoveSeat(long seatId)
-        {
+        public void RemoveSeat(long seatId) {
             AccountabilityAccessor.RemoveNode(GetUser(), seatId);
         }
 
@@ -67,20 +64,24 @@ namespace RadialReview.Api.V0
         [HttpGet]
         public AngularPosition GetPosition(long seatId) // Angular
         {
-            return new AngularPosition(AccountabilityAccessor.GetNodeById(GetUser(), seatId).AccountabilityRolesGroup.NotNull(x => x.Position)); // null check for AccountabilityRolesGroup
+            var node = AccountabilityAccessor.GetNodeById(GetUser(), seatId);
+
+            if (node.AccountabilityRolesGroup.Position != null) {
+                return new AngularPosition(AccountabilityAccessor.GetNodeById(GetUser(), seatId).AccountabilityRolesGroup.NotNull(x => x.Position));
+            } else {
+                throw new HttpException(404, "Seat does not contain a position.");
+            }
         }
 
         [Route("seats/{seatId}/position/{positionId}")]
         [HttpPost]
-        public void AttachPosition(long seatId, long positionId)
-        {
+        public void AttachPosition(long seatId, long positionId) {
             AccountabilityAccessor.SetPosition(GetUser(), seatId, positionId);
         }
 
         [Route("seats/{seatId}/position")]
         [HttpDelete]
-        public void RemovePosition(long seatId)
-        {
+        public void RemovePosition(long seatId) {
             // positionId set to null while removing or detaching
             AccountabilityAccessor.SetPosition(GetUser(), seatId, null);
         }
@@ -97,15 +98,13 @@ namespace RadialReview.Api.V0
 
         [Route("seats/{seatId}/user")]
         [HttpPost]
-        public void AttachUser(long seatId, [FromBody]long? userId)
-        {
+        public void AttachUser(long seatId, [FromBody]long? userId) {
             AccountabilityAccessor.SetUser(GetUser(), seatId, userId);
         }
 
         [Route("seats/{seatId}/user")]
         [HttpDelete]
-        public void DetachUser(long seatId)
-        {
+        public void DetachUser(long seatId) {
             AccountabilityAccessor.SetUser(GetUser(), seatId, null); // null userId for detaching 
         }
 

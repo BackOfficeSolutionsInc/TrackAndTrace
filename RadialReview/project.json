@@ -39,15 +39,17 @@
     "Microsoft.AspNet.WebPages": "3.2.3",
     "Microsoft.Identity.Client": "1.0.304142221-alpha",
     "Microsoft.Office365.OutlookServices-V2.0": "2.0.1.2",
-    "Microsoft.Owin": "3.1.0",
-    "Microsoft.Owin.Host.SystemWeb": "3.1.0",
-    "Microsoft.Owin.Security": "3.1.0",
-    "Microsoft.Owin.Security.Cookies": "3.1.0",
-    "Microsoft.Owin.Security.OAuth": "3.1.0",
+    "Microsoft.Owin": "3.1.0.0",
+    "Microsoft.Owin.Host.SystemWeb": "3.1.0.0",
+    "Microsoft.Owin.Security": "3.1.0.0",
+    "Microsoft.Owin.Security.Cookies": "3.1.0.0",
+    "Microsoft.Owin.Security.OAuth": "3.1.0.0",
     "Microsoft.Web.Infrastructure": "1.0.0",
+    "Microsoft.AspNetCore.DataProtection": "1.1.1",
+    "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "Modernizr": "2.8.3",
     "MySql.Data": "6.9.9",
-    "Newtonsoft.Json": "10.0.3",
+    "Newtonsoft.Json": "10.0.0.0",
     "NHibernate": "4.1.1.4000",
     "NHibernate.Envers": "2.2.0",
     "NReco.PhantomJS": "1.0.4",
@@ -66,7 +68,7 @@
     "Twilio": "5.6.2",
     "TypeLite": "1.8.4",
     "Unofficial.Ionic.Zip": "1.9.1.8",
-    "WebGrease": "1.6.0"
+    "WebGrease": "1.5.2"
   },
   "frameworks": {
     "net452": {

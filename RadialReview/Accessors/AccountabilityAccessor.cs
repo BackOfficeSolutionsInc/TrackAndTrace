@@ -187,7 +187,9 @@ namespace RadialReview.Accessors {
                 throw new PermissionsException("Seat is not accessible.");
             }
 
-            perms.CanView(ResourceType.AccountabilityHierarchy, node.AccountabilityChartId);
+            perms.CanView(ResourceType.AccountabilityHierarchy, node.AccountabilityChartId);           
+
+            var a = node.AccountabilityRolesGroup.Position;
             return node;
         }
 
@@ -355,6 +357,9 @@ namespace RadialReview.Accessors {
         }
         public static void SetPosition(ISession s, PermissionsUtility perms, RealTimeUtility rt, long nodeId, long? positionId) {
             perms.ManagesAccountabilityNodeOrSelf(nodeId);
+            if (positionId.HasValue)
+                perms.ViewOrganizationPosition(positionId.Value);
+
             var now = DateTime.UtcNow;
             UpdatePosition_Unsafe(s, rt, perms, nodeId, positionId, now);
 

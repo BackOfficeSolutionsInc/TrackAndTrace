@@ -21,6 +21,7 @@ using static RadialReview.Controllers.L10Controller;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Angular.Accountability;
 using RadialReview.Models.ViewModels;
+using TractionTools.Tests.Properties;
 
 namespace TractionTools.Tests.Api
 {
@@ -35,11 +36,20 @@ namespace TractionTools.Tests.Api
             RadialReview.Api.V0.SearchController searchController = new RadialReview.Api.V0.SearchController();
             searchController.MockUser(c.E1);
 
-            string searchStr = "mana";
-            var search = searchController.SearchUser(searchStr);
+            {
+                string searchStr = "mana";
+                var search = searchController.SearchUser(searchStr);
+                CompareModelProperties(APIResult.SearchApiTests_v0_TestSearchUser, search);
+                Assert.AreEqual(1, search.Count());
+                Assert.AreEqual(true, search.FirstOrDefault().Name.StartsWith("manager"));
+            }
 
-            Assert.AreEqual(1, search.Count());
-            Assert.AreEqual(true, search.FirstOrDefault().Name.StartsWith("manager"));
+            {
+                string searchStr = "sdsksds"; // random string
+                var search = searchController.SearchUser(searchStr);
+                CompareModelProperties("[]", search); // verify return json string 
+                Assert.AreEqual(0, search.Count());                
+            }
         }
 
         [TestMethod]
@@ -52,7 +62,7 @@ namespace TractionTools.Tests.Api
 
             string searchStr = "team";
             var search = searchController.Search(searchStr);
-
+            CompareModelProperties(APIResult.SearchApiTests_v0_TestSearch, search);
             Assert.AreEqual(2, search.Count());
             Assert.AreEqual(true, search.Any(x => x.Name.Contains("interreviewing-team")));
             Assert.AreEqual(true, search.Any(x => x.Name.Contains("non-interreviewing-team")));
