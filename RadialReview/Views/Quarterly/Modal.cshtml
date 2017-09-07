@@ -1,7 +1,7 @@
 ﻿@model long
 <div class="form-horizontal">
 
-    <input type="hidden" id="meetingId" value="@Model"/>
+    <input type="hidden" id="meetingId" value="@Model" />
 
     <div class="form-group">
         <div class="col-sm-1  ">
@@ -20,13 +20,14 @@
 
     </div>
     <div class="form-group">
-        <div class="col-sm-1 "><input type="checkbox" class="checkbox  pull-right" id="acc" name="acc" checked @*onchange="updateAllowDone()"*@ />
+        <div class="col-sm-1 ">
+            <input type="checkbox" class="checkbox  pull-right" id="acc" name="acc" checked @*onchange="updateAllowDone()"*@ />
         </div>
         <label for="acc" class="col-sm-9 control-label alignLeft">Include Accountability Chart <span style="top: -2px;left:2px;position: relative;" id="accLoadingContainer"></span></label>
     </div>
 
     <iframe id="accFrame" style="display:none;" src="about:blank"></iframe>
-	<input type="hidden" id="rootInput" name="root" />
+    <input type="hidden" id="rootInput" name="root" />
 
     <div class="form-group">
         <div class="col-sm-1 ">
@@ -42,6 +43,13 @@
         </div>
         <label for="rocks" class="col-sm-9 control-label alignLeft">Include Rocks</label>
 
+    </div>
+    <hr />
+    <div class="form-group">
+        <div class="col-sm-1 ">
+            <input type="checkbox" class="checkbox  pull-right" id="quarterly" name="quarterly" checked />
+        </div>
+        <label for="quarterly" class="col-sm-9 control-label alignLeft">Quarterly Printout</label>
     </div>
 </div>
 
@@ -60,7 +68,7 @@
     }
 
     function updateAllowDone() {
-        if (doneLoadingAC || !$(acc).is(":checked")){
+        if (doneLoadingAC || !$(acc).is(":checked")) {
             $("#modalOk").attr("disabled", false);
         } else {
             $("#modalOk").attr("disabled", "disabled");
@@ -73,7 +81,7 @@
 
     }
 
-    $("body").on("AccountabilityChartRenderComplete."+guid, function () {
+    $("body").on("AccountabilityChartRenderComplete." + guid, function () {
         if (createNodes.timeout) {
             clearTimeout(createNodes.timeout);
         }

@@ -71,8 +71,28 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+        public static VtoModel GetOrganizationVTO(UserOrganizationModel caller, long orgId) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    return GetOrganizationVTO(s, perms, orgId);
+                }
+            }
+        }
 
-		public static VtoModel GetVTO(ISession s, PermissionsUtility perms, long vtoId) {
+        private static VtoModel GetOrganizationVTO(ISession s, PermissionsUtility perms, long orgId) {
+            perms.ViewOrganization(orgId);
+            var l10 = s.QueryOver<L10Recurrence>()
+                .Where(x => x.DeleteTime == null && x.OrganizationId == orgId && x.ShareVto == true)
+                .Take(1).SingleOrDefault();
+
+            if (l10 != null) {
+                return GetVTO(s,perms,l10.VtoId);             
+            }
+            return null;
+        }
+
+        public static VtoModel GetVTO(ISession s, PermissionsUtility perms, long vtoId) {
 			perms.ViewVTO(vtoId);
 			var model = s.Get<VtoModel>(vtoId);
 			model._Values = OrganizationAccessor.GetCompanyValues_Unsafe(s.ToQueryProvider(true), model.Organization.Id, null);
@@ -132,12 +152,22 @@ namespace RadialReview.Accessors {
 					if (ang.L10Recurrence != null) {
 						try {
 							var recur = L10Accessor.GetL10Recurrence(s, perms, ang.L10Recurrence.Value, false);
-							//var isLeadership = recur.TeamType == L10TeamType.LeadershipTeam;
-							//if (isLeadership) {
-							//   ang.QuarterlyRocks.Rocks = ang.QuarterlyRocks.Rocks.Where(x => x.Rock.CompanyRock ?? true).ToList();
-							//}
-							if (recur.TeamType != L10TeamType.LeadershipTeam)
-								ang.IncludeVision = false;
+                            //var isLeadership = recur.TeamType == L10TeamType.LeadershipTeam;
+                            //if (isLeadership) {
+                            //   ang.QuarterlyRocks.Rocks = ang.QuarterlyRocks.Rocks.Where(x => x.Rock.CompanyRock ?? true).ToList();
+                            //}
+                            
+                            var orgVto = GetOrganizationVTO(s, perms, vto.Organization.Id);
+                            
+                            if (recur.TeamType != L10TeamType.LeadershipTeam && orgVto == null) {
+                                ang.IncludeVision = false;
+                            }
+
+                            if (orgVto != null) {
+                                ang.ReplaceVision(orgVto);
+
+                            }
+
 						} catch (Exception) {
 
 						}
