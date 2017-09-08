@@ -1,11 +1,14 @@
 ﻿using AmazonSDK.NHibernate;
+using LambdaSerializer;
 using NHibernate;
 using RadialReview.Accessors;
 using RadialReview.Areas.CoreProcess.Models;
 using RadialReview.Areas.CoreProcess.Models.Process;
 using RadialReview.Controllers;
+using RadialReview.Hooks;
 using RadialReview.Models;
 using RadialReview.Utilities.Encrypt;
+using RadialReview.Utilities.Hooks;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -48,18 +51,33 @@ namespace AmazonSDK {
                     AsyncHelper.RunSync(() => DeleteMessage(item.ReceiptHandle));
                     LogDetails("Delete Message from SQS --> Complete ", "INFO");
 
-                    //Process API
-                    LogDetails("ApiRequest --> Start ", "INFO");
-                    var status = AsyncHelper.RunSync<HttpStatusCode>(() => ApiRequest(item));
-                    LogDetails("ApiRequest --> Complete ", "INFO");
+                    if (RadialReview.Utilities.Config.IsSchedulerAction()) {
+                        // exceute action
+                        //var deserializedLambda1 = JsonNetAdapter.Deserialize<SerializableHook>(item);
 
-                    // Mark Complete
-                    if (status == HttpStatusCode.OK) {
-                        LogDetails("MarkComplete --> Start ", "INFO");
-                        MarkComplete(item);
-                        LogDetails("MarkComplete --> Complete ", "INFO");
+                        dynamic func = JsonNetAdapter.Deserialize(item.Model.ToString(), item.type);
+
+                        if (item.type.FullName == "ITodoHook TodoHookModel") {
+                            HooksRegistry.Each<ITodoHook>(func);
+                        }
+                        if (item.type.FullName == "IIssueHook IssueHookModel") {
+                            HooksRegistry.Each<IIssueHook>(func);
+                        }
+
                     } else {
-                        AsyncHelper.RunSync(() => SendMessage(item));
+                        //Process API
+                        LogDetails("ApiRequest --> Start ", "INFO");
+                        var status = AsyncHelper.RunSync<HttpStatusCode>(() => ApiRequest(item));
+                        LogDetails("ApiRequest --> Complete ", "INFO");
+
+                        // Mark Complete
+                        if (status == HttpStatusCode.OK) {
+                            LogDetails("MarkComplete --> Start ", "INFO");
+                            MarkComplete(item);
+                            LogDetails("MarkComplete --> Complete ", "INFO");
+                        } else {
+                            AsyncHelper.RunSync(() => SendMessage(item));
+                        }
                     }
                 } catch (Exception ex) {
                     AsyncHelper.RunSync(() => SendMessage(item));

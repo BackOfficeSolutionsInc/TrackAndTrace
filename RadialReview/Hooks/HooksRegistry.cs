@@ -1,4 +1,7 @@
-﻿using log4net;
+﻿using LambdaSerializer;
+using log4net;
+using RadialReview.Areas.CoreProcess.Models;
+using RadialReview.Models;
 using RadialReview.Utilities;
 using RadialReview.Utilities.Hooks;
 using System;
@@ -37,10 +40,8 @@ namespace RadialReview.Hooks {
             var hooks = GetHooks<T>();
             foreach (var x in hooks) {
                 try {
-
-                    if (true) {
-                        // send message to queue
-
+                    if (Config.IsSchedulerAction()) {
+                        await AmazonSQSUtility.SendMessage(MessageQueueModel.Create(action, null, null));
                     } else {
                         await action.Compile()(x);
                     }

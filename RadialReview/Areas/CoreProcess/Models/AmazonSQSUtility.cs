@@ -42,11 +42,14 @@ namespace RadialReview.Areas.CoreProcess.Models {
         public string ApiUrl { get; set; }
         public long? UserOrgId { get; set; }
         public string UserName { get; set; }
+        public Type type { get; set; }
 
         public static MessageQueueModel Create<T>(T model, UserOrganizationModel caller, Uri api) {
 
-            return new MessageQueueModel() { Identifier = Guid.NewGuid().ToString(), UserName = caller.GetUsername(), UserOrgId = caller.Id,
-                Model = model, ModelType = model.GetType().FullName, ApiUrl = "" + api };
+            return new MessageQueueModel() {
+                Identifier = Guid.NewGuid().ToString(), UserName = caller.GetUsername(), UserOrgId = caller.Id,
+                Model = model, ModelType = model.GetType().FullName, ApiUrl = "" + api,type=model.GetType()
+            };
         }
     }
 }

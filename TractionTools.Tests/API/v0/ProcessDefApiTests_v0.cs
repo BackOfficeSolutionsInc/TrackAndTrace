@@ -31,6 +31,7 @@ using System.Linq.Expressions;
 using LambdaSerializer;
 using RadialReview.Utilities.Hooks;
 using RadialReview.Hooks;
+using RadialReview.Utilities.Encrypt;
 
 namespace TractionTools.Tests.Api {
     [TestClass]
@@ -319,9 +320,9 @@ namespace TractionTools.Tests.Api {
                 var deserializedLambda1 = JsonNetAdapter.Deserialize<SerializableHook>(serializedLambda1);
 
                 dynamic func = JsonNetAdapter.Deserialize(deserializedLambda1.lambda.ToString(), deserializedLambda1.type);
-                
+
                 await HooksRegistry.Each<ITodoHook>(func);
-                
+
             } catch (Exception ex) {
 
                 throw;
@@ -330,5 +331,16 @@ namespace TractionTools.Tests.Api {
             //Assert.IsTrue(string.IsNullOrEmpty(getTask.Id));
         }
 
+
+        [TestMethod]
+        [TestCategory("Api_V0")]
+        public async Task TestEncryptedPassword() {
+            string userName = "Test";
+            string pwd = RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString() + userName;
+            string encrypt_key = Crypto.EncryptStringAES(pwd, RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString());
+            string _encrypt_key = Crypto.EncryptStringAES(pwd, RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString());
+
+            Assert.AreNotEqual(encrypt_key, _encrypt_key);
+        }
     }
 }
