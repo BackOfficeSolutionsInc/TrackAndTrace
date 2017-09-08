@@ -37,7 +37,13 @@ namespace RadialReview.Hooks {
             var hooks = GetHooks<T>();
             foreach (var x in hooks) {
                 try {
-                    await action.Compile()(x);
+
+                    if (true) {
+                        // send message to queue
+
+                    } else {
+                        await action.Compile()(x);
+                    }
                 } catch (Exception e) {
                     log.Error(e);
                     if (Config.IsLocal())

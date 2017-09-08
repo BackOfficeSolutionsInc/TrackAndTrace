@@ -1,5 +1,6 @@
 ﻿{
   "dependencies": {
+    "Aq.ExpressionJsonSerializer": "0.18.0",
     "AWSSDK": "2.3.55.2",
     "BCXAPI": "1.0.4554.21216",
     "bootstrap": "3.3.7",
@@ -37,6 +38,8 @@
     "Microsoft.AspNet.WebHooks.Receivers": "1.2.1",
     "Microsoft.AspNet.WebHooks.Receivers.Custom": "1.2.1",
     "Microsoft.AspNet.WebPages": "3.2.3",
+    "Microsoft.AspNetCore.DataProtection": "1.1.1",
+    "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "Microsoft.Identity.Client": "1.0.304142221-alpha",
     "Microsoft.Office365.OutlookServices-V2.0": "2.0.1.2",
     "Microsoft.Owin": "3.1.0.0",
@@ -45,8 +48,6 @@
     "Microsoft.Owin.Security.Cookies": "3.1.0.0",
     "Microsoft.Owin.Security.OAuth": "3.1.0.0",
     "Microsoft.Web.Infrastructure": "1.0.0",
-    "Microsoft.AspNetCore.DataProtection": "1.1.1",
-    "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "Modernizr": "2.8.3",
     "MySql.Data": "6.9.9",
     "Newtonsoft.Json": "10.0.0.0",

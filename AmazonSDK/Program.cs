@@ -41,6 +41,14 @@ namespace AmazonSDK {
 
 					//Process API
 					LogDetails("ApiRequest --> Start ", "INFO");
+
+                    if (true) {
+                        // execute action
+                        // error => create new message
+                    } else {
+                        //var status = AsyncHelper.RunSync<HttpStatusCode>(() => ApiRequest(item));
+                    }
+
 					var status = AsyncHelper.RunSync<HttpStatusCode>(() => ApiRequest(item));
 					LogDetails("ApiRequest --> Complete ", "INFO");
 
