@@ -34,6 +34,11 @@ namespace RadialReview.Areas.CoreProcess.Models {
         }
     }
 
+    public enum RequestTypeEnum {
+        isHookRegistryAction,
+        isHTTPRequest
+    }
+
     public class MessageQueueModel {
         public string Identifier { get; set; }
         public object Model { get; set; }
@@ -43,12 +48,21 @@ namespace RadialReview.Areas.CoreProcess.Models {
         public long? UserOrgId { get; set; }
         public string UserName { get; set; }
         public Type type { get; set; }
+        public RequestTypeEnum RequestType { get; set; }
 
-        public static MessageQueueModel Create<T>(T model, UserOrganizationModel caller, Uri api) {
+
+        public static MessageQueueModel CreateHTTPRequest<T>(T model, UserOrganizationModel caller, Uri api) {
 
             return new MessageQueueModel() {
                 Identifier = Guid.NewGuid().ToString(), UserName = caller.GetUsername(), UserOrgId = caller.Id,
-                Model = model, ModelType = model.GetType().FullName, ApiUrl = "" + api,type=model.GetType()
+                Model = model, ModelType = model.GetType().FullName, ApiUrl = "" + api, type = model.GetType(), RequestType = RequestTypeEnum.isHTTPRequest
+            };
+        }
+
+        public static MessageQueueModel CreateHookRegistryAction<T>(T model) {
+            return new MessageQueueModel() {
+                Identifier = Guid.NewGuid().ToString(),Model = model,
+                ModelType = model.GetType().FullName, ApiUrl = null, type = model.GetType(), RequestType = RequestTypeEnum.isHookRegistryAction
             };
         }
     }

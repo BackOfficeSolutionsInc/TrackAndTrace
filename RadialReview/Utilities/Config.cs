@@ -329,10 +329,12 @@ namespace RadialReview.Utilities {
         }
 
         public static bool IsSchedulerAction() {
-            if (GetAppSetting("SchedulerAction").ToLower() == "true")
-                return true;
-            else
-                return false;
+            if (!IsLocal()) {
+                if (GetAppSetting("SchedulerAction").ToBooleanJS()) {
+                    return true;
+                }
+            }
+            return false;            
         }
 
         public static string GetAppSetting(string key, string deflt = null) {

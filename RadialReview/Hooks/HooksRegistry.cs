@@ -41,7 +41,7 @@ namespace RadialReview.Hooks {
             foreach (var x in hooks) {
                 try {
                     if (Config.IsSchedulerAction()) {
-                        await AmazonSQSUtility.SendMessage(MessageQueueModel.Create(action, null, null));
+                        await AmazonSQSUtility.SendMessage(MessageQueueModel.CreateHookRegistryAction(action));
                     } else {
                         await action.Compile()(x);
                     }

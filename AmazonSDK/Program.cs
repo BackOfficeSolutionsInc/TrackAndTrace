@@ -51,7 +51,7 @@ namespace AmazonSDK {
                     AsyncHelper.RunSync(() => DeleteMessage(item.ReceiptHandle));
                     LogDetails("Delete Message from SQS --> Complete ", "INFO");
 
-                    if (RadialReview.Utilities.Config.IsSchedulerAction()) {
+                    if (item.RequestType == RequestTypeEnum.isHookRegistryAction) { // this is hook registry process
                         // exceute action
                         //var deserializedLambda1 = JsonNetAdapter.Deserialize<SerializableHook>(item);
 
@@ -64,21 +64,22 @@ namespace AmazonSDK {
                             HooksRegistry.Each<IIssueHook>(func);
                         }
 
-                    } else {
+                    } else if (item.RequestType == RequestTypeEnum.isHTTPRequest) {
                         //Process API
                         LogDetails("ApiRequest --> Start ", "INFO");
                         var status = AsyncHelper.RunSync<HttpStatusCode>(() => ApiRequest(item));
                         LogDetails("ApiRequest --> Complete ", "INFO");
 
                         // Mark Complete
-                        if (status == HttpStatusCode.OK) {
-                            LogDetails("MarkComplete --> Start ", "INFO");
-                            MarkComplete(item);
-                            LogDetails("MarkComplete --> Complete ", "INFO");
-                        } else {
-                            AsyncHelper.RunSync(() => SendMessage(item));
+                        if (status != HttpStatusCode.OK) {
+                            throw new Exception("An error ocurred during HTTP Request." + " Status Code:" + status);
                         }
                     }
+
+                    // Mark Complete
+                    LogDetails("MarkComplete --> Start ", "INFO");
+                    MarkComplete(item);
+                    LogDetails("MarkComplete --> Complete ", "INFO");
                 } catch (Exception ex) {
                     AsyncHelper.RunSync(() => SendMessage(item));
                     LogDetails(ex.Message, "ERROR");
@@ -138,7 +139,7 @@ namespace AmazonSDK {
 
                 var client = new HttpClient();
                 var param = new List<KeyValuePair<string, string>>();
-                param.Add(new KeyValuePair<string, string>("username", model.UserName));
+                param.Add(new KeyValuePair<string, string>("username", model.UserName)); // hash it 
                 param.Add(new KeyValuePair<string, string>("password", encrypt_key));
                 param.Add(new KeyValuePair<string, string>("grant_type", "password"));
                 param.Add(new KeyValuePair<string, string>("client_id", "self"));
