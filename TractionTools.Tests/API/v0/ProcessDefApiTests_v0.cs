@@ -32,6 +32,7 @@ using LambdaSerializer;
 using RadialReview.Utilities.Hooks;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Encrypt;
+using RadialReview.Areas.CoreProcess.Models;
 
 namespace TractionTools.Tests.Api {
     [TestClass]
@@ -291,10 +292,7 @@ namespace TractionTools.Tests.Api {
             return startProcess;
         }
 
-        public class SerializableHook {
-            public object lambda { get; set; }
-            public Type type { get; set; }
-        }
+      
 
         [TestMethod]
         [TestCategory("Api_V0")]

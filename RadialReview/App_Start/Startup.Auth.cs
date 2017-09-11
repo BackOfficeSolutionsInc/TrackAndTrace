@@ -12,20 +12,18 @@ using RadialReview.NHibernate;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Owin.Security.DataHandler.Encoder;
 using RadialReview.Utilities.Encrypt;
+using RadialReview.Utilities;
+using RadialReview.Areas.CoreProcess.Models;
 
-namespace RadialReview
-{
-    public partial class Startup
-    {
+namespace RadialReview {
+    public partial class Startup {
         public static OAuthAuthorizationServerOptions OAuthOptions { get; private set; }
 
 
         // For more information on configuring authentication, please visit http://go.microsoft.com/fwlink/?LinkId=301864
-        public void ConfigureAuth(IAppBuilder app)
-        {
+        public void ConfigureAuth(IAppBuilder app) {
             // Enable the application to use a cookie to store information for the signed in user
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
+            app.UseCookieAuthentication(new CookieAuthenticationOptions {
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
                 LoginPath = new PathString("/Account/Login")
             });
@@ -34,8 +32,7 @@ namespace RadialReview
 
 
             var PublicClientId = "self";
-            OAuthOptions = new OAuthAuthorizationServerOptions
-            {
+            OAuthOptions = new OAuthAuthorizationServerOptions {
                 TokenEndpointPath = new PathString("/Token"),
                 Provider = new ApplicationOAuthProvider(PublicClientId),
                 AuthorizeEndpointPath = new PathString("/api/Account/ExternalLogin"),
@@ -122,15 +119,12 @@ namespace RadialReview
 
 
 
-        public class ApplicationOAuthProvider : OAuthAuthorizationServerProvider
-        {
+        public class ApplicationOAuthProvider : OAuthAuthorizationServerProvider {
             private readonly string _publicClientId;
 
             public static NHibernateUserManager UserManager = new NHibernateUserManager(new NHibernateUserStore());
-            public ApplicationOAuthProvider(string publicClientId)
-            {
-                if (publicClientId == null)
-                {
+            public ApplicationOAuthProvider(string publicClientId) {
+                if (publicClientId == null) {
                     throw new ArgumentNullException("publicClientId");
                 }
 
@@ -138,26 +132,35 @@ namespace RadialReview
             }
 
 
-            public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
-            {
+            public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context) {
                 string encrypt_key = string.Empty;
-                try
-                {
+                try {
                     encrypt_key = Crypto.DecryptStringAES(context.Password, RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString());
+                } catch (Exception) {
+
                 }
-                catch (Exception)
-                {
-                    
-                }
-               
+
                 var key = RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString() + context.UserName;
+                using (var s = HibernateSession.GetCurrentSession()) {
+                    using (var tx = s.BeginTransaction()) {
+                        var getKey = s.QueryOver<TokenIdentifierModel>().Where(x => x.key == key).SingleOrDefault();
+                        if (getKey == null) {
+                            encrypt_key = string.Empty;
+                        } else {
+                            s.Delete(getKey);
+                            tx.Commit();
+                            s.Flush();
+                        }
+                    }
+                }
+
+
                 var user = ((key == encrypt_key) ?
                     await UserManager.FindByNameAsync(context.UserName) :
                     await UserManager.FindAsync(context.UserName, context.Password));
                 //await UserManager.FindAsync(context.UserName, context.Password);
 
-                if (user == null)
-                {
+                if (user == null) {
                     context.SetError("invalid_grant", "The user name or password is incorrect.");
                     return;
                 }
@@ -171,34 +174,27 @@ namespace RadialReview
                 context.Request.Context.Authentication.SignIn(cookiesIdentity);
             }
 
-            public override Task TokenEndpoint(OAuthTokenEndpointContext context)
-            {
-                foreach (KeyValuePair<string, string> property in context.Properties.Dictionary)
-                {
+            public override Task TokenEndpoint(OAuthTokenEndpointContext context) {
+                foreach (KeyValuePair<string, string> property in context.Properties.Dictionary) {
                     context.AdditionalResponseParameters.Add(property.Key, property.Value);
                 }
 
                 return Task.FromResult<object>(null);
             }
 
-            public override Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
-            {
+            public override Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context) {
                 // Resource owner password credentials does not provide a client ID.
-                if (context.ClientId == null)
-                {
+                if (context.ClientId == null) {
                     context.Validated();
                 }
 
                 return Task.FromResult<object>(null);
             }
 
-            public override Task ValidateClientRedirectUri(OAuthValidateClientRedirectUriContext context)
-            {
-                if (context.ClientId == _publicClientId)
-                {
+            public override Task ValidateClientRedirectUri(OAuthValidateClientRedirectUriContext context) {
+                if (context.ClientId == _publicClientId) {
                     Uri expectedRootUri = new Uri(context.Request.Uri, "/");
-                    if (expectedRootUri.AbsoluteUri == context.RedirectUri)
-                    {
+                    if (expectedRootUri.AbsoluteUri == context.RedirectUri) {
                         context.Validated();
                     }
                 }
@@ -206,8 +202,7 @@ namespace RadialReview
                 return Task.FromResult<object>(null);
             }
 
-            public static AuthenticationProperties CreateProperties(string userName)
-            {
+            public static AuthenticationProperties CreateProperties(string userName) {
                 IDictionary<string, string> data = new Dictionary<string, string> { { "userName", userName } };
                 return new AuthenticationProperties(data);
             }

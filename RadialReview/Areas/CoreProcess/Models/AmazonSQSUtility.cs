@@ -1,6 +1,8 @@
 ﻿using Amazon;
 using Amazon.SQS;
 using Amazon.SQS.Model;
+using FluentNHibernate.Mapping;
+using LambdaSerializer;
 using RadialReview.Models;
 using System;
 using System.Collections.Generic;
@@ -19,7 +21,6 @@ namespace RadialReview.Areas.CoreProcess.Models {
         public static async Task<bool> SendMessage(MessageQueueModel model) {
             bool result = false;
             try {
-                //string msg = "This is test message new.";
                 string message = Newtonsoft.Json.JsonConvert.SerializeObject(model);
                 SendMessageRequest messageRequest = new SendMessageRequest(queueURL, message);
                 AmazonSQSClient amazonSQSClient = new AmazonSQSClient(accessKey, secretKey, RegionEndpoint.USWest2);
@@ -50,6 +51,8 @@ namespace RadialReview.Areas.CoreProcess.Models {
         public Type type { get; set; }
         public RequestTypeEnum RequestType { get; set; }
 
+        public string SerializedModel { get; set; }
+
 
         public static MessageQueueModel CreateHTTPRequest<T>(T model, UserOrganizationModel caller, Uri api) {
 
@@ -59,11 +62,30 @@ namespace RadialReview.Areas.CoreProcess.Models {
             };
         }
 
-        public static MessageQueueModel CreateHookRegistryAction<T>(T model) {
+        public static MessageQueueModel CreateHookRegistryAction<T>(T model, SerializableHook serializableHook) {
             return new MessageQueueModel() {
-                Identifier = Guid.NewGuid().ToString(),Model = model,
-                ModelType = model.GetType().FullName, ApiUrl = null, type = model.GetType(), RequestType = RequestTypeEnum.isHookRegistryAction
+                Identifier = Guid.NewGuid().ToString(), Model = model,
+                ModelType = model.GetType().FullName, ApiUrl = null, type = model.GetType(), RequestType = RequestTypeEnum.isHookRegistryAction,
+                SerializedModel = JsonNetAdapter.Serialize(serializableHook)
             };
         }
     }
+
+    public class SerializableHook {
+        public object lambda { get; set; }
+        public Type type { get; set; }
+    }
+
+    public class TokenIdentifierModel {
+        public virtual long Id { get; set; }
+        public virtual string key { get; set; }
+    }
+
+    public class TokenIdentifierModelMap : ClassMap<TokenIdentifierModel> {
+        public TokenIdentifierModelMap() {
+            Id(x => x.Id);
+            Map(x => x.key);
+        }
+    }
+
 }

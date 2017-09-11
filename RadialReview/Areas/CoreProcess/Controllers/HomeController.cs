@@ -74,7 +74,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
                 tskView.name = "NameTest1";
                 tskView.Id = "Test1";
 
-                MessageQueueModel.CreateHookRegistryAction(tskView);
+                //MessageQueueModel.CreateHookRegistryAction(tskView,new SerializableHook() { lambda= });
 
                 MessageQueueModel t1 = new MessageQueueModel();
                 t1.Identifier = Guid.NewGuid().ToString();

@@ -29,6 +29,8 @@ namespace AmazonSDK {
                 t.Start();
                 Thread.Sleep(500);
             }
+
+            //Scheduler();
         }
 
         private static void Scheduler() {
@@ -53,12 +55,24 @@ namespace AmazonSDK {
 
                     if (item.RequestType == RequestTypeEnum.isHookRegistryAction) { // this is hook registry process
                         // exceute action
-                        //var deserializedLambda1 = JsonNetAdapter.Deserialize<SerializableHook>(item);
+                        var deserializedLambda1 = JsonNetAdapter.Deserialize<SerializableHook>(item.SerializedModel);
 
-                        dynamic func = JsonNetAdapter.Deserialize(item.Model.ToString(), item.type);
+                        dynamic func = JsonNetAdapter.Deserialize(deserializedLambda1.lambda.ToString(), deserializedLambda1.type);
+
+                        //dynamic func = JsonNetAdapter.Deserialize(item.Model.ToString(), item.type);
 
                         if (item.type.FullName == "ITodoHook TodoHookModel") {
-                            HooksRegistry.Each<ITodoHook>(func);
+                            HooksRegistry.RegisterHook(new TodoWebhook());
+                            HooksRegistry.GetHooks<ITodoHook>().ForEach(x => {
+                                try {
+                                    func.Compile()(x);
+                                } catch (Exception e) {
+                                    throw;
+                                }
+                            });
+
+                            //func.Compile();
+                            //HooksRegistry.Each<ITodoHook>(func);
                         }
                         if (item.type.FullName == "IIssueHook IssueHookModel") {
                             HooksRegistry.Each<IIssueHook>(func);
@@ -67,7 +81,7 @@ namespace AmazonSDK {
                     } else if (item.RequestType == RequestTypeEnum.isHTTPRequest) {
                         //Process API
                         LogDetails("ApiRequest --> Start ", "INFO");
-                        var status = AsyncHelper.RunSync<HttpStatusCode>(() => ApiRequest(item));
+                        var status = AsyncHelper.RunSync<HttpStatusCode>(() => ApiRequest(new MessageQueueModel() { UserName = "kunal@mytractiontools.com", ApiUrl = "http://localhost:3751/api/v0/todo/users/mine" }));
                         LogDetails("ApiRequest --> Complete ", "INFO");
 
                         // Mark Complete
@@ -132,38 +146,50 @@ namespace AmazonSDK {
 
         private static async Task<HttpStatusCode> ApiRequest(MessageQueueModel model) {
             try {
-                LogDetails("Generate token", "INFO");
-                //get token
-                string pwd = RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString() + model.UserName;
-                string encrypt_key = Crypto.EncryptStringAES(pwd, RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString());
+                using (var s = HibernateSession.GetCurrentSession(true, "_RV")) {
+                    LogDetails("session open", "INFO");
+                    using (var tx = s.BeginTransaction()) {
+                        LogDetails("Generate token", "INFO");
+                        //get token
+                        string pwd = RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString() + model.UserName;
+                        string encrypt_key = Crypto.EncryptStringAES(pwd, RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString());
 
-                var client = new HttpClient();
-                var param = new List<KeyValuePair<string, string>>();
-                param.Add(new KeyValuePair<string, string>("username", model.UserName)); // hash it 
-                param.Add(new KeyValuePair<string, string>("password", encrypt_key));
-                param.Add(new KeyValuePair<string, string>("grant_type", "password"));
-                param.Add(new KeyValuePair<string, string>("client_id", "self"));
-                var url = System.Configuration.ConfigurationManager.AppSettings["HostName"];
-                var req = new HttpRequestMessage(HttpMethod.Post, url) { Content = new FormUrlEncodedContent(param) };
-                TokenModel tokenModel = new TokenModel();
-                HttpResponseMessage response1 = await client.SendAsync(req);
+                        //strore key to db
+                        TokenIdentifierModel tokenIdentifierModel = new TokenIdentifierModel();
+                        tokenIdentifierModel.key = encrypt_key;
+                        s.Save(tokenIdentifierModel);
+                        tx.Commit();
+                        s.Flush();
 
-                LogDetails("Token process complete", "INFO");
-                HttpContent responseContent1 = response1.Content;
-                using (var reader = new StreamReader(await responseContent1.ReadAsStreamAsync())) {
-                    var result1 = reader.ReadToEnd();
-                    tokenModel = Newtonsoft.Json.JsonConvert.DeserializeObject<TokenModel>(result1.ToString());
-                }
+                        var client = new HttpClient();
+                        var param = new List<KeyValuePair<string, string>>();
+                        param.Add(new KeyValuePair<string, string>("username", model.UserName)); // hash it 
+                        param.Add(new KeyValuePair<string, string>("password", encrypt_key));
+                        param.Add(new KeyValuePair<string, string>("grant_type", "password"));
+                        param.Add(new KeyValuePair<string, string>("client_id", "self"));
+                        var url = "http://localhost:3751/Token"; // System.Configuration.ConfigurationManager.AppSettings["HostName"];
+                        var req = new HttpRequestMessage(HttpMethod.Post, url) { Content = new FormUrlEncodedContent(param) };
+                        TokenModel tokenModel = new TokenModel();
+                        HttpResponseMessage response1 = await client.SendAsync(req);
 
-                if (!string.IsNullOrEmpty(tokenModel.access_token)) {
-                    var apiUrl = model.ApiUrl ?? "";
-                    if (!string.IsNullOrEmpty(apiUrl)) {
-                        LogDetails("Calling Api", "INFO");
-                        client = new HttpClient();
-                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenModel.access_token);
-                        HttpResponseMessage response = await client.GetAsync(apiUrl);
-                        LogDetails("Calling Api complete", "INFO");
-                        return response.StatusCode;
+                        LogDetails("Token process complete", "INFO");
+                        HttpContent responseContent1 = response1.Content;
+                        using (var reader = new StreamReader(await responseContent1.ReadAsStreamAsync())) {
+                            var result1 = reader.ReadToEnd();
+                            tokenModel = Newtonsoft.Json.JsonConvert.DeserializeObject<TokenModel>(result1.ToString());
+                        }
+
+                        if (!string.IsNullOrEmpty(tokenModel.access_token)) {
+                            var apiUrl = model.ApiUrl ?? "";
+                            if (!string.IsNullOrEmpty(apiUrl)) {
+                                LogDetails("Calling Api", "INFO");
+                                client = new HttpClient();
+                                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenModel.access_token);
+                                HttpResponseMessage response = await client.GetAsync(apiUrl);
+                                LogDetails("Calling Api complete", "INFO");
+                                return response.StatusCode;
+                            }
+                        }
                     }
                 }
             } catch (Exception ex) {
