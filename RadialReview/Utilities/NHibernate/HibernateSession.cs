@@ -423,7 +423,7 @@ namespace RadialReview.Utilities {
 			enversConf.Audit<ProcessDef_CamundaFile>();
 			enversConf.Audit<ProcessInstance_Camunda>();
 			enversConf.Audit<Task_Camunda>();
-            enversConf.Audit<TokenIdentifierModel>();
+            enversConf.Audit<TokenIdentifier>();
 			nhConf.IntegrateWithEnvers(enversConf);
         }
 

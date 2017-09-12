@@ -182,7 +182,7 @@ namespace RadialReview.Accessors
             todo.Ordering = -todo.Id;
             s.Update(todo);
 
-            await HooksRegistry.Each<ITodoHook>(x => x.CreateTodo(null, todo));
+            await HooksRegistry.Each<ITodoHook>(x => x.CreateTodo(s, todo));
 
             if (todo.TodoType == TodoType.Personal)
             {

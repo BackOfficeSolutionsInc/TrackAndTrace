@@ -133,31 +133,27 @@ namespace RadialReview {
 
 
             public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context) {
-                string encrypt_key = string.Empty;
+                bool encrypt_key = false;
                 try {
-                    encrypt_key = Crypto.DecryptStringAES(context.Password, RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString());
-                } catch (Exception) {
-
-                }
-
-                var key = RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString() + context.UserName;
-                using (var s = HibernateSession.GetCurrentSession()) {
-                    using (var tx = s.BeginTransaction()) {
-                        var getKey = s.QueryOver<TokenIdentifierModel>().Where(x => x.key == key).SingleOrDefault();
-                        if (getKey == null) {
-                            encrypt_key = string.Empty;
-                        } else {
-                            s.Delete(getKey);
-                            tx.Commit();
-                            s.Flush();
+                    using (var s = HibernateSession.GetCurrentSession()) {
+                        using (var tx = s.BeginTransaction()) {
+                            var getKey = s.Get<TokenIdentifier>(context.Password);
+                            if (getKey != null) {
+                                s.Delete(getKey);
+                                tx.Commit();
+                                s.Flush();
+                                encrypt_key = true;
+                            }
                         }
                     }
+                } catch (Exception) {
                 }
 
 
-                var user = ((key == encrypt_key) ?
-                    await UserManager.FindByNameAsync(context.UserName) :
-                    await UserManager.FindAsync(context.UserName, context.Password));
+                //var user = ((key == encrypt_key) ?
+                var user = ((encrypt_key) ?
+               await UserManager.FindByNameAsync(context.UserName) :
+               await UserManager.FindAsync(context.UserName, context.Password));
                 //await UserManager.FindAsync(context.UserName, context.Password);
 
                 if (user == null) {

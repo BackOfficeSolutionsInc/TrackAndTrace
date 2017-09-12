@@ -76,15 +76,14 @@ namespace RadialReview.Areas.CoreProcess.Models {
         public Type type { get; set; }
     }
 
-    public class TokenIdentifierModel {
-        public virtual long Id { get; set; }
-        public virtual string key { get; set; }
+    public class TokenIdentifier {
+        public virtual string TokenKey { get; set; }
     }
 
-    public class TokenIdentifierModelMap : ClassMap<TokenIdentifierModel> {
-        public TokenIdentifierModelMap() {
-            Id(x => x.Id);
-            Map(x => x.key);
+    public class TokenIdentifierMap : ClassMap<TokenIdentifier> {
+        public TokenIdentifierMap() {
+            Id(x => x.TokenKey);
+           // Map(x => x.TokenKey);
         }
     }
 
