@@ -1,40 +1,80 @@
 ﻿
 using CamundaCSharpClient.Model.Deployment;
+using LambdaSerializer;
+using NHibernate;
 using RadialReview.Areas.CoreProcess.Accessors;
 using RadialReview.Areas.CoreProcess.CamundaComm;
 using RadialReview.Areas.CoreProcess.Models;
 using RadialReview.Areas.CoreProcess.Models.Process;
 using RadialReview.Controllers;
-using RadialReview.Utilities.CoreProcess;
+using RadialReview.Hooks;
+using RadialReview.Models.Todo;
+using RadialReview.Utilities;
+using RadialReview.Utilities.Hooks;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
-namespace RadialReview.Areas.CoreProcess.Controllers
-{
-    public class HomeController : BaseController
-    {
-        [Access(AccessLevel.Any)]
+namespace RadialReview.Areas.CoreProcess.Controllers {
+    public class HomeController : BaseController {
+        [Access(AccessLevel.Radial)]
         // GET: CoreProcess/Home
-        public async Task<ActionResult> Index()
-        {
+        public async Task<ActionResult> Index() {
             //TaskAccessor taskAccessor = new TaskAccessor();
             //var getTaskList = taskAccessor.GetAllTasks(new RadialReview.Models.UserOrganizationModel());
 
-            ProcessDefAccessor processDef = new ProcessDefAccessor();
+            try {
+                ProcessDefAccessor processDef = new ProcessDefAccessor();
 
-            if (true)
-            {
+                ISession s = HibernateSession.GetCurrentSession();
+                TodoModel todo = new TodoModel();
+                //var task = HooksRegistry.Each<ITodoHook>(x => x.CreateTodo(s, todo));
+
+                Expression<Func<User, bool>> lambda1 = x => x.Age > 20;
+
+                var serializedLambda = JsonNetAdapter.Serialize(lambda1);
+                var deserializedLambda = JsonNetAdapter.Deserialize<Expression<Func<User, bool>>>(serializedLambda);
+                deserializedLambda.Compile();
+
+                Expression<Func<ITodoHook, Task>> lambda = x => x.CreateTodo(null, todo);
+                var serializedLambda1 = JsonNetAdapter.Serialize(lambda);
+                var deserializedLambda1 = JsonNetAdapter.Deserialize<Expression<Func<IHook, Task>>>(serializedLambda1);
+
+                deserializedLambda1.Compile();
+
+                //await HooksRegistry.Each<ITodoHook>(deserializedLambda1);
+
+                //await deserializedLambda1.Compile()(new TodoWebhook());
+
+
+            } catch (Exception ex) {
+
+                throw;
+            }
+
+
+            //string message = Newtonsoft.Json.JsonConvert.SerializeObject(task);
+
+            //object taskObj = Newtonsoft.Json.JsonConvert.DeserializeObject(message);
+
+            //Task t = (Task)taskObj;
+
+
+
+            if (false) {
                 TaskViewModel tskView = new TaskViewModel();
                 tskView.Assignee = 1;
                 tskView.description = "DescTest1";
                 tskView.name = "NameTest1";
                 tskView.Id = "Test1";
+
+                //MessageQueueModel.CreateHookRegistryAction(tskView,new SerializableHook() { lambda= });
 
                 MessageQueueModel t1 = new MessageQueueModel();
                 t1.Identifier = Guid.NewGuid().ToString();
@@ -75,15 +115,13 @@ namespace RadialReview.Areas.CoreProcess.Controllers
             }
 
             //get ProcessDef By Key
-            if (false)
-            {
+            if (false) {
                 // var getProcessDef = processDef.GetProcessDefByKey(new RadialReview.Models.UserOrganizationModel(), "calculate");
             }
 
 
             //deploy process
-            if (true)
-            {
+            if (true) {
 
                 //string fileName = "calculation.bpmn";
                 //var filePath = string.Format("~/Areas/CoreProcess/{0}", fileName);
@@ -108,8 +146,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers
 
 
             //Upload files to server
-            if (true)
-            {
+            if (true) {
                 //get processDef list
                 //var getProcessDefList = processDef.GetList(GetUser());
 

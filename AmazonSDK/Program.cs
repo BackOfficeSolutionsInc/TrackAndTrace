@@ -1,12 +1,15 @@
 ﻿using AmazonSDK.NHibernate;
+using LambdaSerializer;
 using NHibernate;
 using RadialReview.Accessors;
 using RadialReview.Areas.CoreProcess.Models;
 using RadialReview.Areas.CoreProcess.Models.Process;
 using RadialReview.Controllers;
+using RadialReview.Hooks;
 using RadialReview.Models;
 using RadialReview.Utilities.CoreProcess;
 using RadialReview.Utilities.Encrypt;
+using RadialReview.Utilities.Hooks;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,6 +24,16 @@ using System.Threading.Tasks;
 namespace AmazonSDK {
 	class Program {
 		static void Main(string[] args) {
+            while (true) {
+                Console.WriteLine("Start: " + DateTime.Now.ToString("MM_dd_yyyy_HH_mm_ss"));
+                Thread t = new Thread(Scheduler);
+                t.Start();
+                Thread.Sleep(500);
+            }
+            //Scheduler();
+        }
+
+        private static void Scheduler() {
 			LogDetails("Start", "INFO");
 			List<string> receiptHandleList = new List<string>();
 			List<MessageQueueModel> getMessages = AsyncHelper.RunSync<List<MessageQueueModel>>(() => GetMessages());  //get List of Messages
@@ -46,13 +59,15 @@ namespace AmazonSDK {
 					LogDetails("ApiRequest --> Complete ", "INFO");
 
 					// Mark Complete
-					if (status == HttpStatusCode.OK) {
+                        if (status != HttpStatusCode.OK) {
+                            throw new Exception("An error ocurred during HTTP Request." + " Status Code:" + status);
+                        }
+                    
+
+                    // Mark Complete
 						LogDetails("MarkComplete --> Start ", "INFO");
 						MarkComplete(item);
 						LogDetails("MarkComplete --> Complete ", "INFO");
-					} else {
-						AsyncHelper.RunSync(() => SendMessage(item));
-					}
 				} catch (Exception ex) {
 					AsyncHelper.RunSync(() => SendMessage(item));
 					LogDetails(ex.Message, "ERROR");
@@ -60,7 +75,6 @@ namespace AmazonSDK {
 				}
 			}
 		}
-
 
 		private static void MarkStarted(MessageQueueModel model) {
 
@@ -70,10 +84,9 @@ namespace AmazonSDK {
 					LogDetails("transaction lock", "INFO");
 					try {
 						var getMessage = s.QueryOver<MessageQueue>().Where(x => x.IdentifierId == model.Identifier
-						    && x.UserName == model.UserName
-						    && x.Status == MessageQueueStatus.Start.ToString()
+						&& x.UserName == model.UserName
+						&& x.Status == MessageQueueStatus.Start.ToString()
 						).SingleOrDefault();
-
 						LogDetails("Retreive data [MessageQueue] from DB", "INFO");
 
 						if (getMessage == null) {
@@ -107,14 +120,24 @@ namespace AmazonSDK {
 
 		private static async Task<HttpStatusCode> ApiRequest(MessageQueueModel model) {
 			try {
+                using (var s = HibernateSession.GetCurrentSession(true, "_RV")) {
+                    LogDetails("session open", "INFO");
+                    using (var tx = s.BeginTransaction()) {
 				LogDetails("Generate token", "INFO");
 				//get token
 				string pwd = RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString() + model.UserName;
 				string encrypt_key = Crypto.EncryptStringAES(pwd, RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString());
 
+                        //strore key to db
+                        TokenIdentifier tokenIdentifierModel = new TokenIdentifier();
+                        tokenIdentifierModel.TokenKey = encrypt_key;
+                        s.Save(tokenIdentifierModel);
+                        tx.Commit();
+                        s.Flush();
+
 				var client = new HttpClient();
 				var param = new List<KeyValuePair<string, string>>();
-				param.Add(new KeyValuePair<string, string>("username", model.UserName));
+                        param.Add(new KeyValuePair<string, string>("username", model.UserName)); // hash it 
 				param.Add(new KeyValuePair<string, string>("password", encrypt_key));
 				param.Add(new KeyValuePair<string, string>("grant_type", "password"));
 				param.Add(new KeyValuePair<string, string>("client_id", "self"));
@@ -139,6 +162,8 @@ namespace AmazonSDK {
 						HttpResponseMessage response = await client.GetAsync(apiUrl);
 						LogDetails("Calling Api complete", "INFO");
 						return response.StatusCode;
+                            }
+                        }
 					}
 				}
 			} catch (Exception ex) {
@@ -175,8 +200,11 @@ namespace AmazonSDK {
 		}
 
 		private static void LogDetails(string message, string type) {
+            try {
 			string errorLogPath = @"c:\\TestFile\\AmzonSDK_err_log.txt";
 			File.AppendAllText(errorLogPath, Environment.NewLine + type + "==>:" + message + "_" + DateTime.Now.ToString("MM_dd_yyyy_HH_mm_ss"));
+            } catch (Exception) {
+            }
 		}
 
 		private static async Task<List<MessageQueueModel>> GetMessages() {

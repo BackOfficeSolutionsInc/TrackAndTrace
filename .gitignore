@@ -125,4 +125,4 @@ RadialReview/Web.*.config
 RadialReview/Web.config
 
 #DNX
-project.lock.json
+RadialReview/project.lock.json

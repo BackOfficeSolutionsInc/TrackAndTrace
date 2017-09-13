@@ -5017,7 +5017,7 @@ namespace RadialReview.Accessors {
             } else if (model.Type == typeof(AngularTodo).Name) {
                 var m = (AngularTodo)model;
                 if (m.TodoType == TodoType.Milestone) {
-                    RockAccessor.EditMilestone(caller, -m.Id, m.Name, m.DueDate, status: m.Complete == true ? MilestoneStatus.Done : MilestoneStatus.NotDone);
+                    RockAccessor.EditMilestone(caller, -m.Id, m.Name, m.DueDate, status: m.Complete == true ? MilestoneStatus.Done : MilestoneStatus.NotDone,connectionId:connectionId);
                 } else {
                     await UpdateTodo(caller, m.Id, m.Name ?? "", null, m.DueDate, m.Owner.NotNull(x => (long?)x.Id), m.Complete, connectionId);
                 }

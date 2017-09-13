@@ -88,10 +88,10 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static void EditMilestone(UserOrganizationModel caller, long milestoneId, string name = null, DateTime? duedate = null, bool? required = null, MilestoneStatus? status = null) {
+		public static void EditMilestone(UserOrganizationModel caller, long milestoneId, string name = null, DateTime? duedate = null, bool? required = null, MilestoneStatus? status = null,string connectionId = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					using (var rt = RealTimeUtility.Create()) {
+					using (var rt = RealTimeUtility.Create(connectionId)) {
 
 						var ms = s.Get<Milestone>(milestoneId);
 
@@ -126,7 +126,7 @@ namespace RadialReview.Accessors {
 						var rock = s.Get<RockModel>(ms.RockId);
 
 						var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-						var group = hub.Clients.Group(MeetingHub.GenerateUserId(rock.ForUserId));
+						var group = hub.Clients.Group(MeetingHub.GenerateUserId(rock.ForUserId),connectionId);
 						group.update(new AngularUpdate() { new AngularTodo(ms, rock.AccountableUser) });
 					}
 				}

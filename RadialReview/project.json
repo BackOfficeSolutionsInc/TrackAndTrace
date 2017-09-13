@@ -1,5 +1,6 @@
 ﻿{
   "dependencies": {
+    "Aq.ExpressionJsonSerializer": "0.18.0",
     "AWSSDK": "2.3.55.2",
     "BCXAPI": "1.0.4554.21216",
     "bootstrap": "3.3.7",

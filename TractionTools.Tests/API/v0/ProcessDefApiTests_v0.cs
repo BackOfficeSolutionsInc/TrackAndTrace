@@ -31,9 +31,14 @@ using System.Management;
 using System.Runtime.InteropServices;
 using System.Threading;
 using RadialReview.Exceptions;
-using RadialReview;
+using NHibernate;
+using System.Linq.Expressions;
+using LambdaSerializer;
+using RadialReview.Utilities.Hooks;
+using RadialReview.Hooks;
+using RadialReview.Utilities.Encrypt;
+using RadialReview.Areas.CoreProcess.Models;
 using RadialReview.Areas.CoreProcess.CamundaComm;
-using RadialReview.Utilities.Synchronize;
 
 namespace TractionTools.Tests.Api {
     [TestClass]
@@ -386,5 +391,53 @@ namespace TractionTools.Tests.Api {
             return startProcess;
         }
 
+      
+
+        [TestMethod]
+        [TestCategory("Api_V0")]
+        public async Task TestWebhook() {
+
+            //var c = await Ctx.Build();
+
+            HooksRegistry.RegisterHook(new TodoWebhook());
+
+            try {
+                ProcessDefAccessor processDef = new ProcessDefAccessor();
+
+                ISession s = HibernateSession.GetCurrentSession();
+                TodoModel todo = new TodoModel();
+                //var task = HooksRegistry.Each<ITodoHook>(x => x.CreateTodo(s, todo));                
+
+                Expression<Func<ITodoHook, Task>> lambda = x => x.CreateTodo(null, todo);
+                SerializableHook obj = new SerializableHook();
+                obj.lambda = lambda;
+                obj.type = lambda.GetType();
+
+                var serializedLambda1 = JsonNetAdapter.Serialize(obj);
+                var deserializedLambda1 = JsonNetAdapter.Deserialize<SerializableHook>(serializedLambda1);
+
+                dynamic func = JsonNetAdapter.Deserialize(deserializedLambda1.lambda.ToString(), deserializedLambda1.type);
+
+                await HooksRegistry.Each<ITodoHook>(func);
+
+            } catch (Exception ex) {
+
+                throw;
+            }
+
+            //Assert.IsTrue(string.IsNullOrEmpty(getTask.Id));
+        }
+
+
+        [TestMethod]
+        [TestCategory("Api_V0")]
+        public async Task TestEncryptedPassword() {
+            string userName = "Test";
+            string pwd = RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString() + userName;
+            string encrypt_key = Crypto.EncryptStringAES(pwd, RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString());
+            string _encrypt_key = Crypto.EncryptStringAES(pwd, RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString());
+
+            Assert.AreNotEqual(encrypt_key, _encrypt_key);
+        }
     }
 }

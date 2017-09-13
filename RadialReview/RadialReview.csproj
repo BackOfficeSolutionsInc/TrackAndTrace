@@ -842,6 +842,7 @@
     <Compile Include="Utilities\ReflectionUtility.cs" />
     <Compile Include="Utilities\ResourceUtility.cs" />
     <Compile Include="Utilities\SearchUtil.cs" />
+    <Compile Include="Utilities\Serializers\JsonSerializer.cs" />
     <Compile Include="Utilities\Serializers\AngularSerializer.cs" />
     <Compile Include="Utilities\SetUtility.cs" />
     <Compile Include="Utilities\AskableUtility.cs" />
@@ -2569,7 +2570,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>3751</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://localhost:44300/</IISUrl>
+          <IISUrl>https://localhost:44300</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>http://radial.elasticbeanstalk.com/</CustomServerUrl>

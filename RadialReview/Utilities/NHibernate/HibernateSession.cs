@@ -45,6 +45,7 @@ using RadialReview.Models.Rocks;
 using RadialReview.Areas.People.Models.Survey;
 using static RadialReview.Models.Issues.IssueModel;
 using RadialReview.Areas.CoreProcess.Models.MapModel;
+using RadialReview.Areas.CoreProcess.Models;
 
 //using Microsoft.VisualStudio.Profiler;
 
@@ -422,6 +423,7 @@ namespace RadialReview.Utilities {
 			enversConf.Audit<ProcessDef_CamundaFile>();
 			enversConf.Audit<ProcessInstance_Camunda>();
 			enversConf.Audit<Task_Camunda>();
+            enversConf.Audit<TokenIdentifier>();
 			nhConf.IntegrateWithEnvers(enversConf);
         }
 
