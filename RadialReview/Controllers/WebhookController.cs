@@ -15,6 +15,7 @@ using Microsoft.AspNet.WebHooks;
 using RadialReview.Models.Webhook;
 using RadialReview.Models.ViewModels;
 using System.Net.Http;
+using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
 {
@@ -65,7 +66,6 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.UserOrganization)]
         public ActionResult Index()
         {
-
             List<WebHookViewModel> webHook = new List<WebHookViewModel>();
             WebhooksAccessor webhookAccessor = new WebhooksAccessor();
             var getallwebhook = webhookAccessor.GetAllWebHook();
@@ -98,6 +98,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.UserOrganization)]
         public PartialViewResult Create(string id = "")
         {
+            Config.ThrowNotImplementedOnProduction();
             WebHookViewModel webHook = new WebHookViewModel();
             WebhooksAccessor webhookAccessor = new WebhooksAccessor();
 
@@ -282,7 +283,7 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.UserOrganization)]
         public JsonResult Create(WebHookViewModel webhookModel)
         {
-
+            Config.ThrowNotImplementedOnProduction();
             string email = GetUser().GetEmail();
 
             WebHook webhook = new WebHook()
@@ -326,8 +327,8 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public JsonResult Delete(string id)
-        {
+        public JsonResult Delete(string id) {
+            Config.ThrowNotImplementedOnProduction();
             WebhooksAccessor webhookAccessor = new WebhooksAccessor();
             var s = webhookAccessor.DeleteWebHook(GetUser().GetEmail(), id);
             return Json(ResultObject.SilentSuccess(s), JsonRequestBehavior.AllowGet);
@@ -395,9 +396,10 @@ namespace RadialReview.Controllers
         [Access(AccessLevel.UserOrganization)]
         public JsonResult DeleteEvents(long id)
         {
-            WebhooksAccessor webhookAccessor = new WebhooksAccessor();
-            webhookAccessor.DeleteWebHookEvents(id);
-            return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+            throw new NotImplementedException();
+            //WebhooksAccessor webhookAccessor = new WebhooksAccessor();
+            //webhookAccessor.DeleteWebHookEvents(id);
+            //return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
         #endregion
 

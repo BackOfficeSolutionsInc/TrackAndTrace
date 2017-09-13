@@ -70,7 +70,7 @@ namespace RadialReview.Api.V0 {
 
         [Route("L10/{recurrenceId}/todo")]
         [HttpPost]
-        public async Task<bool> AttachTodoL10(long recurrenceId, [FromBody]string name, [FromBody]long? ownerId = null, [FromBody]DateTime? duedate = null) {
+        public async Task<bool> CreateTodoL10(long recurrenceId, [FromBody]string name, [FromBody]long? ownerId = null, [FromBody]DateTime? duedate = null) {
             if (!duedate.HasValue) {
                 duedate = DateTime.Now.AddDays(7);
             }

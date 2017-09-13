@@ -258,7 +258,7 @@ namespace RadialReview.Accessors {
             return output.SelectMany(x => x);
         }
 
-
+        [Obsolete("Does not check if caller can view ResponsibilityGroups",false)]
         public static List<ResponsibilityGroupModel> GetResponsibilityGroupsForRgm(ISession s, PermissionsUtility permissions, long rgmId) {
             var rgm = s.Get<ResponsibilityGroupModel>(rgmId);
             permissions.ViewRGM(rgmId);

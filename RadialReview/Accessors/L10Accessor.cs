@@ -4901,12 +4901,12 @@ namespace RadialReview.Accessors {
                             //.JoinAlias(x=>x.ForRock,()=>rockAlias)
                             //.Where(x=> (rockAlias.DeleteTime == null || rockAlias.DeleteTime >= range.StartTime))
                             .List();
-                        histRock = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
-                           .Where(x => x.DeleteTime != null && x.L10Recurrence.Id == recurrenceId)
-                           .Where(range.Filter<L10Recurrence.L10Recurrence_Rocks>())
-                           .JoinAlias(x=>x.ForRock,()=>rockAlias)
-                           .Where(x=> (rockAlias.DeleteTime == null || rockAlias.DeleteTime >= range.StartTime))
-                           .List();
+                        //histRock = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
+                        //   .Where(x => x.DeleteTime != null && x.L10Recurrence.Id == recurrenceId)
+                        //   .Where(range.Filter<L10Recurrence.L10Recurrence_Rocks>())
+                        //   .JoinAlias(x=>x.ForRock,()=>rockAlias)
+                        //   .Where(x=> (rockAlias.DeleteTime == null || rockAlias.DeleteTime >= range.StartTime))
+                        //   .List();
 
 
                         allRocks.AddRange(histRock.Select(x => new AngularRock(x.ForRock)));

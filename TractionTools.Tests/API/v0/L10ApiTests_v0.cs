@@ -296,7 +296,7 @@ namespace TractionTools.Tests.API.v0 {
 			var reccurenceId = await L10.CreateL10("Test L10");
 			var name = "Test To Do Meeting";
 
-			await L10.AttachTodoL10(reccurenceId, name, c.E1.Id);
+			await L10.CreateTodoL10(reccurenceId, name, c.E1.Id);
 
 			var getToDoList = L10Accessor.GetAllTodosForRecurrence(c.E1, reccurenceId);
 

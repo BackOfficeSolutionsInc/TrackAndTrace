@@ -70,7 +70,7 @@ namespace TractionTools.Tests.Api {
             ActOnProcessAndChildren(Server, x => MinimizeWindow(x.MainWindowHandle));
             Server.WaitForExit();
             ActOnProcessAndChildren(Server, x => MinimizeWindow(x.MainWindowHandle));
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
 
             AsyncHelper.RunSync(() => {
                 return new CommClass().DeleteAllProcess_Unsafe(TEST_PROCESS_DEF_NAME);
@@ -433,9 +433,9 @@ namespace TractionTools.Tests.Api {
         [TestCategory("Api_V0")]
         public async Task TestEncryptedPassword() {
             string userName = "Test";
-            string pwd = RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString() + userName;
-            string encrypt_key = Crypto.EncryptStringAES(pwd, RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString());
-            string _encrypt_key = Crypto.EncryptStringAES(pwd, RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString());
+            string pwd = Config.SchedulerSecretKey() + userName;
+            string encrypt_key = Crypto.EncryptStringAES(pwd, Config.SchedulerSecretKey());
+            string _encrypt_key = Crypto.EncryptStringAES(pwd, Config.SchedulerSecretKey());
 
             Assert.AreNotEqual(encrypt_key, _encrypt_key);
         }

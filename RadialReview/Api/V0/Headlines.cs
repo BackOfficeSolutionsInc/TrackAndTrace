@@ -32,7 +32,7 @@ namespace RadialReview.Api.V0
         [HttpDelete]
         public async Task RemoveHeadlines(long id)
         {
-            await L10Accessor.Remove(GetUser(), new AngularHeadline() { Id = id }, 0, null);
+            await L10Accessor.Remove(GetUser(), new AngularHeadline() { Id = id }, 0 /*RecurrenceId is not needed*/, null);
         }
     }
 }

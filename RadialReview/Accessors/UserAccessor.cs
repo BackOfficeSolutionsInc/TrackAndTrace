@@ -389,14 +389,14 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perm = PermissionsUtility.Create(s, caller);
-					var output = EditUser(s, perm, userOrganizationId, isManager, manageringOrganization, evalOnly);
+					var output = EditUserPermissionLevel(s, perm, userOrganizationId, isManager, manageringOrganization, evalOnly);
 					tx.Commit();
 					s.Flush();
 					return output;
 				}
 			}
 		}
-		public static EditUserResult EditUser(ISession s, PermissionsUtility perm, long userOrganizationId, bool? isManager = null, bool? manageringOrganization = null, bool? evalOnly = null) {
+		public static EditUserResult EditUserPermissionLevel(ISession s, PermissionsUtility perm, long userOrganizationId, bool? isManager = null, bool? manageringOrganization = null, bool? evalOnly = null) {
 			var o = new EditUserResult();
 			using (var rt = RealTimeUtility.Create()) {
 
@@ -418,8 +418,8 @@ namespace RadialReview.Accessors {
 						o.OverrideManageringOrganization = found.ManagingOrganization;
 						o.Errors.Add("You cannot unmanage this organization yourself.");
 					} else {
-						perm/*.ManagesUserOrganization(userOrganizationId, true)*/.ManagingOrganization(perm.GetCaller().Organization.Id);
-						if (found.ManagingOrganization && !manageringOrganization.Value) {
+						perm/*.ManagesUserOrganization(userOrganizationId, true)*/.ManagingOrganization(found.Organization.Id); // ! Changed the organization from callers, to found
+                        if (found.ManagingOrganization && !manageringOrganization.Value) {
 							//maybe set manager to false
 							if (!DeepAccessor.Users.HasChildren(s, perm, userOrganizationId)) {
 								isManager = false;

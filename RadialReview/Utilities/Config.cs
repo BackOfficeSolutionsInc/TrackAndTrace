@@ -104,6 +104,12 @@ namespace RadialReview.Utilities {
 
         }
 
+        [Obsolete("Must remove when ready for production")]
+        public static void ThrowNotImplementedOnProduction() {
+            if (!IsLocal())
+                throw new NotImplementedException();
+        }
+
         public static long TextInNumber() {
             return 13217665599;
         }
@@ -156,6 +162,13 @@ namespace RadialReview.Utilities {
                     CoachThatReferred = 6,
                 }
             };
+        }
+
+        public static string SchedulerSecretKey() {
+            var found = GetAppSetting("Scheduler_SecretKey", null);
+            if (string.IsNullOrWhiteSpace(found))
+                throw new Exception("Scheduler Key not found in file.");
+            return found;
         }
 
         //public static string PeopleAreaName() {

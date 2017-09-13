@@ -152,7 +152,7 @@ namespace RadialReview
                             var getKey = s.Get<TokenIdentifier>(context.Password);
                             if (getKey != null)
                             {
-                                string decrypt_key = Crypto.DecryptStringAES(getKey.TokenKey, RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString());
+                                string decrypt_key = Crypto.DecryptStringAES(getKey.TokenKey, Config.SchedulerSecretKey());
                                 string userName = decrypt_key.Split('_')[1];
                                 if (userName == context.UserName)
                                 {

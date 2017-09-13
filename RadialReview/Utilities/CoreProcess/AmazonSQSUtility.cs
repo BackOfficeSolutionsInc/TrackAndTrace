@@ -78,12 +78,16 @@ namespace RadialReview.Areas.CoreProcess.Models {
 
     public class TokenIdentifier {
         public virtual string TokenKey { get; set; }
+        public virtual DateTime CreateTime { get; set; }
+        public TokenIdentifier() {
+            CreateTime = DateTime.UtcNow;
+        }
     }
 
     public class TokenIdentifierMap : ClassMap<TokenIdentifier> {
         public TokenIdentifierMap() {
             Id(x => x.TokenKey).GeneratedBy.Assigned();
-           // Map(x => x.TokenKey);
+            Map(x => x.CreateTime);
         }
     }
 

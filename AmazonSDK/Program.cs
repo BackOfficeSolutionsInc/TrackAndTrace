@@ -7,6 +7,7 @@ using RadialReview.Areas.CoreProcess.Models.Process;
 using RadialReview.Controllers;
 using RadialReview.Hooks;
 using RadialReview.Models;
+using RadialReview.Utilities;
 using RadialReview.Utilities.CoreProcess;
 using RadialReview.Utilities.Encrypt;
 using RadialReview.Utilities.Hooks;
@@ -105,7 +106,7 @@ namespace AmazonSDK {
 
         private static void MarkStarted(MessageQueueModel model) {
 
-            using (var s = HibernateSession.GetCurrentSession()) {
+            using (var s = NHibernate.HibernateSession.GetCurrentSession()) {
                 LogDetails("session open", "INFO");
                 using (var tx = s.BeginTransaction(System.Data.IsolationLevel.Serializable)) {
                     LogDetails("transaction lock", "INFO");
@@ -147,13 +148,13 @@ namespace AmazonSDK {
 
 		private static async Task<HttpStatusCode> ApiRequest(MessageQueueModel model) {
 			try {
-                using (var s = HibernateSession.GetCurrentSession(true, "_RV")) {
+                using (var s = NHibernate.HibernateSession.GetCurrentSession(true, "_RV")) {
                     LogDetails("session open", "INFO");
                     using (var tx = s.BeginTransaction()) {
                         LogDetails("Generate token", "INFO");
                         //get token
-                        string pwd = RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString() + model.UserName;
-                        string encrypt_key = Crypto.EncryptStringAES(pwd, RadialReview.Utilities.Config.GetAppSetting("AMZ_secretkey").ToString());
+                        string pwd = Config.SchedulerSecretKey() + model.UserName;
+                        string encrypt_key = Crypto.EncryptStringAES(pwd, Config.SchedulerSecretKey());
 
                         //strore key to db
                         TokenIdentifier tokenIdentifierModel = new TokenIdentifier();
@@ -199,7 +200,7 @@ namespace AmazonSDK {
             return HttpStatusCode.NotFound;
         }
         private static void MarkComplete(MessageQueueModel model) {
-            using (var s = HibernateSession.GetCurrentSession()) {
+            using (var s = NHibernate.HibernateSession.GetCurrentSession()) {
                 LogDetails("session open", "INFO");
                 using (var tx = s.BeginTransaction(System.Data.IsolationLevel.Serializable)) {
                     try {

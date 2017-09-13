@@ -476,7 +476,7 @@ namespace RadialReview.Accessors {
                     if (oldUserId != null) {
                         //Remove Manager status
                         if (!DeepAccessor.Users.HasChildren(s, perms, oldUserId.Value)) {// !DeepAccessor.HasChildren(s, node.ParentNode.Id)) {
-                            UserAccessor.EditUser(s, perms, oldUserId.Value, false);
+                            UserAccessor.EditUserPermissionLevel(s, perms, oldUserId.Value, false);
                             s.Flush();
                             var u = s.Get<UserOrganizationModel>(oldUserId.Value);
                             u.ManagerAtOrganization = false;
@@ -497,7 +497,7 @@ namespace RadialReview.Accessors {
                     if (DeepAccessor.HasChildren(s, n.Id)) {
                         //UPDATE MANAGER STATUS,
                         if (!n.User.ManagerAtOrganization) {
-                            UserAccessor.EditUser(s, perms, n.User.Id, true);
+                            UserAccessor.EditUserPermissionLevel(s, perms, n.User.Id, true);
                             n.User.ManagerAtOrganization = true;
                         }
                         //ADD SUBORDINATES
@@ -745,7 +745,7 @@ namespace RadialReview.Accessors {
 
                         if (node.ParentNode.User != null && node.ParentNode.User.ManagerAtOrganization) {
                             if (!DeepAccessor.Users.HasChildren(s, perms, node.ParentNode.User.Id)) {
-                                UserAccessor.EditUser(s, perms, node.ParentNode.User.Id, false);
+                                UserAccessor.EditUserPermissionLevel(s, perms, node.ParentNode.User.Id, false);
                                 node.ParentNode.User.ManagerAtOrganization = false;
                             }
                         }
@@ -828,7 +828,7 @@ namespace RadialReview.Accessors {
                             }
 
                             if (oldParentNode.User != null && oldParentNode.User.ManagerAtOrganization && !DeepAccessor.HasChildren(s, oldParentNode.Id)) {
-                                UserAccessor.EditUser(s, perms, oldParentNode.User.Id, false);
+                                UserAccessor.EditUserPermissionLevel(s, perms, oldParentNode.User.Id, false);
                                 oldParentNode.User.ManagerAtOrganization = false;
                             }
                         }
@@ -838,7 +838,7 @@ namespace RadialReview.Accessors {
                         DeepAccessor.Add(s, newParentNode, node, node.OrganizationId, now);
 #pragma warning restore CS0618 // Type or member is obsolete
                         if (newParent.User != null && !newParentNode.User.ManagerAtOrganization) {
-                            UserAccessor.EditUser(s, perms, newParentNode.User.Id, true);
+                            UserAccessor.EditUserPermissionLevel(s, perms, newParentNode.User.Id, true);
                             newParentNode.User.ManagerAtOrganization = true;
                         }
 
@@ -944,7 +944,7 @@ namespace RadialReview.Accessors {
             }
 
             if (parent.User != null && !parent.User.ManagerAtOrganization) {
-                UserAccessor.EditUser(s, perms, parent.User.Id, true);
+                UserAccessor.EditUserPermissionLevel(s, perms, parent.User.Id, true);
                 parent.User.ManagerAtOrganization = true;
             }
 

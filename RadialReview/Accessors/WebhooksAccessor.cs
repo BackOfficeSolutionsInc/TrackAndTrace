@@ -281,22 +281,22 @@ namespace RadialReview.Accessors
         }
 
         #region WebHook Events methods
-        public void DeleteWebHookEvents(long id)
-        {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
-                    //var deleteWebHookEvents = s.QueryOver<WebhookEvents>().Where(m => m.Id == id).SingleOrDefault();
-                    //if (deleteWebHookEvents != null) {
-                    //	s.Delete(deleteWebHookEvents);
-                    //	tx.Commit();
-                    //	s.Flush();
-                    //}
+        //public void DeleteWebHookEvents(long id)
+        //{
+        //    using (var s = HibernateSession.GetCurrentSession())
+        //    {
+        //        using (var tx = s.BeginTransaction())
+        //        {
+        //            //var deleteWebHookEvents = s.QueryOver<WebhookEvents>().Where(m => m.Id == id).SingleOrDefault();
+        //            //if (deleteWebHookEvents != null) {
+        //            //	s.Delete(deleteWebHookEvents);
+        //            //	tx.Commit();
+        //            //	s.Flush();
+        //            //}
 
-                }
-            }
-        }
+        //        }
+        //    }
+        //}
 
         //public void UpdateWebHookEvents(WebhookEvents webhookEvents) {
         //	using (var s = HibernateSession.GetCurrentSession()) {
