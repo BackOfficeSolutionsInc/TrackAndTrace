@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace RadialReview.Areas.CoreProcess.Models
+namespace RadialReview.Utilities.CoreProcess
 {
     public class AmazonSQSUtility
     {

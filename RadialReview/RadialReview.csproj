@@ -135,9 +135,9 @@
     <Compile Include="Areas\CoreProcess\CoreProcessAreaRegistration.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\ITaskAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
-    <Compile Include="Areas\CoreProcess\Models\AmazonSQSUtility.cs" />
-    <Compile Include="Areas\CoreProcess\Models\AsyncUtility.cs" />
-    <Compile Include="Areas\CoreProcess\Models\BpmnUtility.cs" />
+    <Compile Include="Utilities\CoreProcess\AmazonSQSUtility.cs" />
+    <Compile Include="Utilities\AsyncUtility.cs" />
+    <Compile Include="Utilities\CoreProcess\BpmnUtility.cs" />
     <Compile Include="Areas\CoreProcess\Models\Interfaces\IProcessInstance.cs" />
     <Compile Include="Areas\CoreProcess\Models\Interfaces\ITask.cs" />
     <Compile Include="Areas\CoreProcess\Models\Interfaces\IProcessDef.cs" />
@@ -2140,7 +2140,6 @@
     <Content Include="Views\Organization\Begin.cshtml" />
     <Content Include="Views\Organization\Create.cshtml" />
     <Content Include="Views\Organization\Index.cshtml" />
-    <Content Include="Views\Organization\Manage.cshtml" />
     <Content Include="Views\Account\Role.cshtml" />
     <Content Include="Views\Partial\_DragDropItem.cshtml" />
     <Content Include="Views\Payment\Index.cshtml" />
@@ -2367,7 +2366,6 @@
     <Folder Include="Models\Notifications\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
     <Folder Include="Utilities\Migradoc\XYScatter\" />
-    <Folder Include="Utilities\NewFolder1\" />
     <Folder Include="Views\AngularAccountability\" />
     <Folder Include="Views\Console\" />
     <Folder Include="Views\Data\" />

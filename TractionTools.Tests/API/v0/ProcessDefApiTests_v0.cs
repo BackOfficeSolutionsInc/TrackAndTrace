@@ -31,6 +31,9 @@ using System.Management;
 using System.Runtime.InteropServices;
 using System.Threading;
 using RadialReview.Exceptions;
+using RadialReview;
+using RadialReview.Areas.CoreProcess.CamundaComm;
+using RadialReview.Utilities.Synchronize;
 
 namespace TractionTools.Tests.Api {
     [TestClass]
@@ -62,11 +65,17 @@ namespace TractionTools.Tests.Api {
             ActOnProcessAndChildren(Server, x => MinimizeWindow(x.MainWindowHandle));
             Server.WaitForExit();
             ActOnProcessAndChildren(Server, x => MinimizeWindow(x.MainWindowHandle));
+            Thread.Sleep(1000);
 
+            AsyncHelper.RunSync(() => {
+                return new CommClass().DeleteAllProcess_Unsafe(TEST_PROCESS_DEF_NAME);
+            });
         }
 
         private const int SW_MAXIMIZE = 3;
         private const int SW_MINIMIZE = 6;
+        private const string TEST_PROCESS_DEF_NAME = "Test Process Def 0312674BF3E3454B95916D394E780ED4";
+
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
@@ -97,7 +106,7 @@ namespace TractionTools.Tests.Api {
 
         #endregion
 
-        private ProcessDefAccessor processDefAccessor;
+        private ProcessDefAccessor pda;
 
 
         [TestMethod]
@@ -154,14 +163,14 @@ namespace TractionTools.Tests.Api {
             var createTask = await CreateTask(c, c.E1, getProcessDef);
             var publishProcess = await PublishProcess(c.E1, getProcessDef);
             await StartProcess(c.E1, getProcessDef);
-            processDefAccessor = new ProcessDefAccessor();
-            var getProcessInstance = processDefAccessor.GetProcessInstanceList(c.E1, getProcessDef);
-            var getTaskList = await processDefAccessor.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
+            pda = new ProcessDefAccessor();
+            var getProcessInstance = pda.GetProcessInstanceList(c.E1, getProcessDef);
+            var getTaskList = await pda.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
 
-            await processDefAccessor.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, true);
-            var getTask = await processDefAccessor.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
+            await pda.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, true);
+            var getTask = await pda.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
             var getClaim = getTask.Assignee;
-            Assert.AreEqual(getClaim, "u_" + c.E1.Id);
+            Assert.AreEqual(getClaim, c.E1.Id);
         }
 
         [TestMethod]
@@ -172,14 +181,14 @@ namespace TractionTools.Tests.Api {
             var createTask = await CreateTask(c, c.E1, getProcessDef);
             var publishProcess = await PublishProcess(c.E1, getProcessDef);
             await StartProcess(c.E1, getProcessDef);
-            processDefAccessor = new ProcessDefAccessor();
-            var getProcessInstance = processDefAccessor.GetProcessInstanceList(c.E1, getProcessDef);
-            var getTaskList = await processDefAccessor.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
-            await processDefAccessor.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, true);
-            var getTask = await processDefAccessor.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
+            pda = new ProcessDefAccessor();
+            var getProcessInstance = pda.GetProcessInstanceList(c.E1, getProcessDef);
+            var getTaskList = await pda.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
+            await pda.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, true);
+            var getTask = await pda.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
             var getClaim = getTask.Assignee;
-            await processDefAccessor.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, false);
-            var getTaskUnClaim = await processDefAccessor.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
+            await pda.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, false);
+            var getTaskUnClaim = await pda.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
             var getClaimUnclaim = getTaskUnClaim.Assignee;
             Assert.AreNotEqual(getClaim, getClaimUnclaim);
         }
@@ -200,11 +209,11 @@ namespace TractionTools.Tests.Api {
             var c = await Ctx.Build();
             var getProcessDef = await CreateProcess(c.E1);
             var createTask = await CreateTask(c, c.E1, getProcessDef);
-            processDefAccessor = new ProcessDefAccessor();
+            pda = new ProcessDefAccessor();
             //confirmation of task create
-            var getAllTaskList = await processDefAccessor.GetAllTaskForProcessDefinition(c.E1, getProcessDef);
-            var deleteTask = await processDefAccessor.DeleteProcessDefTask(c.E1, createTask.Id, getProcessDef);
-            var getAllTask = await processDefAccessor.GetAllTaskForProcessDefinition(c.E1, getProcessDef);
+            var getAllTaskList = await pda.GetAllTaskForProcessDefinition(c.E1, getProcessDef);
+            var deleteTask = await pda.DeleteProcessDefTask(c.E1, createTask.Id, getProcessDef);
+            var getAllTask = await pda.GetAllTaskForProcessDefinition(c.E1, getProcessDef);
             Assert.IsTrue(getAllTask.Count == 0);
         }
 
@@ -217,31 +226,39 @@ namespace TractionTools.Tests.Api {
             var createTask = await CreateTask(c, c.E1, getProcessDef);
             var publishProcess = await PublishProcess(c.E1, getProcessDef);
             await StartProcess(c.E1, getProcessDef);
-            processDefAccessor = new ProcessDefAccessor();
-            var getProcessInstance = processDefAccessor.GetProcessInstanceList(c.E1, getProcessDef);
-            var getTaskList = await processDefAccessor.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
+            pda = new ProcessDefAccessor();
+            var getProcessInstance = pda.GetProcessInstanceList(c.E1, getProcessDef);
+            var getTaskList = await pda.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
 
             {
                 // claim task
-                await processDefAccessor.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, true);
-                var getTask = await processDefAccessor.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
-                var getListTaskForUser = await processDefAccessor.GetTaskListByUserId(c.E1, c.E1.Id);
+                await pda.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, true);
+                var getTask = await pda.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
+                var getListTaskForUser = await pda.GetTaskListByUserId(c.E1, c.E1.Id);
 
-                Assert.IsTrue(getListTaskForUser.Count > 0);
+                Assert.AreEqual(1,getListTaskForUser.Count);
             }
 
             {
                 // create task and assign to E2
                 // make sure task2 does not belong to E1
                 await CreateAnotherUserTask(c);
-                var getListTaskForUser = await processDefAccessor.GetTaskListByUserId(c.E1, c.E1.Id);
+                var getListTaskForUser = await pda.GetTaskListByUserId(c.E1, c.E1.Id);
+                Assert.AreEqual(1, getListTaskForUser.Count);
+                Assert.AreEqual("Test Task", getListTaskForUser.First().name);
+
+                var getListTaskForOtherUser = await pda.GetTaskListByUserId(c.E2, c.E2.Id);
+                Assert.AreEqual(1, getListTaskForOtherUser.Count);
+                Assert.AreEqual("Test other task", getListTaskForOtherUser.First().name);
+
+
             }
 
 
             {
                 // unclaim task or detach task
-                await processDefAccessor.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, false);
-                var getListTaskForUser = await processDefAccessor.GetTaskListByUserId(c.E1, c.E1.Id);
+                await pda.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, false);
+                var getListTaskForUser = await pda.GetTaskListByUserId(c.E1, c.E1.Id);
 
                 Assert.IsTrue(getListTaskForUser.Count == 0);
             }
@@ -250,17 +267,17 @@ namespace TractionTools.Tests.Api {
 
         private async Task CreateAnotherUserTask(Ctx c) {
             var getProcessDef = await CreateProcess(c.E2);
-            var createTask = await CreateTask(c, c.E2, getProcessDef);
+            var createTask = await CreateTask(c, c.E2, getProcessDef,name:"Test other task");
             var publishProcess = await PublishProcess(c.E2, getProcessDef);
             await StartProcess(c.E2, getProcessDef);
-            processDefAccessor = new ProcessDefAccessor();
-            var getProcessInstance = processDefAccessor.GetProcessInstanceList(c.E2, getProcessDef);
-            var getTaskList = await processDefAccessor.GetTaskListByProcessInstanceId(c.E2, getProcessInstance[0].Id);
+            pda = new ProcessDefAccessor();
+            var getProcessInstance = pda.GetProcessInstanceList(c.E2, getProcessDef);
+            var getTaskList = await pda.GetTaskListByProcessInstanceId(c.E2, getProcessInstance[0].Id);
 
             // claim task
-            await processDefAccessor.TaskClaimOrUnclaim(c.E2, getTaskList[0].Id, c.E2.Id, true);
-            var getTask = await processDefAccessor.GetTaskById_Unsafe(c.E2, getTaskList[0].Id);
-            var getListTaskForUser = await processDefAccessor.GetTaskListByUserId(c.E2, c.E2.Id);
+            await pda.TaskClaimOrUnclaim(c.E2, getTaskList[0].Id, c.E2.Id, true);
+            var getTask = await pda.GetTaskById_Unsafe(c.E2, getTaskList[0].Id);
+            var getListTaskForUser = await pda.GetTaskListByUserId(c.E2, c.E2.Id);
         }
 
 
@@ -269,33 +286,46 @@ namespace TractionTools.Tests.Api {
         [TestCategory("CoreProcess")]
         public async Task TestGetTasksForCandidateGroup() {
             var c = await Ctx.Build();
-            var getProcessDef = await CreateProcess(c.E1);
-            var createTask = await CreateTask(c, c.E1, getProcessDef);
-            var publishProcess = await PublishProcess(c.E1, getProcessDef);
-            await StartProcess(c.E1, getProcessDef);
+            var processE1 = await CreateProcess(c.E1);
+            var processE5 = await CreateProcess(c.E1);
+            var processTeam = await CreateProcess(c.E1);
+            var createTaskE1 = await CreateTask(c, c.E1, processE1, name:"E1Task", groups: c.E1.Id);
+            var createTaskE5 = await CreateTask(c, c.E1, processE5, name: "E5Task", groups: c.E5.Id);
+            var createTaskTeam = await CreateTask(c, c.E1, processTeam, groups: c.Org.InterreviewTeam.Id);
+            var publishProcessE1 = await PublishProcess(c.E1, processE1);
+            var publishProcessE5 = await PublishProcess(c.E1, processE5);
+            var publishProcessTeam = await PublishProcess(c.E1, processTeam);
+            await StartProcess(c.E1, processE1);
+            await StartProcess(c.E1, processE5);
+            await StartProcess(c.E1, processTeam);
 
-            processDefAccessor = new ProcessDefAccessor();
-            var getProcessInstance = processDefAccessor.GetProcessInstanceList(c.E1, getProcessDef);
-            var getTaskList = await processDefAccessor.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
+            pda = new ProcessDefAccessor();
+            //var getProcessInstance = processDefAccessor.GetProcessInstanceList(c.E1, processE1);
+            //var getTaskList = await processDefAccessor.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
 
-            var getTasksForCandidateGroup = await processDefAccessor.GetTaskListByCandidateGroups(c.E1, new long[] { c.E1.Id }, true);
-            Assert.IsTrue(getTasksForCandidateGroup.Count > 0);
+            var groupTasks = await pda.GetTaskListByCandidateGroups(c.E1, new long[] { c.E1.Id }, true);
+            Assert.IsTrue(groupTasks.Count == 1);
 
             // allowing some knowing exception 
-            await ThrowsAsync<PermissionsException>(async () => await processDefAccessor.GetTaskListByCandidateGroups(c.E1, new long[] { c.E2.Id }, true));
+            await ThrowsAsync<PermissionsException>(async () => await pda.GetTaskListByCandidateGroups(c.E1, new long[] { c.E2.Id }, true));
 
-            // check for second user
-            getTasksForCandidateGroup = await processDefAccessor.GetTaskListByCandidateGroups(c.E2, new long[] { c.E2.Id }, true);
-            Assert.IsTrue(getTasksForCandidateGroup.Count == 0);
+            // All Unassigned
+            groupTasks = await pda.GetTaskListByCandidateGroups(c.E2, new long[] { c.E2.Id }, true);
+            Assert.IsTrue(groupTasks.Count == 0);
 
-            getTasksForCandidateGroup = await processDefAccessor.GetTaskListByCandidateGroups(c.E1, new long[] { c.E1.Id }, false);
-            Assert.IsTrue(getTasksForCandidateGroup.Count > 0);
+            groupTasks = await pda.GetTaskListByCandidateGroups(c.E5, new long[] { c.E5.Id }, true);
+            Assert.IsTrue(groupTasks.Count == 2);
 
-            getTasksForCandidateGroup = await processDefAccessor.GetTaskListByCandidateGroups(c.E1, new long[] { c.Manager.Id }, false);
-            Assert.IsTrue(getTasksForCandidateGroup.Count > 0);
+            groupTasks = await pda.GetTaskListByCandidateGroups(c.E6, new long[] { c.E6.Id }, true);
+            Assert.IsTrue(groupTasks.Count == 1);
 
-            getTasksForCandidateGroup = await processDefAccessor.GetTaskListByCandidateGroups(c.E1, new long[] { c.Org.InterreviewTeam.Id }, false);
-            Assert.IsTrue(getTasksForCandidateGroup.Count > 0);
+            groupTasks = await pda.GetTaskListByCandidateGroups(c.E5, new long[] { c.Org.InterreviewTeam.Id }, true);
+            Assert.IsTrue(groupTasks.Count == 1);
+
+            groupTasks = await pda.GetTaskListByCandidateGroups(c.E6, new long[] { c.Org.InterreviewTeam.Id }, true);
+            Assert.IsTrue(groupTasks.Count == 1);
+
+            await ThrowsAsync<PermissionsException>(async () => await pda.GetTaskListByCandidateGroups(c.E1, new long[] { c.Org.InterreviewTeam.Id }, true));
 
         }
 
@@ -308,47 +338,51 @@ namespace TractionTools.Tests.Api {
             var createTask = await CreateTask(c, c.E1, getProcessDef);
             var publishProcess = await PublishProcess(c.E1, getProcessDef);
             await StartProcess(c.E1, getProcessDef);
-            processDefAccessor = new ProcessDefAccessor();
-            var getProcessInstance = processDefAccessor.GetProcessInstanceList(c.E1, getProcessDef);
-            var getTaskList = await processDefAccessor.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
+            pda = new ProcessDefAccessor();
+            var getProcessInstance = pda.GetProcessInstanceList(c.E1, getProcessDef);
+            var getTaskList = await pda.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
 
-            await processDefAccessor.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, true);
-            var getTaskforConfirmation = await processDefAccessor.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
-            await processDefAccessor.TaskComplete(c.E1, getTaskList[0].Id, c.E1.Id);
+            await pda.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, true);
+            var getTaskforConfirmation = await pda.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
+            await pda.TaskComplete(c.E1, getTaskList[0].Id, c.E1.Id);
 
             //var getTask = await processDefAccessor.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
-            await ThrowsAsync<PermissionsException>(async () => await processDefAccessor.GetTaskById_Unsafe(c.E1, getTaskList[0].Id));
+            await ThrowsAsync<PermissionsException>(async () => await pda.GetTaskById_Unsafe(c.E1, getTaskList[0].Id));
             //Assert.IsTrue(string.IsNullOrEmpty(getTask.Id));
         }
 
         private async Task<long> CreateProcess(UserOrganizationModel user) {
-            processDefAccessor = new ProcessDefAccessor();
-            var getResult = await processDefAccessor.Create(user, "Test Process Def");
+            pda = new ProcessDefAccessor();
+            var getResult = await pda.Create(user, TEST_PROCESS_DEF_NAME);
             return getResult;
         }
 
-        private async Task<TaskViewModel> CreateTask(Ctx ctx, UserOrganizationModel user, long processDefId) {
-            processDefAccessor = new ProcessDefAccessor();
-            TaskViewModel task = new TaskViewModel() { name = "Test Task", SelectedMemberId = new long[] { ctx.E1.Id, ctx.E2.Id, ctx.Manager.Id, ctx.Org.InterreviewTeam.Id } };
-            var createTask = await processDefAccessor.CreateProcessDefTask(user, processDefId, task);
+        private async Task<TaskViewModel> CreateTask(Ctx ctx, UserOrganizationModel user, long processDefId,string name = null, params long[] groups) {
+            pda = new ProcessDefAccessor();
+
+            if (groups.Length == 0)
+                groups = new long[] { ctx.E1.Id, ctx.E2.Id, ctx.Manager.Id, ctx.Org.InterreviewTeam.Id };
+
+            TaskViewModel task = new TaskViewModel() { name = name??"Test Task", SelectedMemberId = groups };
+            var createTask = await pda.CreateProcessDefTask(user, processDefId, task);
             return createTask;
         }
 
         private async Task<bool> PublishProcess(UserOrganizationModel user, long processDefId) {
-            processDefAccessor = new ProcessDefAccessor();
-            var publishProcess = await processDefAccessor.Deploy(user, processDefId);
+            pda = new ProcessDefAccessor();
+            var publishProcess = await pda.Deploy(user, processDefId);
             return publishProcess;
         }
 
         private async Task<ProcessDef_Camunda> StartProcess(UserOrganizationModel user, long processDefId) {
-            processDefAccessor = new ProcessDefAccessor();
-            var startProcess = await processDefAccessor.ProcessStart(user, processDefId);
+            pda = new ProcessDefAccessor();
+            var startProcess = await pda.ProcessStart(user, processDefId);
             return startProcess;
         }
 
         private async Task<ProcessDef_Camunda> GetTaskList(UserOrganizationModel user, long processDefId) {
-            processDefAccessor = new ProcessDefAccessor();
-            var startProcess = await processDefAccessor.ProcessStart(user, processDefId);
+            pda = new ProcessDefAccessor();
+            var startProcess = await pda.ProcessStart(user, processDefId);
             return startProcess;
         }
 

@@ -281,24 +281,27 @@ namespace RadialReview.Utilities {
 			return "Supervisor";
 		}
 
-		public class UrlCredentials {
+		public class CamundaCredentials {
 			public string Url { get; set; }
 			public string Username { get; set; }
 			public string Password { get; set; }
+            public bool IsLocal { get; set; }
 		}
 
-		public static UrlCredentials GetCamundaServer() {
-			UrlCredentials credentials = new UrlCredentials();
+		public static CamundaCredentials GetCamundaServer() {
+			CamundaCredentials credentials = new CamundaCredentials();
 			credentials.Username = "demo";
 			credentials.Password = "demo";
 
 			switch (GetEnv()) {
 				case Env.local_test_sqlite:
 					credentials.Url = "http://localhost:8080/engine-rest";
+                    credentials.IsLocal = true;
 					return credentials;
 				case Env.local_mysql:
 					credentials.Url = "http://localhost:8080/engine-rest";
-					return credentials;
+                    credentials.IsLocal = true;
+                    return credentials;
 				default:
 					throw new ArgumentOutOfRangeException();
 			}

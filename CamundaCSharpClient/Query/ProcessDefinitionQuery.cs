@@ -286,16 +286,12 @@ namespace CamundaCSharpClient.Query
         /// var pd6 = camundaCl.ProcessDefinition().Key("invoice").Suspend(pr);
         /// </code>
         /// </example>
-        public async Task<NoContentStatus> Suspend(ProcessDefinitionSuspendModel data)
-        {
+        public async Task<NoContentStatus> Suspend(ProcessDefinitionSuspendModel data) {
             EnsureHelper.NotNull("processDefinitionSuspend data", data);
             var request = new RestRequest();
-            if (this.model.id != null)
-            {
-                request.Resource = "/process-definition/" + this.model.id + "/suspended"; 
-            }
-            else
-            {
+            if (this.model.id != null) {
+                request.Resource = "/process-definition/" + this.model.id + "/suspended";
+            } else {
                 EnsureHelper.NotNull("processDefiniftionKey", this.model.key);
                 request.Resource = "/process-definition/key/" + this.model.key + "/suspended";
             }
@@ -303,7 +299,26 @@ namespace CamundaCSharpClient.Query
             request.Method = Method.PUT;
             string output = JsonConvert.SerializeObject(data);
             request.AddParameter("application/json", output, ParameterType.RequestBody);
-            var resp =await this.client.Execute(request);
+            var resp = await this.client.Execute(request);
+            return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public async Task<NoContentStatus> Delete(ProcessDefinitionDeleteModel data) {
+            EnsureHelper.NotNull("ProcessDefinitionDeleteModel data", data);
+            EnsureHelper.NotNull("processDefiniftionId", this.model.id);
+            var request = new RestRequest();
+            if (this.model.id != null) {
+                request.Resource = "/process-definition/" + this.model.id ;
+            } 
+            request.Method = Method.DELETE;
+            //string output = JsonConvert.SerializeObject(data);
+            request.AddParameter("cascade", data.cascade);
+            request.AddParameter("skipCustomListeners", data.skipCustomListeners);
+            var resp = await this.client.Execute(request);
             return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
         }
     }

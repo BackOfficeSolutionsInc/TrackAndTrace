@@ -5,6 +5,7 @@ using RadialReview.Areas.CoreProcess.CamundaComm;
 using RadialReview.Areas.CoreProcess.Models;
 using RadialReview.Areas.CoreProcess.Models.Process;
 using RadialReview.Controllers;
+using RadialReview.Utilities.CoreProcess;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,7 +31,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers
             if (true)
             {
                 TaskViewModel tskView = new TaskViewModel();
-                tskView.Assignee = "Test1";
+                tskView.Assignee = 1;
                 tskView.description = "DescTest1";
                 tskView.name = "NameTest1";
                 tskView.Id = "Test1";

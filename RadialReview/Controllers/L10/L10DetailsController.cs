@@ -17,76 +17,69 @@ using RadialReview.Models.Scorecard;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Models.Angular.DataType;
 
-namespace RadialReview.Controllers
-{
-    public partial class L10Controller : BaseController
-    {
+namespace RadialReview.Controllers {
+    public partial class L10Controller : BaseController {
 
-		[Access(AccessLevel.UserOrganization)]
-		public ActionResult Details(long id,bool complete=false,long? start=null)
-		{
-			ViewBag.NumberOfWeeks = (int)Math.Ceiling(TimingUtility.ApproxDurationOfPeriod(GetUser().Organization.Settings.ScorecardPeriod).TotalDays)*13;
-			
-            var recur = L10Accessor.GetL10Recurrence(GetUser(),id,false);
+        [Access(AccessLevel.UserOrganization)]
+        public ActionResult Details(long id, bool complete = false, long? start = null) {
+            ViewBag.NumberOfWeeks = (int)Math.Ceiling(TimingUtility.ApproxDurationOfPeriod(GetUser().Organization.Settings.ScorecardPeriod).TotalDays) * 13;
+
+            var recur = L10Accessor.GetL10Recurrence(GetUser(), id, false);
 
             ViewBag.VtoId = recur.VtoId;
             ViewBag.IncludeHeadlines = recur.HeadlineType;
             ViewBag.ShowPriority = (/*recur.Prioritization == Models.L10.PrioritizationType.Invalid||*/recur.Prioritization == Models.L10.PrioritizationType.Priority);
-			ViewBag.StartDate = start.NotNull(x=>x.Value);
-			ViewBag.Title = recur.Name;
-            
+            ViewBag.StartDate = start.NotNull(x => x.Value);
+            ViewBag.Title = recur.Name;
+
             return View(id);
-		}
+        }
 
-	    [Access(AccessLevel.UserOrganization)]
+        [Access(AccessLevel.UserOrganization)]
         [OutputCache(NoStore = true, Duration = 0)]
-	    public JsonResult DetailsData(long id,bool scores = true,bool historical=true,long start=0, long end= long.MaxValue,bool fullScorecard = false)
-        {
+        public JsonResult DetailsData(long id, bool scores = true, bool historical = true, long start = 0, long end = long.MaxValue, bool fullScorecard = false) {
             var startRange = Math2.Min(start.ToDateTime(), end.ToDateTime());
-            var endRange   = Math2.Max(start.ToDateTime(), end.ToDateTime());
-            var period = GetUser().GetTimeSettings().Period;
-            if (period == ScorecardPeriod.Monthly) {
-                startRange = startRange.AddDays(-31);
-                endRange = endRange.AddDays(31);
-            }
-            if (period == ScorecardPeriod.Quarterly) {
-                startRange = startRange.AddDays(-100);
-                endRange = endRange.AddDays(100);
-            }
+            var endRange = Math2.Max(start.ToDateTime(), end.ToDateTime());
 
+            var scorecardStart = startRange;
+            var scorecardEnd = endRange;
+
+            var period = GetUser().GetTimeSettings().Period;
+           
 
             var range = new DateRange(startRange, endRange);
+            var scorecardRange = new DateRange(scorecardStart, scorecardEnd);
 
-            var model = L10Accessor.GetAngularRecurrence(GetUser(), id, scores, historical, fullScorecard: fullScorecard,range: range);
-			//model.Name=null;
+            var model = L10Accessor.GetAngularRecurrence(GetUser(), id, scores, historical, fullScorecard: fullScorecard, range: range, scorecardRange: scorecardRange);
+            //model.Name=null;
 
-			if (start != 0 && end != long.MaxValue) {
-				model.dateDataRange = new AngularDateRange(range);
-			}
+            if (start != 0 && end != long.MaxValue) {
+                model.dateDataRange = new AngularDateRange(range);
+            }
 
-			if (scores) {
+            if (scores) {
 
-				if (model.Scorecard.Scores.Count() > 22*16 && period == ScorecardPeriod.Weekly ) {
-					var min = TimingUtility.GetDateSinceEpoch(model.Scorecard.Scores.Min(x => x.ForWeek)).ToJavascriptMilliseconds();
-					var max = TimingUtility.GetDateSinceEpoch(model.Scorecard.Scores.Max(x => x.ForWeek)).ToJavascriptMilliseconds();
-					if (max != min) {
-						var mid = (max + min) / 2;
-						
-						model = new AngularRecurrence(id);
-						model.LoadUrls = new List<AngularString>() { };
+                if (model.Scorecard.Scores.Count() > 22 * 16 && period == ScorecardPeriod.Weekly) {
+                    var min = TimingUtility.GetDateSinceEpoch(model.Scorecard.Scores.Min(x => x.ForWeek)).ToJavascriptMilliseconds();
+                    var max = TimingUtility.GetDateSinceEpoch(model.Scorecard.Scores.Max(x => x.ForWeek)).ToJavascriptMilliseconds();
+                    if (max != min) {
+                        var mid = (max + min) / 2;
 
-						if (start != mid)
-							model.LoadUrls.Add(new AngularString((min / 13), $"/L10/DetailsData/{id}?scores={scores}&historical={historical}&start={start}&end={mid}&fullScorecard=false"));						
-						if (mid != end) 
-							model.LoadUrls.Add(new AngularString((min / 13) - 1, $"/L10/DetailsData/{id}?scores={scores}&historical={historical}&start={ mid }&end={end}&fullScorecard=false"));
-					
-					}
-				}
-			}
+                        model = new AngularRecurrence(id);
+                        model.LoadUrls = new List<AngularString>() { };
+
+                        if (start != mid)
+                            model.LoadUrls.Add(new AngularString((min / 13), $"/L10/DetailsData/{id}?scores={scores}&historical={historical}&start={start}&end={mid}&fullScorecard=false"));
+                        if (mid != end)
+                            model.LoadUrls.Add(new AngularString((min / 13) - 1, $"/L10/DetailsData/{id}?scores={scores}&historical={historical}&start={ mid }&end={end}&fullScorecard=false"));
+
+                    }
+                }
+            }
 
 
-			return Json(model, JsonRequestBehavior.AllowGet);
-	    }       		
+            return Json(model, JsonRequestBehavior.AllowGet);
+        }
 
     }
 }

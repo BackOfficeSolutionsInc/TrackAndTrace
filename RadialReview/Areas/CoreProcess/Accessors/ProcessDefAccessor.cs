@@ -17,6 +17,7 @@ using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Components;
 using RadialReview.Utilities;
+using RadialReview.Utilities.CoreProcess;
 using RestSharp.Serializers;
 using System;
 using System.Collections.Generic;
@@ -26,11 +27,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Linq;
+using static RadialReview.Utilities.CoreProcess.BpmnUtility;
 
 namespace RadialReview.Areas.CoreProcess.Accessors {
     public class ProcessDefAccessor : IProcessDefAccessor {
-        private XNamespace camunda = "http://camunda.org/schema/1.0/bpmn";
-        private XNamespace bpmn = "http://www.omg.org/spec/BPMN/20100524/MODEL";
+
         protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public async Task<bool> Deploy(UserOrganizationModel caller, long localId) {
             using (var s = HibernateSession.GetCurrentSession()) {
@@ -265,7 +266,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 
                     MemoryStream fileStream = new MemoryStream();
                     XDocument xmlDocument = await BpmnUtility.GetBpmnFileXmlDoc(getProcessDefFileDetails.FileKey);
-                    var getElement = xmlDocument.Root.Element(bpmn + "process");
+                    var getElement = xmlDocument.Root.Element(BpmnUtility.BPMN_NAMESPACE + "process");
                     getElement.SetAttributeValue("name", processName);
 
                     xmlDocument.Save(fileStream);
@@ -317,14 +318,15 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                 return created;
             }
         }
+               
         public async Task<TaskViewModel> CreateProcessDefTask(ISession s, PermissionsUtility perm, long localId, TaskViewModel model) {
+            if (model.SelectedMemberId == null || !model.SelectedMemberId.Any()) {
+                throw new PermissionsException("You must select a group.");
+            }
 
             // check permissions
             perm.CanEdit(PermItem.ResourceType.CoreProcess, localId);
 
-            if (model.SelectedMemberId == null || !model.SelectedMemberId.Any()) {
-                throw new PermissionsException("You must select a group.");
-            }
 
             foreach (var item in model.SelectedMemberId) {
                 perm.ViewRGM(item);
@@ -336,7 +338,9 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 
                 //var processDef
 
-                var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
+                var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>()
+                                                .Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId)
+                                                .SingleOrDefault();
 
                 if (getProcessDefFileDetails == null) {
                     throw new PermissionsException("file does not exists");
@@ -344,72 +348,54 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 
                 MemoryStream fileStream = new MemoryStream();
                 XDocument xmlDocument = await BpmnUtility.GetBpmnFileXmlDoc(getProcessDefFileDetails.FileKey);
-                var getAllElement = BpmnUtility.GetAllElement(xmlDocument);
-                //xmlDocument.Root.Element(bpmn + "process").Elements();
-                var getEndProcessElement = BpmnUtility.FindElementByAttribute(getAllElement, "id", "EndEvent");
-                //getAllElement.Where(t => (t.Attribute("id") != null ? t.Attribute("id").Value : "") == "EndEvent").FirstOrDefault();
-                var getStartProcessElement = BpmnUtility.FindElementByAttribute(getAllElement, "id", "StartEvent");
-                //getAllElement.Where(t => (t.Attribute("id") != null ? t.Attribute("id").Value : "") == "StartEvent").FirstOrDefault();
+                var allElements = BpmnUtility.GetAllElement(xmlDocument);
+                var endElement = BpmnUtility.FindElementByAttribute(allElements, "id", "EndEvent");
+                var startElement = BpmnUtility.FindElementByAttribute(allElements, "id", "StartEvent");
+
+                var startId = startElement.GetId();
+                var endId = endElement.GetId();
 
                 //getAllElement
-                int targetCounter = 0;
-                int sourceCounter = 0;
-                foreach (var item in getAllElement.ToList()) {
-                    if (item.Attribute("targetRef") != null) {
-                        if (item.Attribute("targetRef").Value == "EndEvent") {
-                            targetCounter++;
-                        }
-                    }
+                int sourceCounter = allElements.Count(e => e.GetSourceRef() == "StartEvent");
+                int targetCounter = allElements.Count(e => e.GetTargetRef() == "EndEvent");
 
-                    if (item.Attribute("sourceRef") != null) {
-                        if (item.Attribute("sourceRef").Value == "StartEvent") {
-                            sourceCounter++;
-                        }
-                    }
-                }
-
-                string taskId = "Task" + Guid.NewGuid().ToString().Replace("-", "");
+                string taskId = "Task" + GenGuid();
                 var candidateGroups = BpmnUtility.ConcatedCandidateString(model.SelectedMemberId);
 
+
+
                 if (sourceCounter == 0) {
-                    getAllElement.Where(m => m.Attribute("id").Value == getStartProcessElement.Attribute("id").Value).FirstOrDefault().AddAfterSelf(
-                              new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
-                              new XAttribute("sourceRef", getStartProcessElement.Attribute("id").Value), new XAttribute("targetRef", taskId))
-                              );
+                    allElements.FirstOrDefault(e => e.GetId() == startId)
+                        .AddAfterSelf(GenSequenceFlow(startId, taskId));                //new XElement(BpmnUtility.BPMN_NAMESPACE + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + GenGuid()), new XAttribute("sourceRef", startId), new XAttribute("targetRef", taskId)));
 
                     if (targetCounter == 0) {
-                        getAllElement.Where(m => m.Attribute("id").Value == getEndProcessElement.Attribute("id").Value).FirstOrDefault().AddBeforeSelf(
-                                    new XElement(bpmn + "userTask", new XAttribute("id", taskId), new XAttribute("name", model.name), new XAttribute(camunda + "candidateGroups", candidateGroups)),
-                                    new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
-                                    new XAttribute("sourceRef", taskId), new XAttribute("targetRef", getEndProcessElement.Attribute("id").Value))
+                        allElements.FirstOrDefault(e => e.GetId() == endId).AddBeforeSelf(
+                                    GenUserTask(model, taskId, candidateGroups),
+                                    GenSequenceFlow(taskId, endElement)
                                   );
                     } else {
-                        var getEndEventSrc = getAllElement.Where(x => (x.Attribute("sourceRef") != null ? x.Attribute("sourceRef").Value : "") == getEndProcessElement.Attribute("id").Value).FirstOrDefault();
-                        getAllElement.Where(m => m.Attribute("id").Value == getEndEventSrc.Attribute("id").Value).FirstOrDefault().AddAfterSelf(
-                                    new XElement(bpmn + "userTask", new XAttribute("id", taskId), new XAttribute("name", model.name), new XAttribute(camunda + "candidateGroups", candidateGroups)),
-                                    new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
-                                    new XAttribute("sourceRef", getEndEventSrc.Attribute("id").Value), new XAttribute("targetRef", getEndProcessElement.Attribute("id").Value))
+                        var getEndEventSrc = allElements.FirstOrDefault(e => e.GetSourceRef() == endId);
+                        allElements.FirstOrDefault(e => e.GetId() == getEndEventSrc.GetId()).AddAfterSelf(
+                                    GenUserTask(model, taskId, candidateGroups),
+                                    GenSequenceFlow(getEndEventSrc, endElement)
                                   );
                     }
-
                 } else {
                     if (targetCounter == 0) {
-                        getAllElement.Where(m => m.Attribute("id").Value == getStartProcessElement.Attribute("id").Value).FirstOrDefault().AddAfterSelf(
-                                  new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
-                                  new XAttribute("sourceRef", getStartProcessElement.Attribute("id").Value), new XAttribute("targetRef", taskId)),
-                                    new XElement(bpmn + "userTask", new XAttribute("id", taskId), new XAttribute("name", model.name), new XAttribute(camunda + "candidateGroups", candidateGroups)),
-                                    new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
-                                    new XAttribute("sourceRef", taskId), new XAttribute("targetRef", getEndProcessElement.Attribute("id").Value))
+                        allElements.FirstOrDefault(e => e.GetId() == startId).AddAfterSelf(
+                                    GenSequenceFlow(startId, taskId),                    //new XElement(BpmnUtility.BPMN_NAMESPACE + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + GenGuid()),new XAttribute("sourceRef", startId), new XAttribute("targetRef", taskId)),
+                                    GenUserTask(model, taskId, candidateGroups),         //new XElement(BpmnUtility.BPMN_NAMESPACE + "userTask", new XAttribute("id", taskId), new XAttribute("name", model.name), new XAttribute(BpmnUtility.CAMUNDA_NAMESPACE + "candidateGroups", candidateGroups)),
+                                    GenSequenceFlow(taskId, endId)                       //new XElement(BpmnUtility.BPMN_NAMESPACE + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + GenGuid()), new XAttribute("sourceRef", taskId), new XAttribute("targetRef", endId))
+
                                   );
                     } else {
-                        var getEndEventSrc = getAllElement.Where(x => (x.Attribute("targetRef") != null ? x.Attribute("targetRef").Value : "") == getEndProcessElement.Attribute("id").Value).FirstOrDefault();
-                        getAllElement.Where(m => m.Attribute("id").Value == getEndEventSrc.Attribute("id").Value).FirstOrDefault().AddAfterSelf(
-                                    new XElement(bpmn + "userTask", new XAttribute("id", taskId), new XAttribute("name", model.name), new XAttribute(camunda + "candidateGroups", candidateGroups)),
-                                    new XElement(bpmn + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + Guid.NewGuid().ToString().Replace("-", "")),
-                                    new XAttribute("sourceRef", taskId), new XAttribute("targetRef", getEndProcessElement.Attribute("id").Value))
+                        var getEndEventSrc = allElements.FirstOrDefault(e => e.GetTargetRef() == endId);
+                        allElements.FirstOrDefault(e => e.GetId() == getEndEventSrc.GetId()).AddAfterSelf(
+                                    GenUserTask(model, taskId, candidateGroups),          //new XElement(BpmnUtility.BPMN_NAMESPACE + "userTask", new XAttribute("id", taskId), new XAttribute("name", model.name), new XAttribute(BpmnUtility.CAMUNDA_NAMESPACE + "candidateGroups", candidateGroups)),
+                                    GenSequenceFlow(taskId, endId)                       //new XElement(BpmnUtility.BPMN_NAMESPACE + "sequenceFlow", new XAttribute("id", "sequenceFlow_" + GenGuid()),new XAttribute("sourceRef", taskId), new XAttribute("targetRef", endId))
                                   );
 
-                        getAllElement.Where(x => x.Attribute("id").Value == getEndEventSrc.Attribute("id").Value).FirstOrDefault().SetAttributeValue("targetRef", taskId);
+                        allElements.FirstOrDefault(e => e.GetId() == getEndEventSrc.GetId()).SetAttributeValue("targetRef", taskId);
                     }
                 }
 
@@ -421,41 +407,47 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                 await BpmnUtility.UploadFileToServer(fileStream, getProcessDefFileDetails.FileKey);
 
                 modelObj.Id = taskId;
-                modelObj.SelectedMemberName = BpmnUtility.GetMemberNames(perm.GetCaller(), model.SelectedMemberId);
+                modelObj.SelectedMemberName = BpmnUtility.GetMemberNames(s, perm, model.SelectedMemberId);
 
             } catch (Exception) {
 
             }
             return modelObj;
         }
+
+       
+
         public async Task<List<TaskViewModel>> GetAllTaskForProcessDefinition(UserOrganizationModel caller, long localId) {
             List<TaskViewModel> taskList = new List<TaskViewModel>();
             using (var s = HibernateSession.GetCurrentSession()) {
-                PermissionsUtility.Create(s, caller).CanView(PermItem.ResourceType.CoreProcess, localId);
+                using (var tx = s.BeginTransaction()) {
+                    var perms = PermissionsUtility.Create(s, caller).CanView(PermItem.ResourceType.CoreProcess, localId);
 
-                var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
-                if (getProcessDefFileDetails != null) {
-                    XDocument xmlDocument = await BpmnUtility.GetBpmnFileXmlDoc(getProcessDefFileDetails.FileKey);
-                    var getAllElement = BpmnUtility.GetAllElementByAttr(xmlDocument, "userTask");
+                    var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == localId).SingleOrDefault();
+                    if (getProcessDefFileDetails != null) {
+                        XDocument xmlDocument = await BpmnUtility.GetBpmnFileXmlDoc(getProcessDefFileDetails.FileKey);
+                        var getAllElement = BpmnUtility.GetAllElementByAttr(xmlDocument, "userTask");
 
-                    foreach (var item in getAllElement) {
-                        //var getCandidateGroup = (item.Attribute(camunda + "candidateGroups") != null ? (item.Attribute(camunda + "candidateGroups").Value) : "");
-                        var getCandidateGroup = BpmnUtility.GetAttributeValue(item, "candidateGroups", camunda);
-                        taskList.Add(new TaskViewModel() {
-                            description = BpmnUtility.GetAttributeValue(item, "description"),
-                            name = BpmnUtility.GetAttributeValue(item, "name"),
-                            Id = BpmnUtility.GetAttributeValue(item, "id"),
-                            SelectedMemberId = BpmnUtility.GetParseMemberId(getCandidateGroup),
-                            SelectedMemberName = BpmnUtility.GetMemberNamesFromString(caller, getCandidateGroup),
-                            CandidateList = GetCandidateGroupsMembersFromString(caller, getCandidateGroup)
-                        });
+                        foreach (var item in getAllElement) {
+                            //var getCandidateGroup = (item.Attribute(camunda + "candidateGroups") != null ? (item.Attribute(camunda + "candidateGroups").Value) : "");
+                            //var getCandidateGroup = BpmnUtility.GetAttributeValue(item, "candidateGroups", BpmnUtility.CAMUNDA_NAMESPACE);
+                            taskList.Add(TaskViewModel.Create(s, perms, item));
+                            /*{
+                                description = BpmnUtility.GetAttributeValue(item, "description"),
+                                name = BpmnUtility.GetAttributeValue(item, "name"),
+                                Id = BpmnUtility.GetAttributeValue(item, "id"),
+                                SelectedMemberId = BpmnUtility.ParseCandidateGroupIds(getCandidateGroup),
+                                SelectedMemberName = BpmnUtility.GetMemberNamesFromString(s,perms, getCandidateGroup),
+                                CandidateList = GetCandidateGroupsMembersFromString(s,perms, getCandidateGroup)
+                            });*/
+                        }
                     }
                 }
             }
             return taskList;
         }
 
-        // get all tasks of all processes under specific Organization
+        // get all tasks of all processes under specific User Organization
         public async Task<List<TaskViewModel>> GetAllTaskByRGM(UserOrganizationModel caller, long rgmId) {
             List<TaskViewModel> taskList = new List<TaskViewModel>();
             using (var s = HibernateSession.GetCurrentSession()) {
@@ -464,8 +456,8 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 
                     List<Task<List<TaskViewModel>>> threadList = new List<Task<List<TaskViewModel>>>();
                     var getProcessList = s.QueryOver<ProcessDef_Camunda>().Where(t => t.DeleteTime == null && t.OrgId == caller.Organization.Id).List().ToList();
-                    foreach (var item in getProcessList) {
-                        threadList.Add(GetAllTaskByRgmId(s, perm, caller, item.Id, rgmId));
+                    foreach (var processDef in getProcessList) {
+                        threadList.Add(GetAllTaskByRgmId(s, perm, caller, processDef.Id, rgmId));
                     }
 
                     return (await Task.WhenAll(threadList)).SelectMany(x => x).ToList();
@@ -488,17 +480,10 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                 }
 
                 foreach (var item in getAllElement) {
-                    var getCandidateGroup = BpmnUtility.GetAttributeValue(item, "candidateGroups", camunda);
-                    var memberIds = BpmnUtility.GetParseMemberId(getCandidateGroup).ToList();
+                    var getCandidateGroup = BpmnUtility.GetAttributeValue(item, "candidateGroups", BpmnUtility.CAMUNDA_NAMESPACE);
+                    var memberIds = BpmnUtility.ParseCandidateGroupIds(getCandidateGroup).ToList();
                     if (memberIds.Contains(rgmId)) {
-                        taskList.Add(new TaskViewModel() {
-                            description = BpmnUtility.GetAttributeValue(item, "description"),
-                            name = BpmnUtility.GetAttributeValue(item, "name"),
-                            Id = BpmnUtility.GetAttributeValue(item, "id"),
-                            // SelectedMemberId = GetMemberIds(getCandidateGroup),
-                            // SelectedMemberName = GetMemberName(caller, getCandidateGroup, null),
-                            // CandidateList = GetCandidateGroupList(caller, getCandidateGroup)
-                        });
+                        taskList.Add(TaskViewModel.CreateMinimal(item));
                     }
                 }
             }
@@ -512,20 +497,24 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                 using (var tx = s.BeginTransaction()) {
                     var perms = PermissionsUtility.Create(s, caller);
 
-					foreach (var item in candidateGroupIds) {
-						perms.CanViewTasksForCandidateGroup(item);
-					}
+                    foreach (var item in candidateGroupIds) {
+                        perms.CanViewTasksForCandidateGroup(item);
+                    }
 
-					//var candidateGroups = String.Join(",", candidateGroupIds.Select(x => "rgm_" + x));
-					CommClass comClass = new CommClass();
-                    var getUsertaskList = await comClass.GetTaskByCandidateGroups(candidateGroupIds, unassigned: unassigned);
+                    var updatedCandiateGroupIdsList = new List<long>();
+                    updatedCandiateGroupIdsList.AddRange(candidateGroupIds);
+
+                    foreach(var cgid in candidateGroupIds) {
+                        updatedCandiateGroupIdsList.AddRange(ResponsibilitiesAccessor.GetResponsibilityGroupsForRgm(s, perms, cgid).Select(x=>x.Id));
+                    }
+
+
+                    //var candidateGroups = String.Join(",", candidateGroupIds.Select(x => "rgm_" + x));
+                    CommClass comClass = new CommClass();
+                    var getUsertaskList = await comClass.GetTaskByCandidateGroups(updatedCandiateGroupIdsList.ToArray(), unassigned: unassigned);
 
                     foreach (var item in getUsertaskList) {
-                        taskList.Add(new TaskViewModel() {
-                            name = item.Name,
-                            Id = item.Id,
-                            Assignee = item.Assignee,
-                        });
+                        taskList.Add(TaskViewModel.Create(item));
                     }
 
                     tx.Commit();
@@ -557,23 +546,15 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 
                 var getTaskDetail = BpmnUtility.FindElementByAttribute(getAllElement, "name", getTask.Name);
                 //getAllElement.Where(t => t.Attribute("name").Value == getTask.Name).FirstOrDefault();
-                var getCandidateGroup = BpmnUtility.GetAttributeValue(getTaskDetail, "candidateGroups", camunda);
+                var getCandidateGroup = BpmnUtility.GetAttributeValue(getTaskDetail, "candidateGroups", BpmnUtility.CAMUNDA_NAMESPACE);
                 // (getTaskDetail.Attribute(camunda + "candidateGroups") != null ? (getTaskDetail.Attribute(camunda + "candidateGroups").Value) : "");
 
-                candidateGroupId = BpmnUtility.GetParseMemberId(getCandidateGroup).ToList();
+                candidateGroupId = BpmnUtility.ParseCandidateGroupIds(getCandidateGroup).ToList();
                 //return GetMemberName(caller, getCandidateGroup, null);
             }
             return candidateGroupId.ToArray();
         }
 
-        public List<CandidateGroupViewModel> GetCandidateGroupsMembersFromString(UserOrganizationModel caller, string rgmIds) {
-            var getMemberIds = BpmnUtility.GetParseMemberId(rgmIds);
-            ResponsibilitiesAccessor respAccessor = new ResponsibilitiesAccessor();
-            return getMemberIds.Select(x => new CandidateGroupViewModel() {
-                Id = x,
-                Name = respAccessor.GetResponsibilityGroup(caller, x).GetName()
-            }).ToList();
-        }
 
         public async Task<List<long>> GetCandidateGroupIds_Unsafe(ISession s, long processDefId) {
             List<long> candidateGroupIdList = new List<long>();
@@ -587,8 +568,8 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
             var getAllElement = BpmnUtility.GetAllElementByAttr(xmlDocument, "userTask");
 
             foreach (var item in getAllElement) {
-                var getCandidateGroup = BpmnUtility.GetAttributeValue(item, "candidateGroups", camunda);
-                var getIds = BpmnUtility.GetParseMemberId(getCandidateGroup);
+                var getCandidateGroup = BpmnUtility.GetAttributeValue(item, "candidateGroups", BpmnUtility.CAMUNDA_NAMESPACE);
+                var getIds = BpmnUtility.ParseCandidateGroupIds(getCandidateGroup);
                 foreach (var item1 in getIds) {
                     candidateGroupIdList.Add(item1);
                 }
@@ -601,7 +582,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
 
-					// Need to discuss this permission required or not?
+                    // Need to discuss this permission required or not?
                     PermissionsUtility.Create(s, caller).CanViewTasksForCandidateGroup(userId);
 
                     string _userId = "u_" + userId;
@@ -609,11 +590,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                     var getUsertaskList = await comClass.GetTaskListByAssignee(_userId);
 
                     foreach (var item in getUsertaskList) {
-                        taskList.Add(new TaskViewModel() {
-                            name = item.Name,
-                            Assignee = ((!string.IsNullOrEmpty(item.Assignee)) ? item.Assignee : ""),
-                            Id = item.Id
-                        });
+                        taskList.Add(TaskViewModel.Create(item));
                     }
 
                     tx.Commit();
@@ -638,11 +615,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                 }
 
                 foreach (var item in getUsertaskList) {
-                    taskList.Add(new TaskViewModel() {
-                        name = item.Name,
-                        Id = item.Id,
-                        Assignee = ((!string.IsNullOrEmpty(item.Assignee)) ? item.Assignee : ""),
-                    });
+                    taskList.Add(TaskViewModel.Create(item));
                 }
 
 
@@ -651,23 +624,18 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
         }
 
         public async Task<TaskViewModel> GetTaskById_Unsafe(UserOrganizationModel caller, string taskId) {
-            TaskViewModel task = new TaskViewModel();
+            TaskViewModel output = null;
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     PermissionsUtility.Create(s, caller);
                     CommClass comClass = new CommClass();
-                    var getUsertask = await comClass.GetTaskById(taskId);
-
-                    if (getUsertask != null) {
-                        task.name = getUsertask.Name;
-                        task.Id = getUsertask.Id;
-                        task.Assignee = ((!string.IsNullOrEmpty(getUsertask.Assignee)) ? getUsertask.Assignee : "");
+                    var task = await comClass.GetTaskById(taskId);
+                    if (task != null) {
+                        output = TaskViewModel.Create(task);
                     }
-                    tx.Commit();
-                    s.Flush();
                 }
             }
-            return task;
+            return output;
         }
 
         /// <summary>
@@ -815,7 +783,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                 getAllElement.Where(x => x.Attribute("id").Value == model.Id.ToString()).FirstOrDefault().SetAttributeValue("name", model.name);
 
                 //update description element
-                getAllElement.Where(x => x.Attribute("id").Value == model.Id.ToString()).FirstOrDefault().SetAttributeValue(camunda + "candidateGroups", candidateGroups);
+                getAllElement.Where(x => x.Attribute("id").Value == model.Id.ToString()).FirstOrDefault().SetAttributeValue(BpmnUtility.CAMUNDA_NAMESPACE + "candidateGroups", candidateGroups);
 
 
                 xmlDocument.Save(fileStream);
@@ -824,7 +792,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 
                 await BpmnUtility.UploadFileToServer(fileStream, getProcessDefFileDetails.FileKey);
 
-                modelObj.SelectedMemberName = BpmnUtility.GetMemberNames(caller, model.SelectedMemberId);
+                modelObj.SelectedMemberName = BpmnUtility.GetMemberNames(s, perms, model.SelectedMemberId);
             }
             return modelObj;
         }

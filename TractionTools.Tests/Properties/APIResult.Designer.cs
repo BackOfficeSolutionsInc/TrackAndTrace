@@ -133,7 +133,28 @@ namespace TractionTools.Tests.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {&quot;Basics&quot;:{&quot;Name&quot;:&quot;Test L10&quot;,&quot;TeamType&quot;:1,&quot;Id&quot;:1,&quot;Type&quot;:&quot;AngularBasics&quot;,&quot;Key&quot;:&quot;AngularBasics_1&quot;,&quot;CreateOnly&quot;:false,&quot;Hide&quot;:false,&quot;_ExtraProperties&quot;:null},&quot;Attendees&quot;:[],&quot;Scorecard&quot;:{&quot;Measurables&quot;:[],&quot;Scores&quot;:[],&quot;Weeks&quot;:[{&quot;ForWeekNumber&quot;:2475,&quot;ForWeek&quot;:&quot;2017-06-04T00:00:00Z&quot;,&quot;DisplayDate&quot;:&quot;2017-05-28T06:00:00Z&quot;,&quot;IsCurrentWeek&quot;:false,&quot;Id&quot;:636321312000000000,&quot;Type&quot;:&quot;AngularWeek&quot;,&quot;Key&quot;:&quot;AngularWeek_636321312000000000&quot;,&quot;CreateOnly&quot;:false,&quot;Hide&quot;:false,&quot;_ExtraProperties&quot;:null},{&quot;ForWeekNumber&quot;:2476,&quot;ForWeek&quot;:&quot;2017- [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to {
+        ///  &quot;Basics&quot;: {
+        ///    &quot;Name&quot;: &quot;Test L10&quot;,
+        ///    &quot;TeamType&quot;: 1,
+        ///    &quot;Id&quot;: 1,
+        ///    &quot;Type&quot;: &quot;AngularBasics&quot;,
+        ///    &quot;Key&quot;: &quot;AngularBasics_1&quot;,
+        ///    &quot;CreateOnly&quot;: false,
+        ///    &quot;Hide&quot;: false,
+        ///    &quot;_ExtraProperties&quot;: null
+        ///  },
+        ///  &quot;Attendees&quot;: [],
+        ///  &quot;Scorecard&quot;: {
+        ///    &quot;Measurables&quot;: [],
+        ///    &quot;Scores&quot;: [],
+        ///    &quot;Weeks&quot;: [
+        ///      {
+        ///        &quot;ForWeekNumber&quot;: 2475,
+        ///        &quot;ForWeek&quot;: &quot;2017-06-04T00:00:00Z&quot;,
+        ///        &quot;DisplayDate&quot;: &quot;2017-05-28T06:00:00Z&quot;,
+        ///        &quot;IsCurrentWeek&quot;: false,
+        ///        &quot;Id&quot;: 636321312000000 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string L10ApiTests_v0_TestGetMeetingsL10 {
             get {

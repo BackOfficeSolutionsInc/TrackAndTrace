@@ -94,11 +94,12 @@ namespace TractionTools.Tests.Api {
             CompareModelProperties(APIResult.TeamsApiTests_v0_TestGetTeamMember, getTeamMember);
             Assert.AreEqual(2, getTeamMember.Count());
             
-            Throws<PermissionsException>(() => TeamAccessor.AddMember(c.E1, addTeam.Id, c.E2.Id));
-            //var add = TeamAccessor.AddMember(c.E1, addTeam.Id, c.E2.Id);
-            //getTeamMember = teamController.GetTeamMembers(addTeam.Id);
-            //CompareModelProperties(APIResult.TeamsApiTests_v0_TestUpdateTeam, getTeamMember);
-            //Assert.AreEqual(2, getTeamMember.Count());
+            var add = TeamAccessor.AddMember(c.E1, addTeam.Id, c.E2.Id);
+            getTeamMember = teamController.GetTeamMembers(addTeam.Id);
+            //CompareModelProperties(APIResult.TeamsApiTests_v0_TestGetTeamMember, getTeamMember);
+            Assert.AreEqual(3, getTeamMember.Count());
+
+            Throws<PermissionsException>(() => TeamAccessor.AddMember(c.OtherOrg.Employee, addTeam.Id, c.E2.Id));
         }
 
         [TestMethod]

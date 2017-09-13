@@ -142,7 +142,297 @@
     <value>[{"Id":1,"Name":"Test L10"}]</value>
   </data>
   <data name="L10ApiTests_v0_TestGetMeetingsL10" xml:space="preserve">
-    <value>{"Basics":{"Name":"Test L10","TeamType":1,"Id":1,"Type":"AngularBasics","Key":"AngularBasics_1","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"Attendees":[],"Scorecard":{"Measurables":[],"Scores":[],"Weeks":[{"ForWeekNumber":2475,"ForWeek":"2017-06-04T00:00:00Z","DisplayDate":"2017-05-28T06:00:00Z","IsCurrentWeek":false,"Id":636321312000000000,"Type":"AngularWeek","Key":"AngularWeek_636321312000000000","CreateOnly":false,"Hide":false,"_ExtraProperties":null},{"ForWeekNumber":2476,"ForWeek":"2017-06-11T00:00:00Z","DisplayDate":"2017-06-04T06:00:00Z","IsCurrentWeek":false,"Id":636327360000000000,"Type":"AngularWeek","Key":"AngularWeek_636327360000000000","CreateOnly":false,"Hide":false,"_ExtraProperties":null},{"ForWeekNumber":2477,"ForWeek":"2017-06-18T00:00:00Z","DisplayDate":"2017-06-11T06:00:00Z","IsCurrentWeek":false,"Id":636333408000000000,"Type":"AngularWeek","Key":"AngularWeek_636333408000000000","CreateOnly":false,"Hide":false,"_ExtraProperties":null},{"ForWeekNumber":2478,"ForWeek":"2017-06-25T00:00:00Z","DisplayDate":"2017-06-18T06:00:00Z","IsCurrentWeek":false,"Id":636339456000000000,"Type":"AngularWeek","Key":"AngularWeek_636339456000000000","CreateOnly":false,"Hide":false,"_ExtraProperties":null},{"ForWeekNumber":2479,"ForWeek":"2017-07-02T00:00:00Z","DisplayDate":"2017-06-25T06:00:00Z","IsCurrentWeek":false,"Id":636345504000000000,"Type":"AngularWeek","Key":"AngularWeek_636345504000000000","CreateOnly":false,"Hide":false,"_ExtraProperties":null},{"ForWeekNumber":2480,"ForWeek":"2017-07-09T00:00:00Z","DisplayDate":"2017-07-02T06:00:00Z","IsCurrentWeek":false,"Id":636351552000000000,"Type":"AngularWeek","Key":"AngularWeek_636351552000000000","CreateOnly":false,"Hide":false,"_ExtraProperties":null},{"ForWeekNumber":2481,"ForWeek":"2017-07-16T00:00:00Z","DisplayDate":"2017-07-09T06:00:00Z","IsCurrentWeek":false,"Id":636357600000000000,"Type":"AngularWeek","Key":"AngularWeek_636357600000000000","CreateOnly":false,"Hide":false,"_ExtraProperties":null},{"ForWeekNumber":2482,"ForWeek":"2017-07-23T00:00:00Z","DisplayDate":"2017-07-16T06:00:00Z","IsCurrentWeek":false,"Id":636363648000000000,"Type":"AngularWeek","Key":"AngularWeek_636363648000000000","CreateOnly":false,"Hide":false,"_ExtraProperties":null},{"ForWeekNumber":2483,"ForWeek":"2017-07-30T00:00:00Z","DisplayDate":"2017-07-23T06:00:00Z","IsCurrentWeek":false,"Id":636369696000000000,"Type":"AngularWeek","Key":"AngularWeek_636369696000000000","CreateOnly":false,"Hide":false,"_ExtraProperties":null},{"ForWeekNumber":2484,"ForWeek":"2017-08-06T00:00:00Z","DisplayDate":"2017-07-30T06:00:00Z","IsCurrentWeek":false,"Id":636375744000000000,"Type":"AngularWeek","Key":"AngularWeek_636375744000000000","CreateOnly":false,"Hide":false,"_ExtraProperties":null},{"ForWeekNumber":2485,"ForWeek":"2017-08-13T00:00:00Z","DisplayDate":"2017-08-06T06:00:00Z","IsCurrentWeek":false,"Id":636381792000000000,"Type":"AngularWeek","Key":"AngularWeek_636381792000000000","CreateOnly":false,"Hide":false,"_ExtraProperties":null},{"ForWeekNumber":2486,"ForWeek":"2017-08-20T00:00:00Z","DisplayDate":"2017-08-13T06:00:00Z","IsCurrentWeek":false,"Id":636387840000000000,"Type":"AngularWeek","Key":"AngularWeek_636387840000000000","CreateOnly":false,"Hide":false,"_ExtraProperties":null},{"ForWeekNumber":2487,"ForWeek":"2017-08-27T00:00:00Z","DisplayDate":"2017-08-20T06:00:00Z","IsCurrentWeek":false,"Id":636393888000000000,"Type":"AngularWeek","Key":"AngularWeek_636393888000000000","CreateOnly":false,"Hide":false,"_ExtraProperties":null},{"ForWeekNumber":2488,"ForWeek":"2017-09-03T00:00:00Z","DisplayDate":"2017-08-27T06:00:00Z","IsCurrentWeek":false,"Id":636399936000000000,"Type":"AngularWeek","Key":"AngularWeek_636399936000000000","CreateOnly":false,"Hide":false,"_ExtraProperties":null},{"ForWeekNumber":2489,"ForWeek":"2017-09-10T00:00:00Z","DisplayDate":"2017-09-03T06:00:00Z","IsCurrentWeek":true,"Id":636405984000000000,"Type":"AngularWeek","Key":"AngularWeek_636405984000000000","CreateOnly":false,"Hide":false,"_ExtraProperties":null}],"ReverseScorecard":false,"Period":"Weekly","DateFormat1":"MMM d","DateFormat2":"MMM d","Id":1,"Type":"AngularScorecard","Key":"AngularScorecard_1","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"Notes":[],"Rocks":[],"Todos":[],"Headlines":[],"IssuesList":{"Issues":[],"Prioritization":2,"Id":1,"Type":"AngularIssuesList","Key":"AngularIssuesList_1","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"date":{"startDate":"2017-08-27T00:00:00Z","endDate":"2017-09-06T00:00:00Z"},"dateDataRange":null,"HeadlinesUrl":"https://notes.traction.tools/p/a3494072-246d-4683-ac78-be7defcdef78?showControls=true&amp;showChat=false","HeadlineType":2,"VtoId":1,"ShowSegue":true,"ShowScorecard":true,"ShowRockReview":true,"ShowHeadlines":true,"ShowTodos":true,"ShowIDS":true,"ShowConclude":true,"SegueMinutes":5.0,"ScorecardMinutes":5.0,"RockReviewMinutes":5.0,"HeadlinesMinutes":5.0,"TodosMinutes":5.0,"IDSMinutes":60.0,"ConcludeMinutes":5.0,"MeetingType":0,"_Recurrence":{"Item":{"Id":1,"Name":"Test L10","VideoId":"b714fa65-2d39-4c28-afa6-7a582c3c0be5","CombineRocks":false,"Pristine":false,"CurrentWeekHighlightShift":0,"HeadlineType":2,"MeetingType":0,"RockType":0,"HeadlinesId":"a3494072-246d-4683-ac78-be7defcdef78","AttendingOffByDefault":false,"CreateTime":"2017-09-05T13:57:48","MeetingInProgress":null,"DeleteTime":null,"CountDown":true,"StartOfWeekOverride":null,"IsLeadershipTeam":true,"VtoId":1,"EnableTranscription":false,"OrderIssueBy":null,"CreatedById":9,"SegueMinutes":5.0,"ScorecardMinutes":5.0,"RockReviewMinutes":5.0,"HeadlinesMinutes":5.0,"TodoListMinutes":5.0,"IDSMinutes":60.0,"ConclusionMinutes":5.0,"DefaultTodoOwner":0,"DefaultIssueOwner":null,"ReverseScorecard":false,"IncludeIndividualTodos":false,"IncludeAggregateTodoCompletion":false,"IncludeAggregateTodoCompletionOnPrintout":true,"TeamType":1,"Prioritization":2,"ForumStep":0,"ForumCode":null,"PreventEditingUnownedMeasurables":false,"OrganizationId":1,"SelectedVideoProviderId":null,"ShowHeadlinesBox":false,"Organization":{"Id":1},"SelectedVideoProvider":null,"_DefaultAttendees":[],"_DefaultMeasurables":[],"_DefaultRocks":[],"_VideoConferenceProviders":[],"_Pages":[{"Id":1,"DeleteTime":null,"PageType":"Segue","PageTypeStr":"Segue","AutoGen":true,"Url":null,"Title":"Segue","Subheading":"Share good news from the last 7 days.&lt;br/&gt; One personal and one professional.","Minutes":5.0,"L10RecurrenceId":1,"_Ordering":0,"_WasModified":false,"_Used":false},{"Id":2,"DeleteTime":null,"PageType":"Scorecard","PageTypeStr":"Scorecard","AutoGen":true,"Url":null,"Title":"Scorecard","Subheading":"","Minutes":5.0,"L10RecurrenceId":1,"_Ordering":1,"_WasModified":false,"_Used":false},{"Id":3,"DeleteTime":null,"PageType":"Rock Review","PageTypeStr":"Rocks","AutoGen":true,"Url":null,"Title":"Rock Review","Subheading":"","Minutes":5.0,"L10RecurrenceId":1,"_Ordering":2,"_WasModified":false,"_Used":false},{"Id":4,"DeleteTime":null,"PageType":"People Headlines","PageTypeStr":"Headlines","AutoGen":true,"Url":null,"Title":"People Headlines","Subheading":"Share headlines about customers/clients and people in the company.&lt;br/&gt; Good and bad. Drop down (to the issues list) anything that needs discussion.","Minutes":5.0,"L10RecurrenceId":1,"_Ordering":3,"_WasModified":false,"_Used":false},{"Id":5,"DeleteTime":null,"PageType":"To-do List","PageTypeStr":"Todo","AutoGen":true,"Url":null,"Title":"To-do List","Subheading":"","Minutes":5.0,"L10RecurrenceId":1,"_Ordering":4,"_WasModified":false,"_Used":false},{"Id":6,"DeleteTime":null,"PageType":"IDS","PageTypeStr":"IDS","AutoGen":true,"Url":null,"Title":"IDS","Subheading":"","Minutes":60.0,"L10RecurrenceId":1,"_Ordering":5,"_WasModified":false,"_Used":false},{"Id":7,"DeleteTime":null,"PageType":"Conclude","PageTypeStr":"Conclude","AutoGen":true,"Url":null,"Title":"Conclude","Subheading":"","Minutes":5.0,"L10RecurrenceId":1,"_Ordering":6,"_WasModified":false,"_Used":false}],"_MeetingNotes":[],"_WhoCanEdit":null}},"Focus":null,"LoadUrls":null,"Id":1,"Type":"AngularRecurrence","Key":"AngularRecurrence_1","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+    <value>{
+  "Basics": {
+    "Name": "Test L10",
+    "TeamType": 1,
+    "Id": 1,
+    "Type": "AngularBasics",
+    "Key": "AngularBasics_1",
+    "CreateOnly": false,
+    "Hide": false,
+    "_ExtraProperties": null
+  },
+  "Attendees": [],
+  "Scorecard": {
+    "Measurables": [],
+    "Scores": [],
+    "Weeks": [
+      {
+        "ForWeekNumber": 2475,
+        "ForWeek": "2017-06-04T00:00:00Z",
+        "DisplayDate": "2017-05-28T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636321312000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636321312000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2476,
+        "ForWeek": "2017-06-11T00:00:00Z",
+        "DisplayDate": "2017-06-04T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636327360000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636327360000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2477,
+        "ForWeek": "2017-06-18T00:00:00Z",
+        "DisplayDate": "2017-06-11T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636333408000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636333408000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2478,
+        "ForWeek": "2017-06-25T00:00:00Z",
+        "DisplayDate": "2017-06-18T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636339456000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636339456000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2479,
+        "ForWeek": "2017-07-02T00:00:00Z",
+        "DisplayDate": "2017-06-25T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636345504000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636345504000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2480,
+        "ForWeek": "2017-07-09T00:00:00Z",
+        "DisplayDate": "2017-07-02T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636351552000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636351552000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2481,
+        "ForWeek": "2017-07-16T00:00:00Z",
+        "DisplayDate": "2017-07-09T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636357600000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636357600000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2482,
+        "ForWeek": "2017-07-23T00:00:00Z",
+        "DisplayDate": "2017-07-16T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636363648000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636363648000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2483,
+        "ForWeek": "2017-07-30T00:00:00Z",
+        "DisplayDate": "2017-07-23T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636369696000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636369696000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2484,
+        "ForWeek": "2017-08-06T00:00:00Z",
+        "DisplayDate": "2017-07-30T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636375744000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636375744000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2485,
+        "ForWeek": "2017-08-13T00:00:00Z",
+        "DisplayDate": "2017-08-06T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636381792000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636381792000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2486,
+        "ForWeek": "2017-08-20T00:00:00Z",
+        "DisplayDate": "2017-08-13T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636387840000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636387840000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2487,
+        "ForWeek": "2017-08-27T00:00:00Z",
+        "DisplayDate": "2017-08-20T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636393888000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636393888000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2488,
+        "ForWeek": "2017-09-03T00:00:00Z",
+        "DisplayDate": "2017-08-27T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636399936000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636399936000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2489,
+        "ForWeek": "2017-09-10T00:00:00Z",
+        "DisplayDate": "2017-09-03T06:00:00Z",
+        "IsCurrentWeek": true,
+        "Id": 636405984000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636405984000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      }
+    ],
+    "ReverseScorecard": false,
+    "Period": "Weekly",
+    "DateFormat1": "MMM d",
+    "DateFormat2": "MMM d",
+    "Id": 1,
+    "Type": "AngularScorecard",
+    "Key": "AngularScorecard_1",
+    "CreateOnly": false,
+    "Hide": false,
+    "_ExtraProperties": null
+  },
+  "Notes": [],
+  "Rocks": [],
+  "Todos": [],
+  "Headlines": [],
+  "IssuesList": {
+    "Issues": [],
+    "Prioritization": 2,
+    "Id": 1,
+    "Type": "AngularIssuesList",
+    "Key": "AngularIssuesList_1",
+    "CreateOnly": false,
+    "Hide": false,
+    "_ExtraProperties": null
+  },
+  "date": {
+    "startDate": "2017-08-29T00:00:00Z",
+    "endDate": "2017-09-08T00:00:00Z"
+  },
+  "dateDataRange": null,
+  "HeadlinesUrl": "https://notes.traction.tools/p/b6c592eb-f063-4bb6-8cba-7c7736c89ba2?showControls=true&amp;showChat=false",
+  "HeadlineType": 2,
+  "VtoId": 1,
+  "Pages": [
+    {
+      "Minutes": 5.0,
+      "Title": "Segue",
+      "Type": 1
+    },
+    {
+      "Minutes": 5.0,
+      "Title": "Scorecard",
+      "Type": 2
+    },
+    {
+      "Minutes": 5.0,
+      "Title": "Rock Review",
+      "Type": 3
+    },
+    {
+      "Minutes": 5.0,
+      "Title": "People Headlines",
+      "Type": 4
+    },
+    {
+      "Minutes": 5.0,
+      "Title": "To-do List",
+      "Type": 5
+    },
+    {
+      "Minutes": 60.0,
+      "Title": "IDS",
+      "Type": 6
+    },
+    {
+      "Minutes": 5.0,
+      "Title": "Conclude",
+      "Type": 7
+    }
+  ],
+  "ShowSegue": true,
+  "ShowScorecard": true,
+  "ShowRockReview": true,
+  "ShowHeadlines": true,
+  "ShowTodos": true,
+  "ShowIDS": true,
+  "ShowConclude": true,
+  "SegueMinutes": 5.0,
+  "ScorecardMinutes": 5.0,
+  "RockReviewMinutes": 5.0,
+  "HeadlinesMinutes": 5.0,
+  "TodosMinutes": 5.0,
+  "IDSMinutes": 60.0,
+  "ConcludeMinutes": 5.0,
+  "MeetingType": 0,
+  "Focus": null,
+  "LoadUrls": null,
+  "Id": 1,
+  "Type": "AngularRecurrence",
+  "Key": "AngularRecurrence_1",
+  "CreateOnly": false,
+  "Hide": false,
+  "_ExtraProperties": null
+}</value>
   </data>
   <data name="L10ApiTests_v0_TestGetUserIssues" xml:space="preserve">
     <value>[{"DetailsUrl":"https://notes.traction.tools/p/33b88d42-ab93-4006-8110-d3aacf8e9b93?showControls=true&amp;showChat=false","Owner":{"Name":"E1 150426326","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-01T10:54:30","Id":9,"Type":"AngularUser","Key":"AngularUser_9","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"Name":"Issue for Test Method","Details":null,"Children":[],"CompleteTime":null,"CreateTime":"2017-09-01T10:54:33","Complete":false,"Priority":0,"Id":1,"Type":"AngularIssue","Key":"AngularIssue_1","CreateOnly":false,"Hide":false,"_ExtraProperties":null}]</value>

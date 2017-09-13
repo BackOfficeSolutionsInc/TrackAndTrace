@@ -73,6 +73,7 @@
     <Compile Include="Model\Deployment\FormUpload.cs" />
     <Compile Include="Model\History\HistoryVariableInstanceModel.cs" />
     <Compile Include="Model\History\HistoryVariableInstanceQueryModel.cs" />
+    <Compile Include="Model\ProcessDefinition\processDefinitionDeleteModel.cs" />
     <Compile Include="Model\ProcessInstance\GetProcessInstanceQueryModel.cs" />
     <Compile Include="Model\Task\GetTaskQueryModel.cs" />
     <Compile Include="Model\Group\GroupQueryModel.cs" />

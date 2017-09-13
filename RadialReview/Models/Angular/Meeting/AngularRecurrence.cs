@@ -105,6 +105,7 @@ namespace RadialReview.Models.Angular.Meeting
 
         public MeetingType? MeetingType { get; set; }
 
+        [JsonIgnore]
 		public AngularIgnore<L10Recurrence> _Recurrence { get; set; }
         public string Focus { get; set; }
 		public List<AngularString> LoadUrls { get; set; }

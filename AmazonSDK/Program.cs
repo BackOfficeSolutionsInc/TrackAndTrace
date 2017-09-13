@@ -5,6 +5,7 @@ using RadialReview.Areas.CoreProcess.Models;
 using RadialReview.Areas.CoreProcess.Models.Process;
 using RadialReview.Controllers;
 using RadialReview.Models;
+using RadialReview.Utilities.CoreProcess;
 using RadialReview.Utilities.Encrypt;
 using System;
 using System.Collections.Generic;
@@ -69,9 +70,10 @@ namespace AmazonSDK {
 					LogDetails("transaction lock", "INFO");
 					try {
 						var getMessage = s.QueryOver<MessageQueue>().Where(x => x.IdentifierId == model.Identifier
-						&& x.UserName == model.UserName
-						&& x.Status == MessageQueueStatus.Start.ToString()
+						    && x.UserName == model.UserName
+						    && x.Status == MessageQueueStatus.Start.ToString()
 						).SingleOrDefault();
+
 						LogDetails("Retreive data [MessageQueue] from DB", "INFO");
 
 						if (getMessage == null) {

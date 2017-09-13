@@ -4,6 +4,7 @@ using Amazon.SQS;
 using Amazon.SQS.Model;
 using RadialReview.Areas.CoreProcess.Models;
 using RadialReview.Utilities;
+using RadialReview.Utilities.CoreProcess;
 using System;
 using System.Collections.Generic;
 using System.Linq;

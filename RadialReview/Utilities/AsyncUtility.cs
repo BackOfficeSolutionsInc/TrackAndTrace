@@ -5,8 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace RadialReview.Areas.CoreProcess.Models {
-	internal static class AsyncHelper {
+namespace RadialReview.Utilities {
+	public static class AsyncHelper {
 		private static readonly TaskFactory _myTaskFactory = new
 		  TaskFactory(CancellationToken.None,
 					  TaskCreationOptions.None,

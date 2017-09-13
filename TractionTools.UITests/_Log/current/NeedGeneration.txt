@@ -1,5 +1,0 @@
-Chrome~L10_Wizard_Scorecard~_l10_wizard_{id}~Blank.png
-Chrome~L10_Wizard_Scorecard~_l10_wizard_{id}~Complete.png
-Chrome~L10_Wizard_Scorecard~_l10_wizard_{id}~Rocks-Picture.png
-Chrome~L10_Wizard_Scorecard~_l10_wizard_{id}~Scorecard-AfterAdd.png
-Chrome~L10_Wizard_Scorecard~_l10_wizard_{id}~Scorecard-BeforeAdd.png

@@ -99,7 +99,6 @@ namespace RadialReview.Models {
 
 		[EmailAddress]
 		public virtual string ContactEmail { get; set; }
-
 		public virtual long OrgId { get; set; }
 
 		public OrgCreationData() {

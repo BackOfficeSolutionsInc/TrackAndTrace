@@ -4810,7 +4810,7 @@ namespace RadialReview.Accessors {
         #endregion
 
         #region Angular
-        public static AngularRecurrence GetAngularRecurrence(UserOrganizationModel caller, long recurrenceId, bool includeScores = true, bool includeHistorical = true, bool fullScorecard = true, DateRange range = null, bool forceIncludeTodoCompletion = false) {
+        public static AngularRecurrence GetAngularRecurrence(UserOrganizationModel caller, long recurrenceId, bool includeScores = true, bool includeHistorical = true, bool fullScorecard = true, DateRange range = null, bool forceIncludeTodoCompletion = false,DateRange scorecardRange = null) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     var perms = PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
@@ -4825,7 +4825,7 @@ namespace RadialReview.Accessors {
                         return au;
                     }).ToList();
 
-                    var scorecardRange = range;
+                    scorecardRange = scorecardRange ?? range;
                     DateRange lookupRange = null;
                     if (range != null) {
                         lookupRange = new DateRange(range.StartTime, range.EndTime);
@@ -4833,6 +4833,7 @@ namespace RadialReview.Accessors {
 
                     if (fullScorecard) {
                         var period = caller.GetTimeSettings().Period;
+
                         switch (period) {
                             case ScorecardPeriod.Monthly:
                                 scorecardRange = new DateRange(DateTime.UtcNow.AddMonths(-12).StartOfWeek(DayOfWeek.Sunday), DateTime.UtcNow.AddMonths(1).StartOfWeek(DayOfWeek.Sunday));
@@ -4847,6 +4848,17 @@ namespace RadialReview.Accessors {
                                 lookupRange = new DateRange(DateTime.UtcNow.AddDays(-7 * 14).StartOfWeek(DayOfWeek.Sunday), DateTime.UtcNow.AddDays(9).StartOfWeek(DayOfWeek.Sunday));
                                 break;
                         }
+                        //if (fullScorecard) {
+                        //    if (period == ScorecardPeriod.Monthly) {
+                        //        scorecardStart = scorecardStart.AddDays(-31);
+                        //        endRange = endRange.AddDays(31);
+                        //    }
+                        //    if (period == ScorecardPeriod.Quarterly) {
+                        //        scorecardStart = scorecardStart.AddDays(-100);
+                        //        scorecardEnd = scorecardEnd.AddDays(100);
+                        //    }
+                        //}
+
                     }
                     var scores = new List<ScoreModel>();
 
@@ -4882,9 +4894,21 @@ namespace RadialReview.Accessors {
                     var allRocks = recurrence._DefaultRocks.Select(x => new AngularRock(x.ForRock)).ToList();
 
                     if (range != null) {
+                        RockModel rockAlias = null;
                         var histRock = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
                             .Where(x => x.DeleteTime != null && x.L10Recurrence.Id == recurrenceId)
-                            .Where(range.Filter<L10Recurrence.L10Recurrence_Rocks>()).List();
+                            .Where(range.Filter<L10Recurrence.L10Recurrence_Rocks>())
+                            //.JoinAlias(x=>x.ForRock,()=>rockAlias)
+                            //.Where(x=> (rockAlias.DeleteTime == null || rockAlias.DeleteTime >= range.StartTime))
+                            .List();
+                        histRock = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
+                           .Where(x => x.DeleteTime != null && x.L10Recurrence.Id == recurrenceId)
+                           .Where(range.Filter<L10Recurrence.L10Recurrence_Rocks>())
+                           .JoinAlias(x=>x.ForRock,()=>rockAlias)
+                           .Where(x=> (rockAlias.DeleteTime == null || rockAlias.DeleteTime >= range.StartTime))
+                           .List();
+
+
                         allRocks.AddRange(histRock.Select(x => new AngularRock(x.ForRock)));
                     }
                     recur.Rocks = allRocks.Distinct(x => x.Id);

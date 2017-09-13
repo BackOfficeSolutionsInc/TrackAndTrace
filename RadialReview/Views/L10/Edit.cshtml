@@ -240,14 +240,18 @@
                     <div id="collapseVto" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingVto">
                         <div class="panel-body ids">
                             @{
-                            var sharableVto = ((RadialReview.Accessors.L10Accessor.VtoSharable)(ViewBag.VtoSharable));
-                            var disableShareVto = sharableVto.CanShareVto ? "" : "disabled";
-                            var clickThroughShareVto = sharableVto.CanShareVto ? "" : "clickThrough";
+                                var disableShareVto = "";
+                                var clickThroughShareVto = "";
+                                var sharableVto = ((RadialReview.Accessors.L10Accessor.VtoSharable)(ViewBag.VtoSharable));
+                                if (sharableVto != null) {
+                                    disableShareVto = sharableVto.CanShareVto ? "" : "disabled";
+                                    clickThroughShareVto = sharableVto.CanShareVto ? "" : "clickThrough";
+                                }
                             }
                             <div class="form-group ">
                                 <label class="col-sm-3 control-label">Share Vision Component with other teams:</label>
                                 <div class="col-sm-9" style="@(sharableVto.CanShareVto?"":"cursor: not-allowed;")">
-                                    @Html.CheckBoxFor(x => x.Recurrence.ShareVto, new { @class = "editable clickable " + clickThroughShareVto, style = "margin-top: 11px;"})
+                                    @Html.CheckBoxFor(x => x.Recurrence.ShareVto, new { @class = "editable clickable " + clickThroughShareVto, style = "margin-top: 11px;" })
 
                                     <span style="display: block;color: lightgray;">@(new HtmlString(sharableVto.ErrorMessage))</span>
                                 </div>
@@ -275,31 +279,31 @@
 
                             <div id="duration-table"></div>
                             @using (Html.BeginScripts()) {
-                            <script>
+                                <script>
 
-                                DataTable({
-                                    container:"#duration-table",
-                                    clickReorder:"/l10/ReorderL10Page/{0}?oldOrder={1}&newOrder={2}",
-                                    clickRemove: "/l10/DeleteL10Page/{0}",
-                                    clickEdit: "/l10/EditL10Page/{0}",
+                                    DataTable({
+                                        container:"#duration-table",
+                                        clickReorder:"/l10/ReorderL10Page/{0}?oldOrder={1}&newOrder={2}",
+                                        clickRemove: "/l10/DeleteL10Page/{0}",
+                                        clickEdit: "/l10/EditL10Page/{0}",
 
-                                    addButton:{
-                                        text:"New Page"
-                                    },
-                                    nodataText:"No pages. Click add to create one.",
-                                    clickAdd: "/L10/CreateL10Page/@Model.Recurrence.Id", postAdd: "/L10/EditL10Page/",
-                                    cells:[
-                                        {reorder:true},
-                                        {name:"Title",classes:"fullWidth",contents:function(x){return x.Title;}},
-                                        {name:"Type",classes:"alignCenter",contents:function(x){return "<span class='label label-default' style='min-width:80px;display: inline-block;'>"+x.PageTypeStr+"</span>";}},
-                                        //{name:"Subheading",classes:"fullWidth",contents:function(x){return x.Subheading;}},
-                                        {name:"Minutes",classes:"width80",contents:function(x){return x.Minutes;}},
-                                        {edit:true},
-                                        {remove:true},
-                                    ],
-                                    data:@Html.ArrayToString(Model.Recurrence._Pages),
-                                });
-                            </script>
+                                        addButton:{
+                                            text:"New Page"
+                                        },
+                                        nodataText:"No pages. Click add to create one.",
+                                        clickAdd: "/L10/CreateL10Page/@Model.Recurrence.Id", postAdd: "/L10/EditL10Page/",
+                                        cells:[
+                                            {reorder:true},
+                                            {name:"Title",classes:"fullWidth",contents:function(x){return x.Title;}},
+                                            {name:"Type",classes:"alignCenter",contents:function(x){return "<span class='label label-default' style='min-width:80px;display: inline-block;'>"+x.PageTypeStr+"</span>";}},
+                                            //{name:"Subheading",classes:"fullWidth",contents:function(x){return x.Subheading;}},
+                                            {name:"Minutes",classes:"width80",contents:function(x){return x.Minutes;}},
+                                            {edit:true},
+                                            {remove:true},
+                                        ],
+                                        data:@Html.ArrayToString(Model.Recurrence._Pages),
+                                    });
+                                </script>
                             }
                         </div>
                     </div>
@@ -405,15 +409,15 @@
                 @*Fake for spacing*@
                 <div class="pull-left" style="visibility: hidden;">
                     @if (Model.Recurrence.Id != 0) {
-                    <div class="alignCenter"><div class="btn btn-danger">Delete meeting</div></div>
+                        <div class="alignCenter"><div class="btn btn-danger">Delete meeting</div></div>
                     }
                 </div>
                 @*Delete button*@
                 <div class="pull-right">
                     @if (Model.Recurrence.Id != 0) {
-                    <div class="alignCenter">
-                        <div class="btn btn-danger" onclick="@Html.ShowModal("Are you sure?", "/L10/Delete/", "/L10/Delete/" + Model.Recurrence.Id, onCompleteFunction: "goL10")">Delete meeting</div>
-                    </div>
+                        <div class="alignCenter">
+                            <div class="btn btn-danger" onclick="@Html.ShowModal("Are you sure?", "/L10/Delete/", "/L10/Delete/" + Model.Recurrence.Id, onCompleteFunction: "goL10")">Delete meeting</div>
+                        </div>
                     }
                 </div>
                 <div class="alignCenter">
