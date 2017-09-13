@@ -26,14 +26,14 @@ namespace AmazonSDK
     {
         static void Main(string[] args)
         {
-            //while (true)
-            //{
-            //    Console.WriteLine("Start: " + DateTime.Now.ToString("MM_dd_yyyy_HH_mm_ss"));
-            //    Thread t = new Thread(Scheduler);
-            //    t.Start();
-            //    Thread.Sleep(500);
-            //}
-            Scheduler();
+            while (true)
+            {
+                Console.WriteLine("Start: " + DateTime.Now.ToString("MM_dd_yyyy_HH_mm_ss"));
+                Thread t = new Thread(Scheduler);
+                t.Start();
+                Thread.Sleep(500);
+            }
+            //Scheduler();
         }
 
         private static void Scheduler()
