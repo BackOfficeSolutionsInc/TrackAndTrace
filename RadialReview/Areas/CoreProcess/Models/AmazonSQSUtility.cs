@@ -82,7 +82,7 @@ namespace RadialReview.Areas.CoreProcess.Models {
 
     public class TokenIdentifierMap : ClassMap<TokenIdentifier> {
         public TokenIdentifierMap() {
-            Id(x => x.TokenKey);
+            Id(x => x.TokenKey).GeneratedBy.Assigned();
            // Map(x => x.TokenKey);
         }
     }
