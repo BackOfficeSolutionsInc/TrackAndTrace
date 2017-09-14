@@ -30,23 +30,23 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
             //var getTaskList = taskAccessor.GetAllTasks(new RadialReview.Models.UserOrganizationModel());
 
             try {
-                ProcessDefAccessor processDef = new ProcessDefAccessor();
+                //ProcessDefAccessor processDef = new ProcessDefAccessor();
 
-                ISession s = HibernateSession.GetCurrentSession();
-                TodoModel todo = new TodoModel();
-                //var task = HooksRegistry.Each<ITodoHook>(x => x.CreateTodo(s, todo));
+                //ISession s = HibernateSession.GetCurrentSession();
+                //TodoModel todo = new TodoModel();
+                ////var task = HooksRegistry.Each<ITodoHook>(x => x.CreateTodo(s, todo));
 
-                Expression<Func<User, bool>> lambda1 = x => x.Age > 20;
+                //Expression<Func<User, bool>> lambda1 = x => x.Age > 20;
 
-                var serializedLambda = JsonNetAdapter.Serialize(lambda1);
-                var deserializedLambda = JsonNetAdapter.Deserialize<Expression<Func<User, bool>>>(serializedLambda);
-                deserializedLambda.Compile();
+                //var serializedLambda = JsonNetAdapter.Serialize(lambda1);
+                //var deserializedLambda = JsonNetAdapter.Deserialize<Expression<Func<User, bool>>>(serializedLambda);
+                //deserializedLambda.Compile();
 
-                Expression<Func<ITodoHook, Task>> lambda = x => x.CreateTodo(null, todo);
-                var serializedLambda1 = JsonNetAdapter.Serialize(lambda);
-                var deserializedLambda1 = JsonNetAdapter.Deserialize<Expression<Func<IHook, Task>>>(serializedLambda1);
+                //Expression<Func<ITodoHook, Task>> lambda = x => x.CreateTodo(null, todo);
+                //var serializedLambda1 = JsonNetAdapter.Serialize(lambda);
+                //var deserializedLambda1 = JsonNetAdapter.Deserialize<Expression<Func<IHook, Task>>>(serializedLambda1);
 
-                deserializedLambda1.Compile();
+                //deserializedLambda1.Compile();
 
                 //await HooksRegistry.Each<ITodoHook>(deserializedLambda1);
 
@@ -200,6 +200,19 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
             //Deploy if required--
 
             return View();
+        }
+
+        [Access(AccessLevel.Radial)]
+        [HttpPost]
+        public async Task<ActionResult> SendMessage(string uri) {
+
+            TaskViewModel tskView = new TaskViewModel();
+            tskView.Assignee = 1;
+            tskView.description = "DescTest1" + DateTime.Now.ToString("MM_dd_yyyy_hh_mm_tt");
+            tskView.name = "NameTest1";
+            tskView.Id = "Test1";
+            var result = await AmazonSQSUtility.SendMessage(MessageQueueModel.CreateHTTPRequest(tskView, GetUser(), new Uri(uri)));
+            return Json("Success");
         }
     }
 }

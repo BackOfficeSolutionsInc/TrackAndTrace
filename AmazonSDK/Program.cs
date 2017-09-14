@@ -25,13 +25,13 @@ using System.Threading.Tasks;
 namespace AmazonSDK {
 	class Program {
 		static void Main(string[] args) {
-            while (true) {
-                Console.WriteLine("Start: " + DateTime.Now.ToString("MM_dd_yyyy_HH_mm_ss"));
-                Thread t = new Thread(Scheduler);
-                t.Start();
-                Thread.Sleep(500);
-            }
-            //Scheduler();
+            //while (true) {
+            //    Console.WriteLine("Start: " + DateTime.Now.ToString("MM_dd_yyyy_HH_mm_ss"));
+            //    Thread t = new Thread(Scheduler);
+            //    t.Start();
+            //    Thread.Sleep(500);
+            //}
+            Scheduler();
         }
 
         private static void Scheduler() {
@@ -82,8 +82,8 @@ namespace AmazonSDK {
                     } else if (item.RequestType == RequestTypeEnum.isHTTPRequest) {
                         //Process API
                         LogDetails("ApiRequest --> Start ", "INFO");
-                        //var status = AsyncHelper.RunSync<HttpStatusCode>(() => ApiRequest(new MessageQueueModel() { UserName = "kunal@mytractiontools.com", ApiUrl = "http://localhost:3751/api/v0/todo/users/mine" }));
-                        var status = AsyncHelper.RunSync<HttpStatusCode>(() => ApiRequest(item));
+                        var status = AsyncHelper.RunSync<HttpStatusCode>(() => ApiRequest(new MessageQueueModel() { UserName = "kunal@mytractiontools.com", ApiUrl = "http://app-tractiontools-dev.us-west-2.elasticbeanstalk.com/api/v0/todo/users/mine" }));
+                        //var status = AsyncHelper.RunSync<HttpStatusCode>(() => ApiRequest(item));
                         LogDetails("ApiRequest --> Complete ", "INFO");
 
                         // Mark Complete
