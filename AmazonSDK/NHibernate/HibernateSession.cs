@@ -40,10 +40,7 @@ namespace AmazonSDK.NHibernate {
         public static ISession Session { get; set; }
 
         public static ISessionFactory GetDatabaseSessionFactory(string connectionNameExt = "") {
-            if (connectionNameExt != "") {
-                factory = null;
-            }
-
+            factory = null;
             lock (lck) {
                 if (factory == null) {
 
@@ -62,13 +59,13 @@ namespace AmazonSDK.NHibernate {
                             //SetupAudit(c);
                             factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
                             .Mappings(m => {
-                                        //m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
-                                        //   .Conventions.Add<StringColumnLengthConvention>();
-                                        // m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\sqlite\");
-                                        //m.AutoMappings.Add(CreateAutomappings);
-                                        //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+                                //m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+                                //   .Conventions.Add<StringColumnLengthConvention>();
+                                // m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\sqlite\");
+                                //m.AutoMappings.Add(CreateAutomappings);
+                                //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 
-                                    })
+                            })
                            .ExposeConfiguration(SetupAudit)
                            .ExposeConfiguration(BuildSchema)
                            .BuildSessionFactory();
@@ -91,11 +88,11 @@ namespace AmazonSDK.NHibernate {
                                        m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
                                   .Conventions.Add<StringColumnLengthConvention>();
                                    }
-                                           //  m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
-                                           ////m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
-                                           ////m.AutoMappings.Add(CreateAutomappings);
-                                           ////m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
-                                       })
+                                   //  m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
+                                   ////m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
+                                   ////m.AutoMappings.Add(CreateAutomappings);
+                                   ////m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+                               })
                                .ExposeConfiguration(SetupAudit)
                                .ExposeConfiguration(BuildProductionMySqlSchema)
                                .BuildSessionFactory();
@@ -154,11 +151,11 @@ namespace AmazonSDK.NHibernate {
                             .Mappings(m => {
                                 m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
                                    .Conventions.Add<StringColumnLengthConvention>();
-                                        // m.FluentMappings.ExportTo(@"C:\Users\Lynnea\Desktop\temp\sqlite\");
-                                        //m.AutoMappings.Add(CreateAutomappings);
-                                        //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+                                // m.FluentMappings.ExportTo(@"C:\Users\Lynnea\Desktop\temp\sqlite\");
+                                //m.AutoMappings.Add(CreateAutomappings);
+                                //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 
-                                    })
+                            })
                            .ExposeConfiguration(SetupAudit)
                            .ExposeConfiguration(BuildSchema)
                            .BuildSessionFactory();

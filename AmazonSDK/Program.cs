@@ -23,8 +23,8 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace AmazonSDK {
-	class Program {
-		static void Main(string[] args) {
+    class Program {
+        static void Main(string[] args) {
             //while (true) {
             //    Console.WriteLine("Start: " + DateTime.Now.ToString("MM_dd_yyyy_HH_mm_ss"));
             //    Thread t = new Thread(Scheduler);
@@ -39,6 +39,7 @@ namespace AmazonSDK {
             List<string> receiptHandleList = new List<string>();
             List<MessageQueueModel> getMessages = AsyncHelper.RunSync<List<MessageQueueModel>>(() => GetMessages());  //get List of Messages
             LogDetails("Get list of messages", "INFO");
+            LogDetails("Get list of messages count", getMessages.Count().ToString());
 
             foreach (var item in getMessages) {
                 LogDetails("Loop start", "INFO");
@@ -82,8 +83,8 @@ namespace AmazonSDK {
                     } else if (item.RequestType == RequestTypeEnum.isHTTPRequest) {
                         //Process API
                         LogDetails("ApiRequest --> Start ", "INFO");
-                        var status = AsyncHelper.RunSync<HttpStatusCode>(() => ApiRequest(new MessageQueueModel() { UserName = "kunal@mytractiontools.com", ApiUrl = "http://app-tractiontools-dev.us-west-2.elasticbeanstalk.com/api/v0/todo/users/mine" }));
-                        //var status = AsyncHelper.RunSync<HttpStatusCode>(() => ApiRequest(item));
+                        //var status = AsyncHelper.RunSync<HttpStatusCode>(() => ApiRequest(new MessageQueueModel() { UserName = "kunal@mytractiontools.com", ApiUrl = "http://app-tractiontools-dev.us-west-2.elasticbeanstalk.com/api/v0/todo/users/mine" }));
+                        var status = AsyncHelper.RunSync<HttpStatusCode>(() => ApiRequest(item));
                         LogDetails("ApiRequest --> Complete ", "INFO");
 
                         // Mark Complete
@@ -128,14 +129,12 @@ namespace AmazonSDK {
 
                             LogDetails("Save data [MessageQueue] to DB", "INFO");
                             tx.Commit();
-                            s.Flush();
                         }
                     } catch (Exception ex) {
                         tx.Rollback();
-                        s.Flush();
                         LogDetails(ex.Message, "ERROR");
                     }
-
+                    s.Flush();
                 }
             }
         }
@@ -146,14 +145,14 @@ namespace AmazonSDK {
             await amazonSQS.SendMessage(model);
         }
 
-		private static async Task<HttpStatusCode> ApiRequest(MessageQueueModel model) {
-			try {
+        private static async Task<HttpStatusCode> ApiRequest(MessageQueueModel model) {
+            try {
                 using (var s = NHibernate.HibernateSession.GetCurrentSession(true, "_RV")) {
                     LogDetails("session open", "INFO");
                     using (var tx = s.BeginTransaction()) {
                         LogDetails("Generate token", "INFO");
                         //get token
-                        string pwd = Config.SchedulerSecretKey() + model.UserName;
+                        string pwd = Config.SchedulerSecretKey() + "_" + model.UserName;
                         string encrypt_key = Crypto.EncryptStringAES(pwd, Config.SchedulerSecretKey());
 
                         //strore key to db
@@ -163,8 +162,8 @@ namespace AmazonSDK {
                         tx.Commit();
                         s.Flush();
 
-				var client = new HttpClient();
-				var param = new List<KeyValuePair<string, string>>();
+                        var client = new HttpClient();
+                        var param = new List<KeyValuePair<string, string>>();
                         param.Add(new KeyValuePair<string, string>("username", model.UserName)); // hash it 
                         param.Add(new KeyValuePair<string, string>("password", encrypt_key));
                         param.Add(new KeyValuePair<string, string>("grant_type", "password"));
@@ -202,7 +201,7 @@ namespace AmazonSDK {
         private static void MarkComplete(MessageQueueModel model) {
             using (var s = NHibernate.HibernateSession.GetCurrentSession()) {
                 LogDetails("session open", "INFO");
-                using (var tx = s.BeginTransaction(System.Data.IsolationLevel.Serializable)) {
+                using (var tx = s.BeginTransaction()) {
                     try {
                         LogDetails("Update data [MessageQueue] to DB--start", "INFO");
                         var getMessage = s.QueryOver<MessageQueue>().Where(x => x.IdentifierId == model.Identifier
@@ -213,15 +212,14 @@ namespace AmazonSDK {
                             getMessage.Status = MessageQueueStatus.Complete.ToString();
                             s.Update(getMessage);
                             tx.Commit();
-                            s.Flush();
                             LogDetails("Update data [MessageQueue] to DB--start", "INFO");
                         }
                     } catch (Exception ex) {
                         tx.Rollback();
                         LogDetails(ex.Message, "ERROR");
-                        s.Flush();
                         throw ex;
                     }
+                    s.Flush();
                 }
             }
 
