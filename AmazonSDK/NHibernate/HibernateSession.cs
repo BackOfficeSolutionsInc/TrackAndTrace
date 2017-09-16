@@ -78,9 +78,10 @@ namespace AmazonSDK.NHibernate {
                         try {
                             var c = new Configuration();
                             c.SetInterceptor(new NHSQLInterceptor());
+                            Console.WriteLine(connectionStrings["DefaultConnectionLocalMysqlScheduler" + connectionNameExt].ConnectionString);
                             //SetupAudit(c);
                             factory = Fluently.Configure(c).Database(
-                                        MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionLocalMysql" + connectionNameExt].ConnectionString).ShowSql())
+                                        MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionLocalMysqlScheduler" + connectionNameExt].ConnectionString).ShowSql())
                                .Mappings(m => {
                                    if (string.IsNullOrEmpty(connectionNameExt)) {
                                        m.FluentMappings.AddFromAssemblyOf<MessageQueueMap>().Conventions.Add<StringColumnLengthConvention>();
