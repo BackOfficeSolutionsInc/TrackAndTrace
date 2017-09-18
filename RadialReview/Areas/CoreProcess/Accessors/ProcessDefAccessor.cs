@@ -76,9 +76,16 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                     getProcessDefFileDetails.DeploymentId = deploymentId;
                     s.Update(getProcessDefFileDetails);
 
+
+                    //get processDefId
+                    XDocument xmlDocument = await BpmnUtility.GetBpmnFileXmlDoc(getProcessDefFileDetails.FileKey);
+                    var getElement = xmlDocument.Root.Element(BpmnUtility.BPMN_NAMESPACE + "process");
+                    var processDefKey = getElement.GetId();
+
                     //get process def
                     //var getProcessDef = await commClass.GetProcessDefByKey(key.Replace(" ", "") + localId.Replace("-", ""));
-                    var processDef = await commClass.GetProcessDefByKey(deplyomentName.Replace(" ", "") + "bpmn_" + coreProcessId);
+                    //var processDef = await commClass.GetProcessDefByKey(deplyomentName.Replace(" ", "") + "bpmn_" + coreProcessId);
+                    var processDef = await commClass.GetProcessDefByKey(processDefKey);
 
                     if (processDefDetail != null) {
                         processDefDetail.CamundaId = processDef.GetId();
@@ -318,7 +325,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                 return created;
             }
         }
-               
+
         public async Task<TaskViewModel> CreateProcessDefTask(ISession s, PermissionsUtility perm, long localId, TaskViewModel model) {
             if (model.SelectedMemberId == null || !model.SelectedMemberId.Any()) {
                 throw new PermissionsException("You must select a group.");
@@ -415,7 +422,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
             return modelObj;
         }
 
-       
+
 
         public async Task<List<TaskViewModel>> GetAllTaskForProcessDefinition(UserOrganizationModel caller, long localId) {
             List<TaskViewModel> taskList = new List<TaskViewModel>();
@@ -504,8 +511,8 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                     var updatedCandiateGroupIdsList = new List<long>();
                     updatedCandiateGroupIdsList.AddRange(candidateGroupIds);
 
-                    foreach(var cgid in candidateGroupIds) {
-                        updatedCandiateGroupIdsList.AddRange(ResponsibilitiesAccessor.GetResponsibilityGroupsForRgm(s, perms, cgid).Select(x=>x.Id));
+                    foreach (var cgid in candidateGroupIds) {
+                        updatedCandiateGroupIdsList.AddRange(ResponsibilitiesAccessor.GetResponsibilityGroupsForRgm(s, perms, cgid).Select(x => x.Id));
                     }
 
 
