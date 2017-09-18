@@ -30,7 +30,7 @@ namespace AmazonSDK.NHibernate {
     }
 
     public class HibernateSession {
-        private static ISessionFactory factory;
+        private static Dictionary<string, ISessionFactory> factory = new Dictionary<string, ISessionFactory>();
         private static String DbFile = null;
         /*public static void SetDbFile(string file)
         {
@@ -40,172 +40,173 @@ namespace AmazonSDK.NHibernate {
         public static ISession Session { get; set; }
 
         public static ISessionFactory GetDatabaseSessionFactory(string connectionNameExt = "") {
-            factory = null;
+            //factory = null;
             lock (lck) {
-                if (factory == null) {
+                if (!factory.ContainsKey(connectionNameExt)) {
 
                     //ChromeExtensionComms.SendCommand("dbStart");
                     var config = System.Configuration.ConfigurationManager.AppSettings;
                     var connectionStrings = System.Configuration.ConfigurationManager.ConnectionStrings;
 
                     switch (Config.GetEnv()) {
-                    case Env.local_sqlite: {
-                        var connectionString = connectionStrings["DefaultConnectionLocalSqlite"].ConnectionString;
-                        var file = connectionString.Split(new String[] { "Data Source=" }, StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
-                        DbFile = file;
-                        try {
-                            var c = new Configuration();
-                            c.SetInterceptor(new NHSQLInterceptor());
-                            //SetupAudit(c);
-                            factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
-                            .Mappings(m => {
-                                //m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
-                                //   .Conventions.Add<StringColumnLengthConvention>();
-                                // m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\sqlite\");
-                                //m.AutoMappings.Add(CreateAutomappings);
-                                //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+                        case Env.local_sqlite: {
+                                var connectionString = connectionStrings["DefaultConnectionLocalSqlite"].ConnectionString;
+                                var file = connectionString.Split(new String[] { "Data Source=" }, StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
+                                DbFile = file;
+                                try {
+                                    var c = new Configuration();
+                                    c.SetInterceptor(new NHSQLInterceptor());
+                                    //SetupAudit(c);
+                                    factory[connectionNameExt] = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
+                                    .Mappings(m => {
+                                        //m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+                                        //   .Conventions.Add<StringColumnLengthConvention>();
+                                        // m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\sqlite\");
+                                        //m.AutoMappings.Add(CreateAutomappings);
+                                        //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 
-                            })
-                           .ExposeConfiguration(SetupAudit)
-                           .ExposeConfiguration(BuildSchema)
-                           .BuildSessionFactory();
-                        } catch (Exception e) {
-                            throw e;
-                        }
-                        break;
-                    }
-                    case Env.local_mysql: {
-                        try {
-                            var c = new Configuration();
-                            c.SetInterceptor(new NHSQLInterceptor());
-                            Console.WriteLine(connectionStrings["DefaultConnectionLocalMysqlScheduler" + connectionNameExt].ConnectionString);
-                            //SetupAudit(c);
-                            factory = Fluently.Configure(c).Database(
-                                        MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionLocalMysqlScheduler" + connectionNameExt].ConnectionString).ShowSql())
-                               .Mappings(m => {
-                                   if (string.IsNullOrEmpty(connectionNameExt)) {
-                                       m.FluentMappings.AddFromAssemblyOf<MessageQueueMap>().Conventions.Add<StringColumnLengthConvention>();
-                                   } else {
-                                       m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
-                                  .Conventions.Add<StringColumnLengthConvention>();
-                                   }
-                                   //  m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
-                                   ////m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
-                                   ////m.AutoMappings.Add(CreateAutomappings);
-                                   ////m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
-                               })
-                               .ExposeConfiguration(SetupAudit)
-                               .ExposeConfiguration(BuildProductionMySqlSchema)
-                               .BuildSessionFactory();
-                        } catch (Exception e) {
-                            var mbox = e.Message;
-                            if (e.InnerException != null && e.InnerException.Message != null)
-                                mbox = e.InnerException.Message;
+                                    })
+                                   .ExposeConfiguration(SetupAudit)
+                                   .ExposeConfiguration(BuildSchema)
+                                   .BuildSessionFactory();
+                                } catch (Exception e) {
+                                    throw e;
+                                }
+                                break;
+                            }
+                        case Env.local_mysql: {
+                                try {
+                                    var c = new Configuration();
+                                    c.SetInterceptor(new NHSQLInterceptor());
+                                    Console.WriteLine(connectionStrings["DefaultConnectionLocalMysqlScheduler" + connectionNameExt].ConnectionString);
+                                    //SetupAudit(c);
+                                    factory[connectionNameExt] = Fluently.Configure(c).Database(
+                                                MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionLocalMysqlScheduler" + connectionNameExt].ConnectionString).ShowSql())
+                                       .Mappings(m => {
+                                           if (string.IsNullOrEmpty(connectionNameExt)) {
+                                               m.FluentMappings.AddFromAssemblyOf<MessageQueueMap>().Conventions.Add<StringColumnLengthConvention>();
+                                           } else {
+                                               m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+                                          .Conventions.Add<StringColumnLengthConvention>();
+                                           }
+                                           //  m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
+                                           ////m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
+                                           ////m.AutoMappings.Add(CreateAutomappings);
+                                           ////m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+                                       })
+                                       .ExposeConfiguration(SetupAudit)
+                                       .ExposeConfiguration(BuildProductionMySqlSchema)
+                                       .BuildSessionFactory();
+                                } catch (Exception e) {
+                                    var mbox = e.Message;
+                                    if (e.InnerException != null && e.InnerException.Message != null)
+                                        mbox = e.InnerException.Message;
 
-                            //ChromeExtensionComms.SendCommand("dbError",mbox);
-                            throw e;
-                        }
-                        break;
-                    }
-                    case Env.production: {
-                        var c = new Configuration();
-                        //SetupAudit(c);
-                        factory = Fluently.Configure(c).Database(
-                                    MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionProduction" + connectionNameExt].ConnectionString).ShowSql())
-                           .Mappings(m => {
-                               if (string.IsNullOrEmpty(connectionNameExt)) {
-                                   m.FluentMappings.AddFromAssemblyOf<MessageQueueMap>().Conventions.Add<StringColumnLengthConvention>();
-                               } else {
-                                   m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
-                              .Conventions.Add<StringColumnLengthConvention>();
-                               }
-                               //m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
-                               //m.AutoMappings.Add(CreateAutomappings);
-                               //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
-                           })
-                           .ExposeConfiguration(SetupAudit)
-                           .ExposeConfiguration(BuildProductionMySqlSchema)
-                           .BuildSessionFactory();
-                        break;
-                    }
-                    case Env.local_test_sqlite: {
-                        //var connectionString = connectionStrings["DefaultConnectionLocalSqlite"].ConnectionString;
-                        //var file = connectionString.Split(new String[] { "Data Source=" }, StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
-                        //DbFile = file;
-                        //var connectionString = connectionStrings["DefaultConnectionLocalSqlite"].ConnectionString;
-                        // var file = connectionString.Split(new String[] { "Data Source=" }, StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
+                                    //ChromeExtensionComms.SendCommand("dbError",mbox);
+                                    throw e;
+                                }
+                                break;
+                            }
+                        case Env.production: {
+                                var c = new Configuration();
+                                //SetupAudit(c);
+                                factory[connectionNameExt] = Fluently.Configure(c).Database(
+                                            MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionProduction" + connectionNameExt].ConnectionString).ShowSql())
+                                   .Mappings(m => {
+                                       if (string.IsNullOrEmpty(connectionNameExt)) {
+                                           m.FluentMappings.AddFromAssemblyOf<MessageQueueMap>().Conventions.Add<StringColumnLengthConvention>();
+                                       } else {
+                                           m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+                                      .Conventions.Add<StringColumnLengthConvention>();
+                                       }
+                                       //m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
+                                       //m.AutoMappings.Add(CreateAutomappings);
+                                       //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+                                   })
+                                   .ExposeConfiguration(SetupAudit)
+                                   .ExposeConfiguration(BuildProductionMySqlSchema)
+                                   .BuildSessionFactory();
+                                break;
+                            }
+                        case Env.local_test_sqlite: {
+                                //var connectionString = connectionStrings["DefaultConnectionLocalSqlite"].ConnectionString;
+                                //var file = connectionString.Split(new String[] { "Data Source=" }, StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
+                                //DbFile = file;
+                                //var connectionString = connectionStrings["DefaultConnectionLocalSqlite"].ConnectionString;
+                                // var file = connectionString.Split(new String[] { "Data Source=" }, StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
 
 
-                        string Path = "C:\\UITests";//Config.GetAppSetting("DBPATH");//System.Environment.CurrentDirectory;
-                        if (!Directory.Exists(Path))
-                            Directory.CreateDirectory(Path);
-                        DbFile = Path + "\\_testdb.db";
-                        // string[] appPath = Path.Split(new string[] { "bin" }, StringSplitOptions.None);
-                        AppDomain.CurrentDomain.SetData("DataDirectory", Path);
-                        var connectionString = "Data Source=|DataDirectory|\\_testdb.db";
-                        //var connectionString = "Data Source =" + Path;
-                        try {
-                            var c = new Configuration();
-                            c.SetInterceptor(new NHSQLInterceptor());
-                            //SetupAudit(c);
-                            factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
-                            .Mappings(m => {
-                                m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
-                                   .Conventions.Add<StringColumnLengthConvention>();
-                                // m.FluentMappings.ExportTo(@"C:\Users\Lynnea\Desktop\temp\sqlite\");
-                                //m.AutoMappings.Add(CreateAutomappings);
-                                //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+                                string Path = "C:\\UITests";//Config.GetAppSetting("DBPATH");//System.Environment.CurrentDirectory;
+                                if (!Directory.Exists(Path))
+                                    Directory.CreateDirectory(Path);
+                                DbFile = Path + "\\_testdb.db";
+                                // string[] appPath = Path.Split(new string[] { "bin" }, StringSplitOptions.None);
+                                AppDomain.CurrentDomain.SetData("DataDirectory", Path);
+                                var connectionString = "Data Source=|DataDirectory|\\_testdb.db";
+                                //var connectionString = "Data Source =" + Path;
+                                try {
+                                    var c = new Configuration();
+                                    c.SetInterceptor(new NHSQLInterceptor());
+                                    //SetupAudit(c);
+                                    factory[connectionNameExt] = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
+                                    .Mappings(m => {
+                                        m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+                                           .Conventions.Add<StringColumnLengthConvention>();
+                                        // m.FluentMappings.ExportTo(@"C:\Users\Lynnea\Desktop\temp\sqlite\");
+                                        //m.AutoMappings.Add(CreateAutomappings);
+                                        //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 
-                            })
-                           .ExposeConfiguration(SetupAudit)
-                           .ExposeConfiguration(BuildSchema)
-                           .BuildSessionFactory();
-                        } catch (Exception e) {
-                            throw e;
-                        }
-                        break;
-                        //try
-                        //{
-                        //    var c = new Configuration();
-                        //    c.SetProperty("connection.release_mode", "on_close")
-                        //    .SetProperty("dialect", typeof(SQLiteDialect).AssemblyQualifiedName)
-                        //    .SetProperty("connection.driver_class", typeof(SQLite20Driver).AssemblyQualifiedName)
-                        //    ;//.SetProperty("connection.connection_string", "data source=:memory:")
-                        //     //                                    ;//.SetProperty(Environment.ProxyFactoryFactoryClass, typeof(ProxyFactoryFactory).AssemblyQualifiedName);
+                                    })
+                                   .ExposeConfiguration(SetupAudit)
+                                   .ExposeConfiguration(BuildSchema)
+                                   .BuildSessionFactory();
+                                } catch (Exception e) {
+                                    throw e;
+                                }
+                                break;
+                                //try
+                                //{
+                                //    var c = new Configuration();
+                                //    c.SetProperty("connection.release_mode", "on_close")
+                                //    .SetProperty("dialect", typeof(SQLiteDialect).AssemblyQualifiedName)
+                                //    .SetProperty("connection.driver_class", typeof(SQLite20Driver).AssemblyQualifiedName)
+                                //    ;//.SetProperty("connection.connection_string", "data source=:memory:")
+                                //     //                                    ;//.SetProperty(Environment.ProxyFactoryFactoryClass, typeof(ProxyFactoryFactory).AssemblyQualifiedName);
 
-                        //    //c.SetInterceptor(new NHSQLInterceptor());
-                        //    factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString("Data Source=:memory:;Version=3;New=True;"))
-                        //    .Mappings(m =>
-                        //    {
-                        //        m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
-                        //           .Conventions.Add<StringColumnLengthConvention>();
-                        //        m.FluentMappings.ExportTo(@"C:\Users\Lynnea\Desktop\temp\sqlite");
-                        //        //m.AutoMappings.Add(CreateAutomappings);
-                        //        //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
+                                //    //c.SetInterceptor(new NHSQLInterceptor());
+                                //    factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString("Data Source=:memory:;Version=3;New=True;"))
+                                //    .Mappings(m =>
+                                //    {
+                                //        m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+                                //           .Conventions.Add<StringColumnLengthConvention>();
+                                //        m.FluentMappings.ExportTo(@"C:\Users\Lynnea\Desktop\temp\sqlite");
+                                //        //m.AutoMappings.Add(CreateAutomappings);
+                                //        //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 
-                        //    })
-                        //   .ExposeConfiguration(SetupAudit)
-                        //   .ExposeConfiguration(BuildSchema)
-                        //   .BuildSessionFactory();
-                        //}
-                        //catch (Exception e)
-                        //{
-                        //    throw e;
-                        //}
-                        //break;
-                    }
-                    /*case "connectionString":
-                        {
-                            factory = Fluently.Configure().
-                        }*/
-                    default: throw new Exception("No database type");
+                                //    })
+                                //   .ExposeConfiguration(SetupAudit)
+                                //   .ExposeConfiguration(BuildSchema)
+                                //   .BuildSessionFactory();
+                                //}
+                                //catch (Exception e)
+                                //{
+                                //    throw e;
+                                //}
+                                //break;
+                            }
+                        /*case "connectionString":
+                            {
+                                factory = Fluently.Configure().
+                            }*/
+                        default:
+                            throw new Exception("No database type");
                     }
 
                     //ChromeExtensionComms.SendCommand("dbComplete");
 
                 }
                 // DataCollection.MarkProfile(1);
-                return factory;
+                return factory[connectionNameExt];
             }
         }
 

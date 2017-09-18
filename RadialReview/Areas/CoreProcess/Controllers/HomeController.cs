@@ -23,7 +23,7 @@ using System.Web.Mvc;
 
 namespace RadialReview.Areas.CoreProcess.Controllers {
     public class HomeController : BaseController {
-        [Access(AccessLevel.Radial)]
+        [Access(AccessLevel.Any)]
         // GET: CoreProcess/Home
         public async Task<ActionResult> Index() {
             //TaskAccessor taskAccessor = new TaskAccessor();
@@ -202,7 +202,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
             return View();
         }
 
-        [Access(AccessLevel.Radial)]
+        [Access(AccessLevel.Any)]
         [HttpPost]
         public async Task<ActionResult> SendMessage(string uri) {
 
