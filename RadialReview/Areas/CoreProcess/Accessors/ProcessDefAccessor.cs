@@ -82,6 +82,11 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                     var getElement = xmlDocument.Root.Element(BpmnUtility.BPMN_NAMESPACE + "process");
                     var processDefKey = getElement.GetId();
 
+                    //get processDefId
+                    XDocument xmlDocument = await BpmnUtility.GetBpmnFileXmlDoc(getProcessDefFileDetails.FileKey);
+                    var getElement = xmlDocument.Root.Element(BpmnUtility.BPMN_NAMESPACE + "process");
+                    var processDefKey = getElement.GetId();
+
                     //get process def
                     //var getProcessDef = await commClass.GetProcessDefByKey(key.Replace(" ", "") + localId.Replace("-", ""));
                     //var processDef = await commClass.GetProcessDefByKey(deplyomentName.Replace(" ", "") + "bpmn_" + coreProcessId);
