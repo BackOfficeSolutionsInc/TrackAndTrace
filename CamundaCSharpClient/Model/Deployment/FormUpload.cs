@@ -53,8 +53,11 @@ namespace CamundaCSharpClient.Model.Deployment
                 requestStream.Close();
                 requestStream.Dispose();
             }
-
-            return request.GetResponse() as HttpWebResponse;
+            try {
+                return request.GetResponse() as HttpWebResponse;
+            }catch(Exception e) {
+                throw new Exception("Error:" + postUrl, e);
+            }
         }
 
         private static byte[] GetMultipartFormData(Dictionary<string, object> postParameters, string boundary)

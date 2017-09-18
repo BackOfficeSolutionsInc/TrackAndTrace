@@ -37,58 +37,57 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     var perms = PermissionsUtility.Create(s, caller);
-                    var deployed = await Deploy(s, localId, perms);
+                    var deployed = await Deploy(s, perms, localId);
                     tx.Commit();
                     s.Flush();
                     return deployed;
                 }
             }
         }
-        public async Task<bool> Deploy(ISession s, long coreProcessId, PermissionsUtility perms) {
+        public async Task<bool> Deploy(ISession s, PermissionsUtility perms, long coreProcessId) {
             perms.CanEdit(PermItem.ResourceType.CoreProcess, coreProcessId);
 
-            bool result = true;
-            try {
-                var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == coreProcessId).SingleOrDefault();
-                if (getProcessDefFileDetails != null) {
-                    var getfileStream = await BpmnUtility.GetFileFromServer(getProcessDefFileDetails.FileKey);
-
-
-                    List<object> fileObjects = new List<object>();
-                    byte[] bytes = ((MemoryStream)getfileStream).ToArray();
-                    fileObjects.Add(new FileParameter(bytes, getProcessDefFileDetails.FileKey.Split('/')[1].Replace("-", "")));
-
-                    //getfileStream.Seek(0, SeekOrigin.Begin);
-                    //XDocument x1 = XDocument.Load(getfileStream);
-
-                    //var getProcessDefDetail = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.Id == localId).SingleOrDefault();
-                    var processDefDetail = s.Get<ProcessDef_Camunda>(coreProcessId);
-                    if (processDefDetail.DeleteTime != null) {
-                        throw new PermissionsException();
-                    }
-
-                    string deplyomentName = processDefDetail.ProcessDefKey;
-
-                    // call Comm Layer
-                    CommClass commClass = new CommClass();
-                    var deploymentId = commClass.Deploy(deplyomentName, fileObjects);
-
-                    getProcessDefFileDetails.DeploymentId = deploymentId;
-                    s.Update(getProcessDefFileDetails);
-
-                    //get process def
-                    //var getProcessDef = await commClass.GetProcessDefByKey(key.Replace(" ", "") + localId.Replace("-", ""));
-                    var processDef = await commClass.GetProcessDefByKey(deplyomentName.Replace(" ", "") + "bpmn_" + coreProcessId);
-
-                    if (processDefDetail != null) {
-                        processDefDetail.CamundaId = processDef.GetId();
-                        s.Update(getProcessDefFileDetails);
-                    }
-                }
-            } catch (Exception ex) {
-                result = false;
-                throw ex;
+            bool result = false;
+            var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == coreProcessId).SingleOrDefault();
+            if (getProcessDefFileDetails == null) {
+                throw new PermissionsException("Process does not exist.");
             }
+            var getfileStream = await BpmnUtility.GetFileFromServer(getProcessDefFileDetails.FileKey);
+
+
+            List<object> fileObjects = new List<object>();
+            byte[] bytes = ((MemoryStream)getfileStream).ToArray();
+            fileObjects.Add(new FileParameter(bytes, getProcessDefFileDetails.FileKey.Split('/')[1].Replace("-", "")));
+
+            //getfileStream.Seek(0, SeekOrigin.Begin);
+            //XDocument x1 = XDocument.Load(getfileStream);
+
+            //var getProcessDefDetail = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.Id == localId).SingleOrDefault();
+            var processDefDetail = s.Get<ProcessDef_Camunda>(coreProcessId);
+            if (processDefDetail==null || processDefDetail.DeleteTime != null) {
+                throw new PermissionsException("Process doesn't exist.");
+            }
+
+            string deplyomentName = processDefDetail.ProcessDefKey;
+
+            // call Comm Layer
+            CommClass commClass = new CommClass();
+            var deploymentId = commClass.Deploy(deplyomentName, fileObjects);
+
+            getProcessDefFileDetails.DeploymentId = deploymentId;
+            s.Update(getProcessDefFileDetails);
+
+            //get process def
+            //var getProcessDef = await commClass.GetProcessDefByKey(key.Replace(" ", "") + localId.Replace("-", ""));
+            var processDef = await commClass.GetProcessDefByKey(deplyomentName.Replace(" ", "") + "bpmn_" + coreProcessId);
+
+            if (processDefDetail != null) {
+                processDefDetail.CamundaId = processDef.GetId();
+                s.Update(getProcessDefFileDetails);
+            }
+            result = true;
+
+
             return result;
         }
         public async Task<ProcessDef_Camunda> ProcessStart(UserOrganizationModel caller, long processDefId) {
@@ -107,6 +106,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 
                         // call Comm Layer
                         CommClass commClass = new CommClass();
+                        log.Info("User (" + caller.Id + ") started process: " + processDefDetail.CamundaId);
                         var startProcess = await commClass.ProcessStart(processDefDetail.CamundaId);
 
                         ProcessInstance_Camunda processIns = new ProcessInstance_Camunda() {
@@ -318,7 +318,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                 return created;
             }
         }
-               
+
         public async Task<TaskViewModel> CreateProcessDefTask(ISession s, PermissionsUtility perm, long localId, TaskViewModel model) {
             if (model.SelectedMemberId == null || !model.SelectedMemberId.Any()) {
                 throw new PermissionsException("You must select a group.");
@@ -415,7 +415,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
             return modelObj;
         }
 
-       
+
 
         public async Task<List<TaskViewModel>> GetAllTaskForProcessDefinition(UserOrganizationModel caller, long localId) {
             List<TaskViewModel> taskList = new List<TaskViewModel>();
@@ -504,8 +504,8 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                     var updatedCandiateGroupIdsList = new List<long>();
                     updatedCandiateGroupIdsList.AddRange(candidateGroupIds);
 
-                    foreach(var cgid in candidateGroupIds) {
-                        updatedCandiateGroupIdsList.AddRange(ResponsibilitiesAccessor.GetResponsibilityGroupsForRgm(s, perms, cgid).Select(x=>x.Id));
+                    foreach (var cgid in candidateGroupIds) {
+                        updatedCandiateGroupIdsList.AddRange(ResponsibilitiesAccessor.GetResponsibilityGroupsForRgm(s, perms, cgid).Select(x => x.Id));
                     }
 
 

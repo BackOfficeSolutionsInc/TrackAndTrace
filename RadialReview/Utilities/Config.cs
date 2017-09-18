@@ -321,8 +321,8 @@ namespace RadialReview.Utilities {
                     credentials.IsLocal = true;
                     return credentials;
                 case Env.production:
-                    credentials.Url = GetAppSetting("Camunda_Url");
                     credentials.IsLocal = false;
+                    credentials.Url = GetAppSetting("Camunda_Url");
                     credentials.Username = GetAppSetting("Camunda_Username");
                     credentials.Password = GetAppSetting("Camunda_Password");
                     return credentials;

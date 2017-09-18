@@ -238,11 +238,16 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 			return RedirectToAction("UserTask");
 		}
 
-		[Access(AccessLevel.UserOrganization)]
-		public async Task<ActionResult> UnclaimTask(string id) {
-			var result = await processDefAccessor.TaskClaimOrUnclaim(GetUser(), id, GetUser().Id, false);
-			return RedirectToAction("UserTask");
-		}
+        [Access(AccessLevel.UserOrganization)]
+        public async Task<ActionResult> UnclaimTask(string id) {
+            var result = await processDefAccessor.TaskClaimOrUnclaim(GetUser(), id, GetUser().Id, false);
+            return RedirectToAction("UserTask");
+        }
+        [Access(AccessLevel.UserOrganization)]
+        public async Task<ActionResult> CompleteTask(string id) {
+            var result = await processDefAccessor.TaskComplete(GetUser(), id, GetUser().Id);
+            return RedirectToAction("UserTask");
+        }
 
-	}
+    }
 }

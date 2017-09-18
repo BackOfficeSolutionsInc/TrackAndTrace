@@ -16,7 +16,7 @@ namespace CamundaCSharpClient.Query.Deployment
         {
 
         }
-        public string Deploy(string deploymentName, List<object> files)
+        public string Deploy(string deploymentName, List<object> files,string url,string username,string password)
         {
             Dictionary<string, object> postParameters = new Dictionary<string, object>();
             postParameters.Add("deployment-name", deploymentName);
@@ -26,8 +26,8 @@ namespace CamundaCSharpClient.Query.Deployment
 
             // Create request and receive response
             // string postURL = helper.RestUrl + "deployment/create";
-            string postURL = CamundaConfig.GetCamundaServer().Url + "deployment/create";
-            HttpWebResponse webResponse = FormUpload.MultipartFormDataPost(postURL, CamundaConfig.GetCamundaServer().Username, CamundaConfig.GetCamundaServer().Password, postParameters);
+            string postURL = /*Config.GetCamundaServer().Url*/url + "/deployment/create";
+            HttpWebResponse webResponse = FormUpload.MultipartFormDataPost(postURL, username,/*Config.GetCamundaServer().Username*/ /*CamundaConfig.GetCamundaServer().Password*/password, postParameters);
 
             using (var reader = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
             {
@@ -57,7 +57,8 @@ namespace CamundaCSharpClient.Query.Deployment
                 //Console.WriteLine("Adding resource to deployment: " + resource);
             }
 
-            Deploy(thisExe.GetName().Name, files);
+            throw new NotImplementedException();
+            //Deploy(thisExe.GetName().Name, files);
 
             //Console.WriteLine("Deployment to Camunda BPM succeeded.");
 
