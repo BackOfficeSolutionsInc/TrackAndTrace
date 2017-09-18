@@ -165,7 +165,7 @@ namespace RadialReview
                         }
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                 }
 

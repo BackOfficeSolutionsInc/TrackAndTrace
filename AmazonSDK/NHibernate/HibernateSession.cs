@@ -18,24 +18,19 @@ using RadialReview.Utilities.NHibernate;
 using RadialReview.Utilities;
 using RadialReview.Models.Enums;
 
-namespace AmazonSDK.NHibernate
-{
-    public static class NHSQL
-    {
+namespace AmazonSDK.NHibernate {
+    public static class NHSQL {
         public static string NHibernateSQL { get; set; }
     }
-    public class NHSQLInterceptor : EmptyInterceptor, IInterceptor
-    {
-        SqlString IInterceptor.OnPrepareStatement(SqlString sql)
-        {
+    public class NHSQLInterceptor : EmptyInterceptor, IInterceptor {
+        SqlString IInterceptor.OnPrepareStatement(SqlString sql) {
             NHSQL.NHibernateSQL = sql.ToString();
             return sql;
         }
     }
 
-    public class HibernateSession
-    {
-        private static ISessionFactory factory;
+    public class HibernateSession {
+        private static Dictionary<string, ISessionFactory> factory = new Dictionary<string, ISessionFactory>();
         private static String DbFile = null;
         /*public static void SetDbFile(string file)
         {
@@ -44,37 +39,26 @@ namespace AmazonSDK.NHibernate
         private static object lck = new object();
         public static ISession Session { get; set; }
 
-        public static ISessionFactory GetDatabaseSessionFactory(string connectionNameExt = "")
-        {
-            if (connectionNameExt != "")
-            {
-                factory = null;
-            }
-
-            lock (lck)
-            {
-                if (factory == null)
-                {
+        public static ISessionFactory GetDatabaseSessionFactory(string connectionNameExt = "") {
+            //factory = null;
+            lock (lck) {
+                if (!factory.ContainsKey(connectionNameExt)) {
 
                     //ChromeExtensionComms.SendCommand("dbStart");
                     var config = System.Configuration.ConfigurationManager.AppSettings;
                     var connectionStrings = System.Configuration.ConfigurationManager.ConnectionStrings;
 
-                    switch (Config.GetEnv())
-                    {
-                        case Env.local_sqlite:
-                            {
+                    switch (Config.GetEnv()) {
+                        case Env.local_sqlite: {
                                 var connectionString = connectionStrings["DefaultConnectionLocalSqlite"].ConnectionString;
                                 var file = connectionString.Split(new String[] { "Data Source=" }, StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
                                 DbFile = file;
-                                try
-                                {
+                                try {
                                     var c = new Configuration();
                                     c.SetInterceptor(new NHSQLInterceptor());
                                     //SetupAudit(c);
-                                    factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
-                                    .Mappings(m =>
-                                    {
+                                    factory[connectionNameExt] = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
+                                    .Mappings(m => {
                                         //m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
                                         //   .Conventions.Add<StringColumnLengthConvention>();
                                         // m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\sqlite\");
@@ -85,30 +69,23 @@ namespace AmazonSDK.NHibernate
                                    .ExposeConfiguration(SetupAudit)
                                    .ExposeConfiguration(BuildSchema)
                                    .BuildSessionFactory();
-                                }
-                                catch (Exception e)
-                                {
+                                } catch (Exception e) {
                                     throw e;
                                 }
                                 break;
                             }
-                        case Env.local_mysql:
-                            {
-                                try
-                                {
+                        case Env.local_mysql: {
+                                try {
                                     var c = new Configuration();
                                     c.SetInterceptor(new NHSQLInterceptor());
+                                    Console.WriteLine(connectionStrings["DefaultConnectionLocalMysqlScheduler" + connectionNameExt].ConnectionString);
                                     //SetupAudit(c);
-                                    factory = Fluently.Configure(c).Database(
-                                                MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionLocalMysql"+ connectionNameExt].ConnectionString).ShowSql())
-                                       .Mappings(m =>
-                                       {
-                                           if (string.IsNullOrEmpty(connectionNameExt))
-                                           {
+                                    factory[connectionNameExt] = Fluently.Configure(c).Database(
+                                                MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionLocalMysqlScheduler" + connectionNameExt].ConnectionString).ShowSql())
+                                       .Mappings(m => {
+                                           if (string.IsNullOrEmpty(connectionNameExt)) {
                                                m.FluentMappings.AddFromAssemblyOf<MessageQueueMap>().Conventions.Add<StringColumnLengthConvention>();
-                                           }
-                                           else
-                                           {
+                                           } else {
                                                m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
                                           .Conventions.Add<StringColumnLengthConvention>();
                                            }
@@ -120,9 +97,7 @@ namespace AmazonSDK.NHibernate
                                        .ExposeConfiguration(SetupAudit)
                                        .ExposeConfiguration(BuildProductionMySqlSchema)
                                        .BuildSessionFactory();
-                                }
-                                catch (Exception e)
-                                {
+                                } catch (Exception e) {
                                     var mbox = e.Message;
                                     if (e.InnerException != null && e.InnerException.Message != null)
                                         mbox = e.InnerException.Message;
@@ -132,16 +107,18 @@ namespace AmazonSDK.NHibernate
                                 }
                                 break;
                             }
-                        case Env.production:
-                            {
+                        case Env.production: {
                                 var c = new Configuration();
                                 //SetupAudit(c);
-                                factory = Fluently.Configure(c).Database(
+                                factory[connectionNameExt] = Fluently.Configure(c).Database(
                                             MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionProduction" + connectionNameExt].ConnectionString).ShowSql())
-                                   .Mappings(m =>
-                                   {
-                                       m.FluentMappings.AddFromAssemblyOf<MessageQueueMap>()
-                                           .Conventions.Add<StringColumnLengthConvention>();
+                                   .Mappings(m => {
+                                       if (string.IsNullOrEmpty(connectionNameExt)) {
+                                           m.FluentMappings.AddFromAssemblyOf<MessageQueueMap>().Conventions.Add<StringColumnLengthConvention>();
+                                       } else {
+                                           m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
+                                      .Conventions.Add<StringColumnLengthConvention>();
+                                       }
                                        //m.FluentMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\mysql\");
                                        //m.AutoMappings.Add(CreateAutomappings);
                                        //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
@@ -151,8 +128,7 @@ namespace AmazonSDK.NHibernate
                                    .BuildSessionFactory();
                                 break;
                             }
-                        case Env.local_test_sqlite:
-                            {
+                        case Env.local_test_sqlite: {
                                 //var connectionString = connectionStrings["DefaultConnectionLocalSqlite"].ConnectionString;
                                 //var file = connectionString.Split(new String[] { "Data Source=" }, StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
                                 //DbFile = file;
@@ -168,14 +144,12 @@ namespace AmazonSDK.NHibernate
                                 AppDomain.CurrentDomain.SetData("DataDirectory", Path);
                                 var connectionString = "Data Source=|DataDirectory|\\_testdb.db";
                                 //var connectionString = "Data Source =" + Path;
-                                try
-                                {
+                                try {
                                     var c = new Configuration();
                                     c.SetInterceptor(new NHSQLInterceptor());
                                     //SetupAudit(c);
-                                    factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
-                                    .Mappings(m =>
-                                    {
+                                    factory[connectionNameExt] = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
+                                    .Mappings(m => {
                                         m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
                                            .Conventions.Add<StringColumnLengthConvention>();
                                         // m.FluentMappings.ExportTo(@"C:\Users\Lynnea\Desktop\temp\sqlite\");
@@ -186,9 +160,7 @@ namespace AmazonSDK.NHibernate
                                    .ExposeConfiguration(SetupAudit)
                                    .ExposeConfiguration(BuildSchema)
                                    .BuildSessionFactory();
-                                }
-                                catch (Exception e)
-                                {
+                                } catch (Exception e) {
                                     throw e;
                                 }
                                 break;
@@ -226,19 +198,19 @@ namespace AmazonSDK.NHibernate
                             {
                                 factory = Fluently.Configure().
                             }*/
-                        default: throw new Exception("No database type");
+                        default:
+                            throw new Exception("No database type");
                     }
 
                     //ChromeExtensionComms.SendCommand("dbComplete");
 
                 }
                 // DataCollection.MarkProfile(1);
-                return factory;
+                return factory[connectionNameExt];
             }
         }
 
-        public static bool CloseCurrentSession()
-        {
+        public static bool CloseCurrentSession() {
             //var session = (SingleRequestSession)HttpContext.Current.Items["NHibernateSession"];
             //if (session != null)
             //{
@@ -259,8 +231,7 @@ namespace AmazonSDK.NHibernate
 
 
 
-        public static ISession GetCurrentSession(bool singleSession = true, string connectionName = "")
-        {
+        public static ISession GetCurrentSession(bool singleSession = true, string connectionName = "") {
             return new SingleRequestSession(GetDatabaseSessionFactory(connectionName).OpenSession(), true);
         }
         /*
@@ -276,16 +247,12 @@ namespace AmazonSDK.NHibernate
                 .Conventions.Add<CascadeConvention>();
         }*/
 
-        private static void BuildSchema(Configuration config)
-        {
+        private static void BuildSchema(Configuration config) {
             // delete the existing db on each run
             // if (Config.ShouldUpdateDB()) {
-            if (!File.Exists(DbFile))
-            {
+            if (!File.Exists(DbFile)) {
                 new SchemaExport(config).Create(false, true);
-            }
-            else
-            {
+            } else {
                 new SchemaUpdate(config).Execute(false, true);
             }
             // Config.DbUpdateSuccessful();
@@ -301,8 +268,7 @@ namespace AmazonSDK.NHibernate
 
 
 
-        private static void SetupAudit(Configuration nhConf)
-        {
+        private static void SetupAudit(Configuration nhConf) {
 
             var enversConf = new FluentConfiguration();
             nhConf.SetEnversProperty(ConfigurationKey.StoreDataAtDelete, true);
@@ -312,18 +278,17 @@ namespace AmazonSDK.NHibernate
         }
 
 
-        private static void BuildProductionMySqlSchema(Configuration config)
-        {
+        private static void BuildProductionMySqlSchema(Configuration config) {
             var sw = Stopwatch.StartNew();
             //UPDATE DATABASE:
             var updates = new List<string>();
             //Microsoft.VisualStudio.Profiler.DataCollection.MarkProfile(1);
 
-            //if (Config.ShouldUpdateDB()) {
-            var su = new SchemaUpdate(config);
-            su.Execute(updates.Add, true);
-            // Config.DbUpdateSuccessful();
-            // }
+            if (Config.ShouldUpdateDB()) {
+                var su = new SchemaUpdate(config);
+                su.Execute(updates.Add, true);
+                Config.DbUpdateSuccessful();
+            }
             //Microsoft.VisualStudio.Profiler.DataCollection.MarkProfile(3);
 
             var end = sw.Elapsed;
