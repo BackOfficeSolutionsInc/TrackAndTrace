@@ -419,7 +419,14 @@ namespace RadialReview.Controllers {
 
 
         [Access(AccessLevel.UserOrganization)]
-        public async Task<PartialViewResult> CreateHeadlineIssue(long meeting, long headline) {
+        public async Task<PartialViewResult> CreateHeadlineIssue(long meeting, long headline,long? recurrence=null) {
+
+            //Sometimes this method is called with -1 for meetingId,
+            if (meeting==-1 && recurrence != null) {
+                meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrence.Value, true).NotNull(x=>x.Id);
+            }
+
+
             _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
             var s = HeadlineAccessor.GetHeadline(GetUser(), headline);

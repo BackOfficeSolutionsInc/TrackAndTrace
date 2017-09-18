@@ -206,8 +206,8 @@ namespace RadialReview.Accessors.PDF {
 			var tf = new XTextFormatter(gfx);
 
 			tf.Alignment = XParagraphAlignment.Center;
-			XFont bold = new XFont(FONT, 14 * pageProps.scale, XFontStyle.Bold);
-			XFont norm = new XFont(FONT, 14 * pageProps.scale, XFontStyle.Regular);
+			XFont bold = new XFont(FONT,Math.Max(1, 14 * pageProps.scale), XFontStyle.Bold);
+			XFont norm = new XFont(FONT,Math.Max(1, 14 * pageProps.scale), XFontStyle.Regular);
 			//tf.DrawString(me.Position ?? "", bold, XBrushes.Black, new XRect(x, y + 12 * pageProps.scale / 6.0, Math.Max(0, me.width), top / 2.0));
 			//tf.DrawString(me.Name ?? "", norm, XBrushes.Black, new XRect(x, y + top / 2.0 + 12 * pageProps.scale / 6.0, Math.Max(0, me.width), top / 2.0));
 
@@ -245,7 +245,7 @@ namespace RadialReview.Accessors.PDF {
 
 			tf = new XTextFormatter(gfx);
 			tf.Alignment = XParagraphAlignment.Left;
-			norm = new XFont(FONT, 12 * pageProps.scale, XFontStyle.Regular);
+			norm = new XFont(FONT, Math.Max(1, 12 * pageProps.scale), XFontStyle.Regular);
 
 			var h = ch + pad;//50 * pageProps.scale;
 			var top = ch;
@@ -328,7 +328,7 @@ namespace RadialReview.Accessors.PDF {
 			var ty = me.y - origin[1] - adjS;
 			var my = sy + vSeparation /*- origin[1]*/;
 
-			var tempFont = new XFont("Times New Roman", 12 * pageProps.scale, XFontStyle.Regular);
+			var tempFont = new XFont("Times New Roman", Math.Max(1,12 * pageProps.scale), XFontStyle.Regular);
 			var sideL = "";
 			if (me.isLeaf && parent.side!="left" && parent.side!="right") {
 				var tw = me.width;
