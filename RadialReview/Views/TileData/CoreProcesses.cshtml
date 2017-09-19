@@ -1,0 +1,29 @@
+﻿
+@model long?
+@{
+string filter = null;
+//if (Model.HasValue) {
+//    filter = "| filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate) | filter:{Owner:{Id:" + Model + "}}";
+//}
+}
+
+<div class="review smallBreak2 loading tiny" style2="min-height:30px;">
+    <div class="task-heading heading">
+        Core Processes
+        @*<span class="clickable pull-right new hidden-width-1" style="font-size: 12px;" onclick="@Html.ShowModal("Create To-Do", "/Todo/CreateTodoRecurrence", "/Todo/CreateTodoRecurrence")">Create New <span class='glyphicon glyphicon-plus'></span></span>*@
+        @*<span class="clickable pull-right new visible-width-1" style="text-decoration: none;font-size: 12px;" onclick="@Html.ShowModal("Create To-Do", "/Todo/CreateTodoRecurrence", "/Todo/CreateTodoRecurrence")"><span class='glyphicon glyphicon-plus'></span></span>*@
+        @*Current To-Dos<a href="/todo/list" class=""> (View all)</a>*@
+    </div><div class="tile tasks-list-container">
+        @{ Html.RenderPartial("~/Views/Tasks/Partial/coreProcessList.cshtml", new ViewDataDictionary(){
+                                   {"AddHeaders", false},
+                                   {"AddController", false},
+                                   {"AddCompletion", false},
+                                   {"AddDatePicker", false},
+                                   {"DefaultSort","'DueDate'"},
+                                   {"Filter",filter},
+                                   {"UsePopup",true},
+                                   {"RecurrenceId", -1},
+                               }); }<div ng-show="model.CoreProcesses===undefined" class="gray alignCenter" style="padding-bottom: 16px;" elem-ready="functions.reload(model.Tasks===undefined)">Please wait</div>
+    </div>
+</div>
+

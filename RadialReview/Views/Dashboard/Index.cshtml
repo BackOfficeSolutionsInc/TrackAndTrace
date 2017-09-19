@@ -157,6 +157,11 @@
 				<li><a onclick="createTile('/TileData/UserNotes','Url')">Personal Notes</a></li>
 				<li><a onclick="createTile('/TileData/UserProfile2','Url')">Profile Picture</a></li>
 				<!--<li><a onclick="createTile('/TileData/UserNotifications','Url')">Notifications</a></li>-->
+                @if (ViewBag.ShowCoreProcess ?? false) {
+                    <li class="divider"></li>
+                    <li><a onclick="createTile('/TileData/CoreProcesses','Url')">Core Processes</a></li>
+                    <li><a onclick="createTile('/TileData/Tasks','Url')">Tasks</a></li>
+                }
 			</ul>
 		</li>
 		<li class="dropdown-submenu">

@@ -24,7 +24,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 		public ActionResult Index() {
 			List<ProcessViewModel> Process = new List<ProcessViewModel>();
 
-			var sstr = processDefAccessor.GetProcessDefinitionList(GetUser(), GetUser().Organization.Id);
+			var sstr = processDefAccessor.GetVisibleProcessDefinitionList(GetUser(), GetUser().Organization.Id);
 
 			PermissionsAccessor obj = new PermissionsAccessor();
 			ViewBag.CanCreate = obj.IsPermitted(GetUser(), x => x.CanCreateProcessDef());
@@ -115,15 +115,15 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
-		[Access(AccessLevel.UserOrganization)]
-		public JsonResult Delete(long id) // id is processid
-		{
-			var Process = processDefAccessor.GetProcessDefById(GetUser(), id);
-			processDefAccessor.DeleteProcess(GetUser(), id);
-			return Json(ResultObject.SilentSuccess(Process), JsonRequestBehavior.AllowGet);
-		}
+        [Access(AccessLevel.UserOrganization)]
+        public async Task<JsonResult> Delete(long id) // id is processid
+        {
+            var Process = processDefAccessor.GetProcessDefById(GetUser(), id);
+            await processDefAccessor.DeleteProcess(GetUser(), id);
+            return Json(ResultObject.SilentSuccess(Process), JsonRequestBehavior.AllowGet);
+        }
 
-		[Access(AccessLevel.UserOrganization)]
+        [Access(AccessLevel.UserOrganization)]
 		public async Task<ActionResult> Publish(long id) {
 			if (id > 0) {
 				await processDefAccessor.Deploy(GetUser(), id);
@@ -245,7 +245,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
         }
         [Access(AccessLevel.UserOrganization)]
         public async Task<ActionResult> CompleteTask(string id) {
-            var result = await processDefAccessor.TaskComplete(GetUser(), id, GetUser().Id);
+            var result = await processDefAccessor.TaskComplete(GetUser(), id);
             return RedirectToAction("UserTask");
         }
 

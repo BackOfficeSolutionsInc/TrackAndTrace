@@ -173,7 +173,7 @@ namespace TractionTools.Tests.Api {
             var getTaskList = await pda.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
 
             await pda.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, true);
-            var getTask = await pda.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
+            var getTask = await pda.GetTaskById_Unsafe( getTaskList[0].Id);
             var getClaim = getTask.Assignee;
             Assert.AreEqual(getClaim, c.E1.Id);
         }
@@ -190,10 +190,10 @@ namespace TractionTools.Tests.Api {
             var getProcessInstance = pda.GetProcessInstanceList(c.E1, getProcessDef);
             var getTaskList = await pda.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
             await pda.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, true);
-            var getTask = await pda.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
+            var getTask = await pda.GetTaskById_Unsafe( getTaskList[0].Id);
             var getClaim = getTask.Assignee;
             await pda.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, false);
-            var getTaskUnClaim = await pda.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
+            var getTaskUnClaim = await pda.GetTaskById_Unsafe( getTaskList[0].Id);
             var getClaimUnclaim = getTaskUnClaim.Assignee;
             Assert.AreNotEqual(getClaim, getClaimUnclaim);
         }
@@ -238,7 +238,7 @@ namespace TractionTools.Tests.Api {
             {
                 // claim task
                 await pda.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, true);
-                var getTask = await pda.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
+                var getTask = await pda.GetTaskById_Unsafe(getTaskList[0].Id);
                 var getListTaskForUser = await pda.GetTaskListByUserId(c.E1, c.E1.Id);
 
                 Assert.AreEqual(1,getListTaskForUser.Count);
@@ -281,7 +281,7 @@ namespace TractionTools.Tests.Api {
 
             // claim task
             await pda.TaskClaimOrUnclaim(c.E2, getTaskList[0].Id, c.E2.Id, true);
-            var getTask = await pda.GetTaskById_Unsafe(c.E2, getTaskList[0].Id);
+            var getTask = await pda.GetTaskById_Unsafe( getTaskList[0].Id);
             var getListTaskForUser = await pda.GetTaskListByUserId(c.E2, c.E2.Id);
         }
 
@@ -348,11 +348,11 @@ namespace TractionTools.Tests.Api {
             var getTaskList = await pda.GetTaskListByProcessInstanceId(c.E1, getProcessInstance[0].Id);
 
             await pda.TaskClaimOrUnclaim(c.E1, getTaskList[0].Id, c.E1.Id, true);
-            var getTaskforConfirmation = await pda.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
-            await pda.TaskComplete(c.E1, getTaskList[0].Id, c.E1.Id);
+            var getTaskforConfirmation = await pda.GetTaskById_Unsafe( getTaskList[0].Id);
+            await pda.TaskComplete(c.E1, getTaskList[0].Id);
 
             //var getTask = await processDefAccessor.GetTaskById_Unsafe(c.E1, getTaskList[0].Id);
-            await ThrowsAsync<PermissionsException>(async () => await pda.GetTaskById_Unsafe(c.E1, getTaskList[0].Id));
+            await ThrowsAsync<PermissionsException>(async () => await pda.GetTaskById_Unsafe( getTaskList[0].Id));
             //Assert.IsTrue(string.IsNullOrEmpty(getTask.Id));
         }
 

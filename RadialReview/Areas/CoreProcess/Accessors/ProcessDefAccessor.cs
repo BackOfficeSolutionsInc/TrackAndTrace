@@ -64,7 +64,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 
             //var getProcessDefDetail = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.Id == localId).SingleOrDefault();
             var processDefDetail = s.Get<ProcessDef_Camunda>(coreProcessId);
-            if (processDefDetail==null || processDefDetail.DeleteTime != null) {
+            if (processDefDetail == null || processDefDetail.DeleteTime != null) {
                 throw new PermissionsException("Process doesn't exist.");
             }
 
@@ -123,6 +123,11 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                         return processDefDetail;
                     }
                 }
+            } catch (ArgumentNullException ex) {
+                if (ex.ParamName == "processDefiniftionKey")
+                    throw new PermissionsException("Cannot start process. It must be published first.");
+                log.Error(ex);
+                throw new PermissionsException("Cannot start process.");
             } catch (Exception ex) {
                 log.Error(ex);
                 throw new PermissionsException("Cannot start process.");
@@ -282,18 +287,18 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 
             return result;
         }
-        public bool DeleteProcess(UserOrganizationModel caller, long processId) {
+        public async Task<bool> DeleteProcess(UserOrganizationModel caller, long processId) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     var perms = PermissionsUtility.Create(s, caller);
-                    var deleted = DeleteProcess(s, perms, processId);
+                    var deleted = await DeleteProcess(s, perms, processId);
                     tx.Commit();
                     s.Flush();
                     return deleted;
                 }
             }
         }
-        public bool DeleteProcess(ISession s, PermissionsUtility perms, long processId) {
+        public async Task<bool> DeleteProcess(ISession s, PermissionsUtility perms, long processId) {
             perms.CanAdmin(PermItem.ResourceType.CoreProcess, processId);
             try {
                 var processDefDetails = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.Id == processId).SingleOrDefault();
@@ -301,6 +306,9 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                     throw new PermissionsException("Process does not exists");
                 }
                 processDefDetails.DeleteTime = DateTime.UtcNow;
+                if (processDefDetails.CamundaId!=null)
+                    await new CommClass().ProcessSuspend(processDefDetails.CamundaId, true);
+
                 s.Update(processDefDetails);
                 //var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == getProcessDefDetails.LocalId).SingleOrDefault();
                 //if (getProcessDefFileDetails != null) {
@@ -491,38 +499,46 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
         }
 
         public async Task<List<TaskViewModel>> GetTaskListByCandidateGroups(UserOrganizationModel caller, long[] candidateGroupIds, bool unassigned = false) {
-            List<TaskViewModel> taskList = new List<TaskViewModel>();
-
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     var perms = PermissionsUtility.Create(s, caller);
-
-                    foreach (var item in candidateGroupIds) {
-                        perms.CanViewTasksForCandidateGroup(item);
-                    }
-
-                    var updatedCandiateGroupIdsList = new List<long>();
-                    updatedCandiateGroupIdsList.AddRange(candidateGroupIds);
-
-                    foreach (var cgid in candidateGroupIds) {
-                        updatedCandiateGroupIdsList.AddRange(ResponsibilitiesAccessor.GetResponsibilityGroupsForRgm(s, perms, cgid).Select(x => x.Id));
-                    }
-
-
-                    //var candidateGroups = String.Join(",", candidateGroupIds.Select(x => "rgm_" + x));
-                    CommClass comClass = new CommClass();
-                    var getUsertaskList = await comClass.GetTaskByCandidateGroups(updatedCandiateGroupIdsList.ToArray(), unassigned: unassigned);
-
-                    foreach (var item in getUsertaskList) {
-                        taskList.Add(TaskViewModel.Create(item));
-                    }
-
-                    tx.Commit();
-                    s.Flush();
+                    return await GetTaskListByCandidateGroups(s, perms, candidateGroupIds, unassigned);
                 }
             }
+        }
 
+        private static async Task<List<TaskViewModel>> GetTaskListByCandidateGroups(ISession s, PermissionsUtility perms, long[] candidateGroupIds, bool unassigned) {
+            List<TaskViewModel> taskList = new List<TaskViewModel>();
+
+            foreach (var item in candidateGroupIds) {
+                perms.CanViewTasksForCandidateGroup(item);
+            }
+
+            var updatedCandiateGroupIdsList = new List<long>();
+            updatedCandiateGroupIdsList.AddRange(candidateGroupIds);
+
+            foreach (var cgid in candidateGroupIds) {
+                updatedCandiateGroupIdsList.AddRange(ResponsibilitiesAccessor.GetResponsibilityGroupsForRgm(s, perms, cgid).Select(x => x.Id));
+            }
+
+
+            //var candidateGroups = String.Join(",", candidateGroupIds.Select(x => "rgm_" + x));
+            CommClass comClass = new CommClass();
+            var getUsertaskList = await comClass.GetTaskByCandidateGroups(updatedCandiateGroupIdsList.ToArray(), unassigned: unassigned);
+
+            foreach (var item in getUsertaskList) {
+                taskList.Add(TaskViewModel.Create(item));
+            }
             return taskList;
+        }
+
+        public async Task<List<TaskViewModel>> GetVisibleTasksForUser(ISession s, PermissionsUtility perms, long userId) {
+            var userTaskDelay = GetTaskListByUserId(perms, userId);
+            var candidateGroupDelay = GetTaskListByCandidateGroups(s, perms, new long[] { userId }, false);
+
+            var results = await Task.WhenAll<List<TaskViewModel>>(userTaskDelay, candidateGroupDelay);
+
+            return results.SelectMany(x => x).ToList();
         }
 
         public async Task<long[]> GetCandidateGroupIdsForTask_UnSafe(ISession s, string taskId) {
@@ -578,24 +594,26 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
         }
 
         public async Task<List<TaskViewModel>> GetTaskListByUserId(UserOrganizationModel caller, long userId) {
-            List<TaskViewModel> taskList = new List<TaskViewModel>();
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
 
                     // Need to discuss this permission required or not?
-                    PermissionsUtility.Create(s, caller).CanViewTasksForCandidateGroup(userId);
-
-                    string _userId = "u_" + userId;
-                    CommClass comClass = new CommClass();
-                    var getUsertaskList = await comClass.GetTaskListByAssignee(_userId);
-
-                    foreach (var item in getUsertaskList) {
-                        taskList.Add(TaskViewModel.Create(item));
-                    }
-
-                    tx.Commit();
-                    s.Flush();
+                    var perms = PermissionsUtility.Create(s, caller);
+                    return await GetTaskListByUserId(perms, userId);
                 }
+            }
+        }
+
+        private static async Task<List<TaskViewModel>> GetTaskListByUserId(PermissionsUtility perms, long userId) {
+            perms.CanViewTasksForCandidateGroup(userId);
+            List<TaskViewModel> taskList = new List<TaskViewModel>();
+
+            string _userId = "u_" + userId;
+            CommClass comClass = new CommClass();
+            var getUsertaskList = await comClass.GetTaskListByAssignee(_userId);
+
+            foreach (var item in getUsertaskList) {
+                taskList.Add(TaskViewModel.Create(item));
             }
             return taskList;
         }
@@ -623,20 +641,17 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
             return taskList;
         }
 
-        public async Task<TaskViewModel> GetTaskById_Unsafe(UserOrganizationModel caller, string taskId) {
+        public async Task<TaskViewModel> GetTaskById_Unsafe(string taskId) {
             TaskViewModel output = null;
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    PermissionsUtility.Create(s, caller);
-                    CommClass comClass = new CommClass();
-                    var task = await comClass.GetTaskById(taskId);
-                    if (task != null) {
-                        output = TaskViewModel.Create(task);
-                    }
-                }
+            CommClass comClass = new CommClass();
+            var task = await comClass.GetTaskById(taskId);
+            if (task != null) {
+                output = TaskViewModel.Create(task);
             }
+
             return output;
         }
+
 
         /// <summary>
         /// Note: The difference with claim a task is that this method does not check if the task already has a user assigned to it.
@@ -723,24 +738,23 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
         //	return false;
         //}
 
-        public async Task<bool> TaskComplete(UserOrganizationModel caller, string taskId, long userId) {
-            try {
-                using (var s = HibernateSession.GetCurrentSession()) {
+        public async Task<bool> TaskComplete(UserOrganizationModel caller, string taskId) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
                     var perms = PermissionsUtility.Create(s, caller);
-                    perms.Self(userId);
                     // check if user is member of candidategroup in task
                     perms.CanEditTask(taskId);
                     CommClass commClass = new CommClass();
-                    string _userId = "u_" + userId;
-                    var taskComplete = await commClass.TaskComplete(taskId, _userId);
+                    var taskComplete = await commClass.TaskComplete(taskId);
                     if (taskComplete.TNoContentStatus.ToString() == "Success") {
                         return true;
                     }
+                    if (taskComplete.RestException.Message.EndsWith(" is suspended."))
+                        throw new PermissionsException("Cannot complete task. Process is suspended.");
+                    throw new PermissionsException("Could not complete task.");
+
                 }
-            } catch (Exception ex) {
-                throw ex;
-            }
-            return false;
+            }            
         }
 
 
@@ -836,27 +850,30 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
             return true;
         }
 
-        public IEnumerable<ProcessDef_Camunda> GetProcessDefinitionList(UserOrganizationModel caller, long orgId) {
+        public IEnumerable<ProcessDef_Camunda> GetVisibleProcessDefinitionList(UserOrganizationModel caller, long orgId) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
 
                     var perms = PermissionsUtility.Create(s, caller);
-                    perms.ViewOrganization(orgId);
-                    //PermissionsAccessor.GetExplicitPermItemsForUser(s, perms, caller.Id, PermItem.ResourceType.CoreProcess);
-
-                    IEnumerable<ProcessDef_Camunda> processDefList = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.OrgId == orgId).List();
-                    List<ProcessDef_Camunda> finalList = new List<ProcessDef_Camunda>();
-                    foreach (var item in processDefList.ToList()) {
-                        try {
-                            perms.CanView(PermItem.ResourceType.CoreProcess, item.LocalId);
-                            finalList.Add(item);
-                        } catch (Exception) {
-                        }
-                    }
-
-                    return finalList;
+                    return GetVisibleProcessDefinitionList(s, perms, orgId);
                 }
             }
+        }
+
+        public IEnumerable<ProcessDef_Camunda> GetVisibleProcessDefinitionList(ISession s, PermissionsUtility perms, long orgId) {
+            perms.ViewOrganization(orgId);
+
+            IEnumerable<ProcessDef_Camunda> processDefList = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.OrgId == orgId).List();
+            List<ProcessDef_Camunda> finalList = new List<ProcessDef_Camunda>();
+            foreach (var item in processDefList.ToList()) {
+                try {
+                    perms.CanView(PermItem.ResourceType.CoreProcess, item.LocalId);
+                    finalList.Add(item);
+                } catch (Exception) {
+                }
+            }
+
+            return finalList;
         }
 
         public ProcessDef_Camunda GetProcessDefById(UserOrganizationModel caller, long processDefId) {

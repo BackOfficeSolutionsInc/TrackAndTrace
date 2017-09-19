@@ -24,6 +24,8 @@ using RadialReview.Models.Angular.Notifications;
 using RadialReview.Notifications;
 using RadialReview.Models.Angular.Rocks;
 using RadialReview.Models.Enums;
+using RadialReview.Models.Angular.CoreProcess;
+using RadialReview.Areas.CoreProcess.Accessors;
 
 namespace RadialReview.Controllers {
     public partial class L10Controller :BaseController {
@@ -244,7 +246,20 @@ namespace RadialReview.Controllers {
 			}
 			return Json(ResultObject.SilentSuccess());
 		}
-		
-		#endregion
-	}
+
+        #endregion
+
+        #region CoreProcess
+        [HttpPost]
+        [Access(AccessLevel.UserOrganization)]
+        public async Task<JsonResult> UpdateAngularTask(AngularTask model, string connectionId = null) {
+            if (model.Assigned!=null)
+                await new ProcessDefAccessor().TaskClaimOrUnclaim(GetUser(), model.Id, GetUser().Id, model.Assigned.Value);
+            if (model.CompleteTime!=null)
+                await new ProcessDefAccessor().TaskComplete(GetUser(), model.Id);
+
+            return Json(ResultObject.SilentSuccess());
+        }
+        #endregion
+    }
 }

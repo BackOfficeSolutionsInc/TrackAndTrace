@@ -70,6 +70,14 @@
         $scope.functions.showModal = function (title, pull, push, callback, validation, onSuccess) {
             showModal(title, pull, push, callback, validation, onSuccess);
         };
+        $scope.functions.showAlert = function (data,arg2,arg3) {
+            var d= data;
+            if (typeof (data.data) !== "undefined") {
+                showJsonAlert(data.data, arg2, arg3);
+                return;
+            }
+            showAlert(d, arg2, arg3);
+        };
         
         //Select List Builders
         $scope.loadedOptions = {};

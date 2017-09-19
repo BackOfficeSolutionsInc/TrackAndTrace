@@ -724,8 +724,10 @@ namespace RadialReview.Controllers {
 							filterContext.Controller.ViewBag.ConsoleLog = false;
 							filterContext.Controller.ViewBag.LimitFiveState = true;
 							filterContext.Controller.ViewBag.ShowAC = false;
+                            filterContext.Controller.ViewBag.ShowCoreProcess = false;
 
-							if (oneUser != null) {
+
+                            if (oneUser != null) {
 								var name = new HtmlString(oneUser.GetName());
 
 								if (userOrgsCount > 1) {
@@ -750,9 +752,10 @@ namespace RadialReview.Controllers {
 								filterContext.Controller.ViewBag.ShowL10 = oneUser.Organization.Settings.EnableL10;
 								filterContext.Controller.ViewBag.ShowReview = oneUser.Organization.Settings.EnableReview && !oneUser.IsClient;
 								filterContext.Controller.ViewBag.ShowSurvey = oneUser.Organization.Settings.EnableSurvey && oneUser.IsManager();
-								filterContext.Controller.ViewBag.ShowPeople = oneUser.Organization.Settings.EnablePeople;// && oneUser.IsManager();
+                                filterContext.Controller.ViewBag.ShowPeople = oneUser.Organization.Settings.EnablePeople;// && oneUser.IsManager();
+                                filterContext.Controller.ViewBag.ShowCoreProcess = oneUser.Organization.Settings.EnableCoreProcess;// && oneUser.IsManager();
 
-								filterContext.Controller.ViewBag.ShowAC = PermissionsAccessor.IsPermitted(s, oneUser, x => x.CanView(PermItem.ResourceType.AccountabilityHierarchy, oneUser.Organization.AccountabilityChartId)); // oneUser.Organization.acc && oneUser.IsManager();
+                                filterContext.Controller.ViewBag.ShowAC = PermissionsAccessor.IsPermitted(s, oneUser, x => x.CanView(PermItem.ResourceType.AccountabilityHierarchy, oneUser.Organization.AccountabilityChartId)); // oneUser.Organization.acc && oneUser.IsManager();
 
 								var isManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
 								filterContext.Controller.ViewBag.LimitFiveState = oneUser.Organization.Settings.LimitFiveState;

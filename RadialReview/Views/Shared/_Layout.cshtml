@@ -3,29 +3,33 @@
 @using RadialReview
 
 @{
-	var limitFiveState = ViewBag.LimitFiveState ?? true;
-	var l10Enabled = false;
-	var reviewEnabled = false;
-	var acEnabled = false;
-	var surveyEnabled = false;
-	var peopleEnabled = false;
-	if (((int?)ViewBag.Organizations ?? 0) > 0) {
-		if (ViewBag.ShowL10) {
-			l10Enabled = true;
-		}
-		if (ViewBag.ShowReview) {
-			reviewEnabled = true;
-		}
-		if (ViewBag.ShowAC) {
-			acEnabled = true;
-		}
-		if (ViewBag.ShowSurvey) {
-			surveyEnabled = true;
-		}
-		if (ViewBag.ShowPeople) {
-			peopleEnabled = true;
-		}
-	}
+    var limitFiveState = ViewBag.LimitFiveState ?? true;
+    var l10Enabled = false;
+    var reviewEnabled = false;
+    var acEnabled = false;
+    var surveyEnabled = false;
+    var peopleEnabled = false;
+    var coreProcessEnabled = false;
+    if (((int?)ViewBag.Organizations ?? 0) > 0) {
+        if (ViewBag.ShowL10) {
+            l10Enabled = true;
+        }
+        if (ViewBag.ShowReview) {
+            reviewEnabled = true;
+        }
+        if (ViewBag.ShowAC) {
+            acEnabled = true;
+        }
+        if (ViewBag.ShowSurvey) {
+            surveyEnabled = true;
+        }
+        if (ViewBag.ShowPeople) {
+            peopleEnabled = true;
+        }
+        if (ViewBag.ShowCoreProcess) {
+            coreProcessEnabled = true;
+        }
+    }
 }
 
 <!DOCTYPE html>
@@ -115,7 +119,8 @@
 			L10 : @(l10Enabled?"true":"false"),
 			Review : @(reviewEnabled?"true":"false"),
 			AC : @(acEnabled?"true":"false"),
-			Survey : @(surveyEnabled?"true":"false"),
+		    Survey : @(surveyEnabled?"true":"false"),
+            CoreProcess: @(coreProcessEnabled?"true":"false"),
 		};
 
 		window.LimitFiveState = @((""+limitFiveState).ToLower());
@@ -249,18 +254,26 @@
 													<span id="SurveyNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
 												</a>
 											</li>
-										}
-										if (ViewBag.ShowPeople ?? false) {
-											<li>
-												<a href="@Url.Action("Index", "Main",new { area = "People" })" id="header-tab-survey">
-													People
-													<span id="SurveyNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
-												</a>
-											</li>
-										}
-									}
-								} else {
-								}
+                                        }
+                                        if (ViewBag.ShowPeople ?? false) {
+                                            <li>
+                                                <a href="@Url.Action("Index", "Main",new { area = "People" })" id="header-tab-survey">
+                                                    People
+                                                    <span id="PeopleNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+                                                </a>
+                                            </li>
+                                        }
+                                        if (ViewBag.ShowCoreProcess ?? false) {
+                                            <li>
+                                                <a href="@Url.Action("Index", "Process",new { area = "CoreProcess" })" id="header-tab-survey">
+                                                    Core Process
+                                                    <span id="CoreProcessNotification" style="display: none;" class="glyphicon glyphicon-exclamation-sign"></span>
+                                                </a>
+                                            </li>
+                                        }
+                                    }
+                                } else {
+                                }
 							</ul>
 							@if (!(ViewBag.IsLogin ?? false)) {
 								Html.RenderPartial("_LoginPartial", (string)ViewBag.ReturnUrl);

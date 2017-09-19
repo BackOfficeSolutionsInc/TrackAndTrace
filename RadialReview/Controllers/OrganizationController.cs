@@ -322,7 +322,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<ActionResult> Products(OrganizationModel model) {
 			if (ModelState.IsValid) {
-				await _OrganizationAccessor.UpdateProducts(GetUser(), model.Settings.EnableReview, model.Settings.EnableL10, model.Settings.EnableSurvey,model.Settings.EnablePeople, model.Settings.Branding);
+				await _OrganizationAccessor.UpdateProducts(GetUser(), model.Settings.EnableReview, model.Settings.EnableL10, model.Settings.EnableSurvey, model.Settings.EnablePeople, model.Settings.EnableCoreProcess, model.Settings.Branding);
 				return RedirectToAction("Index", "Manage");
 			}
 			return View(GetUser().Organization);

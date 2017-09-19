@@ -96,8 +96,11 @@ namespace RadialReview.Utilities {
 		DisablePeople,
 
 		PaymentEntered,
-		//AccountAge_SemiYearlyAnniversary,
-	}
+
+        EnableCoreProcess,
+        DisableCoreProcess
+        //AccountAge_SemiYearlyAnniversary,
+    }
 
 	public static class EventTypeExtensions {
 

@@ -38,19 +38,20 @@
                         postAdd: "/Process/Create",
                         cells: [
 
-                            { name: "Deploy", classes: "", contents: function (x) { return x.status; } },
+                           // { name: "Deploy", classes: "", contents: function (x) { return x.status; } },
                             { name: "Name", classes: "fullWidth", contents: function (x) { return x.Name; } },
-                            { name: "Instances", classes: "", contents: function (x) { return x.Count; } },
+                            { name: "Running", classes: "alignCenter", contents: function (x) { return "<a href='/CoreProcess/Process/ProcessInstance/" + x.LocalID + "'>"+x.Count+"</a>"; } },
+                            { name: "", classes: "alignCenter", contents: function (x) { return "<a href='#' onclick='startProcess("+x.LocalID+")'>Start</a>"; } },
                             {
                                 name: "", classes: "", contents: function (x) {
-                                    return "<a href='/CoreProcess/Process/Tasks/" + x.Id + "'>Task</a>"
+                                    return "<a href='/CoreProcess/Process/Tasks/" + x.Id + "'>Edit</a>"
                                 }
                             },
-                            {
-                                name: "", classes: "", contents: function (x) {
-                                    return "<a href='/CoreProcess/Process/ProcessInstance/" + x.LocalID + "'>Instances</a>"
-                                }
-                            }
+                            //{
+                            //    name: "", classes: "", contents: function (x) {
+                                   
+                            //    }
+                            //}
                         ],
 					nodataText: "No Process found."
                 });

@@ -113,7 +113,7 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm {
             return await client.Task().Id(taskId).UserId(userId).UnClaim();
         }
 
-        public async Task<NoContentStatus> TaskComplete(string taskId, string userId) {
+        public async Task<NoContentStatus> TaskComplete(string taskId) {
             client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
             return await client.Task().Id(taskId).Complete(new object());
         }
@@ -139,11 +139,12 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm {
             var candidateGroups = BpmnUtility.ConcatedCandidateString(candidateGroupIds);
             client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
             var tasks = await client.Task().Get().CandidateGroups(candidateGroups).list();
+            var request = client.Task().Get().CandidateGroups(candidateGroups).Unassigned(unassigned).Active(true);
 
             if (!string.IsNullOrEmpty(processInstanceId))
-                return await client.Task().Get().CandidateGroups(candidateGroups).Unassigned(unassigned).ProcessInstanceId(processInstanceId).list();
-            else
-                return await client.Task().Get().CandidateGroups(candidateGroups).Unassigned(unassigned).list();
+                request = request.ProcessInstanceId(processInstanceId);
+
+            return await request.list();
         }
 
         public async Task<IEnumerable<TaskModel>> GetTaskListByProcessDefId(string processDefId) {

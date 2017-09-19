@@ -1225,7 +1225,7 @@ namespace RadialReview.Accessors {
 				.List().ToList();
 		}
 
-		public async Task UpdateProducts(UserOrganizationModel caller, bool enableReview, bool enableL10, bool enableSurvey, bool enablePeople, BrandingType branding) {
+		public async Task UpdateProducts(UserOrganizationModel caller, bool enableReview, bool enableL10, bool enableSurvey, bool enablePeople, bool enableCP, BrandingType branding) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller).ManagingOrganization(caller.Organization.Id);
@@ -1237,16 +1237,19 @@ namespace RadialReview.Accessors {
 
 					if (org.Settings.EnableReview != enableReview)
 						await EventUtil.Trigger(x => x.Create(s, enableReview ? EventType.EnableReview : EventType.DisableReview, caller, org));
-					if (org.Settings.EnablePeople != enablePeople)
-						await EventUtil.Trigger(x => x.Create(s, enablePeople ? EventType.EnablePeople : EventType.DisablePeople, caller, org));
+                    if (org.Settings.EnablePeople != enablePeople)
+                        await EventUtil.Trigger(x => x.Create(s, enablePeople ? EventType.EnablePeople : EventType.DisablePeople, caller, org));
+                    if (org.Settings.EnableCoreProcess != enableCP)
+                        await EventUtil.Trigger(x => x.Create(s, enableCP ? EventType.EnableCoreProcess : EventType.DisableCoreProcess, caller, org));
 
-					org.Settings.EnableL10 = enableL10;
+                    org.Settings.EnableL10 = enableL10;
 					org.Settings.EnableReview = enableReview;
 					org.Settings.EnablePeople = enablePeople;
 					org.Settings.Branding = branding;
-					org.Settings.EnableSurvey = enableSurvey;
+                    org.Settings.EnableSurvey = enableSurvey;
+                    org.Settings.EnableCoreProcess = enableCP;
 
-					s.Update(org);
+                    s.Update(org);
 
 					tx.Commit();
 					s.Flush();

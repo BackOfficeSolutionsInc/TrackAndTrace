@@ -135,6 +135,8 @@
     <Compile Include="Areas\CoreProcess\CoreProcessAreaRegistration.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\ITaskAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
+    <Compile Include="Models\Angular\CoreProcess\AngularTask.cs" />
+    <Compile Include="Models\Angular\CoreProcess\AngularCoreProcess.cs" />
     <Compile Include="Utilities\CoreProcess\AmazonSQSUtility.cs" />
     <Compile Include="Utilities\AsyncUtility.cs" />
     <Compile Include="Utilities\CoreProcess\BpmnUtility.cs" />
@@ -1646,6 +1648,10 @@
     <Content Include="Views\Admin\EditCampaign.cshtml" />
     <Content Include="Views\Admin\Campaigns.cshtml" />
     <Content Include="Views\Phone\Index.cshtml" />
+    <Content Include="Views\TileData\CoreProcesses.cshtml" />
+    <Content Include="Views\TileData\Tasks.cshtml" />
+    <Content Include="Views\Tasks\partial\list.cshtml" />
+    <Content Include="Views\Tasks\partial\coreProcessList.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

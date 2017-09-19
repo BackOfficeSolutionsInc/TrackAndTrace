@@ -17,7 +17,7 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
         Task<NoContentStatus> SetAssignee(string taskId, string userId);
         Task<NoContentStatus> TaskClaim(string taskId, string userId);
         Task<NoContentStatus> TaskUnClaim(string taskId, string userId);
-        Task<NoContentStatus> TaskComplete(string taskId, string userId);
+        Task<NoContentStatus> TaskComplete(string taskId);
         Task<IEnumerable<TaskModel>> GetTaskListByProcessDefId(string processDefId);
         Task<IEnumerable<TaskModel>> GetTaskListByAssignee(string assignee);
         Task<IEnumerable<TaskModel>> GetTaskListByProcessDefId(List<string> processDefId);

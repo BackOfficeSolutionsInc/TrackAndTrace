@@ -29,6 +29,9 @@ using RadialReview.Models.Angular.Notifications;
 using RadialReview.Models.Angular.DataType;
 using RadialReview.Models.Angular.Dashboard;
 using RadialReview.Models.Angular.Rocks;
+using RadialReview.Areas.CoreProcess.Accessors;
+using System.Threading.Tasks;
+using RadialReview.Models.Angular.CoreProcess;
 
 namespace RadialReview.Controllers {
     [SessionState(SessionStateBehavior.ReadOnly)]
@@ -44,7 +47,7 @@ namespace RadialReview.Controllers {
 
         //[OutputCache(Duration = 3, VaryByParam = "id", Location = OutputCacheLocation.Client, NoStore = true)]
         //[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
-        public JsonResult Data2(long id, bool completed = false, string name = null, long? start = null, long? end = null, bool fullScorecard = false, long? dashboardId=null) {
+        public async Task<JsonResult> Data2(long id, bool completed = false, string name = null, long? start = null, long? end = null, bool fullScorecard = false, long? dashboardId=null) {
             //Response.AddHeader("Content-Encoding", "gzip");
             var userId = id;
 			Dashboard dash;
@@ -149,11 +152,33 @@ namespace RadialReview.Controllers {
                 }
             }
 
+           
+
             var caller = GetUser();
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     var perms = PermissionsUtility.Create(s, caller);
-					var l10Lookup = new DefaultDictionary<long, L10Recurrence>(x => L10Accessor.GetL10Recurrence(s, perms, x, false));
+
+                    if (tiles.Any(x => x.Type == TileType.Tasks || (x.DataUrl ?? "").Contains("Tasks"))) {
+                        try {
+                            var tasks = (await (new ProcessDefAccessor()).GetVisibleTasksForUser(s, perms, caller.Id)).Select(x => AngularTask.Create(x));
+                            output.Tasks = tasks;
+                        } catch (Exception e) {
+                            ProcessDeadTile(e);
+                        }
+                    }
+
+                    if (tiles.Any(x => x.Type == TileType.CoreProcesses || (x.DataUrl ?? "").Contains("CoreProcesses"))) {
+                        try {
+                            var cps = ((new ProcessDefAccessor()).GetVisibleProcessDefinitionList(s,perms, caller.Organization.Id)).Select(x => AngularCoreProcess.Create(x));
+                            output.CoreProcesses = cps;
+                        } catch (Exception e) {
+                            ProcessDeadTile(e);
+                        }
+                    }
+
+
+                    var l10Lookup = new DefaultDictionary<long, L10Recurrence>(x => L10Accessor.GetL10Recurrence(s, perms, x, false));
 
 					//L10 Todos
 					foreach (var todo in tiles.Where(x => x.Type == TileType.L10Todos || (x.DataUrl ?? "").Contains("L10Todos")).Distinct(x => x.KeyId)) {

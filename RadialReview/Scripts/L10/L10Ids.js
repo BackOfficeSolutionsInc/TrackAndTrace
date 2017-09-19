@@ -691,9 +691,9 @@ function unstarAll() {
 
 }
 
-$("body").on("blur", ".issueDetails .details", function () {
-	sendIssueDetails(this, $(this).data("recurrence_issue"));
-});
+//$("body").on("blur", ".issueDetails .details", function () {
+//	sendIssueDetails(this, $(this).data("recurrence_issue"));
+//});
 
 
 function updateIssueOwner(id, userId, name, image) {

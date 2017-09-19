@@ -50,12 +50,21 @@ namespace RadialReview.Controllers
         }
 
 
-		[Access(AccessLevel.Any)]
-		public PartialViewResult UserNotifications() {
-			return PartialView("UserNotifications");
-		}
-        
-		[Access(AccessLevel.Any)]
+        [Access(AccessLevel.Any)]
+        public PartialViewResult UserNotifications() {
+            return PartialView("UserNotifications");
+        }
+
+        [Access(AccessLevel.Any)]
+        public PartialViewResult CoreProcesses() {
+            return PartialView("CoreProcesses");
+        }
+        [Access(AccessLevel.Any)]
+        public PartialViewResult Tasks() {
+            return PartialView("Tasks");
+        }
+
+        [Access(AccessLevel.Any)]
 		public PartialViewResult UserTodo2(){
             return PartialView("UserTodo", GetUser().Id);
 		}

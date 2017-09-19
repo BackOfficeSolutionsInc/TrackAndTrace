@@ -25,7 +25,9 @@ namespace RadialReview.Models.Dashboard
 		L10Issues,
 		FAQGuide,
 		Notifications,
-		L10SolvedIssues
+		L10SolvedIssues,
+        Tasks,
+        CoreProcesses
 	}
 
 	public class TileModel : ILongIdentifiable, IHistorical

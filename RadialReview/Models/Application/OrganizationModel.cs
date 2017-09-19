@@ -170,8 +170,9 @@ namespace RadialReview.Models {
 			
 			public virtual bool EnableL10 { get; set; }
 			public virtual bool EnableReview { get; set; }
-			public virtual bool EnablePeople { get; set; }
-			public virtual bool DisableAC { get; set; }
+            public virtual bool EnablePeople { get; set; }
+            public virtual bool EnableCoreProcess { get; set; }
+            public virtual bool DisableAC { get; set; }
 
 			public virtual int? DefaultSendTodoTime { get; set; }
 
@@ -252,8 +253,9 @@ namespace RadialReview.Models {
 
 					Map(x => x.OnlySeeRocksAndScorecardBelowYou);
 
-					Map(x => x.EnableL10);
-					Map(x => x.EnableReview);
+                    Map(x => x.EnableCoreProcess);
+                    Map(x => x.EnableL10);
+                    Map(x => x.EnableReview);
 					Map(x => x.EnableSurvey);
 					Map(x => x.EnablePeople);
 

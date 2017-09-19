@@ -1907,18 +1907,24 @@ namespace RadialReview.Utilities {
                 return this;
 
             ProcessDefAccessor accessor = new ProcessDefAccessor();
-            var arr = AsyncHelper.RunSync<long[]>(() => accessor.GetCandidateGroupIdsForTask_UnSafe(session, taskId));
+            var task = AsyncHelper.RunSync(()=>accessor.GetTaskById_Unsafe(taskId));
+            if (task.Assignee != null) {
+                if (task.Assignee.Value == caller.Id)
+                    return this;
+            } else {
 
-            if (arr.Any(x => x == caller.Id)) {
-                return this;
+                var arr = AsyncHelper.RunSync<long[]>(() => accessor.GetCandidateGroupIdsForTask_UnSafe(session, taskId));
+
+                if (arr.Any(x => x == caller.Id)) {
+                    return this;
+                }
+
+                var groupIds = ResponsibilitiesAccessor.GetGroupIdsForUser(session, this, caller.Id);
+
+                if (arr.Any(x => groupIds.Contains(x))) {
+                    return this;
+                }
             }
-
-            var groupIds = ResponsibilitiesAccessor.GetGroupIdsForUser(session, this, caller.Id);
-
-            if (arr.Any(x => groupIds.Contains(x))) {
-                return this;
-            }
-
             throw new PermissionsException();
         }
         public PermissionsUtility CanViewTasksForCandidateGroup(long groupId) {
