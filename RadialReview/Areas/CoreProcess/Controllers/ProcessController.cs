@@ -2,6 +2,7 @@
 using CamundaCSharpClient.Model.ProcessInstance;
 using RadialReview.Accessors;
 using RadialReview.Areas.CoreProcess.Accessors;
+using RadialReview.Areas.CoreProcess.CamundaComm;
 using RadialReview.Areas.CoreProcess.Models.Interfaces;
 using RadialReview.Areas.CoreProcess.Models.Process;
 using RadialReview.Controllers;
@@ -247,6 +248,18 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
         public async Task<ActionResult> CompleteTask(string id) {
             var result = await processDefAccessor.TaskComplete(GetUser(), id);
             return RedirectToAction("UserTask");
+        }
+
+        [Access(AccessLevel.Radial)]
+        public async Task<JsonResult> UpdateTasks() {
+            var res = await processDefAccessor.UpdateAllTasks_Unsafe();
+            return Json(res, JsonRequestBehavior.AllowGet);
+        }
+
+        [Access(AccessLevel.Radial)]
+        public async Task<JsonResult> AllAfter(DateTime? after = null,double minutesAgo=1) {
+            after = after ?? DateTime.UtcNow.AddMinutes(-Math.Abs(minutesAgo));
+            return Json(await new CommClass().GetAllTasksAfter(after.Value),JsonRequestBehavior.AllowGet);
         }
 
     }

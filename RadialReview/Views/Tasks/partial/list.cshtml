@@ -3,7 +3,7 @@
     var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
     //var completion = (ViewBag.AddCompletion == null || ((bool)ViewBag.AddCompletion) == true);
     var datepicker = (ViewBag.AddDatePicker == null || ((bool)ViewBag.AddDatePicker) == true);
-    var selector = ViewBag.Selector as string ?? "model.Tasks";
+    var selector = ViewBag.Selector as string ?? "model.CoreProcess.Tasks";
     var filter = ViewBag.Filter as string ?? "| filter:filters.taskFilter() | filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate)";
 
     var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");

@@ -162,7 +162,7 @@ namespace RadialReview.Controllers {
                     if (tiles.Any(x => x.Type == TileType.Tasks || (x.DataUrl ?? "").Contains("Tasks"))) {
                         try {
                             var tasks = (await (new ProcessDefAccessor()).GetVisibleTasksForUser(s, perms, caller.Id)).Select(x => AngularTask.Create(x));
-                            output.Tasks = tasks;
+                            output.CoreProcess.Tasks = tasks;
                         } catch (Exception e) {
                             ProcessDeadTile(e);
                         }
@@ -171,7 +171,7 @@ namespace RadialReview.Controllers {
                     if (tiles.Any(x => x.Type == TileType.CoreProcesses || (x.DataUrl ?? "").Contains("CoreProcesses"))) {
                         try {
                             var cps = ((new ProcessDefAccessor()).GetVisibleProcessDefinitionList(s,perms, caller.Organization.Id)).Select(x => AngularCoreProcess.Create(x));
-                            output.CoreProcesses = cps;
+                            output.CoreProcess.Processes = cps;
                         } catch (Exception e) {
                             ProcessDeadTile(e);
                         }

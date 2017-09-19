@@ -3,7 +3,9 @@ using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using CamundaCSharpClient.Model;
 using CamundaCSharpClient.Model.Deployment;
+using CamundaCSharpClient.Model.Task;
 using log4net;
+using Microsoft.AspNet.SignalR;
 using NHibernate;
 using RadialReview.Accessors;
 using RadialReview.Areas.CoreProcess.CamundaComm;
@@ -14,7 +16,12 @@ using RadialReview.Areas.CoreProcess.Models.MapModel;
 using RadialReview.Areas.CoreProcess.Models.Process;
 using RadialReview.Areas.CoreProcess.Models.ViewModel;
 using RadialReview.Exceptions;
+using RadialReview.Hubs;
 using RadialReview.Models;
+using RadialReview.Models.Angular.Base;
+using RadialReview.Models.Angular.CoreProcess;
+using RadialReview.Models.Angular.Dashboard;
+using RadialReview.Models.Application;
 using RadialReview.Models.Components;
 using RadialReview.Utilities;
 using RadialReview.Utilities.CoreProcess;
@@ -27,6 +34,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Linq;
+using static CamundaCSharpClient.Query.Task.TaskQuery;
 using static RadialReview.Utilities.CoreProcess.BpmnUtility;
 
 namespace RadialReview.Areas.CoreProcess.Accessors {
@@ -64,7 +72,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 
             //var getProcessDefDetail = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.Id == localId).SingleOrDefault();
             var processDefDetail = s.Get<ProcessDef_Camunda>(coreProcessId);
-            if (processDefDetail==null || processDefDetail.DeleteTime != null) {
+            if (processDefDetail == null || processDefDetail.DeleteTime != null) {
                 throw new PermissionsException("Process doesn't exist.");
             }
 
@@ -253,6 +261,9 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                 }
             }
         }
+
+
+
         public async Task<bool> EditProcess(ISession s, PermissionsUtility perms, long localId, string processName) {
             perms.CanEdit(PermItem.ResourceType.CoreProcess, localId);
 
@@ -311,7 +322,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                     throw new PermissionsException("Process does not exists");
                 }
                 processDefDetails.DeleteTime = DateTime.UtcNow;
-                if (processDefDetails.CamundaId!=null)
+                if (processDefDetails.CamundaId != null)
                     await new CommClass().ProcessSuspend(processDefDetails.CamundaId, true);
 
                 s.Update(processDefDetails);
@@ -527,15 +538,15 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
             }
 
 
-                    //var candidateGroups = String.Join(",", candidateGroupIds.Select(x => "rgm_" + x));
-                    CommClass comClass = new CommClass();
-                    var getUsertaskList = await comClass.GetTaskByCandidateGroups(updatedCandiateGroupIdsList.ToArray(), unassigned: unassigned);
+            //var candidateGroups = String.Join(",", candidateGroupIds.Select(x => "rgm_" + x));
+            CommClass comClass = new CommClass();
+            var getUsertaskList = await comClass.GetTaskByCandidateGroups(updatedCandiateGroupIdsList.ToArray(), unassigned: unassigned);
 
-                    foreach (var item in getUsertaskList) {
-                        taskList.Add(TaskViewModel.Create(item));
-                    }
-            return taskList;
+            foreach (var item in getUsertaskList) {
+                taskList.Add(TaskViewModel.Create(item));
             }
+            return taskList;
+        }
 
         public async Task<List<TaskViewModel>> GetVisibleTasksForUser(ISession s, PermissionsUtility perms, long userId) {
             var userTaskDelay = GetTaskListByUserId(perms, userId);
@@ -613,12 +624,12 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
             perms.CanViewTasksForCandidateGroup(userId);
             List<TaskViewModel> taskList = new List<TaskViewModel>();
 
-                    string _userId = "u_" + userId;
-                    CommClass comClass = new CommClass();
-                    var getUsertaskList = await comClass.GetTaskListByAssignee(_userId);
+            string _userId = "u_" + userId;
+            CommClass comClass = new CommClass();
+            var getUsertaskList = await comClass.GetTaskListByAssignee(_userId);
 
-                    foreach (var item in getUsertaskList) {
-                        taskList.Add(TaskViewModel.Create(item));
+            foreach (var item in getUsertaskList) {
+                taskList.Add(TaskViewModel.Create(item));
             }
             return taskList;
         }
@@ -648,11 +659,11 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 
         public async Task<TaskViewModel> GetTaskById_Unsafe(string taskId) {
             TaskViewModel output = null;
-                    CommClass comClass = new CommClass();
-                    var task = await comClass.GetTaskById(taskId);
-                    if (task != null) {
-                        output = TaskViewModel.Create(task);
-                    }
+            CommClass comClass = new CommClass();
+            var task = await comClass.GetTaskById(taskId);
+            if (task != null) {
+                output = TaskViewModel.Create(task);
+            }
 
             return output;
         }
@@ -743,7 +754,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
         //}
 
         public async Task<bool> TaskComplete(UserOrganizationModel caller, string taskId) {
-                using (var s = HibernateSession.GetCurrentSession()) {
+            using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     var perms = PermissionsUtility.Create(s, caller);
                     // check if user is member of candidategroup in task
@@ -821,7 +832,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                     var perms = PermissionsUtility.Create(s, caller);
                     var result = await DeleteProcessDefTask(s, perms, localId, taskId);
 
-                    tx.Rollback();
+                    tx.Commit();
                     s.Flush();
                     return result;
                 }
@@ -865,19 +876,19 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
         }
 
         public IEnumerable<ProcessDef_Camunda> GetVisibleProcessDefinitionList(ISession s, PermissionsUtility perms, long orgId) {
-                    perms.ViewOrganization(orgId);
+            perms.ViewOrganization(orgId);
 
-                    IEnumerable<ProcessDef_Camunda> processDefList = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.OrgId == orgId).List();
-                    List<ProcessDef_Camunda> finalList = new List<ProcessDef_Camunda>();
-                    foreach (var item in processDefList.ToList()) {
-                        try {
-                            perms.CanView(PermItem.ResourceType.CoreProcess, item.LocalId);
-                            finalList.Add(item);
-                        } catch (Exception) {
-                        }
-                    }
+            IEnumerable<ProcessDef_Camunda> processDefList = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.OrgId == orgId).List();
+            List<ProcessDef_Camunda> finalList = new List<ProcessDef_Camunda>();
+            foreach (var item in processDefList.ToList()) {
+                try {
+                    perms.CanView(PermItem.ResourceType.CoreProcess, item.LocalId);
+                    finalList.Add(item);
+                } catch (Exception) {
+                }
+            }
 
-                    return finalList;
+            return finalList;
         }
 
         public ProcessDef_Camunda GetProcessDefById(UserOrganizationModel caller, long processDefId) {
@@ -930,6 +941,110 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                 await BpmnUtility.UploadFileToServer(ins_stream, getProcessDefFileDetails.FileKey);
             }
             return true;
+        }
+
+        public async Task<IEnumerable<TaskViewModel>> GetAllNewTasks_Unsafe(DateTime after) {
+            CommClass comClass = new CommClass();
+            var allTasks = await comClass.GetAllTasksAfter(after);
+            return allTasks.Select(x => TaskViewModel.Create(x));
+        }
+
+        private async Task<Tuple<string, IEnumerable<IdentityLink>>> _GetLinks(CommClass comClass, string id) {
+            var links = await comClass.GetIdentityLinks(id);
+            return Tuple.Create(id, links);
+        }
+
+        private async Task<Dictionary<string, IEnumerable<IdentityLink>>> _GetTaskIdentityLinkLookup(IEnumerable<TaskModel> tasks) {
+            CommClass comClass = new CommClass();
+            var allIdentityLinksTasks = new List<Task<Tuple<string, IEnumerable<IdentityLink>>>>();
+            foreach (var t in tasks.Distinct(x => x.Id)) {
+                allIdentityLinksTasks.Add(_GetLinks(comClass, t.Id));
+            }
+            var result = await Task.WhenAll(allIdentityLinksTasks);
+
+            return result.ToDictionary(x => x.Item1, x => x.Item2);
+        }
+
+        public class UpdateAllTaskData {
+            public TimeSpan ExecutionTime { get; set; }
+            public DateTime LastUpdate { get; set; }
+            public DateTime MaxTime { get; set; }
+            public int TaskCount { get; set; }
+            public List<TaskModel> Tasks { get; set; }
+        }
+
+        public async Task<UpdateAllTaskData> UpdateAllTasks_Unsafe() {
+            IEnumerable<TaskModel> allTasks = null;
+            CommClass comClass = new CommClass();
+            var o = new UpdateAllTaskData { };
+            var start = DateTime.UtcNow;
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var lastUpdate = s.GetSettingOrDefault<DateTime>(Variable.Names.LAST_CAMUNDA_UPDATE_TIME, DateTime.UtcNow.AddDays(-1));
+                    var maxTime = lastUpdate;
+                    string lastId = null;
+                    o.LastUpdate = lastUpdate;
+                    allTasks = await comClass.GetAllTasksAfter(lastUpdate);
+                    foreach (var t in allTasks) {
+                        var a = DateTime.Parse(t.Created);
+                        if (a > maxTime) {
+                            maxTime = a;
+                            lastId = t.Id;
+                        }
+                        maxTime = Math2.Max(maxTime, a.AddSeconds(1));
+                    }
+                    o.MaxTime = maxTime;
+                    s.UpdateSetting(Variable.Names.LAST_CAMUNDA_UPDATE_TIME, maxTime);
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+            o.TaskCount = allTasks.Count();
+            o.Tasks = allTasks.ToList();
+
+            var lookup = await _GetTaskIdentityLinkLookup(allTasks);
+
+            var hub = GlobalHost.ConnectionManager.GetHubContext<CoreProcessHub>();
+            foreach (var t in allTasks) {
+                var rgms = lookup.GetOrDefault(t.Id, new List<IdentityLink>());
+                var assignee = rgms.Where(x => x.type == "assignee").Select(x => CoreProcessHub.GenerateRgm(x.userId.SubstringAfter("u_").ToLong())).ToList();
+                if (assignee.Any()) {
+                    var group = hub.Clients.Groups(assignee);
+                    group.update(new AngularUpdate() {
+                        new AngularCoreProcessData() {
+                            Tasks = AngularList.CreateFrom(AngularListType.ReplaceIfNewer,AngularTask.Create(TaskViewModel.Create(t)))
+                        }
+                    });
+                    group.showMessage("assignee" + t.Id);
+                } else {
+                    var candidateGroups = rgms.Where(x => x.type == "candidate").Select(x => CoreProcessHub.GenerateRgm(x.groupId)).ToList();
+                    var group = hub.Clients.Groups(candidateGroups);
+                    group.update(new AngularUpdate() {
+                        new AngularCoreProcessData() {
+                            Tasks = AngularList.CreateFrom(AngularListType.ReplaceIfNewer,AngularTask.Create(TaskViewModel.Create(t)))
+                        }
+                    });
+                    group.showMessage("candidate:" + t.Id);
+                }
+            }
+            o.ExecutionTime = DateTime.UtcNow - start;
+            return o;
+
+
+        }
+
+        public static void JoinCoreProcessHub(UserOrganizationModel caller, string connectionId) {
+            var hub = GlobalHost.ConnectionManager.GetHubContext<CoreProcessHub>();
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    var groups = ResponsibilitiesAccessor.GetResponsibilityGroupsForRgm(s, perms, caller.Id);
+
+                    foreach (var r in groups) {
+                        hub.Groups.Add(connectionId, CoreProcessHub.GenerateRgm(r));
+                    }
+                }
+            }
         }
     }
 }

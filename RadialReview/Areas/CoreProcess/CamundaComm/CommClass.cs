@@ -16,6 +16,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using static CamundaCSharpClient.Query.Task.TaskQuery;
 using static RadialReview.Utilities.Config;
 
 namespace RadialReview.Areas.CoreProcess.CamundaComm {
@@ -174,6 +175,16 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm {
             }
 
             return task;
+        }
+
+        public async Task<IEnumerable<TaskModel>> GetAllTasksAfter(DateTime after) {
+            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
+            return await client.Task().Get().CreatedAfter(after).Active(true).list();
+        }
+
+        public async Task<IEnumerable<IdentityLink>> GetIdentityLinks(string taskId) {
+            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
+            return await client.Task().Id(taskId).IdentityLinks();//.Get().iden.CreatedAfter(after).Active(true).list();
         }
 
         #endregion

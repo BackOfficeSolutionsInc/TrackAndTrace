@@ -2,14 +2,14 @@
 using CamundaCSharpClient.Model.ProcessInstance;
 using CamundaCSharpClient.Model.Task;
 using RadialReview.Areas.CoreProcess.Models.Interfaces;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static CamundaCSharpClient.Query.Task.TaskQuery;
 
-namespace RadialReview.Areas.CoreProcess.CamundaComm
-{
-    public interface ICommClass
-    {
+namespace RadialReview.Areas.CoreProcess.CamundaComm {
+    public interface ICommClass {
         Task<IProcessDef> GetProcessDefByKey(string key);
         Task<processInstanceModel> ProcessStart(string id);
 
@@ -28,7 +28,10 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm
         Task<IEnumerable<TaskModel>> GetTaskByCandidateGroup(string candidateGroup);
         Task<IEnumerable<TaskModel>> GetTaskByCandidateGroups(long[] candidateGroupIds, string processInstanceId = "", bool unassigned = false);
         Task<IEnumerable<TaskModel>> GetTaskListByInstanceId(string InstanceId);
-       Task<TaskModel> GetTaskById(string id);
+        Task<TaskModel> GetTaskById(string id);
 
+        Task<IEnumerable<IdentityLink>> GetIdentityLinks(string taskId);
+
+        Task<IEnumerable<TaskModel>> GetAllTasksAfter(DateTime after);
     }
 }

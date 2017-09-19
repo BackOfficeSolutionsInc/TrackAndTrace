@@ -2,7 +2,7 @@
     var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
     var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
     var datepicker = (ViewBag.AddDatePicker == null || ((bool)ViewBag.AddDatePicker) == true);
-    var selector = ViewBag.Selector as string ?? "model.CoreProcesses";
+    var selector = ViewBag.Selector as string ?? "model.CoreProcess.Processes";
     var filter = ViewBag.Filter as string ?? "";// "| filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate)";
 
     var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
