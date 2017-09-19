@@ -26,8 +26,9 @@ namespace AmazonSDK {
     class Program {
         static void Main(string[] args) {
             while (true) {
-                Thread t = new Thread(Scheduler);
-                t.Start();
+                Scheduler();
+                //Thread t = new Thread(Scheduler);
+                //t.Start();
                 Thread.Sleep(500);
             }
             //Scheduler();
