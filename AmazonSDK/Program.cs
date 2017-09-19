@@ -26,12 +26,10 @@ namespace AmazonSDK {
     class Program {
         static void Main(string[] args) {
             while (true) {
-                Console.WriteLine("Start: " + DateTime.Now.ToString("MM_dd_yyyy_HH_mm_ss"));
                 Thread t = new Thread(Scheduler);
                 t.Start();
-                Thread.Sleep(5000);
+                Thread.Sleep(500);
             }
-
             //Scheduler();
         }
 
@@ -39,79 +37,68 @@ namespace AmazonSDK {
             LogDetails("Start", "INFO");
             List<string> receiptHandleList = new List<string>();
             List<MessageQueueModel> getMessages = AsyncHelper.RunSync<List<MessageQueueModel>>(() => GetMessages());  //get List of Messages
-            LogDetails("Get list of messages", "INFO");
             LogDetails("Get list of messages count", getMessages.Count().ToString());
 
-            foreach (var item in getMessages) {
-                LogDetails("Loop start", "INFO");
+            try {
+                foreach (var item in getMessages) {
+                    MarkStarted(item);
+                    try {
+                        //Delete Message from SQS
+                        AsyncHelper.RunSync(() => DeleteMessage(item.ReceiptHandle));
+                        LogDetails("Delete Message from SQS --> Complete ", "INFO");
 
-                //Mark Started
-                LogDetails("MarkStarted --> Start ", "INFO");
-                MarkStarted(item);
-                LogDetails("MarkStarted --> Complete ", "INFO");
+                        if (item.RequestType == RequestTypeEnum.isHookRegistryAction) { // this is hook registry process
+                                                                                        // exceute action
+                                                                                        //var deserializedLambda1 = JsonNetAdapter.Deserialize<SerializableHook>(item.SerializedModel);
 
-                try {
-                    //Delete Message from SQS
-                    LogDetails("Delete Message from SQS --> Start ", "INFO");
-                    AsyncHelper.RunSync(() => DeleteMessage(item.ReceiptHandle));
-                    LogDetails("Delete Message from SQS --> Complete ", "INFO");
+                            //dynamic func = JsonNetAdapter.Deserialize(deserializedLambda1.lambda.ToString(), deserializedLambda1.type);
 
-                    if (item.RequestType == RequestTypeEnum.isHookRegistryAction) { // this is hook registry process
-                        // exceute action
-                        //var deserializedLambda1 = JsonNetAdapter.Deserialize<SerializableHook>(item.SerializedModel);
+                            //dynamic func = JsonNetAdapter.Deserialize(item.Model.ToString(), item.type);
 
-                        //dynamic func = JsonNetAdapter.Deserialize(deserializedLambda1.lambda.ToString(), deserializedLambda1.type);
+                            //if (item.type.FullName == "ITodoHook TodoHookModel") {
+                            //    HooksRegistry.RegisterHook(new TodoWebhook());
+                            //    HooksRegistry.GetHooks<ITodoHook>().ForEach(x => {
+                            //        try {
+                            //            func.Compile()(x);
+                            //        } catch (Exception e) {
+                            //            throw;
+                            //        }
+                            //    });
 
-                        //dynamic func = JsonNetAdapter.Deserialize(item.Model.ToString(), item.type);
+                            //    //func.Compile();
+                            //    //HooksRegistry.Each<ITodoHook>(func);
+                            //}
+                            //if (item.type.FullName == "IIssueHook IssueHookModel") {
+                            //    HooksRegistry.Each<IIssueHook>(func);
+                            //}
 
-                        //if (item.type.FullName == "ITodoHook TodoHookModel") {
-                        //    HooksRegistry.RegisterHook(new TodoWebhook());
-                        //    HooksRegistry.GetHooks<ITodoHook>().ForEach(x => {
-                        //        try {
-                        //            func.Compile()(x);
-                        //        } catch (Exception e) {
-                        //            throw;
-                        //        }
-                        //    });
+                        } else if (item.RequestType == RequestTypeEnum.isHTTPRequest) {
+                            //Process API
+                            //var status = AsyncHelper.RunSync<HttpStatusCode>(() => ApiRequest(new MessageQueueModel() { UserName = "kunal@mytractiontools.com", ApiUrl = "http://app-tractiontools-dev.us-west-2.elasticbeanstalk.com/api/v0/todo/users/mine" }));
+                            var status = AsyncHelper.RunSync<HttpStatusCode>(() => ApiRequest(item));
 
-                        //    //func.Compile();
-                        //    //HooksRegistry.Each<ITodoHook>(func);
-                        //}
-                        //if (item.type.FullName == "IIssueHook IssueHookModel") {
-                        //    HooksRegistry.Each<IIssueHook>(func);
-                        //}
-
-                    } else if (item.RequestType == RequestTypeEnum.isHTTPRequest) {
-                        //Process API
-                        LogDetails("ApiRequest --> Start ", "INFO");
-                        //var status = AsyncHelper.RunSync<HttpStatusCode>(() => ApiRequest(new MessageQueueModel() { UserName = "kunal@mytractiontools.com", ApiUrl = "http://app-tractiontools-dev.us-west-2.elasticbeanstalk.com/api/v0/todo/users/mine" }));
-                        var status = AsyncHelper.RunSync<HttpStatusCode>(() => ApiRequest(item));
-                        LogDetails("ApiRequest --> Complete ", "INFO");
+                            // Mark Complete
+                            if (status != HttpStatusCode.OK) {
+                                throw new Exception("An error ocurred during HTTP Request." + " Status Code:" + status);
+                            }
+                        }
 
                         // Mark Complete
-                        if (status != HttpStatusCode.OK) {
-                            throw new Exception("An error ocurred during HTTP Request." + " Status Code:" + status);
-                        }
+                        MarkComplete(item);
+                    } catch (Exception ex) {
+                        AsyncHelper.RunSync(() => SendMessage(item));
+                        LogDetails(ex.Message, "ERROR");
                     }
-
-                    // Mark Complete
-                    LogDetails("MarkComplete --> Start ", "INFO");
-                    MarkComplete(item);
-                    LogDetails("MarkComplete --> Complete ", "INFO");
-                } catch (Exception ex) {
-                    AsyncHelper.RunSync(() => SendMessage(item));
-                    LogDetails(ex.Message, "ERROR");
-
                 }
+            } catch (Exception ex) {
+                LogDetails(ex.Message, "ERROR");
             }
+
         }
 
         private static void MarkStarted(MessageQueueModel model) {
-
             using (var s = NHibernate.HibernateSession.GetCurrentSession()) {
-                LogDetails("session open", "INFO");
                 using (var tx = s.BeginTransaction(System.Data.IsolationLevel.Serializable)) {
-                    LogDetails("transaction lock", "INFO");
                     try {
                         var getMessage = s.QueryOver<MessageQueue>().Where(x => x.IdentifierId == model.Identifier
                         && x.UserName == model.UserName
@@ -150,7 +137,6 @@ namespace AmazonSDK {
         private static async Task<HttpStatusCode> ApiRequest(MessageQueueModel model) {
             try {
                 using (var s = NHibernate.HibernateSession.GetCurrentSession(true, "_RV")) {
-                    LogDetails("session open", "INFO");
                     using (var tx = s.BeginTransaction()) {
                         LogDetails("Generate token", "INFO");
                         //get token
@@ -202,7 +188,6 @@ namespace AmazonSDK {
         }
         private static void MarkComplete(MessageQueueModel model) {
             using (var s = NHibernate.HibernateSession.GetCurrentSession()) {
-                LogDetails("session open", "INFO");
                 using (var tx = s.BeginTransaction()) {
                     try {
                         LogDetails("Update data [MessageQueue] to DB--start", "INFO");

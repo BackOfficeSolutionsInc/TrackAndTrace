@@ -303,7 +303,7 @@ namespace RadialReview.Utilities {
             public string Url { get; set; }
             public string Username { get; set; }
             public string Password { get; set; }
-            public bool IsLocal { get; set; }
+            public bool IsLocal { get; internal set; }
         }
 
 		public static CamundaCredentials GetCamundaServer() {
@@ -320,13 +320,7 @@ namespace RadialReview.Utilities {
                     credentials.Url = "http://localhost:8080/engine-rest";
                     credentials.IsLocal = true;
                     return credentials;
-                case Env.production:
-                    credentials.IsLocal = false;
-                    credentials.Url = GetAppSetting("Camunda_Url");
-                    credentials.Username = GetAppSetting("Camunda_Username");
-                    credentials.Password = GetAppSetting("Camunda_Password");
-                    return credentials;
-                default:
+				default:
 					throw new ArgumentOutOfRangeException();
 			}
 		}

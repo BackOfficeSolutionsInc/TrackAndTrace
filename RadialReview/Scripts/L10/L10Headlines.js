@@ -169,7 +169,7 @@ function constructHeadlineRow(headline) {
 
 	if (Model.MeetingId == -1)
 		Model.MeetingId= window.MeetingId || Model.MeetingId;
-	debugger;
+
 	if (!Model.Message)
 		Model.Message = "";
 	//Accountable user name populated?

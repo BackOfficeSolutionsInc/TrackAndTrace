@@ -64,7 +64,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 
             //var getProcessDefDetail = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.Id == localId).SingleOrDefault();
             var processDefDetail = s.Get<ProcessDef_Camunda>(coreProcessId);
-            if (processDefDetail == null || processDefDetail.DeleteTime != null) {
+            if (processDefDetail==null || processDefDetail.DeleteTime != null) {
                 throw new PermissionsException("Process doesn't exist.");
             }
 
@@ -78,8 +78,13 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
             s.Update(getProcessDefFileDetails);
 
             //get process def
+            //get processDefId
+            XDocument xmlDocument = await BpmnUtility.GetBpmnFileXmlDoc(getProcessDefFileDetails.FileKey);
+            var getElement = xmlDocument.Root.Element(BpmnUtility.BPMN_NAMESPACE + "process");
+            var processDefKey = getElement.GetId();
             //var getProcessDef = await commClass.GetProcessDefByKey(key.Replace(" ", "") + localId.Replace("-", ""));
-            var processDef = await commClass.GetProcessDefByKey(deplyomentName.Replace(" ", "") + "bpmn_" + coreProcessId);
+            //var processDef = await commClass.GetProcessDefByKey(deplyomentName.Replace(" ", "") + "bpmn_" + coreProcessId);
+            var processDef = await commClass.GetProcessDefByKey(processDefKey);
 
             if (processDefDetail != null) {
                 processDefDetail.CamundaId = processDef.GetId();
@@ -522,15 +527,15 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
             }
 
 
-            //var candidateGroups = String.Join(",", candidateGroupIds.Select(x => "rgm_" + x));
-            CommClass comClass = new CommClass();
-            var getUsertaskList = await comClass.GetTaskByCandidateGroups(updatedCandiateGroupIdsList.ToArray(), unassigned: unassigned);
+                    //var candidateGroups = String.Join(",", candidateGroupIds.Select(x => "rgm_" + x));
+                    CommClass comClass = new CommClass();
+                    var getUsertaskList = await comClass.GetTaskByCandidateGroups(updatedCandiateGroupIdsList.ToArray(), unassigned: unassigned);
 
-            foreach (var item in getUsertaskList) {
-                taskList.Add(TaskViewModel.Create(item));
-            }
+                    foreach (var item in getUsertaskList) {
+                        taskList.Add(TaskViewModel.Create(item));
+                    }
             return taskList;
-        }
+            }
 
         public async Task<List<TaskViewModel>> GetVisibleTasksForUser(ISession s, PermissionsUtility perms, long userId) {
             var userTaskDelay = GetTaskListByUserId(perms, userId);
@@ -608,12 +613,12 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
             perms.CanViewTasksForCandidateGroup(userId);
             List<TaskViewModel> taskList = new List<TaskViewModel>();
 
-            string _userId = "u_" + userId;
-            CommClass comClass = new CommClass();
-            var getUsertaskList = await comClass.GetTaskListByAssignee(_userId);
+                    string _userId = "u_" + userId;
+                    CommClass comClass = new CommClass();
+                    var getUsertaskList = await comClass.GetTaskListByAssignee(_userId);
 
-            foreach (var item in getUsertaskList) {
-                taskList.Add(TaskViewModel.Create(item));
+                    foreach (var item in getUsertaskList) {
+                        taskList.Add(TaskViewModel.Create(item));
             }
             return taskList;
         }
@@ -643,15 +648,14 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
 
         public async Task<TaskViewModel> GetTaskById_Unsafe(string taskId) {
             TaskViewModel output = null;
-            CommClass comClass = new CommClass();
-            var task = await comClass.GetTaskById(taskId);
-            if (task != null) {
-                output = TaskViewModel.Create(task);
-            }
+                    CommClass comClass = new CommClass();
+                    var task = await comClass.GetTaskById(taskId);
+                    if (task != null) {
+                        output = TaskViewModel.Create(task);
+                    }
 
             return output;
         }
-
 
         /// <summary>
         /// Note: The difference with claim a task is that this method does not check if the task already has a user assigned to it.
@@ -739,7 +743,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
         //}
 
         public async Task<bool> TaskComplete(UserOrganizationModel caller, string taskId) {
-            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     var perms = PermissionsUtility.Create(s, caller);
                     // check if user is member of candidategroup in task
@@ -754,7 +758,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                     throw new PermissionsException("Could not complete task.");
 
                 }
-            }            
+            }
         }
 
 
@@ -861,19 +865,19 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
         }
 
         public IEnumerable<ProcessDef_Camunda> GetVisibleProcessDefinitionList(ISession s, PermissionsUtility perms, long orgId) {
-            perms.ViewOrganization(orgId);
+                    perms.ViewOrganization(orgId);
 
-            IEnumerable<ProcessDef_Camunda> processDefList = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.OrgId == orgId).List();
-            List<ProcessDef_Camunda> finalList = new List<ProcessDef_Camunda>();
-            foreach (var item in processDefList.ToList()) {
-                try {
-                    perms.CanView(PermItem.ResourceType.CoreProcess, item.LocalId);
-                    finalList.Add(item);
-                } catch (Exception) {
-                }
-            }
+                    IEnumerable<ProcessDef_Camunda> processDefList = s.QueryOver<ProcessDef_Camunda>().Where(x => x.DeleteTime == null && x.OrgId == orgId).List();
+                    List<ProcessDef_Camunda> finalList = new List<ProcessDef_Camunda>();
+                    foreach (var item in processDefList.ToList()) {
+                        try {
+                            perms.CanView(PermItem.ResourceType.CoreProcess, item.LocalId);
+                            finalList.Add(item);
+                        } catch (Exception) {
+                        }
+                    }
 
-            return finalList;
+                    return finalList;
         }
 
         public ProcessDef_Camunda GetProcessDefById(UserOrganizationModel caller, long processDefId) {

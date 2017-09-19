@@ -5,17 +5,20 @@
     ViewBag.Title = "UserTask";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
 @section top{
     <div class="jumbotron">
         <h1>List of Task</h1>
     </div>
 }
+
 <br />
 <div class="row">
     <div class="col-sm-8 col-lg-12">
         <h1>Assigned Tasks</h1>
         <div id="duration-table"></div>
-        @using (Html.BeginScripts()) {
+        @using (Html.BeginScripts())
+        {
             <script>
 
                 var datas = @Html.ArrayToString(Model.Item1);
@@ -26,17 +29,13 @@
                     //clickEdit: "/Process/Edit/{0}",
                     nodataText: "No Process. Click add to create one.",
                     cells: [
-                        //{ name: "Id", classes: "", contents: function (x) { return x.Id; } },
-                        { name:"",classes:"button-width", contents: function(x){
-                            return "<a href='/CoreProcess/Process/CompleteTask/" + x.Id +"' type='button' class='btn btn-warning'"  /*+ x.Id*/ + "'>Complete</a>";
-                        }
-                        },
-                        { name: "", classes: "fullWidth", contents: function (x) { return x.name; } },
+                        { name: "Id", classes: "", contents: function (x) { return x.Id; } },
+                        { name: "Name", classes: "", contents: function (x) { return x.name; } },
                         {
-                            name: "", classes: "", contents: function (x) {
-                                return "<a href='/CoreProcess/Process/UnclaimTask/" + x.Id +"' type='button' class='btn btn-warning'"  /*+ x.Id*/ + "'>Unclaim</a>"
-                                //+ "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" + "<a href='javascript:void(0);' type='button' class='btn btn-warning'>UnClaim</a>"
-                            }
+                            name: "Action", classes: "", contents: function (x) {
+                                return "<a href='/CoreProcess/Process/UnclaimTask/" + x.Id +"' type='button' class='btn btn-warning'"  + x.Id + "'>Unclaim</a>"
+                            //+ "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" + "<a href='javascript:void(0);' type='button' class='btn btn-warning'>UnClaim</a>"
+                        }
                         },
                     ],
                     nodataText: "No Task found."
@@ -47,13 +46,16 @@
 
 
             </script>}
+
     </div>
 </div>
+
 <div class="row">
     <div class="col-sm-8 col-lg-12">
         <h1>All Tasks</h1>
         <div id="groupTaskList-Table"></div>
-        @using (Html.BeginScripts()) {
+        @using (Html.BeginScripts())
+        {
             <script>
 
                 var datas = @Html.ArrayToString(Model.Item2);
@@ -64,16 +66,14 @@
                     //clickEdit: "/Process/Edit/{0}",
                     nodataText: "No Process. Click add to create one.",
                     cells: [
-                   //     { name: "Id", classes: "", contents: function (x) { return x.Id; } },
-
-                           {
-                               name: "", classes: "button-width", contents: function (x) {
-                                   return "<a href='/CoreProcess/Process/AssignTask/" + x.Id+"' type='button' class='btn btn-warning'"  + x.Id + "'>Claim</a>"
-                                   //+ "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" + "<a href='javascript:void(0);' type='button' class='btn btn-warning'>UnClaim</a>"
-                               }
-                           },
-                           { name: "", classes: "fullWidth", contents: function (x) { return x.name; } }
-
+                        { name: "Id", classes: "", contents: function (x) { return x.Id; } },
+                        { name: "Name", classes: "", contents: function (x) { return x.name; } },
+                        {
+                            name: "Action", classes: "", contents: function (x) {
+                                return "<a href='/CoreProcess/Process/AssignTask/" + x.Id+"' type='button' class='btn btn-warning'"  + x.Id + "'>Claim</a>"
+                            //+ "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" + "<a href='javascript:void(0);' type='button' class='btn btn-warning'>UnClaim</a>"
+                        }
+                        },
                     ],
                     nodataText: "No Task found."
 
@@ -83,9 +83,12 @@
 
 
             </script>}
+
     </div>
 </div>
-@using (Html.BeginStyles()) {
+
+@using (Html.BeginStyles())
+{
     @Styles.Render("~/Content/MeetingEdit")
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet" />
     <style>
@@ -106,13 +109,11 @@
             border-color: rgb(239,118,34);
             border-width: 1px;
             font-weight: bold;
-            color: rgb(239,118,34) !important;
-            width:105px;
         }
 
             .btn-warning:hover:not(.nohover) {
-                background-color: rgb(239,118,34);
-                color: #fff !important;
+                color: black;
+                background-color: #fff;
                 border-color: rgb(239,118,34);
             }
 
@@ -140,20 +141,18 @@
         .grayRow {
             /*background-color: #f2f2f2;*/
         }
-
-        .button-width {
-            min-width: 110px;
-            text-align: center;
-        }
     </style>
 }
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-@*<script>
-        $(window).on('load', function () {
-            $("table thead tr th").next().next().attr("colspan", "3");
-            //$("table tbody tr td").next().next().attr("colspan", "0");
-            $("table tbody tr td").next().next().next().attr("width", "50px");
-        });
 
-    </script>*@
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    $(window).on('load', function () {
+        $("table thead tr th").next().next().attr("colspan", "3");
+        //$("table tbody tr td").next().next().attr("colspan", "0");
+        $("table tbody tr td").next().next().next().attr("width", "50px");
+    });
+
+</script>
+
