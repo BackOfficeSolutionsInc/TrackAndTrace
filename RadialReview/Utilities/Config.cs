@@ -181,7 +181,9 @@ namespace RadialReview.Utilities {
         public static string GetUpdateTaskUrl() {
             var url = "http://localhost:44300/coreprocess/process/UpdateTasks";
             if (!IsLocal()) {
-                url = "https://tractiontools.com/coreprocess/process/UpdateTasks";
+                url = GetAppSetting("UpdateTaskUrl", null);
+                if (string.IsNullOrWhiteSpace(url))
+                    throw new Exception("UpdateTaskUrl not found in file.");
             }
             return url;
         }
@@ -194,6 +196,27 @@ namespace RadialReview.Utilities {
                     throw new Exception("HostName not found in file.");
             }
             return url;
+        }
+
+        public static string GetSQSQueueURL() {
+            var url = GetAppSetting("SQS_QueueURL", null);
+            if (string.IsNullOrWhiteSpace(url))
+                throw new Exception("SQS_QueueURL not found in file.");
+            return url;
+        }
+
+        public static string GetSQSAccessKey() {
+            var access_key = GetAppSetting("SQS_AccessKey", null);
+            if (string.IsNullOrWhiteSpace(access_key))
+                throw new Exception("SQS_AccessKey not found in file.");
+            return access_key;
+        }
+
+        public static string GetSQSSecretKey() {
+            var secret_key = GetAppSetting("SQS_SecretKey", null);
+            if (string.IsNullOrWhiteSpace(secret_key))
+                throw new Exception("SQS_SecretKey not found in file.");
+            return secret_key;
         }
 
         //public static string PeopleAreaName() {

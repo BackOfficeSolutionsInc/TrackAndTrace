@@ -172,11 +172,11 @@ namespace AmazonSDK {
                         if (!string.IsNullOrEmpty(tokenModel.access_token)) {
                             var apiUrl = model.ApiUrl ?? "";
                             if (!string.IsNullOrEmpty(apiUrl)) {
-                                LogDetails("Update Task Calling Api", "INFO");
+                                LogDetails("Calling Api", "INFO");
                                 client = new HttpClient();
                                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenModel.access_token);
                                 HttpResponseMessage response = await client.GetAsync(apiUrl);
-                                LogDetails("Update Task Calling Api complete", "INFO");
+                                LogDetails("Calling Api complete", "INFO");
                                 return response.StatusCode;
                             }
                         }
@@ -225,7 +225,7 @@ namespace AmazonSDK {
 
                         if (!string.IsNullOrEmpty(tokenModel.access_token)) {
                             var apiUrl = Config.GetUpdateTaskUrl();
-                            LogDetails("Calling Api", "INFO");
+                            LogDetails("Update Task Calling Api", "INFO");
                             client = new HttpClient();
                             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenModel.access_token);
                             HttpResponseMessage response = await client.GetAsync(apiUrl);
@@ -233,13 +233,13 @@ namespace AmazonSDK {
                             //using (var reader = new StreamReader(await responseContent2.ReadAsStreamAsync())) {
                             //    var result1 = reader.ReadToEnd();
                             //}
-                            LogDetails("Calling Api complete", "INFO");
+                            LogDetails("Update Task Calling Api complete", "INFO");
                             return response.StatusCode;
                         }
                     }
                 }
             } catch (Exception ex) {
-                throw ex;
+                LogDetails(ex.Message, "ERROR");
             }
             return HttpStatusCode.NotFound;
         }
