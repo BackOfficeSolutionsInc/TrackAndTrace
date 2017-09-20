@@ -27,6 +27,7 @@ namespace AmazonSDK {
         static void Main(string[] args) {
             while (true) {
                 Scheduler();
+                AsyncHelper.RunSync<HttpStatusCode>(() => UpdateTaskRequest());
                 //Thread t = new Thread(Scheduler);
                 //t.Start();
                 Thread.Sleep(500);
@@ -83,7 +84,6 @@ namespace AmazonSDK {
                                 throw new Exception("An error ocurred during HTTP Request." + " Status Code:" + status);
                             }
                         }
-
                         // Mark Complete
                         MarkComplete(item);
                     } catch (Exception ex) {
@@ -157,7 +157,7 @@ namespace AmazonSDK {
                         param.Add(new KeyValuePair<string, string>("password", encrypt_key));
                         param.Add(new KeyValuePair<string, string>("grant_type", "password"));
                         param.Add(new KeyValuePair<string, string>("client_id", "self"));
-                        var url = System.Configuration.ConfigurationManager.AppSettings["HostName"];
+                        var url = Config.GetScedulerHostUrl(); //  System.Configuration.ConfigurationManager.AppSettings["HostName"];
                         var req = new HttpRequestMessage(HttpMethod.Post, url) { Content = new FormUrlEncodedContent(param) };
                         TokenModel tokenModel = new TokenModel();
                         HttpResponseMessage response1 = await client.SendAsync(req);
@@ -172,11 +172,11 @@ namespace AmazonSDK {
                         if (!string.IsNullOrEmpty(tokenModel.access_token)) {
                             var apiUrl = model.ApiUrl ?? "";
                             if (!string.IsNullOrEmpty(apiUrl)) {
-                                LogDetails("Calling Api", "INFO");
+                                LogDetails("Update Task Calling Api", "INFO");
                                 client = new HttpClient();
                                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenModel.access_token);
                                 HttpResponseMessage response = await client.GetAsync(apiUrl);
-                                LogDetails("Calling Api complete", "INFO");
+                                LogDetails("Update Task Calling Api complete", "INFO");
                                 return response.StatusCode;
                             }
                         }
@@ -187,6 +187,64 @@ namespace AmazonSDK {
             }
             return HttpStatusCode.NotFound;
         }
+
+
+        private static async Task<HttpStatusCode> UpdateTaskRequest() {
+            try {
+                using (var s = NHibernate.HibernateSession.GetCurrentSession(true, "_RV")) {
+                    using (var tx = s.BeginTransaction()) {
+                        LogDetails("Generate token", "INFO");
+                        //get token
+                        string pwd = Config.SchedulerSecretKey() + "_" + Config.UpdateTaskUserName();
+                        string encrypt_key = Crypto.EncryptStringAES(pwd, Config.SchedulerSecretKey());
+
+                        //strore key to db
+                        TokenIdentifier tokenIdentifierModel = new TokenIdentifier();
+                        tokenIdentifierModel.TokenKey = encrypt_key;
+                        s.Save(tokenIdentifierModel);
+                        tx.Commit();
+                        s.Flush();
+
+                        var client = new HttpClient();
+                        var param = new List<KeyValuePair<string, string>>();
+                        param.Add(new KeyValuePair<string, string>("username", Config.UpdateTaskUserName())); // hash it 
+                        param.Add(new KeyValuePair<string, string>("password", encrypt_key));
+                        param.Add(new KeyValuePair<string, string>("grant_type", "password"));
+                        param.Add(new KeyValuePair<string, string>("client_id", "self"));
+                        var url = Config.GetScedulerHostUrl(); // System.Configuration.ConfigurationManager.AppSettings["HostName"];
+                        var req = new HttpRequestMessage(HttpMethod.Post, url) { Content = new FormUrlEncodedContent(param) };
+                        TokenModel tokenModel = new TokenModel();
+                        HttpResponseMessage response1 = await client.SendAsync(req);
+
+                        LogDetails("Token process complete", "INFO");
+                        HttpContent responseContent1 = response1.Content;
+                        using (var reader = new StreamReader(await responseContent1.ReadAsStreamAsync())) {
+                            var result1 = reader.ReadToEnd();
+                            tokenModel = Newtonsoft.Json.JsonConvert.DeserializeObject<TokenModel>(result1.ToString());
+                        }
+
+                        if (!string.IsNullOrEmpty(tokenModel.access_token)) {
+                            var apiUrl = Config.GetUpdateTaskUrl();
+                            LogDetails("Calling Api", "INFO");
+                            client = new HttpClient();
+                            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenModel.access_token);
+                            HttpResponseMessage response = await client.GetAsync(apiUrl);
+                            //HttpContent responseContent2 = response.Content;
+                            //using (var reader = new StreamReader(await responseContent2.ReadAsStreamAsync())) {
+                            //    var result1 = reader.ReadToEnd();
+                            //}
+                            LogDetails("Calling Api complete", "INFO");
+                            return response.StatusCode;
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                throw ex;
+            }
+            return HttpStatusCode.NotFound;
+        }
+
+
         private static void MarkComplete(MessageQueueModel model) {
             using (var s = NHibernate.HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {

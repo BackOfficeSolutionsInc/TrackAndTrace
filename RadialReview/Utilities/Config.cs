@@ -33,16 +33,16 @@ namespace RadialReview.Utilities {
 
         public static bool RunChromeExt() {
             switch (GetEnv()) {
-                case Env.local_test_sqlite:
-                    return true;
-                case Env.local_sqlite:
-                    return false;
-                case Env.local_mysql:
-                    return GetAppSetting("RunExt", "false").ToBooleanJS();
-                case Env.production:
-                    return false;
-                default:
-                    throw new ArgumentOutOfRangeException();
+            case Env.local_test_sqlite:
+            return true;
+            case Env.local_sqlite:
+            return false;
+            case Env.local_mysql:
+            return GetAppSetting("RunExt", "false").ToBooleanJS();
+            case Env.production:
+            return false;
+            default:
+            throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -171,6 +171,31 @@ namespace RadialReview.Utilities {
             return found;
         }
 
+        public static string UpdateTaskUserName() {
+            var found = GetAppSetting("UpdateTaskUserName", null);
+            if (string.IsNullOrWhiteSpace(found))
+                throw new Exception("UpdateTask UserName not found in file.");
+            return found;
+        }
+
+        public static string GetUpdateTaskUrl() {
+            var url = "http://localhost:44300/coreprocess/process/UpdateTasks";
+            if (!IsLocal()) {
+                url = "https://tractiontools.com/coreprocess/process/UpdateTasks";
+            }
+            return url;
+        }
+
+        public static string GetScedulerHostUrl() {
+            var url = "http://localhost:44300/token";
+            if (!IsLocal()) {
+                url = GetAppSetting("HostName", null);
+                if (string.IsNullOrWhiteSpace(url))
+                    throw new Exception("HostName not found in file.");
+            }
+            return url;
+        }
+
         //public static string PeopleAreaName() {
         //    return "People";
         //}
@@ -184,29 +209,29 @@ namespace RadialReview.Utilities {
             var env = GetEnv();
 
             switch (env) {
-                case Env.local_test_sqlite:
-                    goto case Env.local_sqlite;
-                case Env.local_mysql:
-                    goto case Env.local_sqlite;
-                case Env.local_sqlite: {
-                        var dir = Path.Combine(Path.GetTempPath(), "TractionTools");
-                        var file = Path.Combine(dir, "dbversion" + env + ".txt");
-                        if (!Directory.Exists(dir))
-                            Directory.CreateDirectory(dir);
-                        if (!File.Exists(file)) {
-                            File.Create(file);
-                            while (!File.Exists(file)) {
-                                Thread.Sleep(100);
-                            }
-                        }
-                        if (version == File.ReadAllText(file))
-                            return false;
-                        return true;
+            case Env.local_test_sqlite:
+            goto case Env.local_sqlite;
+            case Env.local_mysql:
+            goto case Env.local_sqlite;
+            case Env.local_sqlite: {
+                var dir = Path.Combine(Path.GetTempPath(), "TractionTools");
+                var file = Path.Combine(dir, "dbversion" + env + ".txt");
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+                if (!File.Exists(file)) {
+                    File.Create(file);
+                    while (!File.Exists(file)) {
+                        Thread.Sleep(100);
                     }
-                case Env.production:
-                    return true;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                }
+                if (version == File.ReadAllText(file))
+                    return false;
+                return true;
+            }
+            case Env.production:
+            return true;
+            default:
+            throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -221,26 +246,26 @@ namespace RadialReview.Utilities {
                     }
                 }
                 switch (GetEnv()) {
-                    case Env.local_sqlite:
-                        return "https://localhost:44300/";
-                    case Env.local_mysql:
-                        return "https://localhost:44300/";
-                    case Env.production:
-                        if (organization == null)
-                            return "https://traction.tools/";
+                case Env.local_sqlite:
+                return "https://localhost:44300/";
+                case Env.local_mysql:
+                return "https://localhost:44300/";
+                case Env.production:
+                if (organization == null)
+                    return "https://traction.tools/";
 
-                        switch (organization.Settings.Branding) {
-                            case BrandingType.RadialReview:
-                                return "https://traction.tools/";
-                            case BrandingType.RoundTable:
-                                return "https://traction.tools/";
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
-                    case Env.local_test_sqlite:
-                        return "https://localhost:44300/";
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                switch (organization.Settings.Branding) {
+                case BrandingType.RadialReview:
+                return "https://traction.tools/";
+                case BrandingType.RoundTable:
+                return "https://traction.tools/";
+                default:
+                throw new ArgumentOutOfRangeException();
+                }
+                case Env.local_test_sqlite:
+                return "https://localhost:44300/";
+                default:
+                throw new ArgumentOutOfRangeException();
                 }
             });
             return baseUrl() + (append ?? "").TrimStart('/');
@@ -250,12 +275,12 @@ namespace RadialReview.Utilities {
             var org = organization.NotNull(x => x);
             if (org != null) {
                 switch (org.Settings.Branding) {
-                    case BrandingType.RadialReview:
-                        return GetAppSetting("ProductName_Review", "Traction® Tools");
-                    case BrandingType.RoundTable:
-                        return GetAppSetting("ProductName_Roundtable", "Traction® Tools");
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                case BrandingType.RadialReview:
+                return GetAppSetting("ProductName_Review", "Traction® Tools");
+                case BrandingType.RoundTable:
+                return GetAppSetting("ProductName_Roundtable", "Traction® Tools");
+                default:
+                throw new ArgumentOutOfRangeException();
                 }
             }
             try {
@@ -276,12 +301,12 @@ namespace RadialReview.Utilities {
         public static string ReviewName(OrganizationModel organization = null) {
             if (organization != null) {
                 switch (organization.Settings.Branding) {
-                    case BrandingType.RadialReview:
-                        return GetAppSetting("ReviewName_Review", "Eval");
-                    case BrandingType.RoundTable:
-                        return GetAppSetting("ReviewName_Roundtable", "Eval");
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                case BrandingType.RadialReview:
+                return GetAppSetting("ReviewName_Review", "Eval");
+                case BrandingType.RoundTable:
+                return GetAppSetting("ReviewName_Roundtable", "Eval");
+                default:
+                throw new ArgumentOutOfRangeException();
                 }
             }
             try {
@@ -326,25 +351,25 @@ namespace RadialReview.Utilities {
                     credentials.Username = GetAppSetting("Camunda_Username");
                     credentials.Password = GetAppSetting("Camunda_Password");
                     return credentials;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
 
-        public static bool IsLocal() {
-            switch (GetEnv()) {
-                case Env.local_test_sqlite:
-                    return true;
-                case Env.local_sqlite:
-                    return true;
-                case Env.local_mysql:
-                    return true;
-                case Env.production:
-                    return false;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
+		public static bool IsLocal() {
+			switch (GetEnv()) {
+				case Env.local_test_sqlite:
+					return true;
+				case Env.local_sqlite:
+					return true;
+				case Env.local_mysql:
+					return true;
+				case Env.production:
+					return false;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
 
         public static bool ShouldDeploy() {
             return !IsLocal();
@@ -383,16 +408,16 @@ namespace RadialReview.Utilities {
 
         public static bool OptimizationEnabled() {
             switch (GetEnv()) {
-                case Env.local_sqlite:
-                    return GetAppSetting("OptimizeBundles", "False").ToBoolean();
-                case Env.local_mysql:
-                    return GetAppSetting("OptimizeBundles", "False").ToBoolean();
-                case Env.production:
-                    return true;
-                case Env.local_test_sqlite:
-                    return GetAppSetting("OptimizeBundles", "True").ToBoolean();
-                default:
-                    throw new ArgumentOutOfRangeException();
+            case Env.local_sqlite:
+            return GetAppSetting("OptimizeBundles", "False").ToBoolean();
+            case Env.local_mysql:
+            return GetAppSetting("OptimizeBundles", "False").ToBoolean();
+            case Env.production:
+            return true;
+            case Env.local_test_sqlite:
+            return GetAppSetting("OptimizeBundles", "True").ToBoolean();
+            default:
+            throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -408,14 +433,14 @@ namespace RadialReview.Utilities {
 
             public static string GetUserAgent() {
                 switch (GetEnv()) {
-                    case Env.local_mysql:
-                        goto case Env.local_sqlite;
-                    case Env.local_sqlite:
-                        return GetAppSetting("BasecampTestApp");
-                    case Env.production:
-                        return GetAppSetting("BasecampApp");
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                case Env.local_mysql:
+                goto case Env.local_sqlite;
+                case Env.local_sqlite:
+                return GetAppSetting("BasecampTestApp");
+                case Env.production:
+                return GetAppSetting("BasecampApp");
+                default:
+                throw new ArgumentOutOfRangeException();
                 }
             }
 
@@ -423,20 +448,20 @@ namespace RadialReview.Utilities {
                 string key, secret;//, app;
                 var redirect = BaseUrl(organization) + "Callback/Basecamp";
                 switch (GetEnv()) {
-                    case Env.local_mysql:
-                        goto case Env.local_sqlite;
-                    case Env.local_sqlite: {
-                            key = GetAppSetting("BasecampTestKey");
-                            secret = GetAppSetting("BasecampTestSecret");
-                            break;
-                        }
-                    case Env.production: {
-                            key = GetAppSetting("BasecampKey");
-                            secret = GetAppSetting("BasecampSecret");
-                            break;
-                        }
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                case Env.local_mysql:
+                goto case Env.local_sqlite;
+                case Env.local_sqlite: {
+                    key = GetAppSetting("BasecampTestKey");
+                    secret = GetAppSetting("BasecampTestSecret");
+                    break;
+                }
+                case Env.production: {
+                    key = GetAppSetting("BasecampKey");
+                    secret = GetAppSetting("BasecampSecret");
+                    break;
+                }
+                default:
+                throw new ArgumentOutOfRangeException();
                 }
                 return new BCXAPI.Service(key, secret, redirect, GetUserAgent());
             }
@@ -444,16 +469,16 @@ namespace RadialReview.Utilities {
 
         public static bool SendEmails() {
             switch (GetEnv()) {
-                case Env.local_mysql:
-                    return GetAppSetting("SendEmail_Debug", "false").ToBooleanJS();
-                case Env.local_sqlite:
-                    return GetAppSetting("SendEmail_Debug", "false").ToBooleanJS();
-                case Env.production:
-                    return true;
-                case Env.local_test_sqlite:
-                    return false;
-                default:
-                    throw new ArgumentOutOfRangeException();
+            case Env.local_mysql:
+            return GetAppSetting("SendEmail_Debug", "false").ToBooleanJS();
+            case Env.local_sqlite:
+            return GetAppSetting("SendEmail_Debug", "false").ToBooleanJS();
+            case Env.production:
+            return true;
+            case Env.local_test_sqlite:
+            return false;
+            default:
+            throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -462,16 +487,16 @@ namespace RadialReview.Utilities {
                 return GetAppSetting("PaymentSpring_PublicKey_Test");
 
             switch (GetEnv()) {
-                case Env.local_test_sqlite:
-                    return GetAppSetting("PaymentSpring_PublicKey_Test");
-                case Env.local_mysql:
-                    return GetAppSetting("PaymentSpring_PublicKey_Test");
-                case Env.local_sqlite:
-                    return GetAppSetting("PaymentSpring_PublicKey_Test");
-                case Env.production:
-                    return GetAppSetting("PaymentSpring_PublicKey");
-                default:
-                    throw new ArgumentOutOfRangeException();
+            case Env.local_test_sqlite:
+            return GetAppSetting("PaymentSpring_PublicKey_Test");
+            case Env.local_mysql:
+            return GetAppSetting("PaymentSpring_PublicKey_Test");
+            case Env.local_sqlite:
+            return GetAppSetting("PaymentSpring_PublicKey_Test");
+            case Env.production:
+            return GetAppSetting("PaymentSpring_PublicKey");
+            default:
+            throw new ArgumentOutOfRangeException();
             }
         }
         [Obsolete("Be careful with private keys")]
@@ -480,16 +505,16 @@ namespace RadialReview.Utilities {
                 return GetAppSetting("PaymentSpring_PrivateKey_Test");
 
             switch (GetEnv()) {
-                case Env.local_test_sqlite:
-                    return GetAppSetting("PaymentSpring_PrivateKey_Test");
-                case Env.local_mysql:
-                    return GetAppSetting("PaymentSpring_PrivateKey_Test");
-                case Env.local_sqlite:
-                    return GetAppSetting("PaymentSpring_PrivateKey_Test");
-                case Env.production:
-                    return GetAppSetting("PaymentSpring_PrivateKey");
-                default:
-                    throw new ArgumentOutOfRangeException();
+            case Env.local_test_sqlite:
+            return GetAppSetting("PaymentSpring_PrivateKey_Test");
+            case Env.local_mysql:
+            return GetAppSetting("PaymentSpring_PrivateKey_Test");
+            case Env.local_sqlite:
+            return GetAppSetting("PaymentSpring_PrivateKey_Test");
+            case Env.production:
+            return GetAppSetting("PaymentSpring_PrivateKey");
+            default:
+            throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -519,14 +544,14 @@ namespace RadialReview.Utilities {
         } */
         public static string GetAccessLogDir() {
             switch (GetEnv()) {
-                case Env.local_mysql:
-                    return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\IISExpress\Logs\RadialReview\";
-                case Env.local_sqlite:
-                    return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\IISExpress\Logs\RadialReview\";
-                case Env.production:
-                    return @"C:\inetpub\logs\LogFiles\W3SVC1\";
-                default:
-                    throw new ArgumentOutOfRangeException();
+            case Env.local_mysql:
+            return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\IISExpress\Logs\RadialReview\";
+            case Env.local_sqlite:
+            return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\IISExpress\Logs\RadialReview\";
+            case Env.production:
+            return @"C:\inetpub\logs\LogFiles\W3SVC1\";
+            default:
+            throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -569,20 +594,20 @@ namespace RadialReview.Utilities {
         public static RedisConfig Redis(string channel) {
             string server;
             switch (GetEnv()) {
-                case Env.local_mysql:
-                    server = "127.0.0.1";
-                    break;
-                case Env.local_sqlite:
-                    server = "127.0.0.1";
-                    break;
-                case Env.production:
-                    server = GetAppSetting("RedisSignalR_Server", null);
-                    break;
-                case Env.local_test_sqlite:
-                    server = "127.0.0.1";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+            case Env.local_mysql:
+            server = "127.0.0.1";
+            break;
+            case Env.local_sqlite:
+            server = "127.0.0.1";
+            break;
+            case Env.production:
+            server = GetAppSetting("RedisSignalR_Server", null);
+            break;
+            case Env.local_test_sqlite:
+            server = "127.0.0.1";
+            break;
+            default:
+            throw new ArgumentOutOfRangeException();
             }
 
             return new RedisConfig() {
