@@ -15,22 +15,22 @@ using RadialReview.Utilities;
 namespace RadialReview.Controllers {
     public class IssuesController : BaseController {
 
-		[Access(AccessLevel.UserOrganization)]
-		public async Task<ActionResult> Pad(long id) {
-			try {
-				var issue = IssuesAccessor.GetIssue(GetUser(), id);
-				var padId = issue.PadId;
-				if (!_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditIssue(id))) {
-					padId = await PadAccessor.GetReadonlyPad(issue.PadId);
-				}
-				return Redirect(Config.NotesUrl("p/" + padId + "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
-			} catch (Exception) {
-				return RedirectToAction("Index", "Error");
-			}
-		}
+        [Access(AccessLevel.UserOrganization)]
+        public async Task<ActionResult> Pad(long id) {
+            try {
+                var issue = IssuesAccessor.GetIssue(GetUser(), id);
+                var padId = issue.PadId;
+                if (!_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditIssue(id))) {
+                    padId = await PadAccessor.GetReadonlyPad(issue.PadId);
+                }
+                return Redirect(Config.NotesUrl("p/" + padId + "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
+            } catch (Exception) {
+                return RedirectToAction("Index", "Error");
+            }
+        }
 
-		#region From Todo
-		[Access(AccessLevel.UserOrganization)]
+        #region From Todo
+        [Access(AccessLevel.UserOrganization)]
         public async Task<PartialViewResult> IssueFromTodo(long recurrence, long todo, long meeting) {
             //var i = IssuesAccessor.GetIssue_Recurrence(GetUser(), recurrence_issue);
             //copyto = copyto ?? i.Recurrence.Id;
@@ -63,7 +63,7 @@ namespace RadialReview.Controllers {
             return PartialView("CreateIssueModal", model);
         }
 
-		[HttpPost]
+        [HttpPost]
         [Access(AccessLevel.UserOrganization)]
         public async Task<JsonResult> IssueFromTodo(IssueVM model) {
             ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.RecurrenceId, x => x.ForId);
@@ -100,11 +100,11 @@ namespace RadialReview.Controllers {
             var i = IssuesAccessor.GetIssue_Recurrence(GetUser(), recurrence_issue);
 
             copyto = copyto ?? i.Recurrence.Id;
-			var details = "";
-			try {
-				details = await PadAccessor.GetText(i.Issue.PadId);
-			} catch (Exception ) {
-			}
+            var details = "";
+            try {
+                details = await PadAccessor.GetText(i.Issue.PadId);
+            } catch (Exception) {
+            }
 
             var model = new CopyIssueVM() {
                 IssueId = i.Issue.Id,
@@ -118,28 +118,28 @@ namespace RadialReview.Controllers {
         }
 
 
-		//[Access(AccessLevel.UserOrganization)]
-		//public PartialViewResult EditModal(long id) {
-		//	var todo = TodoAccessor.GetTodo(GetUser(), id);
+        //[Access(AccessLevel.UserOrganization)]
+        //public PartialViewResult EditModal(long id) {
+        //	var todo = TodoAccessor.GetTodo(GetUser(), id);
 
-		//	ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTodo(id));
-		//	return PartialView(todo);
-		//}
+        //	ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTodo(id));
+        //	return PartialView(todo);
+        //}
 
-		[Access(AccessLevel.UserOrganization)]
-		public PartialViewResult EditModal(long id) {
+        [Access(AccessLevel.UserOrganization)]
+        public PartialViewResult EditModal(long id) {
 
-			var issueRecurrence = IssuesAccessor.GetIssue_Recurrence(GetUser(), id);
+            var issueRecurrence = IssuesAccessor.GetIssue_Recurrence(GetUser(), id);
 
-			ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditIssueRecurrence(id));
-			return PartialView(new IssueVM() {
-				Priority = issueRecurrence.Priority,
-				Message = issueRecurrence.Issue.Message,
-				OwnerId = issueRecurrence.Owner.Id,
-				IssueId = issueRecurrence.Issue.Id,
-				IssueRecurrenceId = issueRecurrence.Id,
-			});
-		}
+            ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditIssueRecurrence(id));
+            return PartialView(new IssueVM() {
+                Priority = issueRecurrence.Priority,
+                Message = issueRecurrence.Issue.Message,
+                OwnerId = issueRecurrence.Owner.Id,
+                IssueId = issueRecurrence.Issue.Id,
+                IssueRecurrenceId = issueRecurrence.Id,
+            });
+        }
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
@@ -275,7 +275,7 @@ namespace RadialReview.Controllers {
 
             try {
                 if (score == 0 && userid.HasValue) {
-					var shift = System.TimeSpan.FromDays((recur.CurrentWeekHighlightShift+1)*7-.0001);
+                    var shift = System.TimeSpan.FromDays((recur.CurrentWeekHighlightShift + 1) * 7 - .0001);
 
                     var week = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrence, true, false, false).CreateTime.Add(shift).StartOfWeek(DayOfWeek.Sunday);
                     if (measurable > 0) {
@@ -419,7 +419,14 @@ namespace RadialReview.Controllers {
 
 
         [Access(AccessLevel.UserOrganization)]
-        public async Task<PartialViewResult> CreateHeadlineIssue(long meeting, long headline) {
+
+        public async Task<PartialViewResult> CreateHeadlineIssue(long meeting, long headline, long? recurrence = null) {
+
+            //Sometimes this method is called with -1 for meetingId,
+            if (meeting == -1 && recurrence != null) {
+                meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrence.Value, true).NotNull(x => x.Id);
+            }
+
             _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
             var s = HeadlineAccessor.GetHeadline(GetUser(), headline);

@@ -299,15 +299,15 @@ namespace RadialReview.Utilities {
             return "Supervisor";
         }
 
-		public class CamundaCredentials {
+        public class CamundaCredentials {
             public string Url { get; set; }
             public string Username { get; set; }
             public string Password { get; set; }
-            public bool IsLocal { get; internal set; }
+            public bool IsLocal { get; set; }
         }
 
-		public static CamundaCredentials GetCamundaServer() {
-			CamundaCredentials credentials = new CamundaCredentials();
+        public static CamundaCredentials GetCamundaServer() {
+            CamundaCredentials credentials = new CamundaCredentials();
             credentials.Username = "demo";
             credentials.Password = "demo";
 
@@ -320,28 +320,33 @@ namespace RadialReview.Utilities {
                     credentials.Url = "http://localhost:8080/engine-rest";
                     credentials.IsLocal = true;
                     return credentials;
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
-		}
+                case Env.production:
+                    credentials.IsLocal = false;
+                    credentials.Url = GetAppSetting("Camunda_Url");
+                    credentials.Username = GetAppSetting("Camunda_Username");
+                    credentials.Password = GetAppSetting("Camunda_Password");
+                    return credentials;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
 
-		public static bool IsLocal() {
-			switch (GetEnv()) {
-				case Env.local_test_sqlite:
-					return true;
-				case Env.local_sqlite:
-					return true;
-				case Env.local_mysql:
-					return true;
-				case Env.production:
-					return false;
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
-		}
+        public static bool IsLocal() {
+            switch (GetEnv()) {
+                case Env.local_test_sqlite:
+                    return true;
+                case Env.local_sqlite:
+                    return true;
+                case Env.local_mysql:
+                    return true;
+                case Env.production:
+                    return false;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
 
-        public static bool ShouldDeploy()
-        {
+        public static bool ShouldDeploy() {
             return !IsLocal();
         }
 
@@ -351,7 +356,7 @@ namespace RadialReview.Utilities {
                     return true;
                 }
             }
-            return false;            
+            return false;
         }
 
         public static string GetAppSetting(string key, string deflt = null) {

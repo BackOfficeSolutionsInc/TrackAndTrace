@@ -44,8 +44,9 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm {
         public async Task<string> Deploy(string key, List<object> files) {
             // Call API and get JSON
             // Serialize JSON into IProcessDef
-            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
-            var result = client.Deployment().Deploy(key, files);
+            var camundaDetails = Config.GetCamundaServer();
+            client.Authenticator(camundaDetails.Username, camundaDetails.Password);
+            var result = client.Deployment().Deploy(key, files, camundaDetails.Url, camundaDetails.Username, camundaDetails.Password);
             return result;
         }
 

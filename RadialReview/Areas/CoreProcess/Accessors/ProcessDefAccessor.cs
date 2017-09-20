@@ -43,22 +43,22 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
     public class ProcessDefAccessor : IProcessDefAccessor {
 
         protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        public async Task<bool> Deploy(UserOrganizationModel caller, long localId) {
+        public async Task<bool> Deploy(UserOrganizationModel caller, long processDefId) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     var perms = PermissionsUtility.Create(s, caller);
-                    var deployed = await Deploy(s, perms, localId);
+                    var deployed = await Deploy(s, perms, processDefId);
                     tx.Commit();
                     s.Flush();
                     return deployed;
                 }
             }
         }
-        public async Task<bool> Deploy(ISession s, PermissionsUtility perms, long coreProcessId) {
-            perms.CanEdit(PermItem.ResourceType.CoreProcess, coreProcessId);
+        public async Task<bool> Deploy(ISession s, PermissionsUtility perms, long processDefId) {
+            perms.CanEdit(PermItem.ResourceType.CoreProcess, processDefId);
 
             bool result = false;
-            var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == coreProcessId).SingleOrDefault();
+            var getProcessDefFileDetails = s.QueryOver<ProcessDef_CamundaFile>().Where(x => x.DeleteTime == null && x.LocalProcessDefId == processDefId).SingleOrDefault();
             if (getProcessDefFileDetails == null) {
                 throw new PermissionsException("Process does not exist.");
             }
@@ -69,7 +69,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
             byte[] bytes = ((MemoryStream)getfileStream).ToArray();
             fileObjects.Add(new FileParameter(bytes, getProcessDefFileDetails.FileKey.Split('/')[1].Replace("-", "")));
 
-            var processDefDetail = s.Get<ProcessDef_Camunda>(coreProcessId);
+            var processDefDetail = s.Get<ProcessDef_Camunda>(processDefId);
             if (processDefDetail == null || processDefDetail.DeleteTime != null) {
                 throw new PermissionsException("Process doesn't exist.");
             }
