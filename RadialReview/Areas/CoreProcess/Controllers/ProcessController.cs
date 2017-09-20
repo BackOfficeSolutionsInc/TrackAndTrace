@@ -72,7 +72,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
 		public async Task<JsonResult> Create(ProcessViewModel Modal) {
-			var id = await processDefAccessor.Create(GetUser(), Modal.Name);
+			var id = await processDefAccessor.CreateProcessDef(GetUser(), Modal.Name);
 			Modal.Id = id;
 			Modal.status = "<div style='color:red'><i class='fa fa-2x fa-times-circle'></i></ div>";
 
@@ -104,7 +104,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<JsonResult> ReorderTask(long id, int oldOrder, int newOrder) {
-			await processDefAccessor.ReOrderBPMNFile(GetUser(), id, oldOrder, newOrder);
+			await processDefAccessor.ReorderBPMNFile(GetUser(), id, oldOrder, newOrder);
 			//L10Accessor.ReorderPage(GetUser(),  oldOrder, newOrder);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
@@ -259,7 +259,7 @@ namespace RadialReview.Areas.CoreProcess.Controllers {
         [Access(AccessLevel.Radial)]
         public async Task<JsonResult> AllAfter(DateTime? after = null,double minutesAgo=1) {
             after = after ?? DateTime.UtcNow.AddMinutes(-Math.Abs(minutesAgo));
-            return Json(await new CommClass().GetAllTasksAfter(after.Value),JsonRequestBehavior.AllowGet);
+            return Json(await CommFactory.Get().GetAllTasksAfter(after.Value),JsonRequestBehavior.AllowGet);
         }
 
     }

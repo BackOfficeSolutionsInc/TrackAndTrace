@@ -1,26 +1,27 @@
 ﻿/*
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///  obj ={																																	///
-///      title:,																															///
-///      icon : <success,warning,danger,info,primary,default> or {icon:"css icon name",title:"Title Text!",color:"Hex-Color"}				///
-///      fields: [{																															///
-///          name: (optional)																												///
-///          text: (optional)																												///
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///  obj ={																																	    ///
+///      title:,																															    ///
+///      icon : <success,warning,danger,info,primary,default> or {icon:"css icon name",title:"Title Text!",color:"Hex-Color"}				    ///
+///      fields: [{																															    ///
+///          name: (optional)																												    ///
+///          text: (optional)																												    ///
 ///          type: <text,textarea,checkbox,radio,span,div,header,h1,h2,h3,h4,h5,h6,number,date,datetime,time,file,yesno,label,select>(optional)	///
-///				   (if type=radio or select) options:[{text,value},...]																		///
-///          value: (optional)																												///
-///          placeholder: (optional)																										///
-///          classes: (optional)																											///
-///      },...],																															///
-///		 contents: jquery object (optional, overrides fields)																				///
-///      pushUrl:"",																														///
-///      success:function(formData,contentType),																							///
-///      complete:function,																													///
-///      cancel:function,																													///  
-///      reformat: function,																												///
-///      noCancel: bool																														///
-///  }																																		///
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///				   (if type=radio or select) options:[{text,value},...]																		    ///
+///          value: (optional)																												    ///
+///          placeholder: (optional)																										    ///
+///          classes: (optional)																											    ///
+///      },...],																															    ///
+///		 contents: jquery object (optional, overrides fields)																				    ///
+///      pushUrl:"",																														    ///
+///      success:function(formData,contentType),																							    ///
+///      complete:function,																													    ///
+///      cancel:function,																													    ///  
+///      reformat: function,                                                                                                                    ///
+///      validation: function(data),                                                                                                            ///
+///      noCancel: bool																														    ///
+///  }																																		    ///
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 */
 function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onCancel) {
 	$("#modal").modal("hide");
@@ -352,7 +353,7 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 	} else {
 		builder = $(obj.contents);
 	}
-	_bindModal(builder, obj.title, undefined, undefined, onSuccess, onCancel, reformat, onClose, contentType);
+	_bindModal(builder, obj.title, undefined, obj.validation, onSuccess, onCancel, reformat, onClose, contentType);
 	setTimeout(function () {
 		for (var i = 0; i < runAfter.length; i++) {
 			runAfter[i]();
@@ -417,10 +418,10 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 		if (validationArg) {
 			var message = undefined;
 			if (typeof (validationArg) === "string") {
-				message = window[validationArg]();
+				message = window[validationArg](formData);
 				//message = eval(validationArg + '()');
 			} else if (typeof (validationArg) === "function") {
-				message = validationArg();
+			    message = validationArg(formData);
 			}
 			if (message !== undefined && message != true) {
 				if (message == false) {

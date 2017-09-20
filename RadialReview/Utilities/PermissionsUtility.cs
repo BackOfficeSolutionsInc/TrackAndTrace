@@ -120,7 +120,7 @@ namespace RadialReview.Utilities {
                 attached._ClientTimestamp = caller._ClientTimestamp;
             }
             if (caller.DeleteTime != null && caller.DeleteTime < DateTime.UtcNow) {
-				throw new PermissionsException("User has been deleted") {
+                throw new PermissionsException("User has been deleted") {
                     NoErrorReport = true
                 };
             }
@@ -487,7 +487,9 @@ namespace RadialReview.Utilities {
                 });
                 return Or(ors.ToArray());
             } catch (Exception) {
-                throw new PermissionsException("Cannot edit role.");
+                throw new PermissionsException("Cannot edit role.") {
+                    NoErrorReport = true
+                };
             }
         }
         //public PermissionsUtility EditAccountabilityNode(long nodeId) {
@@ -653,9 +655,9 @@ namespace RadialReview.Utilities {
             if (category.OriginType == OriginType.Organization && IsOwnedBelowOrEqualOrganizational(caller.Organization, new Origin(category.OriginType, category.OriginId)))
                 return this;
 
-			throw new PermissionsException();
-		}
-		public PermissionsUtility PairCategoryToQuestion(long categoryId, long questionId) {
+            throw new PermissionsException();
+        }
+        public PermissionsUtility PairCategoryToQuestion(long categoryId, long questionId) {
             if (IsRadialAdmin(caller))
                 return this;
 
@@ -1197,7 +1199,7 @@ namespace RadialReview.Utilities {
             var vto = session.Get<VtoModel>(vtoId);
 
             if (vto.L10Recurrence.HasValue && vto.L10Recurrence.Value > 0) {
-                var l10= session.Get<L10Recurrence>(vto.L10Recurrence.Value);
+                var l10 = session.Get<L10Recurrence>(vto.L10Recurrence.Value);
 
                 if (l10.ShareVto)
                     return ViewOrganization(l10.OrganizationId).ViewOrganization(vto.Organization.Id);
@@ -1907,7 +1909,7 @@ namespace RadialReview.Utilities {
                 return this;
 
             ProcessDefAccessor accessor = new ProcessDefAccessor();
-            var task = AsyncHelper.RunSync(()=>accessor.GetTaskById_Unsafe(taskId));
+            var task = AsyncHelper.RunSync(() => accessor.GetTaskById_Unsafe(taskId));
             if (task.Assignee != null) {
                 if (task.Assignee.Value == caller.Id)
                     return this;

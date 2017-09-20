@@ -358,7 +358,7 @@ namespace TractionTools.Tests.Api {
 
         private async Task<long> CreateProcess(UserOrganizationModel user) {
             pda = new ProcessDefAccessor();
-            var getResult = await pda.Create(user, TEST_PROCESS_DEF_NAME);
+            var getResult = await pda.CreateProcessDef(user, TEST_PROCESS_DEF_NAME);
             return getResult;
         }
 

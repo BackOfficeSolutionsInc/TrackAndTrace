@@ -23,9 +23,11 @@ namespace RadialReview.App_Start {
 
 			//HooksRegistry.RegisterHook(new IssueWebhook());
 			HooksRegistry.RegisterHook(new ActiveCampaignEventHooks());
-			HooksRegistry.RegisterHook(new EnterpriseHook(Config.EnterpriseAboveUserCount()));
+            HooksRegistry.RegisterHook(new EnterpriseHook(Config.EnterpriseAboveUserCount()));
 
-			//HooksRegistry.RegisterHook(new TodoEdit())
-		}
+            HooksRegistry.RegisterHook(new Tasks_RealTime());
+
+            //HooksRegistry.RegisterHook(new TodoEdit())
+        }
     }
 }

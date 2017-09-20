@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace RadialReview.Utilities.Hooks {
     public interface ITaskHook : IHook {
-        Task ClaimTask(ISession s);
-        Task UnclaimTask(ISession s);
-        Task SyncTask(ISession s);
-        Task CompleteTask(ISession s);
+        Task ClaimTask(ISession s, string taskId, long userId);
+        Task UnclaimTask(ISession s, string taskId);
+        Task CompleteTask(ISession s, string taskId,long userId);
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using RadialReview.Areas.CoreProcess.Models.Process;
+using CamundaCSharpClient.Model.Task;
 
 namespace RadialReview.Models.Angular.CoreProcess {
     public class AngularTask : BaseStringAngular {
@@ -16,7 +17,11 @@ namespace RadialReview.Models.Angular.CoreProcess {
         public long? Assignee { get; set; }
         public bool? Assigned { get; set; }
         public DateTime? CompleteTime { get; set; }
-        public bool? Complete { get;set;}
+        public bool? Complete { get;set; }
+
+        public static AngularTask Create(TaskModel x) {
+            return Create(TaskViewModel.Create(x));
+        }
 
         public static AngularTask Create(TaskViewModel x) {
             return new AngularTask(x.Id) {

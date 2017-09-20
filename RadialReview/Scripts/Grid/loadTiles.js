@@ -70,7 +70,7 @@ var Grid = {
             'data-id': id
         });
         $item.find(".content").addClass("transparent");
-        console.log("requesting tile");
+        //console.log("requesting tile");
         $.ajax({
             url: url,
             success: function (data) {

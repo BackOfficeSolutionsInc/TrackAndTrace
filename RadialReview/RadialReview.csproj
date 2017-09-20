@@ -124,9 +124,11 @@
     <Compile Include="Api\V0\Seats.cs" />
     <Compile Include="Api\V0\Teams.cs" />
     <Compile Include="Api\V0\Todo.cs" />
+    <Compile Include="App_Start\DateTimeModelBinder.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="Areas\CoreProcess\Accessors\TaskAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Accessors\ProcessDefAccessor.cs" />
+    <Compile Include="Areas\CoreProcess\CamundaComm\CommFactory.cs" />
     <Compile Include="Areas\CoreProcess\CamundaComm\CommClass.cs" />
     <Compile Include="Areas\CoreProcess\CamundaComm\ICommClass.cs" />
     <Compile Include="Areas\CoreProcess\Controllers\Api_V0\ProcessDef.cs" />
@@ -135,6 +137,7 @@
     <Compile Include="Areas\CoreProcess\CoreProcessAreaRegistration.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\ITaskAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
+    <Compile Include="Hooks\Tasks_RealTime.cs" />
     <Compile Include="Hubs\CoreProcessHub.cs" />
     <Compile Include="Models\Angular\CoreProcess\AngularTask.cs" />
     <Compile Include="Models\Angular\CoreProcess\AngularCoreProcess.cs" />
@@ -820,6 +823,7 @@
     <Compile Include="Utilities\Hooks\IMeasurableHook.cs" />
     <Compile Include="Utilities\Hooks\IMeetingEvents.cs" />
     <Compile Include="Utilities\Hooks\IRockHook.cs" />
+    <Compile Include="Utilities\Hooks\ITaskHook.cs" />
     <Compile Include="Utilities\Hooks\ITodoHook.cs" />
     <Compile Include="Utilities\Hooks\IUserHooks.cs" />
     <Compile Include="Utilities\Hooks\IHook.cs" />

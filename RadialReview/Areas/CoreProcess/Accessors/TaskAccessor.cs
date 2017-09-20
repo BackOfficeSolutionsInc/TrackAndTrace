@@ -8,10 +8,10 @@ using System.Linq;
 using System.Web;
 
 namespace RadialReview.Areas.CoreProcess.Accessors {
-    public class TaskAccessor : ITaskAccessor
-    {
-		ICommClass commClass = new CommClass();
-		public bool CompleteTask(UserOrganizationModel caller, string taskId) {
+    public class TaskAccessor : ITaskAccessor {
+
+        ICommClass commClass = CommFactory.Get();
+        public bool CompleteTask(UserOrganizationModel caller, string taskId) {
 			throw new NotImplementedException();
 		}
 		public IEnumerable<ITask> GetAllTasks(UserOrganizationModel caller)

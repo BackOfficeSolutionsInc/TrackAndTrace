@@ -10,6 +10,7 @@ using RadialReview.Areas.People.Accessors;
 using RadialReview.Areas.CoreProcess.Accessors;
 using RadialReview.Models.Askables;
 using RadialReview.Utilities.CoreProcess;
+using static CamundaCSharpClient.Query.Task.TaskQuery;
 
 namespace RadialReview.Hubs {
     public class CoreProcessHub : BaseHub {
@@ -27,6 +28,15 @@ namespace RadialReview.Hubs {
                 throw;
             }
             return;
+        }
+
+        public static string GenerateRgm(IdentityLink model) {
+            if (model.userId != null)
+                return "rspgrpmdl_" + model.userId.SubstringAfter("u_");
+            if (model.groupId != null)
+                return "rspgrpmdl_" + model.groupId.SubstringAfter("rgm_");
+
+            throw new Exception();
         }
 
         public static string GenerateRgm(ResponsibilityGroupModel model) {

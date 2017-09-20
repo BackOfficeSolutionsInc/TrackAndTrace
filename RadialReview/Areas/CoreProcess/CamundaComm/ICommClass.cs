@@ -33,5 +33,6 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm {
         Task<IEnumerable<IdentityLink>> GetIdentityLinks(string taskId);
 
         Task<IEnumerable<TaskModel>> GetAllTasksAfter(DateTime after);
+        Task<string> Deploy(string deplyomentName, List<object> fileObjects);
     }
 }

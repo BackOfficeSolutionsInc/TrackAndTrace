@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RadialReview.Areas.CoreProcess.Models.MapModel;
 
 namespace RadialReview.Areas.CoreProcess.Models.Process {
     public class ProcessInstanceViewModel : CamundaBase
@@ -23,5 +24,15 @@ namespace RadialReview.Areas.CoreProcess.Models.Process {
 
 		//public string suspend { get; set; }
 		public List<string> Process { get; set; }
+
+        public static ProcessInstanceViewModel Create(ProcessInstance_Camunda x) {
+            return new ProcessInstanceViewModel() {
+                Id = x.CamundaProcessInstanceId,
+                DefinitionId = x.LocalProcessInstanceId,
+                Suspended = x.Suspended,
+                CreateTime = x.CreateTime,
+                CompleteTime = x.CompleteTime
+            };
+        }
     }
 }
