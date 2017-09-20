@@ -239,6 +239,17 @@ namespace RadialReview {
             }
         }
 
+        public static IEnumerable<OUT> SelectNoException<IN,OUT>(this IEnumerable<IN> self,Func<IN,OUT> lambda) {
+            return self.SelectMany(x => {
+                try {
+                    return lambda(x).AsList();
+                }catch(Exception e) {
+                    //Eat it..
+                }
+                return new List<OUT>();
+            });
+        }
+
         /*public static Boolean Contains<T>(this IEnumerable<T> enumerable, Func<T, Boolean> contains)
         {
             return enumerable.FirstOrDefault(contains) != null;

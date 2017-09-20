@@ -253,10 +253,10 @@ namespace RadialReview.Controllers {
         [HttpPost]
         [Access(AccessLevel.UserOrganization)]
         public async Task<JsonResult> UpdateAngularTask(AngularTask model, string connectionId = null) {
-            if (model.Assigned!=null)
-                await new ProcessDefAccessor().TaskClaimOrUnclaim(GetUser(), model.Id, GetUser().Id, model.Assigned.Value);
             if (model.CompleteTime!=null)
                 await new ProcessDefAccessor().TaskComplete(GetUser(), model.Id);
+            else if (model.Assigned!=null)
+                await new ProcessDefAccessor().TaskClaimOrUnclaim(GetUser(), model.Id, GetUser().Id, model.Assigned.Value);
 
             return Json(ResultObject.SilentSuccess());
         }

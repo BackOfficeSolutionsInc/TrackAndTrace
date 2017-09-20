@@ -141,7 +141,8 @@ namespace RadialReview {
                 "~/Scripts/Grid/fixtures.js",
                 "~/Scripts/Grid/src/gridList.js",
                 "~/Scripts/Grid/src/jquery.gridList.js",
-                "~/Scripts/Grid/loadTiles.js"
+                "~/Scripts/Grid/loadTiles.js",
+                "~/Scripts/CoreProcess/coreProcessRT.js"
             //....
             ));
 
@@ -150,6 +151,8 @@ namespace RadialReview {
                 "~/Scripts/Angular/Helpers/d3/LineChart.js",
                 "~/Scripts/Angular/Tiles/L10StatsTile.js"
             ));
+
+
 
 
         }

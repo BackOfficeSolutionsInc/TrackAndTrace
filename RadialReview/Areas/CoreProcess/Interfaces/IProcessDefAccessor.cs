@@ -14,7 +14,7 @@ namespace RadialReview.Areas.CoreProcess.Interfaces {
 	public interface IProcessDefAccessor {
 		Task<bool> Deploy(UserOrganizationModel caller, long localId);
 		List<ProcessInstanceViewModel> GetProcessInstanceList(UserOrganizationModel caller, long localId);
-		Task<long> Create(UserOrganizationModel caller, string processName);
+		Task<long> CreateProcessDef(UserOrganizationModel caller, string processName);
 		Task<bool> EditProcess(UserOrganizationModel caller, long localId, string processName);
         Task<bool> DeleteProcess(UserOrganizationModel caller, long processId);
 
@@ -34,7 +34,7 @@ namespace RadialReview.Areas.CoreProcess.Interfaces {
 		Task<bool> TaskClaimOrUnclaim(UserOrganizationModel caller, string taskId, long userId, bool claim);
 		//Task<bool> TaskUnClaim(UserOrganizationModel caller, string taskId, long userId);
 		Task<bool> TaskComplete(UserOrganizationModel caller, string taskId);
-		Task<bool> ReOrderBPMNFile(UserOrganizationModel caller, long localId, int oldOrder, int newOrder);
+		Task<bool> ReorderBPMNFile(UserOrganizationModel caller, long localId, int oldOrder, int newOrder);
 		Task<bool> SuspendProcess(UserOrganizationModel caller, long localId, string processInstanceId, bool shouldSuspend);
 		Task<ProcessDef_Camunda> ProcessStart(UserOrganizationModel caller, long processId);
 	}

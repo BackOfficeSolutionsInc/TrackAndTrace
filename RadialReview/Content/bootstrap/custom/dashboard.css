@@ -1036,6 +1036,7 @@ body.resizing .notes-tile:after,
   top: 1px;
   position: relative;
 }
+.dashboard .core-process-list-container thead,
 .dashboard .core-process-list-container .name,
 .dashboard .core-process-list-container .empty-cell,
 .dashboard .core-process-list-container .height-placeholder,

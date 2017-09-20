@@ -29,45 +29,6 @@ namespace RadialReview {
 	public class MvcApplication : System.Web.HttpApplication {
 		// protected async void App
 
-		protected async Task Application_End() {
-			var wasKilled = await ChromeExtensionComms.SendCommandAndWait("appEnd");
-			var inte = 0;
-			inte += 1;
-		}
-		[DllImport("gdi32.dll", EntryPoint = "AddFontResourceW", SetLastError = true)]
-		public static extern int AddFontResource([In][MarshalAs(UnmanagedType.LPWStr)]string lpFileName);
-		protected int InstallFonts() {
-			if (!Config.IsLocal()) {
-				var fonts = new[] { "Arial Narrow Bold.TTF", "Arial Narrow.TTF", "arial.ttf" };
-				var installed = 0;
-				foreach (var f in fonts) {
-					try {
-						var result = AddFontResource(@"c:\\Windows\\Fonts\\" + f);
-						var error = Marshal.GetLastWin32Error();
-						installed = installed + (error == 0 ? 1 : 0);
-					} catch (Exception) {
-					}
-				}
-
-				var assembly = Assembly.GetExecutingAssembly();
-
-				foreach (var resourceName in assembly.GetManifestResourceNames()) {
-					try {
-						if (resourceName.ToLower().EndsWith(".ttf")) {
-							using (var resourceStream = assembly.GetManifestResourceStream(resourceName)) {
-								XPrivateFontCollection.Add(resourceStream);//, resourceName.Substring(0, resourceName.Length - 4).Split('.').Last());
-							}
-						}
-					} catch (Exception e) {
-						throw e;
-					}
-				}
-
-				return installed;
-			}
-			return 0;
-		}
-
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 		protected async void Application_Start() {
 
@@ -108,12 +69,53 @@ namespace RadialReview {
 			IViewEngine razorEngine = new RazorViewEngine() { FileExtensions = new[] { "cshtml" } };
 			ViewEngines.Engines.Add(razorEngine);
 
+            ModelBinders.Binders.Add(typeof(DateTime), new DateTimeModelBinder());
+            ModelBinders.Binders.Add(typeof(DateTime?), new DateTimeModelBinder());
 
-			//install fonts
-			InstallFonts();
+            //install fonts
+            InstallFonts();
 		}
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
+
+		protected async Task Application_End() {
+			var wasKilled = await ChromeExtensionComms.SendCommandAndWait("appEnd");
+			var inte = 0;
+			inte += 1;
+		}
+		[DllImport("gdi32.dll", EntryPoint = "AddFontResourceW", SetLastError = true)]
+		public static extern int AddFontResource([In][MarshalAs(UnmanagedType.LPWStr)]string lpFileName);
+		protected int InstallFonts() {
+			if (!Config.IsLocal()) {
+				var fonts = new[] { "Arial Narrow Bold.TTF", "Arial Narrow.TTF", "arial.ttf" };
+				var installed = 0;
+				foreach (var f in fonts) {
+					try {
+						var result = AddFontResource(@"c:\\Windows\\Fonts\\" + f);
+						var error = Marshal.GetLastWin32Error();
+						installed = installed + (error == 0 ? 1 : 0);
+					} catch (Exception) {
+					}
+				}
+
+				var assembly = Assembly.GetExecutingAssembly();
+
+				foreach (var resourceName in assembly.GetManifestResourceNames()) {
+					try {
+						if (resourceName.ToLower().EndsWith(".ttf")) {
+							using (var resourceStream = assembly.GetManifestResourceStream(resourceName)) {
+								XPrivateFontCollection.Add(resourceStream);//, resourceName.Substring(0, resourceName.Length - 4).Split('.').Last());
+							}
+						}
+					} catch (Exception e) {
+						throw e;
+					}
+				}
+
+				return installed;
+			}
+			return 0;
+		}
 
 
 		void Application_EndRequest(Object Sender, EventArgs e) {

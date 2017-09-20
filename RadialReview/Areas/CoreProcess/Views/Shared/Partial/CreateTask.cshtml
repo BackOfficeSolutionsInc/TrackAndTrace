@@ -14,7 +14,7 @@
         @Html.Partial("~/Views/Shared/EditorTemplates/SearchUsers.cshtml", new ViewDataDictionary() {
        { "Name","SelectedMemberId"}, { "multiple", true},
        {"SelectedItemList",Model.CandidateList},
-            {"SearchUrl","/Search/RGM?includeTerm=true" }
+            {"SearchUrl","/Search/RGM?includeTerm=false" }
         })
     </div>
 </div>

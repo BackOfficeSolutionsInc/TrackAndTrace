@@ -103,7 +103,7 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
             $scope.$watch("score.Measurable.Target", refreshMeasurable);
             $scope.$watch("score.Measurable.AltTarget", refreshMeasurable);
             $scope.$watch("score.Measurable.Modifiers", function (x, y) {
-            	console.warn("asdf");
+            	//console.warn("asdf");
             	refreshMeasurable(x, y);
             });
             $scope.$watch("score.Direction", refreshMeasurable);

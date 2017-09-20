@@ -73,6 +73,10 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 
     var r = radial($scope, 'meetingHub', rejoin);
 
+    var cpr = radial($scope, {
+        hubName: "coreProcessHub"
+    });
+
     r.updater.postResolve = updateScorecard;
 
     $scope.functions = $scope.functions || {};

@@ -125,7 +125,7 @@ namespace TractionTools.Tests.Controllers {
 			await l10Other.AddIssue("Issue2-other", org.Manager);
 
 			using (var ctrl = new ControllerCtx<DashboardDataController>(org.Employee)) {
-				var json = ctrl.GetJson(x => x.Data2(org.Employee.Id));
+				var json = await ctrl.GetJson(x => x.Data2(org.Employee.Id));
 				var model = json.GetModel<ListDataVM>();
 
 				Assert.AreEqual(1, model.Todos.Count());
@@ -174,7 +174,7 @@ namespace TractionTools.Tests.Controllers {
 			}
 
 			using (var ctrl = new ControllerCtx<DashboardDataController>(org.Employee)) {
-				var json = ctrl.GetJson(x => x.Data2(org.Employee.Id,dashboardId : dashId));
+				var json = await ctrl.GetJson(x => x.Data2(org.Employee.Id,dashboardId : dashId));
 				var model = json.GetModel<ListDataVM>();
 
 

@@ -14,7 +14,7 @@
             sendUpdateOptions : object                  (default: {})
             loadDataUrl : func()||string                (default: does not initialize)
             loadDataOptions : object                    (default: undefined)
-            rejoin: func(connection, proxy, callback)   **Only use if your're missing the hubJoin options**
+            rejoin: func(connection, proxy, callback)   **Only use if you're missing the hubJoin options**
         };
     
         ===Plug-and-Play===

@@ -78,6 +78,7 @@ namespace CamundaCSharpClient.Query.Task
             var resp = await this.client.Execute(request);
             return ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
         }
+       
 
         /// <summary> Resets a task's assignee. If successful, the task is not assigned to a user.
         /// </summary>
@@ -271,5 +272,31 @@ namespace CamundaCSharpClient.Query.Task
             request.Resource = "/task/" + this.model.id;
             return await this.SingleResult<TaskModel>(request);
         }
+        #region TT Added
+        public class IdentityLink {
+            public string userId { get; set; }      // String The id of the user participating in this link.
+            public string groupId { get; set; }     // String  The id of the group participating in this link.Either groupId or userId is set.
+            public string type { get; set; }        // String  The type of the identity link.Can be any defined type. assignee and owner are reserved types for the task assignee and owner
+        }
+        /// <summary>Gets the identity links for a task by id, which are the users and groups that are in some relation to it (including assignee and owner).
+        /// </summary>
+        /// <example> 
+        /// <code>
+        /// var camundaCl = new camundaRestClient("http://localhost:8080/engine-rest");
+        /// var tsk5 = camundaCl.Task().Id("37ccd7fe-78c5-11e5-beb3-40a8f0a54b22").IdentityLinks();           
+        /// </code>
+        /// </example>
+        public async Task<List<IdentityLink>> IdentityLinks() {
+            EnsureHelper.NotNull("Id", this.model.id);
+
+            var request = new RestRequest();
+            request.Resource = "/task/" + this.model.id + "/identity-links";
+            request.Method = Method.GET;
+            var resp = await List<IdentityLink>(request);
+            //var resp = await this.client.Lis<IList<IdentityLink>>(request);
+
+            return resp;// ReturnHelper.NoContentReturn(resp.Content, resp.StatusCode);
+        }
+        #endregion
     }
 }

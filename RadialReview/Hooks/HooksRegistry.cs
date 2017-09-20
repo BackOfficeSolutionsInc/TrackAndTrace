@@ -1,5 +1,6 @@
 ﻿using LambdaSerializer;
 using log4net;
+using NHibernate;
 using RadialReview.Areas.CoreProcess.Models;
 using RadialReview.Models;
 using RadialReview.Utilities;
@@ -34,6 +35,33 @@ namespace RadialReview.Hooks {
 
         public static List<T> GetHooks<T>() where T : IHook {
             return GetSingleton()._Hooks.Where(x => x is T).Cast<T>().ToList();
+        }
+
+        public static async Task Each<T>(Expression<Func<ISession, T, Task>> action) where T : IHook {
+
+            var hooks = GetHooks<T>();
+            foreach (var x in hooks) {
+                try {
+                    if (Config.IsSchedulerAction()) {
+                        await AmazonSQSUtility.SendMessage(MessageQueueModel.CreateHookRegistryAction(action, new SerializableHook() { lambda = action, type = action.GetType() }));
+                    } else {
+
+                        using (var s = HibernateSession.GetCurrentSession()) {
+                            using (var tx = s.BeginTransaction()) {
+                                await action.Compile()(s, x);
+                                tx.Commit();
+                                s.Flush();
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    log.Error(e);
+                    if (Config.IsLocal())
+                        throw;
+                }
+            };
+
+
         }
 
         public static async Task Each<T>(Expression<Func<T, Task>> action) where T : IHook {

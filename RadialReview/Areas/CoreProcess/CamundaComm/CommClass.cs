@@ -16,10 +16,16 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using static CamundaCSharpClient.Query.Task.TaskQuery;
 using static RadialReview.Utilities.Config;
 
 namespace RadialReview.Areas.CoreProcess.CamundaComm {
     public class CommClass : ICommClass {
+
+        [Obsolete("Use CommFactory instead.")]
+        public CommClass() {
+
+        }
 
         // create new camunda rest client
         //"http://localhost:8080/engine-rest"		
@@ -35,7 +41,7 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm {
             return new ProcessDef(getProcessDef);
         }
 
-        public string Deploy(string key, List<object> files) {
+        public async Task<string> Deploy(string key, List<object> files) {
             // Call API and get JSON
             // Serialize JSON into IProcessDef
             client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
@@ -174,6 +180,16 @@ namespace RadialReview.Areas.CoreProcess.CamundaComm {
             }
 
             return task;
+        }
+
+        public async Task<IEnumerable<TaskModel>> GetAllTasksAfter(DateTime after) {
+            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
+            return await client.Task().Get().CreatedAfter(after).Active(true).list();
+        }
+
+        public async Task<IEnumerable<IdentityLink>> GetIdentityLinks(string taskId) {
+            client.Authenticator(Config.GetCamundaServer().Username, Config.GetCamundaServer().Password);
+            return await client.Task().Id(taskId).IdentityLinks();//.Get().iden.CreatedAfter(after).Active(true).list();
         }
 
         #endregion
