@@ -83,7 +83,6 @@ namespace AmazonSDK {
                                 throw new Exception("An error ocurred during HTTP Request." + " Status Code:" + status);
                             }
                         }
-
                         // Mark Complete
                         MarkComplete(item);
                     } catch (Exception ex) {
