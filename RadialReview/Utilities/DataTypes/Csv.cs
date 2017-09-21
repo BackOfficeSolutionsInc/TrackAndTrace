@@ -12,11 +12,12 @@ namespace RadialReview.Utilities.DataTypes
         public List<String> Rows { get; set; }
 		public List<String> Columns { get; set; }
 		public string Title { get; set; }
-        public Csv ()
+        public Csv (string title =null)
 	    {
             Items = new List<CsvItem>();
 			Rows = new List<String>();
 			Columns = new List<String>();
+            Title = title;
 	    }
 
         public void Add( String row,String column, String value)
@@ -110,6 +111,13 @@ namespace RadialReview.Utilities.DataTypes
 				return cell;
 			}
 		}
+       
+        public string Get(int i, int j) {
+            var row = Rows[i];
+            var col = Columns[j];
+
+            return Items.FirstOrDefault(x => x.Column == col && x.Row == row).NotNull(x => x.Value);
+        }
     }
 
     public class CsvItem

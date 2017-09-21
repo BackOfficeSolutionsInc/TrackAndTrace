@@ -21,6 +21,8 @@ using System.Web;
 using RadialReview.Utilities.RealTime;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
+using RadialReview.Models.Todo;
+using SpreadsheetLight;
 
 namespace RadialReview.Accessors {
     public class IssuesAccessor : BaseAccessor {
@@ -269,11 +271,11 @@ namespace RadialReview.Accessors {
         }
 
 
-       // [Obsolete("Method is broken",true)]
-		public static List<IssueModel.IssueModel_Recurrence> GetRecurrenceIssuesForUser(UserOrganizationModel caller, long userId, long recurrenceId) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-                   // throw new NotImplementedException("query is incorrect");
+        // [Obsolete("Method is broken",true)]
+        public static List<IssueModel.IssueModel_Recurrence> GetRecurrenceIssuesForUser(UserOrganizationModel caller, long userId, long recurrenceId) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    // throw new NotImplementedException("query is incorrect");
                     PermissionsUtility.Create(s, caller).ViewRecurrenceIssuesForUser(userId, recurrenceId);
 
                     return s.QueryOver<IssueModel.IssueModel_Recurrence>()
@@ -434,6 +436,88 @@ namespace RadialReview.Accessors {
             }
         }
 
+        public class IssueAndTodos {
+            public IssueModel.IssueModel_Recurrence Issue { get; set; }
+            public List<TodoModel> Todos { get; set; }
+        }
 
+        public static async Task<SLDocument> GetIssuesAndTodosSpreadsheetAtOrganization(UserOrganizationModel caller, long orgId, bool loadDetails = false) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    perms.ManagingOrganization(orgId);
+
+                    IssueModel issueAlias = null;
+                    //var issues = s.QueryOver<IssueModel>().Where(x => x.OrganizationId == ordId && x.DeleteTime == null);
+                    var issuesQ = s.QueryOver<IssueModel.IssueModel_Recurrence>()
+                        .JoinAlias(x => x.Issue, () => issueAlias)
+                        .Where(x => x.DeleteTime == null && issueAlias.OrganizationId == orgId && issueAlias.DeleteTime == null)
+                        .Future();
+
+
+                    var todosQ = s.QueryOver<TodoModel>()
+                        .Where(x => x.ForModel == "IssueModel" && x.DeleteTime == null && x.OrganizationId == orgId)
+                        .Future();
+
+                    var result = new List<IssueAndTodos>();
+
+                    var allTodos = todosQ.ToList();
+
+
+                    var pads = new List<string>();
+                    foreach (var issue in issuesQ) {
+                        var iat = new IssueAndTodos();
+                        iat.Issue = issue;
+                        iat.Todos = allTodos.Where(x => x.ForModelId == issue.Issue.Id && x.ForModel == "IssueModel").ToList();
+                        pads.Add(issue.Issue.PadId);
+                        pads.AddRange(iat.Todos.Select(x => x.PadId));
+                        result.Add(iat);
+                    }
+
+                    var padLookup = new Dictionary<string, string>();
+
+                    if (loadDetails) {
+                        padLookup = await PadAccessor.GetTexts(pads);
+                    }
+
+                    var issuesSheet = new Csv("Issues");
+                    foreach (var iat in result) {
+                        var ir = iat.Issue;
+                        var issue = ir.Issue;
+                        var id = issue.Id;
+                        issuesSheet.Add("" + id, "Issue", issue.Message);
+                        if (loadDetails) {
+                            var details = padLookup.GetOrDefault(issue.PadId, "");
+                            issuesSheet.Add("" + id, "Details", details);
+                        }
+                        issuesSheet.Add("" + id, "Owner", ir.Owner.Name);
+                        issuesSheet.Add("" + id, "Completed", ir.CloseTime.NotNull(x => x.Value.ToShortDateString()));
+                        issuesSheet.Add("" + id, "Created", issue.CreateTime.ToShortDateString());
+
+                        issuesSheet.Add("" + id, "# Todos", ""+iat.Todos.Count());
+
+                    }
+
+                    var todoSheet= new Csv("Todos");
+                    foreach (var todo in result.SelectMany(x=>x.Todos)) {
+                        var id = todo.Id;
+                        todoSheet.Add("" + id, "Todo", todo.Message);
+                        if (loadDetails) {
+                            var details = padLookup.GetOrDefault(todo.PadId, "");
+                            todoSheet.Add("" + id, "Details", details);
+                        }
+                        todoSheet.Add("" + id, "Owner", todo.AccountableUser.Name);
+                        todoSheet.Add("" + id, "Completed", todo.CompleteTime.NotNull(x => x.Value.ToShortDateString()));
+                        todoSheet.Add("" + id, "Created", todo.CreateTime.ToShortDateString());
+                        todoSheet.Add("" + id, "IssueId", ""+todo.ForModelId);
+                    }
+
+
+
+                    return CsvUtility.ToXls(issuesSheet, todoSheet);
+                    
+                }
+            }
+        }
     }
 }

@@ -482,5 +482,11 @@ namespace RadialReview.Controllers {
             var csv = IssuesAccessor.Listing(GetUser(), GetUser().Organization.Id);
             return File(csv.ToBytes(), "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + csv.Title + ".csv");
         }
+
+        [Access(AccessLevel.UserOrganization)]
+        public async Task<ActionResult> IssuesAndTodos(bool details = false) {
+            var file = await IssuesAccessor.GetIssuesAndTodosSpreadsheetAtOrganization(GetUser(), GetUser().Organization.Id, details);
+            return Xls(file, "Issues_Todos_" + DateTime.UtcNow.ToJavascriptMilliseconds());
+        }
     }
 }
