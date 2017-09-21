@@ -71,10 +71,22 @@ namespace TractionTools.Tests.Api {
             Server.WaitForExit();
             ActOnProcessAndChildren(Server, x => MinimizeWindow(x.MainWindowHandle));
             Thread.Sleep(2000);
+            var count = 0;
+            while (true) {
+                try {
+                    AsyncHelper.RunSync(() => {
+                        return new CommClass().DeleteAllProcess_Unsafe(TEST_PROCESS_DEF_NAME);
+                    });
+                    break;
+                } catch (Exception) {
+                    count += 1;
+                }
+                if (count > 4)
+                    throw new Exception("Couldnt delete existing Core Process Test data");
 
-            AsyncHelper.RunSync(() => {
-                return new CommClass().DeleteAllProcess_Unsafe(TEST_PROCESS_DEF_NAME);
-            });
+                Thread.Sleep(2000);
+            }
+            Console.WriteLine("Deleted after " + (count+1) + " tries.");
         }
 
         private const int SW_MAXIMIZE = 3;
@@ -394,7 +406,7 @@ namespace TractionTools.Tests.Api {
       
 
         [TestMethod]
-        [TestCategory("Api_V0")]
+        [TestCategory("CoreProcess")]
         public async Task TestWebhook() {
 
             //var c = await Ctx.Build();
@@ -430,7 +442,7 @@ namespace TractionTools.Tests.Api {
 
 
         [TestMethod]
-        [TestCategory("Api_V0")]
+        [TestCategory("Scheduler")]
         public async Task TestEncryptedPassword() {
             string userName = "Test";
             string pwd = Config.SchedulerSecretKey() + userName;

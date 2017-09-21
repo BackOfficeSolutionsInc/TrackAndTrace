@@ -176,7 +176,7 @@ namespace RadialReview.Utilities {
 									var c = new Configuration();
 									c.SetInterceptor(new NHSQLInterceptor());
 									//SetupAudit(c);
-									factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
+									factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString).IsolationLevel(System.Data.IsolationLevel.ReadCommitted))
 									.Mappings(m => {
 										m.FluentMappings.AddFromAssemblyOf<ApplicationWideModel>()
 										   .Conventions.Add<StringColumnLengthConvention>();
@@ -185,6 +185,7 @@ namespace RadialReview.Utilities {
 										//m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 
 									})
+                                    
 								   .ExposeConfiguration(SetupAudit)
 								   .ExposeConfiguration(x => BuildSqliteSchema(x, forceDbCreate))
 								   .BuildSessionFactory();
