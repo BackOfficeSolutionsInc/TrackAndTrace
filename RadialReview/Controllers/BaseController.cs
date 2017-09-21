@@ -45,6 +45,7 @@ using RadialReview.NHibernate;
 using System.Threading.Tasks;
 using System.Net.Mime;
 using System.Text.RegularExpressions;
+using SpreadsheetLight;
 
 namespace RadialReview.Controllers {
 	public class UserManagementController : BaseController {
@@ -342,8 +343,20 @@ namespace RadialReview.Controllers {
 		private static string CleanFileName(string fileName) {
 			return Path.GetInvalidFileNameChars().Aggregate(fileName, (current, c) => current.Replace(c.ToString(), string.Empty));
 		}
+        protected ActionResult Xls(SLDocument document, string name = null) {
 
-		protected ActionResult Pdf(PdfDocument document, string name = null, bool inline = true) {
+            name = name ?? ("export_" + DateTime.UtcNow.ToJavascriptMilliseconds());
+            //name = name;
+
+            Response.Clear();
+            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            Response.AddHeader("Content-Disposition", "attachment; filename="+name+".xlsx");
+            document.SaveAs(Response.OutputStream);
+            Response.End();
+            return new EmptyResult();            
+        }
+
+        protected ActionResult Pdf(PdfDocument document, string name = null, bool inline = true) {
 			//var stream = new MemoryStream();
 			////try {
 			////	document.Save("C:\\Users\\Clay\\Desktop\\Stuff\\doc.pdf");
@@ -589,21 +602,26 @@ namespace RadialReview.Controllers {
 
 			if (string.IsNullOrEmpty(encodingsAccepted))
 				return;
-			if (contentType != null && contentType.ToLower().Contains("pdf"))
-				return;
+            if (contentType != null && contentType.ToLower().Contains("pdf"))
+                return;
+            if (contentType != null && contentType.ToLower()=="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                return;
 
-			encodingsAccepted = encodingsAccepted.ToLowerInvariant();
-			var response = filterContext.HttpContext.Response;
-
-			if (encodingsAccepted.Contains("deflate")) {
-				Response.Headers.Remove("Content-Encoding");
-				response.AppendHeader("Content-Encoding", "deflate");
-				response.Filter = new DeflateStream(response.Filter, CompressionMode.Compress);
-			} else if (encodingsAccepted.Contains("gzip")) {
-				Response.Headers.Remove("Content-Encoding");
-				response.AppendHeader("Content-Encoding", "gzip");
-				response.Filter = new GZipStream(response.Filter, CompressionMode.Compress);
-			}
+            try {
+			    encodingsAccepted = encodingsAccepted.ToLowerInvariant();
+			    var response = filterContext.HttpContext.Response;
+                if (encodingsAccepted.Contains("deflate")) {
+                    Response.Headers.Remove("Content-Encoding");
+                    response.AppendHeader("Content-Encoding", "deflate");
+                    response.Filter = new DeflateStream(response.Filter, CompressionMode.Compress);
+                } else if (encodingsAccepted.Contains("gzip")) {
+                    Response.Headers.Remove("Content-Encoding");
+                    response.AppendHeader("Content-Encoding", "gzip");
+                    response.Filter = new GZipStream(response.Filter, CompressionMode.Compress);
+                }
+            } catch (Exception) {
+                //I guess just eat it..
+            }
 		}
 
 		protected override void OnActionExecuting(ActionExecutingContext filterContext) {

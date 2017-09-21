@@ -1414,5 +1414,9 @@ namespace RadialReview.Controllers {
 			}
 		}
 
+        [Access(AccessLevel.Radial)]
+        public ActionResult XLS() {
+            return Xls(CsvUtility.ToXls((List<Csv>)null), "myxml");
+        }
 	}
 }

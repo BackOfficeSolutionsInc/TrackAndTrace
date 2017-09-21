@@ -26,6 +26,19 @@ function sendErrorReport() {
             if (image != null) {
                 data.ImageData = image;
             }
+
+            try {
+                if (JSON.stringify(data).length > 2097152) {
+                    data.ImageData = null;
+                }
+                if (JSON.stringify(data).length > 2097152) {
+                    data.Console = "[]";
+                }
+            } catch (e) {
+                console.error("Error removing data from report.");
+            }
+
+
             $.ajax({
                 method: "POST",
                 url: "/support/email",
@@ -114,6 +127,18 @@ function supportEmail(title, nil, defaultSubject, defaultBody) {
                 if (image != null) {
                     data.ImageData = image;
                 }
+
+                try{
+                    if (JSON.stringify(data).length > 2097152) {
+                        data.ImageData = null;
+                    }
+                    if (JSON.stringify(data).length > 2097152) {
+                        data.Console = "[]";
+                    }
+                } catch (e) {
+                    console.error("Error removing data from report.");
+                }
+
             }
         });
     };
