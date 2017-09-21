@@ -28,10 +28,10 @@ function sendErrorReport() {
             }
 
             try {
-                if (JSON.stringify(data).length > 2147483647) {
+                if (JSON.stringify(data).length > 2097152) {
                     data.ImageData = null;
                 }
-                if (JSON.stringify(data).length > 2147483647) {
+                if (JSON.stringify(data).length > 2097152) {
                     data.Console = "[]";
                 }
             } catch (e) {
@@ -129,10 +129,10 @@ function supportEmail(title, nil, defaultSubject, defaultBody) {
                 }
 
                 try{
-                    if (JSON.stringify(data).length > 2147483647) {
+                    if (JSON.stringify(data).length > 2097152) {
                         data.ImageData = null;
                     }
-                    if (JSON.stringify(data).length > 2147483647) {
+                    if (JSON.stringify(data).length > 2097152) {
                         data.Console = "[]";
                     }
                 } catch (e) {
