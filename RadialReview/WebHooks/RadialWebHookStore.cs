@@ -36,9 +36,11 @@ namespace Microsoft.AspNet.WebHooks
             user = NormalizeKey(user);
             try
             {
+                ICollection<WebHook> list = null;
                 WebhooksAccessor webHookAcc = new WebhooksAccessor();
-                var result = webHookAcc.GetAllWebHook();
-                return Task.FromResult(result);
+                //var result = webHookAcc.GetAllWebHook();
+                //return Task.FromResult(result);
+                return Task.FromResult(list);
             }
             catch (Exception ex)
             {
@@ -64,12 +66,14 @@ namespace Microsoft.AspNet.WebHooks
             predicate = predicate ?? DefaultPredicate;
             try
             {
+                ICollection<WebHook> list = null;
                 WebhooksAccessor webHookAcc = new WebhooksAccessor();
-                var result = webHookAcc.GetAllWebHook();
-                ICollection<WebHook> matches = result
-                    .Where(w => MatchesAnyAction(w, actions) && predicate(w, user))
-                    .ToArray();
-                return Task.FromResult(matches);
+                //var result = webHookAcc.GetAllWebHook();
+                //ICollection<WebHook> matches = result
+                //    .Where(w => MatchesAnyAction(w, actions) && predicate(w, user))
+                //    .ToArray();
+                //return Task.FromResult(matches);
+                return Task.FromResult(list);
             }
             catch (Exception ex)
             {
@@ -92,11 +96,11 @@ namespace Microsoft.AspNet.WebHooks
 
             user = NormalizeKey(user);
 
-            WebHook result = null;
+            //WebHook result = null;
             try
             {
                 WebhooksAccessor webHookAcc = new WebhooksAccessor();
-                result = webHookAcc.LookupWebHook(user, id);
+                //result = webHookAcc.LookupWebHook(user, id);
             }
             catch (Exception ex)
             {
@@ -104,7 +108,7 @@ namespace Microsoft.AspNet.WebHooks
                 throw new InvalidOperationException(msg, ex);
             }
 
-            return Task.FromResult(result);
+            return Task.FromResult(new WebHook());
         }
 
         /// <inheritdoc />
@@ -121,7 +125,8 @@ namespace Microsoft.AspNet.WebHooks
 
             user = NormalizeKey(user);
             WebhooksAccessor webHookAcc = new WebhooksAccessor();
-            return Task.FromResult(webHookAcc.InsertWebHook(user, webHook, null));
+            //return Task.FromResult(webHookAcc.InsertWebHook(user, webHook, null));
+            return Task.FromResult(new StoreResult());
 
         }
 
@@ -142,7 +147,7 @@ namespace Microsoft.AspNet.WebHooks
             try
             {
                 WebhooksAccessor webHookAcc = new WebhooksAccessor();
-                result = webHookAcc.UpdateWebHook(user, webHook, null);
+                //result = webHookAcc.UpdateWebHook(user, webHook, null);
             }
             catch (Exception ex)
             {
@@ -165,18 +170,18 @@ namespace Microsoft.AspNet.WebHooks
             }
 
             user = NormalizeKey(user);
-            StoreResult result;
+            //StoreResult result;
             try
             {
                 WebhooksAccessor webHookAcc = new WebhooksAccessor();
-                result = webHookAcc.DeleteWebHook(user, id);
+               // result = webHookAcc.DeleteWebHook(user, id);
             }
             catch (Exception ex)
             {
                 string msg = string.Format(CultureInfo.CurrentCulture, "General error during '{0}' operation: '{1}'.", "Lookup", ex.Message);
                 throw new InvalidOperationException(msg, ex);
             }
-            return Task.FromResult(result);
+            return Task.FromResult(new StoreResult());
         }
 
         /// <inheritdoc />
@@ -188,11 +193,11 @@ namespace Microsoft.AspNet.WebHooks
             }
 
             user = NormalizeKey(user);
-            StoreResult result;
+            //StoreResult result;
             try
             {
                 WebhooksAccessor webHookAcc = new WebhooksAccessor();
-                result = webHookAcc.DeleteAllWebHook(user);
+               // result = webHookAcc.DeleteAllWebHook(user);
             }
             catch (Exception ex)
             {
