@@ -47,12 +47,12 @@ namespace RadialReview {
 			ILogger logger = config.DependencyResolver.GetLogger();
 			SettingsDictionary settings = config.DependencyResolver.GetSettings();
 
-			// We explicitly set the DB initializer to null to avoid that an existing DB is initialized wrongly.
-			//Database.SetInitializer<WebHookStoreContext>(null);
+            // We explicitly set the DB initializer to null to avoid that an existing DB is initialized wrongly.
+            //Database.SetInitializer<WebHookStoreContext>(null);
 
-			//IWebHookStore store = new RadialWebHookStore();
-			//CustomServices.SetStore(store);
-		}
+            IWebHookStore store = new RadialWebHookStore();
+            CustomServices.SetStore(store);
+        }
 	}
 
 	public class HandleApiExceptionAttribute : ExceptionFilterAttribute {

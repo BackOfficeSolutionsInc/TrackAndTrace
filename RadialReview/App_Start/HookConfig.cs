@@ -19,9 +19,9 @@ namespace RadialReview.App_Start {
 
 			HooksRegistry.RegisterHook(new UpdateUserModel_TeamNames());
 			HooksRegistry.RegisterHook(new UpdateRoles_Notifications());
-			//HooksRegistry.RegisterHook(new TodoWebhook());
+			HooksRegistry.RegisterHook(new TodoWebhook());
 
-			//HooksRegistry.RegisterHook(new IssueWebhook());
+			HooksRegistry.RegisterHook(new IssueWebhook());
 			HooksRegistry.RegisterHook(new ActiveCampaignEventHooks());
             HooksRegistry.RegisterHook(new EnterpriseHook(Config.EnterpriseAboveUserCount()));
 
