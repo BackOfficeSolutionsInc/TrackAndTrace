@@ -65,8 +65,8 @@ namespace TractionTools.Tests.Api {
 
             }
             WebhooksAccessor webhookAccessor = new WebhooksAccessor();
-            StoreResult result = webhookAccessor.InsertWebHook(c.E3.GetEmail(), webhook, selectedEvents);
-            Assert.AreEqual(result, StoreResult.Success);
+            var result = webhookAccessor.InsertWebHook(c.E3, webhook, selectedEvents);
+            Assert.IsNotNull(result);
         }
 
 
@@ -98,10 +98,10 @@ namespace TractionTools.Tests.Api {
             }
 
             WebhooksAccessor webhookAccessor = new WebhooksAccessor();
-            StoreResult result = webhookAccessor.InsertWebHook(c.E3.GetEmail(), webhook, selectedEvents);
+            webhookAccessor.InsertWebHook(c.E3, webhook, selectedEvents);
 
 
-            var getWebHook = webhookAccessor.LookupWebHook(c.E3.GetEmail(), webhook.Id);
+            var getWebHook = webhookAccessor.LookupWebHook(c.E3, webhook.Id);
             var getUserOrg = TinyUserAccessor.GetOrganizationMembers(c.E3, c.E3.Organization.Id);
             for (int i = 0; i < getUserOrg.Count; i++) {
 
@@ -118,8 +118,8 @@ namespace TractionTools.Tests.Api {
 
             var updatedVal = "Test123";
             webhook.Description = updatedVal;
-            var updateWebHook = webhookAccessor.UpdateWebHook(c.E3.GetEmail(), webhook, selectedEvents);
-            var getUpdatedWebHook = webhookAccessor.LookupWebHook(c.E3.GetEmail(), webhook.Id);
+            var updateWebHook = webhookAccessor.UpdateWebHook(c.E3, webhook, selectedEvents);
+            var getUpdatedWebHook = webhookAccessor.LookupWebHook(c.E3, webhook.Id);
 
             Assert.AreEqual(updatedVal, getUpdatedWebHook.Description);
         }
@@ -153,12 +153,12 @@ namespace TractionTools.Tests.Api {
             }
 
             WebhooksAccessor webhookAccessor = new WebhooksAccessor();
-            StoreResult result = webhookAccessor.InsertWebHook(c.E3.GetEmail(), webhook, selectedEvents);
+            webhookAccessor.InsertWebHook(c.E3, webhook, selectedEvents);
 
 
-            var getWebHook = webhookAccessor.LookupWebHook(c.E3.GetEmail(), webhook.Id);
-            var s = webhookAccessor.DeleteWebHook(c.E3.GetEmail(), getWebHook.Id);
-            var getWebHook1 = webhookAccessor.LookupWebHook(c.E3.GetEmail(), webhook.Id);
+            var getWebHook = webhookAccessor.LookupWebHook(c.E3, webhook.Id);
+            var s = webhookAccessor.DeleteWebHook(c.E3, getWebHook.Id);
+            var getWebHook1 = webhookAccessor.LookupWebHook(c.E3, webhook.Id);
 
             Assert.AreEqual(s, StoreResult.Success);
             Assert.IsNull(getWebHook1);
