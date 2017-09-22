@@ -12,13 +12,7 @@ using RadialReview;
 namespace TractionTools.Tests.Api {
     [TestClass]
     public class WebHookAccessorTests_v0 : BaseTest {
-
-        [TestMethod]
-        [TestCategory("Api_V0")]
-        public void TestEnsureApplicationExists() {
-            ApplicationAccessor.EnsureApplicationExists();
-        }
-
+      
         [TestMethod]
         [TestCategory("Api_V0")]
         public async Task TestCreateWebhook() {
@@ -34,7 +28,7 @@ namespace TractionTools.Tests.Api {
 
             List<string> selectedEvents = new List<string>();
 
-            var getAllL10RecurrenceAtOrganization = L10Accessor.GetAllL10RecurrenceAtOrganization(c.E1, c.E1.Organization.Id);
+            var getAllL10RecurrenceAtOrganization = L10Accessor.GetAllL10RecurrenceAtOrganization(c.E3, c.E3.Organization.Id);
             for (int i = 0; i < getAllL10RecurrenceAtOrganization.Count; i++) {
 
                 //L10 Add TODO Events
@@ -45,23 +39,23 @@ namespace TractionTools.Tests.Api {
                 selectedEvents.Add(WebhookEventType.AddIssuetoL10.GetDescription() + getAllL10RecurrenceAtOrganization[i].Id);
 
                 //Organization todo Event
-                selectedEvents.Add(WebhookEventType.AddTODOtoOrganization.GetDescription() + c.E1.Organization.Id);
+                selectedEvents.Add(WebhookEventType.AddTODOtoOrganization.GetDescription() + c.E3.Organization.Id);
 
                 //Organization Changing TODO Event
-                selectedEvents.Add(WebhookEventType.ChangingTODOtoOrganization.GetDescription() + c.E1.Organization.Id);
+                selectedEvents.Add(WebhookEventType.ChangingTODOtoOrganization.GetDescription() + c.E3.Organization.Id);
 
                 //Organization Issue Event
-                selectedEvents.Add(WebhookEventType.AddIssuetoOrganization.GetDescription() + c.E1.Organization.Id);
+                selectedEvents.Add(WebhookEventType.AddIssuetoOrganization.GetDescription() + c.E3.Organization.Id);
             }
 
 
 
             //User Events
-            var getUserOrg = TinyUserAccessor.GetOrganizationMembers(c.E1, c.E1.Organization.Id);
+            var getUserOrg = TinyUserAccessor.GetOrganizationMembers(c.E3, c.E3.Organization.Id);
             for (int i = 0; i < getUserOrg.Count; i++) {
 
                 //User Add TODO Event
-                selectedEvents.Add(WebhookEventType.AddTODOforUser.GetDescription() + c.E1.Organization.Id);
+                selectedEvents.Add(WebhookEventType.AddTODOforUser.GetDescription() + c.E3.Organization.Id);
 
                 //User Changing TODO Event
                 selectedEvents.Add(WebhookEventType.ChangingToDoforUser.GetDescription() + getUserOrg[i].UserOrgId);
@@ -71,7 +65,7 @@ namespace TractionTools.Tests.Api {
 
             }
             WebhooksAccessor webhookAccessor = new WebhooksAccessor();
-            StoreResult result = webhookAccessor.InsertWebHook(c.E1.GetEmail(), webhook, selectedEvents);
+            StoreResult result = webhookAccessor.InsertWebHook(c.E3.GetEmail(), webhook, selectedEvents);
             Assert.AreEqual(result, StoreResult.Success);
         }
 
@@ -91,7 +85,7 @@ namespace TractionTools.Tests.Api {
 
             List<string> selectedEvents = new List<string>();
 
-            var getAllL10RecurrenceAtOrganization = L10Accessor.GetAllL10RecurrenceAtOrganization(c.E1, c.E1.Organization.Id);
+            var getAllL10RecurrenceAtOrganization = L10Accessor.GetAllL10RecurrenceAtOrganization(c.E3, c.E3.Organization.Id);
             for (int i = 0; i < getAllL10RecurrenceAtOrganization.Count; i++) {
 
                 //L10 Add TODO Events
@@ -104,15 +98,15 @@ namespace TractionTools.Tests.Api {
             }
 
             WebhooksAccessor webhookAccessor = new WebhooksAccessor();
-            StoreResult result = webhookAccessor.InsertWebHook(c.E1.GetEmail(), webhook, selectedEvents);
+            StoreResult result = webhookAccessor.InsertWebHook(c.E3.GetEmail(), webhook, selectedEvents);
 
 
-            var getWebHook = webhookAccessor.LookupWebHook(c.E1.GetEmail(), webhook.Id);
-            var getUserOrg = TinyUserAccessor.GetOrganizationMembers(c.E1, c.E1.Organization.Id);
+            var getWebHook = webhookAccessor.LookupWebHook(c.E3.GetEmail(), webhook.Id);
+            var getUserOrg = TinyUserAccessor.GetOrganizationMembers(c.E3, c.E3.Organization.Id);
             for (int i = 0; i < getUserOrg.Count; i++) {
 
                 //User Add TODO Event
-                selectedEvents.Add(WebhookEventType.AddTODOforUser.GetDescription() + c.E1.Organization.Id);
+                selectedEvents.Add(WebhookEventType.AddTODOforUser.GetDescription() + c.E3.Organization.Id);
 
                 //User Changing TODO Event
                 selectedEvents.Add(WebhookEventType.ChangingToDoforUser.GetDescription() + getUserOrg[i].UserOrgId);
@@ -124,8 +118,8 @@ namespace TractionTools.Tests.Api {
 
             var updatedVal = "Test123";
             webhook.Description = updatedVal;
-            var updateWebHook = webhookAccessor.UpdateWebHook(c.E1.GetEmail(), webhook, selectedEvents);
-            var getUpdatedWebHook = webhookAccessor.LookupWebHook(c.E1.GetEmail(), webhook.Id);
+            var updateWebHook = webhookAccessor.UpdateWebHook(c.E3.GetEmail(), webhook, selectedEvents);
+            var getUpdatedWebHook = webhookAccessor.LookupWebHook(c.E3.GetEmail(), webhook.Id);
 
             Assert.AreEqual(updatedVal, getUpdatedWebHook.Description);
         }
@@ -146,7 +140,7 @@ namespace TractionTools.Tests.Api {
 
             List<string> selectedEvents = new List<string>();
 
-            var getAllL10RecurrenceAtOrganization = L10Accessor.GetAllL10RecurrenceAtOrganization(c.E1, c.E1.Organization.Id);
+            var getAllL10RecurrenceAtOrganization = L10Accessor.GetAllL10RecurrenceAtOrganization(c.E3, c.E3.Organization.Id);
             for (int i = 0; i < getAllL10RecurrenceAtOrganization.Count; i++) {
 
                 //L10 Add TODO Events
@@ -159,13 +153,15 @@ namespace TractionTools.Tests.Api {
             }
 
             WebhooksAccessor webhookAccessor = new WebhooksAccessor();
-            StoreResult result = webhookAccessor.InsertWebHook(c.E1.GetEmail(), webhook, selectedEvents);
+            StoreResult result = webhookAccessor.InsertWebHook(c.E3.GetEmail(), webhook, selectedEvents);
 
 
-            var getWebHook = webhookAccessor.LookupWebHook(c.E1.GetEmail(), webhook.Id);
-            var s = webhookAccessor.DeleteWebHook(c.E1.GetEmail(), getWebHook.Id);
+            var getWebHook = webhookAccessor.LookupWebHook(c.E3.GetEmail(), webhook.Id);
+            var s = webhookAccessor.DeleteWebHook(c.E3.GetEmail(), getWebHook.Id);
+            var getWebHook1 = webhookAccessor.LookupWebHook(c.E3.GetEmail(), webhook.Id);
 
             Assert.AreEqual(s, StoreResult.Success);
+            Assert.IsNull(getWebHook1);
         }
 
     }
