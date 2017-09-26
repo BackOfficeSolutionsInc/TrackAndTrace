@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.DataProtection;
 using System.Globalization;
 using System.ComponentModel;
 using System.Reflection;
+using System.Web.Mvc;
 
 namespace RadialReview.Accessors {
     public class WebhooksAccessor : BaseAccessor {
@@ -34,7 +35,7 @@ namespace RadialReview.Accessors {
         public WebhooksAccessor() {
             _protector = DataSecurity.GetDataProtector();
         }
-        public string InsertWebHook(ISession s, string email, WebHook webHook, string userId, List<string> events) {
+        public WebhookDetails InsertWebHook(ISession s, string email, WebHook webHook, string userId, List<string> events) {
             try {
                 var webhookDetails = ConvertToWebHook(email, webHook);
 
@@ -42,14 +43,26 @@ namespace RadialReview.Accessors {
                 s.Save(webhookDetails);
                 AddSubscribeEvents(s, events, webhookDetails.Id);
 
-                return webhookDetails.Id;
+                return webhookDetails;
             } catch (Exception ex) {
                 throw ex;
             }
         }
-        public string InsertWebHook(UserOrganizationModel caller, WebHook webHook, List<string> events) {
+        public WebhookDetails InsertWebHook(UserOrganizationModel caller, WebHook webHook, List<string> events) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
+
+                    int count = 0;
+                    foreach (var item in events) {
+                        var result = GetEventList(caller).Where(t => t.Text == item).SingleOrDefault();
+                        if (result != null)
+                            count++;
+                    }
+
+                    if (count != events.Count) {
+                        throw new PermissionsException("Events doesn't exist.");
+                    }
+
                     var getUser = s.QueryOver<UserModel>().Where(t => t.UserName == caller.GetEmail()).SingleOrDefault();
 
                     PermissionsUtility perms = PermissionsUtility.Create(s, caller);
@@ -81,9 +94,11 @@ namespace RadialReview.Accessors {
         public void AddSubscribeEvents(ISession s, List<string> events, string webhookId, bool isRemove = false) {
             if (events != null) {
                 if (isRemove) {
-                    var getEvents = s.QueryOver<WebhookEventsSubscription>().Where(m => m.WebhookId == webhookId).List().ToList();
+                    var getEvents = s.QueryOver<WebhookEventsSubscription>().Where(m => m.WebhookId == webhookId && m.DeleteTime == null).List().ToList();
                     for (int i = 0; i < getEvents.Count; i++) {
-                        s.Delete(getEvents[i]);
+                        getEvents[i].DeleteTime = DateTime.UtcNow;
+                        s.Update(getEvents[i]);
+                        // s.Delete(getEvents[i]);
                     }
                 }
 
@@ -97,15 +112,19 @@ namespace RadialReview.Accessors {
                 }
             }
         }
-        public ICollection<WebHook> GetAllWebHook() {
+        public ICollection<WebHook> GetAllWebHookByUser(UserOrganizationModel caller) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
-                    var allWebhook = s.QueryOver<WebhookDetails>().Where(m => m.DeleteTime == null).List().ToList();
+                    PermissionsUtility perms = PermissionsUtility.Create(s, caller);
+                    perms.Self(caller.Id);
+                    var allWebhook = s.QueryOver<WebhookDetails>().Where(m => m.DeleteTime == null && m.Email == caller.GetEmail()).List().ToList();
                     ICollection<WebHook> list = allWebhook.Select(r => ConvertToWebHook(r)).Where(w => w != null).ToArray();
                     return list;
                 }
             }
         }
+
+        [Obsolete("Use in WebhookStore")]
         public List<WebHook> GetQueryWebHooksAcrossAllUsers(IEnumerable<string> actions, Func<WebHook, string, bool> predicate = null) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -192,40 +211,18 @@ namespace RadialReview.Accessors {
                 }
             }
         }
-        public StoreResult DeleteAllWebHook(string user) {
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var deleteAllWebHook = s.QueryOver<WebhookDetails>().Where(m => m.Email == user).List().ToList();
-                    foreach (var item in deleteAllWebHook) {
-                        item.DeleteTime = DateTime.UtcNow;
-                        s.Update(item);
-                    }
 
-                    tx.Commit();
-                    s.Flush();
-                    return StoreResult.Success;
-                }
-            }
-        }
-        public void AddWebhookEventsSubscription(WebhookEventsSubscription webhookEventsSubscription) {
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    s.Save(webhookEventsSubscription);
-                    tx.Commit();
-                    s.Flush();
-                }
-            }
-        }
         public WebhookDetails GetWebhookEventSubscriptions(UserOrganizationModel caller, string webhookId) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 var getUser = s.QueryOver<UserModel>().Where(t => t.UserName == caller.GetEmail()).SingleOrDefault();
 
                 var getSubscriptionList = s.Get<WebhookDetails>(webhookId);
 
-                if(getSubscriptionList == null || getSubscriptionList.UserId != getUser.Id || getSubscriptionList.DeleteTime != null) {
+                if (getSubscriptionList == null || getSubscriptionList.UserId != getUser.Id || getSubscriptionList.DeleteTime != null) {
                     throw new PermissionsException();
                 }
 
+                //var r = s.QueryOver<WebhookEventsSubscription>().Where(t => t.WebhookId == webhookId).List();
                 var a = getSubscriptionList.WebhookEventsSubscription.ToList();
 
                 //.Where(t => t.UserId == getUser.Id && t.Id == webhookId && t.DeleteTime == null)
@@ -236,64 +233,141 @@ namespace RadialReview.Accessors {
             }
         }
 
-        #region WebHook Events methods
-        //public void DeleteWebHookEvents(long id)
-        //{
-        //    using (var s = HibernateSession.GetCurrentSession())
-        //    {
-        //        using (var tx = s.BeginTransaction())
-        //        {
-        //            //var deleteWebHookEvents = s.QueryOver<WebhookEvents>().Where(m => m.Id == id).SingleOrDefault();
-        //            //if (deleteWebHookEvents != null) {
-        //            //	s.Delete(deleteWebHookEvents);
-        //            //	tx.Commit();
-        //            //	s.Flush();
-        //            //}
+        public List<SelectListItem> GetEventList(UserOrganizationModel caller) {
 
-        //        }
-        //    }
-        //}
+            var eventList = new List<SelectListItem>();
 
-        //public void UpdateWebHookEvents(WebhookEvents webhookEvents) {
-        //	using (var s = HibernateSession.GetCurrentSession()) {
-        //		using (var tx = s.BeginTransaction()) {
-        //			var updateWebHookEvents = s.QueryOver<WebhookEvents>().Where(m => m.Id == webhookEvents.Id).SingleOrDefault();
-        //			if (updateWebHookEvents != null) {
-        //				s.Clear();
-        //				s.Update(webhookEvents);
-        //				tx.Commit();
-        //				s.Flush();
-        //			}
-        //		}
-        //	}
-        //}
+            //L10 Events
+            var getAllL10RecurrenceAtOrganization = L10Accessor.GetVisibleL10Meetings_Tiny(caller, caller.Id);
 
-        //public void CreateWebhookEvents(WebhookEvents webhookEvents) {
-        //	using (var s = HibernateSession.GetCurrentSession()) {
-        //		using (var tx = s.BeginTransaction()) {
-        //			s.Save(webhookEvents);
-        //			tx.Commit();
-        //			s.Flush();
-        //		}
-        //	}
-        //}
-        //public WebhookEvents LookupWebHookEvents(long id) {
-        //	using (var s = HibernateSession.GetCurrentSession()) {
-        //		using (var tx = s.BeginTransaction()) {
-        //			var lookupWebHookEvents = s.QueryOver<WebhookEvents>().Where(m => m.Id == id).SingleOrDefault();
-        //			return lookupWebHookEvents;
-        //		}
-        //	}
-        //}
-        //public ICollection<WebhookEvents> GetWebHookEvents() {
-        //	using (var s = HibernateSession.GetCurrentSession()) {
-        //		using (var tx = s.BeginTransaction()) {
-        //			var allWebhook = s.QueryOver<WebhookEvents>().List().ToList();
-        //			return allWebhook;
-        //		}
-        //	}
-        //}
-        #endregion
+            for (int i = 0; i < getAllL10RecurrenceAtOrganization.Count; i++) {
+                //L10 Add TODO Events
+                string val = WebhookEventType.AddTODOtoL10.GetDescription() + getAllL10RecurrenceAtOrganization[i].Id;
+                eventList.Add(new SelectListItem() { Text = val, Value = val });
+
+                //L10 Checking/Unchecking/Closing TODO Events
+                string checking_Unchecking_Closing_Events = WebhookEventType.Checking_Unchecking_Closing_TODOtoL10.GetDescription() + getAllL10RecurrenceAtOrganization[i].Id;
+                eventList.Add(new SelectListItem() { Text = checking_Unchecking_Closing_Events, Value = checking_Unchecking_Closing_Events });
+
+                //L10 Changing TODO Events
+                string Changing_Events = WebhookEventType.ChangingToDotoL10.GetDescription() + getAllL10RecurrenceAtOrganization[i].Id;
+                eventList.Add(new SelectListItem() { Text = Changing_Events, Value = Changing_Events });
+
+
+                //L10 Add Issue Events
+                eventList.Add(new SelectListItem() {
+                    Text = WebhookEventType.AddIssuetoL10.GetDescription() + getAllL10RecurrenceAtOrganization[i].Id,
+                    Value = WebhookEventType.AddIssuetoL10.GetDescription() + getAllL10RecurrenceAtOrganization[i].Id
+                });
+
+                //L10 Checking/Unchecking/Closing Issue Events
+                eventList.Add(new SelectListItem() {
+                    Text = WebhookEventType.Checking_Unchecking_Closing_IssuetoL10.GetDescription() + getAllL10RecurrenceAtOrganization[i].Id,
+                    Value = WebhookEventType.Checking_Unchecking_Closing_IssuetoL10.GetDescription() + getAllL10RecurrenceAtOrganization[i].Id
+                });
+
+                //L10 Changing Issue Events
+                eventList.Add(new SelectListItem() {
+                    Text = WebhookEventType.ChangingIssuetoL10.GetDescription() + getAllL10RecurrenceAtOrganization[i].Id,
+                    Value = WebhookEventType.ChangingIssuetoL10.GetDescription() + getAllL10RecurrenceAtOrganization[i].Id
+                });
+
+            }
+
+            #region Organization Todo Event
+
+            //Organization Event
+            eventList.Add(new SelectListItem() {
+                Text = WebhookEventType.AddTODOtoOrganization.GetDescription() + caller.Organization.GetName(),
+                Value = WebhookEventType.AddTODOtoOrganization.GetDescription() + caller.Organization.Id
+            });
+
+            //Organization Checking/Unchecking/Closing TODO Event
+            eventList.Add(new SelectListItem() {
+                Text = WebhookEventType.Checking_Unchecking_Closing_TODOtoOrganization.GetDescription() + caller.Organization.GetName(),
+                Value = WebhookEventType.Checking_Unchecking_Closing_TODOtoOrganization.GetDescription() + caller.Organization.Id
+            });
+
+
+            //Organization Changing TODO Event
+            eventList.Add(new SelectListItem() {
+                Text = WebhookEventType.ChangingTODOtoOrganization.GetDescription() + caller.Organization.GetName(),
+                Value = WebhookEventType.ChangingTODOtoOrganization.GetDescription() + caller.Organization.Id
+            });
+
+            #endregion
+
+
+            #region Organization Issue Event
+
+            //Organization Event
+            eventList.Add(new SelectListItem() {
+                Text = WebhookEventType.AddIssuetoOrganization.GetDescription() + caller.Organization.GetName(),
+                Value = WebhookEventType.AddIssuetoOrganization.GetDescription() + caller.Organization.Id
+            });
+
+            //Organization Checking/Unchecking/Closing TODO Event
+            eventList.Add(new SelectListItem() {
+                Text = WebhookEventType.Checking_Unchecking_Closing_IssuetoOrganization.GetDescription() + caller.Organization.GetName(),
+                Value = WebhookEventType.Checking_Unchecking_Closing_IssuetoOrganization.GetDescription() + caller.Organization.Id
+            });
+
+
+            //Organization Changing TODO Event
+            eventList.Add(new SelectListItem() {
+                Text = WebhookEventType.ChangingIssuetoOrganization.GetDescription() + caller.Organization.GetName(),
+                Value = WebhookEventType.ChangingIssuetoOrganization.GetDescription() + caller.Organization.Id
+            });
+
+            #endregion
+
+            //User Events
+            var getUserOrg = DeepAccessor.Tiny.GetSubordinatesAndSelf(caller, caller.Id);
+            for (int i = 0; i < getUserOrg.Count; i++) {
+                //User Add TODO Event
+                eventList.Add(new SelectListItem() {
+                    Text = WebhookEventType.AddTODOforUser.GetDescription() + getUserOrg[i].UserOrgId,
+                    Value = WebhookEventType.AddTODOforUser.GetDescription() + getUserOrg[i].UserOrgId
+                });
+
+
+                //User Checking/Unchecking/Closing TODO Event
+                eventList.Add(new SelectListItem() {
+                    Text = WebhookEventType.Checking_Unchecking_Closing_TODOforUser.GetDescription() + getUserOrg[i].UserOrgId,
+                    Value = WebhookEventType.Checking_Unchecking_Closing_TODOforUser.GetDescription() + getUserOrg[i].UserOrgId
+                });
+
+                //User Changing TODO Event
+                eventList.Add(new SelectListItem() {
+                    Text = WebhookEventType.ChangingToDoforUser.GetDescription() + getUserOrg[i].UserOrgId,
+                    Value = WebhookEventType.ChangingToDoforUser.GetDescription() + getUserOrg[i].UserOrgId
+                });
+
+
+                //User Add Issue Event
+                eventList.Add(new SelectListItem() {
+                    Text = WebhookEventType.AddIssueforUser.GetDescription() + getUserOrg[i].UserOrgId,
+                    Value = WebhookEventType.AddIssueforUser.GetDescription() + getUserOrg[i].UserOrgId
+                });
+
+
+                //User Checking/Unchecking/Closing Issue Event
+                eventList.Add(new SelectListItem() {
+                    Text = WebhookEventType.Checking_Unchecking_Closing_IssueforUser.GetDescription() + getUserOrg[i].UserOrgId,
+                    Value = WebhookEventType.Checking_Unchecking_Closing_IssueforUser.GetDescription() + getUserOrg[i].UserOrgId
+                });
+
+                //User Changing Issue Event
+                eventList.Add(new SelectListItem() {
+                    Text = WebhookEventType.ChangingIssueforUser.GetDescription() + getUserOrg[i].UserOrgId,
+                    Value = WebhookEventType.ChangingIssueforUser.GetDescription() + getUserOrg[i].UserOrgId
+                });
+
+            }
+
+            return eventList;
+        }
+
 
         #region Helper methods
 
