@@ -20,6 +20,8 @@ namespace RadialReview.Models.L10.VM
 		public DateTime? EndTime { get; set; }
 		public double AverageRating { get; set; }
 
+        public int Version { get; set; }
+
 
         public List<TodoModel> AllTodos { get; set; }
     }

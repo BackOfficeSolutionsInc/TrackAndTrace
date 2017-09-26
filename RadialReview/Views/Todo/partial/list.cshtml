@@ -1,36 +1,39 @@
 ﻿@{
-	var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
-	var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
-	var completion = (ViewBag.AddCompletion == null || ((bool)ViewBag.AddCompletion) == true);
-	var datepicker = (ViewBag.AddDatePicker == null || ((bool)ViewBag.AddDatePicker) == true);
-	var selector = ViewBag.Selector as string ?? "model.Todos";
-	var filter = ViewBag.Filter as string ?? "| filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate)";
+    var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
+    var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
+    var completion = (ViewBag.AddCompletion == null || ((bool)ViewBag.AddCompletion) == true);
+    var datepicker = (ViewBag.AddDatePicker == null || ((bool)ViewBag.AddDatePicker) == true);
+    var selector = ViewBag.Selector as string ?? "model.Todos";
+    var filter = ViewBag.Filter as string ?? "| filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate)";
 
-	var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
-	var defaultSort = ViewBag.DefaultSort ?? "'-DueDate'";
+    var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
+    var defaultSort = ViewBag.DefaultSort ?? "'-DueDate'";
 
-	var usePopup = ViewBag.UsePopup==true;
+    var usePopup = ViewBag.UsePopup==true;
 
-	var showDetails = (ViewBag.ShowDetails == null || ((bool)ViewBag.ShowDetails) == true);
+    var showDetails = (ViewBag.ShowDetails == null || ((bool)ViewBag.ShowDetails) == true);
 
-	var guid = Guid.NewGuid().ToString().Replace("-", "");
+    var guid = Guid.NewGuid().ToString().Replace("-", "");
 
-	var detailsCode = showDetails ? "todo.DetailsUrl_Src=todo.DetailsUrl;model.Selected = todo.Key+'"+guid+"';" : "";
+    var detailsCode = showDetails ? "todo.DetailsUrl_Src=todo.DetailsUrl;model.Selected = todo.Key+'"+guid+"';" : "";
 
-	var recurrenceId = ViewBag.RecurrenceId ?? "model.Id";
+    var recurrenceId = ViewBag.RecurrenceId ?? "model.Id";
 
-	var attrLookup = new Dictionary<string, string>(){
-		{"todotype-column",""},
-		{"checkbox-column",""},
-		{"picture-column",""},
-		{"message-column",""},
-		{"due-column",""},
-		{"empty-column",""},
-		{"createtime-column",""},
-		{"complete-column",""},
-		{"origin-column",""},
-		{"delete-column",""}
-	};
+    var onempty = ViewBag.OnEmpty ?? "No to-dos fit your search criteria.";
+
+
+    var attrLookup = new Dictionary<string, string>(){
+        {"todotype-column",""},
+        {"checkbox-column",""},
+        {"picture-column",""},
+        {"message-column",""},
+        {"due-column",""},
+        {"empty-column",""},
+        {"createtime-column",""},
+        {"complete-column",""},
+        {"origin-column",""},
+        {"delete-column",""}
+    };
 }
 <div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak todo-list-container app">
 	<div @(headers || controller ? "ng-controller=L10Controller" : "")>
@@ -120,7 +123,7 @@
 					<div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
 					<div class="create-row" ng-click="functions.addRow($event,'AngularTodo')" data-toggle="tooltip" data-placement="left" title="New To-do"></div>
 					<div class="gray no-todos empty-search" style="padding: 30px 15px;" ng-if="(@(selector) @(filter)).length==0">
-						No to-dos fit your search criteria.
+						@(onempty)
 					</div>
 				</div>
 			</div>

@@ -389,6 +389,7 @@ namespace RadialReview.Controllers {
 				UserId = user.Id,
 				ShowScorecardColors = user._StylesSettings.ShowScorecardColors,
 				ReverseScorecard = user.ReverseScorecard,
+                DisableTips = user.DisableTips,
 			};
 		}
 
@@ -405,7 +406,8 @@ namespace RadialReview.Controllers {
 				model.SendTodoTime != null,
 				model.SendTodoTime,
 				model.ShowScorecardColors,
-				model.ReverseScorecard);
+                model.ReverseScorecard,
+                model.DisableTips);
 			return RedirectToAction("Index", "Home");
 		}
 

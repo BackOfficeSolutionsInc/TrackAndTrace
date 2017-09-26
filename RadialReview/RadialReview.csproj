@@ -137,11 +137,13 @@
     <Compile Include="Areas\CoreProcess\CoreProcessAreaRegistration.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\ITaskAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
+    <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Hooks\Tasks_RealTime.cs" />
     <Compile Include="Hubs\CoreProcessHub.cs" />
     <Compile Include="Models\Angular\CoreProcess\AngularTask.cs" />
     <Compile Include="Models\Angular\CoreProcess\AngularCoreProcess.cs" />
     <Compile Include="Models\Application\Variable.cs" />
+    <Compile Include="Models\ClientSuccess\TooltipModels.cs" />
     <Compile Include="Utilities\CoreProcess\AmazonSQSUtility.cs" />
     <Compile Include="Utilities\AsyncUtility.cs" />
     <Compile Include="Utilities\CoreProcess\BpmnUtility.cs" />
@@ -1255,6 +1257,7 @@
     <Content Include="Scripts\Main\modals.js" />
     <Content Include="Scripts\Main\profilepicture.js" />
     <Content Include="Scripts\Main\support.js" />
+    <Content Include="Scripts\Main\tooltips.js" />
     <Content Include="Scripts\Main\tours.js" />
     <Content Include="Scripts\People\DiagonalTable.js" />
     <Content Include="Scripts\People\rzslider.js" />
@@ -1659,6 +1662,10 @@
     <Content Include="Views\TileData\Tasks.cshtml" />
     <Content Include="Views\Tasks\partial\list.cshtml" />
     <Content Include="Views\Tasks\partial\coreProcessList.cshtml" />
+    <Content Include="Views\ClientSuccess\Tooltips.cshtml" />
+    <Content Include="Views\ClientSuccess\Index.cshtml" />
+    <Content Include="Views\ClientSuccess\Modal.cshtml" />
+    <Content Include="Views\TileData\Milestones.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

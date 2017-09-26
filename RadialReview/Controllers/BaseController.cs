@@ -746,45 +746,11 @@ namespace RadialReview.Controllers {
 
 
                             if (oneUser != null) {
-								var name = new HtmlString(oneUser.GetName());
+                                OneUserViewBagSetup(filterContext, s, userOrgsCount, oneUser);
 
-								if (userOrgsCount > 1) {
-									name = new HtmlString(oneUser.GetNameAndTitle(1));
-									try {
-										name = new HtmlString(name + " <span class=\"visible-md visible-lg\" style=\"display:inline ! important\">at " + oneUser.Organization.Name.Translate() + "</span>");
-									} catch (Exception e) {
-										log.Error(e);
-									}
-								}
-								filterContext.Controller.ViewBag.UserImage = oneUser.ImageUrl(true, ImageSize._img);
-								filterContext.Controller.ViewBag.UserInitials = oneUser.GetInitials();
-								filterContext.Controller.ViewBag.UserColor = oneUser.GeUserHashCode();
-								filterContext.Controller.ViewBag.UsersName = oneUser.GetName();
+                                SetupToolTips(filterContext.Controller.ViewBag, s, oneUser,Request.NotNull(x=>x.Path));
 
-								filterContext.Controller.ViewBag.UserOrganization = oneUser;
-								filterContext.Controller.ViewBag.ConsoleLog = oneUser.User.NotNull(x => x.ConsoleLog);
-
-								filterContext.Controller.ViewBag.TaskCount = 0;
-
-								filterContext.Controller.ViewBag.UserName = name;
-								filterContext.Controller.ViewBag.ShowL10 = oneUser.Organization.Settings.EnableL10;
-								filterContext.Controller.ViewBag.ShowReview = oneUser.Organization.Settings.EnableReview && !oneUser.IsClient;
-								filterContext.Controller.ViewBag.ShowSurvey = oneUser.Organization.Settings.EnableSurvey && oneUser.IsManager();
-                                filterContext.Controller.ViewBag.ShowPeople = oneUser.Organization.Settings.EnablePeople;// && oneUser.IsManager();
-                                filterContext.Controller.ViewBag.ShowCoreProcess = oneUser.Organization.Settings.EnableCoreProcess;// && oneUser.IsManager();
-
-                                filterContext.Controller.ViewBag.ShowAC = PermissionsAccessor.IsPermitted(s, oneUser, x => x.CanView(PermItem.ResourceType.AccountabilityHierarchy, oneUser.Organization.AccountabilityChartId)); // oneUser.Organization.acc && oneUser.IsManager();
-
-								var isManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
-								filterContext.Controller.ViewBag.LimitFiveState = oneUser.Organization.Settings.LimitFiveState;
-								filterContext.Controller.ViewBag.IsRadialAdmin = oneUser.IsRadialAdmin;
-								filterContext.Controller.ViewBag.IsManager = isManager;
-								filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
-								filterContext.Controller.ViewBag.UserId = oneUser.Id;
-								filterContext.Controller.ViewBag.OrganizationId = oneUser.Organization.Id;
-								filterContext.Controller.ViewBag.Organization = oneUser.Organization;
-								filterContext.Controller.ViewBag.Hints = oneUser.User.NotNull(x => x.Hints);
-							} else {
+                            } else {
 								var user = GetUserModel(s);
 								filterContext.Controller.ViewBag.Hints = user.Hints;
 								filterContext.Controller.ViewBag.UserName = user.Name() ?? MessageStrings.User;
@@ -818,7 +784,63 @@ namespace RadialReview.Controllers {
 				});
 			}
 		}
-		protected override void OnActionExecuted(ActionExecutedContext filterContext) {
+                
+
+        private void SetupToolTips(dynamic ViewBag, ISession s, UserOrganizationModel oneUser,string path) {
+            try {
+                var username = oneUser.User.NotNull(x => x.Id);
+                var enabled =  !oneUser.User.NotNull(x=>x.DisableTips);
+                if (username != null && path != null && enabled) {
+                    ViewBag.TooltipsEnabled = true;
+                    ViewBag.Tooltips = SupportAccessor.GetTooltips(username, path);
+                }
+            } catch (Exception e) {
+                //Eat it! Get yourself a fork and feed it.
+            }
+        }
+
+        private static void OneUserViewBagSetup(ActionExecutingContext filterContext, ISession s, int userOrgsCount, UserOrganizationModel oneUser) {
+            var name = new HtmlString(oneUser.GetName());
+
+            if (userOrgsCount > 1) {
+                name = new HtmlString(oneUser.GetNameAndTitle(1));
+                try {
+                    name = new HtmlString(name + " <span class=\"visible-md visible-lg\" style=\"display:inline ! important\">at " + oneUser.Organization.Name.Translate() + "</span>");
+                } catch (Exception e) {
+                    log.Error(e);
+                }
+            }
+            filterContext.Controller.ViewBag.UserImage = oneUser.ImageUrl(true, ImageSize._img);
+            filterContext.Controller.ViewBag.UserInitials = oneUser.GetInitials();
+            filterContext.Controller.ViewBag.UserColor = oneUser.GeUserHashCode();
+            filterContext.Controller.ViewBag.UsersName = oneUser.GetName();
+
+            filterContext.Controller.ViewBag.UserOrganization = oneUser;
+            filterContext.Controller.ViewBag.ConsoleLog = oneUser.User.NotNull(x => x.ConsoleLog);
+
+            filterContext.Controller.ViewBag.TaskCount = 0;
+
+            filterContext.Controller.ViewBag.UserName = name;
+            filterContext.Controller.ViewBag.ShowL10 = oneUser.Organization.Settings.EnableL10;
+            filterContext.Controller.ViewBag.ShowReview = oneUser.Organization.Settings.EnableReview && !oneUser.IsClient;
+            filterContext.Controller.ViewBag.ShowSurvey = oneUser.Organization.Settings.EnableSurvey && oneUser.IsManager();
+            filterContext.Controller.ViewBag.ShowPeople = oneUser.Organization.Settings.EnablePeople;// && oneUser.IsManager();
+            filterContext.Controller.ViewBag.ShowCoreProcess = oneUser.Organization.Settings.EnableCoreProcess;// && oneUser.IsManager();
+
+            filterContext.Controller.ViewBag.ShowAC = PermissionsAccessor.IsPermitted(s, oneUser, x => x.CanView(PermItem.ResourceType.AccountabilityHierarchy, oneUser.Organization.AccountabilityChartId)); // oneUser.Organization.acc && oneUser.IsManager();
+
+            var isManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
+            filterContext.Controller.ViewBag.LimitFiveState = oneUser.Organization.Settings.LimitFiveState;
+            filterContext.Controller.ViewBag.IsRadialAdmin = oneUser.IsRadialAdmin;
+            filterContext.Controller.ViewBag.IsManager = isManager;
+            filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
+            filterContext.Controller.ViewBag.UserId = oneUser.Id;
+            filterContext.Controller.ViewBag.OrganizationId = oneUser.Organization.Id;
+            filterContext.Controller.ViewBag.Organization = oneUser.Organization;
+            filterContext.Controller.ViewBag.Hints = oneUser.User.NotNull(x => x.Hints);
+        }
+
+        protected override void OnActionExecuted(ActionExecutedContext filterContext) {
 			HibernateSession.CloseCurrentSession();
 			if (ToValidate.Any()) {
 				var err = "Didn't validate: " + String.Join(",", ToValidate);

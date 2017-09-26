@@ -41,10 +41,14 @@
 						<div class="col-md-3">  Show color on scorecard:</div>
 						<div class="col-md-9">  @Html.CheckBoxFor(x => x.ShowScorecardColors, new { @class = "checkbox" })</div>
 					</div>
-					<div class="row smallBreak">
-						<div class="col-md-3">  Reverse my scorecard:</div>
-						<div class="col-md-9">  @Html.CheckBoxFor(x => x.ReverseScorecard, new { @class = "checkbox" })</div>
-					</div>
+                    <div class="row smallBreak">
+                        <div class="col-md-3">  Reverse my scorecard:</div>
+                        <div class="col-md-9">  @Html.CheckBoxFor(x => x.ReverseScorecard, new { @class = "checkbox" })</div>
+                    </div>
+                    <div class="row smallBreak">
+                        <div class="col-md-3">  Disable Tips:</div>
+                        <div class="col-md-9">  @Html.CheckBoxFor(x => x.DisableTips, new { @class = "checkbox" })</div>
+                    </div>
 					<div class="row">
 						<div class="col-md-offset-2 col-md-10">
 							<div class="row alignCenter">

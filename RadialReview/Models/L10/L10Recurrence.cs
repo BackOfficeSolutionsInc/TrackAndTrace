@@ -361,5 +361,11 @@ namespace RadialReview.Models.L10 {
 				return Tuple.Create(Provider.NotNull(x => x.Id), L10Recurrence.Id, DeleteTime);
 			}
 		}
-	}
+
+        public virtual long GetDefaultTodoOwner(UserOrganizationModel caller) {
+            if (DefaultTodoOwner == -1 && caller!=null)
+                return caller.Id;
+            return DefaultTodoOwner;
+        }
+    }
 }

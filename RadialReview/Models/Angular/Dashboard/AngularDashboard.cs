@@ -54,6 +54,7 @@ namespace RadialReview.Models.Angular.Dashboard {
     public class ListDataVM : BaseAngular {
         public string Name { get; set; }
         public IEnumerable<AngularTodo> Todos { get; set; }
+        public IEnumerable<AngularTodo> Milestones { get; set; }
         public AngularScorecard Scorecard { get; set; }
         public IEnumerable<AngularRock> Rocks { get; set; }
         public IEnumerable<AngularUser> Members { get; set; }

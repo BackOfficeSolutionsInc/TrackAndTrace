@@ -270,7 +270,7 @@ namespace RadialReview.Accessors {
 					foreach (var t in ratings.OrderBy(x => x.L10Meeting.CompleteTime).GroupBy(x => x.L10Meeting.Id)) {
 						foreach (var u in t) {
 							if (u.L10Meeting.CompleteTime != null) {
-								csv.Add(u.User.GetName(), u.L10Meeting.CompleteTime.Value.ToString(), u.Rating.NotNull(x => "" + x) ?? "NR");
+								csv.Add(u.User.GetName(), u.L10Meeting.CompleteTime.Value.ToString(), u.Rating.NotNull(x => "" + String.Format("{0:##.###}",x)) ?? "NR");
 							}
 						}
 					}

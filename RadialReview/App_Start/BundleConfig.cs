@@ -83,10 +83,11 @@ namespace RadialReview {
                       "~/Scripts/L10/jquery-ui.color.js",
 					  "~/Scripts/jquery/jquery.tabbable.js",
 					  "~/Scripts/components/milestones.js",
-					  "~/Scripts/Main/keyboard.js"
-			/*,
+                      "~/Scripts/Main/keyboard.js",
+                      "~/Scripts/Main/tooltips.js"
+            /*,
 			"~/Scripts/Main/realtime.js"*/
-			));
+            ));
         }
 
 		private static void AngularMaterial(BundleCollection bundles) {

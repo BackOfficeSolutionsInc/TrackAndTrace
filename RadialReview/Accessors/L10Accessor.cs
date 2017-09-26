@@ -5238,6 +5238,7 @@ namespace RadialReview.Accessors {
                     var meeting = o.OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).FirstOrDefault();
                     var prevMeeting = o.OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).Take(2).LastOrDefault();
 
+                    var version = 0;
 
                     int issuesSolved = 0;
                     int todoComplete = 0;
@@ -5253,9 +5254,11 @@ namespace RadialReview.Accessors {
                         todosCreated = s.QueryOver<TodoModel>().Where(x => x.ForRecurrenceId == recurrenceId && x.CreateTime > createTime).List().ToList();
                         allTodos = s.QueryOver<TodoModel>().Where(x => x.ForRecurrenceId == recurrenceId && x.CompleteTime == null).List().ToList();
                         oldTodos = s.QueryOver<TodoModel>().Where(x => x.ForRecurrenceId == recurrenceId && x.CreateTime < createTime && (x.CompleteTime == null || x.CompleteTime > createTime)).List().ToList();
+                        version = 1;
                         if (prevMeeting != null && prevMeeting.CompleteTime != null)
                             todoComplete = s.QueryOver<TodoModel>().Where(x => x.ForRecurrenceId == recurrenceId && x.CompleteTime > prevMeeting.CompleteTime).List().Count;
                     } else {
+                        version = 2;
                         issuesSolved = s.QueryOver<IssueModel.IssueModel_Recurrence>().Where(x => x.Recurrence.Id == recurrenceId && x.CloseTime > meeting.CreateTime && x.CloseTime < meeting.CompleteTime).List().Count;
                         todosCreated = s.QueryOver<TodoModel>().Where(x => x.ForRecurrenceId == recurrenceId && x.CreateTime > meeting.CreateTime && x.CreateTime < meeting.CompleteTime).List().ToList();
                         allTodos = s.QueryOver<TodoModel>().Where(x => x.ForRecurrenceId == recurrenceId && x.CompleteTime == null).List().ToList();
@@ -5301,7 +5304,8 @@ namespace RadialReview.Accessors {
                         TodoCompleted = todoComplete,
                         AverageRating = rating,
                         AllTodos = allTodos,
-                        TodoCompletionPercentage = completion
+                        TodoCompletionPercentage = completion,
+                        Version = version
                     };
 
                     //if (stats.StartTime != null)

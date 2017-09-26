@@ -527,6 +527,10 @@
                     var selected = +found[i] == selectedTodoList ? "selected" : "";
                     $(".default-todo-list").append("<option value='" + found[i]+ "' " + selected + ">"+text+"</option>");
                 }
+                
+                var selected = -1 == selectedTodoList ? "selected" : "";
+                $(".default-todo-list").append("<option value='-1' " + selected + ">Caller</option>");
+
             } else {
                 $(".default-todo-list").addClass("disable").html("<option value='-1' selected disabled>Add an attendee first...</option>");
             }

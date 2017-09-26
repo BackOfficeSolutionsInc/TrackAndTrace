@@ -9,6 +9,71 @@
 //jquery.autoResize.js
 (function (n) { n.fn.autoResize = function (t) { var i = n.extend({ onResize: function () { }, animate: !1, animateDuration: 150, animateCallback: function () { }, extraSpace: 0, limit: 1e3, useOriginalHeight: !1 }, t), u, r; return this.destroyList = [], u = this, r = null, this.filter("textarea").each(function () { var t = n(this).css({ resize: "none", "overflow-y": "hidden" }), c = i.useOriginalHeight ? t.height() : 0, e = function () { var f = {}, i; return n.each(["height", "width", "lineHeight", "textDecoration", "letterSpacing"], function (n, i) { f[i] = t.css(i) }), i = t.clone().removeAttr("id").removeAttr("name").css({ position: "absolute", top: 0, left: -9999 }).css(f).attr("tabIndex", "-1").insertBefore(t), r != null && n(r).remove(), r = i, u.destroyList.push(i), i }(), o = null, f = function () { var f = {}, r, u; if (n.each(["height", "width", "lineHeight", "textDecoration", "letterSpacing"], function (n, i) { f[i] = t.css(i) }), e.css(f), e.height(0).val(n(this).val()).scrollTop(1e4), r = Math.max(e.scrollTop(), c) + i.extraSpace, u = n(this).add(e), o !== r) { if (o = r, r >= i.limit) { n(this).css("overflow-y", ""); return } i.onResize.call(this); r = Math.max(20, r); i.animate && t.css("display") === "block" ? u.stop().animate({ height: r }, i.animateDuration, i.animateCallback) : u.height(r) } }, s, h; t.unbind(".dynSiz").bind("keyup.dynSiz", f).bind("keydown.dynSiz", f).bind("change.dynSiz", f); s = function () { f.call(t) }; n(window).bind("resize.dynSiz", function () { clearTimeout(h); h = setTimeout(s, 100) }); setTimeout(function () { f.call(t) }, 1) }), this.destroy = function () { for (var t = 0; t < this.destroyList.length; t++) n(this.destroyList[t]).remove(); this.destroyList = [] }, this } })(jQuery);
 
+// $().waitUntilExist
+; (function ($, window) {
+
+    var intervals = {};
+    var removeListener = function (selector) {
+
+        if (intervals[selector]) {
+
+            window.clearInterval(intervals[selector]);
+            intervals[selector] = null;
+        }
+    };
+    var found = 'waitUntilExists.found';
+
+    /**
+     * @function
+     * @property {object} jQuery plugin which runs handler function once specified
+     *           element is inserted into the DOM
+     * @param {function|string} handler 
+     *            A function to execute at the time when the element is inserted or 
+     *            string "remove" to remove the listener from the given selector
+     * @param {bool} shouldRunHandlerOnce 
+     *            Optional: if true, handler is unbound after its first invocation
+     * @example jQuery(selector).waitUntilExists(function);
+     */
+
+    $.fn.waitUntilExists = function (handler, shouldRunHandlerOnce, isChild) {
+
+        var selector = this.selector;
+        var $this = $(selector);
+        var $elements = $this.not(function () { return $(this).data(found); });
+
+        if (handler === 'remove') {
+
+            // Hijack and remove interval immediately if the code requests
+            removeListener(selector);
+        }
+        else {
+
+            // Run the handler on all found elements and mark as found
+            $elements.each(handler).data(found, true);
+
+            if (shouldRunHandlerOnce && $this.length) {
+
+                // Element was found, implying the handler already ran for all 
+                // matched elements
+                removeListener(selector);
+            }
+            else if (!isChild) {
+
+                // If this is a recurring search or if the target has not yet been 
+                // found, create an interval to continue searching for the target
+                intervals[selector] = window.setInterval(function () {
+
+                    $this.waitUntilExists(handler, shouldRunHandlerOnce, true);
+                }, 500);
+            }
+        }
+
+        return $this;
+    };
+
+}(jQuery, window));
+
+
 
 ////Fix Submenus
 //$('ul.dropdown-menu [data-toggle=dropdown]').on('click', function (event) {

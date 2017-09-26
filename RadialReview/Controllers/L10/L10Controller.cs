@@ -110,6 +110,7 @@ namespace RadialReview.Controllers
 
 
             AddExtras(0, model);
+           // ViewBag.VtoSharable = L10Accessor.IsVtoSharable(GetUser(), id);
 
 
             ViewBag.InfoAlert = "You can use the same L10 meeting each week. No need to create a new on each week.";
@@ -178,6 +179,7 @@ namespace RadialReview.Controllers
                 model.SelectedRocks = model.SelectedRocks??new long[0];
             }
 
+            ViewBag.VtoSharable = L10Accessor.IsVtoSharable(GetUser(), recurrenceId);
             return model;
         }
 
@@ -192,7 +194,7 @@ namespace RadialReview.Controllers
             _PermissionsAccessor.Permitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId));
 
             var model=AddExtras(recurrenceId, new L10EditVM(){Return = @return});
-            ViewBag.VtoSharable = L10Accessor.IsVtoSharable(GetUser(), id);
+            //ViewBag.VtoSharable = L10Accessor.IsVtoSharable(GetUser(), id);
 
             return View("Edit", model);
         }

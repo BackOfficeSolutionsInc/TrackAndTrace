@@ -41,7 +41,7 @@ namespace RadialReview.Models.Angular.Todos
 			}
 		}
 
-		public AngularTodo(Milestone milestone,UserOrganizationModel owner) : base(-milestone.Id) {
+		public AngularTodo(Milestone milestone,UserOrganizationModel owner,string origin=null) : base(-milestone.Id) {
 			Name = milestone.Name;
 			//DetailsUrl = Config.NotesUrl() + "p/" + todo.PadId + "?showControls=true&showChat=false";
 
@@ -54,7 +54,7 @@ namespace RadialReview.Models.Angular.Todos
 			TodoType = Todo.TodoType.Milestone;
 			Ordering = -10;
 
-			Origin = "Milestone";
+			Origin = origin ?? "Milestone";
 			
 		}
 

@@ -31,7 +31,7 @@ namespace RadialReview.Api.V0 {
         [HttpGet]
         public IEnumerable<AngularTodo> GetMineTodos() {
             // need to ask for method GetMyTodos() in TodoAccessor
-            return TodoAccessor.GetMyTodos(GetUser(), GetUser().Id, true);//.Select(x => new AngularTodo(x));
+            return TodoAccessor.GetMyTodosAndMilestones(GetUser(), GetUser().Id, true);//.Select(x => new AngularTodo(x));
         }
 
         // GET: api/Todo/mine

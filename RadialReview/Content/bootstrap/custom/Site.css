@@ -154,8 +154,15 @@
   left: 0px;
   right: 0px;
   padding-bottom: 8px;
+  padding-left: 6px;
+  padding-right: 6px;
   font-size: 14px;
   color: #3E3935;
+  white-space: pre-line;
+}
+#modal .modal-icon #modalTitle a {
+  text-decoration: underline;
+  color: #EF7622;
 }
 #modal .modal-icon .input-yesno input {
   margin-left: auto;
@@ -197,6 +204,7 @@
   border-style: double;
   border-width: 4px;
 }
+#modal .modal-icon .modal-icon-title,
 #modal .modal-icon .modal-icon:after {
   display: block;
   font-size: 26px;
@@ -204,7 +212,7 @@
   font-weight: bold;
   position: absolute;
   color: #3E3935;
-  bottom: 28px;
+  top: 109px;
   left: 0px;
   right: 0px;
   text-align: center;

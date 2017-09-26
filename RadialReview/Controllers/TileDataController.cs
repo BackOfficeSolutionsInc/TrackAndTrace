@@ -65,11 +65,16 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.Any)]
-		public PartialViewResult UserTodo2(){
+        public PartialViewResult UserTodo2() {
             return PartialView("UserTodo", GetUser().Id);
-		}
+        }
 
-		[Access(AccessLevel.Any)]
+        [Access(AccessLevel.Any)]
+        public PartialViewResult Milestones() {
+            return PartialView("Milestones", GetUser().Id);
+        }
+
+        [Access(AccessLevel.Any)]
 		public PartialViewResult UserScorecard2(){
             ViewBag.NumberOfWeeks = TimingUtility.NumberOfWeeks(GetUser());
 

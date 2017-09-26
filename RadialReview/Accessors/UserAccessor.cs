@@ -678,37 +678,40 @@ namespace RadialReview.Accessors {
 		}
 
 		public async Task EditUserModel(UserModel caller, string userId, string firstName, string lastName, string imageGuid, bool? sendTodoEmails, int? sendTodoTime,
-			bool? showScorecardColors, bool? reverseScorecard) {
-			UserModel userOrg;
+			bool? showScorecardColors, bool? reverseScorecard,bool? disableTips) {
+			UserModel user;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					if (caller.Id != userId)
 						throw new PermissionsException();
-					userOrg = s.Get<UserModel>(userId);
+					user = s.Get<UserModel>(userId);
 					if (firstName != null)
-						userOrg.FirstName = firstName;
+						user.FirstName = firstName;
 					if (lastName != null)
-						userOrg.LastName = lastName;
+						user.LastName = lastName;
 					if (imageGuid != null) {
-						userOrg.ImageGuid = imageGuid;
+						user.ImageGuid = imageGuid;
 					}
 					if (sendTodoEmails != null) {
-						userOrg.SendTodoTime = sendTodoEmails.Value ? sendTodoTime : null;
+						user.SendTodoTime = sendTodoEmails.Value ? sendTodoTime : null;
 					}
 					if (showScorecardColors != null) {
 						var us = s.Get<UserStyleSettings>(userId);
 						us.ShowScorecardColors = showScorecardColors.Value;
 						s.Update(us);
-					}
-					if (reverseScorecard != null) {
-						userOrg.ReverseScorecard = reverseScorecard.Value;
-					}
+                    }
+                    if (reverseScorecard != null) {
+                        user.ReverseScorecard = reverseScorecard.Value;
+                    }
+                    if (disableTips != null) {
+                        user.DisableTips= disableTips.Value;
+                    }
 
 
-					new Cache().Invalidate(CacheKeys.USER);
+                    new Cache().Invalidate(CacheKeys.USER);
 
-					if (userOrg.UserOrganization != null) {
-						foreach (var u in userOrg.UserOrganization) {
+					if (user.UserOrganization != null) {
+						foreach (var u in user.UserOrganization) {
 							if (u != null)
 								u.UpdateCache(s);
 						}
@@ -719,7 +722,7 @@ namespace RadialReview.Accessors {
 			}
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					await HooksRegistry.Each<IUpdateUserModelHook>(x => x.UpdateUserModel(s, userOrg));
+					await HooksRegistry.Each<IUpdateUserModelHook>(x => x.UpdateUserModel(s, user));
 					tx.Commit();
 					s.Flush();
 				}

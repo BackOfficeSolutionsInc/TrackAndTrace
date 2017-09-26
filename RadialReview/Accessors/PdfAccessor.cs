@@ -709,8 +709,8 @@ namespace RadialReview.Accessors {
                 var pp = new Table();
                 pp.Format.SpaceAfter = 0;
                 pp.AddColumn(Unit.FromInch(1.25));
-                pp.AddColumn(Unit.FromInch(4.75 - .36+.5));
-                pp.AddColumn(Unit.FromInch(0.36));
+                pp.AddColumn(Unit.FromInch(4.75 - .38+.5));
+                pp.AddColumn(Unit.FromInch(0.38));
                 pp.Format.Font.Color = TableDark;
                 var rr = pp.AddRow();
                 pp.Format.Font.Size = fs;
@@ -733,8 +733,8 @@ namespace RadialReview.Accessors {
 
                 pp.Format.SpaceAfter = 0;
                 pp.AddColumn(Unit.FromInch(1.25));
-                pp.AddColumn(Unit.FromInch(4.75 - .35+.5));
-                pp.AddColumn(Unit.FromInch(0.35));
+                pp.AddColumn(Unit.FromInch(4.75 - .38+.5));
+                pp.AddColumn(Unit.FromInch(0.38));
                 var rr = pp.AddRow();
                 //pp.Format.LeftIndent = Unit.FromInch(1.25);
                 pp.Format.Font.Size = fs;
@@ -1450,8 +1450,9 @@ namespace RadialReview.Accessors {
 			column.Format.Alignment = ParagraphAlignment.Center;
 
 			//Measured
-			for (var i = 0; i < 13; i++) {
-				column = table.AddColumn(Unit.FromInch(6.25 / 13.0));
+			var numWeeks = 14;
+			for (var i = 0; i < numWeeks; i++) {
+				column = table.AddColumn(Unit.FromInch(6.25 / (1.0 * numWeeks)));
 				column.Format.Alignment = ParagraphAlignment.Center;
 			}
 
@@ -1473,7 +1474,6 @@ namespace RadialReview.Accessors {
 			row.Cells[3].AddParagraph("Goal");
 			row.Cells[3].VerticalAlignment = VerticalAlignment.Bottom;
 
-			var numWeeks = 13;
 
             var reverse = 1;
             if (recur.Scorecard.ReverseScorecard==true)

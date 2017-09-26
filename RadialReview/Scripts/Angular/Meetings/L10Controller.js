@@ -344,15 +344,46 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
     }
 
     $scope.functions.getFcsa = function (measurable) {
+        //if (measurable.Modifiers == "Dollar") {
+        //    return { prepend: "$" };
+        //} else if (measurable.Modifiers == "Percent") {
+        //    return { append: "%" };
+        //} else if (measurable.Modifiers == "Euros") {
+        //    return { prepend: "€" };
+        //} else if (measurable.Modifiers == "Pound") {
+        //    return { prepend: "£" };
+        //}
+        var builder = {
+            resize: true,
+            localization: $scope.localization
+        };
+
         if (measurable.Modifiers == "Dollar") {
-            return { prepend: "$" };
+            builder = {
+                prepend: "$",
+                resize: true,
+                localization: $scope.localization
+            };
         } else if (measurable.Modifiers == "Percent") {
-            return { append: "%" };
+            builder = {
+                append: "%",
+                resize: true,
+                localization: $scope.localization
+            };
         } else if (measurable.Modifiers == "Euros") {
-            return { prepend: "€" };
+            builder = {
+                prepend: "€",
+                resize: true,
+                localization: $scope.localization
+            };
         } else if (measurable.Modifiers == "Pound") {
-            return { prepend: "£" };
+            builder = {
+                prepend: "£",
+                resize: true,
+                localization: $scope.localization
+            };
         }
+        return builder;
     };
 
     $scope.functions.lookupScoreFull = function (week, measurableId, scorecardKey) {

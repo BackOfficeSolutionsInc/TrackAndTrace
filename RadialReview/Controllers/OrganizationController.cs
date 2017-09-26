@@ -254,7 +254,11 @@ namespace RadialReview.Controllers {
 			ViewBag.Implementers = implementers;
 
 			var support = ApplicationAccessor.GetSupportMembers(GetUser()).OrderBy(x => x.User.GetName());
-			var myIds = GetUser().User.UserOrganizationIds;
+            var myIds = new long[0];
+            try {
+                myIds = GetUser().User.UserOrganizationIds;
+            }catch(Exception e) {
+            }
 			ViewBag.MySupportId = support.FirstOrDefault(x => myIds.Any(y=>y== x.UserOrgId)).NotNull(x => x.Id);
 			ViewBag.SupportTeam = support.ToSelectList(x => x.User.GetName(), x => x.Id);
 

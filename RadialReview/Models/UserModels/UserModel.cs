@@ -123,8 +123,9 @@ namespace RadialReview.Models
                 Map(x => x.Gender);
                 Map(x => x.CreateTime);
 				Map(x => x.UserOrganizationCount);
-				Map(x => x.ReverseScorecard);
-				Map(x => x.ConsoleLog);
+                Map(x => x.ReverseScorecard);
+                Map(x => x.DisableTips);
+                Map(x => x.ConsoleLog);
 				HasMany(x => x.UserOrganization).LazyLoad().Cascade.SaveUpdate();
 				HasMany(x => x.Logins).Cascade.SaveUpdate();
 				HasMany(x => x.Roles).Cascade.SaveUpdate();
@@ -135,7 +136,8 @@ namespace RadialReview.Models
 
 
         public virtual DateTime CreateTime { get; set; }
-	}
+        public virtual bool DisableTips { get; set; }
+    }
 
     
 

@@ -140,7 +140,7 @@ namespace RadialReview.Controllers {
             var people = recur._DefaultAttendees.Select(x => x.User).ToList();
             people.Add(GetUser());
             people = people.Distinct(x => x.Id).ToList();
-            var model = new TodoVM(recur.DefaultTodoOwner) {
+            var model = new TodoVM(recur.GetDefaultTodoOwner(GetUser())) {
                 ForModelId = modelId,
                 ForModelType = modelType,
                 Message = todo,
@@ -232,14 +232,14 @@ namespace RadialReview.Controllers {
 
 
 
-            var model = new ScoreCardTodoVM(recur.DefaultTodoOwner) {
+            var model = new ScoreCardTodoVM(recur.GetDefaultTodoOwner(GetUser())) {
                 ByUserId = GetUser().Id,
                 Message = message,
                 Details = details,
                 MeasurableId = measurable,
                 MeetingId = meeting,
                 RecurrenceId = recurrence,
-                AccountabilityId = new[] { accountable ?? recur.DefaultTodoOwner },
+                AccountabilityId = new[] { accountable ?? recur.GetDefaultTodoOwner(GetUser()) },
                 PossibleUsers = people.Select(x => new AccountableUserVM() {
                     id = x.Id,
                     imageUrl = x.ImageUrl(true, ImageSize._32),
@@ -283,14 +283,14 @@ namespace RadialReview.Controllers {
             people.Add(GetUser());
             people = people.Distinct(x => x.Id).ToList();
 
-            var model = new RockTodoVM(recur.DefaultTodoOwner) {
+            var model = new RockTodoVM(recur.GetDefaultTodoOwner(GetUser())) {
                 ByUserId = GetUser().Id,
                 Message = await s.NotNull(async x => await x.GetTodoMessage()),
                 Details = await s.NotNull(async x => await x.GetTodoDetails()),
                 RockId = rock,
                 MeetingId = meeting,
                 RecurrenceId = recurrence,
-                AccountabilityId = new[] { accountable ?? recur.DefaultTodoOwner },
+                AccountabilityId = new[] { accountable ?? recur.GetDefaultTodoOwner(GetUser()) },
                 PossibleUsers = people.Select(x => new AccountableUserVM() {
                     id = x.Id,
                     imageUrl = x.ImageUrl(true, ImageSize._32),
@@ -334,14 +334,14 @@ namespace RadialReview.Controllers {
             people.Add(GetUser());
             people = people.Distinct(x => x.Id).ToList();
 
-            var model = new HeadlineTodoVm(recur.DefaultTodoOwner) {
+            var model = new HeadlineTodoVm(recur.GetDefaultTodoOwner(GetUser())) {
                 ByUserId = GetUser().Id,
                 Message = await s.NotNull(async x => await x.GetTodoMessage()),
                 Details = await s.NotNull(async x => await x.GetTodoDetails()),
                 HeadlineId = headline,
                 MeetingId = meeting,
                 RecurrenceId = recurrence,
-                AccountabilityId = new[] { accountable ?? recur.DefaultTodoOwner },
+                AccountabilityId = new[] { accountable ?? recur.GetDefaultTodoOwner(GetUser()) },
                 PossibleUsers = people.Select(x => new AccountableUserVM() {
                     id = x.Id,
                     imageUrl = x.ImageUrl(true, ImageSize._32),
@@ -387,14 +387,14 @@ namespace RadialReview.Controllers {
             people.Add(GetUser());
             people = people.Distinct(x => x.Id).ToList();
 
-            var model = new TodoFromIssueVM(recur.DefaultTodoOwner) {
+            var model = new TodoFromIssueVM(recur.GetDefaultTodoOwner(GetUser())) {
                 Message = await i.NotNull(async x => await x.GetTodoMessage()),
                 Details = await i.NotNull(async x => await x.GetTodoDetails()),
                 ByUserId = GetUser().Id,
                 MeetingId = meeting ?? -1,
                 IssueId = issue,
                 RecurrenceId = recurrence,
-                AccountabilityId = new[] { L10Accessor.GuessUserId(i, recur.DefaultTodoOwner) },
+                AccountabilityId = new[] { L10Accessor.GuessUserId(i, recur.GetDefaultTodoOwner(GetUser())) },
                 PossibleUsers = people.Select(x => new AccountableUserVM() {
                     id = x.Id,
                     imageUrl = x.ImageUrl(true, ImageSize._32),
@@ -503,7 +503,7 @@ namespace RadialReview.Controllers {
             }
             IEnumerable<AngularTodo> todos;
             if (id == null) {
-				todos = TodoAccessor.GetMyTodos(GetUser(), id ?? GetUser().Id, range: range);//.Select(x => new AngularTodo(x));
+				todos = TodoAccessor.GetMyTodosAndMilestones(GetUser(), id ?? GetUser().Id, range: range);//.Select(x => new AngularTodo(x));
             } else {
 				todos = TodoAccessor.GetTodosForUser(GetUser(), id ?? GetUser().Id, range: range);//.Select(x => new AngularTodo(x));
             }

@@ -69,6 +69,8 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onC
 	});
 }
 function showModalObject(obj, pushUrl, onSuccess, onCancel) {
+    var runAfter = [];
+    var runAfterAnimation = [];
 	$("#modal").modal("hide");
 	$("#modalCancel").toggleClass("hidden", obj.noCancel || false);
 	if (typeof (pushUrl) === "undefined")
@@ -98,9 +100,11 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 	obj.modalClass = obj.modalClass || "";
 
 	var reformat = obj.reformat;
+	var recalculateModalHeight = false;
 
 	var iconType = typeof (obj.icon);
 	if (iconType !== "undefined") {
+
 		obj.modalClass += " modal-icon";
 		$("#modal-icon").attr("class", "modal-icon");
 		if (iconType === "string") {
@@ -117,14 +121,32 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 			var title = escapeString(obj.icon.title || "Hey!");
 			var color = escapeString(obj.icon.color || "#5bc0de");
 			$("#modal-icon").addClass(icon);
-			icon = icon.replace(" ", ".")
+			icon = icon.replace(" ", ".");
+			//debugger;
+    
 			try {
-				document.styleSheets[0].insertRule("." + custom + " ." + icon + ":after{content: '" + title + "' !important;}", 0);
+	            document.styleSheets[0].insertRule("." + custom + " ." + icon + ":after{content: '" + title + "' !important;}", 0);
 				document.styleSheets[0].insertRule("." + custom + " ." + icon + ":before{ background-color: " + color + ";}", 0);
 				document.styleSheets[0].insertRule("." + custom + " #modalOk{ background-color: " + color + ";}", 0);
 			} catch (e) {
 				console.error(e);
 			}
+
+			runAfterAnimation.push(function () {
+			    try {
+			        //debugger;
+			        var modalHeaderHeight = 125;
+			        var titleDiv = $("<div class='modal-icon-title'>" + title + "</div>");
+			        $("." + custom+" .modal-content").append(titleDiv);
+			        modalHeaderHeight += $(titleDiv).height();
+			        modalHeaderHeight += $("#modalTitle").height();
+			        debugger;
+			        titleDiv.remove();
+			        document.styleSheets[0].insertRule("." + custom + ".modal-icon .modal-header{ height: " + modalHeaderHeight + "px !important;}", 0);
+			    } catch (e) {
+			        console.error(e);
+			    }
+			});
 		}
 
 	}
@@ -169,7 +191,6 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 	var contentType = null;
 
 	var builder = '<div class="form-horizontal modal-builder">';
-	var runAfter = [];
 	var genInput = function (type, name, eid, placeholder, value, others, classes, tag) {
 		others = others || "";
 		classes = classes || "form-control blend";
@@ -353,12 +374,19 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 	} else {
 		builder = $(obj.contents);
 	}
+
 	_bindModal(builder, obj.title, undefined, obj.validation, onSuccess, onCancel, reformat, onClose, contentType);
 	setTimeout(function () {
+	    debugger;
 		for (var i = 0; i < runAfter.length; i++) {
 			runAfter[i]();
 		}
 	}, 1);
+	setTimeout(function () {
+	    for (var i = 0; i < runAfterAnimation.length; i++) {
+	        runAfterAnimation[i]();
+	    }	    
+	},250);
 }
 
 function _bindModal(html, title, callback, validation, onSuccess, onCancel, reformat, onClose, contentType) {

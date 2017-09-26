@@ -302,6 +302,8 @@ var DataTable = function (settings) {
 			var head = $("<thead/>");
 			head.append(headerRow);
 			$(table).append(head);
+		} else {
+		    console.warn("No headers. To add a header, supply a 'name' to the cell.");
 		}
 
 
