@@ -51,6 +51,10 @@ namespace RadialReview.Accessors {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     var getUser = s.QueryOver<UserModel>().Where(t => t.UserName == caller.GetEmail()).SingleOrDefault();
+
+                    PermissionsUtility perms = PermissionsUtility.Create(s, caller);
+                    //perms.Self();
+
                     var o = InsertWebHook(s, getUser.Email, webHook, getUser.Id, events);
                     tx.Commit();
                     s.Flush();
@@ -166,22 +170,24 @@ namespace RadialReview.Accessors {
         public StoreResult DeleteWebHook(UserOrganizationModel caller, string id) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
-                    var deleteWebHookSubscription = s.QueryOver<WebhookEventsSubscription>().Where(m => m.WebhookId == id).List().ToList();
+                    var deleteWebHookSubscription = s.QueryOver<WebhookEventsSubscription>().Where(m => m.WebhookId == id && m.DeleteTime == null).List().ToList();
                     if (deleteWebHookSubscription.Count() > 0) {
                         foreach (var item in deleteWebHookSubscription) {
                             item.DeleteTime = DateTime.UtcNow;
                             s.Update(item);
                         }
                     }
-                    var deleteWebHook = s.QueryOver<WebhookDetails>().Where(m => m.Email == caller.GetEmail() && m.Id == id).SingleOrDefault();
+                    var deleteWebHook = s.QueryOver<WebhookDetails>().Where(m => m.Email == caller.GetEmail() && m.Id == id && m.DeleteTime == null).SingleOrDefault();
                     if (deleteWebHook != null) {
                         deleteWebHook.DeleteTime = DateTime.UtcNow;
                         s.Update(deleteWebHook);
 
+                        // important to do add it here because of permission checks
                         tx.Commit();
                         s.Flush();
                         return StoreResult.Success;
                     }
+
                     return StoreResult.NotFound;
                 }
             }
@@ -213,10 +219,17 @@ namespace RadialReview.Accessors {
         public WebhookDetails GetWebhookEventSubscriptions(UserOrganizationModel caller, string webhookId) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 var getUser = s.QueryOver<UserModel>().Where(t => t.UserName == caller.GetEmail()).SingleOrDefault();
-                var getSubscriptionList =
-                      s.QueryOver<WebhookDetails>()
-                      .Where(t => t.UserId == getUser.Id && t.Id == webhookId && t.DeleteTime == null)
-                      .Fetch(t => t.WebhookEventsSubscription).Eager.SingleOrDefault();
+
+                var getSubscriptionList = s.Get<WebhookDetails>(webhookId);
+
+                if(getSubscriptionList == null || getSubscriptionList.UserId != getUser.Id || getSubscriptionList.DeleteTime != null) {
+                    throw new PermissionsException();
+                }
+
+                var a = getSubscriptionList.WebhookEventsSubscription.ToList();
+
+                //.Where(t => t.UserId == getUser.Id && t.Id == webhookId && t.DeleteTime == null)
+                //.Fetch(t => t.WebhookEventsSubscription).Eager.SingleOrDefault();
 
                 s.Flush();
                 return getSubscriptionList;

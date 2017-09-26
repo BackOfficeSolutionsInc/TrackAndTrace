@@ -56,14 +56,18 @@ namespace RadialReview.Controllers {
         public ActionResult Index() {
             List<WebHookViewModel> webHook = new List<WebHookViewModel>();
             WebhooksAccessor webhookAccessor = new WebhooksAccessor();
-            var getallwebhook = webhookAccessor.GetAllWebHook();
+
+            var getallwebhook = webhookAccessor.GetAllWebHook();   // get with userid
+
             foreach (var item in getallwebhook) {
                 WebHookViewModel webHookViewModel = new WebHookViewModel();
                 var getWebhookEventSubscriptions = webhookAccessor.GetWebhookEventSubscriptions(GetUser(), item.Id);
+
                 List<string> name = new List<string>();
                 foreach (var item1 in getWebhookEventSubscriptions.WebhookEventsSubscription.Select(x => x.EventName)) {
                     name.Add(item1);
                 }
+
                 string nameOfString = (string.Join(" , ", name.Select(x => x.ToString()).ToArray()));
                 webHookViewModel.Eventnames = nameOfString;
                 webHookViewModel.Id = item.Id;
@@ -108,7 +112,8 @@ namespace RadialReview.Controllers {
             webHook.Events = new List<SelectListItem>();
 
             //L10 Events
-            var getAllL10RecurrenceAtOrganization = L10Accessor.GetAllL10RecurrenceAtOrganization(GetUser(), GetUser().Organization.Id);
+            var getAllL10RecurrenceAtOrganization = L10Accessor.GetVisibleL10Meetings_Tiny(GetUser(), GetUser().Id);
+
             for (int i = 0; i < getAllL10RecurrenceAtOrganization.Count; i++) {
                 //L10 Add TODO Events
                 string val = WebhookEventType.AddTODOtoL10.GetDescription() + getAllL10RecurrenceAtOrganization[i].Id;
@@ -189,11 +194,9 @@ namespace RadialReview.Controllers {
             });
 
             #endregion
-
-
-
+            
             //User Events
-            var getUserOrg = TinyUserAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id);
+            var getUserOrg = DeepAccessor.Tiny.GetSubordinatesAndSelf(GetUser(), GetUser().Id);
             for (int i = 0; i < getUserOrg.Count; i++) {
                 //User Add TODO Event
                 webHook.Events.Add(new SelectListItem() {
