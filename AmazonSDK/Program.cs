@@ -24,6 +24,8 @@ using System.Threading.Tasks;
 
 namespace AmazonSDK {
     class Program {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         static void Main(string[] args) {
             while (true) {
                 Scheduler();
@@ -36,10 +38,10 @@ namespace AmazonSDK {
         }
 
         private static void Scheduler() {
-            LogDetails("Start", "INFO");
+            log.Info("Start");
             List<string> receiptHandleList = new List<string>();
             List<MessageQueueModel> getMessages = AsyncHelper.RunSync<List<MessageQueueModel>>(() => GetMessages());  //get List of Messages
-            LogDetails("Get list of messages count", getMessages.Count().ToString());
+            log.Info("Get list of messages count " + getMessages.Count().ToString());
 
             try {
                 foreach (var item in getMessages) {
@@ -47,7 +49,7 @@ namespace AmazonSDK {
                     try {
                         //Delete Message from SQS
                         AsyncHelper.RunSync(() => DeleteMessage(item.ReceiptHandle));
-                        LogDetails("Delete Message from SQS --> Complete ", "INFO");
+                        log.Info("Delete Message from SQS --> Complete ");
 
                         if (item.RequestType == RequestTypeEnum.isHookRegistryAction) { // this is hook registry process
                                                                                         // exceute action
@@ -88,11 +90,11 @@ namespace AmazonSDK {
                         MarkComplete(item);
                     } catch (Exception ex) {
                         AsyncHelper.RunSync(() => SendMessage(item));
-                        LogDetails(ex.Message, "ERROR");
+                        log.Error(ex.Message);
                     }
                 }
             } catch (Exception ex) {
-                LogDetails(ex.Message, "ERROR");
+                log.Error(ex.Message);
             }
 
         }
@@ -105,7 +107,7 @@ namespace AmazonSDK {
                         && x.UserName == model.UserName
                         && x.Status == MessageQueueStatus.Start.ToString()
                         ).SingleOrDefault();
-                        LogDetails("Retreive data [MessageQueue] from DB", "INFO");
+                        log.Info("Retreive data [MessageQueue] from DB");
 
                         if (getMessage == null) {
                             MessageQueue messageQueue = new MessageQueue();
@@ -116,12 +118,12 @@ namespace AmazonSDK {
                             messageQueue.Status = MessageQueueStatus.Start.ToString();
                             s.Save(messageQueue);
 
-                            LogDetails("Save data [MessageQueue] to DB", "INFO");
+                            log.Info("Save data [MessageQueue] to DB");
                             tx.Commit();
                         }
                     } catch (Exception ex) {
                         tx.Rollback();
-                        LogDetails(ex.Message, "ERROR");
+                        log.Error(ex.Message);
                         throw ex;
                     }
                     s.Flush();
@@ -139,7 +141,7 @@ namespace AmazonSDK {
             try {
                 using (var s = NHibernate.HibernateSession.GetCurrentSession(true, "_RV")) {
                     using (var tx = s.BeginTransaction()) {
-                        LogDetails("Generate token", "INFO");
+                        log.Info("Generate token");
                         //get token
                         string pwd = Config.SchedulerSecretKey() + "_" + model.UserName;
                         string encrypt_key = Crypto.EncryptStringAES(pwd, Config.SchedulerSecretKey());
@@ -162,7 +164,7 @@ namespace AmazonSDK {
                         TokenModel tokenModel = new TokenModel();
                         HttpResponseMessage response1 = await client.SendAsync(req);
 
-                        LogDetails("Token process complete", "INFO");
+                        log.Info("Token process complete");
                         HttpContent responseContent1 = response1.Content;
                         using (var reader = new StreamReader(await responseContent1.ReadAsStreamAsync())) {
                             var result1 = reader.ReadToEnd();
@@ -172,11 +174,11 @@ namespace AmazonSDK {
                         if (!string.IsNullOrEmpty(tokenModel.access_token)) {
                             var apiUrl = model.ApiUrl ?? "";
                             if (!string.IsNullOrEmpty(apiUrl)) {
-                                LogDetails("Update Task Calling Api", "INFO");
+                                log.Info("Calling Api");
                                 client = new HttpClient();
                                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenModel.access_token);
                                 HttpResponseMessage response = await client.GetAsync(apiUrl);
-                                LogDetails("Update Task Calling Api complete", "INFO");
+                                log.Info("Calling Api complete");
                                 return response.StatusCode;
                             }
                         }
@@ -193,7 +195,7 @@ namespace AmazonSDK {
             try {
                 using (var s = NHibernate.HibernateSession.GetCurrentSession(true, "_RV")) {
                     using (var tx = s.BeginTransaction()) {
-                        LogDetails("Generate token", "INFO");
+                        log.Info("Generate token");
                         //get token
                         string pwd = Config.SchedulerSecretKey() + "_" + Config.UpdateTaskUserName();
                         string encrypt_key = Crypto.EncryptStringAES(pwd, Config.SchedulerSecretKey());
@@ -216,7 +218,7 @@ namespace AmazonSDK {
                         TokenModel tokenModel = new TokenModel();
                         HttpResponseMessage response1 = await client.SendAsync(req);
 
-                        LogDetails("Token process complete", "INFO");
+                        log.Info("Token process complete");
                         HttpContent responseContent1 = response1.Content;
                         using (var reader = new StreamReader(await responseContent1.ReadAsStreamAsync())) {
                             var result1 = reader.ReadToEnd();
@@ -225,7 +227,7 @@ namespace AmazonSDK {
 
                         if (!string.IsNullOrEmpty(tokenModel.access_token)) {
                             var apiUrl = Config.GetUpdateTaskUrl();
-                            LogDetails("Calling Api", "INFO");
+                            log.Info("Update Task Calling Api");
                             client = new HttpClient();
                             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenModel.access_token);
                             HttpResponseMessage response = await client.GetAsync(apiUrl);
@@ -233,13 +235,13 @@ namespace AmazonSDK {
                             //using (var reader = new StreamReader(await responseContent2.ReadAsStreamAsync())) {
                             //    var result1 = reader.ReadToEnd();
                             //}
-                            LogDetails("Calling Api complete", "INFO");
+                            log.Info("Update Task Calling Api complete");
                             return response.StatusCode;
                         }
                     }
                 }
             } catch (Exception ex) {
-                throw ex;
+                log.Error(ex.Message);
             }
             return HttpStatusCode.NotFound;
         }
@@ -249,7 +251,7 @@ namespace AmazonSDK {
             using (var s = NHibernate.HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     try {
-                        LogDetails("Update data [MessageQueue] to DB--start", "INFO");
+                        log.Info("Update data [MessageQueue] to DB--start");
                         var getMessage = s.QueryOver<MessageQueue>().Where(x => x.IdentifierId == model.Identifier
                        && x.UserName == model.UserName
                        && x.Status == MessageQueueStatus.Start.ToString()
@@ -258,11 +260,11 @@ namespace AmazonSDK {
                             getMessage.Status = MessageQueueStatus.Complete.ToString();
                             s.Update(getMessage);
                             tx.Commit();
-                            LogDetails("Update data [MessageQueue] to DB--start", "INFO");
+                            log.Info("Update data [MessageQueue] to DB--start");
                         }
                     } catch (Exception ex) {
                         tx.Rollback();
-                        LogDetails(ex.Message, "ERROR");
+                        log.Error(ex.Message);
                         throw ex;
                     }
                     s.Flush();

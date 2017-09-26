@@ -284,7 +284,7 @@ namespace AmazonSDK.NHibernate {
             var updates = new List<string>();
             //Microsoft.VisualStudio.Profiler.DataCollection.MarkProfile(1);
 
-            if (Config.ShouldUpdateDB()) {
+            if (false && Config.ShouldUpdateDB()) {
                 var su = new SchemaUpdate(config);
                 su.Execute(updates.Add, true);
                 Config.DbUpdateSuccessful();
