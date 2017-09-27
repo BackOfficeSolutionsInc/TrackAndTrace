@@ -20,6 +20,8 @@ namespace RadialReview.Utilities.NHibernate {
 		private ITransaction _backingTransaction;
 		public SingleRequestSession _request { get; set; }
 
+		public int CommitCount { get; private set; }
+
 		public bool IsActive {
 			get {
 				return _backingTransaction.IsActive;
@@ -56,11 +58,13 @@ namespace RadialReview.Utilities.NHibernate {
 			if (_request.TransactionDepth == 1) {
 				_backingTransaction.Commit();
 			}
-
+			CommitCount += 1;
+			_request.GetCurrentContext().TransactionCommitted = true;
 			//_IsCommitted = true;
 		}
 
 		public void Rollback() {
+			_request.GetCurrentContext().TransactionRolledBack = true;
 			_backingTransaction.Rollback();
 		}
 
@@ -76,6 +80,7 @@ namespace RadialReview.Utilities.NHibernate {
 			//if (!_IsCommitted) {
 			//	_request.TransactionDepth -= 1;
 			//}
+			_request.GetCurrentContext().TransactionDisposed = true;
 			_request.TransactionDepth -= 1;
 			if (_request.TransactionDepth == 0) {
 				_backingTransaction.Dispose();

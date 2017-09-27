@@ -7,28 +7,28 @@ using RadialReview.Accessors;
 using RadialReview.Models.Enums;
 using RadialReview.Models.UserTemplate;
 using RadialReview.Models.ViewModels;
+using System.Threading.Tasks;
 
 namespace RadialReview.Controllers
 {
     public class UserTemplateController : BaseController
     {
-        // GET: UserTemplate
+		// GET: UserTemplate
 		[Access(AccessLevel.Manager)]
-		public ActionResult Create(long id, string type)
-		{
+		public async Task<ActionResult> Create(long id, string type) {
 			var ttype = AttachType.Invalid;
 
 			Enum.TryParse(type, true, out ttype);
-			
-			var ut = new UserTemplate(){
+
+			var ut = new UserTemplate() {
 				AttachId = id,
 				AttachType = ttype,
 				OrganizationId = GetUser().Organization.Id,
 			};
 
-			UserTemplateAccessor.CreateTemplate(GetUser(),ut);
-			
-			return RedirectToAction("Edit",new {id=ut.Id});
+			await UserTemplateAccessor.CreateTemplate(GetUser(), ut);
+
+			return RedirectToAction("Edit", new { id = ut.Id });
 		}
 		[Access(AccessLevel.Manager)]
 		public ActionResult Edit(long id)

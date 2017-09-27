@@ -23,8 +23,13 @@ namespace RadialReview.Hooks
 {
     public class IssueWebhook : IIssueHook
     {
+
+		public bool CanRunRemotely() {
+			return false;
+		}
+
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task CreateIssue(ISession s, IssueModel.IssueModel_Recurrence issue)
+		public async Task CreateIssue(ISession s, IssueModel.IssueModel_Recurrence issue)
         {
             var L10Id = issue.Recurrence.Id;
             var orgId = issue.Recurrence.OrganizationId;

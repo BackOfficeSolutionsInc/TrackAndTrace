@@ -37,14 +37,15 @@ namespace TractionTools.Tests.Utilities {
 			using (var s = HibernateSession.GetCurrentSession(false)) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, Creator);
-					var rock = new RockModel() {
-						Rock = name,
-						OrganizationId = Org.Id,
-						AccountableUser = owner ?? Employee,
-						ForUserId = (owner??Employee).Id
-					};
-					var addRock = AddRockVm.CreateRock(Id,rock);
-					await L10Accessor.AddRock(s, perms, Id, addRock);
+					//var rock = new RockModel() {
+					//	Rock = name,
+					//	OrganizationId = Org.Id,
+					//	AccountableUser = owner ?? Employee,
+					//	ForUserId = (owner??Employee).Id
+					//};
+					//var addRock = AddRockVm.CreateRock(Id,,name);
+					var rock = await RockAccessor.CreateRock(s, perms, (owner ?? Employee).Id, name);
+					await L10Accessor.AttachRock(s, perms, Id, rock.Id,false);
 					tx.Commit();
 					s.Flush();
 					return rock;

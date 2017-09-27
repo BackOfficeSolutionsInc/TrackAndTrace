@@ -75,7 +75,7 @@
                                 <input class="blend" placeholder="Enter due date" ng-class="rock.Complete?(''):(rock.DueDate>now? 'green' : 'red')" data-rock="{{::rock.Id}}" type="text" value="{{rock.DueDate | date:dateFormat}}" n ng-model-options="{debounce: 400}" />
                             </td>
                             <td md-cell class="company-rock-column checkbox-column" style="min-width: 15px;">
-                                <md-checkbox aria-label="Company Rock" ng-model="rock.CompanyRock" class="md-align-top-left" ng-change="functions.sendUpdate(rock)" title="Company Rock"></md-checkbox>
+                                <md-checkbox aria-label="Company Rock" ng-model="rock.VtoRock" class="md-align-top-left" ng-change="functions.sendUpdate(rock)" title="Company Rock"></md-checkbox>
                             </td>
                             <td md-cell class="delete-column" style="min-width: 15px;"><span class="delete-row" ng-click="functions.removeRow($event,rock)" title="Archive Rock"></span></td>
                         </tr>

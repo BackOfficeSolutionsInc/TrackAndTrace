@@ -45,9 +45,11 @@ namespace RadialReview.Controllers {
         [Access(AccessLevel.UserOrganization)]
         [OutputCache(NoStore = true, Duration = 0)]
 
-        //[OutputCache(Duration = 3, VaryByParam = "id", Location = OutputCacheLocation.Client, NoStore = true)]
-        //[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
-        public async Task<JsonResult> Data2(long id, bool completed = false, string name = null, long? start = null, long? end = null, bool fullScorecard = false, long? dashboardId=null) {
+		//[OutputCache(Duration = 3, VaryByParam = "id", Location = OutputCacheLocation.Client, NoStore = true)]
+		//[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
+
+		[Untested("Vto_Rocks","Make sure we dont want to display company rocks on the dashboard. (L10 and User rocks)")]
+		public async Task<JsonResult> Data2(long id, bool completed = false, string name = null, long? start = null, long? end = null, bool fullScorecard = false, long? dashboardId=null) {
             //Response.AddHeader("Content-Encoding", "gzip");
             var userId = id;
 			Dashboard dash;
@@ -115,7 +117,7 @@ namespace RadialReview.Controllers {
             if (tiles.Any(x => x.Type == TileType.Rocks || (x.DataUrl ?? "").Contains("UserRock"))) {
                 try {
                     var now = DateTime.UtcNow;
-                    var rocks = L10Accessor.GetAllMyL10Rocks(GetUser(), GetUser().Id).Select(x => new AngularRock(x));
+                    var rocks = L10Accessor.GetAllMyL10Rocks(GetUser(), GetUser().Id).Select(x => new AngularRock(x,false));
                     output.Rocks = rocks;
                 } catch (Exception e) {
                     ProcessDeadTile(e);
@@ -244,7 +246,7 @@ namespace RadialReview.Controllers {
                         if (long.TryParse(rock.KeyId, out l10Id)) {
                             try {
                                 var tile = new AngularTileId<List<AngularRock>>(rock.Id, l10Id, l10Lookup[l10Id].Name + " rocks");
-                                tile.Contents = L10Accessor.GetRocksForRecurrence(s, perms, l10Id).Select(x => new AngularRock(x.ForRock)).ToList();
+                                tile.Contents = L10Accessor.GetRocksForRecurrence(s, perms, l10Id).Select(x => new AngularRock(x.ForRock,false)).ToList();
                                 output.L10Rocks.Add(tile);
                             } catch (Exception e) {
                                 output.L10Rocks.Add(AngularTileId<List<AngularRock>>.Error(rock.Id, l10Id, e));

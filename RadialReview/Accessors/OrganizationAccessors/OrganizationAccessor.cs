@@ -1184,11 +1184,15 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+
+		[Obsolete("remove",true)]
 		public static List<RockModel> GetCompanyRocks(ISession s, PermissionsUtility perms, long organizationId) {
+			throw new PermissionsException("cannot view");
 			perms.ViewOrganization(organizationId);
 			return s.QueryOver<RockModel>().Where(x => x.DeleteTime == null && x.OrganizationId == organizationId && x.CompanyRock).List().ToList();
 		}
 
+		[Obsolete("remove", true)]
 		public List<RockModel> GetCompanyRocks(UserOrganizationModel caller, long organizationId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {

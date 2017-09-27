@@ -39,6 +39,7 @@ namespace RadialReview.Accessors {
         public static async Task<AddedUser> CreateUserUnderManager_Test(ISession db, PermissionsUtility perms, CreateUserOrganizationViewModel settings) {
             return await CreateUserUnderManager_Test(db, perms, settings.ManagerNodeId, settings.IsManager, settings.OrgPositionId, settings.Email, settings.FirstName, settings.LastName, settings.IsClient, settings.ClientOrganizationName, settings.EvalOnly);
         }
+		[Untested("Is _AddUserToTemplateUnsafe wired correctly?")]
         private static async Task<AddedUser> CreateUserUnderManager_Test(ISession db, PermissionsUtility perms, long? managerNodeId, Boolean isManager, long? orgPositionId, String email, String firstName, String lastName, bool isClient, string organizationName, bool evalOnly) {
             if (!Emailer.IsValid(email))
                 throw new PermissionsException(ExceptionStrings.InvalidEmail);
@@ -130,7 +131,7 @@ namespace RadialReview.Accessors {
 
                     var template = UserTemplateAccessor._GetAttachedUserTemplateUnsafe(db, position.Id, AttachType.Position);
                     if (template != null)
-                        UserTemplateAccessor._AddUserToTemplateUnsafe(db, template.Organization, template.Id, newUser.Id, false);
+						await UserTemplateAccessor._AddUserToTemplateUnsafe(db,perms, template.Organization, template.Id, newUser.Id, false);
 
                     newUser.Positions.Add(positionDuration);
                 }
@@ -195,6 +196,7 @@ namespace RadialReview.Accessors {
             return await CreateUserUnderManager(caller, settings.ManagerNodeId, settings.IsManager, settings.OrgPositionId, settings.Email, settings.FirstName, settings.LastName, settings.IsClient, settings.ClientOrganizationName, settings.EvalOnly);
         }
 
+		[Untested("is _AddUserToTemplateUnsafe wired up correctly?")]
         private static async Task<AddedUser> CreateUserUnderManager(UserOrganizationModel caller, long? managerNodeId, Boolean isManager, long? orgPositionId, String email, String firstName, String lastName, bool isClient, string organizationName, bool evalOnly) {
             if (!Emailer.IsValid(email))
                 throw new PermissionsException(ExceptionStrings.InvalidEmail);
@@ -218,8 +220,7 @@ namespace RadialReview.Accessors {
                 using (var tx = db.BeginTransaction()) {
 
 
-                    PermissionsUtility.Create(db, caller)
-                        .CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, caller.Organization.Id);
+                    var perms = PermissionsUtility.Create(db, caller).CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, caller.Organization.Id);
 
 
                     AccountabilityNode managerNode = null;
@@ -292,7 +293,7 @@ namespace RadialReview.Accessors {
 
                         var template = UserTemplateAccessor._GetAttachedUserTemplateUnsafe(db, position.Id, AttachType.Position);
                         if (template != null)
-                            UserTemplateAccessor._AddUserToTemplateUnsafe(db, template.Organization, template.Id, newUser.Id, false);
+                            await UserTemplateAccessor._AddUserToTemplateUnsafe(db,perms, template.Organization, template.Id, newUser.Id, false);
 
                         //REMOVED, CAUSES DUPLICATE POSITION
                         //newUser.Positions.Add(positionDuration);
@@ -308,7 +309,7 @@ namespace RadialReview.Accessors {
                     newUserId = newUser.Id;
                     if (managerNode != null) {
                         using (var rt = RealTimeUtility.Create()) {
-                            var perms = PermissionsUtility.Create(db, caller);
+                            //var perm = PermissionsUtility.Create(db, caller);
                             var node = AccountabilityAccessor.AppendNode(db, perms, rt, managerNode.Id, userId: newUser.Id);
                             if (orgPositionId > 0 && orgPositionId != null)
                                 AccountabilityAccessor.SetPosition(db, perms, rt, node.Id, orgPositionId);

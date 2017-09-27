@@ -15,6 +15,11 @@ namespace RadialReview.Hooks {
 	public class EnterpriseHook : ICreateUserOrganizationHook, IDeleteUserOrganizationHook {
 		private int EnterpriseGreaterThanUsers;
 
+
+		public bool CanRunRemotely() {
+			return true;
+		}
+
 		public EnterpriseHook(int greaterThanN) {
 			EnterpriseGreaterThanUsers = greaterThanN;
 		}

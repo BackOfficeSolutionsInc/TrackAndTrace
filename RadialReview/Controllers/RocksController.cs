@@ -55,6 +55,7 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
+		[Untested("","Populate _CompanyRock")]
 		public ActionResult Archive(long id) {
 			var userId = id;
 			var archivedRocks = RockAccessor.GetArchivedRocks(GetUser(), userId);
@@ -93,7 +94,8 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public PartialViewResult BlankEditorRow(bool includeUsers = false, bool companyRock = false, long? periodId = null, bool hideperiod = false, bool showCompany = false, bool excludeDelete = false, long? recurrenceId = null) {
+		[Untested("Vto_Rocks","Removed company rock flag","Populate _CompanyRock")]
+		public PartialViewResult BlankEditorRow(bool includeUsers = false, bool unusedCompanyRock = false, long? periodId = null, bool hideperiod = false, bool showCompany = false, bool excludeDelete = false, long? recurrenceId = null) {
 			ViewBag.Periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.Name, x => x.Id);
 			if (includeUsers) {
 				if (recurrenceId != null) {
@@ -110,13 +112,15 @@ namespace RadialReview.Controllers {
 
 			return PartialView("_RockRow", new RockModel() {
 				CreateTime = DateTime.UtcNow,
-				CompanyRock = companyRock,
+				//CompanyRock = companyRock,
 				OnlyAsk = AboutType.Self,
 				PeriodId = periodId
 			});
 		}
 
 		[Access(AccessLevel.Manager)]
+		[Untested("Vto_Rocks","Remove from UI")]
+		[Obsolete("Do not use",true)]
 		public PartialViewResult CompanyRockModal(long id) {
 			var orgId = id;
 			var rocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
@@ -130,6 +134,8 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
+		[Untested("Vto_Rocks", "Remove from UI")]
+		[Obsolete("Do not use", true)]
 		public JsonResult CompanyRockModal(RocksController.RockVM model) {
 			//var rocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
 			var oid = GetUser().Organization.Id;
@@ -201,11 +207,12 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
+		[Untested("Vto_Rocks","Make sure that Company rock is uneditable.")]
 		public PartialViewResult EditModal(long id) {
 			var rockAndMs = RockAccessor.GetRockAndMilestones(GetUser(), id);
 
 			var model = new RockAndMilestonesVM() {
-				Rock = new AngularRock(rockAndMs.Rock),
+				Rock = new AngularRock(rockAndMs.Rock,false),
 				Milestones = rockAndMs.Milestones.Select(x => new AngularMilestone(x)).ToList()
 			};
 
@@ -237,11 +244,11 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
-		public JsonResult TemplateModal(RocksController.RockVM model) {
+		public async Task<JsonResult> TemplateModal(RocksController.RockVM model) {
 			foreach (var r in model.TemplateRocks) {
 				if (r.Id == 0) {
 					if (r.DeleteTime == null)
-						UserTemplateAccessor.AddRockToTemplate(GetUser(), model.TemplateId, r.Rock, r.PeriodId);
+						await UserTemplateAccessor.AddRockToTemplate(GetUser(), model.TemplateId, r.Rock, r.PeriodId);
 				} else
 					UserTemplateAccessor.UpdateRockTemplate(GetUser(), r.Id, r.Rock, r.PeriodId, r.DeleteTime);
 			}

@@ -16,6 +16,11 @@ using RadialReview.Models.Components;
 namespace RadialReview.Hooks {
 	public class UpdateRoles_Notifications : IRolesHook {
 
+
+		public bool CanRunRemotely() {
+			return false;
+		}
+
 		private void AddToNotification(ISession s, RoleModel role, string type) {
 
 

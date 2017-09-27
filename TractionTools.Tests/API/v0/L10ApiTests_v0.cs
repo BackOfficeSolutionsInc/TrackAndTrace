@@ -135,7 +135,8 @@ namespace TractionTools.Tests.API.v0 {
 			MockHttpContext();
 			//var rockModel = AddRockVm.CreateRock(recurrenceId, rock, true);
 			//await L10Accessor.CreateRock(c.E1, recurrenceId, rockModel);
-            var rock = await RockAccessor.CreateRock(c.Manager, "rock", c.E1.Id);
+            //var rock = await RockAccessor.CreateRock(c.Manager, "rock", c.E1.Id);
+			var rock = await L10Accessor.CreateAndAttachRock(c.Manager, recurrenceId, c.E1.Id, "rock");
             //await L10Accessor.CreateRock(c.E1, recurrenceId, rockModel);
             //await L10.AttachRockMeetingL10(recurrenceId, rock.Id);
 
@@ -156,14 +157,16 @@ namespace TractionTools.Tests.API.v0 {
 			L10.MockUser(c.E1);
 			var otherRecurrenceId = await L10.CreateL10("Other L10");
 			var recurrenceId = await L10.CreateL10("Test L10");
-			var rock = new RockModel() {
-				OrganizationId = c.E1.Organization.Id,
-				ForUserId = c.E1.Id,
-			};
+			//var rock = new RockModel() {
+			//	OrganizationId = c.E1.Organization.Id,
+			//	ForUserId = c.E1.Id,
+			//};
 			MockHttpContext();
-			var rockModel = AddRockVm.CreateRock(otherRecurrenceId, rock, true);
+			//var rockModel = AddRockVm.CreateRock(otherRecurrenceId, rock, true);
+			var rock =await L10Accessor.CreateAndAttachRock(c.E1, otherRecurrenceId, c.E1.Id, null);
+
 			//Create and add to other
-			await L10Accessor.CreateRock(c.E1, otherRecurrenceId, rockModel);
+			//await L10Accessor.CreateRock(c.E1, otherRecurrenceId, rockModel);
 			var getRocksForRecurrence = L10Accessor.GetRocksForRecurrence(c.E1, recurrenceId);
 			Assert.AreEqual(0, getRocksForRecurrence.Count());
 			var getRocksForOtherRecurrence = L10Accessor.GetRocksForRecurrence(c.E1, otherRecurrenceId);

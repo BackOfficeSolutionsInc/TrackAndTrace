@@ -13,10 +13,15 @@ using RadialReview.Models.Angular.Dashboard;
 using RadialReview.Models.Angular.CoreProcess;
 using static CamundaCSharpClient.Query.Task.TaskQuery;
 
-namespace RadialReview.Hooks {
-    public class Tasks_RealTime : ITaskHook {
+namespace RadialReview.Hooks.Realtime {
+    public class RealTime_Tasks : ITaskHook {
 
-        private void _UpdateGroup(IHubContext hub,IEnumerable<IdentityLink> links,string identityLinkType, AngularListType addOrRemove,  AngularTask angularTask) {
+
+		public bool CanRunRemotely() {
+			return false;
+		}
+
+		private void _UpdateGroup(IHubContext hub,IEnumerable<IdentityLink> links,string identityLinkType, AngularListType addOrRemove,  AngularTask angularTask) {
             var groups = links.Where(x => identityLinkType == null || x.type == identityLinkType).SelectNoException(link => CoreProcessHub.GenerateRgm(link)).ToList();
             _UpdateGroup(hub, groups, addOrRemove, angularTask);
         }

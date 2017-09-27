@@ -9,6 +9,8 @@ using NHibernate.Engine;
 using NHibernate.Envers;
 using NHibernate.Stat;
 using NHibernate.Type;
+using RadialReview.Utilities;
+using System.Threading.Tasks;
 
 namespace RadialReview.Utilities.NHibernate {
 	public static class AuditReaderExtensions {
@@ -23,8 +25,51 @@ namespace RadialReview.Utilities.NHibernate {
 
 	public class SingleRequestSession : ISession {
 
+		#region Edited 
+		public class Context {
+			public int Depth { get; set; }
+			public List<OnDisposedModel> DisposeActions = new List<OnDisposedModel>();
+			public SingleRequestTransaction Transaction = null;
+			public bool TransactionCommitted = false;
+			public bool TransactionRolledBack = false;
+			public bool TransactionDisposed = false;
+
+			public Context(SingleRequestSession self) {
+				Depth = self._ContextStack.Count;		
+			}
+
+			public void InitTransaction(SingleRequestTransaction tx) {
+				Transaction = tx;
+				TransactionCommitted = false;
+				TransactionRolledBack = false;
+				TransactionDisposed = false;
+			}
+		}
+		public class OnDisposedModel {
+			public OnDisposedModel(Func<ISession, ITransaction, Task> action, bool onlyOnCommit) {
+				Action = action;
+				OnlyOnCommit = onlyOnCommit;
+			}
+			public Func<ISession, ITransaction, Task> Action { get; set; }
+			public bool OnlyOnCommit { get; set; }
+		}
+
+		public Context GetCurrentContext() {
+			return _ContextStack.Peek();
+
+		}
+		public void AddContext() {
+			_ContextStack.Push(new Context(this));
+		}
+
+		public void RunAfterDispose(OnDisposedModel onDisposed) {
+			GetCurrentContext().DisposeActions.Add(onDisposed);
+		}
+
+		private Stack<Context> _ContextStack { get; set; }
 		private ISession _backingSession;
 		private bool _shouldDispose;
+
 		public bool WasDisposed { get; set; }
 
 		public ISession GetBackingSession() {
@@ -34,20 +79,35 @@ namespace RadialReview.Utilities.NHibernate {
 		public SingleRequestSession(ISession toWrap, bool dispose = false) {
 			_backingSession = toWrap;
 			_shouldDispose = dispose;
+			_ContextStack = new Stack<Context>();
+			_ContextStack.Push(new Context(this));
 		}
 		public IAuditReader Auditer() {
 			return GetBackingSession().Auditer();
 		}
 
-		#region Edited 
+		//[Untested("OnDisposedActions", "Rollback", "Exception", "NotCommitted", "OnlyOnCommit = false")]
 		public void Dispose() {
+			var currentContext = _ContextStack.Pop();
 			WasDisposed = true;
+
 			if (_shouldDispose) {
 				_backingSession.Dispose();
 			}
 
-			//skips
-			//_backingSession.Dispose();
+
+			var actions = currentContext.DisposeActions.ToList();
+			currentContext.DisposeActions.Clear();
+
+			foreach (var a in actions) {
+				if (!a.OnlyOnCommit || (!currentContext.TransactionRolledBack && currentContext.TransactionCommitted)) {
+					using (var s = HibernateSession.GetCurrentSession()) {
+						using (var tx = s.BeginTransaction()) {
+							AsyncHelper.RunSync(() => a.Action(s, tx));
+						}
+					}
+				}
+			}
 		}
 
 		#endregion
@@ -245,15 +305,21 @@ namespace RadialReview.Utilities.NHibernate {
 		}
 
 		public int TransactionDepth { get; set; }
+
+
 		public ITransaction BeginTransaction() {
 			TransactionDepth += 1;
 			if (_backingSession != null && _backingSession.Transaction != null) {
-				if (_backingSession.Transaction.IsActive) {					
-					return new SingleRequestTransaction(_backingSession.Transaction, this);					
+				if (_backingSession.Transaction.IsActive) {
+					var tx1 = new SingleRequestTransaction(_backingSession.Transaction, this);
+					GetCurrentContext().InitTransaction(tx1);
+					return tx1;
 				}
 			}
+			var tx = new SingleRequestTransaction(_backingSession.BeginTransaction(), this);
+			GetCurrentContext().InitTransaction(tx);
 
-			return new SingleRequestTransaction(_backingSession.BeginTransaction(), this);			
+			return tx;
 		}
 
 		public ITransaction BeginTransaction(IsolationLevel isolationLevel) {
@@ -418,6 +484,7 @@ namespace RadialReview.Utilities.NHibernate {
 		public ISessionStatistics Statistics {
 			get { return _backingSession.Statistics; }
 		}
+
 		#endregion
 	}
 }

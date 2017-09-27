@@ -17,7 +17,7 @@ using RadialReview;
 
 namespace TractionTools.Tests.Permissions {
 	[TestClass]
-	public class RockPermissions : BasePermissionsTest {
+	public class RockPermissionTests : BasePermissionsTest {
 
 		[TestMethod]
 		[TestCategory("Permissions")]
@@ -26,14 +26,15 @@ namespace TractionTools.Tests.Permissions {
 			
 			var l10= await L10Accessor.CreateBlankRecurrence(c.Manager, c.Id);
 
-			var rock = new RockModel() {
-				ForUserId = c.Middle.Id,
-				OrganizationId = c.Id,
-				Rock = "rock"
-			};
+			//var rock = new RockModel() {
+			//	ForUserId = c.Middle.Id,
+			//	OrganizationId = c.Id,
+			//	Rock = "rock"
+			//};
 
 			MockHttpContext();
-			await L10Accessor.CreateRock(c.Manager, l10.Id, L10Controller.AddRockVm.CreateRock(l10.Id, rock));
+			var rock = await L10Accessor.CreateAndAttachRock(c.Manager, l10.Id, c.Middle.Id, "rock");
+			//var rock = await L10Accessor.CreateRock(c.Manager, l10.Id, L10Controller.AddRockVm.CreateRock(l10.Id, c.Middle.Id, "rock"));
 
 			c.AssertAll(p => p.ViewRock(rock.Id), c.AllUsers);
 			Assert.Inconclusive("Are the view permissions restrictive enough");
@@ -44,14 +45,14 @@ namespace TractionTools.Tests.Permissions {
 		public async Task EditRock() {
 			var c = await Ctx.Build();
 			var l10 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
-			var rock = new RockModel() {
-				ForUserId = c.E5.Id,
-				OrganizationId = c.Id,
-				Rock = "rock"
-			};
+			//var rock = new RockModel() {
+			//	ForUserId = c.E5.Id,
+			//	OrganizationId = c.Id,
+			//	Rock = "rock"
+			//};
 			MockHttpContext();
 			//Make the rock, assign to L10
-			await L10Accessor.CreateRock(c.Manager, l10.Id, L10Controller.AddRockVm.CreateRock(l10.Id, rock));
+			var rock = await L10Accessor.CreateAndAttachRock(c.Manager, l10.Id,c.E5.Id,"rock");
 
 			var perm = new Action<PermissionsUtility>(p => p.EditRock(rock.Id));
 

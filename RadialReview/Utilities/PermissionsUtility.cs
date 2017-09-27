@@ -111,7 +111,10 @@ namespace RadialReview.Utilities {
             this.caller = caller;
 
         }
-
+		[Obsolete("Avoid using")]
+		public static PermissionsUtility CreateAdmin(ISession s) {
+			return Create(s, UserOrganizationModel.CreateAdmin());
+		}
 
         public static PermissionsUtility Create(ISession session, UserOrganizationModel caller) {
             var attached = caller;
@@ -575,7 +578,11 @@ namespace RadialReview.Utilities {
             return this;
         }
 
-        public PermissionsUtility EditUserDetails(long forUserId) {
+		public PermissionsUtility EditRocksForUser(long ownerId) {
+			return EditUserDetails(ownerId);
+		}
+
+		public PermissionsUtility EditUserDetails(long forUserId) {
             return TryWithOverrides(x => {
                 try {
                     return ManagesUserOrganization(forUserId, true);
@@ -1519,33 +1526,35 @@ namespace RadialReview.Utilities {
             return ViewUserOrganization(rock.ForUserId, false);
         }
         public PermissionsUtility EditRock(long rockId) {
-            var rock = session.Get<RockModel>(rockId);
+			return CheckCacheFirst("EditRock", rockId).Execute(() => {
+				var rock = session.Get<RockModel>(rockId);
 
-            var recurrenceIds = session.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
-                .Where(x => x.DeleteTime == null && x.ForRock.Id == rock.Id)
-                .Select(x => x.L10Recurrence.Id).List<long>();
+				var recurrenceIds = session.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
+					.Where(x => x.DeleteTime == null && x.ForRock.Id == rock.Id)
+					.Select(x => x.L10Recurrence.Id).List<long>();
 
-            var acceptedRecurrenceIds = recurrenceIds.Where(rid => {
-                try {
-                    EditL10Recurrence(rid);
-                    return true;
-                } catch (Exception) {
-                    return false;
-                }
-            });
+				var acceptedRecurrenceIds = recurrenceIds.Where(rid => {
+					try {
+						EditL10Recurrence(rid);
+						return true;
+					} catch (Exception) {
+						return false;
+					}
+				});
 
-            if (acceptedRecurrenceIds.Any())
-                return this;
+				if (acceptedRecurrenceIds.Any())
+					return this;
 
-            if (rock.OrganizationId != caller.Organization.Id)
-                throw new PermissionsException() { NoErrorReport = true };
+				if (rock.OrganizationId != caller.Organization.Id)
+					throw new PermissionsException() { NoErrorReport = true };
 
 
-            if (caller.Organization.Settings.EmployeesCanEditSelf && rock.ForUserId == caller.Id)
-                return this;
+				if (caller.Organization.Settings.EmployeesCanEditSelf && rock.ForUserId == caller.Id)
+					return this;
 
-            var editSelf = caller.Organization.Settings.ManagersCanEditSelf;
-            return ManagesUserOrganization(rock.ForUserId, !editSelf, PermissionType.EditEmployeeDetails);
+				var editSelf = caller.Organization.Settings.ManagersCanEditSelf;
+				return ManagesUserOrganization(rock.ForUserId, !editSelf, PermissionType.EditEmployeeDetails);
+			});
         }
 
         public PermissionsUtility EditMilestone(long milestoneId) {

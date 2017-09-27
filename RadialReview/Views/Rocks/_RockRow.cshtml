@@ -33,9 +33,9 @@
                     <td style="width:1px">
                         @if (ViewBag.ShowCompany != null && ViewBag.ShowCompany == true) {
                             @*<span style="padding-left: 8px;" class="glyphicon glyphicon-trash deleteRow clickable @lockedClass" title="Delete"></span>*@
-                            @Html.CheckBoxFor(x => x.CompanyRock, new { @class = "", style = "margin-left: 4px;", title = "Company Rock" })
+                            @Html.CheckBoxFor(x => x._CompanyRock, new { @class = "", style = "margin-left: 4px;", title = "Show on V/TO" })
                         } else {
-                            @Html.HiddenFor(x => x.CompanyRock)
+                            @Html.HiddenFor(x => x._CompanyRock)
                         }
                     </td>
                     <td style="width:1px">

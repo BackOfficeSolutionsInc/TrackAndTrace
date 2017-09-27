@@ -225,6 +225,9 @@ namespace RadialReview.Models.L10 {
 			public virtual DateTime? DeleteTime { get; set; }
 			public virtual RockModel ForRock { get; set; }
 			public virtual L10Recurrence L10Recurrence { get; set; }
+			public virtual bool VtoRock { get; set; }
+
+
 			public L10Recurrence_Rocks() {
 				CreateTime = DateTime.UtcNow;
 			}
@@ -234,6 +237,7 @@ namespace RadialReview.Models.L10 {
 					Id(x => x.Id);
 					Map(x => x.CreateTime);
 					Map(x => x.DeleteTime);
+					Map(x => x.VtoRock);
 					References(x => x.L10Recurrence).Column("L10RecurrenceId");
 					References(x => x.ForRock).Column("RockId");
 				}

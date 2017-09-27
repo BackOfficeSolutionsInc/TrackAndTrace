@@ -466,7 +466,7 @@
 										<div class="rocks-table border-table">
 											<table class="add-row-container">
 												<tr><th colspan="2">Rocks for the Quarter:</th><th class="alignRight hidden-xs">Who</th></tr>
-												<tr class="add-row-row" ng-repeat="item in (model.QuarterlyRocks).Rocks | filter:{Deleted:false,Rock:{CompanyRock:true}}">
+												<tr class="add-row-row" ng-repeat="item in (model.QuarterlyRocks).Rocks | filter:{Deleted:false,Rock:{VtoRock:true}}">
 													<td class="number">{{$index+1}}.</td>
 													<td>
 														<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddRock?vto='+vtoId,'model.QuarterlyRocks.Rocks')"
@@ -691,7 +691,7 @@
 								<table class="table-bordered resize-item ">
 									<tr><th colspan=2>Rocks for the Quarter:</th><th>Who:</th></tr>
 									@*@{
-											var rockFilter = Model.OnlyCompanyWideRocks ? ",Rock.CompanyRock:true" : "";
+											var rockFilter = Model.OnlyCompanyWideRocks ? ",Rock.VtoRock:true" : "";
 										}*@
 
 									<tr ng-repeat="item in (model.QuarterlyRocks).Rocks | filter:{Deleted:false}">

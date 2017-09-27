@@ -50,7 +50,8 @@ namespace TractionTools.Tests.Accessors {
 				sameRock._AddedToL10 = false;
 				sameRock._AddedToVTO = false;
 
-				await L10Accessor.AddExistingRockToL10(s, PermissionsUtility.Create(s, r2.Creator), r2.Id, sameRock);
+				//await L10Accessor.AddExistingRockToL10(s, PermissionsUtility.Create(s, r2.Creator), r2.Id, sameRock);
+				await L10Accessor.AttachRock(s, PermissionsUtility.Create(s, r2.Creator), r2.Id, sameRock.Id, false);
 			});
             var rocks2 = L10Accessor.GetRocksForRecurrence(r2.Creator, r2.Id);
             Assert.AreEqual(1, rocks2.Count);

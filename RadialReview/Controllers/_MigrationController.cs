@@ -951,43 +951,43 @@ namespace RadialReview.Controllers {
 			return "" + f;
 		}
 
-		[Access(AccessLevel.Radial)]
-		public string M2_21_2016() {
-			var f = 0;
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					//Fix TempUser userIds
+		//[Access(AccessLevel.Radial)]
+		//public string M2_21_2016() {
+		//	var f = 0;
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
+		//			//Fix TempUser userIds
 
-					var rocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().Where(x => x.DeleteTime == null).List().ToList();
-					var vtoRocks = s.QueryOver<Vto_Rocks>().Where(x => x.DeleteTime == null).List().ToList();
-					var perm = PermissionsUtility.Create(s, GetUser());
-					var now = DateTime.UtcNow;
-					foreach (var rock in rocks) {
-						if (!vtoRocks.Any(vto => vto.Rock.Id == rock.ForRock.Id)) {
-							var recur = s.Get<L10Recurrence>(rock.L10Recurrence.Id);
-							if (recur.VtoId != 0) {
-								rock.ForRock._AddedToL10 = false;
-								rock.ForRock._AddedToVTO = false;
-								var vto = s.Get<VtoModel>(recur.VtoId);
-								var vtoRock = new Vto_Rocks {
-									CreateTime = now,
-									Rock = rock.ForRock,
-									Vto = vto,
+		//			var rocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().Where(x => x.DeleteTime == null).List().ToList();
+		//			var vtoRocks = s.QueryOver<Vto_Rocks>().Where(x => x.DeleteTime == null).List().ToList();
+		//			var perm = PermissionsUtility.Create(s, GetUser());
+		//			var now = DateTime.UtcNow;
+		//			foreach (var rock in rocks) {
+		//				if (!vtoRocks.Any(vto => vto.Rock.Id == rock.ForRock.Id)) {
+		//					var recur = s.Get<L10Recurrence>(rock.L10Recurrence.Id);
+		//					if (recur.VtoId != 0) {
+		//						rock.ForRock._AddedToL10 = false;
+		//						rock.ForRock._AddedToVTO = false;
+		//						var vto = s.Get<VtoModel>(recur.VtoId);
+		//						var vtoRock = new Vto_Rocks {
+		//							CreateTime = now,
+		//							Rock = rock.ForRock,
+		//							Vto = vto,
 
-								};
-								s.Save(vtoRock);
-								f++;
-							}
-						}
-					}
+		//						};
+		//						s.Save(vtoRock);
+		//						f++;
+		//					}
+		//				}
+		//			}
 
-					tx.Commit();
-					s.Flush();
+		//			tx.Commit();
+		//			s.Flush();
 
-					return "" + f;
-				}
-			}
-		}
+		//			return "" + f;
+		//		}
+		//	}
+		//}
 
 		[Access(AccessLevel.Radial)]
 		public string M3_08_2016() {

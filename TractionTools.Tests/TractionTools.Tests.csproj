@@ -309,6 +309,8 @@
     <Compile Include="API\v0\ProcessDefApiTests_v0.cs" />
     <Compile Include="API\v0\UsersApiTests_v0.cs" />
     <Compile Include="API\v0\WebHookAccessorTests_v0.cs" />
+    <Compile Include="Codebase\EnsureNoUntested.cs" />
+    <Compile Include="Codebase\SingleRequestSessionTests.cs" />
     <Compile Include="Controllers\DashboardControllerTests.cs" />
     <Compile Include="Controllers\L10ControllerTests.cs" />
     <Compile Include="Controllers\TwilioApi.cs" />

@@ -5,5 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RadialReview.Utilities.Hooks {
-    public interface IHook {}
+    public interface IHook {
+		bool CanRunRemotely();
+	}
 }

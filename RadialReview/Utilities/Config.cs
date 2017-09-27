@@ -400,7 +400,7 @@ namespace RadialReview.Utilities {
 
         public static bool IsSchedulerAction() {
             if (!IsLocal()) {
-                if (GetAppSetting("SchedulerAction").ToBooleanJS()) {
+                if (GetAppSetting("SchedulerAction","false").ToBooleanJS()) {
                     return true;
                 }
             }

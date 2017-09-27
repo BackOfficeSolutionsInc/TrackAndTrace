@@ -1141,7 +1141,7 @@ namespace RadialReview.Accessors {
 
 
 
-			if (recur.Rocks.Any(x => x.CompanyRock ?? false)) {
+			if (recur.Rocks.Any(x => x.VtoRock ?? false)) {
 				table = section.AddTable();
 				table.Format.Font.Size = 9;
 
@@ -1190,7 +1190,7 @@ namespace RadialReview.Accessors {
 				row.Cells[4].VerticalAlignment = VerticalAlignment.Center;
 
 				mn = 1;
-				foreach (var m in recur.Rocks.Where(x => x.CompanyRock == true).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)) {
+				foreach (var m in recur.Rocks.Where(x => x.VtoRock == true).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)) {
 
 					row = table.AddRow();
 					row.BottomPadding = Unit.FromInch(.05);
@@ -1315,7 +1315,7 @@ namespace RadialReview.Accessors {
 			row.Cells[4].VerticalAlignment = VerticalAlignment.Center;
 			//table.Format.Font.Size = Unit.FromInch(.1); // --- 1/16"
 			mn = 1;
-			foreach (var m in recur.Rocks.OrderBy(x => x.Owner.Name).ThenByDescending(x => x.CompanyRock).ThenBy(x => x.DueDate)) {
+			foreach (var m in recur.Rocks.OrderBy(x => x.Owner.Name).ThenByDescending(x => x.VtoRock).ThenBy(x => x.DueDate)) {
 
 				row = table.AddRow();
 				row.HeadingFormat = false;

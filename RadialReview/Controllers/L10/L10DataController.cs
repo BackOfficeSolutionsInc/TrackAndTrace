@@ -42,6 +42,30 @@ namespace RadialReview.Controllers {
 
 			public bool AllowCreateCompanyRock { get; set; }
 
+			public static AddRockVm CreateRock(long recurrenceId, long ownerId, string message = null, bool allowBlankRock = false) {
+				var model = new RockModel() {
+					ForUserId = ownerId,
+					Rock = message					
+				};
+
+				if (model.ForUserId <= 0)
+					throw new ArgumentOutOfRangeException("You must specify an accountable user id");
+				//if (model.OrganizationId <= 0)
+				//	throw new ArgumentOutOfRangeException("You must specify an organization id");
+				if (recurrenceId <= 0)
+					throw new ArgumentOutOfRangeException("You must specify a recurrence id");
+				if (String.IsNullOrWhiteSpace(model.Rock) && !allowBlankRock)
+					throw new ArgumentOutOfRangeException("You must specify a title for the rock");
+								
+
+				return new AddRockVm() {
+					SelectedRock = -3,
+					Rocks = model.AsList(),
+					RecurrenceId = recurrenceId,
+				};
+			}
+
+			[Obsolete("Remove",true)]
 			public static AddRockVm CreateRock(long recurrenceId, RockModel model, bool allowBlankRock = false) {
 				if (model == null)
 					throw new ArgumentNullException("model", "Rock was null");
@@ -99,7 +123,7 @@ namespace RadialReview.Controllers {
 		[HttpPost]
 		public async Task<JsonResult> AddRock(AddRockVm model) {
 			ValidateValues(model, x => x.RecurrenceId);
-			await L10Accessor.CreateRock(GetUser(), model.RecurrenceId, model);
+			await L10Accessor.CreateOrAttachRock(GetUser(), model.RecurrenceId, model);
 			return Json(ResultObject.SilentSuccess());
 		}
 
@@ -582,11 +606,13 @@ namespace RadialReview.Controllers {
             return Json(ResultObject.SilentSuccess(date.ToString()));
         }
 
-        [Access(AccessLevel.UserOrganization)]
+		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult UpdateRockCompletion(long id, long rockId, RockState state, string connectionId = null) {
+		[Untested("Changed from UpdateRockCompletion to UpdateRock")]
+		public async Task<JsonResult> UpdateRockCompletion(long id, long rockId, RockState state, string connectionId = null) {
 			var recurrenceId = id;
-			L10Accessor.UpdateRockCompletion(GetUser(), recurrenceId, rockId, state, connectionId);
+			//L10Accessor.UpdateRockCompletion(GetUser(), recurrenceId, rockId, state, connectionId);
+			await L10Accessor.UpdateRock(GetUser(), rockId, null, state, null, connectionId);
 			return Json(ResultObject.SilentSuccess(state.ToString()));
 		}
 

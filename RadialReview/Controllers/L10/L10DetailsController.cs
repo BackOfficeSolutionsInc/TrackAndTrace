@@ -76,10 +76,7 @@ namespace RadialReview.Controllers {
                     }
                 }
             }
-
-
             return Json(model, JsonRequestBehavior.AllowGet);
         }
-
     }
 }

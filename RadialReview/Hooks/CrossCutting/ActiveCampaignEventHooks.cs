@@ -19,6 +19,8 @@ using log4net;
 
 namespace RadialReview.Hooks {
 	public class ActiveCampaignEventHooks : IAccountEvent, ICreateUserOrganizationHook {
+
+
 		protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 		public ActiveCampaignConfig Configs { get; protected set; }
@@ -27,6 +29,11 @@ namespace RadialReview.Hooks {
 		public ActiveCampaignEventHooks() {
 			Configs = Config.GetActiveCampaignConfig();
 			Connector = new ActiveCampaignConnector(Configs);
+		}
+
+
+		public bool CanRunRemotely() {
+			return true;
 		}
 
 		public async Task CreateEvent(ISession s, AccountEvent evt) {

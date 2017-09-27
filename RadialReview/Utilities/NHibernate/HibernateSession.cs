@@ -46,6 +46,8 @@ using RadialReview.Areas.People.Models.Survey;
 using static RadialReview.Models.Issues.IssueModel;
 using RadialReview.Areas.CoreProcess.Models.MapModel;
 using RadialReview.Areas.CoreProcess.Models;
+using RadialReview.Utilities;
+using System.Threading.Tasks;
 
 //using Microsoft.VisualStudio.Profiler;
 
@@ -252,17 +254,43 @@ namespace RadialReview.Utilities {
             return false;
         }
 
+		private static SingleRequestSession GetExistingSingleRequestSession() {
+			if (!(HttpContext.Current == null || HttpContext.Current.Items == null) && HttpContext.Current.Items["IsTest"] == null) {
+				try {
+					var session = (SingleRequestSession)HttpContext.Current.Items["NHibernateSession"];
+					return session;
+				} catch (Exception) {
+					//Something went wrong.. revert
+					//var a = "Error";
+				}
+			}
+			return null;
+		}
 
+		public static async Task RunAfterSuccessfulDisposeOrNow(Func<ISession, ITransaction,Task> method) {
+			var s = GetExistingSingleRequestSession();
+			if (s is SingleRequestSession) {
+				s.RunAfterDispose(new SingleRequestSession.OnDisposedModel(method, true));
+			} else {
+				using (var ss = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
+						await method(ss, tx);
+					}
+				}
+			}
+		}
 
         public static ISession GetCurrentSession(bool singleSession = true) {
 			
 			if (singleSession && !(HttpContext.Current == null || HttpContext.Current.Items == null) && HttpContext.Current.Items["IsTest"] == null) {
 				try {
-					var session = (SingleRequestSession)HttpContext.Current.Items["NHibernateSession"];
+					var session = GetExistingSingleRequestSession();
 					if (session == null) {
 						session = new SingleRequestSession(GetDatabaseSessionFactory().OpenSession()); // Create session, like SessionFactory.createSession()...
-                        HttpContext.Current.Items.Add("NHibernateSession", session);
-                    }
+						HttpContext.Current.Items.Add("NHibernateSession", session);
+					} else {
+						session.AddContext();
+					}
                     return session;
 				} catch (Exception) {
                     //Something went wrong.. revert
@@ -336,7 +364,7 @@ namespace RadialReview.Utilities {
 			enversConf.Audit<VtoItem_String>().ExcludeRelationData(x => x.Vto);
 			enversConf.Audit<VtoItem_DateTime>().ExcludeRelationData(x => x.Vto);
 			enversConf.Audit<VtoItem_Decimal>().ExcludeRelationData(x => x.Vto);
-			enversConf.Audit<Vto_Rocks>().ExcludeRelationData(x => x.Vto);
+			//enversConf.Audit<Vto_Rocks>().ExcludeRelationData(x => x.Vto);
 
 			enversConf.Audit<CoreFocusModel>();//.ExcludeRelationData(x => x.Vto);
 			enversConf.Audit<MarketingStrategyModel>();//.ExcludeRelationData(x => x.Vto);

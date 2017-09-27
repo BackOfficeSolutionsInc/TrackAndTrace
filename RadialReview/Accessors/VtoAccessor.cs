@@ -33,6 +33,7 @@ using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Synchronize;
 using RadialReview.Models.Angular.Rocks;
 using System.Threading.Tasks;
+using static RadialReview.Controllers.L10Controller;
 
 namespace RadialReview.Accessors {
 	public class VtoAccessor : BaseAccessor {
@@ -92,6 +93,7 @@ namespace RadialReview.Accessors {
             return null;
         }
 
+		[Untested("Vto_Rocks","Query over L10Recur_rock","Ensure the correct rocks are obtained","Vto_Rock.Create()")]
         public static VtoModel GetVTO(ISession s, PermissionsUtility perms, long vtoId) {
 			perms.ViewVTO(vtoId);
 			var model = s.Get<VtoModel>(vtoId);
@@ -100,9 +102,12 @@ namespace RadialReview.Accessors {
 			var looksLikeQ= s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_LookLike && x.Vto.Id == vtoId && x.DeleteTime == null).Future();//.List().ToList();
 			var goalsQ = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_YearGoals && x.Vto.Id == vtoId && x.DeleteTime == null).Future();//.List().ToList();
 																																							  //model.._GoalsForYear = s.QueryOver<VtoModel.VtoItem_String>().Where(x => x.Type == VtoItemType.List_Issues && x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList();
-			var rocksQ= s.QueryOver<Vto_Rocks>()
-				.Where(x => x.Vto.Id == vtoId && x.DeleteTime == null).Future();
-			
+			//var rocksQ= s.QueryOver<Vto_Rocks>().Where(x => x.Vto.Id == vtoId && x.DeleteTime == null).Future();
+			var rocksQ = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
+				.Where(x => x.DeleteTime == null && x.L10Recurrence.Id == model.L10Recurrence && x.VtoRock)
+				.Future();
+
+
 
 			model._Issues = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Issues && x.Vto.Id == vtoId && x.DeleteTime == null).List().Select(x=>new VtoIssue() {
 				Id = x.Id,
@@ -120,7 +125,8 @@ namespace RadialReview.Accessors {
 			model.MarketingStrategy._Uniques = uniquesQ.ToList();
 			model.ThreeYearPicture._LooksLike = looksLikeQ.ToList();
 			model.OneYearPlan._GoalsForYear = goalsQ.ToList();
-			model.QuarterlyRocks._Rocks  = rocksQ.ToList().Where(x => x.Rock.DeleteTime == null && x.Rock.CompanyRock).ToList();
+			model.QuarterlyRocks._Rocks  = rocksQ.ToList().Where(x => x.ForRock.DeleteTime == null /* && x.Rock.CompanyRock*/)
+				.Select(x=> AngularVtoRock.Create(x)).ToList();
 
 			var issuesAttachedToRecur = model._Issues
 				.Where(x => x.ForModel != null && x.ForModel.ModelType == ForModel.GetModelType<IssueModel.IssueModel_Recurrence>())
@@ -320,6 +326,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+		[Untested("Vto_rock","Test with UpdateRock","Is RecurrenceRockId populated?")]
 
 		public static async Task Update(UserOrganizationModel caller, BaseAngular model, string connectionId) {
 			if (model.Type == typeof(AngularVtoString).Name) {
@@ -339,7 +346,7 @@ namespace RadialReview.Accessors {
 				UpdateStrategy(caller, m.Id, m.TargetMarket, m.ProvenProcess, m.Guarantee, m.MarketingStrategyTitle, connectionId);
 			} else if (model.Type == typeof(AngularVtoRock).Name) {
 				var m = (AngularVtoRock)model;
-				await UpdateRock(caller, m.Id, m.Rock.Name, m.Rock.Owner.Id, null, connectionId);
+				await UpdateRock(caller, m.Id, m.Rock.Name, m.Rock.Owner.Id, null, connectionId,m.Rock.RecurrenceRockId.Value);
 			} else if (model.Type == typeof(AngularOneYearPlan).Name) {
 				var m = (AngularOneYearPlan)model;
 				UpdateOneYearPlan(caller, m.Id, m.FutureDate, m.Revenue, m.Profit, m.Measurables, m.OneYearPlanTitle, connectionId);
@@ -551,128 +558,155 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		public static void UpdateRockAccountable(UserOrganizationModel caller, long rockId, long accountableUser) {
+		[Untested("Vto_Rocks","Change to L10Accessor","RockID mapped with VtoRock")]
+		[Obsolete("Do not use, Call update rock instead",true)]
+		public static void UpdateRockAccountable(UserOrganizationModel caller, long vtoRockId, long accountableUser,long recurrenceRockId) {
+			throw new NotImplementedException();
 			//var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var rock = s.Get<Vto_Rocks>(rockId);
-					PermissionsUtility.Create(s, caller).EditVTO(rock.Vto.Id).ViewUserOrganization(accountableUser, false);
+			//using (var s = HibernateSession.GetCurrentSession()) {
+			//	using (var tx = s.BeginTransaction()) {
+			//		var rock = s.Get<Vto_Rocks>(vtoRockId);
+			//		PermissionsUtility.Create(s, caller).EditVTO(rock.Vto.Id).ViewUserOrganization(accountableUser, false);
 
-					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateRockOwner(rockId));
+			//		SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateRockOwner(vtoRockId));
 
-					rock.Rock.AccountableUser = s.Get<UserOrganizationModel>(accountableUser);
-					rock.Rock.ForUserId = accountableUser;
+			//		rock.Rock.AccountableUser = s.Get<UserOrganizationModel>(accountableUser);
+			//		rock.Rock.ForUserId = accountableUser;
 
-					var a = rock.Rock.AccountableUser.GetName();
-					var b = rock.Rock.AccountableUser.GetImageUrl();
+			//		var a = rock.Rock.AccountableUser.GetName();
+			//		var b = rock.Rock.AccountableUser.GetImageUrl();
 
-					s.Update(rock.Rock);
-					tx.Commit();
-					s.Flush();
+			//		s.Update(rock.Rock);
+			//		tx.Commit();
+			//		s.Flush();
 
-					var update = new AngularUpdate() { AngularVtoRock.Create(rock), new AngularRock(rock.Rock), };
-					UpdateVTO(s, rock.Vto.Id, null, x => x.update(update));
-				}
-			}
+			//		var update = new AngularUpdate() { AngularVtoRock.Create(rock), new AngularRock(rock.Rock), };
+			//		UpdateVTO(s, rock.Vto.Id, null, x => x.update(update));
+			//	}
+			//}
 		}
 
-		public static async Task UpdateRock(UserOrganizationModel caller, long rockId, string message, long? accountableUser, bool? deleted, string connectionId) {
-			//var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
+		[Untested("Vto_Rocks","Change to L10Accessor", "RockID mapped with VtoRock")]
+		public static async Task UpdateRock_Old(UserOrganizationModel caller, long vtoRockId, string message, long? accountableUser, bool? deleted, string connectionId, long recurrenceRockId) {
+			throw new NotImplementedException();
+			
+			////var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
+			//using (var s = HibernateSession.GetCurrentSession()) {
+			//	using (var tx = s.BeginTransaction()) {
+			//		//var vtoRock = s.Get<Vto_Rocks>(vtoRockId);
+			//		var perm = PermissionsUtility.Create(s, caller).EditVTO(vtoRock.Vto.Id);
+
+			//		var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+			//		SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateRock(vtoRockId));
+					
+			//		bool skipUpdate = false;
+
+
+			//		if (deleted != null) {
+			//			var vto = s.Get<VtoModel>(vtoRock.Vto.Id);
+
+
+			//			if (deleted == false) {
+			//				vtoRock.DeleteTime = null;
+			//				//rock.Rock.DeleteTime = null;
+			//				if (vto.L10Recurrence != null)
+			//					await L10Accessor.AddExistingRockToL10(s, perm, vto.L10Recurrence.Value, vtoRock.Rock);
+
+			//			} else if (vtoRock.DeleteTime == null) {
+			//				vtoRock.DeleteTime = DateTime.UtcNow;
+			//				//rock.Rock.DeleteTime = rock.DeleteTime;
+			//				if (vto.L10Recurrence != null) {
+			//					var recurRocks1 = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().Where(x => x.ForRock.Id == vtoRock.Rock.Id && x.L10Recurrence.Id == vto.L10Recurrence && x.DeleteTime == null).List().ToList();
+
+			//					foreach (var r in recurRocks1) {
+			//						r.DeleteTime = vtoRock.DeleteTime;
+			//						s.Update(r);
+			//						var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(r.L10Recurrence.Id));
+			//						group.removeRock(r.ForRock.Id);
+			//					}
+
+			//					//Delete this meetings rocks
+			//					var m = L10Accessor._GetCurrentL10Meeting(s, perm, vto.L10Recurrence.Value, true, false, false);
+			//					if (m != null) {
+			//						var meetingRocks = s.QueryOver<L10Meeting.L10Meeting_Rock>()
+			//							.Where(x => x.ForRock.Id == vtoRock.Rock.Id && x.L10Meeting.Id == m.Id && x.DeleteTime == null).List().ToList();
+
+			//						foreach (var r in meetingRocks) {
+			//							r.DeleteTime = vtoRock.DeleteTime;
+			//							s.Update(r);
+			//						}
+			//					}
+
+			//					//var recurRocks = L10Accessor.GetRocksForRecurrence(s, perm, vto.L10Recurrence.Value);
+			//					var arecur = new AngularRecurrence(vto.L10Recurrence.Value) {
+			//						Rocks = AngularList.Create(AngularListType.Remove, new AngularRock(vtoRock.Rock.Id).AsList()),
+			//					};
+			//					var group1 = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(vto.L10Recurrence.Value));
+			//					group1.update(new AngularUpdate() { arecur });
+			//				}
+			//				var update = new AngularUpdate() {
+			//					new AngularQuarterlyRocks(){
+			//						Rocks = AngularList.Create(AngularListType.Remove,AngularVtoRock.Create(vtoRock).AsList())
+			//					}
+			//				};
+			//				UpdateVTO(s, vtoRock.Vto.Id, null, x => x.update(update));
+			//				skipUpdate = true; // Assumes all you do is delete the rock.
+			//			}
+
+			//		} else {
+			//			if (vtoRock.Rock.Rock != message) {
+			//				vtoRock.Rock.Rock = message;
+			//				var recurRocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().Where(x => x.DeleteTime == null && x.ForRock.Id == vtoRock.Rock.Id).List().ToList();
+
+			//				foreach (var r in recurRocks) {
+			//					var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(r.L10Recurrence.Id));
+			//					group.updateRockName(r.ForRock.Id, r.ForRock.Rock);
+			//					group.update(new AngularUpdate() { new AngularRock(vtoRock.Rock.Id) { Name = message } });
+			//				}
+			//			}
+			//			if (accountableUser.HasValue) {
+			//				perm.ViewUserOrganization(accountableUser.Value, false);
+			//				vtoRock.Rock.AccountableUser = s.Get<UserOrganizationModel>(accountableUser.Value);
+			//			}
+			//		}
+
+			//		s.Update(vtoRock);
+			//		s.Update(vtoRock.Rock);
+
+			//		tx.Commit();
+			//		s.Flush();
+
+			//		if (!skipUpdate) {
+			//			var update2 = new AngularUpdate() { AngularVtoRock.Create(vtoRock) };
+			//			UpdateVTO(s, vtoRock.Vto.Id, connectionId /*should not be null*/, x => x.update(update2));
+			//		}
+
+
+			//	}
+			//}
+		}
+		[Untested("remove the vtoRockId field","Test all ui for vtoRockId")]
+		public static async Task UpdateRock(UserOrganizationModel caller, long vtoRockId, string message, long? accountableUser, bool? deleted, string connectionId, long recurrenceRockId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					var rock = s.Get<Vto_Rocks>(rockId);
-					var perm = PermissionsUtility.Create(s, caller).EditVTO(rock.Vto.Id);
+					var perms = PermissionsUtility.Create(s, caller);
+					var recurRock = s.Get<L10Recurrence.L10Recurrence_Rocks>(recurrenceRockId);
 
-					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateRock(rockId));
-
-
-					bool skipUpdate = false;
-
-					if (deleted != null) {
-						var vto = s.Get<VtoModel>(rock.Vto.Id);
-
-
-						if (deleted == false) {
-							rock.DeleteTime = null;
-							//rock.Rock.DeleteTime = null;
-							if (vto.L10Recurrence != null)
-								await L10Accessor.AddExistingRockToL10(s, perm, vto.L10Recurrence.Value, rock.Rock);
-
-						} else if (rock.DeleteTime == null) {
-							rock.DeleteTime = DateTime.UtcNow;
-							//rock.Rock.DeleteTime = rock.DeleteTime;
-							if (vto.L10Recurrence != null) {
-								var recurRocks1 = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().Where(x => x.ForRock.Id == rock.Rock.Id && x.L10Recurrence.Id == vto.L10Recurrence && x.DeleteTime == null).List().ToList();
-
-								foreach (var r in recurRocks1) {
-									r.DeleteTime = rock.DeleteTime;
-									s.Update(r);
-									var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(r.L10Recurrence.Id));
-									group.removeRock(r.ForRock.Id);
-								}
-
-								//Delete this meetings rocks
-								var m = L10Accessor._GetCurrentL10Meeting(s, perm, vto.L10Recurrence.Value, true, false, false);
-								if (m != null) {
-									var meetingRocks = s.QueryOver<L10Meeting.L10Meeting_Rock>()
-										.Where(x => x.ForRock.Id == rock.Rock.Id && x.L10Meeting.Id == m.Id && x.DeleteTime == null).List().ToList();
-
-									foreach (var r in meetingRocks) {
-										r.DeleteTime = rock.DeleteTime;
-										s.Update(r);
-									}
-								}
-
-								//var recurRocks = L10Accessor.GetRocksForRecurrence(s, perm, vto.L10Recurrence.Value);
-								var arecur = new AngularRecurrence(vto.L10Recurrence.Value) {
-									Rocks = AngularList.Create(AngularListType.Remove, new AngularRock(rock.Rock.Id).AsList()),
-								};
-								var group1 = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(vto.L10Recurrence.Value));
-								group1.update(new AngularUpdate() { arecur });
-							}
-							var update = new AngularUpdate() {
-								new AngularQuarterlyRocks(){
-									Rocks = AngularList.Create(AngularListType.Remove,AngularVtoRock.Create(rock).AsList())
-								}
-							};
-							UpdateVTO(s, rock.Vto.Id, null, x => x.update(update));
-							skipUpdate = true; // Assumes all you do is delete the rock.
-						}
-
+					if (deleted == true) {
+						await L10Accessor.SetVtoRock(s, perms, recurrenceRockId, false);
 					} else {
-						if (rock.Rock.Rock != message) {
-							rock.Rock.Rock = message;
-							var recurRocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().Where(x => x.DeleteTime == null && x.ForRock.Id == rock.Rock.Id).List().ToList();
-
-							foreach (var r in recurRocks) {
-								var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(r.L10Recurrence.Id));
-								group.updateRockName(r.ForRock.Id, r.ForRock.Rock);
-								group.update(new AngularUpdate() { new AngularRock(rock.Rock.Id) { Name = message } });
-							}
+						if (deleted == false) {
+							await L10Accessor.SetVtoRock(s, perms, recurrenceRockId, true);
 						}
-						if (accountableUser.HasValue) {
-							perm.ViewUserOrganization(accountableUser.Value, false);
-							rock.Rock.AccountableUser = s.Get<UserOrganizationModel>(accountableUser.Value);
-						}
+						await RockAccessor.UpdateRock(s, perms, recurRock.ForRock.Id, message, accountableUser);
 					}
-
-					s.Update(rock);
-					s.Update(rock.Rock);
 
 					tx.Commit();
 					s.Flush();
-
-					if (!skipUpdate) {
-						var update2 = new AngularUpdate() { AngularVtoRock.Create(rock) };
-						UpdateVTO(s, rock.Vto.Id, connectionId /*should not be null*/, x => x.update(update2));
-					}
-
-
 				}
 			}
-		}
 
+		}
 
 		public static void JoinVto(UserOrganizationModel caller, long vtoId, string connectionId) {
 			var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
@@ -762,71 +796,65 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static async Task AddRock(ISession s, PermissionsUtility perms, long vtoId, RockModel rock, DateTime? nowTime = null) {
-			if (rock._AddedToVTO)
-				throw new PermissionsException("Already added to vto");
-			rock._AddedToVTO = true;
-
-			perms.EditVTO(vtoId);
-
+		public static List<RockModel> GetVtoRocks_Unsafe(ISession s, long vtoId) {
 			var vto = s.Get<VtoModel>(vtoId);
+			if (vto.L10Recurrence == null)
+				throw new NotImplementedException("Vto rocks not implemented");
 
-			var organizationId = vto.Organization.Id;
-			//var existing = OrganizationAccessor.GetCompanyRocks(s, perms, organizationId);
+			return s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
+				.Where(x => x.DeleteTime == null && x.L10Recurrence.Id == vto.L10Recurrence && x.VtoRock)
+				.List().Select(x=>x.ForRock)
+				.ToList();
 
-			// if (rock == null)
-			//{
-
-			//}
-			//else
-			//{
-			//    rock.OrganizationId = organizationId;
-			//    rock.Category = category;
-			//    rock.PeriodId = 
-
-			//}
-			//existing.Add(rock);
-			var now = nowTime ?? DateTime.UtcNow;
-
-			var vtoRocks = s.QueryOver<Vto_Rocks>().Where(x => x.Vto.Id == vtoId).List().ToList();
-
-			s.SaveOrUpdate(rock);
-			var vtoRock = new Vto_Rocks {
-				CreateTime = now,
-				Rock = rock,
-				Vto = vto,
-				_Ordering = vtoRocks.Count(),
-
-			};
-			s.Save(vtoRock);
-
-			if (vto.L10Recurrence != null && !rock._AddedToL10) {
-				await L10Accessor.AddExistingRockToL10(s, perms, vto.L10Recurrence.Value, rock, now);
-			}
-
-			vtoRocks.Add(vtoRock);
-
-
-			var angularItems = AngularList.Create(AngularListType.Add, AngularVtoRock.Create(vtoRock).AsList());
-#pragma warning disable CS0618 // Type or member is obsolete
-			var update = new AngularUpdate() { new AngularQuarterlyRocks(vto.QuarterlyRocks.Id) { Rocks = angularItems } };
-#pragma warning restore CS0618 // Type or member is obsolete
-			UpdateVTO(s, vtoId, null, x => x.update(update));
-
-			/*if (vto.L10Recurrence.HasValue)
-            {
-                var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-
-                var recurRocks = L10Accessor.GetRocksForRecurrence(s, perms, vto.L10Recurrence.Value);
-                var arecur = new AngularRecurrence(vto.L10Recurrence.Value)
-                {
-                    Rocks = recurRocks.Select(x => new AngularRock(x.ForRock)).ToList(),
-                };
-                var group1 = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(vto.L10Recurrence.Value));
-                group1.update(new AngularUpdate() { arecur });
-            }*/
 		}
 
+
+//		[Untested("Vto_Rocks", "Accessible?")]
+//		[Obsolete("Do not use", true)]
+//		private static async Task AddRock(ISession s, PermissionsUtility perms, long vtoId, RockModel rock, DateTime? nowTime = null) {
+//			throw new NotImplementedException();
+//			if (rock._AddedToVTO)
+//				throw new PermissionsException("Already added to vto");
+//			rock._AddedToVTO = true;
+//			perms.EditVTO(vtoId);
+
+//			var vto = s.Get<VtoModel>(vtoId);
+//			var organizationId = vto.Organization.Id;
+
+
+//			var now = nowTime ?? DateTime.UtcNow;
+//			var vtoRocks = GetVtoRocks_Unsafe(s, vtoId);
+
+//			s.SaveOrUpdate(rock);
+
+//			await L10Accessor.AddRock(s, perms, vto.L10Recurrence.Value, AddRockVm.CreateRock(vto.L10Recurrence.Value, rock, true));
+
+//			//var vtoRock = new /*Vto_Rocks*/ {
+//			//	CreateTime = now,
+//			//	Rock = rock,
+//			//	Vto = vto,
+//			//	_Ordering = vtoRocks.Count(),
+
+//			//};
+//			//s.Save(vtoRock);
+
+//			if (vto.L10Recurrence != null && !rock._AddedToL10) {
+//				await L10Accessor.AddExistingRockToL10(s, perms, vto.L10Recurrence.Value, rock, now);
+//			}
+
+//			vtoRocks.Add(vtoRock);
+
+
+//			var angularItems = AngularList.Create(AngularListType.Add, AngularVtoRock.Create(vtoRock).AsList());
+//#pragma warning disable CS0618 // Type or member is obsolete
+//			var update = new AngularUpdate() { new AngularQuarterlyRocks(vto.QuarterlyRocks.Id) { Rocks = angularItems } };
+//#pragma warning restore CS0618 // Type or member is obsolete
+//			UpdateVTO(s, vtoId, null, x => x.update(update));
+
+//		}
+
+		//[Obsolete("Do not use",true)]
+		[Untested("Vto_Rocks", "Change to L10Accessor.")]
 		public static async Task CreateNewRock(UserOrganizationModel caller, long vtoId, string message = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -838,27 +866,35 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static async Task CreateNewRock(ISession s, PermissionsUtility perms, long vtoId, long owner, string message = null) {
-			var now = DateTime.UtcNow;
+		[Untested("Vto_Rocks","Replace with the L10Accessor version", "Used CreateRock")]
+		//[Obsolete("Do not use",true)]
+		public static async Task CreateNewRock(ISession s, PermissionsUtility perms, long vtoId, long ownerId, string message = null) {
 			var vto = s.Get<VtoModel>(vtoId);
-			var organizationId = vto.Organization.Id;
-			perms.ViewUserOrganization(owner, false);
 
-			var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
-			var rock = new RockModel() {
-				CreateTime = now,
-				OrganizationId = organizationId,
-				CompanyRock = true,
-				Category = category,
-				//Period = s.Load<PeriodModel>(vto.PeriodId),
-				PeriodId = vto.PeriodId,
-				OnlyAsk = AboutType.Self,
-				ForUserId = owner,
-				AccountableUser = s.Load<UserOrganizationModel>(owner),
-				Rock = message,
-			};
-			await AddRock(s, perms, vtoId, rock, now);
+			//var now = DateTime.UtcNow;
+			//var organizationId = vto.Organization.Id;
+			//perms.ViewUserOrganization(owner, false);
+			//var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
 
+			await L10Accessor.CreateAndAttachRock(s, perms, vto.L10Recurrence.Value, ownerId, message, true);
+			//var rock = await RockAccessor.CreateRock(s, perms, owner, message);
+			//await L10Accessor.AttachRock(s, perms, vto.L10Recurrence.Value, rock.Id, true);
+
+
+			//---Removed---
+			//var rock = new RockModel() {
+			//	CreateTime = now,
+			//	OrganizationId = organizationId,
+			//	CompanyRock = true,
+			//	Category = category,
+			//	//Period = s.Load<PeriodModel>(vto.PeriodId),
+			//	PeriodId = vto.PeriodId,
+			//	OnlyAsk = AboutType.Self,
+			//	ForUserId = owner,
+			//	AccountableUser = s.Load<UserOrganizationModel>(owner),
+			//	Rock = message,
+			//};
+			//await AddRock(s, perms, vtoId, rock, now);
 		}
 
 		private static string ParseVtoHeader(Novacode.Cell cell, string searchFor) {

@@ -1,5 +1,6 @@
 ﻿using RadialReview.Accessors.Hooks;
 using RadialReview.Hooks;
+using RadialReview.Hooks.Realtime;
 using RadialReview.Utilities;
 using RadialReview.Utilities.Hooks;
 using System;
@@ -25,9 +26,12 @@ namespace RadialReview.App_Start {
 			HooksRegistry.RegisterHook(new ActiveCampaignEventHooks());
             HooksRegistry.RegisterHook(new EnterpriseHook(Config.EnterpriseAboveUserCount()));
 
-            HooksRegistry.RegisterHook(new Tasks_RealTime());
+            HooksRegistry.RegisterHook(new RealTime_Tasks());
 
-            //HooksRegistry.RegisterHook(new TodoEdit())
-        }
+			HooksRegistry.RegisterHook(new UpdateUserCache());
+			HooksRegistry.RegisterHook(new RealTime_L10_UpdateRocks());
+			HooksRegistry.RegisterHook(new RealTime_VTO_UpdateRocks());
+			//HooksRegistry.RegisterHook(new TodoEdit())
+		}
     }
 }

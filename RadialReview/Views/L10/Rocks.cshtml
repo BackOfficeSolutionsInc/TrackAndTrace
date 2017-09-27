@@ -26,9 +26,9 @@
 			<div class="empty-holder rock-empty-holder @(Model.Meeting._MeetingRocks.Any() ? "hidden" : "")"></div>
 			<div class="rocks-container @(Model.Meeting.L10Recurrence.CombineRocks?"rocks-combine":"")  @(Model.Meeting._MeetingRocks.Any() ? "" : "hidden")" style="padding-bottom: 20px;margin-bottom:128px;">
 
-				@if (Model.Rocks.Where(x => x.ForRock.CompanyRock).Any()) {
+				@if (Model.Rocks.Where(x => x.VtoRock).Any()) {
 					<div class="company-rock-container">
-						@Html.Partial("partial/CompanyRockGroup", Model.Rocks.Where(x => x.ForRock.CompanyRock).ToList())
+						@Html.Partial("partial/CompanyRockGroup", Model.Rocks.Where(x => x.VtoRock).ToList())
 						<hr />
 					</div>
 				}

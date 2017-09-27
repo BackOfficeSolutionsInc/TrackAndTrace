@@ -10,6 +10,7 @@ using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace RadialReview.Accessors
@@ -76,13 +77,13 @@ namespace RadialReview.Accessors
             }
         }
 
-        public void AddPositionToUser(UserOrganizationModel caller, long forUserId, long positionId)
+        public async Task AddPositionToUser(UserOrganizationModel caller, long forUserId, long positionId)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
                 using (var tx = s.BeginTransaction())
                 {
-                    PermissionsUtility.Create(s, caller).Or(x => x.ManagesUserOrganization(forUserId, false), x => x.EditUserDetails(forUserId));
+                    var perms =PermissionsUtility.Create(s, caller).Or(x => x.ManagesUserOrganization(forUserId, false), x => x.EditUserDetails(forUserId));
                     var position = s.Get<OrganizationPositionModel>(positionId);
                     if (position.Organization.Id != caller.Organization.Id)
                         throw new PermissionsException("Position not available.");
@@ -96,7 +97,7 @@ namespace RadialReview.Accessors
 
                     var template = UserTemplateAccessor._GetAttachedUserTemplateUnsafe(s, positionId, AttachType.Position);
                     if (template != null)
-                        UserTemplateAccessor._AddUserToTemplateUnsafe(s, template.Organization, template.Id, forUserId, false);
+                        await UserTemplateAccessor._AddUserToTemplateUnsafe(s,perms, template.Organization, template.Id, forUserId, false);
 
                     tx.Commit();
                     s.Flush();

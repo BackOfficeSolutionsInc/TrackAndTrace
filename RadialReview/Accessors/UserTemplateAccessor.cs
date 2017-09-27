@@ -26,18 +26,18 @@ using System.Threading.Tasks;
 
 namespace RadialReview.Accessors {
 	public class UserTemplateAccessor {
-		public static void CreateTemplate(UserOrganizationModel caller, UserTemplate template) {
+		public static async Task CreateTemplate(UserOrganizationModel caller, UserTemplate template) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					CreateTemplate(s, perms, caller.Organization, template);
+					await CreateTemplate(s, perms, caller.Organization, template);
 					tx.Commit();
 					s.Flush();
 				}
 			}
 		}
 
-		public static void CreateTemplate(ISession s, PermissionsUtility perms, OrganizationModel org, UserTemplate template) {
+		public static async Task CreateTemplate(ISession s, PermissionsUtility perms, OrganizationModel org, UserTemplate template) {
 			if (template.Id != 0)
 				throw new PermissionsException("Id was not zero");
 			if (template.AttachId == 0)
@@ -61,7 +61,7 @@ namespace RadialReview.Accessors {
 			AttachAccessor.SetTemplateUnsafe(s, a, template.Id);
 			var members = AttachAccessor.GetMemberIdsUnsafe(s, a);
 			foreach (var member in members) {
-				_AddUserToTemplateUnsafe(s, org, template.Id, member, false);
+				await _AddUserToTemplateUnsafe(s, perms, org, template.Id, member, false);
 			}
 		}
 
@@ -264,7 +264,9 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		public static void AddRockToTemplate(UserOrganizationModel caller, long templateId, String rock, long periodId) {
+
+		[Untested("Test template Create Rock")]
+		public static async Task AddRockToTemplate(UserOrganizationModel caller, long templateId, String rock, long periodId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var p = PermissionsUtility.Create(s, caller);
@@ -295,21 +297,24 @@ namespace RadialReview.Accessors {
 						if (user.Organization.Id != caller.Organization.Id)
 							throw new PermissionsException("Organization ids do not match");
 
-						s.Save(new RockModel() {
-							OnlyAsk = AboutType.Self,
-							Category = category,
-							ForUserId = user.Id,
-							OrganizationId = caller.Organization.Id,
-							FromTemplateItemId = utm.Id,
-							Rock = rock,
-							Period = period,
-							PeriodId = periodId,
-						});
+						await RockAccessor.CreateRock(s, p, user.Id, rock, templateId);
 
-						//user.NumRocks += 1;
-						s.Update(user);
-						s.Flush();
-						user.UpdateCache(s);
+
+						//--Removed--
+						//s.Save(new RockModel() {
+						//	OnlyAsk = AboutType.Self,
+						//	Category = category,
+						//	ForUserId = user.Id,
+						//	OrganizationId = caller.Organization.Id,
+						//	FromTemplateItemId = utm.Id,
+						//	Rock = rock,
+						//	Period = period,
+						//	PeriodId = periodId,
+						//});
+						
+						//s.Update(user);
+						//s.Flush();
+						//user.UpdateCache(s);
 					}
 
 					tx.Commit();
@@ -438,18 +443,19 @@ namespace RadialReview.Accessors {
 					var p = PermissionsUtility.Create(s, caller)
 						.EditTemplate(templateId)
 						.ManagesUserOrganization(userId, false);
-					_AddUserToTemplateUnsafe(s, caller.Organization, templateId, userId, forceJobDescription);
+					_AddUserToTemplateUnsafe(s,p, caller.Organization, templateId, userId, forceJobDescription);
 
 					tx.Commit();
 					s.Flush();
 				}
 			}
 		}
-
-		public static void _AddUserToTemplateUnsafe(ISession s, OrganizationModel organization, long templateId, long userId, bool forceJobDescription) {
+		[Untested("RockAccessor.CreateRock")]
+		public static async Task _AddUserToTemplateUnsafe(ISession s,PermissionsUtility perms, OrganizationModel organization, long templateId, long userId, bool forceJobDescription) {
 
 			var user = s.Get<UserOrganizationModel>(userId);
 			var template = s.Get<UserTemplate>(templateId);
+
 
 
 			var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
@@ -486,17 +492,19 @@ namespace RadialReview.Accessors {
 
 			var toAddRocks = newRocks.Where(x => existingRocks.All(y => y.FromTemplateItemId != x.Id));
 			foreach (var a in toAddRocks) {
-				s.Save(new RockModel() {
-					OnlyAsk = AboutType.Self,
-					ForUserId = user.Id,
-					OrganizationId = organization.Id,
-					FromTemplateItemId = a.Id,
-					Rock = a.Rock,
-					Period = s.Load<PeriodModel>(a.PeriodId),
-					PeriodId = a.PeriodId,
-					Category = category
-				});
-				//user.NumRocks += 1;
+				await RockAccessor.CreateRock(s, perms, user.Id, a.Rock, a.Id);
+
+				//--Removed--
+				//s.Save(new RockModel() {
+				//	OnlyAsk = AboutType.Self,
+				//	ForUserId = user.Id,
+				//	OrganizationId = organization.Id,
+				//	FromTemplateItemId = a.Id,
+				//	Rock = a.Rock,
+				//	Period = s.Load<PeriodModel>(a.PeriodId),
+				//	PeriodId = a.PeriodId,
+				//	Category = category
+				//});
 			}
 			#endregion
 			#region Roles

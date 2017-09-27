@@ -107,14 +107,15 @@ namespace RadialReview.Controllers {
 		#region Rocks
 		[HttpGet]
 		[Access(AccessLevel.UserOrganization)]
+		[Untested("Vto_Rocks","Should be allowed to put false in for company rock right?", "AddRockVm.CreateRock")]
 		public async Task<JsonResult> AddAngularRock(long id) {
 			var recurrenceId = id;
-			var rock = new RockModel() {
-				OrganizationId = GetUser().Organization.Id,
-				ForUserId = GetUser().Id,
-			};
-			await L10Accessor.CreateRock(GetUser(), recurrenceId, AddRockVm.CreateRock(recurrenceId, rock, true));
-			return Json(ResultObject.SilentSuccess(new AngularRock(rock)), JsonRequestBehavior.AllowGet);
+			//var rock = new RockModel() {
+			//	OrganizationId = GetUser().Organization.Id,
+			//	ForUserId = GetUser().Id,
+			//};
+			var rock = await L10Accessor.CreateAndAttachRock(GetUser(), recurrenceId, GetUser().Id, null);
+			return Json(ResultObject.SilentSuccess(new AngularRock(rock,false)), JsonRequestBehavior.AllowGet);
 		}
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]

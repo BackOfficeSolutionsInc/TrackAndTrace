@@ -13,9 +13,23 @@ namespace RadialReview.Utilities {
 					  TaskContinuationOptions.None,
 					  TaskScheduler.Default);
 
+		private class State {
+			public HttpContext httpContext { get; set; }
+			public State() {
+				httpContext = HttpContext.Current;
+			}
+
+			public void Deconstruct() {
+				HttpContext.Current = httpContext;
+			}
+		}
+
 		public static TResult RunSync<TResult>(Func<Task<TResult>> func) {
 			return AsyncHelper._myTaskFactory
-			  .StartNew<Task<TResult>>(func)
+			  .StartNew<Task<TResult>>((st) => {
+				  ((State)st).Deconstruct();
+				  return func();
+			  }, new State())
 			  .Unwrap<TResult>()
 			  .GetAwaiter()
 			  .GetResult();
@@ -23,7 +37,10 @@ namespace RadialReview.Utilities {
 
 		public static void RunSync(Func<Task> func) {
 			AsyncHelper._myTaskFactory
-			  .StartNew<Task>(func)
+			  .StartNew<Task>((st) => {
+				  ((State)st).Deconstruct();
+				  return func();
+			  }, new State())
 			  .Unwrap()
 			  .GetAwaiter()
 			  .GetResult();

@@ -17,9 +17,9 @@
                     <th style="width: 1px"></th>
                     <th style="width: 46px"></th>
                 </tr>
-                @foreach (var i in person.OrderByDescending(x=>x.ForRock.CompanyRock)) {
+                @foreach (var i in person.OrderByDescending(x=>x.VtoRock)) {
                     <tr data-owner="@i.ForRock.AccountableUser.Id" 
-						class="rock-row user-id-@i.ForRock.AccountableUser.Id rock-id-@i.ForRock.Id rock-type-@(i.ForRock.CompanyRock ? "company" : "personal")"
+						class="rock-row user-id-@i.ForRock.AccountableUser.Id rock-id-@i.ForRock.Id rock-type-@(i.VtoRock ? "company" : "personal")"
 						data-rockid="@(i.ForRock.Id)"
 						data-message="@(i.ForRock.Rock)"
 						@if (i.ForRock.DueDate != null) {

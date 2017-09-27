@@ -178,6 +178,7 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.Manager)]
+		[Untested("Test this page for company rocks")]
 		public ActionResult Organization()
 		{
 			var user = GetUser().Hydrate().Organization().Execute();
@@ -186,13 +187,13 @@ namespace RadialReview.Controllers
 			var companyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)
 				//.Select(x => x.CompanyValue)
 				.ToList();
-			var companyRocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
+			//var companyRocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
 			var companyQuestions = OrganizationAccessor.GetQuestionsAboutCompany(GetUser(), GetUser().Organization.Id, null).ToList();
 
 			var model = new OrganizationViewModel(){
 				Id = user.Organization.Id,
 				CompanyValues = companyValues,
-				CompanyRocks = companyRocks,
+				CompanyRocks = null,//companyRocks,
 				CompanyQuestions = companyQuestions,
 			};
 			return View(model);
@@ -253,11 +254,12 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
+		[Untested("Test this page for null company rocks")]
 		public ActionResult Organization(OrganizationViewModel model)
 		{
 			model.CompanyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)//.Select(x => x.CompanyValue)
 				.ToList();
-			model.CompanyRocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
+			model.CompanyRocks = null;//_OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
 			model.CompanyQuestions = OrganizationAccessor.GetQuestionsAboutCompany(GetUser(), GetUser().Organization.Id, null).ToList();
 
 			return View(model);
