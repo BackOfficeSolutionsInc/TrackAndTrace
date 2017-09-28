@@ -36,8 +36,8 @@ namespace RadialReview.Hooks.Realtime {
 										});
 
 			return new Rock_Data {
-				MeetingIds = rockMeetingIds,
-				RecurIds = rockRecurrenceIds,
+				MeetingData = rockMeetingIds,
+				RecurData = rockRecurrenceIds,
 			};
 		}
 
@@ -52,8 +52,12 @@ namespace RadialReview.Hooks.Realtime {
 		}
 
 		public class Rock_Data {
-			public IEnumerable<Rock_RecurId> RecurIds { get; set; }
-			public IEnumerable<Rock_MeetingId> MeetingIds { get; set; }
+			public IEnumerable<Rock_RecurId> RecurData { get; set; }
+			public IEnumerable<Rock_MeetingId> MeetingData { get; set; }
+
+			public List<long> GetRecurrenceIds() {
+				return RecurData.Select(x => x.RecurrenceId).ToList();
+			}
 		}
 
 	}

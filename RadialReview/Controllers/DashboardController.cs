@@ -196,7 +196,7 @@ namespace RadialReview.Controllers {
                         long l10Id = 0;
                         if (long.TryParse(todo.KeyId, out l10Id)) {
                             try {
-                                var tile = new AngularTileId<List<AngularTodo>>(todo.Id, l10Id, l10Lookup[l10Id].Name + " to-dos");
+                                var tile = new AngularTileId<List<AngularTodo>>(todo.Id, l10Id, l10Lookup[l10Id].Name + " to-dos", AngularTileKeys.L10TodoList(l10Id));
                                 tile.Contents = L10Accessor.GetAllTodosForRecurrence(s, perms, l10Id, false).Select(x => new AngularTodo(x)).ToList();
                                 output.L10Todos.Add(tile);
                             } catch (Exception e) {
@@ -210,7 +210,7 @@ namespace RadialReview.Controllers {
                         long l10Id = 0;
                         if (long.TryParse(issue.KeyId, out l10Id)) {
                             try {
-                                var tile = new AngularTileId<AngularIssuesList>(issue.Id, l10Id, l10Lookup[l10Id].Name + " issues");
+                                var tile = new AngularTileId<AngularIssuesList>(issue.Id, l10Id, l10Lookup[l10Id].Name + " issues", AngularTileKeys.L10IssuesList(l10Id));
                                 tile.Contents = new AngularIssuesList(l10Id) {
                                     Issues = L10Accessor.GetIssuesForRecurrence(s, perms, l10Id).Select(x => new AngularIssue(x)).ToList(),
                                     Prioritization = l10Lookup[l10Id].Prioritization,
@@ -227,7 +227,7 @@ namespace RadialReview.Controllers {
 						long l10Id = 0;
 						if (long.TryParse(issue.KeyId, out l10Id)) {
 							try {
-								var tile = new AngularTileId<AngularIssuesSolved>(issue.Id, l10Id, l10Lookup[l10Id].Name + " recently solved issues");
+								var tile = new AngularTileId<AngularIssuesSolved>(issue.Id, l10Id, l10Lookup[l10Id].Name + " recently solved issues", AngularTileKeys.L10IssuesSolvedList(l10Id));
 								var recent = new DateRange(DateTime.UtcNow.AddDays(-7), DateTime.UtcNow);
 								tile.Contents = new AngularIssuesSolved(l10Id) {
 									Issues = L10Accessor.GetSolvedIssuesForRecurrence(s, perms, l10Id, recent).Select(x => new AngularIssue(x)).ToList(),
@@ -245,7 +245,7 @@ namespace RadialReview.Controllers {
                         long l10Id = 0;
                         if (long.TryParse(rock.KeyId, out l10Id)) {
                             try {
-                                var tile = new AngularTileId<List<AngularRock>>(rock.Id, l10Id, l10Lookup[l10Id].Name + " rocks");
+                                var tile = new AngularTileId<List<AngularRock>>(rock.Id, l10Id, l10Lookup[l10Id].Name + " rocks",AngularTileKeys.L10RocksList(l10Id));
                                 tile.Contents = L10Accessor.GetRocksForRecurrence(s, perms, l10Id).Select(x => new AngularRock(x.ForRock,false)).ToList();
                                 output.L10Rocks.Add(tile);
                             } catch (Exception e) {
@@ -308,7 +308,7 @@ namespace RadialReview.Controllers {
                 date = new AngularDateRange() { startDate = startRange, endDate = endRange }
             };
             try {
-                var tile = new AngularTileId<AngularScorecard>(scorecardTileId, l10Id, name + " scorecard");
+                var tile = new AngularTileId<AngularScorecard>(scorecardTileId, l10Id, name + " scorecard", AngularTileKeys.L10Scorecard(l10Id));
                 using (var s = HibernateSession.GetCurrentSession()) {
                     using (var tx = s.BeginTransaction()) {
                         var perms = PermissionsUtility.Create(s, GetUser());

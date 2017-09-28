@@ -10,7 +10,7 @@ namespace RadialReview.Models.Angular.Rocks
 	public class AngularRock : BaseAngular
     {
         public AngularRock() { }
-        public AngularRock(long id):base(id) {}
+        public AngularRock(long rockId):base(rockId) {}
 
 		public AngularRock(L10Meeting.L10Meeting_Rock meetingRock) : this(meetingRock.ForRock, meetingRock.VtoRock) {
 		}

@@ -35,7 +35,7 @@ namespace RadialReview.App_Start {
                     return null;
                 }
 
-                logger.DebugFormat("Parsing bound date '{0}' as US format.", date);
+               // logger.DebugFormat("Parsing bound date '{0}' as US format.", date);
 
                 // Set the ModelState to the first attempted value before we have converted the date. This is to ensure that the ModelState has
                 // a value. When we have converted it, we will override it with a full universal date.

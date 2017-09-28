@@ -65,7 +65,7 @@ namespace RadialReview.Utilities {
 				};
 				evt.CreateTime = o.Now ?? evt.CreateTime;
 				o.S.Save(evt);
-				await HooksRegistry.Each<IAccountEvent>(x => x.CreateEvent(o.S, evt));
+				await HooksRegistry.Each<IAccountEvent>((ses, x) => x.CreateEvent(ses, evt));
 			} catch (Exception e) {
 				log.Error("Error triggering event:", e);
 			}

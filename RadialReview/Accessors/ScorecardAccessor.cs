@@ -759,7 +759,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-
+		[Untested("hook")]
 		public static async Task CreateMeasurable(ISession s, PermissionsUtility perm, MeasurableModel measurable, bool checkEditDetails) {
 			//Create new
 			if (measurable == null)
@@ -786,7 +786,7 @@ namespace RadialReview.Accessors {
 			measurable.AccountableUser.UpdateCache(s);
 			measurable.AdminUser.UpdateCache(s);
 
-			await HooksRegistry.Each<IMeasurableHook>(x => x.CreateMeasurable(s, measurable));
+			await HooksRegistry.Each<IMeasurableHook>((ses, x) => x.CreateMeasurable(ses, measurable));
 
 		}
 		public static AngularRecurrence GetReview_Scorecard(UserOrganizationModel caller, long reviewId) {

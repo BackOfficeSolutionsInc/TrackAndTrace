@@ -270,6 +270,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+		[Untested("Hook")]
 		public async Task<CreateOrganizationOutput> CreateOrganization(ISession s, UserModel user, PaymentPlanType planType, DateTime now, OrgCreationData data) {
 			UserOrganizationModel userOrgModel;
 			//OrganizationModel organization;
@@ -514,10 +515,10 @@ namespace RadialReview.Accessors {
 #pragma warning disable CS0618 // Type or member is obsolete
 			//using (var s = HibernateSession.GetCurrentSession()) {
 			using (var tx = s.BeginTransaction()) {
-				await HooksRegistry.Each<ICreateUserOrganizationHook>(x => x.CreateUserOrganization(s, userOrgModel));
+				await HooksRegistry.Each<ICreateUserOrganizationHook>((ses, x) => x.CreateUserOrganization(ses, userOrgModel));
 
 				if (primaryContact != null) {
-					await HooksRegistry.Each<ICreateUserOrganizationHook>(x => x.CreateUserOrganization(s, primaryContact));
+					await HooksRegistry.Each<ICreateUserOrganizationHook>((ses, x) => x.CreateUserOrganization(ses, primaryContact));
 				}
 				tx.Commit();
 			}
@@ -550,6 +551,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+		[Untested("Hooks")]
 		public static async Task<UserOrganizationModel> JoinOrganization_Test(ISession db, UserModel user, long managerId, long userOrgPlaceholder) {
 			var manager = db.Get<UserOrganizationModel>(managerId);
 			var orgId = manager.Organization.Id;
@@ -584,13 +586,14 @@ namespace RadialReview.Accessors {
 
 			userOrg.UpdateCache(db);
 
-			await HooksRegistry.Each<ICreateUserOrganizationHook>(x => x.OnUserOrganizationAttach(db, userOrg));
+			await HooksRegistry.Each<ICreateUserOrganizationHook>((ses,x) => x.OnUserOrganizationAttach(ses, userOrg));
 
 
 			return userOrg;
 		}
 
 
+		[Untested("Hooks")]
 		public static async Task<UserOrganizationModel> JoinOrganization(UserModel user, long managerId, long userOrgPlaceholder) {
 			UserOrganizationModel userOrg = null;
 			using (var db = HibernateSession.GetCurrentSession()) {
@@ -633,7 +636,7 @@ namespace RadialReview.Accessors {
 			}
 			using (var db = HibernateSession.GetCurrentSession()) {
 				using (var tx = db.BeginTransaction()) {
-					await HooksRegistry.Each<ICreateUserOrganizationHook>(x => x.OnUserOrganizationAttach(db, userOrg));
+					await HooksRegistry.Each<ICreateUserOrganizationHook>((ses,x) => x.OnUserOrganizationAttach(ses, userOrg));
 					tx.Commit();
 					db.Flush();
 				}

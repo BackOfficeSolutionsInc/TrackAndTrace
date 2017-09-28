@@ -273,7 +273,8 @@ namespace RadialReview.Models.Angular.VTO {
 	}
 
 	public class AngularQuarterlyRocks : Base.BaseAngular, IVtoSectionHeader {
-		public AngularQuarterlyRocks(long id) : base(id) {
+		[Obsolete("Use vto id")]
+		public AngularQuarterlyRocks(long vtoId) : base(vtoId) {
 		}
 #pragma warning disable CS0618 // Type or member is obsolete
 		public AngularQuarterlyRocks() {
@@ -288,7 +289,7 @@ namespace RadialReview.Models.Angular.VTO {
 
 		public static AngularQuarterlyRocks Create(QuarterlyRocksModel quarterlyRocksModel) {
 			return new AngularQuarterlyRocks() {
-				Id = quarterlyRocksModel.Id,
+				Id = quarterlyRocksModel.Vto,
 				FutureDate = (quarterlyRocksModel.FutureDate),
 				Measurables = (quarterlyRocksModel.Measurables),
 				Profit = (quarterlyRocksModel.ProfitStr),

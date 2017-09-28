@@ -81,11 +81,11 @@ namespace RadialReview.Controllers {
 			return PartialView(new RocksController.RockVM { Rocks = rock.AsList(), UserId = userId });
 		}
 
-		[Access(AccessLevel.UserOrganization)]
-		public JsonResult Delete(long id) {
-			RockAccessor.DeleteRock(GetUser(), id);
-			return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
-		}
+		//[Access(AccessLevel.UserOrganization)]
+		//public JsonResult Delete(long id) {
+		//	RockAccessor.DeleteRock(GetUser(), id);
+		//	return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
+		//}
 
 		[Access(AccessLevel.Radial)]
 		public JsonResult Undelete(long id) {
@@ -118,31 +118,31 @@ namespace RadialReview.Controllers {
 			});
 		}
 
-		[Access(AccessLevel.Manager)]
-		[Untested("Vto_Rocks","Remove from UI")]
-		[Obsolete("Do not use",true)]
-		public PartialViewResult CompanyRockModal(long id) {
-			var orgId = id;
-			var rocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
+		//[Access(AccessLevel.Manager)]
+		//[Untested("Vto_Rocks","Remove from UI")]
+		//[Obsolete("Do not use",true)]
+		//public PartialViewResult CompanyRockModal(long id) {
+		//	var orgId = id;
+		//	var rocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
 
-			//var rocks = RockAccessor.GetAllRocksAtOrganization(GetUser(), orgId, true);
-			var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.Name, x => x.Id);
-			ViewBag.Periods = periods;
-			ViewBag.PossibleUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
-			return PartialView(new RocksController.RockVM { Rocks = rocks, UserId = id });
-		}
+		//	//var rocks = RockAccessor.GetAllRocksAtOrganization(GetUser(), orgId, true);
+		//	var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.Name, x => x.Id);
+		//	ViewBag.Periods = periods;
+		//	ViewBag.PossibleUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
+		//	return PartialView(new RocksController.RockVM { Rocks = rocks, UserId = id });
+		//}
 
-		[HttpPost]
-		[Access(AccessLevel.Manager)]
-		[Untested("Vto_Rocks", "Remove from UI")]
-		[Obsolete("Do not use", true)]
-		public JsonResult CompanyRockModal(RocksController.RockVM model) {
-			//var rocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
-			var oid = GetUser().Organization.Id;
-			model.Rocks.ForEach(x => x.OrganizationId = oid);
-			RockAccessor.EditCompanyRocks(GetUser(), GetUser().Organization.Id, model.Rocks);
-			return Json(ResultObject.Create(model.Rocks.Select(x => new { Session = x.Period.Name, Rock = x.Rock, Id = x.Id }), status: StatusType.Success));
-		}
+		//[HttpPost]
+		//[Access(AccessLevel.Manager)]
+		//[Untested("Vto_Rocks", "Remove from UI")]
+		//[Obsolete("Do not use", true)]
+		//public JsonResult CompanyRockModal(RocksController.RockVM model) {
+		//	//var rocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
+		//	var oid = GetUser().Organization.Id;
+		//	model.Rocks.ForEach(x => x.OrganizationId = oid);
+		//	RockAccessor.EditCompanyRocks(GetUser(), GetUser().Organization.Id, model.Rocks);
+		//	return Json(ResultObject.Create(model.Rocks.Select(x => new { Session = x.Period.Name, Rock = x.Rock, Id = x.Id }), status: StatusType.Success));
+		//}
 
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult Modal(long id) {

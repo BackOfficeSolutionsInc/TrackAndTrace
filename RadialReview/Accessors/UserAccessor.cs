@@ -677,6 +677,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+		[Untested("is IUpdateUserModelHook correctly called?")]
 		public async Task EditUserModel(UserModel caller, string userId, string firstName, string lastName, string imageGuid, bool? sendTodoEmails, int? sendTodoTime,
 			bool? showScorecardColors, bool? reverseScorecard,bool? disableTips) {
 			UserModel user;
@@ -722,7 +723,7 @@ namespace RadialReview.Accessors {
 			}
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					await HooksRegistry.Each<IUpdateUserModelHook>(x => x.UpdateUserModel(s, user));
+					await HooksRegistry.Each<IUpdateUserModelHook>((ses, x) => x.UpdateUserModel(ses, user));
 					tx.Commit();
 					s.Flush();
 				}
@@ -752,6 +753,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+		[Untested("Hooks")]
 		public async Task<ResultObject> UndeleteUser(UserOrganizationModel caller, long userId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -854,7 +856,7 @@ namespace RadialReview.Accessors {
 					s.Update(user);
 					user.UpdateCache(s);
 
-					await HooksRegistry.Each<IDeleteUserOrganizationHook>(x => x.UndeleteUser(s, user));
+					await HooksRegistry.Each<IDeleteUserOrganizationHook>((ses,x) => x.UndeleteUser(ses, user));
 					tx.Commit();
 					s.Flush();
 
@@ -867,6 +869,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+		[Untested("Hooks")]
 		public async Task<ResultObject> RemoveUser(UserOrganizationModel caller, long userId, DateTime now) {
 			UserOrganizationModel user;
 			var warnings = new List<String>();
@@ -966,7 +969,7 @@ namespace RadialReview.Accessors {
 			}
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					await HooksRegistry.Each<IDeleteUserOrganizationHook>(x => x.DeleteUser(s, user));
+					await HooksRegistry.Each<IDeleteUserOrganizationHook>((ses,x) => x.DeleteUser(ses, user));
 					tx.Commit();
 					s.Flush();
 				}
@@ -1121,13 +1124,14 @@ namespace RadialReview.Accessors {
 			return result;
 		}
 
+		[Untested("Hooks")]
 		public async static Task<IdentityResult> CreateUser(NHibernateUserManager UserManager, UserModel user, string password) {
 			user.UserName = user.UserName.NotNull(x => x.ToLower());
 			var resultx = await UserManager.CreateAsync(user, password);
 			AddSettings(resultx, user);
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					await HooksRegistry.Each<ICreateUserOrganizationHook>(x => x.OnUserRegister(s, user));
+					await HooksRegistry.Each<ICreateUserOrganizationHook>((ses,x) => x.OnUserRegister(ses, user));
 					tx.Commit();
 					s.Flush();
 				}

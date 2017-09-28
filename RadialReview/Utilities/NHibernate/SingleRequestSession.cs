@@ -103,7 +103,9 @@ namespace RadialReview.Utilities.NHibernate {
 				if (!a.OnlyOnCommit || (!currentContext.TransactionRolledBack && currentContext.TransactionCommitted)) {
 					using (var s = HibernateSession.GetCurrentSession()) {
 						using (var tx = s.BeginTransaction()) {
-							AsyncHelper.RunSync(() => a.Action(s, tx));
+							AsyncHelper.RunSync(() => {
+								return a.Action(s, tx);
+							});
 						}
 					}
 				}

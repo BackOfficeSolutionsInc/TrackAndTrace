@@ -76,6 +76,8 @@ namespace RadialReview.Accessors {
             public IssueModel IssueModel { get; set; }
             public IssueModel.IssueModel_Recurrence IssueRecurrenceModel { get; set; }
         }
+
+		[Untested("hook")]
         public static async Task<IssueOutput> CreateIssue(ISession s, PermissionsUtility perms, long recurrenceId, long ownerId, IssueModel issue) {
             var o = new IssueOutput();
             perms.EditL10Recurrence(recurrenceId);
@@ -189,7 +191,7 @@ namespace RadialReview.Accessors {
             Audit.L10Log(s, perms.GetCaller(), recurrenceId, "CreateIssue", ForModel.Create(issue), issue.NotNull(x => x.Message));
 
             // Trigger webhook events
-            await HooksRegistry.Each<IIssueHook>(x => x.CreateIssue(s, o.IssueRecurrenceModel));
+            await HooksRegistry.Each<IIssueHook>((ses, x) => x.CreateIssue(ses, o.IssueRecurrenceModel));
 
             return o;
 

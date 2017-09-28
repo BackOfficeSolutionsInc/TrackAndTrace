@@ -644,7 +644,7 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
                 }
             }
 
-            await HooksRegistry.Each<ITaskHook>((s, x) => x.ClaimTask(s,taskId,userId));
+            await HooksRegistry.Each<ITaskHook>((s, x) => x.ClaimTask(s, taskId, userId));
 
             return result;
         }
@@ -682,9 +682,9 @@ namespace RadialReview.Areas.CoreProcess.Accessors {
             }
 
             if (claim)
-                await HooksRegistry.Each<ITaskHook>((s, x) => x.ClaimTask(s,taskId,userId));
+                await HooksRegistry.Each<ITaskHook>((s, x) => x.ClaimTask(s, taskId, userId));
             else
-                await HooksRegistry.Each<ITaskHook>((s, x) => x.UnclaimTask(s,taskId));
+                await HooksRegistry.Each<ITaskHook>((s, x) => x.UnclaimTask(s, taskId));
 
             return result;
         }

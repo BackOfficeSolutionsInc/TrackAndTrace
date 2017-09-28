@@ -418,6 +418,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+		[Untested("does the IMeetingEvent get called?")]
 		public static async Task<L10Recurrence> CreateBlankRecurrence(UserOrganizationModel caller, long orgId, MeetingType meetingType = MeetingType.L10) {
 			L10Recurrence recur;
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -486,7 +487,7 @@ namespace RadialReview.Accessors {
 			//}
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					await HooksRegistry.Each<IMeetingEvents>(x => x.CreateRecurrence(s, recur));
+					await HooksRegistry.Each<IMeetingEvents>((ses, x) => x.CreateRecurrence(ses, recur));
 					tx.Commit();
 					s.Flush();
 				}
@@ -645,7 +646,7 @@ namespace RadialReview.Accessors {
 
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					await HooksRegistry.Each<IMeetingEvents>(x => x.StartMeeting(s, recurrence, meeting));
+					await HooksRegistry.Each<IMeetingEvents>((ses, x) => x.StartMeeting(ses, recurrence, meeting));
 					if (recurrence.TeamType == L10TeamType.LeadershipTeam)
 						await Trigger(x => x.Create(s, EventType.StartLeadershipMeeting, caller, recurrence, message: recurrence.Name));
 					if (recurrence.TeamType == L10TeamType.DepartmentalTeam)
@@ -914,7 +915,7 @@ namespace RadialReview.Accessors {
 
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					await HooksRegistry.Each<IMeetingEvents>(x => x.ConcludeMeeting(s, recurrence, meeting));
+					await HooksRegistry.Each<IMeetingEvents>((ses, x) => x.ConcludeMeeting(ses, recurrence, meeting));
 					tx.Commit();
 					s.Flush();
 				}
@@ -1577,7 +1578,7 @@ namespace RadialReview.Accessors {
 
 		#region Edit Meeting
 
-		[Untested("Vto_Rocks", "No longer adding Vto_Rocks")]
+		[Untested("Vto_Rocks", "No longer adding Vto_Rocks", "hooks")]
 		public static async Task EditL10Recurrence(UserOrganizationModel caller, L10Recurrence l10Recurrence) {
 			bool wasCreated = false;
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -1937,13 +1938,14 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					await EventUtil.Trigger(x => x.Create(s, EventType.DeleteMeeting, caller, r, message: r.Name + "(Deleted)"));
-					await HooksRegistry.Each<IMeetingEvents>(x => x.DeleteRecurrence(s, r));
+					await HooksRegistry.Each<IMeetingEvents>((ses, x) => x.DeleteRecurrence(ses, r));
 					tx.Commit();
 					s.Flush();
 				}
 			}
 
 		}
+		[Untested("Hooks")]
 		public static async Task UndeleteL10Recurrence(UserOrganizationModel caller, long recurrenceId) {
 			L10Recurrence r;
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -1960,13 +1962,13 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					await EventUtil.Trigger(x => x.Create(s, EventType.UndeleteMeeting, caller, r, message: r.Name + "(Undeleted)"));
-					await HooksRegistry.Each<IMeetingEvents>(x => x.UndeleteRecurrence(s, r));
+					await HooksRegistry.Each<IMeetingEvents>((ses, x) => x.UndeleteRecurrence(ses, r));
 					tx.Commit();
 					s.Flush();
 				}
 			}
 		}
-
+		[Untested("Hooks")]
 		public static async Task DeleteL10Meeting(UserOrganizationModel caller, long meetingId) {
 			L10Meeting meeting;
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -1981,7 +1983,7 @@ namespace RadialReview.Accessors {
 			}
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					await HooksRegistry.Each<IMeetingEvents>(x => x.DeleteMeeting(s, meeting));
+					await HooksRegistry.Each<IMeetingEvents>((ses, x) => x.DeleteMeeting(ses, meeting));
 					tx.Commit();
 					s.Flush();
 				}
@@ -2101,7 +2103,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		
+
 
 		public static List<L10Recurrence.L10Recurrence_Rocks> GetRocksForRecurrence(UserOrganizationModel caller, long recurrenceId, bool includeArchives = false) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -2260,6 +2262,7 @@ namespace RadialReview.Accessors {
 						await RockAccessor.UpdateRock(s, perms, rockId, message: rockMessage, ownerId: ownerId, completion: state, dueDate: dueDate, now: now);
 						await _UpdateMeetingRockCompletionTimes(s, rockId, state, now);
 
+						//s.Flush();
 
 						if (vtoRock != null && recurrenceRockId != null) { //Hey.. I can't do anything without the RecurrenceRockId
 							var recurRock = s.Get<L10Recurrence.L10Recurrence_Rocks>(recurrenceRockId.Value);
@@ -4105,6 +4108,8 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+
+		[Untested("Hooks")]
 		public static async Task UpdateTodo(UserOrganizationModel caller, long todoId, string message = null, string details = null, DateTime? dueDate = null, long? accountableUser = null, bool? complete = null, string connectionId = null, bool duringMeeting = false, bool? delete = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -4199,19 +4204,19 @@ namespace RadialReview.Accessors {
 
 					// Webhook event trigger
 					if (IsTodoUpdate) {
-						await HooksRegistry.Each<ITodoHook>(x => x.UpdateMessage(s, todo));
+						await HooksRegistry.Each<ITodoHook>((ses, x) => x.UpdateMessage(ses, todo));
 					}
 
 					// Webhook register Marking complete for TODO
 					if (IsTodoStatusUpdated) {
-						await HooksRegistry.Each<ITodoHook>(x => x.UpdateCompletion(s, todo));
+						await HooksRegistry.Each<ITodoHook>((ses, x) => x.UpdateCompletion(ses, todo));
 					}
 
 					tx.Commit();
 					s.Flush();
 				}
 			}
-		}
+		}[Untested("Hooks")]
 		public static async Task CompleteTodo(ISession s, PermissionsUtility perm, RealTimeUtility rt, long todoModel) {
 			perm.EditTodo(todoModel);
 			var todo = s.Get<TodoModel>(todoModel);
@@ -4228,7 +4233,7 @@ namespace RadialReview.Accessors {
 
 			// Webhook register Marking complete for TODO
 			//? added await
-			await HooksRegistry.Each<ITodoHook>(x => x.UpdateCompletion(s, todo));
+			await HooksRegistry.Each<ITodoHook>((ses, x) => x.UpdateCompletion(ses, todo));
 		}
 
 		public static void MarkFireworks(UserOrganizationModel caller, long recurrenceId) {
@@ -4540,6 +4545,8 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+
+		[Untested("Hooks")]
 		public static async Task UpdateIssue(UserOrganizationModel caller, long issueRecurrenceId, DateTime now, string message = null, string details = null, bool? complete = null, string connectionId = null, long? owner = null, int? priority = null, int? rank = null, bool? delete = null, bool? awaitingSolve = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -4633,13 +4640,13 @@ namespace RadialReview.Accessors {
 					if (IsMessageChange) {
 						// Webhook event trigger
 						//?added await
-						await HooksRegistry.Each<IIssueHook>(x => x.UpdateMessage(s, issue));
+						await HooksRegistry.Each<IIssueHook>((ses, x) => x.UpdateMessage(ses, issue));
 					}
 
 					// Webhook register Marking complete for TODO
 					if (IsIssueStatusUpdated) {
 						//?added await
-						await HooksRegistry.Each<IIssueHook>(x => x.UpdateCompletion(s, issue));
+						await HooksRegistry.Each<IIssueHook>((ses,x) => x.UpdateCompletion(ses, issue));
 					}
 
 					tx.Commit();
@@ -4647,6 +4654,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+		[Untested("Hooks")]
 		public static async Task CompleteIssue(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceIssue) {
 
 			var issue = s.Get<IssueModel.IssueModel_Recurrence>(recurrenceIssue);
@@ -4661,7 +4669,7 @@ namespace RadialReview.Accessors {
 
 			// Webhook register Marking complete for Issue
 			//?added await
-			await HooksRegistry.Each<IIssueHook>(x => x.UpdateCompletion(s, issue));
+			await HooksRegistry.Each<IIssueHook>((ses,x) => x.UpdateCompletion(ses, issue));
 		}
 
 		public static void UpdateIssues(UserOrganizationModel caller, long recurrenceId, /*IssuesDataList*/L10Controller.IssuesListVm model) {

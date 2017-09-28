@@ -375,10 +375,11 @@ namespace RadialReview.Models
                 Cache.Name = this.GetName();
 
             var measurable = s.QueryOver<MeasurableModel>().Where(x => x.DeleteTime == null && x.AccountableUserId == Id).ToRowCountQuery().FutureValue<int>();
-            var role = RoleAccessor.CountRoles(s, Id);
 
             //s.QueryOver<RoleModel>().Where(x => x.DeleteTime == null && x.ForUserId == Id).ToRowCountQuery().FutureValue<int>();
             var rock = s.QueryOver<RockModel>().Where(x => x.DeleteTime == null && x.ForUserId == Id).ToRowCountQuery().FutureValue<int>();
+
+            var role = RoleAccessor.CountRoles(s, Id);
 
             if (Cache.NumMeasurables != measurable.Value)
                 Cache.NumMeasurables = measurable.Value;

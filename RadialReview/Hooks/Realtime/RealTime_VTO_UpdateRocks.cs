@@ -19,56 +19,70 @@ namespace RadialReview.Hooks.Realtime {
 		public bool CanRunRemotely() {
 			return false;
 		}
-		
-		private void AddRockToVto(ISession s, long rockId, long recurrenceId) {
-			var recurRocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
-				.Where(x => x.ForRock.Id == rockId && x.L10Recurrence.Id == recurrenceId && x.DeleteTime == null)
-				.List().ToList();
+
+		private void _DoUpdate(ISession s, long rockId, long? recurrenceId, bool allowDeleted, Func<long, L10Recurrence.L10Recurrence_Rocks, AngularUpdate> action) {
+			var recurRocksQ = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().Where(x => x.ForRock.Id == rockId);
+			if (recurrenceId != null) {
+				recurRocksQ = recurRocksQ.Where(x => x.L10Recurrence.Id == recurrenceId);
+			}
+			if (!allowDeleted) {
+				recurRocksQ = recurRocksQ.Where(x => x.DeleteTime == null);
+			}
+			//if (vtoRock!=null) {
+			//	recurRocksQ = recurRocksQ.Where(x => x.VtoRock == vtoRock.Value);
+			//}
+
+			var recurRocks = recurRocksQ.List().ToList();
 
 			var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
 			foreach (var recurRock in recurRocks) {
-				var vto = s.Get<VtoModel>(recurRock.L10Recurrence.VtoId);
-				if (vto != null) {
-					var angularItems = AngularList.CreateFrom(AngularListType.Add, AngularVtoRock.Create(recurRock));
-					var updates = new AngularUpdate() {
-						new AngularQuarterlyRocks(vto.QuarterlyRocks.Id) {
-							Rocks = angularItems
-						}
-					};
-					var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vto.Id), null);
+				//var vto = s.Get<VtoModel>(recurRock.L10Recurrence.VtoId);
+				var vtoId = recurRock.L10Recurrence.VtoId;
+				//if (vtoId != null) {
+					var updates = action(vtoId, recurRock);
+					var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId));
 					group.update(updates);
-				}
+				//}
 			}
 		}
 
-		private void RemoveRockFromVto(ISession s, long rockId, long recurrenceId) {
-			var recurRocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
-				.Where(x => x.ForRock.Id == rockId && x.L10Recurrence.Id == recurrenceId && x.DeleteTime == null)
-				.List().ToList();
-
-			var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
-			foreach (var recurRock in recurRocks) {
-				var vto = s.Get<VtoModel>(recurRock.L10Recurrence.VtoId);
-				if (vto != null) {
-					var angularItems = AngularList.CreateFrom(AngularListType.Remove, new AngularVtoRock(recurRock.Id));
-					var updates = new AngularUpdate() {
-						new AngularQuarterlyRocks(vto.QuarterlyRocks.Id) {
-							Rocks = angularItems
-						}
-					};
-					var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vto.Id), null);
-					group.update(updates);
+		private void AddRockToVto(ISession s, long rockId, long? recurrenceId) {
+			_DoUpdate(s, rockId, recurrenceId,false, (vtoId, recurRock) =>
+				new AngularUpdate() {
+					new AngularQuarterlyRocks(vtoId) {
+						Rocks = AngularList.CreateFrom(AngularListType.Add, AngularVtoRock.Create(recurRock))
+					}
 				}
-			}
+			);			
+		}
+
+		private void RemoveRockFromVto(ISession s, long rockId, long? recurrenceId) {
+			_DoUpdate(s, rockId, recurrenceId,true, (vtoId, recurRock) =>
+				new AngularUpdate() {
+					new AngularQuarterlyRocks(vtoId) {
+						Rocks = AngularList.CreateFrom(AngularListType.Remove, new AngularVtoRock(recurRock.Id))
+					}
+				}
+			);
+		}
+
+		private void UpdateRock(ISession s, long rockId, long? recurrenceId) {
+			_DoUpdate(s, rockId, recurrenceId,false, (vtoId, recurRock) =>
+				new AngularUpdate() {
+					new AngularQuarterlyRocks(vtoId) {
+						Rocks = AngularList.CreateFrom(AngularListType.ReplaceIfNewer, AngularVtoRock.Create(recurRock))
+					}
+				}
+			);
 		}
 
 
 		public async Task ArchiveRock(ISession s, RockModel rock, bool deleted) {
-			var recurDatas = RealTimeHelpers.GetRecurrenceRockData(s, rock.Id);
+			//var recurDatas = RealTimeHelpers.GetRecurrenceRockData(s, rock.Id);
 
-			foreach (var recurId in recurDatas.RecurIds.Select(x => x.RecurrenceId)) {
-				RemoveRockFromVto(s, rock.Id, recurId);
-			}
+			//foreach (var recurId in recurDatas.RecurIds.Select(x => x.RecurrenceId)) {
+				RemoveRockFromVto(s, rock.Id, null);
+			//}
 		}
 
 		public async Task AttachRock(ISession s, RockModel rock, L10Recurrence.L10Recurrence_Rocks recurRock) {
@@ -85,11 +99,11 @@ namespace RadialReview.Hooks.Realtime {
 		}
 
 		public async Task UpdateRock(ISession s, RockModel rock) {
-			//Nothing to do
+			UpdateRock(s, rock.Id, null);
 		}
 
 		public async Task UpdateVtoRock(ISession s, L10Recurrence.L10Recurrence_Rocks recurRock) {
-			if (recurRock.VtoRock) {
+			if (recurRock.VtoRock && recurRock.DeleteTime == null) {
 				AddRockToVto(s, recurRock.ForRock.Id, recurRock.L10Recurrence.Id);
 			} else {
 				RemoveRockFromVto(s, recurRock.ForRock.Id, recurRock.L10Recurrence.Id);

@@ -22,6 +22,7 @@ using System.Web;
 
 namespace RadialReview.Accessors {
 	public class HeadlineAccessor {
+		[Untested("Hook")]
 		public static async Task<bool> CreateHeadline(ISession s, PermissionsUtility perms, PeopleHeadline headline) {
 			if (headline.Id != 0)
 				throw new PermissionsException("Id was not zero");
@@ -76,7 +77,7 @@ namespace RadialReview.Accessors {
 			
 			headline.Owner = s.Get<UserOrganizationModel>(headline.OwnerId);
 
-			await HooksRegistry.Each<IHeadlineHook>(x => x.CreateHeadline(s, headline));
+			await HooksRegistry.Each<IHeadlineHook>((ses, x) => x.CreateHeadline(ses, headline));
 
 			if (recurrenceId > 0) {
 				var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();

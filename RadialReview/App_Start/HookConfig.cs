@@ -31,6 +31,7 @@ namespace RadialReview.App_Start {
 			HooksRegistry.RegisterHook(new UpdateUserCache());
 			HooksRegistry.RegisterHook(new RealTime_L10_UpdateRocks());
 			HooksRegistry.RegisterHook(new RealTime_VTO_UpdateRocks());
+			HooksRegistry.RegisterHook(new RealTime_Dashboard_UpdateL10Rocks());
 			//HooksRegistry.RegisterHook(new TodoEdit())
 		}
     }

@@ -17,15 +17,39 @@ using System.Web;
 
 namespace RadialReview.Models.Angular.Dashboard {
 
-    public class AngularTileId<T> : BaseAngular {
+	public static class AngularTileKeys{
+		public static string L10TodoList(long recurrenceId) {
+			return "Tile_L10Todo_" + recurrenceId;
+		}
+		public static string L10IssuesList(long recurrenceId) {
+			return "Tile_L10Issues_" + recurrenceId;
+		}
+		public static string L10RocksList(long recurrenceId) {
+			return "Tile_L10Rocks_" + recurrenceId;
+		}
+		public static string L10IssuesSolvedList(long recurrenceId) {
+			return "Tile_L10IssuesSolved_" + recurrenceId;
+		}
+		public static string L10Scorecard(long recurrenceId) {
+			return "Tile_L10Scorecard_" + recurrenceId;
+		}
+		public static string ErrorTile(long tileId) {
+			return "Tile_Error_" + tileId;
+		}
+	}
+
+	public class AngularTileId<T> : BaseStringAngular {
+
         public long KeyId { get; set; }
         public string Title { get; set; }
         public T Contents { get; set; }
         public bool HasError { get; set; }
         public string Message { get; set; }
 
-        public AngularTileId(long tile, long keyId, string title)
-            : base(tile) {
+		public AngularTileId(string id) : base(id) {				
+		}
+
+        public AngularTileId(long tile, long keyId, string title, string key) : base(key) {
             KeyId = keyId;
             Title = title;
         }
@@ -35,7 +59,7 @@ namespace RadialReview.Models.Angular.Dashboard {
             if (e is PermissionsException)
                 message = (e as PermissionsException).Message;
 
-            return new AngularTileId<T>(tile, keyId, "Error") {
+            return new AngularTileId<T>(tile, keyId, "Error", AngularTileKeys.ErrorTile(tile)) {
                 HasError = true,
                 Message = message,
             };

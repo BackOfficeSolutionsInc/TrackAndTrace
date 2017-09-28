@@ -1017,6 +1017,7 @@ namespace RadialReview.Accessors {
             }
         }
 
+		[Untested("Hook")]
         public static async Task<RoleModel> AddRole(ISession s, PermissionsUtility perms, RealTimeUtility rt, Attach attachTo, string name = null) {
 
             perms.EditAttach(attachTo);
@@ -1036,7 +1037,7 @@ namespace RadialReview.Accessors {
             };
 
             s.Save(r);
-            await HooksRegistry.Each<IRolesHook>(x => x.CreateRole(s, r));
+            await HooksRegistry.Each<IRolesHook>((ses, x) => x.CreateRole(ses, r));
 
             UserTemplateAccessor.AddRoleToAttach_Unsafe(s, perms, orgId, attachTo, r);
 
@@ -1231,7 +1232,7 @@ namespace RadialReview.Accessors {
                 SetUser(s, rt, perms, node.Id, userId);
             }
         }
-
+		[Untested("Hooks")]
         public static async Task UpdateRole(ISession s, RealTimeUtility rt, PermissionsUtility perms, long roleId, string name) {
             perms.EditRole(roleId);
 
@@ -1241,7 +1242,7 @@ namespace RadialReview.Accessors {
 
             role.Role = name;
             s.Update(role);
-            await HooksRegistry.Each<IRolesHook>(x => x.UpdateRole(s, role));
+            await HooksRegistry.Each<IRolesHook>((ses, x) => x.UpdateRole(ses, role));
 
             rt.UpdateOrganization(role.OrganizationId).Update(new AngularRole(roleId) {
                 Name = name ?? Removed.String()

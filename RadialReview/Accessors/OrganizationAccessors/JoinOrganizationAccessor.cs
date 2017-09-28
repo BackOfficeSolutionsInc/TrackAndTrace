@@ -39,7 +39,7 @@ namespace RadialReview.Accessors {
         public static async Task<AddedUser> CreateUserUnderManager_Test(ISession db, PermissionsUtility perms, CreateUserOrganizationViewModel settings) {
             return await CreateUserUnderManager_Test(db, perms, settings.ManagerNodeId, settings.IsManager, settings.OrgPositionId, settings.Email, settings.FirstName, settings.LastName, settings.IsClient, settings.ClientOrganizationName, settings.EvalOnly);
         }
-		[Untested("Is _AddUserToTemplateUnsafe wired correctly?")]
+		[Untested("Is _AddUserToTemplateUnsafe wired correctly?", "is ICreateUserOrganizationHook called correctly")]
         private static async Task<AddedUser> CreateUserUnderManager_Test(ISession db, PermissionsUtility perms, long? managerNodeId, Boolean isManager, long? orgPositionId, String email, String firstName, String lastName, bool isClient, string organizationName, bool evalOnly) {
             if (!Emailer.IsValid(email))
                 throw new PermissionsException(ExceptionStrings.InvalidEmail);
@@ -162,7 +162,7 @@ namespace RadialReview.Accessors {
 
             using (var tx = db.BeginTransaction()) {
 #pragma warning disable CS0618 // Type or member is obsolete
-                await HooksRegistry.Each<ICreateUserOrganizationHook>(x => x.CreateUserOrganization(db, newUser));
+                await HooksRegistry.Each<ICreateUserOrganizationHook>((ses,x) => x.CreateUserOrganization(ses, newUser));
 #pragma warning restore CS0618 // Type or member is obsolete
                 tx.Commit();
             }
@@ -196,7 +196,7 @@ namespace RadialReview.Accessors {
             return await CreateUserUnderManager(caller, settings.ManagerNodeId, settings.IsManager, settings.OrgPositionId, settings.Email, settings.FirstName, settings.LastName, settings.IsClient, settings.ClientOrganizationName, settings.EvalOnly);
         }
 
-		[Untested("is _AddUserToTemplateUnsafe wired up correctly?")]
+		[Untested("is _AddUserToTemplateUnsafe wired up correctly?","hooks")]
         private static async Task<AddedUser> CreateUserUnderManager(UserOrganizationModel caller, long? managerNodeId, Boolean isManager, long? orgPositionId, String email, String firstName, String lastName, bool isClient, string organizationName, bool evalOnly) {
             if (!Emailer.IsValid(email))
                 throw new PermissionsException(ExceptionStrings.InvalidEmail);
@@ -350,7 +350,7 @@ namespace RadialReview.Accessors {
                 }
                 using (var tx = db.BeginTransaction()) {
 #pragma warning disable CS0618 // Type or member is obsolete
-                    await HooksRegistry.Each<ICreateUserOrganizationHook>(x => x.CreateUserOrganization(db, newUser));
+                    await HooksRegistry.Each<ICreateUserOrganizationHook>((ses,x) => x.CreateUserOrganization(ses, newUser));
 #pragma warning restore CS0618 // Type or member is obsolete
                     tx.Commit();
                     db.Flush();

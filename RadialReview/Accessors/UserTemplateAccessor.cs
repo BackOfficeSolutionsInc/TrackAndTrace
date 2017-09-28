@@ -200,7 +200,7 @@ namespace RadialReview.Accessors {
 
 
 		}
-
+		[Untested("IRoleHook correct?")]
 		public static async Task AddRoleToTemplate(ISession s, PermissionsUtility p, long templateId, long orgId, String role) {
 			var utm = new UserTemplate.UT_Role() {
 				//Role = role,
@@ -228,7 +228,7 @@ namespace RadialReview.Accessors {
 				Category = category,
 			};
 			s.Save(rm);
-			await HooksRegistry.Each<IRolesHook>(x => x.CreateRole(s, rm));
+			await HooksRegistry.Each<IRolesHook>((ses, x) => x.CreateRole(ses, rm));
 
 			s.Save(new RoleLink() {
 				AttachId = template.AttachId,

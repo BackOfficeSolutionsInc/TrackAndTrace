@@ -134,6 +134,7 @@ namespace RadialReview.Accessors {
 
         }
 
+		[Untested("Hook")]
         public static async Task TryUpdateUser(OnboardingUser o)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
@@ -152,7 +153,7 @@ namespace RadialReview.Accessors {
                             u.User.FirstName = o.FirstName;
                             u.User.LastName = o.LastName;
 
-							await HooksRegistry.Each<IUpdateUserModelHook>(x=>x.UpdateUserModel(s,u.User));
+							await HooksRegistry.Each<IUpdateUserModelHook>((ses, x) => x.UpdateUserModel(ses,u.User));
 
                         }
 

@@ -139,6 +139,7 @@
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Hooks\Realtime\RealTimeHelpers.cs" />
+    <Compile Include="Hooks\Realtime\RealTime_Dashboard_UpdateL10Rocks.cs" />
     <Compile Include="Hooks\Realtime\RealTime_L10_UpdateRocks.cs" />
     <Compile Include="Hooks\Realtime\RealTime_VTO_UpdateRocks.cs" />
     <Compile Include="Hooks\Realtime\RealTime_Tasks.cs" />

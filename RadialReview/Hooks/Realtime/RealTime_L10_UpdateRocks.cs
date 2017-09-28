@@ -25,7 +25,7 @@ namespace RadialReview.Hooks.Realtime {
 		}
 				
 
-		[Untested("Did it add?")]
+		[Untested("Did it add?","Both conditions","in meeting", "in wizard","in archive")]
 		public async Task AttachRock(ISession s, RockModel rock, L10Recurrence.L10Recurrence_Rocks recurRock) {
 			using (var rt = RealTimeUtility.Create(RealTimeHelpers.GetConnectionString())) {
 				rt.UpdateRecurrences(recurRock.L10Recurrence.Id).Update(rid => new AngularRock(recurRock.ForRock.Id) { VtoRock = recurRock.VtoRock });
@@ -55,7 +55,7 @@ namespace RadialReview.Hooks.Realtime {
 
 					//Update Angular
 					var arecur = new AngularRecurrence(recurrenceId) {
-							Rocks = AngularList.Create(AngularListType.Add, new[]{new AngularRock(recurRock){
+							Rocks = AngularList.Create(AngularListType.ReplaceIfNewer, new[]{new AngularRock(recurRock){
 							ForceOrder =int.MaxValue,
 						}}),
 						Focus = "[data-rock='" + rock.Id + "'] input:visible:first"
@@ -63,12 +63,19 @@ namespace RadialReview.Hooks.Realtime {
 					group.update(new AngularUpdate { arecur });
 				} else {
 					var recurRocks = L10Accessor.GetRocksForRecurrence(s, adminPerms, recurrenceId);
-					var arecur = new AngularRecurrence(recurrenceId) {
-						Rocks = AngularList.Create(AngularListType.ReplaceAll, recurRocks.Select(x => new AngularRock(x)).ToList()),
-					};
+					//var arecur = new AngularRecurrence(recurrenceId) {
+					//	Rocks = AngularList.Create(AngularListType.ReplaceAll, recurRocks.Select(x => new AngularRock(x)).ToList()),
+					//};
+					string focus = null;
 					if (recurRocks.Any() && recurRocks.Last().ForRock != null) {
-						arecur.Focus = "[data-rock='" + recurRocks.Last().ForRock.Id + "'] input:visible:first";
+						focus = "[data-rock='" + recurRocks.Last().ForRock.Id + "'] input:visible:first";
 					}
+
+					var arecur = new AngularUpdate { new AngularRecurrence(recurrenceId) {
+							Rocks = AngularList.CreateFrom(AngularListType.ReplaceIfNewer, new AngularRock(recurRock)),
+							Focus = focus,
+						}
+					};
 					group.update(arecur);
 				}
 				///
@@ -93,8 +100,8 @@ namespace RadialReview.Hooks.Realtime {
 		public async Task UpdateRock(ISession s, RockModel rock) {
 			using (var rt = RealTimeUtility.Create(RealTimeHelpers.GetConnectionString())) {
 				var rock_ids = RealTimeHelpers.GetRecurrenceRockData(s, rock.Id);
-				var allRecurIds = rock_ids.RecurIds.Select(x => x.RecurrenceId);
-				var allMeetingRockIds = rock_ids.MeetingIds.Select(x => x.MeetingRockId);
+				var allRecurIds = rock_ids.RecurData.Select(x => x.RecurrenceId);
+				var allMeetingRockIds = rock_ids.MeetingData.Select(x => x.MeetingRockId);
 
 				var updater = rt.UpdateRecurrences(allRecurIds).Update(rid => new AngularRock(rock, null));
 				//Update Name

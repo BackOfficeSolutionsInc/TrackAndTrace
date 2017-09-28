@@ -93,7 +93,8 @@ namespace RadialReview.Accessors {
             return table;
         }
 
-        public static async Task<bool> CreateTodo(ISession s, PermissionsUtility perms, long recurrenceId, TodoModel todo) {
+		[Untested("Hooks")]
+		public static async Task<bool> CreateTodo(ISession s, PermissionsUtility perms, long recurrenceId, TodoModel todo) {
             if (todo.Id != 0)
                 throw new PermissionsException("Id was not zero");
 
@@ -164,7 +165,7 @@ namespace RadialReview.Accessors {
             todo.Ordering = -todo.Id;
             s.Update(todo);
 
-            await HooksRegistry.Each<ITodoHook>(x => x.CreateTodo(s, todo));
+            await HooksRegistry.Each<ITodoHook>((ses,x) => x.CreateTodo(ses, todo));
 
             if (todo.TodoType == TodoType.Personal) {
 
@@ -241,7 +242,7 @@ namespace RadialReview.Accessors {
 
                         foreach (var d in dashs) {
                             if (canView[d.UserId]) {
-                                var tile = new AngularTileId<IEnumerable<AngularTodo>>(d.TileId, recurrenceId, null) {
+                                var tile = new AngularTileId<IEnumerable<AngularTodo>>(d.TileId, recurrenceId, null, AngularTileKeys.L10TodoList(recurrenceId)) {
                                     Contents = AngularList.Create(AngularListType.Add, new[] { new AngularTodo(todo) })
                                 };
                                 meetingHub.update(new AngularUpdate() { tile });

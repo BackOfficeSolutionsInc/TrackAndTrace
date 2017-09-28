@@ -106,7 +106,7 @@ namespace RadialReview.Accessors {
 
 			//return allLinks;
 		}
-
+		[Untested("hooks")]
 		public static async Task EditRole(UserOrganizationModel caller, long id, string role, DateTime? deleteTime = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -118,15 +118,15 @@ namespace RadialReview.Accessors {
 					if (r.DeleteTime != deleteTime) {
 						r.DeleteTime = deleteTime;
 						if (deleteTime == null) {
-							await HooksRegistry.Each<IRolesHook>(x => x.CreateRole(s, r));
+							await HooksRegistry.Each<IRolesHook>((ses, x) => x.CreateRole(ses, r));
 						} else {
-							await HooksRegistry.Each<IRolesHook>(x => x.DeleteRole(s, r));
+							await HooksRegistry.Each<IRolesHook>((ses, x) => x.DeleteRole(ses, r));
 						}
 						updateSent = true;
 					}
 					s.Update(r);
 					if (!updateSent)
-						await HooksRegistry.Each<IRolesHook>(x => x.UpdateRole(s, r));
+						await HooksRegistry.Each<IRolesHook>((ses, x) => x.UpdateRole(ses, r));
 
 
 
@@ -318,10 +318,11 @@ namespace RadialReview.Accessors {
             return roles;
         }
 
-        #endregion
+		#endregion
 
 
-        public async Task EditRoles(UserOrganizationModel caller, long userId, List<RoleModel> roles, bool updateOutstanding) {
+		[Untested("Hooks")]
+		public async Task EditRoles(UserOrganizationModel caller, long userId, List<RoleModel> roles, bool updateOutstanding) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 
@@ -389,9 +390,9 @@ namespace RadialReview.Accessors {
 								CreateTime = r.CreateTime
 							};
 							s.Save(link);
-							await HooksRegistry.Each<IRolesHook>(x => x.CreateRole(s, r));
+							await HooksRegistry.Each<IRolesHook>((ses,x) => x.CreateRole(ses, r));
 						} else {
-							await HooksRegistry.Each<IRolesHook>(x => x.UpdateRole(s, r));
+							await HooksRegistry.Each<IRolesHook>((ses,x) => x.UpdateRole(ses, r));
 						}
 
 						if (updateOutstanding && added) {
