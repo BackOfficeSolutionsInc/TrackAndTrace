@@ -217,6 +217,7 @@
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
     </Reference>
@@ -261,6 +262,8 @@
     <Reference Include="System.Windows.Forms">
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Serialization" />
     <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
       <Private>True</Private>
@@ -295,20 +298,21 @@
     <Compile Include="Accessors\PDF\D3TreeTests.cs" />
     <Compile Include="Accessors\PDF\PdfAccessor_RunAll.cs" />
     <Compile Include="Accessors\Payment\PaymentAccessorTests.cs" />
-    <Compile Include="API\v0\IssueApiTests_v0.cs" />
-    <Compile Include="API\v0\L10ApiTests_v0.cs" />
-    <Compile Include="API\v0\MilestonesApiTests_v0.cs" />
-    <Compile Include="API\v0\PositionApiTests_v0.cs" />
-    <Compile Include="API\v0\RocksApiTests_v0.cs" />
-    <Compile Include="API\v0\RolesApiTests_v0.cs" />
+    <Compile Include="API\v1\IssueApiTests_v1.cs" />
+    <Compile Include="API\v1\L10ApiTests_v1.cs" />
+    <Compile Include="API\v1\MilestonesApiTests_v1.cs" />
+    <Compile Include="API\v1\PositionApiTests_v1.cs" />
+    <Compile Include="API\v1\RocksApiTests_v1.cs" />
+    <Compile Include="API\v1\RolesApiTests_v1.cs" />
     <Compile Include="API\v0\ScorecardApiTests_v0.cs" />
-    <Compile Include="API\v0\SearchApiTests_v0.cs" />
-    <Compile Include="API\v0\SeatsApiTests_v0.cs" />
-    <Compile Include="API\v0\TeamsApiTests_v0.cs" />
-    <Compile Include="API\v0\TodoApiTests_v0.cs" />
-    <Compile Include="API\v0\ProcessDefApiTests_v0.cs" />
-    <Compile Include="API\v0\UsersApiTests_v0.cs" />
-    <Compile Include="API\v0\WebHookAccessorTests_v0.cs" />
+    <Compile Include="API\v1\ScorecardApiTests_v1.cs" />
+    <Compile Include="API\v1\SearchApiTests_v1.cs" />
+    <Compile Include="API\v1\SeatsApiTests_v1.cs" />
+    <Compile Include="API\v1\TeamsApiTests_v1.cs" />
+    <Compile Include="API\v1\TodoApiTests_v1.cs" />
+    <Compile Include="API\v1\ProcessDefApiTests_v1.cs" />
+    <Compile Include="API\v1\UsersApiTests_v1.cs" />
+    <Compile Include="API\v1\WebHookAccessorTests_v1.cs" />
     <Compile Include="Codebase\EnsureNoUntested.cs" />
     <Compile Include="Codebase\SingleRequestSessionTests.cs" />
     <Compile Include="Controllers\DashboardControllerTests.cs" />
@@ -325,6 +329,7 @@
     <Compile Include="PeopleTools\QcSettings.cs" />
     <Compile Include="Permissions\ManagerPermissions.cs" />
     <Compile Include="Permissions\L10Permissions.cs" />
+    <Compile Include="Permissions\PermissionsUtilityTests.cs" />
     <Compile Include="Permissions\RockPermissions.cs" />
     <Compile Include="Permissions\SettledPermissions.cs" />
     <Compile Include="Permissions\DashboardPermissions.cs" />
@@ -346,12 +351,14 @@
       <DependentUpon>SurveyResources.resx</DependentUpon>
     </Compile>
     <Compile Include="Startup\SetupAssemblyInitializer.cs" />
+    <Compile Include="TestUtils\BaseApiTest.cs" />
     <Compile Include="TestUtils\BaseCoreProcessTest.cs" />
     <Compile Include="TestUtils\MockSession.cs" />
     <Compile Include="Utilities\CompareUtil.cs" />
     <Compile Include="Utilities\Credentials.cs" />
     <Compile Include="Utilities\EventUtilTests.cs" />
     <Compile Include="TestUtils\RouteHandler.cs" />
+    <Compile Include="Utilities\ExpectedApiResults.cs" />
     <Compile Include="Utilities\Extensions\ObjectExtensions.cs" />
     <Compile Include="Utilities\L10Utility.cs" />
     <Compile Include="Utilities\DistanceUtility_User.cs" />
@@ -390,6 +397,9 @@
       <Project>{7104473e-4e35-4107-9b11-4346291f8b4e}</Project>
       <Name>RadialReview</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="_data\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

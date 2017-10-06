@@ -6,6 +6,7 @@ using RadialReview.Models.Angular.Base;
 using RadialReview.Models.Scorecard;
 using RadialReview.Utilities;
 using RadialReview.Models.Enums;
+using System.Runtime.Serialization;
 
 namespace RadialReview.Models.Angular.Scorecard
 {
@@ -34,6 +35,8 @@ namespace RadialReview.Models.Angular.Scorecard
 		}
 		public long ForWeek { get; set; }
 		public DateTime Week { get; set; }
+
+		[IgnoreDataMember]
 		public AngularMeasurable Measurable { get; set; } 
 		public DateTime? DateEntered { get; set; }
 		public decimal? Measured { get; set; }

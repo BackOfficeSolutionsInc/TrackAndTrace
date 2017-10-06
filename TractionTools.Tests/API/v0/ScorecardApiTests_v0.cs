@@ -13,7 +13,8 @@ using TractionTools.Tests.Properties;
 
 namespace TractionTools.Tests.API.v0 {
 	[TestClass]
-	public class ScorecardApiTests_v0 : BaseTest {
+	public class ScorecardApiTests_v0 : BaseApiTest {
+		public ScorecardApiTests_v0() : base(VERSION_0) { }
 		[TestMethod]
 		[TestCategory("Api_V0")]
 		public async Task TestCurrentWeek() {
@@ -48,7 +49,7 @@ namespace TractionTools.Tests.API.v0 {
 
 			
 			var s = c.Get(score.Id);
-            CompareModelProperties(APIResult.ScorecardApiTests_v0_GetScore, s);
+            CompareModelProperties(/*APIResult.ScorecardApiTests_v0_GetScore*/ s);
 
             Assert.AreEqual(s.Measurable.Title, m1.Title);
 			Assert.AreEqual(s.Value, null);

@@ -4,6 +4,7 @@ using RadialReview.Models.Askables;
 using RadialReview.Models.Angular.Base;
 using RadialReview.Models.Enums;
 using RadialReview.Models.L10;
+using System.Runtime.Serialization;
 
 namespace RadialReview.Models.Angular.Rocks
 {
@@ -35,9 +36,13 @@ namespace RadialReview.Models.Angular.Rocks
 		public DateTime? DueDate { get; set; }
 		public bool? Complete { get; set; }
 		public RockState? Completion { get; set; }
-        public long? RecurrenceRockId { get; set; }
-        public bool? VtoRock { get; set; }
-        public long? ForceOrder { get; set; }
         public DateTime? CreateTime { get; set; }
+
+		[IgnoreDataMember]
+		public long? RecurrenceRockId { get; set; }
+		[IgnoreDataMember]
+        public bool? VtoRock { get; set; }
+		[IgnoreDataMember]
+		public long? ForceOrder { get; set; }
 	}
 }

@@ -7,6 +7,8 @@ using System.Reflection;
 using NHibernate.Tool.hbm2ddl;
 using RadialReview.Models;
 using RadialReview.Accessors;
+using RadialReview.Utilities.Productivity;
+using System.Threading;
 
 namespace TractionTools.Tests.Startup {
 	[TestClass]
@@ -36,6 +38,10 @@ namespace TractionTools.Tests.Startup {
 
 		[AssemblyCleanup]
 		public static void AssemblyTearDown() {
+			ChromeExtensionComms.SendCommand("testDone");
+
+			Thread.Sleep(200);
+
 			if (_connection != null) {
 				_connection.Dispose();
 				_connection = null;

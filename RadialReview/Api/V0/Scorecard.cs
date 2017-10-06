@@ -11,11 +11,14 @@ using RadialReview.Utilities;
 
 namespace RadialReview.Api.V0
 {
-
+	#region DO NOT EDIT, V0
 	[RoutePrefix("api/v0")]
 	public class WeekController : BaseApiController
 	{
-
+		/// <summary>
+		/// Get the current week
+		/// </summary>
+		/// <returns></returns>
 		// GET: api/Scores/5
 		[Route("week/current")]
 		public L10MeetingVM.WeekVM Get()
@@ -34,28 +37,55 @@ namespace RadialReview.Api.V0
     public class ScoresController : BaseApiController
     {
 
+		/// <summary>
+		/// Get a particular score
+		/// </summary>
+		/// <param name="SCORE_ID"></param>
+		/// <returns></returns>
 		// GET: api/Scores/5
-		[Route("scores/{id}")]
+		[Route("scores/{SCORE_ID}")]
 		[HttpGet]
-        public ScoreModel.DataContract Get(long id){
-	        return new ScoreModel.DataContract(ScorecardAccessor.GetScore(GetUser(), id));
+        public ScoreModel.DataContract Get(long SCORE_ID){
+	        return new ScoreModel.DataContract(ScorecardAccessor.GetScore(GetUser(), SCORE_ID));
         }
 
-
+		/// <summary>
+		/// Update a score for a particular measureable
+		/// </summary>
+		/// <param name="MEASURABLE_ID">Measurable ID</param>
+		/// <param name="WEEK_ID">Week ID</param>
+		/// <param name="value">Value for the score</param>
 		// PUT: api/Scores/5
-		//[Route("api/{namespace}/{controller}/{id}")]
 		[HttpPut]
-		[Route("scores/{measurable}/{forweek}")]
-		public void Put(long measurable,long forWeek, [FromBody]decimal? value)
+		[Route("scores/{MEASURABLE_ID}/{WEEK_ID}")]
+		public void Put_OLD(long MEASURABLE_ID, long WEEK_ID, [FromBody]decimal? value)
 		{
-			L10Accessor.UpdateScore(GetUser(), measurable, forWeek, value, null,true);
+			L10Accessor.UpdateScore(GetUser(), MEASURABLE_ID, WEEK_ID, value, null,true);
         }
 
+		/// <summary>
+		/// Update a score for a particular measureable
+		/// </summary>
+		/// <param name="MEASURABLE_ID">Measurable ID</param>
+		/// <param name="WEEK_ID">Week ID</param>
+		/// <param name="value">Value for the score</param>
+		// PUT: api/Scores/5
 		[HttpPut]
-		[Route("scores/{id:long}")]
-		public void Put(long id, [FromBody]decimal? value)
+		[Route("scores/{MEASURABLE_ID}/week/{WEEK_ID}")]
+		public void Put(long MEASURABLE_ID, long WEEK_ID, [FromBody]decimal? value) {
+			L10Accessor.UpdateScore(GetUser(), MEASURABLE_ID, WEEK_ID, value, null, true);
+		}
+
+		/// <summary>
+		/// Update a score
+		/// </summary>
+		/// <param name="SCORE_ID">Score ID</param>
+		/// <param name="value">Value for the score</param>
+		[HttpPut]
+		[Route("scores/{SCORE_ID:long}")]
+		public void Put(long SCORE_ID, [FromBody]decimal? value)
 		{
-			L10Accessor.UpdateScore(GetUser(), id, value, null, true);
+			L10Accessor.UpdateScore(GetUser(), SCORE_ID, value, null, true);
 		}
 
 		//// GET: api/Scores
@@ -81,25 +111,33 @@ namespace RadialReview.Api.V0
 	[RoutePrefix("api/v0")]
 	public class MeasurablesController : BaseApiController
 	{
+		
 		[Route("measurables/mine")]
 		public IEnumerable<MeasurableModel> GetMineMeasureables(){
 			return ScorecardAccessor.GetUserMeasurables(GetUser(), GetUser().Id, true, true);
 		}
+
+		
 		[Route("measurables/organization")]
 		public IEnumerable<MeasurableModel> GetOrganizationMeasureables(){
 			return ScorecardAccessor.GetOrganizationMeasurables(GetUser(), GetUser().Organization.Id, true);
 		}
+		
 		[Route("measurables/owner/{id}")]
-		public IEnumerable<MeasurableModel> GetOwnerMeasureables(long id)
-		{
+		public IEnumerable<MeasurableModel> GetOwnerMeasureables(long id) {
 			return ScorecardAccessor.GetUserMeasurables(GetUser(), id, true, true);
 		}
 
+		[Route("measurables/user/{id}")]
+		public IEnumerable<MeasurableModel> GetUserMeasureables(long id) {
+			return ScorecardAccessor.GetUserMeasurables(GetUser(), id, true, true);
+		}
+		
 		[Route("measurables/{id}/scores")]
 		public IEnumerable<ScoreModel> GetMeasurableScores(long id){
 			return ScorecardAccessor.GetMeasurableScores(GetUser(), id).OrderBy(x=>x.DataContract_ForWeek);
 		}
-
+		
 		[Route("measurables/{id:long}")]
 		public object Get(long id)
 		{
@@ -117,4 +155,6 @@ namespace RadialReview.Api.V0
 
 
 	}
+
+	#endregion
 }

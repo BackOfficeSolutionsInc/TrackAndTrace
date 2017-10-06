@@ -42,7 +42,9 @@ namespace RadialReview {
 
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 			RouteConfig.RegisterRoutes(RouteTable.Routes);
-	        GlobalConfiguration.Configure(WebApiConfig.Register);
+			//SwaggerConfig.Register(GlobalConfiguration.Configuration);
+			GlobalConfiguration.Configure(WebApiConfig.Register);
+
 			BundleConfig.RegisterBundles(BundleTable.Bundles);
 
 			HookConfig.RegisterHooks();
@@ -54,7 +56,7 @@ namespace RadialReview {
 
 			//Add Angular serializer to SignalR
 			var serializerSettings = new JsonSerializerSettings();
-			serializerSettings.Converters.Add(new AngularSerialization());
+			serializerSettings.Converters.Add(new AngularSerialization(true));
 			var serializer = JsonSerializer.Create(serializerSettings);
 			GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), () => serializer);
 

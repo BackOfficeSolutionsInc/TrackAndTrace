@@ -19,7 +19,7 @@ namespace RadialReview
             //};
 			GlobalHost.DependencyResolver.UseRedis(redis.Server, redis.Port, redis.Password, redis.ChannelName  );
 			app.MapSignalR();
-
-        }
+			
+		}		
     }
 }

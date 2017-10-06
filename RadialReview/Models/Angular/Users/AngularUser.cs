@@ -4,6 +4,7 @@ using System.Linq;
 using NHibernate.Proxy;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Models.Interfaces;
+using System.Runtime.Serialization;
 
 namespace RadialReview.Models.Angular.Users
 {
@@ -81,7 +82,11 @@ namespace RadialReview.Models.Angular.Users
 
 		public string Name { get; set; }
 		public string ImageUrl { get; set; }
+
+		[IgnoreDataMember]
 		public string Initials { get; set; }
+
+		[IgnoreDataMember]
 		public bool? Managing { get; set; }
         public DateTime? CreateTime { get;set;}
 	

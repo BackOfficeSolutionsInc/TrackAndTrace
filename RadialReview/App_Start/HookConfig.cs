@@ -1,5 +1,6 @@
 ﻿using RadialReview.Accessors.Hooks;
 using RadialReview.Hooks;
+using RadialReview.Hooks.Meeting;
 using RadialReview.Hooks.Realtime;
 using RadialReview.Utilities;
 using RadialReview.Utilities.Hooks;
@@ -20,15 +21,19 @@ namespace RadialReview.App_Start {
 
 			HooksRegistry.RegisterHook(new UpdateUserModel_TeamNames());
 			HooksRegistry.RegisterHook(new UpdateRoles_Notifications());
-			HooksRegistry.RegisterHook(new TodoWebhook());
+			HooksRegistry.RegisterHook(new UpdateUserCache());
 
+			HooksRegistry.RegisterHook(new TodoWebhook());
 			HooksRegistry.RegisterHook(new IssueWebhook());
+
 			HooksRegistry.RegisterHook(new ActiveCampaignEventHooks());
             HooksRegistry.RegisterHook(new EnterpriseHook(Config.EnterpriseAboveUserCount()));
 
-            HooksRegistry.RegisterHook(new RealTime_Tasks());
+			HooksRegistry.RegisterHook(new DepristineHooks());
 
-			HooksRegistry.RegisterHook(new UpdateUserCache());
+            HooksRegistry.RegisterHook(new RealTime_Tasks());
+			HooksRegistry.RegisterHook(new RealTime_L10_Todo());
+			HooksRegistry.RegisterHook(new RealTime_Dashboard_Todo());
 			HooksRegistry.RegisterHook(new RealTime_L10_UpdateRocks());
 			HooksRegistry.RegisterHook(new RealTime_VTO_UpdateRocks());
 			HooksRegistry.RegisterHook(new RealTime_Dashboard_UpdateL10Rocks());

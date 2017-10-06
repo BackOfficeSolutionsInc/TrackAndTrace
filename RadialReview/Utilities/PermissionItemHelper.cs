@@ -23,9 +23,7 @@ using RadialReview.Areas.CoreProcess.Models;
 
 namespace RadialReview.Utilities {
 	public partial class PermissionsUtility {
-
-
-
+		
 		public void UnsafeAllow(PermItem.AccessLevel level, PermItem.ResourceType resourceType, long id) {
 			string key;
 			switch (level) {
@@ -43,20 +41,7 @@ namespace RadialReview.Utilities {
 			}
 			new CacheChecker(key, this).Execute(() => this);
 			//this.cache[key] = new CacheResult() { };
-		}
-
-		/*protected class PAccess
-        {
-            public long AccessId { get; set; }
-            public PermItem.AccessType AccessType { get; set; }
-
-            public PAccess(long accessId, PermItem.AccessType accessType)
-            {
-                AccessId = accessId;
-                AccessType = accessType;
-            }
-        }
-        */
+		}		
 
 		public void EnsureAdminExists(PermItem.ResourceType resourceType, long resourceId) {
 			var items = session.QueryOver<PermItem>().Where(x => x.DeleteTime == null && x.CanAdmin && x.ResId == resourceId && x.ResType == resourceType).List();
@@ -73,7 +58,7 @@ namespace RadialReview.Utilities {
 							return;
 						break;
 					case PermItem.AccessType.Members:
-						var ids = GetMyMemeberIds(resourceType, resourceId);
+						var ids = GetMyMemeberUserIds(resourceType, resourceId);
 						var idsAlive = session.QueryOver<UserOrganizationModel>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(ids).Select(x => x.Id).List<long>();
 						if (idsAlive.Any())
 							return;
@@ -160,6 +145,20 @@ namespace RadialReview.Utilities {
 			return items.Where(x => x.CanAdmin).ToList();
 		}
 
+		//public List<PermItem> GetPermissionsForUser(long userId, PermItem.ResourceType resourceType) {
+		//	var allowedAccessors = ResponsibilitiesAccessor.GetResponsibilityGroupsForRgm(session, this, userId);
+		//	var permItemsUnfiltered = session.QueryOver<PermItem>()
+		//						   .Where(x => x.ResType == resourceType && x.DeleteTime == null)
+		//						   .WhereRestrictionOn(x=>x.AccessorId).IsIn(allowedAccessors.Select(x=>x.Id).ToArray())
+		//						   .List().ToList();
+		//	var permItems = permItemsUnfiltered.Where(x => {
+		//		return allowedAccessors.Any(a => {
+		//			if (a is OrganizationModel && x.AccessorType && a.Id == x.AccessorId) 
+		//		});
+		//	});
+		//}
+
+
 
 		protected bool CanAccessItem(PermItem.AccessLevel level, PermItem.ResourceType resourceType, long resourceId, Func<PermissionsUtility, PermissionsUtility> defaultAction, ref PermissionsUtility result, bool and = true) {
 			if (IsRadialAdmin(caller))
@@ -227,7 +226,18 @@ namespace RadialReview.Utilities {
 				return false;
 		}
 
-		protected List<long> GetMyMemeberIds(PermItem.ResourceType resourceType, long resourceId, bool meOnly = false) {
+		protected bool IsMember(PermItem.ResourceType resourceType, long resourceId) {
+			var isMember_ids = GetMyMemeberUserIds(resourceType, resourceId, true);
+			return (isMember_ids.Any(id => id == caller.Id));
+		}
+		protected bool IsOrgAdmin(PermItem.ResourceType resourceType, long resourceId) {
+			return (GetOrganizationId(resourceType, resourceId) == caller.Organization.Id && caller.IsManagingOrganization());
+		}
+
+
+		#region Implement for each resource type
+
+		protected List<long> GetMyMemeberUserIds(PermItem.ResourceType resourceType, long resourceId, bool meOnly = false) {
 			switch (resourceType) {
 				case PermItem.ResourceType.L10Recurrence: {
 						var isMember_idsQ = session.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
@@ -246,14 +256,8 @@ namespace RadialReview.Utilities {
 						var isMember_ids = isMember_idsQ.Select(x => x.Id).List<long>().ToList();
 						return isMember_ids;
 					}
-				case PermItem.ResourceType.CoreProcess: {
-						// unsafe Method
-						// get rgmIds
-						// get bpmn file and get list of tasks and groups
-						// get list<long> rgmIds and pass
-						//return ResponsibilitiesAccessor.GetMemberIds(session, this, ids);						                        
-						var ids = AsyncHelper.RunSync<List<long>>(() => new ProcessDefAccessor().GetCandidateGroupIds_Unsafe(session, resourceId));
-						return ids;
+				case PermItem.ResourceType.CoreProcess: {					                        
+						return AsyncHelper.RunSync<List<long>>(() => new ProcessDefAccessor().GetCandidateGroupIds_Unsafe(session, resourceId));
 					}
 				case PermItem.ResourceType.SurveyContainer: {
 						var isMember_idsQ = session.QueryOver<Survey>()
@@ -268,11 +272,34 @@ namespace RadialReview.Utilities {
 					throw new ArgumentOutOfRangeException("resourceType");
 			}
 		}
-
-		protected bool IsMember(PermItem.ResourceType resourceType, long resourceId) {
-			var isMember_ids = GetMyMemeberIds(resourceType, resourceId, true);
-			return (isMember_ids.Any(id => id == caller.Id));
+		
+		public IEnumerable<long> GetIdsForResourceThatUserIsMemberOf(PermItem.ResourceType resourceType, long userId,bool ignoreExceptions=false) {
+			try {
+				switch (resourceType) {
+					case PermItem.ResourceType.L10Recurrence:
+						return session.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
+										.Where(x => x.User.Id == userId && x.DeleteTime == null)
+										.Select(x => x.L10Recurrence.Id)
+										.Future<long>().Distinct();
+					case PermItem.ResourceType.AccountabilityHierarchy:
+						return new long[] { session.Get<UserOrganizationModel>(userId).Organization.AccountabilityChartId };
+					case PermItem.ResourceType.SurveyContainer:
+						return session.QueryOver<Survey>()
+							.Where(x => x.By.ModelType == ForModel.GetModelType<UserOrganizationModel>() && x.By.ModelId == userId && x.DeleteTime == null)
+							.Select(x => x.SurveyContainerId)
+							.Future<long>().Distinct();
+					case PermItem.ResourceType.CoreProcess:
+						throw new NotImplementedException();//Too Expensive..
+					default:
+						throw new ArgumentOutOfRangeException("resourceType");
+				}
+			} catch {
+				if (!ignoreExceptions)
+					throw;
+				return new long[] { };
+			}
 		}
+		
 		protected bool IsCreator(PermItem.ResourceType resourceType, long resourceId) {
 			switch (resourceType) {
 				case PermItem.ResourceType.L10Recurrence:
@@ -288,24 +315,29 @@ namespace RadialReview.Utilities {
 				default:
 					throw new ArgumentOutOfRangeException("resourceType");
 			}
-			// return false;
 		}
-		protected bool IsOrgAdmin(PermItem.ResourceType resourceType, long resourceId) {
-			return (GetOrganizationId(resourceType, resourceId) == caller.Organization.Id && caller.IsManagingOrganization());
-
-			//        switch (resourceType) {
-			//case PermItem.ResourceType.L10Recurrence:
-			//	if (session.Get<L10Recurrence>(resourceId).OrganizationId == caller.Organization.Id && caller.IsManagingOrganization())
-			//		return true;
-			//	break;
-			//case PermItem.ResourceType.:
-			//	if (session.Get<L10Recurrence>(resourceId).OrganizationId == caller.Organization.Id && caller.IsManagingOrganization())
-			//		return true;
-			//	break;
-			//default:
-			//                throw new ArgumentOutOfRangeException("resourceType");
-			//        }
-			//return false;
+		
+		public IEnumerable<long> GetIdsForResourcesCreatedByUser(PermItem.ResourceType resourceType, long userId) {
+			switch (resourceType) {
+				case PermItem.ResourceType.L10Recurrence:
+					return session.QueryOver<L10Recurrence>().Where(x=>x.CreatedById==userId && x.DeleteTime == null).Select(x=>x.Id).Future<long>();
+				case PermItem.ResourceType.AccountabilityHierarchy:
+					return new long[] { };
+				case PermItem.ResourceType.UpgradeUsersForOrganization:
+					return new long[] { };
+				case PermItem.ResourceType.CoreProcess:
+					return session.QueryOver<ProcessDef_Camunda>()
+						.Where(x => x.Creator.ModelType == ForModel.GetModelType<UserOrganizationModel>() && x.Creator.ModelId == userId && x.DeleteTime == null)
+						.Select(x => x.Id)
+						.Future<long>();
+				case PermItem.ResourceType.SurveyContainer:
+					return session.QueryOver<SurveyContainer>()
+						.Where(x => x.CreatedBy.ModelType == ForModel.GetModelType<UserOrganizationModel>() && x.CreatedBy.ModelId == userId && x.DeleteTime == null)
+						.Select(x => x.Id)
+						.Future<long>();
+				default:
+					throw new ArgumentOutOfRangeException("resourceType");
+			}
 		}
 
 		protected long GetOrganizationId(PermItem.ResourceType resourceType, long resourceId) {
@@ -323,29 +355,121 @@ namespace RadialReview.Utilities {
 				default:
 					throw new ArgumentOutOfRangeException("resourceType");
 			}
-		}        
+		}
+		
+		public IEnumerable<long> GetIdsForResourceForOrganization(PermItem.ResourceType resourceType, long orgId) {
+			switch (resourceType) {
+				case PermItem.ResourceType.L10Recurrence:
+					return session.QueryOver<L10Recurrence>()
+									.Where(x => x.OrganizationId == orgId && x.DeleteTime == null)
+									.Select(x => x.Id)
+									.Future<long>();
+				case PermItem.ResourceType.AccountabilityHierarchy:
+					return new long[] {
+						session.Get<OrganizationModel>(orgId).AccountabilityChartId
+					};
+				case PermItem.ResourceType.SurveyContainer:
+					return session.QueryOver<SurveyContainer>()
+						.Where(x => x.OrgId==orgId && x.DeleteTime == null)
+						.Select(x => x.Id)
+						.Future<long>();
+				case PermItem.ResourceType.CoreProcess:
+					return session.QueryOver<ProcessDef_Camunda>()
+						.Where(x => x.OrgId==orgId&& x.DeleteTime == null)
+						.Select(x => x.Id)
+						.Future<long>();
+				default:
+					throw new ArgumentOutOfRangeException("resourceType");
+			}
+		}
 
-        /*
-        protected List<PAccess> GetPAccess(PermItem.ResourceType resourceType, long resourceId)
-        {
 
-            var o = new List<PAccess>();
-
-            switch (resourceType)
-            {
-                case PermItem.ResourceType.L10:
-                    var isMember_ids = session.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x => x.L10Recurrence.Id == resourceId && x.DeleteTime == null && x.User.Id== caller.Id).Select(x => x.User.Id).List<long>().ToList();
-                    o.AddRange(isMember_ids.Select(id => new PAccess(id, PermItem.AccessType.Members)));
-                    o.Add(new PAccess(session.Get<L10Recurrence>(resourceId).CreatedById,PermItem.AccessType.Creator));
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException("resourceType");
-            }
-
-            return o;
-        }*/
+		#endregion
 
 
+		/// <summary>
+		/// Grabs perm items for explicitly specified permissions(RGM, Email) and implicit (Creator, Admin, Members)
+		/// </summary>
+		/// <param name="s"></param>
+		/// <param name="callerPerms"></param>
+		/// <param name="forUserId"></param>
+		/// <param name="resourceType"></param>
+		/// <returns></returns>
+		//DON'T DELETE, COULD BE USEFUL
+		public IEnumerable<PermItem> GetAllPermItemsForUser(PermItem.ResourceType resourceType, long forUserId) {
+			var s = session;
+			var callerPerms = this;
+			//return items for RGM and Email
+			foreach (var e in PermissionsAccessor.GetExplicitPermItemsForUser(s, callerPerms, forUserId, resourceType))
+				yield return e;
 
-    }
+			var user = s.Get<UserOrganizationModel>(forUserId);
+
+			var memberOfTheseResourceIds = callerPerms.GetIdsForResourceThatUserIsMemberOf(resourceType, forUserId, true);
+			var userCreatedTheseResourceIds = callerPerms.GetIdsForResourcesCreatedByUser(resourceType, forUserId);
+			var resourceIdsAtOrganization = callerPerms.GetIdsForResourceForOrganization(resourceType, user.Organization.Id);
+
+			var allResourceIds = new List<long>();
+			allResourceIds.AddRange(memberOfTheseResourceIds);
+			allResourceIds.AddRange(userCreatedTheseResourceIds);
+			allResourceIds.AddRange(resourceIdsAtOrganization);
+			allResourceIds = allResourceIds.Distinct().ToList();
+
+
+			var allPermItemsUnfiltered = s.QueryOver<PermItem>()
+				.Where(x => x.ResType == resourceType && x.DeleteTime == null)
+				.Where(x => x.AccessorType == PermItem.AccessType.Members || x.AccessorType == PermItem.AccessType.Admins || x.AccessorType == PermItem.AccessType.Creator)
+				.WhereRestrictionOn(x => x.ResId).IsIn(allResourceIds)
+				.List().ToList();
+
+			//==Get Members==
+			{
+				//Things I am a member of
+				//	Any member permissions?
+				if (memberOfTheseResourceIds.Any()) {
+					var permItems = allPermItemsUnfiltered
+										.Where(x => x.ResType == resourceType && x.AccessorType == PermItem.AccessType.Members && x.DeleteTime == null)
+										.Where(x => memberOfTheseResourceIds.Contains(x.ResId))
+										.ToList();
+					foreach (var p in permItems) {
+						//Add the creator perm item(s)
+						yield return p;
+					}
+				}
+			}
+			//==Get Creators==
+			{
+				//Things I created..
+				if (userCreatedTheseResourceIds.Any()) {
+					//	Any creator permissions?
+					var permItems = allPermItemsUnfiltered
+										.Where(x => x.ResType == resourceType && x.AccessorType == PermItem.AccessType.Creator && x.DeleteTime == null)
+										.Where(x => userCreatedTheseResourceIds.Contains(x.ResId))
+										.ToList();
+					foreach (var p in permItems) {
+						//Add the creator perm item(s)
+						yield return p;
+					}
+				}
+			}
+
+			//==Get Admins==
+			{
+				if (user.IsManagingOrganization()) {
+					if (resourceIdsAtOrganization.Any()) {
+						//	Any admins permissions?
+						var permItems = allPermItemsUnfiltered
+							.Where(x => x.ResType == resourceType && x.AccessorType == PermItem.AccessType.Admins && x.DeleteTime == null)
+							.Where(x => resourceIdsAtOrganization.Contains(x.ResId))
+							.ToList();
+						foreach (var p in permItems) {
+							//Add the admins perm item(s)
+							yield return p;
+						}
+					}
+				}
+			}
+			yield break;
+		}
+	}
 }

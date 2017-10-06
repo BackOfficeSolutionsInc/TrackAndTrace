@@ -136,12 +136,18 @@ namespace RadialReview.Controllers {
         #region Todos
         [HttpGet]
         [Access(AccessLevel.UserOrganization)]
-        public async Task<JsonResult> AddAngularTodo(long id)
+		[Untested("Create Todo")]
+
+		public async Task<JsonResult> AddAngularTodo(long id)
         {
             var recurrenceId = id;
-            await TodoAccessor.CreateTodo(GetUser(), recurrenceId, new TodoModel() {
-                ForRecurrenceId=id
-            });
+            //await TodoAccessor.CreateTodo(GetUser(), recurrenceId, new TodoModel() {
+            //    ForRecurrenceId=id
+            //});
+
+			var todoModel = TodoCreation.CreateL10Todo(null, null, GetUser().Id, null, recurrenceId);
+			await TodoAccessor.CreateTodo(GetUser(), todoModel);
+
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
 		[HttpPost]

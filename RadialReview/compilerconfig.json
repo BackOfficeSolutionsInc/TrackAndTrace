@@ -118,5 +118,9 @@
   {
     "outputFile": "Content/People/MaterialRadio.css",
     "inputFile": "Content/People/MaterialRadio.less"
+  },
+  {
+    "outputFile": "Content/Swagger/CustomSwaggerStyle.css",
+    "inputFile": "Content/Swagger/CustomSwaggerStyle.less"
   }
 ]

@@ -551,9 +551,11 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
-        public async Task<JsonResult> UpdateTodo(long id, string message, string details, DateTime? dueDate, long? accountableUser) {
-            await L10Accessor.UpdateTodo(GetUser(), id, message, details, dueDate, accountableUser);
-            return Json(ResultObject.SilentSuccess());
+		[Untested("TodoAccessor")]
+        public async Task<JsonResult> UpdateTodo(long id, string message, /*string details, */ DateTime? dueDate, long? accountableUser) {
+//			await L10Accessor.UpdateTodo(GetUser(), id, message, dueDate, accountableUser);
+			await TodoAccessor.UpdateTodo(GetUser(), id, message, dueDate, accountableUser);
+			return Json(ResultObject.SilentSuccess());
         }
 
         [HttpPost]
@@ -562,13 +564,13 @@ namespace RadialReview.Controllers {
             var todoId = pk.ToLong();
             switch (name) {
                 case "accountable":
-                    return await UpdateTodo(todoId, null, null, null, value.ToLong());
+                    return await UpdateTodo(todoId, null, null, value.ToLong());
                 case "title":
-                    return await UpdateTodo(todoId, value, null, null, null);
-                case "details":
-                    return await UpdateTodo(todoId, null, value, null, null);
+                    return await UpdateTodo(todoId, value, null, null);
+                //case "details":
+                //    return await UpdateTodo(todoId, null, value, null, null);
                 case "duedate":
-                    return await UpdateTodo(todoId, null, null, value.ToLong().ToDateTime(), null);
+                    return await UpdateTodo(todoId, null, value.ToLong().ToDateTime(), null);
                 default:
                     throw new ArgumentOutOfRangeException("name");
             }
@@ -591,18 +593,23 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
-        public async Task<JsonResult> UpdateTodoCompletion(long id, long todoId, bool @checked, string connectionId = null) {
+		[Untested("TodoAccessor","removed connectionId")]
+		public async Task<JsonResult> UpdateTodoCompletion(long id, long todoId, bool @checked, string connectionId = null) {
             var recurrenceId = id;
-            await L10Accessor.UpdateTodo(GetUser(), todoId, complete: @checked, connectionId: connectionId, duringMeeting: true);
-            return Json(ResultObject.SilentSuccess(@checked));
+			//await L10Accessor.UpdateTodo(GetUser(), todoId, complete: @checked, connectionId: connectionId, duringMeeting: true);
+			await TodoAccessor.CompleteTodo(GetUser(), todoId, completed: @checked);
+
+			return Json(ResultObject.SilentSuccess(@checked));
         }
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
-        public async Task<JsonResult> UpdateTodoDate(long id, long date) {
+		[Untested("TodoAccessor")]
+		public async Task<JsonResult> UpdateTodoDate(long id, long date) {
             var todo = id;
             var dateR = date.ToDateTime();
-            await L10Accessor.UpdateTodo(GetUser(), id, dueDate: dateR);
+			await UpdateTodo(id, null, dateR, null);
+            //await L10Accessor.UpdateTodo(GetUser(), id, dueDate: dateR);
             return Json(ResultObject.SilentSuccess(date.ToString()));
         }
 

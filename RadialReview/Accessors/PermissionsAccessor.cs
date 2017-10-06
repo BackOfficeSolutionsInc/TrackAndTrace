@@ -208,10 +208,10 @@ namespace RadialReview.Accessors {
             }
 
             return permList;
-        }
+        }		
 
 
-        public static PermissionDropdownVM GetPermItems(UserOrganizationModel caller, long resourceId, PermItem.ResourceType resourceType)
+		public static PermissionDropdownVM GetPermItems(UserOrganizationModel caller, long resourceId, PermItem.ResourceType resourceType)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -315,18 +315,20 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					var model = s.Get<PermItem>(id);
-					if (model == null || model.DeleteTime != null)
-						throw new PermissionsException("Permission setting does not exist.");
-					perms.CanAdmin(model.ResType, model.ResId);
-					model.DeleteTime = DateTime.UtcNow;
-					s.Update(model);
-					perms.EnsureAdminExists(model.ResType, model.ResId);
-
+					DeletePermItem(s, perms, id);
 					tx.Commit();
 					s.Flush();
 				}
 			}
+		}
+		public static void DeletePermItem(ISession s, PermissionsUtility perms, long permItemId) {
+			var model = s.Get<PermItem>(permItemId);
+			if (model == null || model.DeleteTime != null)
+				throw new PermissionsException("Permission setting does not exist.");
+			perms.CanAdmin(model.ResType, model.ResId);
+			model.DeleteTime = DateTime.UtcNow;
+			s.Update(model);
+			perms.EnsureAdminExists(model.ResType, model.ResId);
 		}
 
 		public static PermissionDropdownVM EditPermItems(UserOrganizationModel caller, PermissionDropdownVM model)

@@ -109,6 +109,12 @@ body {
 .root-node-link {
   display: none;
 }
+.acc-chart svg .top-bar {
+  color: transparent !important;
+}
+.acc-chart svg .root-node .top-bar {
+  color: white !important;
+}
 .acc-chart svg .role-row .role,
 .acc-chart svg input {
   text-overflow: ellipsis;

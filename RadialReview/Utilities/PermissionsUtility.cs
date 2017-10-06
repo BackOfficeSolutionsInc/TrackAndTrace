@@ -578,10 +578,6 @@ namespace RadialReview.Utilities {
             return this;
         }
 
-		public PermissionsUtility EditRocksForUser(long ownerId) {
-			return EditUserDetails(ownerId);
-		}
-
 		public PermissionsUtility EditUserDetails(long forUserId) {
             return TryWithOverrides(x => {
                 try {
@@ -1306,6 +1302,7 @@ namespace RadialReview.Utilities {
                 });
             });
         }
+
         public PermissionsUtility EditIssueRecurrence(long issueRecurrenceId) {
             var issueRecurrence = session.Get<IssueModel.IssueModel_Recurrence>(issueRecurrenceId);
             return EditIssue(issueRecurrence.Issue.Id);
@@ -1376,41 +1373,75 @@ namespace RadialReview.Utilities {
                     throw new PermissionsException();
                 });
             });
-
         }
-        public PermissionsUtility AssignTodoTo(long userId, long? todoId = null) {
-            if (userId <= 0)
-                throw new PermissionsException("UserId was negative");
 
-            if (IsRadialAdmin(caller))
-                return this;
-            if (userId == caller.Id)
-                return this;
-            var user = session.Get<UserOrganizationModel>(userId);
+		private IEnumerable<long> GetEditableMeetingForCaller() {
+			return GetEditableMeetingForUser(caller.Id);
+		}
+		private IEnumerable<long> GetEditableMeetingForUser(long userId) {
+			return GetAllPermItemsForUser(PermItem.ResourceType.L10Recurrence, userId).Where(x => x.CanEdit).Select(x => x.ResId);
+		}
+		private IEnumerable<long> GetAdminMeetingForCaller() {
+			return GetAdminMeetingForUser(caller.Id);
+		}
+		private IEnumerable<long> GetAdminMeetingForUser(long userId) {
+			return GetAllPermItemsForUser(PermItem.ResourceType.L10Recurrence, userId).Where(x => x.CanAdmin).Select(x => x.ResId);
+		}
+				
+		public PermissionsUtility AssignTodo(long userId,long? recurrenceId) {
+			if (userId <= 0)
+				throw new PermissionsException("Invalid UserId");
 
-            var toCheck = new List<Func<PermissionsUtility>> {
-                ()=>ManagingOrganization(user.Organization.Id),
-                ()=>ManagesUserOrganization(userId, false, PermissionType.EditEmployeeDetails),
-            };
+			if (IsRadialAdmin(caller))
+				return this;
 
-            if (todoId != null) {
-                var todo = session.Get<TodoModel>(todoId.Value);
-                if (todo.ForRecurrenceId != null && todo.ForRecurrenceId != 0) {
-                    toCheck.Insert(0, () => EditL10Recurrence(todo.ForRecurrenceId.Value));
-                }
-            }
+			if (recurrenceId == null && userId == caller.Id)
+				return this;
 
-            return ViewUserOrganization(userId, false, PermissionType.EditEmployeeDetails).Or(toCheck.ToArray());
-        }
+			ViewUserOrganization(userId, false);
+			if (recurrenceId != null) {
+				var isAttendee = session.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x=>x.L10Recurrence.Id == recurrenceId && x.DeleteTime==null && x.User.Id == userId).RowCount()>0;
+				if (isAttendee && IsPermitted((x) => x.CanEdit(PermItem.ResourceType.L10Recurrence, recurrenceId.Value))){
+					return this;
+				}
+			}
+			throw new PermissionsException("Cannot assign this user a to-do");
+		}
+
+        //public PermissionsUtility AssignTodoTo(long userId, long? todoId = null) {
+        //    if (userId <= 0)
+        //        throw new PermissionsException("UserId was negative");
+
+        //    if (IsRadialAdmin(caller))
+        //        return this;
+        //    if (userId == caller.Id)
+        //        return this;
+        //    var user = session.Get<UserOrganizationModel>(userId);
+
+        //    var toCheck = new List<Func<PermissionsUtility>> {
+        //        ()=>ManagingOrganization(user.Organization.Id),
+        //        ()=>ManagesUserOrganization(userId, false, PermissionType.EditEmployeeDetails),
+        //    };
+
+        //    if (todoId != null) {
+        //        var todo = session.Get<TodoModel>(todoId.Value);
+        //        if (todo.ForRecurrenceId != null && todo.ForRecurrenceId != 0) {
+        //            toCheck.Insert(0, () => EditL10Recurrence(todo.ForRecurrenceId.Value));
+        //        }
+        //    }
+
+        //    return ViewUserOrganization(userId, false, PermissionType.EditEmployeeDetails).Or(toCheck.ToArray());
+        //}
 
 
         public PermissionsUtility EditTodo(long todoId) {
             if (IsRadialAdmin(caller))
                 return this;
             var todo = session.Get<TodoModel>(todoId);
-            if (todo.AccountableUserId == caller.Id)
-                return this;
 
+			if (IsSelf(todo.AccountableUserId))
+				return this; 
+			           
             if (todo.ForRecurrenceId != null && todo.ForRecurrenceId != 0) {
                 try {
                     EditL10Recurrence(todo.ForRecurrenceId.Value);
@@ -1428,8 +1459,10 @@ namespace RadialReview.Utilities {
             if (IsRadialAdmin(caller))
                 return this;
             var todo = session.Get<TodoModel>(todoId);
-            if (todo.AccountableUserId == caller.Id)
+
+            if (IsSelf(todo.AccountableUserId))
                 return this;
+			
             if (todo.ForRecurrenceId != null && todo.ForRecurrenceId != 0) {
                 try {
                     ViewL10Recurrence(todo.ForRecurrenceId.Value);
@@ -1510,18 +1543,22 @@ namespace RadialReview.Utilities {
 
             return ViewL10Recurrence(note.Recurrence.Id);
         }
-        #endregion
+		#endregion
 
-        #region Headlines
+		#region Headlines
 
-        public PermissionsUtility ViewHeadline(long headlineId) {
-            var h = session.Get<PeopleHeadline>(headlineId);
-            return ViewL10Recurrence(h.RecurrenceId);
-        }
-        #endregion
+		public PermissionsUtility ViewHeadline(long headlineId) {
+			var h = session.Get<PeopleHeadline>(headlineId);
+			return ViewL10Recurrence(h.RecurrenceId);
+		}
+		public PermissionsUtility EditHeadline(long headlineId) {
+			var h = session.Get<PeopleHeadline>(headlineId);
+			return EditL10Recurrence(h.RecurrenceId);
+		}
+		#endregion
 
-        #region Rocks
-        public PermissionsUtility ViewRock(long rockId) {
+		#region Rocks
+		public PermissionsUtility ViewRock(long rockId) {
             var rock = session.Get<RockModel>(rockId);
             return ViewUserOrganization(rock.ForUserId, false);
         }
@@ -1581,11 +1618,40 @@ namespace RadialReview.Utilities {
                 return ManagesUserOrganizationOrSelf(userId);
             throw new PermissionsException();
         }
-        #endregion
+		
+		public PermissionsUtility CreateRocksForUser(long userId) {
+			if (IsRadialAdmin(caller))
+				return this;
 
-        #region NewSurvey
+			var owner = session.Get<UserOrganizationModel>(userId);
+			if (owner.Organization.Settings.EmployeesCanEditSelf && IsSelf(userId))
+				return this;
 
-        public PermissionsUtility CreateQuarterlyConversation(long orgId) {
+			try {
+				return EditUserDetails(userId);
+			} catch (Exception) {
+			}
+
+			//Get caller's Editable meetings
+			var adminRecurrenceIds = GetAdminMeetingForUser(caller.Id);
+			//Get Attendees in that meeting.
+			var inAnyAdminMeetings = session.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
+				.Where(x => x.DeleteTime == null && x.User.Id == userId)
+				.WhereRestrictionOn(x => x.L10Recurrence.Id).IsIn(adminRecurrenceIds.ToList())
+				.RowCount();
+			//is user id an attendee?
+			if (inAnyAdminMeetings > 0)
+				return this;
+
+			throw new PermissionsException("Cannot create rock",true);
+		}
+
+
+		#endregion
+
+		#region NewSurvey
+
+		public PermissionsUtility CreateQuarterlyConversation(long orgId) {
             return ManagerAtOrganization(caller.Id, orgId);
         }
         public PermissionsUtility ViewSurvey(long surveyId) {
@@ -2118,6 +2184,20 @@ namespace RadialReview.Utilities {
                 return this;
             throw new PermissionsException();
         }
+
+		protected bool IsSelf(long id_DONT_USE_CALLER_ID) {
+
+			if (id_DONT_USE_CALLER_ID == caller.Id)
+				return true;
+			if (caller.User != null && caller.User.UserOrganizationIds != null && caller.User.UserOrganizationIds.Contains(id_DONT_USE_CALLER_ID)) {
+				var found = session.Get<UserOrganizationModel>(id_DONT_USE_CALLER_ID);
+				if (found.DeleteTime != null)
+					return false;
+				return true;
+			}
+			return false;
+
+		}
 
 
         public UserOrganizationModel GetCaller() {

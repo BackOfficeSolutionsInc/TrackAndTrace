@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 
 namespace RadialReview.Models.Angular.Positions {
+
     public class AngularPosition : BaseAngular {
         public AngularPosition(){
         }

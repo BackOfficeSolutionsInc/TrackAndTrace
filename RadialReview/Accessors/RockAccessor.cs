@@ -90,7 +90,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		public static void EditMilestone(UserOrganizationModel caller, long milestoneId, string name = null, DateTime? duedate = null, bool? required = null, MilestoneStatus? status = null,string connectionId = null) {
+		public static void EditMilestone(UserOrganizationModel caller, long milestoneId, string name = null, DateTime? duedate = null, bool? required = null, MilestoneStatus? status = null, string connectionId = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					using (var rt = RealTimeUtility.Create(connectionId)) {
@@ -128,7 +128,7 @@ namespace RadialReview.Accessors {
 						var rock = s.Get<RockModel>(ms.RockId);
 
 						var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-						var group = hub.Clients.Group(MeetingHub.GenerateUserId(rock.ForUserId),connectionId);
+						var group = hub.Clients.Group(MeetingHub.GenerateUserId(rock.ForUserId), connectionId);
 						group.update(new AngularUpdate() { new AngularTodo(ms, rock.AccountableUser) });
 					}
 				}
@@ -202,7 +202,7 @@ namespace RadialReview.Accessors {
 		#endregion
 
 		#region Getters
-				
+
 		public static RockModel GetRock(UserOrganizationModel caller, long rockId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -359,11 +359,21 @@ namespace RadialReview.Accessors {
 
 		#endregion
 
-		
+		public static async Task<RockModel> CreateRock(UserOrganizationModel caller, long ownerId, string message = null, long? templateId = null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					var rock = await CreateRock(s, perms, ownerId, message, templateId);
+					tx.Commit();
+					s.Flush();
+					return rock;
+				}
+			}
+		}
 
-		public static async Task<RockModel> CreateRock(ISession s, PermissionsUtility perms, long ownerId, string message = null,long? templateId=null) {
+		public static async Task<RockModel> CreateRock(ISession s, PermissionsUtility perms, long ownerId, string message = null, long? templateId = null) {
 
-			perms.EditRocksForUser(ownerId);
+			perms.CreateRocksForUser(ownerId);
 			var owner = s.Get<UserOrganizationModel>(ownerId);
 
 
@@ -385,7 +395,20 @@ namespace RadialReview.Accessors {
 
 			return rock;
 		}
-		public static async Task UpdateRock(ISession s, PermissionsUtility perms, long rockId, string message = null, long? ownerId = null, RockState? completion=null,DateTime? dueDate=null,DateTime? now =null) {
+
+		public static async Task UpdateRock(UserOrganizationModel caller, long rockId, string message = null, long? ownerId = null, RockState? completion = null, DateTime? dueDate = null, DateTime? now = null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					await UpdateRock(s, perms,rockId,  message, ownerId,completion,dueDate,DateTime.UtcNow);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+
+		public static async Task UpdateRock(ISession s, PermissionsUtility perms, long rockId, string message = null, long? ownerId = null, RockState? completion = null, DateTime? dueDate = null, DateTime? now = null) {
 
 			SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateRockCompletion(rockId));
 
@@ -397,7 +420,7 @@ namespace RadialReview.Accessors {
 			rock.Name = message ?? rock.Name;
 			if (ownerId != null && rock.ForUserId != ownerId) {
 				rock.AccountableUser = s.Load<UserOrganizationModel>(ownerId.Value);
-				rock.ForUserId =ownerId.Value;
+				rock.ForUserId = ownerId.Value;
 			}
 
 
@@ -418,12 +441,24 @@ namespace RadialReview.Accessors {
 
 			await HooksRegistry.Each<IRockHook>((ss, x) => x.UpdateRock(ss, rock));
 		}
+		
+
+		public static async Task ArchiveRock(UserOrganizationModel caller, long rockId, DateTime? now = null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					await ArchiveRock(s, perms, rockId, now);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
 		[Untested("Vto_Rocks", "EditRock cached correctly?")]
-		public static async Task ArchiveRock(ISession s, PermissionsUtility perm, long rockId, DateTime? now=null) {
+		public static async Task ArchiveRock(ISession s, PermissionsUtility perm, long rockId, DateTime? now = null) {
 			perm.EditRock(rockId);
 			var rock = s.Get<RockModel>(rockId);
 			rock.Archived = true;
-			rock.DeleteTime = now??DateTime.UtcNow;
+			rock.DeleteTime = now ?? DateTime.UtcNow;
 			s.Update(rock);
 #pragma warning disable CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
 			if (rock.ForUserId != null) {
@@ -447,7 +482,7 @@ namespace RadialReview.Accessors {
 		}
 
 
-		[Untested("EditRocks","AttachRock","Does this correctly add to L10", "Does this correctly add to VTO", "Remove the Company Rock flag")]
+		[Untested("EditRocks", "AttachRock", "Does this correctly add to L10", "Does this correctly add to VTO", "Remove the Company Rock flag")]
 		public static async Task<List<PermissionsException>> EditRocks(UserOrganizationModel caller, long userId, List<RockModel> rocks, bool updateOutstandingReviews, bool updateAllL10s) {
 			var output = new List<PermissionsException>();
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -489,7 +524,7 @@ namespace RadialReview.Accessors {
 						var added = r.Id == 0;
 						if (added) {
 							s.Save(r);
-							await HooksRegistry.Each<IRockHook>((ses,x) => x.CreateRock(ses, r));
+							await HooksRegistry.Each<IRockHook>((ses, x) => x.CreateRock(ses, r));
 						} else {
 							if (r.DeleteTime != null && r.Archived) {
 								await ArchiveRock(s, perm, r.Id, r.DeleteTime);
@@ -529,7 +564,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-				
+
 
 		#region Deleted
 

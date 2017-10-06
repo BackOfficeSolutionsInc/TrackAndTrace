@@ -92,6 +92,7 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
+		[Untested("Todo Create")]
         public async Task<JsonResult> SubmitTodos(FormCollection model)
         {
                 var path = model["Path"].ToString();
@@ -135,16 +136,19 @@ namespace RadialReview.Controllers {
                             if (details.ContainsKey(ident))
                                 dued = due[ident];
 
-                            await TodoAccessor.CreateTodo(s, perms, recurrence, new TodoModel() {
-                                CreateTime = now,
-                                Message = todos[ident],
-                                OrganizationId = org.Id,
-                                CreatedById = caller.Id,
-                                Details = dets,
-                                DueDate = dued,
-                                AccountableUserId = owner ?? caller.Id,
-                                ForRecurrenceId=recurrence,
-                            });
+							var todoC = TodoCreation.CreateL10Todo(todos[ident], dets, owner ?? caller.Id, dued, recurrence, now: now);
+							await TodoAccessor.CreateTodo(s, perms, todoC);
+
+                            //await TodoAccessor.CreateTodo(s, perms, recurrence, new TodoModel() {
+                            //    CreateTime = now,
+                            //    Message = todos[ident],
+                            //    OrganizationId = org.Id,
+                            //    CreatedById = caller.Id,
+                            //    Details = dets,
+                            //    DueDate = dued,
+                            //    AccountableUserId = owner ?? caller.Id,
+                            //    ForRecurrenceId=recurrence,
+                            //});
 
                         }
                         var existing = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>()

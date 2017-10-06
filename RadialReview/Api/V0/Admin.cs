@@ -5,10 +5,13 @@ using System.Web;
 using System.Web.Http;
 using RadialReview.Accessors;
 using RadialReview.Exceptions;
+using System.Web.Http.Description;
 
+#region DO NOT EDIT, V0
 namespace RadialReview.Api.V0
 {
 	[RoutePrefix("api/v0")]
+	[ApiExplorerSettings(IgnoreApi = true)]
 	public class AdminController : BaseApiController
 	{
 
@@ -25,3 +28,4 @@ namespace RadialReview.Api.V0
 		}
 	}
 }
+#endregion

@@ -1,0 +1,1041 @@
+<?xml version="1.0" encoding="utf-16"?>
+<ArrayOfXmlApiResult xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <XmlApiResult Name="PositionApiTests_v1.TestUpdatePositions" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Result": {},
+  "Id": 244,
+  "Exception": null,
+  "Status": 5,
+  "IsCanceled": false,
+  "IsCompleted": true,
+  "CreationOptions": 0,
+  "AsyncState": null,
+  "IsFaulted": false
+}</ExpectedJson>
+    <GeneratedDate>2017-10-04T00:50:16.5512595Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="SearchApiTests_v0.TestSearch" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 861,
+    "Name": "interreviewing-team",
+    "Description": "Team",
+    "OrganizationId": 843,
+    "Organization": null,
+    "Email": null,
+    "ImageUrl": "https://s3.amazonaws.com/Radial/placeholder/GroupIcon.png",
+    "ResultType": 3
+  },
+  {
+    "Id": 862,
+    "Name": "non-interreviewing-team",
+    "Description": "Team",
+    "OrganizationId": 843,
+    "Organization": null,
+    "Email": null,
+    "ImageUrl": "https://s3.amazonaws.com/Radial/placeholder/GroupIcon.png",
+    "ResultType": 3
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-04T00:50:18.7313518Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="UsersApiTests_v1.TestDeleteUsers" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Status": 0,
+  "Error": false,
+  "MessageType": "Success",
+  "Heading": "Success!",
+  "Data": null,
+  "Html": null,
+  "Object": null,
+  "Message": "Successfully removed Test1.",
+  "Trace": null,
+  "TraceMessage": null,
+  "IsRowUpdate": false,
+  "Refresh": false,
+  "Redirect": null,
+  "Silent": false,
+  "NoErrorReport": false
+}</ExpectedJson>
+    <GeneratedDate>2017-10-04T00:50:31.2785872Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="SearchApiTests_v0.TestSearchUser" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 1400,
+    "Name": "manager 150707823",
+    "Description": "Traction Tools Support",
+    "OrganizationId": 1399,
+    "Organization": null,
+    "Email": "manager@test_566983187.com",
+    "ImageUrl": "/i/userplaceholder",
+    "ResultType": 1
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-04T00:50:36.3199218Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="TodoApiTests_v1.TestMarkComplete" GeneratedVersion="1.0">
+    <ExpectedJson>true</ExpectedJson>
+    <GeneratedDate>2017-10-04T10:49:06.6644367Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="TodoApiTests_v1.TestMarkComplete" GeneratedVersion="1.0">
+    <ExpectedJson>true</ExpectedJson>
+    <GeneratedDate>2017-10-05T00:32:30.9027501Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="L10ApiTests_v1.TestAttachHeadlineMeetingL10" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 1,
+  "Type": "AngularHeadline",
+  "Key": "AngularHeadline_1",
+  "Name": "Test Head Line",
+  "DetailsUrl": "https://localhost:44300/headlines/pad/1",
+  "Owner": {
+    "Id": 87,
+    "Type": "AngularUser",
+    "Key": "AngularUser_87",
+    "Name": "E1 150716918",
+    "ImageUrl": "/i/userplaceholder",
+    "CreateTime": "2017-10-05T02:06:20"
+  },
+  "CloseTime": null,
+  "CreateTime": "2017-10-05T02:06:21.3976921Z",
+  "About": {
+    "Id": -1,
+    "Type": "AngularPicture",
+    "Key": "AngularPicture_-1",
+    "ImageUrl": "https://s3.amazonaws.com/Radial/placeholder/orgPlaceholder.png",
+    "Name": null,
+    "Initials": null
+  }
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:22.2073905Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="MilestonesApiTests_v1.TestGetMilestones" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 1,
+  "Type": "AngularMilestone",
+  "Key": "AngularMilestone_1",
+  "DueDate": "2017-10-12T02:06:24",
+  "Name": "TestMilestone",
+  "Status": "NotDone",
+  "RockId": 25
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:24.6414843Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="SearchApiTests_v1.TestSearch" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 201,
+    "Name": "interreviewing-team",
+    "Description": "Team",
+    "OrganizationId": 183,
+    "Organization": null,
+    "Email": null,
+    "ImageUrl": "https://s3.amazonaws.com/Radial/placeholder/GroupIcon.png",
+    "ResultType": "Team"
+  },
+  {
+    "Id": 202,
+    "Name": "non-interreviewing-team",
+    "Description": "Team",
+    "OrganizationId": 183,
+    "Organization": null,
+    "Email": null,
+    "ImageUrl": "https://s3.amazonaws.com/Radial/placeholder/GroupIcon.png",
+    "ResultType": "Team"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:27.1666017Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="RocksApiTests_v0.TestGetRocksMilestones" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 3,
+    "Type": "AngularMilestone",
+    "Key": "AngularMilestone_3",
+    "DueDate": "2017-10-11T19:06:29",
+    "Name": "TestMilestone",
+    "Status": "NotDone",
+    "RockId": 43
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:29.210101Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="UsersApiTests_v1.TestGetSeats" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 145,
+    "Type": "AngularAccountabilityNode",
+    "Key": "AngularAccountabilityNode_145",
+    "Name": "E1 150716918",
+    "Group": null,
+    "User": {
+      "Id": 269,
+      "Type": "AngularUser",
+      "Key": "AngularUser_269",
+      "Name": "E1 150716918",
+      "ImageUrl": "/i/userplaceholder",
+      "CreateTime": "2017-10-05T02:06:29"
+    },
+    "Children": null
+  },
+  {
+    "Id": 151,
+    "Type": "AngularAccountabilityNode",
+    "Key": "AngularAccountabilityNode_151",
+    "Name": "E1 150716918",
+    "Group": null,
+    "User": {
+      "Id": 269,
+      "Type": "AngularUser",
+      "Key": "AngularUser_269",
+      "Name": "E1 150716918",
+      "ImageUrl": "/i/userplaceholder",
+      "CreateTime": "2017-10-05T02:06:29"
+    },
+    "Children": null
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:30.163834Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="IssueApiTests_v1.TestGetMineIssues" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Name": "Issue for Test Method",
+    "Id": 2,
+    "Type": "AngularIssue",
+    "Key": "AngularIssue_2",
+    "Owner": {
+      "Id": 295,
+      "Type": "AngularUser",
+      "Key": "AngularUser_295",
+      "Name": "E1 150716919",
+      "ImageUrl": "/i/userplaceholder",
+      "CreateTime": "2017-10-05T02:06:30"
+    },
+    "DetailsUrl": "https://localhost:44300/Issues/Pad/2",
+    "CompleteTime": null,
+    "Complete": false,
+    "CreateTime": "2017-10-05T02:06:31"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:31.3256175Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="IssueApiTests_v1.TestCreateIssue" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Name": "Issue for Test Method",
+  "Id": 3,
+  "Type": "AngularIssue",
+  "Key": "AngularIssue_3",
+  "Owner": {
+    "Id": 347,
+    "Type": "AngularUser",
+    "Key": "AngularUser_347",
+    "Name": "E1 150716919",
+    "ImageUrl": "/i/userplaceholder",
+    "CreateTime": "2017-10-05T02:06:32"
+  },
+  "DetailsUrl": "https://localhost:44300/Issues/Pad/3",
+  "CompleteTime": null,
+  "Complete": false,
+  "CreateTime": "2017-10-05T02:06:33"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:33.3461123Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="TeamsApiTests_v0.TestUpdateTeam" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 391,
+  "Type": "AngularTeam",
+  "Key": "AngularTeam_391",
+  "Name": "TestTeam_Update",
+  "ManagedBy": 373,
+  "TeamType": "Standard"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:34.2903415Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="L10ApiTests_v1.TestGetMeetingsL10" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 10,
+  "Type": "AngularRecurrence",
+  "Key": "AngularRecurrence_10",
+  "Basics": {
+    "Id": 10,
+    "Type": "AngularBasics",
+    "Key": "AngularBasics_10",
+    "Name": "Test L10",
+    "TeamType": 1
+  },
+  "Attendees": [],
+  "Scorecard": {
+    "Id": 10,
+    "Type": "AngularScorecard",
+    "Key": "AngularScorecard_10",
+    "Measurables": [],
+    "Scores": [],
+    "Weeks": [
+      {
+        "Id": 636345504000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636345504000000000",
+        "ForWeekNumber": 2479,
+        "ForWeek": "2017-07-02T00:00:00Z",
+        "DisplayDate": "2017-06-25T06:00:00Z",
+        "IsCurrentWeek": false
+      },
+      {
+        "Id": 636351552000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636351552000000000",
+        "ForWeekNumber": 2480,
+        "ForWeek": "2017-07-09T00:00:00Z",
+        "DisplayDate": "2017-07-02T06:00:00Z",
+        "IsCurrentWeek": false
+      },
+      {
+        "Id": 636357600000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636357600000000000",
+        "ForWeekNumber": 2481,
+        "ForWeek": "2017-07-16T00:00:00Z",
+        "DisplayDate": "2017-07-09T06:00:00Z",
+        "IsCurrentWeek": false
+      },
+      {
+        "Id": 636363648000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636363648000000000",
+        "ForWeekNumber": 2482,
+        "ForWeek": "2017-07-23T00:00:00Z",
+        "DisplayDate": "2017-07-16T06:00:00Z",
+        "IsCurrentWeek": false
+      },
+      {
+        "Id": 636369696000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636369696000000000",
+        "ForWeekNumber": 2483,
+        "ForWeek": "2017-07-30T00:00:00Z",
+        "DisplayDate": "2017-07-23T06:00:00Z",
+        "IsCurrentWeek": false
+      },
+      {
+        "Id": 636375744000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636375744000000000",
+        "ForWeekNumber": 2484,
+        "ForWeek": "2017-08-06T00:00:00Z",
+        "DisplayDate": "2017-07-30T06:00:00Z",
+        "IsCurrentWeek": false
+      },
+      {
+        "Id": 636381792000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636381792000000000",
+        "ForWeekNumber": 2485,
+        "ForWeek": "2017-08-13T00:00:00Z",
+        "DisplayDate": "2017-08-06T06:00:00Z",
+        "IsCurrentWeek": false
+      },
+      {
+        "Id": 636387840000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636387840000000000",
+        "ForWeekNumber": 2486,
+        "ForWeek": "2017-08-20T00:00:00Z",
+        "DisplayDate": "2017-08-13T06:00:00Z",
+        "IsCurrentWeek": false
+      },
+      {
+        "Id": 636393888000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636393888000000000",
+        "ForWeekNumber": 2487,
+        "ForWeek": "2017-08-27T00:00:00Z",
+        "DisplayDate": "2017-08-20T06:00:00Z",
+        "IsCurrentWeek": false
+      },
+      {
+        "Id": 636399936000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636399936000000000",
+        "ForWeekNumber": 2488,
+        "ForWeek": "2017-09-03T00:00:00Z",
+        "DisplayDate": "2017-08-27T06:00:00Z",
+        "IsCurrentWeek": false
+      },
+      {
+        "Id": 636405984000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636405984000000000",
+        "ForWeekNumber": 2489,
+        "ForWeek": "2017-09-10T00:00:00Z",
+        "DisplayDate": "2017-09-03T06:00:00Z",
+        "IsCurrentWeek": false
+      },
+      {
+        "Id": 636412032000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636412032000000000",
+        "ForWeekNumber": 2490,
+        "ForWeek": "2017-09-17T00:00:00Z",
+        "DisplayDate": "2017-09-10T06:00:00Z",
+        "IsCurrentWeek": false
+      },
+      {
+        "Id": 636418080000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636418080000000000",
+        "ForWeekNumber": 2491,
+        "ForWeek": "2017-09-24T00:00:00Z",
+        "DisplayDate": "2017-09-17T06:00:00Z",
+        "IsCurrentWeek": false
+      },
+      {
+        "Id": 636424128000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636424128000000000",
+        "ForWeekNumber": 2492,
+        "ForWeek": "2017-10-01T00:00:00Z",
+        "DisplayDate": "2017-09-24T06:00:00Z",
+        "IsCurrentWeek": false
+      },
+      {
+        "Id": 636430176000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636430176000000000",
+        "ForWeekNumber": 2493,
+        "ForWeek": "2017-10-08T00:00:00Z",
+        "DisplayDate": "2017-10-01T06:00:00Z",
+        "IsCurrentWeek": true
+      }
+    ],
+    "ReverseScorecard": false,
+    "Period": "Weekly",
+    "DateFormat1": "MMM d",
+    "DateFormat2": "MMM d"
+  },
+  "Notes": [],
+  "Rocks": [],
+  "Todos": [],
+  "Headlines": [],
+  "IssuesList": {
+    "Id": 10,
+    "Type": "AngularIssuesList",
+    "Key": "AngularIssuesList_10",
+    "Issues": [],
+    "Prioritization": 2
+  },
+  "HeadlinesUrl": "https://notes.traction.tools/p/92674079-83a3-4f3b-aaa0-2b79094a9640?showControls=true&amp;showChat=false",
+  "HeadlineType": 2,
+  "VtoId": 10,
+  "Pages": [
+    {
+      "Minutes": 5.0,
+      "Title": "Segue",
+      "Type": 1
+    },
+    {
+      "Minutes": 5.0,
+      "Title": "Scorecard",
+      "Type": 2
+    },
+    {
+      "Minutes": 5.0,
+      "Title": "Rock Review",
+      "Type": 3
+    },
+    {
+      "Minutes": 5.0,
+      "Title": "People Headlines",
+      "Type": 4
+    },
+    {
+      "Minutes": 5.0,
+      "Title": "To-do List",
+      "Type": 5
+    },
+    {
+      "Minutes": 60.0,
+      "Title": "IDS",
+      "Type": 6
+    },
+    {
+      "Minutes": 5.0,
+      "Title": "Conclude",
+      "Type": 7
+    }
+  ],
+  "MeetingType": 0
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:36.5103844Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="UsersApiTests_v1.TestGetDirectReports" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 457,
+    "Type": "AngularUser",
+    "Key": "AngularUser_457",
+    "Name": "E4 150716919",
+    "ImageUrl": "/i/userplaceholder",
+    "CreateTime": "2017-10-05T02:06:36"
+  },
+  {
+    "Id": 459,
+    "Type": "AngularUser",
+    "Key": "AngularUser_459",
+    "Name": "E5 150716919",
+    "ImageUrl": "/i/userplaceholder",
+    "CreateTime": "2017-10-05T02:06:36"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:37.5396364Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="TeamsApiTests_v0.TestGetTeams" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 497,
+  "Type": "AngularTeam",
+  "Key": "AngularTeam_497",
+  "Name": "TestTeam",
+  "ManagedBy": 479,
+  "TeamType": "Standard"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:38.5378797Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="ScorecardApiTests_v1.GetScore" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 3,
+  "Type": "AngularScore",
+  "Key": "AngularScore_3",
+  "ForWeek": 2000,
+  "Week": "2008-04-27T00:00:00Z",
+  "DateEntered": null,
+  "Measured": null,
+  "Disabled": null,
+  "Direction": "EqualTo",
+  "Target": 0.0,
+  "AltTarget": null
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:39.4891118Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="SeatsApiTests_v1.TestGetSeatUser" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 550,
+  "Type": "AngularUser",
+  "Key": "AngularUser_550",
+  "Name": "Test1 Test2",
+  "ImageUrl": "/i/userplaceholder",
+  "CreateTime": "2017-10-05T02:06:40"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:40.5273654Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="PositionApiTests_v1.TestUpdatePositionRoles" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 96,
+  "Type": "AngularRole",
+  "Key": "AngularRole_96",
+  "Name": "Test Position",
+  "CreateTime": "2017-10-05T02:06:42.5398574Z"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:42.5623629Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="SeatsApiTests_v1.TestGetSeat" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 328,
+  "Type": "AngularAccountabilityNode",
+  "Key": "AngularAccountabilityNode_328",
+  "Name": "E1 150716920",
+  "Group": {
+    "Id": 328,
+    "Type": "AngularAccountabilityGroup",
+    "Key": "AngularAccountabilityGroup_328",
+    "Position": null,
+    "Editable": null,
+    "RoleGroups": null
+  },
+  "User": {
+    "Id": 612,
+    "Type": "AngularUser",
+    "Key": "AngularUser_612",
+    "Name": "E1 150716920",
+    "ImageUrl": "/i/userplaceholder",
+    "CreateTime": "2017-10-05T02:06:42"
+  },
+  "Children": null
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:43.5491163Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="UsersApiTests_v1.TestCreateUsers" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 656,
+  "Type": "AngularUser",
+  "Key": "AngularUser_656",
+  "Name": "Test1 Test2",
+  "ImageUrl": "/i/userplaceholder",
+  "CreateTime": "2017-10-05T02:06:44.5503615Z"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:44.5773678Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="UsersApiTests_v1.TestGetSupervisors" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 658,
+    "Type": "AngularUser",
+    "Key": "AngularUser_658",
+    "Name": "manager 150716920",
+    "ImageUrl": "/i/userplaceholder",
+    "CreateTime": "2017-10-05T02:06:44"
+  },
+  {
+    "Id": 664,
+    "Type": "AngularUser",
+    "Key": "AngularUser_664",
+    "Name": "Middle 150716920",
+    "ImageUrl": "/i/userplaceholder",
+    "CreateTime": "2017-10-05T02:06:44"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:45.522599Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="UsersApiTests_v1.TestGetUserPositions" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 709,
+    "Type": "AngularPosition",
+    "Key": "AngularPosition_709",
+    "Name": "TestPosition"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:46.46833Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="TodoApiTests_v1.TestGetUserTodos" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 3,
+    "Type": "AngularTodo",
+    "Key": "AngularTodo_3",
+    "Name": "GetUserTodo from Test Method",
+    "DetailsUrl": "https://localhost:44300/Todo/Pad/3",
+    "Origin": "Individual",
+    "DueDate": "2017-10-12T02:06:47",
+    "Owner": {
+      "Id": 718,
+      "Type": "AngularUser",
+      "Key": "AngularUser_718",
+      "Name": "E1 150716920",
+      "ImageUrl": "/i/userplaceholder",
+      "CreateTime": "2017-10-05T02:06:46"
+    },
+    "CompleteTime": null,
+    "CreateTime": "2017-10-05T02:06:47",
+    "Complete": false,
+    "TodoType": "Personal",
+    "Ordering": -3
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:47.4035582Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="L10ApiTests_v1.TestGetUserIssues" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Name": "Issue for Test Method",
+    "Id": 4,
+    "Type": "AngularIssue",
+    "Key": "AngularIssue_4",
+    "Owner": {
+      "Id": 744,
+      "Type": "AngularUser",
+      "Key": "AngularUser_744",
+      "Name": "E1 150716920",
+      "ImageUrl": "/i/userplaceholder",
+      "CreateTime": "2017-10-05T02:06:47"
+    },
+    "DetailsUrl": "https://localhost:44300/Issues/Pad/4",
+    "CompleteTime": null,
+    "Complete": false,
+    "CreateTime": "2017-10-05T02:06:48"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:48.5623416Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="L10ApiTests_v1.TestGetL10Attendess" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 851,
+    "Type": "AngularUser",
+    "Key": "AngularUser_851",
+    "Name": "E1 150716921",
+    "ImageUrl": "/i/userplaceholder",
+    "CreateTime": "2017-10-05T02:06:51"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:52.5848339Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="IssueApiTests_v1.TestGetIssue" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Name": "Issue for Test Method",
+  "Id": 6,
+  "Type": "AngularIssue",
+  "Key": "AngularIssue_6",
+  "Owner": {
+    "Id": 877,
+    "Type": "AngularUser",
+    "Key": "AngularUser_877",
+    "Name": "E1 150716921",
+    "ImageUrl": "/i/userplaceholder",
+    "CreateTime": "2017-10-05T02:06:52"
+  },
+  "DetailsUrl": "https://localhost:44300/Issues/Pad/6",
+  "CompleteTime": null,
+  "Complete": false,
+  "CreateTime": "2017-10-05T02:06:53"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:06:53.6175856Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="L10ApiTests_v1.TestAttachIssueMeetingL10" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Name": "Test Name For Issue Meeting L10",
+  "Id": 8,
+  "Type": "AngularIssue",
+  "Key": "AngularIssue_8",
+  "Owner": {
+    "Id": 1061,
+    "Type": "AngularUser",
+    "Key": "AngularUser_1061",
+    "Name": "E1 150716922",
+    "ImageUrl": "/i/userplaceholder",
+    "CreateTime": "2017-10-05T02:07:00"
+  },
+  "DetailsUrl": "https://localhost:44300/Issues/Pad/8",
+  "CompleteTime": null,
+  "Complete": false,
+  "CreateTime": "2017-10-05T02:07:01.2214438Z"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:07:01.6640516Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="TeamsApiTests_v0.TestCreateTeam" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 1105,
+  "Type": "AngularTeam",
+  "Key": "AngularTeam_1105",
+  "Name": "TestTeam",
+  "ManagedBy": 1087,
+  "TeamType": "Standard"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:07:02.6788106Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="PositionApiTests_v1.TestCreatePosition" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 1212,
+  "Type": "AngularPosition",
+  "Key": "AngularPosition_1212",
+  "Name": "TestPosition"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:07:06.898345Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="L10ApiTests_v1.TestGetRecurrenceTodos" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 6,
+    "Type": "AngularTodo",
+    "Key": "AngularTodo_6",
+    "Name": "GetUserTodo from Test Method",
+    "DetailsUrl": "https://localhost:44300/Todo/Pad/6",
+    "Origin": null,
+    "DueDate": "2017-10-12T02:07:07",
+    "Owner": {
+      "Id": 1221,
+      "Type": "AngularUser",
+      "Key": "AngularUser_1221",
+      "Name": "E1 150716922",
+      "ImageUrl": "/i/userplaceholder",
+      "CreateTime": "2017-10-05T02:07:07"
+    },
+    "CompleteTime": null,
+    "CreateTime": "2017-10-05T02:07:07",
+    "Complete": false,
+    "TodoType": "L10",
+    "Ordering": -6
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:07:07.9676065Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="TeamsApiTests_v0.TestGetTeamMember" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 1273,
+    "Type": "AngularUser",
+    "Key": "AngularUser_1273",
+    "Name": "E1 150716922",
+    "ImageUrl": "/i/userplaceholder",
+    "CreateTime": "2017-10-05T02:07:09"
+  },
+  {
+    "Id": 1266,
+    "Type": "AngularUser",
+    "Key": "AngularUser_1266",
+    "Name": "manager 150716922",
+    "ImageUrl": "/i/userplaceholder",
+    "CreateTime": "2017-10-05T02:07:09"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:07:10.0571173Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="SeatsApiTests_v1.TestGetPosition" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 1344,
+  "Type": "AngularPosition",
+  "Key": "AngularPosition_1344",
+  "Name": "TestPosition"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:07:12.1921386Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="L10ApiTests_v1.TestGetList" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 20,
+    "Name": "Test L10"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:07:13.3379185Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="TodoApiTests_v1.TestGetTodo" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 7,
+  "Type": "AngularTodo",
+  "Key": "AngularTodo_7",
+  "Name": "Todo from Test Method",
+  "DetailsUrl": "https://localhost:44300/Todo/Pad/7",
+  "Origin": "Individual",
+  "DueDate": "2017-10-12T02:07:14",
+  "Owner": {
+    "Id": 1379,
+    "Type": "AngularUser",
+    "Key": "AngularUser_1379",
+    "Name": "E1 150716923",
+    "ImageUrl": "/i/userplaceholder",
+    "CreateTime": "2017-10-05T02:07:13"
+  },
+  "CompleteTime": null,
+  "CreateTime": "2017-10-05T02:07:14",
+  "Complete": false,
+  "TodoType": "Personal",
+  "Ordering": -7
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:07:14.3846748Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="SeatsApiTests_v1.TestAttachDirectReport" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 815,
+  "Type": "AngularAccountabilityNode",
+  "Key": "AngularAccountabilityNode_815",
+  "Name": "Test1 Test2",
+  "Group": {
+    "Id": 815,
+    "Type": "AngularAccountabilityGroup",
+    "Key": "AngularAccountabilityGroup_815",
+    "Position": null,
+    "Editable": null,
+    "RoleGroups": null
+  },
+  "User": {
+    "Id": 1528,
+    "Type": "AngularUser",
+    "Key": "AngularUser_1528",
+    "Name": "Test1 Test2",
+    "ImageUrl": "/i/userplaceholder",
+    "CreateTime": "2017-10-05T02:07:20"
+  },
+  "Children": null
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:07:20.8332874Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="RolesApiTests_v1.TestGetRoles" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 256,
+  "Type": "AngularRole",
+  "Key": "AngularRole_256",
+  "Name": "TestRole",
+  "CreateTime": "2017-10-05T02:07:25"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:07:25.2823851Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="PositionApiTests_v1.TestGetPositions" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 1822,
+  "Type": "AngularPosition",
+  "Key": "AngularPosition_1822",
+  "Name": "TestPosition"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:07:32.5792311Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="UsersApiTests_v1.TestGetUserRoles" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 291,
+    "Type": "AngularRole",
+    "Key": "AngularRole_291",
+    "Name": null,
+    "CreateTime": "2017-10-05T02:07:33"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:07:33.5864822Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="PositionApiTests_v1.TestGetMinePosition" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 1875,
+    "Type": "AngularPosition",
+    "Key": "AngularPosition_1875",
+    "Name": "TestPosition"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:07:34.7197588Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="UsersApiTests_v1.TestGetUser" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 1884,
+  "Type": "AngularUser",
+  "Key": "AngularUser_1884",
+  "Name": "E1 150716925",
+  "ImageUrl": "/i/userplaceholder",
+  "CreateTime": "2017-10-05T02:07:34"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:07:35.942058Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="IssueApiTests_v1.TestGetRecurrenceIssues" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Name": "Issue for Test Method",
+    "Id": 10,
+    "Type": "AngularIssue",
+    "Key": "AngularIssue_10",
+    "Owner": {
+      "Id": 1911,
+      "Type": "AngularUser",
+      "Key": "AngularUser_1911",
+      "Name": "E2 150716925",
+      "ImageUrl": "/i/userplaceholder",
+      "CreateTime": "2017-10-05T02:07:36"
+    },
+    "DetailsUrl": "https://localhost:44300/Issues/Pad/10",
+    "CompleteTime": null,
+    "Complete": false,
+    "CreateTime": "2017-10-05T02:07:37"
+  },
+  {
+    "Name": "Issue for Test Method",
+    "Id": 9,
+    "Type": "AngularIssue",
+    "Key": "AngularIssue_9",
+    "Owner": {
+      "Id": 1910,
+      "Type": "AngularUser",
+      "Key": "AngularUser_1910",
+      "Name": "E1 150716925",
+      "ImageUrl": "/i/userplaceholder",
+      "CreateTime": "2017-10-05T02:07:36"
+    },
+    "DetailsUrl": "https://localhost:44300/Issues/Pad/9",
+    "CompleteTime": null,
+    "Complete": false,
+    "CreateTime": "2017-10-05T02:07:37"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:07:37.2098668Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="SearchApiTests_v1.TestSearchUser" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 2,
+    "Name": "manager 150717175",
+    "Description": "Traction Tools Support",
+    "OrganizationId": 1,
+    "Organization": null,
+    "Email": "manager@test_213729870.com",
+    "ImageUrl": "/i/userplaceholder",
+    "ResultType": "User"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:49:20.4875616Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="SearchApiTests_v1.TestSearchUser-1" GeneratedVersion="1.0">
+    <ExpectedJson>[]</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:49:20.5815849Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="TodoApiTests_v1.TestGetMineTodos" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 1,
+    "Type": "AngularTodo",
+    "Key": "AngularTodo_1",
+    "Name": "Todo from Test Method",
+    "DetailsUrl": "https://localhost:44300/Todo/Pad/1",
+    "Origin": "Individual",
+    "DueDate": "2017-10-12T03:37:50",
+    "Owner": {
+      "Id": 9,
+      "Type": "AngularUser",
+      "Key": "AngularUser_9",
+      "Name": "E1 150717466",
+      "ImageUrl": "/i/userplaceholder",
+      "CreateTime": "2017-10-05T03:37:49"
+    },
+    "CompleteTime": null,
+    "CreateTime": "2017-10-05T03:37:50",
+    "Complete": false,
+    "TodoType": "Personal",
+    "Ordering": -1
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-05T03:37:51.2109013Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="TodoApiTests_v1.TestGetMineTodos-1" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 1,
+    "Type": "AngularTodo",
+    "Key": "AngularTodo_1",
+    "Name": "Todo from Test Method",
+    "DetailsUrl": "https://localhost:44300/Todo/Pad/1",
+    "Origin": "Individual",
+    "DueDate": "2017-10-12T03:37:50",
+    "Owner": {
+      "Id": 9,
+      "Type": "AngularUser",
+      "Key": "AngularUser_9",
+      "Name": "E1 150717466",
+      "ImageUrl": "/i/userplaceholder",
+      "CreateTime": "2017-10-05T03:37:49"
+    },
+    "CompleteTime": null,
+    "CreateTime": "2017-10-05T03:37:50",
+    "Complete": false,
+    "TodoType": "Personal",
+    "Ordering": -1
+  },
+  {
+    "Id": 2,
+    "Type": "AngularTodo",
+    "Key": "AngularTodo_2",
+    "Name": "GetMineTodo from Test Method",
+    "DetailsUrl": "https://localhost:44300/Todo/Pad/2",
+    "Origin": null,
+    "DueDate": "2017-10-12T03:37:51",
+    "Owner": {
+      "Id": 9,
+      "Type": "AngularUser",
+      "Key": "AngularUser_9",
+      "Name": "E1 150717466",
+      "ImageUrl": "/i/userplaceholder",
+      "CreateTime": "2017-10-05T03:37:49"
+    },
+    "CompleteTime": null,
+    "CreateTime": "2017-10-05T03:37:51",
+    "Complete": false,
+    "TodoType": "L10",
+    "Ordering": -2
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-05T03:37:51.462463Z</GeneratedDate>
+  </XmlApiResult>
+</ArrayOfXmlApiResult>

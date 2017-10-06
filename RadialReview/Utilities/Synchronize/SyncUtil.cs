@@ -8,14 +8,13 @@ using NHibernate;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Synchronize;
+using System.Threading;
 
-namespace RadialReview.Utilities.Synchronize
-{
+namespace RadialReview.Utilities.Synchronize {
 
-	public class SyncUtil
-	{
+	public class SyncUtil {
 		public static TimeSpan Buffer = TimeSpan.FromSeconds(40);
-		
+
 
 		/*public static void EnsureStrictlyAfterForUser(UserOrganizationModel caller,ISession s,SyncAction action)
 		{
@@ -45,45 +44,57 @@ namespace RadialReview.Utilities.Synchronize
 				throw new SyncException(clientTimestamp);
 		}*/
 
-		public static bool EnsureStrictlyAfter(UserOrganizationModel caller, ISession s, SyncAction action,bool noSyncException=false)
-		{
-			try{
+		public static String NO_SYNC_EXCEPTION = "noSyncException";
+
+		public static bool EnsureStrictlyAfter(UserOrganizationModel caller, ISession s, SyncAction action, bool noSyncException = false) {
+			try {
+				if (noSyncException == false) {
+					if (HttpContext.Current != null && HttpContext.Current.Items != null && HttpContext.Current.Items.Contains(NO_SYNC_EXCEPTION)) {
+						if ((bool)HttpContext.Current.Items[NO_SYNC_EXCEPTION])
+							noSyncException = true;
+
+					}
+				}
+			} catch (Exception e) {
+				int a = 0;
+			}
+
+			try {
 				var now = DateTime.UtcNow;
 				var after = now.Subtract(Buffer);
 				var actionStr = action.ToString();
 				var clientTimestamp = caller._ClientTimestamp;
 
-				if (clientTimestamp == null){
+				if (clientTimestamp == null) {
 					throw new SyncException(null);
 				}
 				var syncs = s.QueryOver<Sync>()
-					.Where(x => x.DeleteTime == null && x.CreateTime >= after && x.Action == actionStr && x.UserId==caller.Id)
-					.Select(x => x.Timestamp,x=>x.CreateTime)
+					.Where(x => x.DeleteTime == null && x.CreateTime >= after && x.Action == actionStr && x.UserId == caller.Id)
+					.Select(x => x.Timestamp, x => x.CreateTime)
 					.List<object[]>()
-					.Select(x=>new {ClientTimestamp = (long)x[0]- clientTimestamp, ServerTimestamp = ((DateTime)x[1]).ToJavascriptMilliseconds()})
+					.Select(x => new { ClientTimestamp = (long)x[0] - clientTimestamp, ServerTimestamp = ((DateTime)x[1]).ToJavascriptMilliseconds() })
 					.ToList();
 
-				s.Save(new Sync(){
+				s.Save(new Sync() {
 					CreateTime = now,
 					Action = actionStr,
 					Timestamp = clientTimestamp.Value,
 					UserId = caller.Id,
 				});
 
-				if (!syncs.All(x => x.ClientTimestamp < 0)){
+				if (!syncs.All(x => x.ClientTimestamp < 0)) {
 					s.Transaction.Commit();
 					s.Flush();
 					throw new SyncException(clientTimestamp);
 				}
-                return true;
-			}
-			catch (SyncException){
+				return true;
+			} catch (SyncException) {
 				if (!noSyncException)
 					throw;
-			}catch (Exception e){
-				throw new SyncException("Sync Exception: "+e.Message,null);
+			} catch (Exception e) {
+				throw new SyncException("Sync Exception: " + e.Message, null);
 			}
-            return false;
+			return false;
 		}
 
 	}

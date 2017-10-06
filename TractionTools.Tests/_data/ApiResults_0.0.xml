@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-16"?>
+<ArrayOfXmlApiResult xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <XmlApiResult Name="ScorecardApiTests_v0.GetScore" GeneratedVersion="0.0">
+    <ExpectedJson>{
+  "Id": 8,
+  "Value": null,
+  "ForWeek": 2000,
+  "Measurable": {
+    "Id": 5,
+    "Title": "Meas1",
+    "Goal": 0.0,
+    "GoalDirection": "EqualTo",
+    "UnitType": "None",
+    "AccountableUser": {
+      "Id": 1247,
+      "Name": "E1 150716922",
+      "Username": "e1@test_1426482635.com"
+    },
+    "AdminUser": {
+      "Id": 1247,
+      "Name": "E1 150716922",
+      "Username": "e1@test_1426482635.com"
+    }
+  },
+  "AccountableUser": {
+    "Id": 1247,
+    "Name": "E1 150716922",
+    "Username": "e1@test_1426482635.com"
+  },
+  "AdminUser": {
+    "Id": 1247,
+    "Name": "E1 150716922",
+    "Username": "e1@test_1426482635.com"
+  }
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:07:09.0433694Z</GeneratedDate>
+  </XmlApiResult>
+</ArrayOfXmlApiResult>

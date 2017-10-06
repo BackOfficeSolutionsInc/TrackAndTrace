@@ -2,6 +2,7 @@
 using Moq;
 using NHibernate;
 using RadialReview;
+using RadialReview.Api;
 using RadialReview.Api.V0;
 using RadialReview.Controllers;
 using RadialReview.Models;

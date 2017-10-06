@@ -755,9 +755,14 @@ body.dragging * {
 .ids .number-priority .number {
   display: none;
 }
-@media (max-width: 1271px) {
+@media (max-width: 1301px) {
   .ids .l10-page-title small {
-    font-size: 15px;
+    font-size: 14px;
+  }
+}
+@media (max-width: 1201px) {
+  .ids .l10-page-title small {
+    font-size: 13px;
   }
 }
 @media (max-width: 767px) {

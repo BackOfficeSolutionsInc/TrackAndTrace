@@ -27,6 +27,7 @@ using RadialReview.Models.Components;
 using RadialReview.Utilities;
 using RadialReview.Utilities.CoreProcess;
 using RadialReview.Utilities.Hooks;
+using RadialReview.Variables;
 using RestSharp.Serializers;
 using System;
 using System.Collections.Generic;

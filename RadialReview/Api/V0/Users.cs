@@ -20,6 +20,7 @@ using RadialReview.Models.Angular.Accountability;
 using System.Threading.Tasks;
 using RadialReview.Models.Angular.Team;
 
+#region DO NOT EDIT, V0
 namespace RadialReview.Api.V0
 {
     [RoutePrefix("api/v0")]
@@ -96,9 +97,9 @@ namespace RadialReview.Api.V0
 
         [Route("users/{userId}")]
         [HttpDelete]
-        public async Task<ResultObject> DeleteUsers(long userId)
+        public async Task DeleteUsers(long userId)
         {
-            return await new UserAccessor().RemoveUser(GetUser(), userId, DateTime.UtcNow);
+			await new UserAccessor().RemoveUser(GetUser(), userId, DateTime.UtcNow);
         }
 
         //[GET] /users/{userid}/roles/
@@ -161,3 +162,4 @@ namespace RadialReview.Api.V0
         }
     }
 }
+#endregion

@@ -1,5 +1,7 @@
-﻿using RadialReview.Accessors;
+﻿using NHibernate;
+using RadialReview.Accessors;
 using RadialReview.Models;
+using RadialReview.Models.L10;
 using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
@@ -10,6 +12,10 @@ using TractionTools.Tests.Utilities;
 
 namespace TractionTools.Tests.Permissions {
 	public class BasePermissionsTest : BaseTest {
+
+
+
+
 		public class Ctx {
 			public FullOrg Org { get; set; }
 			public Org OtherOrg { get; set; }
@@ -32,6 +38,43 @@ namespace TractionTools.Tests.Permissions {
 			public List<UserOrganizationModel> AllUsers { get { return Org.AllUsers; } }
 			public List<UserOrganizationModel> AllAdmins { get { return Org.AllAdmins; } }
 
+
+			public async Task<L10> CreateL10(UserOrganizationModel caller, ISession s, params UserOrganizationModel[] attendees) {
+				return await CreateL10(caller,s, "Meeting", attendees);
+			}
+
+			public async Task<L10> CreateL10(UserOrganizationModel caller, ISession s, string name, params UserOrganizationModel[] attendees) {
+				var perms = PermissionsUtility.Create(s, caller);
+				var orgId = caller.Organization.Id;
+				var l10 = await L10Accessor.CreateBlankRecurrence(s,perms,orgId);
+
+				foreach (var a in attendees ?? new UserOrganizationModel[0]) {
+					await L10Accessor.AddAttendee(s, perms, null, l10.Id, a.Id);
+				}
+				return new L10 {
+					Creator = caller,
+					Employee = null,
+					Org = caller.Organization,
+					Recur = l10
+				};
+			}
+
+			public async Task<L10> CreateL10(UserOrganizationModel caller, params UserOrganizationModel[] attendees) {
+				return await CreateL10(caller, "Meeting", attendees);
+			}
+			public async Task<L10> CreateL10(UserOrganizationModel caller, string name, params UserOrganizationModel[] attendees) {
+				var l10 = await L10Accessor.CreateBlankRecurrence(caller, caller.Organization.Id);
+
+				foreach (var a in attendees ?? new UserOrganizationModel[0]) {
+					await L10Accessor.AddAttendee(caller, l10.Id, a.Id);
+				}
+				return new L10 {
+					Creator = caller,
+					Employee = null,
+					Org = caller.Organization,
+					Recur = l10
+				};
+			}
 
 			public PermissionsAccessor Perms { get; set; }
 			private Ctx() { }

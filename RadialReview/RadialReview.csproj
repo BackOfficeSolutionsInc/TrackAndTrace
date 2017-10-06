@@ -113,33 +113,36 @@
     <Compile Include="Accessors\TinyUserAccessor.cs" />
     <Compile Include="Accessors\VideoConferenceProviders\VideoProviderAccessor.cs" />
     <Compile Include="Accessors\WebhooksAccessor.cs" />
-    <Compile Include="Api\V0\Headlines.cs" />
-    <Compile Include="Api\V0\Issue.cs" />
-    <Compile Include="Api\V0\L10.cs" />
-    <Compile Include="Api\V0\Milestones.cs" />
-    <Compile Include="Api\V0\Positions.cs" />
-    <Compile Include="Api\V0\Rocks.cs" />
-    <Compile Include="Api\V0\Roles.cs" />
-    <Compile Include="Api\V0\Search.cs" />
-    <Compile Include="Api\V0\Seats.cs" />
-    <Compile Include="Api\V0\Teams.cs" />
-    <Compile Include="Api\V0\Todo.cs" />
+    <Compile Include="Api\V1\Headlines.cs" />
+    <Compile Include="Api\V1\Issue.cs" />
+    <Compile Include="Api\V1\L10.cs" />
+    <Compile Include="Api\V1\Rocks.cs" />
+    <Compile Include="Api\V1\Scorecard.cs" />
+    <Compile Include="Api\V1\Search.cs" />
+    <Compile Include="Api\V1\AccountabilityChart.cs" />
+    <Compile Include="Api\V1\Teams.cs" />
+    <Compile Include="Api\V1\Todo.cs" />
     <Compile Include="App_Start\DateTimeModelBinder.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
+    <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="Areas\CoreProcess\Accessors\TaskAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Accessors\ProcessDefAccessor.cs" />
     <Compile Include="Areas\CoreProcess\CamundaComm\CommFactory.cs" />
     <Compile Include="Areas\CoreProcess\CamundaComm\CommClass.cs" />
     <Compile Include="Areas\CoreProcess\CamundaComm\ICommClass.cs" />
-    <Compile Include="Areas\CoreProcess\Controllers\Api_V0\ProcessDef.cs" />
+    <Compile Include="Api\V1\CoreProcess.cs" />
     <Compile Include="Areas\CoreProcess\Controllers\HomeController.cs" />
     <Compile Include="Areas\CoreProcess\Controllers\ProcessController.cs" />
     <Compile Include="Areas\CoreProcess\CoreProcessAreaRegistration.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\ITaskAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
+    <Compile Include="Hooks\Meeting\AuditLogHooks.cs" />
+    <Compile Include="Hooks\Meeting\DepristineHooks.cs" />
     <Compile Include="Hooks\Realtime\RealTimeHelpers.cs" />
     <Compile Include="Hooks\Realtime\RealTime_Dashboard_UpdateL10Rocks.cs" />
+    <Compile Include="Hooks\Realtime\RealTime_Dashboard_Todo.cs" />
+    <Compile Include="Hooks\Realtime\RealTime_L10_Todo.cs" />
     <Compile Include="Hooks\Realtime\RealTime_L10_UpdateRocks.cs" />
     <Compile Include="Hooks\Realtime\RealTime_VTO_UpdateRocks.cs" />
     <Compile Include="Hooks\Realtime\RealTime_Tasks.cs" />
@@ -149,6 +152,7 @@
     <Compile Include="Models\Angular\CoreProcess\AngularCoreProcess.cs" />
     <Compile Include="Models\Application\Variable.cs" />
     <Compile Include="Models\ClientSuccess\TooltipModels.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="Utilities\Attributes\Untested.cs" />
     <Compile Include="Utilities\CoreProcess\AmazonSQSUtility.cs" />
     <Compile Include="Utilities\AsyncUtility.cs" />
@@ -352,7 +356,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Api\V0\Scorecard.cs" />
-    <Compile Include="Api\V0\BaseApiController.cs" />
+    <Compile Include="Api\BaseApiController.cs" />
     <Compile Include="Controllers\ArchiveController.cs" />
     <Compile Include="Controllers\CustomizeController.cs" />
     <Compile Include="Controllers\HealthCheckController.cs" />
@@ -1009,6 +1013,10 @@
     <Content Include="Content\SnackbarAlerts.css">
       <DependentUpon>SnackbarAlerts.less</DependentUpon>
     </Content>
+    <EmbeddedResource Include="Content\Swagger\CustomSwaggerStyle.css">
+      <DependentUpon>CustomSwaggerStyle.less</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="Content\test.html" />
     <Content Include="Content\img\graystripe-light.png" />
     <Content Include="Content\L10\Archive\Archive.css">
@@ -1173,6 +1181,7 @@
     <Content Include="Content\People\rzslider.less" />
     <Content Include="Content\People\MaterialRadio.less" />
     <Content Include="project.json" />
+    <Content Include="Content\Swagger\CustomSwaggerStyle.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1269,6 +1278,9 @@
     <Content Include="Scripts\People\DiagonalTable.js" />
     <Content Include="Scripts\People\rzslider.js" />
     <Content Include="Scripts\speechrecog.js" />
+    <EmbeddedResource Include="Scripts\Swagger\CustomSwaggerScripts.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="Scripts\Tour\startL10.js" />
     <Content Include="Scripts\Tour\createL10.js" />
     <Content Include="Scripts\Tour\lib\anno.js" />
@@ -2521,6 +2533,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\XmlComments.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\</OutputPath>

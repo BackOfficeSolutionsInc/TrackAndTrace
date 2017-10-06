@@ -45,7 +45,7 @@ namespace TractionTools.Tests.Utilities {
 					//};
 					//var addRock = AddRockVm.CreateRock(Id,,name);
 					var rock = await RockAccessor.CreateRock(s, perms, (owner ?? Employee).Id, name);
-					await L10Accessor.AttachRock(s, perms, Id, rock.Id,false);
+					await L10Accessor.AttachRock(s, perms, Id, rock.Id, false);
 					tx.Commit();
 					s.Flush();
 					return rock;
@@ -79,12 +79,14 @@ namespace TractionTools.Tests.Utilities {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, Creator);
 					var todo = new TodoModel() {
-						AccountableUser = owner??Employee,
+						AccountableUser = owner ?? Employee,
 						Message = name,
 						OrganizationId = Org.Id,
-						ForRecurrenceId=Id
+						ForRecurrenceId = Id
 					};
-					await TodoAccessor.CreateTodo(s, perms, Id, todo);
+					var todoC = TodoCreation.CreateL10Todo(name, null, (owner ?? Employee).Id, null, Id);
+
+					await TodoAccessor.CreateTodo(s, perms, todoC);
 					tx.Commit();
 					s.Flush();
 					return todo;
@@ -99,7 +101,7 @@ namespace TractionTools.Tests.Utilities {
 						Message = name,
 						OrganizationId = Org.Id,
 					};
-					await IssuesAccessor.CreateIssue(s, perms, Id,(owner??Employee).Id,issue);
+					await IssuesAccessor.CreateIssue(s, perms, Id, (owner ?? Employee).Id, issue);
 					tx.Commit();
 					s.Flush();
 					return issue;
@@ -110,28 +112,65 @@ namespace TractionTools.Tests.Utilities {
 		public async Task AddAttendee(UserOrganizationModel employee) {
 			await L10Accessor.AddAttendee(Creator, Id, employee.Id);
 		}
+		public async Task AddAttendee(ISession s, UserOrganizationModel employee) {
+			await L10Accessor.AddAttendee(s, PermissionsUtility.Create(s, Creator), null, Id, employee.Id);
+		}
 
-		public async Task<PeopleHeadline> AddHeadline(string name="headline", UserOrganizationModel owner = null, UserOrganizationModel about = null) {
+		public async Task<PeopleHeadline> AddHeadline(string name = "headline", UserOrganizationModel owner = null, UserOrganizationModel about = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, Creator);
 					//(s, perms, null, Id,);
 					var headline = new PeopleHeadline() {
 						Message = name,
-						OwnerId = (owner??Employee).Id,
+						OwnerId = (owner ?? Employee).Id,
 						Owner = (owner ?? Employee),
-						AboutId = (about??Employee).Id,
-						About = (about??Employee),
-						AboutName = (about??Employee).GetName(),
+						AboutId = (about ?? Employee).Id,
+						About = (about ?? Employee),
+						AboutName = (about ?? Employee).GetName(),
 						RecurrenceId = Id,
-						OrganizationId = Org.Id,						
+						OrganizationId = Org.Id,
 					};
-					await HeadlineAccessor.CreateHeadline(s, perms,headline);
+					await HeadlineAccessor.CreateHeadline(s, perms, headline);
 
 					tx.Commit();
 					s.Flush();
 					return headline;
 				}
+			}
+		}
+
+		public void AddAdmin(UserOrganizationModel user) {
+			PermissionsAccessor.CreatePermItems(Creator, PermItem.ResourceType.L10Recurrence, Recur.Id, PermTiny.RGM(user.Id, false, false, true));
+		}
+
+
+		public void RemovePermissions(PermItem.AccessType type) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					RemovePermissions(s, type);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+		public void RemovePermissions(ISession s, PermItem.AccessType type) {
+			var itemIds = new List<long>();
+
+			itemIds = s.QueryOver<PermItem>()
+				.Where(x =>
+						x.DeleteTime == null &&
+						x.AccessorType == type &&
+						x.ResId == Recur.Id &&
+						x.ResType == PermItem.ResourceType.L10Recurrence
+				).Select(x => x.Id)
+				.List<long>().ToList();
+
+			if (itemIds.Any())
+				Console.WriteLine("WARN: No perm items to delete");
+			foreach (var i in itemIds) {
+				PermissionsAccessor.DeletePermItem(s, PermissionsUtility.Create(s, Creator), i);
 			}
 		}
 	}

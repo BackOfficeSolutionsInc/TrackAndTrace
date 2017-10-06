@@ -8,6 +8,8 @@ using RadialReview.Models.Angular.Users;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Scorecard;
 using RadialReview.Models.L10;
+using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace RadialReview.Models.Angular.Scorecard
 {
@@ -66,6 +68,14 @@ namespace RadialReview.Models.Angular.Scorecard
 		public AngularMeasurable(){
 			
 		}
+		[JsonProperty(Order = -10)]
+		public string Name { get; set; }
+
+		public AngularUser Owner { get; set; }
+		public AngularUser Admin { get; set; }
+        public decimal? Target { get; set; }
+        public decimal? AltTarget { get; set; }
+        public LessGreater? Direction { get; set; }
 
 		public bool IsDivider { get; set; }
 
@@ -73,19 +83,17 @@ namespace RadialReview.Models.Angular.Scorecard
 		public decimal? Cumulative { get; set; }
 		public DateTime? CumulativeRange { get; set; }
 
-		public AngularUser Owner { get; set; }
-		public AngularUser Admin { get; set; }
-		public string Name { get; set; }
-        public decimal? Target { get; set; }
-        public decimal? AltTarget { get; set; }
-        public LessGreater? Direction { get; set; }
 		
 		public UnitType? Modifiers { get; set; }
 
 		public int? Ordering { get; set; }
         public bool? Disabled { get; set; }
-        public long? RecurrenceId { get; set; }
-        public long? RecurrenceMeasurableId { get; set; }
-        public AngularMeasurableGroup Grouping { get; set; }
+		
+		[IgnoreDataMember]
+		public long? RecurrenceId { get; set; }
+		[IgnoreDataMember]
+		public long? RecurrenceMeasurableId { get; set; }
+		[IgnoreDataMember]
+		public AngularMeasurableGroup Grouping { get; set; }
 	}
 }

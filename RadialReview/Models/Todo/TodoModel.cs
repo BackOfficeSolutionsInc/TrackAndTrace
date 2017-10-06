@@ -8,12 +8,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using RadialReview.Models.L10;
+using System.Runtime.Serialization;
 
 namespace RadialReview.Models.Todo
 {
     public enum TodoType {
-        Recurrence = 0,
+		[EnumMember(Value = "L10")]
+		Recurrence = 0,
+		[EnumMember(Value = "Personal")]
 		Personal = 1,
+		[EnumMember(Value = "Milestone")]
 		Milestone = 2,
 	}
 

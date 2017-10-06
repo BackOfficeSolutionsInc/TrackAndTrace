@@ -22,98 +22,60 @@ namespace RadialReview.Hooks {
 		public bool CanRunRemotely() {
 			return false;
 		}
-
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 		public async Task CreateTodo(ISession s, TodoModel todo) {
-			try {
-				var L10Id = todo.ForRecurrenceId;
-				var orgId = todo.OrganizationId;
-				var userId = todo.AccountableUserId;
 
-				// setup events
-				string _event = WebhookEventType.AddTODOtoL10.GetDescription() + L10Id;
-				string _event1 = WebhookEventType.AddTODOtoOrganization.GetDescription() + orgId;
-				string _event2 = WebhookEventType.AddTODOforUser.GetDescription() + userId;
+			var recurrenceId = todo.ForRecurrenceId;
+			var orgId = todo.OrganizationId;
+			var userId = todo.AccountableUserId;
 
-				IWebHookManager manager = DependencyResolver.Current.GetManager();
+			// setup events
+			var events = new List<string>();
+			events.Add(WebhookEventType.AddTODOtoL10.GetDescription() + recurrenceId);
+			events.Add(WebhookEventType.AddTODOtoOrganization.GetDescription() + orgId);
+			events.Add(WebhookEventType.AddTODOforUser.GetDescription() + userId);
 
-				var notifications = new List<NotificationDictionary> { new NotificationDictionary(_event, new AngularTodo(todo)) };
-				await manager.NotifyAllAsync(notifications, TodoPermissions(s, todo));
+			await RunEvents(s, todo, events);
+		}
 
-				notifications = new List<NotificationDictionary> { new NotificationDictionary(_event1, new AngularTodo(todo)) };
-				await manager.NotifyAllAsync(notifications, TodoPermissions(s, todo));
+		public async Task UpdateTodo(ISession s, TodoModel todo, ITodoHookUpdates updates) {
 
-				notifications = new List<NotificationDictionary> { new NotificationDictionary(_event2, new AngularTodo(todo)) };
-				await manager.NotifyAllAsync(notifications, TodoPermissions(s, todo));
+			var recurrenceId = todo.ForRecurrenceId;
+			var orgId = todo.OrganizationId;
+			var userId = todo.AccountableUserId;
 
-			} catch (Exception ) {
-				throw;
+			var events = new List<string>();
+
+			//Message
+			if (updates.MessageChanged) {
+				events.Add(WebhookEventType.ChangingToDotoL10.GetDescription() + recurrenceId);
+				events.Add(WebhookEventType.ChangingTODOtoOrganization.GetDescription() + orgId);
+				events.Add(WebhookEventType.ChangingToDoforUser.GetDescription() + userId);
 			}
+			//Completion
+			if (updates.CompletionChanged) {
+				events.Add(WebhookEventType.Checking_Unchecking_Closing_TODOtoL10.GetDescription() + recurrenceId);
+				events.Add(WebhookEventType.Checking_Unchecking_Closing_TODOtoOrganization.GetDescription() + orgId);
+				events.Add(WebhookEventType.Checking_Unchecking_Closing_TODOforUser.GetDescription() + userId);
+			}
+			//TODO add update due date.
+			await RunEvents(s, todo, events);
 		}
 
 		private static Func<WebHook, string, bool> TodoPermissions(ISession s, TodoModel todo) {
-            //return null;
 			return WebhooksAccessor.PermissionsPredicate(s, x => x.ViewTodo(todo.Id));
 		}
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-		public async Task UpdateMessage(ISession s, TodoModel todo)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-		{
-			try {
-				var L10Id = todo.ForRecurrenceId;
-				var orgId = todo.OrganizationId;
-				var userId = todo.AccountableUserId;
-
-				// setup events
-				string _event = WebhookEventType.ChangingToDotoL10.GetDescription() + L10Id;
-				string _event1 = WebhookEventType.ChangingTODOtoOrganization.GetDescription() + orgId;
-				string _event2 = WebhookEventType.ChangingToDoforUser.GetDescription() + userId;
-
+		private static async Task RunEvents(ISession s, TodoModel todo, List<string> events) {
+			if (events.Any()) {
 				IWebHookManager manager = DependencyResolver.Current.GetManager();
-
-				var notifications = new List<NotificationDictionary> { new NotificationDictionary(_event, new AngularTodo(todo)) };
-				await manager.NotifyAllAsync(notifications, TodoPermissions(s, todo));
-
-				notifications = new List<NotificationDictionary> { new NotificationDictionary(_event1, new AngularTodo(todo)) };
-				await manager.NotifyAllAsync(notifications, TodoPermissions(s, todo));
-
-				notifications = new List<NotificationDictionary> { new NotificationDictionary(_event2, new AngularTodo(todo)) };
-				await manager.NotifyAllAsync(notifications, TodoPermissions(s, todo));
-
-			} catch (Exception ) {
-				throw;
+				var tasks = new List<Task<int>>();
+				foreach (var _event in events) {
+					var notifications = new List<NotificationDictionary> { new NotificationDictionary(_event, new AngularTodo(todo)) };
+					tasks.Add(manager.NotifyAllAsync(notifications, TodoPermissions(s, todo)));
+				}
+				await Task.WhenAll(tasks);
 			}
 		}
-
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-		public async Task UpdateCompletion(ISession s, TodoModel todo)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-		{
-			try {
-				var L10Id = todo.ForRecurrenceId;
-				var orgId = todo.OrganizationId;
-				var userId = todo.AccountableUserId;
-
-				// setup events
-				string _event = WebhookEventType.Checking_Unchecking_Closing_TODOtoL10.GetDescription() + L10Id;
-				string _event1 = WebhookEventType.Checking_Unchecking_Closing_TODOtoOrganization.GetDescription() + orgId;
-				string _event2 = WebhookEventType.Checking_Unchecking_Closing_TODOforUser.GetDescription() + userId;
-
-				IWebHookManager manager = DependencyResolver.Current.GetManager();
-
-				var notifications = new List<NotificationDictionary> { new NotificationDictionary(_event, new AngularTodo(todo)) };
-				await manager.NotifyAllAsync(notifications, TodoPermissions(s, todo));
-
-				notifications = new List<NotificationDictionary> { new NotificationDictionary(_event1, new AngularTodo(todo)) };
-				await manager.NotifyAllAsync(notifications, TodoPermissions(s, todo));
-
-				notifications = new List<NotificationDictionary> { new NotificationDictionary(_event2, new AngularTodo(todo)) };
-				await manager.NotifyAllAsync(notifications, TodoPermissions(s, todo));
-
-			} catch (Exception ) {
-				throw;
-			}
-		}		
 	}
 }

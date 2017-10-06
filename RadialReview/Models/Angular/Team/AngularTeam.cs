@@ -4,6 +4,8 @@ using RadialReview.Models.Askables;
 using RadialReview.Models.Angular.Base;
 using RadialReview.Models.Enums;
 using RadialReview.Models.L10;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json;
 
 namespace RadialReview.Models.Angular.Team
 {
@@ -19,6 +21,7 @@ namespace RadialReview.Models.Angular.Team
         }
         public string Name { get; set; }
         public long? ManagedBy { get; set; }
-        public TeamType? TeamType { get; set; }
+		[JsonConverter(typeof(StringEnumConverter))]
+		public TeamType? TeamType { get; set; }
     }
 }

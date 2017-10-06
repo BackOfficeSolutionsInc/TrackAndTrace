@@ -411,88 +411,19 @@ namespace TractionTools.Tests.TestUtils {
             return temp;
         }
 
-        [TestInitialize]
-        public void BaseTestInitialize() {
-            HooksRegistry.Deregister();
+		[TestInitialize]
+		public void BaseTestInitialize() {
+			HooksRegistry.Deregister();
 
-        }
-        #endregion
+		}
+		#endregion
 
-        public void CompareModelProperties(string resourceVal, object actualObj) {
-            string actualVal = Newtonsoft.Json.JsonConvert.SerializeObject(actualObj);
-            
-            if (String.IsNullOrEmpty(resourceVal)) {
-                Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(actualObj,Newtonsoft.Json.Formatting.Indented));
-                Assert.Inconclusive();
-            }
+		[Obsolete("dont use",true)]
+		public void CompareModelProperties(string expected, object actual) {
+			throw new Exception("Use BaseApiTest's CompareModelProperties.");
+		}
 
-            try {
 
-                var resurceDic = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(resourceVal);
-                var actualDic = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(actualVal);
-                CompareModelProperties(resurceDic, actualDic,new List<string>() { "Object" });
-
-            } catch (Newtonsoft.Json.JsonSerializationException ex) {
-                var resurceDic = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(resourceVal);
-                var actualDic = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(actualVal);
-
-                Assert.AreEqual(resurceDic.Count, actualDic.Count);
-
-                for (int i = 0; i < resurceDic.Count; i++) {
-                    CompareModelProperties(resurceDic[i], actualDic[i], new List<string>() { "Array" });
-                }
-            }
-        }
-
-        private static void CompareModelProperties(Dictionary<string, object> resurceDic, Dictionary<string, object> actualDic,List<string> path) {
-            var result = SetUtility.AddRemove(resurceDic.Keys, actualDic.Keys);
-            if (!result.AreSame()) {
-                result.PrintDifference();
-            }
-            if (result.RemovedValues.Any()) {
-                Console.WriteLine();
-                Console.WriteLine("At: " + string.Join(" + ", path));
-                Assert.Fail("Value was removed to model.");
-            }
-
-            if (result.AddedValues.Any()) {
-                Console.WriteLine();
-                Console.WriteLine("At: "+string.Join(" + ", path));
-                Assert.Inconclusive("Value was added to model.");
-            }
-
-            Assert.IsTrue(result.AreSame());
-
-            foreach (var item in resurceDic) {
-                if (item.Value is JObject) {
-                    var newVal = ((JObject)item.Value).ToObject<Dictionary<string, object>>();
-                    var actVal = ((JObject)actualDic[item.Key]).ToObject<Dictionary<string, object>>();
-
-                    var newPath = path.ToList();
-                    newPath.Add(item.Key);
-
-                    CompareModelProperties(newVal, actVal, newPath);
-
-                } else if (item.Value is JArray) { // check is json array
-                    var newVal = ((JArray)item.Value).ToObject<List<Dictionary<string, object>>>();
-                    var actVal = ((JArray)actualDic[item.Key]).ToObject<List<Dictionary<string, object>>>();
-
-                    var newPath = path.ToList();
-                    newPath.Add(item.Key);
-
-                    Assert.AreEqual(newVal.Count, actVal.Count);
-
-                    for (int i = 0; i < newVal.Count; i++) {
-                        CompareModelProperties(newVal[i], actVal[i], newPath);
-                    }
-                } else if (item.Value is string || item.Value == null || (item.Value.GetType() == typeof(DateTime)) || item.Value is long || item.Value is bool || (item.Value.GetType() == typeof(double))) {
-                    // we did this intentionally
-                    // not required for test this case
-                } else {
-                    throw new NotImplementedException();
-                }
-            }
-        }
 
     }
     public static class TestObjectExtensions {

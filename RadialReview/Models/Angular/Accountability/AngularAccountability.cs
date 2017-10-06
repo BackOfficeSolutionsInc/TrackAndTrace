@@ -7,6 +7,7 @@ using RadialReview.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Web;
 
 namespace RadialReview.Models.Angular.Accountability {
@@ -42,7 +43,7 @@ namespace RadialReview.Models.Angular.Accountability {
 			}
 		}
 	}
-
+	[SwaggerName(Name = "Seat")]
     public class AngularAccountabilityNode : AngularTreeNode<AngularAccountabilityNode> {
         public AngularAccountabilityNode(){
         }
@@ -73,14 +74,12 @@ namespace RadialReview.Models.Angular.Accountability {
 
 		}
 
-		public bool HasChildren() {
-			return __children != null && __children.Any();
-		}
+		
+		public string Name { get; set; }
+        public AngularAccountabilityGroup Group { get; set; }  
+
 
 		private AngularUser _User;
-
-		public bool? _hasParent;
-
 		public AngularUser User
 		{
 			get {
@@ -91,9 +90,14 @@ namespace RadialReview.Models.Angular.Accountability {
 			set { _User = value; }
 		}
 
-		public string Name { get; set; }
-				
-        public AngularAccountabilityGroup Group { get; set; }  
+
+
+		public bool HasChildren() {
+			return __children != null && __children.Any();
+		}						
+
+		[IgnoreDataMember]
+		public bool? _hasParent;
 
     }
     public class AngularAccountabilityGroup : BaseAngular {

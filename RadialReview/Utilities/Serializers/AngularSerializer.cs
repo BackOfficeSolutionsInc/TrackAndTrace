@@ -28,7 +28,10 @@ namespace RadialReview.Utilities.Serializers {
 	public class AngularSerialization : JsonConverter {
 		//public JsonConverter Backing { get; set; }
 
-		public AngularSerialization() {
+		public bool RemoveExtraProperties { get; set; }
+
+		public AngularSerialization(bool removeExtraProperties =false) {
+			RemoveExtraProperties = removeExtraProperties;
 		}
 
 		//public override 

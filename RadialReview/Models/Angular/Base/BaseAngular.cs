@@ -4,20 +4,28 @@ using System.Runtime.Remoting.Messaging;
 using System.Runtime.Remoting.Proxies;
 using Amazon.SimpleDB.Model;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace RadialReview.Models.Angular.Base {
+	[Serializable]
 	public class BaseStringAngular : IAngularItemString {
+		[JsonProperty(Order = -100)]
 		public string Id { get; set; }
+		[JsonProperty(Order = -100)]
 		public string Type {
 			get { return GetType().Name; }
 		}
+		[JsonProperty(Order = 100)]
+		public string Key { get { return this.GetKey(); } }
 		public BaseStringAngular() { }
 		public BaseStringAngular(string id) {
 			Id = id;
 		}
-		public string Key { get { return this.GetKey(); } }
-		public bool CreateOnly { get; set; }
+		//public bool CreateOnly { get; set; }
+		[IgnoreDataMember]
 		public bool Hide { get; set; }
+		[IgnoreDataMember]
 		public Dictionary<string, object> _ExtraProperties { get; set; }
 
 		public object GetAngularId() {
@@ -29,22 +37,27 @@ namespace RadialReview.Models.Angular.Base {
 		}
 	}
 
-
+	[Serializable]
 	public class BaseAngular : IAngularItem {
+		[JsonProperty(Order = -2)]
 		public long Id { get; set; }
+		[JsonProperty(Order = -2)]
 		public string Type {
 			get { return GetType().Name; }
 		}
+		[JsonProperty(Order = -2)]
+		public string Key { get { return this.GetKey(); } }
 
 		public BaseAngular() {}
 		public BaseAngular(long id) {
 			Id = id;
 			
 		}
-		
-		public string Key { get { return this.GetKey(); } }
-		public bool CreateOnly { get; set; }
+
+		//public bool CreateOnly { get; set; }
+		[IgnoreDataMember]
 		public bool Hide { get; set; }
+		[IgnoreDataMember]
 		public Dictionary<string, object> _ExtraProperties { get; set; }
 
 		public object GetAngularId() {

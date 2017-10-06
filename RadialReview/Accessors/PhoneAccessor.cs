@@ -55,7 +55,7 @@ namespace RadialReview.Accessors {
 			}
 
 		}
-
+		[Untested("Receive Text","L10 text","PersonalText")]
 		public static async Task<string> ReceiveText(long fromNumber, string body, long systemNumber) {
 			var rnd = new Random();
 			PhoneActionMap found;
@@ -118,29 +118,36 @@ namespace RadialReview.Accessors {
 			switch (found.Action) {
 				case TODO:
 
-					var todoModel = new TodoModel() {
-						AccountableUser = found.Caller,
-						AccountableUserId = found.Caller.Id,
-						CreatedBy = found.Caller,
-						CreatedById = found.Caller.Id,
-						Message = body,
-						CreateTime = now,
-						Organization = found.Caller.Organization,
-						OrganizationId = found.Caller.Organization.Id,
-						DueDate = now.AddDays(7),
-						ForRecurrenceId = found.ForId,
-						Details = "-sent from phone",
-						ForModel = "TodoModel",
-						ForModelId = -2,
-					};
+					//var todoModel = new TodoModel() {
+					//	AccountableUser = found.Caller,
+					//	AccountableUserId = found.Caller.Id,
+					//	CreatedBy = found.Caller,
+					//	CreatedById = found.Caller.Id,
+					//	Message = body,
+					//	CreateTime = now,
+					//	Organization = found.Caller.Organization,
+					//	OrganizationId = found.Caller.Organization.Id,
+					//	DueDate = now.AddDays(7),
+					//	ForRecurrenceId = found.ForId,
+					//	Details = "-sent from phone",
+					//	ForModel = "TodoModel",
+					//	ForModelId = -2,
+					//};
+
+					TodoCreation todoModel;
 
 					if (found.ForId == -2) { // Personal todo list
-						todoModel.ForRecurrenceId = null;
-						todoModel.CreatedDuringMeetingId = null;
-						todoModel.TodoType = TodoType.Personal;
+						//todoModel.ForRecurrenceId = null;
+						//todoModel.CreatedDuringMeetingId = null;
+						//todoModel.TodoType = TodoType.Personal;
+						todoModel = TodoCreation.CreatePersonalTodo(body, "-sent from phone", found.Caller.Id, now.AddDays(7), now);
+					} else {
+						todoModel = TodoCreation.CreateL10Todo(body,"-sent from phone",found.Caller.Id,now.AddDays(7),found.ForId,null,"TodoModel",-2,now);
 					}
 
-					await TodoAccessor.CreateTodo(found.Caller, found.ForId, todoModel);
+
+					await TodoAccessor.CreateTodo(found.Caller, todoModel);
+					//await TodoAccessor.CreateTodo(found.Caller, found.ForId, todoModel);
 					return "To-do added.";
 				case ISSUE:
 					await IssuesAccessor.CreateIssue(found.Caller, found.ForId, found.Caller.Id, new IssueModel() {

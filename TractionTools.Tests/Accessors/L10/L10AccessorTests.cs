@@ -43,11 +43,11 @@ namespace TractionTools.Tests.Accessors
             };
             DateTime? ms = meetingIsRunning ? (DateTime?)(meetingStart) : nextWeek.AddDays(1);
 
-            Assert.AreEqual(new Ratio(0, 0), L10Accessor.TodoCompletion(todo, DateTime.MinValue, twoWeeksAgo, ms), "beginningOfTimeRatio");
-            Assert.AreEqual(twoWeeksAgoRatio, L10Accessor.TodoCompletion(todo, twoWeeksAgo, lastWeek, ms), "twoWeeksAgoRatio");
-            Assert.AreEqual(lastWeekRatio, L10Accessor.TodoCompletion(todo, lastWeek, thisWeek, ms), "lastWeekRatio");
-            Assert.AreEqual(thisWeekRatio, L10Accessor.TodoCompletion(todo, thisWeek, nextWeek, ms), "thisWeekRatio");
-            Assert.AreEqual(endOfTime ?? new Ratio(0, 0), L10Accessor.TodoCompletion(todo, nextWeek, DateTime.MaxValue, ms), "endOfTimeRatio");
+            Assert.AreEqual(new Ratio(0, 0), L10Accessor.GetTodoCompletion(todo, DateTime.MinValue, twoWeeksAgo, ms), "beginningOfTimeRatio");
+            Assert.AreEqual(twoWeeksAgoRatio, L10Accessor.GetTodoCompletion(todo, twoWeeksAgo, lastWeek, ms), "twoWeeksAgoRatio");
+            Assert.AreEqual(lastWeekRatio, L10Accessor.GetTodoCompletion(todo, lastWeek, thisWeek, ms), "lastWeekRatio");
+            Assert.AreEqual(thisWeekRatio, L10Accessor.GetTodoCompletion(todo, thisWeek, nextWeek, ms), "thisWeekRatio");
+            Assert.AreEqual(endOfTime ?? new Ratio(0, 0), L10Accessor.GetTodoCompletion(todo, nextWeek, DateTime.MaxValue, ms), "endOfTimeRatio");
 
             todoList.Add(todo);
             return todo;
@@ -81,7 +81,7 @@ namespace TractionTools.Tests.Accessors
                 DueDate = d,
                 CompleteTime = c,
             };
-            var found = L10Accessor.TodoCompletion(todo, s, e, m);
+            var found = L10Accessor.GetTodoCompletion(todo, s, e, m);
             Assert.AreEqual(expected, found);//expected.Numerator==found.Numerator && found.Denominator==expected.Denominator);
 
         }
@@ -203,15 +203,15 @@ namespace TractionTools.Tests.Accessors
 
             if (Q == n)
             {
-                Assert.AreEqual(new Ratio(2, 8), L10Accessor.TodoCompletion(todoList, twoWeeksAgo, lastWeek, meetingStart));
-                Assert.AreEqual(new Ratio(3, 11), L10Accessor.TodoCompletion(todoList, lastWeek, thisWeek, meetingStart));
-                Assert.AreEqual(new Ratio(4, 12), L10Accessor.TodoCompletion(todoList, thisWeek, nextWeek, meetingStart));
+                Assert.AreEqual(new Ratio(2, 8), L10Accessor.GetTodoCompletion(todoList, twoWeeksAgo, lastWeek, meetingStart));
+                Assert.AreEqual(new Ratio(3, 11), L10Accessor.GetTodoCompletion(todoList, lastWeek, thisWeek, meetingStart));
+                Assert.AreEqual(new Ratio(4, 12), L10Accessor.GetTodoCompletion(todoList, thisWeek, nextWeek, meetingStart));
             }
             else if (Q == z)
             {
-                Assert.AreEqual(new Ratio(2, 8), L10Accessor.TodoCompletion(todoList, twoWeeksAgo, lastWeek, meetingStart));
-                Assert.AreEqual(new Ratio(3, 9), L10Accessor.TodoCompletion(todoList, lastWeek, thisWeek, meetingStart));
-                Assert.AreEqual(new Ratio(4, 8), L10Accessor.TodoCompletion(todoList, thisWeek, nextWeek, meetingStart));
+                Assert.AreEqual(new Ratio(2, 8), L10Accessor.GetTodoCompletion(todoList, twoWeeksAgo, lastWeek, meetingStart));
+                Assert.AreEqual(new Ratio(3, 9), L10Accessor.GetTodoCompletion(todoList, lastWeek, thisWeek, meetingStart));
+                Assert.AreEqual(new Ratio(4, 8), L10Accessor.GetTodoCompletion(todoList, thisWeek, nextWeek, meetingStart));
             }
             else
             {
@@ -240,15 +240,15 @@ namespace TractionTools.Tests.Accessors
 
             if (Q == n)
             {
-                Assert.AreEqual(new Ratio(0, 0), L10Accessor.TodoCompletion(todoList, twoWeeksAgo, lastWeek, DateTime.MaxValue));
-                Assert.AreEqual(new Ratio(3, 6), L10Accessor.TodoCompletion(todoList, lastWeek, thisWeek, DateTime.MaxValue));
-                Assert.AreEqual(new Ratio(4, 10), L10Accessor.TodoCompletion(todoList, thisWeek, nextWeek, DateTime.MaxValue));
+                Assert.AreEqual(new Ratio(0, 0), L10Accessor.GetTodoCompletion(todoList, twoWeeksAgo, lastWeek, DateTime.MaxValue));
+                Assert.AreEqual(new Ratio(3, 6), L10Accessor.GetTodoCompletion(todoList, lastWeek, thisWeek, DateTime.MaxValue));
+                Assert.AreEqual(new Ratio(4, 10), L10Accessor.GetTodoCompletion(todoList, thisWeek, nextWeek, DateTime.MaxValue));
             }
             else if (Q == z)
             {
-                Assert.AreEqual(new Ratio(0, 0), L10Accessor.TodoCompletion(todoList, twoWeeksAgo, lastWeek, DateTime.MaxValue));
-                Assert.AreEqual(new Ratio(3, 6), L10Accessor.TodoCompletion(todoList, lastWeek, thisWeek, DateTime.MaxValue));
-                Assert.AreEqual(new Ratio(4, 8), L10Accessor.TodoCompletion(todoList, thisWeek, nextWeek, DateTime.MaxValue));
+                Assert.AreEqual(new Ratio(0, 0), L10Accessor.GetTodoCompletion(todoList, twoWeeksAgo, lastWeek, DateTime.MaxValue));
+                Assert.AreEqual(new Ratio(3, 6), L10Accessor.GetTodoCompletion(todoList, lastWeek, thisWeek, DateTime.MaxValue));
+                Assert.AreEqual(new Ratio(4, 8), L10Accessor.GetTodoCompletion(todoList, thisWeek, nextWeek, DateTime.MaxValue));
             }
             else
             {
@@ -273,7 +273,7 @@ namespace TractionTools.Tests.Accessors
                 DueDate = date,
                 CompleteTime = null,
             };
-            Assert.AreEqual(new Ratio(0, 0), L10Accessor.TodoCompletion(todo, lastWeek, thisWeek, meetingTime));
+            Assert.AreEqual(new Ratio(0, 0), L10Accessor.GetTodoCompletion(todo, lastWeek, thisWeek, meetingTime));
 
 
             //Due today
@@ -283,21 +283,21 @@ namespace TractionTools.Tests.Accessors
                 DueDate = duedate,
                 CompleteTime = null,
             };
-            Assert.AreEqual(new Ratio(0, 0), L10Accessor.TodoCompletion(todo2, lastWeek, thisWeek, now));
+            Assert.AreEqual(new Ratio(0, 0), L10Accessor.GetTodoCompletion(todo2, lastWeek, thisWeek, now));
             todo2.CompleteTime = new DateTime(2016, 2, 19, 8, 7, 0);
-            Assert.AreEqual(new Ratio(1, 1), L10Accessor.TodoCompletion(todo2, lastWeek, thisWeek, now));
+            Assert.AreEqual(new Ratio(1, 1), L10Accessor.GetTodoCompletion(todo2, lastWeek, thisWeek, now));
             todo2.CompleteTime = new DateTime(2016, 2, 19, 12+6, 1, 0);
-            Assert.AreEqual(new Ratio(1, 1), L10Accessor.TodoCompletion(todo2, lastWeek, thisWeek, now));
+            Assert.AreEqual(new Ratio(1, 1), L10Accessor.GetTodoCompletion(todo2, lastWeek, thisWeek, now));
             todo2.Organization = new OrganizationModel();
             todo2.Organization.Settings.TimeZoneId = "Central Standard Time";
-            Assert.AreEqual(new Ratio(0, 1), L10Accessor.TodoCompletion(todo2, lastWeek, thisWeek, now));
+            Assert.AreEqual(new Ratio(0, 1), L10Accessor.GetTodoCompletion(todo2, lastWeek, thisWeek, now));
             todo2.Organization.Settings.TimeZoneId = "Greenwich Standard Time";
-            Assert.AreEqual(new Ratio(1, 1), L10Accessor.TodoCompletion(todo2, lastWeek, thisWeek, now));
+            Assert.AreEqual(new Ratio(1, 1), L10Accessor.GetTodoCompletion(todo2, lastWeek, thisWeek, now));
             
             todo2.CompleteTime = new DateTime(2016, 2, 20, 2, 1, 0);
-            Assert.AreEqual(new Ratio(0, 1), L10Accessor.TodoCompletion(todo2, lastWeek, thisWeek, now));
+            Assert.AreEqual(new Ratio(0, 1), L10Accessor.GetTodoCompletion(todo2, lastWeek, thisWeek, now));
             todo2.Organization.Settings.TimeZoneId = "Afghanistan Standard Time";
-            Assert.AreEqual(new Ratio(1, 1), L10Accessor.TodoCompletion(todo2, lastWeek, thisWeek, now));
+            Assert.AreEqual(new Ratio(1, 1), L10Accessor.GetTodoCompletion(todo2, lastWeek, thisWeek, now));
 
             
         }

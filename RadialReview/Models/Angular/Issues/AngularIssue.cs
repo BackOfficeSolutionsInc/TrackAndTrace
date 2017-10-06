@@ -6,6 +6,8 @@ using System.Web;
 using RadialReview.Models.Angular.Users;
 using RadialReview.Models.Issues;
 using RadialReview.Utilities;
+using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace RadialReview.Models.Angular.Issues
 {
@@ -14,7 +16,7 @@ namespace RadialReview.Models.Angular.Issues
 		public AngularIssue(IssueModel.IssueModel_Recurrence recurrenceIssue) : base(recurrenceIssue.Id)
 		{
 			var issue = recurrenceIssue.Issue;
-			DetailsUrl = Config.NotesUrl() + "p/" + issue.PadId + "?showControls=true&showChat=false";
+			DetailsUrl = Config.BaseUrl(null, "/Issues/Pad/" + issue.Id); //Config.NotesUrl() + "p/" + issue.PadId + "?showControls=true&showChat=false";
 			Name = issue.Message;
 			Details = issue.Description;
 			CompleteTime = recurrenceIssue.CloseTime;
@@ -33,15 +35,21 @@ namespace RadialReview.Models.Angular.Issues
 			
 		}
 
-		public string DetailsUrl { get; set; }
-		public AngularUser Owner { get; set; }
+		[JsonProperty(Order = -10)]
 		public String Name { get; set; }
-		public String Details { get; set; }
-		public List<AngularIssue> Children { get; set; }
+		public AngularUser Owner { get; set; }
+		public string DetailsUrl { get; set; }
 		public DateTime? CompleteTime { get; set; }
-		public DateTime? CreateTime { get; set; }
 		public bool? Complete { get; set; }
-        public int? Priority { get; set; }
+
+		public DateTime? CreateTime { get; set; }
+
+		[IgnoreDataMember]
+		public String Details { get; set; }
+		[IgnoreDataMember]
+		public List<AngularIssue> Children { get; set; }
+		[IgnoreDataMember]
+		public int? Priority { get; set; }
 
 
     }

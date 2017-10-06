@@ -3,6 +3,7 @@ using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Hubs;
 using RadialReview.Models;
+using RadialReview.Models.Accountability;
 using RadialReview.Models.Application;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Components;
@@ -346,6 +347,7 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
+		[Untested("Todo Create")]
 		public async Task<ActionResult> ResetSwanServices(long id) {
 			var recurId = id;
 			if (GetUser().Organization.AccountType == AccountType.SwanServices) {
@@ -436,15 +438,18 @@ namespace RadialReview.Controllers {
 					var createTime = DateTime.UtcNow.AddDays(-5);
 					foreach (var todo in todos) {
 						var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
-						await TodoAccessor.CreateTodo(s, perms, recurId, new Models.Todo.TodoModel {
-							AccountableUserId = possibleUsers[r.Next(possibleUsers.Count - 1)],
-							Message = todo,
-							ForRecurrenceId = recurId,
-							DueDate = DateTime.UtcNow.AddDays(r.Next(1, 2)),
-							CompleteTime = complete,
-							CreateTime = createTime,
-							OrganizationId = caller.Organization.Id,
-						});
+						var todoC = TodoCreation.CreateL10Todo(todo, null, possibleUsers[r.Next(possibleUsers.Count - 1)], DateTime.UtcNow.AddDays(r.Next(1, 2)), recurId, now: createTime);
+						await TodoAccessor.CreateTodo(s, perms, todoC);
+
+						//await TodoAccessor.CreateTodo(s, perms, recurId, new Models.Todo.TodoModel {
+						//	AccountableUserId = possibleUsers[r.Next(possibleUsers.Count - 1)],
+						//	Message = todo,
+						//	ForRecurrenceId = recurId,
+						//	DueDate = DateTime.UtcNow.AddDays(r.Next(1, 2)),
+						//	CompleteTime = complete,
+						//	CreateTime = createTime,
+						//	OrganizationId = caller.Organization.Id,
+						//});
 						createTime = createTime.AddMinutes(r.Next(3, 8));
 						addedTodos += 1;
 					}
@@ -596,6 +601,14 @@ namespace RadialReview.Controllers {
 					var allOrgsF = s.QueryOver<OrganizationModel>().Select(x => x.Id, x => x.Name.Id, x => x.DeleteTime, x => x.CreationTime, x => x.AccountType).Future<object[]>();
 					var localizedStringF = s.QueryOver<LocalizedStringModel>().Select(x => x.Id, x => x.Standard).Future<object[]>();
 
+
+					var chartsF = s.QueryOver<AccountabilityChart>().Where(x => x.DeleteTime == null).Select(x=>x.RootId).Future<long>();
+					var nodesF = s.QueryOver<AccountabilityNode>().Where(x => x.DeleteTime == null).Select(
+						x=>x.Id,
+						x=>x.ParentNodeId,
+						x=>x.UserId
+					).Future<object[]>();
+
 					var allUsers = allUsersF.ToList();
 					var allLocalizedStrings = localizedStringF.Select(x => new {
 						Id = (long)x[0],
@@ -629,17 +642,57 @@ namespace RadialReview.Controllers {
 						};
 					}).Where(x=>x!=null).ToList();
 
+					var charts = chartsF.Select(x=>new { RootId = x }).ToList();
+					var nodes = nodesF.Select(x => new {
+						Id=(long)x[0],
+						ParentNodeId = (long?)x[1],
+						UserId = (long?)x[2]
+					}).ToList();
+
+					var leadershipMembers = new DefaultDictionary<long,bool>(x=>false);
+					foreach (var c in charts.ToList()) {
+						var roots = nodes.Where(x => x.Id == c.RootId).ToList();
+						if (roots.Any()) {
+							var visionaryRow = nodes.Where(x => roots.Any(y => x.ParentNodeId == y.Id)).ToList();
+
+							foreach (var i in roots.Where(x=>x.UserId!=null).Select(x => x.UserId))
+								leadershipMembers[i.Value] = true;
+							foreach (var i in visionaryRow.Where(x => x.UserId != null).Select(x => x.UserId))
+								leadershipMembers[i.Value] = true;
+
+							if (visionaryRow.Count <= 3) {
+								var integratorRow = nodes.Where(x => visionaryRow.Any(y => x.ParentNodeId == y.Id)).ToList();
+								foreach (var i in integratorRow.Where(x => x.UserId != null).Select(x => x.UserId))
+									leadershipMembers[i.Value] = true;
+
+
+								if (integratorRow.Count == 1) {
+									var leadershipTeamRow = nodes.Where(x => integratorRow.Any(y => x.ParentNodeId == y.Id)).ToList();
+									foreach (var i in leadershipTeamRow.Where(x => x.UserId != null).Select(x => x.UserId))
+										leadershipMembers[i.Value] = true;
+								}
+							}
+						}
+
+					}
+
+
 					var csv = new Csv();
 					csv.Title = "UserId";
 					foreach (var o in items) {
-						csv.Add("" + o.UserId,"UserName",			o.UserName);
-						csv.Add("" + o.UserId,"UserEmail"         ,o.UserEmail         );
-						csv.Add("" + o.UserId,"OrgName"           ,o.OrgName           );
-						csv.Add("" + o.UserId,"UserId"            ,""+o.UserId            );
-						csv.Add("" + o.UserId,"OrgId"             , "" + o.OrgId             );
-						csv.Add("" + o.UserId,"UserCreateTime"    , "" + o.UserCreateTime    );
-						csv.Add("" + o.UserId,"AccountType"       ,o.AccountType       );
-						csv.Add("" + o.UserId,"OrgCreateTime"     , "" + o.OrgCreateTime     );
+						if (o.UserEmail.ToLower().EndsWith("@mytractiontools.com")) {
+							continue;
+						}
+
+						csv.Add("" + o.UserId, "UserName"			,o.UserName);
+						csv.Add("" + o.UserId, "UserEmail"			,o.UserEmail						);
+						csv.Add("" + o.UserId, "OrgName"			,o.OrgName							);
+						csv.Add("" + o.UserId, "UserId"				,""+o.UserId						);
+						csv.Add("" + o.UserId, "OrgId"				,"" + o.OrgId						);
+						csv.Add("" + o.UserId, "UserCreateTime"		,"" + o.UserCreateTime				);
+						csv.Add("" + o.UserId, "AccountType"		,o.AccountType						);
+						csv.Add("" + o.UserId, "OrgCreateTime"		,"" + o.OrgCreateTime				);
+						csv.Add("" + o.UserId, "LeadershipTeam"		,"" + leadershipMembers[o.UserId]	);
 					}
 
 					return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllValidUsers.csv");
@@ -651,6 +704,72 @@ namespace RadialReview.Controllers {
 
 
 
+		//[Access(AccessLevel.Radial)]
+		//public ActionResult AllLT() {
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
+
+		//			var charts = s.QueryOver<AccountabilityChart>().Where(x => x.DeleteTime == null).Future();
+		//			var allOrgsF = s.QueryOver<OrganizationModel>().Select(x => x.Id, x => x.Name.Id, x => x.DeleteTime, x => x.CreationTime, x => x.AccountType).Future<object[]>();
+		//			var localizedStringF = s.QueryOver<LocalizedStringModel>().Select(x => x.Id, x => x.Standard).Future<object[]>();
+		//			var charts = s.QueryOver<AccountabilityChart>().Where(x => x.DeleteTime == null).Future();
+		//			var nodes = s.QueryOver<AccountabilityNode>().Where(x => x.DeleteTime == null).List().ToList();
+
+		//			var allUsersF = s.QueryOver<UserLookup>().Where(x => x.DeleteTime == null && x.HasJoined).Future();
+
+		//			var allUsers = allUsersF.ToList();
+		//			var allLocalizedStrings = localizedStringF.Select(x => new {
+		//				Id = (long)x[0],
+		//				Name = (string)x[1]
+		//			}).ToDictionary(x => x.Id, x => x.Name);
+
+
+		//			var allOrgs = allOrgsF.Select(x => new {
+		//				Id = (long)x[0],
+		//				NameId = (long)x[1],
+		//				Name = (string)allLocalizedStrings.GetOrDefault((long)x[1], ""),
+		//				DeleteTime = (DateTime?)x[2],
+		//				CreateTime = (DateTime)x[3],
+		//				AccountType = (AccountType)x[4],
+		//			}).ToDictionary(x => x.Id, x => x);			
+
+		//			var items = allUsers.Select(x => {
+		//				var org = allOrgs.GetOrDefault(x.OrganizationId, null);
+		//				if (org.DeleteTime != null)
+		//					return null;
+		//				return new AllUserEmail() {
+		//					UserName = x.Name,
+		//					UserEmail = x.Email,
+		//					UserId = x.UserId,
+		//					OrgId = x.OrganizationId,
+		//					OrgName = org.NotNull(y => y.Name),
+		//					AccountType = "" + org.NotNull(y => y.AccountType),
+		//					OrgCreateTime = org.NotNull(y => y.CreateTime),
+		//					UserCreateTime = x.CreateTime
+
+		//				};
+		//			}).Where(x => x != null).ToList();
+
+		//			var csv = new Csv();
+		//			csv.Title = "UserId";
+		//			foreach (var o in items) {
+		//				csv.Add("" + o.UserId, "UserName", o.UserName);
+		//				csv.Add("" + o.UserId, "UserEmail", o.UserEmail);
+		//				csv.Add("" + o.UserId, "OrgName", o.OrgName);
+		//				csv.Add("" + o.UserId, "UserId", "" + o.UserId);
+		//				csv.Add("" + o.UserId, "OrgId", "" + o.OrgId);
+		//				csv.Add("" + o.UserId, "UserCreateTime", "" + o.UserCreateTime);
+		//				csv.Add("" + o.UserId, "AccountType", o.AccountType);
+		//				csv.Add("" + o.UserId, "OrgCreateTime", "" + o.OrgCreateTime);
+		//			}
+
+		//			return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllValidUsers.csv");
+
+
+		//		}
+		//	}
+		//}
+
 
 
 
@@ -658,6 +777,7 @@ namespace RadialReview.Controllers {
 
 
 		[Access(AccessLevel.UserOrganization)]
+		[Untested("Create Todo")]
 		public async Task<ActionResult> ResetDemo(long recurId = 1) {
 
 			if (GetUser().Id == 600 || GetUser().IsRadialAdmin || GetUser().User.IsRadialAdmin) {
@@ -711,15 +831,20 @@ namespace RadialReview.Controllers {
 					var createTime = DateTime.UtcNow.AddDays(-5);
 					foreach (var todo in todos) {
 						var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
-						await TodoAccessor.CreateTodo(s, perms, recurId, new Models.Todo.TodoModel {
-							AccountableUserId = possibleUsers[r.Next(possibleUsers.Count - 1)],
-							Message = todo,
-							ForRecurrenceId = recurId,
-							DueDate = DateTime.UtcNow.AddDays(r.Next(1, 2)),
-							CompleteTime = complete,
-							CreateTime = createTime,
-							OrganizationId = caller.Organization.Id,
-						});
+
+						var todoC = TodoCreation.CreateL10Todo(todo, null, possibleUsers[r.Next(possibleUsers.Count - 1)], DateTime.UtcNow.AddDays(r.Next(1, 2)), recurId, now: createTime);
+						await TodoAccessor.CreateTodo(s, perms, todoC);
+
+
+						//await TodoAccessor.CreateTodo(s, perms, recurId, new Models.Todo.TodoModel {
+						//	AccountableUserId = possibleUsers[r.Next(possibleUsers.Count - 1)],
+						//	Message = todo,
+						//	ForRecurrenceId = recurId,
+						//	DueDate = DateTime.UtcNow.AddDays(r.Next(1, 2)),
+						//	CompleteTime = complete,
+						//	CreateTime = createTime,
+						//	OrganizationId = caller.Organization.Id,
+						//});
 						createTime = createTime.AddMinutes(r.Next(3, 8));
 						addedTodos += 1;
 					}
