@@ -12,9 +12,10 @@ using RadialReview.Models.Angular.VTO;
 using RadialReview.Hubs;
 using Microsoft.AspNet.SignalR;
 using RadialReview.Models.VTO;
+using RadialReview.Models;
 
 namespace RadialReview.Hooks.Realtime {
-	public class RealTime_VTO_UpdateRocks : IRockHook, IMeetingRockHooks {
+	public class RealTime_VTO_UpdateRocks : IRockHook, IMeetingRockHook {
 
 		public bool CanRunRemotely() {
 			return false;
@@ -85,7 +86,7 @@ namespace RadialReview.Hooks.Realtime {
 			//}
 		}
 
-		public async Task AttachRock(ISession s, RockModel rock, L10Recurrence.L10Recurrence_Rocks recurRock) {
+		public async Task AttachRock(ISession s, UserOrganizationModel caller, RockModel rock, L10Recurrence.L10Recurrence_Rocks recurRock) {
 			if (recurRock.VtoRock) {
 				AddRockToVto(s, rock.Id, recurRock.L10Recurrence.Id);
 			}
@@ -98,7 +99,7 @@ namespace RadialReview.Hooks.Realtime {
 			//Nothing to do
 		}
 
-		public async Task UpdateRock(ISession s, RockModel rock) {
+		public async Task UpdateRock(ISession s, UserOrganizationModel caller, RockModel rock, IRockHookUpdates updates) {
 			UpdateRock(s, rock.Id, null);
 		}
 
@@ -109,5 +110,6 @@ namespace RadialReview.Hooks.Realtime {
 				RemoveRockFromVto(s, recurRock.ForRock.Id, recurRock.L10Recurrence.Id);
 			}
 		}
+		
 	}
 }

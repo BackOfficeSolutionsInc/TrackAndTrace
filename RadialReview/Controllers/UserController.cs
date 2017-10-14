@@ -486,37 +486,34 @@ namespace RadialReview.Controllers {
 			return PartialView(model);
 		}
 
-		[Access(AccessLevel.Manager)]
-		[HttpPost]
-		[Obsolete("Cannot remove manager like this", true)]
-		public JsonResult DeleteManager(long id) {
-			_UserAccessor.RemoveManager(GetUser(), id, DateTime.UtcNow);
-			return Json(ResultObject.Success("Removed " + Config.ManagerName() + ".").ForceRefresh());
-		}
-
-		[Access(AccessLevel.Manager)]
-		[HttpPost]
-		[Obsolete("Cannot remove manager like this", true)]
-		public JsonResult RemoveManager(long userId, long managerId) {
-			_UserAccessor.RemoveManager(GetUser(), userId, managerId, DateTime.UtcNow);
-			return Json(ResultObject.Success("Removed " + Config.ManagerName() + "."));
-		}
-
-		[Access(AccessLevel.Manager)]
-		[HttpPost]
-		[Obsolete("Cannot add manager like this", true)]
-		public JsonResult AddManager(AddManagerViewModel model) {
-			_UserAccessor.AddManager(GetUser(), model.UserId, model.ManagerId, DateTime.UtcNow);
-			return Json(ResultObject.Success("Added " + Config.ManagerName() + "."));
-		}
-
-		[Access(AccessLevel.Manager)]
-		[HttpPost]
-		[Obsolete("Cannot remove manager like this", true)]
-		public JsonResult SwapManager(long oldManagerId, long newManagerId, long userId) {
-			_UserAccessor.SwapManager(GetUser(), userId, oldManagerId, newManagerId, DateTime.UtcNow);
-			return Json(ResultObject.Success("Swapped user."));
-		}
+		//[Access(AccessLevel.Manager)]
+		//[HttpPost]
+		//[Obsolete("Cannot remove manager like this", true)]
+		//public JsonResult DeleteManager(long id) {
+		//	_UserAccessor.RemoveManager(GetUser(), id, DateTime.UtcNow);
+		//	return Json(ResultObject.Success("Removed " + Config.ManagerName() + ".").ForceRefresh());
+		//}
+		//[Access(AccessLevel.Manager)]
+		//[HttpPost]
+		//[Obsolete("Cannot remove manager like this", true)]
+		//public JsonResult RemoveManager(long userId, long managerId) {
+		//	_UserAccessor.RemoveManager(GetUser(), userId, managerId, DateTime.UtcNow);
+		//	return Json(ResultObject.Success("Removed " + Config.ManagerName() + "."));
+		//}
+		//[Access(AccessLevel.Manager)]
+		//[HttpPost]
+		//[Obsolete("Cannot add manager like this", true)]
+		//public JsonResult AddManager(AddManagerViewModel model) {
+		//	_UserAccessor.AddManager(GetUser(), model.UserId, model.ManagerId, DateTime.UtcNow);
+		//	return Json(ResultObject.Success("Added " + Config.ManagerName() + "."));
+		//}
+		//[Access(AccessLevel.Manager)]
+		//[HttpPost]
+		//[Obsolete("Cannot remove manager like this", true)]
+		//public JsonResult SwapManager(long oldManagerId, long newManagerId, long userId) {
+		//	_UserAccessor.SwapManager(GetUser(), userId, oldManagerId, newManagerId, DateTime.UtcNow);
+		//	return Json(ResultObject.Success("Swapped user."));
+		//}
 		#endregion
 
 		[Access(AccessLevel.UserOrganization)]

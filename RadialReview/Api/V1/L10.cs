@@ -211,8 +211,9 @@ namespace RadialReview.Api.V1 {
 		[HttpPost]
 		public async Task<AngularIssue> CreateIssueL10(long MEETING_ID, [FromBody]CreateIssue body) {
 			body.ownerId = body.ownerId ?? GetUser().Id;
-			var issue = new IssueModel() { Message = body.title, Description = body.details };
-			var success = await IssuesAccessor.CreateIssue(GetUser(), MEETING_ID, body.ownerId.Value, issue);
+			//var issue = new IssueModel() { Message = body.title, Description = body.details };
+			var creation = IssueCreation.CreateL10Issue(body.title, body.details, body.ownerId, MEETING_ID);
+			var success = await IssuesAccessor.CreateIssue(GetUser(), creation);// MEETING_ID, body.ownerId.Value, issue);
 			return new AngularIssue(success.IssueRecurrenceModel);
 
 		}
@@ -228,9 +229,7 @@ namespace RadialReview.Api.V1 {
 		public async Task RemoveIssueL10(long MEETING_ID, long ISSUE_ID) {
 			await L10Accessor.Remove(GetUser(), new AngularIssue() { Id = ISSUE_ID }, MEETING_ID, null);
 		}
-
-
-
+		
 		public class CreateHeadline {
 			/// <summary>
 			/// Headline title
@@ -360,7 +359,6 @@ namespace RadialReview.Api.V1 {
 		/// <returns></returns>
 		[Route("l10/{MEETING_ID}/todos")]
 		[HttpGet]
-		[Untested("new")]
 		public IEnumerable<AngularTodo> GetRecurrenceTodos(long MEETING_ID) {
 			//await L10Accessor.CreateBlankRecurrence()
 			return L10Accessor.GetAllTodosForRecurrence(GetUser(), MEETING_ID, false).Select(x => new AngularTodo(x));
@@ -373,7 +371,6 @@ namespace RadialReview.Api.V1 {
 		/// <returns></returns>
 		[Route("l10/{MEETING_ID}/headlines")]
 		[HttpGet]
-		[Untested("new")]
 		public IEnumerable<AngularHeadline> GetRecurrenceHeadlines(long MEETING_ID) {
 			//await L10Accessor.CreateBlankRecurrence()
 			return L10Accessor.GetHeadlinesForMeeting(GetUser(), MEETING_ID).Select(x => new AngularHeadline(x));

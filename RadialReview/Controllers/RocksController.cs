@@ -55,7 +55,6 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		[Untested("","Populate _CompanyRock")]
 		public ActionResult Archive(long id) {
 			var userId = id;
 			var archivedRocks = RockAccessor.GetArchivedRocks(GetUser(), userId);
@@ -94,7 +93,6 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		[Untested("Vto_Rocks","Removed company rock flag","Populate _CompanyRock")]
 		public PartialViewResult BlankEditorRow(bool includeUsers = false, bool unusedCompanyRock = false, long? periodId = null, bool hideperiod = false, bool showCompany = false, bool excludeDelete = false, long? recurrenceId = null) {
 			ViewBag.Periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.Name, x => x.Id);
 			if (includeUsers) {

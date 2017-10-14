@@ -148,6 +148,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
+		[Untested("Test me")]
 		public async Task<JsonResult> SubmitScorecard(FormCollection model) {
 			var path = model["Path"].ToString();
 			try {
@@ -216,19 +217,19 @@ namespace RadialReview.Controllers {
 								var owner = users[ident];
 								var goal = goals[ident];
 								var goaldir = goalDirs[ident];
-								var measurable = new MeasurableModel() {
-									Title = m.Value,
-									OrganizationId = org.Id,
-									Goal = goal,
-									GoalDirection = goaldir,
-									AccountableUserId = owner,
-									AdminUserId = owner,
-									CreateTime = now,
-									_Ordering = ii
-								};
+								//var measurable = new MeasurableModel() {
+								//	Title = m.Value,
+								//	OrganizationId = org.Id,
+								//	Goal = goal,
+								//	GoalDirection = goaldir,
+								//	AccountableUserId = owner,
+								//	AdminUserId = owner,
+								//	CreateTime = now,
+								//	_Ordering = ii
+								//};
 
 								//Empty row?
-								if (string.IsNullOrWhiteSpace(measurable.Title)) {
+								if (string.IsNullOrWhiteSpace(m.Value)) {
 									if (scoreRect == null) {
 										continue;
 									} else {
@@ -242,7 +243,17 @@ namespace RadialReview.Controllers {
 									}
 								}
 
-								await L10Accessor.AddMeasurable(s, perms, rt, recurrence, L10Controller.AddMeasurableVm.CreateMeasurableViewModel(recurrence, measurable), skipRealTime: true, rowNum: ii);
+								var units = UnitType.None;
+								try {
+									units = goalUnits[ident];
+								} catch (Exception) {
+								}
+
+								//await L10Accessor.AddMeasurable(s, perms, rt, recurrence, L10Controller.AddMeasurableVm.CreateMeasurableViewModel(recurrence, measurable), skipRealTime: true, rowNum: ii);
+								var measurable = await ScorecardAccessor.CreateMeasurable(s, perms, MeasurableCreation.CreateMeasurable(m.Value, goal, units, goaldir, owner, now: now));
+								await L10Accessor.AttachMeasurable(s, perms,recurrence, measurable.Id, true, ii, now);
+
+
 								ii += 1;
 								measurableLookup[ident] = measurable;
 
@@ -259,7 +270,8 @@ namespace RadialReview.Controllers {
 									for (var i = 0; i < dates.Count; i++) {
 										var week = TimingUtility.GetWeekSinceEpoch(dates[i].AddDays(7).AddDays(6).StartOfWeek(DayOfWeek.Sunday))+weekShift;
 										var score = scoresFound[i];
-										L10Accessor._UpdateScore(s, perms, rt, measurable.Id, week, score, null, noSyncException: true, skipRealTime: true);
+										await ScorecardAccessor.UpdateScore(s, perms, measurable.Id, TimingUtility.GetDateSinceEpoch(week), score);
+										//await L10Accessor._UpdateScore(s, perms, rt, measurable.Id, week, score, null, noSyncException: true, skipRealTime: true);
 									}
 								}
 

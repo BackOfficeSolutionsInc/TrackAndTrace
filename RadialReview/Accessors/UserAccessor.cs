@@ -45,6 +45,7 @@ namespace RadialReview.Accessors {
 #pragma warning restore CS0618 // Type or member is obsolete
 			});
 		}
+
 		public String GetUserNameByUserOrganizationId(long userOrgId) {
 			return (string)CacheLookup.GetOrAddDefault("userorgid_" + userOrgId, x => {
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -73,7 +74,6 @@ namespace RadialReview.Accessors {
 			//}
 		}
 
-
 		public List<UserModel> GetUsersByIds(IEnumerable<String> userIds) {
 			if (userIds == null)
 				throw new LoginException();
@@ -84,7 +84,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		[Obsolete("Dont use this elsewhere", false)]
+		[Obsolete("Dont use this elsewhere")]
 		public UserModel GetUserByEmail(ISession s, String email) {
 			if (email == null)
 				throw new LoginException();
@@ -97,7 +97,8 @@ namespace RadialReview.Accessors {
 			//	}
 			//}
 		}
-		[Obsolete("Dont use this elsewhere", false)]
+
+		[Obsolete("Dont use this elsewhere")]
 		public UserModel GetUserByEmail(String email) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -106,8 +107,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-
-		[Obsolete("Dont use this, its unsafe", false)]
+		[Obsolete("Dont use this, its unsafe")]
 		public UserOrganizationModel GetUserOrganizationUnsafe(long userOrganizationId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -169,8 +169,7 @@ namespace RadialReview.Accessors {
 				throw new LoginException(redirectUrl);
 			return user.UserOrganizationCount;
 		}
-
-
+		
 		public List<UserOrganizationModel> GetPeers(UserOrganizationModel caller, long forId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -179,25 +178,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-
-		//[Obsolete("Fix for AC")]
-		//public static List<UserOrganizationModel> GetPeers(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, Reviewer reviewer) {
-		//	throw new NotImplementedException();
-		//}
-		[Obsolete("Fix for AC")]
-		public static List<UserOrganizationModel> GetPeers(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, Reviewee reviewee) {
-			throw new NotImplementedException();
-		}
-		[Obsolete("Fix for AC")]
-		public static List<UserOrganizationModel> GetManagers(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, Reviewee reviewee) {
-			throw new NotImplementedException();
-		}
-		[Obsolete("Fix for AC")]
-		public static List<UserOrganizationModel> GetDirectSubordinates(AbstractQuery s, PermissionsUtility perms, Reviewee reviewee) {
-			throw new NotImplementedException();
-		}
-
-
+		
 		public static List<UserOrganizationModel> GetPeers(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, long forId) {
 			perms.ViewUserOrganization(forId, false);
 			var forUser = s.Get<UserOrganizationModel>(forId);
@@ -211,7 +192,6 @@ namespace RadialReview.Accessors {
 			return new List<UserOrganizationModel>();
 		}
 
-
 		public List<UserOrganizationModel> GetManagers(UserOrganizationModel caller, long forUserId, params PermissionType[] alsoCheck) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -220,6 +200,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+
 		public static List<UserOrganizationModel> GetManagers(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, long forUserId, params PermissionType[] alsoCheck) {
 			perms.ViewUserOrganization(forUserId, false, alsoCheck);
 			var forUser = s.Get<UserOrganizationModel>(forUserId);
@@ -229,17 +210,14 @@ namespace RadialReview.Accessors {
 							.Where(x => x.Id != forUserId)
 							.ToList();
 		}
-
-
+		
 		public static List<long> WasAliveAt(ISession s, List<long> userOrgIds, DateTime time) {
 			return s.QueryOver<UserOrganizationModel>()
 				.WhereRestrictionOn(x => x.Id).IsIn(userOrgIds)
 				.Where(x => (x.CreateTime <= time) && (x.DeleteTime == null || time <= x.DeleteTime))
 				.Select(x => x.Id).List<long>().ToList();
 		}
-
-
-
+		
 		public List<UserOrganizationModel> GetDirectSubordinates(UserOrganizationModel caller, long forId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -295,8 +273,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-
-
+		
 		public bool UpdateTempUser(UserOrganizationModel caller, long userOrgId, String firstName, String lastName, String email, DateTime? lastSent = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -399,12 +376,9 @@ namespace RadialReview.Accessors {
 		public static EditUserResult EditUserPermissionLevel(ISession s, PermissionsUtility perm, long userOrganizationId, bool? isManager = null, bool? manageringOrganization = null, bool? evalOnly = null) {
 			var o = new EditUserResult();
 			using (var rt = RealTimeUtility.Create()) {
-
-
 				var found = s.Get<UserOrganizationModel>(userOrganizationId);
-                var acId = found.Organization.AccountabilityChartId;
-
-                perm.CanEdit(PermItem.ResourceType.AccountabilityHierarchy, acId);
+				var acId = found.Organization.AccountabilityChartId;
+				perm.CanEdit(PermItem.ResourceType.AccountabilityHierarchy, acId);
 
 				//if (manageringOrganization != null)
 				//	perm.ManagesUserOrganization(userOrganizationId, false);
@@ -412,14 +386,13 @@ namespace RadialReview.Accessors {
 				//	perm.ManagesUserOrganization(userOrganizationId, false, PermissionType.ChangeEmployeePermissions);
 
 				var deleteTime = DateTime.UtcNow;
-
 				if (manageringOrganization != null && manageringOrganization.Value != found.ManagingOrganization) {
 					if (found.Id == perm.GetCaller().Id) {
 						o.OverrideManageringOrganization = found.ManagingOrganization;
 						o.Errors.Add("You cannot unmanage this organization yourself.");
 					} else {
 						perm/*.ManagesUserOrganization(userOrganizationId, true)*/.ManagingOrganization(found.Organization.Id); // ! Changed the organization from callers, to found
-                        if (found.ManagingOrganization && !manageringOrganization.Value) {
+						if (found.ManagingOrganization && !manageringOrganization.Value) {
 							//maybe set manager to false
 							if (!DeepAccessor.Users.HasChildren(s, perm, userOrganizationId)) {
 								isManager = false;
@@ -432,10 +405,8 @@ namespace RadialReview.Accessors {
 								o.OverrideIsManager = true;
 							}
 						}
-
 						found.ManagingOrganization = manageringOrganization.Value;
 					}
-
 				}
 
 				if (isManager != null && (isManager.Value != found.ManagerAtOrganization)) {
@@ -445,23 +416,21 @@ namespace RadialReview.Accessors {
 						var subordinatesTeams = s.QueryOver<OrganizationTeamModel>()
 							.Where(x => x.Type == TeamType.Subordinates && x.ManagedBy == userOrganizationId && x.DeleteTime == null)
 							.List();
-						foreach(var subordinatesTeam in subordinatesTeams) {
+						foreach (var subordinatesTeam in subordinatesTeams) {
 							subordinatesTeam.DeleteTime = DateTime.UtcNow;
 							s.Update(subordinatesTeam);
 						}
 					} else {
-                        var anyTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Type == TeamType.Subordinates && x.ManagedBy == userOrganizationId && x.DeleteTime == null).RowCount();
-
-                        if (anyTeams == 0) {
-                            s.Save(OrganizationTeamModel.SubordinateTeam(perm.GetCaller(), found));
-                            s.Flush();
-                        }
+						var anyTeams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Type == TeamType.Subordinates && x.ManagedBy == userOrganizationId && x.DeleteTime == null).RowCount();
+						if (anyTeams == 0) {
+							s.Save(OrganizationTeamModel.SubordinateTeam(perm.GetCaller(), found));
+							s.Flush();
+						}
 					}
 				}
 
 				if (evalOnly != null) {
 					perm.CanUpgradeUser(found.Id);
-
 					var anyMeetings = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>().Where(x => x.DeleteTime == null && x.User.Id == found.Id).RowCount();
 					if (anyMeetings == 0 || evalOnly.Value == false) {
 						found.EvalOnly = evalOnly.Value;
@@ -470,9 +439,6 @@ namespace RadialReview.Accessors {
 						o.Errors.Add("Could not convert to " + Config.ReviewName() + " only. Remove user from L10 meetings first.");
 					}
 				}
-
-
-				//rt.UpdateOrganization(found.Organization.Id).AddLowLevelAction(x => x.updatePermissionsIcon(userOrganizationId, isManager, manageringOrganization, evalOnly));
 
 				s.Update(found);
 				found.UpdateCache(s);
@@ -537,59 +503,8 @@ namespace RadialReview.Accessors {
 			}
 			return count;
 		}
-		[Obsolete("Cannot remove manager like this", true)]
-		public void RemoveManager(UserOrganizationModel caller, long userId, long managerId, DateTime now) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var perms = PermissionsUtility.Create(s, caller);
-					var managerDuration = s.QueryOver<ManagerDuration>().Where(x => x.DeleteTime == null && x.SubordinateId == userId && x.ManagerId == managerId).Take(1).SingleOrDefault();
-					RemoveManager(s, perms, caller, managerDuration.Id, now);
-					tx.Commit();
-					s.Flush();
-				}
-			}
-		}
-		[Obsolete("Cannot remove manager like this", true)]
-		public static void RemoveManager(ISession s, PermissionsUtility perms, long userId, long managerId, DateTime now) {
-			var managerDuration = s.QueryOver<ManagerDuration>().Where(x => x.DeleteTime == null && x.SubordinateId == userId && x.ManagerId == managerId).Take(1).SingleOrDefault();
-			if (managerDuration != null) {
-				RemoveManager(s, perms, perms.GetCaller(), managerDuration.Id, now);
-			} else {
-				log.Error("manager duration does not exist " + userId + " " + managerId + " " + now.ToString());
-			}
-
-		}
-
-		[Obsolete("Cannot remove manager like this", true)]
-		public static void RemoveManager(ISession s, PermissionsUtility perms, UserOrganizationModel caller, long managerDurationId, DateTime now) {
-			var managerDuration = s.Get<ManagerDuration>(managerDurationId);
-			perms.ManagesUserOrganization(managerDuration.SubordinateId, true, PermissionType.EditEmployeeManagers).ManagesUserOrganization(managerDuration.ManagerId, false, PermissionType.EditEmployeeManagers);
-			RemoveMangerUnsafe(s, caller, managerDuration, now);
-		}
-
-		[Obsolete("This is old. Only used for testing.", true)]
-		private static void RemoveMangerUnsafe(ISession s, UserOrganizationModel caller, ManagerDuration managerDuration, DateTime now) {
-			//DeepSubordianteAccessor.Remove(s, managerDuration.Manager, managerDuration.Subordinate, now);
-			managerDuration.DeletedBy = caller.Id;
-			managerDuration.DeleteTime = now;
-			s.Update(managerDuration);
-			managerDuration.Subordinate.UpdateCache(s);
-			managerDuration.Manager.UpdateCache(s);
-		}
-
-		[Obsolete("This is old. Only used for testing.", true)]
-		public void RemoveManager(UserOrganizationModel caller, long managerDurationId, DateTime now) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var perms = PermissionsUtility.Create(s, caller);
-					RemoveManager(s, perms, caller, managerDurationId, now);
-					tx.Commit();
-					s.Flush();
-				}
-			}
-		}
-
-		[Obsolete("This is old. Only used for testing.", false)]
+		
+		[Obsolete("This is old. Only used for testing.")]
 		public static void AddManager(ISession s, PermissionsUtility perms, long userId, long managerId, DateTime now, bool ignoreCircular = false) {
 
 			perms.ManagesUserOrganization(userId, true, PermissionType.EditEmployeeManagers)
@@ -597,9 +512,8 @@ namespace RadialReview.Accessors {
 
 			AddMangerUnsafe(s, perms.GetCaller(), userId, managerId, now, ignoreCircular);
 		}
-
-
-		[Obsolete("This is old. Only used for testing.", false)]
+		
+		[Obsolete("This is old. Only used for testing.")]
 		public void AddManager(UserOrganizationModel caller, long userId, long managerId, DateTime now) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -613,7 +527,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		[Obsolete("This is old. Only used for testing.", false)]
+		[Obsolete("This is old. Only used for testing.")]
 		private static void AddMangerUnsafe(ISession s, UserOrganizationModel caller, long userId, long managerId, DateTime now, bool ignoreCircular = false) {
 			var user = s.Get<UserOrganizationModel>(userId);
 			var manager = s.Get<UserOrganizationModel>(managerId);
@@ -637,31 +551,7 @@ namespace RadialReview.Accessors {
 			//s.Update(new DeepSubordinateModel(){ManagerId=manager.Id}
 
 		}
-
-		[Obsolete("Cannot remove manager like this", true)]
-		public void SwapManager(UserOrganizationModel caller, long userId, long oldManagerId, long newManagerId, DateTime now) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					PermissionsUtility.Create(s, caller)
-						.ManagesUserOrganization(userId, true, PermissionType.EditEmployeeManagers)
-						.ManagesUserOrganization(oldManagerId, false, PermissionType.EditEmployeeManagers)
-						.ManagesUserOrganization(newManagerId, false, PermissionType.EditEmployeeManagers);
-
-					var managerDuration = s.QueryOver<ManagerDuration>().Where(x => x.DeleteTime == null && x.SubordinateId == userId && x.ManagerId == oldManagerId).Take(1).SingleOrDefault();
-
-					if (managerDuration == null)
-						throw new PermissionsException();
-
-					RemoveMangerUnsafe(s, caller, managerDuration, now);
-					AddMangerUnsafe(s, caller, userId, newManagerId, now);
-
-					tx.Commit();
-					s.Flush();
-				}
-			}
-
-		}
-
+		
 		public void ChangeRole(UserModel caller, UserOrganizationModel callerUserOrg, long roleId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -677,9 +567,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		[Untested("is IUpdateUserModelHook correctly called?")]
-		public async Task EditUserModel(UserModel caller, string userId, string firstName, string lastName, string imageGuid, bool? sendTodoEmails, int? sendTodoTime,
-			bool? showScorecardColors, bool? reverseScorecard,bool? disableTips) {
+		public async Task EditUserModel(UserModel caller, string userId, string firstName, string lastName, string imageGuid, bool? sendTodoEmails, int? sendTodoTime, bool? showScorecardColors, bool? reverseScorecard, bool? disableTips) {
 			UserModel user;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -700,16 +588,16 @@ namespace RadialReview.Accessors {
 						var us = s.Get<UserStyleSettings>(userId);
 						us.ShowScorecardColors = showScorecardColors.Value;
 						s.Update(us);
-                    }
-                    if (reverseScorecard != null) {
-                        user.ReverseScorecard = reverseScorecard.Value;
-                    }
-                    if (disableTips != null) {
-                        user.DisableTips= disableTips.Value;
-                    }
+					}
+					if (reverseScorecard != null) {
+						user.ReverseScorecard = reverseScorecard.Value;
+					}
+					if (disableTips != null) {
+						user.DisableTips = disableTips.Value;
+					}
 
 
-                    new Cache().Invalidate(CacheKeys.USER);
+					new Cache().Invalidate(CacheKeys.USER);
 
 					if (user.UserOrganization != null) {
 						foreach (var u in user.UserOrganization) {
@@ -730,6 +618,7 @@ namespace RadialReview.Accessors {
 			}
 
 		}
+
 		public List<String> SideEffectRemove(UserOrganizationModel caller, long userId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -753,7 +642,6 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		[Untested("Hooks")]
 		public async Task<ResultObject> UndeleteUser(UserOrganizationModel caller, long userId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -856,7 +744,7 @@ namespace RadialReview.Accessors {
 					s.Update(user);
 					user.UpdateCache(s);
 
-					await HooksRegistry.Each<IDeleteUserOrganizationHook>((ses,x) => x.UndeleteUser(ses, user));
+					await HooksRegistry.Each<IDeleteUserOrganizationHook>((ses, x) => x.UndeleteUser(ses, user));
 					tx.Commit();
 					s.Flush();
 
@@ -869,7 +757,6 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		[Untested("Hooks")]
 		public async Task<ResultObject> RemoveUser(UserOrganizationModel caller, long userId, DateTime now) {
 			UserOrganizationModel user;
 			var warnings = new List<String>();
@@ -886,8 +773,6 @@ namespace RadialReview.Accessors {
 							throw new PermissionsException("User does not exist.");
 						user.User.UserOrganizationIds = newArray.ToArray();
 					}
-
-
 					var tempUser = user.TempUser;
 					if (tempUser != null) {
 						//s.Delete(tempUser);
@@ -969,7 +854,7 @@ namespace RadialReview.Accessors {
 			}
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					await HooksRegistry.Each<IDeleteUserOrganizationHook>((ses,x) => x.DeleteUser(ses, user));
+					await HooksRegistry.Each<IDeleteUserOrganizationHook>((ses, x) => x.DeleteUser(ses, user));
 					tx.Commit();
 					s.Flush();
 				}
@@ -1014,35 +899,11 @@ namespace RadialReview.Accessors {
 				model.Position.PositionId = newPosition.Id;
 			}
 
-			//var positionId = -2L;
-			//if (model.Position != null)
-			//	positionId = model.Position.PositionId;
-
-
-
-
-
 			var nexusIdandUser = await JoinOrganizationAccessor.JoinOrganizationUnderManager(user, model);
-			//	user, model.ManagerNodeId, model.IsManager,
-			//	positionId, model.Email,
-			//	model.FirstName, model.LastName,
-			//	model.IsClient,
-			//	model.SendEmail,
-			//	model.OrganizationName
-			//);
 			createdUser = nexusIdandUser.Item2;
 			var nexusId = nexusIdandUser.Item1;
 
 			return nexusIdandUser;
-			//var message = "Successfully added " + model.FirstName + " " + model.LastName + ".";
-			//if (caller.Organization.SendEmailImmediately) {
-			//	message += " An invitation has been sent to " + model.Email + ".";
-			//	return Json(ResultObject.Create(null/*createdUser.GetTree(createdUser.Id.AsList())*/, message));
-			//}
-			//else {
-			//	message += " The invitation has NOT been sent. To send, click \"Send Invites\" below.";
-			//	return Json(ResultObject.Create(null/*createdUser.GetTree(createdUser.Id.AsList())*/, message, StatusType.Warning));
-			//}
 		}
 
 		public static List<TinyUser> Search(UserOrganizationModel caller, long orgId, string search, int take = int.MaxValue, long[] exclude = null) {
@@ -1100,6 +961,31 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+
+		public async static Task<IdentityResult> CreateUser(NHibernateUserManager UserManager, UserModel user, ExternalLoginInfo info) {
+			var result = await UserManager.CreateAsync(user);
+			if (result.Succeeded) {
+				result = await UserManager.AddLoginAsync(user.Id, info.Login);
+				AddSettings(result, user);
+			}
+			return result;
+		}
+
+		public async static Task<IdentityResult> CreateUser(NHibernateUserManager UserManager, UserModel user, string password) {
+			user.UserName = user.UserName.NotNull(x => x.ToLower());
+			var resultx = await UserManager.CreateAsync(user, password);
+			AddSettings(resultx, user);
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					await HooksRegistry.Each<ICreateUserOrganizationHook>((ses, x) => x.OnUserRegister(ses, user));
+					tx.Commit();
+					s.Flush();
+				}
+			}
+
+			return resultx;
+		}
+
 		private static void AddSettings(IdentityResult result, UserModel user) {
 			if (result.Succeeded) {
 				using (var s = HibernateSession.GetCurrentSession()) {
@@ -1114,30 +1000,6 @@ namespace RadialReview.Accessors {
 					}
 				}
 			}
-		}
-		public async static Task<IdentityResult> CreateUser(NHibernateUserManager UserManager, UserModel user, ExternalLoginInfo info) {
-			var result = await UserManager.CreateAsync(user);
-			if (result.Succeeded) {
-				result = await UserManager.AddLoginAsync(user.Id, info.Login);
-				AddSettings(result, user);
-			}
-			return result;
-		}
-
-		[Untested("Hooks")]
-		public async static Task<IdentityResult> CreateUser(NHibernateUserManager UserManager, UserModel user, string password) {
-			user.UserName = user.UserName.NotNull(x => x.ToLower());
-			var resultx = await UserManager.CreateAsync(user, password);
-			AddSettings(resultx, user);
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					await HooksRegistry.Each<ICreateUserOrganizationHook>((ses,x) => x.OnUserRegister(ses, user));
-					tx.Commit();
-					s.Flush();
-				}
-			}
-
-			return resultx;
 		}
 
 		public static string GetStyles(string userModel) {
@@ -1159,6 +1021,95 @@ namespace RadialReview.Accessors {
 			return builder.ToString();
 		}
 
+		#region Deleted
+		//[Obsolete("Fix for AC")]
+		//public static List<UserOrganizationModel> GetPeers(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, Reviewer reviewer) {
+		//	throw new NotImplementedException();
+		//}
+		//[Obsolete("Fix for AC",true)]
+		//public static List<UserOrganizationModel> GetPeers(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, Reviewee reviewee) {
+		//	throw new NotImplementedException();
+		//}
+		//[Obsolete("Fix for AC", true)]
+		//public static List<UserOrganizationModel> GetManagers(AbstractQuery s, PermissionsUtility perms, UserOrganizationModel caller, Reviewee reviewee) {
+		//	throw new NotImplementedException();
+		//}
+		//[Obsolete("Fix for AC", true)]
+		//public static List<UserOrganizationModel> GetDirectSubordinates(AbstractQuery s, PermissionsUtility perms, Reviewee reviewee) {
+		//	throw new NotImplementedException();
+		//}
 
+		//[Obsolete("Cannot remove manager like this", true)]
+		//public void RemoveManager(UserOrganizationModel caller, long userId, long managerId, DateTime now) {
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
+		//			var perms = PermissionsUtility.Create(s, caller);
+		//			var managerDuration = s.QueryOver<ManagerDuration>().Where(x => x.DeleteTime == null && x.SubordinateId == userId && x.ManagerId == managerId).Take(1).SingleOrDefault();
+		//			RemoveManager(s, perms, caller, managerDuration.Id, now);
+		//			tx.Commit();
+		//			s.Flush();
+		//		}
+		//	}
+		//}
+		//[Obsolete("Cannot remove manager like this", true)]
+		//public static void RemoveManager(ISession s, PermissionsUtility perms, long userId, long managerId, DateTime now) {
+		//	var managerDuration = s.QueryOver<ManagerDuration>().Where(x => x.DeleteTime == null && x.SubordinateId == userId && x.ManagerId == managerId).Take(1).SingleOrDefault();
+		//	if (managerDuration != null) {
+		//		RemoveManager(s, perms, perms.GetCaller(), managerDuration.Id, now);
+		//	} else {
+		//		log.Error("manager duration does not exist " + userId + " " + managerId + " " + now.ToString());
+		//	}
+
+		//}
+		//[Obsolete("Cannot remove manager like this", true)]
+		//public static void RemoveManager(ISession s, PermissionsUtility perms, UserOrganizationModel caller, long managerDurationId, DateTime now) {
+		//	var managerDuration = s.Get<ManagerDuration>(managerDurationId);
+		//	perms.ManagesUserOrganization(managerDuration.SubordinateId, true, PermissionType.EditEmployeeManagers).ManagesUserOrganization(managerDuration.ManagerId, false, PermissionType.EditEmployeeManagers);
+		//	RemoveMangerUnsafe(s, caller, managerDuration, now);
+		//}
+		//[Obsolete("This is old. Only used for testing.", true)]
+		//private static void RemoveMangerUnsafe(ISession s, UserOrganizationModel caller, ManagerDuration managerDuration, DateTime now) {
+		//	//DeepSubordianteAccessor.Remove(s, managerDuration.Manager, managerDuration.Subordinate, now);
+		//	managerDuration.DeletedBy = caller.Id;
+		//	managerDuration.DeleteTime = now;
+		//	s.Update(managerDuration);
+		//	managerDuration.Subordinate.UpdateCache(s);
+		//	managerDuration.Manager.UpdateCache(s);
+		//}
+		//[Obsolete("This is old. Only used for testing.", true)]
+		//public void RemoveManager(UserOrganizationModel caller, long managerDurationId, DateTime now) {
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
+		//			var perms = PermissionsUtility.Create(s, caller);
+		//			RemoveManager(s, perms, caller, managerDurationId, now);
+		//			tx.Commit();
+		//			s.Flush();
+		//		}
+		//	}
+		//}
+		//[Obsolete("Cannot remove manager like this", true)]
+		//public void SwapManager(UserOrganizationModel caller, long userId, long oldManagerId, long newManagerId, DateTime now) {
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
+		//			PermissionsUtility.Create(s, caller)
+		//				.ManagesUserOrganization(userId, true, PermissionType.EditEmployeeManagers)
+		//				.ManagesUserOrganization(oldManagerId, false, PermissionType.EditEmployeeManagers)
+		//				.ManagesUserOrganization(newManagerId, false, PermissionType.EditEmployeeManagers);
+
+		//			var managerDuration = s.QueryOver<ManagerDuration>().Where(x => x.DeleteTime == null && x.SubordinateId == userId && x.ManagerId == oldManagerId).Take(1).SingleOrDefault();
+
+		//			if (managerDuration == null)
+		//				throw new PermissionsException();
+
+		//			RemoveMangerUnsafe(s, caller, managerDuration, now);
+		//			AddMangerUnsafe(s, caller, userId, newManagerId, now);
+
+		//			tx.Commit();
+		//			s.Flush();
+		//		}
+		//	}
+		//}
+
+		#endregion
 	}
 }

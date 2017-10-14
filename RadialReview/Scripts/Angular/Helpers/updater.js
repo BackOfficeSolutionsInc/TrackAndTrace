@@ -150,12 +150,16 @@
 
                                 for (var entry in src.AngularList) {
                                     if (arrayHasOwnIndex(src.AngularList, entry)) {
-                                        var entryKey = src.AngularList[entry]["Key"];
-                                        var index = keysList.indexOf(entryKey);
-                                        if (index != -1) {
-                                            dst[key].splice(index, 1);
-                                            keysList.splice(index, 1);
-                                        }
+                                    	var entryKey = src.AngularList[entry]["Key"];
+                                    	while (true) {
+                                    		var index = keysList.indexOf(entryKey);
+                                    		if (index != -1) {
+                                    			dst[key].splice(index, 1);
+                                    			keysList.splice(index, 1);
+                                    		} else {
+                                    			break;
+                                    		}
+                                    	}
                                     }
                                 }
                             } else {
@@ -396,7 +400,7 @@
         return function (self, args) {
             var dat = angular.copy(self);
             var _clientTimestamp = new Date().getTime();
-
+            debugger;
             this.updater.convertDatesForServer(dat, tzoffset());
             var builder = "";
             args = args || {};

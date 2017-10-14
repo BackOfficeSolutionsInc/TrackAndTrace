@@ -14,84 +14,84 @@ using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
 {
-    public partial class MeetingController : BaseController
-    {
-		// GET: Meeting
-		[Access(AccessLevel.UserOrganization)]
-        public ActionResult Index()
-        {
-            return View();
-        }
+  //  public partial class MeetingController : BaseController
+  //  {
+		//// GET: Meeting
+		//[Access(AccessLevel.UserOrganization)]
+  //      public ActionResult Index()
+  //      {
+  //          return View();
+  //      }
 
-		[Access(AccessLevel.UserOrganization)]
-	    public ActionResult Attend(long id){
-		    return View(id);
-		}
+		//[Access(AccessLevel.UserOrganization)]
+	 //   public ActionResult Attend(long id){
+		//    return View(id);
+		//}
 
-		[Access(AccessLevel.UserOrganization)]
-        public PartialViewResult Template(string id)
-	    {
-		    var approved = new []{"segue","scorecard","rocks","headlines","todo","ids","conclusion"};
-		    if (approved.Contains(id.ToLower()))
-			    return PartialView("Templates/" + id);
-			throw new PermissionsException("Template does not exist.");
+		//[Access(AccessLevel.UserOrganization)]
+  //      public PartialViewResult Template(string id)
+	 //   {
+		//    var approved = new []{"segue","scorecard","rocks","headlines","todo","ids","conclusion"};
+		//    if (approved.Contains(id.ToLower()))
+		//	    return PartialView("Templates/" + id);
+		//	throw new PermissionsException("Template does not exist.");
 
-	    }
+	 //   }
 
-		[Access(AccessLevel.UserOrganization)]
-	    public JsonResult Data(long id)
-	    {
-		    var current = L10Accessor.GetCurrentL10Meeting(GetUser(), id, false, true, true);
-			var recurrence = L10Accessor.GetL10Recurrence(GetUser(), id, true);
-		    if (current != null){
-				var model = new AngularMeeting(id);
-				model.AgendaItems.Add(new AngularAgendaItem_Segue(-1));
-				//Scorecard 
-			    var scorecard = new AngularAgendaItem_Scorecard(-2);
-			    var scores = L10Accessor.GetScoresForRecurrence(GetUser(), id);
-				scorecard.Measurables = current._MeetingMeasurables.Select(x => new AngularMeetingMeasurable(x)).ToList();
-
-
-				//var sow = GetUser().Organization.Settings.WeekStart;
-				//var offset = GetUser().Organization.GetTimezoneOffset();
-				//var period = GetUser().Organization.Settings.ScorecardPeriod;
+		//[Access(AccessLevel.UserOrganization)]
+	 //   public JsonResult Data(long id)
+	 //   {
+		//    var current = L10Accessor.GetCurrentL10Meeting(GetUser(), id, false, true, true);
+		//	var recurrence = L10Accessor.GetL10Recurrence(GetUser(), id, true);
+		//    if (current != null){
+		//		var model = new AngularMeeting(id);
+		//		model.AgendaItems.Add(new AngularAgendaItem_Segue(-1));
+		//		//Scorecard 
+		//	    var scorecard = new AngularAgendaItem_Scorecard(-2);
+		//	    var scores = L10Accessor.GetScoresForRecurrence(GetUser(), id);
+		//		scorecard.Measurables = current._MeetingMeasurables.Select(x => new AngularMeetingMeasurable(x)).ToList();
 
 
-				var ts = GetUser().GetTimeSettings();
-				//ts.Descending = recur.ReverseScorecard;
-
-				scorecard.Weeks = TimingUtility.GetPeriods(ts, DateTime.UtcNow, current.StartTime, true).Select(x => new AngularWeek(x)).ToList();
-
-				if (recurrence.ReverseScorecard)
-					scorecard.Weeks.Reverse();
-
-			    scorecard.Scores = scores.Select(x => new AngularScore(x)).ToList();
-
-				model.AgendaItems.Add(scorecard);
+		//		//var sow = GetUser().Organization.Settings.WeekStart;
+		//		//var offset = GetUser().Organization.GetTimezoneOffset();
+		//		//var period = GetUser().Organization.Settings.ScorecardPeriod;
 
 
-				//Rocks
-			    var rockPage = new AngularAgendaItem_Rocks(-3, GetUser().Organization.Settings.RockName + " Review");
-			    rockPage.Rocks = current._MeetingRocks.Select(x => new AngularMeetingRock(x)).ToList();
-				model.AgendaItems.Add(rockPage);
+		//		var ts = GetUser().GetTimeSettings();
+		//		//ts.Descending = recur.ReverseScorecard;
 
-				model.AgendaItems.Add(new AngularAgendaItem_Headlines(-4));
-				model.AgendaItems.Add(new AngularAgendaItem_Todos(-5));
-				model.AgendaItems.Add(new AngularAgendaItem_IDS(-6));
-				model.AgendaItems.Add(new AngularAgendaItem_Conclusion(-7));
+		//		scorecard.Weeks = TimingUtility.GetPeriods(ts, DateTime.UtcNow, current.StartTime, true).Select(x => new AngularWeek(x)).ToList();
 
-			    model.Notes = recurrence._MeetingNotes.Select(x => new AngularMeetingNotes(x)).ToList();
+		//		if (recurrence.ReverseScorecard)
+		//			scorecard.Weeks.Reverse();
 
-			    model.Start = current.StartTime;
-				model.Attendees = current._MeetingAttendees.Select(x => AngularUser.CreateUser(x.User)).ToList();
-			    model.Name = recurrence.Name;
-			    model.MeetingId = current.Id;
-				model.Leader = AngularUser.CreateUser(current.MeetingLeader);
-			    model.CurrentPage = current._MeetingLeaderCurrentPage;
+		//	    scorecard.Scores = scores.Select(x => new AngularScore(x)).ToList();
 
-				return Json(model,JsonRequestBehavior.AllowGet);
-		    }
-			throw new PermissionsException("Meeting has not started");
-	    }
-    }
+		//		model.AgendaItems.Add(scorecard);
+
+
+		//		//Rocks
+		//	    var rockPage = new AngularAgendaItem_Rocks(-3, GetUser().Organization.Settings.RockName + " Review");
+		//	    rockPage.Rocks = current._MeetingRocks.Select(x => new AngularMeetingRock(x)).ToList();
+		//		model.AgendaItems.Add(rockPage);
+
+		//		model.AgendaItems.Add(new AngularAgendaItem_Headlines(-4));
+		//		model.AgendaItems.Add(new AngularAgendaItem_Todos(-5));
+		//		model.AgendaItems.Add(new AngularAgendaItem_IDS(-6));
+		//		model.AgendaItems.Add(new AngularAgendaItem_Conclusion(-7));
+
+		//	    model.Notes = recurrence._MeetingNotes.Select(x => new AngularMeetingNotes(x)).ToList();
+
+		//	    model.Start = current.StartTime;
+		//		model.Attendees = current._MeetingAttendees.Select(x => AngularUser.CreateUser(x.User)).ToList();
+		//	    model.Name = recurrence.Name;
+		//	    model.MeetingId = current.Id;
+		//		model.Leader = AngularUser.CreateUser(current.MeetingLeader);
+		//	    model.CurrentPage = current._MeetingLeaderCurrentPage;
+
+		//		return Json(model,JsonRequestBehavior.AllowGet);
+		//    }
+		//	throw new PermissionsException("Meeting has not started");
+	 //   }
+  //  }
 }

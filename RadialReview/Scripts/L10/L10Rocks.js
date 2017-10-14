@@ -246,10 +246,10 @@ $(window).on("footer-resize", function () {
 	setTimeout(fixRocksDetailsBoxSize, 250);
 });
 
-function updateRockCompletion(meetingRockId, state, rockId) {
-	$("input[name='rock_" + meetingRockId + "']").val(state);
-	if (rockId !== undefined) {
-		$("input[name='for_rock_" + rockId + "']").val(state);
+function updateRockCompletion(rockId, state, rockId1) {
+	$("input[name='rock_" + rockId + "']").val(state);
+	if (rockId1 !== undefined) {
+		$("input[name='for_rock_" + rockId1 + "']").val(state);
 	}
 }
 

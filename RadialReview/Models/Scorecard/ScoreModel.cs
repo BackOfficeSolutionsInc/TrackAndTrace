@@ -26,6 +26,7 @@ namespace RadialReview.Models.Scorecard {
 
         public virtual DateTime ForWeek { get; set; }
         public virtual DateTime? DateEntered { get; set; }
+		[Obsolete("Not used or updated")]
         public virtual DateTime DateDue { get; set; }
 
         public virtual decimal? OriginalGoal { get; set; }

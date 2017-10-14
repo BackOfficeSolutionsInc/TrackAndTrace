@@ -269,23 +269,40 @@ namespace RadialReview.Accessors {
 
             var chart = s.Get<AccountabilityChart>(chartId);
 
-            var nodes = s.QueryOver<AccountabilityNode>().Where(x => x.AccountabilityChartId == chartId).Where(range.Filter<AccountabilityNode>()).Future();
-            var groups = s.QueryOver<AccountabilityRolesGroup>().Where(x => x.AccountabilityChartId == chartId).Where(range.Filter<AccountabilityRolesGroup>()).Future();
-            var userTemplates = s.QueryOver<UserTemplate>().Where(x => x.OrganizationId == chart.OrganizationId).Where(range.Filter<UserTemplate>()).Future();
+            var nodesQ = s.QueryOver<AccountabilityNode>().Where(x => x.AccountabilityChartId == chartId).Where(range.Filter<AccountabilityNode>()).Future();
+			PositionModel posAlias = null;
+            var groupsQ = s.QueryOver<AccountabilityRolesGroup>()
+				//.JoinAlias(x=>x.Position,()=>posAlias)
+				.Where(x => x.AccountabilityChartId == chartId)
+				.Where(range.Filter<AccountabilityRolesGroup>())
+				.Future();
 
-            var roles = s.QueryOver<RoleModel>().Where(x => x.OrganizationId == chart.OrganizationId).Where(range.Filter<RoleModel>()).Future();
-            var roleLinks = s.QueryOver<RoleLink>().Where(x => x.OrganizationId == chart.OrganizationId).Where(range.Filter<RoleLink>()).Future();
+            var userTemplatesQ = s.QueryOver<UserTemplate>().Where(x => x.OrganizationId == chart.OrganizationId).Where(range.Filter<UserTemplate>()).Future();
 
-            var teams = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == chart.OrganizationId).Where(range.Filter<OrganizationTeamModel>()).Select(x => x.Id, x => x.Name).Future<object[]>();
-            var positions = s.QueryOver<OrganizationPositionModel>().Where(x => x.Organization.Id == chart.OrganizationId).Where(range.Filter<OrganizationPositionModel>()).Select(x => x.Id, x => x.CustomName).Future<object[]>();
+            var rolesQ = s.QueryOver<RoleModel>().Where(x => x.OrganizationId == chart.OrganizationId).Where(range.Filter<RoleModel>()).Future();
+            var roleLinksQ = s.QueryOver<RoleLink>().Where(x => x.OrganizationId == chart.OrganizationId).Where(range.Filter<RoleLink>()).Future();
 
-            var teamDurs = s.QueryOver<TeamDurationModel>().Where(x => x.OrganizationId == chart.OrganizationId).Where(range.Filter<TeamDurationModel>()).Select(x => x.TeamId, x => x.UserId).Future<object[]>();
-            var posDurs = s.QueryOver<PositionDurationModel>().Where(x => x.OrganizationId == chart.OrganizationId).Where(range.Filter<PositionDurationModel>()).Select(x => x.Position.Id, x => x.UserId).Future<object[]>();
+            var teamsQ = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == chart.OrganizationId).Where(range.Filter<OrganizationTeamModel>()).Select(x => x.Id, x => x.Name).Future<object[]>();
+            var positionsQ = s.QueryOver<OrganizationPositionModel>().Where(x => x.Organization.Id == chart.OrganizationId).Where(range.Filter<OrganizationPositionModel>()).Select(x => x.Id, x => x.CustomName).Future<object[]>();
 
+            var teamDursQ = s.QueryOver<TeamDurationModel>().Where(x => x.OrganizationId == chart.OrganizationId).Where(range.Filter<TeamDurationModel>()).Select(x => x.TeamId, x => x.UserId).Future<object[]>();
+            var posDursQ = s.QueryOver<PositionDurationModel>().Where(x => x.OrganizationId == chart.OrganizationId).Where(range.Filter<PositionDurationModel>()).Select(x => x.Position.Id, x => x.UserId).Future<object[]>();
 
-            var usersF = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == chart.OrganizationId && !x.IsClient).Where(range.Filter<UserOrganizationModel>()).List().ToList();
+			var userLookupsQ = s.QueryOver<UserLookup>().Where(x=>x.OrganizationId == chart.OrganizationId).Where(range.Filter<UserLookup>()).Future();
+			var usersF = s.QueryOver<UserOrganizationModel>().Where(x => x.Organization.Id == chart.OrganizationId && !x.IsClient).Where(range.Filter<UserOrganizationModel>()).List().ToList();
 
-            var teamName = teams.ToDictionary(x => (long)x[0], x => (string)x[1]);
+			var nodes = nodesQ.ToList();
+			var groups = groupsQ.ToList();
+			var userTemplates = userTemplatesQ.ToList();
+			var roles = rolesQ.ToList();
+			var roleLinks= roleLinksQ.ToList();
+			var teams = teamsQ.ToList();
+			var positions = positionsQ.ToList();
+			var teamDurs = teamDursQ.ToList();
+			var userLookups = userLookupsQ.ToList();
+			var posDurs = posDursQ.ToList();
+			
+			var teamName = teams.ToDictionary(x => (long)x[0], x => (string)x[1]);
             var posName = positions.ToDictionary(x => (long)x[0], x => (string)x[1]);
 
             var pd = posDurs.Select(x => new PosDur { PosId = (long)x[0], PosName = posName.GetOrDefault((long)x[0], null), UserId = (long)x[1] }).ToList();
@@ -1016,8 +1033,7 @@ namespace RadialReview.Accessors {
                 }
             }
         }
-
-		[Untested("Hook")]
+		
         public static async Task<RoleModel> AddRole(ISession s, PermissionsUtility perms, RealTimeUtility rt, Attach attachTo, string name = null) {
 
             perms.EditAttach(attachTo);
@@ -1232,7 +1248,7 @@ namespace RadialReview.Accessors {
                 SetUser(s, rt, perms, node.Id, userId);
             }
         }
-		[Untested("Hooks")]
+
         public static async Task UpdateRole(ISession s, RealTimeUtility rt, PermissionsUtility perms, long roleId, string name) {
             perms.EditRole(roleId);
 

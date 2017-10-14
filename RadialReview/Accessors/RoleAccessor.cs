@@ -79,7 +79,6 @@ namespace RadialReview.Accessors {
 		}
 
 		public static List<RoleModel> GetRolesForAttach_Unsafe(ISession s, Attach attach, DateRange range = null) {
-
 			var roleIds = s.QueryOver<RoleLink>()
 				.Where(range.Filter<RoleLink>())
 				.Where(x => x.AttachId == attach.Id && x.AttachType == attach.Type)
@@ -90,23 +89,8 @@ namespace RadialReview.Accessors {
 				.Where(range.Filter<RoleModel>())
 				.WhereRestrictionOn(x => x.Id).IsIn(roleIds)
 				.List().ToList();
-
-			//var teams = s.QueryOver<TeamDurationModel>().Where(x => x.UserId == forUserId).Where(range.Filter<TeamDurationModel>()).Future();// .FilterRange(range);
-			//var pos = s.QueryOver<PositionDurationModel>().Where(x => x.UserId == forUserId).Where(range.Filter<PositionDurationModel>()).Future();
-			//var userRoleLinks = s.QueryOver<RoleLink>().Where(x => x.AttachType == AttachType.User && x.AttachId == forUserId).Where(range.Filter<RoleLink>()).Future();
-			//var teamRoleLinks = s.QueryOver<RoleLink>().Where(x => x.AttachType == AttachType.Team).Where(range.Filter<RoleLink>())
-			//	.WhereRestrictionOn(x => x.AttachId).IsIn(teams.Select(x => x.TeamId).ToArray()).Future();
-			//var posRoleLinks = s.QueryOver<RoleLink>().Where(x => x.AttachType == AttachType.Position).Where(range.Filter<RoleLink>())
-			//	.WhereRestrictionOn(x => x.AttachId).IsIn(pos.Select(x => x.Position.Id).ToArray()).Future();
-
-			//var allLinks = new List<RoleLink>();
-			//allLinks.AddRange(userRoleLinks);
-			//allLinks.AddRange(teamRoleLinks);
-			//allLinks.AddRange(posRoleLinks);
-
-			//return allLinks;
 		}
-		[Untested("hooks")]
+
 		public static async Task EditRole(UserOrganizationModel caller, long id, string role, DateTime? deleteTime = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -137,84 +121,82 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-        public class RoleLinksQuery {
+		public class RoleLinksQuery {
 
-            public RoleLinksQuery(IEnumerable<RoleModel> roles, IEnumerable<RoleLink> roleLinks, IEnumerable<TeamDurationModel> teams, IEnumerable<PositionDurationModel> positions, DateRange range=null) {
-                Teams = teams;
-                Positions = positions;
-                RoleLinks = roleLinks;
-                DateRange = range;
-                Roles = roles;
-            }
+			public RoleLinksQuery(IEnumerable<RoleModel> roles, IEnumerable<RoleLink> roleLinks, IEnumerable<TeamDurationModel> teams, IEnumerable<PositionDurationModel> positions, DateRange range = null) {
+				Teams = teams;
+				Positions = positions;
+				RoleLinks = roleLinks;
+				DateRange = range;
+				Roles = roles;
+			}
 
-            public IEnumerable<TeamDurationModel> Teams { get; set; }
-            public IEnumerable<PositionDurationModel> Positions { get; set; }
-            public IEnumerable<RoleLink> RoleLinks { get; set; }
-            public IEnumerable<RoleModel> Roles { get; set; }
-            public DateRange DateRange { get; set; }
-            //protected IEnumerable<RoleLink> TeamRoleLinks { get; set; }
-            //protected IEnumerable<RoleLink> PositionRoleLinks { get; set; }        
-         
-            private IEnumerable<RoleDetails> ConstructRoleDetails(RoleLink link) {
-                var role = Roles.Where(x => x.Id == link.RoleId).Where(DateRange.Filter<RoleModel>().Compile()).SingleOrDefault();
-                if (role != null)
-                    yield return new RoleDetails(role, link);
-                yield break;               
-            }
+			public IEnumerable<TeamDurationModel> Teams { get; set; }
+			public IEnumerable<PositionDurationModel> Positions { get; set; }
+			public IEnumerable<RoleLink> RoleLinks { get; set; }
+			public IEnumerable<RoleModel> Roles { get; set; }
+			public DateRange DateRange { get; set; }
 
-            public IEnumerable<RoleDetails> GetRoleDetailsForUser(long forUserId) {
+			private IEnumerable<RoleDetails> ConstructRoleDetails(RoleLink link) {
+				var role = Roles.Where(x => x.Id == link.RoleId).Where(DateRange.Filter<RoleModel>().Compile()).SingleOrDefault();
+				if (role != null)
+					yield return new RoleDetails(role, link);
+				yield break;
+			}
 
-                var range = DateRange;
-                var teams = Teams.Where(x => x.UserId == forUserId).Where(range.Filter<TeamDurationModel>().Compile());// .FilterRange(range);
-                var pos = Positions.Where(x => x.UserId == forUserId).Where(range.Filter<PositionDurationModel>().Compile());
+			public IEnumerable<RoleDetails> GetRoleDetailsForUser(long forUserId) {
 
-                var rangeLinks = RoleLinks.Where(range.Filter<RoleLink>().Compile());
-                
-                var userRoleLinks = rangeLinks.Where(x => x.AttachType == AttachType.User     && x.AttachId == forUserId).SelectMany(ConstructRoleDetails);
-                var teamRoleLinks = rangeLinks.Where(x => x.AttachType == AttachType.Team     && (teams.Any(y => y.TeamId == x.AttachId))).SelectMany(ConstructRoleDetails);
-                var posRoleLinks  = rangeLinks.Where(x => x.AttachType == AttachType.Position && (pos.Any(y => y.Position.Id== x.AttachId))).SelectMany(ConstructRoleDetails);
+				var range = DateRange;
+				var teams = Teams.Where(x => x.UserId == forUserId).Where(range.Filter<TeamDurationModel>().Compile());// .FilterRange(range);
+				var pos = Positions.Where(x => x.UserId == forUserId).Where(range.Filter<PositionDurationModel>().Compile());
 
-                return userRoleLinks.Union(teamRoleLinks).Union(posRoleLinks);
-            }
+				var rangeLinks = RoleLinks.Where(range.Filter<RoleLink>().Compile());
 
-            public IEnumerable<RoleLink> GetRoleLinksForUser(long forUserId) {
-                return GetRoleDetailsForUser(forUserId).Select(x => x.RoleLink);
-            }            
-            public IEnumerable<RoleModel> GetRolesForUser(long forUserId) {
-                return GetRoleDetailsForUser(forUserId).Select(x => x.Role);
-            }
+				var userRoleLinks = rangeLinks.Where(x => x.AttachType == AttachType.User && x.AttachId == forUserId).SelectMany(ConstructRoleDetails);
+				var teamRoleLinks = rangeLinks.Where(x => x.AttachType == AttachType.Team && (teams.Any(y => y.TeamId == x.AttachId))).SelectMany(ConstructRoleDetails);
+				var posRoleLinks = rangeLinks.Where(x => x.AttachType == AttachType.Position && (pos.Any(y => y.Position.Id == x.AttachId))).SelectMany(ConstructRoleDetails);
+
+				return userRoleLinks.Union(teamRoleLinks).Union(posRoleLinks);
+			}
+
+			public IEnumerable<RoleLink> GetRoleLinksForUser(long forUserId) {
+				return GetRoleDetailsForUser(forUserId).Select(x => x.RoleLink);
+			}
+			public IEnumerable<RoleModel> GetRolesForUser(long forUserId) {
+				return GetRoleDetailsForUser(forUserId).Select(x => x.Role);
+			}
 
 			public IEnumerable<RoleDetails> GetRoleDetailsForNode(AccountabilityNode node) {
 				var nodeRoleLinks = new List<RoleDetails>();
 				var posId = node.AccountabilityRolesGroup.NotNull(x => x.PositionId);
-				if ( posId != null) {
+				if (posId != null) {
 					nodeRoleLinks.AddRange(RoleLinks.Where(x => x.AttachType == AttachType.Position && x.AttachId == posId).SelectMany(ConstructRoleDetails));
 				}
-				
+
 				if (node.User != null) {
 					var userId = node.User.Id;
 					nodeRoleLinks.AddRange(RoleLinks.Where(x => x.AttachType == AttachType.User && x.AttachId == userId).SelectMany(ConstructRoleDetails));
 					var teamIds = Teams.Where(x => x.UserId == userId).Select(x => x.TeamId).ToArray();
-					nodeRoleLinks.AddRange(RoleLinks.Where(x => x.AttachType == AttachType.Team && teamIds.Any(y=>y == x.AttachId)).SelectMany(ConstructRoleDetails));
+					nodeRoleLinks.AddRange(RoleLinks.Where(x => x.AttachType == AttachType.Team && teamIds.Any(y => y == x.AttachId)).SelectMany(ConstructRoleDetails));
 				}
 				return nodeRoleLinks;
 			}
 
 			public class RoleDetails {
-                public RoleDetails(RoleModel role, RoleLink roleLink) {
-                    Role = role;
-                    RoleLink = roleLink;
-                }
-                public RoleModel Role { get; set; }
-                public RoleLink RoleLink { get; set; }
-                public Attach RoleComesFrom { get { return RoleLink.GetAttach(); } }                
-            }
-            
+				public RoleDetails(RoleModel role, RoleLink roleLink) {
+					Role = role;
+					RoleLink = roleLink;
+				}
+				public RoleModel Role { get; set; }
+				public RoleLink RoleLink { get; set; }
+				public Attach RoleComesFrom { get { return RoleLink.GetAttach(); } }
+			}
 
-        }
 
-        //Update Both GetRoleLinks_Unsafe Methods
-        public static List<RoleLink> GetRoleLinksForUser_Unsafe(ISession s, long forUserId, DateRange range = null) {
+		}
+
+		//Update Both GetRoleLinks_Unsafe Methods
+		public static List<RoleLink> GetRoleLinksForUser_Unsafe(ISession s, long forUserId, DateRange range = null) {
 			var teams = s.QueryOver<TeamDurationModel>().Where(x => x.UserId == forUserId).Where(range.Filter<TeamDurationModel>()).Future();// .FilterRange(range);
 			var pos = s.QueryOver<PositionDurationModel>().Where(x => x.UserId == forUserId).Where(range.Filter<PositionDurationModel>()).Future();
 			var userRoleLinks = s.QueryOver<RoleLink>().Where(x => x.AttachType == AttachType.User && x.AttachId == forUserId).Where(range.Filter<RoleLink>()).Future();
@@ -222,33 +204,33 @@ namespace RadialReview.Accessors {
 				.WhereRestrictionOn(x => x.AttachId).IsIn(teams.Select(x => x.TeamId).ToLazyCollection()).Future();
 			var posRoleLinks = s.QueryOver<RoleLink>().Where(x => x.AttachType == AttachType.Position).Where(range.Filter<RoleLink>())
 				.WhereRestrictionOn(x => x.AttachId).IsIn(pos.Select(x => x.Position.Id).ToLazyCollection()).Future();
-            
-            //return userRoleLinks.Union(teamRoleLinks).Union(posRoleLinks);
 
-            var allLinks = new List<RoleLink>();
-            allLinks.AddRange(userRoleLinks);
-            allLinks.AddRange(teamRoleLinks);
-            allLinks.AddRange(posRoleLinks);
+			//return userRoleLinks.Union(teamRoleLinks).Union(posRoleLinks);
 
-            return allLinks;
-        }
-        public static RoleLinksQuery GetRolesForOrganization_Unsafe(ISession s, long organizationId, DateRange range = null) {
+			var allLinks = new List<RoleLink>();
+			allLinks.AddRange(userRoleLinks);
+			allLinks.AddRange(teamRoleLinks);
+			allLinks.AddRange(posRoleLinks);
 
-            //THIS SHOULD ALL BE LAZY..
-            var teams = s.QueryOver<TeamDurationModel>().Where(x => x.OrganizationId == organizationId).Where(range.Filter<TeamDurationModel>()).Future();
-            var pos = s.QueryOver<PositionDurationModel>().Where(x => x.OrganizationId == organizationId).Where(range.Filter<PositionDurationModel>()).Future();
-            var roleLinks = s.QueryOver<RoleLink>().Where(x => x.OrganizationId == organizationId).Where(range.Filter<RoleLink>()).Future();
-            var roles = s.QueryOver<RoleModel>().Where(x => x.OrganizationId == organizationId).Where(range.Filter<RoleModel>()).Future();
+			return allLinks;
+		}
+		public static RoleLinksQuery GetRolesForOrganization_Unsafe(ISession s, long organizationId, DateRange range = null) {
 
-            return new RoleLinksQuery(roles, roleLinks, teams, pos, range);
+			//THIS SHOULD ALL BE LAZY..
+			var teams = s.QueryOver<TeamDurationModel>().Where(x => x.OrganizationId == organizationId).Where(range.Filter<TeamDurationModel>()).Future();
+			var pos = s.QueryOver<PositionDurationModel>().Where(x => x.OrganizationId == organizationId).Where(range.Filter<PositionDurationModel>()).Future();
+			var roleLinks = s.QueryOver<RoleLink>().Where(x => x.OrganizationId == organizationId).Where(range.Filter<RoleLink>()).Future();
+			var roles = s.QueryOver<RoleModel>().Where(x => x.OrganizationId == organizationId).Where(range.Filter<RoleModel>()).Future();
 
-            //return userRoleLinks;
-            
-        }
-        #endregion
+			return new RoleLinksQuery(roles, roleLinks, teams, pos, range);
 
-        #region GetRoles
-        public List<RoleModel> GetRoles(UserOrganizationModel caller, long userId, DateRange range = null) {
+			//return userRoleLinks;
+
+		}
+		#endregion
+
+		#region GetRoles
+		public List<RoleModel> GetRoles(UserOrganizationModel caller, long userId, DateRange range = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
@@ -266,16 +248,12 @@ namespace RadialReview.Accessors {
 		}
 
 		public static List<RoleModel> GetRolesForReviewee(AbstractQuery queryProvider, PermissionsUtility perms, Reviewee revieweeUser, DateRange range = null) {
-
 			var forUserId = revieweeUser.RGMId;
-
 			if (revieweeUser.ACNodeId == null)
 				return GetRoles(queryProvider, perms, revieweeUser.RGMId, range);
 			else {
 				return GetRolesForAcNode(queryProvider, perms, revieweeUser.ACNodeId.Value, range);
 			}
-
-			//var allLinks = GetRoleLinks_Unsafe(queryProvider, forUserId, range);
 		}
 
 
@@ -296,27 +274,23 @@ namespace RadialReview.Accessors {
 
 		}
 
-        public static RoleModel GetRoleById(UserOrganizationModel caller, long roleId)
-        {
-            using (var s = HibernateSession.GetCurrentSession())
-            {
-                var perms = PermissionsUtility.Create(s, caller);
-                return GetRolesById(s, caller, perms, roleId);
-            }
-        }
+		public static RoleModel GetRoleById(UserOrganizationModel caller, long roleId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				var perms = PermissionsUtility.Create(s, caller);
+				return GetRolesById(s, caller, perms, roleId);
+			}
+		}
 
-        public static RoleModel GetRolesById(ISession s, UserOrganizationModel caller, PermissionsUtility perms, long roleId)
-        {                       
-            var roles = s.Get<RoleModel>(roleId);
-            perms.ViewOrganization(roles.OrganizationId);
+		public static RoleModel GetRolesById(ISession s, UserOrganizationModel caller, PermissionsUtility perms, long roleId) {
+			var roles = s.Get<RoleModel>(roleId);
+			perms.ViewOrganization(roles.OrganizationId);
 
-            if(roles.DeleteTime != null)
-            {
-                throw new PermissionsException("Cannot view role.");
-            }
+			if (roles.DeleteTime != null) {
+				throw new PermissionsException("Cannot view role.");
+			}
 
-            return roles;
-        }
+			return roles;
+		}
 
 		#endregion
 
@@ -390,9 +364,9 @@ namespace RadialReview.Accessors {
 								CreateTime = r.CreateTime
 							};
 							s.Save(link);
-							await HooksRegistry.Each<IRolesHook>((ses,x) => x.CreateRole(ses, r));
+							await HooksRegistry.Each<IRolesHook>((ses, x) => x.CreateRole(ses, r));
 						} else {
-							await HooksRegistry.Each<IRolesHook>((ses,x) => x.UpdateRole(ses, r));
+							await HooksRegistry.Each<IRolesHook>((ses, x) => x.UpdateRole(ses, r));
 						}
 
 						if (updateOutstanding && added) {

@@ -243,7 +243,6 @@ namespace RadialReview.Api.V1 {
 		/// <param name="model">Role title</param>
 		/// <returns>The created role</returns>
 		[Route("positions/{POSITION_ID}/roles")]
-		[Untested("Null title?")]
 		[HttpPost]
 		public async Task<AngularRole> AddPositionRoles(long POSITION_ID, [FromBody] TitleModel body) // Angular
 		{

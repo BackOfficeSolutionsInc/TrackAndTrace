@@ -83,6 +83,7 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
+		[Untested("Add issue")]
         public async Task<JsonResult> SubmitIssues(FormCollection model)
         {
             var path = model["Path"].ToString();
@@ -119,13 +120,15 @@ namespace RadialReview.Controllers {
                             if (details.ContainsKey(ident))
                                 dets = details[ident];
 
-                            await IssuesAccessor.CreateIssue(s, perms, recurrence, owner ?? caller.Id, new IssueModel() {
+							var creation = IssueCreation.CreateL10Issue(issues[ident], dets, owner ?? caller.Id, recurrence, now: now);
+
+							await IssuesAccessor.CreateIssue(s, perms, creation);/*recurrence, owner ?? caller.Id, new IssueModel() {
                                 CreateTime = now,
                                 Message = issues[ident],
                                 OrganizationId = org.Id,
                                 CreatedById = caller.Id,
                                 Description = dets,
-                            });
+                            });*/
 
                         }
                         var existing = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>()

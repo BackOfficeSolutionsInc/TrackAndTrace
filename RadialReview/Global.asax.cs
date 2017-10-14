@@ -79,6 +79,18 @@ namespace RadialReview {
 		}
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
+		protected void Application_Error(object sender, EventArgs e) {
+			Exception ex = Server.GetLastError();
+			if (ex is HttpException) {
+				var ee = (HttpException)ex;
+				if (ee.Message.StartsWith("A potentially dangerous Request.Path value was detected from the client (:)")) {
+					HttpContext.Current.Server.ClearError();
+					HttpContext.Current.Response.Redirect("~/Home/Index");
+				}
+			}
+
+
+		}
 
 		protected async Task Application_End() {
 			var wasKilled = await ChromeExtensionComms.SendCommandAndWait("appEnd");

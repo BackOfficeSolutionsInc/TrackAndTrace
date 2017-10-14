@@ -196,7 +196,7 @@ namespace RadialReview.Accessors {
             return await CreateUserUnderManager(caller, settings.ManagerNodeId, settings.IsManager, settings.OrgPositionId, settings.Email, settings.FirstName, settings.LastName, settings.IsClient, settings.ClientOrganizationName, settings.EvalOnly);
         }
 
-		[Untested("is _AddUserToTemplateUnsafe wired up correctly?","hooks")]
+		[Untested("is _AddUserToTemplateUnsafe wired up correctly?"/*,"hooks"*/)]
         private static async Task<AddedUser> CreateUserUnderManager(UserOrganizationModel caller, long? managerNodeId, Boolean isManager, long? orgPositionId, String email, String firstName, String lastName, bool isClient, string organizationName, bool evalOnly) {
             if (!Emailer.IsValid(email))
                 throw new PermissionsException(ExceptionStrings.InvalidEmail);

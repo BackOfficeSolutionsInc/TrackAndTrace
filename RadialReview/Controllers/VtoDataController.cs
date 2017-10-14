@@ -86,7 +86,7 @@ namespace RadialReview.Controllers
 
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<JsonResult> DeleteRock(long value, string connectionId = null) {
-			await VtoAccessor.UpdateRock(GetUser(), value, null, null, true, connectionId, value);
+			await VtoAccessor.UpdateRock(GetUser(), value, null, null, true, connectionId);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
@@ -129,10 +129,9 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		[Untested("Fix the vtoRockId/recurRockId","Test working")]
 	    public async Task<JsonResult> XUpdateRock(string pk,string name,string value){
 		    switch(name.ToLower()){
-				case "accountable": await VtoAccessor.UpdateRock(GetUser(), pk.ToLong(),null,value.ToLong(),null,null, pk.ToLong());//VtoAccessor.UpdateRockAccountable(GetUser(), pk.ToLong(), value.ToLong());
+				case "accountable": await VtoAccessor.UpdateRock(GetUser(), pk.ToLong(), null, value.ToLong(), null, null);//VtoAccessor.UpdateRockAccountable(GetUser(), pk.ToLong(), value.ToLong());
 				    break;
 				default: throw new ArgumentOutOfRangeException(name.ToLower());
 		    }

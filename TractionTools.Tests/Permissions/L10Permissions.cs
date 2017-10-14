@@ -157,12 +157,13 @@ namespace TractionTools.Tests.Permissions {
 			var issue2 = new IssueModel() { };
 			var perm1 = new Action<PermissionsUtility>(p => p.ViewIssue(issue.Id));
 			var perm2 = new Action<PermissionsUtility>(p => p.ViewIssue(issue2.Id));
-
-			await IssuesAccessor.CreateIssue(c.Manager, l101.Id, c.Manager.Id, issue);
+			var creation = IssueCreation.CreateL10Issue(null, null, c.Manager.Id, l101.Id);
+			await IssuesAccessor.CreateIssue(c.Manager, creation);
 			c.AssertAll(perm1, c.Manager, c.Employee, c.Org.E5);
 
 			var l102 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
-			await IssuesAccessor.CreateIssue(c.Middle, l102.Id, c.Middle.Id, issue2);
+			var creation2 = IssueCreation.CreateL10Issue(null, null, c.Middle.Id, l102.Id);
+			await IssuesAccessor.CreateIssue(c.Middle, creation2);
 			c.AssertAll(perm2, c.Middle, c.Manager);
 
 			//Revoke some permissions
@@ -205,7 +206,8 @@ namespace TractionTools.Tests.Permissions {
 			var issue2 = new IssueModel() { };
 			var perm1 = new Action<PermissionsUtility>(p => p.EditIssue(issue.Id));
 
-			await IssuesAccessor.CreateIssue(c.Manager, l101.Id, c.Manager.Id, issue);
+			var creation = IssueCreation.CreateL10Issue(null, null, c.Manager.Id, l101.Id);
+			await IssuesAccessor.CreateIssue(c.Manager, creation);
 			c.AssertAll(perm1, c.Manager, c.Employee, c.Org.E5);
 			//Revoke some permissions
 			var level = PermItem.AccessLevel.Edit;
@@ -234,7 +236,8 @@ namespace TractionTools.Tests.Permissions {
 
 
 			var l102 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
-			await IssuesAccessor.CreateIssue(c.Middle, l102.Id, c.Middle.Id, issue2);
+			var creation2 = IssueCreation.CreateL10Issue(null, null, c.Middle.Id, l102.Id);
+			await IssuesAccessor.CreateIssue(c.Middle, creation2);
 			var perm2 = new Action<PermissionsUtility>(p => p.EditIssue(issue2.Id));
 			c.AssertAll(perm2, c.Middle, c.Manager);
 

@@ -1,4 +1,5 @@
 ﻿using NHibernate;
+using RadialReview.Models;
 using RadialReview.Models.Todo;
 using System;
 using System.Collections.Generic;
@@ -16,11 +17,7 @@ namespace RadialReview.Utilities.Hooks {
 	}
 
     public interface ITodoHook : IHook {
-
         Task CreateTodo(ISession s, TodoModel todo);
-		Task UpdateTodo(ISession s, TodoModel todo, ITodoHookUpdates updates);
-
-		//Task UpdateMessage(ISession s, TodoModel todo);
-		//Task UpdateCompletion(ISession s, TodoModel todo);		
+		Task UpdateTodo(ISession s, UserOrganizationModel caller, TodoModel todo, ITodoHookUpdates updates);		
 	}
 }

@@ -33,10 +33,7 @@
 	/*position: relative;*/
 	line-height: 14px;
 	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.1);
-	-moz-transition: background-color ease .15s,color ease .15s;
-	-o-transition: background-color ease .15s,color ease .15s;
-	-webkit-transition: background-color ease .15s,color ease .15s;
-	transition: background-color ease .15s,color ease .15s,padding ease .15s;
+	transition: background-color ease .15s,color ease .15s, padding-top linear .15s,padding-bottom linear .076s,margin-left linear .15s, margin-right linear .15s, margin-top linear .076s, margin-bottom linear .027s;
 }
 
 	.todo-list > .todo-row.selected {
@@ -70,6 +67,7 @@
 
 .todo-list .todo-checkbox {
 	display: none;
+	
 }
 
 .todo-list > .todo-row > .todo-checkbox {
@@ -84,6 +82,10 @@
 	cursor: pointer;
 	width: 15px;
 	height: 15px;
+	-moz-transition: margin linear .15s;
+	-o-transition: margin linear .15s;
+	-webkit-transition: margin linear .15s;
+	transition: margin linear .15s;
 }
 
 

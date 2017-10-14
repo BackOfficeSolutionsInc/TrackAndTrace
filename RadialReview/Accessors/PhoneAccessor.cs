@@ -150,7 +150,8 @@ namespace RadialReview.Accessors {
 					//await TodoAccessor.CreateTodo(found.Caller, found.ForId, todoModel);
 					return "To-do added.";
 				case ISSUE:
-					await IssuesAccessor.CreateIssue(found.Caller, found.ForId, found.Caller.Id, new IssueModel() {
+					var creation = IssueCreation.CreateL10Issue(body, "-sent from phone", found.Caller.Id, found.ForId, null, modelType: "IssueModel", modelId: -2);
+					await IssuesAccessor.CreateIssue(found.Caller, creation); /*found.ForId, found.Caller.Id, new IssueModel() {
 						CreatedById = found.Caller.Id,
 						CreatedDuringMeetingId = null,
 						Message = body,
@@ -159,8 +160,7 @@ namespace RadialReview.Accessors {
 						ForModel = "IssueModel",
 						ForModelId = -2,
 						Organization = found.Caller.Organization,
-
-					});
+					});*/
 					return "Issue added.";
 				case HEADLINE: {
 						//var allGrams = new List<String>();
@@ -190,6 +190,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+		[Untested("Add issue")]
 		public static async Task<string> ReceiveForumText(string fromNumber, string body, string systemNumber) {
 			var rnd = new Random();
 			ExternalUserPhone found;
@@ -357,12 +358,14 @@ namespace RadialReview.Accessors {
 										case ForumStep.AddIssues:
 											if (string.IsNullOrWhiteSpace(body))
 												throw new PhoneException("");
-											await IssuesAccessor.CreateIssue(s, perms, recur.Id, found.UserId, new IssueModel() {
+
+											var creation = IssueCreation.CreateL10Issue(body, null, found.UserId, recur.Id);
+											await IssuesAccessor.CreateIssue(s, perms, creation);/*recur.Id, found.UserId, new IssueModel() {
 												Message = body,
 												OrganizationId = recur.OrganizationId,
 												Organization = recur.Organization,
 												CreatedById = user.Id
-											});
+											});*/
 											tx.Commit();
 											s.Flush();
 											return null;

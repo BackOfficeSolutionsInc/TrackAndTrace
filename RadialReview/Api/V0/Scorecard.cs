@@ -8,6 +8,7 @@ using RadialReview.Models.Application;
 using RadialReview.Models.L10.VM;
 using RadialReview.Models.Scorecard;
 using RadialReview.Utilities;
+using System.Threading.Tasks;
 
 namespace RadialReview.Api.V0
 {
@@ -58,10 +59,10 @@ namespace RadialReview.Api.V0
 		// PUT: api/Scores/5
 		[HttpPut]
 		[Route("scores/{MEASURABLE_ID}/{WEEK_ID}")]
-		public void Put_OLD(long MEASURABLE_ID, long WEEK_ID, [FromBody]decimal? value)
-		{
-			L10Accessor.UpdateScore(GetUser(), MEASURABLE_ID, WEEK_ID, value, null,true);
-        }
+		public async Task Put_OLD(long MEASURABLE_ID, long WEEK_ID, [FromBody]decimal? value) {
+			await ScorecardAccessor.UpdateScore(GetUser(), MEASURABLE_ID, TimingUtility.GetDateSinceEpoch(WEEK_ID), value);
+			//await L10Accessor.UpdateScore(GetUser(), MEASURABLE_ID, WEEK_ID, value, null, true);
+		}
 
 		/// <summary>
 		/// Update a score for a particular measureable
@@ -72,8 +73,9 @@ namespace RadialReview.Api.V0
 		// PUT: api/Scores/5
 		[HttpPut]
 		[Route("scores/{MEASURABLE_ID}/week/{WEEK_ID}")]
-		public void Put(long MEASURABLE_ID, long WEEK_ID, [FromBody]decimal? value) {
-			L10Accessor.UpdateScore(GetUser(), MEASURABLE_ID, WEEK_ID, value, null, true);
+		public async Task Put(long MEASURABLE_ID, long WEEK_ID, [FromBody]decimal? value) {
+			await ScorecardAccessor.UpdateScore(GetUser(), MEASURABLE_ID, TimingUtility.GetDateSinceEpoch(WEEK_ID), value);
+			//await L10Accessor.UpdateScore(GetUser(), MEASURABLE_ID, WEEK_ID, value, null, true);
 		}
 
 		/// <summary>
@@ -83,9 +85,9 @@ namespace RadialReview.Api.V0
 		/// <param name="value">Value for the score</param>
 		[HttpPut]
 		[Route("scores/{SCORE_ID:long}")]
-		public void Put(long SCORE_ID, [FromBody]decimal? value)
-		{
-			L10Accessor.UpdateScore(GetUser(), SCORE_ID, value, null, true);
+		public async Task Put(long SCORE_ID, [FromBody]decimal? value){
+			//L10Accessor.UpdateScore(GetUser(), SCORE_ID, value, null, true);
+			await ScorecardAccessor.UpdateScore(GetUser(), SCORE_ID, value);
 		}
 
 		//// GET: api/Scores

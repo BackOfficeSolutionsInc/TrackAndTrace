@@ -72,8 +72,9 @@ namespace RadialReview.Controllers {
                  .ViewL10Recurrence(model.RecurrenceId)
             );
 
+			var creation = IssueCreation.CreateL10Issue(model.Message, model.Details, model.OwnerId, model.RecurrenceId, model.MeetingId, model.Priority, modelType: "TodoModel", modelId: model.ForId);
 
-            await IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId, model.OwnerId, new IssueModel() {
+			await IssuesAccessor.CreateIssue(GetUser(), creation); /*model.RecurrenceId, model.OwnerId, new IssueModel() {
                 CreatedById = GetUser().Id,
                 //MeetingRecurrenceId = model.RecurrenceId,
                 CreatedDuringMeetingId = model.MeetingId,
@@ -83,7 +84,7 @@ namespace RadialReview.Controllers {
                 ForModelId = model.ForId,
                 Organization = GetUser().Organization,
                 _Priority = model.Priority
-            });
+            });*/
             return Json(ResultObject.SilentSuccess().NoRefresh());
         }
         #endregion
@@ -145,7 +146,7 @@ namespace RadialReview.Controllers {
         [HttpPost]
         public async Task<JsonResult> EditModal(IssueVM model) {
 
-            await L10Accessor.UpdateIssue(GetUser(), model.IssueRecurrenceId, DateTime.UtcNow, model.Message, null, null, null, model.OwnerId, model.Priority);
+            await IssuesAccessor.EditIssue(GetUser(), model.IssueRecurrenceId, message: model.Message, owner: model.OwnerId, priority: model.Priority);
 
             //var todo = IssuesAccessor.EditIssue(GetUser(), model.IssueRecurrenceId, model.Message, model.OwnerId,model.Priority);
             return Json(ResultObject.SilentSuccess());
@@ -160,7 +161,7 @@ namespace RadialReview.Controllers {
             var issue = IssuesAccessor.CopyIssue(GetUser(), model.ParentIssue_RecurrenceId, model.CopyIntoRecurrenceId);
             model.PossibleRecurrences = L10Accessor.GetAllConnectedL10Recurrence(GetUser(), issue.Recurrence.Id);
 
-            await L10Accessor.UpdateIssue(GetUser(), model.ParentIssue_RecurrenceId, DateTime.UtcNow, awaitingSolve: true, connectionId: "");
+            await IssuesAccessor.EditIssue(GetUser(), model.ParentIssue_RecurrenceId, awaitingSolve: true);
             return Json(ResultObject.SilentSuccess().NoRefresh());
         }
 
@@ -229,7 +230,8 @@ namespace RadialReview.Controllers {
         [Access(AccessLevel.UserOrganization)]
         public async Task<JsonResult> CreateIssueRecurrence(IssueVM model) {
             ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.OwnerId, x => x.ForId);
-            await IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId, model.OwnerId, new IssueModel() {
+			var creation = IssueCreation.CreateL10Issue(model.Message ?? "", model.Details ?? "", model.OwnerId, model.RecurrenceId, model.MeetingId, model.Priority);
+			await IssuesAccessor.CreateIssue(GetUser(), creation);/*model.RecurrenceId, model.OwnerId, new IssueModel() {
                 CreatedById = GetUser().Id,
                 //MeetingRecurrenceId = model.RecurrenceId,
                 CreatedDuringMeetingId = model.MeetingId,
@@ -239,8 +241,7 @@ namespace RadialReview.Controllers {
                 ForModelId = -1,
                 Organization = GetUser().Organization,
                 _Priority = model.Priority
-
-            });
+            });*/
             return Json(ResultObject.SilentSuccess().NoRefresh());
         }
 
@@ -251,7 +252,8 @@ namespace RadialReview.Controllers {
             if (model.MeetingId != -1)
                 _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
-            await IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId, model.OwnerId, new IssueModel() {
+			var creation = IssueCreation.CreateL10Issue(model.Message ?? "", model.Details ?? "", model.OwnerId, model.RecurrenceId, model.MeetingId, model.Priority, model.ForModelType ?? "IssueModel", model.ForModelId ?? -1);
+			await IssuesAccessor.CreateIssue(GetUser(), creation);/*model.RecurrenceId, model.OwnerId, new IssueModel() {
                 CreatedById = GetUser().Id,
                 //MeetingRecurrenceId = model.RecurrenceId,
                 CreatedDuringMeetingId = model.MeetingId,
@@ -262,11 +264,13 @@ namespace RadialReview.Controllers {
                 Organization = GetUser().Organization,
                 _Priority = model.Priority,
 
-            });
+            });*/
             return Json(ResultObject.SilentSuccess().NoRefresh());
         }
 
         [Access(AccessLevel.UserOrganization)]
+		[Obsolete("Remove me please",true)]
+		[Untested("Find a work around to this")]
         public async Task<PartialViewResult> Modal(long meeting, long recurrence, long measurable, long score, long? userid = null) {
             _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
@@ -351,7 +355,8 @@ namespace RadialReview.Controllers {
             ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.MeasurableId, x => x.RecurrenceId);
             _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
-            await IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId, model.OwnerId, new IssueModel() {
+			var creation = IssueCreation.CreateL10Issue(model.Message, model.Details, model.OwnerId, model.RecurrenceId, model.MeetingId, model.Priority, "MeasurableModel", model.MeasurableId);
+			await IssuesAccessor.CreateIssue(GetUser(), creation); /*model.RecurrenceId, model.OwnerId, new IssueModel() {
                 CreatedById = GetUser().Id,
                 //MeetingRecurrenceId = model.RecurrenceId,
                 CreatedDuringMeetingId = model.MeetingId,
@@ -361,7 +366,7 @@ namespace RadialReview.Controllers {
                 ForModelId = model.MeasurableId,
                 Organization = GetUser().Organization,
                 _Priority = model.Priority
-            });
+            });*/
             return Json(ResultObject.SilentSuccess().NoRefresh());
             //return PartialView("ScorecardIssueModal", model);
         }
@@ -402,7 +407,8 @@ namespace RadialReview.Controllers {
             ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.RockId, x => x.RecurrenceId);
             _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
-            await IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId, model.OwnerId, new IssueModel() {
+			var creation = IssueCreation.CreateL10Issue(model.Message, model.Details, model.OwnerId, model.RecurrenceId, model.MeetingId, model.Priority, "RockModel", model.RockId);
+			await IssuesAccessor.CreateIssue(GetUser(), creation);/*model.RecurrenceId, model.OwnerId, new IssueModel() {
                 CreatedById = GetUser().Id,
                 //MeetingRecurrenceId = model.RecurrenceId,
                 CreatedDuringMeetingId = model.MeetingId,
@@ -412,7 +418,7 @@ namespace RadialReview.Controllers {
                 ForModelId = model.RockId,
                 Organization = GetUser().Organization,
                 _Priority = model.Priority
-            });
+            });*/
             return Json(ResultObject.SilentSuccess().NoRefresh());
             //return PartialView("ScorecardIssueModal", model);
         }
@@ -461,7 +467,9 @@ namespace RadialReview.Controllers {
             ValidateValues(model, x => x.ByUserId, x => x.MeetingId, x => x.HeadlineId, x => x.RecurrenceId);
             _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
-            await IssuesAccessor.CreateIssue(GetUser(), model.RecurrenceId, model.OwnerId, new IssueModel() {
+			var creation = IssueCreation.CreateL10Issue(model.Message, model.Details, model.OwnerId, model.RecurrenceId, model.MeetingId, model.Priority, "PeopleHeadline", model.HeadlineId);
+
+			await IssuesAccessor.CreateIssue(GetUser(), creation);/* model.RecurrenceId, model.OwnerId, new IssueModel() {
                 CreatedById = GetUser().Id,
                 //MeetingRecurrenceId = model.RecurrenceId,
                 CreatedDuringMeetingId = model.MeetingId,
@@ -471,7 +479,7 @@ namespace RadialReview.Controllers {
                 ForModelId = model.HeadlineId,
                 Organization = GetUser().Organization,
                 _Priority = model.Priority
-            });
+            });*/
             return Json(ResultObject.SilentSuccess().NoRefresh());
             //return PartialView("ScorecardIssueModal", model);
         }

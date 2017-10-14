@@ -39,7 +39,7 @@ namespace RadialReview.Hooks {
 			return GetSingleton()._Hooks.Where(x => x is T).Cast<T>().ToList();
 		}
 
-		[Untested("RunAfterDispose", "Does it run?")]
+		//[Untested("RunAfterDispose", "Does it run?")]
 		public static async Task Each<T>(Expression<Func<ISession, T, Task>> action) where T : IHook {
 
 			var logMethod = "--Debug is off--";
@@ -58,18 +58,35 @@ namespace RadialReview.Hooks {
 						await AmazonSQSUtility.SendMessage(MessageQueueModel.CreateHookRegistryAction(action, new SerializableHook() { lambda = action, type = action.GetType() }));
 					} else {
 						await HibernateSession.RunAfterSuccessfulDisposeOrNow(async (s, tx) => {
-							var sw = new Stopwatch();
-							sw.Start();
-
-							await action.Compile()(s, x);
-							tx.Commit();
-							s.Flush();
-
-							var time = sw.Elapsed;
+							try {
+								var sw = new Stopwatch();
+								sw.Start();
+								await action.Compile()(s, x);
+								tx.Commit();
+								s.Flush();
+								var time = sw.Elapsed;
 #if DEBUG
-							var logT = "HookExecuted(Local)\t" + x.GetType().Name + "\t" + logMethod + "\t"+time;
-							log.Debug(logT);
+								var logT = "HookExecuted(Local)\t" + x.GetType().Name + "\t" + logMethod + "\t" + time;
+								log.Debug(logT);
 #endif
+							} catch (NotImplementedException e) {
+								if (tx.IsActive)
+									tx.Rollback();
+								if (Config.IsLocal()) {
+									throw;
+								} else {
+									//just eat this one..								
+								}
+							} catch (Exception e) {
+								log.Error(e);
+								if (tx.IsActive)
+										tx.Rollback();
+								if (Config.IsLocal()) {									
+									throw;
+								} else {
+									//just eat it.									
+								}
+							}
 						});
 					}
 				} catch (NotImplementedException e) {
@@ -85,7 +102,7 @@ namespace RadialReview.Hooks {
 
 		}
 
-		[Obsolete("Use other one",true)]
+		[Obsolete("Use other one", true)]
 		public static async Task Each<T>(Expression<Func<T, Task>> action) where T : IHook {
 			var hooks = GetHooks<T>();
 			foreach (var x in hooks) {

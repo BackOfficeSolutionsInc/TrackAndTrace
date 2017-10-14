@@ -1413,6 +1413,8 @@ body.resizing .notes-tile:after,
 .dashboard .rock-list-container .icon-column {
   display: table-cell;
   padding-right: 2px;
+  vertical-align: top;
+  padding-top: 6px;
 }
 .dashboard .rock-list-container .icon-column:before {
   font-family: "fontastic" !important;
@@ -1453,11 +1455,17 @@ body.resizing .notes-tile:after,
   content: "\e1fa";
   color: #3c763d;
 }
+.dashboard .rock-list-container tr.Complete ._md-text {
+  color: #3c763d;
+}
 .dashboard .rock-list-container tr.Complete .icon-column:after {
   border-color: #b2dba1;
 }
 .dashboard .rock-list-container tr.OnTrack .icon-column:before {
   content: "\e203";
+  color: #31708f;
+}
+.dashboard .rock-list-container tr.OnTrack ._md-text {
   color: #31708f;
 }
 .dashboard .rock-list-container tr.OnTrack .icon-column:after {
@@ -1467,14 +1475,25 @@ body.resizing .notes-tile:after,
   content: "\e206";
   color: #a94442;
 }
+.dashboard .rock-list-container tr.AtRisk ._md-text {
+  color: #a94442;
+}
 .dashboard .rock-list-container tr.AtRisk .icon-column:after {
   border-color: #dca7a7;
 }
 .dashboard .rock-list-container tr.Indeterminate .icon-column:before {
   content: "\e203";
 }
+.dashboard .rock-list-container md-select ._md-select-value {
+  border-bottom: none;
+}
+.dashboard .rock-list-container ._md-select-value ._md-select-icon {
+  display: none;
+}
 .dashboard .rock-list-container div.rock-name {
   font-size: 14px;
+  vertical-align: top;
+  padding-top: 3px;
 }
 .dashboard .rock-list-container .table-header,
 .dashboard .rock-list-container .picture-column,

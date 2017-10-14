@@ -32,9 +32,9 @@ namespace RadialReview.Api.V1
 		/// <param name="title">Updated title</param>
 		[Route("headline/{HEADLINE_ID}")]
         [HttpPut]
-        public void UpdateHeadlines(long HEADLINE_ID, [FromBody]TitleModel body)
+        public async Task UpdateHeadlines(long HEADLINE_ID, [FromBody]TitleModel body)
         {
-            L10Accessor.UpdateHeadline(GetUser(), HEADLINE_ID, body.title);
+			await HeadlineAccessor.UpdateHeadline(GetUser(), HEADLINE_ID, body.title);
         }
 
 		/// <summary>

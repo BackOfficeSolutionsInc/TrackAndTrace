@@ -29,14 +29,15 @@ namespace TractionTools.Tests.API.v1 {
         [TestCategory("Api_V1")]
         public async Task TestGetMineIssues() {
             var c = await Ctx.Build();
-            var issue = new IssueModel() {
-                Message = "Issue for Test Method",
-            };
+            //var issue = new IssueModel() {
+            //    Message = "Issue for Test Method",
+            //};
             var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
 
             await L10Accessor.AddAttendee(c.E1, _recurrence.Id, c.E1.Id);
 
-            var result = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E1.Id, issue);
+			var creation = IssueCreation.CreateL10Issue("Issue for Test Method", null, c.E1.Id, _recurrence.Id);
+			var result = await IssuesAccessor.CreateIssue(c.E1, creation);// _recurrence.Id, c.E1.Id, issue);
             IssuesController iss = new IssuesController();
             iss.MockUser(c.E1);
             await c.Org.RegisterUser(c.E1);
@@ -46,7 +47,7 @@ namespace TractionTools.Tests.API.v1 {
             CompareModelProperties(/*APIResult.IssueApiTests_v0_TestGetMineIssues,*/ _model);
             
             Assert.AreEqual(1, _model.Count());
-            Assert.AreEqual(issue.Message, _model.FirstOrDefault().Name);
+            Assert.AreEqual(result.IssueModel.Message, _model.FirstOrDefault().Name);
         }
 
         [TestMethod]
@@ -82,7 +83,9 @@ namespace TractionTools.Tests.API.v1 {
             };
 
             var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
-            var result = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E1.Id, issue);
+
+			var creation = IssueCreation.CreateL10Issue("Issue for Test Method", null, c.E1.Id, _recurrence.Id);
+			var result = await IssuesAccessor.CreateIssue(c.E1, creation);//_recurrence.Id, c.E1.Id, issue);
             IssuesController iss = new IssuesController();
             iss.MockUser(c.E1);
             AngularIssue _angularIssue = iss.Get(issue.Id);
@@ -121,16 +124,19 @@ namespace TractionTools.Tests.API.v1 {
         [TestCategory("Api_V1")]
         public async Task TestGetRecurrenceIssues() {
             var c = await Ctx.Build();
-            var issue = new IssueModel() {
-                Message = "Issue for Test Method",
-            };
+            //var issue = new IssueModel() {
+            //    Message = "Issue for Test Method",
+            //};
             var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
-            var result = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E1.Id, issue);
-            var issue1 = new IssueModel() {
-                Message = "Issue for Test Method",
-            };
-            // creating issue with different owner
-            var result1 = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E2.Id, issue1);
+			var creation = IssueCreation.CreateL10Issue("Issue for Test Method", null, c.E1.Id, _recurrence.Id);
+			var result = await IssuesAccessor.CreateIssue(c.E1, creation);// _recurrence.Id, c.E1.Id, issue);
+			//var issue1 = new IssueModel() {
+			//    Message = "Issue for Test Method",
+			//};
+			// creating issue with different owner
+			var creation2 = IssueCreation.CreateL10Issue("Issue for Test Method", null, c.E2.Id, _recurrence.Id);
+
+			var result1 = await IssuesAccessor.CreateIssue(c.E1, creation2);// _recurrence.Id, c.E2.Id, issue1);
             IssuesController iss = new IssuesController();
             iss.MockUser(c.E1);
 
@@ -148,17 +154,18 @@ namespace TractionTools.Tests.API.v1 {
         [TestCategory("Api_V1")]
         public async Task TestEditIssue() {
             var c = await Ctx.Build();
-            var issue = new IssueModel() {
-                Message = "Issue for Test Method",
-            };
+            //var issue = new IssueModel() {
+            //    Message = "Issue for Test Method",
+            //};
             var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
-            var result = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E1.Id, issue);
+			var creation = IssueCreation.CreateL10Issue("Issue for Test Method", null, c.E1.Id, _recurrence.Id);
+			var result = await IssuesAccessor.CreateIssue(c.E1, creation);// _recurrence.Id, c.E1.Id, issue);
             IssuesController iss = new IssuesController();
             iss.MockUser(c.E1);
             var newMessage = "New Issue message for Test Method.";
-            await iss.EditIssue(issue.Id, new IssuesController.UpdateIssueModel { title= newMessage });
-            var _issue = iss.Get(issue.Id);
-            Assert.AreNotEqual(issue.Message, _issue.Name);
+            await iss.EditIssue(result.IssueModel.Id, new IssuesController.UpdateIssueModel { title= newMessage });
+            var _issue = iss.Get(result.IssueModel.Id);
+            Assert.AreNotEqual(result.IssueModel.Message, _issue.Name);
             Assert.AreEqual(newMessage, _issue.Name);
         }
     }

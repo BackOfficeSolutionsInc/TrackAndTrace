@@ -347,7 +347,6 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		[Untested("Todo Create")]
 		public async Task<ActionResult> ResetSwanServices(long id) {
 			var recurId = id;
 			if (GetUser().Organization.AccountType == AccountType.SwanServices) {
@@ -474,11 +473,10 @@ namespace RadialReview.Controllers {
 					foreach (var issue in issues) {
 						//var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
 						var owner = possibleUsers[r.Next(possibleUsers.Count - 1)];
-						await IssuesAccessor.CreateIssue(s, perms, recurId, owner, new IssueModel {
-							Message = issue,
-							OrganizationId = caller.Organization.Id,
-							CreateTime = createTime,
-						});
+
+						var creation = IssueCreation.CreateL10Issue(issue, null, owner, recurId, now: createTime);
+						await IssuesAccessor.CreateIssue(s, perms, creation);
+
 						createTime = createTime.AddMinutes(r.Next(5, 15));
 						addedIssues += 1;
 					}
@@ -507,6 +505,14 @@ namespace RadialReview.Controllers {
 						addedIssues += 1;
 					}
 
+
+
+					var regen = await ScorecardAccessor.GenerateScoreModels_Unsafe(s,recur.Scorecard.Weeks.Select(x=>x.ForWeek), recur.Scorecard.Measurables.Select(x=>x.Id));
+
+					if (regen) {
+						s.Flush();
+						recur = L10Accessor.GetAngularRecurrence(s,perms, recurId);
+					}
 
 
 					var current = recur.Scorecard.Weeks.FirstOrDefault(x => x.IsCurrentWeek).ForWeekNumber;
@@ -777,7 +783,6 @@ namespace RadialReview.Controllers {
 
 
 		[Access(AccessLevel.UserOrganization)]
-		[Untested("Create Todo")]
 		public async Task<ActionResult> ResetDemo(long recurId = 1) {
 
 			if (GetUser().Id == 600 || GetUser().IsRadialAdmin || GetUser().User.IsRadialAdmin) {
@@ -869,11 +874,8 @@ namespace RadialReview.Controllers {
 					foreach (var issue in issues) {
 						//var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
 						var owner = possibleUsers[r.Next(possibleUsers.Count - 1)];
-						await IssuesAccessor.CreateIssue(s, perms, recurId, owner, new IssueModel {
-							Message = issue,
-							OrganizationId = caller.Organization.Id,
-							CreateTime = createTime,
-						});
+						var creation = IssueCreation.CreateL10Issue(issue, null, owner, recurId, now: createTime);
+						await IssuesAccessor.CreateIssue(s, perms, creation);
 						createTime = createTime.AddMinutes(r.Next(5, 15));
 						addedIssues += 1;
 					}

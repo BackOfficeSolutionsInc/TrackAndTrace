@@ -7,9 +7,10 @@ using NHibernate;
 using RadialReview.Models.Askables;
 using System.Threading.Tasks;
 using RadialReview.Models;
+using RadialReview.Models.Scorecard;
 
 namespace RadialReview.Hooks {
-	public class UpdateUserCache : IRockHook {
+	public class UpdateUserCache : IRockHook, IMeasurableHook {
 		public bool CanRunRemotely() {
 			return false;
 		}
@@ -27,7 +28,7 @@ namespace RadialReview.Hooks {
 			await UpdateForUser(s, rock.ForUserId);
 		}
 
-		public async Task UpdateRock(ISession s, RockModel rock) {
+		public async Task UpdateRock(ISession s, UserOrganizationModel caller, RockModel rock, IRockHookUpdates updates) {
 			await UpdateForUser(s, rock.ForUserId);
 		}
 
@@ -35,6 +36,19 @@ namespace RadialReview.Hooks {
 			await UpdateForUser(s, rock.ForUserId);
 		}
 
+		public async Task CreateMeasurable(ISession s, MeasurableModel m) {
+			await UpdateForUser(s, m.AccountableUserId);
+			if (m.AccountableUserId!=m.AdminUserId)
+				await UpdateForUser(s, m.AdminUserId);
+		}
 
+		public async Task UpdateMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel m, List<ScoreModel> updatedScores, IMeasurableHookUpdates updates) {
+			if (updates.AccountableUserChanged)
+				m.AccountableUser.UpdateCache(s);
+
+			if (updates.AdminUserChanged)
+				m.AdminUser.UpdateCache(s);
+
+		}
 	}
 }

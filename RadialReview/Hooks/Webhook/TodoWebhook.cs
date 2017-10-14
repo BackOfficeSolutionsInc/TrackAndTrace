@@ -38,7 +38,7 @@ namespace RadialReview.Hooks {
 			await RunEvents(s, todo, events);
 		}
 
-		public async Task UpdateTodo(ISession s, TodoModel todo, ITodoHookUpdates updates) {
+		public async Task UpdateTodo(ISession s, UserOrganizationModel caller, TodoModel todo, ITodoHookUpdates updates) {
 
 			var recurrenceId = todo.ForRecurrenceId;
 			var orgId = todo.OrganizationId;

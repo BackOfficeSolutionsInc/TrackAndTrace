@@ -248,24 +248,63 @@ namespace RadialReview.Accessors {
 						throw new PermissionsException("You don't have access to this user");
 				}
 
-				var allPermitted = s.QueryOver<AccountabilityNode>()
-					.Where(x => x.DeleteTime == null && x.OrganizationId == user.Organization.Id && x.UserId == userId)
-					.Select(x => x.Id)
-					.List<long>().ToList();
+				//var allPermitted = s.QueryOver<AccountabilityNode>()
+				//	.Where(x => x.DeleteTime == null && x.OrganizationId == user.Organization.Id && x.UserId == userId)
+				//	.Select(x => x.Id)
+				//	.List<long>().ToList();
 
-				if (type != null)
-					allPermitted.AddRange(s.QueryOver<PermissionOverride>()
-						.Where(x => x.DeleteTime == null && x.ForUser.Id == userId && x.Permissions == type)
-						.Select(x => x.AsUser.Id).List<long>().ToList());
+				var allMyNodesQuery = QueryOver.Of<AccountabilityNode>()
+													.Where(x => x.DeleteTime == null && x.OrganizationId == user.Organization.Id && x.UserId == userId)
+													.Select(x => x.Id);
+
+				//if (type != null)
+				//	allPermitted.AddRange(s.QueryOver<PermissionOverride>()
+				//		.Where(x => x.DeleteTime == null && x.ForUser.Id == userId && x.Permissions == type)
+				//		.Select(x => x.AsUser.Id).List<long>().ToList());
 
 				AccountabilityNode child = null;
-				var subordinates = s.QueryOver<DeepAccountability>()
-										.Where(x => x.DeleteTime == null)
-										.WhereRestrictionOn(x => x.ParentId).IsIn(allPermitted)
-										.JoinAlias(x => x.Child, () => child)
-											.Where(x => child.DeleteTime == null && child.UserId != null)
-											.Select(x => child.UserId)
-											.Future<long>();
+				var subordinateQueries = new List<IEnumerable<long>>();
+				
+
+				subordinateQueries.Add(
+					s.QueryOver<DeepAccountability>()
+						.Where(x => x.DeleteTime == null)
+						////////////////
+						//Added vvv
+						.WithSubquery.WhereProperty(x=>x.ParentId).In(allMyNodesQuery)
+						//removed vvv
+						//.WhereRestrictionOn(x => x.ParentId).IsIn(allPermitted)
+						//////////////
+						.JoinAlias(x => x.Child, () => child)
+							.Where(x => child.DeleteTime == null && child.UserId != null)
+							.Select(x => child.UserId)
+							.Future<long>()
+				);
+
+				if (type != null) {
+					var permissionsOverrideSubquery = QueryOver.Of<PermissionOverride>()
+						.Where(x => x.DeleteTime == null && x.ForUser.Id == userId && x.Permissions == type)
+						.Select(x => x.AsUser.Id);
+
+					subordinateQueries.Add(												
+						s.QueryOver<DeepAccountability>()
+							.Where(x => x.DeleteTime == null)
+							////////////////
+							//Added vvv
+							.WithSubquery.WhereProperty(x => x.ParentId).In(permissionsOverrideSubquery)
+							//removed vvv
+							//.WhereRestrictionOn(x => x.ParentId).IsIn(allPermitted)
+							//////////////
+							.JoinAlias(x => x.Child, () => child)
+								.Where(x => child.DeleteTime == null && child.UserId != null)
+								.Select(x => child.UserId)
+								.Future<long>()
+					);
+
+				}
+
+				var subordinates = subordinateQueries.SelectMany(x => x);
+
 
 				subordinates = subordinates.Union(userId.AsList());
 				return subordinates.Distinct();

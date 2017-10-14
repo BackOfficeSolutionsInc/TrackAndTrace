@@ -21,7 +21,7 @@ using RadialReview.Models.Angular.Rocks;
 using System.Diagnostics;
 
 namespace RadialReview.Hooks.Realtime {
-	public class RealTime_Dashboard_UpdateL10Rocks : IRockHook, IMeetingRockHooks {
+	public class RealTime_Dashboard_UpdateL10Rocks : IRockHook, IMeetingRockHook {
 		public bool CanRunRemotely() {
 			return false;
 		}
@@ -32,14 +32,14 @@ namespace RadialReview.Hooks.Realtime {
 				RemoveRock(s, recur, rock.Id);
 			}
 
-			_GetUserHub(rock.ForUserId).update(new AngularUpdate() {
+			RealTimeHelpers.GetUserHubForRecurrence(rock.ForUserId).update(new AngularUpdate() {
 				new ListDataVM(rock.ForUserId) {
 					Rocks = AngularList.CreateFrom(AngularListType.Remove, new AngularRock(rock.Id))
 				}
 			});
 		}
 
-		public async Task AttachRock(ISession s, RockModel rock, L10Recurrence.L10Recurrence_Rocks recurRock) {
+		public async Task AttachRock(ISession s, UserOrganizationModel caller, RockModel rock, L10Recurrence.L10Recurrence_Rocks recurRock) {
 			AddRock(s, recurRock.L10Recurrence.Id, recurRock);
 		}
 
@@ -48,7 +48,7 @@ namespace RadialReview.Hooks.Realtime {
 		}
 
 		public async Task CreateRock(ISession s, RockModel rock) {
-			_GetUserHub(rock.ForUserId).update(new AngularUpdate() {
+			RealTimeHelpers.GetUserHubForRecurrence(rock.ForUserId).update(new AngularUpdate() {
 				new ListDataVM(rock.ForUserId) {
 					Rocks = AngularList.CreateFrom(AngularListType.Add, new AngularRock(rock,null))
 				}
@@ -56,8 +56,8 @@ namespace RadialReview.Hooks.Realtime {
 		}
 
 
-		public async Task UpdateRock(ISession s, RockModel rock) {
-			_GetUserHub(rock.ForUserId).update(new AngularUpdate() {
+		public async Task UpdateRock(ISession s, UserOrganizationModel caller, RockModel rock, IRockHookUpdates updates) {
+			RealTimeHelpers.GetUserHubForRecurrence(rock.ForUserId).update(new AngularUpdate() {
 				new ListDataVM(rock.ForUserId) {
 					Rocks = AngularList.CreateFrom(AngularListType.ReplaceIfNewer, new AngularRock(rock,null))
 				}
@@ -65,12 +65,9 @@ namespace RadialReview.Hooks.Realtime {
 		}
 
 		#region Helpers
-		private dynamic _GetUserHub(long userId) {
-			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-			return hub.Clients.Group(MeetingHub.GenerateUserId(userId));
-		}
+		
 
-		private dynamic _DoUpdate(ISession s, long recurrenceId, Func<AngularUpdate> action) {
+		/*private dynamic _DoUpdate(ISession s, long recurrenceId, Func<AngularUpdate> action) {
 
 			//Dashboard dashboardAlias = null;
 
@@ -91,7 +88,7 @@ namespace RadialReview.Hooks.Realtime {
 			//var dashs = s.QueryOver<TileModel>()
 			//	//.JoinAlias(x => x.Dashboard, () => dashboardAlias)
 			//	.Where(x => x.DeleteTime == null && x.Type == TileType.Url && x.DataUrl == "/TileData/L10Rocks/" + recurrenceId)
-			//	.Select(x => x.Id, x => x.ForUser.Id/*, x => x.Dashboard.Id*/)
+			//	.Select(x => x.Id, x => x.ForUser.Id/*, x => x.Dashboard.Id*)
 			//	.List<object[]>()
 			//	.Select(x => new {
 			//		TileId = (long)x[0],
@@ -156,9 +153,10 @@ namespace RadialReview.Hooks.Realtime {
 			//var t5 = sw.Elapsed;
 			//times.Add(t5-t4);
 		}
+	*/
 
 		private void AddRock(ISession s, long recurrenceId, L10Recurrence.L10Recurrence_Rocks rock) {
-			_DoUpdate(s, recurrenceId, () =>
+			RealTimeHelpers.DoRecurrenceUpdate(s, recurrenceId, () =>
 				  new AngularUpdate() {
 					new AngularTileId<IEnumerable<AngularRock>>(0, recurrenceId, null,AngularTileKeys.L10RocksList(recurrenceId)) {
 						Contents = AngularList.CreateFrom(AngularListType.Add, new AngularRock(rock))
@@ -168,7 +166,7 @@ namespace RadialReview.Hooks.Realtime {
 		}
 
 		private void RemoveRock(ISession s, long recurrenceId, long rockId) {
-			_DoUpdate(s, recurrenceId, () =>
+			RealTimeHelpers.DoRecurrenceUpdate(s, recurrenceId, () =>
 				  new AngularUpdate() {
 					new AngularTileId<IEnumerable<AngularRock>>(0, recurrenceId, null,AngularTileKeys.L10RocksList(recurrenceId)) {
 						Contents = AngularList.CreateFrom(AngularListType.Remove,  new AngularRock(rockId))

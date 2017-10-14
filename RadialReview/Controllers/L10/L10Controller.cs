@@ -119,9 +119,9 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public string Delete()
+        public ActionResult Delete()
         {
-            return "You are about to delete this meeting. Are you sure you want to continue?";
+            return Content("<span>You are about to delete this meeting.  Are you sure you want to continue?</span>");
         }
 
         //[Access(AccessLevel.UserOrganization)]

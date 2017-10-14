@@ -312,7 +312,6 @@ namespace RadialReview.Models.Angular.VTO {
 
 		public bool Deleted { get; set; }
 
-		[Untested("VtoRock","Rock Id uses the L10RecurrenceRock.id not the VtoRock.Id","Is Deleted correct?")]
 		public static AngularVtoRock Create(L10Recurrence.L10Recurrence_Rocks recurRock) {
 			return new AngularVtoRock() {
 				Rock = new AngularRock(recurRock),

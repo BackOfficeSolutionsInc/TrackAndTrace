@@ -32,7 +32,6 @@ namespace RadialReview.Api.V1 {
 		// PUT: api/Todo/5
 		[Route("todo/create")]
 		[HttpPost]
-		[Untested("TodoCreation")]
 		public async Task<AngularTodo> CreateTodo([FromBody]CreateTodoModel body) {
 			var duedate = body.dueDate ?? DateTime.UtcNow.AddDays(7);
 			//var todo = new TodoModel() { Message = body.title, DueDate = duedate, TodoType = TodoType.Personal };
@@ -97,7 +96,6 @@ namespace RadialReview.Api.V1 {
 		/// <returns></returns>
 		[Route("todo/{TODO_ID:long}")]
 		[HttpPut]
-		[Untested("TodoAccessor")]
 		public async Task EditTodo(long TODO_ID, [FromBody]UpdateTodoModel body) {
 			//await L10Accessor.UpdateTodo(GetUser(), id, message, null, dueDate);
 			await TodoAccessor.UpdateTodo(GetUser(), TODO_ID, body.title, body.dueDate);

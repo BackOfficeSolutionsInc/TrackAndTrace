@@ -406,18 +406,20 @@ namespace TractionTools.Tests.API.v1 {
 		[TestCategory("Api_V1")]
 		public async Task TestGetUserIssues() {
 			var c = await Ctx.Build();
-			var issue = new IssueModel() {
-				Message = "Issue for Test Method",
-			};
+			//var issue = new IssueModel() {
+			//	Message = "Issue for Test Method",
+			//};
 
 			var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
-			var result = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E1.Id, issue);
-			var issue1 = new IssueModel() {
-				Message = "Issue for Test Method",
-			};
+			var creation = IssueCreation.CreateL10Issue("Issue for Test Method", null, c.E1.Id, _recurrence.Id);
+			var result = await IssuesAccessor.CreateIssue(c.E1, creation);// _recurrence.Id, c.E1.Id, issue);
+			//var issue1 = new IssueModel() {
+			//	Message = "Issue for Test Method",
+			//};
 
 			// creating issue with different owner
-			var result1 = await IssuesAccessor.CreateIssue(c.E1, _recurrence.Id, c.E2.Id, issue1);
+			var creation2 = IssueCreation.CreateL10Issue("Issue for Test Method", null, c.E2.Id, _recurrence.Id);
+			var result1 = await IssuesAccessor.CreateIssue(c.E1, creation2);// _recurrence.Id, c.E2.Id, issue1);
 			L10Controller iss = new L10Controller();
 			iss.MockUser(c.E1);
 			var _model = iss.GetUserIssues(c.E1.Id, _recurrence.Id);

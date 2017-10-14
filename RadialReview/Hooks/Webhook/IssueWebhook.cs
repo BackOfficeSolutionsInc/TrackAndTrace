@@ -60,7 +60,7 @@ namespace RadialReview.Hooks
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task UpdateMessage(ISession s, IssueModel.IssueModel_Recurrence issue)
+        private async Task UpdateMessage(ISession s, IssueModel.IssueModel_Recurrence issue)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var L10Id = issue.Recurrence.Id;
@@ -86,7 +86,7 @@ namespace RadialReview.Hooks
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task UpdateCompletion(ISession s, IssueModel.IssueModel_Recurrence issue)
+        private async Task UpdateCompletion(ISession s, IssueModel.IssueModel_Recurrence issue)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var L10Id = issue.Recurrence.Id;
@@ -110,5 +110,13 @@ namespace RadialReview.Hooks
             await manager.NotifyAllAsync(notifications, IssuePermissions(s, issue));
 
         }
-    }
+
+		public async Task UpdateIssue(ISession s, UserOrganizationModel caller, IssueModel.IssueModel_Recurrence issue, IIssueHookUpdates updates) {
+			if (updates.MessageChanged)
+				await UpdateMessage(s, issue);
+
+			if (updates.CompletionChanged)
+				await UpdateCompletion(s, issue);
+		}
+	}
 }

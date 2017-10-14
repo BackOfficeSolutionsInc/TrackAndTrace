@@ -178,7 +178,6 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.Manager)]
-		[Untested("Test this page for company rocks")]
 		public ActionResult Organization()
 		{
 			var user = GetUser().Hydrate().Organization().Execute();
@@ -254,7 +253,6 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
-		[Untested("Test this page for null company rocks")]
 		public ActionResult Organization(OrganizationViewModel model)
 		{
 			model.CompanyValues = _OrganizationAccessor.GetCompanyValues(GetUser(), GetUser().Organization.Id)//.Select(x => x.CompanyValue)

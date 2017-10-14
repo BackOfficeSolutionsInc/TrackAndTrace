@@ -40,7 +40,7 @@ namespace TractionTools.Tests.API.v1 {
 			};
 			MockHttpContext();
 			await ScorecardAccessor.CreateMeasurable(ctx.Manager, m1 , false);
-			var score = L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2000L, (decimal?)null,null);
+			var score = await L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2000L, (decimal?)null,null);
 
 			var c = new Scores_Controller();
 			ctx.E1._ClientTimestamp = DateTime.UtcNow.ToJavascriptMilliseconds();
@@ -53,7 +53,7 @@ namespace TractionTools.Tests.API.v1 {
             Assert.AreEqual(s.Measurable.Name, m1.Title);
 			Assert.AreEqual(s.Measured, null);
 
-			score = L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2000L, 3.14m, null);
+			score = await L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2000L, 3.14m, null);
 			var s2 = c.Get(score.Id);
 			Assert.AreEqual(s2.Measured, 3.14m);
 		}
@@ -104,7 +104,7 @@ namespace TractionTools.Tests.API.v1 {
 				OrganizationId = ctx.Org.Organization.Id
 			};
 			await ScorecardAccessor.CreateMeasurable(ctx.Manager, m1, false);
-			var score = L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2000L, (decimal?)null, null);
+			var score = await L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2000L, (decimal?)null, null);
 
 			var c = new Scores_Controller();
 			c.MockUser(ctx.E1);
@@ -117,7 +117,7 @@ namespace TractionTools.Tests.API.v1 {
 			s = ScorecardAccessor.GetScore(ctx.Manager, m1.Id, 2000L);
 			Assert.AreEqual(s.Measured, 3.14m);
 
-			var score2 = L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2001L, (decimal?)6.14, null);			
+			var score2 = await L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2001L, (decimal?)6.14, null);			
 			s = ScorecardAccessor.GetScore(ctx.Manager, score.Id);
 			Assert.AreEqual(s.Measured, 3.14m);
 			s = ScorecardAccessor.GetScore(ctx.Manager, score2.Id);

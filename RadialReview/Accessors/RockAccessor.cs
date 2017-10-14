@@ -373,7 +373,7 @@ namespace RadialReview.Accessors {
 
 		public static async Task<RockModel> CreateRock(ISession s, PermissionsUtility perms, long ownerId, string message = null, long? templateId = null) {
 
-			perms.CreateRocksForUser(ownerId);
+			perms.CreateRocksForUser(ownerId,null);
 			var owner = s.Get<UserOrganizationModel>(ownerId);
 
 
@@ -413,33 +413,44 @@ namespace RadialReview.Accessors {
 			SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateRockCompletion(rockId));
 
 			perms.EditRock(rockId);
-
 			now = now ?? DateTime.UtcNow;
 
+			var updates = new IRockHookUpdates();
+
+
 			var rock = s.Get<RockModel>(rockId);
-			rock.Name = message ?? rock.Name;
+			if (message != null && rock.Name != message) {
+				rock.Name = message;
+				updates.MessageChanged = true;
+			}
+
 			if (ownerId != null && rock.ForUserId != ownerId) {
 				rock.AccountableUser = s.Load<UserOrganizationModel>(ownerId.Value);
 				rock.ForUserId = ownerId.Value;
+				updates.AccountableUserChanged = true;
 			}
 
-
-			rock.DueDate = dueDate ?? rock.DueDate;
+			if (dueDate != null && rock.DueDate != dueDate) {
+				rock.DueDate = dueDate;
+				updates.DueDateChanged = true;
+			}
 
 			if (completion != null) {
 				if (completion != RockState.Indeterminate && rock.Completion != completion) {
 					if (completion == RockState.Complete)
 						rock.CompleteTime = now;
 					rock.Completion = completion.Value;
+					updates.StatusChanged = true;
 				} else if ((completion == RockState.Indeterminate) && rock.Completion != RockState.Indeterminate) {
 					rock.Completion = RockState.Indeterminate;
 					rock.CompleteTime = null;
+					updates.StatusChanged = true;
 				}
 			}
 
 			s.Update(rock);
 
-			await HooksRegistry.Each<IRockHook>((ss, x) => x.UpdateRock(ss, rock));
+			await HooksRegistry.Each<IRockHook>((ss, x) => x.UpdateRock(ss, perms.GetCaller(), rock, updates));
 		}
 		
 
@@ -453,7 +464,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		[Untested("Vto_Rocks", "EditRock cached correctly?")]
+
 		public static async Task ArchiveRock(ISession s, PermissionsUtility perm, long rockId, DateTime? now = null) {
 			perm.EditRock(rockId);
 			var rock = s.Get<RockModel>(rockId);
@@ -468,6 +479,7 @@ namespace RadialReview.Accessors {
 #pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
 			await HooksRegistry.Each<IRockHook>((ss, x) => x.ArchiveRock(s, rock, false));
 		}
+
 		public static void UndeleteRock(UserOrganizationModel caller, long rockId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -483,6 +495,7 @@ namespace RadialReview.Accessors {
 
 
 		[Untested("EditRocks", "AttachRock", "Does this correctly add to L10", "Does this correctly add to VTO", "Remove the Company Rock flag")]
+		[Obsolete("stop using, rock updates not updated")]
 		public static async Task<List<PermissionsException>> EditRocks(UserOrganizationModel caller, long userId, List<RockModel> rocks, bool updateOutstandingReviews, bool updateAllL10s) {
 			var output = new List<PermissionsException>();
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -529,8 +542,9 @@ namespace RadialReview.Accessors {
 							if (r.DeleteTime != null && r.Archived) {
 								await ArchiveRock(s, perm, r.Id, r.DeleteTime);
 							} else {
+								var updates = new IRockHookUpdates();
 								s.Merge(r);
-								await HooksRegistry.Each<IRockHook>((ses, x) => x.UpdateRock(ses, r));
+								await HooksRegistry.Each<IRockHook>((ses, x) => x.UpdateRock(ses,perm.GetCaller(), r, updates));
 							}
 						}
 

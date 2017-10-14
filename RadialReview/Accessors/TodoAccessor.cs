@@ -51,7 +51,7 @@ namespace RadialReview.Accessors {
 
 		private bool _ensured { get; set; }
 
-		private TodoCreation(string message, string details, long? accountableUserId, DateTime? dueDate, TodoType todoType, long? recurrenceId, long? createdDuringMeetingId, string modelType, long modelId,DateTime? now) {
+		private TodoCreation(string message, string details, long? accountableUserId, DateTime? dueDate, TodoType todoType, long? recurrenceId, long? createdDuringMeetingId, string modelType, long modelId, DateTime? now) {
 			Message = message;
 			Details = details;
 			AccountableUserId = accountableUserId;
@@ -64,22 +64,19 @@ namespace RadialReview.Accessors {
 			Now = now;
 		}
 
-		public static TodoCreation CreatePersonalTodo(string message, string details = null, long? accountableUserId = null, DateTime? dueDate = null,DateTime? now = null) {
-			return new TodoCreation(message, details, accountableUserId, dueDate, TodoType.Personal, null, null, "TodoModel", -1,now);
+		public static TodoCreation CreatePersonalTodo(string message, string details = null, long? accountableUserId = null, DateTime? dueDate = null, DateTime? now = null) {
+			return new TodoCreation(message, details, accountableUserId, dueDate, TodoType.Personal, null, null, "TodoModel", -1, now);
 		}
-		public static TodoCreation CreateL10Todo(string message, string details, long? accountableUserId, DateTime? dueDate, long? recurrenceId, long? createdDuringMeeting=null, string modelType="TodoModel", long modelId=-1,DateTime? now=null) {
+		public static TodoCreation CreateL10Todo(string message, string details, long? accountableUserId, DateTime? dueDate, long? recurrenceId, long? createdDuringMeeting = null, string modelType = "TodoModel", long modelId = -1, DateTime? now = null) {
 			return new TodoCreation(message, details, accountableUserId, dueDate, TodoType.Recurrence, recurrenceId, createdDuringMeeting, modelType, modelId, now);
 		}
-				
 
-
-
-		public TodoModel Generate(ISession s,PermissionsUtility perms) {
+		public TodoModel Generate(ISession s, PermissionsUtility perms) {
 			//if (_ensured == false)
 			//	throw new Exception("Permissions testing.");
 			UserOrganizationModel creator = perms.GetCaller();
 
-			EnsurePermitted(perms,creator.Organization.Id);
+			EnsurePermitted(perms, creator.Organization.Id);
 			var duringMeeting = CreatedDuringMeetingId > 0 ? CreatedDuringMeetingId : null;
 			var forRecur = RecurrenceId > 0 ? RecurrenceId : null;
 			Now = Now ?? DateTime.UtcNow;
@@ -87,7 +84,7 @@ namespace RadialReview.Accessors {
 				AccountableUserId = AccountableUserId ?? creator.Id,
 				AccountableUser = s.Load<UserOrganizationModel>(AccountableUserId ?? creator.Id),
 				CreatedDuringMeetingId = duringMeeting,
-				CreatedDuringMeeting = duringMeeting.NotNull(x=>s.Load<L10Meeting>(x)),
+				CreatedDuringMeeting = duringMeeting.NotNull(x => s.Load<L10Meeting>(x)),
 				ClearedInMeeting = null,
 				CloseTime = null,
 				CompleteTime = null,
@@ -100,7 +97,7 @@ namespace RadialReview.Accessors {
 				DueDate = DueDate ?? Now.Value.AddDays(7),
 				ForModel = ForModelType,
 				ForModelId = ForModelId,
-				ForRecurrence = forRecur.NotNull(x=>s.Load<L10Recurrence>(x)),
+				ForRecurrence = forRecur.NotNull(x => s.Load<L10Recurrence>(x)),
 				ForRecurrenceId = forRecur,
 				Message = Message,
 				Ordering = 0,
@@ -111,17 +108,17 @@ namespace RadialReview.Accessors {
 		}
 
 		[Untested("Appropriately tested?")]
-		private void EnsurePermitted(PermissionsUtility perms,long orgId) {
+		private void EnsurePermitted(PermissionsUtility perms, long orgId) {
 			_ensured = true;
 
-			if (CreatedDuringMeetingId != null)
+			if (CreatedDuringMeetingId != null && CreatedDuringMeetingId > 0)
 				perms.ViewL10Meeting(CreatedDuringMeetingId.Value);
 
 			perms.ViewOrganization(orgId);
 
 			if (RecurrenceId != null)
 				perms.EditL10Recurrence(RecurrenceId.Value);
-			
+
 			if (RecurrenceId == null && TodoType == TodoType.Recurrence)
 				throw new PermissionsException("Recurrence Id is required to create a meeting todo.");
 
@@ -134,7 +131,6 @@ namespace RadialReview.Accessors {
 
 	public class TodoAccessor : BaseAccessor {
 
-		[Untested("new todo")]
 		public static async Task<TodoModel> CreateTodo(UserOrganizationModel caller, TodoCreation creation) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -147,13 +143,11 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		[Untested("new todo","Does depristine hook run?", "RT_L10 run?", "RT_Dash run?")]
-		public static async Task<TodoModel> CreateTodo(ISession s, PermissionsUtility perms, TodoCreation creation){
-			var todo = creation.Generate(s,perms);
-						
+		public static async Task<TodoModel> CreateTodo(ISession s, PermissionsUtility perms, TodoCreation creation) {
+			var todo = creation.Generate(s, perms);
+
 			if (!string.IsNullOrWhiteSpace(todo.Details))
 				await PadAccessor.CreatePad(todo.PadId, todo.Details);
-
 
 			s.Save(todo);
 			todo.Ordering = -todo.Id;
@@ -165,196 +159,6 @@ namespace RadialReview.Accessors {
 
 		}
 
-
-		[Untested("Hooks", "AssignTodo permissions")]
-		[Obsolete("Use other", true)]
-		public static async Task<bool> CreateTodo(ISession s, PermissionsUtility perms, long recurrenceId, TodoModel todo) {
-			if (todo.Id != 0)
-				throw new PermissionsException("Id was not zero");
-
-			if (todo.CreatedDuringMeetingId == -1)
-				todo.CreatedDuringMeetingId = null;
-			perms.ConfirmAndFix(todo,
-				x => x.CreatedDuringMeetingId,
-				x => x.CreatedDuringMeeting,
-				x => x.ViewL10Meeting);
-
-			if (todo.OrganizationId == 0 && todo.Organization == null)
-				todo.OrganizationId = perms.GetCaller().Organization.Id;
-			perms.ConfirmAndFix(todo,
-				x => x.OrganizationId,
-				x => x.Organization,
-				x => x.ViewOrganization);
-
-			perms.ConfirmAndFix(todo,
-				x => x.ForRecurrenceId,
-				x => x.ForRecurrence,
-				x => x.EditL10Recurrence);
-
-			if ((todo.ForRecurrenceId == null || todo.ForRecurrence == null) && todo.TodoType == TodoType.Recurrence)
-				throw new PermissionsException("Recurrence Id is required to create a meeting todo.");
-
-
-			if (todo.CreatedById == 0 && todo.CreatedBy == null)
-				todo.CreatedById = perms.GetCaller().Id;
-			perms.ConfirmAndFix(todo,
-				x => x.CreatedById,
-				x => x.CreatedBy,
-				x => y => x.ViewUserOrganization(y, false));
-
-			if (todo.AccountableUserId == 0 && todo.AccountableUser == null)
-				todo.AccountableUserId = perms.GetCaller().Id;
-			perms.ConfirmAndFix(todo,
-				x => x.AccountableUserId,
-				x => x.AccountableUser,
-				x => y => x.ViewUserOrganization(y, false));
-
-
-			//Added
-			perms.AssignTodo(todo.AccountableUserId, todo.ForRecurrenceId);
-
-			L10Recurrence r = null;
-			if (recurrenceId > 0) {
-				r = s.Get<L10Recurrence>(recurrenceId);
-				//r.Pristine = false;
-				await L10Accessor.Depristine_Unsafe(s, perms.GetCaller(), r);
-				s.Update(r);
-			}
-			if (todo.TodoType == TodoType.Recurrence)
-				ExternalTodoAccessor.AddLink(s, perms, ForModel.Create(r), todo.AccountableUserId, todo);
-			else if (todo.TodoType == TodoType.Personal)
-				ExternalTodoAccessor.AddLink(s, perms, ForModel.Create(todo.AccountableUser), todo.AccountableUserId, todo);
-			else
-				throw new PermissionsException("unhandled TodoType");
-
-			if (String.IsNullOrWhiteSpace(todo.PadId))
-				todo.PadId = Guid.NewGuid().ToString();
-
-			if (!string.IsNullOrWhiteSpace(todo.Details))
-				await PadAccessor.CreatePad(todo.PadId, todo.Details);
-			if (recurrenceId > 0) {
-				todo.ForRecurrenceId = recurrenceId;
-				todo.ForRecurrence = r;
-			}
-
-			s.Save(todo);
-			//if (todo.DueDate == todo.DueDate.Date)
-			//    todo.DueDate = todo.DueDate.Date.AddDays(1).AddMinutes(-todo.Organization.GetTimezoneOffset()).AddMilliseconds(-1);
-			todo.Ordering = -todo.Id;
-			s.Update(todo);
-
-			await HooksRegistry.Each<ITodoHook>((ses, x) => x.CreateTodo(ses, todo));
-
-			if (todo.TodoType == TodoType.Personal) {
-
-				var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-				var userMeetingHub = hub.Clients.Group(MeetingHub.GenerateUserId(todo.AccountableUserId));
-				var todoData = TodoData.FromTodo(todo);
-				userMeetingHub.appendTodo(".todo-list", todoData);
-				var updates = new AngularRecurrence(recurrenceId);
-				updates.Todos = AngularList.CreateFrom(AngularListType.Add, new AngularTodo(todo));
-				userMeetingHub.update(updates);
-			}
-
-			if (recurrenceId > 0) {
-				var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-				var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
-				var todoData = TodoData.FromTodo(todo);
-
-				if (todo.CreatedDuringMeetingId != null)
-					todoData.isNew = true;
-				meetingHub.appendTodo(".todo-list", todoData);
-
-				var message = "Created to-do.";
-
-				var showWhoCreatedDetails = true;
-				if (showWhoCreatedDetails) {
-					try {
-						if (perms.GetCaller() != null && perms.GetCaller().GetFirstName() != null) {
-							message = perms.GetCaller().GetFirstName() + " created a to-do.";
-						}
-					} catch (Exception) {
-					}
-				}
-
-				meetingHub.showAlert(message, 1500);
-
-				var updates = new AngularRecurrence(recurrenceId);
-				updates.Todos = AngularList.CreateFrom(AngularListType.Add, new AngularTodo(todo));
-				updates.Focus = "[data-todo='" + todo.Id + "'] input:visible:first";
-				meetingHub.update(updates);
-
-				#region Add to L10 Tile
-				try {
-					Dashboard dashboardAlias = null;
-					var dashs = s.QueryOver<TileModel>()
-						.JoinAlias(x => x.Dashboard, () => dashboardAlias)
-						.Where(x => x.DeleteTime == null && x.Type == TileType.Url && x.DataUrl == "/TileData/L10Todos/" + recurrenceId)
-						.Select(x => x.Dashboard.Id, x => x.Id, x => dashboardAlias.ForUser.Id)
-						.List<object[]>()
-						.Select(x => new {
-							DashboardId = (long)x[0],
-							TileId = (long)x[1],
-							UserId = (string)x[2]
-						}).ToList();
-
-					if (dashs.Any()) {
-						//Only do if there are tiles
-						var dashUserIds = dashs.Select(x => x.UserId).Distinct().ToArray();
-						var dashUsers = s.QueryOver<UserOrganizationModel>()
-											.Where(x => x.DeleteTime == null)
-											.WhereRestrictionOn(x => x.User.Id)
-											.IsIn(dashUserIds)
-											.List().ToList();
-
-						var canView = new DefaultDictionary<string, bool>(x => false);
-						foreach (var u in dashUsers) {
-							if (canView[u.User.Id] == false) {
-								try {
-									PermissionsUtility.Create(s, u).ViewL10Recurrence(recurrenceId);
-									canView[u.User.Id] = true;
-								} catch (PermissionsException) {
-								}
-							}
-						}
-
-						foreach (var d in dashs) {
-							if (canView[d.UserId]) {
-								var tile = new AngularTileId<IEnumerable<AngularTodo>>(d.TileId, recurrenceId, null, AngularTileKeys.L10TodoList(recurrenceId)) {
-									Contents = AngularList.Create(AngularListType.Add, new[] { new AngularTodo(todo) })
-								};
-								meetingHub.update(new AngularUpdate() { tile });
-							}
-						}
-					}
-				} catch (Exception e) {
-					//Special stuff,
-					log.Error(e);
-				}
-				#endregion
-				Audit.L10Log(s, perms.GetCaller(), recurrenceId, "CreateTodo", ForModel.Create(todo), todo.NotNull(x => x.Message));
-			}
-
-			return true;
-		}
-		[Obsolete("Use other", true)]
-		public static async Task<bool> CreateTodo(UserOrganizationModel caller, long recurrenceId, TodoModel todo) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var perms = PermissionsUtility.Create(s, caller);
-					//.ViewL10Recurrence(recurrenceId); //Tested below
-					//perms.ViewL10Recurrence(recurrenceId);
-					var created = await CreateTodo(s, perms, recurrenceId, todo);
-
-					tx.Commit();
-					s.Flush();
-
-					return created;
-				}
-			}
-		}
-
-
 		public static async Task UpdateTodo(UserOrganizationModel caller, long todoId, string message = null, DateTime? dueDate = null, long? accountableUser = null, bool? complete = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -365,10 +169,8 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-
-
-		[Untested("New method", "Test hooks", "test me")]
-		public static async Task UpdateTodo(ISession s, PermissionsUtility perms, long todoId, string message = null, DateTime? dueDate = null, long? accountableUser = null, bool? complete = null/*, string connectionId = null, bool duringMeeting = false, bool? delete = null*/) {
+		
+		public static async Task UpdateTodo(ISession s, PermissionsUtility perms, long todoId, string message = null, DateTime? dueDate = null, long? accountableUser = null, bool? complete = null, bool duringMeeting = false/*, string connectionId = null, bool duringMeeting = false, bool? delete = null*/) {
 			perms.EditTodo(todoId);
 
 			var todo = s.Get<TodoModel>(todoId);
@@ -398,18 +200,28 @@ namespace RadialReview.Accessors {
 					updates.CompletionChanged = true;
 				} else if (complete == false && todo.CompleteTime != null) {
 					todo.CompleteTime = null;
+					todo.CompleteDuringMeetingId = null;
 					updates.CompletionChanged = true;
+				}
+				//Completed during meeting
+				if (duringMeeting && todo.ForRecurrenceId != null && complete==true) {
+					try {
+						var meetingId = L10Accessor._GetCurrentL10Meeting(s, perms, todo.ForRecurrenceId.Value, true, false, false).NotNull(x => x.Id);
+						if (meetingId != 0)
+							todo.CompleteDuringMeetingId = meetingId;
+					} catch (Exception) { }
 				}
 			}
 
 			s.Update(todo);
-			await HooksRegistry.Each<ITodoHook>((ses, x) => x.UpdateTodo(ses, todo, updates));
+			await HooksRegistry.Each<ITodoHook>((ses, x) => x.UpdateTodo(ses,perms.GetCaller(), todo, updates));
 		}
-		public static async Task CompleteTodo(UserOrganizationModel caller, long todoId, bool completed = true) {
+
+		public static async Task CompleteTodo(UserOrganizationModel caller, long todoId, bool completed = true,bool duringMeeting=false) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					await CompleteTodo(s, perms, todoId, completed);
+					await CompleteTodo(s, perms, todoId, completed, duringMeeting);
 					tx.Commit();
 					s.Flush();
 				}
@@ -417,13 +229,13 @@ namespace RadialReview.Accessors {
 
 		}
 
-		public static async Task CompleteTodo(ISession s, PermissionsUtility perms, long todoId, bool completed = true) {
+		public static async Task CompleteTodo(ISession s, PermissionsUtility perms, long todoId, bool completed = true, bool duringMeeting = false) {
 			var todo = s.Get<TodoModel>(todoId);
 			if (todo.CompleteTime != null && completed)
 				throw new PermissionsException("To-do already checked.");
 			if (todo.CompleteTime == null && !completed)
 				throw new PermissionsException("To-do already unchecked.");
-			await UpdateTodo(s, perms, todoId, complete: completed);
+			await UpdateTodo(s, perms, todoId, complete: completed, duringMeeting: duringMeeting);
 		}
 
 
@@ -450,6 +262,7 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+
 		public static List<AngularTodo> GetMyTodosAndMilestones(UserOrganizationModel caller, long userId, bool excludeCompleteDuringMeeting = false, DateRange range = null, bool includeTodos = true, bool includeMilestones = true) {
 
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -468,16 +281,20 @@ namespace RadialReview.Accessors {
 		private static List<AngularTodo> GetTodosForUsers_Unsafe(ISession s, long[] userIds, bool excludeCompleteDuringMeeting, DateRange range, bool includeTodos = true, bool includeMilestones = false) {
 			// List<TodoModel> found;
 			var weekAgo = DateTime.UtcNow.StartOfWeek(DayOfWeek.Sunday).AddDays(-7);
-			IEnumerable<TodoModel> todos = null;
+			List<IEnumerable<TodoModel>> todosMany = new List<IEnumerable<TodoModel>>();
+
+
 			if (includeTodos) {
-				var q = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null)
-					.WhereRestrictionOn(x => x.AccountableUserId)
-					.IsIn(userIds);
-				if (excludeCompleteDuringMeeting)
-					q = q.Where(x => ((x.CompleteTime != null && x.CompleteTime > weekAgo && x.CompleteDuringMeetingId == null) || x.CompleteTime == null));
-				if (range != null)
-					q = q.Where(x => x.CompleteTime == null || (x.CompleteTime != null && x.CompleteTime >= range.StartTime && x.CompleteTime <= range.EndTime));
-				todos = q.Future();
+				foreach (var a in userIds) {
+					var q = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.AccountableUserId == a);
+					//.WhereRestrictionOn(x => x.AccountableUserId)
+					//.IsIn(userIds);
+					if (excludeCompleteDuringMeeting)
+						q = q.Where(x => x.CompleteTime == null || (x.CompleteTime != null && x.CompleteTime > weekAgo && x.CompleteDuringMeetingId == null));
+					if (false && range != null)
+						q = q.Where(x => x.CompleteTime == null || (x.CompleteTime != null && x.CompleteTime >= range.StartTime && x.CompleteTime <= range.EndTime));
+					todosMany.Add(q.List().ToList());
+				}
 			}
 
 			//Add milestones
@@ -516,18 +333,21 @@ namespace RadialReview.Accessors {
 			});
 
 			if (includeTodos) {
-				foreach (var f in todos) {
+				var todosResolved = todosMany.ToList().SelectMany(x => x).ToList();
+
+				foreach (var f in todosResolved) {
 					var a = f.ForRecurrence.NotNull(x => x.Id);
 					var b = f.AccountableUser.NotNull(x => x.GetName());
 					var c = f.AccountableUser.NotNull(x => x.ImageUrl(true, ImageSize._32));
 					var d = f.CreatedDuringMeeting.NotNull(x => x.Id);
 					var e = f.ForRecurrence.NotNull(x => x.Name);
+
 				}
 				//Populate dictionary
-				foreach (var u in todos.Select(x => x.AccountableUser)) {
+				foreach (var u in todosResolved.Select(x => x.AccountableUser)) {
 					ownerLookup[u.Id] = u;
 				}
-				angular.AddRange(todos.Select(x => new AngularTodo(x)));
+				angular.AddRange(todosResolved.Select(x => new AngularTodo(x)));
 			}
 
 			if (includeMilestones) {
@@ -541,37 +361,7 @@ namespace RadialReview.Accessors {
 			}
 			return angular;
 		}
-
-
-
-
-		[Obsolete("Do not use", true)]
-		public static TodoModel MarkComplete(UserOrganizationModel caller, long todoId, DateTime completeTime) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var perm = PermissionsUtility.Create(s, caller).EditTodo(todoId);
-					var found = s.Get<TodoModel>(todoId);
-
-					found.CompleteTime = completeTime;
-					s.Update(found);
-
-					tx.Commit();
-					s.Flush();
-					return found;
-				}
-			}
-		}
-
-		[Obsolete("Do not use", true)]
-		public static List<TodoModel> GetRecurrenceTodos(UserOrganizationModel caller, long recurrenceId, bool excludeCompleteDuringMeeting = false, DateRange range = null) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					return s.QueryOver<TodoModel>()
-						.Where(x => x.DeleteTime == null
-						&& x.ForRecurrenceId == recurrenceId).List().ToList();
-				}
-			}
-		}
+		
 
 		public static Csv Listing(UserOrganizationModel caller, long organizationId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -657,6 +447,225 @@ namespace RadialReview.Accessors {
 			table.Append("</table>");
 			return table;
 		}
+
+
+		#region old		
+		//[Obsolete("Do not use", true)]
+		//public static List<TodoModel> GetRecurrenceTodos(UserOrganizationModel caller, long recurrenceId, bool excludeCompleteDuringMeeting = false, DateRange range = null) {
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
+		//			return s.QueryOver<TodoModel>()
+		//				.Where(x => x.DeleteTime == null
+		//				&& x.ForRecurrenceId == recurrenceId).List().ToList();
+		//		}
+		//	}
+		//}
+		//[Obsolete("Do not use", true)]
+		//public static TodoModel MarkComplete(UserOrganizationModel caller, long todoId, DateTime completeTime) {
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
+		//			var perm = PermissionsUtility.Create(s, caller).EditTodo(todoId);
+		//			var found = s.Get<TodoModel>(todoId);
+
+		//			found.CompleteTime = completeTime;
+		//			s.Update(found);
+
+		//			tx.Commit();
+		//			s.Flush();
+		//			return found;
+		//		}
+		//	}
+		//}
+
+		//[Untested("Hooks", "AssignTodo permissions")]
+		//[Obsolete("Use other", true)]
+		//public static async Task<bool> CreateTodo(ISession s, PermissionsUtility perms, long recurrenceId, TodoModel todo) {
+		//	if (todo.Id != 0)
+		//		throw new PermissionsException("Id was not zero");
+
+		//	if (todo.CreatedDuringMeetingId == -1)
+		//		todo.CreatedDuringMeetingId = null;
+		//	perms.ConfirmAndFix(todo,
+		//		x => x.CreatedDuringMeetingId,
+		//		x => x.CreatedDuringMeeting,
+		//		x => x.ViewL10Meeting);
+
+		//	if (todo.OrganizationId == 0 && todo.Organization == null)
+		//		todo.OrganizationId = perms.GetCaller().Organization.Id;
+		//	perms.ConfirmAndFix(todo,
+		//		x => x.OrganizationId,
+		//		x => x.Organization,
+		//		x => x.ViewOrganization);
+
+		//	perms.ConfirmAndFix(todo,
+		//		x => x.ForRecurrenceId,
+		//		x => x.ForRecurrence,
+		//		x => x.EditL10Recurrence);
+
+		//	if ((todo.ForRecurrenceId == null || todo.ForRecurrence == null) && todo.TodoType == TodoType.Recurrence)
+		//		throw new PermissionsException("Recurrence Id is required to create a meeting todo.");
+
+
+		//	if (todo.CreatedById == 0 && todo.CreatedBy == null)
+		//		todo.CreatedById = perms.GetCaller().Id;
+		//	perms.ConfirmAndFix(todo,
+		//		x => x.CreatedById,
+		//		x => x.CreatedBy,
+		//		x => y => x.ViewUserOrganization(y, false));
+
+		//	if (todo.AccountableUserId == 0 && todo.AccountableUser == null)
+		//		todo.AccountableUserId = perms.GetCaller().Id;
+		//	perms.ConfirmAndFix(todo,
+		//		x => x.AccountableUserId,
+		//		x => x.AccountableUser,
+		//		x => y => x.ViewUserOrganization(y, false));
+
+
+		//	//Added
+		//	perms.AssignTodo(todo.AccountableUserId, todo.ForRecurrenceId);
+
+		//	L10Recurrence r = null;
+		//	if (recurrenceId > 0) {
+		//		r = s.Get<L10Recurrence>(recurrenceId);
+		//		//r.Pristine = false;
+		//		await L10Accessor.Depristine_Unsafe(s, perms.GetCaller(), r);
+		//		s.Update(r);
+		//	}
+		//	if (todo.TodoType == TodoType.Recurrence)
+		//		ExternalTodoAccessor.AddLink(s, perms, ForModel.Create(r), todo.AccountableUserId, todo);
+		//	else if (todo.TodoType == TodoType.Personal)
+		//		ExternalTodoAccessor.AddLink(s, perms, ForModel.Create(todo.AccountableUser), todo.AccountableUserId, todo);
+		//	else
+		//		throw new PermissionsException("unhandled TodoType");
+
+		//	if (String.IsNullOrWhiteSpace(todo.PadId))
+		//		todo.PadId = Guid.NewGuid().ToString();
+
+		//	if (!string.IsNullOrWhiteSpace(todo.Details))
+		//		await PadAccessor.CreatePad(todo.PadId, todo.Details);
+		//	if (recurrenceId > 0) {
+		//		todo.ForRecurrenceId = recurrenceId;
+		//		todo.ForRecurrence = r;
+		//	}
+
+		//	s.Save(todo);
+		//	//if (todo.DueDate == todo.DueDate.Date)
+		//	//    todo.DueDate = todo.DueDate.Date.AddDays(1).AddMinutes(-todo.Organization.GetTimezoneOffset()).AddMilliseconds(-1);
+		//	todo.Ordering = -todo.Id;
+		//	s.Update(todo);
+
+		//	await HooksRegistry.Each<ITodoHook>((ses, x) => x.CreateTodo(ses, todo));
+
+		//	if (todo.TodoType == TodoType.Personal) {
+
+		//		var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+		//		var userMeetingHub = hub.Clients.Group(MeetingHub.GenerateUserId(todo.AccountableUserId));
+		//		var todoData = TodoData.FromTodo(todo);
+		//		userMeetingHub.appendTodo(".todo-list", todoData);
+		//		var updates = new AngularRecurrence(recurrenceId);
+		//		updates.Todos = AngularList.CreateFrom(AngularListType.Add, new AngularTodo(todo));
+		//		userMeetingHub.update(updates);
+		//	}
+
+		//	if (recurrenceId > 0) {
+		//		var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+		//		var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+		//		var todoData = TodoData.FromTodo(todo);
+
+		//		if (todo.CreatedDuringMeetingId != null)
+		//			todoData.isNew = true;
+		//		meetingHub.appendTodo(".todo-list", todoData);
+
+		//		var message = "Created to-do.";
+
+		//		var showWhoCreatedDetails = true;
+		//		if (showWhoCreatedDetails) {
+		//			try {
+		//				if (perms.GetCaller() != null && perms.GetCaller().GetFirstName() != null) {
+		//					message = perms.GetCaller().GetFirstName() + " created a to-do.";
+		//				}
+		//			} catch (Exception) {
+		//			}
+		//		}
+
+		//		meetingHub.showAlert(message, 1500);
+
+		//		var updates = new AngularRecurrence(recurrenceId);
+		//		updates.Todos = AngularList.CreateFrom(AngularListType.Add, new AngularTodo(todo));
+		//		updates.Focus = "[data-todo='" + todo.Id + "'] input:visible:first";
+		//		meetingHub.update(updates);
+
+		//		#region Add to L10 Tile
+		//		try {
+		//			Dashboard dashboardAlias = null;
+		//			var dashs = s.QueryOver<TileModel>()
+		//				.JoinAlias(x => x.Dashboard, () => dashboardAlias)
+		//				.Where(x => x.DeleteTime == null && x.Type == TileType.Url && x.DataUrl == "/TileData/L10Todos/" + recurrenceId)
+		//				.Select(x => x.Dashboard.Id, x => x.Id, x => dashboardAlias.ForUser.Id)
+		//				.List<object[]>()
+		//				.Select(x => new {
+		//					DashboardId = (long)x[0],
+		//					TileId = (long)x[1],
+		//					UserId = (string)x[2]
+		//				}).ToList();
+
+		//			if (dashs.Any()) {
+		//				//Only do if there are tiles
+		//				var dashUserIds = dashs.Select(x => x.UserId).Distinct().ToArray();
+		//				var dashUsers = s.QueryOver<UserOrganizationModel>()
+		//									.Where(x => x.DeleteTime == null)
+		//									.WhereRestrictionOn(x => x.User.Id)
+		//									.IsIn(dashUserIds)
+		//									.List().ToList();
+
+		//				var canView = new DefaultDictionary<string, bool>(x => false);
+		//				foreach (var u in dashUsers) {
+		//					if (canView[u.User.Id] == false) {
+		//						try {
+		//							PermissionsUtility.Create(s, u).ViewL10Recurrence(recurrenceId);
+		//							canView[u.User.Id] = true;
+		//						} catch (PermissionsException) {
+		//						}
+		//					}
+		//				}
+
+		//				foreach (var d in dashs) {
+		//					if (canView[d.UserId]) {
+		//						var tile = new AngularTileId<IEnumerable<AngularTodo>>(d.TileId, recurrenceId, null, AngularTileKeys.L10TodoList(recurrenceId)) {
+		//							Contents = AngularList.Create(AngularListType.Add, new[] { new AngularTodo(todo) })
+		//						};
+		//						meetingHub.update(new AngularUpdate() { tile });
+		//					}
+		//				}
+		//			}
+		//		} catch (Exception e) {
+		//			//Special stuff,
+		//			log.Error(e);
+		//		}
+		//		#endregion
+		//		Audit.L10Log(s, perms.GetCaller(), recurrenceId, "CreateTodo", ForModel.Create(todo), todo.NotNull(x => x.Message));
+		//	}
+
+		//	return true;
+		//}
+		//[Obsolete("Use other", true)]
+		//public static async Task<bool> CreateTodo(UserOrganizationModel caller, long recurrenceId, TodoModel todo) {
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
+		//			var perms = PermissionsUtility.Create(s, caller);
+		//			//.ViewL10Recurrence(recurrenceId); //Tested below
+		//			//perms.ViewL10Recurrence(recurrenceId);
+		//			var created = await CreateTodo(s, perms, recurrenceId, todo);
+
+		//			tx.Commit();
+		//			s.Flush();
+
+		//			return created;
+		//		}
+		//	}
+		//}
+
+		#endregion
 
 	}
 }

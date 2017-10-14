@@ -48,7 +48,6 @@ namespace RadialReview.Controllers {
 		//[OutputCache(Duration = 3, VaryByParam = "id", Location = OutputCacheLocation.Client, NoStore = true)]
 		//[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
 
-		[Untested("Vto_Rocks","Make sure we dont want to display company rocks on the dashboard. (L10 and User rocks)")]
 		public async Task<JsonResult> Data2(long id, bool completed = false, string name = null, long? start = null, long? end = null, bool fullScorecard = false, long? dashboardId=null) {
             //Response.AddHeader("Content-Encoding", "gzip");
             var userId = id;

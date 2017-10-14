@@ -10,6 +10,7 @@ using RadialReview.Models.Scorecard;
 using RadialReview.Utilities;
 using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.Angular.Scorecard;
+using System.Threading.Tasks;
 
 namespace RadialReview.Api.V1 {
 
@@ -59,8 +60,10 @@ namespace RadialReview.Api.V1 {
 		/// <param name="SCORE_ID">Score ID</param>
 		[HttpPut]
 		[Route("scores/{SCORE_ID:long}")]
-		public void Put(long SCORE_ID, [FromBody]UpdateScoreModel body) {
-			L10Accessor.UpdateScore(GetUser(), SCORE_ID, body.value, null, true);
+		[Untested("Test Me")]
+		public async Task Put(long SCORE_ID, [FromBody]UpdateScoreModel body) {
+			await ScorecardAccessor.UpdateScore(GetUser(), SCORE_ID, body.value);
+			///L10Accessor.UpdateScore(GetUser(), SCORE_ID, body.value, null, true);
 		}
 	}
 
@@ -137,9 +140,11 @@ namespace RadialReview.Api.V1 {
 		// PUT: api/Scores/5
 		[HttpPut]
 		[Route("measurables/{MEASURABLE_ID}/week/{WEEK_ID}")]
-		[Untested("Fix realtime for new scores and for null")]
-		public void UpdateScore(long MEASURABLE_ID, long WEEK_ID, [FromBody]Scores_Controller.UpdateScoreModel body) {
-			L10Accessor.UpdateScore(GetUser(), MEASURABLE_ID, WEEK_ID, body.value, null, true);
+		[Untested("Test UpdateScore")]
+		public async Task UpdateScore(long MEASURABLE_ID, long WEEK_ID, [FromBody]Scores_Controller.UpdateScoreModel body) {
+			//await L10Accessor.UpdateScore(GetUser(), MEASURABLE_ID, WEEK_ID, body.value, null, true);
+			await ScorecardAccessor.UpdateScore(GetUser(), MEASURABLE_ID, TimingUtility.GetDateSinceEpoch(WEEK_ID), body.value);
+
 		}
 	}
 }

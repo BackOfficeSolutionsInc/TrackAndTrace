@@ -46,8 +46,9 @@ namespace RadialReview.Api.V1 {
 		[HttpPost]
 		public async Task<AngularIssue> CreateIssue([FromBody]CreateIssueModel body) {
 			body.ownerId = body.ownerId ?? GetUser().Id;
-			var issue = new IssueModel() { Message = body.title, Description = body.details };
-			var success = await IssuesAccessor.CreateIssue(GetUser(), body.meetingId, body.ownerId.Value, issue);
+			//var issue = new IssueModel() { Message = body.title, Description = body.details };
+			var creation = IssueCreation.CreateL10Issue(body.title, body.details, body.ownerId, body.meetingId);
+			var success = await IssuesAccessor.CreateIssue(GetUser(), creation);// body.meetingId, body.ownerId.Value, issue);
 			return new AngularIssue(success.IssueRecurrenceModel);
 		}
 		/// <summary>
@@ -104,7 +105,7 @@ namespace RadialReview.Api.V1 {
 		[Route("issues/{ISSUE_ID}")]
 		[HttpPut]
 		public async Task EditIssue(long ISSUE_ID, [FromBody]UpdateIssueModel body) {
-			await L10Accessor.UpdateIssue(GetUser(), ISSUE_ID, DateTime.UtcNow, message: body.title, owner: body.ownerId);
+			await IssuesAccessor.EditIssue(GetUser(), ISSUE_ID, message: body.title, owner: body.ownerId);
 		}
 	}
 }

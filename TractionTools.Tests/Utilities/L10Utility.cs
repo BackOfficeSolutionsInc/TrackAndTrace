@@ -97,14 +97,16 @@ namespace TractionTools.Tests.Utilities {
 			using (var s = HibernateSession.GetCurrentSession(false)) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, Creator);
-					var issue = new IssueModel() {
-						Message = name,
-						OrganizationId = Org.Id,
-					};
-					await IssuesAccessor.CreateIssue(s, perms, Id, (owner ?? Employee).Id, issue);
+					//var issue = new IssueModel() {
+					//	Message = name,
+					//	OrganizationId = Org.Id,
+					//};
+
+					var creation = IssueCreation.CreateL10Issue(name, null, (owner ?? Employee).Id, Id);
+					var result = await IssuesAccessor.CreateIssue(s, perms, creation);// Id, (owner ?? Employee).Id, issue);
 					tx.Commit();
 					s.Flush();
-					return issue;
+					return result.IssueModel;
 				}
 			}
 		}

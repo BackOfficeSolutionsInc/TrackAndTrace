@@ -269,8 +269,7 @@ namespace RadialReview.Accessors {
 				return result;
 			}
 		}
-
-		[Untested("Hook")]
+		
 		public async Task<CreateOrganizationOutput> CreateOrganization(ISession s, UserModel user, PaymentPlanType planType, DateTime now, OrgCreationData data) {
 			UserOrganizationModel userOrgModel;
 			//OrganizationModel organization;
@@ -551,7 +550,6 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		[Untested("Hooks")]
 		public static async Task<UserOrganizationModel> JoinOrganization_Test(ISession db, UserModel user, long managerId, long userOrgPlaceholder) {
 			var manager = db.Get<UserOrganizationModel>(managerId);
 			var orgId = manager.Organization.Id;
