@@ -268,87 +268,6 @@ namespace RadialReview.Controllers {
             return Json(ResultObject.SilentSuccess().NoRefresh());
         }
 
-        [Access(AccessLevel.UserOrganization)]
-		[Obsolete("Remove me please",true)]
-		[Untested("Find a work around to this")]
-        public async Task<PartialViewResult> Modal(long meeting, long recurrence, long measurable, long score, long? userid = null) {
-            _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
-
-            ScoreModel s = null;
-            var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
-
-            try {
-                if (score == 0 && userid.HasValue) {
-                    var shift = System.TimeSpan.FromDays((recur.CurrentWeekHighlightShift + 1) * 7 - .0001);
-
-                    var week = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrence, true, false, false).CreateTime.Add(shift).StartOfWeek(DayOfWeek.Sunday);
-                    if (measurable > 0) {
-                        var scores = L10Accessor.GetScoresForRecurrence(GetUser(), recurrence).Where(x => x.MeasurableId == measurable && x.AccountableUserId == userid.Value && x.ForWeek == week);
-                        s = scores.FirstOrDefault();
-                        //TODO actually just create the score
-                        if (s == null) {
-                            s = ScorecardAccessor.UpdateScoreInMeeting(GetUser(), recurrence, 0, week, measurable, null, null, null);
-                        }
-                    } else {
-                        var scores = L10Accessor.GetScoresForRecurrence(GetUser(), recurrence).Where(x => x.Id == score && x.AccountableUserId == userid.Value && x.ForWeek == week);
-                        s = scores.FirstOrDefault();
-                    }
-                } else {
-                    s = ScorecardAccessor.GetScoreInMeeting(GetUser(), score, recurrence);
-                }
-            } catch (Exception e) {
-                log.Error("Issues/Modal", e);
-            }
-
-            // var possibleUsers = recur._DefaultAttendees.Select(x => x.User).ToList();
-
-            var people = recur._DefaultAttendees.Select(x => x.User).ToList();
-            people.Add(GetUser());
-            people = people.Distinct(x => x.Id).ToList();
-
-            var possible = people
-                .Select(x => new IssueVM.AccountableUserVM() {
-                    id = x.Id,
-                    imageUrl = x.ImageUrl(true, ImageSize._32),
-                    name = x.GetName()
-                }).ToList();
-
-            bool useMessage = true;
-
-            if (s != null && score == 0 && userid.HasValue) {
-                s.AccountableUser = people.FirstOrDefault(x => x.Id == s.AccountableUserId);
-                s.Measurable.AccountableUser = s.AccountableUser;
-                s.Measurable.AdminUser = s.AccountableUser;
-                //if (s.Measured == null)
-                // useMessage = false;
-            }
-
-            string message = null;
-            try {
-                if (s != null && useMessage) {
-                    message = await s.GetIssueMessage();
-                }
-            } catch (Exception) { }
-
-            string details = null;
-            try {
-                if (s != null && useMessage) {
-                    details = await s.GetIssueDetails();
-                }
-            } catch (Exception) { }
-
-            var model = new ScoreCardIssueVM() {
-                ByUserId = GetUser().Id,
-                Message = message,
-                Details = details,
-                MeasurableId = measurable,
-                MeetingId = meeting,
-                RecurrenceId = recurrence,
-                PossibleUsers = possible,
-                OwnerId = s.NotNull(x => x.AccountableUserId)
-            };
-            return PartialView("ScorecardIssueModal", model);
-        }
         [HttpPost]
         [Access(AccessLevel.UserOrganization)]
         public async Task<JsonResult> Modal(ScoreCardIssueVM model) {
@@ -498,3 +417,89 @@ namespace RadialReview.Controllers {
         }
     }
 }
+
+#region Deleted
+
+//      [Access(AccessLevel.UserOrganization)]
+//[Obsolete("Remove me please",true)]
+//[Untested("Find a work around to this")]
+//      public async Task<PartialViewResult> Modal(long meeting, long recurrence, long measurable, long score, long? userid = null) {
+//          _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
+
+//          ScoreModel s = null;
+//          var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
+
+//          try {
+//              if (score == 0 && userid.HasValue) {
+//                  var shift = System.TimeSpan.FromDays((recur.CurrentWeekHighlightShift + 1) * 7 - .0001);
+
+//                  var week = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrence, true, false, false).CreateTime.Add(shift).StartOfWeek(DayOfWeek.Sunday);
+//                  if (measurable > 0) {
+//                      var scores = L10Accessor.GetScoresForRecurrence(GetUser(), recurrence).Where(x => x.MeasurableId == measurable && x.AccountableUserId == userid.Value && x.ForWeek == week);
+//                      s = scores.FirstOrDefault();
+//                      //TODO actually just create the score
+//                      if (s == null) {
+//                          s = ScorecardAccessor.UpdateScoreInMeeting(GetUser(), recurrence, 0, week, measurable, null, null, null);
+//                      }
+//                  } else {
+//                      var scores = L10Accessor.GetScoresForRecurrence(GetUser(), recurrence).Where(x => x.Id == score && x.AccountableUserId == userid.Value && x.ForWeek == week);
+//                      s = scores.FirstOrDefault();
+//                  }
+//              } else {
+//                  s = ScorecardAccessor.GetScoreInMeeting(GetUser(), score, recurrence);
+//              }
+//          } catch (Exception e) {
+//              log.Error("Issues/Modal", e);
+//          }
+
+//          // var possibleUsers = recur._DefaultAttendees.Select(x => x.User).ToList();
+
+//          var people = recur._DefaultAttendees.Select(x => x.User).ToList();
+//          people.Add(GetUser());
+//          people = people.Distinct(x => x.Id).ToList();
+
+//          var possible = people
+//              .Select(x => new IssueVM.AccountableUserVM() {
+//                  id = x.Id,
+//                  imageUrl = x.ImageUrl(true, ImageSize._32),
+//                  name = x.GetName()
+//              }).ToList();
+
+//          bool useMessage = true;
+
+//          if (s != null && score == 0 && userid.HasValue) {
+//              s.AccountableUser = people.FirstOrDefault(x => x.Id == s.AccountableUserId);
+//              s.Measurable.AccountableUser = s.AccountableUser;
+//              s.Measurable.AdminUser = s.AccountableUser;
+//              //if (s.Measured == null)
+//              // useMessage = false;
+//          }
+
+//          string message = null;
+//          try {
+//              if (s != null && useMessage) {
+//                  message = await s.GetIssueMessage();
+//              }
+//          } catch (Exception) { }
+
+//          string details = null;
+//          try {
+//              if (s != null && useMessage) {
+//                  details = await s.GetIssueDetails();
+//              }
+//          } catch (Exception) { }
+
+//          var model = new ScoreCardIssueVM() {
+//              ByUserId = GetUser().Id,
+//              Message = message,
+//              Details = details,
+//              MeasurableId = measurable,
+//              MeetingId = meeting,
+//              RecurrenceId = recurrence,
+//              PossibleUsers = possible,
+//              OwnerId = s.NotNull(x => x.AccountableUserId)
+//          };
+//          return PartialView("ScorecardIssueModal", model);
+//      }
+
+#endregion

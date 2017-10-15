@@ -19,6 +19,6 @@ namespace RadialReview.Utilities.Hooks {
 
 	public interface IMeetingMeasurableHook : IHook {
 		Task AttachMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, L10Recurrence.L10Recurrence_Measurable recurMeasurable);
-		Task DetatchMeasurable(ISession s, MeasurableModel measurable, long recurrenceId);
+		Task DetatchMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, long recurrenceId);
 	}
 }

@@ -340,43 +340,43 @@ namespace RadialReview.Controllers {
             return Json(output, JsonRequestBehavior.AllowGet);
         }
 
-        [Access(AccessLevel.UserOrganization)]
-        [OutputCache(NoStore = true, Duration = 0)]
-        public JsonResult UserScorecardData(long id, long userId, bool completed = false, bool fullScorecard = false, long? start = null, long? end = null) {
-            DateTime startRange;
-            DateTime endRange;
+		[Access(AccessLevel.UserOrganization)]
+		[OutputCache(NoStore = true, Duration = 0)]
+		public async Task<JsonResult> UserScorecardData(long id, long userId, bool completed = false, bool fullScorecard = false, long? start = null, long? end = null) {
+			DateTime startRange;
+			DateTime endRange;
 
-            if (start == null)
-                startRange = TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod);
-            else
-                startRange = start.Value.ToDateTime();
+			if (start == null)
+				startRange = TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod);
+			else
+				startRange = start.Value.ToDateTime();
 
-            if (end == null)
-                endRange = DateTime.UtcNow.AddDays(14);
-            else
-                endRange = end.Value.ToDateTime();
+			if (end == null)
+				endRange = DateTime.UtcNow.AddDays(14);
+			else
+				endRange = end.Value.ToDateTime();
 
-            if (completed) {
-                startRange = Math2.Min(DateTime.UtcNow.AddDays(-1), startRange);
-                endRange = Math2.Max(DateTime.UtcNow.AddDays(2), endRange);
-            }
-            var dateRange = new DateRange(startRange, endRange);
+			if (completed) {
+				startRange = Math2.Min(DateTime.UtcNow.AddDays(-1), startRange);
+				endRange = Math2.Max(DateTime.UtcNow.AddDays(2), endRange);
+			}
+			var dateRange = new DateRange(startRange, endRange);
 
-            var output = new ListDataVM(id) {
-                date = new AngularDateRange() { startDate = startRange, endDate = endRange }
-            };
-            try {//Scorecard
-                var scorecardStart = fullScorecard ? TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod) : startRange;
-                var scorecardEnd = fullScorecard ? DateTime.UtcNow.AddDays(14) : endRange;
-                output.Scorecard = ScorecardAccessor.GetAngularScorecardForUser(GetUser(), userId, new DateRange(scorecardStart, scorecardEnd), true, now: DateTime.UtcNow);
+			var output = new ListDataVM(id) {
+				date = new AngularDateRange() { startDate = startRange, endDate = endRange }
+			};
+			try {//Scorecard
+				var scorecardStart = fullScorecard ? TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod) : startRange;
+				var scorecardEnd = fullScorecard ? DateTime.UtcNow.AddDays(14) : endRange;
+				output.Scorecard = await ScorecardAccessor.GetAngularScorecardForUser(GetUser(), userId, new DateRange(scorecardStart, scorecardEnd), true, now: DateTime.UtcNow);
 				output.Scorecard.ReverseScorecard = GetUser().NotNull(x => x.User.ReverseScorecard);
 
-            } catch (Exception e) {
-                ProcessDeadTile(e);
-            }
-            return Json(output, JsonRequestBehavior.AllowGet);
-        }
-    }
+			} catch (Exception e) {
+				ProcessDeadTile(e);
+			}
+			return Json(output, JsonRequestBehavior.AllowGet);
+		}
+	}
 
     public class DashboardController : BaseController {
 

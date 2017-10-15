@@ -595,6 +595,21 @@ namespace RadialReview.Utilities {
 			return fixedDates;
 		}
 
+		[Untested("unit test me")]
+		public static IEnumerable<DateTime> GetWeeksBetween(DateTime scorecardStart, DateTime scorecardEnd) {
+			var s = Math2.Min(scorecardStart, scorecardEnd);
+			var e = Math2.Max(scorecardStart, scorecardEnd);
+			s = s.StartOfWeek(DayOfWeek.Sunday);
+			e = e.AddDays(6.999).StartOfWeek(DayOfWeek.Sunday);
+
+			var i = s;
+			while (i <= e) {
+				yield return i;
+				i=i.AddDays(7);
+			}
+			yield break;
+		}
+
 		public static List<DateTime> InterpolateDates(List<DateTime?> dates, out int interpolated) {
 			interpolated = 0;
 			if (!dates.Any())

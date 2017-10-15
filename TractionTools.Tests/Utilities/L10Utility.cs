@@ -58,16 +58,18 @@ namespace TractionTools.Tests.Utilities {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, Creator);
 					var forUser = owner ?? Employee;
-					var mm = new MeasurableModel() {
-						AdminUser = forUser,
-						AdminUserId = forUser.Id,
-						AccountableUser = forUser,
-						AccountableUserId = forUser.Id,
-						OrganizationId = Org.Id,
-						Title = name
-					};
-					var m = AddMeasurableVm.CreateMeasurableViewModel(Id, mm);
-					await L10Accessor.AddMeasurable(s, perms, null, Id, m);
+					//var mm = new MeasurableModel() {
+					//	AdminUser = forUser,
+					//	AdminUserId = forUser.Id,
+					//	AccountableUser = forUser,
+					//	AccountableUserId = forUser.Id,
+					//	OrganizationId = Org.Id,
+					//	Title = name
+					//};
+					//var m = AddMeasurableVm.CreateMeasurableViewModel(Id, mm);
+					var creator = MeasurableBuilder.Build(name,forUser.Id);
+					var mm = await ScorecardAccessor.CreateMeasurable(s, perms, creator);
+					await L10Accessor.AttachMeasurable(s, perms, Id, mm.Id);
 					tx.Commit();
 					s.Flush();
 					return mm;

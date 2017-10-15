@@ -19,25 +19,37 @@ namespace RadialReview.Hooks.Meeting {
 		}
 
 
+		private static void _UpdateCumulative(ISession s, long measurableId, ScoreModel updatedScore = null) {
+			var recurrenceIds = RealTimeHelpers.GetRecurrencesForMeasurable(s, measurableId);
+			var measurable = s.Get<MeasurableModel>(measurableId);
+			using (var rt = RealTimeUtility.Create()) {
+				L10Accessor._RecalculateCumulative_Unsafe(s, rt, measurable , recurrenceIds, updatedScore);
+				rt.UpdateRecurrences(recurrenceIds).AddLowLevelAction(x => x.updateCumulative(measurableId, measurable._Cumulative.NotNull(y => y.Value.ToString("0.#####"))));
+			}
+		}
+
+
 		[Untested("Test me")]
 		public async Task UpdateScore(ISession s, ScoreModel score, IScoreHookUpdates updates) {
 
 			if (updates.ValueChanged) {
-				var recurrenceIds = RealTimeHelpers.GetRecurrencesForScore(s, score);
-
-				using (var rt = RealTimeUtility.Create()) {
-					L10Accessor._RecalculateCumulative_Unsafe(s, rt, score.Measurable, recurrenceIds, score);
-					rt.UpdateRecurrences(recurrenceIds).AddLowLevelAction(x => x.updateCumulative(score.Measurable.Id, score.Measurable._Cumulative.NotNull(y => y.Value.ToString("0.#####"))));
-				}
+				_UpdateCumulative(s, score.MeasurableId, score);
 			}
 		}
+
 
 		public async Task CreateMeasurable(ISession s, MeasurableModel m) {
 			//noop
 		}
 		
 		public async Task UpdateMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel m, List<ScoreModel> updatedScores, IMeasurableHookUpdates updates) {
-			thrownew NotImplementedException();
+			if (updates.GoalChanged || updates.CumulativeRangeChanged || updates.ShowCumulativeChanged) {
+				_UpdateCumulative(s, m.Id);
+			}
+		}
+
+		public async Task DeleteMeasurable(ISession s, MeasurableModel measurable) {
+			//noop
 		}
 	}
 }

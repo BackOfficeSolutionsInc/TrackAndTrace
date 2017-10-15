@@ -12,7 +12,7 @@ using RadialReview.Models.Scorecard;
 namespace RadialReview.Hooks {
 	public class UpdateUserCache : IRockHook, IMeasurableHook {
 		public bool CanRunRemotely() {
-			return false;
+			return false; //Must be false, needs context.
 		}
 
 		private async Task UpdateForUser(ISession s, long userId) {
@@ -38,7 +38,7 @@ namespace RadialReview.Hooks {
 
 		public async Task CreateMeasurable(ISession s, MeasurableModel m) {
 			await UpdateForUser(s, m.AccountableUserId);
-			if (m.AccountableUserId!=m.AdminUserId)
+			if (m.AccountableUserId != m.AdminUserId)
 				await UpdateForUser(s, m.AdminUserId);
 		}
 
@@ -49,6 +49,15 @@ namespace RadialReview.Hooks {
 			if (updates.AdminUserChanged)
 				m.AdminUser.UpdateCache(s);
 
+		}
+
+		public async Task DeleteMeasurable(ISession s, MeasurableModel measurable) {
+			s.Flush();
+			s.GetFresh<UserOrganizationModel>(measurable.AccountableUserId).UpdateCache(s);
+			if (measurable.AccountableUserId != measurable.AdminUserId)
+				s.GetFresh<UserOrganizationModel>(measurable.AdminUserId).UpdateCache(s);
+
+			
 		}
 	}
 }

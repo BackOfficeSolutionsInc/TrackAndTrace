@@ -61,7 +61,7 @@ namespace RadialReview.Hooks.Meeting {
 		public async Task UpdateIssue(ISession s, UserOrganizationModel caller, IssueModel.IssueModel_Recurrence issue, IIssueHookUpdates updates) {
 			//Do nothing
 		}
-		public async Task DetatchMeasurable(ISession s, MeasurableModel measurable, long recurrenceId) {
+		public async Task DetatchMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, long recurrenceId) {
 			//Do nothing
 		}
 

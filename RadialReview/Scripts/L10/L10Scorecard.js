@@ -633,6 +633,11 @@ function reorderMeasurables(order) {
 	updateScorecardNumbers();
 }
 
+function updateScore(newScore) {
+	console.info(newScore);
+	debugger;
+}
+
 function reorderRecurrenceMeasurables(order) {
 	console.log("reorderRecurrenceMeasurables");
 	for (var i = 0; i < order.length; i++) {

@@ -7,29 +7,28 @@ using RadialReview.Models.Scorecard;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Web;
 
 namespace RadialReview.Hooks.Realtime {
 	public static class RealTimeHelpers {
 
+
 		[Untested("Supply the connection string in a way that SQS can access.")]
 		public static string GetConnectionString() {
-			return null;
+			return HookData.ToReadOnly().GetData<string>("ConnectionString");
 		}
 
-		public static List<long> GetRecurrencesForMeasurable(ISession s, MeasurableModel measurable) {
+		public static List<long> GetRecurrencesForMeasurable(ISession s, long measurableId) {
 			return s.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
-				.Where(x => x.DeleteTime == null && x.Measurable.Id == measurable.Id)
+				.Where(x => x.DeleteTime == null && x.Measurable.Id == measurableId)
 				.Select(x => x.L10Recurrence.Id)
 				.List<long>().ToList();
 		}
 
 
 		public static List<long> GetRecurrencesForScore(ISession s, ScoreModel score) {
-			return s.QueryOver<L10Recurrence.L10Recurrence_Measurable>()
-				.Where(x => x.DeleteTime == null && x.Measurable.Id == score.MeasurableId)
-				.Select(x => x.L10Recurrence.Id)
-				.List<long>().ToList();
+			return GetRecurrencesForMeasurable(s, score.MeasurableId);
 		}
 
 		public static Rock_Data GetRecurrenceRockData(ISession s, long rockId) {

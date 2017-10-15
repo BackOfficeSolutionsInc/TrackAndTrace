@@ -3,6 +3,7 @@ using Amazon.SQS;
 using Amazon.SQS.Model;
 using FluentNHibernate.Mapping;
 using LambdaSerializer;
+using RadialReview.Hooks;
 using RadialReview.Models;
 using System;
 using System.Collections.Generic;
@@ -74,6 +75,7 @@ namespace RadialReview.Areas.CoreProcess.Models {
     public class SerializableHook {
         public object lambda { get; set; }
         public Type type { get; set; }
+		public Dictionary<string,object> hookData { get; set; }
     }
 
     public class TokenIdentifier {

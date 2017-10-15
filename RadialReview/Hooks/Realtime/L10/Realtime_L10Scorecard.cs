@@ -16,6 +16,7 @@ using RadialReview.Accessors;
 using RadialReview.Utilities;
 using RadialReview.Utilities.RealTime;
 using RadialReview.Models.ViewModels;
+using RadialReview.Models.Angular.Meeting;
 
 namespace RadialReview.Hooks.Realtime.L10 {
 	public class Realtime_L10Scorecard : IScoreHook, IMeasurableHook, IMeetingMeasurableHook {
@@ -23,8 +24,6 @@ namespace RadialReview.Hooks.Realtime.L10 {
 		public bool CanRunRemotely() {
 			return false;
 		}
-
-
 
 		[Untested("Test me", "Meeting", "Dash", "Archive")]
 		public async Task UpdateScore(ISession s, ScoreModel score, IScoreHookUpdates updates) {
@@ -35,7 +34,10 @@ namespace RadialReview.Hooks.Realtime.L10 {
 				var groupIds = recurIds.Select(rid => MeetingHub.GenerateMeetingGroupId(rid)).ToList();
 				var group = hub.Clients.Groups(groupIds, RealTimeHelpers.GetConnectionString());
 
+
 				var toUpdate = new AngularScore(score, false);
+				group.updateScore(toUpdate); //L10 Updater
+
 				toUpdate.DateEntered = score.Measured == null ? Removed.Date() : DateTime.UtcNow;
 				toUpdate.Measured = toUpdate.Measured ?? Removed.Decimal();
 				group.update(new AngularUpdate() { toUpdate });
@@ -101,21 +103,29 @@ namespace RadialReview.Hooks.Realtime.L10 {
 			}
 		}
 
-		[Untested("implement me")]
-		public Task DetatchMeasurable(ISession s, MeasurableModel measurable, long recurrenceId) {
-			throw new NotImplementedException();
+		[Untested("test me")]
+		public async Task DetatchMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, long recurrenceId) {
+			using (var rt = RealTimeUtility.Create()) {
+				rt.UpdateRecurrences(recurrenceId).Update(
+						new AngularRecurrence(recurrenceId) {
+							Scorecard = new AngularScorecard(recurrenceId) {
+								Id = recurrenceId,
+								Measurables = AngularList.CreateFrom(AngularListType.Remove, new AngularMeasurable(measurable))
+							}
+						}
+					);
+			}
+		}
+		
+		public async Task CreateMeasurable(ISession s, MeasurableModel m) {
+			//nothing to do
 		}
 
-		[Untested("implement me")]
-		public Task CreateMeasurable(ISession s, MeasurableModel m) {
-			throw new NotImplementedException();
-		}
-
-		[Untested("implement me", "Test all cases", "Dash", "wizard", "archive", "meeting")]
+		[Untested("Test all cases", "Dash", "wizard", "archive", "meeting")]
 		public async Task UpdateMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel m, List<ScoreModel> updatedScores, IMeasurableHookUpdates updates) {
 			var applySelf = false;
 			using (var rt = RealTimeUtility.Create(RealTimeHelpers.GetConnectionString())) {
-				var recurrenceIds = RealTimeHelpers.GetRecurrencesForMeasurable(s, m);
+				var recurrenceIds = RealTimeHelpers.GetRecurrencesForMeasurable(s, m.Id);
 
 				var meetingMeasurableIds = s.QueryOver<L10Meeting.L10Meeting_Measurable>()
 					.Where(x => x.DeleteTime == null && x.Measurable.Id == m.Id)
@@ -123,10 +133,10 @@ namespace RadialReview.Hooks.Realtime.L10 {
 					.List<long>().ToList();
 
 				var rtRecur = rt.UpdateRecurrences(recurrenceIds);
-				if (updates.AccountableUserChanged) 
+				if (updates.AccountableUserChanged)
 					foreach (var mmid in meetingMeasurableIds)
 						rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "accountable", m.AccountableUser.NotNull(x => x.GetName()), m.AccountableUserId));
-				
+
 
 				if (updates.AdminUserChanged)
 					foreach (var mmid in meetingMeasurableIds)
@@ -135,15 +145,15 @@ namespace RadialReview.Hooks.Realtime.L10 {
 				if (updates.AlternateGoalChanged)
 					foreach (var mmid in meetingMeasurableIds)
 						rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "altTarget", m.AlternateGoal.NotNull(x => x.Value.ToString("0.#####")) ?? ""));
-				
+
 				if (updates.ShowCumulativeChanged)
 					foreach (var mmid in meetingMeasurableIds)
 						rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "showCumulative", m.ShowCumulative));
 
 				if (updates.CumulativeRangeChanged)
-					foreach (var mmid in meetingMeasurableIds) 
+					foreach (var mmid in meetingMeasurableIds)
 						rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "cumulativeRange", m.CumulativeRange));
-					
+
 				if (updates.CumulativeRangeChanged || updates.ShowCumulativeChanged)
 					L10Accessor._RecalculateCumulative_Unsafe(s, rt, m, recurrenceIds);
 
@@ -151,7 +161,7 @@ namespace RadialReview.Hooks.Realtime.L10 {
 					foreach (var mmid in meetingMeasurableIds)
 						rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "target", m.Goal.ToString("0.#####")));
 
-				if(updates.MessageChanged)
+				if (updates.MessageChanged)
 					foreach (var mmid in meetingMeasurableIds)
 						rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "title", m.Title));
 
@@ -168,6 +178,10 @@ namespace RadialReview.Hooks.Realtime.L10 {
 				rtRecur.UpdateMeasurable(m, updatedScores, forceNoSkip: applySelf);
 
 			}
+		}
+
+		public async Task DeleteMeasurable(ISession s, MeasurableModel measurable) {
+			//nothing to do
 		}
 	}
 }

@@ -23,7 +23,8 @@ namespace RadialReview.Utilities.Hooks {
 
 
 	public interface IMeasurableHook : IHook {
-		Task CreateMeasurable(ISession s, MeasurableModel m);
-		Task UpdateMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel m, List<ScoreModel> updatedScores, IMeasurableHookUpdates updates);
+		Task CreateMeasurable(ISession s, MeasurableModel measurable);
+		Task UpdateMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, List<ScoreModel> updatedScores, IMeasurableHookUpdates updates);
+		Task DeleteMeasurable(ISession s, MeasurableModel measurable);
 	}
 }

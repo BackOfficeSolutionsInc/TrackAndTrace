@@ -73,16 +73,21 @@ namespace TractionTools.Tests.API.v1 {
 
 			L10.MockUser(c.E1);
 			var recurrence = await L10.CreateL10(new CreateMeeting { title = "Test L10" });
-			var m1 = new MeasurableModel() {
-				AccountableUser = c.E1,
-				AccountableUserId = c.E1.Id,
-				AdminUserId = c.E1.Id,
-				Title = "Meas1",
-				OrganizationId = c.Org.Organization.Id
-			};
-			//	var measurable = AddMeasurableVm.CreateNewMeasurable(recurrenceId, m1, true);
+			//var m1 = new MeasurableModel() {
+			//	AccountableUser = c.E1,
+			//	AccountableUserId = c.E1.Id,
+			//	AdminUserId = c.E1.Id,
+			//	Title = "Meas1",
+			//	OrganizationId = c.Org.Organization.Id
+			//};
+			////	var measurable = AddMeasurableVm.CreateNewMeasurable(recurrenceId, m1, true);
+			//MockHttpContext();
+			//await ScorecardAccessor.CreateMeasurable(c.E1, m1, false);
+			
 			MockHttpContext();
-			await ScorecardAccessor.CreateMeasurable(c.E1, m1, false);
+			var builder = MeasurableBuilder.Build("Meas1", c.E1.Id);
+			var m1 = await ScorecardAccessor.CreateMeasurable(c.E1, builder);
+
 
 			var getMeasurablesForRecurrence = L10Accessor.GetScorecardDataForRecurrence(c.E1, recurrence.meetingId);
 			Assert.AreEqual(0, getMeasurablesForRecurrence.MeasurablesAndDividers.Count());
@@ -103,22 +108,28 @@ namespace TractionTools.Tests.API.v1 {
 			L10.MockUser(c.E1);
 
 			var recurrenceId = (await L10.CreateL10(new CreateMeeting { title = "Test L10" })).meetingId;
-			var m1 = new MeasurableModel() {
-				AccountableUserId = c.E1.Id,
-				AdminUserId = c.E1.Id,
-				Title = "Meas1",
-				OrganizationId = c.Org.Organization.Id
-			};
+			//var m1 = new MeasurableModel() {
+			//	AccountableUserId = c.E1.Id,
+			//	AdminUserId = c.E1.Id,
+			//	Title = "Meas1",
+			//	OrganizationId = c.Org.Organization.Id
+			//};
 
-			var measurable = RadialReview.Controllers.L10Controller.AddMeasurableVm.CreateMeasurableViewModel(recurrenceId, m1, true);
+			//var measurable = RadialReview.Controllers.L10Controller.AddMeasurableVm.CreateMeasurableViewModel(recurrenceId, m1, true);
+			//MockHttpContext();
+			//await L10Accessor.CreateMeasurable(c.E1, recurrenceId, measurable);
+			
 			MockHttpContext();
-			await L10Accessor.CreateMeasurable(c.E1, recurrenceId, measurable);
+			var builder = MeasurableBuilder.Build("Meas1", c.E1.Id);
+			var m1 = await ScorecardAccessor.CreateMeasurable(c.E1, builder);
+
+
 			//await L10.AttachMeasurableL10(recurrenceId, measurable.Measurables.FirstOrDefault().Id);
 
 			var getMeasurablesForRecurrence = L10Accessor.GetScorecardDataForRecurrence(c.E1, recurrenceId);
 			Assert.AreEqual(1, getMeasurablesForRecurrence.MeasurablesAndDividers.Count());
 
-			await L10.RemoveMeasurableL10(recurrenceId, measurable.Measurables.FirstOrDefault().Id);
+			await L10.RemoveMeasurableL10(recurrenceId, m1.Id);
 			getMeasurablesForRecurrence = L10Accessor.GetScorecardDataForRecurrence(c.E1, recurrenceId);
 			Assert.AreEqual(0, getMeasurablesForRecurrence.MeasurablesAndDividers.Count());
 

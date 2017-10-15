@@ -49,6 +49,8 @@ $(function () {
 
 	meetingHub.client.setHash = setHash;
 
+	meetingHub.client.updateScore = updateScore;
+
 	meetingHub.client.deserializeIssues = deserializeIssues;
 	meetingHub.client.appendIssue = appendIssue;
 	meetingHub.client.updateIssueCompletion = updateIssueCompletion;

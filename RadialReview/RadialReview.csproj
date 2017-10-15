@@ -137,6 +137,7 @@
     <Compile Include="Areas\CoreProcess\Interfaces\ITaskAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
+    <Compile Include="Hooks\HookData.cs" />
     <Compile Include="Hooks\Meeting\AuditLogHooks.cs" />
     <Compile Include="Hooks\Meeting\CalculateCumulative.cs" />
     <Compile Include="Hooks\Meeting\DepristineHooks.cs" />
@@ -2540,7 +2541,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\XmlComments.xml</DocumentationFile>
-    <NoWarn>1591</NoWarn>
+    <NoWarn>1591,1998</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\</OutputPath>

@@ -32,15 +32,18 @@ namespace TractionTools.Tests.API.v1 {
 		[TestCategory("Api_V1")]
 		public async Task GetScore() {
 			var ctx = await Ctx.Build();
-			var m1 = new MeasurableModel() {
-				AccountableUserId = ctx.E1.Id,
-				AdminUserId = ctx.E1.Id,
-				Title = "Meas1",
-				OrganizationId = ctx.Org.Organization.Id
-			};
+			//var m1 = new MeasurableModel() {
+			//	AccountableUserId = ctx.E1.Id,
+			//	AdminUserId = ctx.E1.Id,
+			//	Title = "Meas1",
+			//	OrganizationId = ctx.Org.Organization.Id
+			//};
+
 			MockHttpContext();
-			await ScorecardAccessor.CreateMeasurable(ctx.Manager, m1 , false);
-			var score = await L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2000L, (decimal?)null,null);
+			var creator = MeasurableBuilder.Build("Meas1", ctx.E1.Id);
+			var m1 =await ScorecardAccessor.CreateMeasurable(ctx.Manager, creator);
+			//await ScorecardAccessor.CreateMeasurable(ctx.Manager, m1, false);
+			var score = await ScorecardAccessor.UpdateScore(ctx.Manager, m1.Id, TimingUtility.GetDateSinceEpoch(2000L), (decimal?)null);
 
 			var c = new Scores_Controller();
 			ctx.E1._ClientTimestamp = DateTime.UtcNow.ToJavascriptMilliseconds();
@@ -53,7 +56,7 @@ namespace TractionTools.Tests.API.v1 {
             Assert.AreEqual(s.Measurable.Name, m1.Title);
 			Assert.AreEqual(s.Measured, null);
 
-			score = await L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2000L, 3.14m, null);
+			score = await ScorecardAccessor.UpdateScore(ctx.Manager, m1.Id, TimingUtility.GetDateSinceEpoch(2000L), 3.14m);
 			var s2 = c.Get(score.Id);
 			Assert.AreEqual(s2.Measured, 3.14m);
 		}
@@ -63,27 +66,30 @@ namespace TractionTools.Tests.API.v1 {
 		[TestCategory("Api_V1")]
 		public async Task PutScoreWeek() {
 			var ctx = await Ctx.Build();
-			var m1 = new MeasurableModel() {
-				AccountableUserId = ctx.E1.Id,
-				AdminUserId = ctx.E1.Id,
-				Title = "Meas1",
-				OrganizationId = ctx.Org.Organization.Id
-			};
+			//var m1 = new MeasurableModel() {
+			//	AccountableUserId = ctx.E1.Id,
+			//	AdminUserId = ctx.E1.Id,
+			//	Title = "Meas1",
+			//	OrganizationId = ctx.Org.Organization.Id
+			//};
+			//MockHttpContext();
 			MockHttpContext();
-			await ScorecardAccessor.CreateMeasurable(ctx.Manager, m1, false);			
+			var creator = MeasurableBuilder.Build("Meas1", ctx.E1.Id);
+			var m1 = await ScorecardAccessor.CreateMeasurable(ctx.Manager, creator);
+
 
 			var c = new Measurables_Controller();
 			c.MockUser(ctx.E1);
 
-			c.UpdateScore(m1.Id, 2000L, new Scores_Controller.UpdateScoreModel { value = null });
+			await c.UpdateScore(m1.Id, 2000L, new Scores_Controller.UpdateScoreModel { value = null });
 			var score = ScorecardAccessor.GetScore(ctx.Manager, m1.Id, 2000L);
 			Assert.AreEqual(score.Measured, null);
 
-			c.UpdateScore(m1.Id, 2000L, new Scores_Controller.UpdateScoreModel { value = 3.14m });
+			await c.UpdateScore(m1.Id, 2000L, new Scores_Controller.UpdateScoreModel { value = 3.14m });
 			score = ScorecardAccessor.GetScore(ctx.Manager, m1.Id, 2000L);
 			Assert.AreEqual(score.Measured, 3.14m);
 
-			c.UpdateScore(m1.Id, 2001L, new Scores_Controller.UpdateScoreModel { value = 6.14m });
+			await c.UpdateScore(m1.Id, 2001L, new Scores_Controller.UpdateScoreModel { value = 6.14m });
 			score = ScorecardAccessor.GetScore(ctx.Manager, m1.Id, 2000L);
 			Assert.AreEqual(score.Measured, 3.14m);
 			score = ScorecardAccessor.GetScore(ctx.Manager, m1.Id, 2001L);
@@ -97,27 +103,32 @@ namespace TractionTools.Tests.API.v1 {
 			MockHttpContext();
 			var ctx = await Ctx.Build();
 
-			var m1 = new MeasurableModel() {
-				AccountableUserId = ctx.E1.Id,
-				AdminUserId = ctx.E1.Id,
-				Title = "Meas1",
-				OrganizationId = ctx.Org.Organization.Id
-			};
-			await ScorecardAccessor.CreateMeasurable(ctx.Manager, m1, false);
-			var score = await L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2000L, (decimal?)null, null);
+			//var m1 = new MeasurableModel() {
+			//	AccountableUserId = ctx.E1.Id,
+			//	AdminUserId = ctx.E1.Id,
+			//	Title = "Meas1",
+			//	OrganizationId = ctx.Org.Organization.Id
+			//};
+			//await ScorecardAccessor.CreateMeasurable(ctx.Manager, m1, false);
+
+			MockHttpContext();
+			var creator = MeasurableBuilder.Build("Meas1", ctx.E1.Id);
+			var m1 = await ScorecardAccessor.CreateMeasurable(ctx.Manager, creator);
+
+			var score = await ScorecardAccessor.UpdateScore(ctx.Manager, m1.Id,TimingUtility.GetDateSinceEpoch(2000L), (decimal?)null);
 
 			var c = new Scores_Controller();
 			c.MockUser(ctx.E1);
-			c.Put(score.Id,new Scores_Controller.UpdateScoreModel { value = null });
+			await c.Put(score.Id,new Scores_Controller.UpdateScoreModel { value = null });
 			var s = ScorecardAccessor.GetScore(ctx.Manager, score.Id);
 			Assert.AreEqual(score.Measured, null);
 
 			c.MockUser(ctx.E1);
-			c.Put(score.Id, new Scores_Controller.UpdateScoreModel { value = 3.14m });
+			await c.Put(score.Id, new Scores_Controller.UpdateScoreModel { value = 3.14m });
 			s = ScorecardAccessor.GetScore(ctx.Manager, m1.Id, 2000L);
 			Assert.AreEqual(s.Measured, 3.14m);
 
-			var score2 = await L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2001L, (decimal?)6.14, null);			
+			var score2 = await ScorecardAccessor.UpdateScore(ctx.Manager, m1.Id, TimingUtility.GetDateSinceEpoch(2001L), (decimal?)6.14);			
 			s = ScorecardAccessor.GetScore(ctx.Manager, score.Id);
 			Assert.AreEqual(s.Measured, 3.14m);
 			s = ScorecardAccessor.GetScore(ctx.Manager, score2.Id);

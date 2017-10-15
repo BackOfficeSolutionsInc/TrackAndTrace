@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -51,11 +52,17 @@ namespace RadialReview.Hooks {
 			logMethod = Path.GetFileName(frame.GetFileName()) + ":" + frame.GetFileLineNumber() + "\t" + frame.GetMethod();
 #endif
 
+			var hookData = HookData.ToReadOnly();
+
 			var hooks = GetHooks<T>();
-			foreach (var x in hooks) {
+			foreach (var x in hooks) {				
 				try {
 					if (x.CanRunRemotely() && Config.IsSchedulerAction()) {
-						await AmazonSQSUtility.SendMessage(MessageQueueModel.CreateHookRegistryAction(action, new SerializableHook() { lambda = action, type = action.GetType() }));
+						await AmazonSQSUtility.SendMessage(MessageQueueModel.CreateHookRegistryAction(action, new SerializableHook() {
+							lambda = action,
+							type = action.GetType(),
+							hookData = hookData.ToDictionary()
+						}));
 					} else {
 						await HibernateSession.RunAfterSuccessfulDisposeOrNow(async (s, tx) => {
 							try {
@@ -102,37 +109,38 @@ namespace RadialReview.Hooks {
 
 		}
 
-		[Obsolete("Use other one", true)]
-		public static async Task Each<T>(Expression<Func<T, Task>> action) where T : IHook {
-			var hooks = GetHooks<T>();
-			foreach (var x in hooks) {
-				try {
-					if (x.CanRunRemotely() && Config.IsSchedulerAction()) {
-						await AmazonSQSUtility.SendMessage(MessageQueueModel.CreateHookRegistryAction(action, new SerializableHook() { lambda = action, type = action.GetType() }));
-					} else {
-						await action.Compile()(x);
-					}
-				} catch (NotImplementedException e) {
-					//just eat this one..
-				} catch (Exception e) {
-					log.Error(e);
-					if (Config.IsLocal())
-						throw;
-				}
-			};
-		}
+		//[Obsolete("Use other one", true)]
+		//public static async Task Each<T>(Expression<Func<T, Task>> action,HookData data=null) where T : IHook {
+		//	var hooks = GetHooks<T>();
+		//	foreach (var x in hooks) {
+		//		try {
+		//			if (x.CanRunRemotely() && Config.IsSchedulerAction()) {
+		//				await AmazonSQSUtility.SendMessage(MessageQueueModel.CreateHookRegistryAction(action, new SerializableHook() { lambda = action, type = action.GetType() }));
+		//			} else {
+		//				await action.Compile()(x);
+		//			}
+		//		} catch (NotImplementedException e) {
+		//			//just eat this one..
+		//		} catch (Exception e) {
+		//			log.Error(e);
+		//			if (Config.IsLocal())
+		//				throw;
+		//		}
+		//	};
+		//}
 
-		public static void Each<T>(Action<T> action) where T : IHook {
-			GetHooks<T>().ForEach(x => {
-				try {
-					action(x);
-				} catch (Exception e) {
-					log.Error(e);
-					if (Config.IsLocal())
-						throw;
-				}
-			});
-		}
+		//[Obsolete("Use other one",true)]
+		//public static void Each<T>(Action<T> action) where T : IHook {
+		//	GetHooks<T>().ForEach(x => {
+		//		try {
+		//			action(x);
+		//		} catch (Exception e) {
+		//			log.Error(e);
+		//			if (Config.IsLocal())
+		//				throw;
+		//		}
+		//	});
+		//}
 
 		public static bool IsRegistered<T>() where T : IHook {
 			return GetSingleton()._Hooks.Where(x => x is T).Any();

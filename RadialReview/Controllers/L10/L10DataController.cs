@@ -234,13 +234,13 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
+		[Untested("Must Rework")]
 		public async Task<JsonResult> AddMeasurable(AddMeasurableVm model) {
-			ValidateValues(model, x => x.RecurrenceId);
-
-
-
-			await L10Accessor.CreateMeasurable(GetUser(), model.RecurrenceId, model);
-			return Json(ResultObject.SilentSuccess());
+			throw new NotImplementedException();
+			//ValidateValues(model, x => x.RecurrenceId);
+			////var creator = MeasurableCreation.CreateMeasurable(model.
+			//await L10Accessor.CreateMeasurable(GetUser(), model.RecurrenceId, model);
+			//return Json(ResultObject.SilentSuccess());
 		}
 
 		[HttpGet]
@@ -250,48 +250,50 @@ namespace RadialReview.Controllers {
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
+		//[HttpPost]
+		//[Access(AccessLevel.UserOrganization)]
+		//[Untested("test me")]
+		//[Obsolete("Do not use",true)]
+		//public async Task<JsonResult> UpdateArchiveMeasurable(string pk, string name, string value) {
+		//	var measurableId = pk.Split('_')[0].ToLong();
+		//	var recurrenceId = pk.Split('_')[1].ToLong();
+		//	string title = null;
+		//	LessGreater? direction = null;
+		//	decimal? target = null;
+		//	long? adminId = null;
+		//	long? accountableId = null;
+		//	switch (name) {
+		//		case "target":
+		//			target = value.ToDecimal();
+		//			break;
+		//		case "direction":
+		//			direction = (LessGreater)Enum.Parse(typeof(LessGreater), value);
+		//			break;
+		//		case "title":
+		//			title = value;
+		//			break;
+		//		case "admin":
+		//			adminId = value.ToLong();
+		//			break;
+		//		case "accountable":
+		//			accountableId = value.ToLong();
+		//			break;
+		//		default:
+		//			throw new ArgumentOutOfRangeException("name");
+		//	}
+
+		//	await ScorecardAccessor.UpdateMeasurable(GetUser(), measurableId, title, direction, target, accountableId, adminId);
+		//	//L10Accessor.UpdateArchiveMeasurable(GetUser(), measurableId, title, direction, target, accountableId, adminId);
+		//	return Json(ResultObject.SilentSuccess());
+		//}
+
+
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		[Untested("test me")]
-		public async Task<JsonResult> UpdateArchiveMeasurable(string pk, string name, string value) {
-			var measurableId = pk.Split('_')[0].ToLong();
-			var recurrenceId = pk.Split('_')[1].ToLong();
-			string title = null;
-			LessGreater? direction = null;
-			decimal? target = null;
-			long? adminId = null;
-			long? accountableId = null;
-			switch (name) {
-				case "target":
-					target = value.ToDecimal();
-					break;
-				case "direction":
-					direction = (LessGreater)Enum.Parse(typeof(LessGreater), value);
-					break;
-				case "title":
-					title = value;
-					break;
-				case "admin":
-					adminId = value.ToLong();
-					break;
-				case "accountable":
-					accountableId = value.ToLong();
-					break;
-				default:
-					throw new ArgumentOutOfRangeException("name");
-			}
-
-			await ScorecardAccessor.UpdateMeasurable(GetUser(), measurableId, title, direction, target, accountableId, adminId);
-			//L10Accessor.UpdateArchiveMeasurable(GetUser(), measurableId, title, direction, target, accountableId, adminId);
-			return Json(ResultObject.SilentSuccess());
-		}
-
-
-		[HttpPost]
-		[Access(AccessLevel.UserOrganization)]
-		[Untested("test me", "Could be fucked up")]
-		public JsonResult UpdateMeasurable(long pk, string name, string value) {
-			var meeting_measureableId = pk;
+		[Untested("test me", "Could be fucked up","Changed PK")]
+		public async Task<JsonResult> UpdateMeasurable(long pk, string name, string value) {
+			//var meeting_measureableId = pk;
+			var measurableId = pk;
 
 			string title = null;
 			LessGreater? direction = null;
@@ -321,7 +323,8 @@ namespace RadialReview.Controllers {
 				default:
 					throw new ArgumentOutOfRangeException("name");
 			}
-			ScorecardAccessor.
+
+			await ScorecardAccessor.UpdateMeasurable(GetUser(), measurableId, title, direction, target, accountableId, adminId, null, unitType: unitType);
 			//L10Accessor.UpdateMeasurable(GetUser(), meeting_measureableId, title, direction, target, accountableId, adminId, unitType);
 			return Json(ResultObject.SilentSuccess());
 		}

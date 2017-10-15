@@ -120,8 +120,8 @@ namespace RadialReview.Hooks.Meeting {
 		}
 
 		[Untested("Implement me")]
-		public Task DetatchMeasurable(ISession s, MeasurableModel measurable, long recurrenceId) {
-			throw new NotImplementedException();
+		public async Task DetatchMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, long recurrenceId) {
+			Audit.L10Log(s, caller, recurrenceId, "DeleteMeasurable", ForModel.Create(measurable), measurable.Title);
 		}
 
 		[Untested("Implement me")]
@@ -160,7 +160,7 @@ namespace RadialReview.Hooks.Meeting {
 
 			var updatedText = "Updated Measurable: \"" + measurable.Title + "\" \n " + String.Join("\n", updateText);
 
-			var recurrenceIds = RealTimeHelpers.GetRecurrencesForMeasurable(s,measurable);
+			var recurrenceIds = RealTimeHelpers.GetRecurrencesForMeasurable(s,measurable.Id);
 
 			foreach (var recurrenceId in recurrenceIds) {
 				Audit.L10Log(s, caller, recurrenceId, "UpdateArchiveMeasurable", ForModel.Create(measurable), updatedText);
@@ -182,6 +182,10 @@ namespace RadialReview.Hooks.Meeting {
 			//Noop
 		}
 		public async Task UpdateVtoRock(ISession s, L10Recurrence.L10Recurrence_Rocks recurRock) {
+			//Noop
+		}
+
+		public async Task DeleteMeasurable(ISession s, MeasurableModel measurable) {          
 			//Noop
 		}
 

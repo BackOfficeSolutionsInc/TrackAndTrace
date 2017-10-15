@@ -15,259 +15,253 @@ using TractionTools.Tests.Utilities;
 using RadialReview.Models;
 
 namespace TractionTools.UITests.MeetingArchive {
-    [TestClass]
-    public class MeetingTests : BaseSelenium {
+	[TestClass]
+	public class MeetingTests : BaseSelenium {
 
-        #region TestWrappers
-        private class RunLayoutTests : IDisposable {
+		#region TestWrappers
+		private class RunLayoutTests : IDisposable {
 
-            private TestCtx d { get; set; }
+			private TestCtx d { get; set; }
 
-            private string PAGENAME;
-            private string TODO_TEXT;
-            private string TODO_DETAILS;
-            private string ISSUE_TEXT;
-            private string ISSUE_DETAILS;
-            private string TODO_DATE;
+			private string PAGENAME;
+			private string TODO_TEXT;
+			private string TODO_DETAILS;
+			private string ISSUE_TEXT;
+			private string ISSUE_DETAILS;
+			private string TODO_DATE;
 
-            public RunLayoutTests(TestCtx context)
-            {
-                d = context;
-                d.WaitUntil(x => x.Find(".elapsed-time").Displayed);
-                d.EnsureDifferent(x => x.Find(".settings-button").Click());
-                d.EnsureDifferent(x => x.Find(".level-10").Click());
-                d.EnsureDifferent(x => x.Find(".print-button").Click());
-                d.EnsureDifferent(x => x.FindElementByText("Quarterly Printout", 1).Click());
-                
-                d.WaitUntil(x=>x.Finds("#modalBody .checkbox").Count==6);
-                d.EnsureDifferent(x => x.Find("#modalCancel").Click());
+			public RunLayoutTests(TestCtx context) {
+				d = context;
+				d.WaitUntil(x => x.Find(".elapsed-time").Displayed);
+				d.EnsureDifferent(x => x.Find(".settings-button").Click());
+				d.EnsureDifferent(x => x.Find(".level-10").Click());
+				d.EnsureDifferent(x => x.Find(".print-button").Click());
+				d.EnsureDifferent(x => x.FindElementByText("Quarterly Printout", 1).Click());
 
-                d.Find(".button-bar", 15);
+				d.WaitUntil(x => x.Finds("#modalBody .checkbox").Count == 6);
+				d.EnsureDifferent(x => x.Find("#modalCancel").Click());
 
-                d.Find(".notesButton", 10).Click();
+				d.Find(".button-bar", 15);
 
-                var notes = d.Find(".notes", 5);
+				d.Find(".notesButton", 10).Click();
 
-                Assert.AreEqual("about:blank", notes.Find("iframe").Attr("src"));
-                Assert.IsTrue(d.Find(".notes-instruction",15).Displayed);
+				var notes = d.Find(".notes", 5);
 
-                d.TestScreenshot("notes");
+				Assert.AreEqual("about:blank", notes.Find("iframe").Attr("src"));
+				Assert.IsTrue(d.Find(".notes-instruction", 15).Displayed);
 
-                notes.Find(".tab.add").Click();
+				d.TestScreenshot("notes");
 
-                var name = d.Find("#modal #Name", 6);
-                PAGENAME = "A new page!";
-                name.SendKeys(PAGENAME);
-                name.SendKeys(Keys.Return);
+				notes.Find(".tab.add").Click();
 
-                var activeTab = d.Find(".tab.active", 10);
+				var name = d.Find("#modal #Name", 6);
+				PAGENAME = "A new page!";
+				name.SendKeys(PAGENAME);
+				name.SendKeys(Keys.Return);
 
-                Assert.AreEqual(PAGENAME, activeTab.Text);
+				var activeTab = d.Find(".tab.active", 10);
 
-                Assert.AreNotEqual("about:blank", notes.Find("iframe").Attr("src"));
+				Assert.AreEqual(PAGENAME, activeTab.Text);
 
-                d.SwitchTo().Frame(notes.Find("iframe")).Find(".enabledtoolbar", 5);
-                d.SwitchTo().DefaultContent();
+				Assert.AreNotEqual("about:blank", notes.Find("iframe").Attr("src"));
 
-                d.TestScreenshot("NewNote");
+				d.SwitchTo().Frame(notes.Find("iframe")).Find(".enabledtoolbar", 5);
+				d.SwitchTo().DefaultContent();
 
-                Throws<Exception>(() => d.Find(".notesButton").Click());
+				d.TestScreenshot("NewNote");
 
-                Assert.IsTrue(notes.Find(".overlay").Displayed);
+				Throws<Exception>(() => d.Find(".notesButton").Click());
 
-                //d.Find(".overlay").Click();
-                d.ExecuteScript("$('.overlay').click()");
+				Assert.IsTrue(notes.Find(".overlay").Displayed);
 
-                d.Find(".button-bar .issuesModal").Click(4);
+				//d.Find(".overlay").Click();
+				d.ExecuteScript("$('.overlay').click()");
 
-                ISSUE_TEXT = "A new issue!!";
-                ISSUE_DETAILS = "issue details!!";
-                d.Find("#modal #Message", 8).SendKeys(ISSUE_TEXT);
-                d.Find("#modal textarea", 4).SendKeys(ISSUE_DETAILS);
+				d.Find(".button-bar .issuesModal").Click(4);
 
-                d.TestScreenshot("IssueModal");
+				ISSUE_TEXT = "A new issue!!";
+				ISSUE_DETAILS = "issue details!!";
+				d.Find("#modal #Message", 8).SendKeys(ISSUE_TEXT);
+				d.Find("#modal textarea", 4).SendKeys(ISSUE_DETAILS);
 
-                d.Find("#modalOk").Click();
+				d.TestScreenshot("IssueModal");
 
-                d.WaitUntil(x => x.Find(".button-bar .todoModal").Displayed);
+				d.Find("#modalOk").Click();
+
+				d.WaitUntil(x => x.Find(".button-bar .todoModal").Displayed);
 
 
-                d.Find(".button-bar .todoModal").Click(2);
+				d.Find(".button-bar .todoModal").Click(2);
 
-                TODO_TEXT = "A new todo!!";
-                TODO_DETAILS = "todo details!!";
+				TODO_TEXT = "A new todo!!";
+				TODO_DETAILS = "todo details!!";
 
-                d.WaitUntil(35,x => x.Find("#modal #Message").Displayed);
+				d.WaitUntil(35, x => x.Find("#modal #Message").Displayed);
 
-                d.Find("#modal #Message", 6).SendKeys(TODO_TEXT);
-                d.Find("#modal textarea", 6).SendKeys(TODO_DETAILS);
+				d.Find("#modal #Message", 6).SendKeys(TODO_TEXT);
+				d.Find("#modal textarea", 6).SendKeys(TODO_DETAILS);
 
-                TODO_DATE = d.Find(".client-date").Val();
+				TODO_DATE = d.Find(".client-date").Val();
 
-                d.TestScreenshot("TodoModal");
-                d.Find("#modalOk").Click();
-                
-              //  Assert.IsFalse(d.Find(".start-video ").Displayed);
-                d.EnsureDifferent(x => x.Find(".videoconference-container .clicker").Click(), waitMs: 500);
+				d.TestScreenshot("TodoModal");
+				d.Find("#modalOk").Click();
+
+				//  Assert.IsFalse(d.Find(".start-video ").Displayed);
+				d.EnsureDifferent(x => x.Find(".videoconference-container .clicker").Click(), waitMs: 500);
 
 				d.TestScreenshot("VideoBar");
 				//Assert.IsTrue(d.Find(".start-video ").Displayed);
 				d.EnsureDifferent(x => x.Find(".videoconference-container .clicker").Click(), waitMs: 500);
-               // Assert.IsFalse(d.Find(".start-video ").Displayed);
-               
+				// Assert.IsFalse(d.Find(".start-video ").Displayed);
 
 
 
-            }
 
-            private void TestTodoWasAdded()
-            {
-                //GO TO THE TODO PAGE
-                d.FindElementByLinkText("To-do List").Click();
+			}
 
-                var todoPage = d.Find(".todo", 5);
+			private void TestTodoWasAdded() {
+				//GO TO THE TODO PAGE
+				d.FindElementByLinkText("To-do List").Click();
 
-                var rows = todoPage.Finds(".todo-row");
-                Assert.AreEqual(1, rows.Count);
+				var todoPage = d.Find(".todo", 5);
 
-                d.WaitUntil(x => x.Find(".new-indicator").Displayed);
+				var rows = todoPage.Finds(".todo-row");
+				Assert.AreEqual(1, rows.Count);
 
-                //Assert.IsTrue(rows.First().Find(".new-indicator").Displayed);
-                Throws<NoSuchElementException>(() => rows.First().Find(".overdue-indicator"));
+				d.WaitUntil(x => x.Find(".new-indicator").Displayed);
 
-                Assert.AreEqual(TODO_TEXT, rows.First().Find(".message").Text);
+				//Assert.IsTrue(rows.First().Find(".new-indicator").Displayed);
+				Throws<NoSuchElementException>(() => rows.First().Find(".overdue-indicator"));
 
-                Assert.IsTrue(String.IsNullOrWhiteSpace(d.Find("#todoDetails").Text));
+				Assert.AreEqual(TODO_TEXT, rows.First().Find(".message").Text);
 
-
-                d.TestScreenshot("TodoPage");
-
-                d.EnsureDifferent(x => x.Find(".todo-row").Click());
-                Assert.IsFalse(String.IsNullOrWhiteSpace(d.Find(".todoDetails").Text));
-
-                Assert.AreEqual(TODO_TEXT, d.Find(".message-holder").Text);
-                var messageHolder = d.Find(".message-holder");
-                messageHolder.Find("span").Click();
-                var EDITED_TODO = "edited todo";
-                messageHolder.Find("textarea").SendKeys(Keys.Control + "a");
-                messageHolder.Find("textarea").SendKeys(EDITED_TODO);
-                d.Find(".level-10").Click();
-                Assert.AreEqual(EDITED_TODO, d.Find(".message-holder span", 2).Text);
-                Assert.AreEqual(EDITED_TODO, todoPage.Find(".todo-row .message").Text);
-                var completion_BeforeCheck = d.Find(".todo-completion-percentage").Text;
-
-                d.Find(".todo-row .todo-checkbox").Check();
-                //Assert.IsFalse(d.Find(".todo-row .todo-checkbox").Enabled);
-                //Assert.IsFalse(d.Find(".todoDetails .doneButton input").Enabled);            
-
-                d.WaitUntil(3, x => x.Find(".todo-row .todo-checkbox").Enabled);
-                Assert.IsTrue(d.Find(".todoDetails .doneButton input").Enabled);
-
-                //Todo completion number should not change
-                Assert.AreEqual(completion_BeforeCheck, d.Find(".todo-completion-percentage").Text);
-
-                d.TestScreenshot("TodoPageSelectedChecked");
-
-                var etherPad = d.SwitchTo().Frame(d.SwitchTo().Frame(d.SwitchTo().Frame(d.Find(".todoDetails iframe")).Find("iframe")).Find("iframe"));
-                Assert.AreEqual(TODO_DETAILS, etherPad.Find("body").Text);
-
-                d.SwitchTo().DefaultContent();
-            }
-
-            private void TestIssueWasAdded()
-            {
-                ///GO TO THE ISSUES PAGE
-                d.FindElementByLinkText("IDS").Click();
-                var idsPage = d.Find(".ids.prioritization-Rank", 5);
-                var rows = idsPage.Finds(".issue-row");
-                Assert.AreEqual(1, rows.Count);
-                Throws<NoSuchElementException>(() => rows.First().Find(".overdue-indicator"));
-
-                Assert.AreEqual(ISSUE_TEXT, rows.First().Find(".message").Text);
-
-                Assert.IsTrue(String.IsNullOrWhiteSpace(d.Find("#issueDetails").Text));
+				Assert.IsTrue(String.IsNullOrWhiteSpace(d.Find("#todoDetails").Text));
 
 
-                d.TestScreenshot("IssuePage");
+				d.TestScreenshot("TodoPage");
 
-                d.EnsureDifferent(x => x.Find(".issue-row").Click());
-                Assert.IsFalse(String.IsNullOrWhiteSpace(d.Find(".issueDetails").Text));
+				d.EnsureDifferent(x => x.Find(".todo-row").Click());
+				Assert.IsFalse(String.IsNullOrWhiteSpace(d.Find(".todoDetails").Text));
 
-                Assert.AreEqual(ISSUE_TEXT, d.Find(".message-holder").Text);
-                var messageHolder = d.Find(".message-holder");
-                messageHolder.Find("span").Click();
-                var EDITED_ISSUE = "edited issue";
-                messageHolder.Find("textarea", d, 2).SendKeys(Keys.Control + "a");
-                messageHolder.Find("textarea", d, 2).SendKeys(EDITED_ISSUE);
-                d.Find(".level-10").Click();
-                Assert.AreEqual(EDITED_ISSUE, d.Find(".message-holder span", 2).Text);
-                Assert.AreEqual(EDITED_ISSUE, idsPage.Find(".issue-row .message").Text);
+				Assert.AreEqual(TODO_TEXT, d.Find(".message-holder").Text);
+				var messageHolder = d.Find(".message-holder");
+				messageHolder.Find("span").Click();
+				var EDITED_TODO = "edited todo";
+				messageHolder.Find("textarea").SendKeys(Keys.Control + "a");
+				messageHolder.Find("textarea").SendKeys(EDITED_TODO);
+				d.Find(".level-10").Click();
+				Assert.AreEqual(EDITED_TODO, d.Find(".message-holder span", 2).Text);
+				Assert.AreEqual(EDITED_TODO, todoPage.Find(".todo-row .message").Text);
+				var completion_BeforeCheck = d.Find(".todo-completion-percentage").Text;
 
-                var etherPad = d.SwitchTo().Frame(d.SwitchTo().Frame(d.SwitchTo().Frame(d.Find(".issueDetails iframe",15)).Find("iframe",15)).Find("iframe",15));
-                Assert.AreEqual(ISSUE_DETAILS, etherPad.Find("body").Text);
-                d.SwitchTo().DefaultContent();
+				d.Find(".todo-row .todo-checkbox").Check();
+				//Assert.IsFalse(d.Find(".todo-row .todo-checkbox").Enabled);
+				//Assert.IsFalse(d.Find(".todoDetails .doneButton input").Enabled);            
 
-                d.Find(".issue-row .issue-checkbox").Check();
-                d.WaitUntil(3, x => x.Finds(".issue-row").Where(y => y.Displayed).Count() == 0);
+				d.WaitUntil(3, x => x.Find(".todo-row .todo-checkbox").Enabled);
+				Assert.IsTrue(d.Find(".todoDetails .doneButton input").Enabled);
 
-                d.TestScreenshot("IDSPageSelectedChecked");
+				//Todo completion number should not change
+				Assert.AreEqual(completion_BeforeCheck, d.Find(".todo-completion-percentage").Text);
+
+				d.TestScreenshot("TodoPageSelectedChecked");
+
+				var etherPad = d.SwitchTo().Frame(d.SwitchTo().Frame(d.SwitchTo().Frame(d.Find(".todoDetails iframe")).Find("iframe")).Find("iframe"));
+				Assert.AreEqual(TODO_DETAILS, etherPad.Find("body").Text);
+
+				d.SwitchTo().DefaultContent();
+			}
+
+			private void TestIssueWasAdded() {
+				///GO TO THE ISSUES PAGE
+				d.FindElementByLinkText("IDS").Click();
+				var idsPage = d.Find(".ids.prioritization-Rank", 5);
+				var rows = idsPage.Finds(".issue-row");
+				Assert.AreEqual(1, rows.Count);
+				Throws<NoSuchElementException>(() => rows.First().Find(".overdue-indicator"));
+
+				Assert.AreEqual(ISSUE_TEXT, rows.First().Find(".message").Text);
+
+				Assert.IsTrue(String.IsNullOrWhiteSpace(d.Find("#issueDetails").Text));
 
 
-            }
+				d.TestScreenshot("IssuePage");
 
-            public void Dispose()
-            {
-                TestTodoWasAdded();
-                TestIssueWasAdded();
-            }
-        }
-        #endregion
+				d.EnsureDifferent(x => x.Find(".issue-row").Click());
+				Assert.IsFalse(String.IsNullOrWhiteSpace(d.Find(".issueDetails").Text));
 
-        [TestMethod]
+				Assert.AreEqual(ISSUE_TEXT, d.Find(".message-holder").Text);
+				var messageHolder = d.Find(".message-holder");
+				messageHolder.Find("span").Click();
+				var EDITED_ISSUE = "edited issue";
+				messageHolder.Find("textarea", d, 2).SendKeys(Keys.Control + "a");
+				messageHolder.Find("textarea", d, 2).SendKeys(EDITED_ISSUE);
+				d.Find(".level-10").Click();
+				Assert.AreEqual(EDITED_ISSUE, d.Find(".message-holder span", 2).Text);
+				Assert.AreEqual(EDITED_ISSUE, idsPage.Find(".issue-row .message").Text);
+
+				var etherPad = d.SwitchTo().Frame(d.SwitchTo().Frame(d.SwitchTo().Frame(d.Find(".issueDetails iframe", 15)).Find("iframe", 15)).Find("iframe", 15));
+				Assert.AreEqual(ISSUE_DETAILS, etherPad.Find("body").Text);
+				d.SwitchTo().DefaultContent();
+
+				d.Find(".issue-row .issue-checkbox").Check();
+				d.WaitUntil(3, x => x.Finds(".issue-row").Where(y => y.Displayed).Count() == 0);
+
+				d.TestScreenshot("IDSPageSelectedChecked");
+
+
+			}
+
+			public void Dispose() {
+				TestTodoWasAdded();
+				TestIssueWasAdded();
+			}
+		}
+		#endregion
+
+		[TestMethod]
 		[TestCategory("Visual")]
-		public async Task L10_Meeting_Segue()
-        {
-            var testId = Guid.NewGuid();
-            var auc = await GetAdminCredentials(testId);
-            var recur = await L10Utility.CreateRecurrence("Meeting");
+		public async Task L10_Meeting_Segue() {
+			var testId = Guid.NewGuid();
+			var auc = await GetAdminCredentials(testId);
+			var recur = await L10Utility.CreateRecurrence("Meeting");
 
-            TestView(auc, "/l10/meeting/" + recur.Id, d => {
+			TestView(auc, "/l10/meeting/" + recur.Id, d => {
 
-                Assert.IsFalse(d.Find(".elapsed-time").Displayed);
-                d.Find("#form0", 10).Submit();
-                d.FindElement(By.PartialLinkText("Segue"), 10).Click();
-                using (new RunLayoutTests(d)) {
-                    //Nothing to test on this page I guess...
-                }
-                BaseSelenium.ConcludeMeeting(d);
-            });
+				Assert.IsFalse(d.Find(".elapsed-time").Displayed);
+				d.Find("#form0", 10).Submit();
+				d.FindElement(By.PartialLinkText("Segue"), 10).Click();
+				using (new RunLayoutTests(d)) {
+					//Nothing to test on this page I guess...
+				}
+				BaseSelenium.ConcludeMeeting(d);
+			});
 
-        }
-        private class MM {
-            public string name;
-            public decimal value;
-            public UserOrganizationModel owner;
-            public LessGreater dir;
-            public MeasurableModel measurable;
-        }
+		}
+		private class MM {
+			public string name;
+			public decimal value;
+			public UserOrganizationModel owner;
+			public LessGreater dir;
+			public MeasurableModel measurable;
+		}
 
 
-        [TestMethod]
+		[TestMethod]
 		[TestCategory("Visual")]
-		public async Task L10_Meeting_Scorecard()
-        {
-            var testId = Guid.NewGuid();
-            var auc = await GetAdminCredentials(testId);
-            var au = auc.User;
-            var recur = await L10Utility.CreateRecurrence("Scorecard");
-            var measurables = new[] { 
-                new MM{name="TestM1",value=10,owner=au,dir=LessGreater.LessThan} ,
-                new MM{name="TestM2",value=12,owner=au,dir=LessGreater.GreaterThan} ,
-                new MM{name="TestM3",value=14,owner=au,dir=LessGreater.LessThan} ,
-            };
+		public async Task L10_Meeting_Scorecard() {
+			var testId = Guid.NewGuid();
+			var auc = await GetAdminCredentials(testId);
+			var au = auc.User;
+			var recur = await L10Utility.CreateRecurrence("Scorecard");
+			var measurables = new[] {
+				new MM{name="TestM1",value=10,owner=au,dir=LessGreater.LessThan} ,
+				new MM{name="TestM2",value=12,owner=au,dir=LessGreater.GreaterThan} ,
+				new MM{name="TestM3",value=14,owner=au,dir=LessGreater.LessThan} ,
+			};
 
-            MockHttpContext();
-            DbCommit(async s => {
+			MockHttpContext();
+			DbCommit(async s => {
 				foreach (var m in measurables) {
 					var m101 = new MeasurableModel {
 						AccountableUserId = m.owner.Id,
@@ -278,22 +272,27 @@ namespace TractionTools.UITests.MeetingArchive {
 						Title = m.name,
 						UnitType = RadialReview.Models.Enums.UnitType.Dollar,
 					};
-					await L10Accessor.AddMeasurable(s, PermissionsUtility.Create(s, au), RealTimeUtility.Create(), recur.Id,
-						 RadialReview.Controllers.L10Controller.AddMeasurableVm.CreateMeasurableViewModel(recur.Id, m101));
+
+					var builder = MeasurableBuilder.Build(m.name, m.owner.Id, m.owner.Id, UnitType.Dollar, m.value, m.dir);
+					var m1 = await ScorecardAccessor.CreateMeasurable(s, PermissionsUtility.Create(s, au) , builder);
+					await L10Accessor.AttachMeasurable(s, PermissionsUtility.Create(s, au), recur.Id, m1.Id);
+
+					//await L10Accessor.AddMeasurable(s, PermissionsUtility.Create(s, au), RealTimeUtility.Create(), recur.Id,
+					//	 RadialReview.Controllers.L10Controller.AddMeasurableVm.CreateMeasurableViewModel(recur.Id, m101));
 					m.measurable = m101;
 				}
 			});
 
 
-            TestView(auc, "/l10/meeting/" + recur.Id, d => {
+			TestView(auc, "/l10/meeting/" + recur.Id, d => {
 
-                d.Find("#form0", 10).Submit();
-                d.FindElement(By.PartialLinkText("Scorecard"), 10).Click();
-                using (new RunLayoutTests(d)) {
-                    //Nothing to test on this page I guess...
-                }
-                BaseSelenium.ConcludeMeeting(d);
-            });
-        }
-    }
+				d.Find("#form0", 10).Submit();
+				d.FindElement(By.PartialLinkText("Scorecard"), 10).Click();
+				using (new RunLayoutTests(d)) {
+					//Nothing to test on this page I guess...
+				}
+				BaseSelenium.ConcludeMeeting(d);
+			});
+		}
+	}
 }

@@ -147,7 +147,7 @@ namespace TractionTools.Tests.Controllers {
 				Assert.AreEqual(1, model.LoadUrls.Count());
 				Assert.AreEqual("/DashboardData/UserScorecardData/" + org.Employee.Id + "?userId=" + org.Employee.Id + "&completed=False&fullScorecard=False", model.LoadUrls.First().Data);
 
-				json = ctrl.GetJson(x => x.UserScorecardData(org.Employee.Id, org.Employee.Id, false, false));
+				json =await ctrl.GetJson(x => x.UserScorecardData(org.Employee.Id, org.Employee.Id, false, false));
 				model = json.GetModel<ListDataVM>();
 
 				Assert.IsNull(model.Todos);

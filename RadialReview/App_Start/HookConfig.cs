@@ -38,10 +38,13 @@ namespace RadialReview.App_Start {
 			HooksRegistry.RegisterHook(new RealTime_L10_Todo());
 			HooksRegistry.RegisterHook(new RealTime_Dashboard_Todo());
 			HooksRegistry.RegisterHook(new RealTime_L10_Issues());
+			HooksRegistry.RegisterHook(new Realtime_L10Scorecard());
 			HooksRegistry.RegisterHook(new RealTime_L10_UpdateRocks());
-			HooksRegistry.RegisterHook(new RealTime_L10_Headline());
 			HooksRegistry.RegisterHook(new RealTime_VTO_UpdateRocks());
 			HooksRegistry.RegisterHook(new RealTime_Dashboard_UpdateL10Rocks());
+			HooksRegistry.RegisterHook(new RealTime_L10_Headline());
+
+			HooksRegistry.RegisterHook(new CalculateCumulative());
 			//HooksRegistry.RegisterHook(new TodoEdit())
 		}
     }

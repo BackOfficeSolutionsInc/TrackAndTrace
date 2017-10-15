@@ -507,7 +507,7 @@ namespace RadialReview.Controllers {
 
 
 
-					var regen = await ScorecardAccessor.GenerateScoreModels_Unsafe(s,recur.Scorecard.Weeks.Select(x=>x.ForWeek), recur.Scorecard.Measurables.Select(x=>x.Id));
+					var regen = await ScorecardAccessor._GenerateScoreModels_Unsafe(s,recur.Scorecard.Weeks.Select(x=>x.ForWeek), recur.Scorecard.Measurables.Select(x=>x.Id));
 
 					if (regen) {
 						s.Flush();
@@ -538,6 +538,7 @@ namespace RadialReview.Controllers {
 
 					}
 
+					//Commit is required
 					tx.Commit();
 					s.Flush();
 				}

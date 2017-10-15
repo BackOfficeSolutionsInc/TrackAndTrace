@@ -1670,7 +1670,7 @@ namespace RadialReview.Utilities {
             throw new PermissionsException();
         }
 		
-		public PermissionsUtility CreateRocksForUser(long userId,long? recurrenceId) {
+		public PermissionsUtility CreateRocksForUser(long userId,long? recurrenceId=null) {
 
 			return CreateMeetingItemForUser(userId, recurrenceId, "Cannot create rock");
 			//if (IsRadialAdmin(caller))
