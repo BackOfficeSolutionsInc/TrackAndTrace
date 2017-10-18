@@ -16,9 +16,9 @@ using static RadialReview.Accessors.L10Accessor;
 
 namespace RadialReview.Accessors {
 	public class ExportAccessor : BaseAccessor{
-		public static string Scorecard(UserOrganizationModel caller, long recurrenceId, string type = "csv") {
+		public static async Task<string> Scorecard(UserOrganizationModel caller, long recurrenceId, string type = "csv") {
 			//var scores = L10Accessor.GetScoresForRecurrence(caller, recurrenceId);
-			var data = L10Accessor.GetScorecardDataForRecurrence(caller, recurrenceId);
+			var data = await L10Accessor.GetOrGenerateScorecardDataForRecurrence(caller, recurrenceId);
 			switch (type.ToLower()) {
 				case "csv": {
 						return GenerateScorecardCsv("Measurable", data).ToCsv();
@@ -204,9 +204,22 @@ namespace RadialReview.Accessors {
 			return lists;
 		}
 
-		public static byte[] Rocks(UserOrganizationModel caller, long recurrenceId) {
+		public static async Task<byte[]> Rocks(UserOrganizationModel caller, long recurrenceId, bool includeDetails) {
 			//var meetingId = L10Accessor.GetLatestMeetingId(caller, recurrenceId);
 			var rocks = L10Accessor.GetRocksForRecurrence(caller, recurrenceId, true);
+
+
+			Dictionary<string, string> padTexts = null;
+
+			if (includeDetails) {
+				try {
+					var pads = rocks.Select(x => x.ForRock.PadId).ToList();
+					padTexts = await PadAccessor.GetTexts(pads);
+				} catch (Exception e) {
+					log.Error(e);
+				}
+			}
+
 			var csv = new Csv();
 			foreach (var rockMilestones in rocks) {
 				var t = rockMilestones.ForRock;
@@ -219,6 +232,12 @@ namespace RadialReview.Accessors {
 				csv.Add("" + t.Id, "Completed", time);
 				csv.Add("" + t.Id, "Status", t.Completion.ToString());
 				csv.Add("" + t.Id, "ArchivedTime", "" + t.DeleteTime);
+
+
+				if (includeDetails) {
+					var padDetails = padTexts.GetOrDefault(t.PadId, "");
+					csv.Add("" + t.Id, "Notes", Csv.CsvQuote(padDetails));
+				}
 			}
 
 			return new System.Text.UTF8Encoding().GetBytes(csv.ToCsv(false));

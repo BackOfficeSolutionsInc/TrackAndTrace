@@ -351,7 +351,6 @@ namespace RadialReview.Accessors {
 			//bool IsIssueStatusUpdated = false;
 			if (complete != null) {
 				//using (var rt = RealTimeUtility.Create(connectionId)) {
-				_UpdateIssueCompletion_Unsafe(s, issue, complete.Value, now1);
 				//}
 				if (complete.Value && issue.CloseTime == null) {
 					updates.CompletionChanged = true;
@@ -360,6 +359,7 @@ namespace RadialReview.Accessors {
 					updates.CompletionChanged = true;
 					//		updatesText.Add("Marked Open");
 				}
+				_UpdateIssueCompletion_Unsafe(s, issue, complete.Value, now1);
 			}
 
 

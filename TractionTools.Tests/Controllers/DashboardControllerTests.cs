@@ -206,7 +206,7 @@ namespace TractionTools.Tests.Controllers {
 				Assert.IsNull(model.Notifications);
 
 				//Get L10Scorecard
-				json = ctrl.GetJson(x => x.L10ScorecardData(org.Employee.Id, "", tileId, l10.Id,false,false));
+				json = await ctrl.GetJson(x => x.L10ScorecardData(org.Employee.Id, "", tileId, l10.Id, false, false));
 				model = json.GetModel<ListDataVM>();
 				Assert.AreEqual(2, model.L10Scorecards.First().Contents.Measurables.Count());
 

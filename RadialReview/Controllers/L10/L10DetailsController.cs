@@ -16,6 +16,7 @@ using RadialReview.Models.Askables;
 using RadialReview.Models.Scorecard;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Models.Angular.DataType;
+using System.Threading.Tasks;
 
 namespace RadialReview.Controllers {
     public partial class L10Controller : BaseController {
@@ -35,48 +36,48 @@ namespace RadialReview.Controllers {
             return View(id);
         }
 
-        [Access(AccessLevel.UserOrganization)]
-        [OutputCache(NoStore = true, Duration = 0)]
-        public JsonResult DetailsData(long id, bool scores = true, bool historical = true, long start = 0, long end = long.MaxValue, bool fullScorecard = false) {
-            var startRange = Math2.Min(start.ToDateTime(), end.ToDateTime());
-            var endRange = Math2.Max(start.ToDateTime(), end.ToDateTime());
+		[Access(AccessLevel.UserOrganization)]
+		[OutputCache(NoStore = true, Duration = 0)]
+		public async Task<JsonResult> DetailsData(long id, bool scores = true, bool historical = true, long start = 0, long end = long.MaxValue, bool fullScorecard = false) {
+			var startRange = Math2.Min(start.ToDateTime(), end.ToDateTime());
+			var endRange = Math2.Max(start.ToDateTime(), end.ToDateTime());
 
-            var scorecardStart = startRange;
-            var scorecardEnd = endRange;
+			var scorecardStart = startRange;
+			var scorecardEnd = endRange;
 
-            var period = GetUser().GetTimeSettings().Period;
-           
+			var period = GetUser().GetTimeSettings().Period;
 
-            var range = new DateRange(startRange, endRange);
-            var scorecardRange = new DateRange(scorecardStart, scorecardEnd);
 
-            var model = L10Accessor.GetAngularRecurrence(GetUser(), id, scores, historical, fullScorecard: fullScorecard, range: range, scorecardRange: scorecardRange);
-            //model.Name=null;
+			var range = new DateRange(startRange, endRange);
+			var scorecardRange = new DateRange(scorecardStart, scorecardEnd);
 
-            if (start != 0 && end != long.MaxValue) {
-                model.dateDataRange = new AngularDateRange(range);
-            }
+			var model = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id, scores, historical, fullScorecard: fullScorecard, range: range, scorecardRange: scorecardRange);
+			//model.Name=null;
 
-            if (scores) {
+			if (start != 0 && end != long.MaxValue) {
+				model.dateDataRange = new AngularDateRange(range);
+			}
 
-                if (model.Scorecard.Scores.Count() > 22 * 16 && period == ScorecardPeriod.Weekly) {
-                    var min = TimingUtility.GetDateSinceEpoch(model.Scorecard.Scores.Min(x => x.ForWeek)).ToJavascriptMilliseconds();
-                    var max = TimingUtility.GetDateSinceEpoch(model.Scorecard.Scores.Max(x => x.ForWeek)).ToJavascriptMilliseconds();
-                    if (max != min) {
-                        var mid = (max + min) / 2;
+			if (scores) {
 
-                        model = new AngularRecurrence(id);
-                        model.LoadUrls = new List<AngularString>() { };
+				if (model.Scorecard.Scores.Count() > 22 * 16 && period == ScorecardPeriod.Weekly) {
+					var min = TimingUtility.GetDateSinceEpoch(model.Scorecard.Scores.Min(x => x.ForWeek)).ToJavascriptMilliseconds();
+					var max = TimingUtility.GetDateSinceEpoch(model.Scorecard.Scores.Max(x => x.ForWeek)).ToJavascriptMilliseconds();
+					if (max != min) {
+						var mid = (max + min) / 2;
 
-                        if (start != mid)
-                            model.LoadUrls.Add(new AngularString((min / 13), $"/L10/DetailsData/{id}?scores={scores}&historical={historical}&start={start}&end={mid}&fullScorecard=false"));
-                        if (mid != end)
-                            model.LoadUrls.Add(new AngularString((min / 13) - 1, $"/L10/DetailsData/{id}?scores={scores}&historical={historical}&start={ mid }&end={end}&fullScorecard=false"));
+						model = new AngularRecurrence(id);
+						model.LoadUrls = new List<AngularString>() { };
 
-                    }
-                }
-            }
-            return Json(model, JsonRequestBehavior.AllowGet);
-        }
-    }
+						if (start != mid)
+							model.LoadUrls.Add(new AngularString((min / 13), $"/L10/DetailsData/{id}?scores={scores}&historical={historical}&start={start}&end={mid}&fullScorecard=false"));
+						if (mid != end)
+							model.LoadUrls.Add(new AngularString((min / 13) - 1, $"/L10/DetailsData/{id}?scores={scores}&historical={historical}&start={ mid }&end={end}&fullScorecard=false"));
+
+					}
+				}
+			}
+			return Json(model, JsonRequestBehavior.AllowGet);
+		}
+	}
 }

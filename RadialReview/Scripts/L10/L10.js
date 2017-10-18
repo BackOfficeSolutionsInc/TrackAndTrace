@@ -506,9 +506,12 @@ $(document).keydown(function (event) {
 			$(".arrowkey:not(.issue-row[data-checked=true]):not(.issue-row[data-checked=True])").first().click().trigger("scroll-to");
 			event.preventDefault();
 		}
-	} else if (event.which == 32 || event.which == 13) {
+	} else if (event.which == 13) {
 		$(f1).find(".todo-checkbox,.issue-checkbox").click();
 		return false;
+	} else if (event.which == 32) {
+		//$(f1).find(".todo-checkbox,.issue-checkbox").click();
+		//return false;
 	} else if (event.which == 73) {
 		$(f1).find(".issuesModal:not(.disabled)").click();
 		event.preventDefault();

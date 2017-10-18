@@ -56,28 +56,26 @@ namespace RadialReview.Controllers
 		};*/
 
 		[Access(AccessLevel.UserOrganization)]
-        public PartialViewResult Modal(long recurrenceId,bool todoOnly=false)
-		{
+		public async Task<PartialViewResult> Modal(long recurrenceId, bool todoOnly = false) {
 			var posActions = PossibleActions.ToList();
 			if (recurrenceId != -2) {
 				//Personal Todo
 				new PermissionsAccessor().Permitted(GetUser(), x => x.ViewL10Recurrence(recurrenceId));
 
-				var recur = L10Accessor.GetAngularRecurrence(GetUser(), recurrenceId, false, false, false);
+				var recur = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), recurrenceId, false, false, false);
 				if (recur.HeadlineType != Model.Enums.PeopleHeadlineType.HeadlinesList)
-					posActions= posActions.Where(x => x.Value != PhoneAccessor.HEADLINE).ToList();
+					posActions = posActions.Where(x => x.Value != PhoneAccessor.HEADLINE).ToList();
 
 			}
 
 			if (todoOnly)
 				posActions = posActions.Where(x => x.Value == PhoneAccessor.TODO).ToList();
 
-			var model = new PhoneVM()
-			{
+			var model = new PhoneVM() {
 				RecurrenceId = recurrenceId,
 				PossibleActions = posActions,
 				PossibleNumbers = PhoneAccessor.GetUnusedCallablePhoneNumbersForUser(GetUser(), GetUser().Id).ToSelectList(x => x.Number.ToPhoneNumber(), x => x.Id),
-				TodoOnly= todoOnly
+				TodoOnly = todoOnly
 			};
 
 			return PartialView(model);

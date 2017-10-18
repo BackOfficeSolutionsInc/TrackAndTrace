@@ -147,7 +147,7 @@
 .ids .picture-container {
   position: relative;
   top: 0px;
-  left: -16px;
+  left: -20px;
   width: 32px;
   height: 32px;
   border: 1px solid #DDD;
@@ -257,11 +257,11 @@ ol.sortable li {
   display: inline-block;
   position: relative;
   top: -3px;
-  left: -11px;
+  left: -17px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  width: calc(100% - 166px);
+  width: calc(100% - 161px);
   font-size: 18px;
   min-height: 19px;
 }
@@ -300,6 +300,11 @@ ol.sortable li {
 }
 .issues-list .issue-row .btn-group {
   display: none;
+  /*.issuesButton,.vtoButton,.todoButton{
+				&:hover:before{
+					top:2px;
+				}
+			}*/
 }
 .issues-list .issue-row .btn-group .issuesButton {
   color: gray;
@@ -321,14 +326,21 @@ ol.sortable li {
   margin: 2px;
   border: 1px solid #CCC;
   background: #F5F5F5;
+  margin-top: 0px;
+  transition: box-shadow 0.25s ease;
+  border-radius: 18px;
 }
 .issues-list > .issue-row.selected {
   border: 1px solid #A5ACB8;
   background: white;
-  box-shadow: 0px 6px 5px -2px rgba(0, 0, 0, 0.1);
+  /*box-shadow: 0px 6px 5px -2px rgba(0,0,0,0.1);*/
+  box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.3);
   margin: 0 0px 4px 0px;
   margin: -1px;
-  padding: 1px 8px 1px 1px;
+  padding: 1px 7px 1px 0.9px;
+  margin-bottom: 1px;
+  position: relative;
+  z-index: 1;
 }
 .issues-list > .issue-row.selected > .issue-checkbox {
   margin-left: 2px;
@@ -340,6 +352,9 @@ ol.sortable li {
 }
 .issues-list > .issue-row.selected > .move-icon {
   color: #7188B0 !important;
+}
+.issues-list > .issue-row.selected .rank123 {
+  left: -22px;
 }
 .issues-list > .issue-row > .issue-checkbox {
   display: inline-block;
@@ -364,7 +379,8 @@ ol.sortable li {
 }
 .issues-list > .issue-row > .btn-group {
   display: inline-block;
-  padding-top: 5px;
+  padding-top: 6px;
+  padding-right: 3px;
 }
 .issues-list > .issue-row ol .move-icon .inner {
   color: #969696;
@@ -653,13 +669,28 @@ body.dragging * {
   min-width: 84px;
   width: 84px;
 }
-.issues-container .rank123 {
+.issues-container .issue-row .rank123 {
   background-color: #cfcfcf;
+  /*box-shadow: 0 0 0px 0px rgba(133, 208, 133, 0.0);
+			transition: box-shadow .2s ease,background .2s ease;*/
 }
-.issues-container .rank123[data-rank='0'] {
+.issues-container .issue-row .rank123[data-rank='0'] {
   background-color: #B9B9B9;
 }
-.issues-container .rank123[data-rank='1']:after {
+.issues-container .issue-row.skipNumber .rank123 {
+  background-color: #85d085;
+  font-size: 0px !important;
+  /*box-shadow: 0 0 60px 30px rgba(133, 208, 133, 0.37);*/
+  z-index: 10000;
+}
+.issues-container .issue-row.skipNumber .rank123:after {
+  content: "DONE";
+  font-size: 9px !important;
+  top: 1px;
+  position: relative;
+  color: white;
+}
+.issues-container .issue-row:not(.skipNumber) .rank123[data-rank='1']:after {
   background-image: url('/content/img/123.png');
   content: "";
   position: absolute;
@@ -668,10 +699,12 @@ body.dragging * {
   background-repeat: no-repeat;
   z-index: 10;
   width: 12px;
-  left: -7px;
+  /*left: -7px;*/
+  left: 1px;
   top: -6px;
+  opacity: 0.85;
 }
-.issues-container .rank123[data-rank='2']:after {
+.issues-container .issue-row:not(.skipNumber) .rank123[data-rank='2']:after {
   background-image: url('/content/img/123.png');
   content: "";
   position: absolute;
@@ -680,11 +713,13 @@ body.dragging * {
   background-repeat: no-repeat;
   z-index: 10;
   width: 23px;
-  left: -13px;
+  /*left: -13px;*/
+  left: -5px;
   top: -4px;
   background-position: -13px 0px;
+  opacity: 0.85;
 }
-.issues-container .rank123[data-rank='3']:after {
+.issues-container .issue-row:not(.skipNumber) .rank123[data-rank='3']:after {
   background-image: url('/content/img/123.png');
   content: "";
   position: absolute;
@@ -693,18 +728,24 @@ body.dragging * {
   background-size: 58px 38px;
   background-repeat: no-repeat;
   z-index: 10;
-  left: -13px;
+  /*left: -13px;*/
+  left: -5px;
   top: -7px;
   background-position: -39px 0px;
+  opacity: 0.85;
 }
-.issues-container .rank123 {
+.issues-container .issue-row:not(.skipNumber) .rank123:after {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.issues-container .issue-row .rank123 {
   display: none;
-  width: 24px;
+  width: 26px;
   float: left;
   height: 14px;
-  top: -3px;
+  top: -2px;
   position: relative;
-  left: -16px;
+  left: -21px;
   text-align: center;
   font-family: monospace;
   font-weight: bold;
@@ -718,10 +759,11 @@ body.dragging * {
   user-select: none;
   margin: 0px 4px;
   cursor: copy;
-  padding-top: 7px;
+  padding-top: 8px;
   padding-left: 1px;
   padding-right: 2px;
-  height: 24px;
+  height: 26px;
+  border-radius: 16px;
 }
 .ids.rank-full .issues-container .rank123[data-rank='0'] {
   cursor: not-allowed;

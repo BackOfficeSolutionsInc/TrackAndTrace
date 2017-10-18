@@ -1150,7 +1150,7 @@ namespace RadialReview.Utilities {
                 throw new PermissionsException();
             });
         }
-		[Untested("Test me")]
+
         public PermissionsUtility EditScore(long scoreId) {
 			var score = session.Get<ScoreModel>(scoreId);
 
@@ -1209,12 +1209,10 @@ namespace RadialReview.Utilities {
             if (IsRadialAdmin(caller))
                 return this;
             var vto = session.Get<VtoModel>(vtoId);
-
             if (vto.L10Recurrence.HasValue && vto.L10Recurrence.Value > 0) {
                 var l10 = session.Get<L10Recurrence>(vto.L10Recurrence.Value);
-
                 if (l10.ShareVto)
-                    return ViewOrganization(l10.OrganizationId).ViewOrganization(vto.Organization.Id);
+                    return Or(()=>ViewOrganization(l10.OrganizationId).ViewOrganization(vto.Organization.Id),()=> ViewL10Recurrence(vto.L10Recurrence.Value));
                 return ViewL10Recurrence(vto.L10Recurrence.Value);
                 //return CanView(PermItem.ResourceType.L10Recurrence, vto.L10Recurrence.Value);
             } else {

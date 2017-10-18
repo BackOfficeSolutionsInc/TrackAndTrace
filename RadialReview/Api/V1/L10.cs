@@ -293,8 +293,8 @@ namespace RadialReview.Api.V1 {
 		/// <returns>The Level 10 meeting</returns>
 		[Route("L10/{MEETING_ID}")]
 		[HttpGet]
-		public AngularRecurrence GetL10(long MEETING_ID) {
-			return L10Accessor.GetAngularRecurrence(GetUser(), MEETING_ID);
+		public async Task<AngularRecurrence> GetL10(long MEETING_ID) {
+			return await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), MEETING_ID);
 		}
 
 		/// <summary>

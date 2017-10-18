@@ -385,7 +385,7 @@ namespace RadialReview.Controllers {
 
 
 			//var recurId = 1;
-			var recur = L10Accessor.GetAngularRecurrence(GetUser(), recurId);
+			var recur = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), recurId);
 			var possibleUsers = recur.Attendees.Select(x => x.Id).ToList();
 			possibleUsers.Add(GetUser().Id);
 
@@ -507,11 +507,11 @@ namespace RadialReview.Controllers {
 
 
 
-					var regen = await ScorecardAccessor._GenerateScoreModels_Unsafe(s,recur.Scorecard.Weeks.Select(x=>x.ForWeek), recur.Scorecard.Measurables.Select(x=>x.Id));
+					//var regen = await ScorecardAccessor._GenerateScoreModels_Unsafe(s,recur.Scorecard.Weeks.Select(x=>x.ForWeek), recur.Scorecard.Measurables.Select(x=>x.Id));
 
-					if (regen) {
+					if (true/*regen*/) {
 						s.Flush();
-						recur = L10Accessor.GetAngularRecurrence(s,perms, recurId);
+						recur = await L10Accessor.GetOrGenerateAngularRecurrence(s,perms, recurId);
 					}
 
 
@@ -802,7 +802,7 @@ namespace RadialReview.Controllers {
 
 
 			//var recurId = 1;
-			var recur = L10Accessor.GetAngularRecurrence(GetUser(), recurId);
+			var recur = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), recurId);
 			var possibleUsers = recur.Attendees.Select(x => x.Id).ToList();
 			possibleUsers.Add(600);
 

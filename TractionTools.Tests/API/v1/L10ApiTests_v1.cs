@@ -89,11 +89,11 @@ namespace TractionTools.Tests.API.v1 {
 			var m1 = await ScorecardAccessor.CreateMeasurable(c.E1, builder);
 
 
-			var getMeasurablesForRecurrence = L10Accessor.GetScorecardDataForRecurrence(c.E1, recurrence.meetingId);
+			var getMeasurablesForRecurrence = await L10Accessor.GetOrGenerateScorecardDataForRecurrence(c.E1, recurrence.meetingId);
 			Assert.AreEqual(0, getMeasurablesForRecurrence.MeasurablesAndDividers.Count());
 
 			await L10.AttachMeasurableL10(recurrence.meetingId, m1.Id);
-			getMeasurablesForRecurrence = L10Accessor.GetScorecardDataForRecurrence(c.E1, recurrence.meetingId);
+			getMeasurablesForRecurrence = await L10Accessor.GetOrGenerateScorecardDataForRecurrence(c.E1, recurrence.meetingId);
 			Assert.AreEqual(1, getMeasurablesForRecurrence.MeasurablesAndDividers.Count());
 			Assert.AreEqual(m1.Title, getMeasurablesForRecurrence.MeasurablesAndDividers.FirstOrDefault().Measurable.Title);
 		}
@@ -126,11 +126,11 @@ namespace TractionTools.Tests.API.v1 {
 
 			//await L10.AttachMeasurableL10(recurrenceId, measurable.Measurables.FirstOrDefault().Id);
 
-			var getMeasurablesForRecurrence = L10Accessor.GetScorecardDataForRecurrence(c.E1, recurrenceId);
+			var getMeasurablesForRecurrence = await L10Accessor.GetOrGenerateScorecardDataForRecurrence(c.E1, recurrenceId);
 			Assert.AreEqual(1, getMeasurablesForRecurrence.MeasurablesAndDividers.Count());
 
 			await L10.RemoveMeasurableL10(recurrenceId, m1.Id);
-			getMeasurablesForRecurrence = L10Accessor.GetScorecardDataForRecurrence(c.E1, recurrenceId);
+			getMeasurablesForRecurrence = await L10Accessor.GetOrGenerateScorecardDataForRecurrence(c.E1, recurrenceId);
 			Assert.AreEqual(0, getMeasurablesForRecurrence.MeasurablesAndDividers.Count());
 
 		}

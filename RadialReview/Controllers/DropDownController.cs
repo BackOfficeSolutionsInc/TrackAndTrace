@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using RadialReview.Models.L10;
 using RadialReview.Models.Angular.Positions;
 using RadialReview.Models.Angular.Users;
+using System.Threading.Tasks;
 
 namespace RadialReview.Controllers {
     public class DropDownController : BaseController {
@@ -71,31 +72,30 @@ namespace RadialReview.Controllers {
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        [Access(AccessLevel.UserOrganization)]
-        public JsonResult AngularMeetingMembers(long id, bool userId = false)
-        {
-            var recurrenceId = id;
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> AngularMeetingMembers(long id, bool userId = false) {
+			var recurrenceId = id;
 			IEnumerable<AngularUser> attendees;
 			if (id <= 0) {
 				attendees = OrganizationAccessor.GetAngularUsers(GetUser(), GetUser().Organization.Id);
 			} else {
-				attendees = L10Accessor.GetAngularRecurrence(GetUser(), id).Attendees;
+				attendees = (await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id)).Attendees;
 			}
 
-            attendees = attendees.OrderBy(x => x.Name).ToList();
+			attendees = attendees.OrderBy(x => x.Name).ToList();
 
-            return Json(attendees, JsonRequestBehavior.AllowGet);
+			return Json(attendees, JsonRequestBehavior.AllowGet);
 
-            //var result = attendees.Select(x => new {
-            //    text = x.User.GetName(),
-            //    value = userId ? "" + x.User.Id : "" + x.Id,
-            //    url = x.User.ImageUrl(true, ImageSize._32),
-            //    profilePicture = true
-            //}).OrderBy(x => x.text);
-            //return Json(result, JsonRequestBehavior.AllowGet);
-        }
+			//var result = attendees.Select(x => new {
+			//    text = x.User.GetName(),
+			//    value = userId ? "" + x.User.Id : "" + x.Id,
+			//    url = x.User.ImageUrl(true, ImageSize._32),
+			//    profilePicture = true
+			//}).OrderBy(x => x.text);
+			//return Json(result, JsonRequestBehavior.AllowGet);
+		}
 
-        [Access(AccessLevel.UserOrganization)]
+		[Access(AccessLevel.UserOrganization)]
         public JsonResult AngularPositions(string q, bool create=false)
         {
             var pos = PositionAccessor.SearchPositions(GetUser(), GetUser().Organization.Id, q);

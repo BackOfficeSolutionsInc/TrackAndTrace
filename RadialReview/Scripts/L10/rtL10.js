@@ -49,7 +49,7 @@ $(function () {
 
 	meetingHub.client.setHash = setHash;
 
-	meetingHub.client.updateScore = updateScore;
+	meetingHub.client.receiveUpdateScore = receiveUpdateScore;
 
 	meetingHub.client.deserializeIssues = deserializeIssues;
 	meetingHub.client.appendIssue = appendIssue;

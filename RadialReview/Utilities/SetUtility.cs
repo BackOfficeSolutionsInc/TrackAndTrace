@@ -33,21 +33,21 @@ namespace RadialReview {
         }
 
 
-        public static void AssertEqual<T>(IEnumerable<T> expected, IEnumerable<T> found) {
+        public static void AssertEqual<T>(IEnumerable<T> expected, IEnumerable<T> found,string additionaErrorInfo=null) {
             var res = AddRemove(found, expected);
             if (res.AddedValues.Any()) {
                 foreach (var i in res.AddedValues) {
                     Console.WriteLine(i.ToString());
                 }
 
-                throw new Exception("Found " + res.AddedValues.Count() + " additional items.");
+                throw new Exception("Found " + res.AddedValues.Count() + " additional items. "+ additionaErrorInfo??"");
             }
             if (res.RemovedValues.Any()) {
 
                 foreach (var i in res.RemovedValues) {
                     Console.WriteLine(i.ToString());
                 }
-                throw new Exception("Expected " + res.RemovedValues.Count() + " additional items.");
+                throw new Exception("Expected " + res.RemovedValues.Count() + " additional items. " + additionaErrorInfo ?? "");
             }
         }
 

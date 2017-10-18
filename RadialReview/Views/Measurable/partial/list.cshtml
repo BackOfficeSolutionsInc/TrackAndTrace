@@ -244,27 +244,25 @@
 </div>
 
 <script>
-
-	if (typeof (scrollRight) === "undefined")
-		scrollRight = false;
-
-	scrollRight = scrollRight || function scrollRight() {
-
-		if ($(".scroll-right:not(.scroll-once)").length > 0) {
-			setTimeout(function () {
-				$(".scroll-right:not(.scroll-once)").each(function () {
-					var that = this;
-					var dist = Math.max(4000, $(that).prop("scrollWidth"));
-					console.log("dist", dist);
-					$(that).addClass("scroll-once").animate({ scrollLeft: dist }, 500);
-				});
-			}, 1);
-		} else {
-			setTimeout(scrollRight, 50);
+	setTimeout(function () {
+		if (typeof (scrollRight) === "undefined")
+			scrollRight = false;
+		scrollRight = scrollRight || function scrollRight() {
+			if ($(".scroll-right:not(.scroll-once)").length > 0) {
+				setTimeout(function () {
+					$(".scroll-right:not(.scroll-once)").each(function () {
+						var that = this;
+						var dist = Math.max(4000, $(that).prop("scrollWidth"));
+						console.log("dist", dist);
+						$(that).addClass("scroll-once").animate({ scrollLeft: dist }, 500);
+					});
+				}, 1);
+			} else {
+				setTimeout(scrollRight, 50);
+			}
 		}
-	}
-
-	scrollRight();
+		scrollRight();
+	}, 1);
 
 </script>
 
@@ -281,8 +279,6 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
     @Scripts.Render("~/bundles/MeasurableList")
     <script>
-
-
         $(function () {
             fixHelperModified = function (e, tr) {
                 var $originals = tr.children();
@@ -314,7 +310,6 @@
                     }
                 });
             };
-
             $(".scorecard-table tbody").xsortable({
                 items: ">.reorderable",
                 handle: ".handle",

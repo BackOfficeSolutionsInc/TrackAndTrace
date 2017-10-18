@@ -11,6 +11,7 @@ using PdfSharp.Pdf.IO;
 using RadialReview.Accessors.PDF;
 using RadialReview.Models.Accountability;
 using RadialReview.Models.Angular.Accountability;
+using System.Threading.Tasks;
 
 namespace RadialReview.Controllers {
 	public class QuarterlyController : BaseController {
@@ -39,23 +40,23 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public ActionResult Printout(long id, FormCollection model/*, PdfAccessor.AccNodeJs root = null*/) {
+		public async Task<ActionResult> Printout(long id, FormCollection model/*, PdfAccessor.AccNodeJs root = null*/) {
 
 			//if (model["root"] != null && root == null)
 			//    root = Newtonsoft.Json.JsonConvert.DeserializeObject<PdfAccessor.AccNodeJs>(model["root"]);
 
-			return Printout(id,
+			return await Printout(id,
 				model["issues"].ToBooleanJS(),
 				model["todos"].ToBooleanJS(),
 				model["scorecard"].ToBooleanJS(),
 				model["rocks"].ToBooleanJS(),
 				model["vto"].ToBooleanJS(),
 				model["l10"].ToBooleanJS(),
-                model["acc"].ToBooleanJS(),
-                model["print"].ToBooleanJS(),
-                model["quarterly"].ToBooleanJS()
-            // root:root
-            );
+				model["acc"].ToBooleanJS(),
+				model["print"].ToBooleanJS(),
+				model["quarterly"].ToBooleanJS()
+			// root:root
+			);
 		}
 
 		[Access(AccessLevel.UserOrganization)]
@@ -77,17 +78,17 @@ namespace RadialReview.Controllers {
 		}
 		[Access(AccessLevel.UserOrganization)]
 		[HttpGet]
-		public ActionResult PrintPages(long id, bool issues = false, bool todos = false, bool scorecard = false, bool rocks = false, bool vto = false, bool l10 = false, bool acc = false, bool print = false) {
-			return Printout(id, issues, todos, scorecard, rocks, vto, l10, acc, print);
+		public async Task<ActionResult> PrintPages(long id, bool issues = false, bool todos = false, bool scorecard = false, bool rocks = false, bool vto = false, bool l10 = false, bool acc = false, bool print = false) {
+			return await Printout(id, issues, todos, scorecard, rocks, vto, l10, acc, print);
 		}
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpGet]
-		public ActionResult Printout(long id, bool issues = false, bool todos = false, bool scorecard = true, bool rocks = true, bool vto = true, bool l10 = true, bool acc = true, bool print = false,bool quarterly=true/*, PdfAccessor.AccNodeJs root = null*/) {
+		public async Task<ActionResult> Printout(long id, bool issues = false, bool todos = false, bool scorecard = true, bool rocks = true, bool vto = true, bool l10 = true, bool acc = true, bool print = false, bool quarterly = true/*, PdfAccessor.AccNodeJs root = null*/) {
 
-			var recur = L10Accessor.GetL10Recurrence(GetUser(), id,false);
+			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, false);
 
-			var angRecur = L10Accessor.GetAngularRecurrence(GetUser(), id, forceIncludeTodoCompletion:recur.IncludeAggregateTodoCompletionOnPrintout);
+			var angRecur = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id, forceIncludeTodoCompletion: recur.IncludeAggregateTodoCompletionOnPrintout);
 			var merger = new DocumentMerger();
 
 			//
@@ -108,7 +109,7 @@ namespace RadialReview.Controllers {
 				anyPages = true;
 				merger.AddDoc(doc);
 			}
-			if (acc) {				
+			if (acc) {
 				try {
 					var tree = AccountabilityAccessor.GetTree(GetUser(), GetUser().Organization.AccountabilityChartId, expandAll: true);
 
@@ -124,7 +125,7 @@ namespace RadialReview.Controllers {
 					//Setup if has parents
 					foreach (var n in nodes) {
 						n._hasParent = topNodes.All(x => x.Id != n.Id);
-					}			
+					}
 
 					merger.AddDocs(AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(nodes, 11, 8.5, true));
 					anyPages = true;
@@ -158,8 +159,8 @@ namespace RadialReview.Controllers {
 				merger.AddDoc(doc);
 				anyPages = true;
 			}
-			
-		
+
+
 			var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
 			if (!anyPages)
 				return Content("No pages to print.");

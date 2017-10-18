@@ -45,8 +45,28 @@ namespace RadialReview.Utilities {
             throw new ArgumentOutOfRangeException();
             }
         }
+		public enum DbType {
+			Invalid = 0,
+			MySql = 1,
+			Sqlite = 2
+		}
 
-        public static int EnterpriseAboveUserCount() {
+		public static DbType GetDatabaseType() {
+			switch (GetEnv()) {
+				case Env.local_test_sqlite:
+					return DbType.Sqlite;
+				case Env.local_sqlite:
+					return DbType.Sqlite;
+				case Env.local_mysql:
+					return DbType.MySql;
+				case Env.production:
+					return DbType.MySql; ////
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+
+		public static int EnterpriseAboveUserCount() {
             return 45;
         }
 

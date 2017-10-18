@@ -388,30 +388,29 @@ namespace TractionTools.Tests.Accessors
                 s.Save(t);
             });
             #endregion
-            DbQuery(s =>
-            {
-                var perms = PermissionsUtility.Create(s, user);
-                var now = meetingStart;
+            DbQuery(async s => {
+				var perms = PermissionsUtility.Create(s, user);
+				var now = meetingStart;
 
-                var scores = L10Accessor.GetScoresForRecurrence(s, perms, recurrenceId, true, now);
-                var agg = scores.Where(x => x.Measurable.Id == -10001).ToList();
-                var individual = scores.Where(x => x.Measurable.Id != -10001).ToList();
+				var scores = await L10Accessor.GetOrGenerateScoresForRecurrence(s, perms, recurrenceId, true, now);
+				var agg = scores.Where(x => x.Measurable.Id == -10001).ToList();
+				var individual = scores.Where(x => x.Measurable.Id != -10001).ToList();
 
-                var week0 = agg.First(x => x.ForWeek == twoWeeksAgo.AddDays(7));
-                var week1 = agg.First(x => x.ForWeek == lastWeek.AddDays(7));
-                var week2 = agg.First(x => x.ForWeek == thisWeek.AddDays(7));
-                //var week3 = agg.First(x => x.ForWeek == nextWeek.AddDays(7));
-                //var week4 = agg.First(x => x.ForWeek == nextWeek);
+				var week0 = agg.First(x => x.ForWeek == twoWeeksAgo.AddDays(7));
+				var week1 = agg.First(x => x.ForWeek == lastWeek.AddDays(7));
+				var week2 = agg.First(x => x.ForWeek == thisWeek.AddDays(7));
+				//var week3 = agg.First(x => x.ForWeek == nextWeek.AddDays(7));
+				//var week4 = agg.First(x => x.ForWeek == nextWeek);
 
-                Assert.AreEqual(25m, week0.Measured);
-                Assert.AreEqual(33.3m, week1.Measured);
-                Assert.AreEqual(50m, week2.Measured);
-                //Assert.AreEqual(0m/4m, week3.Measured);
-
+				Assert.AreEqual(25m, week0.Measured);
+				Assert.AreEqual(33.3m, week1.Measured);
+				Assert.AreEqual(50m, week2.Measured);
+				//Assert.AreEqual(0m/4m, week3.Measured);
 
 
-                //int i = 0;
-            });
+
+				//int i = 0;
+			});
 
         }
 

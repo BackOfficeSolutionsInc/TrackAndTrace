@@ -330,8 +330,8 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public FileContentResult ExportScorecard(long id, string type = "csv") {
-			var csv = ExportAccessor.Scorecard(GetUser(), id, type);
+		public async Task<FileContentResult> ExportScorecard(long id, string type = "csv") {
+			var csv = await ExportAccessor.Scorecard(GetUser(), id, type);
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, false);
 			return File(csv.ToBytes(), "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + recur.Name + "_Scorecard.csv");
 		}
@@ -381,6 +381,7 @@ namespace RadialReview.Controllers {
 
 
 		[Access(AccessLevel.UserOrganization)]
+		[Untested("export rock notes")]
 		public async Task<FileStreamResult> ExportAll(long id, bool includeDetails = false) {
 			/*Response.Clear();
             Response.BufferOutput = false; // false = stream immediately
@@ -394,10 +395,10 @@ namespace RadialReview.Controllers {
 
 			var memoryStream = new MemoryStream();
 			using (var zip = new ZipFile()) {
-				zip.AddEntry(String.Format("Scorecard.csv", time, recur.Name), ExportAccessor.Scorecard(GetUser(), id),Encoding.UTF8);
+				zip.AddEntry(String.Format("Scorecard.csv", time, recur.Name), await ExportAccessor.Scorecard(GetUser(), id),Encoding.UTF8);
 				zip.AddEntry(String.Format("To-Do.csv", time, recur.Name), await ExportAccessor.TodoList(GetUser(), id, includeDetails));
 				zip.AddEntry(String.Format("Issues.csv", time, recur.Name), await ExportAccessor.IssuesList(GetUser(), id, includeDetails));
-				zip.AddEntry(String.Format("Rocks.csv", time, recur.Name), ExportAccessor.Rocks(GetUser(), id));
+				zip.AddEntry(String.Format("Rocks.csv", time, recur.Name), await ExportAccessor.Rocks(GetUser(), id, includeDetails));
 				zip.AddEntry(String.Format("MeetingSummary.csv", time, recur.Name), ExportAccessor.MeetingSummary(GetUser(), id));
 				zip.AddEntry(String.Format("MeetingRatings.csv", time, recur.Name), ExportAccessor.Ratings(GetUser(), id));
 

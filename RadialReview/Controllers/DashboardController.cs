@@ -281,47 +281,50 @@ namespace RadialReview.Controllers {
             return Json(output, JsonRequestBehavior.AllowGet);
         }
 
-        [Access(AccessLevel.UserOrganization)]
-        [OutputCache(NoStore = true, Duration = 0)]
-        public JsonResult L10ScorecardData(long id, string name, long scorecardTileId, long l10Id, bool completed = false, bool fullScorecard = false, long? start = null, long? end = null) {
-            DateTime startRange;
-            DateTime endRange;
+		[Access(AccessLevel.UserOrganization)]
+		[OutputCache(NoStore = true, Duration = 0)]
+		public async Task<JsonResult> L10ScorecardData(long id, string name, long scorecardTileId, long l10Id, bool completed = false, bool fullScorecard = false, long? start = null, long? end = null) {
+			DateTime startRange;
+			DateTime endRange;
 
-            if (start == null)
-                startRange = TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod);
-            else
-                startRange = start.Value.ToDateTime();
+			if (start == null)
+				startRange = TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod);
+			else
+				startRange = start.Value.ToDateTime();
 
-            if (end == null)
-                endRange = DateTime.UtcNow.AddDays(14);
-            else
-                endRange = end.Value.ToDateTime();
+			if (end == null)
+				endRange = DateTime.UtcNow.AddDays(14);
+			else
+				endRange = end.Value.ToDateTime();
 
-            if (completed) {
-                startRange = Math2.Min(DateTime.UtcNow.AddDays(-1), startRange);
-                endRange = Math2.Max(DateTime.UtcNow.AddDays(2), endRange);
-            }
-            var dateRange = new DateRange(startRange, endRange);
+			if (completed) {
+				startRange = Math2.Min(DateTime.UtcNow.AddDays(-1), startRange);
+				endRange = Math2.Max(DateTime.UtcNow.AddDays(2), endRange);
+			}
+			var dateRange = new DateRange(startRange, endRange);
 
-            var output = new ListDataVM(id) {
-                date = new AngularDateRange() { startDate = startRange, endDate = endRange }
-            };
-            try {
-                var tile = new AngularTileId<AngularScorecard>(scorecardTileId, l10Id, name + " scorecard", AngularTileKeys.L10Scorecard(l10Id));
-                using (var s = HibernateSession.GetCurrentSession()) {
-                    using (var tx = s.BeginTransaction()) {
-                        var perms = PermissionsUtility.Create(s, GetUser());
-                        var scoredata = L10Accessor.GetScorecardDataForRecurrence(s, perms, l10Id, false, getMeasurables: true);
-                        var scores = scoredata.Scores;
-                        var measurables = scoredata.Measurables;
+			var output = new ListDataVM(id) {
+				date = new AngularDateRange() { startDate = startRange, endDate = endRange }
+			};
+			try {
+				var tile = new AngularTileId<AngularScorecard>(scorecardTileId, l10Id, name + " scorecard", AngularTileKeys.L10Scorecard(l10Id));
+				using (var s = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
+						var perms = PermissionsUtility.Create(s, GetUser());
+						var scoredata = await L10Accessor.GetOrGenerateScorecardDataForRecurrence(s, perms, l10Id, false, getMeasurables: true);
+						var scores = scoredata.Scores;
+						var measurables = scoredata.Measurables;
 
-                       // var orders = L10Accessor.GetMeasurableOrdering(GetUser(), l10Id);
-                       // var ts = GetUser().GetTimeSettings();
+						tx.Commit();
+						s.Flush();
+
+						// var orders = L10Accessor.GetMeasurableOrdering(GetUser(), l10Id);
+						// var ts = GetUser().GetTimeSettings();
 						//var recur = L10Accessor.GetL10Recurrence(GetUser(), l10Id, false);
-                       // ts.WeekStart = recur.StartOfWeekOverride ?? ts.WeekStart;
-                        tile.Contents = AngularScorecard.Create(scorecardTileId, scoredata.TimeSettings,
-                            scoredata.MeasurablesAndDividers,
-                            scores.ToList(), DateTime.UtcNow, reverseScorecard: scoredata.TimeSettings.Descending);
+						// ts.WeekStart = recur.StartOfWeekOverride ?? ts.WeekStart;
+						tile.Contents = AngularScorecard.Create(scorecardTileId, scoredata.TimeSettings,
+							scoredata.MeasurablesAndDividers,
+							scores.ToList(), DateTime.UtcNow, reverseScorecard: scoredata.TimeSettings.Descending);
 
 						//if (scoredata.TimeSettings.Period == ScorecardPeriod.Monthly || scoredata.TimeSettings.Period == ScorecardPeriod.Quarterly) {
 						//	output.date = new AngularDateRange() {
@@ -331,14 +334,14 @@ namespace RadialReview.Controllers {
 						//}
 
 						output.L10Scorecards.Add(tile);
-                    }
-                }
-            } catch (Exception e) {
-                output.L10Scorecards.Add(AngularTileId<AngularScorecard>.Error(scorecardTileId, l10Id, e));
-            }
+					}
+				}
+			} catch (Exception e) {
+				output.L10Scorecards.Add(AngularTileId<AngularScorecard>.Error(scorecardTileId, l10Id, e));
+			}
 
-            return Json(output, JsonRequestBehavior.AllowGet);
-        }
+			return Json(output, JsonRequestBehavior.AllowGet);
+		}
 
 		[Access(AccessLevel.UserOrganization)]
 		[OutputCache(NoStore = true, Duration = 0)]

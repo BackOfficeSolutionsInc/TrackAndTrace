@@ -96,7 +96,7 @@ namespace RadialReview.Controllers {
 					case "todo":
 						return await Todo(model);
 					case "scorecard":
-						return ScoreCard(model);
+						return await ScoreCard(model);
 					case "segue":
 						return Segue(model);
 					case "conclusion":
@@ -208,12 +208,12 @@ namespace RadialReview.Controllers {
 		#endregion
 
 		#region ScoreCard
-		private PartialViewResult ScoreCard(L10MeetingVM model) {
+		private async Task<PartialViewResult> ScoreCard(L10MeetingVM model) {
 
-			ViewBag.Heading = ViewBag.Heading??"Scorecard";
+			ViewBag.Heading = ViewBag.Heading ?? "Scorecard";
 			ViewBag.Subheading = ViewBag.Subheading ?? "";
 
-			var sm = L10Accessor.GetScorecardDataForRecurrence(GetUser(), model.Recurrence.Id, true, model.MeetingStart, getMeasurables: true);
+			var sm = await L10Accessor.GetOrGenerateScorecardDataForRecurrence(GetUser(), model.Recurrence.Id, true, model.MeetingStart, getMeasurables: true);
 
 			model.Scores = sm.Scores;//L10Accessor.GetScoresForRecurrence(GetUser(), model.Recurrence.Id);
 
@@ -231,7 +231,7 @@ namespace RadialReview.Controllers {
 				highlight = model.MeetingStart.Value.AddDays(7 * model.Recurrence.NotNull(x => x.CurrentWeekHighlightShift));
 
 			model.Weeks = TimingUtility.GetPeriods(timeSettings, DateTime.UtcNow, highlight, /*model.Scores,*/ true);
-			return PartialView("Scorecard", model);			
+			return PartialView("Scorecard", model);
 
 		}
 		#endregion

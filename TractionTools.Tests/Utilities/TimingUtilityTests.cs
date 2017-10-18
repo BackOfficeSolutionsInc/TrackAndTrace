@@ -7,6 +7,7 @@ using RadialReview.Models.Application;
 using RadialReview.Models.Enums;
 using System.Linq;
 using System.Collections.Generic;
+using RadialReview.Utilities.DataTypes;
 
 namespace TractionTools.Tests.Utilities {
 	[TestClass]
@@ -110,6 +111,7 @@ namespace TractionTools.Tests.Utilities {
 				Assert.IsTrue(range.EndTime == new DateTime(2016, 3, 1), "EndTime incorrect");
 			}
 		}
+
 		[TestMethod]
 		public void TestRangeQuarterly_MondayOfFourthWeek() {
 			//var d = new DateTime(2016, 2, 17);
@@ -142,8 +144,7 @@ namespace TractionTools.Tests.Utilities {
 				}
 			}
 		}
-
-
+		
 		[TestMethod]
 		public void TestRangeQuarterly_FirstMondayOfMonth() {
 			//var d = new DateTime(2016, 2, 17);
@@ -209,8 +210,7 @@ namespace TractionTools.Tests.Utilities {
 				d = d.AddDays(1);
 			}
 		}
-
-
+		
 		[TestMethod]
 		public void TestRangeQuarterly_FirstSundayOfTheMonth() {
 			//var d = new DateTime(2016, 2, 17);
@@ -359,6 +359,29 @@ namespace TractionTools.Tests.Utilities {
 			Assert.AreEqual(new DateTime(2013, 2, 1), yearStart.GetDate(2014, -4));
 			Assert.AreEqual(new DateTime(2012, 11, 1), yearStart.GetDate(2014, -5));
 			Assert.AreEqual(new DateTime(2011, 11, 1), yearStart.GetDate(2014, -9));
+		}
+
+		[TestMethod]
+		public void TestWeeksBetween() {
+
+			for (var i = 17; i<= 21; i++) {
+				var w = TimingUtility.GetWeeksBetween(new DateRange(new DateTime(2017, 10, 10), new DateTime(2017, 10, i)));
+				SetUtility.AssertEqual(new[] { new DateTime(2017, 10, 8), new DateTime(2017, 10, 15), new DateTime(2017, 10, 22) }, w,"i="+i);
+			}
+
+			var weeks = TimingUtility.GetWeeksBetween(new DateRange(new DateTime(2017, 10, 10), new DateTime(2017, 10, 14)));
+			SetUtility.AssertEqual(new[] { new DateTime(2017, 10, 8), new DateTime(2017, 10, 15) }, weeks, "ddd");
+
+
+
+			for (var i = 10; i <= 14; i++) {
+				var w = TimingUtility.GetWeeksBetween(new DateRange(new DateTime(2017, 10, i), new DateTime(2017, 10, 17)));
+				SetUtility.AssertEqual(new[] { new DateTime(2017, 10, 8), new DateTime(2017, 10, 15), new DateTime(2017, 10, 22) }, w, "i=" + i);
+			}
+
+			var weeks2 = TimingUtility.GetWeeksBetween(new DateRange(new DateTime(2017, 10, 15), new DateTime(2017, 10, 17)));
+			SetUtility.AssertEqual(new[] { new DateTime(2017, 10, 15), new DateTime(2017, 10, 22) }, weeks2,"eee");
+
 		}
 
 	}

@@ -36,7 +36,7 @@ namespace RadialReview.Hooks.Realtime.L10 {
 
 
 				var toUpdate = new AngularScore(score, false);
-				group.updateScore(toUpdate); //L10 Updater
+				group.receiveUpdateScore(toUpdate); //L10 Updater
 
 				toUpdate.DateEntered = score.Measured == null ? Removed.Date() : DateTime.UtcNow;
 				toUpdate.Measured = toUpdate.Measured ?? Removed.Decimal();
@@ -116,7 +116,7 @@ namespace RadialReview.Hooks.Realtime.L10 {
 					);
 			}
 		}
-		
+
 		public async Task CreateMeasurable(ISession s, MeasurableModel m) {
 			//nothing to do
 		}
@@ -127,53 +127,45 @@ namespace RadialReview.Hooks.Realtime.L10 {
 			using (var rt = RealTimeUtility.Create(RealTimeHelpers.GetConnectionString())) {
 				var recurrenceIds = RealTimeHelpers.GetRecurrencesForMeasurable(s, m.Id);
 
-				var meetingMeasurableIds = s.QueryOver<L10Meeting.L10Meeting_Measurable>()
-					.Where(x => x.DeleteTime == null && x.Measurable.Id == m.Id)
-					.Select(x => x.Id)
-					.List<long>().ToList();
+				//var meetingMeasurableIds = s.QueryOver<L10Meeting.L10Meeting_Measurable>()
+				//	.Where(x => x.DeleteTime == null && x.Measurable.Id == m.Id)
+				//	.Select(x => x.Id)
+				//	.List<long>().ToList();
+				var mmid = m.Id;
 
 				var rtRecur = rt.UpdateRecurrences(recurrenceIds);
 				if (updates.AccountableUserChanged)
-					foreach (var mmid in meetingMeasurableIds)
-						rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "accountable", m.AccountableUser.NotNull(x => x.GetName()), m.AccountableUserId));
+					rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "accountable", m.AccountableUser.NotNull(x => x.GetName()), m.AccountableUserId));
 
 
 				if (updates.AdminUserChanged)
-					foreach (var mmid in meetingMeasurableIds)
-						rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "admin", m.AdminUser.NotNull(x => x.GetName()), m.AdminUserId));
+					rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "admin", m.AdminUser.NotNull(x => x.GetName()), m.AdminUserId));
 
 				if (updates.AlternateGoalChanged)
-					foreach (var mmid in meetingMeasurableIds)
-						rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "altTarget", m.AlternateGoal.NotNull(x => x.Value.ToString("0.#####")) ?? ""));
+					rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "altTarget", m.AlternateGoal.NotNull(x => x.Value.ToString("0.#####")) ?? ""));
 
 				if (updates.ShowCumulativeChanged)
-					foreach (var mmid in meetingMeasurableIds)
-						rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "showCumulative", m.ShowCumulative));
+					rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "showCumulative", m.ShowCumulative));
 
 				if (updates.CumulativeRangeChanged)
-					foreach (var mmid in meetingMeasurableIds)
-						rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "cumulativeRange", m.CumulativeRange));
+					rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "cumulativeRange", m.CumulativeRange));
 
 				if (updates.CumulativeRangeChanged || updates.ShowCumulativeChanged)
 					L10Accessor._RecalculateCumulative_Unsafe(s, rt, m, recurrenceIds);
 
 				if (updates.GoalChanged)
-					foreach (var mmid in meetingMeasurableIds)
-						rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "target", m.Goal.ToString("0.#####")));
+					rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "target", m.Goal.ToString("0.#####")));
 
 				if (updates.MessageChanged)
-					foreach (var mmid in meetingMeasurableIds)
-						rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "title", m.Title));
+					rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "title", m.Title));
 
 				if (updates.UnitTypeChanged) {
 					applySelf = true;
-					foreach (var mmid in meetingMeasurableIds)
-						rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "unittype", m.UnitType.ToTypeString(), m.UnitType));
+					rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "unittype", m.UnitType.ToTypeString(), m.UnitType));
 				}
 
 				if (updates.GoalDirectionChanged)
-					foreach (var mmid in meetingMeasurableIds)
-						rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "direction", m.GoalDirection.ToSymbol(), m.GoalDirection.ToString()));
+					rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "direction", m.GoalDirection.ToSymbol(), m.GoalDirection.ToString()));
 
 				rtRecur.UpdateMeasurable(m, updatedScores, forceNoSkip: applySelf);
 

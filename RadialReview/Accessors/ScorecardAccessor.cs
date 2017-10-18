@@ -132,10 +132,25 @@ namespace RadialReview.Accessors {
 			await HooksRegistry.Each<IMeasurableHook>((ses, x) => x.CreateMeasurable(ses, m));
 			return m;
 		}
-		
+		[Obsolete("Commit afterwards")]
+		public static async Task<List<ScoreModel>> _GenerateScoreModels_AddMissingScores_Unsafe(ISession s, DateRange range, List<long> measurableIds, List<ScoreModel> existing) {
+			//var weeks = new List<DateTime>();
+			//var i = range.StartTime.StartOfWeek(DayOfWeek.Sunday);
+			//var end = range.EndTime.AddDays(6.999).StartOfWeek(DayOfWeek.Sunday);
+			//while (i<=end) {
+			//	weeks.Add(i);
+			//	i = i.AddDays(7);
+			//}
+
+			var weeks = TimingUtility.GetWeeksBetween(range);
+
+			return await _GenerateScoreModels_AddMissingScores_Unsafe(s, weeks, measurableIds, existing);
+
+
+		}
 
 		[Obsolete("Commit afterwards")]
-		private static async Task<List<ScoreModel>> GenerateScoreModels_AddMissingScores_Unsafe(ISession s, IEnumerable<DateTime> weeks, List<long> measurableIds, List<ScoreModel> existing) {
+		public static async Task<List<ScoreModel>> _GenerateScoreModels_AddMissingScores_Unsafe(ISession s, IEnumerable<DateTime> weeks, List<long> measurableIds, List<ScoreModel> existing) {
 			//var measurableLU = measurables.ToDefaultDictionary(x => x.Id, x => x, x => null);
 			//var measurableIds = measurables.Select(x => x.Id).ToList();
 
@@ -192,10 +207,10 @@ namespace RadialReview.Accessors {
 									.Where(x => x.DeleteTime == null && x.ForWeek >= min && x.ForWeek <= max)
 									.WhereRestrictionOn(x => x.MeasurableId).IsIn(measurableIds.ToArray())
 									.List().ToList();
-
+				
 				//var measurables = s.QueryOver<MeasurableModel>().WhereRestrictionOn(x => x.Id).IsIn(measurableIds.ToArray()).List().ToList();//ToDefaultDictionary(x => x.Id, x => x, x => null);
 
-				await GenerateScoreModels_AddMissingScores_Unsafe(s, weeks, measurableIds.ToList(), existing);
+				await _GenerateScoreModels_AddMissingScores_Unsafe(s, weeks, measurableIds.ToList(), existing);
 
 				//foreach (var week in weeks) {
 				//	foreach (var mid in measurableIds) {
@@ -521,7 +536,7 @@ namespace RadialReview.Accessors {
 			var scores = scoresQ.List().ToList();
 
 			//Generate blank ones
-			var extra = await GenerateScoreModels_AddMissingScores_Unsafe(s, weeks, measurableIds, scores);
+			var extra = await _GenerateScoreModels_AddMissingScores_Unsafe(s, weeks, measurableIds, scores);
 			scores.AddRange(extra);
 
 			return scores;

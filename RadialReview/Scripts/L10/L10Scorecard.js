@@ -3,6 +3,11 @@
 var canMoveCells = true;
 
 
+$(".main-window-container").on("submit", ".score form", function (e) {
+	debugger;
+	e.preventDefault();
+});
+
 $(function () {
 	$(".main-window-container").on("keydown", ".grid", changeInput);
 	$(".main-window-container").on("click", ".grid", function (e, d) {
@@ -633,7 +638,7 @@ function reorderMeasurables(order) {
 	updateScorecardNumbers();
 }
 
-function updateScore(newScore) {
+function receiveUpdateScore(newScore) {
 	console.info(newScore);
 	debugger;
 }

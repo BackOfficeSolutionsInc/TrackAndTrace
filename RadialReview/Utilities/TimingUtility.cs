@@ -595,7 +595,10 @@ namespace RadialReview.Utilities {
 			return fixedDates;
 		}
 
-		[Untested("unit test me")]
+		public static IEnumerable<DateTime> GetWeeksBetween(DateRange range) {
+			return GetWeeksBetween(range.StartTime, range.EndTime);
+		}
+		
 		public static IEnumerable<DateTime> GetWeeksBetween(DateTime scorecardStart, DateTime scorecardEnd) {
 			var s = Math2.Min(scorecardStart, scorecardEnd);
 			var e = Math2.Max(scorecardStart, scorecardEnd);

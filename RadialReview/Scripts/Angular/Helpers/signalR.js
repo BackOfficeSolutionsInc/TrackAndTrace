@@ -17,7 +17,7 @@
 		console.log("Beginning getHubProxy");
 		//debugger;
 		var proxy = connection.createHubProxy(hubName);
-		connection.start(/*{ transport: ['serverSentEvents', 'longPolling', 'webSockets'] }*/).done(function () {
+		connection.start({ transport: ['serverSentEvents', 'longPolling', 'webSockets'] }).done(function () {
 				console.log('Now connected, connection ID=' + connection.id);
 				if (callback) {
 					callback(connection, proxy);

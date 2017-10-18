@@ -356,19 +356,18 @@ namespace RadialReview.Controllers
         }
 
 
-        [Access(AccessLevel.UserOrganization)]
-        public ActionResult Printout(long id)
-        {
-            var recur = L10Accessor.GetAngularRecurrence(GetUser(), id);
-            var d = L10Accessor.GetLastMeetingEndTime(GetUser(), id);
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<ActionResult> Printout(long id) {
+			var recur = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id);
+			var d = L10Accessor.GetLastMeetingEndTime(GetUser(), id);
 
-            var doc = PdfAccessor.CreateDoc(GetUser(), "THE LEVEL 10 MEETING");
+			var doc = PdfAccessor.CreateDoc(GetUser(), "THE LEVEL 10 MEETING");
 
-            PdfAccessor.AddL10(doc, recur, d);
+			PdfAccessor.AddL10(doc, recur, d);
 
-            var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
-            return Pdf(doc, now + "_" + recur.Basics.Name + "_L10Meeting.pdf", true);
-        }
+			var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
+			return Pdf(doc, now + "_" + recur.Basics.Name + "_L10Meeting.pdf", true);
+		}
 
 
 		[Access(AccessLevel.UserOrganization)]
