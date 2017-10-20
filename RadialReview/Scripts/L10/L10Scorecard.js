@@ -4,7 +4,6 @@ var canMoveCells = true;
 
 
 $(".main-window-container").on("submit", ".score form", function (e) {
-	debugger;
 	e.preventDefault();
 });
 
@@ -47,8 +46,8 @@ function blurChangeTimeout(key, self, d, i, executeNow) {
 }
 
 function updateCumulative(measurableId, value) {
-    if (value == null)
-        value = "";
+	if (value == null)
+		value = "";
 	$("[data-measurable='" + measurableId + "'] .cumulative-column span").text(value);
 }
 
@@ -640,9 +639,33 @@ function reorderMeasurables(order) {
 	updateScorecardNumbers();
 }
 
-function receiveUpdateScore(newScore) {
-	console.info(newScore);
+function updateScoresGoals(startWeek, measurableId, s) {
 	debugger;
+	console.error("updateScoresGoals");
+	$("[data-measurable=" + measurableId + "].score-value").each(function () {
+		var found = $(this);
+		if (+found.attr("data-week") > startWeek) {
+			found.attr("data-goal-dir", s.GoalDir);
+			found.attr("data-alt-goal", s.AltGoal);
+			found.attr("data-goal", s.Goal);
+			updateScore(found, true);
+		}
+	});
+
+	//for (var i = 0; i < scores.length; i++) {
+	//	var s = scores[i];
+	//	var found = $("[data-scoreid=" + s.Id + "]");
+	//	if (found.length > 0) {
+	//		debugger;
+	//	}
+	//}
+
+}
+
+
+function receiveUpdateScore(newScore) {
+	//console.info(newScore);
+	$("[data-scoreid='" + newScore.Id + "']").val(newScore.Measured);
 }
 
 function reorderRecurrenceMeasurables(order) {
@@ -687,9 +710,15 @@ function deleteDivider(id) {
 	});
 }
 
-function removeMeasurable(id) {
-	console.log(id);
+function removeDivider(id) {
+	console.log("remove divider " + id);
 	$("tr[data-meetingmeasurable='" + id + "']").remove();
+}
+
+function removeMeasurable(id) {
+	console.log("remove measurable " + id);
+	$("tr[data-measurable='" + id + "']").remove();
+
 }
 
 $(window).on("page-scorecard", function () {

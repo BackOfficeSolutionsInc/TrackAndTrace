@@ -18,31 +18,33 @@
 
 <div @(headers ? "ng-app=L10App" : "") class="scorecard meeting-page app scorecard-list-container angular-scorecard ng-cloak" style="clear: both;">
     <div @(headers || controller ? "ng-controller=L10Controller" : "")>
-        <div class="row">
-            <div class="col-md-12">
+        <div class="rowAA">
+            <div class="col-md-12AA">
                 <div class="component">
                     <div class="clearfix"></div>
                     <div style="position: relative;" ng-show="(@(selector)).Measurables.length">
                         <div class="table-responsive scroller repeater-container-scorecard tile-height-resize fixOverlayScroll" style1="min-height: 200px;" ng-class="{'scroll-right':(@(selector)).ReverseScorecard==false}">
                             <table id="ScorecardTable"  class="scorecard-table ng-cloak">
                                 <thead>
-                                    <tr class="top-row">
-                                        @if (reorderable) {
-                                            <th class="button-column">&nbsp;</th>
-                                        }
-                                        @if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false) {
-                                            <th class="accountable-column text-column">&nbsp;</th>
-                                            <th class="admin-column text-column">&nbsp;</th>
-                                        }
-                                        <th class="measurable-column text-column">&nbsp;</th>
-                                        <th class="goal-column data-column" colspan="2">&nbsp;</th>
+									<tr class="top-row">
+										@if (reorderable) {
+											<th class="button-column">&nbsp;</th>
+										}
+										@if (ViewBag.DisableName == null || ((bool)ViewBag.DisableName) == false) {
+											<th class="accountable-column text-column">&nbsp;</th>
+											<th class="admin-column text-column">&nbsp;</th>
+										}
+										<th class="measurable-column text-column">&nbsp;</th>
+										<th class="delete-column-alt button-column"></th>
+										<th class="goal-column data-column" colspan="2">&nbsp;</th>
 										<th class="cumulative-column"></th>
-                                        <th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin),(@(selector)).Period) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="date score-column data-column test-ignore" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
-                                            @*{{functions.subtractDays(week.DisplayDate,0) | date: (@(selector)).DateFormat1}}*@
+										<th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin),(@(selector)).Period) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="date score-column data-column test-ignore" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
+											@*{{functions.subtractDays(week.DisplayDate,0) | date: (@(selector)).DateFormat1}}*@
 											{{functions.topDate(week,@(selector))}}
-                                        </th>
-                                        <th class="delete-column"></th>
-                                    </tr>
+										</th>
+										<th class="delete-column"></th>
+									</tr>
+
                                     <tr>
                                         @if (reorderable) {
                                             <th class="button-column">&nbsp;</th>
@@ -52,13 +54,14 @@
                                             <th class="who alignLeft admin-column text-column"><span class="newLine gray" title="This person is responsible for entering the number">/Admin</span></th>
                                         }
                                         <th class="measurable measurable-column text-column">Measurable</th>
+										<th class="delete-column-alt button-column"></th>
                                         <th class="target goal-column data-column" colspan="2">Goal</th>
 										<th class="cumulative-column"></th>
                                         <th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin),(@(selector)).Period) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="date  data-column score-column test-ignore" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
                                             @*{{functions.subtractDays(week.DisplayDate,-6) | date: (@(selector)).DateFormat2}}*@
 											{{functions.bottomDate(week,@(selector))}}
                                         </th>
-                                        <th class="delete-column button-column"></th>
+										<th class="delete-column button-column"></th>
                                     </tr>
                                 </thead>
                                 <tbody @*New>vs-repeat vs-autoresize vs-scroll-parent="@(ViewBag.ViewParent??".table-responsive")"<New*@ as-sortable="scorecardSortListener" ng-model="measurableGroupItems" ng-repeat="(measurableGroup,measurableGroupItems) in (@(selector)).Measurables | groupBy: 'Grouping'">
@@ -96,11 +99,14 @@
                                         }
                                         <td class="measurable first1  measurable-column text-column" title="{{measurable.Name}}" ng-class="{handle: measurable.IsDivider}">
                                             <span ng-class="{'inlineEdit': measurable.Disabled!=true}">
-                                                <input ng-disabled="measurable.Disabled" placeholder="Enter measurable here" class="blend" ng-model-options="{ debounce: 75 }" ng-model="measurable.Name" @(elastic) ng-change="functions.sendUpdate(measurable)" title="{{measurable.Name}}" />
+                                                <input ng-disabled="measurable.Disabled" placeholder="Enter measurable here" class="blend" ng-model-options="{ debounce: 250 }" ng-model="measurable.Name" @(elastic) ng-change="functions.sendUpdate(measurable)" title="{{measurable.Name}}" />
                                             </span>
                                         </td>
+										<td class="delete-column-alt button-column">
+											<span class="delete-row" ng-click="functions.removeRow($event,measurable)"></span>
+										</td>
                                         <td class="target direction goal-column  data-column" data-measurable="{{::measurable.Id}}" ng-class="{handle: measurable.IsDivider}">
-                                            <span class="item-wrapper place-left">
+                                            <span class="item-wrapper place-right">
                                                 <span class="direction direction_{{measurable.Direction}}"
                                                       onaftersave="functions.checkFutureAndSend(measurable)"
                                                       editable-select="measurable.Direction" onshow="loadPossibleDirections()"
@@ -114,7 +120,7 @@
                                                    @(elastic)
                                                    class="blend modifiers {{measurable.Modifiers}}"
                                                    fcsa-number="{{functions.getFcsa(measurable)}}"
-                                                   ng-model-options="{ debounce: 75 }"
+                                                   ng-model-options="{ debounce: 250 }"
                                                    ng-model="measurable.Target"
                                                    ng-change="functions.sendUpdate(measurable)"
                                                    ng-blur="functions.checkFutureAndSend(measurable)" />
@@ -131,9 +137,9 @@
                                                    tt-onchange="functions.sendUpdate(functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey)))">
                                             </score>
                                         </td>
-                                        <td class="delete-column button-column">
-                                            <span class="delete-row" ng-click="functions.removeRow($event,measurable)"></span>
-                                        </td>
+										<td class="delete-column button-column">
+											<span class="delete-row" title="Remove Measurable" ng-click="functions.removeRow($event,measurable)"></span>
+										</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -149,6 +155,7 @@
                                         <th class="who alignLeft admin-column text-column"></th>
                                     }
                                     <th class="measurable-column  text-column">&nbsp;</th>
+									<th class="delete-column-alt button-column"></th>
                                     <th class="goal-column  dta-column" colspan="2">&nbsp;</th>
 									<th class="cumulative-column"></th>
                                 </tr>
@@ -161,6 +168,7 @@
                                         <th class="who alignLeft admin-column text-column"><span class="newLine gray" title="This person is responsible for entering the number">/Admin</span></th>
                                     }
                                     <th class="measurable measurable-column text-column">Measurable</th>
+									<th class="delete-column-alt button-column"></th>
                                     <th class="target  goal-column data-column" colspan="2">Goal</th>
 									<th class="cumulative-column"></th>
                                 </tr>
@@ -196,11 +204,14 @@
                                     }
                                     <td class="measurable first1 measurable-column text-column" title="{{measurable.Name}}" ng-class="{handle: measurable.IsDivider}">
                                         <span ng-class="{'inlineEdit': measurable.Disabled!=true}">
-                                            <input ng-disabled="measurable.Disabled" class="blend" @(elastic) ng-model="measurable.Name" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(measurable)" title="{{measurable.Name}}" />
+                                            <input ng-disabled="measurable.Disabled" class="blend" @(elastic) ng-model="measurable.Name" ng-model-options="{ debounce: 250 }" ng-change="functions.sendUpdate(measurable)" title="{{measurable.Name}}" />
                                         </span>
                                     </td>
+									<td class="delete-column-alt button-column">
+										<span class="delete-row" title="Remove Measurable" ng-click="functions.removeRow($event,measurable)"></span>
+									</td>
                                     <td class="target direction goal-column data-column" data-measurable="{{::measurable.Id}}" ng-class="{handle: measurable.IsDivider}">
-                                        <span class="item-wrapper place-left">
+                                        <span class="item-wrapper place-right">
                                             <span class="direction direction_{{measurable.Direction}}"
                                                   onaftersave="functions.checkFutureAndSend(measurable)"
                                                   editable-select="measurable.Direction"
@@ -213,7 +224,7 @@
                                         <input ng-if="measurable.Direction!='Between'"
                                                ng-disabled="measurable.Disabled"
                                                @(elastic)
-                                               ng-model-options="{ debounce: 75 }"
+                                               ng-model-options="{ debounce: 250 }"
                                                class="blend modifiers {{measurable.Modifiers}}"
                                                fcsa-number="{{functions.getFcsa(measurable)}}"
                                                ng-model="measurable.Target"

@@ -104,6 +104,8 @@ namespace RadialReview.Controllers {
 		}
 		#endregion
 
+
+
 		[Access(AccessLevel.Radial)]
 		public ActionResult Signups(int days = 14) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -310,6 +312,16 @@ namespace RadialReview.Controllers {
 						.Where(x => x.Organization.AccountType != AccountType.SwanServices)
 						.ToList();
 					return View(measurables);
+				}
+			}
+		}
+
+		[Access(AccessLevel.Radial)]
+		public ActionResult DbTime() {
+			
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					return Content("DbTimestamp:"+HibernateSession.GetDbTime(s));					
 				}
 			}
 		}

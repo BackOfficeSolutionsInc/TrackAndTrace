@@ -140,7 +140,6 @@ namespace RadialReview.Controllers {
 		#region Scorecard
 		// GET: L10Data
 		[Access(AccessLevel.UserOrganization)]
-		[Untested("ScorecardAccessor.UpdateScore", "RealTime")]
 		public async Task<JsonResult> UpdateScore(long id, long s, long w, long m, string value, string dom, string connection) {
 			var recurrenceId = id;
 			var scoreId = s;
@@ -234,13 +233,30 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		[Untested("Must Rework")]
 		public async Task<JsonResult> AddMeasurable(AddMeasurableVm model) {
-			throw new NotImplementedException();
-			//ValidateValues(model, x => x.RecurrenceId);
-			////var creator = MeasurableCreation.CreateMeasurable(model.
-			//await L10Accessor.CreateMeasurable(GetUser(), model.RecurrenceId, model);
-			//return Json(ResultObject.SilentSuccess());
+			ValidateValues(model, x => x.RecurrenceId);
+			//
+			if (model.SelectedMeasurable <= 0) {
+				var selected = model.Measurables.First();
+				var creator = MeasurableBuilder.Build(
+						selected.Title,
+						selected.AccountableUserId,
+						selected.AdminUserId,
+						selected.UnitType,
+						selected.Goal,
+						selected.GoalDirection,
+						selected.AlternateGoal,
+						selected.ShowCumulative,
+						selected.CumulativeRange);
+
+				var m = await ScorecardAccessor.CreateMeasurable(GetUser(), creator);
+				await L10Accessor.AttachMeasurable(GetUser(), model.RecurrenceId, m.Id);
+			} else {
+				await L10Accessor.AttachMeasurable(GetUser(), model.RecurrenceId, model.SelectedMeasurable);
+			}
+
+
+			return Json(ResultObject.SilentSuccess());
 		}
 
 		[HttpGet]
@@ -290,7 +306,6 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		[Untested("test me", "Could be fucked up","Changed PK")]
 		public async Task<JsonResult> UpdateMeasurable(long pk, string name, string value) {
 			//var meeting_measureableId = pk;
 			var measurableId = pk;
@@ -381,7 +396,6 @@ namespace RadialReview.Controllers {
 
 
 		[Access(AccessLevel.UserOrganization)]
-		[Untested("export rock notes")]
 		public async Task<FileStreamResult> ExportAll(long id, bool includeDetails = false) {
 			/*Response.Clear();
             Response.BufferOutput = false; // false = stream immediately
@@ -541,7 +555,6 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
-		[Untested("test me")]
         public async Task<JsonResult> UpdateIssuesRank(List<IssueRankVM> arr) {
             foreach (var m in arr) {
 				await IssuesAccessor.EditIssue(GetUser(), m.id, rank: m.rank);

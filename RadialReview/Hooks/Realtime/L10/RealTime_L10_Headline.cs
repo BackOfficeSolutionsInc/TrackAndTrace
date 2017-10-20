@@ -26,7 +26,10 @@ namespace RadialReview.Hooks.Realtime.L10 {
 		public bool CanRunRemotely() {
 			return false;
 		}
-		
+		public HookPriority GetHookPriority() {
+			return HookPriority.UI;
+		}
+
 		public async Task CreateHeadline(ISession s, PeopleHeadline headline) {
 			var recurrenceId = headline.RecurrenceId;
 			if (recurrenceId > 0) {

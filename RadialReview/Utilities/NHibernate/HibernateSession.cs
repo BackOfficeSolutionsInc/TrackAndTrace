@@ -492,6 +492,15 @@ namespace RadialReview.Utilities {
 
 		}
 
-
+		public static DateTime GetDbTime(ISession s) {
+			switch (Config.GetDatabaseType()) {
+				case Config.DbType.MySql:
+					return ((DateTime)s.CreateSQLQuery("select now();").List()[0]);
+				case Config.DbType.Sqlite:
+					return DateTime.ParseExact((string)s.CreateSQLQuery("select CURRENT_TIMESTAMP;").List()[0], "yyyy-MM-dd hh:mm:ss", new System.Globalization.CultureInfo("en-us"));
+				default:
+					throw new NotImplementedException("Db type unknown");
+			}
+		}
 	}
 }

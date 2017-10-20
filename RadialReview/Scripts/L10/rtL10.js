@@ -50,6 +50,7 @@ $(function () {
 	meetingHub.client.setHash = setHash;
 
 	meetingHub.client.receiveUpdateScore = receiveUpdateScore;
+	meetingHub.client.updateScoresGoals = updateScoresGoals;
 
 	meetingHub.client.deserializeIssues = deserializeIssues;
 	meetingHub.client.appendIssue = appendIssue;
@@ -87,6 +88,7 @@ $(function () {
 	meetingHub.client.reorderMeasurables = reorderMeasurables;
 	meetingHub.client.reorderRecurrenceMeasurables = reorderRecurrenceMeasurables;
 	meetingHub.client.removeMeasurable = removeMeasurable;
+	meetingHub.client.removeDivider = removeDivider;
 
 	meetingHub.client.addLogRow = addLogRow;
 	meetingHub.client.editLogRow = editLogRow;

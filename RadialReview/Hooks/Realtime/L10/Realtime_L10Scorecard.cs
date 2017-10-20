@@ -25,17 +25,24 @@ namespace RadialReview.Hooks.Realtime.L10 {
 			return false;
 		}
 
-		[Untested("Test me", "Meeting", "Dash", "Archive")]
+
+		public HookPriority GetHookPriority() {
+			return HookPriority.UI;
+		}
+
 		public async Task UpdateScore(ISession s, ScoreModel score, IScoreHookUpdates updates) {
 			if (updates.ValueChanged) {
 				var recurIds = RealTimeHelpers.GetRecurrencesForScore(s, score);
 
 				var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 				var groupIds = recurIds.Select(rid => MeetingHub.GenerateMeetingGroupId(rid)).ToList();
+
+				groupIds.Add(MeetingHub.GenerateUserId(score.AccountableUserId));
+				groupIds.Add(MeetingHub.GenerateUserId(score.Measurable.AdminUserId));
 				var group = hub.Clients.Groups(groupIds, RealTimeHelpers.GetConnectionString());
 
 
-				var toUpdate = new AngularScore(score, false);
+				var toUpdate = new AngularScore(score, updates.AbsoluteUpdateTime,false);
 				group.receiveUpdateScore(toUpdate); //L10 Updater
 
 				toUpdate.DateEntered = score.Measured == null ? Removed.Date() : DateTime.UtcNow;
@@ -43,14 +50,20 @@ namespace RadialReview.Hooks.Realtime.L10 {
 				group.update(new AngularUpdate() { toUpdate });
 			}
 		}
-
-		[Untested("Test me")]
+		
 		public async Task AttachMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, L10Recurrence.L10Recurrence_Measurable recurMeasurable) {
 			var recurrenceId = recurMeasurable.L10Recurrence.Id;
 			var recur = s.Load<L10Recurrence>(recurrenceId);
 			var current = L10Accessor._GetCurrentL10Meeting(s, PermissionsUtility.CreateAdmin(s), recurrenceId, true, false, false);
 			var skipRealTime = false;
+			var ts = current.Organization.GetTimeSettings();
+			ts.Descending = recur.ReverseScorecard;
+			var weeks = TimingUtility.GetPeriods(ts, recurMeasurable.CreateTime, current.StartTime, false);
+
 			var scores = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null && x.MeasurableId == measurable.Id).List().ToList();
+			var additional = await ScorecardAccessor._GenerateScoreModels_AddMissingScores_Unsafe(s, weeks.Select(x => x.ForWeek), measurable.Id.AsList(), scores);
+			scores.AddRange(additional);
+
 
 			using (var rt = RealTimeUtility.Create()) {
 				if (current != null) {
@@ -69,10 +82,7 @@ namespace RadialReview.Hooks.Realtime.L10 {
 							var scorecardType = settings.ScorecardPeriod;
 
 
-							var ts = current.Organization.GetTimeSettings();
-							ts.Descending = recur.ReverseScorecard;
 
-							var weeks = TimingUtility.GetPeriods(ts, recurMeasurable.CreateTime, current.StartTime, false);
 
 							//if (recur.ReverseScorecard)
 							//	weeks.Reverse();S:\repos\Radial\RadialReview\RadialReview\Hooks\Realtime\L10\Realtime_L10Scorecard.cs
@@ -97,13 +107,12 @@ namespace RadialReview.Hooks.Realtime.L10 {
 				}
 
 				if (!skipRealTime) {
-					rt.UpdateRecurrences(recurrenceId).UpdateScorecard(scores.Where(x => x.Measurable.Id == measurable.Id));
+					rt.UpdateRecurrences(recurrenceId).UpdateScorecard(scores.Where(x => x.Measurable.Id == measurable.Id),null);
 					rt.UpdateRecurrences(recurrenceId).SetFocus("[data-measurable='" + measurable.Id + "'] input:visible:first");
 				}
 			}
 		}
-
-		[Untested("test me")]
+		
 		public async Task DetatchMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, long recurrenceId) {
 			using (var rt = RealTimeUtility.Create()) {
 				rt.UpdateRecurrences(recurrenceId).Update(
@@ -114,14 +123,15 @@ namespace RadialReview.Hooks.Realtime.L10 {
 							}
 						}
 					);
+
+				rt.UpdateRecurrences(recurrenceId).AddLowLevelAction(x=>x.removeMeasurable(measurable.Id));
 			}
 		}
 
 		public async Task CreateMeasurable(ISession s, MeasurableModel m) {
 			//nothing to do
 		}
-
-		[Untested("Test all cases", "Dash", "wizard", "archive", "meeting")]
+		
 		public async Task UpdateMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel m, List<ScoreModel> updatedScores, IMeasurableHookUpdates updates) {
 			var applySelf = false;
 			using (var rt = RealTimeUtility.Create(RealTimeHelpers.GetConnectionString())) {
@@ -167,8 +177,15 @@ namespace RadialReview.Hooks.Realtime.L10 {
 				if (updates.GoalDirectionChanged)
 					rtRecur.AddLowLevelAction(g => g.updateMeasurable(mmid, "direction", m.GoalDirection.ToSymbol(), m.GoalDirection.ToString()));
 
-				rtRecur.UpdateMeasurable(m, updatedScores, forceNoSkip: applySelf);
+				rtRecur.UpdateMeasurable(m, updatedScores, null, forceNoSkip: applySelf);
 
+				if (updates.UpdateAboveWeek != null) {
+					rtRecur.AddLowLevelAction(group => group.updateScoresGoals(updates.UpdateAboveWeek.ToJsMs(), m.Id, new {
+						GoalDir = m.GoalDirection,
+						Goal = m.Goal,
+						AltGoal = m.AlternateGoal,
+					}));
+				}
 			}
 		}
 

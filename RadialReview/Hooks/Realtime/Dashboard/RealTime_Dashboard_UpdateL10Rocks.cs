@@ -24,9 +24,12 @@ namespace RadialReview.Hooks.Realtime {
     public class RealTime_Dashboard_UpdateL10Rocks : IRockHook, IMeetingRockHook {
         public bool CanRunRemotely() {
             return false;
-        }
+		}
+		public HookPriority GetHookPriority() {
+			return HookPriority.UI;
+		}
 
-        public async Task ArchiveRock(ISession s, RockModel rock, bool deleted) {
+		public async Task ArchiveRock(ISession s, RockModel rock, bool deleted) {
             var data = RealTimeHelpers.GetRecurrenceRockData(s, rock.Id);
             foreach (var recur in data.GetRecurrenceIds()) {
                 RemoveRock(s, recur, rock.Id);

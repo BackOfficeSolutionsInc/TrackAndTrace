@@ -19,6 +19,9 @@ namespace RadialReview.Hooks.Meeting {
 			return true;
 		}
 
+		public HookPriority GetHookPriority() {
+			return HookPriority.Database;
+		}
 		private async Task _Deprestine(ISession s, UserOrganizationModel caller, long recurrenceId) {
 			var r = s.Get<L10Recurrence>(recurrenceId);
 			await L10Accessor.Depristine_Unsafe(s, caller, r);

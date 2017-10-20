@@ -45,7 +45,8 @@ namespace RadialReview.Models.Timeline
 			{"UpdateScoreInMeeting",	new Item("Update score",		"#f0ad4e","glyphicon glyphicon-scale")},
 			{"UpdateMeasurable",		new Item("Update measurable",	"#f0ad4e","glyphicon glyphicon-scale")},
 			{"UpdateArchiveMeasurable",	new Item("Update measurable",	"#f0ad4e","glyphicon glyphicon-scale")},
-			{"CreateMeasurable",		new Item("Create measurable",	"#f0ad4e","glyphicon glyphicon-scale")},
+			{"CreateMeasurable",        new Item("Create measurable",   "#f0ad4e","glyphicon glyphicon-scale")},
+			{"DeleteMeasurable",        new Item("Delete measurable",   "#f0ad4e","glyphicon glyphicon-scale")},
 			{"SetMeasurableOrdering",	new Item("Reorder measurables",	"#f0ad4e","glyphicon glyphicon-scale")},	
 
 			{"UpdateRockCompletion",	new Item("Update rock",			"#f0ad4e","icon fontastic-icon-bullseye")},

@@ -92,7 +92,6 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
-		[Untested("Todo Create")]
         public async Task<JsonResult> SubmitTodos(FormCollection model)
         {
                 var path = model["Path"].ToString();

@@ -21,6 +21,10 @@ namespace RadialReview.Hooks.Realtime {
 			return false;
 		}
 
+		public HookPriority GetHookPriority() {
+			return HookPriority.UI;
+		}
+
 		private void _UpdateGroup(IHubContext hub,IEnumerable<IdentityLink> links,string identityLinkType, AngularListType addOrRemove,  AngularTask angularTask) {
             var groups = links.Where(x => identityLinkType == null || x.type == identityLinkType).SelectNoException(link => CoreProcessHub.GenerateRgm(link)).ToList();
             _UpdateGroup(hub, groups, addOrRemove, angularTask);

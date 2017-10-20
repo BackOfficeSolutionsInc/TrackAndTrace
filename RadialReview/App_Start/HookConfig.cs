@@ -2,6 +2,7 @@
 using RadialReview.Hooks;
 using RadialReview.Hooks.Meeting;
 using RadialReview.Hooks.Realtime;
+using RadialReview.Hooks.Realtime.Dashboard;
 using RadialReview.Hooks.Realtime.L10;
 using RadialReview.Utilities;
 using RadialReview.Utilities.Hooks;
@@ -38,13 +39,16 @@ namespace RadialReview.App_Start {
 			HooksRegistry.RegisterHook(new RealTime_L10_Todo());
 			HooksRegistry.RegisterHook(new RealTime_Dashboard_Todo());
 			HooksRegistry.RegisterHook(new RealTime_L10_Issues());
+
 			HooksRegistry.RegisterHook(new Realtime_L10Scorecard());
 			HooksRegistry.RegisterHook(new RealTime_L10_UpdateRocks());
 			HooksRegistry.RegisterHook(new RealTime_VTO_UpdateRocks());
 			HooksRegistry.RegisterHook(new RealTime_Dashboard_UpdateL10Rocks());
+			HooksRegistry.RegisterHook(new RealTime_Dashboard_Scorecard());
 			HooksRegistry.RegisterHook(new RealTime_L10_Headline());
 
 			HooksRegistry.RegisterHook(new CalculateCumulative());
+			HooksRegistry.RegisterHook(new AttendeeHooks());
 			//HooksRegistry.RegisterHook(new TodoEdit())
 		}
     }

@@ -21,6 +21,10 @@ namespace RadialReview.Hooks {
 			return false;
 		}
 
+		public HookPriority GetHookPriority() {
+			return HookPriority.Database;
+		}
+
 		private void AddToNotification(ISession s, RoleModel role, string type) {
 
 

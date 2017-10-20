@@ -10,6 +10,7 @@ namespace RadialReview.Utilities.Hooks {
 
 
 	public class IScoreHookUpdates {
+		public DateTime AbsoluteUpdateTime { get; internal set; }
 		public bool ValueChanged { get; set; }		
 	}
 

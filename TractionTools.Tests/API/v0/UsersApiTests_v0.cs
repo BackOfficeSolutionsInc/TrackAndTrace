@@ -24,12 +24,12 @@ using TractionTools.Tests.Properties;
 
 namespace TractionTools.Tests.API.v0 {
 	[TestClass]
-	public class UsersApiTests_v1 : BaseApiTest {
-		public UsersApiTests_v1() : base(VERSION_1) { }
+	public class UsersApiTests_v0 : BaseApiTest {
+		public UsersApiTests_v0() : base(VERSION_1) { }
 
 
 		[TestMethod]
-		[TestCategory("Api_V1")]
+		[TestCategory("Api_V0")]
 		public async Task TestCreateUsers() {
 			var c = await Ctx.Build();
 			UsersController userController = new UsersController();
@@ -44,7 +44,7 @@ namespace TractionTools.Tests.API.v0 {
 
 
 		[TestMethod]
-		[TestCategory("Api_V1")]
+		[TestCategory("Api_V0")]
 		public async Task TestGetUser() {
 			var c = await Ctx.Build();
 			UsersController userController = new UsersController();
@@ -56,7 +56,7 @@ namespace TractionTools.Tests.API.v0 {
 
 
 		[TestMethod]
-		[TestCategory("Api_V1")]
+		[TestCategory("Api_V0")]
 		public async Task TestDeleteUsers() {
 			var c = await Ctx.Build();
 			UsersController userController = new UsersController();
@@ -73,7 +73,7 @@ namespace TractionTools.Tests.API.v0 {
 
 
 		[TestMethod]
-		[TestCategory("Api_V1")]
+		[TestCategory("Api_V0")]
 		public async Task TestGetUserRoles() {
 			var c = await Ctx.Build();
 			UsersController userController = new UsersController();
@@ -86,7 +86,7 @@ namespace TractionTools.Tests.API.v0 {
 
 
 		[TestMethod]
-		[TestCategory("Api_V1")]
+		[TestCategory("Api_V0")]
 		public async Task TestGetUserPositions() {
 			var c = await Ctx.Build();
 			UsersController userController = new UsersController();
@@ -102,7 +102,7 @@ namespace TractionTools.Tests.API.v0 {
 		}
 
 		[TestMethod]
-		[TestCategory("Api_V1")]
+		[TestCategory("Api_V0")]
 		public async Task TestGetDirectReports() {
 			var c = await Ctx.Build();
 			UsersController userController = new UsersController();
@@ -113,7 +113,7 @@ namespace TractionTools.Tests.API.v0 {
 		}
 
 		[TestMethod]
-		[TestCategory("Api_V1")]
+		[TestCategory("Api_V0")]
 		public async Task TestGetSupervisors() {
 			var c = await Ctx.Build();
 			UsersController userController = new UsersController();
@@ -124,7 +124,7 @@ namespace TractionTools.Tests.API.v0 {
 		}
 
 		[TestMethod]
-		[TestCategory("Api_V1")]
+		[TestCategory("Api_V0")]
 		public async Task TestGetSeats() {
 			var c = await Ctx.Build();
 			UsersController userController = new UsersController();

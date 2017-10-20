@@ -15,6 +15,11 @@ namespace RadialReview.Hooks {
 			return false; //Must be false, needs context.
 		}
 
+		public HookPriority GetHookPriority() {
+			return HookPriority.Unset;
+		}
+
+
 		private async Task UpdateForUser(ISession s, long userId) {
 			s.Flush();
 			var user = s.Get<UserOrganizationModel>(userId);

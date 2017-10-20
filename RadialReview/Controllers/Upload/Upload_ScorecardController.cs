@@ -148,7 +148,6 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		[Untested("Test me")]
 		public async Task<JsonResult> SubmitScorecard(FormCollection model) {
 			var path = model["Path"].ToString();
 			try {
@@ -206,7 +205,7 @@ namespace RadialReview.Controllers {
 				var caller = GetUser();
 				var now = DateTime.UtcNow;
 				var measurableLookup = new Dictionary<int, MeasurableModel>();
-				using (var s = HibernateSession.GetCurrentSession(singleSession:false)) {
+				using (var s = HibernateSession.GetCurrentSession(/*singleSession:false*/)) {
 					using (var tx = s.BeginTransaction()) {
 						using (var rt = RealTimeUtility.Create(false)) {
 							var org = s.Get<L10Recurrence>(recurrence).Organization;

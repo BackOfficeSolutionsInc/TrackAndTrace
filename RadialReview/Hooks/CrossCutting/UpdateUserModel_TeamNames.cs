@@ -15,6 +15,10 @@ namespace RadialReview.Hooks {
 			return true;
 		}
 
+		public HookPriority GetHookPriority() {
+			return HookPriority.Unset;
+		}
+
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 		public async Task UpdateUserModel(ISession s, UserModel user) {
 			var uos = s.QueryOver<UserOrganizationModel>().Where(x => x.User.Id == user.Id && x.ManagerAtOrganization).List().ToList();

@@ -27,6 +27,9 @@ namespace RadialReview.Hooks.Realtime {
 		public bool CanRunRemotely() {
 			return false;
 		}
+		public HookPriority GetHookPriority() {
+			return HookPriority.UI;
+		}
 
 
 		private dynamic _GetUserHub(long userId) {

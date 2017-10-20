@@ -100,12 +100,32 @@
 
         for (var i = 0, ii = objs.length; i < ii; ++i) {
             var obj = objs[i];
-            if (!angular.isObject(obj) && !angular.isFunction(obj)) continue;
+            if (!angular.isObject(obj) && !angular.isFunction(obj))
+            	continue;
+        	try{
+        		if (typeof (obj["UT"]) !== "undefined") {//new
+        			if (typeof (dst["UT"]) !== "undefined") {//old
+        				if (obj["UT"] < dst["UT"]) {
+        					console.info("update skipped:" + (+obj["UT"]) + "<" + (+dst["UT"]));
+        					continue;
+        				}
+        			}
+        		}
+        		if (typeof (dst["UT"]) !== "undefined" && (typeof (obj["UT"]) === "undefined")) {
+        			dst["UT"] = null;
+        		}
+        	} catch (e) {
+        		console.error("UT Error",e);        		
+        	}
+
             var keys = Object.keys(obj);
             for (var j = 0, jj = keys.length; j < jj; j++) {
                 var key = keys[j];
                 var src = obj[key];
                 if (deep && angular.isObject(src)) {
+                	
+
+
                     if (src.AngularList) {
                         //Special AngularList Object
                         if (typeof (lookupFix) !== "undefined" && lookupFix == true) {

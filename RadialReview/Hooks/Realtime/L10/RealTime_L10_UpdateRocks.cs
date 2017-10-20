@@ -25,8 +25,11 @@ namespace RadialReview.Hooks.Realtime.L10 {
             return false;
         }
 
+		public HookPriority GetHookPriority() {
+			return HookPriority.UI;
+		}
 
-        public async Task AttachRock(ISession s, UserOrganizationModel caller, RockModel rock, L10Recurrence.L10Recurrence_Rocks recurRock) {
+		public async Task AttachRock(ISession s, UserOrganizationModel caller, RockModel rock, L10Recurrence.L10Recurrence_Rocks recurRock) {
             using (var rt = RealTimeUtility.Create(RealTimeHelpers.GetConnectionString())) {
                 rt.UpdateRecurrences(recurRock.L10Recurrence.Id).Update(rid => new AngularRock(recurRock.ForRock.Id) { VtoRock = recurRock.VtoRock });
 

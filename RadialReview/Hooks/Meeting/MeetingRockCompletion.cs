@@ -16,6 +16,11 @@ namespace RadialReview.Hooks.Meeting {
 		public bool CanRunRemotely() {
 			return true;
 		}
+
+		public HookPriority GetHookPriority() {
+			return HookPriority.Database;
+		}
+
 		public async Task UpdateRock(ISession s, UserOrganizationModel caller, RockModel rock, IRockHookUpdates updates) {
 			if (updates.StatusChanged) {
 				var recurIds = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().Where(x => x.ForRock.Id == rock.Id && x.DeleteTime == null).Select(x => x.L10Recurrence.Id).List<long>().ToList();

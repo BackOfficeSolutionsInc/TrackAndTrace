@@ -20,6 +20,9 @@ using log4net;
 namespace RadialReview.Hooks {
 	public class ActiveCampaignEventHooks : IAccountEvent, ICreateUserOrganizationHook {
 
+		public HookPriority GetHookPriority() {
+			return HookPriority.Database;
+		}
 
 		protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 

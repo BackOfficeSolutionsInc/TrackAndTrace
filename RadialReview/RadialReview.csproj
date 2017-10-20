@@ -138,9 +138,11 @@
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Hooks\HookData.cs" />
+    <Compile Include="Hooks\Meeting\AttendeeHooks.cs" />
     <Compile Include="Hooks\Meeting\AuditLogHooks.cs" />
     <Compile Include="Hooks\Meeting\CalculateCumulative.cs" />
     <Compile Include="Hooks\Meeting\DepristineHooks.cs" />
+    <Compile Include="Hooks\Realtime\Dashboard\RealTime_Dashboard_Scorecard.cs" />
     <Compile Include="Hooks\Realtime\L10\Realtime_L10Scorecard.cs" />
     <Compile Include="Hooks\Realtime\L10\RealTime_L10_Issues.cs" />
     <Compile Include="Hooks\Meeting\MeetingRockCompletion.cs" />

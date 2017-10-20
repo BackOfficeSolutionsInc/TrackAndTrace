@@ -18,6 +18,9 @@ namespace RadialReview.Hooks.Meeting {
 			return true;
 		}
 
+		public HookPriority GetHookPriority() {
+			return HookPriority.UI;
+		}
 
 		private static void _UpdateCumulative(ISession s, long measurableId, ScoreModel updatedScore = null) {
 			var recurrenceIds = RealTimeHelpers.GetRecurrencesForMeasurable(s, measurableId);
@@ -27,9 +30,7 @@ namespace RadialReview.Hooks.Meeting {
 				rt.UpdateRecurrences(recurrenceIds).AddLowLevelAction(x => x.updateCumulative(measurableId, measurable._Cumulative.NotNull(y => y.Value.ToString("0.#####"))));
 			}
 		}
-
-
-		[Untested("Test me")]
+		
 		public async Task UpdateScore(ISession s, ScoreModel score, IScoreHookUpdates updates) {
 
 			if (updates.ValueChanged) {

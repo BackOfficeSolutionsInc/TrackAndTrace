@@ -39,7 +39,7 @@ namespace RadialReview.Models.Angular.Scorecard
 
 			ReverseScorecard = reverseScorecard;
             Measurables = measurables;
-            Scores = scores.Select(x => new AngularScore(x, false)).ToList();
+            Scores = scores.Select(x => new AngularScore(x,null, false)).ToList();
 
             DateFormat1 = TimingUtility.ScorecardFormat1(settings.GetTimeSettings().Period);
             DateFormat2 = TimingUtility.ScorecardFormat2(settings.GetTimeSettings().Period);

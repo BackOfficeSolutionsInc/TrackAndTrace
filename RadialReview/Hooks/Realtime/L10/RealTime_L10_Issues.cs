@@ -23,6 +23,9 @@ namespace RadialReview.Hooks.Realtime.L10 {
 		public bool CanRunRemotely() {
 			return true;
 		}
+		public HookPriority GetHookPriority() {
+			return HookPriority.UI;
+		}
 
 		public async Task CreateIssue(ISession s, IssueModel.IssueModel_Recurrence issueRecurrenceModel) {
 			var caller = issueRecurrenceModel.CreatedBy;

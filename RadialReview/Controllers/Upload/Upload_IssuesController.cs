@@ -83,7 +83,6 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
-		[Untested("Add issue")]
         public async Task<JsonResult> SubmitIssues(FormCollection model)
         {
             var path = model["Path"].ToString();

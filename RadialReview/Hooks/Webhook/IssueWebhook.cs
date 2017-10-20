@@ -27,6 +27,9 @@ namespace RadialReview.Hooks
 		public bool CanRunRemotely() {
 			return false;
 		}
+		public HookPriority GetHookPriority() {
+			return HookPriority.Webhook;
+		}
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 		public async Task CreateIssue(ISession s, IssueModel.IssueModel_Recurrence issue)

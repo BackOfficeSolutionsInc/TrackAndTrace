@@ -28,6 +28,41 @@ namespace TractionTools.Tests.API.v1 {
 		}
 
 
+
+		[TestMethod]
+		[TestCategory("Api_V1")]
+		public async Task GetScorecard() {
+			var ctx = await Ctx.Build();
+			//var m1 = new MeasurableModel() {
+			//	AccountableUserId = ctx.E1.Id,
+			//	AdminUserId = ctx.E1.Id,
+			//	Title = "Meas1",
+			//	OrganizationId = ctx.Org.Organization.Id
+			//};
+
+			MockHttpContext();
+			var creator1 = MeasurableBuilder.Build("Meas1", ctx.E1.Id);
+			var creator2 = MeasurableBuilder.Build("Meas2", ctx.E2.Id);
+			var m1 = await ScorecardAccessor.CreateMeasurable(ctx.Manager, creator1);
+			var m2 = await ScorecardAccessor.CreateMeasurable(ctx.Manager, creator2);
+			//await ScorecardAccessor.CreateMeasurable(ctx.Manager, m1, false);
+
+			MockNoSyncException();
+			var score1 = await ScorecardAccessor.UpdateScore(ctx.Manager, m1.Id, DateTime.UtcNow, (decimal?)1);
+			var score2 = await ScorecardAccessor.UpdateScore(ctx.Manager, m2.Id, DateTime.UtcNow, (decimal?)2);
+
+			var c = new ScorecardController();
+			c.MockUser(ctx.E1);
+			var s1 = await c.GetMineMeasureables();
+			CompareModelProperties(s1, false);
+			 
+			c.MockUser(ctx.Manager);
+			var s2 = await c.GetMeasureablesForUser(ctx.E2.Id);
+			CompareModelProperties(s2, true);
+
+		}
+
+
 		[TestMethod]
 		[TestCategory("Api_V1")]
 		public async Task GetScore() {

@@ -23,6 +23,9 @@ namespace RadialReview.Hooks.Realtime.L10 {
 			return false;
 		}
 
+		public HookPriority GetHookPriority() {
+			return HookPriority.UI;
+		}
 		//[Untested("var updates = new AngularRecurrence(todo.ForRecurrenceId) ??? recurrentId ???")]
 		public async Task CreateTodo(ISession s, TodoModel todo) {
 

@@ -489,3 +489,19 @@ function UploadSteps(args) {
 	this.initFileSelect();
 	return this;
 }
+
+$("body").on("keypress", function (e) {
+	if (e.keyCode == 13) {
+		var found = $(".finalSubmit");		
+		if (found.length > 0) {
+			found.click();
+		} else {
+			found = $(".nextButton");
+			if (found.length > 0) {
+				found.click();
+			} else {
+				$(".skipButton").click();
+			}
+		}
+	}
+});

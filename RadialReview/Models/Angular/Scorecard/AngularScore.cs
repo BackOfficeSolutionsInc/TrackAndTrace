@@ -12,7 +12,7 @@ namespace RadialReview.Models.Angular.Scorecard
 {
 	public class AngularScore : BaseAngular
 	{
-		public AngularScore(ScoreModel score,bool skipUser=true) : base(score.Id)
+		public AngularScore(ScoreModel score,DateTime? absoluteUpdateTime,bool skipUser=true) : base(score.Id)
 		{
 			Week = DateTime.SpecifyKind(score.ForWeek,DateTimeKind.Utc);
 			ForWeek = TimingUtility.GetWeekSinceEpoch(Week);
@@ -29,6 +29,8 @@ namespace RadialReview.Models.Angular.Scorecard
 
 			if (score._Editable == false)
 				Disabled = true;
+
+			UT = absoluteUpdateTime;
 		}
 
 		public AngularScore(){
@@ -44,5 +46,6 @@ namespace RadialReview.Models.Angular.Scorecard
         public LessGreater? Direction { get; set; }
         public decimal? Target { get; set; }
         public decimal? AltTarget { get; set; }
+
     }
 }

@@ -50,8 +50,7 @@ namespace RadialReview.Models.Angular.Base {
 
 		public BaseAngular() {}
 		public BaseAngular(long id) {
-			Id = id;
-			
+			Id = id;			
 		}
 
 		//public bool CreateOnly { get; set; }
@@ -67,6 +66,11 @@ namespace RadialReview.Models.Angular.Base {
 		public string GetAngularType() {
 			return Type;
 		}
+
+		[IgnoreDataMember]
+		///Absolute Update Time. Will not update if it is before last update
+		public DateTime? UT { get; set; }
+
 	}
 
 	public class Removed {

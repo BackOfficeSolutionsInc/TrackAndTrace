@@ -55,7 +55,7 @@ namespace RadialReview.Hooks {
 			var hookData = HookData.ToReadOnly();
 
 			var hooks = GetHooks<T>();
-			foreach (var x in hooks) {				
+			foreach (var x in hooks.OrderByDescending(x=>(int)x.GetHookPriority())) {				
 				try {
 					if (x.CanRunRemotely() && Config.IsSchedulerAction()) {
 						await AmazonSQSUtility.SendMessage(MessageQueueModel.CreateHookRegistryAction(action, new SerializableHook() {

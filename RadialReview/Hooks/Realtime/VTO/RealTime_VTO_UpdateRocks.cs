@@ -21,6 +21,10 @@ namespace RadialReview.Hooks.Realtime {
 			return false;
 		}
 
+		public HookPriority GetHookPriority() {
+			return HookPriority.UI;
+		}
+
 		private void _DoUpdate(ISession s, long rockId, long? recurrenceId, bool allowDeleted,string connectionId, Func<long, L10Recurrence.L10Recurrence_Rocks, AngularUpdate> action) {
 			var recurRocksQ = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().Where(x => x.ForRock.Id == rockId);
 			if (recurrenceId != null) {

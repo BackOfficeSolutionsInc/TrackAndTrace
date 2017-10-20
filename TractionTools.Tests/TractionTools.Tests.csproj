@@ -312,11 +312,12 @@
     <Compile Include="API\v1\TeamsApiTests_v1.cs" />
     <Compile Include="API\v1\TodoApiTests_v1.cs" />
     <Compile Include="API\v1\ProcessDefApiTests_v1.cs" />
-    <Compile Include="API\v1\UsersApiTests_v1.cs" />
+    <Compile Include="API\v0\UsersApiTests_v0.cs" />
     <Compile Include="API\v1\WebHookAccessorTests_v1.cs" />
     <Compile Include="Codebase\AllHooksRegistered.cs" />
     <Compile Include="Codebase\EnsureNoUntested.cs" />
     <Compile Include="Codebase\SingleRequestSessionTests.cs" />
+    <Compile Include="Codebase\TestSqliteDbTime.cs" />
     <Compile Include="Controllers\DashboardControllerTests.cs" />
     <Compile Include="Controllers\L10ControllerTests.cs" />
     <Compile Include="Controllers\TwilioApi.cs" />

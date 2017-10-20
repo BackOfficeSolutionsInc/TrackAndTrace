@@ -34,10 +34,18 @@ body {
 	/* border: 1px solid #E8E8E8; */
 	/* border-left: 1px solid #E8E8E8; */
 	margin-bottom: 5px;
+
+	&.component-nobackground {
+		background-color: transparent;
+	}
 }
 
 .level-10 .component {
 	box-shadow: 0px 6px 5px -2px rgba(0,0,0,0.1);
+
+	&.component-nobackground {
+		box-shadow: none;
+	}
 }
 
 .component.flash {

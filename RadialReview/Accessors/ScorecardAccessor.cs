@@ -124,14 +124,13 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-
-		[Untested("does the updatecache hook work?")]
 		public static async Task<MeasurableModel> CreateMeasurable(ISession s, PermissionsUtility perms, MeasurableBuilder measurableBuilder) {
 			var m = measurableBuilder.Generate(s, perms);
 			s.Save(m);
 			await HooksRegistry.Each<IMeasurableHook>((ses, x) => x.CreateMeasurable(ses, m));
 			return m;
 		}
+
 		[Obsolete("Commit afterwards")]
 		public static async Task<List<ScoreModel>> _GenerateScoreModels_AddMissingScores_Unsafe(ISession s, DateRange range, List<long> measurableIds, List<ScoreModel> existing) {
 			//var weeks = new List<DateTime>();
@@ -241,6 +240,13 @@ namespace RadialReview.Accessors {
 		#endregion
 
 		#region Getters
+
+		public static async Task<AngularScorecard> GetAngularScorecardForUser(UserOrganizationModel caller, long userId, int periods) {
+			var scorecardStart =  TimingUtility.PeriodsAgo(DateTime.UtcNow, periods, caller.Organization.Settings.ScorecardPeriod);
+			var scorecardEnd =  DateTime.UtcNow.AddDays(14);
+			return await ScorecardAccessor.GetAngularScorecardForUser(caller, userId, new DateRange(scorecardStart, scorecardEnd), true, now: DateTime.UtcNow);
+		}
+
 		public static async Task<AngularScorecard> GetAngularScorecardForUser(UserOrganizationModel caller, long userId, DateRange range, bool includeAdmin = true, bool includeNextWeek = true, DateTime? now = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -557,8 +563,7 @@ namespace RadialReview.Accessors {
 		#endregion
 
 		#region Edit
-
-		[Untested("TestMe extensivly")]
+			
 		public static async Task UpdateMeasurable(UserOrganizationModel caller, long measurableId, string name = null, LessGreater? direction = null, decimal? target = null, long? accountableId = null, long? adminId = null, string connectionId = null, bool updateFutureOnly = true, decimal? altTarget = null, bool? showCumulative = null, DateTime? cumulativeRange = null, UnitType? unitType = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -607,9 +612,12 @@ namespace RadialReview.Accessors {
 			if ((direction != null && measurable.GoalDirection != direction.Value) || !updateFutureOnly) {
 				measurable.GoalDirection = direction.Value;
 				var scoresQ = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null && x.MeasurableId == measurable.Id);
+
+				updates.UpdateAboveWeek = DateTime.MinValue;
 				if (updateFutureOnly) {
 					var nowSunday = DateTime.UtcNow.StartOfWeek(DayOfWeek.Sunday);
 					scoresQ = scoresQ.Where(x => x.ForWeek > nowSunday);
+					updates.UpdateAboveWeek = nowSunday;
 				}
 				var scores = scoresQ.List().ToList();
 				foreach (var score in scores) {
@@ -627,9 +635,11 @@ namespace RadialReview.Accessors {
 					updates.GoalChanged = true;
 				}
 				var scoresQ = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null && x.MeasurableId == measurable.Id);
+				updates.UpdateAboveWeek = DateTime.MinValue;
 				if (updateFutureOnly) {
 					var nowSunday = DateTime.UtcNow.StartOfWeek(DayOfWeek.Sunday);
 					scoresQ = scoresQ.Where(x => x.ForWeek > nowSunday);
+					updates.UpdateAboveWeek = nowSunday;
 				}
 				var scores = scoresQ.List().ToList();
 				foreach (var score in scores) {
@@ -647,9 +657,11 @@ namespace RadialReview.Accessors {
 					updates.AlternateGoalChanged = true;
 				}
 				var scoresQ = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null && x.MeasurableId == measurable.Id);
+				updates.UpdateAboveWeek = DateTime.MinValue;
 				if (updateFutureOnly) {
 					var nowSunday = DateTime.UtcNow.StartOfWeek(DayOfWeek.Sunday);
 					scoresQ = scoresQ.Where(x => x.ForWeek > nowSunday);
+					updates.UpdateAboveWeek = nowSunday;
 				}
 				var scores = scoresQ.List().ToList();
 				foreach (var score in scores) {
@@ -661,6 +673,7 @@ namespace RadialReview.Accessors {
 			}
 
 			//Accountable User
+			updates.OriginalAccountableUserId = measurable.AccountableUserId;
 			if (accountableId != null && measurable.AccountableUserId != accountableId.Value) {
 				perms.ViewUserOrganization(accountableId.Value, false);
 				var user = s.Get<UserOrganizationModel>(accountableId.Value);
@@ -670,7 +683,9 @@ namespace RadialReview.Accessors {
 
 				updates.AccountableUserChanged = true;
 			}
+
 			//Admin User
+			updates.OriginalAdminUserId = measurable.AdminUserId;
 			if (adminId != null) {
 				perms.ViewUserOrganization(adminId.Value, false);
 				var user = s.Get<UserOrganizationModel>(adminId.Value);
@@ -680,6 +695,7 @@ namespace RadialReview.Accessors {
 
 				updates.AdminUserChanged = true;
 			}
+
 			//User type
 			if (unitType != null && measurable.UnitType != unitType.Value) {
 				measurable.UnitType = unitType.Value;
@@ -740,6 +756,9 @@ namespace RadialReview.Accessors {
 				score.Measured = value;
 				updates.ValueChanged = true;
 			}
+
+			updates.AbsoluteUpdateTime = HibernateSession.GetDbTime(s);
+
 
 			s.Update(score);
 			await HooksRegistry.Each<IScoreHook>((ses, x) => x.UpdateScore(ses, score, updates));

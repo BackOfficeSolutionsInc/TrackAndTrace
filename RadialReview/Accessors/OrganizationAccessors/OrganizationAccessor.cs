@@ -590,8 +590,6 @@ namespace RadialReview.Accessors {
 			return userOrg;
 		}
 
-
-		[Untested("Hooks")]
 		public static async Task<UserOrganizationModel> JoinOrganization(UserModel user, long managerId, long userOrgPlaceholder) {
 			UserOrganizationModel userOrg = null;
 			using (var db = HibernateSession.GetCurrentSession()) {

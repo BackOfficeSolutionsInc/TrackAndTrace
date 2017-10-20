@@ -24,6 +24,10 @@ namespace RadialReview.Hooks.Meeting {
 			return true;
 		}
 
+		public HookPriority GetHookPriority() {
+			return HookPriority.Database;
+		}
+
 		public async Task CreateTodo(ISession s, TodoModel todo) {
 			if (todo.ForRecurrenceId > 0) {
 				Audit.L10Log(s, todo.CreatedBy, todo.ForRecurrenceId.Value, "CreateTodo", ForModel.Create(todo), todo.NotNull(x => x.Message));
@@ -113,13 +117,11 @@ namespace RadialReview.Hooks.Meeting {
 		public async Task AttachRock(ISession s, UserOrganizationModel caller, RockModel rock, L10Recurrence.L10Recurrence_Rocks recurRock) {
 			Audit.L10Log(s, caller, recurRock.L10Recurrence.Id, "CreateRock", ForModel.Create(recurRock), rock.Rock);
 		}
-
-		[Untested("Test me")]
+		
 		public async Task AttachMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, L10Recurrence.L10Recurrence_Measurable recurMeasurable) {
 			Audit.L10Log(s, caller, recurMeasurable.L10Recurrence.Id, "CreateMeasurable", ForModel.Create(measurable), measurable.Title);
 		}
-
-		[Untested("Implement me")]
+		
 		public async Task DetatchMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, long recurrenceId) {
 			Audit.L10Log(s, caller, recurrenceId, "DeleteMeasurable", ForModel.Create(measurable), measurable.Title);
 		}
@@ -127,10 +129,8 @@ namespace RadialReview.Hooks.Meeting {
 		public async Task CreateMeasurable(ISession s, MeasurableModel m) {
 			//throw new NotImplementedException();
 		}
-
-		[Untested("Test me")]
+		
 		public async Task UpdateMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, List<ScoreModel> updatedScores, IMeasurableHookUpdates updates) {
-
 			var updateText = new List<String>();
 
 			if (updates.MessageChanged)

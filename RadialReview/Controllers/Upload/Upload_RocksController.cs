@@ -99,7 +99,6 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		[Untested("CreateRock","AttachRock")]
 		public async Task<JsonResult> SubmitRocks(FormCollection model) {
 			var path = model["Path"].ToString();
 			try {

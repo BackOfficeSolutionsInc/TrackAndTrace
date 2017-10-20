@@ -49,7 +49,6 @@ namespace RadialReview.Controllers {
 		#region Scorecard
 		[HttpGet]
 		[Access(AccessLevel.UserOrganization)]
-		[Untested("Test me")]
 		public async Task<JsonResult> AddAngularMeasurable(long id) {
 			var recurrenceId = id;
 			var creator = MeasurableBuilder.Build(null, GetUser().Id, GetUser().Id, UnitType.None, 0, LessGreater.GreaterThan);
@@ -58,7 +57,8 @@ namespace RadialReview.Controllers {
 			//             AdminUserId = GetUser().Id,
 			//             AccountableUserId = GetUser().Id,
 			//         }, true));
-			await ScorecardAccessor.CreateMeasurable(GetUser(), creator);
+			var m = await ScorecardAccessor.CreateMeasurable(GetUser(), creator);
+			await L10Accessor.AttachMeasurable(GetUser(), id, m.Id);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 		[HttpPost]
@@ -77,8 +77,7 @@ namespace RadialReview.Controllers {
 		}
 
 		[HttpPost]
-		[Access(AccessLevel.UserOrganization)]
-		[Untested("test me")]
+		[Access(AccessLevel.UserOrganization)]		
 		public async Task<JsonResult> UpdateAngularMeasurable(AngularMeasurable model, string connectionId = null, bool historical = false, decimal? lower = null, decimal? upper = null, bool? enableCumulative = null, DateTime? cumulativeStart = null/*, UnitType? Modifier=null*/) {
 			var target = model.Target;
 			var altTarget = (decimal?)null;

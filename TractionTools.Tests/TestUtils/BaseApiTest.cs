@@ -24,8 +24,8 @@ namespace TractionTools.Tests.TestUtils {
 			TestName = "TractionTools.Tests";
 		}
 
-		public void CompareModelProperties(bool? _nil, object actual) {
-			_compareModelProperties(null, actual,true);
+		public void CompareModelProperties(bool? _nil, object actual,bool lastComparison=true) {
+			_compareModelProperties(null, actual,lastComparison);
 		}
 
 
@@ -36,9 +36,11 @@ namespace TractionTools.Tests.TestUtils {
 		private static void _compareModelProperties(ApiExpected expected, object actual, bool lastComparison) {
 			string actualJson = Newtonsoft.Json.JsonConvert.SerializeObject(actual);
 
+
+
 			var expectedXml = ExpectedApiResults.Get(expected);
 
-			var regenSetting = Config.GetAppSetting("RegenerateAPI", "").Split(',').Any(x=>x.ToUpper() == "V" + expected.Verison);
+			var regenSetting = Config.GetAppSetting("RegenerateAPI", "").Split(',').Any(x=>x.ToUpper() == "V" + expected.NotNull(y=>y.Verison));
 
 			//-- Just print the result -- 
 			if ((expectedXml == null || expected == null) && !regenSetting) {
@@ -47,16 +49,18 @@ namespace TractionTools.Tests.TestUtils {
 				Console.WriteLine(actualJson);
 				if (lastComparison)
 					Assert.Inconclusive("Expected JSON does not exist. See console output for actual.");
+				return;
 			}
 
 			//-- Regenerate --
-			if (regenSetting || expected.Regen) {
+			if (regenSetting || (expected!=null && expected.Regen)) {
 				Console.WriteLine("====" + actual.NotNull(x => x.GetType().Name) + "====");
 				actualJson = Newtonsoft.Json.JsonConvert.SerializeObject(actual, Newtonsoft.Json.Formatting.Indented);
 				Console.WriteLine(actualJson);
 				ExpectedApiResults.InsertOrUpdate(expected, actualJson);
 				if (lastComparison)
 					Assert.Inconclusive("JSON was regenerated. See console output for actual.");
+				return;
 			}
 			var expectedJson = expectedXml.ExpectedJson;
 
