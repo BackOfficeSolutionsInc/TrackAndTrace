@@ -82,17 +82,17 @@ namespace TractionTools.Tests.API.v1 {
 			c.MockUser(ctx.E1);
 
 			await c.UpdateScore(m1.Id, 2000L, new Scores_Controller.UpdateScoreModel { value = null });
-			var score = ScorecardAccessor.GetScore(ctx.Manager, m1.Id, 2000L);
+			var score = await ScorecardAccessor.GetScore(ctx.Manager, m1.Id, 2000L);
 			Assert.AreEqual(score.Measured, null);
 
 			await c.UpdateScore(m1.Id, 2000L, new Scores_Controller.UpdateScoreModel { value = 3.14m });
-			score = ScorecardAccessor.GetScore(ctx.Manager, m1.Id, 2000L);
+			score = await ScorecardAccessor.GetScore(ctx.Manager, m1.Id, 2000L);
 			Assert.AreEqual(score.Measured, 3.14m);
 
 			await c.UpdateScore(m1.Id, 2001L, new Scores_Controller.UpdateScoreModel { value = 6.14m });
-			score = ScorecardAccessor.GetScore(ctx.Manager, m1.Id, 2000L);
+			score = await ScorecardAccessor.GetScore(ctx.Manager, m1.Id, 2000L);
 			Assert.AreEqual(score.Measured, 3.14m);
-			score = ScorecardAccessor.GetScore(ctx.Manager, m1.Id, 2001L);
+			score = await ScorecardAccessor.GetScore(ctx.Manager, m1.Id, 2001L);
 			Assert.AreEqual(score.Measured, 6.14m);
 
 		}
@@ -125,7 +125,7 @@ namespace TractionTools.Tests.API.v1 {
 
 			c.MockUser(ctx.E1);
 			await c.Put(score.Id, new Scores_Controller.UpdateScoreModel { value = 3.14m });
-			s = ScorecardAccessor.GetScore(ctx.Manager, m1.Id, 2000L);
+			s = await ScorecardAccessor.GetScore(ctx.Manager, m1.Id, 2000L);
 			Assert.AreEqual(s.Measured, 3.14m);
 
 			var score2 = await ScorecardAccessor.UpdateScore(ctx.Manager, m1.Id, TimingUtility.GetDateSinceEpoch(2001L), (decimal?)6.14);			

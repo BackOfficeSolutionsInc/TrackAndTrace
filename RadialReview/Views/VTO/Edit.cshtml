@@ -113,7 +113,7 @@
 																		  textarea-resize></textarea>
 															</td>
 															<td class="delete-column">
-																<span class="delete glyphicon glyphicon-remove" @((!ViewBag.CanEditCoreValues || !ViewBag.CanEditVTOVision) ? "disabled" : "") ng-click="functions.Get('/VTO/DeleteCompanyValue?value='+value.Id)"></span>
+																<span class="delete glyphicon glyphicon-trash" @((!ViewBag.CanEditCoreValues || !ViewBag.CanEditVTOVision) ? "disabled" : "") ng-click="functions.Get('/VTO/DeleteCompanyValue?value='+value.Id)"></span>
 															</td>
 														</tr>
 														<tr>
@@ -248,7 +248,7 @@
 																	<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddUniques?vto='+vtoId,'model.Strategy.Uniques')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(uniques)" ng-model="uniques.Data" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
 																</td>
 																<td class="delete-column">
-																	<span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteString?value='+uniques.Id)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></span>
+																	<span class="delete glyphicon glyphicon-trash" ng-click="functions.Get('/VTO/DeleteString?value='+uniques.Id)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></span>
 																</td>
 															</tr>
 															<tr>
@@ -325,7 +325,7 @@
 																	  textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
 														</td>
 														<td class="delete-column">
-															<span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteString?value='+item.Id)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></span>
+															<span class="delete glyphicon glyphicon-trash" ng-click="functions.Get('/VTO/DeleteString?value='+item.Id)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></span>
 														</td>
 													</tr>
 													<tr>
@@ -410,7 +410,7 @@
 													<td class="number">{{$index+1}}.</td>
 													<td>
 														<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddYearGoal?vto='+vtoId,'model.OneYearPlan.GoalsForYear')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></textarea>
-														<span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteString?value='+item.Id)" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></span>
+														<span class="delete glyphicon glyphicon-trash" ng-click="functions.Get('/VTO/DeleteString?value='+item.Id)" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></span>
 													</td>
 												</tr>
 												<tr class="add-row-tr">
@@ -468,13 +468,13 @@
 												<tr><th colspan="2">Rocks for the Quarter:</th><th class="alignRight hidden-xs">Who</th></tr>
 												<tr class="add-row-row" ng-repeat="item in (model.QuarterlyRocks).Rocks | filter:{Deleted:false,Rock:{VtoRock:true}}">
 													<td class="number">{{$index+1}}.</td>
-													<td>
+													<td class="fullWidth">
 														<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddRock?vto='+vtoId,'model.QuarterlyRocks.Rocks')"
 																  textarea-resize
 																  @(ViewBag.CanEditVTOTraction ? "" : "disabled")
 																  style="width: 80%;width: calc(100% - 18px);"
 																  ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Rock.Name" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></textarea>
-														<span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteRock?value='+item.Id)" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></span>
+														<span class="delete glyphicon glyphicon-trash" ng-click="functions.Get('/VTO/DeleteRock?value='+item.Id)" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></span>
 													</td>
 
 													<td class="hidden-xs">
@@ -486,7 +486,7 @@
 													</td>
 												</tr>
 												<tr class="add-row-tr">
-													<td colspan="2" class="add-row" ng-click="functions.AddRow('/VTO/AddRock?vto='+vtoId)" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></td>
+													<td colspan="3" class="add-row" ng-click="functions.AddRow('/VTO/AddRock?vto='+vtoId)" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></td>
 												</tr>
 											</table>
 										</div>
@@ -514,7 +514,7 @@
 										</div>
 									</div>
 									<div class="boxed content">
-										<div class="rocks-table border-table">
+										<div class="rocks-table issues-table border-table">
 											<table class="add-row-container">
 												<tr class="add-row-row" ng-repeat="item in (model).Issues | filter:{Deleted:false}">
 													<td class="number">{{$index+1}}.</td>
@@ -522,10 +522,10 @@
 														<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddIssue?vto='+vtoId,'model.Issues')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></textarea>
 														@*</td>
 			<td class="delete-column">*@
-														<div class="pull-right" style="width:25px;margin-top: -4px;margin-bottom: -5px;">
+														<div class="pull-right" style="width:25px;margin-top: -6px;margin-bottom: -8px;">
 															<span class="issue-owner">{{item.OwnerInitials}}</span>
 															<span class="ids-button glyphicon glyphicon-ids gray clickable" ng-click="functions.Get('/L10/MoveIssueFromVto/'+item.Id)" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></span>
-															<span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteString?value='+item.Id)" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></span>
+															<span class="delete glyphicon glyphicon-trash" ng-click="functions.Get('/VTO/DeleteString?value='+item.Id)" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></span>
 														</div>
 													</td>
 												</tr>

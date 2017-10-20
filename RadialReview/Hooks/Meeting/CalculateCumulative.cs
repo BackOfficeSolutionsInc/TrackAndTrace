@@ -33,7 +33,9 @@ namespace RadialReview.Hooks.Meeting {
 		public async Task UpdateScore(ISession s, ScoreModel score, IScoreHookUpdates updates) {
 
 			if (updates.ValueChanged) {
-				_UpdateCumulative(s, score.MeasurableId, score);
+                if (score.Measurable.ShowCumulative) {
+                    _UpdateCumulative(s, score.MeasurableId, score);
+                }
 			}
 		}
 

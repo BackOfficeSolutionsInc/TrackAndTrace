@@ -11,7 +11,8 @@
 			data: { rockId: rockId, state: $(this).val(), connectionId: $.connection.hub.id },
 			success: function (data) {
 				showJsonAlert(data, false, true);
-				//$(selector).val((!data.Error ? data.Object : "Indeterminate"));
+			    //$(selector).val((!data.Error ? data.Object : "Indeterminate"));
+				recalculateMilestones()
 			},
 			error: function () {
 				$(selector).val(oldValue || "Indeterminate");
@@ -251,6 +252,7 @@ function updateRockCompletion(rockId, state, rockId1) {
 	if (rockId1 !== undefined) {
 		$("input[name='for_rock_" + rockId1 + "']").val(state);
 	}
+	recalculateMilestones();
 }
 
 function updateRockName(rockId, message) {
@@ -262,7 +264,8 @@ function updateRockName(rockId, message) {
 var rockGetter = function () {
 	var rocks = [];
 	$(".rock-row").each(function () {
-		rocks.push({
+	    rocks.push({
+	        Status: $(this).find(".rockstate input").val(),
 			DueDate: $(this).data("duedate"),
 			Id: $(this).data("rockid")
 		});
@@ -320,6 +323,8 @@ window.milestoneAccessor = new MilestoneAccessor(function () { return window.mil
 					if (typeof(mm.status)!=="undefined") {
 						$(marker).addClass("status-" + mm.status);
 					}
+
+					$(marker).toggleClass("rock-is-done", rock.rockStatus=="Complete");
 
 					container.append(marker);
 
@@ -396,9 +401,13 @@ window.milestoneAccessor = new MilestoneAccessor(function () { return window.mil
 						dateEllapseMarker.addClass("status-NotDone");
 					}
 				}
-				if (anyMilestones && rock.allDone) {
-					dateEllapseMarker.addClass("status-Done");
+				if (anyMilestones && (rock.allDone || rock.rockStatus == "Complete")) {
+				    dateEllapseMarker.addClass("status-Done");
+				    if (rock.rockStatus == "Complete") {
+				        dateEllapseMarker.removeClass("status-NotDone");
+				    }
 				}
+				
 
 				var dueMarkerW = (dueP - startP) * 100 + "%";
 				var ellapseMarkerW = (Math.min(dueP, nowP) - startP) * 100 + "%";
@@ -447,7 +456,7 @@ function updateRocks(html) {
 	$(".rocks-container").html(html);
 	$(".rock-empty-holder").addClass("hidden");
 	$(".rocks-container").removeClass("hidden");
-	console.error("accept milestones javascript");
+	console.log("accept milestones javascript");
 	recalculateMilestones();
 }
 

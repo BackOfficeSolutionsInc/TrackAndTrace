@@ -573,6 +573,10 @@ html,
 body {
   background-color: #eee;
 }
+body.loading,
+body.loading * {
+  cursor: wait !important;
+}
 tr.grayRow {
   background-image: url("/Content/img/graystripe-light.png");
   background-color: rgba(62, 57, 53, 0.13);
@@ -1148,4 +1152,23 @@ textarea {
 }
 .shift-visible:not(.visible) {
   display: none;
+}
+@media screen {
+  .copyrightPrintFooter {
+    display: none;
+  }
+}
+@media print {
+  html,
+  body,
+  body#body {
+    background-color: white !important;
+  }
+  .copyrightPrintFooter {
+    position: fixed;
+    bottom: 0;
+    color: #777 !important;
+    font-size: 10px;
+    text-shadow: 0 0 1px white,0 0 1px white,0 0 1px white, !important;
+  }
 }

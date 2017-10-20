@@ -16,7 +16,7 @@ namespace RadialReview.Hooks.Realtime {
 
 		[Untested("Supply the connection string in a way that SQS can access.")]
 		public static string GetConnectionString() {
-			return HookData.ToReadOnly().GetData<string>("ConnectionString");
+			return HookData.ToReadOnly().GetData<string>("ConnectionId");
 		}
 
 		public static List<long> GetRecurrencesForMeasurable(ISession s, long measurableId) {
@@ -88,9 +88,9 @@ namespace RadialReview.Hooks.Realtime {
 			return meetingHub;
 		}
 
-		public static dynamic GetUserHubForRecurrence(long userId) {
+		public static dynamic GetUserHubForRecurrence(long userId,bool excludeCaller=true) {
 			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-			return hub.Clients.Group(MeetingHub.GenerateUserId(userId));
+			return hub.Clients.Group(MeetingHub.GenerateUserId(userId), excludeCaller?RealTimeHelpers.GetConnectionString():null);
 		}
 
 	}

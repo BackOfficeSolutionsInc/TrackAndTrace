@@ -66,6 +66,7 @@ namespace RadialReview.Api.V1 {
 			/// </summary>
 			[Required]
 			public string title { get; set; }
+
 			/// <summary>
 			/// Rock owner (Default: you)
 			/// </summary>

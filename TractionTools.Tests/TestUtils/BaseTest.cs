@@ -13,6 +13,7 @@ using RadialReview.Models.UserModels;
 using RadialReview.NHibernate;
 using RadialReview.Utilities;
 using RadialReview.Utilities.Productivity;
+using RadialReview.Utilities.Synchronize;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -193,6 +194,11 @@ namespace TractionTools.Tests.TestUtils {
         public static void AddIsTest() {
             if (HttpContext.Current != null && HttpContext.Current.Items != null)
                 HttpContext.Current.Items["IsTest"] = true;
+        }
+
+        public void MockNoSyncException(){
+            MockHttpContext(true);
+            HttpContext.Current.Items[SyncUtil.NO_SYNC_EXCEPTION] = true;
         }
 
         public static void MockHttpContext(bool isTest = true) {

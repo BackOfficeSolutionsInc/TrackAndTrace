@@ -132,8 +132,8 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
     $scope.functions.startCoreProcess = function (coreProcess) {
         $http.get("/CoreProcess/Process/StartProcess/" + coreProcess.Id)
             .then(function (data) {
-                $scope.functions.showAlert(data,true);
-            },function (data) {
+                $scope.functions.showAlert(data, true);
+            }, function (data) {
                 $scope.functions.showAlert(data);
             });
     }
@@ -172,12 +172,16 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 
             $timeout(function () {
                 try {
-                    $($scope.model.Focus).focus();
+                    var toFocus = $($scope.model.Focus);
+                    console.log("Set Focus ", toFocus);
+                    if (toFocus.length > 0) {
+                        $($scope.model.Focus).focus();
+                    }
                 } catch (e) {
                     console.error("Set Focus", e);
                 }
                 $scope.model.Focus = null;
-            }, 10);
+            }, 20);
         }
     });
 
@@ -242,13 +246,13 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
                 url = url + $scope.recurrenceId;
             }
 
-            var date = ((+new Date()) + (window.tzoffset * 60 * 1000));
+            var date = ((+new Date()) /*+ (window.tzoffset * 60 * 1000)*/);
             if (meetingDataUrlBase.indexOf("?") != -1) {
                 url += "&_clientTimestamp=" + date;
             } else {
                 url += "?_clientTimestamp=" + date;
             }
-            
+
             if (typeof (range) !== "undefined" && typeof (range.startDate) !== "undefined")
                 url += "&start=" + dateToNumber(range.startDate);
             if (typeof (range) !== "undefined" && typeof (range.endDate) !== "undefined")
@@ -406,7 +410,6 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
     };
 
     $scope.functions.lookupScore = function (week, measurableId, scorecardKey) {
-
         if ($scope.ScoreLookup == null) {
             $scope.ScoreLookup = {};
             var scorecard = $scope.model.Lookup[scorecardKey];
@@ -477,6 +480,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
             if (!(id in $scope.possibleOwners)) {
                 $scope.possibleOwners[id] = null;
                 $http.get('/Dropdown/AngularMeetingMembers/' + id + '?userId=true').success(function (data) {
+                    r.updater.convertDates(data);
                     $scope.possibleOwners[id] = data;
                 });
             }
@@ -485,6 +489,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
     $scope.possibleDirections = [];
     $scope.loadPossibleDirections = function () {
         return $scope.possibleDirections.length ? null : $http.get('/Dropdown/Type/lessgreater').success(function (data) {
+            r.updater.convertDates(data);
             $scope.possibleDirections = data;
         });
     };
@@ -752,7 +757,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
         $window.location.href = url;
     }
 
-    $scope.functions.blurSearch = function (self) {
+    $scope.functions.blurSearch = function (self, noHide) {
         //$timeout(function () {
         angular.element(".searchresultspopup").addClass("ng-hide");
         self.visible = false;

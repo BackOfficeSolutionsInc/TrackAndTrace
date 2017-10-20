@@ -16,7 +16,7 @@
     var scorecardKey = "(" + selector + ").Key";
 }
 
-<div @(headers ? "ng-app=L10App" : "") class="scorecard meeting-page app scorecard-list-container angular-scorecard" style="clear: both;">
+<div @(headers ? "ng-app=L10App" : "") class="scorecard meeting-page app scorecard-list-container angular-scorecard ng-cloak" style="clear: both;">
     <div @(headers || controller ? "ng-controller=L10Controller" : "")>
         <div class="row">
             <div class="col-md-12">
@@ -24,7 +24,7 @@
                     <div class="clearfix"></div>
                     <div style="position: relative;" ng-show="(@(selector)).Measurables.length">
                         <div class="table-responsive scroller repeater-container-scorecard tile-height-resize fixOverlayScroll" style1="min-height: 200px;" ng-class="{'scroll-right':(@(selector)).ReverseScorecard==false}">
-                            <table id="ScorecardTable" class="scorecard-table ng-cloak">
+                            <table id="ScorecardTable"  class="scorecard-table ng-cloak">
                                 <thead>
                                     <tr class="top-row">
                                         @if (reorderable) {
@@ -61,12 +61,12 @@
                                         <th class="delete-column button-column"></th>
                                     </tr>
                                 </thead>
-                                <tbody as-sortable="scorecardSortListener" ng-model="measurableGroupItems" ng-repeat="(measurableGroup,measurableGroupItems) in (@(selector)).Measurables | groupBy: 'Grouping'">
+                                <tbody @*New>vs-repeat vs-autoresize vs-scroll-parent="@(ViewBag.ViewParent??".table-responsive")"<New*@ as-sortable="scorecardSortListener" ng-model="measurableGroupItems" ng-repeat="(measurableGroup,measurableGroupItems) in (@(selector)).Measurables | groupBy: 'Grouping'">
                                     <tr as-sortable-item="measurable" ng-hide="measurable.Hide"
                                         ng-class="{IsDivider: measurable.IsDivider,disabled:measurable.Disabled}"
                                         data-measurable="{{::measurable.Id}}"
                                         class="specialClass @(reorderable ? "reorderable" : "")"
-                                        ng-repeat="measurable in measurableGroupItems | orderBy: ['Ordering'] ">
+                                        ng-repeat="measurable in measurableGroupItems | orderBy: ['Ordering'] track by measurable.Key">
                                         @if (reorderable) {
                                             <td as-sortable-item-handle class="handle-cell button-column" ng-class="{handle: measurable.IsDivider}" ng-if="!measurable.Disabled" ><div class="icon fontastic-icon-three-bars icon-rotate handle"></div></td>
 											<td ng-if="measurable.Disabled"></td>
@@ -124,7 +124,7 @@
 										<td class="cumulative-column" ng-click="functions.checkFutureAndSend(measurable)">
 											<input ng-show="measurable.ShowCumulative==true" pu-elastic-input fcsa-number="{{functions.getFcsa(measurable)}}" ng-model="measurable.Cumulative"  disabled/>
 										</td>
-                                        <td ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin),(@(selector)).Period) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="score score-column data-column" ng-class="{current:week.IsCurrentWeek}">
+                                        <td ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin),(@(selector)).Period) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)  track by week.ForWeekNumber" class="score score-column data-column" ng-class="{current:week.IsCurrentWeek}">
                                             <score week="week"
                                                    @(new HtmlString(localization))
                                                    score="functions.lookupScore(week.ForWeekNumber,measurable.Id,@(scorecardKey))"

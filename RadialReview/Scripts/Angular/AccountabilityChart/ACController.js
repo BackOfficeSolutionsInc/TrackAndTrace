@@ -656,7 +656,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 			url = url + $scope.chartId;
 		}
 
-		var date = ((+new Date()) + (window.tzoffset * 60 * 1000));
+		var date = ((+new Date()) /*+ (window.tzoffset * 60 * 1000)*/);
 		if (dataUrl.indexOf("?") != -1) {
 			url += "&_clientTimestamp=" + date;
 		} else {

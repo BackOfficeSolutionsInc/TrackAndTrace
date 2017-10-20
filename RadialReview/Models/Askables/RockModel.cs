@@ -20,8 +20,8 @@ namespace RadialReview.Models.Askables {
 		public virtual long? FromTemplateItemId { get; set; }
 		public virtual long OrganizationId { get; set; }
 		public virtual long ForUserId { get; set; }
-		[Obsolete("Do not use. Instead use L10Recurrent.Rock", true)]
 		///RE-ADD to the map
+		[Obsolete("Do not use. Instead use L10Recurrent.Rock")]
 		public virtual bool CompanyRock { get; set; }
 		public virtual bool _CompanyRock { get; set; }
 		public virtual DateTime? DueDate { get; set; }
@@ -83,8 +83,8 @@ namespace RadialReview.Models.Askables {
 				Map(x => x.DueDate);
 				Map(x => x.OrganizationId);
 				Map(x => x.FromTemplateItemId);
-				//Map(x => x.CompanyRock);
-				//Map(x => x.CreateTime);
+			    Map(x => x.CompanyRock);
+			    //Map(x => x.CreateTime);
 				Map(x => x.CompleteTime);
 				Map(x => x.PeriodId).Column("PeriodId");
 				References(x => x.Period).Column("PeriodId").Not.LazyLoad().ReadOnly();

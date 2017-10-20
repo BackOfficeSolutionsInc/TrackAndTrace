@@ -60,7 +60,7 @@ $(document).ajaxSend(function (event, jqX, ajaxOptions) {
 		else
 			ajaxOptions.url += "&";
 
-		ajaxOptions.url += "_clientTimestamp=" + ((+new Date()) + (window.tzoffset * 60 * 1000));
+		ajaxOptions.url += "_clientTimestamp=" + ((+new Date()) /*+ (window.tzoffset * 60 * 1000)*/);
 	}
 	console.info(ajaxOptions.type + " " + ajaxOptions.url);
 	if (typeof (ajaxOptions.type) === "string" && ajaxOptions.type.toUpperCase() == "POST" && !(ajaxOptions.url.indexOf("/support/email") == 0)) {

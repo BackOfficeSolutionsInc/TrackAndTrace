@@ -1,97 +1,106 @@
 ﻿@model RadialReview.Controllers.AccountabilityController.AccountabilityChartVM
 @{
-	ViewBag.Title = "Accountability Chart";
-	Layout = "~/Views/Shared/_Layout.cshtml";
-	ViewBag.FullWidth = true;
-	ViewBag.FullHeight = true;
+    ViewBag.Title = "Accountability Chart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.FullWidth = true;
+    ViewBag.FullHeight = true;
 
-	Html.RenderPartial("~/Views/CDN/Angular.cshtml");
-	var searchLoc = "top:30px";
-	if (ViewBag.NoTitleBar ?? false) {
-		searchLoc = "top:0px";
-	}
+    Html.RenderPartial("~/Views/CDN/Angular.cshtml");
+    var searchLoc = "top:30px";
+    if (ViewBag.NoTitleBar ?? false) {
+        searchLoc = "top:0px";
+    }
 
 }
 @*
-	<div class="acc-chart">
-		<div id="viewer"></div>
-	</div>
-	<svg height="80%" width="80%">
+    <div class="acc-chart">
+        <div id="viewer"></div>
+    </div>
+    <svg height="80%" width="80%">
 
-		<g>
-			<g>
-				<circle cx="10" cy="5" r="2" class="ng-scope">
-				</circle>
-			</g>
-		</g>
-	</svg>*@
-<div style="position:absolute;">
-	<span class="icon fontastic-icon-page-export-pdf clickable gray" style="font-size: 16px;top: 1px;position: relative;left: 2px;margin:2px;" onclick="genPdf()" title="Export PDF"></span>
-	<span class="icon fontastic-icon-arrows-out clickable gray" style="margin:2px;" onclick="expandAll()" title="Expand All"></span>
-	<span class="icon fontastic-icon-arrows-in clickable gray" style="margin:2px;" onclick="collapseAll()" title="Collapse All"></span>
+        <g>
+            <g>
+                <circle cx="10" cy="5" r="2" class="ng-scope">
+                </circle>
+            </g>
+        </g>
+    </svg>*@
+<div style="position:absolute;" class="ac-btns">
+    <span class="icon fontastic-icon-page-export-pdf clickable gray" style="font-size: 16px;top: 1px;position: relative;left: 2px;margin:2px;" onclick="genPdf()" title="Export PDF"></span>
+    <span class="icon fontastic-icon-arrows-out clickable gray" style="margin:2px;" onclick="expandAll()" title="Expand All"></span>
+    <span class="icon fontastic-icon-arrows-in clickable gray" style="margin:2px;" onclick="collapseAll()" title="Collapse All"></span>
 </div>
 <div ng-app="ACApp" class="full-height acc-chart ng-cloak">
-	<div ng-controller="ACController" class="full-height">
+    <div ng-controller="ACController" class="full-height">
 
-		<md-autocomplete style="position:fixed;@(searchLoc);right: 0px;width:320px;max-width: 70vw;"
-						 md-selected-item="search.selected"
-						 md-search-text-change="search.searchTextChange(search.searchText)"
-						 md-search-text="search.searchText"
-						 md-selected-item-change="functions.selectedItemChange(item)"
-						 md-items="item in search.findNode(search.searchText)"
-						 md-item-text="item.name||item.User.Name"
-						 md-min-length="1"
-						 placeholder="Search">
-			<md-item-template>
-				<span md-highlight-text="search.searchText" md-highlight-flags="^i">{{item.Name||item.User.Name}}</span>
-			</md-item-template>
-			<md-not-found>
-				No states matching "{{search.searchText}}" were found.
-			</md-not-found>
-		</md-autocomplete>
-		@*<div style="top:26px;position:absolute">
-			<md-checkbox ng-model="compact"></md-checkbox>
-		</div>*@
+        <md-autocomplete style="position:fixed;@(searchLoc);right: 0px;width:320px;max-width: 70vw;"
+                         md-selected-item="search.selected"
+                         md-search-text-change="search.searchTextChange(search.searchText)"
+                         md-search-text="search.searchText"
+                         md-selected-item-change="functions.selectedItemChange(item)"
+                         md-items="item in search.findNode(search.searchText)"
+                         md-item-text="item.name||item.User.Name"
+                         md-min-length="1"
+                         placeholder="Search">
+            <md-item-template>
+                <span md-highlight-text="search.searchText" md-highlight-flags="^i">{{item.Name||item.User.Name}}</span>
+            </md-item-template>
+            <md-not-found>
+                No states matching "{{search.searchText}}" were found.
+            </md-not-found>
+        </md-autocomplete>
+        @*<div style="top:26px;position:absolute">
+                <md-checkbox ng-model="compact"></md-checkbox>
+            </div>*@
 
-		<svg @*panzoom*@ id="svg" graph="model">
-			<g tree graph="model"
-				  tt-compact="compact"
-				  tt-enter="nodeEnter"
-				  tt-update="nodeUpdate"
-				  tt-exit="nodeExit"
-				  tt-post-exit="nodePostExit"
-				  tt-watch="nodeWatch"
-				  tt-drag-start="dragStart"
-				  tt-drag-end="dragEnd"
-				  tt-collapse="collapseExpand"
-				  tt-expand="collapseExpand"></g>
-		</svg>
-	</div>
+        <svg @*panzoom*@ id="svg" graph="model">
+            <g tree graph="model"
+               tt-compact="compact"
+               tt-enter="nodeEnter"
+               tt-update="nodeUpdate"
+               tt-exit="nodeExit"
+               tt-post-exit="nodePostExit"
+               tt-watch="nodeWatch"
+               tt-drag-start="dragStart"
+               tt-drag-end="dragEnd"
+               tt-collapse="collapseExpand"
+               tt-expand="collapseExpand"></g>
+        </svg>
+    </div>
 </div>
 
 
 @using (Html.BeginStyles()) {
-	@Styles.Render("~/Content/AccChart")
+    @Styles.Render("~/Content/AccChart")
+
+    if (ViewBag.NoTitleBar ?? false) {
+        <style>
+            .ac-btns {
+                left: 63px;
+                top: 2px;
+            }
+        </style>
+    }
 }
 
 @using (Html.BeginScripts()) {
-	@Scripts.Render("~/bundles/AccountabilityChart")
-	<script type="text/javascript">
-		if (msieversion()){
-			var v = msieversion();
-			if (v>=11){
-				showAlert("Accountability Chart is not fully supported on Edge. Please use Chrome or Firefox.");
-			}else{
-				showAlert("Accountability Chart is not fully on Internet Explorer. Please use Chrome or Firefox.");
-			}
-		}
+    @Scripts.Render("~/bundles/AccountabilityChart")
+    <script type="text/javascript">
+        if (msieversion()){
+            var v = msieversion();
+            if (v>=11){
+                showAlert("Accountability Chart is not fully supported on Edge. Please use Chrome or Firefox.");
+            }else{
+                showAlert("Accountability Chart is not fully on Internet Explorer. Please use Chrome or Firefox.");
+            }
+        }
 
-		angular.module('ACApp')
+        angular.module('ACApp')
             .value('orgId',@Model.OrganizationId)
             .value('chartId',@Model.ChartId)
             .value('dataUrl', "/Accountability/Data/{0}?expandAll=@Model.ExpandAll&@Model.FocusNode.NotNull(x=>"node="+x)")
 
-	
 
-	</script>
+
+    </script>
 }

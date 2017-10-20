@@ -376,7 +376,7 @@
 
     function addTimestamp(url) {
         tzoffset();
-        var date = ((+new Date()) + (window.tzoffset * 60 * 1000));
+        var date = ((+new Date()) /*+ (window.tzoffset * 60 * 1000)*/);
         return url + ((url.indexOf("?") != -1) ? "&_clientTimestamp=" + date : "?_clientTimestamp=" + date);
     }
 

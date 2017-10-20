@@ -580,6 +580,9 @@ html {
 .width_1 {
   font-size: 12px /*!important*/;
 }
+.resizing .tile-resizing .content {
+  display: none;
+}
 /* Track */
 .tiny *::-webkit-scrollbar-track {
   background-color: rgba(0, 0, 0, 0.05);
@@ -718,7 +721,7 @@ body.resizing .notes-tile:after,
 }
 .dashboard .task-list-container td {
   font-size: 13px;
-  color: rgba(0, 0, 0, 0.54);
+  color: #c7c7c7;
   height: 24px;
 }
 .dashboard .task-list-container tbody.md-body > tr.md-row,
@@ -902,7 +905,7 @@ body.resizing .notes-tile:after,
 }
 .dashboard .core-process-list-container td {
   font-size: 13px;
-  color: rgba(0, 0, 0, 0.54);
+  color: #c7c7c7;
   height: 24px;
 }
 .dashboard .core-process-list-container tbody.md-body > tr.md-row,
@@ -1074,7 +1077,7 @@ body.resizing .notes-tile:after,
 }
 .dashboard .scorecard table td {
   font-size: 13px;
-  color: rgba(0, 0, 0, 0.54);
+  color: #c7c7c7;
   height: 24px;
 }
 .dashboard .scorecard table tbody.md-body > tr.md-row,
@@ -1302,7 +1305,7 @@ body.resizing .notes-tile:after,
 }
 .dashboard .rock-list-container td {
   font-size: 13px;
-  color: rgba(0, 0, 0, 0.54);
+  color: #c7c7c7;
   height: 24px;
 }
 .dashboard .rock-list-container tbody.md-body > tr.md-row,
@@ -1409,6 +1412,9 @@ body.resizing .notes-tile:after,
 }
 .dashboard .rock-list-container .rock-pane {
   margin-top: 4px;
+}
+.dashboard .rock-list-container md-select {
+  margin-top: -1px;
 }
 .dashboard .rock-list-container .icon-column {
   display: table-cell;
@@ -1558,7 +1564,7 @@ body.resizing .notes-tile:after,
 }
 .dashboard .todo-list-container td {
   font-size: 13px;
-  color: rgba(0, 0, 0, 0.54);
+  color: #c7c7c7;
   height: 24px;
 }
 .dashboard .todo-list-container tbody.md-body > tr.md-row,
@@ -1865,7 +1871,7 @@ body.resizing .notes-tile:after,
 }
 .dashboard .issues-list-container table td {
   font-size: 13px;
-  color: rgba(0, 0, 0, 0.54);
+  color: #c7c7c7;
   height: 24px;
 }
 .dashboard .issues-list-container table tbody.md-body > tr.md-row,
@@ -2107,7 +2113,7 @@ body.resizing .notes-tile:after,
 }
 .dashboard .notifications-list-container table td {
   font-size: 13px;
-  color: rgba(0, 0, 0, 0.54);
+  color: #c7c7c7;
   height: 24px;
 }
 .dashboard .notifications-list-container table tbody.md-body > tr.md-row,
@@ -2375,9 +2381,11 @@ body.resizing .notes-tile:after,
   -webkit-transition: all 250ms cubic-bezier(0, 0, 0.2, 1);
   transition: all 250ms cubic-bezier(0, 0, 0.2, 1);
   margin-bottom: 15px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   padding: 0;
   margin-bottom: 0;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-top: none;
+  border-radius: 1px;
 }
 .dashboard .component {
   padding: 0px;
@@ -2427,6 +2435,7 @@ body.resizing .notes-tile:after,
   -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
   font-family: 'Roboto', sans-serif;
+  text-transform: uppercase;
 }
 .dashboard .tiny > .heading a {
   font-size: 10px;

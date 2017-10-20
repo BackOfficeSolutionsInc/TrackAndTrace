@@ -167,6 +167,7 @@ var Grid = {
 
             var resizerFunc = function (self,dir, side, unlocks) {
                 if (resizeing == false) {
+                    $(self).closest("li").addClass("tile-resizing");
                     $("body").addClass("resizing");
                     $("body").addClass("resize-"+dir);
                     resizeing = true;
@@ -216,6 +217,8 @@ var Grid = {
             $(window).on("mouseup", function () {
                 resizeing = false;
                 $(window).off(".gridresize");
+
+                $(".tile-resizing").removeClass("tile-resizing");
                 $("body").removeClass("resizing").removeClass("resize-vertical").removeClass("resize-horizontal").removeClass("resize-nwse");
                 var originalX = null;
                 var originalY = null;

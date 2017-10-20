@@ -462,8 +462,8 @@ body.dragging * {
 .issueDetails h4 {
   margin-bottom: 4px;
   padding-bottom: 6px;
-  border-bottom: 1px solid #eee;
-  min-height: 48px;
+  /*border-bottom: 1px solid #eee;*/
+  /*min-height: 48px;*/
   margin-top: 0px;
   margin-bottom: 10px;
 }
@@ -571,7 +571,7 @@ body.dragging * {
   white-space: pre;
 }
 .issueDetails textarea {
-  min-height: 60px;
+  /*min-height: 60px;*/
   white-space: pre-line;
 }
 .page-header.details {

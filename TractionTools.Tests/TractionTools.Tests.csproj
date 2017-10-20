@@ -298,6 +298,7 @@
     <Compile Include="Accessors\PDF\D3TreeTests.cs" />
     <Compile Include="Accessors\PDF\PdfAccessor_RunAll.cs" />
     <Compile Include="Accessors\Payment\PaymentAccessorTests.cs" />
+    <Compile Include="Accessors\Scorecard\ScorecardAccessorTests.cs" />
     <Compile Include="API\v1\IssueApiTests_v1.cs" />
     <Compile Include="API\v1\L10ApiTests_v1.cs" />
     <Compile Include="API\v1\MilestonesApiTests_v1.cs" />

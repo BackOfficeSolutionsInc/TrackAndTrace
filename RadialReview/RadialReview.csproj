@@ -1222,6 +1222,7 @@
     <Content Include="Scripts\Angular\Helpers\Libraries\angular-xeditable.js" />
     <Content Include="Scripts\Angular\Helpers\Libraries\ngfittext.js" />
     <Content Include="Scripts\Angular\Helpers\Libraries\ngsortable.js" />
+    <Content Include="Scripts\Angular\Helpers\Libraries\vs-repeat.js" />
     <Content Include="Scripts\Angular\Helpers\radialModule.js" />
     <Content Include="Scripts\Angular\Helpers\updater.js" />
     <Content Include="Scripts\Angular\MaterialDesign\lf-ng-md-file-input.js" />

@@ -526,9 +526,9 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
-        public async Task<JsonResult> UpdateIssue(long id, DateTime? time = null, string message = null, string details = null, long? owner = null, int? priority = null, int? rank = null) {
-            time = time ?? DateTime.UtcNow;
-			await IssuesAccessor.EditIssue(GetUser(), id, message, owner: owner, priority: priority, rank: rank, now: time.Value);
+        public async Task<JsonResult> UpdateIssue(long id,/* DateTime? time = null,*/ string message = null, string details = null, long? owner = null, int? priority = null, int? rank = null) {
+            //time = time ?? DateTime.UtcNow;
+			await IssuesAccessor.EditIssue(GetUser(), id, message, owner: owner, priority: priority, rank: rank/*, now: time.Value*/);
             //await L10Accessor.UpdateIssue(GetUser(), id, time.Value, message, details, owner: owner, priority: priority, rank: rank);
             return Json(ResultObject.SilentSuccess());
         }
@@ -536,7 +536,7 @@ namespace RadialReview.Controllers {
         public class IssueRankVM {
 			public long id { get; set; }
 			public int rank { get; set; }
-			public DateTime time { get; set; }
+			//public DateTime time { get; set; }
 		}
 
         [Access(AccessLevel.UserOrganization)]
@@ -598,11 +598,11 @@ namespace RadialReview.Controllers {
             var issueId = pk.ToLong();
             switch (name) {
                 case "title":
-                    return await UpdateIssue(issueId, DateTime.UtcNow, value, null, null);
+                    return await UpdateIssue(issueId, value, null, null);
                 case "details":
-                    return await UpdateIssue(issueId, DateTime.UtcNow, null, value, null);
+                    return await UpdateIssue(issueId, null, value, null);
                 case "owner":
-                    return await UpdateIssue(issueId, DateTime.UtcNow, null, null, value.ToLong());
+                    return await UpdateIssue(issueId, null, null, value.ToLong());
                 default:
                     throw new ArgumentOutOfRangeException("name");
             }

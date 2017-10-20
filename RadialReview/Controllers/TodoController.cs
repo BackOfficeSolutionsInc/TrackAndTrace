@@ -57,14 +57,14 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public async Task<ActionResult> Pad(long id) {
+		public async Task<ActionResult> Pad(long id,bool showControls=true) {
 			try {
 				var todo = TodoAccessor.GetTodo(GetUser(), id);
 				var padId = todo.PadId;
 				if (!_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTodo(id))) {
 					padId = await PadAccessor.GetReadonlyPad(todo.PadId);
 				}
-				return Redirect(Config.NotesUrl("p/" + padId+ "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
+				return Redirect(Config.NotesUrl("p/" + padId+ "?showControls="+(showControls?"true":"false")+"&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
 			} catch (Exception e) {
 				return RedirectToAction("Index", "Error");
 			}			

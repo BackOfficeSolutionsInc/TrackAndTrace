@@ -20,10 +20,14 @@ namespace RadialReview.Api.V1 {
 			/// </summary>
 			[Required]
 			public string title { get; set; }
-			/// <summary>
-			/// To-do due date (Default: 7 days)
-			/// </summary>
-			public DateTime? dueDate { get; set; }
+            /// <summary>
+            /// Optional notes 
+            /// </summary>
+            public string notes { get; set; }
+            /// <summary>
+            /// To-do due date (Default: 7 days)
+            /// </summary>
+            public DateTime? dueDate { get; set; }
 		}
 		/// <summary>
 		/// Create a personal to-do
@@ -37,7 +41,7 @@ namespace RadialReview.Api.V1 {
 			//var todo = new TodoModel() { Message = body.title, DueDate = duedate, TodoType = TodoType.Personal };
 			//await TodoAccessor.CreateTodo(GetUser(), -2, todo);  // -2 for personal TODO
 
-			var todoModel = TodoCreation.CreatePersonalTodo(body.title, null, GetUser().Id, duedate);
+			var todoModel = TodoCreation.CreatePersonalTodo(body.title, body.notes, GetUser().Id, duedate);
 			var todo = await TodoAccessor.CreateTodo(GetUser(), todoModel); 
 
 			return new AngularTodo(todo);

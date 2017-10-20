@@ -267,7 +267,7 @@ namespace TractionTools.Tests.API.v1 {
 			var getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
 			Assert.AreEqual(0, getAttachHeadline.Count());
 
-			var getHeadline = await L10.CreateHeadlineL10(headlineModel.RecurrenceId, new CreateHeadline { title = headlineModel.Message, ownerId = null, details = headlineModel._Details });
+			var getHeadline = await L10.CreateHeadlineL10(headlineModel.RecurrenceId, new CreateHeadline { title = headlineModel.Message, ownerId = null, notes = headlineModel._Details });
 
 			CompareModelProperties(getHeadline);
 			getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);
@@ -318,7 +318,7 @@ namespace TractionTools.Tests.API.v1 {
 			};
 
 			//create headline
-			var headline = await L10.CreateHeadlineL10(headlineModel.RecurrenceId, new CreateHeadline { title = headlineModel.Message, ownerId = null, details = headlineModel._Details });
+			var headline = await L10.CreateHeadlineL10(headlineModel.RecurrenceId, new CreateHeadline { title = headlineModel.Message, ownerId = null, notes = headlineModel._Details });
 
 			//Get headlines
 			var getAttachHeadline = L10Accessor.GetHeadlinesForMeeting(c.E1, recurrenceId);

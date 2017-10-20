@@ -457,12 +457,10 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var measureable = s.Get<MeasurableModel>(measurableId);
-
 					PermissionsUtility.Create(s, caller).ViewOrganizationScorecard(measureable.OrganizationId);
 					return s.QueryOver<ScoreModel>().Where(x => x.MeasurableId == measurableId && x.DeleteTime == null).List().ToList();
 				}
 			}
-
 		}
 
 	
@@ -475,30 +473,36 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static ScoreModel GetScore(UserOrganizationModel caller, long measurableId, long weekId) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var perms = PermissionsUtility.Create(s, caller);
-					return GetScore(s, perms, measurableId, weekId);
-				}
-			}
-		}
+        public static async Task<ScoreModel> GetScore(UserOrganizationModel caller, long measurableId, long weekId) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    var score = await GetScore(s, perms, measurableId, weekId);
+                    tx.Commit();
+                    s.Flush();
+                    return score;
+                }
+            }
+        }
 
-		private static ScoreModel GetScore(ISession s, PermissionsUtility perms, long measurableId, long weekId) {
-			perms.ViewMeasurable(measurableId);
-			var week = TimingUtility.GetDateSinceEpoch(weekId);
-			var scores = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null && x.ForWeek == week && x.MeasurableId == measurableId).List().ToList();
-			var found = scores.FirstOrDefault();
-			return found;
+        [Obsolete("Call commit")]
+        private static async Task<ScoreModel> GetScore(ISession s, PermissionsUtility perms, long measurableId, long weekId) {
+            perms.ViewMeasurable(measurableId);
+            var week = TimingUtility.GetDateSinceEpoch(weekId);
+            await _GenerateScoreModels_Unsafe(s, week.AsList(), measurableId.AsList());
+            var scores = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null && x.ForWeek == week && x.MeasurableId == measurableId).List().ToList();
+            var found = scores.FirstOrDefault();
+            return found;
 
 
-		}
+        }
 
-		private static ScoreModel GetScore(ISession s, PermissionsUtility perms, long measurableId, DateTime week) {
-			return GetScore(s, perms, measurableId, TimingUtility.GetWeekSinceEpoch(week));
-		}
+        [Obsolete("Call commit")]
+        private static async Task<ScoreModel> GetScore(ISession s, PermissionsUtility perms, long measurableId, DateTime week) {
+            return await GetScore(s, perms, measurableId, TimingUtility.GetWeekSinceEpoch(week));
+        }
 
-		public static ScoreModel GetScore(UserOrganizationModel caller, long id) {
+        public static ScoreModel GetScore(UserOrganizationModel caller, long id) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var found = s.Get<ScoreModel>(id);
@@ -692,15 +696,15 @@ namespace RadialReview.Accessors {
 			await HooksRegistry.Each<IMeasurableHook>((ses, x) => x.UpdateMeasurable(ses, perms.GetCaller(), measurable, scoresToUpdate, updates));
 		}
 
-		[Untested("Test me")]
+
 		public static async Task<ScoreModel> UpdateScore(UserOrganizationModel caller, long scoreId, decimal? value) {
 			return await UpdateScore(caller, scoreId, 0, DateTime.MinValue, value);
 		}
-		[Untested("Test me")]
+
 		public static async Task<ScoreModel> UpdateScore(UserOrganizationModel caller, long measurableId, DateTime week, decimal? value) {
 			return await UpdateScore(caller, 0, measurableId, week, value);
-		}
-		[Untested("Test me")]
+		} 
+
 		public static async Task<ScoreModel> UpdateScore(UserOrganizationModel caller, long scoreId, long measurableId, DateTime week, decimal? value) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -712,20 +716,17 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-		[Untested("Test me")]
-		public static async Task<ScoreModel> UpdateScore(ISession s, PermissionsUtility perms, long measurableId, DateTime week, decimal? value) {
 
-			return await UpdateScore(s, perms, 0, measurableId, week, value);
+		public static async Task<ScoreModel> UpdateScore(ISession s, PermissionsUtility perms, long measurableId, DateTime week, decimal? value) {
+            return await UpdateScore(s, perms, 0, measurableId, week, value);
 		}
-		[Untested("Test me")]
+
 		public static async Task<ScoreModel> UpdateScore(ISession s, PermissionsUtility perms, long scoreId, long measurableId, DateTime week, decimal? value) {
 			if (scoreId <= 0)
-				scoreId = GetScore(s, perms, measurableId, week).Id;
+				scoreId = (await GetScore(s, perms, measurableId, week)).Id;
 			return await UpdateScore(s, perms, scoreId, value);
 		}
-
-
-		[Untested("Test me")]
+                
 		public static async Task<ScoreModel> UpdateScore(ISession s, PermissionsUtility perms, long scoreId, decimal? value) {
 			perms.EditScore(scoreId);
 			SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateScore(scoreId));

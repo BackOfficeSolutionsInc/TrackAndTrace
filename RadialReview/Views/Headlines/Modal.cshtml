@@ -14,18 +14,6 @@
 }
 <div class="@guid">
 	<div class="form-group">
-		<label>About</label>
-		<div class="row ">
-			<div class="col-sm-12">
-				@Html.Partial("~/Views/Shared/EditorTemplates/SearchUsers.cshtml", new ViewDataDictionary() {
-			{"Name","AboutId"},
-			{"SearchUrl","/Search/RGM?includeTerm=true" }
-		})
-			</div>
-		</div>
-	</div>
-
-	<div class="form-group">
 		@Html.LabelFor(x => x.Message)
 		@Html.TextBoxFor(x => x.Message, new { @class = "form-control", placeholder = "Enter the People Headline", autocomplete = "off" })
 	</div>
@@ -34,7 +22,17 @@
 		@Html.TextAreaFor(x => x.Details, new { @class = "form-control verticalOnly", rows = "6", placeholder = "Enter details (optional)" })
 	</div>
 
-
+    <div class="form-group">
+        <label>About <small class="gray">(optional)</small></label>
+        <div class="row ">
+            <div class="col-sm-12">
+                @Html.Partial("~/Views/Shared/EditorTemplates/SearchUsers.cshtml", new ViewDataDictionary() {
+            {"Name","AboutId"},
+            {"SearchUrl","/Search/RGM?includeTerm=true" }
+        })
+            </div>
+        </div>
+    </div>
 
 	<div class="row">
 		@if (Model.ShowOwners) {

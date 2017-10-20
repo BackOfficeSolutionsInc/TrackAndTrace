@@ -47,6 +47,8 @@ function blurChangeTimeout(key, self, d, i, executeNow) {
 }
 
 function updateCumulative(measurableId, value) {
+    if (value == null)
+        value = "";
 	$("[data-measurable='" + measurableId + "'] .cumulative-column span").text(value);
 }
 

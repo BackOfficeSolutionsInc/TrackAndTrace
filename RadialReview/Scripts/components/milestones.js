@@ -173,6 +173,7 @@ function MilestoneAccessor(milestonesList, rockList, options) {
 					nowPercentage: 0,
 					rockId: rr.Id,
 					markers: [],
+                    rockStatus: rr.Status
 				};
 				var markers = [];
 				var rockId = rr.Id;
@@ -210,6 +211,7 @@ function MilestoneAccessor(milestonesList, rockList, options) {
 						allDone = false;
 					}
 					if (status == "Done") {
+					    debugger;
 						output.done = true;
 					}
 					if (!statusUndefined) {
@@ -266,10 +268,7 @@ function MilestoneAccessor(milestonesList, rockList, options) {
 			for (var r in output.rocks) {
 				if (arrayHasOwnIndex(output.rocks, r)) {
 					var rr = output.rocks[r];
-					
-
 					options.callbacks.recalculateRock(rr,output);
-					
 				}
 			}
 		}

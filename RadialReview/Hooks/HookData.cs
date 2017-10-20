@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
@@ -10,17 +11,22 @@ namespace RadialReview.Hooks {
 		//	return _GetThreadSingleton().data.ToDictionary(x => x.Key, x => x.Value);
 		//}
 
+        public static void LoadFrom(ReadOnlyHookData a) {
+            foreach (var d in a.ToDictionary())
+                SetData(d.Key, d.Value);
+        }
+
 		protected HookData() {
 			data = new Dictionary<string, object>();
 		}
 
-		protected void _SetData<T>(string key, T value) where T : class {
-			data[key] = (object)value;
+		protected void _SetData<T>(string key, T value) {
+			data[key] = (T)value;
 		}
 
-		protected T _GetData<T>(string key, T deflt = null) where T : class {
+		protected T _GetData<T>(string key, T deflt = default(T))  {
 			if (data.ContainsKey(key))
-				return data[key] as T;
+				return (T)data[key];
 			return deflt;
 		}
 
@@ -35,8 +41,8 @@ namespace RadialReview.Hooks {
 		}
 
 
-		[Untested("Unit test me")]
-		public static void SetData<T>(string key, T value) where T : class {
+        [Untested("Unit test me")]
+		public static void SetData<T>(string key, T value)  {
 			_GetThreadSingleton()._SetData(key, value);
 		}
 
@@ -81,9 +87,9 @@ namespace RadialReview.Hooks {
 		}
 
 
-		public T GetData<T>(string key, T deflt = null) where T : class {
+		public T GetData<T>(string key, T deflt = default(T))  {
 			if (data.ContainsKey(key))
-				return data[key] as T;
+				return (T)data[key];
 			return deflt;
 		}
 	}

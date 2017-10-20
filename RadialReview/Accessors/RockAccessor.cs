@@ -424,6 +424,7 @@ namespace RadialReview.Accessors {
 				updates.MessageChanged = true;
 			}
 
+            updates.OriginalAccountableUserId = rock.ForUserId;
 			if (ownerId != null && rock.ForUserId != ownerId) {
 				rock.AccountableUser = s.Load<UserOrganizationModel>(ownerId.Value);
 				rock.ForUserId = ownerId.Value;

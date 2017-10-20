@@ -18,6 +18,11 @@
 							<span class="icon fontastic-icon-plus-3"></span> Add Rock
 						</div>
 					</div>*@
+                    <div class="btn-group smallBreak">
+                        <div class="btn btn-default btn-xs @(Model.CanEdit?"editMeeting-button":"disabled")">
+                            <span class="icon fontastic-icon-clipboard-notes"></span> Edit Rocks
+                        </div>
+                    </div>
 					@Html.Partial("partial/ButtonBar", Model)
 
 				</div>

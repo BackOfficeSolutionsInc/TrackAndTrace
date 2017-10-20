@@ -147,7 +147,7 @@
             //Add time stamp
             //tzoffset();
             //var date = ((+new Date()) + (window.tzoffset * 60 * 1000));
-            url = addTimestamp(url)// (url.indexOf("?") != -1) ? "&_clientTimestamp=" + date : "?_clientTimestamp=" + date;
+            url = addTimestamp(url);// (url.indexOf("?") != -1) ? "&_clientTimestamp=" + date : "?_clientTimestamp=" + date;
             
             //Make the call
             isReloading = true;

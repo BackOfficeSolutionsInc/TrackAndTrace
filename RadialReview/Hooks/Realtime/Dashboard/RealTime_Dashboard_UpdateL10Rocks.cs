@@ -21,53 +21,62 @@ using RadialReview.Models.Angular.Rocks;
 using System.Diagnostics;
 
 namespace RadialReview.Hooks.Realtime {
-	public class RealTime_Dashboard_UpdateL10Rocks : IRockHook, IMeetingRockHook {
-		public bool CanRunRemotely() {
-			return false;
-		}
+    public class RealTime_Dashboard_UpdateL10Rocks : IRockHook, IMeetingRockHook {
+        public bool CanRunRemotely() {
+            return false;
+        }
 
-		public async Task ArchiveRock(ISession s, RockModel rock, bool deleted) {
-			var data = RealTimeHelpers.GetRecurrenceRockData(s, rock.Id);
-			foreach (var recur in data.GetRecurrenceIds()) {
-				RemoveRock(s, recur, rock.Id);
-			}
+        public async Task ArchiveRock(ISession s, RockModel rock, bool deleted) {
+            var data = RealTimeHelpers.GetRecurrenceRockData(s, rock.Id);
+            foreach (var recur in data.GetRecurrenceIds()) {
+                RemoveRock(s, recur, rock.Id);
+            }
 
-			RealTimeHelpers.GetUserHubForRecurrence(rock.ForUserId).update(new AngularUpdate() {
-				new ListDataVM(rock.ForUserId) {
-					Rocks = AngularList.CreateFrom(AngularListType.Remove, new AngularRock(rock.Id))
-				}
-			});
-		}
+            RealTimeHelpers.GetUserHubForRecurrence(rock.ForUserId).update(new AngularUpdate() {
+                new ListDataVM(rock.ForUserId) {
+                    Rocks = AngularList.CreateFrom(AngularListType.Remove, new AngularRock(rock.Id))
+                }
+            });
+        }
 
-		public async Task AttachRock(ISession s, UserOrganizationModel caller, RockModel rock, L10Recurrence.L10Recurrence_Rocks recurRock) {
-			AddRock(s, recurRock.L10Recurrence.Id, recurRock);
-		}
+        public async Task AttachRock(ISession s, UserOrganizationModel caller, RockModel rock, L10Recurrence.L10Recurrence_Rocks recurRock) {
+            AddRock(s, recurRock.L10Recurrence.Id, recurRock);
+        }
 
-		public async Task DetatchRock(ISession s, RockModel rock, long recurrenceId) {
-			RemoveRock(s, recurrenceId, rock.Id);
-		}
+        public async Task DetatchRock(ISession s, RockModel rock, long recurrenceId) {
+            RemoveRock(s, recurrenceId, rock.Id);
+        }
 
-		public async Task CreateRock(ISession s, RockModel rock) {
-			RealTimeHelpers.GetUserHubForRecurrence(rock.ForUserId).update(new AngularUpdate() {
-				new ListDataVM(rock.ForUserId) {
-					Rocks = AngularList.CreateFrom(AngularListType.Add, new AngularRock(rock,null))
-				}
-			});
-		}
+        public async Task CreateRock(ISession s, RockModel rock) {
+            RealTimeHelpers.GetUserHubForRecurrence(rock.ForUserId).update(new AngularUpdate() {
+                new ListDataVM(rock.ForUserId) {
+                    Rocks = AngularList.CreateFrom(AngularListType.Add, new AngularRock(rock,null))
+                }
+            });
+        }
 
 
-		public async Task UpdateRock(ISession s, UserOrganizationModel caller, RockModel rock, IRockHookUpdates updates) {
-			RealTimeHelpers.GetUserHubForRecurrence(rock.ForUserId).update(new AngularUpdate() {
-				new ListDataVM(rock.ForUserId) {
-					Rocks = AngularList.CreateFrom(AngularListType.ReplaceIfNewer, new AngularRock(rock,null))
-				}
-			});
-		}
+        public async Task UpdateRock(ISession s, UserOrganizationModel caller, RockModel rock, IRockHookUpdates updates) {
 
-		#region Helpers
-		
+            if (updates.AccountableUserChanged) {
+                RealTimeHelpers.GetUserHubForRecurrence(updates.OriginalAccountableUserId,false).update(new AngularUpdate() {
+                    new ListDataVM(updates.OriginalAccountableUserId) {
+                        Rocks = AngularList.CreateFrom(AngularListType.Remove, new AngularRock(rock.Id))
+                    }
+                });
+            }
 
-		/*private dynamic _DoUpdate(ISession s, long recurrenceId, Func<AngularUpdate> action) {
+            RealTimeHelpers.GetUserHubForRecurrence(rock.ForUserId,false).update(new AngularUpdate() {
+                new ListDataVM(rock.ForUserId) {
+                    Rocks = AngularList.CreateFrom(AngularListType.ReplaceIfNewer, new AngularRock(rock,null))
+                }
+            });
+        }
+
+        #region Helpers
+
+
+        /*private dynamic _DoUpdate(ISession s, long recurrenceId, Func<AngularUpdate> action) {
 
 			//Dashboard dashboardAlias = null;
 
@@ -155,33 +164,33 @@ namespace RadialReview.Hooks.Realtime {
 		}
 	*/
 
-		private void AddRock(ISession s, long recurrenceId, L10Recurrence.L10Recurrence_Rocks rock) {
-			RealTimeHelpers.DoRecurrenceUpdate(s, recurrenceId, () =>
-				  new AngularUpdate() {
-					new AngularTileId<IEnumerable<AngularRock>>(0, recurrenceId, null,AngularTileKeys.L10RocksList(recurrenceId)) {
-						Contents = AngularList.CreateFrom(AngularListType.Add, new AngularRock(rock))
-					}
-				  }
-			);
-		}
+        private void AddRock(ISession s, long recurrenceId, L10Recurrence.L10Recurrence_Rocks rock) {
+            RealTimeHelpers.DoRecurrenceUpdate(s, recurrenceId, () =>
+                  new AngularUpdate() {
+                    new AngularTileId<IEnumerable<AngularRock>>(0, recurrenceId, null,AngularTileKeys.L10RocksList(recurrenceId)) {
+                        Contents = AngularList.CreateFrom(AngularListType.Add, new AngularRock(rock))
+                    }
+                  }
+            );
+        }
 
-		private void RemoveRock(ISession s, long recurrenceId, long rockId) {
-			RealTimeHelpers.DoRecurrenceUpdate(s, recurrenceId, () =>
-				  new AngularUpdate() {
-					new AngularTileId<IEnumerable<AngularRock>>(0, recurrenceId, null,AngularTileKeys.L10RocksList(recurrenceId)) {
-						Contents = AngularList.CreateFrom(AngularListType.Remove,  new AngularRock(rockId))
-					}
-				  }
-			);
-		}
-		#endregion
+        private void RemoveRock(ISession s, long recurrenceId, long rockId) {
+            RealTimeHelpers.DoRecurrenceUpdate(s, recurrenceId, () =>
+                  new AngularUpdate() {
+                    new AngularTileId<IEnumerable<AngularRock>>(0, recurrenceId, null,AngularTileKeys.L10RocksList(recurrenceId)) {
+                        Contents = AngularList.CreateFrom(AngularListType.Remove,  new AngularRock(rockId))
+                    }
+                  }
+            );
+        }
+        #endregion
 
-		#region NoOps
+        #region NoOps
 
-		public async Task UpdateVtoRock(ISession s, L10Recurrence.L10Recurrence_Rocks recurRock) {
-			//Nothing to do...
-		}
-		#endregion
+        public async Task UpdateVtoRock(ISession s, L10Recurrence.L10Recurrence_Rocks recurRock) {
+            //Nothing to do...
+        }
+        #endregion
 
-	}
+    }
 }

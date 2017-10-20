@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RadialReview.Hooks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -25,9 +26,11 @@ namespace RadialReview.Utilities {
 		}
 
 		public static TResult RunSync<TResult>(Func<Task<TResult>> func) {
-			return AsyncHelper._myTaskFactory
+            var a = HookData.ToReadOnly();
+            return AsyncHelper._myTaskFactory
 			  .StartNew<Task<TResult>>((st) => {
-				  ((State)st).Deconstruct();
+                  HookData.LoadFrom(a);
+                  ((State)st).Deconstruct();
 				  return func();
 			  }, new State())
 			  .Unwrap<TResult>()
@@ -36,8 +39,10 @@ namespace RadialReview.Utilities {
 		}
 
 		public static void RunSync(Func<Task> func) {
+            var a = HookData.ToReadOnly();
 			AsyncHelper._myTaskFactory
 			  .StartNew<Task>((st) => {
+                  HookData.LoadFrom(a);
 				  ((State)st).Deconstruct();
 				  return func();
 			  }, new State())

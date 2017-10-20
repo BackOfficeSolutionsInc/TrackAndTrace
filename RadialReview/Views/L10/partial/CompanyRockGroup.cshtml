@@ -21,7 +21,7 @@
                         @Html.Partial("_ProfilePicture", i.ForRock.AccountableUser)
                     </td>
                     <td class="message">@i.ForRock.Rock</td>
-                    <td class="rock-state-holder" style="width:1px">@Html.EditorFor(x => i.Completion, "RockStateThin", new { name = "rock_" + i.Id })</td>
+                    <td class="rock-state-holder" style="width:1px">@Html.EditorFor(x => i.Completion, "RockStateThin", new { name = "rock_" + i.ForRock.Id })</td>
 					<td class="buttonHolder currentBlue">
                         <span class="icon fontastic-icon-pinboard issuesButton issuesModal"
                               data-meeting="@i.L10Meeting.Id"

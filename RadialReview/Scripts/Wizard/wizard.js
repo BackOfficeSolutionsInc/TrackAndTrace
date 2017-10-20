@@ -135,5 +135,24 @@ $(function () {
             $(".wizard-menu").css("top", 0);
         }
     });
+
+    $(document).keydown(function (e) {
+        if ($(body).hasClass("modal-open"))
+            return true;
+        if ($(e.target).is('input') && $(e.target).closest(".todo-text,.rock-pane").length == 0) {
+            return true;
+        }
+
+        if (e.keyCode == 13) {
+            setTimeout(function () {
+                $(".create-row:visible").click();
+            }, 100);
+            return false;
+        } else if (e.keyCode == 34) {
+            $(".nextButton:visible").click();
+        } else if (e.keyCode == 33) {
+            $(".backButton:visible").click();
+        }
+    });
 });
 

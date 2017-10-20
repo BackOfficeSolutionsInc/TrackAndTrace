@@ -21,7 +21,7 @@ namespace RadialReview.Hooks.Realtime {
 			return false;
 		}
 
-		private void _DoUpdate(ISession s, long rockId, long? recurrenceId, bool allowDeleted, Func<long, L10Recurrence.L10Recurrence_Rocks, AngularUpdate> action) {
+		private void _DoUpdate(ISession s, long rockId, long? recurrenceId, bool allowDeleted,string connectionId, Func<long, L10Recurrence.L10Recurrence_Rocks, AngularUpdate> action) {
 			var recurRocksQ = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().Where(x => x.ForRock.Id == rockId);
 			if (recurrenceId != null) {
 				recurRocksQ = recurRocksQ.Where(x => x.L10Recurrence.Id == recurrenceId);
@@ -41,14 +41,14 @@ namespace RadialReview.Hooks.Realtime {
 				var vtoId = recurRock.L10Recurrence.VtoId;
 				//if (vtoId != null) {
 					var updates = action(vtoId, recurRock);
-					var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId));
+					var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
 					group.update(updates);
 				//}
 			}
 		}
 
 		private void AddRockToVto(ISession s, long rockId, long? recurrenceId) {
-			_DoUpdate(s, rockId, recurrenceId,false, (vtoId, recurRock) =>
+			_DoUpdate(s, rockId, recurrenceId,false, null, (vtoId, recurRock) =>
 				new AngularUpdate() {
 					new AngularQuarterlyRocks(vtoId) {
 						Rocks = AngularList.CreateFrom(AngularListType.Add, AngularVtoRock.Create(recurRock))
@@ -58,7 +58,7 @@ namespace RadialReview.Hooks.Realtime {
 		}
 
 		private void RemoveRockFromVto(ISession s, long rockId, long? recurrenceId) {
-			_DoUpdate(s, rockId, recurrenceId,true, (vtoId, recurRock) =>
+			_DoUpdate(s, rockId, recurrenceId,true,null, (vtoId, recurRock) =>
 				new AngularUpdate() {
 					new AngularQuarterlyRocks(vtoId) {
 						Rocks = AngularList.CreateFrom(AngularListType.Remove, new AngularVtoRock(recurRock.Id))
@@ -68,7 +68,7 @@ namespace RadialReview.Hooks.Realtime {
 		}
 
 		private void UpdateRock(ISession s, long rockId, long? recurrenceId) {
-			_DoUpdate(s, rockId, recurrenceId,false, (vtoId, recurRock) =>
+			_DoUpdate(s, rockId, recurrenceId,false, RealTimeHelpers.GetConnectionString(), (vtoId, recurRock) =>
 				new AngularUpdate() {
 					new AngularQuarterlyRocks(vtoId) {
 						Rocks = AngularList.CreateFrom(AngularListType.ReplaceIfNewer, AngularVtoRock.Create(recurRock))

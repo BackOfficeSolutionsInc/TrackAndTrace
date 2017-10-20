@@ -11,6 +11,7 @@ angular.module("LiveSearch", ["ng"])
              liveSearchSelectCallback: '=', // do not use
              liveSearchSelectionCallback:'=',
              blur: '&ngBlur',
+             ttOnEsc: "&ttOnEsc",
 			 ttOnSelect:'&ttOnSelect',
              liveSearchItemTemplate: '@',
              liveSearchWaitTimeout: '=?',
@@ -34,13 +35,15 @@ angular.module("LiveSearch", ["ng"])
                  scope.selectedIndex = index;
                  console.log("live clicked");
                  onSelection();
+                 //var c = controller;
+                 //c.$setViewValue('adasd');
              };
 
              scope.isSelected = function (index) {
                  return (scope.selectedIndex === index);
              };
 
-             var onSelection = function () {
+             var onSelection = function (noHide) {
                  if (scope.selectedIndex != -1) {
                      var item = scope.results[scope.selectedIndex];
                      if (attrs.liveSearchSelectionCallback) {
@@ -49,7 +52,7 @@ angular.module("LiveSearch", ["ng"])
                      }
                  }
                  if (scope.ttOnSelect) {
-                 	scope.ttOnSelect();
+                     scope.ttOnSelect(noHide);
                  }
              }
 
@@ -117,7 +120,16 @@ angular.module("LiveSearch", ["ng"])
                      scope.visible = false;
                      scope.blur();
                      console.log("live enter");
-                     onSelection();
+                     onSelection(true);
+                     
+                 }
+
+                 if (e.keyCode == 27) {
+                     scope.visible = false;
+                     scope.blur();
+                     //console.log("live leave");
+                     //onSelection(true);
+                     scope.ttOnEsc();
                  }
 
                  //unmanaged code needs to force apply
@@ -135,7 +147,7 @@ angular.module("LiveSearch", ["ng"])
                  var vals = target.val().split(",");
                  var search_string = vals[vals.length - 1].trim();
                  // Do Search
-                 if (search_string.length < 3 ||
+                 if (search_string.length < 2 ||
                      (scope.liveSearchMaxlength !== null && search_string.length > scope.liveSearchMaxlength)) {
                      scope.visible = false;
                      //unmanaged code needs to force apply

@@ -442,7 +442,7 @@ function fixSidebar() {
 		$(".fixed-pos.fader").css("background-color", "rgba(238, 238, 238, " + (($(".slider-container.level-10").scrollTop() / 70)) + ")");
 		$(".fixed-pos.fader").css("box-shadow", "0 4px 2px -2px rgba(128, 128, 128, " + Math.min(.2, $(".slider-container.level-10").scrollTop() / 350) + ")");
 		//$(".fixed-pos.fader").css("border-bottom", "none");
-		$(".fixed-pos.fader").css("z-index", 2);//$(".slider-container.level-10").scrollTop() - 10);
+		$(".fixed-pos.fader").css("z-index", 5);//$(".slider-container.level-10").scrollTop() - 10);
 		$(".fixed-pos.fader").css("padding-bottom", (1 - $(".slider-container.level-10").scrollTop() / 70) * 9);
 
 
@@ -595,25 +595,32 @@ $(window).on("footer-resize", function () {
 });
 
 
-
+var currentPageType = "";
 $(window).on("page-segue", function () {
 	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting");
+	currentPageType = "Segue";
 });
 $(window).on("page-scorecard", function () {
-	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Scorecard");
+    $("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Scorecard");
+    currentPageType = "Scorecard";
 });
 $(window).on("page-rocks", function () {
-	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Rocks");
+    $("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Rocks");
+    currentPageType = "Rocks";
 });
 $(window).on("page-headlines", function () {
-	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Headlines");
+    $("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Headlines");
+    currentPageType = "Headlines";
 });
 $(window).on("page-todo", function () {
-	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Todos");
+    $("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Todos");
+    currentPageType = "Todos";
 });
 $(window).on("page-ids", function () {
-	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Issues");
+    $("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Issues");
+    currentPageType = "Issues";
 });
 $(window).on("page-conclusion", function () {
-	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting");
+    $("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting");
+    currentPageType = "Conclusion";
 });

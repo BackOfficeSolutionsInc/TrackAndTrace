@@ -46,6 +46,7 @@ using System.Threading.Tasks;
 using System.Net.Mime;
 using System.Text.RegularExpressions;
 using SpreadsheetLight;
+using RadialReview.Hooks;
 
 namespace RadialReview.Controllers {
 	public class UserManagementController : BaseController {
@@ -157,7 +158,11 @@ namespace RadialReview.Controllers {
 				user._IsRadialAdmin = user.IsRadialAdmin;
 
 				user._ClientTimestamp = Request.Params.Get("_clientTimestamp").TryParseLong();
-				if (user._ClientTimestamp != null) {
+
+                HookData.SetData("ConnectionId", Request.Params.Get("connectionId"));
+                HookData.SetData("ClientTimestamp", user._ClientTimestamp);
+
+                if (user._ClientTimestamp != null) {
 					var diff = (int)(Math.Round((DateTime.UtcNow - user._ClientTimestamp.Value.ToDateTime()).TotalMinutes / 30.0) * 30.0);
 					user._ClientOffset = diff;// Thread.SetData(Thread.GetNamedDataSlot("timeOffset"), diff);
 				}

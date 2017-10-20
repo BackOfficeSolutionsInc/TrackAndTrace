@@ -200,8 +200,9 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public async Task<ActionResult> Wizard(long? id = null, string @return = null,MeetingType? type=null)
+        public async Task<ActionResult> Wizard(long? id = null, string @return = null,MeetingType? type=null,bool noheading=false)
         {
+            ViewBag.NoTitleBar = noheading;
             if (id == null) {
                 //var m = new L10Recurrence();
                 //var model = new L10EditVM();

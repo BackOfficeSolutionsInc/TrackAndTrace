@@ -162,7 +162,7 @@ function generateDatepicker(selector, date, name, id, options, offsetMinutes) {
 	// if (date == false) {
 	$('.' + guid + ' .client-date').on("change", function () {
 		var v = $(this).val();
-		debugger;
+		//debugger;
 		if (v == "") {
 			$('.' + guid + ' .server-date').val("");
 		}

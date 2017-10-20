@@ -123,10 +123,9 @@ namespace RadialReview.Hooks.Meeting {
 		public async Task DetatchMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, long recurrenceId) {
 			Audit.L10Log(s, caller, recurrenceId, "DeleteMeasurable", ForModel.Create(measurable), measurable.Title);
 		}
-
-		[Untested("Implement me")]
-		public Task CreateMeasurable(ISession s, MeasurableModel m) {
-			throw new NotImplementedException();
+        
+		public async Task CreateMeasurable(ISession s, MeasurableModel m) {
+			//throw new NotImplementedException();
 		}
 
 		[Untested("Test me")]

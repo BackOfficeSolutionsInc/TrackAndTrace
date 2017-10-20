@@ -31,9 +31,9 @@ namespace RadialReview.Api.V1 {
 			///</summary>
 			public long? ownerId { get; set; }
 			///<summary>
-			///Issue details (Default: none)
+			///Optional issue notes (Default: none)
 			///</summary>
-			public string details { get; set; }
+			public string notes { get; set; }
 		}
 
 
@@ -47,7 +47,7 @@ namespace RadialReview.Api.V1 {
 		public async Task<AngularIssue> CreateIssue([FromBody]CreateIssueModel body) {
 			body.ownerId = body.ownerId ?? GetUser().Id;
 			//var issue = new IssueModel() { Message = body.title, Description = body.details };
-			var creation = IssueCreation.CreateL10Issue(body.title, body.details, body.ownerId, body.meetingId);
+			var creation = IssueCreation.CreateL10Issue(body.title, body.notes, body.ownerId, body.meetingId);
 			var success = await IssuesAccessor.CreateIssue(GetUser(), creation);// body.meetingId, body.ownerId.Value, issue);
 			return new AngularIssue(success.IssueRecurrenceModel);
 		}

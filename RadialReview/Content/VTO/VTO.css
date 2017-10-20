@@ -41,17 +41,41 @@ body {
 }
 .vto .content:hover .add-row,
 .vto .content:hover .add-row:after {
-  color: lightgray;
   pointer-events: all;
 }
-.vto .add-row:after {
-  content: "Add row";
-  color: transparent;
+.vto .content:hover .add-row:after {
+  pointer-events: all;
+  opacity: 1;
 }
-.vto .add-row:hover,
+.vto .add-row:focus {
+  outline: none;
+}
+.vto .delete:focus {
+  outline: none;
+}
+.vto .add-row:after {
+  background-color: #cac8c8;
+  display: inline-block;
+  width: 34px;
+  height: 34px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  left: 44%;
+  left: calc(50% - 30px);
+  position: relative;
+  border-radius: 50px;
+  content: "+";
+  color: white;
+  font-size: 23px;
+  margin-top: 6px;
+  padding-top: 0px;
+  opacity: 0;
+  transition: opacity .3s ease,background .1s ease;
+}
 .vto .add-row:hover:after {
-  color: gray;
   cursor: pointer;
+  background-color: #EF7622;
 }
 .vto textarea {
   width: 90%;
@@ -206,20 +230,23 @@ body {
 .vto tr .delete,
 .vto li .delete,
 .vto tr .ids-button {
-  opacity: 0;
+  display: none;
   cursor: pointer;
 }
 .vto tr:hover .delete:hover,
 .vto li:hover .delete:hover,
 .vto tr:hover .ids-button:hover {
+  display: inline-block;
   opacity: .8;
   cursor: pointer;
 }
 .vto tr:hover .delete,
 .vto li:hover .delete {
+  display: inline-block;
   opacity: .2;
 }
 .vto tr:hover .ids-button {
+  display: inline-block;
   opacity: .75;
 }
 .vto .core-focus .title .boxed,
@@ -293,11 +320,11 @@ body {
   color: rgba(51, 51, 51, 0.5);
   padding-top: 4px;
   font-size: 10px;
-  position: absolute;
-  right: 11px;
+  position: relative;
+  right: -12px;
 }
 .vto tr:hover .issue-owner {
-  opacity: 0;
+  display: none;
 }
 @media (min-width: 1200px) {
   .vto .core-focus .boxed,

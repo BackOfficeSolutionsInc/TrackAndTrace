@@ -241,9 +241,9 @@ namespace RadialReview.Api.V1 {
 			/// </summary>
 			public long? ownerId { get; set; }
 			/// <summary>
-			/// Headline details (Default: none)
+			/// Optional headline notes (Default: none)
 			/// </summary>
-			public string details { get; set; }
+			public string notes { get; set; }
 		}
 
 		/// <summary>
@@ -262,7 +262,7 @@ namespace RadialReview.Api.V1 {
 			var headline = new PeopleHeadline() {
 				Message = body.title,
 				OwnerId = body.ownerId.Value,
-				_Details = body.details,
+				_Details = body.notes,
 				RecurrenceId = MEETING_ID,
 				OrganizationId = GetUser().Organization.Id
 			};

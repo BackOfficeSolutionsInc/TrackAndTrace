@@ -15,7 +15,8 @@ namespace RadialReview.Utilities.Hooks {
 		public bool StatusChanged { get; set; }
 		public bool AccountableUserChanged { get; set; }
 
-		//public static IRockHookUpdates Diff(RockModel old, RockModel
+        public long OriginalAccountableUserId { get; set; }
+        //public static IRockHookUpdates Diff(RockModel old, RockModel
 	}
 
 

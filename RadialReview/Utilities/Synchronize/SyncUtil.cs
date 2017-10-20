@@ -52,8 +52,9 @@ namespace RadialReview.Utilities.Synchronize {
 		public static String NO_SYNC_EXCEPTION = "noSyncException";
 
 		public static bool EnsureStrictlyAfter(UserOrganizationModel caller, ISession s, SyncAction action, bool noSyncException = false) {
-			try {
-				if (noSyncException == false) {
+            var shouldThrowSyncException = !noSyncException;
+            try {
+				if (shouldThrowSyncException) {
 					if (HttpContext.Current != null && HttpContext.Current.Items != null && HttpContext.Current.Items.Contains(NO_SYNC_EXCEPTION)) {
 						if ((bool)HttpContext.Current.Items[NO_SYNC_EXCEPTION])
 							noSyncException = true;
@@ -63,25 +64,28 @@ namespace RadialReview.Utilities.Synchronize {
 			} catch (Exception e) {
 				int a = 0;
 			}
+            
+            //Required again after all the short circuits
+            shouldThrowSyncException = !noSyncException;
+            try {
+                //var now = DateTime.UtcNow;
+                //var after = now.Subtract(Buffer);
+                var actionStr = action.ToString();
+                var clientTimestamp = caller._ClientTimestamp;
+                var callerId = caller.Id;
 
-			try {
-				//var now = DateTime.UtcNow;
-				//var after = now.Subtract(Buffer);
-				var actionStr = action.ToString();
-				var clientTimestamp = caller._ClientTimestamp;
-				var callerId = caller.Id;
+                var isAfter = IsStrictlyAfter(s, actionStr, clientTimestamp, callerId, DateTime.UtcNow, Buffer);
+                if (isAfter == false) {
+                    throw new SyncException(clientTimestamp);
+                }
 
-				var isAfter = IsStrictlyAfter(s, actionStr, clientTimestamp, callerId,DateTime.UtcNow, Buffer);
-				if (isAfter == false) {
-					s.Transaction.Commit();
-					s.Flush();
-					throw new SyncException(clientTimestamp);
-				}
-
-				return isAfter;
-			} catch (SyncException) {
-				if (!noSyncException)
-					throw;
+                return isAfter;
+            } catch (SyncException) {
+                if (shouldThrowSyncException) {
+                    s.Transaction.Commit();//should we be rolling back?
+                    s.Flush();
+                    throw;
+                }
 			} catch (Exception e) {
 				throw new SyncException("Sync Exception: " + e.Message, null);
 			}

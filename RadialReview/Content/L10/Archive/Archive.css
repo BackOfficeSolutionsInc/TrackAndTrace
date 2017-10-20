@@ -609,7 +609,7 @@ html {
 }
 .meeting-archive .scorecard-list-container table td {
   font-size: 13px;
-  color: rgba(0, 0, 0, 0.54);
+  color: #c7c7c7;
   height: 24px;
 }
 .meeting-archive .scorecard-list-container table tbody.md-body > tr.md-row,
@@ -824,9 +824,11 @@ html {
   color: #fff;
   padding: 0px 4px 3px 5px;
   border-radius: 3px;
+  min-width: 106px;
 }
 .meeting-archive .rock-list-container .rock-completion-status ._md-select-value {
   border-bottom-color: transparent !important;
+  padding: 0px 2px 0px;
 }
 .meeting-archive .rock-list-container .rock-completion-status:focus *,
 .meeting-archive .rock-list-container .rock-completion-status:active * {
