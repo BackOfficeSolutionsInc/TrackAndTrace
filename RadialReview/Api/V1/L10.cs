@@ -176,7 +176,7 @@ namespace RadialReview.Api.V1 {
 			//	AccountableUserId = body.accountableUserId ?? GetUser().Id,
 			//	ForRecurrenceId = MEETING_ID
 			//};
-			var model = TodoCreation.CreateL10Todo(body.title, body.details, body.accountableUserId ?? GetUser().Id, body.dueDate.Value, MEETING_ID);			
+			var model = TodoCreation.CreateL10Todo(MEETING_ID, body.title, body.details, body.accountableUserId ?? GetUser().Id, body.dueDate.Value);			
 
 			var todo = await TodoAccessor.CreateTodo(GetUser(), model);
 			return new AngularTodo(todo);

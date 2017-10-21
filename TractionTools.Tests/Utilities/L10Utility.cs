@@ -86,8 +86,7 @@ namespace TractionTools.Tests.Utilities {
 						OrganizationId = Org.Id,
 						ForRecurrenceId = Id
 					};
-					var todoC = TodoCreation.CreateL10Todo(name, null, (owner ?? Employee).Id, null, Id);
-
+					var todoC = TodoCreation.CreateL10Todo(Id, name, null, (owner ?? Employee).Id, null);
 					await TodoAccessor.CreateTodo(s, perms, todoC);
 					tx.Commit();
 					s.Flush();

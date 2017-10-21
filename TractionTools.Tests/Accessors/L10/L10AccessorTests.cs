@@ -13,6 +13,7 @@ using System.Linq;
 using TractionTools.Tests.Utilities;
 using System.Threading.Tasks;
 using RadialReview.Model.Enums;
+using RadialReview.Exceptions;
 
 namespace TractionTools.Tests.Accessors
 {
@@ -421,8 +422,14 @@ namespace TractionTools.Tests.Accessors
 			
 			await l10.AddRock("rock1");
 			await l10.AddMeasurable("meas1");
+			await ThrowsAsync<PermissionsException>(async () => await l10.AddTodo("todo1"));
+//			await ThrowsAsync<PermissionsException>(async () => await l10.AddIssue("issue1"));
+
+			await l10.AddAttendee(l10.Employee);
 			await l10.AddTodo("todo1");
 			await l10.AddIssue("issue1");
+
+
 
 			var recur = L10Accessor.GetL10Recurrence(org.Manager, l10, true);
 			

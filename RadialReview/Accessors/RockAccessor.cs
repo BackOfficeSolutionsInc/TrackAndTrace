@@ -371,9 +371,9 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static async Task<RockModel> CreateRock(ISession s, PermissionsUtility perms, long ownerId, string message = null, long? templateId = null) {
+		public static async Task<RockModel> CreateRock(ISession s, PermissionsUtility perms, long ownerId, string message = null, long? templateId = null,long? permittedForRecurrenceId=null) {
 
-			perms.CreateRocksForUser(ownerId,null);
+			perms.CreateRocksForUser(ownerId, permittedForRecurrenceId);
 			var owner = s.Get<UserOrganizationModel>(ownerId);
 
 

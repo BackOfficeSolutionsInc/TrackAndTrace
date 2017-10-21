@@ -40,7 +40,7 @@ namespace TractionTools.Tests.API.v0 {
                 var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
 
                // todo.ForRecurrenceId = _recurrence.Id;
-				var todoC = TodoCreation.CreateL10Todo("GetMineTodo from Test Method", null, c.E1.Id,null,_recurrence.Id);
+				var todoC = TodoCreation.CreateL10Todo(_recurrence.Id, "GetMineTodo from Test Method", null, c.E1.Id, null);
 				var todo = await TodoAccessor.CreateTodo(c.E1, todoC);
 
                 TodosController cnt = new TodosController();

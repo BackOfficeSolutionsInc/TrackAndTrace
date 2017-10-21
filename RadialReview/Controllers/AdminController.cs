@@ -449,7 +449,7 @@ namespace RadialReview.Controllers {
 					var createTime = DateTime.UtcNow.AddDays(-5);
 					foreach (var todo in todos) {
 						var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
-						var todoC = TodoCreation.CreateL10Todo(todo, null, possibleUsers[r.Next(possibleUsers.Count - 1)], DateTime.UtcNow.AddDays(r.Next(1, 2)), recurId, now: createTime);
+						var todoC = TodoCreation.CreateL10Todo(recurId, todo, null, possibleUsers[r.Next(possibleUsers.Count - 1)], DateTime.UtcNow.AddDays(r.Next(1, 2)), now: createTime);
 						await TodoAccessor.CreateTodo(s, perms, todoC);
 
 						//await TodoAccessor.CreateTodo(s, perms, recurId, new Models.Todo.TodoModel {
@@ -850,7 +850,7 @@ namespace RadialReview.Controllers {
 					foreach (var todo in todos) {
 						var complete = r.NextDouble() > .9 ? DateTime.UtcNow.AddDays(r.Next(-5, -1)) : (DateTime?)null;
 
-						var todoC = TodoCreation.CreateL10Todo(todo, null, possibleUsers[r.Next(possibleUsers.Count - 1)], DateTime.UtcNow.AddDays(r.Next(1, 2)), recurId, now: createTime);
+						var todoC = TodoCreation.CreateL10Todo(recurId, todo, null, possibleUsers[r.Next(possibleUsers.Count - 1)], DateTime.UtcNow.AddDays(r.Next(1, 2)), now: createTime);
 						await TodoAccessor.CreateTodo(s, perms, todoC);
 
 

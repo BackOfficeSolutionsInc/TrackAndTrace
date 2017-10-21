@@ -142,7 +142,7 @@ namespace RadialReview.Accessors {
 						//todoModel.TodoType = TodoType.Personal;
 						todoModel = TodoCreation.CreatePersonalTodo(body, "-sent from phone", found.Caller.Id, now.AddDays(7), now);
 					} else {
-						todoModel = TodoCreation.CreateL10Todo(body,"-sent from phone",found.Caller.Id,now.AddDays(7),found.ForId,null,"TodoModel",-2,now);
+						todoModel = TodoCreation.CreateL10Todo(found.ForId, body, "-sent from phone", found.Caller.Id, now.AddDays(7), null, "TodoModel", -2, now);
 					}
 
 

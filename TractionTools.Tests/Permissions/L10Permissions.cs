@@ -153,17 +153,17 @@ namespace TractionTools.Tests.Permissions {
 			await L10Accessor.AddAttendee(c.Manager, l101.Id, c.Employee.Id);
 			await L10Accessor.AddAttendee(c.Manager, l101.Id, c.Org.E5.Id);
 
-			var issue = new IssueModel() { };
-			var issue2 = new IssueModel() { };
-			var perm1 = new Action<PermissionsUtility>(p => p.ViewIssue(issue.Id));
-			var perm2 = new Action<PermissionsUtility>(p => p.ViewIssue(issue2.Id));
+			//var issue = new IssueModel() { };
+			//var issue2 = new IssueModel() { };
 			var creation = IssueCreation.CreateL10Issue(null, null, c.Manager.Id, l101.Id);
-			await IssuesAccessor.CreateIssue(c.Manager, creation);
+			var issue = await IssuesAccessor.CreateIssue(c.Manager, creation);
+			var perm1 = new Action<PermissionsUtility>(p => p.ViewIssue(issue.IssueModel.Id));
 			c.AssertAll(perm1, c.Manager, c.Employee, c.Org.E5);
 
 			var l102 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
 			var creation2 = IssueCreation.CreateL10Issue(null, null, c.Middle.Id, l102.Id);
-			await IssuesAccessor.CreateIssue(c.Middle, creation2);
+			var issue2 = await IssuesAccessor.CreateIssue(c.Middle, creation2);
+			var perm2 = new Action<PermissionsUtility>(p => p.ViewIssue(issue2.IssueModel.Id));
 			c.AssertAll(perm2, c.Middle, c.Manager);
 
 			//Revoke some permissions
@@ -202,12 +202,12 @@ namespace TractionTools.Tests.Permissions {
 			await L10Accessor.AddAttendee(c.Manager, l101.Id, c.Employee.Id);
 			await L10Accessor.AddAttendee(c.Manager, l101.Id, c.Org.E5.Id);
 
-			var issue = new IssueModel() { };
-			var issue2 = new IssueModel() { };
-			var perm1 = new Action<PermissionsUtility>(p => p.EditIssue(issue.Id));
+			//var issue = new IssueModel() { };
+			//var issue2 = new IssueModel() { };
 
 			var creation = IssueCreation.CreateL10Issue(null, null, c.Manager.Id, l101.Id);
-			await IssuesAccessor.CreateIssue(c.Manager, creation);
+			var issue1 = await IssuesAccessor.CreateIssue(c.Manager, creation);
+			var perm1 = new Action<PermissionsUtility>(p => p.EditIssue(issue1.IssueModel.Id));
 			c.AssertAll(perm1, c.Manager, c.Employee, c.Org.E5);
 			//Revoke some permissions
 			var level = PermItem.AccessLevel.Edit;
@@ -237,8 +237,8 @@ namespace TractionTools.Tests.Permissions {
 
 			var l102 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
 			var creation2 = IssueCreation.CreateL10Issue(null, null, c.Middle.Id, l102.Id);
-			await IssuesAccessor.CreateIssue(c.Middle, creation2);
-			var perm2 = new Action<PermissionsUtility>(p => p.EditIssue(issue2.Id));
+			var issue2 = await IssuesAccessor.CreateIssue(c.Middle, creation2);
+			var perm2 = new Action<PermissionsUtility>(p => p.EditIssue(issue2.IssueModel.Id));
 			c.AssertAll(perm2, c.Middle, c.Manager);
 
 		}
@@ -321,14 +321,17 @@ namespace TractionTools.Tests.Permissions {
 
 			//var todo = new TodoModel() { ForRecurrenceId = l101.Id };
 
-			var todoC = TodoCreation.CreateL10Todo(null, null, null, null, l101.Id);
+			var todoC = TodoCreation.CreateL10Todo(l101.Id, null, null, null, null);
+			///Not yet an attendee..
+			await ThrowsAsync<PermissionsException>(async()=>await TodoAccessor.CreateTodo(c.Manager, todoC));
+			await L10Accessor.AddAttendee(c.Manager, l101.Id, c.Manager.Id);
 			var todo = await TodoAccessor.CreateTodo(c.Manager, todoC);
 			var perm1 = new Action<PermissionsUtility>(p => p.ViewTodo(todo.Id));
 			c.AssertAll(perm1, c.Manager, c.Employee, c.Org.E5);
 
 			var l102 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
 			//var todo2 = new TodoModel() { ForRecurrenceId = l102.Id };
-			var todoC2 = TodoCreation.CreateL10Todo(null, null, null, null, l102.Id);
+			var todoC2 = TodoCreation.CreateL10Todo(l102.Id, null, null, null, null);
 			var todo2 = await TodoAccessor.CreateTodo(c.Middle, todoC2);
 			var perm2 = new Action<PermissionsUtility>(p => p.ViewTodo(todo2.Id));
 			c.AssertAll(perm2, c.Middle, c.Manager);
@@ -341,7 +344,6 @@ namespace TractionTools.Tests.Permissions {
 
 			//var todo = new TodoModel() { TodoType = TodoType.Personal, AccountableUser = c.Org.E5 };
 			var todoC = TodoCreation.CreatePersonalTodo(null, null, c.Org.E5.Id);
-
 			var todo = await TodoAccessor.CreateTodo(c.Manager, todoC);
 
 			var perm1 = new Action<PermissionsUtility>(p => p.ViewTodo(todo.Id));
@@ -359,7 +361,9 @@ namespace TractionTools.Tests.Permissions {
 
 				//var todo = new TodoModel() { ForRecurrenceId = l101.Id };
 				//await TodoAccessor.CreateTodo(c.Manager, l101.Id, todo);
-				var todoC = TodoCreation.CreateL10Todo(null, null, null, null, l101.Id);
+				var todoC = TodoCreation.CreateL10Todo(l101.Id, null, null, null, null);
+				await ThrowsAsync<PermissionsException>(async () => await TodoAccessor.CreateTodo(c.Manager, todoC));
+				await L10Accessor.AddAttendee(c.Manager, l101.Id, c.Manager.Id);
 				var todo = await TodoAccessor.CreateTodo(c.Manager, todoC);
 
 
@@ -402,7 +406,7 @@ namespace TractionTools.Tests.Permissions {
 				await L10Accessor.AddAttendee(c.Manager, l101.Id, c.Org.E5.Id);
 
 
-				var todoC = TodoCreation.CreateL10Todo(null, null, c.Org.E5.Id, null, l101.Id);
+				var todoC = TodoCreation.CreateL10Todo(l101.Id, null, null, c.Org.E5.Id, null);
 				var todo = await TodoAccessor.CreateTodo(c.Manager, todoC);
 				var perm = new Action<PermissionsUtility>(p => p.EditTodo(todo.Id));
 				//var todo = new TodoModel() { ForRecurrenceId = l101.Id, AccountableUser = c.Org.E5 };
@@ -433,8 +437,9 @@ namespace TractionTools.Tests.Permissions {
 			}
 			{
 				var l102 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
+				await L10Accessor.AddAttendee(c.Middle, l102.Id, c.E5.Id);
 				//var todo2 = new TodoModel() { ForRecurrenceId = l102.Id, AccountableUser = c.Org.E5 };
-				var todoC = TodoCreation.CreateL10Todo(null, null, c.Org.E5.Id, null, l102.Id);
+				var todoC = TodoCreation.CreateL10Todo(l102.Id, null, null, c.Org.E5.Id, null);
 				var todo2 = await TodoAccessor.CreateTodo(c.Middle, todoC);//await TodoAccessor.CreateTodo(c.Middle, l102.Id, todo2);
 				var perm = new Action<PermissionsUtility>(p => p.EditTodo(todo2.Id));
 				c.AssertAll(perm, c.Middle, c.Manager, c.Org.E5);

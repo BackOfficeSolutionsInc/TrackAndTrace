@@ -131,7 +131,7 @@ namespace RadialReview.Controllers {
 			if (model.RecurrenceId == -2) {
 				todo = TodoCreation.CreatePersonalTodo(model.Message ?? "", model.Details, GetUser().Id, model.DueDate.AddMinutes(adjust));				
 			} else {
-				todo = TodoCreation.CreateL10Todo(model.Message ?? "", model.Details, GetUser().Id, model.DueDate.AddMinutes(adjust), model.RecurrenceId, model.MeetingId);
+				todo = TodoCreation.CreateL10Todo(model.RecurrenceId, model.Message ?? "", model.Details, GetUser().Id, model.DueDate.AddMinutes(adjust), model.MeetingId);
 			}
 			//await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, todoModel);
 			await TodoAccessor.CreateTodo(GetUser(),todo);
@@ -172,7 +172,7 @@ namespace RadialReview.Controllers {
                 _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
             foreach (var a in model.AccountabilityId) {               
-				var todo = TodoCreation.CreateL10Todo(model.Message, model.Details, a, model.DueDate, model.RecurrenceId, model.MeetingId, model.ForModelType ?? "TodoModel", model.ForModelId ?? -1);
+				var todo = TodoCreation.CreateL10Todo(model.RecurrenceId, model.Message, model.Details, a, model.DueDate, model.MeetingId, model.ForModelType ?? "TodoModel", model.ForModelId ?? -1);
 				await TodoAccessor.CreateTodo(GetUser(), todo);
 			}
             return Json(ResultObject.SilentSuccess().NoRefresh());
@@ -256,7 +256,7 @@ namespace RadialReview.Controllers {
             _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
             foreach (var m in model.AccountabilityId) {              
-				var todo = TodoCreation.CreateL10Todo(model.Message, model.Details, m, model.DueDate, model.RecurrenceId, model.MeetingId, "MeasurableModel", model.MeasurableId);
+				var todo = TodoCreation.CreateL10Todo(model.RecurrenceId, model.Message, model.Details, m, model.DueDate, model.MeetingId, "MeasurableModel", model.MeasurableId);
 				await TodoAccessor.CreateTodo(GetUser(), todo);
 
 			}
@@ -310,7 +310,7 @@ namespace RadialReview.Controllers {
 				//    AccountableUserId = m,
 				//    DueDate = model.DueDate
 				//});
-				var todo = TodoCreation.CreateL10Todo(model.Message	??"",model.Details,m,model.DueDate,model.RecurrenceId,model.MeetingId,"RockModel", model.RockId);
+				var todo = TodoCreation.CreateL10Todo(model.RecurrenceId, model.Message ?? "", model.Details, m, model.DueDate, model.MeetingId, "RockModel", model.RockId);
 				await TodoAccessor.CreateTodo(GetUser(), todo);
             }
             return Json(ResultObject.SilentSuccess().NoRefresh());
@@ -351,7 +351,7 @@ namespace RadialReview.Controllers {
             _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
             foreach (var m in model.AccountabilityId) {
-				var todo = TodoCreation.CreateL10Todo(model.Message, model.Details, m, model.DueDate, model.RecurrenceId, model.MeetingId, "PeopleHeadline", model.HeadlineId);
+				var todo = TodoCreation.CreateL10Todo(model.RecurrenceId, model.Message, model.Details, m, model.DueDate, model.MeetingId, "PeopleHeadline", model.HeadlineId);
 				await TodoAccessor.CreateTodo(GetUser(), todo);
 			}
             return Json(ResultObject.SilentSuccess().NoRefresh());
@@ -396,7 +396,7 @@ namespace RadialReview.Controllers {
                 _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
             foreach (var m in model.AccountabilityId) {
-				var todo = TodoCreation.CreateL10Todo(model.Message, model.Details, m, model.DueDate, model.RecurrenceId, model.MeetingId, "IssueModel", model.IssueId);
+				var todo = TodoCreation.CreateL10Todo(model.RecurrenceId, model.Message, model.Details, m, model.DueDate, model.MeetingId, "IssueModel", model.IssueId);
 				await TodoAccessor.CreateTodo(GetUser(), todo);
 			}
             return Json(ResultObject.SilentSuccess().NoRefresh());

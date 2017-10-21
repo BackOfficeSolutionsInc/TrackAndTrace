@@ -67,7 +67,7 @@ namespace RadialReview.Accessors {
 		public static TodoCreation CreatePersonalTodo(string message, string details = null, long? accountableUserId = null, DateTime? dueDate = null, DateTime? now = null) {
 			return new TodoCreation(message, details, accountableUserId, dueDate, TodoType.Personal, null, null, "TodoModel", -1, now);
 		}
-		public static TodoCreation CreateL10Todo(string message, string details, long? accountableUserId, DateTime? dueDate, long? recurrenceId, long? createdDuringMeeting = null, string modelType = "TodoModel", long modelId = -1, DateTime? now = null) {
+		public static TodoCreation CreateL10Todo(long recurrenceId, string message, string details, long? accountableUserId, DateTime? dueDate, long? createdDuringMeeting = null, string modelType = "TodoModel", long modelId = -1, DateTime? now = null) {
 			return new TodoCreation(message, details, accountableUserId, dueDate, TodoType.Recurrence, recurrenceId, createdDuringMeeting, modelType, modelId, now);
 		}
 
@@ -75,14 +75,14 @@ namespace RadialReview.Accessors {
 			//if (_ensured == false)
 			//	throw new Exception("Permissions testing.");
 			UserOrganizationModel creator = perms.GetCaller();
-
-			EnsurePermitted(perms, creator.Organization.Id);
+			var assignTo = AccountableUserId ?? creator.Id;
+			EnsurePermitted(perms, creator.Organization.Id, assignTo);
 			var duringMeeting = CreatedDuringMeetingId > 0 ? CreatedDuringMeetingId : null;
 			var forRecur = RecurrenceId > 0 ? RecurrenceId : null;
 			Now = Now ?? DateTime.UtcNow;
 			return new TodoModel {
-				AccountableUserId = AccountableUserId ?? creator.Id,
-				AccountableUser = s.Load<UserOrganizationModel>(AccountableUserId ?? creator.Id),
+				AccountableUserId = assignTo,
+				AccountableUser = s.Load<UserOrganizationModel>(assignTo),
 				CreatedDuringMeetingId = duringMeeting,
 				CreatedDuringMeeting = duringMeeting.NotNull(x => s.Load<L10Meeting>(x)),
 				ClearedInMeeting = null,
@@ -108,7 +108,7 @@ namespace RadialReview.Accessors {
 		}
 
 		[Untested("Appropriately tested?")]
-		private void EnsurePermitted(PermissionsUtility perms, long orgId) {
+		private void EnsurePermitted(PermissionsUtility perms, long orgId,long assignTo) {
 			_ensured = true;
 
 			if (CreatedDuringMeetingId != null && CreatedDuringMeetingId > 0)
@@ -121,11 +121,9 @@ namespace RadialReview.Accessors {
 
 			if (RecurrenceId == null && TodoType == TodoType.Recurrence)
 				throw new PermissionsException("Recurrence Id is required to create a meeting todo.");
-
-			if (AccountableUserId != null)
-				perms.ViewUserOrganization(AccountableUserId.Value, false);
-
-			perms.AssignTodo(AccountableUserId.Value, RecurrenceId);
+			
+			perms.ViewUserOrganization(assignTo, false);
+			perms.AssignTodo(assignTo, RecurrenceId);
 		}
 	}
 

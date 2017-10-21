@@ -74,7 +74,7 @@ namespace TractionTools.Tests.Accessors
             //Test Rock
             Assert.AreEqual(0,rowVm.Id);
             Assert.AreEqual(AboutType.Self,rowVm.OnlyAsk);
-			throw new NotImplementedException("CompanyRock deleted");//Assert.AreEqual(false,rowVm.CompanyRock);
+			Assert.AreEqual(false,rowVm.CompanyRock);
 
             //Test periods
             //var allPeriods= (List<SelectListItem>)(row.ViewBag.Periods);

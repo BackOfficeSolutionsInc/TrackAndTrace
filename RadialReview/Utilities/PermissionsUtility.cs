@@ -1252,7 +1252,7 @@ namespace RadialReview.Utilities {
 		/// <param name="optionalRecurrenceId"></param>
 		/// <param name="onError"></param>
 		/// <returns></returns>
-		private PermissionsUtility CreateMeetingItemForUser(long userId,long? optionalRecurrenceId=null,string onError="Cannot create") {
+		private PermissionsUtility CreateMeetingItemForUser(long userId,long? optionalRecurrenceId=null,string onError="Cannot create. User is not an attendee of the meeting.") {
 			if (IsRadialAdmin(caller))
 				return this;
 
@@ -1444,8 +1444,14 @@ namespace RadialReview.Utilities {
 			if (IsRadialAdmin(caller))
 				return this;
 
-			if (recurrenceId == null && userId == caller.Id)
-				return this;
+			if (recurrenceId == null) {
+				if (userId == caller.Id)
+					return this;
+				try {
+					return ManagesUserOrganization(userId, false);
+				} catch (Exception e) {
+				}
+			}
 
 			ViewUserOrganization(userId, false);
 			if (recurrenceId != null) {
@@ -1454,6 +1460,8 @@ namespace RadialReview.Utilities {
 					return this;
 				}
 			}
+
+
 			throw new PermissionsException("Cannot assign this user a to-do");
 		}
 

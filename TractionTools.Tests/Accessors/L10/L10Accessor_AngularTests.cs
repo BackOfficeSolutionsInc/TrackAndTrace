@@ -14,6 +14,7 @@ using RadialReview.Utilities;
 using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.Angular.Rocks;
 using System.Threading.Tasks;
+using RadialReview.Exceptions;
 
 namespace TractionTools.Tests.Accessors {
     [TestClass]
@@ -25,13 +26,19 @@ namespace TractionTools.Tests.Accessors {
         {
             var r=await L10Utility.CreateRecurrence();
             var rocks = L10Accessor.GetRocksForRecurrence(r.Creator, r.Id);
+			
             Assert.AreEqual(0, rocks.Count);
             var ctrl = new L10Controller();
             //controller.SetValue("SkipValidation", true);
             ctrl.MockUser(r.Creator);
             MockHttpContext();
-            var result =(await ctrl.AddAngularRock(r.Id)).Data as ResultObject;
-            Assert.IsNotNull(result);
+            await ThrowsAsync<PermissionsException>(async()=> {
+				var a=(await ctrl.AddAngularRock(r.Id)).Data;
+			});
+			await r.AddAttendee(r.Creator);
+			var result=( await ctrl.AddAngularRock(r.Id)).Data as ResultObject;
+
+			Assert.IsNotNull(result);
             var rock = result.Object as AngularRock;
             Assert.IsNotNull(rock);
             

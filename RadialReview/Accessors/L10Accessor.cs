@@ -2182,6 +2182,7 @@ namespace RadialReview.Accessors {
             }
             return found;
         }
+
         public static List<MeetingRockAndMilestones> GetRocksForMeeting(UserOrganizationModel caller, long recurrenceId, long meetingId) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -2190,7 +2191,6 @@ namespace RadialReview.Accessors {
                 }
             }
         }
-
 
         public static async Task AttachRock(UserOrganizationModel caller, long recurrenceId, long rockId, bool vtoRock) {
             using (var s = HibernateSession.GetCurrentSession()) {
@@ -2221,10 +2221,11 @@ namespace RadialReview.Accessors {
             }
         }
         public static async Task<RockModel> CreateAndAttachRock(ISession s, PermissionsUtility perm, long recurrenceId, long owner, string message, bool vtoRock) {
-            var rock = await RockAccessor.CreateRock(s, perm, owner, message);
+            var rock = await RockAccessor.CreateRock(s, perm, owner, message, permittedForRecurrenceId:recurrenceId);
             await AttachRock(s, perm, recurrenceId, rock.Id, vtoRock);
             return rock;
         }
+		[Obsolete("Avoid using")]
         public static async Task<RockModel> CreateOrAttachRock(UserOrganizationModel caller, long recurrenceId, L10Controller.AddRockVm model) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -2236,7 +2237,8 @@ namespace RadialReview.Accessors {
                 }
             }
         }
-        public static async Task<RockModel> CreateOrAttachRock(ISession s, PermissionsUtility perm, long recurrenceId, L10Controller.AddRockVm model) {
+		[Obsolete("Avoid using")]
+		public static async Task<RockModel> CreateOrAttachRock(ISession s, PermissionsUtility perm, long recurrenceId, L10Controller.AddRockVm model) {
             var recur = s.Get<L10Recurrence>(recurrenceId);
 
             RockModel rock;

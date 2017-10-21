@@ -142,7 +142,7 @@ namespace RadialReview.Controllers {
 			//    ForRecurrenceId=id
 			//});
 
-			var todoModel = TodoCreation.CreateL10Todo(null, null, GetUser().Id, null, recurrenceId);
+			var todoModel = TodoCreation.CreateL10Todo(recurrenceId, null, null, GetUser().Id, null);
 			await TodoAccessor.CreateTodo(GetUser(), todoModel);
 
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
