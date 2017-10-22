@@ -292,8 +292,8 @@ namespace TractionTools.Tests.Permissions {
 			var c = await Ctx.Build();
 
 			//Can assing to self
-			c.AssertAll(p => p.AssignTodo(c.E1.Id, null), c.E1);
-			c.AssertAll(p => p.AssignTodo(c.E2.Id, null), c.E2);
+			c.AssertAll(p => p.AssignTodo(c.E1.Id, null), c.E1,c.Manager,c.Middle);
+			c.AssertAll(p => p.AssignTodo(c.E2.Id, null), c.E2,c.Manager,c.Middle);
 
 			//Can assign for L10 attendees
 			var l10 = await c.CreateL10(c.E1, c.E2, c.E3);
@@ -330,6 +330,7 @@ namespace TractionTools.Tests.Permissions {
 			c.AssertAll(perm1, c.Manager, c.Employee, c.Org.E5);
 
 			var l102 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
+			await L10Accessor.AddAttendee(c.Middle, l102.Id, c.Middle.Id);
 			//var todo2 = new TodoModel() { ForRecurrenceId = l102.Id };
 			var todoC2 = TodoCreation.CreateL10Todo(l102.Id, null, null, null, null);
 			var todo2 = await TodoAccessor.CreateTodo(c.Middle, todoC2);

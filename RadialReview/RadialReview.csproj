@@ -1283,6 +1283,7 @@
     <Content Include="Scripts\Main\modals.js" />
     <Content Include="Scripts\Main\profilepicture.js" />
     <Content Include="Scripts\Main\support.js" />
+    <Content Include="Scripts\Main\time.js" />
     <Content Include="Scripts\Main\tooltips.js" />
     <Content Include="Scripts\Main\tours.js" />
     <Content Include="Scripts\People\DiagonalTable.js" />

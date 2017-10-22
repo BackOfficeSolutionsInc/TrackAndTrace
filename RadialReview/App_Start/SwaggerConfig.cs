@@ -220,7 +220,7 @@ namespace RadialReview {
 					//
 					c.DescribeAllEnumsAsStrings();
 
-					c.DocumentFilter<CustomDocumentSortFilter>();
+					//c.DocumentFilter<CustomDocumentSortFilter>();
 
 
 					// Similar to Schema filters, Swashbuckle also supports Operation and Document filters:
@@ -359,14 +359,14 @@ namespace RadialReview {
 			return returnedValue;
 		});
 
-		public class CustomDocumentSortFilter : IDocumentFilter {
-			public void Apply(SwaggerDocument swaggerDoc, SchemaRegistry schemaRegistry, System.Web.Http.Description.IApiExplorer apiExplorer) {
-				//make operations alphabetic
-				//var paths = swaggerDoc.paths.OrderBy(e => e.Value.ToString()).ThenBy(x=>x.Key).ToList();
-				//swaggerDoc.paths = paths.ToDictionary(e => e.Key, e => e.Value);
-				//swaggerDoc
-			}
-		}
+		//public class CustomDocumentSortFilter : IDocumentFilter {
+		//	public void Apply(SwaggerDocument swaggerDoc, SchemaRegistry schemaRegistry, System.Web.Http.Description.IApiExplorer apiExplorer) {
+		//		//make operations alphabetic
+		//		//var paths = swaggerDoc.paths.OrderBy(e => e.Value.ToString()).ThenBy(x=>x.Key).ToList();
+		//		//swaggerDoc.paths = paths.ToDictionary(e => e.Key, e => e.Value);
+		//		//swaggerDoc
+		//	}
+		//}
 
 		private static string schemaIdStrategy(Type currentClass) {
 

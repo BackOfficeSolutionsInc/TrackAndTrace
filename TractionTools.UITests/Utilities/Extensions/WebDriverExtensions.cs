@@ -186,6 +186,10 @@ namespace TractionTools.UITests {
 			}
 			return Find(e, selector);
 		}
+		[DebuggerHidden]
+		public static IWebElement FindVisible(this IWebElement e, string selector) {
+			return e.FindElements(By.CssSelector(selector)).First(x=>x.Displayed);
+		}
 
 		[DebuggerHidden]
 		public static IWebElement Find(this IWebElement e, string selector) {

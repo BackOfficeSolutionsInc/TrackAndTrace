@@ -109,7 +109,7 @@
 
         //Construct Updater
         var u = updater($scope, hub);
-        var addTimestamp = u.addTimestamp;
+        var addTimestamp = Time.addTimestamp;//u.addTimestamp;
         $scope.functions.addTimestamp = addTimestamp;
 
         //Load Data

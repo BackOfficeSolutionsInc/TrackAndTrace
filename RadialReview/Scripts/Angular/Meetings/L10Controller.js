@@ -185,7 +185,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
         }
     });
 
-    var tzoffset = r.updater.tzoffset;
+    //var tzoffset = r.updater.tzoffset;
     var firstLoad = true;
 
     function loadDataFromUrl(url) {
@@ -237,7 +237,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
             firstLoad = first;
         }
         if (reload) {
-            tzoffset();
+            Time.tzoffset();
             console.log("reloading...");
             var url = meetingDataUrlBase;
             if (meetingDataUrlBase.indexOf("{0}") != -1) {
@@ -246,12 +246,14 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
                 url = url + $scope.recurrenceId;
             }
 
-            var date = ((+new Date()) /*+ (window.tzoffset * 60 * 1000)*/);
-            if (meetingDataUrlBase.indexOf("?") != -1) {
-                url += "&_clientTimestamp=" + date;
-            } else {
-                url += "?_clientTimestamp=" + date;
-            }
+            //var date = Time.getTimestamp();//((+new Date()) /*+ (window.tzoffset * 60 * 1000)*/);
+            //if (meetingDataUrlBase.indexOf("?") != -1) {
+            //    url += "&_clientTimestamp=" + date;
+            //} else {
+            //    url += "?_clientTimestamp=" + date;
+            //}
+
+            url = Time.addTimestamp(url);
 
             if (typeof (range) !== "undefined" && typeof (range.startDate) !== "undefined")
                 url += "&start=" + dateToNumber(range.startDate);
@@ -557,9 +559,9 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 
     $scope.functions.sendUpdate = function (self, args) {
         var dat = angular.copy(self);
-        var _clientTimestamp = new Date().getTime();
+        //var _clientTimestamp = new Date().getTime();
 
-        r.updater.convertDatesForServer(dat, tzoffset());
+        r.updater.convertDatesForServer(dat, Time.tzoffset());
         var builder = "";
         args = args || {};
 
@@ -572,7 +574,9 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
             }
         }
 
-        $http.post("/L10/Update" + self.Type + "?_clientTimestamp=" + _clientTimestamp + builder, dat)
+        var url = Time.addTimestamp("/L10/Update" + self.Type) + builder;
+
+        $http.post(url, dat)
             .then(function () { }, showAngularError);
     };
 
@@ -696,7 +700,9 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 
         $(".editable-wrap").remove();
 
-        $http.post("/L10/Remove" + self.Type + "/?recurrenceId=" + $scope.recurrenceId + "&_clientTimestamp=" + _clientTimestamp, dat).error(function (data) {
+        var url = Time.addTimestamp("/L10/Remove" + self.Type + "/?recurrenceId=" + $scope.recurrenceId);
+
+        $http.post(url, dat).error(function (data) {
             showJsonAlert(data, false, true);
             self.Hide = false;
         }).finally(function () { });
@@ -712,7 +718,9 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
             if (typeof (args) === "undefined")
                 args = "";
 
-            $http.get("/L10/Add" + type + "/" + $scope.recurrenceId + "?connectionId=" + $scope.connectionId + "&_clientTimestamp=" + _clientTimestamp + args)
+			var url =Time.addTimestamp("/L10/Add" + type + "/" + $scope.recurrenceId + "?connectionId=" + $scope.connectionId);
+
+            $http.get( url + args)
                 .error(showAngularError)
                 .finally(function () {
                     controller.removeClass("loading");
@@ -812,9 +820,10 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
                 oldOrder: event.source.index,
                 newOrder: event.dest.index,
             }
-            var _clientTimestamp = new Date().getTime();
             event.source.itemScope.measurable.Ordering = event.dest.index;
-            $http.post("/L10/OrderAngularMeasurable?_clientTimestamp=" + _clientTimestamp, dat).then(function () { }, showAngularError);
+            var url = Time.addTimestamp("/L10/OrderAngularMeasurable");
+
+            $http.post(url, dat).then(function () { }, showAngularError);
         },
         // containment: '#board',//optional param.
         clone: false,//optional param for clone feature.
@@ -831,6 +840,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
     }
 
     $scope.functions.topDate = function (week, selector) {
+    	debugger;
         var dat = decideOnDate(week, selector);
         var date = $scope.functions.subtractDays(dat/*week.DisplayDate*/, 0);
         return $filter('date')(date, selector.DateFormat1);

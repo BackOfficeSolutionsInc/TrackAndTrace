@@ -104,34 +104,11 @@ namespace RadialReview.Controllers {
             if (model.MeetingId != -1 && model.MeetingId != -2)
                 _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(model.MeetingId));
 
-            var adjust = 0.0;
-            if (GetUser()._ClientTimestamp != null)
-                adjust = Math.Round((GetUser()._ClientTimestamp.Value.ToDateTime() - DateTime.UtcNow).TotalHours * 2) / 2 * 60;
-
-			//var todoModel = new TodoModel() {
-			//	CreatedById = GetUser().Id,
-			//	ForRecurrenceId = model.RecurrenceId,
-			//	CreatedDuringMeetingId = model.MeetingId,
-			//	Message = model.Message ?? "",
-			//	Details = model.Details ?? "",
-			//	ForModel = "TodoModel",
-			//	ForModelId = -1,
-			//	Organization = GetUser().Organization,
-			//	AccountableUserId = GetUser().Id,
-			//	DueDate = model.DueDate.AddMinutes(adjust)
-			//};
-
 			TodoCreation todo;
-
-			//if (model.RecurrenceId == -2) { // Personal todo list
-			//todoModel.ForRecurrenceId = null;
-			//todoModel.CreatedDuringMeetingId = null;
-			//todoModel.TodoType = TodoType.Personal;
-
 			if (model.RecurrenceId == -2) {
-				todo = TodoCreation.CreatePersonalTodo(model.Message ?? "", model.Details, GetUser().Id, model.DueDate.AddMinutes(adjust));				
+				todo = TodoCreation.CreatePersonalTodo(model.Message ?? "", model.Details, GetUser().Id, model.DueDate/*.AddMinutes(adjust)*/);				
 			} else {
-				todo = TodoCreation.CreateL10Todo(model.RecurrenceId, model.Message ?? "", model.Details, GetUser().Id, model.DueDate.AddMinutes(adjust), model.MeetingId);
+				todo = TodoCreation.CreateL10Todo(model.RecurrenceId, model.Message ?? "", model.Details, GetUser().Id, model.DueDate/*.AddMinutes(adjust)*/, model.MeetingId);
 			}
 			//await TodoAccessor.CreateTodo(GetUser(), model.RecurrenceId, todoModel);
 			await TodoAccessor.CreateTodo(GetUser(),todo);

@@ -49,18 +49,18 @@ $(document).ajaxSend(function (event, jqX, ajaxOptions) {
 	}
 	//var date = (new Date().getTime());
 	if (ajaxOptions.url.indexOf("_clientTimestamp") == -1) {
-		if (!window.tzoffset) {
-			var jan = new Date(new Date().getYear() + 1900, 0, 1, 2, 0, 0), jul = new Date(new Date().getYear() + 1900, 6, 1, 2, 0, 0);
-			window.tzoffset = (jan.getTime() % 24 * 60 * 60 * 1000) >
-                         (jul.getTime() % 24 * 60 * 60 * 1000)
-                         ? jan.getTimezoneOffset() : jul.getTimezoneOffset();
-		}
-		if (ajaxOptions.url.indexOf("?") == -1)
-			ajaxOptions.url += "?";
-		else
-			ajaxOptions.url += "&";
-
-		ajaxOptions.url += "_clientTimestamp=" + ((+new Date()) /*+ (window.tzoffset * 60 * 1000)*/);
+		ajaxOptions.url = Time.addTimestamp(ajaxOptions.url);
+		//if (!window.tzoffset) {
+		//	var jan = new Date(new Date().getYear() + 1900, 0, 1, 2, 0, 0), jul = new Date(new Date().getYear() + 1900, 6, 1, 2, 0, 0);
+		//	window.tzoffset = (jan.getTime() % 24 * 60 * 60 * 1000) >
+        //                 (jul.getTime() % 24 * 60 * 60 * 1000)
+        //                 ? jan.getTimezoneOffset() : jul.getTimezoneOffset();
+		//}
+		//if (ajaxOptions.url.indexOf("?") == -1)
+		//	ajaxOptions.url += "?";
+		//else
+		//	ajaxOptions.url += "&";
+		//ajaxOptions.url += "_clientTimestamp=" + ((+new Date()) /*+ (window.tzoffset * 60 * 1000)*/);
 	}
 	console.info(ajaxOptions.type + " " + ajaxOptions.url);
 	if (typeof (ajaxOptions.type) === "string" && ajaxOptions.type.toUpperCase() == "POST" && !(ajaxOptions.url.indexOf("/support/email") == 0)) {

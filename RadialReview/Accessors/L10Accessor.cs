@@ -2910,8 +2910,8 @@ namespace RadialReview.Accessors {
 
                     var rangeTemp = range;
                     if (rangeTemp == null) {
-                        var minDate = Math2.Max(new DateTime(2013, 1, 1), scoreModels.Select(x => x.DateDue).Min());
-                        var maxDate = Math2.Min(DateTime.UtcNow.AddDays(14), scoreModels.Select(x => x.DateDue).Max());
+                        var minDate = Math2.Max(new DateTime(2013, 1, 1), scoreModels.Select(x => x.ForWeek).Min());
+                        var maxDate = Math2.Min(DateTime.UtcNow.AddDays(14), scoreModels.Select(x => x.ForWeek).Max());
                         rangeTemp = new DateRange(minDate, maxDate);
                     }
 

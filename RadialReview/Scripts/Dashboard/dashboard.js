@@ -52,3 +52,6 @@ var isMobile = function () {
 //$(window).resize($.debounce(250, zoomScorecards));
 //$("body").on("resize-tile", ".grid-tile", $.debounce(250,zoomScorecards));
 //$("body").on("loaded", ".grid-tile",  $.debounce(250,zoomScorecards));
+
+
+

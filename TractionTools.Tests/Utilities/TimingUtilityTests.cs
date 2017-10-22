@@ -384,5 +384,20 @@ namespace TractionTools.Tests.Utilities {
 
 		}
 
+
+		[TestMethod]
+		public void ServerTimeConvert() {
+			var td= new TimeData() {
+				TimezoneOffset = -420, //-7hrs = PST
+			};
+
+			var localTime = new DateTime(2017, 10, 22);
+			var serverTime = td.ConvertToServerTime(localTime);
+			Assert.AreEqual(new DateTime(2017,10,22,7,0,0), serverTime);
+
+			var backToLocal = td.ConvertFromServerTime(serverTime);
+			Assert.AreEqual(new DateTime(2017, 10, 22, 0, 0, 0), backToLocal);
+		}
+
 	}
 }

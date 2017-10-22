@@ -62,6 +62,7 @@ namespace RadialReview {
 
         private static void Main(BundleCollection bundles) {
             bundles.Add(new ScriptBundle("~/bundles/main").Include(
+					  "~/Scripts/Main/time.js",
 					  "~/Scripts/Main/linq.js",
 					  "~/Scripts/Main/radial.js",
 					  "~/Scripts/Main/modals.js",

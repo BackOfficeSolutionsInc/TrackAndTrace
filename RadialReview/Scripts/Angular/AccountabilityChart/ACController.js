@@ -643,11 +643,11 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 	}
 
 	var r = radial($scope, 'organizationHub', rejoin);
-	var tzoffset = r.updater.tzoffset;
+	var tzoffset = Time.tzoffset();// r.updater.tzoffset;
 	$scope.functions.reload = function (clearData) {
 		if (typeof (clearData) === "undefined")
 			clearData = false;
-		tzoffset();
+		Time.tzoffset();//tzoffset();
 		console.log("reloading...");
 		var url = dataUrl;
 		if (dataUrl.indexOf("{0}") != -1) {
@@ -656,12 +656,13 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 			url = url + $scope.chartId;
 		}
 
-		var date = ((+new Date()) /*+ (window.tzoffset * 60 * 1000)*/);
-		if (dataUrl.indexOf("?") != -1) {
-			url += "&_clientTimestamp=" + date;
-		} else {
-			url += "?_clientTimestamp=" + date;
-		}
+		//var date = ((+new Date()) /*+ (window.tzoffset * 60 * 1000)*/);
+		//if (dataUrl.indexOf("?") != -1) {
+		//	url += "&_clientTimestamp=" + date;
+		//} else {
+		//	url += "?_clientTimestamp=" + date;
+		//}
+		url = Time.addTimestamp(url);
 
 		$http({ method: 'get', url: url })
         .success(function (data, status) {
@@ -697,8 +698,11 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		var _clientTimestamp = new Date().getTime();
 
 		fixNodeRecurse(dat);
-		r.updater.convertDatesForServer(dat, tzoffset());
-		$http.post("/Accountability/Update" + self.Type + "?connectionId=" + $scope.connectionId + "&_clientTimestamp=" + _clientTimestamp, dat).error(function (data) {
+		r.updater.convertDatesForServer(dat, Time.tzoffset());
+
+		var url = Time.addTimestamp("/Accountability/Update" + self.Type + "?connectionId=" + $scope.connectionId);
+
+		$http.post(url, dat).error(function (data) {
 			showJsonAlert(data, true, true);
 		});
 	};

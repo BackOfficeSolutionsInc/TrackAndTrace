@@ -78,9 +78,9 @@ namespace TractionTools.Tests.API.v1 {
         [TestCategory("Api_V1")]
         public async Task TestGetIssue() {
             var c = await Ctx.Build();
-            var issue = new IssueModel() {
-                Message = "Issue for Test Method",
-            };
+            //var issue = new IssueModel() {
+            //    Message = "Issue for Test Method",
+            //};
 
             var _recurrence = await L10Accessor.CreateBlankRecurrence(c.E1, c.Org.Id);
 
@@ -88,11 +88,11 @@ namespace TractionTools.Tests.API.v1 {
 			var result = await IssuesAccessor.CreateIssue(c.E1, creation);//_recurrence.Id, c.E1.Id, issue);
             IssuesController iss = new IssuesController();
             iss.MockUser(c.E1);
-            AngularIssue _angularIssue = iss.Get(issue.Id);
+            AngularIssue _angularIssue = iss.Get(result.IssueRecurrenceModel.Id);
 
             CompareModelProperties(/*APIResult.IssueApiTests_v0_TestGetIssue,*/ _angularIssue);
             Assert.IsNotNull(_angularIssue);
-            Assert.AreEqual(issue.Message, _angularIssue.Name);
+            Assert.AreEqual(result.IssueModel.Message, _angularIssue.Name);
         }
 
 

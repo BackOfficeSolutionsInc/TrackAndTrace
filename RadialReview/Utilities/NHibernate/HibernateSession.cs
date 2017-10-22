@@ -273,7 +273,7 @@ namespace RadialReview.Utilities {
 				s.RunAfterDispose(new SingleRequestSession.OnDisposedModel(method, true));
 			} else {
 				using (var ss = HibernateSession.GetCurrentSession()) {
-					using (var tx = s.BeginTransaction()) {
+					using (var tx = ss.BeginTransaction()) {
 						await method(ss, tx);
 					}
 				}
@@ -497,7 +497,7 @@ namespace RadialReview.Utilities {
 				case Config.DbType.MySql:
 					return ((DateTime)s.CreateSQLQuery("select now();").List()[0]);
 				case Config.DbType.Sqlite:
-					return DateTime.ParseExact((string)s.CreateSQLQuery("select CURRENT_TIMESTAMP;").List()[0], "yyyy-MM-dd hh:mm:ss", new System.Globalization.CultureInfo("en-us"));
+					return DateTime.ParseExact((string)s.CreateSQLQuery("select CURRENT_TIMESTAMP;").List()[0], "yyyy-MM-dd HH:mm:ss", new System.Globalization.CultureInfo("en-us"));
 				default:
 					throw new NotImplementedException("Db type unknown");
 			}

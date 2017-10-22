@@ -28,7 +28,7 @@ namespace TractionTools.Tests.Accessors.Scorecard {
             Assert.AreEqual(o.Employee.Id, found.AdminUserId);
             Assert.AreEqual(null, found.AlternateGoal);
             Assert.AreEqual(false, found.Archived);
-            Assert.IsTrue(found.CreateTime >= o.CreateTime,found.CreateTime.ToJavascriptMilliseconds()+" was < "+o.CreateTime.ToJavascriptMilliseconds());
+            Assert.IsTrue(found.CreateTime >= new DateTime(2017,1,1));
             Assert.IsTrue(found.CreateTime <= DateTime.UtcNow);
             Assert.AreEqual(null, found.CumulativeRange);
             Assert.AreEqual(null, found.FromTemplateItemId);

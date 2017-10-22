@@ -152,7 +152,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 				errorCount++;
 				if (errorCount==3){
 					badge("","green","gray.png");
-					showNotification("Lost connection","","gray.png");
+					//showNotification("Lost connection","","gray.png");
 				}
 					//chrome.browserAction.setIcon({path: "icon.png"});
 			},

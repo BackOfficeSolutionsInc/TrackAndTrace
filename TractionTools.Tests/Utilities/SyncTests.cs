@@ -177,6 +177,7 @@ namespace TractionTools.Tests.Utilities {
 		}
 
 		[TestMethod]
+		[TestCategory("Sync")]
 		public void TryOutPermutator() {
 			var ss = new SyncSystem(new DateTime(2017, 1, 15), TimeSpan.FromDays(.1));
 			ss.AddServer("A", TimeSpan.FromSeconds(5));
@@ -186,6 +187,7 @@ namespace TractionTools.Tests.Utilities {
 
 
 		[TestMethod]
+		[TestCategory("Sync")]
 		public void ConstantFulfilmentTime() {
 			var ss = new SyncSystem(new DateTime(2017, 1, 15), TimeSpan.FromSeconds(40));
 			ss.AddServer("A", TimeSpan.FromSeconds(5));
@@ -203,6 +205,7 @@ namespace TractionTools.Tests.Utilities {
 		}
 
 		[TestMethod]
+		[TestCategory("Sync")]
 		public void NonconstantFulfilmentTime() {
 			var ss = new SyncSystem(new DateTime(2017, 1, 15), TimeSpan.FromSeconds(40));
 			ss.AddServer("A", TimeSpan.FromSeconds(5));

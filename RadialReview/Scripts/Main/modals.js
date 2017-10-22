@@ -36,6 +36,7 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onC
 		return showModalObject(obj, push, cback);
 	}
 
+	$("#modalTitle").html(title);
 	$("#modalMessage").html("");
 	$("#modalMessage").addClass("hidden");
 	$("#modal").addClass("loading");

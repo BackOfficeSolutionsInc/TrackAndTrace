@@ -54,7 +54,7 @@ namespace TractionTools.Tests.API.v1 {
 			var c = new ScorecardController();
 			c.MockUser(ctx.E1);
 			var s1 = await c.GetMineMeasureables();
-			CompareModelProperties(s1, false);
+			CompareModelProperties(null,s1, false);
 			 
 			c.MockUser(ctx.Manager);
 			var s2 = await c.GetMeasureablesForUser(ctx.E2.Id);
@@ -78,6 +78,7 @@ namespace TractionTools.Tests.API.v1 {
 			var creator = MeasurableBuilder.Build("Meas1", ctx.E1.Id);
 			var m1 =await ScorecardAccessor.CreateMeasurable(ctx.Manager, creator);
 			//await ScorecardAccessor.CreateMeasurable(ctx.Manager, m1, false);
+			MockNoSyncException();
 			var score = await ScorecardAccessor.UpdateScore(ctx.Manager, m1.Id, TimingUtility.GetDateSinceEpoch(2000L), (decimal?)null);
 
 			var c = new Scores_Controller();
@@ -115,7 +116,7 @@ namespace TractionTools.Tests.API.v1 {
 
 			var c = new Measurables_Controller();
 			c.MockUser(ctx.E1);
-
+			MockNoSyncException();
 			await c.UpdateScore(m1.Id, 2000L, new Scores_Controller.UpdateScoreModel { value = null });
 			var score = await ScorecardAccessor.GetScore(ctx.Manager, m1.Id, 2000L);
 			Assert.AreEqual(score.Measured, null);
@@ -149,7 +150,7 @@ namespace TractionTools.Tests.API.v1 {
 			MockHttpContext();
 			var creator = MeasurableBuilder.Build("Meas1", ctx.E1.Id);
 			var m1 = await ScorecardAccessor.CreateMeasurable(ctx.Manager, creator);
-
+			MockNoSyncException();
 			var score = await ScorecardAccessor.UpdateScore(ctx.Manager, m1.Id,TimingUtility.GetDateSinceEpoch(2000L), (decimal?)null);
 
 			var c = new Scores_Controller();

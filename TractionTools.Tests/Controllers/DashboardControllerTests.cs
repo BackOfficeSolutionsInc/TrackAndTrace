@@ -16,6 +16,7 @@ using RadialReview.Accessors;
 using static RadialReview.Controllers.L10Controller;
 using RadialReview.Models.Askables;
 using System.Linq;
+using RadialReview.Exceptions;
 
 namespace TractionTools.Tests.Controllers {
 	[TestClass]
@@ -118,7 +119,14 @@ namespace TractionTools.Tests.Controllers {
 			await l10Other.AddMeasurable("Meas3-other", org.Manager);
 
 			await l10.AddTodo("Todo1");
+			try {
+				await l10.AddTodo("Todo2-not mine", org.Manager);
+				Assert.Fail();
+			} catch (PermissionsException) {
+			}
+			await L10Accessor.AddAttendee(org.Manager, l10.Id, org.Manager.Id);
 			await l10.AddTodo("Todo2-not mine", org.Manager);
+			await L10Accessor.AddAttendee(org.Manager, l10Other.Id, org.Manager.Id);
 			await l10Other.AddTodo("Todo3-other", org.Manager);
 
 			await l10.AddIssue("Issue1");

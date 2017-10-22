@@ -130,7 +130,7 @@ namespace RadialReview.Utilities.Synchronize {
 		}
 
 		private static bool IsStrictlyAfter(long clientTimestamp, List<SyncTiny> existingSyncs) {
-			return existingSyncs.All(x => x.ClientTimestamp - clientTimestamp < 0);
+			return existingSyncs.All(x => x.ClientTimestamp - clientTimestamp <= 0);
 		}
 	}
 }

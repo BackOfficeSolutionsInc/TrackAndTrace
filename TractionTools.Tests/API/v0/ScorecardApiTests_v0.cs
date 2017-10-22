@@ -43,7 +43,7 @@ namespace TractionTools.Tests.API.v0 {
 			MockHttpContext();
 			var builder = MeasurableBuilder.Build("Meas1", ctx.E1.Id);
 			var m1 = await ScorecardAccessor.CreateMeasurable(ctx.Manager, builder);
-
+			MockNoSyncException();
 			var score = await ScorecardAccessor.UpdateScore(ctx.Manager, m1.Id, TimingUtility.GetDateSinceEpoch(2000L), null);
 
 			//var score = await L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2000L, (decimal?)null,null);
@@ -124,7 +124,7 @@ namespace TractionTools.Tests.API.v0 {
 			var builder = MeasurableBuilder.Build("Meas1", ctx.E1.Id);
 			var m1 = await ScorecardAccessor.CreateMeasurable(ctx.Manager, builder);
 
-
+			MockNoSyncException();
 			//var score = await L10Accessor.UpdateScore(ctx.Manager, m1.Id, 2000L, (decimal?)null, null);
 			var score = await ScorecardAccessor.UpdateScore(ctx.Manager, m1.Id, TimingUtility.GetDateSinceEpoch(2000L), null);
 

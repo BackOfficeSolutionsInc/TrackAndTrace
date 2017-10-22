@@ -150,7 +150,7 @@ namespace TractionTools.UITests.L10Wizard {
                 d.WaitForVisible(".editable-wrap");
                 d.TestScreenshot("Rocks-Picture");
 
-                row.Find(".delete-row").Click();
+                row.FindVisible(".delete-row").Click();
                 d.WaitForNotVisible(/*"#l10-wizard-scorecard */".editable-wrap");
 
                 d.WaitForVisible("#l10-wizard-scorecard .empty-search");

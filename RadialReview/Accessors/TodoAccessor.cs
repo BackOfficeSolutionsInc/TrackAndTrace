@@ -80,6 +80,13 @@ namespace RadialReview.Accessors {
 			var duringMeeting = CreatedDuringMeetingId > 0 ? CreatedDuringMeetingId : null;
 			var forRecur = RecurrenceId > 0 ? RecurrenceId : null;
 			Now = Now ?? DateTime.UtcNow;
+
+			var dueDate = Now.Value.AddDays(7);
+			if (DueDate != null) {
+				dueDate = creator.GetTimeSettings().ConvertToServerTime(DueDate.Value);
+			}
+			dueDate = dueDate.AddDays(1).AddSeconds(-1);
+
 			return new TodoModel {
 				AccountableUserId = assignTo,
 				AccountableUser = s.Load<UserOrganizationModel>(assignTo),
@@ -94,7 +101,7 @@ namespace RadialReview.Accessors {
 				CreateTime = Now.Value,
 				DeleteTime = null,
 				Details = Details,
-				DueDate = DueDate ?? Now.Value.AddDays(7),
+				DueDate = dueDate,//DueDate ?? Now.Value.AddDays(7),
 				ForModel = ForModelType,
 				ForModelId = ForModelId,
 				ForRecurrence = forRecur.NotNull(x => s.Load<L10Recurrence>(x)),

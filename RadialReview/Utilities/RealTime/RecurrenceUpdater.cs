@@ -70,6 +70,7 @@ namespace RadialReview.Utilities.RealTime {
 			/// <param name="absoluteUpdateTime"></param>
 			/// <param name="type"></param>
 			/// <returns></returns>
+			[Obsolete("Requires at least one score")]
             public RTRecurrenceUpdater UpdateScorecard(IEnumerable<ScoreModel> scores,DateTime? absoluteUpdateTime, AngularListType type = AngularListType.ReplaceIfNewer) {
                 rt.AddAction(() => {
                     //UpdateAngular stuff

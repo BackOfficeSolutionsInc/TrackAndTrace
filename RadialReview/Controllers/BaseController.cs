@@ -158,12 +158,14 @@ namespace RadialReview.Controllers {
 				user._IsRadialAdmin = user.IsRadialAdmin;
 
 				user._ClientTimestamp = Request.Params.Get("_clientTimestamp").TryParseLong();
+				user._ClientOffset = Request.Params.Get("_tz").TryParseInt();
 
-                HookData.SetData("ConnectionId", Request.Params.Get("connectionId"));
-                HookData.SetData("ClientTimestamp", user._ClientTimestamp);
+				HookData.SetData("ConnectionId", Request.Params.Get("connectionId"));
+				HookData.SetData("ClientTimestamp", user._ClientTimestamp);
+				HookData.SetData("ClientTimezone", user._ClientOffset);
 
-                if (user._ClientTimestamp != null) {
-					var diff = (int)(Math.Round((DateTime.UtcNow - user._ClientTimestamp.Value.ToDateTime()).TotalMinutes / 30.0) * 30.0);
+				if (user._ClientTimestamp != null && user._ClientOffset==null) {
+					var diff = (int)(Math.Round((user._ClientTimestamp.Value.ToDateTime()-DateTime.UtcNow).TotalMinutes / 30.0) * 30.0);
 					user._ClientOffset = diff;// Thread.SetData(Thread.GetNamedDataSlot("timeOffset"), diff);
 				}
 			}

@@ -1190,7 +1190,7 @@ namespace RadialReview.Utilities {
         }
 
 		public PermissionsUtility CreateMeasurableForUser(long userId,long? recurrenceId=null) {
-			return CreateMeetingItemForUser(userId,recurrenceId, "Cannot create measurable");
+			return Or(x=>x.EditUserDetails(userId), x => x.CreateMeetingItemForUser(userId,recurrenceId, "Cannot create measurable"));
 		}
 
 		#endregion

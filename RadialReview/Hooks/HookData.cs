@@ -69,6 +69,7 @@ namespace RadialReview.Hooks {
 		public static ReadOnlyHookData ToReadOnly() {
 			return ReadOnlyHookData.FromDictionary(_GetThreadSingleton().data);
 		}
+		
 	}
 
 

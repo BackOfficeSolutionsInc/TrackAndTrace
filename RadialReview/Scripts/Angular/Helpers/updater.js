@@ -232,15 +232,7 @@
         return dst;
     }
 
-    function tzoffset() {
-        if (!window.tzoffset) {
-            var jan = new Date(new Date().getYear() + 1900, 0, 1, 2, 0, 0), jul = new Date(new Date().getYear() + 1900, 6, 1, 2, 0, 0);
-            window.tzoffset = (jan.getTime() % 24 * 60 * 60 * 1000) >
-                         (jul.getTime() % 24 * 60 * 60 * 1000)
-                         ? jan.getTimezoneOffset() : jul.getTimezoneOffset();
-        }
-        return window.tzoffset;
-    }
+
 
     //When sending data TO the server
     function convertDatesForServer(obj) {
@@ -257,7 +249,7 @@
                 if (obj[key] == null) {
                     //Do nothing
                 } else if (obj[key].getDate !== undefined) {
-                    obj[key] = new Date(obj[key].getTime() + tzoffset() * 60 * 1000);
+                	obj[key] = Time.toServerTime(obj[key]);//new Date(obj[key].getTime() + tzoffset() * 60 * 1000);
                 } else if (type == 'object') {
                     _continueIfUnseen(value, seen, function () {
                         _convertDatesForServer(value, seen);
@@ -394,11 +386,6 @@
         return populate(model, update);
     }
 
-    function addTimestamp(url) {
-        tzoffset();
-        var date = ((+new Date()) /*+ (window.tzoffset * 60 * 1000)*/);
-        return url + ((url.indexOf("?") != -1) ? "&_clientTimestamp=" + date : "?_clientTimestamp=" + date);
-    }
 
     function constructSendUpdate(useUpdateUrl, options) {
         options = options || {};
@@ -419,9 +406,8 @@
 
         return function (self, args) {
             var dat = angular.copy(self);
-            var _clientTimestamp = new Date().getTime();
-            debugger;
-            this.updater.convertDatesForServer(dat, tzoffset());
+            //var _clientTimestamp = Time.getTimestamp();
+            this.updater.convertDatesForServer(dat, Time.tzoffset());
             var builder = "";
             args = args || {};
 
@@ -460,8 +446,8 @@
             convertDates: convertDates,
             convertDatesForServer: convertDatesForServer,
             constructSendUpdate: constructSendUpdate,
-            tzoffset: tzoffset,
-            addTimestamp : addTimestamp,
+            //tzoffset: tzoffset,
+            //addTimestamp : addTimestamp,
         };
 
         o.applyUpdate = function (d, s) { applyUpdate.call(o, d, s); };

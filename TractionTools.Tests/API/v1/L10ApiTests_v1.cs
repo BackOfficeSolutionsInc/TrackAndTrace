@@ -24,6 +24,7 @@ using RadialReview.Models.Angular.Meeting;
 using RadialReview.Api.V1;
 using RadialReview.Api;
 using RadialReview;
+using RadialReview.Exceptions;
 
 namespace TractionTools.Tests.API.v1 {
 	[TestClass]
@@ -83,9 +84,13 @@ namespace TractionTools.Tests.API.v1 {
 			////	var measurable = AddMeasurableVm.CreateNewMeasurable(recurrenceId, m1, true);
 			//MockHttpContext();
 			//await ScorecardAccessor.CreateMeasurable(c.E1, m1, false);
-			
+
+
 			MockHttpContext();
 			var builder = MeasurableBuilder.Build("Meas1", c.E1.Id);
+			await ThrowsAsync<PermissionsException>(async ()=> await ScorecardAccessor.CreateMeasurable(c.E1, builder));
+
+			OrganizationAccessor.Edit(c.Manager, c.Id, employeesCanEditSelf: true);
 			var m1 = await ScorecardAccessor.CreateMeasurable(c.E1, builder);
 
 
@@ -108,6 +113,7 @@ namespace TractionTools.Tests.API.v1 {
 			L10.MockUser(c.E1);
 
 			var recurrenceId = (await L10.CreateL10(new CreateMeeting { title = "Test L10" })).meetingId;
+			await L10Accessor.AddAttendee(c.E1, recurrenceId, c.E1.Id);
 			//var m1 = new MeasurableModel() {
 			//	AccountableUserId = c.E1.Id,
 			//	AdminUserId = c.E1.Id,
@@ -118,13 +124,13 @@ namespace TractionTools.Tests.API.v1 {
 			//var measurable = RadialReview.Controllers.L10Controller.AddMeasurableVm.CreateMeasurableViewModel(recurrenceId, m1, true);
 			//MockHttpContext();
 			//await L10Accessor.CreateMeasurable(c.E1, recurrenceId, measurable);
-			
+
 			MockHttpContext();
 			var builder = MeasurableBuilder.Build("Meas1", c.E1.Id);
 			var m1 = await ScorecardAccessor.CreateMeasurable(c.E1, builder);
 
 
-			//await L10.AttachMeasurableL10(recurrenceId, measurable.Measurables.FirstOrDefault().Id);
+			await L10.AttachMeasurableL10(recurrenceId, m1.Id);
 
 			var getMeasurablesForRecurrence = await L10Accessor.GetOrGenerateScorecardDataForRecurrence(c.E1, recurrenceId);
 			Assert.AreEqual(1, getMeasurablesForRecurrence.MeasurablesAndDividers.Count());
@@ -174,6 +180,7 @@ namespace TractionTools.Tests.API.v1 {
 			var otherRecurrenceId = (await L10.CreateL10(new CreateMeeting { title = "Other L10" })).meetingId;
 			var recurrenceId = (await L10.CreateL10(new CreateMeeting { title = "Test L10" })).meetingId;
 			await L10Accessor.AddAttendee(c.E1, recurrenceId, c.E1.Id);
+			await L10Accessor.AddAttendee(c.E1, otherRecurrenceId, c.E1.Id);
 			//var rock = new RockModel() {
 			//	OrganizationId = c.E1.Organization.Id,
 			//	ForUserId = c.E1.Id,
@@ -220,7 +227,7 @@ namespace TractionTools.Tests.API.v1 {
 
 			L10.MockUser(c.E1);
 			var recurrenceId = (await L10.CreateL10(new CreateMeeting { title = "Test L10" })).meetingId;
-			var getMeetingsL10 = L10.GetL10(recurrenceId);
+			var getMeetingsL10 = await L10.GetL10(recurrenceId);
 
 			CompareModelProperties(/*APIResult.L10ApiTests_v0_TestGetMeetingsL10,*/ getMeetingsL10);
 			Assert.AreEqual(recurrenceId, getMeetingsL10.Id);
@@ -293,7 +300,8 @@ namespace TractionTools.Tests.API.v1 {
 
 			//todo.ForRecurrenceId = _recurrence.Id;
 			var todo = TodoCreation.CreateL10Todo(_recurrence.Id, "GetUserTodo from Test Method", null, c.E1.Id, null);
-//			bool result = await TodoAccessor.CreateTodo(c.E1, _recurrence.Id, todo);
+			//			bool result = await TodoAccessor.CreateTodo(c.E1, _recurrence.Id, todo);
+			await L10Accessor.AddAttendee(c.E1, _recurrence.Id, c.E1.Id);
 			var result = await TodoAccessor.CreateTodo(c.E1,  todo);
 			
 			var _model = cnt.GetRecurrenceTodos(_recurrence.Id);
@@ -341,8 +349,8 @@ namespace TractionTools.Tests.API.v1 {
 
 			L10.MockUser(c.E1);
 			var recurrenceId = (await L10.CreateL10(new CreateMeeting { title = "Test L10" })).meetingId;
+			await L10Accessor.AddAttendee(c.E1,recurrenceId, c.E1.Id);
 			var name = "Test To Do Meeting";
-
 			await L10.CreateTodoL10(recurrenceId, new CreateTodo { title = name, accountableUserId = c.E1.Id });
 
 			var getToDoList = L10Accessor.GetAllTodosForRecurrence(c.E1, recurrenceId);

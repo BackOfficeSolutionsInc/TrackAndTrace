@@ -25,7 +25,7 @@ using TractionTools.Tests.Properties;
 namespace TractionTools.Tests.API.v0 {
 	[TestClass]
 	public class UsersApiTests_v0 : BaseApiTest {
-		public UsersApiTests_v0() : base(VERSION_1) { }
+		public UsersApiTests_v0() : base(VERSION_0) { }
 
 
 		[TestMethod]

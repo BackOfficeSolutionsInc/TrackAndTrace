@@ -49,6 +49,12 @@ namespace RadialReview {
 				return o;
 			return null;
 		}
+		public static int? TryParseInt(this string str) {
+			int o;
+			if (int.TryParse(str, out o))
+				return o;
+			return null;
+		}
 
 		//NotNull
 		public static R NotNull<T, R>(this T obj, Func<T, R> f) {

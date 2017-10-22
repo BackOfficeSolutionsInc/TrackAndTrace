@@ -1038,430 +1038,6 @@
 ]</ExpectedJson>
     <GeneratedDate>2017-10-05T03:37:51.462463Z</GeneratedDate>
   </XmlApiResult>
-  <XmlApiResult Name="ScorecardApiTests_v1.GetScorecard" GeneratedVersion="1.0">
-    <ExpectedJson>{
-  "Id": -1,
-  "Type": "AngularScorecard",
-  "Key": "AngularScorecard_-1",
-  "Measurables": [
-    {
-      "Name": "Meas1",
-      "Id": 1,
-      "Type": "AngularMeasurable",
-      "Key": "AngularMeasurable_1",
-      "Owner": {
-        "Id": 9,
-        "Type": "AngularUser",
-        "Key": "AngularUser_9",
-        "Name": "E1 150848014",
-        "ImageUrl": "/i/userplaceholder",
-        "CreateTime": "2017-10-20T06:15:46"
-      },
-      "Admin": {
-        "Id": 9,
-        "Type": "AngularUser",
-        "Key": "AngularUser_9",
-        "Name": "E1 150848014",
-        "ImageUrl": "/i/userplaceholder",
-        "CreateTime": "2017-10-20T06:15:46"
-      },
-      "Target": 0.0,
-      "AltTarget": null,
-      "Direction": "GreaterThan",
-      "IsDivider": false,
-      "ShowCumulative": false,
-      "Cumulative": null,
-      "CumulativeRange": null,
-      "Modifiers": "None",
-      "Ordering": null,
-      "Disabled": null
-    }
-  ],
-  "Scores": [
-    {
-      "Id": 1,
-      "Type": "AngularScore",
-      "Key": "AngularScore_1",
-      "ForWeek": 2494,
-      "Week": "2017-10-15T00:00:00Z",
-      "DateEntered": "2017-10-20T06:15:48",
-      "Measured": 1.0,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 3,
-      "Type": "AngularScore",
-      "Key": "AngularScore_3",
-      "ForWeek": 2481,
-      "Week": "2017-07-16T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 4,
-      "Type": "AngularScore",
-      "Key": "AngularScore_4",
-      "ForWeek": 2482,
-      "Week": "2017-07-23T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 5,
-      "Type": "AngularScore",
-      "Key": "AngularScore_5",
-      "ForWeek": 2483,
-      "Week": "2017-07-30T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 6,
-      "Type": "AngularScore",
-      "Key": "AngularScore_6",
-      "ForWeek": 2484,
-      "Week": "2017-08-06T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 7,
-      "Type": "AngularScore",
-      "Key": "AngularScore_7",
-      "ForWeek": 2485,
-      "Week": "2017-08-13T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 8,
-      "Type": "AngularScore",
-      "Key": "AngularScore_8",
-      "ForWeek": 2486,
-      "Week": "2017-08-20T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 9,
-      "Type": "AngularScore",
-      "Key": "AngularScore_9",
-      "ForWeek": 2487,
-      "Week": "2017-08-27T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 10,
-      "Type": "AngularScore",
-      "Key": "AngularScore_10",
-      "ForWeek": 2488,
-      "Week": "2017-09-03T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 11,
-      "Type": "AngularScore",
-      "Key": "AngularScore_11",
-      "ForWeek": 2489,
-      "Week": "2017-09-10T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 12,
-      "Type": "AngularScore",
-      "Key": "AngularScore_12",
-      "ForWeek": 2490,
-      "Week": "2017-09-17T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 13,
-      "Type": "AngularScore",
-      "Key": "AngularScore_13",
-      "ForWeek": 2491,
-      "Week": "2017-09-24T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 14,
-      "Type": "AngularScore",
-      "Key": "AngularScore_14",
-      "ForWeek": 2492,
-      "Week": "2017-10-01T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 15,
-      "Type": "AngularScore",
-      "Key": "AngularScore_15",
-      "ForWeek": 2493,
-      "Week": "2017-10-08T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 16,
-      "Type": "AngularScore",
-      "Key": "AngularScore_16",
-      "ForWeek": 2495,
-      "Week": "2017-10-22T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 17,
-      "Type": "AngularScore",
-      "Key": "AngularScore_17",
-      "ForWeek": 2496,
-      "Week": "2017-10-29T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 18,
-      "Type": "AngularScore",
-      "Key": "AngularScore_18",
-      "ForWeek": 2497,
-      "Week": "2017-11-05T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    }
-  ],
-  "Weeks": [
-    {
-      "Id": 636357600000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636357600000000000",
-      "ForWeekNumber": 2481,
-      "ForWeek": "2017-07-16T00:00:00Z",
-      "DisplayDate": "2017-07-09T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636363648000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636363648000000000",
-      "ForWeekNumber": 2482,
-      "ForWeek": "2017-07-23T00:00:00Z",
-      "DisplayDate": "2017-07-16T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636369696000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636369696000000000",
-      "ForWeekNumber": 2483,
-      "ForWeek": "2017-07-30T00:00:00Z",
-      "DisplayDate": "2017-07-23T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636375744000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636375744000000000",
-      "ForWeekNumber": 2484,
-      "ForWeek": "2017-08-06T00:00:00Z",
-      "DisplayDate": "2017-07-30T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636381792000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636381792000000000",
-      "ForWeekNumber": 2485,
-      "ForWeek": "2017-08-13T00:00:00Z",
-      "DisplayDate": "2017-08-06T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636387840000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636387840000000000",
-      "ForWeekNumber": 2486,
-      "ForWeek": "2017-08-20T00:00:00Z",
-      "DisplayDate": "2017-08-13T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636393888000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636393888000000000",
-      "ForWeekNumber": 2487,
-      "ForWeek": "2017-08-27T00:00:00Z",
-      "DisplayDate": "2017-08-20T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636399936000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636399936000000000",
-      "ForWeekNumber": 2488,
-      "ForWeek": "2017-09-03T00:00:00Z",
-      "DisplayDate": "2017-08-27T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636405984000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636405984000000000",
-      "ForWeekNumber": 2489,
-      "ForWeek": "2017-09-10T00:00:00Z",
-      "DisplayDate": "2017-09-03T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636412032000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636412032000000000",
-      "ForWeekNumber": 2490,
-      "ForWeek": "2017-09-17T00:00:00Z",
-      "DisplayDate": "2017-09-10T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636418080000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636418080000000000",
-      "ForWeekNumber": 2491,
-      "ForWeek": "2017-09-24T00:00:00Z",
-      "DisplayDate": "2017-09-17T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636424128000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636424128000000000",
-      "ForWeekNumber": 2492,
-      "ForWeek": "2017-10-01T00:00:00Z",
-      "DisplayDate": "2017-09-24T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636430176000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636430176000000000",
-      "ForWeekNumber": 2493,
-      "ForWeek": "2017-10-08T00:00:00Z",
-      "DisplayDate": "2017-10-01T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636436224000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636436224000000000",
-      "ForWeekNumber": 2494,
-      "ForWeek": "2017-10-15T00:00:00Z",
-      "DisplayDate": "2017-10-08T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636442272000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636442272000000000",
-      "ForWeekNumber": 2495,
-      "ForWeek": "2017-10-22T00:00:00Z",
-      "DisplayDate": "2017-10-15T06:00:00Z",
-      "IsCurrentWeek": true
-    },
-    {
-      "Id": 636448320000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636448320000000000",
-      "ForWeekNumber": 2496,
-      "ForWeek": "2017-10-29T00:00:00Z",
-      "DisplayDate": "2017-10-22T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636454368000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636454368000000000",
-      "ForWeekNumber": 2497,
-      "ForWeek": "2017-11-05T00:00:00Z",
-      "DisplayDate": "2017-10-29T06:00:00Z",
-      "IsCurrentWeek": false
-    }
-  ],
-  "ReverseScorecard": false,
-  "Period": "Weekly",
-  "DateFormat1": "MMM d",
-  "DateFormat2": "MMM d"
-}</ExpectedJson>
-    <GeneratedDate>2017-10-20T06:15:48.3616492Z</GeneratedDate>
-  </XmlApiResult>
   <XmlApiResult Name="ScorecardApiTests_v1.GetScorecard-1" GeneratedVersion="1.0">
     <ExpectedJson>{
   "Id": -1,
@@ -1885,5 +1461,416 @@
   "DateFormat2": "MMM d"
 }</ExpectedJson>
     <GeneratedDate>2017-10-20T06:15:48.3981576Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="ScorecardApiTests_v1.GetScorecard" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": -1,
+  "Type": "AngularScorecard",
+  "Key": "AngularScorecard_-1",
+  "Measurables": [
+    {
+      "Name": "Meas2",
+      "Id": 2,
+      "Type": "AngularMeasurable",
+      "Key": "AngularMeasurable_2",
+      "Owner": {
+        "Id": 10,
+        "Type": "AngularUser",
+        "Key": "AngularUser_10",
+        "Name": "E2 150867073",
+        "ImageUrl": "/i/userplaceholder",
+        "CreateTime": "2017-10-22T11:12:13"
+      },
+      "Admin": {
+        "Id": 10,
+        "Type": "AngularUser",
+        "Key": "AngularUser_10",
+        "Name": "E2 150867073",
+        "ImageUrl": "/i/userplaceholder",
+        "CreateTime": "2017-10-22T11:12:13"
+      },
+      "Target": 0.0,
+      "AltTarget": null,
+      "Direction": "GreaterThan",
+      "IsDivider": false,
+      "ShowCumulative": false,
+      "Cumulative": null,
+      "CumulativeRange": null,
+      "Modifiers": "None",
+      "Ordering": null,
+      "Disabled": null
+    }
+  ],
+  "Scores": [
+    {
+      "Id": 2,
+      "Type": "AngularScore",
+      "Key": "AngularScore_2",
+      "ForWeek": 2495,
+      "Week": "2017-10-22T00:00:00Z",
+      "DateEntered": "2017-10-22T11:12:14",
+      "Measured": 2.0,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 18,
+      "Type": "AngularScore",
+      "Key": "AngularScore_18",
+      "ForWeek": 2482,
+      "Week": "2017-07-23T00:00:00Z",
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 19,
+      "Type": "AngularScore",
+      "Key": "AngularScore_19",
+      "ForWeek": 2483,
+      "Week": "2017-07-30T00:00:00Z",
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 20,
+      "Type": "AngularScore",
+      "Key": "AngularScore_20",
+      "ForWeek": 2484,
+      "Week": "2017-08-06T00:00:00Z",
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 21,
+      "Type": "AngularScore",
+      "Key": "AngularScore_21",
+      "ForWeek": 2485,
+      "Week": "2017-08-13T00:00:00Z",
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 22,
+      "Type": "AngularScore",
+      "Key": "AngularScore_22",
+      "ForWeek": 2486,
+      "Week": "2017-08-20T00:00:00Z",
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 23,
+      "Type": "AngularScore",
+      "Key": "AngularScore_23",
+      "ForWeek": 2487,
+      "Week": "2017-08-27T00:00:00Z",
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 24,
+      "Type": "AngularScore",
+      "Key": "AngularScore_24",
+      "ForWeek": 2488,
+      "Week": "2017-09-03T00:00:00Z",
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 25,
+      "Type": "AngularScore",
+      "Key": "AngularScore_25",
+      "ForWeek": 2489,
+      "Week": "2017-09-10T00:00:00Z",
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 26,
+      "Type": "AngularScore",
+      "Key": "AngularScore_26",
+      "ForWeek": 2490,
+      "Week": "2017-09-17T00:00:00Z",
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 27,
+      "Type": "AngularScore",
+      "Key": "AngularScore_27",
+      "ForWeek": 2491,
+      "Week": "2017-09-24T00:00:00Z",
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 28,
+      "Type": "AngularScore",
+      "Key": "AngularScore_28",
+      "ForWeek": 2492,
+      "Week": "2017-10-01T00:00:00Z",
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 29,
+      "Type": "AngularScore",
+      "Key": "AngularScore_29",
+      "ForWeek": 2493,
+      "Week": "2017-10-08T00:00:00Z",
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 30,
+      "Type": "AngularScore",
+      "Key": "AngularScore_30",
+      "ForWeek": 2494,
+      "Week": "2017-10-15T00:00:00Z",
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 31,
+      "Type": "AngularScore",
+      "Key": "AngularScore_31",
+      "ForWeek": 2496,
+      "Week": "2017-10-29T00:00:00Z",
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 32,
+      "Type": "AngularScore",
+      "Key": "AngularScore_32",
+      "ForWeek": 2497,
+      "Week": "2017-11-05T00:00:00Z",
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    }
+  ],
+  "Weeks": [
+    {
+      "Id": 636363648000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636363648000000000",
+      "ForWeekNumber": 2482,
+      "ForWeek": "2017-07-23T00:00:00Z",
+      "DisplayDate": "2017-07-16T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636369696000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636369696000000000",
+      "ForWeekNumber": 2483,
+      "ForWeek": "2017-07-30T00:00:00Z",
+      "DisplayDate": "2017-07-23T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636375744000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636375744000000000",
+      "ForWeekNumber": 2484,
+      "ForWeek": "2017-08-06T00:00:00Z",
+      "DisplayDate": "2017-07-30T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636381792000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636381792000000000",
+      "ForWeekNumber": 2485,
+      "ForWeek": "2017-08-13T00:00:00Z",
+      "DisplayDate": "2017-08-06T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636387840000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636387840000000000",
+      "ForWeekNumber": 2486,
+      "ForWeek": "2017-08-20T00:00:00Z",
+      "DisplayDate": "2017-08-13T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636393888000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636393888000000000",
+      "ForWeekNumber": 2487,
+      "ForWeek": "2017-08-27T00:00:00Z",
+      "DisplayDate": "2017-08-20T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636399936000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636399936000000000",
+      "ForWeekNumber": 2488,
+      "ForWeek": "2017-09-03T00:00:00Z",
+      "DisplayDate": "2017-08-27T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636405984000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636405984000000000",
+      "ForWeekNumber": 2489,
+      "ForWeek": "2017-09-10T00:00:00Z",
+      "DisplayDate": "2017-09-03T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636412032000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636412032000000000",
+      "ForWeekNumber": 2490,
+      "ForWeek": "2017-09-17T00:00:00Z",
+      "DisplayDate": "2017-09-10T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636418080000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636418080000000000",
+      "ForWeekNumber": 2491,
+      "ForWeek": "2017-09-24T00:00:00Z",
+      "DisplayDate": "2017-09-17T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636424128000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636424128000000000",
+      "ForWeekNumber": 2492,
+      "ForWeek": "2017-10-01T00:00:00Z",
+      "DisplayDate": "2017-09-24T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636430176000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636430176000000000",
+      "ForWeekNumber": 2493,
+      "ForWeek": "2017-10-08T00:00:00Z",
+      "DisplayDate": "2017-10-01T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636436224000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636436224000000000",
+      "ForWeekNumber": 2494,
+      "ForWeek": "2017-10-15T00:00:00Z",
+      "DisplayDate": "2017-10-08T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636442272000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636442272000000000",
+      "ForWeekNumber": 2495,
+      "ForWeek": "2017-10-22T00:00:00Z",
+      "DisplayDate": "2017-10-15T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636448320000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636448320000000000",
+      "ForWeekNumber": 2496,
+      "ForWeek": "2017-10-29T00:00:00Z",
+      "DisplayDate": "2017-10-22T05:00:00Z",
+      "IsCurrentWeek": true
+    },
+    {
+      "Id": 636454368000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636454368000000000",
+      "ForWeekNumber": 2497,
+      "ForWeek": "2017-11-05T00:00:00Z",
+      "DisplayDate": "2017-10-29T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636460416000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636460416000000000",
+      "ForWeekNumber": 2498,
+      "ForWeek": "2017-11-12T00:00:00Z",
+      "DisplayDate": "2017-11-05T05:00:00Z",
+      "IsCurrentWeek": false
+    }
+  ],
+  "ReverseScorecard": false,
+  "Period": "Weekly",
+  "DateFormat1": "MMM d",
+  "DateFormat2": "MMM d"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-22T11:12:14.6117271Z</GeneratedDate>
   </XmlApiResult>
 </ArrayOfXmlApiResult>
