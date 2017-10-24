@@ -429,7 +429,7 @@
                 console.error("Aborting sendUpdate. Url did not resolve to a string.");
                 return;
             }
-            url = addTimestamp(url) + builder;
+            url = Time.addTimestamp(url) + builder;
             $http.post(url, dat).then(onSuccess, onError);
         };
     }

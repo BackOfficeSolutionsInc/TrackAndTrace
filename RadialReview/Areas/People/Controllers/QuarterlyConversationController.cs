@@ -124,16 +124,9 @@ namespace RadialReview.Areas.People.Controllers {
 					var perms = PermissionsUtility.Create(s, caller);
 					var sun = s.Get<SurveyUserNode>(sunId);
 					perms.ViewUserOrganization(sun.UserOrganizationId, false);
-					var user = s.Get<UserOrganizationModel>(sun.UserOrganizationId);
-					var email = user.GetEmail();
-					var linkUrl = Config.BaseUrl(null, "/People/QuarterlyConversation/");
 
-					var sc = s.Get<SurveyContainer>(surveyContainerId);
-
-					await Emailer.SendEmail(
-						Mail.To(EmailTypes.QuarterlyConversationReminder, email)
-						.SubjectPlainText("[Reminder] Please complete your Quarterly Conversation")
-						.Body(EmailStrings.QuarterlyConversationReminder_Body, user.GetFirstName(), sc.DueDate.NotNull(x => x.Value.ToShortDateString()), linkUrl, linkUrl, Config.ProductName()));
+                    var user = s.Get<UserOrganizationModel>(sun.UserOrganizationId);                    
+                    await QuarterlyConversationAccessor.SendReminderUnsafe(s,user,surveyContainerId);
 
 				}
 			}
@@ -166,7 +159,19 @@ namespace RadialReview.Areas.People.Controllers {
 			return RedirectToAction("Index", "Home", new { area = "" });
 		}
 
-		[Access(AccessLevel.UserOrganization)]
+        [Access(AccessLevel.UserOrganization)]
+        public async Task<JsonResult> RemindAll(long id) {
+            var count = await QuarterlyConversationAccessor.RemindAllIncompleteSurveys(GetUser(), id);
+            var txt = "All Quarterly Conversations completed.";
+            if (count == 1) {
+                txt = "Reminder sent";
+            }else if (count > 1) {
+                txt = "Reminders sent";
+            }
+            return Json(ResultObject.Success(txt), JsonRequestBehavior.AllowGet);
+        }
+
+        [Access(AccessLevel.UserOrganization)]
 		public JsonResult Remove(long id) {
 			SurveyAccessor.RemoveSurveyContainer(GetUser(), id);// QuarterlyConversationAccessor
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);

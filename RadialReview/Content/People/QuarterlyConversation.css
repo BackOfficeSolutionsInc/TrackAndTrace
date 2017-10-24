@@ -1,4 +1,8 @@
-﻿.people.quarterly-conversation .anchor {
+﻿.people.quarterly-conversation .md-radio {
+  display: inline-block;
+  padding-right: 18px;
+}
+.people.quarterly-conversation .anchor {
   position: relative;
   top: -60px;
   display: block;
@@ -419,6 +423,22 @@
 }
 .people.quarterly-conversation survey-container .survey .sections .section-Values survey-item-container {
   padding-bottom: 5px;
+}
+.people.quarterly-conversation survey-container .survey .sections .section-Values [value="often"] ~ .response-title:before {
+  content: "[+]";
+  letter-spacing: 9px;
+}
+.people.quarterly-conversation survey-container .survey .sections .section-Values [value="sometimes"] ~ .response-title:before {
+  content: "[+/\2212]";
+  letter-spacing: 1px;
+  padding-right: 9px;
+}
+.people.quarterly-conversation survey-container .survey .sections .section-Values [value="not-often"] ~ .response-title:before {
+  content: "[\2212]";
+  letter-spacing: 9px;
+}
+.people.quarterly-conversation survey-container .survey .sections .section-Values .md-radio {
+  padding-right: 0px;
 }
 .people.quarterly-conversation survey-container .survey .sections .section-Roles .item-container-Text {
   padding-top: 10px;

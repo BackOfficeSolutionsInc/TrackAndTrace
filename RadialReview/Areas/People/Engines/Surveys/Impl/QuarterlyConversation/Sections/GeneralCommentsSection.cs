@@ -17,7 +17,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		}
 
 		public ISection InitializeSection(ISectionInitializerData data) {
-			return new SurveySection(data, "General Comments", SurveySectionType.GeneralComments, "mk-gencomments");
+			return new SurveySection(data, "General Comments/Next Steps", SurveySectionType.GeneralComments, "mk-gencomments");
 		}
 
 		public void Prelookup(IInitializerLookupData data) {

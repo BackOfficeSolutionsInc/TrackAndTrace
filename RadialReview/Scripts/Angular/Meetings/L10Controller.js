@@ -63,7 +63,13 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
                         if (!(value.ForWeek in $scope.ScoreLookup))
                             $scope.ScoreLookup[value.ForWeek] = {};
                         if (value.Measurable) {
-                            $scope.ScoreLookup[value.ForWeek][value.Measurable.Id] = value.Key;
+                            var foundKey =$scope.ScoreLookup[value.ForWeek][value.Measurable.Id];
+                            var newKey = value.Key;
+                            if (typeof (foundKey) !== "undefined" && foundKey.localeCompare(value.Key)<0) {
+                                debugger;
+                                newKey = foundKey;
+                            }
+                            $scope.ScoreLookup[value.ForWeek][value.Measurable.Id] = newKey;
                         }
                     }
                 }

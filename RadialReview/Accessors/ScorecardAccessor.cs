@@ -497,7 +497,7 @@ namespace RadialReview.Accessors {
             var week = TimingUtility.GetDateSinceEpoch(weekId);
             await _GenerateScoreModels_Unsafe(s, week.AsList(), measurableId.AsList());
             var scores = s.QueryOver<ScoreModel>().Where(x => x.DeleteTime == null && x.ForWeek == week && x.MeasurableId == measurableId).List().ToList();
-            var found = scores.FirstOrDefault();
+            var found = scores.OrderBy(x=>x.Id).FirstOrDefault();
             return found;
 
 
@@ -543,11 +543,15 @@ namespace RadialReview.Accessors {
 			} else {
 				scoresQ = scoresQ.Where(x => x.AccountableUserId == userId); //already checked delete time above
 			}
-			var scores = scoresQ.List().ToList();
+			var scoresWithDups = scoresQ.List().ToList();
+
+            var scores = scoresWithDups.OrderBy(x => x.Id).Distinct(x => Tuple.Create(x.ForWeek, x.Measurable.Id)).ToList();
+
+
 
 			//Generate blank ones
 			var extra = await _GenerateScoreModels_AddMissingScores_Unsafe(s, weeks, measurableIds, scores);
-			scores.AddRange(extra);
+            scores.AddRange(extra);
 
 			return scores;
 		}

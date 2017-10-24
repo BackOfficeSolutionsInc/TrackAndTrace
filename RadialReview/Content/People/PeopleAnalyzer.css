@@ -68,6 +68,10 @@
   width: 100%;
   position: absolute;
   bottom: 0px;
+  border-left: 1px solid gray;
+  border-right: 1px solid gray;
+  border-top: 1px solid gray;
+  left: 1px;
 }
 .people-analyzer .people-analyzer-table {
   margin: auto;

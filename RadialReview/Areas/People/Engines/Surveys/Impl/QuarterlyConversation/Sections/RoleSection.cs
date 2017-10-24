@@ -18,7 +18,7 @@ using RadialReview.Models.Enums;
 namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.Sections {
 	public class RoleSection : ISectionInitializer {
 
-		public static String RoleCommentHeading = "Role Comments";
+		public static String RoleCommentHeading = "5 Roles/GWC Comments";
 
 		public IEnumerable<IItemInitializer> GetAllPossibleItemBuilders(IEnumerable<IByAbout> byAbouts) {
 #pragma warning disable CS0618 // Type or member is obsolete

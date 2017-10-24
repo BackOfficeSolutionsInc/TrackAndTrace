@@ -9,11 +9,14 @@ using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Synchronize;
 using System.Threading;
+using log4net;
 
 namespace RadialReview.Utilities.Synchronize {
 
 	public class SyncUtil {
-		public static TimeSpan Buffer = TimeSpan.FromSeconds(40);
+        protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        public static TimeSpan Buffer = TimeSpan.FromSeconds(40);
 
 
 		/*public static void EnsureStrictlyAfterForUser(UserOrganizationModel caller,ISession s,SyncAction action)
@@ -87,6 +90,7 @@ namespace RadialReview.Utilities.Synchronize {
                     throw;
                 }
 			} catch (Exception e) {
+                log.Error(e);
 				throw new SyncException("Sync Exception: " + e.Message, null);
 			}
 			return false;
@@ -110,7 +114,9 @@ namespace RadialReview.Utilities.Synchronize {
 		}
 		
 		private static bool IsStrictlyAfter(ISession s, string actionStr, long clientTimestamp, long callerId, Sync newSync, DateTime newSyncDbTimestamp,TimeSpan buffer) {
-			var after = newSyncDbTimestamp.Subtract(buffer);
+            var after = newSyncDbTimestamp;
+            if ((newSyncDbTimestamp - DateTime.MinValue) > buffer)
+                after = newSyncDbTimestamp.Subtract(buffer);
 
 			var syncs = s.QueryOver<Sync>()
 				.Where(x => x.DeleteTime == null && x.DbTimestamp >= after && x.Action == actionStr && x.UserId == callerId)

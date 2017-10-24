@@ -154,6 +154,36 @@ namespace RadialReview.Areas.People.Accessors {
 			}
 		}
 
+        public static List<IForModel> GetForModelsWithIncompleteSurveysForSurveyContainers(UserOrganizationModel caller,long surveyContainerId) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    perms.CanAdmin(ResourceType.SurveyContainer, surveyContainerId);
+                    var sc = s.Get<SurveyContainer>(surveyContainerId);
+                    var byAndLockedIn= s.QueryOver<Survey>()
+                        .Where(x => x.DeleteTime == null && x.SurveyContainerId == surveyContainerId)
+                        .Select(x => x.By, x => x.LockedIn)
+                        .List<object[]>()
+                        .Select(x => new {
+                            By = (ForModel)x[0],
+                            LockedIn = (bool)x[1]
+                        }).ToList();
+
+                    var allBy = byAndLockedIn.Select(x => x.By).Distinct(x => x.ToKey()).ToDictionary(x => x.ToKey(), x => x);
+                    var allLockedIn = byAndLockedIn.Select(x => x.By).Distinct(x => x.ToKey()).ToDictionary(x=>x.ToKey(),x=>true);
+                    foreach(var bl in byAndLockedIn) {
+                        if (bl.LockedIn == false) {
+                            allLockedIn[bl.By.ToKey()] = false;
+                        }
+                    }
+
+                    return allLockedIn.Where(x => x.Value == false)
+                        .Select(x => (IForModel)allBy[x.Key])
+                        .ToList();
+                }
+            }            
+        }
+
 		public static bool UpdateAngularSurveyResponse(UserOrganizationModel caller, long responseId, string answer, string connectionId = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {

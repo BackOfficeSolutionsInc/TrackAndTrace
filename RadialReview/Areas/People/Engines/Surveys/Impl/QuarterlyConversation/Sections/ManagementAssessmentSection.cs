@@ -98,13 +98,19 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 			} else {
 				var sun = (data.About as SurveyUserNode);
 				if (sun != null && sun._Relationship != null && sun._Relationship[data.By.ToKey()].HasFlag(AboutType.Self))
-					return GetItemBuildersSupervisorSelfAssessment(data);
-				return GetItemBuildersSupervisorAssessment(data);
+                    return GetItemBuildersSupervisorSelfAssessment(data);
+                return GetItemBuildersSupervisorSelfAssessment(data);//return GetItemBuildersSupervisorAssessment(data);
 			}
 		}
 
-		public ISection InitializeSection(ISectionInitializerData data) {
-			return new SurveySection(data, "Management Assessment", SurveySectionType.ManagementAssessment, "management-assessment");
+        public ISection InitializeSection(ISectionInitializerData data) {
+            var sun = (data.Survey.GetAbout() as SurveyUserNode);
+            var help = "Would you say your boss could say yes to...";
+            if (sun != null && sun._Relationship != null && sun._Relationship[data.Survey.GetBy().ToKey()].HasFlag(AboutType.Self))
+                help = "";
+            return new SurveySection(data, "Management Self-Assessment", SurveySectionType.ManagementAssessment, "management-assessment") {
+                Help = help
+            };
 		}
 
 		public void Prelookup(IInitializerLookupData data) {

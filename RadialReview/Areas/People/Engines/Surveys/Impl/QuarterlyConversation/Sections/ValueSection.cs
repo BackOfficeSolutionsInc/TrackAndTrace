@@ -13,7 +13,7 @@ using RadialReview.Models.Enums;
 namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.Sections {
     public class ValueSection : ISectionInitializer {
 
-		public static string ValueCommentHeading = "Value Comments";
+		public static string ValueCommentHeading = "Core Values Comments";
 
 		public IEnumerable<IItemInitializer> GetAllPossibleItemBuilders(IEnumerable<IByAbout> byAbouts) {
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -41,7 +41,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
         }
 
         public ISection InitializeSection(ISectionInitializerData data) {
-            return new SurveySection(data, "Values", SurveySectionType.Values,"mk-values");
+            return new SurveySection(data, "Core Values", SurveySectionType.Values,"mk-values");
         }
 
         public void Prelookup(IInitializerLookupData data) {
@@ -62,9 +62,9 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 
         public IItemFormatRegistry GetItemFormat(IItemFormatInitializerCtx ctx) {
             var options = new Dictionary<string, string> {
-				{"often"    ,"Most of the time they live this value"     },
-                {"sometimes","Some of the time they live this value" },
-				{"not-often","Most of the time they do not live this value" },
+				{"often"    ,"Most of the time they live this value"          },
+                {"sometimes","Some of the time they live this value"          },
+				{"not-often","Most of the time they do not live this value"   },
 			};
             return ctx.RegistrationItemFormat(true, () => SurveyItemFormat.GenerateRadio(ctx, SurveyQuestionIdentifier.Value, options));
         }
