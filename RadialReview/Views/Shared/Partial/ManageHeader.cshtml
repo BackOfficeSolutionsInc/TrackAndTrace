@@ -10,7 +10,7 @@
 		<li class="@(ViewBag.Page == "Settings"  ? "active" : "")"><a href="/Manage/Organization">  Organization</a></li>
 	}
 	@if ((ViewBag.ManagingOrganization ?? false) || (ViewBag.Organization != null && ViewBag.Organization.ManagersCanEdit)) {
-		<li class="@(ViewBag.Page == "Advanced"  ? "active" : "")"><a href="/Manage/Advanced">  Advanced</a></li>
+		<li class="@(ViewBag.Page == "Advanced"  ? "active" : "")"><a href="/Manage/Advanced">  Admin</a></li>
 	}
 	@Html.Partial("_ExtraTab")
 </ul>

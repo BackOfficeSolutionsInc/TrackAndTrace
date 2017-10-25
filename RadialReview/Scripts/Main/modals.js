@@ -419,10 +419,10 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 	var callbackArg = callback;
 
 	var dur = 1;
-	if ($("#modalBody :focusable").first().is("select"))
+	if ($("#modalBody").closest(".after-load").find(":focusable").first().is("select"))
 		dur = 360;
 
-	setTimeout(function () { $("#modalBody :focusable").first().focus(); }, dur);
+	setTimeout(function () { $("#modalBody").closest(".after-load").find(":focusable").first().focus(); }, dur);
 	//$("#modalForm input:visible,#modalForm textarea:visible,#modalForm button:not(.close):visible").first().focus();
 
 	$("#modalForm").submit(function (ev) {

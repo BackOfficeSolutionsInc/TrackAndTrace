@@ -146,6 +146,8 @@
   background-color: #3E3935;
   border-top: none;
   height: 105px;
+  margin-left: -1px;
+  margin-right: -1px;
 }
 #modal .modal-icon #modalTitle {
   position: absolute;

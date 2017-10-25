@@ -100,6 +100,9 @@ namespace RadialReview.Areas.People.Engines.Surveys.Interfaces {
 		IInnerLookup Lookup { get; }
 		ISurveyContainer SurveyContainer { get; }
 		ISurvey Survey { get; }
+
+		IForModel By { get; }
+		IForModel About { get; }
 	}
 	public interface IItemInitializerData : IInitializerData {
 		IInnerLookup Lookup { get; }

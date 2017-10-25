@@ -17,16 +17,12 @@ namespace RadialReview.Models.Enums {
 
     public static class AboutTypeExtensions {
         public static int Order(this AboutType self) {
-            
-
-            switch (self) {
-                case AboutType.Self: return 1;
-                case AboutType.Manager: return 2;
-                default: return 0;
-            }
-
+			if (self.HasFlag(AboutType.Self))
+				return 1;
+			if (self.HasFlag(AboutType.Manager))
+				return 2;
+			return 0;
         }
-
     }
 
 }

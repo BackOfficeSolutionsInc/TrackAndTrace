@@ -5,7 +5,7 @@
 #alerts {
 	.material-snackbar();
 	z-index: 10011;
-	margin-bottom:30px;
+	margin-bottom: 30px;
 
 	.alert {
 		position: relative;
@@ -23,5 +23,51 @@ body, html {
 .nav.nav-tabs.manage {
 	.active a {
 		//background-color:#eee;
+	}
+}
+
+
+.traction-library {
+
+	.panel-body {
+		position: relative;
+	}
+
+	.thumbnail {
+		border: none;
+		min-height:140px;
+	}
+
+	.well {
+		font-family: 'Roboto',sans-serif;
+
+		sup {
+			top: -0.8em;
+			font-size: 50%;
+		}
+	}
+
+	h4 {
+		margin-top: 0px;
+	}
+
+	.btn {
+		background-color: #fff !important;
+		color: #229bef !important;
+		border-color: #229bef !important;
+
+		&:hover {
+			color: #fff !important;
+			background-color: #229bef !important;
+			border-color: #229bef !important;
+		}
+	}
+
+	.disclaimer {
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		padding: 3px 7px;
+		font-size: 11px;
 	}
 }

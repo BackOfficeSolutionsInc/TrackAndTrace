@@ -374,7 +374,7 @@
 
 .direction_1:empty:before,
 .direction_GreaterThan:empty:before {
-	content: "≥";
+	content: "\2265";
 }
 
 .direction_LessThan:empty:before {
@@ -382,7 +382,7 @@
 }
 
 .direction_LessThanOrEqual:empty:before {
-	content: "≤";
+	content: "\2264";
 }
 
 .direction_GreaterThanNotEqual:empty:before {
@@ -394,7 +394,7 @@
 }
 
 .direction_Between:empty:before {
-	content: "⇔";
+	content: "\21D4";
 }
 
 .modifiers.Dollar:before,

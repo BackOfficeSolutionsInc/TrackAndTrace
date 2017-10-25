@@ -2914,7 +2914,8 @@ namespace RadialReview.Accessors {
                         rangeTemp = new DateRange(minDate, maxDate);
                     }
 
-                    await ScorecardAccessor._GenerateScoreModels_AddMissingScores_Unsafe(s, rangeTemp, measurables, scoreModels);
+                    var extra = await ScorecardAccessor._GenerateScoreModels_AddMissingScores_Unsafe(s, rangeTemp, measurables, scoreModels);
+					scoreModels.AddRange(extra);
                 }
             }
 

@@ -65,7 +65,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
                         if (value.Measurable) {
                             var foundKey =$scope.ScoreLookup[value.ForWeek][value.Measurable.Id];
                             var newKey = value.Key;
-                            if (typeof (foundKey) !== "undefined" && foundKey.localeCompare(value.Key)<0) {
+                            if (typeof (foundKey) !== "undefined" && foundKey.localeCompare(value.Key)>0) {
                                 debugger;
                                 newKey = foundKey;
                             }
@@ -846,7 +846,6 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
     }
 
     $scope.functions.topDate = function (week, selector) {
-    	debugger;
         var dat = decideOnDate(week, selector);
         var date = $scope.functions.subtractDays(dat/*week.DisplayDate*/, 0);
         return $filter('date')(date, selector.DateFormat1);

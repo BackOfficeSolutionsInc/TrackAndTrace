@@ -166,7 +166,7 @@ namespace RadialReview.Areas.People.Accessors {
                         .List<object[]>()
                         .Select(x => new {
                             By = (ForModel)x[0],
-                            LockedIn = (bool)x[1]
+                            LockedIn = (((bool?)x[1])??false)
                         }).ToList();
 
                     var allBy = byAndLockedIn.Select(x => x.By).Distinct(x => x.ToKey()).ToDictionary(x => x.ToKey(), x => x);

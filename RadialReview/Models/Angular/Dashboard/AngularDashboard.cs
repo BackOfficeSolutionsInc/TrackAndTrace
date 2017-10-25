@@ -85,9 +85,10 @@ namespace RadialReview.Models.Angular.Dashboard {
 
         public AngularCoreProcessData CoreProcess { get; set; }
 
-        public AngularDateRange date { get; set; }
+		public AngularDateRange date { get; set; }
+		public AngularDateRange dataDateRange { get; set; }
 
-        public class DateVM {
+		public class DateVM {
             public DateTime startDate { get; set; }
             public DateTime endDate { get; set; }
         }

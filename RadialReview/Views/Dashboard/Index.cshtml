@@ -23,7 +23,8 @@
 	@Scripts.Render("~/bundles/DashboardGrid")
 	<script type="text/javascript">
 		dataDateRange = {
-			startDate : new Date().setDate(new Date().getDate() - 1)
+			startDate : null,// new Date().setDate(new Date().getDate() - 1)
+			endDate:null,
 		};
 		function buildGrid(data) {
 			if (showJsonAlert(data, true, true)) {

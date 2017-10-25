@@ -66,8 +66,8 @@ namespace RadialReview.Controllers {
             else
                 startRange = start.Value.ToDateTime();
 
-            if (end == null)
-                endRange = DateTime.UtcNow.AddDays(14);
+			if (end == null)
+				endRange = DateTime.UtcNow/*.AddDays(14);//*/.StartOfWeek(DayOfWeek.Sunday);
             else
                 endRange = end.Value.ToDateTime();
 
@@ -79,10 +79,13 @@ namespace RadialReview.Controllers {
 
             var output = new ListDataVM(id) {
                 Name = name,
-                date = new AngularDateRange() { startDate = startRange, endDate = endRange }
-            };
+                date = new AngularDateRange() { startDate = startRange, endDate = endRange },
+				dataDateRange = new AngularDateRange() { startDate = startRange, endDate = endRange },
 
-            if (tiles.Any(x => x.Type == TileType.Todo || (x.DataUrl ?? "").Contains("UserTodo"))) {
+			};
+
+
+			if (tiles.Any(x => x.Type == TileType.Todo || (x.DataUrl ?? "").Contains("UserTodo"))) {
                 try {
                     //Todos
                     var todos = TodoAccessor.GetMyTodosAndMilestones(GetUser(), id, !completed, dateRange, includeTodos: true, includeMilestones: false);//.Select(x => new AngularTodo(x));
@@ -105,12 +108,12 @@ namespace RadialReview.Controllers {
 
             if (tiles.Any(x => x.Type == TileType.Scorecard || (x.DataUrl ?? "").Contains("UserScorecard"))) {
                 var startEnd = "";
-                if (start != null)
-                    startEnd += "&start=" + start;
-                if (end != null)
-                    startEnd += "&end=" + end;
+				//if (start != null)
+					startEnd += "&start=" + startRange.ToJsMs();//start;
+				//if (end != null)
+					startEnd += "&end=" + endRange.ToJsMs();//end;
 
-                output.LoadUrls.Add(new AngularString(-15291127 * userId, $"/DashboardData/UserScorecardData/{id}?userId={userId}&completed={completed}&fullScorecard={fullScorecard}" + startEnd));
+				output.LoadUrls.Add(new AngularString(-15291127 * userId, $"/DashboardData/UserScorecardData/{id}?userId={userId}&completed={completed}&fullScorecard={fullScorecard}" + startEnd));
             }
 
             if (tiles.Any(x => x.Type == TileType.Rocks || (x.DataUrl ?? "").Contains("UserRock"))) {
@@ -264,10 +267,10 @@ namespace RadialReview.Controllers {
                                 } catch (Exception) {
                                 }
                                 var startEnd = "";
-                                if (start != null)
-                                    startEnd += "&start=" + start;
-                                if (end != null)
-                                    startEnd += "&end=" + end;
+                               // if (startRange != null)
+                                    startEnd += "&start=" + startRange.ToJsMs();//start;
+								//if (end != null)
+									startEnd += "&end=" + endRange.ToJsMs();//end;
                                 //random prime
                                 output.LoadUrls.Add(new AngularString(15291127 * l10Id, $"/DashboardData/L10ScorecardData/{id}?name={scname}&scorecardTileId={scorecard.Id}&l10Id={l10Id}&completed={completed}&fullScorecard={fullScorecard}" + startEnd));
                             } catch (Exception e) {
