@@ -40,6 +40,8 @@ namespace RadialReview.Models.Angular.Scorecard
 
 		[IgnoreDataMember]
 		public AngularMeasurable Measurable { get; set; } 
+        public long MeasurableId { get { return Measurable.Id; } }
+
 		public DateTime? DateEntered { get; set; }
 		public decimal? Measured { get; set; }
         public bool? Disabled { get; set; }

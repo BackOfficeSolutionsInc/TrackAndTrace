@@ -17,6 +17,10 @@
         return url + ((url.indexOf("?") != -1) ? "&_clientTimestamp=" + date : "?_clientTimestamp=" + date) + "&_tz=" + (-window.tzoffset);
     }
 
+    this.toLocalTime = function (date) {
+        return new Date(date.getTime() - tzoffset() * 60 * 1000);
+    }
+
     this.toServerTime = function (date) {
         return new Date(date.getTime() + tzoffset() * 60 * 1000);
     }

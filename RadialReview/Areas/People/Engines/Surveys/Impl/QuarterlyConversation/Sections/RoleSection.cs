@@ -41,7 +41,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 
 			var modelType = data.Survey.GetAbout().ModelType;
 
-			var genComments = new TextAreaItemIntializer(RoleCommentHeading, SurveyQuestionIdentifier.GeneralComment);
+			var genComments = new InputItemIntializer(RoleCommentHeading, SurveyQuestionIdentifier.GeneralComment);
 
 			if (modelType == ForModel.GetModelType<UserOrganizationModel>()) {
 				var query = data.Lookup.Get<RoleLinksQuery>("RoleQuery");

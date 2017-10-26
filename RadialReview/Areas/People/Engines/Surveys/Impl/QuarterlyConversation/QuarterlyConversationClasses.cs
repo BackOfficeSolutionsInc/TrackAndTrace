@@ -28,6 +28,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation {
             yield return new ValueSection();
             yield return new RoleSection();
 			yield return new RockSection();
+            yield return new RockCompletionSection();
 			yield return new LeadershipAssessmentSection(false);
 			yield return new ManagementAssessmentSection(false);
 			yield return new GeneralCommentsSection();

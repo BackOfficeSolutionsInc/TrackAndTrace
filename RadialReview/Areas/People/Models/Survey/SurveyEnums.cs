@@ -18,15 +18,17 @@ namespace RadialReview.Areas.People.Models.Survey {
 		GeneralComments = 4,
 		LeadershipAssessment = 5,
 		ManagementAssessment = 6,
-	}
+        RockCompletion = 7,
+    }
 
 	public enum SurveyItemType {
 		Invalid = 0,
 		TextArea = 1,
 		TextBox = 2,
 		Radio = 3,
-		Text = 4,
-	}
+        Text = 4,
+        Number = 5,
+    }
 	public enum SurveyQuestionIdentifier {
 		None = 0,
 
@@ -37,6 +39,8 @@ namespace RadialReview.Areas.People.Models.Survey {
 		LeadershipAssessment = 5,
 		ManagementAssessment = 6,
 
+        RockCompletion = 7,
+
 		GeneralComment = 100,
-	}
+    }
 }

@@ -27,8 +27,7 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
-        public async Task<PartialViewResult> ProcessTodosSelection(IEnumerable<int> users, IEnumerable<int> todos, IEnumerable<int> details, IEnumerable<int> duedate, long recurrenceId, string path, FileType fileType)
-        {
+        public async Task<PartialViewResult> ProcessTodosSelection(IEnumerable<int> users, IEnumerable<int> todos, IEnumerable<int> details, IEnumerable<int> duedate, long recurrenceId, string path, FileType fileType) {
             try {
                 var ui = await UploadAccessor.DownloadAndParse(GetUser(), path);
 
@@ -92,9 +91,8 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
-        public async Task<JsonResult> SubmitTodos(FormCollection model)
-        {
-                var path = model["Path"].ToString();
+        public async Task<JsonResult> SubmitTodos(FormCollection model) {
+            var path = model["Path"].ToString();
             try {
                 //var useAws = model["UseAWS"].ToBoolean();
                 var recurrence = model["recurrenceId"].ToLong();
@@ -117,11 +115,27 @@ namespace RadialReview.Controllers {
                                .ToDictionary(x => x.SubstringAfter("m_due_").ToInt(), x => { var o = now.AddDays(7); DateTime.TryParse(model[x], out o); return o; });
 
                 var caller = GetUser();
+                var userAddedCount = 0;
                 var measurableLookup = new Dictionary<int, MeasurableModel>();
                 using (var s = HibernateSession.GetCurrentSession()) {
                     using (var tx = s.BeginTransaction()) {
                         var org = s.Get<L10Recurrence>(recurrence).Organization;
                         var perms = PermissionsUtility.Create(s, caller).ViewOrganization(org.Id);
+
+                        var existing = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
+                            .Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrence)
+                            .Select(x => x.User.Id)
+                            .List<long>().ToList();
+
+                        foreach (var u in users.Where(x => !existing.Any(y => y == x.Value)).Select(x => x.Value).Distinct()) {
+                            s.Save(new L10Recurrence.L10Recurrence_Attendee() {
+                                User = s.Load<UserOrganizationModel>(u),
+                                L10Recurrence = s.Load<L10Recurrence>(recurrence),
+                                CreateTime = now,
+                            });
+                            userAddedCount += 1;
+                        }
+
                         foreach (var m in todos) {
                             var ident = m.Key;
                             long? owner = null;
@@ -135,8 +149,8 @@ namespace RadialReview.Controllers {
                             if (details.ContainsKey(ident))
                                 dued = due[ident];
 
-							var todoC = TodoCreation.CreateL10Todo(recurrence, todos[ident], dets, owner ?? caller.Id, dued, now: now);
-							await TodoAccessor.CreateTodo(s, perms, todoC);
+                            var todoC = TodoCreation.CreateL10Todo(recurrence, todos[ident], dets, owner ?? caller.Id, dued, now: now);
+                            await TodoAccessor.CreateTodo(s, perms, todoC);
 
                             //await TodoAccessor.CreateTodo(s, perms, recurrence, new TodoModel() {
                             //    CreateTime = now,
@@ -150,18 +164,6 @@ namespace RadialReview.Controllers {
                             //});
 
                         }
-                        var existing = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
-                            .Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrence)
-                            .Select(x => x.User.Id)
-                            .List<long>().ToList();
-
-                        foreach (var u in users.Where(x => !existing.Any(y => y == x.Value)).Select(x => x.Value).Distinct()) {
-                            s.Save(new L10Recurrence.L10Recurrence_Attendee() {
-                                User = s.Load<UserOrganizationModel>(u),
-                                L10Recurrence = s.Load<L10Recurrence>(recurrence),
-                                CreateTime = now,
-                            });
-                        }
                         tx.Commit();
                         s.Flush();
                     }
@@ -169,7 +171,11 @@ namespace RadialReview.Controllers {
 
                 //ShowAlert("Uploaded Scorecard", AlertType.Success);
 
-                return Json(ResultObject.CreateRedirect("/l10/wizard/" + recurrence + "#Todos", "Uploaded To-dos"));
+                var message = "Uploaded To-dos";
+                if (userAddedCount > 0)
+                    message += ". Added " + (userAddedCount) + " user".Pluralize(userAddedCount)+".";
+
+                    return Json(ResultObject.CreateRedirect("/l10/wizard/" + recurrence + "#Todos", message));
             } catch (Exception e) {
                 //e.Data.Add("AWS_ID", path);
                 throw new Exception(e.Message + "[" + path + "]", e);

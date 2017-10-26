@@ -4749,6 +4749,8 @@ namespace RadialReview.Accessors {
 
                         perm.EditL10Recurrence(recurIssue.Recurrence.Id);
 
+                        recurIssue.Rank = 0;
+                        recurIssue.Priority = 0;
                         recurIssue.DeleteTime = DateTime.UtcNow;
                         s.Update(recurIssue);
 

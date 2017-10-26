@@ -22,7 +22,8 @@ $(function () {
 		//var padId = $(todoRow).data("padid");
 		var todo = $(todoRow).data("todo");
 
-		var due = new Date(new Date(duedate).toUTCString().substr(0, 16));
+	    //var due = new Date(new Date(duedate).toUTCString().substr(0, 16));
+		var due = new Date(duedate);
 		var checked = $(todoRow).find(".todo-checkbox").is(":checked");
 
 		var detailsContents = $("<div class='todoDetails abstract-details-panel'></div>");
@@ -200,7 +201,10 @@ $(window).on("footer-resize", function () {
 function updateTodoDueDate(todo, duedate) {
 	var row = $(".todo-row[data-todo=" + todo + "]");
 	row.attr("data-duedate", duedate);
+
 	var d = new Date(duedate);
+	d = Time.toLocalTime(d);
+
 	var a = d.toISOString().substr(0, 10).split("-");
 	var dispDate = new Date(a[0], a[1] - 1, a[2]);
 	var nowDateStr = new Date();
@@ -304,11 +308,18 @@ function sortTodoByUser(recurId, todoList) {
 }
 
 function constructTodoRow(todo) {
+    debugger;
 	var red = "";
 	var nowDateStr = new Date();
 	var nowDate = new Date(nowDateStr.getYear() + 1900, nowDateStr.getMonth(), nowDateStr.getDate());
 	var duedateStr = todo.duedate.split("T")[0].split("-");
-	var duedate = new Date(duedateStr[0], duedateStr[1] - 1, duedateStr[2]).getTime();
+	//var duedate = new Date(duedateStr[0], duedateStr[1] - 1, duedateStr[2]).getTime();
+	var date = Time.toLocalTime(new Date(todo.duedate));
+	var duedate = date.getTime();
+	var message = todo.message;
+
+	if (message == null)
+	    message = "";
 
 	if (duedate < nowDate)
 		red = "red";
@@ -319,7 +330,7 @@ function constructTodoRow(todo) {
 	else if (todo.duedate < nowDate)
 		labelIndicator = "<div class=\"label label-danger overdue-indicator\" title=\"This to-do is overdue\">late</div>";
 
-	var date = new Date(new Date(todo.duedate).toUTCString().substr(0, 16));
+	//var date = new Date(new Date(todo.duedate).toUTCString().substr(0, 16));
 	//Accountable user name populated?
 	return '<li class="todo-row dd-item arrowkey"' +
 			'data-createtime="' + todo.createtime + '"' +
@@ -330,7 +341,7 @@ function constructTodoRow(todo) {
 			'data-accountable="' + todo.accountableUserId + '" ' +
 			//'data-padid="' + todo.padId + '" ' +
 			'data-todo="' + todo.todo + '" ' +
-			'data-message="' + todo.message + '" ' +
+			'data-message="' + message + '" ' +
 			'data-details="' + todo.details + '">' +
 			 '  <input data-todo="' + todo.todo + '" class="todo-checkbox on-edit-enabled" type="checkbox" ' + (todo.checked ? "checked" : "") + '/>' +
 			 '  <div class="move-icon noselect dd-handle">' +
@@ -345,7 +356,7 @@ function constructTodoRow(todo) {
             '<span class="profile-image">' +
                 profilePicture(todo.imageurl, todo.accountableUser) +
             '</span>' +
-			'   <div class="message" data-todo=' + todo.todo + '>' + todo.message + '</div>' +
+			'   <div class="message" data-todo=' + todo.todo + '>' + message + '</div>' +
 			'   <div class="todo-details-container"><div class="todo-details" data-todo=' + todo.todo + '>' + todo.details + '</div></div>' +
 			'   <div class="due-date ' + red + '">' + dateFormatter(date) + '</div>' +
 			'</li>';

@@ -93,7 +93,7 @@
 											<div ng-if="todo.TodoType!='Milestone'" class="todoModal" data-method="EditModal" data-title="Edit to-do" data-Id="{{todo.Id}}">{{todo.Name}}</div>
 											<div ng-if="todo.TodoType=='Milestone'" class="milestoneModal" data-method="EditModal" data-title="Edit milestone" data-Id="{{-todo.Id}}">{{todo.Name}}</div>
 										} else {
-											<input class="blend" placeholder="Enter to-do here" ng-model-options="{debounce: 75}" type="text" ng-model="todo.Name" ng-change="functions.sendUpdate(todo)" title="{{todo.Name}}" />
+											<input class="blend" placeholder="Enter to-do here" ng-model-options="{debounce: 400}" type="text" ng-model="todo.Name" ng-change="functions.sendUpdate(todo)" title="{{todo.Name}}" />
 											<div class="todo-text" ng-if="model.Selected==todo.Key+'@guid'">
 												<a class="pull-right timeline-button" ng-if="todo.Link!=null" target="_blank" href="{{todo.Link}}" style="margin-top: 4px;margin-right: 2px;"><span class="glyphicon glyphicon-comment"></span></a>
 												<iframe class="keep-background" style="background-color: white" width="100%" ng-src="{{trustAsResourceUrl(todo.DetailsUrl_Src)}}" ng-data-src="{{todo.DetailsUrl}}"></iframe>

@@ -13,7 +13,7 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		}
 
 		public IEnumerable<IItemInitializer> GetItemBuilders(IItemInitializerData data) {
-			yield return new TextAreaItemIntializer("Comments", SurveyQuestionIdentifier.GeneralComment);
+			yield return new InputItemIntializer("Comments", SurveyQuestionIdentifier.GeneralComment);
 		}
 
 		public ISection InitializeSection(ISectionInitializerData data) {

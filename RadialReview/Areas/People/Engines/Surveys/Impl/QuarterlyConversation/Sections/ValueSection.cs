@@ -9,6 +9,7 @@ using RadialReview.Models.Askables;
 using RadialReview.Areas.People.Models.Survey;
 using RadialReview.Models.Components;
 using RadialReview.Models.Enums;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.Sections {
     public class ValueSection : ISectionInitializer {
@@ -22,22 +23,33 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 		}
 
         public IEnumerable<IItemInitializer> GetItemBuilders(IItemInitializerData data) {
-			//only ask if they are not our manager
-			if (data.SurveyContainer.GetSurveyType() == SurveyType.QuarterlyConversation && data.About.Is<SurveyUserNode>()) {
 
-				if (data.SurveyContainer.GetCreator().ToKey() == ((SurveyUserNode)data.About).User.ToKey())
-					return new List<IItemInitializer>();
+            var dict = data.Lookup.GetOrAdd("ValueSectionAlreadyGenerated", (_str) => new DefaultDictionary<string, bool>(x=>false));
+            var byAboutKey = data.By.ToKey() + "-" + data.About.ToKey();
+            if (data.About.Is<SurveyUserNode>()) {
+                byAboutKey = data.By.ToKey() + "-" + ((SurveyUserNode)data.About).User.ToKey();
+            }
+            var alreadyGenerated =  dict[byAboutKey];
 
-				if ((data.About as SurveyUserNode)._Relationship[data.By.ToKey()] == AboutType.Manager)
-					return new List<IItemInitializer>();
-				
-			}
+            if (!alreadyGenerated) {
+                dict[byAboutKey] =true;
+                //only ask if they are not our manager
+                if (data.SurveyContainer.GetSurveyType() == SurveyType.QuarterlyConversation && data.About.Is<SurveyUserNode>()) {
 
-			var values = data.Lookup.GetList<CompanyValueModel>();
-			var genComments = new TextAreaItemIntializer(ValueCommentHeading, SurveyQuestionIdentifier.GeneralComment);
-			var items = values.Select(x => (IItemInitializer) new ValueItem(x)).ToList();
-			items.Add(genComments);
-			return items;
+                    if (data.SurveyContainer.GetCreator().ToKey() == ((SurveyUserNode)data.About).User.ToKey())
+                        return new List<IItemInitializer>();
+
+                    if ((data.About as SurveyUserNode)._Relationship[data.By.ToKey()] == AboutType.Manager)
+                        return new List<IItemInitializer>();
+                }
+
+                var values = data.Lookup.GetList<CompanyValueModel>();
+                var genComments = new InputItemIntializer(ValueCommentHeading, SurveyQuestionIdentifier.GeneralComment);
+                var items = values.Select(x => (IItemInitializer)new ValueItem(x)).ToList();
+                items.Add(genComments);
+                return items;
+            }
+            return new IItemInitializer[] { };
         }
 
         public ISection InitializeSection(ISectionInitializerData data) {

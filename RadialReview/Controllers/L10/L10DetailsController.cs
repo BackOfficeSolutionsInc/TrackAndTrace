@@ -60,7 +60,7 @@ namespace RadialReview.Controllers {
 
 			if (scores) {
 
-				if (model.Scorecard.Scores.Count() > 22 * 16 && period == ScorecardPeriod.Weekly) {
+				if (false && model.Scorecard.Scores.Count() > 22 * 16 && period == ScorecardPeriod.Weekly) {
 					var min = TimingUtility.GetDateSinceEpoch(model.Scorecard.Scores.Min(x => x.ForWeek)).ToJavascriptMilliseconds();
 					var max = TimingUtility.GetDateSinceEpoch(model.Scorecard.Scores.Max(x => x.ForWeek)).ToJavascriptMilliseconds();
 					if (max != min) {

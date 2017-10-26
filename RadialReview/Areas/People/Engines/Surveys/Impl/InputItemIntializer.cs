@@ -6,16 +6,23 @@ using System.Linq;
 using System.Web;
 
 namespace RadialReview.Areas.People.Engines.Surveys.Impl {
-	public class TextAreaItemIntializer : IItemInitializer {
+	public class InputItemIntializer : IItemInitializer {
+        
+        public SurveyItemType InputType { get; set; }
 		public string Name { get; set; }
 		public SurveyQuestionIdentifier QuestionIdentifier { get; set; }
-		public TextAreaItemIntializer(string name, SurveyQuestionIdentifier questionIdentifier) {
+        public KV[] Parameters { get;  set; }
+
+        public InputItemIntializer(string name, SurveyQuestionIdentifier questionIdentifier, SurveyItemType type = SurveyItemType.TextArea,KV[] parameters=null) {
 			Name = name;
 			QuestionIdentifier = questionIdentifier;
-		}
+            InputType = type;
+            Parameters = parameters ?? new KV[] { };
+
+        }
 
 		public IItemFormatRegistry GetItemFormat(IItemFormatInitializerCtx ctx) {
-			return ctx.RegistrationItemFormat(false, () => new SurveyItemFormat(ctx, QuestionIdentifier, SurveyItemType.TextArea));
+			return ctx.RegistrationItemFormat(false, () => new SurveyItemFormat(ctx, QuestionIdentifier, InputType, Parameters));
 		}
 
 		public bool HasResponse(IResponseInitializerCtx ctx) {

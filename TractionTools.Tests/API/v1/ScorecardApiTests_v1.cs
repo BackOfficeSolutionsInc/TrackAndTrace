@@ -54,7 +54,7 @@ namespace TractionTools.Tests.API.v1 {
 			var c = new ScorecardController();
 			c.MockUser(ctx.E1);
 			var s1 = await c.GetMineMeasureables();
-			CompareModelProperties(null,s1, false);
+			CompareModelProperties(s1, false);
 			 
 			c.MockUser(ctx.Manager);
 			var s2 = await c.GetMeasureablesForUser(ctx.E2.Id);

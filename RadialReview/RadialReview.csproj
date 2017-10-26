@@ -122,6 +122,7 @@
     <Compile Include="Api\V1\AccountabilityChart.cs" />
     <Compile Include="Api\V1\Teams.cs" />
     <Compile Include="Api\V1\Todo.cs" />
+    <Compile Include="Api\V1\Users.cs" />
     <Compile Include="App_Start\DateTimeModelBinder.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="Areas\CoreProcess\CoreProcessAreaRegistration.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\ITaskAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\RockCompletionSection.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Hooks\HookData.cs" />
     <Compile Include="Hooks\Meeting\AttendeeHooks.cs" />
@@ -192,7 +194,7 @@
     <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\GeneralCommentsSection.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\LeadershipAssessmentSection.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\ManagementAssessmentSection.cs" />
-    <Compile Include="Areas\People\Engines\Surveys\Impl\TextAreaItemIntializer.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Impl\InputItemIntializer.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Impl\TextItemIntializer.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Strategies\PostProcesses\PostProcessorFixPrettyNames.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Strategies\PostProcesses\PostProcessorNoOp.cs" />
@@ -214,6 +216,7 @@
     <None Include="Areas\People\Views\Main\Diagonal.cshtml" />
     <Content Include="Content\AngularTemplates\People\PeopleAnalyzer\peopleAnalyzerTable.html" />
     <Content Include="Content\AngularTemplates\People\PeopleAnalyzer\rzSliderTpl.html" />
+    <Content Include="Content\AngularTemplates\People\Survey\Items\bs\number-item.html" />
     <Content Include="Content\AngularTemplates\People\Survey\Items\bs\textarea-item.html" />
     <Content Include="Content\AngularTemplates\People\Survey\Items\bs\text-item.html" />
     <Content Include="Content\AngularTemplates\People\Survey\Items\bs\radio-item.html" />

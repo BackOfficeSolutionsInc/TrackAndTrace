@@ -157,6 +157,7 @@
 
                 if (typeof($(".vto-frame").attr("src"))==="undefined"|| $(".vto-frame").attr("data-page")!=pageName){
                     $("body").addClass("loading");
+                    $(".vto-frame").attr("src","about:blank");
                     setTimeout(function(){
                         $(".vto-frame").attr("src",pageUrl);
                         $(".vto-frame").attr("data-page",pageName);

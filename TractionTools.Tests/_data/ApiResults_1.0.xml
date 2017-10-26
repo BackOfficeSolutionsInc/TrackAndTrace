@@ -82,34 +82,6 @@
     <ExpectedJson>true</ExpectedJson>
     <GeneratedDate>2017-10-05T00:32:30.9027501Z</GeneratedDate>
   </XmlApiResult>
-  <XmlApiResult Name="L10ApiTests_v1.TestAttachHeadlineMeetingL10" GeneratedVersion="1.0">
-    <ExpectedJson>{
-  "Id": 1,
-  "Type": "AngularHeadline",
-  "Key": "AngularHeadline_1",
-  "Name": "Test Head Line",
-  "DetailsUrl": "https://localhost:44300/headlines/pad/1",
-  "Owner": {
-    "Id": 87,
-    "Type": "AngularUser",
-    "Key": "AngularUser_87",
-    "Name": "E1 150716918",
-    "ImageUrl": "/i/userplaceholder",
-    "CreateTime": "2017-10-05T02:06:20"
-  },
-  "CloseTime": null,
-  "CreateTime": "2017-10-05T02:06:21.3976921Z",
-  "About": {
-    "Id": -1,
-    "Type": "AngularPicture",
-    "Key": "AngularPicture_-1",
-    "ImageUrl": "https://s3.amazonaws.com/Radial/placeholder/orgPlaceholder.png",
-    "Name": null,
-    "Initials": null
-  }
-}</ExpectedJson>
-    <GeneratedDate>2017-10-05T02:06:22.2073905Z</GeneratedDate>
-  </XmlApiResult>
   <XmlApiResult Name="MilestonesApiTests_v1.TestGetMilestones" GeneratedVersion="1.0">
     <ExpectedJson>{
   "Id": 1,
@@ -197,50 +169,6 @@
   }
 ]</ExpectedJson>
     <GeneratedDate>2017-10-05T02:06:30.163834Z</GeneratedDate>
-  </XmlApiResult>
-  <XmlApiResult Name="IssueApiTests_v1.TestGetMineIssues" GeneratedVersion="1.0">
-    <ExpectedJson>[
-  {
-    "Name": "Issue for Test Method",
-    "Id": 2,
-    "Type": "AngularIssue",
-    "Key": "AngularIssue_2",
-    "Owner": {
-      "Id": 295,
-      "Type": "AngularUser",
-      "Key": "AngularUser_295",
-      "Name": "E1 150716919",
-      "ImageUrl": "/i/userplaceholder",
-      "CreateTime": "2017-10-05T02:06:30"
-    },
-    "DetailsUrl": "https://localhost:44300/Issues/Pad/2",
-    "CompleteTime": null,
-    "Complete": false,
-    "CreateTime": "2017-10-05T02:06:31"
-  }
-]</ExpectedJson>
-    <GeneratedDate>2017-10-05T02:06:31.3256175Z</GeneratedDate>
-  </XmlApiResult>
-  <XmlApiResult Name="IssueApiTests_v1.TestCreateIssue" GeneratedVersion="1.0">
-    <ExpectedJson>{
-  "Name": "Issue for Test Method",
-  "Id": 3,
-  "Type": "AngularIssue",
-  "Key": "AngularIssue_3",
-  "Owner": {
-    "Id": 347,
-    "Type": "AngularUser",
-    "Key": "AngularUser_347",
-    "Name": "E1 150716919",
-    "ImageUrl": "/i/userplaceholder",
-    "CreateTime": "2017-10-05T02:06:32"
-  },
-  "DetailsUrl": "https://localhost:44300/Issues/Pad/3",
-  "CompleteTime": null,
-  "Complete": false,
-  "CreateTime": "2017-10-05T02:06:33"
-}</ExpectedJson>
-    <GeneratedDate>2017-10-05T02:06:33.3461123Z</GeneratedDate>
   </XmlApiResult>
   <XmlApiResult Name="TeamsApiTests_v0.TestUpdateTeam" GeneratedVersion="1.0">
     <ExpectedJson>{
@@ -501,33 +429,6 @@
 }</ExpectedJson>
     <GeneratedDate>2017-10-05T02:06:38.5378797Z</GeneratedDate>
   </XmlApiResult>
-  <XmlApiResult Name="ScorecardApiTests_v1.GetScore" GeneratedVersion="1.0">
-    <ExpectedJson>{
-  "Id": 3,
-  "Type": "AngularScore",
-  "Key": "AngularScore_3",
-  "ForWeek": 2000,
-  "Week": "2008-04-27T00:00:00Z",
-  "DateEntered": null,
-  "Measured": null,
-  "Disabled": null,
-  "Direction": "EqualTo",
-  "Target": 0.0,
-  "AltTarget": null
-}</ExpectedJson>
-    <GeneratedDate>2017-10-05T02:06:39.4891118Z</GeneratedDate>
-  </XmlApiResult>
-  <XmlApiResult Name="SeatsApiTests_v1.TestGetSeatUser" GeneratedVersion="1.0">
-    <ExpectedJson>{
-  "Id": 550,
-  "Type": "AngularUser",
-  "Key": "AngularUser_550",
-  "Name": "Test1 Test2",
-  "ImageUrl": "/i/userplaceholder",
-  "CreateTime": "2017-10-05T02:06:40"
-}</ExpectedJson>
-    <GeneratedDate>2017-10-05T02:06:40.5273654Z</GeneratedDate>
-  </XmlApiResult>
   <XmlApiResult Name="PositionApiTests_v1.TestUpdatePositionRoles" GeneratedVersion="1.0">
     <ExpectedJson>{
   "Id": 96,
@@ -537,32 +438,6 @@
   "CreateTime": "2017-10-05T02:06:42.5398574Z"
 }</ExpectedJson>
     <GeneratedDate>2017-10-05T02:06:42.5623629Z</GeneratedDate>
-  </XmlApiResult>
-  <XmlApiResult Name="SeatsApiTests_v1.TestGetSeat" GeneratedVersion="1.0">
-    <ExpectedJson>{
-  "Id": 328,
-  "Type": "AngularAccountabilityNode",
-  "Key": "AngularAccountabilityNode_328",
-  "Name": "E1 150716920",
-  "Group": {
-    "Id": 328,
-    "Type": "AngularAccountabilityGroup",
-    "Key": "AngularAccountabilityGroup_328",
-    "Position": null,
-    "Editable": null,
-    "RoleGroups": null
-  },
-  "User": {
-    "Id": 612,
-    "Type": "AngularUser",
-    "Key": "AngularUser_612",
-    "Name": "E1 150716920",
-    "ImageUrl": "/i/userplaceholder",
-    "CreateTime": "2017-10-05T02:06:42"
-  },
-  "Children": null
-}</ExpectedJson>
-    <GeneratedDate>2017-10-05T02:06:43.5491163Z</GeneratedDate>
   </XmlApiResult>
   <XmlApiResult Name="UsersApiTests_v1.TestCreateUsers" GeneratedVersion="1.0">
     <ExpectedJson>{
@@ -607,111 +482,6 @@
 ]</ExpectedJson>
     <GeneratedDate>2017-10-05T02:06:46.46833Z</GeneratedDate>
   </XmlApiResult>
-  <XmlApiResult Name="TodoApiTests_v1.TestGetUserTodos" GeneratedVersion="1.0">
-    <ExpectedJson>[
-  {
-    "Id": 3,
-    "Type": "AngularTodo",
-    "Key": "AngularTodo_3",
-    "Name": "GetUserTodo from Test Method",
-    "DetailsUrl": "https://localhost:44300/Todo/Pad/3",
-    "Origin": "Individual",
-    "DueDate": "2017-10-12T02:06:47",
-    "Owner": {
-      "Id": 718,
-      "Type": "AngularUser",
-      "Key": "AngularUser_718",
-      "Name": "E1 150716920",
-      "ImageUrl": "/i/userplaceholder",
-      "CreateTime": "2017-10-05T02:06:46"
-    },
-    "CompleteTime": null,
-    "CreateTime": "2017-10-05T02:06:47",
-    "Complete": false,
-    "TodoType": "Personal",
-    "Ordering": -3
-  }
-]</ExpectedJson>
-    <GeneratedDate>2017-10-05T02:06:47.4035582Z</GeneratedDate>
-  </XmlApiResult>
-  <XmlApiResult Name="L10ApiTests_v1.TestGetUserIssues" GeneratedVersion="1.0">
-    <ExpectedJson>[
-  {
-    "Name": "Issue for Test Method",
-    "Id": 4,
-    "Type": "AngularIssue",
-    "Key": "AngularIssue_4",
-    "Owner": {
-      "Id": 744,
-      "Type": "AngularUser",
-      "Key": "AngularUser_744",
-      "Name": "E1 150716920",
-      "ImageUrl": "/i/userplaceholder",
-      "CreateTime": "2017-10-05T02:06:47"
-    },
-    "DetailsUrl": "https://localhost:44300/Issues/Pad/4",
-    "CompleteTime": null,
-    "Complete": false,
-    "CreateTime": "2017-10-05T02:06:48"
-  }
-]</ExpectedJson>
-    <GeneratedDate>2017-10-05T02:06:48.5623416Z</GeneratedDate>
-  </XmlApiResult>
-  <XmlApiResult Name="L10ApiTests_v1.TestGetL10Attendess" GeneratedVersion="1.0">
-    <ExpectedJson>[
-  {
-    "Id": 851,
-    "Type": "AngularUser",
-    "Key": "AngularUser_851",
-    "Name": "E1 150716921",
-    "ImageUrl": "/i/userplaceholder",
-    "CreateTime": "2017-10-05T02:06:51"
-  }
-]</ExpectedJson>
-    <GeneratedDate>2017-10-05T02:06:52.5848339Z</GeneratedDate>
-  </XmlApiResult>
-  <XmlApiResult Name="IssueApiTests_v1.TestGetIssue" GeneratedVersion="1.0">
-    <ExpectedJson>{
-  "Name": "Issue for Test Method",
-  "Id": 6,
-  "Type": "AngularIssue",
-  "Key": "AngularIssue_6",
-  "Owner": {
-    "Id": 877,
-    "Type": "AngularUser",
-    "Key": "AngularUser_877",
-    "Name": "E1 150716921",
-    "ImageUrl": "/i/userplaceholder",
-    "CreateTime": "2017-10-05T02:06:52"
-  },
-  "DetailsUrl": "https://localhost:44300/Issues/Pad/6",
-  "CompleteTime": null,
-  "Complete": false,
-  "CreateTime": "2017-10-05T02:06:53"
-}</ExpectedJson>
-    <GeneratedDate>2017-10-05T02:06:53.6175856Z</GeneratedDate>
-  </XmlApiResult>
-  <XmlApiResult Name="L10ApiTests_v1.TestAttachIssueMeetingL10" GeneratedVersion="1.0">
-    <ExpectedJson>{
-  "Name": "Test Name For Issue Meeting L10",
-  "Id": 8,
-  "Type": "AngularIssue",
-  "Key": "AngularIssue_8",
-  "Owner": {
-    "Id": 1061,
-    "Type": "AngularUser",
-    "Key": "AngularUser_1061",
-    "Name": "E1 150716922",
-    "ImageUrl": "/i/userplaceholder",
-    "CreateTime": "2017-10-05T02:07:00"
-  },
-  "DetailsUrl": "https://localhost:44300/Issues/Pad/8",
-  "CompleteTime": null,
-  "Complete": false,
-  "CreateTime": "2017-10-05T02:07:01.2214438Z"
-}</ExpectedJson>
-    <GeneratedDate>2017-10-05T02:07:01.6640516Z</GeneratedDate>
-  </XmlApiResult>
   <XmlApiResult Name="TeamsApiTests_v0.TestCreateTeam" GeneratedVersion="1.0">
     <ExpectedJson>{
   "Id": 1105,
@@ -732,54 +502,6 @@
 }</ExpectedJson>
     <GeneratedDate>2017-10-05T02:07:06.898345Z</GeneratedDate>
   </XmlApiResult>
-  <XmlApiResult Name="L10ApiTests_v1.TestGetRecurrenceTodos" GeneratedVersion="1.0">
-    <ExpectedJson>[
-  {
-    "Id": 6,
-    "Type": "AngularTodo",
-    "Key": "AngularTodo_6",
-    "Name": "GetUserTodo from Test Method",
-    "DetailsUrl": "https://localhost:44300/Todo/Pad/6",
-    "Origin": null,
-    "DueDate": "2017-10-12T02:07:07",
-    "Owner": {
-      "Id": 1221,
-      "Type": "AngularUser",
-      "Key": "AngularUser_1221",
-      "Name": "E1 150716922",
-      "ImageUrl": "/i/userplaceholder",
-      "CreateTime": "2017-10-05T02:07:07"
-    },
-    "CompleteTime": null,
-    "CreateTime": "2017-10-05T02:07:07",
-    "Complete": false,
-    "TodoType": "L10",
-    "Ordering": -6
-  }
-]</ExpectedJson>
-    <GeneratedDate>2017-10-05T02:07:07.9676065Z</GeneratedDate>
-  </XmlApiResult>
-  <XmlApiResult Name="TeamsApiTests_v0.TestGetTeamMember" GeneratedVersion="1.0">
-    <ExpectedJson>[
-  {
-    "Id": 1273,
-    "Type": "AngularUser",
-    "Key": "AngularUser_1273",
-    "Name": "E1 150716922",
-    "ImageUrl": "/i/userplaceholder",
-    "CreateTime": "2017-10-05T02:07:09"
-  },
-  {
-    "Id": 1266,
-    "Type": "AngularUser",
-    "Key": "AngularUser_1266",
-    "Name": "manager 150716922",
-    "ImageUrl": "/i/userplaceholder",
-    "CreateTime": "2017-10-05T02:07:09"
-  }
-]</ExpectedJson>
-    <GeneratedDate>2017-10-05T02:07:10.0571173Z</GeneratedDate>
-  </XmlApiResult>
   <XmlApiResult Name="SeatsApiTests_v1.TestGetPosition" GeneratedVersion="1.0">
     <ExpectedJson>{
   "Id": 1344,
@@ -797,57 +519,6 @@
   }
 ]</ExpectedJson>
     <GeneratedDate>2017-10-05T02:07:13.3379185Z</GeneratedDate>
-  </XmlApiResult>
-  <XmlApiResult Name="TodoApiTests_v1.TestGetTodo" GeneratedVersion="1.0">
-    <ExpectedJson>{
-  "Id": 7,
-  "Type": "AngularTodo",
-  "Key": "AngularTodo_7",
-  "Name": "Todo from Test Method",
-  "DetailsUrl": "https://localhost:44300/Todo/Pad/7",
-  "Origin": "Individual",
-  "DueDate": "2017-10-12T02:07:14",
-  "Owner": {
-    "Id": 1379,
-    "Type": "AngularUser",
-    "Key": "AngularUser_1379",
-    "Name": "E1 150716923",
-    "ImageUrl": "/i/userplaceholder",
-    "CreateTime": "2017-10-05T02:07:13"
-  },
-  "CompleteTime": null,
-  "CreateTime": "2017-10-05T02:07:14",
-  "Complete": false,
-  "TodoType": "Personal",
-  "Ordering": -7
-}</ExpectedJson>
-    <GeneratedDate>2017-10-05T02:07:14.3846748Z</GeneratedDate>
-  </XmlApiResult>
-  <XmlApiResult Name="SeatsApiTests_v1.TestAttachDirectReport" GeneratedVersion="1.0">
-    <ExpectedJson>{
-  "Id": 815,
-  "Type": "AngularAccountabilityNode",
-  "Key": "AngularAccountabilityNode_815",
-  "Name": "Test1 Test2",
-  "Group": {
-    "Id": 815,
-    "Type": "AngularAccountabilityGroup",
-    "Key": "AngularAccountabilityGroup_815",
-    "Position": null,
-    "Editable": null,
-    "RoleGroups": null
-  },
-  "User": {
-    "Id": 1528,
-    "Type": "AngularUser",
-    "Key": "AngularUser_1528",
-    "Name": "Test1 Test2",
-    "ImageUrl": "/i/userplaceholder",
-    "CreateTime": "2017-10-05T02:07:20"
-  },
-  "Children": null
-}</ExpectedJson>
-    <GeneratedDate>2017-10-05T02:07:20.8332874Z</GeneratedDate>
   </XmlApiResult>
   <XmlApiResult Name="RolesApiTests_v1.TestGetRoles" GeneratedVersion="1.0">
     <ExpectedJson>{
@@ -902,47 +573,6 @@
 }</ExpectedJson>
     <GeneratedDate>2017-10-05T02:07:35.942058Z</GeneratedDate>
   </XmlApiResult>
-  <XmlApiResult Name="IssueApiTests_v1.TestGetRecurrenceIssues" GeneratedVersion="1.0">
-    <ExpectedJson>[
-  {
-    "Name": "Issue for Test Method",
-    "Id": 10,
-    "Type": "AngularIssue",
-    "Key": "AngularIssue_10",
-    "Owner": {
-      "Id": 1911,
-      "Type": "AngularUser",
-      "Key": "AngularUser_1911",
-      "Name": "E2 150716925",
-      "ImageUrl": "/i/userplaceholder",
-      "CreateTime": "2017-10-05T02:07:36"
-    },
-    "DetailsUrl": "https://localhost:44300/Issues/Pad/10",
-    "CompleteTime": null,
-    "Complete": false,
-    "CreateTime": "2017-10-05T02:07:37"
-  },
-  {
-    "Name": "Issue for Test Method",
-    "Id": 9,
-    "Type": "AngularIssue",
-    "Key": "AngularIssue_9",
-    "Owner": {
-      "Id": 1910,
-      "Type": "AngularUser",
-      "Key": "AngularUser_1910",
-      "Name": "E1 150716925",
-      "ImageUrl": "/i/userplaceholder",
-      "CreateTime": "2017-10-05T02:07:36"
-    },
-    "DetailsUrl": "https://localhost:44300/Issues/Pad/9",
-    "CompleteTime": null,
-    "Complete": false,
-    "CreateTime": "2017-10-05T02:07:37"
-  }
-]</ExpectedJson>
-    <GeneratedDate>2017-10-05T02:07:37.2098668Z</GeneratedDate>
-  </XmlApiResult>
   <XmlApiResult Name="SearchApiTests_v1.TestSearchUser" GeneratedVersion="1.0">
     <ExpectedJson>[
   {
@@ -971,23 +601,22 @@
     "Name": "Todo from Test Method",
     "DetailsUrl": "https://localhost:44300/Todo/Pad/1",
     "Origin": "Individual",
-    "DueDate": "2017-10-12T03:37:50",
+    "DueDate": "2017-11-03T00:40:07",
     "Owner": {
       "Id": 9,
       "Type": "AngularUser",
       "Key": "AngularUser_9",
-      "Name": "E1 150717466",
-      "ImageUrl": "/i/userplaceholder",
-      "CreateTime": "2017-10-05T03:37:49"
+      "Name": "E1 150897840",
+      "ImageUrl": "/i/userplaceholder"
     },
     "CompleteTime": null,
-    "CreateTime": "2017-10-05T03:37:50",
+    "CreateTime": "2017-10-26T00:40:08",
     "Complete": false,
     "TodoType": "Personal",
     "Ordering": -1
   }
 ]</ExpectedJson>
-    <GeneratedDate>2017-10-05T03:37:51.2109013Z</GeneratedDate>
+    <GeneratedDate>2017-10-26T00:40:08.591433Z</GeneratedDate>
   </XmlApiResult>
   <XmlApiResult Name="TodoApiTests_v1.TestGetMineTodos-1" GeneratedVersion="1.0">
     <ExpectedJson>[
@@ -998,17 +627,16 @@
     "Name": "Todo from Test Method",
     "DetailsUrl": "https://localhost:44300/Todo/Pad/1",
     "Origin": "Individual",
-    "DueDate": "2017-10-12T03:37:50",
+    "DueDate": "2017-11-03T00:40:07",
     "Owner": {
       "Id": 9,
       "Type": "AngularUser",
       "Key": "AngularUser_9",
-      "Name": "E1 150717466",
-      "ImageUrl": "/i/userplaceholder",
-      "CreateTime": "2017-10-05T03:37:49"
+      "Name": "E1 150897840",
+      "ImageUrl": "/i/userplaceholder"
     },
     "CompleteTime": null,
-    "CreateTime": "2017-10-05T03:37:50",
+    "CreateTime": "2017-10-26T00:40:08",
     "Complete": false,
     "TodoType": "Personal",
     "Ordering": -1
@@ -1020,447 +648,49 @@
     "Name": "GetMineTodo from Test Method",
     "DetailsUrl": "https://localhost:44300/Todo/Pad/2",
     "Origin": null,
-    "DueDate": "2017-10-12T03:37:51",
+    "DueDate": "2017-11-03T00:40:07",
     "Owner": {
       "Id": 9,
       "Type": "AngularUser",
       "Key": "AngularUser_9",
-      "Name": "E1 150717466",
-      "ImageUrl": "/i/userplaceholder",
-      "CreateTime": "2017-10-05T03:37:49"
+      "Name": "E1 150897840",
+      "ImageUrl": "/i/userplaceholder"
     },
     "CompleteTime": null,
-    "CreateTime": "2017-10-05T03:37:51",
+    "CreateTime": "2017-10-26T00:40:08",
     "Complete": false,
     "TodoType": "L10",
     "Ordering": -2
   }
 ]</ExpectedJson>
-    <GeneratedDate>2017-10-05T03:37:51.462463Z</GeneratedDate>
+    <GeneratedDate>2017-10-26T00:40:08.9831946Z</GeneratedDate>
   </XmlApiResult>
-  <XmlApiResult Name="ScorecardApiTests_v1.GetScorecard-1" GeneratedVersion="1.0">
+  <XmlApiResult Name="L10ApiTests_v1.TestAttachHeadlineMeetingL10" GeneratedVersion="1.0">
     <ExpectedJson>{
-  "Id": -1,
-  "Type": "AngularScorecard",
-  "Key": "AngularScorecard_-1",
-  "Measurables": [
-    {
-      "Name": "Meas2",
-      "Id": 2,
-      "Type": "AngularMeasurable",
-      "Key": "AngularMeasurable_2",
-      "Owner": {
-        "Id": 10,
-        "Type": "AngularUser",
-        "Key": "AngularUser_10",
-        "Name": "E2 150848014",
-        "ImageUrl": "/i/userplaceholder",
-        "CreateTime": "2017-10-20T06:15:46"
-      },
-      "Admin": {
-        "Id": 10,
-        "Type": "AngularUser",
-        "Key": "AngularUser_10",
-        "Name": "E2 150848014",
-        "ImageUrl": "/i/userplaceholder",
-        "CreateTime": "2017-10-20T06:15:46"
-      },
-      "Target": 0.0,
-      "AltTarget": null,
-      "Direction": "GreaterThan",
-      "IsDivider": false,
-      "ShowCumulative": false,
-      "Cumulative": null,
-      "CumulativeRange": null,
-      "Modifiers": "None",
-      "Ordering": null,
-      "Disabled": null
-    }
-  ],
-  "Scores": [
-    {
-      "Id": 2,
-      "Type": "AngularScore",
-      "Key": "AngularScore_2",
-      "ForWeek": 2494,
-      "Week": "2017-10-15T00:00:00Z",
-      "DateEntered": "2017-10-20T06:15:48",
-      "Measured": 2.0,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 19,
-      "Type": "AngularScore",
-      "Key": "AngularScore_19",
-      "ForWeek": 2481,
-      "Week": "2017-07-16T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 20,
-      "Type": "AngularScore",
-      "Key": "AngularScore_20",
-      "ForWeek": 2482,
-      "Week": "2017-07-23T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 21,
-      "Type": "AngularScore",
-      "Key": "AngularScore_21",
-      "ForWeek": 2483,
-      "Week": "2017-07-30T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 22,
-      "Type": "AngularScore",
-      "Key": "AngularScore_22",
-      "ForWeek": 2484,
-      "Week": "2017-08-06T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 23,
-      "Type": "AngularScore",
-      "Key": "AngularScore_23",
-      "ForWeek": 2485,
-      "Week": "2017-08-13T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 24,
-      "Type": "AngularScore",
-      "Key": "AngularScore_24",
-      "ForWeek": 2486,
-      "Week": "2017-08-20T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 25,
-      "Type": "AngularScore",
-      "Key": "AngularScore_25",
-      "ForWeek": 2487,
-      "Week": "2017-08-27T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 26,
-      "Type": "AngularScore",
-      "Key": "AngularScore_26",
-      "ForWeek": 2488,
-      "Week": "2017-09-03T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 27,
-      "Type": "AngularScore",
-      "Key": "AngularScore_27",
-      "ForWeek": 2489,
-      "Week": "2017-09-10T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 28,
-      "Type": "AngularScore",
-      "Key": "AngularScore_28",
-      "ForWeek": 2490,
-      "Week": "2017-09-17T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 29,
-      "Type": "AngularScore",
-      "Key": "AngularScore_29",
-      "ForWeek": 2491,
-      "Week": "2017-09-24T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 30,
-      "Type": "AngularScore",
-      "Key": "AngularScore_30",
-      "ForWeek": 2492,
-      "Week": "2017-10-01T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 31,
-      "Type": "AngularScore",
-      "Key": "AngularScore_31",
-      "ForWeek": 2493,
-      "Week": "2017-10-08T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 32,
-      "Type": "AngularScore",
-      "Key": "AngularScore_32",
-      "ForWeek": 2495,
-      "Week": "2017-10-22T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 33,
-      "Type": "AngularScore",
-      "Key": "AngularScore_33",
-      "ForWeek": 2496,
-      "Week": "2017-10-29T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 34,
-      "Type": "AngularScore",
-      "Key": "AngularScore_34",
-      "ForWeek": 2497,
-      "Week": "2017-11-05T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    }
-  ],
-  "Weeks": [
-    {
-      "Id": 636357600000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636357600000000000",
-      "ForWeekNumber": 2481,
-      "ForWeek": "2017-07-16T00:00:00Z",
-      "DisplayDate": "2017-07-09T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636363648000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636363648000000000",
-      "ForWeekNumber": 2482,
-      "ForWeek": "2017-07-23T00:00:00Z",
-      "DisplayDate": "2017-07-16T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636369696000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636369696000000000",
-      "ForWeekNumber": 2483,
-      "ForWeek": "2017-07-30T00:00:00Z",
-      "DisplayDate": "2017-07-23T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636375744000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636375744000000000",
-      "ForWeekNumber": 2484,
-      "ForWeek": "2017-08-06T00:00:00Z",
-      "DisplayDate": "2017-07-30T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636381792000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636381792000000000",
-      "ForWeekNumber": 2485,
-      "ForWeek": "2017-08-13T00:00:00Z",
-      "DisplayDate": "2017-08-06T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636387840000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636387840000000000",
-      "ForWeekNumber": 2486,
-      "ForWeek": "2017-08-20T00:00:00Z",
-      "DisplayDate": "2017-08-13T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636393888000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636393888000000000",
-      "ForWeekNumber": 2487,
-      "ForWeek": "2017-08-27T00:00:00Z",
-      "DisplayDate": "2017-08-20T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636399936000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636399936000000000",
-      "ForWeekNumber": 2488,
-      "ForWeek": "2017-09-03T00:00:00Z",
-      "DisplayDate": "2017-08-27T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636405984000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636405984000000000",
-      "ForWeekNumber": 2489,
-      "ForWeek": "2017-09-10T00:00:00Z",
-      "DisplayDate": "2017-09-03T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636412032000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636412032000000000",
-      "ForWeekNumber": 2490,
-      "ForWeek": "2017-09-17T00:00:00Z",
-      "DisplayDate": "2017-09-10T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636418080000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636418080000000000",
-      "ForWeekNumber": 2491,
-      "ForWeek": "2017-09-24T00:00:00Z",
-      "DisplayDate": "2017-09-17T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636424128000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636424128000000000",
-      "ForWeekNumber": 2492,
-      "ForWeek": "2017-10-01T00:00:00Z",
-      "DisplayDate": "2017-09-24T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636430176000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636430176000000000",
-      "ForWeekNumber": 2493,
-      "ForWeek": "2017-10-08T00:00:00Z",
-      "DisplayDate": "2017-10-01T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636436224000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636436224000000000",
-      "ForWeekNumber": 2494,
-      "ForWeek": "2017-10-15T00:00:00Z",
-      "DisplayDate": "2017-10-08T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636442272000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636442272000000000",
-      "ForWeekNumber": 2495,
-      "ForWeek": "2017-10-22T00:00:00Z",
-      "DisplayDate": "2017-10-15T06:00:00Z",
-      "IsCurrentWeek": true
-    },
-    {
-      "Id": 636448320000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636448320000000000",
-      "ForWeekNumber": 2496,
-      "ForWeek": "2017-10-29T00:00:00Z",
-      "DisplayDate": "2017-10-22T06:00:00Z",
-      "IsCurrentWeek": false
-    },
-    {
-      "Id": 636454368000000000,
-      "Type": "AngularWeek",
-      "Key": "AngularWeek_636454368000000000",
-      "ForWeekNumber": 2497,
-      "ForWeek": "2017-11-05T00:00:00Z",
-      "DisplayDate": "2017-10-29T06:00:00Z",
-      "IsCurrentWeek": false
-    }
-  ],
-  "ReverseScorecard": false,
-  "Period": "Weekly",
-  "DateFormat1": "MMM d",
-  "DateFormat2": "MMM d"
+  "Id": 1,
+  "Type": "AngularHeadline",
+  "Key": "AngularHeadline_1",
+  "Name": "Test Head Line",
+  "DetailsUrl": "https://localhost:44300/headlines/pad/1",
+  "Owner": {
+    "Id": 35,
+    "Type": "AngularUser",
+    "Key": "AngularUser_35",
+    "Name": "E1 150897840",
+    "ImageUrl": "/i/userplaceholder"
+  },
+  "CloseTime": null,
+  "CreateTime": "2017-10-26T00:40:12.8318376Z",
+  "About": {
+    "Id": -1,
+    "Type": "AngularPicture",
+    "Key": "AngularPicture_-1",
+    "ImageUrl": "https://s3.amazonaws.com/Radial/placeholder/orgPlaceholder.png",
+    "Name": null,
+    "Initials": null
+  }
 }</ExpectedJson>
-    <GeneratedDate>2017-10-20T06:15:48.3981576Z</GeneratedDate>
+    <GeneratedDate>2017-10-26T00:40:13.5017831Z</GeneratedDate>
   </XmlApiResult>
   <XmlApiResult Name="ScorecardApiTests_v1.GetScorecard" GeneratedVersion="1.0">
     <ExpectedJson>{
@@ -1469,25 +699,23 @@
   "Key": "AngularScorecard_-1",
   "Measurables": [
     {
-      "Name": "Meas2",
-      "Id": 2,
+      "Name": "Meas1",
+      "Id": 1,
       "Type": "AngularMeasurable",
-      "Key": "AngularMeasurable_2",
+      "Key": "AngularMeasurable_1",
       "Owner": {
-        "Id": 10,
+        "Id": 61,
         "Type": "AngularUser",
-        "Key": "AngularUser_10",
-        "Name": "E2 150867073",
-        "ImageUrl": "/i/userplaceholder",
-        "CreateTime": "2017-10-22T11:12:13"
+        "Key": "AngularUser_61",
+        "Name": "E1 150897841",
+        "ImageUrl": "/i/userplaceholder"
       },
       "Admin": {
-        "Id": 10,
+        "Id": 61,
         "Type": "AngularUser",
-        "Key": "AngularUser_10",
-        "Name": "E2 150867073",
-        "ImageUrl": "/i/userplaceholder",
-        "CreateTime": "2017-10-22T11:12:13"
+        "Key": "AngularUser_61",
+        "Name": "E1 150897841",
+        "ImageUrl": "/i/userplaceholder"
       },
       "Target": 0.0,
       "AltTarget": null,
@@ -1503,13 +731,224 @@
   ],
   "Scores": [
     {
-      "Id": 2,
+      "Id": 1,
       "Type": "AngularScore",
-      "Key": "AngularScore_2",
+      "Key": "AngularScore_1",
       "ForWeek": 2495,
       "Week": "2017-10-22T00:00:00Z",
-      "DateEntered": "2017-10-22T11:12:14",
-      "Measured": 2.0,
+      "MeasurableId": 1,
+      "DateEntered": "2017-10-26T00:40:15",
+      "Measured": 1.0,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 3,
+      "Type": "AngularScore",
+      "Key": "AngularScore_3",
+      "ForWeek": 2482,
+      "Week": "2017-07-23T00:00:00Z",
+      "MeasurableId": 1,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 4,
+      "Type": "AngularScore",
+      "Key": "AngularScore_4",
+      "ForWeek": 2483,
+      "Week": "2017-07-30T00:00:00Z",
+      "MeasurableId": 1,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 5,
+      "Type": "AngularScore",
+      "Key": "AngularScore_5",
+      "ForWeek": 2484,
+      "Week": "2017-08-06T00:00:00Z",
+      "MeasurableId": 1,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 6,
+      "Type": "AngularScore",
+      "Key": "AngularScore_6",
+      "ForWeek": 2485,
+      "Week": "2017-08-13T00:00:00Z",
+      "MeasurableId": 1,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 7,
+      "Type": "AngularScore",
+      "Key": "AngularScore_7",
+      "ForWeek": 2486,
+      "Week": "2017-08-20T00:00:00Z",
+      "MeasurableId": 1,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 8,
+      "Type": "AngularScore",
+      "Key": "AngularScore_8",
+      "ForWeek": 2487,
+      "Week": "2017-08-27T00:00:00Z",
+      "MeasurableId": 1,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 9,
+      "Type": "AngularScore",
+      "Key": "AngularScore_9",
+      "ForWeek": 2488,
+      "Week": "2017-09-03T00:00:00Z",
+      "MeasurableId": 1,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 10,
+      "Type": "AngularScore",
+      "Key": "AngularScore_10",
+      "ForWeek": 2489,
+      "Week": "2017-09-10T00:00:00Z",
+      "MeasurableId": 1,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 11,
+      "Type": "AngularScore",
+      "Key": "AngularScore_11",
+      "ForWeek": 2490,
+      "Week": "2017-09-17T00:00:00Z",
+      "MeasurableId": 1,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 12,
+      "Type": "AngularScore",
+      "Key": "AngularScore_12",
+      "ForWeek": 2491,
+      "Week": "2017-09-24T00:00:00Z",
+      "MeasurableId": 1,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 13,
+      "Type": "AngularScore",
+      "Key": "AngularScore_13",
+      "ForWeek": 2492,
+      "Week": "2017-10-01T00:00:00Z",
+      "MeasurableId": 1,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 14,
+      "Type": "AngularScore",
+      "Key": "AngularScore_14",
+      "ForWeek": 2493,
+      "Week": "2017-10-08T00:00:00Z",
+      "MeasurableId": 1,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 15,
+      "Type": "AngularScore",
+      "Key": "AngularScore_15",
+      "ForWeek": 2494,
+      "Week": "2017-10-15T00:00:00Z",
+      "MeasurableId": 1,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 16,
+      "Type": "AngularScore",
+      "Key": "AngularScore_16",
+      "ForWeek": 2496,
+      "Week": "2017-10-29T00:00:00Z",
+      "MeasurableId": 1,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 17,
+      "Type": "AngularScore",
+      "Key": "AngularScore_17",
+      "ForWeek": 2497,
+      "Week": "2017-11-05T00:00:00Z",
+      "MeasurableId": 1,
+      "DateEntered": null,
+      "Measured": null,
       "Disabled": null,
       "Direction": "GreaterThan",
       "Target": 0.0,
@@ -1519,190 +958,9 @@
       "Id": 18,
       "Type": "AngularScore",
       "Key": "AngularScore_18",
-      "ForWeek": 2482,
-      "Week": "2017-07-23T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 19,
-      "Type": "AngularScore",
-      "Key": "AngularScore_19",
-      "ForWeek": 2483,
-      "Week": "2017-07-30T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 20,
-      "Type": "AngularScore",
-      "Key": "AngularScore_20",
-      "ForWeek": 2484,
-      "Week": "2017-08-06T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 21,
-      "Type": "AngularScore",
-      "Key": "AngularScore_21",
-      "ForWeek": 2485,
-      "Week": "2017-08-13T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 22,
-      "Type": "AngularScore",
-      "Key": "AngularScore_22",
-      "ForWeek": 2486,
-      "Week": "2017-08-20T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 23,
-      "Type": "AngularScore",
-      "Key": "AngularScore_23",
-      "ForWeek": 2487,
-      "Week": "2017-08-27T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 24,
-      "Type": "AngularScore",
-      "Key": "AngularScore_24",
-      "ForWeek": 2488,
-      "Week": "2017-09-03T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 25,
-      "Type": "AngularScore",
-      "Key": "AngularScore_25",
-      "ForWeek": 2489,
-      "Week": "2017-09-10T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 26,
-      "Type": "AngularScore",
-      "Key": "AngularScore_26",
-      "ForWeek": 2490,
-      "Week": "2017-09-17T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 27,
-      "Type": "AngularScore",
-      "Key": "AngularScore_27",
-      "ForWeek": 2491,
-      "Week": "2017-09-24T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 28,
-      "Type": "AngularScore",
-      "Key": "AngularScore_28",
-      "ForWeek": 2492,
-      "Week": "2017-10-01T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 29,
-      "Type": "AngularScore",
-      "Key": "AngularScore_29",
-      "ForWeek": 2493,
-      "Week": "2017-10-08T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 30,
-      "Type": "AngularScore",
-      "Key": "AngularScore_30",
-      "ForWeek": 2494,
-      "Week": "2017-10-15T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 31,
-      "Type": "AngularScore",
-      "Key": "AngularScore_31",
-      "ForWeek": 2496,
-      "Week": "2017-10-29T00:00:00Z",
-      "DateEntered": null,
-      "Measured": null,
-      "Disabled": null,
-      "Direction": "GreaterThan",
-      "Target": 0.0,
-      "AltTarget": null
-    },
-    {
-      "Id": 32,
-      "Type": "AngularScore",
-      "Key": "AngularScore_32",
-      "ForWeek": 2497,
-      "Week": "2017-11-05T00:00:00Z",
+      "ForWeek": 2498,
+      "Week": "2017-11-12T00:00:00Z",
+      "MeasurableId": 1,
       "DateEntered": null,
       "Measured": null,
       "Disabled": null,
@@ -1871,6 +1129,792 @@
   "DateFormat1": "MMM d",
   "DateFormat2": "MMM d"
 }</ExpectedJson>
-    <GeneratedDate>2017-10-22T11:12:14.6117271Z</GeneratedDate>
+    <GeneratedDate>2017-10-26T00:40:16.2566181Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="ScorecardApiTests_v1.GetScorecard-1" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": -1,
+  "Type": "AngularScorecard",
+  "Key": "AngularScorecard_-1",
+  "Measurables": [
+    {
+      "Name": "Meas2",
+      "Id": 2,
+      "Type": "AngularMeasurable",
+      "Key": "AngularMeasurable_2",
+      "Owner": {
+        "Id": 62,
+        "Type": "AngularUser",
+        "Key": "AngularUser_62",
+        "Name": "E2 150897841",
+        "ImageUrl": "/i/userplaceholder"
+      },
+      "Admin": {
+        "Id": 62,
+        "Type": "AngularUser",
+        "Key": "AngularUser_62",
+        "Name": "E2 150897841",
+        "ImageUrl": "/i/userplaceholder"
+      },
+      "Target": 0.0,
+      "AltTarget": null,
+      "Direction": "GreaterThan",
+      "IsDivider": false,
+      "ShowCumulative": false,
+      "Cumulative": null,
+      "CumulativeRange": null,
+      "Modifiers": "None",
+      "Ordering": null,
+      "Disabled": null
+    }
+  ],
+  "Scores": [
+    {
+      "Id": 2,
+      "Type": "AngularScore",
+      "Key": "AngularScore_2",
+      "ForWeek": 2495,
+      "Week": "2017-10-22T00:00:00Z",
+      "MeasurableId": 2,
+      "DateEntered": "2017-10-26T00:40:16",
+      "Measured": 2.0,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 19,
+      "Type": "AngularScore",
+      "Key": "AngularScore_19",
+      "ForWeek": 2482,
+      "Week": "2017-07-23T00:00:00Z",
+      "MeasurableId": 2,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 20,
+      "Type": "AngularScore",
+      "Key": "AngularScore_20",
+      "ForWeek": 2483,
+      "Week": "2017-07-30T00:00:00Z",
+      "MeasurableId": 2,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 21,
+      "Type": "AngularScore",
+      "Key": "AngularScore_21",
+      "ForWeek": 2484,
+      "Week": "2017-08-06T00:00:00Z",
+      "MeasurableId": 2,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 22,
+      "Type": "AngularScore",
+      "Key": "AngularScore_22",
+      "ForWeek": 2485,
+      "Week": "2017-08-13T00:00:00Z",
+      "MeasurableId": 2,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 23,
+      "Type": "AngularScore",
+      "Key": "AngularScore_23",
+      "ForWeek": 2486,
+      "Week": "2017-08-20T00:00:00Z",
+      "MeasurableId": 2,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 24,
+      "Type": "AngularScore",
+      "Key": "AngularScore_24",
+      "ForWeek": 2487,
+      "Week": "2017-08-27T00:00:00Z",
+      "MeasurableId": 2,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 25,
+      "Type": "AngularScore",
+      "Key": "AngularScore_25",
+      "ForWeek": 2488,
+      "Week": "2017-09-03T00:00:00Z",
+      "MeasurableId": 2,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 26,
+      "Type": "AngularScore",
+      "Key": "AngularScore_26",
+      "ForWeek": 2489,
+      "Week": "2017-09-10T00:00:00Z",
+      "MeasurableId": 2,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 27,
+      "Type": "AngularScore",
+      "Key": "AngularScore_27",
+      "ForWeek": 2490,
+      "Week": "2017-09-17T00:00:00Z",
+      "MeasurableId": 2,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 28,
+      "Type": "AngularScore",
+      "Key": "AngularScore_28",
+      "ForWeek": 2491,
+      "Week": "2017-09-24T00:00:00Z",
+      "MeasurableId": 2,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 29,
+      "Type": "AngularScore",
+      "Key": "AngularScore_29",
+      "ForWeek": 2492,
+      "Week": "2017-10-01T00:00:00Z",
+      "MeasurableId": 2,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 30,
+      "Type": "AngularScore",
+      "Key": "AngularScore_30",
+      "ForWeek": 2493,
+      "Week": "2017-10-08T00:00:00Z",
+      "MeasurableId": 2,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 31,
+      "Type": "AngularScore",
+      "Key": "AngularScore_31",
+      "ForWeek": 2494,
+      "Week": "2017-10-15T00:00:00Z",
+      "MeasurableId": 2,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 32,
+      "Type": "AngularScore",
+      "Key": "AngularScore_32",
+      "ForWeek": 2496,
+      "Week": "2017-10-29T00:00:00Z",
+      "MeasurableId": 2,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 33,
+      "Type": "AngularScore",
+      "Key": "AngularScore_33",
+      "ForWeek": 2497,
+      "Week": "2017-11-05T00:00:00Z",
+      "MeasurableId": 2,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    },
+    {
+      "Id": 34,
+      "Type": "AngularScore",
+      "Key": "AngularScore_34",
+      "ForWeek": 2498,
+      "Week": "2017-11-12T00:00:00Z",
+      "MeasurableId": 2,
+      "DateEntered": null,
+      "Measured": null,
+      "Disabled": null,
+      "Direction": "GreaterThan",
+      "Target": 0.0,
+      "AltTarget": null
+    }
+  ],
+  "Weeks": [
+    {
+      "Id": 636363648000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636363648000000000",
+      "ForWeekNumber": 2482,
+      "ForWeek": "2017-07-23T00:00:00Z",
+      "DisplayDate": "2017-07-16T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636369696000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636369696000000000",
+      "ForWeekNumber": 2483,
+      "ForWeek": "2017-07-30T00:00:00Z",
+      "DisplayDate": "2017-07-23T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636375744000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636375744000000000",
+      "ForWeekNumber": 2484,
+      "ForWeek": "2017-08-06T00:00:00Z",
+      "DisplayDate": "2017-07-30T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636381792000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636381792000000000",
+      "ForWeekNumber": 2485,
+      "ForWeek": "2017-08-13T00:00:00Z",
+      "DisplayDate": "2017-08-06T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636387840000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636387840000000000",
+      "ForWeekNumber": 2486,
+      "ForWeek": "2017-08-20T00:00:00Z",
+      "DisplayDate": "2017-08-13T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636393888000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636393888000000000",
+      "ForWeekNumber": 2487,
+      "ForWeek": "2017-08-27T00:00:00Z",
+      "DisplayDate": "2017-08-20T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636399936000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636399936000000000",
+      "ForWeekNumber": 2488,
+      "ForWeek": "2017-09-03T00:00:00Z",
+      "DisplayDate": "2017-08-27T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636405984000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636405984000000000",
+      "ForWeekNumber": 2489,
+      "ForWeek": "2017-09-10T00:00:00Z",
+      "DisplayDate": "2017-09-03T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636412032000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636412032000000000",
+      "ForWeekNumber": 2490,
+      "ForWeek": "2017-09-17T00:00:00Z",
+      "DisplayDate": "2017-09-10T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636418080000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636418080000000000",
+      "ForWeekNumber": 2491,
+      "ForWeek": "2017-09-24T00:00:00Z",
+      "DisplayDate": "2017-09-17T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636424128000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636424128000000000",
+      "ForWeekNumber": 2492,
+      "ForWeek": "2017-10-01T00:00:00Z",
+      "DisplayDate": "2017-09-24T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636430176000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636430176000000000",
+      "ForWeekNumber": 2493,
+      "ForWeek": "2017-10-08T00:00:00Z",
+      "DisplayDate": "2017-10-01T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636436224000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636436224000000000",
+      "ForWeekNumber": 2494,
+      "ForWeek": "2017-10-15T00:00:00Z",
+      "DisplayDate": "2017-10-08T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636442272000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636442272000000000",
+      "ForWeekNumber": 2495,
+      "ForWeek": "2017-10-22T00:00:00Z",
+      "DisplayDate": "2017-10-15T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636448320000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636448320000000000",
+      "ForWeekNumber": 2496,
+      "ForWeek": "2017-10-29T00:00:00Z",
+      "DisplayDate": "2017-10-22T05:00:00Z",
+      "IsCurrentWeek": true
+    },
+    {
+      "Id": 636454368000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636454368000000000",
+      "ForWeekNumber": 2497,
+      "ForWeek": "2017-11-05T00:00:00Z",
+      "DisplayDate": "2017-10-29T05:00:00Z",
+      "IsCurrentWeek": false
+    },
+    {
+      "Id": 636460416000000000,
+      "Type": "AngularWeek",
+      "Key": "AngularWeek_636460416000000000",
+      "ForWeekNumber": 2498,
+      "ForWeek": "2017-11-12T00:00:00Z",
+      "DisplayDate": "2017-11-05T05:00:00Z",
+      "IsCurrentWeek": false
+    }
+  ],
+  "ReverseScorecard": false,
+  "Period": "Weekly",
+  "DateFormat1": "MMM d",
+  "DateFormat2": "MMM d"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:40:16.3241625Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="IssueApiTests_v1.TestGetMineIssues" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Name": "Issue for Test Method",
+    "Id": 1,
+    "Type": "AngularIssue",
+    "Key": "AngularIssue_1",
+    "Owner": {
+      "Id": 87,
+      "Type": "AngularUser",
+      "Key": "AngularUser_87",
+      "Name": "E1 150897841",
+      "ImageUrl": "/i/userplaceholder"
+    },
+    "DetailsUrl": "https://localhost:44300/Issues/Pad/1",
+    "CompleteTime": null,
+    "Complete": false,
+    "CreateTime": "2017-10-26T00:40:18"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:40:18.9344002Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="IssueApiTests_v1.TestCreateIssue" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Name": "Issue for Test Method",
+  "Id": 2,
+  "Type": "AngularIssue",
+  "Key": "AngularIssue_2",
+  "Owner": {
+    "Id": 113,
+    "Type": "AngularUser",
+    "Key": "AngularUser_113",
+    "Name": "E1 150897841",
+    "ImageUrl": "/i/userplaceholder"
+  },
+  "DetailsUrl": "https://localhost:44300/Issues/Pad/2",
+  "CompleteTime": null,
+  "Complete": false,
+  "CreateTime": "2017-10-26T00:40:20"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:40:20.9432381Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="ScorecardApiTests_v1.GetScore" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 35,
+  "Type": "AngularScore",
+  "Key": "AngularScore_35",
+  "ForWeek": 2000,
+  "Week": "2008-04-27T00:00:00Z",
+  "MeasurableId": 3,
+  "DateEntered": null,
+  "Measured": null,
+  "Disabled": null,
+  "Direction": "GreaterThan",
+  "Target": 0.0,
+  "AltTarget": null
+}</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:40:22.6729248Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="SeatsApiTests_v1.TestGetSeatUser" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 183,
+  "Type": "AngularUser",
+  "Key": "AngularUser_183",
+  "Name": "Test1 Test2",
+  "ImageUrl": "/i/userplaceholder"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:40:24.3240944Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="SeatsApiTests_v1.TestGetSeat" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 104,
+  "Type": "AngularAccountabilityNode",
+  "Key": "AngularAccountabilityNode_104",
+  "Name": "E1 150897842",
+  "Group": {
+    "Id": 104,
+    "Type": "AngularAccountabilityGroup",
+    "Key": "AngularAccountabilityGroup_104",
+    "Position": null,
+    "Editable": null,
+    "RoleGroups": null
+  },
+  "User": {
+    "Id": 192,
+    "Type": "AngularUser",
+    "Key": "AngularUser_192",
+    "Name": "E1 150897842",
+    "ImageUrl": "/i/userplaceholder"
+  },
+  "Children": null
+}</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:40:25.855145Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="TodoApiTests_v1.TestGetUserTodos" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 3,
+    "Type": "AngularTodo",
+    "Key": "AngularTodo_3",
+    "Name": "GetUserTodo from Test Method",
+    "DetailsUrl": "https://localhost:44300/Todo/Pad/3",
+    "Origin": "Individual",
+    "DueDate": "2017-11-03T00:40:26",
+    "Owner": {
+      "Id": 218,
+      "Type": "AngularUser",
+      "Key": "AngularUser_218",
+      "Name": "E1 150897842",
+      "ImageUrl": "/i/userplaceholder"
+    },
+    "CompleteTime": null,
+    "CreateTime": "2017-10-26T00:40:27",
+    "Complete": false,
+    "TodoType": "Personal",
+    "Ordering": -3
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:40:27.4091795Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="L10ApiTests_v1.TestGetUserIssues" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Name": "Issue for Test Method",
+    "Id": 3,
+    "Type": "AngularIssue",
+    "Key": "AngularIssue_3",
+    "Owner": {
+      "Id": 244,
+      "Type": "AngularUser",
+      "Key": "AngularUser_244",
+      "Name": "E1 150897842",
+      "ImageUrl": "/i/userplaceholder"
+    },
+    "DetailsUrl": "https://localhost:44300/Issues/Pad/3",
+    "CompleteTime": null,
+    "Complete": false,
+    "CreateTime": "2017-10-26T00:40:28"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:40:28.9306927Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="L10ApiTests_v1.TestGetL10Attendess" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 270,
+    "Type": "AngularUser",
+    "Key": "AngularUser_270",
+    "Name": "E1 150897842",
+    "ImageUrl": "/i/userplaceholder"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:40:30.457209Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="IssueApiTests_v1.TestGetIssue" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Name": "Issue for Test Method",
+  "Id": 5,
+  "Type": "AngularIssue",
+  "Key": "AngularIssue_5",
+  "Owner": {
+    "Id": 296,
+    "Type": "AngularUser",
+    "Key": "AngularUser_296",
+    "Name": "E1 150897843",
+    "ImageUrl": "/i/userplaceholder"
+  },
+  "DetailsUrl": "https://localhost:44300/Issues/Pad/5",
+  "CompleteTime": null,
+  "Complete": false,
+  "CreateTime": "2017-10-26T00:40:31"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:40:31.9371947Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="UserApiTests_v1.GetUser" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 322,
+  "Type": "AngularUser",
+  "Key": "AngularUser_322",
+  "Name": "E1 150897843",
+  "ImageUrl": "/i/userplaceholder"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:40:33.4316901Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="L10ApiTests_v1.TestAttachIssueMeetingL10" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Name": "Test Name For Issue Meeting L10",
+  "Id": 6,
+  "Type": "AngularIssue",
+  "Key": "AngularIssue_6",
+  "Owner": {
+    "Id": 348,
+    "Type": "AngularUser",
+    "Key": "AngularUser_348",
+    "Name": "E1 150897843",
+    "ImageUrl": "/i/userplaceholder"
+  },
+  "DetailsUrl": "https://localhost:44300/Issues/Pad/6",
+  "CompleteTime": null,
+  "Complete": false,
+  "CreateTime": "2017-10-26T00:40:35.0012349Z"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:40:35.4215517Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="L10ApiTests_v1.TestGetRecurrenceTodos" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 4,
+    "Type": "AngularTodo",
+    "Key": "AngularTodo_4",
+    "Name": "GetUserTodo from Test Method",
+    "DetailsUrl": "https://localhost:44300/Todo/Pad/4",
+    "Origin": null,
+    "DueDate": "2017-11-03T00:40:36",
+    "Owner": {
+      "Id": 374,
+      "Type": "AngularUser",
+      "Key": "AngularUser_374",
+      "Name": "E1 150897843",
+      "ImageUrl": "/i/userplaceholder"
+    },
+    "CompleteTime": null,
+    "CreateTime": "2017-10-26T00:40:37",
+    "Complete": false,
+    "TodoType": "L10",
+    "Ordering": -4
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:40:37.144775Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="TeamsApiTests_v0.TestGetTeamMember" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Id": 400,
+    "Type": "AngularUser",
+    "Key": "AngularUser_400",
+    "Name": "E1 150897843",
+    "ImageUrl": "/i/userplaceholder"
+  },
+  {
+    "Id": 393,
+    "Type": "AngularUser",
+    "Key": "AngularUser_393",
+    "Name": "manager 150897843",
+    "ImageUrl": "/i/userplaceholder"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:40:38.6803734Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="TodoApiTests_v1.TestGetTodo" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 5,
+  "Type": "AngularTodo",
+  "Key": "AngularTodo_5",
+  "Name": "Todo from Test Method",
+  "DetailsUrl": "https://localhost:44300/Todo/Pad/5",
+  "Origin": "Individual",
+  "DueDate": "2017-11-03T00:40:39",
+  "Owner": {
+    "Id": 427,
+    "Type": "AngularUser",
+    "Key": "AngularUser_427",
+    "Name": "E1 150897843",
+    "ImageUrl": "/i/userplaceholder"
+  },
+  "CompleteTime": null,
+  "CreateTime": "2017-10-26T00:40:40",
+  "Complete": false,
+  "TodoType": "Personal",
+  "Ordering": -5
+}</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:40:40.1929576Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="UserApiTests_v1.GetMine" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 479,
+  "Type": "AngularUser",
+  "Key": "AngularUser_479",
+  "Name": "E1 150897844",
+  "ImageUrl": "/i/userplaceholder"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:40:45.0262788Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="SeatsApiTests_v1.TestAttachDirectReport" GeneratedVersion="1.0">
+    <ExpectedJson>{
+  "Id": 282,
+  "Type": "AngularAccountabilityNode",
+  "Key": "AngularAccountabilityNode_282",
+  "Name": "Test1 Test2",
+  "Group": {
+    "Id": 282,
+    "Type": "AngularAccountabilityGroup",
+    "Key": "AngularAccountabilityGroup_282",
+    "Position": null,
+    "Editable": null,
+    "RoleGroups": null
+  },
+  "User": {
+    "Id": 523,
+    "Type": "AngularUser",
+    "Key": "AngularUser_523",
+    "Name": "Test1 Test2",
+    "ImageUrl": "/i/userplaceholder"
+  },
+  "Children": null
+}</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:40:46.7900239Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="IssueApiTests_v1.TestGetRecurrenceIssues" GeneratedVersion="1.0">
+    <ExpectedJson>[
+  {
+    "Name": "Issue for Test Method",
+    "Id": 8,
+    "Type": "AngularIssue",
+    "Key": "AngularIssue_8",
+    "Owner": {
+      "Id": 533,
+      "Type": "AngularUser",
+      "Key": "AngularUser_533",
+      "Name": "E2 150897844",
+      "ImageUrl": "/i/userplaceholder"
+    },
+    "DetailsUrl": "https://localhost:44300/Issues/Pad/8",
+    "CompleteTime": null,
+    "Complete": false,
+    "CreateTime": "2017-10-26T00:40:48"
+  },
+  {
+    "Name": "Issue for Test Method",
+    "Id": 7,
+    "Type": "AngularIssue",
+    "Key": "AngularIssue_7",
+    "Owner": {
+      "Id": 532,
+      "Type": "AngularUser",
+      "Key": "AngularUser_532",
+      "Name": "E1 150897844",
+      "ImageUrl": "/i/userplaceholder"
+    },
+    "DetailsUrl": "https://localhost:44300/Issues/Pad/7",
+    "CompleteTime": null,
+    "Complete": false,
+    "CreateTime": "2017-10-26T00:40:48"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:40:48.4221104Z</GeneratedDate>
   </XmlApiResult>
 </ArrayOfXmlApiResult>

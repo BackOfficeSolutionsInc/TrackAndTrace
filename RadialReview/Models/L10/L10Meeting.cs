@@ -145,24 +145,34 @@ namespace RadialReview.Models.L10
 			public virtual async Task<string> GetIssueMessage()
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 			{
-				var name = "'" + ForRock.Rock + "'";
-				switch(Completion){
-					case RockState.Indeterminate:	return name;
-					case RockState.AtRisk:			return name + " is marked 'Off Track'";
-					case RockState.OnTrack:			return name + " is marked 'On Track'";
-					case RockState.Complete:		return name + " is marked 'Done'";
-					default:throw new ArgumentOutOfRangeException();
-				}
+                return ForRock.Rock;
+				//var name = "'" + ForRock.Rock + "'";
+				//switch(Completion){
+				//	case RockState.Indeterminate:	return name;
+				//	case RockState.AtRisk:			return name + " is marked 'Off Track'";
+				//	case RockState.OnTrack:			return name + " is marked 'On Track'";
+				//	case RockState.Complete:		return name + " is marked 'Done'";
+				//	default:throw new ArgumentOutOfRangeException();
+				//}
 			}
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 			public virtual async Task<string> GetIssueDetails()
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 			{
-				var week = L10Meeting.CreateTime.StartOfWeek(DayOfWeek.Sunday).ToString("d");
+                var marked = "";
+                switch (Completion) {
+                    case RockState.AtRisk: marked ="\nMarked: 'Off Track'"; break;
+                    case RockState.OnTrack: marked = "\nMarked: 'On Track'"; break;
+                    case RockState.Complete: marked = "\nMarked: 'Done'"; break;
+                }
+
+                var week = L10Meeting.CreateTime.StartOfWeek(DayOfWeek.Sunday).ToString("d");
 				var accountable = ForRock.AccountableUser.GetName();
 				var footer = "Week:" + week + "\nOwner: " + accountable;
-				return footer;
+                footer += marked;
+
+                return footer;
 			}
 
 		}

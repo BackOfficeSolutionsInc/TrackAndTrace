@@ -313,6 +313,7 @@
     <Compile Include="API\v1\TodoApiTests_v1.cs" />
     <Compile Include="API\v1\ProcessDefApiTests_v1.cs" />
     <Compile Include="API\v0\UsersApiTests_v0.cs" />
+    <Compile Include="API\v1\UserApiTests_v1.cs" />
     <Compile Include="API\v1\WebHookAccessorTests_v1.cs" />
     <Compile Include="Codebase\AllHooksRegistered.cs" />
     <Compile Include="Codebase\EnsureNoUntested.cs" />

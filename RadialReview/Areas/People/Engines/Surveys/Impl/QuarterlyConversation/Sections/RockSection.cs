@@ -11,14 +11,13 @@ using System.Linq;
 using System.Web;
 using RadialReview.Models.Accountability;
 using RadialReview.Models.Enums;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.Sections {
 
     public class RockSection : ISectionInitializer {
-		//private IEnumerable<RockModel> rockLookup = new List<RockModel>();
-		public static String RockCommentHeading = "Rock Quality/Comments";
-
-
+        //private IEnumerable<RockModel> rockLookup = new List<RockModel>();
+        public static String RockCommentHeading = "Rock Quality/Comments";
 
         public RockSection() {
         }
@@ -28,75 +27,88 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
         }
 
         public void Prelookup(IInitializerLookupData data) {
-			var rocks = data.Session.QueryOver<RockModel>().Where(x => x.DeleteTime == null && x.OrganizationId == data.OrgId).Future();
-			data.Lookup.AddList(rocks);
+            var rocks = data.Session.QueryOver<RockModel>().Where(x => x.DeleteTime == null && x.OrganizationId == data.OrgId).Future();
+            data.Lookup.AddList(rocks);
 
-			var nodeIds = data.ByAbouts.SelectMany(x => new[] { x.GetBy(), x.GetAbout() }).Where(x => x.Is<AccountabilityNode>()).Select(x => x.ModelId).ToArray();
-			if (nodeIds.Any()) {
-				data.Lookup.AddList(data.Session.QueryOver<AccountabilityNode>().WhereRestrictionOn(x => x.Id).IsIn(nodeIds).Future());
-			}
+            var nodeIds = data.ByAbouts.SelectMany(x => new[] { x.GetBy(), x.GetAbout() }).Where(x => x.Is<AccountabilityNode>()).Select(x => x.ModelId).ToArray();
+            if (nodeIds.Any()) {
+                data.Lookup.AddList(data.Session.QueryOver<AccountabilityNode>().WhereRestrictionOn(x => x.Id).IsIn(nodeIds).Future());
+            }
 
-			var surveyUserNodeIds = data.ByAbouts.SelectMany(x => new[] { x.GetBy(), x.GetAbout() }).Where(x => x.Is<SurveyUserNode>()).Select(x => x.ModelId).ToArray();
-			if (surveyUserNodeIds.Any()) {
-				data.Lookup.AddList(
-					data.Session.QueryOver<SurveyUserNode>()
-						.WhereRestrictionOn(x => x.Id).IsIn(surveyUserNodeIds)
-						.Fetch(x => x.AccountabilityNode).Eager
-						.Fetch(x => x.User).Eager
-						.Future()
-				);
-				//data.Lookup.AddList(data.Session.QueryOver<AccountabilityNode>().WhereRestrictionOn(x => x.Id).IsIn(surveyUserNodeIds).Future());
-			}
-		}
-
-        public ISection InitializeSection(ISectionInitializerData data) {
-			return new SurveySection(data, "Rocks", SurveySectionType.Rocks, "mk-rocks");
+            var surveyUserNodeIds = data.ByAbouts.SelectMany(x => new[] { x.GetBy(), x.GetAbout() }).Where(x => x.Is<SurveyUserNode>()).Select(x => x.ModelId).ToArray();
+            if (surveyUserNodeIds.Any()) {
+                data.Lookup.AddList(
+                    data.Session.QueryOver<SurveyUserNode>()
+                        .WhereRestrictionOn(x => x.Id).IsIn(surveyUserNodeIds)
+                        .Fetch(x => x.AccountabilityNode).Eager
+                        .Fetch(x => x.User).Eager
+                        .Future()
+                );
+                //data.Lookup.AddList(data.Session.QueryOver<AccountabilityNode>().WhereRestrictionOn(x => x.Id).IsIn(surveyUserNodeIds).Future());
+            }
         }
 
-		private List<IItemInitializer> GetRocksForAccountabilityNode(IItemInitializerData data,AccountabilityNode about) {
-			var accNodeLookup = data.Lookup.GetList<AccountabilityNode>();
+        public ISection InitializeSection(ISectionInitializerData data) {
+            return new SurveySection(data, "Rocks", SurveySectionType.Rocks, "mk-rocks");
+        }
 
-			var items = new List<IItemInitializer>();
-			var node = accNodeLookup.FirstOrDefault(x => x.Id == about.ModelId);
-			if (node != null) {
-				items.AddRange(GetRockForUserId(data, node.UserId));
-			}
-			return items;
-		}
+        private List<IItemInitializer> GetRocksForAccountabilityNode(IItemInitializerData data, AccountabilityNode about) {
+            var accNodeLookup = data.Lookup.GetList<AccountabilityNode>();
 
-		private static IEnumerable<IItemInitializer> GetRockForUserId(IItemInitializerData data, long? userId) {
-			var rockLookup = data.Lookup.GetList<RockModel>();
-			return rockLookup.Where(x => x.ForUserId == userId).Select(x => new RockItems(x));
-		}
+            var items = new List<IItemInitializer>();
+            var node = accNodeLookup.FirstOrDefault(x => x.Id == about.ModelId);
+            if (node != null) {
+                items.AddRange(GetRockForUserId(data, node.UserId));
+            }
+            return items;
+        }
 
-		public IEnumerable<IItemInitializer> GetItemBuilders(IItemInitializerData data) {
-			//only ask if they are not our manager
-			if (data.SurveyContainer.GetSurveyType() == SurveyType.QuarterlyConversation && data.About.Is<SurveyUserNode>()) {
+        private static IEnumerable<IItemInitializer> GetRockForUserId(IItemInitializerData data, long? userId) {
+            var rockLookup = data.Lookup.GetList<RockModel>();
+            return rockLookup.Where(x => x.ForUserId == userId).Select(x => new RockItems(x));
+        }
 
-				if (data.SurveyContainer.GetCreator().ToKey() == ((SurveyUserNode)data.About).User.ToKey())
-					return new List<IItemInitializer>();
+        public IEnumerable<IItemInitializer> GetItemBuilders(IItemInitializerData data) {
 
-				if ((data.About as SurveyUserNode)._Relationship[data.By.ToKey()] == AboutType.Manager) 
-					return new List<IItemInitializer>();
-				
-			}
+            var dict = data.Lookup.GetOrAdd("RockSectionAlreadyGenerated", (_str) => new DefaultDictionary<string, bool>(x => false));
+            var byAboutKey = data.By.ToKey() + "-" + data.About.ToKey();
+            if (data.About.Is<SurveyUserNode>()) {
+                byAboutKey = data.By.ToKey() + "-" + ((SurveyUserNode)data.About).User.ToKey();
+            }
+            var alreadyGenerated = dict[byAboutKey];
 
-			var items = new List<IItemInitializer>();
-            var about = data.Survey.GetAbout();
-			if (about.ModelType == ForModel.GetModelType<UserOrganizationModel>()) {
-				var rockLookup = data.Lookup.GetList<RockModel>();
-				var rocks = rockLookup.Where(x => x.ForUserId == about.ModelId).Select(x => new RockItems(x));
-				items.AddRange(rocks);
-			} else if (about.ModelType == ForModel.GetModelType<AccountabilityNode>()) {
-				items.AddRange(GetRocksForAccountabilityNode(data, (AccountabilityNode)about));
-			} else if (about.ModelType == ForModel.GetModelType<SurveyUserNode>()) {
-				var node = data.Lookup.GetList<SurveyUserNode>().First(x => x.Id == about.ModelId).AccountabilityNode;
-				items.AddRange(GetRockForUserId(data, node.UserId));
-			}
-			if (!items.Any())
-				items.Add(new TextItemIntializer("No rocks.",true));
-			items.Add(new TextAreaItemIntializer(RockCommentHeading, SurveyQuestionIdentifier.GeneralComment));
-			return items;
+            if (!alreadyGenerated) {
+                dict[byAboutKey] = true;
+
+                //only ask if they are not our manager
+                if (data.SurveyContainer.GetSurveyType() == SurveyType.QuarterlyConversation && data.About.Is<SurveyUserNode>()) {
+
+                    if (data.SurveyContainer.GetCreator().ToKey() == ((SurveyUserNode)data.About).User.ToKey())
+                        return new List<IItemInitializer>();
+
+                    if ((data.About as SurveyUserNode)._Relationship[data.By.ToKey()] == AboutType.Manager)
+                        return new List<IItemInitializer>();
+
+                }
+
+                var items = new List<IItemInitializer>();
+                var about = data.Survey.GetAbout();
+                if (about.ModelType == ForModel.GetModelType<UserOrganizationModel>()) {
+                    var rockLookup = data.Lookup.GetList<RockModel>();
+                    var rocks = rockLookup.Where(x => x.ForUserId == about.ModelId).Select(x => new RockItems(x));
+                    items.AddRange(rocks);
+                } else if (about.ModelType == ForModel.GetModelType<AccountabilityNode>()) {
+                    items.AddRange(GetRocksForAccountabilityNode(data, (AccountabilityNode)about));
+                } else if (about.ModelType == ForModel.GetModelType<SurveyUserNode>()) {
+                    var node = data.Lookup.GetList<SurveyUserNode>().First(x => x.Id == about.ModelId).AccountabilityNode;
+                    items.AddRange(GetRockForUserId(data, node.UserId));
+                }
+                if (!items.Any())
+                    items.Add(new TextItemIntializer("No rocks.", true));
+                items.Add(new InputItemIntializer(RockCommentHeading, SurveyQuestionIdentifier.GeneralComment));
+                return items;
+            }
+            return new IItemInitializer[] { };
         }
     }
 
@@ -108,8 +120,8 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
         }
 
         public IItem InitializeItem(IItemInitializerData data) {
-			var forModel = ForModel.Create(Rock);
-            return new SurveyItem(data, Rock.Rock, forModel, forModel.ToKey() );
+            var forModel = ForModel.Create(Rock);
+            return new SurveyItem(data, Rock.Rock, forModel, forModel.ToKey());
         }
 
         public IItemFormatRegistry GetItemFormat(IItemFormatInitializerCtx ctx) {

@@ -138,11 +138,18 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<JsonResult> AddAngularTodo(long id) {
 			var recurrenceId = id;
-			//await TodoAccessor.CreateTodo(GetUser(), recurrenceId, new TodoModel() {
-			//    ForRecurrenceId=id
-			//});
+            //await TodoAccessor.CreateTodo(GetUser(), recurrenceId, new TodoModel() {
+            //    ForRecurrenceId=id
+            //});
 
-			var todoModel = TodoCreation.CreateL10Todo(recurrenceId, null, null, GetUser().Id, null);
+            var attendees = L10Accessor.GetAttendees(GetUser(), recurrenceId);
+            if (!attendees.Any())
+                throw new PermissionsException("Meeting has no attendees. Add some first.");
+
+            var selected = attendees.FirstOrDefault(x => x.Id == GetUser().Id);
+            selected = selected ?? attendees.FirstOrDefault();
+
+			var todoModel = TodoCreation.CreateL10Todo(recurrenceId, null, null, selected.Id, null);
 			await TodoAccessor.CreateTodo(GetUser(), todoModel);
 
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);

@@ -25,11 +25,11 @@ namespace RadialReview.Hooks.Realtime.L10 {
             return false;
         }
 
-		public HookPriority GetHookPriority() {
-			return HookPriority.UI;
-		}
+        public HookPriority GetHookPriority() {
+            return HookPriority.UI;
+        }
 
-		public async Task AttachRock(ISession s, UserOrganizationModel caller, RockModel rock, L10Recurrence.L10Recurrence_Rocks recurRock) {
+        public async Task AttachRock(ISession s, UserOrganizationModel caller, RockModel rock, L10Recurrence.L10Recurrence_Rocks recurRock) {
             using (var rt = RealTimeUtility.Create(RealTimeHelpers.GetConnectionString())) {
                 rt.UpdateRecurrences(recurRock.L10Recurrence.Id).Update(rid => new AngularRock(recurRock.ForRock.Id) { VtoRock = recurRock.VtoRock });
 
@@ -57,10 +57,19 @@ namespace RadialReview.Hooks.Realtime.L10 {
 
                     var arecur = new AngularUpdate { new AngularRecurrence(recurrenceId) {
                             Rocks = AngularList.CreateFrom(AngularListType.ReplaceIfNewer, new AngularRock(recurRock)),
-                            Focus = focus,
+                           // Focus = focus,
                         }
                     };
                     group.update(arecur);
+
+                    if (RealTimeHelpers.GetConnectionString() != null) {
+                        var me = hub.Clients.Client(RealTimeHelpers.GetConnectionString());
+                        me.update(new AngularUpdate() {
+                            new AngularRecurrence(recurrenceId) {
+                                Focus = focus
+                            }
+                        });
+                    }
                 }
             }
         }
@@ -73,9 +82,18 @@ namespace RadialReview.Hooks.Realtime.L10 {
                 Rocks = AngularList.Create(AngularListType.ReplaceIfNewer, new[]{new AngularRock(recurRock){
                             ForceOrder =int.MaxValue,
                         }}),
-                Focus = "[data-rock='" + rock.Id + "'] input:visible:first"
+                // Focus = "[data-rock='" + rock.Id + "'] input:visible:first"
             };
             group.update(new AngularUpdate { arecur });
+
+
+            if (RealTimeHelpers.GetConnectionString() != null) {
+                var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+                var me = hub.Clients.Client(RealTimeHelpers.GetConnectionString());
+                me.update(new AngularUpdate {new AngularRecurrence(recurrenceId) {
+                    Focus = "[data-rock='" + rock.Id + "'] input:visible:first"
+                }});
+            }
         }
 
         private static void _UpdateL10MeetingRocks(ISession s, PermissionsUtility adminPerms, long recurrenceId, L10Recurrence recur, L10Meeting current, dynamic group) {

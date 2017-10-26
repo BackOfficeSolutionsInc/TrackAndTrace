@@ -153,7 +153,7 @@ namespace TractionTools.Tests.Controllers {
 				Assert.IsNull(model.Notifications);
 
 				Assert.AreEqual(1, model.LoadUrls.Count());
-				Assert.AreEqual("/DashboardData/UserScorecardData/" + org.Employee.Id + "?userId=" + org.Employee.Id + "&completed=False&fullScorecard=False", model.LoadUrls.First().Data);
+				Assert.IsTrue(model.LoadUrls.First().Data.StartsWith("/DashboardData/UserScorecardData/" + org.Employee.Id + "?userId=" + org.Employee.Id + "&completed=False&fullScorecard=False"));
 
 				json =await ctrl.GetJson(x => x.UserScorecardData(org.Employee.Id, org.Employee.Id, false, false));
 				model = json.GetModel<ListDataVM>();
@@ -200,7 +200,7 @@ namespace TractionTools.Tests.Controllers {
 				Assert.AreEqual(0, model.L10SolvedIssues.Count());
 				Assert.AreEqual(0, model.L10Scorecards.Count());// This is requested with a Load Url			
 				Assert.AreEqual(2, model.LoadUrls.Count());
-				Assert.AreEqual("/DashboardData/L10ScorecardData/"+org.Employee.Id+"?name=&scorecardTileId="+tileId+"&l10Id="+l10.Id+"&completed=False&fullScorecard=False", model.LoadUrls.Last().Data);
+				Assert.IsTrue(model.LoadUrls.Last().Data.StartsWith("/DashboardData/L10ScorecardData/"+org.Employee.Id+"?name=&scorecardTileId="+tileId+"&l10Id="+l10.Id+"&completed=False&fullScorecard=False"));
 
 
 				//Data within tile

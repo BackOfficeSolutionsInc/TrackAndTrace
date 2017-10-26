@@ -391,6 +391,33 @@
     width: 50%;
   }
 }
+.people.quarterly-conversation survey-container .survey .sections .section survey-item-container.item-container-Number .item-row .item {
+  position: relative;
+  min-height: 1px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+@media (min-width: 992px) {
+  .people.quarterly-conversation survey-container .survey .sections .section survey-item-container.item-container-Number .item-row .item {
+    float: left;
+    width: 50%;
+  }
+}
+.people.quarterly-conversation survey-container .survey .sections .section survey-item-container.item-container-Number .item-row .item .name {
+  padding-top: 12px;
+}
+.people.quarterly-conversation survey-container .survey .sections .section survey-item-container.item-container-Number .item-row .responses {
+  position: relative;
+  min-height: 1px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+@media (min-width: 992px) {
+  .people.quarterly-conversation survey-container .survey .sections .section survey-item-container.item-container-Number .item-row .responses {
+    float: left;
+    width: 50%;
+  }
+}
 .people.quarterly-conversation survey-container .survey .sections .section survey-item-container.item-container-TextArea .item-row .name,
 .people.quarterly-conversation survey-container .survey .sections .section survey-item-container.item-container-TextArea .item-row .help {
   text-align: left;
@@ -420,6 +447,19 @@
   .people.quarterly-conversation survey-container .survey .sections .section survey-item-container.item-container-Text .item-row .item .name {
     text-align: left;
   }
+}
+.people.quarterly-conversation survey-container .survey .sections .section-Values {
+  /*[value="often"]:checked ~ .response-title:before {
+                        color:green;
+                    }
+
+                    [value="sometimes"]:checked ~ .response-title:before {
+                        color:yellow;
+                    }
+
+                    [value="not-often"]:checked ~ .response-title:before {
+                        color :red;
+                    }*/
 }
 .people.quarterly-conversation survey-container .survey .sections .section-Values survey-item-container {
   padding-bottom: 5px;

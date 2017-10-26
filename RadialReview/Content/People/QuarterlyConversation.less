@@ -208,6 +208,20 @@
                             }
                         }
 
+                        &.item-container-Number .item-row {
+                            .item {
+                                .make-md-column(6);
+
+                                .name {
+                                    padding-top: 12px;
+                                }
+                            }
+
+                            .responses {
+                                .make-md-column(6);
+                            }
+                        }
+
                         &.item-container-TextArea .item-row {
                             .name, .help {
                                 text-align: left;
@@ -258,6 +272,21 @@
                         content: "[\2212]";
                         letter-spacing: 9px;
                     }
+
+                    /*[value="often"]:checked ~ .response-title:before {
+                        color:green;
+                    }
+
+                    [value="sometimes"]:checked ~ .response-title:before {
+                        color:yellow;
+                    }
+
+                    [value="not-often"]:checked ~ .response-title:before {
+                        color :red;
+                    }*/
+
+
+
 
                     .md-radio {
                         padding-right: 0px;

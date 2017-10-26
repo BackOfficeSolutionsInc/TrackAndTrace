@@ -88,6 +88,8 @@ namespace RadialReview.Models.Angular.Users
 
 		[IgnoreDataMember]
 		public bool? Managing { get; set; }
+
+        [IgnoreDataMember]
         public DateTime? CreateTime { get;set;}
 	
 	}

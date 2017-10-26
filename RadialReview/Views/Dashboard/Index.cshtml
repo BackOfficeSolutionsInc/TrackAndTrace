@@ -25,6 +25,8 @@
 		dataDateRange = {
 			startDate : null,// new Date().setDate(new Date().getDate() - 1)
 			endDate:null,
+			todoStart : new Date().setDate(new Date().getDate() - 1),
+            todoEnd:null
 		};
 		function buildGrid(data) {
 			if (showJsonAlert(data, true, true)) {

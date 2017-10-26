@@ -553,7 +553,7 @@ namespace TractionTools.Tests.Engines {
 			var about = SurveyAccessor.GetSurveyContainerAbout(org.Manager,empl, containerId);
 
 			Assert.AreEqual(1, about.GetSurveys().Count());
-			Assert.AreEqual(6, about.GetSurveys().First().GetSections().Count());
+			Assert.AreEqual(7, about.GetSurveys().First().GetSections().Count());
 			{
 				var rockItemContainers = about.GetSurveys().First().GetSections().First(x => x.GetSectionType() == "" + SurveySectionType.Rocks).GetItemContainers();
 				Assert.AreEqual(5, rockItemContainers.Count());

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using TractionTools.Tests.Utilities;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using RadialReview.Accessors;
 
 namespace TractionTools.UITests.L10Wizard {
     [TestClass]
@@ -219,9 +220,10 @@ namespace TractionTools.UITests.L10Wizard {
             });
         }
         [TestMethod]
-		[TestCategory("Visual")]
-		public void L10_Wizard_Todo()
-        {
+        [TestCategory("Visual")]
+        public async Task L10_Wizard_Todo() {
+            await L10Accessor.AddAttendee(AUC.User, Recur.Id, AUC.User.Id);
+
             TestView(AUC, "/l10/wizard/" + Recur.Id, d => {
                 d.Find("#l10-wizard-menu", 10);
                 var pageTitle = d.FindElement(By.PartialLinkText("To-dos"), 10);
