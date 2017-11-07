@@ -301,9 +301,10 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
         }
     };
 
-    $scope.functions.subtractDays = function (date, days) {
-        var d = new Date(date);
-        d = new Date(moment(d).add(new Date().getTimezoneOffset(), "minutes").valueOf())
+    $scope.functions.subtractDays = function (date, days, shift) {
+    	var d = new Date(date);
+		if (typeof(shift)==="undefined" || shift==true)
+			d = new Date(moment(d).add(new Date().getTimezoneOffset(), "minutes").valueOf())
         d.setDate(d.getDate() - days);
         return d;
     };
@@ -847,14 +848,14 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 
     $scope.functions.topDate = function (week, selector) {
         var dat = decideOnDate(week, selector);
-        var date = $scope.functions.subtractDays(dat/*week.DisplayDate*/, 0);
+        var date = $scope.functions.subtractDays(dat/*week.DisplayDate*/, 0, false);
         return $filter('date')(date, selector.DateFormat1);
     };
     $scope.functions.bottomDate = function (week, selector) {
         var dat = decideOnDate(week, selector);
-        var date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, -6);
+        var date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, -6, false);
         if (selector.Period == "Monthly" || selector.Period == "Quarterly") {
-            date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, 0);
+        	date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, 0, false);
         }
         return $filter('date')(date, selector.DateFormat2);
     };
