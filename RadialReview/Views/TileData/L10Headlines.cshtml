@@ -1,0 +1,28 @@
+﻿@model long
+    @{ 
+        string filter = null;
+        filter = "| filter:filters.byRange('CompleteTime', model.dataDateRange.todoStart,model.dataDateRange.todoEnd)";
+      
+    }
+<div class="review smallBreak2 loading tiny " style2="min-height:30px;">
+    <div class="todo-heading heading" style="@(ViewBag.HeadingStyle)" data-style="@(ViewBag.HeadingStyle)">
+        @*<span class="clickable pull-right new hidden-width-1" onclick="@Html.ShowModal("Create To-Do", "/Todo/CreateTodoRecurrence/"+Model, "/Todo/CreateTodoRecurrence")">Create New <span class='glyphicon glyphicon-unchecked'></span></span>*@
+        <span class="clickable pull-right new visible-width-1" style="text-decoration: none;" onclick="@Html.ShowModal("Create To-Do", "/Todo/CreateTodoRecurrence", "/Todo/CreateTodoRecurrence")"><span class='glyphicon glyphicon-unchecked'></span></span>
+        {{(model.L10Headlines | filter:{KeyId:@(Model)})[0].Title}}<a href="/l10/details/@(Model)#Headlines" class=""> (View all)</a>
+
+
+    </div><div class="tile l10-todo-list-container">
+        @{ Html.RenderPartial("~/Views/Headlines/Partial/list.cshtml", new ViewDataDictionary(){
+                                   {"AddHeaders", false},
+                                   {"AddController", false},
+                                   {"AddCompletion", false},
+                                   {"AddDatePicker", false},
+                                   {"UsePopup",true},
+                                   {"RecurrenceId", Model},
+                                   {"Filter",filter },
+                                   {"Selector","(model.L10Headlines | filter:{KeyId:"+(Model)+"})[0].Contents"},
+                                   {"DefaultSort","'DueDate'"}
+
+                               }); }<div ng-show="(model.L10Headlines | filter:{KeyId:@(Model)}).length==0" class="gray alignCenter" style="padding-bottom: 16px;" elem-ready="functions.reload((model.L10Todos | filter:{KeyId:@(Model)}).length==0)">Please wait</div>
+    </div>
+</div>
