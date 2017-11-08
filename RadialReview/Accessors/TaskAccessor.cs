@@ -227,9 +227,13 @@ namespace RadialReview.Accessors {
 			}
 			return o;
 		}
-		protected static async Task<dynamic> d_ExecuteTaskFunc(String server, ScheduledTask task, DateTime _unused) {
+		public static async Task<dynamic> d_ExecuteTaskFunc(String server, ScheduledTask task, DateTime _unused) {
 			var webClient = new WebClient();
-			var url = (server.TrimEnd('/') + "/" + task.Url.TrimStart('/'));
+            var url = "";
+            if (server != null) {
+                url = (server.TrimEnd('/'))+"/";
+            }
+			url = url + task.Url.TrimStart('/');
 			if (url.Contains("?"))
 				url += "&taskId=" + task.Id;
 			else
