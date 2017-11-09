@@ -33,11 +33,12 @@ using RadialReview.Utilities.RealTime;
 using RadialReview.Model.Enums;
 using System.Linq.Expressions;
 using RadialReview.Reflection;
+using RadialReview.Controllers.AbstractController;
 
 #pragma warning disable CS0219 // Variable is assigned but its value is never used
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace RadialReview.Controllers {
-    public class MigrationController : BaseController {
+    public class MigrationController : BaseExpensiveController {
         #region old
         #region 11/06/2016
         // GET: Migration
@@ -1997,7 +1998,154 @@ namespace RadialReview.Controllers {
 
         }
 
-        #endregion
+		#endregion
+
+		[Access(AccessLevel.Radial)]
+		public async Task<ActionResult> RevertScores() {
+			var count = 0;
+			using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
+				using (var tx = s.BeginTransaction()) {
+					
+					var scores = s.QueryOver<ScoreModel>()
+						.Where(x => x.DeleteTime == new DateTime(2017, 11, 9))
+						.List().ToList();
+
+					foreach (var score in scores) {
+						score.DeleteTime = null;
+						s.Update(score);
+						count += 1;
+					}
+
+					tx.Commit();
+					//s.Flush();
+				}
+			}
+			return Content("count:" + count);
+		}
+
+		public ScoreModel DecideOnScores(List<ScoreModel> scores, TimeSpan threshold) {
+
+			var ordered = scores.OrderByDescending(x => x.DateEntered ?? DateTime.MinValue);
+
+			var prev = DateTime.MinValue;
+			var best = ordered.FirstOrDefault();
+						
+
+			foreach (var o in ordered) {
+				if (o.DateEntered == null)
+					break;
+				if (o.DateEntered - prev < threshold) {
+					if (best.Measured < o.Measured) {
+						best = o;
+					}
+				}
+
+				prev = o.DateEntered.Value;
+			}
+
+			return best;
+
+			//var grouped = new List<List<ScoreModel>>();
+
+			//var currentGroup = new List<ScoreModel>();
+			//var currentGroupMaxTime = DateTime.MinValue;
+			//ScoreModel currentGroupBest = null;
+
+			//var prevTime = DateTime.MinValue;
+
+			//ScoreModel finalScore = null;
+			//var finalTime = DateTime.MinValue;
+
+			//foreach (var cur in ordered) {
+			//	var myEntryTime = cur.DateEntered ?? DateTime.MinValue;
+
+			//	currentGroupBest = currentGroupBest ?? cur;
+			//	currentGroup.Add(cur);
+
+			//	if (myEntryTime > currentGroupMaxTime) {
+			//		currentGroupMaxTime = myEntryTime;
+			//	}				
+
+			//	if (Math.Abs(myEntryTime.Ticks - prevTime.Ticks) > threshold.Ticks) {
+			//		if (currentGroupMaxTime
+
+			//		//reset;
+			//		currentGroup = new List<ScoreModel>();
+			//		currentGroupMaxTime = DateTime.MinValue;
+			//		currentGroupBest = null;
+			//	}
+			//	prevTime = myEntryTime;
+			//}
+			//return finalScore;
+		}
+		
+
+		[Access(AccessLevel.Radial)]
+		public async Task<ActionResult> FixScores(Divisor d = null) {
+			return await BreakUpAction("FixScores", d, dd => {
+
+				using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
+					using (var tx = s.BeginTransaction()) {
+
+						var scores = s.QueryOver<ScoreModel>()
+							.Where(Mod<ScoreModel>(x => x.MeasurableId, dd))
+							.Where(x => x.DeleteTime == null)
+							.List().ToList();
+
+						foreach (var measurableWeekGroup in scores.GroupBy(x => Tuple.Create(x.ForWeek, x.MeasurableId))) {
+							if (measurableWeekGroup.Count() > 1) {
+								var ordered = measurableWeekGroup.OrderByDescending(x => x.DateEntered ?? DateTime.MinValue);
+								var best = DecideOnScores(ordered.ToList(), TimeSpan.FromSeconds(6));
+
+
+								foreach (var mw in ordered) {
+									if (mw.Id == best.Id)
+										continue;
+
+									mw.DeleteTime = new DateTime(2017, 11, 10);
+									s.Update(mw);
+									dd.updates += 1;
+								}
+							}
+						}
+						tx.Commit();
+					}
+				}
+			});
+
+		}
+
+		[Access(AccessLevel.Radial)]
+		public async Task<ActionResult> FixScoresOld(Divisor d = null) {
+			return await BreakUpAction("FixScores",d, dd => {
+
+				using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
+					using (var tx = s.BeginTransaction()) {
+
+						var scores = s.QueryOver<ScoreModel>()
+							.Where(Mod<ScoreModel>(x => x.MeasurableId, dd))
+							.Where(x => x.DeleteTime == null)
+							.List().ToList();
+
+						foreach (var measurableWeekGroup in scores.GroupBy(x => Tuple.Create(x.ForWeek, x.MeasurableId))) {
+							if (measurableWeekGroup.Count() > 1) {
+								var ordered  = measurableWeekGroup.OrderByDescending(x => x.DateEntered ?? DateTime.MinValue);
+								
+								foreach (var mw in ordered.Skip(1)) {
+									mw.DeleteTime = new DateTime(2017,11,7);
+									s.Update(mw);
+									dd.updates += 1;
+								}
+							}
+						}
+						tx.Commit();
+					}
+				}
+			});
+
+		}
+
+
         [Access(Controllers.AccessLevel.Radial)]
         public String M10_17_2017() {
             var a = 0;

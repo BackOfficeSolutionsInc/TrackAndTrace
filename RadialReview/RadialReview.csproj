@@ -138,6 +138,7 @@
     <Compile Include="Areas\CoreProcess\Interfaces\ITaskAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\RockCompletionSection.cs" />
+    <Compile Include="Controllers\AbstractController\BaseExpensiveController.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Hooks\HookData.cs" />
     <Compile Include="Hooks\Meeting\AttendeeHooks.cs" />
@@ -294,6 +295,7 @@
     <Compile Include="Utilities\AngularTreeUtil.cs" />
     <Compile Include="Utilities\Constants\PdfImageConst.cs" />
     <Compile Include="Utilities\DataTypes\LazyCollection.cs" />
+    <Compile Include="Utilities\DivisorUtility.cs" />
     <Compile Include="Utilities\EmailUtil.cs" />
     <Compile Include="Controllers\IntegrationsController.cs" />
     <Compile Include="Hooks\Integrations\BasecampTodoHook.cs" />
@@ -1699,6 +1701,9 @@
     <Content Include="Views\ClientSuccess\Index.cshtml" />
     <Content Include="Views\ClientSuccess\Modal.cshtml" />
     <Content Include="Views\TileData\Milestones.cshtml" />
+    <Content Include="Views\Audit\L10.cshtml" />
+    <Content Include="Views\Audit\MeasurableScores.cshtml" />
+    <Content Include="Views\Audit\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -2421,6 +2426,7 @@
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
     <Folder Include="Utilities\Migradoc\XYScatter\" />
     <Folder Include="Views\AngularAccountability\" />
+    <Folder Include="Views\BaseExpensive\" />
     <Folder Include="Views\Console\" />
     <Folder Include="Views\Data\" />
     <Folder Include="Views\DropDown\" />

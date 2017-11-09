@@ -1,0 +1,44 @@
+﻿@model RadialReview.Controllers.AuditController.L10AuditData
+@{
+	ViewBag.Title = "Audit - Scores";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Model.L10.Name</h2>
+
+<div id="measurable-container"></div>
+
+@using (Html.BeginScripts()) {
+	<script>
+
+		var data = @Html.ArrayToString(Model.Measurables);
+
+		DataTable({
+			container: "#measurable-container",
+			data: data,
+			//cellId:function(cell){
+			//	debugger;
+			//	return cell.Item1;
+			//},
+			title:"Measurables",
+			cells: [
+				{ name: "Id", contents: function (r) { return r.Measurable.Id; } },
+				{ name: "Name", contents: function (r) { return "<a href='/audit/measurables/"+r.Measurable.Id+"'>"+r.Measurable.Title+"</a>"; } },
+				{ name: "Scores", contents: function (r) { return "<a class='gray' href='/audit/measurablescores/"+r.Measurable.Id+"'>(scores)</a>"; } },
+				{ name: "DeleteTime", contents: function (r) { return r.DeleteTime; } },
+				//{ name: "REV_DATE", contents: function (r) { return dateFormatter(parseJsonDate(r.Item2,true)); } },
+				//{ name: "REVID", contents: function (r) { return r.Item1; } },
+				//{ name: "Value", contents: function (r) { return r.Item3.Value; }, classes: "fullWidth" },
+				//{ name: "OriginalGoal", contents: function (r) { return r.Item3.OriginalGoal; } },
+				//{ name: "AlternateGoal", contents: function (r) { return r.Item3.AlternateOriginalGoal; } },
+				//{ name: "OriginalGoalDirection", contents: function (r) { return r.Item3.OriginalGoalDirection; } },
+				//{ name: "OwnerId", contents: function (r) { return r.Item3.AccountableUserId; } },
+				//{ name: "DeleteTime", contents: function (r) { return r.Item3.DeleteTime; } }
+			]
+		});
+
+		$("#measurable-container table").tablesorter();
+	</script>
+
+
+}

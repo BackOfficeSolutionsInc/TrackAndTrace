@@ -78,6 +78,7 @@
 
 							<li class="divider"></li>
 							<li><a href="#" onclick="supportEmail('@Html.Encode(ViewBag.Title)','@ProductStrings.SupportEmail')"><span class="icon fontastic-icon-lifebuoy pull-right" style="color:#EF7622"></span>Contact Support</a></li>
+							<li><a href="https://tractiontools.happyfox.com/home" target="_blank"><span class="icon fontastic-icon-book-bookmark pull-right" style="color:#EF7622"></span>Knowledge Base</a></li>
 							<li class="divider"></li>
 							@if (((int?)ViewBag.Organizations ?? 0) > 1) {
 								<li class="@(((int?)ViewBag.Organizations ?? 0 )> 1?"":"disabled")" id="header-tab-dropdown-changeorganization">

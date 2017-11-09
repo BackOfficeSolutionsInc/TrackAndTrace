@@ -27,7 +27,7 @@ namespace RadialReview.Controllers {
 
 			public RockVM() {
 				CurrentTime = DateTime.UtcNow;
-				UpdateAllL10s = true;
+				UpdateAllL10s = false;//true;
 			}
 		}
 

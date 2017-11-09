@@ -28,7 +28,7 @@ namespace RadialReview.Controllers
             public bool UpdateAllL10s { get; set; }
             public MeasurableVM()
             {
-                UpdateAllL10s = true;
+				UpdateAllL10s = false;//true;
             }
 		}
 

@@ -848,14 +848,14 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 
     $scope.functions.topDate = function (week, selector) {
         var dat = decideOnDate(week, selector);
-        var date = $scope.functions.subtractDays(dat/*week.DisplayDate*/, 0, false);
+        var date = $scope.functions.subtractDays(dat/*week.DisplayDate*/, 0, !(selector.Period == "Monthly" || selector.Period == "Quarterly"));
         return $filter('date')(date, selector.DateFormat1);
     };
     $scope.functions.bottomDate = function (week, selector) {
         var dat = decideOnDate(week, selector);
-        var date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, -6, false);
+        var date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, -6, !(selector.Period == "Monthly" || selector.Period == "Quarterly"));
         if (selector.Period == "Monthly" || selector.Period == "Quarterly") {
-        	date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, 0, false);
+        	date = $scope.functions.subtractDays(/*week.DisplayDate*/dat, 0, !(selector.Period == "Monthly" || selector.Period == "Quarterly"));
         }
         return $filter('date')(date, selector.DateFormat2);
     };

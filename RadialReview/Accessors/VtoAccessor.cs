@@ -543,6 +543,7 @@ namespace RadialReview.Accessors {
 							companyValue.DeleteTime = null;
 						else if (companyValue.DeleteTime == null) {
 							companyValue.DeleteTime = DateTime.UtcNow;
+							connectionId = null;
 						}
 						s.Update(companyValue);
 					}
@@ -1126,8 +1127,8 @@ namespace RadialReview.Accessors {
 					try {
 						var page2 = doc.Tables[1];
 
-						if (page2.Rows.Count != 2)
-							throw new FormatException("Could not find Traction Page.");
+						//if (page2.Rows.Count != 2)
+						//	throw new FormatException("Could not find Traction Page.");
 
 						var headingsRow = page2.Rows[0];
 						var tractionRow = page2.Rows[1];
