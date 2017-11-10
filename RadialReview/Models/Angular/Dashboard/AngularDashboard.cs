@@ -3,6 +3,7 @@ using RadialReview.Models.Angular.Base;
 using RadialReview.Models.Angular.CompanyValue;
 using RadialReview.Models.Angular.CoreProcess;
 using RadialReview.Models.Angular.DataType;
+using RadialReview.Models.Angular.Headlines;
 using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.Angular.Notifications;
 using RadialReview.Models.Angular.Rocks;
@@ -21,7 +22,10 @@ namespace RadialReview.Models.Angular.Dashboard {
 		public static string L10TodoList(long recurrenceId) {
 			return "Tile_L10Todo_" + recurrenceId;
 		}
-		public static string L10IssuesList(long recurrenceId) {
+        public static string L10HeadlineList(long recurrenceId) {
+            return "Tile_L10Headline_" + recurrenceId;
+        }
+        public static string L10IssuesList(long recurrenceId) {
 			return "Tile_L10Issues_" + recurrenceId;
 		}
 		public static string L10RocksList(long recurrenceId) {
@@ -103,6 +107,7 @@ namespace RadialReview.Models.Angular.Dashboard {
         public List<AngularTileId<AngularIssuesList>> L10Issues { get; set; }
         public List<AngularTileId<AngularIssuesSolved>> L10SolvedIssues { get; set; }
         public List<AngularTileId<List<AngularTodo>>> L10Todos { get; set; }
+        public List<AngularTileId<List<AngularHeadline>>> L10Headlines { get; set; }
 
         public List<AngularString> LoadUrls { get; set; }
 
@@ -112,6 +117,7 @@ namespace RadialReview.Models.Angular.Dashboard {
             L10Issues = new List<AngularTileId<AngularIssuesList>>();
             L10SolvedIssues = new List<AngularTileId<AngularIssuesSolved>>();
             L10Todos = new List<AngularTileId<List<AngularTodo>>>();
+            L10Headlines = new List<AngularTileId<List<AngularHeadline>>>();
             LoadUrls = new List<AngularString>();
             CoreProcess = new AngularCoreProcessData();
         }

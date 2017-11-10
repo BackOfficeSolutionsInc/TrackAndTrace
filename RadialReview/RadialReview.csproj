@@ -1704,6 +1704,7 @@
     <Content Include="Views\Audit\L10.cshtml" />
     <Content Include="Views\Audit\MeasurableScores.cshtml" />
     <Content Include="Views\Audit\Index.cshtml" />
+    <Content Include="Views\TileData\L10Headlines.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -2631,7 +2632,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>3751</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://localhost:44300</IISUrl>
+          <IISUrl>http://localhost:44300</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>http://radial.elasticbeanstalk.com/</CustomServerUrl>

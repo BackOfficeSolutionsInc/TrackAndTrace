@@ -111,7 +111,13 @@ namespace RadialReview.Controllers
             return PartialView("L10Todos", id);
 		}
 
-		[Access(AccessLevel.Any)]
+        [Access(AccessLevel.User)]
+        public PartialViewResult L10Headlines(long id) {
+            SetupViewBag(id);
+            return PartialView("L10Headlines", id);
+        }
+
+        [Access(AccessLevel.Any)]
 		public PartialViewResult L10Stats(long id) {
             ViewBag.Name = "L10 Stats";
             try {

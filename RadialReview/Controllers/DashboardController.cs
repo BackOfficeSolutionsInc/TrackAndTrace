@@ -32,6 +32,7 @@ using RadialReview.Models.Angular.Rocks;
 using RadialReview.Areas.CoreProcess.Accessors;
 using System.Threading.Tasks;
 using RadialReview.Models.Angular.CoreProcess;
+using RadialReview.Models.Angular.Headlines;
 
 namespace RadialReview.Controllers {
     [SessionState(SessionStateBehavior.ReadOnly)]
@@ -203,6 +204,20 @@ namespace RadialReview.Controllers {
                                 output.L10Todos.Add(tile);
                             } catch (Exception e) {
                                 output.L10Todos.Add(AngularTileId<List<AngularTodo>>.Error(todo.Id, l10Id, e));
+                            }
+                        }
+                    }
+
+                    //L10 Headlines
+                    foreach (var headlines in tiles.Where(x => x.Type == TileType.Headlines || (x.DataUrl ?? "").Contains("L10Headlines")).Distinct(x => x.KeyId)) {
+                        long l10Id = 0;
+                        if (long.TryParse(headlines.KeyId, out l10Id)) {
+                            try {
+                                var tile = new AngularTileId<List<AngularHeadline>>(headlines.Id, l10Id, l10Lookup[l10Id].Name + " headlines", AngularTileKeys.L10HeadlineList(l10Id));
+                                tile.Contents = L10Accessor.GetAllHeadlinesForRecurrence(s, perms, l10Id, false, null).Select(x => new AngularHeadline(x)).ToList();
+                                output.L10Headlines.Add(tile);
+                            } catch (Exception e) {
+                                output.L10Todos.Add(AngularTileId<List<AngularTodo>>.Error(headlines.Id, l10Id, e));
                             }
                         }
                     }
