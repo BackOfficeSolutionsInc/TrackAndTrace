@@ -19,6 +19,7 @@ using RadialReview.Models.Todo;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Models.Angular.Meeting;
 using RadialReview.Utilities;
+using RadialReview.Exceptions;
 
 namespace RadialReview.Controllers {
     public class TodoController : BaseController {
@@ -241,10 +242,18 @@ namespace RadialReview.Controllers {
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public async Task<PartialViewResult> CreateRockTodo(long meeting, long recurrence, long rock, long? accountable = null) {
+        public async Task<PartialViewResult> CreateRockTodo(long meeting, long recurrence, long? rock=null,long? rockId=null, long? accountable = null) {
+
+			//Supply either rock or rockId
+			var rr = rock ?? rockId;
+			if (!rr.HasValue) {
+				throw new PermissionsException("Rock Id blank");
+			}
+			var r = rr.Value;
+
             _PermissionsAccessor.Permitted(GetUser(), x => x.ViewL10Meeting(meeting));
 
-            var s = RockAccessor.GetRockInMeeting(GetUser(), rock, meeting);
+            var s = RockAccessor.GetRockInMeeting(GetUser(), r, meeting);
             var recur = L10Accessor.GetL10Recurrence(GetUser(), recurrence, true);
 
             var people = recur._DefaultAttendees.Select(x => x.User).ToList();
@@ -255,7 +264,7 @@ namespace RadialReview.Controllers {
                 ByUserId = GetUser().Id,
                 Message = await s.NotNull(async x => await x.GetTodoMessage()),
                 Details = await s.NotNull(async x => await x.GetTodoDetails()),
-                RockId = rock,
+                RockId = r,
                 MeetingId = meeting,
                 RecurrenceId = recurrence,
                 AccountabilityId = new[] { accountable ?? recur.GetDefaultTodoOwner(GetUser()) },

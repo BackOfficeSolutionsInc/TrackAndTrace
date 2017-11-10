@@ -31,6 +31,8 @@ namespace RadialReview.Models.L10 {
 		LeadershipTeam = 1,
 		[Display(Name = "Departmental Team")]
 		DepartmentalTeam = 2,
+		[Display(Name = "Same Page Meeting")]
+		SamePageMeeting = 3,
 		[Display(Name = "Other")]
 		Other = 100
 	}

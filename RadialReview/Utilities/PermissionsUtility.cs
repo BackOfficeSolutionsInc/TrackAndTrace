@@ -1621,6 +1621,10 @@ namespace RadialReview.Utilities {
         }
         public PermissionsUtility EditRock(long rockId) {
 			return CheckCacheFirst("EditRock", rockId).Execute(() => {
+
+				if (IsRadialAdmin(caller))
+					return this;
+
 				var rock = session.Get<RockModel>(rockId);
 
 				var recurrenceIds = session.QueryOver<L10Recurrence.L10Recurrence_Rocks>()

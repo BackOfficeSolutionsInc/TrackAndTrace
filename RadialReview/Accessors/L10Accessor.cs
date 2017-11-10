@@ -446,6 +446,11 @@ namespace RadialReview.Accessors {
                 CreatedById = caller.Id,
                 CreateTime = DateTime.UtcNow
             };
+
+			if (meetingType == MeetingType.SamePage) {
+				recur.TeamType = L10TeamType.SamePageMeeting;
+			}
+
             s.Save(recur);
 
             foreach (var page in GenerateMeetingPages(recur.Id, meetingType, recur.CreateTime)) {
