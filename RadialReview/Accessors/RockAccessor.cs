@@ -371,7 +371,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static async Task<RockModel> CreateRock(ISession s, PermissionsUtility perms, long ownerId, string message = null, long? templateId = null,long? permittedForRecurrenceId=null) {
+		public static async Task<RockModel> CreateRock(ISession s, PermissionsUtility perms, long ownerId, string message = null, long? templateId = null, long? permittedForRecurrenceId = null) {
 
 			perms.CreateRocksForUser(ownerId, permittedForRecurrenceId);
 			var owner = s.Get<UserOrganizationModel>(ownerId);
@@ -400,7 +400,7 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					await UpdateRock(s, perms,rockId,  message, ownerId,completion,dueDate,DateTime.UtcNow);
+					await UpdateRock(s, perms, rockId, message, ownerId, completion, dueDate, DateTime.UtcNow);
 					tx.Commit();
 					s.Flush();
 				}
@@ -424,7 +424,7 @@ namespace RadialReview.Accessors {
 				updates.MessageChanged = true;
 			}
 
-            updates.OriginalAccountableUserId = rock.ForUserId;
+			updates.OriginalAccountableUserId = rock.ForUserId;
 			if (ownerId != null && rock.ForUserId != ownerId) {
 				rock.AccountableUser = s.Load<UserOrganizationModel>(ownerId.Value);
 				rock.ForUserId = ownerId.Value;
@@ -453,7 +453,7 @@ namespace RadialReview.Accessors {
 
 			await HooksRegistry.Each<IRockHook>((ss, x) => x.UpdateRock(ss, perms.GetCaller(), rock, updates));
 		}
-		
+
 
 		public static async Task ArchiveRock(UserOrganizationModel caller, long rockId, DateTime? now = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -480,6 +480,35 @@ namespace RadialReview.Accessors {
 #pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
 			await HooksRegistry.Each<IRockHook>((ss, x) => x.ArchiveRock(s, rock, false));
 		}
+
+
+		public static async Task UnArchiveRock(UserOrganizationModel caller, long rockId, DateTime? now = null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					await UnArchiveRock(s, perms, rockId, now);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+		public static async Task UnArchiveRock(ISession s, PermissionsUtility perm, long rockId, DateTime? now = null) {
+			perm.EditRock(rockId);
+			var rock = s.Get<RockModel>(rockId);
+			rock.Archived = false;
+			rock.DeleteTime = now; //?? DateTime.UtcNow;
+			s.Update(rock);
+#pragma warning disable CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
+			if (rock.ForUserId != null) {
+				s.Flush();
+				s.GetFresh<UserOrganizationModel>(rock.ForUserId).UpdateCache(s);
+			}
+#pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
+			//await HooksRegistry.Each<IRockHook>((ss, x) => x.ArchiveRock(s, rock, false));
+		}
+
+
 
 		public static void UndeleteRock(UserOrganizationModel caller, long rockId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -545,7 +574,7 @@ namespace RadialReview.Accessors {
 							} else {
 								var updates = new IRockHookUpdates();
 								s.Merge(r);
-								await HooksRegistry.Each<IRockHook>((ses, x) => x.UpdateRock(ses,perm.GetCaller(), r, updates));
+								await HooksRegistry.Each<IRockHook>((ses, x) => x.UpdateRock(ses, perm.GetCaller(), r, updates));
 							}
 						}
 

@@ -704,15 +704,30 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
         var _clientTimestamp = new Date().getTime();
         self.Hide = true;
 
-        $(".editable-wrap").remove();
+		$(".editable-wrap").remove();
 
         var url = Time.addTimestamp("/L10/Remove" + self.Type + "/?recurrenceId=" + $scope.recurrenceId);
 
-        $http.post(url, dat).error(function (data) {
+		$http.post(url, dat).error(function (data) {
             showJsonAlert(data, false, true);
             self.Hide = false;
         }).finally(function () { });
-    };
+	};
+
+	$scope.functions.unarchiveRow = function (event, self) {
+		var dat = angular.copy(self);
+		var _clientTimestamp = new Date().getTime();
+		self.Hide = true;
+		
+		$(".editable-wrap").remove();
+
+		var url = Time.addTimestamp("/L10/Unarchive" + self.Type + "/?recurrenceId=" + $scope.recurrenceId);
+
+		$http.post(url, dat).error(function (data) {
+			showJsonAlert(data, false, true);
+			self.Hide = false;
+		}).finally(function () { });
+	};
 
     $scope.functions.addRow = function (event, type, args) {
         if (!$(event.target).hasClass("disabled")) {

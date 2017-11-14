@@ -32,6 +32,7 @@
 					<div></div>
 					<md-table-container class="repeater-container">
 						<table md-table class="@(orderVariable)" width="100%" class="component table-hover" ng-if="(@(selector) @(filter)).length" click-anywhere-but-here="model.Selected = -1">
+
 							<thead md-head md-order="@(orderVariable)" ng-init="functions.setValue('@(orderVariable)',@(orderVariable) || @(defaultSort))">
 								<tr class="table-header" md-row>
 									<th md-column @(attrLookup["picture-column"]) class="picture-column owner-column" style="width: 32px;" md-order-by="Owner.Name">&nbsp;</th>
@@ -75,7 +76,8 @@
 									</td>
 									<td class="alignCenter close-column date-column" md-cell>{{headline.CloseTime | date:dateFormat}}</td>
 									<td class="delete-column" md-cell>
-										<span class="delete-row" ng-click="functions.removeRow($event,headline)"></span>
+										<span class="delete-row-archive" ng-click="functions.removeRow($event,headline)"></span>
+										@*<span class="delete-row-unarchive" ng-if="" ng-click="functions.removeRow($event,headline)"></span>*@
 									</td>
 								</tr>
 							</tbody>
