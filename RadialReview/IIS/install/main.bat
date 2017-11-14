@@ -10,4 +10,7 @@ REM To review the config
 w32tm /query /configuration
 
 echo "END NIST POLLING"
+echo "DISK EXTEND"
+diskpart /s "C:\install\Scripts\resizeDisk.script"
+echo "END DISK EXTEND"
 echo "END MAIN"

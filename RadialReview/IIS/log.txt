@@ -372,3 +372,29 @@ User    Time =     0.171 =  145%
 Process Time =     0.171 =  145%    Virtual  Memory =    145 MB
 Global  Time =     0.118 =  100%    Physical Memory =     18 MB
 Completed 256.0 KiB/651.1 KiB (105.6 KiB/s) with 1 file(s) remainingCompleted 512.0 KiB/651.1 KiB (178.1 KiB/s) with 1 file(s) remainingCompleted 651.1 KiB/651.1 KiB (193.3 KiB/s) with 1 file(s) remainingupload: .\install.zip to s3://Radial/Installer/install.zip          
+ 
+'======================Mon 11-13-2017 21-59-39.46======================' 
+        1 file(s) moved.
+
+7-Zip [64] 9.20  Copyright (c) 1999-2010 Igor Pavlov  2010-11-18
+Scanning
+
+Creating archive install.zip
+
+Compressing  install\Files\ec2service\AWS.EC2.Windows.CloudWatch.json
+Compressing  install\Files\ec2service\config.xml
+Compressing  install\Fonts\Arial Narrow Bold.TTF
+Compressing  install\Fonts\Arial Narrow.TTF
+Compressing  install\Fonts\Arial.ttf
+Compressing  install\Installers\installEC2Service.bat
+Compressing  install\Installers\installFonts.bat
+Compressing  install\Installers\installSendEmail.ps1
+Compressing  install\Installers\NistPolling.reg
+Compressing  install\main.bat
+Compressing  install\README.txt
+Compressing  install\Scripts\resizeDisk.script
+Compressing  install\Scripts\SendEmail.ps1
+Compressing  install\Scripts\UrlRewrite.bat
+
+Everything is Ok
+upload: .\install.zip to s3://Radial/Installer/install.zip

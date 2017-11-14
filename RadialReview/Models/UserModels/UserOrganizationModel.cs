@@ -256,20 +256,20 @@ namespace RadialReview.Models
         public virtual string GetFirstName()
         {
             if (this.User != null && !String.IsNullOrWhiteSpace(this.User.FirstName))
-                return this.User.FirstName;
+                return this.User.FirstName.Trim();
 
             if (TempUser != null && !String.IsNullOrWhiteSpace(this.TempUser.FirstName))
-                return this.TempUser.FirstName;
+                return this.TempUser.FirstName.Trim();
 
             return GetName();
         }
         public virtual string GetLastName()
         {
             if (this.User != null && !String.IsNullOrWhiteSpace(this.User.LastName))
-                return this.User.LastName;
+                return this.User.LastName.Trim();
 
             if (TempUser != null && !String.IsNullOrWhiteSpace(this.TempUser.LastName))
-                return this.TempUser.LastName;
+                return this.TempUser.LastName.Trim();
 
             return GetName();
         }
