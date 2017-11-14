@@ -27,7 +27,7 @@
 <div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak headline-list-container app">
 	<div @(headers || controller ? "ng-controller=L10Controller" : "")>
 		<div class="row">
-			<div class="col-md-12 component">			
+			<div class="col-md-12 component">
 				<div id="Headline" class="tab-pane headline-pane scrollbox pull-left fullWidth scroller">
 					<div></div>
 					<md-table-container class="repeater-container">
@@ -53,10 +53,10 @@
 									<td class="picture-column owner-column" md-cell>
 										<span class="item-wrapper place-right">
 											@*<span onaftersave="functions.sendUpdate(headline)"
-												  editable-select="headline.Owner"
-												  onshow="loadPossibleOwners(@(recurrenceId))"
-												  e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]">*@
-												<profile-image user="headline.Owner"></profile-image>
+												editable-select="headline.Owner"
+												onshow="loadPossibleOwners(@(recurrenceId))"
+												e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]">*@
+											<profile-image user="headline.Owner"></profile-image>
 											@*</span>*@
 										</span>
 									</td>
@@ -76,8 +76,8 @@
 									</td>
 									<td class="alignCenter close-column date-column" md-cell>{{headline.CloseTime | date:dateFormat}}</td>
 									<td class="delete-column" md-cell>
-										<span class="delete-row-archive" ng-click="functions.removeRow($event,headline)"></span>
-										@*<span class="delete-row-unarchive" ng-if="" ng-click="functions.removeRow($event,headline)"></span>*@
+										<span class="delete-row-archive" ng-if="headline.CloseTime==null" title="Archive" ng-click="functions.removeRow($event,headline)"></span>
+										<span class="delete-row-unarchive" ng-if="headline.CloseTime!=null" title="UnArchive" ng-click="functions.unarchiveRow($event,headline)"></span>
 									</td>
 								</tr>
 							</tbody>

@@ -4538,8 +4538,9 @@ namespace RadialReview.Accessors {
             if (range != null && includeCompleted) {
                 var st = range.StartTime.AddDays(-1);
                 var et = range.EndTime.AddDays(1);
-                issuesQ = issuesQ.Where(x => x.CloseTime == null || (x.CloseTime >= st && x.CloseTime <= et));
-            }
+				//issuesQ = issuesQ.Where(x => x.CloseTime == null || (x.CloseTime >= st && x.CloseTime <= et));
+				//issuesQ = issuesQ.Where(x =>(x.CloseTime >= st && x.CloseTime <= et));
+			}
 
             if (!includeCompleted)
                 issuesQ = issuesQ.Where(x => x.CloseTime == null);
@@ -5158,7 +5159,7 @@ namespace RadialReview.Accessors {
                         perms.EditL10Recurrence(recurrenceId);
 
                         if (model.Type == typeof(AngularIssue).Name) {
-                            //await CompleteIssue(s, perms, rt, model.Id);
+                            await UnarchiveIssue(s, perms, rt, model.Id);
                         } else if (model.Type == typeof(AngularTodo).Name) {
                             //await TodoAccessor.CompleteTodo(s, perms, model.Id);
                         } else if (model.Type == typeof(AngularRock).Name) {
@@ -5181,15 +5182,25 @@ namespace RadialReview.Accessors {
         }
 
 
-        public static async Task UnarchiveHeadline(ISession s, PermissionsUtility perm, RealTimeUtility rt, long headlineId) {
+
+		public static async Task UnarchiveIssue(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceIssue) {
+			var issue = s.Get<IssueModel.IssueModel_Recurrence>(recurrenceIssue);
+			perm.EditL10Recurrence(issue.Recurrence.Id);
+			if (issue.CloseTime == null)
+				throw new PermissionsException("Issue already unarchived.");
+			await IssuesAccessor.EditIssue(s, perm, recurrenceIssue, complete: false);
+		}
+
+
+		public static async Task UnarchiveHeadline(ISession s, PermissionsUtility perm, RealTimeUtility rt, long headlineId) {
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
             perm.ViewHeadline(headlineId);
 
             var r = s.Get<PeopleHeadline>(headlineId);
 
-            if (r.CloseTime != null)
-                throw new PermissionsException("Headline already removed.");
+            if (r.CloseTime == null)
+                throw new PermissionsException("Headline already unarchived.");
 
             perm.EditL10Recurrence(r.RecurrenceId);
 

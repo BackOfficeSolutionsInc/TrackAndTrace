@@ -729,7 +729,9 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
             $http.post(url, dat).error(function (data) {
                 showJsonAlert(data, false, true);
                 self.Hide = false;
-            }).finally(function () {
+			}).finally(function () {
+				// reload
+				$scope.functions.reload(true, $scope.model.dataDateRange, false);
             });
         };
 

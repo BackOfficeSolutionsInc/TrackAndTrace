@@ -69,7 +69,7 @@ body, html {
 
 	.issues-list-container {
 		.vto-column,
-		.delete-column,
+		//.delete-column,
 		.createtime-column {
 			display: none;
 		}
@@ -404,6 +404,66 @@ body, html {
 	}
 
 	.headline-list-container {
+		.delete-row-archive:before {
+			content: "0";
+			font-family: "fontastic" !important;
+			font-style: normal !important;
+			font-weight: normal !important;
+			font-variant: normal !important;
+			text-transform: none !important;
+			speak: none;
+			line-height: 1;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+			display: inline-block;
+			position: relative;
+			top: 0px;
+			left: -4px;
+		}
+
+		.delete-row-unarchive:before {
+			content: "0";
+			font-family: "fontastic" !important;
+			font-style: normal !important;
+			font-weight: normal !important;
+			font-variant: normal !important;
+			text-transform: none !important;
+			speak: none;
+			line-height: 1;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+			display: inline-block;
+			position: relative;
+			top: 0px;
+			left: -4px;
+		}
+
+		.delete-row-archive {
+			margin: 0;
+			margin-right: 10px;
+			padding: 13px;
+			height: 50px;
+			width: 50px;
+			overflow: hidden;
+			float: left;
+			font-size: 24px;
+			color: rgba(0, 0, 0, 0.90);
+		}
+
+		.delete-row-unarchive {
+			margin: 0;
+			margin-right: 10px;
+			padding: 13px;
+			height: 50px;
+			width: 50px;
+			overflow: hidden;
+			float: left;
+			font-size: 24px;
+			color: rgba(0, 0, 0, 0.54);
+		}
+	}
+
+	.issues-list-container {
 		.delete-row-archive:before {
 			content: "0";
 			font-family: "fontastic" !important;

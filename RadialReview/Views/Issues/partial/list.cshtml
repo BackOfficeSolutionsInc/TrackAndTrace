@@ -52,7 +52,7 @@
                            ng-show="((@(selector)).Issues @(filter)).length">
                         <thead md-head md-order="@(orderVariable)" ng-init="@(orderVariable) =@(orderVariable) || @(defaultSort)">
                             <tr md-row>
-                                <th md-column @(attrLookup["checkbox-column"]) class="checkbox-column" md-order-by="Complete">&nbsp;</th>
+                               @* <th md-column @(attrLookup["checkbox-column"]) class="checkbox-column" md-order-by="Complete">&nbsp;</th>*@
                                 <th md-column @(attrLookup["priority-column"]) class="priority-column" md-order-by="Priority">Priority</th>
                                 <th md-column @(attrLookup["owner-column"]) class="owner-column" md-order-by="Owner.Name">&nbsp;</th>
                                 <th md-column @(attrLookup["issue-column"]) class="issue-column message-column" md-order-by="Name" style="padding-left: 4px;">Issue</th>
@@ -68,10 +68,10 @@
                                 class="clickable"
                                 data-issue="{{::issue.Id}}"
                                 md-row>
-                                <td md-cell class="checkbox-column">
+                                @*<td md-cell class="checkbox-column">
                                     <md-checkbox aria-label="Complete" ng-model="issue.Complete" class="md-align-top-left" ng-change="functions.updateComplete(this);functions.sendUpdate(issue)"></md-checkbox>
 
-                                </td>
+                                </td>*@
                                 <td md-cell class="priority-column" style="vertical-align: top;padding-top: 5px;">
                                     <priority ng-model="issue.Priority" ng-change="functions.sendUpdate(issue)"></priority>
                                 </td>
@@ -112,7 +112,8 @@
                                     <span class="move-to-vto" ng-click="functions.moveToVto(issue)"></span>
                                 </td>
                                 <td md-cell class="delete-column">
-                                    <span class="delete-row" ng-click="functions.removeRow($event,issue)"></span>
+                                    <span class="delete-row-archive" ng-if="issue.CloseTime==null" title="Archive" ng-click="functions.removeRow($event,issue)"></span>
+									<span class="delete-row-unarchive" ng-if="issue.CloseTime!=null" title="UnArchive" ng-click="functions.unarchiveRow($event,issue)"></span>
                                 </td>
                             </tr>
                         </tbody>
