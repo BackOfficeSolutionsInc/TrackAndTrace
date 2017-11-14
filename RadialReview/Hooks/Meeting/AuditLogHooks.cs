@@ -174,10 +174,22 @@ namespace RadialReview.Hooks.Meeting {
 		public async Task ArchiveRock(ISession s, RockModel rock, bool deleted) {
 			//noop
 		}
-		public async Task UpdateHeadline(ISession s, PeopleHeadline todo, IHeadlineHookUpdates updates) {
+        public async Task UnArchiveRock(ISession s, RockModel rock, bool v)
+        {
+            //Nothing to do...
+        }
+        public async Task UpdateHeadline(ISession s, PeopleHeadline headline, IHeadlineHookUpdates updates) {
 			//noop
 		}
-		public async Task DetatchRock(ISession s, RockModel rock, long recurrenceId) {
+        public async Task ArchiveHeadline(ISession s, PeopleHeadline headline)
+        {
+            //noop
+        }
+        public async Task UnArchiveHeadline(ISession s, PeopleHeadline headline)
+        {
+            //Nothing to do...
+        }
+        public async Task DetatchRock(ISession s, RockModel rock, long recurrenceId) {
 			//Noop
 		}
 		public async Task UpdateVtoRock(ISession s, L10Recurrence.L10Recurrence_Rocks recurRock) {
