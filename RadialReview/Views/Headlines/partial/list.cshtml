@@ -47,7 +47,7 @@
 							<tbody md-body @*vs-repeat vs-autoresize vs-scroll-parent=".repeater-container"*@>
 								<tr id="headline_{{headline.Id}}"
 									ng-repeat="headline in @(selector) | orderBy: @(orderVariable) @(filter) track by $index"
-									ng-class="{grayRow: headline.Complete}"
+									ng-class="{grayRow: headline.Complete, grayRow: headline.CloseTime!=null }"
 									class="clickable {{model.Selected == headline.Key?'selected':''}}"
 									md-row>
 									<td class="picture-column owner-column" md-cell>
