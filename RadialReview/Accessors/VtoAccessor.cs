@@ -416,7 +416,7 @@ namespace RadialReview.Accessors {
 					tx.Commit();
 					s.Flush();
 #pragma warning disable CS0618 // Type or member is obsolete
-					group.update(new AngularUpdate(){new AngularQuarterlyRocks(vtoId) {
+					group.update(new AngularUpdate(){new AngularQuarterlyRocks(id) {
 						FutureDate = futuredate,
 						Revenue = revenue,
 						Profit = profit,

@@ -289,7 +289,7 @@ namespace RadialReview.Models.Angular.VTO {
 
 		public static AngularQuarterlyRocks Create(QuarterlyRocksModel quarterlyRocksModel) {
 			return new AngularQuarterlyRocks() {
-				Id = quarterlyRocksModel.Vto,
+				Id = quarterlyRocksModel.Id,
 				FutureDate = (quarterlyRocksModel.FutureDate),
 				Measurables = (quarterlyRocksModel.Measurables),
 				Profit = (quarterlyRocksModel.ProfitStr),

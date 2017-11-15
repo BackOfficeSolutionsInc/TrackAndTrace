@@ -15,7 +15,7 @@ using RadialReview.Models.Scorecard;
 using static RadialReview.Accessors.L10Accessor;
 
 namespace RadialReview.Accessors {
-	public class ExportAccessor : BaseAccessor{
+	public class ExportAccessor : BaseAccessor {
 		public static async Task<string> Scorecard(UserOrganizationModel caller, long recurrenceId, string type = "csv") {
 			//var scores = L10Accessor.GetScoresForRecurrence(caller, recurrenceId);
 			var data = await L10Accessor.GetOrGenerateScorecardDataForRecurrence(caller, recurrenceId);
@@ -52,18 +52,19 @@ namespace RadialReview.Accessors {
 
 
 
-            foreach (var s in data.MeasurablesAndDividers.OrderBy(x => x._Ordering)) {// scores.GroupBy(x => x.MeasurableId).OrderBy(x=>x.First().Measurable._Ordering)) {
-                var measurable = s.Measurable;
-                //var ss = s.First();
-                if (measurable != null) {
-                    csv.Add(measurable.Title, "Owner", measurable.AccountableUser.NotNull(x => x.GetName()));
-                    csv.Add(measurable.Title, "Admin", measurable.AdminUser.NotNull(x => x.GetName()));
-                    csv.Add(measurable.Title, "Goal", "" + measurable.Goal.NotNull(x => measurable.UnitType.Format(x)));
-                    csv.Add(measurable.Title, "GoalDirection", "" + measurable.GoalDirection);
-                }
-            }
+			foreach (var s in data.MeasurablesAndDividers.OrderBy(x => x._Ordering)) {// scores.GroupBy(x => x.MeasurableId).OrderBy(x=>x.First().Measurable._Ordering)) {
+				var measurable = s.Measurable;
+				//var ss = s.First();
+				if (measurable != null) {
+					csv.Add(measurable.Id + "", "Title", measurable.Title);
+					csv.Add(measurable.Id + "", "Owner", measurable.AccountableUser.NotNull(x => x.GetName()));
+					csv.Add(measurable.Id + "", "Admin", measurable.AdminUser.NotNull(x => x.GetName()));
+					csv.Add(measurable.Id + "", "Goal", "" + measurable.Goal.NotNull(x => measurable.UnitType.Format(x)));
+					csv.Add(measurable.Id + "", "GoalDirection", "" + measurable.GoalDirection);
+				}
+			}
 			foreach (var s in data.Scores.OrderBy(x => x.ForWeek)) {
-				csv.Add(s.Measurable.Title, s.ForWeek.ToShortDateString(), s.Measured.NotNull(x => s.Measurable.UnitType.Format(x.Value)) ?? "");
+				csv.Add(s.Measurable.Id + "", s.ForWeek.ToShortDateString(), s.Measured.NotNull(x => s.Measurable.UnitType.Format(x.Value)) ?? "");
 			}
 			return csv;
 		}
@@ -101,10 +102,10 @@ namespace RadialReview.Accessors {
 		}
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        private static async Task GrabTodo(Csv csv, Models.Todo.TodoModel t, Dictionary<string,string> padLookup) {
+		private static async Task GrabTodo(Csv csv, Models.Todo.TodoModel t, Dictionary<string, string> padLookup) {
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
-            csv.Add("" + t.Id, "Owner", t.AccountableUser.NotNull(x => x.GetName()));
+			csv.Add("" + t.Id, "Owner", t.AccountableUser.NotNull(x => x.GetName()));
 			csv.Add("" + t.Id, "Created", t.CreateTime.ToShortDateString());
 			csv.Add("" + t.Id, "Due Date", t.DueDate.ToShortDateString());
 			var time = "";
@@ -116,7 +117,7 @@ namespace RadialReview.Accessors {
 
 			if (padLookup != null) {
 				var padDetails = padLookup.GetOrDefault(t.PadId, "");
-				csv.Add(""+t.Id,"Details",Csv.CsvQuote(padDetails));
+				csv.Add("" + t.Id, "Details", Csv.CsvQuote(padDetails));
 			}
 
 			//if (includeDetails) {
@@ -143,7 +144,7 @@ namespace RadialReview.Accessors {
 					//}
 					var sb = new StringBuilder();
 
-					sb.Append("Id,"+/*Depth,*/"Owner,Created,Closed,Issue");
+					sb.Append("Id," +/*Depth,*/"Owner,Created,Closed,Issue");
 					//var id = 0;
 
 					var rows = new List<Tuple<long, List<string>>>();
@@ -289,7 +290,7 @@ namespace RadialReview.Accessors {
 					foreach (var t in ratings.OrderBy(x => x.L10Meeting.CompleteTime).GroupBy(x => x.L10Meeting.Id)) {
 						foreach (var u in t) {
 							if (u.L10Meeting.CompleteTime != null) {
-								csv.Add(u.User.GetName(), u.L10Meeting.CompleteTime.Value.ToString(), u.Rating.NotNull(x => "" + String.Format("{0:##.###}",x)) ?? "NR");
+								csv.Add(u.User.GetName(), u.L10Meeting.CompleteTime.Value.ToString(), u.Rating.NotNull(x => "" + String.Format("{0:##.###}", x)) ?? "NR");
 							}
 						}
 					}
