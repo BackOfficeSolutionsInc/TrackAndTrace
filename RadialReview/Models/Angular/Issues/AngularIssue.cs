@@ -40,6 +40,7 @@ namespace RadialReview.Models.Angular.Issues
 		public String Name { get; set; }
 		public AngularUser Owner { get; set; }
 		public string DetailsUrl { get; set; }
+        [Obsolete]
 		public DateTime? CompleteTime { get; set; }
 		public bool? Complete { get; set; }
 
