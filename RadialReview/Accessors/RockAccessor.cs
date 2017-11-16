@@ -347,7 +347,7 @@ namespace RadialReview.Accessors {
 					foreach (var r in rocks) {
 						csv.Add(r.Rock, "Owner", r.AccountableUser.GetName());
 						//csv.Add(r.Rock, "Manager", string.Join(" & ", r.AccountableUser.ManagedBy.Select(x => x.Manager.GetName())));
-						csv.Add(r.Rock, "Status", "" + r.Completion);
+						csv.Add(r.Rock, "Status", "" + RockStateExtensions.GetCompletionVal(r.Completion));
 						csv.Add(r.Rock, "CreateTime", "" + r.CreateTime);
 						csv.Add(r.Rock, "CompleteTime", "" + r.CompleteTime);
 						csv.Add(r.Rock, "Archived", "" + r.Archived);
@@ -371,7 +371,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static async Task<RockModel> CreateRock(ISession s, PermissionsUtility perms, long ownerId, string message = null, long? templateId = null,long? permittedForRecurrenceId=null) {
+		public static async Task<RockModel> CreateRock(ISession s, PermissionsUtility perms, long ownerId, string message = null, long? templateId = null, long? permittedForRecurrenceId = null) {
 
 			perms.CreateRocksForUser(ownerId, permittedForRecurrenceId);
 			var owner = s.Get<UserOrganizationModel>(ownerId);
@@ -400,7 +400,7 @@ namespace RadialReview.Accessors {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					await UpdateRock(s, perms,rockId,  message, ownerId,completion,dueDate,DateTime.UtcNow);
+					await UpdateRock(s, perms, rockId, message, ownerId, completion, dueDate, DateTime.UtcNow);
 					tx.Commit();
 					s.Flush();
 				}
@@ -424,7 +424,7 @@ namespace RadialReview.Accessors {
 				updates.MessageChanged = true;
 			}
 
-            updates.OriginalAccountableUserId = rock.ForUserId;
+			updates.OriginalAccountableUserId = rock.ForUserId;
 			if (ownerId != null && rock.ForUserId != ownerId) {
 				rock.AccountableUser = s.Load<UserOrganizationModel>(ownerId.Value);
 				rock.ForUserId = ownerId.Value;
@@ -453,7 +453,7 @@ namespace RadialReview.Accessors {
 
 			await HooksRegistry.Each<IRockHook>((ss, x) => x.UpdateRock(ss, perms.GetCaller(), rock, updates));
 		}
-		
+
 
 		public static async Task ArchiveRock(UserOrganizationModel caller, long rockId, DateTime? now = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -545,7 +545,7 @@ namespace RadialReview.Accessors {
 							} else {
 								var updates = new IRockHookUpdates();
 								s.Merge(r);
-								await HooksRegistry.Each<IRockHook>((ses, x) => x.UpdateRock(ses,perm.GetCaller(), r, updates));
+								await HooksRegistry.Each<IRockHook>((ses, x) => x.UpdateRock(ses, perm.GetCaller(), r, updates));
 							}
 						}
 
