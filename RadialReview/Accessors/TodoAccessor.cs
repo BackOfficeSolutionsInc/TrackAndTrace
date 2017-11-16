@@ -294,8 +294,14 @@ namespace RadialReview.Accessors {
 					var q = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.AccountableUserId == a);
 					//.WhereRestrictionOn(x => x.AccountableUserId)
 					//.IsIn(userIds);
+
+					var useStart = weekAgo;
+					if (range != null) {
+						useStart = range.StartTime;
+					}
+					
 					if (excludeCompleteDuringMeeting)
-						q = q.Where(x => x.CompleteTime == null || (x.CompleteTime != null && x.CompleteTime > weekAgo && x.CompleteDuringMeetingId == null));
+						q = q.Where(x => x.CompleteTime == null || (x.CompleteTime != null && x.CompleteTime >= useStart && x.CompleteDuringMeetingId == null));
 					if (false && range != null)
 						q = q.Where(x => x.CompleteTime == null || (x.CompleteTime != null && x.CompleteTime >= range.StartTime && x.CompleteTime <= range.EndTime));
 					todosMany.Add(q.List().ToList());

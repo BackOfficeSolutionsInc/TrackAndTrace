@@ -65,12 +65,12 @@ function ($scope, $http, $timeout, radial, signalR, vtoDataUrlBase, vtoId, vtoCa
 	$scope.functions.sendUpdate = function (self) {
 		var dat = angular.copy(self);
 		r.updater.convertDatesForServer(dat, Time.tzoffset());
-		console.log(self)
+		console.log(self);
+
 
 		var url = Time.addTimestamp("/VTO/Update" + self.Type + "?connectionId=" + $scope.connectionId);
 
-		$http.post(url, dat)
-		.then(function () { }, showAngularError);
+		$http.post(url, dat).then(function () { }, showAngularError);
 	};
 
 	$scope.functions.AddRow = function (url, self) {

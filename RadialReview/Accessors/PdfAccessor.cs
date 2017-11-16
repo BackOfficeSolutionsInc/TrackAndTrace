@@ -1700,8 +1700,19 @@ namespace RadialReview.Accessors {
 				s.Width += w;
 				s.Height += h;
 			} else if (o is Row) {
-
+				
 				var row = (Row)o;
+
+				//if (row.Table == null) {
+				//	var tempTable = new Table();
+				//	tempTable.AddColumn(maxWidth);
+				//	row = tempTable.AddRow();
+				//	var paragraph = row.Cells[0].AddParagraph();
+				//	var tempTable2 = new Table();
+				//	tempTable2.AddColumn();
+				//	paragraph.Add(row);
+				//}
+
 				var family = row.Format.Font.Name;
 				var h = 0.0;
 				var w = 0.0;
@@ -2422,6 +2433,7 @@ namespace RadialReview.Accessors {
 			var goalObjects = new List<DocumentObject>();
 			var goalsSplits = new List<Page>();
 			var goalRows = new List<Row>();
+			var goalParagraphs = new List<Paragraph>();
 			{
 				var goals = vto.OneYearPlan.GoalsForYear.Select(x => x.Data).Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
 
@@ -2438,14 +2450,14 @@ namespace RadialReview.Accessors {
 				//var pt = new Paragraph();
 				//pt.Elements.Add(t);
 
-				var goalParagraphs = goals.Select(x => {
-					var c = new Cell();
-					var p = c.AddParagraph(x);
-					p.Format.SpaceBefore = Unit.FromPoint(2);
-					p.Format.Font.Size = fs;
-					p.Format.Font.Name = "Arial Narrow";
-					return p;
-				});
+				//var goalParagraphs = goals.Select(x => {
+				//	var c = new Cell();
+				//	var p = c.AddParagraph(x);
+				//	p.Format.SpaceBefore = Unit.FromPoint(2);
+				//	p.Format.Font.Size = fs;
+				//	p.Format.Font.Name = "Arial Narrow";
+				//	return p;
+				//});
 
 
 				for (var i = 0; i < goals.Count; i++) {
@@ -2463,11 +2475,12 @@ namespace RadialReview.Accessors {
 					p.Format.Font.Size = fs;
 					p.Format.Font.Name = "Arial Narrow";
 					goalRows.Add(r);
+					goalParagraphs.Add(p);
 				}
 
 				var headerSize = GetSize(goalObjects, Unit.FromInch(3.47));
 				Unit pg1Height = baseHeight - headerSize.Height;
-				goalsSplits = SplitHeights(Unit.FromInch(3), new[] { pg1Height, (baseHeight) }, goalRows);
+				goalsSplits = SplitHeights(Unit.FromInch(3), new[] { pg1Height, (baseHeight) }, goalParagraphs);
 
 
 				goalObjects.Add(goalTable);
@@ -2476,6 +2489,7 @@ namespace RadialReview.Accessors {
 			var rockObjects = new List<DocumentObject>();
 			var rockSplits = new List<Page>();
 			var rockRows = new List<Row>();
+			var rockParagraphs = new List<Paragraph>();
 			{
 				var rocks = vto.QuarterlyRocks.Rocks.Where(x => !String.IsNullOrWhiteSpace(x.Rock.Name)).ToList();
 				quarterlyRocks.Format.LeftIndent = Unit.FromInch(.095);
@@ -2489,14 +2503,14 @@ namespace RadialReview.Accessors {
 				rockObjects.Add(gfy);
 
 
-				var rockParagraphs = rocks.Select(x => {
-					var c = new Cell();
-					var p = c.AddParagraph(x.Rock.Name);
-					p.Format.SpaceBefore = Unit.FromPoint(2);
-					p.Format.Font.Size = fs;
-					p.Format.Font.Name = "Arial Narrow";
-					return p;
-				});
+				//var rockParagraphs = rocks.Select(x => {
+				//	var c = new Cell();
+				//	var p = c.AddParagraph(x.Rock.Name);
+				//	p.Format.SpaceBefore = Unit.FromPoint(2);
+				//	p.Format.Font.Size = fs;
+				//	p.Format.Font.Name = "Arial Narrow";
+				//	return p;
+				//});
 
 
 
@@ -2510,6 +2524,7 @@ namespace RadialReview.Accessors {
 					p.Format.Font.Name = "Arial Narrow";
 					p.Format.Alignment = ParagraphAlignment.Right;
 					p = r.Cells[1].AddParagraph(rocks[i].Rock.Name ?? "");
+					rockParagraphs.Add(p);
 					p.Format.SpaceBefore = Unit.FromPoint(2);
 					p.Format.Font.Size = fs;
 					p.Format.Font.Name = "Arial Narrow";
@@ -2519,19 +2534,21 @@ namespace RadialReview.Accessors {
 					p.Format.Font.Size = fs;
 					p.Format.Font.Name = "Arial Narrow";
 					rockRows.Add(r);
+
 				}
 				//var headerSize = GetSize(gfy, Unit.FromInch(3.47));
 
 				var headerSize = GetSize(rockObjects, Unit.FromInch(3.47));
 				//Unit pg1Height = Unit.FromInch(baseHeight - Unit.FromPoint(headerSize.Height*.166).Inch);
 				Unit pg1Height = baseHeight - headerSize.Height;
-				rockSplits = SplitHeights(Unit.FromInch(3), new[] { pg1Height, (baseHeight) }, rockRows);
+				rockSplits = SplitHeights(Unit.FromInch(2.6), new[] { pg1Height, (baseHeight) }, rockParagraphs);
 				rockObjects.Add(rockTable);
 
 			}
 			var issuesObjects = new List<DocumentObject>();
 			var issueSplits = new List<Page>();
 			var issueRows = new List<Row>();
+			var issueParagraph = new List<Paragraph>();
 			{
 				var issues = vto.Issues.Select(x => x.Data).Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
 
@@ -2539,14 +2556,14 @@ namespace RadialReview.Accessors {
 				//ResizeToFit(issuesList, Unit.FromInch(3.47), Unit.FromInch(5.15), (cell, fs) => {
 
 				if (issues.Any()) {
-					var issueParagraphs = issues.Select(x => {
-						var c = new Cell();
-						var p = c.AddParagraph(x);
-						p.Format.SpaceBefore = Unit.FromPoint(2);
-						p.Format.Font.Size = fs;
-						p.Format.Font.Name = "Arial Narrow";
-						return p;
-					});
+					//var issueParagraphs = issues.Select(x => {
+					//	var c = new Cell();
+					//	var p = c.AddParagraph(x);
+					//	p.Format.SpaceBefore = Unit.FromPoint(2);
+					//	p.Format.Font.Size = fs;
+					//	p.Format.Font.Name = "Arial Narrow";
+					//	return p;
+					//});
 
 
 					var rspace = issueTable.AddRow();
@@ -2566,6 +2583,7 @@ namespace RadialReview.Accessors {
 						p.Format.Font.Name = "Arial Narrow";
 						p.Format.Alignment = ParagraphAlignment.Right;
 						p = r.Cells[1].AddParagraph(issues[i] ?? "");
+						issueParagraph.Add(p);
 						p.Format.SpaceBefore = Unit.FromPoint(2);
 						p.Format.Font.Size = fs;
 						p.Format.Font.Name = "Arial Narrow";
@@ -2575,7 +2593,7 @@ namespace RadialReview.Accessors {
 					//var rowHeights = GetRowHeights(issueRows, Unit.FromInch(3));
 					var extraHeight = 0.51;
 
-					issueSplits = SplitHeights(Unit.FromInch(3), new[] { (baseHeight), (baseHeight) }, issueRows, x => x.Cells[1], extraHeight);
+					issueSplits = SplitHeights(Unit.FromInch(3), new[] { (baseHeight), (baseHeight) }, issueParagraph, null /*x => x.Cells[1]*/, extraHeight);
 					issuesObjects.Add(issueTable);
 				}
 

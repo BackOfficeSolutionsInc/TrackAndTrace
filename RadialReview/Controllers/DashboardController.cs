@@ -85,11 +85,14 @@ namespace RadialReview.Controllers {
 
 			};
 
+			var dayDateRange = new DateRange(DateTime.UtcNow.AddDays(-1), DateTime.UtcNow);
+			var nowDateRange = new DateRange(DateTime.UtcNow, DateTime.UtcNow);
+
 
 			if (tiles.Any(x => x.Type == TileType.Todo || (x.DataUrl ?? "").Contains("UserTodo"))) {
                 try {
                     //Todos
-                    var todos = TodoAccessor.GetMyTodosAndMilestones(GetUser(), id, !completed, dateRange, includeTodos: true, includeMilestones: false);//.Select(x => new AngularTodo(x));
+                    var todos = TodoAccessor.GetMyTodosAndMilestones(GetUser(), id, !completed, dayDateRange/*dateRange*/, includeTodos: true, includeMilestones: false);//.Select(x => new AngularTodo(x));
                     var m = _UserAccessor.GetUserOrganization(GetUser(), id, false, true, PermissionType.ViewTodos);
                     output.Todos = todos.OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ThenBy(x => x.DueDate);
                 } catch (Exception e) {
@@ -99,7 +102,7 @@ namespace RadialReview.Controllers {
             if (tiles.Any(x => x.Type == TileType.Milestones || (x.DataUrl ?? "").Contains("Milestones"))) {
                 try {
                     //Milestones
-                    var milestones = TodoAccessor.GetMyTodosAndMilestones(GetUser(), id, !completed, dateRange, includeTodos:false, includeMilestones: true);//.Select(x => new AngularTodo(x));
+                    var milestones = TodoAccessor.GetMyTodosAndMilestones(GetUser(), id, !completed, nowDateRange, includeTodos:false, includeMilestones: true);//.Select(x => new AngularTodo(x));
                     var m = _UserAccessor.GetUserOrganization(GetUser(), id, false, true, PermissionType.ViewTodos);
                     output.Milestones = milestones.OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ThenBy(x => x.DueDate);
                 } catch (Exception e) {
