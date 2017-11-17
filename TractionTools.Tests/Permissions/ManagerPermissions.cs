@@ -18,8 +18,8 @@ namespace TractionTools.Tests.Permissions {
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void ManagerAtOrganization() {
-			var c = new Ctx();
+		public async Task ManagerAtOrganization() {
+			var c =await Ctx.Build();
 			foreach (var u in c.AllManagers) {
 				c.AssertAll(p => p.ManagerAtOrganization(u.Id, c.Id), c.AllUsers);
 			}
@@ -32,8 +32,8 @@ namespace TractionTools.Tests.Permissions {
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void ManagingOrganization() {
-			var c = new Ctx();
+		public async Task ManagingOrganization() {
+			var c =await Ctx.Build();
 			c.AssertAll(p => p.ManagingOrganization(c.Id), c.Manager);
 		}
 		/*
@@ -41,7 +41,7 @@ namespace TractionTools.Tests.Permissions {
 		[TestMethod]
 		[TestCategory("Permissions")]
 		public void XXX() {
-			var c = new Ctx();
+			var c =await Ctx.Build();
 			c.AssertAll(p => p.XXX(YYY), c.Manager);
 		}
 

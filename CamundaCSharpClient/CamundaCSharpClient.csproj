@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{220D5704-6B65-4F39-ABE2-E3786114F2FD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CamundaCSharpClient</RootNamespace>
+    <AssemblyName>CamundaCSharpClient</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\packages\RestSharp.105.2.3\lib\net4\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CamundaConfig.cs" />
+    <Compile Include="Core.cs" />
+    <Compile Include="Group.cs" />
+    <Compile Include="Helper\EnsureHelper.cs" />
+    <Compile Include="Helper\queryHelper.cs" />
+    <Compile Include="Helper\ReturnHelper.cs" />
+    <Compile Include="History.cs" />
+    <Compile Include="Model\ActivityInstanceModel.cs" />
+    <Compile Include="Model\camundaBase.cs" />
+    <Compile Include="Model\Count.cs" />
+    <Compile Include="Model\Deployment\Deployment.cs" />
+    <Compile Include="Model\Deployment\EngineException.cs" />
+    <Compile Include="Model\Deployment\FileParameter.cs" />
+    <Compile Include="Model\Deployment\FormUpload.cs" />
+    <Compile Include="Model\History\HistoryVariableInstanceModel.cs" />
+    <Compile Include="Model\History\HistoryVariableInstanceQueryModel.cs" />
+    <Compile Include="Model\ProcessDefinition\processDefinitionDeleteModel.cs" />
+    <Compile Include="Model\ProcessInstance\GetProcessInstanceQueryModel.cs" />
+    <Compile Include="Model\Task\GetTaskQueryModel.cs" />
+    <Compile Include="Model\Group\GroupQueryModel.cs" />
+    <Compile Include="Model\History\DetailsQueryModel.cs" />
+    <Compile Include="Model\History\HistoryDetailsModel.cs" />
+    <Compile Include="Model\History\HistoryProcessInstance.cs" />
+    <Compile Include="Model\History\HistoryProcessInstanceQueryModel.cs" />
+    <Compile Include="Model\History\HistoryTaskModel.cs" />
+    <Compile Include="Model\History\HistoryTaskQueryModel.cs" />
+    <Compile Include="Model\noContentStatus.cs" />
+    <Compile Include="Model\Group\groupModel.cs" />
+    <Compile Include="Model\ProcessDefinition\processDefinitionModel.cs" />
+    <Compile Include="Model\ProcessDefinition\ProcessDefinitionQueryModel.cs" />
+    <Compile Include="Model\ProcessDefinition\processDefinitionSuspendModel.cs" />
+    <Compile Include="Model\ProcessDefinition\processDefinitionXMLModel.cs" />
+    <Compile Include="Model\ProcessInstance\processInstanceModel.cs" />
+    <Compile Include="Model\ProcessInstance\ProcessInstanceQueryModel.cs" />
+    <Compile Include="Model\RestException.cs" />
+    <Compile Include="Model\Task\TaskFormKeyModel.cs" />
+    <Compile Include="Model\Task\TaskModel.cs" />
+    <Compile Include="Model\Task\TaskCommentModel.cs" />
+    <Compile Include="Model\Task\TaskQueryModel.cs" />
+    <Compile Include="Model\User\UserModel.cs" />
+    <Compile Include="Model\User\UserQueryModel.cs" />
+    <Compile Include="ProcessDefinition.cs" />
+    <Compile Include="ProcessInstance.cs" />
+    <Compile Include="Query\Deployment\DeploymentQuery.cs" />
+    <Compile Include="Query\History\DetailsQuery.cs" />
+    <Compile Include="Query\History\HistoryProcessInstanceQuery.cs" />
+    <Compile Include="Query\History\HistoryQuery.cs" />
+    <Compile Include="Query\History\HistoryTaskQuery.cs" />
+    <Compile Include="Query\History\HistoryVariableInstanceQuery.cs" />
+    <Compile Include="Query\ProcessInstance\GetProcessInstanceQuery.cs" />
+    <Compile Include="Query\ProcessInstance\ProcessInstanceQuery.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Query\Task\GetTaskQuery.cs" />
+    <Compile Include="Query\groupQuery.cs" />
+    <Compile Include="Query\ProcessDefinitionQuery.cs" />
+    <Compile Include="Query\queryBase.cs" />
+    <Compile Include="Query\Task\TaskQuery.cs" />
+    <Compile Include="Query\userQuery.cs" />
+    <Compile Include="Deployment.cs" />
+    <Compile Include="Task.cs" />
+    <Compile Include="User.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\StyleCop.MSBuild.5.0.0\build\StyleCop.MSBuild.targets" Condition="Exists('..\packages\StyleCop.MSBuild.5.0.0\build\StyleCop.MSBuild.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\StyleCop.MSBuild.5.0.0\build\StyleCop.MSBuild.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\StyleCop.MSBuild.5.0.0\build\StyleCop.MSBuild.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

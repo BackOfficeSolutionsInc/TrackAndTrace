@@ -38,25 +38,21 @@ namespace RadialReview
 		}
 
 
+#pragma warning disable CS0618 // Type or member is obsolete
 		public static void PopulateTeams(this UserOrganizationModel self, List<OrganizationTeamModel> allOrgTeams, List<TeamDurationModel> allTeamDurations)
 		{
 			var teams = new List<TeamDurationModel>();
-			//self.Teams = .ToList();
-
 			if (self.IsManager())
 			{
 				var managerTeam = allOrgTeams.Where(x => x.Type == TeamType.Managers).SingleOrDefault();
-				//Populate(s,managerTeam);
 				teams.Add(new TeamDurationModel() { CreateTime = self.AttachTime, Id = -2, Team = managerTeam, User = self });
 			}
 			var allMembersTeam = allOrgTeams.Where(x => x.Organization.Id == self.Organization.Id && x.Type == TeamType.AllMembers).SingleOrDefault();
-			//Populate(s,allMembersTeam);
 			teams.Add(new TeamDurationModel() { CreateTime = self.AttachTime, Id = -2, Team = allMembersTeam, User = self });
-
 			teams.AddRange(allTeamDurations.Where(x => x.UserId == self.Id));
-			//teams.ForEach(x => Populate(s, x.Team));
 			self.Teams = teams;
 		}
+#pragma warning restore CS0618 // Type or member is obsolete
 
 
 

@@ -1,0 +1,65 @@
+﻿@model RadialReview.Areas.People.Angular.AngularPeopleAnalyzer
+@{
+	ViewBag.Title = "People Analyzer";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+
+	//var values = Model.Values;// Rows.SelectMany(x => x.Values).Distinct(x => x.ValueId).ToList();
+
+	Html.RenderPartial("~/Views/CDN/Angular.cshtml");
+}
+
+
+@section top{
+	<div class="jumbotron">
+		<h1>People Analyzer</h1>
+	</div>
+}
+<div ng-app="people" class="people quarterly-conversation ng-cloak">
+	<people-analyzer id="pa" class="hidden"></people-analyzer>
+</div>
+
+@using (Html.BeginStyles()) {
+	@Styles.Render("~/styles/people")
+}
+@using (Html.BeginScripts()) {
+	@Scripts.Render("~/bundles/people")
+
+	<script>
+		$(window).on("data-loaded", function () {
+			setTimeout(function () {
+				$("#pa").removeClass("hidden");
+				DiagonalTable("#pa table", -Math.PI / 4, 200, 10);
+			}, 1);
+
+		});
+	</script>
+		@*<script>
+				DataTable({
+					container: "#pa",
+					data: @Html.ArrayToString(Model.Rows),
+					cells:[{},{
+						name: "Name",
+						contents:function(x){ return x.Name; }
+					},
+					@foreach(var v in values) {
+						@:{name:"@v.Value",contents:function(x){return x.Value[@(v.ValueId)];}},
+					}
+					{
+						name:"Get it",
+						contents:function(x){return x.Get;}
+					},{
+						name:"Want it",
+						contents:function(x){return x.Want;}
+					},{
+						name:"Capacity to Do It",
+						contents:function(x){return x.Capacity;}
+					},
+
+					//},{
+					//	name: "Name",
+					//	contents:function(x){ return x.Name; }
+					//}]
+					]
+				});
+			</script>*@
+}

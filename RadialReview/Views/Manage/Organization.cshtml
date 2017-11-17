@@ -14,7 +14,7 @@
 @section header{
 	@Html.Partial("Partial/manageheader")
 }
-
+<div class="smallBreak2"></div>
 <div class="panel panel-primary">
 	<div class="headerButton btn-link" onclick="@Html.ShowModal("Edit Company Values", "/CompanyValues/Modal/"+Model.Id, "/CompanyValues/Modal", onComplete: "location.reload()")">Edit</div>
 	<div class="panel-heading">
@@ -52,7 +52,7 @@
 		}
 	</div>
 </div>
-<div class="panel panel-primary">
+@*<div class="panel panel-primary">
 	<div class="headerButton btn-link" onclick="@Html.ShowModal("Edit Company " + @Html.Organization().Settings.RockName, "/Rocks/CompanyRockModal/" + Model.Id, "/Rocks/CompanyRockModal", onComplete: "location.reload()")">Edit</div>
 	<div class="panel-heading">
 		<h3 class="panel-title">Company @Html.Organization().Settings.RockName:</h3>
@@ -73,7 +73,7 @@
 			<span class="gray">No Company @Html.Organization().Settings.RockName. Click edit to add some.</span>
 		}
 	</div>
-</div>
+</div>*@
 @if (ViewBag.ShowReview == true) {
 	<div class="panel panel-primary">
 		<div class="headerButton btn-link" onclick="@Html.ShowModal("Edit Organization Questions", "/OrganizationQuestion/Modal/" + Model.Id, "/OrganizationQuestion/Modal", onComplete: "location.reload()")">Edit</div>

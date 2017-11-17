@@ -10,6 +10,7 @@
 	var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
 	var defaultSort = ViewBag.DefaultSort ?? "'-CreateTime'";
 
+	var usePopup = ViewBag.UsePopup == true;
 
 	var recurrenceId = ViewBag.RecurrenceId ?? "model.Id";
 
@@ -39,7 +40,7 @@
                             <th md-column @(attrLookup["message-column"]) class="message-column" md-order-by="Name">Rock</th>
                             <th md-column md-numeric @(attrLookup["createtime-column"]) class="createtime-column alignCenter" md-order-by="CreateTime">Create Time</th>
                             <th md-column md-numeric @(attrLookup["due-column"]) class="due-column alignCenter" md-order-by="DueDate">Due Date</th>
-                            <th md-column @(attrLookup["company-rock-column"]) class="company-rock-column checkbox-column">Company Rock</th>
+                            <th md-column @(attrLookup["company-rock-column"]) class="company-rock-column checkbox-column">V/TO</th>
                             <th md-column @(attrLookup["delete-column"]) class="delete-column"></th>
                         </tr>
                     </thead>
@@ -47,7 +48,7 @@
                         <tr ng-hide="rock.Hide" @*ts-repeat*@ class="{{rock.Completion}}  keep-background" id="rock_{{::rock.Id}}" data-rock="{{::rock.Id}}" ng-repeat="rock in @(selector) | orderBy: @(orderVariable) @(filter)" md-row>
                             <td class="icon-column"></td>
                             <td md-cell class="rock-completion-container hidden-width-1 status-column" style="min-width: 80px;;vertical-align: top;">
-                                <md-select aria-label="Status" ng-model="rock.Completion" ng-change="functions.sendUpdate(rock)" ng-class="forRock_{{::rock.Id}}" class="keep-background rock-completion1 rock-completion-status {{rock.Completion}}">
+                                <md-select placeholder= "Not set" aria-label="Status" ng-model="rock.Completion" ng-change="functions.sendUpdate(rock)" ng-class="forRock_{{::rock.Id}}" class="keep-background rock-completion1 rock-completion-status {{rock.Completion}}">
                                     <md-option ng-repeat="item in rockstates" value="{{item.value}}" ng-selected="{{ rock.Completion === item.value ? 'true' : 'false' }}">
                                         {{item.name}}
                                     </md-option>
@@ -61,7 +62,11 @@
                                 </span>
                             </td>
                             <td md-cell class="message-column name" style="width:100%">
-                                <input ng-model-options="{debounce: 400}" ng-model="rock.Name" placeholder="Enter rock here" type="text" class="rock-name blend" ng-change="functions.sendUpdate(rock)" title="{{rock.Name}}">
+								@if (usePopup) {
+									<div class="rockModal rock-name blend" data-method="EditModal" data-title="Edit rock" data-Id="{{rock.Id}}">{{rock.Name}}</div>
+								} else {
+									<input ng-model-options="{debounce: 200}" ng-model="rock.Name" placeholder="Enter rock here" type="text" class="rock-name blend" ng-change="functions.sendUpdate(rock)" title="{{rock.Name}}">
+								}
                             </td>
                             <td md-cell class="createtime-column">
                                 {{::rock.CreateTime | date:dateFormat}}
@@ -70,9 +75,9 @@
                                 <input class="blend" placeholder="Enter due date" ng-class="rock.Complete?(''):(rock.DueDate>now? 'green' : 'red')" data-rock="{{::rock.Id}}" type="text" value="{{rock.DueDate | date:dateFormat}}" n ng-model-options="{debounce: 400}" />
                             </td>
                             <td md-cell class="company-rock-column checkbox-column" style="min-width: 15px;">
-                                <md-checkbox aria-label="Company Rock" ng-model="rock.CompanyRock" class="md-align-top-left" ng-change="functions.sendUpdate(rock)" title="Company Rock"></md-checkbox>
+                                <md-checkbox aria-label="Show on V/TO" ng-model="rock.VtoRock" class="md-align-top-left" ng-change="functions.sendUpdate(rock)" title="Show on V/TO"></md-checkbox>
                             </td>
-                            <td md-cell class="delete-column" style="min-width: 15px;"><span class="delete-row" ng-click="functions.removeRow($event,rock)" title="Delete Rock"></span></td>
+                            <td md-cell class="delete-column" style="min-width: 15px;"><span class="delete-row" ng-click="functions.removeRow($event,rock)" title="Archive Rock"></span></td>
                         </tr>
 
                     </tbody>

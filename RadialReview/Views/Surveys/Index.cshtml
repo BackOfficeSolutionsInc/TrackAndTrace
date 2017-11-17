@@ -1,0 +1,177 @@
+﻿@using RadialReview.Utilities
+@model RadialReview.Controllers.SurveysController.SurveyListing
+@{
+	ViewBag.Title = "Surveys";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section top{
+	<div class="jumbotron">
+		<h1>Surveys</h1>
+	</div>
+}
+
+@section header{
+	@*Html.Partial("_ReviewsHeader")*@
+}
+
+@using (Html.BeginScripts())
+{
+
+}
+@if (ViewBag.IsManager ?? false)
+{
+	<div style="text-align: right;margin-bottom: 3px;">
+		<a class="btn btn-primary btn-invert" href="/Survey/Edit">Create new survey</a>
+	</div>
+}
+
+<div class="row">
+	<div class="col-md-offset-0 col-md-12">
+		<div class="panel panel-primary startHiddennGroup">
+			<div class="panel-heading">
+				<h3 class="panel-title">Surveys:</h3>
+			</div>
+			@if (Model.Issued.Any())
+			{
+				<div class="table-responsive">
+					<table class="table table-condensed tablesorter tablefilter tablesorter-default table-hover">
+						<thead>
+							<tr>
+								<th style="width: 15px;"></th>
+								<th style="min-width: 120px">Name</th>
+								<th style="width:100px" class="alignCenter" >Status</th>
+								<th style="width:10px" class="alignCenter">Actions</th>
+								<th style="width:10px" class="alignCenter"></th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var survey in Model.Issued)
+							{
+								<tr class="startHiddenn">
+									<td style=""><br/><br/></td>
+									<td style="vertical-align: middle"><b>@survey.Name</b></td>
+										@if (survey.IssueDate == null)
+										{
+											<td class="alignCenter" style="vertical-align: middle">
+												<span class="gray">Unissued</span>
+											</td>
+										}
+										else
+										{
+											<td class="alignCenter" style="vertical-align: middle">
+												<span class="gray">Issued<br /> @Html.Organization().ConvertFromUTC(survey.IssueDate.Value).ToShortDateString()</span>
+											</td>
+										}
+									<td  class="alignCenter" style="vertical-align: middle">
+										@if (survey.IssueDate == null)
+										{
+											<a href="/Survey/Edit/@(survey.Id)">Edit Survey</a>
+										}
+										else
+										{
+											<a href="/Survey/Results/@(survey.Id)">View Results</a>
+										}
+									</td>
+									<td  class="alignCenter" style="vertical-align: middle">
+										@if (survey.OpenEnded && survey.IssueDate!=null){
+											<div class="btn btn-link" onclick="showTextAreaModal('Copy this into your html:',null,'<iframe width=&quot;560&quot; height=&quot;560&quot; src=&quot;@(Config.BaseUrl(Html.Organization()))Survey/OpenEnded/@(survey.LookupId)?embedded=true&quot; frameborder=&quot;0&quot; allowfullscreen></iframe>')">Embed</div>
+										}
+									</td>
+						
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+
+			}
+			else
+			{
+				<div class="panel-body gray">
+					There are no surveys.
+					@if (ViewBag.IsManager ?? false){
+						@:Click the button to create a new one.
+					}
+				</div>
+			}
+		</div>
+	</div>
+	@*<div class="col-md-4">
+		<div class="panel panel-primary startHiddennGroup">
+			<div class="panel-heading">
+				<h3 class="panel-title">Respondents:</h3>
+			</div>
+			@if (Model.RespondentGroups.Any())
+			{
+				<div class="table-responsive">
+					<table class="table table-condensed tablesorter tablefilter tablesorter-default">
+						<thead>
+							<tr>
+								<th style="width: 10px;"></th>
+								<th style="min-width: 120px"></th>
+								<th style="width:100px" class="alignCenter">Edit</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var survey in Model.RespondentGroups)
+							{
+								<tr class="startHiddenn">
+									<td></td>
+									<td>@survey.Name</td>
+									<td class="alignCenter"><a href="/Survey/Edit/@(survey.Id)">Edit</a></td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+
+			}
+			else
+			{
+				<div class="panel-body gray">
+					There are no respondents.
+				</div>
+			}
+		</div>
+	</div>
+	<div class="col-md-4">
+		<div class="panel panel-primary startHiddennGroup">
+			<div class="panel-heading">
+				<h3 class="panel-title">Respondents:</h3>
+			</div>
+			@if (Model.QuestionGroups.Any())
+			{
+				<div class="table-responsive">
+					<table class="table table-condensed tablesorter tablefilter tablesorter-default">
+						<thead>
+							<tr>
+								<th style="width: 10px;"></th>
+								<th style="min-width: 120px"></th>
+								<th style="width:100px" class="alignCenter">Edit</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var survey in Model.QuestionGroups)
+							{
+								<tr class="startHiddenn">
+									<td></td>
+									<td>@survey.Name</td>
+									<td class="alignCenter"><a href="/Survey/Edit/@(survey.Id)">Edit</a></td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+
+			}
+			else
+			{
+				<div class="panel-body gray">
+					There are no questions.
+				</div>
+			}
+		</div>
+	</div>*@
+</div> 

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>Nhibernate Session</Title>
+			<Shortcut>session</Shortcut>
+			<Description>Code snippet for session</Description>
+			<Author>Radial Inc.</Author>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+		</Header>		
+		<Snippet>
+			<Imports>
+                <Import>
+                    <Namespace>NHibernate</Namespace>
+                </Import>
+				<Import>
+					<Namespace>RadialReview.Utilities</Namespace>
+				</Import>
+            </Imports>
+			<Declarations>
+				<Literal>
+					<ID>perms</ID>
+					<ToolTip>Include PermissionsUtility</ToolTip>
+					<Default>
+		var perms = PermissionsUtility.Create(s,caller);</Default>
+				</Literal>
+				<Literal>
+					<ID>save</ID>
+					<ToolTip>Include Save</ToolTip>
+					<Default>
+		tx.Commit();
+		s.Flush();</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp"><![CDATA[using(var s = HibernateSession.GetCurrentSession()){
+	using (var tx = s.BeginTransaction()){$perms$
+		$end$$save$
+	}
+}]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

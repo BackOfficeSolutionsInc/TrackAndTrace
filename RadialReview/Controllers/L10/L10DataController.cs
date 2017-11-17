@@ -26,6 +26,7 @@ using System.Dynamic;
 using Newtonsoft.Json;
 using RadialReview.Accessors.VideoConferenceProviders;
 using Ionic.Zip;
+using System.Text;
 
 namespace RadialReview.Controllers {
 	public partial class L10Controller : BaseController {
@@ -41,6 +42,30 @@ namespace RadialReview.Controllers {
 
 			public bool AllowCreateCompanyRock { get; set; }
 
+			public static AddRockVm CreateRock(long recurrenceId, long ownerId, string message = null, bool allowBlankRock = false) {
+				var model = new RockModel() {
+					ForUserId = ownerId,
+					Rock = message					
+				};
+
+				if (model.ForUserId <= 0)
+					throw new ArgumentOutOfRangeException("You must specify an accountable user id");
+				//if (model.OrganizationId <= 0)
+				//	throw new ArgumentOutOfRangeException("You must specify an organization id");
+				if (recurrenceId <= 0)
+					throw new ArgumentOutOfRangeException("You must specify a recurrence id");
+				if (String.IsNullOrWhiteSpace(model.Rock) && !allowBlankRock)
+					throw new ArgumentOutOfRangeException("You must specify a title for the rock");
+								
+
+				return new AddRockVm() {
+					SelectedRock = -3,
+					Rocks = model.AsList(),
+					RecurrenceId = recurrenceId,
+				};
+			}
+
+			[Obsolete("Remove",true)]
 			public static AddRockVm CreateRock(long recurrenceId, RockModel model, bool allowBlankRock = false) {
 				if (model == null)
 					throw new ArgumentNullException("model", "Rock was null");
@@ -96,17 +121,17 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult AddRock(AddRockVm model) {
+		public async Task<JsonResult> AddRock(AddRockVm model) {
 			ValidateValues(model, x => x.RecurrenceId);
-			L10Accessor.CreateRock(GetUser(), model.RecurrenceId, model);
+			await L10Accessor.CreateOrAttachRock(GetUser(), model.RecurrenceId, model);
 			return Json(ResultObject.SilentSuccess());
 		}
 
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult UpdateRock(long id, string message = null) {
-			L10Accessor.UpdateRock(GetUser(), id, message,null,null, null);
+		public async Task<JsonResult> UpdateRock(long id, string message = null) {
+			await L10Accessor.UpdateRock(GetUser(), id, message, null, null, null);
 			return Json(ResultObject.SilentSuccess());
 		}
 
@@ -115,7 +140,7 @@ namespace RadialReview.Controllers {
 		#region Scorecard
 		// GET: L10Data
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult UpdateScore(long id, long s, long w, long m, string value, string dom, string connection) {
+		public async Task<JsonResult> UpdateScore(long id, long s, long w, long m, string value, string dom, string connection) {
 			var recurrenceId = id;
 			var scoreId = s;
 			var week = w.ToDateTime();
@@ -127,7 +152,8 @@ namespace RadialReview.Controllers {
 				val = measured;
 				output = value;
 			}
-			ScorecardAccessor.UpdateScoreInMeeting(GetUser(), recurrenceId, scoreId, week, measurableId, val, dom, connection);
+			await ScorecardAccessor.UpdateScore(GetUser(), scoreId, measurableId, week, val);
+			//ScorecardAccessor.UpdateScoreInMeeting(GetUser(), recurrenceId, scoreId, week, measurableId, val, dom, connection);
 
 
 			return Json(ResultObject.SilentSuccess(output), JsonRequestBehavior.AllowGet);
@@ -142,7 +168,7 @@ namespace RadialReview.Controllers {
 			//public long SelectedAdminMember { get; set; }
 			public List<MeasurableModel> Measurables { get; set; }
 
-			public static AddMeasurableVm CreateNewMeasurable(long recurrenceId, MeasurableModel model, bool allowBlankMeasurable = false) {
+			public static AddMeasurableVm CreateMeasurableViewModel(long recurrenceId, MeasurableModel model, bool allowBlankMeasurable = false) {
 				if (model.AdminUserId <= 0)// && (model.AdminUser==null || model.AdminUser.Id<=0))
 					throw new ArgumentOutOfRangeException("You must specify an admin user id");
 				if (model.AccountableUserId <= 0)//&& (model.AccountableUser == null || model.AccountableUser.Id <= 0))
@@ -207,9 +233,29 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult AddMeasurable(AddMeasurableVm model) {
+		public async Task<JsonResult> AddMeasurable(AddMeasurableVm model) {
 			ValidateValues(model, x => x.RecurrenceId);
-			L10Accessor.CreateMeasurable(GetUser(), model.RecurrenceId, model);
+			//
+			if (model.SelectedMeasurable <= 0) {
+				var selected = model.Measurables.First();
+				var creator = MeasurableBuilder.Build(
+						selected.Title,
+						selected.AccountableUserId,
+						selected.AdminUserId,
+						selected.UnitType,
+						selected.Goal,
+						selected.GoalDirection,
+						selected.AlternateGoal,
+						selected.ShowCumulative,
+						selected.CumulativeRange);
+
+				var m = await ScorecardAccessor.CreateMeasurable(GetUser(), creator);
+				await L10Accessor.AttachMeasurable(GetUser(), model.RecurrenceId, m.Id);
+			} else {
+				await L10Accessor.AttachMeasurable(GetUser(), model.RecurrenceId, model.SelectedMeasurable);
+			}
+
+
 			return Json(ResultObject.SilentSuccess());
 		}
 
@@ -220,45 +266,49 @@ namespace RadialReview.Controllers {
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
+		//[HttpPost]
+		//[Access(AccessLevel.UserOrganization)]
+		//[Untested("test me")]
+		//[Obsolete("Do not use",true)]
+		//public async Task<JsonResult> UpdateArchiveMeasurable(string pk, string name, string value) {
+		//	var measurableId = pk.Split('_')[0].ToLong();
+		//	var recurrenceId = pk.Split('_')[1].ToLong();
+		//	string title = null;
+		//	LessGreater? direction = null;
+		//	decimal? target = null;
+		//	long? adminId = null;
+		//	long? accountableId = null;
+		//	switch (name) {
+		//		case "target":
+		//			target = value.ToDecimal();
+		//			break;
+		//		case "direction":
+		//			direction = (LessGreater)Enum.Parse(typeof(LessGreater), value);
+		//			break;
+		//		case "title":
+		//			title = value;
+		//			break;
+		//		case "admin":
+		//			adminId = value.ToLong();
+		//			break;
+		//		case "accountable":
+		//			accountableId = value.ToLong();
+		//			break;
+		//		default:
+		//			throw new ArgumentOutOfRangeException("name");
+		//	}
+
+		//	await ScorecardAccessor.UpdateMeasurable(GetUser(), measurableId, title, direction, target, accountableId, adminId);
+		//	//L10Accessor.UpdateArchiveMeasurable(GetUser(), measurableId, title, direction, target, accountableId, adminId);
+		//	return Json(ResultObject.SilentSuccess());
+		//}
+
+
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult UpdateArchiveMeasurable(string pk, string name, string value) {
-			var measurableId = pk.Split('_')[0].ToLong();
-			var recurrenceId = pk.Split('_')[1].ToLong();
-			string title = null;
-			LessGreater? direction = null;
-			decimal? target = null;
-			long? adminId = null;
-			long? accountableId = null;
-			switch (name) {
-				case "target":
-					target = value.ToDecimal();
-					break;
-				case "direction":
-					direction = (LessGreater)Enum.Parse(typeof(LessGreater), value);
-					break;
-				case "title":
-					title = value;
-					break;
-				case "admin":
-					adminId = value.ToLong();
-					break;
-				case "accountable":
-					accountableId = value.ToLong();
-					break;
-				default:
-					throw new ArgumentOutOfRangeException("name");
-			}
-
-			L10Accessor.UpdateArchiveMeasurable(GetUser(), measurableId, title, direction, target, accountableId, adminId);
-			return Json(ResultObject.SilentSuccess());
-		}
-
-
-		[HttpPost]
-		[Access(AccessLevel.UserOrganization)]
-		public JsonResult UpdateMeasurable(long pk, string name, string value) {
-			var meeting_measureableId = pk;
+		public async Task<JsonResult> UpdateMeasurable(long pk, string name, string value) {
+			//var meeting_measureableId = pk;
+			var measurableId = pk;
 
 			string title = null;
 			LessGreater? direction = null;
@@ -289,15 +339,16 @@ namespace RadialReview.Controllers {
 					throw new ArgumentOutOfRangeException("name");
 			}
 
-			L10Accessor.UpdateMeasurable(GetUser(), meeting_measureableId, title, direction, target, accountableId, adminId, unitType);
+			await ScorecardAccessor.UpdateMeasurable(GetUser(), measurableId, title, direction, target, accountableId, adminId, null, unitType: unitType);
+			//L10Accessor.UpdateMeasurable(GetUser(), meeting_measureableId, title, direction, target, accountableId, adminId, unitType);
 			return Json(ResultObject.SilentSuccess());
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public FileContentResult ExportScorecard(long id, string type = "csv") {
-			var csv = ExportAccessor.Scorecard(GetUser(), id, type);
+		public async Task<FileContentResult> ExportScorecard(long id, string type = "csv") {
+			var csv = await ExportAccessor.Scorecard(GetUser(), id, type);
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, false);
-			return File(csv, "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + recur.Name + "_Scorecard.csv");
+			return File(csv.ToBytes(), "text/csv", "" + DateTime.UtcNow.ToJavascriptMilliseconds() + "_" + recur.Name + "_Scorecard.csv");
 		}
 
 
@@ -358,15 +409,16 @@ namespace RadialReview.Controllers {
 
 			var memoryStream = new MemoryStream();
 			using (var zip = new ZipFile()) {
-				zip.AddEntry(String.Format("Scorecard.csv", time, recur.Name), ExportAccessor.Scorecard(GetUser(), id));
+				zip.AddEntry(String.Format("Scorecard.csv", time, recur.Name), await ExportAccessor.Scorecard(GetUser(), id),Encoding.UTF8);
 				zip.AddEntry(String.Format("To-Do.csv", time, recur.Name), await ExportAccessor.TodoList(GetUser(), id, includeDetails));
 				zip.AddEntry(String.Format("Issues.csv", time, recur.Name), await ExportAccessor.IssuesList(GetUser(), id, includeDetails));
-				zip.AddEntry(String.Format("Rocks.csv", time, recur.Name), ExportAccessor.Rocks(GetUser(), id));
+				zip.AddEntry(String.Format("Rocks.csv", time, recur.Name), await ExportAccessor.Rocks(GetUser(), id, includeDetails));
 				zip.AddEntry(String.Format("MeetingSummary.csv", time, recur.Name), ExportAccessor.MeetingSummary(GetUser(), id));
+				zip.AddEntry(String.Format("MeetingRatings.csv", time, recur.Name), ExportAccessor.Ratings(GetUser(), id));
 
 				var names = new DefaultDictionary<string, int>(x => 0);
 				foreach (var note in await ExportAccessor.Notes(GetUser(), id)) {
-					var name = String.Format("{2}", time, recur.Name, note.Item1.Replace("/", "_"));
+					var name = "Notes/"+String.Format("{2}", time, recur.Name, note.Item1.Replace("/", "_"));
 					var addition = "";
 					var count = 0;
 					while (true) {
@@ -466,51 +518,55 @@ namespace RadialReview.Controllers {
 			return Json(ResultObject.SilentSuccess());
 		}
 
-		[Access(AccessLevel.UserOrganization)]
-		[HttpPost]
-		public JsonResult UpdateIssueCompletion(long id, long issueId, bool @checked, DateTime? time = null, string connectionId = null) {
-			time = time ?? DateTime.UtcNow;
-			var recurrenceId = id;
-			L10Accessor.UpdateIssue(GetUser(), issueId, time.Value, complete: @checked, connectionId: connectionId);
-			return Json(ResultObject.SilentSuccess(@checked));
-		}
+        [Access(AccessLevel.UserOrganization)]
+        [HttpPost]
+        public async Task<JsonResult> UpdateIssueCompletion(long id, long issueId, bool @checked, DateTime? time = null, string connectionId = null) {
+            time = time ?? DateTime.UtcNow;
+            var recurrenceId = id;
+			await IssuesAccessor.EditIssue(GetUser(), issueId, complete: @checked, now: time.Value);
+            //await L10Accessor.UpdateIssue(GetUser(), issueId, time.Value, complete: @checked, connectionId: connectionId);
+            return Json(ResultObject.SilentSuccess(@checked));
+        }
 
-		[Access(AccessLevel.UserOrganization)]
-		[HttpGet]
-		public JsonResult UpdateIssueCompleted(long id, bool @checked, string connectionId = null) {
-			var time = DateTime.UtcNow;
-			var recurrenceId = id;
-			L10Accessor.UpdateIssue(GetUser(), id, time, complete: @checked, connectionId: connectionId);
+        [Access(AccessLevel.UserOrganization)]
+        [HttpGet]
+        public async Task<JsonResult> UpdateIssueCompleted(long id, bool @checked, string connectionId = null) {
+            var time = DateTime.UtcNow;
+            var recurrenceId = id;
+           // await L10Accessor.UpdateIssue(GetUser(), id, time, complete: @checked, connectionId: connectionId);
+			await IssuesAccessor.EditIssue(GetUser(), id, complete: @checked, now: time);
 			return Json(ResultObject.SilentSuccess(@checked), JsonRequestBehavior.AllowGet);
-		}
+        }
 
-		[Access(AccessLevel.UserOrganization)]
-		[HttpPost]
-		public JsonResult UpdateIssue(long id, DateTime? time = null, string message = null, string details = null, long? owner = null, int? priority = null, int? rank = null) {
-			time = time ?? DateTime.UtcNow;
-			L10Accessor.UpdateIssue(GetUser(), id, time.Value, message, details, owner: owner, priority: priority, rank: rank);
-			return Json(ResultObject.SilentSuccess());
-		}
+        [Access(AccessLevel.UserOrganization)]
+        [HttpPost]
+        public async Task<JsonResult> UpdateIssue(long id,/* DateTime? time = null,*/ string message = null, string details = null, long? owner = null, int? priority = null, int? rank = null) {
+            //time = time ?? DateTime.UtcNow;
+			await IssuesAccessor.EditIssue(GetUser(), id, message, owner: owner, priority: priority, rank: rank/*, now: time.Value*/);
+            //await L10Accessor.UpdateIssue(GetUser(), id, time.Value, message, details, owner: owner, priority: priority, rank: rank);
+            return Json(ResultObject.SilentSuccess());
+        }
 
-		public class IssueRankVM {
+        public class IssueRankVM {
 			public long id { get; set; }
 			public int rank { get; set; }
-			public DateTime time { get; set; }
+			//public DateTime time { get; set; }
 		}
 
-		[Access(AccessLevel.UserOrganization)]
-		[HttpPost]
-		public JsonResult UpdateIssuesRank(List<IssueRankVM> arr) {
-			foreach (var m in arr) {
-				L10Accessor.UpdateIssue(GetUser(), m.id, DateTime.UtcNow, rank: m.rank);
-			}
-			return Json(ResultObject.SilentSuccess());
-		}
+        [Access(AccessLevel.UserOrganization)]
+        [HttpPost]
+        public async Task<JsonResult> UpdateIssuesRank(List<IssueRankVM> arr) {
+            foreach (var m in arr) {
+				await IssuesAccessor.EditIssue(GetUser(), m.id, rank: m.rank);
+				//await L10Accessor.UpdateIssue(GetUser(), m.id, DateTime.UtcNow, rank: m.rank);
+            }
+            return Json(ResultObject.SilentSuccess());
+        }
 
-		#endregion
+        #endregion
 
-		#region Todos
-		public class UpdateTodoVM {
+        #region Todos
+        public class UpdateTodoVM {
 			public List<long> todos { get; set; }
 			public string connectionId { get; set; }
 		}
@@ -519,72 +575,77 @@ namespace RadialReview.Controllers {
 		[HttpPost]
 		public JsonResult UpdateTodos(long id, UpdateTodoVM model) {
 			var recurrenceId = id;
-			L10Accessor.UpdateTodos(GetUser(), recurrenceId, model);
+			L10Accessor.UpdateTodoOrder(GetUser(), recurrenceId, model);
 			return Json(ResultObject.SilentSuccess());
 		}
 
-		[Access(AccessLevel.UserOrganization)]
-		[HttpPost]
-		public JsonResult UpdateTodo(long id, string message, string details, DateTime? dueDate, long? accountableUser) {
-			L10Accessor.UpdateTodo(GetUser(), id, message, details, dueDate, accountableUser);
+        [Access(AccessLevel.UserOrganization)]
+        [HttpPost]
+		public async Task<JsonResult> UpdateTodo(long id, string message, /*string details, */ DateTime? dueDate, long? accountableUser) {
+//			await L10Accessor.UpdateTodo(GetUser(), id, message, dueDate, accountableUser);
+			await TodoAccessor.UpdateTodo(GetUser(), id, message, dueDate, accountableUser);
 			return Json(ResultObject.SilentSuccess());
-		}
+        }
 
-		[HttpPost]
-		[Access(AccessLevel.UserOrganization)]
-		public JsonResult XUpdateTodo(string pk, string name, string value) {
-			var todoId = pk.ToLong();
-			switch (name) {
-				case "accountable":
-					return UpdateTodo(todoId, null, null, null, value.ToLong());
-				case "title":
-					return UpdateTodo(todoId, value, null, null, null);
-				case "details":
-					return UpdateTodo(todoId, null, value, null, null);
-				case "duedate":
-					return UpdateTodo(todoId, null, null, value.ToLong().ToDateTime(), null);
-				default:
-					throw new ArgumentOutOfRangeException("name");
-			}
-		}
-		[HttpPost]
-		[Access(AccessLevel.UserOrganization)]
-		public JsonResult XUpdateIssue(string pk, string name, string value) {
-			var issueId = pk.ToLong();
-			switch (name) {
-				case "title":
-					return UpdateIssue(issueId, DateTime.UtcNow, value, null, null);
-				case "details":
-					return UpdateIssue(issueId, DateTime.UtcNow, null, value, null);
-				case "owner":
-					return UpdateIssue(issueId, DateTime.UtcNow, null, null, value.ToLong());
-				default:
-					throw new ArgumentOutOfRangeException("name");
-			}
-		}
+        [HttpPost]
+        [Access(AccessLevel.UserOrganization)]
+        public async Task<JsonResult> XUpdateTodo(string pk, string name, string value) {
+            var todoId = pk.ToLong();
+            switch (name) {
+                case "accountable":
+                    return await UpdateTodo(todoId, null, null, value.ToLong());
+                case "title":
+                    return await UpdateTodo(todoId, value, null, null);
+                //case "details":
+                //    return await UpdateTodo(todoId, null, value, null, null);
+                case "duedate":
+                    return await UpdateTodo(todoId, null, value.ToLong().ToDateTime(), null);
+                default:
+                    throw new ArgumentOutOfRangeException("name");
+            }
+        }
 
-		[Access(AccessLevel.UserOrganization)]
-		[HttpPost]
-		public JsonResult UpdateTodoCompletion(long id, long todoId, bool @checked, string connectionId = null) {
-			var recurrenceId = id;
-			L10Accessor.UpdateTodo(GetUser(), todoId, complete: @checked, connectionId: connectionId, duringMeeting: true);
+        [HttpPost]
+        [Access(AccessLevel.UserOrganization)]
+        public async Task<JsonResult> XUpdateIssue(string pk, string name, string value) {
+            var issueId = pk.ToLong();
+            switch (name) {
+                case "title":
+                    return await UpdateIssue(issueId, value, null, null);
+                case "details":
+                    return await UpdateIssue(issueId, null, value, null);
+                case "owner":
+                    return await UpdateIssue(issueId, null, null, value.ToLong());
+                default:
+                    throw new ArgumentOutOfRangeException("name");
+            }
+        }
+
+        [Access(AccessLevel.UserOrganization)]
+        [HttpPost]
+		public async Task<JsonResult> UpdateTodoCompletion(long id, long todoId, bool @checked, string connectionId = null) {
+            var recurrenceId = id;
+			//await L10Accessor.UpdateTodo(GetUser(), todoId, complete: @checked, connectionId: connectionId, duringMeeting: true);
+			await TodoAccessor.CompleteTodo(GetUser(), todoId, completed: @checked,duringMeeting:true);
+
 			return Json(ResultObject.SilentSuccess(@checked));
-		}
+        }
+
+        [Access(AccessLevel.UserOrganization)]
+        [HttpPost]		
+		public async Task<JsonResult> UpdateTodoDate(long id, long date) {
+            var todo = id;
+            var dateR = date.ToDateTime();
+			await UpdateTodo(id, null, dateR, null);
+            //await L10Accessor.UpdateTodo(GetUser(), id, dueDate: dateR);
+            return Json(ResultObject.SilentSuccess(date.ToString()));
+        }
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult UpdateTodoDate(long id, long date) {
-			var todo = id;
-			var dateR = date.ToDateTime();
-			L10Accessor.UpdateTodo(GetUser(), id, dueDate: dateR);
-			return Json(ResultObject.SilentSuccess(date.ToString()));
-		}
-
-		[Access(AccessLevel.UserOrganization)]
-		[HttpPost]
-		public JsonResult UpdateRockCompletion(long id, long rockId, RockState state, string connectionId = null) {
+		public async Task<JsonResult> UpdateRockCompletion(long id, long rockId, RockState state, string connectionId = null) {
 			var recurrenceId = id;
-			L10Accessor.UpdateRockCompletion(GetUser(), recurrenceId, rockId, state, connectionId);
+			await L10Accessor.UpdateRock(GetUser(), rockId, null, state, null, connectionId);
 			return Json(ResultObject.SilentSuccess(state.ToString()));
 		}
 
@@ -596,12 +657,11 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult UpdateHeadline(long id, string message) {
+		public async Task<JsonResult> UpdateHeadline(long id, string message) {
 			var recurrenceId = id;
-			L10Accessor.UpdateHeadline(GetUser(), id, message);
+			await HeadlineAccessor.UpdateHeadline(GetUser(), id, message);
 			return Json(ResultObject.SilentSuccess());
 		}
-
 
 		#endregion
 
@@ -639,7 +699,7 @@ namespace RadialReview.Controllers {
 					padId = await PadAccessor.GetReadonlyPad(note.PadId);
 				}
 				return Redirect(Config.NotesUrl("p/" + padId + "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
-			} catch (Exception e) {
+			} catch (Exception ) {
 				return RedirectToAction("Index", "Error");
 			}
 		}
@@ -736,7 +796,8 @@ namespace RadialReview.Controllers {
 		[HttpPost]
 		public JsonResult EditL10Page(L10Recurrence.L10Recurrence_Page model) {
 			var page = L10Accessor.EditOrCreatePage(GetUser(), model);
-			return Json(ResultObject.SilentSuccess(page));
+			var result = Json(ResultObject.SilentSuccess(page));
+			return result;
 		}
 		
 		[Access(AccessLevel.UserOrganization)]
@@ -768,9 +829,9 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult MoveIssueToVTO(long id) {
+		public JsonResult MoveIssueToVTO(long id, string connectionId = null) {
 			var issue_recurrence = id;
-			var vto_issue = L10Accessor.MoveIssueToVto(GetUser(), issue_recurrence);
+			var vto_issue = L10Accessor.MoveIssueToVto(GetUser(), issue_recurrence, connectionId);
 			return Json(ResultObject.SilentSuccess(vto_issue.Id), JsonRequestBehavior.AllowGet);
 		}
 

@@ -65,24 +65,28 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Iesi.Collections, Version=4.0.0.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Iesi.Collections.4.0.1.4000\lib\net40\Iesi.Collections.dll</HintPath>
+    <Reference Include="FluentNHibernate, Version=2.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentNHibernate.2.0.3.0\lib\net40\FluentNHibernate.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.2.1\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    <Reference Include="Iesi.Collections, Version=4.0.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Iesi.Collections.4.0.2\lib\net40\Iesi.Collections.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.2.2\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Security.3.0.1\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    <Reference Include="Microsoft.Owin, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.3.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security.OAuth, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.2.1.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    <Reference Include="Microsoft.Owin.Security, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.3.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.3.1.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -92,58 +96,68 @@
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MigraDoc.DocumentObjectModel-gdi, Version=1.50.4000.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\PDFsharp-MigraDoc-gdi.1.50.4000-beta3b\lib\net20\MigraDoc.DocumentObjectModel-gdi.dll</HintPath>
+    <Reference Include="MigraDoc.DocumentObjectModel-gdi, Version=1.50.4589.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp-MigraDoc-gdi.1.50.4589-beta4\lib\net20\MigraDoc.DocumentObjectModel-gdi.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MigraDoc.Rendering-gdi, Version=1.50.4000.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\PDFsharp-MigraDoc-gdi.1.50.4000-beta3b\lib\net20\MigraDoc.Rendering-gdi.dll</HintPath>
+    <Reference Include="MigraDoc.Rendering-gdi, Version=1.50.4589.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp-MigraDoc-gdi.1.50.4589-beta4\lib\net20\MigraDoc.Rendering-gdi.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MigraDoc.RtfRendering-gdi, Version=1.50.4000.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\PDFsharp-MigraDoc-gdi.1.50.4000-beta3b\lib\net20\MigraDoc.RtfRendering-gdi.dll</HintPath>
+    <Reference Include="MigraDoc.RtfRendering-gdi, Version=1.50.4589.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp-MigraDoc-gdi.1.50.4589-beta4\lib\net20\MigraDoc.RtfRendering-gdi.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NHibernate, Version=4.0.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <HintPath>..\packages\NHibernate.4.0.0.4000\lib\net40\NHibernate.dll</HintPath>
+    <Reference Include="NHibernate, Version=4.1.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <HintPath>..\packages\NHibernate.4.1.1.4000\lib\net40\NHibernate.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="PdfSharp-gdi, Version=1.50.4000.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\PDFsharp-MigraDoc-gdi.1.50.4000-beta3b\lib\net20\PdfSharp-gdi.dll</HintPath>
+    <Reference Include="PdfSharp-gdi, Version=1.50.4589.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp-MigraDoc-gdi.1.50.4589-beta4\lib\net20\PdfSharp-gdi.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="PdfSharp.Charting-gdi, Version=1.50.4000.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\PDFsharp-MigraDoc-gdi.1.50.4000-beta3b\lib\net20\PdfSharp.Charting-gdi.dll</HintPath>
+    <Reference Include="PdfSharp.Charting-gdi, Version=1.50.4589.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp-MigraDoc-gdi.1.50.4589-beta4\lib\net20\PdfSharp.Charting-gdi.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Data.SQLite, Version=1.0.102.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.Core.1.0.102.0\lib\net451\System.Data.SQLite.dll</HintPath>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite, Version=1.0.105.2, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Core.1.0.105.2\lib\net451\System.Data.SQLite.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Data.SQLite.EF6, Version=1.0.102.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.EF6.1.0.102.0\lib\net451\System.Data.SQLite.EF6.dll</HintPath>
+    <Reference Include="System.Data.SQLite.EF6, Version=1.0.105.2, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.EF6.1.0.105.2\lib\net451\System.Data.SQLite.EF6.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Data.SQLite.Linq, Version=1.0.102.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.Linq.1.0.102.0\lib\net451\System.Data.SQLite.Linq.dll</HintPath>
+    <Reference Include="System.Data.SQLite.Linq, Version=1.0.105.2, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Linq.1.0.105.2\lib\net451\System.Data.SQLite.Linq.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -174,12 +188,12 @@
       <HintPath>..\packages\Microsoft.TestApi.0.6.0.0\lib\net40\TestApiWpf.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="WebDriver, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Selenium.WebDriver.3.0.0\lib\net40\WebDriver.dll</HintPath>
+    <Reference Include="WebDriver, Version=3.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Selenium.WebDriver.3.5.1\lib\net40\WebDriver.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="WebDriver.Support, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Selenium.Support.3.0.0\lib\net40\WebDriver.Support.dll</HintPath>
+    <Reference Include="WebDriver.Support, Version=3.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Selenium.Support.3.5.1\lib\net40\WebDriver.Support.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -256,20 +270,20 @@
   </Choose>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.102.0\build\net451\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.102.0\build\net451\System.Data.SQLite.Core.targets'))" />
-    <Error Condition="!Exists('..\packages\Selenium.WebDriver.IEDriver.2.53.1.1\build\Selenium.WebDriver.IEDriver.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Selenium.WebDriver.IEDriver.2.53.1.1\build\Selenium.WebDriver.IEDriver.targets'))" />
-    <Error Condition="!Exists('..\packages\Selenium.WebDriver.ChromeDriver.2.29.0\build\Selenium.WebDriver.ChromeDriver.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Selenium.WebDriver.ChromeDriver.2.29.0\build\Selenium.WebDriver.ChromeDriver.targets'))" />
-  </Target>
   <PropertyGroup>
     <PreBuildEvent>taskkill /F /IM vstest.executionengine.x86.exe /FI "MEMUSAGE gt 1"</PreBuildEvent>
   </PropertyGroup>
-  <Import Project="..\packages\System.Data.SQLite.Core.1.0.102.0\build\net451\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.102.0\build\net451\System.Data.SQLite.Core.targets')" />
-  <Import Project="..\packages\Selenium.WebDriver.IEDriver.2.53.1.1\build\Selenium.WebDriver.IEDriver.targets" Condition="Exists('..\packages\Selenium.WebDriver.IEDriver.2.53.1.1\build\Selenium.WebDriver.IEDriver.targets')" />
-  <Import Project="..\packages\Selenium.WebDriver.ChromeDriver.2.29.0\build\Selenium.WebDriver.ChromeDriver.targets" Condition="Exists('..\packages\Selenium.WebDriver.ChromeDriver.2.29.0\build\Selenium.WebDriver.ChromeDriver.targets')" />
+  <Import Project="..\packages\Selenium.WebDriver.ChromeDriver.2.31.0\build\Selenium.WebDriver.ChromeDriver.targets" Condition="Exists('..\packages\Selenium.WebDriver.ChromeDriver.2.31.0\build\Selenium.WebDriver.ChromeDriver.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Selenium.WebDriver.ChromeDriver.2.31.0\build\Selenium.WebDriver.ChromeDriver.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Selenium.WebDriver.ChromeDriver.2.31.0\build\Selenium.WebDriver.ChromeDriver.targets'))" />
+    <Error Condition="!Exists('..\packages\Selenium.WebDriver.IEDriver.3.5.1\build\Selenium.WebDriver.IEDriver.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Selenium.WebDriver.IEDriver.3.5.1\build\Selenium.WebDriver.IEDriver.targets'))" />
+    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.105.2\build\net451\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.105.2\build\net451\System.Data.SQLite.Core.targets'))" />
+  </Target>
+  <Import Project="..\packages\Selenium.WebDriver.IEDriver.3.5.1\build\Selenium.WebDriver.IEDriver.targets" Condition="Exists('..\packages\Selenium.WebDriver.IEDriver.3.5.1\build\Selenium.WebDriver.IEDriver.targets')" />
+  <Import Project="..\packages\System.Data.SQLite.Core.1.0.105.2\build\net451\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.105.2\build\net451\System.Data.SQLite.Core.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

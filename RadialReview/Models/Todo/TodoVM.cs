@@ -52,14 +52,11 @@ namespace RadialReview.Models.Todo {
 
         public string ForModelType { get; set; }
 
-        public TodoVM()
-        {
-            DueDate = DateTime.UtcNow.AddDays(7);
+        public TodoVM() {
+            DueDate = DateTime.UtcNow.Date.AddDays(7);
         }
 
-        public TodoVM(long accountableUserId)
-            : this()
-        {
+        public TodoVM(long accountableUserId) : this() {
             AccountabilityId = new[] { accountableUserId };
 
         }

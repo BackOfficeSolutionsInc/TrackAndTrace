@@ -1,31 +1,138 @@
 ﻿.chat-container {
 	/*position:relative;*/
-	
-	background-color:#EFEFEF;
-	border:1px solid #E2E2E2;
-	font-size:12px;
-	padding-left:4px;
-	display:none;
+	background-color: #EFEFEF;
+	border: 1px solid #E2E2E2;
+	font-size: 12px;
+	padding-left: 4px;
+	display: none;
 
-	.component{
-		margin-bottom:-6px;
-		background-color:rgba(0, 0, 0, 0);	
-	}
-	
-	.text{ 
-		&.typing{
-			color:lightgray;
-		}
-		&.log{
-			color:lightgray;
-		}
-		&.chat{
-			color:#ADADAD;
-		}
+	.component {
+		margin-bottom: -6px;
+		background-color: rgba(0, 0, 0, 0);
 	}
 
-	ul{
+	.text {
+		&.typing {
+			color: lightgray;
+		}
+
+		&.log {
+			color: lightgray;
+		}
+
+		&.chat {
+			color: #ADADAD;
+		}
+	}
+
+	ul {
 		list-style-type: none;
-		padding-left:5px;
+		padding-left: 5px;
+	}
+}
+
+.online-component-container {
+	.online-component {
+
+		.options {
+			display: none;
+		}
+
+		.toggle {
+			transition: .25s margin-bottom ease-in-out;
+		}
+
+		.user-picture-container {
+			padding-left: 8px;
+			padding-right: 8px;
+			max-height: 0px;
+			overflow: hidden;
+			-webkit-transition: .25s max-height ease-in-out;
+			-moz-transition: .25s max-height ease-in-out;
+			-o-transition: .25s max-height ease-in-out;
+			transition: .25s max-height ease-in-out;
+
+			.picture-container {
+				height: 34px;
+				width: 34px;
+				margin: 1px;
+				padding: 1px;
+				border: 1px solid #ccc;
+			}
+		}
+
+		z-index: 1;
+		margin-bottom: 15px;
+
+		&.on {
+			.user-picture-container {
+				display: block;
+				max-height: 150px;
+
+				.picture-container {
+				}
+			}
+
+			.toggle {
+				border-bottom: 2px solid #F7F7F7;
+				margin-bottom: 6px;
+
+				.glyphicon-chevron-down {
+					top: 4px;
+					padding-left: 2px;
+				}
+			}
+
+
+			.options {
+				display: block;
+				float: right;
+				font-size: 10px;
+				top: -10px;
+				position: relative;
+				z-index: -10;
+				-webkit-transition: .2s top ease-in-out, .2s opacity ease-in-out;
+				-moz-transition: .2s top ease-in-out, .2s opacity ease-in-out;
+				-o-transition: .2s top ease-in-out, .2s opacity ease-in-out;
+				transition: .2s top ease-in-out, .2s opacity ease-in-out;
+				opacity:0;
+
+				.option {
+					padding: 0 2px;
+					cursor: pointer;
+				}
+			}
+		}
+
+		.user-picture {
+			cursor: pointer;
+
+			.notification-icon .checkmark {
+				position: relative;
+				left: -12px;
+				top: -19px;
+				font-size: 14px;
+				width: 13px;
+				height: 13px;
+				border-radius: 7px;
+				margin-right: -13px;
+				padding-left: 0px;
+				border: 0px;
+				color: #3c763d;
+				background: #a8ffa8;
+				background-color: #dff0d8;
+				border-color: #d6e9c6;
+			}
+		}
+	}
+
+	padding-bottom: 15px;
+	z-index:-10;
+	&:hover {
+		.online-component.on .options {
+			top: 6px;
+			z-index: 5;
+			opacity:1
+		}
 	}
 }

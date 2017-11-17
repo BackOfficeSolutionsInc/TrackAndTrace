@@ -58,7 +58,10 @@ namespace RadialReview.Models.Askables {
 			return new Attach(AttachType, AttachId);
 		}
 
+        private static int CtorCalls = 0;
+
 		public RoleLink() {
+            CtorCalls += 1;
 			CreateTime = DateTime.UtcNow;
 		}
 

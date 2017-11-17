@@ -1,0 +1,80 @@
+﻿@model RadialReview.Models.ClientSuccess.TooltipTemplate
+
+
+@Html.HiddenFor(x => x.Id)
+@Html.HiddenFor(x => x.CreateTime)
+<div class="">
+    <div class="row">
+        <div class="col-md-9 col-md-offset-2 well"><i>Tooltip campaigns can introduce new features. Use the URL and CSS selector to restrict who views these tool tips. The page displays most one popup. Once popups are closed, the user will never see them again. Users can disable popups from their My Settings page.</i></div>
+    </div>
+    <div class="row smallBreak2">
+        <div class="col-sm-2">
+            <label>Note:</label>
+        </div>
+        <div class="col-sm-9">
+            @Html.TextBoxFor(x => x.Note, new { @class = "form-control" })
+            <div class="gray">Meant to name the tooltip campaign. These are not displayed.</div>
+        </div>
+    </div>
+    <div class="row smallBreak2">
+        <div class="col-sm-2">
+            <label>Title:</label>
+        </div>
+        <div class="col-sm-9">
+            @Html.TextBoxFor(x => x.Title, new { @class = "form-control" })
+            <div class="gray">The title for the popup</div>
+
+        </div>
+    </div>
+
+    <div class="row smallBreak2">
+        <div class="col-sm-2">
+            <label>Url:</label>
+        </div>
+        <div class="col-sm-9">
+            @Html.TextBoxFor(x => x.UrlSelector, new { @class = "form-control" })
+            <div class="gray">Only display popup when the case-insensitive URL matches exactly. Use <code>%</code> as a wildcard. Please be as restrictive as possible with URLs</div>
+
+        </div>
+    </div>
+    <div class="row smallBreak2">
+        <div class="col-sm-2">
+            <label>Css Selector:</label>
+        </div>
+        <div class="col-sm-9">
+            @Html.TextBoxFor(x => x.Selector, new { @class = "form-control" })
+            <div class="gray">Only display popup when this element is visible. Any standard CSS selector is allowed. <code><b>.</b>class-name</code> for classes, <code><b>#</b>element-id</code> for ids. Use <code><b>#main</b></code> to display on any page. </div>
+        </div>
+    </div>
+    <div class="row smallBreak2">
+        <div class="col-sm-2">
+            <label>End date:</label>
+        </div>
+        <div class="col-sm-9">
+            @Html.EditorFor(x => x.DeleteTime, new { @class = "form-control", allowEmpty = true })
+            <div class="gray">Pop-up campaigns are annoying in high doses. Lets make sure that these campaigns are sparse and have a defined end date (new clients don't need to be introduced to new features, everything is new for them).</div>
+        </div>
+    </div>
+    
+
+    <div class="row smallBreak2">
+        <div class="col-sm-2">
+            <label>Body (HTML enabled):</label>
+        </div>
+        <div class="col-sm-9">
+            @Html.TextAreaFor(x => x.HtmlBody, new { @class = "form-control" })
+            <div class="gray">Body for the popup. HTML is allowed. Please specify <code>target="_blank"</code> in &lt;a&gt; tags so links open in a new window.</div>
+        </div>
+    </div>
+    <div class="row smallBreak2">
+        <div class="col-sm-2">
+            <label>Enabled:</label>
+        </div>
+        <div class="col-sm-9">
+            @Html.EditorFor(x => x.IsEnabled, new { @class = "form-control" })
+            <div class="gray">Only shows the popup when this campaign is enabled.</div>
+        </div>
+    </div>
+
+</div>
+

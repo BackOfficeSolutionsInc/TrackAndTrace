@@ -109,12 +109,23 @@ body {
 .root-node-link {
   display: none;
 }
+.acc-chart svg .top-bar {
+  color: transparent !important;
+}
+.acc-chart svg .root-node .top-bar {
+  color: white !important;
+}
 .acc-chart svg .role-row .role,
 .acc-chart svg input {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
   font-family: 'Roboto', sans-serif;
+}
+.acc-chart svg .role-row div.role {
+  display: inline-block;
+  width: 100%;
+  margin-left: -8px;
 }
 .acc-chart svg button md-icon {
   display: none;

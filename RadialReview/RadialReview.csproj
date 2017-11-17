@@ -45,7 +45,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Globalization" />
+    <Reference Include="System.ObjectModel" />
+    <Reference Include="System.Net.Primitives" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Data.SQLite">
@@ -94,6 +99,7 @@
     <Compile Include="Accessors\DeepSubordianteAccessor.cs" />
     <Compile Include="Accessors\Emailer.cs" />
     <Compile Include="Accessors\ExportAccessor.cs" />
+    <Compile Include="Accessors\ForModelAccessor.cs" />
     <Compile Include="Accessors\GroupAccessor.cs" />
     <Compile Include="Accessors\HeadlineAccessor.cs" />
     <Compile Include="Accessors\OrganizationAccessors\JoinOrganizationAccessor.cs" />
@@ -107,26 +113,148 @@
     <Compile Include="Accessors\TinyUserAccessor.cs" />
     <Compile Include="Accessors\VideoConferenceProviders\VideoProviderAccessor.cs" />
     <Compile Include="Accessors\WebhooksAccessor.cs" />
-    <Compile Include="Api\V0\Headlines.cs" />
-    <Compile Include="Api\V0\Issue.cs" />
-    <Compile Include="Api\V0\L10.cs" />
-    <Compile Include="Api\V0\Milestones.cs" />
-    <Compile Include="Api\V0\Positions.cs" />
-    <Compile Include="Api\V0\Rocks.cs" />
-    <Compile Include="Api\V0\Roles.cs" />
-    <Compile Include="Api\V0\Search.cs" />
-    <Compile Include="Api\V0\Seats.cs" />
-    <Compile Include="Api\V0\Teams.cs" />
-    <Compile Include="Api\V0\Todo.cs" />
+    <Compile Include="Api\V1\Headlines.cs" />
+    <Compile Include="Api\V1\Issue.cs" />
+    <Compile Include="Api\V1\L10.cs" />
+    <Compile Include="Api\V1\Rocks.cs" />
+    <Compile Include="Api\V1\Scorecard.cs" />
+    <Compile Include="Api\V1\Search.cs" />
+    <Compile Include="Api\V1\AccountabilityChart.cs" />
+    <Compile Include="Api\V1\Teams.cs" />
+    <Compile Include="Api\V1\Todo.cs" />
+    <Compile Include="Api\V1\Users.cs" />
+    <Compile Include="App_Start\DateTimeModelBinder.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
+    <Compile Include="App_Start\SwaggerConfig.cs" />
+    <Compile Include="Areas\CoreProcess\Accessors\TaskAccessor.cs" />
+    <Compile Include="Areas\CoreProcess\Accessors\ProcessDefAccessor.cs" />
+    <Compile Include="Areas\CoreProcess\CamundaComm\CommFactory.cs" />
+    <Compile Include="Areas\CoreProcess\CamundaComm\CommClass.cs" />
+    <Compile Include="Areas\CoreProcess\CamundaComm\ICommClass.cs" />
+    <Compile Include="Api\V1\CoreProcess.cs" />
+    <Compile Include="Areas\CoreProcess\Controllers\HomeController.cs" />
+    <Compile Include="Areas\CoreProcess\Controllers\ProcessController.cs" />
+    <Compile Include="Areas\CoreProcess\CoreProcessAreaRegistration.cs" />
+    <Compile Include="Areas\CoreProcess\Interfaces\ITaskAccessor.cs" />
+    <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\RockCompletionSection.cs" />
+    <Compile Include="Controllers\AbstractController\BaseExpensiveController.cs" />
+    <Compile Include="Controllers\ClientSuccessController.cs" />
+    <Compile Include="Hooks\HookData.cs" />
+    <Compile Include="Hooks\Meeting\AttendeeHooks.cs" />
+    <Compile Include="Hooks\Meeting\AuditLogHooks.cs" />
+    <Compile Include="Hooks\Meeting\CalculateCumulative.cs" />
+    <Compile Include="Hooks\Meeting\DepristineHooks.cs" />
+    <Compile Include="Hooks\Realtime\Dashboard\RealTime_Dashboard_Scorecard.cs" />
+    <Compile Include="Hooks\Realtime\L10\Realtime_L10Scorecard.cs" />
+    <Compile Include="Hooks\Realtime\L10\RealTime_L10_Issues.cs" />
+    <Compile Include="Hooks\Meeting\MeetingRockCompletion.cs" />
+    <Compile Include="Hooks\Realtime\RealTimeHelpers.cs" />
+    <Compile Include="Hooks\Realtime\Dashboard\RealTime_Dashboard_UpdateL10Rocks.cs" />
+    <Compile Include="Hooks\Realtime\Dashboard\RealTime_Dashboard_Todo.cs" />
+    <Compile Include="Hooks\Realtime\L10\RealTime_L10_Todo.cs" />
+    <Compile Include="Hooks\Realtime\L10\RealTime_L10_UpdateRocks.cs" />
+    <Compile Include="Hooks\Realtime\VTO\RealTime_VTO_UpdateRocks.cs" />
+    <Compile Include="Hooks\Realtime\CoreProcess\RealTime_Tasks.cs" />
+    <Compile Include="Hooks\CrossCutting\UpdateUserCache.cs" />
+    <Compile Include="Hubs\CoreProcessHub.cs" />
+    <Compile Include="Models\Angular\CoreProcess\AngularTask.cs" />
+    <Compile Include="Models\Angular\CoreProcess\AngularCoreProcess.cs" />
+    <Compile Include="Models\Application\Variable.cs" />
+    <Compile Include="Models\ClientSuccess\TooltipModels.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="Utilities\Attributes\Untested.cs" />
+    <Compile Include="Utilities\CoreProcess\AmazonSQSUtility.cs" />
+    <Compile Include="Utilities\AsyncUtility.cs" />
+    <Compile Include="Utilities\CoreProcess\BpmnUtility.cs" />
+    <Compile Include="Areas\CoreProcess\Models\Interfaces\IProcessInstance.cs" />
+    <Compile Include="Areas\CoreProcess\Models\Interfaces\ITask.cs" />
+    <Compile Include="Areas\CoreProcess\Models\Interfaces\IProcessDef.cs" />
+    <Compile Include="Areas\CoreProcess\Models\MapModel\ComundaModelMap.cs" />
+    <Compile Include="Areas\CoreProcess\Models\ViewModel\BpmnXmlFileModel.cs" />
+    <Compile Include="Areas\CoreProcess\Models\ViewModel\ProcessInstanceViewModel.cs" />
+    <Compile Include="Areas\CoreProcess\Models\ViewModel\TaskViewModel.cs" />
+    <Compile Include="Areas\CoreProcess\Models\ViewModel\ProcessViewModel.cs" />
+    <Compile Include="Areas\People\Accessors\QuarterlyConversationAccessor.cs" />
+    <Compile Include="Areas\People\Accessors\SurveyAccessor.cs" />
+    <Compile Include="Areas\People\Accessors\PDF\SurveyPdfAccessor.cs" />
+    <Compile Include="Areas\People\Angular\AngularPeopleAnalyzer.cs" />
+    <Compile Include="Areas\People\Angular\Survey\AngularForModel.cs" />
+    <Compile Include="Areas\People\Angular\Survey\SurveyAbout\AngularSurveyAbout.cs" />
+    <Compile Include="Areas\People\Angular\Survey\AngularSurveyContainer.cs" />
+    <Compile Include="Areas\People\Angular\Survey\AngularSurvey.cs" />
+    <Compile Include="Areas\People\Angular\Survey\AngularSurveyItem.cs" />
+    <Compile Include="Areas\People\Angular\Survey\SurveyAbout\AngularSurveyAboutContainer.cs" />
+    <Compile Include="Areas\People\Angular\Survey\SurveyAbout\AngularSurveyAboutSection.cs" />
+    <Compile Include="Areas\People\Angular\Survey\SurveyAbout\AngularSurveyItemContainerAbout.cs" />
+    <Compile Include="Areas\People\Controllers\AngularTemplatesController.cs" />
+    <Compile Include="Areas\People\Controllers\MainController.cs" />
+    <Compile Include="Areas\People\Controllers\PeopleAnalyzerController.cs" />
+    <Compile Include="Areas\People\Controllers\QuarterlyConversationController.cs" />
+    <Compile Include="Areas\People\Controllers\SurveyController.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\GeneralCommentsSection.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\LeadershipAssessmentSection.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\ManagementAssessmentSection.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Impl\InputItemIntializer.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Impl\TextItemIntializer.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\PostProcesses\PostProcessorFixPrettyNames.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\PostProcesses\PostProcessorNoOp.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\Transformers\TransformAboutAccountabilityNodes.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\Transformers\TransformByAboutNoop.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\Traverse\TraverseBuildAboutAngular.cs" />
+    <Compile Include="Areas\People\Models\Survey\ByAbout.cs" />
+    <Compile Include="Areas\People\Models\Survey\SurveyItemFormat.cs" />
+    <Compile Include="Areas\People\Models\Survey\SurveyItemResponse.cs" />
+    <Compile Include="Areas\People\Models\Survey\SurveyResponse.cs" />
+    <Compile Include="Areas\People\Models\Survey\SurveyItem.cs" />
+    <Compile Include="Areas\People\Models\Survey\SurveySection.cs" />
+    <Compile Include="Areas\People\Models\Survey\Survey.cs" />
+    <Compile Include="Areas\People\Models\Survey\SurveyContainer.cs" />
+    <Compile Include="Areas\People\Models\Survey\SurveyEnums.cs" />
+    <Compile Include="Areas\People\Models\Survey\SurveyUserNode.cs" />
+    <Compile Include="Areas\People\PeopleAreaRegistration.cs" />
+    <Compile Include="Areas\People\ViewModels\QuarterlyConversationVM.cs" />
+    <None Include="Areas\People\Views\Main\Diagonal.cshtml" />
+    <Content Include="Content\AngularTemplates\People\PeopleAnalyzer\peopleAnalyzerTable.html" />
+    <Content Include="Content\AngularTemplates\People\PeopleAnalyzer\rzSliderTpl.html" />
+    <Content Include="Content\AngularTemplates\People\Survey\Items\bs\number-item.html" />
+    <Content Include="Content\AngularTemplates\People\Survey\Items\bs\textarea-item.html" />
+    <Content Include="Content\AngularTemplates\People\Survey\Items\bs\text-item.html" />
+    <Content Include="Content\AngularTemplates\People\Survey\Items\bs\radio-item.html" />
+    <Content Include="Content\AngularTemplates\People\Survey\Items\md\radio-item.html" />
+    <Content Include="Content\AngularTemplates\People\Survey\surveyItemContainer.html" />
+    <Content Include="Content\AngularTemplates\People\Survey\survey.html" />
+    <Content Include="Content\AngularTemplates\People\Survey\surveySection.html" />
     <Compile Include="Controllers\Ac\AngularAccountabilityController.cs" />
     <Compile Include="Controllers\AuditController.cs" />
     <Compile Include="Controllers\HeadlinesController.cs" />
     <Compile Include="Controllers\MilestoneController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\PdfController.cs" />
-    <Compile Include="Hooks\UpdateRoles_Notifications.cs" />
-    <Compile Include="Hooks\UpdateUserModel_TeamNames.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\Events\SurveyReconstructionEventsNoOp.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\OuterLookup.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\QuarterlyConversationClasses.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\RockSection.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\RoleSection.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\ValueSection.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Interfaces\SurveyReconstructionInterfaces.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\Reconstructor\DatabaseAggregator.cs" />
+    <Compile Include="Areas\People\Angular\Survey\AngularSurveySection.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\Traverse\TraverseBuild.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\Traverse\TraverseBuildAngular.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\SurveyBuilderEngine.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Interfaces\SurveyBuilderInterfaces.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\Events\SurveyBuilderEventsNoOp.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\Strategies\Events\SurveyBuilderEventsSaveStrategy.cs" />
+    <Compile Include="Areas\People\Engines\Surveys\SurveyReconstructionEngine.cs" />
+    <Compile Include="Controllers\SuController.cs" />
+    <Compile Include="Hooks\CrossCutting\ActiveCampaignEventHooks.cs" />
+    <Compile Include="Hooks\CrossCutting\EnterpriseHook.cs" />
+    <Compile Include="Hooks\CrossCutting\UpdateRoles_Notifications.cs" />
+    <Compile Include="Hooks\CrossCutting\UpdateUserModel_TeamNames.cs" />
+    <Compile Include="Hooks\Webhook\IssueWebhook.cs" />
+    <Compile Include="Hooks\Webhook\TodoWebhook.cs" />
+    <Compile Include="Hubs\PeopleHub.cs" />
     <Compile Include="Models\Angular\Base\AngularPicture.cs" />
     <Compile Include="Models\Angular\Dashboard\AngularDashboard.cs" />
     <Compile Include="Models\Angular\DataType\AngularString.cs" />
@@ -136,11 +264,18 @@
     <Compile Include="Models\Angular\Rocks\AngularMilestone.cs" />
     <Compile Include="Models\Angular\Scorecard\AngularMeasurableGroup.cs" />
     <Compile Include="Models\Angular\Team\AngularTeam.cs" />
-    <Compile Include="Models\Application\WebhooksModel.cs" />
+    <Compile Include="Models\Application\Campaign.cs" />
+    <Compile Include="Models\Application\SupportMember.cs" />
+    <Compile Include="Models\Application\Coach.cs" />
+    <Compile Include="Models\Application\WebhookModel.cs" />
     <Compile Include="Models\Enums\RGMType.cs" />
     <Compile Include="Models\Enums\VideoConferenceType.cs" />
     <Compile Include="Models\Events\Event.cs" />
+    <Compile Include="Areas\CoreProcess\Interfaces\IProcessId.cs" />
+    <Compile Include="Models\Interfaces\IByAbout.cs" />
+    <Compile Include="Models\Interfaces\ICaller.cs" />
     <Compile Include="Models\Issues\HeadlineIssueVM.cs" />
+    <Compile Include="Models\L10\L10RecurrenceOrder.cs" />
     <Compile Include="Models\L10\L10Page.cs" />
     <Compile Include="Models\L10\PeopleHeadline.cs" />
     <Compile Include="Models\L10\L10RockType.cs" />
@@ -148,6 +283,8 @@
     <Compile Include="Models\Askables\AskableSectionModel.cs" />
     <Compile Include="Models\Reviews\WhoReviewsWho.cs" />
     <Compile Include="Models\Rocks\Milestone.cs" />
+    <Compile Include="Models\ViewModels\WebhooksEventSubscriptionViewModel.cs" />
+    <Compile Include="Models\ViewModels\WebHookViewModel.cs" />
     <Compile Include="Notifications\Notification.cs" />
     <Compile Include="Models\Reviews\ValueBar.cs" />
     <Compile Include="Models\Todo\HeadlineTodoVm.cs" />
@@ -156,10 +293,13 @@
     <Compile Include="Models\VideoConference\ZoomUserLink.cs" />
     <Compile Include="Notifications\PubSub.cs" />
     <Compile Include="Utilities\AngularTreeUtil.cs" />
+    <Compile Include="Utilities\Constants\PdfImageConst.cs" />
+    <Compile Include="Utilities\DataTypes\LazyCollection.cs" />
+    <Compile Include="Utilities\DivisorUtility.cs" />
     <Compile Include="Utilities\EmailUtil.cs" />
     <Compile Include="Controllers\IntegrationsController.cs" />
-    <Compile Include="Hooks\BasecampTodoHook.cs" />
-    <Compile Include="Hooks\CreateUserOrganization_UpdateHierarchy.cs" />
+    <Compile Include="Hooks\Integrations\BasecampTodoHook.cs" />
+    <Compile Include="Hooks\CrossCutting\CreateUserOrganization_UpdateHierarchy.cs" />
     <Compile Include="Accessors\Hydrators\ResponsibilityGroupHydration.cs" />
     <Compile Include="Accessors\Hydrators\UserHydration.cs" />
     <Compile Include="Accessors\ImageAccessor.cs" />
@@ -205,7 +345,7 @@
     <Compile Include="Accessors\ScorecardAccessor.cs" />
     <Compile Include="Accessors\SettingsAccessor.cs" />
     <Compile Include="Accessors\SupportAccessor.cs" />
-    <Compile Include="Accessors\SurveyAccessor.cs" />
+    <Compile Include="Accessors\OldSurveyAccessor.cs" />
     <Compile Include="Accessors\TaskAccessor.cs" />
     <Compile Include="Accessors\TeamAccessor.cs" />
     <Compile Include="Accessors\TestAccessor.cs" />
@@ -228,26 +368,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Api\V0\Scorecard.cs" />
-    <Compile Include="Api\V0\BaseApiController.cs" />
-    <Compile Include="Areas\RouteDebugger\Components\ActionSelectSimulator.cs" />
-    <Compile Include="Areas\RouteDebugger\Components\DictionaryExtensions.cs" />
-    <Compile Include="Areas\RouteDebugger\Components\HttpParameterBindingExtensions.cs" />
-    <Compile Include="Areas\RouteDebugger\Components\TypeHelper.cs" />
-    <Compile Include="Areas\RouteDebugger\Controllers\RouteDebuggerController.cs" />
-    <Compile Include="Areas\RouteDebugger\InspectActionInvoker.cs" />
-    <Compile Include="Areas\RouteDebugger\InspectActionSelector.cs" />
-    <Compile Include="Areas\RouteDebugger\InspectControllerSelector.cs" />
-    <Compile Include="Areas\RouteDebugger\InspectHandler.cs" />
-    <Compile Include="Areas\RouteDebugger\Models\ActionSelectionInfo.cs" />
-    <Compile Include="Areas\RouteDebugger\Models\ActionSelectionLog.cs" />
-    <Compile Include="Areas\RouteDebugger\Models\ControllerSelectionInfo.cs" />
-    <Compile Include="Areas\RouteDebugger\Models\HttpParameterDescriptionInfo.cs" />
-    <Compile Include="Areas\RouteDebugger\Models\InspectData.cs" />
-    <Compile Include="Areas\RouteDebugger\Models\RouteDataInfo.cs" />
-    <Compile Include="Areas\RouteDebugger\Models\RouteInfo.cs" />
-    <Compile Include="Areas\RouteDebugger\RequestHelper.cs" />
-    <Compile Include="Areas\RouteDebugger\RouteDebuggerAreaRegistration.cs" />
-    <Compile Include="Areas\RouteDebugger\RouteDebuggerConfig.cs" />
+    <Compile Include="Api\BaseApiController.cs" />
     <Compile Include="Controllers\ArchiveController.cs" />
     <Compile Include="Controllers\CustomizeController.cs" />
     <Compile Include="Controllers\HealthCheckController.cs" />
@@ -331,7 +452,7 @@
     <Compile Include="Controllers\ResponsibilitiesController.cs" />
     <Compile Include="Controllers\ReviewController.cs" />
     <Compile Include="Controllers\ReviewsController.cs" />
-    <Compile Include="Controllers\SurveyController.cs" />
+    <Compile Include="Controllers\SurveysController.cs" />
     <Compile Include="Controllers\TeamController.cs" />
     <Compile Include="Controllers\TemplateController.cs" />
     <Compile Include="Controllers\Upload\UploadController.cs" />
@@ -352,7 +473,7 @@
     <Compile Include="Helpers\SecuredValueHtmlHelper.cs" />
     <Compile Include="Helpers\SelectExtensions.cs" />
     <Compile Include="Hooks\HooksRegistry.cs" />
-    <Compile Include="Hooks\Outlook_TodoHook.cs" />
+    <Compile Include="Hooks\Integrations\Outlook_TodoHook.cs" />
     <Compile Include="Hubs\AlertHub.cs" />
     <Compile Include="Hubs\BaseHub.cs" />
     <Compile Include="Hubs\MessageHub.cs" />
@@ -473,9 +594,9 @@
     <Compile Include="Models\Permissions\PermissionOverride.cs" />
     <Compile Include="Models\PhoneModel.cs" />
     <Compile Include="Models\Scorecard\ScorecardType.cs" />
-    <Compile Include="Models\Survey\SurveyContainerModel.cs" />
-    <Compile Include="Models\Survey\SurveyResultVMs.cs" />
-    <Compile Include="Models\Survey\SurveyTake.cs" />
+    <Compile Include="Models\Survey_OLD\SurveyContainerModel.cs" />
+    <Compile Include="Models\Survey_OLD\SurveyResultVMs.cs" />
+    <Compile Include="Models\Survey_OLD\SurveyTake.cs" />
     <Compile Include="Models\Synchronize\Sync.cs" />
     <Compile Include="Models\Tests\TestUrl.cs" />
     <Compile Include="Models\Timeline\MeetingTimeline.cs" />
@@ -691,8 +812,8 @@
     <Compile Include="Models\Enums\AccessLevel.cs" />
     <Compile Include="Controllers\TController.cs" />
     <Compile Include="Utilities\AwsUtil.cs" />
-    <Compile Include="Utilities\Cache\Cache.cs" />
-    <Compile Include="Utilities\Cache\CacheKeys.cs" />
+    <Compile Include="Utilities\Attributes\Cache\Cache.cs" />
+    <Compile Include="Utilities\Attributes\Cache\CacheKeys.cs" />
     <Compile Include="Utilities\DataTypes\AccountabilityTree.cs" />
     <Compile Include="Utilities\DataTypes\Chart.cs" />
     <Compile Include="Utilities\DataTypes\DateRange.cs" />
@@ -717,22 +838,30 @@
     <Compile Include="Utilities\Extensions\ViewBagExtensions.cs" />
     <Compile Include="Utilities\FileUtilities.cs" />
     <Compile Include="Utilities\DistanceUtility.cs" />
+    <Compile Include="Utilities\ForModelUtil.cs" />
     <Compile Include="Utilities\GraphUtility.cs" />
     <Compile Include="Utilities\HashUtil.cs" />
     <Compile Include="Utilities\Hooks\IAccountEvent.cs" />
+    <Compile Include="Utilities\Hooks\ICreateIssue.cs" />
     <Compile Include="Utilities\Hooks\IHeadlineHook.cs" />
-    <Compile Include="Utilities\Hooks\ICreateTodo.cs" />
-    <Compile Include="Utilities\Hooks\ICreateUserOrganization.cs" />
-    <Compile Include="Utilities\Hooks\IDeleteUserOrganizationHook.cs" />
+    <Compile Include="Utilities\Hooks\IMeasurableHook.cs" />
+    <Compile Include="Utilities\Hooks\IMeetingEvents.cs" />
+    <Compile Include="Utilities\Hooks\IMeetingItemHooks.cs" />
+    <Compile Include="Utilities\Hooks\IScoreHook.cs" />
+    <Compile Include="Utilities\Hooks\IRockHook.cs" />
+    <Compile Include="Utilities\Hooks\ITaskHook.cs" />
+    <Compile Include="Utilities\Hooks\ITodoHook.cs" />
+    <Compile Include="Utilities\Hooks\IUserHooks.cs" />
     <Compile Include="Utilities\Hooks\IHook.cs" />
     <Compile Include="Utilities\Hooks\IRolesHook.cs" />
-    <Compile Include="Utilities\Hooks\IUpdateUserModelHook.cs" />
     <Compile Include="Utilities\HtmlUtility.cs" />
+    <Compile Include="Utilities\Integrations\ActiveCampaign.cs" />
     <Compile Include="Utilities\NHibernateHelper.cs" />
     <Compile Include="Utilities\NHibernate\AuditEventListener.cs" />
     <Compile Include="Utilities\NHibernate\Context.cs" />
     <Compile Include="Utilities\NHibernate\CustomAuditStrategy.cs" />
     <Compile Include="Utilities\NHibernate\NHibernateProxyJsonConvert.cs" />
+    <Compile Include="Utilities\NHibernate\SingleRequestTransaction.cs" />
     <Compile Include="Utilities\NHibernate\SingleRequestSession.cs" />
     <Compile Include="Utilities\NumberUtility.cs" />
     <Compile Include="Utilities\PaymentSpringUtil.cs" />
@@ -747,6 +876,7 @@
     <Compile Include="Utilities\ReflectionUtility.cs" />
     <Compile Include="Utilities\ResourceUtility.cs" />
     <Compile Include="Utilities\SearchUtil.cs" />
+    <Compile Include="Utilities\Serializers\JsonSerializer.cs" />
     <Compile Include="Utilities\Serializers\AngularSerializer.cs" />
     <Compile Include="Utilities\SetUtility.cs" />
     <Compile Include="Utilities\AskableUtility.cs" />
@@ -799,6 +929,7 @@
     <Compile Include="Utilities\Query\SessionUpdate.cs" />
     <Compile Include="Utilities\RandomUtility.cs" />
     <Compile Include="Utilities\ShortenerUtility.cs" />
+    <!--<Compile Include="Utilities\NHibernate\SingleRequestTransaction.cs" />-->
     <Compile Include="Utilities\StreamUtil.cs" />
     <Compile Include="Utilities\SubordinateUtility.cs" />
     <Compile Include="Utilities\Synchronize\SyncAction.cs" />
@@ -830,6 +961,29 @@
     </Content>
     <Content Include="Content\Angular\livesearch.css" />
     <Content Include=".ebextensions\Autoscaling.config" />
+    <Content Include="Areas\CoreProcess\Views\web.config" />
+    <Content Include="Areas\CoreProcess\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\CoreProcess\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\CoreProcess\Views\Home\Index.cshtml" />
+    <EmbeddedResource Include="Areas\CoreProcess\calculation.bpmn">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Content Include="Areas\CoreProcess\d.bpmn" />
+    <Content Include="Areas\CoreProcess\Views\Process\Tasks.cshtml" />
+    <Content Include="Areas\CoreProcess\Views\Process\Index.cshtml" />
+    <Content Include="Areas\CoreProcess\Views\Shared\Partial\CreateTask.cshtml" />
+    <Content Include="Areas\CoreProcess\Views\Shared\Partial\CreateProcess.cshtml" />
+    <Content Include="Areas\CoreProcess\Views\Process\ProcessInstance.cshtml" />
+    <Content Include="Areas\CoreProcess\Views\Process\UserTask.cshtml" />
+    <Content Include="Areas\People\Views\web.config" />
+    <Content Include="Areas\People\Views\Main\Index.cshtml" />
+    <Content Include="Areas\People\Views\QuarterlyConversation\Index.cshtml" />
+    <Content Include="Content\AngularTemplates\People\Survey\surveyContainer.html" />
+    <Content Include="Areas\People\Views\QuarterlyConversation\Questions.cshtml" />
+    <Content Include="Areas\People\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\People\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\People\Views\QuarterlyConversation\Issue.cshtml" />
+    <Content Include="Areas\People\Views\PeopleAnalyzer\Index.cshtml" />
     <None Include="bundleconfig.json" />
     <None Include="Content\Angular\ngsortable.less" />
     <Content Include="Content\Angular\ngsortable.css">
@@ -857,6 +1011,26 @@
     <Content Include="Content\GettingStarted\GettingStarted.css">
       <DependentUpon>GettingStarted.less</DependentUpon>
     </Content>
+    <Content Include="Content\People\MaterialRadio.css">
+      <DependentUpon>MaterialRadio.less</DependentUpon>
+    </Content>
+    <Content Include="Content\People\PeopleAnalyzer.css">
+      <DependentUpon>PeopleAnalyzer.less</DependentUpon>
+    </Content>
+    <Content Include="Content\People\QuarterlyConversation.css">
+      <DependentUpon>QuarterlyConversation.less</DependentUpon>
+    </Content>
+    <Content Include="Content\People\rzslider.css">
+      <DependentUpon>rzslider.less</DependentUpon>
+    </Content>
+    <Content Include="Content\SnackbarAlerts.css">
+      <DependentUpon>SnackbarAlerts.less</DependentUpon>
+    </Content>
+    <EmbeddedResource Include="Content\Swagger\CustomSwaggerStyle.css">
+      <DependentUpon>CustomSwaggerStyle.less</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <Content Include="Content\test.html" />
     <Content Include="Content\img\graystripe-light.png" />
     <Content Include="Content\L10\Archive\Archive.css">
       <DependentUpon>Archive.less</DependentUpon>
@@ -1014,6 +1188,14 @@
     <Content Include="Content\L10\L10IDS.V2.less" />
     <Content Include="Content\L10\l10-ie-only.less" />
     <Content Include="Content\L10\L10Rocks.less" />
+    <Content Include="Content\SnackbarAlerts.less" />
+    <Content Include="Content\People\QuarterlyConversation.less" />
+    <Content Include="Content\People\PeopleAnalyzer.less" />
+    <Content Include="Content\People\rzslider.less" />
+    <Content Include="Content\People\MaterialRadio.less" />
+    <Content Include="project.json" />
+    <Content Include="Content\Swagger\CustomSwaggerStyle.less" />
+    <Compile Include="Hooks\Realtime\L10\RealTime_L10_Headline.cs" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1043,9 +1225,11 @@
     <Content Include="Scripts\Angular\Helpers\Directives\ScoreTemplates.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\TableSort.js" />
     <Content Include="Scripts\Angular\Helpers\Directives\vsRepeat.js" />
+    <Content Include="Scripts\Angular\Helpers\Libraries\angular-material-custom.js" />
     <Content Include="Scripts\Angular\Helpers\Libraries\angular-xeditable.js" />
     <Content Include="Scripts\Angular\Helpers\Libraries\ngfittext.js" />
     <Content Include="Scripts\Angular\Helpers\Libraries\ngsortable.js" />
+    <Content Include="Scripts\Angular\Helpers\Libraries\vs-repeat.js" />
     <Content Include="Scripts\Angular\Helpers\radialModule.js" />
     <Content Include="Scripts\Angular\Helpers\updater.js" />
     <Content Include="Scripts\Angular\MaterialDesign\lf-ng-md-file-input.js" />
@@ -1054,10 +1238,15 @@
     </Content>
     <Content Include="Scripts\Angular\MaterialDesign\md-data-table.js" />
     <Content Include="Scripts\Angular\MaterialDesign\md-stepper.js" />
+    <Content Include="Scripts\Angular\People\PeopleAnalyzer\PeopleAnalyzer.js" />
+    <Content Include="Scripts\Angular\People\init.js" />
+    <Content Include="Scripts\Angular\People\Survey\SurveyComponents.js" />
     <Content Include="Scripts\Angular\Tiles\L10StatsTile.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\components\jquery.bootstrap-duallistbox.js" />
     <Content Include="Scripts\AccountabilityChart\accountabilityChart.js" />
+    <Content Include="Scripts\components\milestones.js" />
+    <Content Include="Scripts\CoreProcess\coreProcessRT.js" />
     <Content Include="Scripts\d3\d3.v4.js" />
     <Content Include="Scripts\d3\radial.d3.tree.js" />
     <Content Include="Scripts\Dashboard\dashboard.js" />
@@ -1084,10 +1273,30 @@
     <Content Include="Scripts\L10\L10Headlines.js" />
     <Content Include="Scripts\L10\L10Transcribe.js" />
     <Content Include="Scripts\L10\L10Wizard.js" />
+    <Content Include="Scripts\Main\ajaxintercepters.js" />
+    <Content Include="Scripts\Main\alerts.js" />
+    <Content Include="Scripts\Main\backwardcompatability.js" />
+    <Content Include="Scripts\Main\clickableclass.js" />
+    <Content Include="Scripts\Main\datatable.js" />
+    <Content Include="Scripts\Main\datepickers.js" />
     <Content Include="Scripts\Main\iefixes.js" />
     <Content Include="Scripts\Main\intercom.min.js" />
+    <Content Include="Scripts\Main\keyboard.js" />
+    <Content Include="Scripts\Main\libraries.js" />
+    <Content Include="Scripts\Main\linq.js" />
     <Content Include="Scripts\Main\log-helper.js" />
+    <Content Include="Scripts\Main\modals.js" />
+    <Content Include="Scripts\Main\profilepicture.js" />
+    <Content Include="Scripts\Main\support.js" />
+    <Content Include="Scripts\Main\time.js" />
+    <Content Include="Scripts\Main\tooltips.js" />
+    <Content Include="Scripts\Main\tours.js" />
+    <Content Include="Scripts\People\DiagonalTable.js" />
+    <Content Include="Scripts\People\rzslider.js" />
     <Content Include="Scripts\speechrecog.js" />
+    <EmbeddedResource Include="Scripts\Swagger\CustomSwaggerScripts.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="Scripts\Tour\startL10.js" />
     <Content Include="Scripts\Tour\createL10.js" />
     <Content Include="Scripts\Tour\lib\anno.js" />
@@ -1469,6 +1678,33 @@
     <Content Include="Views\Review\Take\Radio.cshtml" />
     <Content Include="Views\TileData\L10SolvedIssues.cshtml" />
     <Content Include="Views\Todo\EditModal.cshtml" />
+    <Content Include="Views\Webhook\Create.cshtml" />
+    <Content Include="Views\Webhook\Index.cshtml" />
+    <Content Include="Views\Webhook\CreateEvents.cshtml" />
+    <Content Include="Views\Webhook\Events.cshtml" />
+    <Content Include="Views\Webhook\API.cshtml" />
+    <Content Include="Views\L10\MeetingSummary.cshtml" />
+    <Content Include="Views\Rocks\EditModal.cshtml" />
+    <Content Include="Views\Milestone\EditModal.cshtml" />
+    <Content Include="Views\Admin\Implementers.cshtml" />
+    <Content Include="Views\Admin\EditImplementers.cshtml" />
+    <Content Include="Views\Admin\EditSupportMember.cshtml" />
+    <Content Include="Views\Admin\SupportMembers.cshtml" />
+    <Content Include="Views\Admin\EditCampaign.cshtml" />
+    <Content Include="Views\Admin\Campaigns.cshtml" />
+    <Content Include="Views\Phone\Index.cshtml" />
+    <Content Include="Views\TileData\CoreProcesses.cshtml" />
+    <Content Include="Views\TileData\Tasks.cshtml" />
+    <Content Include="Views\Tasks\partial\list.cshtml" />
+    <Content Include="Views\Tasks\partial\coreProcessList.cshtml" />
+    <Content Include="Views\ClientSuccess\Tooltips.cshtml" />
+    <Content Include="Views\ClientSuccess\Index.cshtml" />
+    <Content Include="Views\ClientSuccess\Modal.cshtml" />
+    <Content Include="Views\TileData\Milestones.cshtml" />
+    <Content Include="Views\Audit\L10.cshtml" />
+    <Content Include="Views\Audit\MeasurableScores.cshtml" />
+    <Content Include="Views\Audit\Index.cshtml" />
+    <Content Include="Views\TileData\L10Headlines.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -1588,37 +1824,6 @@
     <Content Include="Content\img\titlebarTiles.png" />
     <Content Include="orgPlaceholder.png" />
     <Content Include="placeholder.png" />
-    <Content Include="Radial_files\analytics.js" />
-    <Content Include="Radial_files\application.js" />
-    <Content Include="Radial_files\bootstrap.js" />
-    <Content Include="Radial_files\bootstrap.min.js" />
-    <Content Include="Radial_files\features1.png" />
-    <Content Include="Radial_files\features2.png" />
-    <Content Include="Radial_files\features3.png" />
-    <Content Include="Radial_files\features4.png" />
-    <Content Include="Radial_files\features5.png" />
-    <Content Include="Radial_files\features6.png" />
-    <Content Include="Radial_files\fluidvids.js" />
-    <Content Include="Radial_files\holder.js" />
-    <Content Include="Radial_files\jQuery.equalHeights.js" />
-    <Content Include="Radial_files\jquery.js" />
-    <Content Include="Radial_files\jquery.magnific-popup.js" />
-    <Content Include="Radial_files\logo1.png" />
-    <Content Include="Radial_files\logo2.png" />
-    <Content Include="Radial_files\logo3.png" />
-    <Content Include="Radial_files\logo4.png" />
-    <Content Include="Radial_files\placelogo1.png" />
-    <Content Include="Radial_files\placelogo2.png" />
-    <Content Include="Radial_files\placelogo3.png" />
-    <Content Include="Radial_files\placelogo4.png" />
-    <Content Include="Radial_files\placelogo5.png" />
-    <Content Include="Radial_files\placelogo6.png" />
-    <Content Include="Radial_files\placelogo7.png" />
-    <Content Include="Radial_files\placelogo8.png" />
-    <Content Include="Radial_files\prettify.js" />
-    <Content Include="Radial_files\radial.png" />
-    <Content Include="Radial_files\radial2.png" />
-    <Content Include="Radial_files\widgets.js" />
     <Content Include="Scripts\animations\circles.js" />
     <Content Include="Scripts\bootstrap-datepicker-old.js" />
     <Content Include="Scripts\bootstrap-slider.js" />
@@ -1873,8 +2078,6 @@
     <Content Include="Views\L10\partial\CompanyRockGroup.cshtml" />
     <Content Include="Views\Measurable\partial\list.cshtml" />
     <Content Include="Views\Faq\API.cshtml" />
-    <Content Include="Areas\RouteDebugger\Views\RouteDebugger\Index.cshtml" />
-    <Content Include="Areas\RouteDebugger\Views\Web.config" />
     <Content Include="Views\Log\Row.cshtml" />
     <Content Include="Views\Log\Index.cshtml" />
     <Content Include="Views\Account\FixEmail.cshtml" />
@@ -1949,7 +2152,6 @@
     <Content Include="Data\people.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Radial_files\imgs\Thumbs.db" />
     <Content Include="Scripts\d3\d3.v3.min.js.map">
       <DependentUpon>d3.v3.js</DependentUpon>
     </Content>
@@ -1998,7 +2200,6 @@
     <Content Include="Views\Organization\Begin.cshtml" />
     <Content Include="Views\Organization\Create.cshtml" />
     <Content Include="Views\Organization\Index.cshtml" />
-    <Content Include="Views\Organization\Manage.cshtml" />
     <Content Include="Views\Account\Role.cshtml" />
     <Content Include="Views\Partial\_DragDropItem.cshtml" />
     <Content Include="Views\Payment\Index.cshtml" />
@@ -2176,25 +2377,25 @@
     <Content Include="Views\Todo\partial\list.cshtml" />
     <Content Include="Views\VTO\Index.cshtml" />
     <Content Include="Views\VTO\Edit.cshtml" />
-    <Content Include="Views\Survey\Index.cshtml" />
-    <Content Include="Views\Survey\Edit.cshtml" />
+    <Content Include="Views\Surveys\Index.cshtml" />
+    <Content Include="Views\Surveys\Edit.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\SurveyQuestionGroupModel.cshtml" />
-    <Content Include="Views\Survey\_SurveyQuestionRow.cshtml" />
+    <Content Include="Views\Surveys\_SurveyQuestionRow.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\SurveyRespondentGroupModel.cshtml" />
-    <Content Include="Views\Survey\_SurveyRespondentRow.cshtml" />
-    <Content Include="Views\Survey\Take.cshtml" />
+    <Content Include="Views\Surveys\_SurveyRespondentRow.cshtml" />
+    <Content Include="Views\Surveys\Take.cshtml" />
     <Content Include="Views\TwilioApi\Modal.cshtml" />
     <Content Include="Views\TwilioApi\_PhoneRow.cshtml" />
     <Content Include="Views\TwilioApi\Index.cshtml" />
     <Content Include="Views\Scorecard\partial\listscripts.cshtml" />
     <Content Include="Views\Rocks\partial\list.cshtml" />
     <Content Include="Views\Todo\CreateTodoRecurrence.cshtml" />
-    <Content Include="Views\Survey\Results.cshtml" />
-    <Content Include="Views\Survey\partial\Radio5Result.cshtml" />
-    <Content Include="Views\Survey\partial\Radio5Take.cshtml" />
-    <Content Include="Views\Survey\partial\FeedbackTake.cshtml" />
-    <Content Include="Views\Survey\partial\FeedbackResult.cshtml" />
-    <Content Include="Views\Survey\Embedded.cshtml" />
+    <Content Include="Views\Surveys\Results.cshtml" />
+    <Content Include="Views\Surveys\partial\Radio5Result.cshtml" />
+    <Content Include="Views\Surveys\partial\Radio5Take.cshtml" />
+    <Content Include="Views\Surveys\partial\FeedbackTake.cshtml" />
+    <Content Include="Views\Surveys\partial\FeedbackResult.cshtml" />
+    <Content Include="Views\Surveys\Embedded.cshtml" />
     <Content Include="Views\UnitTest\Sync.cshtml" />
     <Content Include="Views\UnitTest\AllPages.cshtml" />
     <Content Include="Views\UnitTest\EditPage.cshtml" />
@@ -2217,14 +2418,16 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\CoreProcess\CamundaFiles\" />
+    <Folder Include="Areas\People\Engines\Surveys\Abstract\" />
     <Folder Include="Content\fonts\fonts\" />
     <Folder Include="External\" />
     <Folder Include="logs\" />
     <Folder Include="Models\Notifications\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
     <Folder Include="Utilities\Migradoc\XYScatter\" />
-    <Folder Include="Utilities\NewFolder1\" />
     <Folder Include="Views\AngularAccountability\" />
+    <Folder Include="Views\BaseExpensive\" />
     <Folder Include="Views\Console\" />
     <Folder Include="Views\Data\" />
     <Folder Include="Views\DropDown\" />
@@ -2235,15 +2438,14 @@
     <Folder Include="Views\MeetingData\" />
     <Folder Include="Views\Members\" />
     <Folder Include="Views\Migration\" />
-    <Folder Include="Views\Milestone\" />
     <Folder Include="Views\Onboard\" />
     <Folder Include="Views\Scheduler\" />
     <Folder Include="Views\Session\" />
+    <Folder Include="Views\Su\" />
     <Folder Include="Views\Svg\" />
     <Folder Include="Views\Transcript\" />
     <Folder Include="Views\Url\" />
     <Folder Include="Views\VtoData\" />
-    <Folder Include="Views\Webhook\" />
     <Folder Include="Views\WebRtc\" />
     <Folder Include="Views\Wizard\" />
     <Folder Include="Views\_Angular\" />
@@ -2334,6 +2536,12 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CamundaCSharpClient\CamundaCSharpClient.csproj">
+      <Project>{220d5704-6b65-4f39-abe2-e3786114f2fd}</Project>
+      <Name>CamundaCSharpClient</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -2346,6 +2554,8 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\XmlComments.xml</DocumentationFile>
+    <NoWarn>1591,1998</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\</OutputPath>
@@ -2422,7 +2632,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>3751</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:44300/</IISUrl>
+          <IISUrl>http://localhost:44301</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>http://radial.elasticbeanstalk.com/</CustomServerUrl>

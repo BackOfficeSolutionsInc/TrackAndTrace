@@ -4,17 +4,37 @@
     ViewBag.FullWidth = true;
     Layout = "~/Views/Shared/_Layout.cshtml";
     Html.RenderPartial("~/Views/CDN/Angular.cshtml");
+
+    var target = "";
+    if (ViewBag.NoTitleBar ?? false) {
+        target = "target=\"_blank\"";
+    }
+
 }
 @using (Html.BeginStyles()) {
     @*<link href="~/Content/L10/L10Wizard.css" rel="stylesheet" />*@
     @Styles.Render("~/Content/L10Wizard")
     @*<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.1/angular.js"></script>*@
 
+
+    if (ViewBag.NoTitleBar ?? false) {
+        <style>
+            html {
+                overflow: auto;
+                padding-top: 26px;
+            }
+
+            #l10-wizard-menu .wizard-nav-bar {
+                display: none;
+            }
+        </style>
+    }
+
 }
 
 @using (Html.BeginScripts()) {
     @*<script src="~/Scripts/Wizard/wizard.js"></script>
-    <script src="~/Scripts/L10/L10Wizard.js"></script>*@
+        <script src="~/Scripts/L10/L10Wizard.js"></script>*@
     @Scripts.Render("~/bundles/meeting")
 
     @Scripts.Render("~/bundles/L10Wizard")
@@ -65,7 +85,7 @@
                             <li><span id="l10-wizard-attendees-btn"><a href="#Attendees">Attendees</a></span></li>
                             <li ng-show="model.ShowScorecard"><a href="#Scorecard">Scorecard</a></li>
                             <li ng-show="model.ShowRockReview"><a href="#Rocks">Rocks</a></li>
-							<li ng-show="model.HeadlineType=='HeadlinesList' && model.ShowHeadlines"><a href="#Headlines">People Headlines</a></li>
+                            <li ng-show="model.HeadlineType=='HeadlinesList' && model.ShowHeadlines"><a href="#Headlines">People Headlines</a></li>
                             <li ng-show="model.ShowTodos"><a href="#Todos">To-dos</a></li>
                             <li ng-show="model.ShowIDS"><a href="#Issues">Issues</a></li>
                             @*<li><a href="#VTO">V/TO</a></li>*@
@@ -90,7 +110,7 @@
                             <div class="form-group" ng-show="model.MeetingType =='L10'">
                                 <label class="col-md-3 control-label">Type of team:</label>
                                 <div class="col-md-9" id="l10-wizard-teamtype">
-                                    <select class="blend" ng-model="model.Basics.TeamType" ng-change="functions.sendUpdate(model.Basics)" ng-options=" s.value as s.text for s in options.l10teamtypes"></select>
+                                    <select class="blend" ng-model="model.Basics.TeamType" ng-change="functions.sendUpdate(model.Basics)" ng-options="s.value as s.text for s in options.l10teamtypes"></select>
                                 </div>
                             </div>
                         </div>
@@ -113,7 +133,7 @@
                               {"AddDatePicker",false},
                               {"EditOwner",true},
                               {"ElasticInput",false},
-                              {"Order","| orderBy: ['DateCreated','Id']"}
+                              {"Order","| orderBy: ['Id','DateCreated']"}
                           });
                         }
                     </div>
@@ -126,22 +146,22 @@
                               {"AddHeaders",false},
                               {"AddDatePicker",false},
                               {"Filter",""},
-                              {"DefaultSort","['CreateTime','Id']"}
+                              {"DefaultSort","['Id','CreateTime']"}
                           });
                         }
                     </div>
-					<div class="component wizard-page" data-page="Headlines" id="l10-wizard-headlines" ng-show="model.HeadlineType=='HeadlinesList'">
-						<div class="title-bar">People Headlines</div>
-						@{Html.RenderPartial("~/Views/Headlines/partial/list.cshtml", new ViewDataDictionary{
-							  {"AddHeaders",false},
-							  {"ShowDetails",false},
-							  {"SortBy","createtime-column"},
-							  {"AddDatePicker",false},
-							  {"DefaultSort","CreateTime"},
-							  {"Order","| orderBy: ['DateCreated','Id']"}
-						  });
-						}
-					</div>
+                    <div class="component wizard-page" data-page="Headlines" id="l10-wizard-headlines" ng-show="model.HeadlineType=='HeadlinesList'">
+                        <div class="title-bar">People Headlines</div>
+                        @{Html.RenderPartial("~/Views/Headlines/partial/list.cshtml", new ViewDataDictionary{
+                              {"AddHeaders",false},
+                              {"ShowDetails",false},
+                              {"SortBy","createtime-column"},
+                              {"AddDatePicker",false},
+                              {"DefaultSort","CreateTime"},
+                              {"Order","| orderBy: ['Id','DateCreated']"}
+                          });
+                        }
+                    </div>
                     <div class="component wizard-page" data-page="Todos" id="l10-wizard-todos">
                         <div class="upload upload-todos" ng-click="functions.goto('/upload/l10/todos?recurrence='+recurrenceId)" data-toggle="tooltip" data-placement="left" title="Upload To-dos"></div>
                         <div class="title-bar">To-do List</div>
@@ -151,7 +171,7 @@
                               {"SortBy","createtime-column"},
                               {"AddDatePicker",false},
                               {"DefaultSort","CreateTime"},
-                              {"Order","| orderBy: ['DateCreated','Id']"}
+                              {"Order","| orderBy: ['Id','DateCreated']"}
                           });
                         }
                     </div>
@@ -163,7 +183,7 @@
                               {"ShowDetails",false},
                               {"SortBy","createtime-column"},
                               {"SortByDirection","ascending"},
-                              {"DefaultSort","['CreateTime','Id']"}
+                              {"DefaultSort","['Id','CreateTime']"}
                           });
                         }
                     </div>

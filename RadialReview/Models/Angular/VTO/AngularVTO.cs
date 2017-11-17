@@ -8,6 +8,7 @@ using RadialReview.Models.Angular.CompanyValue;
 using RadialReview.Models.Angular.Meeting;
 using RadialReview.Models.VTO;
 using RadialReview.Models.Angular.Rocks;
+using RadialReview.Models.L10;
 
 namespace RadialReview.Models.Angular.VTO {
 	public interface IVtoSectionHeader {
@@ -66,7 +67,27 @@ namespace RadialReview.Models.Angular.VTO {
 		}
 
 		public long? L10Recurrence { get; set; }
-	}
+
+        public void ReplaceVision(VtoModel vto) {
+            // Id = vto.Id;
+            //L10Recurrence = vto.L10Recurrence,
+            //CreateTime = vto.CreateTime,
+            //CopiedFrom = vto.CopiedFrom,
+            TenYearTarget = vto.TenYearTarget;
+            //Name = vto.Name, //AngularVtoString.Create(vto.Name),
+            Values = AngularCompanyValue.Create(vto._Values);
+            CoreFocus = AngularCoreFocus.Create(vto.CoreFocus);
+            Strategy = AngularStrategy.Create(vto.MarketingStrategy);
+            //OneYearPlan = AngularOneYearPlan.Create(vto.OneYearPlan);
+            //QuarterlyRocks = AngularQuarterlyRocks.Create(vto.QuarterlyRocks),
+            ThreeYearPicture = AngularThreeYearPicture.Create(vto.ThreeYearPicture);
+            //Issues = AngularVtoString.Create(vto._Issues),
+            TenYearTargetTitle = vto.TenYearTargetTitle ?? "10-YEAR TARGET™";
+            CoreValueTitle = vto.CoreValueTitle ?? "CORE VALUES";
+            //IssuesListTitle = vto.IssuesListTitle ?? "ISSUES LIST",
+            IncludeVision = true;
+        }
+    }
 	#region DataTypes
 	//public class AngularVtoIssue : AngularVtoString {
 	//	public string Owner { get; set; }
@@ -252,6 +273,7 @@ namespace RadialReview.Models.Angular.VTO {
 	}
 
 	public class AngularQuarterlyRocks : Base.BaseAngular, IVtoSectionHeader {
+		//[Obsolete("Use vto id")]
 		public AngularQuarterlyRocks(long id) : base(id) {
 		}
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -272,14 +294,14 @@ namespace RadialReview.Models.Angular.VTO {
 				Measurables = (quarterlyRocksModel.Measurables),
 				Profit = (quarterlyRocksModel.ProfitStr),
 				Revenue = (quarterlyRocksModel.RevenueStr),
-				Rocks = AngularVtoRock.Create(quarterlyRocksModel._Rocks),
+				Rocks = /*AngularVtoRock.Create(*/quarterlyRocksModel._Rocks/*)*/,
 				RocksTitle = quarterlyRocksModel.RocksTitle ?? "ROCKS"
 			};
 		}
 	}
 
 	public class AngularVtoRock : Base.BaseAngular {
-		public AngularVtoRock(long id) : base(id) {
+		public AngularVtoRock(long recurRockId) : base(recurRockId) {
 		}
 #pragma warning disable CS0618 // Type or member is obsolete
 		public AngularVtoRock() {
@@ -287,18 +309,30 @@ namespace RadialReview.Models.Angular.VTO {
 #pragma warning restore CS0618 // Type or member is obsolete
 
 		public AngularRock Rock { get; set; }
+
 		public bool Deleted { get; set; }
 
-		public static AngularVtoRock Create(Vto_Rocks rock) {
+		public static AngularVtoRock Create(L10Recurrence.L10Recurrence_Rocks recurRock) {
 			return new AngularVtoRock() {
-				Rock = new AngularRock(rock.Rock),
-				Id = rock.Id,
-				Deleted = rock.DeleteTime != null
+				Rock = new AngularRock(recurRock),
+				Deleted = recurRock.DeleteTime != null,
+				Id = recurRock.Id,
 			};
 		}
-
-		public static List<AngularVtoRock> Create(IEnumerable<Vto_Rocks> rocks) {
-			return rocks.Select(Create).ToList();
+		public static List<AngularVtoRock> Create(IEnumerable<L10Recurrence.L10Recurrence_Rocks> recurRocks) {
+			return recurRocks.Select(Create).ToList();
 		}
+
+		//public static AngularVtoRock Create(Vto_Rocks rock) {
+		//	return new AngularVtoRock() {
+		//		Rock = new AngularRock(rock.Rock),
+		//		Id = rock.Id,
+		//		Deleted = rock.DeleteTime != null
+		//	};
+		//}
+
+		//public static List<AngularVtoRock> Create(IEnumerable<Vto_Rocks> rocks) {
+		//	return rocks.Select(Create).ToList();
+		//}
 	}
 }

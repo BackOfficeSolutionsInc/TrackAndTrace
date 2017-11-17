@@ -11,6 +11,8 @@ using RadialReview;
 using RadialReview.Models.Interfaces;
 using static RadialReview.Utilities.NHibernateHelper;
 using Newtonsoft.Json;
+using System.Linq.Expressions;
+using RadialReview.Reflection;
 
 namespace System.Web {
 	public static class HtmlExtensions {
@@ -236,9 +238,31 @@ namespace System.Web {
 		}
 
 		public static MvcHtmlString ArrayToString<T>(this HtmlHelper html, IEnumerable<T> items) {
-		//	var unproxied = items.Select(x => NHibernateProxyRemover.From(x));
+			//	var unproxied = items.Select(x => NHibernateProxyRemover.From(x));
 
 			return new MvcHtmlString(JsonConvert.SerializeObject(items));
+			//Json.Encode());
+		}
+
+		public static IEnumerable<object> AdaptArray<T>(this HtmlHelper html, IEnumerable<T> items, Func<T, object> converter) {
+
+			return items.Select(x => converter(x));
+		}
+
+		public static MvcHtmlString ArrayToString<T>(this HtmlHelper html, IEnumerable<T> items, Func<T, object> converter ) {//params Tuple<string,Expression<Func<T,object>>>[] nameColumns) {
+																															  //	var unproxied = items.Select(x => NHibernateProxyRemover.From(x));
+
+			//var convert = items.Select(x => {
+			//	var o = new Dictionary<string, object>();
+			//	foreach (var nc in nameColumns) {
+			//		o[nc.Item1] = x.Get(nc.Item2);
+			//	}
+			//	return o;
+			//});
+
+			var convert = AdaptArray(html, items, converter);
+
+			return new MvcHtmlString(JsonConvert.SerializeObject(convert));
 			//Json.Encode());
 		}
 

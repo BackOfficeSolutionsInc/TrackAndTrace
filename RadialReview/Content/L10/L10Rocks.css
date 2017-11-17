@@ -252,14 +252,18 @@
 }
 .milestone-marker-container .milestone-marker.past-due.status-NotDone,
 .milestone-marker-container .milestone-marker.past-due.status-0 {
+  z-index: 2;
+}
+.milestone-marker-container .milestone-marker.past-due.status-NotDone:not(.rock-is-done),
+.milestone-marker-container .milestone-marker.past-due.status-0:not(.rock-is-done) {
   background-color: #f1d9d8;
   border: 1px solid #D9534F;
-  z-index: 2;
 }
 .milestone-marker-container .milestone-marker.past-due.status-NotDone:hover,
 .milestone-marker-container .milestone-marker.past-due.status-0:hover,
 .milestone-marker-container .milestone-marker.past-due.status-NotDone.mouseover,
 .milestone-marker-container .milestone-marker.past-due.status-0.mouseover {
+  background-color: #f1d9d8;
   border: 1px solid #D9534F;
   z-index: 4;
 }
@@ -270,10 +274,10 @@
 }
 .rock-details h4 {
   margin-top: 0px;
-  margin-bottom: 10px;
+  /*margin-bottom: 10px;*/
   min-height: 30px;
   padding-bottom: 6px;
-  border-bottom: 1px solid #eee;
+  /*border-bottom: 1px solid #eee;*/
 }
 .rock-details .component {
   margin-bottom: 10px;
@@ -303,6 +307,8 @@
   min-height: 40px;
   width: 100%;
   margin-left: 8px;
+  display: inline-block;
+  overflow-y: auto;
 }
 .rock-details .milestone-table:empty:after {
   content: "No milestones.";
@@ -318,6 +324,9 @@
 .rock-details .milestone-table .milestone-delete-cell {
   width: 20px;
 }
+.rock-details .milestone-table .milestone-name-cell {
+  width: 60%;
+}
 .rock-details .milestone-table .milestone-name {
   color: #666;
   cursor: pointer;
@@ -327,6 +336,7 @@
 }
 .rock-details .milestone-table .milestone-duedate-cell {
   width: 100px;
+  min-width: 100px;
 }
 .rock-details .milestone-table .milestone-duedate-cell input {
   text-align: right;

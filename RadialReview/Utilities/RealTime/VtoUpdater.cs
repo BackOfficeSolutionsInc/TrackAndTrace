@@ -18,18 +18,18 @@ namespace RadialReview.Utilities.RealTime {
                 _vtoIds = vtos.Distinct().ToList();
                 this.rt = rt;
             }
-            protected void UpdateAll(Func<long, IAngularItem> itemGenerater)
+            protected void UpdateAll(Func<long, IAngularId> itemGenerater)
             {
                 foreach (var r in _vtoIds) {
                     var updater = rt.GetUpdater<VtoHub>(VtoHub.GenerateVtoGroupId(r));
                     updater.Add(itemGenerater(r));
                 }
             }
-            public RTVtoUpdater Update(IAngularItem item)
+            public RTVtoUpdater Update(IAngularId item)
             {
                 return Update(rid => item);
             }
-            public RTVtoUpdater Update(Func<long, IAngularItem> item)
+            public RTVtoUpdater Update(Func<long, IAngularId> item)
             {
                 rt.AddAction(() => {
                     UpdateAll(item);

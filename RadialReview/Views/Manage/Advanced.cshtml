@@ -39,7 +39,7 @@
 	<div style="text-align: right;margin-bottom: 3px;">
 		<div class="no-ios">
 			<a class="btn btn-primary btn-invert" href="/Payment/SetACH">Add Bank Account</a>
-			<a class="btn btn-primary btn-invert" href="/Payment/SetCard">Add Credit Card</a> 
+			<a class="btn btn-primary btn-invert" href="/Payment/SetCard">Add Credit Card</a>
 		</div>
 	</div>
 	<div class="panel panel-primary">
@@ -65,15 +65,13 @@
 						</tr>
 					}
 				</tbody>
-			</table>
-		} else {
+			</table> } else {
 			<div class="panel-heading">
 				Payment Methods
 			</div>
 			<div class="panel-body">
 				<span class="gray">No credit cards on file. Click Add button to create one.</span>
-			</div>
-		}
+			</div> }
 	</div>
 
 	<div class="panel panel-primary">
@@ -115,8 +113,7 @@
 						<tr>
 							<td>&nbsp;&nbsp;<span class="price">@String.Format("{0:C}", plan.L10PricePerPerson)</span><span class="price-ending">/Person/Month</span></td>
 							<td></td>
-						</tr>
-						if (plan.L10FreeUntil != null && plan.L10FreeUntil > DateTime.UtcNow) {
+						</tr>if (plan.L10FreeUntil != null && plan.L10FreeUntil > DateTime.UtcNow) {
 							<tr>
 								<td>&nbsp;&nbsp;Free until <span>@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", plan.L10FreeUntil.Value)</span></td>
 								<td></td>
@@ -139,8 +136,7 @@
 						<tr>
 							<td>&nbsp;&nbsp;<span class="price">@String.Format("{0:C}", plan.ReviewPricePerPerson)</span><span class="price-ending">/Person/Month</span></td>
 							<td></td>
-						</tr>
-						if (plan.ReviewFreeUntil != null && plan.ReviewFreeUntil > DateTime.UtcNow) {
+						</tr>if (plan.ReviewFreeUntil != null && plan.ReviewFreeUntil > DateTime.UtcNow) {
 							<tr>
 								<td>&nbsp;&nbsp;Free until <span>@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", plan.ReviewFreeUntil.Value)</span></td>
 								<td></td>
@@ -170,18 +166,17 @@
 					}*@
 
 
-				@{
-				var extras = new List<HtmlString>();
-				if (Model.PaymentPlan is PaymentPlan_Monthly) {
-					var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
-					if (plan.FreeUntil.Date >= DateTime.UtcNow.Date) {
-						extras.Add(new HtmlString("<li>Free until <b>" + Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", plan.FreeUntil) + "</b>.</li>"));
-					}
-					if (plan.FirstN_Users_Free > 0 && showExtra_freeusers) {
-						extras.Add(new HtmlString("<li>First <b>" + plan.FirstN_Users_Free + "</b> are free.</li>"));
-					}
+				@{var extras = new List<HtmlString>();
+					if (Model.PaymentPlan is PaymentPlan_Monthly) {
+						var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
+						if (plan.FreeUntil.Date >= DateTime.UtcNow.Date) {
+							extras.Add(new HtmlString("<li>Free until <b>" + Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", plan.FreeUntil) + "</b>.</li>"));
+						}
+						if (plan.FirstN_Users_Free > 0 && showExtra_freeusers) {
+							extras.Add(new HtmlString("<li>First <b>" + plan.FirstN_Users_Free + "</b> are free.</li>"));
+						}
 
-				}
+					}
 				}
 
 				@if (extras.Any()) {
@@ -208,13 +203,52 @@
 	</div>
 					}
 
+<div class="panel panel-primary traction-library">
+	<div class="panel-heading">Traction Library Books</div>
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-sm-6 ">
+				<div class="thumbnail" style="border:none;">
+					<img src="https://s3.amazonaws.com/Radial/base/Pictures/bookssmall.png" alt="The Traction Library">
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<div class="well" style="">
+					<h4>THE TRACTION<sup>®</sup> LIBRARY</h4>
+					Need to more books for your team?<br />
+					Want to introduce EOS to your local business community?<br />
+					Looking for the perfect thank you gift?<br />
+				</div>
+				<div class="alignCenter">
+					<a href="https://www.eosworldwide.com/traction-library" class="btn btn-info btn-invert" style="color:white">Buy books here!</a>
+				</div>
+				<br />
+			</div>
+			@*<div class="disclaimer"><i>*Bulk discounts are available!</i></div>*@
+		</div>
+	</div>
+</div>
+
 <div class="panel panel-primary">
 	<div class="panel-heading">Export</div>
 	<div class="panel-body">
 		<a class="btn btn-default" href="/rocks/listing">All rocks</a>
 		<a class="btn btn-default" href="/scorecard/listing">All scorecards</a>
 		<a class="btn btn-default" href="/todo/listing">All to-dos</a>
-		<a class="btn btn-default" href="/issues/listing">All issues</a>
+		@*<a class="btn btn-default" href="/issues/listing">All issues</a>*@
+		<div class="btn-group">
+			<a type="button" class="btn btn-default" href="/issues/listing">All issues</a>
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<span class="caret"></span>
+				<span class="sr-only">Toggle Dropdown</span>
+			</button>
+			<ul class="dropdown-menu">
+				<li><a href="/issues/listing">All Issues</a></li>
+				<li class="shift-hidden"><a href="/issues/issuesandtodos">All Issues and their Context-Aware To-dos™</a></li>
+				<li class="shift-visible"><a href="/issues/issuesandtodos?details=true">All Issues and their Context-Aware To-dos™ <small class="gray"> (and notes)</small></a></li>
+			</ul>
+		</div>
+
 	</div>
 </div>
 

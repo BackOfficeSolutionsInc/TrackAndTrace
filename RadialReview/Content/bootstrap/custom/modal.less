@@ -84,6 +84,8 @@
 			background-color: @traction-black;
 			border-top: none;
 			height: 105px;
+			margin-left: -1px;
+			margin-right: -1px;
 		}
 
 		#modalTitle {
@@ -93,8 +95,16 @@
 			left: 0px;
 			right: 0px;
 			padding-bottom: 8px;
+			padding-left: 6px;
+			padding-right: 6px;
 			font-size: 14px;
 			color: @traction-black;
+			white-space: pre-line;
+
+			a {
+				text-decoration: underline;
+				color: @traction-orange;
+			}
 		}
 
 		.input-yesno {
@@ -142,6 +152,7 @@
 			border-width: 4px;
 		}
 
+		.modal-icon-title,
 		.modal-icon:after {
 			display: block;
 			font-size: 26px;
@@ -149,7 +160,8 @@
 			font-weight: bold;
 			position: absolute;
 			color: @traction-black;
-			bottom: 28px;
+			//bottom: 28px;
+			top: 109px;
 			left: 0px;
 			right: 0px;
 			text-align: center;

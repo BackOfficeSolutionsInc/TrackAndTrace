@@ -14,6 +14,57 @@
 @import (reference)"../Angular/ProfilePicture";
 
 
+
+.delete-row() {
+	.glyphicon;
+	.glyphicon-trash;
+	cursor: pointer;
+	vertical-align: top;
+	padding-left: 5px;
+	padding-right: 33px;
+	padding-top: 2px;
+	color: rgba(0,0,0,.54);
+	font-size: 15px;
+
+
+	&:hover {
+		color: @traction-black;
+	}
+}
+
+.archive-row() {
+	margin: 0;
+	margin-right: 10px;
+	padding: 13px;
+	height: 50px;
+	width: 50px;
+	overflow: hidden;
+	float: left;
+	font-size: 24px;
+	color: rgba(0, 0, 0, 0.54);
+
+	&:before {
+		content: "0";
+		font-family: "fontastic" !important;
+		font-style: normal !important;
+		font-weight: normal !important;
+		font-variant: normal !important;
+		text-transform: none !important;
+		speak: none;
+		line-height: 1;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		display: inline-block;
+		position: relative;
+		top: 0px;
+		left: -4px;
+	}
+
+	&:hover {
+		color: @traction-black;
+	}
+}
+
 /*#wrap {
     background-color: #F9F9F9 !important;
 }*/
@@ -276,6 +327,7 @@ body,
 		.admin-column,
 		.IsDivider,
 		.top-row,
+		.delete-column-alt,
 		.cumulative-column,
 		thead {
 			display: none;
@@ -354,6 +406,10 @@ body,
 		tr.disabled {
 			display: none;
 		}
+
+		.delete-row {
+			.delete-row()
+		}
 	}
 
 	.rock-list-container {
@@ -395,6 +451,10 @@ body,
 				max-width: 100%;
 			}
 		}
+
+		.delete-row {
+			.archive-row();
+		}
 	}
 
 	.issues-list-container {
@@ -423,6 +483,10 @@ body,
 
 		.owner-column > * {
 			//display: inline-block !important;
+		}
+
+		.delete-row {
+			.delete-row()
 		}
 	}
 
@@ -464,6 +528,10 @@ body,
 				max-width: 90px;
 				text-align: center;
 			}
+		}
+
+		.delete-row {
+			.delete-row()
 		}
 	}
 
@@ -522,6 +590,10 @@ body,
 					font-size: 10px !important;
 				}
 			}
+		}
+
+		.delete-row {
+			.delete-row()
 		}
 	}
 
@@ -736,22 +808,10 @@ body,
 				border-left: 5px solid #B2B2B2;
 			}
 		}
-	}
 
-	.delete-row {
-		.glyphicon;
-		.glyphicon-trash;
-		cursor: pointer;
-		vertical-align: top;
-		padding-left: 5px;
-		padding-right: 33px;
-		padding-top: 2px;
-		color: rgba(0,0,0,.54);
-		font-size: 15px;
-	}
-
-	.delete-row:hover {
-		color: @traction-black;
+		.delete-row {
+			.delete-row()
+		}
 	}
 }
 
@@ -835,7 +895,7 @@ body,
 	z-index: 1;
 }
 
- 
+
 #modal input[type=checkbox].blend {
 	width: 47px;
 	height: 47px;

@@ -18,6 +18,7 @@ using NHibernate.Proxy;
 using RadialReview.Models.Angular;
 using RadialReview.Models.Angular.Base;
 using System.Linq.Expressions;
+using Newtonsoft.Json.Converters;
 
 namespace RadialReview.Utilities.Serializers {
 	/**
@@ -27,7 +28,10 @@ namespace RadialReview.Utilities.Serializers {
 	public class AngularSerialization : JsonConverter {
 		//public JsonConverter Backing { get; set; }
 
-		public AngularSerialization() {
+		public bool RemoveExtraProperties { get; set; }
+
+		public AngularSerialization(bool removeExtraProperties =false) {
+			RemoveExtraProperties = removeExtraProperties;
 		}
 
 		//public override 
@@ -88,13 +92,13 @@ namespace RadialReview.Utilities.Serializers {
 				if (name == "_ExtraProperties" && value != null) {
 					var dict = (Dictionary<string, object>)value;
 					foreach (var k in dict.Keys) {
-						var serialized = _SerializeProperty(k, dict[k], parent, lookup, now);
+						var serialized = _SerializeProperty(k, dict[k], parent, lookup, now, item);
 						if (serialized != null) {
 							parent[k] = serialized;
 						}
 					}
 				} else {
-					var serialized = _SerializeProperty(name, value, parent, lookup, now);
+					var serialized = _SerializeProperty(name, value, parent, lookup, now, item);
 					if (serialized != null) {
 						parent[name] = serialized;
 					}
@@ -111,7 +115,7 @@ namespace RadialReview.Utilities.Serializers {
 			}
 		}
 
-		private static object _SerializeProperty(string name, object value, Dictionary<string, object> parent, Dictionary<string, object> lookup, DateTime now) {
+		private static object _SerializeProperty(string name, object value, Dictionary<string, object> parent, Dictionary<string, object> lookup, DateTime now, object owner) {
 			/*if (value != null && value.GetType().GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof (IAngularizer<>))){
 				var output = new Dictionary<string, object>();
 				_Serialize(value, output, lookup, now);
@@ -130,24 +134,28 @@ namespace RadialReview.Utilities.Serializers {
 				return null;
 			}
 
-			if (value is IAngularItem) {
+            if (value is Enum && GetAttributeFrom<JsonConverterAttribute>(owner, name).NotNull(x => x.ConverterType) == typeof(StringEnumConverter)) {
+                return value + "";
+            }
+
+			if (value is IAngularId) {
 				var sub = new Dictionary<string, object>();
-				var resolved = (IAngularItem)value;
+				var resolved = (IAngularId)value;
 				_Serialize(value, sub, lookup, now);
 				Merge(lookup, resolved, sub); //lookup[resolved.GetKey()] = sub;
 				var output = new AngularPointer(resolved, now, false);
-				if (value is Removed || resolved.Id == Removed.Long()) {
+				if (value is Removed || resolved.GetAngularId() as long? == Removed.Long() || resolved.GetAngularId() as string == Removed.String() ) {
 					parent[name] = Removed.DELETED_KEY;
 					return parent[name];
 				}
 				return output;
-			} else if (value is IEnumerable && GenericImplementsType((IEnumerable)value, typeof(IAngularItem))) {
+			} else if (value is IEnumerable && GenericImplementsType((IEnumerable)value, typeof(IAngularId))) {
 				var keyList = new List<AngularPointer>();
 				var resolved = value as IEnumerable;
 
 				foreach (var v in resolved) {
 					var sub = new Dictionary<string, object>();
-					var vResolved = (IAngularItem)v;
+					var vResolved = (IAngularId)v;
 					_Serialize(v, sub, lookup, now);
 					Merge(lookup, vResolved, sub); //lookup[vResolved.GetKey()] = sub;
 					keyList.Add(new AngularPointer(vResolved, now, false));
@@ -157,13 +165,13 @@ namespace RadialReview.Utilities.Serializers {
 					return new { UpdateMethod = ((IAngularList)value).UpdateMethod.ToString(), AngularList = keyList };
 				}
 				return keyList;
-			} else if (value is IDictionary && GenericImplementsValueType((IDictionary)value, typeof(IAngularItem))) {
+			} else if (value is IDictionary && GenericImplementsValueType((IDictionary)value, typeof(IAngularId))) {
 				var keyList = new Dictionary<string, object>();
 				var resolved = value as IDictionary;
 				foreach (var vKey in resolved.Keys) {
 					var v = resolved[vKey];
 					var sub = new Dictionary<string, object>();
-					var vResolved = (IAngularItem)v;
+					var vResolved = (IAngularId)v;
 					_Serialize(v, sub, lookup, now);
 					Merge(lookup, vResolved, sub); //lookup[vResolved.GetKey()] = sub;
 					keyList.Add(vResolved.GetKey(), new AngularPointer(vResolved, now, false));
@@ -193,7 +201,7 @@ namespace RadialReview.Utilities.Serializers {
 					prop.SetValue(target, value, null);
 			}
 		}
-		private static void Merge(Dictionary<string, object> lookup, IAngularItem key, Dictionary<string, object> value) {
+		private static void Merge(Dictionary<string, object> lookup, IAngularId key, Dictionary<string, object> value) {
 			var keyStr = key.GetKey();
 			if (lookup.ContainsKey(keyStr)) {
 				var old = lookup[keyStr];
@@ -256,8 +264,13 @@ namespace RadialReview.Utilities.Serializers {
 			return false;
 		}
 
+        private static T GetAttributeFrom<T>(object instance, string propertyName) where T : Attribute {
+            var attrType = typeof(T);
+            var property = instance.GetType().GetProperty(propertyName);
+            return (T)property.GetCustomAttributes(attrType, false).FirstOrDefault();
+        }
 
-		private static IEnumerable<PropertyInfo> GetProperties(object obj) {
+        private static IEnumerable<PropertyInfo> GetProperties(object obj) {
 			return obj.GetType().GetProperties();
 		}
 

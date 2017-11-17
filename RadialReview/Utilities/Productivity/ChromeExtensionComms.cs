@@ -17,7 +17,7 @@ namespace RadialReview.Utilities.Productivity
         private static bool waitingForCleared = false;
         public static void SendCommand(string command,string details=null)
         {
-            if (Config.IsLocal())
+            if (Config.RunChromeExt())
             {
                 try
                 {
@@ -34,7 +34,7 @@ namespace RadialReview.Utilities.Productivity
         }
         protected ChromeExtensionComms()
         {
-            if (!Config.IsLocal())
+            if (!Config.RunChromeExt())
                 return;
             if (_listener == null)
             {
@@ -49,7 +49,7 @@ namespace RadialReview.Utilities.Productivity
         protected void Send(string command, string details = null)
         {
 
-            if (!Config.IsLocal())
+            if (!Config.RunChromeExt())
                 return;
 
             lock (_listener)
@@ -64,7 +64,7 @@ namespace RadialReview.Utilities.Productivity
         static void ProcessRequest(IAsyncResult result)
         {
 
-            if (!Config.IsLocal())
+            if (!Config.RunChromeExt())
                 return;
 
             HttpListenerContext context = _listener.EndGetContext(result);
@@ -108,7 +108,7 @@ namespace RadialReview.Utilities.Productivity
 
         public async static Task<bool> SendCommandAndWait(string p,int timeoutMs=10000)
         {
-            if (!Config.IsLocal())
+            if (!Config.RunChromeExt())
                 return false;
             SendCommand(p);
             waitingForCleared = true;

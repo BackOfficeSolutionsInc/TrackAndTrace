@@ -14,18 +14,19 @@ using RadialReview.Models.Interfaces;
 using RadialReview.Models.L10;
 using RadialReview.Models.VTO;
 using RestSharp.Extensions;
+using log4net;
 
 namespace RadialReview.Utilities
 {
-	public class Audit
-	{
+	public class Audit {
+        protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-		/*public static void Message(ISession s, UserOrganizationModel caller,LogType type, ILongIdentifiable about, string title, string message = null)
+        /*public static void Message(ISession s, UserOrganizationModel caller,LogType type, ILongIdentifiable about, string title, string message = null)
 		{
 			s.Save(LogModel.Create(caller, type, about, title));
 		}*/
 
-		public static void Log(ISession s, UserOrganizationModel caller)
+        public static void Log(ISession s, UserOrganizationModel caller)
 		{
 			try
 			{
@@ -127,9 +128,8 @@ namespace RadialReview.Utilities
 				meetingHub.addOrEditLogRow(type + "_" + forModel.ModelId, html, type);
 
 			}
-			catch (Exception)
-			{
-
+			catch (Exception e){
+                log.Error(e);
 			}
 		}
 

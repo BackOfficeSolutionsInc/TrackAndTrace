@@ -7,6 +7,9 @@ var disconnected = false;
 var isUnloading = false;
 var skipBeforeUnload = false;
 
+var pingTimeout = 1.5 * 60 * 1000; //1.5 minutes in ms
+
+
 $(".rt").prop("disabled", true);
 $(function () {
 
@@ -46,6 +49,9 @@ $(function () {
 
 	meetingHub.client.setHash = setHash;
 
+	meetingHub.client.receiveUpdateScore = receiveUpdateScore;
+	meetingHub.client.updateScoresGoals = updateScoresGoals;
+
 	meetingHub.client.deserializeIssues = deserializeIssues;
 	meetingHub.client.appendIssue = appendIssue;
 	meetingHub.client.updateIssueCompletion = updateIssueCompletion;
@@ -82,6 +88,7 @@ $(function () {
 	meetingHub.client.reorderMeasurables = reorderMeasurables;
 	meetingHub.client.reorderRecurrenceMeasurables = reorderRecurrenceMeasurables;
 	meetingHub.client.removeMeasurable = removeMeasurable;
+	meetingHub.client.removeDivider = removeDivider;
 
 	meetingHub.client.addLogRow = addLogRow;
 	meetingHub.client.editLogRow = editLogRow;
@@ -96,6 +103,7 @@ $(function () {
 
 	meetingHub.client.userEnterMeeting = userEnterMeeting;
 	meetingHub.client.userExitMeeting = userExitMeeting;
+	meetingHub.client.stillAlive = stillAlive;
 
 	meetingHub.client.addVideoProvider = addVideoProvider;
 	meetingHub.client.setSelectedVideoProvider = setSelectedVideoProvider;
@@ -106,6 +114,7 @@ $(function () {
 
 	meetingHub.client.updateIssueAwaitingSolve = updateIssueAwaitingSolve;
 	meetingHub.client.updateModedIssueSolve = updateModedIssueSolve;
+	meetingHub.client.removeIssueRow = removeIssueRow;
 
 
 	meetingHub.client.setMilestone = setMilestone;
@@ -171,6 +180,7 @@ function initConnection() {
 	$("body").on("keyup", ".rt", $.throttle(250, sendTextContents));
 	$("body").on("focus", ".rt", $.throttle(250, sendFocus));
 	$("body").on("blur", ".rt", $.throttle(250, sendUnfocus));
+	$("body").on("click", "[type='number'].rt", $.throttle(250, sendTextContents));
 
 	/*
 	$(".rt").keypress(function () { typed = typed + String.fromCharCode(event.charCode); });
@@ -191,7 +201,7 @@ function rejoin(callback) {
 			meetingHub.server.join(window.recurrenceId, $.connection.hub.id).done(function () {
 				//update(d);
 				if (rejoinTimer) {
-					showAlert("Successfully joined.", "alert-danger", "Error",1500);
+					showAlert("Successfully joined.", "alert-danger", "Error", 1500);
 					clearTimeout(rejoinTimer);
 				}
 				reconnectionCount = 0;
@@ -229,21 +239,21 @@ function rejoin(callback) {
 				setTimeout(function () {
 					var attempt = "";
 					if (reconnectionCount > 1) {
-						attempt = " Attempt "+(reconnectionCount+1)+".";
+						attempt = " Attempt " + (reconnectionCount + 1) + ".";
 					}
 					console.log("Attempt #" + reconnectionCount);
 
-					showAlert("Attempting to rejoin."+attempt, "alert-danger", "Error", Math.max(3000,1000 + Math.pow(1.5, reconnectionCount)*1000));
+					showAlert("Attempting to rejoin." + attempt, "alert-danger", "Error", Math.max(3000, 1000 + Math.pow(1.5, reconnectionCount) * 1000));
 					rejoinTimer = setTimeout(function () {
 						rejoin(callback);
 					}, 3000 + Math.pow(1.5, reconnectionCount) * 1000);
-				},2000)
+				}, 2000)
 			});
 		}
 	} catch (e) {
 		console.error(e);
 		showAlert("Could not connect with server.", "alert-danger", "Error");
-		setTimeout(function (){
+		setTimeout(function () {
 			location.reload();
 		}, 2000)
 		//callback();
@@ -293,12 +303,102 @@ function updateTextContents(id, contents) {
 	$("#" + id).trigger("change", ["external"]);
 }
 
+var reping =function () {
+	console.log("Repinging - "+ new Date());
+	meetingHub.server.ping();
+};
 
-function userEnterMeeting(id, connectionId, name, url, initials) {
-	$("user-status-container-" + id).append("<span class='user-status-" + connectionId + " icon fontastic-icon-monitor green' />")
-	$("user-picture-container").append("<span class='user-picture-" + connectionId + "'>" + profilePicture(url, name, initials) + "</span>");
+var myPing = setInterval(reping, pingTimeout - 5000);
+
+function removeOnTimeout(connectionId) {
+	return function () {
+		console.warn("User timed out: " + connectionId +" (not removing)");
+		//userExitMeeting(connectionId);
+	};
 }
+
+function userEnterMeeting(connection) {
+	var id = connection.User.Id;
+	var connectionId = connection.Id;
+	var name = connection.User.Name;
+	var url = connection.User.ImageUrl;
+	var initials = connection.User.Initials;
+
+	userEnterMeeting.notifications = userEnterMeeting.notifications || {};
+
+	//Add to online list	
+	userEnterMeeting.existing = userEnterMeeting.existing || [];
+	if (!Enumerable.from(userEnterMeeting.existing).any(function (x) { return x.id == id; })) {
+		$(".user-status-container-" + id).append("<span class='user-status-" + connectionId + " icon fontastic-icon-monitor green' />")
+		var notif = $("<span class='notification-icon'></span>");
+		var pix = $("<span class='user-picture user-picture-" + connectionId + " user-picture-"+id+"' data-userid='" + id + "'>" + profilePicture(url, name, initials) + "</span>");
+		if (id in userEnterMeeting.notifications && userEnterMeeting.notifications[id]) {
+			notif.append("<span class='glyphicon glyphicon-ok-circle checkmark'></span>");
+		}
+		pix.append(notif);
+		$(".user-picture-container").append(pix);
+
+
+	}
+	var tout = setTimeout(removeOnTimeout(connectionId), pingTimeout);
+
+	//Check the attendance button
+	userEnterMeeting.checkedOnce = userEnterMeeting.checkedOnce || [];
+	if (!Enumerable.from(userEnterMeeting.checkedOnce).any(function (x) { return x == id; })) {
+
+		waitUntilVisible(".start-meeting", function () {
+			$(".user-attendence-box-" + id).prop("checked", true);
+			userEnterMeeting.checkedOnce.push(id);
+		},10000);
+	}
+
+	userEnterMeeting.existing.push({
+		id: id,
+		connectionId: connectionId,
+		timeout: tout
+	});
+}
+
+function stillAlive(connection) {
+
+	var id = connection.User.Id;
+	var connectionId = connection.Id;
+	var name = connection.User.Name;
+	var url = connection.User.ImageUrl;
+	var initials = connection.User.Initials;
+
+	console.warn("Still alive: " + id);
+	var found = Enumerable.from(userEnterMeeting.existing).where(function (x) {
+		return x.id == id;
+	});
+
+	if (found.any()) {
+		found.forEach(function (e) {
+			clearTimeout(e.timeout);
+			e.timeout = setTimeout(removeOnTimeout(connectionId), pingTimeout)
+		});
+	}
+
+	if (!found.any() || $(".user-picture-"+id).length == 0){
+		userEnterMeeting(connection);
+	}
+
+}
+
 function userExitMeeting(connectionId) {
-	$("user-status-" + connectionId).remove();
-	$("user-picture-" + connectionId).remove();
+	$(".user-status-" + connectionId).remove();
+	$(".user-picture-" + connectionId).remove();
+
+	userEnterMeeting.existing = userEnterMeeting.existing || [];
+
+	//Before Removal
+	Enumerable.from(userEnterMeeting.existing).where(function (x) { return x.connectionId == connectionId; }).forEach(function (e) {
+		clearTimeout(e.timeout);
+	});
+
+	//Remove
+	userEnterMeeting.existing = Enumerable.from(userEnterMeeting.existing).where(function (x) {
+		return x.connectionId != connectionId;
+	}).toArray();
+
 }

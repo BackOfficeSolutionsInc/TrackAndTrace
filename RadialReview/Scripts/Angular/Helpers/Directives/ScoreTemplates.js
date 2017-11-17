@@ -90,9 +90,9 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
                     if (newColor !== $scope.scoreColor) {
                         $scope.scoreColor = newColor;
                     }
-                    var newFsca = $scope.getFcsa($scope.measurable);
-                    if (newFsca !== $scope.fsca) {
-                        $scope.fsca = newFsca;
+                    var newFcsa = $scope.getFcsa($scope.measurable);
+                    if (newFcsa !== $scope.fcsa) {
+                    	$scope.fcsa = newFcsa;
                     }
                     console.log(oldVal + " vs " + newVal);
                 }
@@ -102,6 +102,10 @@ angular.module('scoreTemplates', ['fcsa-number']).directive("score", ["$compile"
             $scope.$watch("score.Measurable.Direction", refreshMeasurable);
             $scope.$watch("score.Measurable.Target", refreshMeasurable);
             $scope.$watch("score.Measurable.AltTarget", refreshMeasurable);
+            $scope.$watch("score.Measurable.Modifiers", function (x, y) {
+            	//console.warn("asdf");
+            	refreshMeasurable(x, y);
+            });
             $scope.$watch("score.Direction", refreshMeasurable);
             $scope.$watch("score.Target", refreshMeasurable);
             $scope.$watch("score.AltTarget", refreshMeasurable);

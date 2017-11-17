@@ -36,7 +36,6 @@ namespace RadialReview.Engines {
 			return allReviews.Where(x => x.Reviews.Any(y => subordinates.Any(z => z.Id == y.ReviewerUserId))).ToList();
 		}
 
-		[Obsolete("Fix for AC")]
 		public CustomizeModel GetCustomizeModel(UserOrganizationModel caller, long teamId, bool includeCopyFrom, DateRange dateRange = null,List<WhoReviewsWho> existingMatches=null) {			
 
 			var parameters = new ReviewParameters() {

@@ -6,13 +6,14 @@ using TractionTools.Tests.TestUtils;
 using TractionTools.Tests.Permissions;
 using System.IO;
 using RadialReview.Accessors.PDF.JS;
+using System.Threading.Tasks;
 
 namespace TractionTools.UITests.PDF {
 	[TestClass]
 	public class AccountabilityChartPdfTest : BasePermissionsTest {
 		[TestMethod]
-		public void FullTreeDiagram() {
-			var c= new Ctx();
+		public async Task FullTreeDiagram() {
+			var c = await Ctx.Build();
 			var tree = AccountabilityAccessor.GetTree(c.Manager, c.Org.Organization.AccountabilityChartId);
 			//Tree.Update(tree.Root, false);
 

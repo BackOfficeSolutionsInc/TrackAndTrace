@@ -1,0 +1,21 @@
+{
+  "name": "Visual Studio Chrome Extension",
+  "manifest_version":2,
+  "version": "1.0",
+  "description": "Auto hide page when visual studio is finished compiling",
+  "browser_action": {
+    "default_icon": "icon.png",
+    "popup": "popup.html"
+  },
+  "permissions": [
+    "http://localhost:*/",
+	"tabs",
+	"http://*/*",
+	"https://*/*",
+	"notifications" 
+	
+  ],
+  "background":{
+	"scripts":["jquery.min.js","background.js","pageLoaded.js"]
+  }
+}

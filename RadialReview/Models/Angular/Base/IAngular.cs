@@ -8,11 +8,21 @@ using RadialReview.Models.Angular;
 namespace RadialReview.Models.Angular.Base
 {
 	public interface IAngular{
-		
 	}
-	public interface IAngularItem : IAngular
-	{
+
+	public interface IAngularId : IAngular{
+		object GetAngularId();
+		string GetAngularType();
+	}
+
+	public interface IAngularItem : IAngularId {
         long Id { get; set; }
+		string Type { get; }
+		bool Hide { get; }
+	}
+
+	public interface IAngularItemString : IAngularId {
+		string Id { get; set; }
 		string Type { get; }
 		bool Hide { get; }
 	}
@@ -21,9 +31,9 @@ namespace RadialReview.Models.Angular.Base
 	{
 	}
 
-	public static class IAngularExtensions
-	{
-		public static string GetKey(this IAngularItem self){	return self.Type + "_" + self.Id;	}
+	public static class IAngularExtensions {
+		public static string GetKey(this IAngularId self) { return self.GetAngularType() + "_" + self.GetAngularId(); }
+		//public static string GetKey(this IAngularItemString self) { return self.Type + "_" + self.Id; }
 	}
 
 	public interface IAngularIgnore {

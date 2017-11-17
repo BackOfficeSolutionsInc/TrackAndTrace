@@ -9,6 +9,12 @@ using RadialReview.Models.Interfaces;
 using RadialReview.Models.Scorecard;
 using RadialReview.Model.Enums;
 using RadialReview.Models.VideoConference;
+using RadialReview.Utilities.DataTypes;
+using RadialReview.Hubs;
+using Newtonsoft.Json;
+using System.Runtime.Serialization;
+using NHibernate;
+using RadialReview.Accessors;
 
 namespace RadialReview.Models.L10 {
 	public enum PrioritizationType {
@@ -25,6 +31,8 @@ namespace RadialReview.Models.L10 {
 		LeadershipTeam = 1,
 		[Display(Name = "Departmental Team")]
 		DepartmentalTeam = 2,
+		[Display(Name = "Same Page Meeting")]
+		SamePageMeeting = 3,
 		[Display(Name = "Other")]
 		Other = 100
 	}
@@ -37,6 +45,14 @@ namespace RadialReview.Models.L10 {
 		SamePage = 1
 	}
 
+	public enum ForumStep {
+		// Invalid =0,
+		[Display(Name = "Add Issues")]
+		AddIssues = 0,
+		[Display(Name = "Rate the Meeting")]
+		RateMeeting = 1
+	}
+
 	public partial class L10Recurrence : ILongIdentifiable, IDeletable {
 
 		public virtual long Id { get; set; }
@@ -47,11 +63,14 @@ namespace RadialReview.Models.L10 {
 		public virtual OrganizationModel Organization { get; set; }
 		public virtual bool Pristine { get; set; }
 
+
 		public virtual bool CountDown { get; set; }
+		public virtual bool AttendingOffByDefault { get; set; }
 		public virtual int CurrentWeekHighlightShift { get; set; }
 
 		public virtual bool IncludeIndividualTodos { get; set; }
 		public virtual bool IncludeAggregateTodoCompletion { get; set; }
+		public virtual bool IncludeAggregateTodoCompletionOnPrintout { get; set; }
 
 		public virtual DayOfWeek? StartOfWeekOverride { get; set; }
 
@@ -91,8 +110,9 @@ namespace RadialReview.Models.L10 {
 		public virtual long CreatedById { get; set; }
 		public virtual List<long> _WhoCanEdit { get; set; }
 		public virtual string VideoId { get; set; }
-		public virtual long VtoId { get; set; }
-		public virtual string OrderIssueBy { get; set; }
+        public virtual long VtoId { get; set; }
+        public virtual bool ShareVto { get; set; }
+        public virtual string OrderIssueBy { get; set; }
 		public virtual bool EnableTranscription { get; set; }
 		public virtual bool PreventEditingUnownedMeasurables { get; set; }
 
@@ -109,6 +129,8 @@ namespace RadialReview.Models.L10 {
 
 		public virtual PrioritizationType Prioritization { get; set; }
 
+		public virtual string ForumCode { get; set; }
+		public virtual ForumStep ForumStep { get; set; }
 
 		public L10Recurrence() {
 			VideoId = Guid.NewGuid().ToString();
@@ -120,21 +142,28 @@ namespace RadialReview.Models.L10 {
 			TodoListMinutes = 5;
 			IDSMinutes = 60;
 			ConclusionMinutes = 5;
+			AttendingOffByDefault = false;
 			IncludeIndividualTodos = false;
 			IncludeAggregateTodoCompletion = false;
 			EnableTranscription = false;
 			MeetingType = MeetingType.L10;
 			CountDown = true;
 			IsLeadershipTeam = true;
+			IncludeAggregateTodoCompletionOnPrintout = true;
 			Prioritization = PrioritizationType.Rank;
-			ShowHeadlinesBox = false;
 			HeadlineType = PeopleHeadlineType.HeadlinesList;
 			RockType = L10RockType.Original;
 			TeamType = L10TeamType.LeadershipTeam;
 			CombineRocks = false;
 			CurrentWeekHighlightShift = 0;
+			ForumStep = ForumStep.AddIssues;
 			PreventEditingUnownedMeasurables = false;
 
+			ForumCode = null;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+			ShowHeadlinesBox = false;
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		public class L10RecurrenceMap : ClassMap<L10Recurrence> {
@@ -145,11 +174,11 @@ namespace RadialReview.Models.L10 {
 				Map(x => x.CombineRocks);
 				Map(x => x.Pristine);
 				Map(x => x.CurrentWeekHighlightShift);
-				Map(x => x.ShowHeadlinesBox);
 				Map(x => x.HeadlineType);
 				Map(x => x.MeetingType);
 				Map(x => x.RockType);
 				Map(x => x.HeadlinesId);
+				Map(x => x.AttendingOffByDefault);
 				Map(x => x.CreateTime);
 				Map(x => x.MeetingInProgress);
 				Map(x => x.DeleteTime);
@@ -169,17 +198,26 @@ namespace RadialReview.Models.L10 {
 				Map(x => x.ConclusionMinutes);
 				Map(x => x.DefaultTodoOwner);
 				Map(x => x.DefaultIssueOwner);
-				Map(x => x.ReverseScorecard);
-				Map(x => x.IncludeIndividualTodos);
+                Map(x => x.ReverseScorecard);
+                Map(x => x.ShareVto);
+                Map(x => x.IncludeIndividualTodos);
 				Map(x => x.IncludeAggregateTodoCompletion);
+				Map(x => x.IncludeAggregateTodoCompletionOnPrintout);
 				Map(x => x.TeamType).CustomType<L10TeamType>();
 				Map(x => x.Prioritization).CustomType<PrioritizationType>();
+
+				Map(x => x.ForumStep);
+				Map(x => x.ForumCode);
 
 				Map(x => x.PreventEditingUnownedMeasurables);
 				Map(x => x.OrganizationId).Column("OrganizationId");
 				References(x => x.Organization).Column("OrganizationId").LazyLoad().ReadOnly();
 				Map(x => x.SelectedVideoProviderId).Column("SelectedVideoProviderId");
 				References(x => x.SelectedVideoProvider).Column("SelectedVideoProviderId").LazyLoad().Nullable().ReadOnly();
+
+#pragma warning disable CS0618 // Type or member is obsolete
+				Map(x => x.ShowHeadlinesBox);
+#pragma warning restore CS0618 // Type or member is obsolete
 			}
 		}
 
@@ -189,6 +227,9 @@ namespace RadialReview.Models.L10 {
 			public virtual DateTime? DeleteTime { get; set; }
 			public virtual RockModel ForRock { get; set; }
 			public virtual L10Recurrence L10Recurrence { get; set; }
+			public virtual bool VtoRock { get; set; }
+
+
 			public L10Recurrence_Rocks() {
 				CreateTime = DateTime.UtcNow;
 			}
@@ -198,6 +239,7 @@ namespace RadialReview.Models.L10 {
 					Id(x => x.Id);
 					Map(x => x.CreateTime);
 					Map(x => x.DeleteTime);
+					Map(x => x.VtoRock);
 					References(x => x.L10Recurrence).Column("L10RecurrenceId");
 					References(x => x.ForRock).Column("RockId");
 				}
@@ -214,6 +256,7 @@ namespace RadialReview.Models.L10 {
 			public virtual DateTime? DeleteTime { get; set; }
 			public virtual UserOrganizationModel User { get; set; }
 			public virtual L10Recurrence L10Recurrence { get; set; }
+           // public virtual int? Ordering { get; set;  }
 
 			public L10Recurrence_Attendee() {
 				CreateTime = DateTime.UtcNow;
@@ -222,8 +265,9 @@ namespace RadialReview.Models.L10 {
 				public L10Recurrence_AttendeeMap() {
 					Id(x => x.Id);
 					Map(x => x.CreateTime);
-					Map(x => x.DeleteTime);
-					References(x => x.L10Recurrence).Column("L10RecurrenceId");
+                    Map(x => x.DeleteTime);
+                    //Map(x => x.Ordering);
+                    References(x => x.L10Recurrence).Column("L10RecurrenceId");
 					References(x => x.User).Column("UserId");
 				}
 			}
@@ -261,7 +305,37 @@ namespace RadialReview.Models.L10 {
 			public virtual bool _Used { get; set; }
 		}
 
+		[DataContract]
+		public class L10Recurrence_Connection : IHistorical {
+			[DataMember]
+			public virtual string Id { get; set; }
+			public virtual DateTime CreateTime { get; set; }
+			[DataMember]
+			public virtual DateTime? DeleteTime { get; set; }
+			public virtual long UserId { get; set; }
+			public virtual long RecurrenceId { get; set; }
+			//public virtual string ConnectionId { get; set; }
+			[JsonProperty("User")]
+			[DataMember]
+			public virtual TinyUser _User { get; set; }
 
+			[Obsolete("DeleteTime is automatically set to the ping timeout.")]
+			public L10Recurrence_Connection() {
+				CreateTime = DateTime.UtcNow;
+				DeleteTime = MeetingHub.NowPlusPingTimeout();
+			}
+
+
+			public class Map : ClassMap<L10Recurrence_Connection> {
+				public Map() {
+					Id(x => x.Id).GeneratedBy.Assigned();
+					Map(x => x.CreateTime);
+					Map(x => x.DeleteTime);
+					Map(x => x.UserId);
+					Map(x => x.RecurrenceId);
+				}
+			}
+		}
 
 		public class L10Recurrence_VideoConferenceProvider : ILongIdentifiable, IDeletable, IOneToMany {
 			public virtual long Id { get; set; }
@@ -293,5 +367,11 @@ namespace RadialReview.Models.L10 {
 				return Tuple.Create(Provider.NotNull(x => x.Id), L10Recurrence.Id, DeleteTime);
 			}
 		}
-	}
+
+        public virtual long GetDefaultTodoOwner(UserOrganizationModel caller) {
+            if (DefaultTodoOwner == -1 && caller!=null)
+                return caller.Id;
+            return DefaultTodoOwner;
+        }
+    }
 }

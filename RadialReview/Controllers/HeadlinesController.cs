@@ -3,6 +3,7 @@ using RadialReview.Models.Application;
 using RadialReview.Models.Json;
 using RadialReview.Models.L10;
 using RadialReview.Models.L10.VM;
+using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +46,22 @@ namespace RadialReview.Controllers
 				}).ToList();
 			}
 
+		}
+
+
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<ActionResult> Pad(long id,bool showControls=true) {
+			try {
+				var headline = HeadlineAccessor.GetHeadline(GetUser(), id);
+				var padId = headline.HeadlinePadId;
+				if (!_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditHeadline(id))) {
+					padId = await PadAccessor.GetReadonlyPad(headline.HeadlinePadId);
+				}
+				return Redirect(Config.NotesUrl("p/" + padId + "?showControls=" + (showControls ? "true" : "false") + "&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
+			} catch (Exception e) {
+				Response.StatusCode = 400;
+				return Content("<span class='error'>Could not load.</span>");
+			}
 		}
 
 		[Access(AccessLevel.UserOrganization)]
@@ -121,7 +138,7 @@ namespace RadialReview.Controllers
 			var details = "";
 			try {
 				details = await PadAccessor.GetText(i.HeadlinePadId);
-			} catch (Exception e) {
+			} catch (Exception) {
 			}
 
 			var model = new CopyHeadlineVM() {

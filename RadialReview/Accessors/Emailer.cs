@@ -115,6 +115,8 @@ namespace RadialReview.Accessors {
 		}
 
 		public static bool IsValid(string emailaddress) {
+			if (emailaddress == null)
+				return false;
 			try {
 				MailAddress m = new MailAddress(emailaddress);
 				return true;
@@ -325,7 +327,9 @@ namespace RadialReview.Accessors {
 		}
 
 		private static string FixEmail(string email) {
-			return Config.IsLocal() ? "clay.upton+test_" + email.Replace("@", "_at_") + "@radialreview.com" : email;
+			return Config.FixEmail(email);
+
+			
 		}
 
 		private static SendMessageRequest CreateMandrillMessageRequest(EmailModel email) {

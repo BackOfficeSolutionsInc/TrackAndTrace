@@ -14,7 +14,11 @@
 }
 <div class="@guid">
 	<div class="form-group">
-		<label>About</label>
+		@Html.LabelFor(x => x.Message)
+		@Html.TextBoxFor(x => x.Message, new { @class = "form-control", placeholder = "Enter the People Headline", autocomplete = "off" })
+	</div>
+	<div class="form-group">
+		<label>About <small class="gray">(optional)</small></label>
 		<div class="row ">
 			<div class="col-sm-12">
 				@Html.Partial("~/Views/Shared/EditorTemplates/SearchUsers.cshtml", new ViewDataDictionary() {
@@ -23,11 +27,6 @@
 		})
 			</div>
 		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(x => x.Message)
-		@Html.TextBoxFor(x => x.Message, new { @class = "form-control", placeholder = "Enter the People Headline", autocomplete = "off" })
 	</div>
 	<div class="form-group">
 		@Html.LabelFor(x => x.Details)
@@ -70,7 +69,7 @@
 			</script>
 		} else {
 			for (var i = 0; i < Model.RecurrenceIds.Length; i++) {
-				@Html.Hidden(Html.NameFor(x=>x.RecurrenceIds).ToString(), Model.RecurrenceIds[i])
+				@Html.Hidden(Html.NameFor(x => x.RecurrenceIds).ToString(), Model.RecurrenceIds[i])
 			}
 		}
 	</div>

@@ -94,7 +94,7 @@
 									@if (usePopup) {
 									<div class="issuesModal" data-method="EditModal" data-title="Edit issue" data-Id="{{::issue.Id}}">{{issue.Name}}</div>
 									} else {
-										<input class="blend" placeholder="Enter issue here" ng-model-options="{debounce: 75}" type="text" ng-model="issue.Name" class="fullWidth" ng-change="functions.sendUpdate(issue)" title="{{issue.Name}}" />
+										<input class="blend" placeholder="Enter issue here" ng-model-options="{debounce: 400}" type="text" ng-model="issue.Name" class="fullWidth" ng-change="functions.sendUpdate(issue)" title="{{issue.Name}}" />
 										<div class="iframe-container" ng-if="model.Selected==issue.Key+'@guid'">
 											<iframe class="details-row keep-background" style="background-color: white" width="100%" ng-src="{{::trustAsResourceUrl(issue.DetailsUrl_Src)}}" ng-data-src="{{::issue.DetailsUrl}}"></iframe>
 										</div>

@@ -1,85 +1,100 @@
-﻿@model RadialReview.Models.L10.VM.L10ListingVM
+@model RadialReview.Models.L10.VM.L10ListingVM
 
 @{
-    ViewBag.Title = "L10 Meetings";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.FullWidth = true;
+	ViewBag.Title = "L10 Meetings";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.FullWidth = true;
 }
 
 
 @section top{
-    <div class="jumbotron">
-        <h1>LEVEL 10</h1>
-    </div>
+	<div class="jumbotron">
+		<h1>LEVEL 10</h1>
+	</div>
 }
 
 @*<link href="~/Content/Theme.css" rel="stylesheet" />*@
 <br />
 <div class="row">
-    <div class="col-sm-8 col-sm-offset-2">
-        @if (ViewBag.IsManager ?? false) {
-            <div style="text-align: right;margin-bottom: 3px;">
-                @*<a class="btn btn-primary btn-invert" href="/L10/Wizard" id="l10-create-meeting">Create New L10 Meeting</a>*@
+	<div class="col-sm-8 col-sm-offset-2">
+		@if (ViewBag.IsManager ?? false) {
+			<div style="text-align: right;margin-bottom: 3px;">
+				@*<a class="btn btn-primary btn-invert" href="/L10/Wizard" id="l10-create-meeting">Create New L10 Meeting</a>*@
 
 				<div class="btn-group">
 					<button type="button" id="l10-create-meeting" class="btn btn-primary btn-invert dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 						Create New Meeting <span class="caret"></span>
 					</button>
 					@*<button type="button" class="btn btn-primary btn-invert dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-						<span class="caret"></span>
-						<span class="sr-only">Toggle Dropdown</span>
-					</button>*@
+							<span class="caret"></span>
+							<span class="sr-only">Toggle Dropdown</span>
+						</button>*@
 					<ul class="dropdown-menu dropdown-menu-right" id="l10-create-meeting-dropdown">
 						<li><a href="/L10/Wizard?type=L10" id="l10-create-new-meeting">New L10 Meeting</a></li>
 						<li><a href="/L10/Wizard?type=SamePage" id="samepage-create-new-meeting">New Same Page Meeting</a></li>
 					</ul>
 				</div>
-            </div>
-        }
-        <div class="panel panel-primary" id="l10-meeting-list">
-            @if (Model.Recurrences.Any()) {
-                <table class="table startHiddenGroup2 table-condensed table-hover table-condensed tablesorter">
-                    <thead>
-                        <tr>
-                            <th style="width:30px;padding:0" class=""></th>
-                            <th class="" style="padding:0;width:42%;">@*Meeting:*@</th>
-                            @*<th style="width: 100px; text-align: center">@RadialReview.Properties.DisplayNameStrings.due</th><th style="width:150px;text-align:center">@RadialReview.Properties.DisplayNameStrings.completion</th>*@
-                            <th class="alignRight hidden-xs" data-sorter="false" style="padding:0"@*width:42%;*@>@*Attendees*@</th>
+			</div>
+		}
+		<div class="panel panel-primary" id="l10-meeting-list">
+			@if (Model.Recurrences.Any()) {
+				<table class="table startHiddenGroup2 table-condensed table-hover table-condensed tablesorter">
+					<thead>
+						<tr>
+                            @*<th></th>*@
+							<th style="width:30px;padding:0" class=""></th>
+							<th class="" style="padding:0;width:42%;">@*Meeting:*@</th>
+							@*<th style="width: 100px; text-align: center">@RadialReview.Properties.DisplayNameStrings.due</th><th style="width:150px;text-align:center">@RadialReview.Properties.DisplayNameStrings.completion</th>*@
+							<th class="alignRight hidden-xs" data-sorter="false" style="padding:0" @*width:42%;*@>@*Attendees*@</th>
 							<th class="visible-xs" data-sorter="false"></th>
-                            <th style="width:1px;"@*width: 110px;min-width: 110px;max-width: 110px;padding:0"*@ data-sorter="false"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var meeting in Model.Recurrences.OrderByDescending(x => x.IsAttendee)) {
-                            <tr class="startHidden2 clickable imageRow @(meeting.IsAttendee??false?"":"grayRow") l10-row">
-                                <td style="vertical-align:top" onclick="location.href='@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})';">
-                                    <span class="hidden">@(meeting.IsAttendee ?? false ? "1" : "2")@(meeting.Recurrence.MeetingInProgress !=null ? "1" : "2")</span>
-                                    @if (meeting.Recurrence.MeetingInProgress != null) {
-                                        <div class="label label-success hoverable" style="height:16px; width: 80px;display: inline-block">in-progress</div>
-                                    } else {
-                                        <div class="label label-primary hoverable" style="width: 80px;display: inline-block">Go!</div>
-                                    }
-                                </td>
-                                <td style="vertical-align:top" class="table-hover-underline test-ignore" onclick="gotoMeeting(@(meeting.Recurrence.Id))"><a href="@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})">@meeting.Recurrence.Name</a></td>
-                                @*<td class=""><a href="/Todo/Previous/@meeting.Recurrence.Id"><span class="glyphicon glyphicon-check" title="All Todos"></span></a></td>*@
-                                <td class="alignRight hidden-xs test-ignore" onclick="gotoMeeting(@(meeting.Recurrence.Id))">
-                                    @foreach (var a in meeting.Recurrence._DefaultAttendees) {
-                                        @Html.Partial("_ProfilePicture", a.User)
-                                    }
-                                </td>
+							<th style="width:1px;" @*width: 110px;min-width: 110px;max-width: 110px;padding:0"*@ data-sorter="false"></th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var meeting in Model.Recurrences.OrderByDescending(x => x.IsAttendee)) {
+							<tr class="startHidden2 clickable imageRow @(meeting.IsAttendee??false?"":"grayRow") l10-row">
+                                @*<td><span class='reorder-handle icon fontastic-icon-three-bars icon-rotate gray' style='margin-left: -5px;margin-right: -5px;cursor:move;'></span></td>*@
+								<td style="vertical-align:top" onclick="location.href='@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})';">
+									<span class="hidden">@(meeting.IsAttendee ?? false ? "1" : "2")@(meeting.Recurrence.MeetingInProgress != null ? "1" : "2")</span>
+									@if (meeting.Recurrence.MeetingInProgress != null) {
+										<div class="label label-success hoverable" style="height:16px; width: 80px;display: inline-block">in-progress</div>
+									} else {
+										<div class="label label-primary hoverable" style="width: 80px;display: inline-block">Go!</div>
+									}
+								</td>
+								<td style="vertical-align:top" class="table-hover-underline test-ignore" onclick="gotoMeeting(@(meeting.Recurrence.Id))"><a href="@Url.Action("Meeting", new { id = meeting.Recurrence.Id,})">@meeting.Recurrence.Name</a></td>
+								@*<td class=""><a href="/Todo/Previous/@meeting.Recurrence.Id"><span class="glyphicon glyphicon-check" title="All Todos"></span></a></td>*@
+								<td class="alignRight hidden-xs test-ignore" onclick="gotoMeeting(@(meeting.Recurrence.Id))">
+									@foreach (var a in meeting.Recurrence._DefaultAttendees) {
+										@Html.Partial("_ProfilePicture", a.User)
+									}
+								</td>
 								<td class="visible-xs"></td>
-                                @*<td><a href="/L10/Edit/@meeting.Recurrence.Id"><span class="btn btn-default glyphicon glyphicon-cog" title="Archives"></span></a></td>*@
-                                <td class="alignCenter" style="width:1px;">
-                                    <div class="btn-group">
+								@*<td><a href="/L10/Edit/@meeting.Recurrence.Id"><span class="btn btn-default glyphicon glyphicon-cog" title="Archives"></span></a></td>*@
+								<td class="alignCenter" style="width:80px;">
+									<div class="btn-group">
+										<div class="btn-group">
 
-                                        <div class="btn-group">
-                                            <button id="" type="button" class="btn btn-default btn-sm dropdown-toggle l10-extra-options" data-toggle="dropdown" aria-expanded="false">
-                                                <span style="top: 2px;" class="glyphicon glyphicon-chevron-down"></span>
-                                            </button>
+											@if (meeting.AdminMeeting) {
+												<a href="/L10/Wizard/@meeting.Recurrence.Id" id="" class="btn btn-default btn-sm dropdown-toggle l10-edit-options" title="Edit Meeting" aria-expanded="false">
+													<span style="top: 2px;" class="glyphicon glyphicon-pencil"></span>
+												</a>
+											} else {
+												<a href="#" onclick="getAdmins(@meeting.Recurrence.Id)" class="btn btn-default btn-sm dropdown-toggle l10-edit-options" title="Edit Meeting" aria-expanded="false">
+													<span style="top: 2px;" class="glyphicon glyphicon-pencil gray"></span>
+												</a>
+											}
+										</div>
+
+										<div class="btn-group">
+											<button id="" type="button" class="btn btn-default btn-sm dropdown-toggle l10-extra-options" data-toggle="dropdown" aria-expanded="false">
+												<span style="top: 2px;" class="glyphicon glyphicon-chevron-down"></span>
+											</button>
 											<ul class="dropdown-menu alignLeft pull-right" role="menu">
 												<li><a href="/L10/Details/@meeting.Recurrence.Id" @*class="btn btn-default btn-sm"*@><span style="top: 2px;" class="icon fontastic-icon-archive-1" title=""></span> Meeting Archive</a></li>
-												<li><a href="#" onclick="showPrint(@(meeting.Recurrence.Id))" @*href="/Quarterly/Printout/@meeting.Recurrence.Id"*@><span style="top: 2px;" class="icon fontastic-icon-page-export-pdf"></span> Generate Quarterly Printout</a></li>
-												<li><a href="@Url.Action("ExportAll",new { id=meeting.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
+												<li><a href="#" onclick="showPrint(@(meeting.Recurrence.Id))" @*href="/Quarterly/Printout/@meeting.Recurrence.Id"*@><span style="top: 2px;" class="icon fontastic-icon-page-export-pdf"></span> Generate Printout</a></li>
+												<li class="shift-hidden"><a href="@Url.Action("ExportAll",new { id=meeting.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
+												<li class="shift-visible"><a href="@Url.Action("ExportAll",new { id=meeting.Recurrence.Id,includeDetails=true })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> <i>Export All <span class="gray">(include notes)</span></i></a></li>
 												<li><a href="/L10/Timeline/@meeting.Recurrence.Id"><span class="icon fontastic-icon-back-in-time"></span> Timeline</a></li>
 												<li role="separator" class="divider"></li>
 												<li><a href="/vto/edit/@meeting.Recurrence.VtoId" @*class="btn btn-default btn-sm"*@><span style="top: 2px;" class="glyphicon glyphicon-vto" title=""></span> View V/TO</a></li>
@@ -89,60 +104,61 @@
 												<li role="separator" class="divider"></li>
 
 												@if (meeting.AdminMeeting) {
-													<li><a href="/L10/Wizard/@meeting.Recurrence.Id" @*href="#" onclick="getAdmins(@meeting.Recurrence.Id)"*@  class="btn btn-link alignLeft"><span style="top: 2px;" class="glyphicon glyphicon-edit"></span> Edit meeting</a></li>
+													@*<li><a href="/L10/Wizard/@meeting.Recurrence.Id" @*href="#" onclick="getAdmins(@meeting.Recurrence.Id)"* class="btn btn-link alignLeft"><span style="top: 2px;" class="glyphicon glyphicon-edit"></span> Edit meeting</a></li>*@
 													<li><a href="/L10/Edit/@meeting.Recurrence.Id" style="color:#AB3333"><span style="top: 2px;" class="glyphicon glyphicon-cog"></span>Advanced Settings</a></li>
 												} else {
-													<li><a href="#" onclick="getAdmins(@meeting.Recurrence.Id)" class="btn btn-link alignLeft disable"><span style="top: 2px;" class="glyphicon glyphicon-edit"></span> Edit meeting</a></li>
+													@*<li><a href="#" onclick="getAdmins(@meeting.Recurrence.Id)" class="btn btn-link alignLeft disable"><span style="top: 2px;" class="glyphicon glyphicon-edit"></span> Edit meeting</a></li>*@
 													<li><a href="#" class="clickable" onclick="getAdmins(@meeting.Recurrence.Id)" style="color:#AB3333"><span style="top: 2px;" class="glyphicon glyphicon-cog"></span> Advanced Settings</a></li>
 												}
 											</ul>
 
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            } else {
-                <div class="panel-heading">
-                    <h3 class="panel-title">L10 Meetings</h3>
-                </div>
-                <div class="panel-body gray">
-                    <div>You have no L10 meetings.</div>
-                </div>
+										</div>
+									</div>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			} else {
+				<div class="panel-heading">
+					<h3 class="panel-title">L10 Meetings</h3>
+				</div>
+				<div class="panel-body gray">
+					<div>You have no L10 meetings.</div>
+				</div>
 
-            }
-        </div>
+			}
+		</div>
 
-    </div>
+	</div>
 </div>
 
 <style>
-    .table .btn-default {
-        color: #5e5e5e !important;
-    }
+	.table .btn-default {
+		color: #5e5e5e !important;
+	}
 
-    .body-full-width #alerts:not(:empty) {
-        margin-top: 20px;
-        margin-bottom: -15px;
-    }
+	.body-full-width #alerts:not(:empty) {
+		margin-top: 20px;
+		margin-bottom: -15px;
+	}
 
-    html, body {
-        background-color: #eee;
-    }
+	html, body {
+		background-color: #eee;
+	}
 
-    .panel {
-        border: none;
-    }
+	.panel {
+		border: none;
+	}
 
-    .grayRow {
-        /*background-color: #f2f2f2;*/
-    }
+	.grayRow {
+		/*background-color: #f2f2f2;*/
+	}
 </style>
 
 @using (Html.BeginScripts()) {
-    <script>
+    <script src="/Scripts/jquery/jquery.ui.sortable.js"></script>
+	<script>
 
 		function textingModal(data){
 			if (!data.Error){
@@ -155,41 +171,68 @@
 			}
 		}
 
-        function gotoMeeting(id) {
-            var additional = "";
-            if (tname != "")
-                additional = "?tname=" + tname + "&tmethod=" + tmethod;
+		function gotoMeeting(id) {
+			var additional = "";
+			if (tname != "")
+				additional = "?tname=" + tname + "&tmethod=" + tmethod;
 
-            location.href = "/l10/meeting/" + id + additional;
-        }
+			location.href = "/l10/meeting/" + id + additional;
+		}
 
-        
-        $(".tablesorter").tablesorter({
-            sortList: [[0, 0], [1, 0]],
-            sortForce: [[0, 0]],
-            sortStable: true,
-        });
 
-        
-        var curRecur=0;
-        function showPrint(recurrenceId) {
-            //Html.ShowModal("Generate Printout","/Quarterly/Modal","/Quarterly/Printout/"+Model.Recurrence.Id,newTab:true)
-            curRecur=recurrenceId;
-            showModal("Generate Quarterly Printout", "/Quarterly/Modal/"+ recurrenceId, "/Quarterly/Printout/" + recurrenceId, "callbackPrint");
+        ////
 
-        }
-        
-        function callbackPrint() {
-            $("#modalForm").unbind("submit");
-            $("#modalForm").attr("target", "_blank");
-            $("#modalForm").attr("method", "post");
-            $("#modalForm").attr("action", "/Quarterly/Printout/" + curRecur);
-            $("#modalForm").bind("submit", function () {
-                $("#modal").modal('hide');
-            });
-        }
+		//$("#l10-meeting-list tbody").xsortable({
+		//    items: ">.l10-row",
+		//    handle: ".reorder-handle",
+		//    start: function (e, ui) {
+		//        $(this).attr('data-previndex', ui.item.index()/* + rowIndexShift*/);
+		//    },
+		//    update: function (e, ui) {
+		//        var newIndex = ui.item.index() /*+ rowIndexShift*/;
+		//        var oldIndex = +$(this).attr('data-previndex');
+		//        $(this).removeAttr('data-previndex');
+		//        //var row = settings.data[oldIndex];
+		//        debugger;
+    
+		//        $.ajax({
+		//            url: "/l10/reorder?rid=0&oldIndex=" + oldIndex + "&newIndex=" + newIndex,
+		//        });
+		//        //resolve(settings.clickReorder, row, oldIndex, newIndex, settings);
+		//        //refreshRowNum();
+		//    }
+		//}).disableSelection();
+
+        ////
+
+
+
+		$(".tablesorter").tablesorter({
+			sortList: [[0, 0], [1, 0]],
+			sortForce: [[0, 0]],
+			sortStable: true,
+		});
+
+
+		var curRecur=0;
+		function showPrint(recurrenceId) {
+			//Html.ShowModal("Generate Printout","/Quarterly/Modal","/Quarterly/Printout/"+Model.Recurrence.Id,newTab:true)
+			curRecur=recurrenceId;
+			showModal("Generate Quarterly Printout", "/Quarterly/Modal/"+ recurrenceId, "/Quarterly/Printout/" + recurrenceId, "callbackPrint");
+
+		}
+
+		function callbackPrint() {
+			$("#modalForm").unbind("submit");
+			$("#modalForm").attr("target", "_blank");
+			$("#modalForm").attr("method", "post");
+			$("#modalForm").attr("action", "/Quarterly/Printout/" + curRecur);
+			$("#modalForm").bind("submit", function () {
+				$("#modal").modal('hide');
+			});
+		}
 		function getAdmins(id){
 			showModal("You do not have access to this page.","/l10/getadmins/"+id,null);
 		}
-    </script>
+	</script>
 }

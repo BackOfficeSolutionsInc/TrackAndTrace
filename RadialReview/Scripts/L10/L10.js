@@ -63,6 +63,7 @@ function replaceAll(find, replace, str) {
 function setFollowLeader(val) {
 	followLeader = val;
 	resetClickables();
+	$(window).trigger("follow-leader");
 }
 
 function resetClickables() {
@@ -325,11 +326,18 @@ function loadPageForce(location) {
 			url: "/L10/Load/" + window.recurrenceId + "?page=" + location + "&connection=" + $.connection.hub.id,
 			success: function (data) {
 				replaceMainWindow(data, function () {
-					var type = $(".page-item." + location).data("pagetype");
-					if (typeof (type) === "undefined")
-						type = location;
-
-					$(window).trigger("page-" + /*location*/type.toLowerCase());
+					var modloc = location;
+					if (modloc === "") {
+						modloc = currentPage || "";
+					}
+					var type = $(".page-item." + modloc).data("pagetype");
+					if (typeof (type) === "undefined"|| type==null)
+						type = modloc;
+					try{
+						$(window).trigger("page-" + type.toLowerCase());
+					} catch (e) {
+						console.log(e);
+					}
 					fixSidebar();
 				});
 
@@ -434,7 +442,7 @@ function fixSidebar() {
 		$(".fixed-pos.fader").css("background-color", "rgba(238, 238, 238, " + (($(".slider-container.level-10").scrollTop() / 70)) + ")");
 		$(".fixed-pos.fader").css("box-shadow", "0 4px 2px -2px rgba(128, 128, 128, " + Math.min(.2, $(".slider-container.level-10").scrollTop() / 350) + ")");
 		//$(".fixed-pos.fader").css("border-bottom", "none");
-		$(".fixed-pos.fader").css("z-index", 2);//$(".slider-container.level-10").scrollTop() - 10);
+		$(".fixed-pos.fader").css("z-index", 5);//$(".slider-container.level-10").scrollTop() - 10);
 		$(".fixed-pos.fader").css("padding-bottom", (1 - $(".slider-container.level-10").scrollTop() / 70) * 9);
 
 
@@ -498,9 +506,12 @@ $(document).keydown(function (event) {
 			$(".arrowkey:not(.issue-row[data-checked=true]):not(.issue-row[data-checked=True])").first().click().trigger("scroll-to");
 			event.preventDefault();
 		}
-	} else if (event.which == 32 || event.which == 13) {
+	} else if (event.which == 13) {
 		$(f1).find(".todo-checkbox,.issue-checkbox").click();
 		return false;
+	} else if (event.which == 32) {
+		//$(f1).find(".todo-checkbox,.issue-checkbox").click();
+		//return false;
 	} else if (event.which == 73) {
 		$(f1).find(".issuesModal:not(.disabled)").click();
 		event.preventDefault();
@@ -563,25 +574,53 @@ $(window).on("footer-resize", function () {
 });
 
 
+function fixNotesBoxSize() {
+	if ($(".notes-box").length) {
+		var wh = $(window).height();
+		var pos = $(".notes-box").offset();
+		var st = $(window).scrollTop();
+		var footerH = wh;
+		try {
+			footerH = $(".footer-bar .footer-bar-container:not(.hidden)").last().offset().top;
+		} catch (e) { }
 
+		$(".notes-box").height(Math.max(200, footerH - 20 - 50 - pos.top));
+	}
+}
+
+$(window).resize(fixNotesBoxSize);
+$(window).on("page-notesbox", fixNotesBoxSize);
+$(window).on("footer-resize", function () {
+	setTimeout(fixNotesBoxSize, 250);
+});
+
+
+var currentPageType = "";
 $(window).on("page-segue", function () {
 	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting");
+	currentPageType = "Segue";
 });
 $(window).on("page-scorecard", function () {
-	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Scorecard");
+    $("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Scorecard");
+    currentPageType = "Scorecard";
 });
 $(window).on("page-rocks", function () {
-	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Rocks");
+    $("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Rocks");
+    currentPageType = "Rocks";
 });
 $(window).on("page-headlines", function () {
-	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Headlines");
+    $("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Headlines");
+    currentPageType = "Headlines";
 });
 $(window).on("page-todo", function () {
-	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Todos");
+    $("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Todos");
+    currentPageType = "Todos";
 });
 $(window).on("page-ids", function () {
-	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Issues");
+    $("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting#/Issues");
+    currentPageType = "Issues";
 });
 $(window).on("page-conclusion", function () {
-	$("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting");
+    $("#edit_meeting_link").attr("href", "/L10/Wizard/" + window.recurrenceId + "?return=meeting");
+    currentPageType = "Conclusion";
 });

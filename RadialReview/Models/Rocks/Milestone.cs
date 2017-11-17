@@ -1,6 +1,7 @@
 ﻿using FluentNHibernate.Mapping;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using RadialReview.Models.Askables;
 using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -26,11 +27,14 @@ namespace RadialReview.Models.Rocks {
 		public virtual String Name { get; set; }
 
 		public virtual MilestoneStatus Status { get; set; }
+		public virtual DateTime? CompleteTime { get; set; }
 
 		[ScriptIgnore]
 		public virtual string PadId { get; set; }
 		public virtual long RockId { get; set; }
 		public virtual bool Required { get; set; }
+
+		public virtual RockModel _Rock { get; set; }
 
 		public Milestone() {
 			PadId = Guid.NewGuid().ToString();
@@ -43,6 +47,7 @@ namespace RadialReview.Models.Rocks {
 				Id(x => x.Id);
 				Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
+				Map(x => x.CompleteTime);
 				Map(x => x.DueDate);
 				Map(x => x.Name);
 				Map(x => x.Status);
@@ -50,6 +55,5 @@ namespace RadialReview.Models.Rocks {
 				Map(x => x.RockId);
 			}
 		}
-
 	}
 }

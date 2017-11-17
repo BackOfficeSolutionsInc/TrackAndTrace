@@ -17,21 +17,24 @@ using RadialReview;
 
 namespace TractionTools.Tests.Permissions {
 	[TestClass]
-	public class RockPermissions : BasePermissionsTest {
+	public class RockPermissionTests : BasePermissionsTest {
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void ViewRock() {
-			var c = new Ctx();
+		public async Task ViewRock() {
+			var c = await Ctx.Build();
 			
-			var l10=L10Accessor.CreateBlankRecurrence(c.Manager, c.Id);
+			var l10= await L10Accessor.CreateBlankRecurrence(c.Manager, c.Id);
 
-			var rock = new RockModel() {
-				ForUserId = c.Middle.Id,
-				OrganizationId = c.Id,
-				Rock = "rock"
-			};
-			L10Accessor.CreateRock(c.Manager, l10.Id, L10Controller.AddRockVm.CreateRock(l10.Id, rock));
+			//var rock = new RockModel() {
+			//	ForUserId = c.Middle.Id,
+			//	OrganizationId = c.Id,
+			//	Rock = "rock"
+			//};
+
+			MockHttpContext();
+			var rock = await L10Accessor.CreateAndAttachRock(c.Manager, l10.Id, c.Middle.Id, "rock");
+			//var rock = await L10Accessor.CreateRock(c.Manager, l10.Id, L10Controller.AddRockVm.CreateRock(l10.Id, c.Middle.Id, "rock"));
 
 			c.AssertAll(p => p.ViewRock(rock.Id), c.AllUsers);
 			Assert.Inconclusive("Are the view permissions restrictive enough");
@@ -39,27 +42,28 @@ namespace TractionTools.Tests.Permissions {
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void EditRock() {
-			var c = new Ctx();
-			var l10 = L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
-			var rock = new RockModel() {
-				ForUserId = c.E5.Id,
-				OrganizationId = c.Id,
-				Rock = "rock"
-			};
+		public async Task EditRock() {
+			var c = await Ctx.Build();
+			var l10 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
+			//var rock = new RockModel() {
+			//	ForUserId = c.E5.Id,
+			//	OrganizationId = c.Id,
+			//	Rock = "rock"
+			//};
+			MockHttpContext();
 			//Make the rock, assign to L10
-			L10Accessor.CreateRock(c.Manager, l10.Id, L10Controller.AddRockVm.CreateRock(l10.Id, rock));
+			var rock = await L10Accessor.CreateAndAttachRock(c.Manager, l10.Id,c.E5.Id,"rock");
 
 			var perm = new Action<PermissionsUtility>(p => p.EditRock(rock.Id));
 
 			c.AssertAll(perm, c.Manager, c.Middle, c.E1);
 
 			//Add attendee E5
-			L10Accessor.AddAttendee(c.Manager, l10.Id, c.E5.Id);
+			await L10Accessor.AddAttendee(c.Manager, l10.Id, c.E5.Id);
 			c.AssertAll(perm, c.Manager, c.Middle, c.E5, c.E1);
 
 			//Add attendee E4
-			L10Accessor.AddAttendee(c.Manager, l10.Id, c.E4.Id);
+			await L10Accessor.AddAttendee(c.Manager, l10.Id, c.E4.Id);
 			c.AssertAll(perm, c.Manager, c.Middle, c.E5, c.E1, c.E4);
 
 
@@ -91,13 +95,14 @@ namespace TractionTools.Tests.Permissions {
 		}
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void EditRock_OutsideMeeting() {
-			var c = new Ctx();			
+		public async Task EditRock_OutsideMeeting() {
+			var c = await Ctx.Build();			
 			var rock = new RockModel() {
 				ForUserId = c.E2.Id,
 				Rock="Rock"
 			};
-			RockAccessor.EditRocks(c.Middle, c.E2.Id, rock.AsList(), false, false);
+			MockHttpContext();
+			await RockAccessor.EditRocks(c.Middle, c.E2.Id, rock.AsList(), false, false);
 			var perm = new Action<PermissionsUtility>(p => p.EditRock(rock.Id));
 
 			OrganizationAccessor.Edit(c.Manager, c.Id, managersCanEditSelf: false, employeesCanEditSelf: false);
@@ -112,7 +117,7 @@ namespace TractionTools.Tests.Permissions {
 				ForUserId = c.E6.Id,
 				Rock = "Rock2"
 			};
-			RockAccessor.EditRocks(c.Middle, c.E6.Id, rock.AsList(), false, false);
+			await RockAccessor.EditRocks(c.Middle, c.E6.Id, rock.AsList(), false, false);
 
 			OrganizationAccessor.Edit(c.Manager, c.Id, managersCanEditSelf: false, employeesCanEditSelf: false);
 			c.AssertAll(perm, c.Manager, c.Middle, c.E2);
@@ -128,7 +133,7 @@ namespace TractionTools.Tests.Permissions {
 		[TestMethod]
 		[TestCategory("Permissions")]
 		public void XXX() {
-			var c = new Ctx();
+			var c = await Ctx.Build();
 			c.AssertAll(p => p.XXX(YYY), c.Manager);
 		}
 

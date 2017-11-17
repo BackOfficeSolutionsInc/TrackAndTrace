@@ -1,23 +1,17 @@
-﻿using System.Collections;
-using Amazon.IdentityManagement.Model;
-using FluentNHibernate.Utils;
-using NHibernate;
-using NHibernate.Mapping;
-using NHibernate.Util;
+﻿using NHibernate;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Permissions;
-using RadialReview.Models.Responsibilities;
 using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
 using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 namespace RadialReview.Accessors {
 	public class TeamAccessor : BaseAccessor {
 
@@ -52,12 +46,12 @@ namespace RadialReview.Accessors {
 						try {
 							PermissionsUtility.Create(s, caller).OwnedBelowOrEqual(userOrganizationId);
 							var directlyManaging = s.QueryOver<OrganizationTeamModel>()
-								.Where(x => x.ManagedBy == userOrganizationId)
+								.Where(x => x.ManagedBy == userOrganizationId && x.DeleteTime == null)
 								.List().ToList();
 							var user = s.Get<UserOrganizationModel>(userOrganizationId);
 							if (caller.ManagingOrganization) {
 								var orgId = caller.Organization.Id;
-								directlyManaging.AddRange(s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId && x.Type != TeamType.Standard).List().ToList());
+								directlyManaging.AddRange(s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == orgId && x.Type != TeamType.Standard && x.DeleteTime == null).List().ToList());
 							}
 							managingTeams.AddRange(directlyManaging);
 						} catch (Exception) {
@@ -199,50 +193,13 @@ namespace RadialReview.Accessors {
 										DeleteTime = x.DeleteTime,
 									});
 									members.AddRange(additionalManagers);
-
-
 									break;
-
-									////var subordinates = caller.Hydrate(s).ManagingUsers(true).Execute().AllSubordinates;
-									////permissions.OwnedBelowOrEqual(x => x.Id == team.ManagedBy);
-									//var callerUnderlying = s.Get<UserOrganizationModel>(teams.ManagedBy);
-									//var subs = UserAccessor.GetDirectSubordinates(s, permissions, teams.ManagedBy);
-									////var subs = SubordinateUtility.GetSubordinates(callerUnderlying, false);
-									//var subordinates = subs.Union(callerUnderlying.AsList(), new EqualityComparer<UserOrganizationModel>((x, y) => x.Id == y.Id, x => x.Id.GetHashCode()));
-									//return subordinates.Select(x => new TeamDurationModel()
-									//{
-									//	Id = -2,
-									//	Start = x.AttachTime,
-									//	Team = teams,
-									//	User = x,
-									//	DeleteTime = x.DeleteTime ?? x.DetachTime,
-									//	UserId = x.Id,
-									//	TeamId = teams.Id
-									//}).ToList();
 								}
 							default:
 								throw new NotImplementedException("Team Type unknown2");
 						}
-
-
-
 					}
-
 					return members;
-
-
-					/*
-					return teams.SelectMany(x =>
-					{
-						try
-						{
-							return GetTeamMembers(s.ToQueryProvider(true), perm, x.Id);
-						}
-						catch (PermissionsException)
-						{
-							return new List<TeamDurationModel>();
-						}
-					}).ToList();*/
 				}
 			}
 		}
@@ -422,11 +379,11 @@ namespace RadialReview.Accessors {
 			output.Add(s.QueryOver<OrganizationTeamModel>().Where(x => x.DeleteTime == null && x.ManagedBy == forUserId).Select(x => x.Id).Future<long>());
 
 			if (forUser.IsManager()) {
-				var managerTeam = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == forUser.Organization.Id && x.Type == TeamType.Managers).Select(x => x.Id).Take(1).SingleOrDefault<long?>();
+				var managerTeam = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == forUser.Organization.Id && x.Type == TeamType.Managers && x.DeleteTime == null).Select(x => x.Id).Take(1).SingleOrDefault<long?>();
 				if (managerTeam != null)
 					output.Add(managerTeam.Value.AsList());
 			}
-			var allMembersTeam = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == forUser.Organization.Id && x.Type == TeamType.AllMembers).Select(x => x.Id).Take(1).SingleOrDefault<long?>();
+			var allMembersTeam = s.QueryOver<OrganizationTeamModel>().Where(x => x.Organization.Id == forUser.Organization.Id && x.Type == TeamType.AllMembers && x.DeleteTime == null).Select(x => x.Id).Take(1).SingleOrDefault<long?>();
 			if (allMembersTeam != null)
 				output.Add(allMembersTeam.Value.AsList());
 
@@ -521,36 +478,43 @@ namespace RadialReview.Accessors {
 			return team;
 		}
 
+		public static bool AddMember(ISession s, PermissionsUtility perms, long teamId, long userOrgId) {
+			perms.EditTeam(teamId).ViewUserOrganization(userOrgId,false);//ManagesUserOrganization(userOrgId,false);
+			var team = s.Get<OrganizationTeamModel>(teamId);
+
+			if (team.Type != TeamType.Standard)
+				throw new PermissionsException("You cannot add members to an auto-generated team.");
+
+
+			var uOrg = s.Get<UserOrganizationModel>(userOrgId);
+
+			var existing = s.QueryOver<TeamDurationModel>().Where(x => x.User.Id == userOrgId && x.Team.Id == teamId && x.DeleteTime == null).SingleOrDefault();
+			if (existing != null)
+				throw new PermissionsException("The user is already a member of this team.");
+
+			//team.Members.Add(new TeamMemberModel() { UserOrganization = uOrg });
+
+			var teamDuration = new TeamDurationModel(uOrg, team, perms.GetCaller().Id);
+
+			s.Save(teamDuration);
+			if (uOrg != null)
+				uOrg.UpdateCache(s);
+			return true;
+		}
+
+
 		public static bool AddMember(UserOrganizationModel caller, long teamId, long userOrgId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					PermissionsUtility.Create(s, caller).EditTeam(teamId).ViewUserOrganization(userOrgId, false);//ManagesUserOrganization(userOrgId,false);
-					var team = s.Get<OrganizationTeamModel>(teamId);
-
-					if (team.Type != TeamType.Standard)
-						throw new PermissionsException("You cannot add members to an auto-generated team.");
-
-
-					var uOrg = s.Get<UserOrganizationModel>(userOrgId);
-
-					var existing = s.QueryOver<TeamDurationModel>().Where(x => x.User.Id == userOrgId && x.Team.Id == teamId && x.DeleteTime == null).SingleOrDefault();
-					if (existing != null)
-						throw new PermissionsException("The user is already a member of this team.");
-
-					//team.Members.Add(new TeamMemberModel() { UserOrganization = uOrg });
-
-					var teamDuration = new TeamDurationModel(uOrg, team, caller.Id);
-
-					s.Save(teamDuration);
-					if (uOrg != null)
-						uOrg.UpdateCache(s);
-
+					var perms = PermissionsUtility.Create(s, caller);
+					var res = AddMember(s, perms, teamId, userOrgId);
 					tx.Commit();
 					s.Flush();
-					return true;
+					return res;
 				}
 			}
 		}
+
 
 		public static bool RemoveMember(UserOrganizationModel caller, long teamDurationId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -612,3 +576,4 @@ namespace RadialReview.Accessors {
 		}
 	}
 }
+#pragma warning restore CS0618 // Type or member is obsolete

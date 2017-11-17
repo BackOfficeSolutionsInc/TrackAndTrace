@@ -20,6 +20,7 @@ using RadialReview.Models.Enums;
 using RadialReview.Exceptions;
 using RadialReview.Models.Application;
 using RadialReview.Utilities;
+using RadialReview.Hooks;
 
 namespace RadialReview.Controllers {
 	[Authorize]
@@ -36,8 +37,10 @@ namespace RadialReview.Controllers {
         //}
         [Access(AccessLevel.Radial)]
         public virtual async Task<ActionResult> SetAsUser(string id) {
-            var user = _UserAccessor.GetUserByEmail(id.ToLower());
-            if (user != null) {
+#pragma warning disable CS0618 // Type or member is obsolete
+			var user = _UserAccessor.GetUserByEmail(id.ToLower());
+#pragma warning restore CS0618 // Type or member is obsolete
+			if (user != null) {
                 await SignInAsync(user);
                 return RedirectToAction("Index", "Dashboard");
             }
@@ -176,6 +179,8 @@ namespace RadialReview.Controllers {
 			_UserAccessor.ChangeRole(GetUserModel(), userOrg, id);
 			GetUser(id);
 			if (ReturnUrl == null || ReturnUrl.StartsWith("/Account/Role"))
+				return RedirectToAction("Index", "Home");
+			if (ReturnUrl == null || ReturnUrl.StartsWith("/Error"))
 				return RedirectToAction("Index", "Home");
 			return RedirectToLocal(ReturnUrl);
 		}
@@ -383,14 +388,16 @@ namespace RadialReview.Controllers {
 				PossibleTimes = TimingUtility.GetPossibleTimes(user.SendTodoTime),
 				UserId = user.Id,
 				ShowScorecardColors = user._StylesSettings.ShowScorecardColors,
+				ReverseScorecard = user.ReverseScorecard,
+                DisableTips = user.DisableTips,
 			};
 		}
 
 		[HttpPost]
 		[Access(AccessLevel.User)]
 		[ValidateAntiForgeryToken]
-		public ActionResult Manage(ProfileViewModel model) {
-			_UserAccessor.EditUserModel(
+		public async Task<ActionResult> Manage(ProfileViewModel model) {
+			await _UserAccessor.EditUserModel(
 				GetUserModel(),
 				GetUserModel().Id,
 				model.FirstName,
@@ -398,7 +405,9 @@ namespace RadialReview.Controllers {
 				null,
 				model.SendTodoTime != null,
 				model.SendTodoTime,
-				model.ShowScorecardColors);
+				model.ShowScorecardColors,
+                model.ReverseScorecard,
+                model.DisableTips);
 			return RedirectToAction("Index", "Home");
 		}
 
@@ -511,45 +520,45 @@ namespace RadialReview.Controllers {
 			return RedirectToAction("Manage", new { Message = ManageMessageId.Error });
 		}
 
-		//
-		// POST: /Account/ExternalLoginConfirmation
-		[HttpPost]
-		[AllowAnonymous]
-		[ValidateAntiForgeryToken]
-		[Access(AccessLevel.Any)]
-		public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl) {
-			throw new Exception("Fix Default Todo Send Time");
-			if (User.Identity.IsAuthenticated) {
-				return RedirectToAction("Manage");
-			}
+        //
+        // POST: /Account/ExternalLoginConfirmation
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        [Access(AccessLevel.Any)]
+        public ActionResult ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl) {
+            throw new Exception("Fix Default Todo Send Time");
+            //if (User.Identity.IsAuthenticated) {
+            //	return RedirectToAction("Manage");
+            //}
 
-			if (ModelState.IsValid) {
-				// Get the information about the user from the external login provider
-				var info = await AuthenticationManager.GetExternalLoginInfoAsync();
-				if (info == null) {
-					return View("ExternalLoginFailure");
-				}
-				var user = new UserModel() { UserName = model.UserName };
-				//var result = await UserManager.CreateAsync(user);
-				var result = await UserAccessor.CreateUser(UserManager, user, info);
-				if (result.Succeeded) {
-					//result = await UserManager.AddLoginAsync(user.Id, info.Login);
-					//if (result.Succeeded)
-					//{
-					await SignInAsync(user, isPersistent: false);
-					return RedirectToLocal(returnUrl);
-					//}
-				}
-				AddErrors(result);
-			}
+            //if (ModelState.IsValid) {
+            //	// Get the information about the user from the external login provider
+            //	var info = await AuthenticationManager.GetExternalLoginInfoAsync();
+            //	if (info == null) {
+            //		return View("ExternalLoginFailure");
+            //	}
+            //	var user = new UserModel() { UserName = model.UserName };
+            //	//var result = await UserManager.CreateAsync(user);
+            //	var result = await UserAccessor.CreateUser(UserManager, user, info);
+            //	if (result.Succeeded) {
+            //		//result = await UserManager.AddLoginAsync(user.Id, info.Login);
+            //		//if (result.Succeeded)
+            //		//{
+            //		await SignInAsync(user, isPersistent: false);
+            //		return RedirectToLocal(returnUrl);
+            //		//}
+            //	}
+            //	AddErrors(result);
+            //}
 
-			ViewBag.ReturnUrl = returnUrl;
-			return View(model);
-		}
+            //ViewBag.ReturnUrl = returnUrl;
+            //return View(model);
+        }
 
-		//
-		// POST: /Account/LogOff
-		[HttpPost]
+        //
+        // POST: /Account/LogOff
+        [HttpPost]
 		[ValidateAntiForgeryToken]
 		[Access(AccessLevel.Any)]
 		public ActionResult LogOff() {

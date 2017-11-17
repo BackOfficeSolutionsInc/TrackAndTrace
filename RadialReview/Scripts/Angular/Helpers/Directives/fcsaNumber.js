@@ -6,7 +6,7 @@
 	fcsaNumberModule = angular.module('fcsa-number', []);
 
 	fcsaNumberModule.directive('fcsaNumber', [
-      'fcsaNumberConfig', function (fcsaNumberConfig) {
+      'fcsaNumberConfig', "$timeout", function (fcsaNumberConfig, $timeout) {
       	var addCommasToInteger, controlKeys, defaultOptions, getOptions, hasMultipleDecimals, isNotControlKey, isNotDigit, isNumber, makeIsValid, makeMaxDecimals, makeMaxDigits, makeMaxNumber, makeMinNumber;
       	defaultOptions = fcsaNumberConfig.defaultOptions;
       	getOptions = function (scope) {
@@ -64,7 +64,7 @@
       			return validRegex.test(val);
       		};
       	};
-       	makeIsValid = function (options) {
+      	makeIsValid = function (options) {
       		var validations;
       		validations = [];
       		if (options.maxDecimals != null) {
@@ -96,7 +96,7 @@
       			return true;
       		};
       	};
-      	resize = function (val,options) {
+      	resize = function (val, options) {
       		var absV = Math.abs(val);
       		var shorter = false;
       		if (options && (options.prepend || options.append || val < 0)) {
@@ -109,9 +109,9 @@
       			return { val: Math.round(val / 10000) / 100 + "M", skipComma: true, decimals: -1 };
       		} else if (shorter && absV >= 100000) {
       			return { val: Math.round(val / 100) / 10 + "k", skipComma: true, decimals: -1 };
-      		}else if ((absV >= 10000) || (shorter && absV >= 1000)) {
-      			return { val: Math.round(val), skipComma: false, decimals:-1 };
-      		} 
+      		} else if ((absV >= 10000) || (shorter && absV >= 1000)) {
+      			return { val: Math.round(val), skipComma: false, decimals: -1 };
+      		}
       		return { val: val, skipComma: false };
 
       	}
@@ -129,28 +129,40 @@
       		scope: {
       			options: '@fcsaNumber'
       		},
+      		//controller: ["$scope","$element", "$attrs",function(sc
       		link: function (scope, elem, attrs, ngModelCtrl) {
       			var isValid, options;
       			options = getOptions(scope);
       			isValid = makeIsValid(options);
-
+      			var started = false;
+      			scope.$watch("options", function (newV, oldV) {
+      				if (started && newV!=oldV) {
+      					options = getOptions(scope);
+      					isValid = makeIsValid(options);
+      					$timeout(function () {
+      						updateViewValue();
+      					},1);
+      					//debugger;
+      				}
+      			});
+      			started = true;
       			ngModelCtrl.$parsers.unshift(function (viewVal) {
-      				var noCommasVal,radixReplace;
+      				var noCommasVal, radixReplace;
       				var groupSep = ",";
       				var radixSep = ".";
       				if (options.localization) {
-					  	if (options.localization.radix)
-					  		radixSep = options.localization.radix;
+      					if (options.localization.radix)
+      						radixSep = options.localization.radix;
       					if (options.localization.group)
       						groupSep = options.localization.group;
-      					if (options.localization.radix=="," && (!options.localization.group || options.localization.group == ","))
+      					if (options.localization.radix == "," && (!options.localization.group || options.localization.group == ","))
       						options.localization.group = " ";
       				}
-      				var groupFinder = new RegExp(groupSep.replace(".","\\."), "g");
+      				var groupFinder = new RegExp(groupSep.replace(".", "\\."), "g");
       				noCommasVal = viewVal.replace(groupFinder, '');
       				var radixFinder = new RegExp(radixSep.replace(".", "\\."), "g");
       				radixReplace = noCommasVal.replace(radixFinder, '.');
-					
+
       				//console.log("parser:" + viewVal + " -> " + radixReplace);
 
       				if (isValid(radixReplace) || !radixReplace) {
@@ -180,7 +192,7 @@
       				}
 
       				if (options.resize) {
-      					var r = resize(valFormat,options);
+      					var r = resize(valFormat, options);
       					valFormat = r.val;
       					skipComma = r.skipComma;
       					decimals = r.decimals || decimals;
@@ -216,16 +228,16 @@
       				}
       				return valFormat;
       			});
-      			elem.on('blur', function () {
+      			function updateViewValue() {
       				var formatter, viewValue, _i, _len, _ref;
-      				viewValue = ngModelCtrl.$modelValue ;
+      				viewValue = ngModelCtrl.$modelValue;
       				//console.log("fsca blur:" + ngModelCtrl.$modelValue);
       				scope.realValue = viewValue;
-					if ((viewValue == null) || !isValid(viewValue)) {
+      				if ((viewValue == null) || !isValid(viewValue)) {
       					return;
       				}
 
-      				
+
       				_ref = ngModelCtrl.$formatters;
       				for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       					formatter = _ref[_i];
@@ -236,6 +248,10 @@
       				//}
       				ngModelCtrl.$viewValue = viewValue;
       				return ngModelCtrl.$render();
+      			};
+
+      			elem.on('blur', function () {
+      				return updateViewValue();
       			});
       			elem.on('focus', function () {
       				var val;

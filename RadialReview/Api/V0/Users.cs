@@ -17,7 +17,10 @@ using RadialReview.Models.UserModels;
 using RadialReview.Models.Angular.Roles;
 using RadialReview.Models.Angular.Positions;
 using RadialReview.Models.Angular.Accountability;
+using System.Threading.Tasks;
+using RadialReview.Models.Angular.Team;
 
+#region DO NOT EDIT, V0
 namespace RadialReview.Api.V0
 {
     [RoutePrefix("api/v0")]
@@ -68,18 +71,18 @@ namespace RadialReview.Api.V0
 
         //--
         [Route("users/")]
-        [HttpPut]
-        public AngularUser CreateUser([FromBody]string firstName, [FromBody]string lastName, [FromBody]string email, [FromBody]long? managerNodeId = null, [FromBody]bool? SendEmail = null)
+        [HttpPost]
+        public async Task<AngularUser> CreateUser([FromBody]string firstName, [FromBody]string lastName, [FromBody]string email, [FromBody]long? managerNodeId = null, [FromBody]bool? SendEmail = null)
         {
-            var outParam = new UserOrganizationModel();
+            //var outParam = new UserOrganizationModel();
             if (!SendEmail.HasValue)
             {
                 SendEmail = GetUser().Organization.SendEmailImmediately;
             }
-            JoinOrganizationAccessor.CreateUserUnderManager(GetUser(), new CreateUserOrganizationViewModel()
-            { FirstName = firstName, LastName = lastName, Email = email, OrgId = GetUser().Organization.Id, SendEmail = SendEmail.Value }, out outParam);
+			var model = new CreateUserOrganizationViewModel() { FirstName = firstName, LastName = lastName, Email = email, OrgId = GetUser().Organization.Id, SendEmail = SendEmail.Value };
+            var result = await JoinOrganizationAccessor.CreateUserUnderManager(GetUser(), model);
 
-            return AngularUser.CreateUser(outParam);
+            return AngularUser.CreateUser(result.User);
         }
 
 
@@ -94,9 +97,9 @@ namespace RadialReview.Api.V0
 
         [Route("users/{userId}")]
         [HttpDelete]
-        public ResultObject DeleteUsers(long userId)
+        public async Task DeleteUsers(long userId)
         {
-            return new UserAccessor().RemoveUser(GetUser(), userId, DateTime.UtcNow);
+			await new UserAccessor().RemoveUser(GetUser(), userId, DateTime.UtcNow);
         }
 
         //[GET] /users/{userid}/roles/
@@ -143,17 +146,20 @@ namespace RadialReview.Api.V0
         //[GET] /user/mine/teams
         [Route("users/mine/teams")]
         [HttpGet]
-        public IEnumerable<TeamDurationModel> GetMineTeam()
+        public IEnumerable<AngularTeam> GetMineTeam()
         {
-            return TeamAccessor.GetUsersTeams(GetUser(), GetUser().Id);
+		    //throw new NotImplementedException("Obfuscate the TeamDurationModel");
+            return TeamAccessor.GetUsersTeams(GetUser(), GetUser().Id).Select(x=> new AngularTeam(x.Team));
         }
 
         //[GET] /user/{userId}/teams
         [Route("users/{userId}/teams")]
         [HttpGet]
-        public IEnumerable<TeamDurationModel> GetUserTeams(long userId)
+        public IEnumerable<AngularTeam> GetUserTeams(long userId)
         {
-            return TeamAccessor.GetUsersTeams(GetUser(), userId);
+		    //throw new NotImplementedException("Obfuscate the TeamDurationModel");
+            return TeamAccessor.GetUsersTeams(GetUser(), userId).Select(x => new AngularTeam(x.Team));
         }
     }
 }
+#endregion

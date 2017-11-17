@@ -4,27 +4,31 @@ using RadialReview.Models.Askables;
 using RadialReview.Models.Angular.Base;
 using RadialReview.Models.Enums;
 using RadialReview.Models.L10;
+using System.Runtime.Serialization;
 
 namespace RadialReview.Models.Angular.Rocks
 {
 	public class AngularRock : BaseAngular
     {
         public AngularRock() { }
-        public AngularRock(long id):base(id) {}
+        public AngularRock(long rockId):base(rockId) {}
 
-        public AngularRock(L10Recurrence.L10Recurrence_Rocks rock) : this(rock.ForRock)
+		public AngularRock(L10Meeting.L10Meeting_Rock meetingRock) : this(meetingRock.ForRock, meetingRock.VtoRock) {
+		}
+
+		public AngularRock(L10Recurrence.L10Recurrence_Rocks recurRock) : this(recurRock.ForRock, recurRock.VtoRock)
         {
-            RecurrenceRockId = rock.Id;
+            RecurrenceRockId = recurRock.Id;
         }
 
-		public AngularRock(RockModel rock) : base(rock.Id)
+		public AngularRock(RockModel rock, bool? vtoRock) : base(rock.Id)
 		{
 			Name = rock.Rock;
 			Owner = AngularUser.CreateUser(rock.AccountableUser);
 			Complete = rock.CompleteTime != null;
 			DueDate = rock.DueDate;
 			Completion = rock.Completion;
-            CompanyRock = rock.CompanyRock;
+			VtoRock = vtoRock;//rock.CompanyRock;
             CreateTime = rock.CreateTime;
 		}
 		public string Name { get; set; }
@@ -32,9 +36,13 @@ namespace RadialReview.Models.Angular.Rocks
 		public DateTime? DueDate { get; set; }
 		public bool? Complete { get; set; }
 		public RockState? Completion { get; set; }
-        public long? RecurrenceRockId { get; set; }
-        public bool? CompanyRock { get; set; }
-        public long? ForceOrder { get; set; }
         public DateTime? CreateTime { get; set; }
+
+		[IgnoreDataMember]
+		public long? RecurrenceRockId { get; set; }
+		[IgnoreDataMember]
+        public bool? VtoRock { get; set; }
+		[IgnoreDataMember]
+		public long? ForceOrder { get; set; }
 	}
 }

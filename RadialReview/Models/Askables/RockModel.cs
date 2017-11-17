@@ -7,17 +7,24 @@ using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using RadialReview.Models.Periods;
 using RadialReview.Models.Angular.Base;
+using Newtonsoft.Json;
 
 namespace RadialReview.Models.Askables {
 	public class RockModel :Askable/*, IAngularizer<RockModel>*/ {
 
 		public virtual String Rock { get; set; }
 
+		[JsonIgnore]
+		public virtual string Name { get { return Rock; }  set { Rock = value; } }
+
 		public virtual long? FromTemplateItemId { get; set; }
 		public virtual long OrganizationId { get; set; }
 		public virtual long ForUserId { get; set; }
+		///RE-ADD to the map
+		[Obsolete("Do not use. Instead use L10Recurrent.Rock")]
 		public virtual bool CompanyRock { get; set; }
-        public virtual DateTime? DueDate { get; set; }
+		public virtual bool _CompanyRock { get; set; }
+		public virtual DateTime? DueDate { get; set; }
         public virtual RockState Completion { get; set; }
         public virtual bool _AddedToVTO { get; set; }
         public virtual bool _AddedToL10 { get; set; }
@@ -58,16 +65,15 @@ namespace RadialReview.Models.Askables {
             //if (Period != null)
             //    p = Period.Name+" ";
 
-			if (CompanyRock)
-				b += "[" + p + "Company Rock]";
-			else if (!string.IsNullOrWhiteSpace(p))
+			//if (CompanyRock)
+			//	b += "[" + p + "Company Rock]";
+			/*else*/ if (!string.IsNullOrWhiteSpace(p))
 				b += "[" + p.Trim() + "]";
 
 			return b ;
 		}
 
-		public class RockModelMap : SubclassMap<RockModel>
-		{
+		public class RockModelMap : SubclassMap<RockModel> {
 			public RockModelMap()
             {
                 Map(x => x.Rock);
@@ -77,8 +83,8 @@ namespace RadialReview.Models.Askables {
 				Map(x => x.DueDate);
 				Map(x => x.OrganizationId);
 				Map(x => x.FromTemplateItemId);
-				Map(x => x.CompanyRock);
-				//Map(x => x.CreateTime);
+			    Map(x => x.CompanyRock);
+			    //Map(x => x.CreateTime);
 				Map(x => x.CompleteTime);
 				Map(x => x.PeriodId).Column("PeriodId");
 				References(x => x.Period).Column("PeriodId").Not.LazyLoad().ReadOnly();

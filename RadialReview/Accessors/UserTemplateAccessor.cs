@@ -22,21 +22,22 @@ using WebGrease.Css.Extensions;
 using NHibernate;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
+using System.Threading.Tasks;
 
 namespace RadialReview.Accessors {
 	public class UserTemplateAccessor {
-		public static void CreateTemplate(UserOrganizationModel caller, UserTemplate template) {
+		public static async Task CreateTemplate(UserOrganizationModel caller, UserTemplate template) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					CreateTemplate(s, perms, caller.Organization, template);
+					await CreateTemplate(s, perms, caller.Organization, template);
 					tx.Commit();
 					s.Flush();
 				}
 			}
 		}
 
-		public static void CreateTemplate(ISession s, PermissionsUtility perms, OrganizationModel org, UserTemplate template) {
+		public static async Task CreateTemplate(ISession s, PermissionsUtility perms, OrganizationModel org, UserTemplate template) {
 			if (template.Id != 0)
 				throw new PermissionsException("Id was not zero");
 			if (template.AttachId == 0)
@@ -60,7 +61,7 @@ namespace RadialReview.Accessors {
 			AttachAccessor.SetTemplateUnsafe(s, a, template.Id);
 			var members = AttachAccessor.GetMemberIdsUnsafe(s, a);
 			foreach (var member in members) {
-				_AddUserToTemplateUnsafe(s, org, template.Id, member, false);
+				await _AddUserToTemplateUnsafe(s, perms, org, template.Id, member, false);
 			}
 		}
 
@@ -199,8 +200,8 @@ namespace RadialReview.Accessors {
 
 
 		}
-
-		public static void AddRoleToTemplate(ISession s, PermissionsUtility p, long templateId, long orgId, String role) {
+		[Untested("IRoleHook correct?")]
+		public static async Task AddRoleToTemplate(ISession s, PermissionsUtility p, long templateId, long orgId, String role) {
 			var utm = new UserTemplate.UT_Role() {
 				//Role = role,
 				TemplateId = templateId,
@@ -227,7 +228,7 @@ namespace RadialReview.Accessors {
 				Category = category,
 			};
 			s.Save(rm);
-			HooksRegistry.Each<IRolesHook>(x => x.CreateRole(s, rm));
+			await HooksRegistry.Each<IRolesHook>((ses, x) => x.CreateRole(ses, rm));
 
 			s.Save(new RoleLink() {
 				AttachId = template.AttachId,
@@ -251,24 +252,21 @@ namespace RadialReview.Accessors {
 			}
 
 		}
-		public static void AddRoleToTemplate(UserOrganizationModel caller, long templateId, String role) {
+		public static async Task AddRoleToTemplate(UserOrganizationModel caller, long templateId, String role) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var p = PermissionsUtility.Create(s, caller);
 
-					AddRoleToTemplate(s, p, templateId, caller.Organization.Id, role);
-
-					//
-					//
-					//
-					//}
-
+					await AddRoleToTemplate(s, p, templateId, caller.Organization.Id, role);
+					
 					tx.Commit();
 					s.Flush();
 				}
 			}
 		}
-		public static void AddRockToTemplate(UserOrganizationModel caller, long templateId, String rock, long periodId) {
+
+		[Untested("Test template Create Rock")]
+		public static async Task AddRockToTemplate(UserOrganizationModel caller, long templateId, String rock, long periodId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var p = PermissionsUtility.Create(s, caller);
@@ -299,21 +297,24 @@ namespace RadialReview.Accessors {
 						if (user.Organization.Id != caller.Organization.Id)
 							throw new PermissionsException("Organization ids do not match");
 
-						s.Save(new RockModel() {
-							OnlyAsk = AboutType.Self,
-							Category = category,
-							ForUserId = user.Id,
-							OrganizationId = caller.Organization.Id,
-							FromTemplateItemId = utm.Id,
-							Rock = rock,
-							Period = period,
-							PeriodId = periodId,
-						});
+						await RockAccessor.CreateRock(s, p, user.Id, rock, templateId);
 
-						//user.NumRocks += 1;
-						s.Update(user);
-						s.Flush();
-						user.UpdateCache(s);
+
+						//--Removed--
+						//s.Save(new RockModel() {
+						//	OnlyAsk = AboutType.Self,
+						//	Category = category,
+						//	ForUserId = user.Id,
+						//	OrganizationId = caller.Organization.Id,
+						//	FromTemplateItemId = utm.Id,
+						//	Rock = rock,
+						//	Period = period,
+						//	PeriodId = periodId,
+						//});
+						
+						//s.Update(user);
+						//s.Flush();
+						//user.UpdateCache(s);
 					}
 
 					tx.Commit();
@@ -367,57 +368,32 @@ namespace RadialReview.Accessors {
 		}
 
 
-		public static void UpdateRoleTemplate(UserOrganizationModel caller, long utRoleId, string role, DateTime? deleteTime) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var p = PermissionsUtility.Create(s, caller);
+		//public static async Task UpdateRoleTemplate(UserOrganizationModel caller, long utRoleId, string role, DateTime? deleteTime) {
+		//	RoleModel r;
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
+		//			var p = PermissionsUtility.Create(s, caller);
+		//			var utRole = s.Get<UserTemplate.UT_Role>(utRoleId);
+		//			p.EditTemplate(utRole.TemplateId);
+		//			utRole.DeleteTime = deleteTime;
+		//			s.Update(utRole);
+		//			r = s.Get<RoleModel>(utRole.RoleId);
+		//			r.Role = role;
+		//			r.DeleteTime = deleteTime;
+		//			s.Update(r);					
+		//			tx.Commit();
+		//			s.Flush();
+		//		}
+		//	}
+		//	using (var s = HibernateSession.GetCurrentSession()) {
+		//		using (var tx = s.BeginTransaction()) {
+		//			await HooksRegistry.Each<IRolesHook>(x => x.UpdateRole(s, r));
+		//			tx.Commit();
+		//			s.Flush();
+		//		}
+		//	}
+		//}
 
-
-					var utRole = s.Get<UserTemplate.UT_Role>(utRoleId);//.Where(x=>x.DeleteTime==null && x.TemplateId==templateId)
-					p.EditTemplate(utRole.TemplateId);
-
-
-					//utRole.Role = role;
-					utRole.DeleteTime = deleteTime;
-					s.Update(utRole);
-
-					//var template = s.Get<UserTemplate>(utRole.TemplateId);
-
-					//var links = s.QueryOver<RoleModelLink>().Where(x => x.AttachType == template.AttachType && x.AttachId == template.AttachId && x.RoleId == utRole.Id);
-
-					//var roles = s.QueryOver<RoleModel>()
-					//	.Where(x => x.DeleteTime == null && x.FromTemplateItemId == utRole.Id)
-					//	.List().ToList();
-
-					var r = s.Get<RoleModel>(utRole.RoleId);
-
-					r.Role = role;
-					r.DeleteTime = deleteTime;
-					s.Update(r);
-
-					HooksRegistry.Each<IRolesHook>(x => x.UpdateRole(s, r));
-					//foreach (var r in roles) {
-					//	r.Role = role;
-					//	r.DeleteTime = deleteTime;
-					//	s.Update(r);
-					//	if (deleteTime.HasValue) {
-					//		var u = s.Get<UserOrganizationModel>(r.ForUserId);
-					//		//u.NumRoles -= 1;
-					//		if (u != null) {
-					//			s.Update(u);
-					//			s.Flush();
-					//			u.UpdateCache(s);
-					//		}
-					//	}
-					//}
-
-
-
-					tx.Commit();
-					s.Flush();
-				}
-			}
-		}
 		public static void UpdateMeasurableTemplate(UserOrganizationModel caller, long utMeasurableId, String measurable, LessGreater goalDirection, decimal goal, DateTime? deleteTime) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -467,18 +443,19 @@ namespace RadialReview.Accessors {
 					var p = PermissionsUtility.Create(s, caller)
 						.EditTemplate(templateId)
 						.ManagesUserOrganization(userId, false);
-					_AddUserToTemplateUnsafe(s, caller.Organization, templateId, userId, forceJobDescription);
+					_AddUserToTemplateUnsafe(s,p, caller.Organization, templateId, userId, forceJobDescription);
 
 					tx.Commit();
 					s.Flush();
 				}
 			}
 		}
-
-		public static void _AddUserToTemplateUnsafe(ISession s, OrganizationModel organization, long templateId, long userId, bool forceJobDescription) {
+		[Untested("RockAccessor.CreateRock")]
+		public static async Task _AddUserToTemplateUnsafe(ISession s,PermissionsUtility perms, OrganizationModel organization, long templateId, long userId, bool forceJobDescription) {
 
 			var user = s.Get<UserOrganizationModel>(userId);
 			var template = s.Get<UserTemplate>(templateId);
+
 
 
 			var category = ApplicationAccessor.GetApplicationCategory(s, ApplicationAccessor.EVALUATION);
@@ -515,17 +492,19 @@ namespace RadialReview.Accessors {
 
 			var toAddRocks = newRocks.Where(x => existingRocks.All(y => y.FromTemplateItemId != x.Id));
 			foreach (var a in toAddRocks) {
-				s.Save(new RockModel() {
-					OnlyAsk = AboutType.Self,
-					ForUserId = user.Id,
-					OrganizationId = organization.Id,
-					FromTemplateItemId = a.Id,
-					Rock = a.Rock,
-					Period = s.Load<PeriodModel>(a.PeriodId),
-					PeriodId = a.PeriodId,
-					Category = category
-				});
-				//user.NumRocks += 1;
+				await RockAccessor.CreateRock(s, perms, user.Id, a.Rock, a.Id);
+
+				//--Removed--
+				//s.Save(new RockModel() {
+				//	OnlyAsk = AboutType.Self,
+				//	ForUserId = user.Id,
+				//	OrganizationId = organization.Id,
+				//	FromTemplateItemId = a.Id,
+				//	Rock = a.Rock,
+				//	Period = s.Load<PeriodModel>(a.PeriodId),
+				//	PeriodId = a.PeriodId,
+				//	Category = category
+				//});
 			}
 			#endregion
 			#region Roles

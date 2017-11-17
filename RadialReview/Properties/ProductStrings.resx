@@ -152,10 +152,11 @@
     <value>clay.upton@radialreview.com</value>
   </data>
   <data name="PurchaseNumber" xml:space="preserve">
-    <value>1-402-437-0099</value>
+    <value>1-402-437-0098</value>
   </data>
   <data name="SupportEmail" xml:space="preserve">
-    <value>support@mail.traction.tools</value>
+    <value>client-success@mytractiontools.com</value>
+    <comment>support@mail.traction.tools</comment>
   </data>
   <data name="TestEmail" xml:space="preserve">
     <value>clay.upton+test@radialreview.com</value>

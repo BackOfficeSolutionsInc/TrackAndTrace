@@ -23,7 +23,10 @@
 	@Scripts.Render("~/bundles/DashboardGrid")
 	<script type="text/javascript">
 		dataDateRange = {
-			startDate : new Date().setDate(new Date().getDate() - 1)
+			startDate : null,// new Date().setDate(new Date().getDate() - 1)
+			endDate:null,
+			todoStart : new Date().setDate(new Date().getDate() - 1),
+            todoEnd:null
 		};
 		function buildGrid(data) {
 			if (showJsonAlert(data, true, true)) {
@@ -150,6 +153,7 @@
 				<li><a onclick="createTile('/TileData/UserTodo2','Url')">To-do List</a></li>
 				<li><a onclick="createTile('/TileData/UserScorecard2','Url')">Scorecard</a></li>
 				<li><a onclick="createTile('/TileData/UserRock2','Url')">@Html.Organization().Settings.RockName</a></li>
+                <li><a onclick="createTile('/TileData/Milestones','Url')">Milestones</a></li>
 				<li><a onclick="createTile('/TileData/UserRoles','Url')">Roles</a></li>
 				@if (ViewBag.IsManager) {
 					<li><a onclick="createTile('/TileData/UserManage2', 'Url') ">Direct Reports</a></li>
@@ -157,6 +161,11 @@
 				<li><a onclick="createTile('/TileData/UserNotes','Url')">Personal Notes</a></li>
 				<li><a onclick="createTile('/TileData/UserProfile2','Url')">Profile Picture</a></li>
 				<!--<li><a onclick="createTile('/TileData/UserNotifications','Url')">Notifications</a></li>-->
+                @if (ViewBag.ShowCoreProcess ?? false) {
+                    <li class="divider"></li>
+                    <li><a onclick="createTile('/TileData/CoreProcesses','Url')">Core Processes</a></li>
+                    <li><a onclick="createTile('/TileData/Tasks','Url')">Tasks</a></li>
+                }
 			</ul>
 		</li>
 		<li class="dropdown-submenu">

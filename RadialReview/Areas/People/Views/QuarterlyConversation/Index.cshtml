@@ -1,0 +1,119 @@
+﻿@model IEnumerable<RadialReview.Areas.People.Angular.Survey.AngularSurveyContainer>
+@{
+    ViewBag.Title = "Quarterly Conversation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Subheading = "";
+
+    Html.RenderPartial("~/Views/CDN/Angular.cshtml");
+}
+
+@section top{
+    <div class="jumbotron">
+        <h1>Quarterly Conversation</h1>
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <div id="qc-archive"></div>
+    </div>
+</div>
+
+@using (Html.BeginStyles()) {
+    @Styles.Render("~/styles/people")
+
+    <style>
+        .remind-btn.sent .glyphicon:before {
+            opacity: .5;
+            color: #5cb85c !important;
+            cursor: default;
+            background-color: #09400a !important;
+        }
+
+        .remind-btn .glyphicon:hover:before {
+            width: 16.5px;
+            display: block;
+            text-align: center;
+            background-color: #cf5e0f;
+            color: #ffb079;
+        }
+
+        .remind-btn .glyphicon:before {
+            width: 16.5px;
+            display: block;
+            text-align: center;
+            background-color: gray;
+            color: lightgray;
+        }
+    </style>
+}
+@using (Html.BeginScripts()) {
+    @Scripts.Render("~/bundles/people")
+    <script>
+        function sendReminder(surveyContainerId){
+            $(".reminder-"+surveyContainerId).attr("onclick",null).addClass("sent");
+            showAlert("Sending...");
+            $.ajax({
+                url:"/People/QuarterlyConversation/RemindAll/"+surveyContainerId,
+                success:function(d){
+                }
+            });
+        }
+
+        DataTable({
+            container: "#qc-archive",
+            data: @Html.ArrayToString(Model),
+            clickAdd: function(){
+                window.location="/people/quarterlyconversation/issue";
+            },
+            clickRemove: "/people/quarterlyconversation/remove/{0}",
+            addButton:{text: "Create New"},
+            cells:[{
+                name: "Name",
+                classes:"fullWidth",
+                contents:function(x){ return "<a href='/People/QuarterlyConversation/Questions/"+x.Id+"'>"+x.Name+"</a>"; }
+            },{
+                name: "Issued By",
+                classes:"nowrap alignRight",
+                contents:function(x){
+                    return x.IssuedBy.Name;//.toDateString();
+                }
+            },{
+                name: "Issued",
+                classes:"nowrap alignRight",
+                contents:function(x){
+                    return getFormattedDate(x.IssueDate);//.toDateString();
+                }
+            },{
+                name: "Due",
+                classes:"nowrap alignCenter",
+                contents:function(x){
+                    return getFormattedDate(x.DueDate,null,"--");//.toDateString();
+                }
+            },{
+                name: "",
+                classes:"nowrap alignRight",
+                contents:function(x){
+                    return "<a href='/People/QuarterlyConversation/PrintAll?surveyContainerId="+x.Id+"' title='Print all'><span class='gray clickable glyphicon glyphicon-print'></span></a>";
+                }
+            },{
+                name: "",
+                classes:"nowrap alignRight",
+                contents:function(x){
+                    return "<a href='#' class='remind-btn reminder-"+x.Id+"' onclick='sendReminder("+x.Id+")' title='Send Reminder'><span class='gray clickable glyphicon glyphicon-envelope'></span></a>";
+                }
+            },{
+                remove:true,
+                classes:"nowrap alignRight",
+                contents:function(x){
+                    return "<span class='gray clickable glyphicon glyphicon-trash' title='Delete'></span>";
+                }
+            }
+			//},{
+			//	name: "Name",
+			//	contents:function(x){ return x.Name; }
+			//}]
+            ]
+        });
+    </script>
+}

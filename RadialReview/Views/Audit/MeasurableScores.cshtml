@@ -1,0 +1,164 @@
+﻿@model RadialReview.Controllers.AuditController.MeasurableScoresAudit
+@{
+	ViewBag.Title = "MeasurableScores";
+
+}
+
+<div class="rev-data">
+	<div><u>Rev Data:</u></div>
+	<div>Update Time: <span class="update-time"></span></div>
+
+	<div class="toggle-deleted btn btn-default">Toggle Deleted</div>
+
+</div>
+
+
+<h2>Measurable Scores</h2>
+<h4>@Model.Measurable.Title</h4>
+
+
+<hr />
+<div class="table-responsive">
+	<table class="table">
+		<thead>
+			<tr class="dates">
+				@foreach (var col in Model.ExistingScores) {
+					<td class="@(col.DeleteTime!=null?"deleted":"")">@col.ForWeek.ToShortDateString()</td>
+			}
+			</tr>
+			<tr class="existing-score">
+				@foreach (var col in Model.ExistingScores) {
+					<td data-score-id="@col.Id" class="@(col.DeleteTime!=null?"deleted":"")">@col.Measured</td>
+			}
+			</tr>
+		</thead>
+		<tbody>
+			<tr class="revisions">
+				@foreach (var col in Model.ExistingScores) {
+					DateTime prev = Model.Revisions[col.Id].FirstOrDefault().NotNull(x => x.RevDate);
+					<td class="@(col.DeleteTime!=null?"deleted":"")">
+						@foreach (var rev in Model.Revisions[col.Id]) {
+
+							if (rev.Model != null) {
+								if (rev.RevDate - prev > TimeSpan.FromSeconds(5)) {
+									<div class="rev-divider"></div>
+								}
+
+								prev = rev.RevDate;
+							}
+
+							<div class="rev" data-update="@rev.RevDate.ToString()">
+								@(rev.Model.NotNull(x => x.Measured.NotNull(y => new HtmlString(y.Value.ToString()))) ?? new HtmlString("&nbsp;"))
+								@if (rev.Model != null) {
+									<div class="revert" title="Revert to this score (@rev.RevDate.ToString())" data-score-id="@rev.Model.Id" data-value="@rev.Model.Measured"></div>
+								}
+							</div>
+						}
+					</td>
+				}
+			</tr>
+		</tbody>
+	</table>
+</div>
+@using (Html.BeginScripts()) {
+	<script>
+		$(".revert").on("click", function () {
+			var scoreId = $(this).data("score-id");
+			var value = $(this).data("value");
+
+			$.ajax({
+				url: "/audit/updatescore?scoreid=" + scoreId + "&value=" + value,
+				success: function () {
+					var header = $(".existing-score [data-score-id=" + scoreId + "]");
+					header.css("color", "orange");
+					header.html(value + " <small>(n)</small>");
+				}
+			});
+		});
+
+		$(".rev").on("mouseover", function () {
+			$(".highlight").removeClass("highlight");
+
+			$(this).addClass("highlight");
+
+			var updateTime = $(this).data("update");
+			$(".update-time").html(updateTime);
+
+		})
+
+		$(".toggle-deleted").on("click", function () {
+			$(".deleted").toggleClass("hidden");
+		});
+	</script>
+}
+
+<style>
+	.highlight {
+		border-color: orange !important;
+	}
+
+	.update-time {
+		font-weight: bold;
+	}
+
+	.rev-data {
+		width: 260px;
+		float: right;
+		border: 2px solid lightgray;
+	}
+
+	.rev-divider {
+		height: 22px;
+		width: 50%;
+		border-right: 4px dotted orange;
+		/*border-bottom:22px solid transparent;*/
+	}
+
+	td {
+		min-width: 92px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	tbody td {
+		padding: 0 !important;
+	}
+
+	.dates td, .existing-score td {
+		border: none;
+	}
+
+	.existing-score td {
+		font-weight: bold;
+		border-bottom: 2px solid gray;
+	}
+
+	.rev {
+		border: 1px solid lightgray;
+		position: relative;
+		background-color: white;
+	}
+
+	.deleted {
+		color: red !important;
+		opacity: .5;
+	}
+
+	.revert {
+		width: 0;
+		height: 0;
+		border-top: 10px solid gray;
+		border-left: 10px solid transparent;
+		position: absolute;
+		top: 0;
+		right: 0;
+		opacity: .5;
+	}
+
+		.revert:hover {
+			border-top: 10px solid orange;
+			opacity: 1;
+			cursor: pointer;
+		}
+</style>

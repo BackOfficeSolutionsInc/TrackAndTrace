@@ -24,7 +24,7 @@ namespace RadialReview.Utilities.RealTime {
                 this.rt = rt;
             }
 
-            protected void UpdateAll(Func<long, IAngularItem> itemGenerater,bool forceNoSkip =false) {
+            protected void UpdateAll(Func<long, IAngularId> itemGenerater,bool forceNoSkip =false) {
                 foreach (var r in _recurrenceIds) {
                     var updater = rt.GetUpdater<MeetingHub>(MeetingHub.GenerateMeetingGroupId(r), !forceNoSkip);
                     updater.Add(itemGenerater(r));
@@ -47,24 +47,31 @@ namespace RadialReview.Utilities.RealTime {
                 });
                 return this;
             }
-            public RTRecurrenceUpdater UpdateMeasurable(MeasurableModel measurable, IEnumerable<ScoreModel> scores, AngularListType type = AngularListType.ReplaceIfNewer) {
+            public RTRecurrenceUpdater UpdateMeasurable(MeasurableModel measurable, IEnumerable<ScoreModel> scores, DateTime? absoluteUpdateTime, AngularListType type = AngularListType.ReplaceIfNewer, bool forceNoSkip = false) {
                 rt.AddAction(() => {
-                    UpdateAll(rid => new AngularMeasurable(measurable));
+                    UpdateAll(rid => new AngularMeasurable(measurable),forceNoSkip);
                 });
-                return UpdateScorecard(scores.Where(x => x.Measurable.Id == measurable.Id), type);
+                return UpdateScorecard(scores.Where(x => x.Measurable.Id == measurable.Id),absoluteUpdateTime, type);
             }
 
-            public RTRecurrenceUpdater Update(IAngularItem item) {
+            public RTRecurrenceUpdater Update(IAngularId item) {
                 return Update(rid => item);
             }
-            public RTRecurrenceUpdater Update(Func<long, IAngularItem> item) {
+            public RTRecurrenceUpdater Update(Func<long, IAngularId> item) {
                 rt.AddAction(() => {
                     UpdateAll(item);
                 });
                 return this;
             }
-
-            public RTRecurrenceUpdater UpdateScorecard(IEnumerable<ScoreModel> scores, AngularListType type = AngularListType.ReplaceIfNewer) {
+			/// <summary>
+			/// AbsoluteUpdateTime is used to avoid collisions on scores in ui
+			/// </summary>
+			/// <param name="scores"></param>
+			/// <param name="absoluteUpdateTime"></param>
+			/// <param name="type"></param>
+			/// <returns></returns>
+			[Obsolete("Requires at least one score")]
+            public RTRecurrenceUpdater UpdateScorecard(IEnumerable<ScoreModel> scores,DateTime? absoluteUpdateTime, AngularListType type = AngularListType.ReplaceIfNewer) {
                 rt.AddAction(() => {
                     //UpdateAngular stuff
                     var scorecard = new AngularScorecard();
@@ -75,7 +82,7 @@ namespace RadialReview.Utilities.RealTime {
                         var scoresList = new List<AngularScore>();
                         foreach (var ss in scores.Where(x => x.Measurable.Id == measurable.Id)) {
 
-                            scoresList.Add(new AngularScore(ss, false));
+                            scoresList.Add(new AngularScore(ss, absoluteUpdateTime, false));
                         }
                         scorecard.Scores = AngularList.Create<AngularScore>(type, scoresList);
                     }

@@ -8,6 +8,7 @@ using RadialReview.Models.Askables;
 using RadialReview.Models.Json;
 using RadialReview.Models.UserModels;
 using RadialReview.Models.UserTemplate;
+using System.Threading.Tasks;
 
 namespace RadialReview.Controllers
 {
@@ -39,14 +40,14 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult Modal(RoleVM model) {
+		public async Task<JsonResult> Modal(RoleVM model) {
 
 
 			//foreach (var r in model.Roles){
 			//	r.ForUserId = model.UserId;
 			//}
 			//try {
-				_RoleAccessor.EditRoles(GetUser(), model.UserId, model.Roles, model.UpdateOutstandingReviews);
+				await _RoleAccessor.EditRoles(GetUser(), model.UserId, model.Roles, model.UpdateOutstandingReviews);
 			//} catch (Exception) {
 
 			//}
@@ -80,16 +81,16 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
-		public JsonResult TemplateModal(RoleVM model)
+		public async Task<JsonResult> TemplateModal(RoleVM model)
 		{
 			foreach (var r in model.Roles)
 			{
 				if (r.Id == 0){
 					if (r.DeleteTime==null)
-						UserTemplateAccessor.AddRoleToTemplate(GetUser(), model.TemplateId, r.Role);
+						await UserTemplateAccessor.AddRoleToTemplate(GetUser(), model.TemplateId, r.Role);
 				}
 				else
-					RoleAccessor.EditRole(GetUser(), r.Id, r.Role, r.DeleteTime);
+					await RoleAccessor.EditRole(GetUser(), r.Id, r.Role, r.DeleteTime);
 			}
 			return Json(ResultObject.SilentSuccess());
 		}

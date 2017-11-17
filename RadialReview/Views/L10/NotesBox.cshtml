@@ -19,16 +19,16 @@
 				<div class="pull-right">
 					@Html.Partial("partial/ButtonBar", Model)
 				</div>
-				<h2 class="l10-page-title">@(heading)</h2>
+				<h2 class="l10-page-title">@heading</h2>
 			</hgroup>			
-			<div class="centered" style="width:90%;">
+			<div class="centered" style="width:100%;">
 				<div class="component">
-					<div style="padding: 20px 70px 20px 70px">
+					@*<div style="padding: 20px 70px 20px 70px">
 						<h2>@(heading)</h2>
 						<h4>@(new MvcHtmlString(subheading))</h4>
-					</div>
+					</div>*@
 					@if (notesUrl != null) {
-						<div class="headlines-notes">
+						<div class="notes-box">
 							<iframe style="width: 100%;height: 100%; border: 1px solid #CCCCCC;width:calc(100% - 2px);" src="@(notesUrl)"></iframe>
 						</div>
 					}

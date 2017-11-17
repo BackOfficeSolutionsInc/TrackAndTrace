@@ -7,78 +7,85 @@
 
 'use strict';
 
-angular.module('puElasticInput', []).directive('puElasticInput', ['$document', '$window', function($document, $window) {
+angular.module('puElasticInput', []).directive('puElasticInput', ['$document', '$window', function ($document, $window) {
 
-    var wrapper = angular.element('<div class="elastic-wrapper" style="position:fixed; top:-999px; left:0;"></div>');
-    angular.element($document[0].body).append(wrapper);
+	var wrapper = angular.element('<div class="elastic-wrapper" style="position:fixed; top:-999px; left:0;"></div>');
+	angular.element($document[0].body).append(wrapper);
 
-    function setMirrorStyle(mirror, element, attrs) {
-        var style = $window.getComputedStyle(element[0]);
-        
-        var defaultMaxWidth = style.maxWidth === 'none' ? (element.parent().prop('clientWidth') || style.width) : style.maxWidth;
-        element.css('minWidth', attrs.puElasticInputMinwidth || style.minWidth);
-        element.css('maxWidth', attrs.puElasticInputMaxwidth || defaultMaxWidth);
+	function setMirrorStyle(mirror, element, attrs) {
+		var style = $window.getComputedStyle(element[0]);
 
-        angular.forEach(['fontFamily', 'fontSize', 'fontWeight', 'fontStyle',
-            'letterSpacing', 'textTransform', 'wordSpacing'], function(value) {
-            mirror.css(value, style[value]);
-        });
+		var defaultMaxWidth = style.maxWidth === 'none' ? (element.parent().prop('clientWidth') || style.width) : style.maxWidth;
+		element.css('minWidth', attrs.puElasticInputMinwidth || style.minWidth);
+		element.css('maxWidth', attrs.puElasticInputMaxwidth || defaultMaxWidth);
 
-        mirror.css('paddingLeft', style.textIndent);
+		angular.forEach(['fontFamily', 'fontSize', 'fontWeight', 'fontStyle',
+            'letterSpacing', 'textTransform', 'wordSpacing'], function (value) {
+            	mirror.css(value, style[value]);
+            });
 
-        if (style.boxSizing === 'border-box') {
-            angular.forEach(['paddingLeft', 'paddingRight',
+		mirror.css('paddingLeft', style.textIndent);
+
+		if (style.boxSizing === 'border-box') {
+			angular.forEach(['paddingLeft', 'paddingRight',
                 'borderLeftStyle', 'borderLeftWidth',
-                'borderRightStyle', 'borderRightWidth'], function(value) {
-                mirror.css(value, style[value]);
-            });
-        } else if (style.boxSizing === 'padding-box') {
-            angular.forEach(['paddingLeft', 'paddingRight'], function(value) {
-                mirror.css(value, style[value]);
-            });
-        }
-    }
+                'borderRightStyle', 'borderRightWidth'], function (value) {
+                	mirror.css(value, style[value]);
+                });
+		} else if (style.boxSizing === 'padding-box') {
+			angular.forEach(['paddingLeft', 'paddingRight'], function (value) {
+				mirror.css(value, style[value]);
+			});
+		}
+	}
 
-    return {
-        restrict: 'A',
-        link: function postLink(scope, element, attrs) {
+	return {
+		restrict: 'A',
+		require: '?ngModel',
+		link: function postLink(scope, element, attrs, ngModelCtrl) {
 
-            // Disable trimming inputs by default
-            attrs.$set('ngTrim', attrs.ngTrim === 'true' ? 'true' : 'false');
+			// Disable trimming inputs by default
+			attrs.$set('ngTrim', attrs.ngTrim === 'true' ? 'true' : 'false');
 
-            var mirror = angular.element('<span style="white-space:pre;"></span>');
-            setMirrorStyle(mirror, element, attrs);
+			var mirror = angular.element('<span style="white-space:pre;"></span>');
+			setMirrorStyle(mirror, element, attrs);
 
-            wrapper.append(mirror);
+			wrapper.append(mirror);
 
-            function update() {
-                var v = element.val() || attrs.placeholder || '';
-                if (typeof (element.attr("fcsa-number")) !== "undefined" && v.indexOf(",") == -1
+			function update() {
+				var v = element.val() || attrs.placeholder || '';
+				if (typeof (element.attr("fcsa-number")) !== "undefined" && v.indexOf(",") == -1
                     && v.indexOf("$") == -1 && v.indexOf("%") == -1) {
-                    var len =v.length;
-                    for (var i = 0; i < len / 3;i++)
-                        v +=",";
-                    if (element.attr("fcsa-number").length) {
-                        v+="$";
-                    }
-                }
-                //console.log("puElasticInput:" + v);
-                mirror.text(v);
-                var delta = parseInt(attrs.puElasticInputWidthDelta) || 1;
-                element.css('width', mirror.prop('offsetWidth') + delta + 'px');
-            }
+					var len = v.length;
+					for (var i = 0; i < len / 3; i++)
+						v += ",";
+					if (element.attr("fcsa-number").length) {
+						v += "$";
+					}
+				}
+				//console.log("puElasticInput:" + v);
+				mirror.text(v);
+				var delta = parseInt(attrs.puElasticInputWidthDelta) || 1;
+				element.css('width', mirror.prop('offsetWidth') + delta + 'px');
+			}
 
-            update();
+			update();
 
-            if (attrs.ngModel) {
-                scope.$watch(attrs.ngModel, update);
-            } else {
-                element.on('keydown keyup focus input propertychange change', update);
-            }
+			if (attrs.ngModel) {
+				scope.$watch(attrs.ngModel, update);
+				if (typeof (ngModelCtrl) !== "undefined") {
+					scope.$watch(function () { return ngModelCtrl.$viewValue; }, update);
+					//ngModelCtrl.$viewChangeListeners.push(function () {
+					//	update();
+					//});
+				}
+			} else {
+				element.on('keydown keyup focus input propertychange change', update);
+			}
 
-            scope.$on('$destroy', function() {
-                mirror.remove();
-            });
-        }
-    };
+			scope.$on('$destroy', function () {
+				mirror.remove();
+			});
+		}
+	};
 }]);

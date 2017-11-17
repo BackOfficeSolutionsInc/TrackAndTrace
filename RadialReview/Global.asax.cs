@@ -29,6 +29,69 @@ namespace RadialReview {
 	public class MvcApplication : System.Web.HttpApplication {
 		// protected async void App
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+		protected async void Application_Start() {
+
+			ChromeExtensionComms.SendCommand("appStart");
+			//GlobalConfiguration.Configure(WebApiConfig.Register);
+			//AntiForgeryConfig.RequireSsl = true;
+			AntiForgeryConfig.SuppressXFrameOptionsHeader = true;
+
+			//AreaRegistration.RegisterAllAreas();
+            AreaRegistration.RegisterAllAreas();
+
+			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+			RouteConfig.RegisterRoutes(RouteTable.Routes);
+			//SwaggerConfig.Register(GlobalConfiguration.Configuration);
+			GlobalConfiguration.Configure(WebApiConfig.Register);
+
+			BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+			HookConfig.RegisterHooks();
+
+			// ValueProviderFactories.Factories.Add(new JsonValueProviderFactory());
+
+			//ServerUtility.RegisterCacheEntry();
+			//ServerUtility.Reschedule();
+
+			//Add Angular serializer to SignalR
+			var serializerSettings = new JsonSerializerSettings();
+			serializerSettings.Converters.Add(new AngularSerialization(true));
+			var serializer = JsonSerializer.Create(serializerSettings);
+			GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), () => serializer);
+
+			//NHibernate ignore proxy
+			JsonConvert.DefaultSettings = () => new JsonSerializerSettings {
+				Converters = new List<JsonConverter> { new NHibernateProxyJsonConvert() }
+			};
+
+			ApplicationAccessor.EnsureApplicationExists();
+
+			ViewEngines.Engines.Clear();
+			IViewEngine razorEngine = new RazorViewEngine() { FileExtensions = new[] { "cshtml" } };
+			ViewEngines.Engines.Add(razorEngine);
+
+            ModelBinders.Binders.Add(typeof(DateTime), new DateTimeModelBinder());
+            ModelBinders.Binders.Add(typeof(DateTime?), new DateTimeModelBinder());
+
+            //install fonts
+            InstallFonts();
+		}
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+
+		protected void Application_Error(object sender, EventArgs e) {
+			Exception ex = Server.GetLastError();
+			if (ex is HttpException) {
+				var ee = (HttpException)ex;
+				if (ee.Message.StartsWith("A potentially dangerous Request.Path value was detected from the client (:)")) {
+					HttpContext.Current.Server.ClearError();
+					HttpContext.Current.Response.Redirect("~/Home/Index");
+				}
+			}
+
+
+		}
+
 		protected async Task Application_End() {
 			var wasKilled = await ChromeExtensionComms.SendCommandAndWait("appEnd");
 			var inte = 0;
@@ -67,54 +130,6 @@ namespace RadialReview {
 			}
 			return 0;
 		}
-
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-		protected async void Application_Start() {
-
-			ChromeExtensionComms.SendCommand("appStart");
-			//GlobalConfiguration.Configure(WebApiConfig.Register);
-			//AntiForgeryConfig.RequireSsl = true;
-			AntiForgeryConfig.SuppressXFrameOptionsHeader = true;
-
-			//AreaRegistration.RegisterAllAreas();
-			//AreaRegistration.RegisterAllAreas();
-			GlobalConfiguration.Configure(WebApiConfig.Register);
-
-			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-			RouteConfig.RegisterRoutes(RouteTable.Routes);
-
-			BundleConfig.RegisterBundles(BundleTable.Bundles);
-
-			HookConfig.RegisterHooks();
-
-			// ValueProviderFactories.Factories.Add(new JsonValueProviderFactory());
-
-			//ServerUtility.RegisterCacheEntry();
-			//ServerUtility.Reschedule();
-
-			//Add Angular serializer to SignalR
-			var serializerSettings = new JsonSerializerSettings();
-			serializerSettings.Converters.Add(new AngularSerialization());
-			var serializer = JsonSerializer.Create(serializerSettings);
-			GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), () => serializer);
-
-			//NHibernate ignore proxy
-			JsonConvert.DefaultSettings = () => new JsonSerializerSettings {
-				Converters = new List<JsonConverter> { new NHibernateProxyJsonConvert() }
-			};
-
-			ApplicationAccessor.EnsureApplicationExists();
-
-			ViewEngines.Engines.Clear();
-			IViewEngine razorEngine = new RazorViewEngine() { FileExtensions = new[] { "cshtml" } };
-			ViewEngines.Engines.Add(razorEngine);
-
-
-			//install fonts
-			InstallFonts();
-		}
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-
 
 
 		void Application_EndRequest(Object Sender, EventArgs e) {

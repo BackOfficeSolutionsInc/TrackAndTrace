@@ -7,61 +7,55 @@ using RadialReview.Accessors;
 using RadialReview.Models.Angular.CompanyValue;
 using RadialReview.Models.Angular.VTO;
 using RadialReview.Models.Json;
+using System.Threading.Tasks;
 
 namespace RadialReview.Controllers
 {
     public partial class VTOController : BaseController
     {
-        // GET: VtoData
+		// GET: VtoData
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult UpdateAngularVtoString(AngularVtoString model, string connectionId = null)
-		{
-			VtoAccessor.Update(GetUser(), model, connectionId);
-			return Json(ResultObject.SilentSuccess());
-        }
-
-		[HttpPost]
-		[Access(AccessLevel.UserOrganization)]
-		public JsonResult UpdateAngularVto(AngularVTO model, string connectionId = null)
-		{
-			VtoAccessor.Update(GetUser(), model, connectionId);
-			return Json(ResultObject.SilentSuccess());
-		}
-		[HttpPost]
-		[Access(AccessLevel.UserOrganization)]
-		public JsonResult UpdateAngularVtoRock(AngularVtoRock model, string connectionId = null)
-		{
-			VtoAccessor.Update(GetUser(), model, connectionId);
-			return Json(ResultObject.SilentSuccess());
-		}
-		[HttpPost]
-		[Access(AccessLevel.UserOrganization)]
-		public JsonResult UpdateAngularOneYearPlan(AngularOneYearPlan model, string connectionId = null)
-		{
-			VtoAccessor.Update(GetUser(), model, connectionId);
-			return Json(ResultObject.SilentSuccess());
-		}
-		[HttpPost]
-		[Access(AccessLevel.UserOrganization)]
-		public JsonResult UpdateAngularQuarterlyRocks(AngularQuarterlyRocks model, string connectionId = null)
-		{
-			VtoAccessor.Update(GetUser(), model, connectionId);
-			return Json(ResultObject.SilentSuccess());
-		}
-		[HttpPost]
-		[Access(AccessLevel.UserOrganization)]
-		public JsonResult UpdateAngularThreeYearPicture(AngularThreeYearPicture model, string connectionId = null)
-		{
-			VtoAccessor.Update(GetUser(), model, connectionId);
+		public async Task<JsonResult> UpdateAngularVtoString(AngularVtoString model, string connectionId = null) {
+			await VtoAccessor.Update(GetUser(), model, connectionId);
 			return Json(ResultObject.SilentSuccess());
 		}
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult UpdateAngularStrategy(AngularStrategy model, string connectionId = null)
-		{
-			VtoAccessor.Update(GetUser(), model, connectionId);
+		public async Task<JsonResult> UpdateAngularVto(AngularVTO model, string connectionId = null) {
+			await VtoAccessor.Update(GetUser(), model, connectionId);
+			return Json(ResultObject.SilentSuccess());
+		}
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> UpdateAngularVtoRock(AngularVtoRock model, string connectionId = null) {
+			await VtoAccessor.Update(GetUser(), model, connectionId);
+			return Json(ResultObject.SilentSuccess());
+		}
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> UpdateAngularOneYearPlan(AngularOneYearPlan model, string connectionId = null) {
+			await VtoAccessor.Update(GetUser(), model, connectionId);
+			return Json(ResultObject.SilentSuccess());
+		}
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> UpdateAngularQuarterlyRocks(AngularQuarterlyRocks model, string connectionId = null) {
+			await VtoAccessor.Update(GetUser(), model, connectionId);
+			return Json(ResultObject.SilentSuccess());
+		}
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> UpdateAngularThreeYearPicture(AngularThreeYearPicture model, string connectionId = null) {
+			await VtoAccessor.Update(GetUser(), model, connectionId);
+			return Json(ResultObject.SilentSuccess());
+		}
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> UpdateAngularStrategy(AngularStrategy model, string connectionId = null) {
+			await VtoAccessor.Update(GetUser(), model, connectionId);
 			return Json(ResultObject.SilentSuccess());
 		}
 		[Access(AccessLevel.UserOrganization)]
@@ -85,18 +79,16 @@ namespace RadialReview.Controllers
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult AddRock(long vto, string connectionId = null)
-		{
-			VtoAccessor.CreateNewRock(GetUser(), vto);
+		public async Task<JsonResult> AddRock(long vto, string connectionId = null) {
+			await VtoAccessor.CreateNewRock(GetUser(), vto);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult DeleteRock(long value, string connectionId = null)
-		{
-			VtoAccessor.UpdateRock(GetUser(), value,null,null,true,connectionId);
+		public async Task<JsonResult> DeleteRock(long value, string connectionId = null) {
+			await VtoAccessor.UpdateRock(GetUser(), value, null, null, true, connectionId);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
-		}	
+		}
 
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult DeleteCompanyValue(long value, string connectionId = null)
@@ -104,17 +96,15 @@ namespace RadialReview.Controllers
 			VtoAccessor.UpdateCompanyValue(GetUser(), value, null, null, true, connectionId);
 			return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
 		}
-	
+
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult UpdateAngularCompanyValue(AngularCompanyValue model, string connectionId = null)
-		{
-			VtoAccessor.Update(GetUser(), model, connectionId);
+		public async Task<JsonResult> UpdateAngularCompanyValue(AngularCompanyValue model, string connectionId = null) {
+			await VtoAccessor.Update(GetUser(), model, connectionId);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult UpdateAngularCoreFocus(AngularCoreFocus model, string connectionId = null)
-		{
-			VtoAccessor.Update(GetUser(), model, connectionId);
+		public async Task<JsonResult> UpdateAngularCoreFocus(AngularCoreFocus model, string connectionId = null) {
+			await VtoAccessor.Update(GetUser(), model, connectionId);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
@@ -139,16 +129,13 @@ namespace RadialReview.Controllers
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-	    public JsonResult XUpdateRock(string pk,string name,string value)
-	    {
+	    public async Task<JsonResult> XUpdateRock(string pk,string name,string value){
 		    switch(name.ToLower()){
-				case "accountable": VtoAccessor.UpdateRockAccountable(GetUser(), pk.ToLong(), value.ToLong());
+				case "accountable": await VtoAccessor.UpdateRock(GetUser(), pk.ToLong(), null, value.ToLong(), null, null);//VtoAccessor.UpdateRockAccountable(GetUser(), pk.ToLong(), value.ToLong());
 				    break;
 				default: throw new ArgumentOutOfRangeException(name.ToLower());
 		    }
 		    return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 	    }
-
-
     }
 }

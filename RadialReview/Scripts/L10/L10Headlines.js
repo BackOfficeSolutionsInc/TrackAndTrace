@@ -130,7 +130,7 @@ $("body").on("click", ".headlineDetails .message-holder .message", function () {
 
 function updateHeadlineMessage(id, message) {
 	$(".headlines .message[data-headline=" + id + "]").html(message);
-	$(".headlines .headline-row[data-headline=" + id + "]").data("message", escapeString(message));
+	$(".headlines .headline-row[data-id=" + id + "]").attr("data-message", escapeString(message));
 
 }
 

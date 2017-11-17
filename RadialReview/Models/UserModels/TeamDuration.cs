@@ -11,7 +11,8 @@ using System.Web;
 namespace RadialReview.Models.UserModels
 {
 	public class TeamDurationModel : IDeletable, ILongIdentifiable, IHistorical {
-		public virtual long Id { get; set; }
+        [Obsolete("Did you mean TeamId?")]
+        public virtual long Id { get; set; }
 		public virtual long UserId { get; set; }
 		public virtual long TeamId { get; set; }
 		public virtual long OrganizationId { get; set; }
@@ -47,7 +48,9 @@ namespace RadialReview.Models.UserModels
 
 		public class TeamDurationMap : ClassMap<TeamDurationModel> {
 			public TeamDurationMap() {
+#pragma warning disable CS0618 // Type or member is obsolete
 				Id(x => x.Id);
+#pragma warning restore CS0618 // Type or member is obsolete
 				Map(x => x.CreateTime).Column("Start");
 				Map(x => x.AddedBy);
 				Map(x => x.DeletedBy);

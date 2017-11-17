@@ -1,0 +1,222 @@
+﻿@model RadialReview.Areas.CoreProcess.Models.Process.ProcessViewModel
+@using RadialReview.Models;
+@{
+	ViewBag.Title = "CreateTask";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section top{
+	<div class="jumbotron">
+		<h1>List Of Task</h1>
+	</div>
+}
+
+<style>
+	@if (ViewBag.CanEdit == false) {
+	  @:.CanEdit{
+		@:	display: none;
+		@:}
+	}
+</style>
+
+@{
+	if (ViewBag.CanAdmin == true) {
+		Html.RenderAction("Dropdown", "Permissions", new { area = "", id = Model.Id, type = PermItem.ResourceType.CoreProcess });
+	}
+}
+<div class="row">
+	<div class="col-sm-8 col-lg-12">
+
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="headingFour">
+				<h4 class="panel-title">
+					<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+						Edit Process
+					</a>
+				</h4>
+			</div>
+
+			<div class="panel-body durations">
+				<div class="form-group">
+					<label class="col-sm-3 control-label">Process Name:</label>
+					<div class="col-sm-5">
+						<span id="name">@Model.Name</span>
+						<a class="CanEdit" href="#" onclick="@Html.ShowModal("Edit Process", "/Process/Edit/" + @Model.Id, "/Process/Edit/", onCompleteFunction: "reload")">
+							<span class="glyphicon glyphicon-pencil"></span>
+						</a>
+						@*<input class="btn btn-primary" type="submit" onclick="@Html.ShowModal("Edit Process", "/Process/Edit/" + @Model.Id, "/Process/Edit/")" value="Edit" />*@
+					</div>
+				</div>
+				@using (Html.BeginForm("Create", "Process", FormMethod.Post)) {
+					@Html.HiddenFor(m => m.Id);
+					@Html.HiddenFor(m => m.Name);
+					@Html.HiddenFor(m => m.LocalID);
+					@Html.AntiForgeryToken()
+					@Html.ValidationSummary(true)
+
+					<div style="clear:both">
+
+					</div>
+					if (Model.taskList != null) {
+						for (int i = 0; i < Model.taskList.Count; i++) {
+							@Html.HiddenFor(m => m.taskList[i].Id);
+							@Html.HiddenFor(m => m.taskList[i].description);
+							@Html.HiddenFor(m => m.taskList[i].name);
+						}
+					}
+					<div id="duration-table"></div>
+					using (Html.BeginScripts()) {
+						<script>
+							function ValidateForm(d) {
+								if (d.name == "") {
+									return "Name is required.";
+								}
+							}
+
+							var datas = @Html.ArrayToString(Model.taskList);
+							var table = DataTable({
+								container: "#duration-table",
+								data: datas,
+								clickAddValidation: ValidateForm,
+								clickEditValidation: ValidateForm,
+								clickReorder: "/Process/ReorderTask?id=@Model.LocalID&oldOrder={1}&newOrder={2}",
+								clickRemove: "/Process/DeleteTask/{0}?localid=@Model.LocalID",
+								clickEdit: "/Process/EditTask/{0}?localid=@Model.LocalID",
+								//addButton:{text: "Publish"},
+								@if (ViewBag.CanEdit == true) {
+										@:addButton: { text: "Publish"},
+																										@:clickAdd: PublishProcess,
+																								}
+								nodataText: "No Process. Click add to create one.",
+								@*clickAdd: "/Process/CreateTask/@Model.LocalID",
+								postAdd: "/Process/CreateTask",*@
+								//postAdd: "/Process/Publish",
+								cells:[
+									@if (ViewBag.CanEdit == true) {
+										@:{ reorder: true },
+									}
+                                    //{ id: "id", classes: "hidden", contents: function (x) { return x.Id;}},
+                                    { name: "Name", classes: "nowrap", contents: function(x) { console.log(x); return x.name; } },
+                                    { name: "Candidate Group", classes: "fullWidth", contents: function (x) { return x.SelectedMemberName; } },
+									@if (ViewBag.CanEdit == true) {
+										@:{ name: "Action", classes: "nowrap", edit: true},
+									}
+									@if (ViewBag.CanAdmin == true) {
+										@:{remove:true},
+									}
+									//{ edit: true ,},
+								],
+								nodataText: "No Task found."
+								@*data: @Html.ArrayToString(Model.taskList),*@
+							});
+
+							function PublishProcess(val) {
+								if (val.data.length != 0) {
+
+									window.location = "/CoreProcess/Process/Publish/" + "@Model.LocalID";
+								}
+								else {
+									$.ajax({
+										url: "/CoreProcess/Process/Publish/0",
+										success: function (data) {
+											console.log(data);
+											table.editRow(data.Object);
+										},
+										error: function (data) {
+
+										}
+									});
+								}
+
+							}
+
+                            function deleteprocess(x,val)
+                            {
+                                if (val != 0) {
+                                    var title = "This will delete all running instances associated with this process.</br>Are you sure you want to delete!";
+                                    show(x, title);
+                                }
+                                else
+                                {
+                                    var title = "Are you sure you want to remove!";
+                                    show(x, title);
+                                }
+                            }
+                            function show(x, title)
+                            {
+                                showModal({
+                                    icon: "warning",
+                                    title: title,
+                                    success: function (d) {
+                                        $.ajax({
+                                            url: '/CoreProcess/Process/Delete/' + x,
+                                            success: function (data) {
+                                                window.location = "/CoreProcess/";
+                                                //table.removeRow(data.Object);
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                            function startProcess(id){
+                                $.ajax({
+                                    url: "/CoreProcess/Process/StartProcess/" + id,
+                                    success: function (data) {
+                                        window.location = "/CoreProcess/";
+                                        //console.log(data.Object);
+                                        //table.editRow(data.Object);
+                                    },
+                                    error: function (data) {
+
+                                    }
+                                });
+                            }
+
+							function reload(model) {
+								var name = model.Object.Name;
+								console.log(name);
+								$('#name').html(name);
+							}
+							function reloadGrid(model) {
+								datas.push(model.Object);
+								table.setData(datas);
+							}
+						</script>
+					}
+				}
+				<div class="alignCenter">
+					<input class="btn btn-primary CanEdit" type="submit" onclick="@Html.ShowModal("New Task", "/Process/CreateTask/" + @Model.LocalID, "/Process/CreateTask", onCompleteFunction: "reloadGrid")" value="New Task" />
+                    <input class="btn btn-primary CanEdit" type="submit" onclick="startProcess(@Model.LocalID)" value="Start Process" />
+                    <input class="btn btn-primary CanEdit" type="submit" onclick="deleteprocess(@Model.LocalID)" value="Delete Process" />                    
+				</div>
+			</div>
+
+
+
+
+		</div>
+	</div>
+</div>
+@using (Html.BeginStyles()) {
+	@Styles.Render("~/Content/MeetingEdit")
+	<style>
+		.durations .form-group {
+			margin-bottom: 4px;
+		}
+
+		html, body {
+			background-color: #eee;
+		}
+
+		.width80 {
+			width: 80px;
+		}
+	</style>
+}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+@*<script>
+	$(window).on('load', function () {
+		$("table thead tr th").next().next().attr("colspan", "3");;
+	});
+
+
+</script>*@

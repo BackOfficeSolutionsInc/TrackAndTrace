@@ -13,6 +13,17 @@ using RadialReview.Utilities;
 
 namespace RadialReview.Controllers
 {
+	public class PhoneController : BaseController {
+
+		// GET: TwilioApi
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Index() {
+			var actions = PhoneAccessor.GetAllPhoneActionsForUser(GetUser(), GetUser().Id);
+			return View(actions);
+		}
+	}
+
+
     public class TwilioApiController : BaseController
     {
 		// GET: TwilioApi
@@ -34,35 +45,37 @@ namespace RadialReview.Controllers
 			public bool TodoOnly { get; internal set; }
 		}
 
-		protected static List<SelectListItem> PossibleActions = new List<SelectListItem>(){
+		static TwilioApiController() {
+			PossibleActions = PhoneAccessor.PossibleActions.ToSelectList(x => x.Value, x => x.Key);
+		}
+
+		public static List<SelectListItem> PossibleActions;/* = new List<SelectListItem>(){
 			new SelectListItem(){Text = "Add an Issue", Value = PhoneAccessor.ISSUE },
 			new SelectListItem(){Text = "Add a To-Do", Value = PhoneAccessor.TODO },
 			new SelectListItem(){Text = "Add a People Headline", Value = PhoneAccessor.HEADLINE },
-		};
+		};*/
 
 		[Access(AccessLevel.UserOrganization)]
-        public PartialViewResult Modal(long recurrenceId,bool todoOnly=false)
-		{
+		public async Task<PartialViewResult> Modal(long recurrenceId, bool todoOnly = false) {
 			var posActions = PossibleActions.ToList();
 			if (recurrenceId != -2) {
 				//Personal Todo
 				new PermissionsAccessor().Permitted(GetUser(), x => x.ViewL10Recurrence(recurrenceId));
 
-				var recur = L10Accessor.GetAngularRecurrence(GetUser(), recurrenceId, false, false, false);
+				var recur = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), recurrenceId, false, false, false);
 				if (recur.HeadlineType != Model.Enums.PeopleHeadlineType.HeadlinesList)
-					posActions= posActions.Where(x => x.Value != PhoneAccessor.HEADLINE).ToList();
+					posActions = posActions.Where(x => x.Value != PhoneAccessor.HEADLINE).ToList();
 
 			}
 
 			if (todoOnly)
 				posActions = posActions.Where(x => x.Value == PhoneAccessor.TODO).ToList();
 
-			var model = new PhoneVM()
-			{
+			var model = new PhoneVM() {
 				RecurrenceId = recurrenceId,
 				PossibleActions = posActions,
 				PossibleNumbers = PhoneAccessor.GetUnusedCallablePhoneNumbersForUser(GetUser(), GetUser().Id).ToSelectList(x => x.Number.ToPhoneNumber(), x => x.Id),
-				TodoOnly= todoOnly
+				TodoOnly = todoOnly
 			};
 
 			return PartialView(model);
@@ -116,13 +129,24 @@ namespace RadialReview.Controllers
 
 
 		[Access(AccessLevel.UserOrganization)]
-	    public JsonResult Delete(long id)
-	    {
+	    public JsonResult Delete(long id){
 		    PhoneAccessor.DeleteAction(GetUser(), id);
 			return Json(ResultObject.SilentSuccess());
 	    }
 
-	
+
+		[Access(AccessLevel.Any)]
+		public async Task<ContentResult> ReceiveForum_C4C187FFD1544290A05CB860EED6F2B0(string From,string Body,string To) {
+			try {
+				var response = await PhoneAccessor.ReceiveForumText(From, Body, To);
+				return PhoneContent(response);
+			} catch (PhoneException e) {
+				return PhoneContent(e.Message);
+			} catch (Exception) {
+				return PhoneContent("Something went wrong");
+			}	
+		}
+
 		[Access(AccessLevel.Any)]
 		public async Task<ContentResult> ReceiveText_53B006C3B7ED45C58EE31DBFA85D75BA()
 		{
@@ -144,7 +168,9 @@ namespace RadialReview.Controllers
 		}
 
 	    protected ContentResult PhoneContent(string message){
-		    return Content("<Response><Sms>"+message+"</Sms></Response>");
+			if (string.IsNullOrWhiteSpace(message))
+				return Content("<Response></Response>");
+			return Content("<Response><Sms>"+message+"</Sms></Response>");
 	    }
     }
 }

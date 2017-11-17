@@ -2,6 +2,8 @@
 using Microsoft.AspNet.WebHooks.Config;
 using Microsoft.AspNet.WebHooks.Diagnostics;
 using Microsoft.AspNet.WebHooks.Services;
+using RadialReview.Utilities.Synchronize;
+//using Microsoft.AspNetCore.Http;
 //using Microsoft.AspNetCore.DataProtection;
 
 using System;
@@ -10,6 +12,8 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Dispatcher;
@@ -30,7 +34,10 @@ namespace RadialReview {
 			//config.Services.Replace(typeof(IHttpControllerSelector), new NamespaceHttpControllerSelector(config));
 			config.Formatters.Remove(config.Formatters.XmlFormatter);
 			config.Formatters.Add(config.Formatters.JsonFormatter);
+			config.Formatters.Add(config.Formatters.FormUrlEncodedFormatter);
+			config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
 
+			config.Filters.Add(new ClientTimestampFilter());
 			config.Filters.Add(new HandleApiExceptionAttribute());
 
 			config.InitializeCustomWebHooks();
@@ -47,11 +54,18 @@ namespace RadialReview {
 			ILogger logger = config.DependencyResolver.GetLogger();
 			SettingsDictionary settings = config.DependencyResolver.GetSettings();
 
-			// We explicitly set the DB initializer to null to avoid that an existing DB is initialized wrongly.
-			//Database.SetInitializer<WebHookStoreContext>(null);
+            // We explicitly set the DB initializer to null to avoid that an existing DB is initialized wrongly.
+            //Database.SetInitializer<WebHookStoreContext>(null);
 
-			IWebHookStore store = new RadialWebHookStore();
-			CustomServices.SetStore(store);
+            IWebHookStore store = new RadialWebHookStore();
+            CustomServices.SetStore(store);
+        }
+	}
+
+	public class ClientTimestampFilter : ActionFilterAttribute {
+		public override void OnActionExecuting(HttpActionContext actionContext) {			
+			HttpContext.Current.Items[SyncUtil.NO_SYNC_EXCEPTION] = true;
+			base.OnActionExecuting(actionContext);
 		}
 	}
 

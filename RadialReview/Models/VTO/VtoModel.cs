@@ -11,6 +11,7 @@ using RadialReview.Models.Interfaces;
 using Remotion.Linq.Clauses;
 using RadialReview.Models.Components;
 using RadialReview.Models.Issues;
+using RadialReview.Models.Angular.VTO;
 
 namespace RadialReview.Models.VTO {
 	public enum VtoItemType : int {
@@ -189,14 +190,14 @@ namespace RadialReview.Models.VTO {
 		public virtual string ProfitStr { get; set; }
 		public virtual string Measurables { get; set; }
 		public virtual string RocksTitle { get; set; }
-		public virtual List<Vto_Rocks> _Rocks { get; set; }
-
+		public virtual List<AngularVtoRock> _Rocks { get; set; }
+		
 		public QuarterlyRocksModel() {
 			//FutureDate = new VtoItem_DateTime();
 			//Revenue=new VtoItem_Decimal();
 			//Profit = new VtoItem_Decimal();
 			//Measurables = new VtoItem_String();
-			_Rocks = new List<Vto_Rocks>();
+			_Rocks = new List<AngularVtoRock>();
 		}
 		public class QuarterlyRocksMap : ClassMap<QuarterlyRocksModel> {
 			public QuarterlyRocksMap() {
@@ -310,33 +311,33 @@ namespace RadialReview.Models.VTO {
 
 	#endregion
 	#region Rocks
-	public class Vto_Rocks : ILongIdentifiable, IHistorical {
-		public virtual long Id { get; set; }
+	//public class Vto_Rocks : ILongIdentifiable, IHistorical {
+	//	public virtual long Id { get; set; }
 
-		public virtual VtoModel Vto { get; set; }
-		public virtual long? CopiedFrom { get; set; }
+	//	public virtual VtoModel Vto { get; set; }
+	//	public virtual long? CopiedFrom { get; set; }
 
-		public virtual DateTime CreateTime { get; set; }
-		public virtual DateTime? DeleteTime { get; set; }
-		public virtual int _Ordering { get; set; }
-		public virtual RockModel Rock { get; set; }
+	//	public virtual DateTime CreateTime { get; set; }
+	//	public virtual DateTime? DeleteTime { get; set; }
+	//	public virtual int _Ordering { get; set; }
+	//	public virtual RockModel Rock { get; set; }
 
-		public Vto_Rocks() {
-			CreateTime = DateTime.UtcNow;
-		}
+	//	public Vto_Rocks() {
+	//		CreateTime = DateTime.UtcNow;
+	//	}
 
-		public class Vto_RocksMap : ClassMap<Vto_Rocks> {
-			public Vto_RocksMap() {
-				Id(x => x.Id);
-				References(x => x.Vto).Nullable().LazyLoad();
-				Map(x => x.CopiedFrom);
-				Map(x => x.CreateTime);
-				Map(x => x.DeleteTime);
-				Map(x => x._Ordering);
-				References(x => x.Rock).Not.Nullable().Not.LazyLoad();
-			}
-		}
-	}
+	//	public class Vto_RocksMap : ClassMap<Vto_Rocks> {
+	//		public Vto_RocksMap() {
+	//			Id(x => x.Id);
+	//			References(x => x.Vto).Nullable().LazyLoad();
+	//			Map(x => x.CopiedFrom);
+	//			Map(x => x.CreateTime);
+	//			Map(x => x.DeleteTime);
+	//			Map(x => x._Ordering);
+	//			References(x => x.Rock).Not.Nullable().Not.LazyLoad();
+	//		}
+	//	}
+	//}
 	#endregion
 
 

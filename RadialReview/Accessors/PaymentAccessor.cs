@@ -32,6 +32,8 @@ using System.Collections.Specialized;
 using NHibernate.Criterion;
 using static RadialReview.Utilities.PaymentSpringUtil;
 using RadialReview.Models.Components;
+using RadialReview.Utilities.DataTypes;
+using RadialReview.Hooks;
 
 namespace RadialReview.Accessors {
 	public class PaymentAccessor : BaseAccessor {
@@ -273,6 +275,72 @@ namespace RadialReview.Accessors {
 		}
 
 
+		public class UserCalculator {
+			public class UQ {
+				public long UserOrgId { get; set; }
+				public bool? IsRadialAdmin { get; set; }
+				public bool IsClient { get; set; }
+				public String UserId { get; set; }
+				public bool IsRegistered { get; set; }
+				public bool EvalOnly { get; set; }
+			}
+
+			public IEnumerable<UQ> AllPeopleList { get; protected set; }
+			public PaymentPlan_Monthly Plan { get; protected set; }
+
+			public int NumberQCUsers { get { return AllPeopleList.Where(x => !x.IsClient).Count(); } }
+			public int NumberTotalUsers { get { return AllPeopleList.Count(); } }
+
+			public int NumberQCUsersToChargeFor { get { return NumberQCUsers; } }
+			public int NumberL10UsersToChargeFor { get { return Math.Max(0, NumberL10Users - Plan.FirstN_Users_Free); } }
+
+			public int NumberL10Users {
+				get {
+					var l10Users = AllPeopleList.Where(x => !x.EvalOnly);
+					var l10UserCount = l10Users.Count();
+					return l10UserCount;
+				}
+			}
+
+			public UserCalculator(ISession s, long orgId, PaymentPlanModel planModel, DateRange range) {
+				if (NHibernateUtil.GetClass(planModel) != typeof(PaymentPlan_Monthly)) {
+					throw new PermissionsException("Unhandled Payment Plan");
+				}
+
+				Plan = (PaymentPlan_Monthly)s.GetSessionImplementation().PersistenceContext.Unproxy(planModel);
+
+				if (Plan.OrgId != orgId)
+					throw new Exception("Org Id do not match");
+
+				var rangeStart = range.StartTime;
+				var rangeEnd = range.EndTime;
+
+				UserModel u = null;
+				UserOrganizationModel uo = null;
+				AllPeopleList = s.QueryOver<UserOrganizationModel>(() => uo)
+									.Left.JoinAlias(() => uo.User, () => u)                 ///Existed any time during this range.
+									.Where(() => uo.Organization.Id == orgId && uo.CreateTime <= rangeEnd && (uo.DeleteTime == null || uo.DeleteTime > rangeStart) && !uo.IsRadialAdmin)
+									.Select(x => x.Id, x => u.IsRadialAdmin, x => x.IsClient, x => x.User.Id, x => x.EvalOnly)
+									.List<object[]>()
+									.Select(x => new UQ {
+										UserOrgId = (long)x[0],
+										IsRadialAdmin = (bool?)x[1],
+										IsClient = (bool)x[2],
+										UserId = (string)x[3],
+										IsRegistered = x[3] != null,
+										EvalOnly = (bool?)x[4] ?? false
+									})
+									.Where(x => x.IsRadialAdmin == null || (bool)x.IsRadialAdmin == false)
+									.ToList();
+				if (Plan.NoChargeForClients) {
+					AllPeopleList = AllPeopleList.Where(x => x.IsClient == false).ToList();
+				}
+				if (Plan.NoChargeForUnregisteredUsers) {
+					AllPeopleList = AllPeopleList.Where(x => x.IsRegistered).ToList();
+				}
+			}
+		}
+
 		public static List<Itemized> CalculateCharge(ISession s, OrganizationModel org, PaymentPlanModel paymentPlan, DateTime executeTime) {
 			var itemized = new List<Itemized>();
 
@@ -281,46 +349,14 @@ namespace RadialReview.Accessors {
 				var rangeStart = executeTime.Subtract(TimespanExtensions.OneMonth());
 				var rangeEnd = executeTime;
 
-				UserModel u = null;
-				UserOrganizationModel uo = null;
-				var allPeopleList = s.QueryOver<UserOrganizationModel>(() => uo)
-					.Left.JoinAlias(() => uo.User, () => u)
-					//.Where(Restrictions.Or(
-					//    Restrictions.On(()=>uo.User).IsNull,
-					//    Restrictions.Eq(Projections.Property(()=>uo.User.IsRadialAdmin),false)
-					//))
-					.Where(() => uo.Organization.Id == org.Id && uo.CreateTime < rangeEnd && (uo.DeleteTime == null || uo.DeleteTime > rangeStart) && !uo.IsRadialAdmin)
-					.Select(x => x.Id, x => u.IsRadialAdmin, x => x.IsClient, x => x.User.Id, x => x.EvalOnly)
-					.List<object[]>()
-					.Select(x => new {
-						UserOrgId = (long)x[0],
-						IsRadialAdmin = (bool?)x[1],
-						IsClient = (bool)x[2],
-						UserId = (string)x[3],
-						IsRegistered = x[3] != null,
-						EvalOnly = (bool?)x[4] ?? false
-					})
-					.Where(x => x.IsRadialAdmin == null || (bool)x.IsRadialAdmin == false)
-					.ToList();
-
-				if (plan.NoChargeForClients) {
-					allPeopleList = allPeopleList.Where(x => x.IsClient == false).ToList();
-				}
-				if (plan.NoChargeForUnregisteredUsers) {
-					allPeopleList = allPeopleList.Where(x => x.IsRegistered).ToList();
-				}
-
-				var l10Users = allPeopleList.Where(x => !x.EvalOnly);
-				var l10UserCount = l10Users.Count();
-
-				var people = Math.Max(0, l10UserCount - plan.FirstN_Users_Free);
-				var allRevisions = s.AuditReader().GetRevisionsBetween<OrganizationModel>(s, org.Id, rangeStart, rangeEnd).ToList();
+				///HEAVY LIFTING
+				var calc = new UserCalculator(s, org.Id, plan, new DateRange(rangeStart, rangeEnd));
 
 				//s.Auditer().GetRevisionNumberForDate(<OrganizationModel>(org.Id,);
 
+				var allRevisions = s.AuditReader().GetRevisionsBetween<OrganizationModel>(s, org.Id, rangeStart, rangeEnd).ToList();
 				var reviewEnabled = /*org.Settings.EnableReview;//*/allRevisions.Any(x => x.Object.Settings.EnableReview);
 				var l10Enabled = /*org.Settings.EnableL10; //*/allRevisions.Any(x => x.Object.Settings.EnableL10);
-
 
 				//In case clocks are off.
 				var executionCalculationDate = executeTime.AddDays(1).Date;
@@ -339,7 +375,7 @@ namespace RadialReview.Accessors {
 					var reviewItem = new Itemized() {
 						Name = "Quarterly Conversation",
 						Price = plan.ReviewPricePerPerson,
-						Quantity = allPeopleList.Where(x => !x.IsClient).Count()
+						Quantity = calc.NumberQCUsersToChargeFor//allPeopleList.Where(x => !x.IsClient).Count()
 					};
 					if (reviewItem.Quantity != 0) {
 						itemized.Add(reviewItem);
@@ -353,7 +389,7 @@ namespace RadialReview.Accessors {
 					var l10Item = new Itemized() {
 						Name = "L10 Meeting Software",
 						Price = plan.L10PricePerPerson,
-						Quantity = people,
+						Quantity = calc.NumberL10UsersToChargeFor,
 					};
 					if (l10Item.Quantity != 0) {
 						itemized.Add(l10Item);
@@ -383,7 +419,7 @@ namespace RadialReview.Accessors {
 		[Obsolete("Unsafe")]
 		public static async Task<PaymentResult> ChargeOrganizationAmount(ISession s, long organizationId, decimal amount, bool forceTest = false) {
 			if (amount == 0) {
-				EventUtil.Trigger(x => x.Create(s, EventType.PaymentFree, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "No Charge", arg1: 0m));
+				await EventUtil.Trigger(x => x.Create(s, EventType.PaymentFree, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "No Charge", arg1: 0m));
 				return new PaymentResult() {
 					amount_settled = 0,
 				};
@@ -396,27 +432,27 @@ namespace RadialReview.Accessors {
 
 			var org2 = s.Get<OrganizationModel>(organizationId);
 			if (org2 != null && org2.AccountType == AccountType.Implementer) {
-				EventUtil.Trigger(x => x.Create(s, EventType.PaymentFree, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "Implementer", arg1: 0));
+				await EventUtil.Trigger(x => x.Create(s, EventType.PaymentFree, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "Implementer", arg1: 0));
 				throw new FallthroughException("Failed to charge implementer account (" + org2.Id + ") " + org2.GetName());
 			}
 			if (org2 != null && org2.AccountType == AccountType.Dormant) {
-				EventUtil.Trigger(x => x.Create(s, EventType.PaymentFailed, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "Dormant", arg1: 0));
+				await EventUtil.Trigger(x => x.Create(s, EventType.PaymentFailed, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "Dormant", arg1: 0));
 				throw new FallthroughException("Failed to charge dormant account (" + org2.Id + ") " + org2.GetName());
 			}
 
 			if (token == null) {
-				EventUtil.Trigger(x => x.Create(s, EventType.PaymentFailed, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "MissingToken", arg1: amount));
+				await EventUtil.Trigger(x => x.Create(s, EventType.PaymentFailed, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "MissingToken", arg1: amount));
 				throw new PaymentException(s.Get<OrganizationModel>(organizationId), amount, PaymentExceptionType.MissingToken);
 			}
 			PaymentResult pr = null;
 			try {
 				pr = await PaymentSpringUtil.ChargeToken(org2, token, amount, forceTest);
-				EventUtil.Trigger(x => x.Create(s, EventType.PaymentReceived, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "Charged", arg1: amount));
+				await EventUtil.Trigger(x => x.Create(s, EventType.PaymentReceived, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "Charged", arg1: amount));
 			} catch (PaymentException e) {
-				EventUtil.Trigger(x => x.Create(s, EventType.PaymentFailed, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "" + e.Type, arg1: amount));
+				await EventUtil.Trigger(x => x.Create(s, EventType.PaymentFailed, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "" + e.Type, arg1: amount));
 				throw e;
 			} catch (Exception e) {
-				EventUtil.Trigger(x => x.Create(s, EventType.PaymentFailed, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "Unhandled:" + e.Message, arg1: amount));
+				await EventUtil.Trigger(x => x.Create(s, EventType.PaymentFailed, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "Unhandled:" + e.Message, arg1: amount));
 				throw e;
 			}
 
@@ -551,7 +587,7 @@ namespace RadialReview.Accessors {
 		public static async Task<PaymentMethodVM> SetCard(UserOrganizationModel caller, long organizationId, string tokenId, string @class,
 			string cardType, string cardOwnerName, string last4, int expireMonth, int expireYear, String address_1, String address_2,
 			String city, String state, string zip, string phone, string website, string country, string email, bool active) {
-			
+
 			return await SetToken(caller, organizationId, tokenId, @class, cardType, cardOwnerName, last4, expireMonth, expireYear, address_1, address_2, city, state, zip, phone, website, country, email, active, null, null, null, null, null, PaymentSpringTokenType.CreditCard);
 
 		}
@@ -562,6 +598,7 @@ namespace RadialReview.Accessors {
 			String city, String state, string zip, string phone, string website, string country, string email, bool active,
 			string bankLast4, string bankRouting, string bankFirstName, string bankLastName, string bankAccountType, PaymentSpringTokenType tokenType) {
 
+			PaymentSpringsToken token;
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					if (@class != "token")
@@ -614,7 +651,6 @@ namespace RadialReview.Accessors {
 					// Create the HttpContent for the form to be posted.
 					var requestContent = new FormUrlEncodedContent(keys.ToArray());
 
-
 					//Do not supress
 					var privateApi = Config.PaymentSpring_PrivateKey();
 
@@ -636,7 +672,7 @@ namespace RadialReview.Accessors {
 							throw new PermissionsException("Expected class: 'Customer'");
 
 
-						var token = new PaymentSpringsToken() {
+						token = new PaymentSpringsToken() {
 							CustomerToken = Json.Decode(result).id,
 							CardLast4 = cardLast4,
 							CardOwner = cardOwnerName,
@@ -659,11 +695,18 @@ namespace RadialReview.Accessors {
 						s.Save(token);
 						tx.Commit();
 						s.Flush();
-																	
-						return new PaymentMethodVM(token);
-					}
 
+					}
 				}
+				using (var ss = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
+						await EventUtil.Trigger(x => x.Create(ss, EventType.PaymentEntered, caller, token, "Added " + tokenType));
+						tx.Commit();
+						s.Flush();
+					}
+				}
+
+				return new PaymentMethodVM(token);
 			}
 		}
 
@@ -793,14 +836,14 @@ namespace RadialReview.Accessors {
 
 
 		[Obsolete("Dont forget to attach to send this through AttachPlan")]
-		public static PaymentPlan_Monthly GeneratePlan(PaymentPlanType type, DateTime? now = null) {
+		public static PaymentPlan_Monthly GeneratePlan(PaymentPlanType type, DateTime? now = null,DateTime? trialEnd=null) {
 			var now1 = now ?? DateTime.UtcNow;
 			var day30 = now1.AddDays(30);
 			var day90 = now1.AddDays(90);
 			var basePlan = new PaymentPlan_Monthly() {
-				FreeUntil = day30,
-				L10FreeUntil = day30,
-				ReviewFreeUntil = day90,
+				FreeUntil = trialEnd??day30,
+				L10FreeUntil = trialEnd??day30,
+				ReviewFreeUntil = Math2.Max(day90, trialEnd??DateTime.MinValue),
 				PlanCreated = now1,
 				NoChargeForUnregisteredUsers = true,
 			};

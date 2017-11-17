@@ -167,3 +167,234 @@ Compressing  install\Scripts\UrlRewrite.bat
 
 Everything is Ok
 upload: .\install.zip to s3://Radial/Installer/install.zip
+ 
+'======================Fri 08-18-2017  0-34-25.80======================' 
+        1 file(s) moved.
+
+7-Zip [64] 9.38 beta  Copyright (c) 1999-2014 Igor Pavlov  2015-01-03
+Scanning
+
+Creating archive install.zip
+
+Compressing  install\Files\ec2service\AWS.EC2.Windows.CloudWatch.json
+Compressing  install\Files\ec2service\config.xml
+Compressing  install\Fonts\Arial Narrow Bold.TTF
+Compressing  install\Fonts\Arial Narrow.TTF
+Compressing  install\Fonts\Arial.ttf
+Compressing  install\Installers\installEC2Service.bat
+Compressing  install\Installers\installFonts.bat
+Compressing  install\Installers\installSendEmail.ps1
+Compressing  install\Installers\NistPolling.reg
+Compressing  install\main.bat
+Compressing  install\README.txt
+Compressing  install\Scripts\SendEmail.ps1
+Compressing  install\Scripts\UrlRewrite.bat
+
+Everything is Ok
+
+Kernel  Time =     0.015 =    7%
+User    Time =     0.156 =   75%
+Process Time =     0.171 =   83%    Virtual  Memory =    145 MB
+Global  Time =     0.206 =  100%    Physical Memory =     18 MB
+ 
+'======================Fri 08-18-2017  0-43-40.67======================' 
+        1 file(s) moved.
+
+7-Zip [64] 9.38 beta  Copyright (c) 1999-2014 Igor Pavlov  2015-01-03
+Scanning
+
+Creating archive install.zip
+
+Compressing  install\Files\ec2service\AWS.EC2.Windows.CloudWatch.json
+Compressing  install\Files\ec2service\config.xml
+Compressing  install\Fonts\Arial Narrow Bold.TTF
+Compressing  install\Fonts\Arial Narrow.TTF
+Compressing  install\Fonts\Arial.ttf
+Compressing  install\Installers\installEC2Service.bat
+Compressing  install\Installers\installFonts.bat
+Compressing  install\Installers\installSendEmail.ps1
+Compressing  install\Installers\NistPolling.reg
+Compressing  install\main.bat
+Compressing  install\README.txt
+Compressing  install\Scripts\SendEmail.ps1
+Compressing  install\Scripts\UrlRewrite.bat
+
+Everything is Ok
+
+Kernel  Time =     0.031 =   18%
+User    Time =     0.218 =  126%
+Process Time =     0.250 =  144%    Virtual  Memory =    145 MB
+Global  Time =     0.173 =  100%    Physical Memory =     18 MB
+ 
+'======================Fri 08-18-2017  1-17-51.92======================' 
+        1 file(s) moved.
+
+7-Zip [64] 9.38 beta  Copyright (c) 1999-2014 Igor Pavlov  2015-01-03
+Scanning
+
+Creating archive install.zip
+
+Compressing  install\Files\ec2service\AWS.EC2.Windows.CloudWatch.json
+Compressing  install\Files\ec2service\config.xml
+Compressing  install\Fonts\Arial Narrow Bold.TTF
+Compressing  install\Fonts\Arial Narrow.TTF
+Compressing  install\Fonts\Arial.ttf
+Compressing  install\Installers\installEC2Service.bat
+Compressing  install\Installers\installFonts.bat
+Compressing  install\Installers\installSendEmail.ps1
+Compressing  install\Installers\NistPolling.reg
+Compressing  install\main.bat
+Compressing  install\README.txt
+Compressing  install\Scripts\SendEmail.ps1
+Compressing  install\Scripts\UrlRewrite.bat
+
+Everything is Ok
+
+Kernel  Time =     0.015 =   11%
+User    Time =     0.171 =  130%
+Process Time =     0.187 =  141%    Virtual  Memory =    145 MB
+Global  Time =     0.132 =  100%    Physical Memory =     18 MB
+ 
+'======================Fri 08-18-2017  1-18-10.89======================' 
+        1 file(s) moved.
+
+7-Zip [64] 9.38 beta  Copyright (c) 1999-2014 Igor Pavlov  2015-01-03
+Scanning
+
+Creating archive install.zip
+
+Compressing  install\Files\ec2service\AWS.EC2.Windows.CloudWatch.json
+Compressing  install\Files\ec2service\config.xml
+Compressing  install\Fonts\Arial Narrow Bold.TTF
+Compressing  install\Fonts\Arial Narrow.TTF
+Compressing  install\Fonts\Arial.ttf
+Compressing  install\Installers\installEC2Service.bat
+Compressing  install\Installers\installFonts.bat
+Compressing  install\Installers\installSendEmail.ps1
+Compressing  install\Installers\NistPolling.reg
+Compressing  install\main.bat
+Compressing  install\README.txt
+Compressing  install\Scripts\SendEmail.ps1
+Compressing  install\Scripts\UrlRewrite.bat
+
+Everything is Ok
+
+Kernel  Time =     0.015 =   12%
+User    Time =     0.171 =  136%
+Process Time =     0.187 =  148%    Virtual  Memory =    145 MB
+Global  Time =     0.126 =  100%    Physical Memory =     18 MB
+ 
+'======================Fri 08-18-2017  1-19-50.38======================' 
+        1 file(s) moved.
+
+7-Zip [64] 9.38 beta  Copyright (c) 1999-2014 Igor Pavlov  2015-01-03
+Scanning
+
+Creating archive install.zip
+
+Compressing  install\Files\ec2service\AWS.EC2.Windows.CloudWatch.json
+Compressing  install\Files\ec2service\config.xml
+Compressing  install\Fonts\Arial Narrow Bold.TTF
+Compressing  install\Fonts\Arial Narrow.TTF
+Compressing  install\Fonts\Arial.ttf
+Compressing  install\Installers\installEC2Service.bat
+Compressing  install\Installers\installFonts.bat
+Compressing  install\Installers\installSendEmail.ps1
+Compressing  install\Installers\NistPolling.reg
+Compressing  install\main.bat
+Compressing  install\README.txt
+Compressing  install\Scripts\SendEmail.ps1
+Compressing  install\Scripts\UrlRewrite.bat
+
+Everything is Ok
+
+Kernel  Time =     0.000 =    0%
+User    Time =     0.171 =  118%
+Process Time =     0.171 =  118%    Virtual  Memory =    145 MB
+Global  Time =     0.145 =  100%    Physical Memory =     18 MB
+ 
+'======================Fri 08-18-2017  1-24-17.13======================' 
+        1 file(s) moved.
+
+7-Zip [64] 9.38 beta  Copyright (c) 1999-2014 Igor Pavlov  2015-01-03
+Scanning
+
+Creating archive install.zip
+
+Compressing  install\Files\ec2service\AWS.EC2.Windows.CloudWatch.json
+Compressing  install\Files\ec2service\config.xml
+Compressing  install\Fonts\Arial Narrow Bold.TTF
+Compressing  install\Fonts\Arial Narrow.TTF
+Compressing  install\Fonts\Arial.ttf
+Compressing  install\Installers\installEC2Service.bat
+Compressing  install\Installers\installFonts.bat
+Compressing  install\Installers\installSendEmail.ps1
+Compressing  install\Installers\NistPolling.reg
+Compressing  install\main.bat
+Compressing  install\README.txt
+Compressing  install\Scripts\SendEmail.ps1
+Compressing  install\Scripts\UrlRewrite.bat
+
+Everything is Ok
+
+Kernel  Time =     0.000 =    0%
+User    Time =     0.187 =  124%
+Process Time =     0.187 =  124%    Virtual  Memory =    145 MB
+Global  Time =     0.151 =  100%    Physical Memory =     18 MB
+Completed 256.0 KiB/651.1 KiB (100.1 KiB/s) with 1 file(s) remainingCompleted 512.0 KiB/651.1 KiB (144.2 KiB/s) with 1 file(s) remainingCompleted 651.1 KiB/651.1 KiB (150.3 KiB/s) with 1 file(s) remainingupload: .\install.zip to s3://Radial/Installer/install.zip          
+ 
+'======================Fri 08-18-2017  1-24-33.63======================' 
+        1 file(s) moved.
+
+7-Zip [64] 9.38 beta  Copyright (c) 1999-2014 Igor Pavlov  2015-01-03
+Scanning
+
+Creating archive install.zip
+
+Compressing  install\Files\ec2service\AWS.EC2.Windows.CloudWatch.json
+Compressing  install\Files\ec2service\config.xml
+Compressing  install\Fonts\Arial Narrow Bold.TTF
+Compressing  install\Fonts\Arial Narrow.TTF
+Compressing  install\Fonts\Arial.ttf
+Compressing  install\Installers\installEC2Service.bat
+Compressing  install\Installers\installFonts.bat
+Compressing  install\Installers\installSendEmail.ps1
+Compressing  install\Installers\NistPolling.reg
+Compressing  install\main.bat
+Compressing  install\README.txt
+Compressing  install\Scripts\SendEmail.ps1
+Compressing  install\Scripts\UrlRewrite.bat
+
+Everything is Ok
+
+Kernel  Time =     0.000 =    0%
+User    Time =     0.171 =  145%
+Process Time =     0.171 =  145%    Virtual  Memory =    145 MB
+Global  Time =     0.118 =  100%    Physical Memory =     18 MB
+Completed 256.0 KiB/651.1 KiB (105.6 KiB/s) with 1 file(s) remainingCompleted 512.0 KiB/651.1 KiB (178.1 KiB/s) with 1 file(s) remainingCompleted 651.1 KiB/651.1 KiB (193.3 KiB/s) with 1 file(s) remainingupload: .\install.zip to s3://Radial/Installer/install.zip          
+ 
+'======================Mon 11-13-2017 21-59-39.46======================' 
+        1 file(s) moved.
+
+7-Zip [64] 9.20  Copyright (c) 1999-2010 Igor Pavlov  2010-11-18
+Scanning
+
+Creating archive install.zip
+
+Compressing  install\Files\ec2service\AWS.EC2.Windows.CloudWatch.json
+Compressing  install\Files\ec2service\config.xml
+Compressing  install\Fonts\Arial Narrow Bold.TTF
+Compressing  install\Fonts\Arial Narrow.TTF
+Compressing  install\Fonts\Arial.ttf
+Compressing  install\Installers\installEC2Service.bat
+Compressing  install\Installers\installFonts.bat
+Compressing  install\Installers\installSendEmail.ps1
+Compressing  install\Installers\NistPolling.reg
+Compressing  install\main.bat
+Compressing  install\README.txt
+Compressing  install\Scripts\resizeDisk.script
+Compressing  install\Scripts\SendEmail.ps1
+Compressing  install\Scripts\UrlRewrite.bat
+
+Everything is Ok
+upload: .\install.zip to s3://Radial/Installer/install.zip

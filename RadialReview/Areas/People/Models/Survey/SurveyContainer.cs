@@ -1,0 +1,117 @@
+﻿using RadialReview.Areas.People.Engines.Surveys.Interfaces;
+using RadialReview.Models.Components;
+using RadialReview.Models.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Collections;
+using FluentNHibernate.Mapping;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+namespace RadialReview.Areas.People.Models.Survey {
+    public class SurveyContainer : ILongIdentifiable, IHistorical, ISurveyContainer {
+        public virtual long Id { get; set; }
+        public virtual DateTime CreateTime { get; set; }
+        public virtual DateTime? DeleteTime { get; set; }
+
+        public virtual string Name { get; set; }
+        public virtual string Help { get; set; }
+        public virtual int Ordering { get; set; }
+		public virtual long OrgId { get; set; }
+		public virtual DateTime? DueDate { get; set; }
+
+		public virtual ForModel CreatedBy { get; set; }
+		//public virtual ForModel By { get; set; }
+		public virtual SurveyType SurveyType { get; set; }
+        
+        public virtual ICollection<ISurvey> _Surveys { get; set; }
+
+        //public virtual long IssuedBy { get; set; }
+
+#pragma warning disable CS0618 // Type or member is obsolete
+        public SurveyContainer(IForModel createdBy, /*IForModel by,*/ string name, long orgid, SurveyType type, string help,DateTime? dueDate) : this() {
+#pragma warning restore CS0618 // Type or member is obsolete
+                              //By = ForModel.From(by);
+            CreatedBy = ForModel.From(createdBy);
+            Name = name;
+            SurveyType = type;
+            Help = help;
+            OrgId = orgid;
+			DueDate = dueDate;
+        }
+
+        [Obsolete("Use other constructor")]
+        public SurveyContainer() {
+            CreateTime = DateTime.UtcNow;
+            Help = "";
+            _Surveys = new List<ISurvey>();
+        }
+
+        public virtual IEnumerable<ISurvey> GetSurveys() {
+            return _Surveys;
+        }
+
+        public virtual void AppendSurvey(ISurvey survey) {
+            _Surveys.Add(survey);
+        }
+
+        public virtual string ToPrettyString() {
+            return "SurveyContainer: " + Name;
+        }
+
+        public virtual SurveyType GetSurveyType() {
+            return SurveyType;
+        }
+
+        public virtual string GetName() {
+            return Name;
+        }
+        public virtual string GetHelp() {
+            return Help;
+        }
+        public virtual int GetOrdering() {
+            return Ordering;
+        }
+
+		public virtual DateTime GetIssueDate() {
+			return CreateTime;
+		}
+
+		public virtual DateTime? GetDueDate() {
+			return DueDate;
+		}
+
+		public virtual IForModel GetCreator() {
+			return CreatedBy;
+		}
+
+		public class Map : ClassMap<SurveyContainer> {
+            public Map() {
+                Id(x => x.Id);
+                Map(x => x.CreateTime);
+                Map(x => x.DeleteTime);
+                Map(x => x.Name).Length(512);
+                Map(x => x.Help).Length(2000);
+                Map(x => x.Ordering);
+                Map(x => x.OrgId);
+				Map(x => x.SurveyType);
+				Map(x => x.DueDate);
+				Component(x => x.CreatedBy).ColumnPrefix("CreatedBy_");
+            }
+        }
+
+        //public IEnumerator<IComponent> GetEnumerator() {
+        //    yield return this;
+        //    if (_Surveys != null) {
+        //        foreach (var survey in _Surveys)
+        //            foreach (var e in survey)
+        //                yield return e;
+        //    }
+        //}
+        //IEnumerator IEnumerable.GetEnumerator() {
+        //    return this.GetEnumerator();
+        //}
+    }
+}

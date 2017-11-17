@@ -1,0 +1,539 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="IssueApiTests_v0_TestCreateIssue" xml:space="preserve">
+    <value>{"DetailsUrl":"https://notes.traction.tools/p/38b21548-2e4b-48a5-a214-9b27a47257bb?showControls=true&amp;showChat=false","Owner":{"Name":"E1 150425335","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-01T08:09:18","Id":9,"Type":"AngularUser","Key":"AngularUser_9","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"Name":"Issue for Test Method","Details":null,"Children":[],"CompleteTime":null,"CreateTime":"2017-09-01T08:09:23","Complete":false,"Priority":0,"Id":1,"Type":"AngularIssue","Key":"AngularIssue_1","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+  </data>
+  <data name="IssueApiTests_v0_TestGetIssue" xml:space="preserve">
+    <value>{"DetailsUrl":"https://notes.traction.tools/p/eb9e8560-904a-4b36-81be-c04e36413cca?showControls=true&amp;showChat=false","Owner":{"Name":"E1 150425546","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-01T08:44:25","Id":9,"Type":"AngularUser","Key":"AngularUser_9","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"Name":"Issue for Test Method","Details":null,"Children":[],"CompleteTime":null,"CreateTime":"2017-09-01T08:44:26","Complete":false,"Priority":0,"Id":1,"Type":"AngularIssue","Key":"AngularIssue_1","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+  </data>
+  <data name="IssueApiTests_v0_TestGetMineIssues" xml:space="preserve">
+    <value>[{"DetailsUrl":"https://notes.traction.tools/p/b1863074-0df6-43d4-a5e5-ca7bfecc45b0?showControls=true&amp;showChat=false","Owner":{"Name":"E1 150424568","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-01T06:01:24","Id":9,"Type":"AngularUser","Key":"AngularUser_9","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"Name":"Issue for Test Method","Details":null,"Children":[],"CompleteTime":null,"CreateTime":"2017-09-01T06:01:25","Complete":false,"Priority":0,"Id":1,"Type":"AngularIssue","Key":"AngularIssue_1","CreateOnly":false,"Hide":false,"_ExtraProperties":null}]</value>
+  </data>
+  <data name="IssueApiTests_v0_TestGetRecurrenceIssues" xml:space="preserve">
+    <value>[{"DetailsUrl":"https://notes.traction.tools/p/0af8d29b-bf57-45e8-9fac-6b993e9ed665?showControls=true&amp;showChat=false","Owner":{"Name":"E2 150461923","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-05T13:47:14","Id":10,"Type":"AngularUser","Key":"AngularUser_10","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"Name":"Issue for Test Method","Details":null,"Children":[],"CompleteTime":null,"CreateTime":"2017-09-05T13:47:17","Complete":false,"Priority":0,"Id":2,"Type":"AngularIssue","Key":"AngularIssue_2","CreateOnly":false,"Hide":false,"_ExtraProperties":null},{"DetailsUrl":"https://notes.traction.tools/p/f9184b49-ed6c-41d7-a063-b8ec1fa8c23e?showControls=true&amp;showChat=false","Owner":{"Name":"E1 150461923","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-05T13:47:13","Id":9,"Type":"AngularUser","Key":"AngularUser_9","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"Name":"Issue for Test Method","Details":null,"Children":[],"CompleteTime":null,"CreateTime":"2017-09-05T13:47:15","Complete":false,"Priority":0,"Id":1,"Type":"AngularIssue","Key":"AngularIssue_1","CreateOnly":false,"Hide":false,"_ExtraProperties":null}]</value>
+  </data>
+  <data name="L10ApiTests_v0_TestAttachHeadlineMeetingL10" xml:space="preserve">
+    <value>{"Name":"Test Head Line","DetailsUrl":"https://notes.traction.tools/p/b72fe374-0ca3-440c-bd52-b6b6411fee7e?showControls=true&amp;showChat=false","Owner":{"Name":"E1 150426243","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-01T10:40:32","Id":9,"Type":"AngularUser","Key":"AngularUser_9","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"CloseTime":null,"CreateTime":"2017-09-01T10:40:36.9200168Z","About":{"ImageUrl":"https://s3.amazonaws.com/Radial/placeholder/orgPlaceholder.png","Name":null,"Initials":null,"Id":-1,"Type":"AngularPicture","Key":"AngularPicture_-1","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"Link":"/L10/Timeline/1#transcript-1","Id":1,"Type":"AngularHeadline","Key":"AngularHeadline_1","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+  </data>
+  <data name="L10ApiTests_v0_TestAttachIssueMeetingL10" xml:space="preserve">
+    <value>{"DetailsUrl":"https://notes.traction.tools/p/727a9be5-dbe3-42dc-8b7f-a881cc309b49?showControls=true&amp;showChat=false","Owner":{"Name":"E1 150426301","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-01T10:50:17","Id":9,"Type":"AngularUser","Key":"AngularUser_9","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"Name":"Test Name For Issue Meeting L10","Details":"Test detail For Issue Meeting L10","Children":[],"CompleteTime":null,"CreateTime":"2017-09-01T10:50:19.1928058Z","Complete":false,"Priority":0,"Id":1,"Type":"AngularIssue","Key":"AngularIssue_1","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+  </data>
+  <data name="L10ApiTests_v0_TestGetL10Attendess" xml:space="preserve">
+    <value>[{"Name":"E1 150426214","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-01T10:35:46","Id":9,"Type":"AngularUser","Key":"AngularUser_9","CreateOnly":false,"Hide":false,"_ExtraProperties":null}]</value>
+  </data>
+  <data name="L10ApiTests_v0_TestGetList" xml:space="preserve">
+    <value>[{"Id":1,"Name":"Test L10"}]</value>
+  </data>
+  <data name="L10ApiTests_v0_TestGetMeetingsL10" xml:space="preserve">
+    <value>{
+  "Basics": {
+    "Name": "Test L10",
+    "TeamType": 1,
+    "Id": 1,
+    "Type": "AngularBasics",
+    "Key": "AngularBasics_1",
+    "CreateOnly": false,
+    "Hide": false,
+    "_ExtraProperties": null
+  },
+  "Attendees": [],
+  "Scorecard": {
+    "Measurables": [],
+    "Scores": [],
+    "Weeks": [
+      {
+        "ForWeekNumber": 2475,
+        "ForWeek": "2017-06-04T00:00:00Z",
+        "DisplayDate": "2017-05-28T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636321312000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636321312000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2476,
+        "ForWeek": "2017-06-11T00:00:00Z",
+        "DisplayDate": "2017-06-04T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636327360000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636327360000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2477,
+        "ForWeek": "2017-06-18T00:00:00Z",
+        "DisplayDate": "2017-06-11T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636333408000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636333408000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2478,
+        "ForWeek": "2017-06-25T00:00:00Z",
+        "DisplayDate": "2017-06-18T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636339456000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636339456000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2479,
+        "ForWeek": "2017-07-02T00:00:00Z",
+        "DisplayDate": "2017-06-25T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636345504000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636345504000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2480,
+        "ForWeek": "2017-07-09T00:00:00Z",
+        "DisplayDate": "2017-07-02T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636351552000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636351552000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2481,
+        "ForWeek": "2017-07-16T00:00:00Z",
+        "DisplayDate": "2017-07-09T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636357600000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636357600000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2482,
+        "ForWeek": "2017-07-23T00:00:00Z",
+        "DisplayDate": "2017-07-16T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636363648000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636363648000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2483,
+        "ForWeek": "2017-07-30T00:00:00Z",
+        "DisplayDate": "2017-07-23T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636369696000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636369696000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2484,
+        "ForWeek": "2017-08-06T00:00:00Z",
+        "DisplayDate": "2017-07-30T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636375744000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636375744000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2485,
+        "ForWeek": "2017-08-13T00:00:00Z",
+        "DisplayDate": "2017-08-06T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636381792000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636381792000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2486,
+        "ForWeek": "2017-08-20T00:00:00Z",
+        "DisplayDate": "2017-08-13T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636387840000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636387840000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2487,
+        "ForWeek": "2017-08-27T00:00:00Z",
+        "DisplayDate": "2017-08-20T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636393888000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636393888000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2488,
+        "ForWeek": "2017-09-03T00:00:00Z",
+        "DisplayDate": "2017-08-27T06:00:00Z",
+        "IsCurrentWeek": false,
+        "Id": 636399936000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636399936000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      },
+      {
+        "ForWeekNumber": 2489,
+        "ForWeek": "2017-09-10T00:00:00Z",
+        "DisplayDate": "2017-09-03T06:00:00Z",
+        "IsCurrentWeek": true,
+        "Id": 636405984000000000,
+        "Type": "AngularWeek",
+        "Key": "AngularWeek_636405984000000000",
+        "CreateOnly": false,
+        "Hide": false,
+        "_ExtraProperties": null
+      }
+    ],
+    "ReverseScorecard": false,
+    "Period": "Weekly",
+    "DateFormat1": "MMM d",
+    "DateFormat2": "MMM d",
+    "Id": 1,
+    "Type": "AngularScorecard",
+    "Key": "AngularScorecard_1",
+    "CreateOnly": false,
+    "Hide": false,
+    "_ExtraProperties": null
+  },
+  "Notes": [],
+  "Rocks": [],
+  "Todos": [],
+  "Headlines": [],
+  "IssuesList": {
+    "Issues": [],
+    "Prioritization": 2,
+    "Id": 1,
+    "Type": "AngularIssuesList",
+    "Key": "AngularIssuesList_1",
+    "CreateOnly": false,
+    "Hide": false,
+    "_ExtraProperties": null
+  },
+  "date": {
+    "startDate": "2017-08-29T00:00:00Z",
+    "endDate": "2017-09-08T00:00:00Z"
+  },
+  "dateDataRange": null,
+  "HeadlinesUrl": "https://notes.traction.tools/p/b6c592eb-f063-4bb6-8cba-7c7736c89ba2?showControls=true&amp;showChat=false",
+  "HeadlineType": 2,
+  "VtoId": 1,
+  "Pages": [
+    {
+      "Minutes": 5.0,
+      "Title": "Segue",
+      "Type": 1
+    },
+    {
+      "Minutes": 5.0,
+      "Title": "Scorecard",
+      "Type": 2
+    },
+    {
+      "Minutes": 5.0,
+      "Title": "Rock Review",
+      "Type": 3
+    },
+    {
+      "Minutes": 5.0,
+      "Title": "People Headlines",
+      "Type": 4
+    },
+    {
+      "Minutes": 5.0,
+      "Title": "To-do List",
+      "Type": 5
+    },
+    {
+      "Minutes": 60.0,
+      "Title": "IDS",
+      "Type": 6
+    },
+    {
+      "Minutes": 5.0,
+      "Title": "Conclude",
+      "Type": 7
+    }
+  ],
+  "ShowSegue": true,
+  "ShowScorecard": true,
+  "ShowRockReview": true,
+  "ShowHeadlines": true,
+  "ShowTodos": true,
+  "ShowIDS": true,
+  "ShowConclude": true,
+  "SegueMinutes": 5.0,
+  "ScorecardMinutes": 5.0,
+  "RockReviewMinutes": 5.0,
+  "HeadlinesMinutes": 5.0,
+  "TodosMinutes": 5.0,
+  "IDSMinutes": 60.0,
+  "ConcludeMinutes": 5.0,
+  "MeetingType": 0,
+  "Focus": null,
+  "LoadUrls": null,
+  "Id": 1,
+  "Type": "AngularRecurrence",
+  "Key": "AngularRecurrence_1",
+  "CreateOnly": false,
+  "Hide": false,
+  "_ExtraProperties": null
+}</value>
+  </data>
+  <data name="L10ApiTests_v0_TestGetUserIssues" xml:space="preserve">
+    <value>[{"DetailsUrl":"https://notes.traction.tools/p/33b88d42-ab93-4006-8110-d3aacf8e9b93?showControls=true&amp;showChat=false","Owner":{"Name":"E1 150426326","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-01T10:54:30","Id":9,"Type":"AngularUser","Key":"AngularUser_9","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"Name":"Issue for Test Method","Details":null,"Children":[],"CompleteTime":null,"CreateTime":"2017-09-01T10:54:33","Complete":false,"Priority":0,"Id":1,"Type":"AngularIssue","Key":"AngularIssue_1","CreateOnly":false,"Hide":false,"_ExtraProperties":null}]</value>
+  </data>
+  <data name="MilestonesApiTests_v0_TestGetMilestones" xml:space="preserve">
+    <value>{"DueDate":"2017-09-12T13:28:41","Name":"TestMilestone","Status":"NotDone","RockId":5,"Id":1,"Type":"AngularMilestone","Key":"AngularMilestone_1","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+  </data>
+  <data name="PositionApiTests_v0_TestCreatePosition" xml:space="preserve">
+    <value>{"Name":"TestPosition","Id":27,"Type":"AngularPosition","Key":"AngularPosition_27","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+  </data>
+  <data name="PositionApiTests_v0_TestGetMinePosition" xml:space="preserve">
+    <value>[{"Name":"TestPosition","Id":27,"Type":"AngularPosition","Key":"AngularPosition_27","CreateOnly":false,"Hide":false,"_ExtraProperties":null}]</value>
+  </data>
+  <data name="PositionApiTests_v0_TestGetPositions" xml:space="preserve">
+    <value>{"Name":"TestPosition","Id":27,"Type":"AngularPosition","Key":"AngularPosition_27","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+  </data>
+  <data name="PositionApiTests_v0_TestUpdatePositionRoles" xml:space="preserve">
+    <value>{"Name":"Test Position","CreateTime":"2017-09-01T11:27:39.529421Z","Id":5,"Type":"AngularRole","Key":"AngularRole_5","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+  </data>
+  <data name="PositionApiTests_v0_TestUpdatePositions" xml:space="preserve">
+    <value>{"Name":"TestPosition","Id":27,"Type":"AngularPosition","Key":"AngularPosition_27","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+  </data>
+  <data name="RocksApiTests_v0_TestGetRocksMilestones" xml:space="preserve">
+    <value>[{"DueDate":"2017-09-12T19:01:20","Name":"TestMilestone","Status":"NotDone","RockId":5,"Id":1,"Type":"AngularMilestone","Key":"AngularMilestone_1","CreateOnly":false,"Hide":false,"_ExtraProperties":null}]</value>
+  </data>
+  <data name="RolesApiTests_v0_TestGetRoles" xml:space="preserve">
+    <value>{"Name":"TestRole","CreateTime":"2017-09-01T11:48:19","Id":5,"Type":"AngularRole","Key":"AngularRole_5","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+  </data>
+  <data name="ScorecardApiTests_v0_GetScore" xml:space="preserve">
+    <value>{"Id":1,"Value":null,"ForWeek":2000,"Measurable":{"Id":1,"Title":"Meas1","GoalDirection":"EqualTo","Goal":0.0,"UnitType":"None","AccountableUser":{"Id":9,"Name":"E1 150426672","Username":"e1@test_958590972.com"},"AdminUser":{"Id":9,"Name":"E1 150426672","Username":"e1@test_958590972.com"}},"AccountableUser":{"Id":9,"Name":"E1 150426672","Username":"e1@test_958590972.com"},"AdminUser":{"Id":9,"Name":"E1 150426672","Username":"e1@test_958590972.com"}}</value>
+  </data>
+  <data name="SearchApiTests_v0_TestSearch" xml:space="preserve">
+    <value>[{"Id":19,"Name":"interreviewing-team","Description":"Team","OrganizationId":1,"Organization":null,"Email":null,"ImageUrl":"https://s3.amazonaws.com/Radial/placeholder/GroupIcon.png","ResultType":3},{"Id":20,"Name":"non-interreviewing-team","Description":"Team","OrganizationId":1,"Organization":null,"Email":null,"ImageUrl":"https://s3.amazonaws.com/Radial/placeholder/GroupIcon.png","ResultType":3}]</value>
+  </data>
+  <data name="SearchApiTests_v0_TestSearchUser" xml:space="preserve">
+    <value>[{"Id":2,"Name":"manager 150426696","Description":"Traction Tools Support","OrganizationId":1,"Organization":null,"Email":"manager@test_1734209655.com","ImageUrl":"/i/userplaceholder","ResultType":1}]</value>
+  </data>
+  <data name="SeatsApiTests_v0_TestAttachDirectReport" xml:space="preserve">
+    <value>{"_hasParent":null,"User":{"Name":"Test1 Test2","ImageUrl":"/i/userplaceholder","Initials":"T T","Managing":null,"CreateTime":"2017-09-01T12:03:01","Id":27,"Type":"AngularUser","Key":"AngularUser_27","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"Name":"Test1 Test2","Group":{"Position":null,"Editable":null,"RoleGroups":null,"Id":15,"Type":"AngularAccountabilityGroup","Key":"AngularAccountabilityGroup_15","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"collapsed":false,"order":2,"Editable":null,"Me":null,"children":null,"_children":null,"Id":15,"Type":"AngularAccountabilityNode","Key":"AngularAccountabilityNode_15","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+  </data>
+  <data name="SeatsApiTests_v0_TestGetPosition" xml:space="preserve">
+    <value>{"Name":"TestPosition","Id":27,"Type":"AngularPosition","Key":"AngularPosition_27","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+  </data>
+  <data name="SeatsApiTests_v0_TestGetSeat" xml:space="preserve">
+    <value>{"_hasParent":null,"User":{"Name":"E1 150426752","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-01T12:05:25","Id":9,"Type":"AngularUser","Key":"AngularUser_9","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"Name":"E1 150426752","Group":null,"collapsed":false,"order":2,"Editable":null,"Me":null,"children":null,"_children":null,"Id":5,"Type":"AngularAccountabilityNode","Key":"AngularAccountabilityNode_5","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+  </data>
+  <data name="SeatsApiTests_v0_TestGetSeatUser" xml:space="preserve">
+    <value>{"Name":"Test1 Test2","ImageUrl":"/i/userplaceholder","Initials":"T T","Managing":null,"CreateTime":"2017-09-01T12:21:43","Id":27,"Type":"AngularUser","Key":"AngularUser_27","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+  </data>
+  <data name="TeamsApiTests_v0_TestCreateTeam" xml:space="preserve">
+    <value>{"Name":"TestTeam","ManagedBy":9,"TeamType":0,"Id":27,"Type":"AngularTeam","Key":"AngularTeam_27","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+  </data>
+  <data name="TeamsApiTests_v0_TestGetTeamMember" xml:space="preserve">
+    <value>[{"Name":"E1 150461855","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-05T13:35:57","Id":9,"Type":"AngularUser","Key":"AngularUser_9","CreateOnly":false,"Hide":false,"_ExtraProperties":null},{"Name":"manager 150461855","ImageUrl":"/i/userplaceholder","Initials":"M 1","Managing":null,"CreateTime":"2017-09-05T13:35:56","Id":2,"Type":"AngularUser","Key":"AngularUser_2","CreateOnly":false,"Hide":false,"_ExtraProperties":null}]</value>
+  </data>
+  <data name="TeamsApiTests_v0_TestGetTeams" xml:space="preserve">
+    <value>{"Name":"TestTeam","ManagedBy":9,"TeamType":0,"Id":27,"Type":"AngularTeam","Key":"AngularTeam_27","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+  </data>
+  <data name="TeamsApiTests_v0_TestUpdateTeam" xml:space="preserve">
+    <value>{"Name":"TestTeam_Update","ManagedBy":9,"TeamType":0,"Id":27,"Type":"AngularTeam","Key":"AngularTeam_27","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+  </data>
+  <data name="TodoApiTests_v0_TestGetMineTodos" xml:space="preserve">
+    <value>[{"Name":"Todo from Test Method","DetailsUrl":"https://notes.traction.tools/p/4e688d33-11c4-4dad-9f00-bff027be8052?showControls=true&amp;showChat=false","Origin":"Individual","DueDate":"2017-09-12T08:39:26","Owner":{"Name":"E1 150460076","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-05T08:39:24","Id":9,"Type":"AngularUser","Key":"AngularUser_9","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"CompleteTime":null,"CreateTime":"2017-09-05T08:39:26","Complete":false,"Link":null,"TodoType":1,"Ordering":-1,"Id":1,"Type":"AngularTodo","Key":"AngularTodo_1","CreateOnly":false,"Hide":false,"_ExtraProperties":null}]</value>
+  </data>
+  <data name="TodoApiTests_v0_TestGetMineTodos_list" xml:space="preserve">
+    <value>[{"Name":"Todo from Test Method","DetailsUrl":"https://notes.traction.tools/p/4e688d33-11c4-4dad-9f00-bff027be8052?showControls=true&amp;showChat=false","Origin":"Individual","DueDate":"2017-09-12T08:39:26","Owner":{"Name":"E1 150460076","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-05T08:39:24","Id":9,"Type":"AngularUser","Key":"AngularUser_9","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"CompleteTime":null,"CreateTime":"2017-09-05T08:39:26","Complete":false,"Link":null,"TodoType":1,"Ordering":-1,"Id":1,"Type":"AngularTodo","Key":"AngularTodo_1","CreateOnly":false,"Hide":false,"_ExtraProperties":null},{"Name":"GetMineTodo from Test Method","DetailsUrl":"https://notes.traction.tools/p/49203147-6c89-478b-b03f-8243314fc1e6?showControls=true&amp;showChat=false","Origin":null,"DueDate":"2017-09-12T08:39:42","Owner":{"Name":"E1 150460076","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-05T08:39:24","Id":9,"Type":"AngularUser","Key":"AngularUser_9","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"CompleteTime":null,"CreateTime":"2017-09-05T08:39:42","Complete":false,"Link":"/L10/Timeline/1#TodoModel-0","TodoType":0,"Ordering":-2,"Id":2,"Type":"AngularTodo","Key":"AngularTodo_2","CreateOnly":false,"Hide":false,"_ExtraProperties":null}]</value>
+  </data>
+  <data name="TodoApiTests_v0_TestGetRecurrenceTodos" xml:space="preserve">
+    <value>[{"Name":"GetUserTodo from Test Method","DetailsUrl":"https://notes.traction.tools/p/594d8185-3fcc-4922-b1aa-3bbf33f2ee74?showControls=true&amp;showChat=false","Origin":null,"DueDate":"2017-09-08T13:06:53","Owner":{"Name":"E1 150427121","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-01T13:06:52","Id":9,"Type":"AngularUser","Key":"AngularUser_9","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"CompleteTime":null,"CreateTime":"2017-09-01T13:06:53","Complete":false,"Link":"/L10/Timeline/1#TodoModel-0","TodoType":0,"Ordering":-1,"Id":1,"Type":"AngularTodo","Key":"AngularTodo_1","CreateOnly":false,"Hide":false,"_ExtraProperties":null}]</value>
+  </data>
+  <data name="TodoApiTests_v0_TestGetTodo" xml:space="preserve">
+    <value>{"Name":"Todo from Test Method","DetailsUrl":"https://notes.traction.tools/p/aaf129d3-9047-4a44-8140-032d88ac2b50?showControls=true&amp;showChat=false","Origin":"Individual","DueDate":"2017-09-08T12:55:00","Owner":{"Name":"E1 150427049","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-01T12:54:58","Id":9,"Type":"AngularUser","Key":"AngularUser_9","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"CompleteTime":null,"CreateTime":"2017-09-01T12:55:00","Complete":false,"Link":null,"TodoType":1,"Ordering":-1,"Id":1,"Type":"AngularTodo","Key":"AngularTodo_1","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+  </data>
+  <data name="TodoApiTests_v0_TestGetUserTodos" xml:space="preserve">
+    <value>[{"Name":"GetUserTodo from Test Method","DetailsUrl":"https://notes.traction.tools/p/62d8921f-6abd-47a0-8440-4a459b43b7ee?showControls=true&amp;showChat=false","Origin":"Individual","DueDate":"2017-09-08T13:04:32","Owner":{"Name":"E1 150427107","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-01T13:04:31","Id":9,"Type":"AngularUser","Key":"AngularUser_9","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"CompleteTime":null,"CreateTime":"2017-09-01T13:04:32","Complete":false,"Link":null,"TodoType":1,"Ordering":-1,"Id":1,"Type":"AngularTodo","Key":"AngularTodo_1","CreateOnly":false,"Hide":false,"_ExtraProperties":null}]</value>
+  </data>
+  <data name="TodoApiTests_v0_TestMarkComplete" xml:space="preserve">
+    <value>{"Name":"GetUserTodo from Test Method","DetailsUrl":"https://notes.traction.tools/p/25a3e49f-de22-43f5-8400-875fcf6e2884?showControls=true&amp;showChat=false","Origin":"Individual","DueDate":"2017-09-08T13:09:17","Owner":{"Name":"E1 150427135","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-01T13:09:16","Id":9,"Type":"AngularUser","Key":"AngularUser_9","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"CompleteTime":"2017-09-01T13:09:17.5730004Z","CreateTime":"2017-09-01T13:09:17","Complete":true,"Link":null,"TodoType":1,"Ordering":-1,"Id":1,"Type":"AngularTodo","Key":"AngularTodo_1","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+  </data>
+  <data name="UsersApiTests_v0_TestCreateUsers" xml:space="preserve">
+    <value>{"Name":"Test1 Test2","ImageUrl":"/i/userplaceholder","Initials":"T T","Managing":null,"CreateTime":"2017-09-01T13:38:28.7846798Z","Id":27,"Type":"AngularUser","Key":"AngularUser_27","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+  </data>
+  <data name="UsersApiTests_v0_TestDeleteUsers" xml:space="preserve">
+    <value>{"Status":0,"Error":false,"MessageType":"Success","Heading":"Success!","Data":null,"Html":null,"Object":null,"Message":"Successfully removed Test1.","Trace":null,"TraceMessage":null,"IsRowUpdate":false,"Refresh":false,"Redirect":null,"Silent":false,"NoErrorReport":false}</value>
+  </data>
+  <data name="UsersApiTests_v0_TestGetDirectReports" xml:space="preserve">
+    <value>[{"Name":"E4 150427377","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-01T13:49:40","Id":13,"Type":"AngularUser","Key":"AngularUser_13","CreateOnly":false,"Hide":false,"_ExtraProperties":null},{"Name":"E5 150427377","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-01T13:49:40","Id":15,"Type":"AngularUser","Key":"AngularUser_15","CreateOnly":false,"Hide":false,"_ExtraProperties":null}]</value>
+  </data>
+  <data name="UsersApiTests_v0_TestGetSeats" xml:space="preserve">
+    <value>[{"_hasParent":null,"User":{"Name":"E1 150427400","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-01T13:53:27","Id":9,"Type":"AngularUser","Key":"AngularUser_9","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"Name":"E1 150427400","Group":null,"collapsed":false,"order":2,"Editable":null,"Me":null,"children":null,"_children":null,"Id":5,"Type":"AngularAccountabilityNode","Key":"AngularAccountabilityNode_5","CreateOnly":false,"Hide":false,"_ExtraProperties":null},{"_hasParent":null,"User":{"Name":"E1 150427400","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-01T13:53:27","Id":9,"Type":"AngularUser","Key":"AngularUser_9","CreateOnly":false,"Hide":false,"_ExtraProperties":null},"Name":"E1 150427400","Group":null,"collapsed":false,"order":2,"Editable":null,"Me":null,"children":null,"_children":null,"Id":11,"Type":"AngularAccountabilityNode","Key":"AngularAccountabilityNode_11","CreateOnly":false,"Hide":false,"_ExtraProperties":null}]</value>
+  </data>
+  <data name="UsersApiTests_v0_TestGetSupervisors" xml:space="preserve">
+    <value>[{"Name":"manager 150427390","ImageUrl":"/i/userplaceholder","Initials":"M 1","Managing":null,"CreateTime":"2017-09-01T13:51:41","Id":2,"Type":"AngularUser","Key":"AngularUser_2","CreateOnly":false,"Hide":false,"_ExtraProperties":null},{"Name":"Middle 150427390","ImageUrl":"/i/userplaceholder","Initials":"M 1","Managing":null,"CreateTime":"2017-09-01T13:51:41","Id":8,"Type":"AngularUser","Key":"AngularUser_8","CreateOnly":false,"Hide":false,"_ExtraProperties":null}]</value>
+  </data>
+  <data name="UsersApiTests_v0_TestGetUser" xml:space="preserve">
+    <value>{"Name":"E1 150427322","ImageUrl":"/i/userplaceholder","Initials":"E 1","Managing":null,"CreateTime":"2017-09-01T13:40:24","Id":9,"Type":"AngularUser","Key":"AngularUser_9","CreateOnly":false,"Hide":false,"_ExtraProperties":null}</value>
+  </data>
+  <data name="UsersApiTests_v0_TestGetUserPositions" xml:space="preserve">
+    <value>[{"Name":"TestPosition","Id":27,"Type":"AngularPosition","Key":"AngularPosition_27","CreateOnly":false,"Hide":false,"_ExtraProperties":null}]</value>
+  </data>
+  <data name="UsersApiTests_v0_TestGetUserRoles" xml:space="preserve">
+    <value>[{"Name":null,"CreateTime":"2017-09-01T13:45:26","Id":5,"Type":"AngularRole","Key":"AngularRole_5","CreateOnly":false,"Hide":false,"_ExtraProperties":null}]</value>
+  </data>
+</root>

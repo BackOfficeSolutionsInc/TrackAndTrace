@@ -71,13 +71,21 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public static async Task<Dictionary<string, HtmlString>> GetHtmls(List<string> padIds) {			
+		public static async Task<Dictionary<string, HtmlString>> GetHtmls(List<string> padIds) {
 			var results = await Task.WhenAll(padIds.Distinct().Select(x => _GetHtml(x)));
 			return results.ToDictionary(x => x.Item1, x => x.Item2);
 		}
+		public static async Task<Dictionary<string, string>> GetTexts(List<string> padIds) {
+			var results = await Task.WhenAll(padIds.Distinct().Select(x => _GetText(x)));
+			return results.ToDictionary(x => x.Item1, x => x.Item2);
+		}
 
-		private static async Task<Tuple<string,HtmlString>> _GetHtml(string padid) {
+		private static async Task<Tuple<string, HtmlString>> _GetHtml(string padid) {
 			var result = await GetHtml(padid);
+			return Tuple.Create(padid, result);
+		}
+		private static async Task<Tuple<string, string>> _GetText(string padid) {
+			var result = await GetText(padid);
 			return Tuple.Create(padid, result);
 		}
 

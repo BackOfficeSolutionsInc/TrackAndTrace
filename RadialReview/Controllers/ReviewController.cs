@@ -31,7 +31,6 @@ using RadialReview.Models.Permissions;
 using RadialReview.Models.Angular.Scorecard;
 using RadialReview.Models.Angular.Meeting;
 using PdfSharp.Pdf;
-using RadialReview.Engines;
 using RadialReview.Models.Reviews;
 
 namespace RadialReview.Controllers {
@@ -445,7 +444,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
-		public ActionResult ClientDetails(long id, bool print = false, bool reviewing = false) {
+		public async Task<ActionResult> ClientDetails(long id, bool print = false, bool reviewing = false) {
 			var review = _ReviewAccessor.GetReview(GetUser(), id);
 			var managesUser = _PermissionsAccessor.IsPermitted(GetUser(), x => x.ManagesUserOrganization(review.ReviewerUserId, false, PermissionType.ViewReviews));
 			if (managesUser)
@@ -453,7 +452,7 @@ namespace RadialReview.Controllers {
 			ViewBag.ReviewId = id;
 
 			if (review.ClientReview.Visible || managesUser || GetUser().ManagingOrganization) {
-				var model = GetReviewDetails(review);
+				var model = await GetReviewDetails(review);
 				ViewBag.Reviewing = reviewing;
 				ViewBag.ReviewId = id;
 				if (print)
@@ -816,7 +815,12 @@ namespace RadialReview.Controllers {
 			public Table CompanyValuesTable(long reviewId) {
 				var dictionary = new DefaultDictionary<long, decimal[]>(x => new decimal[] { 0, 0, 0, 0, 0 });
 
-				var values = AnswersAbout.Where(x => x.Askable.GetQuestionType() == QuestionType.CompanyValue).Cast<CompanyValueAnswer>();
+				var values = AnswersAbout
+                    .Where(x => x.Askable.GetQuestionType() == QuestionType.CompanyValue)
+                    .Cast<CompanyValueAnswer>()
+                    .GroupBy(x=>x.RevieweeUserId+"_"+x.ReviewerUserId+"_"+x.Askable.Id)
+                    .Select(x=>x.OrderByDescending(y=>y.CompleteTime ?? DateTime.MinValue).First())
+                    .ToList();
 
 
 				var dictionaryPerson = new DefaultDictionary<string, decimal>(x => 0);
@@ -969,7 +973,7 @@ namespace RadialReview.Controllers {
 
 
 		[Access(AccessLevel.Manager)]
-		public ActionResult GenerateReports(string ids) {
+		public async Task<ActionResult> GenerateReports(string ids) {
 			var idList = ids.Split(',').Select(x => x.TryParseLong())
 				.Where(x => x != null).Select(x => x.Value).ToList();
 
@@ -978,7 +982,7 @@ namespace RadialReview.Controllers {
 
 			foreach (var id in idList) {
 				var review = _ReviewAccessor.GetReview(GetUser(), id);
-				var model = GetReviewDetails(review, true);
+				var model = await GetReviewDetails(review, true);
 				PdfAccessor.AddReviewPrintout(GetUser(), document, model);
 			}
 			return Pdf(document);
@@ -988,7 +992,7 @@ namespace RadialReview.Controllers {
 		public async Task<JsonResult> SaveArchive(long id) {
 
 			var review = _ReviewAccessor.GetReview(GetUser(), id);
-			var model = GetReviewDetails(review, true);
+			var model = await GetReviewDetails(review, true);
 
 			var output = await ReportAccessor.ArchiveReport(GetUser(), model, true);
 
@@ -1004,7 +1008,7 @@ namespace RadialReview.Controllers {
 			ViewBag.ReviewId = id;
 
 			if (review.ClientReview.Visible || managesUser || GetUser().ManagingOrganization) {
-				var model = GetReviewDetails(review, true);
+				var model = await GetReviewDetails(review, true);
 				return Pdf(PdfAccessor.GenerateReviewPrintout(GetUser(), model));
 			} else {
 				throw new PermissionsException("This report has not been shared with you. If you feel this is in error, please contact your supervisor.");
@@ -1013,7 +1017,7 @@ namespace RadialReview.Controllers {
 
 		}
 
-		private ReviewDetailsViewModel GetReviewDetails(ReviewModel review, bool includeScorecard = false) {
+		private async Task<ReviewDetailsViewModel> GetReviewDetails(ReviewModel review, bool includeScorecard = false) {
 			var categories = _OrganizationAccessor.GetOrganizationCategories(GetUser(), GetUser().Organization.Id).OrderByDescending(x => x.Id);
 			var answers = _ReviewAccessor.GetAnswersForUserReview(GetUser(), review.ReviewerUserId, review.ForReviewContainerId).Alive().ToList();
 			var managers = _UserAccessor.GetManagers(GetUser(), review.ReviewerUserId, PermissionType.ViewReviews);
@@ -1040,7 +1044,7 @@ namespace RadialReview.Controllers {
 			var nextRocks = RockAccessor.GetRocks(GetUser(), review.ReviewerUserId/*, reviewContainer.NextPeriodId*/).ToList();
 
 			if (review.ClientReview.IncludeScorecard && includeScorecard) {
-				review.ClientReview._ScorecardRecur = ScorecardAccessor.GetReview_Scorecard(GetUser(), review.Id);
+				review.ClientReview._ScorecardRecur = await ScorecardAccessor.GetReview_Scorecard(GetUser(), review.Id);
 			}
 
 
@@ -1070,7 +1074,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
-		public ActionResult Details(long id) {
+		public async Task<ActionResult> Details(long id) {
 			var review = _ReviewAccessor.GetReview(GetUser(), id);
 			ViewBag.ReviewId = id;
 			//Clients View
@@ -1082,16 +1086,16 @@ namespace RadialReview.Controllers {
 			else {
 				ViewBag.RoleDetails = true;
 				_PermissionsAccessor.Permitted(GetUser(), x => x.ManagesUserOrganization(review.ReviewerUserId, false, PermissionType.ViewReviews));
-				var model = GetReviewDetails(review);
+				var model = await GetReviewDetails(review);
 				//model.Supervisors = model.AnswersAbout.Where(x => x.ByUserId == GetUser().Id).ToList();
 				return View(model);
 			}
 		}
 
 		[Access(AccessLevel.Manager)]
-		public PartialViewResult GWCDetails(long reviewId, long roleId, string gwc) {
+		public async Task<PartialViewResult> GWCDetails(long reviewId, long roleId, string gwc) {
 			var review = _ReviewAccessor.GetReview(GetUser(), reviewId);
-			var model = GetReviewDetails(review);
+			var model = await GetReviewDetails(review);
 			ViewBag.RoleId = roleId;
 			ViewBag.GWC = gwc;
 
@@ -1100,21 +1104,21 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Manager)]
-		public PartialViewResult ValueDetails(long? reviewId, long? valueId, long? userId) {
+		public async Task<PartialViewResult> ValueDetails(long? reviewId, long? valueId, long? userId) {
 			if (reviewId == null && valueId == null && userId == null)
 				return null;
 
 			var review = _ReviewAccessor.GetReview(GetUser(), reviewId.Value);
-			var model = GetReviewDetails(review);
+			var model = await GetReviewDetails(review);
 			ViewBag.ValueId = valueId.Value;
 			ViewBag.ByUserId = userId.Value;
 
 			return PartialView(model);
 		}
 		[Access(AccessLevel.Manager)]
-		public PartialViewResult RockDetails(long reviewId, long rockId, long userId) {
+		public async Task<PartialViewResult> RockDetails(long reviewId, long rockId, long userId) {
 			var review = _ReviewAccessor.GetReview(GetUser(), reviewId);
-			var model = GetReviewDetails(review);
+			var model = await GetReviewDetails(review);
 			ViewBag.RockId = rockId;
 			ViewBag.ByUserId = userId;
 

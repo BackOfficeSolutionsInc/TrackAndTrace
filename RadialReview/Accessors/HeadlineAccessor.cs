@@ -14,6 +14,7 @@ using RadialReview.Models.Components;
 using RadialReview.Models.L10;
 using RadialReview.Utilities;
 using RadialReview.Utilities.Hooks;
+using RadialReview.Utilities.Synchronize;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,7 @@ using System.Web;
 
 namespace RadialReview.Accessors {
 	public class HeadlineAccessor {
+
 		public static async Task<bool> CreateHeadline(ISession s, PermissionsUtility perms, PeopleHeadline headline) {
 			if (headline.Id != 0)
 				throw new PermissionsException("Id was not zero");
@@ -57,7 +59,7 @@ namespace RadialReview.Accessors {
 
 			if (recurrenceId > 0) {
 				r = s.Get<L10Recurrence>(recurrenceId);
-				r.Pristine = false;
+				await L10Accessor.Depristine_Unsafe(s, perms.GetCaller(), r);
 				s.Update(r);
 			}
 
@@ -69,32 +71,15 @@ namespace RadialReview.Accessors {
 
 			s.Save(headline);
 			headline.Ordering = -headline.Id;
-			s.Update(headline);
+			//s.Update(headline);
 
 			if (headline.AboutId.HasValue)
 				headline.About = s.Get<ResponsibilityGroupModel>(headline.AboutId.Value);
 			
 			headline.Owner = s.Get<UserOrganizationModel>(headline.OwnerId);
+			s.Update(headline);
 
-			HooksRegistry.Each<IHeadlineHook>(x => x.CreateHeadline(s, headline));
-
-			if (recurrenceId > 0) {
-				var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-				var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
-
-				if (headline.CreatedDuringMeetingId == null) {
-					headline.CreatedDuringMeetingId = L10Accessor._GetCurrentL10Meeting(s, perms, recurrenceId, true, false, false).NotNull(x=>(long?)x.Id);
-				}
-
-				var aHeadline = new AngularHeadline(headline);
-
-				meetingHub.appendHeadline(".headlines-list", headline.ToRow());
-				meetingHub.showAlert("Created people headline.",1500);
-				var updates = new AngularRecurrence(recurrenceId);
-				updates.Headlines = AngularList.CreateFrom(AngularListType.Add, aHeadline);
-				meetingHub.update(updates);
-				Audit.L10Log(s, perms.GetCaller(), recurrenceId, "CreateHeadline", ForModel.Create(headline), headline.NotNull(x => x.Message));
-			}
+			await HooksRegistry.Each<IHeadlineHook>((ses, x) => x.CreateHeadline(ses, headline));
 
 			return true;
 		}
@@ -110,6 +95,32 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+		
+		public static async Task UpdateHeadline(UserOrganizationModel caller, long headlineId, string message, string connectionId = null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					var headline = s.Get<PeopleHeadline>(headlineId);
+					perms.EditL10Recurrence(headline.RecurrenceId);
+
+					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateHeadlineMessage(headlineId));
+
+					var updates = new IHeadlineHookUpdates();
+
+					if (message != null && headline.Message != message) {
+						headline.Message = message;
+						updates.MessageChanged = true;
+					}
+					s.Update(headline);
+
+					tx.Commit();
+					s.Flush();
+
+					await HooksRegistry.Each<IHeadlineHook>((ses, x) => x.UpdateHeadline(ses, headline,updates));
+				}
+			}
+		}
+
 
 		public static PeopleHeadline GetHeadline(UserOrganizationModel caller, long headlineId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -205,11 +216,6 @@ namespace RadialReview.Accessors {
 					s.Flush();
 
 					return newHeadline;
-					//var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-					//var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(childRecurrenceId));
-
-					//meetingHub.appendIssue(".issues-list", viewModel);
-					//var issue = s.Get<IssueModel>(parent.Issue.Id);
 				}
 			}
 		}

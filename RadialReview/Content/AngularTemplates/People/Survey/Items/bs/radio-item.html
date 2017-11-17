@@ -1,0 +1,16 @@
+﻿<div class="radio-item bs-radio-item item-row">
+    <span class="debug-info">
+        <i>--RadioItem--</i>
+        <hr />
+        {{model | json:4}}
+    </span>
+    <div class="item"><div class="name">{{item.Name}}</div><div class="help">{{item.Help}}</div></div>
+    <div class="responses radio-responses btn-group" data-toggle="buttons" >
+        <label class="response radio-response btn btn-default" 
+			   ng-class="{active:response.Answer==value}" 
+			   ng-click="response.Answer=value;changeResponse(response)" 
+			   ng-repeat="(value,text) in format.Settings.options">
+            <input type="radio" name="{{item.Key}}" value="{{value}}" ng-model="response.Answer" ><span class="response-title radio-response-title">{{text}}</span>
+        </label>
+    </div>
+</div> 

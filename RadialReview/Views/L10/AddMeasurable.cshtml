@@ -1,9 +1,12 @@
 ﻿@model RadialReview.Controllers.L10Controller.AddMeasurableVm
-		   
+@{
+	var guid = Guid.NewGuid().ToString().Replace("-", "");
+}
+	   
 
 @Html.SecuredHiddenFor(x => x.RecurrenceId)
 	
-<div class="form-group">
+@*<div class="form-group">
 	@Html.LabelFor(x => x.SelectedMeasurable)
 	@Html.DropDownListFor(x => x.SelectedMeasurable,Model.AvailableMeasurables, new {id="measurableSelector", @class = "form-control", placeholder = "Select a measurable..." })
 </div>
@@ -37,4 +40,96 @@
 	    });
         Update_AddMeasurable();
     });
+</script>*@
+
+
+@*=================*@
+
+
+<div class="measurablemodal_@guid">
+	<!-- Nav tabs -->
+	<ul class="nav nav-tabs" role="tablist">
+		<li role="presentation" class="active"><a data-target="#addmeasurable" aria-controls="addmeasurable" role="tab" data-toggle="tab">Add Existing Measurable</a></li>
+		<li role="presentation">
+			<a data-target="#createmeasurable" aria-controls="createmeasurable" role="tab" data-toggle="tab"> Create New Measurable</a>
+		</li>
+	</ul>
+	<!-- Tab panes -->
+	<div class="tab-content">
+
+		<div role="tabpanel" class="tab-pane @(Model.AvailableMeasurables.Count()==1?"hidden":"active")" id="addmeasurable">
+			<div class="form-group">
+				<label>Select a measurable to add:</label>
+				@Html.DropDownListFor(x => x.SelectedMeasurable, Model.AvailableMeasurables, new { id = "measurableSelector", @class = "form-control", placeholder = "Select a measurable..." })
+			</div>
+		</div>
+
+		<div role="tabpanel" class="tab-pane  @(Model.AvailableMeasurables.Count()==1?"active":"")" id="createmeasurable">
+			<div class="createNewmeasurable">
+				@*<label>Create a new measurable:</label>*@
+				<div class="contents spinner" style="min-height:40px;"></div>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+
+<style>
+	.measurablemodal_@(guid) .nav-tabs > li:not(.active) > a{
+	    border-bottom: 1px solid #ddd;
+	}
+
+	.measurablemodal_@(guid) .nav-tabs{
+		border-bottom:1px solid #ddd;
+	    margin-top: -61px;
+		background-color: #fff;
+		margin-bottom: 15px;
+	}
+
+</style>
+
+
+<script>
+	$(function () {
+		var oldmeasurable=null;
+		function Update_Addmeasurable(e) {
+			//if ($("#measurableSelector").val() == -3) {
+			//debugger;
+			var target = null;
+			if (e.target) {
+				target = $(e.target).attr("data-target");
+			}
+
+			if (target == "#createmeasurable") {
+				//$(".createNewmeasurable").removeClass("hidden");
+				oldmeasurable = $("#measurableSelector").val();
+				$("#measurableSelector").append("<option value='-3'></option>");
+				$("#measurableSelector").val("-3");
+
+				@*//var companymeasurable = "@(new HtmlString(Model.AllowCreateCompanymeasurable? "&companymeasurable=true&showCompany=true" : ""))";*@
+
+				$.ajax({
+					url: "/Measurable/BlankEditorRow?accountable=true",
+					success: function (data) {
+						$(".createNewmeasurable .contents").html(data);
+					}
+				});
+			} else {
+				$("#measurableSelector").find("[value='-3']").remove();
+
+				if (oldmeasurable!=null) {
+					$("#measurableSelector").val(oldmeasurable);
+				}
+				$(".createNewmeasurable .contents").html("");
+			}
+		}
+
+		$('.measurablemodal_@guid a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			Update_Addmeasurable(e);
+		});
+		Update_Addmeasurable({
+			target: $("[data-target='#addmeasurable']")
+		});
+	});
 </script>

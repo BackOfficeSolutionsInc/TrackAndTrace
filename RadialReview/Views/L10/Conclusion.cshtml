@@ -18,13 +18,13 @@
 
 
 
-			@if (ViewBag.TodosCreated is List<TodoModel>) {
+			@if (ViewBag.TodosForNextWeek is List<TodoModel>) {
 				<div class="centered" style="width: 75%; max-width: 700px; margin-bottom: 47px; margin-top: -22px; min-width: 320px;">
 					<div class="component meeting-stats">
 						<h3 style="font-size: 20px; color: #444;">Recap Our To-Dos</h3>
 						<div class="todo-container ">
 							<ol class="todo-list sortable">
-								@foreach (var i in ((List<TodoModel>)ViewBag.TodosCreated).OrderBy(x => x.Ordering).Where(x => x.CompleteTime == null).GroupBy(x => x.AccountableUser.NotNull(y => y.GetName())).SelectMany(x => x)) {@*<li class="todo-item">@Html.Partial("_ProfilePicture", i.AccountableUser)<span class="todo-due pull-right">@i.DueDate.ToShortDateString()</span><span class="todo-message">@i.Message</span></li>*@
+								@foreach (var i in ((List<TodoModel>)ViewBag.TodosForNextWeek).OrderBy(x => x.Ordering).Where(x => x.CompleteTime == null).GroupBy(x => x.AccountableUser.NotNull(y => y.GetName())).SelectMany(x => x)) {@*<li class="todo-item">@Html.Partial("_ProfilePicture", i.AccountableUser)<span class="todo-due pull-right">@i.DueDate.ToShortDateString()</span><span class="todo-message">@i.Message</span></li>*@
 									var vm = new ViewDataDictionary { { "MeetingId", Model.Meeting.Id }, { "CanEdit", Model.CanEdit } };
 									Html.RenderPartial("~/Views/L10/partial/TodoRow.cshtml", i, vm);
 								}
@@ -44,7 +44,7 @@
 
 			<div class="centered" style="width:65%; max-width: 600px;margin-top:-22px;margin-bottom:128px;    min-width: 330px;">
 				<div class="component">
-					<div class="meeting-manager">
+					<div class="meeting-manager rating-section">
 						<div class="title" style="font-size: 20px;color: #444;">Ratings (1 to 10)<div style="font-size: 12px;font-weight: lighter;"><small>Ratings less than an 8? Drop it down to the issues list.</small></div></div>
 
 						@using (Ajax.BeginForm("Conclusion", new AjaxOptions() {
@@ -68,14 +68,15 @@
 											@Model.Meeting._MeetingAttendees[i].User.GetName()
 										</td>
 										<td style="width: 1px;">
-											@Html.TextBox("rating_" + (Model.Meeting._MeetingAttendees[i].User.Id), Model.Meeting._MeetingAttendees[i].Rating, new { max = "10", min = "1", step = "0.5", novalidate = "novalidate", type = "number", style = "width:60px", @class = "rt", lang = "nb" })
+											@Html.TextBox("rating_" + (Model.Meeting._MeetingAttendees[i].User.Id), Model.Meeting._MeetingAttendees[i].Rating, new { max = "10", min = "1", step = "0.1", novalidate = "novalidate", type = "number", style = "width:60px", @class = "rt", lang = "nb" })
 										</td>
 										<td style="width:50%;"></td>
 									</tr>
 								}
 								<tr>
 									<td colspan="3" class="alignRight"><label>Send e-mail summary:</label></td>
-									<td>@Html.CheckBoxFor(x => x.SendEmail, new { @class = "checkbox", style = "margin:auto;" })</td>
+									@*<td>@Html.CheckBoxFor(x => x.SendEmail, new { @class = "checkbox", style = "margin:auto;" })</td>*@
+									<td colspan="2">@Html.DropDownListFor(x => x.SendEmailRich, Model.GenerateEmailOptions(), new { @class = "form-control", style = "max-width:222px;" })</td>
 								</tr>
 								<tr>
 									<td colspan="3" class="alignRight"><label>Close completed to-do:</label></td>
@@ -104,6 +105,16 @@
 
 
 <script>
+	function resetConcludeButton() {
+		$("#conclude_meeting_button").attr("disabled", !isLeader && followLeader ? "disabled" : false);
+	}
+
+	resetConcludeButton();
+
+	$(window).on("follow-leader", function () {
+		resetConcludeButton();
+	});
+
 	function gotoIndex(data) {
 		window.location.href = "/L10/MeetingStats/";
 	}
@@ -129,6 +140,10 @@
 
 
 <style>
+	.rating-section label {
+		padding-right: 13px;
+	}
+
 	.todo-list:empty:after {
 		content: "No to-dos added.";
 		color: #C1C1C1;

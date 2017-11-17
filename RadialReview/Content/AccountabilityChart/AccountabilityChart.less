@@ -61,6 +61,7 @@ html, body {
 	&.root-node {
 		background-color: @background-color;
 
+
 		.move-icon {
 			cursor: default !important;
 		}
@@ -101,12 +102,26 @@ html, body {
 
 .acc-chart svg {
 
+
+	.top-bar {
+		color: transparent !important;
+	}
+	.root-node .top-bar {
+		color: white !important;
+	}
+
 	.role-row .role,
 	input {
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		overflow: hidden;
 		font-family: 'Roboto', sans-serif;
+	}
+
+	.role-row div.role {
+		display: inline-block;
+		width: 100%;
+		margin-left: -8px;
 	}
 
 	button md-icon {

@@ -7,7 +7,7 @@ namespace RadialReview.Models.Angular.Meeting
 	public class AngularMeetingRock : BaseAngular
 	{
 		public AngularMeetingRock(L10Meeting.L10Meeting_Rock meetingRock):base(meetingRock.Id){
-			Rock = new AngularRock(meetingRock.ForRock);
+			Rock = new AngularRock(meetingRock);
 		}
 		public AngularRock Rock { get; set; }
 	}

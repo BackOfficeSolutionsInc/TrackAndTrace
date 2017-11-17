@@ -1,0 +1,11 @@
+﻿<div class="textarea-item bs-textarea-item item-row">
+    <span class="debug-info">
+        <i>--TextArea--</i>
+        <hr />
+        {{model | json:4}}
+    </span>
+    <div class="item"><div class="name">{{item.Name}}</div><div class="help">{{item.Help}}</div></div>
+    <div class="responses textarea-responses">
+		<textarea class="form-control verticalOnly" ng-model="response.Answer" ng-model-options="{debounce:400}" ng-change="changeResponse(response)"></textarea>
+    </div>
+</div> 

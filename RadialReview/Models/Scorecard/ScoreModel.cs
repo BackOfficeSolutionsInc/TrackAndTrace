@@ -26,6 +26,7 @@ namespace RadialReview.Models.Scorecard {
 
         public virtual DateTime ForWeek { get; set; }
         public virtual DateTime? DateEntered { get; set; }
+		[Obsolete("Not used or updated")]
         public virtual DateTime DateDue { get; set; }
 
         public virtual decimal? OriginalGoal { get; set; }
@@ -54,7 +55,11 @@ namespace RadialReview.Models.Scorecard {
         public virtual async Task<string> GetIssueMessage()
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            var name = "'" + Measurable.Title + "'";
+            return Measurable.Title;
+        }
+
+        public virtual string _GetMessageDetails() {
+            var name = "" + Measurable.Title + "";
 
             if (!Measured.HasValue) {
                 return name + " was not entered.";
@@ -95,12 +100,15 @@ namespace RadialReview.Models.Scorecard {
                 accountable += "/" + admin;
             }
             var footer = "Week: " + week + "\nOwner: " + accountable;
-            if (Measured.HasValue) {
 
+            footer +="\n\n" + _GetMessageDetails();
+
+            if (Measured.HasValue) {
                 var goal = "GOAL: " + (OriginalGoalDirection ?? (Measurable.GoalDirection)).GetDisplayName() + " " + Measurable.UnitType.Format(Measurable.Goal);
                 var recorded = "RECORDED: " + Measurable.UnitType.Format(Measured.Value);
                 return goal + "\n" + recorded + "\n\n" + footer;
             }
+            
             return footer;
         }
 
@@ -112,7 +120,7 @@ namespace RadialReview.Models.Scorecard {
         }
         protected virtual string GetTodoHeading() {
             var name = "'" + Measurable.Title + "'";
-            var heading = "";
+            //var heading = "";
             if (!Measured.HasValue) {
                 return "Enter " + name;
             }

@@ -29,6 +29,10 @@ using RadialReview.Models.Angular.Notifications;
 using RadialReview.Models.Angular.DataType;
 using RadialReview.Models.Angular.Dashboard;
 using RadialReview.Models.Angular.Rocks;
+using RadialReview.Areas.CoreProcess.Accessors;
+using System.Threading.Tasks;
+using RadialReview.Models.Angular.CoreProcess;
+using RadialReview.Models.Angular.Headlines;
 
 namespace RadialReview.Controllers {
     [SessionState(SessionStateBehavior.ReadOnly)]
@@ -42,9 +46,10 @@ namespace RadialReview.Controllers {
         [Access(AccessLevel.UserOrganization)]
         [OutputCache(NoStore = true, Duration = 0)]
 
-        //[OutputCache(Duration = 3, VaryByParam = "id", Location = OutputCacheLocation.Client, NoStore = true)]
-        //[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
-        public JsonResult Data2(long id, bool completed = false, string name = null, long? start = null, long? end = null, bool fullScorecard = false, long? dashboardId=null) {
+		//[OutputCache(Duration = 3, VaryByParam = "id", Location = OutputCacheLocation.Client, NoStore = true)]
+		//[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
+
+		public async Task<JsonResult> Data2(long id, bool completed = false, string name = null, long? start = null, long? end = null, bool fullScorecard = false, long? dashboardId=null) {
             //Response.AddHeader("Content-Encoding", "gzip");
             var userId = id;
 			Dashboard dash;
@@ -62,8 +67,8 @@ namespace RadialReview.Controllers {
             else
                 startRange = start.Value.ToDateTime();
 
-            if (end == null)
-                endRange = DateTime.UtcNow.AddDays(14);
+			if (end == null)
+				endRange = DateTime.UtcNow/*.AddDays(14);//*/.StartOfWeek(DayOfWeek.Sunday);
             else
                 endRange = end.Value.ToDateTime();
 
@@ -75,35 +80,50 @@ namespace RadialReview.Controllers {
 
             var output = new ListDataVM(id) {
                 Name = name,
-                date = new AngularDateRange() { startDate = startRange, endDate = endRange }
-            };
+                date = new AngularDateRange() { startDate = startRange, endDate = endRange },
+				dataDateRange = new AngularDateRange() { startDate = startRange, endDate = endRange },
 
-            if (tiles.Any(x => x.Type == TileType.Todo || (x.DataUrl ?? "").Contains("UserTodo"))) {
+			};
+
+			var dayDateRange = new DateRange(DateTime.UtcNow.AddDays(-1), DateTime.UtcNow);
+			var nowDateRange = new DateRange(DateTime.UtcNow, DateTime.UtcNow);
+
+
+			if (tiles.Any(x => x.Type == TileType.Todo || (x.DataUrl ?? "").Contains("UserTodo"))) {
                 try {
                     //Todos
-                    var todos = TodoAccessor.GetMyTodos(GetUser(), id, !completed, dateRange).Select(x => new AngularTodo(x));
+                    var todos = TodoAccessor.GetMyTodosAndMilestones(GetUser(), id, !completed, dayDateRange/*dateRange*/, includeTodos: true, includeMilestones: false);//.Select(x => new AngularTodo(x));
                     var m = _UserAccessor.GetUserOrganization(GetUser(), id, false, true, PermissionType.ViewTodos);
                     output.Todos = todos.OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ThenBy(x => x.DueDate);
                 } catch (Exception e) {
                     ProcessDeadTile(e);
                 }
-
+            }
+            if (tiles.Any(x => x.Type == TileType.Milestones || (x.DataUrl ?? "").Contains("Milestones"))) {
+                try {
+                    //Milestones
+                    var milestones = TodoAccessor.GetMyTodosAndMilestones(GetUser(), id, !completed, nowDateRange, includeTodos:false, includeMilestones: true);//.Select(x => new AngularTodo(x));
+                    var m = _UserAccessor.GetUserOrganization(GetUser(), id, false, true, PermissionType.ViewTodos);
+                    output.Milestones = milestones.OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ThenBy(x => x.DueDate);
+                } catch (Exception e) {
+                    ProcessDeadTile(e);
+                }
             }
 
             if (tiles.Any(x => x.Type == TileType.Scorecard || (x.DataUrl ?? "").Contains("UserScorecard"))) {
                 var startEnd = "";
-                if (start != null)
-                    startEnd += "&start=" + start;
-                if (end != null)
-                    startEnd += "&end=" + end;
+				//if (start != null)
+					startEnd += "&start=" + startRange.ToJsMs();//start;
+				//if (end != null)
+					startEnd += "&end=" + endRange.ToJsMs();//end;
 
-                output.LoadUrls.Add(new AngularString(-15291127 * userId, $"/DashboardData/UserScorecardData/{id}?userId={userId}&completed={completed}&fullScorecard={fullScorecard}" + startEnd));
+				output.LoadUrls.Add(new AngularString(-15291127 * userId, $"/DashboardData/UserScorecardData/{id}?userId={userId}&completed={completed}&fullScorecard={fullScorecard}" + startEnd));
             }
 
             if (tiles.Any(x => x.Type == TileType.Rocks || (x.DataUrl ?? "").Contains("UserRock"))) {
                 try {
                     var now = DateTime.UtcNow;
-                    var rocks = L10Accessor.GetAllMyL10Rocks(GetUser(), GetUser().Id).Select(x => new AngularRock(x));
+                    var rocks = L10Accessor.GetAllMyL10Rocks(GetUser(), GetUser().Id).Select(x => new AngularRock(x,false));
                     output.Rocks = rocks;
                 } catch (Exception e) {
                     ProcessDeadTile(e);
@@ -112,11 +132,11 @@ namespace RadialReview.Controllers {
 
             if (tiles.Any(x => x.Type == TileType.Manage || (x.DataUrl ?? "").Contains("UserManage"))) {
                 try {
-                    var directReports = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails)
-                        .Select(x => AngularUser.CreateUser(x, managing: true)).ToList();
-                    var managingIds = DeepAccessor.Users.GetSubordinatesAndSelf(GetUser(), GetUser().Id);
-                    directReports = directReports.Where(x => managingIds.Contains(x.Id)).ToList();
-                    output.Members = directReports;
+                    //var directReports = _OrganizationAccessor.GetOrganizationMembersLookup(GetUser(), GetUser().Organization.Id, true, PermissionType.EditEmployeeDetails)
+                    //    .Select(x => AngularUser.CreateUser(x, managing: true)).ToList();
+                    //var managingIds = DeepAccessor.Users.GetSubordinatesAndSelf(GetUser(), GetUser().Id);
+                    //directReports = directReports.Where(x => managingIds.Contains(x.Id)).ToList();
+					output.Members = DeepAccessor.Users.GetDirectReportsAndSelfModels(GetUser(), GetUser().Id).Select(x=>AngularUser.CreateUser(x,managing:true));
                 } catch (Exception e) {
                     ProcessDeadTile(e);
                 }
@@ -149,22 +169,58 @@ namespace RadialReview.Controllers {
                 }
             }
 
+           
+
             var caller = GetUser();
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
-                    var l10Lookup = new DefaultDictionary<long, L10Recurrence>(x => L10Accessor.GetL10Recurrence(caller, x, false));
                     var perms = PermissionsUtility.Create(s, caller);
 
-                    //L10 Todos
-                    foreach (var todo in tiles.Where(x => x.Type == TileType.L10Todos || (x.DataUrl ?? "").Contains("L10Todos")).Distinct(x => x.KeyId)) {
+                    if (tiles.Any(x => x.Type == TileType.Tasks || (x.DataUrl ?? "").Contains("Tasks"))) {
+                        try {
+                            var tasks = (await (new ProcessDefAccessor()).GetVisibleTasksForUser(s, perms, caller.Id)).Select(x => AngularTask.Create(x));
+                            output.CoreProcess.Tasks = tasks;
+                        } catch (Exception e) {
+                            ProcessDeadTile(e);
+                        }
+                    }
+
+                    if (tiles.Any(x => x.Type == TileType.CoreProcesses || (x.DataUrl ?? "").Contains("CoreProcesses"))) {
+                        try {
+                            var cps = ((new ProcessDefAccessor()).GetVisibleProcessDefinitionList(s,perms, caller.Organization.Id)).Select(x => AngularCoreProcess.Create(x));
+                            output.CoreProcess.Processes = cps;
+                        } catch (Exception e) {
+                            ProcessDeadTile(e);
+                        }
+                    }
+
+
+                    var l10Lookup = new DefaultDictionary<long, L10Recurrence>(x => L10Accessor.GetL10Recurrence(s, perms, x, false));
+
+					//L10 Todos
+					foreach (var todo in tiles.Where(x => x.Type == TileType.L10Todos || (x.DataUrl ?? "").Contains("L10Todos")).Distinct(x => x.KeyId)) {
                         long l10Id = 0;
                         if (long.TryParse(todo.KeyId, out l10Id)) {
                             try {
-                                var tile = new AngularTileId<List<AngularTodo>>(todo.Id, l10Id, l10Lookup[l10Id].Name + " to-dos");
+                                var tile = new AngularTileId<List<AngularTodo>>(todo.Id, l10Id, l10Lookup[l10Id].Name + " to-dos", AngularTileKeys.L10TodoList(l10Id));
                                 tile.Contents = L10Accessor.GetAllTodosForRecurrence(s, perms, l10Id, false).Select(x => new AngularTodo(x)).ToList();
                                 output.L10Todos.Add(tile);
                             } catch (Exception e) {
                                 output.L10Todos.Add(AngularTileId<List<AngularTodo>>.Error(todo.Id, l10Id, e));
+                            }
+                        }
+                    }
+
+                    //L10 Headlines
+                    foreach (var headlines in tiles.Where(x => x.Type == TileType.Headlines || (x.DataUrl ?? "").Contains("L10Headlines")).Distinct(x => x.KeyId)) {
+                        long l10Id = 0;
+                        if (long.TryParse(headlines.KeyId, out l10Id)) {
+                            try {
+                                var tile = new AngularTileId<List<AngularHeadline>>(headlines.Id, l10Id, l10Lookup[l10Id].Name + " headlines", AngularTileKeys.L10HeadlineList(l10Id));
+                                tile.Contents = L10Accessor.GetAllHeadlinesForRecurrence(s, perms, l10Id, false, null).Select(x => new AngularHeadline(x)).ToList();
+                                output.L10Headlines.Add(tile);
+                            } catch (Exception e) {
+                                output.L10Todos.Add(AngularTileId<List<AngularTodo>>.Error(headlines.Id, l10Id, e));
                             }
                         }
                     }
@@ -174,7 +230,7 @@ namespace RadialReview.Controllers {
                         long l10Id = 0;
                         if (long.TryParse(issue.KeyId, out l10Id)) {
                             try {
-                                var tile = new AngularTileId<AngularIssuesList>(issue.Id, l10Id, l10Lookup[l10Id].Name + " issues");
+                                var tile = new AngularTileId<AngularIssuesList>(issue.Id, l10Id, l10Lookup[l10Id].Name + " issues", AngularTileKeys.L10IssuesList(l10Id));
                                 tile.Contents = new AngularIssuesList(l10Id) {
                                     Issues = L10Accessor.GetIssuesForRecurrence(s, perms, l10Id).Select(x => new AngularIssue(x)).ToList(),
                                     Prioritization = l10Lookup[l10Id].Prioritization,
@@ -191,7 +247,7 @@ namespace RadialReview.Controllers {
 						long l10Id = 0;
 						if (long.TryParse(issue.KeyId, out l10Id)) {
 							try {
-								var tile = new AngularTileId<AngularIssuesSolved>(issue.Id, l10Id, l10Lookup[l10Id].Name + " recently solved issues");
+								var tile = new AngularTileId<AngularIssuesSolved>(issue.Id, l10Id, l10Lookup[l10Id].Name + " recently solved issues", AngularTileKeys.L10IssuesSolvedList(l10Id));
 								var recent = new DateRange(DateTime.UtcNow.AddDays(-7), DateTime.UtcNow);
 								tile.Contents = new AngularIssuesSolved(l10Id) {
 									Issues = L10Accessor.GetSolvedIssuesForRecurrence(s, perms, l10Id, recent).Select(x => new AngularIssue(x)).ToList(),
@@ -209,8 +265,8 @@ namespace RadialReview.Controllers {
                         long l10Id = 0;
                         if (long.TryParse(rock.KeyId, out l10Id)) {
                             try {
-                                var tile = new AngularTileId<List<AngularRock>>(rock.Id, l10Id, l10Lookup[l10Id].Name + " rocks");
-                                tile.Contents = L10Accessor.GetRocksForRecurrence(s, perms, l10Id).Select(x => new AngularRock(x.ForRock)).ToList();
+                                var tile = new AngularTileId<List<AngularRock>>(rock.Id, l10Id, l10Lookup[l10Id].Name + " rocks",AngularTileKeys.L10RocksList(l10Id));
+                                tile.Contents = L10Accessor.GetRocksForRecurrence(s, perms, l10Id).Select(x => new AngularRock(x.ForRock,false)).ToList();
                                 output.L10Rocks.Add(tile);
                             } catch (Exception e) {
                                 output.L10Rocks.Add(AngularTileId<List<AngularRock>>.Error(rock.Id, l10Id, e));
@@ -229,10 +285,10 @@ namespace RadialReview.Controllers {
                                 } catch (Exception) {
                                 }
                                 var startEnd = "";
-                                if (start != null)
-                                    startEnd += "&start=" + start;
-                                if (end != null)
-                                    startEnd += "&end=" + end;
+                               // if (startRange != null)
+                                    startEnd += "&start=" + startRange.ToJsMs();//start;
+								//if (end != null)
+									startEnd += "&end=" + endRange.ToJsMs();//end;
                                 //random prime
                                 output.LoadUrls.Add(new AngularString(15291127 * l10Id, $"/DashboardData/L10ScorecardData/{id}?name={scname}&scorecardTileId={scorecard.Id}&l10Id={l10Id}&completed={completed}&fullScorecard={fullScorecard}" + startEnd));
                             } catch (Exception e) {
@@ -246,92 +302,105 @@ namespace RadialReview.Controllers {
             return Json(output, JsonRequestBehavior.AllowGet);
         }
 
-        [Access(AccessLevel.UserOrganization)]
-        [OutputCache(NoStore = true, Duration = 0)]
-        public JsonResult L10ScorecardData(long id, string name, long scorecardTileId, long l10Id, bool completed = false, bool fullScorecard = false, long? start = null, long? end = null) {
-            DateTime startRange;
-            DateTime endRange;
+		[Access(AccessLevel.UserOrganization)]
+		[OutputCache(NoStore = true, Duration = 0)]
+		public async Task<JsonResult> L10ScorecardData(long id, string name, long scorecardTileId, long l10Id, bool completed = false, bool fullScorecard = false, long? start = null, long? end = null) {
+			DateTime startRange;
+			DateTime endRange;
 
-            if (start == null)
-                startRange = TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod);
-            else
-                startRange = start.Value.ToDateTime();
+			if (start == null)
+				startRange = TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod);
+			else
+				startRange = start.Value.ToDateTime();
 
-            if (end == null)
-                endRange = DateTime.UtcNow.AddDays(14);
-            else
-                endRange = end.Value.ToDateTime();
+			if (end == null)
+				endRange = DateTime.UtcNow.AddDays(14);
+			else
+				endRange = end.Value.ToDateTime();
 
-            if (completed) {
-                startRange = Math2.Min(DateTime.UtcNow.AddDays(-1), startRange);
-                endRange = Math2.Max(DateTime.UtcNow.AddDays(2), endRange);
-            }
-            var dateRange = new DateRange(startRange, endRange);
+			if (completed) {
+				startRange = Math2.Min(DateTime.UtcNow.AddDays(-1), startRange);
+				endRange = Math2.Max(DateTime.UtcNow.AddDays(2), endRange);
+			}
+			var dateRange = new DateRange(startRange, endRange);
 
-            var output = new ListDataVM(id) {
-                date = new AngularDateRange() { startDate = startRange, endDate = endRange }
-            };
-            try {
-                var tile = new AngularTileId<AngularScorecard>(scorecardTileId, l10Id, name + " scorecard");
-                using (var s = HibernateSession.GetCurrentSession()) {
-                    using (var tx = s.BeginTransaction()) {
-                        var perms = PermissionsUtility.Create(s, GetUser());
-                        var scoredata = L10Accessor.GetScorecardDataForRecurrence(s, perms, l10Id, false, getMeasurables: true);
-                        var scores = scoredata.Scores;
-                        var measurables = scoredata.Measurables;
+			var output = new ListDataVM(id) {
+				date = new AngularDateRange() { startDate = startRange, endDate = endRange }
+			};
+			try {
+				var tile = new AngularTileId<AngularScorecard>(scorecardTileId, l10Id, name + " scorecard", AngularTileKeys.L10Scorecard(l10Id));
+				using (var s = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
+						var perms = PermissionsUtility.Create(s, GetUser());
+						var scoredata = await L10Accessor.GetOrGenerateScorecardDataForRecurrence(s, perms, l10Id,includeAutoGenerated: false, range:dateRange, getMeasurables: true);
+						var scores = scoredata.Scores;
+						var measurables = scoredata.Measurables;
 
-                       // var orders = L10Accessor.GetMeasurableOrdering(GetUser(), l10Id);
-                       // var ts = GetUser().GetTimeSettings();
+						tx.Commit();
+						s.Flush();
+
+						// var orders = L10Accessor.GetMeasurableOrdering(GetUser(), l10Id);
+						// var ts = GetUser().GetTimeSettings();
 						//var recur = L10Accessor.GetL10Recurrence(GetUser(), l10Id, false);
-                       // ts.WeekStart = recur.StartOfWeekOverride ?? ts.WeekStart;
-                        tile.Contents = AngularScorecard.Create(scorecardTileId, scoredata.TimeSettings,
-                            scoredata.MeasurablesAndDividers,
-                            scores.ToList(), DateTime.UtcNow, reverseScorecard: scoredata.TimeSettings.Descending);
-                        output.L10Scorecards.Add(tile);
-                    }
-                }
-            } catch (Exception e) {
-                output.L10Scorecards.Add(AngularTileId<AngularScorecard>.Error(scorecardTileId, l10Id, e));
-            }
+						// ts.WeekStart = recur.StartOfWeekOverride ?? ts.WeekStart;
+						tile.Contents = AngularScorecard.Create(scorecardTileId, scoredata.TimeSettings,
+							scoredata.MeasurablesAndDividers,
+							scores.ToList(), DateTime.UtcNow, reverseScorecard: scoredata.TimeSettings.Descending);
 
-            return Json(output, JsonRequestBehavior.AllowGet);
-        }
+						//if (scoredata.TimeSettings.Period == ScorecardPeriod.Monthly || scoredata.TimeSettings.Period == ScorecardPeriod.Quarterly) {
+						//	output.date = new AngularDateRange() {
+						//		startDate = Math2.Min(TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod), startRange),
+						//		endDate = endRange
+						//	};
+						//}
 
-        [Access(AccessLevel.UserOrganization)]
-        [OutputCache(NoStore = true, Duration = 0)]
-        public JsonResult UserScorecardData(long id, long userId, bool completed = false, bool fullScorecard = false, long? start = null, long? end = null) {
-            DateTime startRange;
-            DateTime endRange;
+						output.L10Scorecards.Add(tile);
+					}
+				}
+			} catch (Exception e) {
+				output.L10Scorecards.Add(AngularTileId<AngularScorecard>.Error(scorecardTileId, l10Id, e));
+			}
 
-            if (start == null)
-                startRange = TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod);
-            else
-                startRange = start.Value.ToDateTime();
+			return Json(output, JsonRequestBehavior.AllowGet);
+		}
 
-            if (end == null)
-                endRange = DateTime.UtcNow.AddDays(14);
-            else
-                endRange = end.Value.ToDateTime();
+		[Access(AccessLevel.UserOrganization)]
+		[OutputCache(NoStore = true, Duration = 0)]
+		public async Task<JsonResult> UserScorecardData(long id, long userId, bool completed = false, bool fullScorecard = false, long? start = null, long? end = null) {
+			DateTime startRange;
+			DateTime endRange;
 
-            if (completed) {
-                startRange = Math2.Min(DateTime.UtcNow.AddDays(-1), startRange);
-                endRange = Math2.Max(DateTime.UtcNow.AddDays(2), endRange);
-            }
-            var dateRange = new DateRange(startRange, endRange);
+			if (start == null)
+				startRange = TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod);
+			else
+				startRange = start.Value.ToDateTime();
 
-            var output = new ListDataVM(id) {
-                date = new AngularDateRange() { startDate = startRange, endDate = endRange }
-            };
-            try {//Scorecard
-                var scorecardStart = fullScorecard ? TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod) : startRange;
-                var scorecardEnd = fullScorecard ? DateTime.UtcNow.AddDays(14) : endRange;
-                output.Scorecard = ScorecardAccessor.GetAngularScorecardForUser(GetUser(), userId, new DateRange(scorecardStart, scorecardEnd), true, now: DateTime.UtcNow);
-            } catch (Exception e) {
-                ProcessDeadTile(e);
-            }
-            return Json(output, JsonRequestBehavior.AllowGet);
-        }
-    }
+			if (end == null)
+				endRange = DateTime.UtcNow.AddDays(14);
+			else
+				endRange = end.Value.ToDateTime();
+
+			if (completed) {
+				startRange = Math2.Min(DateTime.UtcNow.AddDays(-1), startRange);
+				endRange = Math2.Max(DateTime.UtcNow.AddDays(2), endRange);
+			}
+			var dateRange = new DateRange(startRange, endRange);
+
+			var output = new ListDataVM(id) {
+				date = new AngularDateRange() { startDate = startRange, endDate = endRange }
+			};
+			try {//Scorecard
+				var scorecardStart = fullScorecard ? TimingUtility.PeriodsAgo(DateTime.UtcNow, 13, GetUser().Organization.Settings.ScorecardPeriod) : startRange;
+				var scorecardEnd = fullScorecard ? DateTime.UtcNow.AddDays(14) : endRange;
+				output.Scorecard = await ScorecardAccessor.GetAngularScorecardForUser(GetUser(), userId, new DateRange(scorecardStart, scorecardEnd), true, now: DateTime.UtcNow);
+				output.Scorecard.ReverseScorecard = GetUser().NotNull(x => x.User.ReverseScorecard);
+
+			} catch (Exception e) {
+				ProcessDeadTile(e);
+			}
+			return Json(output, JsonRequestBehavior.AllowGet);
+		}
+	}
 
     public class DashboardController : BaseController {
 

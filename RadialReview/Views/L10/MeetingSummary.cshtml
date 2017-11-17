@@ -1,0 +1,31 @@
+﻿@model MvcHtmlString
+<div class="meetingsummary">
+	@Model
+</div>
+
+<style>
+	.meetingsummary{
+		padding-left:10px;
+		padding-right:10px;
+	}
+		
+	.meetingsummary tr:first-of-type{
+		display:none;
+	}
+
+	.meetingsummary tr td:nth-of-type(2) b{
+	    font-weight:normal;
+	}
+
+	.meetingsummary tr td:nth-of-type(1) a{
+	    display:none;
+	}
+
+	.meetingsummary tr td:nth-of-type(1) b:after{
+	    content:" • ";
+	    font-size:50%;
+	    top:-2px;
+	    left:-5px;
+	    position:relative;
+	}
+</style>

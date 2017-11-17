@@ -1,0 +1,38 @@
+﻿@model RadialReview.Models.ViewModels.WebHookViewModel
+
+@Html.HiddenFor(m => m.Id)
+
+<div class="form-group">	
+	@Html.LabelFor(x => x.WebHookUri)
+	@Html.TextBoxFor(x => x.WebHookUri, new { @class = "form-control , uri", placeholder = "Enter WebHook Uri", autocomplete = "off", @required = "required" })
+	<span style="color:red"> @Html.ValidationMessageFor(x => x.WebHookUri) </span>
+</div>
+<div class="form-group">
+	@Html.LabelFor(x => x.Description)
+	@Html.TextAreaFor(x => x.Description, new { @class = "form-control verticalOnly , des", rows = "6", placeholder = "Enter Description" })
+</div>
+@if (Model.Events.Count() > 0) {
+	<div class="form-group">
+		Events
+		@Html.DropDownListFor(m => m.selected, Model.Events, new { id = "Events", @class = "js-example-basic-multiple ,sec", Style = "Width:100%", multiple = "multiple" })
+	</div>
+} else {
+	<div class="form-group">
+		Events
+		@Html.DropDownListFor(m => m.selected, Model.Events, new { id = "Events", @class = "js-example-basic-multiple ,sec", Style = "Width:100%", multiple = "multiple", disabled = "disabled" })
+	</div>
+}
+
+
+
+<script type="text/javascript">
+	var arrayOfArrays =  @Html.Raw(Json.Encode(Model.selected));
+
+	$(".js-example-basic-multiple").select2({
+		placeholder: 'Select Events',
+	}).select2('val', arrayOfArrays);
+
+</script>
+
+
+

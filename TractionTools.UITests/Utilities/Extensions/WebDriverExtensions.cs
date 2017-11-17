@@ -29,10 +29,10 @@ namespace TractionTools.UITests {
 		public static bool TestScreenshot(this TestCtx ctx, string identifier = null) {
 			ctx.CurrentIdentifier = identifier ?? ctx.CurrentIdentifier;
 			var screenshotDriver = ctx as ITakesScreenshot;
-			ctx.ExecuteScript("$('.test-ignore').css('opacity',0)");
+			ctx.ExecuteScript("$('.test-ignore').css('opacity','0')");
 			Thread.Sleep(200);
 			var screenshot = screenshotDriver.GetScreenshot();
-			ctx.ExecuteScript("$('.test-ignore').css('opacity',1)");
+			ctx.ExecuteScript("$('.test-ignore').css('opacity','1')");
 			Thread.Sleep(200);
 			using (var ms = new MemoryStream(screenshot.AsByteArray)) {
 				var curScreen = new Bitmap(Image.FromStream(ms));
@@ -75,7 +75,7 @@ namespace TractionTools.UITests {
 		public static string TakeScreenshot(this IWebDriver driver, string file) {
 			var screenshotDriver = driver as ITakesScreenshot;
 			var screenshot = screenshotDriver.GetScreenshot();
-			screenshot.SaveAsFile(file, ImageFormat.Png);
+			screenshot.SaveAsFile(file, ScreenshotImageFormat.Png/* ImageFormat.Png*/);
 			return file;
 		}
 
@@ -186,6 +186,10 @@ namespace TractionTools.UITests {
 			}
 			return Find(e, selector);
 		}
+		[DebuggerHidden]
+		public static IWebElement FindVisible(this IWebElement e, string selector) {
+			return e.FindElements(By.CssSelector(selector)).First(x=>x.Displayed);
+		}
 
 		[DebuggerHidden]
 		public static IWebElement Find(this IWebElement e, string selector) {
@@ -203,9 +207,9 @@ namespace TractionTools.UITests {
 			try {
 				Find(d, selector, timeoutSeconds);
 				throw new Exception("Item(" + selector + ") was not expected");
-			} catch (WebDriverTimeoutException e) {
+			} catch (WebDriverTimeoutException) {
 				return true;
-			} catch (NoSuchElementException e) {
+			} catch (NoSuchElementException) {
 				return true;
 			}
 		}

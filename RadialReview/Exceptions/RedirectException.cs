@@ -15,7 +15,8 @@ namespace RadialReview.Exceptions
 
 		public bool NoErrorReport { get; set; }
 
-		public RedirectException(String message) : base(message) {  
+        public RedirectException(String message) : base(message) {
         }
+        
     }
 }

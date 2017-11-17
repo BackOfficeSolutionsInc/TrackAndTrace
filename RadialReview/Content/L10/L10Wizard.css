@@ -1236,6 +1236,7 @@ body,
 .wizard .scorecard-list-container .admin-column,
 .wizard .scorecard-list-container .IsDivider,
 .wizard .scorecard-list-container .top-row,
+.wizard .scorecard-list-container .delete-column-alt,
 .wizard .scorecard-list-container .cumulative-column,
 .wizard .scorecard-list-container thead {
   display: none;
@@ -1298,6 +1299,30 @@ body,
 }
 .wizard .scorecard-list-container tr.disabled {
   display: none;
+}
+.wizard .scorecard-list-container .delete-row {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  cursor: pointer;
+  vertical-align: top;
+  padding-left: 5px;
+  padding-right: 33px;
+  padding-top: 2px;
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 15px;
+}
+.wizard .scorecard-list-container .delete-row:before {
+  content: "\e020";
+}
+.wizard .scorecard-list-container .delete-row:hover {
+  color: #3E3935;
 }
 .wizard .rock-list-container {
   /*.picture-container { 
@@ -1415,6 +1440,36 @@ body,
 .wizard .rock-list-container table .rock-name {
   max-width: 100%;
 }
+.wizard .rock-list-container .delete-row {
+  margin: 0;
+  margin-right: 10px;
+  padding: 13px;
+  height: 50px;
+  width: 50px;
+  overflow: hidden;
+  float: left;
+  font-size: 24px;
+  color: rgba(0, 0, 0, 0.54);
+}
+.wizard .rock-list-container .delete-row:before {
+  content: "0";
+  font-family: "fontastic" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: inline-block;
+  position: relative;
+  top: 0px;
+  left: -4px;
+}
+.wizard .rock-list-container .delete-row:hover {
+  color: #3E3935;
+}
 .wizard .issues-list-container .create-row {
   float: right;
   height: 56px;
@@ -1514,6 +1569,30 @@ body,
 .wizard .issues-list-container .details-row,
 .wizard .issues-list-container thead {
   display: none;
+}
+.wizard .issues-list-container .delete-row {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  cursor: pointer;
+  vertical-align: top;
+  padding-left: 5px;
+  padding-right: 33px;
+  padding-top: 2px;
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 15px;
+}
+.wizard .issues-list-container .delete-row:before {
+  content: "\e020";
+}
+.wizard .issues-list-container .delete-row:hover {
+  color: #3E3935;
 }
 .wizard .todo-list-container .create-row {
   float: right;
@@ -1627,6 +1706,30 @@ body,
   min-width: 90px;
   max-width: 90px;
   text-align: center;
+}
+.wizard .todo-list-container .delete-row {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  cursor: pointer;
+  vertical-align: top;
+  padding-left: 5px;
+  padding-right: 33px;
+  padding-top: 2px;
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 15px;
+}
+.wizard .todo-list-container .delete-row:before {
+  content: "\e020";
+}
+.wizard .todo-list-container .delete-row:hover {
+  color: #3E3935;
 }
 .wizard .headline-list-container .create-row {
   float: right;
@@ -1767,6 +1870,30 @@ body,
 }
 .wizard .headline-list-container .owner-column .picture .initials {
   font-size: 10px !important;
+}
+.wizard .headline-list-container .delete-row {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  cursor: pointer;
+  vertical-align: top;
+  padding-left: 5px;
+  padding-right: 33px;
+  padding-top: 2px;
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 15px;
+}
+.wizard .headline-list-container .delete-row:before {
+  content: "\e020";
+}
+.wizard .headline-list-container .delete-row:hover {
+  color: #3E3935;
 }
 .wizard .user-list-container .create-row {
   float: right;
@@ -2129,7 +2256,7 @@ body,
   border-bottom: 5px solid transparent;
   border-left: 5px solid #B2B2B2;
 }
-.wizard .delete-row {
+.wizard .user-list-container .delete-row {
   position: relative;
   top: 1px;
   display: inline-block;
@@ -2147,10 +2274,10 @@ body,
   color: rgba(0, 0, 0, 0.54);
   font-size: 15px;
 }
-.wizard .delete-row:before {
+.wizard .user-list-container .delete-row:before {
   content: "\e020";
 }
-.wizard .delete-row:hover {
+.wizard .user-list-container .delete-row:hover {
   color: #3E3935;
 }
 #class-container:not(.modal-icon) .modal-content {

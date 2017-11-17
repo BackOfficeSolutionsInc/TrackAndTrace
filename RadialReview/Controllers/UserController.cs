@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -99,8 +100,8 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Manager)]
-		public JsonResult Undelete(long id) {
-			var result = _UserAccessor.UndeleteUser(GetUser(), id);
+		public async Task<JsonResult> Undelete(long id) {
+			var result = await _UserAccessor.UndeleteUser(GetUser(), id);
 			return Json(result, JsonRequestBehavior.AllowGet);
 		}
 
@@ -123,17 +124,18 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
-		public JsonResult Remove(RemoveUserVM model) {
+		public async Task<JsonResult> Remove(RemoveUserVM model) {
 			//var user = _UserAccessor.GetUserOrganization(GetUser(), , true, true);
-			var result = _UserAccessor.RemoveUser(GetUser(), model.UserId, DateTime.UtcNow);
+			var result = await _UserAccessor.RemoveUser(GetUser(), model.UserId, DateTime.UtcNow);
 			return Json(result);
 		}
 
 
-		[Access(AccessLevel.Manager)]
+		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult AddModal(
 			long? managerId = null, string name = null, bool isClient = false, long? managerNodeId = null, 
-			bool forceManager = false, bool hideIsManager = false,bool hidePosition=false,long? nodeId=null,bool hideEvalOnly=false)
+			bool forceManager = false, bool hideIsManager = false,bool hidePosition=false,long? nodeId=null,bool hideEvalOnly=false,
+            bool forceNoSend=false)
 		{
 			var sw = new Stopwatch();
 			sw.Start();
@@ -142,8 +144,10 @@ namespace RadialReview.Controllers {
 			var e1 = sw.ElapsedMilliseconds;
 
 
+            _PermissionsAccessor.Permitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, GetUser().Organization.Id));
+
 #pragma warning disable CS0618 // Type or member is obsolete
-			var orgPos = _OrganizationAccessor
+                var orgPos = _OrganizationAccessor
 							.GetOrganizationPositions(GetUser(), GetUser().Organization.Id)
 							.ToListAlive()
 							.OrderBy(x => x.CustomName)
@@ -197,8 +201,9 @@ namespace RadialReview.Controllers {
 			ViewBag.HideIsManager = hideIsManager;
 			ViewBag.HidePosition = hidePosition;
 			ViewBag.HideEvalOnly = hideEvalOnly;
+            ViewBag.HideSend = forceNoSend;
 
-			string fname = null;
+            string fname = null;
 			string lname = null;
 			string email = null;
 
@@ -223,7 +228,7 @@ namespace RadialReview.Controllers {
 				StrictlyHierarchical = strictHierarchy,
 				ManagerNodeId = managerNodeId,
 				PotentialManagers = managers,
-				SendEmail = caller.Organization.SendEmailImmediately,
+				SendEmail = forceNoSend?false:caller.Organization.SendEmailImmediately,
 				IsClient = isClient,
 				FirstName = fname,
 				LastName = lname,
@@ -318,7 +323,9 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
 		public PartialViewResult PositionModal(long userId, long id = 0) {
 			var user = _UserAccessor.GetUserOrganization(GetUser(), userId, false, false);
+#pragma warning disable CS0618 // Type or member is obsolete
 			var pos = user.Positions.FirstOrDefault(x => x.Id == id);
+#pragma warning restore CS0618 // Type or member is obsolete
 			var orgId = GetUser().Organization.Id;
 #pragma warning disable CS0618 // Type or member is obsolete
 			var orgPos = _OrganizationAccessor
@@ -401,7 +408,9 @@ namespace RadialReview.Controllers {
 			var teams = TeamAccessor.GetUsersTeams(GetUser(), userId);
 			var aliveTeams = teams.ToListAlive();
 			var user = _UserAccessor.GetUserOrganization(GetUser(), userId, false, false).Hydrate().SetTeams(teams).Execute();
+#pragma warning disable CS0618 // Type or member is obsolete
 			var team = user.Teams.FirstOrDefault(x => x.Id == id);
+#pragma warning restore CS0618 // Type or member is obsolete
 			var orgTeam = TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id)
 							.Where(x => aliveTeams.All(y => y.Team.Id != x.Id))//TeamAccessor.GetTeamsDirectlyManaged(GetUser(), GetUser().Id)
 							.Where(x => x.Type == TeamType.Standard)
@@ -477,37 +486,34 @@ namespace RadialReview.Controllers {
 			return PartialView(model);
 		}
 
-		[Access(AccessLevel.Manager)]
-		[HttpPost]
-		[Obsolete("Cannot remove manager like this", true)]
-		public JsonResult DeleteManager(long id) {
-			_UserAccessor.RemoveManager(GetUser(), id, DateTime.UtcNow);
-			return Json(ResultObject.Success("Removed " + Config.ManagerName() + ".").ForceRefresh());
-		}
-
-		[Access(AccessLevel.Manager)]
-		[HttpPost]
-		[Obsolete("Cannot remove manager like this", true)]
-		public JsonResult RemoveManager(long userId, long managerId) {
-			_UserAccessor.RemoveManager(GetUser(), userId, managerId, DateTime.UtcNow);
-			return Json(ResultObject.Success("Removed " + Config.ManagerName() + "."));
-		}
-
-		[Access(AccessLevel.Manager)]
-		[HttpPost]
-		[Obsolete("Cannot add manager like this", true)]
-		public JsonResult AddManager(AddManagerViewModel model) {
-			_UserAccessor.AddManager(GetUser(), model.UserId, model.ManagerId, DateTime.UtcNow);
-			return Json(ResultObject.Success("Added " + Config.ManagerName() + "."));
-		}
-
-		[Access(AccessLevel.Manager)]
-		[HttpPost]
-		[Obsolete("Cannot remove manager like this", true)]
-		public JsonResult SwapManager(long oldManagerId, long newManagerId, long userId) {
-			_UserAccessor.SwapManager(GetUser(), userId, oldManagerId, newManagerId, DateTime.UtcNow);
-			return Json(ResultObject.Success("Swapped user."));
-		}
+		//[Access(AccessLevel.Manager)]
+		//[HttpPost]
+		//[Obsolete("Cannot remove manager like this", true)]
+		//public JsonResult DeleteManager(long id) {
+		//	_UserAccessor.RemoveManager(GetUser(), id, DateTime.UtcNow);
+		//	return Json(ResultObject.Success("Removed " + Config.ManagerName() + ".").ForceRefresh());
+		//}
+		//[Access(AccessLevel.Manager)]
+		//[HttpPost]
+		//[Obsolete("Cannot remove manager like this", true)]
+		//public JsonResult RemoveManager(long userId, long managerId) {
+		//	_UserAccessor.RemoveManager(GetUser(), userId, managerId, DateTime.UtcNow);
+		//	return Json(ResultObject.Success("Removed " + Config.ManagerName() + "."));
+		//}
+		//[Access(AccessLevel.Manager)]
+		//[HttpPost]
+		//[Obsolete("Cannot add manager like this", true)]
+		//public JsonResult AddManager(AddManagerViewModel model) {
+		//	_UserAccessor.AddManager(GetUser(), model.UserId, model.ManagerId, DateTime.UtcNow);
+		//	return Json(ResultObject.Success("Added " + Config.ManagerName() + "."));
+		//}
+		//[Access(AccessLevel.Manager)]
+		//[HttpPost]
+		//[Obsolete("Cannot remove manager like this", true)]
+		//public JsonResult SwapManager(long oldManagerId, long newManagerId, long userId) {
+		//	_UserAccessor.SwapManager(GetUser(), userId, oldManagerId, newManagerId, DateTime.UtcNow);
+		//	return Json(ResultObject.Success("Swapped user."));
+		//}
 		#endregion
 
 		[Access(AccessLevel.UserOrganization)]

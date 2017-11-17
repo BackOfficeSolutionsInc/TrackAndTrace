@@ -1,0 +1,29 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+<div class="col-md-6">
+    <p>Api Uri</p>
+    <input type="text" class="form-control" id="uri" />
+</div>
+<div class="col-md-6"><button onclick="sendMessage()">Send Message</button></div>
+
+
+<script>
+    function sendMessage() {
+
+        if ($('#uri').val() != "") {
+            $.ajax({
+                url: "Home/SendMessage",
+                type: "POST",
+                data: { uri: $('#uri').val() },
+                success: function (data) {
+                    alert(data);
+                }
+            });
+        }
+        else {
+            alert('please enter uri..');
+        }
+    }
+</script>

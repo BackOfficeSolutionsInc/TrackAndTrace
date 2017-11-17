@@ -4,6 +4,7 @@ using RadialReview.Models.Angular.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Web;
 
 namespace RadialReview.Models.Angular {
@@ -15,15 +16,20 @@ namespace RadialReview.Models.Angular {
 #pragma warning restore CS0618 // Type or member is obsolete
 
         public AngularTreeNode(long id ) : base(id){}
-
-        public bool collapsed { get; set; }
-        public int? order { get; set; }
-
-        public bool? Editable { get; set; }
+		[IgnoreDataMember]
+		public bool collapsed { get; set; }
+		[IgnoreDataMember]
+		public int? order { get; set; }
+		[IgnoreDataMember]
+		public bool? Editable { get; set; }
+		[IgnoreDataMember]
 		public bool? Me { get; set; }
 
 		protected IEnumerable<T> __children { get; set; }
+
+		[JsonProperty(PropertyName = "Children")]
         public IEnumerable<T> children { get { return !collapsed ? __children : null; } set { collapsed = false; __children = value; } }
+		[IgnoreDataMember]
 		public IEnumerable<T> _children { get { return collapsed ? __children : null; } set { collapsed = true; __children = value; } }
 
 		public void SetChildren(IEnumerable<T> children, bool? collapse=null) {

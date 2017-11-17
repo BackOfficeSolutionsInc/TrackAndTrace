@@ -17,6 +17,7 @@ using System.Threading;
 using TractionTools.UITests.Utilities;
 using TractionTools.Tests.Utilities;
 using OpenQA.Selenium.Support.UI;
+using RadialReview.Models.Enums;
 
 namespace TractionTools.UITests.Selenium {
     [TestClass]
@@ -30,25 +31,36 @@ namespace TractionTools.UITests.Selenium {
         {
             var testId = Guid.NewGuid();
             //Ensure correct week
-            var recur = L10Utility.CreateRecurrence(MEETING_NAME);
+            var recur = await L10Utility.CreateRecurrence(MEETING_NAME);
             var auc = await GetAdminCredentials(testId);
             var au = auc.User;
-            var m101 = new MeasurableModel {
-                AccountableUserId = au.Id,
-                AdminUserId = au.Id,
-                OrganizationId = au.Organization.Id,
-                Goal = 101,
-                GoalDirection = RadialReview.Models.Enums.LessGreater.LessThan,
-                Title = "TestMeasurable101",
-                UnitType = RadialReview.Models.Enums.UnitType.Dollar,
-            };
-            MockHttpContext();
-            DbCommit(s => {
-                L10Accessor.AddMeasurable(s, PermissionsUtility.Create(s, au), RealTimeUtility.Create(), recur.Id,
-                    RadialReview.Controllers.L10Controller.AddMeasurableVm.CreateNewMeasurable(recur.Id, m101));
-            });
+			//var m101 = new MeasurableModel {
+			//    AccountableUserId = au.Id,
+			//    AdminUserId = au.Id,
+			//    OrganizationId = au.Organization.Id,
+			//    Goal = 101,
+			//    GoalDirection = RadialReview.Models.Enums.LessGreater.LessThan,
+			//    Title = "TestMeasurable101",
+			//    UnitType = RadialReview.Models.Enums.UnitType.Dollar,
+			//};
+			MeasurableModel m101=null;
 
-            foreach (var dow in new []{DayOfWeek.Sunday}){//Enum.GetValues(typeof(DayOfWeek))) {
+
+			MockHttpContext();
+            DbCommit(async s => {
+				var perms = PermissionsUtility.Create(s, au);
+				MockHttpContext();
+
+				var creator = MeasurableBuilder.Build("TestMeasurable101",au.Id,goal:101,goalDirection:LessGreater.LessThan,type:UnitType.Dollar);
+				m101 = await ScorecardAccessor.CreateMeasurable(s, perms, creator);
+				await L10Accessor.AttachMeasurable(s, perms, recur.Id, m101.Id, true);
+
+				//await L10Accessor.AddMeasurable(s, PermissionsUtility.Create(s, au), RealTimeUtility.Create(), recur.Id,
+				//	RadialReview.Controllers.L10Controller.AddMeasurableVm.CreateMeasurableViewModel(recur.Id, m101));
+			});
+		
+
+			foreach (var dow in new []{DayOfWeek.Sunday}){//Enum.GetValues(typeof(DayOfWeek))) {
                 var pType = (DayOfWeek)dow;
 
                 //TestView(auc, "/Manage/Advanced", d => {
@@ -86,7 +98,7 @@ namespace TractionTools.UITests.Selenium {
                     Assert.IsTrue(row.Find(".target.value span").HasClass("modifiers-Dollar"));
                     var dateRows = d.Finds("#ScorecardTable thead tr");
                     var ths = dateRows[0].Finds("th");
-                    for (var i = 6; i < ths.Count - 2; i++) {
+                    for (var i = 7; i < ths.Count - 2; i++) {
                         var top = ths[i].Text;
                         var date1 = DateTime.Parse(top);
 						if (date1 > DateTime.UtcNow.AddDays(180)) {
@@ -117,7 +129,7 @@ namespace TractionTools.UITests.Selenium {
 
                 d.Find(".scorecard", 5);
 
-                var element = d.FindElementByText("TestMeasurable101");
+                var element = d.FindElementByText("TestMeasurable101",20);
                 var row = element.Closest(By.TagName("tr"));
 
                 row.Find(".who").WaitForText(d, auc.User.GetFirstName()[0] + " " + auc.User.GetLastName()[0], 1);

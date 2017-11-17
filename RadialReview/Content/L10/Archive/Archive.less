@@ -12,6 +12,21 @@ body, html {
 }
 
 .meeting-archive {
+
+	tr span.delete-row:after {
+		content: "\00d7";
+		color: transparent;
+		font-size: 18px;
+	}
+
+	tr:hover span.delete-row:after {
+		color: rgba(0,0,0,.3);
+	}
+
+	tr span.delete-row:hover:after {
+		color: @traction-orange;
+	}
+
 	.meeting-name {
 		font-family: 'Roboto','Lato',sans-serif;
 	}
@@ -60,9 +75,28 @@ body, html {
 		}
 	}
 
+	.notes-list-container {
+		.delete-btn {
+			&:before {
+				color: rgba(0,0,0,.3);
+			}
+
+			&:hover:before {
+				color: @traction-orange;
+			}
+		}
+	}
+
 	.scorecard-list-container {
 		table {
 			.dataTableTiny();
+
+
+			tr span.delete-row:after {
+				position: relative;
+				top: 5px;
+			}
+
 
 			tr.IsDivider {
 
@@ -83,7 +117,7 @@ body, html {
 
 			input {
 				padding-left: 0px !important;
-				padding-right: 10px;
+				padding-right: 0px;
 				font-size: 12px;
 			}
 
@@ -198,8 +232,7 @@ body, html {
 			padding-right: 12px !important;
 			padding-left: 8px !important;
 		}
-
-		.delete-column,
+		//.delete-column,
 		.company-rock-column,
 		.due-column {
 			display: none;
@@ -210,9 +243,11 @@ body, html {
 			color: #fff;
 			padding: 0px 4px 3px 5px;
 			border-radius: 3px;
-			._md-select-value{
-					border-bottom-color:transparent !important;
+			min-width: 106px;
 
+			._md-select-value {
+				border-bottom-color: transparent !important;
+				padding: 0px 2px 0px;
 			}
 
 			&:focus *, &:active * {

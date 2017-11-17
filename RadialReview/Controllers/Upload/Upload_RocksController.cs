@@ -99,7 +99,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult SubmitRocks(FormCollection model) {
+		public async Task<JsonResult> SubmitRocks(FormCollection model) {
 			var path = model["Path"].ToString();
 			try {
 				//var useAws = model["UseAWS"].ToBoolean();
@@ -147,17 +147,20 @@ namespace RadialReview.Controllers {
 							if (details.ContainsKey(ident))
 								dued = due[ident];
 
+							var rock = await RockAccessor.CreateRock(s, perms, (owner ?? caller.Id), rocks[ident]);
+							await L10Accessor.AttachRock(s, perms, recurrence, rock.Id, false);
 
-							L10Accessor.AddRock(s, perms, recurrence, L10Controller.AddRockVm.CreateRock(recurrence, new RockModel() {
-								CreateTime = now,
-								Rock = rocks[ident],
-								OrganizationId = org.Id,
-								//AccountableUser = s.Load<UserOrganizationModel>(owner??caller.Id),
-								ForUserId = owner ?? caller.Id,
-								DueDate = dued,
-								PeriodId = period.NotNull(x => x.Id),
-								//Category=category,
-							}));
+							//---Removed---
+							//await L10Accessor.AddRock(s, perms, recurrence, L10Controller.AddRockVm.CreateRock(recurrence, new RockModel() {
+							//	CreateTime = now,
+							//	Rock = rocks[ident],
+							//	OrganizationId = org.Id,
+							//	//AccountableUser = s.Load<UserOrganizationModel>(owner??caller.Id),
+							//	ForUserId = owner ?? caller.Id,
+							//	DueDate = dued,
+							//	PeriodId = period.NotNull(x => x.Id),
+							//	//Category=category,
+							//}));
 
 						}
 						var existing = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>()

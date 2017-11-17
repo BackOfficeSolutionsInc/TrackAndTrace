@@ -18,12 +18,13 @@ using System.Collections.Generic;
 using System.Linq;
 using RadialReview.Utilities.DataTypes;
 using log4net;
+using RadialReview.Models.Components;
 
 namespace RadialReview.Models
 {
-    [DebuggerDisplay("User {User}")]
+    [DebuggerDisplay("User: {EmailAtOrganization}")]
     [DataContract]
-    public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IHistorical, TimeSettings/*, IAngularizer<UserOrganizationModel>*/
+    public class UserOrganizationModel : ResponsibilityGroupModel, IOrigin, IHistorical, TimeSettings,IForModel/*, IAngularizer<UserOrganizationModel>*/
     {
         protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -255,20 +256,20 @@ namespace RadialReview.Models
         public virtual string GetFirstName()
         {
             if (this.User != null && !String.IsNullOrWhiteSpace(this.User.FirstName))
-                return this.User.FirstName;
+                return this.User.FirstName.Trim();
 
             if (TempUser != null && !String.IsNullOrWhiteSpace(this.TempUser.FirstName))
-                return this.TempUser.FirstName;
+                return this.TempUser.FirstName.Trim();
 
             return GetName();
         }
         public virtual string GetLastName()
         {
             if (this.User != null && !String.IsNullOrWhiteSpace(this.User.LastName))
-                return this.User.LastName;
+                return this.User.LastName.Trim();
 
             if (TempUser != null && !String.IsNullOrWhiteSpace(this.TempUser.LastName))
-                return this.TempUser.LastName;
+                return this.TempUser.LastName.Trim();
 
             return GetName();
         }
@@ -374,10 +375,11 @@ namespace RadialReview.Models
                 Cache.Name = this.GetName();
 
             var measurable = s.QueryOver<MeasurableModel>().Where(x => x.DeleteTime == null && x.AccountableUserId == Id).ToRowCountQuery().FutureValue<int>();
-            var role = RoleAccessor.CountRoles(s, Id);
 
             //s.QueryOver<RoleModel>().Where(x => x.DeleteTime == null && x.ForUserId == Id).ToRowCountQuery().FutureValue<int>();
             var rock = s.QueryOver<RockModel>().Where(x => x.DeleteTime == null && x.ForUserId == Id).ToRowCountQuery().FutureValue<int>();
+
+            var role = RoleAccessor.CountRoles(s, Id);
 
             if (Cache.NumMeasurables != measurable.Value)
                 Cache.NumMeasurables = measurable.Value;
@@ -418,8 +420,16 @@ namespace RadialReview.Models
 
 		public virtual string UserModelId { get { return User.NotNull(x => x.Id); } set { } }
 
+        public virtual long ModelId {get { return Id; }}
+        public virtual string ModelType {get {return ForModel.GetModelType<UserOrganizationModel>();}}
+        public virtual bool Is<T>() {
+            return typeof(UserOrganizationModel).IsAssignableFrom(typeof(T));
+        }
+		public virtual string ToPrettyString() {
+			return GetName();
+		}
 
-		public virtual DataContract GetUserDataContract()
+        public virtual DataContract GetUserDataContract()
         {
             return new DataContract(this);
         }
@@ -446,7 +456,8 @@ namespace RadialReview.Models
         {
             return _ClientOffset ?? GetOrganizationSettings().GetTimezoneOffset();
         }
-    }
+
+	}
 
     public class UserOrganizationModelMap : SubclassMap<UserOrganizationModel>
     {

@@ -562,6 +562,17 @@ body,
 html {
   background-color: #F7F7F7;
 }
+.meeting-archive tr span.delete-row:after {
+  content: "\00d7";
+  color: transparent;
+  font-size: 18px;
+}
+.meeting-archive tr:hover span.delete-row:after {
+  color: rgba(0, 0, 0, 0.3);
+}
+.meeting-archive tr span.delete-row:hover:after {
+  color: #EF7622;
+}
 .meeting-archive .meeting-name {
   font-family: 'Roboto', 'Lato', sans-serif;
 }
@@ -600,6 +611,12 @@ html {
 .meeting-archive .issues-list-container .createtime-column {
   display: none;
 }
+.meeting-archive .notes-list-container .delete-btn:before {
+  color: rgba(0, 0, 0, 0.3);
+}
+.meeting-archive .notes-list-container .delete-btn:hover:before {
+  color: #EF7622;
+}
 .meeting-archive .scorecard-list-container table {
   font-family: 'Roboto', san-sarif;
 }
@@ -609,7 +626,7 @@ html {
 }
 .meeting-archive .scorecard-list-container table td {
   font-size: 13px;
-  color: rgba(0, 0, 0, 0.54);
+  color: #c7c7c7;
   height: 24px;
 }
 .meeting-archive .scorecard-list-container table tbody.md-body > tr.md-row,
@@ -711,6 +728,10 @@ html {
   font-size: 10px;
   line-height: 20px;
 }
+.meeting-archive .scorecard-list-container table tr span.delete-row:after {
+  position: relative;
+  top: 5px;
+}
 .meeting-archive .scorecard-list-container table tr.IsDivider td {
   height: 3px !important;
 }
@@ -723,7 +744,7 @@ html {
 }
 .meeting-archive .scorecard-list-container table input {
   padding-left: 0px !important;
-  padding-right: 10px;
+  padding-right: 0px;
   font-size: 12px;
 }
 .meeting-archive .scorecard-list-container table score input {
@@ -814,7 +835,6 @@ html {
   padding-right: 12px !important;
   padding-left: 8px !important;
 }
-.meeting-archive .rock-list-container .delete-column,
 .meeting-archive .rock-list-container .company-rock-column,
 .meeting-archive .rock-list-container .due-column {
   display: none;
@@ -824,9 +844,11 @@ html {
   color: #fff;
   padding: 0px 4px 3px 5px;
   border-radius: 3px;
+  min-width: 106px;
 }
 .meeting-archive .rock-list-container .rock-completion-status ._md-select-value {
   border-bottom-color: transparent !important;
+  padding: 0px 2px 0px;
 }
 .meeting-archive .rock-list-container .rock-completion-status:focus *,
 .meeting-archive .rock-list-container .rock-completion-status:active * {

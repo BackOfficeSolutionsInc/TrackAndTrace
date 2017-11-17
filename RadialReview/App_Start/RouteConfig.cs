@@ -5,12 +5,12 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 
-namespace RadialReview
-{
-    public class RouteConfig
-    {
-        public static void RegisterRoutes(RouteCollection routes)
-        {
+namespace RadialReview {
+    public class RouteConfig {
+        public static void RegisterRoutes(RouteCollection routes) {
+            //routes.IgnoreRoute("Content/AngularTemplates/{file}.html");
+
+
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(name: "url",url: "u/{id}",defaults: new { controller = "Url", action = "Index", id = "" });
@@ -22,11 +22,9 @@ namespace RadialReview
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+				defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional },
+				namespaces: new[] { "RadialReview.Controllers" }
             );
-
-
-
         }
     }
 }

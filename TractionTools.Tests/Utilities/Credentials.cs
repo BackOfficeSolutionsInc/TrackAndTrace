@@ -6,13 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace TractionTools.Tests.Utilities {
+	
 
 	public class Credentials {
 		public string Username { get; private set; }
 		public string Password { get; private set; }
 		public UserOrganizationModel User { get; private set; }
 
-		public Credentials(String username, string password, UserOrganizationModel user = null) {
+		public Credentials(String username, string password, UserOrganizationModel user = null,bool wasCreated = false) {
 			Username = username;
 			Password = password;
 			User = user;

@@ -1,0 +1,79 @@
+﻿@{
+    var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
+    var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
+    var datepicker = (ViewBag.AddDatePicker == null || ((bool)ViewBag.AddDatePicker) == true);
+    var selector = ViewBag.Selector as string ?? "model.CoreProcess.Processes";
+    var filter = ViewBag.Filter as string ?? "";// "| filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate)";
+
+    var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
+    var defaultSort = ViewBag.DefaultSort ?? "'Name'";
+
+    //var usePopup = ViewBag.UsePopup==true;
+
+    var showDetails = (ViewBag.ShowDetails == null || ((bool)ViewBag.ShowDetails) == true);
+
+    var guid = Guid.NewGuid().ToString().Replace("-", "");
+
+    var attrLookup = new Dictionary<string, string>(){
+        {"message-column",""},
+        {"instances-column",""},
+        {"empty-column",""},
+        {"create-column",""},
+        {"delete-column",""}
+    };
+}
+<div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak core-process-list-container app">
+    <div @(headers || controller ? "ng-controller=L10Controller" : "")>
+        <div class="row">
+            <div class="col-md-12 component">
+                <div id="CoreProcess" class="tab-pane core-process-pane scrollbox pull-left fullWidth scroller">
+                    <div></div>
+                    <md-table-container class="repeater-container">
+                        <table class="@(orderVariable) component table-hover"
+                               md-table
+                               width="100%"
+                               ng-if="(@(selector) @(filter)).length"
+                               @*@if(!usePopup) {
+									@:click-anywhere-but-here="model.Selected = -1"
+							   }*@>
+                            <thead md-head md-order="@(orderVariable)" ng-init="functions.setValue('@(orderVariable)',@(orderVariable) || @(defaultSort))">
+                                <tr class="table-header" md-row>
+                                    <th md-column @(attrLookup["message-column"]) class="message-column" md-order-by="Name">Core Process</th>
+                                    @*<th md-column md-numeric @(attrLookup["instances-column"]) class="instances-column"></th>*@
+                                    <th md-column md-numeric @(attrLookup["create-column"]) class="create-column"></th>
+                                    <th md-column md-numeric @(attrLookup["empty-column"]) class="empty-cell" style="width:1px;">&nbsp;</th>
+                                    <th md-column md-numeric @(attrLookup["delete-column"]) class="delete-column"></th>
+                                </tr>
+                            </thead>
+                            <tbody md-body>
+                                <tr ng-hide="coreProcess.Hide" id="coreProcess_{{coreProcess.Id}}"
+                                    ng-repeat="coreProcess in @(selector) | orderBy: @(orderVariable) @(filter) track by $index"
+                                    ng-class="{grayRow: coreProcess.Complete}"
+                                    class="clickable {{model.Selected == coreProcess.Key+'@guid'?'selected':''}}"
+                                    data-coreProcess="{{::coreProcess.Id}}"
+                                    md-row>
+                                  
+                                    <td class="core-process-text message-column" style="width:100%" md-cell>
+                                        <a href="/CoreProcess/Process/Tasks/{{coreProcess.Id}}" class="coreProcessModal" data-Id="{{coreProcess.Id}}">{{coreProcess.Name}}</a>
+                                    </td>
+                                    <td class="alignCenter create-column date-column" md-cell>
+                                        <div class="start-button" ng-click="functions.startCoreProcess(coreProcess)" >Start</div>
+                                    </td>                                   
+                                    <td class="empty-cell" style="min-width: 15px;" md-cell></td>
+                                    <td class="delete-column" md-cell>
+                                        <span class="delete-row" ng-click="functions.removeRow($event,coreProcess)"></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </md-table-container>
+                    <div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
+                    @*<div class="create-row" ng-click="functions.addRow($event,'AngularcoreProcess')" data-toggle="tooltip" data-placement="left" title="New To-do"></div>*@
+                    <div class="gray no-coreProcesss empty-search" style="padding: 30px 15px;" ng-if="(@(selector) @(filter)).length==0">
+                        No Core Processes fit your search criteria.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

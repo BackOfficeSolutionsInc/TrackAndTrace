@@ -24,6 +24,7 @@ namespace RadialReview.Accessors {
 			var lname = (string)x[1];
 			var email = (string)x[5];
 			var uoId = (long)x[2];
+			var imageGuid = (string)x[7];
 			if (fname == null && lname == null) {
 				fname = (string)x[3];
 				lname = (string)x[4];
@@ -33,7 +34,8 @@ namespace RadialReview.Accessors {
 				FirstName = fname,
 				LastName = lname,
 				Email = email,
-				UserOrgId = uoId
+				UserOrgId = uoId,
+				ImageGuid = imageGuid
 			};
 		});
 
@@ -51,7 +53,7 @@ namespace RadialReview.Accessors {
 			}
 
 			return q.WhereRestrictionOn(x => x.Id).IsIn(userIds.ToArray())
-					.Select(x => userAlias.FirstName, x => userAlias.LastName, x => x.Id, x => tempUserAlias.FirstName, x => tempUserAlias.LastName, x => userAlias.UserName, x => tempUserAlias.Email)
+					.Select(x => userAlias.FirstName, x => userAlias.LastName, x => x.Id, x => tempUserAlias.FirstName, x => tempUserAlias.LastName, x => userAlias.UserName, x => tempUserAlias.Email,x=>userAlias.ImageGuid)
 					.Future<object[]>()
 					.Select(Unpackage);
 		}
@@ -78,7 +80,7 @@ namespace RadialReview.Accessors {
 			if (excludeClients)
 				q = q.Where(x => !x.IsClient);
 
-			return q.Select(x => userAlias.FirstName, x => userAlias.LastName, x => x.Id, x => tempUserAlias.FirstName, x => tempUserAlias.LastName, x => userAlias.UserName, x => tempUserAlias.Email)
+			return q.Select(x => userAlias.FirstName, x => userAlias.LastName, x => x.Id, x => tempUserAlias.FirstName, x => tempUserAlias.LastName, x => userAlias.UserName, x => tempUserAlias.Email, x => userAlias.ImageGuid)
 				.Future<object[]>()
 				.Select(Unpackage);
 

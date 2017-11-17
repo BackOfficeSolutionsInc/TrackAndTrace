@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-16"?>
+<ArrayOfXmlApiResult xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <XmlApiResult Name="ScorecardApiTests_v0.GetScore" GeneratedVersion="0.0">
+    <ExpectedJson>{
+  "Id": 8,
+  "Value": null,
+  "ForWeek": 2000,
+  "Measurable": {
+    "Id": 5,
+    "Title": "Meas1",
+    "Goal": 0.0,
+    "GoalDirection": "EqualTo",
+    "UnitType": "None",
+    "AccountableUser": {
+      "Id": 1247,
+      "Name": "E1 150716922",
+      "Username": "e1@test_1426482635.com"
+    },
+    "AdminUser": {
+      "Id": 1247,
+      "Name": "E1 150716922",
+      "Username": "e1@test_1426482635.com"
+    }
+  },
+  "AccountableUser": {
+    "Id": 1247,
+    "Name": "E1 150716922",
+    "Username": "e1@test_1426482635.com"
+  },
+  "AdminUser": {
+    "Id": 1247,
+    "Name": "E1 150716922",
+    "Username": "e1@test_1426482635.com"
+  }
+}</ExpectedJson>
+    <GeneratedDate>2017-10-05T02:07:09.0433694Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="UsersApiTests_v0.TestCreateUsers" GeneratedVersion="0.0">
+    <ExpectedJson>{
+  "Id": 27,
+  "Type": "AngularUser",
+  "Key": "AngularUser_27",
+  "Name": "Test1 Test2",
+  "ImageUrl": "/i/userplaceholder"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:45:22.756094Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="UsersApiTests_v0.TestGetUser" GeneratedVersion="0.0">
+    <ExpectedJson>{
+  "Id": 36,
+  "Type": "AngularUser",
+  "Key": "AngularUser_36",
+  "Name": "E1 150897872",
+  "ImageUrl": "/i/userplaceholder"
+}</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:45:24.3376796Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="UsersApiTests_v0.TestGetUserPositions" GeneratedVersion="0.0">
+    <ExpectedJson>[
+  {
+    "Id": 80,
+    "Type": "AngularPosition",
+    "Key": "AngularPosition_80",
+    "Name": "TestPosition"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:45:25.6115276Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="UsersApiTests_v0.TestGetSupervisors" GeneratedVersion="0.0">
+    <ExpectedJson>[
+  {
+    "Id": 82,
+    "Type": "AngularUser",
+    "Key": "AngularUser_82",
+    "Name": "manager 150897872",
+    "ImageUrl": "/i/userplaceholder"
+  },
+  {
+    "Id": 88,
+    "Type": "AngularUser",
+    "Key": "AngularUser_88",
+    "Name": "Middle 150897872",
+    "ImageUrl": "/i/userplaceholder"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:45:26.7783045Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="UsersApiTests_v0.TestGetDirectReports" GeneratedVersion="0.0">
+    <ExpectedJson>[
+  {
+    "Id": 119,
+    "Type": "AngularUser",
+    "Key": "AngularUser_119",
+    "Name": "E4 150897872",
+    "ImageUrl": "/i/userplaceholder"
+  },
+  {
+    "Id": 121,
+    "Type": "AngularUser",
+    "Key": "AngularUser_121",
+    "Name": "E5 150897872",
+    "ImageUrl": "/i/userplaceholder"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:45:27.9741009Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="UsersApiTests_v0.TestGetUserRoles" GeneratedVersion="0.0">
+    <ExpectedJson>[
+  {
+    "Id": 25,
+    "Type": "AngularRole",
+    "Key": "AngularRole_25",
+    "Name": null,
+    "CreateTime": "2017-10-26T00:45:29"
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:45:30.4197293Z</GeneratedDate>
+  </XmlApiResult>
+  <XmlApiResult Name="UsersApiTests_v0.TestGetSeats" GeneratedVersion="0.0">
+    <ExpectedJson>[
+  {
+    "Id": 89,
+    "Type": "AngularAccountabilityNode",
+    "Key": "AngularAccountabilityNode_89",
+    "Name": "E1 150897873",
+    "Group": null,
+    "User": {
+      "Id": 167,
+      "Type": "AngularUser",
+      "Key": "AngularUser_167",
+      "Name": "E1 150897873",
+      "ImageUrl": "/i/userplaceholder"
+    },
+    "Children": null
+  },
+  {
+    "Id": 95,
+    "Type": "AngularAccountabilityNode",
+    "Key": "AngularAccountabilityNode_95",
+    "Name": "E1 150897873",
+    "Group": null,
+    "User": {
+      "Id": 167,
+      "Type": "AngularUser",
+      "Key": "AngularUser_167",
+      "Name": "E1 150897873",
+      "ImageUrl": "/i/userplaceholder"
+    },
+    "Children": null
+  }
+]</ExpectedJson>
+    <GeneratedDate>2017-10-26T00:45:31.715592Z</GeneratedDate>
+  </XmlApiResult>
+</ArrayOfXmlApiResult>

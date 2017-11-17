@@ -123,7 +123,7 @@
 		border: 1px solid rgb(208, 208, 208);
 		margin: 5px;
 	}
-
+    
 	.rock-row {
 		.rock-title {
 			cursor: pointer;
@@ -303,11 +303,14 @@
 
 		&.past-due.status-NotDone,
 		&.past-due.status-0 {
-			background-color: #f1d9d8;
-			border: 1px solid #D9534F;
+            &:not(.rock-is-done){
+			    background-color: #f1d9d8;
+			    border: 1px solid #D9534F;
+            }
 			z-index: 2;
 
 			&:hover, &.mouseover {
+			    background-color: #f1d9d8;
 				border: 1px solid #D9534F;
 				z-index: 4;
 			}
@@ -326,10 +329,10 @@
 
 	h4 {
 		margin-top: 0px;
-		margin-bottom: 10px;
+		/*margin-bottom: 10px;*/
 		min-height: 30px;
 		padding-bottom: 6px;
-		border-bottom: 1px solid #eee;
+		/*border-bottom: 1px solid #eee;*/
 	}
 
 	.component {
@@ -367,8 +370,10 @@
 		min-height: 40px;
 		width: 100%;
 		margin-left: 8px;
-
-		&:empty:after {
+        display:inline-block;
+        overflow-y: auto;
+        
+        &:empty:after {
 			content: "No milestones.";
 			padding: 10px;
 			color: #ddd;
@@ -386,6 +391,10 @@
 			width: 20px;
 		}
 
+        .milestone-name-cell{
+            width:60%;
+        }
+
 		.milestone-name {
 			color: #666;
 			cursor: pointer;
@@ -397,6 +406,7 @@
 
 		.milestone-duedate-cell {
 			width: 100px;
+			min-width: 100px;
 
 			input {
 				text-align: right;

@@ -1,4 +1,6 @@
-﻿using NHibernate;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using NHibernate;
 using NHibernate.Criterion;
 using RadialReview.Models;
 using RadialReview.Models.Askables;
@@ -21,6 +23,8 @@ namespace RadialReview.Accessors {
 		public string Organization { get; set; }
 		public string Email { get; set; }
 		public string ImageUrl { get; set; }
+
+		[JsonConverter(typeof(StringEnumConverter))]
 		public RGMType ResultType { get; set; }
 	}
 	public class SearchAccessor : BaseAccessor {

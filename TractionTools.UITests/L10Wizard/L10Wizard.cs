@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using TractionTools.Tests.Utilities;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using RadialReview.Accessors;
 
 namespace TractionTools.UITests.L10Wizard {
     [TestClass]
@@ -21,7 +22,7 @@ namespace TractionTools.UITests.L10Wizard {
             AUC = GetAdminCredentials(testId).GetAwaiter().GetResult();
 
             MeetingName = "WizardMeeting";
-            Recur = L10Utility.CreateRecurrence(MeetingName);
+            Recur = L10Utility.CreateRecurrence(MeetingName).GetAwaiter().GetResult();
         }
 
         [TestMethod]
@@ -115,7 +116,7 @@ namespace TractionTools.UITests.L10Wizard {
 
                 page.Find(".create-row").Click();
 
-                var rows = d.WaitUntil(x => {
+                var rows = d.WaitUntil(15,x => {
                     var f = x.Finds("#ScorecardTable tbody tr");
                     if (f.Count == 0)
                         return null;
@@ -137,7 +138,7 @@ namespace TractionTools.UITests.L10Wizard {
 
 				d.TestScreenshot("Scorecard-AfterAdd");
 
-				rows = d.WaitUntil(x => {
+				rows = d.WaitUntil(15,x => {
 					var f = x.Finds("#ScorecardTable tbody tr");
 					if (f.Count == 0)
 						return null;
@@ -150,7 +151,7 @@ namespace TractionTools.UITests.L10Wizard {
                 d.WaitForVisible(".editable-wrap");
                 d.TestScreenshot("Rocks-Picture");
 
-                row.Find(".delete-row").Click();
+                row.FindVisible(".delete-row").Click();
                 d.WaitForNotVisible(/*"#l10-wizard-scorecard */".editable-wrap");
 
                 d.WaitForVisible("#l10-wizard-scorecard .empty-search");
@@ -182,7 +183,7 @@ namespace TractionTools.UITests.L10Wizard {
 
                 page.Find(".create-row").Click();
 
-                var rows = d.WaitUntil(x => {
+                var rows = d.WaitUntil(20,x => {
                     var f = x.Finds(".rock-pane tbody tr[md-row]");
                     if (f.Count == 0)
                         return null;
@@ -219,9 +220,10 @@ namespace TractionTools.UITests.L10Wizard {
             });
         }
         [TestMethod]
-		[TestCategory("Visual")]
-		public void L10_Wizard_Todo()
-        {
+        [TestCategory("Visual")]
+        public async Task L10_Wizard_Todo() {
+            await L10Accessor.AddAttendee(AUC.User, Recur.Id, AUC.User.Id);
+
             TestView(AUC, "/l10/wizard/" + Recur.Id, d => {
                 d.Find("#l10-wizard-menu", 10);
                 var pageTitle = d.FindElement(By.PartialLinkText("To-dos"), 10);

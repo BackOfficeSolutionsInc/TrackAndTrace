@@ -39,25 +39,27 @@ namespace RadialReview.Utilities.RealTime {
 					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
 					var group = hub.Clients.Users(usernames.ToList());
 					var updates = new {
+#pragma warning disable CS0618 // Type or member is obsolete
 						Notifications = AngularList.CreateFrom(AngularListType.Add, new AngularNotification(notification))
+#pragma warning restore CS0618 // Type or member is obsolete
 					};
 					group.update(updates);
 				});
 				return this;
 			}
 
-            protected void UpdateAll(Func<long, IAngularItem> itemGenerater, bool forceNoSkip = false)
+            protected void UpdateAll(Func<long, IAngularId> itemGenerater, bool forceNoSkip = false)
             {
                 var updater = rt.GetUpdater<OrganizationHub>(OrganizationHub.GenerateId(_OrganizationId),!forceNoSkip);
                 updater.Add(itemGenerater(_OrganizationId));
 			}
-			public RTOrganizationUpdater Update(IAngularItem item, bool forceNoSkip = false) {
+			public RTOrganizationUpdater Update(IAngularId item, bool forceNoSkip = false) {
 				return Update(rid => item, forceNoSkip);
 			}
-			public RTOrganizationUpdater ForceUpdate(IAngularItem item) {
+			public RTOrganizationUpdater ForceUpdate(IAngularId item) {
 				return Update(rid => item, true);
 			}
-			public RTOrganizationUpdater Update(Func<long, IAngularItem> item,bool forceNoSkip = false)
+			public RTOrganizationUpdater Update(Func<long, IAngularId> item,bool forceNoSkip = false)
             {
                 rt.AddAction(() => {
                     UpdateAll(item, forceNoSkip);

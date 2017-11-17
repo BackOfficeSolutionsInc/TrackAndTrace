@@ -57,8 +57,8 @@ namespace TractionTools.Tests.Accessors.Evals {
 
 
 		[TestMethod]
-		public void TestRelationships_AllMembersTeam() {
-			var org = OrgUtil.CreateFullOrganization();
+		public async Task TestRelationships_AllMembersTeam() {
+			var org = await OrgUtil.CreateFullOrganization();
 
 			var rels = ReviewAccessor.GetAllRelationships(org.Manager, org.AllMembersTeam.Id, ReviewParameters.AllTrue()).GetAll();
 
@@ -126,8 +126,8 @@ namespace TractionTools.Tests.Accessors.Evals {
 		}
 
 		[TestMethod]
-		public void TestRelationships_StandardTeam() {
-			var org = OrgUtil.CreateFullOrganization();
+		public async Task TestRelationships_StandardTeam() {
+			var org =await OrgUtil.CreateFullOrganization();
 
 			var rels = ReviewAccessor.GetAllRelationships(org.Manager, org.InterreviewTeam.Id, ReviewParameters.AllTrue()).GetAll();
 
@@ -148,8 +148,8 @@ namespace TractionTools.Tests.Accessors.Evals {
 
 
 		[TestMethod]
-		public void TestRelationships_Noninterreview() {
-			var org = OrgUtil.CreateFullOrganization();
+		public async Task TestRelationships_Noninterreview() {
+			var org =await OrgUtil.CreateFullOrganization();
 
 			var rels = ReviewAccessor.GetAllRelationships(org.Manager, org.NonreviewTeam.Id, ReviewParameters.AllTrue()).GetAll();
 
@@ -171,8 +171,8 @@ namespace TractionTools.Tests.Accessors.Evals {
 
 
 		[TestMethod]
-		public void TestRelationships_Subordinate() {
-			var org = OrgUtil.CreateFullOrganization();
+		public async Task TestRelationships_Subordinate() {
+			var org =await OrgUtil.CreateFullOrganization();
 
 			var rels = ReviewAccessor.GetAllRelationships(org.Manager, org.MiddleSubordinatesTeam.Id, ReviewParameters.AllTrue()).GetAll();
 

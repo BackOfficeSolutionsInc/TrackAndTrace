@@ -66,7 +66,9 @@ namespace RadialReview.Models.UserTemplate
 				{
 					Id(x => x.Id);
 					Map(x => x.DeleteTime);
+#pragma warning disable CS0618 // Type or member is obsolete
 					Map(x => x.Role);
+#pragma warning restore CS0618 // Type or member is obsolete
 					Map(x => x.RoleId);
 					Map(x => x.TemplateId).Column("TemplateId");
 					References(x => x.Template).Column("TemplateId").LazyLoad().ReadOnly();

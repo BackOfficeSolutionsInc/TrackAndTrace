@@ -1,0 +1,121 @@
+﻿@{
+    var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
+    var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
+    //var completion = (ViewBag.AddCompletion == null || ((bool)ViewBag.AddCompletion) == true);
+    var datepicker = (ViewBag.AddDatePicker == null || ((bool)ViewBag.AddDatePicker) == true);
+    var selector = ViewBag.Selector as string ?? "model.CoreProcess.Tasks";
+    var filter = ViewBag.Filter as string ?? "| filter:filters.taskFilter() | filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate)";
+
+    var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
+    var defaultSort = ViewBag.DefaultSort ?? "'-DueDate'";
+
+    //var usePopup = ViewBag.UsePopup==true;
+
+    var showDetails = (ViewBag.ShowDetails == null || ((bool)ViewBag.ShowDetails) == true);
+
+    var guid = Guid.NewGuid().ToString().Replace("-", "");
+
+    //var detailsCode = showDetails ? "task.DetailsUrl_Src=task.DetailsUrl;model.Selected = task.Key+'"+guid+"';" : "";
+
+    //var recurrenceId = ViewBag.RecurrenceId ?? "model.Id";
+
+    var attrLookup = new Dictionary<string, string>(){
+        //{"tasktype-column",""},
+        {"checkbox-column",""},
+        {"picture-column",""},
+        {"message-column",""},
+        {"due-column",""},
+        {"empty-column",""},
+        {"createtime-column",""},
+		//{"complete-column",""},
+		//{"origin-column",""},
+        {"delete-column",""}
+    };
+}
+<div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak task-list-container app">
+	<div @(headers || controller ? "ng-controller=L10Controller" : "")>
+		<div class="row">
+			<div class="col-md-12 component">
+				<div id="Task" class="tab-pane task-pane scrollbox pull-left fullWidth scroller">
+					<div></div>
+					<md-table-container class="repeater-container">
+						<table class="@(orderVariable) component table-hover" 
+							   md-table 
+							   width="100%"
+							   ng-if="(@(selector) @(filter)).length" 
+							   @*@if(!usePopup) { 
+									@:click-anywhere-but-here="model.Selected = -1"
+							   }*@
+						>
+							<thead md-head md-order="@(orderVariable)" ng-init="functions.setValue('@(orderVariable)',@(orderVariable) || @(defaultSort))">
+								<tr class="table-header" md-row>
+									@*<th md-column @(attrLookup["tasktype-column"]) class="tasktype-column" style="width: 25px;" md-order-by="taskType">&nbsp;</th>*@
+									<th md-column @(attrLookup["checkbox-column"]) class="checkbox-column" style="" md-order-by="Complete">&nbsp;</th>
+									<th md-column @(attrLookup["picture-column"]) class="picture-column owner-column" style="width: 32px;" md-order-by="Owner.Name">&nbsp;</th>
+									<th md-column @(attrLookup["message-column"]) class="message-column" md-order-by="Name">Task</th>
+									@*<th md-column md-numeric @(attrLookup["origin-column"]) class="origin-column alignCenter hidden-width-1" md-order-by="Origin">Origin</th>*@
+									<th md-column md-numeric @(attrLookup["createtime-column"]) class="createtime-column" md-order-by="Created">Created</th>
+									<th md-column md-numeric @(attrLookup["due-column"]) class="due-column alignCenter hidden-width-1" md-order-by="DueDate">Due Date</th>
+									<th md-column md-numeric @(attrLookup["empty-column"]) class="empty-cell" style="width:1px;">&nbsp;</th>
+									@*@if (completion) {
+										<th md-column md-numeric @(attrLookup["complete-column"]) class="complete-column alignCenter hidden-width-1" md-order-by="CompleteTime" style="width:90px;">Completed</th>
+									}*@
+									<th md-column md-numeric @(attrLookup["delete-column"]) class="delete-column"></th>
+								</tr>
+							</thead>
+							<tbody md-body>
+								<tr ng-hide="task.Hide" id="task_{{task.Id}}"                                   
+									ng-repeat="task in @(selector) | orderBy: @(orderVariable) @(filter) track by $index"
+									ng-class="{grayRow: task.Complete}"
+									class="clickable {{model.Selected == task.Key+'@guid'?'selected':''}}"
+                                    data-task="{{::task.Id}}"
+									md-row>
+									@*<td class="tasktype-column"><span class="type-icon"></span></td>*@
+                                    <td class="task-checkbox-container clickable checkbox-column" style="min-width: 25px;text-align: center;" md-cell>
+                                        <div  ng-switch="task.Assigned">
+                                            <div ng-switch-when="true" class="complete-box" ><md-checkbox aria-label="Complete" ng-model="task.Complete" class="md-align-top-left" ng-change="functions.updateComplete(task);functions.sendUpdate(task)"></md-checkbox></div>
+                                            <div ng-switch-default class="assign-button" ng-click="functions.updateAssign(task,true);functions.sendUpdate(task)">Assign</div>
+                                        </div>
+
+                                    </td>
+
+									<td class="picture-column owner-column" md-cell>
+										<span class="item-wrapper place-right">
+											<span onaftersave="functions.sendUpdate(task)"
+												  editable-select="task.Owner"
+												  @*onshow="loadPossibleOwners(@(recurrenceId))"
+												  e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]"*@>
+												<profile-image user="task.Owner"></profile-image>
+											</span>
+										</span>
+									</td>
+                                    <td class="task-text message-column" style="width:100%" @*ng-click="@(detailsCode)"*@ md-cell>
+                                        <div class="taskModal" data-Id="{{task.Id}}">{{task.Name}}</div>
+                                    </td>
+									<td class="alignCenter createtime-column date-column" md-cell>
+										{{task.CreateTime | date:dateFormat}}
+									</td>
+									<td class="alignCenter hidden-width-1 due-column date-column" md-cell>
+										<md-datepicker ng-model="task.DueDate" md-placeholder="Due date" ng-click="$scope.@(orderVariable)=$index" ng-change="task.DueDate=functions.adjustToMidnight(task.DueDate);functions.sendUpdate(task)" ng-class="task.Complete?(task.DueDate>task.CompleteTime? 'green' : 'red'):(task.DueDate>=now? 'green' : 'red')" class="due-date"></md-datepicker>
+									</td>
+									<td class="empty-cell" style="min-width: 15px;" md-cell></td>
+									@*@if (completion){
+										<td class="alignCenter complete-column date-column" md-cell>{{task.CompleteTime | date:dateFormat}}</td>
+									}*@
+									<td class="delete-column" md-cell>
+										<span class="delete-row" ng-click="functions.removeRow($event,task)"></span>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</md-table-container>
+					<div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
+					@*<div class="create-row" ng-click="functions.addRow($event,'AngularTask')" data-toggle="tooltip" data-placement="left" title="New To-do"></div>*@
+					<div class="gray no-tasks empty-search" style="padding: 30px 15px;" ng-if="(@(selector) @(filter)).length==0">
+						No tasks fit your search criteria.
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

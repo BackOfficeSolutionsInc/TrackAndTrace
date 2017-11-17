@@ -160,7 +160,7 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 1-402-437-0099.
+        ///   Looks up a localized string similar to 1-402-437-0098.
         /// </summary>
         public static string PurchaseNumber {
             get {
@@ -169,7 +169,7 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to support@mail.traction.tools.
+        ///   Looks up a localized string similar to client-success@mytractiontools.com.
         /// </summary>
         public static string SupportEmail {
             get {

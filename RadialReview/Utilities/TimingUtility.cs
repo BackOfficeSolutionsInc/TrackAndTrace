@@ -196,14 +196,14 @@ namespace RadialReview.Utilities {
 				var currWeek = false;
 				var next = s.AddDays(7);
 				var s1 = s;
-                var displayDate = s.AddDays(-7).AddDays(6.9999).StartOfWeek(weekStart).AddMinutes(-(diff - 60));
+				var displayDate = s.AddDays(-7).AddDays(6.9999).StartOfWeek(weekStart);//.AddMinutes(-(diff));
                 var displayDateNext = displayDate.AddDays(7);
                 if (localTimeMeetingStart.NotNull(x => displayDate <= x.Value && x.Value < displayDateNext))
 					currWeek = true;
 				//var j = s.AddDays(-7);
 				weeks.Add(new L10MeetingVM.WeekVM() {
-					DisplayDate = displayDate,
-					StartDate = displayDate.AddMinutes(diff),
+					DisplayDate = settings.ConvertToServerTime(displayDate),
+					StartDate = displayDate,//.AddMinutes(diff),
 					ForWeek = s.StartOfWeek(DayOfWeek.Sunday),
 					IsCurrentWeek = currWeek,
 				});
@@ -593,6 +593,25 @@ namespace RadialReview.Utilities {
 			int interp;
 			var fixedDates = TimingUtility.InterpolateDates(found, out interp);
 			return fixedDates;
+		}
+
+		public static IEnumerable<DateTime> GetWeeksBetween(DateRange range) {
+			return GetWeeksBetween(range.StartTime, range.EndTime);
+		}
+		
+		public static IEnumerable<DateTime> GetWeeksBetween(DateTime scorecardStart, DateTime scorecardEnd) {
+			var s = Math2.Min(scorecardStart, scorecardEnd);
+			var e = Math2.Max(scorecardStart, scorecardEnd);
+			s = s.StartOfWeek(DayOfWeek.Sunday);
+			if (e>DateTime.MinValue.AddDays(6.999))
+				e = e.AddDays(6.999).StartOfWeek(DayOfWeek.Sunday);
+
+			var i = s;
+			while (i <= e) {
+				yield return i;
+				i=i.AddDays(7);
+			}
+			yield break;
 		}
 
 		public static List<DateTime> InterpolateDates(List<DateTime?> dates, out int interpolated) {

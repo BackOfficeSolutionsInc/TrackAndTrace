@@ -94,5 +94,33 @@
   {
     "outputFile": "Content/L10/L10Rocks.css",
     "inputFile": "Content/L10/L10Rocks.less"
+  },
+  {
+    "outputFile": "Content/SnackbarAlerts.css",
+    "inputFile": "Content/SnackbarAlerts.less"
+  },
+  {
+    "outputFile": "Content/People/QuarterlyConversation.css",
+    "inputFile": "Content/People/QuarterlyConversation.less"
+  },
+  {
+    "outputFile": "Content/L10/L10ChatLog.css",
+    "inputFile": "Content/L10/L10ChatLog.less"
+  },
+  {
+    "outputFile": "Content/People/PeopleAnalyzer.css",
+    "inputFile": "Content/People/PeopleAnalyzer.less"
+  },
+  {
+    "outputFile": "Content/People/rzslider.css",
+    "inputFile": "Content/People/rzslider.less"
+  },
+  {
+    "outputFile": "Content/People/MaterialRadio.css",
+    "inputFile": "Content/People/MaterialRadio.less"
+  },
+  {
+    "outputFile": "Content/Swagger/CustomSwaggerStyle.css",
+    "inputFile": "Content/Swagger/CustomSwaggerStyle.less"
   }
 ]

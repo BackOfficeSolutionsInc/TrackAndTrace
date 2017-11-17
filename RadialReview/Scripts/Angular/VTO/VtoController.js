@@ -60,15 +60,17 @@ function ($scope, $http, $timeout, radial, signalR, vtoDataUrlBase, vtoId, vtoCa
 	};
 
 	$scope.proxyLookup = {};
-	var tzoffset = r.updater.tzoffset;
+	//var tzoffset = r.updater.tzoffset;
 
 	$scope.functions.sendUpdate = function (self) {
 		var dat = angular.copy(self);
-		var _clientTimestamp = new Date().getTime();
-		r.updater.convertDatesForServer(dat, tzoffset());
-		console.log(self)
-		$http.post("/VTO/Update" + self.Type + "?connectionId=" + $scope.connectionId + "&_clientTimestamp=" + _clientTimestamp, dat)
-		.then(function () { }, showAngularError);
+		r.updater.convertDatesForServer(dat, Time.tzoffset());
+		console.log(self);
+
+
+		var url = Time.addTimestamp("/VTO/Update" + self.Type + "?connectionId=" + $scope.connectionId);
+
+		$http.post(url, dat).then(function () { }, showAngularError);
 	};
 
 	$scope.functions.AddRow = function (url, self) {
@@ -101,10 +103,9 @@ function ($scope, $http, $timeout, radial, signalR, vtoDataUrlBase, vtoId, vtoCa
 	}
 
 	$scope.functions.Get = function (url, dat) {
-		var _clientTimestamp = new Date().getTime();
-		url += (url.indexOf("?") != -1) ? "&" : "?";
-		url += "connectionId=" + $scope.connectionId + "&_clientTimestamp=" + _clientTimestamp;
-		$http.get(url).then(function () { }, showAngularError)
+		//var _clientTimestamp = new Date().getTime();
+		var u = Time.addTimestamp(url)+"&connectionId=" + $scope.connectionId ;
+		$http.get(u).then(function () { }, showAngularError)
 	};
 
 }]).directive('blurToCurrency', function ($filter) {

@@ -11,6 +11,7 @@ using RadialReview.Models.UserTemplate;
 using RadialReview.Utilities.DataTypes;
 using System.Threading.Tasks;
 using RadialReview.Utilities;
+using RadialReview.Models.Angular.Rocks;
 
 namespace RadialReview.Controllers {
 	public class RocksController : BaseController {
@@ -26,21 +27,21 @@ namespace RadialReview.Controllers {
 
 			public RockVM() {
 				CurrentTime = DateTime.UtcNow;
-				UpdateAllL10s = true;
+				UpdateAllL10s = false;//true;
 			}
 		}
 
 
 		[Access(AccessLevel.UserOrganization)]
-		public async Task<ActionResult> Pad(long id) {
+		public async Task<ActionResult> Pad(long id, bool showControls=true) {
 			try {
 				var rock = RockAccessor.GetRock(GetUser(), id);
 				var padId = rock.PadId;
 				if (!_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditRock(id))) {
 					padId = await PadAccessor.GetReadonlyPad(rock.PadId);
 				}
-				return Redirect(Config.NotesUrl("p/" + padId + "?showControls=true&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
-			} catch (Exception e) {
+				return Redirect(Config.NotesUrl("p/" + padId + "?showControls=" + (showControls ? "true" : "false") + "&showChat=false&showLineNumbers=false&useMonospaceFont=false&userName=" + Url.Encode(GetUser().GetName())));
+			} catch (Exception ) {
 				return RedirectToAction("Index", "Error");
 			}
 		}
@@ -48,8 +49,8 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
-		public JsonResult SetDueDate(long rockId, DateTime duedate) {
-			L10Accessor.UpdateRock(GetUser(), rockId, null, null, null, null, dueDate: duedate);
+		public async Task<JsonResult> SetDueDate(long rockId, DateTime duedate) {
+			await L10Accessor.UpdateRock(GetUser(), rockId, null, null, null, null, dueDate: duedate);
 			return Json(ResultObject.SilentSuccess());
 		}
 
@@ -79,11 +80,11 @@ namespace RadialReview.Controllers {
 			return PartialView(new RocksController.RockVM { Rocks = rock.AsList(), UserId = userId });
 		}
 
-		[Access(AccessLevel.UserOrganization)]
-		public JsonResult Delete(long id) {
-			RockAccessor.DeleteRock(GetUser(), id);
-			return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
-		}
+		//[Access(AccessLevel.UserOrganization)]
+		//public JsonResult Delete(long id) {
+		//	RockAccessor.DeleteRock(GetUser(), id);
+		//	return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
+		//}
 
 		[Access(AccessLevel.Radial)]
 		public JsonResult Undelete(long id) {
@@ -92,7 +93,7 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public PartialViewResult BlankEditorRow(bool includeUsers = false, bool companyRock = false, long? periodId = null, bool hideperiod = false, bool showCompany = false, bool excludeDelete = false, long? recurrenceId = null) {
+		public PartialViewResult BlankEditorRow(bool includeUsers = false, bool unusedCompanyRock = false, long? periodId = null, bool hideperiod = false, bool showCompany = false, bool excludeDelete = false, long? recurrenceId = null) {
 			ViewBag.Periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.Name, x => x.Id);
 			if (includeUsers) {
 				if (recurrenceId != null) {
@@ -109,33 +110,37 @@ namespace RadialReview.Controllers {
 
 			return PartialView("_RockRow", new RockModel() {
 				CreateTime = DateTime.UtcNow,
-				CompanyRock = companyRock,
+				//CompanyRock = companyRock,
 				OnlyAsk = AboutType.Self,
 				PeriodId = periodId
 			});
 		}
 
-		[Access(AccessLevel.Manager)]
-		public PartialViewResult CompanyRockModal(long id) {
-			var orgId = id;
-			var rocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
+		//[Access(AccessLevel.Manager)]
+		//[Untested("Vto_Rocks","Remove from UI")]
+		//[Obsolete("Do not use",true)]
+		//public PartialViewResult CompanyRockModal(long id) {
+		//	var orgId = id;
+		//	var rocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
 
-			//var rocks = RockAccessor.GetAllRocksAtOrganization(GetUser(), orgId, true);
-			var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.Name, x => x.Id);
-			ViewBag.Periods = periods;
-			ViewBag.PossibleUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
-			return PartialView(new RocksController.RockVM { Rocks = rocks, UserId = id });
-		}
+		//	//var rocks = RockAccessor.GetAllRocksAtOrganization(GetUser(), orgId, true);
+		//	var periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(x => x.Name, x => x.Id);
+		//	ViewBag.Periods = periods;
+		//	ViewBag.PossibleUsers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
+		//	return PartialView(new RocksController.RockVM { Rocks = rocks, UserId = id });
+		//}
 
-		[HttpPost]
-		[Access(AccessLevel.Manager)]
-		public JsonResult CompanyRockModal(RocksController.RockVM model) {
-			//var rocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
-			var oid = GetUser().Organization.Id;
-			model.Rocks.ForEach(x => x.OrganizationId = oid);
-			RockAccessor.EditCompanyRocks(GetUser(), GetUser().Organization.Id, model.Rocks);
-			return Json(ResultObject.Create(model.Rocks.Select(x => new { Session = x.Period.Name, Rock = x.Rock, Id = x.Id }), status: StatusType.Success));
-		}
+		//[HttpPost]
+		//[Access(AccessLevel.Manager)]
+		//[Untested("Vto_Rocks", "Remove from UI")]
+		//[Obsolete("Do not use", true)]
+		//public JsonResult CompanyRockModal(RocksController.RockVM model) {
+		//	//var rocks = _OrganizationAccessor.GetCompanyRocks(GetUser(), GetUser().Organization.Id).ToList();
+		//	var oid = GetUser().Organization.Id;
+		//	model.Rocks.ForEach(x => x.OrganizationId = oid);
+		//	RockAccessor.EditCompanyRocks(GetUser(), GetUser().Organization.Id, model.Rocks);
+		//	return Json(ResultObject.Create(model.Rocks.Select(x => new { Session = x.Period.Name, Rock = x.Rock, Id = x.Id }), status: StatusType.Success));
+		//}
 
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult Modal(long id) {
@@ -149,11 +154,11 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult Modal(RocksController.RockVM model) {
+		public async Task<JsonResult> Modal(RocksController.RockVM model) {
 			foreach (var r in model.Rocks) {
 				r.ForUserId = model.UserId;
 			}
-			RockAccessor.EditRocks(GetUser(), model.UserId, model.Rocks, model.UpdateOutstandingReviews, model.UpdateAllL10s);
+			await RockAccessor.EditRocks(GetUser(), model.UserId, model.Rocks, model.UpdateOutstandingReviews, model.UpdateAllL10s);
 			return Json(ResultObject.Create(model.Rocks.Select(x => new { Session = x.Period.Name, Rock = x.Rock, Id = x.Id }), status: StatusType.Success));
 		}
 
@@ -194,6 +199,36 @@ namespace RadialReview.Controllers {
 
 		}
 
+		public class RockAndMilestonesVM {
+			public List<AngularMilestone> Milestones { get; set; }
+			public AngularRock Rock { get; set; }
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		[Untested("Vto_Rocks","Make sure that Company rock is uneditable.")]
+		public PartialViewResult EditModal(long id) {
+			var rockAndMs = RockAccessor.GetRockAndMilestones(GetUser(), id);
+
+			var model = new RockAndMilestonesVM() {
+				Rock = new AngularRock(rockAndMs.Rock,false),
+				Milestones = rockAndMs.Milestones.Select(x => new AngularMilestone(x)).ToList()
+			};
+
+			ViewBag.AnyL10sWithMilestones = rockAndMs.AnyMilestoneMeetings;
+
+			return PartialView(model);
+
+		}
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> EditModal(RocksController.RockAndMilestonesVM model) {
+			var rock = model.Rock;
+			await L10Accessor.Update(GetUser(), rock, null);
+			return Json(ResultObject.SilentSuccess());
+		}
+
+
 		//public ActionResult Assessment()
 		#region Template
 		[Access(AccessLevel.Manager)]
@@ -207,11 +242,11 @@ namespace RadialReview.Controllers {
 
 		[HttpPost]
 		[Access(AccessLevel.Manager)]
-		public JsonResult TemplateModal(RocksController.RockVM model) {
+		public async Task<JsonResult> TemplateModal(RocksController.RockVM model) {
 			foreach (var r in model.TemplateRocks) {
 				if (r.Id == 0) {
 					if (r.DeleteTime == null)
-						UserTemplateAccessor.AddRockToTemplate(GetUser(), model.TemplateId, r.Rock, r.PeriodId);
+						await UserTemplateAccessor.AddRockToTemplate(GetUser(), model.TemplateId, r.Rock, r.PeriodId);
 				} else
 					UserTemplateAccessor.UpdateRockTemplate(GetUser(), r.Id, r.Rock, r.PeriodId, r.DeleteTime);
 			}

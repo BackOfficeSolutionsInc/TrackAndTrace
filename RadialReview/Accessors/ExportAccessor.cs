@@ -11,86 +11,124 @@ using RadialReview.Models.Issues;
 using RadialReview.Models.L10;
 using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
+using RadialReview.Models.Scorecard;
+using static RadialReview.Accessors.L10Accessor;
 
-namespace RadialReview.Accessors
-{
-	public class ExportAccessor
-	{
-		public static byte[] Scorecard(UserOrganizationModel caller, long recurrenceId, string type = "csv")
-		{
-			var scores = L10Accessor.GetScoresForRecurrence(caller, recurrenceId);
-
-			switch (type.ToLower())
-			{
-				case "csv":
-					{
-						var csv = new Csv();
-						csv.SetTitle("Measurable");
-						foreach (var s in scores.GroupBy(x => x.MeasurableId))
-						{
-							var ss = s.First();
-							csv.Add(ss.Measurable.Title, "Owner", ss.Measurable.AccountableUser.NotNull(x=>x.GetName()));
-							csv.Add(ss.Measurable.Title, "Admin", ss.Measurable.AdminUser.NotNull(x=>x.GetName()));
-							csv.Add(ss.Measurable.Title, "Goal", "" + ss.Measurable.Goal);
-							csv.Add(ss.Measurable.Title, "GoalDirection", "" + ss.Measurable.GoalDirection);
-						}
-						foreach (var s in scores.OrderBy(x => x.ForWeek))
-						{
-							csv.Add(s.Measurable.Title, s.ForWeek.ToShortDateString(), s.Measured.NotNull(x => x.Value.ToString()) ?? "");
-						}
-						return new System.Text.UTF8Encoding().GetBytes(csv.ToCsv());
+namespace RadialReview.Accessors {
+	public class ExportAccessor : BaseAccessor {
+		public static async Task<string> Scorecard(UserOrganizationModel caller, long recurrenceId, string type = "csv") {
+			//var scores = L10Accessor.GetScoresForRecurrence(caller, recurrenceId);
+			var data = await L10Accessor.GetOrGenerateScorecardDataForRecurrence(caller, recurrenceId);
+			switch (type.ToLower()) {
+				case "csv": {
+						return GenerateScorecardCsv("Measurable", data).ToCsv();
+						//var csv = new Csv();
+						//csv.SetTitle("Measurable");
+						//foreach (var s in scores.GroupBy(x => x.MeasurableId))
+						//{
+						//	var ss = s.First();
+						//	csv.Add(ss.Measurable.Title, "Owner", ss.Measurable.AccountableUser.NotNull(x=>x.GetName()));
+						//	csv.Add(ss.Measurable.Title, "Admin", ss.Measurable.AdminUser.NotNull(x=>x.GetName()));
+						//	csv.Add(ss.Measurable.Title, "Goal", "" + ss.Measurable.Goal.NotNull(x => ss.Measurable.UnitType.Format(x)));
+						//	csv.Add(ss.Measurable.Title, "GoalDirection", "" + ss.Measurable.GoalDirection);
+						//}
+						//foreach (var s in scores.OrderBy(x => x.ForWeek))
+						//{
+						//	csv.Add(s.Measurable.Title, s.ForWeek.ToShortDateString(),s.Measured.NotNull(x => s.Measurable.UnitType.Format(x.Value)) ?? "");
+						//}
+						//var csvTxt = csv.ToCsv();
+						//return csvTxt;
+						//return new System.Text.UTF8Encoding().GetBytes(csvTxt);
 						//break;
 					}
-				default: throw new Exception("Unrecognized Type");
+				default:
+					throw new Exception("Unrecognized Type");
 			}
 		}
 
-		public static async Task<byte[]> TodoList(UserOrganizationModel caller, long recurrenceId,bool includeDetails)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+		public static Csv GenerateScorecardCsv(string title, ScorecardData data) {
+			var csv = new Csv();
+			csv.SetTitle("Measurable");
+
+
+
+			foreach (var s in data.MeasurablesAndDividers.OrderBy(x => x._Ordering)) {// scores.GroupBy(x => x.MeasurableId).OrderBy(x=>x.First().Measurable._Ordering)) {
+				var measurable = s.Measurable;
+				//var ss = s.First();
+				if (measurable != null) {
+					csv.Add(measurable.Id + "", "Title", measurable.Title);
+					csv.Add(measurable.Id + "", "Owner", measurable.AccountableUser.NotNull(x => x.GetName()));
+					csv.Add(measurable.Id + "", "Admin", measurable.AdminUser.NotNull(x => x.GetName()));
+					csv.Add(measurable.Id + "", "Goal", "" + measurable.Goal.NotNull(x => measurable.UnitType.Format(x)));
+					csv.Add(measurable.Id + "", "GoalDirection", "" + measurable.GoalDirection);
+				}
+			}
+			foreach (var s in data.Scores.OrderBy(x => x.ForWeek)) {
+				csv.Add(s.Measurable.Id + "", s.ForWeek.ToShortDateString(), s.Measured.NotNull(x => s.Measurable.UnitType.Format(x.Value)) ?? "");
+			}
+			return csv;
+		}
+
+		public static async Task<byte[]> TodoList(UserOrganizationModel caller, long recurrenceId, bool includeDetails) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					var todos = L10Accessor.GetAllTodosForRecurrence(s, PermissionsUtility.Create(s, caller), recurrenceId);
 					var csv = new Csv();
-                    //foreach (var t in todos) {
-                    //    await 
-                    //}
-                    var tasks = todos.Select(t=>{
-                        return GrabTodo(csv, t, includeDetails);
-                    });
+					//foreach (var t in todos) {
+					//    await 
+					//}
 
-                    await Task.WhenAll(tasks);
+					Dictionary<string, string> padTexts = null;
+					if (includeDetails) {
+						try {
+							var pads = todos.Select(x => x.PadId).ToList();
+							padTexts = await PadAccessor.GetTexts(pads);
+							//sb.Append(",Details");
+						} catch (Exception e) {
+							log.Error(e);
+						}
+					}
+
+
+					var tasks = todos.Select(t => {
+						return GrabTodo(csv, t, padTexts);
+					});
+
+					await Task.WhenAll(tasks);
 
 					return new System.Text.UTF8Encoding().GetBytes(csv.ToCsv(false));
 				}
 			}
 		}
 
-        private static async Task GrabTodo(Csv csv, Models.Todo.TodoModel t,bool includeDetails)
-        {
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+		private static async Task GrabTodo(Csv csv, Models.Todo.TodoModel t, Dictionary<string, string> padLookup) {
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
-            csv.Add("" + t.Id, "Owner", t.AccountableUser.NotNull(x => x.GetName()));
-            csv.Add("" + t.Id, "Created", t.CreateTime.ToShortDateString());
-            csv.Add("" + t.Id, "Due Date", t.DueDate.ToShortDateString());
-            var time = "";
-            if (t.CompleteTime != null)
-                time = t.CompleteTime.Value.ToShortDateString();
-            csv.Add("" + t.Id, "Completed", time);
-            csv.Add("" + t.Id, "To-Do", "" + t.Message);
+			csv.Add("" + t.Id, "Owner", t.AccountableUser.NotNull(x => x.GetName()));
+			csv.Add("" + t.Id, "Created", t.CreateTime.ToShortDateString());
+			csv.Add("" + t.Id, "Due Date", t.DueDate.ToShortDateString());
+			var time = "";
+			if (t.CompleteTime != null)
+				time = t.CompleteTime.Value.ToShortDateString();
+			csv.Add("" + t.Id, "Completed", time);
+			csv.Add("" + t.Id, "To-Do", "" + t.Message);
 
-            if (includeDetails) {
-                var padDetails = await PadAccessor.GetText(t.PadId);
-                csv.Add("" + t.Id, "Details", "" + padDetails);
-            }
-        }
 
-		public static async Task<byte[]> IssuesList(UserOrganizationModel caller, long recurrenceId,bool includeDetails)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction())
-				{
+			if (padLookup != null) {
+				var padDetails = padLookup.GetOrDefault(t.PadId, "");
+				csv.Add("" + t.Id, "Details", Csv.CsvQuote(padDetails));
+			}
+
+			//if (includeDetails) {
+			//	var padDetails = await PadAccessor.GetText(t.PadId);
+			//	csv.Add("" + t.Id, "Details", "" + padDetails);
+			//}
+		}
+
+		public static async Task<byte[]> IssuesList(UserOrganizationModel caller, long recurrenceId, bool includeDetails) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					var issues = L10Accessor.GetAllIssuesForRecurrence(s, PermissionsUtility.Create(s, caller), recurrenceId);
 					//var csv = new Csv();
 					//foreach (var t in issues)
@@ -106,23 +144,33 @@ namespace RadialReview.Accessors
 					//}
 					var sb = new StringBuilder();
 
-                    sb.Append("Id,Depth,Owner,Created,Closed,Issue");
-                    if (includeDetails){
-                        sb.Append(",Details");
-                    } 
-                    sb.AppendLine();
+					sb.Append("Id," +/*Depth,*/"Owner,Created,Closed,Issue");
 					//var id = 0;
 
 					var rows = new List<Tuple<long, List<string>>>();
 
-                    var tasks = issues.Select((i, id) => {
-                        return RecurseIssue(rows, id, i, 0, includeDetails);
-                    });
-                    //foreach (var i in issues){
-                    //    id++;
-                    //    await ;
-                    //}
-                    await Task.WhenAll(tasks);
+					Dictionary<string, string> padTexts = null;
+
+					if (includeDetails) {
+						try {
+							var pads = issues.Select(x => x.Issue.PadId).ToList();
+							padTexts = await PadAccessor.GetTexts(pads);
+							sb.Append(",Details");
+						} catch (Exception e) {
+							log.Error(e);
+						}
+					}
+					sb.AppendLine();
+
+
+					var tasks = issues.Select((i, id) => {
+						return RecurseIssue(rows, id, i, 0, padTexts);
+					});
+					//foreach (var i in issues){
+					//    id++;
+					//    await ;
+					//}
+					await Task.WhenAll(tasks);
 
 					foreach (var r in rows.OrderBy(x => x.Item1)) {
 						foreach (var c in r.Item2) {
@@ -137,19 +185,17 @@ namespace RadialReview.Accessors
 			}
 		}
 
-		public async static Task<List<Tuple<string, byte[]>>> Notes(UserOrganizationModel caller, long recurrenceId)
-		{
+		public async static Task<List<Tuple<string, byte[]>>> Notes(UserOrganizationModel caller, long recurrenceId) {
 			var recur = L10Accessor.GetL10Recurrence(caller, recurrenceId, true);
 			var lists = new List<Tuple<string, byte[]>>();
 			var existing = new Dictionary<string, int>();
-			foreach (var note in recur._MeetingNotes)
-			{
+			foreach (var note in recur._MeetingNotes) {
 				var padDetails = await PadAccessor.GetText(note.PadId);
 				var bytes = new System.Text.UTF8Encoding().GetBytes(padDetails);
 				var append = "";
 				if (!existing.ContainsKey(note.Name))
 					existing.Add(note.Name, 1);
-				else{
+				else {
 					append = " (" + existing[note.Name] + ")";
 					existing[note.Name] += 1;
 				}
@@ -159,38 +205,55 @@ namespace RadialReview.Accessors
 			return lists;
 		}
 
-		public static byte[] Rocks(UserOrganizationModel caller, long recurrenceId)
-		{
-			var meetingId = L10Accessor.GetLatestMeetingId(caller, recurrenceId);
-			var rocksAndMilestones = L10Accessor.GetRocksForMeeting(caller, recurrenceId, meetingId);
+		public static async Task<byte[]> Rocks(UserOrganizationModel caller, long recurrenceId, bool includeDetails) {
+			//var meetingId = L10Accessor.GetLatestMeetingId(caller, recurrenceId);
+			var rocks = L10Accessor.GetRocksForRecurrence(caller, recurrenceId, true);
+
+
+			Dictionary<string, string> padTexts = null;
+
+			if (includeDetails) {
+				try {
+					var pads = rocks.Select(x => x.ForRock.PadId).ToList();
+					padTexts = await PadAccessor.GetTexts(pads);
+				} catch (Exception e) {
+					log.Error(e);
+				}
+			}
+
 			var csv = new Csv();
-			foreach (var rockMilestones in rocksAndMilestones)
-			{
-				var t = rockMilestones.Rock;
-				csv.Add("" + t.Id, "Owner", t.ForRock.Rock);
+			foreach (var rockMilestones in rocks) {
+				var t = rockMilestones.ForRock;
+				csv.Add("" + t.Id, "Owner", t.AccountableUser.NotNull(x => x.GetName()));
+				csv.Add("" + t.Id, "Rock", t.Rock);
 				csv.Add("" + t.Id, "Created", t.CreateTime.ToShortDateString());
 				var time = "";
 				if (t.CompleteTime != null)
 					time = t.CompleteTime.Value.ToShortDateString();
 				csv.Add("" + t.Id, "Completed", time);
 				csv.Add("" + t.Id, "Status", t.Completion.ToString());
+				csv.Add("" + t.Id, "ArchivedTime", "" + t.DeleteTime);
+
+
+				if (includeDetails) {
+					var padDetails = padTexts.GetOrDefault(t.PadId, "");
+					csv.Add("" + t.Id, "Notes", Csv.CsvQuote(padDetails));
+				}
 			}
 
 			return new System.Text.UTF8Encoding().GetBytes(csv.ToCsv(false));
 		}
-		public static byte[] MeetingSummary(UserOrganizationModel caller, long recurrenceId)
-		{
-			using (var s = HibernateSession.GetCurrentSession())
-			{
-				using (var tx = s.BeginTransaction()){
+		public static byte[] MeetingSummary(UserOrganizationModel caller, long recurrenceId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
 					var ratings = s.QueryOver<L10Meeting.L10Meeting_Attendee>().Where(x => x.DeleteTime == null)
-						.JoinQueryOver(x=>x.L10Meeting)
-						.Where(x=>x.L10RecurrenceId == recurrenceId)
-						.Fetch(x=>x.L10Meeting).Eager
+						.JoinQueryOver(x => x.L10Meeting)
+						.Where(x => x.L10RecurrenceId == recurrenceId)
+						.Fetch(x => x.L10Meeting).Eager
 						.List().ToList();
 
 					var csv = new Csv();
-					foreach (var t in ratings.OrderBy(x => x.L10Meeting.CompleteTime).GroupBy(x => x.L10Meeting.Id)){
+					foreach (var t in ratings.OrderBy(x => x.L10Meeting.CompleteTime).GroupBy(x => x.L10Meeting.Id)) {
 						var sum = t.Where(x => x.Rating.HasValue).Select(x => x.Rating.Value).Sum();
 						decimal count = t.Where(x => x.Rating.HasValue).Select(x => x.Rating.Value).Count();
 
@@ -202,22 +265,52 @@ namespace RadialReview.Accessors
 						csv.Add("" + first.L10Meeting.Id, "End Time", time);
 						var avg = "";
 						if (count > 0)
-							avg = String.Format("{0:##.###}", sum/count);
+							avg = String.Format("{0:##.###}", sum / count);
 						csv.Add("" + first.L10Meeting.Id, "Average Rating", avg);
 					}
 
-					foreach (var t in ratings){
-						csv.Add("" + t.L10Meeting.Id, t.User.GetName(), ""+t.Rating);
+					foreach (var t in ratings) {
+						csv.Add("" + t.L10Meeting.Id, t.User.GetName(), "" + t.Rating);
 					}
 
 					return new System.Text.UTF8Encoding().GetBytes(csv.ToCsv(false));
 				}
 			}
-		
-			
 		}
-        public static async Task RecurseIssue(List<Tuple<long,List<string>>> rows, int index, IssueModel.IssueModel_Recurrence parent, int depth, bool includeDetails)
-		{
+		public static byte[] Ratings(UserOrganizationModel caller, long recurrenceId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var ratings = s.QueryOver<L10Meeting.L10Meeting_Attendee>().Where(x => x.DeleteTime == null)
+						.JoinQueryOver(x => x.L10Meeting)
+						.Where(x => x.L10RecurrenceId == recurrenceId)
+						.Fetch(x => x.L10Meeting).Eager
+						.List().ToList();
+
+					var csv = new Csv();
+					foreach (var t in ratings.OrderBy(x => x.L10Meeting.CompleteTime).GroupBy(x => x.L10Meeting.Id)) {
+						foreach (var u in t) {
+							if (u.L10Meeting.CompleteTime != null) {
+								csv.Add(u.User.GetName(), u.L10Meeting.CompleteTime.Value.ToString(), u.Rating.NotNull(x => "" + String.Format("{0:##.###}", x)) ?? "NR");
+							}
+						}
+					}
+
+					foreach (var t in ratings.OrderBy(x => x.L10Meeting.CompleteTime).GroupBy(x => x.L10Meeting.Id)) {
+						var sum = t.Where(x => x.Rating.HasValue).Select(x => x.Rating.Value).Sum();
+						decimal count = t.Where(x => x.Rating.HasValue).Select(x => x.Rating.Value).Count();
+						var avg = "";
+						if (count > 0)
+							avg = String.Format("{0:##.###}", sum / count);
+						if (t.First().L10Meeting.CompleteTime != null) {
+							csv.Add("Average Rating", t.First().L10Meeting.CompleteTime.Value.ToString(), "" + avg);
+						}
+					}
+
+					return new System.Text.UTF8Encoding().GetBytes(csv.ToCsv(true));
+				}
+			}
+		}
+		public static async Task RecurseIssue(List<Tuple<long, List<string>>> rows, int index, IssueModel.IssueModel_Recurrence parent, int depth, Dictionary<string, string> padLookup) {
 			var cells = new List<string>();
 			var row = Tuple.Create((long)index, cells);
 
@@ -225,7 +318,7 @@ namespace RadialReview.Accessors
 			if (parent.CloseTime != null)
 				time = parent.CloseTime.Value.ToShortDateString();
 			cells.Add("" + index);
-			cells.Add("" + depth);
+			//cells.Add("" + depth);
 			cells.Add("" + Csv.CsvQuote(parent.Owner.NotNull(x => x.GetName())));
 			cells.Add("" + parent.CreateTime.ToShortDateString());
 			cells.Add("" + time);
@@ -240,19 +333,22 @@ namespace RadialReview.Accessors
 						sb.Append(",");*/
 			//sb.Append(Csv.CsvQuote(parent.Issue.Message)).Append(",");
 
-            if (includeDetails) {
-                var padDetails = await PadAccessor.GetText(parent.Issue.PadId);
-				//var bytes = new System.Text.UTF8Encoding().GetBytes(padDetails);
+			//if (includeDetails) {
+			// var padDetails = await PadAccessor.GetText(parent.Issue.PadId);
+			//var bytes = new System.Text.UTF8Encoding().GetBytes(padDetails);
+			if (padLookup != null) {
+				var padDetails = padLookup.GetOrDefault(parent.Issue.PadId, "");
 				cells.Add(Csv.CsvQuote(padDetails));
-            }
+			}
+			//}
 
 			rows.Add(row);
 
-			foreach(var child in parent._ChildIssues)
-                await RecurseIssue(rows, index, child, depth + 1, includeDetails);
+			foreach (var child in parent._ChildIssues)
+				await RecurseIssue(rows, index, child, depth + 1, padLookup);
 		}
-	
-		
+
+
 
 	}
 }

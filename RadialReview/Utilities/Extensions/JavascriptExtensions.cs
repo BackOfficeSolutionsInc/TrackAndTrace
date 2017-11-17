@@ -24,9 +24,11 @@ namespace RadialReview
 	        }
         }
 
-        public static long ToJavascriptMilliseconds(this DateTime time)
-        {
-            return (long)time.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
-        }
-    }
+		public static long ToJavascriptMilliseconds(this DateTime time) {
+			return (long)time.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+		}
+		public static long ToJsMs(this DateTime time) {
+			return ToJavascriptMilliseconds(time);
+		}
+	}
 }

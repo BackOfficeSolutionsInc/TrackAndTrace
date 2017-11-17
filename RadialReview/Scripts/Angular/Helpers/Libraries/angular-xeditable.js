@@ -741,7 +741,7 @@ angular.module('xeditable').factory('editableController',
   			// insert into DOM
   			//$element.after(self.editorEl);
 
-  			debugger;
+  			//debugger;
   			var pos = self.absPos($element[0]);
   			pos.x += $element[0].offsetWidth;
   			pos.y += $element[0].offsetHeight/2;
@@ -817,8 +817,7 @@ angular.module('xeditable').factory('editableController',
   			// click - mark element as clicked to exclude in document click handler
   			self.editorEl.bind('click', function (e) {
   				// ignore right/middle button click
-  				debugger;
-				console.log("heloo moto")
+  				//debugger;
   				if (e.which && e.which !== 1) {
   					return;
   				}

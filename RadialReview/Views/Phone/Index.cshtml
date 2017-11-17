@@ -1,0 +1,69 @@
+﻿@model  List<RadialReview.Models.PhoneActionMap>
+@{
+	ViewBag.Title = "Phone Numbers";
+}
+<div style="text-align: right;margin-bottom: 3px;">
+	<div onclick="showModal('Add phone action','/TwilioApi/ModalRecurrence','/TwilioApi/Modal',null,null,'textingModal')" class="btn btn-primary btn-invert" href="/Twilio/Edit">Create new phone action</div>
+</div>
+<div id="table"></div>
+
+@using (Html.BeginScripts()) {
+	<script>
+		DataTable({
+			container: "#table",
+			data: @Html.ArrayToString(Model),
+			//clickAdd: "/TwilioApi/ModalRecurrence",
+			//postAdd:'/TwilioApi/Modal',
+			clickRemove: "/phone/remove/{0}",
+			//addButton:{text: "Add"},
+			cells:[{
+				name: "Number",
+				classes:"nowrap alignRight",
+				contents:function(x){ return x._SystemNumberFormatted; }
+			},{
+				name: "Action",
+				classes:"fullWidth",
+				contents:function(x){
+					return x._ActionName + " to <span class='dotted'>" + x._RecurrenceName+"</span>";
+				}
+			},/*{
+				name: "",
+				classes:"nowrap alignRight",
+				contents:function(x){
+					return "<a href='/People/QuarterlyConversation/PrintAll?surveyContainerId="+x.Id+"' ><span class='gray clickable glyphicon glyphicon-print'></span></a>";
+				}
+			},*/{
+				remove:true,
+				classes:"nowrap alignRight",
+				contents:function(x){
+					return "<span class='gray clickable glyphicon glyphicon-trash'></span>";
+				}
+			}
+			//},{
+			//	name: "Name",
+			//	contents:function(x){ return x.Name; }
+			//}]
+			]
+		});
+
+		
+		function textingModal(data){
+			if (!data.Error){
+				var message = data.Message.replace(" '"," '<b>").replace("' to ","</b>' to ");//.replace(" to activate.","</b> to activate.");
+
+				showModal({
+					icon:"info",
+					title: message,
+					success:function(){
+						showAlert("Please refresh to display the number.","alert-info","Hey!",4000);
+					}
+				});
+			}
+		}
+	</script>
+	<style>
+		.dotted{
+			border-bottom:1px dotted gray;
+		}
+	</style>
+}

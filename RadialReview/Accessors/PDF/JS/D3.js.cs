@@ -236,7 +236,9 @@ namespace RadialReview.Accessors.PDF {
 				}
 
 
+#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
 				protected static void d3_layout_hierarchyVisitBefore<T>(T node, Action<T> callback) where T : IChildren<T> {
+#pragma warning restore CS0693 // Type parameter has the same name as the type parameter from outer type
 					var nodes = new Stack<T>();
 					nodes.Push(node);
 					while (nodes.Any()) {
@@ -250,8 +252,10 @@ namespace RadialReview.Accessors.PDF {
 						}
 					}
 				}
-				protected static void d3_layout_hierarchyVisitAfter<T>(T node, Action<T> callback) where T : IChildren<T> {
-					var nodes = new Stack<T>();
+#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
+                protected static void d3_layout_hierarchyVisitAfter<T>(T node, Action<T> callback) where T : IChildren<T> {
+#pragma warning restore CS0693 // Type parameter has the same name as the type parameter from outer type
+                    var nodes = new Stack<T>();
 					nodes.Push(node);
 					var nodes2 = new Stack<T>();
 					while (nodes.Any()) {
@@ -565,8 +569,10 @@ namespace RadialReview.Accessors.PDF {
 						//# Rows and Columns
 						var n = leafs.Count;
 						var sqrtn = Math.Sqrt(n);
-						var rows = Math.Floor(sqrtn);
-						var cols = (int)Math.Ceiling(sqrtn);
+						//var rows = Math.Floor(sqrtn);
+						//var cols = (int)Math.Ceiling(sqrtn);
+						var cols = (int)Math.Floor(sqrtn);
+						var rows = (int)Math.Ceiling(sqrtn);
 						if (rows * cols < n)
 							cols += 1;
 
@@ -668,7 +674,9 @@ namespace RadialReview.Accessors.PDF {
 				// SECOND WALK
 				// Computes all real x-coordinates by summing up the modifiers recursively.
 				private void secondWalk(nodeWrapper<N> v) {
+#pragma warning disable CS0219 // Variable is assigned but its value is never used
 					var adj = 1;
+#pragma warning restore CS0219 // Variable is assigned but its value is never used
 					if (compactify && v._self._compact != null /*&& v._._compact.isLeaf*/) {
 						adj = 2;
 						//if (v._._compact.side == "left") {

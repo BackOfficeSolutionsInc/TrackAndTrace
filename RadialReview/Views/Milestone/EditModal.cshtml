@@ -1,0 +1,27 @@
+﻿@model RadialReview.Models.Rocks.Milestone
+<div class="row">
+	<div class="col-md-2 alignRight">
+		<label class="control-label">Rock:</label>
+	</div>
+	<div class="col-md-10">
+		@Html.TextBoxFor(x=>x._Rock.Rock,new { disabled = "disabled", @class = "form-control" })
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-2 alignRight">
+		<label class="control-label">Milestone:</label>
+	</div>
+	<div class="col-md-10">
+		@Html.TextBoxFor(x => x.Name, new { @class = "form-control" })
+		@Html.HiddenFor(x => x.Id)
+	</div>
+</div>
+@*<div class="row">
+		<div class="col-md-2 alignRight">
+			<label class="control-label">Complete:</label>
+		</div>
+		<div class="col-md-10">
+			@Html.CheckBoxFor(x => x., new { @class = "form-control" })
+			@Html.HiddenFor(x => x.Id)
+		</div>
+	</div>*@

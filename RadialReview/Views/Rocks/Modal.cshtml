@@ -39,7 +39,7 @@
                 first = false;
         }
     </div>*@
-                <div class="pull-right" style="margin-top: -19px;"><b>Company Rock</b></div>
+                @*<div class="pull-right" style="margin-top: -19px;"><b>Company Rock</b></div>*@
                 <div role="tabpanel" class="tab-pane" style="padding-top: 1px;">
                     @foreach (var r in Model.Rocks.Where(x=>x.DeleteTime==null)) {
                         Html.RenderPartial("_RockRow", r, new ViewDataDictionary(ViewData) { { "HidePeriod", true }, { "ShowCompany", showCompany } });
@@ -57,12 +57,12 @@
         <label>Update Outstanding Reviews: </label>     @Html.CheckBoxFor(x => x.UpdateOutstandingReviews)
     </div>
     }
-    @if(Html.Organization().NotNull(x=>x.Settings.EnableL10))
+    @*@if(Html.Organization().NotNull(x=>x.Settings.EnableL10))
     {
     <div>
         <label>Update All Level 10s: </label> @Html.CheckBoxFor(x => x.UpdateAllL10s)
     </div>
-    }
+    }*@
 
 </div>
 <script>

@@ -190,7 +190,7 @@ namespace RadialReview.Controllers {
 
 				var exceptions = new List<Exception>();
 
-                var vto = VtoAccessor.UploadVtoForRecurrence(GetUser(), doc, recurrenceId,exceptions);
+                var vto = await VtoAccessor.UploadVtoForRecurrence(GetUser(), doc, recurrenceId,exceptions);
 				
               //  var a = 0;
 

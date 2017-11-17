@@ -8,6 +8,10 @@ using System.Web;
 using RadialReview.Models.Angular.Users;
 using RadialReview.Models.Todo;
 using Config = RadialReview.Utilities.Config;
+using RadialReview.Models.Rocks;
+using System.Runtime.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace RadialReview.Models.Angular.Todos
 {
@@ -16,7 +20,7 @@ namespace RadialReview.Models.Angular.Todos
 		public AngularTodo(TodoModel todo) : base(todo.Id)
 		{
 			Name = todo.Message;
-			DetailsUrl = Config.NotesUrl() + "p/" + todo.PadId + "?showControls=true&showChat=false";
+			DetailsUrl = Config.BaseUrl(null,"/Todo/Pad/" + todo.Id); //Config.NotesUrl() + "p/" + todo.PadId + "?showControls=true&showChat=false";
 		
 			//Details = todo.Details;
 			DueDate = todo.DueDate;
@@ -38,7 +42,23 @@ namespace RadialReview.Models.Angular.Todos
 
 				Link = "/L10/Timeline/" + todo.ForRecurrenceId + "#" + mod + "-" + id;
 			}
+		}
 
+		public AngularTodo(Milestone milestone,UserOrganizationModel owner,string origin=null) : base(-milestone.Id) {
+			Name = milestone.Name;
+			//DetailsUrl = Config.NotesUrl() + "p/" + todo.PadId + "?showControls=true&showChat=false";
+
+			//Details = todo.Details;
+			DueDate = milestone.DueDate;
+			Owner = AngularUser.CreateUser(owner);
+			CompleteTime = milestone.CompleteTime;
+			CreateTime = milestone.CreateTime;
+			Complete = milestone.Status == MilestoneStatus.Done;
+			TodoType = Todo.TodoType.Milestone;
+			Ordering = -10;
+
+			Origin = origin ?? "Milestone";
+			
 		}
 
 		public AngularTodo(){
@@ -54,8 +74,11 @@ namespace RadialReview.Models.Angular.Todos
 		public DateTime? CompleteTime { get; set; }
 		public DateTime? CreateTime { get; set; }
 		public bool? Complete { get; set; }
+
+		[IgnoreDataMember]
 		public string Link { get; set; }
-        public TodoType? TodoType { get; set; }
+		[JsonConverter(typeof(StringEnumConverter))]
+		public TodoType? TodoType { get; set; }
 		public long Ordering { get; set; }
 	}
 }

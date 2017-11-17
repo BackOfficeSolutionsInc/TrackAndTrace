@@ -17,5 +17,14 @@ namespace RadialReview.Utilities.DataTypes {
         public string Type{get { return "AccountabilityTree"; }}
 
         public bool Hide{get { return false; }}
-    }
+
+		public object GetAngularId() {
+			return Id;
+		}
+
+		public string GetAngularType() {
+			return Type;
+		}
+		
+	}
 }

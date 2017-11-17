@@ -1,9 +1,11 @@
 ﻿using FluentNHibernate.Mapping;
 using RadialReview.Models.Askables;
+using RadialReview.Models.Components;
 using RadialReview.Models.Enums;
 using RadialReview.Models.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using static RadialReview.Models.PermItem;
@@ -18,7 +20,8 @@ namespace RadialReview.Models.Accountability {
         public virtual string Name { get; set; }
         public virtual long RootId { get; set; }
 
-        public AccountabilityChart()
+
+		public AccountabilityChart()
         {
             CreateTime = DateTime.UtcNow;
         }
@@ -34,9 +37,11 @@ namespace RadialReview.Models.Accountability {
                 Map(x => x.OrganizationId);
             }
         }
-    }
 
-    public class AccountabilityNode : ILongIdentifiable, IHistorical {
+	}
+
+	[DebuggerDisplay("Node: {User.EmailAtOrganization}")]
+	public class AccountabilityNode : ILongIdentifiable, IHistorical, IForModel {
         public virtual long Id { get; set; }
         public virtual DateTime CreateTime { get; set; }
         public virtual DateTime? DeleteTime { get; set; }
@@ -50,11 +55,26 @@ namespace RadialReview.Models.Accountability {
         public virtual AccountabilityRolesGroup AccountabilityRolesGroup { get; set; }
         public virtual List<AccountabilityNode> _Children { get; set; }
 
+
+		public virtual string PositionName { get { return AccountabilityRolesGroup.NotNull(x => x.Position.GetName()); } }
+
 		public virtual string _Name { get; set; }
 		public virtual bool? _Editable { get; set; }
         public virtual int Ordering { get; set; }
 
-        public AccountabilityNode()
+
+		public virtual long ModelId { get { return Id; } }
+		public virtual string ModelType { get { return ForModel.GetModelType<AccountabilityNode>(); } }
+		public virtual bool Is<T>() {
+#pragma warning disable CS0618 // Type or member is obsolete
+			return ModelType == ForModel.GetModelType(typeof(T));
+#pragma warning restore CS0618 // Type or member is obsolete
+		}
+
+		public virtual string ToPrettyString() {
+			return _Name ?? string.Join(" - ", new[] { User.NotNull(x => x.GetName()), AccountabilityRolesGroup.NotNull(y => y.Position.GetName())}.Where(x=>x!=null));
+		}
+		public AccountabilityNode()
         {
             CreateTime = DateTime.UtcNow;
         }

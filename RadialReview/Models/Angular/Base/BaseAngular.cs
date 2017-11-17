@@ -4,59 +4,98 @@ using System.Runtime.Remoting.Messaging;
 using System.Runtime.Remoting.Proxies;
 using Amazon.SimpleDB.Model;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
-namespace RadialReview.Models.Angular.Base
-{
-	public class BaseAngular  : IAngularItem
-	{
-		public long Id { get; set; }
-		public string Type
-		{
+namespace RadialReview.Models.Angular.Base {
+	[Serializable]
+	public class BaseStringAngular : IAngularItemString {
+		[JsonProperty(Order = -100)]
+		public string Id { get; set; }
+		[JsonProperty(Order = -100)]
+		public string Type {
 			get { return GetType().Name; }
 		}
-
-		public BaseAngular(long id)
-		{
+		[JsonProperty(Order = 100)]
+		public string Key { get { return this.GetKey(); } }
+		public BaseStringAngular() { }
+		public BaseStringAngular(string id) {
 			Id = id;
-			//Removed = false;
+		}
+		//public bool CreateOnly { get; set; }
+		[IgnoreDataMember]
+		public bool Hide { get; set; }
+		[IgnoreDataMember]
+		public Dictionary<string, object> _ExtraProperties { get; set; }
+
+		public object GetAngularId() {
+			return Id;
 		}
 
-		//[Obsolete("Use BaseAngular(id) instead.")]
-		public BaseAngular()
-		{
-
+		public string GetAngularType() {
+			return Type;
 		}
+	}
 
+	[Serializable]
+	public class BaseAngular : IAngularItem {
+		[JsonProperty(Order = -2)]
+		public long Id { get; set; }
+		[JsonProperty(Order = -2)]
+		public string Type {
+			get { return GetType().Name; }
+		}
+		[JsonProperty(Order = -2)]
 		public string Key { get { return this.GetKey(); } }
 
-		public bool CreateOnly { get; set; }
-        
-        public bool Hide {get;set;}
+		public BaseAngular() {}
+		public BaseAngular(long id) {
+			Id = id;			
+		}
 
-		public Dictionary<string, object> _ExtraProperties { get; set;  }
-    }
+		//public bool CreateOnly { get; set; }
+		[IgnoreDataMember]
+		public bool Hide { get; set; }
+		[IgnoreDataMember]
+		public Dictionary<string, object> _ExtraProperties { get; set; }
 
-	public class Removed
-	{
+		public object GetAngularId() {
+			return Id;
+		}
 
-        //public static T Create<T>(T instance)
-        //{
-        //    return (T)new Removed<T>(instance).GetTransparentProxy();
-        //}
+		public string GetAngularType() {
+			return Type;
+		}
 
-        public static long Long()
-        {
-            return long.MaxValue - 1;
-        }
-        public static T From<T>() where T : IAngularItem,new() 
-        {
-            var obj= (T)Activator.CreateInstance<T>();
-            obj.Id = Long();
-			//obj.Deleted = true;
-            return obj;
-        }
-		public static DateTime Date()
-		{
+		[IgnoreDataMember]
+		///Absolute Update Time. Will not update if it is before last update
+		public DateTime? UT { get; set; }
+
+	}
+
+	public class Removed {
+
+		//public static T Create<T>(T instance)
+		//{
+		//    return (T)new Removed<T>(instance).GetTransparentProxy();
+		//}
+
+		public static long Long() {
+			return long.MaxValue - 1;
+		}
+		public static T From<T>() where T : IAngularItem, new() {
+			var obj = (T)Activator.CreateInstance<T>();
+			obj.Id = Long();// Long();
+							//obj.Deleted = true;
+			return obj;
+		}
+		public static T FromAngularString<T>() where T : IAngularItemString, new() {
+			var obj = (T)Activator.CreateInstance<T>();
+			obj.Id = String();// Long();
+							//obj.Deleted = true;
+			return obj;
+		}
+		public static DateTime Date() {
 			return DateTime.MaxValue - TimeSpan.FromSeconds(1);
 		}
 		public static decimal Decimal() {
@@ -108,12 +147,12 @@ namespace RadialReview.Models.Angular.Base
 	//		}
 	//	}
 
- //       public long Id { get { return 0; } set { } }
+	//       public long Id { get { return 0; } set { } }
 
 	//	public string Type{get { return "Removed"; }}
 
 
 
- //       public bool Hide { get; set; }
- //   }
+	//       public bool Hide { get; set; }
+	//   }
 }

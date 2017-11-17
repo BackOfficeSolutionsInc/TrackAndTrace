@@ -17,8 +17,8 @@ namespace TractionTools.Tests.Permissions {
 	public class OrganizationPermissions : BasePermissionsTest {
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void EditOrganization() {
-			var c = new Ctx();
+		public async Task EditOrganization() {
+			var c = await Ctx.Build();
 			var perm = new Action<PermissionsUtility>(p => p.EditOrganization(c.Id));
 
 			//Only managers by default
@@ -35,16 +35,16 @@ namespace TractionTools.Tests.Permissions {
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void ViewOrganization() {
-			var c = new Ctx();
+		public async Task ViewOrganization() {
+			var c = await Ctx.Build();
 			c.AssertAll(p => p.ViewOrganization(c.Id), c.AllUsers);
 
 		}
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void EditCompanyValues() {
-			var c = new Ctx();
+		public async Task EditCompanyValues() {
+			var c = await Ctx.Build();
 			var perm = new Action<PermissionsUtility>(p => p.EditCompanyValues(c.Id));
 			c.AssertAll(perm, c.AllAdmins);
 
@@ -62,7 +62,7 @@ namespace TractionTools.Tests.Permissions {
 		[TestMethod]
 		[TestCategory("Permissions")]
 		public void XXX() {
-			var c = new Ctx();
+			var c = await Ctx.Build();
 			c.AssertAll(p => p.XXX(YYY), c.Manager);
 		}
 

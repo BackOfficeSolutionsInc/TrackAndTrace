@@ -16,16 +16,16 @@ namespace RadialReview.Accessors {
 	public class PdfChartAccessor {
 		private static bool DEBUG = false && Config.IsLocal();
 
-		private static XFont _FontLargeBold = new XFont("Verdana", 20, XFontStyle.Bold);
-		private static XFont _Font = new XFont("Verdana", 10, XFontStyle.Regular);
-		private static XFont _FontBold = new XFont("Verdana", 10, XFontStyle.Bold);
+		public static XFont _FontLargeBold = new XFont("Verdana", 20, XFontStyle.Bold);
+		public static XFont _Font = new XFont("Verdana", 10, XFontStyle.Regular);
+		public static XFont _FontBold = new XFont("Verdana", 10, XFontStyle.Bold);
 		public static XFont _Font8 = new XFont("Verdana", 8, XFontStyle.Regular);
-		private static XFont _Font8Bold = new XFont("Verdana", 8, XFontStyle.Bold);
-		private static XFont _Font7 = new XFont("Verdana", 7, XFontStyle.Regular);
-		private static XFont _Font7Bold = new XFont("Verdana", 7, XFontStyle.Bold);
-		private static XBrush _BlackText = new XSolidBrush(XColor.FromArgb(255, 51, 51, 51));
-		private static XBrush _GrayText = new XSolidBrush(XColor.FromArgb((128+255)/2, 51, 51, 51));
-		private static Unit _DefaultMargin = Unit.FromInch(0.3);
+		public static XFont _Font8Bold = new XFont("Verdana", 8, XFontStyle.Bold);
+		public static XFont _Font7 = new XFont("Verdana", 7, XFontStyle.Regular);
+		public static XFont _Font7Bold = new XFont("Verdana", 7, XFontStyle.Bold);
+		public static XBrush _BlackText = new XSolidBrush(XColor.FromArgb(255, 51, 51, 51));
+		public static XBrush _GrayText = new XSolidBrush(XColor.FromArgb((128+255)/2, 51, 51, 51));
+		public static Unit _DefaultMargin = Unit.FromInch(0.3);
 		
 
 		private static XRect FromMargin(XRect placement, Unit? margin = null) {
@@ -609,7 +609,7 @@ namespace RadialReview.Accessors {
 			var valueFont = _Font8Bold;
 
 			foreach (var v in theValues) {
-				var value = v.GetQuestion();
+				var value = v.GetQuestion()??"";
 				maxWidth_Value = Math.Max(maxWidth_Value, gfx.MeasureString(value, valueFont).Width);
 			}
 			var titleHeight = Math.Sin(angle * Math.PI / 180) * maxWidth_Value;
@@ -743,17 +743,21 @@ namespace RadialReview.Accessors {
 			gfx.DrawLine(XPens.LightGray, placement.Left, placement.Top + totalHeight, placement.Right, placement.Top + totalHeight);
 
 			//totalHeight +=lineMargin;
+#pragma warning disable CS0162 // Unreachable code detected
+			if (false) {
+				//Turn off job description
+				var jd = review.ReviewerUser.JobDescription;
+				if (!string.IsNullOrWhiteSpace(jd)) {
+					var jdW = Unit.FromInch(1.1);
+					var jdh = GetTextHeight(gfx, jd, placement.Width - jdW, _Font8);
+					gfx.DrawString("Job Description:", _Font8Bold, _BlackText, new XRect(placement.Left, placement.Top + totalHeight, jdW, jdh), XStringFormats.TopLeft);
+					var tf = new XTextFormatter(gfx) { Alignment = XParagraphAlignment.Left };
+					tf.DrawString(jd ?? "", _Font8, _BlackText, new XRect(placement.Left + jdW, placement.Top + totalHeight, placement.Width - jdW, jdh), XStringFormats.TopLeft);
 
-			var jd = review.ReviewerUser.JobDescription;
-			if (!string.IsNullOrWhiteSpace(jd)) {
-				var jdW = Unit.FromInch(1.1);
-				var jdh = GetTextHeight(gfx, jd, placement.Width- jdW, _Font8);
-				gfx.DrawString("Job Description:", _Font8Bold, _BlackText, new XRect(placement.Left, placement.Top + totalHeight, jdW, jdh),XStringFormats.TopLeft);
-				var tf = new XTextFormatter(gfx) { Alignment = XParagraphAlignment.Left };
-				tf.DrawString(jd ?? "", _Font8, _BlackText, new XRect(placement.Left+ jdW, placement.Top + totalHeight, placement.Width - jdW, jdh), XStringFormats.TopLeft);
-
-				totalHeight += jdh;
+					totalHeight += jdh;
+				}
 			}
+#pragma warning restore CS0162 // Unreachable code detected
 
 
 			var actualSize = new XRect(location.Left, location.Top, location.Width, totalHeight + 2*(margin ?? _DefaultMargin));

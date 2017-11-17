@@ -99,6 +99,8 @@ namespace RadialReview.Models.L10
 			public virtual RockModel ForRock { get; set; }
 			public virtual L10Recurrence ForRecurrence { get; set; }
 
+			public virtual bool VtoRock { get; set; }
+
 			public L10Meeting_Rock()
 			{
 				CreateTime = DateTime.UtcNow;
@@ -114,6 +116,7 @@ namespace RadialReview.Models.L10
 					Map(x => x.CompleteTime);
 					Map(x => x.CreateTime);
 					Map(x => x.Completion);
+					Map(x => x.VtoRock);
 					References(x => x.ForRock).Column("RockId");
 					References(x => x.L10Meeting).Column("MeetingId");
 					References(x => x.ForRecurrence).Column("RecurrenceId");
@@ -142,24 +145,34 @@ namespace RadialReview.Models.L10
 			public virtual async Task<string> GetIssueMessage()
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 			{
-				var name = "'" + ForRock.Rock + "'";
-				switch(Completion){
-					case RockState.Indeterminate:	return name;
-					case RockState.AtRisk:			return name + " is marked 'Off Track'";
-					case RockState.OnTrack:			return name + " is marked 'On Track'";
-					case RockState.Complete:		return name + " is marked 'Done'";
-					default:throw new ArgumentOutOfRangeException();
-				}
+                return ForRock.Rock;
+				//var name = "'" + ForRock.Rock + "'";
+				//switch(Completion){
+				//	case RockState.Indeterminate:	return name;
+				//	case RockState.AtRisk:			return name + " is marked 'Off Track'";
+				//	case RockState.OnTrack:			return name + " is marked 'On Track'";
+				//	case RockState.Complete:		return name + " is marked 'Done'";
+				//	default:throw new ArgumentOutOfRangeException();
+				//}
 			}
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 			public virtual async Task<string> GetIssueDetails()
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 			{
-				var week = L10Meeting.CreateTime.StartOfWeek(DayOfWeek.Sunday).ToString("d");
+                var marked = "";
+                switch (Completion) {
+                    case RockState.AtRisk: marked ="\nMarked: 'Off Track'"; break;
+                    case RockState.OnTrack: marked = "\nMarked: 'On Track'"; break;
+                    case RockState.Complete: marked = "\nMarked: 'Done'"; break;
+                }
+
+                var week = L10Meeting.CreateTime.StartOfWeek(DayOfWeek.Sunday).ToString("d");
 				var accountable = ForRock.AccountableUser.GetName();
 				var footer = "Week:" + week + "\nOwner: " + accountable;
-				return footer;
+                footer += marked;
+
+                return footer;
 			}
 
 		}

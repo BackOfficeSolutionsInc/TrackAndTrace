@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using RadialReview.Reflection;
+using NHibernate.Proxy;
 
 namespace RadialReview
 {
@@ -84,6 +86,16 @@ namespace RadialReview
 			session.Update(obj);
 	    }
     }
+}
 
-
+namespace RadialReview.SessionExtension {
+    public static class SessionExtension {
+        public static T Deproxy<T>(this T model) {
+            if (model is INHibernateProxy) {
+                var lazyInitialiser = ((INHibernateProxy)model).HibernateLazyInitializer;
+                model = (T)lazyInitialiser.GetImplementation();
+            }
+            return model;
+        }
+    }
 }

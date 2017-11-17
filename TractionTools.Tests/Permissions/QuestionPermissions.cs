@@ -6,6 +6,7 @@ using RadialReview.Utilities;
 using RadialReview.Models;
 using RadialReview.Models.Enums;
 using RadialReview.Exceptions;
+using System.Threading.Tasks;
 
 namespace TractionTools.Tests.Permissions {
 	[TestClass]
@@ -13,9 +14,9 @@ namespace TractionTools.Tests.Permissions {
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void CreateQuestion() {
+		public async Task CreateQuestion() {
 
-			var c = new Ctx();
+			var c = await Ctx.Build();
 
 			var qa = new QuestionAccessor();
 
@@ -41,8 +42,8 @@ namespace TractionTools.Tests.Permissions {
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void EditQuestion() {
-			var c = new Ctx();
+		public async Task EditQuestion() {
+			var c = await Ctx.Build();
 
 			var qa= new QuestionAccessor();
 			QuestionModel q;
@@ -66,8 +67,8 @@ namespace TractionTools.Tests.Permissions {
 
 			[TestMethod]
 			[TestCategory("Permissions")]
-			public void XXX() {
-				var c = new Ctx();
+			public async Task XXX() {
+				var c = await Ctx.Build();
 				c.AssertAll(p => p.XXX(YYY), c.Manager);
 				//var perm = new Action<PermissionsUtility>(p=>p.XXX(YYY));
 				//c.AssertAll(perm, c.Manager);

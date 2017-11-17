@@ -205,7 +205,7 @@ namespace RadialReview.Controllers {
 				var caller = GetUser();
 				var now = DateTime.UtcNow;
 				var measurableLookup = new Dictionary<int, MeasurableModel>();
-				using (var s = HibernateSession.GetCurrentSession()) {
+				using (var s = HibernateSession.GetCurrentSession(/*singleSession:false*/)) {
 					using (var tx = s.BeginTransaction()) {
 						using (var rt = RealTimeUtility.Create(false)) {
 							var org = s.Get<L10Recurrence>(recurrence).Organization;
@@ -216,19 +216,19 @@ namespace RadialReview.Controllers {
 								var owner = users[ident];
 								var goal = goals[ident];
 								var goaldir = goalDirs[ident];
-								var measurable = new MeasurableModel() {
-									Title = m.Value,
-									OrganizationId = org.Id,
-									Goal = goal,
-									GoalDirection = goaldir,
-									AccountableUserId = owner,
-									AdminUserId = owner,
-									CreateTime = now,
-									_Ordering = ii
-								};
+								//var measurable = new MeasurableModel() {
+								//	Title = m.Value,
+								//	OrganizationId = org.Id,
+								//	Goal = goal,
+								//	GoalDirection = goaldir,
+								//	AccountableUserId = owner,
+								//	AdminUserId = owner,
+								//	CreateTime = now,
+								//	_Ordering = ii
+								//};
 
 								//Empty row?
-								if (string.IsNullOrWhiteSpace(measurable.Title)) {
+								if (string.IsNullOrWhiteSpace(m.Value)) {
 									if (scoreRect == null) {
 										continue;
 									} else {
@@ -242,13 +242,19 @@ namespace RadialReview.Controllers {
 									}
 								}
 
-								L10Accessor.AddMeasurable(s, perms, rt, recurrence, L10Controller.AddMeasurableVm.CreateNewMeasurable(recurrence, measurable), skipRealTime: true, rowNum: ii);
+								var units = UnitType.None;
+								try {
+									units = goalUnits[ident];
+								} catch (Exception) {
+								}
+
+								//await L10Accessor.AddMeasurable(s, perms, rt, recurrence, L10Controller.AddMeasurableVm.CreateMeasurableViewModel(recurrence, measurable), skipRealTime: true, rowNum: ii);
+								var measurable = await ScorecardAccessor.CreateMeasurable(s, perms, MeasurableBuilder.Build(m.Value, owner, type: units, goal: goal, goalDirection: goaldir, now: now));
+								await L10Accessor.AttachMeasurable(s, perms,recurrence, measurable.Id, true, ii, now);
+								
 								ii += 1;
 								measurableLookup[ident] = measurable;
-
-
-
-
+								
 								if (scoreRect != null) {
 									var scoreRow = measurableRectType != "Column"
 										? new Rect(scoreRect.MinX, scoreRect.MinY + ident, scoreRect.MaxX, scoreRect.MinY + ident)
@@ -259,11 +265,10 @@ namespace RadialReview.Controllers {
 									for (var i = 0; i < dates.Count; i++) {
 										var week = TimingUtility.GetWeekSinceEpoch(dates[i].AddDays(7).AddDays(6).StartOfWeek(DayOfWeek.Sunday))+weekShift;
 										var score = scoresFound[i];
-										L10Accessor._UpdateScore(s, perms, rt, measurable.Id, week, score, null, noSyncException: true, skipRealTime: true);
+										await ScorecardAccessor.UpdateScore(s, perms, measurable.Id, TimingUtility.GetDateSinceEpoch(week), score);
+										//await L10Accessor._UpdateScore(s, perms, rt, measurable.Id, week, score, null, noSyncException: true, skipRealTime: true);
 									}
 								}
-
-
 							}
 							var existing = s.QueryOver<L10Recurrence.L10Recurrence_Attendee>()
 								.Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrence)

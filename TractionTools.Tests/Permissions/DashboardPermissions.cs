@@ -3,16 +3,17 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RadialReview.Accessors;
 using RadialReview.Utilities;
 using RadialReview.Models.Dashboard;
+using System.Threading.Tasks;
 
 namespace TractionTools.Tests.Permissions {
 	[TestClass]
 	public class DashboardPermissions : BasePermissionsTest {
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void ViewDashboardForUser() {
-			var c = new Ctx();
-			c.Org.RegisterAllUsers();
-			c.OtherOrg.RegisterAllUsers();
+		public async Task ViewDashboardForUser() {
+			var c = await Ctx.Build();
+			await c.Org.RegisterAllUsers();
+			await c.OtherOrg.RegisterAllUsers();
 
 			foreach (var u in c.AllUsers) {
 				c.AssertAll(p => p.ViewDashboardForUser(u.User.Id), u);
@@ -21,11 +22,11 @@ namespace TractionTools.Tests.Permissions {
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void EditDashboard() {
-			var c = new Ctx();
+		public async Task EditDashboard() {
+			var c = await Ctx.Build();
 
-			c.Org.RegisterAllUsers();
-			c.OtherOrg.RegisterAllUsers();
+			await c.Org.RegisterAllUsers();
+			await c.OtherOrg.RegisterAllUsers();
 
 			foreach (var u in c.AllUsers) {
 				var dash = DashboardAccessor.CreateDashboard(u, null, false, true);
@@ -40,11 +41,11 @@ namespace TractionTools.Tests.Permissions {
 
 		[TestMethod]
 		[TestCategory("Permissions")]
-		public void EditTile() {
-			var c = new Ctx();
+		public async Task EditTile() {
+			var c = await Ctx.Build();
 
-			c.Org.RegisterAllUsers();
-			c.OtherOrg.RegisterAllUsers();
+			await c.Org.RegisterAllUsers();
+			await c.OtherOrg.RegisterAllUsers();
 
 			var dash = DashboardAccessor.CreateDashboard(c.E1, null, false, true);
 
@@ -57,7 +58,7 @@ namespace TractionTools.Tests.Permissions {
 		[TestMethod]
 		[TestCategory("Permissions")]
 		public void XXX() {
-			var c = new Ctx();
+			var c = await Ctx.Build();
 			c.AssertAll(p => p.XXX(YYY), c.Manager);
 			//var perm = new Action<PermissionsUtility>(p=>p.XXX(YYY));
 			//c.AssertAll(perm, c.Manager);

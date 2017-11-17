@@ -7,38 +7,30 @@ using RadialReview.Accessors;
 using RadialReview.Models.ViewModels;
 using System.Text;
 using System.Threading.Tasks;
+using RadialReview.Models;
+using Microsoft.AspNet.Identity;
 
-namespace RadialReview.Controllers
-{
-	public class BackendViewModel
-	{
+namespace RadialReview.Controllers {
+	public class BackendViewModel {
 		public UserViewModel User { get; set; }
 		public List<OutstandingReviewViewModel> OutstandingReview { get; set; }
 		public bool IncludeTodos { get; set; }
 		public bool IncludeScorecard { get; set; }
 		public bool IncludeRocks { get; set; }
 
-		public BackendViewModel()
-		{
-			OutstandingReview=new List<OutstandingReviewViewModel>();
+		public BackendViewModel() {
+			OutstandingReview = new List<OutstandingReviewViewModel>();
 		}
 	}
-
-	public class OutstandingReviewViewModel
-	{
+	public class OutstandingReviewViewModel {
 		public String Name { get; set; }
 		public long ReviewContainerId { get; set; }
-
 	}
+	public class HomeController : BaseController {
 
-
-	public class HomeController : BaseController
-	{
-	
 		[Access(AccessLevel.Any)]
-		public ActionResult Index()
-		{
-			if (IsLoggedIn()){
+		public ActionResult Index() {
+			if (IsLoggedIn()) {
 				return RedirectToAction("Index", "Dashboard");
 				//var model = new BackendViewModel();
 
@@ -72,32 +64,55 @@ namespace RadialReview.Controllers
 			return RedirectToAction("Login", "Account");
 		}
 
+		//[Access(AccessLevel.Radial)]
+		//public ActionResult About() {
+		//	ViewBag.Message = "Your application description page.";
+		//	return View();
+		//}
 
+		//[Access(AccessLevel.Any)]
+		//public ActionResult Contact() {
+		//	ViewBag.Message = "Your contact page.";
 
+		//	return View();
+		//}
 
-		[Access(AccessLevel.Any)]
-		public ActionResult About()
-		{
-			ViewBag.Message = "Your application description page.";
+		//[Access(AccessLevel.Any)]
+		//[HttpPost]
+		//public async Task<ActionResult> Submit() {
+		//	// Create an event with action 'event1' and additional data			
+		//	await this.NotifyAsync("event1", new { P1 = "p1" });
 
-			return View();
-		}
+		//	return new EmptyResult();
+		//}
 
-		[Access(AccessLevel.Any)]
-		public ActionResult Contact()
-		{
-			ViewBag.Message = "Your contact page.";
+		//[Access(AccessLevel.Any)]
+		//[HttpPost]
+		//public ActionResult AddEventSubscription(WebhookEventsSubscription model) {
+		//	WebhooksAccessor acc = new WebhooksAccessor();
+		//	model.WebhookId = acc.GetAllWebHook().FirstOrDefault().Id;
 
-			return View();
-		}
+		//	var list = acc.GetWebhookEventSubscriptions(User.Identity.GetUserId(), model.WebhookId);
 
-		[Access(AccessLevel.Any)]
-		[HttpPost]
-		public async Task<ActionResult> Submit() {
-			// Create an event with action 'event1' and additional data
-			await this.NotifyAsync("event1", new { P1 = "p1" });
+		//	// fill viewModel
+		//	WebhooksEventSubscriptionViewModel webhooksEventSubscriptionViewModel = new WebhooksEventSubscriptionViewModel();
+		//	webhooksEventSubscriptionViewModel.Id = list.Id;
+		//	webhooksEventSubscriptionViewModel.Email = list.Email;
+		//	webhooksEventSubscriptionViewModel.UserId = list.UserId;
+		//	webhooksEventSubscriptionViewModel.angularUser = new Models.Angular.Users.AngularUser() {
+		//		Name = list.User.Name()
+		//	};
+		//	webhooksEventSubscriptionViewModel.ProtectedData = list.ProtectedData;
 
-			return new EmptyResult();
-		}
+		//	return Json(webhooksEventSubscriptionViewModel, JsonRequestBehavior.AllowGet);
+		//}
+
+		//[Access(AccessLevel.Any)]
+		//public ActionResult CreateWebhookEvents() {
+		//	WebhooksAccessor acc = new WebhooksAccessor();
+		//	//acc.CreateWebhookEvents(new WebhookEvents() { Name = "Create To Do", Description = "To Do" });
+		//	return new EmptyResult();
+		//}
+
 	}
 }

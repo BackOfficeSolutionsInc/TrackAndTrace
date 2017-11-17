@@ -13,6 +13,7 @@ using System.Web;
 using static RadialReview.Accessors.PDF.D3.Layout;
 using static RadialReview.Accessors.PDF.JS.Tree;
 
+#pragma warning disable CS0162 // Unreachable code detected
 namespace RadialReview.Accessors.PDF {
 	public class AccountabilityChartPDF {
 
@@ -95,12 +96,26 @@ namespace RadialReview.Accessors.PDF {
 		}
 
 		public static List<PdfDocument> GenerateAccountabilityChartSingleLevels(List<AngularAccountabilityNode> roots, double width, double height, bool restrictSize = false, TreeSettings settings = null) {
-
+			var settingsEmpty = settings == null;
 			var docs = new List<PdfDocument>();
 			roots = roots.Where(x => x != null).Distinct(x => x.Id).ToList();
+			var seen = new List<long>();
 			foreach (var r in roots) {
 				_collapser(r);
-				docs.Add(GenerateAccountabilityChart(r, width, height, restrictSize, settings, r._hasParent??false));
+				if (r.HasChildren() || !seen.Contains(r.Id)) {
+
+					var useCompact = r.GetDirectChildren().Count() >= 8;
+
+
+					var useSettings = settings ?? new TreeSettings() {
+						compact = useCompact
+					};
+
+					docs.Add(GenerateAccountabilityChart(r, width, height, restrictSize, useSettings, r._hasParent ?? false));
+
+					seen.Add(r.Id);
+					seen.AddRange(r.children.Select(x => x.Id));
+				}
 			}
 			return docs;
 		}
@@ -110,7 +125,7 @@ namespace RadialReview.Accessors.PDF {
 			settings = settings ?? new TreeSettings();
 			var rootACNode = dive(root, settings);
 
-			var margin = XUnit.FromInch(.25);
+			var margin = XUnit.FromInch(.5);
 
 			var pageProp = new PageProp() {
 				pageWidth = XUnit.FromInch(width),
@@ -174,12 +189,14 @@ namespace RadialReview.Accessors.PDF {
 			var x = (int)me.x - origin[0];
 			var y = (int)me.y - origin[1];
 
-
+			
 			if (me.side == "left") {
 				x += me.width / 2;
 			} else if (me.side == "right") {
 				x -= me.width / 2;
 			}
+			
+
 
 			//var top = 50 * pageProps.scale;
 			var pad = 1.0 / 24.0 * me.width;
@@ -189,8 +206,9 @@ namespace RadialReview.Accessors.PDF {
 			var tf = new XTextFormatter(gfx);
 
 			tf.Alignment = XParagraphAlignment.Center;
-			XFont bold = new XFont(FONT, 14 * pageProps.scale, XFontStyle.Bold);
-			XFont norm = new XFont(FONT, 14 * pageProps.scale, XFontStyle.Regular);
+            XFont bold = new XFont(FONT,Math.Max(1, 14 * pageProps.scale), XFontStyle.Bold);
+			XFont norm = new XFont(FONT,Math.Max(1, 14 * pageProps.scale), XFontStyle.Regular);
+			
 			//tf.DrawString(me.Position ?? "", bold, XBrushes.Black, new XRect(x, y + 12 * pageProps.scale / 6.0, Math.Max(0, me.width), top / 2.0));
 			//tf.DrawString(me.Name ?? "", norm, XBrushes.Black, new XRect(x, y + top / 2.0 + 12 * pageProps.scale / 6.0, Math.Max(0, me.width), top / 2.0));
 
@@ -228,7 +246,7 @@ namespace RadialReview.Accessors.PDF {
 
 			tf = new XTextFormatter(gfx);
 			tf.Alignment = XParagraphAlignment.Left;
-			norm = new XFont(FONT, 12 * pageProps.scale, XFontStyle.Regular);
+            norm = new XFont(FONT, Math.Max(1, 12 * pageProps.scale), XFontStyle.Regular);
 
 			var h = ch + pad;//50 * pageProps.scale;
 			var top = ch;
@@ -260,6 +278,7 @@ namespace RadialReview.Accessors.PDF {
 
 			if (DEBUG) {
 				gfx.DrawRectangle(new XPen(XPens.Blue) { DashStyle = XDashStyle.Dot }, x + PAGE_MARGIN, y + PAGE_MARGIN, me.width - PAGE_MARGIN * 2, me.height - PAGE_MARGIN * 2);
+
 				gfx.DrawRectangle(XPens.Blue, x, y, me.width, me.height);
 			}
 		}
@@ -310,8 +329,8 @@ namespace RadialReview.Accessors.PDF {
 			var ty = me.y - origin[1] - adjS;
 			var my = sy + vSeparation /*- origin[1]*/;
 
-			var tempFont = new XFont("Times New Roman", 12 * pageProps.scale, XFontStyle.Regular);
-			var sideL = "";
+            var tempFont = new XFont("Times New Roman", Math.Max(1, 12 * pageProps.scale), XFontStyle.Regular);
+            var sideL = "";
 			if (me.isLeaf && parent.side!="left" && parent.side!="right") {
 				var tw = me.width;
 				double lx;
@@ -459,15 +478,29 @@ namespace RadialReview.Accessors.PDF {
 				mult = -1;
 			}
 
-			for (var ii = 0; ii < 3; ii += 1) {
-				var i = (3 + 6 * ii) * pageProps.scale;
-				var d = (3.0) * pageProps.scale;
-				gfx.DrawEllipse(new XPen(XColors.Black, 0.5), x - (d / 2.0), y + mult * i - (d / 2.0), d, d);
-			}
+			var d = (3.0) * pageProps.scale;
+			var i = (3 + 6 * 2/*ii*/) * pageProps.scale;
+			var adj = pageProps.linePen.Width * .5;
+			gfx.DrawLine(pageProps.linePen, x - (d / 2.0), y - (d / 2.0)+adj, x - (d / 2.0), y + mult * i - (d / 2.0) + adj);
+
+			//for (var ii = 0; ii < 3; ii += 1) {
+			//	var i = (3 + 6 * ii) * pageProps.scale;
+			//	var d = (3.0) * pageProps.scale;
+			//	gfx.DrawEllipse(new XPen(XColors.Black, 0.5), x - (d / 2.0), y + mult * i - (d / 2.0), d, d);
+			//}
 		}
 
 		private static double[] ACRanges(ACNode root) {
-			var range = new[] { root.x, root.y, root.x + root.width, root.y + root.height };
+			var x = root.x;
+			var y = root.y;
+			var me = root;
+			if (me.side == "left") {
+				x += me.width / 2;
+			} else if (me.side == "right") {
+				x -= me.width / 2;
+			}
+
+			var range = new[] { x, y, x + root.width, y + root.height };
 			if (root.children != null) {
 				foreach (var n in root.children) {
 					var n_range = ACRanges(n);
@@ -479,11 +512,27 @@ namespace RadialReview.Accessors.PDF {
 			}
 			return range;
 		}
+		private static double fixDivision(double val) {
+			var precision = 10000000;
+			return Math.Round(val * precision) / precision;
+		}
+
 		private static void ACNormalize(ACNode root, double[] range, PageProp pageProp, double? forceScale = null) {
 			root.x += -range[0];
 			root.y += -range[1];
+
+			//////Added
+			//if (root.side == "left") {
+			//	root.x += root.width / 2;
+			//} else if (root.side == "right") {
+			//	root.x -= root.width / 2;
+			//}
+			//////
 			var shouldScale = forceScale == null;
 			var scale = forceScale ?? 1.0;
+
+
+			
 
 			var width = (double)(range[2] - range[0]);
 			var height = (double)(range[3] - range[1]);
@@ -495,10 +544,12 @@ namespace RadialReview.Accessors.PDF {
 			}
 
 			//For centering
-			var numPagesWide = width * scale / pageProp.allowedWidth;
-			var numPagesTall = height * scale / pageProp.allowedHeight;
+			var numPagesWide = fixDivision(width * scale / pageProp.allowedWidth);
+			var numPagesTall = fixDivision(height * scale / pageProp.allowedHeight);
 
 			//Rescale
+			//root.x += -range[0]* scale;		 //added
+			//root.y += -range[1]* scale;		 //added
 			root.x *= scale;
 			root.y *= scale;
 			root.width *= scale;
@@ -593,8 +644,7 @@ namespace RadialReview.Accessors.PDF {
 
 			}
 		}
-
-
+		
 		private static void ACDrawOnAllPages_Dive(DefaultDictionary<Tuple<int, int>, PdfPage> pageLookup, DefaultDictionary<PdfPage, XGraphics> gfxLookup, ACNode me, PageProp pageProp, TreeSettings settings, ACNode parent = null, bool anyAboveRoot = false) {
 			ACDrawOnAllPages(pageLookup, gfxLookup, parent, me, pageProp, settings, anyAboveRoot);
 			if (me.children != null) {
@@ -655,3 +705,4 @@ namespace RadialReview.Accessors.PDF {
 		}
 	}
 }
+#pragma warning restore CS0162 // Unreachable code detected

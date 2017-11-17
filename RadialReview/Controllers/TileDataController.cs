@@ -50,17 +50,31 @@ namespace RadialReview.Controllers
         }
 
 
-		[Access(AccessLevel.Any)]
-		public PartialViewResult UserNotifications() {
-			return PartialView("UserNotifications");
-		}
-        
-		[Access(AccessLevel.Any)]
-		public PartialViewResult UserTodo2(){
-            return PartialView("UserTodo", GetUser().Id);
-		}
+        [Access(AccessLevel.Any)]
+        public PartialViewResult UserNotifications() {
+            return PartialView("UserNotifications");
+        }
 
-		[Access(AccessLevel.Any)]
+        [Access(AccessLevel.Any)]
+        public PartialViewResult CoreProcesses() {
+            return PartialView("CoreProcesses");
+        }
+        [Access(AccessLevel.Any)]
+        public PartialViewResult Tasks() {
+            return PartialView("Tasks");
+        }
+
+        [Access(AccessLevel.Any)]
+        public PartialViewResult UserTodo2() {
+            return PartialView("UserTodo", GetUser().Id);
+        }
+
+        [Access(AccessLevel.Any)]
+        public PartialViewResult Milestones() {
+            return PartialView("Milestones", GetUser().Id);
+        }
+
+        [Access(AccessLevel.Any)]
 		public PartialViewResult UserScorecard2(){
             ViewBag.NumberOfWeeks = TimingUtility.NumberOfWeeks(GetUser());
 
@@ -97,7 +111,13 @@ namespace RadialReview.Controllers
             return PartialView("L10Todos", id);
 		}
 
-		[Access(AccessLevel.Any)]
+        [Access(AccessLevel.User)]
+        public PartialViewResult L10Headlines(long id) {
+            SetupViewBag(id);
+            return PartialView("L10Headlines", id);
+        }
+
+        [Access(AccessLevel.Any)]
 		public PartialViewResult L10Stats(long id) {
             ViewBag.Name = "L10 Stats";
             try {

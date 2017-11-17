@@ -63,3 +63,51 @@ function addOrEditLogRow(id, html, type) {
 		addLogRow(id, html, type);
 	}
 }
+$("body").on("click", ".online-component .toggle", function () {
+	$(this).closest(".online-component").toggleClass("on");
+	$(this).find(".glyphicon").toggleClass("glyphicon-chevron-right");
+	$(this).find(".glyphicon").toggleClass("glyphicon-chevron-down");
+});
+
+$("body").on("click", ".online-component .user-picture", function () {
+	var icon = $(this).find(".notification-icon");
+	var check = icon.find(".checkmark");
+
+	if (check.length>0) {
+		check.remove();
+	} else {
+		icon.append("<span class='glyphicon glyphicon-ok-circle checkmark'></span>");	
+	}
+
+	var userId = $(this).data("userid");
+	if (userEnterMeeting && userEnterMeeting.notifications) {
+		userEnterMeeting.notifications[userId] = check.length>0?false:true; //flipflopped
+	}
+});
+
+$("body").on("click", ".online-component .options .option.uncheck", function () {
+	$(".notification-icon .checkmark").remove();
+});
+$("body").on("click", ".online-component .options .option.randomize", function () {
+
+	function shuffle(that,childElem) {
+		return that.each(function () {
+			var $this = $(that);
+			var elems = $this.children(childElem);
+
+			elems.sort(function () { return (Math.round(Math.random()) - 0.5); });
+
+			$this.remove(childElem);
+
+			for (var i = 0; i < elems.length; i++)
+				$this.append(elems[i]);
+
+		});
+	}
+
+
+
+	shuffle($(".online-component .user-picture-container"), ".user-picture")
+
+});
+

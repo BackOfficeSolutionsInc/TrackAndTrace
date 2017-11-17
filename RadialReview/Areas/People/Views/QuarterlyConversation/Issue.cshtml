@@ -1,0 +1,295 @@
+﻿@model RadialReview.Areas.People.Controllers.QuarterlyConversationController.IssueViewModel
+@{
+    ViewBag.Title = "Issue Quarterly Conversation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-sm-10 col-sm-offset-1">
+        <div class="instructions">
+            <h2>Instructions</h2>
+            <ol>
+                <li>The Quarterly Conversation is an informal, face-to-face, one-on-one meeting to talk about what’s working and what’s not.</li>
+                <li>It’s not a performance review and doesn’t require filling out a form (or even this software!)</li>
+                <li>It’s okay to take notes for yourself, but not for the employee's file.</li>
+                <li>Use the 5-5-5 as your guide, not your master.</li>
+            </ol>
+            <div class="ref gray">For more information, please read <a href='https://www.amazon.com/How-Great-Boss-Gino-Wickman/dp/1942952848/'>How to Be a Great Boss</a></div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginForm()) {
+    <div class="row smallBreak2">
+        <div class="col-sm-8 col-sm-offset-2">
+            <label class="control-label">Name this Quarterly Conversation:</label>
+            @Html.TextBoxFor(x => x.Name, new { @class = "form-control smallBreak2" })
+            @Html.ValidationMessageFor(x => x.Name)
+        </div>
+    </div>
+    <div class="row smallBreak2">
+        <div class="col-sm-8 col-sm-offset-2">
+            <label class="control-label">Add to Quarterly Conversation:</label>
+            <div id="qc-issue"></div>
+        </div>
+    </div>
+    <div class="row smallBreak2">
+        <div class="col-sm-8 col-sm-offset-2 material">
+            <div class="row smallBreak2">
+                <div class="col-sm-12 smallBreak2">
+                    <label class="control-label">Selected team members evaluate themselves:</label>
+
+                    <div class="responses radio-responses">
+                        <div class="md-radio active">
+                            <label>
+                                <input type="radio" name="@Html.NameFor(x=>x.EvalSelf)" value="true" checked>
+                                <span class="circle"></span>
+                                <span class="check"></span>
+                                <span class="response-title radio-response-title">Yes</span>
+                            </label>
+                        </div>
+                        <div class="md-radio">
+                            <label>
+                                <input type="radio" name="@Html.NameFor(x=>x.EvalSelf)" value="false">
+                                <span class="circle"></span>
+                                <span class="check"></span>
+                                <span class="response-title radio-response-title">No</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    @*<div class="btn-group" style="display:block;" data-toggle="buttons">
+                            <label class="btn btn-default active">
+                                <input type="radio" name="@Html.NameFor(x=>x.EvalSelf)" value="true" autocomplete="off" checked> Yes
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="@Html.NameFor(x=>x.EvalSelf)" value="false" autocomplete="off"> No
+                            </label>
+                        </div>*@
+                </div>
+            </div>
+            <div class="row smallBreak2">
+                <div class="col-sm-12">
+                    <label class="control-label">Selected Team Members Evaluate Me (LMA Questionnaire):</label>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="responses radio-responses">
+                                <div class="md-radio active">
+                                    <label>
+                                        <input type="radio" name="@Html.NameFor(x=>x.EvalManager)" value="true" checked>
+                                        <span class="circle"></span>
+                                        <span class="check"></span>
+                                        <span class="response-title radio-response-title">Yes</span>
+                                    </label>
+                                </div>
+                                <div class="md-radio">
+                                    <label>
+                                        <input type="radio" name="@Html.NameFor(x=>x.EvalManager)" value="false">
+                                        <span class="circle"></span>
+                                        <span class="check"></span>
+                                        <span class="response-title radio-response-title">No</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <span class="well label-comment1">We recommending that employees review managers once per year, not every quarter.</span>
+
+                        </div>
+                    </div>
+
+
+                    @*<div class="btn-group" style="display:block;" data-toggle="buttons">
+                            <label class="btn btn-default active">
+                                <input type="radio" name="@Html.NameFor(x=>x.EvalManager)" value="true" autocomplete="off" checked> Yes
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="@Html.NameFor(x=>x.EvalManager)" value="false" autocomplete="off"> No
+                            </label>
+                        </div>*@
+                </div>
+            </div>
+            <div class="row smallBreak2">
+                <div class="col-sm-12">
+                    <label class="control-label">Send email notification:</label>
+
+                    <div class="responses radio-responses">
+                        <div class="md-radio active">
+                            <label>
+                                <input type="radio" name="@Html.NameFor(x=>x.Email)" value="true" checked>
+                                <span class="circle"></span>
+                                <span class="check"></span>
+                                <span class="response-title radio-response-title">Yes</span>
+                            </label>
+                        </div>
+                        <div class="md-radio">
+                            <label>
+                                <input type="radio" name="@Html.NameFor(x=>x.Email)" value="false">
+                                <span class="circle"></span>
+                                <span class="check"></span>
+                                <span class="response-title radio-response-title">No</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    @*<div class="btn-group" style="display:block;" data-toggle="buttons">
+                            <label class="btn btn-default active">
+                                <input type="radio" name="@Html.NameFor(x=>x.Email)" value="true" autocomplete="off" checked> Yes
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name="@Html.NameFor(x=>x.Email)" value="false" autocomplete="off"> No
+                            </label>
+                        </div>*@
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row ">
+        <div class="col-sm-3 col-sm-offset-2">
+            <label class="control-label">Due Date:</label>
+            <div class="btn-group" style="display:block;" data-toggle="buttons">
+                @Html.EditorFor(x => x.DueDate, new { startDate = "tomorrow" })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-2">
+            <hr />
+            <button class="btn btn-primary" type="submit">Create</button>
+        </div>
+        <div class="col-sm-4">
+            @Html.ValidationSummary()
+        </div>
+    </div>
+}
+
+@using (Html.BeginStyles()) {
+    @Styles.Render("~/styles/people")
+
+    <style>
+        .md-radio {
+            display: inline-block;
+            padding-right: 17px;
+        }
+
+        #qc-issue .panel {
+            border-color: #cccccc;
+        }
+
+        .well {
+            margin-bottom: 0px;
+            display: block;
+        }
+
+        .label-comment {
+            display: block;
+            padding: 0px 7px 0px 12px;
+            /* padding-bottom: 14px; */
+            color: gray;
+            border-left: 3px solid #ccc;
+            margin-bottom: 7px;
+            margin-left: 5px;
+        }
+
+        .instructions {
+            padding: 20px;
+            padding-top: 50px;
+            padding-right: 40px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            margin: 30px;
+            background: #fff;
+            border-radius: 2px;
+            display: inline-block;
+            position: relative;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        }
+
+            .instructions h2 {
+                margin-top: -22px;
+                margin-left: 25px;
+                text-transform: uppercase;
+                margin-bottom: 13px;
+            }
+
+            .instructions ol {
+                margin-bottom: 0px;
+            }
+
+                .instructions ol li {
+                    padding: 2px 0 2px 15px;
+                }
+
+            .instructions .ref {
+                text-align: right;
+                padding-top: 14px;
+                font-size: 13px;
+            }
+
+                .instructions .ref a {
+                    font-style: italic;
+                    text-decoration: underline;
+                }
+
+                    .instructions .ref a:hover {
+                        color: black;
+                    }
+
+        *:focus {
+            outline: none;
+        }
+    </style>
+}
+@using (Html.BeginScripts()) {
+
+    <script>
+
+
+
+        $("form").submit(function validateForm(event) {
+            event = event || window.event || event.srcElement;
+            var name = $('#Name').val();
+            if (!name) {
+                $("[data-valmsg-for=\"Name\"]").removeClass("field-validation-valid").addClass("field-validation-error").text("Name is required");
+                $("#Name").addClass("input-validation-error");//.text("Name is required");
+                showAlert("Name is required");
+                event.preventDefault();
+            }else{
+                $(this).find("button[type=submit]").addClass("noclick").prop("disabled","disabled").prop("title","Please wait.").html("Issuing...");
+            }
+        });
+
+        $("[name=@Html.NameFor(x => x.EvalSelf)],[name=@Html.NameFor(x => x.EvalManager)]").on("change",function(){
+
+            var selected = $("[name=@Html.NameFor(x => x.EvalSelf)]:checked").val()=="true" || $("[name=@Html.NameFor(x => x.EvalManager)]:checked").val()=="true";
+            debugger;
+            $("[name=@Html.NameFor(x => x.Email)]").closest(".btn-group").find(".btn").toggleClass("disabled",!selected).attr("disabled",!selected?"true":null).toggleClass("noclick",!selected).replaceClass("active","was-active",!selected);
+            $("[name=@Html.NameFor(x => x.Email)]").closest(".md-radio").find("input").toggleClass("disabled",!selected).attr("disabled",!selected?"true":null).toggleClass("noclick",!selected).replaceClass("active","was-active",!selected);
+        });
+
+
+        DataTable({
+            nodataText:"No direct reports. Ensure you have direct reports on the Accountability Chart.",
+            container: "#qc-issue",
+            data: @Html.ArrayToString(Model.AvailableUsers, x => new { Name = x.ToPrettyString(), Id = x.ToViewModelKey(), Hidden = x._Hidden }),
+            //title
+            cells:[{
+                contents:function(x){ return "<input type='checkbox' checked name='selected' value ='"+x.Id+"'/>"; },
+                classes:function(x){return x.Hidden?"hidden":"";}
+            },{
+                //name: "Add to Quarterly Conversation",
+                contents:function(x){ return x.Name; },
+                classes:function(x){return "fullWidth "+(x.Hidden?"hidden":"");}
+            }
+			//,{
+			//	name: "Id",
+			//	contents:function(x){ return x.Id; }
+			//}
+
+            ]
+        });
+    </script>
+}

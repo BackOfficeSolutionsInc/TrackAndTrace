@@ -3,15 +3,26 @@
 @{
 	ViewBag.FullWidth = true;
 
-	var scoreOrder = new Dictionary<AccountType, int>() {
+	/*var scoreOrder = new Dictionary<AccountType, int>() {
 		{AccountType.Demo, 1},
 		{AccountType.Implementer, 2},
-		{AccountType.Dormant, 3},
-		{AccountType.Cancelled, 4},
-		{AccountType.SwanServices, 5},
-		{AccountType.Other, 6},
-		{AccountType.Paying, 7},
-	};
+		{AccountType.Coach, 3},
+		{AccountType.Dormant, 4},
+		{AccountType.Cancelled, 5},
+		{AccountType.SwanServices, 6},
+		{AccountType.Other, 7},
+		{AccountType.Paying, 8},
+	};*/
+	var scoreOrder = new RadialReview.Utilities.DataTypes.DefaultDictionary<AccountType, int>(x => 6);
+	scoreOrder[AccountType.Demo] = 1;
+	scoreOrder[AccountType.Implementer] = 2;
+	scoreOrder[AccountType.Coach] = 3;
+	scoreOrder[AccountType.Dormant] = 4;
+	scoreOrder[AccountType.Cancelled] = 5;
+	scoreOrder[AccountType.SwanServices] = 6;
+	scoreOrder[AccountType.Other] = 7;
+	scoreOrder[AccountType.Paying] = 8;
+
 
 	var creditCardTxt = new Func<RadialReview.Controllers.OrganizationController.OrgStats, string>(x => {
 		if (x.CreditCardExp == null) {

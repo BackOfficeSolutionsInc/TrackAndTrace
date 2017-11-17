@@ -134,7 +134,7 @@ namespace RadialReview.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;p&gt;{0},&lt;/p&gt;
-        ///&lt;p&gt;Here are your meeting summary for this week:&lt;/p&gt;
+        ///&lt;p&gt;Here is your meeting summary for this week:&lt;/p&gt;
         ///{1}
         ///&lt;br /&gt;
         ///&lt;br /&gt;
@@ -297,6 +297,40 @@ namespace RadialReview.Properties {
         public static string Prereview_Subject {
             get {
                 return ResourceManager.GetString("Prereview_Subject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;p&gt;{0},&lt;/p&gt;
+        ///&lt;p&gt;You have a new Quarterly Conversation due on {1}. You can complete it by clicking the following link:&lt;/p&gt;
+        ///&lt;br&gt; 
+        ///    &lt;a href=&quot;{2}&quot;&gt;{3}&lt;/a&gt;
+        ///&lt;br /&gt;&lt;br /&gt;If you have any questions, feedback, or concerns, you can reply to this e-mail address.
+        ///&lt;br /&gt;
+        ///&lt;br /&gt;
+        ///Sincerely,&lt;br/&gt;
+        ///The {4} Team.
+        /// </summary>
+        public static string QuarterlyConversation_Body {
+            get {
+                return ResourceManager.GetString("QuarterlyConversation_Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;p&gt;{0},&lt;/p&gt;
+        ///&lt;p&gt;You have a new Quarterly Conversation due on {1}. You can complete it by clicking the following link:&lt;/p&gt;
+        ///&lt;br&gt; 
+        ///    &lt;a href=&quot;{2}&quot;&gt;{3}&lt;/a&gt;
+        ///&lt;br /&gt;&lt;br /&gt;If you have any questions, feedback, or concerns, you can reply to this e-mail address.
+        ///&lt;br /&gt;
+        ///&lt;br /&gt;
+        ///Sincerely,&lt;br/&gt;
+        ///The {4} Team.
+        /// </summary>
+        public static string QuarterlyConversationReminder_Body {
+            get {
+                return ResourceManager.GetString("QuarterlyConversationReminder_Body", resourceCulture);
             }
         }
         

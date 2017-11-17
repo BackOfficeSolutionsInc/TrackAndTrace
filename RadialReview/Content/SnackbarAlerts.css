@@ -1,0 +1,56 @@
+﻿#alerts {
+  position: fixed;
+  left: 20px;
+  bottom: 15px;
+  opacity: 1;
+  color: white;
+  -moz-transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), bottom 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -o-transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), bottom 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), bottom 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), bottom 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  -ms-flex-direction: column-reverse;
+  -webkit-flex-direction: column-reverse;
+  flex-direction: column-reverse;
+  z-index: 10011;
+}
+#alerts:empty {
+  bottom: 0px;
+  opacity: 0;
+  color: transparent;
+}
+#alerts .alert {
+  width: 408px;
+  /* height: 48px; */
+  /* padding-left: 24px; */
+  font-family: 'Roboto', sans-serif;
+  background: #fff;
+  border-radius: 2px;
+  padding: 1rem;
+  position: relative;
+  -moz-transition: all 250ms cubic-bezier(0, 0, 0.2, 1);
+  -o-transition: all 250ms cubic-bezier(0, 0, 0.2, 1);
+  -webkit-transition: all 250ms cubic-bezier(0, 0, 0.2, 1);
+  transition: all 250ms cubic-bezier(0, 0, 0.2, 1);
+  margin-bottom: 15px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  background-color: #323232;
+  color: white;
+  border: none;
+  margin: 0px;
+  padding-left: 15px;
+  margin-bottom: 5px;
+  /*-moz-animation: grow-in .5s cubic-bezier(.4,0,.2,1) 1;
+        -o-animation: grow-in .5s cubic-bezier(.4,0,.2,1) 1;
+        -webkit-animation: grow-in .5s cubic-bezier(.4,0,.2,1) 1;
+        animation: grow-in .5s cubic-bezier(.4,0,.2,1) 1;*/
+}
+#alerts .alert .close {
+  position: relative;
+  top: -2px;
+  right: 0px;
+  color: inherit;
+}
+#alerts .alert strong {
+  display: none;
+}

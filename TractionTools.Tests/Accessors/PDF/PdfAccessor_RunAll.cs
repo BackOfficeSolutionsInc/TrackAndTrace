@@ -4,16 +4,17 @@ using TractionTools.Tests.Utilities;
 using RadialReview.Accessors;
 using RadialReview.Controllers;
 using TractionTools.Tests.TestUtils;
+using System.Threading.Tasks;
 
 namespace TractionTools.Tests.Accessors {
     [TestClass]
     public class PdfAccessor_RunAll : BaseTest {
         [TestMethod]
-        public void VTO()
+        public async Task VTO()
         {
 
             MockHttpContext();
-            var r = L10Utility.CreateRecurrence("VTO");
+            var r = await L10Utility.CreateRecurrence("VTO");
             var d = PdfAccessor.CreateDoc(r.Creator, "d");
 
             var avto = VtoAccessor.GetAngularVTO(r.Creator, r.Recur.VtoId);
@@ -21,9 +22,9 @@ namespace TractionTools.Tests.Accessors {
             PdfAccessor.AddVTO(d, avto, "MM-dd-yyyy");
         }
         [TestMethod]
-        public void QuarterlyPrintout()
+        public async Task QuarterlyPrintout()
         {
-            var r = L10Utility.CreateRecurrence("QuarterlyPrintout");
+            var r = await L10Utility.CreateRecurrence("QuarterlyPrintout");
             var d = PdfAccessor.CreateDoc(r.Creator, "d");
 
 			//var ctrl = new QuarterlyController();

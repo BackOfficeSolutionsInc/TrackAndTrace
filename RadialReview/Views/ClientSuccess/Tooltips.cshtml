@@ -1,0 +1,51 @@
+﻿@model List<RadialReview.Models.ClientSuccess.TooltipTemplate>
+@{
+    ViewBag.Title = "Tooltips";
+}
+
+<h2>Tooltips</h2>
+<div id="table"></div>
+@using (Html.BeginScripts()) {
+    <script>
+        $(function(){
+            var d = DataTable({
+
+                container: "#table",
+                data:@Html.ArrayToString(Model),
+                clickAdd: "/ClientSuccess/Modal/0",
+                clickEdit: "/ClientSuccess/Modal/{0}",
+                cells:[
+                    {name:"On",classes:"",contents:function(x){
+                        if (new Date()>getParsedDate(x.DeleteTime))
+                            return "<span class='label label-default'>DONE</span>";
+                        if (!x.IsEnabled)
+                            return "<span class='label label-default'>OFF</span>";
+                        else return "<span class='label label-success'>ON</span>";
+                    }},
+                    {name:"Note",classes:"fullWidth",contents:function(x){return x.Note;}},
+                    {name:"Title",classes:"fullWidth",contents:function(x){return x.Title;}},
+                    //{name:"HtmlBody",classes:"",contents:function(x){return "<span title='"+escape(x.HtmlBody)+"'>Body</span>";}},
+                    {name:"Url",classes:"",contents:function(x){return x.UrlSelector;}},
+                    {name:"Selector",classes:"",contents:function(x){return x.Selector;}},
+                    {name:"Stop After",classes:"nowrap",contents:function(x){
+                        var d =getFormattedDate(x.DeleteTime); 
+                        if (new Date()>getParsedDate(x.DeleteTime))
+                            d = "<span style='color:red'>"+d+"</span>";
+                        return d;
+                    }},
+                    {edit:true}
+                ]
+            });
+        });
+    </script>
+}
+
+<style>
+    .fullWidth {
+        width: 50%;
+    }
+    .label{
+        width:42px;
+        display:inline-block;
+    }
+</style>

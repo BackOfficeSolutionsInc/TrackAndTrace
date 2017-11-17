@@ -1,0 +1,77 @@
+﻿@model List<RadialReview.Models.ViewModels.WebHookViewModel>
+@{
+	ViewBag.Title = "List Of WebHook";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="container"></div>
+
+
+@using (Html.BeginScripts()) {
+
+	@*<script src="~/Radial_files/jquery.js"></script>*@
+	<script src="~/Scripts/jquery.validate.min.js"></script>
+	<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+	<script>
+		var datas = @Html.ArrayToString(Model);
+
+		function ValidateForm(d) {
+			console.log(d.WebHookUri);
+			if (d.WebHookUri == "") {
+				return "URL is required.";
+			}
+			if (d.selected == undefined) {
+				return "You must select at least one event.";
+			}
+		}
+
+		var table =DataTable({
+			container: "#container",
+			title:"WebHook",
+			clickAddValidation: ValidateForm,
+			clickEditValidation: ValidateForm,
+			//addButton: [
+			//	{ text: "New Webhook" }
+			//],
+			data:datas,
+			clickAdd: "/Webhook/Create/",
+			clickEdit: "/Webhook/Create/{0}",
+			clickRemove: "/Webhook/Delete/{0}",
+			cells: [
+				{ reorder: true },
+				{ rowNum: true },
+				{ name: "WebHookUri", classes: "fullWidth half", contents: function (r) { return r.WebHookUri; } },
+				{ name: "Description", classes: "fullWidth half", contents: function (r) { return r.Description; } },
+				{ name: "Events", classes: "fullWidth half", contents: function (r) { return r.Eventnames; } },
+				{ edit: true },
+				{remove:true},
+			],
+			nodataText:"No Webhooks found."
+		});
+
+		table.setData(datas);
+
+
+	</script>
+}
+@using (Html.BeginStyles()) {
+	<style>
+		.fullWidth {
+			width: 33.3%;
+		}
+
+		.color-box {
+			border: 1px solid #333;
+			padding: 2px;
+			margin: 2px;
+			width: 16px;
+			height: 16px;
+		}
+
+		html, body {
+			background-color: #eee;
+		}
+	</style>
+}
+

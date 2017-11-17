@@ -124,6 +124,24 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to QuarterlyConversationIssued.
+        /// </summary>
+        public static string QuarterlyConversationIssued {
+            get {
+                return ResourceManager.GetString("QuarterlyConversationIssued", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to QuarterlyConversationReminder.
+        /// </summary>
+        public static string QuarterlyConversationReminder {
+            get {
+                return ResourceManager.GetString("QuarterlyConversationReminder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Receipt.
         /// </summary>
         public static string Receipt {

@@ -1,25 +1,26 @@
 ﻿@model RadialReview.Controllers.VTOController.VTOViewModel
 @{
-	ViewBag.Title = "Edit";
-	Layout = "~/Views/Shared/_Layout.cshtml";
-	ViewBag.FullWidth = true;
-	ViewBag.HideVision = ViewBag.HideVision ?? false;
-	ViewBag.HideTraction = ViewBag.HideTraction ?? false;
+    ViewBag.Title = "V/TO";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.FullWidth = true;
+    ViewBag.HideVision = ViewBag.HideVision ?? false;
+    ViewBag.HideTraction = ViewBag.HideTraction ?? false;
 
-	if (ViewBag.HideVision && !ViewBag.HideTraction) {
-		ViewBag.TractionPageTitle = "DEPARTMENT PLAN";
-	} else {
-		ViewBag.TractionPageTitle = "TRACTION";
-	}
+    if (ViewBag.HideVision && !ViewBag.HideTraction) {
+        ViewBag.TractionPageTitle = "DEPARTMENT PLAN";
+    } else {
+        ViewBag.TractionPageTitle = "TRACTION";
+    }
 
-	ViewBag.CanEditCoreValues = ViewBag.CanEditCoreValues ?? false;
-	ViewBag.CanEditVTO = ViewBag.CanEditVTO ?? false;
+    ViewBag.CanEditCoreValues = ViewBag.CanEditCoreValues ?? false;
+    ViewBag.CanEditVTOVision = ViewBag.CanEditVTOVision ?? false;
+    ViewBag.CanEditVTOTraction = ViewBag.CanEditVTOTraction ?? false;
 
 
-	if (Model.IsPartial) {
-		ViewBag.NoTitleBar = true;
-	}
-	Html.RenderPartial("~/Views/CDN/Angular.cshtml");
+    if (Model.IsPartial) {
+        ViewBag.NoTitleBar = true;
+    }
+    Html.RenderPartial("~/Views/CDN/Angular.cshtml");
 }
 @using (Html.BeginStyles()) {
 	<link href="~/Content/VTO/VTO.css" rel="stylesheet" />
@@ -42,7 +43,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
 	@Scripts.Render("~/bundles/vto")
-	<script src="~/Scripts/Angular/VTO/VtoController.js"></script>
+	@*<script src="~/Scripts/Angular/VTO/VtoController.js"></script>*@
 	<script>
 		angular.module('VtoApp')
 			.value('vtoId', @Model.Id)
@@ -68,7 +69,7 @@
 						</div>
 						<div class="col-sm-8">
 							<div class="vto-title tm">THE VISION/TRACTION ORGANIZER</div>
-							<div class="organzation-name"><span class="title">NAME:</span><input ng-change="functions.sendUpdate((model))" ng-model="(model).Name" type="text" ng-model-options="{ debounce: 75 }" @(ViewBag.CanEditVTO ? "" : "disabled")> </div>
+							<div class="organzation-name"><span class="title">NAME:</span><input ng-change="functions.sendUpdate((model))" ng-model="(model).Name" type="text" ng-model-options="{ debounce: 75 }" @(ViewBag.CanEditVTOVision ? "" : "disabled")> </div>
 							<div class="page-title">VISION</div>
 						</div>
 						<div class="col-sm-1"></div>
@@ -86,7 +87,7 @@
 												<div style="display:table-cell;vertical-align:middle;">
 													<div style="text-align:center;">
 														<input style="width:100%;"
-															   @(ViewBag.CanEditVTO ? "" : "disabled")
+															   @(ViewBag.CanEditVTOVision ? "" : "disabled")
 															   class="title alignCenter"
 															   ng-model-options="{ debounce: 75 }"
 															   ng-change="functions.sendUpdate((model))"
@@ -108,16 +109,16 @@
 																		  ng-model-options="{ debounce: 75 }"
 																		  ng-change="functions.sendUpdate(value)"
 																		  ng-model="value.CompanyValue"
-																		  @((!ViewBag.CanEditCoreValues || !ViewBag.CanEditVTO) ? "disabled" : "")
+																		  @((!ViewBag.CanEditCoreValues || !ViewBag.CanEditVTOVision) ? "disabled" : "")
 																		  textarea-resize></textarea>
 															</td>
 															<td class="delete-column">
-																<span class="delete glyphicon glyphicon-remove" @((!ViewBag.CanEditCoreValues || !ViewBag.CanEditVTO) ? "disabled" : "") ng-click="functions.Get('/VTO/DeleteCompanyValue?value='+value.Id)"></span>
+																<span class="delete glyphicon glyphicon-trash" @((!ViewBag.CanEditCoreValues || !ViewBag.CanEditVTOVision) ? "disabled" : "") ng-click="functions.Get('/VTO/DeleteCompanyValue?value='+value.Id)"></span>
 															</td>
 														</tr>
 														<tr>
 															<td></td>
-															<td class="add-row" @((!ViewBag.CanEditCoreValues || !ViewBag.CanEditVTO) ? "disabled" : "") ng-click="functions.AddRow('/VTO/AddCompanyValue?vto='+vtoId,this)"></td>
+															<td class="add-row" @((!ViewBag.CanEditCoreValues || !ViewBag.CanEditVTOVision) ? "disabled" : "") ng-click="functions.AddRow('/VTO/AddCompanyValue?vto='+vtoId,this)"></td>
 
 														</tr>
 													</table>
@@ -136,7 +137,7 @@
 													<div style="text-align:center;" class="tmm">
 														<input style="width:100%;"
 															   class="title alignCenter"
-															   @(ViewBag.CanEditVTO ? "" : "disabled")
+															   @(ViewBag.CanEditVTOVision ? "" : "disabled")
 															   ng-model-options="{ debounce: 75 }"
 															   ng-change="functions.sendUpdate((model).CoreFocus)"
 															   ng-model="(model).CoreFocus.CoreFocusTitle" />
@@ -154,13 +155,13 @@
 															<tr class="purpose">
 																<td style="width: 175px;" class="hidden-xs">
 																	<div class="title" style="color:transparent;height:0px;">{{(model).CoreFocus.PurposeTitle}}:</div>
-																	<input style="width:100%;" class="title" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)" ng-model="(model).CoreFocus.PurposeTitle" @(ViewBag.CanEditVTO ? "" : "disabled") />
+																	<input style="width:100%;" class="title" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)" ng-model="(model).CoreFocus.PurposeTitle" @(ViewBag.CanEditVTOVision ? "" : "disabled") />
 																</td>
 																<td>
 																	<div class="visible-xs">
-																		<input style="width:100%;" class="title alignLeft" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)" ng-model="(model).CoreFocus.PurposeTitle" @(ViewBag.CanEditVTO ? "" : "disabled") />
+																		<input style="width:100%;" class="title alignLeft" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)" ng-model="(model).CoreFocus.PurposeTitle" @(ViewBag.CanEditVTOVision ? "" : "disabled") />
 																	</div>
-																	<textarea textarea-resize ng-model="(model).CoreFocus.Purpose" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+																	<textarea textarea-resize ng-model="(model).CoreFocus.Purpose" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
 																</td>
 															</tr>
 															<tr class="niche">
@@ -171,7 +172,7 @@
 																	<div class="visible-xs alignLeft">
 																		<span class="title alignLeft">Our Niche:</span>
 																	</div>
-																	<textarea textarea-resize ng-model="(model).CoreFocus.Niche" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+																	<textarea textarea-resize ng-model="(model).CoreFocus.Niche" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).CoreFocus)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
 																</td>
 															</tr>
 														</table>
@@ -191,7 +192,7 @@
 												<div style="display:table-cell;vertical-align:middle;">
 													<div style="text-align:center;" class="tmm">
 														<input style="width:100%;"
-															   @(ViewBag.CanEditVTO ? "" : "disabled")
+															   @(ViewBag.CanEditVTOVision ? "" : "disabled")
 															   class="title alignCenter"
 															   ng-model-options="{ debounce: 75 }"
 															   ng-change="functions.sendUpdate((model))"
@@ -204,7 +205,7 @@
 									<div class="col-lg-9">
 										<div class="boxed content">
 											<div class="target">
-												<textarea  ng-model="(model).TenYearTarget" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model))" @(ViewBag.CanEditVTO ? "" : "disabled") textarea-resize></textarea>
+												<textarea  ng-model="(model).TenYearTarget" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model))" @(ViewBag.CanEditVTOVision ? "" : "disabled") textarea-resize></textarea>
 											</div>
 										</div>
 									</div>
@@ -219,7 +220,7 @@
 													<div style="text-align:center;">
 														<input style="width:100%;"
 															   class="title alignCenter"
-															   @(ViewBag.CanEditVTO ? "" : "disabled")
+															   @(ViewBag.CanEditVTOVision ? "" : "disabled")
 															   ng-model-options="{ debounce: 75 }"
 															   ng-change="functions.sendUpdate((model).Strategy)"
 															   ng-model="(model.Strategy).MarketingStrategyTitle" />
@@ -235,7 +236,7 @@
 													<div class="target-market">
 														<span class="title">Target Market/"The List":</span>
 														<div>
-															<textarea textarea-resize ng-model="(model.Strategy).TargetMarket" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).Strategy)" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+															<textarea textarea-resize ng-model="(model.Strategy).TargetMarket" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).Strategy)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
 														</div>
 													</div>
 													<div class="three-uniques">
@@ -244,28 +245,28 @@
 															<tr class="add-row-row" ng-repeat="uniques in (model.Strategy.Uniques) | filter:{Deleted:false}">
 																<td class="row-number">{{$index+1}}.</td>
 																<td>
-																	<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddUniques?vto='+vtoId,'model.Strategy.Uniques')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(uniques)" ng-model="uniques.Data" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+																	<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddUniques?vto='+vtoId,'model.Strategy.Uniques')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(uniques)" ng-model="uniques.Data" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
 																</td>
 																<td class="delete-column">
-																	<span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteString?value='+uniques.Id)" @(ViewBag.CanEditVTO ? "" : "disabled")></span>
+																	<span class="delete glyphicon glyphicon-trash" ng-click="functions.Get('/VTO/DeleteString?value='+uniques.Id)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></span>
 																</td>
 															</tr>
 															<tr>
 																<td></td>
-																<td class="add-row" @(ViewBag.CanEditVTO ? "" : "disabled") ng-click="functions.AddRow('/VTO/AddUniques?vto='+vtoId)"></td>
+																<td class="add-row" @(ViewBag.CanEditVTOVision ? "" : "disabled") ng-click="functions.AddRow('/VTO/AddUniques?vto='+vtoId)"></td>
 															</tr>
 														</table>
 													</div>
 													<div class="proven-process">
 														<span class="title">Proven Process:</span>
 														<div>
-															<textarea textarea-resize ng-model="(model.Strategy).ProvenProcess" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).Strategy)" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+															<textarea textarea-resize ng-model="(model.Strategy).ProvenProcess" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).Strategy)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
 														</div>
 													</div>
 													<div class="guarantee">
 														<span class="title">Guarantee:</span>
 														<div>
-															<textarea textarea-resize ng-model="(model.Strategy).Guarantee" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).Strategy)" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+															<textarea textarea-resize ng-model="(model.Strategy).Guarantee" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).Strategy)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
 														</div>
 													</div>
 												</div>
@@ -285,7 +286,7 @@
 													<div style="text-align:center; margin: 9px;" class="tmm">
 														<input style="width:100%;"
 															   class="title alignCenter"
-															   @(ViewBag.CanEditVTO ? "" : "disabled")
+															   @(ViewBag.CanEditVTOVision ? "" : "disabled")
 															   ng-model-options="{ debounce: 75 }"
 															   ng-change="functions.sendUpdate((model.ThreeYearPicture))"
 															   ng-model="(model.ThreeYearPicture).ThreeYearPictureTitle" />
@@ -296,22 +297,22 @@
 										<div class="boxed content">
 											<div>
 												<span class="bold lbl">Future Date:</span> <span class="future-date input">
-													<input type="date" class="datepicker2" ng-model='(model.ThreeYearPicture).FutureDate' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" @(ViewBag.CanEditVTO ? "" : "disabled") />
+													<input type="date" class="datepicker2" ng-model='(model.ThreeYearPicture).FutureDate' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" @(ViewBag.CanEditVTOVision ? "" : "disabled") />
 												</span>
 											</div>
 											<div>
 												<span class="bold lbl">Revenue:</span><span class="revenue input ">
-													<input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.ThreeYearPicture).Revenue' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" @(ViewBag.CanEditVTO ? "" : "disabled") />
+													<input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.ThreeYearPicture).Revenue' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" @(ViewBag.CanEditVTOVision ? "" : "disabled") />
 												</span>
 											</div>
 											<div>
 												<span class="bold lbl">Profit:</span><span class="profit input ">
-													<input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.ThreeYearPicture).Profit' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" @(ViewBag.CanEditVTO ? "" : "disabled") />
+													<input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.ThreeYearPicture).Profit' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" @(ViewBag.CanEditVTOVision ? "" : "disabled") />
 												</span>
 											</div>
 											<div>
 												<span class="bold lbl">Measurables:</span><span class="measurables input">
-													<textarea textarea-resize type="text" ng-model='(model.ThreeYearPicture).Measurables' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+													<textarea textarea-resize type="text" ng-model='(model.ThreeYearPicture).Measurables' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.ThreeYearPicture))" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
 												</span>
 											</div>
 											<div class="looks-like">What does it look like?</div>
@@ -321,15 +322,15 @@
 														<td class="row-number">{{$index+1}}.</td>
 														<td>
 															<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddThreeYear?vto='+vtoId,'model.ThreeYearPicture.LooksLike')"
-																	  textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+																	  textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
 														</td>
 														<td class="delete-column">
-															<span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteString?value='+item.Id)" @(ViewBag.CanEditVTO ? "" : "disabled")></span>
+															<span class="delete glyphicon glyphicon-trash" ng-click="functions.Get('/VTO/DeleteString?value='+item.Id)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></span>
 														</td>
 													</tr>
 													<tr>
 														<td></td>
-														<td class="add-row" ng-click="functions.AddRow('/VTO/AddThreeYear?vto='+vtoId)" @(ViewBag.CanEditVTO ? "" : "disabled")></td>
+														<td class="add-row" ng-click="functions.AddRow('/VTO/AddThreeYear?vto='+vtoId)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></td>
 													</tr>
 												</table>
 											</div>
@@ -372,7 +373,7 @@
 												<div style="text-align:center; margin: 9px;" class="">
 													<input style="width:100%;"
 														   class="title alignCenter"
-														   @(ViewBag.CanEditVTO ? "" : "disabled")
+														   @(ViewBag.CanEditVTOTraction ? "" : "disabled")
 														   ng-model-options="{ debounce: 75 }"
 														   ng-change="functions.sendUpdate((model.OneYearPlan))"
 														   ng-model="(model.OneYearPlan).OneYearPlanTitle" />
@@ -383,22 +384,22 @@
 									<div class="boxed content">
 										<div>
 											<span class="bold lbl">Future Date:</span> <span class="future-date input">
-												<input type="date" class="datepicker2" ng-model='(model.OneYearPlan).FutureDate' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.OneYearPlan))" @(ViewBag.CanEditVTO ? "" : "disabled") />
+												<input type="date" class="datepicker2" ng-model='(model.OneYearPlan).FutureDate' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.OneYearPlan))" @(ViewBag.CanEditVTOTraction ? "" : "disabled") />
 											</span>
 										</div>
 										<div>
 											<span class="bold lbl">Revenue:</span><span class="revenue input ">
-												<input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.OneYearPlan).Revenue' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.OneYearPlan))" @(ViewBag.CanEditVTO ? "" : "disabled") />
+												<input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.OneYearPlan).Revenue' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.OneYearPlan))" @(ViewBag.CanEditVTOTraction ? "" : "disabled") />
 											</span>
 										</div>
 										<div>
 											<span class="bold lbl">Profit:</span><span class="profit input ">
-												<input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.OneYearPlan).Profit' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.OneYearPlan))" @(ViewBag.CanEditVTO ? "" : "disabled") />
+												<input @*type="number"*@ @*fcsa-number="{ prepend: '$' }"*@ ng-model='(model.OneYearPlan).Profit' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.OneYearPlan))" @(ViewBag.CanEditVTOTraction ? "" : "disabled") />
 											</span>
 										</div>
 										<div>
 											<span class="bold lbl">Measurables:</span><span class="measurables input">
-												<textarea textarea-resize type="text" ng-model='(model.OneYearPlan).Measurables' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.OneYearPlan))" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+												<textarea textarea-resize type="text" ng-model='(model.OneYearPlan).Measurables' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.OneYearPlan))" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></textarea>
 											</span>
 										</div>
 										<div class="smallBreak2">&nbsp;</div>
@@ -408,12 +409,12 @@
 												<tr class="add-row-row" ng-repeat="item in (model.OneYearPlan).GoalsForYear | filter:{Deleted:false}">
 													<td class="number">{{$index+1}}.</td>
 													<td>
-														<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddYearGoal?vto='+vtoId,'model.OneYearPlan.GoalsForYear')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
-														<span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteString?value='+item.Id)" @(ViewBag.CanEditVTO ? "" : "disabled")></span>
+														<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddYearGoal?vto='+vtoId,'model.OneYearPlan.GoalsForYear')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></textarea>
+														<span class="delete glyphicon glyphicon-trash" ng-click="functions.Get('/VTO/DeleteString?value='+item.Id)" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></span>
 													</td>
 												</tr>
 												<tr class="add-row-tr">
-													<td colspan="2" class="add-row" ng-click="functions.AddRow('/VTO/AddYearGoal?vto='+vtoId)" @(ViewBag.CanEditVTO ? "" : "disabled")></td>
+													<td colspan="2" class="add-row" ng-click="functions.AddRow('/VTO/AddYearGoal?vto='+vtoId)" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></td>
 												</tr>
 											</table>
 										</div>
@@ -432,7 +433,7 @@
 												<div style="text-align:center; margin: 9px;" class="">
 													<input style="width:100%;"
 														   class="title alignCenter"
-														   @(ViewBag.CanEditVTO ? "" : "disabled")
+														   @(ViewBag.CanEditVTOTraction ? "" : "disabled")
 														   ng-model-options="{ debounce: 75 }"
 														   ng-change="functions.sendUpdate((model.QuarterlyRocks))"
 														   ng-model="(model.QuarterlyRocks).RocksTitle" />
@@ -443,41 +444,41 @@
 									<div class="boxed content">
 										<div>
 											<span class="bold lbl">Future Date:</span><span class="future-date input">
-												<input type="date" class="datepicker2" ng-model='(model.QuarterlyRocks).FutureDate' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" @(ViewBag.CanEditVTO ? "" : "disabled") />
+												<input type="date" class="datepicker2" ng-model='(model.QuarterlyRocks).FutureDate' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" @(ViewBag.CanEditVTOTraction ? "" : "disabled") />
 											</span>
 										</div>
 										<div>
 											<span class="bold lbl">Revenue:</span><span class="revenue input ">
-												<input @*type="number" fcsa-number="{ prepend: '$' }"*@ ng-model='(model.QuarterlyRocks).Revenue' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" @(ViewBag.CanEditVTO ? "" : "disabled") />
+												<input @*type="number" fcsa-number="{ prepend: '$' }"*@ ng-model='(model.QuarterlyRocks).Revenue' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" @(ViewBag.CanEditVTOTraction ? "" : "disabled") />
 											</span>
 										</div>
 										<div>
 											<span class="bold lbl">Profit:</span><span class="profit input ">
-												<input @*type="number" fcsa-number="{ prepend: '$' }"*@ ng-model='(model.QuarterlyRocks).Profit' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" @(ViewBag.CanEditVTO ? "" : "disabled") />
+												<input @*type="number" fcsa-number="{ prepend: '$' }"*@ ng-model='(model.QuarterlyRocks).Profit' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" @(ViewBag.CanEditVTOTraction ? "" : "disabled") />
 											</span>
 										</div>
 										<div>
 											<span class="bold lbl">Measurables:</span><span class="measurables input">
-												<textarea textarea-resize type="text" ng-model='(model.QuarterlyRocks).Measurables' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+												<textarea textarea-resize type="text" ng-model='(model.QuarterlyRocks).Measurables' ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model.QuarterlyRocks))" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></textarea>
 											</span>
 										</div>
 										<div class="smallBreak2">&nbsp;</div>
 										<div class="rocks-table border-table">
 											<table class="add-row-container">
 												<tr><th colspan="2">Rocks for the Quarter:</th><th class="alignRight hidden-xs">Who</th></tr>
-												<tr class="add-row-row" ng-repeat="item in (model.QuarterlyRocks).Rocks | filter:{Deleted:false,Rock:{CompanyRock:true}}">
+												<tr class="add-row-row" ng-repeat="item in (model.QuarterlyRocks).Rocks | filter:{Deleted:false,Rock:{VtoRock:true}}">
 													<td class="number">{{$index+1}}.</td>
-													<td>
+													<td class="fullWidth">
 														<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddRock?vto='+vtoId,'model.QuarterlyRocks.Rocks')"
 																  textarea-resize
-																  @(ViewBag.CanEditVTO ? "" : "disabled")
+																  @(ViewBag.CanEditVTOTraction ? "" : "disabled")
 																  style="width: 80%;width: calc(100% - 18px);"
-																  ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Rock.Name" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
-														<span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteRock?value='+item.Id)" @(ViewBag.CanEditVTO ? "" : "disabled")></span>
+																  ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Rock.Name" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></textarea>
+														<span class="delete glyphicon glyphicon-trash" ng-click="functions.Get('/VTO/DeleteRock?value='+item.Id)" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></span>
 													</td>
 
 													<td class="hidden-xs">
-														<a href="#rock" data-value="{{item.Rock.Owner.Id}}" data-display="false" class="@(ViewBag.CanEditVTO ? "inlineEdit":"") rock-accountable" @(ViewBag.CanEditVTO ? "" : "disabled") data-type="select" data-pk="{{item.Id}}" data-url="/Vto/XUpdateRock" data-name="accountable" data-source="/Dropdown/OrganizationMembers/@(Html.Organization().Id)?userId=true">
+														<a href="#rock" data-value="{{item.Rock.Owner.Id}}" data-display="false" class="@(ViewBag.CanEditVTOTraction ? "inlineEdit":"") rock-accountable" @(ViewBag.CanEditVTOTraction ? "" : "disabled") data-type="select" data-pk="{{item.Id}}" data-url="/Vto/XUpdateRock" data-name="accountable" data-source="/Dropdown/OrganizationMembers/@(Html.Organization().Id)?userId=true">
 															<profile-image user="(item.Rock.Owner)"></profile-image>
 															{{(item.Rock.Owner).Name}}
 														</a>
@@ -485,7 +486,7 @@
 													</td>
 												</tr>
 												<tr class="add-row-tr">
-													<td colspan="2" class="add-row" ng-click="functions.AddRow('/VTO/AddRock?vto='+vtoId)" @(ViewBag.CanEditVTO ? "" : "disabled")></td>
+													<td colspan="3" class="add-row" ng-click="functions.AddRow('/VTO/AddRock?vto='+vtoId)" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></td>
 												</tr>
 											</table>
 										</div>
@@ -504,7 +505,7 @@
 												<div style="text-align:center; margin: 9px;" class="">
 													<input style="width:100%;"
 														   class="title alignCenter"
-														   @(ViewBag.CanEditVTO ? "" : "disabled")
+														   @(ViewBag.CanEditVTOTraction ? "" : "disabled")
 														   ng-model-options="{ debounce: 75 }"
 														   ng-change="functions.sendUpdate((model))"
 														   ng-model="(model).IssuesListTitle" />
@@ -513,23 +514,23 @@
 										</div>
 									</div>
 									<div class="boxed content">
-										<div class="rocks-table border-table">
+										<div class="rocks-table issues-table border-table">
 											<table class="add-row-container">
 												<tr class="add-row-row" ng-repeat="item in (model).Issues | filter:{Deleted:false}">
 													<td class="number">{{$index+1}}.</td>
 													<td>
-														<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddIssue?vto='+vtoId,'model.Issues')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data" @(ViewBag.CanEditVTO ? "" : "disabled")></textarea>
+														<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddIssue?vto='+vtoId,'model.Issues')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></textarea>
 														@*</td>
 			<td class="delete-column">*@
-														<div class="pull-right" style="width:25px;margin-top: -4px;margin-bottom: -5px;">
+														<div class="pull-right" style="width:25px;margin-top: -6px;margin-bottom: -8px;">
 															<span class="issue-owner">{{item.OwnerInitials}}</span>
-															<span class="ids-button glyphicon glyphicon-ids gray clickable" ng-click="functions.Get('/L10/MoveIssueFromVto/'+item.Id)" @(ViewBag.CanEditVTO ? "" : "disabled")></span>
-															<span class="delete glyphicon glyphicon-remove" ng-click="functions.Get('/VTO/DeleteString?value='+item.Id)" @(ViewBag.CanEditVTO ? "" : "disabled")></span>
+															<span class="ids-button glyphicon glyphicon-ids gray clickable" ng-click="functions.Get('/L10/MoveIssueFromVto/'+item.Id)" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></span>
+															<span class="delete glyphicon glyphicon-trash" ng-click="functions.Get('/VTO/DeleteString?value='+item.Id)" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></span>
 														</div>
 													</td>
 												</tr>
 												<tr class="add-row-tr">
-													<td colspan="3" class="add-row" ng-click="functions.AddRow('/VTO/AddIssue?vto='+vtoId)" @(ViewBag.CanEditVTO ? "" : "disabled")></td>
+													<td colspan="3" class="add-row" ng-click="functions.AddRow('/VTO/AddIssue?vto='+vtoId)" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></td>
 												</tr>
 											</table>
 										</div>
@@ -639,6 +640,7 @@
 					</div>
 				</div>
 			</div>
+			@*<span class="copyright">&#9400; 2003 - @(DateTime.UtcNow.AddMonths(3).Year) EOS. All Rights Reserved.</span>*@
 		}
 		@if (!ViewBag.HideTraction) {
 			<div class="page">
@@ -690,7 +692,7 @@
 								<table class="table-bordered resize-item ">
 									<tr><th colspan=2>Rocks for the Quarter:</th><th>Who:</th></tr>
 									@*@{
-											var rockFilter = Model.OnlyCompanyWideRocks ? ",Rock.CompanyRock:true" : "";
+											var rockFilter = Model.OnlyCompanyWideRocks ? ",Rock.VtoRock:true" : "";
 										}*@
 
 									<tr ng-repeat="item in (model.QuarterlyRocks).Rocks | filter:{Deleted:false}">
@@ -723,6 +725,7 @@
 					</div>
 				</div>
 			</div>
+			@*<span class="copyright">&#9400; 2003 - @(DateTime.UtcNow.AddMonths(3).Year) EOS. All Rights Reserved.</span>*@
 		}
 	</div>
 </div>

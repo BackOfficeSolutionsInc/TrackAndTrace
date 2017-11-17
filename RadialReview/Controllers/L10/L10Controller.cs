@@ -20,6 +20,7 @@ using RadialReview.Utilities;
 using RadialReview.Exceptions;
 using RadialReview.Models.UserModels;
 using static RadialReview.Models.PermItem;
+using System.Threading.Tasks;
 
 namespace RadialReview.Controllers
 {
@@ -56,34 +57,30 @@ namespace RadialReview.Controllers
 			ViewBag.VideoChatRoom = new VideoConferenceVM() {
 				RoomId = recurrence.VideoId,
 				CurrentProviders = recurrence._VideoConferenceProviders.Select(x => x.Provider).ToList(),
-				Selected = recurrence.SelectedVideoProvider,
-			
+				Selected = recurrence.SelectedVideoProvider,			
             };
 
 			ViewBag.ViewAccountabilityChart = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanView(ResourceType.AccountabilityHierarchy, GetUser().Organization.AccountabilityChartId));
 			
 
-			var model = new L10MeetingVM()
-            {
+			var model = new L10MeetingVM(){
                 Recurrence = recurrence,
                 Meeting = L10Accessor.GetCurrentL10Meeting(GetUser(), recurrenceId, true, loadLogs: true),
                 EnableTranscript = recurrence.EnableTranscription,
             };
             
 
-            if (model.Meeting != null)
-            {
-
+            if (model.Meeting != null){
                 model.MemberPictures = recurrence._DefaultAttendees.Select(x => new ProfilePictureVM { UserId = x.User.Id, Url = x.User.ImageUrl(true, ImageSize._32), Name = x.User.GetName(), Initials = x.User.GetInitials() }).ToList();
-
-                var transcript = TranscriptAccessor.GetMeetingTranscript(GetUser(), model.Meeting.Id);
-                model.CurrentTranscript = transcript.Select(x => new MeetingTranscriptVM()
-                {
-                    Id = x.Id,
-                    Message = x.Text,
-                    Order = x.CreateTime.ToJavascriptMilliseconds(),
-                    Owner = x._User.GetName()
-                }).ToList();
+				if (model.EnableTranscript) {
+					var transcript = TranscriptAccessor.GetMeetingTranscript(GetUser(), model.Meeting.Id);
+					model.CurrentTranscript = transcript.Select(x => new MeetingTranscriptVM() {
+						Id = x.Id,
+						Message = x.Text,
+						Order = x.CreateTime.ToJavascriptMilliseconds(),
+						Owner = x._User.GetName()
+					}).ToList();
+				}
             }
 
             if (model != null && model.Recurrence != null)
@@ -91,7 +88,11 @@ namespace RadialReview.Controllers
                 model.CanAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
                 model.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, model.Recurrence.Id));
                 model.VtoId = model.Recurrence.VtoId;
+
+				model.Connected = L10Accessor.GetConnected(GetUser(), id.Value, true);
+
             }
+			
 
             return View(model);
         }
@@ -109,6 +110,7 @@ namespace RadialReview.Controllers
 
 
             AddExtras(0, model);
+           // ViewBag.VtoSharable = L10Accessor.IsVtoSharable(GetUser(), id);
 
 
             ViewBag.InfoAlert = "You can use the same L10 meeting each week. No need to create a new on each week.";
@@ -117,21 +119,27 @@ namespace RadialReview.Controllers
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public string Delete()
+        public ActionResult Delete()
         {
-            return "You are about to delete this meeting. Are you sure you want to continue?";
+            return Content("<span>You are about to delete this meeting.  Are you sure you want to continue?</span>");
         }
 
-		[HttpPost]
+        //[Access(AccessLevel.UserOrganization)]
+        //public async Task<JsonResult> Reorder(long id,int oldOrder,int newOrder) {
+        //    await L10Accessor.ReorderL10Recurrence(GetUser(), id,oldOrder,newOrder);
+        //    return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+        //}
+
+        [HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult Delete(long id) {
-			L10Accessor.DeleteL10(GetUser(), id);
+		public async Task<JsonResult> Delete(long id) {
+			await L10Accessor.DeleteL10Recurrence(GetUser(), id);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
 		[Access(AccessLevel.Radial)]
-		public JsonResult Undelete(long id) {
-			L10Accessor.UndeleteL10(GetUser(), id);
+		public async Task<JsonResult> Undelete(long id) {
+			await L10Accessor.UndeleteL10Recurrence(GetUser(), id);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
@@ -171,6 +179,7 @@ namespace RadialReview.Controllers
                 model.SelectedRocks = model.SelectedRocks??new long[0];
             }
 
+            ViewBag.VtoSharable = L10Accessor.IsVtoSharable(GetUser(), recurrenceId);
             return model;
         }
 
@@ -185,19 +194,22 @@ namespace RadialReview.Controllers
             _PermissionsAccessor.Permitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, recurrenceId));
 
             var model=AddExtras(recurrenceId, new L10EditVM(){Return = @return});
+            //ViewBag.VtoSharable = L10Accessor.IsVtoSharable(GetUser(), id);
+
             return View("Edit", model);
         }
 
         [Access(AccessLevel.UserOrganization)]
-        public ActionResult Wizard(long? id = null, string @return = null,MeetingType? type=null)
+        public async Task<ActionResult> Wizard(long? id = null, string @return = null,MeetingType? type=null,bool noheading=false)
         {
+            ViewBag.NoTitleBar = noheading;
             if (id == null) {
                 //var m = new L10Recurrence();
                 //var model = new L10EditVM();
                 //AddExtras(0, model);
                 //ViewBag.InfoAlert = "You can use the same L10 meeting each week. No need to create a new on each week.";
 
-                var l10 = L10Accessor.CreateBlankRecurrence(GetUser(),GetUser().Organization.Id, type??MeetingType.L10);
+                var l10 = await L10Accessor.CreateBlankRecurrence(GetUser(),GetUser().Organization.Id, type??MeetingType.L10);
                 return RedirectToAction("Wizard", new { id = l10.Id, tname = Request["tname"], tmethod = Request["tmethod"] });
             } else {
                 //var recurrenceId = id.Value;
@@ -210,7 +222,7 @@ namespace RadialReview.Controllers
 
         [HttpPost]
         [Access(AccessLevel.UserOrganization)]
-        public ActionResult Edit(L10EditVM model)
+        public async Task<ActionResult> Edit(L10EditVM model)
         {
             //ValidateValues(model,
             //    x => x.Recurrence.Id,
@@ -280,7 +292,7 @@ namespace RadialReview.Controllers
 
 
 
-                L10Accessor.EditL10Recurrence(GetUser(), model.Recurrence);
+                await L10Accessor.EditL10Recurrence(GetUser(), model.Recurrence);
 
 
                 if (model.Return == "meeting")
@@ -311,6 +323,12 @@ namespace RadialReview.Controllers
         }
 
 		[Access(AccessLevel.UserOrganization)]
+		public async Task<ActionResult> MeetingSummary(long id) {
+			var summary = await L10Accessor.GetMeetingSummary(GetUser(), id);
+			return PartialView(summary);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
         public ActionResult Timeline(long id)
         {
             var recurrence = id;
@@ -339,19 +357,18 @@ namespace RadialReview.Controllers
         }
 
 
-        [Access(AccessLevel.UserOrganization)]
-        public ActionResult Printout(long id)
-        {
-            var recur = L10Accessor.GetAngularRecurrence(GetUser(), id);
-            var d = L10Accessor.GetLastMeetingEndTime(GetUser(), id);
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<ActionResult> Printout(long id) {
+			var recur = await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id);
+			var d = L10Accessor.GetLastMeetingEndTime(GetUser(), id);
 
-            var doc = PdfAccessor.CreateDoc(GetUser(), "THE LEVEL 10 MEETING");
+			var doc = PdfAccessor.CreateDoc(GetUser(), "THE LEVEL 10 MEETING");
 
-            PdfAccessor.AddL10(doc, recur, d);
+			PdfAccessor.AddL10(doc, recur, d);
 
-            var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
-            return Pdf(doc, now + "_" + recur.Basics.Name + "_L10Meeting.pdf", true);
-        }
+			var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
+			return Pdf(doc, now + "_" + recur.Basics.Name + "_L10Meeting.pdf", true);
+		}
 
 
 		[Access(AccessLevel.UserOrganization)]
@@ -359,6 +376,23 @@ namespace RadialReview.Controllers
 			var model = L10Accessor.GetAdmins(GetUser(),id);
 
 			return PartialView(model);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> DeleteMeeting(long id) {
+			//Deletes the meeting not the recurrence
+			await L10Accessor.DeleteL10Meeting(GetUser(), id);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult EditMeetingTime(long id,string type, long? time) {
+			//Deletes the meeting not the recurrence
+			var meeting = L10Accessor.EditMeetingTimes(GetUser(), id, type, time.NotNull(x=>x.Value.ToDateTime()));
+			return Json(ResultObject.SilentSuccess(new {
+				start=meeting.StartTime,
+				end = meeting.CompleteTime,					
+			}), JsonRequestBehavior.AllowGet);
 		}
 
 		#region Error

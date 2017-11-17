@@ -32,6 +32,8 @@ namespace RadialReview.Models.ViewModels
         public long? ManagerNodeId { get; set; }
 		public bool EvalOnly { get; set; }
 
+		public string PhoneNumber { get; set; }
+
 		public bool IsClient { get; set; }
 		public string ClientOrganizationName { get; set; }
 		

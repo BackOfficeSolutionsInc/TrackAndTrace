@@ -6,12 +6,13 @@ using RadialReview.Models.Angular.Base;
 using RadialReview.Models.Scorecard;
 using RadialReview.Utilities;
 using RadialReview.Models.Enums;
+using System.Runtime.Serialization;
 
 namespace RadialReview.Models.Angular.Scorecard
 {
 	public class AngularScore : BaseAngular
 	{
-		public AngularScore(ScoreModel score,bool skipUser=true) : base(score.Id)
+		public AngularScore(ScoreModel score,DateTime? absoluteUpdateTime,bool skipUser=true) : base(score.Id)
 		{
 			Week = DateTime.SpecifyKind(score.ForWeek,DateTimeKind.Utc);
 			ForWeek = TimingUtility.GetWeekSinceEpoch(Week);
@@ -28,18 +29,25 @@ namespace RadialReview.Models.Angular.Scorecard
 
 			if (score._Editable == false)
 				Disabled = true;
+
+			UT = absoluteUpdateTime;
 		}
 
 		public AngularScore(){
 		}
 		public long ForWeek { get; set; }
 		public DateTime Week { get; set; }
+
+		[IgnoreDataMember]
 		public AngularMeasurable Measurable { get; set; } 
+        public long MeasurableId { get { return Measurable.Id; } }
+
 		public DateTime? DateEntered { get; set; }
 		public decimal? Measured { get; set; }
         public bool? Disabled { get; set; }
         public LessGreater? Direction { get; set; }
         public decimal? Target { get; set; }
         public decimal? AltTarget { get; set; }
+
     }
 }

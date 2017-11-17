@@ -11,6 +11,9 @@ using System.IO;
 using TractionTools.UITests.Selenium;
 using Microsoft.Test.VisualVerification;
 using System.Drawing.Imaging;
+using RadialReview.Utilities;
+using RadialReview;
+using System.Configuration;
 
 namespace TractionTools.UITests.Utilities.Extensions {
 
@@ -52,6 +55,8 @@ namespace TractionTools.UITests.Utilities.Extensions {
     public class ImageCompareUtil {
 
         public static object _SCFileLock = new Object();
+
+		public static bool? Regen = null;
 
         protected ImageId Id = null;
         protected TestCtx Info = null;
@@ -125,14 +130,19 @@ namespace TractionTools.UITests.Utilities.Extensions {
                 Info.DeferException(new AssertInconclusiveException("No comparison image: " + Id.GetName()));
                 return false;
             } else {
-                var baseImg = new Bitmap(Image.FromFile(basePath));
-                var same = Comparer(screenshot, baseImg, Path.Combine(BaseSelenium.GetScreenshotFolder("Errors"), Id.GetName()));
-                if (!same) {
-                    Info.ImagesDoNotMatch.Add(Id);
-                    //diff.Save(Path.Combine(BaseSelenium.GetScreenshotFolder("Errors"),Id.GetName()));
-                    Info.DeferException(new AssertInconclusiveException("Images do not match: " + Id.GetName()));
-                }
-                return same;
+				using (FileStream fs = new FileStream(basePath, FileMode.Open, FileAccess.Read)) {
+					using (Image original = Image.FromStream(fs)) {
+						//var baseImg = new Bitmap(Image.FromFile(basePath));
+						var baseImg = new Bitmap(original);
+						var same = Comparer(screenshot, baseImg, Path.Combine(BaseSelenium.GetScreenshotFolder("Errors"), Id.GetName()));
+						if (!same) {
+							Info.ImagesDoNotMatch.Add(Id);
+							//diff.Save(Path.Combine(BaseSelenium.GetScreenshotFolder("Errors"),Id.GetName()));
+							Info.DeferException(new AssertInconclusiveException("Images do not match: " + Id.GetName()));
+						}
+						return same;
+					}
+				}
             }
         }
 
@@ -162,7 +172,16 @@ namespace TractionTools.UITests.Utilities.Extensions {
                 var path = GetResetFile();
                 var lines = File.ReadAllLines(path);
                 var name = id.GetName();
-                if (lines.Where(x => !x.TrimStart().StartsWith("#")).Any(x => x.Trim() == name)) {
+
+				if (Regen == null) {
+					Regen = Config.GetAppSetting("RegenerateImages", "false").ToBooleanJS();
+					//Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+					//config.AppSettings.Settings["RegenerateImages"].Value = "false";
+					//config.Save(ConfigurationSaveMode.Modified);
+					//ConfigurationManager.RefreshSection("appSettings");
+				}
+
+                if (Regen==true || lines.Where(x => !x.TrimStart().StartsWith("#")).Any(x => x.Trim() == name)) {
                     replaceWith.Save(GetBaseImagePath(id));
                     File.WriteAllLines(path, lines.Where(x => x.Trim() != name));
                     return true;

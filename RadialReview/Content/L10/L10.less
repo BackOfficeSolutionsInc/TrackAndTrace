@@ -23,6 +23,10 @@ body {
 	background-color: #eeeeee !important;
 }
 
+.gray {
+	color: rgba(0,0,0,.5);
+}
+
 .component {
 	/* margin: 5px 10px; */
 	background-color: white;
@@ -30,10 +34,18 @@ body {
 	/* border: 1px solid #E8E8E8; */
 	/* border-left: 1px solid #E8E8E8; */
 	margin-bottom: 5px;
+
+	&.component-nobackground {
+		background-color: transparent;
+	}
 }
 
 .level-10 .component {
 	box-shadow: 0px 6px 5px -2px rgba(0,0,0,0.1);
+
+	&.component-nobackground {
+		box-shadow: none;
+	}
 }
 
 .component.flash {
@@ -111,7 +123,7 @@ body {
 .component .gray {
 	//-ms-opacity: .50;
 	//opacity: .50;
-	color: inherit;
+	//color: inherit;
 }
 
 .main-window-container {
@@ -119,6 +131,7 @@ body {
 		height: 100%;
 		margin: 0px;
 		padding: 15px;
+		clear: both;
 	}
 
 	.centered .component {

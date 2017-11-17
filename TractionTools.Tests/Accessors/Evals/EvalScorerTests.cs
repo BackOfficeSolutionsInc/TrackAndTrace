@@ -37,9 +37,7 @@ namespace TractionTools.Tests.Accessors {
 			res = ChartsEngine.ScatterScorer.MergeValueScores(scores, new CompanyValueModel() { MinimumPercentage = 61 });
 			Assert.AreEqual(PositiveNegativeNeutral.Negative, res.Merged);
 			Assert.AreEqual(false, res.Above);
-
 		}
-
 	}
 }
 

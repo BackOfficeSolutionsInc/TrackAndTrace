@@ -1,0 +1,11 @@
+﻿<div class="number-item bs-number-item item-row">
+    <span class="debug-info">
+        <i>--Number--</i>
+        <hr />
+        {{model | json:4}}
+    </span>
+    <div class="item"><div class="name">{{item.Name}}</div><div class="help">{{item.Help}}</div></div>
+    <div class="responses number-responses">
+		<input type="number" class="form-control" ng-model="response.Answer" ng-model-options="{debounce:400}" ng-change="changeResponse(response)"/>
+    </div>
+</div> 

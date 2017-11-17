@@ -81,6 +81,17 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .swagger-section #header {
+        ///    background-color: red;
+        ///}.
+        /// </summary>
+        public static string CustomSwaggerStyle {
+            get {
+                return ResourceManager.GetString("CustomSwaggerStyle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap EOS_Model {

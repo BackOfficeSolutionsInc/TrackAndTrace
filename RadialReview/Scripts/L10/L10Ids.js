@@ -520,8 +520,13 @@ function updateModedIssueSolve(issueRecurId, status) {
 	row.attr("data-markedforclose", status);
 	row.attr("data-checked", status);
 	console.log("checked:" + issueRecurId);
-
 	//undoStack.execute(new CheckOffIssue(this, status));
+}
+
+function removeIssueRow(issueRecurId) {
+	$(".issue-row[data-recurrence_issue='" + issueRecurId + "']").remove();
+	refreshCurrentIssueDetails();
+	refreshRanks();
 }
 
 function updateIssuesList(recurId, issueRow, orderby) {
@@ -686,9 +691,9 @@ function unstarAll() {
 
 }
 
-$("body").on("blur", ".issueDetails .details", function () {
-	sendIssueDetails(this, $(this).data("recurrence_issue"));
-});
+//$("body").on("blur", ".issueDetails .details", function () {
+//	sendIssueDetails(this, $(this).data("recurrence_issue"));
+//});
 
 
 function updateIssueOwner(id, userId, name, image) {
@@ -809,7 +814,7 @@ $(function () {
 		if (e.button == 0) {
 			p += 1;
 
-			if (p > 6)
+			if (p > 9)
 				p = 0;
 		} else if (e.button == 2 || e.which == 3) {
 			p -= 1;

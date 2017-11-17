@@ -1,0 +1,7 @@
+﻿<!--<div class="survey-component item-container">-->
+<span class="debug-info">
+	<i>--ItemContainer--</i>
+	<span>{{model | json}}</span>
+</span>
+<survey-item item="model.Item" format="model.ItemFormat" response="model.Response" type="model.ItemFormat.ItemType" class="survey-component item-{{model.ItemFormat.ItemType}}" ng-class="{disabled:model.ItemFormat.Settings.disabled}" on-change-response="changeResponse"></survey-item>
+<!--</div>-->

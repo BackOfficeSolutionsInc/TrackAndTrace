@@ -10,6 +10,7 @@ namespace RadialReview
     {
         public void Configuration(IAppBuilder app)
         {
+
             ConfigureAuth(app);
 	        
 			var redis = Config.Redis("Radial-SignalR");
@@ -18,7 +19,7 @@ namespace RadialReview
             //};
 			GlobalHost.DependencyResolver.UseRedis(redis.Server, redis.Port, redis.Password, redis.ChannelName  );
 			app.MapSignalR();
-
-        }
+			
+		}		
     }
 }

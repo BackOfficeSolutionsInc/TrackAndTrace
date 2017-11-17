@@ -1,8 +1,10 @@
 ﻿@model long?
 @{
     string filter = null;
-    if (Model.HasValue) { 
-        filter = "| filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate) | filter:{Owner:{Id:" + Model + "}}";
+    if (Model.HasValue) {
+       
+        //filter = "| filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate) | filter:{Owner:{Id:" + Model + "}}";
+        filter = "| filter:filters.byRange('CompleteTime', model.dataDateRange.todoStart,model.dataDateRange.todoEnd) | filter:{Owner:{Id:" + Model + "}}";
     }
 }
 

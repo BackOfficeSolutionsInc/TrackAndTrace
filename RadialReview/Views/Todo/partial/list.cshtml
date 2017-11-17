@@ -1,36 +1,39 @@
 ﻿@{
-	var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
-	var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
-	var completion = (ViewBag.AddCompletion == null || ((bool)ViewBag.AddCompletion) == true);
-	var datepicker = (ViewBag.AddDatePicker == null || ((bool)ViewBag.AddDatePicker) == true);
-	var selector = ViewBag.Selector as string ?? "model.Todos";
-	var filter = ViewBag.Filter as string ?? "| filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate)";
+    var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
+    var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
+    var completion = (ViewBag.AddCompletion == null || ((bool)ViewBag.AddCompletion) == true);
+    var datepicker = (ViewBag.AddDatePicker == null || ((bool)ViewBag.AddDatePicker) == true);
+    var selector = ViewBag.Selector as string ?? "model.Todos";
+    var filter = ViewBag.Filter as string ?? "| filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate)";
 
-	var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
-	var defaultSort = ViewBag.DefaultSort ?? "'-DueDate'";
+    var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
+    var defaultSort = ViewBag.DefaultSort ?? "'-DueDate'";
 
-	var usePopup = ViewBag.UsePopup==true;
+    var usePopup = ViewBag.UsePopup==true;
 
-	var showDetails = (ViewBag.ShowDetails == null || ((bool)ViewBag.ShowDetails) == true);
+    var showDetails = (ViewBag.ShowDetails == null || ((bool)ViewBag.ShowDetails) == true);
 
-	var guid = Guid.NewGuid().ToString().Replace("-", "");
+    var guid = Guid.NewGuid().ToString().Replace("-", "");
 
-	var detailsCode = showDetails ? "todo.DetailsUrl_Src=todo.DetailsUrl;model.Selected = todo.Key+'"+guid+"';" : "";
+    var detailsCode = showDetails ? "todo.DetailsUrl_Src=todo.DetailsUrl;model.Selected = todo.Key+'"+guid+"';" : "";
 
-	var recurrenceId = ViewBag.RecurrenceId ?? "model.Id";
+    var recurrenceId = ViewBag.RecurrenceId ?? "model.Id";
 
-	var attrLookup = new Dictionary<string, string>(){
-		{"todotype-column",""},
-		{"checkbox-column",""},
-		{"picture-column",""},
-		{"message-column",""},
-		{"due-column",""},
-		{"empty-column",""},
-		{"createtime-column",""},
-		{"complete-column",""},
-		{"origin-column",""},
-		{"delete-column",""}
-	};
+    var onempty = ViewBag.OnEmpty ?? "No to-dos fit your search criteria.";
+
+
+    var attrLookup = new Dictionary<string, string>(){
+        {"todotype-column",""},
+        {"checkbox-column",""},
+        {"picture-column",""},
+        {"message-column",""},
+        {"due-column",""},
+        {"empty-column",""},
+        {"createtime-column",""},
+        {"complete-column",""},
+        {"origin-column",""},
+        {"delete-column",""}
+    };
 }
 <div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak todo-list-container app">
 	<div @(headers || controller ? "ng-controller=L10Controller" : "")>
@@ -87,9 +90,10 @@
 									</td>
 									<td class="todo-text message-column" style="width:100%" ng-click="@(detailsCode)" md-cell>
 										@if (usePopup) {
-											<div class="todoModal" data-method="EditModal" data-title="Edit to-do" data-Id="{{todo.Id}}">{{todo.Name}}</div>
+											<div ng-if="todo.TodoType!='Milestone'" class="todoModal" data-method="EditModal" data-title="Edit to-do" data-Id="{{todo.Id}}">{{todo.Name}}</div>
+											<div ng-if="todo.TodoType=='Milestone'" class="milestoneModal" data-method="EditModal" data-title="Edit milestone" data-Id="{{-todo.Id}}">{{todo.Name}}</div>
 										} else {
-											<input class="blend" placeholder="Enter to-do here" ng-model-options="{debounce: 75}" type="text" ng-model="todo.Name" ng-change="functions.sendUpdate(todo)" title="{{todo.Name}}" />
+											<input class="blend" placeholder="Enter to-do here" ng-model-options="{debounce: 400}" type="text" ng-model="todo.Name" ng-change="functions.sendUpdate(todo)" title="{{todo.Name}}" />
 											<div class="todo-text" ng-if="model.Selected==todo.Key+'@guid'">
 												<a class="pull-right timeline-button" ng-if="todo.Link!=null" target="_blank" href="{{todo.Link}}" style="margin-top: 4px;margin-right: 2px;"><span class="glyphicon glyphicon-comment"></span></a>
 												<iframe class="keep-background" style="background-color: white" width="100%" ng-src="{{trustAsResourceUrl(todo.DetailsUrl_Src)}}" ng-data-src="{{todo.DetailsUrl}}"></iframe>
@@ -97,7 +101,7 @@
 										}
 									</td>
 									<td class="alignCenter hidden-width-1 origin-column" md-cell>
-										<span class="origin-cell">{{todo.Origin}}</span>
+										<div class="origin-cell" title="{{todo.Origin}}">{{todo.Origin}}</div>
 									</td>
 									<td class="alignCenter createtime-column date-column" style=";" md-cell>
 										{{todo.CreateTime | date:dateFormat}}
@@ -107,7 +111,7 @@
 									</td>
 									<td class="empty-cell" style="min-width: 15px;" md-cell></td>
 									@if (completion){
-										<td class="alignCenter complete-column date-column"  md-cell>{{todo.CompleteTime | date:dateFormat}}</td>
+										<td class="alignCenter complete-column date-column" md-cell>{{todo.CompleteTime | date:dateFormat}}</td>
 									}
 									<td class="delete-column" md-cell>
 										<span class="delete-row" ng-click="functions.removeRow($event,todo)"></span>
@@ -119,7 +123,7 @@
 					<div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
 					<div class="create-row" ng-click="functions.addRow($event,'AngularTodo')" data-toggle="tooltip" data-placement="left" title="New To-do"></div>
 					<div class="gray no-todos empty-search" style="padding: 30px 15px;" ng-if="(@(selector) @(filter)).length==0">
-						No to-dos fit your search criteria.
+						@(onempty)
 					</div>
 				</div>
 			</div>

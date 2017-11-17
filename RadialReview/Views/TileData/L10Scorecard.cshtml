@@ -7,7 +7,7 @@
         Html.RenderPartial("~/Views/Measurable/partial/list.cshtml", new ViewDataDictionary(){
             {"AddHeaders", false},
             {"AddController", false},
-
+            {"ViewParent",".l10-scorecard-tile" },
             {"RecurrenceId", Model},
             {"Reorderable", true},
 			//{"DisableName", true},
@@ -15,12 +15,12 @@
             {"Selector", "((model.L10Scorecards)| filter:{KeyId:"+Model+"})[0].Contents "},
             { "ForceMin", ViewBag.NumberOfWeeks??13*7 }
         }); }</div><div class="tile visible-width-1">@{
-			Html.RenderPartial("~/Views/Scorecard/Partial/tile.cshtml", new ViewDataDictionary(){
-			{"AddHeaders",false},
-			{"AddController",false},
-			{"DisableName",true},
-
-			{"RecurrenceId", Model},
-			{"Selector", "((model.L10Scorecards)| filter:{KeyId:"+Model+"})[0].Contents "},
-		});}</div><div ng-show="(model.L10Scorecards | filter:{KeyId:@(Model)}).length==0" class="gray alignCenter" elem-ready="functions.reload((model.L10Scorecards | filter:{KeyId:@(Model)}).length==0)"></div></div></div>
+Html.RenderPartial("~/Views/Scorecard/Partial/tile.cshtml", new ViewDataDictionary(){
+            {"AddHeaders",false},
+            {"AddController",false},
+            {"DisableName",true},
+            {"ViewParent",".l10-scorecard-tile" },
+            {"RecurrenceId", Model},
+            {"Selector", "((model.L10Scorecards)| filter:{KeyId:"+Model+"})[0].Contents "},
+        });}</div><div ng-show="(model.L10Scorecards | filter:{KeyId:@(Model)}).length==0" class="gray alignCenter" elem-ready="functions.reload((model.L10Scorecards | filter:{KeyId:@(Model)}).length==0)"></div></div></div>
 
