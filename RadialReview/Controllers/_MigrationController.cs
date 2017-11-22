@@ -2005,7 +2005,7 @@ namespace RadialReview.Controllers {
             var pageCount = 0;
             using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
                 using (var tx = s.BeginTransaction()) {
-                    var _rl = s.QueryOver<RockModel>().List().ToDictionary(x=>x.Id,x=>x);
+                    var _rl = s.QueryOver<RockModel>().List().ToDictionary(x => x.Id, x => x);
                     var rocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().List().ToList();
                     foreach (var rr in rocks) {
                         var rock = _rl[rr.ForRock.Id];
@@ -2025,6 +2025,49 @@ namespace RadialReview.Controllers {
             return "Updated:" + a + ",  Not Updated:" + b;
         }
 
+        [Access(Controllers.AccessLevel.Radial)]
+        public String M11_22_2017() {
+            var a = 0;
+            var b = 0;
+            var pageCount = 0;
+            var createTime = new DateTime(2017, 11, 22);
+            using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var _VtoModel = s.QueryOver<VtoModel>().List().ToList();
+                    var _VtoStrategyMap = s.QueryOver<VtoStrategyMap>().List().ToList();
+
+                    var _VtoItemString = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Uniques).List().ToList();
+
+                    foreach (var rr in _VtoModel) {
+                        if (!_VtoStrategyMap.Any(x => x.VtoId == rr.Id
+                         && x.MarketingStrategyId == rr.MarketingStrategy.Id
+                        )) {
+                            // save new
+                            VtoStrategyMap _map = new VtoStrategyMap() {
+                                CreateTime = createTime,
+                                VtoId = rr.Id,
+                                MarketingStrategyId = rr.MarketingStrategy.Id,
+                            };
+
+                            s.Insert(_map);
+                            a++;
+                        }
+                    }
+
+                    foreach (var item in _VtoItemString) {
+                        if (item.MarketingStrategyId == null) {
+                            item.MarketingStrategyId = item.Vto.MarketingStrategy.Id;
+                            b++;
+
+                            s.Update(item);
+                        }
+                    }
+
+                    tx.Commit();
+                }
+            }
+            return "VtoStrategyMap Inserted:" + a + ", VtoITemString Inserted:" + b;
+        }
     }
 }
 #pragma warning restore CS0618 // Type or member is obsolete

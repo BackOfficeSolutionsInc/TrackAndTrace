@@ -2189,12 +2189,12 @@ namespace RadialReview.Accessors {
 				p1.Format.Font.Size = fs;
 				var txt = p1.AddFormattedText("Target Market/\"The List\": ", TextFormat.Bold);
 				p1.Format.Font.Name = "Arial Narrow";
-				p1.AddText(vto.Strategy.TargetMarket ?? "");
+				p1.AddText(vto.Strategies.TargetMarket ?? "");
 				marketingParagraphs.Add(p1);
 
 				var p2 = new Paragraph();
 				p2.Format.Font.Size = fs;
-				var uniques = vto.Strategy.Uniques.ToList();
+				var uniques = vto.Strategies.Uniques.ToList();
 				p2.Format.SpaceBefore = fs * 1.5;
 				var uniquesTitle = "Uniques: ";
 				if (uniques.Count == 3)
@@ -2209,7 +2209,7 @@ namespace RadialReview.Accessors {
 				p3.Format.SpaceBefore = fs * 1.5;
 				p3.AddFormattedText("Proven Process: ", TextFormat.Bold);
 				p3.Format.Font.Name = "Arial Narrow";
-				p3.AddText(vto.Strategy.ProvenProcess ?? "");
+				p3.AddText(vto.Strategies.ProvenProcess ?? "");
 				marketingParagraphs.Add(p3);
 
 				var p4 = new Paragraph();
@@ -2217,7 +2217,7 @@ namespace RadialReview.Accessors {
 				p4.Format.SpaceBefore = fs * 1.5;
 				p4.AddFormattedText("Guarantee: ", TextFormat.Bold);
 				p4.Format.Font.Name = "Arial Narrow";
-				p4.AddText(vto.Strategy.Guarantee ?? "");
+				p4.AddText(vto.Strategies.Guarantee ?? "");
 				marketingParagraphs.Add(p4);
 			}
 			//////
@@ -2405,7 +2405,7 @@ namespace RadialReview.Accessors {
 				row = vtoLeft.AddRow();
 				var msTitle = row.Cells[0];
 				msTitle.Shading.Color = TableGray;
-				msTitle.AddParagraph(vto.Strategy.MarketingStrategyTitle ?? "MARKETING STRATEGY");
+				msTitle.AddParagraph(vto.Strategies.MarketingStrategyTitle ?? "MARKETING STRATEGY");
 				msTitle.Format.Font.Name = "Arial Narrow";
 				marketingStrategyPanel = row.Cells[1];
 				msTitle.Format.Font.Bold = true;
