@@ -33,7 +33,9 @@ namespace RadialReview.Models.Angular.VTO {
 		public bool IncludeVision { get; set; }
 
 		public AngularCoreFocus CoreFocus { get; set; }
-		public AngularStrategy Strategies { get; set; }
+		public AngularStrategy Strategy { get; set; }
+		public List<AngularStrategy> Strategies { get; set; }
+
 		public AngularQuarterlyRocks QuarterlyRocks { get; set; }
 		public AngularThreeYearPicture ThreeYearPicture { get; set; }
 		public AngularOneYearPlan OneYearPlan { get; set; }
@@ -54,10 +56,11 @@ namespace RadialReview.Models.Angular.VTO {
                 Name = vto.Name, //AngularVtoString.Create(vto.Name),
                 Values = AngularCompanyValue.Create(vto._Values),
                 CoreFocus = AngularCoreFocus.Create(vto.CoreFocus),
-                Strategies = AngularStrategy.Create(vto.MarketingStrategy), 
-                //vto._MarketingStrategyModel.Select(x => AngularStrategy.Create(x)),
+                Strategy = AngularStrategy.Create(vto.MarketingStrategy),
+				//vto._MarketingStrategyModel.Select(x => AngularStrategy.Create(x)),
+				Strategies= vto._MarketingStrategyModel.Select(x => AngularStrategy.Create(x)).ToList(),
 
-                OneYearPlan = AngularOneYearPlan.Create(vto.OneYearPlan),
+				OneYearPlan = AngularOneYearPlan.Create(vto.OneYearPlan),
 				QuarterlyRocks = AngularQuarterlyRocks.Create(vto.QuarterlyRocks),
 				ThreeYearPicture = AngularThreeYearPicture.Create(vto.ThreeYearPicture),
 				Issues = AngularVtoString.Create(vto._Issues),
@@ -79,7 +82,8 @@ namespace RadialReview.Models.Angular.VTO {
             //Name = vto.Name, //AngularVtoString.Create(vto.Name),
             Values = AngularCompanyValue.Create(vto._Values);
             CoreFocus = AngularCoreFocus.Create(vto.CoreFocus);
-            Strategies = AngularStrategy.Create(vto.MarketingStrategy); //vto._MarketingStrategyModel.Select(x => AngularStrategy.Create(x));
+            Strategy = AngularStrategy.Create(vto.MarketingStrategy); //vto._MarketingStrategyModel.Select(x => AngularStrategy.Create(x));
+			Strategies = vto._MarketingStrategyModel.Select(x => AngularStrategy.Create(x)).ToList();
             //OneYearPlan = AngularOneYearPlan.Create(vto.OneYearPlan);
             //QuarterlyRocks = AngularQuarterlyRocks.Create(vto.QuarterlyRocks),
             ThreeYearPicture = AngularThreeYearPicture.Create(vto.ThreeYearPicture);

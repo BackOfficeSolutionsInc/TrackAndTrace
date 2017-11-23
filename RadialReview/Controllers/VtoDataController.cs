@@ -9,10 +9,8 @@ using RadialReview.Models.Angular.VTO;
 using RadialReview.Models.Json;
 using System.Threading.Tasks;
 
-namespace RadialReview.Controllers
-{
-    public partial class VTOController : BaseController
-    {
+namespace RadialReview.Controllers {
+	public partial class VTOController : BaseController {
 		// GET: VtoData
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
@@ -58,23 +56,28 @@ namespace RadialReview.Controllers
 			await VtoAccessor.Update(GetUser(), model, connectionId);
 			return Json(ResultObject.SilentSuccess());
 		}
+
+
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult AddThreeYear(long vto, string connectionId = null)
-		{
+		public JsonResult CreateMarketStrategy(long vto, string connectionId = null) {
+			VtoAccessor.CreateMarketingStrategy(GetUser(), vto);
+			return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult AddThreeYear(long vto, string connectionId = null) {
 			VtoAccessor.AddThreeYear(GetUser(), vto);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult AddYearGoal(long vto, string connectionId = null)
-		{
+		public JsonResult AddYearGoal(long vto, string connectionId = null) {
 			VtoAccessor.AddYearGoal(GetUser(), vto);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
-		}	
-		
+		}
+
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult AddCompanyValue(long vto, string connectionId = null)
-		{
+		public JsonResult AddCompanyValue(long vto, string connectionId = null) {
 			VtoAccessor.AddCompanyValue(GetUser(), vto);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
@@ -91,10 +94,9 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult DeleteCompanyValue(long value, string connectionId = null)
-		{
+		public JsonResult DeleteCompanyValue(long value, string connectionId = null) {
 			VtoAccessor.UpdateCompanyValue(GetUser(), value, null, null, true, connectionId);
-			return Json(ResultObject.SilentSuccess(),JsonRequestBehavior.AllowGet);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
 		[Access(AccessLevel.UserOrganization)]
@@ -109,33 +111,32 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult AddUniques(long vto, string connectionId = null)
-		{
-			VtoAccessor.AddUniques(GetUser(), vto);
+		public JsonResult AddUniques(long vto, long marketingStrategyId, string connectionId = null) {
+			VtoAccessor.AddUniques(GetUser(), vto, marketingStrategyId);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult AddIssue(long vto, string connectionId = null)
-		{
+		public JsonResult AddIssue(long vto, string connectionId = null) {
 			VtoAccessor.AddIssue(GetUser(), vto);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult DeleteString(long value, string connectionId = null)
-		{
+		public JsonResult DeleteString(long value, string connectionId = null) {
 			VtoAccessor.UpdateVtoString(GetUser(), value, null, true, connectionId);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
 
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
-	    public async Task<JsonResult> XUpdateRock(string pk,string name,string value){
-		    switch(name.ToLower()){
-				case "accountable": await VtoAccessor.UpdateRock(GetUser(), pk.ToLong(), null, value.ToLong(), null, null);//VtoAccessor.UpdateRockAccountable(GetUser(), pk.ToLong(), value.ToLong());
-				    break;
-				default: throw new ArgumentOutOfRangeException(name.ToLower());
-		    }
-		    return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
-	    }
-    }
+		public async Task<JsonResult> XUpdateRock(string pk, string name, string value) {
+			switch (name.ToLower()) {
+			case "accountable":
+			await VtoAccessor.UpdateRock(GetUser(), pk.ToLong(), null, value.ToLong(), null, null);//VtoAccessor.UpdateRockAccountable(GetUser(), pk.ToLong(), value.ToLong());
+			break;
+			default:
+			throw new ArgumentOutOfRangeException(name.ToLower());
+			}
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+	}
 }

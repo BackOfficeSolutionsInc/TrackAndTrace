@@ -42,7 +42,7 @@ namespace RadialReview.Accessors {
 			var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
 			var vtoIds = s.QueryOver<VtoModel>().Where(x => x.Organization.Id == organizationId).Select(x => x.Id).List<long>();
 			foreach (var vtoId in vtoIds) {
-				var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId),connectionId);
+				var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
 				action(group);
 			}
 		}
@@ -53,7 +53,7 @@ namespace RadialReview.Accessors {
 			action(group);
 		}
 
-		public static List<VtoModel> GetAllVTOForOrganization(UserOrganizationModel caller, long organizationId) { 
+		public static List<VtoModel> GetAllVTOForOrganization(UserOrganizationModel caller, long organizationId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).ManagingOrganization(organizationId);
@@ -72,48 +72,48 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-        public static VtoModel GetOrganizationVTO(UserOrganizationModel caller, long orgId) {
-            using (var s = HibernateSession.GetCurrentSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var perms = PermissionsUtility.Create(s, caller);
-                    return GetOrganizationVTO(s, perms, orgId);
-                }
-            }
-        }
+		public static VtoModel GetOrganizationVTO(UserOrganizationModel caller, long orgId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					return GetOrganizationVTO(s, perms, orgId);
+				}
+			}
+		}
 
-        private static VtoModel GetOrganizationVTO(ISession s, PermissionsUtility perms, long orgId) {
-            perms.ViewOrganization(orgId);
-            var l10 = s.QueryOver<L10Recurrence>()
-                .Where(x => x.DeleteTime == null && x.OrganizationId == orgId && x.ShareVto == true)
-                .Take(1).SingleOrDefault();
+		private static VtoModel GetOrganizationVTO(ISession s, PermissionsUtility perms, long orgId) {
+			perms.ViewOrganization(orgId);
+			var l10 = s.QueryOver<L10Recurrence>()
+				.Where(x => x.DeleteTime == null && x.OrganizationId == orgId && x.ShareVto == true)
+				.Take(1).SingleOrDefault();
 
-            if (l10 != null) {
-                return GetVTO(s,perms,l10.VtoId);             
-            }
-            return null;
-        }
-		
-        public static VtoModel GetVTO(ISession s, PermissionsUtility perms, long vtoId) {
+			if (l10 != null) {
+				return GetVTO(s, perms, l10.VtoId);
+			}
+			return null;
+		}
+
+		public static VtoModel GetVTO(ISession s, PermissionsUtility perms, long vtoId) {
 			perms.ViewVTO(vtoId);
 			var model = s.Get<VtoModel>(vtoId);
 			model._Values = OrganizationAccessor.GetCompanyValues_Unsafe(s.ToQueryProvider(true), model.Organization.Id, null);
-			var uniquesQ= s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Uniques && x.Vto.Id == vtoId && x.DeleteTime == null).Future();//.List().ToList();
-			var looksLikeQ= s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_LookLike && x.Vto.Id == vtoId && x.DeleteTime == null).Future();//.List().ToList();
+			var uniquesQ = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Uniques && x.Vto.Id == vtoId && x.DeleteTime == null).Future();//.List().ToList();
+			var looksLikeQ = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_LookLike && x.Vto.Id == vtoId && x.DeleteTime == null).Future();//.List().ToList();
 			var goalsQ = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_YearGoals && x.Vto.Id == vtoId && x.DeleteTime == null).Future();//.List().ToList();
 																																							  //model.._GoalsForYear = s.QueryOver<VtoModel.VtoItem_String>().Where(x => x.Type == VtoItemType.List_Issues && x.Vto.Id == vtoId && x.DeleteTime == null).List().ToList();
-			//var rocksQ= s.QueryOver<Vto_Rocks>().Where(x => x.Vto.Id == vtoId && x.DeleteTime == null).Future();
+																																							  //var rocksQ= s.QueryOver<Vto_Rocks>().Where(x => x.Vto.Id == vtoId && x.DeleteTime == null).Future();
 			var rocksQ = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
 				.Where(x => x.DeleteTime == null && x.L10Recurrence.Id == model.L10Recurrence && x.VtoRock)
 				.Future();
 
 
 
-			model._Issues = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Issues && x.Vto.Id == vtoId && x.DeleteTime == null).List().Select(x=>new VtoIssue() {
+			model._Issues = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Issues && x.Vto.Id == vtoId && x.DeleteTime == null).List().Select(x => new VtoIssue() {
 				Id = x.Id,
 				BaseId = x.BaseId,
 				CopiedFrom = x.CopiedFrom,
 				CreateTime = x.CreateTime,
-				Data=x.Data,
+				Data = x.Data,
 				DeleteTime = x.DeleteTime,
 				ForModel = x.ForModel,
 				Ordering = x.Ordering,
@@ -121,22 +121,30 @@ namespace RadialReview.Accessors {
 				Vto = x.Vto,
 			}).ToList();
 
-			model.MarketingStrategy._Uniques = uniquesQ.ToList();
+
+			var getMarketStrategy = s.QueryOver<MarketingStrategyModel>().Where(x => x.Vto == vtoId).List();
+			foreach (var item in getMarketStrategy) {
+				var getUniques= s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Uniques && x.MarketingStrategyId == item.Id && x.DeleteTime == null).Future();
+				item._Uniques = getUniques.ToList();
+			}
+
+			model._MarketingStrategyModel = getMarketStrategy.ToList();
+			//model.MarketingStrategy._Uniques = uniquesQ.ToList();
 			model.ThreeYearPicture._LooksLike = looksLikeQ.ToList();
 			model.OneYearPlan._GoalsForYear = goalsQ.ToList();
-			model.QuarterlyRocks._Rocks  = rocksQ.ToList().Where(x => x.ForRock.DeleteTime == null /* && x.Rock.CompanyRock*/)
-				.Select(x=> AngularVtoRock.Create(x)).ToList();
+			model.QuarterlyRocks._Rocks = rocksQ.ToList().Where(x => x.ForRock.DeleteTime == null /* && x.Rock.CompanyRock*/)
+				.Select(x => AngularVtoRock.Create(x)).ToList();
 
 			var issuesAttachedToRecur = model._Issues
 				.Where(x => x.ForModel != null && x.ForModel.ModelType == ForModel.GetModelType<IssueModel.IssueModel_Recurrence>())
-				.Select(x=>x.ForModel.ModelId)
+				.Select(x => x.ForModel.ModelId)
 				.Distinct().ToArray();
 
 			if (issuesAttachedToRecur.Any()) {
 				var foundIssues = s.QueryOver<IssueModel.IssueModel_Recurrence>().WhereRestrictionOn(x => x.Id).IsIn(issuesAttachedToRecur).List().ToList();
 				foreach (var i in model._Issues) {
-					if (i.ForModel!=null && i.ForModel.ModelType == ForModel.GetModelType<IssueModel.IssueModel_Recurrence>()) {
-						i.Issue = foundIssues.FirstOrDefault(x => x.Id == i.ForModel.ModelId);						
+					if (i.ForModel != null && i.ForModel.ModelType == ForModel.GetModelType<IssueModel.IssueModel_Recurrence>()) {
+						i.Issue = foundIssues.FirstOrDefault(x => x.Id == i.ForModel.ModelId);
 						i._Extras["Owner"] = i.Issue.NotNull(x => x.Owner.NotNull(y => y.GetName()));
 						i._Extras["OwnerInitials"] = i.Issue.NotNull(x => x.Owner.NotNull(y => y.GetInitials()));
 					}
@@ -157,21 +165,21 @@ namespace RadialReview.Accessors {
 					if (ang.L10Recurrence != null) {
 						try {
 							var recur = L10Accessor.GetL10Recurrence(s, perms, ang.L10Recurrence.Value, false);
-                            //var isLeadership = recur.TeamType == L10TeamType.LeadershipTeam;
-                            //if (isLeadership) {
-                            //   ang.QuarterlyRocks.Rocks = ang.QuarterlyRocks.Rocks.Where(x => x.Rock.CompanyRock ?? true).ToList();
-                            //}
-                            
-                            var orgVto = GetOrganizationVTO(s, perms, vto.Organization.Id);
-                            
-                            if (recur.TeamType != L10TeamType.LeadershipTeam && orgVto == null) {
-                                ang.IncludeVision = false;
-                            }
+							//var isLeadership = recur.TeamType == L10TeamType.LeadershipTeam;
+							//if (isLeadership) {
+							//   ang.QuarterlyRocks.Rocks = ang.QuarterlyRocks.Rocks.Where(x => x.Rock.CompanyRock ?? true).ToList();
+							//}
 
-                            if (orgVto != null) {
-                                ang.ReplaceVision(orgVto);
+							var orgVto = GetOrganizationVTO(s, perms, vto.Organization.Id);
 
-                            }
+							if (recur.TeamType != L10TeamType.LeadershipTeam && orgVto == null) {
+								ang.IncludeVision = false;
+							}
+
+							if (orgVto != null) {
+								ang.ReplaceVision(orgVto);
+
+							}
 
 						} catch (Exception) {
 
@@ -243,6 +251,24 @@ namespace RadialReview.Accessors {
 			}
 		}
 
+
+		public static MarketingStrategyModel CreateMarketingStrategy(UserOrganizationModel caller, long vtoId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perm = PermissionsUtility.Create(s, caller);
+
+					MarketingStrategyModel obj = new MarketingStrategyModel();
+					obj.Vto = vtoId;
+					s.Save(obj);
+					tx.Commit();
+					s.Flush();
+
+					return obj;
+				}
+			}
+		}
+
+
 		public static void UpdateVtoString(UserOrganizationModel caller, long vtoStringId, String message, bool? deleted, string connectionId = null) {
 			long? update_VtoId = null;
 			VtoItem_String str = null;
@@ -250,7 +276,7 @@ namespace RadialReview.Accessors {
 				using (var tx = s.BeginTransaction()) {
 					str = s.Get<VtoItem_String>(vtoStringId);
 					var perm = PermissionsUtility.Create(s, caller).EditVTO(str.Vto.Id);
-					
+
 					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateVtoItem(vtoStringId));
 
 					str.Data = message;
@@ -345,7 +371,7 @@ namespace RadialReview.Accessors {
 			} else if (model.Type == typeof(AngularVtoRock).Name) {
 				var m = (AngularVtoRock)model;
 				await UpdateRock(caller, m.Id, m.Rock.Name, m.Rock.Owner.Id, null, connectionId);
-			}else if (model.Type == typeof(AngularOneYearPlan).Name) {
+			} else if (model.Type == typeof(AngularOneYearPlan).Name) {
 				var m = (AngularOneYearPlan)model;
 				UpdateOneYearPlan(caller, m.Id, m.FutureDate, m.Revenue, m.Profit, m.Measurables, m.OneYearPlanTitle, connectionId);
 			} else if (model.Type == typeof(AngularQuarterlyRocks).Name) {
@@ -368,7 +394,7 @@ namespace RadialReview.Accessors {
 
 					var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
 					var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
-					
+
 					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateThreeYearPicture(id));
 
 					PermissionsUtility.Create(s, caller).EditVTO(vtoId);
@@ -483,6 +509,15 @@ namespace RadialReview.Accessors {
 					strategy.MarketingStrategyTitle = marketingStrategyTitle;
 					s.Update(strategy);
 
+					//add entry to VtoStrategyMap
+					var vtoStrategy = s.QueryOver<VtoStrategyMap>().Where(x => x.MarketingStrategyId == strategyId).SingleOrDefault();
+					if (vtoStrategy == null) {
+						VtoStrategyMap vtoStrategyMap = new VtoStrategyMap();
+						vtoStrategyMap.MarketingStrategyId = strategyId;
+						vtoStrategyMap.VtoId = vtoId;
+						s.Save(vtoStrategyMap);
+					}
+
 					tx.Commit();
 					s.Flush();
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -548,7 +583,7 @@ namespace RadialReview.Accessors {
 					}
 					var update = new AngularUpdate();
 					update.Add(AngularCompanyValue.Create(companyValue));
-					UpdateAllVTOs(s, companyValue.OrganizationId,connectionId, x => x.update(update));
+					UpdateAllVTOs(s, companyValue.OrganizationId, connectionId, x => x.update(update));
 
 					tx.Commit();
 					s.Flush();
@@ -720,12 +755,12 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static VtoItem_String AddString(ISession s, PermissionsUtility perms, long vtoId, VtoItemType type, Func<VtoModel, BaseAngularList<AngularVtoString>, IAngularId> updateFunc, bool skipUpdate = false, ForModel forModel = null, string value = null) {
+		public static VtoItem_String AddString(ISession s, PermissionsUtility perms, long vtoId, VtoItemType type, Func<VtoModel, BaseAngularList<AngularVtoString>, IAngularId> updateFunc, bool skipUpdate = false, ForModel forModel = null, string value = null, long? marketingStrategyId = null) {
 			perms.EditVTO(vtoId);
 			var vto = s.Get<VtoModel>(vtoId);
 			var organizationId = vto.Organization.Id;
 
-			var items = s.QueryOver<VtoItem_String>().Where(x => x.Vto.Id == vtoId && x.Type == type && x.DeleteTime == null).List().ToList();
+			var items = s.QueryOver<VtoItem_String>().Where(x => x.Vto.Id == vtoId &&  x.Type == type && x.DeleteTime == null && x.MarketingStrategyId==marketingStrategyId).List().ToList();
 			var count = items.Count();
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -734,7 +769,8 @@ namespace RadialReview.Accessors {
 				Ordering = count,
 				Vto = vto,
 				ForModel = forModel,
-				Data = value
+				Data = value,
+				MarketingStrategyId= marketingStrategyId
 			};
 #pragma warning restore CS0618 // Type or member is obsolete
 
@@ -752,11 +788,11 @@ namespace RadialReview.Accessors {
 			return str;
 		}
 
-		public static void AddString(UserOrganizationModel caller, long vtoId, VtoItemType type, Func<VtoModel, BaseAngularList<AngularVtoString>, IAngularId> updateFunc, bool skipUpdate = false, ForModel forModel = null) {
+		public static void AddString(UserOrganizationModel caller, long vtoId, VtoItemType type, Func<VtoModel, BaseAngularList<AngularVtoString>, IAngularId> updateFunc, bool skipUpdate = false, ForModel forModel = null,long? marketingStrategyId=null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					AddString(s, perms, vtoId, type, updateFunc, skipUpdate, forModel);
+					AddString(s, perms, vtoId, type, updateFunc, skipUpdate, forModel,null, marketingStrategyId);
 					tx.Commit();
 					s.Flush();
 				}
@@ -765,8 +801,9 @@ namespace RadialReview.Accessors {
 
 
 #pragma warning disable CS0618 // Type or member is obsolete
-		public static void AddUniques(UserOrganizationModel caller, long vtoId) {
-			AddString(caller, vtoId, VtoItemType.List_Uniques, (vto, items) => new AngularStrategy(vto.MarketingStrategy.Id) { Uniques = items });
+		public static void AddUniques(UserOrganizationModel caller, long vtoId, long marketingStrategyId) {
+			//AddString(caller, vtoId, VtoItemType.List_Uniques, (vto, items) => new AngularStrategy(vto.MarketingStrategy.Id) { Uniques = items });
+			AddString(caller, vtoId, VtoItemType.List_Uniques, (vto, items) => new AngularStrategy(marketingStrategyId) { Uniques = items },false,null, marketingStrategyId);
 		}
 		public static void AddThreeYear(UserOrganizationModel caller, long vtoId) {
 			AddString(caller, vtoId, VtoItemType.List_LookLike, (vto, list) => new AngularThreeYearPicture(vto.ThreeYearPicture.Id) { LooksLike = list });
@@ -804,55 +841,55 @@ namespace RadialReview.Accessors {
 
 			return s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
 				.Where(x => x.DeleteTime == null && x.L10Recurrence.Id == vto.L10Recurrence && x.VtoRock)
-				.List().Select(x=>x.ForRock)
+				.List().Select(x => x.ForRock)
 				.ToList();
 
 		}
 
 
-//		[Untested("Vto_Rocks", "Accessible?")]
-//		[Obsolete("Do not use", true)]
-//		private static async Task AddRock(ISession s, PermissionsUtility perms, long vtoId, RockModel rock, DateTime? nowTime = null) {
-//			throw new NotImplementedException();
-//			if (rock._AddedToVTO)
-//				throw new PermissionsException("Already added to vto");
-//			rock._AddedToVTO = true;
-//			perms.EditVTO(vtoId);
+		//		[Untested("Vto_Rocks", "Accessible?")]
+		//		[Obsolete("Do not use", true)]
+		//		private static async Task AddRock(ISession s, PermissionsUtility perms, long vtoId, RockModel rock, DateTime? nowTime = null) {
+		//			throw new NotImplementedException();
+		//			if (rock._AddedToVTO)
+		//				throw new PermissionsException("Already added to vto");
+		//			rock._AddedToVTO = true;
+		//			perms.EditVTO(vtoId);
 
-//			var vto = s.Get<VtoModel>(vtoId);
-//			var organizationId = vto.Organization.Id;
-
-
-//			var now = nowTime ?? DateTime.UtcNow;
-//			var vtoRocks = GetVtoRocks_Unsafe(s, vtoId);
-
-//			s.SaveOrUpdate(rock);
-
-//			await L10Accessor.AddRock(s, perms, vto.L10Recurrence.Value, AddRockVm.CreateRock(vto.L10Recurrence.Value, rock, true));
-
-//			//var vtoRock = new /*Vto_Rocks*/ {
-//			//	CreateTime = now,
-//			//	Rock = rock,
-//			//	Vto = vto,
-//			//	_Ordering = vtoRocks.Count(),
-
-//			//};
-//			//s.Save(vtoRock);
-
-//			if (vto.L10Recurrence != null && !rock._AddedToL10) {
-//				await L10Accessor.AddExistingRockToL10(s, perms, vto.L10Recurrence.Value, rock, now);
-//			}
-
-//			vtoRocks.Add(vtoRock);
+		//			var vto = s.Get<VtoModel>(vtoId);
+		//			var organizationId = vto.Organization.Id;
 
 
-//			var angularItems = AngularList.Create(AngularListType.Add, AngularVtoRock.Create(vtoRock).AsList());
-//#pragma warning disable CS0618 // Type or member is obsolete
-//			var update = new AngularUpdate() { new AngularQuarterlyRocks(vto.QuarterlyRocks.Id) { Rocks = angularItems } };
-//#pragma warning restore CS0618 // Type or member is obsolete
-//			UpdateVTO(s, vtoId, null, x => x.update(update));
+		//			var now = nowTime ?? DateTime.UtcNow;
+		//			var vtoRocks = GetVtoRocks_Unsafe(s, vtoId);
 
-//		}
+		//			s.SaveOrUpdate(rock);
+
+		//			await L10Accessor.AddRock(s, perms, vto.L10Recurrence.Value, AddRockVm.CreateRock(vto.L10Recurrence.Value, rock, true));
+
+		//			//var vtoRock = new /*Vto_Rocks*/ {
+		//			//	CreateTime = now,
+		//			//	Rock = rock,
+		//			//	Vto = vto,
+		//			//	_Ordering = vtoRocks.Count(),
+
+		//			//};
+		//			//s.Save(vtoRock);
+
+		//			if (vto.L10Recurrence != null && !rock._AddedToL10) {
+		//				await L10Accessor.AddExistingRockToL10(s, perms, vto.L10Recurrence.Value, rock, now);
+		//			}
+
+		//			vtoRocks.Add(vtoRock);
+
+
+		//			var angularItems = AngularList.Create(AngularListType.Add, AngularVtoRock.Create(vtoRock).AsList());
+		//#pragma warning disable CS0618 // Type or member is obsolete
+		//			var update = new AngularUpdate() { new AngularQuarterlyRocks(vto.QuarterlyRocks.Id) { Rocks = angularItems } };
+		//#pragma warning restore CS0618 // Type or member is obsolete
+		//			UpdateVTO(s, vtoId, null, x => x.update(update));
+
+		//		}
 
 		//[Obsolete("Do not use",true)]
 		public static async Task CreateNewRock(UserOrganizationModel caller, long vtoId, string message = null) {

@@ -77,6 +77,27 @@ function ($scope, $http, $timeout, radial, signalR, vtoDataUrlBase, vtoId, vtoCa
 		$scope.functions.Get(url);
 	};
 
+	$scope.functions.tabClick = function(element) {
+		console.log(element);
+		$('#exTab2 .nav nav-tabs li').each(function () {
+			$(this).removeClass('active');
+		})
+
+		$(this).parent().addClass('active');
+
+		$('.tab-content .tab-pane').each(function () {
+			$(this).removeClass('active');
+		});
+
+		$(element).addClass('active');
+
+		$('#exTab2 .nav nav-tabs li').each(function () {
+			$(this).removeClass('active');
+		})
+
+		$(this).parent().addClass('active');
+	}
+
 	$scope.functions.shouldCreateRow = function ($event, self, url, collection) {
 		if ($event.keyCode == 9 && self.$last) {
 			$scope.functions.AddRow(url, self);
@@ -107,6 +128,37 @@ function ($scope, $http, $timeout, radial, signalR, vtoDataUrlBase, vtoId, vtoCa
 		var u = Time.addTimestamp(url)+"&connectionId=" + $scope.connectionId ;
 		$http.get(u).then(function () { }, showAngularError)
 	};
+
+
+	$scope.functions.AddNewStrategy = function (url, dat) {
+		//var _clientTimestamp = new Date().getTime();
+		var u = Time.addTimestamp(url) + "&connectionId=" + $scope.connectionId;
+		$http.get(u).then(function () {
+
+			$http({ method: 'get', url: vtoDataUrlBase + $scope.vtoId })
+				.success(function (data, status) {
+					r.updater.clearAndApply(data);
+
+					if (vtoCallback) {
+						setTimeout(function () {
+							vtoCallback();
+						}, 1);
+					}
+					$(".target [textarea-resize]").autoResize();
+					$(".target-market [textarea-resize]").autoResize();
+					$(".purpose [textarea-resize]").autoResize();
+					$(".niche [textarea-resize]").autoResize();
+
+					//setTimeout(function () {
+					//	$("[textarea-resize]").each(function () {
+					//		$(this).autoResize();
+					//	});
+					//}, 1);
+				}).error(showAngularError);
+			//window.location.href = '/vto/edit/' + $scope.vtoId;
+		}, showAngularError)
+	};
+
 
 }]).directive('blurToCurrency', function ($filter) {
 	return {
