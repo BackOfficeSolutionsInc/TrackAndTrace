@@ -60,6 +60,8 @@ namespace RadialReview.Models.VTO {
     public class MarketingStrategyModel : ILongIdentifiable {
         public virtual long Id { get; set; }
         public virtual long Vto { get; set; }
+        public virtual DateTime CreateTime { get; set; }
+        public virtual DateTime? DeleteTime { get; set; }
         //public virtual string TenYearTarget { get; set; }
         public virtual string TargetMarket { get; set; }
         public virtual string ProvenProcess { get; set; }
@@ -68,6 +70,7 @@ namespace RadialReview.Models.VTO {
         public virtual string MarketingStrategyTitle { get; set; }
 
         public MarketingStrategyModel() {
+            CreateTime = DateTime.UtcNow;
             //TenYearTarget=new VtoItem_String();
             //TargetMarket = new VtoItem_String();
             //ProvenProcess = new VtoItem_String();
@@ -78,6 +81,8 @@ namespace RadialReview.Models.VTO {
             public MarketingStrategyMap() {
                 Id(x => x.Id);
                 Map(x => x.Vto).Column("Vto_id");
+                Map(x => x.CreateTime);
+                Map(x => x.DeleteTime);
                 //References(x => x.TenYearTarget).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
                 //References(x => x.TargetMarket).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
                 //References(x => x.ProvenProcess).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
@@ -369,7 +374,7 @@ namespace RadialReview.Models.VTO {
         public virtual long? L10Recurrence { get; set; }
         public virtual CoreFocusModel CoreFocus { get; set; }
 
-        [Obsolete]
+        [Obsolete("Instead use _MarketingStrategyModel list property.")]
         public virtual MarketingStrategyModel MarketingStrategy { get; set; }
 
         public virtual ThreeYearPictureModel ThreeYearPicture { get; set; }

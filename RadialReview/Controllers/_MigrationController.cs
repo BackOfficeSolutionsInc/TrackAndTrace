@@ -2038,21 +2038,21 @@ namespace RadialReview.Controllers {
 
                     var _VtoItemString = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Uniques).List().ToList();
 
-                    foreach (var rr in _VtoModel) {
-                        if (!_VtoStrategyMap.Any(x => x.VtoId == rr.Id
-                         && x.MarketingStrategyId == rr.MarketingStrategy.Id
-                        )) {
-                            // save new
-                            VtoStrategyMap _map = new VtoStrategyMap() {
-                                CreateTime = createTime,
-                                VtoId = rr.Id,
-                                MarketingStrategyId = rr.MarketingStrategy.Id,
-                            };
+                    //foreach (var rr in _VtoModel) {
+                    //    if (!_VtoStrategyMap.Any(x => x.VtoId == rr.Id
+                    //     && x.MarketingStrategyId == rr.MarketingStrategy.Id
+                    //    )) {
+                    //        // save new
+                    //        VtoStrategyMap _map = new VtoStrategyMap() {
+                    //            CreateTime = createTime,
+                    //            VtoId = rr.Id,
+                    //            MarketingStrategyId = rr.MarketingStrategy.Id,
+                    //        };
 
-                            s.Insert(_map);
-                            a++;
-                        }
-                    }
+                    //        s.Insert(_map);
+                    //        a++;
+                    //    }
+                    //}
 
                     foreach (var item in _VtoItemString) {
                         if (item.MarketingStrategyId == null) {
