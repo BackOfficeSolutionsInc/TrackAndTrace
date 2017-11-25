@@ -1111,6 +1111,9 @@ body,
 .wizard .wizard-menu .selected {
   font-weight: bold;
 }
+.wizard .wizard-page.component {
+  padding-bottom: 25px;
+}
 .wizard .component {
   background: #fff;
   border-radius: 2px;
@@ -2280,6 +2283,13 @@ body,
 .wizard .user-list-container .delete-row:hover {
   color: #3E3935;
 }
+.wizard .create-row {
+  bottom: 1px;
+  right: 35px;
+  position: fixed !important;
+  opacity: 0;
+  transition: opacity ease-in 0.2s;
+}
 #class-container:not(.modal-icon) .modal-content {
   background: #fff;
   border-radius: 2px;
@@ -2293,7 +2303,6 @@ body,
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
   font-family: 'Roboto', sans-serif;
   /*.btn-primary {
-
         background-color: @traction-orange;
     }*/
 }
@@ -2364,6 +2373,22 @@ body,
 #class-container:not(.modal-icon) .modal-content .btn.btn-default:not(:disabled):not(.disabled):active,
 #class-container:not(.modal-icon) .modal-content .btn.btn-default:not(:disabled):not(.disabled):active:hover {
   background-color: rgba(94, 94, 94, 0.12) !important;
+}
+#class-container:not(.modal-icon) .modal-content .btn.btn-primary:focus {
+  border: 1px solid rgba(239, 118, 34, 0.7);
+  margin-top: -1px;
+}
+#class-container:not(.modal-icon) .modal-content .btn.btn-default:focus {
+  border: 1px solid rgba(94, 94, 94, 0.7);
+  margin-top: -1px;
+}
+#class-container:not(.modal-icon) .modal-content .seoc-alt-btn .btn {
+  font-family: sans-serif;
+  /* color: blue !important; */
+  text-transform: unset;
+  color: #444;
+  font-weight: normal;
+  text-decoration: underline;
 }
 /*@-moz-keyframes grow-in {
     from {height:0%;color:transparent;overflow:hidden;}

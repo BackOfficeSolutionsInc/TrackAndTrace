@@ -35,6 +35,10 @@
 @using (Html.BeginScripts()) {
     @*<script src="~/Scripts/Wizard/wizard.js"></script>
         <script src="~/Scripts/L10/L10Wizard.js"></script>*@
+	<script>
+		console.log("Wizard-started",+new Date());
+	</script>
+
     @Scripts.Render("~/bundles/meeting")
 
     @Scripts.Render("~/bundles/L10Wizard")

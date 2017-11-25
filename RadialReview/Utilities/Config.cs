@@ -464,6 +464,22 @@ namespace RadialReview.Utilities {
 			}
 		}
 
+		public static bool DisableMinification() {
+			
+			switch (GetEnv()) {
+				case Env.local_sqlite:
+					return GetAppSetting("DisableMinification", "False").ToBoolean();
+				case Env.local_mysql:
+					return GetAppSetting("DisableMinification", "False").ToBoolean();
+				case Env.production:
+					return false;
+				case Env.local_test_sqlite:
+					return GetAppSetting("DisableMinification", "False").ToBoolean();
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+
 		public static string GetTrelloKey() {
 			return GetAppSetting("TrelloKey");
 		}

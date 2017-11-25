@@ -44,6 +44,12 @@ namespace RadialReview.Controllers {
 			}
 		}
 
+
+		[Access(AccessLevel.UserOrganization)]
+		public PartialViewResult SelectExistingOrCreate(string exclude = null) {
+			return PartialView();
+		}
+
 		#region User
 		public class SaveUserModel {
 			public class Tup {
@@ -135,109 +141,12 @@ namespace RadialReview.Controllers {
 		public PartialViewResult AddModal(
 			long? managerId = null, string name = null, bool isClient = false, long? managerNodeId = null, 
 			bool forceManager = false, bool hideIsManager = false,bool hidePosition=false,long? nodeId=null,bool hideEvalOnly=false,
-            bool forceNoSend=false)
-		{
-			var sw = new Stopwatch();
-			sw.Start();
-			var caller = GetUser().Hydrate().Organization().Execute();
-			//var positions = _OrganizationAccessor.GetOrganizationPositions(caller, caller.Organization.Id);
-			var e1 = sw.ElapsedMilliseconds;
-
-
-            _PermissionsAccessor.Permitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, GetUser().Organization.Id));
-
-#pragma warning disable CS0618 // Type or member is obsolete
-                var orgPos = _OrganizationAccessor
-							.GetOrganizationPositions(GetUser(), GetUser().Organization.Id)
-							.ToListAlive()
-							.OrderBy(x => x.CustomName)
-							.ToSelectList(x => x.CustomName, x => x.Id).ToList();
-#pragma warning restore CS0618 // Type or member is obsolete
-			if (_PermissionsAccessor.IsPermitted(GetUser(), x => x.EditPositions(GetUser().Organization.Id))) {
-				orgPos.Insert(0, new SelectListItem() { Value = "-1", Text = "<" + DisplayNameStrings.createNew + ">" });
-			}
-			var e2 = sw.ElapsedMilliseconds;
-			var positions = _PositionAccessor
-								.AllPositions()
-								.ToSelectList(x => x.Name.Translate(), x => x.Id)
-								.ToList();
-			orgPos.Insert(0, new SelectListItem() { Value = "-2", Text = "<None>" });
-
-			var e3 = sw.ElapsedMilliseconds;
-			var posModel = new UserPositionViewModel() {
-				UserId = -1L,
-				PositionId = -2L,
-				OrgPositions = orgPos,
-				Positions = positions,
-				CustomPosition = null,
-
-			};
-
-			var managers = new List<SelectListItem>();
-			var strictHierarchy = caller.Organization.StrictHierarchy;
-			if (!strictHierarchy)
-				managers = AccountabilityAccessor.GetOrganizationManagerNodes(GetUser(), GetUser().Organization.Id)
-												.ToSelectList(x => x.User.GetName() + x.AccountabilityRolesGroup.NotNull(y => y.Position.NotNull(z => z.GetName().Surround(" (", ")"))), x => x.Id)
-												.ToList();
-
-			var e4 = sw.ElapsedMilliseconds;
-			if (caller.ManagingOrganization) {
-				var root = AccountabilityAccessor.GetRoot(GetUser(), caller.Organization.AccountabilityChartId);
-				managers.Insert(0, new SelectListItem() { Selected = false, Text = "[Organization Admin]", Value = "" + root.Id });
-			}
-			managers.Insert(0, new SelectListItem() { Selected = false, Text = "[None]", Value = "-3" });
-
-			//long? nodeId = managerNodeId;
-			if (managerNodeId == null) {
-				var node = DeepAccessor.Users.GetNodesForUser(GetUser(), managerId ?? caller.Id).FirstOrDefault();
-				managerNodeId = node == null ? (long?)null : node.Id;
-			}
-
-			if (!caller.Organization.Settings.EnableReview) {
-				hideEvalOnly = true;
-			}
-
-			ViewBag.ForceManager = forceManager;
-			ViewBag.HideIsManager = hideIsManager;
-			ViewBag.HidePosition = hidePosition;
-			ViewBag.HideEvalOnly = hideEvalOnly;
-            ViewBag.HideSend = forceNoSend;
-
-            string fname = null;
-			string lname = null;
-			string email = null;
-
-			if (name != null) {
-				try {
-					var names = name.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-					var nameCount = names.Length;
-					fname = string.Join(" ", names.Where((x, i) => i < nameCount - 1));
-					if (nameCount > 1) {
-						lname = names[nameCount - 1];
-						email = EmailUtil.GuessEmail(caller,caller.Organization.Id,fname,lname);
-					}
-				} catch (Exception) {
-				}
-			}
-
-
-
-			var model = new CreateUserOrganizationViewModel() {
-				Position = posModel,
-				OrgId = caller.Organization.Id,
-				StrictlyHierarchical = strictHierarchy,
-				ManagerNodeId = managerNodeId,
-				PotentialManagers = managers,
-				SendEmail = forceNoSend?false:caller.Organization.SendEmailImmediately,
-				IsClient = isClient,
-				FirstName = fname,
-				LastName = lname,
-				Email = email,
-				NodeId = nodeId				
-			};
-			var e5 = sw.ElapsedMilliseconds;
+            bool forceNoSend=false) {
+			var model = UserAccessor.BuildCreateUserVM(GetUser(),ViewBag,managerId, name, isClient, managerNodeId, forceManager, hideIsManager, hidePosition, nodeId, hideEvalOnly, forceNoSend);
 			return PartialView(model);
 		}
+
+		
 
 		[Access(AccessLevel.Manager)]
 		public PartialViewResult EditModal(long id) {
@@ -543,6 +452,21 @@ namespace RadialReview.Controllers {
 		[HttpGet]
 		[Access(AccessLevel.UserOrganization)]
 		public JsonResult Search(string q, int results = 4, string exclude = null) {
+			var oo = _SearchUsers(q, results, exclude);
+			var o = oo.Select(x => new {
+				name = x.FirstName.ToTitleCase() + " " + x.LastName.ToTitleCase(),
+				first = x.FirstName.ToTitleCase(),
+				last = x.LastName.ToTitleCase(),
+				id = x.UserOrgId,
+				ItemValue = x.UserOrgId,
+				Name = x.FirstName.ToTitleCase() + " " + x.LastName.ToTitleCase(),
+				ImageUrl = x.ImageUrl,
+
+			}).ToList();
+			return Json(ResultObject.SilentSuccess(o), JsonRequestBehavior.AllowGet);
+		}
+
+		private List<Utilities.DataTypes.TinyUser> _SearchUsers(string q, int results, string exclude) {
 			long[] excludeLong = new long[] { };
 			if (exclude != null) {
 				try {
@@ -550,15 +474,8 @@ namespace RadialReview.Controllers {
 				} catch (Exception) { }
 			}
 			results = Math.Max(0, Math.Min(100, results));
-			var o = UserAccessor.Search(GetUser(), GetUser().Organization.Id, q, results, excludeLong)
-			.Select(x => new {
-				name = x.FirstName.ToTitleCase() + " " + x.LastName.ToTitleCase(),
-				first = x.FirstName.ToTitleCase(),
-				last = x.LastName.ToTitleCase(),
-				id = x.UserOrgId
-			}).ToList();
-			return Json(ResultObject.Create(o), JsonRequestBehavior.AllowGet);
+			var oo = UserAccessor.Search(GetUser(), GetUser().Organization.Id, q, results, excludeLong);
+			return oo;
 		}
-
 	}
 }

@@ -679,6 +679,7 @@ body.modal-open {
 .body-notitlebar .body-full-width .body-content {
   padding: 0;
   max-width: 100%;
+  max-width: calc(100% - 30px );
 }
 .body-full-width .jumbotron .video-container .volume {
   position: absolute;

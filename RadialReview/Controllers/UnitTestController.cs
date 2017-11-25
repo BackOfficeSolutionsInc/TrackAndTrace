@@ -16,6 +16,8 @@ using RadialReview.Models.Json;
 using RadialReview.Models.Tests;
 using RadialReview.Models.VideoConference;
 using RadialReview.Utilities;
+using RadialReview.Utilities.DataTypes;
+using RadialReview.Models.ViewModels;
 
 namespace RadialReview.Controllers
 {
@@ -51,6 +53,15 @@ namespace RadialReview.Controllers
 		}
 
 
+		[Access(AccessLevel.Radial)]
+		public ActionResult SelectExistingOrCreate(bool create=false) {
+
+			var obj = UserAccessor.BuildCreateUserVM(GetUser(), ViewBag);
+
+			var settings = SelectExistingOrCreateUtility.Create<CreateUserOrganizationViewModel>("/User/Search", "CreateUserOrganizationViewModel",obj, create);
+
+			return PartialView(settings);
+		}
 
 		[Access(AccessLevel.Radial)]
 		public ActionResult Tristate(Tristate state = Models.Enums.Tristate.Indeterminate)

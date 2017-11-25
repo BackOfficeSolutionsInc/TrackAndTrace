@@ -5,6 +5,15 @@ using RadialReview.Utilities;
 
 namespace RadialReview {
     public class BundleConfig {
+
+		private static Bundle UpdateMinification(Bundle scripts) {
+			if (Config.DisableMinification()) {
+				scripts.Transforms.Clear();
+			}
+			return scripts;
+		}
+
+
         // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles) {
             string[] angularHelpers_Scripts, angularHelpers_Styles;// angularPeople_Scripts, angularPeople_Styles;
@@ -36,32 +45,34 @@ namespace RadialReview {
 
             BundleTable.EnableOptimizations = Config.OptimizationEnabled();
 
-        }
+
+
+		}
 
         private static void People(BundleCollection bundles, string[] ngStyles, string[] ngScripts) {
-			bundles.Add(new ScriptBundle("~/bundles/people").Include(ngScripts)
+			bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/people").Include(ngScripts)
 				.Include(
 					"~/Scripts/Angular/People/init.js",
 					"~/Scripts/Angular/People/Survey/SurveyComponents.js",
 					"~/Scripts/Angular/People/PeopleAnalyzer/PeopleAnalyzer.js",
 					"~/Scripts/People/*.js"
-				));
+				)));
             bundles.Add(new StyleBundle("~/styles/people").Include(ngStyles).Include(
 				"~/Content/SnackbarAlerts.css", "~/Content/People/*.css"));
 		}
 
         private static void SetCard(BundleCollection bundles) {
-            bundles.Add(new ScriptBundle("~/bundles/SetCard").Include("~/Scripts/jquery/jquery.redirect.js"));
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/SetCard").Include("~/Scripts/jquery/jquery.redirect.js")));
         }
 
         private static void Compatability(BundleCollection bundles) {
-            bundles.Add(new ScriptBundle("~/bundles/compatability").Include(
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/compatability").Include(
                       "~/Scripts/Main/iefixes.js"
-            ));
+            )));
         }
 
         private static void Main(BundleCollection bundles) {
-            bundles.Add(new ScriptBundle("~/bundles/main").Include(
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/main").Include(
 					  "~/Scripts/Main/time.js",
 					  "~/Scripts/Main/linq.js",
 					  "~/Scripts/Main/radial.js",
@@ -88,22 +99,22 @@ namespace RadialReview {
                       "~/Scripts/Main/tooltips.js"
             /*,
 			"~/Scripts/Main/realtime.js"*/
-            ));
+            )));
         }
 
 		private static void AngularMaterial(BundleCollection bundles) {
-			bundles.Add(new ScriptBundle("~/bundles/AngularMaterial").Include(
+			bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/AngularMaterial").Include(
 				//"~/bower_components/angular-material-data-table/dist/md-data-table.min.js"
 				//S:\repos\Radial\RadialReview\RadialReview\Scripts\Angular\Helpers\Libraries\angular-material-custom.js
 				"~/Scripts/Angular/Helpers/Libraries/angular-material-custom.js"
-			));
+			)));
 		}
 
 		private static void Angular(BundleCollection bundles) {
-            bundles.Add(new ScriptBundle("~/bundles/Angular").Include(
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/Angular").Include(
                 //"~/bower_components/angular-material-data-table/dist/md-data-table.min.js"
                 "~/Scripts/Angular/MaterialDesign/md-data-table.js"
-            ));
+            )));
 
             bundles.Add(new StyleBundle("~/styles/Angular").Include(
              //"~/bower_components/angular-material-data-table/dist/md-data-table.min.css"
@@ -111,14 +122,14 @@ namespace RadialReview {
         }
 
         private static void VTO(BundleCollection bundles, string[] angularHelpers_Scripts) {
-            bundles.Add(new ScriptBundle("~/bundles/vto")
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/vto")
                             .Include(angularHelpers_Scripts)
                             .Include(
                                 "~/Scripts/jquery/jquery.autoresize.js",
                                 "~/Scripts/Angular/VTO/VtoApp.js",
                                 "~/Scripts/Angular/VTO/VtoController.js",
                                 "~/Scripts/VTO/vto.js"
-                            ));
+                            )));
         }
 
         private static void Dashboard(BundleCollection bundles) {
@@ -129,16 +140,16 @@ namespace RadialReview {
             ));
 
             ///I dont think this is used anywhere...
-            bundles.Add(new ScriptBundle("~/bundles/Dashboard").Include(
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/Dashboard").Include(
                 "~/Scripts/Dashboard/dashboard.js",
                 "~/Scripts/jquery/jquery.ba-throttle-debounce.js",
                 "~/Scripts/L10/L10.js",
                 "~/Scripts/L10/L10Scorecard.js",
                 "~/Scripts/d3/d3.js"
-            ));
+            )));
             //^^^^^
 
-            bundles.Add(new ScriptBundle("~/bundles/DashboardGrid").Include(
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/DashboardGrid").Include(
                 "~/Scripts/Dashboard/dashboard.js",
                 "~/Scripts/Grid/fixtures.js",
                 "~/Scripts/Grid/src/gridList.js",
@@ -146,13 +157,13 @@ namespace RadialReview {
                 "~/Scripts/Grid/loadTiles.js",
                 "~/Scripts/CoreProcess/coreProcessRT.js"
             //....
-            ));
+            )));
 
-            bundles.Add(new ScriptBundle("~/bundles/DashboardPostAngular").Include(
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/DashboardPostAngular").Include(
                 "~/Scripts/d3/d3.js",
                 "~/Scripts/Angular/Helpers/d3/LineChart.js",
                 "~/Scripts/Angular/Tiles/L10StatsTile.js"
-            ));
+            )));
 
 
 
@@ -160,35 +171,35 @@ namespace RadialReview {
         }
 
         private static void Manage(BundleCollection bundles) {
-            bundles.Add(new ScriptBundle("~/bundles/Manage").Include(
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/Manage").Include(
                 "~/Scripts/jquery/jquery.tablesorter.js",
                 "~/Scripts/jquery/jquery.filtertable.min.js"
-            ));
+            )));
 
             bundles.Add(new StyleBundle("~/Content/ManageCSS")
                 .Include("~/Content/Manage/Manage.css"));
         }
 
         private static void MeetingEdit(BundleCollection bundles) {
-            bundles.Add(new ScriptBundle("~/bundles/MeetingEdit").Include("~/Scripts/components/jquery.bootstrap-duallistbox.js"));
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/MeetingEdit").Include("~/Scripts/components/jquery.bootstrap-duallistbox.js")));
             bundles.Add(new StyleBundle("~/Content/MeetingEdit").Include("~/Content/bootstrap-duallistbox.css"));
         }
 
         private static void DashboardWidgets(BundleCollection bundles) {
-            bundles.Add(new ScriptBundle("~/bundles/MeasurableList").Include("~/Scripts/jquery/jquery.ui.sortable.js", "~/Scripts/L10/L10Scorecard.js"));
-            bundles.Add(new ScriptBundle("~/bundles/ScorecardDetails").Include(
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/MeasurableList").Include("~/Scripts/jquery/jquery.ui.sortable.js", "~/Scripts/L10/L10Scorecard.js")));
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/ScorecardDetails").Include(
                 "~/Scripts/jquery/jquery.ui.sortable.js",
                 "~/Scripts/L10/L10Scorecard.js"
-            ));
-            bundles.Add(new ScriptBundle("~/bundles/MeetingDetails").Include(
+            )));
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/MeetingDetails").Include(
                 "~/Scripts/L10/charts/sparklines.min.js",
                 "~/Scripts/jquery/jquery.ba-throttle-debounce.js",
                 "~/Scripts/L10/L10.js"
-            ));
+            )));
         }
 
         private static void L10Wizard(BundleCollection bundles, string[] angularHelpers_Scripts, string[] angularHelpers_Styles) {
-            bundles.Add(new ScriptBundle("~/bundles/L10Wizard").Include("~/Scripts/Wizard/wizard.js", "~/Scripts/L10/L10Wizard.js", "~/Scripts/L10/L10.js"));
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/L10Wizard").Include("~/Scripts/Wizard/wizard.js", "~/Scripts/L10/L10Wizard.js", "~/Scripts/L10/L10.js")));
             bundles.Add(new StyleBundle("~/Content/L10Wizard").Include(
                 "~/Content/L10/L10Wizard.css",
                 "~/Content/Angular/xeditable.min.css",
@@ -197,11 +208,11 @@ namespace RadialReview {
             ));
 
             //_L10App.cshtml
-            bundles.Add(new ScriptBundle("~/bundles/L10js").Include(
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/L10js").Include(
                 "~/Scripts/jquery/jquery.ba-throttle-debounce.js",
-                "~/Scripts/L10/L10.js"));
+                "~/Scripts/L10/L10.js")));
 
-            bundles.Add(new ScriptBundle("~/bundles/meeting")
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/meeting")
                 .Include(angularHelpers_Scripts)
                 .Include(
                     "~/Scripts/Angular/Meetings/RockState.js",
@@ -209,7 +220,7 @@ namespace RadialReview {
                     "~/Scripts/Angular/Helpers/Libraries/angular-xeditable.js",
                     "~/Scripts/Angular/Meetings/L10App.js",
                     "~/Scripts/Angular/Meetings/L10Controller.js"
-                ));
+                )));
             bundles.Add(new StyleBundle("~/styles/meeting").Include(angularHelpers_Styles));
             bundles.Add(new StyleBundle("~/styles/archive").Include("~/Content/L10/Archive/Archive.css"));
 
@@ -218,21 +229,21 @@ namespace RadialReview {
 
         private static void L10(BundleCollection bundles) {
             bundles.Add(new StyleBundle("~/styles/L10").Include(
-        "~/Content/L10/fireworks.css",
-        "~/Content/L10/L10.css",
-        "~/Content/L10/L10Todo.css",
-        "~/Content/L10/L10Stats.css",
-        "~/Content/L10/L10Rocks.css",
-        "~/Content/L10/L10Headlines.css",
-        "~/Content/L10/L10IDS.v2.css",
-        "~/Content/L10/L10Scorecard.css",
-        "~/Content/L10/L10Notes.css",
-        "~/Content/L10/L10Transcribe.css",
-        "~/Content/L10/L10ChatLog.css",
-        "~/Content/bootstrap-switch.css"
-    ));
+				"~/Content/L10/fireworks.css",
+				"~/Content/L10/L10.css",
+				"~/Content/L10/L10Todo.css",
+				"~/Content/L10/L10Stats.css",
+				"~/Content/L10/L10Rocks.css",
+				"~/Content/L10/L10Headlines.css",
+				"~/Content/L10/L10IDS.v2.css",
+				"~/Content/L10/L10Scorecard.css",
+				"~/Content/L10/L10Notes.css",
+				"~/Content/L10/L10Transcribe.css",
+				"~/Content/L10/L10ChatLog.css",
+				"~/Content/bootstrap-switch.css"
+			));
 
-            bundles.Add(new ScriptBundle("~/bundles/L10").Include(
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/L10").Include(
                     "~/Scripts/L10/resize-columns.js",
                     "~/Scripts/jquery/jquery.ui.sortable.js",
                     "~/Scripts/L10/charts/sparklines.min.js",
@@ -253,35 +264,35 @@ namespace RadialReview {
                     "~/Scripts/L10/L10ChatLog.js",
                     "~/Scripts/components/rockstate.js",
                     "~/Scripts/L10/rtL10.js"//Ensure last
-                ));
+                )));
 
-            bundles.Add(new ScriptBundle("~/bundles/MeetingPage").Include(
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/MeetingPage").Include(
                 "~/Scripts/jquery/jquery.ba-throttle-debounce.js",
                 "~/Scripts/jquery/jquery.scrollTo.js",
                 "~/Scripts/bootstrap-switch.js"
-            ));
+            )));
 
         }
 
         private static void GettingStarted(BundleCollection bundles) {
-            bundles.Add(new ScriptBundle("~/bundles/GetStarted").Include("~/Scripts/Angular/GettingStartd/GSController.js", "~/Scripts/jquery/jquery.redirect.js", "~/Scripts/jquery/jquery.vide.js"));
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/GetStarted").Include("~/Scripts/Angular/GettingStartd/GSController.js", "~/Scripts/jquery/jquery.redirect.js", "~/Scripts/jquery/jquery.vide.js")));
             bundles.Add(new StyleBundle("~/Content/GetStarted").Include("~/Content/GettingStarted/GettingStarted.css"));
 
         }
 
         private static void D3(BundleCollection bundles) {
-            bundles.Add(new ScriptBundle("~/bundles/d3").Include("~/Scripts/d3/d3.min.js"));
-            bundles.Add(new ScriptBundle("~/bundles/d3v3").Include("~/Scripts/d3/d3.v3.js", "~/Scripts/d3/line.v1.js"));
-            bundles.Add(new ScriptBundle("~/bundles/linechart").Include("~/Scripts/d3/line.v1.js"));
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/d3").Include("~/Scripts/d3/d3.min.js")));
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/d3v3").Include("~/Scripts/d3/d3.v3.js", "~/Scripts/d3/line.v1.js")));
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/linechart").Include("~/Scripts/d3/line.v1.js")));
             bundles.Add(new StyleBundle("~/Content/Charts").Include("~/Content/Chart/Chart.css"));
-            bundles.Add(new ScriptBundle("~/bundles/TranslateSliders").Include("~/Scripts/review/translateSlider.js"));
-            bundles.Add(new ScriptBundle("~/bundles/Reorganize").Include("~/Scripts/d3/orgchart.js"));
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/TranslateSliders").Include("~/Scripts/review/translateSlider.js")));
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/Reorganize").Include("~/Scripts/d3/orgchart.js")));
 
         }
 
         private static void AccoutabilityChart(BundleCollection bundles, string[] angularHelpers_Scripts) {
 
-            bundles.Add(new ScriptBundle("~/bundles/AccountabilityChart")
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/AccountabilityChart")
                 .Include(angularHelpers_Scripts)
             .Include(
                 "~/Scripts/d3/d3.js",
@@ -293,28 +304,28 @@ namespace RadialReview {
                 "~/Scripts/Angular/AccountabilityChart/ACController.js",
                 "~/Scripts/d3/radial.d3.tree.js",
                 "~/Scripts/undo.js"
-            ));
+            )));
             bundles.Add(new StyleBundle("~/Content/AccChart")
                 .Include("~/Content/AccountabilityChart/AccountabilityChart.css"));
 
         }
 
         private static void VideoChat(BundleCollection bundles) {
-            bundles.Add(new ScriptBundle("~/bundles/VideoChat1").Include(
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/VideoChat1").Include(
     "~/Scripts/video/hark.js",
     "~/Scripts/video/video.js"
-));
-            bundles.Add(new ScriptBundle("~/bundles/VideoChat2").Include(
+)));
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/VideoChat2").Include(
                 "~/Scripts/L10/AV/adapter.js",
                 "~/Scripts/L10/AV/connectionManager.js",
                 "~/Scripts/L10/AV/app.js"
-            ));
-            bundles.Add(new ScriptBundle("~/bundles/Video").Include(
+            )));
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/Video").Include(
                 "~/Scripts/video/RTCMultiConnection.js",
                 "~/Scripts/video/FileBufferReader.js",
                 "~/Scripts/video/socket.io.js",
                 "~/Scripts/video/hark.js"
-            ));
+            )));
 
 
         }
@@ -322,18 +333,18 @@ namespace RadialReview {
         private static void MaterialDesign(BundleCollection bundles) {
             bundles.Add(new StyleBundle("~/Content/MdStepper").Include("~/Content/MaterialDesign/Libraries/md-stepper.css"));
             bundles.Add(new StyleBundle("~/Content/MdFile").Include("~/Content/MaterialDesign/Libraries/lf-ng-md-file-input.css"));
-            bundles.Add(new ScriptBundle("~/bundles/MdStepper").Include("~/Scripts/Angular/MaterialDesign/md-stepper.js"));
-            bundles.Add(new ScriptBundle("~/bundles/MdFile").Include("~/Scripts/Angular/MaterialDesign/lf-ng-md-file-input.min.js"));
-            bundles.Add(new ScriptBundle("~/bundles/filtertable").Include("~/Scripts/jquery/jquery.filtertable.min.js"));
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/MdStepper").Include("~/Scripts/Angular/MaterialDesign/md-stepper.js")));
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/MdFile").Include("~/Scripts/Angular/MaterialDesign/lf-ng-md-file-input.min.js")));
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/filtertable").Include("~/Scripts/jquery/jquery.filtertable.min.js")));
 
         }
 
         private static void OldReview(BundleCollection bundles) {
-            bundles.Add(new ScriptBundle("~/bundles/TakeReview").Include(
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/TakeReview").Include(
     "~/Scripts/review/review.js",
     "~/Scripts/review/translateSlider.js",
     "~/Scripts/jquery/jquery-simple-slider.js"
-));
+)));
             bundles.Add(new StyleBundle("~/Content/TakeReview").Include(
                 "~/Content/simple-slider.css",
                 "~/Content/Review.css"
@@ -350,7 +361,7 @@ namespace RadialReview {
                 "~/Content/ReportBuilder/evaluation.css",
                 "~/Content/Reports/ReportDetails.css"
            ));
-            bundles.Add(new ScriptBundle("~/bundles/ReviewDetails").Include(
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/ReviewDetails").Include(
                 "~/Scripts/Angular/MaterialDesign/md-stepper.js",
                 "~/Scripts/jquery/jquery.nouislider.js",
                 "~/Scripts/d3/d3.v3.js",
@@ -362,7 +373,7 @@ namespace RadialReview {
                 "~/Scripts/d3/Plot.js",
                 "~/Scripts/moment.min.js",
                 "~/Scripts/report/reportbuilder.js"
-            ));
+            )));
             bundles.Add(new StyleBundle("~/Content/ClientDetails").Include(
                     "~/Content/Chart/Scatter.v2.css",
                     //"~/Content/Chart/Scatter.v2.css",
@@ -373,13 +384,13 @@ namespace RadialReview {
                     "~/Content/chart.css",
                     "~/Content/Reports/ClientDetails.css"
                 ));
-            bundles.Add(new ScriptBundle("~/bundles/ClientDetails").Include(
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/ClientDetails").Include(
                     "~/Scripts/d3/d3.v3.js",
                     "~/scripts/d3/d3.csv.js",
                     "~/scripts/d3/Plot.js",
                     "~/Scripts/d3/Scatter.v2.js",
                     "~/Scripts/review/translateSlider.js"
-                ));
+                )));
             bundles.Add(new StyleBundle("~/Content/ReportStyles").Include("~/Content/Reports/Reports.css"));
 
         }
@@ -390,7 +401,7 @@ namespace RadialReview {
             //bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
             //			"~/Scripts/modernizr-*"));
 
-            bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/bootstrap").Include(
                       "~/Scripts/components/posneg.js",
                       "~/Scripts/components/tristate.js",
                       "~/Scripts/components/fivestate.js",
@@ -402,7 +413,7 @@ namespace RadialReview {
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/respond.js",
                       "~/Scripts/bootstrap-slider.js",
-                      "~/Scripts/bootstrap-datepicker.js"));
+                      "~/Scripts/bootstrap-datepicker.js")));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                     "~/Content/components/posneg.css",
@@ -427,20 +438,20 @@ namespace RadialReview {
         }
 
         private static void JQuery(BundleCollection bundles) {
-            bundles.Add(new ScriptBundle("~/bundles/jquery")
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/jquery")
                             .Include("~/Scripts/jquery-{version}.js")
                             .Include("~/Scripts/jquery.unobtrusive-ajax.js")
                             .Include("~/Scripts/jquery/jquery.qtip.js")
                             //.Include("~/Scripts/jquery/jquery.attrchange.js")
-                            );
+                            ));
 
-            bundles.Add(new ScriptBundle("~/bundles/animations")
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/animations")
                 .Include("~/Scripts/animations/*.js")
                 .Include("~/Scripts/jquery/*.js")
-                );
+                ));
 
-            bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
-                        "~/Scripts/jquery.validate*"));
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/jqueryval").Include(
+                        "~/Scripts/jquery.validate*")));
         }
 
         private static void AngularHelpers(out string[] angularHelpers_Scripts, out string[] angularHelpers_Styles/*, out string[] angularPeople_Scripts*/) {

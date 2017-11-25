@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Web;
+using static RadialReview.Utilities.SelectExistingOrCreateUtility;
 
 namespace RadialReview.Utilities.DataTypes {
 	[DataContract]
@@ -32,6 +33,14 @@ namespace RadialReview.Utilities.DataTypes {
 
 		public long ModelId { get { return UserOrgId; } }
 		public string ModelType { get { return ForModel.GetModelType<UserOrganizationModel>(); } }
+
+		public string Description {
+			get {
+				return null;
+			}
+		}
+
+		public string ItemValue {get {return "" + UserOrgId;}}
 
 		public Tuple<string, string, string, long> Tuplize() {
 			return Tuple.Create(FirstName, LastName, Email, UserOrgId);

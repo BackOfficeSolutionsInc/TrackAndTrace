@@ -162,6 +162,7 @@
     <Compile Include="Models\Angular\CoreProcess\AngularCoreProcess.cs" />
     <Compile Include="Models\Application\Variable.cs" />
     <Compile Include="Models\ClientSuccess\TooltipModels.cs" />
+    <Compile Include="Models\L10\L10LookupCache.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Utilities\Attributes\Untested.cs" />
     <Compile Include="Utilities\CoreProcess\AmazonSQSUtility.cs" />
@@ -876,6 +877,7 @@
     <Compile Include="Utilities\ReflectionUtility.cs" />
     <Compile Include="Utilities\ResourceUtility.cs" />
     <Compile Include="Utilities\SearchUtil.cs" />
+    <Compile Include="Utilities\SelectExistingOrCreateUtility.cs" />
     <Compile Include="Utilities\Serializers\JsonSerializer.cs" />
     <Compile Include="Utilities\Serializers\AngularSerializer.cs" />
     <Compile Include="Utilities\SetUtility.cs" />
@@ -1705,6 +1707,12 @@
     <Content Include="Views\Audit\MeasurableScores.cshtml" />
     <Content Include="Views\Audit\Index.cshtml" />
     <Content Include="Views\TileData\L10Headlines.cshtml" />
+    <Content Include="Views\User\SelectExistingOrCreate.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\SelectExistingOrCreate.cshtml" />
+    <Content Include="Views\UnitTest\SelectExistingOrCreate.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\TinyUser.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\CreateUserOrganizationViewModel.cshtml" />
+    <Content Include="Views\L10\AddAttendee.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -2246,7 +2254,7 @@
     <Content Include="Views\Manage\Organization.cshtml" />
     <Content Include="Views\Team\Edit.cshtml" />
     <Content Include="Views\Team\AddModal.cshtml" />
-    <Content Include="Views\User\EditorTemplates\UserPositionViewModel.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\UserPositionViewModel.cshtml" />
     <Content Include="Views\Reports\Generate.cshtml" />
     <Content Include="Views\Reports\List.cshtml" />
     <Content Include="Views\Shared\_Completion.cshtml" />
@@ -2445,6 +2453,7 @@
     <Folder Include="Views\Svg\" />
     <Folder Include="Views\Transcript\" />
     <Folder Include="Views\Url\" />
+    <Folder Include="Views\User\EditorTemplates\" />
     <Folder Include="Views\VtoData\" />
     <Folder Include="Views\WebRtc\" />
     <Folder Include="Views\Wizard\" />

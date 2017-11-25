@@ -1,7 +1,9 @@
-﻿
+﻿console.log("L10Controller-Loaded", +new Date());
 angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', '$location',
     'radial', 'meetingDataUrlBase'/*, 'dateFormat'*/, 'recurrenceId', "meetingCallback", "$compile", "$sce", "$q", "$window", "$filter",
 function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurrenceId, meetingCallback, $compile, $sce, $q, $window, $filter) {
+
+	console.log("L10Controller-Started", +new Date());
 
     $scope.trustAsResourceUrl = $sce.trustAsResourceUrl;
     if (recurrenceId == null)
@@ -195,8 +197,11 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
     var firstLoad = true;
 
     function loadDataFromUrl(url) {
-        var stD = new Date();
-        $http({ method: 'get', url: url }).success(function (data, status) {
+    	var stD = new Date();
+
+    	console.log("L10Controller-loadDataFromUrl", +new Date());
+    	$http({ method: 'get', url: url }).success(function (data, status) {
+    		console.log("L10Controller-loadDataFromUrl-success", +new Date());
             console.log("A dur: " + (+(new Date() - stD)));
             var ddr = undefined;
             if (typeof ($scope.model) !== "undefined" && typeof ($scope.model.dataDateRange) !== "undefined")
@@ -228,10 +233,13 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 
     $scope.isReloading = false;
     $scope.functions.reload = function (reload, range, first) {
+
+
         if ($scope.isReloading) {
             console.log("Already reloading.");
             return;
         }
+    	console.log("L10Controller-Reloading", +new Date());
         $scope.isReloading = true;
 
         if (typeof (reload) === "undefined") {
@@ -751,10 +759,13 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 
     $scope.ShowSearch = false;
     $scope.functions.showUserSearch = function (event) {
-        $scope.ShowSearch = true;
-        $timeout(function () {
-            $(".user-list-container .livesearch-container input").focus();
-        }, 1);
+
+    	$scope.functions.showModal("Add Attendee", "/L10/AddAttendee?meetingId=" + $scope.recurrenceId, "/L10/AddAttendee");
+
+        //$scope.ShowSearch = true;
+        //$timeout(function () {
+        //    $(".user-list-container .livesearch-container input").focus();
+        //}, 1);
     };
 
     $scope.functions.addAttendee = function (selected) {

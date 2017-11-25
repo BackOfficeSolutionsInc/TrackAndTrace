@@ -273,6 +273,10 @@ body,
 		}
 	}
 
+	.wizard-page.component {
+		padding-bottom: 25px;
+	}
+
 	.component {
 		.BoxShadowHelper(1);
 		padding: 15px;
@@ -813,6 +817,15 @@ body,
 			.delete-row()
 		}
 	}
+
+
+	.create-row {
+		bottom: 1px;
+		right: 35px;
+		position: fixed !important;
+		opacity: 0;
+		transition: opacity ease-in .2s;
+	}
 }
 
 #class-container:not(.modal-icon) .modal-content {
@@ -837,8 +850,16 @@ body,
 		padding: 9px;
 		.material-button-flat();
 	}
-	/*.btn-primary {
 
+	.seoc-alt-btn .btn {
+		font-family: sans-serif;
+		/* color: blue !important; */
+		text-transform: unset;
+		color: #444;
+		font-weight: normal;
+		text-decoration: underline;
+	}
+	/*.btn-primary {
         background-color: @traction-orange;
     }*/
 }

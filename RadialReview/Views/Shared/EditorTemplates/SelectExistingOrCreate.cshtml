@@ -1,0 +1,274 @@
+﻿@model RadialReview.Utilities.SelectExistingOrCreateUtility.SelectExistingOrCreate
+
+@{
+	var guid = Guid.NewGuid().ToString().Replace("-", "");
+}
+
+<div class="seoc seoc-@guid">
+	<span class="seoc-alt-btn"><span class="btn btn-link"></span></span>
+	<div class="seoc-panel">
+		<div class="seoc-existing hidden">
+			<select class="seoc-select" name="@Html.NameFor(x=>x.SelectedValue)"></select>
+		</div>
+		<div class="seoc-create hidden">
+			<div class="panel">
+				<div class="panel-body">
+					@Html.EditorFor(x => x.Object, Model.Template)
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+<style>
+	.seoc-@guid{
+		width:100%;
+		display:inline-block;
+	}
+
+	.seoc-@guid .seoc-panel{
+		/*width:90%;
+		width:calc(100% - 169px);*/
+		width:100%;
+		display:inline-block;
+		float:left;
+	}
+
+
+	.seoc-@guid .seoc-panel .panel{
+		-webkit-box-shadow: none;
+		box-shadow: none;
+	}
+
+	.seoc-@guid select {
+		width:100%;
+	    padding: 9px 9px 8px 9px;
+		border-radius: 4px;
+		border: 1px solid #ccc;
+		color:#888;
+	}
+
+	.seoc-@guid .seoc-existing .select2 {
+		width:100% !important;
+	}
+
+	.seoc-@guid .seoc-existing .select2-container .select2-selection__rendered{
+		/*padding-left:2px;*/
+	}
+
+	.seoc-@guid .seoc-existing .select2-container--default .select2-selection--single .select2-selection__rendered {
+		line-height: 32px;
+	}
+
+	.seoc-@guid .seoc-existing .select2-container--default .select2-selection--single .select2-selection__clear {
+		cursor: pointer;
+		float: right;
+		font-weight: bold;
+		background-color: #ccc;
+		width: 60px;
+		height: 18px;
+		margin-top: 7px;
+		color: white;
+		line-height: 18px;
+		text-align: right;
+		padding-right: 6px;
+		border-radius: 5px;
+		transition:.15s ease background;
+	}
+
+	.seoc-@guid .seoc-existing .select2-container--default .select2-selection--single .select2-selection__clear:hover {
+		background-color: #7b7b7b;
+	}
+
+	.seoc-@guid .seoc-existing .select2-container--default .select2-selection--single .select2-selection__clear:before{
+		content: "CLEAR";
+		font-size: 11px;
+		padding-right: 4px;
+		top: -1px;
+		position: relative;
+		color: #eee;
+	}
+
+	.seoc-@guid .seoc-create .panel-body{
+		padding:9px 11px;
+	}
+
+	.seoc-@guid {
+		min-height:38px;
+	}
+
+	.seoc-@guid .seoc-alt-btn {
+		float:left;
+	    position: absolute;
+		top: -18px;
+		right: 0px;
+	}
+
+	.seoc-@guid .seoc-alt-btn .btn{
+	}
+
+	.seoc-@guid .seoc-alt-btn .btn:hover{
+		color:#EF7622;
+		/*text-decoration:underline;*/
+		font-style: italic;
+	}
+
+
+	@*.seoc-@guid .select2-container .select2-selection--single{
+		height:28px !important;
+	}*@
+
+
+</style>
+<script>
+	//$.fn.select2.amd.require(
+	//	["select2/core", "select2/utils", "select2/compat/matcher"],
+	//	function (Select2, Utils, oldMatcher) {
+
+
+	function a@(guid)() {
+		$.getScript("//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.js").done(function () {
+
+			var container = $(".seoc-@guid");
+
+			var settings = {
+				showCreate: @Model.ShowCreateFirst.ToJavascript(),
+				searchUrl:  "@Model.SearchUrl",
+			};
+
+			var hiddenPage;
+
+
+			var template = function (d) {
+				var des = "";
+				var org = "";
+				var name = "";
+				var img = "";
+				if (typeof (d.Name) === "string")
+					name = d.Name;
+
+				if (typeof (d.Description) === "string")
+					des = " " + d.ItemDescription;
+
+				if (typeof (d.ImageUrl) === "string")
+					img = profilePicture(d.ImageUrl, name);
+
+
+				var markup = "<div class='searchresult-image'>" + img + "</div>" +
+							  "<div class='searchresult-meta'>" +
+								"<div class='searchresult-title'>" + name + "</div>" +
+								"<div class='searchresult-description'>" + des + "</div>" +
+							  "</div>";
+
+				return markup;
+			};
+
+			var select2 = container.find(".seoc-existing .seoc-select").select2({
+				closeOnSelect: true,
+				allowClear: true,
+				placeholder: { Name: "Search for existing..." },
+				//selectOnClose: true,
+				ajax: {
+					url: settings.searchUrl,
+					dataType: 'json',
+					//minimumInputLength: Model.MinimumInputLength,
+					delay: 450,
+					data: function (params) {
+						return {
+							search: params.term,
+							q:params.term,
+						};
+					},
+					processResults: function (data, page) {
+						if (data.Object){
+							data = data.Object;
+						}
+
+						data.forEach(function (d, i) {
+							d.id = d.ItemValue;
+						});
+
+						data.push({
+							Name: "Create New...",
+							ItemValue: '!!new',
+
+						})
+
+						return {
+							results: data
+						};
+					},
+					cache: true
+				},
+				escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+				minimumInputLength: 1,
+				templateResult: function (d) {
+					return "<div><div class='searchresult clearfix' data-value='" + d.ItemValue + "'>" + template(d) + "</div></div>";
+				},
+				templateSelection: function (d) {
+					return "<div class='searchresult searchresult-selected'>" + template(d) + "</div>";
+				}
+			}).on("change", function (e) {
+				//console.info($(this).select2('data')[0].Name);
+				//$("[@@(nameAttr + "Text")]").val($(this).select2('data')[0].Name);
+			});
+			$(select2).on('select2:open', function (e) {
+				var o = $(container).find(".seoc-existing .select2");
+				//setTimeout(function(){
+					var loc = /*o.offset().top+o.height() -*/ parseInt($("html").css("padding-top"));
+					$("body>.select2-container").css("margin-top",-loc);
+				//},0);
+
+			});
+
+
+
+			function adjustPage(){
+				var container = $(".seoc-@guid");
+				//.toggleClass("hidden",settings.showCreate);
+				//$(container).find(".seoc-create").toggleClass("hidden",!settings.showCreate);
+				var text = "";
+				if (settings.showCreate){
+					var tempHidden = hiddenPage;
+					hiddenPage = $(container).find(".seoc-existing").detach();
+					if (tempHidden){
+						$(container).find(".seoc-panel").append(tempHidden);
+					}
+
+					text = "or select existing";
+				}else{
+					var tempHidden = hiddenPage;
+					hiddenPage = $(container).find(".seoc-create").detach();
+					if (tempHidden){
+						$(container).find(".seoc-panel").append(tempHidden);
+					}
+					text = "or create new";
+				}
+
+				container.find(".seoc-alt-btn .btn").text(text);
+			}
+
+
+			container.find(".seoc-alt-btn .btn").click(function(){
+				settings.showCreate=!settings.showCreate;
+				adjustPage();
+			});
+
+			$(container).find(".seoc-existing,.seoc-create").removeClass("hidden");
+			adjustPage();
+
+
+		});
+	}
+
+	function defer@(guid)() {
+		if (window.jQuery)
+			a@(guid)();
+		else
+			setTimeout(function () { defer@(guid)() }, 50);
+	}
+	defer@(guid)();
+</script>
