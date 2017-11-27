@@ -42,7 +42,7 @@ namespace RadialReview.Controllers
 				} catch (Exception) { }
 			}
 
-			await ScorecardAccessor.Search(GetUser(), GetUser().Organization.Id,q, excludeLong);
+			var o = await ScorecardAccessor.Search(GetUser(), GetUser().Organization.Id,q, excludeLong);
 			//var oo = _SearchUsers(q, results, exclude);
 			//var o = oo.Select(x => new {
 			//	name = x.FirstName.ToTitleCase() + " " + x.LastName.ToTitleCase(),
