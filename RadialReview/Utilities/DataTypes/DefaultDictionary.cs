@@ -27,7 +27,7 @@ namespace RadialReview.Utilities.DataTypes {
 		}
 
 		public DefaultDictionary(Func<K, V> defaultFunc, Func<K, V, V, V> mergeFunc) {
-			DefaultFunction = defaultFunc;
+			DefaultFunction = defaultFunc?? new Func<K,V>(x=> default(V));
 			MergeFunction = mergeFunc;
 			Backing = new Dictionary<K, V>();
 		}
