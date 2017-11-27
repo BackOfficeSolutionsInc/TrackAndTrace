@@ -38,7 +38,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		[OutputCache(NoStore = true, Duration = 0)]
-		public async Task<JsonResult> DetailsData(long id, bool scores = true, bool historical = true, long start = 0, long end = long.MaxValue, bool fullScorecard = false) {
+		public async Task<JsonResult> DetailsData(long id, bool scores = true, bool historical = true, long start = 0, long end = long.MaxValue, bool fullScorecard = false,bool removeWeeks = false) {
 			var startRange = Math2.Min(start.ToDateTime(), end.ToDateTime());
 			var endRange = Math2.Max(start.ToDateTime(), end.ToDateTime());
 
@@ -77,6 +77,11 @@ namespace RadialReview.Controllers {
 					}
 				}
 			}
+
+			if (removeWeeks) {
+				model.Scorecard.Weeks = null;
+			}
+
 			return Json(model, JsonRequestBehavior.AllowGet);
 		}
 	}

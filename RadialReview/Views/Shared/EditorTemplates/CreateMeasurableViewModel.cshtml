@@ -1,0 +1,27 @@
+﻿@model RadialReview.Models.ViewModels.CreateMeasurableViewModel
+
+
+<div class="row smallBreak2">
+	<div class="col-xs-3"><label>Measurable:</label></div>
+	<div class="col-xs-9 noPadLeft">
+		@Html.TextBoxFor(x => x.Title, new { placeholder = "Measurable Name", @class = "fullWidth form-control blend" })
+	</div>
+</div>
+<div class="row smallBreak2">
+	<div class="col-xs-3"><label>Owner:</label></div>
+	<div class="col-xs-9 noPadLeft">
+		@Html.DropDownListFor(x => x.AccountableUser, Model.PotentialUsers, new { placeholder = "Measurable Name", @class = "fullWidth form-control blend" })
+	</div>
+</div>
+<div class="row smallBreak2">
+	<div class="col-xs-3"><label>Goal:</label></div>
+	<div class="col-xs-3 noPadLeft">
+		@Html.EnumDropDownListFor(x => x.GoalDirection, new { placeholder = "", @class = "fullWidth form-control blend" })
+	</div>
+	<div class="col-xs-3 noPadLeft">
+		@Html.EditorFor(x => x.Goal, new { placeholder = "Goal", @class = "fullWidth form-control blend" })
+	</div>
+	<div class="col-xs-3 noPadLeft">
+		@Html.EnumDropDownListFor(x => x.Units, new { placeholder = "Goal", @class = "fullWidth form-control blend" })
+	</div>
+</div>

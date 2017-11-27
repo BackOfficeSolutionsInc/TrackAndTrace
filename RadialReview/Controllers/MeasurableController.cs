@@ -32,6 +32,31 @@ namespace RadialReview.Controllers
             }
 		}
 
+		[HttpGet]
+		[Access(AccessLevel.UserOrganization)]
+		public JsonResult Search(string q, int results = 4, string exclude = null) {
+			long[] excludeLong = new long[] { };
+			if (exclude != null) {
+				try {
+					excludeLong = exclude.Split(',').Select(x => x.ToLong()).ToArray();
+				} catch (Exception) { }
+			}
+
+			await ScorecardAccessor.Search(GetUser(), GetUser().Organization.Id,q, excludeLong);
+			//var oo = _SearchUsers(q, results, exclude);
+			//var o = oo.Select(x => new {
+			//	name = x.FirstName.ToTitleCase() + " " + x.LastName.ToTitleCase(),
+			//	first = x.FirstName.ToTitleCase(),
+			//	last = x.LastName.ToTitleCase(),
+			//	id = x.UserOrgId,
+			//	ItemValue = x.UserOrgId,
+			//	Name = x.FirstName.ToTitleCase() + " " + x.LastName.ToTitleCase(),
+			//	ImageUrl = x.ImageUrl,
+
+			//}).ToList();
+			return Json(ResultObject.SilentSuccess(o), JsonRequestBehavior.AllowGet);
+		}
+
 
 		[Access(AccessLevel.UserOrganization)]
 		public PartialViewResult BlankEditorRow(bool accountable=false,long? admin=null)

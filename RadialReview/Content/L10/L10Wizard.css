@@ -1327,6 +1327,14 @@ body,
 .wizard .scorecard-list-container .delete-row:hover {
   color: #3E3935;
 }
+.wizard .scorecard-list-container .delete-row:focus:before {
+  width: 38px;
+  margin: -7px;
+  padding: 7px;
+  height: 38px;
+  border-radius: 21px;
+  background-color: rgba(0, 0, 0, 0.16);
+}
 .wizard .rock-list-container {
   /*.picture-container { 
             width: 32px;
@@ -1470,6 +1478,14 @@ body,
   top: 0px;
   left: -4px;
 }
+.wizard .rock-list-container .delete-row:focus:before {
+  width: 38px;
+  margin: -7px;
+  padding: 7px;
+  height: 38px;
+  border-radius: 21px;
+  background-color: rgba(0, 0, 0, 0.16);
+}
 .wizard .rock-list-container .delete-row:hover {
   color: #3E3935;
 }
@@ -1596,6 +1612,14 @@ body,
 }
 .wizard .issues-list-container .delete-row:hover {
   color: #3E3935;
+}
+.wizard .issues-list-container .delete-row:focus:before {
+  width: 38px;
+  margin: -7px;
+  padding: 7px;
+  height: 38px;
+  border-radius: 21px;
+  background-color: rgba(0, 0, 0, 0.16);
 }
 .wizard .todo-list-container .create-row {
   float: right;
@@ -1733,6 +1757,14 @@ body,
 }
 .wizard .todo-list-container .delete-row:hover {
   color: #3E3935;
+}
+.wizard .todo-list-container .delete-row:focus:before {
+  width: 38px;
+  margin: -7px;
+  padding: 7px;
+  height: 38px;
+  border-radius: 21px;
+  background-color: rgba(0, 0, 0, 0.16);
 }
 .wizard .headline-list-container .create-row {
   float: right;
@@ -1898,6 +1930,14 @@ body,
 .wizard .headline-list-container .delete-row:hover {
   color: #3E3935;
 }
+.wizard .headline-list-container .delete-row:focus:before {
+  width: 38px;
+  margin: -7px;
+  padding: 7px;
+  height: 38px;
+  border-radius: 21px;
+  background-color: rgba(0, 0, 0, 0.16);
+}
 .wizard .user-list-container .create-row {
   float: right;
   height: 56px;
@@ -1995,7 +2035,7 @@ body,
 }
 .wizard .user-list-container .new-user-container-space:before {
   float: left;
-  height: 80px;
+  /*height: 80px;*/
   display: block;
   position: relative;
   content: "";
@@ -2282,6 +2322,14 @@ body,
 }
 .wizard .user-list-container .delete-row:hover {
   color: #3E3935;
+}
+.wizard .user-list-container .delete-row:focus:before {
+  width: 38px;
+  margin: -7px;
+  padding: 7px;
+  height: 38px;
+  border-radius: 21px;
+  background-color: rgba(0, 0, 0, 0.16);
 }
 .wizard .create-row {
   bottom: 1px;

@@ -30,6 +30,15 @@
 	&:hover {
 		color: @traction-black;
 	}
+
+	&:focus:before {
+		width: 38px;
+		margin: -7px;
+		padding: 7px;
+		height: 38px;
+		border-radius: 21px;
+		background-color: rgba(0,0,0,.16);
+	}
 }
 
 .archive-row() {
@@ -58,6 +67,15 @@
 		position: relative;
 		top: 0px;
 		left: -4px;
+	}
+
+	&:focus:before {
+		width: 38px;
+		margin: -7px;
+		padding: 7px;
+		height: 38px;
+		border-radius: 21px;
+		background-color: rgba(0,0,0,.16);
 	}
 
 	&:hover {
@@ -623,7 +641,7 @@ body,
 
 		.new-user-container-space:before {
 			float: left;
-			height: 80px;
+			/*height: 80px;*/
 			display: block;
 			position: relative;
 			content: "";

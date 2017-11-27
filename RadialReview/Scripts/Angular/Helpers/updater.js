@@ -358,7 +358,7 @@
 
                 return m;
             }
-            else if (u && u._Pointer) {
+            else if (u && u._P) {
                 return model.Lookup[m.Key];
             } else if (angular.isObject(u)) {
                 for (var k in u) {

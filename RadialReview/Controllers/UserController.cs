@@ -443,10 +443,9 @@ namespace RadialReview.Controllers {
 
 		[HttpGet]
 		[Access(AccessLevel.User)]
-		public ActionResult Styles() {
-			return Content(UserAccessor.GetStyles(GetUserModel().Id), "text/css");
-
-
+		public string Styles() {
+			return UserAccessor.GetStyles(GetUserModel().Id);
+			//return Content(UserAccessor.GetStyles(GetUserModel().Id), "text/css");
 		}
 
 		[HttpGet]

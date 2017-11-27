@@ -23,6 +23,7 @@ using static RadialReview.Models.PermItem;
 using System.Threading.Tasks;
 using RadialReview.Models.ViewModels;
 using static RadialReview.Utilities.SelectExistingOrCreateUtility;
+using Newtonsoft.Json;
 
 namespace RadialReview.Controllers {
 	public partial class L10Controller : BaseController {
@@ -201,6 +202,14 @@ namespace RadialReview.Controllers {
 			} else {
 				//var recurrenceId = id.Value;
 				_PermissionsAccessor.Permitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, id.Value));
+				var now = DateTime.UtcNow.ToJavascriptMilliseconds();
+				try {
+					var initModel = (await DetailsData(id.Value, false, false, now, now, true, removeWeeks:true)).Data;
+					ViewBag.InitialModel =new HtmlString(JsonConvert.SerializeObject(initModel));
+				} catch (Exception e) {
+					int a = 0;
+				}
+
 				//var model = AddExtras(recurrenceId, new L10EditVM() { Return = @return });
 				return View("Wizard", id.Value);
 			}
@@ -375,12 +384,10 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<PartialViewResult> AddAttendee(long meetingId) {
 
-			var existingAttendees = string.Join(",",L10Accessor.GetAttendees(GetUser(), meetingId).Select(x => x.Id));
-
-
+			var existingAttendees = string.Join(",", L10Accessor.GetAttendees(GetUser(), meetingId).Select(x => x.Id));
 
 			var obj = UserAccessor.BuildCreateUserVM(GetUser(), ViewBag);
-			var settings = SelectExistingOrCreateUtility.Create<CreateUserOrganizationViewModel>("/User/Search?exclude="+existingAttendees, "CreateUserOrganizationViewModel", obj, false);
+			var settings = SelectExistingOrCreateUtility.Create<CreateUserOrganizationViewModel>("/User/Search?exclude=" + existingAttendees, "CreateUserOrganizationViewModel", obj, false);
 			ViewBag.meetingId = meetingId;
 			return PartialView(settings);
 		}
@@ -402,6 +409,18 @@ namespace RadialReview.Controllers {
 
 			return Json(ResultObject.SilentSuccess());
 
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<PartialViewResult> AddMeasurable(long meetingId) {
+
+			var data = await L10Accessor.GetOrGenerateScorecardDataForRecurrence(GetUser(), meetingId, false, null, null, true, false, null);
+			var existingIds = string.Join(",", data.Measurables.Select(x => x.Id));
+
+			var obj = UserAccessor.BuildCreateUserVM(GetUser(), ViewBag);
+			var settings = SelectExistingOrCreateUtility.Create<CreateMeasurableViewModel>("/Measurable/Search?exclude=" + existingIds, "CreateMeasurableViewModel", obj, false);
+			ViewBag.meetingId = meetingId;
+			return PartialView(settings);
 		}
 
 		//[Access(AccessLevel.UserOrganization)]

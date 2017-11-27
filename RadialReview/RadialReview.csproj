@@ -163,6 +163,7 @@
     <Compile Include="Models\Application\Variable.cs" />
     <Compile Include="Models\ClientSuccess\TooltipModels.cs" />
     <Compile Include="Models\L10\L10LookupCache.cs" />
+    <Compile Include="Models\ViewModels\CreateMeasurableViewModel.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Utilities\Attributes\Untested.cs" />
     <Compile Include="Utilities\CoreProcess\AmazonSQSUtility.cs" />
@@ -1713,6 +1714,7 @@
     <Content Include="Views\Shared\EditorTemplates\TinyUser.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\CreateUserOrganizationViewModel.cshtml" />
     <Content Include="Views\L10\AddAttendee.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\CreateMeasurableViewModel.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -2171,7 +2173,7 @@
     <Content Include="Content\fonts\new.woff" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
-    <Content Include="Scripts\jquery-1.10.2.min.js" />
+    <Content Include="Scripts\_jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
@@ -2190,7 +2192,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Scripts\jquery-1.10.2.min.map" />
+    <Content Include="Scripts\_jquery-1.10.2.min.map" />
     <Content Include="Views\Account\_ChangePasswordPartial.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\_RemoveAccountPartial.cshtml" />

@@ -16,7 +16,7 @@ $(window).on("wizard:changed-page", function (e, data) {
 		}
 		setCompletion(data.completion * 100);
 
-	}, 800);
+	}, 1);
 
 	setTimeout(function () {
 		try {
@@ -38,22 +38,29 @@ $(window).on("wizard:last-page", function (e, data) {
 	$(".nextButton").addClass("disabled");
 });
 
-$(window).on("scroll", updateCreateButton);
-$(window).on("resize", updateCreateButton);
-
+var lastLoc = -1000;
 function updateCreateButton() {
 	var btn = $(".create-row:visible");
 	if (btn.length) {
 		var container = btn.closest(".component.wizard-page");
-		var windowHeight = $(window).height() - container.offset().top - btn.height()/2 - 10;
+		var windowHeight = $(window).height() - container.offset().top - btn.height() / 2 - 10;
 		var loc = container.offset().top + container.height() - $(document).scrollTop() - parseFloat(container.css("margin-bottom")) + parseFloat(container.css("padding-bottom")) / 2;
 		var x = loc;
 		if (loc > windowHeight) {
 			x = windowHeight;
 		}
-		btn.css({ top: x, opacity: 1 });
 
+		var time = 70;
+		if (Math.abs(loc - lastLoc) < 40) {
+			time = 0;
+		} else {
+			console.log("longer");
+		}
+
+		btn.animate({ top: x, opacity: 1 }, time);
+		lastLoc = loc;
 	}
 }
-
-setInterval(updateCreateButton, 400);
+setInterval(updateCreateButton, 300);
+$(window).on("scroll", updateCreateButton);
+$(window).on("resize", updateCreateButton);
