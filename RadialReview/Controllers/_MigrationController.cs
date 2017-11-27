@@ -2033,8 +2033,7 @@ namespace RadialReview.Controllers {
             var createTime = new DateTime(2017, 11, 22);
             using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
                 using (var tx = s.BeginTransaction()) {
-                    var _VtoModel = s.QueryOver<VtoModel>().List().ToList();
-                    var _VtoStrategyMap = s.QueryOver<VtoStrategyMap>().List().ToList();
+                    var _VtoModel = s.QueryOver<VtoModel>().List().ToList();                   
 
                     var _VtoItemString = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Uniques).List().ToList();
 

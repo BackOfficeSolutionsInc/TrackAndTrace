@@ -433,25 +433,5 @@ namespace RadialReview.Models.VTO {
         }
     }
 
-    public class VtoStrategyMap {
-        public virtual long Id { get; set; }
-        public virtual DateTime CreateTime { get; set; }
-        public virtual DateTime? DeleteTime { get; set; }
-        public virtual long MarketingStrategyId { get; set; }
-        public virtual long VtoId { get; set; }
-
-        public VtoStrategyMap() {
-            CreateTime = DateTime.UtcNow;
-        }
-
-        public class Map : ClassMap<VtoStrategyMap> {
-            public Map() {
-                Id(x => x.Id);
-                Map(x => x.CreateTime);
-                Map(x => x.DeleteTime);
-                Map(x => x.MarketingStrategyId);
-                Map(x => x.VtoId);
-            }
-        }
-    }
+  
 }

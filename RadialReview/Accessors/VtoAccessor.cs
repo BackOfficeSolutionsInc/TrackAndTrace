@@ -506,15 +506,6 @@ namespace RadialReview.Accessors {
                     strategy.MarketingStrategyTitle = marketingStrategyTitle;
                     s.Update(strategy);
 
-                    //add entry to VtoStrategyMap
-                    var vtoStrategy = s.QueryOver<VtoStrategyMap>().Where(x => x.MarketingStrategyId == strategyId).SingleOrDefault();
-                    if (vtoStrategy == null) {
-                        VtoStrategyMap vtoStrategyMap = new VtoStrategyMap();
-                        vtoStrategyMap.MarketingStrategyId = strategyId;
-                        vtoStrategyMap.VtoId = vtoId;
-                        s.Save(vtoStrategyMap);
-                    }
-
                     tx.Commit();
                     s.Flush();
 #pragma warning disable CS0618 // Type or member is obsolete
