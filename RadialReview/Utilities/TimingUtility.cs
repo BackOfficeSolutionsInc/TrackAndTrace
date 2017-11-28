@@ -14,6 +14,8 @@ using System.Globalization;
 using System.Threading;
 using log4net;
 using System.Web.Mvc;
+using NHibernate;
+using RadialReview.Models.Synchronize;
 
 namespace RadialReview.Utilities {
 	public static class TimingUtility {
@@ -744,5 +746,23 @@ namespace RadialReview.Utilities {
 
 		}
 
+
+		public static DateTime GetDbTimestamp(ISession s) {
+			try {
+				//var sync = new Sync();
+				//s.Save(sync);
+				var sql = String.Format("SELECT DATE_FORMAT(UTC_TIMESTAMP(4), '%Y~%m~%d %T.%f')");
+				var query = s.CreateSQLQuery(sql);
+				var result = query.UniqueResult();
+				var convert = Convert.ToString(result);
+				return DateTime.ParseExact(convert, "yyyy~MM~dd hh:mm:ss.ffffff",CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+				//return sync.DbTimestamp;
+			} catch (Exception e) {
+				if (Config.GetEnv()==Env.local_test_sqlite)
+					return DateTime.UtcNow;
+				else
+					throw e;
+			}
+		}
 	}
 }

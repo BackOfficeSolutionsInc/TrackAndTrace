@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.SignalR;
+using NHibernate;
 using RadialReview.Accessors;
 using RadialReview.Exceptions;
 using RadialReview.Hubs;
@@ -1010,13 +1011,42 @@ namespace RadialReview.Controllers {
 		public ActionResult Version() {
 
 			var version = Assembly.GetExecutingAssembly().GetName().Version;
-			var date = new DateTime(2000, 1, 1)
+			var buildDate = new DateTime(2000, 1, 1)
 				.AddDays(version.Build)
 				.AddSeconds(version.Revision * 2);
 
 			//var server = NetworkAccessor.GetPublicIP();//Dns.GetHostEntry(Dns.GetHostName()).AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
-			var server = Amazon.EC2.Util.EC2Metadata.InstanceId.ToString();
-			return Content(version.ToString() + " <br/> " + date.ToString("U") + " <br/><br/> " + server + " <br/> Server Time:" + DateTime.UtcNow.ToString("U") +" ["+ DateTime.UtcNow.Ticks+"]");
+			var serverRow = "<tr><td>Amazon Server: </td><td><i>failed</i></td></tr>";
+			try {
+				serverRow = "<tr><td>Amazon Server: </td><td>"+Amazon.EC2.Util.EC2Metadata.InstanceId.ToString()+"</td></tr>";
+			} catch (Exception e) {
+
+			}
+			DateTime? dbTime = null;
+			var now = DateTime.UtcNow;
+			double? diff = null;
+			var dbTimeRow = "<tr><td>DbTime:</td><td><i>failed</i></td></tr>";
+			try {
+				using (var s = HibernateSession.GetCurrentSession()) {
+					using (var tx = s.BeginTransaction()) {
+						dbTime = TimingUtility.GetDbTimestamp(s);
+					}
+				}
+				var nowAfter = DateTime.UtcNow;
+				var half = new DateTime((nowAfter.Ticks - now.Ticks) / 2+now.Ticks);
+				diff = (dbTime - half).Value.TotalMilliseconds;
+				dbTimeRow = "<tr><td>DbTime:</td><td>" + dbTime.Value.ToString("U") + " </td><td> [diff: "+diff+ "ms]</td></tr>";
+
+			} catch (Exception e) {
+			}
+			var txt	 = "<table>";
+			txt		+= "<tr><td>Build Date: </td><td>"+ buildDate.ToString("U") + " </td><td> [version: "+ version.ToString() + "]</td></tr>";
+			txt		+= dbTimeRow;
+			txt		+= "<tr><td>Server Time:</td><td>" + now.ToString("U") +	  " </td><td> [ticks: "+now.Ticks+"]</td></tr>";
+			txt		+= serverRow;
+			txt		+= "</table>";
+
+			return Content(txt);
 		}
 
 
