@@ -43,7 +43,12 @@
 		<div class="col-sm-5">
 			<div class="form-group">
 				<label>From:</label>
-				<div style="font-size: 15px;padding-top: 6px;color: #333;">@ViewBag.Originating</div>
+				@*<div style="font-size: 15px;padding-top: 6px;color: #333;">@ViewBag.Originating</div>*@
+				<select name="@Html.NameFor(x => x.ForRecurrenceId)" class="form-control" style="width: 100%;">
+					@foreach (var u in ViewBag.PossibleMeetings) {
+						<option value="@u.id" @(u.id == Model.ForRecurrenceId ? "selected" : "")>@u.name</option>
+				}
+				</select>
 			</div>
 		</div>
 		@*</div>*@

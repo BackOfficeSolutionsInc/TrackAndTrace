@@ -31,6 +31,7 @@ namespace RadialReview.Controllers {
 			public bool todos { get; set; }
 			public bool scorecard { get; set; }
 			public bool rocks { get; set; }
+			public bool headlines { get; set; }
 			public bool vto { get; set; }
 			public bool l10 { get; set; }
 			public bool acc { get; set; }
@@ -50,11 +51,13 @@ namespace RadialReview.Controllers {
 				model["todos"].ToBooleanJS(),
 				model["scorecard"].ToBooleanJS(),
 				model["rocks"].ToBooleanJS(),
+				model["headlines"].ToBooleanJS(),
 				model["vto"].ToBooleanJS(),
 				model["l10"].ToBooleanJS(),
 				model["acc"].ToBooleanJS(),
 				model["print"].ToBooleanJS(),
 				model["quarterly"].ToBooleanJS()
+
 			// root:root
 			);
 		}
@@ -68,23 +71,23 @@ namespace RadialReview.Controllers {
 			PdfAccessor.AddVTO(doc, vto, GetUser().GetOrganizationSettings().GetDateFormat());
 			var now = DateTime.UtcNow.ToJavascriptMilliseconds() + "";
 
-            var merger = new DocumentMerger();
-            merger.AddDoc(doc);
-            var merged  =merger.Flatten( now + "_" + vto.Name + "_VTO.pdf", false, true, GetUser().Organization.Settings.GetDateFormat());
+			var merger = new DocumentMerger();
+			merger.AddDoc(doc);
+			var merged = merger.Flatten(now + "_" + vto.Name + "_VTO.pdf", false, true, GetUser().Organization.Settings.GetDateFormat());
 
 
 
-            return Pdf(merged, now + "_" + vto.Name + "_VTO.pdf", true);
+			return Pdf(merged, now + "_" + vto.Name + "_VTO.pdf", true);
 		}
 		[Access(AccessLevel.UserOrganization)]
 		[HttpGet]
 		public async Task<ActionResult> PrintPages(long id, bool issues = false, bool todos = false, bool scorecard = false, bool rocks = false, bool vto = false, bool l10 = false, bool acc = false, bool print = false) {
-			return await Printout(id, issues, todos, scorecard, rocks, vto, l10, acc, print);
+			return await Printout(id, issues, todos, scorecard, rocks, false, vto, l10, acc, print);
 		}
 
 		[Access(AccessLevel.UserOrganization)]
 		[HttpGet]
-		public async Task<ActionResult> Printout(long id, bool issues = false, bool todos = false, bool scorecard = true, bool rocks = true, bool vto = true, bool l10 = true, bool acc = true, bool print = false, bool quarterly = true/*, PdfAccessor.AccNodeJs root = null*/) {
+		public async Task<ActionResult> Printout(long id, bool issues = false, bool todos = false, bool scorecard = true, bool rocks = true, bool headlines = true, bool vto = true, bool l10 = true, bool acc = true, bool print = false, bool quarterly = true/*, PdfAccessor.AccNodeJs root = null*/) {
 
 			var recur = L10Accessor.GetL10Recurrence(GetUser(), id, false);
 
@@ -99,6 +102,12 @@ namespace RadialReview.Controllers {
 			if (rocks) {
 				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout6");
 				PdfAccessor.AddRocks(GetUser(), doc, quarterly, angRecur, vtoModel, addPageNumber: false);
+				merger.AddDoc(doc);
+				anyPages = true;
+			}
+			if (headlines) {
+				var doc = PdfAccessor.CreateDoc(GetUser(), "Quarterly Printout6");
+				PdfAccessor.AddHeadLines(GetUser(), doc, quarterly, angRecur, vtoModel, addPageNumber: false);
 				merger.AddDoc(doc);
 				anyPages = true;
 			}

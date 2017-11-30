@@ -684,103 +684,109 @@ namespace RadialReview.Accessors {
 		}
 
 
-        #region L10PageRows
+		#region L10PageRows
 
-        private static Row AddL10Row_Title(Section section, AngularRecurrencePage page) {
-            var t = section.AddTable();
-            t.Format.SpaceBefore = Unit.FromInch(.05);
-            t.Format.LeftIndent = Unit.FromInch(1);
-            t.AddColumn(Unit.FromInch(3.75+0.5));
-            t.AddColumn(Unit.FromInch(2.25));
+		private static Row AddL10Row_Title(Section section, AngularRecurrencePage page) {
+			var t = section.AddTable();
+			t.Format.SpaceBefore = Unit.FromInch(.05);
+			t.Format.LeftIndent = Unit.FromInch(1);
+			t.AddColumn(Unit.FromInch(3.75 + 0.5));
+			t.AddColumn(Unit.FromInch(2.25));
 
-            var r = t.AddRow();
-            r.Cells[0].AddParagraph(""+page.Title);
-            r.Cells[1].AddParagraph((int)(page.Minutes) + " Minutes");
-            r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
-            return r;
-        }
-        private static void AddL10Row_Todos(Section section, AngularRecurrence recur, AngularRecurrencePage page, DateTime? lastMeeting) {
-            AddL10Row_Title(section, page);
+			var r = t.AddRow();
+			r.Cells[0].AddParagraph("" + page.Title);
+			r.Cells[1].AddParagraph((int)(page.Minutes) + " Minutes");
+			r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
+			return r;
+		}
+		private static void AddL10Row_Todos(Section section, AngularRecurrence recur, AngularRecurrencePage page, DateTime? lastMeeting) {
+			AddL10Row_Title(section, page);
 
-            var todos = recur.Todos.Where(x => x.Complete == false || x.CompleteTime > lastMeeting).OrderBy(x => x.Ordering)/*.OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)*/.ToList();
-            var fs = 10;
+			var todos = recur.Todos.Where(x => x.Complete == false || x.CompleteTime > lastMeeting).OrderBy(x => x.Ordering)/*.OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)*/.ToList();
+			var fs = 10;
 
-            for (var i = 0; i < todos.Count; i++) {
-                var pp = new Table();
-                pp.Format.SpaceAfter = 0;
-                pp.AddColumn(Unit.FromInch(1.25));
-                pp.AddColumn(Unit.FromInch(4.75 - .38+.5));
-                pp.AddColumn(Unit.FromInch(0.38));
-                pp.Format.Font.Color = TableDark;
-                var rr = pp.AddRow();
-                pp.Format.Font.Size = fs;
-                var  p = rr.Cells[1].AddParagraph(todos[i].Name ?? "");
-                p.Format.FirstLineIndent = Unit.FromInch(-.1);
-                p.Format.LeftIndent = Unit.FromInch(.1);
-                rr.Cells[2].AddParagraph(todos[i].Owner.NotNull(x => x.Initials) ?? "");
-                rr.Cells[2].Format.Alignment = ParagraphAlignment.Right;
-                section.Add(pp);
-            }
-        }
-        private static void AddL10Row_Issues(Section section, AngularRecurrence recur, AngularRecurrencePage page) {
-            AddL10Row_Title(section, page);
+			for (var i = 0; i < todos.Count; i++) {
+				var pp = new Table();
+				pp.Format.SpaceAfter = 0;
+				pp.AddColumn(Unit.FromInch(1.25));
+				pp.AddColumn(Unit.FromInch(4.75 - .38 + .5));
+				pp.AddColumn(Unit.FromInch(0.38));
+				pp.Format.Font.Color = TableDark;
+				var rr = pp.AddRow();
+				pp.Format.Font.Size = fs;
+				var p = rr.Cells[1].AddParagraph(todos[i].Name ?? "");
+				p.Format.FirstLineIndent = Unit.FromInch(-.1);
+				p.Format.LeftIndent = Unit.FromInch(.1);
+				rr.Cells[2].AddParagraph(todos[i].Owner.NotNull(x => x.Initials) ?? "");
+				rr.Cells[2].Format.Alignment = ParagraphAlignment.Right;
+				section.Add(pp);
+			}
+		}
+		private static void AddL10Row_Issues(Section section, AngularRecurrence recur, AngularRecurrencePage page) {
+			AddL10Row_Title(section, page);
 
-            var issues = recur.IssuesList.Issues.Where(x => x.Complete == false).OrderByDescending(x => x.Priority).ThenBy(x => x.Name).ToList();
-            var fs = 10;
+			var issues = recur.IssuesList.Issues.Where(x => x.Complete == false).OrderByDescending(x => x.Priority).ThenBy(x => x.Name).ToList();
+			var fs = 10;
 
-            for (var i = 0; i < issues.Count; i++) {
-                var pp = new Table();
+			for (var i = 0; i < issues.Count; i++) {
+				var pp = new Table();
 
-                pp.Format.SpaceAfter = 0;
-                pp.AddColumn(Unit.FromInch(1.25));
-                pp.AddColumn(Unit.FromInch(4.75 - .38+.5));
-                pp.AddColumn(Unit.FromInch(0.38));
-                var rr = pp.AddRow();
-                //pp.Format.LeftIndent = Unit.FromInch(1.25);
-                pp.Format.Font.Size = fs;
-                pp.Format.Font.Color = TableDark;
-                var p = rr.Cells[1].AddParagraph(issues[i].Name ?? "");
-                p.Format.FirstLineIndent = Unit.FromInch(-.1);
-                p.Format.LeftIndent = Unit.FromInch(.1);
-                rr.Cells[2].AddParagraph(issues[i].Owner.NotNull(x => x.Initials) ?? "");
-                rr.Cells[2].Format.Alignment = ParagraphAlignment.Right;
-                section.Add(pp);
-            }
+				pp.Format.SpaceAfter = 0;
+				pp.AddColumn(Unit.FromInch(1.25));
+				pp.AddColumn(Unit.FromInch(4.75 - .38 + .5));
+				pp.AddColumn(Unit.FromInch(0.38));
+				var rr = pp.AddRow();
+				//pp.Format.LeftIndent = Unit.FromInch(1.25);
+				pp.Format.Font.Size = fs;
+				pp.Format.Font.Color = TableDark;
+				var p = rr.Cells[1].AddParagraph(issues[i].Name ?? "");
+				p.Format.FirstLineIndent = Unit.FromInch(-.1);
+				p.Format.LeftIndent = Unit.FromInch(.1);
+				rr.Cells[2].AddParagraph(issues[i].Owner.NotNull(x => x.Initials) ?? "");
+				rr.Cells[2].Format.Alignment = ParagraphAlignment.Right;
+				section.Add(pp);
+			}
 
-        }
+		}
 
-        private static void AddL10Row_Conclude(Section section, AngularRecurrence recur, AngularRecurrencePage page) {
+		private static void AddL10Row_Conclude(Section section, AngularRecurrence recur, AngularRecurrencePage page) {
 
-            var r = AddL10Row_Title(section, page);
-            
-            var p = r.Cells[0].AddParagraph("Recap To-Do List");
-            p.Format.LeftIndent = Unit.FromInch(1 + 3 / 8.0);
-            p = r.Cells[0].AddParagraph("Cascading messages");
-            p.Format.LeftIndent = Unit.FromInch(1 + 3 / 8.0);
-            p = r.Cells[0].AddParagraph("Rating 1-10");
-            p.Format.LeftIndent = Unit.FromInch(1 + 3 / 8.0);
-        }
+			var r = AddL10Row_Title(section, page);
 
-        private static void AddL10Row(Section section, AngularRecurrence recur, AngularRecurrencePage page, DateTime? lastMeeting) {
-            switch (page.Type) {
-                case L10Recurrence.L10PageType.IDS: AddL10Row_Issues(section, recur, page); break;
-                case L10Recurrence.L10PageType.Conclude: AddL10Row_Conclude(section, recur, page); break;
-                case L10Recurrence.L10PageType.Todo: AddL10Row_Todos(section, recur, page, lastMeeting); break;
-                default:
-                    AddL10Row_Title(section, page);
-                    break;
-            }
-        }
-        #endregion
+			var p = r.Cells[0].AddParagraph("Recap To-Do List");
+			p.Format.LeftIndent = Unit.FromInch(1 + 3 / 8.0);
+			p = r.Cells[0].AddParagraph("Cascading messages");
+			p.Format.LeftIndent = Unit.FromInch(1 + 3 / 8.0);
+			p = r.Cells[0].AddParagraph("Rating 1-10");
+			p.Format.LeftIndent = Unit.FromInch(1 + 3 / 8.0);
+		}
 
-        public static Document AddL10(Document doc, AngularRecurrence recur, DateTime? lastMeeting, bool addPageNumber = false) {
+		private static void AddL10Row(Section section, AngularRecurrence recur, AngularRecurrencePage page, DateTime? lastMeeting) {
+			switch (page.Type) {
+			case L10Recurrence.L10PageType.IDS:
+			AddL10Row_Issues(section, recur, page);
+			break;
+			case L10Recurrence.L10PageType.Conclude:
+			AddL10Row_Conclude(section, recur, page);
+			break;
+			case L10Recurrence.L10PageType.Todo:
+			AddL10Row_Todos(section, recur, page, lastMeeting);
+			break;
+			default:
+			AddL10Row_Title(section, page);
+			break;
+			}
+		}
+		#endregion
+
+		public static Document AddL10(Document doc, AngularRecurrence recur, DateTime? lastMeeting, bool addPageNumber = false) {
 			//CreateDoc(caller,"THE LEVEL 10 MEETING");
 			var section = AddTitledPage(doc, "THE LEVEL 10 MEETING™", addPageNumber: addPageNumber);
 			var p = section.Footers.Primary.AddParagraph("© 2003 - " + DateTime.UtcNow.AddMonths(3).Year + " EOS. All Rights Reserved.");
 			p.Format.Font.Size = 8;
 			p.Format.Font.Color = TableGray;
 			p.Format.LeftIndent = Unit.FromPoint(0);
-			
+
 			p = section.AddParagraph();
 			p.Format.SpaceAfter = Unit.FromInch(.25 / 2);
 			p.Format.SpaceBefore = Unit.FromInch(0);
@@ -797,10 +803,10 @@ namespace RadialReview.Accessors {
 			var recurr = recur._Recurrence.Item;
 
 
-            foreach(var page in recur.Pages) {
-                AddL10Row(section, recur, page, lastMeeting);
-            }
-            
+			foreach (var page in recur.Pages) {
+				AddL10Row(section, recur, page, lastMeeting);
+			}
+
 			//Row r;
 			//if (recur.ShowSegue == true) {
 			//	r = t.AddRow();
@@ -1210,41 +1216,41 @@ namespace RadialReview.Accessors {
 					Color statusColor = Colors.DarkRed;
 					//Update below also
 					switch (m.Completion) {
-						case RockState.OnTrack:
-							statusColor = Colors.DarkBlue;
-							break;
-						case RockState.AtRisk:
-							statusColor = Colors.DarkRed;
-							break;
-						case RockState.Complete:
-							statusColor = Colors.DarkGreen;
-							break;
-						default:
-							break;
+					case RockState.OnTrack:
+					statusColor = Colors.DarkBlue;
+					break;
+					case RockState.AtRisk:
+					statusColor = Colors.DarkRed;
+					break;
+					case RockState.Complete:
+					statusColor = Colors.DarkGreen;
+					break;
+					default:
+					break;
 					}
 					if (quarterlyPrintout) {
 						switch (m.Completion ?? RockState.Indeterminate) {
-							case RockState.Indeterminate:
-								status = "Not Done";
-								bold = true;
-								statusColor = Colors.DarkRed;
-								break;
-							case RockState.AtRisk:
-								status = "Not Done";
-								bold = true;
-								statusColor = Colors.DarkRed;
-								break;
-							case RockState.OnTrack:
-								status = "Not Done";
-								statusColor = Colors.DarkRed;
-								bold = true;
-								break;
-							case RockState.Complete:
-								status = "Done";
-								statusColor = Colors.DarkGreen;
-								break;
-							default:
-								break;
+						case RockState.Indeterminate:
+						status = "Not Done";
+						bold = true;
+						statusColor = Colors.DarkRed;
+						break;
+						case RockState.AtRisk:
+						status = "Not Done";
+						bold = true;
+						statusColor = Colors.DarkRed;
+						break;
+						case RockState.OnTrack:
+						status = "Not Done";
+						statusColor = Colors.DarkRed;
+						bold = true;
+						break;
+						case RockState.Complete:
+						status = "Done";
+						statusColor = Colors.DarkGreen;
+						break;
+						default:
+						break;
 						}
 					}
 
@@ -1344,42 +1350,42 @@ namespace RadialReview.Accessors {
 
 				if (quarterlyPrintout) {
 					switch (m.Completion ?? RockState.Indeterminate) {
-						case RockState.Indeterminate:
-							status = "Not Done";
-							bold = true;
-							statusColor = Colors.DarkRed;
-							break;
-						case RockState.AtRisk:
-							status = "Not Done";
-							bold = true;
-							statusColor = Colors.DarkRed;
-							break;
-						case RockState.OnTrack:
-							status = "Not Done";
-							statusColor = Colors.DarkRed;
-							bold = true;
-							break;
-						case RockState.Complete:
-							status = "Done";
-							statusColor = Colors.DarkGreen;
-							break;
-						default:
-							break;
+					case RockState.Indeterminate:
+					status = "Not Done";
+					bold = true;
+					statusColor = Colors.DarkRed;
+					break;
+					case RockState.AtRisk:
+					status = "Not Done";
+					bold = true;
+					statusColor = Colors.DarkRed;
+					break;
+					case RockState.OnTrack:
+					status = "Not Done";
+					statusColor = Colors.DarkRed;
+					bold = true;
+					break;
+					case RockState.Complete:
+					status = "Done";
+					statusColor = Colors.DarkGreen;
+					break;
+					default:
+					break;
 					}
 				} else {
 					switch (m.Completion) {
-						case RockState.OnTrack:
-							statusColor = Colors.DarkBlue;
-							break;
-						case RockState.AtRisk:
-							statusColor = Colors.DarkRed;
-							bold = true;
-							break;
-						case RockState.Complete:
-							statusColor = Colors.DarkGreen;
-							break;
-						default:
-							break;
+					case RockState.OnTrack:
+					statusColor = Colors.DarkBlue;
+					break;
+					case RockState.AtRisk:
+					statusColor = Colors.DarkRed;
+					bold = true;
+					break;
+					case RockState.Complete:
+					statusColor = Colors.DarkGreen;
+					break;
+					default:
+					break;
 					}
 				}
 
@@ -1414,6 +1420,136 @@ namespace RadialReview.Accessors {
 													   //row.Cells[4].Format.Font.Size = 10;// Unit.FromInch(.1);
 													   //row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
 													   //row.Cells[4].Format.KeepTogether = false;
+				mn++;
+			}
+		}
+
+
+		public static void AddHeadLines(UserOrganizationModel caller, Document doc, bool quarterlyPrintout, AngularRecurrence recur, AngularVTO vto, bool addPageNumber = true) {
+			//var recur = L10Accessor.GetAngularRecurrence(caller, recurrenceId);
+
+			//return SetupDoc(caller, caller.Organization.Settings.RockName);
+
+			var section = AddTitledPage(doc, "HeadLines", Orientation.Landscape, addPageNumber: addPageNumber);
+			Table table;
+			double mult;
+			Row row;
+			int mn;
+			Column column;
+
+			var format = caller.NotNull(x => x.Organization.NotNull(y => y.Settings.NotNull(z => z.GetDateFormat()))) ?? "MM-dd-yyyy";
+
+			//var addVTO = true;
+			//if (addVTO && vto != null) {
+			//	table = section.AddTable();
+			//	column = table.AddColumn(Unit.FromInch(5.0));
+			//	column.Format.Alignment = ParagraphAlignment.Right;
+
+			//	table.AddColumn(Unit.FromInch(5.0));
+			//	column.Format.Alignment = ParagraphAlignment.Right;
+
+			//	row = table.AddRow();
+			//	var p1 = new Paragraph();
+			//	p1.AddFormattedText("Future Date:", TextFormat.Bold);
+			//	row.Cells[0].Add(p1);
+			//	var p2 = new Paragraph();
+			//	p2.AddText(vto.QuarterlyRocks.FutureDate.NotNull(x => x.Value.ToString(format)) ?? "");
+			//	row.Cells[1].Add(p2);
+
+
+			//	row = table.AddRow();
+			//	var p3 = new Paragraph();
+			//	p3.AddFormattedText("Revenue:", TextFormat.Bold);
+			//	row.Cells[0].Add(p3);
+			//	var p4 = new Paragraph();
+			//	p4.AddText(vto.QuarterlyRocks.Revenue ?? "");
+			//	row.Cells[1].Add(p4);
+
+			//	row = table.AddRow();
+			//	var p5 = new Paragraph();
+			//	p5.AddFormattedText("Profit:", TextFormat.Bold);
+			//	row.Cells[0].Add(p5);
+			//	var p6 = new Paragraph();
+			//	p6.AddText(vto.QuarterlyRocks.Profit ?? "");
+			//	row.Cells[1].Add(p6);
+
+			//	row = table.AddRow();
+			//	var p7 = new Paragraph();
+			//	p7.AddFormattedText("Measurables:", TextFormat.Bold);
+			//	row.Cells[0].Add(p7);
+			//	var p8 = new Paragraph();
+			//	p8.AddText(vto.QuarterlyRocks.Measurables ?? "");
+			//	row.Cells[1].Add(p8);
+
+			//	row = table.AddRow();
+			//	row.Height = Unit.FromPoint(25);
+			//}
+
+
+			table = section.AddTable();
+			table.Format.Font.Size = 9;
+			table.Style = "Table";
+			table.Rows.LeftIndent = 0;
+			table.LeftPadding = 0;
+			table.RightPadding = 0;
+
+
+			mult = 10.0 / 7.5;
+			//Number
+			column = table.AddColumn(Unit.FromInch(0.001 * mult));//*0.2* 0.001 * mult));
+			column.Format.Alignment = ParagraphAlignment.Center;
+			//Due
+			column = table.AddColumn(Unit.FromInch(/*0.7*/0.001 * mult));
+			column.Format.Alignment = ParagraphAlignment.Center;
+			//Who
+			column = table.AddColumn(Unit.FromInch(1 + 0.2 * mult));
+			column.Format.Alignment = ParagraphAlignment.Center;
+			//Completion
+			column = table.AddColumn(Unit.FromInch(0.75 * mult));
+			column.Format.Alignment = ParagraphAlignment.Center;
+			//Rock
+			column = table.AddColumn(Unit.FromInch((4.85 + .7) * mult));
+			column.Format.Alignment = ParagraphAlignment.Left;
+
+			row = table.AddRow();
+			row.HeadingFormat = true;
+			row.Format.Alignment = ParagraphAlignment.Center;
+			row.Format.Font.Bold = true;
+			row.Shading.Color = TableGray;
+			row.Height = Unit.FromInch(0.25);
+
+			row.Cells[1].AddParagraph(/*"Due"*/"");
+			row.Cells[1].VerticalAlignment = VerticalAlignment.Center;
+
+			row.Cells[2].AddParagraph("Owner");
+			row.Cells[2].VerticalAlignment = VerticalAlignment.Center;
+
+			row.Cells[3].AddParagraph("Created");
+			row.Cells[3].VerticalAlignment = VerticalAlignment.Center;
+
+			row.Cells[4].AddParagraph("Headlines");
+			row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
+			row.Cells[4].VerticalAlignment = VerticalAlignment.Center;
+			//table.Format.Font.Size = Unit.FromInch(.1); // --- 1/16"
+			mn = 1;
+			foreach (var m in recur.Headlines.OrderBy(x => x.Owner.Name).ThenBy(x => x.CreateTime)) {
+
+				row = table.AddRow();
+				row.HeadingFormat = false;
+				row.HeightRule = RowHeightRule.AtLeast;
+				row.BottomPadding = Unit.FromInch(.05);
+				row.Height = Unit.FromInch((6 * 8 + 5.0) / (8 * 16.0) / 2);
+				
+
+				row.Cells[2].AddParagraph("" + m.Owner.NotNull(x => x.Name));
+				row.Cells[2].Format.Alignment = ParagraphAlignment.Center;
+				row.Cells[3].AddParagraph("" + (m.CreateTime.HasValue ? m.CreateTime.Value.ToString("MM-dd-yyyy") : ""));
+				
+
+
+				row.Cells[3].Format.Alignment = ParagraphAlignment.Center;
+				row.Cells[4].AddParagraph("" + m.Name);
+
 				mn++;
 			}
 		}
@@ -1475,9 +1611,9 @@ namespace RadialReview.Accessors {
 			row.Cells[3].VerticalAlignment = VerticalAlignment.Bottom;
 
 
-            var reverse = 1;
-            if (recur.Scorecard.ReverseScorecard==true)
-                reverse = -1;
+			var reverse = 1;
+			if (recur.Scorecard.ReverseScorecard == true)
+				reverse = -1;
 
 			var weeks = recur.Scorecard.Weeks.OrderByDescending(x => x.ForWeekNumber).Take(numWeeks).OrderBy(x => reverse * x.ForWeekNumber);
 			var ii = 0;

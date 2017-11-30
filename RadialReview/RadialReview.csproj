@@ -24,6 +24,7 @@
     <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
     <TargetFrameworkProfile />
     <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -1700,6 +1701,7 @@
     <Content Include="Views\ClientSuccess\Modal.cshtml" />
     <Content Include="Views\TileData\Milestones.cshtml" />
     <Content Include="Views\TileData\L10Headlines.cshtml" />
+    <Content Include="Views\Headlines\EditModal.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

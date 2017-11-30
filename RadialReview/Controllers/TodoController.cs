@@ -75,12 +75,25 @@ namespace RadialReview.Controllers {
 
 			if (id > 0) {
 				var todo = TodoAccessor.GetTodo(GetUser(), id);
+
+				var meetings = L10Accessor.GetVisibleL10Recurrences(GetUser(), GetUser().Id, false)
+			   .Select(x => new MeetingVm { name = x.Recurrence.Name, id = x.Recurrence.Id })
+			   .OrderBy(x => x.name)
+			   .ToList();
+
 				ViewBag.Originating = "";
-				if (todo.TodoType == TodoType.Personal)
+				if (todo.TodoType == TodoType.Personal) {
 					ViewBag.Originating = "Individual To-do List";
-				else {
+					meetings.Add(new MeetingVm() {
+						name = "Individual To-do List",
+						id = -2 // Personal todo list
+					});
+					todo.ForRecurrenceId = -2;
+				} else {
 					ViewBag.Originating = todo.ForRecurrence.Name;
 				}
+				
+				ViewBag.PossibleMeetings = meetings;
 
 				ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.EditTodo(id));
 				return PartialView(todo);
