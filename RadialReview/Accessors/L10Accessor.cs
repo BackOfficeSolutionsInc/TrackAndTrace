@@ -2429,7 +2429,7 @@ namespace RadialReview.Accessors {
                 //        s.Update(rv);
                 //    }
                 //}
-                await HooksRegistry.Each<IMeetingRockHook>((ss, x) => x.DetatchRock(s, r.ForRock, recurrenceId));
+                await HooksRegistry.Each<IMeetingRockHook>((ss, x) => x.DetachRock(s, r.ForRock, recurrenceId));
             }
 
            
@@ -3295,7 +3295,7 @@ namespace RadialReview.Accessors {
             }
 
             foreach (var r in meetingMeasurables) {
-                await HooksRegistry.Each<IMeetingMeasurableHook>((ses, x) => x.DetatchMeasurable(ses, perm.GetCaller(), r.Measurable, recurrenceId));
+                await HooksRegistry.Each<IMeetingMeasurableHook>((ses, x) => x.DetachMeasurable(ses, perm.GetCaller(), r.Measurable, recurrenceId));
             }
         }
         public static void DeleteMeetingMeasurableDivider(UserOrganizationModel caller, long l10Meeting_measurableId) {

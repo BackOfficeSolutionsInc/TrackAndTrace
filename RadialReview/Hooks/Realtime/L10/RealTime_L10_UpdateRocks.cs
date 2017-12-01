@@ -110,7 +110,7 @@ namespace RadialReview.Hooks.Realtime.L10 {
             group.updateRocks(builder);
         }
 
-        public async Task DetatchRock(ISession s, RockModel rock, long recurrenceId) {
+        public async Task DetachRock(ISession s, RockModel rock, long recurrenceId) {
             using (var rt = RealTimeUtility.Create(/*RealTimeHelpers.GetConnectionString()*/)) {
                 var recur = s.Get<L10Recurrence>(recurrenceId);
 

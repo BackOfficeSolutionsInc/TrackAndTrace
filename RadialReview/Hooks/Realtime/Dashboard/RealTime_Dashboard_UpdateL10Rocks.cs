@@ -46,7 +46,7 @@ namespace RadialReview.Hooks.Realtime {
             AddRock(s, recurRock.L10Recurrence.Id, recurRock);
         }
 
-        public async Task DetatchRock(ISession s, RockModel rock, long recurrenceId) {
+        public async Task DetachRock(ISession s, RockModel rock, long recurrenceId) {
             RemoveRock(s, recurrenceId, rock.Id);
         }
 
