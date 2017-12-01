@@ -13,9 +13,9 @@
 						<div class="clickable" style="padding: 5px 0 ;"><span class="glyphicon glyphicon-chevron-right  gray"></span> <b>{{note.Title}}</b></div>
 					</div>
 					<div ng-show="model.Selected==note.Key">
-						<div style="padding: 5px 0;" class=""><span class="glyphicon glyphicon-chevron-down gray"></span> <b>{{note.Title}}</b><span class="pull-right glyphicon glyphicon-trash clickable delete-btn" ng-click="functions.showModal('Delete note?','/L10/DeleteNote/'+note.Id,'/L10/DeleteNote')"></span></div>
+						<div style="padding: 5px 0;" class=""><span class="glyphicon glyphicon-chevron-down gray"></span> @*<b>{{note.Title}}</b>*@<span class="pull-right glyphicon glyphicon-trash clickable delete-btn" ng-click="functions.showModal('Delete note?','/L10/DeleteNote/'+note.Id,'/L10/DeleteNote')"></span></div>
 						<div style="padding-left: 18px;padding-bottom:10px;">
-							<input class="blend" placeholder="Enter note here" ng-model-options="{debounce: 400}" type="text" ng-model="note.Title" ng-change="functions.sendUpdate(note)" title="{{note.note}}" />
+							<input class="blend" style="font-weight:bold;font-size: 14px;" placeholder="Enter note here" ng-model-options="{debounce: 400}" type="text" ng-model="note.Title" ng-change="functions.sendUpdate(note)" title="{{note.note}}" />
 						</div>
 						<div style="padding-left: 18px;">
 							<iframe style="background-color: white;resize:vertical;border:1px solid lightgray" width="100%" ng-src="{{trustAsResourceUrl(note.DetailsUrl_Src)}}" ng-data-src="{{note.DetailsUrl}}"></iframe>

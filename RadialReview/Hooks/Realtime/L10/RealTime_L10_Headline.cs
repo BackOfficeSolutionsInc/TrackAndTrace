@@ -57,7 +57,8 @@ namespace RadialReview.Hooks.Realtime.L10 {
 
 				group.update(new AngularUpdate() {
 					new AngularHeadline(headline.Id) {
-						Name = headline.Message
+						Name = headline.Message,
+						About =new AngularPicture(headline.About)
 					}
 				});
 			}

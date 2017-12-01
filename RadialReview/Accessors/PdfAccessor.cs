@@ -1501,14 +1501,14 @@ namespace RadialReview.Accessors {
 			//Due
 			column = table.AddColumn(Unit.FromInch(/*0.7*/0.001 * mult));
 			column.Format.Alignment = ParagraphAlignment.Center;
-			//Who
+			//Owner
 			column = table.AddColumn(Unit.FromInch(1 + 0.2 * mult));
 			column.Format.Alignment = ParagraphAlignment.Center;
-			//Completion
-			column = table.AddColumn(Unit.FromInch(0.75 * mult));
+			//About
+			column = table.AddColumn(Unit.FromInch(1 + 0.4 * mult));
 			column.Format.Alignment = ParagraphAlignment.Center;
-			//Rock
-			column = table.AddColumn(Unit.FromInch((4.85 + .7) * mult));
+			//Headlines
+			column = table.AddColumn(Unit.FromInch((4.4 + .3) * mult));
 			column.Format.Alignment = ParagraphAlignment.Left;
 
 			row = table.AddRow();
@@ -1524,7 +1524,7 @@ namespace RadialReview.Accessors {
 			row.Cells[2].AddParagraph("Owner");
 			row.Cells[2].VerticalAlignment = VerticalAlignment.Center;
 
-			row.Cells[3].AddParagraph("Created");
+			row.Cells[3].AddParagraph("About");
 			row.Cells[3].VerticalAlignment = VerticalAlignment.Center;
 
 			row.Cells[4].AddParagraph("Headlines");
@@ -1539,16 +1539,16 @@ namespace RadialReview.Accessors {
 				row.HeightRule = RowHeightRule.AtLeast;
 				row.BottomPadding = Unit.FromInch(.05);
 				row.Height = Unit.FromInch((6 * 8 + 5.0) / (8 * 16.0) / 2);
-				
+
 
 				row.Cells[2].AddParagraph("" + m.Owner.NotNull(x => x.Name));
 				row.Cells[2].Format.Alignment = ParagraphAlignment.Center;
-				row.Cells[3].AddParagraph("" + (m.CreateTime.HasValue ? m.CreateTime.Value.ToString("MM-dd-yyyy") : ""));
-				
+				row.Cells[3].AddParagraph("" + m.About != null ? m.About.Name ?? "" : "");
+
 
 
 				row.Cells[3].Format.Alignment = ParagraphAlignment.Center;
-				row.Cells[4].AddParagraph("" + m.Name);
+				row.Cells[4].AddParagraph("" + m.Name ?? "");
 
 				mn++;
 			}

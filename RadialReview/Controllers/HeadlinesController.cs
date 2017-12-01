@@ -115,7 +115,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		[HttpPost]
 		public async Task<JsonResult> EditModal(PeopleHeadline model) {
-			await HeadlineAccessor.UpdateHeadline(GetUser(), model.Id, model.Message);
+			await HeadlineAccessor.UpdateHeadline(GetUser(), model.Id, model.Message,null,model.AboutId,model.AboutIdText);
 			return Json(ResultObject.SilentSuccess());
 		}
 
