@@ -836,6 +836,23 @@ body,
 		}
 	}
 
+	.wizard-menu .btn-row {
+		.btn {
+			width: 96%;
+			margin: auto;
+			display: block;
+			text-align: left;
+			margin-top: 5px;
+
+			.glyphicon-triangle-right {
+				top: 5px;
+				left: 1px;
+				font-size: 10px;
+				color: #a2a2a2;
+				float: right;
+			}
+		}
+	}
 
 	.create-row {
 		bottom: 1px;
@@ -843,6 +860,19 @@ body,
 		position: fixed !important;
 		opacity: 0;
 		transition: opacity ease-in .2s;
+	}
+
+	.fadein {
+		opacity: 0;
+		-moz-transition: opacity .1s ease;
+		-o-transition: opacity .1s ease;
+		-webkit-transition: opacity .1s ease;
+		transition: opacity .1s ease;
+		transition-delay: .1s;
+	}
+
+	.btn.visible:hover .fadein {
+		opacity: 1;
 	}
 }
 

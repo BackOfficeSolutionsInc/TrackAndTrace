@@ -61,8 +61,7 @@ namespace RadialReview.Variables {
         public static T GetSettingOrDefault<T>(this ISession s, string key, T defaultValue) {
             return JsonConvert.DeserializeObject<T>(_GetSettingOrDefault(s, key, () => JsonConvert.SerializeObject(defaultValue)).V);
         }
-
-
+		
         public static void UpdateSetting<T>(this ISession s, string key, T newValue) {
             UpdateSetting(s, key, JsonConvert.SerializeObject(newValue));
         }

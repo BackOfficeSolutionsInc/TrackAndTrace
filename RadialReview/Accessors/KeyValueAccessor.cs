@@ -9,7 +9,9 @@ namespace RadialReview.Accessors
 {
     public class KeyValueAccessor : BaseAccessor
     {
-        public List<KeyValueModel> Get(String key)
+
+		[Obsolete("Use Variable instead")]
+        public static List<KeyValueModel> Get(String key)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -19,8 +21,8 @@ namespace RadialReview.Accessors
                 }
             }
         }
-
-        public long Put(String key, String value)
+		[Obsolete("Use Variable instead")]
+		public static long Put(String key, String value)
         {
             using (var s = HibernateSession.GetCurrentSession())
             {
@@ -34,7 +36,8 @@ namespace RadialReview.Accessors
                 }
             }
         }
-        public void Remove(long id)
+		[Obsolete("Use Variable instead")]
+		public static void Remove(long id)
         {
             try
             {

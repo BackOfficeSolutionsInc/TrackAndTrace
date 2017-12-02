@@ -47,10 +47,19 @@ namespace RadialReview.Utilities {
 
 
 		public interface ISelectExistingOrCreateItem {
-			string Name { get;  }
-			string ImageUrl { get;  }
-			string Description { get;  }
-			string ItemValue { get;  }
+			string Name { get; }
+			string ImageUrl { get; }
+			string Description { get; }
+			string ItemValue { get; }
+			string AltIcon { get; }
+		}
+
+		public class BaseSelectExistingOrCreateItem : ISelectExistingOrCreateItem {
+			public string Name { get; set; }
+			public string ImageUrl { get; set; }
+			public string Description { get; set; }
+			public string ItemValue { get; set; }
+			public string AltIcon { get; set; }
 		}
 
 	}

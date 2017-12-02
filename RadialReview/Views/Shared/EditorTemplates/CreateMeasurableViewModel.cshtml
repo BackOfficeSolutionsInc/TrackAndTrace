@@ -1,27 +1,111 @@
 ﻿@model RadialReview.Models.ViewModels.CreateMeasurableViewModel
+@{ 
+	var guid = Guid.NewGuid().ToString().Replace("-", "");
+	var admins = Model.PotentialUsers.ToList();
+	admins.ForEach(x => { x.Selected = false; });
+	admins.Add(new SelectListItem() {
+		Text = "Select an admin (optional)...",
+		Selected =true,
+		Value = null
+	});
+
+}
+<div class="cmvm cmvm-@(guid)">
+	<div class="row smallBreak2">
+		<div class="col-xs-3"><label>Measurable:</label></div>
+		<div class="col-xs-9 noPadLeft">
+			@Html.TextBoxFor(x => x.Title, new { placeholder = "Measurable Name", @class = "fullWidth form-control blend" })
+		</div>
+	</div>
+	<div class="row smallBreak2">
+		<div class="col-xs-3"><label>Owner:</label><div class="tiny add-admin">(Add an Admin)</div></div>
+		<div class="col-xs-9 noPadLeft">
+			@Html.DropDownListFor(x => x.AccountableUser, Model.PotentialUsers, new { placeholder = "Owner", @class = "fullWidth form-control blend" })
+		</div>
+	</div>
+	<div class="row smallBreak2 admin-container hidden">
+		<div class="col-xs-3"><label>Admin:</label></div>
+		<div class="col-xs-9 noPadLeft">
+			@Html.DropDownListFor(x => x.AdminUser, admins, new { placeholder = "Admin", @class = "fullWidth form-control blend" })
+		</div>
+	</div>
+	<div class="row smallBreak2">
+		<div class="col-xs-3"><label>Goal:</label></div>
+		<div class="col-xs-1 noPadLeft">
+			@Html.EnumDropDownListFor(x => x.GoalDirection, new { placeholder = "", @class = "fullWidth form-control blend goal-direction full" })
+		</div>
+		<div class="noPadLeft goal-container">
+			@Html.TextBoxFor(x => x.Goal, new { placeholder = "Goal", @class = "fullWidth form-control blend full" })
+		</div>
+		<div class="col-xs-3 noPadLeft noPadRight alt-goal-container">
+			<table style="width:100%">
+				<tr>
+					<td style="padding-right:20px;padding-left:20px;"> to </td>
+					<td>
+						@Html.TextBoxFor(x => x.AltGoal, new { placeholder = "", @class = "fullWidth form-control blend full" })
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div class="col-xs-2 noPadLeft">
+			@Html.EnumDropDownListFor(x => x.Units, new { placeholder = "Units", @class = "fullWidth form-control blend" })
+		</div>
+	</div>
+</div>
+
+<style>
+	.cmvm-@(guid) .tiny {
+		font-size: 11px;
+		color: #888;
+		top: -3px;
+		position: relative;
+		cursor:pointer;
+	}
+
+	.cmvm-@(guid) .tiny:hover {
+		color: #ef7622;
+	}
+
+	.cmvm-@(guid) .full.form-control.blend{
+		max-width:100%;
+	}
+</style>
+
+<script>
+
+	function a@(guid)() {
+		var c = $(".cmvm-@(guid)");
+		var goalDir = c.find(".goal-direction");
 
 
-<div class="row smallBreak2">
-	<div class="col-xs-3"><label>Measurable:</label></div>
-	<div class="col-xs-9 noPadLeft">
-		@Html.TextBoxFor(x => x.Title, new { placeholder = "Measurable Name", @class = "fullWidth form-control blend" })
-	</div>
-</div>
-<div class="row smallBreak2">
-	<div class="col-xs-3"><label>Owner:</label></div>
-	<div class="col-xs-9 noPadLeft">
-		@Html.DropDownListFor(x => x.AccountableUser, Model.PotentialUsers, new { placeholder = "Measurable Name", @class = "fullWidth form-control blend" })
-	</div>
-</div>
-<div class="row smallBreak2">
-	<div class="col-xs-3"><label>Goal:</label></div>
-	<div class="col-xs-3 noPadLeft">
-		@Html.EnumDropDownListFor(x => x.GoalDirection, new { placeholder = "", @class = "fullWidth form-control blend" })
-	</div>
-	<div class="col-xs-3 noPadLeft">
-		@Html.EditorFor(x => x.Goal, new { placeholder = "Goal", @class = "fullWidth form-control blend" })
-	</div>
-	<div class="col-xs-3 noPadLeft">
-		@Html.EnumDropDownListFor(x => x.Units, new { placeholder = "Goal", @class = "fullWidth form-control blend" })
-	</div>
-</div>
+
+		function adjInputs() {
+			if (goalDir.val()==-3){
+				$(".goal-container").addClass("col-xs-3").removeClass("col-xs-6");
+				$(".alt-goal-container").removeClass("hidden");
+			}else{				
+				$(".goal-container").removeClass("col-xs-3").addClass("col-xs-6");
+				$(".alt-goal-container").addClass("hidden");
+			}
+		}
+		goalDir.on("change", function () { adjInputs(); });
+		adjInputs();
+
+		c.find(".add-admin").on("click", function () {
+			$(this).remove();
+			c.find(".admin-container").removeClass("hidden");
+		});
+
+	}
+
+
+
+	function defer@(guid)() {
+		if (window.jQuery)
+			a@(guid)();
+		else
+			setTimeout(function () { defer@(guid)() }, 50);
+	}
+		defer@(guid)();
+
+</script>

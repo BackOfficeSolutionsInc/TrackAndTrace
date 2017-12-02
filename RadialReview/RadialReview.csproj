@@ -140,6 +140,9 @@
     <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\RockCompletionSection.cs" />
     <Compile Include="Controllers\AbstractController\BaseExpensiveController.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
+    <Compile Include="Controllers\RedirectController.cs" />
+    <Compile Include="Hooks\CrossCutting\CreateFinancialPermItems.cs" />
+    <Compile Include="Hooks\CrossCutting\SwapScorecardOnRegister.cs" />
     <Compile Include="Hooks\HookData.cs" />
     <Compile Include="Hooks\Meeting\AttendeeHooks.cs" />
     <Compile Include="Hooks\Meeting\AuditLogHooks.cs" />
@@ -162,7 +165,9 @@
     <Compile Include="Models\Angular\CoreProcess\AngularCoreProcess.cs" />
     <Compile Include="Models\Application\Variable.cs" />
     <Compile Include="Models\ClientSuccess\TooltipModels.cs" />
+    <Compile Include="Models\Enums\DashboardType.cs" />
     <Compile Include="Models\L10\L10LookupCache.cs" />
+    <Compile Include="Models\ViewModels\CreateRockViewModel.cs" />
     <Compile Include="Models\ViewModels\CreateMeasurableViewModel.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Utilities\Attributes\Untested.cs" />
@@ -849,6 +854,7 @@
     <Compile Include="Utilities\Hooks\IMeasurableHook.cs" />
     <Compile Include="Utilities\Hooks\IMeetingEvents.cs" />
     <Compile Include="Utilities\Hooks\IMeetingItemHooks.cs" />
+    <Compile Include="Utilities\Hooks\IOrganizationHooks.cs" />
     <Compile Include="Utilities\Hooks\IScoreHook.cs" />
     <Compile Include="Utilities\Hooks\IRockHook.cs" />
     <Compile Include="Utilities\Hooks\ITaskHook.cs" />
@@ -1715,6 +1721,10 @@
     <Content Include="Views\Shared\EditorTemplates\CreateUserOrganizationViewModel.cshtml" />
     <Content Include="Views\L10\AddAttendee.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\CreateMeasurableViewModel.cshtml" />
+    <Content Include="Views\L10\AddMeasurableModal.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\CreateRockViewModel.cshtml" />
+    <Content Include="Views\L10\AddRockModal.cshtml" />
+    <Content Include="Views\Manage\Payment.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

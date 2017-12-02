@@ -9,6 +9,7 @@ using RadialReview.Models.Json;
 using RadialReview.Models.Scorecard;
 using RadialReview.Models.UserTemplate;
 using System.Threading.Tasks;
+using static RadialReview.Utilities.SelectExistingOrCreateUtility;
 
 namespace RadialReview.Controllers
 {
@@ -34,7 +35,7 @@ namespace RadialReview.Controllers
 
 		[HttpGet]
 		[Access(AccessLevel.UserOrganization)]
-		public JsonResult Search(string q, int results = 4, string exclude = null) {
+		public async Task<JsonResult> Search(string q, int results = 4, string exclude = null) {
 			long[] excludeLong = new long[] { };
 			if (exclude != null) {
 				try {
@@ -42,18 +43,19 @@ namespace RadialReview.Controllers
 				} catch (Exception) { }
 			}
 
-			var o = await ScorecardAccessor.Search(GetUser(), GetUser().Organization.Id,q, excludeLong);
+			var oo = await ScorecardAccessor.Search(GetUser(), GetUser().Organization.Id, q, excludeLong);
 			//var oo = _SearchUsers(q, results, exclude);
-			//var o = oo.Select(x => new {
-			//	name = x.FirstName.ToTitleCase() + " " + x.LastName.ToTitleCase(),
-			//	first = x.FirstName.ToTitleCase(),
-			//	last = x.LastName.ToTitleCase(),
-			//	id = x.UserOrgId,
-			//	ItemValue = x.UserOrgId,
-			//	Name = x.FirstName.ToTitleCase() + " " + x.LastName.ToTitleCase(),
-			//	ImageUrl = x.ImageUrl,
-
-			//}).ToList();
+			var o = oo.Select(x => {
+				var desc = "Owner: " + x.AccountableUser.GetName();
+				if (x.AccountableUserId != x.AdminUserId)
+					desc += " (Admin: " + x.AdminUser.GetName() + ")";
+				return new BaseSelectExistingOrCreateItem {					
+					ItemValue = "" + x.Id,
+					Name = x.Title,
+					ImageUrl = x.AccountableUser.GetImageUrl(),
+					Description = desc
+				};
+			}).ToList();
 			return Json(ResultObject.SilentSuccess(o), JsonRequestBehavior.AllowGet);
 		}
 

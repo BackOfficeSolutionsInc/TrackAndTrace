@@ -19,6 +19,11 @@ namespace RadialReview.Controllers
 {
 	public class ManageController : BaseController
 	{
+		private void UpdateViewbag() {
+			ViewBag.ManagingPayments = PermissionsAccessor.CanEdit(GetUser(), PermItem.ResourceType.UpdatePaymentForOrganization, GetUser().Organization.Id);
+		}
+
+
 		//
 		// GET: /Manage/
 		[Access(AccessLevel.Manager)]
@@ -66,6 +71,7 @@ namespace RadialReview.Controllers
 		[Access(AccessLevel.Manager)]
 		public ActionResult Positions()
 		{
+			UpdateViewbag();
 			new Cache().Push(CacheKeys.MANAGE_PAGE, "Positions", LifeTime.Request/*Session*/);
 #pragma warning disable CS0618 // Type or member is obsolete
 			var orgPos = _OrganizationAccessor.GetOrganizationPositions(GetUser(), GetUser().Organization.Id).ToListAlive();
@@ -82,10 +88,9 @@ namespace RadialReview.Controllers
 		}
 
         [Access(AccessLevel.Manager)]
-        public ActionResult Teams()
-        {
-
-            new Cache().Push(CacheKeys.MANAGE_PAGE, "Teams", LifeTime.Request/*Session*/);
+        public ActionResult Teams() {
+			UpdateViewbag();
+			new Cache().Push(CacheKeys.MANAGE_PAGE, "Teams", LifeTime.Request/*Session*/);
             var orgTeams = TeamAccessor.GetOrganizationTeams(GetUser(), GetUser().Organization.Id);
             var teams = orgTeams.Select(x => new OrganizationTeamViewModel { Team = x, Members = 0, TemplateId = x.TemplateId }).ToList();
 
@@ -109,9 +114,9 @@ namespace RadialReview.Controllers
             public List<SelectListItem> Periods { get; set; }
         }
         [Access(AccessLevel.Manager)]
-        public ActionResult Data()
-        {
-            new Cache().Push(CacheKeys.MANAGE_PAGE, "Data", LifeTime.Request/*Session*/);
+        public ActionResult Data() {
+			UpdateViewbag();
+			new Cache().Push(CacheKeys.MANAGE_PAGE, "Data", LifeTime.Request/*Session*/);
             var model = new DataVM(){
                 Periods = PeriodAccessor.GetPeriods(GetUser(), GetUser().Organization.Id).ToSelectList(y=>y.Name,y=>y.Id)
             };
@@ -121,8 +126,8 @@ namespace RadialReview.Controllers
 
 		[Access(AccessLevel.Manager)]
 		[OutputCache(NoStore = true,Duration = 0)]
-		public ActionResult Members()
-		{
+		public ActionResult Members() {
+			UpdateViewbag();
 			new Cache().Push(CacheKeys.MANAGE_PAGE, "Members", LifeTime.Request/*Session*/);
 			//var user = GetUser().Hydrate().ManagingUsers(true).Execute();
 
@@ -150,14 +155,12 @@ namespace RadialReview.Controllers
 		{
 			public List<UserOrganizationModel> AllUsers { get; set; }
 			public List<ManagerDuration> AllManagerLinks { get; set; }
-
-
 		}
 
 		[Access(AccessLevel.Manager)]
 		[Obsolete("Do not use",true)]
-		public ActionResult Reorganize()
-		{
+		public ActionResult Reorganize() {
+			UpdateViewbag();
 			throw new Exception("Do not use");
 			//new Cache().Push(CacheKeys.MANAGE_PAGE, "Reorganize", LifeTime.Request/*Session*/);
 			//var orgId = GetUser().Organization.Id;
@@ -178,8 +181,8 @@ namespace RadialReview.Controllers
 		}
 
 		[Access(AccessLevel.Manager)]
-		public ActionResult Organization()
-		{
+		public ActionResult Organization() {
+			UpdateViewbag();
 			var user = GetUser().Hydrate().Organization().Execute();
 			_PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(GetUser().Organization.Id));
 
@@ -200,15 +203,32 @@ namespace RadialReview.Controllers
 
 
 		[Access(AccessLevel.Manager)]
-		public ActionResult Advanced()
-		{
+		public ActionResult Advanced() {
+			UpdateViewbag();
+			OrganizationViewModel model = GetAdminDataModel(true,false);
+			return View(model);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult Payment() {
+			UpdateViewbag();
+			OrganizationViewModel model = GetAdminDataModel(false,true);
+			return View(model);
+		}
+
+		private OrganizationViewModel GetAdminDataModel(bool testManageOrg,bool testManageFinance) {
 			var user = GetUser().Hydrate().Organization().Execute();
 
-			_PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(GetUser().Organization.Id));
+			if (!testManageFinance && !testManageOrg)
+				throw new PermissionsException();
+
+			if (testManageOrg)
+				_PermissionsAccessor.Permitted(GetUser(), x => x.ManagingOrganization(GetUser().Organization.Id));
+			if (testManageFinance)
+				_PermissionsAccessor.Permitted(GetUser(), x => x.EditCompanyPayment(GetUser().Organization.Id));
 
 
-			var model = new OrganizationViewModel()
-			{
+			var model = new OrganizationViewModel() {
 				Id = user.Organization.Id,
 				ManagersCanEdit = user.Organization.ManagersCanEdit,
 				OrganizationName = user.Organization.Name.Standard,
@@ -247,8 +267,7 @@ namespace RadialReview.Controllers
 				AccountabilityChartId = user.Organization.AccountabilityChartId
 
 			};
-
-			return View(model);
+			return model;
 		}
 
 		[HttpPost]

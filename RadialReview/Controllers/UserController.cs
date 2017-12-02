@@ -442,9 +442,13 @@ namespace RadialReview.Controllers {
 		}
 
 		[HttpGet]
-		[Access(AccessLevel.User)]
+		[Access(AccessLevel.Any)]
 		public string Styles() {
-			return UserAccessor.GetStyles(GetUserModel().Id);
+			try {
+				return UserAccessor.GetStyles(GetUserModel().Id);
+			} catch (LoginException) {
+				return "";
+			}
 			//return Content(UserAccessor.GetStyles(GetUserModel().Id), "text/css");
 		}
 

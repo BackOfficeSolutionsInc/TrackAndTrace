@@ -1033,6 +1033,34 @@ body.resizing *::-moz-selection {
   -webkit-filter: grayscale(0.3);
   opacity: .9;
 }
+.searchresult .searchresult-alticon {
+  float: right;
+}
+.searchresult .searchresult-alticon .profile-picture .picture-container {
+  width: 32px;
+  height: 32px;
+  line-height: 29px;
+  position: relative;
+  top: 0px;
+  float: left;
+  font-size: 9px;
+}
+.searchresult .searchresult-alticon .profile-picture.desaturate {
+  filter: gray;
+  filter: grayscale(0.7);
+  -webkit-filter: grayscale(0.7);
+  opacity: 0.7;
+  -moz-transition: all ease .2s;
+  -o-transition: all ease .2s;
+  -webkit-transition: all ease .2s;
+  transition: all ease .2s;
+}
+.searchresult .searchresult-alticon .profile-picture.desaturate:hover {
+  filter: none;
+  filter: grayscale(0.3);
+  -webkit-filter: grayscale(0.3);
+  opacity: .9;
+}
 .searchresult .searchresult-meta {
   display: inline-block;
   float: left;

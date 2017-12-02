@@ -43,7 +43,7 @@
 		box-shadow: none;
 	}
 
-	.seoc-@guid select {
+	.seoc-@guid .seoc-existing select {
 		width:100%;
 	    padding: 9px 9px 8px 9px;
 		border-radius: 4px;
@@ -147,21 +147,26 @@
 				var org = "";
 				var name = "";
 				var img = "";
+				var altIcon = "";
+
 				if (typeof (d.Name) === "string")
 					name = d.Name;
 
 				if (typeof (d.Description) === "string")
-					des = " " + d.ItemDescription;
+					des = " " + d.Description;
 
 				if (typeof (d.ImageUrl) === "string")
 					img = profilePicture(d.ImageUrl, name);
+				if (typeof (d.AltIcon) === "string")
+					img = d.AltIcon;
 
 
 				var markup = "<div class='searchresult-image'>" + img + "</div>" +
 							  "<div class='searchresult-meta'>" +
 								"<div class='searchresult-title'>" + name + "</div>" +
 								"<div class='searchresult-description'>" + des + "</div>" +
-							  "</div>";
+							  "</div>"+
+							  "<div class='searchresult-alticon'>" + altIcon + "</div>";
 
 				return markup;
 			};
@@ -224,6 +229,20 @@
 
 			});
 
+
+			var select2_open;
+			// open select2 dropdown on focus
+			$(".seoc-@guid").on('focus', '.select2-selection--single', function(e) {
+				select2_open = $(this).parent().parent().siblings('select');
+				select2_open.select2('open').select2('open');
+			});
+
+			// fix for ie11
+			if (/rv:11.0/i.test(navigator.userAgent)) {
+				$(".seoc-@guid").on('blur', '.select2-search__field', function (e) {
+					select2_open.select2('close');
+				});
+			}
 
 
 			function adjustPage(){

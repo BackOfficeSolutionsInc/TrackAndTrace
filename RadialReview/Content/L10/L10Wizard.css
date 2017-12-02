@@ -2331,12 +2331,37 @@ body,
   border-radius: 21px;
   background-color: rgba(0, 0, 0, 0.16);
 }
+.wizard .wizard-menu .btn-row .btn {
+  width: 96%;
+  margin: auto;
+  display: block;
+  text-align: left;
+  margin-top: 5px;
+}
+.wizard .wizard-menu .btn-row .btn .glyphicon-triangle-right {
+  top: 5px;
+  left: 1px;
+  font-size: 10px;
+  color: #a2a2a2;
+  float: right;
+}
 .wizard .create-row {
   bottom: 1px;
   right: 35px;
   position: fixed !important;
   opacity: 0;
   transition: opacity ease-in 0.2s;
+}
+.wizard .fadein {
+  opacity: 0;
+  -moz-transition: opacity .1s ease;
+  -o-transition: opacity .1s ease;
+  -webkit-transition: opacity .1s ease;
+  transition: opacity .1s ease;
+  transition-delay: .1s;
+}
+.wizard .btn.visible:hover .fadein {
+  opacity: 1;
 }
 #class-container:not(.modal-icon) .modal-content {
   background: #fff;

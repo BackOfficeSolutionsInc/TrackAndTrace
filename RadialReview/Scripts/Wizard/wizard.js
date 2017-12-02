@@ -14,7 +14,9 @@ function setCompletion(percentage) {
 
 var doneLoading = true;
 var currentPage = null;
-function changePage(page,first) {
+function changePage(page, first) {
+
+	window.location.hash = page;
     if (page[0] == "#") {
         if (page[1] == "/")
             page = page.substr(2);
@@ -25,7 +27,7 @@ function changePage(page,first) {
         setTimeout(function () {
             changePage(page, first);
             console.log("trying again to change page");
-        }, 250);
+        },300);
         return;
     }
     var pages = $(".wizard-page:not(.hidden)");
@@ -149,9 +151,11 @@ $(function () {
             }, 100);
             return false;
         } else if (e.keyCode == 34) {
-            $(".nextButton:visible").click();
+        	var b = $(".nextButton:visible");
+        	b.click();
         } else if (e.keyCode == 33) {
-            $(".backButton:visible").click();
+        	var b = $(".backButton:visible");
+        	b.click();
         }
     });
 });

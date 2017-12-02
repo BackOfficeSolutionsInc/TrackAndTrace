@@ -1,20 +1,24 @@
 ﻿<ul class="nav nav-tabs manage">
-	<li class="@(ViewBag.Page == "Members"   ? "active" : "")"><a href="/Manage/Members">     Members</a></li>
-	<li class="@(ViewBag.Page == "AC"   ? "active" : "")"><a href="/Accountability/Chart">     Accountability Chart</a></li>
+	@if (ViewBag.IsManager ?? false) {
+		<li class="@(ViewBag.Page == "Members" ? "active" : "")"><a href="/Manage/Members">     Members</a></li>
+	}
+	@*<li class="@(ViewBag.Page == "AC"   ? "active" : "")"><a href="/Accountability/Chart">     Accountability Chart</a></li>*@
 	@*<li class="@(ViewBag.Page == "Reorganize"   ? "active" : "")"><a href="/Manage/Reorganize"> Reorganize</a></li>*@
-	<li class="@(ViewBag.Page == "Positions" ? "active" : "")"><a href="/Manage/Positions">     Positions</a></li>
-	<li class="@(ViewBag.Page == "Teams"     ? "active" : "")"><a href="/Manage/Teams">     Teams</a></li>
+	@*<li class="@(ViewBag.Page == "Positions" ? "active" : "")"><a href="/Manage/Positions">     Positions</a></li>*@
+	@*<li class="@(ViewBag.Page == "Teams"     ? "active" : "")"><a href="/Manage/Teams">     Teams</a></li>*@
 	@*<li class="@(ViewBag.Page == "Reviews"   ? "active" : "")"><a href="/Manage/Reviews">       Reviews</a></li>*@
 	@*<li class="@(ViewBag.Page == "Data"  ? "active" : "")"><a href="/Manage/Data">  Data</a></li>*@
 	@if ((ViewBag.ManagingOrganization ?? false) || (ViewBag.Organization != null && ViewBag.Organization.ManagersCanEdit)) {
-		<li class="@(ViewBag.Page == "Settings"  ? "active" : "")"><a href="/Manage/Organization">  Organization</a></li>
+		<li class="@(ViewBag.Page == "Settings"  ? "active" : "")"><a href="/Manage/Organization">  Core Values</a></li>
+	}
+	@if ((ViewBag.ManagingPayments ?? false)) {
+		<li class="@(ViewBag.Page == "Payment"  ? "active" : "")"><a href="/Manage/Payment">  Payment</a></li>
 	}
 	@if ((ViewBag.ManagingOrganization ?? false) || (ViewBag.Organization != null && ViewBag.Organization.ManagersCanEdit)) {
-		<li class="@(ViewBag.Page == "Advanced"  ? "active" : "")"><a href="/Manage/Advanced">  Admin</a></li>
+		<li class="@(ViewBag.Page == "Advanced"  ? "active" : "")"><a href="/Manage/Advanced">  Advanced</a></li>
 	}
 	@Html.Partial("_ExtraTab")
 </ul>
-
 <style>
 	.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
 		background-color: #eee;

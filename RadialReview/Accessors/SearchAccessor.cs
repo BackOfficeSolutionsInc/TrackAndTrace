@@ -24,6 +24,7 @@ namespace RadialReview.Accessors {
 		public string Organization { get; set; }
 		public string Email { get; set; }
 		public string ImageUrl { get; set; }
+		public string AltIcon { get; set; }
 
 		[JsonConverter(typeof(StringEnumConverter))]
 		public RGMType ResultType { get; set; }
@@ -52,6 +53,8 @@ namespace RadialReview.Accessors {
 			}
 		}
 	}
+
+
 	public class SearchAccessor : BaseAccessor {
 		public class SearchSelectors<T> {
 			public SearchSelectors(RGMType resultType, bool forceLookupOrganizationName = false/*, bool or = false*/) {

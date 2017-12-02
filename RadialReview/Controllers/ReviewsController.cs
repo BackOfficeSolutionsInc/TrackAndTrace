@@ -243,7 +243,7 @@ namespace RadialReview.Controllers {
 			var allPossibleReviewees = ReviewAccessor.GetAllPossibleReviewees(GetUser(), review.OrganizationId, review.GetDateRange(true));
 
 			//Add to review
-			var alsoExclude = _KeyValueAccessor.Get("AddToReviewReserved_" + id).Select(x => long.Parse(x.V));
+			var alsoExclude = KeyValueAccessor.Get("AddToReviewReserved_" + id).Select(x => long.Parse(x.V));
 
 			var additionalMembers = allPossibleReviewees.Where(everyone => !existingReviewees.Any(existing => existing == everyone))
 				.Where(x => !alsoExclude.Any(y => y == x.RGMId))
@@ -261,7 +261,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
 		[Obsolete("Fix for AC")]
 		public async Task<JsonResult> Update(UpdateReviewsViewModel model) {
-			var reservedId = _KeyValueAccessor.Put("AddToReviewReserved_" + model.ReviewId, "" + model.SelectedUserId);
+			var reservedId = KeyValueAccessor.Put("AddToReviewReserved_" + model.ReviewId, "" + model.SelectedUserId);
 			var userName = GetUserModel().UserName;
 
 			var user = GetUser();
@@ -275,7 +275,7 @@ namespace RadialReview.Controllers {
 						log.Error(e);
 						output = new ResultObject(e);
 					} finally {
-						_KeyValueAccessor.Remove(reservedId);
+						KeyValueAccessor.Remove(reservedId);
 					}
 					return output;
 				});

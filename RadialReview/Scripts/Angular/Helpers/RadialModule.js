@@ -100,10 +100,10 @@
         var o = {};
         //Construct Hub
         var hub = signalR(hubName, function (connection, proxy) {
-            console.log('Connecting to service');
+            //console.log('Connecting to service');
             $scope.connectionId = connection.id;
             rejoin(connection, proxy, function () {
-                console.log("Joined: " + connection.id);
+                //console.log("Joined: " + connection.id);
             });
         });
 

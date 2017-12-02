@@ -377,6 +377,12 @@ namespace RadialReview.Controllers {
 				end = meeting.CompleteTime,
 			}), JsonRequestBehavior.AllowGet);
 		}
+		
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<ActionResult> EditVto(long id) {
+			var vtoId = (await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), id, false, false, false)).VtoId;
+			return RedirectToAction("Edit", "VTO", new { id = vtoId });
+		}
 
 
 		#region Modal
@@ -388,6 +394,35 @@ namespace RadialReview.Controllers {
 
 			var obj = UserAccessor.BuildCreateUserVM(GetUser(), ViewBag);
 			var settings = SelectExistingOrCreateUtility.Create<CreateUserOrganizationViewModel>("/User/Search?exclude=" + existingAttendees, "CreateUserOrganizationViewModel", obj, false);
+			ViewBag.meetingId = meetingId;
+			return PartialView(settings);
+		}
+
+
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<PartialViewResult> AddMeasurableModal(long meetingId) {
+
+			var data = await L10Accessor.GetOrGenerateScorecardDataForRecurrence(GetUser(), meetingId, false, null, null, true, false, null);
+			var existingIds = string.Join(",", data.Measurables.Select(x => x.Id));
+
+			var attendees = L10Accessor.GetAttendees(GetUser(), meetingId);
+
+			var obj = ScorecardAccessor.BuildCreateMeasurableVM(GetUser(), ViewBag, attendees.ToSelectList(x => x.GetName(), x => x.Id, GetUser().Id));
+			var settings = SelectExistingOrCreateUtility.Create<CreateMeasurableViewModel>("/Measurable/Search?exclude=" + existingIds, "CreateMeasurableViewModel", obj, true);
+			ViewBag.meetingId = meetingId;
+			return PartialView(settings);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<PartialViewResult> AddRockModal(long meetingId) {
+
+			var data = L10Accessor.GetRocksForRecurrence(GetUser(), meetingId);
+			var existingIds = string.Join(",", data.Select(x => x.ForRock.Id));
+
+			var attendees = L10Accessor.GetAttendees(GetUser(), meetingId);
+
+			var obj = RockAccessor.BuildCreateRockVM(GetUser(), ViewBag, attendees.ToSelectList(x => x.GetName(), x => x.Id, GetUser().Id));
+			var settings = SelectExistingOrCreateUtility.Create<CreateRockViewModel>("/Rocks/Search?exclude=" + existingIds, "CreateRockViewModel", obj, true);
 			ViewBag.meetingId = meetingId;
 			return PartialView(settings);
 		}
@@ -412,15 +447,43 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public async Task<PartialViewResult> AddMeasurable(long meetingId) {
+		[HttpPost]
+		public async Task<JsonResult> AddMeasurableModal(long meetingId, SelectExistingOrCreateModel<CreateMeasurableViewModel> model) {
+			if (model.ShouldCreateNew()) {
+				var o = model.Object;
+				var builder = MeasurableBuilder.Build(o.Title, o.AccountableUser, o.AdminUser, o.Units, o.Goal, o.GoalDirection, o.AltGoal, o.ShowCumulative, o.CumulativeRange);
+				var result = await ScorecardAccessor.CreateMeasurable(GetUser(), builder);
+				try {
+					await L10Accessor.AttachMeasurable(GetUser(), meetingId, result.Id);
+				} catch (Exception) {
+					throw new PermissionsException("Could not add to meeting.");
+				}
+			} else {
+				await L10Accessor.AttachMeasurable(GetUser(), meetingId, model.SelectedValue.Value);
+			}
 
-			var data = await L10Accessor.GetOrGenerateScorecardDataForRecurrence(GetUser(), meetingId, false, null, null, true, false, null);
-			var existingIds = string.Join(",", data.Measurables.Select(x => x.Id));
+			return Json(ResultObject.SilentSuccess());
 
-			var obj = UserAccessor.BuildCreateUserVM(GetUser(), ViewBag);
-			var settings = SelectExistingOrCreateUtility.Create<CreateMeasurableViewModel>("/Measurable/Search?exclude=" + existingIds, "CreateMeasurableViewModel", obj, false);
-			ViewBag.meetingId = meetingId;
-			return PartialView(settings);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public async Task<JsonResult> AddRockModal(long meetingId, SelectExistingOrCreateModel<CreateRockViewModel> model) {
+			if (model.ShouldCreateNew()) {
+				var o = model.Object;
+				//var builder = MeasurableBuilder.Build(o.Title, o.AccountableUser, o.AdminUser, o.Units, o.Goal, o.GoalDirection, o.AltGoal, o.ShowCumulative, o.CumulativeRange);
+				var result = await RockAccessor.CreateRock(GetUser(), o.AccountableUser, o.Title);
+				try {
+					await L10Accessor.AttachRock(GetUser(), meetingId, result.Id, o.AddToVTO);
+				} catch (Exception) {
+					throw new PermissionsException("Could not add to meeting.");
+				}
+			} else {
+				await L10Accessor.AttachRock(GetUser(), meetingId, model.SelectedValue.Value, false);
+			}
+
+			return Json(ResultObject.SilentSuccess());
+
 		}
 
 		//[Access(AccessLevel.UserOrganization)]

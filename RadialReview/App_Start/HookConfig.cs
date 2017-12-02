@@ -1,5 +1,6 @@
 ﻿using RadialReview.Accessors.Hooks;
 using RadialReview.Hooks;
+using RadialReview.Hooks.CrossCutting;
 using RadialReview.Hooks.Meeting;
 using RadialReview.Hooks.Realtime;
 using RadialReview.Hooks.Realtime.Dashboard;
@@ -49,6 +50,10 @@ namespace RadialReview.App_Start {
 
 			HooksRegistry.RegisterHook(new CalculateCumulative());
 			HooksRegistry.RegisterHook(new AttendeeHooks());
+
+			HooksRegistry.RegisterHook(new SwapScorecardOnRegister());
+			
+			HooksRegistry.RegisterHook(new CreateFinancialPermItems());
 			//HooksRegistry.RegisterHook(new TodoEdit())
 		}
     }

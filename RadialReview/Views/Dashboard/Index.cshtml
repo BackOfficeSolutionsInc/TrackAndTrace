@@ -135,7 +135,34 @@
 				}
 			});
 		}
+
 	</script>
+
+	if (ViewBag.DisableEditTiles ?? false) {
+		<script>
+			$(".add-tile").attr("title","This workspace cannot be edited.").css({"opacity":.5,"cursor":"not-allowed"})
+				.find("button").css({"pointer-events":"none"});			
+
+			window.AllowDragDrop =false;
+		</script>
+		<style>
+			.settings-container,.resizer {
+				display:none!important;
+			}
+			
+			.grid-container li .heading{
+				cursor:default;
+			}
+
+		</style>
+	}
+
+	if (ViewBag.InitialModel is String) {
+		<script>
+			window.InitialModel = @(new HtmlString(ViewBag.InitialModel));
+		</script>
+	}
+
 }
 @section topSection{
 	<div class="ng-cloak2" ng-app="L10App">
@@ -217,6 +244,20 @@
 	</ul>
 </div>
 
+<div class="btn-group l10-pages" style="position: fixed;top: 25px;left:162px;z-index: 1001;color:white">
+	<button type="button" class="btn btn-link clickable dropdown-toggle" style="color:white" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		Meetings <span class="caret"></span>
+	</button>
+	<ul class="dropdown-menu">
+		@foreach (var l10 in Model.L10s) {
+			<li>
+				<a href="#">
+					<span class="dashtitle" onclick="window.location='/Dashboard/Generate/@l10.Value?type=L10'">@l10.Text</span>
+				</a>
+			</li>
+		}
+	</ul>
+</div>
 <div class="meeting-review ng-cloa2k grid-container">
 	<div ng-controller2="L10Controller">
 		@Html.Partial("~/Views/Angular/_L10App.cshtml", (long)ViewBag.UserId, new ViewDataDictionary(){

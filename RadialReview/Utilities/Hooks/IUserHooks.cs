@@ -11,7 +11,7 @@ namespace RadialReview.Utilities.Hooks {
 	public interface ICreateUserOrganizationHook : IHook {
 		[Obsolete("User might not be attached yet")]
 		Task CreateUserOrganization(ISession s, UserOrganizationModel user);
-		Task OnUserOrganizationAttach(ISession s, UserOrganizationModel userOrganization);
+		Task OnUserOrganizationAttach(ISession s, UserOrganizationModel user);
 		Task OnUserRegister(ISession s, UserModel user);
 	}
 

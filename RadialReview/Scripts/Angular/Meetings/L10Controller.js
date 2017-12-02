@@ -1,9 +1,9 @@
-﻿console.log("L10Controller-Loaded", +new Date());
+﻿//console.log("L10Controller-Loaded", +new Date());
 angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeout', '$location',
     'radial', 'meetingDataUrlBase'/*, 'dateFormat'*/, 'recurrenceId', "meetingCallback", "$compile", "$sce", "$q", "$window", "$filter",
 	function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurrenceId, meetingCallback, $compile, $sce, $q, $window, $filter) {
 
-		console.log("L10Controller-Started", +new Date());
+		//console.log("L10Controller-Started", +new Date());
 
 		var nbDigest = 0;
 
@@ -25,7 +25,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			try {
 				if (proxy) {
 					proxy.invoke("join", $scope.recurrenceId, connection.id).done(function () {
-						console.log("rejoin");
+						console.log("Rejoin completed.");
 						//$(".rt").prop("disabled", false);
 						if (callback) {
 							callback();
@@ -43,7 +43,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 		}
 
 		function updateScorecard(data) {
-			console.log("updateScorecard");
+			console.log("Updating Scorecard.");
 			$scope.ScoreLookup = $scope.ScoreLookup || {};
 			var luArr = [];
 			if (data.Scorecard != null && data.Scorecard.Scores != null) {
@@ -113,7 +113,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 		$scope.model.dataDateRange = dataDateRange;
 		$scope._alreadyLoaded = { startDate: dataDateRange.startDate.getTime(), endDate: dataDateRange.endDate.getTime() };
 		$scope.$watch('model.dataDateRange', function (newValue, oldValue) {
-			console.log("watch dataDateRange");
+			//console.log("watch dataDateRange");
 			if (newValue.startDate < $scope._alreadyLoaded.startDate) {
 				var range1 = {
 					startDate: newValue.startDate,
@@ -140,7 +140,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			} else if (date.getDate !== undefined) {
 				return date.getTime();
 			}
-			console.error("cant process:" + date);
+			console.error("Can't process:" + date);
 		}
 
 		$scope.functions.startCoreProcess = function (coreProcess) {
@@ -158,7 +158,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 		}
 
 		$scope.$watch('model.LoadUrls.length', function (newValue, oldValue) {
-			console.log("watch LoadUrls");
+			//console.log("watch LoadUrls");
 			if (newValue != 0 && $scope.model && $scope.model.LoadUrls && $scope.model.LoadUrls.length) {
 				var urls = [];
 				for (var u in $scope.model.LoadUrls) {
@@ -181,7 +181,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 		});
 
 		$scope.$watch('model.Focus', function (newValue, oldValue) {
-			console.log("watch Focus");
+			//console.log("watch Focus");
 			if (newValue) {
 				var setFocus = function (count) {
 					if (!count)
@@ -192,7 +192,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 					}
 					try {
 						var toFocus = $($scope.model.Focus);
-						console.log("Set Focus ", toFocus);
+						console.log("Setting Focus: ", toFocus);
 						if (toFocus.length > 0) {
 							$($scope.model.Focus).focus();
 							$scope.model.Focus = null;
@@ -220,11 +220,11 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 		var canUseInitialValue = true;
 		function loadDataFromUrl(url) {
 			var stD = new Date();
-			console.log("L10Controller-loadDataFromUrl", +new Date());
+			//console.log("L10Controller-loadDataFromUrl", +new Date());
 
 			var processSuccess = function (data, status) {
-				console.log("L10Controller-loadDataFromUrl-success", +new Date());
-				console.log("A dur: " + (+(new Date() - stD)));
+				//console.log("L10Controller-loadDataFromUrl-success", +new Date());
+				//console.log("A dur: " + (+(new Date() - stD)));
 				var ddr = undefined;
 				if (typeof ($scope.model) !== "undefined" && typeof ($scope.model.dataDateRange) !== "undefined")
 					ddr = $scope.model.dataDateRange;
@@ -254,6 +254,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			};
 
 			if (canUseInitialValue && $window.InitialModel) {
+				console.info("Using InitialModel:",$window.InitialModel);
 				var initModel = $window.InitialModel
 				if (typeof (initModel) === "function") {
 
@@ -285,10 +286,10 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 
 
 			if ($scope.isReloading) {
-				console.log("Already reloading.");
+				//console.log("Already reloading.");
 				return;
 			}
-			console.log("L10Controller-Reloading", +new Date());
+			//console.log("L10Controller-Reloading", +new Date());
 			$scope.isReloading = true;
 
 			if (typeof (reload) === "undefined") {
@@ -301,7 +302,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			}
 			if (reload) {
 				Time.tzoffset();
-				console.log("reloading...");
+				console.log("Reloading Data.");
 				var url = meetingDataUrlBase;
 				if (meetingDataUrlBase.indexOf("{0}") != -1) {
 					url = url.replace("{0}", $scope.recurrenceId);
@@ -351,7 +352,7 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 		};
 
 		$scope.functions.setPage = function (page) {
-			console.info("should we be here?")
+			//console.info("should we be here?")
 			$http.get("/meeting/SetPage/" + $scope.model.RecurrenceId + "?page=" + page + "&connection=" + $scope.connectionId);
 			if (!$scope.model.FollowLeader || $scope.model.IsLeader) {
 				$scope.model.CurrentPage = page;
@@ -565,13 +566,13 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 
 		$scope.opts = {
 			ranges: {
-				'Incomplete': [moment().add('days', 1), moment().add('days', 9)],
-				'Today': [moment().subtract('days', 1), moment().add('days', 9)],
-				'Last 7 Days': [moment().subtract('days', 6), moment().add('days', 9)],
-				'Last 14 Days': [moment().subtract('days', 13), moment().add('days', 9)],
-				'Last 30 Days': [moment().subtract('days', 29), moment().add('days', 9)],
-				//'Last 60 Days': [moment().subtract('days', 59), moment().add('days',1)],
-				'Last 90 Days': [moment().subtract('days', 89), moment().add('days', 9)]// [sevenMin, sevenMax]
+				'Incomplete': [moment().add(1,'days'), moment().add(9,'days')],
+				'Today': [moment().subtract(1,'days'), moment().add(9,'days')],
+				'Last 7 Days': [moment().subtract(6,'days'), moment().add(9,'days')],
+				'Last 14 Days': [moment().subtract(13,'days'), moment().add(9,'days')],
+				'Last 30 Days': [moment().subtract(29,'days'), moment().add(9,'days')],
+				//'Last 60 Days': [moment().subtract(59,'days'), moment().add('days',1)],
+				'Last 90 Days': [moment().subtract(89,'days'), moment().add(9,'days')]// [sevenMin, sevenMax]
 			},
 			separator: '  to  ',
 			showDropdowns: true,
@@ -817,11 +818,10 @@ angular.module('L10App').controller('L10Controller', ['$scope', '$http', '$timeo
 			//}, 1);
 		};
 		$scope.functions.showMeasurableSearch = function (event) {
-			$scope.functions.showModal("Add Measurable", "/L10/AddMeasurable?meetingId=" + $scope.recurrenceId, "/L10/AddMeasurable");
-			//$scope.ShowSearch = true;
-			//$timeout(function () {
-			//    $(".user-list-container .livesearch-container input").focus();
-			//}, 1);
+			$scope.functions.showModal("Add Measurable", "/L10/AddMeasurableModal?meetingId=" + $scope.recurrenceId, "/L10/AddMeasurableModal");
+		};
+		$scope.functions.showRockSearch = function (event) {
+			$scope.functions.showModal("Add Rock", "/L10/AddRockModal?meetingId=" + $scope.recurrenceId, "/L10/AddRockModal");
 		};
 
 		$scope.functions.addAttendee = function (selected) {

@@ -291,7 +291,7 @@
 
     function clearAndApply(data, status) {
 
-        console.log("updater",this.scope);
+        console.log("Updating Scope: ",this.scope);
         this.scope.model = {};
         this.applyUpdate(data, status);
     }

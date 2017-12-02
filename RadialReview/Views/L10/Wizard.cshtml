@@ -100,8 +100,51 @@ if (ViewBag.NoTitleBar ?? false) {
 			.value('meetingDataUrlBase', '/L10/DetailsData/{0}?scores=false&historical=false')
 			.value("meetingCallback",false);
 
+		
+		function textingModal(data){
+			if (!data.Error){
+				var message = data.Message.replace(" '"," '<b>").replace("' to ","</b>' to ");//.replace(" to activate.","</b> to activate.");
+
+				showModal({
+					icon:"info",
+					title: message
+				});
+			}
+		}
+
+		var curRecur=0;
+		function showPrint(recurrenceId) {
+			//Html.ShowModal("Generate Printout","/Quarterly/Modal","/Quarterly/Printout/"+Model.Recurrence.Id,newTab:true)
+			curRecur=recurrenceId;
+			showModal("Generate Quarterly Printout", "/Quarterly/Modal/"+ recurrenceId, "/Quarterly/Printout/" + recurrenceId, "callbackPrint");
+
+		}
+
+		function callbackPrint() {
+			$("#modalForm").unbind("submit");
+			$("#modalForm").attr("target", "_blank");
+			$("#modalForm").attr("method", "post");
+			$("#modalForm").attr("action", "/Quarterly/Printout/" + curRecur);
+			$("#modalForm").bind("submit", function () {
+				$("#modal").modal('hide');
+			});
+		}
+		function getAdmins(id){
+			showModal("You do not have access to this page.","/l10/getadmins/"+id,null);
+		}
+
 	</script>
 }
+@*<div class="btn-row pull-right">
+	<a class="btn btn-default btn-sm" href="/L10/Details/@Model"><span style="top: 2px;" class="icon fontastic-icon-archive-1" title=""></span> Meeting Archive</a>
+	<a class="btn btn-default btn-sm" href="#" onclick="showPrint(@(Model))"><span style="top: 2px;" class="icon fontastic-icon-page-export-pdf"></span> Generate Printout</a>
+	<a class="btn btn-default btn-sm shift-hidden" href="@Url.Action("ExportAll",new { id=Model })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a>
+	<a class="btn btn-default btn-sm shift-visible" href="@Url.Action("ExportAll",new { id=Model,includeDetails=true })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> <i>Export All <span class="gray">(include notes)</span></i></a>
+	<a class="btn btn-default btn-sm" href="/L10/Timeline/@Model"><span class="icon fontastic-icon-back-in-time"></span> Timeline</a>
+	<a class="btn btn-default btn-sm" href="/L10/EditVto/@Model"><span style="top: 2px;" class="glyphicon glyphicon-vto" title=""></span> View V/TO</a>
+	<a class="btn btn-default btn-sm l10-texting-actions" href="#" onclick="@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId="+Model,"/TwilioApi/Modal",null,null,"textingModal")"><span style="top: 2px;" class="glyphicon glyphicon-phone l10-texting-actions"></span> Texting Actions</a>
+</div>*@
+<div class="clearfix smallBreak2"></div>
 <div class="ng-cloak2" ng-app="L10App">
 	<div ng-controller="L10Controller">
 		<div class="wizard hidden">
@@ -142,6 +185,17 @@ if (ViewBag.NoTitleBar ?? false) {
 							@*<li><a href="#VTO">V/TO</a></li>*@
 						</ol>
 
+					</div>
+					<div class="component1">
+						<div class="btn-row pull-right1">
+							<a class="btn btn-default btn-sm1" href="/L10/Details/@Model"><span style="top: 2px;" class="icon fontastic-icon-archive-1" title=""></span> Meeting Archive <span class="glyphicon glyphicon-triangle-right gray"></span></a>
+							<a class="btn btn-default btn-sm1" href="#" onclick="showPrint(@(Model))"><span style="top: 2px;" class="icon fontastic-icon-page-export-pdf"></span> Generate Printout <span class="glyphicon glyphicon-triangle-right gray"></span></a>
+							<a class="btn btn-default btn-sm1 shift-hidden" href="@Url.Action("ExportAll",new { id=Model })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All <span class="glyphicon glyphicon-triangle-right gray"></span></a>
+							<a class="btn btn-default btn-sm1 shift-visible hidden" href="@Url.Action("ExportAll",new { id=Model,includeDetails=true })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> <i>Export All <span class="gray fadein">(include notes)</span></i> <span class="glyphicon glyphicon-triangle-right gray"></span></a>
+							<a class="btn btn-default btn-sm1" href="/L10/Timeline/@Model"><span class="icon fontastic-icon-back-in-time"></span> Timeline <span class="glyphicon glyphicon-triangle-right gray"></span></a>
+							<a class="btn btn-default btn-sm1" href="/L10/EditVto/@Model"><span style="top: 2px;" class="glyphicon glyphicon-vto" title=""></span> View V/TO <span class="glyphicon glyphicon-triangle-right gray"></span></a>
+							<a class="btn btn-default btn-sm1 l10-texting-actions" href="#" onclick="@Html.ShowModal("Add Texting Action","/TwilioApi/Modal?recurrenceId="+Model,"/TwilioApi/Modal",null,null,"textingModal")"><span style="top: 2px;" class="glyphicon glyphicon-phone l10-texting-actions"></span> Texting Actions <span class="glyphicon glyphicon-triangle-right gray"></span></a>
+						</div>
 					</div>
 				</div>
 				<div class="col-sm-9">

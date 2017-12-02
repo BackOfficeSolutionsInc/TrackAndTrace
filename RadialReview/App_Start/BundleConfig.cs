@@ -2,6 +2,7 @@
 using System.Web.Optimization;
 using RadialReview.Models.Enums;
 using RadialReview.Utilities;
+using System.Collections.Generic;
 
 namespace RadialReview {
     public class BundleConfig {
@@ -72,34 +73,45 @@ namespace RadialReview {
         }
 
         private static void Main(BundleCollection bundles) {
-            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/main").Include(
-					  "~/Scripts/Main/time.js",
-					  "~/Scripts/Main/linq.js",
-					  "~/Scripts/Main/radial.js",
-					  "~/Scripts/Main/modals.js",
-					  "~/Scripts/Main/datepickers.js",
-					  "~/Scripts/Main/support.js",
-					  "~/Scripts/Main/backwardcompatability.js",
-					  "~/Scripts/Main/ajaxintercepters.js",
-					  "~/Scripts/Main/datatable.js",
-					  "~/Scripts/Main/tours.js",
-					  "~/Scripts/Main/alerts.js",
-					  "~/Scripts/Main/clickableclass.js",
-					  "~/Scripts/Main/profilepicture.js",
-					  "~/Scripts/Main/libraries.js",
-					  "~/Scripts/Main/log-helper.js",
-                      /*"~/Scripts/jquery.signalR-{version}.js",Was deleted*/
-                      "~/Scripts/jquery/jquery.tablesorter.js",
-                      "~/Scripts/Main/finally.js",
-                      "~/Scripts/Main/intercom.min.js",
-                      "~/Scripts/L10/jquery-ui.color.js",
-					  "~/Scripts/jquery/jquery.tabbable.js",
-					  "~/Scripts/components/milestones.js",
-                      "~/Scripts/Main/keyboard.js",
-                      "~/Scripts/Main/tooltips.js"
-            /*,
+
+			var list = new List<string>() {
+				"~/Scripts/Main/time.js",
+				"~/Scripts/Main/linq.js",
+				"~/Scripts/Main/radial.js",
+				"~/Scripts/Main/modals.js",
+				"~/Scripts/Main/datepickers.js",
+				"~/Scripts/Main/support.js",
+				"~/Scripts/Main/backwardcompatability.js",
+				"~/Scripts/Main/ajaxintercepters.js",
+				"~/Scripts/Main/datatable.js",
+				"~/Scripts/Main/tours.js",
+				"~/Scripts/Main/alerts.js",
+				"~/Scripts/Main/clickableclass.js",
+				"~/Scripts/Main/profilepicture.js",
+				"~/Scripts/Main/libraries.js"
+			};
+
+
+			//Only intercept logs if not local...
+			if (Config.GetEnv() != Env.local_mysql)
+				list.Add("~/Scripts/Main/log-helper.js");
+
+			list.AddRange(new [] {
+                /*"~/Scripts/jquery.signalR-{version}.js",Was deleted*/
+                "~/Scripts/jquery/jquery.tablesorter.js",
+                "~/Scripts/Main/finally.js",
+                "~/Scripts/Main/intercom.min.js",
+                "~/Scripts/L10/jquery-ui.color.js",
+				"~/Scripts/jquery/jquery.tabbable.js",
+				"~/Scripts/components/milestones.js",
+                "~/Scripts/Main/keyboard.js",
+                "~/Scripts/Main/tooltips.js"
+			});
+
+			bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/main").Include(list.ToArray())));
+
+			/*,
 			"~/Scripts/Main/realtime.js"*/
-            )));
         }
 
 		private static void AngularMaterial(BundleCollection bundles) {

@@ -308,6 +308,7 @@ namespace RadialReview.Accessors {
 					foreach (var r in results) {
 						try {
 							r.AccountableUser.GetName();
+							r.AdminUser.GetName();
 						} catch (Exception) {
 
 						}
@@ -333,6 +334,7 @@ namespace RadialReview.Accessors {
 						foreach (var r in results) {
 							try {
 								r.AccountableUser.GetName();
+								r.AdminUser.GetName();
 							} catch (Exception) {
 
 							}
@@ -945,7 +947,8 @@ namespace RadialReview.Accessors {
 			excludeLong = excludeLong ?? new long[] { };
 
 			var visible = ScorecardAccessor.GetVisibleMeasurables(caller, orgId, true)
-				.Where(x => !excludeLong.Any(y => y == x.Id));
+				.Where(x => !excludeLong.Any(y => y == x.Id))
+				.Where(x=>x.Id>0);
 			
 
 			var splits = search.ToLower().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -955,6 +958,7 @@ namespace RadialReview.Accessors {
 
 
 			foreach (var u in visible) {
+				
 				var fname = false;
 				var lname = false;
 				var ordered = false;
@@ -996,7 +1000,7 @@ namespace RadialReview.Accessors {
 						if (l == t)
 							exactLast = true;
 
-						if (u.Title.ToLower().Contains(t))
+						if (u.Title !=null && u.Title.ToLower().Contains(t))
 							containsText = true;
 
 						wasFirst = true;
