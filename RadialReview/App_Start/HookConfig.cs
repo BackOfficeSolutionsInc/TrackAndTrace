@@ -1,5 +1,6 @@
 ﻿using RadialReview.Accessors.Hooks;
 using RadialReview.Hooks;
+using RadialReview.Hooks.CrossCutting.ActiveCampaign;
 using RadialReview.Hooks.Meeting;
 using RadialReview.Hooks.Realtime;
 using RadialReview.Hooks.Realtime.Dashboard;
@@ -30,6 +31,8 @@ namespace RadialReview.App_Start {
 
 			HooksRegistry.RegisterHook(new ActiveCampaignEventHooks());
             HooksRegistry.RegisterHook(new EnterpriseHook(Config.EnterpriseAboveUserCount()));
+			HooksRegistry.RegisterHook(new ActiveCampaignFirstThreeMeetings());
+
 
 			HooksRegistry.RegisterHook(new DepristineHooks());
 			HooksRegistry.RegisterHook(new MeetingRockCompletion());
@@ -49,6 +52,8 @@ namespace RadialReview.App_Start {
 
 			HooksRegistry.RegisterHook(new CalculateCumulative());
 			HooksRegistry.RegisterHook(new AttendeeHooks());
+
+
 			//HooksRegistry.RegisterHook(new TodoEdit())
 		}
     }

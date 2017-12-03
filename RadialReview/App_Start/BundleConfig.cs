@@ -85,10 +85,11 @@ namespace RadialReview {
 					  "~/Scripts/jquery/jquery.tabbable.js",
 					  "~/Scripts/components/milestones.js",
                       "~/Scripts/Main/keyboard.js",
-                      "~/Scripts/Main/tooltips.js"
-            /*,
+					  "~/Scripts/Main/tooltips.js",
+					  "~/Scripts/Main/beta.js"
+			/*,
 			"~/Scripts/Main/realtime.js"*/
-            ));
+			));
         }
 
 		private static void AngularMaterial(BundleCollection bundles) {

@@ -1139,6 +1139,23 @@ textarea {
 .is-ios .no-ios {
   display: none;
 }
+.beta-only {
+  display: none;
+}
+body.beta .beta-only {
+  display: block;
+}
+body.beta .beta-only.beta-label {
+  color: gray;
+  font-size: 10px;
+  position: fixed;
+  left: 39px;
+  top: 12px;
+  font-style: oblique;
+}
+body.beta .beta-only.beta-label:hover {
+  color: white;
+}
 @media print {
   .body-content {
     padding: 0px;

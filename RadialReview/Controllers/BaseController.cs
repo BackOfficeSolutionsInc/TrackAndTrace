@@ -694,6 +694,7 @@ namespace RadialReview.Controllers {
 
 						filterContext.Controller.ViewBag.IsLocal = Config.IsLocal();
 						filterContext.Controller.ViewBag.HasBaseController = true;
+						filterContext.Controller.ViewBag.AppVersion = GetAppVersion();
 
 						if (IsLoggedIn()) {
 							var userOrgsCount = GetUserOrganizationCounts(s, Request.Url.PathAndQuery);
@@ -750,6 +751,7 @@ namespace RadialReview.Controllers {
 							filterContext.Controller.ViewBag.LimitFiveState = true;
 							filterContext.Controller.ViewBag.ShowAC = false;
                             filterContext.Controller.ViewBag.ShowCoreProcess = false;
+							
 
 
                             if (oneUser != null) {
@@ -791,9 +793,14 @@ namespace RadialReview.Controllers {
 				});
 			}
 		}
-                
 
-        private void SetupToolTips(dynamic ViewBag, ISession s, UserOrganizationModel oneUser,string path) {
+		protected string GetAppVersion() {
+			var version = Assembly.GetExecutingAssembly().GetName().Version;
+			//var buildDate = new DateTime(2000, 1, 1).AddDays(version.Build).AddSeconds(version.Revision * 2);
+			return version.ToString();
+		}
+
+		private void SetupToolTips(dynamic ViewBag, ISession s, UserOrganizationModel oneUser,string path) {
             try {
                 var username = oneUser.User.NotNull(x => x.Id);
                 var enabled =  !oneUser.User.NotNull(x=>x.DisableTips);
