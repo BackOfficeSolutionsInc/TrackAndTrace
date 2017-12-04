@@ -156,7 +156,7 @@ namespace RadialReview.Controllers {
 
         [HttpPost]
         [Access(AccessLevel.UserOrganization)]
-        public async Task<ActionResult> StartMeeting(L10MeetingVM model) {
+        public async Task<ActionResult> StartMeeting(L10MeetingVM model,string preview=null) {
             ValidateValues(model, x => x.Recurrence.Id);
 
             /*if (model.Attendees == null || model.Attendees.Count() == 0)
@@ -171,7 +171,7 @@ namespace RadialReview.Controllers {
                 List<long> attendees = new List<long>();
                 if (model.Attendees != null)
                     attendees = allMembers.Where(x => model.Attendees.Contains(x)).ToList();
-                await L10Accessor.StartMeeting(GetUser(), GetUser(), model.Recurrence.Id, attendees);
+                await L10Accessor.StartMeeting(GetUser(), GetUser(), model.Recurrence.Id, attendees,preview == "preview");
                 var tempRecur = L10Accessor.GetL10Recurrence(GetUser(), model.Recurrence.Id, true);
                 var p = L10Accessor.GetDefaultStartPage(tempRecur);
                 return RedirectToAction("Load", new { id = model.Recurrence.Id, page = p });
@@ -362,6 +362,10 @@ namespace RadialReview.Controllers {
                 if (ModelState.IsValid) {
                     await L10Accessor.ConcludeMeeting(GetUser(), model.Recurrence.Id, ratingValues, model.SendEmailRich, model.CloseTodos, model.CloseHeadlines, connectionId);
 
+					if (Request.Form["preview"] == "true") {
+						//var meeting1 = L10Accessor.GetCurrentL10Meeting(GetUser(), model.Recurrence.Id, false, true);
+						return await Load(model.Recurrence.Id,null, "startmeeting");
+					}
 
                     //var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
                     //hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(model.Recurrence.Id)).setHash("stats");

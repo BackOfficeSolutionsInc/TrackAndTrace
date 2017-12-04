@@ -32,6 +32,12 @@ namespace RadialReview.Models.L10.VM {
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
 
+		public bool IsPreview {
+			get {
+				return Meeting.NotNull(x => x.Preview);
+			}
+		}
+
 		public List<PeopleHeadline> Headlines { get; set; }
 
 		public bool CanEdit { get; set; }
@@ -86,8 +92,8 @@ namespace RadialReview.Models.L10.VM {
 
 		public List<MeetingTranscriptVM> CurrentTranscript { get; set; }
 
-		public List<SelectListItem> GenerateEmailOptions() {			
-			return SelectExtensions.ToSelectList(typeof(ConcludeSendEmail), ""+ SendEmailRich);// (SendEmail ? ConcludeSendEmail.AllAttendees : ConcludeSendEmail.None));
+		public List<SelectListItem> GenerateEmailOptions() {
+			return SelectExtensions.ToSelectList(typeof(ConcludeSendEmail), "" + SendEmailRich);// (SendEmail ? ConcludeSendEmail.AllAttendees : ConcludeSendEmail.None));
 		}
 
 		public IEnumerable<L10Recurrence.L10Recurrence_Connection> Connected { get; set; }
@@ -100,7 +106,7 @@ namespace RadialReview.Models.L10.VM {
 			Headlines = new List<PeopleHeadline>();
 			Milestones = new List<Milestone>();
 			Connected = new List<L10Recurrence.L10Recurrence_Connection>();
-			
+
 
 		}
 

@@ -22,7 +22,7 @@
         <span class="outer icon fontastic-icon-three-bars icon-rotate"></span>
         <span class="inner icon fontastic-icon-primitive-square"></span>
     </div>
-    <div class="btn-group pull-right">
+    <div class="btn-group pull-right on-edit-enabled">
         <span class='issuesButton icon fontastic-icon-forward-1  @((ViewBag.CanEdit??true)?"issuesModal":"disabled")' style="padding-right: 5px"
               title="Send to another L10"
               data-copyto="@Model.Recurrence.Id"
@@ -38,7 +38,7 @@
         <span class='glyphicon glyphicon-vto vtoButton @((ViewBag.CanEdit??true)?"":"disabled")'
               title="Move to V/TO's long-term issues list"></span>
     </div>
-    <div class="number-priority">
+    <div class="number-priority on-edit-enabled">
         <span class="number"></span>
         <span class="priority" data-priority="@Model.Priority"></span>
         <span class="rank123 badge" data-rank="@Model.Rank" title="Click to IDS">IDS</span>

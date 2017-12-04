@@ -16,88 +16,116 @@
 				<h2>&nbsp;</h2>
 			</hgroup>
 
-
-
-			@if (ViewBag.TodosForNextWeek is List<TodoModel>) {
-				<div class="centered" style="width: 75%; max-width: 700px; margin-bottom: 47px; margin-top: -22px; min-width: 320px;">
-					<div class="component meeting-stats">
-						<h3 style="font-size: 20px; color: #444;">Recap Our To-Dos</h3>
-						<div class="todo-container ">
-							<ol class="todo-list sortable">
-								@foreach (var i in ((List<TodoModel>)ViewBag.TodosForNextWeek).OrderBy(x => x.Ordering).Where(x => x.CompleteTime == null).GroupBy(x => x.AccountableUser.NotNull(y => y.GetName())).SelectMany(x => x)) {@*<li class="todo-item">@Html.Partial("_ProfilePicture", i.AccountableUser)<span class="todo-due pull-right">@i.DueDate.ToShortDateString()</span><span class="todo-message">@i.Message</span></li>*@
-									var vm = new ViewDataDictionary { { "MeetingId", Model.Meeting.Id }, { "CanEdit", Model.CanEdit } };
-									Html.RenderPartial("~/Views/L10/partial/TodoRow.cshtml", i, vm);
-								}
-							</ol>
-						</div>
-					</div>
-				</div>
-			}
-
-			<div class="centered" style="width: 87%; max-width: 760px; margin-bottom: 47px; margin-top: -22px; ">
-				<div class="component cascading-messages">
-					<div class="pull-right"><div class="btn btn-default btn-xs todoModal " data-method="createtodo" data-meeting="@Model.Meeting.Id" data-recurrence="@Model.Recurrence.Id"><span class="glyphicon glyphicon-unchecked"></span> New Todo</div></div>
-					<h3 style="font-size: 20px; color: #444; margin-left: 81px;margin-right: 81px;">Cascading Messages</h3>
-					<h4 class="cascading-messages-container" style="padding-bottom:15px;">Do we need to tell anyone about any of the decisions we made?</h4>
-				</div>
-			</div>
-
-			<div class="centered" style="width:65%; max-width: 600px;margin-top:-22px;margin-bottom:128px;    min-width: 330px;">
-				<div class="component">
-					<div class="meeting-manager rating-section">
-						<div class="title" style="font-size: 20px;color: #444;">Ratings (1 to 10)<div style="font-size: 12px;font-weight: lighter;"><small>Ratings less than an 8? Drop it down to the issues list.</small></div></div>
-
+			@if (Model.IsPreview) {
+				<div class="centered" style="width:65%; max-width: 600px;margin-top:-22px;margin-bottom:128px;    min-width: 330px;">
+					<div class="component">
+						
 						@using (Ajax.BeginForm("Conclusion", new AjaxOptions() {
 							HttpMethod = "POST",
-							UpdateTargetId = "main-window",
+							UpdateTargetId = "html",
 							LoadingElementDuration = 1000,
 							InsertionMode = InsertionMode.Replace,
-							OnSuccess = "ConclusionSuccess",
-							OnBegin = "OnBeginSubmit"
+							OnSuccess = "PreviewConclusionSuccess",
+							
 						})) {
-							@Html.ValidationSummaryMin()
-							@Html.SecuredHiddenFor(x => x.Recurrence.Id)
-							<table style="width: 100%;">
-								@for (var i = 0; i < Model.Meeting._MeetingAttendees.Count; i++) {
-									<tr>
-										<td style="width:50%;"></td>
-										<td style="width: 1px;">
-											@Html.Partial("_ProfilePicture", Model.Meeting._MeetingAttendees[i].User)
-										</td>
-										<td style="width: 1px;white-space: nowrap;padding: 0 25px 0 5px;text-align: left;">
-											@Model.Meeting._MeetingAttendees[i].User.GetName()
-										</td>
-										<td style="width: 1px;">
-											@Html.TextBox("rating_" + (Model.Meeting._MeetingAttendees[i].User.Id), Model.Meeting._MeetingAttendees[i].Rating, new { max = "10", min = "1", step = "0.1", novalidate = "novalidate", type = "number", style = "width:60px", @class = "rt", lang = "nb" })
-										</td>
-										<td style="width:50%;"></td>
-									</tr>
-								}
-								<tr>
-									<td colspan="3" class="alignRight"><label>Send e-mail summary:</label></td>
-									@*<td>@Html.CheckBoxFor(x => x.SendEmail, new { @class = "checkbox", style = "margin:auto;" })</td>*@
-									<td colspan="2">@Html.DropDownListFor(x => x.SendEmailRich, Model.GenerateEmailOptions(), new { @class = "form-control", style = "max-width:222px;" })</td>
-								</tr>
-								<tr>
-									<td colspan="3" class="alignRight"><label>Close completed to-do:</label></td>
-									<td>@Html.CheckBoxFor(x => x.CloseTodos, new { @class = "checkbox", style = "margin:auto;" })</td>
-								</tr>
-								@if (Model.HeadlineType == PeopleHeadlineType.HeadlinesList) {
-									<tr>
-										<td colspan="3" class="alignRight"><label>Close people headlines:</label></td>
-										<td>@Html.CheckBoxFor(x => x.CloseHeadlines, new { @class = "checkbox", style = "margin:auto;" })</td>
-									</tr>
-								}
-							</table>
+							<h3 style="font-size: 20px; color: #444; margin-left: 81px;margin-right: 81px;">Exit Meeting Preview?</h3>
 
+							@Html.SecuredHiddenFor(x => x.Recurrence.Id)
 							<input type="hidden" id="conclude_connectionId" name="connectionId" value="" />
+							<input type="hidden" id="@Html.NameFor(x=>x.SendEmailRich)" name="@Html.NameFor(x=>x.SendEmailRich)" value="0" />
+							<input type="hidden" id="@Html.NameFor(x=>x.CloseTodos)" name="@Html.NameFor(x=>x.CloseTodos)" value="false" />
+							<input type="hidden" id="@Html.NameFor(x=>x.CloseHeadlines)" name="@Html.NameFor(x=>x.CloseHeadlines)" value="false" />
+
+							<input type="hidden" id="preview" name="preview" value="true" />
+
 							<div class="alignCenter">
-								<input type="submit" id="conclude_meeting_button" class="btn btn-primary center concludeButton" value="Conclude Meeting" />
+								<input type="submit" id="conclude_meeting_button" class="btn btn-info center concludeButton" value="Exit Preview" />
 							</div>
 						}
 					</div>
 				</div>
-			</div>
+
+			} else {
+				if (ViewBag.TodosForNextWeek is List<TodoModel>) {
+					<div class="centered" style="width: 75%; max-width: 700px; margin-bottom: 47px; margin-top: -22px; min-width: 320px;">
+						<div class="component meeting-stats">
+							<h3 style="font-size: 20px; color: #444;">Recap Our To-Dos</h3>
+							<div class="todo-container ">
+								<ol class="todo-list sortable">
+									@foreach (var i in ((List<TodoModel>)ViewBag.TodosForNextWeek).OrderBy(x => x.Ordering).Where(x => x.CompleteTime == null).GroupBy(x => x.AccountableUser.NotNull(y => y.GetName())).SelectMany(x => x)) {@*<li class="todo-item">@Html.Partial("_ProfilePicture", i.AccountableUser)<span class="todo-due pull-right">@i.DueDate.ToShortDateString()</span><span class="todo-message">@i.Message</span></li>*@
+										var vm = new ViewDataDictionary { { "MeetingId", Model.Meeting.Id }, { "CanEdit", Model.CanEdit } };
+										Html.RenderPartial("~/Views/L10/partial/TodoRow.cshtml", i, vm);
+									}
+								</ol>
+							</div>
+						</div>
+					</div>
+				}
+
+				<div class="centered" style="width: 87%; max-width: 760px; margin-bottom: 47px; margin-top: -22px; ">
+					<div class="component cascading-messages">
+						<div class="pull-right"><div class="btn btn-default btn-xs todoModal " data-method="createtodo" data-meeting="@Model.Meeting.Id" data-recurrence="@Model.Recurrence.Id"><span class="glyphicon glyphicon-unchecked"></span> New Todo</div></div>
+						<h3 style="font-size: 20px; color: #444; margin-left: 81px;margin-right: 81px;">Cascading Messages</h3>
+						<h4 class="cascading-messages-container" style="padding-bottom:15px;">Do we need to tell anyone about any of the decisions we made?</h4>
+					</div>
+				</div>
+				<div class="centered" style="width:65%; max-width: 600px;margin-top:-22px;margin-bottom:128px;    min-width: 330px;">
+					<div class="component">
+						<div class="meeting-manager rating-section">
+							<div class="title" style="font-size: 20px;color: #444;">Ratings (1 to 10)<div style="font-size: 12px;font-weight: lighter;"><small>Ratings less than an 8? Drop it down to the issues list.</small></div></div>
+
+							@using (Ajax.BeginForm("Conclusion", new AjaxOptions() {
+								HttpMethod = "POST",
+								UpdateTargetId = "main-window",
+								LoadingElementDuration = 1000,
+								InsertionMode = InsertionMode.Replace,
+								OnSuccess = "ConclusionSuccess",
+								OnBegin = "OnBeginSubmit"
+							})) {
+								@Html.ValidationSummaryMin()
+								@Html.SecuredHiddenFor(x => x.Recurrence.Id)
+								<table style="width: 100%;">
+									@for (var i = 0; i < Model.Meeting._MeetingAttendees.Count; i++) {
+										<tr>
+											<td style="width:50%;"></td>
+											<td style="width: 1px;">
+												@Html.Partial("_ProfilePicture", Model.Meeting._MeetingAttendees[i].User)
+											</td>
+											<td style="width: 1px;white-space: nowrap;padding: 0 25px 0 5px;text-align: left;">
+												@Model.Meeting._MeetingAttendees[i].User.GetName()
+											</td>
+											<td style="width: 1px;">
+												@Html.TextBox("rating_" + (Model.Meeting._MeetingAttendees[i].User.Id), Model.Meeting._MeetingAttendees[i].Rating, new { max = "10", min = "1", step = "0.1", novalidate = "novalidate", type = "number", style = "width:60px", @class = "rt", lang = "nb" })
+											</td>
+											<td style="width:50%;"></td>
+										</tr>
+									}
+									<tr>
+										<td colspan="3" class="alignRight"><label>Send e-mail summary:</label></td>
+										@*<td>@Html.CheckBoxFor(x => x.SendEmail, new { @class = "checkbox", style = "margin:auto;" })</td>*@
+										<td colspan="2">@Html.DropDownListFor(x => x.SendEmailRich, Model.GenerateEmailOptions(), new { @class = "form-control", style = "max-width:222px;" })</td>
+									</tr>
+									<tr>
+										<td colspan="3" class="alignRight"><label>Close completed to-do:</label></td>
+										<td>@Html.CheckBoxFor(x => x.CloseTodos, new { @class = "checkbox", style = "margin:auto;" })</td>
+									</tr>
+									@if (Model.HeadlineType == PeopleHeadlineType.HeadlinesList) {
+										<tr>
+											<td colspan="3" class="alignRight"><label>Close people headlines:</label></td>
+											<td>@Html.CheckBoxFor(x => x.CloseHeadlines, new { @class = "checkbox", style = "margin:auto;" })</td>
+										</tr>
+									}
+								</table>
+
+								<input type="hidden" id="conclude_connectionId" name="connectionId" value="" />
+								<div class="alignCenter">
+									<input type="submit" id="conclude_meeting_button" class="btn btn-primary center concludeButton" value="Conclude Meeting" />
+								</div>
+							}
+						</div>
+					</div>
+				</div>
+			}
 
 		</div>
 	</div>
@@ -121,6 +149,11 @@
 	function ConclusionSuccess() {
 		startTime = undefined;
 		skipBeforeUnload = true;
+	}
+	function PreviewConclusionSuccess() {
+		window.location.href = "/L10/Meeting/@(Model.Recurrence.Id)";
+		//startTime = undefined;
+		//skipBeforeUnload = true;
 	}
 	setTimeout(function () {
 		try {

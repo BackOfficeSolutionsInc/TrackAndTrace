@@ -57,6 +57,19 @@ namespace RadialReview.Utilities.DataTypes {
 			return this.Tuplize().GetHashCode();
 		}
 
+		public int GetUserHashCode() {
+			var hash = 0;
+			var str = Name;
+			if (str != null && str.Length != 0) {
+				foreach (var chr in str) {
+					hash = ((hash << 5) - hash) + chr;
+					hash |= 0; // Convert to 32bit integer
+				}
+			}
+			hash = Math.Abs(hash) % 360;
+			return hash;
+		}
+
 
 		public string GetImageUrl(ImageSize size = ImageSize._64) {
 			

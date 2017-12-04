@@ -32,7 +32,7 @@ $(function () {
 		$(detailsContents).append("<div class='createTime'>" + dateFormatter(new Date(createtime)) + "</div>");
 
 		$(detailsContents).append("<div class='heading'><h4 class='message-holder clickable on-edit-enabled' data-todo='" + todo + "'><span data-todo='" + todo + "' class='message editable-text '>" + message + "</span></h4></div>");
-		$(detailsContents).append("<iframe class='details todo-details' name='embed_readwrite' src='/Todo/Pad/" + todo + "' width='100%' height='100%'></iframe>");
+		$(detailsContents).append("<iframe class='details todo-details on-edit-enabled' name='embed_readwrite' src='/Todo/Pad/" + todo + "' width='100%' height='100%'></iframe>");
 
 		$(detailsContents).append(
 			"<div class='button-bar'>" +

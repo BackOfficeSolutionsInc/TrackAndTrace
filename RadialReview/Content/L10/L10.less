@@ -879,6 +879,7 @@ profile-image.desaturate:hover {
 	opacity: .15;
 }
 
+.meeting-preview,
 .edit-disabled {
 	input[type='checkbox'].on-edit-enabled {
 		.opacity(.65);
@@ -904,7 +905,49 @@ profile-image.desaturate:hover {
 			&:hover {
 				cursor: @cursor-disabled !important;
 			}
+
+			.icon, .glyphicon {
+				.opacity(1);
+			}
 		}
+
+		.icon, .glyphicon {
+			.opacity(.25);
+		}
+	}
+
+	iframe.on-edit-enabled {
+		&, iframe {
+			opacity: .7;
+			border: 2px #e2e2e2;
+			border-style: dashed;
+			-webkit-filter: contrast(80%);
+			filter: contrast(80%);
+		}
+	}
+}
+
+html {
+	overflow: hidden;
+}
+
+.meeting-preview {
+	//background-image:url("/Content/img/graystripe-light.png");
+	.navbar-inverse {
+		background-color: @traction-orange;
+		background-image: url("/Content/img/graystripe-light.png");
+	}
+
+	.navbar-inverse:before {
+		content: "Meeting Preview";
+		color: white; //@traction-orange;
+		position: absolute;
+		text-align: center;
+		width: 100%;
+		font-size: 20px;
+		text-transform: uppercase;
+		font-weight: bold;
+		letter-spacing: 1px;
 	}
 }
 

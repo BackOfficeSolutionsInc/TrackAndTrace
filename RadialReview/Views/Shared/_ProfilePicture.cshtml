@@ -1,10 +1,14 @@
 ﻿@using RadialReview.Models
 @using RadialReview.Models.Askables
+@using RadialReview.Utilities.DataTypes
 @model object
 
 @{
-	var M = Model as UserOrganizationModel;
+	var title = "n/a";
+	var initials = "n/a";
+	int color = 0;
 	var size = ImageSize._64;
+	var url = "/i/userplaceholder";
 	if (ViewBag.Size != null) {
 		switch ((int)ViewBag.Size) {
 			case 32:
@@ -18,19 +22,27 @@
 				break;
 		}
 	}
-	var rgm = Model as ResponsibilityGroupModel;
 
-	var url = M.NotNull(x => x.ImageUrl(true, size)) ?? rgm.NotNull(x => x.GetImageUrl()) ?? "/i/userplaceholder";
+	if (Model is ResponsibilityGroupModel) {
+		var M = Model as UserOrganizationModel;
+		var rgm = Model as ResponsibilityGroupModel;
+		url = M.NotNull(x => x.ImageUrl(true, size)) ?? rgm.NotNull(x => x.GetImageUrl()) ?? "/i/userplaceholder";
+		title = M.NotNull(x => x.GetName()) ?? rgm.NotNull(x => x.GetName()) ?? "n/a";
+		initials = M.NotNull(x => x.GetInitials()) ?? "n/a";
+		color = M.NotNull(x => x.GeUserHashCode());
+	}else if (Model is TinyUser) {
 
+		var M = Model as TinyUser;
+		url = M.NotNull(x => x.GetImageUrl(size)) ?? url;
+		title = M.NotNull(x => x.GetName()) ?? title;
+		initials = M.NotNull(x => x.GetInitials()) ?? initials;
+		color = M.NotNull(x => x.GetUserHashCode());
 
-
-	var title = M.NotNull(x => x.GetName()) ?? rgm.NotNull(x => x.GetName()) ?? "n/a";
-	var initials = M.NotNull(x => x.GetInitials()) ?? "n/a";
-	var color = M.NotNull(x => x.GeUserHashCode());
+	}
 }
 
 <span class="profile-picture">
-@Html.Partial("_Picture", url, new ViewDataDictionary() {
+	@Html.Partial("_Picture", url, new ViewDataDictionary() {
 	{ "ImageTitle", title }, { "Initials", initials }, { "Color", color}
 })
 </span>
