@@ -453,8 +453,10 @@ namespace RadialReview.Controllers {
                 name = x.GetName()
             }).ToList();
 
+			//get Notes
+			s._Notes = await PadAccessor.GetText(s.HeadlinePadId);
 
-            var model = new HeadlineIssueVM() {
+			var model = new HeadlineIssueVM() {
                 ByUserId = GetUser().Id,
                 Message = await s.NotNull(async x => await x.GetIssueMessage()),
                 Details = await s.NotNull(async x => await x.GetIssueDetails()),
@@ -462,7 +464,7 @@ namespace RadialReview.Controllers {
                 HeadlineId = headline,
                 RecurrenceId = s.RecurrenceId,
                 PossibleUsers = possible,
-                OwnerId = s.OwnerId
+                OwnerId = s.OwnerId,
             };
             return PartialView("HeadlineIssueModal", model);
         }

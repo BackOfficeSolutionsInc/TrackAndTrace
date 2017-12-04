@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Dynamic;
 using RadialReview.Utilities;
 using RadialReview.Properties;
+using RadialReview.Accessors;
 
 namespace RadialReview.Models.L10 {
 	public class PeopleHeadline : ILongIdentifiable, IHistorical, IIssue, ITodo {
@@ -36,6 +37,7 @@ namespace RadialReview.Models.L10 {
 		public virtual long Ordering { get; set; }
 
 		public virtual string _Details { get; set; }
+		public virtual string _Notes { get; set; }
 
 		public PeopleHeadline() {
 			CreateTime = DateTime.UtcNow;
@@ -65,14 +67,17 @@ namespace RadialReview.Models.L10 {
 		}
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public virtual async Task<string> GetIssueMessage() {
-            return Message;
+		public virtual async Task<string> GetIssueMessage() {
+			return Message;
 		}
 
 		public virtual async Task<string> GetIssueDetails() {
+
+			var notes = _Notes ?? "n/a";
 			var aboutName = About.NotNull(x => x.GetName()) ?? AboutName ?? "n/a";
-			return "ABOUT: " + aboutName+ "\n\nOwner: " + Owner.NotNull(x=>x.GetName())??"n/a";
-			
+			var owner = Owner.NotNull(x => x.GetName()) ?? "n/a";
+			return "ABOUT: " + aboutName + "\n\nOwner: " + owner + "\n\nNotes: " + notes;
+
 		}
 
 		public virtual async Task<string> GetTodoMessage() {
@@ -80,8 +85,10 @@ namespace RadialReview.Models.L10 {
 		}
 
 		public virtual async Task<string> GetTodoDetails() {
+			var notes = _Notes ?? "n/a";
 			var aboutName = About.NotNull(x => x.GetName()) ?? AboutName ?? "n/a";
-			return "MESSAGE: "+Message+"\n\nABOUT: " + aboutName + "\n\nOwner: " + Owner.NotNull(x => x.GetName()) ?? "n/a";			
+			var owner = Owner.NotNull(x => x.GetName()) ?? "n/a";
+			return "MESSAGE: " + Message + "\n\nABOUT: " + aboutName + "\n\nOwner: " + owner + "\n\nNotes: " + notes;
 		}
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
@@ -94,12 +101,12 @@ namespace RadialReview.Models.L10 {
 			o.Owner = new ExpandoObject();
 			o.Owner.Id = Owner.Id;
 			o.Owner.Name = Owner.GetName();
-			o.Owner.ImageUrl = Owner.ImageUrl(awsFaster:true,size:ImageSize._32);
+			o.Owner.ImageUrl = Owner.ImageUrl(awsFaster: true, size: ImageSize._32);
 
 			o.About = new ExpandoObject();
-			o.About.Id = About.NotNull(x => (long?)x.Id)??AboutId;
-			o.About.ImageUrl = About.NotNull(x=>x.GetImageUrl())??(ConstantStrings.AmazonS3Location+ConstantStrings.ImagePlaceholder);
-			o.About.Name = About.NotNull(x =>x.GetName())??AboutName;
+			o.About.Id = About.NotNull(x => (long?)x.Id) ?? AboutId;
+			o.About.ImageUrl = About.NotNull(x => x.GetImageUrl()) ?? (ConstantStrings.AmazonS3Location + ConstantStrings.ImagePlaceholder);
+			o.About.Name = About.NotNull(x => x.GetName()) ?? AboutName;
 
 			o.HeadlinePadId = HeadlinePadId;
 

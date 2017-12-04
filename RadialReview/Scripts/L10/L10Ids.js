@@ -168,6 +168,9 @@ $(function () {
 
 		var detailsContents = $("<div class='issueDetails abstract-details-panel'></div>");
 
+		$(detailsContents).append("<span class='expandContract btn-group pull-right'></span>");
+		$(detailsContents).append("<div class='createTime'>" + dateFormatter(new Date(createtime)) + "</div>");
+
 		// $("#issueDetails").html("");
 		$(detailsContents).append("<div class='heading'><h4 class='message-holder clickable on-edit-enabled' data-recurrence_issue='" + recurrence_issue + "'><span class='message editable-text' data-recurrence_issue='" + recurrence_issue + "'>" + message + "</span></h4></div>");
 		$(detailsContents).append(detailsList);
