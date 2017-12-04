@@ -707,6 +707,14 @@ body.resizing .notes-tile:after,
 .dashboard .width_2 .l10-scorecard-tile .admin-column {
   display: none;
 }
+.dashboard .l10-scorecard-tile {
+  /*.direction,input{
+			pointer-events:none;
+		}
+		input{
+			pointer-events:none;
+		}*/
+}
 .dashboard .l10-scorecard-tile .admin-column {
   display: none;
 }
@@ -2809,6 +2817,18 @@ body.resizing .notes-tile:after,
 }
 .add-pages .dropdown-menu a:hover .glyphicon {
   opacity: .8;
+}
+.dashboard .minimal-editing .l10-scorecard-tile .button-column,
+.dashboard .minimal-editing .l10-scorecard-tile .admin-column {
+  display: none;
+}
+.dashboard .minimal-editing .l10-scorecard-tile .direction,
+.dashboard .minimal-editing .l10-scorecard-tile .measurable-column input,
+.dashboard .minimal-editing .l10-scorecard-tile .goal-column input {
+  pointer-events: none;
+}
+.dashboard .minimal-editing .scorecard-list-container .measurable-column input {
+  pointer-events: none;
 }
 .dashboard {
   /*::-webkit-input-placeholder { /* WebKit, Blink, Edge *
