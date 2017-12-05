@@ -89,6 +89,8 @@ $(function () {
 	});
 
 
+
+
 	var MoveIssueToVTO = Undo.Command.extend({
 		constructor: function (row) {
 			this.rowId = row.data("recurrence_issue");
@@ -105,6 +107,10 @@ $(function () {
 						$(row).remove();
 						refreshCurrentIssueDetails();
 						refreshRanks();
+						setTimeout(function () {
+							var ele_click = '<a style="text-decoration:none;" onclick="undoStack.canUndo() && undoStack.undo();">Undo?</a>';
+							showAlert(ele_click, 4000);
+						}, 500)
 					}
 				}
 			});
@@ -119,11 +125,15 @@ $(function () {
 						$(row).removeClass("skipNumber");
 						refreshCurrentIssueDetails();
 						refreshRanks();
+
+						if ($('#alerts')!=undefined)
+						$('#alerts').html('');
 					}
 				}
 			});
 		}
 	});
+
 
 	refreshCurrentIssueDetails();
 	fixIssueDetailsBoxSize();
@@ -179,7 +189,7 @@ $(function () {
 		$(detailsContents).append("<div class='button-bar'>" +
 			"<div style='height:28px;'>" +
 			"<span class='btn-group pull-right'>" +
-				"<span class='btn btn-default btn-xs doneButton on-edit-enabled'><input data-recurrence_issue='" + recurrence_issue + "' class='issue-checkbox hidden' type='checkbox' " + (checked ? "checked" : "") + "/> Resolve</span>" +
+			"<span class='btn btn-default btn-xs doneButton on-edit-enabled'><input data-recurrence_issue='" + recurrence_issue + "' class='issue-checkbox hidden' type='checkbox' " + (checked ? "checked" : "") + "/> Resolve</span>" +
 			"</span>" +
 			"<span class='expandContract btn-group'>" +
 			"<span class='btn btn-default btn-xs copyButton issuesModal on-edit-enabled' data-method='copymodal' data-recurrence_issue='" + recurrence_issue + "' data-copyto='" + window.recurrenceId + "'><span class='icon fontastic-icon-forward-1' title='Move issue to another L10'></span> Move To</span>" +
@@ -189,9 +199,9 @@ $(function () {
 			"<span class='clearfix'></span>" +
 			"<span class='gray' style='width:75px;display:inline-block'>Owned By:</span>" +
 			"<span>" +
-				"<span style='width:250px;padding-left:10px;' class='assignee on-edit-enabled' data-accountable='" + accountable + "' data-recurrence_issue='" + recurrence_issue + "'  >" +
-					"<span data-recurrence_issue='" + recurrence_issue + "' class='btn btn-link owner'>" + ownerStr + "</span>" +
-				"</span>" +
+			"<span style='width:250px;padding-left:10px;' class='assignee on-edit-enabled' data-accountable='" + accountable + "' data-recurrence_issue='" + recurrence_issue + "'  >" +
+			"<span data-recurrence_issue='" + recurrence_issue + "' class='btn btn-link owner'>" + ownerStr + "</span>" +
+			"</span>" +
 			"</span>" +
 			"</div>");
 		$("#issueDetails").html("");
@@ -438,8 +448,8 @@ function constructRow(issue) {
 		details = issue.details;
 
 	return '<li class="issue-row dd-item arrowkey undoable-stripped"  data-createtime="' + issue.createtime + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-issue="' + issue.issue + '" data-checked="' + issue.checked + '"  data-message="' + issue.message + '"  data-details="' + issue.details + '"  data-owner="' + issue.owner + '" data-accountable="' + issue.accountable + '"  data-priority="' + issue.priority + '"  data-rank="' + issue.rank + '" data-awaitingsolve="' + issue.awaitingsolve + ' data-markedforclose="' + issue.markedforclose + '">\n'
-        + '<span class="undo-button">Undo</span>'
-        + '<input data-recurrence_issue="' + issue.recurrence_issue + '" class="issue-checkbox" type="checkbox" ' + (issue.checked ? "checked" : "") + '/>\n'
+		+ '<span class="undo-button">Undo</span>'
+		+ '<input data-recurrence_issue="' + issue.recurrence_issue + '" class="issue-checkbox" type="checkbox" ' + (issue.checked ? "checked" : "") + '/>\n'
 		+ '<div class="move-icon noselect dd-handle">\n'
 		+ '<span class="outer icon fontastic-icon-three-bars icon-rotate"></span>\n'
 		+ '<span class="inner icon fontastic-icon-primitive-square"></span>\n'
@@ -447,15 +457,15 @@ function constructRow(issue) {
 		+ '<div class="btn-group pull-right">\n'
 		+ '<span class="issuesButton issuesModal icon fontastic-icon-forward-1" data-copyto="' + window.recurrenceId + '" data-recurrence_issue="' + issue.recurrence_issue + '" data-method="copymodal" style="padding-right: 5px"></span>\n'
 		+ '<span class="glyphicon glyphicon-unchecked todoButton issuesButton todoModal" data-issue="' + issue.issue + '" data-meeting="' + issue.createdDuringMeetingId + '" data-recurrence="' + window.recurrenceId + '" data-method="CreateTodoFromIssue" style="padding-right:5px;"></span>\n'
-        + '<span class="glyphicon glyphicon-vto vtoButton"></span>'
-        + '</div>\n'
+		+ '<span class="glyphicon glyphicon-vto vtoButton"></span>'
+		+ '</div>\n'
 		+ '<div class="number-priority">\n'
 		+ '<span class="number"></span>\n'
-        + '<span class="priority" data-priority="' + issue.priority + '"></span>\n'
-        + '<span class="rank123 badge" data-rank="' + issue.rank + '">IDS</span>\n'
+		+ '<span class="priority" data-priority="' + issue.priority + '"></span>\n'
+		+ '<span class="rank123 badge" data-rank="' + issue.rank + '">IDS</span>\n'
 		+ '</div>\n'
 		+ '<span class="profile-image">\n'
-        + '' + profilePicture(issue.imageUrl, issue.owner) + ''
+		+ '' + profilePicture(issue.imageUrl, issue.owner) + ''
 		//+ '		<span class="profile-picture">\n'
 		//+ '			<span class="picture-container" title="' + issue.owner + '">\n'
 		//+ '				<span class="picture" style="background: url(' + issue.imageUrl + ') no-repeat center center;"></span>\n'
@@ -514,7 +524,7 @@ function getIssueOrder() {
 	return output;
 }
 
-function updateIssueAwaitingSolve(issueRecurId,status) {
+function updateIssueAwaitingSolve(issueRecurId, status) {
 	$(".issue-row[data-recurrence_issue='" + issueRecurId + "']").attr("data-awaitingsolve", status);
 }
 
@@ -720,9 +730,9 @@ var refreshRankTimer = null;
 var refreshRankArr = [];
 function refreshRanks(last) {
 	var ranks = $(".issues-list >.issue-row:not('.skipNumber'):not([data-checked='true']):not([data-checked='True']):not([data-awaitingsolve='True']):not([data-awaitingsolve='true']) > .number-priority > .rank123")
-        .filter(function () { return $(this).data("rank") > 0 }).sort(function (a, b) {
-        	return $(a).data("rank") - $(b).data("rank");
-        });
+		.filter(function () { return $(this).data("rank") > 0 }).sort(function (a, b) {
+			return $(a).data("rank") - $(b).data("rank");
+		});
 
 	if (typeof (last) === "undefined")
 		last = 100000;
