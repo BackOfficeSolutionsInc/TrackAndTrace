@@ -21,6 +21,7 @@ using RadialReview.Exceptions;
 using RadialReview.Models.Application;
 using RadialReview.Utilities;
 using RadialReview.Hooks;
+using RadialReview.Variables;
 
 namespace RadialReview.Controllers {
 	[Authorize]
@@ -202,6 +203,22 @@ namespace RadialReview.Controllers {
 			var model = new LoginViewModel {
 				UserName = username
 			};
+
+			ViewBag.SpecialOffer = VariableAccessor.Get("LOGIN_SPECIAL_OFFER", () =>
+@"<div class=""row"">
+	<div class=""col-md-offset-2 col-md-8 alignCenter"">
+		Would you like to test the latest Traction<sup>®</sup> Tools features before anyone else?<br/>
+		Become a beta tester by visiting <a href=""#"" onclick=""supportEmail('Sign up for beta',null,'Traction Tools Beta','I want to sign up for Traction Tools Beta.')""><u>this page</u></a>.
+	</div>
+</div>
+<style>
+	.special-offer{
+		color: #ffffff;	
+		font-family: sans-serif;
+		opacity: 0.6;
+		padding-top: 40px;
+	}
+</style>");
 
 			return View(model);
 		}

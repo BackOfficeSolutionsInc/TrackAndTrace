@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using NHibernate;
 using RadialReview.Models.Application;
+using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +34,19 @@ namespace RadialReview.Models.Application {
 
 }
 namespace RadialReview.Variables {
+
+	public class VariableAccessor {
+		public static T Get<T>(string key, Func<T> defaultValue) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var v = s.GetSettingOrDefault(key, defaultValue);
+					tx.Commit();
+					s.Flush();
+					return v;
+				}
+			}
+		}
+	}
 
     public static class VariableExtensions{
 
