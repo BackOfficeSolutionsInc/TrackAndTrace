@@ -433,7 +433,7 @@ namespace RadialReview.Utilities {
 		}
 
 		public static string FixEmail(string email) {
-			return Config.IsLocal() ? "clay.upton+test_" + email.Replace("@", "_at_") + "@mytractiontools.com" : email;
+			return Config.IsLocal() ? "clay.upton+test_" + (email??"").Replace("@", "_at_") + "@mytractiontools.com" : email;
 		}
 
 		public static Env GetEnv() {

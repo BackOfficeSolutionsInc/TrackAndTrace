@@ -157,11 +157,13 @@
     <Compile Include="Hooks\Realtime\VTO\RealTime_VTO_UpdateRocks.cs" />
     <Compile Include="Hooks\Realtime\CoreProcess\RealTime_Tasks.cs" />
     <Compile Include="Hooks\CrossCutting\UpdateUserCache.cs" />
+    <Compile Include="Hooks\UserRegistration\UpdatePlaceholder.cs" />
     <Compile Include="Hubs\CoreProcessHub.cs" />
     <Compile Include="Models\Angular\CoreProcess\AngularTask.cs" />
     <Compile Include="Models\Angular\CoreProcess\AngularCoreProcess.cs" />
     <Compile Include="Models\Application\Variable.cs" />
     <Compile Include="Models\ClientSuccess\TooltipModels.cs" />
+    <Compile Include="Models\UserModels\UserRole.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Utilities\Attributes\Untested.cs" />
     <Compile Include="Utilities\CoreProcess\AmazonSQSUtility.cs" />
@@ -847,6 +849,7 @@
     <Compile Include="Utilities\Hooks\IMeasurableHook.cs" />
     <Compile Include="Utilities\Hooks\IMeetingEvents.cs" />
     <Compile Include="Utilities\Hooks\IMeetingItemHooks.cs" />
+    <Compile Include="Utilities\Hooks\IUserRoleHook.cs" />
     <Compile Include="Utilities\Hooks\IScoreHook.cs" />
     <Compile Include="Utilities\Hooks\IRockHook.cs" />
     <Compile Include="Utilities\Hooks\ITaskHook.cs" />

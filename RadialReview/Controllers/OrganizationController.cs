@@ -447,11 +447,16 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Manager)]
-		public PartialViewResult ResendJoin(long id) {
+		public ActionResult ResendJoin(long id) {
 			var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false, PermissionType.EditEmployeeDetails);
 
 			if (found.TempUser == null)
 				throw new PermissionsException("User is already a part of the organization");
+
+			if (found.IsPlaceholder) {
+				if (!_PermissionsAccessor.IsPermitted(GetUser(), x => x.CanUpgradeUsersAtOrganization(found.Organization.Id)))
+					return Content("You're not permitted to upgrade placeholders to paid accounts.");
+			}
 
 			return PartialView(found.TempUser);
 		}
@@ -462,6 +467,17 @@ namespace RadialReview.Controllers {
 			var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false, PermissionType.EditEmployeeDetails);
 			if (found.TempUser == null)
 				throw new PermissionsException("User is already a part of the organization");
+
+
+			if (found.IsPlaceholder) {
+				if (!_PermissionsAccessor.IsPermitted(GetUser(), x => x.CanUpgradeUsersAtOrganization(found.Organization.Id)))
+					return Json(ResultObject.CreateError("You're not permitted to upgrade placeholders to paid accounts."));
+			}
+
+			if (found.IsPlaceholder) {
+				await UserAccessor.RemoveRole(GetUser(), found.Id, UserRoleType.PlaceholderOnly);
+			}
+
 
 			_UserAccessor.UpdateTempUser(GetUser(), id, model.FirstName, model.LastName, model.Email, DateTime.UtcNow);
 			model.Id = TempId;

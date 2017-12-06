@@ -183,6 +183,7 @@ namespace RadialReview.Controllers {
 			var e4 = sw.ElapsedMilliseconds;
 			if (caller.ManagingOrganization) {
 				var root = AccountabilityAccessor.GetRoot(GetUser(), caller.Organization.AccountabilityChartId);
+				ViewBag.ShowLeadershipTeam = true;
 				managers.Insert(0, new SelectListItem() { Selected = false, Text = "[Organization Admin]", Value = "" + root.Id });
 			}
 			managers.Insert(0, new SelectListItem() { Selected = false, Text = "[None]", Value = "-3" });
@@ -202,6 +203,7 @@ namespace RadialReview.Controllers {
 			ViewBag.HidePosition = hidePosition;
 			ViewBag.HideEvalOnly = hideEvalOnly;
             ViewBag.HideSend = forceNoSend;
+			ViewBag.ShowPlaceholder = true;
 
             string fname = null;
 			string lname = null;
@@ -558,6 +560,14 @@ namespace RadialReview.Controllers {
 				id = x.UserOrgId
 			}).ToList();
 			return Json(ResultObject.Create(o), JsonRequestBehavior.AllowGet);
+		}
+
+
+		[HttpGet]
+		[Access(AccessLevel.Radial)]
+		public async Task<JsonResult> ToggleUserType(UserRoleType type, long user, bool enabled) {
+			await UserAccessor.SetRole(GetUser(), user, type, enabled);
+			return Json(enabled, JsonRequestBehavior.AllowGet);
 		}
 
 	}

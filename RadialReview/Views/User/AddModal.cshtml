@@ -1,75 +1,105 @@
 ﻿@model RadialReview.Models.ViewModels.CreateUserOrganizationViewModel
-
+@{
+	var guid = Guid.NewGuid().ToString().Replace("-", "");
+}
 @Html.HiddenFor(x => x.OrgId)
 
 <div class="row">
-    <div class="col-xs-3"><label>@(RadialReview.Properties.DisplayNameStrings.name):</label></div>
+	<div class="col-xs-3"><label>@(RadialReview.Properties.DisplayNameStrings.name):</label></div>
 
-    <div class="row col-xs-9 noPadLeft">
-        <div class="col-xs-6 noPadLeft">@Html.TextBoxFor(x => x.FirstName, new { placeholder = RadialReview.Properties.DisplayNameStrings.firstName, @class = "fullWidth form-control blend" })</div>
-        <div class="col-xs-6 noPadRight noPadLeft">@Html.TextBoxFor(x => x.LastName, new { placeholder = RadialReview.Properties.DisplayNameStrings.lastName, @class = "fullWidth form-control blend" })</div>
-    </div>
+	<div class="row col-xs-9 noPadLeft">
+		<div class="col-xs-6 noPadLeft">@Html.TextBoxFor(x => x.FirstName, new { placeholder = RadialReview.Properties.DisplayNameStrings.firstName, @class = "fullWidth form-control blend" })</div>
+		<div class="col-xs-6 noPadRight noPadLeft">@Html.TextBoxFor(x => x.LastName, new { placeholder = RadialReview.Properties.DisplayNameStrings.lastName, @class = "fullWidth form-control blend" })</div>
+	</div>
 </div>
 @if (Model.IsClient) {
-    <div class="smallBreak"></div>
-    <div class="row">
-        <div class="col-xs-3"><label>Organization Name:</label></div>
+	<div class="smallBreak"></div>
+	<div class="row">
+		<div class="col-xs-3"><label>Organization Name:</label></div>
 
-        <div class="col-xs-9">
-            @Html.TextBoxFor(x => x.ClientOrganizationName, new { placeholder = "Client Name", @class = "fullWidth form-control blend" })
-            @*<div class="col-xs-6 noPadRight noPadLeft">@Html.TextBoxFor(x => x.LastName, new { placeholder = RadialReview.Properties.DisplayNameStrings.lastName, @class = "fullWidth form-control" })</div>*@
-        </div>
-    </div>
+		<div class="col-xs-9">
+			@Html.TextBoxFor(x => x.ClientOrganizationName, new { placeholder = "Client Name", @class = "fullWidth form-control blend" })
+			@*<div class="col-xs-6 noPadRight noPadLeft">@Html.TextBoxFor(x => x.LastName, new { placeholder = RadialReview.Properties.DisplayNameStrings.lastName, @class = "fullWidth form-control" })</div>*@
+		</div>
+	</div>
 }
 <div class="smallBreak"></div>
-    <div class="row">
-        <div class="col-xs-3"><label>@(RadialReview.Properties.DisplayNameStrings.email):</label></div>
-        <div class="col-xs-9">@Html.TextBoxFor(x => x.Email, new { placeholder = RadialReview.Properties.DisplayNameStrings.email, @class = "fullWidth form-control blend" })</div>
-    </div>
-    <div class="smallBreak"></div>
+<div class="row">
+	<div class="col-xs-3"><label>@(RadialReview.Properties.DisplayNameStrings.email):</label></div>
+	<div class="col-xs-9">@Html.TextBoxFor(x => x.Email, new { placeholder = RadialReview.Properties.DisplayNameStrings.email, @class = "fullWidth form-control blend email-textbox" })</div>
+</div>
+<div class="smallBreak"></div>
 
 @if (!Model.IsClient) {
 
-    if (ViewBag.HidePosition == true) {
-        @Html.HiddenFor(x => x.Position.PositionId);
-        @Html.HiddenFor(x => x.Position.CustomPositionId);
-        @Html.HiddenFor(x => x.Position.CustomPosition);
-    } else {
-        @Html.EditorFor(x => x.Position, "~/Views/User/EditorTemplates/UserPositionViewModel.cshtml")
-    }
+	if (ViewBag.HidePosition == true) {
+		@Html.HiddenFor(x => x.Position.PositionId);
+		@Html.HiddenFor(x => x.Position.CustomPositionId);
+		@Html.HiddenFor(x => x.Position.CustomPosition);
+	} else {
+		@Html.EditorFor(x => x.Position, "~/Views/User/EditorTemplates/UserPositionViewModel.cshtml")
+	}
 
-    if (Model.StrictlyHierarchical || ViewBag.ForceManager == true) {
-        @Html.HiddenFor(x => x.ManagerNodeId)
-    } else {
-        <div class="smallBreak"></div>
-        <div class="row">
-            <div class="col-xs-3"><label>Their @RadialReview.Utilities.Config.ManagerName():</label></div>
-            <div class="col-xs-9">@Html.DropDownListFor(x => x.ManagerNodeId, Model.PotentialManagers, new { @class = "fullWidth form-control blend" })</div>
-        </div>
-    }
+	if (Model.StrictlyHierarchical || ViewBag.ForceManager == true) {
+		@Html.HiddenFor(x => x.ManagerNodeId)
+	} else {
+		<div class="smallBreak"></div>
+		<div class="row">
+			<div class="col-xs-3"><label>Their @RadialReview.Utilities.Config.ManagerName():</label></div>
+			<div class="col-xs-9">@Html.DropDownListFor(x => x.ManagerNodeId, Model.PotentialManagers, new { @class = "fullWidth form-control blend" })</div>
+		</div>
+	}
 
-    if (true || ViewBag.HideIsManager == true) {
-        @Html.HiddenFor(x => x.IsManager)
-    } else {
-        <div class="smallBreak"></div>
-        <div class="row">
-            <div class="col-xs-3"><label>Is @RadialReview.Utilities.Config.ManagerName():</label></div>
-            <div class="col-xs-9">@Html.CheckBoxFor(x => x.IsManager, new { style = "padding-bottom: 7px;", @class = "checkbox blend" })</div>
-        </div>
-    }
-    if (ViewBag.HideEvalOnly == true) {
-        @Html.HiddenFor(x => x.EvalOnly)
-    } else {
-        <div class="smallBreak"></div>
-        <div class="row">
-            <div class="col-xs-3"><label>Only Enable @RadialReview.Utilities.Config.ReviewName():</label></div>
-            <div class="col-xs-9">@Html.CheckBoxFor(x => x.EvalOnly, new { style = "padding-bottom: 7px;", @class = "checkbox blend" })</div>
-        </div>
-    }
+	if (true || ViewBag.HideIsManager == true) {
+		@Html.HiddenFor(x => x.IsManager)
+	} else {
+		<div class="smallBreak"></div>
+		<div class="row">
+			<div class="col-xs-3"><label>Is @RadialReview.Utilities.Config.ManagerName():</label></div>
+			<div class="col-xs-9">@Html.CheckBoxFor(x => x.IsManager, new { style = "padding-bottom: 7px;", @class = "checkbox blend" })</div>
+		</div>
+	}
+	if (ViewBag.ShowPlaceholder ?? false) {
+		<div class="smallBreak"></div>
+		<div class="row">
+			<div class="col-xs-3"><label >Placeholder User:</label></div>
+			<div class="col-xs-9">@Html.CheckBoxFor(x => x.PlaceholderOnly, new { style = "padding-bottom: 7px; display: inline-block;margin-right:2px;", @class = "checkbox blend placeholder-box "})<span title="Placeholders can be added to the Accountability Chart, but you won't be charged for them." class="info"></span></div>
+		</div>
+	} else {
+		@Html.HiddenFor(x => x.PlaceholderOnly)
+	}
+	if (ViewBag.ShowLeadershipTeam ?? false) {
+		<div class="smallBreak"></div>
+		<div class="row">
+			<div class="col-xs-3"><label>Leadership Team Member:</label></div>
+			<div class="col-xs-9">@Html.CheckBoxFor(x => x.OnLeadershipTeam, new { style = "padding-bottom: 7px;", @class = "checkbox blend leadershipteam-box" })</div>
+		</div>
+	} else {
+		@Html.HiddenFor(x => x.OnLeadershipTeam)
+	}
+
+
+	if (true || ViewBag.HideEvalOnly == true) {
+		@Html.HiddenFor(x => x.EvalOnly)
+	} else {
+		<div class="smallBreak"></div>
+		<div class="row">
+			<div class="col-xs-3"><label>Only Enable @RadialReview.Utilities.Config.ReviewName():</label></div>
+			<div class="col-xs-9">@Html.CheckBoxFor(x => x.EvalOnly, new { style = "padding-bottom: 7px;", @class = "checkbox blend eval-box" })</div>
+		</div>
+	}
 
 } else {
-    @Html.Hidden("ManagerNodeId", "null"); @*No Manger*@
-    @Html.Hidden("Position.PositionId", "-2"); @*No Position*@
+	@Html.Hidden("ManagerNodeId", "null"); @*No Manger*@
+	@Html.Hidden("Position.PositionId", "-2"); @*No Position*@
+}
+
+@if (!(ViewBag.HideSend ?? false)) {
+	<div class="smallBreak"></div>
+	<div class="row">
+		<div class="col-xs-3"><label>Send Email Invite:</label></div>
+		<div class="col-xs-9">@Html.CheckBoxFor(x => x.SendEmail, new { style = "padding-bottom: 7px;", @class = "checkbox blend email-box" })</div>
+	</div>
 }
 
 @Html.HiddenFor(x => x.IsClient)
@@ -78,19 +108,58 @@
 
 
 <script>
-    /*
+	/*
 	$(function () {
 		$("#positionSelector").change(function () {
 			$("#customPosition").val($("#positionSelector option:selected").text());
 			setTimeout(function () { $("#customPosition")[0].select(); }, 10);
 		})
 	});*/
-</script>
+	//$.fn.select2.amd.require(
+	//	["select2/core", "select2/utils", "select2/compat/matcher"],
+	//	function (Select2, Utils, oldMatcher) {
 
-@if (!(ViewBag.HideSend ?? false)) {
-    <div class="smallBreak"></div>
-    <div class="row">
-        <div class="col-xs-3"><label>Send Email Invite:</label></div>
-        <div class="col-xs-9">@Html.CheckBoxFor(x => x.SendEmail, new { style = "padding-bottom: 7px;", @class = "checkbox blend" })</div>
-    </div>
-}
+
+	function a@(guid)() {
+
+		var pb = $(".placeholder-box");
+		function adjPlaceholder() {
+			var dependent = $(".eval-box,.leadershipteam-box,.email-box");
+
+			if (pb.is(":checked")) {
+				dependent.each(function () {
+					$(this).attr("data-waschecked", $(this).is(":checked"));
+				});
+				dependent.prop("checked", false);
+				dependent.prop("disabled", true);
+
+				$(".email-textbox").attr("placeholder", "Email (Optional)");
+
+			} else {
+				dependent.prop("disabled", false);
+				dependent.each(function () {
+					var was = $(this).attr("data-waschecked");
+					if (typeof (was) !== "undefined") {
+						$(this).prop("checked", was=="true");
+					}
+				});
+				$(".email-textbox").attr("placeholder", "Email");
+			}
+		}
+
+		$(pb).on("change", adjPlaceholder);
+		adjPlaceholder();		
+
+	}
+
+	function defer@(guid)() {
+		if (window.jQuery)
+			a@(guid)();
+		else
+			setTimeout(function () { defer@(guid)() }, 50);
+	}
+	defer@(guid)();
+
+
+
+</script>

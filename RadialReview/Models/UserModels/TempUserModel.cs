@@ -14,7 +14,7 @@ namespace RadialReview.Models.UserModels
         public virtual long Id { get; set; }
         public virtual long? OrganizationId { get; set; }
         public virtual String FirstName { get;  set; }
-        public virtual String LastName { get; set; }
+        public virtual String LastName { get; set; }		
 		public virtual String Email { get; set; }
         public virtual DateTime Created { get; set; }       
         public virtual DateTime? LastSent { get; set; }

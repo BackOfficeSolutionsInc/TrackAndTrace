@@ -985,6 +985,11 @@ body.resizing *::-moz-selection {
 [data-permicon][data-evalonly="True"][data-isadmin="True"] {
   color: #FFE296;
 }
+[data-permicon][data-isplaceholder="True"] {
+  color: #eee;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: #c1c1c1;
+}
 .nowrap {
   overflow: hidden;
   text-overflow: ellipsis;

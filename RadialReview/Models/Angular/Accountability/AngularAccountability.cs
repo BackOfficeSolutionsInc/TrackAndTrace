@@ -25,7 +25,7 @@ namespace RadialReview.Models.Angular.Accountability {
 		public long? CenterNode { get; set; }
 		public long? ShowNode { get; set; }
 		public long? ExpandNode { get; set; }
-
+		public bool? CanReorganize { get; set; }
 
 		public void Dive(Action<AngularAccountabilityNode> action) {
 			Dive(action, Root);
