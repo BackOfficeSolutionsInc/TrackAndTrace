@@ -143,6 +143,7 @@
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Hooks\CrossCutting\CreateFinancialPermItems.cs" />
     <Compile Include="Hooks\CrossCutting\SwapScorecardOnRegister.cs" />
+    <Compile Include="Hooks\CrossCutting\ActiveCampaign\ActiveCampaignFirstThreeMeetings.cs" />
     <Compile Include="Hooks\HookData.cs" />
     <Compile Include="Hooks\Meeting\AttendeeHooks.cs" />
     <Compile Include="Hooks\Meeting\AuditLogHooks.cs" />
@@ -255,7 +256,7 @@
     <Compile Include="Areas\People\Engines\Surveys\Strategies\Events\SurveyBuilderEventsSaveStrategy.cs" />
     <Compile Include="Areas\People\Engines\Surveys\SurveyReconstructionEngine.cs" />
     <Compile Include="Controllers\SuController.cs" />
-    <Compile Include="Hooks\CrossCutting\ActiveCampaignEventHooks.cs" />
+    <Compile Include="Hooks\CrossCutting\ActiveCampaign\ActiveCampaignEventHooks.cs" />
     <Compile Include="Hooks\CrossCutting\EnterpriseHook.cs" />
     <Compile Include="Hooks\CrossCutting\UpdateRoles_Notifications.cs" />
     <Compile Include="Hooks\CrossCutting\UpdateUserModel_TeamNames.cs" />
@@ -1285,6 +1286,7 @@
     <Content Include="Scripts\Main\ajaxintercepters.js" />
     <Content Include="Scripts\Main\alerts.js" />
     <Content Include="Scripts\Main\backwardcompatability.js" />
+    <Content Include="Scripts\Main\beta.js" />
     <Content Include="Scripts\Main\clickableclass.js" />
     <Content Include="Scripts\Main\datatable.js" />
     <Content Include="Scripts\Main\datepickers.js" />
