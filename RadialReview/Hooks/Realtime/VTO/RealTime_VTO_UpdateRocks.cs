@@ -101,7 +101,7 @@ namespace RadialReview.Hooks.Realtime {
 				AddRockToVto(s, rock.Id, recurRock.L10Recurrence.Id);
 			}
 		}
-		public async Task DetatchRock(ISession s, RockModel rock, long recurrenceId) {
+		public async Task DetachRock(ISession s, RockModel rock, long recurrenceId) {
 			RemoveRockFromVto(s, rock.Id, recurrenceId);
 		}
 

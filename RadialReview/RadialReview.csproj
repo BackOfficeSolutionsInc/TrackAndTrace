@@ -24,6 +24,7 @@
     <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
     <TargetFrameworkProfile />
     <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -1730,6 +1731,7 @@
     <Content Include="Views\Shared\EditorTemplates\CreateRockViewModel.cshtml" />
     <Content Include="Views\L10\AddRockModal.cshtml" />
     <Content Include="Views\Manage\Payment.cshtml" />
+    <Content Include="Views\Headlines\EditModal.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -116,7 +116,7 @@ namespace RadialReview.Hooks.Realtime.L10 {
 			}
 		}
 
-		public async Task DetatchMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, long recurrenceId) {
+		public async Task DetachMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, long recurrenceId) {
 			using (var rt = RealTimeUtility.Create()) {
 				rt.UpdateRecurrences(recurrenceId).Update(
 						new AngularRecurrence(recurrenceId) {

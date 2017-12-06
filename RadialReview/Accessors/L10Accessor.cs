@@ -2492,7 +2492,7 @@ namespace RadialReview.Accessors {
 				//        s.Update(rv);
 				//    }
 				//}
-				await HooksRegistry.Each<IMeetingRockHook>((ss, x) => x.DetatchRock(s, r.ForRock, recurrenceId));
+				await HooksRegistry.Each<IMeetingRockHook>((ss, x) => x.DetachRock(s, r.ForRock, recurrenceId));
 			}
 
 
@@ -3365,7 +3365,7 @@ namespace RadialReview.Accessors {
 			}
 
 			foreach (var r in meetingMeasurables) {
-				await HooksRegistry.Each<IMeetingMeasurableHook>((ses, x) => x.DetatchMeasurable(ses, perm.GetCaller(), r.Measurable, recurrenceId));
+                await HooksRegistry.Each<IMeetingMeasurableHook>((ses, x) => x.DetachMeasurable(ses, perm.GetCaller(), r.Measurable, recurrenceId));
 			}
 		}
 		public static void DeleteMeetingMeasurableDivider(UserOrganizationModel caller, long l10Meeting_measurableId) {
@@ -4294,32 +4294,32 @@ namespace RadialReview.Accessors {
                             update = true;
                         }*/
 
-						if (f.Ordering != i) {
-							f.Ordering = i;
-							update = true;
-						}
-						if (update)
-							s.Update(f);
-						i++;
-					}
+                        if (f.Ordering != i) {
+                            f.Ordering = i;
+                            update = true;
+                }
+                        if (update)
+                            s.Update(f);
+                        i++;
+            }
 
-					var json = Json.Encode(model);
+                    var json = Json.Encode(model);
 
-					var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-					var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId), model.connectionId);
+                    var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+                    var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId), model.connectionId);
 
-					//group.deserializeTodos(".todo-list", model);
-					group.setTodoOrder(model.todos);
+                    //group.deserializeTodos(".todo-list", model);
+                    group.setTodoOrder(model.todos);
 
 
-					group.update(new AngularRecurrence(recurrenceId) {
-						Todos = existingTodos.OrderBy(x => x.Ordering).Select(x => new AngularTodo(x)).ToList()
-					});
+                    group.update(new AngularRecurrence(recurrenceId) {
+                        Todos = existingTodos.OrderBy(x => x.Ordering).Select(x => new AngularTodo(x)).ToList()
+                    });
 
-					Audit.L10Log(s, caller, recurrenceId, "UpdateTodos", ForModel.Create<L10Recurrence>(recurrenceId));
-					tx.Commit();
-					s.Flush();
-				}
+                    Audit.L10Log(s, caller, recurrenceId, "UpdateTodos", ForModel.Create<L10Recurrence>(recurrenceId));
+                    tx.Commit();
+                    s.Flush();
+                }
 			}
 		}
 
@@ -4817,7 +4817,6 @@ namespace RadialReview.Accessors {
 						var perm = PermissionsUtility.Create(s, caller);
 						var recurIssue = s.Get<IssueModel.IssueModel_Recurrence>(issue_recurrence);
 
-						perm.EditL10Recurrence(recurIssue.Recurrence.Id);
 
 						recurIssue.Rank = 0;
 						recurIssue.Priority = 0;
