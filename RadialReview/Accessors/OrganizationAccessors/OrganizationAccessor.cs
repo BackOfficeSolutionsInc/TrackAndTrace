@@ -531,6 +531,13 @@ namespace RadialReview.Accessors {
 					await EventUtil.Trigger(x => x.Create(s, EventType.EnableReview, userOrgModel, output.organization));
 				tx.Commit();
 			}
+
+			using (var tx = s.BeginTransaction()) {
+				var org = s.Get<OrganizationModel>(output.organization.Id);
+				await HooksRegistry.Each<IOrganizationHook>((ses, x) => x.CreateOrganization(ses,output.NewUser,org));
+				tx.Commit();
+			}
+
 			s.Flush();
 			//}
 #pragma warning restore CS0618 // Type or member is obsolete

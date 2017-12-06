@@ -291,7 +291,7 @@
 
     function clearAndApply(data, status) {
 
-        console.log("updater",this.scope);
+        console.log("Updating Scope: ",this.scope);
         this.scope.model = {};
         this.applyUpdate(data, status);
     }
@@ -358,7 +358,7 @@
 
                 return m;
             }
-            else if (u && u._Pointer) {
+            else if (u && u._P) {
                 return model.Lookup[m.Key];
             } else if (angular.isObject(u)) {
                 for (var k in u) {

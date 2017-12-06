@@ -143,7 +143,7 @@ namespace RadialReview.Utilities.Serializers {
 				var resolved = (IAngularId)value;
 				_Serialize(value, sub, lookup, now);
 				Merge(lookup, resolved, sub); //lookup[resolved.GetKey()] = sub;
-				var output = new AngularPointer(resolved, now, false);
+				var output = new AngularPointer(resolved, now/*, false*/);
 				if (value is Removed || resolved.GetAngularId() as long? == Removed.Long() || resolved.GetAngularId() as string == Removed.String() ) {
 					parent[name] = Removed.DELETED_KEY;
 					return parent[name];
@@ -158,7 +158,7 @@ namespace RadialReview.Utilities.Serializers {
 					var vResolved = (IAngularId)v;
 					_Serialize(v, sub, lookup, now);
 					Merge(lookup, vResolved, sub); //lookup[vResolved.GetKey()] = sub;
-					keyList.Add(new AngularPointer(vResolved, now, false));
+					keyList.Add(new AngularPointer(vResolved, now/*, false*/));
 				}
 
 				if (value is IAngularList) {
@@ -174,7 +174,7 @@ namespace RadialReview.Utilities.Serializers {
 					var vResolved = (IAngularId)v;
 					_Serialize(v, sub, lookup, now);
 					Merge(lookup, vResolved, sub); //lookup[vResolved.GetKey()] = sub;
-					keyList.Add(vResolved.GetKey(), new AngularPointer(vResolved, now, false));
+					keyList.Add(vResolved.GetKey(), new AngularPointer(vResolved, now/*, false*/));
 				}
 				if (!parent.ContainsKey(name))
 					parent[name] = keyList;

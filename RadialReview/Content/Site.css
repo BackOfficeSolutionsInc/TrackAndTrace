@@ -1567,7 +1567,7 @@ textarea.reason {
 	height: 40px;
 }
 
-	.imageRow > td {
+	.imageRow > td.images {
 		vertical-align: middle !important;
 		height: 40px;
 	}
@@ -1660,7 +1660,7 @@ textarea.reason {
 
 .body-full-width .body-content {
 	padding: 8px 8px;
-	max-width: calc(100% - 25px );
+	max-width: calc(100% - 30px );
 	height: 100%;
 	width: 100%;
 }

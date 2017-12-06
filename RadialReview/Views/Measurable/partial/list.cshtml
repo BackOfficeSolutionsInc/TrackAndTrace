@@ -241,7 +241,8 @@
                         </table>
                     </div>
                     <div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
-                    <div class="create-row" ng-click="functions.addRow($event,'AngularMeasurable')" data-toggle="tooltip" data-placement="left" title="New Measurable"></div>
+					<div class="create-row create-new-btn" ng-click="functions.showMeasurableSearch($event)" data-toggle="tooltip" data-placement="left" title="Add Measurable"></div>
+                    @*<div class="create-row" ng-click="functions.addRow($event,'AngularMeasurable')" data-toggle="tooltip" data-placement="left" title="New Measurable"></div>*@
                     <div class="gray empty-search" style="padding: 30px 15px;" ng-show="(@(selector)).Measurables.length==0">
                         No measurables fit your search criteria.
                     </div>

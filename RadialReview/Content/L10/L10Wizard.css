@@ -1111,6 +1111,9 @@ body,
 .wizard .wizard-menu .selected {
   font-weight: bold;
 }
+.wizard .wizard-page.component {
+  padding-bottom: 25px;
+}
 .wizard .component {
   background: #fff;
   border-radius: 2px;
@@ -1324,6 +1327,14 @@ body,
 .wizard .scorecard-list-container .delete-row:hover {
   color: #3E3935;
 }
+.wizard .scorecard-list-container .delete-row:focus:before {
+  width: 38px;
+  margin: -7px;
+  padding: 7px;
+  height: 38px;
+  border-radius: 21px;
+  background-color: rgba(0, 0, 0, 0.16);
+}
 .wizard .rock-list-container {
   /*.picture-container { 
             width: 32px;
@@ -1467,6 +1478,14 @@ body,
   top: 0px;
   left: -4px;
 }
+.wizard .rock-list-container .delete-row:focus:before {
+  width: 38px;
+  margin: -7px;
+  padding: 7px;
+  height: 38px;
+  border-radius: 21px;
+  background-color: rgba(0, 0, 0, 0.16);
+}
 .wizard .rock-list-container .delete-row:hover {
   color: #3E3935;
 }
@@ -1593,6 +1612,14 @@ body,
 }
 .wizard .issues-list-container .delete-row:hover {
   color: #3E3935;
+}
+.wizard .issues-list-container .delete-row:focus:before {
+  width: 38px;
+  margin: -7px;
+  padding: 7px;
+  height: 38px;
+  border-radius: 21px;
+  background-color: rgba(0, 0, 0, 0.16);
 }
 .wizard .todo-list-container .create-row {
   float: right;
@@ -1730,6 +1757,14 @@ body,
 }
 .wizard .todo-list-container .delete-row:hover {
   color: #3E3935;
+}
+.wizard .todo-list-container .delete-row:focus:before {
+  width: 38px;
+  margin: -7px;
+  padding: 7px;
+  height: 38px;
+  border-radius: 21px;
+  background-color: rgba(0, 0, 0, 0.16);
 }
 .wizard .headline-list-container .create-row {
   float: right;
@@ -1895,6 +1930,14 @@ body,
 .wizard .headline-list-container .delete-row:hover {
   color: #3E3935;
 }
+.wizard .headline-list-container .delete-row:focus:before {
+  width: 38px;
+  margin: -7px;
+  padding: 7px;
+  height: 38px;
+  border-radius: 21px;
+  background-color: rgba(0, 0, 0, 0.16);
+}
 .wizard .user-list-container .create-row {
   float: right;
   height: 56px;
@@ -1992,7 +2035,7 @@ body,
 }
 .wizard .user-list-container .new-user-container-space:before {
   float: left;
-  height: 80px;
+  /*height: 80px;*/
   display: block;
   position: relative;
   content: "";
@@ -2280,6 +2323,46 @@ body,
 .wizard .user-list-container .delete-row:hover {
   color: #3E3935;
 }
+.wizard .user-list-container .delete-row:focus:before {
+  width: 38px;
+  margin: -7px;
+  padding: 7px;
+  height: 38px;
+  border-radius: 21px;
+  background-color: rgba(0, 0, 0, 0.16);
+}
+.wizard .wizard-menu .btn-row .btn {
+  width: 96%;
+  margin: auto;
+  display: block;
+  text-align: left;
+  margin-top: 5px;
+}
+.wizard .wizard-menu .btn-row .btn .glyphicon-triangle-right {
+  top: 5px;
+  left: 1px;
+  font-size: 10px;
+  color: #a2a2a2;
+  float: right;
+}
+.wizard .create-row {
+  bottom: 1px;
+  right: 35px;
+  position: fixed !important;
+  opacity: 0;
+  transition: opacity ease-in 0.2s;
+}
+.wizard .fadein {
+  opacity: 0;
+  -moz-transition: opacity .1s ease;
+  -o-transition: opacity .1s ease;
+  -webkit-transition: opacity .1s ease;
+  transition: opacity .1s ease;
+  transition-delay: .1s;
+}
+.wizard .btn.visible:hover .fadein {
+  opacity: 1;
+}
 #class-container:not(.modal-icon) .modal-content {
   background: #fff;
   border-radius: 2px;
@@ -2293,7 +2376,6 @@ body,
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
   font-family: 'Roboto', sans-serif;
   /*.btn-primary {
-
         background-color: @traction-orange;
     }*/
 }
@@ -2364,6 +2446,22 @@ body,
 #class-container:not(.modal-icon) .modal-content .btn.btn-default:not(:disabled):not(.disabled):active,
 #class-container:not(.modal-icon) .modal-content .btn.btn-default:not(:disabled):not(.disabled):active:hover {
   background-color: rgba(94, 94, 94, 0.12) !important;
+}
+#class-container:not(.modal-icon) .modal-content .btn.btn-primary:focus {
+  border: 1px solid rgba(239, 118, 34, 0.7);
+  margin-top: -1px;
+}
+#class-container:not(.modal-icon) .modal-content .btn.btn-default:focus {
+  border: 1px solid rgba(94, 94, 94, 0.7);
+  margin-top: -1px;
+}
+#class-container:not(.modal-icon) .modal-content .seoc-alt-btn .btn {
+  font-family: sans-serif;
+  /* color: blue !important; */
+  text-transform: unset;
+  color: #444;
+  font-weight: normal;
+  text-decoration: underline;
 }
 /*@-moz-keyframes grow-in {
     from {height:0%;color:transparent;overflow:hidden;}

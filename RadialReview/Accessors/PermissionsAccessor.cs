@@ -48,6 +48,8 @@ namespace RadialReview.Accessors {
 			try {
 				Permitted(s, caller, ensurePermitted);
 				return true;
+			} catch (ArgumentOutOfRangeException) {
+				throw;
 			} catch (Exception) {
 				return false;
 			}
@@ -442,7 +444,30 @@ namespace RadialReview.Accessors {
                 throw new PermissionsException("Requires at least one admin");
 
         }
-    }
+
+		public static bool CanView(UserOrganizationModel caller, PermItem.ResourceType resourceType, long resourceId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					return IsPermitted(s, caller, x => x.CanView(resourceType, resourceId));
+				}
+			}
+		}
+		public static bool CanEdit(UserOrganizationModel caller, PermItem.ResourceType resourceType, long resourceId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					return IsPermitted(s, caller, x => x.CanEdit(resourceType, resourceId));
+				}
+			}
+		}
+		public static bool CanAdmin(UserOrganizationModel caller, PermItem.ResourceType resourceType, long resourceId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					return IsPermitted(s, caller, x => x.CanAdmin(resourceType, resourceId));
+				}
+			}
+		}
+
+	}
 
     public class PermTiny {
         public PermTiny()

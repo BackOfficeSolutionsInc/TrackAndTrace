@@ -30,7 +30,6 @@ function initL10() {
 	}
 
 	if (!meetingStart) {
-
 		loadPage("startmeeting");
 	}
 
@@ -252,7 +251,12 @@ function concludeMeeting() {
 	meetingStart = false;
 	resetClickables();
 	delete startTime;// = undefined;
-	loadPage("stats");
+
+	if ($("body").is(".preview-meeting")) {
+		loadPage("stats");
+	} else {
+		setPreviewMode(false);
+	}
 	$(".timer-bar").hide();
 }
 
@@ -531,6 +535,9 @@ $(document).keydown(function (event) {
 });
 
 
+function setPreviewMode(mode) {
+	$("body").toggleClass("meeting-preview", mode);
+}
 
 function showPrint() {
 	//Html.ShowModal("Generate Printout","/Quarterly/Modal","/Quarterly/Printout/"+Model.Recurrence.Id,newTab:true)

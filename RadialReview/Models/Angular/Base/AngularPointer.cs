@@ -9,19 +9,22 @@ namespace RadialReview.Models.Angular.Base
 		public string Key {
 			get { return Reference.GetKey(); }
 		}
-		public bool Delete { get; set; }
+		//public bool Delete { get; set; }		
+		[ScriptIgnore]
+		[JsonIgnore]
 		public DateTime LastUpdate { get; set; }
-		public bool _Pointer {get { return true; }}
+
+		public int _P {get { return 1; }}
 
 		[ScriptIgnore]
-        [JsonIgnore]
+		[JsonIgnore]
 		public IAngularId Reference { get; set; }
 
-		public AngularPointer(IAngularId reference, DateTime time,bool delete)
+		public AngularPointer(IAngularId reference, DateTime time/*,bool delete*/)
 		{
 			Reference = reference;
-			Delete = delete;
 			LastUpdate = time;
+			//Delete = delete;
 		}
 	}
 }

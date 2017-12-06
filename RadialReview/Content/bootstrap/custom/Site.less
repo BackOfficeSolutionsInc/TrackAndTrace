@@ -145,6 +145,7 @@ body.modal-open {
     .body-full-width .body-content {
         padding: 0;
         max-width: 100%;
+		max-width: ~"calc(100% - 30px )";
     }
 }
 
@@ -526,9 +527,16 @@ body.resizing, body.resizing *::-moz-selection {
         float: left;
 
         .profile-picture {
-            .profile-picture;
+            .profile-picture();
         }
     }
+
+	.searchresult-alticon{
+		float:right;
+		.profile-picture {
+            .profile-picture();
+        }
+	}
 
     .searchresult-meta {
         display: inline-block;

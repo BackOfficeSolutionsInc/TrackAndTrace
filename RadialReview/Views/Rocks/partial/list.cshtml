@@ -83,7 +83,8 @@
                     </tbody>
                 </table>
                 <div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
-                <div class="create-row" ng-click="functions.addRow($event,'AngularRock')" data-toggle="tooltip" data-placement="left" title="New Rock"></div>
+				<div class="create-row create-new-btn" ng-click="functions.showRockSearch($event)" data-toggle="tooltip" data-placement="left" title="New Rock"></div>
+				@*<div class="create-row" ng-click="functions.addRow($event,'AngularRock')" data-toggle="tooltip" data-placement="left" title="New Rock"></div>*@
                 <div class="gray empty-search" style="padding: 15px 15px;" ng-show="(@(selector)  @(filter)).length==0">
                     No @rockName fit your search criteria.
                 </div>

@@ -1,0 +1,77 @@
+﻿@model RadialReview.Models.ViewModels.CreateRockViewModel
+@{ 
+	var guid = Guid.NewGuid().ToString().Replace("-", "");	
+}
+<div class="cmvm cmvm-@(guid)">
+	<div class="row smallBreak2">
+		<div class="col-xs-3"><label>Rock:</label></div>
+		<div class="col-xs-9 noPadLeft">
+			@Html.TextBoxFor(x => x.Title, new { placeholder = "Rock Name", @class = "fullWidth form-control blend" })
+		</div>
+	</div>
+	<div class="row smallBreak2">
+		<div class="col-xs-3"><label>Owner:</label></div>
+		<div class="col-xs-9 noPadLeft">
+			@Html.DropDownListFor(x => x.AccountableUser, Model.PotentialUsers, new { placeholder = "Owner", @class = "fullWidth form-control blend" })
+		</div>
+	</div>
+	<div class="row smallBreak2">
+		<div class="col-xs-3"><label>Add to V/TO™:</label></div>
+		<div class="col-xs-9 noPadLeft">
+			@Html.CheckBoxFor(x => x.AddToVTO, new {  @class = "fullWidth checkbox blend" })
+		</div>
+	</div>	
+</div>
+
+<style>
+	.cmvm-@(guid) .tiny {
+		font-size: 11px;
+		color: #888;
+		top: -3px;
+		position: relative;
+		cursor:pointer;
+	}
+
+	.cmvm-@(guid) .tiny:hover {
+		color: #ef7622;
+	}
+
+	.cmvm-@(guid) .full.form-control.blend{
+		max-width:100%;
+	}
+</style>
+
+<script>
+
+	function a@(guid)() {
+		@*var c = $(".cmvm-@(guid)");
+		var goalDir = c.find(".goal-direction");
+
+		function adjInputs() {
+			if (goalDir.val()==-3){
+				$(".goal-container").addClass("col-xs-3").removeClass("col-xs-6");
+				$(".alt-goal-container").removeClass("hidden");
+			}else{				
+				$(".goal-container").removeClass("col-xs-3").addClass("col-xs-6");
+				$(".alt-goal-container").addClass("hidden");
+			}
+		}
+		goalDir.on("change", function () { adjInputs(); });
+		adjInputs();
+
+		c.find(".add-admin").on("click", function () {
+			$(this).remove();
+			c.find(".admin-container").removeClass("hidden");
+		});*@
+
+	}
+
+	function defer@(guid)() {
+		if (window.jQuery)
+			a@(guid)();
+		else
+			setTimeout(function () { defer@(guid)() }, 50);
+	}
+		defer@(guid)();
+
+</script>

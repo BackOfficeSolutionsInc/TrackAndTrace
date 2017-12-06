@@ -13,9 +13,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
+using static RadialReview.Utilities.SelectExistingOrCreateUtility;
 
 namespace RadialReview.Accessors {
-	public class SearchResult {
+	public class SearchResult : ISelectExistingOrCreateItem{
 		public long Id { get; set; }
 		public string Name { get; set; }
 		public string Description { get; set; }
@@ -23,10 +24,37 @@ namespace RadialReview.Accessors {
 		public string Organization { get; set; }
 		public string Email { get; set; }
 		public string ImageUrl { get; set; }
+		public string AltIcon { get; set; }
 
 		[JsonConverter(typeof(StringEnumConverter))]
 		public RGMType ResultType { get; set; }
+
+		public string ItemName {
+			get {
+				return Name;
+			}
+		}
+
+		public string ItemImageUrl {
+			get {
+				return ImageUrl;
+			}
+		}
+
+		public string ItemValue {
+			get {
+				return Id+"";
+			}
+		}
+
+		public string ItemDescription {
+			get {
+				return Description;
+			}
+		}
 	}
+
+
 	public class SearchAccessor : BaseAccessor {
 		public class SearchSelectors<T> {
 			public SearchSelectors(RGMType resultType, bool forceLookupOrganizationName = false/*, bool or = false*/) {

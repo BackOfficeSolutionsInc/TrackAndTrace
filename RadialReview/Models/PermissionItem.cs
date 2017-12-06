@@ -54,8 +54,9 @@ namespace RadialReview.Models {
 			UpgradeUsersForOrganization = 5,
 			CoreProcess = 6,
             SurveyContainer = 7,
-            Survey = 8,
-            //Survey = 7,
+			Survey = 8,
+			UpdatePaymentForOrganization = 9,
+			//Survey = 7,
 		}
 		[Flags]
 		public enum AccessLevel

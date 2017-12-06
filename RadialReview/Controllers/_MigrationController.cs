@@ -2146,34 +2146,66 @@ namespace RadialReview.Controllers {
 		}
 
 
-        [Access(Controllers.AccessLevel.Radial)]
-        public String M10_17_2017() {
-            var a = 0;
-            var b = 0;
-            var pageCount = 0;
-            using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
-                using (var tx = s.BeginTransaction()) {
-                    var _rl = s.QueryOver<RockModel>().List().ToDictionary(x=>x.Id,x=>x);
-                    var rocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().List().ToList();
-                    foreach (var rr in rocks) {
-                        var rock = _rl[rr.ForRock.Id];
+		[Access(Controllers.AccessLevel.Radial)]
+		public String M10_17_2017() {
+			var a = 0;
+			var b = 0;
+			var pageCount = 0;
+			using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var _rl = s.QueryOver<RockModel>().List().ToDictionary(x => x.Id, x => x);
+					var rocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().List().ToList();
+					foreach (var rr in rocks) {
+						var rock = _rl[rr.ForRock.Id];
 
-                        if (rock.CompanyRock && !rr.VtoRock) {
-                            rr.VtoRock = true;
-                            s.Update(rr);
-                            a += 1;
-                        } else {
-                            b += 1;
-                        }
-                    }
+						if (rock.CompanyRock && !rr.VtoRock) {
+							rr.VtoRock = true;
+							s.Update(rr);
+							a += 1;
+						} else {
+							b += 1;
+						}
+					}
 
-                    tx.Commit();
-                }
-            }
-            return "Updated:" + a + ",  Not Updated:" + b;
-        }
+					tx.Commit();
+				}
+			}
+			return "Updated:" + a + ",  Not Updated:" + b;
+		}
 
-    }
+		[Access(Controllers.AccessLevel.Radial)]
+		public String M12_01_2017() {
+			var a = 0;
+			var b = 0;
+			var pageCount = 0;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var orgs = s.QueryOver<OrganizationModel>().List().ToList();
+					var permItems = s.QueryOver<PermItem>().Where(x=>x.ResType == PermItem.ResourceType.UpdatePaymentForOrganization).List().ToList();
+
+					foreach (var org in orgs) {
+						if (!permItems.Any(x => x.ResId == org.Id && x.CanAdmin)) {
+							
+							var tempUser = new UserOrganizationModel() {
+								Id= -11,
+								Organization = org,
+							};
+
+							PermissionsAccessor.CreatePermItems(s, tempUser, PermItem.ResourceType.UpdatePaymentForOrganization, org.Id,
+								PermTiny.Admins(true, true, true)
+							);
+							a++;
+						}
+					}
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return "Updated:" + a;
+		}
+
+	}
 }
 #pragma warning restore CS0618 // Type or member is obsolete
 #pragma warning restore CS0219 // Variable is assigned but its value is never used

@@ -171,10 +171,8 @@ namespace RadialReview
 		{
 			var hash = 0;
 			var str = user.GetName();
-			if (str!=null && str.Length != 0)
-			{
-				foreach (var chr in str)
-				{
+			if (str!=null && str.Length != 0){
+				foreach (var chr in str){
 					hash = ((hash << 5) - hash) + chr;
 					hash |= 0; // Convert to 32bit integer
 				}

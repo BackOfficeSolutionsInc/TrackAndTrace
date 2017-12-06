@@ -12,6 +12,7 @@ using RadialReview.Utilities.DataTypes;
 using System.Threading.Tasks;
 using RadialReview.Utilities;
 using RadialReview.Models.Angular.Rocks;
+using static RadialReview.Utilities.SelectExistingOrCreateUtility;
 
 namespace RadialReview.Controllers {
 	public class RocksController : BaseController {
@@ -31,6 +32,29 @@ namespace RadialReview.Controllers {
 			}
 		}
 
+		[HttpGet]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> Search(string q, int results = 4, string exclude = null) {
+			long[] excludeLong = new long[] { };
+			if (exclude != null) {
+				try {
+					excludeLong = exclude.Split(',').Select(x => x.ToLong()).ToArray();
+				} catch (Exception) { }
+			}
+
+			var oo = await RockAccessor.Search(GetUser(), GetUser().Organization.Id, q, excludeLong);
+			//var oo = _SearchUsers(q, results, exclude);
+			var o = oo.Select(x => {
+				var desc = "Owner: " + x.AccountableUser.GetName();				
+				return new BaseSelectExistingOrCreateItem {
+					ItemValue = "" + x.Id,
+					Name = x.Rock,
+					ImageUrl = x.AccountableUser.GetImageUrl(),
+					Description = desc
+				};
+			}).ToList();
+			return Json(ResultObject.SilentSuccess(o), JsonRequestBehavior.AllowGet);
+		}
 
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<ActionResult> Pad(long id, bool showControls=true) {

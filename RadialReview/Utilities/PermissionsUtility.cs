@@ -377,7 +377,8 @@ namespace RadialReview.Utilities {
 
         #region Payment
         public PermissionsUtility EditCompanyPayment(long organizationId) {
-            return EditOrganization(organizationId);
+			return CanEdit(PermItem.ResourceType.UpdatePaymentForOrganization, organizationId);
+            //return EditOrganization(organizationId);
         }
         #endregion
 

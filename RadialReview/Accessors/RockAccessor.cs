@@ -32,6 +32,8 @@ using System.Threading.Tasks;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
 using RadialReview.Utilities.Synchronize;
+using System.Web.Mvc;
+using RadialReview.Models.ViewModels;
 
 namespace RadialReview.Accessors {
 	public class RockAndMilestones {
@@ -90,6 +92,67 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+
+		public async static Task<List<RockModel>> Search(UserOrganizationModel caller, long orgId, string search, long[] excludeLong, int take = int.MaxValue) {
+			excludeLong = excludeLong ?? new long[] { };
+
+			var visible = RockAccessor.GetAllVisibleRocksAtOrganization(caller, orgId, true)
+				.Where(x => !excludeLong.Any(y => y == x.Id))
+				.Where(x => x.Id > 0);
+
+			var splits = search.ToLower().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+			var dist = new DiscreteDistribution<RockModel>(0, 9, true);
+			
+			foreach (var u in visible) {
+
+				var fname = false;
+				var lname = false;
+				var ordered = false;
+				var fnameStart = false;
+				var lnameStart = false;
+				var wasFirst = false;
+				var exactFirst = false;
+				var exactLast = false;
+				var containsText = false;
+
+				var names = new List<string[]>();
+				names.Add(new string[] {
+					u.AccountableUser.GetFirstName().ToLower(),
+					u.AccountableUser.GetLastName().ToLower(),
+				});
+
+				foreach (var n in names) {
+					var f = n[0];
+					var l = n[1];
+					foreach (var t in splits) {
+						if (f.Contains(t))
+							fname = true;
+						if (f == t)
+							exactFirst = true;
+						if (f.StartsWith(t))
+							fnameStart = true;
+						if (l.Contains(t))
+							lname = true;
+						if (l.StartsWith(t))
+							lnameStart = true;
+						if (fname && !wasFirst && lname)
+							ordered = true;
+						if (l == t)
+							exactLast = true;
+						if (u.Rock != null && u.Rock.ToLower().Contains(t))
+							containsText = true;
+						wasFirst = true;
+					}
+				}
+
+				var score = fname.ToInt() + lname.ToInt() + ordered.ToInt() + fnameStart.ToInt() + lnameStart.ToInt() + exactFirst.ToInt() + exactLast.ToInt() + containsText.ToInt() * 2;
+				if (score > 0)
+					dist.Add(u, score);
+			}
+			return dist.GetProbabilities().OrderByDescending(x => x.Value).Select(x => x.Key).Take(take).ToList();
+
+		}
+
 		public static void EditMilestone(UserOrganizationModel caller, long milestoneId, string name = null, DateTime? duedate = null, bool? required = null, MilestoneStatus? status = null, string connectionId = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -394,6 +457,24 @@ namespace RadialReview.Accessors {
 			await HooksRegistry.Each<IRockHook>((ss, x) => x.CreateRock(ss, rock));
 
 			return rock;
+		}
+
+		public static CreateRockViewModel BuildCreateRockVM(UserOrganizationModel caller, dynamic ViewBag, List<SelectListItem> potentialUsers = null) {
+			if (potentialUsers == null) {
+				potentialUsers = TinyUserAccessor.GetOrganizationMembers(caller, caller.Organization.Id, false).Select((x, i) => new SelectListItem() {
+					Selected = i == 0 || x.UserOrgId == caller.Id,
+					Text = x.Name,
+					Value = "" + x.UserOrgId,
+				}).OrderBy(x => x.Text).ToList();
+			}
+
+			if (!potentialUsers.Any())
+				throw new PermissionsException("No users");
+
+			return new CreateRockViewModel() {
+				AccountableUser = potentialUsers.Last(x => x.Selected).Value.ToLong(),
+				PotentialUsers = potentialUsers,
+			};
 		}
 
 		public static async Task UpdateRock(UserOrganizationModel caller, long rockId, string message = null, long? ownerId = null, RockState? completion = null, DateTime? dueDate = null, DateTime? now = null) {
