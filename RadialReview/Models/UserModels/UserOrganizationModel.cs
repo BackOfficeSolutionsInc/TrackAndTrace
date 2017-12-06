@@ -153,9 +153,10 @@ namespace RadialReview.Models
         }
         public virtual List<UserOrganizationModel> AllSubordinates { get; set; }
 
-        public virtual bool IsClient { get; set; }
+		public virtual bool IsClient { get; set; }
+		public virtual bool IsPlaceholder { get; set; }
 
-        /*
+		/*
         public virtual List<OriginType> EditableQuestionOrigins
         {
             get
@@ -170,9 +171,9 @@ namespace RadialReview.Models
                 return origins;
             }
         }*/
-        #endregion
+		#endregion
 
-        public UserOrganizationModel()
+		public UserOrganizationModel()
             : base()
         {
             CreateTime = DateTime.UtcNow;
@@ -192,6 +193,7 @@ namespace RadialReview.Models
             Teams = new List<TeamDurationModel>();
             TempUser = null;
             IsClient = false;
+			IsPlaceholder = false;
             Cache = new UserLookup();
         }
 
@@ -476,6 +478,7 @@ namespace RadialReview.Models
             Map(x => x.DeleteTime);
             Map(x => x.EmailAtOrganization);
 			Map(x => x.IsClient);
+			Map(x => x.IsPlaceholder);
 
 			Map(x => x.UserModelId).Column("UserModel_id");
 

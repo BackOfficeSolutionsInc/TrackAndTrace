@@ -319,7 +319,8 @@ namespace RadialReview.Accessors {
                     centerNode = cn.Id;
             }
 
-            var editAll = perms.IsPermitted(x => x.Or(y => y.ManagingOrganization(chart.OrganizationId), y => y.EditHierarchy(chart.Id)));
+			var editAC = perms.IsPermitted(x => x.EditHierarchy(chart.Id));
+			var editAll = perms.IsPermitted(x => x.Or(y => y.ManagingOrganization(chart.OrganizationId), y => y.EditHierarchy(chart.Id)));
 
             var allManaging = new HashSet<long>();
 
@@ -333,7 +334,8 @@ namespace RadialReview.Accessors {
                 Root = root,
                 CenterNode = centerNode,
                 AllUsers = allUsers,
-            };
+				CanReorganize = editAC,
+			};
 
             c.Root.Name = chart.Name;
 

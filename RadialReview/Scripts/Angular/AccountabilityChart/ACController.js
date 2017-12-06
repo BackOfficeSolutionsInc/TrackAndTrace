@@ -174,13 +174,12 @@ acapp.directive("ttOverflow", function () {
 			if (typeof (ngModel) !== "undefined") {
 				function shorten() {
 					var numMs = +(attrs.ttOverflow || 17);
-					console.log("inshort");
+					//console.log("inshort");
 					var mv = ngModel.$modelValue;
 					if (typeof (mv) === "string" && calcMWidth(mv) > numMs) {
 						var length = calcNumChars(mv, numMs);
 						mv = mv.substring(0, length) + "...";
-
-						console.log(" - shorten");
+						//console.log(" - shorten");
 					}
 					ngModel.$viewValue = mv;
 					ngModel.$render();
@@ -194,8 +193,10 @@ acapp.directive("ttOverflow", function () {
 					return shorten();
 				});
 				element.on('focus', function () {
+					debugger;
 					ngModel.$viewValue = ngModel.$modelValue;
 					ngModel.$render();
+					console.info(ngModel.$viewValue);
 				});
 			}
 		}
@@ -266,7 +267,7 @@ acapp.filter('ttOverflowTxt', function () {
 
 		function shorten() {
 			var numMs = +(max || 17);
-			console.log("inshort");
+			//console.log("inshort");
 			var mv = value;
 			if (typeof (mv) === "string" && calcMWidth(mv) > numMs) {
 				var length = calcNumChars(mv, numMs);
@@ -284,7 +285,7 @@ acapp.filter('ttOverflowTxt', function () {
 
 				mv = mv+ "...";
 
-				console.log(" - shorten");
+				//console.log(" - shorten");
 			}
 
 			return mv;
@@ -1014,6 +1015,12 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		}
 	}
 
+	var canReorder = function (d) {
+		var res = d.Editable == true && $scope.model.data.CanReorganize;
+		if (res)
+			debugger;
+		return res;
+	}
 	var standardNodeEnter = function (nodeEnter) {
 		var rect = nodeEnter.append("rect").attr("class", "acc-rect")
             .attr("width", 0).attr("height", 0).attr("x", 0).attr("rx", 2).attr("ry", 2);
@@ -1215,6 +1222,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 	};
 
 
+
 	///////////////////////////////FALLBACK START///////////////////////////////
 
 	var fallbackNodeEnter = function (nodeEnter) {
@@ -1234,7 +1242,7 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 			return d.Name;
 		});
 		buttonsTop.append("rect").classed("move-icon", function (d) {
-			return d.Editable != false;
+			return canReorder(d) != false;
 		});
 		////
 
@@ -1398,17 +1406,19 @@ function ($scope, $http, $timeout, $location, radial, orgId, chartId, dataUrl, $
 		nodeUpdate.select(".button.add").attr("transform", function (d) {
 			return "translate(" + (d.width / 2 - 30) + "," + (d.height + 15.5) + ")";
 		}).attr("tabindex", function (d) {
-			return d.Editable == false ? "-1" : "0";
+			return canReorder(d) == false ? "-1" : "0";
 		}).style("display", function (d) {
-			return d.Editable == false ? "none" : null;
+			debugger;
+			return canReorder(d) == false ? "none" : null;
 		});
 
 		nodeUpdate.select(".button.remove").attr("transform", function (d) {
 			return "translate(" + (d.width / 2 + 30) + "," + (d.height + 15.5) + ")";
 		}).attr("tabindex", function (d) {
-			return d.Editable == false ? "-1" : "0";
+			return canReorder(d) == false ? "-1" : "0";
 		}).style("display", function (d) {
-			return d.Editable == false ? "none" : null;
+			debugger;
+			return canReorder(d) == false ? "none" : null;
 		});
 
 		nodeUpdate.select(".button.minimize").attr("transform", function (d) {

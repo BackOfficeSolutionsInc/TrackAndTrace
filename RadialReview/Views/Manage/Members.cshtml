@@ -1,5 +1,6 @@
 ﻿@using Mandrill.Models
 @using System.Runtime
+@using RadialReview.Models.UserModels
 @model RadialReview.Models.ViewModels.OrgMembersViewModel
 
 @{
@@ -24,6 +25,8 @@
 	var invalidCount = Model.Users.Count(x => x.EmailEvent.HasValue && lookup[x.EmailEvent.Value].Item2.Contains("invalidEmail"));
 	var resendCount = Model.Users.Count(x => !x.Verified && !(x.EmailEvent.HasValue && lookup[x.EmailEvent.Value].Item2.Contains("invalidEmail")));
 	var unsentCount = Model.Users.Count(x => !x.EmailSent);
+
+
 }
 
 @section top{
@@ -95,6 +98,35 @@
 			background-color: rgba(255, 255, 0, 0.2);
 		}
 
+		.userType[data-type='Standard']:before {
+			content: "s";
+		}
+
+		.userType[data-type='PlaceholderOnly']:before {
+			content: "p";
+		}
+
+		.userType[data-type='LeadershipTeamMember']:before {
+			content: "l";
+		}
+
+		.userType[data-type='AccountContact']:before {
+			content: "c";
+		}
+
+		.userType[data-enabled='true']:before {
+			text-transform:lowercase;
+			color: #333;
+		}
+
+		.userType[data-enabled='false']:before {
+			color: lightgray;
+		}
+
+		.userroles{
+			text-align: right;
+		}
+
 		@@media screen and (max-width: 400px) {
 			.filter-resize-tiny {
 				display: none;
@@ -110,7 +142,6 @@
 	<script>
 
 		function deleteUser(id) {
-
 			showModal({
 				title: "Are you sure?",
 				icon: "danger",
@@ -170,7 +201,7 @@
 					value: $("#permissions_" + id).attr("data-isadmin")
 				});
 			}
-			
+
 			if (window.Products.Review){
 				if (canUpgradeUsers){
 					fields.push({
@@ -231,6 +262,21 @@
 			});
 		}
 
+		function setUserType(self){
+
+			var userId = $(self).closest(".record-row").data("id");
+			var type = $(self).data("type");
+			var enabled =$(self).data("enabled");
+
+			$.ajax("/User/ToggleUserType?type="+type+"&user="+userId+"&enabled="+!enabled,{
+				success:function(data){
+					$(self).attr("data-enabled",data);
+					$(self).data("enabled",data);
+				}
+			});
+
+		}
+
 		function checkAddUser(a,b){
 			var modal = $("#modal");
 			var err = "";
@@ -240,7 +286,7 @@
 				required.push("First name");
 			if (modal.find("#LastName").val()=="")
 				required.push("Last name");
-			if (modal.find("#Email").val()=="")
+			if (modal.find("#Email").val()=="" && !modal.find(".placeholder-box").is(":checked"))
 				required.push("Email");
 
 			if (required.length==1){
@@ -329,6 +375,8 @@
 		<table class="table table-condensed table-hover tablesorter tablefilter">
 			<thead>
 				<tr>
+
+
 					<th class="hidden"></th>
 					<th style="width:15px;" class="alignCenter  noPadLeft"></th>
 					<th style="width:15px;" class="alignCenter  noPadLeft"></th>
@@ -344,15 +392,19 @@
 					@if (Model.Organization.ManagersCanRemoveUsers || Model.ManagingOrganization || Model.Users.Any(x => x.ForceCanDelete)) {
 						<th style="width:10px" class="alignCenter"></th>
 					}
+					@if (ViewBag.IsRadialAdmin ?? false) {
+						<th style="min-width: 52px;"></th>
+					}
 				</tr>
 			</thead>
 			<tbody>
 				@foreach (var p in Model.Users.OrderByDescending(x => x.Managing)/*.ThenBy(x=>-1*(x.Admin.ToInt()+x.Manager.ToInt()))*/.ThenBy(x => x.Name)) {
 
-					<tr class="@(p.Managing?"managing":"grayRow") row_@(p.Id)">
+					<tr class="@(p.Managing?"managing":"grayRow") row_@(p.Id) record-row" data-id="@p.Id">
 						<td class="hidden">@(p.Managing ? 1 : 0)</td>
 						<td class="alignCenter noselect  noPadLeft">
 							@{
+								var isplaceholder = p.Roles.Any(x => x.RoleType == UserRoleType.PlaceholderOnly);
 								//Icon
 								string attrs = "";
 								var title = "";
@@ -374,6 +426,11 @@
 										sort = "3";
 									}
 								}
+								if (isplaceholder) {
+									title = "Placeholder User";
+									sort = "4";
+								}
+
 								if (p.EvalOnly) {
 									title += " &amp; " + @RadialReview.Utilities.Config.ReviewName().ToLower() + " only";
 								}
@@ -384,9 +441,9 @@
 								}
 							}
 
-							<span data-permicon="@(!p.IsClient)" id="permissions_@p.Id" data-evalonly="@p.EvalOnly" data-isclient="@p.IsClient" data-ismanager="@p.Manager" data-isadmin="@p.Admin" @(new HtmlString(attrs))></span>
+							<span data-permicon="@(!p.IsClient)" id="permissions_@p.Id" data-evalonly="@p.EvalOnly" data-isclient="@p.IsClient" data-ismanager="@p.Manager" data-isadmin="@p.Admin" data-isplaceholder="@(isplaceholder)" @(new HtmlString(attrs))></span>
 						</td>
-						<td class="alignCenter noselect noPadLeft">
+						<td class="alignCenter noselect noPadLeft" data-isplaceholder="@(isplaceholder)">
 
 							@if (p.Verified || (!p.Managing && !Model.ManagingOrganization)) {
 								if (p.Verified) {
@@ -402,7 +459,7 @@
 										<span data-sort="2" title="Awaiting Response. Click here to resend email." class="glyphicon glyphicon-envelope strokeRed resendEmail red clickable icon" onclick="@Html.ShowModal("Resend Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id, onComplete: "afterResend")"></span>
 									}
 								} else {
-									<span data-sort="1" class="glyphicon glyphicon-envelope glyphicon-exclamation-sign1 red strokeRed unsentEmail clickable icon" title="Invitation not sent. Click here to send." onclick="@Html.ShowModal("Send Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id, onComplete: "afterResend")"></span>
+									<span data-sort="1" class="glyphicon glyphicon-envelope glyphicon-exclamation-sign1 red strokeRed unsentEmail clickable icon" title="Invitation not sent. Click here to send." onclick="@Html.ShowModal("Send Email", "/Organization/ResendJoin/" + p.Id, "/Organization/ResendJoin/" + p.Id,preSubmitCheck:"checkAddUser", onComplete: "afterResend")"></span>
 								}
 							}
 						</td>
@@ -474,6 +531,23 @@
 										  class="glyphicon glyphicon-trash clickable">
 									</span>
 								}
+							</td>
+						}
+
+						@if (ViewBag.IsRadialAdmin ?? false) {
+							var score = 0;
+							<td class="userroles">
+								@foreach (var item in Enum.GetValues(typeof(UserRoleType))) {
+									var fi = (UserRoleType)item;
+									var any = p.Roles.Any(x => x.RoleType == fi);
+									score += any?(int)fi:0;
+									<span class="userType userType-@fi.ToString() clickable" data-type="@fi.ToString()" data-id="@p.Id" data-enabled="@any.ToJavascript()" onclick="setUserType(this)" title="@fi.ToString()"></span>
+								}
+								<span class="hidden">@(-score)</span>
+								@*@( ? new HtmlString("<span data-type='AccountContact' onlick='setRoleType(this,false)'>C</span>") : new HtmlString("<span data-type='AccountContact' onlick='setRoleType(this,true)'>c</span>"))
+									@(p.Roles.Any(x => x.RoleType == UserRoleType.LeadershipTeamMember) ? new HtmlString("<span data-type='LeadershipTeamMember' onlick='setRoleType(this,false)'>L</span>") : new HtmlString("<span data-type='LeadershipTeamMember' onlick='setRoleType(this,true)'>l</span>"))
+									@(p.Roles.Any(x => x.RoleType == UserRoleType.AccountabilityChartOnly) ? new HtmlString("<span data-type='AccountabilityChartOnly' onlick='setRoleType(this,false)'>A</span>") : new HtmlString("<span data-type='AccountabilityChartOnly' onlick='setRoleType(this,true)'>a</span>"))
+									@*<span class="gray clickable" onclick="">e</span>*@
 							</td>
 						}
 					</tr>

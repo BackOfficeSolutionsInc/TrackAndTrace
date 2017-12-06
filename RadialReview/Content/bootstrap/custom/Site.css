@@ -681,6 +681,10 @@ body.modal-open {
   max-width: 100%;
   max-width: calc(100% - 30px );
 }
+.body-notitlebar .body-full-width .body-content {
+  padding: 0;
+  max-width: 100%;
+}
 .body-full-width .jumbotron .video-container .volume {
   position: absolute;
   top: 0;
@@ -985,6 +989,11 @@ body.resizing *::-moz-selection {
 }
 [data-permicon][data-evalonly="True"][data-isadmin="True"] {
   color: #FFE296;
+}
+[data-permicon][data-isplaceholder="True"] {
+  color: #eee;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: #c1c1c1;
 }
 .nowrap {
   overflow: hidden;

@@ -1926,11 +1926,15 @@ namespace RadialReview.Utilities {
             var user = session.Get<UserOrganizationModel>(userId);
             return CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, user.Organization.Id, exceptionMessage: "This user is '" + Config.ReviewName().ToLower() + " only' and cannot be added to an L10. You are not permitted to upgrade them.");
         }
-        #endregion
 
-        #region Overrides
+		public PermissionsUtility CanUpgradeUsersAtOrganization(long orgId) {
+			return CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, orgId, exceptionMessage: "You're not permitted to increase the user count.");
+		}
+		#endregion
 
-        public PermissionsUtility TryWithAllUsers(Func<PermissionsUtility, PermissionsUtility> p) {
+		#region Overrides
+
+		public PermissionsUtility TryWithAllUsers(Func<PermissionsUtility, PermissionsUtility> p) {
             try {
                 return p(this);
             } catch (PermissionsException e) {

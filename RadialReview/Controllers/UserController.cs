@@ -142,6 +142,7 @@ namespace RadialReview.Controllers {
 			long? managerId = null, string name = null, bool isClient = false, long? managerNodeId = null, 
 			bool forceManager = false, bool hideIsManager = false,bool hidePosition=false,long? nodeId=null,bool hideEvalOnly=false,
             bool forceNoSend=false) {
+
 			var model = UserAccessor.BuildCreateUserVM(GetUser(),ViewBag,managerId, name, isClient, managerNodeId, forceManager, hideIsManager, hidePosition, nodeId, hideEvalOnly, forceNoSend);
 			return PartialView(model);
 		}
@@ -480,5 +481,13 @@ namespace RadialReview.Controllers {
 			var oo = UserAccessor.Search(GetUser(), GetUser().Organization.Id, q, results, excludeLong);
 			return oo;
 		}
+
+		[HttpGet]
+		[Access(AccessLevel.Radial)]
+		public async Task<JsonResult> ToggleUserType(UserRoleType type, long user, bool enabled) {
+			await UserAccessor.SetRole(GetUser(), user, type, enabled);
+			return Json(enabled, JsonRequestBehavior.AllowGet);
+		}
+		
 	}
 }

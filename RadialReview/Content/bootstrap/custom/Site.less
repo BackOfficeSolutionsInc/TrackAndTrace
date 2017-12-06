@@ -147,6 +147,10 @@ body.modal-open {
         max-width: 100%;
 		max-width: ~"calc(100% - 30px )";
     }
+	.body-full-width .body-content {
+		padding: 0;
+		max-width: 100%;
+	}
 }
 
 
@@ -497,6 +501,12 @@ body.resizing, body.resizing *::-moz-selection {
 	&[data-evalonly="True"][data-isadmin="True"] {
 		color: #FFE296;
 	}
+
+	&[data-isplaceholder="True"] {
+		color: #eee;	
+		-webkit-text-stroke-width: 1px;
+		-webkit-text-stroke-color: rgb(193, 193, 193);
+	}
 }
 
 
@@ -526,10 +536,10 @@ body.resizing, body.resizing *::-moz-selection {
 		padding-right: 6px;
 		float: left;
 
-        .profile-picture {
-            .profile-picture;
-        }
-    }
+		.profile-picture {
+			.profile-picture;
+		}
+	}
 
 	.searchresult-alticon{
 		float:right;

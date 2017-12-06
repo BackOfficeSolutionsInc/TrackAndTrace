@@ -146,7 +146,10 @@ namespace RadialReview.Controllers
 				//var teams = _TeamAccessor.GetUsersTeams(GetUser(), u.Id);
 				//members[i] = members[i].Hydrate().SetTeams(teams).PersonallyManaging(GetUser()).Managers().Execute();
 			}
-			var model = new OrgMembersViewModel(GetUser(), members, GetUser().Organization, hasAdminDelete, canUpgrade);
+
+			var roles = UserAccessor.GetUserRolesAtOrganization(GetUser(), GetUser().Organization.Id);
+
+			var model = new OrgMembersViewModel(GetUser(), members, GetUser().Organization, hasAdminDelete, canUpgrade,roles);
 			model.Messages = messages;
 			return View(model);
 		}

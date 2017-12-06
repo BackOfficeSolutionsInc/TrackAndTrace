@@ -6,6 +6,7 @@ using RadialReview.Hooks.Meeting;
 using RadialReview.Hooks.Realtime;
 using RadialReview.Hooks.Realtime.Dashboard;
 using RadialReview.Hooks.Realtime.L10;
+using RadialReview.Hooks.UserRegistration;
 using RadialReview.Utilities;
 using RadialReview.Utilities.Hooks;
 using System;
@@ -53,10 +54,11 @@ namespace RadialReview.App_Start {
 
 			HooksRegistry.RegisterHook(new CalculateCumulative());
 			HooksRegistry.RegisterHook(new AttendeeHooks());
-			
 			HooksRegistry.RegisterHook(new SwapScorecardOnRegister());
 			
 			HooksRegistry.RegisterHook(new CreateFinancialPermItems());
+
+			HooksRegistry.RegisterHook(new UpdatePlaceholder());
 			//HooksRegistry.RegisterHook(new TodoEdit())
 		}
     }

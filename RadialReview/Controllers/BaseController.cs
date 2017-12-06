@@ -695,6 +695,7 @@ namespace RadialReview.Controllers {
 						filterContext.Controller.ViewBag.IsLocal = Config.IsLocal();
 						filterContext.Controller.ViewBag.HasBaseController = true;
 						filterContext.Controller.ViewBag.AppVersion = GetAppVersion();
+						filterContext.Controller.ViewBag.IsRadialAdmin = false;
 
 						if (IsLoggedIn()) {
 							var userOrgsCount = GetUserOrganizationCounts(s, Request.Url.PathAndQuery);
@@ -711,6 +712,7 @@ namespace RadialReview.Controllers {
 								oneUser._IsRadialAdmin = oneUser._IsRadialAdmin || isRadialAdmin;
 
 								Thread.SetData(Thread.GetNamedDataSlot("IsRadialAdmin"), oneUser._IsRadialAdmin);
+								filterContext.Controller.ViewBag.IsRadialAdmin = oneUser._IsRadialAdmin;
 
 								if (!oneUser._IsRadialAdmin) {
 									lu.LastLogin = DateTime.UtcNow;
@@ -754,7 +756,7 @@ namespace RadialReview.Controllers {
 							
 
 
-                            if (oneUser != null) {
+							if (oneUser != null) {
                                 OneUserViewBagSetup(filterContext, s, userOrgsCount, oneUser);
 
                                 SetupToolTips(filterContext.Controller.ViewBag, s, oneUser,Request.NotNull(x=>x.Path));
