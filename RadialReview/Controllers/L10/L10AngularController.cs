@@ -131,6 +131,16 @@ namespace RadialReview.Controllers {
 			await L10Accessor.Remove(GetUser(), model, recurrenceId, connectionId);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> UnarchiveAngularRock(long recurrenceId, AngularRock model, string connectionId = null) {
+			//var recurrenceId = id;
+			await L10Accessor.UnArchive(GetUser(), model, recurrenceId, connectionId);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+
+
 		#endregion
 
 		#region Todos
@@ -192,6 +202,14 @@ namespace RadialReview.Controllers {
 			await L10Accessor.Remove(GetUser(), model, recurrenceId, connectionId);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> UnarchiveAngularIssue(long recurrenceId, AngularIssue model, string connectionId = null) {
+			//var recurrenceId = id;
+			await L10Accessor.UnArchive(GetUser(), model, recurrenceId, connectionId);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
 		#endregion
 
 		#region Headline
@@ -209,6 +227,15 @@ namespace RadialReview.Controllers {
 			await L10Accessor.Remove(GetUser(), model, recurrenceId, connectionId);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
 		}
+
+		[HttpPost]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> UnarchiveAngularHeadline(long recurrenceId, AngularHeadline model, string connectionId = null) {
+			//var recurrenceId = id;
+			await L10Accessor.UnArchive(GetUser(), model, recurrenceId, connectionId);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+
 		//[HttpGet]
 		//[Access(AccessLevel.UserOrganization)]
 		//public async Task<JsonResult> AddAngularHeadline(long id) {

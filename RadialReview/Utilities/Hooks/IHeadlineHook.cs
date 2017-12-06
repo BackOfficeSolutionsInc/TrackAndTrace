@@ -16,6 +16,7 @@ namespace RadialReview.Utilities.Hooks {
 
         Task CreateHeadline(ISession s, PeopleHeadline headline);
         Task UpdateHeadline(ISession s, PeopleHeadline headline, IHeadlineHookUpdates updates);
-
+        Task ArchiveHeadline(ISession s, PeopleHeadline headline);
+        Task UnArchiveHeadline(ISession s, PeopleHeadline headline);
     }
 }

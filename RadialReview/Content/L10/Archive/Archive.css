@@ -607,7 +607,6 @@ html {
   border-bottom: inherit;
 }
 .meeting-archive .issues-list-container .vto-column,
-.meeting-archive .issues-list-container .delete-column,
 .meeting-archive .issues-list-container .createtime-column {
   display: none;
 }
@@ -863,6 +862,38 @@ html {
 .meeting-archive .rock-list-container .rock-completion-status.Complete {
   background-color: #449D44;
 }
+.meeting-archive .rock-list-container .delete-row-archive {
+  content: "0";
+  font-family: "fontastic" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: inline-block;
+  position: relative;
+  top: 0px;
+  left: -4px;
+}
+.meeting-archive .rock-list-container .delete-row-unarchive {
+  content: "0";
+  font-family: "fontastic" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: inline-block;
+  position: relative;
+  top: 0px;
+  left: -4px;
+}
 .meeting-archive .headline-list-container .owner-column {
   filter: gray;
   filter: grayscale(0.7);
@@ -902,6 +933,168 @@ html {
 .meeting-archive .headline-list-container .close-column,
 .meeting-archive .headline-list-container .createtime-column {
   min-width: 140px;
+}
+.meeting-review .rock-list-container .delete-row-archive:before {
+  content: "0";
+  font-family: "fontastic" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: inline-block;
+  position: relative;
+  top: 0px;
+  left: -4px;
+}
+.meeting-review .rock-list-container .delete-row-unarchive:before {
+  content: "0";
+  font-family: "fontastic" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: inline-block;
+  position: relative;
+  top: 0px;
+  left: -4px;
+}
+.meeting-review .rock-list-container .delete-row-archive {
+  margin: 0;
+  margin-right: 10px;
+  padding: 13px;
+  height: 50px;
+  width: 50px;
+  overflow: hidden;
+  float: left;
+  font-size: 24px;
+  color: rgba(0, 0, 0, 0.9);
+}
+.meeting-review .rock-list-container .delete-row-unarchive {
+  margin: 0;
+  margin-right: 10px;
+  padding: 13px;
+  height: 50px;
+  width: 50px;
+  overflow: hidden;
+  float: left;
+  font-size: 24px;
+  color: rgba(0, 0, 0, 0.54);
+}
+.meeting-review .headline-list-container .delete-row-archive:before {
+  content: "0";
+  font-family: "fontastic" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: inline-block;
+  position: relative;
+  top: 0px;
+  left: -4px;
+}
+.meeting-review .headline-list-container .delete-row-unarchive:before {
+  content: "0";
+  font-family: "fontastic" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: inline-block;
+  position: relative;
+  top: 0px;
+  left: -4px;
+}
+.meeting-review .headline-list-container .delete-row-archive {
+  margin: 0;
+  margin-right: 10px;
+  padding: 13px;
+  height: 50px;
+  width: 50px;
+  overflow: hidden;
+  float: left;
+  font-size: 24px;
+  color: rgba(0, 0, 0, 0.9);
+}
+.meeting-review .headline-list-container .delete-row-unarchive {
+  margin: 0;
+  margin-right: 10px;
+  padding: 13px;
+  height: 50px;
+  width: 50px;
+  overflow: hidden;
+  float: left;
+  font-size: 24px;
+  color: rgba(0, 0, 0, 0.54);
+}
+.meeting-review .issues-list-container .delete-row-archive:before {
+  content: "0";
+  font-family: "fontastic" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: inline-block;
+  position: relative;
+  top: 0px;
+  left: -4px;
+}
+.meeting-review .issues-list-container .delete-row-unarchive:before {
+  content: "0";
+  font-family: "fontastic" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: inline-block;
+  position: relative;
+  top: 0px;
+  left: -4px;
+}
+.meeting-review .issues-list-container .delete-row-archive {
+  margin: 0;
+  margin-right: 10px;
+  padding: 13px;
+  height: 50px;
+  width: 50px;
+  overflow: hidden;
+  float: left;
+  font-size: 24px;
+  color: rgba(0, 0, 0, 0.9);
+}
+.meeting-review .issues-list-container .delete-row-unarchive {
+  margin: 0;
+  margin-right: 10px;
+  padding: 13px;
+  height: 50px;
+  width: 50px;
+  overflow: hidden;
+  float: left;
+  font-size: 24px;
+  color: rgba(0, 0, 0, 0.54);
 }
 .repeater-container {
   max-height: 800px;

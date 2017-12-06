@@ -50,7 +50,7 @@
 							<tbody md-body @*vs-repeat vs-autoresize vs-scroll-parent=".repeater-container"*@>
 								<tr id="headline_{{headline.Id}}"
 									ng-repeat="headline in @(selector) | orderBy: @(orderVariable) @(filter) track by $index"
-									ng-class="{grayRow: headline.Complete}"
+									ng-class="{grayRow: headline.Complete, grayRow: headline.CloseTime!=null }"
 									class="clickable {{model.Selected == headline.Key?'selected':''}}"
 									md-row>
 									<td class="picture-column owner-column" md-cell>
@@ -84,7 +84,8 @@
 									</td>
 									<td class="alignCenter close-column date-column" md-cell>{{headline.CloseTime | date:dateFormat}}</td>
 									<td class="delete-column" md-cell>
-										<span class="delete-row" ng-click="functions.removeRow($event,headline)"></span>
+										<span class="delete-row-archive" ng-if="headline.CloseTime==null" title="Archive" ng-click="functions.removeRow($event,headline)"></span>
+										<span class="delete-row-unarchive" ng-if="headline.CloseTime!=null" title="Unarchive" ng-click="functions.unarchiveRow($event,headline)"></span>
 									</td>
 								</tr>
 							</tbody>

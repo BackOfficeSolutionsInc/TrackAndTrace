@@ -210,32 +210,6 @@ namespace RadialReview.Accessors {
 			return recur;
 		}
 
-		public static List<PeopleHeadline> GetAllHeadlinesForRecurrence(ISession s, PermissionsUtility perms, long recurrenceId, bool includeClosed, DateRange range) {
-			perms.ViewL10Recurrence(recurrenceId);
-
-			var headlineListQ = s.QueryOver<PeopleHeadline>().Where(x => x.DeleteTime == null && x.RecurrenceId == recurrenceId);
-			if (range != null && includeClosed) {
-				var st = range.StartTime.AddDays(-1);
-				var et = range.EndTime.AddDays(1);
-				headlineListQ = headlineListQ.Where(x => x.CloseTime == null || (x.CloseTime >= st && x.CloseTime <= et));
-			}
-
-			if (!includeClosed) {
-				headlineListQ = headlineListQ.Where(x => x.CloseTime == null);
-			}
-			var headlineList = headlineListQ.List().ToList();
-			foreach (var t in headlineList) {
-				if (t.About != null) {
-					var a = t.About.GetName();
-					var b = t.About.GetImageUrl();
-				}
-				if (t.Owner != null) {
-					var a = t.Owner.GetName();
-					var b = t.Owner.GetImageUrl();
-				}
-			}
-			return headlineList;
-		}
 		public static async Task Remove(UserOrganizationModel caller, BaseAngular model, long recurrenceId, string connectionId = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -265,6 +239,83 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+
+		public static async Task UnArchive(UserOrganizationModel caller, BaseAngular model, long recurrenceId, string connectionId = null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					using (var rt = RealTimeUtility.Create(connectionId)) {
+						var perms = PermissionsUtility.Create(s, caller);
+						perms.EditL10Recurrence(recurrenceId);
+
+						if (model.Type == typeof(AngularIssue).Name) {
+							await UnarchiveIssue(s, perms, rt, model.Id);
+						} else if (model.Type == typeof(AngularTodo).Name) {
+							//await TodoAccessor.CompleteTodo(s, perms, model.Id);
+						} else if (model.Type == typeof(AngularRock).Name) {
+							await UnarchiveRock(s, perms, rt, recurrenceId, model.Id);
+						} else if (model.Type == typeof(AngularMeasurable).Name) {
+							//await DetachMeasurable(s, perms, rt, recurrenceId, model.Id);
+						} else if (model.Type == typeof(AngularUser).Name) {
+							//await RemoveAttendee(s, perms, rt, recurrenceId, model.Id);
+						} else if (model.Type == typeof(AngularHeadline).Name) {
+							await UnarchiveHeadline(s, perms, rt, model.Id);
+						} else {
+							throw new PermissionsException("Unhandled type: " + model.Type);
+						}
+
+						tx.Commit();
+						s.Flush();
+					}
+				}
+			}
+		}
+
+
+
+		public static async Task UnarchiveIssue(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceIssue) {
+			var issue = s.Get<IssueModel.IssueModel_Recurrence>(recurrenceIssue);
+			perm.EditL10Recurrence(issue.Recurrence.Id);
+			if (issue.CloseTime == null)
+				throw new PermissionsException("Issue already unarchived.");
+			await IssuesAccessor.EditIssue(s, perm, recurrenceIssue, complete: false);
+		}
+
+
+		public static async Task UnarchiveHeadline(ISession s, PermissionsUtility perm, RealTimeUtility rt, long headlineId) {
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+
+			perm.ViewHeadline(headlineId);
+
+			var r = s.Get<PeopleHeadline>(headlineId);
+
+			if (r.CloseTime == null)
+				throw new PermissionsException("Headline already unarchived.");
+
+			perm.EditL10Recurrence(r.RecurrenceId);
+
+			var now = DateTime.UtcNow;
+			r.CloseTime = null;
+			s.Update(r);
+
+			await HooksRegistry.Each<IHeadlineHook>((ses, x) => x.UnArchiveHeadline(ses, r));
+		}
+
+		//[Untested("Vto_Rocks",/* "Is the rock correctly removed in real-time from L10",/* "Is the rock correctly removed in real-time from VTO",*/ "Is rock correctly archived when existing in no meetings?")]
+		public static async Task UnarchiveRock(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceId, long rockId) {
+			perm.AdminL10Recurrence(recurrenceId).EditRock(rockId);
+
+			await RockAccessor.UnArchiveRock(s, perm, rockId);
+
+			// attach rock
+			await AttachRock(s, perm, recurrenceId, rockId, false);
+
+			//perm.AdminL10Recurrence(recurrenceId).EditRock(rockId);
+			//var rocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
+			//    .Where(x => x.L10Recurrence.Id == recurrenceId && x.ForRock.Id == rockId)
+			//    .List().ToList();
+			//DateTime? now = null;                       
+		}
+
 
 		public static async Task Update(UserOrganizationModel caller, BaseAngular model, string connectionId) {
 			if (model.Type == typeof(AngularIssue).Name) {

@@ -1,40 +1,40 @@
 ﻿@{
-	var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
-	var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
+    var headers = (ViewBag.AddHeaders == null || ((bool)ViewBag.AddHeaders) == true);
+    var controller = (ViewBag.AddController != null && ((bool)ViewBag.AddController) == true);
 
-	//var datepicker = (ViewBag.AddDatePicker == null || ((bool)ViewBag.AddDatePicker) == true);
-	//var includeOwner = (ViewBag.IncludeOwner == null || ((bool)ViewBag.IncludeOwner) == true);
-	//var rockName = (ViewBag.RockName ?? Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName)));
-	//var includeTitle = (ViewBag.IncludeTitle == null || ((bool)ViewBag.IncludeTitle) == true);
-	var selector = ViewBag.Selector as string ?? "model.IssuesList";
-	//var order = ViewBag.Order as string ?? "| orderBy: ['Complete','-CompleteTime','DueDate']";
-	var showDetails = (ViewBag.ShowDetails == null || ((bool)ViewBag.ShowDetails) == true);
+    //var datepicker = (ViewBag.AddDatePicker == null || ((bool)ViewBag.AddDatePicker) == true);
+    //var includeOwner = (ViewBag.IncludeOwner == null || ((bool)ViewBag.IncludeOwner) == true);
+    //var rockName = (ViewBag.RockName ?? Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName)));
+    //var includeTitle = (ViewBag.IncludeTitle == null || ((bool)ViewBag.IncludeTitle) == true);
+    var selector = ViewBag.Selector as string ?? "model.IssuesList";
+    //var order = ViewBag.Order as string ?? "| orderBy: ['Complete','-CloseTime','DueDate']";
+    var showDetails = (ViewBag.ShowDetails == null || ((bool)ViewBag.ShowDetails) == true);
 
-	var guid = Guid.NewGuid().ToString().Replace("-", "");
-	var detailsCode = showDetails ? "issue.DetailsUrl_Src=issue.DetailsUrl;model.Selected = issue.Key+'"+ guid + "'" : "";
+    var guid = Guid.NewGuid().ToString().Replace("-", "");
+    var detailsCode = showDetails ? "issue.DetailsUrl_Src=issue.DetailsUrl;model.Selected = issue.Key+'"+ guid + "'" : "";
 
-	var allowEditOwner = ViewBag.AllowEditOwner == null || ((bool)ViewBag.AllowEditOwner) == true;
+    var allowEditOwner = ViewBag.AllowEditOwner == null || ((bool)ViewBag.AllowEditOwner) == true;
 
-	var filter = (ViewBag.Filter ?? " | filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate)");
+    var filter = (ViewBag.Filter ?? " | filter:filters.byRange('CloseTime',model.dataDateRange.startDate,model.dataDateRange.endDate)");
 
-	var usePopup = ViewBag.UsePopup == true;
+    var usePopup = ViewBag.UsePopup == true;
 
-	var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
-	var defaultSort = ViewBag.DefaultSort ?? "'-CreateTime'";
+    var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
+    var defaultSort = ViewBag.DefaultSort ?? "'-CreateTime'";
 
-	var recurrenceId = ViewBag.RecurrenceId ?? "model.Id";
+    var recurrenceId = ViewBag.RecurrenceId ?? "model.Id";
 
-	var attrLookup = new Dictionary<string, string>(){
-		{"checkbox-column",""},
-		{"priority-column",""},
-		{"owner-column",""},
-		{"issue-column",""},
-		{"createtime-column",""},
-		{"complete-column",""},
-		{"vto-column",""},
-		{"delete-column",""}
-	};
-	attrLookup[ViewBag.SortBy ?? "createtime-column"] += " ts-default=\"" + (ViewBag.SortByDirection ?? "ascending") + "\"";
+    var attrLookup = new Dictionary<string, string>(){
+        {"checkbox-column",""},
+        {"priority-column",""},
+        {"owner-column",""},
+        {"issue-column",""},
+        {"createtime-column",""},
+        {"complete-column",""},
+        {"vto-column",""},
+        {"delete-column",""}
+    };
+    attrLookup[ViewBag.SortBy ?? "createtime-column"] += " ts-default=\"" + (ViewBag.SortByDirection ?? "ascending") + "\"";
 
 }
 
@@ -52,7 +52,7 @@
                            ng-show="((@(selector)).Issues @(filter)).length">
                         <thead md-head md-order="@(orderVariable)" ng-init="@(orderVariable) =@(orderVariable) || @(defaultSort)">
                             <tr md-row>
-                                <th md-column @(attrLookup["checkbox-column"]) class="checkbox-column" md-order-by="Complete">&nbsp;</th>
+                               @* <th md-column @(attrLookup["checkbox-column"]) class="checkbox-column" md-order-by="Complete">&nbsp;</th>*@
                                 <th md-column @(attrLookup["priority-column"]) class="priority-column" md-order-by="Priority">Priority</th>
                                 <th md-column @(attrLookup["owner-column"]) class="owner-column" md-order-by="Owner.Name">&nbsp;</th>
                                 <th md-column @(attrLookup["issue-column"]) class="issue-column message-column" md-order-by="Name" style="padding-left: 4px;">Issue</th>
@@ -68,10 +68,10 @@
                                 class="clickable"
                                 data-issue="{{::issue.Id}}"
                                 md-row>
-                                <td md-cell class="checkbox-column">
+                                @*<td md-cell class="checkbox-column">
                                     <md-checkbox aria-label="Complete" ng-model="issue.Complete" class="md-align-top-left" ng-change="functions.updateComplete(this);functions.sendUpdate(issue)"></md-checkbox>
 
-                                </td>
+                                </td>*@
                                 <td md-cell class="priority-column" style="vertical-align: top;padding-top: 5px;">
                                     <priority ng-model="issue.Priority" ng-change="functions.sendUpdate(issue)"></priority>
                                 </td>
@@ -107,12 +107,13 @@
                                     </table>
                                 </td>
                                 <td md-cell class="alignCenter createtime-column" style="min-width: 75px;">{{issue.CreateTime | date:dateFormat}}</td>
-                                <td md-cell class="alignCenter complete-column" style="min-width: 75px;">{{issue.CompleteTime | date:dateFormat}}</td>
+                                <td md-cell class="alignCenter complete-column" style="min-width: 75px;">{{issue.CloseTime | date:dateFormat}}</td>
                                 <td md-cell class="vto-column">
                                     <span class="move-to-vto" ng-click="functions.moveToVto(issue)"></span>
                                 </td>
                                 <td md-cell class="delete-column">
-                                    <span class="delete-row" ng-click="functions.removeRow($event,issue)"></span>
+                                    <span class="delete-row-archive" ng-if="issue.CloseTime==null" title="Archive" ng-click="functions.removeRow($event,issue)"></span>
+									<span class="delete-row-unarchive" ng-if="issue.CloseTime!=null" title="UnArchive" ng-click="functions.unarchiveRow($event,issue)"></span>
                                 </td>
                             </tr>
                         </tbody>

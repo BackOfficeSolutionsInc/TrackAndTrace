@@ -193,6 +193,12 @@ namespace RadialReview.Hooks.Realtime {
         public async Task UpdateVtoRock(ISession s, L10Recurrence.L10Recurrence_Rocks recurRock) {
             //Nothing to do...
         }
+
+        public async Task UnArchiveRock(ISession s, RockModel rock, bool v)
+        {
+            //Nothing to do...
+        }
+
         #endregion
 
     }

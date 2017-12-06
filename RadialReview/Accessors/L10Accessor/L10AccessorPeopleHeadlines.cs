@@ -151,12 +151,37 @@ namespace RadialReview.Accessors {
 			var now = DateTime.UtcNow;
 			r.CloseTime = now;
 			s.Update(r);
-			rt.UpdateRecurrences(r.RecurrenceId).Update(
-				new AngularRecurrence(r.RecurrenceId) {
-					Headlines = AngularList.CreateFrom(AngularListType.Remove, new AngularHeadline(r.Id))
-				}
-			);
+
+			await HooksRegistry.Each<IHeadlineHook>((ses, x) => x.ArchiveHeadline(ses, r));
 		}
+
+		public static List<PeopleHeadline> GetAllHeadlinesForRecurrence(ISession s, PermissionsUtility perms, long recurrenceId, bool includeClosed, DateRange range) {
+			perms.ViewL10Recurrence(recurrenceId);
+
+			var headlineListQ = s.QueryOver<PeopleHeadline>().Where(x => x.DeleteTime == null && x.RecurrenceId == recurrenceId);
+			if (range != null && includeClosed) {
+				var st = range.StartTime.AddDays(-1);
+				var et = range.EndTime.AddDays(1);
+				headlineListQ = headlineListQ.Where(x => x.CloseTime == null || (x.CloseTime >= st && x.CloseTime <= et));
+			}
+
+			if (!includeClosed) {
+				headlineListQ = headlineListQ.Where(x => x.CloseTime == null);
+			}
+			var headlineList = headlineListQ.List().ToList();
+			foreach (var t in headlineList) {
+				if (t.About != null) {
+					var a = t.About.GetName();
+					var b = t.About.GetImageUrl();
+				}
+				if (t.Owner != null) {
+					var a = t.Owner.GetName();
+					var b = t.Owner.GetImageUrl();
+				}
+			}
+			return headlineList;
+		}
+
 
 		//public static void AttachHeadline(UserOrganizationModel caller, long recurrenceId, long headlineId) {
 		//	using (var s = HibernateSession.GetCurrentSession()) {

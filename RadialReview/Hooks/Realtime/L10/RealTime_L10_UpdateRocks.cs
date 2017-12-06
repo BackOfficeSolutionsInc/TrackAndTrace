@@ -179,6 +179,11 @@ namespace RadialReview.Hooks.Realtime.L10 {
             //Nothing to do..
         }
 
+        public async Task UnArchiveRock(ISession s, RockModel rock, bool v)
+        {
+            //Nothing to do...
+        }
+
         public async Task CreateRock(ISession s, RockModel rock) {
             //Nothing to do..
         }

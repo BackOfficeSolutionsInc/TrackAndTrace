@@ -20,40 +20,41 @@ using RadialReview.Models.L10;
 using RadialReview.Models.Angular.Headlines;
 using RadialReview.Accessors;
 using RadialReview.Utilities;
+using RadialReview.Utilities.RealTime;
 
 namespace RadialReview.Hooks.Realtime.L10 {
-	public class RealTime_L10_Headline : IHeadlineHook {
-		public bool CanRunRemotely() {
-			return false;
-		}
-		public HookPriority GetHookPriority() {
-			return HookPriority.UI;
-		}
+    public class RealTime_L10_Headline : IHeadlineHook {
+        public bool CanRunRemotely() {
+            return false;
+        }
+        public HookPriority GetHookPriority() {
+            return HookPriority.UI;
+        }
 
-		public async Task CreateHeadline(ISession s, PeopleHeadline headline) {
-			var recurrenceId = headline.RecurrenceId;
-			if (recurrenceId > 0) {
-				var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-				var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+        public async Task CreateHeadline(ISession s, PeopleHeadline headline) {
+            var recurrenceId = headline.RecurrenceId;
+            if (recurrenceId > 0) {
+                var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+                var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
 
-				if (headline.CreatedDuringMeetingId == null) {
-					headline.CreatedDuringMeetingId = L10Accessor._GetCurrentL10Meeting(s, PermissionsUtility.CreateAdmin(s), recurrenceId, true, false, false).NotNull(x => (long?)x.Id);
-				}
-				var aHeadline = new AngularHeadline(headline);
-				meetingHub.appendHeadline(".headlines-list", headline.ToRow());
-				meetingHub.showAlert("Created people headline.", 1500);
-				var updates = new AngularRecurrence(recurrenceId);
-				updates.Headlines = AngularList.CreateFrom(AngularListType.Add, aHeadline);
-				meetingHub.update(updates);
-			}
-		}
+                if (headline.CreatedDuringMeetingId == null) {
+                    headline.CreatedDuringMeetingId = L10Accessor._GetCurrentL10Meeting(s, PermissionsUtility.CreateAdmin(s), recurrenceId, true, false, false).NotNull(x => (long?)x.Id);
+                }
+                var aHeadline = new AngularHeadline(headline);
+                meetingHub.appendHeadline(".headlines-list", headline.ToRow());
+                meetingHub.showAlert("Created people headline.", 1500);
+                var updates = new AngularRecurrence(recurrenceId);
+                updates.Headlines = AngularList.CreateFrom(AngularListType.Add, aHeadline);
+                meetingHub.update(updates);
+            }
+        }
 
-		public async Task UpdateHeadline(ISession s, PeopleHeadline headline, IHeadlineHookUpdates updates) {
-			var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-			var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(headline.RecurrenceId), RealTimeHelpers.GetConnectionString());
+        public async Task UpdateHeadline(ISession s, PeopleHeadline headline, IHeadlineHookUpdates updates) {
+            var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+            var group = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(headline.RecurrenceId), RealTimeHelpers.GetConnectionString());
 
-			if (updates.MessageChanged) {
-				group.updateHeadlineMessage(headline.Id, headline.Message);
+            if (updates.MessageChanged) {
+                group.updateHeadlineMessage(headline.Id, headline.Message);
 
 				group.update(new AngularUpdate() {
 					new AngularHeadline(headline.Id) {
@@ -63,6 +64,25 @@ namespace RadialReview.Hooks.Realtime.L10 {
 				});
 			}
 
-		}
-	}
+        }
+
+        public async Task ArchiveHeadline(ISession s, PeopleHeadline headline) {
+            using (var rt = RealTimeUtility.Create()) {
+                rt.UpdateRecurrences(headline.RecurrenceId).Update(
+                  new AngularRecurrence(headline.RecurrenceId) {
+                      Headlines = AngularList.CreateFrom(AngularListType.Remove, new AngularHeadline(headline.Id))
+                  }
+              );
+            }
+        }
+        public async Task UnArchiveHeadline(ISession s, PeopleHeadline headline) {
+            using (var rt = RealTimeUtility.Create()) {
+                rt.UpdateRecurrences(headline.RecurrenceId).Update(
+                  new AngularRecurrence(headline.RecurrenceId) {
+                      Headlines = AngularList.CreateFrom(AngularListType.ReplaceIfNewer, new AngularHeadline(headline))
+                  }
+              );
+            }
+        }
+    }
 }
