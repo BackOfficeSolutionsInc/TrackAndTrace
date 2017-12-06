@@ -1173,8 +1173,13 @@ namespace RadialReview.Accessors {
 				column = table.AddColumn(Unit.FromInch(0.75 * mult));
 				column.Format.Alignment = ParagraphAlignment.Center;
 				//Rock
-				column = table.AddColumn(Unit.FromInch((4.85 + .7) * mult));
-				column.Format.Alignment = ParagraphAlignment.Left;
+				column = table.AddColumn(Unit.FromInch((3.85 + .4) * mult));
+				column.Format.Alignment = ParagraphAlignment.Center;
+
+				//% Completion
+				//column = table.AddColumn(Unit.FromInch((4.85 + .7) * mult));
+				column = table.AddColumn(Unit.FromInch((1 + .3) * mult));
+				column.Format.Alignment = ParagraphAlignment.Center;
 
 				row = table.AddRow();
 				row.HeadingFormat = true;
@@ -1195,7 +1200,17 @@ namespace RadialReview.Accessors {
 				row.Cells[4].AddParagraph("Company Rock");
 				row.Cells[4].VerticalAlignment = VerticalAlignment.Center;
 
+				row.Cells[5].AddParagraph("");
+				row.Cells[5].VerticalAlignment = VerticalAlignment.Center;
+
 				mn = 1;
+
+				//for %completion
+				var getTotalCount_rock_com = recur.Rocks.Where(x => x.VtoRock == true).Count();
+				var getDoneCount_rock_com = recur.Rocks.Where(t => t.Completion == RockState.Complete && t.VtoRock == true).Count();
+				var getCompletionPercentage_rock_com = Convert.ToDouble((Convert.ToDouble(getDoneCount_rock_com) / Convert.ToDouble(getTotalCount_rock_com)));
+				bool isCompletionPercentageDisplayed_com = true;
+
 				foreach (var m in recur.Rocks.Where(x => x.VtoRock == true).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)) {
 
 					row = table.AddRow();
@@ -1266,7 +1281,16 @@ namespace RadialReview.Accessors {
 
 					row.Cells[3].Format.Alignment = ParagraphAlignment.Center;
 					row.Cells[4].AddParagraph("" + m.NotNull(x => x.Name));
-					row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
+					row.Cells[4].Format.Alignment = ParagraphAlignment.Center;
+
+					if (isCompletionPercentageDisplayed_com) {
+						row.Cells[5].AddParagraph("" + getDoneCount_rock_com + "/" + getTotalCount_rock_com + " - " + string.Format("{0:0.##%}", getCompletionPercentage_rock_com));
+
+						isCompletionPercentageDisplayed_com = false;
+					} else {
+						row.Cells[5].AddParagraph("");
+					}
+
 					mn++;
 				}
 				row = table.AddRow();
@@ -1297,8 +1321,13 @@ namespace RadialReview.Accessors {
 			column = table.AddColumn(Unit.FromInch(0.75 * mult));
 			column.Format.Alignment = ParagraphAlignment.Center;
 			//Rock
-			column = table.AddColumn(Unit.FromInch((4.85 + .7) * mult));
-			column.Format.Alignment = ParagraphAlignment.Left;
+			column = table.AddColumn(Unit.FromInch((3.85 + .4) * mult));
+			column.Format.Alignment = ParagraphAlignment.Center;
+
+			//% Completion
+			//column = table.AddColumn(Unit.FromInch((4.85 + .7) * mult));
+			column = table.AddColumn(Unit.FromInch((1 + .3) * mult));
+			column.Format.Alignment = ParagraphAlignment.Center;
 
 			row = table.AddRow();
 			row.HeadingFormat = true;
@@ -1317,10 +1346,21 @@ namespace RadialReview.Accessors {
 			row.Cells[3].VerticalAlignment = VerticalAlignment.Center;
 
 			row.Cells[4].AddParagraph("Rock");
-			row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
+			//row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
 			row.Cells[4].VerticalAlignment = VerticalAlignment.Center;
+
+			row.Cells[5].AddParagraph("");
+			//row.Cells[5].Format.Alignment = ParagraphAlignment.Left;
+			row.Cells[5].VerticalAlignment = VerticalAlignment.Center;
+
 			//table.Format.Font.Size = Unit.FromInch(.1); // --- 1/16"
 			mn = 1;
+
+			var getTotalCount_rock = recur.Rocks.Count();
+			var getDoneCount_rock = recur.Rocks.Where(t => t.Completion == RockState.Complete).Count();
+			var getCompletionPercentage_rock = Convert.ToDouble((Convert.ToDouble(getDoneCount_rock) / Convert.ToDouble(getTotalCount_rock)));
+			bool isCompletionPercentageDisplayed = true;
+
 			foreach (var m in recur.Rocks.OrderBy(x => x.Owner.Name).ThenByDescending(x => x.VtoRock).ThenBy(x => x.DueDate)) {
 
 				row = table.AddRow();
@@ -1420,6 +1460,15 @@ namespace RadialReview.Accessors {
 													   //row.Cells[4].Format.Font.Size = 10;// Unit.FromInch(.1);
 													   //row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
 													   //row.Cells[4].Format.KeepTogether = false;
+				if (isCompletionPercentageDisplayed) {
+					row.Cells[5].AddParagraph("" + getDoneCount_rock + "/" + getTotalCount_rock + " - " + string.Format("{0:0.##%}", getCompletionPercentage_rock));
+
+					isCompletionPercentageDisplayed = false;
+				} else {
+					row.Cells[5].AddParagraph("");
+				}
+
+
 				mn++;
 			}
 		}

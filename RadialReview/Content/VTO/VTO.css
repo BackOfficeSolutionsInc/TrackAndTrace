@@ -8,6 +8,30 @@ body {
   background-color: white;
   margin-bottom: 10px;
 }
+.vto .nav.nav-tabs {
+  margin-top: 0px !important;
+}
+.vto .panel-default > .panel-heading {
+  color: #333333;
+  background-color: #fff;
+  border-color: #fff;
+  display: none;
+}
+.vto .panel {
+  border: none;
+}
+.vto .panel-heading {
+  padding: 0px;
+}
+.vto .nav.nav-tabs li {
+  padding: 4px;
+}
+.vto .active-li {
+  background-color: #cac8c8;
+}
+.vto .boxed.content:hover .panel-default > .panel-heading {
+  display: block;
+}
 .vto .delete {
   vertical-align: top;
 }

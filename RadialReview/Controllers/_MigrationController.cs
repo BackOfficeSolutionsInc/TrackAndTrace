@@ -1998,7 +1998,7 @@ namespace RadialReview.Controllers {
 
         }
 
-		#endregion
+        #endregion
 
 		[Access(AccessLevel.Radial)]
 		public async Task<ActionResult> RevertScores() {
@@ -2146,33 +2146,75 @@ namespace RadialReview.Controllers {
 		}
 
 
-		[Access(Controllers.AccessLevel.Radial)]
-		public String M10_17_2017() {
-			var a = 0;
-			var b = 0;
-			var pageCount = 0;
-			using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var _rl = s.QueryOver<RockModel>().List().ToDictionary(x => x.Id, x => x);
-					var rocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().List().ToList();
-					foreach (var rr in rocks) {
-						var rock = _rl[rr.ForRock.Id];
+        [Access(Controllers.AccessLevel.Radial)]
+        public String M10_17_2017() {
+            var a = 0;
+            var b = 0;
+            var pageCount = 0;
+            using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var _rl = s.QueryOver<RockModel>().List().ToDictionary(x=>x.Id,x=>x);
+                    var rocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().List().ToList();
+                    foreach (var rr in rocks) {
+                        var rock = _rl[rr.ForRock.Id];
 
-						if (rock.CompanyRock && !rr.VtoRock) {
-							rr.VtoRock = true;
-							s.Update(rr);
-							a += 1;
-						} else {
-							b += 1;
-						}
-					}
+                        if (rock.CompanyRock && !rr.VtoRock) {
+                            rr.VtoRock = true;
+                            s.Update(rr);
+                            a += 1;
+                        } else {
+                            b += 1;
+                        }
+                    }
 
-					tx.Commit();
-				}
-			}
-			return "Updated:" + a + ",  Not Updated:" + b;
-		}
+                    tx.Commit();
+                }
+            }
+            return "Updated:" + a + ",  Not Updated:" + b;
+        }
 
+        [Access(Controllers.AccessLevel.Radial)]
+        public String M11_22_2017() {
+            var a = 0;
+            var b = 0;
+            var pageCount = 0;
+            var createTime = new DateTime(2017, 11, 22);
+            using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var _VtoModel = s.QueryOver<VtoModel>().List().ToList();                   
+
+                    var _VtoItemString = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Uniques).List().ToList();
+
+                    //foreach (var rr in _VtoModel) {
+                    //    if (!_VtoStrategyMap.Any(x => x.VtoId == rr.Id
+                    //     && x.MarketingStrategyId == rr.MarketingStrategy.Id
+                    //    )) {
+                    //        // save new
+                    //        VtoStrategyMap _map = new VtoStrategyMap() {
+                    //            CreateTime = createTime,
+                    //            VtoId = rr.Id,
+                    //            MarketingStrategyId = rr.MarketingStrategy.Id,
+                    //        };
+
+                    //        s.Insert(_map);
+                    //        a++;
+                    //    }
+                    //}
+
+                    foreach (var item in _VtoItemString) {
+                        if (item.MarketingStrategyId == null) {
+                            item.MarketingStrategyId = item.Vto.MarketingStrategy.Id;
+                            b++;
+
+                            s.Update(item);
+    }
+                    }
+
+                    tx.Commit();
+                }
+            }
+            return "VtoStrategyMap Inserted:" + a + ", VtoITemString Inserted:" + b;
+        }
 		[Access(Controllers.AccessLevel.Radial)]
 		public String M12_01_2017() {
 			var a = 0;
@@ -2204,8 +2246,7 @@ namespace RadialReview.Controllers {
 			}
 			return "Updated:" + a;
 		}
-
-	}
+    }
 }
 #pragma warning restore CS0618 // Type or member is obsolete
 #pragma warning restore CS0219 // Variable is assigned but its value is never used
