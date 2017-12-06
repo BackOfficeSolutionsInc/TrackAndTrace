@@ -159,6 +159,46 @@
 			}, showAngularError)
 		};
 
+
+
+		$scope.functions.DeleteStrategy = function (url, dat) {
+			//var _clientTimestamp = new Date().getTime();
+			var u = Time.addTimestamp(url) + "&connectionId=" + $scope.connectionId;
+
+			showModal({
+				title: "Are you sure you want to delete?",
+				icon: "warning",
+				success: function () {
+					//call delete code
+
+					$http.get(u).then(function () {
+
+						$http({ method: 'get', url: vtoDataUrlBase + $scope.vtoId })
+							.success(function (data, status) {
+								r.updater.clearAndApply(data);
+
+								if (vtoCallback) {
+									setTimeout(function () {
+										vtoCallback();
+									}, 1);
+								}
+								$(".target [textarea-resize]").autoResize();
+								$(".target-market [textarea-resize]").autoResize();
+								$(".purpose [textarea-resize]").autoResize();
+								$(".niche [textarea-resize]").autoResize();
+							}).error(showAngularError);
+						//window.location.href = '/vto/edit/' + $scope.vtoId;
+					}, showAngularError)
+
+				},
+				cancel: function () {
+					//optional cancel code
+				}
+			});
+		};
+
+
+
 		$scope.functions.showStrategyTab = function (id) {
 			var targets1 = angular.element(document).find('.tab-pane');
 			var tabs = angular.element(document).find('.nav-tabs li');

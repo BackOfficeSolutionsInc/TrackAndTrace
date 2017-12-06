@@ -29,7 +29,13 @@ body {
 .vto .active-li {
   background-color: #cac8c8;
 }
+.vto .add-new-strategy {
+  display: none;
+}
 .vto .boxed.content:hover .panel-default > .panel-heading {
+  display: block;
+}
+.vto .boxed.content:hover .add-new-strategy {
   display: block;
 }
 .vto .delete {
@@ -310,6 +316,7 @@ body {
   text-align: right;
 }
 .vto .marketing-strategy .target-market,
+.vto .marketing-strategy .strategy-title,
 .vto .marketing-strategy .three-uniques,
 .vto .marketing-strategy .proven-process,
 .vto .marketing-strategy .guarantee {

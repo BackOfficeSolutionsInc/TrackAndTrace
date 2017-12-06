@@ -68,8 +68,9 @@ namespace RadialReview.Models.VTO {
         public virtual string Guarantee { get; set; }
         public virtual List<VtoItem_String> _Uniques { get; set; }
         public virtual string MarketingStrategyTitle { get; set; }
+		public virtual string Title { get; set; }
 
-        public MarketingStrategyModel() {
+		public MarketingStrategyModel() {
             CreateTime = DateTime.UtcNow;
             //TenYearTarget=new VtoItem_String();
             //TargetMarket = new VtoItem_String();
@@ -89,7 +90,8 @@ namespace RadialReview.Models.VTO {
                 //References(x => x.Guarantee).Not.Nullable().Not.LazyLoad().Cascade.SaveUpdate();
                 //Map(x => x.TenYearTarget);
                 Map(x => x.MarketingStrategyTitle);
-                Map(x => x.ProvenProcess);
+				Map(x => x.Title);
+				Map(x => x.ProvenProcess);
                 Map(x => x.TargetMarket);
                 Map(x => x.Guarantee);
                 Table("VTO_MarketingStrategy");

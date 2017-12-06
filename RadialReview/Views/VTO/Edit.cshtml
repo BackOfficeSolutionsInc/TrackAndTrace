@@ -263,7 +263,9 @@
 													<ul class="nav nav-tabs">
 														<li ng-class="{'active-li' : $index==0}" id="{{'tab'+strategy.Id}}" ng-repeat="strategy in (model.Strategies)">
 															@*<a ng-href="#{{strategy.Id}}" data-toggle="tab">{{strategy.TargetMarket || "New Strategy" }}</a>*@
-															<span ng-click="functions.showStrategyTab(strategy.Id)">{{"Strategy" + ($index+1)}}</span>
+															<span ng-click="functions.showStrategyTab(strategy.Id)">
+																{{strategy.Title || "Strategy"}}
+															</span>
 														</li>
 														@*<li><a href="#tab2default" data-toggle="tab">Default 2</a></li>
 															<li><a href="#tab3default" data-toggle="tab">Default 3</a></li>*@
@@ -272,12 +274,18 @@
 												<div class="panel-body">
 													<div class="tab-content">
 														<div class="tab-pane fade" ng-class="{'active' : $index==0,'in':$index==0}" id="{{strategy.Id}}" ng-repeat="strategy in (model.Strategies)">
-															<div style="width:100%" ng-if="model.Strategies.length<5">
-																<button ng-click="functions.AddNewStrategy('/VTO/CreateMarketStrategy?vto='+vtoId)">Add New</button>
+															<div style="width:100%">
+																<button  class="add-new-strategy" style="float:left;" ng-click="functions.AddNewStrategy('/VTO/CreateMarketStrategy?vto='+vtoId)">Add New</button>
+																<button class="add-new-strategy" ng-if="model.Strategies.length>1" ng-click="functions.DeleteStrategy('/VTO/RemoveMarketStrategy?strategyId='+strategy.Id)">Delete</button>
 															</div>
 															<div style="display:table; width: 100%;height: 100%;">
-
 																<div style="display:table-cell;vertical-align:middle;">
+																	<div class="strategy-title">
+																		<span class="title">Title:</span>
+																		<div>
+																			<textarea textarea-resize ng-model="strategy.Title" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(strategy)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
+																		</div>
+																	</div>
 																	<div class="target-market">
 																		<span class="title">Target Market/"The List":</span>
 																		<div>

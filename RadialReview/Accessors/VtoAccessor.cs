@@ -266,7 +266,30 @@ namespace RadialReview.Accessors {
         }
 
 
-        public static void UpdateVtoString(UserOrganizationModel caller, long vtoStringId, String message, bool? deleted, string connectionId = null) {
+		public static void RemoveMarketingStrategy(UserOrganizationModel caller, long strategyId,string connectionId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+
+					var strategy = s.Get<MarketingStrategyModel>(strategyId);
+				
+
+					//var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
+					//var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(strategy.Vto), connectionId);
+
+					PermissionsUtility.Create(s, caller).EditVTO(strategy.Vto);
+					SyncUtil.EnsureStrictlyAfter(caller, s, SyncAction.UpdateStrategy(strategyId));
+
+					strategy.DeleteTime = DateTime.UtcNow;
+					s.Update(strategy);
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+
+		public static void UpdateVtoString(UserOrganizationModel caller, long vtoStringId, String message, bool? deleted, string connectionId = null) {
             long? update_VtoId = null;
             VtoItem_String str = null;
             using (var s = HibernateSession.GetCurrentSession()) {
@@ -364,7 +387,7 @@ namespace RadialReview.Accessors {
                 UpdateCoreFocus(caller, m.Id, m.Purpose, m.Niche, m.PurposeTitle, m.CoreFocusTitle, connectionId);
             } else if (model.Type == typeof(AngularStrategy).Name) {
                 var m = (AngularStrategy)model;
-                UpdateStrategy(caller, m.Id, m.TargetMarket, m.ProvenProcess, m.Guarantee, m.MarketingStrategyTitle, connectionId);
+                UpdateStrategy(caller, m.Id, m.TargetMarket, m.ProvenProcess, m.Guarantee, m.MarketingStrategyTitle,m.Title, connectionId);
             } else if (model.Type == typeof(AngularVtoRock).Name) {
                 var m = (AngularVtoRock)model;
                 await UpdateRock(caller, m.Id, m.Rock.Name, m.Rock.Owner.Id, null, connectionId);
@@ -487,7 +510,7 @@ namespace RadialReview.Accessors {
             }
         }
 
-        public static void UpdateStrategy(UserOrganizationModel caller, long strategyId, String targetMarket = null, String provenProcess = null, String guarantee = null, String marketingStrategyTitle = null, string connectionId = null) {
+        public static void UpdateStrategy(UserOrganizationModel caller, long strategyId, String targetMarket = null, String provenProcess = null, String guarantee = null, String marketingStrategyTitle = null, String title = null, string connectionId = null) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
 
@@ -504,7 +527,8 @@ namespace RadialReview.Accessors {
                     strategy.Guarantee = guarantee;
                     strategy.TargetMarket = targetMarket;
                     strategy.MarketingStrategyTitle = marketingStrategyTitle;
-                    s.Update(strategy);
+					strategy.Title = title;
+					s.Update(strategy);
 
                     tx.Commit();
                     s.Flush();

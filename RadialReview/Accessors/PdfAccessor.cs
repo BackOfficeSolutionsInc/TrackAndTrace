@@ -2184,41 +2184,94 @@ namespace RadialReview.Accessors {
 
 			//////
 			{
-				var fs = 10;
-				var p1 = new Paragraph();
-				p1.Format.Font.Size = fs;
-				var txt = p1.AddFormattedText("Target Market/\"The List\": ", TextFormat.Bold);
-				p1.Format.Font.Name = "Arial Narrow";
-				p1.AddText(vto.Strategy.TargetMarket ?? "");
-				marketingParagraphs.Add(p1);
+				foreach (var item in vto.Strategies) {
+					var fs = 10;
 
-				var p2 = new Paragraph();
-				p2.Format.Font.Size = fs;
-				var uniques = vto.Strategy.Uniques.ToList();
-				p2.Format.SpaceBefore = fs * 1.5;
-				var uniquesTitle = "Uniques: ";
-				if (uniques.Count == 3)
-					uniquesTitle = "Three " + uniquesTitle;
-				p2.AddFormattedText(uniquesTitle, TextFormat.Bold);
-				p2.Format.Font.Name = "Arial Narrow";
-				marketingParagraphs.Add(p2);
-				marketingParagraphs.AddRange(OrderedList(uniques.Select(x => x.Data), ListType.NumberList1, Unit.FromInch(.44)));
+					var p0 = new Paragraph();
+					p0.Format.Font.Size = fs;
+					var txt0 = p0.AddFormattedText("Title: ", TextFormat.Bold);
+					p0.Format.Font.Name = "Arial Narrow";
+					p0.AddText(item.Title ?? "");
+					marketingParagraphs.Add(p0);
 
-				var p3 = new Paragraph();
-				p3.Format.Font.Size = fs;
-				p3.Format.SpaceBefore = fs * 1.5;
-				p3.AddFormattedText("Proven Process: ", TextFormat.Bold);
-				p3.Format.Font.Name = "Arial Narrow";
-				p3.AddText(vto.Strategy.ProvenProcess ?? "");
-				marketingParagraphs.Add(p3);
+					var p1 = new Paragraph();
+					p1.Format.Font.Size = fs;
+					p1.Format.SpaceBefore = fs * 1.5;
+					var txt = p1.AddFormattedText("Target Market/\"The List\": ", TextFormat.Bold);
+					p1.Format.Font.Name = "Arial Narrow";
+					p1.AddText(item.TargetMarket ?? "");
+					marketingParagraphs.Add(p1);
 
-				var p4 = new Paragraph();
-				p4.Format.Font.Size = fs;
-				p4.Format.SpaceBefore = fs * 1.5;
-				p4.AddFormattedText("Guarantee: ", TextFormat.Bold);
-				p4.Format.Font.Name = "Arial Narrow";
-				p4.AddText(vto.Strategy.Guarantee ?? "");
-				marketingParagraphs.Add(p4);
+					var p2 = new Paragraph();
+					p2.Format.Font.Size = fs;
+					var uniques = item.Uniques.ToList();
+					p2.Format.SpaceBefore = fs * 1.5;
+					var uniquesTitle = "Uniques: ";
+					if (uniques.Count == 3)
+						uniquesTitle = "Three " + uniquesTitle;
+					p2.AddFormattedText(uniquesTitle, TextFormat.Bold);
+					p2.Format.Font.Name = "Arial Narrow";
+					marketingParagraphs.Add(p2);
+					marketingParagraphs.AddRange(OrderedList(uniques.Select(x => x.Data), ListType.NumberList1, Unit.FromInch(.44)));
+
+					var p3 = new Paragraph();
+					p3.Format.Font.Size = fs;
+					p3.Format.SpaceBefore = fs * 1.5;
+					p3.AddFormattedText("Proven Process: ", TextFormat.Bold);
+					p3.Format.Font.Name = "Arial Narrow";
+					p3.AddText(item.ProvenProcess ?? "");
+					marketingParagraphs.Add(p3);
+
+					var p4 = new Paragraph();
+					p4.Format.Font.Size = fs;
+					p4.Format.SpaceBefore = fs * 1.5;
+
+					if (vto.Strategies.Count > 1) {
+						p4.Format.SpaceAfter = fs * 1.5;
+					}
+					
+					p4.AddFormattedText("Guarantee: ", TextFormat.Bold);
+					p4.Format.Font.Name = "Arial Narrow";
+					p4.AddText(item.Guarantee ?? "");
+					marketingParagraphs.Add(p4);
+				}
+
+
+				//var fs = 10;
+				//var p1 = new Paragraph();
+				//p1.Format.Font.Size = fs;
+				//var txt = p1.AddFormattedText("Target Market/\"The List\": ", TextFormat.Bold);
+				//p1.Format.Font.Name = "Arial Narrow";
+				//p1.AddText(vto.Strategy.TargetMarket ?? "");
+				//marketingParagraphs.Add(p1);
+
+				//var p2 = new Paragraph();
+				//p2.Format.Font.Size = fs;
+				//var uniques = vto.Strategy.Uniques.ToList();
+				//p2.Format.SpaceBefore = fs * 1.5;
+				//var uniquesTitle = "Uniques: ";
+				//if (uniques.Count == 3)
+				//	uniquesTitle = "Three " + uniquesTitle;
+				//p2.AddFormattedText(uniquesTitle, TextFormat.Bold);
+				//p2.Format.Font.Name = "Arial Narrow";
+				//marketingParagraphs.Add(p2);
+				//marketingParagraphs.AddRange(OrderedList(uniques.Select(x => x.Data), ListType.NumberList1, Unit.FromInch(.44)));
+
+				//var p3 = new Paragraph();
+				//p3.Format.Font.Size = fs;
+				//p3.Format.SpaceBefore = fs * 1.5;
+				//p3.AddFormattedText("Proven Process: ", TextFormat.Bold);
+				//p3.Format.Font.Name = "Arial Narrow";
+				//p3.AddText(vto.Strategy.ProvenProcess ?? "");
+				//marketingParagraphs.Add(p3);
+
+				//var p4 = new Paragraph();
+				//p4.Format.Font.Size = fs;
+				//p4.Format.SpaceBefore = fs * 1.5;
+				//p4.AddFormattedText("Guarantee: ", TextFormat.Bold);
+				//p4.Format.Font.Name = "Arial Narrow";
+				//p4.AddText(vto.Strategy.Guarantee ?? "");
+				//marketingParagraphs.Add(p4);
 			}
 			//////
 			var marketingPages = SplitHeights(Unit.FromInch(5.33), new[] { Unit.FromInch(2.7), Unit.FromInch(5.7) }, marketingParagraphs);
