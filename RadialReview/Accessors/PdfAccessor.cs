@@ -2181,7 +2181,7 @@ namespace RadialReview.Accessors {
 			}, maxFontSize: 10);
 
 			var marketingParagraphs = new List<Paragraph>();
-
+			bool addBeforeSpace = false;
 			//////
 			{
 				foreach (var item in vto.Strategies) {
@@ -2189,6 +2189,9 @@ namespace RadialReview.Accessors {
 
 					var p0 = new Paragraph();
 					p0.Format.Font.Size = fs;
+					if (addBeforeSpace) {
+						p0.Format.SpaceBefore = fs * 1.5;
+					}
 					var txt0 = p0.AddFormattedText("Title: ", TextFormat.Bold);
 					p0.Format.Font.Name = "Arial Narrow";
 					p0.AddText(item.Title ?? "");
@@ -2214,26 +2217,40 @@ namespace RadialReview.Accessors {
 					marketingParagraphs.Add(p2);
 					marketingParagraphs.AddRange(OrderedList(uniques.Select(x => x.Data), ListType.NumberList1, Unit.FromInch(.44)));
 
-					var p3 = new Paragraph();
-					p3.Format.Font.Size = fs;
-					p3.Format.SpaceBefore = fs * 1.5;
-					p3.AddFormattedText("Proven Process: ", TextFormat.Bold);
-					p3.Format.Font.Name = "Arial Narrow";
-					p3.AddText(item.ProvenProcess ?? "");
-					marketingParagraphs.Add(p3);
+					if (!string.IsNullOrEmpty(item.ProvenProcess)) {
+						var p3 = new Paragraph();
+						p3.Format.Font.Size = fs;
+						p3.Format.SpaceBefore = fs * 1.5;
 
-					var p4 = new Paragraph();
-					p4.Format.Font.Size = fs;
-					p4.Format.SpaceBefore = fs * 1.5;
+						if (vto.Strategies.Count > 1 && string.IsNullOrEmpty(item.Guarantee)) {
+							p3.Format.SpaceAfter = fs * 1.5;
+						}
 
-					if (vto.Strategies.Count > 1) {
-						p4.Format.SpaceAfter = fs * 1.5;
+						p3.AddFormattedText("Proven Process: ", TextFormat.Bold);
+						p3.Format.Font.Name = "Arial Narrow";
+						p3.AddText(item.ProvenProcess ?? "");
+						marketingParagraphs.Add(p3);
 					}
-					
-					p4.AddFormattedText("Guarantee: ", TextFormat.Bold);
-					p4.Format.Font.Name = "Arial Narrow";
-					p4.AddText(item.Guarantee ?? "");
-					marketingParagraphs.Add(p4);
+
+					if (!string.IsNullOrEmpty(item.Guarantee)) {
+						var p4 = new Paragraph();
+						p4.Format.Font.Size = fs;
+						p4.Format.SpaceBefore = fs * 1.5;
+
+						if (vto.Strategies.Count > 1) {
+							p4.Format.SpaceAfter = fs * 1.5;
+						}
+
+						p4.AddFormattedText("Guarantee: ", TextFormat.Bold);
+						p4.Format.Font.Name = "Arial Narrow";
+						p4.AddText(item.Guarantee ?? "");
+						marketingParagraphs.Add(p4);
+					}
+
+					addBeforeSpace = false;
+					if (string.IsNullOrEmpty(item.ProvenProcess) && string.IsNullOrEmpty(item.ProvenProcess)) {
+						addBeforeSpace = true;
+					}
 				}
 
 
