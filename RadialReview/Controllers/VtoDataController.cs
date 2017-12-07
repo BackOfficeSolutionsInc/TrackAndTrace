@@ -65,6 +65,12 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
+		public JsonResult RemoveMarketStrategy(long strategyId, string connectionId = null) {
+			VtoAccessor.RemoveMarketingStrategy(GetUser(), strategyId, connectionId);
+			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
 		public JsonResult AddThreeYear(long vto, string connectionId = null) {
 			VtoAccessor.AddThreeYear(GetUser(), vto);
 			return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);

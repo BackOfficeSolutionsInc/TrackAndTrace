@@ -260,10 +260,10 @@
 										<div class="boxed content">
 											<div class="panel with-nav-tabs panel-default">
 												<div class="panel-heading">
-													<ul class="nav nav-tabs {{model.Strategies.length==1?'one-strategy':'multi-strategy'}}">
-														<li ng-click="functions.showStrategyTab(strategy.Id)" ng-class="{'active-li' : $index==0}" id="{{'tab'+strategy.Id}}" ng-repeat="strategy in (model.Strategies)" >
+													<ul class="nav nav-tabs strategy-tabs {{model.Strategies.length==1?'one-strategy':'multi-strategy'}}">
+														<li ng-click="functions.showStrategyTab(strategy.Id)" ng-class="{'active-li' : $index==0}" id="{{'tab'+strategy.Id}}" ng-repeat="strategy in (model.Strategies)">
 															@*<a ng-href="#{{strategy.Id}}" data-toggle="tab">{{strategy.TargetMarket || "New Strategy" }}</a>*@
-															<span >{{"Strategy" + ($index+1)}}</span>
+															<span><textarea textarea-resize placeholder="Strategy {{$index+1}}" ng-model="strategy.Title" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(strategy)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea></span>
 														</li>
 														<li class="add-tab">
 															<span class="add-row" ng-if="model.Strategies.length<5" ng-click="functions.AddNewStrategy('/VTO/CreateMarketStrategy?vto='+vtoId)">Add New</span>
@@ -273,11 +273,19 @@
 												<div class="panel-body">
 													<div class="tab-content">
 														<div class="tab-pane fade" ng-class="{'active' : $index==0,'in':$index==0}" id="{{strategy.Id}}" ng-repeat="strategy in (model.Strategies)">
-															<div style="width:100%">
-															</div>
-															<div style="display:table; width: 100%;height: 100%;">
+															<span class="remove-strategy delete glyphicon glyphicon-trash" title="Delete this Marketing Strategy" ng-if="model.Strategies.length>1" ng-click="functions.DeleteStrategy('/VTO/RemoveMarketStrategy?strategyId='+strategy.Id,strategy.Title)"></span>
 
+															@*<div style="width:100%">
+																	<button  class="add-new-strategy" style="float:left;" ng-click="functions.AddNewStrategy('/VTO/CreateMarketStrategy?vto='+vtoId)">Add New</button>
+																	<button class="add-new-strategy" ng-if="model.Strategies.length>1" ng-click="functions.DeleteStrategy('/VTO/RemoveMarketStrategy?strategyId='+strategy.Id)">Delete</button>
+																</div>*@
+															<div style="display:table; width: 100%;height: 100%;">
 																<div style="display:table-cell;vertical-align:middle;">
+																	@*<div class="strategy-title">
+																		<span class="title">Title:</span>
+																		<div>
+																		</div>
+																	</div>*@
 																	<div class="target-market">
 																		<span class="title">Target Market/"The List":</span>
 																		<div>

@@ -34,7 +34,7 @@ namespace RadialReview.Models.Angular.VTO {
 
 		public AngularCoreFocus CoreFocus { get; set; }
 		public AngularStrategy Strategy { get; set; }
-		public List<AngularStrategy> Strategies { get; set; }
+		public IEnumerable<AngularStrategy> Strategies { get; set; }
 
 		public AngularQuarterlyRocks QuarterlyRocks { get; set; }
 		public AngularThreeYearPicture ThreeYearPicture { get; set; }
@@ -209,6 +209,7 @@ namespace RadialReview.Models.Angular.VTO {
 		public String ProvenProcess { get; set; }
 		public String Guarantee { get; set; }
 		public String MarketingStrategyTitle { get; set; }
+		public String Title { get; set; }
 		public IEnumerable<AngularVtoString> Uniques { get; set; }
 
 		internal static AngularStrategy Create(MarketingStrategyModel marketingStrategyModel) {
@@ -220,6 +221,7 @@ namespace RadialReview.Models.Angular.VTO {
 				//TenYearTarget = (marketingStrategyModel.TenYearTarget),
 				Uniques = AngularVtoString.Create(marketingStrategyModel._Uniques),
 				MarketingStrategyTitle = marketingStrategyModel.MarketingStrategyTitle ?? "MARKETING STRATEGY",
+				Title= (marketingStrategyModel.Title),
 			};
 		}
 	}

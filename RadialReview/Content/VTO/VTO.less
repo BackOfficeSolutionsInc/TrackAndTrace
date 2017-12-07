@@ -30,17 +30,67 @@ html, body {
 	.panel-heading {
 		padding: 0px;
 	}
-	
+
 	.nav.nav-tabs li {
 		padding: 4px;
 		margin: 0 2px;
 		color: lightgray;
 		border-bottom: 2px solid transparent;
 		transition: ease-in-out .2s border,ease-in-out .2s color;
+		min-width: 115px;
+		max-width: 145px;
 
 		&.active-li {
 			color: @traction-orange;
 			font-weight: bold;
+
+			textarea {
+				&focus {
+					border: none;
+					height: auto !important;
+				}
+
+				&::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+					color: @traction-orange;
+				}
+
+				&::-moz-placeholder { /* Firefox 19+ */
+					color: @traction-orange;
+				}
+
+				&:-ms-input-placeholder { /* IE 10+ */
+					color: @traction-orange;
+				}
+
+				&:-moz-placeholder { /* Firefox 18- */
+					color: @traction-orange;
+				}
+			}
+		}
+
+		&.add-tab {
+			max-width: 64px;
+			min-width: 64px;
+			height: 10px;
+		}
+
+		textarea {
+			text-align: center;
+			border: none !important;
+			height: 20px !important;
+
+
+			&:empty {
+			}
+			/*white-space: nowrap;
+			overflow: hidden;
+			/*text-overflow: ellipsis;*
+
+			&:focus {
+				white-space: normal !important;
+				overflow: hidden;
+				text-overflow: clip;
+			}*/
 		}
 	}
 
@@ -50,6 +100,8 @@ html, body {
 		color: transparent;
 		border-bottom: 2px solid transparent;
 		transition: ease-in-out .2s border,ease-in-out .2s color;
+
+
 
 		&.active-li {
 			color: transparent;
@@ -66,24 +118,52 @@ html, body {
 	.nav.nav-tabs li:not(.add-tab):hover {
 		//color: @traction-orange;
 		color: #333;
-		border-bottom: 1px solid @traction-orange;
+		border-bottom: 2px solid @traction-orange;
 	}
 
-	.boxed.content:hover .panel-default > .panel-heading {
-		opacity: 1;
+	.add-new-strategy {
+		display: none;
+	}
 
-		.nav.nav-tabs li {
-			color: gray;
+	.remove-strategy {
+		position: absolute;
+		right: 17px;
+		top: 5px;
+		color: #333;
+		opacity: 0;
+		transition: ease-in-out .2s opacity;
+
+		&:hover {
+			opacity: 1 !important;
+		}
+	}
+
+	.boxed.content:hover .panel-default {
+
+		.remove-strategy {
+			opacity: .2;
+		}
+
+		& > .panel-heading {
+			opacity: 1;
+
+			.nav.nav-tabs li {
+				color: gray;
 
 
-			&.active-li {
-				/*background-color: #cac8c8;*/
-				border-bottom: 2px solid @traction-orange;
-				border-bottom-width: 2px !important;
-				color: @traction-orange;
-				transition: ease-in-out 0s color;
+				&.active-li {
+					/*background-color: #cac8c8;*/
+					border-bottom: 2px solid @traction-orange;
+					border-bottom-width: 2px !important;
+					color: @traction-orange;
+					transition: ease-in-out 0s color;
+				}
 			}
 		}
+	}
+
+	.boxed.content:hover .add-new-strategy {
+		display: block;
 	}
 
 	.delete {
@@ -442,6 +522,7 @@ html, body {
 	}
 
 	.marketing-strategy .target-market,
+	.marketing-strategy .strategy-title,
 	.marketing-strategy .three-uniques,
 	.marketing-strategy .proven-process,
 	.marketing-strategy .guarantee {

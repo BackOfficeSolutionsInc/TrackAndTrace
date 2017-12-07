@@ -763,18 +763,18 @@ namespace RadialReview.Accessors {
 
 		private static void AddL10Row(Section section, AngularRecurrence recur, AngularRecurrencePage page, DateTime? lastMeeting) {
 			switch (page.Type) {
-			case L10Recurrence.L10PageType.IDS:
-			AddL10Row_Issues(section, recur, page);
-			break;
-			case L10Recurrence.L10PageType.Conclude:
-			AddL10Row_Conclude(section, recur, page);
-			break;
-			case L10Recurrence.L10PageType.Todo:
-			AddL10Row_Todos(section, recur, page, lastMeeting);
-			break;
-			default:
-			AddL10Row_Title(section, page);
-			break;
+				case L10Recurrence.L10PageType.IDS:
+					AddL10Row_Issues(section, recur, page);
+					break;
+				case L10Recurrence.L10PageType.Conclude:
+					AddL10Row_Conclude(section, recur, page);
+					break;
+				case L10Recurrence.L10PageType.Todo:
+					AddL10Row_Todos(section, recur, page, lastMeeting);
+					break;
+				default:
+					AddL10Row_Title(section, page);
+					break;
 			}
 		}
 		#endregion
@@ -1231,41 +1231,41 @@ namespace RadialReview.Accessors {
 					Color statusColor = Colors.DarkRed;
 					//Update below also
 					switch (m.Completion) {
-					case RockState.OnTrack:
-					statusColor = Colors.DarkBlue;
-					break;
-					case RockState.AtRisk:
-					statusColor = Colors.DarkRed;
-					break;
-					case RockState.Complete:
-					statusColor = Colors.DarkGreen;
-					break;
-					default:
-					break;
+						case RockState.OnTrack:
+							statusColor = Colors.DarkBlue;
+							break;
+						case RockState.AtRisk:
+							statusColor = Colors.DarkRed;
+							break;
+						case RockState.Complete:
+							statusColor = Colors.DarkGreen;
+							break;
+						default:
+							break;
 					}
 					if (quarterlyPrintout) {
 						switch (m.Completion ?? RockState.Indeterminate) {
-						case RockState.Indeterminate:
-						status = "Not Done";
-						bold = true;
-						statusColor = Colors.DarkRed;
-						break;
-						case RockState.AtRisk:
-						status = "Not Done";
-						bold = true;
-						statusColor = Colors.DarkRed;
-						break;
-						case RockState.OnTrack:
-						status = "Not Done";
-						statusColor = Colors.DarkRed;
-						bold = true;
-						break;
-						case RockState.Complete:
-						status = "Done";
-						statusColor = Colors.DarkGreen;
-						break;
-						default:
-						break;
+							case RockState.Indeterminate:
+								status = "Not Done";
+								bold = true;
+								statusColor = Colors.DarkRed;
+								break;
+							case RockState.AtRisk:
+								status = "Not Done";
+								bold = true;
+								statusColor = Colors.DarkRed;
+								break;
+							case RockState.OnTrack:
+								status = "Not Done";
+								statusColor = Colors.DarkRed;
+								bold = true;
+								break;
+							case RockState.Complete:
+								status = "Done";
+								statusColor = Colors.DarkGreen;
+								break;
+							default:
+								break;
 						}
 					}
 
@@ -1390,42 +1390,42 @@ namespace RadialReview.Accessors {
 
 				if (quarterlyPrintout) {
 					switch (m.Completion ?? RockState.Indeterminate) {
-					case RockState.Indeterminate:
-					status = "Not Done";
-					bold = true;
-					statusColor = Colors.DarkRed;
-					break;
-					case RockState.AtRisk:
-					status = "Not Done";
-					bold = true;
-					statusColor = Colors.DarkRed;
-					break;
-					case RockState.OnTrack:
-					status = "Not Done";
-					statusColor = Colors.DarkRed;
-					bold = true;
-					break;
-					case RockState.Complete:
-					status = "Done";
-					statusColor = Colors.DarkGreen;
-					break;
-					default:
-					break;
+						case RockState.Indeterminate:
+							status = "Not Done";
+							bold = true;
+							statusColor = Colors.DarkRed;
+							break;
+						case RockState.AtRisk:
+							status = "Not Done";
+							bold = true;
+							statusColor = Colors.DarkRed;
+							break;
+						case RockState.OnTrack:
+							status = "Not Done";
+							statusColor = Colors.DarkRed;
+							bold = true;
+							break;
+						case RockState.Complete:
+							status = "Done";
+							statusColor = Colors.DarkGreen;
+							break;
+						default:
+							break;
 					}
 				} else {
 					switch (m.Completion) {
-					case RockState.OnTrack:
-					statusColor = Colors.DarkBlue;
-					break;
-					case RockState.AtRisk:
-					statusColor = Colors.DarkRed;
-					bold = true;
-					break;
-					case RockState.Complete:
-					statusColor = Colors.DarkGreen;
-					break;
-					default:
-					break;
+						case RockState.OnTrack:
+							statusColor = Colors.DarkBlue;
+							break;
+						case RockState.AtRisk:
+							statusColor = Colors.DarkRed;
+							bold = true;
+							break;
+						case RockState.Complete:
+							statusColor = Colors.DarkGreen;
+							break;
+						default:
+							break;
 					}
 				}
 
@@ -1885,7 +1885,7 @@ namespace RadialReview.Accessors {
 				s.Width += w;
 				s.Height += h;
 			} else if (o is Row) {
-				
+
 				var row = (Row)o;
 
 				//if (row.Table == null) {
@@ -2322,47 +2322,161 @@ namespace RadialReview.Accessors {
 			}, maxFontSize: 10);
 
 			var marketingParagraphs = new List<Paragraph>();
-
+			bool addBeforeSpace = false;
 			//////
 			{
-				var fs = 10;
-				var p1 = new Paragraph();
-				p1.Format.Font.Size = fs;
-				var txt = p1.AddFormattedText("Target Market/\"The List\": ", TextFormat.Bold);
-				p1.Format.Font.Name = "Arial Narrow";
-				p1.AddText(vto.Strategy.TargetMarket ?? "");
-				marketingParagraphs.Add(p1);
+				var count = -1;
+				var strats = vto.Strategies.ToList();
+				var includeTitle = strats.Count > 1;
 
-				var p2 = new Paragraph();
-				p2.Format.Font.Size = fs;
-				var uniques = vto.Strategy.Uniques.ToList();
-				p2.Format.SpaceBefore = fs * 1.5;
-				var uniquesTitle = "Uniques: ";
-				if (uniques.Count == 3)
-					uniquesTitle = "Three " + uniquesTitle;
-				p2.AddFormattedText(uniquesTitle, TextFormat.Bold);
-				p2.Format.Font.Name = "Arial Narrow";
-				marketingParagraphs.Add(p2);
-				marketingParagraphs.AddRange(OrderedList(uniques.Select(x => x.Data), ListType.NumberList1, Unit.FromInch(.44)));
+				foreach (var item in strats.ToList()) {
+					count += 1;
+					var fs = 10;
 
-				var p3 = new Paragraph();
-				p3.Format.Font.Size = fs;
-				p3.Format.SpaceBefore = fs * 1.5;
-				p3.AddFormattedText("Proven Process: ", TextFormat.Bold);
-				p3.Format.Font.Name = "Arial Narrow";
-				p3.AddText(vto.Strategy.ProvenProcess ?? "");
-				marketingParagraphs.Add(p3);
 
-				var p4 = new Paragraph();
-				p4.Format.Font.Size = fs;
-				p4.Format.SpaceBefore = fs * 1.5;
-				p4.AddFormattedText("Guarantee: ", TextFormat.Bold);
-				p4.Format.Font.Name = "Arial Narrow";
-				p4.AddText(vto.Strategy.Guarantee ?? "");
-				marketingParagraphs.Add(p4);
+					if (count > 0) {
+						var spacer = new Paragraph();
+						spacer.Format.Borders.Top.Color = TableGray;
+						//spacer.Format.Borders.Bottom.Color = Colors.Red;
+						spacer.Format.SpaceBefore = fs * 1.5;
+						spacer.Format.SpaceAfter = fs * .75;
+						marketingParagraphs.Add(spacer);
+					}
+
+					if (includeTitle && !string.IsNullOrWhiteSpace(item.Title)) {
+						var p0 = new Paragraph();
+						p0.Format.Font.Size = fs;
+						if (count > 0) {
+							if (addBeforeSpace) {
+								p0.Format.SpaceBefore = fs * 1.5;
+							}
+						}
+						p0.Format.SpaceAfter = fs * 1;
+						var txt0 = p0.AddFormattedText(item.Title ?? "", TextFormat.Bold | TextFormat.Underline);
+						p0.Format.Font.Name = "Arial Narrow";
+						//p0.AddText(item.Title ?? "");
+						marketingParagraphs.Add(p0);
+					}
+
+					var p1 = new Paragraph();
+					p1.Format.Font.Size = fs;
+					//p1.Format.SpaceBefore = fs * 1.5;
+					var txt = p1.AddFormattedText("Target Market/\"The List\": ", TextFormat.Bold);
+					p1.Format.Font.Name = "Arial Narrow";
+					p1.AddText(item.TargetMarket ?? "");
+					marketingParagraphs.Add(p1);
+
+					var p2 = new Paragraph();
+					p2.Format.Font.Size = fs;
+					var uniques = item.Uniques.ToList();
+					p2.Format.SpaceBefore = fs * 1.25;
+					var uniquesTitle = "Uniques: ";
+					if (uniques.Count == 3)
+						uniquesTitle = "Three " + uniquesTitle;
+					p2.AddFormattedText(uniquesTitle, TextFormat.Bold);
+					p2.Format.Font.Name = "Arial Narrow";
+					marketingParagraphs.Add(p2);
+					marketingParagraphs.AddRange(OrderedList(uniques.Select(x => x.Data), ListType.NumberList1, Unit.FromInch(.44)));
+
+					if (!string.IsNullOrEmpty(item.ProvenProcess)) {
+						var p3 = new Paragraph();
+						p3.Format.Font.Size = fs;
+						p3.Format.SpaceBefore = fs * 1.25;
+
+						if (strats.Count > 1 && string.IsNullOrEmpty(item.Guarantee)) {
+							p3.Format.SpaceAfter = fs * 1.25;
+						}
+
+						p3.AddFormattedText("Proven Process: ", TextFormat.Bold);
+						p3.Format.Font.Name = "Arial Narrow";
+						p3.AddText(item.ProvenProcess ?? "");
+						marketingParagraphs.Add(p3);
+					}
+
+					if (!string.IsNullOrEmpty(item.Guarantee)) {
+						var p4 = new Paragraph();
+						p4.Format.Font.Size = fs;
+						p4.Format.SpaceBefore = fs * 1.25;
+
+						if (strats.Count > 1) {
+							p4.Format.SpaceAfter = fs * 1.25;
+						}
+
+						p4.AddFormattedText("Guarantee: ", TextFormat.Bold);
+						p4.Format.Font.Name = "Arial Narrow";
+						p4.AddText(item.Guarantee ?? "");
+						marketingParagraphs.Add(p4);
+					}
+
+					addBeforeSpace = false;
+					if (string.IsNullOrEmpty(item.ProvenProcess) && string.IsNullOrEmpty(item.ProvenProcess)) {
+						addBeforeSpace = true;
+					}
+				}
+
+
+				//var fs = 10;
+				//var p1 = new Paragraph();
+				//p1.Format.Font.Size = fs;
+				//var txt = p1.AddFormattedText("Target Market/\"The List\": ", TextFormat.Bold);
+				//p1.Format.Font.Name = "Arial Narrow";
+				//p1.AddText(vto.Strategy.TargetMarket ?? "");
+				//marketingParagraphs.Add(p1);
+
+				//var p2 = new Paragraph();
+				//p2.Format.Font.Size = fs;
+				//var uniques = vto.Strategy.Uniques.ToList();
+				//p2.Format.SpaceBefore = fs * 1.5;
+				//var uniquesTitle = "Uniques: ";
+				//if (uniques.Count == 3)
+				//	uniquesTitle = "Three " + uniquesTitle;
+				//p2.AddFormattedText(uniquesTitle, TextFormat.Bold);
+				//p2.Format.Font.Name = "Arial Narrow";
+				//marketingParagraphs.Add(p2);
+				//marketingParagraphs.AddRange(OrderedList(uniques.Select(x => x.Data), ListType.NumberList1, Unit.FromInch(.44)));
+
+				//var p3 = new Paragraph();
+				//p3.Format.Font.Size = fs;
+				//p3.Format.SpaceBefore = fs * 1.5;
+				//p3.AddFormattedText("Proven Process: ", TextFormat.Bold);
+				//p3.Format.Font.Name = "Arial Narrow";
+				//p3.AddText(vto.Strategy.ProvenProcess ?? "");
+				//marketingParagraphs.Add(p3);
+
+				//var p4 = new Paragraph();
+				//p4.Format.Font.Size = fs;
+				//p4.Format.SpaceBefore = fs * 1.5;
+				//p4.AddFormattedText("Guarantee: ", TextFormat.Bold);
+				//p4.Format.Font.Name = "Arial Narrow";
+				//p4.AddText(vto.Strategy.Guarantee ?? "");
+				//marketingParagraphs.Add(p4);
 			}
 			//////
 			var marketingPages = SplitHeights(Unit.FromInch(5.33), new[] { Unit.FromInch(2.7), Unit.FromInch(5.7) }, marketingParagraphs);
+
+			var j = 0;
+			for (var i = 0; i < marketingPages.Count; i++) {
+				Page m = marketingPages[i];
+				var f = m.FirstOrDefault();
+				if (f != null && f.Item is Paragraph) {
+					var p = (Paragraph)f.Item;
+					if (p.Format.Borders.Top.Color == TableGray) {
+						m.Items = m.Items.Skip(1).ToList();
+						//marketingParagraphs.RemoveAt(j);
+						marketingParagraphs.Remove(p);
+					}
+				}
+				f = m.LastOrDefault();
+				if (f != null && f.Item is Paragraph) {
+					var p = (Paragraph)f.Item;
+					if (p.Format.Borders.Top.Color == TableGray) {
+						m.Items = m.Items.Take(m.Items.Count-1).ToList();
+						marketingParagraphs.Remove(p);
+					}
+				}
+			}
+
+
 
 			var looksList = vto.ThreeYearPicture.LooksLike.Where(x => !string.IsNullOrWhiteSpace(x.Data)).Select(x => x.Data).ToList();
 

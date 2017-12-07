@@ -141,7 +141,7 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 					$("." + custom + " .modal-content").append(titleDiv);
 					modalHeaderHeight += $(titleDiv).height();
 					modalHeaderHeight += $("#modalTitle").height();
-					debugger;
+					//debugger;
 					titleDiv.remove();
 					document.styleSheets[0].insertRule("." + custom + ".modal-icon .modal-header{ height: " + modalHeaderHeight + "px !important;}", 0);
 				} catch (e) {
@@ -378,7 +378,7 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 
 	_bindModal(builder, obj.title, undefined, obj.validation, onSuccess, onCancel, reformat, onClose, contentType);
 	setTimeout(function () {
-		debugger;
+		//debugger;
 		for (var i = 0; i < runAfter.length; i++) {
 			runAfter[i]();
 		}
