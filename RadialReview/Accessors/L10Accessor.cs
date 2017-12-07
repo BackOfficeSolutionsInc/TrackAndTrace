@@ -5056,7 +5056,9 @@ namespace RadialReview.Accessors {
             }
             recur.Rocks = allRocks.Distinct(x => x.Id);
             recur.Todos = GetAllTodosForRecurrence(s, perms, recurrenceId, includeClosed: includeHistorical, range: range).Select(x => new AngularTodo(x)).OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ToList();
-            recur.IssuesList.Issues = GetAllIssuesForRecurrence(s, perms, recurrenceId, includeCompleted: includeHistorical, range: range).Select(x => new AngularIssue(x)).OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ToList();
+
+			recur.IssuesList.Issues = GetAllIssuesForRecurrence(s, perms, recurrenceId, includeCompleted: includeHistorical, range: range).Select(x => new AngularIssue(x)).ToList();
+			//recur.IssuesList.Issues = GetAllIssuesForRecurrence(s, perms, recurrenceId, includeCompleted: includeHistorical, range: range).Select(x => new AngularIssue(x)).OrderByDescending(x => x.CompleteTime ?? DateTime.MaxValue).ToList();
             recur.Headlines = GetAllHeadlinesForRecurrence(s, perms, recurrenceId, includeClosed: includeHistorical, range: range).Select(x => new AngularHeadline(x)).OrderByDescending(x => x.CloseTime ?? DateTime.MaxValue).ToList();
             recur.Notes = recurrence._MeetingNotes.Select(x => new AngularMeetingNotes(x)).ToList();
 
