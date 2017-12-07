@@ -140,16 +140,79 @@ namespace RadialReview.Utilities {
 			}
 		}
 
+
 		private static List<L10MeetingVM.WeekVM> GetWeeks(TimeData settings, DateTime endDate, DateTime? highlightDate, bool includeNextWeek, bool useWeekstartForWeekNumber = false, DateRange range = null) {
+			DateTime? serverTimeMeetingStart = null;
+			if (highlightDate != null) {
+				serverTimeMeetingStart = highlightDate.Value;
+			}
 
-            //var ordered = scores.Select(x => x.DateDue).OrderBy(x => x).ToList();
-            //var StartDate = ordered.FirstOrDefault().NotNull(x => now);
-            //var EndDate = ordered.LastOrDefault().NotNull(x => now).AddDays(7);
+			var weekStart = settings.WeekStart;
+			var timezoneOffset = settings.TimezoneOffset;
 
-            //var s = StartDate.StartOfWeek(weekStart).AddDays(-7 * 4);
-            //var e = EndDate.StartOfWeek(weekStart).AddDays(7 * 4);
 
-            DateTime? localTimeMeetingStart = null;
+			var weekNumber_StartOfWeek = DayOfWeek.Sunday;
+			if (useWeekstartForWeekNumber)
+				weekNumber_StartOfWeek = weekStart;
+
+
+			var s = (serverTimeMeetingStart ?? endDate).StartOfWeek(DayOfWeek.Sunday).AddDays(-7 * 13);
+			var e = (serverTimeMeetingStart ?? endDate).StartOfWeek(DayOfWeek.Sunday);
+
+			if (range != null) {
+				s = range.StartTime.StartOfWeek(DayOfWeek.Sunday);
+				if (range.EndTime.StartOfWeek(DayOfWeek.Sunday) == range.EndTime) {
+					e = range.EndTime.StartOfWeek(DayOfWeek.Sunday);
+				} else {
+					e = range.EndTime.AddDays(7).StartOfWeek(DayOfWeek.Sunday);
+
+				}
+			}
+
+
+			DateTime arg;
+
+			arg = endDate.StartOfWeek(DayOfWeek.Sunday);
+			if (includeNextWeek)
+				arg = arg.AddDays(7);
+
+			//var offsetObj = Thread.GetData(Thread.GetNamedDataSlot("timeOffset"));
+			var diff = timezoneOffset;
+			//if (offsetObj != null) {
+			//    diff = (int)Math.Round((double)offsetObj);
+			//}
+
+
+			e = Math2.Max(arg, e);
+			//if (StartDate >= EndDate)
+			//	throw new PermissionsException("Date ordering incorrect");
+			var weeks = new List<L10MeetingVM.WeekVM>();
+			while (true) {
+				var currWeek = false;
+				var next = s.AddDays(7);
+				var s1 = s;
+				var displayDate = s.AddDays(-7).AddDays(6.9999).StartOfWeek(weekStart);//.AddMinutes(-(diff));
+				var displayDateNext = displayDate.AddDays(7);
+				if (serverTimeMeetingStart.NotNull(x => displayDate <= x.Value && x.Value < displayDateNext))
+					currWeek = true;
+				//var j = s.AddDays(-7);
+				weeks.Add(new L10MeetingVM.WeekVM() {
+					DisplayDate = settings.ConvertFromServerTime(displayDate),
+					StartDate = displayDate,//.AddMinutes(diff),
+					ForWeek = s.StartOfWeek(DayOfWeek.Sunday),
+					IsCurrentWeek = currWeek,
+				});
+
+				s = next;
+				if (s > e)
+					break;
+			}
+			return weeks;
+		}
+
+		[Obsolete("old timing methods",true)]
+		private static List<L10MeetingVM.WeekVM> GetWeeks_Old(TimeData settings, DateTime endDate, DateTime? highlightDate, bool includeNextWeek, bool useWeekstartForWeekNumber = false, DateRange range = null) {
+			DateTime? localTimeMeetingStart = null;
             if (highlightDate != null) {
                 localTimeMeetingStart = settings.ConvertFromServerTime(highlightDate.Value);
             }

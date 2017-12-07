@@ -471,8 +471,12 @@ namespace RadialReview.Accessors {
 			if (!potentialUsers.Any())
 				throw new PermissionsException("No users");
 
+			var selected = potentialUsers.LastOrDefault(x => x.Selected);
+			if (selected == null)
+				selected = potentialUsers.First();
+
 			return new CreateRockViewModel() {
-				AccountableUser = potentialUsers.Last(x => x.Selected).Value.ToLong(),
+				AccountableUser = selected.Value.ToLong(),
 				PotentialUsers = potentialUsers,
 			};
 		}

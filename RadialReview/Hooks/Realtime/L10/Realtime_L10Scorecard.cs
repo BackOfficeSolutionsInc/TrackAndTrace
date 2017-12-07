@@ -63,7 +63,7 @@ namespace RadialReview.Hooks.Realtime.L10 {
 				if (current != null) {
 					var ts = recur.Organization.GetTimeSettings();
 					ts.Descending = recur.ReverseScorecard;
-					var weeks = TimingUtility.GetPeriods(ts, recurMeasurable.CreateTime, current.StartTime, false);
+					var weeks = TimingUtility.GetPeriods(ts, recurMeasurable.CreateTime, current.StartTime,true);
 
 					var additional = await ScorecardAccessor._GenerateScoreModels_AddMissingScores_Unsafe(s, weeks.Select(x => x.ForWeek), measurable.Id.AsList(), scores);
 					scores.AddRange(additional);

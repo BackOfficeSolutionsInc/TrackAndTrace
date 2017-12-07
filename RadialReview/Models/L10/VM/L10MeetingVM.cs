@@ -46,7 +46,10 @@ namespace RadialReview.Models.L10.VM {
 
 		[DataContract]
 		public class WeekVM {
+			
+			public DateTime LocalDate { get { return StartDate; } }
 
+			[Obsolete("Uses local time.")]
 			public DateTime DisplayDate { get; set; }
 			[DataMember(Name = "EndDate")]
 			public DateTime DataContract_EndDate { get { return StartDate.AddDays(7); } }

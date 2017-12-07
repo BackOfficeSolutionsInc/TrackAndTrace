@@ -279,7 +279,7 @@
                 if (obj[key] == null) {
                     //Do nothing
                 } else {
-                    var isDate = parseJsonDate(value);
+                    var isDate = Time.parseJsonDate(value);
 
                     if (isDate != false) {
                         obj[key] = isDate;

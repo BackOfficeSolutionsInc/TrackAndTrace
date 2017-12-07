@@ -1667,7 +1667,7 @@ namespace RadialReview.Accessors {
 			var weeks = recur.Scorecard.Weeks.OrderByDescending(x => x.ForWeekNumber).Take(numWeeks).OrderBy(x => reverse * x.ForWeekNumber);
 			var ii = 0;
 			foreach (var w in weeks) {
-				row.Cells[4 + ii].AddParagraph(w.DisplayDate.ToString("MM/dd/yy") + " to " + w.DisplayDate.AddDays(6).ToString("MM/dd/yy"));
+				row.Cells[4 + ii].AddParagraph(w.DisplayDate.ToString("MM/dd/yy") + " to " + w.DisplayDate.Date.AddDays(6).ToString("MM/dd/yy"));
 				row.Cells[4 + ii].Format.Font.Size = Unit.FromInch(0.07);
 				row.Cells[4 + ii].Format.Font.Size = Unit.FromInch(0.07);
 				ii++;

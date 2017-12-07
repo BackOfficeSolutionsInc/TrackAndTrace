@@ -88,7 +88,10 @@ $(function () {
 				todayBtn: true,
 				orientation: "top left"
 			}).on('changeDate', function (ev) {
-				var data = { date: (ev.date).valueOf() };
+				debugger;
+				//DO NOT CONVERT TO SERVER TIME... 
+				var data = { date: ev.date.addDays(.99999).valueOf() };
+				//var data = { date: Time.toServerTime(ev.date.addDays(.99999)).valueOf() };
 				$.ajax({
 					method: "POST",
 					data: data,
@@ -202,11 +205,13 @@ function updateTodoDueDate(todo, duedate) {
 	var row = $(".todo-row[data-todo=" + todo + "]");
 	row.attr("data-duedate", duedate);
 
+	debugger;
 	var d = new Date(duedate);
-	d = Time.toLocalTime(d);
+	d = Time.parseJsonDate(d);
 
-	var a = d.toISOString().substr(0, 10).split("-");
-	var dispDate = new Date(a[0], a[1] - 1, a[2]);
+	//var a = d.toISOString().substr(0, 10).split("-");
+	//var dispDate = new Date(a[0], a[1] - 1, a[2]);
+	var dispDate = d;
 	var nowDateStr = new Date();
 	var nowDate = new Date(nowDateStr.getYear() + 1900, nowDateStr.getMonth(), nowDateStr.getDate());
 

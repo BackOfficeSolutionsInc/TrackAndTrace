@@ -97,7 +97,7 @@ namespace RadialReview.Hooks.Realtime.L10 {
             //	group.updateTodoDetails(todoId, details);
             //}
             if (updates.DueDateChanged) {
-                groups.ForEach(g => g.updateTodoDueDate(todo.Id, todo.DueDate.ToJavascriptMilliseconds()));
+                groups.ForEach(g => g.updateTodoDueDate(todo.Id, todo.DueDate));
             }
             if (updates.AccountableUserChanged) {
                 groups.ForEach(g => g.updateTodoAccountableUser(todo.Id, todo.AccountableUserId, todo.AccountableUser.GetName(), todo.AccountableUser.ImageUrl(true, ImageSize._32)));

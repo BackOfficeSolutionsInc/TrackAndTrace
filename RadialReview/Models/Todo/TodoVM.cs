@@ -1,4 +1,6 @@
-﻿using System;
+﻿using RadialReview.Models.Angular;
+using RadialReview.Utilities.DataTypes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -53,11 +55,16 @@ namespace RadialReview.Models.Todo {
         public string ForModelType { get; set; }
 
         public TodoVM() {
-            DueDate = DateTime.UtcNow.Date.AddDays(7);
+            DueDate = DateTime.UtcNow.AddDays(7);
         }
 
-        public TodoVM(long accountableUserId) : this() {
+        public TodoVM(long accountableUserId, TimeSettings timeSettings) : this() {
             AccountabilityId = new[] { accountableUserId };
+			if (timeSettings != null) {
+				var ts = timeSettings.GetTimeSettings();
+				DueDate = ts.ConvertToServerTime(ts.ConvertFromServerTime(DateTime.UtcNow).AddDays(7).Date);
+			}
+
 
         }
     }

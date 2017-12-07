@@ -917,7 +917,8 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 	};
 
 	function decideOnDate(week, selector) {
-		var dat = week.DisplayDate;
+		var dat = week.LocalDate; // week.DisplayDate;
+		//var dat = week.StartDate;
         if (selector.Period == "Monthly" || selector.Period == "Quarterly") {
 			dat = new Date(70, 0, 4);
 			dat.setDate(dat.getDate() + 7 * (week.ForWeekNumber - 1));
@@ -926,6 +927,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 	}
 
 	$scope.functions.topDate = function (week, selector) {
+		debugger;
 		var dat = decideOnDate(week, selector);
 			var date = $scope.functions.subtractDays(dat/*week.DisplayDate*/, 0, !(selector.Period == "Monthly" || selector.Period == "Quarterly"));
 		return $filter('date')(date, selector.DateFormat1);

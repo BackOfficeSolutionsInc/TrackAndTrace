@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using RadialReview.Models.Todo;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Models.Issues
 {
@@ -13,8 +14,7 @@ namespace RadialReview.Models.Issues
 		public ScoreCardTodoVM(){
 			
 		}
-		public ScoreCardTodoVM(long accountableUserId) : base(accountableUserId)
-		{
+		public ScoreCardTodoVM(long accountableUserId, TimeSettings timeSettings) : base(accountableUserId, timeSettings) {
 		}
 
 		[Required]

@@ -183,6 +183,7 @@
     <Compile Include="Hubs\CoreProcessHub.cs" />
     <Compile Include="Models\Angular\CoreProcess\AngularTask.cs" />
     <Compile Include="Models\Angular\CoreProcess\AngularCoreProcess.cs" />
+    <Compile Include="Models\Angular\LocalDateTime.cs" />
     <Compile Include="Models\Application\Variable.cs" />
     <Compile Include="Models\ClientSuccess\TooltipModels.cs" />
     <Compile Include="Models\Enums\DashboardType.cs" />
@@ -1749,6 +1750,7 @@
     <Content Include="Views\L10\AddRockModal.cshtml" />
     <Content Include="Views\Manage\Payment.cshtml" />
     <Content Include="Views\Headlines\EditModal.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\LocalDateTime.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -36,7 +36,8 @@ namespace RadialReview.Controllers {
         }
         [Access(AccessLevel.UserOrganization)]
         public PartialViewResult CreateTodoRecurrence(long? id = null) {
-            var model = new TodoVM(GetUser().Id) {
+			
+            var model = new TodoVM(GetUser().Id,GetUser()) {
                 ByUserId = GetUser().Id,
                 AccountabilityId = new[] { GetUser().Id },
                 MeetingId = -1,
@@ -150,7 +151,7 @@ namespace RadialReview.Controllers {
             var people = recur._DefaultAttendees.Select(x => x.User).ToList();
             people.Add(GetUser());
             people = people.Distinct(x => x.Id).ToList();
-            var model = new TodoVM(recur.GetDefaultTodoOwner(GetUser())) {
+            var model = new TodoVM(recur.GetDefaultTodoOwner(GetUser()),GetUser()) {
                 ForModelId = modelId,
                 ForModelType = modelType,
                 Message = todo,
@@ -234,7 +235,7 @@ namespace RadialReview.Controllers {
 
 
 
-            var model = new ScoreCardTodoVM(recur.GetDefaultTodoOwner(GetUser())) {
+            var model = new ScoreCardTodoVM(recur.GetDefaultTodoOwner(GetUser()), GetUser()) {
                 ByUserId = GetUser().Id,
                 Message = message,
                 Details = details,
@@ -284,7 +285,7 @@ namespace RadialReview.Controllers {
             people.Add(GetUser());
             people = people.Distinct(x => x.Id).ToList();
 
-            var model = new RockTodoVM(recur.GetDefaultTodoOwner(GetUser())) {
+            var model = new RockTodoVM(recur.GetDefaultTodoOwner(GetUser()),GetUser()) {
                 ByUserId = GetUser().Id,
                 Message = await s.NotNull(async x => await x.GetTodoMessage()),
                 Details = await s.NotNull(async x => await x.GetTodoDetails()),
@@ -337,7 +338,7 @@ namespace RadialReview.Controllers {
             people.Add(GetUser());
             people = people.Distinct(x => x.Id).ToList();
 
-            var model = new HeadlineTodoVm(recur.GetDefaultTodoOwner(GetUser())) {
+            var model = new HeadlineTodoVm(recur.GetDefaultTodoOwner(GetUser()),GetUser()) {
                 ByUserId = GetUser().Id,
                 Message = await s.NotNull(async x => await x.GetTodoMessage()),
                 Details = await s.NotNull(async x => await x.GetTodoDetails()),
@@ -380,7 +381,7 @@ namespace RadialReview.Controllers {
             people.Add(GetUser());
             people = people.Distinct(x => x.Id).ToList();
 
-            var model = new TodoFromIssueVM(recur.GetDefaultTodoOwner(GetUser())) {
+            var model = new TodoFromIssueVM(recur.GetDefaultTodoOwner(GetUser()), GetUser()) {
                 Message = await i.NotNull(async x => await x.GetTodoMessage()),
                 Details = await i.NotNull(async x => await x.GetTodoDetails()),
                 ByUserId = GetUser().Id,

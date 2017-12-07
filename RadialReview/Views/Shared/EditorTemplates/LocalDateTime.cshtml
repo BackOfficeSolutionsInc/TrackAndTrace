@@ -1,4 +1,4 @@
-﻿@model DateTime?
+﻿@model RadialReview.LocalDateTime
 
 @{
 	var lookups = new Dictionary<string, string>() {
@@ -54,20 +54,13 @@
 	var id = ViewData["id"] ?? name;
 	var jsDate = "{Local:true, Date: new Date()}";
 	if (Model != null) {
-		jsDate = "{Local:false, Date: new Date(" + (Model.Value.Year) + "," + (Model.Value.Month - 1) + "," + Model.Value.Day + "," + Model.Value.Hour + "," + Model.Value.Minute + "," + Model.Value.Second + ")}";
+		jsDate = "{Local:"+Model.Local.ToJavascript()+", Date:new Date(" + (Model.Date.Year) + "," + (Model.Date.Month - 1) + "," + Model.Date.Day + "," + Model.Date.Hour + "," + Model.Date.Minute + "," + Model.Date.Second + ")}";
 	} else if (allowEmpty) {
 		jsDate = "false";
 	}
 	var options = "{startDate:" + startDate + ",endDate:" + endDate + "}";
 
-	var method = "generateDatepicker";
-	if (localize) {
-		method = "generateDatepickerLocalize";
-	}
-
-	if (ViewData["correctDate"] as bool? ?? false) {
-		method = "createDatepicker";
-	}
+	var method = "createDatepicker";
 
 
 	var generater = new MvcHtmlString(method+"('." + guid + "'," + jsDate + ",'" + name + "','" + id + "',"+options+");");

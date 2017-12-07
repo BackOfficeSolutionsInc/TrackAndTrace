@@ -23,7 +23,10 @@ namespace TractionTools.UITests.L10Wizard {
 
             MeetingName = "WizardMeeting";
             Recur = L10Utility.CreateRecurrence(MeetingName).GetAwaiter().GetResult();
-        }
+			
+			Recur.AddAttendee(Recur.Creator).GetAwaiter().GetResult();
+			
+		}
 
         [TestMethod]
 		[TestCategory("Visual")]
@@ -69,7 +72,7 @@ namespace TractionTools.UITests.L10Wizard {
 
                 var page = d.Find("#l10-wizard-attendees");
 
-                d.WaitForVisible("#l10-wizard-attendees .empty-search");
+               // d.WaitForVisible("#l10-wizard-attendees .empty-search");
 
 
                 d.TestScreenshot("Blank");
@@ -87,59 +90,81 @@ namespace TractionTools.UITests.L10Wizard {
 				//Assert.IsTrue(d.WaitUntil(x => x.Find(".create-user").Displayed));
 				//Assert.IsTrue(d.WaitUntil(x => x.Find(".upload-users").Displayed));
 
-				Assert.IsTrue(d.WaitUntil(x => x.Find(".seoc .select2-selection--single").Displayed));
+				Assert.IsTrue(d.WaitUntil(10,x => x.Find(".seoc .select2-selection--single",10).Displayed));
 
 				d.TestScreenshot("Basics-Select");
             });
         }
-        [TestMethod]
+		[TestMethod]
 		[TestCategory("Visual")]
-		public void L10_Wizard_Scorecard()
-        {
-            TestView(AUC, "/l10/wizard/" + Recur.Id, d => {
-                d.Find("#l10-wizard-menu", 10);
-                var pageTitle = d.FindElement(By.PartialLinkText("Scorecard"), 10);
-                pageTitle.Click();
-                Assert.IsTrue(d.WaitUntil(x => pageTitle.HasClass("selected")));
+		public async Task L10_Wizard_Scorecard() {
+			TestView(AUC, "/l10/wizard/" + Recur.Id, d => {
+				d.Find("#l10-wizard-menu", 10);
+				var pageTitle = d.FindElement(By.PartialLinkText("Scorecard"), 10);
+				pageTitle.Click();
+				Assert.IsTrue(d.WaitUntil(x => pageTitle.HasClass("selected")));
 
-                Assert.IsTrue(d.Find(".backButton", 10).Displayed);
-                Assert.IsTrue(d.Find(".nextButton", 10).Displayed);
+				Assert.IsTrue(d.Find(".backButton", 10).Displayed);
+				Assert.IsTrue(d.Find(".nextButton", 10).Displayed);
 
-                var page = d.Find("#l10-wizard-scorecard");
+				var page = d.Find("#l10-wizard-scorecard");
 
-                d.WaitForVisible("#l10-wizard-scorecard .empty-search");
+				d.WaitForVisible("#l10-wizard-scorecard .empty-search");
 
-                d.TestScreenshot("Blank");
+				d.TestScreenshot("Blank");
 
-                Assert.AreEqual("SCORECARD MEASURABLES", page.Find(".title-bar").Text);
+				Assert.AreEqual("SCORECARD MEASURABLES", page.Find(".title-bar").Text);
 
-                Assert.IsTrue(page.Find(".upload-scorecard").Displayed);
+				Assert.IsTrue(page.Find(".upload-scorecard").Displayed);
 
-                page.Find(".create-row").Click();
+				page.Find(".create-row").Click();
 
-                var rows = d.WaitUntil(15,x => {
-                    var f = x.Finds("#ScorecardTable tbody tr");
-                    if (f.Count == 0)
-                        return null;
-                    return f;
-                });
-                d.WaitForNotVisible("#l10-wizard-scorecard .empty-search");
+				d.Find("[placeholder='Measurable Name']", 20);
+				d.Find("#modalOk").Click();
 
-                Assert.AreEqual(1, rows.Count);
+				//d.Wait(1000);
+				//d.Find("#modalOk").Submit();
 
-                var row = rows[0];
-                d.TestScreenshot("Scorecard-BeforeAdd");
+				var rows = d.WaitUntil(15, x => {
+					var f = x.Finds("#ScorecardTable tbody tr");
+					if (f.Count == 0)
+						return null;
+					return f;
+				});
+				d.WaitForNotVisible("#l10-wizard-scorecard .empty-search");
 
-                var measurableName = "Measurable-Name";
-                row.Find(".measurable-column input").SendKeys(measurableName);
-                row.Find(".value.goal-column input").SendKeys("1234");
+				Assert.AreEqual(1, rows.Count);
 
+				var row = rows[0];
+				d.TestScreenshot("Scorecard-BeforeAdd");
+
+				var measurableName = "Measurable-Name";
+				row.Find(".measurable-column input").SendKeys(measurableName);
+				row.Find(".value.goal-column input").SendKeys("1234");
+
+				d.Find("body").Click();
+
+				d.Wait(1000);
+				
 
 				d.Find("#modalOk").Submit();
 
 				d.TestScreenshot("Scorecard-AfterAdd");
+				
+				//d.Wait(1000);
+				//d.Find("#modalOk").Submit();
 
-				rows = d.WaitUntil(15,x => {
+				//rows = d.WaitUntil(15, x => {
+				//	var f = x.Finds("[placeholder='Measurable Name']");
+				//	if (f.Count == 0)
+				//		return null;
+				//	return f;
+				//});
+
+				//d.Find("[placeholder='Measurable Name']",20);
+				//d.Find("#modalOk").Click();
+
+				rows = d.WaitUntil(15, x => {
 					var f = x.Finds("#ScorecardTable tbody tr");
 					if (f.Count == 0)
 						return null;
@@ -148,79 +173,84 @@ namespace TractionTools.UITests.L10Wizard {
 				row = rows[0];
 
 
-                row.Find(".picture").Click();
-                d.WaitForVisible(".editable-wrap");
-                d.TestScreenshot("Rocks-Picture");
+				row.Find(".picture").Click();
+				d.WaitForVisible(".editable-wrap");
+				d.TestScreenshot("Rocks-Picture");
 
-                row.FindVisible(".delete-row").Click();
-                d.WaitForNotVisible(/*"#l10-wizard-scorecard */".editable-wrap");
+				row.FindVisible(".delete-row").Click();
+				d.WaitForNotVisible(/*"#l10-wizard-scorecard */".editable-wrap");
 
-                d.WaitForVisible("#l10-wizard-scorecard .empty-search");
+				d.WaitForVisible("#l10-wizard-scorecard .empty-search");
 
-            });
-        }
-        [TestMethod]
+			});
+		}
+		[TestMethod]
 		[TestCategory("Visual")]
-		public void L10_Wizard_Rocks()
-        {
-            TestView(AUC, "/l10/wizard/" + Recur.Id, d => {
-                d.Find("#l10-wizard-menu", 10);
-                var pageTitle = d.FindElement(By.PartialLinkText("Rocks"), 10);
-                pageTitle.Click();
-                Assert.IsTrue(d.WaitUntil(x => pageTitle.HasClass("selected")));
+		public async Task L10_Wizard_Rocks() {
 
-                Assert.IsTrue(d.Find(".backButton", 10).Displayed);
-                Assert.IsTrue(d.Find(".nextButton", 10).Displayed);
+			TestView(AUC, "/l10/wizard/" + Recur.Id, d => {
+				d.Find("#l10-wizard-menu", 10);
+				var pageTitle = d.FindElement(By.PartialLinkText("Rocks"), 10);
+				pageTitle.Click();
+				Assert.IsTrue(d.WaitUntil(x => pageTitle.HasClass("selected")));
 
-                var page = d.Find("#l10-wizard-rocks");
+				Assert.IsTrue(d.Find(".backButton", 10).Displayed);
+				Assert.IsTrue(d.Find(".nextButton", 10).Displayed);
 
-                d.WaitForVisible("#l10-wizard-rocks .empty-search");
+				var page = d.Find("#l10-wizard-rocks");
 
-                d.TestScreenshot("Blank");
+				d.WaitForVisible("#l10-wizard-rocks .empty-search");
 
-                Assert.AreEqual("QUARTERLY ROCKS", page.Find(".title-bar").Text);
+				d.TestScreenshot("Blank");
 
-                Assert.IsTrue(page.Find(".upload-rocks").Displayed);
+				Assert.AreEqual("QUARTERLY ROCKS", page.Find(".title-bar").Text);
 
-                page.Find(".create-row").Click();
+				Assert.IsTrue(page.Find(".upload-rocks").Displayed);
 
-                var rows = d.WaitUntil(20,x => {
-                    var f = x.Finds(".rock-pane tbody tr[md-row]");
-                    if (f.Count == 0)
-                        return null;
-                    return f;
-                });
-                d.WaitForNotVisible("#l10-wizard-rocks .empty-search");
+				page.Find(".create-row").Click();
 
-                Assert.AreEqual(1, rows.Count); //extra one for ".vs-repeat-before-content"
 
-                var row = rows[0];
-                d.TestScreenshot("Rocks-BeforeAdd");
+				d.Find("[placeholder='Rock Name']", 20);
+				d.Find("#modalForm").Submit();
 
-                var measurableName = "Rock-Name";
-                row.Find(".message-column input").SendKeys(measurableName);
-                var box = row.Find(".checkbox-column md-checkbox");
+				var rows = d.WaitUntil(20, x => {
+					var f = x.Finds(".rock-pane tbody tr[md-row]");
+					if (f.Count == 0)
+						return null;
+					return f;
+				});
+				d.WaitForNotVisible("#l10-wizard-rocks .empty-search");
 
-                Assert.AreEqual("false", box.Attr("aria-checked"));
+				Assert.AreEqual(1, rows.Count); //extra one for ".vs-repeat-before-content"
 
-                box.Click();
+				var row = rows[0];
+				d.TestScreenshot("Rocks-BeforeAdd");
 
-                Assert.AreEqual("true", box.Attr("aria-checked"));
+				var measurableName = "Rock-Name";
+				row.Find(".message-column input").SendKeys(measurableName);
+				var box = row.Find(".checkbox-column md-checkbox");
 
-                d.TestScreenshot("Rocks-AfterAdd");
+				Assert.AreEqual("false", box.Attr("aria-checked"));
 
-                row.Find(".picture").Click();
-                d.WaitForVisible(/*"#l10-wizard-rocks */".editable-wrap");
-                d.TestScreenshot("Rocks-Picture");
+				box.Click();
 
-                row.Find(".delete-row").Click();
-                d.WaitForNotVisible(/*"#l10-wizard-rocks */".editable-wrap");
+				Assert.AreEqual("true", box.Attr("aria-checked"));
 
-                d.WaitForVisible("#l10-wizard-rocks .empty-search");
+				d.TestScreenshot("Rocks-AfterAdd");
 
-            });
-        }
-        [TestMethod]
+				row.Find(".picture").Click();
+				d.WaitForVisible(/*"#l10-wizard-rocks */".editable-wrap");
+				d.TestScreenshot("Rocks-Picture");
+
+				row.Find(".delete-row-archive").Click();
+				d.WaitForVisible(/*"#l10-wizard-rocks */".grayRow");
+				d.Wait(2000);
+				d.Navigate().Refresh();
+				d.WaitForVisible("#l10-wizard-rocks .empty-search");
+
+			});
+		}
+		[TestMethod]
         [TestCategory("Visual")]
         public async Task L10_Wizard_Todo() {
             await L10Accessor.AddAttendee(AUC.User, Recur.Id, AUC.User.Id);

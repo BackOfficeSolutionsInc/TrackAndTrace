@@ -83,7 +83,7 @@ namespace RadialReview.Accessors {
 
 			var dueDate = Now.Value.AddDays(7);
 			if (DueDate != null) {
-				dueDate = creator.GetTimeSettings().ConvertToServerTime(DueDate.Value);
+				dueDate = DueDate.Value;// creator.GetTimeSettings().ConvertToServerTime(DueDate.Value);
 			}
 			dueDate = dueDate.AddDays(1).AddSeconds(-1);
 

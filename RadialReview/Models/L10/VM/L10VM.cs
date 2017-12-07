@@ -7,7 +7,7 @@ namespace RadialReview.Models.L10.VM
 	{
 
 		public TinyRecurrence Recurrence { get; set; }
-		public bool? IsAttendee { get; set; }
+		public bool? IsAttendee { get { return Recurrence.IsAttendee; } }
 		//public bool AdminMeeting { get; set; }
 
 		public L10VM(TinyRecurrence recurrence)
