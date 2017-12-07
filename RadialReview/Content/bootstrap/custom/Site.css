@@ -551,7 +551,7 @@
     }
 
 .anno-emphasise-target {
-    z-index: 1001 !important !important;
+    z-index: 1001 !important;
 }
 
 .anno-center {
@@ -1008,6 +1008,10 @@ body.resizing *::-moz-selection {
 .permissions-dropdown-menu {
   padding: 5px;
   border-radius: 0px 4px 4px 4px;
+}
+.permissions-dropdown-menu.menu-right {
+  left: auto;
+  right: 0;
 }
 .searchresult {
   line-height: 16px;

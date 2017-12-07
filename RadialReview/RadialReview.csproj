@@ -1751,6 +1751,7 @@
     <Content Include="Views\Manage\Payment.cshtml" />
     <Content Include="Views\Headlines\EditModal.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\LocalDateTime.cshtml" />
+    <Content Include="Views\L10\Pages.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

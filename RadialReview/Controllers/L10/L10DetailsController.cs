@@ -33,7 +33,10 @@ namespace RadialReview.Controllers {
             ViewBag.StartDate = start.NotNull(x => x.Value);
             ViewBag.Title = recur.Name;
 
-            return View(id);
+			ViewBag.CanEdit = PermissionsAccessor.CanEdit(GetUser(), Models.PermItem.ResourceType.L10Recurrence, id);
+
+
+			return View(id);
         }
 
 		[Access(AccessLevel.UserOrganization)]

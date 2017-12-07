@@ -1,0 +1,33 @@
+﻿@model RadialReview.Models.L10.L10Recurrence
+
+
+<h2 style="margin-bottom: -25px;">@Model.Name</h2>
+
+<div id="duration-table"></div>
+@using (Html.BeginScripts()) {
+	<script>
+
+		DataTable({
+			container:"#duration-table",
+			clickReorder:"/l10/ReorderL10Page/{0}?oldOrder={1}&newOrder={2}",
+			clickRemove: "/l10/DeleteL10Page/{0}",
+			clickEdit: "/l10/EditL10Page/{0}",
+
+			addButton:{
+				text:"New Page"
+			},
+			nodataText:"No pages. Click add to create one.",
+			clickAdd: "/L10/CreateL10Page/@Model.Id", postAdd: "/L10/EditL10Page/",
+			cells:[
+				{reorder:true},
+				{name:"Title",classes:"fullWidth",contents:function(x){return x.Title;}},
+				{name:"Type",classes:"alignCenter",contents:function(x){return "<span class='label label-default' style='min-width:80px;display: inline-block;background-color:#3e3935;'>"+x.PageTypeStr+"</span>";}},
+				//{name:"Subheading",classes:"fullWidth",contents:function(x){return x.Subheading;}},
+				{name:"Minutes",classes:"width80",contents:function(x){return x.Minutes;}},
+				{edit:true},
+				{remove:true},
+			],
+			data:@Html.ArrayToString(Model._Pages),
+		});
+	</script>
+}

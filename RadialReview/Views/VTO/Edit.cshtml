@@ -59,6 +59,17 @@
 		padding: 0px;
 	}*/
 </style>
+@if (!(ViewBag.CanEditVTOVision ?? false)) {
+	<style>
+		.vision .glyphicon-trash,
+		.vision .strategy-tabs .add-row,
+		.vision .remove-strategy{
+			display: none !important;
+
+		}
+
+	</style>
+}
 @using (Html.BeginScripts()) {
 	<script src="~/Scripts/VTO/vto.js"></script>
 
@@ -274,7 +285,6 @@
 													<div class="tab-content">
 														<div class="tab-pane fade" ng-class="{'active' : $index==0,'in':$index==0}" id="{{strategy.Id}}" ng-repeat="strategy in (model.Strategies)">
 															<span class="remove-strategy delete glyphicon glyphicon-trash" title="Delete this Marketing Strategy" ng-if="model.Strategies.length>1" ng-click="functions.DeleteStrategy('/VTO/RemoveMarketStrategy?strategyId='+strategy.Id,strategy.Title)"></span>
-
 															@*<div style="width:100%">
 																	<button  class="add-new-strategy" style="float:left;" ng-click="functions.AddNewStrategy('/VTO/CreateMarketStrategy?vto='+vtoId)">Add New</button>
 																	<button class="add-new-strategy" ng-if="model.Strategies.length>1" ng-click="functions.DeleteStrategy('/VTO/RemoveMarketStrategy?strategyId='+strategy.Id)">Delete</button>
@@ -282,10 +292,10 @@
 															<div style="display:table; width: 100%;height: 100%;">
 																<div style="display:table-cell;vertical-align:middle;">
 																	@*<div class="strategy-title">
-																		<span class="title">Title:</span>
-																		<div>
-																		</div>
-																	</div>*@
+																			<span class="title">Title:</span>
+																			<div>
+																			</div>
+																		</div>*@
 																	<div class="target-market">
 																		<span class="title">Target Market/"The List":</span>
 																		<div>

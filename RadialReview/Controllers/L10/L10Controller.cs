@@ -189,6 +189,13 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
+		public async Task<ActionResult> Pages(long id) {
+			var now = DateTime.UtcNow.ToJavascriptMilliseconds();
+			var model = L10Accessor.GetL10Recurrence(GetUser(), id, true);
+			return View(model);
+		}
+
+		[Access(AccessLevel.UserOrganization)]
 		public async Task<ActionResult> Wizard(long? id = null, string @return = null, MeetingType? type = null, bool noheading = false) {
 			ViewBag.NoTitleBar = noheading;
 			if (id == null) {
@@ -201,7 +208,11 @@ namespace RadialReview.Controllers {
 				return RedirectToAction("Wizard", new { id = l10.Id, tname = Request["tname"], tmethod = Request["tmethod"] });
 			} else {
 				//var recurrenceId = id.Value;
-				_PermissionsAccessor.Permitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, id.Value));
+				_PermissionsAccessor.Permitted(GetUser(), x => x.CanView(PermItem.ResourceType.L10Recurrence, id.Value));
+
+				ViewBag.CanEdit = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanEdit(PermItem.ResourceType.L10Recurrence, id.Value));
+				//ViewBag.CanAdmin = _PermissionsAccessor.IsPermitted(GetUser(), x => x.CanAdmin(PermItem.ResourceType.L10Recurrence, id.Value));
+
 				var now = DateTime.UtcNow.ToJavascriptMilliseconds();
 				try {
 					var initModel = (await DetailsData(id.Value, false, false, now, now, true, removeWeeks:true)).Data;

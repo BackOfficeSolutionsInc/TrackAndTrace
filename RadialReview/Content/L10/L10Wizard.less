@@ -840,7 +840,7 @@ body,
 		.btn-row {
 			.btn {
 				//width: 96%;
-				width:100%;
+				width: 100%;
 				margin: 0 5px;
 				display: block;
 				text-align: left;
@@ -965,6 +965,74 @@ body,
 		}
 	}
 }
+
+.edit-disabled {
+	input[type='checkbox'].on-edit-enabled {
+		.opacity(.65);
+	}
+
+	.upload,
+	.create-row,
+	.delete-row {
+		display: none !important;
+	}
+	.app td,
+	.app .direction {
+		cursor: default;
+	}
+
+	.app md-checkbox {
+		.opacity(.65);
+	}
+
+	.app input,
+	.app md-checkbox,
+	.app .item-wrapper,	
+	.btn-pages,.btn-texting,
+	.on-edit-enabled {
+		pointer-events: none;
+		touch-action: none;
+		cursor: not-allowed !important;
+
+
+		&, &:hover {
+			cursor: default;
+		}
+
+		input[type='checkbox'] {
+			.opacity(.65);
+		}
+
+		&.btn,
+		.btn {
+			.opacity(.65);
+			.box-shadow(none);
+
+			&:hover {
+				cursor: @cursor-disabled !important;
+			}
+
+			.icon, .glyphicon {
+				.opacity(1);
+			}
+		}
+
+		.icon, .glyphicon {
+			.opacity(.25);
+		}
+	}
+
+	iframe.on-edit-enabled {
+		&, iframe {
+			opacity: .7;
+			border: 2px #e2e2e2;
+			border-style: dashed;
+			-webkit-filter: contrast(80%);
+			filter: contrast(80%);
+		}
+	}
+}
+
 
 #alerts {
 	.material-snackbar();

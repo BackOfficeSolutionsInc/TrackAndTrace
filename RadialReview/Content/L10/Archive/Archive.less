@@ -36,8 +36,9 @@ body, html {
 	}
 
 	.owner-column {
-		vertical-align: middle !important;
+		vertical-align: top !important;
 		padding-right: 24px !important;
+		padding-top: 8px !important;
 	}
 
 	profile-picture {
@@ -196,7 +197,8 @@ body, html {
 
 		.date-column,
 		.checkbox-column {
-			vertical-align: middle !important;
+			vertical-align: top !important;
+			padding-top:12px !important;
 		}
 
 		.checkbox-column {
@@ -523,6 +525,86 @@ body, html {
 		}
 	}
 }
+
+
+.edit-disabled .meeting-archive {
+	input[type='checkbox'].on-edit-enabled {
+		.opacity(.65);
+	}
+	.add-note-btn,
+	.handle-cell *,
+	.upload,
+	.create-row,
+	.delete-row,
+	.add-btn {
+		display: none !important;
+	}
+
+	.app td,
+	.app .direction {
+		cursor: default;
+	}
+
+	.app md-checkbox {
+		.opacity(.65);
+	}
+
+	.app md-datepicker,
+	.app .status-column,
+	.app md-select,
+	.app [data-method],
+	.app input,
+	.app md-checkbox,
+	.app .item-wrapper,
+	.btn-pages, .btn-texting,
+	.on-edit-enabled {
+		pointer-events: none;
+		touch-action: none;
+		cursor: not-allowed !important;
+
+
+		&, &:hover {
+			cursor: default;
+		}
+
+		input[type='checkbox'] {
+			.opacity(.65);
+		}
+
+		.md-datepicker-triangle-button{
+			display:none;
+		}
+
+		&.btn,
+		.btn {
+			.opacity(.65);
+			.box-shadow(none);
+
+			&:hover {
+				cursor: @cursor-disabled !important;
+			}
+
+			.icon, .glyphicon {
+				.opacity(1);
+			}
+		}
+
+		.icon, .glyphicon {
+			.opacity(.25);
+		}
+	}
+
+	iframe:not(#vto-frame) {
+		&, iframe {
+			opacity: .7;
+			border: 2px #e2e2e2;
+			border-style: dashed;
+			-webkit-filter: contrast(80%);
+			filter: contrast(80%);
+		}
+	}
+}
+
 
 .repeater-container {
 	max-height: 800px;

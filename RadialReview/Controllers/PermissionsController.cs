@@ -99,13 +99,14 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.UserOrganization)]
-		public PartialViewResult Dropdown(long id, PermItem.ResourceType type, string buttonClass = null) {
+		public PartialViewResult Dropdown(long id, PermItem.ResourceType type, string buttonClass = null,bool right=false,string displayText=null) {
 			ViewBag.ButtonClass = buttonClass;
             
             ViewBag.Heading = PermissionsHeading.GetHeading(type);
+			ViewBag.Right = right;
 
             try {
-				var model = PermissionsAccessor.GetPermItems(GetUser(), id, type);
+				var model = PermissionsAccessor.GetPermItems(GetUser(), id, type, displayText);
 				return PartialView(model);
 			} catch (PermissionsException ) {
 				return PartialView(PermissionDropdownVM.NotPermitted);

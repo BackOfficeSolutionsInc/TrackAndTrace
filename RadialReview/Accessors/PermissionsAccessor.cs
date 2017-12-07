@@ -213,7 +213,7 @@ namespace RadialReview.Accessors {
         }		
 
 
-		public static PermissionDropdownVM GetPermItems(UserOrganizationModel caller, long resourceId, PermItem.ResourceType resourceType)
+		public static PermissionDropdownVM GetPermItems(UserOrganizationModel caller, long resourceId, PermItem.ResourceType resourceType,string displayText=null)
         {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -236,7 +236,7 @@ namespace RadialReview.Accessors {
                         CanEdit_Admin = admin,
                         CanEdit_Edit = admin,
                         CanEdit_View = admin,
-                        DisplayText = new HtmlString("Permissions"),
+                        DisplayText = new HtmlString(displayText??"Permissions"),
                         ResId = resourceId,
                         ResType = resourceType,
                         Items = items.Select(x=>PermItemVM.Create(x,admin)).ToList(),
