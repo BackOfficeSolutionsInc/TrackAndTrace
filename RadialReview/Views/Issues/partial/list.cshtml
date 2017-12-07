@@ -112,8 +112,8 @@
                                     <span class="move-to-vto" ng-click="functions.moveToVto(issue)"></span>
                                 </td>
                                 <td md-cell class="delete-column">
-                                    <span class="delete-row-archive" ng-if="issue.CloseTime==null" title="Archive" ng-click="functions.removeRow($event,issue)"></span>
-									<span class="delete-row-unarchive" ng-if="issue.CloseTime!=null" title="UnArchive" ng-click="functions.unarchiveRow($event,issue)"></span>
+                                    <span class="delete-row-archive delete-row" ng-if="issue.CloseTime==null" title="Archive" ng-click="functions.removeRow($event,issue)"></span>
+									<span class="delete-row-unarchive delete-row" ng-if="issue.CloseTime!=null" title="Unarchive" ng-click="functions.unarchiveRow($event,issue)"></span>
                                 </td>
                             </tr>
                         </tbody>

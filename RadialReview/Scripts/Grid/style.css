@@ -115,8 +115,6 @@ html {
             opacity: 1;
         }
 
-        .grid .controls .resize:hover {
-        }
 
     .grid > li .settings {
         -webkit-transition: opacity 0.3s,right 0.3s;

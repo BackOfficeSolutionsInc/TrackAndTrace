@@ -176,7 +176,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Edit(long? id = null, string @return = null) {
 			if (id == null)
-				return RedirectToAction("Create");
+				return RedirectToAction("Wizard", new { @return = @return});
 
 			var recurrenceId = id.Value;
 

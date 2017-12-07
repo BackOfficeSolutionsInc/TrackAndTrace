@@ -19,7 +19,8 @@ html, body {
 		color: #333333;
 		background-color: #fff;
 		border-color: #fff;
-		display: none;
+		opacity: 1;
+		transition: ease-in-out .2s opacity,ease-in-out .2s color,ease-in-out .2s color;
 	}
 
 	.panel {
@@ -29,17 +30,60 @@ html, body {
 	.panel-heading {
 		padding: 0px;
 	}
-
+	
 	.nav.nav-tabs li {
 		padding: 4px;
+		margin: 0 2px;
+		color: lightgray;
+		border-bottom: 2px solid transparent;
+		transition: ease-in-out .2s border,ease-in-out .2s color;
+
+		&.active-li {
+			color: @traction-orange;
+			font-weight: bold;
+		}
 	}
 
-	.active-li {
-		background-color: #cac8c8;
+	.nav.nav-tabs.one-strategy li {
+		padding: 4px;
+		margin: 0 2px;
+		color: transparent;
+		border-bottom: 2px solid transparent;
+		transition: ease-in-out .2s border,ease-in-out .2s color;
+
+		&.active-li {
+			color: transparent;
+			font-weight: bold;
+		}
+	}
+
+
+
+	.nav.nav-tabs li:focus {
+		outline: none !important;
+	}
+
+	.nav.nav-tabs li:not(.add-tab):hover {
+		//color: @traction-orange;
+		color: #333;
+		border-bottom: 1px solid @traction-orange;
 	}
 
 	.boxed.content:hover .panel-default > .panel-heading {
-		display: block;
+		opacity: 1;
+
+		.nav.nav-tabs li {
+			color: gray;
+
+
+			&.active-li {
+				/*background-color: #cac8c8;*/
+				border-bottom: 2px solid @traction-orange;
+				border-bottom-width: 2px !important;
+				color: @traction-orange;
+				transition: ease-in-out 0s color;
+			}
+		}
 	}
 
 	.delete {
@@ -81,12 +125,25 @@ html, body {
 		}
 	}
 
+	.add-tab {
+		min-width: 0px;
+
+		.add-row {
+			&:before {
+				font-size: 18px;
+				width: 24px;
+				height: 24px;
+				margin-top: 0px;
+			}
+		}
+	}
+
 	.content:hover .add-row,
-	.content:hover .add-row:after {
+	.content:hover .add-row:before {
 		pointer-events: all;
 	}
 
-	.content:hover .add-row:after {
+	.content:hover .add-row:before {
 		pointer-events: all;
 		opacity: 1;
 	}
@@ -99,7 +156,7 @@ html, body {
 		outline: none;
 	}
 
-	.add-row:after {
+	.add-row:before {
 		background-color: @traction-gray;
 		display: inline-block;
 		width: 34px;
@@ -120,7 +177,7 @@ html, body {
 		transition: opacity .3s ease,background .1s ease;
 	}
 
-	.add-row:hover:after {
+	.add-row:hover:before {
 		cursor: pointer;
 		background-color: @traction-orange;
 	}

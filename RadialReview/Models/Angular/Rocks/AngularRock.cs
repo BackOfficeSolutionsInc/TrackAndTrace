@@ -19,6 +19,9 @@ namespace RadialReview.Models.Angular.Rocks
 		public AngularRock(L10Recurrence.L10Recurrence_Rocks recurRock) : this(recurRock.ForRock, recurRock.VtoRock)
         {
             RecurrenceRockId = recurRock.Id;
+			if (recurRock.DeleteTime != null)
+				Archived = true;
+
         }
 
 		public AngularRock(RockModel rock, bool? vtoRock) : base(rock.Id)

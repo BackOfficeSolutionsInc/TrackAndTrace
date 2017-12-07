@@ -1798,7 +1798,6 @@
     <Content Include="Content\home\Cover.jpg" />
     <Content Include="Content\home\custom.css" />
     <Content Include="Content\home\denim.png" />
-    <Content Include="Content\home\docs.css" />
     <Content Include="Content\home\font-awesome.css" />
     <Content Include="Content\home\magnific-popup.css" />
     <Content Include="Content\home\prettify.css" />

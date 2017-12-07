@@ -4,7 +4,7 @@
 	var datepicker = (ViewBag.AddDatePicker == null || ((bool)ViewBag.AddDatePicker) == true);
 	var rockName = (ViewBag.RockName ?? Html.Organization().NotNull(x => x.Settings.NotNull(y => y.RockName)));
 	var selector = ViewBag.Selector as string ?? "(model.Rocks)";
-	var filter = ViewBag.Filter as string ?? "";// | filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate)";
+	var filter = ViewBag.Filter as string ?? " | filter:!!rock.Archived";// | filter:filters.byRange('CompleteTime',model.dataDateRange.startDate,model.dataDateRange.endDate)";
 												//var order = ViewBag.Order as string ?? "| orderBy: ['Complete','-CompleteTime','DueDate']";
 
 	var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
@@ -78,8 +78,8 @@
 								<md-checkbox aria-label="Show on V/TO" ng-model="rock.VtoRock" class="md-align-top-left" ng-change="functions.sendUpdate(rock)" title="Show on V/TO"></md-checkbox>
 							</td>
 							<td md-cell class="delete-column" style="min-width: 15px;">
-								<span ng-if="rock.Archived==false" class="delete-row-archive" ng-click="functions.removeRow($event,rock)" title="Archive Rock"></span>
-								<span ng-if="rock.Archived==true" class="delete-row-unarchive" ng-click="functions.unarchiveRow($event,rock)" title="UnArchive Rock"></span>
+								<span ng-if="rock.Archived==false" class="delete-row-archive delete-row" ng-click="functions.removeRow($event,rock)" title="Archive Rock"></span>
+								<span ng-if="rock.Archived==true" class="delete-row-unarchive delete-row" ng-click="functions.unarchiveRow($event,rock)" title="Unarchive Rock"></span>
 							</td>
 						</tr>
 

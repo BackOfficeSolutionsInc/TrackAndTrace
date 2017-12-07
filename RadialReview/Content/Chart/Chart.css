@@ -42,9 +42,6 @@
     stroke-width: 6px;
 }*/
 
-.scatter-point:not(.on) {
-    /*-webkit-filter: blur(3px);*/
-}
 
 .scatter-link {
     fill: none;
@@ -117,9 +114,7 @@
     background-color: #7AD17A;
 }
 
-.scatterPoint {
-	/*opacity: .85;*/
-}
+
 
 .scatterPoint.about-Self,line.prev.about-Self {
     border-width:2px !important;

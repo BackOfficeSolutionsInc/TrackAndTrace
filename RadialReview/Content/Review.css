@@ -633,9 +633,7 @@ textarea[disabled] {
 	backface-visibility: hidden !important;
 }
 
-.flipCard .front {
-	/*background: red;*/
-}
+
 
 .flipCard .back {
 	/*background: blue;*/
@@ -738,10 +736,6 @@ textarea[disabled] {
 	display: block;
 }
 
-.panel-body {
-	/*padding:0px;
-	padding-right:15px;*/
-}
 
 	.panel-body blocksep:last-of-type {
 		display: none;

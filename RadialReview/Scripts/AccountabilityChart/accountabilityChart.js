@@ -54,10 +54,10 @@ function generateAccNodes() {
 		output.children = []
 		var pc = parent.children;
 		if (pc) {
-			for (var i in pc) {
-				if (arrayHasOwnIndex(pc, i)) {
+			for (var k in pc) {
+				if (arrayHasOwnIndex(pc, k)) {
 					var oc = {};
-					dive(pc[i], oc);
+					dive(pc[k], oc);
 					output.children.push(oc);
 				}
 			}
@@ -91,7 +91,7 @@ var genPdf = function () {
 
 	var selected = null;
 	var scope = angular.element($("[ng-controller]")).scope();
-	if (scope != null && scope.search != null && scope.search.selected != null) {
+	if (scope !== null && scope.search !== null && scope.search.selected !== null) {
 		selected = scope.search.selected.Id;
 		fields.push({
 			text: " ", name: "which", type: "radio", options: [
@@ -137,10 +137,10 @@ var genPdf = function () {
 					showAlert("An error occurred");
 				}
 			};
-			if (d.which == "visible") {
+			if (d.which === "visible") {
 				ajax.data = JSON.stringify(generateAccNodes());
 			}
-			if (d.which == "selected") {
+			if (d.which === "selected") {
 				ajax.url += "&selected=" + selected;
 			}
 
@@ -179,11 +179,11 @@ var genPdf = function () {
 	var support = {},
         xhrId = 0,
         xhrSuccessStatus = {
-        	// file protocol always yields status code 0, assume 200
-        	0: 200,
-        	// Support: IE9
-        	// #1450: sometimes IE returns 1223 when it should be 204
-        	1223: 204
+			// file protocol always yields status code 0, assume 200
+			0: 200,
+			// Support: IE9
+			// #1450: sometimes IE returns 1223 when it should be 204
+			1223: 204
         },
         xhrCallbacks = {},
         xhrSupported = jQuery.ajaxSettings.xhr();

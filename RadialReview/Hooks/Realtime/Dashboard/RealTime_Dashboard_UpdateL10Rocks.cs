@@ -171,7 +171,9 @@ namespace RadialReview.Hooks.Realtime {
             RealTimeHelpers.DoRecurrenceUpdate(s, recurrenceId, () =>
                   new AngularUpdate() {
                     new AngularTileId<IEnumerable<AngularRock>>(0, recurrenceId, null,AngularTileKeys.L10RocksList(recurrenceId)) {
-                        Contents = AngularList.CreateFrom(AngularListType.Add, new AngularRock(rock))
+                        Contents = AngularList.CreateFrom(AngularListType.ReplaceIfNewer, new AngularRock(rock) {
+							Archived = false,
+						})
                     }
                   }
             );
@@ -181,7 +183,9 @@ namespace RadialReview.Hooks.Realtime {
             RealTimeHelpers.DoRecurrenceUpdate(s, recurrenceId, () =>
                   new AngularUpdate() {
                     new AngularTileId<IEnumerable<AngularRock>>(0, recurrenceId, null,AngularTileKeys.L10RocksList(recurrenceId)) {
-                        Contents = AngularList.CreateFrom(AngularListType.Remove,  new AngularRock(rockId))
+                        Contents = AngularList.CreateFrom(AngularListType.ReplaceIfExists,  new AngularRock(rockId) {
+							Archived=true,
+						})
                     }
                   }
             );

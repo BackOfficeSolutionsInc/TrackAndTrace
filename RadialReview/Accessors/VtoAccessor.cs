@@ -203,6 +203,8 @@ namespace RadialReview.Accessors {
 
             model.CoreFocus.Vto = model.Id;
             model.MarketingStrategy.Vto = model.Id;
+			
+
             model.OneYearPlan.Vto = model.Id;
             model.QuarterlyRocks.Vto = model.Id;
             model.ThreeYearPicture.Vto = model.Id;

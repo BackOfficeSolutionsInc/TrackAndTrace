@@ -83,9 +83,11 @@
 
 
         $(function() {
+
+
             $('md-tab-item').on('click',"body", function (e) {
-                var target = $(e.target).attr("href") // activated tab
-                window.location.hash = target;
+            	var target = $(e.target).attr("href") // activated tab
+                window.location.hash = "/"+target;
             });
 
             function setpage(page){
@@ -104,10 +106,16 @@
             }
             if (window.location.hash){
                 if (!setpage(window.location.hash))
-                    setpage("#Scorecard");
+                    setpage("#/Scorecard");
             }
             else
-                setpage("#Scorecard");
+                setpage("#/Scorecard");
+
+
+            window.addEventListener("hashchange",function(){ 
+            	setpage(window.location.hash); 
+            }, false);
+
 
             function fixHandle() {
                 $(".ui-resizable-e").css("right", -$("#ScorecardTable_Over").scrollLeft());
@@ -197,41 +205,41 @@
                             @Html.Partial("~/Views/L10/Details/scorecard.cshtml", new ViewDataDictionary() { { "ForceMin", ViewBag.NumberOfWeeks } })
                         </md-content>
                     </md-tab>
-                    <md-tab label="Rocks" href="Rocks" md-on-select="functions.setHash('Rocks')">
+                    <md-tab label="Rocks" href="Rocks" md-on-select="functions.setHash('/Rocks')">
                         <md-content class="md-padding">
                             @Html.Partial("~/Views/L10/Details/rocks.cshtml")
                         </md-content>
                     </md-tab>
 					@if ((ViewBag.IncludeHeadlines ?? RadialReview.Model.Enums.PeopleHeadlineType.None) == RadialReview.Model.Enums.PeopleHeadlineType.HeadlinesBox) {
-						<md-tab label="Headlines" href="Headlines" md-on-select="functions.setHash('Headlines')">
+						<md-tab label="Headlines" href="Headlines" md-on-select="functions.setHash('/Headlines')">
 							<md-content class="md-padding">
 								@Html.Partial("~/Views/L10/Details/headlines.cshtml")
 							</md-content>
 						</md-tab>
 					} else if ((ViewBag.IncludeHeadlines ?? RadialReview.Model.Enums.PeopleHeadlineType.None) == RadialReview.Model.Enums.PeopleHeadlineType.HeadlinesList) {
-						<md-tab label="Headlines" href="Headlines" md-on-select="functions.setHash('Headlines')">
+						<md-tab label="Headlines" href="Headlines" md-on-select="functions.setHash('/Headlines')">
 							<md-content class="md-padding">
 								@Html.Partial("~/Views/L10/Details/headlinesList.cshtml")
 							</md-content>
 						</md-tab>
 					}
-                    <md-tab label="To-dos" href="Todos" md-on-select="functions.setHash('Todos')">
+                    <md-tab label="To-dos" href="Todos" md-on-select="functions.setHash('/Todos')">
                         <md-content class="md-padding">
                             @Html.Partial("~/Views/L10/Details/todo.cshtml")
                         </md-content>
                     </md-tab>
 
-                    <md-tab label="Issues" href="Issues" md-on-select="functions.setHash('Issues')">
+                    <md-tab label="Issues" href="Issues" md-on-select="functions.setHash('/Issues')">
                         <md-content class="md-padding">
                             @Html.Partial("~/Views/L10/Details/issues.cshtml")
                         </md-content>
                     </md-tab>
-                    <md-tab label="V/TO" href="VTO" md-on-select="functions.setHash('VTO')">
+                    <md-tab label="V/TO" href="VTO" md-on-select="functions.setHash('/VTO')">
                         <md-content class="md-padding1">
                             <iframe id="vto-frame" class="vto-frame"  data-src="/vto/edit/@(ViewBag.VtoId)?noheading=true" src="/vto/edit/@(ViewBag.VtoId)?noheading=true"></iframe>
                         </md-content>
                     </md-tab>
-                    <md-tab label="Notes" href="Notes" md-on-select="functions.setHash('Notes')">
+                    <md-tab label="Notes" href="Notes" md-on-select="functions.setHash('/Notes')">
                         <md-content class="md-padding">
                             @Html.Partial("~/Views/L10/Details/notes.cshtml")
                         </md-content>

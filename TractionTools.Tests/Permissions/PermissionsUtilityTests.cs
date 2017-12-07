@@ -23,7 +23,7 @@ namespace TractionTools.Tests.Permissions {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 
-					Assert.AreEqual(9, Enum.GetValues(typeof(ResourceType)).GetLength(0));
+					Assert.AreEqual(10, Enum.GetValues(typeof(ResourceType)).GetLength(0));
 
 					var perms = PermissionsUtility.Create(s, c.E1);
 					//AccountabilityHierarchy
@@ -82,7 +82,7 @@ namespace TractionTools.Tests.Permissions {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 
-					Assert.AreEqual(9, Enum.GetValues(typeof(ResourceType)).GetLength(0));
+					Assert.AreEqual(10, Enum.GetValues(typeof(ResourceType)).GetLength(0));
 					var perms = PermissionsUtility.Create(s, c.E1);
 					//AccountabilityHierarchy
 					{
@@ -136,7 +136,7 @@ namespace TractionTools.Tests.Permissions {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 
-					Assert.AreEqual(9, Enum.GetValues(typeof(ResourceType)).GetLength(0));
+					Assert.AreEqual(10, Enum.GetValues(typeof(ResourceType)).GetLength(0));
 					var perms = PermissionsUtility.Create(s, c.E1);
 					//AccountabilityHierarchy
 					{

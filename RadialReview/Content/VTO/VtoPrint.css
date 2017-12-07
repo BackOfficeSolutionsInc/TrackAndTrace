@@ -370,8 +370,7 @@
 		padding: 0;
 	}
 
-	.vto-print .column-1 table {
-	}
+	
 
 	@page {
 		size: landscape;

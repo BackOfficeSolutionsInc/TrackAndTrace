@@ -188,9 +188,11 @@
 .fontastic-icon-inbox:before {
   content: "~";
 }
+/* csslint ignore:start */
 .fontastic-icon-info:before {
   content: "\\";
 }
+/* csslint ignore:end */
 .fontastic-icon-issue-closed:before {
   content: "\e000";
 }

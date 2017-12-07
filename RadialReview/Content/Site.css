@@ -213,9 +213,7 @@ html, body {
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#57569c', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
 }
 
-#alerts {
-	/*margin-top: 8px;*/
-}
+
 
 	#alerts, #alerts * {
 		transition: border 1s ease;
@@ -245,9 +243,6 @@ html, body {
 	margin-bottom: 0px;
 }
 
-	.alert:last-child {
-		/*margin-bottom: 10px;*/
-	}
 /*
 .jumbotron hgroup h1,hgroup h2,hgroup h3,hgroup h4,hgroup h5,hgroup h6{
     float:left;
@@ -350,9 +345,6 @@ ul a {
 	width: 100%;
 }
 
-.subheading:empty {
-	/*padding-bottom: 42px;*/
-}
 
 .subheading:not(:empty) {
 	font-family: 'Lato',sans-serif;
@@ -711,11 +703,6 @@ body {
 		transition: 0.15s linear !important;
 	}
 
-.drag ul {
-}
-
-.drop ul {
-}
 
 .greenHover, .redHover {
 	-webkit-transition: color 0.4s ease;

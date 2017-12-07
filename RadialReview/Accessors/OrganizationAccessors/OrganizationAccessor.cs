@@ -409,6 +409,9 @@ namespace RadialReview.Accessors {
 					PermTiny.Admins(),
 					PermTiny.RGM(allMemberTeam.Id, admin: false)
 				);
+				PermissionsAccessor.CreatePermItems(s, perms.GetCaller(), PermItem.ResourceType.UpdatePaymentForOrganization, output.organization.Id,
+					PermTiny.Admins()
+				);
 
 				#endregion
 

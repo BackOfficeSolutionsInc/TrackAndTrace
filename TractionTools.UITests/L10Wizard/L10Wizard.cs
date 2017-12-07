@@ -83,12 +83,13 @@ namespace TractionTools.UITests.L10Wizard {
 
                 page.Find(".create-row").Click();
 
-                Assert.IsTrue(d.WaitUntil(x => x.Find(".livesearch-container").Displayed));
-                Assert.IsTrue(d.WaitUntil(x => x.Find(".create-user").Displayed));
-                Assert.IsTrue(d.WaitUntil(x => x.Find(".upload-users").Displayed));
+				//Assert.IsTrue(d.WaitUntil(x => x.Find(".livesearch-container").Displayed));
+				//Assert.IsTrue(d.WaitUntil(x => x.Find(".create-user").Displayed));
+				//Assert.IsTrue(d.WaitUntil(x => x.Find(".upload-users").Displayed));
 
+				Assert.IsTrue(d.WaitUntil(x => x.Find(".seoc .select2-selection--single").Displayed));
 
-                d.TestScreenshot("Basics-Select");
+				d.TestScreenshot("Basics-Select");
             });
         }
         [TestMethod]

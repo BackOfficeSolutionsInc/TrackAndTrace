@@ -15,7 +15,8 @@ body {
   color: #333333;
   background-color: #fff;
   border-color: #fff;
-  display: none;
+  opacity: 1;
+  transition: ease-in-out 0.2s opacity, ease-in-out 0.2s color, ease-in-out 0.2s color;
 }
 .vto .panel {
   border: none;
@@ -25,12 +26,45 @@ body {
 }
 .vto .nav.nav-tabs li {
   padding: 4px;
+  margin: 0 2px;
+  color: lightgray;
+  border-bottom: 2px solid transparent;
+  transition: ease-in-out 0.2s border, ease-in-out 0.2s color;
 }
-.vto .active-li {
-  background-color: #cac8c8;
+.vto .nav.nav-tabs li.active-li {
+  color: #EF7622;
+  font-weight: bold;
+}
+.vto .nav.nav-tabs.one-strategy li {
+  padding: 4px;
+  margin: 0 2px;
+  color: transparent;
+  border-bottom: 2px solid transparent;
+  transition: ease-in-out 0.2s border, ease-in-out 0.2s color;
+}
+.vto .nav.nav-tabs.one-strategy li.active-li {
+  color: transparent;
+  font-weight: bold;
+}
+.vto .nav.nav-tabs li:focus {
+  outline: none !important;
+}
+.vto .nav.nav-tabs li:not(.add-tab):hover {
+  color: #333;
+  border-bottom: 1px solid #EF7622;
 }
 .vto .boxed.content:hover .panel-default > .panel-heading {
-  display: block;
+  opacity: 1;
+}
+.vto .boxed.content:hover .panel-default > .panel-heading .nav.nav-tabs li {
+  color: gray;
+}
+.vto .boxed.content:hover .panel-default > .panel-heading .nav.nav-tabs li.active-li {
+  /*background-color: #cac8c8;*/
+  border-bottom: 2px solid #EF7622;
+  border-bottom-width: 2px !important;
+  color: #EF7622;
+  transition: ease-in-out 0s color;
 }
 .vto .delete {
   vertical-align: top;
@@ -63,11 +97,20 @@ body {
   width: 16px;
   padding-left: 2px;
 }
+.vto .add-tab {
+  min-width: 0px;
+}
+.vto .add-tab .add-row:before {
+  font-size: 18px;
+  width: 24px;
+  height: 24px;
+  margin-top: 0px;
+}
 .vto .content:hover .add-row,
-.vto .content:hover .add-row:after {
+.vto .content:hover .add-row:before {
   pointer-events: all;
 }
-.vto .content:hover .add-row:after {
+.vto .content:hover .add-row:before {
   pointer-events: all;
   opacity: 1;
 }
@@ -77,7 +120,7 @@ body {
 .vto .delete:focus {
   outline: none;
 }
-.vto .add-row:after {
+.vto .add-row:before {
   background-color: #cac8c8;
   display: inline-block;
   width: 34px;
@@ -97,7 +140,7 @@ body {
   opacity: 0;
   transition: opacity .3s ease,background .1s ease;
 }
-.vto .add-row:hover:after {
+.vto .add-row:hover:before {
   cursor: pointer;
   background-color: #EF7622;
 }

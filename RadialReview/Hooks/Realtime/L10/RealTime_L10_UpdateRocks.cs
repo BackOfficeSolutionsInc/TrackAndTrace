@@ -123,7 +123,9 @@ namespace RadialReview.Hooks.Realtime.L10 {
 
                 rt.UpdateRecurrences(recurrenceId).Update(
                     new AngularRecurrence(recurrenceId) {
-                        Rocks = AngularList.CreateFrom(AngularListType.Remove, new AngularRock(rock.Id))
+                        Rocks = AngularList.CreateFrom(AngularListType.ReplaceIfExists, new AngularRock(rock.Id) {
+							Archived= true
+						})
                     }
                 );
             }

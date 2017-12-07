@@ -297,8 +297,7 @@ img.mfp-img {
     padding-right: 0; }
   .mfp-img-mobile img.mfp-img {
     padding: 0; }
-  .mfp-img-mobile .mfp-figure {
-    /* The shadow behind the image */ }
+
     .mfp-img-mobile .mfp-figure:after {
       top: 0;
       bottom: 0; }
