@@ -2426,11 +2426,21 @@ body.resizing .notes-tile:after,
 }
 .dashboard .software-updates h1 {
   margin: 0;
-  font-size: 14px;
+  font-size: 16px;
   color: #6D645D;
   font-weight: bold;
   text-transform: uppercase;
   white-space: nowrap;
+}
+.dashboard .software-updates .head {
+  color: #5d5d5d;
+  font-size: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+  white-space: nowrap;
+  font-family: 'Lato', sans-serif;
+  letter-spacing: 0.6px;
+  margin-bottom: 10px;
 }
 .dashboard .software-updates h2 {
   margin: 0;
@@ -2440,15 +2450,41 @@ body.resizing .notes-tile:after,
 .dashboard .software-updates p {
   margin: 0;
   font-size: 12px;
-  margin-bottom: 6px;
+  margin-bottom: 20px;
+  margin-top: 2px;
   color: darkgray;
   margin-left: 6px;
 }
+.dashboard .software-updates .su-row {
+  display: block;
+  transition: ease-in-out 0.2s color;
+}
+.dashboard .software-updates .su-row:before {
+  content: ".";
+  color: #333;
+  /* font-size: 21px; */
+  left: -5px;
+  position: relative;
+  top: -3px;
+  font-weight: bold;
+  transition: ease-in-out 0.2s color;
+}
+.dashboard .software-updates .su-row:hover {
+  color: #EF7622;
+}
+.dashboard .software-updates .su-row:hover:before {
+  color: #EF7622;
+}
 .dashboard .software-updates ul {
-  padding-left: 6px;
-  font-size: 9px;
+  /*padding-left: 6px;
+			font-size: 9px;*/
+  font-size: 14px;
   color: #A9A9A9;
   list-style: none;
+  transition: ease-in-out 0.2s color;
+}
+.dashboard .software-updates ul:hover {
+  color: #333;
 }
 .dashboard .software-updates ul > li {
   padding-left: 1.1m;
@@ -2461,8 +2497,10 @@ body.resizing .notes-tile:after,
 }
 .dashboard .software-updates blockquote {
   padding: 5px 15px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   border-left: 4px solid #D0D0D0;
+  font-size: 14px;
+  margin-top: 2px;
 }
 .dashboard .width_1 .software-updates {
   padding: 5px;
