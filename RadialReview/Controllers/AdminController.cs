@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -105,7 +106,12 @@ namespace RadialReview.Controllers {
 		}
 		#endregion
 
-
+		[Access(AccessLevel.Radial)]
+		[AsyncTimeout(5000)]
+		public async Task<ActionResult> Wait(CancellationToken ct,int seconds = 10,int timeout = 5) {
+			await Task.Delay((int)(seconds * 1000));
+			return Content("done "+ DateTime.UtcNow.ToJsMs());
+		}
 
 		[Access(AccessLevel.Radial)]
 		public ActionResult Signups(int days = 14) {
