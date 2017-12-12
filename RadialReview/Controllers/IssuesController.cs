@@ -208,6 +208,18 @@ namespace RadialReview.Controllers
             return Json(ResultObject.SilentSuccess().NoRefresh());
         }
 
+        [HttpPost]
+        [Access(AccessLevel.UserOrganization)]
+        public async Task<JsonResult> UnCopyModal(CopyIssueVM model)
+        {
+            //ValidateValues(model, x => x.ParentIssue_RecurrenceId, x => x.IssueId);
+            var issue = IssuesAccessor.UnCopyIssue(GetUser(), model.ParentIssue_RecurrenceId, model.CopyIntoRecurrenceId);
+            //model.PossibleRecurrences = L10Accessor.GetAllConnectedL10Recurrence(GetUser(), issue.Recurrence.Id);
+
+            await IssuesAccessor.EditIssue(GetUser(), model.ParentIssue_RecurrenceId, awaitingSolve: false);
+            return Json(ResultObject.SilentSuccess().NoRefresh());
+        }
+
         [Access(AccessLevel.UserOrganization)]
         public PartialViewResult CreateIssue(long recurrence, long meeting = -1, string issue = null, long? modelId = null, string modelType = null)
         {

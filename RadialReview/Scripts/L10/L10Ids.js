@@ -154,20 +154,16 @@ $(function () {
             });
         },
         undo: function () {
-            var parent_reccurenceId = this.copyIntoRevertId;
-            var copyIntoRecurrenceId = this.parenRevertId;
-            alert('undo');
-            //$.ajax({
-            //    url: "/Issues/CopyModal/",
-            //    data: { ParentIssue_RecurrenceId: parent_reccurenceId, CopyIntoRecurrenceId: copyIntoRecurrenceId },
-            //    success: function (data) {
-            //        //if (showJsonAlert(data)) {
-            //        refreshCurrentIssueDetails();
-            //        refreshRanks();
-
-            //        //}
-            //    }
-            //});
+            $.ajax({
+                url: "/Issues/UnCopyModal/",
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(this.modalData),// JSON.stringify(formData),                               
+                success: function (data) {
+                    refreshCurrentIssueDetails();
+                    refreshRanks();
+                }
+            });
         }
     });
 
@@ -470,6 +466,7 @@ function deserializeIssues(selector, issueList) {
     refreshCurrentIssueDetails();
 }
 function appendIssue(selector, issue, order) {
+    console.log()
     var li = $(constructRow(issue));
     if (typeof (order) !== "undefined") {
         if (order == "data-priority") {
