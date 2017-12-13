@@ -83,7 +83,7 @@ namespace RadialReview.Accessors {
 
 			var dueDate = Now.Value.AddDays(7);
 			if (DueDate != null) {
-				dueDate = creator.GetTimeSettings().ConvertToServerTime(DueDate.Value);
+				dueDate = DueDate.Value;// creator.GetTimeSettings().ConvertToServerTime(DueDate.Value);
 			}
 			dueDate = dueDate.AddDays(1).AddSeconds(-1);
 
@@ -160,22 +160,30 @@ namespace RadialReview.Accessors {
 
 			await HooksRegistry.Each<ITodoHook>((ses, x) => x.CreateTodo(ses, todo));
 
+            if (todo.ForRecurrenceId.HasValue && todo.ForRecurrenceId > 0) {
+                await HooksRegistry.Each<IMeetingTodoHook>((ses, x) => x.AttachTodo(ses, perms.GetCaller(), todo));
+            }
+
 			return todo;
 
 		}
 
-		public static async Task UpdateTodo(UserOrganizationModel caller, long todoId, string message = null, DateTime? dueDate = null, long? accountableUser = null, bool? complete = null) {
+		public static async Task UpdateTodo(UserOrganizationModel caller, long todoId, string message = null, DateTime? dueDate = null, long? accountableUser = null, bool? complete = null, ForModel source = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					await UpdateTodo(s, perms, todoId, message, dueDate, accountableUser, complete);
+                    await UpdateTodo(s, perms, todoId, message, dueDate, accountableUser, complete, source: source);
+                    //L10Recurrence L10 = new L10Recurrence();
+                    //ForModel.Create(L10);
+                    //ForModel.Create<L10Recurrence>(1);
+
 					tx.Commit();
 					s.Flush();
 				}
 			}
 		}
 		
-		public static async Task UpdateTodo(ISession s, PermissionsUtility perms, long todoId, string message = null, DateTime? dueDate = null, long? accountableUser = null, bool? complete = null, bool duringMeeting = false/*, string connectionId = null, bool duringMeeting = false, bool? delete = null*/) {
+        public static async Task UpdateTodo(ISession s, PermissionsUtility perms, long todoId, string message = null, DateTime? dueDate = null, long? accountableUser = null, bool? complete = null, bool duringMeeting = false, ForModel source = null /*, string connectionId = null, bool duringMeeting = false, bool? delete = null*/) {
 			perms.EditTodo(todoId);
 
 			var todo = s.Get<TodoModel>(todoId);
@@ -216,10 +224,84 @@ namespace RadialReview.Accessors {
 							todo.CompleteDuringMeetingId = meetingId;
 					} catch (Exception) { }
 				}
+            }
+
+            List<Action> actionList = new List<Action>();
+            if (source != null) {
+                actionList = await ChangeTodoSource(s,perms, source, todo);
 			}
 
 			s.Update(todo);
 			await HooksRegistry.Each<ITodoHook>((ses, x) => x.UpdateTodo(ses,perms.GetCaller(), todo, updates));
+
+            foreach (var item in actionList) {
+                item();
+            }
+        }
+
+        private static async Task<List<Action>> ChangeTodoSource(ISession s, PermissionsUtility perms, ForModel newSource_, TodoModel todo) {
+            
+            List<Action> actionList = new List<Action>();
+            var l10Todo = ForModel.GetModelType<L10Recurrence>();
+            var personalTodo = ForModel.GetModelType<UserOrganizationModel>();
+
+            {
+                // deal with oldSource
+                var oldListSource = todo.GetListSource();
+
+                if(oldListSource.ModelType != l10Todo && (oldListSource.ModelType != personalTodo)) {
+                    throw new PermissionsException("Unhandled List Type.");
+                }
+
+                if (oldListSource.Equals(newSource_)) {
+                    return actionList;
+                }
+
+                if (oldListSource.ModelType == l10Todo) {
+                    perms.EditL10Recurrence(oldListSource.ModelId);
+                    actionList.Add((async () => await HooksRegistry.Each<IMeetingTodoHook>((ses, x) => x.DetachTodo(ses, perms.GetCaller(), todo))));
+                    //await HooksRegistry.Each<IMeetingTodoHook>((ses, x) => x.DetachTodo(ses, perms.GetCaller(), todo, oldListSource.ModelId));
+                }
+
+                if (oldListSource.ModelType == personalTodo) {
+                    perms.Self(oldListSource.ModelId);
+                    actionList.Add((async () => await HooksRegistry.Each<IMeetingTodoHook>((ses, x) => x.DetachTodo(ses, perms.GetCaller(), todo))));
+                }
+            }
+
+            {
+                // deal with newSource
+                var newSource = newSource_;
+
+                if (newSource.ModelType != l10Todo && (newSource.ModelType != personalTodo)) {
+                    throw new PermissionsException("Unhandled List Type.");
+                }
+
+                if (newSource.ModelType == l10Todo) {
+                    perms.EditL10Recurrence(newSource.ModelId);
+                    actionList.Add((async () => await HooksRegistry.Each<IMeetingTodoHook>((ses, x) => x.AttachTodo(ses, perms.GetCaller(), todo))));
+
+                    todo.ForRecurrenceId = newSource.ModelId;
+                    todo.ForRecurrence = s.Get<L10Recurrence>(newSource.ModelId);
+                    todo.TodoType = TodoType.Recurrence;
+                }
+
+                if (newSource.ModelType == personalTodo) {
+                    perms.Self(newSource.ModelId);
+
+                    if (newSource.ModelId != todo.AccountableUserId) {
+                        throw new PermissionsException("You can only create personal todo for yourself.");
+                    }
+
+                    actionList.Add((async () => await HooksRegistry.Each<IMeetingTodoHook>((ses, x) => x.AttachTodo(ses, perms.GetCaller(), todo))));
+
+                    todo.ForRecurrenceId = null; // for personal todo
+                    todo.ForRecurrence = null;
+                    todo.TodoType = TodoType.Personal;
+                }
+            }
+            
+            return actionList;
 		}
 
 		public static async Task CompleteTodo(UserOrganizationModel caller, long todoId, bool completed = true,bool duringMeeting=false) {
@@ -231,7 +313,6 @@ namespace RadialReview.Accessors {
 					s.Flush();
 				}
 			}
-
 		}
 
 		public static async Task CompleteTodo(ISession s, PermissionsUtility perms, long todoId, bool completed = true, bool duringMeeting = false) {
@@ -242,7 +323,6 @@ namespace RadialReview.Accessors {
 				throw new PermissionsException("To-do already unchecked.");
 			await UpdateTodo(s, perms, todoId, complete: completed, duringMeeting: duringMeeting);
 		}
-
 
 		public static TodoModel GetTodo(UserOrganizationModel caller, long todoId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -294,8 +374,14 @@ namespace RadialReview.Accessors {
 					var q = s.QueryOver<TodoModel>().Where(x => x.DeleteTime == null && x.AccountableUserId == a);
 					//.WhereRestrictionOn(x => x.AccountableUserId)
 					//.IsIn(userIds);
+
+					var useStart = weekAgo;
+					if (range != null) {
+						useStart = range.StartTime;
+					}
+					
 					if (excludeCompleteDuringMeeting)
-						q = q.Where(x => x.CompleteTime == null || (x.CompleteTime != null && x.CompleteTime > weekAgo && x.CompleteDuringMeetingId == null));
+						q = q.Where(x => x.CompleteTime == null || (x.CompleteTime != null && x.CompleteTime >= useStart && x.CompleteDuringMeetingId == null));
 					if (false && range != null)
 						q = q.Where(x => x.CompleteTime == null || (x.CompleteTime != null && x.CompleteTime >= range.StartTime && x.CompleteTime <= range.EndTime));
 					todosMany.Add(q.List().ToList());

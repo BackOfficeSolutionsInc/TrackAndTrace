@@ -19,6 +19,9 @@ namespace RadialReview.Models.Angular.Rocks
 		public AngularRock(L10Recurrence.L10Recurrence_Rocks recurRock) : this(recurRock.ForRock, recurRock.VtoRock)
         {
             RecurrenceRockId = recurRock.Id;
+			if (recurRock.DeleteTime != null)
+				Archived = true;
+
         }
 
 		public AngularRock(RockModel rock, bool? vtoRock) : base(rock.Id)
@@ -30,6 +33,7 @@ namespace RadialReview.Models.Angular.Rocks
 			Completion = rock.Completion;
 			VtoRock = vtoRock;//rock.CompanyRock;
             CreateTime = rock.CreateTime;
+			Archived = rock.Archived;
 		}
 		public string Name { get; set; }
 		public AngularUser Owner { get; set; }
@@ -37,6 +41,7 @@ namespace RadialReview.Models.Angular.Rocks
 		public bool? Complete { get; set; }
 		public RockState? Completion { get; set; }
         public DateTime? CreateTime { get; set; }
+		public bool Archived { get; set; }
 
 		[IgnoreDataMember]
 		public long? RecurrenceRockId { get; set; }

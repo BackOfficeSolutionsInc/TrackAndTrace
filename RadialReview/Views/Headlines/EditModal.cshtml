@@ -1,0 +1,66 @@
+﻿@using RadialReview.Areas.CoreProcess.Models.Process
+@model RadialReview.Models.L10.PeopleHeadline
+@{
+
+	var list = new List<CandidateGroupViewModel>();
+	if (Model.AboutId.HasValue) {
+		list.Add(new CandidateGroupViewModel() { Id = Model.AboutId.Value, Name = Model.AboutName });
+	}
+}
+
+@Html.HiddenFor(x => x.Id)
+
+<div class="form-group">
+	@*@Html.LabelFor(x => x.Message)*@
+	@Html.TextAreaFor(x => x.Message, new { @class = "form-control autoResize", placeholder = "Enter Headline message", autocomplete = "off", disable = ViewBag.CanEdit == false })
+</div>
+<div class="form-group">
+	<iframe src="/headlines/Pad/@Model.Id" width="99.8%"></iframe>
+</div>
+<div class="form-group">
+	<label>About <small class="gray">(optional)</small></label>
+	<div class="row ">
+		<div class="col-sm-12">
+			@Html.Partial("~/Views/Shared/EditorTemplates/SearchUsers.cshtml", new ViewDataDictionary() {
+			{"Name","AboutId"},
+			{"SelectedItemList",list},
+			{"SearchUrl","/Search/RGM?includeTerm=true" }
+		})
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-5">
+		<div class="form-group">
+			<label>Created Date: </label>
+			<div style="font-size: 15px;padding-top: 6px;color: #333;">@Model.CreateTime.ToString("MM-dd-yyyy")</div>
+		</div>
+	</div>
+</div>
+
+
+<script>
+	//function formatState(state) {
+	//	if (!state.id) {
+	//		return state.text;
+	//	}
+	//	var $state = $('<span><img style="max-width:32;max-height:32px" src="' + $(state.element).data("img") + '" class="img-flag" /> ' + state.text + '</span>');
+	//	return $state;
+	//};
+
+	$(".select-user").select2({
+		templateResult: imageListFormat,
+		templateSelection: imageListFormat,
+	});
+
+	$(".autoResize").autoResize();
+
+	@*var now = new Date();
+	now = Date.UTC(now.getYear()+1900, now.getMonth(), now.getDate(),0,0,0);
+	$('#TodoDueDate').datepickerX({
+	    format: '@Html.Organization().Settings.GetDateFormat().ToLower()',
+		onRender: function(date) {
+			return date.valueOf() < now.valueOf() ? 'disabled' : '';
+		}
+	});*@
+</script>

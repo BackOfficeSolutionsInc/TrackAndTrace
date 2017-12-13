@@ -9,6 +9,7 @@ using RadialReview.Models.Json;
 using RadialReview.Models.Scorecard;
 using RadialReview.Models.UserTemplate;
 using System.Threading.Tasks;
+using static RadialReview.Utilities.SelectExistingOrCreateUtility;
 
 namespace RadialReview.Controllers
 {
@@ -28,8 +29,34 @@ namespace RadialReview.Controllers
             public bool UpdateAllL10s { get; set; }
             public MeasurableVM()
             {
-                UpdateAllL10s = true;
+				UpdateAllL10s = false;//true;
             }
+		}
+
+		[HttpGet]
+		[Access(AccessLevel.UserOrganization)]
+		public async Task<JsonResult> Search(string q, int results = 4, string exclude = null) {
+			long[] excludeLong = new long[] { };
+			if (exclude != null) {
+				try {
+					excludeLong = exclude.Split(',').Select(x => x.ToLong()).ToArray();
+				} catch (Exception) { }
+			}
+
+			var oo = await ScorecardAccessor.Search(GetUser(), GetUser().Organization.Id, q, excludeLong);
+			//var oo = _SearchUsers(q, results, exclude);
+			var o = oo.Select(x => {
+				var desc = "Owner: " + x.AccountableUser.GetName();
+				if (x.AccountableUserId != x.AdminUserId)
+					desc += " (Admin: " + x.AdminUser.GetName() + ")";
+				return new BaseSelectExistingOrCreateItem {					
+					ItemValue = "" + x.Id,
+					Name = x.Title,
+					ImageUrl = x.AccountableUser.GetImageUrl(),
+					Description = desc
+				};
+			}).ToList();
+			return Json(ResultObject.SilentSuccess(o), JsonRequestBehavior.AllowGet);
 		}
 
 

@@ -475,7 +475,7 @@ namespace TractionTools.Tests.Permissions {
 		public async Task ViewL10Meeting() {
 			var c = await Ctx.Build();
 			var l10 = await L10Accessor.CreateBlankRecurrence(c.Middle, c.Id);
-			var meeting = await L10Accessor.StartMeeting(c.Middle, c.Middle, l10.Id, new List<long>());
+			var meeting = await L10Accessor.StartMeeting(c.Middle, c.Middle, l10.Id, new List<long>(),false);
 			var perm = new Action<PermissionsUtility>(p => p.ViewL10Meeting(meeting.Id));
 
 			c.AssertAll(perm, c.Middle, c.Manager);

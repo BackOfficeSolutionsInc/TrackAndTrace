@@ -9,6 +9,7 @@ using RadialReview.Models.Angular.Todos;
 using RadialReview.Models.Todo;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Api.V1 {
 	[RoutePrefix("api/v1")]
@@ -68,7 +69,10 @@ namespace RadialReview.Api.V1 {
 		[HttpGet]
 		public IEnumerable<AngularTodo> GetMineTodos() {
 			// need to ask for method GetMyTodos() in TodoAccessor
-			return TodoAccessor.GetMyTodosAndMilestones(GetUser(), GetUser().Id, true);//.Select(x => new AngularTodo(x));
+
+			var range = new DateRange(DateTime.UtcNow.AddDays(-1),DateTime.UtcNow);
+
+			return TodoAccessor.GetMyTodosAndMilestones(GetUser(), GetUser().Id, true, range);//.Select(x => new AngularTodo(x));
 		}
 		/// <summary>
 		/// Get to-dos for a user

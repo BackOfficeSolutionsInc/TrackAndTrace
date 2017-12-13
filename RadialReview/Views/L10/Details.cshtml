@@ -1,243 +1,256 @@
 ﻿@model long
 @{
-    ViewBag.Title = ViewBag.Title?? "Meeting Details";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.FullWidth = true;
+	ViewBag.Title = ViewBag.Title ?? "Meeting Details";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.FullWidth = true;
 
-    Html.RenderPartial("~/Views/CDN/Angular.cshtml");
+	Html.RenderPartial("~/Views/CDN/Angular.cshtml");
 
 }
 @using (Html.BeginStyles()) {
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
-    @Styles.Render("~/styles/L10")
-    @Styles.Render("~/styles/meeting")
-    @Styles.Render("~/styles/archive")
+	@Styles.Render("~/styles/L10")
+	@Styles.Render("~/styles/meeting")
+	@Styles.Render("~/styles/archive")
 
-    <style>
-        input.due-date {
-            border: none;
-            width: 80px;
-            text-decoration: underline;
-            color: #767F99;
-            text-align: center;
-            background-color: rgba(0, 0, 0, 0);
-            cursor: pointer;
-        }
+	<style>
+		input.due-date {
+			border: none;
+			width: 80px;
+			text-decoration: underline;
+			color: #767F99;
+			text-align: center;
+			background-color: rgba(0, 0, 0, 0);
+			cursor: pointer;
+		}
 
-        .body-content {
-            max-width: 90%;
-        }
+		.body-content {
+			max-width: 90%;
+		}
 
-        .meeting-archive .todo-list-container .picture-column {
-            display: block;
-        }
+		.meeting-archive .todo-list-container .picture-column {
+			display: block;
+		}
 
-        .fontastic-icon-checklist:before {
-            font-size: inherit;
-        }
+		.fontastic-icon-checklist:before {
+			font-size: inherit;
+		}
 
-        .vto-frame {
-            width: 100%;
-            height: 640px;
-            height: calc(100vh - 196px);
-            margin-top: 10px;
-            border: none;
-        }
+		.vto-frame {
+			width: 100%;
+			height: 640px;
+			height: calc(100vh - 196px);
+			margin-top: 10px;
+			border: none;
+		}
 
-        .nav.nav-pills.tabs-up a span {
-            margin-left: -4px;
-            margin-right: 1px;
-        }
-    </style>
+		.nav.nav-pills.tabs-up a span {
+			margin-left: -4px;
+			margin-right: 1px;
+		}
+	</style>
 
 }
 @using (Html.BeginScripts()) {
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-    @Scripts.Render("~/bundles/meeting")
-    @Scripts.Render("~/bundles/MeetingDetails")
-	
-    <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+	@Scripts.Render("~/bundles/meeting")
+	@Scripts.Render("~/bundles/MeetingDetails")
 
-    <script>
+
+
+	<script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+
+	<script>
+		
+		@if (!(ViewBag.CanEdit??false)) {
+			@:$("body").addClass("edit-disabled");
+		}
+
 		window.recurrenceId = @Model;
-        angular.module('L10App')
+		angular.module('L10App')
 			.value('recurrenceId', @Model)
 			.value('date-range',"today")
 			.value('meetingDataUrlBase', '/L10/DetailsData/{0}?'@*start=@ViewBag.StartDate'*@)
 			.value("meetingCallback",false);
-        $('#pages a').click(function(e) {
-            e.preventDefault();
-            $(this).tab('show');
-        });
+		$('#pages a').click(function(e) {
+			e.preventDefault();
+			$(this).tab('show');
+		});
 
 
-        function printIframe(id)
-        {
-            var iframe = document.frames ? document.frames[id] : document.getElementById(id);
-            var ifWin = iframe.contentWindow || iframe;
-            iframe.focus();
-            ifWin.printPage();
-            return false;
-        }
+		function printIframe(id)
+		{
+			var iframe = document.frames ? document.frames[id] : document.getElementById(id);
+			var ifWin = iframe.contentWindow || iframe;
+			iframe.focus();
+			ifWin.printPage();
+			return false;
+		}
+
+		$(function() {
+
+			$('md-tab-item').on('click',"body", function (e) {
+				var target = $(e.target).attr("href") // activated tab
+				window.location.hash = "/"+target;
+			});
+
+			function setpage(page){
+				page = page.replace(/^[#\/]*/gm,'');
+				var found = $("md-tab[href='"+page+"']");
+				if (found.length==1){
+
+					var id = $("md-tab").index(found);
+					var $scope = angular.element($('[ng-controller="L10Controller"]')).scope();
+					$scope.$apply(function() {
+						$scope.selectedTab = id;
+					});
+					return true;
+				}
+				return false;
+			}
+			if (window.location.hash){
+				if (!setpage(window.location.hash))
+					setpage("#/Scorecard");
+			}
+			else
+				setpage("#/Scorecard");
 
 
-        $(function() {
-            $('md-tab-item').on('click',"body", function (e) {
-                var target = $(e.target).attr("href") // activated tab
-                window.location.hash = target;
-            });
-
-            function setpage(page){
-                page = page.replace(/^[#\/]*/gm,'');
-                var found = $("md-tab[href='"+page+"']");
-                if (found.length==1){
-
-                    var id = $("md-tab").index(found);
-                    var $scope = angular.element($('[ng-controller="L10Controller"]')).scope();
-                    $scope.$apply(function() {
-                        $scope.selectedTab = id;
-                    });
-                    return true;
-                }
-                return false;
-            }
-            if (window.location.hash){
-                if (!setpage(window.location.hash))
-                    setpage("#Scorecard");
-            }
-            else
-                setpage("#Scorecard");
-
-            function fixHandle() {
-                $(".ui-resizable-e").css("right", -$("#ScorecardTable_Over").scrollLeft());
-            }
-
-            function slideRight(){
-                setTimeout(function() {
-                	if ($(".scroll-right").length){
-                        $(".scroll-right").scrollLeft(4000);
-                        $("#ScorecardTable_Over").scrollLeft(10000).scrollLeft(0);
-                    }else{
-                        slideRight();
-                    }
-                },100);
-            }
-
-            setTimeout(function() {
-                slideRight();
-
-                $("#ScorecardTable_Over").resizable({
-                    handles: 'e',
-                });
-                $("#ScorecardTable_Over").scroll(function(e) {
-                    fixHandle();
-                });
-                var shift = 0;
-                $(".table-responsive").scroll(function(e) {
-                    $("#ScorecardTable_Over").removeClass("hidden");
-                    if ($(".table-responsive").scrollLeft() - shift < $("#ScorecardTable_Over").scrollLeft() ) {
-                        $("#ScorecardTable_Over").addClass("hidden");
-                    }
-                });
-
-                $("#ScorecardTable_Over").scrollLeft(10000).scrollLeft(0);
-
-            }, 1000);
-
-            $("body").on("click", ".measurableModal:not(.disabled)", function() {
-                var m = $(this).data("recurrence");
-                showModal('Add Measurable', '/L10/AddMeasurable/' + m, '/L10/AddMeasurable/');
-            });
-
-            $(document).bind("keyup keydown", function(e){
-                if((e.ctrlKey || e.metaKey) && e.keyCode == 80){
-                    //refreshDocHeight();
-                    //window.print();
-                    var scope = angular.element($('[ng-controller="L10Controller"]')).scope();
-                    var w;
-                    var page="";
-                    var hash = window.location.hash;
-                    debugger;
-                    if (hash.contains("#/VTO")){
-                        page = "vto=true";
-                    }else if (hash.contains("#/Scorecard")){
-                        page = "scorecard=true";
-                    }else if (hash.contains("#/Todo")){
-                        page = "todos=true";
-                    }else if (hash.contains("#/Rocks")){
-                        page = "rocks=true";
-                    }else if (hash.contains("#/Issues")){
-                        page = "issues=true";
-                    }else{
-                        return;
-                    }
-                    w = window.open("/Quarterly/PrintPages/"+scope.model.Id+"?"+page);
-                    w.print();
-                    e.preventDefault();
-                }
-            });
+			window.addEventListener("hashchange",function(){
+				setpage(window.location.hash);
+			}, false);
 
 
-        });
-    </script>
+			function fixHandle() {
+				$(".ui-resizable-e").css("right", -$("#ScorecardTable_Over").scrollLeft());
+			}
+
+			function slideRight(){
+				setTimeout(function() {
+					if ($(".scroll-right").length){
+						$(".scroll-right").scrollLeft(4000);
+						$("#ScorecardTable_Over").scrollLeft(10000).scrollLeft(0);
+					}else{
+						slideRight();
+					}
+				},100);
+			}
+
+			setTimeout(function() {
+				slideRight();
+
+				$("#ScorecardTable_Over").resizable({
+					handles: 'e',
+				});
+				$("#ScorecardTable_Over").scroll(function(e) {
+					fixHandle();
+				});
+				var shift = 0;
+				$(".table-responsive").scroll(function(e) {
+					$("#ScorecardTable_Over").removeClass("hidden");
+					if ($(".table-responsive").scrollLeft() - shift < $("#ScorecardTable_Over").scrollLeft() ) {
+						$("#ScorecardTable_Over").addClass("hidden");
+					}
+				});
+
+				$("#ScorecardTable_Over").scrollLeft(10000).scrollLeft(0);
+
+			}, 1000);
+
+			$("body").on("click", ".measurableModal:not(.disabled)", function() {
+				var m = $(this).data("recurrence");
+				showModal('Add Measurable', '/L10/AddMeasurable/' + m, '/L10/AddMeasurable/');
+			});
+
+			$(document).bind("keyup keydown", function(e){
+				if((e.ctrlKey || e.metaKey) && e.keyCode == 80){
+					//refreshDocHeight();
+					//window.print();
+					var scope = angular.element($('[ng-controller="L10Controller"]')).scope();
+					var w;
+					var page="";
+					var hash = window.location.hash;
+					debugger;
+					if (hash.contains("#/VTO")){
+						page = "vto=true";
+					}else if (hash.contains("#/Scorecard")){
+						page = "scorecard=true";
+					}else if (hash.contains("#/Todo")){
+						page = "todos=true";
+					}else if (hash.contains("#/Rocks")){
+						page = "rocks=true";
+					}else if (hash.contains("#/Issues")){
+						page = "issues=true";
+					}else{
+						return;
+					}
+					w = window.open("/Quarterly/PrintPages/"+scope.model.Id+"?"+page);
+					w.print();
+					e.preventDefault();
+				}
+			});
+
+
+		});
+	</script>
 }
 <div ng-app="L10App" class="meeting-review ng-cloak meeting-archive">
-    <div ng-controller="L10Controller">
-        <div class="pull-left"><h3 id="meeting-name" style="margin-top: 5px;">{{::model.Basics.Name}}</h3></div>
-        
-        @{Html.RenderPartial("~/Views/Angular/_DateRange.cshtml");}
-        <div style="" class="clearfix"></div>
+	<div ng-controller="L10Controller">
+		<div class="pull-left"><h3 id="meeting-name" style="margin-top: 5px;">{{::model.Basics.Name}}</h3></div>
 
-        <div ng-cloak>
-            <md-content class="archive">
-                <md-tabs md-dynamic-height md-border-bottom md-selected="selectedTab" md-enable-disconnect="false" md-no-disconnect="true">
-                    <md-tab label="Scorecard" ng-href="Scorecard" md-on-select="functions.setHash('/Scorecard')">
-                        <md-content class="md-padding">
-                            @Html.Partial("~/Views/L10/Details/scorecard.cshtml", new ViewDataDictionary() { { "ForceMin", ViewBag.NumberOfWeeks } })
-                        </md-content>
-                    </md-tab>
-                    <md-tab label="Rocks" href="Rocks" md-on-select="functions.setHash('Rocks')">
-                        <md-content class="md-padding">
-                            @Html.Partial("~/Views/L10/Details/rocks.cshtml")
-                        </md-content>
-                    </md-tab>
+		@{Html.RenderPartial("~/Views/Angular/_DateRange.cshtml");}
+		<div style="" class="clearfix"></div>
+
+		<div ng-cloak>
+			<md-content class="archive">
+				<md-tabs md-dynamic-height md-border-bottom md-selected="selectedTab" md-enable-disconnect="false" md-no-disconnect="true">
+					<md-tab label="Scorecard" ng-href="Scorecard" md-on-select="functions.setHash('/Scorecard')">
+						<md-content class="md-padding">
+							@Html.Partial("~/Views/L10/Details/scorecard.cshtml", new ViewDataDictionary() { { "ForceMin", ViewBag.NumberOfWeeks } })
+						</md-content>
+					</md-tab>
+					<md-tab label="Rocks" href="Rocks" md-on-select="functions.setHash('/Rocks')">
+						<md-content class="md-padding">
+							@Html.Partial("~/Views/L10/Details/rocks.cshtml")
+						</md-content>
+					</md-tab>
 					@if ((ViewBag.IncludeHeadlines ?? RadialReview.Model.Enums.PeopleHeadlineType.None) == RadialReview.Model.Enums.PeopleHeadlineType.HeadlinesBox) {
-						<md-tab label="Headlines" href="Headlines" md-on-select="functions.setHash('Headlines')">
+						<md-tab label="Headlines" href="Headlines" md-on-select="functions.setHash('/Headlines')">
 							<md-content class="md-padding">
 								@Html.Partial("~/Views/L10/Details/headlines.cshtml")
 							</md-content>
 						</md-tab>
 					} else if ((ViewBag.IncludeHeadlines ?? RadialReview.Model.Enums.PeopleHeadlineType.None) == RadialReview.Model.Enums.PeopleHeadlineType.HeadlinesList) {
-						<md-tab label="Headlines" href="Headlines" md-on-select="functions.setHash('Headlines')">
+						<md-tab label="Headlines" href="Headlines" md-on-select="functions.setHash('/Headlines')">
 							<md-content class="md-padding">
 								@Html.Partial("~/Views/L10/Details/headlinesList.cshtml")
 							</md-content>
 						</md-tab>
 					}
-                    <md-tab label="To-dos" href="Todos" md-on-select="functions.setHash('Todos')">
-                        <md-content class="md-padding">
-                            @Html.Partial("~/Views/L10/Details/todo.cshtml")
-                        </md-content>
-                    </md-tab>
+					<md-tab label="To-dos" href="Todos" md-on-select="functions.setHash('/Todos')">
+						<md-content class="md-padding">
+							@Html.Partial("~/Views/L10/Details/todo.cshtml")
+						</md-content>
+					</md-tab>
 
-                    <md-tab label="Issues" href="Issues" md-on-select="functions.setHash('Issues')">
-                        <md-content class="md-padding">
-                            @Html.Partial("~/Views/L10/Details/issues.cshtml")
-                        </md-content>
-                    </md-tab>
-                    <md-tab label="V/TO" href="VTO" md-on-select="functions.setHash('VTO')">
-                        <md-content class="md-padding1">
-                            <iframe id="vto-frame" class="vto-frame"  data-src="/vto/edit/@(ViewBag.VtoId)?noheading=true" src="/vto/edit/@(ViewBag.VtoId)?noheading=true"></iframe>
-                        </md-content>
-                    </md-tab>
-                    <md-tab label="Notes" href="Notes" md-on-select="functions.setHash('Notes')">
-                        <md-content class="md-padding">
-                            @Html.Partial("~/Views/L10/Details/notes.cshtml")
-                        </md-content>
-                    </md-tab>
-                </md-tabs>
-            </md-content>
-        </div>
-    </div>
+					<md-tab label="Issues" href="Issues" md-on-select="functions.setHash('/Issues')">
+						<md-content class="md-padding">
+							@Html.Partial("~/Views/L10/Details/issues.cshtml")
+						</md-content>
+					</md-tab>
+					<md-tab label="V/TO" href="VTO" md-on-select="functions.setHash('/VTO')">
+						<md-content class="md-padding1">
+							<iframe id="vto-frame" class="vto-frame" data-src="/vto/edit/@(ViewBag.VtoId)?noheading=true" src="/vto/edit/@(ViewBag.VtoId)?noheading=true"></iframe>
+						</md-content>
+					</md-tab>
+					<md-tab label="Notes" href="Notes" md-on-select="functions.setHash('/Notes')">
+						<md-content class="md-padding">
+							@Html.Partial("~/Views/L10/Details/notes.cshtml")
+						</md-content>
+					</md-tab>
+				</md-tabs>
+			</md-content>
+		</div>
+	</div>
 </div>

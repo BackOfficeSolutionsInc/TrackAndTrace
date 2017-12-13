@@ -104,8 +104,9 @@
 		p = {
 			target: '.create-row',
 			content: "Click this button to add users.",
-			className: 'anno-width-400',
-			position: "center-left",
+			className: 'anno-center anno-width-400',
+			arrowPosition: "none",
+			//position: "center-left",
 			onShow: function (a) {
 				a.showOverlay();
 			},
@@ -160,9 +161,9 @@
 			arrowPosition: "none",
 			onShow: function (a) {
 				a.hideOverlay();
-				if (!$(".new-user-container").is("isSearching")) {
-					$(".new-user-container .create-row").click();
-				}
+				//if (!$(".new-user-container").is("isSearching")) {
+				$(".new-user-container .create-row").click();
+				//}
 			},
 			//arrowPosition: "none",
 			//position: { bottom: "-80px" },
@@ -193,9 +194,19 @@
 			className: 'anno-width-400 ',
 			onShow: function (a) {
 				a.showOverlay();
+				$("#modalCancel").click();
 			},
 			//arrowPosition: "none",
 			//position: { bottom: "-80px" },
+			buttons: [AnnoButton.BackButton, AnnoButton.NextButton]
+		});
+
+		pages.push({
+			target: '#wizard-extra-buttons',
+			content: "You can also access your meeting's archive, timeline, V/TO™, and more.",
+			className: 'anno-width-400',
+			//position: { left: "-15px" },
+			arrowPosition: "left",
 			buttons: [AnnoButton.BackButton, AnnoButton.NextButton]
 		});
 

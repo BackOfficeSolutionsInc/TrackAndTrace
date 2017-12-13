@@ -51,5 +51,20 @@ namespace RadialReview.Models.Enums
 				default:throw new ArgumentOutOfRangeException("GetCompletion out of range: " + self);
 			}
 		}
+
+		public static string GetCompletionVal(this RockState self) {
+			switch (self) {
+			case RockState.Indeterminate:
+			return "Unspecified";
+			case RockState.AtRisk:
+			return "Off Track";
+			case RockState.OnTrack:
+			return "On Track";
+			case RockState.Complete:
+			return "Done";
+			default:
+			throw new ArgumentOutOfRangeException("GetCompletion out of range: " + self);
+			}
+		}
 	}
 }

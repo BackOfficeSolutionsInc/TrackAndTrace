@@ -1,0 +1,92 @@
+﻿@{
+	ViewBag.Title = "Audit";
+}
+
+<h2>Audit Menu</h2>
+
+
+@*Measurable: <input class="form-control" type="number" name="id"/> <button class="btn btn-default">Go</button>*@
+<br /><br />
+<div class="row">
+	<div class="col-xs-6">
+		<form action="/audit/measurables" method="get">
+			<div class="input-group">
+				<input type="number" class="form-control" name="id" placeholder="Measurable Id...">
+				<span class="input-group-btn">
+					<button class="btn btn-default" type="submit">Go</button>
+				</span>
+			</div>
+		</form>
+
+	</div>
+	<div class="col-xs-6">
+		<form action="/audit/measurableScores" method="get">
+			<div class="input-group">
+				<input type="number" class="form-control" name="id" placeholder="Scores for Measurable Id...">
+				<span class="input-group-btn">
+					<button class="btn btn-default" type="submit">Go</button>
+				</span>
+			</div>
+		</form>
+
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-6">
+		<form action="/audit/l10" method="get">
+			<div class="input-group">
+				<input type="number" class="form-control" name="id" placeholder="L10 Id...">
+				<span class="input-group-btn">
+					<button class="btn btn-default" type="button">Go</button>
+				</span>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-6">
+		<form action="/audit/rocks" method="get">
+			<div class="input-group">
+				<input type="number" class="form-control" name="id" placeholder="Rock Id...">
+				<span class="input-group-btn">
+					<button class="btn btn-default" type="button">Go</button>
+				</span>
+			</div>
+		</form>
+
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-6">
+		<form action="/audit/Roles" method="get">
+			<div class="input-group">
+				<input type="number" class="form-control" name="id" placeholder="Role Id...">
+				<span class="input-group-btn">
+					<button class="btn btn-default" type="button">Go</button>
+				</span>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-6">
+		<form action="/audit/Scores" method="get">
+			<div class="input-group">
+				<input type="number" class="form-control" name="id" placeholder="Score Id...">
+				<span class="input-group-btn">
+					<button class="btn btn-default" type="button">Go</button>
+				</span>
+			</div>
+		</form>
+	</div>
+</div>
+
+<style>
+	form {
+		margin-bottom: 15px;
+	}
+</style>

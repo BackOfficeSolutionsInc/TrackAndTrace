@@ -213,9 +213,7 @@ html, body {
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#57569c', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
 }
 
-#alerts {
-	/*margin-top: 8px;*/
-}
+
 
 	#alerts, #alerts * {
 		transition: border 1s ease;
@@ -245,9 +243,6 @@ html, body {
 	margin-bottom: 0px;
 }
 
-	.alert:last-child {
-		/*margin-bottom: 10px;*/
-	}
 /*
 .jumbotron hgroup h1,hgroup h2,hgroup h3,hgroup h4,hgroup h5,hgroup h6{
     float:left;
@@ -350,9 +345,6 @@ ul a {
 	width: 100%;
 }
 
-.subheading:empty {
-	/*padding-bottom: 42px;*/
-}
 
 .subheading:not(:empty) {
 	font-family: 'Lato',sans-serif;
@@ -712,11 +704,6 @@ body {
 		transition: 0.15s linear !important;
 	}
 
-.drag ul {
-}
-
-.drop ul {
-}
 
 .greenHover, .redHover {
 	-webkit-transition: color 0.4s ease;
@@ -1012,7 +999,7 @@ tr.danger .strikable {
 }
 
 .unsentEmail:not(.nohover):hover {
-	color: #FFBF4B;
+	color: #FFBF4B !important;
 	background-color: #c69232;
 }
 
@@ -1024,6 +1011,24 @@ tr.danger .strikable {
 .invalidEmail:not(.nohover):hover {
 	color: #CC8384;
 	background-color: #b06869;
+}
+
+.glyphicon-envelope.strokeGray.gray{
+	width: 16.5px;
+	-webkit-text-stroke-color: transparent;
+	background-color: rgb(193, 193, 193);
+}
+
+[data-isplaceholder="True"] .unsentEmail {
+	color: #eee;
+	box-shadow:none;
+	background-color: rgb(193, 193, 193);
+}
+
+[data-isplaceholder="True"] .unsentEmail:not(.nohover):hover  {
+	color: #ddd!important;
+	box-shadow:none;
+	background-color: rgb(193, 193, 193);
 }
 
 .nohover {
@@ -1568,7 +1573,7 @@ textarea.reason {
 	height: 40px;
 }
 
-	.imageRow > td {
+	.imageRow > td.images {
 		vertical-align: middle !important;
 		height: 40px;
 	}
@@ -1661,7 +1666,7 @@ textarea.reason {
 
 .body-full-width .body-content {
 	padding: 8px 8px;
-	max-width: calc(100% - 25px );
+	max-width: calc(100% - 30px );
 	height: 100%;
 	width: 100%;
 }
@@ -1921,7 +1926,7 @@ select.disable {
 }
 
 #modal.loading .modal-icon .modal-content {
-	border-radius: 100px
+	border-radius: 100px;
 }
 
 #modal .modal-icon .modal-header,

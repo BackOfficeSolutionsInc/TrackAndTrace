@@ -122,7 +122,7 @@ namespace RadialReview.Hooks.Meeting {
 			Audit.L10Log(s, caller, recurMeasurable.L10Recurrence.Id, "CreateMeasurable", ForModel.Create(measurable), measurable.Title);
 		}
 		
-		public async Task DetatchMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, long recurrenceId) {
+		public async Task DetachMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, long recurrenceId) {
 			Audit.L10Log(s, caller, recurrenceId, "DeleteMeasurable", ForModel.Create(measurable), measurable.Title);
 		}
         
@@ -174,10 +174,22 @@ namespace RadialReview.Hooks.Meeting {
 		public async Task ArchiveRock(ISession s, RockModel rock, bool deleted) {
 			//noop
 		}
-		public async Task UpdateHeadline(ISession s, PeopleHeadline todo, IHeadlineHookUpdates updates) {
+        public async Task UnArchiveRock(ISession s, RockModel rock, bool v)
+        {
+            //Nothing to do...
+        }
+        public async Task UpdateHeadline(ISession s, PeopleHeadline headline, IHeadlineHookUpdates updates) {
 			//noop
 		}
-		public async Task DetatchRock(ISession s, RockModel rock, long recurrenceId) {
+        public async Task ArchiveHeadline(ISession s, PeopleHeadline headline)
+        {
+            //noop
+        }
+        public async Task UnArchiveHeadline(ISession s, PeopleHeadline headline)
+        {
+            //Nothing to do...
+        }
+		public async Task DetachRock(ISession s, RockModel rock, long recurrenceId) {
 			//Noop
 		}
 		public async Task UpdateVtoRock(ISession s, L10Recurrence.L10Recurrence_Rocks recurRock) {

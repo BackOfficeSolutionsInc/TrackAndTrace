@@ -13,7 +13,7 @@ namespace RadialReview.Models.Angular.Meeting
 	{
 		public AngularMeetingNotes(L10Note note) : base(note.Id)
 		{
-			Contents = note.Contents;
+			//Contents = note.Contents;
 			Title = note.Name;
 			DetailsUrl = Config.NotesUrl() + "p/" + note.PadId + "?showControls=true&showChat=false";
 		}
@@ -22,7 +22,7 @@ namespace RadialReview.Models.Angular.Meeting
 		}
 
 		public string DetailsUrl { get; set; }
-		public String Contents { get; set; }
+		//public String Contents { get; set; }
 		public String Title { get; set; }
 	}
 }

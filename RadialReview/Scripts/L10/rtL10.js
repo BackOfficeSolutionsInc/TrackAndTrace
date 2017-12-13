@@ -12,153 +12,159 @@ var pingTimeout = 1.5 * 60 * 1000; //1.5 minutes in ms
 
 $(".rt").prop("disabled", true);
 $(function () {
+	setTimeout(function () {
+		//All Scripts loaded
+		meetingHub = $.connection.meetingHub;
+		/*meetingHub.error = function (error) {
+			console.log(error);
+		};*/
 
-	//All Scripts loaded
-	meetingHub = $.connection.meetingHub;
-	/*meetingHub.error = function (error) {
-		console.log(error);
-	};*/
-
-	meetingHub.client.jsonAlert = function (data, showSuccess) { showJsonAlert(data, showSuccess); };
-	meetingHub.client.unhide = function (selector) { $(selector).show(); };
-	meetingHub.client.status = function (text) {
-		$(".statusContainer").css("bottom", "0px");
-		$(".statusContainer").css("display", "block");
-		$(".statusContainer").css("opacity", "1");
-		$("#status").html(text);
-		clearTimeout(statusTimeout);
-		statusTimeout = setTimeout(function () {
-			$(".statusContainer").animate({
-				opacity: 0,
-				bottom: "-20px"
-			}, 500, function () {
-				$(".statusContainer").css("display", "none");
-			});
-		}, 2000);
-	};
-
-	//meetingHub.client.insert = insert;
-	//meetingHub.client.remove = remove;
-
-	meetingHub.client.updateUserFocus = updateUserFocus;
-	meetingHub.client.updateTextContents = updateTextContents;
-	meetingHub.client.setCurrentPage = setCurrentPage;
-	meetingHub.client.setPageTime = setPageTime;
-	meetingHub.client.setupMeeting = setupMeeting;
-	meetingHub.client.concludeMeeting = concludeMeeting;
-
-	meetingHub.client.setHash = setHash;
-
-	meetingHub.client.receiveUpdateScore = receiveUpdateScore;
-	meetingHub.client.updateScoresGoals = updateScoresGoals;
-
-	meetingHub.client.deserializeIssues = deserializeIssues;
-	meetingHub.client.appendIssue = appendIssue;
-	meetingHub.client.updateIssueCompletion = updateIssueCompletion;
-
-	meetingHub.client.deserializeTodos = deserializeTodos;
-	meetingHub.client.appendTodo = appendTodo;
-	meetingHub.client.updateTodoList = updateTodoList;
-	meetingHub.client.updateTodoCompletion = updateTodoCompletion;
-	meetingHub.client.updateRockCompletion = updateRockCompletion;
-	meetingHub.client.updateRockName = updateRockName;
-	meetingHub.client.updateRocks = updateRocks;
-	meetingHub.client.removeRock = removeRock;
-
-	meetingHub.client.updateTodoMessage = updateTodoMessage;
-	meetingHub.client.updateTodoDetails = updateTodoDetails;
-	meetingHub.client.updateTodoAccountableUser = updateTodoAccountableUser;
-	meetingHub.client.updateTodoDueDate = updateTodoDueDate;
-	meetingHub.client.setTodoOrder = setTodoOrder;
-
-	meetingHub.client.updateIssueMessage = updateIssueMessage;
-	meetingHub.client.updateIssueDetails = updateIssueDetails;
-	meetingHub.client.updateIssueOwner = updateIssueOwner;
-	meetingHub.client.updateIssuePriority = updateIssuePriority;
-	meetingHub.client.updateIssueRank = updateIssueRank;
-	meetingHub.client.setIssueOrder = setIssueOrder;
-
-	meetingHub.client.createNote = createNote;
-	meetingHub.client.updateNoteName = updateNoteName;
-	meetingHub.client.updateNoteContents = updateNoteContents;
-
-	meetingHub.client.updateMeasurable = updateMeasurable;
-	meetingHub.client.updateArchiveMeasurable = updateArchiveMeasurable;
-	meetingHub.client.addMeasurable = addMeasurable;
-	meetingHub.client.reorderMeasurables = reorderMeasurables;
-	meetingHub.client.reorderRecurrenceMeasurables = reorderRecurrenceMeasurables;
-	meetingHub.client.removeMeasurable = removeMeasurable;
-	meetingHub.client.removeDivider = removeDivider;
-
-	meetingHub.client.addLogRow = addLogRow;
-	meetingHub.client.editLogRow = editLogRow;
-	meetingHub.client.addOrEditLogRow = addOrEditLogRow;
-
-	meetingHub.client.appendHeadline = appendHeadline;
-	meetingHub.client.updateHeadlineMessage = updateHeadlineMessage;
-
-	meetingHub.client.addTranscription = addTranscription;
-
-	meetingHub.client.showAlert = showAlert;
-
-	meetingHub.client.userEnterMeeting = userEnterMeeting;
-	meetingHub.client.userExitMeeting = userExitMeeting;
-	meetingHub.client.stillAlive = stillAlive;
-
-	meetingHub.client.addVideoProvider = addVideoProvider;
-	meetingHub.client.setSelectedVideoProvider = setSelectedVideoProvider;
-	meetingHub.client.joinVideoConference = joinVideoConference;
-	//meetingHub.client.setLeader = setLeader;
-	meetingHub.client.disableItem = disableItem;
-	meetingHub.client.updateCumulative = updateCumulative;
-
-	meetingHub.client.updateIssueAwaitingSolve = updateIssueAwaitingSolve;
-	meetingHub.client.updateModedIssueSolve = updateModedIssueSolve;
-	meetingHub.client.removeIssueRow = removeIssueRow;
+		if (typeof (meetingHub) === "undefined") {
+			showAlert("Error. Please try refreshing.");
+		}
 
 
-	meetingHub.client.setMilestone = setMilestone;
-	meetingHub.client.deleteMilestone = deleteMilestone;
+		meetingHub.client.jsonAlert = function (data, showSuccess) { showJsonAlert(data, showSuccess); };
+		meetingHub.client.unhide = function (selector) { $(selector).show(); };
+		meetingHub.client.status = function (text) {
+			$(".statusContainer").css("bottom", "0px");
+			$(".statusContainer").css("display", "block");
+			$(".statusContainer").css("opacity", "1");
+			$("#status").html(text);
+			clearTimeout(statusTimeout);
+			statusTimeout = setTimeout(function () {
+				$(".statusContainer").animate({
+					opacity: 0,
+					bottom: "-20px"
+				}, 500, function () {
+					$(".statusContainer").css("display", "none");
+				});
+			}, 2000);
+		};
 
-	console.log("StartingHub ");
+		//meetingHub.client.insert = insert;
+		//meetingHub.client.remove = remove;
 
-	$.connection.hub.start(Constants.StartHubSettings).done(initConnection);
+		meetingHub.client.updateUserFocus = updateUserFocus;
+		meetingHub.client.updateTextContents = updateTextContents;
+		meetingHub.client.setCurrentPage = setCurrentPage;
+		meetingHub.client.setPageTime = setPageTime;
+		meetingHub.client.setupMeeting = setupMeeting;
+		meetingHub.client.concludeMeeting = concludeMeeting;
 
-	$.connection.hub.disconnected(function () {
-		if (!isUnloading) {
-			clearAlerts();
-			setTimeout(function () {
-				showAlert("Connection lost. Reconnecting.");
-				disconnected = true;
+		meetingHub.client.setHash = setHash;
+
+		meetingHub.client.receiveUpdateScore = receiveUpdateScore;
+		meetingHub.client.updateScoresGoals = updateScoresGoals;
+
+		meetingHub.client.deserializeIssues = deserializeIssues;
+		meetingHub.client.appendIssue = appendIssue;
+		meetingHub.client.updateIssueCompletion = updateIssueCompletion;
+
+		meetingHub.client.deserializeTodos = deserializeTodos;
+		meetingHub.client.appendTodo = appendTodo;
+		meetingHub.client.updateTodoList = updateTodoList;
+		meetingHub.client.updateTodoCompletion = updateTodoCompletion;
+		meetingHub.client.updateRockCompletion = updateRockCompletion;
+		meetingHub.client.updateRockName = updateRockName;
+		meetingHub.client.updateRocks = updateRocks;
+		meetingHub.client.removeRock = removeRock;
+
+		meetingHub.client.updateTodoMessage = updateTodoMessage;
+		meetingHub.client.updateTodoDetails = updateTodoDetails;
+		meetingHub.client.updateTodoAccountableUser = updateTodoAccountableUser;
+		meetingHub.client.updateTodoDueDate = updateTodoDueDate;
+		meetingHub.client.setTodoOrder = setTodoOrder;
+
+		meetingHub.client.updateIssueMessage = updateIssueMessage;
+		meetingHub.client.updateIssueDetails = updateIssueDetails;
+		meetingHub.client.updateIssueOwner = updateIssueOwner;
+		meetingHub.client.updateIssuePriority = updateIssuePriority;
+		meetingHub.client.updateIssueRank = updateIssueRank;
+		meetingHub.client.setIssueOrder = setIssueOrder;
+
+		meetingHub.client.createNote = createNote;
+		meetingHub.client.updateNoteName = updateNoteName;
+		meetingHub.client.updateNoteContents = updateNoteContents;
+
+		meetingHub.client.updateMeasurable = updateMeasurable;
+		meetingHub.client.updateArchiveMeasurable = updateArchiveMeasurable;
+		meetingHub.client.addMeasurable = addMeasurable;
+		meetingHub.client.reorderMeasurables = reorderMeasurables;
+		meetingHub.client.reorderRecurrenceMeasurables = reorderRecurrenceMeasurables;
+		meetingHub.client.removeMeasurable = removeMeasurable;
+		meetingHub.client.removeDivider = removeDivider;
+
+		meetingHub.client.addLogRow = addLogRow;
+		meetingHub.client.editLogRow = editLogRow;
+		meetingHub.client.addOrEditLogRow = addOrEditLogRow;
+
+		meetingHub.client.appendHeadline = appendHeadline;
+		meetingHub.client.updateHeadlineMessage = updateHeadlineMessage;
+
+		meetingHub.client.addTranscription = addTranscription;
+
+		meetingHub.client.showAlert = showAlert;
+
+		meetingHub.client.userEnterMeeting = userEnterMeeting;
+		meetingHub.client.userExitMeeting = userExitMeeting;
+		meetingHub.client.stillAlive = stillAlive;
+
+		meetingHub.client.addVideoProvider = addVideoProvider;
+		meetingHub.client.setSelectedVideoProvider = setSelectedVideoProvider;
+		meetingHub.client.joinVideoConference = joinVideoConference;
+		//meetingHub.client.setLeader = setLeader;
+		meetingHub.client.disableItem = disableItem;
+		meetingHub.client.updateCumulative = updateCumulative;
+
+		meetingHub.client.updateIssueAwaitingSolve = updateIssueAwaitingSolve;
+		meetingHub.client.updateModedIssueSolve = updateModedIssueSolve;
+		meetingHub.client.removeIssueRow = removeIssueRow;
+
+
+		meetingHub.client.setMilestone = setMilestone;
+		meetingHub.client.deleteMilestone = deleteMilestone;
+
+		console.log("StartingHub ");
+
+		$.connection.hub.start(Constants.StartHubSettings).done(initConnection);
+
+		$.connection.hub.disconnected(function () {
+			if (!isUnloading) {
+				clearAlerts();
 				setTimeout(function () {
-					$.connection.hub.start(Constants.StartHubSettings).done(initConnection);
-				}, 5000); // Restart connection after 5 seconds.
-			}, 1000);
-		}
-	});
+					showAlert("Connection lost. Reconnecting.");
+					disconnected = true;
+					setTimeout(function () {
+						$.connection.hub.start(Constants.StartHubSettings).done(initConnection);
+					}, 5000); // Restart connection after 5 seconds.
+				}, 1000);
+			}
+		});
 
-	window.onbeforeunload = function (e) {
-		if ($(":focus").length) {
-			$(":focus").blur();
-		}
-		if (isLeader && meetingStart && !skipBeforeUnload) {
-			return 'You have not concluded the meeting.';
-		}
-		disconnected = false;
-		isUnloading = true;
-		$.connection.hub.stop();
+		window.onbeforeunload = function (e) {
+			if ($(":focus").length) {
+				$(":focus").blur();
+			}
+			if (isLeader && meetingStart && !skipBeforeUnload) {
+				return 'You have not concluded the meeting.';
+			}
+			disconnected = false;
+			isUnloading = true;
+			$.connection.hub.stop();
 
-	};
-	window.onunload = function () {
+		};
+		window.onunload = function () {
 
-		if ($(":focus").length) {
-			$(":focus").blur();
-		}
+			if ($(":focus").length) {
+				$(":focus").blur();
+			}
 
-		disconnected = false;
-		isUnloading = true;
-		$.connection.hub.stop();
-	};
+			disconnected = false;
+			isUnloading = true;
+			$.connection.hub.stop();
+		};
+	}, 1);
 });
 
 function initConnection() {

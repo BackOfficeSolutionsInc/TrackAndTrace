@@ -20,6 +20,7 @@ namespace RadialReview.Models.L10 {
 		public virtual long? AboutId { get; set; }
 		public virtual ResponsibilityGroupModel About { get; set; }
 		public virtual string AboutName { get; set; }
+		public virtual string AboutIdText { get; set; }
 		public virtual string Message { get; set; }
 
 		public virtual DateTime CreateTime { get; set; }

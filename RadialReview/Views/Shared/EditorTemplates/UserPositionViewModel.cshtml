@@ -1,0 +1,76 @@
+﻿@model RadialReview.Models.ViewModels.UserPositionViewModel
+@{
+	var guid = Guid.NewGuid().ToString().Replace("-", "");
+}
+
+@Html.HiddenFor(x => x.UserId)
+
+
+<div class="hidden newPosition">
+	<hr />
+</div>
+<div class="row">
+	<div class="col-xs-3">
+		<label>Position:</label>
+	</div>
+	<div class="col-xs-9">
+		@Html.DropDownListFor(x => x.PositionId, Model.OrgPositions, new { id = "positionSelector", @class = "form-control  blend" })
+	</div>
+</div>
+<div class="hidden newPosition">
+	<div class="smallBreak"></div>
+	<div class="row hidden">
+		<div class="col-xs-3">
+			<label>New position:</label>
+		</div>
+		<div class="col-xs-9">
+			@Html.DropDownListFor(x => x.CustomPositionId, Model.Positions, new { id = "newPositionSelector", @class = "form-control blend" })
+		</div>
+	</div>
+	<div class="smallBreak"></div>
+	<div class="row">
+		<div class="col-xs-3">
+			<label>Custom name:</label>
+		</div>
+		<div class="col-xs-9">
+			@Html.TextBoxFor(x => x.CustomPosition, new { id = "newPositionInput", @class = "form-control blend", placeholder = "New position name" })
+		</div>
+	</div>
+	<hr />
+</div>
+
+<script>
+	function defer@(guid)() {
+		if (window.jQuery) {
+			start@(guid)();
+			a@(guid)();
+		} else {
+			setTimeout(function () { defer@(guid)() }, 50);
+		}
+	}
+	defer@(guid)();
+
+	function a@(guid)() {
+		if ($("#positionSelector").val() == -1) {
+			$(".newPosition").removeClass("hidden");
+		} else {
+			$(".newPosition").addClass("hidden");
+			$("#newPositionInput").val(null);
+		}
+	}
+
+	function start@(guid)() {
+		$(function () {
+			$("#positionSelector").change(function () {
+				a@(guid)();
+			});
+
+			$("#newPositionSelector").change(function () {
+				$("#newPositionInput").val($("#newPositionSelector option:selected").text());
+				setTimeout(function () { $("#newPositionInput")[0].select(); }, 10);
+			});
+
+			a@(guid)();
+		});
+	}
+</script>

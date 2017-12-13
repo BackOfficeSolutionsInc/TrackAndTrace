@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Ajax.Utilities;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Models.Todo
 {
@@ -12,8 +13,7 @@ namespace RadialReview.Models.Todo
 			
 		}
 
-		public RockTodoVM(long accountableUserId) : base(accountableUserId)
-		{
+		public RockTodoVM(long accountableUserId, TimeSettings timeSettings) : base(accountableUserId, timeSettings) {
 		}
 
 		[Required]

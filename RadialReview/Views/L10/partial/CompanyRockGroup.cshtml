@@ -13,36 +13,42 @@
 					<th>Company Rocks</th>
 					<th>Who</th>
 				</tr>*@
-            <tr></tr>
-			@foreach (var i in Model)
-			{
-				<tr class="user-id-@i.ForRock.AccountableUser.Id rock-id-@i.ForRock.Id">
-                    <td class="picture">
-                        @Html.Partial("_ProfilePicture", i.ForRock.AccountableUser)
-                    </td>
-                    <td class="message">@i.ForRock.Rock</td>
-                    <td class="rock-state-holder" style="width:1px">@Html.EditorFor(x => i.Completion, "RockStateThin", new { name = "rock_" + i.ForRock.Id })</td>
+			<tr></tr>
+			@foreach (var i in Model) {
+				<tr class="user-id-@i.ForRock.AccountableUser.Id rock-id-@i.ForRock.Id rock-row"					
+					@if (i.ForRock.DueDate != null) {
+						@:data-duedate="@(i.ForRock.DueDate.NotNull(x=>x.Value.ToJavascriptMilliseconds()))"
+					}
+					data-rockid="@(i.ForRock.Id)"
+					data-name="@(i.ForRock.AccountableUser.GetName())"
+					data-accountable="@(i.ForRock.AccountableUser.Id)"
+					data-message="@(i.ForRock.Rock)">
+					<td class="picture">
+						@Html.Partial("_ProfilePicture", i.ForRock.AccountableUser)
+					</td>
+					<td class="message rock-title" data-rock="@(i.ForRock.Id)">@i.ForRock.Rock</td>
+					<td class="rock-state-holder on-edit-enabled" style="width:1px">@Html.EditorFor(x => i.Completion, "RockStateThin", new { name = "rock_" + i.ForRock.Id })</td>
 					<td class="buttonHolder currentBlue">
-                        <span class="icon fontastic-icon-pinboard issuesButton issuesModal"
-                              data-meeting="@i.L10Meeting.Id"
-                              data-recurrence="@i.ForRecurrence.Id"
-                              data-rock="@(i.ForRock.Id)"
-                              data-method="CreateRockIssue"
-                              title="Create a Context-Aware Issue™"></span>
-                        <span class="glyphicon glyphicon-unchecked todoButton todoModal"
-                              data-meeting="@i.L10Meeting.Id"
-                              data-recurrence="@i.ForRecurrence.Id"
-                              data-rock="@(i.ForRock.Id)"
-                              data-method="CreateRockTodo"
-                              title="Create a Context-Aware To-Do™">
-                        </span>
+						<span class="icon fontastic-icon-pinboard issuesButton issuesModal"
+							  data-meeting="@i.L10Meeting.Id"
+							  data-recurrence="@i.ForRecurrence.Id"
+							  data-rock="@(i.ForRock.Id)"
+							  data-method="CreateRockIssue"
+							  title="Create a Context-Aware Issue™"></span>
+						<span class="glyphicon glyphicon-unchecked todoButton todoModal"
+							  data-meeting="@i.L10Meeting.Id"
+							  data-recurrence="@i.ForRecurrence.Id"
+							  data-rock="@(i.ForRock.Id)"
+							  data-method="CreateRockTodo"
+							  title="Create a Context-Aware To-Do™">
+						</span>
 					</td>
 					@*<td style="white-space: nowrap;vertical-align:top;">
-						@Html.Partial("_Picture", i.ForRock.AccountableUser.ImageUrl(true, ImageSize._32))
-						<span class="owner">
-							@i.ForRock.AccountableUser.GetName()
-						</span>
-					</td>*@
+							@Html.Partial("_Picture", i.ForRock.AccountableUser.ImageUrl(true, ImageSize._32))
+							<span class="owner">
+								@i.ForRock.AccountableUser.GetName()
+							</span>
+						</td>*@
 				</tr>
 			}
 		</table>

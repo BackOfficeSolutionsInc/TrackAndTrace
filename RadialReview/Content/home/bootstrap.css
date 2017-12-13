@@ -4566,11 +4566,7 @@ input[type="submit"].btn.btn-mini {
           border-radius: 0;
 }
 
-.navbar-static-top .container,
-.navbar-fixed-top .container,
-.navbar-fixed-bottom .container {
-  /*width: 940px;*/
-}
+
 
 .navbar-fixed-top {
   top: 0;
@@ -5749,6 +5745,7 @@ a.badge:focus {
   }
 }
 
+/* csslint ignore:start */
 @-ms-keyframes progress-bar-stripes {
   from {
     background-position: 40px 0;
@@ -5757,6 +5754,7 @@ a.badge:focus {
     background-position: 0 0;
   }
 }
+/* csslint ignore:end */
 
 @-o-keyframes progress-bar-stripes {
   from {

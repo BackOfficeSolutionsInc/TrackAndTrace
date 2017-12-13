@@ -745,32 +745,87 @@ a.editable-click:hover {
   cursor: not-allowed;
   opacity: .15;
 }
+.meeting-preview input[type='checkbox'].on-edit-enabled,
 .edit-disabled input[type='checkbox'].on-edit-enabled {
   opacity: 0.65;
   filter: alpha(opacity=65);
 }
+.meeting-preview .on-edit-enabled,
 .edit-disabled .on-edit-enabled {
   pointer-events: none;
   touch-action: none;
 }
+.meeting-preview .on-edit-enabled,
 .edit-disabled .on-edit-enabled,
+.meeting-preview .on-edit-enabled:hover,
 .edit-disabled .on-edit-enabled:hover {
   cursor: default;
 }
+.meeting-preview .on-edit-enabled input[type='checkbox'],
 .edit-disabled .on-edit-enabled input[type='checkbox'] {
   opacity: 0.65;
   filter: alpha(opacity=65);
 }
+.meeting-preview .on-edit-enabled.btn,
 .edit-disabled .on-edit-enabled.btn,
+.meeting-preview .on-edit-enabled .btn,
 .edit-disabled .on-edit-enabled .btn {
   opacity: 0.65;
   filter: alpha(opacity=65);
   -webkit-box-shadow: none;
   box-shadow: none;
 }
+.meeting-preview .on-edit-enabled.btn:hover,
 .edit-disabled .on-edit-enabled.btn:hover,
+.meeting-preview .on-edit-enabled .btn:hover,
 .edit-disabled .on-edit-enabled .btn:hover {
   cursor: not-allowed !important;
+}
+.meeting-preview .on-edit-enabled.btn .icon,
+.edit-disabled .on-edit-enabled.btn .icon,
+.meeting-preview .on-edit-enabled .btn .icon,
+.edit-disabled .on-edit-enabled .btn .icon,
+.meeting-preview .on-edit-enabled.btn .glyphicon,
+.edit-disabled .on-edit-enabled.btn .glyphicon,
+.meeting-preview .on-edit-enabled .btn .glyphicon,
+.edit-disabled .on-edit-enabled .btn .glyphicon {
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
+.meeting-preview .on-edit-enabled .icon,
+.edit-disabled .on-edit-enabled .icon,
+.meeting-preview .on-edit-enabled .glyphicon,
+.edit-disabled .on-edit-enabled .glyphicon {
+  opacity: 0.25;
+  filter: alpha(opacity=25);
+}
+.meeting-preview iframe.on-edit-enabled,
+.edit-disabled iframe.on-edit-enabled,
+.meeting-preview iframe.on-edit-enabled iframe,
+.edit-disabled iframe.on-edit-enabled iframe {
+  opacity: .7;
+  border: 2px #e2e2e2;
+  border-style: dashed;
+  -webkit-filter: contrast(80%);
+  filter: contrast(80%);
+}
+html {
+  overflow: hidden;
+}
+.meeting-preview .navbar-inverse {
+  background-color: #EF7622;
+  background-image: url("/Content/img/graystripe-light.png");
+}
+.meeting-preview .navbar-inverse:before {
+  content: "Meeting Preview";
+  color: white;
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  font-size: 20px;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 1px;
 }
 .meeting-page.externalPage .component {
   height: 100%;

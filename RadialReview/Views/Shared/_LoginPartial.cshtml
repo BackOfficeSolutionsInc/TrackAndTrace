@@ -55,29 +55,30 @@
 										Hints<div class="pull-right">@(((bool?)ViewBag.Hints ?? true).GetIcon())</div>
 									</a>
 								</li>*@
-							@if (ViewBag.ManagingOrganization ?? false) {
+							@*@if (ViewBag.ManagingOrganization ?? false) {
 								<li>
 									<a href="@Url.Action("Advanced", "Manage",new { area = "" })" title1="Add credit card information, edit advanced settings" id="header-tab-dropdown-advancedsettings">
-										@*@(Html.Organization().NotNull(x => x.GetName()) ?? "Organization")*@Admin Settings
+										@* @(Html.Organization().NotNull(x => x.GetName()) ?? "Organization")* @ Admin Settings
 									</a>
 								</li>
 								doDivider = true;
-							}
+							}*@
 
-							@if (doDivider == true) {
+							@*@if (doDivider == true) {
 
 								<li class="divider"></li>
-							}
+							}*@
 
 
-							@if (((int?)ViewBag.Organizations ?? 0) > 0) {
+							@*@if (((int?)ViewBag.Organizations ?? 0) > 0) {
 
 								<li id="header-tab-dropdown-myaccountabilities">@Html.ActionLink("My Accountabilities", "Details", "User", new { id = ViewBag.UserId , area="" }, null)</li>
-							}
-							<li>@Html.ActionLink("My Settings", "Manage", "Account", new { area = "" }, null)</li>
+							}*@
+							<li>@Html.ActionLink("Edit My Profile", "Manage", "Account", new { area = "" }, null)</li>
 
 							<li class="divider"></li>
 							<li><a href="#" onclick="supportEmail('@Html.Encode(ViewBag.Title)','@ProductStrings.SupportEmail')"><span class="icon fontastic-icon-lifebuoy pull-right" style="color:#EF7622"></span>Contact Support</a></li>
+							<li><a href="https://tractiontools.happyfox.com/home" target="_blank"><span class="icon fontastic-icon-book-bookmark pull-right" style="color:#EF7622"></span>Knowledge Base</a></li>
 							<li class="divider"></li>
 							@if (((int?)ViewBag.Organizations ?? 0) > 1) {
 								<li class="@(((int?)ViewBag.Organizations ?? 0 )> 1?"":"disabled")" id="header-tab-dropdown-changeorganization">

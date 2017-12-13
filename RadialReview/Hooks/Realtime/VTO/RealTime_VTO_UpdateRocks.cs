@@ -40,11 +40,17 @@ namespace RadialReview.Hooks.Realtime {
 			var recurRocks = recurRocksQ.List().ToList();
 
 			var hub = GlobalHost.ConnectionManager.GetHubContext<VtoHub>();
+
+
+
 			foreach (var recurRock in recurRocks) {
 				//var vto = s.Get<VtoModel>(recurRock.L10Recurrence.VtoId);
 				var vtoId = recurRock.L10Recurrence.VtoId;
+
+				var qrId = s.QueryOver<QuarterlyRocksModel>().Where(x => x.Vto == vtoId).SingleOrDefault().Id;
+
 				//if (vtoId != null) {
-					var updates = action(vtoId, recurRock);
+					var updates = action(qrId, recurRock);
 					var group = hub.Clients.Group(VtoHub.GenerateVtoGroupId(vtoId), connectionId);
 					group.update(updates);
 				//}
@@ -52,9 +58,9 @@ namespace RadialReview.Hooks.Realtime {
 		}
 
 		private void AddRockToVto(ISession s, long rockId, long? recurrenceId) {
-			_DoUpdate(s, rockId, recurrenceId,false, null, (vtoId, recurRock) =>
+			_DoUpdate(s, rockId, recurrenceId,false, null, (qrId, recurRock) =>
 				new AngularUpdate() {
-					new AngularQuarterlyRocks(vtoId) {
+					new AngularQuarterlyRocks(qrId) {
 						Rocks = AngularList.CreateFrom(AngularListType.Add, AngularVtoRock.Create(recurRock))
 					}
 				}
@@ -62,9 +68,9 @@ namespace RadialReview.Hooks.Realtime {
 		}
 
 		private void RemoveRockFromVto(ISession s, long rockId, long? recurrenceId) {
-			_DoUpdate(s, rockId, recurrenceId,true,null, (vtoId, recurRock) =>
+			_DoUpdate(s, rockId, recurrenceId,true,null, (qrId, recurRock) =>
 				new AngularUpdate() {
-					new AngularQuarterlyRocks(vtoId) {
+					new AngularQuarterlyRocks(qrId) {
 						Rocks = AngularList.CreateFrom(AngularListType.Remove, new AngularVtoRock(recurRock.Id))
 					}
 				}
@@ -72,9 +78,9 @@ namespace RadialReview.Hooks.Realtime {
 		}
 
 		private void UpdateRock(ISession s, long rockId, long? recurrenceId) {
-			_DoUpdate(s, rockId, recurrenceId,false, RealTimeHelpers.GetConnectionString(), (vtoId, recurRock) =>
+			_DoUpdate(s, rockId, recurrenceId,false, RealTimeHelpers.GetConnectionString(), (qrId, recurRock) =>
 				new AngularUpdate() {
-					new AngularQuarterlyRocks(vtoId) {
+					new AngularQuarterlyRocks(qrId) {
 						Rocks = AngularList.CreateFrom(AngularListType.ReplaceIfNewer, AngularVtoRock.Create(recurRock))
 					}
 				}
@@ -90,12 +96,17 @@ namespace RadialReview.Hooks.Realtime {
 			//}
 		}
 
-		public async Task AttachRock(ISession s, UserOrganizationModel caller, RockModel rock, L10Recurrence.L10Recurrence_Rocks recurRock) {
+        public async Task UnArchiveRock(ISession s, RockModel rock, bool v)
+        {
+            //Nothing to do...
+        }
+
+        public async Task AttachRock(ISession s, UserOrganizationModel caller, RockModel rock, L10Recurrence.L10Recurrence_Rocks recurRock) {
 			if (recurRock.VtoRock) {
 				AddRockToVto(s, rock.Id, recurRock.L10Recurrence.Id);
 			}
 		}
-		public async Task DetatchRock(ISession s, RockModel rock, long recurrenceId) {
+		public async Task DetachRock(ISession s, RockModel rock, long recurrenceId) {
 			RemoveRockFromVto(s, rock.Id, recurrenceId);
 		}
 

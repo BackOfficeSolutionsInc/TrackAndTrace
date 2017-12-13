@@ -108,7 +108,7 @@
 	.ids.prioritization-Priority .issues-list > .prioritize.selected > .number-priority > .number,
 	.ids.prioritization-Invalid .issues-list > .issue-row.prioritize.selected > .message,
 	.ids.prioritization-Invalid .issues-list > .prioritize.selected > .move-icon,
-	.ids.prioritization-Invalid .issues-list > .prioritize.selected > .number-priority > .number, {
+	.ids.prioritization-Invalid .issues-list > .prioritize.selected > .number-priority > .number {
 		color: rgb(137, 112, 0) !important;
 	}
 
@@ -726,12 +726,12 @@ body.dragging, body.dragging * {
 	white-space: pre-line;
 }
 
-> .ids .issues-container.columns .issues-list {
+/*> .ids .issues-container.columns .issues-list {
 	overflow: hidden;
 	border-top: 1px solid #ccc;
 	padding: 0px;
 	margin: 0px;
-}
+}*/
 
 .ids .issues-container.columns .issues-list > li {
 	line-height: 1.5em;

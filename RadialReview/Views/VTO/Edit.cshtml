@@ -1,30 +1,30 @@
 ﻿@model RadialReview.Controllers.VTOController.VTOViewModel
 @{
-    ViewBag.Title = "V/TO";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.FullWidth = true;
-    ViewBag.HideVision = ViewBag.HideVision ?? false;
-    ViewBag.HideTraction = ViewBag.HideTraction ?? false;
+	ViewBag.Title = "V/TO";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.FullWidth = true;
+	ViewBag.HideVision = ViewBag.HideVision ?? false;
+	ViewBag.HideTraction = ViewBag.HideTraction ?? false;
 
-    if (ViewBag.HideVision && !ViewBag.HideTraction) {
-        ViewBag.TractionPageTitle = "DEPARTMENT PLAN";
-    } else {
-        ViewBag.TractionPageTitle = "TRACTION";
-    }
+	if (ViewBag.HideVision && !ViewBag.HideTraction) {
+		ViewBag.TractionPageTitle = "DEPARTMENT PLAN";
+	} else {
+		ViewBag.TractionPageTitle = "TRACTION";
+	}
 
-    ViewBag.CanEditCoreValues = ViewBag.CanEditCoreValues ?? false;
-    ViewBag.CanEditVTOVision = ViewBag.CanEditVTOVision ?? false;
-    ViewBag.CanEditVTOTraction = ViewBag.CanEditVTOTraction ?? false;
+	ViewBag.CanEditCoreValues = ViewBag.CanEditCoreValues ?? false;
+	ViewBag.CanEditVTOVision = ViewBag.CanEditVTOVision ?? false;
+	ViewBag.CanEditVTOTraction = ViewBag.CanEditVTOTraction ?? false;
 
 
-    if (Model.IsPartial) {
-        ViewBag.NoTitleBar = true;
-    }
-    Html.RenderPartial("~/Views/CDN/Angular.cshtml");
+	if (Model.IsPartial) {
+		ViewBag.NoTitleBar = true;
+	}
+	Html.RenderPartial("~/Views/CDN/Angular.cshtml");
 }
 @using (Html.BeginStyles()) {
 	<link href="~/Content/VTO/VTO.css" rel="stylesheet" />
-	
+
 	<!--vvvv  DO NOT DELETE THIS  vvvv-->
 	<!--[if IE]>
 	<style>
@@ -35,6 +35,41 @@
 	<![endif]-->
 	<!--^^^^  DO NOT DELETE THIS  ^^^^-->
 }
+<style>
+	/*.nav.nav-tabs {
+		margin-top: 0px !important;
+	}
+
+	 .panel-default > .panel-heading {
+		color: #333333;
+		background-color: #fff;
+		border-color: #fff;
+		display: none;
+	}
+
+	.vto .boxed.content:hover .panel-default > .panel-heading {
+		display: block;
+	}
+
+	.panel {
+		border: none;
+	}
+
+	.panel-heading {
+		padding: 0px;
+	}*/
+</style>
+@if (!(ViewBag.CanEditVTOVision ?? false)) {
+	<style>
+		.vision .glyphicon-trash,
+		.vision .strategy-tabs .add-row,
+		.vision .remove-strategy{
+			display: none !important;
+
+		}
+
+	</style>
+}
 @using (Html.BeginScripts()) {
 	<script src="~/Scripts/VTO/vto.js"></script>
 
@@ -43,13 +78,16 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
 	@Scripts.Render("~/bundles/vto")
-	<script src="~/Scripts/Angular/VTO/VtoController.js"></script>
+	@*<script src="~/Scripts/Angular/VTO/VtoController.js"></script>*@
 	<script>
 		angular.module('VtoApp')
 			.value('vtoId', @Model.Id)
 			.value('vtoDataUrlBase', '/Vto/Data/')
 			.value("vtoCallback",false);
-		function printPage() { refreshDocHeight();print(); }
+		function printPage() { refreshDocHeight(); print(); }
+
+
+
 	</script>
 }
 
@@ -205,7 +243,7 @@
 									<div class="col-lg-9">
 										<div class="boxed content">
 											<div class="target">
-												<textarea  ng-model="(model).TenYearTarget" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model))" @(ViewBag.CanEditVTOVision ? "" : "disabled") textarea-resize></textarea>
+												<textarea ng-model="(model).TenYearTarget" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model))" @(ViewBag.CanEditVTOVision ? "" : "disabled") textarea-resize></textarea>
 											</div>
 										</div>
 									</div>
@@ -231,46 +269,116 @@
 									</div>
 									<div class="col-lg-9">
 										<div class="boxed content">
-											<div style="display:table; width: 100%;height: 100%;">
-												<div style="display:table-cell;vertical-align:middle;">
-													<div class="target-market">
-														<span class="title">Target Market/"The List":</span>
-														<div>
-															<textarea textarea-resize ng-model="(model.Strategy).TargetMarket" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).Strategy)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
-														</div>
-													</div>
-													<div class="three-uniques">
-														<div class="title">Three Uniques:</div>
-														<table class="add-row-container table-list">
-															<tr class="add-row-row" ng-repeat="uniques in (model.Strategy.Uniques) | filter:{Deleted:false}">
-																<td class="row-number">{{$index+1}}.</td>
-																<td>
-																	<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddUniques?vto='+vtoId,'model.Strategy.Uniques')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(uniques)" ng-model="uniques.Data" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
-																</td>
-																<td class="delete-column">
-																	<span class="delete glyphicon glyphicon-trash" ng-click="functions.Get('/VTO/DeleteString?value='+uniques.Id)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></span>
-																</td>
-															</tr>
-															<tr>
-																<td></td>
-																<td class="add-row" @(ViewBag.CanEditVTOVision ? "" : "disabled") ng-click="functions.AddRow('/VTO/AddUniques?vto='+vtoId)"></td>
-															</tr>
-														</table>
-													</div>
-													<div class="proven-process">
-														<span class="title">Proven Process:</span>
-														<div>
-															<textarea textarea-resize ng-model="(model.Strategy).ProvenProcess" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).Strategy)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
-														</div>
-													</div>
-													<div class="guarantee">
-														<span class="title">Guarantee:</span>
-														<div>
-															<textarea textarea-resize ng-model="(model.Strategy).Guarantee" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).Strategy)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
+											<div class="panel with-nav-tabs panel-default">
+												<div class="panel-heading">
+													<ul class="nav nav-tabs strategy-tabs {{model.Strategies.length==1?'one-strategy':'multi-strategy'}}">
+														<li ng-click="functions.showStrategyTab(strategy.Id)" ng-class="{'active-li' : $index==0}" id="{{'tab'+strategy.Id}}" ng-repeat="strategy in (model.Strategies)">
+															@*<a ng-href="#{{strategy.Id}}" data-toggle="tab">{{strategy.TargetMarket || "New Strategy" }}</a>*@
+															<span><textarea textarea-resize placeholder="Strategy {{$index+1}}" ng-model="strategy.Title" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(strategy)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea></span>
+														</li>
+														<li class="add-tab">
+															<span class="add-row" ng-if="model.Strategies.length<5" ng-click="functions.AddNewStrategy('/VTO/CreateMarketStrategy?vto='+vtoId)">Add New</span>
+														</li>
+													</ul>
+												</div>
+												<div class="panel-body">
+													<div class="tab-content">
+														<div class="tab-pane fade" ng-class="{'active' : $index==0,'in':$index==0}" id="{{strategy.Id}}" ng-repeat="strategy in (model.Strategies)">
+															<span class="remove-strategy delete glyphicon glyphicon-trash" title="Delete this Marketing Strategy" ng-if="model.Strategies.length>1" ng-click="functions.DeleteStrategy('/VTO/RemoveMarketStrategy?strategyId='+strategy.Id,strategy.Title)"></span>
+															@*<div style="width:100%">
+																	<button  class="add-new-strategy" style="float:left;" ng-click="functions.AddNewStrategy('/VTO/CreateMarketStrategy?vto='+vtoId)">Add New</button>
+																	<button class="add-new-strategy" ng-if="model.Strategies.length>1" ng-click="functions.DeleteStrategy('/VTO/RemoveMarketStrategy?strategyId='+strategy.Id)">Delete</button>
+																</div>*@
+															<div style="display:table; width: 100%;height: 100%;">
+																<div style="display:table-cell;vertical-align:middle;">
+																	@*<div class="strategy-title">
+																			<span class="title">Title:</span>
+																			<div>
+																			</div>
+																		</div>*@
+																	<div class="target-market">
+																		<span class="title">Target Market/"The List":</span>
+																		<div>
+																			<textarea textarea-resize ng-model="strategy.TargetMarket" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(strategy)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
+																		</div>
+																	</div>
+																	<div class="three-uniques">
+																		<div class="title">Three Uniques:</div>
+																		<table class="add-row-container table-list">
+																			<tr class="add-row-row" ng-repeat="uniques in (strategy.Uniques) | filter:{Deleted:false}">
+																				<td class="row-number">{{$index+1}}.</td>
+																				<td>
+																					<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddUniques?vto='+vtoId,'strategy.Uniques')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(uniques)" ng-model="uniques.Data" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
+																				</td>
+																				<td class="delete-column">
+																					<span class="delete glyphicon glyphicon-trash" ng-click="functions.Get('/VTO/DeleteString?value='+uniques.Id)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></span>
+																				</td>
+																			</tr>
+																			<tr>
+																				<td></td>
+																				<td class="add-row" @(ViewBag.CanEditVTOVision ? "" : "disabled") ng-click="functions.AddRow('/VTO/AddUniques?vto='+vtoId+'&marketingStrategyId='+strategy.Id)"></td>
+																			</tr>
+																		</table>
+																	</div>
+																	<div class="proven-process">
+																		<span class="title">Proven Process:</span>
+																		<div>
+																			<textarea textarea-resize ng-model="(strategy).ProvenProcess" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(strategy)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
+																		</div>
+																	</div>
+																	<div class="guarantee">
+																		<span class="title">Guarantee:</span>
+																		<div>
+																			<textarea textarea-resize ng-model="strategy.Guarantee" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(strategy)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
+																		</div>
+																	</div>
+																</div>
+															</div>
 														</div>
 													</div>
 												</div>
 											</div>
+
+											@*<div style="display:table; width: 100%;height: 100%;">
+													<div style="display:table-cell;vertical-align:middle;">
+														<div class="target-market">
+															<span class="title">Target Market/"The List":</span>
+															<div>
+																<textarea textarea-resize ng-model="(model.Strategy).TargetMarket" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).Strategy)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
+															</div>
+														</div>
+														<div class="three-uniques">
+															<div class="title">Three Uniques:</div>
+															<table class="add-row-container table-list">
+																<tr class="add-row-row" ng-repeat="uniques in (model.Strategy.Uniques) | filter:{Deleted:false}">
+																	<td class="row-number">{{$index+1}}.</td>
+																	<td>
+																		<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddUniques?vto='+vtoId,'model.Strategy.Uniques')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(uniques)" ng-model="uniques.Data" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
+																	</td>
+																	<td class="delete-column">
+																		<span class="delete glyphicon glyphicon-trash" ng-click="functions.Get('/VTO/DeleteString?value='+uniques.Id)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></span>
+																	</td>
+																</tr>
+																<tr>
+																	<td></td>
+																	<td class="add-row" @(ViewBag.CanEditVTOVision ? "" : "disabled") ng-click="functions.AddRow('/VTO/AddUniques?vto='+vtoId+'&marketingStrategyId='+model.Strategy.Id)"></td>
+																</tr>
+															</table>
+														</div>
+														<div class="proven-process">
+															<span class="title">Proven Process:</span>
+															<div>
+																<textarea textarea-resize ng-model="(model.Strategy).ProvenProcess" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).Strategy)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
+															</div>
+														</div>
+														<div class="guarantee">
+															<span class="title">Guarantee:</span>
+															<div>
+																<textarea textarea-resize ng-model="(model.Strategy).Guarantee" ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate((model).Strategy)" @(ViewBag.CanEditVTOVision ? "" : "disabled")></textarea>
+															</div>
+														</div>
+													</div>
+												</div>*@
 										</div>
 									</div>
 								</div>
@@ -521,7 +629,7 @@
 													<td>
 														<textarea ng-keydown="functions.shouldCreateRow($event,this,'/VTO/AddIssue?vto='+vtoId,'model.Issues')" textarea-resize ng-model-options="{ debounce: 75 }" ng-change="functions.sendUpdate(item)" ng-model="item.Data" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></textarea>
 														@*</td>
-			<td class="delete-column">*@
+															<td class="delete-column">*@
 														<div class="pull-right" style="width:25px;margin-top: -6px;margin-bottom: -8px;">
 															<span class="issue-owner">{{item.OwnerInitials}}</span>
 															<span class="ids-button glyphicon glyphicon-ids gray clickable" ng-click="functions.Get('/L10/MoveIssueFromVto/'+item.Id)" @(ViewBag.CanEditVTOTraction ? "" : "disabled")></span>
@@ -770,26 +878,25 @@
 		}
 	</style>
 	if (ViewBag.HideVision || ViewBag.HideTraction) {
-        <style>
-	@@media print {
-		body {
-			height: 100% !important;
-		}
+		<style>
+			@@media print {
+				body {
+					height: 100% !important;
+				}
 
-		.vto-print .page {
-			height: 100% !important;
-		}
+				.vto-print .page {
+					height: 100% !important;
+				}
+			}
+		</style>
 	}
-        </style>
-    }
 }
 
-@using (Html.BeginScripts())
-{
-    <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
-    @*<script>
-	$.fn.editable.defaults.ajaxOptions = { type: "POST" };$.fn.editable.defaults.mod
-	<script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>*@
+@using (Html.BeginScripts()) {
+	<script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+	@*<script>
+		$.fn.editable.defaults.ajaxOptions = { type: "POST" };$.fn.editable.defaults.mod
+		<script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>*@
 	<script>
 		$.fn.editable.defaults.ajaxOptions = { type: "POST" };
 		$.fn.editable.defaults.mode = 'popup';

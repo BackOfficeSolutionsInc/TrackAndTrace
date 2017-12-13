@@ -170,7 +170,7 @@ namespace TractionTools.Tests.Accessors {
 				await L10Accessor.AttachMeasurable(s, perms, r.Id, m.Id);
 			});
 
-			await L10Accessor.StartMeeting(r.Creator, r.Creator, r.Id, r.Creator.Id.AsList());
+			await L10Accessor.StartMeeting(r.Creator, r.Creator, r.Id, r.Creator.Id.AsList(), false);
 
 			var week = DateTime.UtcNow.AddDays(-7 * 16);
 			using (var frame = TestUtilities.CreateFrame()) {

@@ -102,7 +102,7 @@ namespace RadialReview.Controllers
 			{
 				height = "100%",
 				width = "100%",
-				data = tree,
+				data = tree,				
 			};
 			return Json(c, JsonRequestBehavior.AllowGet);
 		}

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RadialReview.Utilities.DataTypes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -14,8 +15,7 @@ namespace RadialReview.Models.Todo
 		{
 			
 		}
-		public TodoFromIssueVM(long accountableUserId) : base(accountableUserId)
-		{
+		public TodoFromIssueVM(long accountableUserId, TimeSettings timeSettings) : base(accountableUserId, timeSettings) {
 		}
 
 		[Required]

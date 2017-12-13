@@ -42,9 +42,6 @@
 	shape-rendering: optimizeQuality;
 }
 
-.line-chart .x.axis path {
-	/*display: none;*/
-}
 
 .line-chart .line {
 	fill: none;

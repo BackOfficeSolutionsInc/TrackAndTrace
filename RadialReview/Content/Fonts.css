@@ -1,5 +1,6 @@
-﻿@charset "UTF-8";
-
+﻿/* csslint ignore:start */
+@charset "UTF-8";
+/* csslint ignore:end */
 @font-face {
   font-family: "reports";
   src:url("fonts/reports.eot");
@@ -52,7 +53,9 @@
 }
 
 
+/* csslint ignore:start */
 @charset "UTF-8";
+/* csslint ignore:end */
 
 @font-face {
   font-family: "new";
@@ -279,7 +282,9 @@
 }
 
 
+/* csslint ignore:start */
 @charset "UTF-8";
+/* csslint ignore:end */
 
 @font-face {
   font-family: "fontastic";
@@ -473,9 +478,11 @@
 .fontastic-icon-inbox:before {
   content: "~";
 }
+/* csslint ignore:start */
 .fontastic-icon-info:before {
   content: "\\";
 }
+/* csslint ignore:end */
 .fontastic-icon-issue-closed:before {
   content: "\e000";
 }

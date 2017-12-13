@@ -49,7 +49,10 @@
 		}else{
 			@:var meetingStart = false;
             @:var isLeader = false;
-        }
+	    }
+
+		$("body").toggleClass("meeting-preview",@(Model.IsPreview?"true":"false"));
+
     </script>
 	<!--_SetupScript End-->
 

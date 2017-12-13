@@ -294,7 +294,7 @@
         var a = new Anno(pages);
         a.show();
     },
-    noScorecard: function () {
+    scorecard: function () {
         var pages = [{
             target: '#ScorecardTable tbody tr td.current',
             content: "<h2>View your current week's measurables</h2> Use the scorecard to identify trends. Take 5 minutes to discuss your measurables capture any issues.",

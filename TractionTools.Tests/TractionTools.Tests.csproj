@@ -321,6 +321,7 @@
     <Compile Include="Codebase\TestSqliteDbTime.cs" />
     <Compile Include="Controllers\DashboardControllerTests.cs" />
     <Compile Include="Controllers\L10ControllerTests.cs" />
+    <Compile Include="Controllers\TestMigration.cs" />
     <Compile Include="Controllers\TwilioApi.cs" />
     <Compile Include="Controllers\PasswordTests.cs" />
     <Compile Include="Engines\SurveyEngineTests.cs" />

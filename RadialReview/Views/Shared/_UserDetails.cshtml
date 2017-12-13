@@ -51,11 +51,12 @@
 							<div class="tab-content">
 								<ul>
 									@foreach (var r in Model.Rocks@*.Where(x => x.Period!=null && x.Period.Id == q.Id)*@) {
-										<li class="font-size:19px;">
+										<li class="rock-item" data-id="@r.Id">
 											@r.Rock
 											@if (r.FromTemplateItemId.HasValue) {
 												<span class="icon fontastic-icon-link-2 template-link" title="This was created by a template."></span>
 											}
+											<span class="pull-right icon fontastic-icon-archive gray clickable" onclick="removeRock(@r.Id)"></span>
 										</li>
 									}
 								</ul>
@@ -185,7 +186,7 @@
 												<td class="alignCenter"><a href="/Manage/UserDetails/@r.AccountableUserId">@r.AccountableUser.NotNull(x => x.GetName())</a></td>
 												<td>
 													@if (edit && Model.CanViewMeasurables) {
-														<span class="glyphicon glyphicon-trash clickable" title="Remove as admin" onclick="removeAdminMeasurables(@r.Id)"></span>
+														<span class="glyphicon glyphicon-trash clickable gray clickable" title="Remove as admin" onclick="removeAdminMeasurables(@r.Id)"></span>
 
 													}
 												</td>
@@ -218,12 +219,25 @@
 </div>
 
 <script>
+	
+	function removeRock(id) {
+		$.ajax("/api/v1/rocks/" + id, {
+			method: "delete",
+			success: function () {
+				var parent = $(".rock-item[data-id=" + id + "]").closest("ul");
+				$(".rock-item[data-id=" + id + "]").remove();
+
+				if (parent.find("li").length == 0) {
+					$(parent).parent().append("<div class='gray'>No Rocks.</div>");
+				}
+			}
+		});
+	}
 
 	function removeAdminMeasurables(id) {
-
 		showModal({
 			icon: "warning",
-			title:"Remove as an admin? The measurable will revert its owner.",
+			title: "Remove as an admin? The measurable will revert its owner.",
 			success: function () {
 				$.ajax({
 					method: "get",
@@ -238,14 +252,10 @@
 							$(this).html(i + ".");
 							i += 1;
 						});
-
 					}
 				});
 			}
-			
-		})
-
-		
+		});		
 	}
 
 </script>

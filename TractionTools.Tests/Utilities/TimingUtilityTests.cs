@@ -8,6 +8,7 @@ using RadialReview.Models.Enums;
 using System.Linq;
 using System.Collections.Generic;
 using RadialReview.Utilities.DataTypes;
+using NHibernate;
 
 namespace TractionTools.Tests.Utilities {
 	[TestClass]
@@ -387,16 +388,27 @@ namespace TractionTools.Tests.Utilities {
 
 		[TestMethod]
 		public void ServerTimeConvert() {
-			var td= new TimeData() {
+			var td = new TimeData() {
 				TimezoneOffset = -420, //-7hrs = PST
 			};
 
 			var localTime = new DateTime(2017, 10, 22);
 			var serverTime = td.ConvertToServerTime(localTime);
-			Assert.AreEqual(new DateTime(2017,10,22,7,0,0), serverTime);
+			Assert.AreEqual(new DateTime(2017, 10, 22, 7, 0, 0), serverTime);
 
 			var backToLocal = td.ConvertFromServerTime(serverTime);
 			Assert.AreEqual(new DateTime(2017, 10, 22, 0, 0, 0), backToLocal);
+		}
+
+
+		[TestMethod]
+		public void SingleSourceOfTime_DatabaseFallback() {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					//No exceptions...
+					var time = TimingUtility.GetDbTimestamp(s);
+				}
+			}
 		}
 
 	}

@@ -725,8 +725,7 @@ namespace RadialReview.Accessors {
 		private static void AddL10Row_Issues(Section section, AngularRecurrence recur, AngularRecurrencePage page) {
 			AddL10Row_Title(section, page);
 
-			//var issues = recur.IssuesList.Issues.Where(x => x.Complete == false).OrderByDescending(x => x.Priority).ThenBy(x => x.Name).ToList();
-			var issues = recur.IssuesList.Issues.Where(x => x.Complete == false).ToList();
+			var issues = recur.IssuesList.Issues.Where(x => x.Complete == false).OrderByDescending(x => x.Priority).ThenBy(x => x.Name).ToList();
 			var fs = 10;
 
 			for (var i = 0; i < issues.Count; i++) {
@@ -764,18 +763,18 @@ namespace RadialReview.Accessors {
 
 		private static void AddL10Row(Section section, AngularRecurrence recur, AngularRecurrencePage page, DateTime? lastMeeting) {
 			switch (page.Type) {
-			case L10Recurrence.L10PageType.IDS:
-			AddL10Row_Issues(section, recur, page);
-			break;
-			case L10Recurrence.L10PageType.Conclude:
-			AddL10Row_Conclude(section, recur, page);
-			break;
-			case L10Recurrence.L10PageType.Todo:
-			AddL10Row_Todos(section, recur, page, lastMeeting);
-			break;
-			default:
-			AddL10Row_Title(section, page);
-			break;
+				case L10Recurrence.L10PageType.IDS:
+					AddL10Row_Issues(section, recur, page);
+					break;
+				case L10Recurrence.L10PageType.Conclude:
+					AddL10Row_Conclude(section, recur, page);
+					break;
+				case L10Recurrence.L10PageType.Todo:
+					AddL10Row_Todos(section, recur, page, lastMeeting);
+					break;
+				default:
+					AddL10Row_Title(section, page);
+					break;
 			}
 		}
 		#endregion
@@ -1174,8 +1173,13 @@ namespace RadialReview.Accessors {
 				column = table.AddColumn(Unit.FromInch(0.75 * mult));
 				column.Format.Alignment = ParagraphAlignment.Center;
 				//Rock
-				column = table.AddColumn(Unit.FromInch((4.85 + .7) * mult));
-				column.Format.Alignment = ParagraphAlignment.Left;
+				column = table.AddColumn(Unit.FromInch((3.85 + .4) * mult));
+				column.Format.Alignment = ParagraphAlignment.Center;
+
+				//% Completion
+				//column = table.AddColumn(Unit.FromInch((4.85 + .7) * mult));
+				column = table.AddColumn(Unit.FromInch((1 + .3) * mult));
+				column.Format.Alignment = ParagraphAlignment.Center;
 
 				row = table.AddRow();
 				row.HeadingFormat = true;
@@ -1196,7 +1200,17 @@ namespace RadialReview.Accessors {
 				row.Cells[4].AddParagraph("Company Rock");
 				row.Cells[4].VerticalAlignment = VerticalAlignment.Center;
 
+				row.Cells[5].AddParagraph("");
+				row.Cells[5].VerticalAlignment = VerticalAlignment.Center;
+
 				mn = 1;
+
+				//for %completion
+				var getTotalCount_rock_com = recur.Rocks.Where(x => x.VtoRock == true).Count();
+				var getDoneCount_rock_com = recur.Rocks.Where(t => t.Completion == RockState.Complete && t.VtoRock == true).Count();
+				var getCompletionPercentage_rock_com = Convert.ToDouble((Convert.ToDouble(getDoneCount_rock_com) / Convert.ToDouble(getTotalCount_rock_com)));
+				bool isCompletionPercentageDisplayed_com = true;
+
 				foreach (var m in recur.Rocks.Where(x => x.VtoRock == true).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)) {
 
 					row = table.AddRow();
@@ -1267,7 +1281,16 @@ namespace RadialReview.Accessors {
 
 					row.Cells[3].Format.Alignment = ParagraphAlignment.Center;
 					row.Cells[4].AddParagraph("" + m.NotNull(x => x.Name));
-					row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
+					row.Cells[4].Format.Alignment = ParagraphAlignment.Center;
+
+					if (isCompletionPercentageDisplayed_com) {
+						row.Cells[5].AddParagraph("" + getDoneCount_rock_com + "/" + getTotalCount_rock_com + " - " + string.Format("{0:0.##%}", getCompletionPercentage_rock_com));
+
+						isCompletionPercentageDisplayed_com = false;
+					} else {
+						row.Cells[5].AddParagraph("");
+					}
+
 					mn++;
 				}
 				row = table.AddRow();
@@ -1298,8 +1321,13 @@ namespace RadialReview.Accessors {
 			column = table.AddColumn(Unit.FromInch(0.75 * mult));
 			column.Format.Alignment = ParagraphAlignment.Center;
 			//Rock
-			column = table.AddColumn(Unit.FromInch((4.85 + .7) * mult));
-			column.Format.Alignment = ParagraphAlignment.Left;
+			column = table.AddColumn(Unit.FromInch((3.85 + .4) * mult));
+			column.Format.Alignment = ParagraphAlignment.Center;
+
+			//% Completion
+			//column = table.AddColumn(Unit.FromInch((4.85 + .7) * mult));
+			column = table.AddColumn(Unit.FromInch((1 + .3) * mult));
+			column.Format.Alignment = ParagraphAlignment.Center;
 
 			row = table.AddRow();
 			row.HeadingFormat = true;
@@ -1318,10 +1346,21 @@ namespace RadialReview.Accessors {
 			row.Cells[3].VerticalAlignment = VerticalAlignment.Center;
 
 			row.Cells[4].AddParagraph("Rock");
-			row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
+			//row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
 			row.Cells[4].VerticalAlignment = VerticalAlignment.Center;
+
+			row.Cells[5].AddParagraph("");
+			//row.Cells[5].Format.Alignment = ParagraphAlignment.Left;
+			row.Cells[5].VerticalAlignment = VerticalAlignment.Center;
+
 			//table.Format.Font.Size = Unit.FromInch(.1); // --- 1/16"
 			mn = 1;
+
+			var getTotalCount_rock = recur.Rocks.Count();
+			var getDoneCount_rock = recur.Rocks.Where(t => t.Completion == RockState.Complete).Count();
+			var getCompletionPercentage_rock = Convert.ToDouble((Convert.ToDouble(getDoneCount_rock) / Convert.ToDouble(getTotalCount_rock)));
+			bool isCompletionPercentageDisplayed = true;
+
 			foreach (var m in recur.Rocks.OrderBy(x => x.Owner.Name).ThenByDescending(x => x.VtoRock).ThenBy(x => x.DueDate)) {
 
 				row = table.AddRow();
@@ -1421,6 +1460,145 @@ namespace RadialReview.Accessors {
 													   //row.Cells[4].Format.Font.Size = 10;// Unit.FromInch(.1);
 													   //row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
 													   //row.Cells[4].Format.KeepTogether = false;
+				if (isCompletionPercentageDisplayed) {
+					row.Cells[5].AddParagraph("" + getDoneCount_rock + "/" + getTotalCount_rock + " - " + string.Format("{0:0.##%}", getCompletionPercentage_rock));
+
+					isCompletionPercentageDisplayed = false;
+				} else {
+					row.Cells[5].AddParagraph("");
+				}
+
+
+				mn++;
+			}
+		}
+
+
+		public static void AddHeadLines(UserOrganizationModel caller, Document doc, bool quarterlyPrintout, AngularRecurrence recur, AngularVTO vto, bool addPageNumber = true) {
+			//var recur = L10Accessor.GetAngularRecurrence(caller, recurrenceId);
+
+			//return SetupDoc(caller, caller.Organization.Settings.RockName);
+
+			var section = AddTitledPage(doc, "HeadLines", Orientation.Landscape, addPageNumber: addPageNumber);
+			Table table;
+			double mult;
+			Row row;
+			int mn;
+			Column column;
+
+			var format = caller.NotNull(x => x.Organization.NotNull(y => y.Settings.NotNull(z => z.GetDateFormat()))) ?? "MM-dd-yyyy";
+
+			//var addVTO = true;
+			//if (addVTO && vto != null) {
+			//	table = section.AddTable();
+			//	column = table.AddColumn(Unit.FromInch(5.0));
+			//	column.Format.Alignment = ParagraphAlignment.Right;
+
+			//	table.AddColumn(Unit.FromInch(5.0));
+			//	column.Format.Alignment = ParagraphAlignment.Right;
+
+			//	row = table.AddRow();
+			//	var p1 = new Paragraph();
+			//	p1.AddFormattedText("Future Date:", TextFormat.Bold);
+			//	row.Cells[0].Add(p1);
+			//	var p2 = new Paragraph();
+			//	p2.AddText(vto.QuarterlyRocks.FutureDate.NotNull(x => x.Value.ToString(format)) ?? "");
+			//	row.Cells[1].Add(p2);
+
+
+			//	row = table.AddRow();
+			//	var p3 = new Paragraph();
+			//	p3.AddFormattedText("Revenue:", TextFormat.Bold);
+			//	row.Cells[0].Add(p3);
+			//	var p4 = new Paragraph();
+			//	p4.AddText(vto.QuarterlyRocks.Revenue ?? "");
+			//	row.Cells[1].Add(p4);
+
+			//	row = table.AddRow();
+			//	var p5 = new Paragraph();
+			//	p5.AddFormattedText("Profit:", TextFormat.Bold);
+			//	row.Cells[0].Add(p5);
+			//	var p6 = new Paragraph();
+			//	p6.AddText(vto.QuarterlyRocks.Profit ?? "");
+			//	row.Cells[1].Add(p6);
+
+			//	row = table.AddRow();
+			//	var p7 = new Paragraph();
+			//	p7.AddFormattedText("Measurables:", TextFormat.Bold);
+			//	row.Cells[0].Add(p7);
+			//	var p8 = new Paragraph();
+			//	p8.AddText(vto.QuarterlyRocks.Measurables ?? "");
+			//	row.Cells[1].Add(p8);
+
+			//	row = table.AddRow();
+			//	row.Height = Unit.FromPoint(25);
+			//}
+
+
+			table = section.AddTable();
+			table.Format.Font.Size = 9;
+			table.Style = "Table";
+			table.Rows.LeftIndent = 0;
+			table.LeftPadding = 0;
+			table.RightPadding = 0;
+
+
+			mult = 10.0 / 7.5;
+			//Number
+			column = table.AddColumn(Unit.FromInch(0.001 * mult));//*0.2* 0.001 * mult));
+			column.Format.Alignment = ParagraphAlignment.Center;
+			//Due
+			column = table.AddColumn(Unit.FromInch(/*0.7*/0.001 * mult));
+			column.Format.Alignment = ParagraphAlignment.Center;
+			//Owner
+			column = table.AddColumn(Unit.FromInch(1 + 0.2 * mult));
+			column.Format.Alignment = ParagraphAlignment.Center;
+			//About
+			column = table.AddColumn(Unit.FromInch(1 + 0.4 * mult));
+			column.Format.Alignment = ParagraphAlignment.Center;
+			//Headlines
+			column = table.AddColumn(Unit.FromInch((4.4 + .3) * mult));
+			column.Format.Alignment = ParagraphAlignment.Left;
+
+			row = table.AddRow();
+			row.HeadingFormat = true;
+			row.Format.Alignment = ParagraphAlignment.Center;
+			row.Format.Font.Bold = true;
+			row.Shading.Color = TableGray;
+			row.Height = Unit.FromInch(0.25);
+
+			row.Cells[1].AddParagraph(/*"Due"*/"");
+			row.Cells[1].VerticalAlignment = VerticalAlignment.Center;
+
+			row.Cells[2].AddParagraph("Owner");
+			row.Cells[2].VerticalAlignment = VerticalAlignment.Center;
+
+			row.Cells[3].AddParagraph("About");
+			row.Cells[3].VerticalAlignment = VerticalAlignment.Center;
+
+			row.Cells[4].AddParagraph("Headlines");
+			row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
+			row.Cells[4].VerticalAlignment = VerticalAlignment.Center;
+			//table.Format.Font.Size = Unit.FromInch(.1); // --- 1/16"
+			mn = 1;
+			foreach (var m in recur.Headlines.OrderBy(x => x.Owner.Name).ThenBy(x => x.CreateTime)) {
+
+				row = table.AddRow();
+				row.HeadingFormat = false;
+				row.HeightRule = RowHeightRule.AtLeast;
+				row.BottomPadding = Unit.FromInch(.05);
+				row.Height = Unit.FromInch((6 * 8 + 5.0) / (8 * 16.0) / 2);
+
+
+				row.Cells[2].AddParagraph("" + m.Owner.NotNull(x => x.Name));
+				row.Cells[2].Format.Alignment = ParagraphAlignment.Center;
+				row.Cells[3].AddParagraph("" + m.About != null ? m.About.Name ?? "" : "");
+
+
+
+				row.Cells[3].Format.Alignment = ParagraphAlignment.Center;
+				row.Cells[4].AddParagraph("" + m.Name ?? "");
+
 				mn++;
 			}
 		}
@@ -1489,7 +1667,7 @@ namespace RadialReview.Accessors {
 			var weeks = recur.Scorecard.Weeks.OrderByDescending(x => x.ForWeekNumber).Take(numWeeks).OrderBy(x => reverse * x.ForWeekNumber);
 			var ii = 0;
 			foreach (var w in weeks) {
-				row.Cells[4 + ii].AddParagraph(w.DisplayDate.ToString("MM/dd/yy") + " to " + w.DisplayDate.AddDays(6).ToString("MM/dd/yy"));
+				row.Cells[4 + ii].AddParagraph(w.DisplayDate.ToString("MM/dd/yy") + " to " + w.DisplayDate.Date.AddDays(6).ToString("MM/dd/yy"));
 				row.Cells[4 + ii].Format.Font.Size = Unit.FromInch(0.07);
 				row.Cells[4 + ii].Format.Font.Size = Unit.FromInch(0.07);
 				ii++;
@@ -1709,6 +1887,17 @@ namespace RadialReview.Accessors {
 			} else if (o is Row) {
 
 				var row = (Row)o;
+
+				//if (row.Table == null) {
+				//	var tempTable = new Table();
+				//	tempTable.AddColumn(maxWidth);
+				//	row = tempTable.AddRow();
+				//	var paragraph = row.Cells[0].AddParagraph();
+				//	var tempTable2 = new Table();
+				//	tempTable2.AddColumn();
+				//	paragraph.Add(row);
+				//}
+
 				var family = row.Format.Font.Name;
 				var h = 0.0;
 				var w = 0.0;
@@ -2133,47 +2322,161 @@ namespace RadialReview.Accessors {
 			}, maxFontSize: 10);
 
 			var marketingParagraphs = new List<Paragraph>();
-
+			bool addBeforeSpace = false;
 			//////
 			{
-				var fs = 10;
-				var p1 = new Paragraph();
-				p1.Format.Font.Size = fs;
-				var txt = p1.AddFormattedText("Target Market/\"The List\": ", TextFormat.Bold);
-				p1.Format.Font.Name = "Arial Narrow";
-				p1.AddText(vto.Strategy.TargetMarket ?? "");
-				marketingParagraphs.Add(p1);
+				var count = -1;
+				var strats = vto.Strategies.ToList();
+				var includeTitle = strats.Count > 1;
 
-				var p2 = new Paragraph();
-				p2.Format.Font.Size = fs;
-				var uniques = vto.Strategy.Uniques.ToList();
-				p2.Format.SpaceBefore = fs * 1.5;
-				var uniquesTitle = "Uniques: ";
-				if (uniques.Count == 3)
-					uniquesTitle = "Three " + uniquesTitle;
-				p2.AddFormattedText(uniquesTitle, TextFormat.Bold);
-				p2.Format.Font.Name = "Arial Narrow";
-				marketingParagraphs.Add(p2);
-				marketingParagraphs.AddRange(OrderedList(uniques.Select(x => x.Data), ListType.NumberList1, Unit.FromInch(.44)));
+				foreach (var item in strats.ToList()) {
+					count += 1;
+					var fs = 10;
 
-				var p3 = new Paragraph();
-				p3.Format.Font.Size = fs;
-				p3.Format.SpaceBefore = fs * 1.5;
-				p3.AddFormattedText("Proven Process: ", TextFormat.Bold);
-				p3.Format.Font.Name = "Arial Narrow";
-				p3.AddText(vto.Strategy.ProvenProcess ?? "");
-				marketingParagraphs.Add(p3);
 
-				var p4 = new Paragraph();
-				p4.Format.Font.Size = fs;
-				p4.Format.SpaceBefore = fs * 1.5;
-				p4.AddFormattedText("Guarantee: ", TextFormat.Bold);
-				p4.Format.Font.Name = "Arial Narrow";
-				p4.AddText(vto.Strategy.Guarantee ?? "");
-				marketingParagraphs.Add(p4);
+					if (count > 0) {
+						var spacer = new Paragraph();
+						spacer.Format.Borders.Top.Color = TableGray;
+						//spacer.Format.Borders.Bottom.Color = Colors.Red;
+						spacer.Format.SpaceBefore = fs * 1.5;
+						spacer.Format.SpaceAfter = fs * .75;
+						marketingParagraphs.Add(spacer);
+					}
+
+					if (includeTitle && !string.IsNullOrWhiteSpace(item.Title)) {
+						var p0 = new Paragraph();
+						p0.Format.Font.Size = fs;
+						if (count > 0) {
+							if (addBeforeSpace) {
+								p0.Format.SpaceBefore = fs * 1.5;
+							}
+						}
+						p0.Format.SpaceAfter = fs * 1;
+						var txt0 = p0.AddFormattedText(item.Title ?? "", TextFormat.Bold | TextFormat.Underline);
+						p0.Format.Font.Name = "Arial Narrow";
+						//p0.AddText(item.Title ?? "");
+						marketingParagraphs.Add(p0);
+					}
+
+					var p1 = new Paragraph();
+					p1.Format.Font.Size = fs;
+					//p1.Format.SpaceBefore = fs * 1.5;
+					var txt = p1.AddFormattedText("Target Market/\"The List\": ", TextFormat.Bold);
+					p1.Format.Font.Name = "Arial Narrow";
+					p1.AddText(item.TargetMarket ?? "");
+					marketingParagraphs.Add(p1);
+
+					var p2 = new Paragraph();
+					p2.Format.Font.Size = fs;
+					var uniques = item.Uniques.ToList();
+					p2.Format.SpaceBefore = fs * 1.25;
+					var uniquesTitle = "Uniques: ";
+					if (uniques.Count == 3)
+						uniquesTitle = "Three " + uniquesTitle;
+					p2.AddFormattedText(uniquesTitle, TextFormat.Bold);
+					p2.Format.Font.Name = "Arial Narrow";
+					marketingParagraphs.Add(p2);
+					marketingParagraphs.AddRange(OrderedList(uniques.Select(x => x.Data), ListType.NumberList1, Unit.FromInch(.44)));
+
+					if (!string.IsNullOrEmpty(item.ProvenProcess)) {
+						var p3 = new Paragraph();
+						p3.Format.Font.Size = fs;
+						p3.Format.SpaceBefore = fs * 1.25;
+
+						if (strats.Count > 1 && string.IsNullOrEmpty(item.Guarantee)) {
+							p3.Format.SpaceAfter = fs * 1.25;
+						}
+
+						p3.AddFormattedText("Proven Process: ", TextFormat.Bold);
+						p3.Format.Font.Name = "Arial Narrow";
+						p3.AddText(item.ProvenProcess ?? "");
+						marketingParagraphs.Add(p3);
+					}
+
+					if (!string.IsNullOrEmpty(item.Guarantee)) {
+						var p4 = new Paragraph();
+						p4.Format.Font.Size = fs;
+						p4.Format.SpaceBefore = fs * 1.25;
+
+						if (strats.Count > 1) {
+							p4.Format.SpaceAfter = fs * 1.25;
+						}
+
+						p4.AddFormattedText("Guarantee: ", TextFormat.Bold);
+						p4.Format.Font.Name = "Arial Narrow";
+						p4.AddText(item.Guarantee ?? "");
+						marketingParagraphs.Add(p4);
+					}
+
+					addBeforeSpace = false;
+					if (string.IsNullOrEmpty(item.ProvenProcess) && string.IsNullOrEmpty(item.ProvenProcess)) {
+						addBeforeSpace = true;
+					}
+				}
+
+
+				//var fs = 10;
+				//var p1 = new Paragraph();
+				//p1.Format.Font.Size = fs;
+				//var txt = p1.AddFormattedText("Target Market/\"The List\": ", TextFormat.Bold);
+				//p1.Format.Font.Name = "Arial Narrow";
+				//p1.AddText(vto.Strategy.TargetMarket ?? "");
+				//marketingParagraphs.Add(p1);
+
+				//var p2 = new Paragraph();
+				//p2.Format.Font.Size = fs;
+				//var uniques = vto.Strategy.Uniques.ToList();
+				//p2.Format.SpaceBefore = fs * 1.5;
+				//var uniquesTitle = "Uniques: ";
+				//if (uniques.Count == 3)
+				//	uniquesTitle = "Three " + uniquesTitle;
+				//p2.AddFormattedText(uniquesTitle, TextFormat.Bold);
+				//p2.Format.Font.Name = "Arial Narrow";
+				//marketingParagraphs.Add(p2);
+				//marketingParagraphs.AddRange(OrderedList(uniques.Select(x => x.Data), ListType.NumberList1, Unit.FromInch(.44)));
+
+				//var p3 = new Paragraph();
+				//p3.Format.Font.Size = fs;
+				//p3.Format.SpaceBefore = fs * 1.5;
+				//p3.AddFormattedText("Proven Process: ", TextFormat.Bold);
+				//p3.Format.Font.Name = "Arial Narrow";
+				//p3.AddText(vto.Strategy.ProvenProcess ?? "");
+				//marketingParagraphs.Add(p3);
+
+				//var p4 = new Paragraph();
+				//p4.Format.Font.Size = fs;
+				//p4.Format.SpaceBefore = fs * 1.5;
+				//p4.AddFormattedText("Guarantee: ", TextFormat.Bold);
+				//p4.Format.Font.Name = "Arial Narrow";
+				//p4.AddText(vto.Strategy.Guarantee ?? "");
+				//marketingParagraphs.Add(p4);
 			}
 			//////
 			var marketingPages = SplitHeights(Unit.FromInch(5.33), new[] { Unit.FromInch(2.7), Unit.FromInch(5.7) }, marketingParagraphs);
+
+			var j = 0;
+			for (var i = 0; i < marketingPages.Count; i++) {
+				Page m = marketingPages[i];
+				var f = m.FirstOrDefault();
+				if (f != null && f.Item is Paragraph) {
+					var p = (Paragraph)f.Item;
+					if (p.Format.Borders.Top.Color == TableGray) {
+						m.Items = m.Items.Skip(1).ToList();
+						//marketingParagraphs.RemoveAt(j);
+						marketingParagraphs.Remove(p);
+					}
+				}
+				f = m.LastOrDefault();
+				if (f != null && f.Item is Paragraph) {
+					var p = (Paragraph)f.Item;
+					if (p.Format.Borders.Top.Color == TableGray) {
+						m.Items = m.Items.Take(m.Items.Count-1).ToList();
+						marketingParagraphs.Remove(p);
+					}
+				}
+			}
+
+
 
 			var looksList = vto.ThreeYearPicture.LooksLike.Where(x => !string.IsNullOrWhiteSpace(x.Data)).Select(x => x.Data).ToList();
 
@@ -2429,6 +2732,7 @@ namespace RadialReview.Accessors {
 			var goalObjects = new List<DocumentObject>();
 			var goalsSplits = new List<Page>();
 			var goalRows = new List<Row>();
+			var goalParagraphs = new List<Paragraph>();
 			{
 				var goals = vto.OneYearPlan.GoalsForYear.Select(x => x.Data).Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
 
@@ -2445,14 +2749,14 @@ namespace RadialReview.Accessors {
 				//var pt = new Paragraph();
 				//pt.Elements.Add(t);
 
-				var goalParagraphs = goals.Select(x => {
-					var c = new Cell();
-					var p = c.AddParagraph(x);
-					p.Format.SpaceBefore = Unit.FromPoint(2);
-					p.Format.Font.Size = fs;
-					p.Format.Font.Name = "Arial Narrow";
-					return p;
-				});
+				//var goalParagraphs = goals.Select(x => {
+				//	var c = new Cell();
+				//	var p = c.AddParagraph(x);
+				//	p.Format.SpaceBefore = Unit.FromPoint(2);
+				//	p.Format.Font.Size = fs;
+				//	p.Format.Font.Name = "Arial Narrow";
+				//	return p;
+				//});
 
 
 				for (var i = 0; i < goals.Count; i++) {
@@ -2470,11 +2774,12 @@ namespace RadialReview.Accessors {
 					p.Format.Font.Size = fs;
 					p.Format.Font.Name = "Arial Narrow";
 					goalRows.Add(r);
+					goalParagraphs.Add(p);
 				}
 
 				var headerSize = GetSize(goalObjects, Unit.FromInch(3.47));
 				Unit pg1Height = baseHeight - headerSize.Height;
-				goalsSplits = SplitHeights(Unit.FromInch(3), new[] { pg1Height, (baseHeight) }, goalRows);
+				goalsSplits = SplitHeights(Unit.FromInch(3), new[] { pg1Height, (baseHeight) }, goalParagraphs);
 
 
 				goalObjects.Add(goalTable);
@@ -2483,6 +2788,7 @@ namespace RadialReview.Accessors {
 			var rockObjects = new List<DocumentObject>();
 			var rockSplits = new List<Page>();
 			var rockRows = new List<Row>();
+			var rockParagraphs = new List<Paragraph>();
 			{
 				var rocks = vto.QuarterlyRocks.Rocks.Where(x => !String.IsNullOrWhiteSpace(x.Rock.Name)).ToList();
 				quarterlyRocks.Format.LeftIndent = Unit.FromInch(.095);
@@ -2496,14 +2802,14 @@ namespace RadialReview.Accessors {
 				rockObjects.Add(gfy);
 
 
-				var rockParagraphs = rocks.Select(x => {
-					var c = new Cell();
-					var p = c.AddParagraph(x.Rock.Name);
-					p.Format.SpaceBefore = Unit.FromPoint(2);
-					p.Format.Font.Size = fs;
-					p.Format.Font.Name = "Arial Narrow";
-					return p;
-				});
+				//var rockParagraphs = rocks.Select(x => {
+				//	var c = new Cell();
+				//	var p = c.AddParagraph(x.Rock.Name);
+				//	p.Format.SpaceBefore = Unit.FromPoint(2);
+				//	p.Format.Font.Size = fs;
+				//	p.Format.Font.Name = "Arial Narrow";
+				//	return p;
+				//});
 
 
 
@@ -2517,6 +2823,7 @@ namespace RadialReview.Accessors {
 					p.Format.Font.Name = "Arial Narrow";
 					p.Format.Alignment = ParagraphAlignment.Right;
 					p = r.Cells[1].AddParagraph(rocks[i].Rock.Name ?? "");
+					rockParagraphs.Add(p);
 					p.Format.SpaceBefore = Unit.FromPoint(2);
 					p.Format.Font.Size = fs;
 					p.Format.Font.Name = "Arial Narrow";
@@ -2526,19 +2833,21 @@ namespace RadialReview.Accessors {
 					p.Format.Font.Size = fs;
 					p.Format.Font.Name = "Arial Narrow";
 					rockRows.Add(r);
+
 				}
 				//var headerSize = GetSize(gfy, Unit.FromInch(3.47));
 
 				var headerSize = GetSize(rockObjects, Unit.FromInch(3.47));
 				//Unit pg1Height = Unit.FromInch(baseHeight - Unit.FromPoint(headerSize.Height*.166).Inch);
 				Unit pg1Height = baseHeight - headerSize.Height;
-				rockSplits = SplitHeights(Unit.FromInch(3), new[] { pg1Height, (baseHeight) }, rockRows);
+				rockSplits = SplitHeights(Unit.FromInch(2.6), new[] { pg1Height, (baseHeight) }, rockParagraphs);
 				rockObjects.Add(rockTable);
 
 			}
 			var issuesObjects = new List<DocumentObject>();
 			var issueSplits = new List<Page>();
 			var issueRows = new List<Row>();
+			var issueParagraph = new List<Paragraph>();
 			{
 				var issues = vto.Issues.Select(x => x.Data).Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
 
@@ -2546,14 +2855,14 @@ namespace RadialReview.Accessors {
 				//ResizeToFit(issuesList, Unit.FromInch(3.47), Unit.FromInch(5.15), (cell, fs) => {
 
 				if (issues.Any()) {
-					var issueParagraphs = issues.Select(x => {
-						var c = new Cell();
-						var p = c.AddParagraph(x);
-						p.Format.SpaceBefore = Unit.FromPoint(2);
-						p.Format.Font.Size = fs;
-						p.Format.Font.Name = "Arial Narrow";
-						return p;
-					});
+					//var issueParagraphs = issues.Select(x => {
+					//	var c = new Cell();
+					//	var p = c.AddParagraph(x);
+					//	p.Format.SpaceBefore = Unit.FromPoint(2);
+					//	p.Format.Font.Size = fs;
+					//	p.Format.Font.Name = "Arial Narrow";
+					//	return p;
+					//});
 
 
 					var rspace = issueTable.AddRow();
@@ -2573,6 +2882,7 @@ namespace RadialReview.Accessors {
 						p.Format.Font.Name = "Arial Narrow";
 						p.Format.Alignment = ParagraphAlignment.Right;
 						p = r.Cells[1].AddParagraph(issues[i] ?? "");
+						issueParagraph.Add(p);
 						p.Format.SpaceBefore = Unit.FromPoint(2);
 						p.Format.Font.Size = fs;
 						p.Format.Font.Name = "Arial Narrow";
@@ -2582,7 +2892,7 @@ namespace RadialReview.Accessors {
 					//var rowHeights = GetRowHeights(issueRows, Unit.FromInch(3));
 					var extraHeight = 0.51;
 
-					issueSplits = SplitHeights(Unit.FromInch(3), new[] { (baseHeight), (baseHeight) }, issueRows, x => x.Cells[1], extraHeight);
+					issueSplits = SplitHeights(Unit.FromInch(3), new[] { (baseHeight), (baseHeight) }, issueParagraph, null /*x => x.Cells[1]*/, extraHeight);
 					issuesObjects.Add(issueTable);
 				}
 

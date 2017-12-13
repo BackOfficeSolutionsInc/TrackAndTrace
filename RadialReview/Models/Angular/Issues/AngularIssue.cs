@@ -28,6 +28,7 @@ namespace RadialReview.Models.Angular.Issues
 			if (recurrenceIssue.Owner!=null)
 				Owner = AngularUser.CreateUser(recurrenceIssue.Owner);
             Priority = recurrenceIssue.Priority;
+			CloseTime = recurrenceIssue.CloseTime;
             //Delete = recurrenceIssue.DeleteTime != null;
 		}
 		public AngularIssue()
@@ -39,10 +40,12 @@ namespace RadialReview.Models.Angular.Issues
 		public String Name { get; set; }
 		public AngularUser Owner { get; set; }
 		public string DetailsUrl { get; set; }
+        [Obsolete]
 		public DateTime? CompleteTime { get; set; }
 		public bool? Complete { get; set; }
 
 		public DateTime? CreateTime { get; set; }
+		public DateTime? CloseTime { get; set; }
 
 		[IgnoreDataMember]
 		public String Details { get; set; }

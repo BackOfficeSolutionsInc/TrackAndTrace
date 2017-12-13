@@ -33,7 +33,22 @@
 	/*position: relative;*/
 	line-height: 14px;
 	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.1);
-	transition: background-color ease .15s,color ease .15s, padding-top linear .15s,padding-bottom linear .076s,margin-left linear .15s, margin-right linear .15s, margin-top linear .076s, margin-bottom linear .027s;
+	/*transition: background-color ease .15s,
+		color ease .15s,
+		padding-top  41.7311ms linear 0ms,
+		padding-bottom linear .076s,
+		margin-left linear .15s,
+		margin-right linear .15s,
+		margin-top 28.8035ms linear 12.7067ms,
+		margin-bottom 38.9ms linear 35.4982ms;*/
+	transition: background-color ease .15s,
+		color ease .15s,
+		padding-top  38ms linear 0ms,
+		padding-bottom  49.5277ms linear 14.5747ms,
+		margin-left linear .15s,
+		margin-right linear .15s,
+		margin-top 38ms linear,
+		margin-bottom 25ms linear;
 }
 
 	.todo-list > .todo-row.selected {

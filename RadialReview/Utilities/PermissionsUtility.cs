@@ -377,7 +377,8 @@ namespace RadialReview.Utilities {
 
         #region Payment
         public PermissionsUtility EditCompanyPayment(long organizationId) {
-            return EditOrganization(organizationId);
+			return CanEdit(PermItem.ResourceType.UpdatePaymentForOrganization, organizationId);
+            //return EditOrganization(organizationId);
         }
         #endregion
 
@@ -1621,6 +1622,10 @@ namespace RadialReview.Utilities {
         }
         public PermissionsUtility EditRock(long rockId) {
 			return CheckCacheFirst("EditRock", rockId).Execute(() => {
+
+				if (IsRadialAdmin(caller))
+					return this;
+
 				var rock = session.Get<RockModel>(rockId);
 
 				var recurrenceIds = session.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
@@ -1921,11 +1926,15 @@ namespace RadialReview.Utilities {
             var user = session.Get<UserOrganizationModel>(userId);
             return CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, user.Organization.Id, exceptionMessage: "This user is '" + Config.ReviewName().ToLower() + " only' and cannot be added to an L10. You are not permitted to upgrade them.");
         }
-        #endregion
 
-        #region Overrides
+		public PermissionsUtility CanUpgradeUsersAtOrganization(long orgId) {
+			return CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, orgId, exceptionMessage: "You're not permitted to increase the user count.");
+		}
+		#endregion
 
-        public PermissionsUtility TryWithAllUsers(Func<PermissionsUtility, PermissionsUtility> p) {
+		#region Overrides
+
+		public PermissionsUtility TryWithAllUsers(Func<PermissionsUtility, PermissionsUtility> p) {
             try {
                 return p(this);
             } catch (PermissionsException e) {

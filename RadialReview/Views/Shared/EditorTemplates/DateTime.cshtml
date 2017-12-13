@@ -1,71 +1,76 @@
 ﻿@model DateTime?
 
 @{
-    var lookups = new Dictionary<string, string>() {
-        {"today","new Date()" },
-        {"tomorrow",@" (function(){
+	var lookups = new Dictionary<string, string>() {
+		{"today","new Date()" },
+		{"tomorrow",@" (function(){
 							var currentDate = new Date();
 							currentDate.setDate(currentDate.getDate() + 1);
 							return currentDate;
 						})()" }
 
-    };
+	};
 
 
-    if (ViewData["startDate"] is DateTime) {
-        ViewData["startDate"] = ((DateTime)ViewData["startDate"]).ToJavascriptMilliseconds();
-    }
-    if (ViewData["endDate"] is DateTime) {
-        ViewData["endDate"] = ((DateTime)ViewData["endDate"]).ToJavascriptMilliseconds();
-    }
+	if (ViewData["startDate"] is DateTime) {
+		ViewData["startDate"] = ((DateTime)ViewData["startDate"]).ToJavascriptMilliseconds();
+	}
+	if (ViewData["endDate"] is DateTime) {
+		ViewData["endDate"] = ((DateTime)ViewData["endDate"]).ToJavascriptMilliseconds();
+	}
 
-    if (ViewData["startDate"] is long) {
-        ViewData["startDate"] = "new Date(" + ViewData["startDate"] + ")";
-    }
+	if (ViewData["startDate"] is long) {
+		ViewData["startDate"] = "new Date(" + ViewData["startDate"] + ")";
+	}
 
-    if (ViewData["endDate"] is long) {
-        ViewData["endDate"] = "new Date(" + ViewData["endDate"] + ")";
-    }
+	if (ViewData["endDate"] is long) {
+		ViewData["endDate"] = "new Date(" + ViewData["endDate"] + ")";
+	}
 
-    if (ViewData["startDate"] is string) {
-        ViewData["startDate"] = lookups.GetOrDefault((string)ViewData["startDate"], (string)ViewData["startDate"]);
-    }
-    if (ViewData["endDate"] is string) {
-        ViewData["endDate"] = lookups.GetOrDefault((string)ViewData["endDate"], (string)ViewData["endDate"]);
-    }
+	if (ViewData["startDate"] is string) {
+		ViewData["startDate"] = lookups.GetOrDefault((string)ViewData["startDate"], (string)ViewData["startDate"]);
+	}
+	if (ViewData["endDate"] is string) {
+		ViewData["endDate"] = lookups.GetOrDefault((string)ViewData["endDate"], (string)ViewData["endDate"]);
+	}
 
-    bool localize = ViewData["localize"] as bool? == true;
+	bool localize = ViewData["localize"] as bool? == true;
 
-    var startDate = ViewData["startDate"]??"-Infinity";
-    var endDate = ViewData["endDate"]??"Infinity";
-
-
-
-    bool allowEmpty = ViewData["allowEmpty"] as bool? == true;
+	var startDate = ViewData["startDate"]??"-Infinity";
+	var endDate = ViewData["endDate"]??"Infinity";
 
 
-    var guid = "date-"+Guid.NewGuid().ToString();
-    string name = null;
-    if (Html.NameForModel()!=null && !String.IsNullOrWhiteSpace(Html.NameForModel().ToString())) {
-        name = Html.NameForModel().ToString();
 
-    }
-    name = name ?? ViewData["name"] as string ?? "Date";
-    var id = ViewData["id"] ?? name;
-    var jsDate = "new Date()";
-    if (Model != null) {
-        jsDate = "new Date(" + (Model.Value.Year) + "," + (Model.Value.Month - 1) + "," + Model.Value.Day + "," + Model.Value.Hour + "," + Model.Value.Minute + "," + Model.Value.Second + ")";
-    } else if (allowEmpty) {
-        jsDate = "false";
-    }
-    var options = "{startDate:" + startDate + ",endDate:" + endDate + "}";
+	bool allowEmpty = ViewData["allowEmpty"] as bool? == true;
 
-    var method = "generateDatepicker";
-    if (localize) {
-        method = "generateDatepickerLocalize";
-    }
 
-    var generater = new MvcHtmlString(method+"('." + guid + "'," + jsDate + ",'" + name + "','" + id + "',"+options+");");
+	var guid = "date-"+Guid.NewGuid().ToString();
+	string name = null;
+	if (Html.NameForModel()!=null && !String.IsNullOrWhiteSpace(Html.NameForModel().ToString())) {
+		name = Html.NameForModel().ToString();
+
+	}
+	name = name ?? ViewData["name"] as string ?? "Date";
+	var id = ViewData["id"] ?? name;
+	var jsDate = "{Local:true, Date: new Date()}";
+	if (Model != null) {
+		jsDate = "{Local:false, Date: new Date(" + (Model.Value.Year) + "," + (Model.Value.Month - 1) + "," + Model.Value.Day + "," + Model.Value.Hour + "," + Model.Value.Minute + "," + Model.Value.Second + ")}";
+	} else if (allowEmpty) {
+		jsDate = "false";
+	}
+	var options = "{startDate:" + startDate + ",endDate:" + endDate + "}";
+
+	var method = "generateDatepicker";
+	if (localize) {
+		method = "generateDatepickerLocalize";
+	}
+
+	if (ViewData["correctDate"] as bool? ?? false) {
+		method = "createDatepicker";
+	}
+
+
+	var generater = new MvcHtmlString(method+"('." + guid + "'," + jsDate + ",'" + name + "','" + id + "',"+options+");");
 	}
 <div class="date-container test-ignore @guid" id="@guid"></div>
 

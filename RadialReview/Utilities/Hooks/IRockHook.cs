@@ -25,5 +25,6 @@ namespace RadialReview.Utilities.Hooks {
 		Task CreateRock(ISession s, RockModel rock);
 		Task UpdateRock(ISession s, UserOrganizationModel caller, RockModel rock, IRockHookUpdates updates);
 		Task ArchiveRock(ISession s, RockModel rock,bool deleted);
-	}
+        Task UnArchiveRock(ISession s, RockModel rock, bool v);
+    }
 }

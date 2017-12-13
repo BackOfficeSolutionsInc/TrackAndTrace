@@ -29,7 +29,7 @@
 						data-name="@(i.ForRock.AccountableUser.GetName())"
 					>
                         <td class="message multiline2"  data-rock="@(i.ForRock.Id)"><div class="milestone-marker-container"></div><div class="rock-title">@i.ForRock.Rock</div></td>
-                        <td width="240px" class="rock-state-holder">@Html.EditorFor(x => i.Completion, "RockStateThin", new { name = "rock_" + i.ForRock.Id })</td>
+                        <td width="240px" class="rock-state-holder on-edit-enabled">@Html.EditorFor(x => i.Completion, "RockStateThin", new { name = "rock_" + i.ForRock.Id })</td>
                         <td width="34px" class="buttonHolder currentBlue">
                             <span class="icon fontastic-icon-pinboard issuesButton @((ViewBag.CanEdit??true)?"issuesModal":"disabled")"
                                   data-meeting="@person.First().L10Meeting.Id"

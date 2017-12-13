@@ -49,10 +49,12 @@ namespace RadialReview.Models.L10
 		//public virtual String _MeetingLeaderCurrentPageType { get; set; }
 		public virtual DateTime? _MeetingLeaderCurrentPageStartTime { get; set; }
 		public virtual double? _MeetingLeaderCurrentPageBaseMinutes { get; set; }
-
-        public virtual Ratio TodoCompletion { get; set; }
-
 		
+		public virtual Ratio TodoCompletion { get; set; }
+
+		public virtual bool Preview { get; set; }
+
+
 		public L10Meeting()
 		{
 			_MeetingAttendees = new List<L10Meeting_Attendee>();
@@ -80,6 +82,8 @@ namespace RadialReview.Models.L10
 				References(x => x.L10Recurrence).Column("L10RecurrenceId").Not.LazyLoad().ReadOnly();
 				Map(x => x.MeetingLeaderId).Column("MeetingLeaderId");
 				References(x => x.MeetingLeader).Column("MeetingLeaderId").Not.LazyLoad().ReadOnly();
+
+				Map(x => x.Preview);
 
                 Component(x => x.TodoCompletion).ColumnPrefix("TodoCompletion_");
 

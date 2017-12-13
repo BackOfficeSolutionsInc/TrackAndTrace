@@ -32,6 +32,8 @@ using System.Threading.Tasks;
 using RadialReview.Hooks;
 using RadialReview.Utilities.Hooks;
 using RadialReview.Utilities.Synchronize;
+using System.Web.Mvc;
+using RadialReview.Models.ViewModels;
 
 namespace RadialReview.Accessors {
 	public class RockAndMilestones {
@@ -90,6 +92,67 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
+
+		public async static Task<List<RockModel>> Search(UserOrganizationModel caller, long orgId, string search, long[] excludeLong, int take = int.MaxValue) {
+			excludeLong = excludeLong ?? new long[] { };
+
+			var visible = RockAccessor.GetAllVisibleRocksAtOrganization(caller, orgId, true)
+				.Where(x => !excludeLong.Any(y => y == x.Id))
+				.Where(x => x.Id > 0);
+
+			var splits = search.ToLower().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+			var dist = new DiscreteDistribution<RockModel>(0, 9, true);
+			
+			foreach (var u in visible) {
+
+				var fname = false;
+				var lname = false;
+				var ordered = false;
+				var fnameStart = false;
+				var lnameStart = false;
+				var wasFirst = false;
+				var exactFirst = false;
+				var exactLast = false;
+				var containsText = false;
+
+				var names = new List<string[]>();
+				names.Add(new string[] {
+					u.AccountableUser.GetFirstName().ToLower(),
+					u.AccountableUser.GetLastName().ToLower(),
+				});
+
+				foreach (var n in names) {
+					var f = n[0];
+					var l = n[1];
+					foreach (var t in splits) {
+						if (f.Contains(t))
+							fname = true;
+						if (f == t)
+							exactFirst = true;
+						if (f.StartsWith(t))
+							fnameStart = true;
+						if (l.Contains(t))
+							lname = true;
+						if (l.StartsWith(t))
+							lnameStart = true;
+						if (fname && !wasFirst && lname)
+							ordered = true;
+						if (l == t)
+							exactLast = true;
+						if (u.Rock != null && u.Rock.ToLower().Contains(t))
+							containsText = true;
+						wasFirst = true;
+					}
+				}
+
+				var score = fname.ToInt() + lname.ToInt() + ordered.ToInt() + fnameStart.ToInt() + lnameStart.ToInt() + exactFirst.ToInt() + exactLast.ToInt() + containsText.ToInt() * 2;
+				if (score > 0)
+					dist.Add(u, score);
+			}
+			return dist.GetProbabilities().OrderByDescending(x => x.Value).Select(x => x.Key).Take(take).ToList();
+
+		}
+
 		public static void EditMilestone(UserOrganizationModel caller, long milestoneId, string name = null, DateTime? duedate = null, bool? required = null, MilestoneStatus? status = null, string connectionId = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -347,7 +410,7 @@ namespace RadialReview.Accessors {
 					foreach (var r in rocks) {
 						csv.Add(r.Rock, "Owner", r.AccountableUser.GetName());
 						//csv.Add(r.Rock, "Manager", string.Join(" & ", r.AccountableUser.ManagedBy.Select(x => x.Manager.GetName())));
-						csv.Add(r.Rock, "Status", "" + r.Completion);
+						csv.Add(r.Rock, "Status", "" + RockStateExtensions.GetCompletionVal(r.Completion));
 						csv.Add(r.Rock, "CreateTime", "" + r.CreateTime);
 						csv.Add(r.Rock, "CompleteTime", "" + r.CompleteTime);
 						csv.Add(r.Rock, "Archived", "" + r.Archived);
@@ -371,7 +434,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static async Task<RockModel> CreateRock(ISession s, PermissionsUtility perms, long ownerId, string message = null, long? templateId = null,long? permittedForRecurrenceId=null) {
+		public static async Task<RockModel> CreateRock(ISession s, PermissionsUtility perms, long ownerId, string message = null, long? templateId = null, long? permittedForRecurrenceId = null) {
 
 			perms.CreateRocksForUser(ownerId, permittedForRecurrenceId);
 			var owner = s.Get<UserOrganizationModel>(ownerId);
@@ -396,11 +459,33 @@ namespace RadialReview.Accessors {
 			return rock;
 		}
 
+		public static CreateRockViewModel BuildCreateRockVM(UserOrganizationModel caller, dynamic ViewBag, List<SelectListItem> potentialUsers = null) {
+			if (potentialUsers == null) {
+				potentialUsers = TinyUserAccessor.GetOrganizationMembers(caller, caller.Organization.Id, false).Select((x, i) => new SelectListItem() {
+					Selected = i == 0 || x.UserOrgId == caller.Id,
+					Text = x.Name,
+					Value = "" + x.UserOrgId,
+				}).OrderBy(x => x.Text).ToList();
+			}
+
+			if (!potentialUsers.Any())
+				throw new PermissionsException("No users");
+
+			var selected = potentialUsers.LastOrDefault(x => x.Selected);
+			if (selected == null)
+				selected = potentialUsers.First();
+
+			return new CreateRockViewModel() {
+				AccountableUser = selected.Value.ToLong(),
+				PotentialUsers = potentialUsers,
+			};
+		}
+
 		public static async Task UpdateRock(UserOrganizationModel caller, long rockId, string message = null, long? ownerId = null, RockState? completion = null, DateTime? dueDate = null, DateTime? now = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
-					await UpdateRock(s, perms,rockId,  message, ownerId,completion,dueDate,DateTime.UtcNow);
+					await UpdateRock(s, perms, rockId, message, ownerId, completion, dueDate, DateTime.UtcNow);
 					tx.Commit();
 					s.Flush();
 				}
@@ -424,7 +509,7 @@ namespace RadialReview.Accessors {
 				updates.MessageChanged = true;
 			}
 
-            updates.OriginalAccountableUserId = rock.ForUserId;
+			updates.OriginalAccountableUserId = rock.ForUserId;
 			if (ownerId != null && rock.ForUserId != ownerId) {
 				rock.AccountableUser = s.Load<UserOrganizationModel>(ownerId.Value);
 				rock.ForUserId = ownerId.Value;
@@ -453,7 +538,7 @@ namespace RadialReview.Accessors {
 
 			await HooksRegistry.Each<IRockHook>((ss, x) => x.UpdateRock(ss, perms.GetCaller(), rock, updates));
 		}
-		
+
 
 		public static async Task ArchiveRock(UserOrganizationModel caller, long rockId, DateTime? now = null) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -480,6 +565,35 @@ namespace RadialReview.Accessors {
 #pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
 			await HooksRegistry.Each<IRockHook>((ss, x) => x.ArchiveRock(s, rock, false));
 		}
+
+
+		public static async Task UnArchiveRock(UserOrganizationModel caller, long rockId, DateTime? now = null) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					await UnArchiveRock(s, perms, rockId);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+		public static async Task UnArchiveRock(ISession s, PermissionsUtility perm, long rockId) {
+			perm.EditRock(rockId);
+			var rock = s.Get<RockModel>(rockId);
+			rock.Archived = false;
+			rock.DeleteTime = null;
+			s.Update(rock);
+#pragma warning disable CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
+			if (rock.ForUserId != null) {
+				s.Flush();
+				s.GetFresh<UserOrganizationModel>(rock.ForUserId).UpdateCache(s);
+			}
+#pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
+			await HooksRegistry.Each<IRockHook>((ss, x) => x.UnArchiveRock(s, rock, false));
+		}
+
+
 
 		public static void UndeleteRock(UserOrganizationModel caller, long rockId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
@@ -545,7 +659,7 @@ namespace RadialReview.Accessors {
 							} else {
 								var updates = new IRockHookUpdates();
 								s.Merge(r);
-								await HooksRegistry.Each<IRockHook>((ses, x) => x.UpdateRock(ses,perm.GetCaller(), r, updates));
+								await HooksRegistry.Each<IRockHook>((ses, x) => x.UpdateRock(ses, perm.GetCaller(), r, updates));
 							}
 						}
 

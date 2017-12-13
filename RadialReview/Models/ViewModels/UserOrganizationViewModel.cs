@@ -21,8 +21,7 @@ namespace RadialReview.Models.ViewModels
 		public String FirstName { get; set; }
 		[Required]
 		public String LastName { get; set; }
-
-		[Required]
+		
 		[EmailAddress]
 		public String Email { get; set; }
 
@@ -31,6 +30,8 @@ namespace RadialReview.Models.ViewModels
         public bool StrictlyHierarchical { get; set; }
         public long? ManagerNodeId { get; set; }
 		public bool EvalOnly { get; set; }
+		public bool OnLeadershipTeam { get; set; }
+		public bool PlaceholderOnly { get; set; }
 
 		public string PhoneNumber { get; set; }
 

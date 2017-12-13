@@ -12,10 +12,15 @@ using NHibernate.Mapping;
 using RadialReview.Exceptions;
 using RadialReview.Models;
 using RadialReview.Models.Dashboard;
+using RadialReview.Models.Enums;
 using RadialReview.Utilities;
+using RadialReview.Models.L10;
 
 namespace RadialReview.Accessors {
 	public class DashboardAccessor {
+
+		public static int TILE_HEIGHT = 5;
+
 		public static List<Dashboard> GetDashboardsForUser(UserOrganizationModel caller, long userId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -32,17 +37,21 @@ namespace RadialReview.Accessors {
 		public static Dashboard GetPrimaryDashboardForUser(UserOrganizationModel caller, long userId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					var user = s.Get<UserOrganizationModel>(userId);
-					if (user == null || user.User == null)
-						throw new PermissionsException("User does not exist.");
-
-					PermissionsUtility.Create(s, caller).ViewDashboardForUser(user.User.Id);
-					return s.QueryOver<Dashboard>()
-						.Where(x => x.DeleteTime == null && x.ForUser.Id == user.User.Id && x.PrimaryDashboard)
-						.OrderBy(x => x.CreateTime).Desc
-						.Take(1).SingleOrDefault();
+					return GetPrimaryDashboardForUser(s, caller, userId);
 				}
 			}
+		}
+
+		public static Dashboard GetPrimaryDashboardForUser(ISession s, UserOrganizationModel caller, long userId) {
+			var user = s.Get<UserOrganizationModel>(userId);
+			if (user == null || user.User == null)
+				throw new PermissionsException("User does not exist.");
+
+			PermissionsUtility.Create(s, caller).ViewDashboardForUser(user.User.Id);
+			return s.QueryOver<Dashboard>()
+				.Where(x => x.DeleteTime == null && x.ForUser.Id == user.User.Id && x.PrimaryDashboard)
+				.OrderBy(x => x.CreateTime).Desc
+				.Take(1).SingleOrDefault();
 		}
 
 		public static Dashboard CreateDashboard(UserOrganizationModel caller, string title, bool primary, bool defaultDashboard = false) {
@@ -51,48 +60,52 @@ namespace RadialReview.Accessors {
 					if (caller.User == null)
 						throw new PermissionsException("User does not exist.");
 
-
-					if (primary) {
-						var existing = s.QueryOver<Dashboard>().Where(x => x.DeleteTime == null && x.ForUser.Id == caller.User.Id && x.PrimaryDashboard).List();
-						foreach (var e in existing) {
-							e.PrimaryDashboard = false;
-							s.Update(e);
-						}
-					} else {
-						//If this the first one, then override primary to true
-						primary = (!s.QueryOver<Dashboard>().Where(x => x.DeleteTime == null && x.ForUser.Id == caller.User.Id).Select(x => x.Id).List<long>().Any());
-					}
-
-					var dash = new Dashboard() {
-						ForUser = caller.User,
-						Title = title,
-						PrimaryDashboard = primary,
-					};
-					s.Save(dash);
-					if (defaultDashboard) {
-						var perms = PermissionsUtility.Create(s, caller);
-						var height = 5;
-						//x: 0, y: 0, w: 1, h: 1
-						CreateTile(s, perms, dash.Id, 1, 1 * height, 0, 0 * height, "/TileData/UserProfile2", "Profile", TileType.Profile);
-						CreateTile(s, perms, dash.Id, 1, 1 * height, 0, 1 * height, "/TileData/FAQTips", "FAQ Guide", TileType.FAQGuide);
-						if (caller.IsManager()) {
-							//x: 0, y: 1, w: 1, h: 3
-							CreateTile(s, perms, dash.Id, 1, 2 * height, 0, 2 * height, "/TileData/UserManage2", "Managing", TileType.Manage);
-						}
-						//x: 1, y: 2, w: 3, h: 2
-						CreateTile(s, perms, dash.Id, 3, 2 * height, 1, 2 * height, "/TileData/UserTodo2", "To-dos", TileType.Todo);
-						//x: 1, y: 0, w: 6, h: 2
-						CreateTile(s, perms, dash.Id, 6, 2 * height, 1, 0 * height, "/TileData/UserScorecard2", "Scorecard", TileType.Scorecard);
-						//x: 4, y: 2, w: 3, h: 2
-						CreateTile(s, perms, dash.Id, 3, 2 * height, 4, 2 * height, "/TileData/UserRock2", "Rocks", TileType.Rocks);
-
-					}
+					Dashboard dash = CreateDashboard(s, caller, title, primary, defaultDashboard);
 
 					tx.Commit();
 					s.Flush();
 					return dash;
 				}
 			}
+		}
+
+		public static Dashboard CreateDashboard(ISession s, UserOrganizationModel caller, string title, bool primary, bool defaultDashboard) {
+			if (primary) {
+				var existing = s.QueryOver<Dashboard>().Where(x => x.DeleteTime == null && x.ForUser.Id == caller.User.Id && x.PrimaryDashboard).List();
+				foreach (var e in existing) {
+					e.PrimaryDashboard = false;
+					s.Update(e);
+				}
+			} else {
+				//If this the first one, then override primary to true
+				primary = (!s.QueryOver<Dashboard>().Where(x => x.DeleteTime == null && x.ForUser.Id == caller.User.Id).Select(x => x.Id).List<long>().Any());
+			}
+
+			var dash = new Dashboard() {
+				ForUser = caller.User,
+				Title = title,
+				PrimaryDashboard = primary,
+			};
+			s.Save(dash);
+			if (defaultDashboard) {
+				var perms = PermissionsUtility.Create(s, caller);				
+				//x: 0, y: 0, w: 1, h: 1
+				CreateTile(s, perms, dash.Id, 1, 1 * TILE_HEIGHT, 0, 0 * TILE_HEIGHT, "/TileData/UserProfile2", "Profile", TileType.Profile);
+				CreateTile(s, perms, dash.Id, 1, 1 * TILE_HEIGHT, 0, 1 * TILE_HEIGHT, "/TileData/FAQTips", "FAQ Guide", TileType.FAQGuide);
+				if (caller.IsManager()) {
+					//x: 0, y: 1, w: 1, h: 3
+					CreateTile(s, perms, dash.Id, 1, 2 * TILE_HEIGHT, 0, 2 * TILE_HEIGHT, "/TileData/UserManage2", "Managing", TileType.Manage);
+				}
+				//x: 1, y: 2, w: 3, h: 2
+				CreateTile(s, perms, dash.Id, 3, 2 * TILE_HEIGHT, 1, 2 * TILE_HEIGHT, "/TileData/UserTodo2", "To-dos", TileType.Todo);
+				//x: 1, y: 0, w: 6, h: 2
+				CreateTile(s, perms, dash.Id, 6, 2 * TILE_HEIGHT, 1, 0 * TILE_HEIGHT, "/TileData/UserScorecard2", "Scorecard", TileType.Scorecard);
+				//x: 4, y: 2, w: 3, h: 2
+				CreateTile(s, perms, dash.Id, 3, 2 * TILE_HEIGHT, 4, 2 * TILE_HEIGHT, "/TileData/UserRock2", "Rocks", TileType.Rocks);
+
+			}
+
+			return dash;
 		}
 
 		public static Dashboard GetDashboard(UserOrganizationModel caller, long dashboardId) {
@@ -183,7 +196,6 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-
 		public static void EditTiles(UserOrganizationModel caller, long dashboardId, IEnumerable<Controllers.DashboardController.TileVM> model) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -222,9 +234,7 @@ namespace RadialReview.Accessors {
 				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).EditDashboard(dashboardId);
 
-					tiles = s.QueryOver<TileModel>()
-						.Where(x => x.DeleteTime == null && x.Dashboard.Id == dashboardId && x.Hidden == false)
-						.List().OrderBy(x => x.Y).ThenBy(x => x.X).ToList();
+					tiles = GetTiles(s, dashboardId);
 
 				}
 			}
@@ -233,6 +243,12 @@ namespace RadialReview.Accessors {
 				tile.Dashboard = null;
 			}
 			return tiles;
+		}
+
+		public static List<TileModel> GetTiles(ISession s, long dashboardId) {
+			return s.QueryOver<TileModel>()
+				.Where(x => x.DeleteTime == null && x.Dashboard.Id == dashboardId && x.Hidden == false)
+				.List().OrderBy(x => x.Y).ThenBy(x => x.X).ToList();
 		}
 
 		public static void RenameDashboard(UserOrganizationModel caller, long dashboardId, string title) {
@@ -259,6 +275,59 @@ namespace RadialReview.Accessors {
 					s.Flush();
 				}
 			}
+		}
+
+
+		public class DashboardAndTiles {
+			public Dashboard Dashboard { get; set; }
+			public List<TileModel> Tiles { get; set; }
+			public DashboardAndTiles(Dashboard d) {
+				Dashboard = d;
+				Tiles = new List<TileModel>();
+			}
+		}
+
+
+		public static DashboardAndTiles GenerateDashboard(UserOrganizationModel caller, long id, DashboardType type) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					switch (type) {
+						//case DashboardType.DirectReport:
+						//	(perms.ManagesUserOrganizationOrSelf(id);)>
+						//	return GenerateUserDashboard(s,id);
+						//	break;
+						//case DashboardType.Client:
+						//	(perms.ViewClient(id);)>
+						//	return GenerateClientDashboard(s, id);							
+						case DashboardType.L10:
+							return GenerateL10Dashboard(s,perms, id);
+						default:
+							throw new ArgumentOutOfRangeException("DashboardType", "" + type);
+					}
+				}
+			}			
+		}
+
+
+		private static DashboardAndTiles GenerateL10Dashboard(ISession s,PermissionsUtility perms, long id) {
+			perms.ViewL10Recurrence(id);
+			var recur = s.Get<L10Recurrence>(id);
+			var now = DateTime.UtcNow;
+
+			var d = new Dashboard() {
+				Id =-1,
+				CreateTime = DateTime.UtcNow,
+				Title =recur.Name ??" L10 Dashboard",				
+			};
+			var o = new DashboardAndTiles(d);
+			
+			o.Tiles.Add(new TileModel(0, 0 * TILE_HEIGHT, 6, 2 * TILE_HEIGHT, "Scorecard", TileTypeBuilder.L10Scorecard(id), d, now));
+			o.Tiles.Add(new TileModel(0, 2 * TILE_HEIGHT, 2, 3 * TILE_HEIGHT, "Rocks", TileTypeBuilder.L10Rocks(id), d, now));
+			o.Tiles.Add(new TileModel(2, 2 * TILE_HEIGHT, 2, 3 * TILE_HEIGHT, "To-dos", TileTypeBuilder.L10Todos(id), d, now));
+			o.Tiles.Add(new TileModel(4, 2 * TILE_HEIGHT, 2, 3 * TILE_HEIGHT, "Issues", TileTypeBuilder.L10Issues(id), d, now));
+
+			return o;
 		}
 	}
 }

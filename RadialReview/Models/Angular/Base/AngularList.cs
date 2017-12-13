@@ -9,8 +9,15 @@ namespace RadialReview.Models.Angular.Base
     public enum AngularListType {
         ReplaceAll,
         Add,
+		/// <summary>
+		/// Adds or replaces the entry
+		/// </summary>
         ReplaceIfNewer,
         Remove,
+		/// <summary>
+		/// Replaces entry only if it exists
+		/// </summary>
+		ReplaceIfExists,
     }
 
 	public class AngularList
