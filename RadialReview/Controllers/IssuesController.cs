@@ -152,7 +152,7 @@ namespace RadialReview.Controllers
                 Details = details,//i.Issue.Description,
                 ParentIssue_RecurrenceId = i.Id,
                 CopyIntoRecurrenceId = copyto.Value,
-                PossibleRecurrences = L10Accessor.GetAllConnectedL10Recurrence(GetUser(), i.Recurrence.Id).Select(s => new L10Recurrence() { Id = s.Id, Name = s.Name }).ToList()
+                PossibleRecurrences = L10Accessor.GetAllConnectedL10Recurrence(GetUser(), i.Recurrence.Id).Where(m => m.Id != i.Recurrence.Id).Select(s => new L10Recurrence() { Id = s.Id, Name = s.Name }).ToList()
             };
 
             return Json(ResultObject.SilentSuccess(model), JsonRequestBehavior.AllowGet);
@@ -211,10 +211,8 @@ namespace RadialReview.Controllers
         [HttpPost]
         [Access(AccessLevel.UserOrganization)]
         public async Task<JsonResult> UnCopyModal(CopyIssueVM model)
-        {
-            //ValidateValues(model, x => x.ParentIssue_RecurrenceId, x => x.IssueId);
-            var issue = IssuesAccessor.UnCopyIssue(GetUser(), model.ParentIssue_RecurrenceId, model.CopyIntoRecurrenceId);
-            //model.PossibleRecurrences = L10Accessor.GetAllConnectedL10Recurrence(GetUser(), issue.Recurrence.Id);
+        {            
+            var issue = IssuesAccessor.UnCopyIssue(GetUser(), model.ParentIssue_RecurrenceId, model.CopyIntoRecurrenceId);            
 
             await IssuesAccessor.EditIssue(GetUser(), model.ParentIssue_RecurrenceId, awaitingSolve: false);
             return Json(ResultObject.SilentSuccess().NoRefresh());

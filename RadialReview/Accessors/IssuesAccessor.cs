@@ -628,7 +628,7 @@ namespace RadialReview.Accessors
                     var childRecur = s.Get<L10Recurrence>(childRecurrenceId);
 
                     if (childRecur.Organization.Id != caller.Organization.Id)
-                        throw new PermissionsException("You cannot copy an issue into this meeting.");
+                        throw new PermissionsException("You cannot Uncopy an issue into this meeting.");
                     if (parent.DeleteTime != null)
                         throw new PermissionsException("Issue does not exist.");
 
@@ -646,21 +646,10 @@ namespace RadialReview.Accessors
                     {
                         throw new PermissionsException("Issue Recurrence does not exist.");
                     }
-
-                    getL10RecurrenceChild.DeleteTime = DateTime.UtcNow;
-
-                    //var issue_recur = new IssueModel.IssueModel_Recurrence()
-                    //{
-                    //    ParentRecurrenceIssue = null,
-                    //    CreateTime = now,
-                    //    CopiedFrom = parent,
-                    //    CreatedBy = caller,
-                    //    Issue = s.Load<IssueModel>(parent.Issue.Id),
-                    //    Recurrence = s.Load<L10Recurrence>(childRecurrenceId),
-                    //    Owner = parent.Owner
-                    //};
-                    //s.Save(issue_recur);
+                    
+                    getL10RecurrenceChild.DeleteTime = now;
                     s.Update(getL10RecurrenceChild);
+
                     var viewModel = IssuesData.FromIssueRecurrence(getL10RecurrenceChild);
                     _UnRecurseCopy(s, viewModel, caller, parent, now);
                     tx.Commit();
@@ -671,7 +660,7 @@ namespace RadialReview.Accessors
 
                     meetingHub.removeIssueRow(getL10RecurrenceChild.Id);
                     var issue = s.Get<IssueModel>(parent.Issue.Id);
-                    Audit.L10Log(s, caller, parent.Recurrence.Id, "CopyIssue", ForModel.Create(getL10RecurrenceChild), issue.NotNull(x => x.Message) + " copied into " + childRecur.NotNull(x => x.Name));
+                    Audit.L10Log(s, caller, parent.Recurrence.Id, "UnCopyIssue", ForModel.Create(getL10RecurrenceChild), issue.NotNull(x => x.Message) + " Uncopied from " + childRecur.NotNull(x => x.Name));
                     return getL10RecurrenceChild;
                 }
             }
@@ -685,18 +674,7 @@ namespace RadialReview.Accessors
             var childrenVMs = new List<IssuesData>();
             foreach (var child in children)
             {
-                child.DeleteTime = now;
-                //var issue_recur = new IssueModel.IssueModel_Recurrence()
-                //{
-                //    ParentRecurrenceIssue = parent,
-                //    CreateTime = now,
-                //    CopiedFrom = child,
-                //    CreatedBy = caller,
-                //    Issue = s.Load<IssueModel>(child.Issue.Id),
-                //    Recurrence = s.Load<L10Recurrence>(parent.Recurrence.Id),
-                //    Owner = s.Load<UserOrganizationModel>(parent.Owner.Id)
-                //};
-                //s.Save(issue_recur);
+                child.DeleteTime = now;              
                 s.Update(child);
                 var childVM = IssuesData.FromIssueRecurrence(child);
                 childrenVMs.Add(childVM);
@@ -704,8 +682,6 @@ namespace RadialReview.Accessors
             }
             viewModel.children = childrenVMs.ToArray();
         }
-
-
 
         public static Csv Listing(UserOrganizationModel caller, long organizationId)
         {

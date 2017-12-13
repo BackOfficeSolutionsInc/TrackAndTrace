@@ -146,7 +146,7 @@ $(function () {
                     console.log(data);
                     if (showJsonAlert(data)) {
                         setTimeout(function () {
-                            var ele_click = 'Issue moved to L10. <a style="text-decoration:underline;" onclick="undoStack.canUndo() && undoStack.undo();">Undo?</a>';
+                            var ele_click = 'Issue moved to L10. <a style="cursor:pointer;text-decoration:underline;" onclick="undoStack.canUndo() && undoStack.undo();">Undo?</a>';
                             showAlert(ele_click, 4000);
                         }, 500)
                     }
@@ -304,7 +304,7 @@ $(function () {
                 var fields = [
                     { name: "ParentIssue_RecurrenceId", text: "ParentIssue_RecurrenceId", type: "hidden", value: data.Object.ParentIssue_RecurrenceId },
                     { name: "IssueId", text: "IssueId", type: "hidden", value: data.Object.IssueId },
-                    { name: "message", text: "Detail", type: "text", value: data.Object.Message },
+                    { name: "message", text: "Issue", type: "readonly", value: data.Object.Message },
                     { name: "CopyIntoRecurrenceId", text: "Copy into", type: "Select", options: optionArr }
                 ];
 
