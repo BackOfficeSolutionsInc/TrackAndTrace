@@ -32,7 +32,7 @@ $(function () {
 		$(detailsContents).append("<div class='createTime'>" + dateFormatter(new Date(createtime)) + "</div>");
 
 		$(detailsContents).append("<div class='heading'><h4 class='message-holder clickable on-edit-enabled' data-todo='" + todo + "'><span data-todo='" + todo + "' class='message editable-text '>" + message + "</span></h4></div>");
-		$(detailsContents).append("<iframe class='details todo-details' name='embed_readwrite' src='/Todo/Pad/" + todo + "' width='100%' height='100%'></iframe>");
+		$(detailsContents).append("<iframe class='details todo-details on-edit-enabled' name='embed_readwrite' src='/Todo/Pad/" + todo + "' width='100%' height='100%'></iframe>");
 
 		$(detailsContents).append(
 			"<div class='button-bar'>" +
@@ -88,7 +88,10 @@ $(function () {
 				todayBtn: true,
 				orientation: "top left"
 			}).on('changeDate', function (ev) {
-				var data = { date: (ev.date).valueOf() };
+				debugger;
+				//DO NOT CONVERT TO SERVER TIME... 
+				var data = { date: ev.date.addDays(.99999).valueOf() };
+				//var data = { date: Time.toServerTime(ev.date.addDays(.99999)).valueOf() };
 				$.ajax({
 					method: "POST",
 					data: data,
@@ -202,11 +205,13 @@ function updateTodoDueDate(todo, duedate) {
 	var row = $(".todo-row[data-todo=" + todo + "]");
 	row.attr("data-duedate", duedate);
 
+	debugger;
 	var d = new Date(duedate);
-	d = Time.toLocalTime(d);
+	d = Time.parseJsonDate(d);
 
-	var a = d.toISOString().substr(0, 10).split("-");
-	var dispDate = new Date(a[0], a[1] - 1, a[2]);
+	//var a = d.toISOString().substr(0, 10).split("-");
+	//var dispDate = new Date(a[0], a[1] - 1, a[2]);
+	var dispDate = d;
 	var nowDateStr = new Date();
 	var nowDate = new Date(nowDateStr.getYear() + 1900, nowDateStr.getMonth(), nowDateStr.getDate());
 

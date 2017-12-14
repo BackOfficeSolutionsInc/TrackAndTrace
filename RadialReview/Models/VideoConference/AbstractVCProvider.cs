@@ -34,6 +34,7 @@ namespace RadialReview.Models.VideoConference {
 		public virtual long OwnerId { get; set; }
 
 		public abstract VideoConferenceType GetVideoConferenceType();
+
 		public virtual string GetName() {
 			return FriendlyName?? (""+GetVideoConferenceType());
 		}

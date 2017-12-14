@@ -736,7 +736,7 @@ namespace RadialReview.Accessors {
 		public static PaymentPlanModel GetPlan(UserOrganizationModel caller, long organizationId) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
-					PermissionsUtility.Create(s, caller).ManagingOrganization(organizationId);
+					PermissionsUtility.Create(s, caller).Or(x=>x.ManagingOrganization(organizationId),x=>x.CanView(PermItem.ResourceType.UpdatePaymentForOrganization,organizationId));
 					var org = s.Get<OrganizationModel>(organizationId);
 
 					var plan = s.Get<PaymentPlanModel>(org.PaymentPlan.Id);

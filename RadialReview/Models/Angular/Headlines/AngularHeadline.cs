@@ -32,6 +32,7 @@ namespace RadialReview.Models.Angular.Headlines {
 				};
 			CloseTime = headline.CloseTime;
 			CreateTime = headline.CreateTime;
+			Archived = headline.CloseTime != null;
 			
 			Link = "/L10/Timeline/" + headline.RecurrenceId + "#transcript-" + headline.Id;
 
@@ -48,6 +49,7 @@ namespace RadialReview.Models.Angular.Headlines {
 		public DateTime? CloseTime { get; set; }
 		public DateTime? CreateTime { get; set; }
 		public AngularPicture About { get; set; }
+		public bool? Archived { get; set; }
 
 		[IgnoreDataMember]
 		public string Link { get; set; }

@@ -729,7 +729,7 @@ namespace RadialReview.Controllers {
 
 			if (cache.Get(CacheKeys.LAST_SEND_NOTE_TIME) == null || model.SendTime > (long)cache.Get(CacheKeys.LAST_SEND_NOTE_TIME)) {
 				cache.Push(CacheKeys.LAST_SEND_NOTE_TIME, model.SendTime, LifeTime.Request/*Session*/);
-				L10Accessor.EditNote(GetUser(), model.NoteId, model.Contents, model.Name, model.ConnectionId);
+				L10Accessor.EditNote(GetUser(), model.NoteId, /*model.Contents,*/ model.Name, model.ConnectionId);
 				return Json(ResultObject.SilentSuccess(model).NoRefresh());
 			}
 			return Json(ResultObject.SilentSuccess("stale").NoRefresh());

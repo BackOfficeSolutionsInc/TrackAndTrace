@@ -193,12 +193,12 @@ namespace RadialReview.Accessors {
         #endregion
 
         public static async Task<AddedUser> CreateUserUnderManager(UserOrganizationModel caller, CreateUserOrganizationViewModel settings) {
-            return await CreateUserUnderManager(caller, settings.ManagerNodeId, settings.IsManager, settings.OrgPositionId, settings.Email, settings.FirstName, settings.LastName, settings.IsClient, settings.ClientOrganizationName, settings.EvalOnly);
+            return await CreateUserUnderManager(caller, settings.ManagerNodeId, settings.IsManager, settings.OrgPositionId, settings.Email, settings.FirstName, settings.LastName, settings.IsClient, settings.ClientOrganizationName, settings.EvalOnly, settings.OnLeadershipTeam, settings.PlaceholderOnly);
         }
 
 		[Untested("is _AddUserToTemplateUnsafe wired up correctly?"/*,"hooks"*/)]
-        private static async Task<AddedUser> CreateUserUnderManager(UserOrganizationModel caller, long? managerNodeId, Boolean isManager, long? orgPositionId, String email, String firstName, String lastName, bool isClient, string organizationName, bool evalOnly) {
-            if (!Emailer.IsValid(email))
+        private static async Task<AddedUser> CreateUserUnderManager(UserOrganizationModel caller, long? managerNodeId, Boolean isManager, long? orgPositionId, String email, String firstName, String lastName, bool isClient, string organizationName, bool evalOnly,bool leadershipTeam, bool placeholder) {
+            if (!Emailer.IsValid(email) && !placeholder)
                 throw new PermissionsException(ExceptionStrings.InvalidEmail);
             if (firstName == null)
                 throw new PermissionsException("First name cannot be empty.");
@@ -262,6 +262,7 @@ namespace RadialReview.Accessors {
                     newUser.EvalOnly = evalOnly;
                     newUser.ClientOrganizationName = organizationName;
                     newUser.IsClient = isClient;
+					newUser.IsPlaceholder = placeholder;
                     newUser.ManagerAtOrganization = isManager;
                     newUser.Organization = caller.Organization;
                     newUser.EmailAtOrganization = email;
@@ -348,13 +349,26 @@ namespace RadialReview.Accessors {
                     tx.Commit();
                     db.Flush();
                 }
-                using (var tx = db.BeginTransaction()) {
+				using (var tx = db.BeginTransaction()) {
+						var perms = PermissionsUtility.Create(db, caller);
+					if (leadershipTeam) {
+						await UserAccessor.AddRole(db, perms, newUser.Id, UserRoleType.LeadershipTeamMember);
+					}
+					if (placeholder) {
+						await UserAccessor.AddRole(db, perms, newUser.Id, UserRoleType.PlaceholderOnly);
+					}
+					tx.Commit();
+					db.Flush();
+
+				}
+
+				using (var tx = db.BeginTransaction()) {
 #pragma warning disable CS0618 // Type or member is obsolete
-                    await HooksRegistry.Each<ICreateUserOrganizationHook>((ses,x) => x.CreateUserOrganization(ses, newUser));
+					await HooksRegistry.Each<ICreateUserOrganizationHook>((ses, x) => x.CreateUserOrganization(ses, newUser));
 #pragma warning restore CS0618 // Type or member is obsolete
-                    tx.Commit();
-                    db.Flush();
-                }
+					tx.Commit();
+					db.Flush();
+				}
             }
             return output;
         }

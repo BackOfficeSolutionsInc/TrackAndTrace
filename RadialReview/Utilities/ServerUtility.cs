@@ -32,7 +32,16 @@ namespace RadialReview.Utilities
             return true;
         }
 
-        public static async void Reschedule()
+		//public static async Task SetRequestTimeout(int seconds) {
+		//	try {
+		//		HttpContext.Current.GetType().GetField("_timeoutState", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).SetValue(System.Web.HttpContext.Current, seconds);
+		//	} catch (Exception) {
+		//		//welp..
+		//		int a = 0;
+		//	}
+		//}
+
+		public static async void Reschedule()
         {
             while (true)
             {

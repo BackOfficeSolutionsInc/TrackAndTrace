@@ -40,8 +40,12 @@ namespace RadialReview.Hooks {
 		public async Task ArchiveRock(ISession s, RockModel rock, bool deleted) {
 			await UpdateForUser(s, rock.ForUserId);
 		}
+        public async Task UnArchiveRock(ISession s, RockModel rock, bool v)
+        {
+            //Nothing to do...
+        }
 
-		public async Task CreateMeasurable(ISession s, MeasurableModel m) {
+        public async Task CreateMeasurable(ISession s, MeasurableModel m) {
 			await UpdateForUser(s, m.AccountableUserId);
 			if (m.AccountableUserId != m.AdminUserId)
 				await UpdateForUser(s, m.AdminUserId);

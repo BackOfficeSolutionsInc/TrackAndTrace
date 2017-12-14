@@ -15,11 +15,13 @@ namespace RadialReview.Models.Angular.Meeting
 			ForWeek = week.ForWeek;
 			ForWeekNumber = TimingUtility.GetWeekSinceEpoch(week.ForWeek);
 			DisplayDate = week.DisplayDate;
+			LocalDate = week.StartDate;
 			IsCurrentWeek = week.IsCurrentWeek;
 		}
 		public long ForWeekNumber { get; set; }
 		public DateTime ForWeek { get; set; }
 		public DateTime DisplayDate { get; set; }
+		public LocalDateTime LocalDate { get; set; }
 		public bool IsCurrentWeek { get; set; }
 
 	}

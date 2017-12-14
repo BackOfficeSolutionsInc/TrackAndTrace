@@ -14,7 +14,7 @@
 
 @using (Html.BeginStyles()) {
 	<style>
-		 /*{
+		/*{
 			background-color: #1f1e1d;
 		}*/
 		html,
@@ -54,6 +54,18 @@
 			border: none;
 			border-radius: 0px;
 		}
+
+
+		.special-offer sup{
+
+			font-size: 64%;
+		}
+
+		/*.special-offer {
+			/*font-weight: bold;*
+			color: white;
+			text-transform: uppercase;
+		}*/
 	</style>
 }
 
@@ -133,14 +145,21 @@
 	</div>
 
 </div>
-@*<br />
-	<hr />
-	<br />*@
-<br />
+
+
 <div class="alignCenter no-ios" style="padding-top: 90px;">
 	<a class="btn btn btn-primary btn-invert" id="learnMore" href="http://mytractiontools.com"> Learn more about Traction Tools</a>
 </div>
 
+<br />
+<br />
+@{
+	if (ViewBag.SpecialOffer != null) {
+		<div class="special-offer">
+			@(new HtmlString(ViewBag.SpecialOffer))
+		</div>
+	}
+}
 <div class="row">
 	<div class="col-md-6"></div>
 	<div class="col-md-6"></div>

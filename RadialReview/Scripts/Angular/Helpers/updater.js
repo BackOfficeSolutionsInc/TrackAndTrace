@@ -139,7 +139,7 @@
                                 dst[key] = dst[key].concat(src.AngularList);
                             } else if (src.UpdateMethod == "ReplaceAll") {
                                 dst[key] = src.AngularList;
-                            } else if (src.UpdateMethod == "ReplaceIfNewer") {
+                            } else if (src.UpdateMethod == "ReplaceIfNewer" || src.UpdateMethod == "ReplaceIfExists") {
                                 var keysList = [];
                                 for (var entry in dst[key]) {
                                     if (arrayHasOwnIndex(dst[key], entry)) {
@@ -150,8 +150,10 @@
                                     if (arrayHasOwnIndex(src.AngularList, entry)) {
                                         var loc = keysList.indexOf(src.AngularList[entry]["Key"]);
                                         if (loc != -1) {
+											//Replace it
                                             dst[key][loc] = src.AngularList[entry];
-                                        } else {
+                                        } else if (src.UpdateMethod == "ReplaceIfNewer") {
+											//Add it
                                             if (typeof (dst[key]) === "undefined") {
                                                 dst[key] = [];
                                             }
@@ -277,7 +279,7 @@
                 if (obj[key] == null) {
                     //Do nothing
                 } else {
-                    var isDate = parseJsonDate(value);
+                    var isDate = Time.parseJsonDate(value);
 
                     if (isDate != false) {
                         obj[key] = isDate;
@@ -291,7 +293,7 @@
 
     function clearAndApply(data, status) {
 
-        console.log("updater",this.scope);
+        console.log("Updating Scope: ",this.scope);
         this.scope.model = {};
         this.applyUpdate(data, status);
     }
@@ -358,7 +360,7 @@
 
                 return m;
             }
-            else if (u && u._Pointer) {
+            else if (u && u._P) {
                 return model.Lookup[m.Key];
             } else if (angular.isObject(u)) {
                 for (var k in u) {
@@ -368,7 +370,7 @@
                             //Fix m[k]
                             if (m[k].UpdateMethod == "Remove") {
                                 m[k] = [];
-                            } else if (m[k].UpdateMethod == "Replace" || m[k].UpdateMethod == "ReplaceIfNewer" || m[k].UpdateMethod == "Add") {
+                            } else if (m[k].UpdateMethod == "Replace" || m[k].UpdateMethod == "ReplaceIfNewer" || m[k].UpdateMethod == "ReplaceIfExists" || m[k].UpdateMethod == "Add") {
                                 m[k] = m[k].AngularList;
                             } else {
                                 console.error("Unknown update type:" + m[k].UpdateMethod);

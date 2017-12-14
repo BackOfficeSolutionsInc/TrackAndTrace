@@ -34,6 +34,8 @@ using RadialReview.Utilities.Hooks;
 using RadialReview.Models.Accountability;
 using RadialReview.Models.Reviews;
 using RadialReview.Utilities.RealTime;
+using System.Diagnostics;
+using RadialReview.Utiliities;
 
 namespace RadialReview.Accessors {
 
@@ -986,6 +988,114 @@ namespace RadialReview.Accessors {
 			return resultx;
 		}
 
+		public static CreateUserOrganizationViewModel BuildCreateUserVM(UserOrganizationModel caller,dynamic ViewBag, long? managerId=null, string name=null, bool isClient=false, long? managerNodeId=null, bool forceManager=false, bool hideIsManager=false, bool hidePosition=false, long? nodeId=null, bool hideEvalOnly=false, bool forceNoSend=false) {
+			var sw = new Stopwatch();
+			sw.Start();
+			//var caller = GetUser().Hydrate().Organization().Execute();
+			//var positions = _OrganizationAccessor.GetOrganizationPositions(caller, caller.Organization.Id);
+			var e1 = sw.ElapsedMilliseconds;
+			var _PermissionsAccessor = new PermissionsAccessor();
+			var _OrganizationAccessor = new OrganizationAccessor();
+			var _PositionAccessor = new PositionAccessor();
+
+			_PermissionsAccessor.Permitted(caller, x => x.CanEdit(PermItem.ResourceType.UpgradeUsersForOrganization, caller.Organization.Id));
+
+#pragma warning disable CS0618 // Type or member is obsolete
+			var orgPos = _OrganizationAccessor
+						.GetOrganizationPositions(caller, caller.Organization.Id)
+						.ToListAlive()
+						.OrderBy(x => x.CustomName)
+						.ToSelectList(x => x.CustomName, x => x.Id).ToList();
+#pragma warning restore CS0618 // Type or member is obsolete
+			if (_PermissionsAccessor.IsPermitted(caller, x => x.EditPositions(caller.Organization.Id))) {
+				orgPos.Insert(0, new SelectListItem() { Value = "-1", Text = "<" + DisplayNameStrings.createNew + ">" });
+			}
+			var e2 = sw.ElapsedMilliseconds;
+			var positions = _PositionAccessor
+								.AllPositions()
+								.ToSelectList(x => x.Name.Translate(), x => x.Id)
+								.ToList();
+			orgPos.Insert(0, new SelectListItem() { Value = "-2", Text = "<None>" });
+
+			var e3 = sw.ElapsedMilliseconds;
+			var posModel = new UserPositionViewModel() {
+				UserId = -1L,
+				PositionId = -2L,
+				OrgPositions = orgPos,
+				Positions = positions,
+				CustomPosition = null,
+
+			};
+
+			var managers = new List<SelectListItem>();
+			var strictHierarchy = caller.Organization.StrictHierarchy;
+			if (!strictHierarchy)
+				managers = AccountabilityAccessor.GetOrganizationManagerNodes(caller, caller.Organization.Id)
+												.ToSelectList(x => x.User.GetName() + x.AccountabilityRolesGroup.NotNull(y => y.Position.NotNull(z => z.GetName().Surround(" (", ")"))), x => x.Id)
+												.ToList();
+
+			var e4 = sw.ElapsedMilliseconds;
+			if (caller.ManagingOrganization) {
+				var root = AccountabilityAccessor.GetRoot(caller, caller.Organization.AccountabilityChartId);
+				ViewBag.ShowLeadershipTeam = true;
+				managers.Insert(0, new SelectListItem() { Selected = false, Text = "[Organization Admin]", Value = "" + root.Id });
+			}
+			managers.Insert(0, new SelectListItem() { Selected = false, Text = "[None]", Value = "-3" });
+
+			//long? nodeId = managerNodeId;
+			if (managerNodeId == null) {
+				var node = DeepAccessor.Users.GetNodesForUser(caller, managerId ?? caller.Id).FirstOrDefault();
+				managerNodeId = node == null ? (long?)null : node.Id;
+			}
+
+			if (!caller.Organization.Settings.EnableReview) {
+				hideEvalOnly = true;
+			}
+
+			ViewBag.ForceManager = forceManager;
+			ViewBag.HideIsManager = hideIsManager;
+			ViewBag.HidePosition = hidePosition;
+			ViewBag.HideEvalOnly = hideEvalOnly;
+			ViewBag.HideSend = forceNoSend;
+			ViewBag.ShowPlaceholder = true;
+
+			string fname = null;
+			string lname = null;
+			string email = null;
+
+			if (name != null) {
+				try {
+					var names = name.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+					var nameCount = names.Length;
+					fname = string.Join(" ", names.Where((x, i) => i < nameCount - 1));
+					if (nameCount > 1) {
+						lname = names[nameCount - 1];
+						email = EmailUtil.GuessEmail(caller, caller.Organization.Id, fname, lname);
+					}
+				} catch (Exception) {
+				}
+			}
+
+
+
+			var model = new CreateUserOrganizationViewModel() {
+				Position = posModel,
+				OrgId = caller.Organization.Id,
+				StrictlyHierarchical = strictHierarchy,
+				ManagerNodeId = managerNodeId,
+				PotentialManagers = managers,
+				SendEmail = forceNoSend ? false : caller.Organization.SendEmailImmediately,
+				IsClient = isClient,
+				FirstName = fname,
+				LastName = lname,
+				Email = email,
+				NodeId = nodeId
+			};
+			var e5 = sw.ElapsedMilliseconds;
+			return model;
+		}
+
+
 		private static void AddSettings(IdentityResult result, UserModel user) {
 			if (result.Succeeded) {
 				using (var s = HibernateSession.GetCurrentSession()) {
@@ -1019,6 +1129,83 @@ namespace RadialReview.Accessors {
 			}
 
 			return builder.ToString();
+		}
+
+
+		public static List<UserRole> GetUserRolesAtOrganization(UserOrganizationModel caller, long orgId) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					perms.ViewOrganization(orgId);
+					return s.QueryOver<UserRole>().Where(x => x.DeleteTime == null && x.OrgId == orgId).List().ToList();
+				}
+			}
+		}
+
+		public static async Task SetRole(UserOrganizationModel caller, long userId, UserRoleType type, bool enabled) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+
+					if (enabled) {
+						await AddRole(s, perms, userId, type);
+					} else {
+						await RemoveRole(s, perms, userId, type);
+					}
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+		public static async Task RemoveRole(UserOrganizationModel caller, long userId, UserRoleType type) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					await RemoveRole(s, perms, userId, type);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+		public static async Task AddRole(UserOrganizationModel caller, long userId, UserRoleType type) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var perms = PermissionsUtility.Create(s, caller);
+					await AddRole(s, perms, userId, type);
+					tx.Commit();
+					s.Flush();
+				}
+			}
+		}
+
+		public static async Task AddRole(ISession s, PermissionsUtility perms, long userId, UserRoleType type) {
+			perms.ViewUserOrganization(userId, false);
+			var any = s.QueryOver<UserRole>().Where(x => x.UserId == userId && type == x.RoleType && x.DeleteTime == null).RowCount();
+			var user = s.Get<UserOrganizationModel>(userId);
+			if (any == 0) {
+				s.Save(new UserRole() {
+					OrgId = user.Organization.Id,
+					RoleType = type,
+					UserId = userId,
+				});
+				await HooksRegistry.Each<IUserRoleHook>((ses, x) => x.AddRole(ses, userId, type));
+			}
+		}
+
+		public static async Task RemoveRole(ISession s, PermissionsUtility perms, long userId, UserRoleType type) {
+			perms.ViewUserOrganization(userId, false);
+			var any = s.QueryOver<UserRole>().Where(x => x.UserId == userId && type == x.RoleType && x.DeleteTime == null).List().ToList();
+			var user = s.Get<UserOrganizationModel>(userId);
+			if (any.Count > 0) {
+				foreach (var a in any) {
+					a.DeleteTime = DateTime.UtcNow;
+					s.Update(a);
+				}
+				await HooksRegistry.Each<IUserRoleHook>((ses, x) => x.RemoveRole(ses, userId, type));
+			}
 		}
 
 		#region Deleted

@@ -96,12 +96,17 @@ namespace RadialReview.Hooks.Realtime {
 			//}
 		}
 
-		public async Task AttachRock(ISession s, UserOrganizationModel caller, RockModel rock, L10Recurrence.L10Recurrence_Rocks recurRock) {
+        public async Task UnArchiveRock(ISession s, RockModel rock, bool v)
+        {
+            //Nothing to do...
+        }
+
+        public async Task AttachRock(ISession s, UserOrganizationModel caller, RockModel rock, L10Recurrence.L10Recurrence_Rocks recurRock) {
 			if (recurRock.VtoRock) {
 				AddRockToVto(s, rock.Id, recurRock.L10Recurrence.Id);
 			}
 		}
-		public async Task DetatchRock(ISession s, RockModel rock, long recurrenceId) {
+		public async Task DetachRock(ISession s, RockModel rock, long recurrenceId) {
 			RemoveRockFromVto(s, rock.Id, recurrenceId);
 		}
 

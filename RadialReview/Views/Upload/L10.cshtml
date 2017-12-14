@@ -12,10 +12,10 @@
         <tr>
             <td>@row.Recurrence.Name</td>
             <td style="width: 111px;">
-                <a href="/upload/l10/scorecard?recurrence=@row.Recurrence.Id">Scorecard (@row.Recurrence._DefaultMeasurables.Count)</a>
+                <a href="/upload/l10/scorecard?recurrence=@row.Recurrence.Id">Scorecard @*(@row.Recurrence._DefaultMeasurables.Count)*@</a>
             </td>
             <td style="width: 81px;">
-                <a href="/upload/l10/rocks?recurrence=@row.Recurrence.Id">Rocks (@row.Recurrence._DefaultRocks.Count)</a>
+                <a href="/upload/l10/rocks?recurrence=@row.Recurrence.Id">Rocks @*(@row.Recurrence._DefaultRocks.Count)*@</a>
             </td>
             <td style="width:60px;">
                 <a href="/upload/l10/todos?recurrence=@row.Recurrence.Id">To-dos</a>

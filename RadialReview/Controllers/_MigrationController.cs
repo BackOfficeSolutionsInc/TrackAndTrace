@@ -1998,7 +1998,7 @@ namespace RadialReview.Controllers {
 
         }
 
-		#endregion
+        #endregion
 
 		[Access(AccessLevel.Radial)]
 		public async Task<ActionResult> RevertScores() {
@@ -2173,6 +2173,79 @@ namespace RadialReview.Controllers {
             return "Updated:" + a + ",  Not Updated:" + b;
         }
 
+        [Access(Controllers.AccessLevel.Radial)]
+        public String M11_22_2017() {
+            var a = 0;
+            var b = 0;
+            var pageCount = 0;
+            var createTime = new DateTime(2017, 11, 22);
+            using (var s = HibernateSession.GetDatabaseSessionFactory().OpenStatelessSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var _VtoModel = s.QueryOver<VtoModel>().List().ToList();                   
+
+                    var _VtoItemString = s.QueryOver<VtoItem_String>().Where(x => x.Type == VtoItemType.List_Uniques).List().ToList();
+
+                    //foreach (var rr in _VtoModel) {
+                    //    if (!_VtoStrategyMap.Any(x => x.VtoId == rr.Id
+                    //     && x.MarketingStrategyId == rr.MarketingStrategy.Id
+                    //    )) {
+                    //        // save new
+                    //        VtoStrategyMap _map = new VtoStrategyMap() {
+                    //            CreateTime = createTime,
+                    //            VtoId = rr.Id,
+                    //            MarketingStrategyId = rr.MarketingStrategy.Id,
+                    //        };
+
+                    //        s.Insert(_map);
+                    //        a++;
+                    //    }
+                    //}
+
+                    foreach (var item in _VtoItemString) {
+                        if (item.MarketingStrategyId == null) {
+                            item.MarketingStrategyId = item.Vto.MarketingStrategy.Id;
+                            b++;
+
+                            s.Update(item);
+    }
+                    }
+
+                    tx.Commit();
+                }
+            }
+            return "VtoStrategyMap Inserted:" + a + ", VtoITemString Inserted:" + b;
+        }
+		[Access(Controllers.AccessLevel.Radial)]
+		public String M12_01_2017() {
+			var a = 0;
+			var b = 0;
+			var pageCount = 0;
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var orgs = s.QueryOver<OrganizationModel>().List().ToList();
+					var permItems = s.QueryOver<PermItem>().Where(x=>x.ResType == PermItem.ResourceType.UpdatePaymentForOrganization).List().ToList();
+
+					foreach (var org in orgs) {
+						if (!permItems.Any(x => x.ResId == org.Id && x.CanAdmin)) {
+							
+							var tempUser = new UserOrganizationModel() {
+								Id= -11,
+								Organization = org,
+							};
+
+							PermissionsAccessor.CreatePermItems(s, tempUser, PermItem.ResourceType.UpdatePaymentForOrganization, org.Id,
+								PermTiny.Admins(true, true, true)
+							);
+							a++;
+						}
+					}
+
+					tx.Commit();
+					s.Flush();
+				}
+			}
+			return "Updated:" + a;
+		}
     }
 }
 #pragma warning restore CS0618 // Type or member is obsolete

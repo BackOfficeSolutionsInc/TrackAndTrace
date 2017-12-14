@@ -8,6 +8,125 @@ body {
   background-color: white;
   margin-bottom: 10px;
 }
+.vto .nav.nav-tabs {
+  margin-top: 0px !important;
+}
+.vto .panel-default > .panel-heading {
+  color: #333333;
+  background-color: #fff;
+  border-color: #fff;
+  opacity: 1;
+  transition: ease-in-out 0.2s opacity, ease-in-out 0.2s color, ease-in-out 0.2s color;
+}
+.vto .panel {
+  border: none;
+}
+.vto .panel-heading {
+  padding: 0px;
+}
+.vto .nav.nav-tabs li {
+  padding: 4px;
+  margin: 0 2px;
+  color: lightgray;
+  border-bottom: 2px solid transparent;
+  transition: ease-in-out 0.2s border, ease-in-out 0.2s color;
+  min-width: 115px;
+  max-width: 145px;
+}
+.vto .nav.nav-tabs li.active-li {
+  color: #EF7622;
+  font-weight: bold;
+}
+.vto .nav.nav-tabs li.active-li textareafocus {
+  border: none;
+  height: auto !important;
+}
+.vto .nav.nav-tabs li.active-li textarea::-webkit-input-placeholder {
+  /* Chrome/Opera/Safari */
+  color: #EF7622;
+}
+.vto .nav.nav-tabs li.active-li textarea::-moz-placeholder {
+  /* Firefox 19+ */
+  color: #EF7622;
+}
+.vto .nav.nav-tabs li.active-li textarea:-ms-input-placeholder {
+  /* IE 10+ */
+  color: #EF7622;
+}
+.vto .nav.nav-tabs li.active-li textarea:-moz-placeholder {
+  /* Firefox 18- */
+  color: #EF7622;
+}
+.vto .nav.nav-tabs li.add-tab {
+  max-width: 64px;
+  min-width: 64px;
+  height: 10px;
+}
+.vto .nav.nav-tabs li textarea {
+  text-align: center;
+  border: none !important;
+  height: 20px !important;
+  /*white-space: nowrap;
+			overflow: hidden;
+			/*text-overflow: ellipsis;*
+
+			&:focus {
+				white-space: normal !important;
+				overflow: hidden;
+				text-overflow: clip;
+			}*/
+}
+.vto .nav.nav-tabs.one-strategy li {
+  padding: 4px;
+  margin: 0 2px;
+  color: transparent;
+  border-bottom: 2px solid transparent;
+  transition: ease-in-out 0.2s border, ease-in-out 0.2s color;
+}
+.vto .nav.nav-tabs.one-strategy li.active-li {
+  color: transparent;
+  font-weight: bold;
+}
+.vto .nav.nav-tabs li:focus {
+  outline: none !important;
+}
+.vto .nav.nav-tabs li:not(.add-tab):hover {
+  color: #333;
+  border-bottom: 2px solid #EF7622;
+}
+.vto .add-new-strategy {
+  display: none;
+}
+.vto .remove-strategy {
+  position: absolute;
+  right: 17px;
+  top: 5px;
+  color: #333;
+  opacity: 0;
+  transition: ease-in-out 0.2s opacity;
+}
+.vto .remove-strategy:hover {
+  opacity: 1 !important;
+}
+.vto .boxed.content:hover .panel-default .remove-strategy {
+  opacity: .2;
+}
+.vto .boxed.content:hover .panel-default > .panel-heading {
+  opacity: 1;
+}
+.vto .boxed.content:hover .panel-default > .panel-heading .nav.nav-tabs li {
+  color: gray;
+}
+.vto .boxed.content:hover .panel-default > .panel-heading .nav.nav-tabs li.active-li {
+  /*background-color: #cac8c8;*/
+  border-bottom: 2px solid #EF7622;
+  border-bottom-width: 2px !important;
+  color: #EF7622;
+  transition: ease-in-out 0s color;
+}
+.vto .boxed.content:hover .add-new-strategy {
+  display: block;
+}
 .vto .delete {
   vertical-align: top;
 }
@@ -39,11 +158,20 @@ body {
   width: 16px;
   padding-left: 2px;
 }
+.vto .add-tab {
+  min-width: 0px;
+}
+.vto .add-tab .add-row:before {
+  font-size: 18px;
+  width: 24px;
+  height: 24px;
+  margin-top: 0px;
+}
 .vto .content:hover .add-row,
-.vto .content:hover .add-row:after {
+.vto .content:hover .add-row:before {
   pointer-events: all;
 }
-.vto .content:hover .add-row:after {
+.vto .content:hover .add-row:before {
   pointer-events: all;
   opacity: 1;
 }
@@ -53,7 +181,7 @@ body {
 .vto .delete:focus {
   outline: none;
 }
-.vto .add-row:after {
+.vto .add-row:before {
   background-color: #cac8c8;
   display: inline-block;
   width: 34px;
@@ -73,7 +201,7 @@ body {
   opacity: 0;
   transition: opacity .3s ease,background .1s ease;
 }
-.vto .add-row:hover:after {
+.vto .add-row:hover:before {
   cursor: pointer;
   background-color: #EF7622;
 }
@@ -286,6 +414,7 @@ body {
   text-align: right;
 }
 .vto .marketing-strategy .target-market,
+.vto .marketing-strategy .strategy-title,
 .vto .marketing-strategy .three-uniques,
 .vto .marketing-strategy .proven-process,
 .vto .marketing-strategy .guarantee {

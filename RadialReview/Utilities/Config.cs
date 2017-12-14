@@ -433,7 +433,7 @@ namespace RadialReview.Utilities {
 		}
 
 		public static string FixEmail(string email) {
-			return Config.IsLocal() ? "clay.upton+test_" + email.Replace("@", "_at_") + "@mytractiontools.com" : email;
+			return Config.IsLocal() ? "clay.upton+test_" + (email??"").Replace("@", "_at_") + "@mytractiontools.com" : email;
 		}
 
 		public static Env GetEnv() {
@@ -459,6 +459,22 @@ namespace RadialReview.Utilities {
 					return true;
 				case Env.local_test_sqlite:
 					return GetAppSetting("OptimizeBundles", "True").ToBoolean();
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+
+		public static bool DisableMinification() {
+			
+			switch (GetEnv()) {
+				case Env.local_sqlite:
+					return GetAppSetting("DisableMinification", "False").ToBoolean();
+				case Env.local_mysql:
+					return GetAppSetting("DisableMinification", "False").ToBoolean();
+				case Env.production:
+					return false;
+				case Env.local_test_sqlite:
+					return GetAppSetting("DisableMinification", "False").ToBoolean();
 				default:
 					throw new ArgumentOutOfRangeException();
 			}

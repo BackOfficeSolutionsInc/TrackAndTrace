@@ -72,7 +72,7 @@
 		text-align: center;
 		font-weight: normal;
 		min-width: 70px;
-		background-color:white;
+		background-color: white;
 	}
 
 		.scorecard-table .date.current {
@@ -81,9 +81,7 @@
 			border-color: #2c77ba;
 		}
 
-	.scorecard-table .score.current input {
-	}
-
+	
 	.scorecard-table .score.current {
 		border-left: 3px solid #2c77ba;
 		border-right: 3px solid #2c77ba;
@@ -106,8 +104,6 @@
 	border-bottom: 3px solid #2c77ba;
 }
 
-.scorecard-table .buttonColumn {
-}
 
 .scorecard-table .buttonHolder {
 	background-color: #2c77ba;
@@ -118,8 +114,6 @@
 	padding-right: 4px;
 }
 
-.scorecard-table tr:nth-child(1) .buttonHolder {
-}
 
 .scorecard-table .heading {
 	font-weight: bold;
@@ -203,7 +197,7 @@
 	font-size: 15px;
 	font-family: 'Roboto',sans-serif;
 	color: rgba(51, 51, 51, 0.5);
-    padding-top:4px;
+	padding-top: 4px;
 }
 
 
@@ -217,7 +211,7 @@
 	top: -1px;
 	bottom: 0;
 	float: right;
-    right: calc(100% + 24px);
+	right: calc(100% + 24px);
 	display: block;
 }
 
@@ -317,6 +311,7 @@
 	height: 29px;
 }
 
+/* csslint ignore:start */
 @-moz-document url-prefix() {
 	.scorecard-table .score input {
 		height: 25px;
@@ -327,6 +322,7 @@
 		padding-top: 6px;
 	}
 }
+/* csslint ignore:end */
 
 .scorecard-table .score input:focus, .scorecard-table .score input:not([disabled]):active {
 	outline: #2c77ba auto 2px;
@@ -350,7 +346,7 @@
 }
 
 #ScorecardTable {
-	margin-bottom: 0px;/*18px;*/
+	margin-bottom: 0px; /*18px;*/
 }
 
 #ScorecardTable_Over {
@@ -497,8 +493,6 @@
 	color: #999999;
 }
 
-.scorecard-table .reorderable td {
-}
 
 .scorecard-table .deleteDivider {
 	font-size: 10px;
@@ -694,22 +688,15 @@
 		border-top-color: #2c77ba;
 	}
 
-.divider + tr:not(.divider) .current input {
-	/*/*border-top: 2px solid #2c77ba;*
-	height: 22px;
-	margin-left: 0px;
-	/* border-left: 3px solid #2c77ba; *
-	border-bottom: 1px solid #e0e0e0;
-	padding-top: 0px;*/
-	/* border-left: 0px; */
-}
-
+	
+/* csslint ignore:start */
 @-moz-document url-prefix() {
 	.divider + tr:not(.divider) .current input {
 		height: 25px;
 		padding-top: 6px;
 	}
 }
+/* csslint ignore:end */
 
 
 
@@ -742,8 +729,6 @@
 }
 
 
-.scorecard:hover *::-webkit-scrollbar-track {
-}
 
 .scorecard *::-webkit-scrollbar-track {
 	background-color: rgba(0, 0, 0, 0);

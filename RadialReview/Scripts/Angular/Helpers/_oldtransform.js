@@ -25,7 +25,7 @@
 //	        //    }
 //	        //}
 //	        //var o;
-//	        else if (item && item._Pointer) {
+//	        else if (item && item._P) {
 //	            var out = scope.model.Lookup[item.Key];
 
 //	            for (var k in out) {
@@ -84,7 +84,7 @@
 //					out.push(populate(item[k], lookup));
 //				}
 //				return out;
-//			} else if (item && item._Pointer) {
+//			} else if (item && item._P) {
 //				var out = lookup[item.Key];
 //				for (var k in out) {
 //					out[k] = populate(out[k], lookup);

@@ -1,4 +1,8 @@
-﻿
+﻿/*
+ * CAUTION: 
+ * This file is not loaded locally, only on production....
+ */
+
 window.consoleStore = new Array(1000);
 var oldConsoleLog = console.log;
 var oldConsoleError = console.error;

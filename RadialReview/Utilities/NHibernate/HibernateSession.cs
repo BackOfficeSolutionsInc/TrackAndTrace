@@ -51,16 +51,24 @@ using System.Threading.Tasks;
 using NHibernate.Criterion;
 using NHibernate.Impl;
 using System.Linq.Expressions;
+using log4net;
 
 //using Microsoft.VisualStudio.Profiler;
 
 namespace RadialReview.Utilities {
     public static class NHSQL {
-        public static string NHibernateSQL { get; set; }
-    }
+		public static string NHibernateSQL { get; set; }
+		public static bool SaveCommands { get; set; }
+	}
     public class NHSQLInterceptor : EmptyInterceptor, IInterceptor {
-        SqlString IInterceptor.OnPrepareStatement(SqlString sql) {
+		protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+		SqlString IInterceptor.OnPrepareStatement(SqlString sql) {
             NHSQL.NHibernateSQL = sql.ToString();
+			if (NHSQL.SaveCommands) {
+				log.Info(NHSQL.NHibernateSQL);
+			}
+
             return sql;
         }
     }

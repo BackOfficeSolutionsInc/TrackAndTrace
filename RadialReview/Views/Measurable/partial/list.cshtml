@@ -39,7 +39,6 @@
 										<th class="goal-column data-column" colspan="2">&nbsp;</th>
 										<th class="cumulative-column"></th>
 										<th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin),(@(selector)).Period) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="date score-column data-column test-ignore" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
-											@*{{functions.subtractDays(week.DisplayDate,0) | date: (@(selector)).DateFormat1}}*@
 											{{functions.topDate(week,@(selector))}}
 										</th>
 										<th class="delete-column"></th>
@@ -58,7 +57,6 @@
                                         <th class="target goal-column data-column" colspan="2">Goal</th>
 										<th class="cumulative-column"></th>
                                         <th ng-repeat="week in (@(selector)).Weeks | filter:filters.byRange('ForWeek',model.dataDateRange.startDate,model.dataDateRange.endDate@(forceMin),(@(selector)).Period) | orderBy:functions.orderScorecard((@(selector)).ReverseScorecard)" class="date  data-column score-column test-ignore" ng-class="{current:week.IsCurrentWeek}" @*colspan="{{::week.IsCurrentWeek ? 1 : 1}}"*@>
-                                            @*{{functions.subtractDays(week.DisplayDate,-6) | date: (@(selector)).DateFormat2}}*@
 											{{functions.bottomDate(week,@(selector))}}
                                         </th>
 										<th class="delete-column button-column"></th>
@@ -241,7 +239,8 @@
                         </table>
                     </div>
                     <div class="loader-container" style="display:none">@{Html.RenderPartial("~/Views/Shared/Partial/MaterialIndefiniteLoader.cshtml");}</div>
-                    <div class="create-row" ng-click="functions.addRow($event,'AngularMeasurable')" data-toggle="tooltip" data-placement="left" title="New Measurable"></div>
+					<div class="create-row create-new-btn" ng-click="functions.showMeasurableSearch($event)" data-toggle="tooltip" data-placement="left" title="Add Measurable"></div>
+                    @*<div class="create-row" ng-click="functions.addRow($event,'AngularMeasurable')" data-toggle="tooltip" data-placement="left" title="New Measurable"></div>*@
                     <div class="gray empty-search" style="padding: 30px 15px;" ng-show="(@(selector)).Measurables.length==0">
                         No measurables fit your search criteria.
                     </div>

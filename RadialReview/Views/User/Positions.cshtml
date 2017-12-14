@@ -55,9 +55,9 @@
 				@*<td><a href="/accountability/chart/@p.">View</a></td>*@
 				@if (Model.GetPersonallyManaging())
 				{
-					<td class="deleteButton">
+					@*<td class="deleteButton">
 						<a onclick="Delete(@p.Id)" class="fullWidth glyphicon glyphicon-trash clickable"></a>
-					</td>
+					</td>*@
 
 					@*<td class="deleteButton">
 						@if (p.DeleteTime == null)

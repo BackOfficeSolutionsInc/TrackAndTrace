@@ -46,7 +46,7 @@ namespace RadialReview.Hooks.Realtime {
             AddRock(s, recurRock.L10Recurrence.Id, recurRock);
         }
 
-        public async Task DetatchRock(ISession s, RockModel rock, long recurrenceId) {
+        public async Task DetachRock(ISession s, RockModel rock, long recurrenceId) {
             RemoveRock(s, recurrenceId, rock.Id);
         }
 
@@ -171,7 +171,9 @@ namespace RadialReview.Hooks.Realtime {
             RealTimeHelpers.DoRecurrenceUpdate(s, recurrenceId, () =>
                   new AngularUpdate() {
                     new AngularTileId<IEnumerable<AngularRock>>(0, recurrenceId, null,AngularTileKeys.L10RocksList(recurrenceId)) {
-                        Contents = AngularList.CreateFrom(AngularListType.Add, new AngularRock(rock))
+                        Contents = AngularList.CreateFrom(AngularListType.ReplaceIfNewer, new AngularRock(rock) {
+							Archived = false,
+						})
                     }
                   }
             );
@@ -181,7 +183,9 @@ namespace RadialReview.Hooks.Realtime {
             RealTimeHelpers.DoRecurrenceUpdate(s, recurrenceId, () =>
                   new AngularUpdate() {
                     new AngularTileId<IEnumerable<AngularRock>>(0, recurrenceId, null,AngularTileKeys.L10RocksList(recurrenceId)) {
-                        Contents = AngularList.CreateFrom(AngularListType.Remove,  new AngularRock(rockId))
+                        Contents = AngularList.CreateFrom(AngularListType.ReplaceIfExists,  new AngularRock(rockId) {
+							Archived=true,
+						})
                     }
                   }
             );
@@ -193,6 +197,12 @@ namespace RadialReview.Hooks.Realtime {
         public async Task UpdateVtoRock(ISession s, L10Recurrence.L10Recurrence_Rocks recurRock) {
             //Nothing to do...
         }
+
+        public async Task UnArchiveRock(ISession s, RockModel rock, bool v)
+        {
+            //Nothing to do...
+        }
+
         #endregion
 
     }

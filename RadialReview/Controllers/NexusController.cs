@@ -44,12 +44,11 @@ namespace RadialReview.Controllers {
 				}
 			}
 		}
-
-
+		
 		[Access(AccessLevel.Any)]
 		[AsyncTimeout(60 * 60 * 1000)]
 		[Obsolete("Fix for AC")]
-		public async Task<ActionResult> Index(String id, CancellationToken ct) {
+		public async Task<ActionResult> Index(CancellationToken ct, String id) {
 			var rethrow = false;
 			try {
 				if (id == null)

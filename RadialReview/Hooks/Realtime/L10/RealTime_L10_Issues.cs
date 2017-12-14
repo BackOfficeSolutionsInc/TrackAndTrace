@@ -96,7 +96,12 @@ namespace RadialReview.Hooks.Realtime.L10 {
                     using (var rt = RealTimeUtility.Create()) {
                         rt.UpdateRecurrences(o.Recurrence.Id).AddLowLevelAction(x => x.updateModedIssueSolve(o.Id, completed));
                         var recur = new AngularRecurrence(o.Recurrence.Id);
-                        recur.IssuesList.Issues = AngularList.CreateFrom(added ? AngularListType.Add : AngularListType.Remove, new AngularIssue(issueRecurrence));
+
+                        var issue = new AngularIssue(issueRecurrence);
+                        if(issue.CloseTime == null) {
+                            issue.CloseTime = Removed.Date();
+                        }
+                        recur.IssuesList.Issues = AngularList.CreateFrom(added ? AngularListType.ReplaceIfNewer : AngularListType.Remove, issue);
                         rt.UpdateRecurrences(o.Recurrence.Id).Update(recur);
                     }
                 }

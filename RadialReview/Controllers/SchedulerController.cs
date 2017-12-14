@@ -39,17 +39,23 @@ namespace RadialReview.Controllers {
         public bool Index() {
             return true;
         }
+		
+		[Access(AccessLevel.Radial)]
+		[AsyncTimeout(5000)]
+		public async Task<ActionResult> Wait(CancellationToken ct, int seconds = 10, int timeout = 5) {
+			await Task.Delay((int)(seconds * 1000));
+			return Content("done " + DateTime.UtcNow.ToJsMs());
+		}
 
-
-        /// <summary>
-        /// Do not change controller. 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="taskId"></param>
-        /// <returns></returns>
-        [Access(AccessLevel.Any)]
-		[AsyncTimeout(60 * 60 * 1000)]
-		public async Task<JsonResult> ChargeAccount(long id, long taskId, CancellationToken ct/*,long? executeTime=null*/) {
+		/// <summary>
+		/// Do not change controller. 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="taskId"></param>
+		/// <returns></returns>
+		[Access(AccessLevel.Any)]
+		[AsyncTimeout(20 * 60 * 1000)]
+		public async Task<JsonResult> ChargeAccount(CancellationToken ct, long id, long taskId/*,long? executeTime=null*/) {
             PaymentException capturedPaymentException = null;
             Exception capturedException = null;
             //DateTime? time = null;
@@ -179,6 +185,9 @@ namespace RadialReview.Controllers {
                 error += " | " + e.Message;
             }
             duration += (DateTime.UtcNow - start).TotalSeconds;
+
+			//Give some other requests a chance to go.
+			await Task.Delay(1500);
 
             return RedirectToAction("EmailTodos", new {
                 currentTime = currentTime,
@@ -374,9 +383,10 @@ namespace RadialReview.Controllers {
 
 
         [Access(AccessLevel.Any)]
-        [AsyncTimeout(60000 * 30)]//20 minutes..
-		public async Task<JsonResult> Reschedule(CancellationToken ct) {
-            var res = await TaskAccessor.ExecuteTasks();
+        [AsyncTimeout(60000 * 30)]//30 minutes..
+        public async Task<JsonResult> Reschedule(CancellationToken ct) {
+			//HttpContext.Server.ScriptTimeout = 20*60; // Twenty minutes..
+			var res = await TaskAccessor.ExecuteTasks();
             return Json(res, JsonRequestBehavior.AllowGet);
         }
 

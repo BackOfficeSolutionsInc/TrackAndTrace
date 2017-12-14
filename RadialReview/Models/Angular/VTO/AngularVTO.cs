@@ -34,6 +34,8 @@ namespace RadialReview.Models.Angular.VTO {
 
 		public AngularCoreFocus CoreFocus { get; set; }
 		public AngularStrategy Strategy { get; set; }
+		public IEnumerable<AngularStrategy> Strategies { get; set; }
+
 		public AngularQuarterlyRocks QuarterlyRocks { get; set; }
 		public AngularThreeYearPicture ThreeYearPicture { get; set; }
 		public AngularOneYearPlan OneYearPlan { get; set; }
@@ -45,16 +47,19 @@ namespace RadialReview.Models.Angular.VTO {
 		public String CoreValueTitle { get; set; }
 		public String IssuesListTitle { get; set; }
 		public static AngularVTO Create(VtoModel vto) {
-			return new AngularVTO() {
-				Id = vto.Id,
-				L10Recurrence = vto.L10Recurrence,
-				CreateTime = vto.CreateTime,
-				CopiedFrom = vto.CopiedFrom,
-				TenYearTarget = vto.TenYearTarget,
-				Name = vto.Name, //AngularVtoString.Create(vto.Name),
-				Values = AngularCompanyValue.Create(vto._Values),
-				CoreFocus = AngularCoreFocus.Create(vto.CoreFocus),
-				Strategy = AngularStrategy.Create(vto.MarketingStrategy),
+            return new AngularVTO() {
+                Id = vto.Id,
+                L10Recurrence = vto.L10Recurrence,
+                CreateTime = vto.CreateTime,
+                CopiedFrom = vto.CopiedFrom,
+                TenYearTarget = vto.TenYearTarget,
+                Name = vto.Name, //AngularVtoString.Create(vto.Name),
+                Values = AngularCompanyValue.Create(vto._Values),
+                CoreFocus = AngularCoreFocus.Create(vto.CoreFocus),
+                Strategy = AngularStrategy.Create(vto.MarketingStrategy),
+				//vto._MarketingStrategyModel.Select(x => AngularStrategy.Create(x)),
+				Strategies= vto._MarketingStrategyModel.Select(x => AngularStrategy.Create(x)).ToList(),
+
 				OneYearPlan = AngularOneYearPlan.Create(vto.OneYearPlan),
 				QuarterlyRocks = AngularQuarterlyRocks.Create(vto.QuarterlyRocks),
 				ThreeYearPicture = AngularThreeYearPicture.Create(vto.ThreeYearPicture),
@@ -77,7 +82,8 @@ namespace RadialReview.Models.Angular.VTO {
             //Name = vto.Name, //AngularVtoString.Create(vto.Name),
             Values = AngularCompanyValue.Create(vto._Values);
             CoreFocus = AngularCoreFocus.Create(vto.CoreFocus);
-            Strategy = AngularStrategy.Create(vto.MarketingStrategy);
+            Strategy = AngularStrategy.Create(vto.MarketingStrategy); //vto._MarketingStrategyModel.Select(x => AngularStrategy.Create(x));
+			Strategies = vto._MarketingStrategyModel.Select(x => AngularStrategy.Create(x)).ToList();
             //OneYearPlan = AngularOneYearPlan.Create(vto.OneYearPlan);
             //QuarterlyRocks = AngularQuarterlyRocks.Create(vto.QuarterlyRocks),
             ThreeYearPicture = AngularThreeYearPicture.Create(vto.ThreeYearPicture);
@@ -203,6 +209,7 @@ namespace RadialReview.Models.Angular.VTO {
 		public String ProvenProcess { get; set; }
 		public String Guarantee { get; set; }
 		public String MarketingStrategyTitle { get; set; }
+		public String Title { get; set; }
 		public IEnumerable<AngularVtoString> Uniques { get; set; }
 
 		internal static AngularStrategy Create(MarketingStrategyModel marketingStrategyModel) {
@@ -214,6 +221,7 @@ namespace RadialReview.Models.Angular.VTO {
 				//TenYearTarget = (marketingStrategyModel.TenYearTarget),
 				Uniques = AngularVtoString.Create(marketingStrategyModel._Uniques),
 				MarketingStrategyTitle = marketingStrategyModel.MarketingStrategyTitle ?? "MARKETING STRATEGY",
+				Title= (marketingStrategyModel.Title),
 			};
 		}
 	}

@@ -20,11 +20,11 @@ namespace RadialReview.Models.ViewModels
 		public bool CanUpgradeUsers { get; set; }
 		
 
-        public OrgMembersViewModel(UserOrganizationModel caller,IEnumerable<UserLookup> members,OrganizationModel organization,bool hasAdminDelete,bool canUpgradeUsers)
+        public OrgMembersViewModel(UserOrganizationModel caller,IEnumerable<UserLookup> members,OrganizationModel organization,bool hasAdminDelete,bool canUpgradeUsers,List<UserRole> roles)
         {
 	        ManagingOrganization = caller.ManagingOrganization;
             Organization = organization;
-			Users = members.ToListAlive().Select(x => new OrgMemberViewModel(x, hasAdminDelete)).ToList();
+			Users = members.ToListAlive().Select(x => new OrgMemberViewModel(x, hasAdminDelete,roles.Where(y=>y.UserId == x.UserId))).ToList();
 			CanUpgradeUsers = canUpgradeUsers;
         }
 
@@ -47,6 +47,8 @@ namespace RadialReview.Models.ViewModels
         public Boolean Managing { get; set; }
 		public bool EvalOnly { get; set; }
 
+		public List<UserRole> Roles { get; set; }
+
         public List<String> PositionTitles { get; set; }
         public List<String> TeamsTitles { get; set; }
         public List<string> ManagersTitles { get; set; }
@@ -54,7 +56,7 @@ namespace RadialReview.Models.ViewModels
 
 	    public bool IsClient { get; set; }
 
-        public OrgMemberViewModel(UserOrganizationModel userOrg,bool forceCanDelete)
+        public OrgMemberViewModel(UserOrganizationModel userOrg,bool forceCanDelete,IEnumerable<UserRole> roles)
         {
             Id = userOrg.Id;
             Name = userOrg.GetName();
@@ -68,6 +70,8 @@ namespace RadialReview.Models.ViewModels
 
 	        EmailEvent = userOrg.TempUser.EmailStatus;
 			EvalOnly = userOrg.EvalOnly;
+
+			Roles = roles.ToList();
 
 	        IsClient = userOrg.IsClient;
             EmailSent=true;
@@ -91,7 +95,7 @@ namespace RadialReview.Models.ViewModels
 	        //NumMeasurables = userOrg.NumMeasurables;
         }
 
-		public OrgMemberViewModel(UserLookup u, bool forceCanDelete)
+		public OrgMemberViewModel(UserLookup u, bool forceCanDelete, IEnumerable<UserRole> roles)
 		{
 			Id = u.UserId;
 			Name = u.Name;
@@ -120,6 +124,9 @@ namespace RadialReview.Models.ViewModels
 			NumRoles = u.NumRoles;
 			NumMeasurables = u.NumMeasurables;
 			ForceCanDelete = forceCanDelete;
+
+			Roles = roles.ToList();
+
 		}
 
 

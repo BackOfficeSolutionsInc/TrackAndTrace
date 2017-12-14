@@ -165,8 +165,7 @@
     opacity: .5;
 }
 
-.has-switch {
-}
+
 
 #chart {
     /*width: 650px;
@@ -230,16 +229,8 @@ ul.empty:empty {
 	overflow: hidden;
 }
 
-.flex-center div {
-	 
-}
 
-
-/*.panel-includable {
-	transition: opacity .25s;
-}
-
-	.panel-includable .panel-collapse,*/
+	.panel-includable .panel-collapse,
 	.panel-includable .panel-heading {
 		-webkit-transition: background-color .5s ease;
 		-moz-transition: background-color .5s ease;

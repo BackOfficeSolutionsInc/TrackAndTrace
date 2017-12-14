@@ -29,13 +29,11 @@
 @using (Html.BeginScripts()) {
     <script>
         @*Initialize some variables for the scripts*@
-
-
 		@*Dangerous MeetingId*@
         window.RecurrenceId = @Model.Recurrence.Id;
         @if (Model.MeetingStart != null){
 			@:var startTime = new Date(@(Model.MeetingStart.Value.ToJavascriptMilliseconds()));
-                        														}
+        }
 
 
     </script>
@@ -102,50 +100,14 @@
             var vtoLastScroll=0;
             $(".vto-button").click(function(){
                 showAltPage("vto","/vto/edit/@(Model.VtoId)?noheading=true","32px",1000);
-                @*if (typeof($(".vto-frame").attr("src"))==="undefined" || $(".vto-frame").attr("data-page")!="vto"){
-			        $(".vto-frame").attr("src","about:blank");
-					$(".vto-frame").attr("src","/vto/edit/@(Model.VtoId)?noheading=true");
-					$(".vto-frame").attr("data-page","vto");
-				}
-				$(".slider").css({marginLeft:"-100%"});
-				$(".slider-container").css("overflow-y","hidden");
-				$(".back-button").css("top","35px").show();
-				$(".print-vto-button").show();
-				page="vto";
-				vtoLastScroll = $(".slider-container").scrollTop();
-				$(".slider-container").scrollTop(0);*@
             });
 
             $(".ac-button").click(function(){
                 showAltPage("ac","/accountability/chart/@(Html.Organization().AccountabilityChartId)?noheading=true#/","32px",1000);
-                @*if (typeof($(".vto-frame").attr("src"))==="undefined"|| $(".vto-frame").attr("data-page")!="ac"){
-				    $(".vto-frame").attr("src","/accountability/chart/@(Html.Organization().AccountabilityChartId)?noheading=true#/");
-					$(".vto-frame").attr("data-page","ac");
-				}
-				$(".slider").css({marginLeft:"-100%"});
-				$(".slider-container").css("overflow-y","hidden");
-				$(".back-button").css("top","55px").show();
-				page="ac";
-				vtoLastScroll = $(".slider-container").scrollTop();
-				$(".slider-container").scrollTop(0);*@
             });
 
             $("body").on("click",".editMeeting-button",function(){
                 showAltPage("wizard#/"+currentPageType,"/l10/wizard/@(Model.Recurrence.Id)?noheading=true#/"+currentPageType,"32px");
-                @*var timer = 0;
-		        if (typeof($(".vto-frame").attr("src"))==="undefined"|| $(".vto-frame").attr("data-page")!="wizard#/"+currentPageType){
-		            $(".vto-frame").attr("src","/l10/wizard/@(Model.Recurrence.Id)?noheading=true#/"+currentPageType);
-		            $(".vto-frame").attr("data-page","wizard#/"+currentPageType);
-		            timer=500;
-		        }
-		        setTimeout(function(){
-		            $(".slider").css({marginLeft:"-100%"});
-		            $(".slider-container").css("overflow-y","hidden");
-		            $(".back-button").css("top","29px").show();
-		            //page="wizard";
-		            vtoLastScroll = $(".slider-container").scrollTop();
-		            $(".slider-container").scrollTop(0);
-		        },timer);*@
             });
 
             function showAltPage(pageName,pageUrl,backButtonTop,wait){
@@ -258,11 +220,9 @@
                                     <li class="divider"></li>
                                 }
                                 @if (Model.CanEdit) {
-                                    @*<li><a href="/L10/Wizard/@(Model.Recurrence.Id)?return=meeting" id="edit_meeting_link" onclick="skipBeforeUnload = true"><span class="glyphicon glyphicon-edit"></span> Edit Meeting</a></li>*@
-                                    <li><a @*href="#wizard"*@ class="editMeeting-button" @*id="edit_meeting_link"*@ onclick="skipBeforeUnload = true"><span class="glyphicon glyphicon-edit"></span> Edit Meeting</a></li>
+                                    <li><a class="editMeeting-button" onclick="skipBeforeUnload = true"><span class="glyphicon glyphicon-edit"></span> Edit Meeting</a></li>
                                     <li class="divider"></li>
                                 }
-
                                 <li><a href="@Url.Action("Details",new { id=Model.Recurrence.Id})" target="_blank"><span class="icon fontastic-icon-box"></span> Meeting Archive</a></li>
                                 <li><a href="@Url.Action("Timeline",new { id=Model.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-back-in-time"></span> Timeline</a></li>
                                 <li><a href="@Url.Action("ExportAll",new { id=Model.Recurrence.Id })" target="_blank"><span class="icon fontastic-icon-file-zip"></span> Export All</a></li>
@@ -277,26 +237,6 @@
                             @foreach (var p in Model.Recurrence._Pages) {
                                 <li class="page-item page-@p.Id pagetype-@(p.PageTypeStr.ToLower())" data-pagetype="@(p.PageTypeStr.ToLower())"><a data-location="page-@p.Id" href="#page-@p.Id">@p.Title</a><span title="Spend @String.Format("{0:0.##}", p.Minutes) minutes on your @Html.Encode(p.Title)" data-over="@p.Minutes" class="page-time"><span class="gray">@(String.Format("{0:0.##}", p.Minutes))m</span></span></li>
                             }
-
-                            @*@if (Model.Recurrence.SegueMinutes > 0) {
-                                    <li class="page-item page-segue">		<a data-location="Segue" href="#Segue">Segue</a><span title="Spend @String.Format("{0:0.##}", Model.Recurrence.SegueMinutes) minutes on your Segue" data-over="@Model.Recurrence.SegueMinutes" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.SegueMinutes))m</span></span></li>
-                                }
-                                @if (Model.Recurrence.ScorecardMinutes > 0) {
-                                    <li class="page-item page-scorecard">	<a data-location="Scorecard" href="#Scorecard">Scorecard</a><span data-over="@Model.Recurrence.ScorecardMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.ScorecardMinutes) minutes on your Scorecard" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.ScorecardMinutes))m</span></span></li>
-                                }
-                                @if (Model.Recurrence.RockReviewMinutes > 0) {
-                                    <li class="page-item page-rocks">		<a data-location="Rocks" href="#Rocks">Rock Review</a><span data-over="@Model.Recurrence.RockReviewMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.RockReviewMinutes) minutes on your @Html.Organization().Settings.RockName Review" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.RockReviewMinutes))m</span></span></li>
-                                }
-                                @if (Model.Recurrence.HeadlinesMinutes > 0) {
-                                    <li class="page-item page-headlines">	<a data-location="Headlines" href="#Headlines">People Headlines</a><span data-over="@Model.Recurrence.HeadlinesMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.HeadlinesMinutes) minutes on Headlines" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.HeadlinesMinutes))m</span></span></li>
-                                }
-                                @if (Model.Recurrence.TodoListMinutes > 0) {
-                                    <li class="page-item page-todo">		<a data-location="Todo" href="#Todo">To-do List</a><span title="Spend @String.Format("{0:0.##}", Model.Recurrence.TodoListMinutes) minutes on your Todo List" data-over="@Model.Recurrence.TodoListMinutes" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.TodoListMinutes))m</span></span></li>
-                                }
-                                @if (Model.Recurrence.IDSMinutes > 0) {
-                                    <li class="page-item page-ids">			<a data-location="IDS" href="#IDS">IDS</a><span data-over="@Model.Recurrence.IDSMinutes" title="Spend @String.Format("{0:0.##}", Model.Recurrence.IDSMinutes) minutes on IDS" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.IDSMinutes))m</span></span></li>
-                                }
-                                <li class="page-item page-conclusion">		<a data-location="Conclusion" href="#Conclusion">Conclude</a><span data-over="@Model.Recurrence.ConclusionMinutes" title="Spend @String.Format("{0:0.##}",Model.Recurrence.ConclusionMinutes) minutes on your Conclusion" class="page-time"><span class="gray">@(String.Format("{0:0.##}", Model.Recurrence.ConclusionMinutes))m</span></span></li>*@
                         </ol>
 
                         @if (Model.Meeting.NotNull(x => x.MeetingLeaderId) != ViewBag.UserId) {
@@ -320,7 +260,6 @@
                         }
                     </div>
                     <div class="component additional-pages">
-                        @*<b class="title">Additional Pages</b>*@
                         <div>
                             @if (Model.VtoId != 0) {
                                 <div class="alignRight" style1="padding-left:24px;"><div class="vto-button clickable gray" data-location="vto" href="#vto">View V/TO <span class="glyphicon glyphicon-chevron-right"></span></div></div>
@@ -335,20 +274,16 @@
 
                             </div>
                             @*<div class="alignCenter">
-                                    <a class="btn btn-default" data-location="stats" href="#stats"><span class="glyphicon glyphicon-stats"></span> Stats</a>
-                                </div>*@
+                                <a class="btn btn-default" data-location="stats" href="#stats"><span class="glyphicon glyphicon-stats"></span> Stats</a>
+                            </div>*@
 
                         </div>
                     }
                     <div class="clearfix"></div>
-
-
                     @*Chat*@
                     <div class="chat-container">
                         <div class="component">
                             <ul class="log"></ul>
-                            @*<div class="text typing">typing...</div>
-                                <div class="text log">log</div>*@
                         </div>
                     </div>
                     <div class="online-component-container">
@@ -360,11 +295,9 @@
                                 <script>
                                     (function(){
                                         var existingUsers = @Html.ArrayToString(Model.Connected);
-
                                         Enumerable.from(existingUsers).forEach(function(c){
                                             userEnterMeeting(c);
                                         });
-
                                     })();
                                 </script>
                             }
@@ -372,8 +305,6 @@
                         </div>
                     </div>
                     <div style="margin-bottom: 10px;width:100%;clear:both"></div>
-
-
                     @if (Model.Recurrence.ForumCode != null) {
                         <div class="component">
                             <div>
@@ -383,16 +314,11 @@
                         </div>
                     }
                     <div class="clearfix"></div>
-
-
-
                 </div>
             </div>
             <div class="col-sm-9 col-md-10  full">
-
                 <div class="main-window-container">
                     <div id="main-window"></div>
-                    @*<div class="component"></div>*@
                     <div id="hiddenWindow" style="display:none"></div>
                 </div>
             </div>
@@ -412,8 +338,6 @@
         <div class="col-xs-9 noPadLeft noPadRight">
             <div class="container main">
                 <span class="notes-instruction" @(Model.Recurrence.NotNull(x => x._MeetingNotes.Any()) ? "style=display:none" : "")>No notes to show. Click the Add Page button to create a custom note.</span>
-
-                @*<textarea cols="9" class="verticalOnly"></textarea>*@
                 <iframe class="" style="background-color: white" width="100%" src="about:blank"></iframe>
             </div>
         </div>
@@ -429,26 +353,17 @@
         </div>
     </div>
 </div>
-@using (Html.BeginScripts()) {
-
-    @*<script src="~/Scripts/speechrecog.js"></script>*@
+@using (Html.BeginScripts()) {	
     <script>
-
         var shouldStartTranscribe = false;
         var countDown = @(Model.Recurrence.CountDown.ToJavascript());
         @if (Model.EnableTranscript)
 		{
-		@:shouldStartTranscribe = true;
-                        														}
-
-
-
+			@:shouldStartTranscribe = true;                     														
+		}
         var notesUrl = "@RadialReview.Utilities.Config.NotesUrl()";
-
-
         $(function() {
             InitTranscribe(@Model.Recurrence.Id,@(Model.Meeting==null?-1:Model.Meeting.Id),shouldStartTranscribe);
-
         });
     </script>
 }

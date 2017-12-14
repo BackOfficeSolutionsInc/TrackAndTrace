@@ -96,9 +96,13 @@ namespace RadialReview.Accessors {
 			}
 		}
 		
+<<<<<<< HEAD
 		public static async Task UpdateHeadline(UserOrganizationModel caller, long headlineId, string message, string connectionId = null) {
 
 
+=======
+		public static async Task UpdateHeadline(UserOrganizationModel caller, long headlineId, string message, string connectionId = null,long? aboutId=null,string aboutName=null) {
+>>>>>>> master
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
@@ -112,6 +116,12 @@ namespace RadialReview.Accessors {
 					if (message != null && headline.Message != message) {
 						headline.Message = message;
 						updates.MessageChanged = true;
+					}
+					if (aboutId.HasValue) {
+						headline.AboutId = aboutId.Value;
+						headline.AboutName = aboutName;
+						updates.MessageChanged = true;
+						headline.About = s.Get<ResponsibilityGroupModel>(headline.AboutId);
 					}
 					s.Update(headline);
 

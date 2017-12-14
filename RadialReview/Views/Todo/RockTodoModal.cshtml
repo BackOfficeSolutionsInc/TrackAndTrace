@@ -28,7 +28,7 @@
 	<div class="col-sm-5">
 		<div class="form-group">
 			<label>Due Date:</label>
-            @Html.Partial("~/Views/Shared/EditorTemplates/DateTime.cshtml", Model.DueDate, new ViewDataDictionary() { { "name", "DueDate" } })
+            @Html.Partial("~/Views/Shared/EditorTemplates/DateTime.cshtml", Model.DueDate, new ViewDataDictionary() { { "name", "DueDate" }, { "correctDate", true } })
 
 
 			@*<div class="date" data-date="@Model.DueDate.ToString("MM-dd-yyyy")" data-date-format="mm-dd-yyyy">

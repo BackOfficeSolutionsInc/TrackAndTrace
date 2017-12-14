@@ -138,7 +138,7 @@ namespace RadialReview.Accessors {
                 }
             }
         }
-		
+
         public static async Task AddAttendee(ISession s, PermissionsUtility perms, RealTimeUtility rt, long recurrenceId, long userorgid) {
             perms.AdminL10Recurrence(recurrenceId);
             perms.ViewUserOrganization(userorgid, false);
@@ -179,7 +179,7 @@ namespace RadialReview.Accessors {
                 });
             }
 
-			await HooksRegistry.Each<IMeetingEvents>((ses, x) => x.AddAttendee(ses, recurrenceId, user, attendee));
+            await HooksRegistry.Each<IMeetingEvents>((ses, x) => x.AddAttendee(ses, recurrenceId, user, attendee));
         }
 
         public class VtoSharable {
@@ -254,7 +254,7 @@ namespace RadialReview.Accessors {
                 }
             }
 
-			await HooksRegistry.Each<IMeetingEvents>((ses, x) => x.RemoveAttendee(ses, recurrenceId, userorgid));
+            await HooksRegistry.Each<IMeetingEvents>((ses, x) => x.RemoveAttendee(ses, recurrenceId, userorgid));
         }
         public static async Task RemoveAttendee(UserOrganizationModel caller, long recurrenceId, long userorgid) {
             using (var s = HibernateSession.GetCurrentSession()) {
@@ -418,7 +418,7 @@ namespace RadialReview.Accessors {
                 #endregion
             }
         }
-		
+
         public static async Task<L10Recurrence> CreateBlankRecurrence(UserOrganizationModel caller, long orgId, MeetingType meetingType = MeetingType.L10) {
             L10Recurrence recur;
             using (var s = HibernateSession.GetCurrentSession()) {
@@ -446,11 +446,6 @@ namespace RadialReview.Accessors {
                 CreatedById = caller.Id,
                 CreateTime = DateTime.UtcNow
             };
-
-			if (meetingType == MeetingType.SamePage) {
-				recur.TeamType = L10TeamType.SamePageMeeting;
-			}
-
             s.Save(recur);
 
             foreach (var page in GenerateMeetingPages(recur.Id, meetingType, recur.CreateTime)) {
@@ -1130,7 +1125,7 @@ namespace RadialReview.Accessors {
                     .Future<L10Recurrence.L10Recurrence_Measurable>();
                 var allRocksQ = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
                     .JoinAlias(x => x.ForRock, () => rockAlias)
-                    .Where(x => x.DeleteTime == null && rockAlias.DeleteTime == null)
+                    //.Where(x => x.DeleteTime == null && rockAlias.DeleteTime == null)
                     .WhereRestrictionOn(x => x.L10Recurrence.Id).IsIn(recurrenceIds)
                     .Future<L10Recurrence.L10Recurrence_Rocks>();
                 var allNotesQ = s.QueryOver<L10Note>()
@@ -1157,7 +1152,7 @@ namespace RadialReview.Accessors {
                 foreach (var a in all.Where(x => x != null).ToList()) {
                     a._DefaultAttendees = allAttend.Where(x => a.Id == x.L10Recurrence.Id/* && x.User.DeleteTime == null;*/).ToList();
                     var dm = allMeasurables.Where(x => a.Id == x.L10Recurrence.Id && ((x.Measurable != null && x.Measurable.DeleteTime == null) || (x.Measurable == null && x.IsDivider))).ToList();
-                    a._DefaultRocks = allRocks.Where(x => a.Id == x.L10Recurrence.Id /*&& x.ForRock.DeleteTime == null*/).ToList();
+                    a._DefaultRocks = allRocks.Where(x => a.Id == x.L10Recurrence.Id && x.ForRock.DeleteTime == null).ToList();
                     a._MeetingNotes = allNotes.Where(x => a.Id == x.Recurrence.Id && x.DeleteTime == null).ToList();
                     a._VideoConferenceProviders = allVCP.Where(x => a.Id == x.L10Recurrence.Id && x.DeleteTime == null).ToList();
                     a._Pages = allPages.Where(x => a.Id == x.L10Recurrence.Id && x.DeleteTime == null).OrderBy(x => x._Ordering).ToList();
@@ -2226,11 +2221,11 @@ namespace RadialReview.Accessors {
             }
         }
         public static async Task<RockModel> CreateAndAttachRock(ISession s, PermissionsUtility perm, long recurrenceId, long owner, string message, bool vtoRock) {
-            var rock = await RockAccessor.CreateRock(s, perm, owner, message, permittedForRecurrenceId:recurrenceId);
+            var rock = await RockAccessor.CreateRock(s, perm, owner, message, permittedForRecurrenceId: recurrenceId);
             await AttachRock(s, perm, recurrenceId, rock.Id, vtoRock);
             return rock;
         }
-		[Obsolete("Avoid using")]
+        [Obsolete("Avoid using")]
         public static async Task<RockModel> CreateOrAttachRock(UserOrganizationModel caller, long recurrenceId, L10Controller.AddRockVm model) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -2242,8 +2237,8 @@ namespace RadialReview.Accessors {
                 }
             }
         }
-		[Obsolete("Avoid using")]
-		public static async Task<RockModel> CreateOrAttachRock(ISession s, PermissionsUtility perm, long recurrenceId, L10Controller.AddRockVm model) {
+        [Obsolete("Avoid using")]
+        public static async Task<RockModel> CreateOrAttachRock(ISession s, PermissionsUtility perm, long recurrenceId, L10Controller.AddRockVm model) {
             var recur = s.Get<L10Recurrence>(recurrenceId);
 
             RockModel rock;
@@ -2264,7 +2259,7 @@ namespace RadialReview.Accessors {
             await AttachRock(s, perm, recurrenceId, rock.Id, false);
             return rock;
         }
-		
+
         public static async Task UpdateRock(UserOrganizationModel caller, long rockId, String rockMessage, RockState? state, long? ownerId, string connectionId, /* bool? delete = null,bool? companyRock = null,*/ DateTime? dueDate = null, long? recurrenceRockId = null, bool? vtoRock = null) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -2437,7 +2432,7 @@ namespace RadialReview.Accessors {
                 await HooksRegistry.Each<IMeetingRockHook>((ss, x) => x.DetatchRock(s, r.ForRock, recurrenceId));
             }
 
-           
+
 
 
             var rocksInOthers = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>().Where(x => x.DeleteTime == null && x.ForRock.Id == rockId).RowCount();
@@ -2458,8 +2453,8 @@ namespace RadialReview.Accessors {
 
             var meetingId = recurRock.L10Recurrence.MeetingInProgress;
             if (meetingId != null) {
-                var meetingRocks =s.QueryOver<L10Meeting.L10Meeting_Rock>().Where(x => x.DeleteTime == null && x.ForRock.Id == recurRock.ForRock.Id && x.L10Meeting.Id == meetingId.Value).List().ToList();
-                foreach(var m in meetingRocks) {
+                var meetingRocks = s.QueryOver<L10Meeting.L10Meeting_Rock>().Where(x => x.DeleteTime == null && x.ForRock.Id == recurRock.ForRock.Id && x.L10Meeting.Id == meetingId.Value).List().ToList();
+                foreach (var m in meetingRocks) {
                     m.VtoRock = vtoRock;
                     s.Update(m);
                 }
@@ -2734,7 +2729,7 @@ namespace RadialReview.Accessors {
                 }
             }
         }
-		
+
         public static async Task AttachMeasurable(ISession s, PermissionsUtility perm, long recurrenceId, long measurableId, bool skipRealTime = false, int? rowNum = null, DateTime? now = null) {
             perm.AdminL10Recurrence(recurrenceId);
             var measurable = s.Get<MeasurableModel>(measurableId);
@@ -2742,17 +2737,17 @@ namespace RadialReview.Accessors {
                 throw new PermissionsException("Measurable does not exist.");
             perm.ViewMeasurable(measurable.Id);
 
-			var alreadyExist = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId && x.Measurable.Id == measurableId).RowCount() >0;
-			if (alreadyExist) {
-				throw new PermissionsException("Measurable already attached to meeting");
-			}
+            var alreadyExist = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId && x.Measurable.Id == measurableId).RowCount() > 0;
+            if (alreadyExist) {
+                throw new PermissionsException("Measurable already attached to meeting");
+            }
 
-			if (rowNum == null) {
-				var orders = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId).Select(x => x._Ordering).List<int>().ToList();
-				if (orders.Any()) {
-					rowNum = orders.Max() + 1;
-				}
-			}
+            if (rowNum == null) {
+                var orders = s.QueryOver<L10Recurrence.L10Recurrence_Measurable>().Where(x => x.DeleteTime == null && x.L10Recurrence.Id == recurrenceId).Select(x => x._Ordering).List<int>().ToList();
+                if (orders.Any()) {
+                    rowNum = orders.Max() + 1;
+                }
+            }
 
 
             var rm = new L10Recurrence.L10Recurrence_Measurable() {
@@ -2920,7 +2915,7 @@ namespace RadialReview.Accessors {
                     }
 
                     var extra = await ScorecardAccessor._GenerateScoreModels_AddMissingScores_Unsafe(s, rangeTemp, measurables, scoreModels);
-					scoreModels.AddRange(extra);
+                    scoreModels.AddRange(extra);
                 }
             }
 
@@ -4543,8 +4538,9 @@ namespace RadialReview.Accessors {
             if (range != null && includeCompleted) {
                 var st = range.StartTime.AddDays(-1);
                 var et = range.EndTime.AddDays(1);
-                issuesQ = issuesQ.Where(x => x.CloseTime == null || (x.CloseTime >= st && x.CloseTime <= et));
-            }
+				//issuesQ = issuesQ.Where(x => x.CloseTime == null || (x.CloseTime >= st && x.CloseTime <= et));
+				//issuesQ = issuesQ.Where(x =>(x.CloseTime >= st && x.CloseTime <= et));
+			}
 
             if (!includeCompleted)
                 issuesQ = issuesQ.Where(x => x.CloseTime == null);
@@ -4664,7 +4660,7 @@ namespace RadialReview.Accessors {
         //		}
         //	}
         //}
-		
+
         public static async Task CompleteIssue(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceIssue) {
             var issue = s.Get<IssueModel.IssueModel_Recurrence>(recurrenceIssue);
             perm.EditL10Recurrence(issue.Recurrence.Id);
@@ -4783,7 +4779,7 @@ namespace RadialReview.Accessors {
                 }
             }
         }
-		
+
         public async static Task<IssueModel.IssueModel_Recurrence> MoveIssueFromVto(UserOrganizationModel caller, long vtoIssue) {
 
             using (var s = HibernateSession.GetCurrentSession()) {
@@ -4920,11 +4916,8 @@ namespace RadialReview.Accessors {
             var now = DateTime.UtcNow;
             r.CloseTime = now;
             s.Update(r);
-            rt.UpdateRecurrences(r.RecurrenceId).Update(
-                new AngularRecurrence(r.RecurrenceId) {
-                    Headlines = AngularList.CreateFrom(AngularListType.Remove, new AngularHeadline(r.Id))
-                }
-            );
+
+            await HooksRegistry.Each<IHeadlineHook>((ses, x) => x.ArchiveHeadline(ses, r));
         }
 
         //public static void AttachHeadline(UserOrganizationModel caller, long recurrenceId, long headlineId) {
@@ -5107,7 +5100,8 @@ namespace RadialReview.Accessors {
             if (range != null && includeClosed) {
                 var st = range.StartTime.AddDays(-1);
                 var et = range.EndTime.AddDays(1);
-                headlineListQ = headlineListQ.Where(x => x.CloseTime == null || (x.CloseTime >= st && x.CloseTime <= et));
+                //headlineListQ = headlineListQ.Where(x => x.CloseTime == null || (x.CloseTime >= st && x.CloseTime <= et));
+                //headlineListQ = headlineListQ.Where(x => (x.CloseTime >= st && x.CloseTime <= et));
             }
 
             if (!includeClosed) {
@@ -5155,7 +5149,85 @@ namespace RadialReview.Accessors {
                 }
             }
         }
-		
+
+
+        public static async Task UnArchive(UserOrganizationModel caller, BaseAngular model, long recurrenceId, string connectionId = null) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    using (var rt = RealTimeUtility.Create(connectionId)) {
+                        var perms = PermissionsUtility.Create(s, caller);
+                        perms.EditL10Recurrence(recurrenceId);
+
+                        if (model.Type == typeof(AngularIssue).Name) {
+                            await UnarchiveIssue(s, perms, rt, model.Id);
+                        } else if (model.Type == typeof(AngularTodo).Name) {
+                            //await TodoAccessor.CompleteTodo(s, perms, model.Id);
+                        } else if (model.Type == typeof(AngularRock).Name) {
+                            await UnarchiveRock(s, perms, rt, recurrenceId, model.Id);
+                        } else if (model.Type == typeof(AngularMeasurable).Name) {
+                            //await DetachMeasurable(s, perms, rt, recurrenceId, model.Id);
+                        } else if (model.Type == typeof(AngularUser).Name) {
+                            //await RemoveAttendee(s, perms, rt, recurrenceId, model.Id);
+                        } else if (model.Type == typeof(AngularHeadline).Name) {
+                            await UnarchiveHeadline(s, perms, rt, model.Id);
+                        } else {
+                            throw new PermissionsException("Unhandled type: " + model.Type);
+                        }
+
+                        tx.Commit();
+                        s.Flush();
+                    }
+                }
+            }
+        }
+
+
+
+		public static async Task UnarchiveIssue(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceIssue) {
+			var issue = s.Get<IssueModel.IssueModel_Recurrence>(recurrenceIssue);
+			perm.EditL10Recurrence(issue.Recurrence.Id);
+			if (issue.CloseTime == null)
+				throw new PermissionsException("Issue already unarchived.");
+			await IssuesAccessor.EditIssue(s, perm, recurrenceIssue, complete: false);
+		}
+
+
+		public static async Task UnarchiveHeadline(ISession s, PermissionsUtility perm, RealTimeUtility rt, long headlineId) {
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+
+            perm.ViewHeadline(headlineId);
+
+            var r = s.Get<PeopleHeadline>(headlineId);
+
+            if (r.CloseTime == null)
+                throw new PermissionsException("Headline already unarchived.");
+
+            perm.EditL10Recurrence(r.RecurrenceId);
+
+            var now = DateTime.UtcNow;
+            r.CloseTime = null;
+            s.Update(r);
+
+            await HooksRegistry.Each<IHeadlineHook>((ses, x) => x.UnArchiveHeadline(ses, r));           
+        }
+
+        //[Untested("Vto_Rocks",/* "Is the rock correctly removed in real-time from L10",/* "Is the rock correctly removed in real-time from VTO",*/ "Is rock correctly archived when existing in no meetings?")]
+        public static async Task UnarchiveRock(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceId, long rockId) {
+            perm.AdminL10Recurrence(recurrenceId).EditRock(rockId);
+
+            await RockAccessor.UnArchiveRock(s, perm, rockId);
+
+            // attach rock
+            await AttachRock(s, perm, recurrenceId, rockId, false);
+
+            //perm.AdminL10Recurrence(recurrenceId).EditRock(rockId);
+            //var rocks = s.QueryOver<L10Recurrence.L10Recurrence_Rocks>()
+            //    .Where(x => x.L10Recurrence.Id == recurrenceId && x.ForRock.Id == rockId)
+            //    .List().ToList();
+            //DateTime? now = null;                       
+        }
+
+
         public static async Task Update(UserOrganizationModel caller, BaseAngular model, string connectionId) {
             if (model.Type == typeof(AngularIssue).Name) {
                 var m = (AngularIssue)model;
@@ -5190,7 +5262,8 @@ namespace RadialReview.Accessors {
                 var m = (AngularMeasurable)model;
                 await ScorecardAccessor.UpdateMeasurable(caller, m.Id, m.Name, m.Direction, m.Target, m.Owner.NotNull(x => (long?)x.Id), m.Admin.NotNull(x => (long?)x.Id));
                 //UpdateArchiveMeasurable(caller, m.Id, m.Name, m.Direction, m.Target, m.Owner.NotNull(x => (long?)x.Id), m.Admin.NotNull(x => (long?)x.Id), connectionId);
-            }*/ else if (model.Type == typeof(AngularBasics).Name) {
+            }*/
+              else if (model.Type == typeof(AngularBasics).Name) {
                 var m = (AngularBasics)model;
                 await UpdateRecurrence(caller, m.Id, m.Name, m.TeamType, connectionId);
             } else if (model.Type == typeof(AngularHeadline).Name) {

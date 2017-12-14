@@ -551,7 +551,7 @@
     }
 
 .anno-emphasise-target {
-    z-index: 1001 !important !important;
+    z-index: 1001 !important;
 }
 
 .anno-center {
@@ -675,6 +675,11 @@ body.modal-open {
 }
 .body-notitlebar #wrap #main {
   top: 0px;
+}
+.body-notitlebar .body-full-width .body-content {
+  padding: 0;
+  max-width: 100%;
+  max-width: calc(100% - 30px );
 }
 .body-notitlebar .body-full-width .body-content {
   padding: 0;
@@ -985,6 +990,11 @@ body.resizing *::-moz-selection {
 [data-permicon][data-evalonly="True"][data-isadmin="True"] {
   color: #FFE296;
 }
+[data-permicon][data-isplaceholder="True"] {
+  color: #eee;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: #c1c1c1;
+}
 .nowrap {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -998,6 +1008,10 @@ body.resizing *::-moz-selection {
 .permissions-dropdown-menu {
   padding: 5px;
   border-radius: 0px 4px 4px 4px;
+}
+.permissions-dropdown-menu.menu-right {
+  left: auto;
+  right: 0;
 }
 .searchresult {
   line-height: 16px;
@@ -1027,6 +1041,34 @@ body.resizing *::-moz-selection {
   transition: all ease .2s;
 }
 .searchresult .searchresult-image .profile-picture.desaturate:hover {
+  filter: none;
+  filter: grayscale(0.3);
+  -webkit-filter: grayscale(0.3);
+  opacity: .9;
+}
+.searchresult .searchresult-alticon {
+  float: right;
+}
+.searchresult .searchresult-alticon .profile-picture .picture-container {
+  width: 32px;
+  height: 32px;
+  line-height: 29px;
+  position: relative;
+  top: 0px;
+  float: left;
+  font-size: 9px;
+}
+.searchresult .searchresult-alticon .profile-picture.desaturate {
+  filter: gray;
+  filter: grayscale(0.7);
+  -webkit-filter: grayscale(0.7);
+  opacity: 0.7;
+  -moz-transition: all ease .2s;
+  -o-transition: all ease .2s;
+  -webkit-transition: all ease .2s;
+  transition: all ease .2s;
+}
+.searchresult .searchresult-alticon .profile-picture.desaturate:hover {
   filter: none;
   filter: grayscale(0.3);
   -webkit-filter: grayscale(0.3);
@@ -1138,6 +1180,23 @@ textarea {
 }
 .is-ios .no-ios {
   display: none;
+}
+.beta-only {
+  display: none;
+}
+body.beta .beta-only {
+  display: block;
+}
+body.beta .beta-only.beta-label {
+  color: gray;
+  font-size: 10px;
+  position: fixed;
+  left: 39px;
+  top: 12px;
+  font-style: oblique;
+}
+body.beta .beta-only.beta-label:hover {
+  color: white;
 }
 @media print {
   .body-content {

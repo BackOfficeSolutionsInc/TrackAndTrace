@@ -171,7 +171,7 @@ $(function () {
 		// $("#issueDetails").html("");
 		$(detailsContents).append("<div class='heading'><h4 class='message-holder clickable on-edit-enabled' data-recurrence_issue='" + recurrence_issue + "'><span class='message editable-text' data-recurrence_issue='" + recurrence_issue + "'>" + message + "</span></h4></div>");
 		$(detailsContents).append(detailsList);
-		$(detailsContents).append("<iframe class='details issue-details' name='embed_readwrite' src='/Issues/Pad/" + issueId + "' width='100%' height='100%'></iframe>");
+		$(detailsContents).append("<iframe class='details issue-details on-edit-enabled' name='embed_readwrite' src='/Issues/Pad/" + issueId + "' width='100%' height='100%'></iframe>");
 
 		$(detailsContents).append("<div class='button-bar'>" +
 			"<div style='height:28px;'>" +

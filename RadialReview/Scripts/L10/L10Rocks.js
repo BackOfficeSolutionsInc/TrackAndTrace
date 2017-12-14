@@ -49,7 +49,7 @@
 		//$(detailsContents).append("<div class='createTime'>" + dateFormatter(new Date(createtime)) + "</div>");
 
 		$(detailsContents).append("<div class='heading'><h4 class='message-holder clickable on-edit-enabled' data-rockid='" + rockId + "'><span data-rockid='" + rockId + "' class='message editable-text '>" + message + "</span></h4></div>");
-		$(detailsContents).append("<iframe class='details rock-details' name='embed_readwrite' src='/Rocks/Pad/" + rockId + "' width='100%' height='100%'></iframe>");
+		$(detailsContents).append("<iframe class='details rock-details on-edit-enabled' name='embed_readwrite' src='/Rocks/Pad/" + rockId + "' width='100%' height='100%'></iframe>");
 
 		//Context buttons
 		$(detailsContents).append(
@@ -81,7 +81,7 @@
 
 		//Milestones
 		$(milestoneDetailsContents).append(
-			"<div class='btn btn-default btn-xs add-milestone-button' data-rockid='" + rockId + "'><span class='icon fontastic-icon-plus-3'></span>Add Milestone</div>" +
+			"<div class='btn btn-default btn-xs add-milestone-button on-edit-enabled' data-rockid='" + rockId + "'><span class='icon fontastic-icon-plus-3'></span>Add Milestone</div>" +
 			"<h4 class='milestone-heading'>Milestones</h4>" +
 			"<table class='milestone-table' data-rockid='" + rockId + "'></table>"
 		);
@@ -165,6 +165,7 @@
 	});
 
 	$("body").on("click", ".rocks-container .rock-row", clickRockRow);
+	$("body").on("click", ".company-rock-container .rock-row", clickRockRow);
 	$("body").on("click", ".milestone-table .milestone .milestone-name", clickMilestoneRow);
 	$("body").on("click", ".milestone-marker", clickMilestoneRow);
 	$("body").on("click", ".rock-details .add-milestone-button", function () {

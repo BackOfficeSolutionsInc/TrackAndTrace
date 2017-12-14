@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using NHibernate;
 using RadialReview.Models.Application;
+using RadialReview.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,6 +35,19 @@ namespace RadialReview.Models.Application {
 }
 namespace RadialReview.Variables {
 
+	public class VariableAccessor {
+		public static T Get<T>(string key, Func<T> defaultValue) {
+			using (var s = HibernateSession.GetCurrentSession()) {
+				using (var tx = s.BeginTransaction()) {
+					var v = s.GetSettingOrDefault(key, defaultValue);
+					tx.Commit();
+					s.Flush();
+					return v;
+				}
+			}
+		}
+	}
+
     public static class VariableExtensions{
 
         private static Variable _GetSettingOrDefault(this ISession s, string key, Func<string> defaultValue = null) {
@@ -61,8 +75,7 @@ namespace RadialReview.Variables {
         public static T GetSettingOrDefault<T>(this ISession s, string key, T defaultValue) {
             return JsonConvert.DeserializeObject<T>(_GetSettingOrDefault(s, key, () => JsonConvert.SerializeObject(defaultValue)).V);
         }
-
-
+		
         public static void UpdateSetting<T>(this ISession s, string key, T newValue) {
             UpdateSetting(s, key, JsonConvert.SerializeObject(newValue));
         }

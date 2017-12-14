@@ -107,6 +107,8 @@
     -o-transform: rotate(359deg);
   }
 }
+
+/* csslint ignore:start */
 @-ms-keyframes spin {
   0% {
     -ms-transform: rotate(0deg);
@@ -115,6 +117,8 @@
     -ms-transform: rotate(359deg);
   }
 }
+
+/* csslint ignore:end */
 @keyframes spin {
   0% {
     transform: rotate(0deg);

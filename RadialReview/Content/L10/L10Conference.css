@@ -14,9 +14,7 @@
 	/*border-top: 1px solid #444;*/
 }
 
-	.video-bar.shifted {
-		/*bottom: 0px;*/
-	}
+	
 
 .video-container {
 	height: 121px;
@@ -113,33 +111,12 @@
 }*/
 
 
-.videoconference-container .uncollapser {
-	/*position: absolute;
-	right: 0px;
-	bottom: 0px;
-	height: 20px;
-	text-align: center;
-	background: #0F0F0F;
-	border-top-left-radius: 7px;
-	color: #777;
-	cursor: pointer;
-	border-color: #444;
-	border-width: 1px 0px 0px 1px;
-	border-style: solid;
-	-webkit-transition: bottom 0.25s;
-	transition: bottom 0.25s;
-	z-index: 10001;
-	padding: 0 10px;*/
-}
 
 	.uncollapser.shifted {
 		/*bottom: 127px;*/
 		background: #0F0F0F;
 	}
 
-.start-conference {
-	/*width: 102px;*/
-}
 
 .start-screenshare {
 	position: absolute;
@@ -171,9 +148,6 @@
 	color: #6CAE6C;
 }
 
-.sendAudio.fontastic-icon-mic-no, .sendVideo.fontastic-icon-eye-slash-close {
-	/*color: #E86363;*/
-}
 
 #footer {
 	display: none;

@@ -70,8 +70,8 @@ function showModal(title, pullUrl, pushUrl, callback, validation, onSuccess, onC
 	});
 }
 function showModalObject(obj, pushUrl, onSuccess, onCancel) {
-    var runAfter = [];
-    var runAfterAnimation = [];
+	var runAfter = [];
+	var runAfterAnimation = [];
 	$("#modal").modal("hide");
 	$("#modalCancel").toggleClass("hidden", obj.noCancel || false);
 	if (typeof (pushUrl) === "undefined")
@@ -124,9 +124,9 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 			$("#modal-icon").addClass(icon);
 			icon = icon.replace(" ", ".");
 			//debugger;
-    
+
 			try {
-	            document.styleSheets[0].insertRule("." + custom + " ." + icon + ":after{content: '" + title + "' !important;}", 0);
+				document.styleSheets[0].insertRule("." + custom + " ." + icon + ":after{content: '" + title + "' !important;}", 0);
 				document.styleSheets[0].insertRule("." + custom + " ." + icon + ":before{ background-color: " + color + ";}", 0);
 				document.styleSheets[0].insertRule("." + custom + " #modalOk{ background-color: " + color + ";}", 0);
 			} catch (e) {
@@ -134,19 +134,19 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 			}
 
 			runAfterAnimation.push(function () {
-			    try {
-			        //debugger;
-			        var modalHeaderHeight = 125;
-			        var titleDiv = $("<div class='modal-icon-title'>" + title + "</div>");
-			        $("." + custom+" .modal-content").append(titleDiv);
-			        modalHeaderHeight += $(titleDiv).height();
-			        modalHeaderHeight += $("#modalTitle").height();
-			        debugger;
-			        titleDiv.remove();
-			        document.styleSheets[0].insertRule("." + custom + ".modal-icon .modal-header{ height: " + modalHeaderHeight + "px !important;}", 0);
-			    } catch (e) {
-			        console.error(e);
-			    }
+				try {
+					//debugger;
+					var modalHeaderHeight = 125;
+					var titleDiv = $("<div class='modal-icon-title'>" + title + "</div>");
+					$("." + custom + " .modal-content").append(titleDiv);
+					modalHeaderHeight += $(titleDiv).height();
+					modalHeaderHeight += $("#modalTitle").height();
+					//debugger;
+					titleDiv.remove();
+					document.styleSheets[0].insertRule("." + custom + ".modal-icon .modal-header{ height: " + modalHeaderHeight + "px !important;}", 0);
+				} catch (e) {
+					console.error(e);
+				}
 			});
 		}
 
@@ -378,29 +378,29 @@ function showModalObject(obj, pushUrl, onSuccess, onCancel) {
 
 	_bindModal(builder, obj.title, undefined, obj.validation, onSuccess, onCancel, reformat, onClose, contentType);
 	setTimeout(function () {
-	    debugger;
+		//debugger;
 		for (var i = 0; i < runAfter.length; i++) {
 			runAfter[i]();
 		}
 	}, 1);
 	setTimeout(function () {
-	    for (var i = 0; i < runAfterAnimation.length; i++) {
-	        runAfterAnimation[i]();
-	    }	    
-	},250);
+		for (var i = 0; i < runAfterAnimation.length; i++) {
+			runAfterAnimation[i]();
+		}
+	}, 250);
 }
 
 function _bindModal(html, title, callback, validation, onSuccess, onCancel, reformat, onClose, contentType) {
 	$('#modalBody').html("");
 	setTimeout(function () {
 
-	    var error = $(html).find(".error-page");
-	    if (error.length >= 1) {
-	        $('#modal').modal('hide');
-	        var msg= error.find(".error-message").text() || "An error occurred.";
-	        showAlert(msg);
-	        return;
-	    }
+		var error = $(html).find(".error-page");
+		if (error.length >= 1) {
+			$('#modal').modal('hide');
+			var msg = error.find(".error-message").text() || "An error occurred.";
+			showAlert(msg);
+			return;
+		}
 
 		$('#modalBody').append(html);
 	}, 0);
@@ -418,11 +418,17 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 	var reformatArg = reformat;
 	var callbackArg = callback;
 
-	var dur = 1;
-	if ($("#modalBody").closest(".after-load").find(":focusable").first().is("select"))
-		dur = 360;
+	setTimeout(function () {
+		var dur = 1;
+		var firstFocusable = $("#modalBody").closest(".after-load").find(":focusable").first();
+		if (firstFocusable.is("select") || firstFocusable.is(".select2-selection--single")) {
+			dur = 360;
+			console.info("focus select");
+		}
 
-	setTimeout(function () { $("#modalBody").closest(".after-load").find(":focusable").first().focus(); }, dur);
+		console.info(firstFocusable);
+		setTimeout(function () { firstFocusable.focus(); }, dur);
+	}, 100);
 	//$("#modalForm input:visible,#modalForm textarea:visible,#modalForm button:not(.close):visible").first().focus();
 
 	$("#modalForm").submit(function (ev) {
@@ -450,7 +456,7 @@ function _bindModal(html, title, callback, validation, onSuccess, onCancel, refo
 				message = window[validationArg](formData);
 				//message = eval(validationArg + '()');
 			} else if (typeof (validationArg) === "function") {
-			    message = validationArg(formData);
+				message = validationArg(formData);
 			}
 			if (message !== undefined && message != true) {
 				if (message == false) {

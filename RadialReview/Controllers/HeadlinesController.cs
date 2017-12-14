@@ -11,8 +11,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
-namespace RadialReview.Controllers
-{
+namespace RadialReview.Controllers {
 	public class HeadlinesController : BaseController {
 		public class HeadlineVM {
 			public long[] RecurrenceIds { get; set; }
@@ -20,8 +19,8 @@ namespace RadialReview.Controllers
 			public string Message { get; set; }
 			public List<NameId> PossibleRecurrences { get; set; }
 			public List<SelectListItem> PossibleOwners { get; set; }
-            public long? AboutId { get; set; }
-            public string AboutIdText { get; set; }
+			public long? AboutId { get; set; }
+			public string AboutIdText { get; set; }
 			public long? MeetingId { get; set; }
 			public bool ShowRecurrences { get; set; }
 			public bool ShowOwners { get; set; }
@@ -33,9 +32,9 @@ namespace RadialReview.Controllers
 			}
 
 			public List<PeopleHeadline> ToPeopleHeadline() {
-                
 
-				return RecurrenceIds.Select(x=>new PeopleHeadline() {
+
+				return RecurrenceIds.Select(x => new PeopleHeadline() {
 					AboutId = AboutId,
 					AboutName = AboutIdText,
 					Message = Message,
@@ -50,7 +49,7 @@ namespace RadialReview.Controllers
 
 
 		[Access(AccessLevel.UserOrganization)]
-		public async Task<ActionResult> Pad(long id,bool showControls=true) {
+		public async Task<ActionResult> Pad(long id, bool showControls = true) {
 			try {
 				var headline = HeadlineAccessor.GetHeadline(GetUser(), id);
 				var padId = headline.HeadlinePadId;
@@ -85,11 +84,11 @@ namespace RadialReview.Controllers
 
 			//L10Accessor.GetVisibleL10Meetings_Tiny(GetUser(), GetUser().Id, false);
 
-			model.PossibleRecurrences = (_listRecur == true) 
-				? HeadlineAccessor.GetRecurrencesWithHeadlines(GetUser(),GetUser().Id)
+			model.PossibleRecurrences = (_listRecur == true)
+				? HeadlineAccessor.GetRecurrencesWithHeadlines(GetUser(), GetUser().Id)
 				: new List<NameId>();
 
-			if (recurrenceId==null && _listRecur && model.PossibleRecurrences.Any()) {
+			if (recurrenceId == null && _listRecur && model.PossibleRecurrences.Any()) {
 				model.RecurrenceIds = new[] { model.PossibleRecurrences.First().Id };
 			}
 
@@ -105,13 +104,29 @@ namespace RadialReview.Controllers
 			return PartialView(model);
 		}
 
+
+		[Access(AccessLevel.UserOrganization)]
+		public ActionResult EditModal(long id) {
+			var headline = HeadlineAccessor.GetHeadline(GetUser(), id);
+			return PartialView(headline);
+		}
+
+
+		[Access(AccessLevel.UserOrganization)]
+		[HttpPost]
+		public async Task<JsonResult> EditModal(PeopleHeadline model) {
+			await HeadlineAccessor.UpdateHeadline(GetUser(), model.Id, model.Message,null,model.AboutId,model.AboutIdText);
+			return Json(ResultObject.SilentSuccess());
+		}
+
+
 		[HttpPost]
 		[Access(AccessLevel.UserOrganization)]
 		public async Task<JsonResult> Modal(HeadlineVM model) {
-			ValidateValues(model,x => x.CreatedBy, x => x.MeetingId);
-            if (model.AboutId < 0){
-                model.AboutId = null;
-            }
+			ValidateValues(model, x => x.CreatedBy, x => x.MeetingId);
+			if (model.AboutId < 0) {
+				model.AboutId = null;
+			}
 			var phs = model.ToPeopleHeadline();
 			foreach (var ph in phs) {
 				ph.OrganizationId = GetUser().Organization.Id;
@@ -144,7 +159,7 @@ namespace RadialReview.Controllers
 			var model = new CopyHeadlineVM() {
 				HeadlineId = i.Id,
 				Message = i.Message,
-				Details = details,				
+				Details = details,
 				CopyIntoRecurrenceId = copyto.Value,
 				PossibleRecurrences = L10Accessor.GetAllConnectedL10Recurrence(GetUser(), i.RecurrenceId)
 			};

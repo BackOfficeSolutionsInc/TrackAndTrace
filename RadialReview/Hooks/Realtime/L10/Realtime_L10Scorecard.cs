@@ -63,7 +63,7 @@ namespace RadialReview.Hooks.Realtime.L10 {
 				if (current != null) {
 					var ts = recur.Organization.GetTimeSettings();
 					ts.Descending = recur.ReverseScorecard;
-					var weeks = TimingUtility.GetPeriods(ts, recurMeasurable.CreateTime, current.StartTime, false);
+					var weeks = TimingUtility.GetPeriods(ts, recurMeasurable.CreateTime, current.StartTime,true);
 
 					var additional = await ScorecardAccessor._GenerateScoreModels_AddMissingScores_Unsafe(s, weeks.Select(x => x.ForWeek), measurable.Id.AsList(), scores);
 					scores.AddRange(additional);
@@ -116,7 +116,7 @@ namespace RadialReview.Hooks.Realtime.L10 {
 			}
 		}
 
-		public async Task DetatchMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, long recurrenceId) {
+		public async Task DetachMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, long recurrenceId) {
 			using (var rt = RealTimeUtility.Create()) {
 				rt.UpdateRecurrences(recurrenceId).Update(
 						new AngularRecurrence(recurrenceId) {

@@ -14,11 +14,11 @@
 	function getHubProxy(connection,hubName,callback) {
 		if (hubName in window.angularSharedSignalR.proxies)
 			return window.angularSharedSignalR.proxies[hubName];
-		console.log("Beginning getHubProxy");
+		console.log("Starting Hub: "+hubName);
 		//debugger;
 		var proxy = connection.createHubProxy(hubName);
 		connection.start({ transport: ['serverSentEvents', 'longPolling', 'webSockets'] }).done(function () {
-				console.log('Now connected, connection ID=' + connection.id);
+				console.log('Now connected. ConnectionId: ' + connection.id);
 				if (callback) {
 					callback(connection, proxy);
 				}
@@ -60,7 +60,7 @@
 		//	}
 		//});
 		connection.disconnected(function () {
-			console.log("Signalr disconnect. "+new Date());
+			console.log("Hub disconnect. "+new Date());
 			if (!isUnloading) {
 				clearAlerts();
 				setTimeout(function () {

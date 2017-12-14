@@ -20,28 +20,42 @@
 
 //Date stuff
 function parseJsonDate(value, allowNumbers) {
-	var type = typeof (value);
-	var dateRegex1 = /\/Date\([+-]?\d{13,14}\)\//;
-	var dateRegex2 = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{0,7})?/;
-	var dateRegex3 = /^(\d{2})-(\d{2})-(\d{4}) (\d{2}):(\d{2}):(\d{2})$/;
-	if (type === "undefined" || value === null)
-		return false;
-	if (allowNumbers == true && type === "number")
-		return new Date(value - new Date().getTimezoneOffset() * 60000);
-	if (type == 'string' && dateRegex1.test(value)) {
-		return new Date(new Date(parseInt(value.substr(6))).getTime() - new Date().getTimezoneOffset() * 60000)
-	} else if (type == 'string' && dateRegex2.test(value)) {
-		return  new Date(new Date(value).getTime() - new Date().getTimezoneOffset() * 60000);
-	} else if (type == 'string' && dateRegex3.test(value)) {
-		return new Date(new Date(value).getTime() - new Date().getTimezoneOffset() * 60000);
-	} else if (value.getDate !== undefined) {
-		return new Date(value.getTime());
-	}
-	if (allowNumbers == true && type === "string" && !isNaN(value)) {
-		return new Date(+value - new Date().getTimezoneOffset() * 60000);
-	}
+	console.warn("obsolete. use Time.parseJsonDate(...) instead");
+	return Time.parseJsonDate(value, allowNumbers);
+	//var type = typeof (value);
+	//var dateRegex1 = /\/Date\([+-]?\d{13,14}\)\//;
+	//var dateRegex2 = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{0,7})?/;
+	//var dateRegex3 = /^(\d{2})-(\d{2})-(\d{4}) (\d{2}):(\d{2}):(\d{2})$/;
+	//if (type === "undefined" || value === null)
+	//	return false;
+	//if (allowNumbers == true && type === "number") {
+	//	Time.toLocalTime(new Date(value));
 
-	return false;
+	//	return new Date(value - new Date().getTimezoneOffset() * 60000);
+	//}
+	//if (type == 'string' && dateRegex1.test(value)) {
+	//	var d = new Date(parseInt(value.substr(6)));
+	//	return Time.toLocalTime(d);
+	//	//return new Date(new Date(parseInt(value.substr(6))).getTime() - new Date().getTimezoneOffset() * 60000)
+	//} else if (type == 'string' && dateRegex2.test(value)) {
+	//	var d = new Date(value);
+	//	return Time.toLocalTime(d);
+	//	//return  new Date(new Date(value).getTime() - new Date().getTimezoneOffset() * 60000);
+	//} else if (type == 'string' && dateRegex3.test(value)) {
+	//	var d = new Date(value);
+	//	return Time.toLocalTime(d);
+	//	//return new Date(new Date(value).getTime() - new Date().getTimezoneOffset() * 60000);
+	//} else if (value.getDate !== undefined) {
+	//	console.warn("timezone not applied");
+	//	return new Date(value.getTime());
+	//}
+	//if (allowNumbers == true && type === "string" && !isNaN(value)) {
+	//	var d = new Date(+value);
+	//	return Time.toLocalTime(d);
+	//	//return new Date(+value - new Date().getTimezoneOffset() * 60000);
+	//}
+
+	//return false;
 }
 
 function dateFormatter(date) {
@@ -49,6 +63,8 @@ function dateFormatter(date) {
 }
 
 function clientDateFormat(date) {
+	console.info("using clientDateFormat");
+	//console.warn("obsolete. use Time.clientDateFormat()");
 	if (date == false)
 		return "";
 	var _d = date.getDate(),
@@ -63,6 +79,7 @@ function clientDateFormat(date) {
 }
 
 function serverDateFormat(edate) {
+	console.info("using serverDateFormat");
 	if (edate == false)
 		return "";
 	var _d = edate.getDate(),
@@ -78,7 +95,99 @@ function serverDateFormat(edate) {
 	return m + '-' + d + '-' + (edate.getFullYear()) + " " + h + ":" + mm + ":" + s;
 }
 
+function createDatepicker(selector, date, name, id, options) {
+	debugger;
+	if (typeof (date) === "undefined") {
+		date = new Date();
+	} else if (date == false) {
+		//do nothing.
+	} else {
+		var pdate = parseJsonDate(date, true);
+		if (!pdate) {
+			console.error("Could not determine format from date: " + date);
+			var err = $("<span style='color:rgba(255,0,0,.5)' >DateErr</span>");
+			$(selector).html(err);
+			return err;
+		}
+		date = pdate;
+	}
+
+	if (typeof (name) === "undefined")
+		name = "Date";
+	if (typeof (id) === "undefined")
+		id = name;
+
+	//var offsetMinutes;
+	//if (date == false)
+	//	offsetMinutes = new Date().getTimezoneOffset();
+	//else
+	//	offsetMinutes = date.getTimezoneOffset();
+	//var newDate = date;
+	//if (date != false)
+	//	newDate = Time.toServerTime(date);// new Date(date.getTime() + offsetMinutes * 60000);
+
+	//if (date != false){
+	//	if (typeof(date.Local)!=="undefined" && typeof(date.Date)!=="undefined"){
+	//		date = date.Date;
+	//	}else {
+	//		date = Time.toLocalTime(date);
+	//	}
+	//}
+
+
+	var formatted = serverDateFormat(date);
+	var _userFormat = clientDateFormat(date);
+
+
+	var guid = generateGuid();
+	var builder = '<div class="input-append date ' + guid + '">';
+	builder += '<input class="form-control client-date" data-val="true"' +
+               ' data-val-date="The field Model must be a date." type="text" ' +
+               'value="' + _userFormat + '" placeholder="not set">';
+	builder += '<span class="add-on"><i class="icon-th"></i></span>';
+	builder += '<input type="hidden" class="server-date" id="' + id + '" name="' + name + '" value="' + formatted + '" />';
+	builder += '</div>';
+	var dp = $(builder);
+	$(selector).append(dp);
+	var dpOptions = {
+		format: window.dateFormat.toLowerCase(),
+	};
+	if (options) {
+		for (var k in options) {
+			if (arrayHasOwnIndex(options, k)) {
+				dpOptions[k] = options[k];
+			}
+		}
+	}
+	//var _offsetMin = offsetMinutes;
+	var eventHolder = $("[name='" + name + "']");
+
+	$('.' + guid + ' .client-date').on("change", function () {
+		var v = $(this).val();
+		if (v == "") {
+			$('.' + guid + ' .server-date').val("");
+		}
+	});
+	$('.' + guid + ' .client-date').datepickerX(dpOptions).on('changeDate', function (e) {
+		var edate = Time.toServerTime(e.date);// new Date(e.date.getTime() + _offsetMin * 60000);
+		var formatted = serverDateFormat(edate);
+		$('.' + guid + ' .server-date').val(formatted);
+		$(eventHolder).trigger("change", [{
+			clientDate: edate,
+			serverDate: formatted,
+			containerElement: $(selector),
+			clientDateElement: $(this),
+			serverDateElement: $(eventHolder)
+		}]);
+		$(this).datepickerX("hide");
+	}).on("hide", function () {
+		$(eventHolder).trigger("close");
+	});
+	return eventHolder;
+}
+
 function generateDatepickerLocalize(selector, date, name, id, options) {
+	console.warn("obsolete: use createDatepicker");
 	if (typeof (date) === "undefined") {
 		date = new Date();
 	} else if (date == false) {
@@ -106,6 +215,7 @@ function generateDatepickerLocalize(selector, date, name, id, options) {
 
 
 function generateDatepicker(selector, date, name, id, options, offsetMinutes) {
+	console.warn("obsolete: use createDatepicker");
 	if (typeof (date) === "undefined") {
 		date = new Date();
 	} else if (date == false) {
@@ -202,7 +312,9 @@ Date.prototype.startOfWeek = function (pStartOfWeek) {
 }
 
 function getWeekSinceEpoch(day) {
-	var oneDay = 24 * 60 * 60 * 1000;
-	var span = day.startOfWeek(0);
-	return Math.floor((span.getTime() / oneDay) / 7);
+	console.warn("obsolete. use Time.getWeekSinceEpoch(...) instead");
+	return Time.getWeekSinceEpoch(day);
+	//var oneDay = 24 * 60 * 60 * 1000;
+	//var span = day.startOfWeek(0);
+	//return Math.floor((span.getTime() / oneDay) / 7);
 }

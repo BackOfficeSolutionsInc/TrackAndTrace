@@ -5,21 +5,24 @@
 	
 	var disabled =(Model.Disabled ? "disabled" : "");
 	var lockClass = (Model.Disabled ? "fontastic-icon-lock-1" : "fontastic-icon-unlock-1");
+
+	var right = ViewBag.Right ?? false;
+
 }
 
 <span class="dropdown dropdown-permissions dd_@guid">
-	<button class="btn btn-default dropdown-toggle @(@ViewBag.ButtonClass??"") @disabled" @disabled type="button" id="dropdownMenu122" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+	<button class="btn btn-default dropdown-toggle @(@ViewBag.ButtonClass??"") @disabled" @disabled type="button" id="dropdownMenu122" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" title="Permissions">
 		<span class="icon @lockClass gray"></span>
 		@(Model.DisplayText ?? new HtmlString("Permissions"))
 		<span class="caret"></span>
 	</button>
 	@if (!Model.Disabled) {
-		<ul class="dropdown-menu permissions-dropdown-menu" aria-labelledby="dropdownMenu122">
+		<ul class="dropdown-menu permissions-dropdown-menu @(right?"menu-right":"")" aria-labelledby="dropdownMenu122">
 			<li class="">
 				<form class="permissions-container">
 					<label>Add permissions for a user, team, or position. Begin typing here...</label>
 					<br />
-					<select id="search_@guid" style="width:450px;height: 28px !important;" placeholder=""></select>
+					<select id="search_@guid" style="width:450px;height: 28px !important;" placeholder="" @(Model.CanEdit_Admin?"":"disabled")></select>
 					<hr />
 					<div class="form-group" id="container_@guid">
 						<table class="table-hover" style="text-align: center;">

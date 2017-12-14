@@ -186,6 +186,16 @@
 	&.btn-default {
 		.material-button-flat-part(#5e5e5e);
 	}
+	
+	&.btn-primary:focus {
+		border: 1px solid fade(@traction-orange,70%);
+		margin-top: -1px;
+	}
+
+	&.btn-default:focus {
+		border: 1px solid fade(#5e5e5e,70%);
+		margin-top: -1px;
+	}
 }
 
 .material-button-flat-part(@color) {

@@ -182,12 +182,7 @@ body.body-normal-width ,html.body-normal-width ,html.body-normal-height  {
     color: white;
 }
 
-    .table-io .fill.True,
-    .table-io .fill.Indeterminate,
-    .table-io .fill.Positive:after,
-    .table-io .fill.Indeterminate:after {
-        /*color: #aeaeae !important;*/
-    }
+    
 
 .table-io.rocks .fill {
     padding-top: 8px;

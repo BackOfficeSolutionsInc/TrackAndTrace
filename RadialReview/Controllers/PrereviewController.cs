@@ -65,7 +65,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
 		[AsyncTimeout(60 * 60 * 1000)]
 		[Obsolete("Fix for AC")]
-		public async Task<JsonResult> IssueImmediately(long id, CancellationToken ct) {
+		public async Task<JsonResult> IssueImmediately(CancellationToken ct,long id) {
 			Server.ScriptTimeout = 60 * 60;
 			Session.Timeout = 60;
 

@@ -110,7 +110,7 @@ namespace RadialReview.Hooks.Realtime.L10 {
             group.updateRocks(builder);
         }
 
-        public async Task DetatchRock(ISession s, RockModel rock, long recurrenceId) {
+        public async Task DetachRock(ISession s, RockModel rock, long recurrenceId) {
             using (var rt = RealTimeUtility.Create(/*RealTimeHelpers.GetConnectionString()*/)) {
                 var recur = s.Get<L10Recurrence>(recurrenceId);
 
@@ -123,7 +123,9 @@ namespace RadialReview.Hooks.Realtime.L10 {
 
                 rt.UpdateRecurrences(recurrenceId).Update(
                     new AngularRecurrence(recurrenceId) {
-                        Rocks = AngularList.CreateFrom(AngularListType.Remove, new AngularRock(rock.Id))
+                        Rocks = AngularList.CreateFrom(AngularListType.ReplaceIfExists, new AngularRock(rock.Id) {
+							Archived= true
+						})
                     }
                 );
             }
@@ -177,6 +179,11 @@ namespace RadialReview.Hooks.Realtime.L10 {
 
         public async Task ArchiveRock(ISession s, RockModel rock, bool deleted) {
             //Nothing to do..
+        }
+
+        public async Task UnArchiveRock(ISession s, RockModel rock, bool v)
+        {
+            //Nothing to do...
         }
 
         public async Task CreateRock(ISession s, RockModel rock) {

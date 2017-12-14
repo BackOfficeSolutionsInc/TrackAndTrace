@@ -18,7 +18,7 @@ using RadialReview.Exceptions;
 using RadialReview.Models.Angular.Dashboard;
 
 namespace RadialReview.Hooks.Realtime.L10 {
-    public class RealTime_L10_Todo : ITodoHook {
+    public class RealTime_L10_Todo : ITodoHook, IMeetingTodoHook {
         public bool CanRunRemotely() {
             return false;
         }
@@ -40,42 +40,40 @@ namespace RadialReview.Hooks.Realtime.L10 {
                         Todos = AngularList.CreateFrom(AngularListType.ReplaceIfNewer, new AngularTodo(todo))
                     }
                 });
-
             }
 
-            if (todo.ForRecurrenceId > 0) {
-                var recurrenceId = todo.ForRecurrenceId.Value;
-                var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-                var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
-                var todoData = TodoData.FromTodo(todo);
+            //if (todo.ForRecurrenceId > 0) {
+            //    var recurrenceId = todo.ForRecurrenceId.Value;
+            //    var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+            //    var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+            //    var todoData = TodoData.FromTodo(todo);
 
-                if (todo.CreatedDuringMeetingId != null)
-                    todoData.isNew = true;
-                meetingHub.appendTodo(".todo-list", todoData);
+            //    if (todo.CreatedDuringMeetingId != null)
+            //        todoData.isNew = true;
+            //    meetingHub.appendTodo(".todo-list", todoData);
 
-                var message = "Created to-do.";
-                try {
-                    message = todo.CreatedBy.GetFirstName() + " created a to-do.";
-                } catch (Exception) {
-                }
+            //    var message = "Created to-do.";
+            //    try {
+            //        message = todo.CreatedBy.GetFirstName() + " created a to-do.";
+            //    } catch (Exception) {
+            //    }
 
-                meetingHub.showAlert(message, 1500);
+            //    meetingHub.showAlert(message, 1500);
 
-                var updates = new AngularRecurrence(recurrenceId);
-                updates.Todos = AngularList.CreateFrom(AngularListType.Add, new AngularTodo(todo));
-                meetingHub.update(new AngularUpdate() {
-                    updates
-                });
+            //    var updates = new AngularRecurrence(recurrenceId);
+            //    updates.Todos = AngularList.CreateFrom(AngularListType.Add, new AngularTodo(todo));
+            //    meetingHub.update(new AngularUpdate() {
+            //        updates
+            //    });
 
-                if (RealTimeHelpers.GetConnectionString() != null) {
-                    var me = hub.Clients.Client(RealTimeHelpers.GetConnectionString());
-                        me.update(new AngularUpdate() { new AngularRecurrence(recurrenceId) {
-                            Focus = "[data-todo='" + todo.Id + "'] input:visible:first"
-                        }
-                    });
-                }
-
-            }
+            //    if (RealTimeHelpers.GetConnectionString() != null) {
+            //        var me = hub.Clients.Client(RealTimeHelpers.GetConnectionString());
+            //        me.update(new AngularUpdate() { new AngularRecurrence(recurrenceId) {
+            //                Focus = "[data-todo='" + todo.Id + "'] input:visible:first"
+            //            }
+            //        });
+            //    }
+            //}
         }
 
         public async Task UpdateTodo(ISession s, UserOrganizationModel caller, TodoModel todo, ITodoHookUpdates updates) {
@@ -99,7 +97,7 @@ namespace RadialReview.Hooks.Realtime.L10 {
             //	group.updateTodoDetails(todoId, details);
             //}
             if (updates.DueDateChanged) {
-                groups.ForEach(g => g.updateTodoDueDate(todo.Id, todo.DueDate.ToJavascriptMilliseconds()));
+                groups.ForEach(g => g.updateTodoDueDate(todo.Id, todo.DueDate));
             }
             if (updates.AccountableUserChanged) {
                 groups.ForEach(g => g.updateTodoAccountableUser(todo.Id, todo.AccountableUserId, todo.AccountableUser.GetName(), todo.AccountableUser.ImageUrl(true, ImageSize._32)));
@@ -132,6 +130,72 @@ namespace RadialReview.Hooks.Realtime.L10 {
             //_ProcessDeleted(s, todo, delete);
 
             groups.ForEach(g => g.update(new AngularUpdate() { new AngularTodo(todo) }));
+        }
+
+        public async Task AttachTodo(ISession s, UserOrganizationModel caller, TodoModel todo) {
+
+            if (todo.TodoType == TodoType.Personal) {
+                var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+                var userMeetingHub = hub.Clients.Group(MeetingHub.GenerateUserId(todo.AccountableUserId));
+                var todoData = TodoData.FromTodo(todo);
+                userMeetingHub.appendTodo(".todo-list", todoData);
+
+                RealTimeHelpers.GetUserHubForRecurrence(todo.AccountableUserId).update(new AngularUpdate() {
+                    new ListDataVM(todo.AccountableUserId) {
+                        Todos = AngularList.CreateFrom(AngularListType.ReplaceIfNewer, new AngularTodo(todo))
+                    }
+                });
+            } else {
+                var recurrenceId = todo.ForRecurrenceId.Value;
+                var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+                var meetingHub = hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(recurrenceId));
+                var todoData = TodoData.FromTodo(todo);
+
+                if (todo.CreatedDuringMeetingId != null)
+                    todoData.isNew = true;
+                meetingHub.appendTodo(".todo-list", todoData);
+
+                var message = "Created to-do.";
+                try {
+                    message = todo.CreatedBy.GetFirstName() + " created a to-do.";
+                } catch (Exception) {
+                }
+
+                meetingHub.showAlert(message, 1500);
+
+                var updates = new AngularRecurrence(recurrenceId);
+                updates.Todos = AngularList.CreateFrom(AngularListType.ReplaceIfNewer, new AngularTodo(todo));
+                meetingHub.update(new AngularUpdate() {
+                    updates
+                });
+
+                if (RealTimeHelpers.GetConnectionString() != null) {
+                    var me = hub.Clients.Client(RealTimeHelpers.GetConnectionString());
+                    me.update(new AngularUpdate() { new AngularRecurrence(recurrenceId) {
+                            Focus = "[data-todo='" + todo.Id + "'] input:visible:first"
+                        }
+                    });
+                }
+            }
+        }
+
+        public async Task DetachTodo(ISession s, UserOrganizationModel caller, TodoModel todo) {
+
+            var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+
+            List<dynamic> groups = new List<dynamic>();
+            if (todo.TodoType == TodoType.Recurrence) {
+                groups.Add(hub.Clients.Group(MeetingHub.GenerateMeetingGroupId(todo.ForRecurrenceId.Value), RealTimeHelpers.GetConnectionString()));
+            }
+            groups.Add(hub.Clients.Group(MeetingHub.GenerateUserId(todo.AccountableUserId), RealTimeHelpers.GetConnectionString()));
+
+            if (todo.ForRecurrenceId != null) {
+                groups.ForEach(g => g.update(new AngularRecurrence(todo.ForRecurrenceId.Value) {
+                    Todos = AngularList.CreateFrom(AngularListType.Remove, new AngularTodo(todo.Id))
+                }));
+            } else {
+                groups.ForEach(g => g.update(AngularList.CreateFrom(AngularListType.Remove, new AngularTodo(todo.Id))));
+            }
         }
     }
 }

@@ -52,6 +52,7 @@ namespace RadialReview.Models.L10 {
 		[Display(Name = "Rate the Meeting")]
 		RateMeeting = 1
 	}
+	
 
 	public partial class L10Recurrence : ILongIdentifiable, IDeletable {
 
@@ -82,6 +83,8 @@ namespace RadialReview.Models.L10 {
 		public virtual IList<L10Recurrence_Rocks> _DefaultRocks { get; set; }
 		public virtual IList<L10Recurrence_VideoConferenceProvider> _VideoConferenceProviders { get; set; }
 		public virtual IList<L10Recurrence_Page> _Pages { get; set; }
+
+		public virtual L10LookupCache _CacheQueries {get;set;}
 
 		//public virtual IList<L10AgendaItem> _AgendaItems { get; set; }
 

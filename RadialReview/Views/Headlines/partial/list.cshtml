@@ -9,6 +9,8 @@
 	var orderVariable = ViewBag.OrderSelector ?? "order_" + Guid.NewGuid().ToString().Replace("-", "");
 	var defaultSort = ViewBag.DefaultSort ?? "'-CreateTime'";
 
+	var usePopup = ViewBag.UsePopup == true;
+
 	var showDetails = (ViewBag.ShowDetails == null || ((bool)ViewBag.ShowDetails) == true);
 	var detailsCode = showDetails ? "headline.DetailsUrl_Src=headline.DetailsUrl;model.Selected = headline.Key;" : "";
 
@@ -27,11 +29,13 @@
 <div @(headers ? "ng-app=L10App" : "") class="meeting-review ng-cloak headline-list-container app">
 	<div @(headers || controller ? "ng-controller=L10Controller" : "")>
 		<div class="row">
-			<div class="col-md-12 component">			
+			<div class="col-md-12 component">
 				<div id="Headline" class="tab-pane headline-pane scrollbox pull-left fullWidth scroller">
 					<div></div>
 					<md-table-container class="repeater-container">
-						<table md-table class="@(orderVariable)" width="100%" class="component table-hover" ng-if="(@(selector) @(filter)).length" click-anywhere-but-here="model.Selected = -1">
+						<table md-table class="@(orderVariable)" width="100%" class="component table-hover" ng-if="(@(selector) @(filter)).length"
+							   @if (!usePopup) { @: click-anywhere-but-here="model.Selected = -1"
+							   							   }>
 							<thead md-head md-order="@(orderVariable)" ng-init="functions.setValue('@(orderVariable)',@(orderVariable) || @(defaultSort))">
 								<tr class="table-header" md-row>
 									<th md-column @(attrLookup["picture-column"]) class="picture-column owner-column" style="width: 32px;" md-order-by="Owner.Name">&nbsp;</th>
@@ -46,16 +50,16 @@
 							<tbody md-body @*vs-repeat vs-autoresize vs-scroll-parent=".repeater-container"*@>
 								<tr id="headline_{{headline.Id}}"
 									ng-repeat="headline in @(selector) | orderBy: @(orderVariable) @(filter) track by $index"
-									ng-class="{grayRow: headline.Complete}"
+									ng-class="{grayRow: headline.Complete, grayRow: headline.Archived==true }"
 									class="clickable {{model.Selected == headline.Key?'selected':''}}"
 									md-row>
 									<td class="picture-column owner-column" md-cell>
 										<span class="item-wrapper place-right">
 											@*<span onaftersave="functions.sendUpdate(headline)"
-												  editable-select="headline.Owner"
-												  onshow="loadPossibleOwners(@(recurrenceId))"
-												  e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]">*@
-												<profile-image user="headline.Owner"></profile-image>
+												editable-select="headline.Owner"
+												onshow="loadPossibleOwners(@(recurrenceId))"
+												e-ng-options="s as s.Name for s in possibleOwners[@(recurrenceId)]">*@
+											<profile-image user="headline.Owner"></profile-image>
 											@*</span>*@
 										</span>
 									</td>
@@ -63,19 +67,25 @@
 										<profile-image user="headline.About"></profile-image>
 									</td>
 									<td class="headline-text message-column" style="width:100%" ng-click="@(detailsCode)" md-cell>
+										@if (usePopup) {
+											<div  class="headlineModal" data-method="EditModal" data-title="Edit headline" data-Id="{{headline.Id}}">{{headline.Name}}</div>
+											
+										} else {
 										<input class="blend" placeholder="Enter people headline here" ng-model-options="{debounce: 75}" type="text" ng-model="headline.Name" ng-change="functions.sendUpdate(headline)" title="{{headline.Name}}" />
 
 										<div class="headline-text" ng-if="model.Selected==headline.Key">
 											<a class="pull-right timeline-button" ng-if="headline.Link!=null" target="_blank" href="{{headline.Link}}" style="margin-top: 4px;margin-right: 2px;"><span class="glyphicon glyphicon-comment"></span></a>
 											<iframe class="keep-background" style="background-color: white" width="100%" ng-src="{{trustAsResourceUrl(headline.DetailsUrl_Src)}}" ng-data-src="{{headline.DetailsUrl}}"></iframe>
 										</div>
+										}
 									</td>
 									<td class="alignCenter createtime-column date-column" md-cell>
 										{{headline.CreateTime | date:dateFormat}}
 									</td>
 									<td class="alignCenter close-column date-column" md-cell>{{headline.CloseTime | date:dateFormat}}</td>
 									<td class="delete-column" md-cell>
-										<span class="delete-row" ng-click="functions.removeRow($event,headline)"></span>
+										<span class="delete-row-archive delete-row" ng-if="headline.Archived==false" title="Archive" ng-click="functions.removeRow($event,headline)"></span>
+										<span class="delete-row-unarchive delete-row" ng-if="headline.Archived==true" title="Unarchive" ng-click="functions.unarchiveRow($event,headline)"></span>
 									</td>
 								</tr>
 							</tbody>

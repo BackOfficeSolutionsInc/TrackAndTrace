@@ -408,9 +408,6 @@ display: block;
 }
 
 
-/* pricing charts section */
-#pricing { }
-
 #pricing .btn {
   margin-top: 20px;
 }
@@ -441,8 +438,7 @@ display: block;
 #pricing .price_wrapper.regular .header {
 	background: url('/Content/Home/denim.png') 0 0 repeat;
 }
-#pricing .price_wrapper.pro {
-}
+
 
 #pricing .price_wrapper.pro .header {
         background-color: #5b9bd5

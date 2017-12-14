@@ -96,10 +96,8 @@
 			}
 
 /* Applied to 'focused' tooltips e.g. most recently displayed/interacted with */
-.qtip-focus{}
 
 /* Applied on hover of tooltips i.e. added/removed on mouseenter/mouseleave respectively */
-.qtip-hover{}
 
 /* Default tooltip style */
 .qtip-default{
