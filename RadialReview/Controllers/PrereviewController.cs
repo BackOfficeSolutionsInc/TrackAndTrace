@@ -12,6 +12,7 @@ using System.Web.Mvc;
 using RadialReview.Utilities;
 using RadialReview.Models.Json;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace RadialReview.Controllers {
 	public class PrereviewController : BaseController {
@@ -64,7 +65,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
 		[AsyncTimeout(60 * 60 * 1000)]
 		[Obsolete("Fix for AC")]
-		public async Task<JsonResult> IssueImmediately(long id) {
+		public async Task<JsonResult> IssueImmediately(long id, CancellationToken ct) {
 			Server.ScriptTimeout = 60 * 60;
 			Session.Timeout = 60;
 

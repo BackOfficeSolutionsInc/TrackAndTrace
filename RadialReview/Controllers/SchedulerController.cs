@@ -25,6 +25,7 @@ using RadialReview.Models.Synchronize;
 using NHibernate.Criterion;
 using System.Linq.Expressions;
 using NHibernate.Impl;
+using System.Threading;
 
 namespace RadialReview.Controllers {
 
@@ -47,7 +48,8 @@ namespace RadialReview.Controllers {
         /// <param name="taskId"></param>
         /// <returns></returns>
         [Access(AccessLevel.Any)]
-        public async Task<JsonResult> ChargeAccount(long id, long taskId/*,long? executeTime=null*/) {
+		[AsyncTimeout(60 * 60 * 1000)]
+		public async Task<JsonResult> ChargeAccount(long id, long taskId, CancellationToken ct,/*,long? executeTime=null*/) {
             PaymentException capturedPaymentException = null;
             Exception capturedException = null;
             //DateTime? time = null;
@@ -133,7 +135,8 @@ namespace RadialReview.Controllers {
         }
 
         [Access(AccessLevel.Any)]
-        public async Task<ActionResult> EmailTodos(int currentTime, int divisor = 13, int remainder = 0, int sent = 0, string error = null,double duration=0) {
+		[AsyncTimeout(60 * 60 * 1000)]
+		public async Task<ActionResult> EmailTodos(int currentTime, CancellationToken ct, int divisor = 13, int remainder = 0, int sent = 0, string error = null,double duration=0) {
             if (remainder >= divisor) {
                 return Content("Sent:" + sent+"<br/>Duration:"+duration+"s");
             }
@@ -372,7 +375,7 @@ namespace RadialReview.Controllers {
 
         [Access(AccessLevel.Any)]
         [AsyncTimeout(60000 * 30)]//20 minutes..
-        public async Task<JsonResult> Reschedule() {
+		public async Task<JsonResult> Reschedule(CancellationToken ct) {
             var res = await TaskAccessor.ExecuteTasks();
             return Json(res, JsonRequestBehavior.AllowGet);
         }

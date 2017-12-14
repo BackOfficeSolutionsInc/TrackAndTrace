@@ -8,6 +8,7 @@ using RadialReview.Models.Reviews;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -69,7 +70,7 @@ namespace RadialReview.Controllers {
 		[Access(AccessLevel.Manager)]
 		[Obsolete("Fix for AC")]
 		[AsyncTimeout(60000 * 30)]//20 minutes..
-		public async Task<ActionResult> Index(FormCollection form) {
+		public async Task<ActionResult> Index(FormCollection form, CancellationToken ct) {
 			Server.ScriptTimeout = 60*30;
 			if (form["review"] == "issueReview") {
 				var customized = form.AllKeys.Where(x => x.StartsWith("customize_")).Select(x => {
