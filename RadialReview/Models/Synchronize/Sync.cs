@@ -7,10 +7,8 @@ using RadialReview.Models.Interfaces;
 using NHibernate.Type;
 using RadialReview.Utilities;
 
-namespace RadialReview.Models.Synchronize
-{
-	public class Sync : ILongIdentifiable, IHistorical
-	{
+namespace RadialReview.Models.Synchronize {
+	public class Sync : ILongIdentifiable, IHistorical {
 		public virtual long Id { get; set; }
 		public virtual long UserId { get; set; }
 		/// <summary>
@@ -21,17 +19,15 @@ namespace RadialReview.Models.Synchronize
 		[Obsolete("Not accurate, use DbTimestamp instead")]
 		public virtual DateTime CreateTime { get; set; }
 		public virtual DateTime? DeleteTime { get; set; }
-		public virtual DateTime DbTimestamp{ get; set; }
+		public virtual DateTime DbTimestamp { get; set; }
 
 
-		public Sync(){
+		public Sync() {
 			CreateTime = DateTime.UtcNow;
 		}
 
-		public class SyncMap : ClassMap<Sync>
-		{
-			public SyncMap()
-			{
+		public class SyncMap : ClassMap<Sync> {
+			public SyncMap() {
 				Id(x => x.Id);
 				Map(x => x.Timestamp);
 				Map(x => x.UserId);
@@ -45,9 +41,27 @@ namespace RadialReview.Models.Synchronize
 					case Config.DbType.Sqlite:
 						Map(c => c.DbTimestamp).Default("CURRENT_TIMESTAMP").Generated.Insert();
 						break;
-					default: throw new Exception("Unknown Db Type. Cannot Create Sync model");
+					default:
+						throw new Exception("Unknown Db Type. Cannot Create Sync model");
 				}
 
+			}
+		}
+	}
+	public class SyncLock {
+		public virtual string Id { get; set; }
+		public virtual DateTime LastUpdate { get; set; }
+		public virtual int UpdateCount { get; set; }
+
+		public SyncLock() {
+			LastUpdate = DateTime.UtcNow;
+		}
+
+		public class Map : ClassMap<SyncLock> {
+			public Map() {
+				Id(x => x.Id).GeneratedBy.Assigned();
+				Map(x => x.LastUpdate);
+				Map(x => x.UpdateCount);
 			}
 		}
 	}
