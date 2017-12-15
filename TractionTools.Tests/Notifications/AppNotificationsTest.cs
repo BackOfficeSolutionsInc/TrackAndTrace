@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RadialReview.Accessors.NotificationAccessor;
+using RadialReview.Accessors;
 
 namespace TractionTools.Tests.Notifications {
 	[TestClass]

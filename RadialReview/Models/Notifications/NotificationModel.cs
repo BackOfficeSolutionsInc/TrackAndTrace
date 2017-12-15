@@ -6,14 +6,28 @@ using System.Linq;
 using System.Web;
 
 namespace RadialReview.Models.Notifications {
+	public enum NotificationType {
+		Standard = 0,
+	}
+	public enum NotificationPriority {
+		Low= -100,
+		Normal = 0,
+		High = 100,
+	}
+
+
 	public class NotificationModel : ILongIdentifiable, IHistorical {
 		public virtual long Id { get; set; }
+		public virtual long UserId { get; set; }
 		public virtual DateTime CreateTime { get; set; }
 		public virtual DateTime? DeleteTime { get; set; }
 		public virtual string Name { get; set; }
 		public virtual string Details { get; set; }
 		public virtual bool Seen { get; set; }
+		public virtual bool Sent { get; set; }
 		public virtual string ImageUrl { get; set; }
+		public virtual NotificationType Type { get; set; }
+		public virtual NotificationPriority Priority { get; set; }
 
 		public NotificationModel() {
 			CreateTime = DateTime.UtcNow;
@@ -27,7 +41,8 @@ namespace RadialReview.Models.Notifications {
 				Map(x => x.Name);
 				Map(x => x.Details);
 				Map(x => x.Seen);
-				Map(x => x.ImageUrl);				
+				Map(x => x.ImageUrl);
+				Map(x => x.Type);
 			}
 
 		}

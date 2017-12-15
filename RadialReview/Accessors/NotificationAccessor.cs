@@ -51,19 +51,19 @@ namespace RadialReview.Accessors {
 					return found;
 				}
 			}
-
 		}
 
-		public static async Task SendNotification_Unsafe(NotifcationCreation notification) {
-
-
-
+		
+		public static async Task CreateNotification_Unsafe(NotifcationCreation notification,bool send) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 
-
-					await notification.Send(s);
-
+					await notification.Save(s);
+					if (send) {
+						await notification.Send(s);
+					}
+					tx.Commit();
+					s.Flush();
 				}
 			}
 		}
@@ -76,6 +76,8 @@ namespace RadialReview.Accessors {
 		private string Details { get; set; }
 		private string ImageUrl { get; set; }
 		private long UserId { get; set; }
+		private NotificationType Type { get; set; }
+		private NotificationPriority Priority { get; set; }
 
 		public static NotifcationCreation Build(long userId, string message, string details = null, string imageUrl = null) {
 			return new NotifcationCreation {
@@ -83,6 +85,24 @@ namespace RadialReview.Accessors {
 				Details = details,
 				ImageUrl = imageUrl,
 				UserId = userId,
+			};
+		}
+
+		public async Task<NotificationModel> Save(ISession s) {
+			var nm = GenerateModel();
+			s.Save(nm);
+			return nm;
+		}
+
+		protected NotificationModel GenerateModel() {
+			return new NotificationModel {
+				Details = Details,
+				ImageUrl = ImageUrl,
+				Name = Message,
+				Priority = Priority,
+				Type = Type,
+				Sent =false,
+				UserId = UserId,
 			};
 		}
 
@@ -96,7 +116,7 @@ namespace RadialReview.Accessors {
 					.List().ToList();
 
 				foreach (var d in devices) {
-
+					NotifcationCreation.SendToDevice(d,this);
 				}
 			}
 		}
