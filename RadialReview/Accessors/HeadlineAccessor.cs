@@ -96,13 +96,7 @@ namespace RadialReview.Accessors {
 			}
 		}
 		
-<<<<<<< HEAD
-		public static async Task UpdateHeadline(UserOrganizationModel caller, long headlineId, string message, string connectionId = null) {
-
-
-=======
 		public static async Task UpdateHeadline(UserOrganizationModel caller, long headlineId, string message, string connectionId = null,long? aboutId=null,string aboutName=null) {
->>>>>>> master
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);

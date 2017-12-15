@@ -131,63 +131,53 @@ namespace RadialReview.Utilities.Synchronize {
 			if (clientTimestamp == null) {
 				return false;
 			}
-
+			
 			//Concurrency Lock...
 			var lockId = callerId + "@" + actionStr;
 			long syncId;
-			using (var s2 = HibernateSession.GetDatabaseSessionFactory().OpenSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var syncLock = s2.Get<SyncLock>(lockId, LockMode.Upgrade);
-					if (syncLock == null) {
-						try {
-							s2.Save(new SyncLock() {
-								Id = lockId,
-							});
-							tx.Commit();
-							s2.Flush();
-							//log.Info("[" + clientTimestamp + "] SyncLock for '" + actionStr + "' @ " + serverTime);
-
-						} catch (GenericADOException e) {
-							//save a duplicate key i guess...
-							//log.Info("[" + clientTimestamp + "] SyncLock error '" + actionStr + "' @ " + serverTime,e);
-							tx.Rollback();
+			if (Config.GetEnv() == Models.Enums.Env.local_test_sqlite) {
+				var ns = new Sync() {
+					CreateTime = serverTime,
+					Action = actionStr,
+					Timestamp = clientTimestamp.Value,
+					UserId = callerId,
+				};
+				s.Save(ns);
+				syncId = ns.Id;
+			} else {
+				using (var s2 = HibernateSession.GetDatabaseSessionFactory().OpenSession()) {
+					using (var tx = s.BeginTransaction()) {
+						var syncLock = s2.Get<SyncLock>(lockId, LockMode.Upgrade);
+						if (syncLock == null) {
+							try {
+								s2.Save(new SyncLock() { Id = lockId,});
+								tx.Commit();
+								s2.Flush();
+							} catch (GenericADOException e) {
+								//save a duplicate key i guess...
+								tx.Rollback();
+							}
 						}
 					}
-				}
-				using (var tx = s.BeginTransaction()) {
-					//log.Info("[" + clientTimestamp + "] Lock '" + actionStr );
-					var syncLock = s2.Get<SyncLock>(lockId, LockMode.Upgrade);
-					//log.Info("[" + clientTimestamp + "] Through '" + actionStr );
-					syncLock.LastUpdate = DateTime.UtcNow;
-					syncLock.UpdateCount += 1;
-					s2.Update(syncLock);
-
-					var ns = new Sync() {
-						CreateTime = serverTime,
-						Action = actionStr,
-						Timestamp = clientTimestamp.Value,
-						UserId = callerId,
-					};
-					s.Save(ns);
-
-					///Debug info
-					//log.Info("["+clientTimestamp+"] Adding sync:" + ns.Id+" for '"+actionStr+"' @ "+ serverTime);
-
-					//} else {
-					//	syncLock.LastUpdate = DateTime.UtcNow;
-					//	syncLock.UpdateCount += 1;
-					//	s2.Update(syncLock);
-					//}
-					syncId = ns.Id;
-					//log.Info("[" + clientTimestamp + "] Unlocking '" + actionStr);
-					tx.Commit();
-					//log.Info("[" + clientTimestamp + "] Unlocked '" + actionStr);
-					s2.Flush();
+					using (var tx = s.BeginTransaction()) {
+						var syncLock = s2.Get<SyncLock>(lockId, LockMode.Upgrade);
+						syncLock.LastUpdate = DateTime.UtcNow;
+						syncLock.UpdateCount += 1;
+						s2.Update(syncLock);
+						var ns = new Sync() {
+							CreateTime = serverTime,
+							Action = actionStr,
+							Timestamp = clientTimestamp.Value,
+							UserId = callerId,
+						};
+						s.Save(ns);						
+						syncId = ns.Id;
+						tx.Commit();
+						s2.Flush();
+					}
 				}
 			}
-
-			var newSync = s.Get<Sync>(syncId);
-			
+			var newSync = s.Get<Sync>(syncId);			
 
 			var newSyncDbTimestamp = newSync.DbTimestamp;
 			return IsStrictlyAfter(s, actionStr, clientTimestamp.Value, callerId, newSync, newSyncDbTimestamp, buffer);

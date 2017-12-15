@@ -106,7 +106,7 @@ namespace TractionTools.UITests.FAQ {
 
 				d.Wait(500);
 				text = d.Find(".anno-content").Wait(400).Text;
-				Assert.IsTrue(text.Contains("When you're done, you can start the meeting from the L10 tab."));
+				Assert.IsTrue(text.Contains("You can also access your meeting's archive, timeline, V/TO™, and more."));
 				d.Find(".anno-btn:not(.anno-btn-low-importance)").Wait(400).Click();
 				
 			});
