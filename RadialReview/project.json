@@ -62,6 +62,7 @@
     "OxyPlot.Core": "1.0.0",
     "OxyPlot.Wpf": "1.0.0",
     "PDFsharp-MigraDoc-GDI": "1.50.4589-beta4",
+    "PushSharp": "4.0.10",
     "RestSharp": "105.2.3",
     "SpreadsheetLight": "3.4.9",
     "Swashbuckle": "5.6.0",

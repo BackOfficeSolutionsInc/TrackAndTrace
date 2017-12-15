@@ -120,6 +120,7 @@
     <Compile Include="Accessors\L10Accessor\L10AccessorLoadData.cs" />
     <Compile Include="Accessors\L10Accessor\L10AccessorMeetingActions.cs" />
     <Compile Include="Accessors\L10Accessor\L10AccessorAttendees.cs" />
+    <Compile Include="Accessors\NotificationAccessor.cs" />
     <Compile Include="Accessors\OrganizationAccessors\JoinOrganizationAccessor.cs" />
     <Compile Include="Accessors\PdfChartAccessor.cs" />
     <Compile Include="Accessors\PDF\AccountabilityChartPDF.cs" />
@@ -134,6 +135,7 @@
     <Compile Include="Api\V1\Headlines.cs" />
     <Compile Include="Api\V1\Issue.cs" />
     <Compile Include="Api\V1\L10.cs" />
+    <Compile Include="Api\V1\Notification.cs" />
     <Compile Include="Api\V1\Rocks.cs" />
     <Compile Include="Api\V1\Scorecard.cs" />
     <Compile Include="Api\V1\Search.cs" />
@@ -184,10 +186,12 @@
     <Compile Include="Models\Angular\CoreProcess\AngularTask.cs" />
     <Compile Include="Models\Angular\CoreProcess\AngularCoreProcess.cs" />
     <Compile Include="Models\Angular\LocalDateTime.cs" />
+    <Compile Include="Models\Angular\Notifications\AngularAppNotification.cs" />
     <Compile Include="Models\Application\Variable.cs" />
     <Compile Include="Models\ClientSuccess\TooltipModels.cs" />
     <Compile Include="Models\Enums\DashboardType.cs" />
     <Compile Include="Models\L10\L10LookupCache.cs" />
+    <Compile Include="Models\Notifications\NotificationModel.cs" />
     <Compile Include="Models\ViewModels\CreateRockViewModel.cs" />
     <Compile Include="Models\ViewModels\CreateMeasurableViewModel.cs" />
     <Compile Include="Models\UserModels\UserRole.cs" />
@@ -1190,6 +1194,7 @@
     <Content Include="Content\L10\L10Wizard.less" />
     <Content Include="Content\Angular\Rocks.less" />
     <Content Include="Content\Angular\Issues.less" />
+    <None Include="Data\APS.cert" />
     <Content Include="IIS\install.zip" />
     <Content Include="Content\bootstrap\custom\modal.less" />
     <Content Include="Content\MaterialDesign\Components\Progress.less" />
@@ -1238,6 +1243,7 @@
     <None Include="Resources\EOS_Model.png" />
     <None Include="Resources\closed.gif" />
     <None Include="Resources\open.gif" />
+    <None Include="Resources\AppleAPS.txt" />
     <Content Include="Scripts\Angular\AccountabilityChart\ACController.js" />
     <Content Include="Scripts\Angular\angular.js" />
     <Content Include="Scripts\Angular\GettingStartd\GSApp.js" />
@@ -2470,7 +2476,6 @@
     <Folder Include="Content\fonts\fonts\" />
     <Folder Include="External\" />
     <Folder Include="logs\" />
-    <Folder Include="Models\Notifications\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
     <Folder Include="Utilities\Migradoc\XYScatter\" />
     <Folder Include="Views\AngularAccountability\" />

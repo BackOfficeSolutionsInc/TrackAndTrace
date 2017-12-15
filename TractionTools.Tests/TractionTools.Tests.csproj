@@ -328,6 +328,7 @@
     <Compile Include="Hooks\EnterpriseHookTest.cs" />
     <Compile Include="Integrations\ActiveCampaignTest.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Notifications\AppNotificationsTest.cs" />
     <Compile Include="PDF\MigradocExtension.cs" />
     <Compile Include="PDF\SurveyPdfTest.cs" />
     <Compile Include="PDF\AccountabilityChartPdfTest.cs" />
