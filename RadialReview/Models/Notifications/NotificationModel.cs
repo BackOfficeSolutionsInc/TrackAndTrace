@@ -23,8 +23,8 @@ namespace RadialReview.Models.Notifications {
 		public virtual DateTime? DeleteTime { get; set; }
 		public virtual string Name { get; set; }
 		public virtual string Details { get; set; }
-		public virtual bool Seen { get; set; }
-		public virtual bool Sent { get; set; }
+		public virtual DateTime? Seen { get; set; }
+		public virtual DateTime? Sent { get; set; }
 		public virtual string ImageUrl { get; set; }
 		public virtual NotificationType Type { get; set; }
 		public virtual NotificationPriority Priority { get; set; }
@@ -41,8 +41,10 @@ namespace RadialReview.Models.Notifications {
 				Map(x => x.Name);
 				Map(x => x.Details);
 				Map(x => x.Seen);
+				Map(x => x.Sent);
 				Map(x => x.ImageUrl);
 				Map(x => x.Type);
+				Map(x => x.Priority);
 			}
 
 		}

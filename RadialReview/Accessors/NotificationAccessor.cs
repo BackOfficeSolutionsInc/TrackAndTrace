@@ -101,7 +101,7 @@ namespace RadialReview.Accessors {
 				Name = Message,
 				Priority = Priority,
 				Type = Type,
-				Sent =false,
+				Sent = null,
 				UserId = UserId,
 			};
 		}
