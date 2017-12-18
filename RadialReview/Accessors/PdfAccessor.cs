@@ -1580,10 +1580,84 @@ namespace RadialReview.Accessors
             }
         }
 
+
+        protected static Section AddTitledPage_rock(Document document, string pageTitle, Orientation orientation = Orientation.Portrait, bool addSection = true, bool addPageNumber = true)
+        {
+            Section section;
+
+            if (addSection || document.LastSection == null)
+            {
+                section = document.AddSection();
+                section.PageSetup.Orientation = orientation;
+            }
+            else
+            {
+                section = document.LastSection;
+            }
+            if (addPageNumber)
+            {
+                //paragraph.AddTab();
+                var paragraph = new Paragraph();
+                paragraph.Format.Alignment = ParagraphAlignment.Right;
+
+                //if (addDate) {
+                ///	//paragraph.AddTab();
+                //	paragraph.AddDateField("MM-dd-yyyy");
+                // Add paragraph to footer for odd pages.
+                //section.Footers.Primary.Format.SpaceBefore = Unit.FromInch(-0.2);
+                ////}
+                //if (addPageNumber && addDate) {
+                //	paragraph.AddText(" | ");
+                //}
+                if (addPageNumber)
+                {
+                    paragraph.AddPageField();
+                }
+                section.Footers.Primary.Add(paragraph);
+
+            }
+
+
+
+            var frame = section.AddTextFrame();
+            frame.Height = Unit.FromInch(.75);
+            frame.Width = Unit.FromInch(7.5);
+            if (orientation == Orientation.Landscape)
+                frame.Width = Unit.FromInch(12);
+            // frame.LineFormat.Color = TableGray;
+            //frame.Left = ShapePosition.Center;
+
+            frame.MarginRight = Unit.FromInch(1);
+            //frame.MarginLeft = Unit.FromInch(1);
+
+
+            var title = frame.AddTable();
+            //title.Borders.Color = TableBlack;
+
+            var size = Unit.FromInch(5.5);
+            if (orientation == Orientation.Landscape)
+                size = Unit.FromInch(8);
+            //size = Unit.FromInch(8);
+            var c = title.AddColumn(size);
+            c.Format.Alignment = ParagraphAlignment.Left;
+            var rr = title.AddRow();
+            rr.Cells[0].AddParagraph(pageTitle);
+            rr.Format.Font.Bold = true;
+            //rr.Format.Font.Size = .4;
+            rr.Format.Font.Name = "Arial Narrow";
+            //rr.Shading.Color = TableGray;
+            rr.HeightRule = RowHeightRule.AtLeast;
+            rr.VerticalAlignment = VerticalAlignment.Center;
+            rr.Height = Unit.FromInch(0.4);
+            rr.Format.Font.Size = Unit.FromInch(.2);
+
+            return section;
+        }
+
         public static void AddRocks(UserOrganizationModel caller, Document doc, bool quarterlyPrintout, AngularRecurrence recur, AngularVTO vto, bool addPageNumber = true)
         {
 
-            var section = AddTitledPage(doc, "Quarterly " + caller.Organization.Settings.RockName, Orientation.Landscape, addPageNumber: addPageNumber);
+            var section = AddTitledPage_rock(doc, "Quarterly " + caller.Organization.Settings.RockName + " Sheet", Orientation.Landscape, addPageNumber: addPageNumber);
             Table table;
             double mult;
             Row row;
@@ -1593,7 +1667,53 @@ namespace RadialReview.Accessors
             var format = caller.NotNull(x => x.Organization.NotNull(y => y.Settings.NotNull(z => z.GetDateFormat()))) ?? "MM-dd-yyyy";
 
             var addVTO = true;
-           
+
+            if (addVTO && vto != null)
+            {
+                table = section.AddTable();
+                column = table.AddColumn(Unit.FromInch(5.0));
+                column.Format.Alignment = ParagraphAlignment.Left;
+
+                table.AddColumn(Unit.FromInch(5.0));
+                column.Format.Alignment = ParagraphAlignment.Left;
+
+                row = table.AddRow();
+                var p1 = new Paragraph();
+                p1.AddFormattedText("Future Date:", TextFormat.Bold);
+                row.Cells[0].Add(p1);
+                var p2 = new Paragraph();
+                p2.AddText(vto.QuarterlyRocks.FutureDate.NotNull(x => x.Value.ToString(format)) ?? "");
+                row.Cells[1].Add(p2);
+
+
+                row = table.AddRow();
+                var p3 = new Paragraph();
+                p3.AddFormattedText("Revenue:", TextFormat.Bold);
+                row.Cells[0].Add(p3);
+                var p4 = new Paragraph();
+                p4.AddText(vto.QuarterlyRocks.Revenue ?? "");
+                row.Cells[1].Add(p4);
+
+                row = table.AddRow();
+                var p5 = new Paragraph();
+                p5.AddFormattedText("Profit:", TextFormat.Bold);
+                row.Cells[0].Add(p5);
+                var p6 = new Paragraph();
+                p6.AddText(vto.QuarterlyRocks.Profit ?? "");
+                row.Cells[1].Add(p6);
+
+                row = table.AddRow();
+                var p7 = new Paragraph();
+                p7.AddFormattedText("Measurables:", TextFormat.Bold);
+                row.Cells[0].Add(p7);
+                var p8 = new Paragraph();
+                p8.AddText(vto.QuarterlyRocks.Measurables ?? "");
+                row.Cells[1].Add(p8);
+
+                row = table.AddRow();
+                row.Height = Unit.FromPoint(25);
+            }
+
 
             if (recur.Rocks.Any(x => x.VtoRock ?? false))
             {
@@ -1603,34 +1723,42 @@ namespace RadialReview.Accessors
                 table.Style = "Table";
                 table.Rows.LeftIndent = Unit.FromInch(1.25);
 
-                table.LeftPadding = 0;
+                table.LeftPadding = 5;
                 table.RightPadding = 0;
 
                 table.Format.Alignment = ParagraphAlignment.Center;
+                table.Borders.Color = TableBlack;
 
                 mult = 1.0;
-                ////Number
-                column = table.AddColumn(Unit.FromInch(/*0.2*/0.001 * mult));
-                column.Format.Alignment = ParagraphAlignment.Center;
-                ////Due
-                column = table.AddColumn(Unit.FromInch(/*0.7*/0.001 * mult));
-                column.Format.Alignment = ParagraphAlignment.Center;
-                //Who
                 //column = table.AddColumn(Unit.FromInch(1 + .2 * mult));
-                column = table.AddColumn(Unit.FromInch(3.3 + .45 * mult));
+                column = table.AddColumn(Unit.FromInch(5.3 + .45 * mult));
                 column.Format.Alignment = ParagraphAlignment.Center;
                 //Completion
                 //column = table.AddColumn(Unit.FromInch(0.75 * mult));
-                column = table.AddColumn(Unit.FromInch(3.3 + .45 * mult));
+                column = table.AddColumn(Unit.FromInch(1.3 + .45 * mult));
                 column.Format.Alignment = ParagraphAlignment.Center;
 
                 row = table.AddRow();
                 row.HeadingFormat = true;
                 row.Format.Alignment = ParagraphAlignment.Right;
                 row.Format.Font.Bold = true;
-                //row.Shading.Color = TableGray;
+                row.Shading.Color = TableGray;
                 row.Height = Unit.FromInch(0.25);
-              
+                row.VerticalAlignment = VerticalAlignment.Center;
+                var com_h = row.Cells[0].AddParagraph("COMPNAY ROCKS");
+                com_h.Format.Font.Name = "Arial Narrow";
+                com_h.Format.Font.Size = 10;
+                //com_h.Format.Font.Bold = true;
+                //com_h.Format.Borders.Color = TableBlack;
+                com_h.Format.Alignment = ParagraphAlignment.Center;
+
+
+                var who_h = row.Cells[1].AddParagraph("WHO");
+                who_h.Format.Font.Name = "Arial Narrow";
+                who_h.Format.Font.Size = 10;
+                // who_h.Format.Font.Bold = true;
+                //who_h.Format.Borders.Color = TableBlack;
+                who_h.Format.Alignment = ParagraphAlignment.Center;
 
                 mn = 1;
 
@@ -1640,7 +1768,9 @@ namespace RadialReview.Accessors
                 var getCompletionPercentage_rock_com = Convert.ToDouble((Convert.ToDouble(getDoneCount_rock_com) / Convert.ToDouble(getTotalCount_rock_com)));
                 bool isCompletionPercentageDisplayed_com = true;
 
-                row.Cells[3].AddParagraph("Completion : " + getDoneCount_rock_com + "/" + getTotalCount_rock_com + " - " + string.Format("{0:0.##%}", getCompletionPercentage_rock_com));
+                //row.Cells[3].AddParagraph("Completion : " + getDoneCount_rock_com + "/" + getTotalCount_rock_com + " - " + string.Format("{0:0.##%}", getCompletionPercentage_rock_com));
+
+                int sr_count = 0;
 
                 foreach (var m in recur.Rocks.Where(x => x.VtoRock == true).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate))
                 {
@@ -1704,45 +1834,28 @@ namespace RadialReview.Accessors
                         }
                     }
 
-                    row.Cells[2].AddParagraph("" + m.NotNull(x => x.Name));
-                    row.Cells[2].Format.Alignment = ParagraphAlignment.Left;
+                    row.Cells[0].AddParagraph("" + (sr_count + 1) + ")  " + m.NotNull(x => x.Name));
+                    row.Cells[0].Format.Alignment = ParagraphAlignment.Left;
 
-                    row.Cells[3].AddParagraph("" + m.Owner.NotNull(x => x.Name));
-                    row.Cells[3].Format.Alignment = ParagraphAlignment.Center;
-                    //row.Cells[3].AddParagraph("" + status);
-                    //row.Cells[3].Format.Font.Bold = bold;
-                    //row.Cells[3].Format.Font.Color = statusColor;
-
-
-
-
-
-                    //row.Cells[3].Format.Alignment = ParagraphAlignment.Center;
-
-                    //row.Cells[4].AddParagraph("" + m.NotNull(x => x.Name));
-                    //row.Cells[4].Format.Alignment = ParagraphAlignment.Center;
-
-                    //if (isCompletionPercentageDisplayed_com)
-                    //{
-                    //    row.Cells[5].AddParagraph("" + getDoneCount_rock_com + "/" + getTotalCount_rock_com + " - " + string.Format("{0:0.##%}", getCompletionPercentage_rock_com));
-
-                    //    isCompletionPercentageDisplayed_com = false;
-                    //}
-                    //else
-                    //{
-                    //    row.Cells[5].AddParagraph("");
-                    //}
-
+                    row.Cells[1].AddParagraph("" + m.Owner.NotNull(x => x.Name));
+                    row.Cells[1].Format.Alignment = ParagraphAlignment.Center;
                     mn++;
+                    sr_count++;
                 }
-                row = table.AddRow();
-                row.HeightRule = RowHeightRule.AtLeast;
-                row.Height = Unit.FromInch((6 * 8 + 5.0) / (8 * 16.0));
+                //row = table.AddRow();
+                //row.HeightRule = RowHeightRule.AtLeast;
+                //row.Height = Unit.FromInch((6 * 8 + 5.0) / (8 * 16.0));
             }
+
+            //add space to file
+            table = section.AddTable();
+            column = table.AddColumn(Unit.FromInch(2));
+            row = table.AddRow();
+            row.Height = Unit.FromPoint(20);
 
 
             //group by owner name 
-            var getRock = recur.Rocks.Where(t=>t.VtoRock==false).GroupBy(x => new { x.Owner.Name }, (key, group) => new
+            var getRock = recur.Rocks.Where(t => t.VtoRock == false).GroupBy(x => new { x.Owner.Name }, (key, group) => new
             {
                 OwnerName = key.Name,
                 Result = group.ToList()
@@ -1759,7 +1872,7 @@ namespace RadialReview.Accessors
             //Unit baseHeight = Unit.FromInch(5.1);
 
             //split data
-            var data = splitData(4, rockList);
+            var data = splitData(3, rockList);
 
             for (int l = 0; l < data.Count; l++)
             {
@@ -1815,11 +1928,14 @@ namespace RadialReview.Accessors
                             //rockTable.AddRow();
                             r.Height = Unit.FromInch(0.2444 * fs.Point / 10);
                             r.HeightRule = RowHeightRule.AtLeast;
-                            var p = r.Cells[0].AddParagraph("" + (j + 1) + ".");
+
+                            //r.Format.LeftIndent = -2;
+                            var p = r.Cells[0].AddParagraph("" + (j + 1) + ")");
                             p.Format.SpaceBefore = Unit.FromPoint(2);
                             p.Format.Font.Size = fs;
                             p.Format.Font.Name = "Arial Narrow";
-                            p.Format.Alignment = ParagraphAlignment.Right;
+                            p.Format.Alignment = ParagraphAlignment.Center;
+
                             p = r.Cells[1].AddParagraph(goals[j].Name ?? "");
                             p.Format.SpaceBefore = Unit.FromPoint(2);
                             p.Format.Font.Size = fs;
@@ -2000,16 +2116,29 @@ namespace RadialReview.Accessors
             List<Table> tables1 = new List<Table>();
 
             var table = section.AddTable();
+            if (list.Count == 2)
+            {
+
+                table.Rows.LeftIndent = Unit.FromInch(1.60);
+            }
+            else if (list.Count == 1) {
+                table.Rows.LeftIndent = Unit.FromInch(3.39);
+            }
+
             foreach (var item in list)
             {
-                table.AddColumn(Unit.FromInch(2.5425));
+                table.AddColumn(Unit.FromInch(3.39));
             }
             table.Borders.Color = TableBlack;
             table.Format.Alignment = ParagraphAlignment.Center;
+            table.LeftPadding = 0;
 
             var tractionHeader = table.AddRow();
             tractionHeader.Shading.Color = TableGray;
-            tractionHeader.Height = Unit.FromInch(0.55);
+            tractionHeader.Height = Unit.FromInch(0.25);
+            //tractionHeader.Height = Unit.FromInch(0.55);
+
+           
 
 
             bool flag = true;
@@ -2017,9 +2146,9 @@ namespace RadialReview.Accessors
 
             for (int i = 0; i < list.Count; i++)
             {
-                paragraph = tractionHeader.Cells[i].AddParagraph(list[i].OwnerName);
+                paragraph = tractionHeader.Cells[i].AddParagraph(list[i].OwnerName.ToUpper());
                 paragraph.Format.Font.Name = "Arial Narrow";
-                paragraph.Format.Font.Size = 14;
+                paragraph.Format.Font.Size = 10;
                 paragraph.Format.Font.Bold = true;
                 paragraph.Format.Alignment = ParagraphAlignment.Center;
 
@@ -2035,10 +2164,12 @@ namespace RadialReview.Accessors
             {
                 cells1.Add(tractionData.Cells[i]);
                 var tbl = new Table();
-                tbl.Borders.Color = TableGray;
-                tbl.AddColumn(Unit.FromInch(.28));
-                tbl.AddColumn(Unit.FromInch(1.26));
-                tbl.AddColumn(Unit.FromInch(0.9));
+                //tbl.Borders.Color = TableBlack;
+                //tbl.Borders.Color = TableBlack;
+                tbl.Borders.Bottom.Color = TableBlack;
+                tbl.AddColumn(Unit.FromInch(.30));
+                tbl.AddColumn(Unit.FromInch(2.08));
+                tbl.AddColumn(Unit.FromInch(1));
                 tables1.Add(tbl);
             }
 
