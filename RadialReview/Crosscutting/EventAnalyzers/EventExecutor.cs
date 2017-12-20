@@ -2,6 +2,8 @@
 using NHibernate;
 using RadialReview.Crosscutting.EventAnalyzers.Interfaces;
 using RadialReview.Crosscutting.EventAnalyzers.Models;
+using RadialReview.Crosscutting.Hooks.Interfaces;
+using RadialReview.Hooks;
 using RadialReview.Models;
 using System;
 using System.Collections.Generic;
@@ -76,9 +78,10 @@ namespace RadialReview.Crosscutting.EventAnalyzers {
 						if (a.IsEnabled(settings)) {
 							var shouldTrigger = EventProcessor.ShouldTrigger(settings, a);
 
-							//TODO handle the trigger...
-
-							anyExecuted = true;
+                            if (shouldTrigger) {
+                                anyExecuted = true;
+                                await HooksRegistry.Each<IEventHook>((ses, x) => x.HandleEventTriggered(ses, a, settings));
+                            }
 							//Run the analyzer
 						}
 					}
