@@ -173,6 +173,7 @@
     <Compile Include="Crosscutting\Hooks\CrossCutting\SwapScorecardOnRegister.cs" />
     <Compile Include="Crosscutting\Hooks\CrossCutting\ActiveCampaign\ActiveCampaignFirstThreeMeetings.cs" />
     <Compile Include="Crosscutting\Hooks\HookData.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IEventHook.cs" />
     <Compile Include="Crosscutting\Hooks\Meeting\AttendeeHooks.cs" />
     <Compile Include="Crosscutting\Hooks\Meeting\AuditLogHooks.cs" />
     <Compile Include="Crosscutting\Hooks\Meeting\CalculateCumulative.cs" />
