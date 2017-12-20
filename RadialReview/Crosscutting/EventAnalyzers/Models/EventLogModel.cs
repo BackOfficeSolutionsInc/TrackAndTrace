@@ -12,9 +12,9 @@ namespace RadialReview.Crosscutting.EventAnalyzers.Models {
 		public virtual DateTime CreateTime { get; set; }
 		public virtual DateTime? DeleteTime { get; set; }
 
-		public String EventAnalyzerName { get; set; }
-		public DateTime LastRun { get; set; }
-		public EventFrequency Frequency { get; set; }
+		public virtual String EventAnalyzerName { get; set; }
+		public virtual DateTime LastRun { get; set; }
+		public virtual EventFrequency Frequency { get; set; }
 
 		public EventLogModel() {
 			CreateTime = DateTime.UtcNow;
