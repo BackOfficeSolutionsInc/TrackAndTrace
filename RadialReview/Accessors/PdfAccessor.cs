@@ -1671,7 +1671,7 @@ namespace RadialReview.Accessors
             if (addVTO && vto != null)
             {
                 table = section.AddTable();
-                column = table.AddColumn(Unit.FromInch(5.0));
+                column = table.AddColumn(Unit.FromInch(1));
                 column.Format.Alignment = ParagraphAlignment.Left;
 
                 table.AddColumn(Unit.FromInch(5.0));
@@ -2118,7 +2118,6 @@ namespace RadialReview.Accessors
             var table = section.AddTable();
             if (list.Count == 2)
             {
-
                 table.Rows.LeftIndent = Unit.FromInch(1.60);
             }
             else if (list.Count == 1) {

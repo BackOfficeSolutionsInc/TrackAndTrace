@@ -2,186 +2,196 @@
 @model RadialReview.Models.LoginViewModel
 
 @{
-	ViewBag.Title = "Traction Tools - EOS Software for your business";
-	ViewBag.FullLogo = true;
+    ViewBag.Title = "Traction Tools - EOS Software for your business";
+    ViewBag.FullLogo = true;
 }
 
-@using (Html.BeginStyles()) {
+@using (Html.BeginStyles())
+{
 
-	<meta name="description" content="Using EOS in your business? Traction Tools gets you. We've made productivity easy with software for Level 10 Meetings, V/TO, Accountability and more." />
-	<meta name="keywords" content="Traction, tractiontools, traction tools, EOS model, EOS, Traction Software" />
+    <meta name="description" content="Using EOS in your business? Traction Tools gets you. We've made productivity easy with software for Level 10 Meetings, V/TO, Accountability and more." />
+    <meta name="keywords" content="Traction, tractiontools, traction tools, EOS model, EOS, Traction Software" />
 }
 
-@using (Html.BeginStyles()) {
-	<style>
-		/*{
-			background-color: #1f1e1d;
-		}*/
-		html,
-		body {
-			background-color: #ef7622;
-		}
+@using (Html.BeginStyles())
+{
+    <style>
+        /*{
+            background-color: #1f1e1d;
+        }*/
+        html,
+        body {
+            background-color: #ef7622;
+        }
 
-		.validation-summary-errors {
-			color: #F7EBEB;
-		}
+        .validation-summary-errors {
+            color: #F7EBEB;
+        }
 
-		.logo-container {
-			text-align: center;
-		}
+        .logo-container {
+            text-align: center;
+        }
 
-			.logo-container img {
-				width: 100%;
-			}
+            .logo-container img {
+                width: 100%;
+            }
 
-		.btn {
-			font-size: 16px;
-		}
+        .btn {
+            font-size: 16px;
+        }
 
-		#loginForm {
-			top: 98px;
-			position: relative;
-		}
+        #loginForm {
+            top: 98px;
+            position: relative;
+        }
 
-		#loginContainer {
-			margin-top: 4%;
-			position: relative;
-		}
+        #loginContainer {
+            margin-top: 4%;
+            position: relative;
+        }
 
-		.alert {
-			background-color: white;
-			color: #ef7622;
-			border: none;
-			border-radius: 0px;
-		}
+        .alert {
+            background-color: white;
+            color: #ef7622;
+            border: none;
+            border-radius: 0px;
+        }
 
 
-		.special-offer sup{
+        .special-offer sup {
+            font-size: 64%;
+        }
 
-			font-size: 64%;
-		}
+        .font-style {
+            font-size: 16px;
+            color: #ffffff  !important;
+        }
 
-		/*.special-offer {
-			/*font-weight: bold;*
-			color: white;
-			text-transform: uppercase;
-		}*/
-	</style>
+        /*.special-offer {
+            /*font-weight: bold;*
+            color: white;
+            text-transform: uppercase;
+        }*/
+    </style>
 }
 
 <div id="loginContainer">
-	<div class="row">
+    <div class="row">
 
-		<div class=" col-md-12">
-			@if (ViewBag.Message != null) {
-				<div class="alert alert-danger">
-					<button type="button" class="close" data-dismiss="alert">&times;</button>
-					<strong>Error!</strong> @ViewBag.Message
-				</div>
-			}
-			@if (ViewBag.Info != null) {
-				<div class="alert alert-info">
-					<button type="button" class="close" data-dismiss="alert">&times;</button>
-					<strong>Info!</strong> @ViewBag.Info
-				</div>
-			}
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-6">
-			<div class="logo-container">
-				<img src="~/Content/img/TRACTION-TOOLS_large_stacked_wh.png" />
-			</div>
-		</div>
-		<div class="col-md-6">
-			<section id="loginForm">
-				@using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" })) {
-					@Html.AntiForgeryToken()
-					@Html.ValidationSummary(true)
-					<div class="form-group">
-						@Html.Label("Email", new { @class = "col-md-2 control-label" })
-						<div class="col-md-10">
-							@Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
-							@Html.ValidationMessageFor(m => m.UserName)
-						</div>
-					</div>
-					<div class="form-group">
-						@Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
-						<div class="col-md-10">
-							@Html.PasswordFor(m => m.Password, new { @class = "form-control password" })
-							@Html.ValidationMessageFor(m => m.Password)
-						</div>
-					</div>
+        <div class=" col-md-12">
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <strong>Error!</strong> @ViewBag.Message
+                </div>
+            }
+            @if (ViewBag.Info != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <strong>Info!</strong> @ViewBag.Info
+                </div>
+            }
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="logo-container">
+                <img src="~/Content/img/TRACTION-TOOLS_large_stacked_wh.png" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <section id="loginForm">
+                @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                    <div class="form-group">
+                        @Html.Label("Email", new { @class = "col-md-2 control-label font-style" })
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.UserName)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label font-style" })
+                        <div class="col-md-10">
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control password" })
+                            @Html.ValidationMessageFor(m => m.Password)
+                        </div>
+                    </div>
 
-					<div class="form-group">
-						<div class="col-md-offset-2 col-md-3 col-xs-offset-0 alignCenter alignLeft-md">
-							<input type="submit" value="LOG IN" class="btn btn-primary btn-invert" />
-						</div>
-						<div class="col-md-4 alignCenter">
-							<div class="checkbox" style="color:white;font-weight: bold;">
-								@Html.CheckBoxFor(m => m.RememberMe)
-								@Html.LabelFor(m => m.RememberMe)
-							</div>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-offset-2 col-md-8 clickable">
-							@Html.ActionLink("Forgot my password", "ResetPassword", new { returnUrl = ViewBag.ReturnUrl },new { style="font-size:16px;"})
-						</div>
-					</div>
-					@*<p>
-							or @Html.ActionLink("Register", "Register", new { returnUrl = ViewBag.ReturnUrl }) if you don't have a Radial account.
-						</p>*@
-				}
-			</section>
-		</div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-3 col-xs-offset-0 alignCenter alignLeft-md">
+                            <input type="submit" value="LOG IN" class="btn btn-primary btn-invert" />
+                        </div>
+                        <div class="col-md-4 alignCenter">
+                            <div class="checkbox font-style" style="color:white;font-weight: bold;">
+                                @Html.CheckBoxFor(m => m.RememberMe)
+                                @Html.LabelFor(m => m.RememberMe)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-offset-2 col-md-8 clickable">
+                            @Html.ActionLink("Forgot my password", "ResetPassword", new { returnUrl = ViewBag.ReturnUrl }, new { @class = "font-style" })
+                        </div>
+                    </div>
+                    @*<p>
+                            or @Html.ActionLink("Register", "Register", new { returnUrl = ViewBag.ReturnUrl }) if you don't have a Radial account.
+                        </p>*@
+                }
+            </section>
+        </div>
 
-		@*
-			<!--div class="col-md-4">
-				<section id="socialLoginForm">
-					@Html.Partial("_ExternalLoginsListPartial", new { Action = "ExternalLogin", ReturnUrl = ViewBag.ReturnUrl })
-				</section>
-			</div-->*@
-	</div>
+        @*
+            <!--div class="col-md-4">
+                <section id="socialLoginForm">
+                    @Html.Partial("_ExternalLoginsListPartial", new { Action = "ExternalLogin", ReturnUrl = ViewBag.ReturnUrl })
+                </section>
+            </div-->*@
+    </div>
 
 </div>
 
 
 <div class="alignCenter no-ios" style="padding-top: 90px;">
-	<a class="btn btn btn-primary btn-invert" id="learnMore" href="http://mytractiontools.com"> Learn more about Traction Tools</a>
+    <a class="btn btn btn-primary btn-invert" id="learnMore" href="http://mytractiontools.com"> Learn more about Traction Tools</a>
 </div>
 
 <br />
 <br />
 @{
-	if (ViewBag.SpecialOffer != null) {
-		<div class="special-offer">
-			@(new HtmlString(ViewBag.SpecialOffer))
-		</div>
-	}
+    if (ViewBag.SpecialOffer != null)
+    {
+        <div class="special-offer">
+            @(new HtmlString(ViewBag.SpecialOffer))
+        </div>
+    }
 }
 <div class="row">
-	<div class="col-md-6"></div>
-	<div class="col-md-6"></div>
+    <div class="col-md-6"></div>
+    <div class="col-md-6"></div>
 </div>
 
 @section Scripts {
-	@Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryval")
 
-	<script>
+    <script>
 
-		$("body").on("click", "#registerLink", function (e) {
-			e.preventDefault();
-			setTimeout(function () {
-				window.location = "/getstarted";
-			}, 130);
+        $("body").on("click", "#registerLink", function (e) {
+            e.preventDefault();
+            setTimeout(function () {
+                window.location = "/getstarted";
+            }, 130);
 
-			$("html").css({ backgroundColor: "rgb(31, 30, 29)" });
-			$("body").animate({ backgroundColor: "rgba(239,118,34,0)" }, 150);
-			$("#loginForm,.navbar,#footer").animate({ opacity: 0 }, 150);
-			$("#learnMore").animate({ opacity: 0 }, 5);
-		});
+            $("html").css({ backgroundColor: "rgb(31, 30, 29)" });
+            $("body").animate({ backgroundColor: "rgba(239,118,34,0)" }, 150);
+            $("#loginForm,.navbar,#footer").animate({ opacity: 0 }, 150);
+            $("#learnMore").animate({ opacity: 0 }, 5);
+        });
 
-	</script>
+    </script>
 
 }
