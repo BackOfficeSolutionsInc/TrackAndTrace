@@ -1137,10 +1137,6 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
                 }
             };
             var clickRemoveNode = function (d) {
-                console.log(d);
-
-                return false;
-
                 if (d.Id) {
                     if ((d._children && d._children.length) || (d.children && d.children.length)) {
                         showModal({
