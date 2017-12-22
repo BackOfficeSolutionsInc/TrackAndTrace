@@ -294,6 +294,9 @@
                             @if (!(ViewBag.IsLogin ?? false)) {
                                 Html.RenderPartial("_LoginPartial", (string)ViewBag.ReturnUrl);
                             }
+                             <div class="beta-only">
+                                 <a href="/redirect/feedback"><span class="feedback-smile"></span></a>
+                             </div>
                         </div>
                     </div>
                 </div>

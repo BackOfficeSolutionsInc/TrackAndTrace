@@ -1198,6 +1198,9 @@ body.beta .beta-only.beta-label {
 body.beta .beta-only.beta-label:hover {
   color: white;
 }
+body.beta .beta-only .feedback-smile {
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QwUER8DQvDZLQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAABCUlEQVQ4y82VO27CQBCGv9kABVwCDgClD0BFg8gREMdwWuAYiCNg0aTyAShoXKOglPRJY4elWBtZ67VkyEbKSCvt85Pmn8cKNaYP4x0wBZR1dAX2EsSvrndSA5rRzCIbLBbsC+jymH1LEPcqwCdhFagqufksDKCbM+6CVzT7vJjRdL9gSF0QJm9GjfeVbrRfBEnlqeHLpqIPY+0RWEnafw5Mf+B4MsIfT2aN5LeUmTvvWMBrsWi/wLAP64Um3AjJGdIM0GakGSRnCDfCeqEZ9s2bcp070ybNIPmAcCtOt5ZzzWgAnZajtvNK8RJpCWIpNIw88KI/aQ7e25eyNOg96H5Uhjk79m+/gBuD5HVmlKlcKwAAAABJRU5ErkJggg==');
+}
 @media print {
   .body-content {
     padding: 0px;
