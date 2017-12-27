@@ -1172,32 +1172,35 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
             };
 
             var printNode = function (d) {
-                console.log(d);
-                if (d.Id) {
-                    var ajax = {
-                        url: "/pdf/ac?fit=" + false + "&pw=11&ph=8.5&selected=" + d.Id,
-                        method: "POST",
-                        dataType: 'native',
-                        xhrFields: {
-                            responseType: 'blob'
-                        },
-                        contentType: "application/json; charset=utf-8",
-                        //processData: true,
-                        success: function (blob) {
-                            console.log(blob.size);
-                            var link = document.createElement('a');
-                            link.href = window.URL.createObjectURL(blob);
-                            link.download = "Accountability Chart.pdf";
-                            link.click();
-                        }, error: function (D) {
-                            showAlert("An error occurred");
-                        }
-                    };
-                    $.ajax(ajax);
-                }
-                else {
-                    throw "node id requires"
-                }
+
+                genPdf(true);
+
+                //console.log(d);
+                //if (d.Id) {
+                //    var ajax = {
+                //        url: "/pdf/ac?fit=" + false + "&pw=11&ph=8.5&selected=" + d.Id,
+                //        method: "POST",
+                //        dataType: 'native',
+                //        xhrFields: {
+                //            responseType: 'blob'
+                //        },
+                //        contentType: "application/json; charset=utf-8",
+                //        //processData: true,
+                //        success: function (blob) {
+                //            console.log(blob.size);
+                //            var link = document.createElement('a');
+                //            link.href = window.URL.createObjectURL(blob);
+                //            link.download = "Accountability Chart.pdf";
+                //            link.click();
+                //        }, error: function (D) {
+                //            showAlert("An error occurred");
+                //        }
+                //    };
+                //    $.ajax(ajax);
+                //}
+                //else {
+                //    throw "node id requires"
+                //}
             };
 
             function onClickKey(func) {
