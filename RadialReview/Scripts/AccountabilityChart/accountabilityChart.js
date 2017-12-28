@@ -73,7 +73,7 @@ function generateAccNodes() {
 	return copy;
 }
 
-var genPdf = function (val) {
+var genPdf = function (val,nodeId) {
 
 	function compactify(shouldCompact) {
 		angular.element($("[ng-controller]")).scope().$apply(function () {
@@ -87,7 +87,7 @@ var genPdf = function (val) {
 			{ text: "Height (inches)", name: "ph", type: "text", value: 8.5 },
 			{ text: "Scale to one page", name: "fit", type: "checkbox", value: false },
             { text: "Compress Chart", name: "compact", type: "checkbox", value: false, onchange: function () { compactify($(this).is(":checked")); } },
-            { text: "Department Wise", name: "department", type: "checkbox", value: false }
+            { text: "Department per page", name: "department", type: "checkbox", value: false }
 	];
 
 	var selected = null;
@@ -127,7 +127,7 @@ var genPdf = function (val) {
         else {
             fields.push({
                 text: " ", name: "which", type: "radio", options: [
-                    { value: "full", text: "All Child", checked: true },
+                    { value: "full", text: "All Children", checked: true },
                     { value: "visible", text: "Only visible" }
                 ]
             });
@@ -168,7 +168,10 @@ var genPdf = function (val) {
 			}
 			if (d.which === "selected") {
 				ajax.url += "&selected=" + selected;
-			}
+            }
+            if (nodeId > 0) {
+                ajax.url += "&selected=" + nodeId;
+            }
 
 			$.ajax(ajax);
 		},

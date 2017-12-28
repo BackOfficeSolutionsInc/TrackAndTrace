@@ -105,7 +105,7 @@ namespace RadialReview.Controllers
 
 
                         merger.AddDocs(AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(nodes, pw.Value, ph.Value, restrictSize: fit, settings: settings));
-                        pdf = merger.Flatten("", true, false, GetUser().Organization.Settings.GetDateFormat(), "");
+                        pdf = merger.Flatten("", false, false);
                     }
                 }
 
@@ -136,7 +136,7 @@ namespace RadialReview.Controllers
 
 
                         merger.AddDocs(AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(nodes, pw.Value, ph.Value, restrictSize: fit, settings: settings));
-                        pdf = merger.Flatten("", true, true, GetUser().Organization.Settings.GetDateFormat(), "");
+                        pdf = merger.Flatten("", false, false);
                     }
                 }
 

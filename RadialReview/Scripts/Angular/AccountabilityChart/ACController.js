@@ -1173,7 +1173,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 
             var printNode = function (d) {
 
-                genPdf(true);
+                genPdf(true,d.Id);
 
                 //console.log(d);
                 //if (d.Id) {
