@@ -164,11 +164,17 @@
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\EventExecutor.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Events\Base\BaseL10EventAnalyzers.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Events\ConsecutiveLateEnds.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Events\ConsecutiveLateStarts.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Events\DaysWithoutL10.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Events\AverageMeetingRatingBelowForWeeksInARow.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Events\TodoCompletionConsecutiveWeeks.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Models\EventLogModel.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Models\IEventAnalyzer.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Searchers\SearchL10Meeting.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Searchers\SearchL10RecurrenceIds.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Searchers\SearchLeadershipL10RecurrenceIds.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Searchers\SearchPageTimers.cs" />
     <Compile Include="Crosscutting\Hooks\CrossCutting\CreateFinancialPermItems.cs" />
     <Compile Include="Crosscutting\Hooks\CrossCutting\SwapScorecardOnRegister.cs" />
     <Compile Include="Crosscutting\Hooks\CrossCutting\ActiveCampaign\ActiveCampaignFirstThreeMeetings.cs" />

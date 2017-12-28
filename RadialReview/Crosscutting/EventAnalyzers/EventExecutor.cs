@@ -57,7 +57,7 @@ namespace RadialReview.Crosscutting.EventAnalyzers {
 				.List<long>().ToList();
 
 			foreach (var a in analyzers) {
-				var f = a.GetFrequency();
+				var f = a.GetExecutionFrequency();
 				var after = now.Subtract(f);
 				var type = ForModel.GetModelType(a.GetType());
 

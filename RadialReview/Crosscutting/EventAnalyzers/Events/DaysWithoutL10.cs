@@ -12,7 +12,7 @@ using RadialReview.Models.Enums;
 namespace RadialReview.Crosscutting.EventAnalyzers.Events {
 	public class DaysWithoutL10 : BaseLeadershipTeamL10EventAnalyzer {
 		
-		public override EventFrequency GetFrequency() {
+		public override EventFrequency GetExecutionFrequency() {
 			return EventFrequency.Weekly;
 		}
 		
