@@ -159,7 +159,11 @@
     <Compile Include="Controllers\AbstractController\BaseExpensiveController.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
+    <Compile Include="Crosscutting\Flags\OrganizationFlag.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IOrganizationFlagHook.cs" />
     <Compile Include="Hooks\CrossCutting\CreateFinancialPermItems.cs" />
+    <Compile Include="Hooks\CrossCutting\Payment\ExecutePaymentOnCardUpdate.cs" />
+    <Compile Include="Hooks\CrossCutting\Payment\FirstPaymentEmail.cs" />
     <Compile Include="Hooks\CrossCutting\SwapScorecardOnRegister.cs" />
     <Compile Include="Hooks\CrossCutting\ActiveCampaign\ActiveCampaignFirstThreeMeetings.cs" />
     <Compile Include="Hooks\HookData.cs" />
@@ -1228,6 +1232,7 @@
     <Content Include="project.json" />
     <Content Include="Content\Swagger\CustomSwaggerStyle.less" />
     <Compile Include="Hooks\Realtime\L10\RealTime_L10_Headline.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IPaymentHook.cs" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1753,6 +1758,7 @@
     <Content Include="Views\Headlines\EditModal.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\LocalDateTime.cshtml" />
     <Content Include="Views\L10\Pages.cshtml" />
+    <Content Include="Views\ClientSuccess\Close.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

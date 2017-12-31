@@ -76,7 +76,7 @@ namespace RadialReview.Controllers {
 		}
 
 		[Access(AccessLevel.Radial)]
-		public ActionResult FreeUntil(long id, DateTime date) {
+		public JsonResult FreeUntil(long id, DateTime date) {
 
 			var plan = PaymentAccessor.GetPlan(GetUser(), id); 
 			using (var s = HibernateSession.GetCurrentSession()) {

@@ -35,6 +35,8 @@ using NHibernate.Criterion;
 using RadialReview.Models.Reviews;
 using System.Threading.Tasks;
 using RadialReview.Models.ViewModels;
+using RadialReview.Crosscutting.Flags;
+using RadialReview.Crosscutting.Hooks.Interfaces;
 
 namespace RadialReview.Accessors {
 
@@ -1410,5 +1412,71 @@ namespace RadialReview.Accessors {
 				}
 			}
 		}
-	}
+
+        public static async Task SetFlag(UserOrganizationModel caller, long orgId, OrganizationFlagType type, bool enabled) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var perms = PermissionsUtility.Create(s, caller);
+
+                    if (enabled) {
+                        await AddFlag(s, perms, orgId, type);
+                    } else {
+                        await RemoveFlag(s, perms, orgId, type);
+                    }
+
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
+
+        public static async Task RemoveFlag(UserOrganizationModel caller, long orgId, OrganizationFlagType type) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    await RemoveFlag(s, perms, orgId, type);
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
+
+        public static async Task AddFlag(UserOrganizationModel caller, long orgId, OrganizationFlagType type) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    await AddFlag(s, perms, orgId, type);
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
+
+        public static async Task AddFlag(ISession s, PermissionsUtility perms, long orgId, OrganizationFlagType type) {
+            perms.ViewOrganization(orgId);
+            var any = s.QueryOver<OrganizationFlag>().Where(x => x.OrganizationId == orgId && type == x.FlagType && x.DeleteTime == null).RowCount();
+            var user = s.Get<OrganizationModel>(orgId);
+            if (any == 0) {
+                s.Save(new OrganizationFlag() {
+                    OrganizationId = orgId,
+                    FlagType = type,
+                    
+                });
+                await HooksRegistry.Each<IOrganizationFlagHook>((ses, x) => x.AddFlag(ses, orgId, type));
+            }
+        }
+
+        public static async Task RemoveFlag(ISession s, PermissionsUtility perms, long userId, OrganizationFlagType type) {
+            perms.ViewOrganization(userId);
+            var any = s.QueryOver<OrganizationFlag>().Where(x => x.OrganizationId == userId && type == x.FlagType && x.DeleteTime == null).List().ToList();
+            var user = s.Get<UserOrganizationModel>(userId);
+            if (any.Count > 0) {
+                foreach (var a in any) {
+                    a.DeleteTime = DateTime.UtcNow;
+                    s.Update(a);
+                }
+                await HooksRegistry.Each<IOrganizationFlagHook>((ses, x) => x.RemoveFlag(ses, userId, type));
+            }
+        }
+    }
 }
