@@ -89,19 +89,29 @@ namespace RadialReview.Controllers
                     else {
 
                         var nodes = new List<AngularAccountabilityNode>();
-                        var topNodes = tree.Root.GetDirectChildren();
+                        var topNodes = tree.Root.GetDirectChildren(); //tree.Root.children.Where(t => t.Id == selected).FirstOrDefault().GetDirectChildren();
+                        //var tree1 = tree.Root.children.Where(t => t.Id == selected).FirstOrDefault();
+
 
                         //Add nodes from the tree.
                         tree.Dive(x => {
-                            if (x.User != null && x.Id == selected)
+                            if (x.User != null && x.Id == selected) 
                                 nodes.Add(x);
                         });
 
-                        //Setup if has parents
-                        foreach (var n in nodes)
+                        if (nodes.Any())
                         {
-                            n._hasParent = topNodes.All(x => x.Id != n.Id);
+                            foreach (var item in nodes.FirstOrDefault().children)
+                            {
+                                nodes.Add(item);
+                            }
                         }
+
+                        //Setup if has parents
+                        //foreach (var n in nodes)
+                        //{
+                        //    n._hasParent = topNodes.All(x => x.Id != n.Id);
+                        //}
 
 
                         merger.AddDocs(AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(nodes, pw.Value, ph.Value, restrictSize: fit, settings: settings));
