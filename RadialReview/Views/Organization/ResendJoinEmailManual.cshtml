@@ -1,0 +1,34 @@
+﻿@model RadialReview.Models.UserModels.TempUserModel
+
+
+
+
+<div class="row">
+    <div class="col-xs-12"><p>This link must be used for registration of @Model.FirstName @Model.LastName</p></div>
+    <div class="col-xs-12"><p>Do not send this link to anyone else or You should not click this link.</p></div>
+    <div class="col-xs-12"><p><strong>This will cause issues with your account linking with this user.</strong></p></div>
+</div>
+<div class="smallBreak"></div>
+<div class="row">
+    <div class="col-xs-12">Copy below text and email to @Model.Email for registration process.</div>
+</div>
+<div class="smallBreak"></div>
+<div class="row">
+    <div class="row">
+        <div class="col-xs-12" style="padding:30px;">
+            @Html.Raw(Model.EmailTemplate)
+            @*<textarea class="form-control">
+              @Html.Raw(Model.EmailTemplate)
+           </textarea>*@
+        </div>
+    </div>
+</div>
+@if (ViewBag.IsRadialAdmin == true) {
+<div style="color:white;font-size:4px;">https://traction.tools/Account/Register?returnUrl=%2FOrganization%2FJoin%2F@(Model.Guid)</div>
+}
+@Html.Hidden("TempId", "" + Model.Id)
+@Html.HiddenFor(x => x.Guid)
+@Html.HiddenFor(x => x.EmailStatus)
+@Html.HiddenFor(x => x.UserOrganizationId)
+@Html.HiddenFor(x => x.EmailStatusUnseen)
+@Html.HiddenFor(x => x.LastSentByUserId)
