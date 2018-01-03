@@ -38,8 +38,14 @@ namespace RadialReview.Utilities.DataTypes
 			return new DateRange(time, time);
 		}
 
+        public static DateRange Full() {
+            return new DateRange(DateTime.MinValue, DateTime.MaxValue);
+        }
 
-	}
+        public static DateRange CopyFrom(DateRange range) {
+            return new DateRange(range.StartTime, range.EndTime);
+        }
+    }
 	public static class DateRangeExtensions {
 
         /// <summary>

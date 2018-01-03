@@ -122,5 +122,9 @@
   {
     "outputFile": "Content/Swagger/CustomSwaggerStyle.css",
     "inputFile": "Content/Swagger/CustomSwaggerStyle.less"
+  },
+  {
+    "outputFile": "Content/Inputs/TagInput.css",
+    "inputFile": "Content/Inputs/TagInput.less"
   }
 ]

@@ -1209,6 +1209,16 @@ body.resizing .notes-tile:after,
 .dashboard .scorecard table .direction {
   cursor: pointer;
 }
+.dashboard .scorecard table .edit-formula {
+  float: right;
+}
+.dashboard .scorecard table .edit-formula:after {
+  content: "(f)";
+  color: lightgray;
+  position: absolute;
+  margin-top: 7px;
+  font-size: 80%;
+}
 .dashboard .scorecard table .score input {
   padding-left: 0px !important;
   padding-right: 10px !important;

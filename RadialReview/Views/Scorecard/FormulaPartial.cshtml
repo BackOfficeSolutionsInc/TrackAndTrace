@@ -1,0 +1,96 @@
+﻿@model RadialReview.Controllers.ScorecardController.FormulaParts
+@{
+    var guid = Guid.NewGuid().ToString().Replace("-", "");
+}
+@Scripts.Render("~/bundles/taginput")
+@Styles.Render("~/styles/taginput")
+
+@Model.ForMeasurable.Title = <div id="@guid" class="taginput taginput-container"></div>
+<input id="val-@guid" type="hidden" name="formula" value="-notset-"/>
+<script>
+    function a@(guid)() {
+        require(['token-editor'], function (TokenEditor) {
+            //debugger;
+            //var autoCompleteItems = [
+            //    { label: 'banana', attrs: { id: '1', color: 'yellow' } },
+            //    { label: 'apple', attrs: { id: '2', color: 'various' } },
+            //    { label: 'orange', attrs: { id: '3', color: 'orange' } },
+            //    { label: 'strawberry', attrs: { id: '4', color: 'red' } },
+            //    { label: 'blueberry', attrs: { id: '5', color: 'blue' } },
+            //    { label: 'apple sauce', attrs: { id: '6', color: 'pale yellow' } },
+            //    { label: 'apple juice', attrs: { id: '7', color: 'pale yellow' } },
+            //];
+
+            var autoCompleteItems = @Html.ArrayToString(Model.VisibleMeasurables.Where(x=>x.Title !=null).Select(x => new {
+                                   label = x.Title,
+                                   attrs = new { id = x.Id, offset = 0 }
+                               }));
+
+            var emptyEditor = new TokenEditor({
+                //items: autoCompleteItems,
+                value: [@Html.ArrayToString(Model.Values)],
+                //options:{
+                autoComplete:{
+                    minLen: 0,
+                    items: autoCompleteItems,
+                    multiLines:false
+                    //maxResults: 4,
+                    //minScore: 0.0
+                }
+                //}
+            });
+
+            document.getElementById('@guid').appendChild(emptyEditor.el)
+            emptyEditor.render()
+
+            setTimeout(function () {
+                emptyEditor.edit(true);
+                emptyEditor.focusEnd();
+            }, 100)
+           // debugger;
+           //$("#modalForm")
+           emptyEditor.on("blur",function(){
+                var json=emptyEditor.toJSON()[0];
+                var builder = "";
+               // debugger;
+                if(typeof(json)!=="undefined"){
+                    for(var i = 0;i<json.length;i++){
+                        var a = json[i];
+                        if (typeof(a)==="string"){
+                            builder+=a;
+                        }else{
+                            builder+="["+a.attrs.id+"("+a.attrs.offset+")]";
+                        }
+                    }
+                }
+
+                $("#val-@guid").val(builder);
+            });
+
+            //$('#modal').one('hidden.bs.modal', function () {
+            //    debugger;
+            //    $("#modalForm").off(".formula");
+            //})
+
+            //var prefilledValue = [["I would like a ",{"label":"banana","attrs":{"id":"1","color":"yellow"}},", but not an ",{"label":"apple","attrs":{"id":"2","color":"various"}},"."],["A few ",{"label":"strawberry","attrs":{"id":"4","color":"red"}},"s would be nice too!"]];
+            //window.prefilledEditor = new TokenEditor({items: autoCompleteItems, value: prefilledValue});
+            //document.getElementById('prefilled').appendChild( prefilledEditor.el )
+            //prefilledEditor.render()
+            //window.prefilledString = function(){
+            //	document.getElementById('prefilled-json').innerHTML = prefilledEditor.toString();
+            //}
+            //window.prefilledJSON = function(){
+            //	document.getElementById('prefilled-json').innerHTML = JSON.stringify(prefilledEditor.toJSON(), null, "  ")
+            //}
+        });
+    }
+
+    function defer@(guid)() {
+        if (window.jQuery)
+            a@(guid)();
+        else
+            setTimeout(function () { defer@(guid)() }, 50);
+    }
+    defer@(guid)();
+
+</script>

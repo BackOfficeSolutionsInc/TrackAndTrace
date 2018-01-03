@@ -30,25 +30,34 @@ namespace RadialReview.Hooks.Realtime.L10 {
 			return HookPriority.UI;
 		}
 
-		public async Task UpdateScore(ISession s, ScoreModel score, IScoreHookUpdates updates) {
-			if (updates.ValueChanged) {
-				var recurIds = RealTimeHelpers.GetRecurrencesForScore(s, score);
+		public async Task UpdateScores(ISession s, List<ScoreAndUpdates> scoreAndUpdates) {
+            
+            foreach (var sau in scoreAndUpdates) {
+                var updates = sau.updates;
+                var score = sau.score;
+                if (updates.ValueChanged) {
+                    var connection = RealTimeHelpers.GetConnectionString();
+                    if (updates.Calculated)
+                        connection = null;
 
-				var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-				var groupIds = recurIds.Select(rid => MeetingHub.GenerateMeetingGroupId(rid)).ToList();
+                    var recurIds = RealTimeHelpers.GetRecurrencesForScore(s, score);
 
-				groupIds.Add(MeetingHub.GenerateUserId(score.AccountableUserId));
-				groupIds.Add(MeetingHub.GenerateUserId(score.Measurable.AdminUserId));
-				var group = hub.Clients.Groups(groupIds, RealTimeHelpers.GetConnectionString());
+                    var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+                    var groupIds = recurIds.Select(rid => MeetingHub.GenerateMeetingGroupId(rid)).ToList();
+
+                    groupIds.Add(MeetingHub.GenerateUserId(score.AccountableUserId));
+                    groupIds.Add(MeetingHub.GenerateUserId(score.Measurable.AdminUserId));
+                    var group = hub.Clients.Groups(groupIds, connection);
 
 
-				var toUpdate = new AngularScore(score, updates.AbsoluteUpdateTime, false);
-				group.receiveUpdateScore(toUpdate); //L10 Updater
+                    var toUpdate = new AngularScore(score, updates.AbsoluteUpdateTime, false);
+                    group.receiveUpdateScore(toUpdate); //L10 Updater
 
-				toUpdate.DateEntered = score.Measured == null ? Removed.Date() : DateTime.UtcNow;
-				toUpdate.Measured = toUpdate.Measured ?? Removed.Decimal();
-				group.update(new AngularUpdate() { toUpdate });
-			}
+                    toUpdate.DateEntered = score.Measured == null ? Removed.Date() : DateTime.UtcNow;
+                    toUpdate.Measured = toUpdate.Measured ?? Removed.Decimal();
+                    group.update(new AngularUpdate() { toUpdate });
+                }
+            }
 		}
 
 		public async Task AttachMeasurable(ISession s, UserOrganizationModel caller, MeasurableModel measurable, L10Recurrence.L10Recurrence_Measurable recurMeasurable) {

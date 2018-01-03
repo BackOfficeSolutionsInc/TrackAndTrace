@@ -159,6 +159,7 @@
     <Compile Include="Controllers\AbstractController\BaseExpensiveController.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
+    <Compile Include="Crosscutting\Hooks\CrossCutting\Formula\CascadeScorecardUpdates.cs" />
     <Compile Include="Hooks\CrossCutting\CreateFinancialPermItems.cs" />
     <Compile Include="Hooks\CrossCutting\SwapScorecardOnRegister.cs" />
     <Compile Include="Hooks\CrossCutting\ActiveCampaign\ActiveCampaignFirstThreeMeetings.cs" />
@@ -868,6 +869,7 @@
     <Compile Include="Utilities\FileUtilities.cs" />
     <Compile Include="Utilities\DistanceUtility.cs" />
     <Compile Include="Utilities\ForModelUtil.cs" />
+    <Compile Include="Utilities\FormulaUtility.cs" />
     <Compile Include="Utilities\GraphUtility.cs" />
     <Compile Include="Utilities\HashUtil.cs" />
     <Compile Include="Utilities\Hooks\IAccountEvent.cs" />
@@ -1042,6 +1044,9 @@
     <Content Include="Content\favicon-local.ico" />
     <Content Include="Content\GettingStarted\GettingStarted.css">
       <DependentUpon>GettingStarted.less</DependentUpon>
+    </Content>
+    <Content Include="Content\Inputs\TagInput.css">
+      <DependentUpon>TagInput.less</DependentUpon>
     </Content>
     <Content Include="Content\People\MaterialRadio.css">
       <DependentUpon>MaterialRadio.less</DependentUpon>
@@ -1228,6 +1233,7 @@
     <Content Include="project.json" />
     <Content Include="Content\Swagger\CustomSwaggerStyle.less" />
     <Compile Include="Hooks\Realtime\L10\RealTime_L10_Headline.cs" />
+    <Content Include="Content\Inputs\TagInput.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1287,6 +1293,16 @@
     <Content Include="Scripts\home\screenshot.js" />
     <Content Include="Scripts\home\landscape.js" />
     <Content Include="Scripts\home\pretty-json.min.js" />
+    <Content Include="Scripts\Inputs\backbone.min.js" />
+    <Content Include="Scripts\Inputs\backbone.subviews.js" />
+    <Content Include="Scripts\Inputs\bullseye.js" />
+    <Content Include="Scripts\Inputs\jquery.min.js" />
+    <Content Include="Scripts\Inputs\liquidmetal.js" />
+    <Content Include="Scripts\Inputs\list.png" />
+    <Content Include="Scripts\Inputs\require.js" />
+    <Content Include="Scripts\Inputs\token-editor.js" />
+    <Content Include="Scripts\Inputs\underscore.min.js" />
+    <Content Include="Scripts\Inputs\underscore.string.min.js" />
     <Content Include="Scripts\jquery\jquery.autoresize.min.js">
       <DependentUpon>jquery.autoresize.js</DependentUpon>
     </Content>
@@ -1753,6 +1769,7 @@
     <Content Include="Views\Headlines\EditModal.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\LocalDateTime.cshtml" />
     <Content Include="Views\L10\Pages.cshtml" />
+    <Content Include="Views\Scorecard\FormulaPartial.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -2468,6 +2485,7 @@
     <Folder Include="Areas\CoreProcess\CamundaFiles\" />
     <Folder Include="Areas\People\Engines\Surveys\Abstract\" />
     <Folder Include="Content\fonts\fonts\" />
+    <Folder Include="Crosscutting\Hooks\CrossCutting\ActiveCampaign\" />
     <Folder Include="External\" />
     <Folder Include="logs\" />
     <Folder Include="Models\Notifications\" />
@@ -2680,7 +2698,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>3751</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:44301</IISUrl>
+          <IISUrl>http://localhost:44302</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>http://radial.elasticbeanstalk.com/</CustomServerUrl>

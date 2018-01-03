@@ -6,6 +6,7 @@
 			list-style-type: decimal;
 		}
 	</style>
+    @Styles.Render("~/styles/snackbar")
 }
 @{
 	var edit = Model.Editable;//Model.User.GetPersonallyManaging() || Model.ManagingOrganization;
@@ -166,6 +167,7 @@
 										<tr>
 											<th style="width: 40px;"></th>
 											<th>Admin for measurables</th>
+                                            <th></th>
 											<th style="width: 90px;" class="alignCenter">Weekly Goal</th>
 											<th style="width: 160px;" class="alignCenter">Owner</th>
 											<th style="width:20px"></th>
@@ -182,6 +184,8 @@
 														<span class="icon fontastic-icon-link-2 template-link" title="This measurable was created by a template."></span>
 													}
 												</td>
+                                                <td class="shift-hidden"></td>
+                                                <td class="shift-visible gray small nowrap"><span class="clickable" onclick="showFormula(@r.Id)">(edit formula)</span></td>
 												<td class="alignCenter">@r.GoalDirection.GetDisplayName() @r.Goal.ToString("0.#####")</td>
 												<td class="alignCenter"><a href="/Manage/UserDetails/@r.AccountableUserId">@r.AccountableUser.NotNull(x => x.GetName())</a></td>
 												<td>
@@ -219,6 +223,11 @@
 </div>
 
 <script>
+
+    
+    function showFormula(id) {
+        showModal("Edit formula", "/scorecard/formulapartial/" + id, "/scorecard/setformula?id=" + id, null, null, function () { showAlert("Formula updated"); });
+    }
 	
 	function removeRock(id) {
 		$.ajax("/api/v1/rocks/" + id, {

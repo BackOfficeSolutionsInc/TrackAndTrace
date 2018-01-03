@@ -23,6 +23,11 @@ $(function () {
 	});
 
 });
+
+function showFormula(id) {
+    showModal("Edit formula", "/scorecard/formulapartial/" + id, "/scorecard/setformula?id=" + id, null, null, function () { showAlert("Formula updated"); });
+}
+
 function blurChangeTimeout(key, self, d, i, executeNow) {
 	if (typeof (executeNow) === "undefined") {
 		executeNow = false;
