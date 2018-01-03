@@ -1,4 +1,10 @@
-﻿.taginput .token-editor {
+﻿.taginput {
+  /*.token-editor .token:after{
+        content : attr(data-content);
+        color:red;
+    }*/
+}
+.taginput .token-editor {
   background: transparent;
   position: relative;
   padding: .5em;
@@ -57,6 +63,17 @@
 .taginput .token-editor[contenteditable=true] .token > span {
   background: darkgray;
   color: #fff;
+}
+.taginput .token-editor[contenteditable=true] .token > span:after {
+  content: "\25BE";
+  top: 1px;
+  position: relative;
+  right: -2px;
+  color: lightgrey;
+  cursor: pointer;
+}
+.taginput .token-editor[contenteditable=true] .token > span:after:hover {
+  color: white;
 }
 .taginput .token-editor .token:focus {
   outline: none;

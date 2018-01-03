@@ -1081,16 +1081,16 @@ namespace RadialReview.Accessors {
                 end = scores.Max(x => x.ForWeek);
             }
 
-            var minOffset = 0;
-            var maxOffset = 0;
+            //var minOffset = 0;
+            //var maxOffset = 0;
 
-            if (measurables.Any()) {
-                minOffset = measurables.Min(x => x.Offset);
-                maxOffset = measurables.Max(x => x.Offset);
-            }
+            //if (measurables.Any()) {
+            //    minOffset = measurables.Min(x => x.Offset);
+            //    maxOffset = measurables.Max(x => x.Offset);
+            //}
 
-            i = Math2.Min(i, TimingUtility.PeriodsFromNow(i, minOffset, ScorecardPeriod.Weekly));
-            end = Math2.Max(i, TimingUtility.PeriodsFromNow(end, maxOffset, ScorecardPeriod.Weekly));
+            //i = Math2.Min(i, TimingUtility.PeriodsFromNow(i, minOffset, ScorecardPeriod.Weekly));
+            //end = Math2.Max(i, TimingUtility.PeriodsFromNow(end, maxOffset, ScorecardPeriod.Weekly));
 
             i = TimingUtility.ToScorecardDate(i);
             end = TimingUtility.ToScorecardDate(end);
@@ -1145,12 +1145,16 @@ namespace RadialReview.Accessors {
             var variablesLookup = new DefaultDictionary<long, ParsedFormula>(x => FormulaUtility.Parse(measurableLookup[x].Formula));
 
             var dataNeeded = scores.SelectMany(c => {
-                return GetVariables(variablesLookup[c.MeasurableId]).Select(x => new { measurableId = x.MeasurableId, weekId = TimingUtility.GetWeekSinceEpoch(c.ForWeek) });
+                return GetVariables(variablesLookup[c.MeasurableId])
+                            .Select(x => new {
+                                measurableId = x.MeasurableId,
+                                weekId = TimingUtility.GetWeekSinceEpoch(c.ForWeek) + x.Offset
+                            });
             }).Distinct().ToList();
 
 
             //Get queries for data needed for calculations
-            IEnumerable<object[]> actualScoreDataQ;
+            IEnumerable<ScoreModel> actualScoreDataQ;
             {
                 var criteria = s.CreateCriteria<ScoreModel>();
                 var ors = Restrictions.Disjunction();
@@ -1161,17 +1165,25 @@ namespace RadialReview.Accessors {
                     ors.Add(ands);
                 }
                 criteria.Add(ors);
-                actualScoreDataQ = criteria.SetProjection(
-                        Projections.Property<ScoreModel>(x => x.ForWeek),
-                        Projections.Property<ScoreModel>(x => x.MeasurableId),
-                        Projections.Property<ScoreModel>(x => x.Measured)
-                    ).Future<object[]>();
+                actualScoreDataQ = criteria.Future<ScoreModel>();
+                //.SetProjection(
+                //    Projections.Property<ScoreModel>(x => x.ForWeek),
+                //    Projections.Property<ScoreModel>(x => x.MeasurableId),
+                //    Projections.Property<ScoreModel>(x => x.Measured)
+                //)
             }
+            var actualScores = actualScoreDataQ.ToList();
+           
 
-            var actualData = actualScoreDataQ.Select(x => new {
-                week = TimingUtility.GetWeekSinceEpoch((DateTime)x[0]),
-                measurableId = (long)x[1],
-                measured = (decimal?)x[2]
+
+            var genOnlyData = dataNeeded.Select(x => Tuple.Create(TimingUtility.GetDateSinceEpoch(x.weekId), x.measurableId)).Distinct().ToList();
+            var gen = await _GenerateScoreModels_AddMissingScores_Unsafe(s, genOnlyData, actualScores);
+            actualScores.AddRange(gen);
+
+            var actualData = actualScores.Select(x => new {
+                week = TimingUtility.GetWeekSinceEpoch(x.ForWeek),//(DateTime)x[0]),
+                measurableId = x.MeasurableId,//(long)x[1],
+                measured = x.Measured,//(decimal?)x[2]
             }).ToList();
 
             var scoreLookup = actualData.GroupBy(x => x.measurableId).ToDictionary(x => x.Key, x => x.ToDefaultDictionary(y => y.week, y => (double?)y.measured, y => null));

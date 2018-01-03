@@ -59,8 +59,8 @@
 
     .token-editor .token {
         position: relative;
-        padding-left:2px;
-        padding-right:1px;
+        padding-left: 2px;
+        padding-right: 1px;
     }
 
     .token-editor .token > span {
@@ -73,6 +73,23 @@
     .token-editor[contenteditable=true] .token > span {
         background: darkgray;
         color: #fff;
+    }
+    
+    /*.token-editor .token:after{
+        content : attr(data-content);
+        color:red;
+    }*/
+
+    .token-editor[contenteditable=true] .token > span:after {
+        content: "\25BE";
+        top: 1px;
+        position: relative;
+        right: -2px;
+        color:lightgrey;
+        cursor:pointer;
+        &:hover{
+            color:white;
+        }
     }
 
     .token-editor .token:focus {

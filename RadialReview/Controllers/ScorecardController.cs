@@ -65,18 +65,21 @@ namespace RadialReview.Controllers {
                     offset = int.Parse(args[0]);
                 }
                 var lbl = lookup[mid].Title;
+                var content = "<span class='offset'>";
                 if (offset != 0) {
                     if (offset >= 0) {
-                        lbl += " (+" + offset + ")";
+                        content +="(+" + offset + ")";
                     } else {
-                        lbl += " (" + offset + ")";
+                        content += "(" + offset + ")";
                     }
                 }
+                content += "</span>";
                 return new {
-                    label = lbl,
+                    label = lbl + content,
                     attrs = new {
                         id = mid,
                         offset = offset,
+                        //content = content,
                     }
                 };
             });
