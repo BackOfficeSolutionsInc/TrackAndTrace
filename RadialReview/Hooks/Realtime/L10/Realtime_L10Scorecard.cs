@@ -17,6 +17,7 @@ using RadialReview.Utilities;
 using RadialReview.Utilities.RealTime;
 using RadialReview.Models.ViewModels;
 using RadialReview.Models.Angular.Meeting;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Hooks.Realtime.L10 {
 	public class Realtime_L10Scorecard : IScoreHook, IMeasurableHook, IMeetingMeasurableHook {
@@ -31,7 +32,10 @@ namespace RadialReview.Hooks.Realtime.L10 {
 		}
 
 		public async Task UpdateScores(ISession s, List<ScoreAndUpdates> scoreAndUpdates) {
-            
+
+            var groupLookup = new Dictionary<string, dynamic>();
+            var updateLookup = new Dictionary<string, List<IAngularId>>();
+
             foreach (var sau in scoreAndUpdates) {
                 var updates = sau.updates;
                 var score = sau.score;
@@ -47,7 +51,14 @@ namespace RadialReview.Hooks.Realtime.L10 {
 
                     groupIds.Add(MeetingHub.GenerateUserId(score.AccountableUserId));
                     groupIds.Add(MeetingHub.GenerateUserId(score.Measurable.AdminUserId));
-                    var group = hub.Clients.Groups(groupIds, connection);
+
+                    groupIds = groupIds.OrderBy(x => x).ToList();
+                    var groupKey = string.Join("##", groupIds)+"###"+connection;
+                    if (!groupLookup.ContainsKey(groupKey)) {
+                        groupLookup[groupKey] = hub.Clients.Groups(groupIds, connection);// new List<IAngular>();
+                    }
+
+                    var group = groupLookup[groupKey];
 
 
                     var toUpdate = new AngularScore(score, updates.AbsoluteUpdateTime, false);
@@ -55,7 +66,16 @@ namespace RadialReview.Hooks.Realtime.L10 {
 
                     toUpdate.DateEntered = score.Measured == null ? Removed.Date() : DateTime.UtcNow;
                     toUpdate.Measured = toUpdate.Measured ?? Removed.Decimal();
-                    group.update(new AngularUpdate() { toUpdate });
+                    if (!updateLookup.ContainsKey(groupKey)) {
+                        updateLookup[groupKey] = new List<IAngularId>();
+                    }
+                    groupLookup[groupKey].Add(toUpdate);
+                }
+                foreach (var kv in updateLookup) {
+                    var groupUpdate = new AngularUpdate();
+                    foreach (var u in kv.Value)
+                        groupUpdate.Add(u);
+                    groupLookup[kv.Key].update(groupUpdate);
                 }
             }
 		}
@@ -76,6 +96,14 @@ namespace RadialReview.Hooks.Realtime.L10 {
 
 					var additional = await ScorecardAccessor._GenerateScoreModels_AddMissingScores_Unsafe(s, weeks.Select(x => x.ForWeek), measurable.Id.AsList(), scores);
 					scores.AddRange(additional);
+
+                    //make calculated uneditable..
+                    if (measurable.HasFormula) {
+                        foreach (var score in scores)
+                            score._Editable = false;
+                    }
+
+
 					var mm = new L10Meeting.L10Meeting_Measurable() {
 						L10Meeting = current,
 						Measurable = measurable,

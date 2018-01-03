@@ -135,7 +135,12 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 	}
 
 	$scope.functions.showFormula = function (id) {
-	    $scope.functions.showModal("Edit formula", "/scorecard/formulapartial/" + id, "/scorecard/setformula?id=" + id, null, null, function () { $scope.functions.showAlert("Formula updated"); });
+	    $scope.functions.showModal("Edit formula", "/scorecard/formulapartial/" + id, "/scorecard/setformula?id=" + id, null, function () {
+	        $scope.functions.showAlert("Updating formula...");
+	    }, function (d) {
+	        debugger;
+	        $scope.functions.showAlert("Formula updated!");
+	    });
 	};
 
 	$scope.functions.startCoreProcess = function (coreProcess) {
