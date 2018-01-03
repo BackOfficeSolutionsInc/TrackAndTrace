@@ -30,7 +30,7 @@ namespace RadialReview.Controllers
 
         [HttpPost, ValidateInput(false)]
         [Access(AccessLevel.Any)]
-        public ActionResult AC(PdfAccessor.AccNodeJs root = null, bool fit = false, bool department = false, PageSize ps = PageSize.Letter, double? pw = null, double? ph = null, long? selected = null, bool? compact = null)
+        public ActionResult AC(PdfAccessor.AccNodeJs root = null, bool fit = false, bool department = false, PageSize ps = PageSize.Letter, double? pw = null, double? ph = null, long? selected = null, bool? compact = null, bool userCheck = false)
         {
             //using (var stream = new MemoryStream()) {
             //	var html = new HtmlDocument();
@@ -86,7 +86,8 @@ namespace RadialReview.Controllers
                         });
                         pdf = AccountabilityChartPDF.GenerateAccountabilityChart(node, pw.Value, ph.Value, restrictSize: fit, settings: settings);
                     }
-                    else {
+                    else
+                    {
 
                         var nodes = new List<AngularAccountabilityNode>();
                         var topNodes = tree.Root.GetDirectChildren(); //tree.Root.children.Where(t => t.Id == selected).FirstOrDefault().GetDirectChildren();
@@ -94,8 +95,9 @@ namespace RadialReview.Controllers
 
 
                         //Add nodes from the tree.
-                        tree.Dive(x => {
-                            if (x.User != null && x.Id == selected) 
+                        tree.Dive(x =>
+                        {
+                            if (x.Id == selected)
                                 nodes.Add(x);
                         });
 
@@ -124,7 +126,7 @@ namespace RadialReview.Controllers
                     var tree = AccountabilityAccessor.GetTree(GetUser(), GetUser().Organization.AccountabilityChartId, expandAll: true);
                     if (!department)
                     {
-                      
+
                         pdf = AccountabilityChartPDF.GenerateAccountabilityChart(tree.Root, pw.Value, ph.Value, restrictSize: fit, settings: settings);
                     }
                     else
@@ -133,10 +135,21 @@ namespace RadialReview.Controllers
                         var topNodes = tree.Root.GetDirectChildren();
 
                         //Add nodes from the tree.
-                        tree.Dive(x => {
-                            if (x.User != null)
+                        if (userCheck)
+                        {
+                            tree.Dive(x =>
+                            {
+                                if (x.User != null)
+                                    nodes.Add(x);
+                            });
+                        }
+                        else
+                        {
+                            tree.Dive(x =>
+                            {
                                 nodes.Add(x);
-                        });
+                            });
+                        }
 
                         //Setup if has parents
                         foreach (var n in nodes)

@@ -60,6 +60,12 @@ $(function () {
                         $(selector2).toggleClass("skipNumber", (!data.Error ? data.Object : !checked));
                         refreshCurrentIssueDetails();
                         refreshRanks();
+                        if (checked) {
+                            setTimeout(function () {
+                                var ele_click = 'Issue Completed. <a style="text-decoration:underline;" onclick="undoStack.canUndo() && undoStack.undo();">Undo?</a>';
+                                showAlert(ele_click, 4000);
+                            }, 500);
+                        }
                     },
                     error: function () {
                         $(selector).prop("checked", !checked);
@@ -83,6 +89,7 @@ $(function () {
                 var selected = $(this.issueRow).removeClass("wasSelected");
                 if ($(window).width() > modalWidth) {
                     $(selected).click();
+                    clearAlerts();
                 }
             }
         }

@@ -1233,7 +1233,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
                 });
             printPdfBtn.append("circle").attr("r", 10).attr("title", "Print")//.on("click", printNode);
             printPdfBtn.append("title").text("Print");
-            printPdfBtn.append("text").classed("glyphicon glyphicon-paste", true).attr("title", "Print").text("")//.on("click", printNode);
+            printPdfBtn.append("text").classed("glyphicon glyphicon-glyphicon-print", true).attr("title", "Print").text("")//.on("click", printNode);
 
 
             var addNodeBtn = nodeEnter.append("g").classed("button add node-button", true).attr("tabindex", 0).style("opacity", 0)

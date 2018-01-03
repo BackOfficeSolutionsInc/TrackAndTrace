@@ -169,8 +169,12 @@ var genPdf = function (val,nodeId) {
 			if (d.which === "selected") {
 				ajax.url += "&selected=" + selected;
             }
+          
             if (nodeId > 0) {
                 ajax.url += "&selected=" + nodeId;
+            }
+            else {
+                ajax.url += "&userCheck=true";
             }
 
 			$.ajax(ajax);
