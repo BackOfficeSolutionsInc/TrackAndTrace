@@ -225,9 +225,6 @@
 <script>
 
     
-    function showFormula(id) {
-        showModal("Edit formula", "/scorecard/formulapartial/" + id, "/scorecard/setformula?id=" + id, null, null, function () { showAlert("Formula updated"); });
-    }
 	
 	function removeRock(id) {
 		$.ajax("/api/v1/rocks/" + id, {

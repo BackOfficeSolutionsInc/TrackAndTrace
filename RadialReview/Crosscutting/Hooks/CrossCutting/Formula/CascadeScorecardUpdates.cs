@@ -19,11 +19,12 @@ namespace RadialReview.Crosscutting.Hooks.CrossCutting.Formula {
         }
 
         public async Task UpdateScores(ISession s, List<ScoreAndUpdates> scoreAndUpdates) {
-            foreach (var sau in scoreAndUpdates) {
-                var score = sau.score;
-                foreach (var mid in score.Measurable.BackReferenceMeasurables)
-                    await ScorecardAccessor.UpdateCalculatedScores_FromUpdatedScore_Unsafe(s, score);
-            }
+            //foreach (var sau in scoreAndUpdates) {
+            //    var score = sau.score;
+            //foreach (var mid in score.Measurable.BackReferenceMeasurables)
+            var scores = scoreAndUpdates.Where(x => x.updates.ValueChanged).Select(x => x.score).ToList();
+            await ScorecardAccessor.UpdateCalculatedScores_FromUpdatedScore_Unsafe(s, scores);
+            //}
         }
     }
 }

@@ -832,9 +832,9 @@ namespace RadialReview.Accessors {
                 });
                 o.Add(score);
             }
-
-            await HooksRegistry.Each<IScoreHook>((ses, x) => x.UpdateScores(ses, updateLater));
-
+            if (updateLater.Any()) {
+                await HooksRegistry.Each<IScoreHook>((ses, x) => x.UpdateScores(ses, updateLater));
+            }
             return o;
         }
 
@@ -1203,29 +1203,35 @@ namespace RadialReview.Accessors {
         }
 
         /// <summary>
-        /// When this score is updated, also update its dependency
+        /// When these scores are updated, also update their dependencies
         /// </summary>
         /// <param name="s"></param>
-        /// <param name="score"></param>
+        /// <param name="scores"></param>
         /// <returns></returns>
-        public static async Task UpdateCalculatedScores_FromUpdatedScore_Unsafe(ISession s, ScoreModel score) {
-            var curMeasurable = score.MeasurableId;
+        public static async Task UpdateCalculatedScores_FromUpdatedScore_Unsafe(ISession s, List<ScoreModel> scores) {
+
+            if (!scores.Any())
+                return;
+
             //Get all measurables that need updating.
             var measurableToUpdate = s.QueryOver<MeasurableModel>()
-                .WhereRestrictionOn(x => x.Id).IsIn(score.Measurable.BackReferenceMeasurables)
+                .WhereRestrictionOn(x => x.Id).IsIn(scores.SelectMany(x=>x.Measurable.BackReferenceMeasurables).Distinct().ToList())
                 .List().ToList();
 
-            var curWeek = TimingUtility.GetWeekSinceEpoch(score.ForWeek);
 
             var measurableLookup = measurableToUpdate.ToDictionary(x => x.Id, x => x);
             var variablesLookup = new DefaultDictionary<long, ParsedFormula>(x => FormulaUtility.Parse(measurableLookup[x].Formula));
 
             //Get all cells needing updates
-            var cellsToUpdate = measurableToUpdate.Where(m => m.Formula != null).SelectMany(m => {
-                var variables = GetVariables(variablesLookup[m.Id]);
-                return variables.Where(x => x.MeasurableId == curMeasurable).Select(x => new {
-                    measurableId = m.Id,
-                    weekId = curWeek - x.Offset,
+            var cellsToUpdate = scores.SelectMany(score => {
+                var curMeasurable = score.MeasurableId;
+                var curWeek = TimingUtility.GetWeekSinceEpoch(score.ForWeek);
+                return measurableToUpdate.Where(m => m.Formula != null).SelectMany(m => {
+                    var variables = GetVariables(variablesLookup[m.Id]);
+                    return variables.Where(x => x.MeasurableId == curMeasurable).Select(x => new {
+                        measurableId = m.Id,
+                        weekId = curWeek - x.Offset,
+                    });
                 });
             }).Distinct().ToList();
 

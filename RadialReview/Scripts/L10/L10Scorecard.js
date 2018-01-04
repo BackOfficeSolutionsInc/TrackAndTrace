@@ -477,8 +477,9 @@ function changeInput(event) {
 		} else if (event.which == 38) { //up
 			var curRow = (+$(this).data("row") - 1);
 			while (true) {
-				var $row = $("tr[data-row=" + curRow + "]");
-				if ($row.length > 0 && !$row.hasClass("divider")) {
+			    var $row = $("tr[data-row=" + curRow + "]");
+			    debugger;
+			    if ($row.length > 0 && !$row.hasClass("divider") && !$row.is("[data-editable='False']")) {
 					found = $(".grid[data-row=" + (curRow) + "][data-col=" + $(this).data("col") + "]");
 					break;
 				}
@@ -494,7 +495,7 @@ function changeInput(event) {
 			var curRow = (+$(this).data("row") + 1);
 			while (true) {
 				var $row = $("tr[data-row=" + curRow + "]");
-				if ($row.length > 0 && !$row.hasClass("divider")) {
+				if ($row.length > 0 && !$row.hasClass("divider") && !$row.is("[data-editable='False']")) {
 					found = $(".grid[data-row=" + (curRow) + "][data-col=" + $(this).data("col") + "]");
 					break;
 				}
@@ -669,7 +670,13 @@ function updateScoresGoals(startWeek, measurableId, s) {
 
 
 function receiveUpdateScore(newScore) {
-	//console.info(newScore);
+    //console.info(newScore);
+    if (Array.isArray(newScore)) {
+        newScore.map(function (x) {
+            receiveUpdateScore(x);
+        });
+        return;
+    }
 	$("[data-scoreid='" + newScore.Id + "']").val(newScore.Measured);
 }
 
