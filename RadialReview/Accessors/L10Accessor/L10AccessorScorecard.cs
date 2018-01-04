@@ -198,9 +198,11 @@ namespace RadialReview.Accessors {
 							IsDivider = true,
 							Weeks = weeks
 						});
-						row.ViewData["row"] = rowId - 1;
 
-						var first = row.Execute();
+
+                        row.ViewData["row"] = rowId - 1;
+
+                        var first = row.Execute();
 						row.ViewData["ShowRow"] = false;
 						var second = row.Execute();
 						group.addMeasurable(first, second);

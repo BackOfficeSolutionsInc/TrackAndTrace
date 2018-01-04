@@ -322,8 +322,10 @@ function makeXEditable_Scorecard(selector) {
 }
 
 function addMeasurable(data, smallTable) {
-	$("#ScorecardTable tbody").append(data);
-	$("#ScorecardTable_Over tbody").append(smallTable);
+	//$("#ScorecardTable tbody").append(data);
+    //$("#ScorecardTable_Over tbody").append(smallTable);
+    $("#ScorecardTable tbody").prepend(data);
+    $("#ScorecardTable_Over tbody").prepend(smallTable);
 
 	makeXEditable_Scorecard("#ScorecardTable .inlineEdit:not(.editable)");
 	makeXEditable_Scorecard("#ScorecardTable_Over .inlineEdit:not(.editable)");
