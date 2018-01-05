@@ -15,7 +15,8 @@ var collapseAll = function () {
 
 function generateAccNodes() {
 	var data = angular.element("[ng-controller]").scope().model.data.Root;
-	var copy = {};
+    var copy = {};
+    var nodeIds = [];
 	function dive(parent, output) {
 		output.x = parent.x;
 		output.y = parent.y;
@@ -27,13 +28,17 @@ function generateAccNodes() {
 			output.isLeaf = parent._compact.isLeaf;
 		}
 
-		output.Roles = []
+        output.Roles = []
+        output.NodeId = []
+        if (parent.Id)
+            nodeIds.push(parent.Id);
 		if (parent.User)
 			output.Name = parent.User.Name;
 		if (parent.Group && parent.Group.Position)
 			output.Position = parent.Group.Position.Name
 		else if (parent.Name)
-			output.Position = parent.Name;
+            output.Position = parent.Name;
+
 
 		if (parent.Group && parent.Group.RoleGroups) {
 			//Roles
@@ -69,7 +74,8 @@ function generateAccNodes() {
 		}
 	}
 
-	dive(data, copy);
+    dive(data, copy);
+    copy.NodeId = nodeIds;
 	return copy;
 }
 

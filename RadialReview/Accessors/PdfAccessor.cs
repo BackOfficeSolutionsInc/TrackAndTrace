@@ -3890,6 +3890,7 @@ namespace RadialReview.Accessors
             public string Name { get; set; }
             public string Position { get; set; }
             public List<string> Roles { get; set; }
+            public List<long> NodeId { get; set; }
 
             public bool isLeaf { get; set; }
             public string side { get; set; }

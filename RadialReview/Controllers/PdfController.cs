@@ -63,8 +63,36 @@ namespace RadialReview.Controllers
             if (root != null && (root.children != null || root._children != null))
             {
 #pragma warning disable CS0618 // Type or member is obsolete
-                pdf = PdfAccessor.GenerateAccountabilityChart(root, pw.Value, ph.Value, restrictSize: fit);
+                //pdf = PdfAccessor.GenerateAccountabilityChart(root, pw.Value, ph.Value, restrictSize: fit);
 #pragma warning restore CS0618 // Type or member is obsolete
+
+                var tree = AccountabilityAccessor.GetTree(GetUser(), GetUser().Organization.AccountabilityChartId, expandAll: true);
+                if (!department)
+                    pdf = AccountabilityChartPDF.GenerateAccountabilityChart(tree.Root, pw.Value, ph.Value, restrictSize: fit, selectedNode: root.NodeId);
+                else {
+                    var nodes = new List<AngularAccountabilityNode>();
+                    //Add nodes from the tree.
+                    if (!userCheck)
+                    {
+                        tree.Dive(x =>
+                        {
+                            if (x.User != null)
+                                nodes.Add(x);
+                        });
+                    }
+                    else
+                    {
+                        tree.Dive(x =>
+                        {
+                            nodes.Add(x);
+                        });
+                    }
+
+                    nodes = nodes.Where(t => root.NodeId.Contains(t.Id)).ToList();
+                    var selectedNode = diveSeletedNode(nodes, root.NodeId);
+                    merger.AddDocs(AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(selectedNode, pw.Value, ph.Value, restrictSize: fit));
+                    pdf = merger.Flatten("", false, false);
+                }
             }
             else
             {
@@ -135,7 +163,7 @@ namespace RadialReview.Controllers
                         var topNodes = tree.Root.GetDirectChildren();
 
                         //Add nodes from the tree.
-                        if (userCheck)
+                        if (!userCheck)
                         {
                             tree.Dive(x =>
                             {
@@ -181,6 +209,17 @@ namespace RadialReview.Controllers
             //}
 
 
+        }
+
+        private List<AngularAccountabilityNode> diveSeletedNode(List<AngularAccountabilityNode> root, List<long> selectedIds) {
+            List<AngularAccountabilityNode> list = new List<AngularAccountabilityNode>();
+            foreach (var item in root)
+            {
+                item.children = item.children.Where(t => selectedIds.Contains(t.Id));
+                item.children = diveSeletedNode(item.children.ToList(), selectedIds);
+                list.Add(item);
+            }
+            return list;
         }
     }
 }
