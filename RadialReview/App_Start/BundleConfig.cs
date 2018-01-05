@@ -88,8 +88,9 @@ namespace RadialReview {
 				"~/Scripts/Main/alerts.js",
 				"~/Scripts/Main/clickableclass.js",
 				"~/Scripts/Main/profilepicture.js",
-				"~/Scripts/Main/libraries.js"
-			};
+                "~/Scripts/Main/libraries.js",
+                "~/Scripts/Main/chart.js"
+            };
 
 
 			//Only intercept logs if not local...
