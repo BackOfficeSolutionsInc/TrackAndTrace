@@ -17,6 +17,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Script.Serialization;
+using RadialReview.Api.V1;
+using RadialReview.Hooks;
+using RadialReview.Crosscutting.Hooks.Interfaces;
 
 namespace RadialReview.Accessors {
     public class NotificationAccessor {
@@ -57,18 +60,80 @@ namespace RadialReview.Accessors {
                 }
             }
         }
-
-
-        public static async Task CreateNotification_Unsafe(NotifcationCreation notification, bool send) {
+        public static async Task SetNotificationStatus(UserOrganizationModel caller, long notificationId, NotificationStatus status) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    var n = s.Get<NotificationModel>(notificationId);
+                    perms.Self(n.UserId);
+                    var oldStatus = n.GetStatus();
+                    var updates = new INotificationHookUpdates();
 
-                    await notification.Save(s);
+                    if (oldStatus != status) {
+                        updates.StatusChanged = true;
+                        switch (status) {
+                            case NotificationStatus.Unread:
+                                n.DeleteTime = null;
+                                n.Seen = null;
+                                break;
+                            case NotificationStatus.Read:
+                                n.Seen = DateTime.UtcNow;
+                                break;
+                            case NotificationStatus.Delete:
+                                n.DeleteTime = DateTime.UtcNow;
+                                n.Seen = n.Seen ?? n.DeleteTime;
+                                break;
+                            default:
+                                break;
+                        }
+                        s.Update(n);
+                    }
+
+                    await HooksRegistry.Each<INotificationHook>((ses, x) => x.UpdateNotification(ses, n, updates));
+                    
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
+
+        public static NotificationModel GetNotification(UserOrganizationModel caller, long notificationId) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    var notification = s.Get<NotificationModel>(notificationId);
+                    perms.Self(notification.UserId);
+                    return notification;
+                }
+            }
+        }
+        public static List<NotificationModel> GetNotificationsForUser(UserOrganizationModel caller, long userId, bool includeSeen=false) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    perms.Self(userId);// must be self.. 
+                    var uids = s.Get<UserOrganizationModel>(userId).User.UserOrganizationIds;
+                    var notificationsQ = s.QueryOver<NotificationModel>()
+                        .Where(x => x.DeleteTime == null)
+                        .WhereRestrictionOn(x=>x.UserId).IsIn(uids);
+                    if (!includeSeen)
+                        notificationsQ = notificationsQ.Where(x => x.Seen == null);
+                    return notificationsQ.List().ToList();                    
+                }
+            }
+        }
+
+        public static async Task<NotificationModel> CreateNotification_Unsafe(NotifcationCreation notification, bool send) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var n = await notification.Save(s);
                     if (send) {
                         await notification.Send(s);
                     }
                     tx.Commit();
                     s.Flush();
+
+                    return n;
                 }
             }
         }
@@ -117,7 +182,7 @@ namespace RadialReview.Accessors {
 
             if (userName != null) {
                 var devices = s.QueryOver<UserDevice>()
-                    .Where(x => x.DeleteTime == null && x.Ignore == false && x.UserName == userName)
+                    .Where(x => x.DeleteTime == null && x.IgnoreDevice == false && x.UserName == userName)
                     .List().ToList();
 
                 foreach (var d in devices) {
