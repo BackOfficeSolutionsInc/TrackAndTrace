@@ -190,7 +190,7 @@ namespace RadialReview.Areas.People.Accessors {
 			}
 		}
 
-		public static async Task<long> GenerateQuarterlyConversation(UserOrganizationModel caller, string name, IEnumerable<ByAboutSurveyUserNode> byAbout, DateTime dueDate, bool sendEmails) {
+		public static async Task<long> GenerateQuarterlyConversation(UserOrganizationModel caller, string name, IEnumerable<ByAboutSurveyUserNode> byAbout, DateRange quarterRange, DateTime dueDate, bool sendEmails) {
 
 			var possible = AvailableByAboutsForMe(caller, true, true);
 			var invalid = byAbout.Where(selected => possible.All(avail => avail.GetViewModelKey() != selected.GetViewModelKey()));
@@ -209,7 +209,7 @@ namespace RadialReview.Areas.People.Accessors {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);
 					perms.CreateQuarterlyConversation(caller.Organization.Id);
-					qcResult = GenerateQuarterlyConversation_Unsafe(s, perms, name, populatedByAbouts, dueDate, sendEmails);
+					qcResult = GenerateQuarterlyConversation_Unsafe(s, perms, name, populatedByAbouts, quarterRange, dueDate, sendEmails);
 					tx.Commit();
 					s.Flush();
 				}
@@ -220,7 +220,7 @@ namespace RadialReview.Areas.People.Accessors {
 			return qcResult.SurveyContainerId;
 		}
 
-		public static QuarterlyConversationGeneration GenerateQuarterlyConversation_Unsafe(ISession s, PermissionsUtility perms, string name, IEnumerable<ByAboutSurveyUserNode> byAbout, DateTime dueDate, bool generateEmails) {
+		public static QuarterlyConversationGeneration GenerateQuarterlyConversation_Unsafe(ISession s, PermissionsUtility perms, string name, IEnumerable<ByAboutSurveyUserNode> byAbout, DateRange quarterRange, DateTime dueDate, bool generateEmails) {
 			var caller = perms.GetCaller();
 
 			var reconstructed = byAbout.GroupBy(x => x.By.UserOrganizationId + "~" + x.About.ToViewModelKey())
@@ -258,7 +258,7 @@ namespace RadialReview.Areas.People.Accessors {
 			}
 
 			var engine = new SurveyBuilderEngine(
-				new QuarterlyConversationInitializer(caller, name, caller.Organization.Id, dueDate),
+				new QuarterlyConversationInitializer(caller, name, caller.Organization.Id, quarterRange, dueDate),
 				new SurveyBuilderEventsSaveStrategy(s),
 				new TransformAboutAccountabilityNodes(s)
 			);

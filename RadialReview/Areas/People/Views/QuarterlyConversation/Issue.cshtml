@@ -70,10 +70,10 @@
             </div>
             <div class="row smallBreak2">
                 <div class="col-sm-12">
-                    <label class="control-label">Selected Team Members Evaluate Me (LMA Questionnaire):</label>
 
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-7">
+                            <label class="control-label">Selected team members evaluate me (LMA Questionnaire):</label>
                             <div class="responses radio-responses">
                                 <div class="md-radio active">
                                     <label>
@@ -93,8 +93,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-8">
-                            <span class="well label-comment1">We recommending that employees review managers once per year, not every quarter.</span>
+                        <div class="col-md-5">
+                            <span class="well label-comment1">We recommend that employees review managers once per year, not quarterly.</span>
 
                         </div>
                     </div>
@@ -146,9 +146,17 @@
         </div>
 
     </div>
-    <div class="row ">
+    <div class="row smallBreak2">
         <div class="col-sm-3 col-sm-offset-2">
-            <label class="control-label">Due Date:</label>
+            <label class="control-label">When did the quarter start:</label>
+            <div class="btn-group" style="display:block;" data-toggle="buttons">
+                @Html.EditorFor(x => x.QuarterStart, new { endDate = "today" })
+            </div>
+        </div>
+    </div>
+    <div class="row smallBreak2">
+        <div class="col-sm-3 col-sm-offset-2">
+            <label class="control-label">Due date:</label>
             <div class="btn-group" style="display:block;" data-toggle="buttons">
                 @Html.EditorFor(x => x.DueDate, new { startDate = "tomorrow" })
             </div>
@@ -176,6 +184,7 @@
 
         #qc-issue .panel {
             border-color: #cccccc;
+            padding-left: 6px;
         }
 
         .well {
@@ -196,7 +205,7 @@
         .instructions {
             padding: 20px;
             padding-top: 50px;
-            padding-right: 40px;
+            padding-right: 60px;
             background-color: white;
             border: 1px solid #ccc;
             border-radius: 6px;

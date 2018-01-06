@@ -18,8 +18,11 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
     public class RockSection : ISectionInitializer {
         //private IEnumerable<RockModel> rockLookup = new List<RockModel>();
         public static String RockCommentHeading = "Rock Quality/Comments";
+        public DateRange SearchRange { get; set; }
 
-        public RockSection() {
+
+        public RockSection(DateRange searchRange) {
+            SearchRange = searchRange;
         }
 
         public IEnumerable<IItemInitializer> GetAllPossibleItemBuilders(IEnumerable<IByAbout> byAbouts) {
@@ -27,7 +30,11 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
         }
 
         public void Prelookup(IInitializerLookupData data) {
-            var rocks = data.Session.QueryOver<RockModel>().Where(x => x.DeleteTime == null && x.OrganizationId == data.OrgId).Future();
+            var rocks = data.Session.QueryOver<RockModel>()
+                .Where(x=>x.CreateTime>=SearchRange.StartTime && x.CreateTime<=SearchRange.EndTime)
+                .Where(x => x.OrganizationId == data.OrgId)
+                .Future();
+
             data.Lookup.AddList(rocks);
 
             var nodeIds = data.ByAbouts.SelectMany(x => new[] { x.GetBy(), x.GetAbout() }).Where(x => x.Is<AccountabilityNode>()).Select(x => x.ModelId).ToArray();

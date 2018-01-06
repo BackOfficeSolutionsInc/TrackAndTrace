@@ -57,7 +57,7 @@ namespace RadialReview.Utilities.DataTypes
 		}
 
         /// <summary>
-        /// Filters IHistoricals. Use Filter.Compile() for Linq
+        /// Filters IHistoricals. Use Filter.Compile() for Linq. Was alive any time during this range
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="range"></param>

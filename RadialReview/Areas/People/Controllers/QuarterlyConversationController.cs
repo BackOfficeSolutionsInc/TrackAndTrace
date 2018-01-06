@@ -21,6 +21,7 @@ using RadialReview.Utilities;
 using RadialReview.Models;
 using RadialReview.Models.Application;
 using RadialReview.Properties;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Areas.People.Controllers {
 	public class QuarterlyConversationController : BaseController {
@@ -34,8 +35,9 @@ namespace RadialReview.Areas.People.Controllers {
 
 		public class IssueViewModel {
 			public IEnumerable<SurveyUserNode> AvailableUsers { get; set; }
-			public DateTime DueDate { get; set; }
-			public bool Email { get; set; }
+            public DateTime DueDate { get; set; }
+            public DateTime QuarterStart { get; set; }
+            public bool Email { get; set; }
 			public bool EvalSelf { get; set; }
 			public string Name { get; set; }
 			public bool EvalManager { get; internal set; }
@@ -43,6 +45,7 @@ namespace RadialReview.Areas.People.Controllers {
 			public IssueViewModel() {
 				Email = true;
 				EvalSelf = true;
+                QuarterStart = DateTime.UtcNow.AddDays(-90);
 			}
 		}
 		private IEnumerable<SurveyUserNode> Possible() {
@@ -51,7 +54,6 @@ namespace RadialReview.Areas.People.Controllers {
 
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Issue() {
-
 
 			var vm = new IssueViewModel() {
 				AvailableUsers = Possible(),
@@ -64,7 +66,8 @@ namespace RadialReview.Areas.People.Controllers {
 		[HttpPost]
 		public async Task<ActionResult> Issue(FormCollection form) {
 			var name = form["Name"];
-			var dueDate = (form["DueDate"] ?? "").ToDateTime("MM-dd-yyyy HH:mm:ss");
+            var qtrStart = (form["QuarterStart"] ?? "").ToDateTime("MM-dd-yyyy HH:mm:ss");
+            var dueDate = (form["DueDate"] ?? "").ToDateTime("MM-dd-yyyy HH:mm:ss");
 
 			if (string.IsNullOrWhiteSpace(name))
 				ModelState.AddModelError("name", "Name is required");
@@ -77,24 +80,28 @@ namespace RadialReview.Areas.People.Controllers {
 
 				var filtered = QuarterlyConversationAccessor.AvailableByAboutsFiltered(GetUser(), byAbouts, evalSelf, evalManager);
 
-				//if (evalManager) {
-				//	byAbouts.AddRange(byAbouts.Select(x => new ByAboutSurveyUserNode(x.About, x.By,AboutType.Subordinate)).ToList());
-				//}
-				//if (evalSelf) {
-				//	byAbouts.AddRange(byAbouts.Select(x => new ByAboutSurveyUserNode(x.About, x.About, AboutType.Self)).ToList());
-				//}
-				//byAbouts = byAbouts.Distinct().ToList();
-				var id = await QuarterlyConversationAccessor.GenerateQuarterlyConversation(GetUser(), name, filtered, dueDate, email);
+                //if (evalManager) {
+                //	byAbouts.AddRange(byAbouts.Select(x => new ByAboutSurveyUserNode(x.About, x.By,AboutType.Subordinate)).ToList());
+                //}
+                //if (evalSelf) {
+                //	byAbouts.AddRange(byAbouts.Select(x => new ByAboutSurveyUserNode(x.About, x.About, AboutType.Self)).ToList());
+                //}
+                //byAbouts = byAbouts.Distinct().ToList();
+                var quarterRange = new DateRange(qtrStart.AddDays(-7), qtrStart.AddDays(65));
+
+
+                var id = await QuarterlyConversationAccessor.GenerateQuarterlyConversation(GetUser(), name, filtered, quarterRange, dueDate, email);
 				return RedirectToAction("Questions",new { id = id });
 			}
 
 			return View(new IssueViewModel() {
 				AvailableUsers = Possible(),
 				DueDate = dueDate,
+                QuarterStart = qtrStart, 
 				Name = form["Name"],
 				EvalSelf = (form["EvalSelf"] ?? "true").ToBooleanJS(),
 				Email = (form["Email"] ?? "true").ToBooleanJS(),
-				EvalManager = (form["EvalManager"] ?? "true").ToBooleanJS(),
+				EvalManager = (form["EvalManager"] ?? "true").ToBooleanJS(),                
 			});
 		}
 
