@@ -15,6 +15,10 @@ li[data-key="undo"] {
     display:none;
 }
 
+/*[name='uploadfile']{
+    width:0px !important;
+}*/
+
 body .hyperlink-icon .buttonicon:before {
     content: "\1f517" !important;
     position:absolute;
