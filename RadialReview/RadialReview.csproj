@@ -1049,6 +1049,9 @@
     <Content Include="Content\GettingStarted\GettingStarted.css">
       <DependentUpon>GettingStarted.less</DependentUpon>
     </Content>
+    <Content Include="Content\L10\L10Scorecard.css">
+      <DependentUpon>L10Scorecard.less</DependentUpon>
+    </Content>
     <Content Include="Content\People\MaterialRadio.css">
       <DependentUpon>MaterialRadio.less</DependentUpon>
     </Content>
@@ -1855,7 +1858,7 @@
     <Content Include="Content\jquery.nouislider.css" />
     <Content Include="Content\jquery.qtip.css" />
     <Content Include="Content\L10\L10IDS.css" />
-    <Content Include="Content\L10\L10Scorecard.css" />
+    <None Include="Content\L10\L10Scorecard.less" />
     <Content Include="Content\L10\L10Stats.css" />
     <Content Include="Content\print.css" />
     <Content Include="Content\ReportBuilder\evaluation.css" />

@@ -4549,6 +4549,7 @@
             mg_add_area_generator(args, plot);
             mg_add_flat_line_generator(args, plot);
             mg_add_confidence_band_generator(args, plot, svg);
+            //mg_add_point_generator(args, plot);
         }
 
         function mg_add_confidence_band_generator(args, plot, svg) {
@@ -4597,6 +4598,15 @@
               })
               .curve(args.interpolate);
         }
+
+        //function mg_add_point_generator(args, plot) {
+        //    debugger;
+        //    plot.points = function (d) {
+        //        debugger;
+        //        var x= args.scalefns.xf();
+        //        var y= args.scalefns.yf();
+        //    };
+        //}
 
         function mg_add_line_generator(args, plot) {
             plot.line = d3.line()
@@ -4704,6 +4714,39 @@
             }
         }
 
+        //function mg_add_point_element(args, plot, svg, which_line) {
+        //    debugger;
+
+        //    plot.data(args.data[which_line])
+        //        .enter()
+        //        .append('circle')
+        //        .attr('cx', function (d) {
+        //            return args.scalefns.xf(d);
+        //        }).attr('cy', function (d) {
+        //            return args.scalefns.yf(d);
+        //        }).attr('r', function (d) {
+        //            debugger;
+        //            return 4;
+        //        });
+
+        //    //if (args.animate_on_load) {
+        //    //    plot.data_median = d3.median(args.data[which_line], function (d) {
+        //    //        return d[args.y_accessor];
+        //    //    });
+
+        //    //    this_path.
+
+        //    //    this_path.attr('d', plot.flat_line(args.data[which_line]))
+        //    //      .transition()
+        //    //      .duration(1000)
+        //    //      .attr('d', plot.line(args.data[which_line]))
+        //    //      .attr('clip-path', 'url(#mg-plot-window-' + mg_target_ref(args.target) + ')');
+        //    //} else { // or just add the line
+        //    //    this_path.attr('d', plot.line(args.data[which_line]))
+        //    //      .attr('clip-path', 'url(#mg-plot-window-' + mg_target_ref(args.target) + ')');
+        //    //}
+        //}
+
         function mg_add_line(args, plot, svg, existing_line, which_line, line_id) {
             if (!existing_line.empty()) {
                 svg.node().appendChild(existing_line.node());
@@ -4726,6 +4769,34 @@
             }
         }
 
+        //function mg_add_point(args, plot, svg, existing_line, which_line, line_id) {
+        //    debugger;
+        //    if (!existing_line.empty()) {
+        //        //svg.node().appendChild(existing_line.node());
+
+        //        //var lineTransition = existing_line.transition().duration(plot.update_transition_duration);
+
+        //        //if (!plot.display_area && args.transition_on_update && !args.missing_is_hidden) {
+        //        //    lineTransition.attrTween('d', path_tween(plot.line(args.data[which_line]), 4));
+        //        //} else {
+        //        //    lineTransition.attr('d', plot.line(args.data[which_line]));
+        //        //}
+        //    } else { // otherwise...
+        //        //// if we're animating on load, animate the line from its median value
+        //        //var this_path = svg.append('path')
+        //        //  .attr('class', 'mg-main-line mg-line' + line_id);
+
+        //        //mg_color_line(args, this_path, which_line, line_id);
+        //        //mg_add_line_element(args, plot, this_path, which_line);
+
+
+
+        //        mg_add_point_element(args, plot, svg, which_line);
+        //    }
+        //}
+
+
+
         function mg_add_legend_element(args, plot, which_line, line_id) {
             var this_legend;
             if (args.legend) {
@@ -4744,37 +4815,53 @@
                           this_legend + '&nbsp; </span>' + plot.legend_text;
                     }
                 } else {
-                    var anchor_point, anchor_orientation, dx;
+                    var anchor_point, anchor_orientation, dx, dy;
                     if (args.y_axis_position === 'left') {
                         anchor_point = args.data[which_line][args.data[which_line].length - 1];
-                        anchor_orientation = 'start';
+                        anchor_orientation = 'end';
                         dx = args.buffer;
                     } else {
                         anchor_point = args.data[which_line][0];
-                        anchor_orientation = 'end';
+                        anchor_orientation = 'start';
                         dx = -args.buffer;
                     }
-                    var legend_text = plot.legend_group.append('svg:text')
-                      .attr('x', args.scalefns.xf(anchor_point))
-                      .attr('dx', dx)
-                      .attr('y', args.scalefns.yf(anchor_point))
-                      .attr('dy', '.35em')
-                      .attr('font-size', 10)
-                      .attr('text-anchor', anchor_orientation)
-                      .attr('font-weight', '300')
-                      .text(this_legend);
+                    plot.legend_group.append('svg:text')
+                        .attr('x', args.scalefns.xf(anchor_point))
+                        .attr('dx', dx)
+                        .attr('y', args.scalefns.yf(anchor_point))
+                        .attr('dy', '-.45em')
+                        .attr('font-size', 10)
+                        .attr('text-anchor', anchor_orientation)
+                        //.attr('stroke-width', '2px')
+                        .attr('style', 'stroke:rgba(256,256,256,.8);stroke-width:6px;')
+                        .attr('font-weight', '300')
+                        .text(this_legend);
 
-                    if (args.colors && args.colors.constructor === Array) {
-                        if (args.colors.length < which_line + 1) {
-                            legend_text.classed('mg-line' + (line_id) + '-legend-color', true);
+
+                  //  setTimeout(function () {
+                        var legend_text = plot.legend_group.append('svg:text')
+                              .attr('x', args.scalefns.xf(anchor_point))
+                              .attr('dx', dx)
+                              .attr('y', args.scalefns.yf(anchor_point))
+                              .attr('dy', '-.45em')
+                              .attr('font-size', 10)
+                              .attr('text-anchor', anchor_orientation)
+                              .attr('font-weight', '300')
+                              .text(this_legend);
+
+
+                        if (args.colors && args.colors.constructor === Array) {
+                            if (args.colors.length < which_line + 1) {
+                                legend_text.classed('mg-line' + (line_id) + '-legend-color', true);
+                            } else {
+                                legend_text.attr('fill', args.colors[which_line]);
+                            }
                         } else {
-                            legend_text.attr('fill', args.colors[which_line]);
+                            legend_text.classed('mg-line' + (line_id) + '-legend-color', true);
                         }
-                    } else {
-                        legend_text.classed('mg-line' + (line_id) + '-legend-color', true);
-                    }
 
-                    mg_prevent_vertical_overlap(plot.legend_group.selectAll('.mg-line-legend text').nodes(), args);
+                        mg_prevent_vertical_overlap(plot.legend_group.selectAll('.mg-line-legend text').nodes(), args);
+                    //}, 1);
                 }
             }
         }
@@ -5121,6 +5208,7 @@
                 mg_add_confidence_band(args, plot, svg, line_id);
                 mg_add_area(args, plot, svg, i, line_id);
                 mg_add_line(args, plot, svg, existing_line, i, line_id);
+                //mg_add_point(args, plot, svg, existing_line, i, line_id);
                 mg_add_legend_element(args, plot, i, line_id);
 
                 // passing the data for the current line
@@ -5156,6 +5244,9 @@
             }
 
             mg_plot_legend_if_legend_target(args.legend_target, plot.legend_text);
+            var parent = $(".mg-line-legend").closest("svg");
+            var d = $(".mg-line-legend").detach();
+            parent.append(d);
         }
 
         function mg_line_rollover_setup(args, graph) {

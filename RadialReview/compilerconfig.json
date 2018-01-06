@@ -126,5 +126,9 @@
   {
     "outputFile": "Content/Chart/metric-graphics.css",
     "inputFile": "Content/Chart/metric-graphics.less"
+  },
+  {
+    "outputFile": "Content/L10/L10Scorecard.css",
+    "inputFile": "Content/L10/L10Scorecard.less"
   }
 ]
