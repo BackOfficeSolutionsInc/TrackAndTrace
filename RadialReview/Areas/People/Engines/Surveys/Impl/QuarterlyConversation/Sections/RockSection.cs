@@ -11,7 +11,13 @@ using System.Linq;
 using System.Web;
 using RadialReview.Models.Accountability;
 using RadialReview.Models.Enums;
+using RadialReview.Utilities.Extensions;
 using RadialReview.Utilities.DataTypes;
+using NHibernate.Envers;
+using NHibernate.Envers.Query;
+using RadialReview.Utilities;
+using NHibernate.Envers.Query.Criteria;
+using RadialReview.Utilities.NHibernate;
 
 namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.Sections {
 
@@ -21,19 +27,58 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
         public DateRange SearchRange { get; set; }
 
 
-        public RockSection(DateRange searchRange) {
-            SearchRange = searchRange;
+        public const string AUDIT_ROCKS = "AuditRocks";
+
+        /// <summary>
+        /// Pass in the full range of the quarter. It automatically trims the range.
+        /// 
+        /// 
+        /// It uses an inner range to prevent things deleted shortly after the beginning of the quarter
+        /// 
+        ///     start = 7 days after qtr start
+        ///     end = 21 days before qtr end
+        ///     
+        ///                 +==============QTR==============+
+        ///                 |                               |
+        /// -----------*-*-*-*-*----|=====Range=====|----------------------
+        ///            ^ Rocks Created
+        /// 
+        /// 
+        ///    -------------Created-----------------+
+        ///                                         |
+        ///                         o=====Range=====o
+        ///                         |
+        ///                         +-----------------------Deleted--------------------------->
+        ///                                         
+        /// </summary>
+        /// <param name="searchRange"></param>
+        public RockSection(DateRange qtrRange) {
+
+            var ts = qtrRange.ToTimespan();
+            var start = qtrRange.StartTime.AddDays(ts.TotalDays * 9 / 90);
+            var end = qtrRange.EndTime.AddDays(-ts.TotalDays * 21 / 90);
+
+            SearchRange = new DateRange(start,end);
         }
 
         public IEnumerable<IItemInitializer> GetAllPossibleItemBuilders(IEnumerable<IByAbout> byAbouts) {
-            return new[] { new RockItems(null) };
+            return new[] { new RockItems(null,null) };
         }
 
         public void Prelookup(IInitializerLookupData data) {
             var rocks = data.Session.QueryOver<RockModel>()
-                .Where(x=>x.CreateTime>=SearchRange.StartTime && x.CreateTime<=SearchRange.EndTime)
+                //.Where(x=>x.CreateTime>=SearchRange.StartTime && x.CreateTime<=SearchRange.EndTime)
+                .Where(SearchRange.Filter<RockModel>())
                 .Where(x => x.OrganizationId == data.OrgId)
                 .Future();
+
+            var audit = data.Session.AuditReader();
+            var orgProp = AuditEntity.Property(HibernateSession.Names.ColumnName<RockModel>(x => x.OrganizationId));
+            var auditRocks = audit.CreateQuery().ForEntitiesAtRevision<RockModel>(audit.GetRevisionNumberForDate(SearchRange.EndTime))
+                                .Add(SearchRange.FilterAudit<RockModel>())
+                                .Add(orgProp.Eq(data.OrgId))
+                                .Results().ToList();
+            data.Lookup.Add(AUDIT_ROCKS, auditRocks);
 
             data.Lookup.AddList(rocks);
 
@@ -72,7 +117,8 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 
         private static IEnumerable<IItemInitializer> GetRockForUserId(IItemInitializerData data, long? userId) {
             var rockLookup = data.Lookup.GetList<RockModel>();
-            return rockLookup.Where(x => x.ForUserId == userId).Select(x => new RockItems(x));
+            var audits = data.Lookup.GetOrAdd(AUDIT_ROCKS, x => new List<RockModel>());
+            return rockLookup.Where(x => x.ForUserId == userId).Select(x => new RockItems(x, audits.FirstOrDefault(y=>y.Id==x.Id)));
         }
 
         public IEnumerable<IItemInitializer> GetItemBuilders(IItemInitializerData data) {
@@ -101,8 +147,9 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
                 var items = new List<IItemInitializer>();
                 var about = data.Survey.GetAbout();
                 if (about.ModelType == ForModel.GetModelType<UserOrganizationModel>()) {
-                    var rockLookup = data.Lookup.GetList<RockModel>();
-                    var rocks = rockLookup.Where(x => x.ForUserId == about.ModelId).Select(x => new RockItems(x));
+                    //var rockLookup = data.Lookup.GetList<RockModel>();
+                    //var rocks = rockLookup.Where(x => x.ForUserId == about.ModelId).Select(x => new RockItems(x,));
+                    var rocks = GetRockForUserId(data, about.ModelId);
                     items.AddRange(rocks);
                 } else if (about.ModelType == ForModel.GetModelType<AccountabilityNode>()) {
                     items.AddRange(GetRocksForAccountabilityNode(data, (AccountabilityNode)about));
@@ -121,14 +168,26 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 
     public class RockItems : IItemInitializer {
         private RockModel Rock;
+        private RockModel Audit;
 
-        public RockItems(RockModel rock) {
+        public RockItems(RockModel rock,RockModel audit) {
             Rock = rock;
+            Audit = audit;
         }
 
         public IItem InitializeItem(IItemInitializerData data) {
             var forModel = ForModel.Create(Rock);
-            return new SurveyItem(data, Rock.Rock, forModel, forModel.ToKey());
+
+            var name = Rock.Rock;
+            try {
+                var newName = Audit.NotNull(x => x.Name);
+                if (name != newName && newName != null)
+                    name = newName;
+            }catch(Exception e) {
+                //no revision available
+                int a = 0;
+            }
+            return new SurveyItem(data, name, forModel, forModel.ToKey());
         }
 
         public IItemFormatRegistry GetItemFormat(IItemFormatInitializerCtx ctx) {

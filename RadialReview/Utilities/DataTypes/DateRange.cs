@@ -6,6 +6,8 @@ using RadialReview.Models.L10;
 using NHibernate.Criterion;
 using RadialReview.Models.Interfaces;
 using System.Linq.Expressions;
+using NHibernate.Envers.Query.Criteria;
+using NHibernate.Envers.Query;
 
 namespace RadialReview.Utilities.DataTypes
 {
@@ -38,8 +40,10 @@ namespace RadialReview.Utilities.DataTypes
 			return new DateRange(time, time);
 		}
 
-
-	}
+        public TimeSpan ToTimespan() {
+            return EndTime - StartTime;
+        }
+    }
 	public static class DateRangeExtensions {
 
         /// <summary>
@@ -68,8 +72,22 @@ namespace RadialReview.Utilities.DataTypes
 				return (T x) => x.DeleteTime == null; /// x => true
 			}
 			return (T x) => x.CreateTime <= range.EndTime && (x.DeleteTime == null || x.DeleteTime >= range.StartTime);
-
 		}
+
+        public static IAuditCriterion FilterAudit<T>(this DateRange range) where T : class,IHistorical,new() {
+
+            var createProp = AuditEntity.Property(HibernateSession.Names.ColumnName<T>(x => x.CreateTime));
+            var deleteProp = AuditEntity.Property(HibernateSession.Names.ColumnName<T>(x => x.DeleteTime));
+
+            var ands = new AuditConjunction();
+            ands.Add(createProp.Le(range.EndTime));//x.CreateTime <= range.EndTime
+            var ors = new AuditDisjunction();
+            ors.Add(deleteProp.IsNull());
+            ors.Add(deleteProp.Ge(range.StartTime));// (x.DeleteTime == null || x.DeleteTime >= range.StartTime)
+            ands.Add(ors);
+
+            return ands;
+        }
 
 		public static Expression<Func<T, bool>> Filter<T>(this DateRange range, Func<T, DateTime> transform) {
 			if (range == null) {

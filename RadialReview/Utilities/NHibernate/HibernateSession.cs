@@ -52,6 +52,7 @@ using NHibernate.Criterion;
 using NHibernate.Impl;
 using System.Linq.Expressions;
 using log4net;
+using Mapping = NHibernate.Mapping;
 
 //using Microsoft.VisualStudio.Profiler;
 
@@ -74,6 +75,39 @@ namespace RadialReview.Utilities {
     }
 
     public class HibernateSession {
+
+
+        public class RuntimeNames {
+            private Configuration cfg;
+
+            public RuntimeNames(Configuration cfg) {
+                this.cfg = cfg;
+            }
+
+            public string ColumnName<T>(Expression<Func<T, object>> property)
+                where T : class, new() {
+                var accessor = FluentNHibernate.Utils.Reflection
+                    .ReflectionHelper.GetAccessor(property);
+
+                var names = accessor.Name.Split('.');
+
+                var classMapping = cfg.GetClassMapping(typeof(T));
+
+                return WalkPropertyChain(classMapping.GetProperty(names.First()), 0, names);
+            }
+
+            private string WalkPropertyChain(Mapping.Property property, int index, string[] names) {
+                if (property.IsComposite)
+                    return WalkPropertyChain(((Mapping.Component)property.Value).GetProperty(names[++index]), index, names);
+
+                return property.ColumnIterator.First().Text;
+            }
+
+            public string TableName<T>() where T : class, new() {
+                return cfg.GetClassMapping(typeof(T)).Table.Name;
+            }
+        }
+
         private static ISessionFactory factory;
         private static String DbFile = null;
         /*public static void SetDbFile(string file)
@@ -83,6 +117,8 @@ namespace RadialReview.Utilities {
         private static object lck = new object();
         public static ISession Session { get; set; }
 
+        public static RuntimeNames Names { get; private set; }
+
         public static ISessionFactory GetDatabaseSessionFactory() {
             lock (lck) {
                 if (factory == null) {
@@ -91,6 +127,8 @@ namespace RadialReview.Utilities {
                     var config = System.Configuration.ConfigurationManager.AppSettings;
                     var connectionStrings = System.Configuration.ConfigurationManager.ConnectionStrings;
 
+                    Configuration c;
+
                     switch (Config.GetEnv()) {
                         case Env.local_sqlite: {
 
@@ -98,7 +136,7 @@ namespace RadialReview.Utilities {
                                 var file = connectionString.Split(new String[] { "Data Source=" }, StringSplitOptions.RemoveEmptyEntries)[0].Split(';')[0];
                                 DbFile = file;
                                 try {
-                                    var c = new Configuration();
+                                    c = new Configuration();
                                     c.SetInterceptor(new NHSQLInterceptor());
                                     //SetupAudit(c);
                                     factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
@@ -110,6 +148,7 @@ namespace RadialReview.Utilities {
                                         //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 
                                     })
+                                   .CurrentSessionContext("web")
                                    .ExposeConfiguration(SetupAudit)
                                    .ExposeConfiguration(x => BuildSqliteSchema(x))
                                    .BuildSessionFactory();
@@ -120,7 +159,7 @@ namespace RadialReview.Utilities {
                             }
                         case Env.local_mysql: {
                                 try {
-                                    var c = new Configuration();
+                                    c = new Configuration();
                                     c.SetInterceptor(new NHSQLInterceptor());
                                     //SetupAudit(c);
                                     factory = Fluently.Configure(c).Database(
@@ -133,6 +172,7 @@ namespace RadialReview.Utilities {
                                            ////m.AutoMappings.Add(CreateAutomappings);
                                            ////m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
                                        })
+                                       .CurrentSessionContext("web")
                                        .ExposeConfiguration(SetupAudit)
                                        .ExposeConfiguration(BuildProductionMySqlSchema)
                                        .BuildSessionFactory();
@@ -147,7 +187,7 @@ namespace RadialReview.Utilities {
                                 break;
                             }
                         case Env.production: {
-                                var c = new Configuration();
+                                c = new Configuration();
                                 //SetupAudit(c);
                                 factory = Fluently.Configure(c).Database(
                                             MySQLConfiguration.Standard.Dialect<MySQL5Dialect>().ConnectionString(connectionStrings["DefaultConnectionProduction"].ConnectionString).ShowSql())
@@ -158,6 +198,7 @@ namespace RadialReview.Utilities {
                                        //m.AutoMappings.Add(CreateAutomappings);
                                        //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
                                    })
+                                   .CurrentSessionContext("web")
                                    .ExposeConfiguration(SetupAudit)
                                    .ExposeConfiguration(BuildProductionMySqlSchema)
                                    .BuildSessionFactory();
@@ -186,7 +227,7 @@ namespace RadialReview.Utilities {
 
                                 //var connectionString = "Data Source =" + Path;
                                 try {
-                                    var c = new Configuration();
+                                    c = new Configuration();
                                     c.SetInterceptor(new NHSQLInterceptor());
                                     //SetupAudit(c);
                                     factory = Fluently.Configure(c).Database(SQLiteConfiguration.Standard.ConnectionString(connectionString).IsolationLevel(System.Data.IsolationLevel.ReadCommitted))
@@ -198,7 +239,7 @@ namespace RadialReview.Utilities {
                                         //m.AutoMappings.ExportTo(@"C:\Users\Clay\Desktop\temp\");
 
                                     })
-
+                                    .CurrentSessionContext("web")
                                    .ExposeConfiguration(SetupAudit)
                                    .ExposeConfiguration(x => BuildSqliteSchema(x, forceDbCreate))
                                    .BuildSessionFactory();
@@ -239,6 +280,8 @@ namespace RadialReview.Utilities {
                             }*/
                         default: throw new Exception("No database type");
                     }
+
+                    Names = new RuntimeNames(c);
 
                     ChromeExtensionComms.SendCommand("dbComplete");
 

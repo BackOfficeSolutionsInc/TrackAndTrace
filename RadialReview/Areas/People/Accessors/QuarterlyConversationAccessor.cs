@@ -192,32 +192,36 @@ namespace RadialReview.Areas.People.Accessors {
 
 		public static async Task<long> GenerateQuarterlyConversation(UserOrganizationModel caller, string name, IEnumerable<ByAboutSurveyUserNode> byAbout, DateRange quarterRange, DateTime dueDate, bool sendEmails) {
 
-			var possible = AvailableByAboutsForMe(caller, true, true);
-			var invalid = byAbout.Where(selected => possible.All(avail => avail.GetViewModelKey() != selected.GetViewModelKey()));
-			if (invalid.Any()) {
-				Console.WriteLine("Invalid");
-				foreach (var i in invalid) {
-					Console.WriteLine("\tby:" + i.GetBy().ToKey() + "  about:" + i.GetAbout().ToKey());
-				}
-				throw new PermissionsException("Could not create Quarterly Conversation. You cannot view these items.");
-			}
+            try {
+                var possible = AvailableByAboutsForMe(caller, true, true);
+                var invalid = byAbout.Where(selected => possible.All(avail => avail.GetViewModelKey() != selected.GetViewModelKey()));
+                if (invalid.Any()) {
+                    Console.WriteLine("Invalid");
+                    foreach (var i in invalid) {
+                        Console.WriteLine("\tby:" + i.GetBy().ToKey() + "  about:" + i.GetAbout().ToKey());
+                    }
+                    throw new PermissionsException("Could not create Quarterly Conversation. You cannot view these items.");
+                }
 
-			var populatedByAbouts = byAbout.Select(x => possible.First(y => x.GetViewModelKey() == y.GetViewModelKey())).ToList();
+                var populatedByAbouts = byAbout.Select(x => possible.First(y => x.GetViewModelKey() == y.GetViewModelKey())).ToList();
 
-			QuarterlyConversationGeneration qcResult;
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var perms = PermissionsUtility.Create(s, caller);
-					perms.CreateQuarterlyConversation(caller.Organization.Id);
-					qcResult = GenerateQuarterlyConversation_Unsafe(s, perms, name, populatedByAbouts, quarterRange, dueDate, sendEmails);
-					tx.Commit();
-					s.Flush();
-				}
-			}
-			if (sendEmails) {
-				await Emailer.SendEmails(qcResult.UnsentEmail);
-			}
-			return qcResult.SurveyContainerId;
+                QuarterlyConversationGeneration qcResult;
+                using (var s = HibernateSession.GetCurrentSession()) {
+                    using (var tx = s.BeginTransaction()) {
+                        var perms = PermissionsUtility.Create(s, caller);
+                        perms.CreateQuarterlyConversation(caller.Organization.Id);
+                        qcResult = GenerateQuarterlyConversation_Unsafe(s, perms, name, populatedByAbouts, quarterRange, dueDate, sendEmails);
+                        tx.Commit();
+                        s.Flush();
+                    }
+                }
+                if (sendEmails) {
+                    await Emailer.SendEmails(qcResult.UnsentEmail);
+                }
+			    return qcResult.SurveyContainerId;
+            }catch(Exception e) {
+                throw e;
+            }
 		}
 
 		public static QuarterlyConversationGeneration GenerateQuarterlyConversation_Unsafe(ISession s, PermissionsUtility perms, string name, IEnumerable<ByAboutSurveyUserNode> byAbout, DateRange quarterRange, DateTime dueDate, bool generateEmails) {

@@ -87,7 +87,7 @@ namespace RadialReview.Areas.People.Controllers {
                 //	byAbouts.AddRange(byAbouts.Select(x => new ByAboutSurveyUserNode(x.About, x.About, AboutType.Self)).ToList());
                 //}
                 //byAbouts = byAbouts.Distinct().ToList();
-                var quarterRange = new DateRange(qtrStart.AddDays(-7), qtrStart.AddDays(65));
+                var quarterRange = new DateRange(qtrStart, qtrStart.AddDays(90));
 
 
                 var id = await QuarterlyConversationAccessor.GenerateQuarterlyConversation(GetUser(), name, filtered, quarterRange, dueDate, email);
