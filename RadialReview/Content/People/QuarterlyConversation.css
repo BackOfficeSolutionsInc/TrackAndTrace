@@ -44,6 +44,11 @@
   border-bottom: 2px solid rgba(62, 57, 53, 0.5);
   box-shadow: 0 0 15px 2px rgba(0, 0, 0, 0.4);
 }
+@media (max-width: 768px) {
+  .people.quarterly-conversation survey-container .current-section .decoration {
+    display: none;
+  }
+}
 .people.quarterly-conversation survey-container .current-section .title {
   color: #fff;
   background-color: #EF7622;
@@ -96,8 +101,15 @@
     font-family: 'Lato', sans-serif;
     font-weight: 900;
     padding-left: 0px;
-    padding-left: 53px;
-    padding-right: 188px;
+    padding-left: 80px;
+    padding-right: 158px;
+    box-shadow: none;
+    border-bottom: none;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    height: 32px;
+    padding-top: 10px;
   }
 }
 .people.quarterly-conversation survey-container .survey {

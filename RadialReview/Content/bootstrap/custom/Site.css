@@ -1233,3 +1233,39 @@ body.beta .beta-only.beta-label:hover {
     text-shadow: 0 0 1px white,0 0 1px white,0 0 1px white, !important;
   }
 }
+.help-icon[title] {
+  color: white;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 9px;
+  width: 18px;
+  height: 18px;
+  overflow: hidden;
+  display: inline-block;
+  text-align: center;
+  margin-bottom: -4px;
+  margin-left: 6px;
+  margin-right: 6px;
+  margin-top: -14px;
+  cursor: help;
+  font-weight: bold;
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+}
+.help-icon[title]:after {
+  content: "?";
+  color: white;
+  font-size: 12px;
+  margin-top: -4px;
+  position: relative;
+  top: -2.3px;
+  left: -0.5px;
+}
