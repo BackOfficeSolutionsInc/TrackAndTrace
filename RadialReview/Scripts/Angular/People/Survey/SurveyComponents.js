@@ -41,7 +41,7 @@ angular.module('people').component('surveyContainer', {
 		}
 		$scope.anchorShift = function () {
 			$timeout(function () {
-				$window.scrollTo($window.scrollX, $window.scrollY - 65);
+				$window.scrollTo($window.scrollX, $window.scrollY - 48);
 			}, 1);
 		};
 		$scope.$on('spied', function (evt, spies) {
