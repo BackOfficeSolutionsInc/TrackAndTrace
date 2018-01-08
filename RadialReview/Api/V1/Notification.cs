@@ -24,7 +24,7 @@ namespace RadialReview.Api.V1 {
         //[GET/POST/DELETE] /headline/{id}
         [Route("notification/{NOTIFICATION_ID}")]
         [HttpGet]
-        public AngularAppNotification GetHeadline(long NOTIFICATION_ID) {
+        public AngularAppNotification GetNotification(long NOTIFICATION_ID) {
             return new AngularAppNotification(NotificationAccessor.GetNotification(GetUser(), NOTIFICATION_ID));
         }
 
