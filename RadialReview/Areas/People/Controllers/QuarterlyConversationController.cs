@@ -116,7 +116,7 @@ namespace RadialReview.Areas.People.Controllers {
 
             var userNodes = AccountabilityAccessor.GetNodesForUser(GetUser(), userId);
 
-            SurveyAccessor.GetSurveyContainerAbout(GetUser(),)
+            SurveyAccessor.GetSurveyContainersAbout(GetUser(),)
 
         }
 
