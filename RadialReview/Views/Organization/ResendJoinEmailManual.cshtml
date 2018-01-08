@@ -4,8 +4,8 @@
 
 
 <div class="row">
-    <div class="col-xs-12"><p>This link must be used for registration of @Model.FirstName @Model.LastName</p></div>
-    <div class="col-xs-12"><p>Do not send this link to anyone else or You should not click this link.</p></div>
+    <div class="col-xs-12"><p><strong> This link must be used for registration of @Model.FirstName @Model.LastName</strong></p></div>
+    @*<div class="col-xs-12"><p>Do not send this link to anyone else or You should not click this link.</p></div>*@
     <div class="col-xs-12"><p><strong>This will cause issues with your account linking with this user.</strong></p></div>
 </div>
 <div class="smallBreak"></div>
@@ -20,7 +20,13 @@
                 Open your favourite email client
             </li>
             <li>
-                send copied text to email  @Model.Email
+                Send copied text to email  @Model.Email
+            </li>
+            <li>
+                Do not send this link to anyone else
+            </li>
+            <li>
+                You should not click this link
             </li>
         </ul>
     
@@ -31,7 +37,7 @@
     <div class="row">
         <a class="pull-right" style="margin-right:11%;" href="javascript:void(0);" onclick="CopyClipboard($('.emailContainer'));">Copy Content</a>
         <div class="col-xs-12">
-            <div class="emailContainer" style="width:80%;margin-left:10%;border: 1px solid gray;padding: 10px;">
+            <div class="emailContainer" style="width:80%;margin-left:10%;border: 1px solid gray;padding: 10px;background-color:#f3f4f4;">
                 @Html.Raw(Model.EmailTemplate)
                 @*<textarea class="form-control">
            @Html.Raw(Model.EmailTemplate)

@@ -69,29 +69,71 @@ namespace RadialReview.Controllers
                 var tree = AccountabilityAccessor.GetTree(GetUser(), GetUser().Organization.AccountabilityChartId, expandAll: true);
                 if (!department)
                     pdf = AccountabilityChartPDF.GenerateAccountabilityChart(tree.Root, pw.Value, ph.Value, restrictSize: fit, selectedNode: root.NodeId);
-                else {
-                    var nodes = new List<AngularAccountabilityNode>();
-                    //Add nodes from the tree.
-                    if (!userCheck)
-                    {
+                else
+                {
+                    if (selected != null) {
+
+                        var nodes = new List<AngularAccountabilityNode>();
+                        var topNodes = tree.Root.GetDirectChildren(); //tree.Root.children.Where(t => t.Id == selected).FirstOrDefault().GetDirectChildren();
+                        //var tree1 = tree.Root.children.Where(t => t.Id == selected).FirstOrDefault();
+
+
+                        //Add nodes from the tree.
                         tree.Dive(x =>
                         {
-                            if (x.User != null)
+                            if (x.Id == selected)
                                 nodes.Add(x);
                         });
+
+                        if (nodes.Any())
+                        {
+                            foreach (var item in nodes.FirstOrDefault().children)
+                            {
+                                nodes.Add(item);
+                            }
+                        }
+
+                        //Setup if has parents
+                        //foreach (var n in nodes)
+                        //{
+                        //    n._hasParent = topNodes.All(x => x.Id != n.Id);
+                        //}
+
+
+                        //merger.AddDocs(AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(nodes, pw.Value, ph.Value, restrictSize: fit, settings: settings));
+                        //pdf = merger.Flatten("", false, false);
+
+                        nodes = nodes.Where(t => root.NodeId.Contains(t.Id)).ToList();
+                        var selectedNode = diveSeletedNode(nodes, root.NodeId);
+                        merger.AddDocs(AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(selectedNode, pw.Value, ph.Value, restrictSize: fit));
+                        pdf = merger.Flatten("", false, false);
+
                     }
                     else
                     {
-                        tree.Dive(x =>
+                        var nodes = new List<AngularAccountabilityNode>();
+                        //Add nodes from the tree.
+                        if (!userCheck)
                         {
-                            nodes.Add(x);
-                        });
-                    }
+                            tree.Dive(x =>
+                            {
+                                if (x.User != null)
+                                    nodes.Add(x);
+                            });
+                        }
+                        else
+                        {
+                            tree.Dive(x =>
+                            {
+                                nodes.Add(x);
+                            });
+                        }
 
-                    nodes = nodes.Where(t => root.NodeId.Contains(t.Id)).ToList();
-                    var selectedNode = diveSeletedNode(nodes, root.NodeId);
-                    merger.AddDocs(AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(selectedNode, pw.Value, ph.Value, restrictSize: fit));
-                    pdf = merger.Flatten("", false, false);
+                        nodes = nodes.Where(t => root.NodeId.Contains(t.Id)).ToList();
+                        var selectedNode = diveSeletedNode(nodes, root.NodeId);
+                        merger.AddDocs(AccountabilityChartPDF.GenerateAccountabilityChartSingleLevels(selectedNode, pw.Value, ph.Value, restrictSize: fit));
+                        pdf = merger.Flatten("", false, false);
+                    }
                 }
             }
             else
