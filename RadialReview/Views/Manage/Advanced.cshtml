@@ -178,14 +178,21 @@
 						@Html.CheckBoxFor(x => x.ManagersCanRemoveUsers, new { @class = "checkbox" })
 					</div>
 				</div>
-				<div class="row">
-					<div class="col-xs-5  ttt">
-						<label class="control-label">@RadialReview.Utilities.Config.ManagerName()s can edit positions:</label>
-					</div>
-					<div class="col-xs-3">
-						@Html.CheckBoxFor(x => x.ManagersCanEditPositions, new { @class = "checkbox" })
-					</div>
-				</div>
+                <div class="row">
+                    <div class="col-xs-5  ttt">
+                        <label class="control-label">@RadialReview.Utilities.Config.ManagerName()s can edit positions:</label>
+                    </div>
+                    <div class="col-xs-3">
+                        @Html.CheckBoxFor(x => x.ManagersCanEditPositions, new { @class = "checkbox" })
+                    </div>
+                </div><div class="row">
+                    <div class="col-xs-5  ttt">
+                        <label class="control-label">Allow adding clients as users:</label>
+                    </div>
+                    <div class="col-xs-3">
+                        @Html.CheckBoxFor(x => x.AllowAddClient, new { @class = "checkbox" })
+                    </div>
+                </div>
 
 				@if (ViewBag.ShowReview) {
 					<div class="row">

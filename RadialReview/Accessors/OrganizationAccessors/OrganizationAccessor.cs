@@ -844,7 +844,8 @@ namespace RadialReview.Accessors {
 																			string dateFormat = null,
 																			NumberFormat? numberFormat = null,
 																			bool? limitFiveState = null,
-																			int? defaultTodoSendTime = null
+																			int? defaultTodoSendTime = null,
+                                                                            bool? allowAddClient =null
 			) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
@@ -932,6 +933,9 @@ namespace RadialReview.Accessors {
 
 					if (defaultTodoSendTime != null)
 						org.Settings.DefaultSendTodoTime = defaultTodoSendTime.Value;
+
+                    if (allowAddClient != null)
+                        org.Settings.AllowAddClient = allowAddClient.Value;
 
 					s.Update(org);
 
