@@ -27,6 +27,14 @@ angular.module('people').component('surveyContainer', {
 			r.sendUpdate(a);
 		};
 
+        $scope.showSurvey = function (survey) {
+            for (var i = 0; i < survey.Sections.length; i++) {
+                if (survey.Sections[i].Items.length > 0)
+		            return true;
+		    }
+		    return false;
+		}
+
 		var sectionNames = {};
 
 		$scope.getSections = function (survey) {
@@ -39,9 +47,12 @@ angular.module('people').component('surveyContainer', {
 			sectionNames["survey-" + survey.Id] = survey.Name;
 			return "survey-" + survey.Id + builder;
 		}
-		$scope.anchorShift = function () {
+		$scope.anchorShift = function (titlebar) {
+		    var s = -90;
+		    if (titlebar)
+		        s = -48;
 			$timeout(function () {
-				$window.scrollTo($window.scrollX, $window.scrollY - 48);
+				$window.scrollTo($window.scrollX, $window.scrollY + s);
 			}, 1);
 		};
 		$scope.$on('spied', function (evt, spies) {
@@ -66,6 +77,15 @@ angular.module('people').component('surveyContainer', {
 		$scope.changeResponse = function (response) {
 			$scope.onChangeResponse()(response);
 		};
+
+		$scope.showSurvey = function () {
+		    for (var i = 0; i < $scope.model.Sections.length; i++) {
+		        if ($scope.model.Sections[i].Items.length > 0)
+		            return true;
+		    }
+		    return false;
+		}
+
 	}]
 }).component('surveySection', {
 	templateUrl: function () { return '/Content/AngularTemplates/People/Survey/surveySection.html'; },

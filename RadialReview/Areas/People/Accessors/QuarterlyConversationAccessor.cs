@@ -48,7 +48,9 @@ namespace RadialReview.Areas.People.Accessors {
 
 		public static IEnumerable<ByAboutSurveyUserNode> AvailableByAboutsFiltered(UserOrganizationModel caller, IEnumerable<SurveyUserNode> abouts, bool includeSelf, bool supervisorLMA) {
 			var allAvailable = AvailableByAboutsForMe(caller, includeSelf, supervisorLMA);
-			return allAvailable.Where(aa => abouts.Any(about => about.ToViewModelKey() == aa.About.ToViewModelKey()));
+			return allAvailable
+                        .Where(aa => abouts.Any(about => about.ToViewModelKey() == aa.About.ToViewModelKey()))
+                        .Where(aa => abouts.Any(about => about.ToViewModelKey() == aa.By.ToViewModelKey()));
 		}
 
 		private static SurveyUserNode SunGetter(Dictionary<string, SurveyUserNode> existingItems, AccountabilityNode toAdd) {
@@ -317,7 +319,6 @@ namespace RadialReview.Areas.People.Accessors {
 
 		}
 		
-
 		public static AngularPeopleAnalyzer GetPeopleAnalyzer(UserOrganizationModel caller, long userId, DateRange range = null) {
 			//Determine if self should be included.
 			var includeSelf = caller.IsManager();
@@ -365,30 +366,16 @@ namespace RadialReview.Areas.People.Accessors {
 														//PrettyString = prettyString
 													};
 												}).ToList();
-					//var acNodeChildrenIds = acNodeChildrenModels.Where(x => allSurveyNodeItems.Any(n => n.AccountabilityNodeId == x.Id && n.UserOrganizationId == x.UserId)).Select(x => x.Id);
-
-
+				
 					//Should be more of these which produce more accNodeResults...
 					var availableSurveyNodes = allSurveyNodeItems.Where(n => acNodeChildrenModels.Any(x => x.Id == n.AccountabilityNodeId && x.UserId == n.UserOrganizationId)).ToList();
 					var surveyNodeIds = availableSurveyNodes.Select(x => x.ModelId).ToList();
-					//System.Diagnostics.Debug.WriteLine("-----");
-					//foreach (var sni in allSurveyNodeItems) {						
-					//	System.Diagnostics.Debug.WriteLine(sni.Id+" "+sni.UserOrganizationId + " " + sni.AccountabilityNodeId);
-					//}
-					//System.Diagnostics.Debug.WriteLine("-----");
-
-					//foreach (var sni in acNodeChildrenModels) {
-					//	System.Diagnostics.Debug.WriteLine(sni.UserId + " " + sni.Id);
-					//}
-
-
+					
 					var accountabiliyNodeResults = s.QueryOver<SurveyResponse>()
 						.Where(x => x.SurveyType == SurveyType.QuarterlyConversation && x.OrgId == caller.Organization.Id && x.About.ModelType == ForModel.GetModelType<SurveyUserNode>() && x.DeleteTime == null && x.Answer != null)
 						.Where(range.Filter<SurveyResponse>())
 						.WhereRestrictionOn(x => x.About.ModelId).IsIn(surveyNodeIds.ToArray())
 						.List().ToList();
-					//var users = s.QueryOver<AccountabilityNode>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(acNodeChildrenIds.Distinct().ToArray()).Fetch(x => x.User).Eager.Future();
-
 
 					var formats = s.QueryOver<SurveyItemFormat>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(accountabiliyNodeResults.Select(x => x.ItemFormatId).Distinct().ToArray()).Future();
 					var items = s.QueryOver<SurveyItem>().Where(x => x.DeleteTime == null).WhereRestrictionOn(x => x.Id).IsIn(accountabiliyNodeResults.Select(x => x.ItemId).Distinct().ToArray()).Future();
@@ -588,5 +575,9 @@ namespace RadialReview.Areas.People.Accessors {
 				}
 			}
 		}
+
+
+
+
 	}
 }

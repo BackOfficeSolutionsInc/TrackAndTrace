@@ -110,6 +110,15 @@ namespace RadialReview.Areas.People.Controllers {
 			return View(id);
 		}
 
+        [Access(AccessLevel.UserOrganization)]
+        public ActionResult Surveys(long id) {
+            var userId = id;
+
+            var userNodes = AccountabilityAccessor.GetNodesForUser(GetUser(), userId);
+
+            SurveyAccessor.GetSurveyContainerAbout(GetUser(),)
+
+        }
 
 		[Access(AccessLevel.UserOrganization)]
 		public ActionResult Print(long surveyContainerId, long sunId, bool print = true) {

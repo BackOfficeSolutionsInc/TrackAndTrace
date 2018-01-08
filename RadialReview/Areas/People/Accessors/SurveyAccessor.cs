@@ -118,7 +118,40 @@ namespace RadialReview.Areas.People.Accessors {
 			}
 		}
 
-		public static IEnumerable<AngularSurveyContainer> GetSurveyContainersBy(UserOrganizationModel caller, IForModel byModel, SurveyType type) {
+        public static IEnumerable<AngularSurveyContainer> GetSurveyContainersAbout(UserOrganizationModel caller, IForModel aboutModel, SurveyType type) {
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    perms.ViewSurveyResultsAbout(aboutModel);
+                   //perms.Self(byModel);
+
+                    var containerIds = s.QueryOver<Survey>().Where(x => x.DeleteTime == null && x.SurveyType == type)
+                        .Where(x => x.By.ModelId == byModel.ModelId && x.By.ModelType == byModel.ModelType)
+                        .Select(x => Projections.Group<Survey>(y => y.SurveyContainerId))
+                        .Select(x => x.SurveyContainerId)
+                        .List<long>().ToArray();
+
+                    var containers = s.QueryOver<SurveyContainer>().Where(x => x.DeleteTime == null && x.SurveyType == type)
+                        .WhereRestrictionOn(x => x.Id).IsIn(containerIds)
+                        .List();
+
+                    var issuedBy = containers
+                        .Select(x => x.CreatedBy)
+                        .Where(x => x.ModelType == ForModel.GetModelType<UserOrganizationModel>())
+                        .Select(x => x.ModelId)
+                        .Distinct().ToList();
+
+                    var creatorLookup = TinyUserAccessor.GetUsers_Unsafe(s, issuedBy, false).ToDefaultDictionary(x => x.ToKey(), x => AngularUser.CreateUser(x), null);
+
+                    return containers.Select(x => new AngularSurveyContainer(x, x.DueDate < DateTime.UtcNow, creatorLookup[x.CreatedBy.ToKey()]));
+
+                    //perms.ViewSurveyContainer(surveyContainerId);
+                }
+            }
+        }
+
+
+        public static IEnumerable<AngularSurveyContainer> GetSurveyContainersBy(UserOrganizationModel caller, IForModel byModel, SurveyType type) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					var perms = PermissionsUtility.Create(s, caller);

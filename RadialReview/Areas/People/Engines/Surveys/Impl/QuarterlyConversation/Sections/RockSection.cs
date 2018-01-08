@@ -123,15 +123,15 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.S
 
         public IEnumerable<IItemInitializer> GetItemBuilders(IItemInitializerData data) {
 
-            var dict = data.Lookup.GetOrAdd("RockSectionAlreadyGenerated", (_str) => new DefaultDictionary<string, bool>(x => false));
-            var byAboutKey = data.By.ToKey() + "-" + data.About.ToKey();
-            if (data.About.Is<SurveyUserNode>()) {
-                byAboutKey = data.By.ToKey() + "-" + ((SurveyUserNode)data.About).User.ToKey();
-            }
-            var alreadyGenerated = dict[byAboutKey];
+            //var dict = data.Lookup.GetOrAdd("RockSectionAlreadyGenerated", (_str) => new DefaultDictionary<string, bool>(x => false));
+            //var byAboutKey = data.By.ToKey() + "-" + data.About.ToKey();
+            //if (data.About.Is<SurveyUserNode>()) {
+            //    byAboutKey = data.By.ToKey() + "-" + ((SurveyUserNode)data.About).User.ToKey();
+            //}
+            //var alreadyGenerated = dict[byAboutKey];
 
-            if (!alreadyGenerated) {
-                dict[byAboutKey] = true;
+            if (data.FirstSeenByAbout()) {
+                //dict[byAboutKey] = true;
 
                 //only ask if they are not our manager
                 if (data.SurveyContainer.GetSurveyType() == SurveyType.QuarterlyConversation && data.About.Is<SurveyUserNode>()) {

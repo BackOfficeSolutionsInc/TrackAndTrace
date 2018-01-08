@@ -13,6 +13,16 @@ using System.Web;
 namespace RadialReview.Accessors {
 	public class ForModelAccessor {
 
+        public static long GetOrganizationId(ISession s,IForModel forModel) {
+            if (forModel.Is<UserOrganizationModel>()) {
+                return s.Get<UserOrganizationModel>(forModel.ModelId).Organization.Id;
+            }else if (forModel.Is<SurveyUserNode>()) {
+                var sun = s.Get<SurveyUserNode>(forModel.ModelId);
+                return sun.User.Organization.Id;
+
+            }
+
+        }
 
 		public static string GetEmail_Unsafe(IForModel forModel) {
 			using (var s = HibernateSession.GetCurrentSession()) {

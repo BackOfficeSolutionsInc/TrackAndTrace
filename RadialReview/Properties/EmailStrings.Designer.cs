@@ -93,7 +93,7 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This message was generated automatically by Traction Tools, a product of {0} 1201 Infinity Ct, Lincoln, NE 68512&lt;br/&gt;If you feel you have received this message in error you can respond to this email..
+        ///   Looks up a localized string similar to This message was generated automatically by Traction Tools.&lt;br/&gt; 1201 Infinity Ct, Lincoln, NE 68512&lt;br/&gt;If you feel you have received this message in error you can respond to this email..
         /// </summary>
         public static string Footer {
             get {
