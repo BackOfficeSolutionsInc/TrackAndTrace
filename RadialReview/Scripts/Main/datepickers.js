@@ -96,7 +96,7 @@ function serverDateFormat(edate) {
 }
 
 function createDatepicker(selector, date, name, id, options) {
-	debugger;
+	//debugger;
 	if (typeof (date) === "undefined") {
 		date = new Date();
 	} else if (date == false) {
