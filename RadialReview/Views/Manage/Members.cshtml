@@ -335,7 +335,7 @@
 						<td class="filter-resize-tiny">
 							<input id="input-filter" style="display: inline-block;" type="text" class="form-control" placeholder="Filter by name, position, @RadialReview.Utilities.Config.ManagerName().ToLower() or email..." />
 						</td>
-						<td style="width: 186px; padding-left: 8px; padding-top: 1px; text-align: center;">
+						<td style="width: @(ViewBag.ShowAddClient==true?"186px":"210px"); padding-left: 8px; padding-top: 1px; text-align: center;">
 							<div class="btn-group">
 								<button type="button" class="btn btn-default dropdown-toggle plus" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="send">
 									Send invites <span class="caret"></span>
@@ -362,12 +362,15 @@
 							<div class="btn-group">
 								<button type="button" class="btn btn-default plus dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @*onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization")"*@>Add<span class="caret"></span></button>
 								<ul class="dropdown-menu dropdown-menu-right">
-									<li><a href="#" onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization", preSubmitCheck: "checkAddUser")"><span class="glyphicon glyphicon-user gray"></span> Add Member</a></li>
+									<li><a href="#" onclick="@Html.ShowModal("Add user", "/User/AddModal", "/nexus/AddManagedUserToOrganization", preSubmitCheck: "checkAddUser")"><span class="glyphicon glyphicon-user gray"></span> Add Member</a></li>
 									<li><a href="#" onclick="@Html.ShowModal("Add client", "/User/AddModal?isClient=true", "/nexus/AddManagedUserToOrganization")"><span class="glyphicon glyphicon-globe gray"></span> Add Client</a></li>
 								</ul>
 							</div>
                             } else {
-                                <button type="button" class="btn btn-default plus dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="@Html.ShowModal("Add managed user", "/User/AddModal", "/nexus/AddManagedUserToOrganization", preSubmitCheck: "checkAddUser")">Add User</button>
+                                <button type="button" class="btn btn-default plus" aria-haspopup="true" aria-expanded="false"
+                                        onclick="@Html.ShowModal("Add user", "/User/AddModal", "/nexus/AddManagedUserToOrganization", preSubmitCheck: "checkAddUser")">
+                                    Add User
+                                </button>
                             }
 						</td>
 					</tr>
