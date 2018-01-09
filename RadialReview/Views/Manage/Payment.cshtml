@@ -1,262 +1,266 @@
 ﻿@using RadialReview.Models
 @model RadialReview.Models.ViewModels.OrganizationViewModel
 @{
-	ViewBag.Title = "Advanced";
-	Layout = "~/Views/Shared/_Layout.cshtml";
-	ViewBag.Page = "Payment";
-	var showExtra_freeusers = false;
+    ViewBag.Title = "Advanced";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Page = "Payment";
+    var showExtra_freeusers = false;
 }
 
 @section top{
-	<div class="jumbotron">
-		<h1>Manage</h1>
-	</div>
+    <div class="jumbotron">
+        <h1>Manage</h1>
+    </div>
 }
 
 @section header{
-	@Html.Partial("Partial/manageheader")
+    @Html.Partial("Partial/manageheader")
 }
 <br />
 
 @{
-	var l10Enabled = Html.Organization().Settings.EnableL10;
-	var reviewedEnabled = Html.Organization().Settings.EnableReview;
-	var surveyEnabled = Html.Organization().Settings.EnableSurvey;
-	var isImplementer = Html.Organization().AccountType == RadialReview.Models.Enums.AccountType.Implementer;
+    var l10Enabled = Html.Organization().Settings.EnableL10;
+    var reviewedEnabled = Html.Organization().Settings.EnableReview;
+    var surveyEnabled = Html.Organization().Settings.EnableSurvey;
+    var isImplementer = Html.Organization().AccountType == RadialReview.Models.Enums.AccountType.Implementer;
 }
 
 <div class="pull-left">
-	@{
-		Html.RenderAction("Dropdown", "Permissions", new { id = Model.Id, type = PermItem.ResourceType.UpdatePaymentForOrganization });
-	}
+    @{
+        Html.RenderAction("Dropdown", "Permissions", new { id = Model.Id, type = PermItem.ResourceType.UpdatePaymentForOrganization });
+    }
 </div>
 
 
 
 @if (isImplementer) {
-	<div class="panel panel-primary">
-		<div class="panel-heading">
-			Payment Plan
-		</div>
-		<div style="padding:15px;" class="panel-body">
-			<i>Implementer accounts are free.</i>
-		</div>
-	</div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Payment Plan
+        </div>
+        <div style="padding:15px;" class="panel-body">
+            <i>Implementer accounts are free.</i>
+        </div>
+    </div>
 } else {
-	<div style="text-align: right;margin-bottom: 3px;">
-		<div class="no-ios">
-			<a class="btn btn-primary btn-invert" href="/Payment/SetACH">Add Bank Account</a>
-			<a class="btn btn-primary btn-invert" href="/Payment/SetCard">Add Credit Card</a>
-		</div>
-	</div>
-	<div class="panel panel-primary">
-		@if (Model.Cards.Any()) {
-			<table class="table table-condensed table-hover">
-				<thead>
-					<tr>
-						<th></th>
-						<th>Owner</th>
-						<th class="alignCenter">Number</th>
-						<th class="alignCenter">Entered</th>
-						<th class="alignCenter">Status</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach (var card in Model.Cards) {
-						<tr>
-							<td style="width:40px"><img style="height: 23px;" src="@card.ImageUrl" /></td>
-							<td>@card.Owner</td>
-							<td class="alignCenter" style="width:150px;">************@card.Last4</td>
-							<td class="alignCenter" style="width:90px;" title="@Html.Organization().ConvertFromUTC(card.Created).ToString()">@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", Html.Organization().ConvertFromUTC(card.Created))</td>
-							<td class="alignCenter" style="width:90px;"><span style="width:56px;display:inline-block;" class="label label-@(card.Active ? "success" : "default")">@(card.Active ? "Active" : "Inactive")</span></td>
-						</tr>
-					}
-				</tbody>
-			</table> } else {
-			<div class="panel-heading">
-				Payment Methods
-			</div>
-			<div class="panel-body">
-				<span class="gray">No credit cards on file. Click Add button to create one.</span>
-			</div> }
-	</div>
+    <div style="text-align: right;margin-bottom: 3px;">
+        <div class="no-ios">
+            <a class="btn btn-primary btn-invert" href="/Payment/SetACH">Add Bank Account</a>
+            <a class="btn btn-primary btn-invert" href="/Payment/SetCard">Add Credit Card</a>
+        </div>
+    </div>
+    <div class="panel panel-primary">
+        @if (Model.Cards.Any()) {
+            <table class="table table-condensed table-hover">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Owner</th>
+                        <th class="alignCenter">Number</th>
+                        <th class="alignCenter">Entered</th>
+                        <th class="alignCenter">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var card in Model.Cards) {
+                        <tr>
+                            <td style="width:40px"><img style="height: 23px;" src="@card.ImageUrl" /></td>
+                            <td>@card.Owner</td>
+                            <td class="alignCenter" style="width:150px;">************@card.Last4</td>
+                            <td class="alignCenter" style="width:90px;" title="@Html.Organization().ConvertFromUTC(card.Created).ToString()">@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", Html.Organization().ConvertFromUTC(card.Created))</td>
+                            <td class="alignCenter" style="width:90px;"><span style="width:56px;display:inline-block;" class="label label-@(card.Active ? "success" : "default")">@(card.Active ? "Active" : "Inactive")</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table> } else {
+            <div class="panel-heading">
+                Payment Methods
+            </div>
+            <div class="panel-body">
+                <span class="gray">No credit cards on file. Click Add button to create one.</span>
+            </div> }
+    </div>
 
-	<div class="panel panel-primary">
-		<div class="panel-heading">
-			Payment Plan
-		</div>
-		<table class="table table-condensed payment">
-			@*<thead>
-					<tr>
-						<th style="width:250px;padding-left: 5px!important"></th>
-						<th></th>
-					</tr>
-				</thead>*@
-			<tbody>
-				@if (Model.PaymentPlan is PaymentPlan_Monthly) {
-					var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
-					if (plan.BaselinePrice > 0) {
-						<tr>
-							<th>Base fee</th>
-							<td>
-								@String.Format("{0:C}", plan.BaselinePrice)
-								@if (plan.FirstN_Users_Free > 0) {
-									<span>(covers the first <b>@plan.FirstN_Users_Free</b> users)</span>
-								}
-							</td>
-						</tr>
-					} else {
-						showExtra_freeusers = true;
-					}
-				}
-				<tr>
-					<th>Level 10 Meeting Software </th>
-					<td>@(l10Enabled ? new HtmlString("<span class='enabled label label-success'>Enabled</span>") : new HtmlString("<span class='enabled label label-danger'>Not Enabled</span>"))</td>
-				</tr>
-				@if (l10Enabled) {
-					if (Model.PaymentPlan is PaymentPlan_Monthly) {
-						var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Payment Plan
+        </div>
+        <table class="table table-condensed payment">
+            @*<thead>
+                    <tr>
+                        <th style="width:250px;padding-left: 5px!important"></th>
+                        <th></th>
+                    </tr>
+                </thead>*@
+            <tbody>
+                @if (Model.PaymentPlan is PaymentPlan_Monthly) {
+                    var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
+                    if (plan.BaselinePrice > 0) {
+                        <tr>
+                            <th>Base fee</th>
+                            <td>
+                                @String.Format("{0:C}", plan.BaselinePrice)
+                                @if (plan.FirstN_Users_Free > 0) {
+                                    <span>(covers the first <b>@plan.FirstN_Users_Free</b> users)</span>
+                                }
+                            </td>
+                        </tr>
+                    } else {
+                        showExtra_freeusers = true;
+                    }
+                }
+                <tr>
+                    <th>Level 10 Meeting Software </th>
+                    <td>@(l10Enabled ? new HtmlString("<span class='enabled label label-success'>Enabled</span>") : new HtmlString("<span class='enabled label label-danger'>Not Enabled</span>"))</td>
+                </tr>
+                @if (l10Enabled) {
+                    if (Model.PaymentPlan is PaymentPlan_Monthly) {
+                        var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
 
-						<tr>
-							<td>&nbsp;&nbsp;<span class="price">@String.Format("{0:C}", plan.L10PricePerPerson)</span><span class="price-ending">/Person/Month</span></td>
-							<td></td>
-						</tr>if (plan.L10FreeUntil != null && plan.L10FreeUntil > DateTime.UtcNow) {
-							<tr>
-								<td>&nbsp;&nbsp;Free until <span>@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", plan.L10FreeUntil.Value)</span></td>
-								<td></td>
-							</tr>
-						}
-					}
-				}
-				<tr>
-					<td style="border-top:1px solid #f1f1f1"></td>
-					<td style="border-top:1px solid #f1f1f1"></td>
-				</tr>
-				<tr>
-					<th>Review Software</th>
-					<td> @(reviewedEnabled ? new HtmlString("<span class='enabled label label-success'>Enabled</span>") : new HtmlString("<span class='enabled label label-danger'>Not Enabled</span>"))</td>
-				</tr>
-				@if (reviewedEnabled) {
-					if (Model.PaymentPlan is PaymentPlan_Monthly) {
-						var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
+                        <tr>
+                            <td>&nbsp;&nbsp;<span class="price">@String.Format("{0:C}", plan.L10PricePerPerson)</span><span class="price-ending">/Person/Month</span></td>
+                            <td></td>
+                        </tr>if (plan.L10FreeUntil != null && plan.L10FreeUntil > DateTime.UtcNow) {
+                            <tr>
+                                <td>&nbsp;&nbsp;Free until <span>@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", plan.L10FreeUntil.Value)</span></td>
+                                <td></td>
+                            </tr>
+                        }
+                    }
+                }
+                <tr>
+                    <td style="border-top:1px solid #f1f1f1"></td>
+                    <td style="border-top:1px solid #f1f1f1"></td>
+                </tr>
+                <tr>
+                    <th>Review Software</th>
+                    <td> @(reviewedEnabled ? new HtmlString("<span class='enabled label label-success'>Enabled</span>") : new HtmlString("<span class='enabled label label-danger'>Not Enabled</span>"))</td>
+                </tr>
+                @if (reviewedEnabled) {
+                    if (Model.PaymentPlan is PaymentPlan_Monthly) {
+                        var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
 
-						<tr>
-							<td>&nbsp;&nbsp;<span class="price">@String.Format("{0:C}", plan.ReviewPricePerPerson)</span><span class="price-ending">/Person/Month</span></td>
-							<td></td>
-						</tr>if (plan.ReviewFreeUntil != null && plan.ReviewFreeUntil > DateTime.UtcNow) {
-							<tr>
-								<td>&nbsp;&nbsp;Free until <span>@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", plan.ReviewFreeUntil.Value)</span></td>
-								<td></td>
-							</tr>
-						}
-					}
-				}
-				<tr>
-					<td style="border-top:1px solid #f1f1f1"></td>
-					<td style="border-top:1px solid #f1f1f1"></td>
-				</tr>
-				@*<tr>
-						<th>Survey Software </th>
-						<td>@(surveyEnabled ? new HtmlString("<span class='enabled label label-success'>Enabled</span>") : new HtmlString("<span class='enabled label label-danger'>Not Enabled</span>"))</td>
-					</tr>
-					@if (surveyEnabled)
-					{
-						if (Model.PaymentPlan is PaymentPlan_Monthly)
-						{
-							var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
+                        <tr>
+                            <td>&nbsp;&nbsp;<span class="price">@String.Format("{0:C}", plan.ReviewPricePerPerson)</span><span class="price-ending">/Person/Month</span></td>
+                            <td></td>
+                        </tr>if (plan.ReviewFreeUntil != null && plan.ReviewFreeUntil > DateTime.UtcNow) {
+                            <tr>
+                                <td>&nbsp;&nbsp;Free until <span>@Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", plan.ReviewFreeUntil.Value)</span></td>
+                                <td></td>
+                            </tr>
+                        }
+                    }
+                }
+                <tr>
+                    <td style="border-top:1px solid #f1f1f1"></td>
+                    <td style="border-top:1px solid #f1f1f1"></td>
+                </tr>
+                @*<tr>
+                        <th>Survey Software </th>
+                        <td>@(surveyEnabled ? new HtmlString("<span class='enabled label label-success'>Enabled</span>") : new HtmlString("<span class='enabled label label-danger'>Not Enabled</span>"))</td>
+                    </tr>
+                    @if (surveyEnabled)
+                    {
+                        if (Model.PaymentPlan is PaymentPlan_Monthly)
+                        {
+                            var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
 
-							<tr>
-								<td>&nbsp;&nbsp;<span class="price">Free</span></td>
-								<td></td>
-							</tr>
-						}
-					}*@
+                            <tr>
+                                <td>&nbsp;&nbsp;<span class="price">Free</span></td>
+                                <td></td>
+                            </tr>
+                        }
+                    }*@
 
 
-				@{var extras = new List<HtmlString>();
-					if (Model.PaymentPlan is PaymentPlan_Monthly) {
-						var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
-						if (plan.FreeUntil.Date >= DateTime.UtcNow.Date) {
-							extras.Add(new HtmlString("<li>Free until <b>" + Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", plan.FreeUntil) + "</b>.</li>"));
-						}
-						if (plan.FirstN_Users_Free > 0 && showExtra_freeusers) {
-							extras.Add(new HtmlString("<li>First <b>" + plan.FirstN_Users_Free + "</b> are free.</li>"));
-						}
+                @{var extras = new List<HtmlString>();
+                    if (Model.PaymentPlan is PaymentPlan_Monthly) {
+                        var plan = (PaymentPlan_Monthly)Model.PaymentPlan;
+                        if (plan.FreeUntil.Date >= DateTime.UtcNow.Date) {
+                            extras.Add(new HtmlString("<li>Free until <b>" + Html.Partial("~/Views/Shared/DisplayTemplates/DateTime.cshtml", plan.FreeUntil) + "</b>.</li>"));
+                        }
+                        if (plan.FirstN_Users_Free > 0 && showExtra_freeusers) {
+                            extras.Add(new HtmlString("<li>First <b>" + plan.FirstN_Users_Free + "</b> are free.</li>"));
+                        }
 
-					}
-				}
+                    }
+                }
 
-				@if (extras.Any()) {
-					<tr>
-						<td style="border-top:1px solid #f1f1f1;height:3px"></td>
-						<td style="border-top:1px solid #f1f1f1"></td>
-					</tr>
+                @if (extras.Any()) {
+                    <tr>
+                        <td style="border-top:1px solid #f1f1f1;height:3px"></td>
+                        <td style="border-top:1px solid #f1f1f1"></td>
+                    </tr>
 
-					<tr>
-						<th>Extras</th>
-						<td>
-							<ul style="margin-left:-1px;padding-left: 0px;">
-								@foreach (var e in extras) {
-									@e
-								}
-							</ul>
-						</td>
-					</tr>
+                    <tr>
+                        <th>Extras</th>
+                        <td>
+                            <ul style="margin-left:-1px;padding-left: 0px;">
+                                @foreach (var e in extras) {
+                                    @e
+                                }
+                            </ul>
+                        </td>
+                    </tr>
 
-				}
+                }
 
-			</tbody>
-		</table>
-	</div>
-					}
-
+            </tbody>
+        </table>
+    </div>
+                    }
+@if (ViewBag.IsRadialAdmin == true) {
+    <div class="btn btn-danger pull-right" onclick="window.location='/invoice/forcecardupdate/@ViewBag.OrganizationId'">Force charge '@ViewBag.Organization.Name'</div>
+    
+}
+<div class="btn btn-primary pull-left" onclick="window.location='/invoice'">View Invoices</div>
 
 @using (Html.BeginStyles()) {
-	<style>
-		.enabled {
-			font-size: 75%;
-		}
+    <style>
+        .enabled {
+            font-size: 75%;
+        }
 
-		.price {
-			font-size: 100%;
-		}
+        .price {
+            font-size: 100%;
+        }
 
-		.payment {
-			font-size: 110%;
-		}
+        .payment {
+            font-size: 110%;
+        }
 
-			.payment tbody td, .payment tbody th {
-				padding-top: 0 !important;
-				padding-bottom: 0 !important;
-			}
+            .payment tbody td, .payment tbody th {
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+            }
 
-		.price-ending {
-			font-size: 80%;
-		}
+        .price-ending {
+            font-size: 80%;
+        }
 
-		.ttt {
-			text-align: right;
-		}
-	</style>
+        .ttt {
+            text-align: right;
+        }
+    </style>
 
-	@Styles.Render("~/Content/ManageCSS")
+    @Styles.Render("~/Content/ManageCSS")
 }
 @using (Html.BeginScripts()) {
-	<script>
-		function managersEdit() {
-			var newStatus = $(".cb-managers-edit").is(":checked");
-			if (newStatus == true) {
-				showModal({
-					icon: "warning",
-					title: "This gives supervisors all admin abilities. Are you sure you want to do this?",
-					success: function () {
+    <script>
+        function managersEdit() {
+            var newStatus = $(".cb-managers-edit").is(":checked");
+            if (newStatus == true) {
+                showModal({
+                    icon: "warning",
+                    title: "This gives supervisors all admin abilities. Are you sure you want to do this?",
+                    success: function () {
 
-					},
-					cancel: function () {
-						$(".cb-managers-edit").prop("checked", false);
-					}
-				});
-			}
-		}
-	</script>
+                    },
+                    cancel: function () {
+                        $(".cb-managers-edit").prop("checked", false);
+                    }
+                });
+            }
+        }
+    </script>
 }

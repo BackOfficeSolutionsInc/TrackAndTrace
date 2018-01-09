@@ -848,7 +848,7 @@ namespace RadialReview.Controllers {
 
             var isManager = oneUser.ManagerAtOrganization || oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
             filterContext.Controller.ViewBag.LimitFiveState = oneUser.Organization.Settings.LimitFiveState;
-            filterContext.Controller.ViewBag.IsRadialAdmin = oneUser.IsRadialAdmin;
+            filterContext.Controller.ViewBag.IsRadialAdmin = oneUser.IsRadialAdmin || (filterContext.Controller.ViewBag.IsRadialAdmin ??false);
             filterContext.Controller.ViewBag.IsManager = isManager;
             filterContext.Controller.ViewBag.ManagingOrganization = oneUser.ManagingOrganization || oneUser.IsRadialAdmin;
             filterContext.Controller.ViewBag.UserId = oneUser.Id;

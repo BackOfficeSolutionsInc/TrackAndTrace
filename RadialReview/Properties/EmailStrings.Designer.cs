@@ -93,6 +93,24 @@ namespace RadialReview.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;p&gt;
+        ///Welcome to the &lt;b&gt;Traction&lt;span style=&quot;&quot;line-height: 200%;font-size: 50%;vertical-align: top;&quot;&quot;&gt;®&lt;/span&gt; Tools&lt;/b&gt; family!
+        ///&lt;/p&gt;&lt;p&gt;
+        ///Please save this email which has some important next-steps and links.
+        ///&lt;/p&gt;&lt;p&gt;
+        ///&lt;b&gt;What&apos;s next?&lt;/b&gt;
+        ///&lt;/p&gt;&lt;p&gt;
+        ///Schedule a quick &lt;a href=&quot;&quot;https://www.mytractiontools.com/schedule/optimize/&quot;&quot;&gt;&lt;b&gt;15-20 minute Optimizer Call&lt;/b&gt;&lt;/a&gt; to ensure that you are taking advantage of all of the features that Traction Tools has to offer. 
+        ///&lt;/p&gt;&lt;p&gt;
+        ///&lt;b&gt;Get Assistance When you Need it&lt;/b [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string FirstCharge_Body {
+            get {
+                return ResourceManager.GetString("FirstCharge_Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This message was generated automatically by Traction Tools, a product of {0} 1201 Infinity Ct, Lincoln, NE 68512&lt;br/&gt;If you feel you have received this message in error you can respond to this email..
         /// </summary>
         public static string Footer {
@@ -381,6 +399,25 @@ namespace RadialReview.Properties {
         public static string TodoReminder_Subject {
             get {
                 return ResourceManager.GetString("TodoReminder_Subject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hello,
+        ///
+        ///I hope that this email finds you well.
+        ///
+        ///We noticed that your credit card on file is about to expire. Please update your card information within {0}.
+        ///
+        ///If you do need to update your card information in your {0} account please follow the steps below:
+        ///
+        ///1. Log in to your {0} account.
+        ///2. Navigate to &quot;Manage Organization&quot; from the drop down menu by your picture (Upper right corner) then click the &quot;Payment&quot; tab (click this link {1}Manage/Payment)
+        ///3. Click &quot;Add Bank Account&quot; or “Add Credit Card” bu [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string UpdateCard_Body {
+            get {
+                return ResourceManager.GetString("UpdateCard_Body", resourceCulture);
             }
         }
     }

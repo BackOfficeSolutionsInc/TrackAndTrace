@@ -61,7 +61,7 @@ namespace RadialReview.App_Start {
 
 			HooksRegistry.RegisterHook(new UpdatePlaceholder());
 
-            HooksRegistry.RegisterHook(new ExecutePaymentOnFirstCardUpdate());
+            HooksRegistry.RegisterHook(new ExecutePaymentCardUpdate());
             HooksRegistry.RegisterHook(new FirstPaymentEmail());
             //HooksRegistry.RegisterHook(new TodoEdit())
         }

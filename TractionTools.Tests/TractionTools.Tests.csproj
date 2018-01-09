@@ -294,6 +294,7 @@
     <Compile Include="Accessors\BaseTools\ScorecardAccessorTests.cs" />
     <Compile Include="Accessors\Payment\PaymentPlanAccessorTests.cs" />
     <Compile Include="Accessors\L10\L10Accessor_AngularTests.cs" />
+    <Compile Include="Accessors\Payment\RechargeAccountTests.cs" />
     <Compile Include="Accessors\PDF\AccountabilityChartPdfTest.cs" />
     <Compile Include="Accessors\PDF\D3TreeTests.cs" />
     <Compile Include="Accessors\PDF\PdfAccessor_RunAll.cs" />

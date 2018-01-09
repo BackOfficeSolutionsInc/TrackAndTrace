@@ -161,6 +161,8 @@
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Crosscutting\Flags\OrganizationFlag.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IOrganizationFlagHook.cs" />
+    <Compile Include="Crosscutting\Hooks\Payment\CardExpireEmail.cs" />
+    <Compile Include="Exceptions\TestException.cs" />
     <Compile Include="Hooks\CrossCutting\CreateFinancialPermItems.cs" />
     <Compile Include="Hooks\CrossCutting\Payment\ExecutePaymentOnCardUpdate.cs" />
     <Compile Include="Hooks\CrossCutting\Payment\FirstPaymentEmail.cs" />
@@ -1047,6 +1049,7 @@
     <Content Include="Content\GettingStarted\GettingStarted.css">
       <DependentUpon>GettingStarted.less</DependentUpon>
     </Content>
+    <Content Include="Content\img\TRACTION-TOOLS_large_stacked_2c.png" />
     <Content Include="Content\People\MaterialRadio.css">
       <DependentUpon>MaterialRadio.less</DependentUpon>
     </Content>
