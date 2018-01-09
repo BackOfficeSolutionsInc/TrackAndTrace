@@ -393,7 +393,7 @@
 						<th style="width:10px" class="alignCenter"></th>
 					}
 					@if (ViewBag.IsRadialAdmin ?? false) {
-						<th style="min-width: 52px;"></th>
+						<th style="min-width: 67px;"></th>
 					}
 				</tr>
 			</thead>
@@ -432,7 +432,7 @@
 								}
 
 								if (p.EvalOnly) {
-									title += " &amp; " + @RadialReview.Utilities.Config.ReviewName().ToLower() + " only";
+									title += " &amp; people tools only";
 								}
 
 								attrs = @"title=""" + title + @""" data-sort=""" + sort + @"""";
@@ -544,6 +544,7 @@
 									<span class="userType userType-@fi.ToString() clickable" data-type="@fi.ToString()" data-id="@p.Id" data-enabled="@any.ToJavascript()" onclick="setUserType(this)" title="@fi.ToString()"></span>
 								}
 								<span class="hidden">@(-score)</span>
+                                <a href="/account/setasuser?id=@p.Email" style="color:lightcoral" title="Set As User...">(sa)</a>
 								@*@( ? new HtmlString("<span data-type='AccountContact' onlick='setRoleType(this,false)'>C</span>") : new HtmlString("<span data-type='AccountContact' onlick='setRoleType(this,true)'>c</span>"))
 									@(p.Roles.Any(x => x.RoleType == UserRoleType.LeadershipTeamMember) ? new HtmlString("<span data-type='LeadershipTeamMember' onlick='setRoleType(this,false)'>L</span>") : new HtmlString("<span data-type='LeadershipTeamMember' onlick='setRoleType(this,true)'>l</span>"))
 									@(p.Roles.Any(x => x.RoleType == UserRoleType.AccountabilityChartOnly) ? new HtmlString("<span data-type='AccountabilityChartOnly' onlick='setRoleType(this,false)'>A</span>") : new HtmlString("<span data-type='AccountabilityChartOnly' onlick='setRoleType(this,true)'>a</span>"))
