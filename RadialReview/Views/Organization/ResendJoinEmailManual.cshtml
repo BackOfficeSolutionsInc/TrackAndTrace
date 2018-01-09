@@ -4,9 +4,9 @@
 
 
 <div class="row">
-    <div class="col-xs-12"><p><strong> This link must be used for registration of @Model.FirstName @Model.LastName</strong></p></div>
+    <div class="col-xs-12"><p><strong> This link must be used for registration of @Model.FirstName @Model.LastName only.</strong></p></div>
     @*<div class="col-xs-12"><p>Do not send this link to anyone else or You should not click this link.</p></div>*@
-    <div class="col-xs-12"><p><strong>This will cause issues with your account linking with this user.</strong></p></div>
+    
 </div>
 <div class="smallBreak"></div>
 <div class="row">
@@ -22,15 +22,16 @@
             <li>
                 Send copied text to email  @Model.Email
             </li>
-            <li>
+            <li style="color:red;">
                 Do not send this link to anyone else
             </li>
-            <li>
+            <li style="color:red;">
                 You should not click this link
             </li>
         </ul>
-    
+
     </div>
+    <div class="col-xs-12"><p><strong>This will cause issues with your account linking with this user.</strong></p></div>
 </div>
 <div class="smallBreak"></div>
 <div class="row">

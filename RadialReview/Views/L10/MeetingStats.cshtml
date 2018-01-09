@@ -50,6 +50,7 @@
 			<div class="row">
 				<div class="col-xs-6 smallPad smallBreak2">
 					<div class="stats">
+                        <a href="javascript:void(0)" style="float: right;padding-right: 10px;" onclick="editRating(@Model.RecurrenceId)"> Edit </a>
 						<h1 id="questionsAnswered" class="scramble resize1" data-range="1500" style="font-size: 52px;margin-top: 27px;margin-bottom: 24px;">
 							@(double.IsNaN(Model.AverageRating)?"N/A":(Math.Round(Model.AverageRating*10.0)/10.0)+"")
 						</h1>

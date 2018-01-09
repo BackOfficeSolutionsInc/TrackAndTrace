@@ -1754,6 +1754,7 @@
     <Content Include="Views\Shared\EditorTemplates\LocalDateTime.cshtml" />
     <Content Include="Views\L10\Pages.cshtml" />
     <Content Include="Views\Organization\ResendJoinEmailManual.cshtml" />
+    <Content Include="Views\L10\EditRating.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

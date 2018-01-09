@@ -704,7 +704,47 @@ namespace RadialReview.Accessors {
 			}
 		}
 
-		public static IEnumerable<L10Recurrence.L10Recurrence_Connection> GetConnected(UserOrganizationModel caller, long recurrenceId, bool load = false) {
+
+        public async static Task UpdateRating(UserOrganizationModel caller, long recurrenceId, List<System.Tuple<long, decimal?>> ratingValues,long meetingId,string connectionId)
+        {
+            var unsent = new List<Mail>();
+          
+            L10Meeting meeting = null;
+            using (var s = HibernateSession.GetCurrentSession())
+            {
+                using (var tx = s.BeginTransaction())
+                {
+                    var now = DateTime.UtcNow;
+                    //Make sure we're unstarted
+                    var perms = PermissionsUtility.Create(s, caller);
+                    meeting= s.QueryOver<L10Meeting>().Where(t=>t.Id== meetingId).SingleOrDefault();
+                    perms.ViewL10Meeting(meeting.Id);
+
+
+                    var ids = ratingValues.Select(x => x.Item1).ToArray();
+
+                    //Set rating for attendees
+                    var attendees = s.QueryOver<L10Meeting.L10Meeting_Attendee>()
+                        .Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id)
+                        .List().ToList();
+                    var raters = attendees.Where(x => ids.Any(y => y == x.User.Id));
+
+                    foreach (var a in raters)
+                    {
+                        a.Rating = ratingValues.FirstOrDefault(x => x.Item1 == a.User.Id).NotNull(x => x.Item2);
+                        s.Update(a);
+                    }
+
+                    Audit.L10Log(s, caller, recurrenceId, "UpdateL10Rating", ForModel.Create(meeting));
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+        }
+
+
+
+        public static IEnumerable<L10Recurrence.L10Recurrence_Connection> GetConnected(UserOrganizationModel caller, long recurrenceId, bool load = false) {
 			using (var s = HibernateSession.GetCurrentSession()) {
 				using (var tx = s.BeginTransaction()) {
 					PermissionsUtility.Create(s, caller).ViewL10Recurrence(recurrenceId);
