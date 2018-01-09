@@ -70,6 +70,7 @@ namespace RadialReview.Controllers {
 				L10PricePerPerson = 10,
 				ReviewPricePerPerson = 2,
 				PlanCreated = DateTime.UtcNow,
+                SchedulePeriod = SchedulePeriodType.Monthly,
 				OrgId = id,
 				_Org = org
 			});

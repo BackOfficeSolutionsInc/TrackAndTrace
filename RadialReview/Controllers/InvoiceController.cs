@@ -21,10 +21,18 @@ namespace RadialReview.Controllers {
         [Access(AccessLevel.Radial)]
         public async Task<bool> ForceUpdateCard(long id) {
             var caller = GetUser();
-            var t = PaymentAccessor.GetCards(GetUser(), GetUser().Organization.Id).LastOrDefault(x => x.Active).NotNull(x => x.GetToken());
+            var t = PaymentAccessor.GetCards(GetUser(), id).LastOrDefault(x => x.Active).NotNull(x => x.GetToken());
             if (t != null) {
-                await HooksRegistry.Each<IPaymentHook>((ses, x) => x.UpdateCard(ses, t));
-                return true;
+                using (var s = HibernateSession.GetCurrentSession()) {
+                    using (var tx = s.BeginTransaction()) {
+                        var perms = PermissionsUtility.Create(s, caller);
+
+                        await HooksRegistry.Each<IPaymentHook>((ses, x) => x.UpdateCard(ses, t));
+                        tx.Commit();
+                        s.Flush();
+                        return true;
+                    }
+                }
             }
             return false;
 
@@ -34,7 +42,7 @@ namespace RadialReview.Controllers {
         public ActionResult List(long? id = null) {
             var orgid = id ?? GetUser().Organization.Id;
             var list = InvoiceAccessor.GetInvoicesForOrganization(GetUser(), orgid);
-
+            ViewBag.OrgId = id;
             return View("List", list);
         }
         [Access(AccessLevel.UserOrganization)]

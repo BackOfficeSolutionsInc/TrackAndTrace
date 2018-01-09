@@ -45,7 +45,8 @@ namespace RadialReview.Hooks.CrossCutting {
                         if (i == Test_ThrowExceptionOn) { throw new TestException(); }
                         #endregion
                         await PaymentAccessor.ExecuteInvoice(s, f, Config.IsLocal());
-                    } catch (Exception) {
+                    } catch (Exception e) {
+                        var a = 0;
                     }
                     i += 1;
                 }             

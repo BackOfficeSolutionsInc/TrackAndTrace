@@ -370,9 +370,10 @@ namespace RadialReview.Accessors {
 
             if (NHibernateUtil.GetClass(paymentPlan) == typeof(PaymentPlan_Monthly)) {
                 var plan = (PaymentPlan_Monthly)s.GetSessionImplementation().PersistenceContext.Unproxy(paymentPlan);
-                var rangeStart = executeTime.Subtract(TimespanExtensions.OneMonth());
+                var rangeStart = executeTime.Subtract(plan.SchedulerPeriod());// TimespanExtensions.OneMonth());
                 var rangeEnd = executeTime;
-
+                var durationMult = plan.DurationMultiplier();
+                var durationDesc = plan.MultiplierDesc();
                 ///HEAVY LIFTING
                 var calc = new UserCalculator(s, org.Id, plan, new DateRange(rangeStart, rangeEnd));
 
@@ -388,8 +389,8 @@ namespace RadialReview.Accessors {
 
                 if (plan.BaselinePrice > 0) {
                     var reviewItem = new Itemized() {
-                        Name = "Traction® Tools",
-                        Price = plan.BaselinePrice,
+                        Name = "Traction® Tools"+ durationDesc,
+                        Price = plan.BaselinePrice*durationMult,
                         Quantity = 1,
                     };
                     itemized.Add(reviewItem);
@@ -397,8 +398,8 @@ namespace RadialReview.Accessors {
 
                 if (reviewEnabled) {
                     var reviewItem = new Itemized() {
-                        Name = "Quarterly Conversation",
-                        Price = plan.ReviewPricePerPerson,
+                        Name = "Quarterly Conversation"+durationDesc,
+                        Price = plan.ReviewPricePerPerson * durationMult,
                         Quantity = calc.NumberQCUsersToChargeFor//allPeopleList.Where(x => !x.IsClient).Count()
                     };
                     if (reviewItem.Quantity != 0) {
@@ -411,8 +412,8 @@ namespace RadialReview.Accessors {
                 }
                 if (l10Enabled) {
                     var l10Item = new Itemized() {
-                        Name = "L10 Meeting Software",
-                        Price = plan.L10PricePerPerson,
+                        Name = "L10 Meeting Software"+ durationDesc,
+                        Price = plan.L10PricePerPerson * durationMult,
                         Quantity = calc.NumberL10UsersToChargeFor,
                     };
                     if (l10Item.Quantity != 0) {
@@ -536,10 +537,9 @@ namespace RadialReview.Accessors {
         public static List<PaymentMethodVM> GetCards(UserOrganizationModel caller, long organizationId) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
-                    if (organizationId != caller.Organization.Id)
+                    if (!caller.User.IsRadialAdmin && organizationId != caller.Organization.Id)
                         throw new PermissionsException("Organization Ids do not match");
-
-
+                    
                     PermissionsUtility.Create(s, caller).EditCompanyPayment(organizationId);
                     var cards = s.QueryOver<PaymentSpringsToken>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null).List().ToList();
 

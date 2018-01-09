@@ -31,6 +31,8 @@
         color: #f31c1c;
     }
 </style>
+<div class="pull-right"><a href="/manage/payment">Back to Payments</a></div>
+<div class="clearfix"></div>
 <div class="panel panel-primary">
     <div class="panel-heading"><b>@Model.FirstOrDefault().NotNull(x => x.Organization.GetName() + " ") Invoices</b></div>
 
@@ -41,7 +43,7 @@
                 @*<th>Invoice Sent</th>*@
                 <th>Invoice Due</th>
                 <th>Paid Time</th>
-                <th>Service End</th>
+                <th>Service Ending</th>
                 <th class="amtDue">Amount Due</th>
                 @if (ViewBag.ShowOrganization == true) {
                     <th>Org</th>
@@ -91,6 +93,12 @@
 
     </table>
 </div>
+               
+@if (ViewBag.IsRadialAdmin == true && ViewBag.OrgId!=null) {
+    <div class="btn btn-danger pull-right" onclick="window.location='/invoice/ForceUpdateCard/@ViewBag.OrgId'">Force charge '@Model.FirstOrDefault().NotNull(x => x.Organization.GetName() + " ")'</div>
+
+}
+
 <link rel="/Content/SnackbarAlerts.css" />
 @using (Html.BeginScripts()) {
     <script>
