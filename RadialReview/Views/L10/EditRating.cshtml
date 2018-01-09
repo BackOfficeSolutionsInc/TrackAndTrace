@@ -3,12 +3,12 @@
 <div class="conclusion meeting-page">
     <div class="row">
         <div class="col-md-12">
-            <div class="centered" style="width:65%; max-width: 600px;margin-top:-22px;margin-bottom:128px;    min-width: 330px;">
+            <div class="centered" style="width:65%; max-width: 600px;margin-bottom:128px;    min-width: 330px;">
                 <div class="component">
                     <div class="meeting-manager rating-section">
                         <div class="title" style="font-size: 20px;color: #444;">Ratings (1 to 10)<div style="font-size: 12px;font-weight: lighter;"><small>Ratings less than an 8? Drop it down to the issues list.</small></div></div>
 
-                        @using (Ajax.BeginForm("EditRanting", new AjaxOptions()
+                        @*@using (Ajax.BeginForm("EditRanting", new AjaxOptions()
                         {
                             HttpMethod = "POST",
                             //UpdateTargetId = "main-window",
@@ -17,7 +17,7 @@
                             OnSuccess = "ConclusionSuccess",
                             OnBegin = "OnBeginSubmit"
                         }))
-                        {
+                        {*@
                             @Html.ValidationSummaryMin()
                             @Html.SecuredHiddenFor(x => x.Recurrence.Id)
                             @Html.SecuredHiddenFor(x => x.Meeting.Id)
@@ -42,12 +42,12 @@
 
                             <input type="hidden" id="conclude_connectionId" name="connectionId" value="" />
                             <div class="alignCenter">
-                                 <input type="submit" id="conclude_meeting_button" class="btn btn-primary center concludeButton" value="Update" />
+                                 @*<input type="submit" id="conclude_meeting_button" class="btn btn-primary center concludeButton" value="Update" />*@
 
                                 @*<input type="button" id="conclude_meeting_button" class="btn btn-primary center concludeButton" onclick="updateVal()" value="Update" />*@
 
                             </div>
-                        }
+                        @*}*@
                     </div>
                 </div>
             </div>
@@ -57,53 +57,5 @@
     </div>
 </div>
 <script>
-
-    function updateVal() {
-        $('.rating-section .rating').each(function () {
-            var id = $(this).attr("id");
-            var value = $(this).attr("value");
-
-            console.log(id)
-            console.log(value)
-
-        })
-    } 
-
-    function resetConcludeButton() {
-        $("#conclude_meeting_button").attr("disabled", !isLeader && followLeader ? "disabled" : false);
-    }
-
-    resetConcludeButton();
-
-    $(window).on("follow-leader", function () {
-        resetConcludeButton();
-    });
-
-    function gotoIndex(data) {
-        window.location.href = "/L10/MeetingStats/";
-    }
-    function ConclusionSuccess(data) {
-        console.log(data);
-        startTime = undefined;
-        skipBeforeUnload = true;
-    }
-    function PreviewConclusionSuccess() {
-
-        //startTime = undefined;
-        //skipBeforeUnload = true;
-    }
-    setTimeout(function () {
-        try {
-            $('#conclude_connectionId').val(meetingHub.connection.id);
-        } catch (e) {
-            console.error(e);
-        }
-    }, 1);
-
-    function OnBeginSubmit(a, b) {
-        $('.concludeButton').attr('disabled', true).css('cursor', 'progress');
-        $(this).attr('novalidate', 'novalidate');
-
-        //sendDisable("conclude_meeting_button", true);
-    }
+    
 </script>

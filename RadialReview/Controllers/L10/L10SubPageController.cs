@@ -442,7 +442,7 @@ namespace RadialReview.Controllers
         public PartialViewResult MeetingStats(long recurrenceId)
         {
             var model = L10Accessor.GetStats(GetUser(), recurrenceId);
-
+            model.RecurrenceId = recurrenceId;
             #region For Demo
             if (recurrenceId == 1)
             {
@@ -507,10 +507,6 @@ namespace RadialReview.Controllers
 
             if (ModelState.IsValid)
             {
-                //var allMembers = _OrganizationAccessor.GetOrganizationMembers(GetUser(), GetUser().Organization.Id, false, false);
-                //var attendees = allMembers.Where(x => model.Attendees.Contains(x.Id)).ToList();
-                //var allMembers = _OrganizationAccessor.GetAllOrganizationMemberIdsAcrossTime(GetUser(), GetUser().Organization.Id);
-
                 var ratingKeys = form.AllKeys.Where(x => x.StartsWith("rating_"));
                 var ratingIds = ratingKeys.Where(x => form[x].TryParseDecimal() != null).Select(x => long.Parse(x.Replace("rating_", ""))).ToList();
 
@@ -519,26 +515,25 @@ namespace RadialReview.Controllers
 
                 _OrganizationAccessor.EnsureAllAtOrganization(GetUser(), GetUser().Organization.Id, ratingIds);
 
-                foreach (var r in ratingValues)
-                {
-                    if (r.Item2 < 1 || r.Item2 > 10)
-                    {
-                        ModelState.AddModelError("rating_" + r.Item1, "Value must be between 1 and 10.");
-                    }
-                }
+                //foreach (var r in ratingValues)
+                //{
+                //    if (r.Item2 < 1 || r.Item2 > 10)
+                //    {
+                //        ModelState.AddModelError("rating_" + r.Item1, "Value must be between 1 and 10.");
+                //    }
+                //}
 
-                if (ratingValues.All(x => x.Item2 == null))
-                {
-                    foreach (var r in ratingValues)
-                        ModelState.AddModelError("rating_" + r.Item1, "Ratings must be filled out.");
-                }
+                //if (ratingValues.All(x => x.Item2 == null))
+                //{
+                //    foreach (var r in ratingValues)
+                //        ModelState.AddModelError("rating_" + r.Item1, "Ratings must be filled out.");
+                //}
 
                 if (ModelState.IsValid)
                 {
-                    await L10Accessor.UpdateRating(GetUser(), model.Recurrence.Id, ratingValues, model.Meeting.Id, connectionId);
+                    await L10Accessor.UpdateRating(GetUser(), ratingValues, model.Meeting.Id, connectionId);
                     var model1 = L10Accessor.GetStats(GetUser(), model.Recurrence.Id);
                     return Json(new { data = model1.AverageRating, response = "success" }, JsonRequestBehavior.AllowGet);
-                    //return MeetingStats(model.Recurrence.Id);
                 }
             }
             return Json(new { response = "error" }, JsonRequestBehavior.AllowGet);

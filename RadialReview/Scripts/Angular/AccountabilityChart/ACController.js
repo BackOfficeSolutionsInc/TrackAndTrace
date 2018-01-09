@@ -1173,7 +1173,7 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 
             var printNode = function (d) {
 
-                genPdf(true,d.Id);
+                genPdf(true, d.Id);
 
                 //console.log(d);
                 //if (d.Id) {
@@ -1213,6 +1213,38 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 
             var expandNode = function (d) {
             };
+
+            var childIndication = nodeEnter.append("g").classed("childIndication", true).attr("transform", "translate(99.75,75)")
+            childIndication.append("circle").attr("r", function (d) {
+                if (d.Id) {
+                    if ((d._children && d._children.length) || (d.children && d.children.length)) {
+                        return 1.2;
+                    }
+                }
+                else {
+                    return 0;
+                }
+            }).attr("stroke-width", 3).attr("fill", "#EF7622").attr("cx", 0).attr("cy", 10);
+            childIndication.append("circle").attr("r", function (d) {
+                if (d.Id) {
+                    if ((d._children && d._children.length) || (d.children && d.children.length)) {
+                        return 1.2;
+                    }
+                }
+                else {
+                    return 0;
+                }
+            }).attr("stroke-width", 3).attr("fill", "#EF7622").attr("cx", 0).attr("cy", 15);
+            childIndication.append("circle").attr("r", function (d) {
+                if (d.Id) {
+                    if ((d._children && d._children.length) || (d.children && d.children.length)) {
+                        return 1.2;
+                    }
+                }
+                else {
+                    return 0;
+                }
+            }).attr("stroke-width", 3).attr("fill", "#EF7622").attr("cx", 0).attr("cy", 20);
 
             nodeEnter.append("rect").classed("bounding-box", true);
             var minimizeNodeBtn = nodeEnter.append("g").classed("button minimize minimize-icon node-button", true).style("opacity", 0).attr("tabindex", 0)
@@ -1476,6 +1508,15 @@ acapp.controller('ACController', ['$scope', '$http', '$timeout', '$location', 'r
 
             nodeUpdate.select(".button.minimize").attr("transform", function (d) {
                 return "translate(" + (d.width / 2 - .25) + "," + (d.height + 15.5) + ")";
+            });
+
+            nodeUpdate.select(".childIndication").attr("transform", function (d) {
+                return "translate(" + (d.width / 2 - .25) + "," + (d.height - 4) + ")";
+            }).style("display", function (d) {
+                if (!d.parent)
+                    return "none";
+                else
+                    return null;
             });
 
             nodeUpdate.select(".button.minimize")

@@ -705,9 +705,8 @@ namespace RadialReview.Accessors {
 		}
 
 
-        public async static Task UpdateRating(UserOrganizationModel caller, long recurrenceId, List<System.Tuple<long, decimal?>> ratingValues,long meetingId,string connectionId)
+        public async static Task UpdateRating(UserOrganizationModel caller,List<System.Tuple<long, decimal?>> ratingValues,long meetingId,string connectionId)
         {
-            var unsent = new List<Mail>();
           
             L10Meeting meeting = null;
             using (var s = HibernateSession.GetCurrentSession())
@@ -735,7 +734,7 @@ namespace RadialReview.Accessors {
                         s.Update(a);
                     }
 
-                    Audit.L10Log(s, caller, recurrenceId, "UpdateL10Rating", ForModel.Create(meeting));
+                    Audit.L10Log(s, caller, meeting.L10RecurrenceId, "UpdateL10Rating", ForModel.Create(meeting));
                     tx.Commit();
                     s.Flush();
                 }
