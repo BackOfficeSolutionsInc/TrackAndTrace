@@ -142,6 +142,7 @@ namespace RadialReview.Accessors {
         public static async Task<PaymentResult> ChargeOrganization(long organizationId, long taskId, bool forceUseTest = false, bool sendReceipt = true, DateTime? executeTime = null) {
 
             PaymentResult result = null;
+            ChargeResult chargeResult = null;
             InvoiceModel invoice = null;
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -177,10 +178,9 @@ namespace RadialReview.Accessors {
 
                     executeTime = executeTime ?? DateTime.UtcNow.Date;
                     try {
-                        await ChargeOrganization_Unsafe(s, org, plan, executeTime.Value, forceUseTest, true);
-
+                        chargeResult = await ChargeOrganization_Unsafe(s, org, plan, executeTime.Value, forceUseTest, true);
+                        result = chargeResult.Result;
                     } finally {
-
                         tx.Commit();
                         s.Flush();
                     }
@@ -188,7 +188,7 @@ namespace RadialReview.Accessors {
             }
             if (sendReceipt) {
 #pragma warning disable CS0618 // Type or member is obsolete
-                await SendReceipt(result, invoice);
+                await SendReceipt(result, chargeResult.Invoice);
 #pragma warning restore CS0618 // Type or member is obsolete
             }
             return result;
