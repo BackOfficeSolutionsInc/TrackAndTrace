@@ -44,13 +44,20 @@ namespace RadialReview {
 			AngularMaterial(bundles);
 			People(bundles, angularHelpers_Styles, angularHelpers_Scripts);
 
+            TagInput(bundles);
+            SnackBar(bundles);
+
 			BundleTable.EnableOptimizations = Config.OptimizationEnabled();
 
 
 
 		}
 
-		private static void People(BundleCollection bundles, string[] ngStyles, string[] ngScripts) {
+        private static void SnackBar(BundleCollection bundles){
+            bundles.Add(new StyleBundle("~/styles/snackbar").Include("~/Content/SnackbarAlerts.css"));
+        }
+
+        private static void People(BundleCollection bundles, string[] ngStyles, string[] ngScripts) {
 			bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/people").Include(ngScripts)
 				.Include(
 					"~/Scripts/Angular/People/init.js",
@@ -61,6 +68,22 @@ namespace RadialReview {
 			bundles.Add(new StyleBundle("~/styles/people").Include(ngStyles).Include(
 				"~/Content/SnackbarAlerts.css", "~/Content/People/*.css"));
 		}
+
+        private static void TagInput(BundleCollection bundles) {
+            bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/taginput").Include(
+                      "~/Scripts/Inputs/underscore.min.js",
+                      "~/Scripts/Inputs/underscore.string.min.js",
+                      "~/Scripts/Inputs/backbone.min.js",
+                      "~/Scripts/Inputs/backbone.subviews.js",
+                      "~/Scripts/Inputs/liquidmetal.js",
+                      "~/Scripts/Inputs/require.js",
+                      "~/Scripts/Inputs/token-editor.js"
+            )));
+
+            bundles.Add(new StyleBundle("~/styles/taginput").Include(
+             "~/Content/Inputs/TagInput.css"
+             ));
+        }
 
 		private static void SetCard(BundleCollection bundles) {
 			bundles.Add(UpdateMinification(new ScriptBundle("~/bundles/SetCard").Include("~/Scripts/jquery/jquery.redirect.js")));

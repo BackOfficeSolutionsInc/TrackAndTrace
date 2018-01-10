@@ -497,7 +497,11 @@ namespace RadialReview.Utilities {
 			return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).StartOfWeek(DayOfWeek.Sunday).AddDays(week * 7);
 		}
 
-		/*
+        public static DateTime ToScorecardDate(DateTime date) {
+            return GetDateSinceEpoch(GetWeekSinceEpoch(date));
+        }
+
+        /*
         public static double? ReviewDuration(List<AnswerModel> answers)
         {
             return answers.Where(x => x.DurationMinutes != null && x.CompleteTime != null).Sum(x => x.DurationMinutes);
@@ -509,7 +513,12 @@ namespace RadialReview.Utilities {
             return sum.TotalMinutes;*
         }*/
 
-		public static DateTime PeriodsAgo(DateTime startTime, int periods, ScorecardPeriod scorecardPeriod) {
+        public static DateTime PeriodsFromNow(DateTime startTime, int periods, ScorecardPeriod scorecardPeriod) {
+            return PeriodsAgo(startTime, -1 * periods, scorecardPeriod);
+        }
+
+
+        public static DateTime PeriodsAgo(DateTime startTime, int periods, ScorecardPeriod scorecardPeriod) {
 			switch (scorecardPeriod) {
 				case ScorecardPeriod.Weekly:
 					return startTime.AddDays(-7 * periods);

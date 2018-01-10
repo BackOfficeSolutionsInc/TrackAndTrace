@@ -134,6 +134,10 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 		console.error("Can't process:" + date);
 	}
 
+	$scope.functions.showFormula = function (id) {
+	    setFormula(id);
+	};
+
 	$scope.functions.startCoreProcess = function (coreProcess) {
 		$http.get("/CoreProcess/Process/StartProcess/" + coreProcess.Id)
             .then(function (data) {
@@ -927,7 +931,7 @@ function ($scope, $http, $timeout, $location, radial, meetingDataUrlBase, recurr
 	}
 
 	$scope.functions.topDate = function (week, selector) {
-		debugger;
+		//debugger;
 		var dat = decideOnDate(week, selector);
 			var date = $scope.functions.subtractDays(dat/*week.DisplayDate*/, 0, !(selector.Period == "Monthly" || selector.Period == "Quarterly"));
 		return $filter('date')(date, selector.DateFormat1);

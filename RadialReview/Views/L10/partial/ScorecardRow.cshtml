@@ -1,14 +1,20 @@
 ﻿@using System.Web.UI.WebControls
 @model RadialReview.Models.ViewModels.ScorecardRowVM
 @{
-	var inlineEdit = "inlineEdit";
-	if (Model.MeetingMeasurable.Measurable.NotNull(x => x._Editable) == false) {
-		inlineEdit = "";
-	}
-	var auto = Model.MeetingMeasurable.Measurable.NotNull(x => x.AccountableUser) == null;
+    var inlineEdit = "inlineEdit";
+    var isEditable = true;
+    if (Model.MeetingMeasurable.Measurable.NotNull(x => x._Editable) == false) {
+        inlineEdit = "";
+    }
+    
+    isEditable = Model.Scores.Where(x=>x.MeasurableId == Model.MeetingMeasurable.Measurable.Id).All(x=>x._Editable!=false);
+    
 
-	var showAdmin = Model.ShowAdmin;
-	var showScorecardChart = Model.ShowScorecardChart;
+
+    var auto = Model.MeetingMeasurable.Measurable.NotNull(x => x.AccountableUser) == null;
+
+    var showAdmin = Model.ShowAdmin;
+    var showScorecardChart = Model.ShowScorecardChart;
 }
 
 @if (Model.IsDivider) {
@@ -24,7 +30,8 @@
 		<td class="measurable first1 handle header-cell"></td>
 		<td class="target direction handle header-cell"></td>
 		<td class="target value handle header-cell"></td>
-		<td class="cumulative-column"></td>
+		<td class="cumulative-column"></td>		
+		<td class="header-cell chart"></td>
 		@if (showScorecardChart) {
 			<td class="handle header-cell"></td>
 		}
@@ -42,48 +49,58 @@
 	</tr>
 } else {
 
-    <tr data-row="@ViewBag.Row"
-        class="@(auto ? "auto" : "reorderable")"
-        data-measurable="@Model.MeetingMeasurable.Measurable.Id"
-        data-meetingmeasurable="@Model.MeetingMeasurable.Id"
-        data-ShowCumulative="@Model.MeetingMeasurable.Measurable.ShowCumulative"
-        data-CumulativeRange="@Model.MeetingMeasurable.Measurable.CumulativeRange"
-        data-Target="@Model.MeetingMeasurable.Measurable.Goal"
-        data-AltTarget="@Model.MeetingMeasurable.Measurable.AlternateGoal">
-        <td class="header-cell">
-            @if (!auto) {
-                <div class="icon fontastic-icon-three-bars icon-rotate handle reorder-icon"></div>}
-        </td>
-        <td><div class="number header-cell"></div></td>
-        <td class="who first1 alignRight @inlineEdit accountable header-cell test-ignore" data-accountable="@Model.MeetingMeasurable.Measurable.AccountableUserId"
-            @*data-accountable-name="@Model.MeetingMeasurable.Measurable.AccountableUser.GetName()"
+	<tr data-row="@ViewBag.Row" 
+		class="@(auto ? "auto" : "reorderable")" 
+		data-measurable="@Model.MeetingMeasurable.Measurable.Id" 
+		data-meetingmeasurable="@Model.MeetingMeasurable.Id"
+		data-ShowCumulative="@Model.MeetingMeasurable.Measurable.ShowCumulative"
+		data-CumulativeRange="@Model.MeetingMeasurable.Measurable.CumulativeRange"
+		data-Target="@Model.MeetingMeasurable.Measurable.Goal"
+		data-AltTarget="@Model.MeetingMeasurable.Measurable.AlternateGoal"
+        data-editable="@isEditable"
+	>
+		<td class="header-cell">
+			@if (!auto) {
+				<div class="icon fontastic-icon-three-bars icon-rotate handle reorder-icon"></div>
+			}
+		</td>
+		<td><div class="number header-cell"></div></td>
+		<td class="who first1 alignRight @inlineEdit accountable header-cell test-ignore" data-accountable="@Model.MeetingMeasurable.Measurable.AccountableUserId"
+			@*data-accountable-name="@Model.MeetingMeasurable.Measurable.AccountableUser.GetName()"
             data-accountable-initals="@Model.MeetingMeasurable.Measurable.AccountableUser.GetInitials()"
             data-accountable-url="@Model.MeetingMeasurable.Measurable.AccountableUser.ImageUrl(true,ImageSize._32)"*@
-            data-placement="right" data-source="/Dropdown/MeetingMembers/@(Model.RecurrenceId)?userId=true" data-url="/L10/UpdateMeasurable" data-type="select" data-name="accountable" @*fixed*@ data-pk="@Model.MeetingMeasurable.Measurable.Id" title="Owner">
-            @if (Model.MeetingMeasurable.Measurable.AccountableUser != null) {
-                @Html.Partial("_ProfilePicture", Model.MeetingMeasurable.Measurable.AccountableUser);
-            } else {
-            }
+			data-placement="right" data-source="/Dropdown/MeetingMembers/@(Model.RecurrenceId)?userId=true" data-url="/L10/UpdateMeasurable" data-type="select" data-name="accountable" @*fixed*@ data-pk="@Model.MeetingMeasurable.Measurable.Id" title="Owner">
+			@if (Model.MeetingMeasurable.Measurable.AccountableUser != null) {
+				@Html.Partial("_ProfilePicture", Model.MeetingMeasurable.Measurable.AccountableUser);
+			} else {
+			}
+		</td>
+		@if (showAdmin) {
+			<td class="who first1 alignLeft header-cell test-ignore">
+				<span class="newLine gray @inlineEdit adminSelection" data-placement="right" data-source="/Dropdown/MeetingMembers/@(Model.RecurrenceId)?userId=true" data-type="select" data-name="admin" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable" title="@(Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetName()) ?? "Auto-Generated")">/@(Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetInitials()) ?? "Auto")</span>
+			</td>
+		}
+        <td class="measurable first1 header-cell" title="@Model.MeetingMeasurable.Measurable.Title">
+            <span class="@inlineEdit" data-placement='right' data-type="text" data-name="title" data-measurable="@Model.MeetingMeasurable.Measurable.Id" @*fixed*@ data-pk="@Model.MeetingMeasurable.Measurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Title</span>
+            <span class="pull-right" style="position:absolute;right:0px">
+                <span class="shift-visible gray clickable" style="background-color:white" onclick="setFormula(@Model.MeetingMeasurable.Measurable.Id)">(f)</span>
+            </span>
         </td>
-        @if (showAdmin) {
-            <td class="who first1 alignLeft header-cell test-ignore">
-                <span class="newLine gray @inlineEdit adminSelection" data-placement="right" data-source="/Dropdown/MeetingMembers/@(Model.RecurrenceId)?userId=true" data-type="select" data-name="admin" data-pk="@Model.MeetingMeasurable.Id" data-url="/L10/UpdateMeasurable" title="@(Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetName()) ?? "Auto-Generated")">/@(Model.MeetingMeasurable.Measurable.AdminUser.NotNull(x => x.GetInitials()) ?? "Auto")</span>
-            </td> }
-        <td class="measurable first1 header-cell" title="@Model.MeetingMeasurable.Measurable.Title"><span class="@inlineEdit" data-placement='right' data-type="text" data-name="title" data-measurable="@Model.MeetingMeasurable.Measurable.Id" @*fixed*@ data-pk="@Model.MeetingMeasurable.Measurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Title</span></td>
-        <td class="target direction header-cell" data-measurable="@Model.MeetingMeasurable.Id"><span class="@inlineEdit" data-type="select" data-name="direction" data-measurable="@Model.MeetingMeasurable.Measurable.Id" @*fixed*@ data-pk="@Model.MeetingMeasurable.Measurable.Id" data-url="/L10/UpdateMeasurable" data-source="/Dropdown/Type/lessgreater" @*data-title="Select goal direction"*@ data-value="@Model.MeetingMeasurable.Measurable.GoalDirection">@Model.MeetingMeasurable.Measurable.GoalDirection.ToSymbol()</span></td>
-        <td class="target value header-cell" data-measurable="@Model.MeetingMeasurable.Id">
-            <span class="@inlineEdit numeric target-value" data-type="text" data-name="target" data-measurable="@Model.MeetingMeasurable.Measurable.Id" @*fixed*@ data-pk="@Model.MeetingMeasurable.Measurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Goal.ToString("0.#####")</span>
-            <span class="@inlineEdit gray unit" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="@Model.MeetingMeasurable.Measurable.Id" @*fixed*@ data-pk="@Model.MeetingMeasurable.Measurable.Id" data-url="/L10/UpdateMeasurable" data-value="@Model.MeetingMeasurable.Measurable.UnitType">@Model.MeetingMeasurable.Measurable.UnitType.ToTypeString()</span>
-        </td>
-        <td class="cumulative-column"><span onclick="showScorecardOptions(this)" class="@(@Model.MeetingMeasurable.Measurable.ShowCumulative?"":"hidden")">@Model.MeetingMeasurable.Measurable._Cumulative.NotNull(x => x.Value.ToString("0.#####"))</span></td>
+		<td class="target direction header-cell" data-measurable="@Model.MeetingMeasurable.Id"><span class="@inlineEdit" data-type="select" data-name="direction" data-measurable="@Model.MeetingMeasurable.Measurable.Id" @*fixed*@ data-pk="@Model.MeetingMeasurable.Measurable.Id" data-url="/L10/UpdateMeasurable" data-source="/Dropdown/Type/lessgreater" @*data-title="Select goal direction"*@ data-value="@Model.MeetingMeasurable.Measurable.GoalDirection">@Model.MeetingMeasurable.Measurable.GoalDirection.ToSymbol()</span></td>
+		<td class="target value header-cell" data-measurable="@Model.MeetingMeasurable.Id">
+			<span class="@inlineEdit numeric target-value" data-type="text" data-name="target" data-measurable="@Model.MeetingMeasurable.Measurable.Id" @*fixed*@ data-pk="@Model.MeetingMeasurable.Measurable.Id" data-url="/L10/UpdateMeasurable">@Model.MeetingMeasurable.Measurable.Goal.ToString("0.#####")</span>
+			<span class="@inlineEdit gray unit" data-type="select" data-source="/Dropdown/Type/unitType" data-name="unitType" data-measurable="@Model.MeetingMeasurable.Measurable.Id" @*fixed*@ data-pk="@Model.MeetingMeasurable.Measurable.Id" data-url="/L10/UpdateMeasurable" data-value="@Model.MeetingMeasurable.Measurable.UnitType">@Model.MeetingMeasurable.Measurable.UnitType.ToTypeString()</span>
+		</td>
+		<td class="cumulative-column"><span onclick="showScorecardOptions(this)" class="@(@Model.MeetingMeasurable.Measurable.ShowCumulative?"":"hidden")">@Model.MeetingMeasurable.Measurable._Cumulative.NotNull(x => x.Value.ToString("0.#####"))</span></td>
         <td class="header-cell chart"><span class="chart-btn icon fontastic-icon-graph-trend" onclick="onClickScChart(this)"></span></td>
-        @if (Model.ShowScorecardChart) {
-            <td class="header-cell" data-measurable="@Model.MeetingMeasurable.Measurable.Id"><span class="inlinesparkline"></span></td> }
-        <td class="input-placeholder"><form><input /></form></td>
-        @if (ViewBag.ShowRow == null || ViewBag.ShowRow == true) {
-            var col = 0;
-            var seenCurrent = false;
-            var weeks = Model.Weeks;
+		@if (Model.ShowScorecardChart) {
+			<td class="header-cell" data-measurable="@Model.MeetingMeasurable.Measurable.Id"><span class="inlinesparkline"></span></td>
+		}
+		<td class="input-placeholder"><form><input /></form></td>
+		@if (ViewBag.ShowRow == null || ViewBag.ShowRow == true) {
+			var col = 0;
+			var seenCurrent = false;
+			var weeks = Model.Weeks;
 
             foreach (var r in Model.Weeks) {
                 seenCurrent = seenCurrent || r.IsCurrentWeek;
@@ -95,7 +112,8 @@
                         <div class="lineCovers">
                             <div class="lineCoverLeft"></div>
                             <div class="lineCoverRight"></div>
-                        </div>}
+						</div>
+					}
                     <form>
                         <input @(inlineEdit == "" ? "disabled" : "")
                                data-goal="@(found.NotNull(x => x.OriginalGoal) ?? Model.MeetingMeasurable.Measurable.Goal)"
@@ -117,7 +135,8 @@
                                id="sc_@(found != null ? "" + found.Id : Model.MeetingMeasurable.Measurable.Id + "_" + r.ForWeek.ToJavascriptMilliseconds())" />
                     </form>
 
-                </td>  if (r.IsCurrentWeek) {
+				</td>
+				if (r.IsCurrentWeek) {
                     <td class="buttonHolder">
                         <span class="icon fontastic-icon-pinboard issuesButton issuesModal"
                               data-meeting="@Model.MeetingId"

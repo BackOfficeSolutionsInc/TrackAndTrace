@@ -124,7 +124,10 @@
     "inputFile": "Content/Swagger/CustomSwaggerStyle.less"
   },
   {
-    "outputFile": "Content/Chart/metric-graphics.css",
+    "outputFile": "Content/Inputs/TagInput.css",
+    "inputFile": "Content/Inputs/TagInput.less"
+  },
+  {  "outputFile": "Content/Chart/metric-graphics.css",
     "inputFile": "Content/Chart/metric-graphics.less"
   },
   {

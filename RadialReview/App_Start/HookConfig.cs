@@ -1,4 +1,5 @@
 ﻿using RadialReview.Accessors.Hooks;
+using RadialReview.Crosscutting.Hooks.CrossCutting.Formula;
 using RadialReview.Hooks;
 using RadialReview.Hooks.CrossCutting;
 using RadialReview.Hooks.CrossCutting.ActiveCampaign;
@@ -61,9 +62,11 @@ namespace RadialReview.App_Start {
 
 			HooksRegistry.RegisterHook(new UpdatePlaceholder());
 
+            HooksRegistry.RegisterHook(new CascadeScorecardFormulaUpdates());
+
             HooksRegistry.RegisterHook(new ExecutePaymentCardUpdate());
             HooksRegistry.RegisterHook(new FirstPaymentEmail());
-            //HooksRegistry.RegisterHook(new TodoEdit())
-        }
+			//HooksRegistry.RegisterHook(new TodoEdit())
+		}
     }
 }

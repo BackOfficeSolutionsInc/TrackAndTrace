@@ -40,10 +40,15 @@ namespace RadialReview.Utilities.DataTypes
 			return new DateRange(time, time);
 		}
 
-        public TimeSpan ToTimespan() {
-            return EndTime - StartTime;
-        }
-    }
+		public TimeSpan ToTimespan() {
+		    return EndTime - StartTime;
+		}
+
+		public static DateRange Full() {
+		    return new DateRange(DateTime.MinValue, DateTime.MaxValue);
+		}
+
+	}
 	public static class DateRangeExtensions {
 
         /// <summary>

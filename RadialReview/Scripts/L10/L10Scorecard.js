@@ -22,6 +22,11 @@ $(function () {
         }
     });
 });
+
+function showFormula(id) {
+    showModal("Edit formula", "/scorecard/formulapartial/" + id, "/scorecard/setformula?id=" + id, null, null, function () { showAlert("Formula updated"); });
+}
+
 function blurChangeTimeout(key, self, d, i, executeNow) {
     if (typeof (executeNow) === "undefined") {
         executeNow = false;
@@ -465,41 +470,42 @@ function changeInput(event) {
 		($(this)[0].selectionStart == 0 && (event.which == 37)) || //all the way left
 		($(this)[0].selectionEnd == $(this).val().length && (event.which == 39)) // all the way right
 		) {
-        if (event.which == 37) { //left
-            found = $(".grid[data-col=" + (+$(this).data("col") - 1) + "][data-row=" + $(this).data("row") + "]");
-            goingLeft = true;
-        } else if (event.which == 38) { //up
-            var curRow = (+$(this).data("row") - 1);
-            while (true) {
-                var $row = $("tr[data-row=" + curRow + "]");
-                if ($row.length > 0 && !$row.hasClass("divider")) {
-                    found = $(".grid[data-row=" + (curRow) + "][data-col=" + $(this).data("col") + "]");
-                    break;
-                }
-                if ($row.length == 0) {
-                    break;
-                }
-                curRow -= 1;
-            }
-        } else if (event.which == 39) { //right
-            found = $(".grid[data-col=" + (+$(this).data("col") + 1) + "][data-row=" + $(this).data("row") + "]");
-            goingRight = true;
-        } else if (event.which == 40 || event.which == 13) { //down
-            var curRow = (+$(this).data("row") + 1);
-            while (true) {
-                var $row = $("tr[data-row=" + curRow + "]");
-                if ($row.length > 0 && !$row.hasClass("divider")) {
-                    found = $(".grid[data-row=" + (curRow) + "][data-col=" + $(this).data("col") + "]");
-                    break;
-                }
-                if ($row.length == 0) {
-                    break;
-                }
-                curRow += 1;
-            }
-        }
-        var keycode = event.which;
-        var validPrintable =
+		if (event.which == 37) { //left
+			found = $(".grid[data-col=" + (+$(this).data("col") - 1) + "][data-row=" + $(this).data("row") + "]");
+			goingLeft = true;
+		} else if (event.which == 38) { //up
+			var curRow = (+$(this).data("row") - 1);
+			while (true) {
+				var $row = $("tr[data-row=" + curRow + "]");
+			    
+			    if ($row.length > 0 && !$row.hasClass("divider") && !$row.is("[data-editable='False']")) {
+					found = $(".grid[data-row=" + (curRow) + "][data-col=" + $(this).data("col") + "]");
+					break;
+				}
+				if ($row.length == 0) {
+					break;
+				}
+				curRow -= 1;
+			}
+		} else if (event.which == 39) { //right
+			found = $(".grid[data-col=" + (+$(this).data("col") + 1) + "][data-row=" + $(this).data("row") + "]");
+			goingRight = true;
+		} else if (event.which == 40 || event.which == 13) { //down
+			var curRow = (+$(this).data("row") + 1);
+			while (true) {
+				var $row = $("tr[data-row=" + curRow + "]");
+				if ($row.length > 0 && !$row.hasClass("divider") && !$row.is("[data-editable='False']")) {
+					found = $(".grid[data-row=" + (curRow) + "][data-col=" + $(this).data("col") + "]");
+					break;
+				}
+				if ($row.length == 0) {
+					break;
+				}
+				curRow += 1;
+			}
+		}
+		var keycode = event.which;
+		var validPrintable =
 			(keycode > 47 && keycode < 58) || // number keys
 			keycode == 32 || keycode == 13 || // spacebar & return key(s) (if you want to allow carriage returns)
 			(keycode > 64 && keycode < 91) || // letter keys
@@ -663,8 +669,14 @@ function updateScoresGoals(startWeek, measurableId, s) {
 
 
 function receiveUpdateScore(newScore) {
-    //console.info(newScore);
-    $("[data-scoreid='" + newScore.Id + "']").val(newScore.Measured);
+	//console.info(newScore);
+    if (Array.isArray(newScore)) {
+        newScore.map(function (x) {
+            receiveUpdateScore(x);
+        });
+        return;
+    }
+	$("[data-scoreid='" + newScore.Id + "']").val(newScore.Measured);
 }
 
 function reorderRecurrenceMeasurables(order) {

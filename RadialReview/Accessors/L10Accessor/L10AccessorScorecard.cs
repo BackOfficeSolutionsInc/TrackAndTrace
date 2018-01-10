@@ -411,6 +411,10 @@ namespace RadialReview.Accessors {
 								var u1 = a.Measurable.AdminUser.GetName();
 								var v1 = a.Measurable.AdminUser.ImageUrl(true);
 							}
+
+                            if (a.Measurable.HasFormula)
+                                a._Editable = false;
+
 						}
 						if (a.AccountableUser != null) {
 							var j = a.AccountableUser.GetName();
