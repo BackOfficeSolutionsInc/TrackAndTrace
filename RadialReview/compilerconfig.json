@@ -122,5 +122,13 @@
   {
     "outputFile": "Content/Swagger/CustomSwaggerStyle.css",
     "inputFile": "Content/Swagger/CustomSwaggerStyle.less"
+  },
+  {
+    "outputFile": "Content/Chart/metric-graphics.css",
+    "inputFile": "Content/Chart/metric-graphics.less"
+  },
+  {
+    "outputFile": "Content/L10/L10Scorecard.css",
+    "inputFile": "Content/L10/L10Scorecard.less"
   }
 ]

@@ -128,6 +128,7 @@
     <Compile Include="Accessors\PDF\JS\Tree.js.cs" />
     <Compile Include="Accessors\ReportAccessor.cs" />
     <Compile Include="Accessors\SearchAccessor.cs" />
+    <Compile Include="Accessors\StatsAccessor.cs" />
     <Compile Include="Accessors\TinyUserAccessor.cs" />
     <Compile Include="Accessors\VideoConferenceProviders\VideoProviderAccessor.cs" />
     <Compile Include="Accessors\WebhooksAccessor.cs" />
@@ -157,6 +158,7 @@
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
     <Compile Include="Areas\People\Controllers\ErrorController.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\RockCompletionSection.cs" />
+    <None Include="Content\Chart\metric-graphics.less" />
     <Compile Include="Controllers\AbstractController\BaseExpensiveController.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
@@ -192,6 +194,7 @@
     <Compile Include="Models\Angular\CoreProcess\AngularCoreProcess.cs" />
     <Compile Include="Models\Angular\LocalDateTime.cs" />
     <Compile Include="Models\Application\Variable.cs" />
+    <Compile Include="Models\Charts\MetricGraphic.cs" />
     <Compile Include="Models\ClientSuccess\TooltipModels.cs" />
     <Compile Include="Models\Enums\DashboardType.cs" />
     <Compile Include="Models\L10\L10LookupCache.cs" />
@@ -1044,6 +1047,9 @@
     <Content Include="Content\bootstrap\custom\XEditable.css">
       <DependentUpon>XEditable.less</DependentUpon>
     </Content>
+    <Content Include="Content\Chart\metric-graphics.css">
+      <DependentUpon>metric-graphics.less</DependentUpon>
+    </Content>
     <Content Include="Content\creditcard_icon\bank.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -1052,6 +1058,9 @@
       <DependentUpon>GettingStarted.less</DependentUpon>
     </Content>
     <Content Include="Content\img\TRACTION-TOOLS_large_stacked_2c.png" />
+    <Content Include="Content\L10\L10Scorecard.css">
+      <DependentUpon>L10Scorecard.less</DependentUpon>
+    </Content>
     <Content Include="Content\People\MaterialRadio.css">
       <DependentUpon>MaterialRadio.less</DependentUpon>
     </Content>
@@ -1285,10 +1294,12 @@
     <Content Include="Scripts\Angular\People\Survey\SurveyComponents.js" />
     <Content Include="Scripts\Angular\Tiles\L10StatsTile.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
+    <Content Include="Scripts\Charts\metrics-graphics.js" />
     <Content Include="Scripts\components\jquery.bootstrap-duallistbox.js" />
     <Content Include="Scripts\AccountabilityChart\accountabilityChart.js" />
     <Content Include="Scripts\components\milestones.js" />
     <Content Include="Scripts\CoreProcess\coreProcessRT.js" />
+    <Content Include="Scripts\d3\d3.v4.12.2.js" />
     <Content Include="Scripts\d3\d3.v4.js" />
     <Content Include="Scripts\d3\radial.d3.tree.js" />
     <Content Include="Scripts\Dashboard\dashboard.js" />
@@ -1319,6 +1330,7 @@
     <Content Include="Scripts\Main\alerts.js" />
     <Content Include="Scripts\Main\backwardcompatability.js" />
     <Content Include="Scripts\Main\beta.js" />
+    <Content Include="Scripts\Main\chart.js" />
     <Content Include="Scripts\Main\clickableclass.js" />
     <Content Include="Scripts\Main\datatable.js" />
     <Content Include="Scripts\Main\datepickers.js" />
@@ -1765,6 +1777,7 @@
     <Content Include="Views\Shared\EditorTemplates\LocalDateTime.cshtml" />
     <Content Include="Views\L10\Pages.cshtml" />
     <Content Include="Views\ClientSuccess\Close.cshtml" />
+    <Content Include="Views\Data\Dashboard.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -1857,7 +1870,7 @@
     <Content Include="Content\jquery.nouislider.css" />
     <Content Include="Content\jquery.qtip.css" />
     <Content Include="Content\L10\L10IDS.css" />
-    <Content Include="Content\L10\L10Scorecard.css" />
+    <None Include="Content\L10\L10Scorecard.less" />
     <Content Include="Content\L10\L10Stats.css" />
     <Content Include="Content\print.css" />
     <Content Include="Content\ReportBuilder\evaluation.css" />
@@ -2488,7 +2501,6 @@
     <Folder Include="Views\AngularAccountability\" />
     <Folder Include="Views\BaseExpensive\" />
     <Folder Include="Views\Console\" />
-    <Folder Include="Views\Data\" />
     <Folder Include="Views\DropDown\" />
     <Folder Include="Views\HealthCheck\" />
     <Folder Include="Views\Img\" />

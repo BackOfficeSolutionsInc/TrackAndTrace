@@ -129,4 +129,10 @@
 		return Math.floor((span.getTime() / oneDay) / 7);
 	}
 
+    
+	this.getDateSinceEpoch = function (week) {
+	    var day = 24 * 60 * 60 * 1000 * 7 * week;
+	    return new Date(day);
+	};
+
 }
