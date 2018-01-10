@@ -155,6 +155,7 @@
     <Compile Include="Areas\CoreProcess\CoreProcessAreaRegistration.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\ITaskAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
+    <Compile Include="Areas\People\Controllers\ErrorController.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\RockCompletionSection.cs" />
     <Compile Include="Controllers\AbstractController\BaseExpensiveController.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
@@ -1022,6 +1023,7 @@
     <Content Include="Areas\People\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\People\Views\QuarterlyConversation\Issue.cshtml" />
     <Content Include="Areas\People\Views\PeopleAnalyzer\Index.cshtml" />
+    <Content Include="Areas\People\Views\QuarterlyConversation\Surveys.cshtml" />
     <None Include="bundleconfig.json" />
     <None Include="Content\Angular\ngsortable.less" />
     <Content Include="Content\Angular\ngsortable.css">
@@ -1371,6 +1373,7 @@
     <Content Include="SoftwareUpdates\20160622.txt" />
     <Content Include="SoftwareUpdates\20160620.txt" />
     <Content Include="SoftwareUpdates\20171207.txt" />
+    <Compile Include="Utilities\QuarterGuessUtility.cs" />
     <Content Include="Views\Permissions\Dropdown.cshtml" />
     <Content Include="Content\Bootstrap-tabs.css" />
     <Content Include="Content\bootstrap.vertical-tabs.css" />

@@ -59,15 +59,12 @@
                 }
             });
         }
-
-        DataTable({
+        var dtOptions = {
             container: "#qc-archive",
             data: @Html.ArrayToString(Model),
-            clickAdd: function(){
-                window.location="/people/quarterlyconversation/issue";
-            },
+
             clickRemove: "/people/quarterlyconversation/remove/{0}",
-            addButton:{text: "Create New"},
+            nodataText: "No quarterly conversations at this time.",
             cells:[{
                 name: "Name",
                 classes:"fullWidth",
@@ -90,13 +87,15 @@
                 contents:function(x){
                     return getFormattedDate(x.DueDate,null,"--");//.toDateString();
                 }
-            },{
-                name: "",
-                classes:"nowrap alignRight",
-                contents:function(x){
-                    return "<a href='/People/QuarterlyConversation/PrintAll?surveyContainerId="+x.Id+"' title='Print all'><span class='gray clickable glyphicon glyphicon-print'></span></a>";
-                }
-            },{
+            }
+        ]};
+    </script>
+
+    if (ViewBag.CanCreate == true) {
+        <script>
+            dtOptions.addButton= { text: "Create New"};
+            dtOptions.clickAdd= function(){window.location = "/people/quarterlyconversation/issue";};
+            dtOptions.cells.push({
                 name: "",
                 classes:"nowrap alignRight",
                 contents:function(x){
@@ -108,12 +107,17 @@
                 contents:function(x){
                     return "<span class='gray clickable glyphicon glyphicon-trash' title='Delete'></span>";
                 }
-            }
-			//},{
-			//	name: "Name",
-			//	contents:function(x){ return x.Name; }
-			//}]
-            ]
-        });
+            },{
+                name: "",
+                classes:"nowrap alignRight",
+                contents:function(x){
+                    return "<a href='/People/QuarterlyConversation/PrintAll?surveyContainerId="+x.Id+"' title='Print all'><span class='gray clickable glyphicon glyphicon-print'></span></a>";
+                }
+            });
+        </script>
+    }
+    
+    <script>
+        DataTable(dtOptions);
     </script>
 }

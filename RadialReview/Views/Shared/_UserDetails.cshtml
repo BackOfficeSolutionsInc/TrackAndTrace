@@ -21,14 +21,15 @@
 			<div class="smallBreak"></div>
 			@if (edit) {
 				<hr />
-				<div class="alignCenter">
+				<div class="alignCenter smallBreak2">
 					<a class="btn btn-link alignCenter" href="/Todo/List/@Model.User.Id">View To-Dos</a>
 				</div>
-				<div class="smallBreak2"></div>
-				<div class="alignCenter">
-					<a class="btn btn-link alignCenter" href="/Rocks/Archive/@Model.User.Id">View Archived Rocks</a>
-				</div>
-				<div class="smallBreak2"></div>
+                <div class="alignCenter smallBreak2">
+                    <a class="btn btn-link alignCenter" href="/Rocks/Archive/@Model.User.Id">View Archived Rocks</a>
+                </div>
+                <div class="alignCenter smallBreak2">
+                    <a class="btn btn-link alignCenter" href="/people/quarterlyconversation/surveys/@Model.User.Id">View Quarterly Conversations</a>
+                </div>
 			}
 		</div>
 		<div class="col-sm-9">

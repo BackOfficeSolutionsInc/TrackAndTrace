@@ -9,6 +9,8 @@ using System.Web.UI;
 using RadialReview.Accessors;
 using RadialReview.Models.Angular.Todos;
 using RadialReview.Utilities;
+using NHibernate;
+using RadialReview.Variables;
 
 namespace RadialReview.Controllers
 {
@@ -18,6 +20,14 @@ namespace RadialReview.Controllers
 
         [Access(AccessLevel.Any)]
         public PartialViewResult FAQTips(){
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    ViewBag.KB = s.GetSettingOrDefault("KB_URL", "https://tractiontools.happyfox.com/kb/");
+
+                    tx.Commit();
+                    s.Flush();
+                }
+            }            
             return PartialView("FAQTips");
         }
 
