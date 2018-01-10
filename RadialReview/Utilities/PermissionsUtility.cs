@@ -2248,10 +2248,13 @@ namespace RadialReview.Utilities {
             throw new PermissionsException();
         }
 
+        
         public PermissionsUtility Self(long userId) {
             if (IsRadialAdmin(caller))
                 return this;
             if (userId == caller.Id)
+                return this;
+            if (caller.UserIds !=null && caller.UserIds.Any(x => x == userId))
                 return this;
             throw new PermissionsException();
         }

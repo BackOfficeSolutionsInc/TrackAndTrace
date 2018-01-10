@@ -543,6 +543,7 @@ namespace RadialReview.Accessors {
 					meeting.CompleteTime = now;
 					meeting.TodoCompletion = todoRatio;
 
+
 					s.Update(meeting);
 
 					var ids = ratingValues.Select(x => x.Item1).ToArray();
@@ -552,13 +553,25 @@ namespace RadialReview.Accessors {
 						.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id)
 						.List().ToList();
 					var raters = attendees.Where(x => ids.Any(y => y == x.User.Id));
+                    var raterCount =0m;
+                    var raterValue = 0m;
 
 					foreach (var a in raters) {
 						a.Rating = ratingValues.FirstOrDefault(x => x.Item1 == a.User.Id).NotNull(x => x.Item2);
 						s.Update(a);
+
+                        if (a.Rating != null) {
+                            raterCount += 1;
+                            raterValue += a.Rating.Value;
+                        }
 					}
-					//End all logs 
-					var logs = s.QueryOver<L10Meeting.L10Meeting_Log>()
+
+                    meeting.AverageMeetingRating = new Ratio(raterValue, raterCount);
+                    s.Update(meeting);
+
+
+                    //End all logs 
+                    var logs = s.QueryOver<L10Meeting.L10Meeting_Log>()
 						.Where(x => x.DeleteTime == null && x.L10Meeting.Id == meeting.Id && x.EndTime == null)
 						.List().ToList();
 					foreach (var l in logs) {

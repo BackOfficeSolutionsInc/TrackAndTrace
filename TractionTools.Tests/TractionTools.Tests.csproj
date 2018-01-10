@@ -325,10 +325,12 @@
     <Compile Include="Controllers\TestMigration.cs" />
     <Compile Include="Controllers\TwilioApi.cs" />
     <Compile Include="Controllers\PasswordTests.cs" />
+    <Compile Include="Crosscutting\Events\EventProcessorTests.cs" />
     <Compile Include="Engines\SurveyEngineTests.cs" />
-    <Compile Include="Hooks\EnterpriseHookTest.cs" />
-    <Compile Include="Integrations\ActiveCampaignTest.cs" />
+    <Compile Include="Crosscutting\Hooks\EnterpriseHookTest.cs" />
+    <Compile Include="Crosscutting\Integrations\ActiveCampaignTest.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Crosscutting\Notifications\AppNotificationsTest.cs" />
     <Compile Include="PDF\MigradocExtension.cs" />
     <Compile Include="PDF\SurveyPdfTest.cs" />
     <Compile Include="PDF\AccountabilityChartPdfTest.cs" />
