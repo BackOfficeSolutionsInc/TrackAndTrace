@@ -52,7 +52,7 @@
 							<div class="tab-content">
 								<ul>
 									@foreach (var r in Model.Rocks@*.Where(x => x.Period!=null && x.Period.Id == q.Id)*@) {
-										<li class="rock-item" data-id="@r.Id">
+										<li class="rock-item hoverable" data-id="@r.Id">
 											@r.Rock
 											@if (r.FromTemplateItemId.HasValue) {
 												<span class="icon fontastic-icon-link-2 template-link" title="This was created by a template."></span>
@@ -260,3 +260,10 @@
 	}
 
 </script>
+
+<style>
+    .hoverable:hover{
+        /*background-color:#fdece0;*/
+        color:#cf5e0f;
+    }
+</style>

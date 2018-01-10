@@ -733,7 +733,7 @@ namespace RadialReview.Accessors {
 		public static void _RecalculateCumulative_Unsafe(ISession s, RealTimeUtility rt, List<MeasurableModel> measurables, List<L10Recurrence> recurs, ScoreModel updatedScore = null, bool forceNoSkip = true) {
 			var cumulativeByMeasurable = new Dictionary<long, IEnumerable<object[]>>();
 			//Grab Cumulative Values
-			foreach (var mm in measurables.Where(x => x.ShowCumulative && x.Id > 0).Distinct(x => x.Id)) {
+			foreach (var mm in measurables.Where(x => x.ShowCumulative && x.Id > 0 && x.CumulativeRange.HasValue).Distinct(x => x.Id)) {
 				cumulativeByMeasurable[mm.Id] = s.QueryOver<ScoreModel>()
 				.Where(x => x.MeasurableId == mm.Id && x.DeleteTime == null && x.Measured != null && x.ForWeek > mm.CumulativeRange.Value.AddDays(-7))
 				.Select(x => x.ForWeek, x => x.Measured)
