@@ -75,13 +75,19 @@ namespace RadialReview.Api.V1 {
 			return await GetMeasureablesForUser(GetUser().Id);
 		}
 
-		[Route("scorecard/user/{USER_ID}")]
-		[HttpGet]
-		public async Task<AngularScorecard> GetMeasureablesForUser(long USER_ID) {
-			return await ScorecardAccessor.GetAngularScorecardForUser(GetUser(), USER_ID, 13);
-		}
+        [Route("scorecard/user/{USER_ID}")]
+        [HttpGet]
+        public async Task<AngularScorecard> GetMeasureablesForUser(long USER_ID) {
+            return await ScorecardAccessor.GetAngularScorecardForUser(GetUser(), USER_ID, 13);
+        }
 
-	}
+        [Route("scorecard/meeting/{MEETING_ID}")]
+        [HttpGet]
+        public async Task<AngularScorecard> GetScorecardForMeeting(long MEETING_ID) {
+            return (await L10Accessor.GetOrGenerateAngularRecurrence(GetUser(), MEETING_ID)).Scorecard;
+        }
+
+    }
 
 	[RoutePrefix("api/v1")]
 	public class Measurables_Controller : BaseApiController {

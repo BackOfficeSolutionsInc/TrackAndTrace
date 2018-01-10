@@ -12,11 +12,15 @@ namespace RadialReview.Controllers
         //
         // GET: /Error/
         [Access(AccessLevel.Any)]
-        public ActionResult Index(String message=null,String redirectUrl=null)
-        {
+        public ActionResult Index(String message = null, String redirectUrl = null) {
             ViewBag.Message = message;
             ViewBag.RedirectUrl = redirectUrl;
             return View();
+        }
+
+        [Access(AccessLevel.Any)]
+        public ActionResult NotFound() {
+            return Index("404 - Not Found");
         }
 
         [Access(AccessLevel.Any)]

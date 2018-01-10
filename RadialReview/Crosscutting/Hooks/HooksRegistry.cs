@@ -27,16 +27,24 @@ namespace RadialReview.Hooks {
 			lock (lck) {
 				_Hooks = new List<IHook>();
 			}
-		}
+        }
 
-		public static void RegisterHook(IHook hook) {
-			var hooks = GetSingleton();
-			lock (lck) {
-				hooks._Hooks.Add(hook);
-			}
-		}
+        public static void RegisterHook(IHook hook) {
+            var hooks = GetSingleton();
+            lock (lck) {
+                hooks._Hooks.Add(hook);
+            }
+        }
 
-		public static List<T> GetHooks<T>() where T : IHook {
+
+        public static void RegisterHookForTests(params IHook[] hooks) {
+            Deregister();
+            foreach (var h in hooks) {
+                RegisterHook(h);
+            }
+        }
+
+        public static List<T> GetHooks<T>() where T : IHook {
 			return GetSingleton()._Hooks.Where(x => x is T).Cast<T>().ToList();
 		}
 
@@ -152,8 +160,8 @@ namespace RadialReview.Hooks {
 			return _Singleton;
 		}
 
-		public static void Deregister() {
-			_Singleton = null;
-		}
+        public static void Deregister() {
+            _Singleton = null;
+        }
 	}
 }

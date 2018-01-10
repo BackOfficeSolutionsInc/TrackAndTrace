@@ -1184,6 +1184,10 @@ textarea {
 .beta-only {
   display: none;
 }
+body.beta .navbar:hover .beta-label {
+  color: white;
+  font-weight: bold;
+}
 body.beta .beta-only {
   display: block;
 }
@@ -1197,6 +1201,16 @@ body.beta .beta-only.beta-label {
 }
 body.beta .beta-only.beta-label:hover {
   color: white;
+}
+body.beta .beta-only .feedback-smile {
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QwUER8DQvDZLQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAABCUlEQVQ4y82VO27CQBCGv9kABVwCDgClD0BFg8gREMdwWuAYiCNg0aTyAShoXKOglPRJY4elWBtZ67VkyEbKSCvt85Pmn8cKNaYP4x0wBZR1dAX2EsSvrndSA5rRzCIbLBbsC+jymH1LEPcqwCdhFagqufksDKCbM+6CVzT7vJjRdL9gSF0QJm9GjfeVbrRfBEnlqeHLpqIPY+0RWEnafw5Mf+B4MsIfT2aN5LeUmTvvWMBrsWi/wLAP64Um3AjJGdIM0GakGSRnCDfCeqEZ9s2bcp070ybNIPmAcCtOt5ZzzWgAnZajtvNK8RJpCWIpNIw88KI/aQ7e25eyNOg96H5Uhjk79m+/gBuD5HVmlKlcKwAAAABJRU5ErkJggg==');
+  position: absolute;
+  top: 7px;
+  right: 5px;
+  width: 14px;
+  height: 14px;
+  background-size: 14px;
+  display: block;
 }
 @media print {
   .body-content {
@@ -1232,4 +1246,40 @@ body.beta .beta-only.beta-label:hover {
     font-size: 10px;
     text-shadow: 0 0 1px white,0 0 1px white,0 0 1px white, !important;
   }
+}
+.help-icon[title] {
+  color: white;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 9px;
+  width: 18px;
+  height: 18px;
+  overflow: hidden;
+  display: inline-block;
+  text-align: center;
+  margin-bottom: -4px;
+  margin-left: 6px;
+  margin-right: 6px;
+  margin-top: -14px;
+  cursor: help;
+  font-weight: bold;
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+}
+.help-icon[title]:after {
+  content: "?";
+  color: white;
+  font-size: 12px;
+  margin-top: -4px;
+  position: relative;
+  top: -2.3px;
+  left: -0.5px;
 }

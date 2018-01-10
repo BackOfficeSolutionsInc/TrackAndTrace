@@ -65,8 +65,16 @@
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr4.Runtime.4.6.4\lib\net45\Antlr4.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Castle.Core, Version=4.1.1.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\packages\Castle.Core.4.1.1\lib\net45\Castle.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Dangl.Calculator, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dangl.Calculator.1.0.5\lib\net45\Dangl.Calculator.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -294,11 +302,13 @@
     <Compile Include="Accessors\BaseTools\ScorecardAccessorTests.cs" />
     <Compile Include="Accessors\Payment\PaymentPlanAccessorTests.cs" />
     <Compile Include="Accessors\L10\L10Accessor_AngularTests.cs" />
+    <Compile Include="Accessors\Payment\RechargeAccountTests.cs" />
     <Compile Include="Accessors\PDF\AccountabilityChartPdfTest.cs" />
     <Compile Include="Accessors\PDF\D3TreeTests.cs" />
     <Compile Include="Accessors\PDF\PdfAccessor_RunAll.cs" />
     <Compile Include="Accessors\Payment\PaymentAccessorTests.cs" />
     <Compile Include="Accessors\Scorecard\ScorecardAccessorTests.cs" />
+    <Compile Include="Accessors\Scorecard\ScorecardFormulaTests.cs" />
     <Compile Include="API\v1\IssueApiTests_v1.cs" />
     <Compile Include="API\v1\L10ApiTests_v1.cs" />
     <Compile Include="API\v1\MilestonesApiTests_v1.cs" />
@@ -324,10 +334,12 @@
     <Compile Include="Controllers\TestMigration.cs" />
     <Compile Include="Controllers\TwilioApi.cs" />
     <Compile Include="Controllers\PasswordTests.cs" />
+    <Compile Include="Crosscutting\Events\EventProcessorTests.cs" />
     <Compile Include="Engines\SurveyEngineTests.cs" />
-    <Compile Include="Hooks\EnterpriseHookTest.cs" />
-    <Compile Include="Integrations\ActiveCampaignTest.cs" />
+    <Compile Include="Crosscutting\Hooks\EnterpriseHookTest.cs" />
+    <Compile Include="Crosscutting\Integrations\ActiveCampaignTest.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Crosscutting\Notifications\AppNotificationsTest.cs" />
     <Compile Include="PDF\MigradocExtension.cs" />
     <Compile Include="PDF\SurveyPdfTest.cs" />
     <Compile Include="PDF\AccountabilityChartPdfTest.cs" />

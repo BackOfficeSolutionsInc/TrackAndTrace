@@ -485,7 +485,7 @@ namespace RadialReview.Controllers {
 
 		[Access(AccessLevel.Manager)]
 		[HttpPost]
-		public async Task<JsonResult> ResendJoin(long id, TempUserModel model, long TempId) {
+		public async Task<JsonResult> ResendJoin(long id, TempUserModel model, long TempId, bool resendEmail) {
 			var found = _UserAccessor.GetUserOrganization(GetUser(), id, true, false, PermissionType.EditEmployeeDetails);
 			if (found.TempUser == null)
 				throw new PermissionsException("User is already a part of the organization");
@@ -503,14 +503,18 @@ namespace RadialReview.Controllers {
 
 			_UserAccessor.UpdateTempUser(GetUser(), id, model.FirstName, model.LastName, model.Email, DateTime.UtcNow);
 			model.Id = TempId;
-			var result = await Emailer.SendEmail(JoinOrganizationAccessor.CreateJoinEmailToGuid(GetUser(), model));
-			var prefix = "Resent";
-			if (model.LastSent == null)
-				prefix = "Sent";
-			var o = result.ToResults(prefix + " invite to " + model.Name() + ".");
-			o.Object = model;
+            if (resendEmail) {
+                var result = await Emailer.SendEmail(JoinOrganizationAccessor.CreateJoinEmailToGuid(GetUser(), model));
+                var prefix = "Resent";
+                if (model.LastSent == null)
+                    prefix = "Sent";
+                var o = result.ToResults(prefix + " invite to " + model.Name() + ".");
+                o.Object = model;
 
-			return Json(o);
+                return Json(o);
+            }else {
+                return Json(ResultObject.SilentSuccess(model));
+            }
 		}
 
 

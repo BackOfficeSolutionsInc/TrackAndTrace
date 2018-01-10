@@ -426,7 +426,6 @@ namespace RadialReview.Areas.People.Accessors.PDF {
             });
 
             var table = PdfTable.Build(usableWidth, valueQuestions, responseBuilder);
-            cell.Elements.Add(table);
 
             #region Old
             //var questions = iSection.GetItemContainers();
@@ -503,6 +502,17 @@ namespace RadialReview.Areas.People.Accessors.PDF {
             //}
             #endregion
 
+
+            if (!valueQuestions.Any()) {
+                var p = cell.AddParagraph("No core values responses.");
+                p.Format.Font.Color = _Gray;
+                p.Format.Font.Italic = true;
+                p.Format.Alignment = ParagraphAlignment.Center;
+                p.Format.SpaceAfter = Unit.FromInch(.45);
+            }else {
+                cell.Elements.Add(table);
+            }
+
             var questions = iSection.GetItemContainers();
 
             //ADD GENERAL COMMENTS
@@ -546,15 +556,15 @@ namespace RadialReview.Areas.People.Accessors.PDF {
 
             var width1 = Unit.FromInch(3);
             var width2 = Unit.FromInch(1);
-            var pad = (usableWidth - (width1*2)) / 2.0;
+            var pad = (usableWidth - (width1 * 2)) / 2.0;
 
             table.AddColumn(pad);
             table.AddColumn(width1);
             table.AddColumn(width2);
-            table.AddColumn(width1-width2);
+            table.AddColumn(width1 - width2);
             table.AddColumn(pad);
 
-            
+
 
             var row = table.AddRow();
             var p = row.Cells[1].AddParagraph();
@@ -582,14 +592,14 @@ namespace RadialReview.Areas.People.Accessors.PDF {
                 }
             }
             row = table.AddRow();
-            
+
             p = row.Cells[1].AddParagraph();
             p.Format.Alignment = ParagraphAlignment.Right;
             p.AddFormattedText("Rock completion percentage");
             p = row.Cells[2].AddParagraph();
             p.Format.Alignment = ParagraphAlignment.Center;
             p.AddFormattedText(percent ?? "_______________");
-            
+
 
             PdfTable.AddSpacerRow(table);
             //Append table
@@ -646,10 +656,12 @@ namespace RadialReview.Areas.People.Accessors.PDF {
                 }
             } else {
                 var row = roleTable.AddRow();
-                var p = row.Cells[1].AddParagraph("No roles.");
+                var p = row.Cells[1].AddParagraph("No roles responses.");
                 p.Format.Font.Color = _Gray;
                 p.Format.Font.Italic = true;
                 p.Format.Alignment = ParagraphAlignment.Center;
+                p.Format.LeftIndent = -10;
+
             }
             var spacer = roleTable.AddRow();
             spacer.Height = BottomPad;
@@ -765,6 +777,7 @@ namespace RadialReview.Areas.People.Accessors.PDF {
             var tableBuilder = new PdfTable(usableWidth, rockQuestions, responseBuilder, addSpacerRow: false);
             var table = tableBuilder.BuildTable();
 
+
             //Add the rock completion percentage
             table.Format.Borders.Color = DebugColor;
             var percentRow = table.AddRow();
@@ -776,6 +789,14 @@ namespace RadialReview.Areas.People.Accessors.PDF {
                 var p = percentRow.Cells[i + 2].AddParagraph(percentLookup[by.ToKey()].ToPercentage("n/a"));
                 p.Format.Alignment = ParagraphAlignment.Center;
             }
+
+            if (!rockQuestions.Any()) {
+                var p = cell.AddParagraph("No rocks responses.");
+                p.Format.Font.Color = _Gray;
+                p.Format.Font.Italic = true;
+                p.Format.Alignment = ParagraphAlignment.Center;
+            }
+
 
             PdfTable.AddSpacerRow(table);
             //Append table

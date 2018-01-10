@@ -2215,37 +2215,72 @@ namespace RadialReview.Controllers {
             }
             return "VtoStrategyMap Inserted:" + a + ", VtoITemString Inserted:" + b;
         }
-		[Access(Controllers.AccessLevel.Radial)]
-		public String M12_01_2017() {
-			var a = 0;
-			var b = 0;
-			var pageCount = 0;
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var orgs = s.QueryOver<OrganizationModel>().List().ToList();
-					var permItems = s.QueryOver<PermItem>().Where(x=>x.ResType == PermItem.ResourceType.UpdatePaymentForOrganization).List().ToList();
+        [Access(Controllers.AccessLevel.Radial)]
+        public String M12_01_2017() {
+            var a = 0;
+            var b = 0;
+            var pageCount = 0;
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var orgs = s.QueryOver<OrganizationModel>().List().ToList();
+                    var permItems = s.QueryOver<PermItem>().Where(x => x.ResType == PermItem.ResourceType.UpdatePaymentForOrganization).List().ToList();
 
-					foreach (var org in orgs) {
-						if (!permItems.Any(x => x.ResId == org.Id && x.CanAdmin)) {
-							
-							var tempUser = new UserOrganizationModel() {
-								Id= -11,
-								Organization = org,
-							};
+                    foreach (var org in orgs) {
+                        if (!permItems.Any(x => x.ResId == org.Id && x.CanAdmin)) {
 
-							PermissionsAccessor.CreatePermItems(s, tempUser, PermItem.ResourceType.UpdatePaymentForOrganization, org.Id,
-								PermTiny.Admins(true, true, true)
-							);
-							a++;
-						}
-					}
+                            var tempUser = new UserOrganizationModel() {
+                                Id = -11,
+                                Organization = org,
+                            };
 
-					tx.Commit();
-					s.Flush();
-				}
-			}
-			return "Updated:" + a;
-		}
+                            PermissionsAccessor.CreatePermItems(s, tempUser, PermItem.ResourceType.UpdatePaymentForOrganization, org.Id,
+                                PermTiny.Admins(true, true, true)
+                            );
+                            a++;
+                        }
+                    }
+
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+            return "Updated:" + a;
+        }
+
+        [Access(Controllers.AccessLevel.Radial)]
+        public String M01_09_2018() {
+            var a = 0;
+            var b = 0;
+            var pageCount = 0;
+            using (var s = HibernateSession.GetCurrentSession()) {
+                using (var tx = s.BeginTransaction()) {
+                    var invoices = s.QueryOver<InvoiceModel>().Where(x=>x.PaidTime==null && x.DeleteTime==null).List().ToList();
+
+                    var forgive = new[] {
+                        AccountType.Implementer,
+                        AccountType.Dormant,
+                        AccountType.SwanServices,
+                        AccountType.Other,
+                        AccountType.Coach,
+                        AccountType.Cancelled,
+                        AccountType.UserGroup,                        
+                    };
+
+                    foreach (var i in invoices) {
+                        if (forgive.Contains(i.Organization.AccountType)) {
+                            i.DeleteTime = new DateTime(2018, 1, 9);
+                            a += 1;
+                        }
+                    }
+
+                    tx.Commit();
+                    s.Flush();
+                }
+            }
+            return "Updated:" + a;
+        }
+
+
     }
 }
 #pragma warning restore CS0618 // Type or member is obsolete

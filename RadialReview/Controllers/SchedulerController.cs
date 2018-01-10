@@ -25,6 +25,9 @@ using RadialReview.Models.Synchronize;
 using NHibernate.Criterion;
 using System.Linq.Expressions;
 using NHibernate.Impl;
+using System.Threading;
+using RadialReview.Hooks;
+using RadialReview.Utilities.Hooks;
 
 namespace RadialReview.Controllers {
 
@@ -39,6 +42,12 @@ namespace RadialReview.Controllers {
             return true;
         }
 
+        [Access(AccessLevel.Radial)]
+        [AsyncTimeout(5000)]
+        public async Task<ActionResult> Wait(CancellationToken ct, int seconds = 10, int timeout = 5) {
+            await Task.Delay((int)(seconds * 1000));
+            return Content("done " + DateTime.UtcNow.ToJsMs());
+        }
 
         /// <summary>
         /// Do not change controller. 
@@ -47,7 +56,8 @@ namespace RadialReview.Controllers {
         /// <param name="taskId"></param>
         /// <returns></returns>
         [Access(AccessLevel.Any)]
-        public async Task<JsonResult> ChargeAccount(long id, long taskId/*,long? executeTime=null*/) {
+        [AsyncTimeout(20 * 60 * 1000)]
+        public async Task<JsonResult> ChargeAccount(CancellationToken ct, long id, long taskId/*,long? executeTime=null*/) {
             PaymentException capturedPaymentException = null;
             Exception capturedException = null;
             //DateTime? time = null;
@@ -133,9 +143,10 @@ namespace RadialReview.Controllers {
         }
 
         [Access(AccessLevel.Any)]
-        public async Task<ActionResult> EmailTodos(int currentTime, int divisor = 13, int remainder = 0, int sent = 0, string error = null,double duration=0) {
+        [AsyncTimeout(60 * 60 * 1000)]
+        public async Task<ActionResult> EmailTodos(int currentTime, CancellationToken ct, int divisor = 13, int remainder = 0, int sent = 0, string error = null, double duration = 0) {
             if (remainder >= divisor) {
-                return Content("Sent:" + sent+"<br/>Duration:"+duration+"s");
+                return Content("Sent:" + sent + "<br/>Duration:" + duration + "s");
             }
             var start = DateTime.UtcNow;
 
@@ -176,6 +187,9 @@ namespace RadialReview.Controllers {
                 error += " | " + e.Message;
             }
             duration += (DateTime.UtcNow - start).TotalSeconds;
+
+            //Give some other requests a chance to go.
+            await Task.Delay(1500);
 
             return RedirectToAction("EmailTodos", new {
                 currentTime = currentTime,
@@ -218,11 +232,11 @@ namespace RadialReview.Controllers {
                     await _ConstructTodoEmail(currentTime, unsent, nowUtc, userTodos.Value);
                 }
             }
-            
+
             public static List<TodoModel> _QueryTodoModulo(ISession s, long divisor, long remainder, DateTime rangeLow, DateTime rangeHigh, DateTime nextWeek) {
                 return s.QueryOver<TodoModel>()
                                 .Where(x => ((rangeLow <= x.DueDate && x.DueDate <= rangeHigh) || (x.CompleteTime == null && x.DueDate <= nextWeek)) && x.DeleteTime == null)
-                                .Where(Restrictions.Eq(Projections.SqlFunction("mod", NHibernateUtil.Int64, Projections.Property<TodoModel>(x=>x.AccountableUserId), Projections.Constant(divisor)),remainder))
+                                .Where(Restrictions.Eq(Projections.SqlFunction("mod", NHibernateUtil.Int64, Projections.Property<TodoModel>(x => x.AccountableUserId), Projections.Constant(divisor)), remainder))
                                 .List().ToList();
             }
 
@@ -345,16 +359,24 @@ namespace RadialReview.Controllers {
 
                     #region Cleanup Sync model
                     try {
-                        var syncTable = "Sync";
-                        s.CreateSQLQuery("delete from " + syncTable + " where CreateTime < \"" + DateTime.UtcNow.AddDays(-7).ToString("yyyy-MM-dd") + "\"")
-                         .ExecuteUpdate();
-
+                        {
+                            var syncTable = "Sync";
+                            s.CreateSQLQuery("delete from " + syncTable + " where CreateTime < \"" + DateTime.UtcNow.AddDays(-7).ToString("yyyy-MM-dd") + "\"")
+                             .ExecuteUpdate();
+                        }
+                        {
+                            var syncTable = "SyncLock";
+                            s.CreateSQLQuery("delete from " + syncTable + " where LastUpdate < \"" + DateTime.UtcNow.AddDays(-7).ToString("yyyy-MM-dd") + "\"")
+                             .ExecuteUpdate();
+                        }
                     } catch (Exception e) {
                         log.Error(e);
                     }
                     #endregion
 
                     await EventUtil.GenerateAllDailyEvents(s, DateTime.UtcNow);
+
+                    await CheckCardExpirations(s);
 
                     tx.Commit();
                     s.Flush();
@@ -363,10 +385,25 @@ namespace RadialReview.Controllers {
             return any;
         }
 
+        private async Task CheckCardExpirations(ISession s) {
+            var date = DateTime.UtcNow.Date;
+            if (date == new DateTime(date.Year, date.Month, 1) || date == new DateTime(date.Year, date.Month, 15) || date == new DateTime(date.Year, date.Month, 21)) {
+                var expireMonth = date.AddMonths(1);
+                var tokens = s.QueryOver<PaymentSpringsToken>()
+                        .Where(x => x.Active && x.DeleteTime == null && x.TokenType == PaymentSpringTokenType.CreditCard && x.MonthExpire == expireMonth.Month && x.YearExpire == expireMonth.Year)
+                        .List().ToList();
+
+                var tt = tokens.GroupBy(x => x.OrganizationId).Select(x => x.OrderByDescending(y => y.CreateTime).First());
+                foreach (var t in tt)
+                    await HooksRegistry.Each<IPaymentHook>((ses, x) => x.CardExpiresSoon(ses, t));
+
+            }
+        }
 
         [Access(AccessLevel.Any)]
-        [AsyncTimeout(60000 * 30)]//20 minutes..
-        public async Task<JsonResult> Reschedule() {
+        [AsyncTimeout(60000 * 30)]//30 minutes..
+        public async Task<JsonResult> Reschedule(CancellationToken ct) {
+            //HttpContext.Server.ScriptTimeout = 20*60; // Twenty minutes..
             var res = await TaskAccessor.ExecuteTasks();
             return Json(res, JsonRequestBehavior.AllowGet);
         }
@@ -391,5 +428,5 @@ namespace RadialReview.Controllers {
             return Json(ResultObject.SilentSuccess(), JsonRequestBehavior.AllowGet);
         }
     }
-   
+
 }

@@ -54,5 +54,10 @@ namespace RadialReview.Hooks.Meeting {
 		public async Task DeleteMeasurable(ISession s, MeasurableModel measurable) {
 			//noop
 		}
-	}
+
+        public async Task UpdateScores(ISession s, List<ScoreAndUpdates> scoreAndUpdates) {
+            foreach (var sau in scoreAndUpdates)
+                await UpdateScore(s,sau.score,sau.updates);
+        }
+    }
 }

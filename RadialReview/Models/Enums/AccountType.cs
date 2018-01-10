@@ -20,4 +20,5 @@ namespace RadialReview.Models.Enums
 		Dormant = 20,
 		Cancelled = 30,
 	}
+    
 }

@@ -14,16 +14,20 @@ namespace RadialReview.Utilities.DataTypes
 		public decimal Numerator { get; set; }
 		public decimal Denominator { get; set; }
 
-		public void Add(decimal numerator, decimal denominator)
-		{
-			Numerator   += numerator;
-			Denominator += denominator;
-		}
+        public Ratio Add(decimal numerator, decimal denominator) {
+            Numerator += numerator;
+            Denominator += denominator;
+            return this;
+        }
+        public Ratio Add(Ratio ratio) {
+            return Merge(ratio);
+        }
 
-		public void Merge(Ratio ratio)
+        public Ratio Merge(Ratio ratio)
 		{
-			Add(ratio.Numerator,ratio.Denominator);			
-		}
+			Add(ratio.Numerator,ratio.Denominator);
+            return this;
+        }
 
 
 		public Ratio()
