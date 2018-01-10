@@ -30,28 +30,23 @@ using PdfSharp.Pdf.IO;
 using System.Collections;
 using RadialReview.Models.Angular.Rocks;
 
-namespace RadialReview.Accessors
-{
-    public class LayoutHelper
-    {
+namespace RadialReview.Accessors {
+    public class LayoutHelper {
         private readonly PdfDocument _document;
         private readonly XUnit _topPosition;
         private readonly XUnit _bottomMargin;
         private XUnit _currentPosition;
-        public LayoutHelper(PdfDocument document, XUnit topPosition, XUnit bottomMargin)
-        {
+        public LayoutHelper(PdfDocument document, XUnit topPosition, XUnit bottomMargin) {
             _document = document;
             _topPosition = topPosition;
             _bottomMargin = bottomMargin;
             // Set a value outside the page - a new page will be created on the first request.
             _currentPosition = bottomMargin + 10000;
         }
-        public XUnit GetLinePosition(XUnit requestedHeight)
-        {
+        public XUnit GetLinePosition(XUnit requestedHeight) {
             return GetLinePosition(requestedHeight, -1f);
         }
-        public XUnit GetLinePosition(XUnit requestedHeight, XUnit requiredHeight)
-        {
+        public XUnit GetLinePosition(XUnit requestedHeight, XUnit requiredHeight) {
             XUnit required = requiredHeight == -1f ? requestedHeight : requiredHeight;
             if (_currentPosition + required > _bottomMargin)
                 CreatePage();
@@ -62,8 +57,7 @@ namespace RadialReview.Accessors
         public XGraphics Gfx { get; private set; }
         public PdfPage Page { get; private set; }
 
-        void CreatePage()
-        {
+        void CreatePage() {
             Page = _document.AddPage();
             Page.Size = PdfSharp.PageSize.A4;
             Gfx = XGraphics.FromPdfPage(Page);
@@ -71,41 +65,32 @@ namespace RadialReview.Accessors
         }
     }
 
-    public class DocumentMerger
-    {
+    public class DocumentMerger {
 
         protected List<object> docs { get; set; }
 
-        public void AddDocs(IEnumerable<PdfDocument> docList)
-        {
-            foreach (var doc in docList)
-            {
+        public void AddDocs(IEnumerable<PdfDocument> docList) {
+            foreach (var doc in docList) {
                 docs.Add(doc);
             }
         }
-        public void AddDocs(IEnumerable<Document> docList)
-        {
-            foreach (var doc in docList)
-            {
+        public void AddDocs(IEnumerable<Document> docList) {
+            foreach (var doc in docList) {
                 docs.Add(doc);
             }
         }
-        public void AddDoc(PdfDocument doc)
-        {
+        public void AddDoc(PdfDocument doc) {
             docs.Add(doc);
         }
-        public void AddDoc(Document doc)
-        {
+        public void AddDoc(Document doc) {
             docs.Add(doc);
         }
 
-        public DocumentMerger()
-        {
+        public DocumentMerger() {
             docs = new List<object>();
         }
 
-        protected void DrawNumber(XGraphics gfx, XFont font, int? number, DateTime? date, string dateFormat, string name = null)
-        {
+        protected void DrawNumber(XGraphics gfx, XFont font, int? number, DateTime? date, string dateFormat, string name = null) {
 
             var wmargin = 35;
             var hmargin = 22;
@@ -113,14 +98,12 @@ namespace RadialReview.Accessors
             var size = new XSize(gfx.PageSize.Width - wmargin * 2, gfx.PageSize.Height - hmargin * 2);
 
             //var text = "";
-            if (number != null)
-            {
+            if (number != null) {
                 gfx.DrawString(number.ToString(), font, XBrushes.Black, new XRect(new XPoint(wmargin, hmargin), size), XStringFormats.BottomRight);
 
                 //text += number.ToString();
             }
-            if (date != null)
-            {
+            if (date != null) {
                 //	if (number != null) {
                 //		text += " | ";
                 //	};
@@ -138,8 +121,7 @@ namespace RadialReview.Accessors
         }
 
 
-        public PdfDocument Flatten(string title, bool includeNumber, bool includeDate = true, string dateFormat = null, string name = null)
-        {
+        public PdfDocument Flatten(string title, bool includeNumber, bool includeDate = true, string dateFormat = null, string name = null) {
             DateTime now = DateTime.Now;
             //  filename = filename.ToLower().EndsWith(".pdf")?filename:filename+".pdf";
             PdfDocument document = new PdfDocument();
@@ -151,8 +133,7 @@ namespace RadialReview.Accessors
             var pages = 0;
             XFont font = new XFont("Verdana", 10, XFontStyle.Regular);
 
-            if (!docs.Any())
-            {
+            if (!docs.Any()) {
                 //Cannot save empty document
                 var doc = new Document();
                 var section = new Section();
@@ -165,21 +146,17 @@ namespace RadialReview.Accessors
                 AddDoc(doc);
             }
 
-            foreach (var doc in docs)
-            {
-                if (doc is PdfDocument)
-                {
+            foreach (var doc in docs) {
+                if (doc is PdfDocument) {
                     var pdfDoc = (PdfDocument)doc;
                     PdfDocument newPdfDoc;
 
-                    using (var stream = new MemoryStream())
-                    {
+                    using (var stream = new MemoryStream()) {
                         pdfDoc.Save(stream, false);
                         newPdfDoc = PdfReader.Open(stream, PdfDocumentOpenMode.Import);
                     }
 
-                    foreach (var p in newPdfDoc.Pages)
-                    {
+                    foreach (var p in newPdfDoc.Pages) {
                         var page = document.AddPage(p);
                         page.Width = p.Width;
                         page.Height = p.Height;
@@ -191,16 +168,14 @@ namespace RadialReview.Accessors
                         pages += 1;
                     }
                 }
-                if (doc is Document)
-                {
+                if (doc is Document) {
                     var mdoc = (Document)doc;
 
                     DocumentRenderer docRenderer = new DocumentRenderer(mdoc);
                     docRenderer.PrepareDocument();
 
                     int pageCount = docRenderer.FormattedDocument.PageCount;
-                    for (int idx = 0; idx < pageCount; idx++)
-                    {
+                    for (int idx = 0; idx < pageCount; idx++) {
                         PdfPage page = document.AddPage();
 
                         var pageInfo = docRenderer.FormattedDocument.GetPageInfo(idx + 1);
@@ -226,11 +201,9 @@ namespace RadialReview.Accessors
     }
 
 
-    public class PdfAccessor
-    {
+    public class PdfAccessor {
 
-        static XRect GetRect(int index)
-        {
+        static XRect GetRect(int index) {
             XRect rect = new XRect(0, 0, A4Width / 2 * 0.9, A4Height / 2 * 0.9);
             rect.X = (index % 2) * A4Width / 2 + A4Width * 0.05 / 2;
             rect.Y = (index / 2) * A4Height / 2 + A4Height * 0.05 / 2;
@@ -241,8 +214,7 @@ namespace RadialReview.Accessors
         static double LetterWidth = XUnit.FromInch(8.5).Point;
         static double LetterHeight = XUnit.FromInch(11).Point;
 
-        public static Document CreateDoc(UserOrganizationModel caller, string docTitle)
-        {
+        public static Document CreateDoc(UserOrganizationModel caller, string docTitle) {
             var document = new Document();
 
             document.Info.Title = docTitle;
@@ -265,10 +237,8 @@ namespace RadialReview.Accessors
         }
 
 
-        public static byte[] LoadImage(MemoryStream st)
-        {
-            using (Stream stream = new MemoryStream(st.ToArray()))
-            {
+        public static byte[] LoadImage(MemoryStream st) {
+            using (Stream stream = new MemoryStream(st.ToArray())) {
                 if (stream == null)
                     throw new ArgumentException("No resource with name " + stream);
 
@@ -279,8 +249,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static Document GeneratePeopleAnalyzer(UserOrganizationModel caller, PeopleAnalyzer peopleAnalyzer)
-        {
+        public static Document GeneratePeopleAnalyzer(UserOrganizationModel caller, PeopleAnalyzer peopleAnalyzer) {
 
             var doc = CreateDoc(caller, "People Analyzer");
 
@@ -290,8 +259,7 @@ namespace RadialReview.Accessors
             return doc;
         }
 
-        public static void AddPeopleAnalyzer(Document doc, PeopleAnalyzer peopleAnalyzer, bool addPageNumber = true)
-        {
+        public static void AddPeopleAnalyzer(Document doc, PeopleAnalyzer peopleAnalyzer, bool addPageNumber = true) {
 
             var section = AddTitledPage(doc, "People Analyzer - " + peopleAnalyzer.ReviewName, addPageNumber: addPageNumber);
             //var section = doc.AddSection();
@@ -315,8 +283,7 @@ namespace RadialReview.Accessors
             column.Format.Alignment = ParagraphAlignment.Left;
 
             //Values
-            foreach (var v in peopleAnalyzer.Values)
-            {
+            foreach (var v in peopleAnalyzer.Values) {
                 column = table.AddColumn(Unit.FromInch(size));
                 column.Format.Alignment = ParagraphAlignment.Center;
             }
@@ -347,8 +314,7 @@ namespace RadialReview.Accessors
 
 
             var i = 0;
-            for (i = 0; i < peopleAnalyzer.Values.Count; i++)
-            {
+            for (i = 0; i < peopleAnalyzer.Values.Count; i++) {
                 row.Cells[1 + i].AddParagraph("" + peopleAnalyzer.Values[i].CompanyValue);
                 row.Cells[1 + i].VerticalAlignment = VerticalAlignment.Bottom;
                 row.Cells[1 + i].Format.Font.Size = 8;
@@ -367,8 +333,7 @@ namespace RadialReview.Accessors
             row.Cells[i + 3].Format.Font.Size = 8;
 
 
-            foreach (var r in peopleAnalyzer.Rows.OrderBy(x => peopleAnalyzer.GetUser(x).NotNull(y => y.GetName())))
-            {
+            foreach (var r in peopleAnalyzer.Rows.OrderBy(x => peopleAnalyzer.GetUser(x).NotNull(y => y.GetName()))) {
                 var user = peopleAnalyzer.GetUser(r);
                 if (user == null)
                     continue;
@@ -382,8 +347,7 @@ namespace RadialReview.Accessors
                 row.Cells[0].Format.RightIndent = Unit.FromInch(.05);
                 row.Cells[0].Format.Alignment = ParagraphAlignment.Right;
                 i = 1;
-                foreach (var val in peopleAnalyzer.Values)
-                {
+                foreach (var val in peopleAnalyzer.Values) {
                     var thisValue = r.ValueRatings.Where(x => x.ValueId == val.Id).Select(x => x.Rating).ToList();
                     var merge = ScatterScorer.MergeValueScores(thisValue, val);
                     var text = merge.Merged.ToShortKey();
@@ -392,8 +356,7 @@ namespace RadialReview.Accessors
                     i++;
                 }
 
-                var stateName = new Func<FiveState, string>(x =>
-                {
+                var stateName = new Func<FiveState, string>(x => {
                     if (x == FiveState.Indeterminate)
                         return "";
                     return (x == FiveState.Always || x == FiveState.Mostly) ? "Y" : "N";
@@ -420,12 +383,10 @@ namespace RadialReview.Accessors
 
         }
 
-        public static void AddReviewPrintout(UserOrganizationModel caller, PdfDocument document, ReviewController.ReviewDetailsViewModel review)
-        {
+        public static void AddReviewPrintout(UserOrganizationModel caller, PdfDocument document, ReviewController.ReviewDetailsViewModel review) {
 
             var pageNum = 0;
-            var AddPageNum = new Action<XGraphics, XRect>((g, pageDim) =>
-            {
+            var AddPageNum = new Action<XGraphics, XRect>((g, pageDim) => {
                 pageNum++;
                 g.DrawString(review.Review.ReviewerUser.GetName() + "  |  " + pageNum, PdfChartAccessor._Font8, XBrushes.LightGray, new XPoint(pageDim.Width - 20, pageDim.Height - 20), XStringFormats.BottomRight);
             });
@@ -469,8 +430,7 @@ namespace RadialReview.Accessors
             var leftColumnHeight = top;
             var rightColumnHeight = top;
 
-            if (review.Review.ClientReview.IncludeScatterChart)
-            {
+            if (review.Review.ClientReview.IncludeScatterChart) {
                 var r = new XRect(w2, top, w2, w2 * 0.8);
                 var q = PdfChartAccessor.DrawQuadrant(scatter, gfx, r, centerHeight: false, margin: margin);
                 rightColumnHeight += q.Height;
@@ -481,8 +441,7 @@ namespace RadialReview.Accessors
             XGraphics gfxPage2 = null;
 
 
-            if (review.Review.ClientReview.IncludeEvaluation)
-            {
+            if (review.Review.ClientReview.IncludeEvaluation) {
                 var testDoc = new PdfDocument();
                 var testPage = testDoc.AddPage();
                 var tester = XGraphics.FromPdfPage(testPage);
@@ -495,10 +454,8 @@ namespace RadialReview.Accessors
                 //List<ValueBar> theBar = null;
                 var valueRect = PdfChartAccessor.DrawValueTable(tester, r, review.Review.ReviewerUser, valAnswers, review.Supervisers, margin: margin);
 
-                if (r.Top + valueRect.Height > pageSize.Height)
-                {
-                    if (!addedPage2)
-                    {
+                if (r.Top + valueRect.Height > pageSize.Height) {
+                    if (!addedPage2) {
                         page2 = document.AddPage();
                         addedPage2 = true;
                         gfxPage2 = XGraphics.FromPdfPage(page2);
@@ -509,9 +466,7 @@ namespace RadialReview.Accessors
                         currentGfx = gfxPage2;
                     }
                     PdfChartAccessor.DrawValueTable(gfxPage2, r, review.Review.ReviewerUser, valAnswers, review.Supervisers, margin: margin);
-                }
-                else
-                {
+                } else {
                     PdfChartAccessor.DrawValueTable(gfx, r, review.Review.ReviewerUser, valAnswers, review.Supervisers, margin: margin);
                 }
 
@@ -525,10 +480,8 @@ namespace RadialReview.Accessors
                 var rockRect = PdfChartAccessor.DrawRocksTable(tester, r, rockAnswers, margin: margin);
 
 
-                if (r.Top + rockRect.Height > pageSize.Height)
-                {
-                    if (!addedPage2)
-                    {
+                if (r.Top + rockRect.Height > pageSize.Height) {
+                    if (!addedPage2) {
                         page2 = document.AddPage();
                         addedPage2 = true;
                         gfxPage2 = XGraphics.FromPdfPage(page2);
@@ -538,16 +491,13 @@ namespace RadialReview.Accessors
                         leftColumnHeight = 0;
                     }
                     PdfChartAccessor.DrawRocksTable(gfxPage2, r, rockAnswers, margin: margin);
-                }
-                else
-                {
+                } else {
                     PdfChartAccessor.DrawRocksTable(gfx, r, rockAnswers, margin: margin);
                 }
                 leftColumnHeight += rockRect.Height;
             }
 
-            if (review.Review.ClientReview.IncludeScorecard && review.Review.ClientReview._ScorecardRecur.Scorecard.Measurables.Any())
-            {
+            if (review.Review.ClientReview.IncludeScorecard && review.Review.ClientReview._ScorecardRecur.Scorecard.Measurables.Any()) {
                 Document doc = new Document();
                 var sc = GenerateScorecard(review.Review.ClientReview._ScorecardRecur, true);
                 var sec = doc.AddSection();
@@ -572,10 +522,8 @@ namespace RadialReview.Accessors
 
             var availableRect = new XRect(pageSize.Left, pageSize.Top, pageSize.Width, pageSize.Height);
 
-            if (feedbackAnswers.Any())
-            {
-                if (!addedPage3)
-                {
+            if (feedbackAnswers.Any()) {
+                if (!addedPage3) {
                     addedPage3 = true;
                     page3 = document.AddPage();
                     currentPage = page3;
@@ -594,10 +542,8 @@ namespace RadialReview.Accessors
             XGraphics gfxPage4 = null;
 
 
-            if (review.Review.ClientReview.IncludeNotes && !string.IsNullOrWhiteSpace(review.Review.ClientReview.ManagerNotes))
-            {
-                if (!addedPage3)
-                {
+            if (review.Review.ClientReview.IncludeNotes && !string.IsNullOrWhiteSpace(review.Review.ClientReview.ManagerNotes)) {
+                if (!addedPage3) {
                     addedPage3 = true;
                     page3 = document.AddPage();
                     gfxPage3 = XGraphics.FromPdfPage(page3);
@@ -610,8 +556,7 @@ namespace RadialReview.Accessors
                 var tester = XGraphics.FromPdfPage(testPage);
                 var notesSize = PdfChartAccessor.DrawNotes(tester, availableRect, review.Review.ClientReview.ManagerNotes, margin: margin);
 
-                if (notesSize.Bottom > pageSize.Bottom)
-                {
+                if (notesSize.Bottom > pageSize.Bottom) {
                     addedPage4 = true;
                     page4 = document.AddPage();
                     currentPage = page4;
@@ -620,18 +565,14 @@ namespace RadialReview.Accessors
                     AddPageNum(gfxPage4, pageSize);
                     var rect = PdfChartAccessor.DrawNotes(gfxPage4, pageSize, review.Review.ClientReview.ManagerNotes, margin: margin);
                     availableRect = new XRect(pageSize.Left, rect.Bottom, pageSize.Width, Math.Max(pageSize.Height - rect.Bottom, 1));
-                }
-                else
-                {
+                } else {
                     var rect = PdfChartAccessor.DrawNotes(gfxPage3, availableRect, review.Review.ClientReview.ManagerNotes, margin: margin);
                     availableRect = new XRect(pageSize.Left, rect.Bottom, pageSize.Width, Math.Max(pageSize.Height - rect.Bottom, 1));
                 }
             }
 
-            if (review.Review.ClientReview.IncludeRadios)
-            {
-                if (!addedPage3)
-                {
+            if (review.Review.ClientReview.IncludeRadios) {
+                if (!addedPage3) {
                     addedPage3 = true;
                     page3 = document.AddPage();
                     gfxPage3 = XGraphics.FromPdfPage(page3);
@@ -644,8 +585,7 @@ namespace RadialReview.Accessors
                 var tester = XGraphics.FromPdfPage(testPage);
                 var barSize = PdfChartAccessor.DrawBarChart(tester, availableRect, radioAnswers, margin: margin);
 
-                if (barSize.Bottom > pageSize.Bottom)
-                {
+                if (barSize.Bottom > pageSize.Bottom) {
                     var pg = document.AddPage();
                     currentPage = pg;
                     var pgGfx = XGraphics.FromPdfPage(currentPage);
@@ -653,9 +593,7 @@ namespace RadialReview.Accessors
                     AddPageNum(pgGfx, pageSize);
                     var rect = PdfChartAccessor.DrawBarChart(currentGfx, pageSize, radioAnswers, margin: margin);
                     availableRect = new XRect(pageSize.Left, rect.Bottom, pageSize.Width, Math.Max(pageSize.Height - rect.Bottom, 1));
-                }
-                else
-                {
+                } else {
                     var rect = PdfChartAccessor.DrawBarChart(currentGfx, availableRect, radioAnswers, margin: margin);
                     availableRect = new XRect(pageSize.Left, rect.Bottom, pageSize.Width, Math.Max(pageSize.Height - rect.Bottom, 1));
                 }
@@ -663,8 +601,7 @@ namespace RadialReview.Accessors
 
         }
 
-        public static PdfDocument GenerateReviewPrintout(UserOrganizationModel caller, ReviewController.ReviewDetailsViewModel review)
-        {
+        public static PdfDocument GenerateReviewPrintout(UserOrganizationModel caller, ReviewController.ReviewDetailsViewModel review) {
             var name = review.Review.ReviewerUser.GetName();
             PdfDocument document = new PdfDocument();
             document.Info.Author = "Traction® Tools";
@@ -681,21 +618,16 @@ namespace RadialReview.Accessors
         public static Color TableDark = new Color(50, 50, 50);
         public static Color TableBlack = new Color(0, 0, 0);
 
-        protected static Section AddTitledPage(Document document, string pageTitle, Orientation orientation = Orientation.Portrait, bool addSection = true, bool addPageNumber = true)
-        {
+        protected static Section AddTitledPage(Document document, string pageTitle, Orientation orientation = Orientation.Portrait, bool addSection = true, bool addPageNumber = true) {
             Section section;
 
-            if (addSection || document.LastSection == null)
-            {
+            if (addSection || document.LastSection == null) {
                 section = document.AddSection();
                 section.PageSetup.Orientation = orientation;
-            }
-            else
-            {
+            } else {
                 section = document.LastSection;
             }
-            if (addPageNumber)
-            {
+            if (addPageNumber) {
                 //paragraph.AddTab();
                 var paragraph = new Paragraph();
                 paragraph.Format.Alignment = ParagraphAlignment.Right;
@@ -709,8 +641,7 @@ namespace RadialReview.Accessors
                 //if (addPageNumber && addDate) {
                 //	paragraph.AddText(" | ");
                 //}
-                if (addPageNumber)
-                {
+                if (addPageNumber) {
                     paragraph.AddPageField();
                 }
                 section.Footers.Primary.Add(paragraph);
@@ -756,8 +687,7 @@ namespace RadialReview.Accessors
 
         #region L10PageRows
 
-        private static Row AddL10Row_Title(Section section, AngularRecurrencePage page)
-        {
+        private static Row AddL10Row_Title(Section section, AngularRecurrencePage page) {
             var t = section.AddTable();
             t.Format.SpaceBefore = Unit.FromInch(.05);
             t.Format.LeftIndent = Unit.FromInch(1);
@@ -770,15 +700,13 @@ namespace RadialReview.Accessors
             r.Cells[1].Format.Alignment = ParagraphAlignment.Right;
             return r;
         }
-        private static void AddL10Row_Todos(Section section, AngularRecurrence recur, AngularRecurrencePage page, DateTime? lastMeeting)
-        {
+        private static void AddL10Row_Todos(Section section, AngularRecurrence recur, AngularRecurrencePage page, DateTime? lastMeeting) {
             AddL10Row_Title(section, page);
 
             var todos = recur.Todos.Where(x => x.Complete == false || x.CompleteTime > lastMeeting).OrderBy(x => x.Ordering)/*.OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)*/.ToList();
             var fs = 10;
 
-            for (var i = 0; i < todos.Count; i++)
-            {
+            for (var i = 0; i < todos.Count; i++) {
                 var pp = new Table();
                 pp.Format.SpaceAfter = 0;
                 pp.AddColumn(Unit.FromInch(1.25));
@@ -795,15 +723,13 @@ namespace RadialReview.Accessors
                 section.Add(pp);
             }
         }
-        private static void AddL10Row_Issues(Section section, AngularRecurrence recur, AngularRecurrencePage page)
-        {
+        private static void AddL10Row_Issues(Section section, AngularRecurrence recur, AngularRecurrencePage page) {
             AddL10Row_Title(section, page);
 
             var issues = recur.IssuesList.Issues.Where(x => x.Complete == false).OrderByDescending(x => x.Priority).ThenBy(x => x.Name).ToList();
             var fs = 10;
 
-            for (var i = 0; i < issues.Count; i++)
-            {
+            for (var i = 0; i < issues.Count; i++) {
                 var pp = new Table();
 
                 pp.Format.SpaceAfter = 0;
@@ -824,8 +750,7 @@ namespace RadialReview.Accessors
 
         }
 
-        private static void AddL10Row_Conclude(Section section, AngularRecurrence recur, AngularRecurrencePage page)
-        {
+        private static void AddL10Row_Conclude(Section section, AngularRecurrence recur, AngularRecurrencePage page) {
 
             var r = AddL10Row_Title(section, page);
 
@@ -837,10 +762,8 @@ namespace RadialReview.Accessors
             p.Format.LeftIndent = Unit.FromInch(1 + 3 / 8.0);
         }
 
-        private static void AddL10Row(Section section, AngularRecurrence recur, AngularRecurrencePage page, DateTime? lastMeeting)
-        {
-            switch (page.Type)
-            {
+        private static void AddL10Row(Section section, AngularRecurrence recur, AngularRecurrencePage page, DateTime? lastMeeting) {
+            switch (page.Type) {
                 case L10Recurrence.L10PageType.IDS:
                     AddL10Row_Issues(section, recur, page);
                     break;
@@ -857,8 +780,7 @@ namespace RadialReview.Accessors
         }
         #endregion
 
-        public static Document AddL10(Document doc, AngularRecurrence recur, DateTime? lastMeeting, bool addPageNumber = false)
-        {
+        public static Document AddL10(Document doc, AngularRecurrence recur, DateTime? lastMeeting, bool addPageNumber = false) {
             //CreateDoc(caller,"THE LEVEL 10 MEETING");
             var section = AddTitledPage(doc, "THE LEVEL 10 MEETING™", addPageNumber: addPageNumber);
             var p = section.Footers.Primary.AddParagraph("© 2003 - " + DateTime.UtcNow.AddMonths(3).Year + " EOS. All Rights Reserved.");
@@ -882,8 +804,7 @@ namespace RadialReview.Accessors
             var recurr = recur._Recurrence.Item;
 
 
-            foreach (var page in recur.Pages)
-            {
+            foreach (var page in recur.Pages) {
                 AddL10Row(section, recur, page, lastMeeting);
             }
 
@@ -997,8 +918,7 @@ namespace RadialReview.Accessors
             return doc;
         }
 
-        public static void AddTodos(UserOrganizationModel caller, Document doc, AngularRecurrence recur, bool addPageNumber = true)
-        {
+        public static void AddTodos(UserOrganizationModel caller, Document doc, AngularRecurrence recur, bool addPageNumber = true) {
             //var recur = L10Accessor.GetAngularRecurrence(caller, recurrenceId);
 
             //return SetupDoc(caller, caller.Organization.Settings.RockName);
@@ -1049,8 +969,7 @@ namespace RadialReview.Accessors
             row.Cells[3].Format.Alignment = ParagraphAlignment.Left;
 
             var mn = 1;
-            foreach (var m in recur.Todos.Where(x => x.Complete == false).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate))
-            {
+            foreach (var m in recur.Todos.Where(x => x.Complete == false).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)) {
 
                 row = table.AddRow();
                 row.HeadingFormat = false;
@@ -1072,8 +991,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static void AddIssues(UserOrganizationModel caller, Document doc, AngularRecurrence recur, bool mergeWithTodos, bool addPageNumber = true)
-        {
+        public static void AddIssues(UserOrganizationModel caller, Document doc, AngularRecurrence recur, bool mergeWithTodos, bool addPageNumber = true) {
             //var recur = L10Accessor.GetAngularRecurrence(caller, recurrenceId);
 
             //return SetupDoc(caller, caller.Organization.Settings.RockName);
@@ -1125,8 +1043,7 @@ namespace RadialReview.Accessors
             row.Cells[3].VerticalAlignment = VerticalAlignment.Center;
 
             var mn = 1;
-            foreach (var m in recur.IssuesList.Issues.Where(x => x.Complete == false).OrderByDescending(x => x.Priority).ThenBy(x => x.Name))
-            {
+            foreach (var m in recur.IssuesList.Issues.Where(x => x.Complete == false).OrderByDescending(x => x.Priority).ThenBy(x => x.Name)) {
 
                 row = table.AddRow();
                 row.HeadingFormat = false;
@@ -1141,15 +1058,11 @@ namespace RadialReview.Accessors
                 //row.Cells[0].AddParagraph("" + mn + ".");
 
                 var p = "";
-                if (isPriority)
-                {
-                    if (m.Priority >= 1 && m.Priority <= 3)
-                    {
+                if (isPriority) {
+                    if (m.Priority >= 1 && m.Priority <= 3) {
                         for (var i = 0; i < m.Priority; i++)
                             p += "*";//"★";
-                    }
-                    else if (m.Priority > 3)
-                    {
+                    } else if (m.Priority > 3) {
                         p = "* x" + m.Priority;
                     }
                     //row.Cells[1].Format.Font.Name = "Arial";
@@ -1171,8 +1084,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static void AddRocks_old(UserOrganizationModel caller, Document doc, bool quarterlyPrintout, AngularRecurrence recur, AngularVTO vto, bool addPageNumber = true)
-        {
+        public static void AddRocks_old(UserOrganizationModel caller, Document doc, bool quarterlyPrintout, AngularRecurrence recur, AngularVTO vto, bool addPageNumber = true) {
             //var recur = L10Accessor.GetAngularRecurrence(caller, recurrenceId);
 
             //return SetupDoc(caller, caller.Organization.Settings.RockName);
@@ -1187,8 +1099,7 @@ namespace RadialReview.Accessors
             var format = caller.NotNull(x => x.Organization.NotNull(y => y.Settings.NotNull(z => z.GetDateFormat()))) ?? "MM-dd-yyyy";
 
             var addVTO = true;
-            if (addVTO && vto != null)
-            {
+            if (addVTO && vto != null) {
                 table = section.AddTable();
                 column = table.AddColumn(Unit.FromInch(5.0));
                 column.Format.Alignment = ParagraphAlignment.Right;
@@ -1237,8 +1148,7 @@ namespace RadialReview.Accessors
 
 
 
-            if (recur.Rocks.Any(x => x.VtoRock ?? false))
-            {
+            if (recur.Rocks.Any(x => x.VtoRock ?? false)) {
                 table = section.AddTable();
                 table.Format.Font.Size = 9;
 
@@ -1302,8 +1212,7 @@ namespace RadialReview.Accessors
                 var getCompletionPercentage_rock_com = Convert.ToDouble((Convert.ToDouble(getDoneCount_rock_com) / Convert.ToDouble(getTotalCount_rock_com)));
                 bool isCompletionPercentageDisplayed_com = true;
 
-                foreach (var m in recur.Rocks.Where(x => x.VtoRock == true).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate))
-                {
+                foreach (var m in recur.Rocks.Where(x => x.VtoRock == true).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)) {
 
                     row = table.AddRow();
                     row.BottomPadding = Unit.FromInch(.05);
@@ -1322,8 +1231,7 @@ namespace RadialReview.Accessors
                     var bold = m.Completion == RockState.AtRisk;
                     Color statusColor = Colors.DarkRed;
                     //Update below also
-                    switch (m.Completion)
-                    {
+                    switch (m.Completion) {
                         case RockState.OnTrack:
                             statusColor = Colors.DarkBlue;
                             break;
@@ -1336,10 +1244,8 @@ namespace RadialReview.Accessors
                         default:
                             break;
                     }
-                    if (quarterlyPrintout)
-                    {
-                        switch (m.Completion ?? RockState.Indeterminate)
-                        {
+                    if (quarterlyPrintout) {
+                        switch (m.Completion ?? RockState.Indeterminate) {
                             case RockState.Indeterminate:
                                 status = "Not Done";
                                 bold = true;
@@ -1378,14 +1284,11 @@ namespace RadialReview.Accessors
                     row.Cells[4].AddParagraph("" + m.NotNull(x => x.Name));
                     row.Cells[4].Format.Alignment = ParagraphAlignment.Center;
 
-                    if (isCompletionPercentageDisplayed_com)
-                    {
+                    if (isCompletionPercentageDisplayed_com) {
                         row.Cells[5].AddParagraph("" + getDoneCount_rock_com + "/" + getTotalCount_rock_com + " - " + string.Format("{0:0.##%}", getCompletionPercentage_rock_com));
 
                         isCompletionPercentageDisplayed_com = false;
-                    }
-                    else
-                    {
+                    } else {
                         row.Cells[5].AddParagraph("");
                     }
 
@@ -1459,8 +1362,7 @@ namespace RadialReview.Accessors
             var getCompletionPercentage_rock = Convert.ToDouble((Convert.ToDouble(getDoneCount_rock) / Convert.ToDouble(getTotalCount_rock)));
             bool isCompletionPercentageDisplayed = true;
 
-            foreach (var m in recur.Rocks.OrderBy(x => x.Owner.Name).ThenByDescending(x => x.VtoRock).ThenBy(x => x.DueDate))
-            {
+            foreach (var m in recur.Rocks.OrderBy(x => x.Owner.Name).ThenByDescending(x => x.VtoRock).ThenBy(x => x.DueDate)) {
 
                 row = table.AddRow();
                 row.HeadingFormat = false;
@@ -1487,10 +1389,8 @@ namespace RadialReview.Accessors
                 Color statusColor = Colors.Black;
                 //Update below also
 
-                if (quarterlyPrintout)
-                {
-                    switch (m.Completion ?? RockState.Indeterminate)
-                    {
+                if (quarterlyPrintout) {
+                    switch (m.Completion ?? RockState.Indeterminate) {
                         case RockState.Indeterminate:
                             status = "Not Done";
                             bold = true;
@@ -1513,11 +1413,8 @@ namespace RadialReview.Accessors
                         default:
                             break;
                     }
-                }
-                else
-                {
-                    switch (m.Completion)
-                    {
+                } else {
+                    switch (m.Completion) {
                         case RockState.OnTrack:
                             statusColor = Colors.DarkBlue;
                             break;
@@ -1564,14 +1461,11 @@ namespace RadialReview.Accessors
                                                        //row.Cells[4].Format.Font.Size = 10;// Unit.FromInch(.1);
                                                        //row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
                                                        //row.Cells[4].Format.KeepTogether = false;
-                if (isCompletionPercentageDisplayed)
-                {
+                if (isCompletionPercentageDisplayed) {
                     row.Cells[5].AddParagraph("" + getDoneCount_rock + "/" + getTotalCount_rock + " - " + string.Format("{0:0.##%}", getCompletionPercentage_rock));
 
                     isCompletionPercentageDisplayed = false;
-                }
-                else
-                {
+                } else {
                     row.Cells[5].AddParagraph("");
                 }
 
@@ -1581,21 +1475,16 @@ namespace RadialReview.Accessors
         }
 
 
-        protected static Section AddTitledPage_rock(Document document, string pageTitle, Orientation orientation = Orientation.Portrait, bool addSection = true, bool addPageNumber = true)
-        {
+        protected static Section AddTitledPage_rock(Document document, string pageTitle, Orientation orientation = Orientation.Portrait, bool addSection = true, bool addPageNumber = true) {
             Section section;
 
-            if (addSection || document.LastSection == null)
-            {
+            if (addSection || document.LastSection == null) {
                 section = document.AddSection();
                 section.PageSetup.Orientation = orientation;
-            }
-            else
-            {
+            } else {
                 section = document.LastSection;
             }
-            if (addPageNumber)
-            {
+            if (addPageNumber) {
                 //paragraph.AddTab();
                 var paragraph = new Paragraph();
                 paragraph.Format.Alignment = ParagraphAlignment.Right;
@@ -1609,8 +1498,7 @@ namespace RadialReview.Accessors
                 //if (addPageNumber && addDate) {
                 //	paragraph.AddText(" | ");
                 //}
-                if (addPageNumber)
-                {
+                if (addPageNumber) {
                     paragraph.AddPageField();
                 }
                 section.Footers.Primary.Add(paragraph);
@@ -1654,8 +1542,7 @@ namespace RadialReview.Accessors
             return section;
         }
 
-        public static void AddRocks(UserOrganizationModel caller, Document doc, bool quarterlyPrintout, AngularRecurrence recur, AngularVTO vto, bool addPageNumber = true)
-        {
+        public static void AddRocks(UserOrganizationModel caller, Document doc, bool quarterlyPrintout, AngularRecurrence recur, AngularVTO vto, bool addPageNumber = true) {
 
             var section = AddTitledPage_rock(doc, "Quarterly " + caller.Organization.Settings.RockName + " Sheet", Orientation.Landscape, addPageNumber: addPageNumber);
             Table table;
@@ -1668,8 +1555,7 @@ namespace RadialReview.Accessors
 
             var addVTO = true;
 
-            if (addVTO && vto != null)
-            {
+            if (addVTO && vto != null) {
                 table = section.AddTable();
                 column = table.AddColumn(Unit.FromInch(1));
                 column.Format.Alignment = ParagraphAlignment.Left;
@@ -1715,8 +1601,7 @@ namespace RadialReview.Accessors
             }
 
 
-            if (recur.Rocks.Any(x => x.VtoRock ?? false))
-            {
+            if (recur.Rocks.Any(x => x.VtoRock ?? false)) {
                 table = section.AddTable();
                 table.Format.Font.Size = 9;
 
@@ -1772,8 +1657,7 @@ namespace RadialReview.Accessors
 
                 int sr_count = 0;
 
-                foreach (var m in recur.Rocks.Where(x => x.VtoRock == true).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate))
-                {
+                foreach (var m in recur.Rocks.Where(x => x.VtoRock == true).OrderBy(x => x.Owner.Name).ThenBy(x => x.DueDate)) {
 
                     row = table.AddRow();
                     row.BottomPadding = Unit.FromInch(.05);
@@ -1792,8 +1676,7 @@ namespace RadialReview.Accessors
                     var bold = m.Completion == RockState.AtRisk;
                     Color statusColor = Colors.DarkRed;
                     //Update below also
-                    switch (m.Completion)
-                    {
+                    switch (m.Completion) {
                         case RockState.OnTrack:
                             statusColor = Colors.DarkBlue;
                             break;
@@ -1806,10 +1689,8 @@ namespace RadialReview.Accessors
                         default:
                             break;
                     }
-                    if (quarterlyPrintout)
-                    {
-                        switch (m.Completion ?? RockState.Indeterminate)
-                        {
+                    if (quarterlyPrintout) {
+                        switch (m.Completion ?? RockState.Indeterminate) {
                             case RockState.Indeterminate:
                                 status = "Not Done";
                                 bold = true;
@@ -1855,15 +1736,13 @@ namespace RadialReview.Accessors
 
 
             //group by owner name 
-            var getRock = recur.Rocks.Where(t => t.VtoRock == false).GroupBy(x => new { x.Owner.Name }, (key, group) => new
-            {
+            var getRock = recur.Rocks.Where(t => t.VtoRock == false).GroupBy(x => new { x.Owner.Name }, (key, group) => new {
                 OwnerName = key.Name,
                 Result = group.ToList()
             }).ToList();
 
             List<RockPdfModel> rockList = new List<RockPdfModel>();
-            foreach (var item in getRock)
-            {
+            foreach (var item in getRock) {
                 rockList.Add(new RockPdfModel() { OwnerName = item.OwnerName, RockList = item.Result });
             }
 
@@ -1874,17 +1753,13 @@ namespace RadialReview.Accessors
             //split data
             var data = splitData(3, rockList);
 
-            for (int l = 0; l < data.Count; l++)
-            {
+            for (int l = 0; l < data.Count; l++) {
 
                 List<Cell> cells;
                 List<Table> tables;
-                if (l > 0)
-                {
+                if (l > 0) {
                     AddPage_Rock(section, doc, vto, data[l], baseHeight, out cells, out tables);
-                }
-                else
-                {
+                } else {
                     AddPage_Rock(section, doc, vto, data[l], baseHeight, out cells, out tables, true);
                 }
 
@@ -1893,8 +1768,7 @@ namespace RadialReview.Accessors
                 List<List<Row>> rowList = new List<List<Row>>();
                 List<CellDetailsModel> cellDetails = new List<CellDetailsModel>();
 
-                for (int i = 0; i < cells.Count; i++)
-                {
+                for (int i = 0; i < cells.Count; i++) {
                     Unit fs = 10;
                     var itemObjects = new List<DocumentObject>();
                     var itemsSplits = new List<Page>();
@@ -1904,13 +1778,11 @@ namespace RadialReview.Accessors
                     {
                         var goals = data[l][i].RockList.ToList();
 
-                        for (var j = 0; j < goals.Count; j++)
-                        {
+                        for (var j = 0; j < goals.Count; j++) {
                             var status = goals[j].Completion.NotNull(x => x.Value.GetDisplayName());
                             Color statusColor = Colors.DarkRed;
                             //Update below also
-                            switch (goals[j].Completion)
-                            {
+                            switch (goals[j].Completion) {
                                 case RockState.OnTrack:
                                     statusColor = Colors.DarkBlue;
                                     break;
@@ -2030,17 +1902,12 @@ namespace RadialReview.Accessors
                 var curThirdColumnI = 0;
                 var curFourthColumnI = 0;
 
-                for (var p = 0; p < maxPage; p++)
-                {
+                for (var p = 0; p < maxPage; p++) {
 
-                    for (int i = 0; i < cellDetails.Count; i++)
-                    {
-                        if (p < cellDetails[i].PageList.Count())
-                        {
-                            for (int j = 0; j < cellDetails[i].PageList[p].Count(); j++)
-                            {
-                                switch (i)
-                                {
+                    for (int i = 0; i < cellDetails.Count; i++) {
+                        if (p < cellDetails[i].PageList.Count()) {
+                            for (int j = 0; j < cellDetails[i].PageList[p].Count(); j++) {
+                                switch (i) {
                                     case 0:
                                         tables[i].Rows.Add(cellDetails[i].RowList[curFirstColumnI]);
                                         curFirstColumnI++;
@@ -2065,11 +1932,9 @@ namespace RadialReview.Accessors
                         }
                     }
 
-                    if (p + 1 < maxPage)
-                    {
+                    if (p + 1 < maxPage) {
                         AddPage_Rock(section, doc, vto, data[l], baseHeight, out cells, out tables);
-                        for (int i = 0; i < cells.Count; i++)
-                        {
+                        for (int i = 0; i < cells.Count; i++) {
                             AppendAll(cells[i], new DocumentObject[] { tables[i] }.ToList());
                         }
                     }
@@ -2078,15 +1943,13 @@ namespace RadialReview.Accessors
 
         }
 
-        public static List<List<RockPdfModel>> splitData(int width, List<RockPdfModel> data)
-        {
+        public static List<List<RockPdfModel>> splitData(int width, List<RockPdfModel> data) {
             List<List<RockPdfModel>> list = new List<List<RockPdfModel>>();
 
             // Determine how many lists are required
             int numberOfLists = (data.Count / width);
 
-            for (int i = 0; i <= numberOfLists; i++)
-            {
+            for (int i = 0; i <= numberOfLists; i++) {
                 List<RockPdfModel> new_data = new List<RockPdfModel>();
                 new_data = data.Skip(i * width).Take(width).ToList();
                 if (new_data.Count() > 0)
@@ -2097,12 +1960,10 @@ namespace RadialReview.Accessors
         }
 
 
-        private static void AddPage_Rock(Section section, Document doc, AngularVTO vto, List<RockPdfModel> list, Unit height, out List<Cell> cells, out List<Table> tables, bool includeSection = false)
-        {
+        private static void AddPage_Rock(Section section, Document doc, AngularVTO vto, List<RockPdfModel> list, Unit height, out List<Cell> cells, out List<Table> tables, bool includeSection = false) {
 
             //AddTitledPage(doc, "Quarterly " + caller.Organization.Settings.RockName, Orientation.Landscape, addPageNumber: addPageNumber);
-            if (!includeSection)
-            {
+            if (!includeSection) {
                 var table_empty = section.AddTable();
                 table_empty.AddColumn(Unit.FromInch(2.5425));
                 var empty_row = table_empty.AddRow();
@@ -2116,16 +1977,13 @@ namespace RadialReview.Accessors
             List<Table> tables1 = new List<Table>();
 
             var table = section.AddTable();
-            if (list.Count == 2)
-            {
+            if (list.Count == 2) {
                 table.Rows.LeftIndent = Unit.FromInch(1.60);
-            }
-            else if (list.Count == 1) {
+            } else if (list.Count == 1) {
                 table.Rows.LeftIndent = Unit.FromInch(3.39);
             }
 
-            foreach (var item in list)
-            {
+            foreach (var item in list) {
                 table.AddColumn(Unit.FromInch(3.39));
             }
             table.Borders.Color = TableBlack;
@@ -2137,14 +1995,13 @@ namespace RadialReview.Accessors
             tractionHeader.Height = Unit.FromInch(0.25);
             //tractionHeader.Height = Unit.FromInch(0.55);
 
-           
+
 
 
             bool flag = true;
             Paragraph paragraph;
 
-            for (int i = 0; i < list.Count; i++)
-            {
+            for (int i = 0; i < list.Count; i++) {
                 paragraph = tractionHeader.Cells[i].AddParagraph(list[i].OwnerName.ToUpper());
                 paragraph.Format.Font.Name = "Arial Narrow";
                 paragraph.Format.Font.Size = 10;
@@ -2159,8 +2016,7 @@ namespace RadialReview.Accessors
 
             //tractionData.Height = height;
 
-            for (int i = 0; i < list.Count; i++)
-            {
+            for (int i = 0; i < list.Count; i++) {
                 cells1.Add(tractionData.Cells[i]);
                 var tbl = new Table();
                 //tbl.Borders.Color = TableBlack;
@@ -2177,8 +2033,7 @@ namespace RadialReview.Accessors
         }
 
 
-        public static void AddHeadLines(UserOrganizationModel caller, Document doc, bool quarterlyPrintout, AngularRecurrence recur, AngularVTO vto, bool addPageNumber = true)
-        {
+        public static void AddHeadLines(UserOrganizationModel caller, Document doc, bool quarterlyPrintout, AngularRecurrence recur, AngularVTO vto, bool addPageNumber = true) {
             //var recur = L10Accessor.GetAngularRecurrence(caller, recurrenceId);
 
             //return SetupDoc(caller, caller.Organization.Settings.RockName);
@@ -2285,8 +2140,7 @@ namespace RadialReview.Accessors
             row.Cells[4].VerticalAlignment = VerticalAlignment.Center;
             //table.Format.Font.Size = Unit.FromInch(.1); // --- 1/16"
             mn = 1;
-            foreach (var m in recur.Headlines.OrderBy(x => x.Owner.Name).ThenBy(x => x.CreateTime))
-            {
+            foreach (var m in recur.Headlines.OrderBy(x => x.Owner.Name).ThenBy(x => x.CreateTime)) {
 
                 row = table.AddRow();
                 row.HeadingFormat = false;
@@ -2308,8 +2162,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        private static Table GenerateScorecard(AngularRecurrence recur, bool includeDisabled = false)
-        {
+        private static Table GenerateScorecard(AngularRecurrence recur, bool includeDisabled = false) {
 
             var table = new Table();
             table.Style = "Table";
@@ -2342,8 +2195,7 @@ namespace RadialReview.Accessors
 
             //Measured
             var numWeeks = 14;
-            for (var i = 0; i < numWeeks; i++)
-            {
+            for (var i = 0; i < numWeeks; i++) {
                 column = table.AddColumn(Unit.FromInch(6.25 / (1.0 * numWeeks)));
                 column.Format.Alignment = ParagraphAlignment.Center;
             }
@@ -2373,8 +2225,7 @@ namespace RadialReview.Accessors
 
             var weeks = recur.Scorecard.Weeks.OrderByDescending(x => x.ForWeekNumber).Take(numWeeks).OrderBy(x => reverse * x.ForWeekNumber);
             var ii = 0;
-            foreach (var w in weeks)
-            {
+            foreach (var w in weeks) {
                 row.Cells[4 + ii].AddParagraph(w.DisplayDate.ToString("MM/dd/yy") + " to " + w.DisplayDate.Date.AddDays(6).ToString("MM/dd/yy"));
                 row.Cells[4 + ii].Format.Font.Size = Unit.FromInch(0.07);
                 row.Cells[4 + ii].Format.Font.Size = Unit.FromInch(0.07);
@@ -2386,8 +2237,7 @@ namespace RadialReview.Accessors
             var mn = 1;
 
             //for (var k = 0; k < 2; k++){
-            foreach (var m in measurables)
-            {
+            foreach (var m in measurables) {
 
                 row = table.AddRow();
                 row.HeadingFormat = false;
@@ -2413,33 +2263,26 @@ namespace RadialReview.Accessors
 
 
 
-                foreach (var w in weeks)
-                {
+                foreach (var w in weeks) {
                     var founds = recur.Scorecard.Scores.Where(x => x.ForWeek == w.ForWeekNumber && x.Measurable.Id == m.Id);
                     //if (founds.Count() > 1) {
                     //	var a = 1;
                     //}
                     var found = founds.LastOrDefault();
-                    if (found != null && found.Measured.HasValue)
-                    {
+                    if (found != null && found.Measured.HasValue) {
                         var val = found.Measured ?? 0;
                         var cell = row.Cells[4 + ii];
                         cell.AddParagraph("" + modifier.Format(val.KiloFormat()));
                         var dir = found.Direction ?? m.Direction;
                         var target = found.Target;
-                        if (dir == null)
-                        {
+                        if (dir == null) {
                             dir = m.Direction;
                             target = m.Target;
                         }
-                        if (dir != null)
-                        {
-                            if (dir.Value.MeetGoal(target ?? 0, found.AltTarget ?? m.AltTarget, val))
-                            {
+                        if (dir != null) {
+                            if (dir.Value.MeetGoal(target ?? 0, found.AltTarget ?? m.AltTarget, val)) {
                                 cell.Shading.Color = Color.FromArgb(255, 223, 240, 216); //Colors.LightGreen;// Color.FromCmyk(0.0708, 0.0, 0.1, .0588);
-                            }
-                            else
-                            {
+                            } else {
                                 cell.Shading.Color = Color.FromArgb(255, 255, 236, 242);//Colors.LightSalmon;// Color.FromCmyk(0, 0.0826, 0.0826, .0510);
                             }
                         }
@@ -2452,10 +2295,8 @@ namespace RadialReview.Accessors
             return table;
         }
 
-        public static bool AddScorecard(Document doc, AngularRecurrence recur, bool addPageNumber = true)
-        {
-            if (recur.Scorecard.Measurables.Any())
-            {
+        public static bool AddScorecard(Document doc, AngularRecurrence recur, bool addPageNumber = true) {
+            if (recur.Scorecard.Measurables.Any()) {
                 var section = AddTitledPage(doc, "Scorecard", Orientation.Landscape, addPageNumber: addPageNumber);
                 var TableGray = new Color(100, 100, 100, 100);
                 var TableBlack = new Color(0, 0, 0);
@@ -2466,8 +2307,7 @@ namespace RadialReview.Accessors
             return false;
         }
 
-        private static List<Paragraph> AddVtoSectionHeader(IVtoSectionHeader section, Unit fontSize, string dateformat)
-        {
+        private static List<Paragraph> AddVtoSectionHeader(IVtoSectionHeader section, Unit fontSize, string dateformat) {
             var o = new List<Paragraph>();
 
             var futureDate = new Paragraph();
@@ -2486,8 +2326,7 @@ namespace RadialReview.Accessors
             revenue.AddFormattedText("Revenue: ", TextFormat.Bold);
             revenue.Format.Font.Name = "Arial Narrow";
             revenue.Format.Font.Size = fontSize;
-            if (section.Revenue != null)
-            {
+            if (section.Revenue != null) {
                 //revenue.AddFormattedText(string.Format(Thread.CurrentThread.CurrentCulture, "{0:c0}", section.Revenue.Value), TextFormat.NotBold);
                 revenue.AddFormattedText(section.Revenue, TextFormat.NotBold);
             }
@@ -2498,8 +2337,7 @@ namespace RadialReview.Accessors
             profit.AddFormattedText("Profit: ", TextFormat.Bold);
             profit.Format.Font.Name = "Arial Narrow";
             profit.Format.Font.Size = fontSize;
-            if (section.Profit != null)
-            {
+            if (section.Profit != null) {
                 //profit.AddFormattedText(string.Format(Thread.CurrentThread.CurrentCulture, "{0:c0}", section.Profit.Value), TextFormat.NotBold);
                 profit.AddFormattedText(section.Profit, TextFormat.NotBold);
             }
@@ -2517,20 +2355,16 @@ namespace RadialReview.Accessors
             return o;
         }
 
-        static string MigraDocFilenameFromByteArray(byte[] image)
-        {
+        static string MigraDocFilenameFromByteArray(byte[] image) {
             return "base64:" + Convert.ToBase64String(image);
         }
 
-        public class YSize
-        {
-            public YSize(XSize ptSize)
-            {
+        public class YSize {
+            public YSize(XSize ptSize) {
                 Width = Unit.FromPoint(ptSize.Width);
                 Height = Unit.FromPoint(ptSize.Height);
             }
-            public YSize(Unit width, Unit height)
-            {
+            public YSize(Unit width, Unit height) {
                 Width = width;
                 Height = height;
             }
@@ -2540,18 +2374,15 @@ namespace RadialReview.Accessors
             public Unit Width { get; set; }
         }
 
-        private static YSize GetSize(DocumentObject o, Unit width)
-        {
+        private static YSize GetSize(DocumentObject o, Unit width) {
             var ctx = XGraphics.CreateMeasureContext(new XSize(width, Unit.FromInch(1000)), XGraphicsUnit.Inch, XPageDirection.Downwards);
             var size = GetSize(ctx, o, GetFontFamily(o), GetFontSize(o), width/* Unit.FromInch(3.47)*/);
             return size;// new YSize(Unit.FromInch(size.Width /** 0.166044*/), /*Unit.FromInch(*/size.Height /** 0.166044)*/);
         }
-        private static YSize GetSize(List<DocumentObject> os, Unit width)
-        {
+        private static YSize GetSize(List<DocumentObject> os, Unit width) {
             var ctx = XGraphics.CreateMeasureContext(new XSize(width, Unit.FromInch(1000)), XGraphicsUnit.Inch, XPageDirection.Downwards);
             var size = new YSize(0, 0);
-            foreach (var o in os)
-            {
+            foreach (var o in os) {
                 var s = GetSize(ctx, o, GetFontFamily(o), GetFontSize(o), width/* Unit.FromInch(3.47)*/);
                 size.Width = Math.Max(size.Width, s.Width);
                 size.Height += s.Height;
@@ -2559,35 +2390,27 @@ namespace RadialReview.Accessors
             return size;// new YSize(Unit.FromInch(size.Width * 0.166044), Unit.FromInch(size.Height * 0.166044));
         }
 
-        private static YSize GetSize(XGraphics ctx, DocumentObject o, String fontName, Unit fontSize, Unit maxWidth)
-        {
+        private static YSize GetSize(XGraphics ctx, DocumentObject o, String fontName, Unit fontSize, Unit maxWidth) {
             var s = new YSize(0, 0);
 
-            if (o is FormattedText)
-            {
+            if (o is FormattedText) {
                 var txt = (FormattedText)o;
-                foreach (DocumentObject e in txt.Elements)
-                {
+                foreach (DocumentObject e in txt.Elements) {
                     var fn = string.IsNullOrWhiteSpace(txt.FontName) ? fontName : txt.FontName;
                     var size = GetSize(ctx, e, fn, fontSize, maxWidth);
                     s.Width = Math.Max(s.Width, size.Width);
                     s.Height += size.Height;
                 }
-            }
-            else if (o is Text)
-            {
+            } else if (o is Text) {
                 var txt = (Text)o;
                 var wrapper = new PdfWordWrapper(ctx, maxWidth);
                 wrapper.Add(txt.Content, new XFont(fontName, fontSize), XBrushes.Black);
                 wrapper.Process();
                 s.Width = wrapper.Size.Width;
                 s.Height += wrapper.Size.Height;
-            }
-            else if (o is Paragraph)
-            {
+            } else if (o is Paragraph) {
                 var para = (Paragraph)o;
-                foreach (DocumentObject e in para.Elements)
-                {
+                foreach (DocumentObject e in para.Elements) {
                     var family = para.Format.Font.Name;
                     if (string.IsNullOrWhiteSpace(family))
                         family = fontName;
@@ -2597,21 +2420,16 @@ namespace RadialReview.Accessors
                 }
                 s.Width += (para.Format.LeftIndent + para.Format.RightIndent);//(para.Format.LeftIndent.Inch + para.Format.RightIndent.Inch) * 6.0225;
                 s.Height += (para.Format.SpaceBefore + para.Format.SpaceAfter);// (para.Format.SpaceBefore.Inch + para.Format.SpaceAfter.Inch) * 6.0225;
-            }
-            else if (o is Table)
-            {
+            } else if (o is Table) {
                 var table = (Table)o;
                 var family = table.Format.Font.Name;
                 var h = 0.0;
                 var w = 0.0;
                 var maxH = new Unit(0.0);
-                for (var i = 0; i < table.Rows.Count; i++)
-                {
-                    for (var j = 0; j < table.Rows[i].Cells.Count; j++)
-                    {
+                for (var i = 0; i < table.Rows.Count; i++) {
+                    for (var j = 0; j < table.Rows[i].Cells.Count; j++) {
                         var curH = new Unit(0.0);
-                        for (var k = 0; k < table.Rows[i].Cells[j].Elements.Count; k++)
-                        {
+                        for (var k = 0; k < table.Rows[i].Cells[j].Elements.Count; k++) {
                             var size = GetSize(ctx, table.Rows[i].Cells[j].Elements[k], family, fontSize, table.Columns[j].Width);
                             curH += size.Height;
                         }
@@ -2620,15 +2438,12 @@ namespace RadialReview.Accessors
                     h += Math.Max(table.Rows[i].Height/*.Inch * 6.0225*/, maxH);
                     maxH = 0;
                 }
-                for (var i = 0; i < table.Columns.Count; i++)
-                {
+                for (var i = 0; i < table.Columns.Count; i++) {
                     w += table.Columns[i].Width/*.Inch * 6.0225*/;
                 }
                 s.Width += w;
                 s.Height += h;
-            }
-            else if (o is Row)
-            {
+            } else if (o is Row) {
 
                 var row = (Row)o;
 
@@ -2651,39 +2466,30 @@ namespace RadialReview.Accessors
 
                 s.Width += w;
                 s.Height += h;
-            }
-            else if (o is Cell)
-            {
+            } else if (o is Cell) {
                 var cell = (Cell)o;
                 var family = cell.Format.Font.Name;
                 //var h = 0.0;
                 //var w = 0.0;
                 var maxH = new Unit(0.0);
                 var rowMin = new Unit(0.0);
-                if (cell.Row != null && cell.Row.HeightRule == RowHeightRule.AtLeast)
-                {
+                if (cell.Row != null && cell.Row.HeightRule == RowHeightRule.AtLeast) {
                     rowMin = cell.Row.Height;
                 }
-                for (var i = 0; i < cell.Elements.Count; i++)
-                {
+                for (var i = 0; i < cell.Elements.Count; i++) {
                     var size = GetSize(cell.Elements[i], maxWidth);
                     s.Height += Math.Max(rowMin, size.Height);
                 }
                 //Width is not calculated.               
-            }
-            else if (o is Character)
-            {
+            } else if (o is Character) {
 
-            }
-            else
-            {
+            } else {
                 throw new Exception("donno this type:" + o.NotNull(x => x.GetType()));
             }
             return s;
         }
 
-        public static List<Unit> GetRowHeights(Table table)
-        {
+        public static List<Unit> GetRowHeights(Table table) {
             var doc = new Document();
             var sec = doc.AddSection();
             var clone = table.Clone();
@@ -2691,34 +2497,28 @@ namespace RadialReview.Accessors
             var renderer = new DocumentRenderer(doc);
             renderer.PrepareDocument();
             var o = new List<Unit>();
-            for (var i = 0; i < clone.Rows.Count; i++)
-            {
+            for (var i = 0; i < clone.Rows.Count; i++) {
                 var row = clone.Rows[i];
                 o.Add(row.Height);
             }
             return o;
         }
 
-        public static List<Unit> GetRowHeights(List<Row> rows, Unit maxWidth)
-        {
+        public static List<Unit> GetRowHeights(List<Row> rows, Unit maxWidth) {
             if (!rows.Any())
                 return new List<Unit>();
 
             var table = new Table();
             var first = rows.First();
 
-            foreach (var c in first.Cells)
-            {
+            foreach (var c in first.Cells) {
                 table.AddColumn();
             }
 
-            foreach (var row in rows)
-            {
+            foreach (var row in rows) {
                 var tr = table.AddRow();
-                for (var i = 0; i < row.Cells.Count; i++)
-                {
-                    for (var ei = 0; ei < row.Cells[i].Elements.Count; ei++)
-                    {
+                for (var i = 0; i < row.Cells.Count; i++) {
+                    for (var ei = 0; ei < row.Cells[i].Elements.Count; ei++) {
                         tr.Cells[i].Elements.Add((DocumentObject)row.Cells[i].Elements[ei].Clone());
                     }
                 }
@@ -2727,15 +2527,11 @@ namespace RadialReview.Accessors
             return GetRowHeights(table);
         }
 
-        private static Unit GetFontSize(DocumentObject p)
-        {
+        private static Unit GetFontSize(DocumentObject p) {
             Unit? size = null;
-            if (p is Paragraph)
-            {
+            if (p is Paragraph) {
                 size = ((Paragraph)p).Format.Font.Size;
-            }
-            else if (p is Table)
-            {
+            } else if (p is Table) {
                 var table = (Table)p;
                 size = table.Format.Font.Size;
             }
@@ -2744,15 +2540,11 @@ namespace RadialReview.Accessors
             return size.Value;
         }
 
-        private static string GetFontFamily(DocumentObject p)
-        {
+        private static string GetFontFamily(DocumentObject p) {
             string family = null;
-            if (p is Paragraph)
-            {
+            if (p is Paragraph) {
                 family = ((Paragraph)p).Format.Font.Name;
-            }
-            else if (p is Table)
-            {
+            } else if (p is Table) {
                 var table = (Table)p;
                 family = table.Format.Font.Name;
             }
@@ -2761,11 +2553,9 @@ namespace RadialReview.Accessors
             return family;
         }
 
-        public static List<ItemHeight> GetHeights<T>(Unit width, IEnumerable<T> paragraphs, Func<T, DocumentObject> selector = null, Unit? extraHeight = null) where T : DocumentObject
-        {
+        public static List<ItemHeight> GetHeights<T>(Unit width, IEnumerable<T> paragraphs, Func<T, DocumentObject> selector = null, Unit? extraHeight = null) where T : DocumentObject {
             var ctx = XGraphics.CreateMeasureContext(new XSize(width.Inch, Unit.FromInch(1000)), XGraphicsUnit.Inch, XPageDirection.Downwards);
-            return paragraphs.Select(xx =>
-            {
+            return paragraphs.Select(xx => {
                 DocumentObject x = (selector == null) ? xx : selector(xx);
                 var f = GetFontFamily(x);
                 var s = GetFontSize(x);
@@ -2775,35 +2565,29 @@ namespace RadialReview.Accessors
             }).ToList();
         }
 
-        public class ItemHeight
-        {
+        public class ItemHeight {
             public DocumentObject Item { get; set; }
             public Unit Height { get; set; }
         }
 
-        public class FurtherAdjustments
-        {
+        public class FurtherAdjustments {
             public ItemHeight Unmodified { get; set; }
             public Unit MaximumWidth { get; set; }
             public Unit MaximumHeight { get; set; }
         }
 
-        public class Page : IEnumerable<ItemHeight>
-        {
+        public class Page : IEnumerable<ItemHeight> {
             public List<ItemHeight> Items { get; set; }
 
-            public IEnumerator<ItemHeight> GetEnumerator()
-            {
+            public IEnumerator<ItemHeight> GetEnumerator() {
                 return Items.GetEnumerator();
             }
-            IEnumerator IEnumerable.GetEnumerator()
-            {
+            IEnumerator IEnumerable.GetEnumerator() {
                 return Items.GetEnumerator();
             }
         }
 
-        public static List<Page> SplitHeights<T>(Unit width, Unit[] heights, IEnumerable<T> paragraphs, Func<T, DocumentObject> selector = null, Unit? extraHeight = null, Func<FurtherAdjustments, ItemHeight> stillTooBig = null) where T : DocumentObject
-        {
+        public static List<Page> SplitHeights<T>(Unit width, Unit[] heights, IEnumerable<T> paragraphs, Func<T, DocumentObject> selector = null, Unit? extraHeight = null, Func<FurtherAdjustments, ItemHeight> stillTooBig = null) where T : DocumentObject {
             Unit cumulative = 0;
             var splits = new List<Page>();
             var curHeight = heights[0];
@@ -2811,12 +2595,10 @@ namespace RadialReview.Accessors
             var heightObj = GetHeights(width, paragraphs, selector, extraHeight);
 
             var curSplit = new List<ItemHeight>();
-            for (var i = 0; i < heightObj.Count(); i++)
-            {
+            for (var i = 0; i < heightObj.Count(); i++) {
                 var ho = heightObj[i];
                 cumulative += ho.Height;
-                if (cumulative > curHeight && curSplit.Any())
-                {
+                if (cumulative > curHeight && curSplit.Any()) {
                     //next
                     page += 1;
                     curHeight = heights[Math.Min(page, heights.Count() - 1)];
@@ -2824,12 +2606,9 @@ namespace RadialReview.Accessors
                     splits.Add(new Page() { Items = curSplit });
                     curSplit = new List<ItemHeight>();
                 }
-                if (cumulative > curHeight && !curSplit.Any() && stillTooBig != null)
-                {
-                    try
-                    {
-                        var adj = stillTooBig(new FurtherAdjustments()
-                        {
+                if (cumulative > curHeight && !curSplit.Any() && stillTooBig != null) {
+                    try {
+                        var adj = stillTooBig(new FurtherAdjustments() {
                             MaximumHeight = curHeight,
                             MaximumWidth = width,
                             Unmodified = ho,
@@ -2837,9 +2616,7 @@ namespace RadialReview.Accessors
                         if (adj != null)
                             ho = adj;
 
-                    }
-                    catch (Exception)
-                    {
+                    } catch (Exception) {
                         //fall back
                     }
                 }
@@ -2847,8 +2624,7 @@ namespace RadialReview.Accessors
                 curSplit.Add(ho);
 
             }
-            if (curSplit.Any())
-            {
+            if (curSplit.Any()) {
                 splits.Add(new Page() { Items = curSplit });
             }
 
@@ -2856,10 +2632,8 @@ namespace RadialReview.Accessors
             return splits;
         }
 
-        public static void AppendAll(DocumentObject o, List<DocumentObject> toAdd)
-        {
-            foreach (var p in toAdd)
-            {
+        public static void AppendAll(DocumentObject o, List<DocumentObject> toAdd) {
+            foreach (var p in toAdd) {
                 if (o is Paragraph)
                     ((Paragraph)o).Elements.Add(p);
                 if (o is Cell)
@@ -2869,8 +2643,7 @@ namespace RadialReview.Accessors
             }
         }
 
-        public static Unit ResizeToFit(DocumentObject cell, Unit width, Unit height, Func<DocumentObject, Unit, IEnumerable<DocumentObject>> paragraphs, Unit? minFontSize = null, Unit? maxFontSize = null)
-        {
+        public static Unit ResizeToFit(DocumentObject cell, Unit width, Unit height, Func<DocumentObject, Unit, IEnumerable<DocumentObject>> paragraphs, Unit? minFontSize = null, Unit? maxFontSize = null) {
             var ctx = XGraphics.CreateMeasureContext(new XSize(width.Inch, height.Inch), XGraphicsUnit.Inch, XPageDirection.Downwards);
             var fontSize = maxFontSize ?? Unit.FromPoint(12);
             var minSize = minFontSize ?? Unit.FromPoint(8);
@@ -2879,28 +2652,22 @@ namespace RadialReview.Accessors
             if (!(cell is Cell || cell is Paragraph || cell is Section))
                 throw new Exception("cant handle:" + cell.NotNull(x => x.GetType()));
 
-            while (true)
-            {
+            while (true) {
                 var curHeight = new Unit(0.0);
                 var curWidth = new Unit(0.0);
                 paragraphsToAdd = paragraphs(cell, fontSize).ToList();
 
-                foreach (var p in paragraphsToAdd)
-                {
+                foreach (var p in paragraphsToAdd) {
                     string family = null;
-                    if (p is Paragraph)
-                    {
+                    if (p is Paragraph) {
                         ((Paragraph)p).Format.Font.Size = fontSize;
                         family = ((Paragraph)p).Format.Font.Name;
-                    }
-                    else if (p is Table)
-                    {
+                    } else if (p is Table) {
                         var table = (Table)p;
                         table.Format.Font.Size = fontSize;
                         family = table.Format.Font.Name;
                     }
-                    if (string.IsNullOrWhiteSpace(family))
-                    {
+                    if (string.IsNullOrWhiteSpace(family)) {
                         if (cell is Paragraph)
                             family = ((Paragraph)cell).Format.Font.Name;
                         if (cell is Cell)
@@ -2914,8 +2681,7 @@ namespace RadialReview.Accessors
                     curWidth += size.Width;
                 }
 
-                if (curHeight < height || fontSize <= minSize)
-                {
+                if (curHeight < height || fontSize <= minSize) {
                     break;
                 }
                 fontSize -= Unit.FromPoint(1);
@@ -2925,13 +2691,11 @@ namespace RadialReview.Accessors
             return fontSize;
         }
 
-        private static List<Paragraph> OrderedList(IEnumerable<string> items, ListType type, Unit? leftIndent = null)
-        {
+        private static List<Paragraph> OrderedList(IEnumerable<string> items, ListType type, Unit? leftIndent = null) {
 
             var o = new List<Paragraph>();
             var res = items.Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
-            for (int idx = 0; idx < res.Count(); ++idx)
-            {
+            for (int idx = 0; idx < res.Count(); ++idx) {
                 ListInfo listinfo = new ListInfo();
                 listinfo.ContinuePreviousList = idx > 0;
                 listinfo.ListType = type;
@@ -2941,8 +2705,7 @@ namespace RadialReview.Accessors
                 paragraph.Format.Font.Size = 10;
                 paragraph.Style = "" + type;
                 paragraph.Format.ListInfo = listinfo;
-                if (leftIndent != null)
-                {
+                if (leftIndent != null) {
                     var tabStopDist = Unit.FromInch(.15);
                     paragraph.Format.TabStops.ClearAll();
                     paragraph.Format.TabStops.AddTabStop(Unit.FromInch(leftIndent.Value.Inch + tabStopDist));
@@ -2954,8 +2717,7 @@ namespace RadialReview.Accessors
             return o;
         }
 
-        private static Section AddVtoPage(Document doc, string docName, string pageName)
-        {
+        private static Section AddVtoPage(Document doc, string docName, string pageName) {
 
             //doc.AddTab
 
@@ -3073,8 +2835,7 @@ namespace RadialReview.Accessors
             return section;
         }
 
-        private static void AddVtoVision(Document doc, AngularVTO vto, string dateformat)
-        {
+        private static void AddVtoVision(Document doc, AngularVTO vto, string dateformat) {
 
             Cell coreValuesPanel, coreFocusPanel, tenYearPanel, marketingStrategyPanel, threeYearPanel;
             //Table issueTable, rockTable, goalTable;
@@ -3087,15 +2848,13 @@ namespace RadialReview.Accessors
             AddPage_VtoVision(doc, vto, baseHeight, out coreValuesPanel, out coreFocusPanel, out tenYearPanel, out marketingStrategyPanel, out threeYearPanel);
 
             var values = vto.Values.ToList();
-            ResizeToFit(coreValuesPanel, Unit.FromInch(5.33), Unit.FromInch(1.2), (cell, fs) =>
-            {
+            ResizeToFit(coreValuesPanel, Unit.FromInch(5.33), Unit.FromInch(1.2), (cell, fs) => {
                 var o = new List<Paragraph>();
                 return OrderedList(values.Select(x => x.CompanyValue), ListType.NumberList1);
             }, maxFontSize: Unit.FromPoint(10));
 
 
-            ResizeToFit(coreFocusPanel, Unit.FromInch(5.33), Unit.FromInch(1.2), (cell, fs) =>
-            {
+            ResizeToFit(coreFocusPanel, Unit.FromInch(5.33), Unit.FromInch(1.2), (cell, fs) => {
                 var o = new List<Paragraph>();
                 var p1 = new Paragraph();
                 var txt = p1.AddFormattedText((vto.CoreFocus.PurposeTitle ?? "Purpose/Cause/Passion").Trim().TrimEnd(':') + ": ", TextFormat.Bold);
@@ -3112,8 +2871,7 @@ namespace RadialReview.Accessors
             }, maxFontSize: 10);
 
 
-            ResizeToFit(tenYearPanel, Unit.FromInch(5.33), Unit.FromInch(.6), (cell, fs1) =>
-            {
+            ResizeToFit(tenYearPanel, Unit.FromInch(5.33), Unit.FromInch(.6), (cell, fs1) => {
                 var o = new List<Paragraph>();
                 var p11 = new Paragraph();
                 p11.Format.Font.Name = "Arial Narrow";
@@ -3130,14 +2888,12 @@ namespace RadialReview.Accessors
                 var strats = vto.Strategies.ToList();
                 var includeTitle = strats.Count > 1;
 
-                foreach (var item in strats.ToList())
-                {
+                foreach (var item in strats.ToList()) {
                     count += 1;
                     var fs = 10;
 
 
-                    if (count > 0)
-                    {
+                    if (count > 0) {
                         var spacer = new Paragraph();
                         spacer.Format.Borders.Top.Color = TableGray;
                         //spacer.Format.Borders.Bottom.Color = Colors.Red;
@@ -3146,14 +2902,11 @@ namespace RadialReview.Accessors
                         marketingParagraphs.Add(spacer);
                     }
 
-                    if (includeTitle && !string.IsNullOrWhiteSpace(item.Title))
-                    {
+                    if (includeTitle && !string.IsNullOrWhiteSpace(item.Title)) {
                         var p0 = new Paragraph();
                         p0.Format.Font.Size = fs;
-                        if (count > 0)
-                        {
-                            if (addBeforeSpace)
-                            {
+                        if (count > 0) {
+                            if (addBeforeSpace) {
                                 p0.Format.SpaceBefore = fs * 1.5;
                             }
                         }
@@ -3184,14 +2937,12 @@ namespace RadialReview.Accessors
                     marketingParagraphs.Add(p2);
                     marketingParagraphs.AddRange(OrderedList(uniques.Select(x => x.Data), ListType.NumberList1, Unit.FromInch(.44)));
 
-                    if (!string.IsNullOrEmpty(item.ProvenProcess))
-                    {
+                    if (!string.IsNullOrEmpty(item.ProvenProcess)) {
                         var p3 = new Paragraph();
                         p3.Format.Font.Size = fs;
                         p3.Format.SpaceBefore = fs * 1.25;
 
-                        if (strats.Count > 1 && string.IsNullOrEmpty(item.Guarantee))
-                        {
+                        if (strats.Count > 1 && string.IsNullOrEmpty(item.Guarantee)) {
                             p3.Format.SpaceAfter = fs * 1.25;
                         }
 
@@ -3201,14 +2952,12 @@ namespace RadialReview.Accessors
                         marketingParagraphs.Add(p3);
                     }
 
-                    if (!string.IsNullOrEmpty(item.Guarantee))
-                    {
+                    if (!string.IsNullOrEmpty(item.Guarantee)) {
                         var p4 = new Paragraph();
                         p4.Format.Font.Size = fs;
                         p4.Format.SpaceBefore = fs * 1.25;
 
-                        if (strats.Count > 1)
-                        {
+                        if (strats.Count > 1) {
                             p4.Format.SpaceAfter = fs * 1.25;
                         }
 
@@ -3219,8 +2968,7 @@ namespace RadialReview.Accessors
                     }
 
                     addBeforeSpace = false;
-                    if (string.IsNullOrEmpty(item.ProvenProcess) && string.IsNullOrEmpty(item.ProvenProcess))
-                    {
+                    if (string.IsNullOrEmpty(item.ProvenProcess) && string.IsNullOrEmpty(item.ProvenProcess)) {
                         addBeforeSpace = true;
                     }
                 }
@@ -3266,26 +3014,21 @@ namespace RadialReview.Accessors
             var marketingPages = SplitHeights(Unit.FromInch(5.33), new[] { Unit.FromInch(2.7), Unit.FromInch(5.7) }, marketingParagraphs);
 
             var j = 0;
-            for (var i = 0; i < marketingPages.Count; i++)
-            {
+            for (var i = 0; i < marketingPages.Count; i++) {
                 Page m = marketingPages[i];
                 var f = m.FirstOrDefault();
-                if (f != null && f.Item is Paragraph)
-                {
+                if (f != null && f.Item is Paragraph) {
                     var p = (Paragraph)f.Item;
-                    if (p.Format.Borders.Top.Color == TableGray)
-                    {
+                    if (p.Format.Borders.Top.Color == TableGray) {
                         m.Items = m.Items.Skip(1).ToList();
                         //marketingParagraphs.RemoveAt(j);
                         marketingParagraphs.Remove(p);
                     }
                 }
                 f = m.LastOrDefault();
-                if (f != null && f.Item is Paragraph)
-                {
+                if (f != null && f.Item is Paragraph) {
                     var p = (Paragraph)f.Item;
-                    if (p.Format.Borders.Top.Color == TableGray)
-                    {
+                    if (p.Format.Borders.Top.Color == TableGray) {
                         m.Items = m.Items.Take(m.Items.Count - 1).ToList();
                         marketingParagraphs.Remove(p);
                     }
@@ -3308,21 +3051,18 @@ namespace RadialReview.Accessors
                 threeYearParagraphs.AddRange(OrderedList(looksList, ListType.BulletList1));
             }
 
-            var threeYearPages = SplitHeights(Unit.FromInch(3.4), new[] { Unit.FromInch(5.15), Unit.FromInch(5.7) }, threeYearParagraphs, null, null, stillTooBig: x =>
-            {
+            var threeYearPages = SplitHeights(Unit.FromInch(3.4), new[] { Unit.FromInch(5.15), Unit.FromInch(5.7) }, threeYearParagraphs, null, null, stillTooBig: x => {
                 var i = (Paragraph)x.Unmodified.Item;
                 var baseSize = i.Format.Font.Size;
                 var o = new Paragraph();
-                var size = ResizeToFit(o, x.MaximumWidth, x.MaximumHeight, (d, s) =>
-                {
+                var size = ResizeToFit(o, x.MaximumWidth, x.MaximumHeight, (d, s) => {
                     i.Format.Font.Size = s;
                     return i.AsList();
                 }, 5, baseSize);
 
                 o.Format.Font.Size = size;
 
-                return new ItemHeight()
-                {
+                return new ItemHeight() {
                     Item = o,
                     Height = GetSize(o, x.MaximumWidth).Height
                 };
@@ -3331,18 +3071,14 @@ namespace RadialReview.Accessors
             var curMSI = 0;
             var curTYPI = 0;
             //Page 1
-            if (marketingPages.Any())
-            {
-                foreach (var mPara in marketingPages[0])
-                {
+            if (marketingPages.Any()) {
+                foreach (var mPara in marketingPages[0]) {
                     marketingStrategyPanel.Add(marketingParagraphs[curMSI].Clone());
                     curMSI++;
                 }
             }
-            if (threeYearPages.Any())
-            {
-                foreach (var tyPara in threeYearPages[0])
-                {
+            if (threeYearPages.Any()) {
+                foreach (var tyPara in threeYearPages[0]) {
                     threeYearPanel.Add(threeYearParagraphs[curTYPI].Clone());
                     curTYPI++;
                 }
@@ -3350,28 +3086,22 @@ namespace RadialReview.Accessors
 
 
             var maxPage = Math.Max(marketingPages.Count(), threeYearPages.Count());
-            for (var p = 1; p < maxPage; p++)
-            {
-                if (p < maxPage)
-                {
+            for (var p = 1; p < maxPage; p++) {
+                if (p < maxPage) {
                     var showMarketing = p < marketingPages.Count();
                     var showThreeYear = p < threeYearPages.Count();
 
                     AddPage_VtoVision(doc, vto, baseHeight, out coreValuesPanel, out coreFocusPanel, out tenYearPanel, out marketingStrategyPanel, out threeYearPanel, false, false, false, showMarketing, showThreeYear);
                 }
-                if (p < marketingPages.Count())
-                {
-                    foreach (var r in marketingPages[p])
-                    {
+                if (p < marketingPages.Count()) {
+                    foreach (var r in marketingPages[p]) {
                         marketingStrategyPanel.Add(marketingParagraphs[curMSI].Clone());
                         curMSI++;
                     }
                 }
 
-                if (p < threeYearPages.Count())
-                {
-                    foreach (var r in threeYearPages[p])
-                    {
+                if (p < threeYearPages.Count()) {
+                    foreach (var r in threeYearPages[p]) {
                         threeYearPanel.Add(threeYearParagraphs[curTYPI].Clone());
                         curTYPI++;
                     }
@@ -3382,8 +3112,7 @@ namespace RadialReview.Accessors
 
         private static void AddPage_VtoVision(Document doc, AngularVTO vto, Unit height,
             out Cell coreValuePanel, out Cell coreFocusPanel, out Cell tenYearPanel, out Cell marketingStrategyPanel, out Cell threeYearPanel,
-            bool showCoreValue = true, bool showCoreFocus = true, bool showTenYear = true, bool showMarketingStrategy = true, bool showThreeYear = true)
-        {
+            bool showCoreValue = true, bool showCoreFocus = true, bool showTenYear = true, bool showMarketingStrategy = true, bool showThreeYear = true) {
             var section = AddVtoPage(doc, vto.Name ?? "", "VISION");
             var vision = section.AddTable();
             vision.Style = "Table";
@@ -3395,13 +3124,10 @@ namespace RadialReview.Accessors
 
             var anyCellsOnLeft = showMarketingStrategy || showCoreValue || showCoreFocus || showTenYear;
 
-            if (anyCellsOnLeft && showThreeYear)
-            {
+            if (anyCellsOnLeft && showThreeYear) {
                 vision.AddColumn(Unit.FromInch(1.66 + 5.33));
                 vision.AddColumn(Unit.FromInch(3.4));
-            }
-            else
-            {
+            } else {
                 vision.AddColumn(Unit.FromInch(1.66 + 5.33 + 3.4));
             }
 
@@ -3410,20 +3136,14 @@ namespace RadialReview.Accessors
 
 
             Column column;
-            if (anyCellsOnLeft)
-            {
+            if (anyCellsOnLeft) {
                 column = vtoLeft.AddColumn(Unit.FromInch(1.66));
-                if (showThreeYear)
-                {
+                if (showThreeYear) {
                     column = vtoLeft.AddColumn(Unit.FromInch(5.33));
-                }
-                else
-                {
+                } else {
                     column = vtoLeft.AddColumn(Unit.FromInch(5.33 + 3.4));
                 }
-            }
-            else
-            {
+            } else {
                 column = vtoLeft.AddColumn(Unit.FromInch(0));
                 column = vtoLeft.AddColumn(Unit.FromInch(0));
                 //column = vtoLeft.AddColumn(Unit.FromInch(0));
@@ -3435,8 +3155,7 @@ namespace RadialReview.Accessors
             var extraHeight = Unit.FromInch(0);
 
             //core values
-            if (showCoreValue)
-            {
+            if (showCoreValue) {
                 row = vtoLeft.AddRow();
                 var cvTitle = row.Cells[0];
                 row.Height = Unit.FromInch(1.2);
@@ -3450,16 +3169,13 @@ namespace RadialReview.Accessors
                 cvTitle.Format.Alignment = ParagraphAlignment.Center;
                 row.VerticalAlignment = VerticalAlignment.Center;
                 coreValuePanel = row.Cells[1];
-            }
-            else
-            {
+            } else {
                 coreValuePanel = null;
                 extraHeight += Unit.FromInch(1.2);
             }
 
             //corefocus
-            if (showCoreFocus)
-            {
+            if (showCoreFocus) {
                 row = vtoLeft.AddRow();
                 row.Borders.Bottom.Color = TableBlack;
                 row.Borders.Right.Color = TableBlack;
@@ -3473,16 +3189,13 @@ namespace RadialReview.Accessors
                 coreFocusPanel = row.Cells[1];
                 cfTitle.Format.Alignment = ParagraphAlignment.Center;
                 row.VerticalAlignment = VerticalAlignment.Center;
-            }
-            else
-            {
+            } else {
                 coreFocusPanel = null;
                 extraHeight += Unit.FromInch(1.2);
             }
 
             //ten year target
-            if (showTenYear)
-            {
+            if (showTenYear) {
                 row = vtoLeft.AddRow();
                 row.Borders.Bottom.Color = TableBlack;
                 row.Borders.Right.Color = TableBlack;
@@ -3496,16 +3209,13 @@ namespace RadialReview.Accessors
                 tenYearPanel = row.Cells[1];
                 tyTitle.Format.Alignment = ParagraphAlignment.Center;
                 row.VerticalAlignment = VerticalAlignment.Center;
-            }
-            else
-            {
+            } else {
                 tenYearPanel = null;
                 extraHeight += Unit.FromInch(0.6);
             }
 
             //marketing strategy
-            if (showMarketingStrategy)
-            {
+            if (showMarketingStrategy) {
                 row = vtoLeft.AddRow();
                 var msTitle = row.Cells[0];
                 msTitle.Shading.Color = TableGray;
@@ -3518,26 +3228,20 @@ namespace RadialReview.Accessors
                 msTitle.Format.Alignment = ParagraphAlignment.Center;
                 row.VerticalAlignment = VerticalAlignment.Center;
                 row.Borders.Right.Color = TableBlack;
-            }
-            else
-            {
+            } else {
                 marketingStrategyPanel = null;
             }
 
             //three year picture
-            if (showThreeYear)
-            {
+            if (showThreeYear) {
                 var cellNum = 1;
                 if (!anyCellsOnLeft)
                     cellNum = 0;
 
                 var vtoRight = vrow.Cells[cellNum].Elements.AddTable();
-                if (anyCellsOnLeft)
-                {
+                if (anyCellsOnLeft) {
                     column = vtoRight.AddColumn(Unit.FromInch(3.4));
-                }
-                else
-                {
+                } else {
                     column = vtoRight.AddColumn(Unit.FromInch(5.33 + 3.4 + 1.66));
                 }
                 row = vtoRight.AddRow();
@@ -3553,9 +3257,7 @@ namespace RadialReview.Accessors
                 row.Borders.Bottom.Color = TableBlack;
                 row = vtoRight.AddRow();
                 threeYearPanel = row.Cells[0];
-            }
-            else
-            {
+            } else {
                 threeYearPanel = null;
             }
 
@@ -3579,8 +3281,7 @@ namespace RadialReview.Accessors
             style.ParagraphFormat.SpaceAfter = 0;
         }
 
-        private static void AddVtoTraction(Document doc, AngularVTO vto, string dateformat)
-        {
+        private static void AddVtoTraction(Document doc, AngularVTO vto, string dateformat) {
             Cell oneYear, quarterlyRocks, issuesList;
             Table issueTable, rockTable, goalTable;
             Unit baseHeight = Unit.FromInch(5.1);//5.15
@@ -3617,8 +3318,7 @@ namespace RadialReview.Accessors
                 //});
 
 
-                for (var i = 0; i < goals.Count; i++)
-                {
+                for (var i = 0; i < goals.Count; i++) {
                     var r = new Row();
                     //rockTable.AddRow();
                     r.Height = Unit.FromInch(0.2444 * fs.Point / 10);
@@ -3672,8 +3372,7 @@ namespace RadialReview.Accessors
 
 
 
-                for (var i = 0; i < rocks.Count; i++)
-                {
+                for (var i = 0; i < rocks.Count; i++) {
                     var r = new Row();
                     r.Height = Unit.FromInch(0.2444 * fs.Point / 10);
                     r.HeightRule = RowHeightRule.AtLeast;
@@ -3714,8 +3413,7 @@ namespace RadialReview.Accessors
                 //issuesList.Elements.AddParagraph(" ").SpaceBefore = Unit.FromInch(0.095);
                 //ResizeToFit(issuesList, Unit.FromInch(3.47), Unit.FromInch(5.15), (cell, fs) => {
 
-                if (issues.Any())
-                {
+                if (issues.Any()) {
                     //var issueParagraphs = issues.Select(x => {
                     //	var c = new Cell();
                     //	var p = c.AddParagraph(x);
@@ -3733,8 +3431,7 @@ namespace RadialReview.Accessors
                     rspace.Borders.Right.Visible = false;
                     rspace.Borders.Top.Visible = false;
 
-                    for (var i = 0; i < issues.Count; i++)
-                    {
+                    for (var i = 0; i < issues.Count; i++) {
                         var r = new Row();
                         r.Height = Unit.FromInch(0.2444 * fs.Point / 10);
                         r.HeightRule = RowHeightRule.AtLeast;
@@ -3770,38 +3467,30 @@ namespace RadialReview.Accessors
             var curRockI = 0;
             var curIssueI = 0;
 
-            for (var p = 0; p < maxPage; p++)
-            {
+            for (var p = 0; p < maxPage; p++) {
 
-                if (p < goalsSplits.Count())
-                {
-                    foreach (var r in goalsSplits[p])
-                    {
+                if (p < goalsSplits.Count()) {
+                    foreach (var r in goalsSplits[p]) {
                         goalTable.Rows.Add(goalRows[curGoalI]);
                         curGoalI++;
                     }
                 }
 
-                if (p < rockSplits.Count())
-                {
-                    foreach (var r in rockSplits[p])
-                    {
+                if (p < rockSplits.Count()) {
+                    foreach (var r in rockSplits[p]) {
                         rockTable.Rows.Add(rockRows[curRockI]);
                         curRockI++;
                     }
                 }
 
-                if (p < issueSplits.Count())
-                {
-                    foreach (var r in issueSplits[p])
-                    {
+                if (p < issueSplits.Count()) {
+                    foreach (var r in issueSplits[p]) {
                         issueTable.Rows.Add(issueRows[curIssueI]);
                         curIssueI++;
                     }
                 }
 
-                if (p + 1 < maxPage)
-                {
+                if (p + 1 < maxPage) {
                     AddPage_VtoTraction(doc, vto, baseHeight, out oneYear, out quarterlyRocks, out issuesList, out issueTable, out rockTable, out goalTable);
                     AppendAll(oneYear, new DocumentObject[] { goalTable }.ToList());
                     AppendAll(quarterlyRocks, new DocumentObject[] { rockTable }.ToList());
@@ -3814,8 +3503,7 @@ namespace RadialReview.Accessors
 
 
 
-        private static void AddPage_VtoTraction(Document doc, AngularVTO vto, Unit height, out Cell oneYear, out Cell quarterlyRocks, out Cell issuesList, out Table issueTable, out Table rockTable, out Table goalTable)
-        {
+        private static void AddPage_VtoTraction(Document doc, AngularVTO vto, Unit height, out Cell oneYear, out Cell quarterlyRocks, out Cell issuesList, out Table issueTable, out Table rockTable, out Table goalTable) {
             var section = AddVtoPage(doc, vto.Name ?? "", "TRACTION");
 
             var table = section.AddTable();
@@ -3876,15 +3564,13 @@ namespace RadialReview.Accessors
             goalTable.AddColumn(Unit.FromInch(3));
         }
 
-        public static void AddVTO(Document doc, AngularVTO vto, string dateformat)
-        {
+        public static void AddVTO(Document doc, AngularVTO vto, string dateformat) {
             if (vto.IncludeVision)
                 AddVtoVision(doc, vto, dateformat);
             AddVtoTraction(doc, vto, dateformat);
         }
 
-        public class AccNodeJs
-        {
+        public class AccNodeJs {
             public List<AccNodeJs> children { get; set; }
             public List<AccNodeJs> _children { get; set; }
             public string Name { get; set; }
@@ -3904,13 +3590,11 @@ namespace RadialReview.Accessors
             public double height { get; set; }
         }
 
-        private class PageProp
-        {
+        private class PageProp {
             public XUnit pageWidth { get; set; }
             public XUnit pageHeight { get; set; }
             public XUnit margin { get; set; }
-            public XPen pen = new XPen(XColors.Black, 1)
-            {
+            public XPen pen = new XPen(XColors.Black, 1) {
                 LineJoin = XLineJoin.Miter,
                 MiterLimit = 10,
                 LineCap = XLineCap.Square
@@ -3919,25 +3603,20 @@ namespace RadialReview.Accessors
 
             public double scale = 1;
 
-            public XUnit allowedWidth
-            {
-                get
-                {
+            public XUnit allowedWidth {
+                get {
                     return pageWidth - 2 * margin;
                 }
             }
-            public XUnit allowedHeight
-            {
-                get
-                {
+            public XUnit allowedHeight {
+                get {
                     return pageHeight - 2 * margin;
                 }
             }
         }
 
         #region AC Helpers 
-        private static void ACDrawRole(XGraphics gfx, AccNodeJs me, PageProp pageProps, double[] origin = null)
-        {
+        private static void ACDrawRole(XGraphics gfx, AccNodeJs me, PageProp pageProps, double[] origin = null) {
             origin = origin ?? new[] { 0.0, 0.0 };
 
             var x = (int)me.x - origin[0];
@@ -3955,8 +3634,7 @@ namespace RadialReview.Accessors
             tf.DrawString(me.Position ?? "", bold, XBrushes.Black, new XRect(x, y + 12 * pageProps.scale / 3.0, Math.Max(0, me.width), top / 2.0));
             tf.DrawString(me.Name ?? "", norm, XBrushes.Black, new XRect(x, y + top / 2.0 + 12 * pageProps.scale / 3.0, Math.Max(0, me.width), top / 2.0));
 
-            if (me.height > top)
-            {
+            if (me.height > top) {
                 gfx.DrawLine(XPens.Black, x + pad, y + top, x + (me.width - 2 * pad), y + top);
             }
 
@@ -3966,15 +3644,12 @@ namespace RadialReview.Accessors
 
             var h = 50 * pageProps.scale;
 
-            if (me.Roles != null && me.Roles.Any())
-            {
+            if (me.Roles != null && me.Roles.Any()) {
                 var rheight = (me.height - top) / (me.Roles.Count + 1);
                 //h += rheight / 2.0;
-                foreach (var r in me.Roles)
-                {
+                foreach (var r in me.Roles) {
                     var text = r;
-                    if (text != null)
-                    {
+                    if (text != null) {
                         text = text.TrimStart(' ', '•', '*');
                         //text = "• " + r;
                     }
@@ -3994,16 +3669,13 @@ namespace RadialReview.Accessors
             gfx.DrawRectangle(pageProps.pen, pageProps.brush, x, y, (int)Math.Max(0, me.width), (int)Math.Max(0, me.height));
         }
 
-        private static void DrawLine(XGraphics gfx, PageProp pageProps, List<Tuple<double, double>> points)
-        {
-            for (var i = 1; i < points.Count; i++)
-            {
+        private static void DrawLine(XGraphics gfx, PageProp pageProps, List<Tuple<double, double>> points) {
+            for (var i = 1; i < points.Count; i++) {
                 gfx.DrawLine(pageProps.pen, points[i - 1].Item1, points[i - 1].Item2, points[i].Item1, points[i].Item2);
             }
         }
 
-        private static void ACDrawRoleLine(XGraphics gfx, AccNodeJs parent, AccNodeJs me, PageProp pageProps, double[] origin = null)
-        {
+        private static void ACDrawRoleLine(XGraphics gfx, AccNodeJs parent, AccNodeJs me, PageProp pageProps, double[] origin = null) {
             origin = origin ?? new[] { 0.0, 0.0 };
             //gfx.DrawRectangle(pageProps.pen, pageProps.brush, (int)me.x - origin[0], (int)me.y - origin[1], (int)me.width, (int)me.height);
 
@@ -4029,17 +3701,13 @@ namespace RadialReview.Accessors
             var tx = me.x - origin[0] + me.width / 2;
             var ty = me.y - origin[1] - adjS;
             var my = sy + vSeparation /*- origin[1]*/;
-            if (me.isLeaf)
-            {
+            if (me.isLeaf) {
                 var tw = me.width;
                 double lx;
-                if (me.side == "left")
-                {
+                if (me.side == "left") {
                     tx = tx - tw / 2 - adjS;
                     lx = tx - hSeparation / 2 /*- origin[0]*/+ adjS;
-                }
-                else
-                {
+                } else {
                     tx = tx + tw / 2 - adjS;
                     lx = tx + hSeparation / 2 /*- origin[0]*/+ adjS;
                 }
@@ -4049,21 +3717,15 @@ namespace RadialReview.Accessors
 
                 var tyy = ty + Math.Min(10, me.height / 2);
                 var points = new List<Tuple<double, double>>();
-                if (!parent.isLeaf)
-                {
+                if (!parent.isLeaf) {
                     points.Add(Tuple.Create(sx, sy));
                     points.Add(Tuple.Create(sx, my));
                     points.Add(Tuple.Create(lx, my));
-                }
-                else
-                {
+                } else {
                     double ax;
-                    if (me.side == "left")
-                    {
+                    if (me.side == "left") {
                         ax = sx /*- origin[0]*/ - parent.width / 2;// - d.source.width / 2;
-                    }
-                    else
-                    {
+                    } else {
                         ax = sx /*- origin[0]*/ + parent.width / 2 - adjS;// - d.source.width / 2;
                     }
 
@@ -4076,9 +3738,7 @@ namespace RadialReview.Accessors
                 points.Add(Tuple.Create(tx, tyy));
 
                 DrawLine(gfx, pageProps, points);
-            }
-            else
-            {
+            } else {
                 var points = new List<Tuple<double, double>>() {
                         Tuple.Create(sx, sy),
                         Tuple.Create(sx, my),
@@ -4090,18 +3750,14 @@ namespace RadialReview.Accessors
 
         }
 
-        private static void ACDrawRoles(XGraphics gfx, AccNodeJs root, PageProp pageProps, double[] origin = null)
-        {
+        private static void ACDrawRoles(XGraphics gfx, AccNodeJs root, PageProp pageProps, double[] origin = null) {
             ACDrawRole(gfx, root, pageProps, origin);
-            if (root.children != null)
-            {
-                foreach (var c in root.children)
-                {
+            if (root.children != null) {
+                foreach (var c in root.children) {
                     ACDrawRoleLine(gfx, root, c, pageProps, origin);
                     ACDrawRoles(gfx, c, pageProps, origin);
                 }
-                if (root.hasHiddenChildren)
-                {
+                if (root.hasHiddenChildren) {
                     ACDrawEllipse(gfx, root, pageProps, origin);
                 }
 
@@ -4109,14 +3765,12 @@ namespace RadialReview.Accessors
             }
         }
 
-        private static void ACDrawEllipse(XGraphics gfx, AccNodeJs root, PageProp pageProps, double[] origin = null)
-        {
+        private static void ACDrawEllipse(XGraphics gfx, AccNodeJs root, PageProp pageProps, double[] origin = null) {
             origin = origin ?? new[] { 0.0, 0.0 };
             var x = root.x + root.width / 2.0 - origin[0];
             var y = root.y + root.height - origin[1];
 
-            for (var ii = 0; ii < 3; ii += 1)
-            {
+            for (var ii = 0; ii < 3; ii += 1) {
                 var i = (3 + 6 * ii) * pageProps.scale;
                 var d = (4.0) * pageProps.scale;
                 gfx.DrawEllipse(XBrushes.Black, x - (d / 2.0), y + i - (d / 2.0), d, d);
@@ -4124,13 +3778,10 @@ namespace RadialReview.Accessors
         }
 
 
-        private static double[] ACRanges(AccNodeJs root)
-        {
+        private static double[] ACRanges(AccNodeJs root) {
             var range = new[] { root.x, root.y, root.x + root.width, root.y + root.height };
-            if (root.children != null)
-            {
-                foreach (var n in root.children)
-                {
+            if (root.children != null) {
+                foreach (var n in root.children) {
                     var n_range = ACRanges(n);
                     range[0] = Math.Min(range[0], n_range[0]);
                     range[1] = Math.Min(range[1], n_range[1]);
@@ -4140,8 +3791,7 @@ namespace RadialReview.Accessors
             }
             return range;
         }
-        private static void ACNormalize(AccNodeJs root, double[] range, PageProp pageProp, double? forceScale = null)
-        {
+        private static void ACNormalize(AccNodeJs root, double[] range, PageProp pageProp, double? forceScale = null) {
             root.x += -range[0];
             root.y += -range[1];
             var shouldScale = forceScale == null;
@@ -4149,8 +3799,7 @@ namespace RadialReview.Accessors
 
             var width = (double)(range[2] - range[0]);
             var height = (double)(range[3] - range[1]);
-            if (shouldScale)
-            {
+            if (shouldScale) {
                 if (width > pageProp.allowedWidth)
                     scale = pageProp.allowedWidth / width;
                 if (height > pageProp.allowedHeight)
@@ -4177,50 +3826,41 @@ namespace RadialReview.Accessors
             root.x += pageProp.margin.Point;
             root.y += pageProp.margin.Point;
 
-            if (root.children != null)
-            {
-                foreach (var n in root.children)
-                {
+            if (root.children != null) {
+                foreach (var n in root.children) {
                     ACNormalize(n, range, pageProp, scale);
                 }
             }
         }
-        private static Tuple<int, int> ACGetPage(double x, double y, PageProp pageProp)
-        {
+        private static Tuple<int, int> ACGetPage(double x, double y, PageProp pageProp) {
             return Tuple.Create((int)(x / pageProp.allowedWidth), (int)(y / pageProp.allowedHeight));
         }
-        private static double[] ACGetOrigin(Tuple<int, int> page, PageProp pageProp)
-        {
+        private static double[] ACGetOrigin(Tuple<int, int> page, PageProp pageProp) {
             return new[] {
                 page.Item1 * pageProp.allowedWidth,
                 page.Item2 * pageProp.allowedHeight
             };
 
         }
-        private static void ACGeneratePages(DefaultDictionary<Tuple<int, int>, PdfPage> pageLookup, AccNodeJs root, PageProp pageProp)
-        {
+        private static void ACGeneratePages(DefaultDictionary<Tuple<int, int>, PdfPage> pageLookup, AccNodeJs root, PageProp pageProp) {
             var a = pageLookup[ACGetPage(root.x, root.y, pageProp)];
             var b = pageLookup[ACGetPage(root.x + root.width, root.y, pageProp)];
             var c = pageLookup[ACGetPage(root.x + root.width, root.y + root.height, pageProp)];
             var d = pageLookup[ACGetPage(root.x, root.y + root.height, pageProp)];
-            if (root.children != null)
-            {
-                foreach (var p in root.children)
-                {
+            if (root.children != null) {
+                foreach (var p in root.children) {
                     ACGeneratePages(pageLookup, p, pageProp);
                 }
             }
         }
-        private static void ACDrawOnAllPages(DefaultDictionary<Tuple<int, int>, PdfPage> pageLookup, DefaultDictionary<PdfPage, XGraphics> gfxLookup, AccNodeJs parent, AccNodeJs me, PageProp pageProp)
-        {
+        private static void ACDrawOnAllPages(DefaultDictionary<Tuple<int, int>, PdfPage> pageLookup, DefaultDictionary<PdfPage, XGraphics> gfxLookup, AccNodeJs parent, AccNodeJs me, PageProp pageProp) {
             var pages = new List<Tuple<int, int>>();
 
             pages.Add(ACGetPage(me.x, me.y, pageProp));
             pages.Add(ACGetPage(me.x + me.width, me.y, pageProp));
             pages.Add(ACGetPage(me.x + me.width, me.y + me.height, pageProp));
             pages.Add(ACGetPage(me.x, me.y + me.height, pageProp));
-            if (parent != null)
-            {
+            if (parent != null) {
                 pages.Add(ACGetPage(parent.x, parent.y, pageProp));
                 pages.Add(ACGetPage(parent.x + parent.width, parent.y, pageProp));
                 pages.Add(ACGetPage(parent.x + parent.width, parent.y + parent.height, pageProp));
@@ -4228,8 +3868,7 @@ namespace RadialReview.Accessors
             }
             pages.Distinct();
 
-            foreach (var p in pages)
-            {
+            foreach (var p in pages) {
                 var origin = ACGetOrigin(p, pageProp);
                 var page = pageLookup[p];
                 var gfx = gfxLookup[page];
@@ -4237,21 +3876,17 @@ namespace RadialReview.Accessors
                 if (parent != null)
                     ACDrawRoleLine(gfx, parent, me, pageProp, origin);
 
-                if (me.hasHiddenChildren)
-                {
+                if (me.hasHiddenChildren) {
                     ACDrawEllipse(gfx, me, pageProp, origin);
                 }
             }
         }
 
 
-        private static void ACDrawOnAllPages_Dive(DefaultDictionary<Tuple<int, int>, PdfPage> pageLookup, DefaultDictionary<PdfPage, XGraphics> gfxLookup, AccNodeJs me, PageProp pageProp, AccNodeJs parent = null)
-        {
+        private static void ACDrawOnAllPages_Dive(DefaultDictionary<Tuple<int, int>, PdfPage> pageLookup, DefaultDictionary<PdfPage, XGraphics> gfxLookup, AccNodeJs me, PageProp pageProp, AccNodeJs parent = null) {
             ACDrawOnAllPages(pageLookup, gfxLookup, parent, me, pageProp);
-            if (me.children != null)
-            {
-                foreach (var c in me.children)
-                {
+            if (me.children != null) {
+                foreach (var c in me.children) {
                     ACDrawOnAllPages_Dive(pageLookup, gfxLookup, c, pageProp, me);
                 }
             }
@@ -4269,21 +3904,18 @@ namespace RadialReview.Accessors
 
         //}
 
-        private static void ACGenerate_Resized(PdfPage page, AccNodeJs root, PageProp pageProp)
-        {
+        private static void ACGenerate_Resized(PdfPage page, AccNodeJs root, PageProp pageProp) {
             var ranges = ACRanges(root);
             ACNormalize(root, ranges, pageProp, null);
             XGraphics gfx = XGraphics.FromPdfPage(page);
             ACDrawRoles(gfx, root, pageProp);
         }
 
-        private static void ACGenerate_Full(PdfDocument doc, AccNodeJs root, PageProp pageProp, double scale)
-        {
+        private static void ACGenerate_Full(PdfDocument doc, AccNodeJs root, PageProp pageProp, double scale) {
             var ranges = ACRanges(root);
             ACNormalize(root, ranges, pageProp, scale);
 
-            var pageLookup = new DefaultDictionary<Tuple<int, int>, PdfPage>(x => new PdfPage(doc)
-            {
+            var pageLookup = new DefaultDictionary<Tuple<int, int>, PdfPage>(x => new PdfPage(doc) {
                 Width = pageProp.pageWidth,
                 Height = pageProp.pageHeight
             });
@@ -4295,8 +3927,7 @@ namespace RadialReview.Accessors
             pageLookup.Keys.OrderBy(x => x.Item1)
                 .ThenBy(x => x.Item2)
                 .ToList()
-                .ForEach(x =>
-                {
+                .ForEach(x => {
                     doc.AddPage(pageLookup[x]);
                 });
         }
@@ -4324,8 +3955,7 @@ namespace RadialReview.Accessors
         //            return null;
         //  }
         [Obsolete("Use AccountabilityChartPDf.cs instead.")]
-        public static PdfDocument GenerateAccountabilityChart(AccNodeJs root, double width, double height, bool restrictSize = false)
-        {
+        public static PdfDocument GenerateAccountabilityChart(AccNodeJs root, double width, double height, bool restrictSize = false) {
             //throw new NotImplementedException();
             // Create new PDF document
             PdfDocument document = new PdfDocument();
@@ -4338,33 +3968,27 @@ namespace RadialReview.Accessors
 
             var margin = XUnit.FromInch(.25);
 
-            var pageProp = new PageProp()
-            {
+            var pageProp = new PageProp() {
                 pageWidth = _unusedPage.Width,
                 pageHeight = _unusedPage.Height,
                 margin = margin
             };
 
-            if (restrictSize)
-            {
+            if (restrictSize) {
                 document.AddPage(_unusedPage);
                 ACGenerate_Resized(_unusedPage, root, pageProp);
-            }
-            else
-            {
+            } else {
                 ACGenerate_Full(document, root, pageProp, .5);
             }
             return document;
         }
 
-        public class RockPdfModel
-        {
+        public class RockPdfModel {
             public string OwnerName { get; set; }
             public List<AngularRock> RockList { get; set; }
         }
 
-        public class CellDetailsModel
-        {
+        public class CellDetailsModel {
             public List<Page> PageList { get; set; }
             public List<Row> RowList { get; set; }
         }
