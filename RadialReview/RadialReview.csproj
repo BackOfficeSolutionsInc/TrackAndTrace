@@ -1820,13 +1820,13 @@
     <Content Include="Views\ClientSuccess\Close.cshtml" />
     <Content Include="Views\Data\Dashboard.cshtml" />
     <None Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
+      <DependentUpon>web.config</DependentUpon>
     </None>
     <None Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
+      <DependentUpon>web.config</DependentUpon>
     </None>
     <None Include="Web.UPDATE DATABSE.config">
-      <DependentUpon>Web.config</DependentUpon>
+      <DependentUpon>web.config</DependentUpon>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -2253,7 +2253,7 @@
     <Content Include="Views\Dashboard\_L10TileList.cshtml" />
     <Content Include="Views\L10\ExternalPage.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
-    <Content Include="Web.config">
+    <Content Include="web.config">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="wkhtmltox0.dll">
