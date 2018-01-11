@@ -76,7 +76,7 @@ namespace RadialReview.Accessors {
                         .Where(x => x.OrganizationId == orgId)
                         .Select(x => x.CreateTime, x => x.DeleteTime, x => x.CompleteTime)
                         .List<object[]>()
-                        .Select(x => new EventTimes(x[0], x[1], x[2]))
+                        .SelectNoException(x => new EventTimes(x[0], x[1], x[2]))
                         .ToList();
                     return GenerateBurndown("Outstanding Rock", rockData);
                 }
@@ -95,7 +95,7 @@ namespace RadialReview.Accessors {
                         .Where(x => alias.OrganizationId == orgId)
                         .Select(x => x.CreateTime, x => x.DeleteTime, x => x.CloseTime)
                         .List<object[]>()
-                        .Select(x => new EventTimes(x[0], x[1], x[2]))
+                        .SelectNoException(x => new EventTimes(x[0], x[1], x[2]))
                         .ToList();
 
                     return GenerateBurndown("Outstanding Issues", data);
@@ -113,7 +113,7 @@ namespace RadialReview.Accessors {
                         .Where(x => x.OrganizationId == orgId)
                         .Select(x => x.CreateTime, x => x.DeleteTime, x => x.CompleteTime)
                         .List<object[]>()
-                        .Select(x => new EventTimes(x[0], x[1], x[2]))
+                        .SelectNoException(x => new EventTimes(x[0], x[1], x[2]))
                         .ToList();
 
                     return GenerateBurndown("Outstanding To-dos", data);
@@ -136,7 +136,7 @@ namespace RadialReview.Accessors {
                         .Where(x => x.OrganizationId == orgId)
                         .Select(x => x.CreateTime, x => x.DeleteTime, x => x.DeleteTime)
                         .List<object[]>()
-                        .Select(x => new EventTimes(x[0], x[1], x[2]))
+                        .SelectNoException(x => new EventTimes(x[0], x[1], x[2]))
                         .ToList();
 
                     var attach = data.Select(x => new EventTimes(x[0], x[1], x[2])).ToList();
