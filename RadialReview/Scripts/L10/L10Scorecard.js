@@ -672,6 +672,7 @@ function updateScoresGoals(startWeek, measurableId, s) {
 
 function receiveUpdateScore(newScore) {
 	//console.info(newScore);
+    debugger;
     if (Array.isArray(newScore)) {
         newScore.map(function (x) {
             receiveUpdateScore(x);

@@ -94,8 +94,8 @@ namespace TractionTools.Tests.PeopleTools {
 
                     "Core Values Comments",
                     "5 Roles/GWC Comments",
-                    "# of Rocks completed last Quarter",
-                    "# of Rocks last Quarter",
+                    //"# of Rocks completed last Quarter",
+                    //"# of Rocks last Quarter",
 
 					//"They are rewarding and recognizing",
 					//"They are having quarterly conversations",
@@ -168,8 +168,8 @@ namespace TractionTools.Tests.PeopleTools {
 
                     "Core Values Comments",
                     "5 Roles/GWC Comments",
-                    "# of Rocks completed last Quarter",
-                    "# of Rocks last Quarter",
+                   // "# of Rocks completed last Quarter",
+                    //"# of Rocks last Quarter",
 
 
                     "I am giving clear direction","I am providing the necessary tools","I am letting go of the vine",
@@ -235,8 +235,8 @@ namespace TractionTools.Tests.PeopleTools {
                     "Comments",
                     "Core Values Comments",
                     "5 Roles/GWC Comments",
-                    "# of Rocks completed last Quarter",
-                    "# of Rocks last Quarter"
+                    //"# of Rocks completed last Quarter",
+                    //"# of Rocks last Quarter"
                 };
 
                 var managerQC = SurveyAccessor.GetAngularSurveyContainerBy(org.Manager, org.Manager, id);
