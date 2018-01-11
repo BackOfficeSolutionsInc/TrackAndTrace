@@ -62,6 +62,7 @@
     }
 
     function _setChart(o) {
+        debugger;
         _conditionOptions(o);
         MG.data_graphic(o);
         chart._options = o;
@@ -107,7 +108,7 @@
 
     ensureLoaded(function () {
         MG.add_hook('line.after_each_series', function (this_data, existing_line, args) {
-            debugger;
+            //debugger;
             //args.enhanced_rollover = true;
         });
     });

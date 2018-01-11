@@ -5244,8 +5244,9 @@
             }
 
             mg_plot_legend_if_legend_target(args.legend_target, plot.legend_text);
-            var parent = $(".mg-line-legend").closest("svg");
-            var d = $(".mg-line-legend").detach();
+            //debugger;
+            var parent = $(args.target).find(".mg-line-legend").closest("svg");
+            var d = $(args.target).find(".mg-line-legend").detach();
             parent.append(d);
         }
 
