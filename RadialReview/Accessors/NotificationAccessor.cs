@@ -20,6 +20,7 @@ using System.Web.Script.Serialization;
 using RadialReview.Api.V1;
 using RadialReview.Hooks;
 using RadialReview.Crosscutting.Hooks.Interfaces;
+using RadialReview.Exceptions;
 
 namespace RadialReview.Accessors {
     public class NotificationAccessor {
@@ -90,7 +91,7 @@ namespace RadialReview.Accessors {
                     }
 
                     await HooksRegistry.Each<INotificationHook>((ses, x) => x.UpdateNotification(ses, n, updates));
-                    
+
                     tx.Commit();
                     s.Flush();
                 }
@@ -107,7 +108,7 @@ namespace RadialReview.Accessors {
                 }
             }
         }
-        public static List<NotificationModel> GetNotificationsForUser(UserOrganizationModel caller, long userId, bool includeSeen=false) {
+        public static List<NotificationModel> GetNotificationsForUser(UserOrganizationModel caller, long userId, bool includeSeen = false) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     var perms = PermissionsUtility.Create(s, caller);
@@ -115,10 +116,10 @@ namespace RadialReview.Accessors {
                     var uids = s.Get<UserOrganizationModel>(userId).User.UserOrganizationIds;
                     var notificationsQ = s.QueryOver<NotificationModel>()
                         .Where(x => x.DeleteTime == null)
-                        .WhereRestrictionOn(x=>x.UserId).IsIn(uids);
+                        .WhereRestrictionOn(x => x.UserId).IsIn(uids);
                     if (!includeSeen)
                         notificationsQ = notificationsQ.Where(x => x.Seen == null);
-                    return notificationsQ.List().ToList();                    
+                    return notificationsQ.List().ToList();
                 }
             }
         }
@@ -142,25 +143,29 @@ namespace RadialReview.Accessors {
 
     public class NotifcationCreation {
 
+        private long NotificationId { get; set; }
         private string Message { get; set; }
         private string Details { get; set; }
         private string ImageUrl { get; set; }
         private long UserId { get; set; }
         private NotificationType Type { get; set; }
         private NotificationPriority Priority { get; set; }
+        public bool Sensitive { get; private set; }
 
-        public static NotifcationCreation Build(long userId, string message, string details = null, string imageUrl = null) {
+        public static NotifcationCreation Build(long userId, string message, string details = null, bool sensitive = true, string imageUrl = null) {
             return new NotifcationCreation {
                 Message = message,
                 Details = details,
                 ImageUrl = imageUrl,
                 UserId = userId,
+                Sensitive = sensitive,
             };
         }
 
         public async Task<NotificationModel> Save(ISession s) {
             var nm = GenerateModel();
             s.Save(nm);
+            NotificationId = nm.Id;
             return nm;
         }
 
@@ -218,21 +223,26 @@ namespace RadialReview.Accessors {
 
                 FCMClient client = new FCMClient(ServerApiKey);
 
+                if (this.Sensitive == true && NotificationId == 0)
+                    throw new PermissionsException("You must save the notification before sending");
+
                 var message = new Message() {
                     To = deviceId,//"bk3RNwTe3H0:CI2k_HHwgIpoDKCIZvvDMExUdFQ3P1...",
-                    Notification = new AndroidNotification() {
-                        Body = "great match!",
-                        Title = "Portugal vs. Denmark",
-                        Icon = "myIcon"
-                    },
-                    Data = new Dictionary<string, string>
-                    {
-                        { "Nick", "Mario" },
-                        { "body", "great match!" },
-                        { "Room", "PortugalVSDenmark" }
-                    }
                 };
 
+                if (Sensitive) {
+                    message.Data = new Dictionary<string, string>{
+                                { "MessageId", ""+this.NotificationId},
+                                { "Type", ""+this.Type },
+                                { "Priority", ""+this.Priority }
+                            };
+                } else {
+                    message.Notification = new AndroidNotification() {
+                        Body = this.Details,
+                        Title = this.Message,
+                        Icon = this.ImageUrl
+                    };
+                }
                 var result = await client.SendMessageAsync(message);
                 int i = 0;
             } catch (Exception ex) {

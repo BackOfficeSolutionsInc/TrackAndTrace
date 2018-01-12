@@ -800,8 +800,8 @@ namespace RadialReview.Controllers {
 
 
         [Access(AccessLevel.Radial)]
-        public async Task<JsonResult> Notify(long userId, string message) {
-            var n = await NotificationAccessor.CreateNotification_Unsafe(NotifcationCreation.Build(userId, message), true);
+        public async Task<JsonResult> Notify(long userId, string message,string details = null,bool sensitive = true,string imageUrl = null) {
+            var n = await NotificationAccessor.CreateNotification_Unsafe(NotifcationCreation.Build(userId, message, details, sensitive, imageUrl), true);
             return Json(n, JsonRequestBehavior.AllowGet);
         }
 

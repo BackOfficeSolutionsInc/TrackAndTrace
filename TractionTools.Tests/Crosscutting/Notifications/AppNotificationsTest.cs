@@ -9,7 +9,7 @@ namespace TractionTools.Tests.Notifications {
 		[TestMethod]
 		public async Task SendIOS() {
 
-			var b = NotifcationCreation.Build(0, "Test Heading", "Test body");
+			var b = NotifcationCreation.Build(0, "Test Heading", sensitive: "Test body");
 
             await NotifcationCreation.SendToDevice(new RadialReview.Models.Notifications.UserDevice() {
                 DeviceType = "ios",
