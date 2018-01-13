@@ -7,12 +7,13 @@ var disconnected = false;
 var isUnloading = false;
 var skipBeforeUnload = false;
 
-var pingTimeout = 1.5 * 60 * 1000; //1.5 minutes in ms
+var pingTimeout = 2 * 60 * 1000; //1.5 minutes in ms
 
 
 $(".rt").prop("disabled", true);
 $(function () {
-	setTimeout(function () {
+
+    var setup = function(i) {
 		//All Scripts loaded
 		meetingHub = $.connection.meetingHub;
 		/*meetingHub.error = function (error) {
@@ -20,7 +21,13 @@ $(function () {
 		};*/
 
 		if (typeof (meetingHub) === "undefined") {
-			showAlert("Error. Please try refreshing.");
+		    if (i==20){
+		        showAlert("Error. Please try refreshing.");
+		        return;
+		    }
+		    console.log("Hub undefined. Trying again. Attempt " + (i + 2));
+		    setTimeout(function(){setup(i+1);},500);
+		    return;
 		}
 
 
@@ -164,7 +171,8 @@ $(function () {
 			isUnloading = true;
 			$.connection.hub.stop();
 		};
-	}, 1);
+	}
+    setTimeout(function () { setup(0); }, 1);
 });
 
 function initConnection() {
