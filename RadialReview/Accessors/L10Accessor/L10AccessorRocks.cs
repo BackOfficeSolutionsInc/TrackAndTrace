@@ -228,36 +228,38 @@ namespace RadialReview.Accessors {
 			await AttachRock(s, perm, recurrenceId, rock.Id, false);
 			return rock;
 		}
+
         [Untested("EnsureStrictlyAfter")]
 		public static async Task UpdateRock(UserOrganizationModel caller, long rockId, String rockMessage, RockState? state, long? ownerId, string connectionId, /* bool? delete = null,bool? companyRock = null,*/ DateTime? dueDate = null, long? recurrenceRockId = null, bool? vtoRock = null) {
-			//using (var s = HibernateSession.GetCurrentSession()) {
-			//	using (var tx = s.BeginTransaction()) {
-            await SyncUtil.EnsureStrictlyAfter(caller,)
-					using (var rt = RealTimeUtility.Create(connectionId)) {
-						var perms = PermissionsUtility.Create(s, caller);
-						var rock = s.Get<RockModel>(rockId);
-						perms.EditRock(rock.Id);
-						//var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
-						var now = DateTime.UtcNow;
+            //using (var s = HibernateSession.GetCurrentSession()) {
+            //	using (var tx = s.BeginTransaction()) {
+            await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateRockCompletion(rockId), async s => {
+                using (var rt = RealTimeUtility.Create(connectionId)) {
+                    var perms = PermissionsUtility.Create(s, caller);
+                    var rock = s.Get<RockModel>(rockId);
+                    perms.EditRock(rock.Id);
+                    //var hub = GlobalHost.ConnectionManager.GetHubContext<MeetingHub>();
+                    var now = DateTime.UtcNow;
 
 
-						await RockAccessor.UpdateRock(s, perms, rockId, message: rockMessage, ownerId: ownerId, completion: state, dueDate: dueDate, now: now);
-						await _UpdateMeetingRockCompletionTimes(s, rockId, state, now);
+                    await RockAccessor.UpdateRock(s, perms, rockId, message: rockMessage, ownerId: ownerId, completion: state, dueDate: dueDate, now: now);
+                    await _UpdateMeetingRockCompletionTimes(s, rockId, state, now);
 
-						//s.Flush();
+                    //s.Flush();
 
-						if (vtoRock != null && recurrenceRockId != null) { //Hey.. I can't do anything without the RecurrenceRockId
-							var recurRock = s.Get<L10Recurrence.L10Recurrence_Rocks>(recurrenceRockId.Value);
-							if (recurRock.ForRock.Id != rockId)
-								throw new PermissionsException("Incorrect rock");
-							await L10Accessor.SetVtoRock(s, perms, recurRock.Id, vtoRock.Value);
-						}
+                    if (vtoRock != null && recurrenceRockId != null) { //Hey.. I can't do anything without the RecurrenceRockId
+                        var recurRock = s.Get<L10Recurrence.L10Recurrence_Rocks>(recurrenceRockId.Value);
+                        if (recurRock.ForRock.Id != rockId)
+                            throw new PermissionsException("Incorrect rock");
+                        await L10Accessor.SetVtoRock(s, perms, recurRock.Id, vtoRock.Value);
+                    }
 
-						tx.Commit();
-						s.Flush();
-					}
-				}
-			}
+                    //	tx.Commit();
+                    //	s.Flush();
+                    //}
+                }
+            });
+			//}
 			#region hide
 			//List<Tuple<long, long>> rockRecurrenceIds = null;
 			//var rockRecurs = new Func<List<Tuple<long, long>>>(() => {

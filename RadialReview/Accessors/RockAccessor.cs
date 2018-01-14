@@ -498,6 +498,18 @@ namespace RadialReview.Accessors {
 
         //[Obsolete("Update for StrictlyAfter", true)]
         //[Untested("StrictlyAfter")]
+        /// <summary>
+        /// SyncAction.UpdateRockCompletion(rockId)
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="perms"></param>
+        /// <param name="rockId"></param>
+        /// <param name="message"></param>
+        /// <param name="ownerId"></param>
+        /// <param name="completion"></param>
+        /// <param name="dueDate"></param>
+        /// <param name="now"></param>
+        /// <returns></returns>
         public static async Task UpdateRock(IOrderedSession s, PermissionsUtility perms, long rockId, string message = null, long? ownerId = null, RockState? completion = null, DateTime? dueDate = null, DateTime? now = null) {
 
             //SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateRockCompletion(rockId));

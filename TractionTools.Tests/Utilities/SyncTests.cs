@@ -117,7 +117,7 @@ namespace TractionTools.Tests.Utilities {
                 return builder.Trim();
             }
 
-            public void EnsureAlwaysOrdered() {
+          /*  public void EnsureAlwaysOrdered() {
                 var count = 0;
                 var userId = 1;
 
@@ -181,54 +181,54 @@ namespace TractionTools.Tests.Utilities {
                 }
 
                 Console.WriteLine("Number of combinations tested:" + count + "!");
-            }
+            }*/
         }
 
-        [TestMethod]
-        [TestCategory("Sync")]
-        public void TryOutPermutator() {
-            var ss = new SyncSystem(new DateTime(2017, 1, 15), TimeSpan.FromDays(.1));
-            ss.AddServer("A", TimeSpan.FromSeconds(5));
-            ss.SendRequest("1", TimeSpan.FromSeconds(.1), TimeSpan.FromSeconds(.1));
-            ss.EnsureAlwaysOrdered();
-        }
+        //[TestMethod]
+        //[TestCategory("Sync")]
+        //public void TryOutPermutator() {
+        //    var ss = new SyncSystem(new DateTime(2017, 1, 15), TimeSpan.FromDays(.1));
+        //    ss.AddServer("A", TimeSpan.FromSeconds(5));
+        //    ss.SendRequest("1", TimeSpan.FromSeconds(.1), TimeSpan.FromSeconds(.1));
+        //    ss.EnsureAlwaysOrdered();
+        //}
 
 
-        [TestMethod]
-        [TestCategory("Sync")]
-        public void ConstantFulfilmentTime() {
-            var ss = new SyncSystem(new DateTime(2017, 1, 15), TimeSpan.FromSeconds(40));
-            ss.AddServer("A", TimeSpan.FromSeconds(5));
-            ss.AddServer("B", TimeSpan.FromSeconds(-5));
-            ss.AddServer("C", TimeSpan.FromSeconds(100));
-            //ss.AddServer("D", TimeSpan.FromSeconds(-100));
+        //[TestMethod]
+        //[TestCategory("Sync")]
+        //public void ConstantFulfilmentTime() {
+        //    var ss = new SyncSystem(new DateTime(2017, 1, 15), TimeSpan.FromSeconds(40));
+        //    ss.AddServer("A", TimeSpan.FromSeconds(5));
+        //    ss.AddServer("B", TimeSpan.FromSeconds(-5));
+        //    ss.AddServer("C", TimeSpan.FromSeconds(100));
+        //    //ss.AddServer("D", TimeSpan.FromSeconds(-100));
 
-            //Send several requests, constant FulfilmentTime
-            ss.SendRequest("1", TimeSpan.FromSeconds(.1), TimeSpan.FromSeconds(.1));
-            ss.SendRequest("2", TimeSpan.FromSeconds(.2), TimeSpan.FromSeconds(.1));
-            ss.SendRequest("3", TimeSpan.FromSeconds(.3), TimeSpan.FromSeconds(.1));
-            ss.SendRequest("4", TimeSpan.FromSeconds(.4), TimeSpan.FromSeconds(.1));
+        //    //Send several requests, constant FulfilmentTime
+        //    ss.SendRequest("1", TimeSpan.FromSeconds(.1), TimeSpan.FromSeconds(.1));
+        //    ss.SendRequest("2", TimeSpan.FromSeconds(.2), TimeSpan.FromSeconds(.1));
+        //    ss.SendRequest("3", TimeSpan.FromSeconds(.3), TimeSpan.FromSeconds(.1));
+        //    ss.SendRequest("4", TimeSpan.FromSeconds(.4), TimeSpan.FromSeconds(.1));
 
-            ss.EnsureAlwaysOrdered();
-        }
+        //    ss.EnsureAlwaysOrdered();
+        //}
 
-        [TestMethod]
-        [TestCategory("Sync")]
-        public void NonconstantFulfilmentTime() {
-            var ss = new SyncSystem(new DateTime(2017, 1, 15), TimeSpan.FromSeconds(40));
-            ss.AddServer("A", TimeSpan.FromSeconds(5));
-            ss.AddServer("B", TimeSpan.FromSeconds(-5));
-            ss.AddServer("C", TimeSpan.FromSeconds(100));
-            ss.AddServer("D", TimeSpan.FromSeconds(-100));
+        //[TestMethod]
+        //[TestCategory("Sync")]
+        //public void NonconstantFulfilmentTime() {
+        //    var ss = new SyncSystem(new DateTime(2017, 1, 15), TimeSpan.FromSeconds(40));
+        //    ss.AddServer("A", TimeSpan.FromSeconds(5));
+        //    ss.AddServer("B", TimeSpan.FromSeconds(-5));
+        //    ss.AddServer("C", TimeSpan.FromSeconds(100));
+        //    ss.AddServer("D", TimeSpan.FromSeconds(-100));
 
-            //Send several requests, constant FulfilmentTime
-            ss.SendRequest("1", TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(.1));
-            ss.SendRequest("2", TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(50));
-            ss.SendRequest("3", TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(20));
-            //ss.SendRequest("4", TimeSpan.FromSeconds(.4), TimeSpan.FromSeconds(.1));
+        //    //Send several requests, constant FulfilmentTime
+        //    ss.SendRequest("1", TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(.1));
+        //    ss.SendRequest("2", TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(50));
+        //    ss.SendRequest("3", TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(20));
+        //    //ss.SendRequest("4", TimeSpan.FromSeconds(.4), TimeSpan.FromSeconds(.1));
 
-            ss.EnsureAlwaysOrdered();
-        }
+        //    ss.EnsureAlwaysOrdered();
+        //}
 
         [TestMethod]
         public void TestDualOrderedList() {
@@ -399,7 +399,7 @@ namespace TractionTools.Tests.Utilities {
                                             message.Add("\t\t\t\t\t\t\t\tSemaphore Ended:" + i + " (order doesn't matter)");
                                         }
                                     };
-                                    await SyncUtil.Lock(syncLockId, async (s, lck) => {
+                                    await SyncUtil.Lock(syncLockId,null, async (s, lck) => {
                                         //Database is opened                   
                                         stepIterator();
                                         waitForStep(i, CLOSE_DB);

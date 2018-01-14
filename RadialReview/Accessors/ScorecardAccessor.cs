@@ -27,6 +27,7 @@ using static RadialReview.Accessors.L10Accessor;
 using RadialReview.Models.Enums;
 using RadialReview.Models.ViewModels;
 using System.Web.Mvc;
+using RadialReview.Utilities.NHibernate;
 
 namespace RadialReview.Accessors {
 
@@ -729,34 +730,49 @@ namespace RadialReview.Accessors {
 			return await UpdateScore(caller, 0, measurableId, week, value);
 		}
 
+        [Untested("ESA")]
 		public static async Task<ScoreModel> UpdateScore(UserOrganizationModel caller, long scoreId, long measurableId, DateTime week, decimal? value) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var perms = PermissionsUtility.Create(s, caller);
-					var score = await UpdateScore(s, perms, scoreId, measurableId, week, value);
-					tx.Commit();
-					s.Flush();
-					return score;
-				}
-			}
+            //using (var s = HibernateSession.GetCurrentSession()) {
+            //	using (var tx = s.BeginTransaction()) {
+            ScoreModel score=null;
+            await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateScore(scoreId), async s => {
+                var perms = PermissionsUtility.Create(s, caller);
+                score = await UpdateScore(s, perms, scoreId, measurableId, week, value);
+                //tx.Commit();
+                //s.Flush();
+                //return score;
+            });
+            return score;
+			//	}
+			//}
 		}
-        [Obsolete("Update for StrictlyAfter", true)][Untested("StrictlyAfter")]
-        public static async Task<ScoreModel> UpdateScore(ISession s, PermissionsUtility perms, long measurableId, DateTime week, decimal? value) {
+        //[Obsolete("Update for StrictlyAfter", true)]
+        [Untested("StrictlyAfter")]
+        public static async Task<ScoreModel> UpdateScore(IOrderedSession s, PermissionsUtility perms, long measurableId, DateTime week, decimal? value) {
 			return await UpdateScore(s, perms, 0, measurableId, week, value);
 		}
 
-        [Obsolete("Update for StrictlyAfter", true)][Untested("StrictlyAfter")]
-        public static async Task<ScoreModel> UpdateScore(ISession s, PermissionsUtility perms, long scoreId, long measurableId, DateTime week, decimal? value) {
+        //[Obsolete("Update for StrictlyAfter", true)]
+        [Untested("StrictlyAfter")]
+        public static async Task<ScoreModel> UpdateScore(IOrderedSession s, PermissionsUtility perms, long scoreId, long measurableId, DateTime week, decimal? value) {
 			if (scoreId <= 0)
 				scoreId = (await GetScore(s, perms, measurableId, week)).Id;
 			return await UpdateScore(s, perms, scoreId, value);
 		}
 
-
-        [Obsolete("Update for StrictlyAfter", true)][Untested("StrictlyAfter")]
-        public static async Task<ScoreModel> UpdateScore(ISession s, PermissionsUtility perms, long scoreId, decimal? value) {
+        /// <summary>
+        /// SyncAction.UpdateScore(scoreId)
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="perms"></param>
+        /// <param name="scoreId"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        //[Obsolete("Update for StrictlyAfter", true)]
+        [Untested("StrictlyAfter")]        
+        public static async Task<ScoreModel> UpdateScore(IOrderedSession s, PermissionsUtility perms, long scoreId, decimal? value) {
 			perms.EditScore(scoreId);
-			SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateScore(scoreId));
+			//SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateScore(scoreId));
 			var updates = new IScoreHookUpdates();
 			var score = s.Get<ScoreModel>(scoreId);
 			if (score.Measured != value) {

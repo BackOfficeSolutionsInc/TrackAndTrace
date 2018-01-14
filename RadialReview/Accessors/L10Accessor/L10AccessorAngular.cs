@@ -69,6 +69,7 @@ using Twilio.Types;
 using Twilio.Rest.Api.V2010.Account;
 using RadialReview.Accessors;
 using RadialReview.Models.UserModels;
+using RadialReview.Utilities.NHibernate;
 
 namespace RadialReview.Accessors {
 	public partial class L10Accessor : BaseAccessor {
@@ -248,7 +249,7 @@ namespace RadialReview.Accessors {
 						perms.EditL10Recurrence(recurrenceId);
 
 						if (model.Type == typeof(AngularIssue).Name) {
-							await UnarchiveIssue(s, perms, rt, model.Id);
+							await UnarchiveIssue(OrderedSession.Indifferent(s), perms, rt, model.Id);
 						} else if (model.Type == typeof(AngularTodo).Name) {
 							//await TodoAccessor.CompleteTodo(s, perms, model.Id);
 						} else if (model.Type == typeof(AngularRock).Name) {
@@ -272,7 +273,7 @@ namespace RadialReview.Accessors {
 
 
 
-		public static async Task UnarchiveIssue(ISession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceIssue) {
+		public static async Task UnarchiveIssue(IOrderedSession s, PermissionsUtility perm, RealTimeUtility rt, long recurrenceIssue) {
 			var issue = s.Get<IssueModel.IssueModel_Recurrence>(recurrenceIssue);
 			perm.EditL10Recurrence(issue.Recurrence.Id);
 			if (issue.CloseTime == null)

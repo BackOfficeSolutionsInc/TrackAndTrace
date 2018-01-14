@@ -18,6 +18,7 @@ using RadialReview.Models.UserTemplate;
 using RadialReview.Utilities;
 using RadialReview.Utilities.DataTypes;
 using RadialReview.Utilities.Hooks;
+using RadialReview.Utilities.NHibernate;
 using RadialReview.Utilities.Query;
 using RadialReview.Utilities.RealTime;
 using RadialReview.Utilities.Synchronize;
@@ -33,7 +34,7 @@ namespace RadialReview.Accessors {
     public class AccountabilityAccessor : BaseAccessor {
 
         #region Single call
-        [Obsolete("Update for StrictlyAfter", true)]
+        //[Obsolete("Update for StrictlyAfter", true)]
         [Untested("StrictlyAfter","Both angularTypes")]
         public static async Task Update(UserOrganizationModel caller, IAngularId model, string connectionId) {
 
@@ -1257,9 +1258,9 @@ namespace RadialReview.Accessors {
             }
         }
 
-        [Obsolete("Update for StrictlyAfter", true)]
+        //[Obsolete("Update for StrictlyAfter", true)]
         [Untested("StrictlyAfter")]
-        public static async Task UpdateRole(ISession s, RealTimeUtility rt, PermissionsUtility perms, long roleId, string name) {
+        public static async Task UpdateRole(IOrderedSession s, RealTimeUtility rt, PermissionsUtility perms, long roleId, string name) {
             perms.EditRole(roleId);
 
             //SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateRole(roleId));

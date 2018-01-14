@@ -9,6 +9,7 @@ using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
+using RadialReview.Models;
 
 namespace RadialReview.Utilities.NHibernate {
 
@@ -16,12 +17,21 @@ namespace RadialReview.Utilities.NHibernate {
 
     }
 
-    public class OrderedSession : ISession {
+    public class OrderedSession : IOrderedSession {
         private ISession _backingSession;
+        public bool FromSyncLock { get; set; }
 
         [Obsolete("only to be used in SyncUtil. Did you forget to wrap your request in an SyncUtil.EnsureStrictlyAfter")]
-        public OrderedSession(ISession session,SyncLock _) {
+        private OrderedSession(ISession session,SyncLock _) {
             _backingSession = session;
+            FromSyncLock = _ != null;
+        }
+
+        public static IOrderedSession Indifferent(ISession s) {
+            return new OrderedSession(s, null);
+        }
+        public static IOrderedSession From(ISession s, SyncLock lck) {
+            return new OrderedSession(s, lck);
         }
 
         public EntityMode ActiveEntityMode { get { return _backingSession.ActiveEntityMode; } }
@@ -367,7 +377,7 @@ namespace RadialReview.Utilities.NHibernate {
         public void Save(string entityName, object obj, object id) {
             _backingSession.Save(entityName, obj, id);
         }
-
+        
         public void SaveOrUpdate(object obj) {
             _backingSession.SaveOrUpdate(obj);
         }

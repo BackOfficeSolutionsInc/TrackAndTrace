@@ -78,11 +78,26 @@ namespace RadialReview.Utilities.Synchronize {
         //	}
         //}
 
+        //public class OrderedExecutable<T> {
+        //    public Func<ISession, SyncAction> ActionSelector { get; set; }
+        //    public Func<IOrderedSession, Task<T>> Atomic { get; set; }
+
+
+        //    public T Execute(UserOrganizationModel caller,bool noSyncException=false) {
+        //        EnsureStrictlyAfter(caller, ActionSelector, Atomic, noSyncException);
+        //    }
+
+        //}
+
         public static string UserActionKey(UserOrganizationModel caller, SyncAction action) {
             return (caller.GetClientRequestId()) + "_" + action.ToString();
         }
 
         public static async Task<bool> EnsureStrictlyAfter(UserOrganizationModel caller, SyncAction action, Func<IOrderedSession, Task> atomic, bool noSyncException = false) {
+            return await EnsureStrictlyAfter(caller, x => action, atomic, noSyncException);
+        }
+
+        public static async Task<bool> EnsureStrictlyAfter(UserOrganizationModel caller, Func<ISession,SyncAction> actionSelector, Func<IOrderedSession, Task> atomic, bool noSyncException = false) {
             var shouldThrowSyncException = !noSyncException;
             try {
                 if (shouldThrowSyncException && HttpContext.Current != null && HttpContext.Current.Items != null && HttpContext.Current.Items.Contains(NO_SYNC_EXCEPTION) && (bool)HttpContext.Current.Items[NO_SYNC_EXCEPTION]) {
@@ -103,14 +118,15 @@ namespace RadialReview.Utilities.Synchronize {
             }
 
             //Ensure only one...
-            await SyncUtil.Lock(UserActionKey(caller, action), clientUpdateTime, async (s, lck) => {
+            await SyncUtil.Lock(ss=>UserActionKey(caller, actionSelector(ss)), clientUpdateTime, async (s, lck) => {
 
                 var canUpdate = lck.LastClientUpdateTimeMs == null;
                 canUpdate = canUpdate || clientUpdateTime.Value - lck.LastClientUpdateTimeMs.Value > 0;
                 canUpdate = canUpdate || lck.LastUpdateDb.Add(TimeSpan.FromMinutes(1)) < DateTime.UtcNow;
 
                 if (lck.LastClientUpdateTimeMs == null || clientUpdateTime.Value - lck.LastClientUpdateTimeMs.Value > 0) {
-                    await atomic(s);
+                    var os = OrderedSession.From(s,lck);
+                    await atomic(os);
                 } else {
                     hasError = true;
                 }
@@ -207,10 +223,14 @@ namespace RadialReview.Utilities.Synchronize {
         private static object TEST_UNLOCK = new object();
 
         public static async Task Lock(string key, long? clientUpdateTimeMs, Func<ISession, SyncLock, Task> atomic, TestHooks testHooks = null) {
-            var nil = Lock(key, clientUpdateTimeMs, async (s, lck) => { await atomic(s, lck); return false; }, testHooks);
+            await Lock(x => key, clientUpdateTimeMs, atomic, testHooks);
         }
 
-        public static async Task<T> Lock<T>(string key, long? clientUpdateTimeMs, Func<ISession, SyncLock, Task<T>> atomic, TestHooks testHooks = null) {
+        public static async Task Lock(Func<ISession,string> keySelector, long? clientUpdateTimeMs, Func<ISession, SyncLock, Task> atomic, TestHooks testHooks = null) {
+            var nil = await Lock(keySelector, clientUpdateTimeMs, async (s, lck) => { await atomic(s, lck); return false; }, testHooks);
+        }
+
+        public static async Task<T> Lock<T>(Func<ISession,string> keySelector, long? clientUpdateTimeMs, Func<ISession, SyncLock, Task<T>> atomic, TestHooks testHooks = null) {
             if (clientUpdateTimeMs == null) {
                 //probably want to make sure its not null...
                 int a = 0;
@@ -225,7 +245,7 @@ namespace RadialReview.Utilities.Synchronize {
                         if (srs.GetCurrentContext().Depth != 0)
                             throw new Exception("Lock must be called outside of a session.");
                     }
-
+                    var key = keySelector(s);
                     var found = s.Get<SyncLock>(key, LockMode.Upgrade);
                     if (found == null) {
                         //Didnt exists. Lets atomically create it
@@ -252,6 +272,7 @@ namespace RadialReview.Utilities.Synchronize {
             //Lets lock on the thing we just created..
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
+                    var key = keySelector(s);
                     //LOCK
                     SyncLock lck;
                     if (testHooks != null && testHooks.AfterLock != null) {
@@ -363,7 +384,7 @@ namespace RadialReview.Utilities.Synchronize {
                     }
                     using (var tx = s.BeginTransaction()) {
                         var syncLock = s2.Get<SyncLock>(lockId, LockMode.Upgrade);
-                        syncLock.LastUpdate = DateTime.UtcNow;
+                        syncLock.LastUpdateDb = DateTime.UtcNow;
                         syncLock.UpdateCount += 1;
                         s2.Update(syncLock);
                         var ns = new Sync() {
