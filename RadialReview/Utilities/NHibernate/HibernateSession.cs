@@ -57,17 +57,17 @@ using log4net;
 
 namespace RadialReview.Utilities {
     public static class NHSQL {
-		public static string NHibernateSQL { get; set; }
-		public static bool SaveCommands { get; set; }
-	}
+        public static string NHibernateSQL { get; set; }
+        public static bool SaveCommands { get; set; }
+    }
     public class NHSQLInterceptor : EmptyInterceptor, IInterceptor {
-		protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        protected static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-		SqlString IInterceptor.OnPrepareStatement(SqlString sql) {
+        SqlString IInterceptor.OnPrepareStatement(SqlString sql) {
             NHSQL.NHibernateSQL = sql.ToString();
-			if (NHSQL.SaveCommands) {
-				log.Info(NHSQL.NHibernateSQL);
-			}
+            if (NHSQL.SaveCommands) {
+                //log.Info(NHSQL.NHibernateSQL);
+            }
 
             return sql;
         }
@@ -83,7 +83,22 @@ namespace RadialReview.Utilities {
         private static object lck = new object();
         public static ISession Session { get; set; }
 
-        public static ISessionFactory GetDatabaseSessionFactory() {
+        public class TestClearDispose : IDisposable {
+            public void Dispose() {
+                ClearSessionFactory_Unsafe(Config.GetEnv());
+            }
+        }
+
+        [Obsolete("Run in using. Use only in concurrent environments. Will blow away the session factory associated with a session. Built for test purposes.")]
+        public static IDisposable ClearSessionFactory_Unsafe(Env environmentOverride) {
+            lock (lck) {
+                factory = null;
+                GetDatabaseSessionFactory(environmentOverride);
+                return new TestClearDispose();
+            }
+        }
+
+        public static ISessionFactory GetDatabaseSessionFactory(Env? environmentOverride = null) {
             lock (lck) {
                 if (factory == null) {
 
@@ -91,7 +106,7 @@ namespace RadialReview.Utilities {
                     var config = System.Configuration.ConfigurationManager.AppSettings;
                     var connectionStrings = System.Configuration.ConfigurationManager.ConnectionStrings;
 
-                    switch (Config.GetEnv()) {
+                    switch (environmentOverride ?? Config.GetEnv()) {
                         case Env.local_sqlite: {
 
                                 var connectionString = connectionStrings["DefaultConnectionLocalSqlite"].ConnectionString;
@@ -291,13 +306,13 @@ namespace RadialReview.Utilities {
             }
         }
 
-        public static ISession GetCurrentSession(bool singleSession = true) {
+        public static ISession GetCurrentSession(bool singleSession = true, Env? environmentOverride_TestOnly = null) {
 
             if (singleSession && !(HttpContext.Current == null || HttpContext.Current.Items == null) && HttpContext.Current.Items["IsTest"] == null) {
                 try {
                     var session = GetExistingSingleRequestSession();
                     if (session == null) {
-                        session = new SingleRequestSession(GetDatabaseSessionFactory().OpenSession()); // Create session, like SessionFactory.createSession()...
+                        session = new SingleRequestSession(GetDatabaseSessionFactory(environmentOverride_TestOnly).OpenSession()); // Create session, like SessionFactory.createSession()...
                         HttpContext.Current.Items.Add("NHibernateSession", session);
                     } else {
                         session.AddContext();
@@ -309,11 +324,11 @@ namespace RadialReview.Utilities {
                 }
             }
             if (!(HttpContext.Current == null || HttpContext.Current.Items == null) && HttpContext.Current.Items["IsTest"] != null)
-                return GetDatabaseSessionFactory().OpenSession();
+                return GetDatabaseSessionFactory(environmentOverride_TestOnly).OpenSession();
             if (singleSession == false)
-                return GetDatabaseSessionFactory().OpenSession();
+                return GetDatabaseSessionFactory(environmentOverride_TestOnly).OpenSession();
 
-            return new SingleRequestSession(GetDatabaseSessionFactory().OpenSession(), true);
+            return new SingleRequestSession(GetDatabaseSessionFactory(environmentOverride_TestOnly).OpenSession(), true);
             //GetDatabaseSessionFactory().OpenSession();
             /*while(true)
             {

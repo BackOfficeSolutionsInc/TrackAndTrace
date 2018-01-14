@@ -36,7 +36,7 @@ namespace RadialReview.Models
             Id = UserOrganizationModel.ADMIN_ID,
         };
 
-		public static UserOrganizationModel CreateAdmin() {
+        public static UserOrganizationModel CreateAdmin() {
 
 			return new UserOrganizationModel() {
 				IsRadialAdmin = true,
@@ -46,6 +46,23 @@ namespace RadialReview.Models
 
 
 		public virtual DateTime? _MethodStart { get; set; }
+
+        public virtual string GetClientRequestId() {
+            if (string.IsNullOrEmpty(_ClientRequestId)) {
+                return "" + User.NotNull(x => x.Id.ToString().Replace("-", "")) ?? ("" + CreateTime.ToJsMs() + Id);
+            }
+            return _ClientRequestId;
+        }
+
+        public virtual void SetClientRequestId(string id) {
+            _ClientRequestId = id;
+        }
+
+        public virtual void SetClientTimeStamp(long timestamp) {
+            _ClientTimestamp = timestamp;
+        }
+
+        public virtual string _ClientRequestId { get; set; }
         public virtual long? _ClientTimestamp { get; set; }
         public virtual int? _ClientOffset { get; set; }
         protected virtual TimeData _timeData { get; set; }
@@ -275,6 +292,7 @@ namespace RadialReview.Models
 
             return GetName();
         }
+
 
         public virtual string GetTitles(int numToShow = int.MaxValue, long callerUserId = -1)
         {

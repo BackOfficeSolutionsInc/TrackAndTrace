@@ -228,10 +228,11 @@ namespace RadialReview.Accessors {
 			await AttachRock(s, perm, recurrenceId, rock.Id, false);
 			return rock;
 		}
-
+        [Untested("EnsureStrictlyAfter")]
 		public static async Task UpdateRock(UserOrganizationModel caller, long rockId, String rockMessage, RockState? state, long? ownerId, string connectionId, /* bool? delete = null,bool? companyRock = null,*/ DateTime? dueDate = null, long? recurrenceRockId = null, bool? vtoRock = null) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
+			//using (var s = HibernateSession.GetCurrentSession()) {
+			//	using (var tx = s.BeginTransaction()) {
+            await SyncUtil.EnsureStrictlyAfter(caller,)
 					using (var rt = RealTimeUtility.Create(connectionId)) {
 						var perms = PermissionsUtility.Create(s, caller);
 						var rock = s.Get<RockModel>(rockId);

@@ -11,6 +11,7 @@ using NHibernate.Stat;
 using NHibernate.Type;
 using RadialReview.Utilities;
 using System.Threading.Tasks;
+using RadialReview.Models.Synchronize;
 
 namespace RadialReview.Utilities.NHibernate {
 	public static class AuditReaderExtensions {
@@ -19,7 +20,6 @@ namespace RadialReview.Utilities.NHibernate {
 				return ((SingleRequestSession)self).GetBackingSession().Auditer();
 			return self.Auditer();
 		}
-
 	}
 
 

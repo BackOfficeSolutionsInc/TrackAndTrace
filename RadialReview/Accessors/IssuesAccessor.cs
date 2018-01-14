@@ -25,6 +25,7 @@ using RadialReview.Models.Todo;
 using SpreadsheetLight;
 using static RadialReview.Accessors.IssuesAccessor;
 using RadialReview.Utilities.Synchronize;
+using RadialReview.Utilities.NHibernate;
 
 namespace RadialReview.Accessors {
 
@@ -267,19 +268,33 @@ namespace RadialReview.Accessors {
 		}
 
 		public static async Task EditIssue(UserOrganizationModel caller, long issueRecurrenceId, string message = null, bool? complete = null,
-			long? owner = null, int? priority = null, int? rank = null, bool? awaitingSolve = null,
-			DateTime? now = null) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var perms = PermissionsUtility.Create(s, caller);
-					await EditIssue(s, perms, issueRecurrenceId, message, complete, owner, priority, rank, awaitingSolve, now);
-					tx.Commit();
-					s.Flush();
-				}
-			}
+			long? owner = null, int? priority = null, int? rank = null, bool? awaitingSolve = null, DateTime? now = null) {
+			//using (var s = HibernateSession.GetCurrentSession()) {
+			//	using (var tx = s.BeginTransaction()) {
+            await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateIssueMessage(issueRecurrenceId),async s=>{
+                var perms = PermissionsUtility.Create(s, caller);
+                await EditIssue(s, perms, issueRecurrenceId, message, complete, owner, priority, rank, awaitingSolve, now);
+            });
+			//		tx.Commit();
+			//		s.Flush();
+			//	}
+			//}
 		}
-
-		public static async Task EditIssue(ISession s,PermissionsUtility perms, long issueRecurrenceId, string message=null,
+        /// <summary>
+        /// SyncAction.UpdateIssueMessage(issue.Issue.Id)
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="perms"></param>
+        /// <param name="issueRecurrenceId"></param>
+        /// <param name="message"></param>
+        /// <param name="complete"></param>
+        /// <param name="owner"></param>
+        /// <param name="priority"></param>
+        /// <param name="rank"></param>
+        /// <param name="awaitingSolve"></param>
+        /// <param name="now"></param>
+        /// <returns></returns>
+		public static async Task EditIssue(IOrderedSession s,PermissionsUtility perms, long issueRecurrenceId, string message=null,
 			bool? complete=null, long? owner=null, int? priority=null, int? rank=null, /*bool? delete=null,*/ bool? awaitingSolve=null,
 			DateTime? now = null) 
 		{
@@ -303,7 +318,7 @@ namespace RadialReview.Accessors {
 
 			//bool IsMessageChange = false;
 			if (message != null && message != issue.Issue.Message) {
-				SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateIssueMessage(issue.Issue.Id));
+				//SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateIssueMessage(issue.Issue.Id));
 				issue.Issue.Message = message;
 				updates.MessageChanged = true;
 				//	group.updateIssueMessage(issueRecurrenceId, message);

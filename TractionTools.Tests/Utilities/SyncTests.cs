@@ -6,10 +6,18 @@ using RadialReview.Utilities;
 using System.Linq;
 using RadialReview.Utilities.Synchronize;
 using RadialReview;
+using RadialReview.Models.Enums;
+using System.Threading.Tasks;
+using RadialReview.Models.Synchronize;
+using System.Data;
+using System.Diagnostics;
+using System.Threading;
+using TractionTools.Tests.TestUtils;
+using RadialReview.Exceptions;
 
 namespace TractionTools.Tests.Utilities {
     [TestClass]
-    public class SyncTests {
+    public class SyncTests : BaseTest {
 
         public class Request {
             public string Name { get; set; }
@@ -243,6 +251,242 @@ namespace TractionTools.Tests.Utilities {
             Assert.IsTrue(flat.Contains("CADB"));
         }
 
+        [TestMethod]
+        public async Task TestEnsureAfter() {
+            var org = await OrgUtil.CreateOrganization();
+
+            org.Manager.SetClientRequestId("REQUEST_ID_1");
+            org.Manager.SetClientTimeStamp(100);
+            await SyncUtil.EnsureStrictlyAfter(org.Manager, SyncAction.UpdateVto(1), async s => { });
+
+            try {
+                org.Manager.SetClientTimeStamp(99);
+                await SyncUtil.EnsureStrictlyAfter(org.Manager, SyncAction.UpdateVto(1), async s => { });
+                Assert.Fail();
+            } catch (SyncException) {
+                //Pass
+            } catch (Exception) {
+                Assert.Fail();
+            }
+
+            org.Manager.SetClientTimeStamp(101);
+            await SyncUtil.EnsureStrictlyAfter(org.Manager, SyncAction.UpdateVto(1), async s => { });
+
+            try {
+                //Same time stamp
+                org.Manager.SetClientTimeStamp(101);
+                await SyncUtil.EnsureStrictlyAfter(org.Manager, SyncAction.UpdateVto(1), async s => { });                
+                Assert.Fail();
+            } catch (SyncException) {
+                //Pass
+            } catch (Exception) {
+                Assert.Fail();
+            }
+
+            org.Manager.SetClientRequestId("REQUEST_ID_2");
+            org.Manager.SetClientTimeStamp(98);
+            await SyncUtil.EnsureStrictlyAfter(org.Manager, SyncAction.UpdateVto(1), async s => { });
+        }
+
+
+        [TestMethod]
+        public async Task DbLockingSmokeTest() {
+            var runNum = 0;
+            while (runNum < 1) {
+                var message = new List<string>();
+                var errors = new List<string>();
+                var count = 0;
+
+                Action timedOut = () => { };
+
+                try {
+                    int[] steps = null;
+                    int[] currentStep = null;
+                    string[] ordering = null;
+
+                    var stepIterator = new Action(async () => {
+                        lock (steps) {
+                            var cs = currentStep[0];
+                            if (cs >= ordering.Length)
+                                return;
+                            var o = ordering[cs];
+
+                            if ("ABCD".Contains(o))
+                                message.Add("\t" + o);
+                            else
+                                message.Add("\t\t" + o);
+
+                            switch (o) {
+                                case "A": steps[0] = 1; break;
+                                case "B": steps[0] = 2; break;
+                                case "C": steps[0] = 3; break;
+                                case "D": steps[0] = 4; break;
+                                case "E": steps[1] = 1; break;
+                                case "F": steps[1] = 2; break;
+                                case "G": steps[1] = 3; break;
+                                case "H": steps[1] = 4; break;
+                                default:
+                                    break;
+                            }
+                            currentStep[0] += 1;
+                        }
+                        await Task.Delay(20);
+                    });
+
+                    var waitForStep = new Action<int, int>((requestId, stepId) => {
+                        var tempTime = DateTime.UtcNow;
+                        while (steps[requestId] < stepId) {
+                            if (DateTime.UtcNow - tempTime > TimeSpan.FromMilliseconds(100)) {
+                                message.Add("\t\t\tInfo: Step " + stepId + " out of requested order for request " + requestId + ".");
+                                break;
+                            }
+                        }
+                    });
+
+                    var START_REQUEST = 1;
+                    var OPEN_DB = 2;
+                    var CLOSE_DB = 3;
+                    var END_REQUEST = 4;
+
+                    //var orderings = new List<string[]> { new string[] { "A", "E", "B", "F", "G", "C", "H", "D" } };
+                    var orderings = PermutationUtil.DualOrderdLists(new[] { "A", "B", "C", "D" }, new[] { "E", "F", "G", "H" });
+
+                    using (HibernateSession.ClearSessionFactory_Unsafe(Env.local_mysql)) {
+
+                        foreach (var o in orderings) {
+                            message.Add("STARTING - " + string.Join("", o));
+                            ordering = o.ToArray();
+                            steps = new[] { 0, 0 };
+                            currentStep = new[] { 0 };
+
+                            var semephoreOpen = new[] { false, false };
+
+
+                            //   A ========= B ----------- C ======== D
+                            //        E ======== F --- G ====== H
+                            var syncLockId = "TEST_" + Guid.NewGuid();
+
+                            //Remove session factory to ensure mysql db is used.
+                            //var i = 0;
+                            var requests = Enumerable.Range(0, 2).Select(i => new Action(async () => {
+                                try {
+                                    //Wait until request starts
+                                    waitForStep(i, START_REQUEST);
+                                    //Request is starting
+                                    //Request has started
+                                    stepIterator();
+                                    //while (steps[i] < OPEN_DB) { }
+                                    waitForStep(i, OPEN_DB);
+                                    //Database opening
+                                    var testHooks = new SyncUtil.TestHooks() {
+                                        AfterLock = () => {
+                                            if (semephoreOpen[(i + 1) % 2]) {
+                                                errors.Add("Error: " + string.Join("", o));
+                                                message.Add("\t\t\tDUEL SEMAPHORES ERROR");
+                                            }
+                                            message.Add("\t\t\tSEMAPHORE STARTED:" + i);
+                                            semephoreOpen[i] = true;
+                                        },
+                                        BeforeUnlock = () => {
+                                            message.Add("\t\t\tSEMAPHORE ENDING:" + i);
+                                            semephoreOpen[i] = false;
+                                        },
+                                        //LOGGING ONLY
+                                        BeforeLock = () => {
+                                            message.Add("\t\t\t\t\t\t\t\tSemaphore Starting:" + i + " (order doesn't matter)");
+                                        },
+                                        AfterUnlock = () => {
+                                            message.Add("\t\t\t\t\t\t\t\tSemaphore Ended:" + i + " (order doesn't matter)");
+                                        }
+                                    };
+                                    await SyncUtil.Lock(syncLockId, async (s, lck) => {
+                                        //Database is opened                   
+                                        stepIterator();
+                                        waitForStep(i, CLOSE_DB);
+
+                                    }, testHooks);
+                                    #region hide
+                                    //SyncUtil.GenerateSyncLock(syncLockId);
+                                    //using (var s = HibernateSession.GetCurrentSession()) {
+                                    //    using (var tx = s.BeginTransaction()) {
+
+                                    //        if (semephoreOpen[(i + 1) % 2]) {
+                                    //            errors.Add("Error: " + string.Join("", o));
+                                    //            message.Add("DUEL SEMAPHORES ERROR");
+                                    //        }
+                                    //        message.Add("\tSemaphore Start:" + i);
+                                    //        semephoreOpen[i] = true;
+                                    //        SyncUtil.Semaphore(s, syncLockId);
+
+                                    //        //Database is opened                   
+                                    //        stepIterator();
+                                    //        waitForStep(i, CLOSE_DB);
+                                    //        //var tempTime = DateTime.UtcNow;
+                                    //        //while (steps[i] < CLOSE_DB) {
+                                    //        //    if (DateTime.UtcNow - tempTime > TimeSpan.FromMilliseconds(100)) {
+                                    //        //        message.Add("Db closed out of requested order.");
+                                    //        //        break;
+                                    //        //    }
+                                    //        //}
+                                    //        //Database closeing
+                                    //        tx.Commit();
+                                    //        s.Flush();
+                                    //    }
+                                    //}
+                                    #endregion
+                                    //Database is closed
+                                    stepIterator();
+                                    waitForStep(i, END_REQUEST);
+                                    //while (steps[i] < END_REQUEST) { }
+                                    //Request is ending
+                                    //Request has ended
+                                    stepIterator();
+                                } catch (Exception e) {
+                                    message.Add("\t\t\tERROR: " + e.Message);
+                                }
+
+                            })).ToList();
+                            var cancel = new CancellationTokenSource();
+                            cancel.Token.ThrowIfCancellationRequested();
+                            await Task.WhenAny(Task.WhenAll(
+                                Task.Run(() => stepIterator(), cancel.Token),
+                                Task.Run(requests[0], cancel.Token),
+                                Task.Run(requests[1], cancel.Token)
+                                ), Task.Run(async () => {
+                                    await Task.Delay(20000);
+                                    if (!Debugger.IsAttached) {
+                                        timedOut = () => Assert.Fail("Timed out");
+                                        message.Add("TIMED OUT");
+                                        throw new Exception("Timed out.");
+                                        cancel.Cancel();
+                                    } else {
+                                        message.Add("TIMED OUT (Debugger)");
+                                        timedOut = () => Assert.Inconclusive("Timed out");
+
+                                    }
+                                }, cancel.Token)
+                            );
+                            if (cancel.Token.IsCancellationRequested)
+                                Assert.Fail();
+                            count++;
+                        }
+                    }
+                } finally {
+                    Console.WriteLine("Errors");
+                    Console.WriteLine(string.Join("\n", errors));
+                    Console.WriteLine("Messages");
+                    Console.WriteLine(string.Join("\n", message));
+                    Assert.IsTrue(!errors.Any(), "There were " + errors.Count + " errors.\n" + string.Join("\n", errors));
+                    timedOut();
+                }
+                runNum += 1;
+                Console.WriteLine("Run" + runNum);
+                Assert.AreEqual(0, errors.Count, "Run had errors");
+                Assert.AreEqual(70, count);
+
+            }
+        }
+
 
         [TestMethod]
         public void TestDualOrderedListLong() {
@@ -331,7 +575,7 @@ namespace TractionTools.Tests.Utilities {
             Assert.IsTrue(flat.Contains("EFABGCHD"));
             Assert.IsTrue(flat.Contains("AEFBGCHD"));
             Assert.IsTrue(flat.Contains("EAFBGCHD"));
-            
+
 
         }
     }

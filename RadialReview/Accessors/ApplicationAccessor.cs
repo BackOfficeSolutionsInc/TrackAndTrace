@@ -9,6 +9,7 @@ using RadialReview.Models.Enums;
 using RadialReview.Models.L10;
 using RadialReview.Models.Log;
 using RadialReview.Models.Responsibilities;
+using RadialReview.Models.Synchronize;
 using RadialReview.Models.Tasks;
 using RadialReview.Models.UserModels;
 using RadialReview.Utilities;
@@ -16,6 +17,7 @@ using RadialReview.Utilities.Productivity;
 using RadialReview.Utilities.Query;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -294,20 +296,28 @@ namespace RadialReview.Accessors
 					tx.Commit();
 					s.Flush();
 
-				}
-				using (var tx = s.BeginTransaction())
-				{
-					ConstructPhoneNumbers(s);
-					tx.Commit();
-					s.Flush();
+                }
+                using (var tx = s.BeginTransaction()) {
+                    ConstructPhoneNumbers(s);
+                    tx.Commit();
+                    s.Flush();
+                }
+                using (var tx = s.BeginTransaction(IsolationLevel.Serializable)) {
+                    var found = s.Get<SyncLock>(SyncLock.CREATE_KEY, LockMode.Upgrade);
+                    if (found == null) {
+                        s.Save(new SyncLock() {
+                            Id = SyncLock.CREATE_KEY
+                        });
+                    }
+                    tx.Commit();
+                    s.Flush();
+                }
 
-				}
-				
-                using (var tx = s.BeginTransaction())
-                {
+
+                // must be last
+                using (var tx = s.BeginTransaction()) {
                     var application = s.Get<ApplicationWideModel>(APPLICATION_ID);
-                    if (application == null)
-                    {
+                    if (application == null) {
                         s.Save(new ApplicationWideModel(APPLICATION_ID));
                         tx.Commit();
                         s.Flush();
@@ -315,7 +325,7 @@ namespace RadialReview.Accessors
                     }
                     return false;
                 }
-	           
+
 
             }
         }

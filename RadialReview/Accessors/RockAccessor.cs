@@ -34,6 +34,7 @@ using RadialReview.Utilities.Hooks;
 using RadialReview.Utilities.Synchronize;
 using System.Web.Mvc;
 using RadialReview.Models.ViewModels;
+using RadialReview.Utilities.NHibernate;
 
 namespace RadialReview.Accessors {
 	public class RockAndMilestones {
@@ -482,21 +483,24 @@ namespace RadialReview.Accessors {
 		}
 
 		public static async Task UpdateRock(UserOrganizationModel caller, long rockId, string message = null, long? ownerId = null, RockState? completion = null, DateTime? dueDate = null, DateTime? now = null) {
-			using (var s = HibernateSession.GetCurrentSession()) {
-				using (var tx = s.BeginTransaction()) {
-					var perms = PermissionsUtility.Create(s, caller);
-					await UpdateRock(s, perms, rockId, message, ownerId, completion, dueDate, DateTime.UtcNow);
-					tx.Commit();
-					s.Flush();
-				}
-			}
+            //using (var s = HibernateSession.GetCurrentSession()) {
+            //	using (var tx = s.BeginTransaction()) {
+            await SyncUtil.EnsureStrictlyAfter(caller, SyncAction.UpdateRockCompletion(rockId), async s => {
+                var perms = PermissionsUtility.Create(s, caller);
+                await UpdateRock(s, perms, rockId, message, ownerId, completion, dueDate, DateTime.UtcNow);
+            });
+					//tx.Commit();
+					//s.Flush();
+			//	}
+			//}
 		}
 
 
-		public static async Task UpdateRock(ISession s, PermissionsUtility perms, long rockId, string message = null, long? ownerId = null, RockState? completion = null, DateTime? dueDate = null, DateTime? now = null) {
+        //[Obsolete("Update for StrictlyAfter", true)]
+        //[Untested("StrictlyAfter")]
+        public static async Task UpdateRock(IOrderedSession s, PermissionsUtility perms, long rockId, string message = null, long? ownerId = null, RockState? completion = null, DateTime? dueDate = null, DateTime? now = null) {
 
-			SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateRockCompletion(rockId));
-
+            //SyncUtil.EnsureStrictlyAfter(perms.GetCaller(), s, SyncAction.UpdateRockCompletion(rockId));
 			perms.EditRock(rockId);
 			now = now ?? DateTime.UtcNow;
 

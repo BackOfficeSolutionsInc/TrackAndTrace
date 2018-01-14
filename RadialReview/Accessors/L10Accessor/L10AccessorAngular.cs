@@ -356,7 +356,7 @@ namespace RadialReview.Accessors {
 				await UpdateRecurrence(caller, m.Id, m.Name, m.TeamType, connectionId);
 			} else if (model.Type == typeof(AngularHeadline).Name) {
 				var m = (AngularHeadline)model;
-				await HeadlineAccessor.UpdateHeadline(caller, m.Id, m.Name, connectionId);
+				await HeadlineAccessor.UpdateHeadline(caller, m.Id, m.Name);
 			} else {
 				throw new PermissionsException("Unhandled type: " + model.Type);
 			}
