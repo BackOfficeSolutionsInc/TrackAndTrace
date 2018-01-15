@@ -68,7 +68,9 @@ namespace RadialReview.Areas.People.Accessors {
 		}
 
 		public static IEnumerable<ByAboutSurveyUserNode> AvailableByAboutsForMe(UserOrganizationModel caller, bool includeSelf = false, bool supervisorLMA = false) {
-			var allModels = new List<SurveyUserNode>();
+            log.Info("\tStart\tAvailableByAboutsForMe- " + DateTime.UtcNow.ToJsMs());
+
+            var allModels = new List<SurveyUserNode>();
 			var sunDict = new Dictionary<string, SurveyUserNode>();
 			var nodes = AccountabilityAccessor.GetNodesForUser(caller, caller.Id);
 			var possible = new List<ByAboutSurveyUserNode>();
@@ -105,8 +107,9 @@ namespace RadialReview.Areas.People.Accessors {
 				}
 				return new ByAboutSurveyUserNode(ba.First().By, ba.First().About, about);
 			});
+            log.Info("\t End  \tAvailableByAboutsForMe- " + DateTime.UtcNow.ToJsMs());
 
-			return combined.OrderBy(x => x.GetBy().ToPrettyString());
+            return combined.OrderBy(x => x.GetBy().ToPrettyString());
 		}
 
         public static async Task<int> RemindAllIncompleteSurveys(UserOrganizationModel caller, long surveyContainerId) {
@@ -193,8 +196,9 @@ namespace RadialReview.Areas.People.Accessors {
 		}
 
 		public static async Task<long> GenerateQuarterlyConversation(UserOrganizationModel caller, string name, IEnumerable<ByAboutSurveyUserNode> byAbout, DateRange quarterRange, DateTime dueDate, bool sendEmails) {
-
+            log.Info("Start\tQC Generator- " + DateTime.UtcNow.ToJsMs());
             try {
+
                 var possible = AvailableByAboutsForMe(caller, true, true);
                 var invalid = byAbout.Where(selected => possible.All(avail => avail.GetViewModelKey() != selected.GetViewModelKey()));
                 if (invalid.Any()) {
@@ -212,6 +216,7 @@ namespace RadialReview.Areas.People.Accessors {
                     using (var tx = s.BeginTransaction()) {
                         var perms = PermissionsUtility.Create(s, caller);
                         perms.CreateQuarterlyConversation(caller.Organization.Id);
+
                         qcResult = GenerateQuarterlyConversation_Unsafe(s, perms, name, populatedByAbouts, quarterRange, dueDate, sendEmails);
                         tx.Commit();
                         s.Flush();
@@ -220,14 +225,18 @@ namespace RadialReview.Areas.People.Accessors {
                 if (sendEmails) {
                     await Emailer.SendEmails(qcResult.UnsentEmail);
                 }
-			    return qcResult.SurveyContainerId;
+                log.Info("End  \tQC Generator- " + DateTime.UtcNow.ToJsMs());
+
+                return qcResult.SurveyContainerId;
             }catch(Exception e) {
                 throw e;
             }
 		}
 
 		public static QuarterlyConversationGeneration GenerateQuarterlyConversation_Unsafe(ISession s, PermissionsUtility perms, string name, IEnumerable<ByAboutSurveyUserNode> byAbout, DateRange quarterRange, DateTime dueDate, bool generateEmails) {
-			var caller = perms.GetCaller();
+            log.Info("\tStart\tGenerateQuarterlyConversation_Unsafe- " + DateTime.UtcNow.ToJsMs());
+
+            var caller = perms.GetCaller();
 
 			var reconstructed = byAbout.GroupBy(x => x.By.UserOrganizationId + "~" + x.About.ToViewModelKey())
                 .OrderBy(x=>x.First().AboutIsThe.NotNull(y=>y.Value.Order()))
@@ -306,8 +315,9 @@ namespace RadialReview.Areas.People.Accessors {
 				}
 				result.UnsentEmail = emails;
 			}
+            log.Info("\tEnd  \tGenerateQuarterlyConversation_Unsafe- " + DateTime.UtcNow.ToJsMs());
 
-			return result;
+            return result;
 		}
 
 		public static DefaultDictionary<string, string> TransformValueAnswer = new DefaultDictionary<string, string>(x => x);
