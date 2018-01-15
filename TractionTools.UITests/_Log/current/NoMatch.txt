@@ -1,9 +1,9 @@
-Chrome~Visual_CanCreateEval_2~_~Complete.png
+Chrome~Visual_CanCreateEval~_~Complete.png
 Chrome~Visual_CreateNoSupervisor_2~_~Complete.png
+Chrome~Visual_CreateNoSupervisor_2~_~CreateNoSupervisor_DropdownEmployee.png
 Chrome~Visual_CreateNoSupervisor_3~_~Complete.png
 Chrome~Visual_CreateSupervisor~_~CreateSupervisor_CreatingReview.png
+Chrome~Visual_CreateSupervisor~_~CreateSupervisor_Dropdown1.png
 Chrome~Visual_L10_Wizard_Attendees~_l10_wizard_{id}~Basics-Select.png
 Chrome~Visual_L10_Wizard_Attendees~_l10_wizard_{id}~Blank.png
 Chrome~Visual_L10_Wizard_Attendees~_l10_wizard_{id}~Complete.png
-Chrome~Visual_L10_Wizard_Issues~_l10_wizard_{id}~AfterAdd.png
-Chrome~Visual_L10_Wizard_Issues~_l10_wizard_{id}~BeforeAdd.png
