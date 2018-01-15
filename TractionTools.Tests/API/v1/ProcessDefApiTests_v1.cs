@@ -407,9 +407,10 @@ namespace TractionTools.Tests.Api {
 
         [TestMethod]
         [TestCategory("CoreProcess")]
-        public async Task TestWebhook() {
+        public async Task DISABLED_TestWebhook() {
 
             //var c = await Ctx.Build();
+            Assert.Inconclusive("Webhooks not setup");
 
             HooksRegistry.RegisterHook(new TodoWebhook());
 

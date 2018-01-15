@@ -177,7 +177,8 @@ namespace TractionTools.Tests.Accessors {
 				{
 					//var score = ScorecardAccessor.UpdateScoreInMeeting(r.Creator, r.Id, -1, week, m.Id, 101.5m, null, null);
 					MockNoSyncException();
-					var score = await ScorecardAccessor.UpdateScore(r.Creator, m.Id, week, 101.5m);
+                    r.Creator.IncrementClientTimestamp();
+                    var score = await ScorecardAccessor.UpdateScore(r.Creator, m.Id, week, 101.5m);
 
 					//frame.EnsureContainsAndClear(
 					////	"Score not found. Score below boundry. Creating scores down to value.",
@@ -195,8 +196,10 @@ namespace TractionTools.Tests.Accessors {
 
 				{
 					week = DateTime.UtcNow.AddDays(7 * 3);
-					//var score2 = ScorecardAccessor.UpdateScoreInMeeting(r.Creator, r.Id, -1, week, m.Id, 102, null, null);
-					var score2 = await ScorecardAccessor.UpdateScore(r.Creator, m.Id, week, 102);
+                    //var score2 = ScorecardAccessor.UpdateScoreInMeeting(r.Creator, r.Id, -1, week, m.Id, 102, null, null);
+                    r.Creator.IncrementClientTimestamp();
+
+                    var score2 = await ScorecardAccessor.UpdateScore(r.Creator, m.Id, week, 102);
 
 					//frame.EnsureContainsAndClear(
 					//	"Score not found. Score above boundry. Creating scores up to value.",
@@ -215,8 +218,10 @@ namespace TractionTools.Tests.Accessors {
 				{
 					week = DateTime.UtcNow.AddDays(-7 * 15);
 
-					//  var score3 = ScorecardAccessor.UpdateScoreInMeeting(r.Creator, r.Id, -1, week, m.Id, 1042, null, null);
-					var score3 = await ScorecardAccessor.UpdateScore(r.Creator, m.Id, week, 1042);
+                    r.Creator.IncrementClientTimestamp();
+                    
+                    //  var score3 = ScorecardAccessor.UpdateScoreInMeeting(r.Creator, r.Id, -1, week, m.Id, 1042, null, null);
+                    var score3 = await ScorecardAccessor.UpdateScore(r.Creator, m.Id, week, 1042);
 
 					//frame.EnsureContainsAndClear(
 					//	"Score not found. Score inside boundry. Creating score.",
@@ -236,10 +241,11 @@ namespace TractionTools.Tests.Accessors {
 				{
 					week = DateTime.UtcNow.AddDays(-7 * 15);
 
-					r.Creator._ClientTimestamp = DateTime.UtcNow.ToJavascriptMilliseconds();
+                    //r.Creator._ClientTimestamp = DateTime.UtcNow.ToJavascriptMilliseconds();
+                    r.Creator.IncrementClientTimestamp();
 
-					//var score4 = ScorecardAccessor.UpdateScoreInMeeting(r.Creator, r.Id, scoreId, week, m.Id, 333, null, null);
-					var score4 = await ScorecardAccessor.UpdateScore(r.Creator, scoreId, 333);
+                    //var score4 = ScorecardAccessor.UpdateScoreInMeeting(r.Creator, r.Id, scoreId, week, m.Id, 333, null, null);
+                    var score4 = await ScorecardAccessor.UpdateScore(r.Creator, scoreId, 333);
 
 					//frame.EnsureContainsAndClear("Found one or more score. Updating All.");
 					Assert.AreEqual(scoreId, score4.Id);
@@ -253,10 +259,6 @@ namespace TractionTools.Tests.Accessors {
 					Assert.AreEqual(r.Employee.Id, m.AdminUserId);
 				}
 			}
-
-
-
-
 		}
 	}
 }

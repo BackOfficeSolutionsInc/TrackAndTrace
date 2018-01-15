@@ -16,14 +16,14 @@ namespace TractionTools.UITests.Evals {
 
 		[TestMethod]
 		[TestCategory("Visual")]
-		public void ImageRegenerationIsFalse() {
+		public void Visual_ImageRegenerationIsFalse() {
 			Assert.IsFalse(Config.GetAppSetting("RegenerateImages", "false").ToBooleanJS(),"Turn off RegenerateImages in the app.config. All visual tests are incorrect until you do.");
 		}
 
 
 		[TestMethod]
 		[TestCategory("Visual")]
-		public async Task CanCreateEval() {
+		public async Task Visual_CanCreateEval() {
 			var testId = Guid.NewGuid();
 			//var AUC = await GetAdminCredentials(testId);
 			var AUC = await GetAdminCredentials(testId);
@@ -51,7 +51,7 @@ namespace TractionTools.UITests.Evals {
 
 		[TestMethod]
 		[TestCategory("Visual")]
-		public async Task CreateNoSupervisor() {
+		public async Task Visual_CreateNoSupervisor() {
 			var testId = Guid.NewGuid();
 			//var AUC = await GetAdminCredentials(testId);
 			var AUC = await GetAdminCredentials(testId);
@@ -146,7 +146,7 @@ namespace TractionTools.UITests.Evals {
 
 		[TestMethod]
 		[TestCategory("Visual")]
-		public async Task CreateSupervisor() {
+		public async Task Visual_CreateSupervisor() {
 			var testId = Guid.NewGuid();
 			//var AUC = await GetAdminCredentials(testId);
 			var AUC = await GetAdminCredentials(testId);

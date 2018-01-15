@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.Threading;
 using TractionTools.Tests.TestUtils;
 using RadialReview.Exceptions;
+using TractionTools.Tests.Startup;
 
 namespace TractionTools.Tests.Utilities {
     [TestClass]
@@ -117,71 +118,71 @@ namespace TractionTools.Tests.Utilities {
                 return builder.Trim();
             }
 
-          /*  public void EnsureAlwaysOrdered() {
-                var count = 0;
-                var userId = 1;
+            /*  public void EnsureAlwaysOrdered() {
+                  var count = 0;
+                  var userId = 1;
 
-                var requestsOrderedByClientSend = Requests.OrderBy(x => x.ClientTimestamp).Select(x => x.Name).ToList();
-
-
-                //Server receives requests out of order
-                var requestOrders = Requests.Permutate().ToList();
-                var serverSelections = ServerSelections();
-
-                if (!requestOrders.Any())
-                    Assert.Fail("No request orders. Did you register any requests?");
-                if (!serverSelections.Any())
-                    Assert.Fail("No server selections. Did you register any servers?");
-
-                //Try all the different orders that requests could be received...
-                foreach (var ro in requestOrders) {
-                    var requestOrder = ro.ToList();
-                    //at all the different server end points
-                    foreach (var serverSelection in serverSelections) {
-                        userId += 1;
-                        var remainingRequests = requestsOrderedByClientSend.ToList();
-
-                        using (var s = HibernateSession.GetCurrentSession()) {
-                            using (var tx = s.BeginTransaction()) {
-                                //Make all requests
-                                for (var i = 0; i < requestOrder.Count; i++) {
-                                    //Match request with server
-                                    var request = requestOrder[i];
-                                    var server = serverSelection[i];
-                                    var serverTime = request.ClientTimestamp + request.FulfilmentTime + server.OffsetFromClient;
-
-                                    var isAfter = SyncUtil.IsStrictlyAfter(s, "_action_name_", request.ClientTimestamp.ToJavascriptMilliseconds(), userId, serverTime, BufferTime);
-
-                                    if (isAfter == false) {
-                                        if (remainingRequests.Contains(request.Name))
-                                            Assert.Fail("Request should have been allowed. " + MakeError(requestOrder, serverSelection));
-                                    } else {
-                                        if (!remainingRequests.Contains(request.Name))
-                                            Assert.Fail("Request should not have been allowed. " + MakeError(requestOrder, serverSelection));
-                                    }
-
-                                    //remove requests that happened before me...
-                                    var tempRemaining = new List<string>();
-                                    for (var j = remainingRequests.Count - 1; j >= 0; j--) {
-                                        if (remainingRequests[j] == request.Name)
-                                            break;
-                                        tempRemaining.Insert(0, remainingRequests[j]);
-                                    }
-                                    remainingRequests = tempRemaining;
+                  var requestsOrderedByClientSend = Requests.OrderBy(x => x.ClientTimestamp).Select(x => x.Name).ToList();
 
 
-                                }
-                                tx.Commit();
-                                s.Flush();
-                                count += 1;
+                  //Server receives requests out of order
+                  var requestOrders = Requests.Permutate().ToList();
+                  var serverSelections = ServerSelections();
 
-                            }
-                        }
-                    }
-                }
+                  if (!requestOrders.Any())
+                      Assert.Fail("No request orders. Did you register any requests?");
+                  if (!serverSelections.Any())
+                      Assert.Fail("No server selections. Did you register any servers?");
 
-                Console.WriteLine("Number of combinations tested:" + count + "!");
-            }*/
+                  //Try all the different orders that requests could be received...
+                  foreach (var ro in requestOrders) {
+                      var requestOrder = ro.ToList();
+                      //at all the different server end points
+                      foreach (var serverSelection in serverSelections) {
+                          userId += 1;
+                          var remainingRequests = requestsOrderedByClientSend.ToList();
+
+                          using (var s = HibernateSession.GetCurrentSession()) {
+                              using (var tx = s.BeginTransaction()) {
+                                  //Make all requests
+                                  for (var i = 0; i < requestOrder.Count; i++) {
+                                      //Match request with server
+                                      var request = requestOrder[i];
+                                      var server = serverSelection[i];
+                                      var serverTime = request.ClientTimestamp + request.FulfilmentTime + server.OffsetFromClient;
+
+                                      var isAfter = SyncUtil.IsStrictlyAfter(s, "_action_name_", request.ClientTimestamp.ToJavascriptMilliseconds(), userId, serverTime, BufferTime);
+
+                                      if (isAfter == false) {
+                                          if (remainingRequests.Contains(request.Name))
+                                              Assert.Fail("Request should have been allowed. " + MakeError(requestOrder, serverSelection));
+                                      } else {
+                                          if (!remainingRequests.Contains(request.Name))
+                                              Assert.Fail("Request should not have been allowed. " + MakeError(requestOrder, serverSelection));
+                                      }
+
+                                      //remove requests that happened before me...
+                                      var tempRemaining = new List<string>();
+                                      for (var j = remainingRequests.Count - 1; j >= 0; j--) {
+                                          if (remainingRequests[j] == request.Name)
+                                              break;
+                                          tempRemaining.Insert(0, remainingRequests[j]);
+                                      }
+                                      remainingRequests = tempRemaining;
+
+
+                                  }
+                                  tx.Commit();
+                                  s.Flush();
+                                  count += 1;
+
+                              }
+                          }
+                      }
+                  }
+
+                  Console.WriteLine("Number of combinations tested:" + count + "!");
+              }*/
         }
 
         //[TestMethod]
@@ -253,105 +254,108 @@ namespace TractionTools.Tests.Utilities {
 
         [TestMethod]
         public async Task TestEnsureAfter() {
-            var org = await OrgUtil.CreateOrganization();
-
-            org.Manager.SetClientRequestId("REQUEST_ID_1");
-            org.Manager.SetClientTimeStamp(100);
-            await SyncUtil.EnsureStrictlyAfter(org.Manager, SyncAction.UpdateVto(1), async s => { });
-
-            try {
-                org.Manager.SetClientTimeStamp(99);
+            using (HibernateSession.SetDatabaseEnv_TestOnly(Env.local_mysql)) {
+                var org = await OrgUtil.CreateOrganization();
+                var now = DateTime.UtcNow.ToJsMs();
+                org.Manager.SetClientRequestId("REQUEST_ID_1");
+                org.Manager.SetClientTimeStamp(now+100);
                 await SyncUtil.EnsureStrictlyAfter(org.Manager, SyncAction.UpdateVto(1), async s => { });
-                Assert.Fail();
-            } catch (SyncException) {
-                //Pass
-            } catch (Exception) {
-                Assert.Fail();
+
+                try {
+                    org.Manager.SetClientTimeStamp(now + 99);
+                    await SyncUtil.EnsureStrictlyAfter(org.Manager, SyncAction.UpdateVto(1), async s => { });
+                    Assert.Fail();
+                } catch (SyncException) {
+                    //Pass
+                } catch (Exception) {
+                    Assert.Fail();
+                }
+
+                org.Manager.SetClientTimeStamp(now + 101);
+                await SyncUtil.EnsureStrictlyAfter(org.Manager, SyncAction.UpdateVto(1), async s => { });
+
+                try {
+                    //Same time stamp
+                    org.Manager.SetClientTimeStamp(now + 101);
+                    await SyncUtil.EnsureStrictlyAfter(org.Manager, SyncAction.UpdateVto(1), async s => { });
+                    Assert.Fail();
+                } catch (SyncException) {
+                    //Pass
+                } catch (Exception) {
+                    Assert.Fail();
+                }
+
+                org.Manager.SetClientRequestId("REQUEST_ID_2");
+                org.Manager.SetClientTimeStamp(now + 98);
+                await SyncUtil.EnsureStrictlyAfter(org.Manager, SyncAction.UpdateVto(1), async s => { });
             }
-
-            org.Manager.SetClientTimeStamp(101);
-            await SyncUtil.EnsureStrictlyAfter(org.Manager, SyncAction.UpdateVto(1), async s => { });
-
-            try {
-                //Same time stamp
-                org.Manager.SetClientTimeStamp(101);
-                await SyncUtil.EnsureStrictlyAfter(org.Manager, SyncAction.UpdateVto(1), async s => { });                
-                Assert.Fail();
-            } catch (SyncException) {
-                //Pass
-            } catch (Exception) {
-                Assert.Fail();
-            }
-
-            org.Manager.SetClientRequestId("REQUEST_ID_2");
-            org.Manager.SetClientTimeStamp(98);
-            await SyncUtil.EnsureStrictlyAfter(org.Manager, SyncAction.UpdateVto(1), async s => { });
         }
 
 
         [TestMethod]
         public async Task DbLockingSmokeTest() {
-            var runNum = 0;
-            while (runNum < 1) {
-                var message = new List<string>();
-                var errors = new List<string>();
-                var count = 0;
 
-                Action timedOut = () => { };
+            using (HibernateSession.SetDatabaseEnv_TestOnly(Env.local_mysql)) {
+                var runNum = 0;
+                while (runNum < 1) {
+                    var message = new List<string>();
+                    var errors = new List<string>();
+                    var count = 0;
 
-                try {
-                    int[] steps = null;
-                    int[] currentStep = null;
-                    string[] ordering = null;
+                    Action timedOut = () => { };
 
-                    var stepIterator = new Action(async () => {
-                        lock (steps) {
-                            var cs = currentStep[0];
-                            if (cs >= ordering.Length)
-                                return;
-                            var o = ordering[cs];
+                    try {
+                        int[] steps = null;
+                        int[] currentStep = null;
+                        string[] ordering = null;
 
-                            if ("ABCD".Contains(o))
-                                message.Add("\t" + o);
-                            else
-                                message.Add("\t\t" + o);
+                        var stepIterator = new Action(async () => {
+                            lock (steps) {
+                                var cs = currentStep[0];
+                                if (cs >= ordering.Length)
+                                    return;
+                                var o = ordering[cs];
 
-                            switch (o) {
-                                case "A": steps[0] = 1; break;
-                                case "B": steps[0] = 2; break;
-                                case "C": steps[0] = 3; break;
-                                case "D": steps[0] = 4; break;
-                                case "E": steps[1] = 1; break;
-                                case "F": steps[1] = 2; break;
-                                case "G": steps[1] = 3; break;
-                                case "H": steps[1] = 4; break;
-                                default:
+                                if ("ABCD".Contains(o))
+                                    message.Add("\t" + o);
+                                else
+                                    message.Add("\t\t" + o);
+
+                                switch (o) {
+                                    case "A": steps[0] = 1; break;
+                                    case "B": steps[0] = 2; break;
+                                    case "C": steps[0] = 3; break;
+                                    case "D": steps[0] = 4; break;
+                                    case "E": steps[1] = 1; break;
+                                    case "F": steps[1] = 2; break;
+                                    case "G": steps[1] = 3; break;
+                                    case "H": steps[1] = 4; break;
+                                    default:
+                                        break;
+                                }
+                                currentStep[0] += 1;
+                            }
+                            await Task.Delay(20);
+                        });
+
+                        var waitForStep = new Action<int, int>((requestId, stepId) => {
+                            var tempTime = DateTime.UtcNow;
+                            while (steps[requestId] < stepId) {
+                                if (DateTime.UtcNow - tempTime > TimeSpan.FromMilliseconds(100)) {
+                                    message.Add("\t\t\tInfo: Step " + stepId + " out of requested order for request " + requestId + ".");
                                     break;
+                                }
                             }
-                            currentStep[0] += 1;
-                        }
-                        await Task.Delay(20);
-                    });
+                        });
 
-                    var waitForStep = new Action<int, int>((requestId, stepId) => {
-                        var tempTime = DateTime.UtcNow;
-                        while (steps[requestId] < stepId) {
-                            if (DateTime.UtcNow - tempTime > TimeSpan.FromMilliseconds(100)) {
-                                message.Add("\t\t\tInfo: Step " + stepId + " out of requested order for request " + requestId + ".");
-                                break;
-                            }
-                        }
-                    });
+                        var START_REQUEST = 1;
+                        var OPEN_DB = 2;
+                        var CLOSE_DB = 3;
+                        var END_REQUEST = 4;
 
-                    var START_REQUEST = 1;
-                    var OPEN_DB = 2;
-                    var CLOSE_DB = 3;
-                    var END_REQUEST = 4;
+                        //var orderings = new List<string[]> { new string[] { "A", "E", "B", "F", "G", "C", "H", "D" } };
+                        var orderings = PermutationUtil.DualOrderdLists(new[] { "A", "B", "C", "D" }, new[] { "E", "F", "G", "H" });
 
-                    //var orderings = new List<string[]> { new string[] { "A", "E", "B", "F", "G", "C", "H", "D" } };
-                    var orderings = PermutationUtil.DualOrderdLists(new[] { "A", "B", "C", "D" }, new[] { "E", "F", "G", "H" });
-
-                    using (HibernateSession.ClearSessionFactory_Unsafe(Env.local_mysql)) {
 
                         foreach (var o in orderings) {
                             message.Add("STARTING - " + string.Join("", o));
@@ -399,7 +403,7 @@ namespace TractionTools.Tests.Utilities {
                                             message.Add("\t\t\t\t\t\t\t\tSemaphore Ended:" + i + " (order doesn't matter)");
                                         }
                                     };
-                                    await SyncUtil.Lock(syncLockId,null, async (s, lck) => {
+                                    await SyncUtil.Lock(syncLockId, null, async (s, lck) => {
                                         //Database is opened                   
                                         stepIterator();
                                         waitForStep(i, CLOSE_DB);
@@ -470,20 +474,21 @@ namespace TractionTools.Tests.Utilities {
                                 Assert.Fail();
                             count++;
                         }
-                    }
-                } finally {
-                    Console.WriteLine("Errors");
-                    Console.WriteLine(string.Join("\n", errors));
-                    Console.WriteLine("Messages");
-                    Console.WriteLine(string.Join("\n", message));
-                    Assert.IsTrue(!errors.Any(), "There were " + errors.Count + " errors.\n" + string.Join("\n", errors));
-                    timedOut();
-                }
-                runNum += 1;
-                Console.WriteLine("Run" + runNum);
-                Assert.AreEqual(0, errors.Count, "Run had errors");
-                Assert.AreEqual(70, count);
 
+                    } finally {
+                        Console.WriteLine("Errors");
+                        Console.WriteLine(string.Join("\n", errors));
+                        Console.WriteLine("Messages");
+                        Console.WriteLine(string.Join("\n", message));
+                        Assert.IsTrue(!errors.Any(), "There were " + errors.Count + " errors.\n" + string.Join("\n", errors));
+                        timedOut();
+                    }
+                    runNum += 1;
+                    Console.WriteLine("Run" + runNum);
+                    Assert.AreEqual(0, errors.Count, "Run had errors");
+                    Assert.AreEqual(70, count);
+
+                }
             }
         }
 

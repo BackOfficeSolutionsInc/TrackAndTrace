@@ -61,6 +61,9 @@ namespace RadialReview.Models
         public virtual void SetClientTimeStamp(long timestamp) {
             _ClientTimestamp = timestamp;
         }
+        public virtual void IncrementClientTimestamp() {
+            _ClientTimestamp = (_ClientTimestamp ?? DateTime.UtcNow.ToJsMs()) + 1;
+        }
 
         public virtual string _ClientRequestId { get; set; }
         public virtual long? _ClientTimestamp { get; set; }

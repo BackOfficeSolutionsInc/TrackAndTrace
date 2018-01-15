@@ -249,25 +249,25 @@ namespace TractionTools.Tests.PeopleTools {
 
         }
 
-        [TestMethod]
-        [TestCategory("Survey")]
-        public void GuessRocks() {
-            var l = new DateTime(2017, 3, 1);
-            var n = new DateTime(2017, 6, 1);
+        //[TestMethod]
+        //[TestCategory("Survey")]
+        //public void GuessRocks() {
+        //    var l = new DateTime(2017, 3, 1);
+        //    var n = new DateTime(2017, 6, 1);
 
-            var dates = new[] {
-                l.AddDays(3), l.AddDays(4), l.AddDays(2), l.AddDays(6), l.AddDays(4),
-                n.AddDays(3), n.AddDays(4), n.AddDays(2), n.AddDays(6), n.AddDays(4),
-            };
+        //    var dates = new[] {
+        //        l.AddDays(3), l.AddDays(4), l.AddDays(2), l.AddDays(6), l.AddDays(4),
+        //        n.AddDays(3), n.AddDays(4), n.AddDays(2), n.AddDays(6), n.AddDays(4),
+        //    };
 
-            DbCommit(s => {
+        //    DbCommit(s => {
 
-            });
+        //    });
 
 
-            Assert.Inconclusive("Not finished");
+        //    Assert.Inconclusive("Not finished");
 
-        }
+        //}
 
     }
 }

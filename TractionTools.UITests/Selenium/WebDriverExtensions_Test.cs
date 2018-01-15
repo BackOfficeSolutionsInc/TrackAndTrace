@@ -22,7 +22,7 @@ namespace TractionTools.UITests.Selenium {
 
         [TestMethod]
 		[TestCategory("Visual")]
-		public void WebDriver_Matches(){
+		public void Visual_WebDriver_Matches(){
             Assert.IsTrue(driver.FindElement(By.Id("hnmain")).Matches(By.Id("hnmain")));
             Assert.IsFalse(driver.FindElement(By.Id("hnmain")).Matches(By.Id("hnmai")));
             Assert.IsTrue(driver.FindElement(By.Id("hnmain")).Matches(By.TagName("table")));
@@ -35,14 +35,14 @@ namespace TractionTools.UITests.Selenium {
 
         [TestMethod]
 		[TestCategory("Visual")]
-		public void WebDriver_Parent(){
+		public void Visual_WebDriver_Parent(){
             Assert.IsTrue(driver.FindElement(By.ClassName("hnname")).Parent().Matches(By.ClassName("pagetop")));
             Assert.IsTrue(driver.FindElement(By.Id("hnmain")).Parent().Matches(By.TagName("center")));
         }
 
         [TestMethod]
 		[TestCategory("Visual")]
-		public void WebDriver_Closest(){
+		public void Visual_WebDriver_Closest(){
             Assert.IsTrue(driver.FindElement(By.ClassName("itemlist")).Closest(By.TagName("table")).Matches(By.Id("hnmain")));
             Throws<NoSuchElementException>(() => driver.FindElement(By.ClassName("itemlist")).Closest(By.TagName("span")));
 
