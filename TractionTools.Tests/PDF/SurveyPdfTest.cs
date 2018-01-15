@@ -29,6 +29,7 @@ using MigraDoc.DocumentObjectModel;
 using MigraDoc.Rendering;
 using System.Threading.Tasks;
 using RadialReview.Utilities;
+using RadialReview.Utilities.DataTypes;
 
 namespace TractionTools.Tests.PDF {
 	[TestClass]
@@ -225,7 +226,7 @@ mug disrupt wayfarers ethical cloud bread viral cornhole skateboard ";
 			ConstructSurveyEnv(c.Org);
 			long surveyContainerId=0;
 			DbCommit(s => {
-				var result = QuarterlyConversationAccessor.GenerateQuarterlyConversation_Unsafe(s, PermissionsUtility.Create(s,c.Middle), "Test", byAbouts, DateTime.MaxValue, false);
+				var result = QuarterlyConversationAccessor.GenerateQuarterlyConversation_Unsafe(s, PermissionsUtility.Create(s,c.Middle), "Test", byAbouts, new DateRange(), DateTime.MaxValue, false);
 				surveyContainerId = result.SurveyContainerId;
 			});
 			

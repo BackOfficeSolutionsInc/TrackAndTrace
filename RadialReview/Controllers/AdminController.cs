@@ -730,79 +730,84 @@ namespace RadialReview.Controllers {
 
 
 
-		//[Access(AccessLevel.Radial)]
-		//public ActionResult AllLT() {
-		//	using (var s = HibernateSession.GetCurrentSession()) {
-		//		using (var tx = s.BeginTransaction()) {
+        //[Access(AccessLevel.Radial)]
+        //public ActionResult AllLT() {
+        //	using (var s = HibernateSession.GetCurrentSession()) {
+        //		using (var tx = s.BeginTransaction()) {
 
-		//			var charts = s.QueryOver<AccountabilityChart>().Where(x => x.DeleteTime == null).Future();
-		//			var allOrgsF = s.QueryOver<OrganizationModel>().Select(x => x.Id, x => x.Name.Id, x => x.DeleteTime, x => x.CreationTime, x => x.AccountType).Future<object[]>();
-		//			var localizedStringF = s.QueryOver<LocalizedStringModel>().Select(x => x.Id, x => x.Standard).Future<object[]>();
-		//			var charts = s.QueryOver<AccountabilityChart>().Where(x => x.DeleteTime == null).Future();
-		//			var nodes = s.QueryOver<AccountabilityNode>().Where(x => x.DeleteTime == null).List().ToList();
+        //			var charts = s.QueryOver<AccountabilityChart>().Where(x => x.DeleteTime == null).Future();
+        //			var allOrgsF = s.QueryOver<OrganizationModel>().Select(x => x.Id, x => x.Name.Id, x => x.DeleteTime, x => x.CreationTime, x => x.AccountType).Future<object[]>();
+        //			var localizedStringF = s.QueryOver<LocalizedStringModel>().Select(x => x.Id, x => x.Standard).Future<object[]>();
+        //			var charts = s.QueryOver<AccountabilityChart>().Where(x => x.DeleteTime == null).Future();
+        //			var nodes = s.QueryOver<AccountabilityNode>().Where(x => x.DeleteTime == null).List().ToList();
 
-		//			var allUsersF = s.QueryOver<UserLookup>().Where(x => x.DeleteTime == null && x.HasJoined).Future();
+        //			var allUsersF = s.QueryOver<UserLookup>().Where(x => x.DeleteTime == null && x.HasJoined).Future();
 
-		//			var allUsers = allUsersF.ToList();
-		//			var allLocalizedStrings = localizedStringF.Select(x => new {
-		//				Id = (long)x[0],
-		//				Name = (string)x[1]
-		//			}).ToDictionary(x => x.Id, x => x.Name);
-
-
-		//			var allOrgs = allOrgsF.Select(x => new {
-		//				Id = (long)x[0],
-		//				NameId = (long)x[1],
-		//				Name = (string)allLocalizedStrings.GetOrDefault((long)x[1], ""),
-		//				DeleteTime = (DateTime?)x[2],
-		//				CreateTime = (DateTime)x[3],
-		//				AccountType = (AccountType)x[4],
-		//			}).ToDictionary(x => x.Id, x => x);			
-
-		//			var items = allUsers.Select(x => {
-		//				var org = allOrgs.GetOrDefault(x.OrganizationId, null);
-		//				if (org.DeleteTime != null)
-		//					return null;
-		//				return new AllUserEmail() {
-		//					UserName = x.Name,
-		//					UserEmail = x.Email,
-		//					UserId = x.UserId,
-		//					OrgId = x.OrganizationId,
-		//					OrgName = org.NotNull(y => y.Name),
-		//					AccountType = "" + org.NotNull(y => y.AccountType),
-		//					OrgCreateTime = org.NotNull(y => y.CreateTime),
-		//					UserCreateTime = x.CreateTime
-
-		//				};
-		//			}).Where(x => x != null).ToList();
-
-		//			var csv = new Csv();
-		//			csv.Title = "UserId";
-		//			foreach (var o in items) {
-		//				csv.Add("" + o.UserId, "UserName", o.UserName);
-		//				csv.Add("" + o.UserId, "UserEmail", o.UserEmail);
-		//				csv.Add("" + o.UserId, "OrgName", o.OrgName);
-		//				csv.Add("" + o.UserId, "UserId", "" + o.UserId);
-		//				csv.Add("" + o.UserId, "OrgId", "" + o.OrgId);
-		//				csv.Add("" + o.UserId, "UserCreateTime", "" + o.UserCreateTime);
-		//				csv.Add("" + o.UserId, "AccountType", o.AccountType);
-		//				csv.Add("" + o.UserId, "OrgCreateTime", "" + o.OrgCreateTime);
-		//			}
-
-		//			return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllValidUsers.csv");
+        //			var allUsers = allUsersF.ToList();
+        //			var allLocalizedStrings = localizedStringF.Select(x => new {
+        //				Id = (long)x[0],
+        //				Name = (string)x[1]
+        //			}).ToDictionary(x => x.Id, x => x.Name);
 
 
-		//		}
-		//	}
-		//}
+        //			var allOrgs = allOrgsF.Select(x => new {
+        //				Id = (long)x[0],
+        //				NameId = (long)x[1],
+        //				Name = (string)allLocalizedStrings.GetOrDefault((long)x[1], ""),
+        //				DeleteTime = (DateTime?)x[2],
+        //				CreateTime = (DateTime)x[3],
+        //				AccountType = (AccountType)x[4],
+        //			}).ToDictionary(x => x.Id, x => x);			
+
+        //			var items = allUsers.Select(x => {
+        //				var org = allOrgs.GetOrDefault(x.OrganizationId, null);
+        //				if (org.DeleteTime != null)
+        //					return null;
+        //				return new AllUserEmail() {
+        //					UserName = x.Name,
+        //					UserEmail = x.Email,
+        //					UserId = x.UserId,
+        //					OrgId = x.OrganizationId,
+        //					OrgName = org.NotNull(y => y.Name),
+        //					AccountType = "" + org.NotNull(y => y.AccountType),
+        //					OrgCreateTime = org.NotNull(y => y.CreateTime),
+        //					UserCreateTime = x.CreateTime
+
+        //				};
+        //			}).Where(x => x != null).ToList();
+
+        //			var csv = new Csv();
+        //			csv.Title = "UserId";
+        //			foreach (var o in items) {
+        //				csv.Add("" + o.UserId, "UserName", o.UserName);
+        //				csv.Add("" + o.UserId, "UserEmail", o.UserEmail);
+        //				csv.Add("" + o.UserId, "OrgName", o.OrgName);
+        //				csv.Add("" + o.UserId, "UserId", "" + o.UserId);
+        //				csv.Add("" + o.UserId, "OrgId", "" + o.OrgId);
+        //				csv.Add("" + o.UserId, "UserCreateTime", "" + o.UserCreateTime);
+        //				csv.Add("" + o.UserId, "AccountType", o.AccountType);
+        //				csv.Add("" + o.UserId, "OrgCreateTime", "" + o.OrgCreateTime);
+        //			}
+
+        //			return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllValidUsers.csv");
 
 
+        //		}
+        //	}
+        //}
 
 
 
 
+        [Access(AccessLevel.Radial)]
+        public async Task<JsonResult> Notify(long userId, string message,string details = null,bool sensitive = true,string imageUrl = null) {
+            var n = await NotificationAccessor.CreateNotification_Unsafe(NotifcationCreation.Build(userId, message, details, sensitive, imageUrl), true);
+            return Json(n, JsonRequestBehavior.AllowGet);
+        }
 
-		[Access(AccessLevel.UserOrganization)]
+
+
+        [Access(AccessLevel.UserOrganization)]
 		public async Task<ActionResult> ResetDemo(long recurId = 1) {
 
 			if (GetUser().Id == 600 || GetUser().IsRadialAdmin || GetUser().User.IsRadialAdmin) {
@@ -1065,7 +1070,7 @@ namespace RadialReview.Controllers {
 		}
 
 
-		[Access(AccessLevel.Radial)]
+        [Access(AccessLevel.Radial)]
 		[OutputCache(NoStore = true, Duration = 0, VaryByParam = "None")]
 
 		public ActionResult FixEmail() {

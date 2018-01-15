@@ -1725,7 +1725,8 @@ namespace RadialReview.Utilities {
             ViewSurveyContainer(survey.SurveyContainerId);
             return CanView(PermItem.ResourceType.Survey, surveyId);
         }
-        public PermissionsUtility ViewSurveyResultsAbout(IForModel about, long orgId) {
+        public PermissionsUtility ViewSurveyResultsAbout(IForModel about) {
+            var orgId = ForModelAccessor.GetOrganizationId(session,about);
             var allowSelf = (IsManager(orgId));
             return ManagesForModel(about, !allowSelf);
         }
@@ -1760,6 +1761,8 @@ namespace RadialReview.Utilities {
             }
             throw new PermissionsException("Unknown 'by' type");
         }
+
+           
 
         #endregion
 
@@ -2245,10 +2248,13 @@ namespace RadialReview.Utilities {
             throw new PermissionsException();
         }
 
+        
         public PermissionsUtility Self(long userId) {
             if (IsRadialAdmin(caller))
                 return this;
             if (userId == caller.Id)
+                return this;
+            if (caller.UserIds !=null && caller.UserIds.Any(x => x == userId))
                 return this;
             throw new PermissionsException();
         }

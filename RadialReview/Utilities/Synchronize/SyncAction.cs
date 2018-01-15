@@ -20,8 +20,8 @@ namespace RadialReview.Utilities.Synchronize
 		public static SyncAction MeasurableReorder(long recurrenceId){
 			return new SyncAction("MsReord_" + recurrenceId);
 		}
-		public static SyncAction UpdateScore(long scoreId){
-			return new SyncAction("ScVal_" + scoreId);
+		public static SyncAction UpdateScore(long scoreId,DateTime week,long measurableId){
+			return new SyncAction("ScVal_" + scoreId+"_"+week.ToJsMs()+"_"+measurableId);
 		}
 		public static SyncAction UpdateIssueMessage(long issueId){
 			return new SyncAction("IsMsg_" + issueId);

@@ -198,9 +198,11 @@ namespace RadialReview.Accessors {
 							IsDivider = true,
 							Weeks = weeks
 						});
-						row.ViewData["row"] = rowId - 1;
 
-						var first = row.Execute();
+
+                        row.ViewData["row"] = rowId - 1;
+
+                        var first = row.Execute();
 						row.ViewData["ShowRow"] = false;
 						var second = row.Execute();
 						group.addMeasurable(first, second);
@@ -411,6 +413,10 @@ namespace RadialReview.Accessors {
 								var u1 = a.Measurable.AdminUser.GetName();
 								var v1 = a.Measurable.AdminUser.ImageUrl(true);
 							}
+
+                            if (a.Measurable.HasFormula)
+                                a._Editable = false;
+
 						}
 						if (a.AccountableUser != null) {
 							var j = a.AccountableUser.GetName();
@@ -737,7 +743,7 @@ namespace RadialReview.Accessors {
 		public static void _RecalculateCumulative_Unsafe(ISession s, RealTimeUtility rt, List<MeasurableModel> measurables, List<L10Recurrence> recurs, ScoreModel updatedScore = null, bool forceNoSkip = true) {
 			var cumulativeByMeasurable = new Dictionary<long, IEnumerable<object[]>>();
 			//Grab Cumulative Values
-			foreach (var mm in measurables.Where(x => x.ShowCumulative && x.Id > 0).Distinct(x => x.Id)) {
+			foreach (var mm in measurables.Where(x => x.ShowCumulative && x.Id > 0 && x.CumulativeRange.HasValue).Distinct(x => x.Id)) {
 				cumulativeByMeasurable[mm.Id] = s.QueryOver<ScoreModel>()
 				.Where(x => x.MeasurableId == mm.Id && x.DeleteTime == null && x.Measured != null && x.ForWeek > mm.CumulativeRange.Value.AddDays(-7))
 				.Select(x => x.ForWeek, x => x.Measured)

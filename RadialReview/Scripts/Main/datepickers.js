@@ -96,7 +96,7 @@ function serverDateFormat(edate) {
 }
 
 function createDatepicker(selector, date, name, id, options) {
-	debugger;
+	//debugger;
 	if (typeof (date) === "undefined") {
 		date = new Date();
 	} else if (date == false) {
@@ -132,7 +132,20 @@ function createDatepicker(selector, date, name, id, options) {
 	//	}else {
 	//		date = Time.toLocalTime(date);
 	//	}
-	//}
+    //}
+
+	var setClasses = function (obj, d) {
+	    debugger;
+	    var o = $(obj);
+        if (!o.is(".client-date"))
+	        o = $(obj).find(".client-date");
+	    $(o).removeClass("past-date");
+	    $(o).removeClass("future-date");
+	    if (d < new Date())
+	        $(o).addClass("past-date");
+	    else
+	        $(o).addClass("future-date");
+	}
 
 
 	var formatted = serverDateFormat(date);
@@ -148,6 +161,7 @@ function createDatepicker(selector, date, name, id, options) {
 	builder += '<input type="hidden" class="server-date" id="' + id + '" name="' + name + '" value="' + formatted + '" />';
 	builder += '</div>';
 	var dp = $(builder);
+	setClasses(dp, date);
 	$(selector).append(dp);
 	var dpOptions = {
 		format: window.dateFormat.toLowerCase(),
@@ -168,10 +182,17 @@ function createDatepicker(selector, date, name, id, options) {
 			$('.' + guid + ' .server-date').val("");
 		}
 	});
+
+
+
 	$('.' + guid + ' .client-date').datepickerX(dpOptions).on('changeDate', function (e) {
 		var edate = Time.toServerTime(e.date);// new Date(e.date.getTime() + _offsetMin * 60000);
 		var formatted = serverDateFormat(edate);
 		$('.' + guid + ' .server-date').val(formatted);
+
+
+		setClasses(this, e.date);
+
 		$(eventHolder).trigger("change", [{
 			clientDate: edate,
 			serverDate: formatted,

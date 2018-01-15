@@ -8,6 +8,7 @@ using RadialReview.Areas.People.Models.Survey;
 using RadialReview.Models.Interfaces;
 using RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation.Sections;
 using RadialReview.Models.Accountability;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation {
     public class QuarterlyConversationInitializer : ISurveyInitializer {
@@ -15,20 +16,22 @@ namespace RadialReview.Areas.People.Engines.Surveys.Impl.QuarterlyConversation {
 		public IForModel CreatedBy { get; set; }
 		public String Name { get; set; }
 		public DateTime DueDate { get; set; }
-		public long OrgId { get; set; }
+		public DateRange QuarterRange { get; set; }
+        public long OrgId { get; set; }
 
-        public QuarterlyConversationInitializer(IForModel createdBy, string name, long orgId,DateTime dueDate) {
+        public QuarterlyConversationInitializer(IForModel createdBy, string name, long orgId,DateRange quarterRange,DateTime dueDate) {
 			CreatedBy = createdBy;
 			DueDate = dueDate;
             Name = name;
             OrgId = orgId;
+            QuarterRange = quarterRange;
         }
 
         private IEnumerable<ISectionInitializer> _sectionBuilders() {
             yield return new ValueSection();
             yield return new RoleSection();
-			yield return new RockSection();
-            yield return new RockCompletionSection();
+            yield return new RockSection(QuarterRange);// new DateRange(QuarterRange.AddDays(-7),QuarterRange.AddDays(65)));
+            //yield return new RockCompletionSection();
 			yield return new LeadershipAssessmentSection(false);
 			yield return new ManagementAssessmentSection(false);
 			yield return new GeneralCommentsSection();

@@ -41,28 +41,44 @@
   width: 100%;
   z-index: 999;
   height: 16px;
+  border-bottom: 2px solid rgba(62, 57, 53, 0.5);
+  box-shadow: 0 0 15px 2px rgba(0, 0, 0, 0.4);
+}
+@media (max-width: 768px) {
+  .people.quarterly-conversation survey-container .current-section .decoration {
+    display: none;
+  }
 }
 .people.quarterly-conversation survey-container .current-section .title {
   color: #fff;
   background-color: #EF7622;
   font-weight: 900;
   position: fixed;
-  /*top: 45px;*/
+  /* top: 45px; */
   top: 54px;
   z-index: 1000;
   display: block;
   font-family: 'Lato', sans-serif;
   font-size: 12px;
-  line-height: 14px;
-  height: 14px;
+  line-height: 30px;
+  height: 30px;
   text-align: left;
   padding-left: 15px;
   padding-right: 15px;
-  margin-left: 1px;
+  margin-left: -30px;
   border-radius: 3px;
   font-size: 14px;
   font-weight: bold;
   letter-spacing: 0.8px;
+  border-radius: 0;
+  border-bottom: 2px solid rgba(62, 57, 53, 0.5);
+  /* padding-right: 50px; */
+  min-width: 350px;
+  padding-left: 45px;
+  /* padding-right: 88px; */
+  /* border-bottom-color: white; */
+  border-radius: 2px;
+  box-shadow: 0 6px 10px -4px rgba(0, 0, 0, 0.4);
 }
 .people.quarterly-conversation survey-container .current-section .title:empty {
   display: none;
@@ -85,8 +101,15 @@
     font-family: 'Lato', sans-serif;
     font-weight: 900;
     padding-left: 0px;
-    padding-left: 53px;
-    padding-right: 188px;
+    padding-left: 80px;
+    padding-right: 158px;
+    box-shadow: none;
+    border-bottom: none;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    height: 32px;
+    padding-top: 10px;
   }
 }
 .people.quarterly-conversation survey-container .survey {
@@ -295,6 +318,10 @@
   font-size: 14px;
   font-weight: bold;
   letter-spacing: 0.8px;
+  background-color: #eee;
+  border-bottom: 1px solid #3E3935;
+  margin: -1.1px;
+  color: #3E3935;
 }
 .people.quarterly-conversation survey-container .survey > .title + .panel-collapse > .panel-body {
   border-top-color: transparent;
@@ -661,7 +688,7 @@
   .bs-docs-sidebar.affix {
     position: fixed;
     /* Undo the static from mobile first approach */
-    top: 50px;
+    top: 60px;
   }
   .bs-docs-sidebar.affix-bottom {
     position: absolute;

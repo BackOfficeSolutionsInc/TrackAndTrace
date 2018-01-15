@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using RadialReview.Areas.People.Engines.Surveys.Strategies.PostProcesses;
+using RadialReview.Utilities.DataTypes;
 
 namespace RadialReview.Areas.People.Engines.Surveys {
 
@@ -55,7 +56,7 @@ namespace RadialReview.Areas.People.Engines.Surveys {
                     data.About = about;
                     //Build individual surveys , About = about };
                     data.Survey = BuildSurvey(SurveyBuilder, data);
-					if (data.Survey.GetSections().Any()) {
+					if (data.Survey.GetSections().Any() && data.Survey.GetSections().Any(x=>x.GetItems().Any())) {
 						data.SurveyContainer.AppendSurvey(data.Survey);
 						any = true;
 					}
@@ -208,6 +209,21 @@ namespace RadialReview.Areas.People.Engines.Surveys {
                     ItemFormat = format,
                     ShouldInitialize = shouldInitialize
                 };
+            }
+
+            public bool FirstSeen(string key,string type="") {
+                var dict = Lookup.GetOrAdd("~~FirstSeen~"+type+"~", _nil => new DefaultDictionary<string, bool>(x => true));
+                var res =  dict[key];
+                dict[key] = false;
+                return res;
+            }
+
+            public bool FirstSeenByAbout() {
+                var byAboutKey = By.ToKey() + "-" + About.ToKey();
+                if (About.Is<SurveyUserNode>()) {
+                    byAboutKey = By.ToKey() + "-" + ((SurveyUserNode)About).User.ToKey();
+                }
+                return FirstSeen(byAboutKey,"FirstSeenByAbout");
             }
         }
 

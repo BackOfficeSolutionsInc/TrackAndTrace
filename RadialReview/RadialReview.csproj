@@ -120,6 +120,7 @@
     <Compile Include="Accessors\L10Accessor\L10AccessorLoadData.cs" />
     <Compile Include="Accessors\L10Accessor\L10AccessorMeetingActions.cs" />
     <Compile Include="Accessors\L10Accessor\L10AccessorAttendees.cs" />
+    <Compile Include="Accessors\NotificationAccessor.cs" />
     <Compile Include="Accessors\OrganizationAccessors\JoinOrganizationAccessor.cs" />
     <Compile Include="Accessors\PdfChartAccessor.cs" />
     <Compile Include="Accessors\PDF\AccountabilityChartPDF.cs" />
@@ -128,12 +129,15 @@
     <Compile Include="Accessors\PDF\JS\Tree.js.cs" />
     <Compile Include="Accessors\ReportAccessor.cs" />
     <Compile Include="Accessors\SearchAccessor.cs" />
+    <Compile Include="Accessors\StatsAccessor.cs" />
     <Compile Include="Accessors\TinyUserAccessor.cs" />
     <Compile Include="Accessors\VideoConferenceProviders\VideoProviderAccessor.cs" />
     <Compile Include="Accessors\WebhooksAccessor.cs" />
+    <Compile Include="Api\V1\App.cs" />
     <Compile Include="Api\V1\Headlines.cs" />
     <Compile Include="Api\V1\Issue.cs" />
     <Compile Include="Api\V1\L10.cs" />
+    <Compile Include="Api\V1\Notification.cs" />
     <Compile Include="Api\V1\Rocks.cs" />
     <Compile Include="Api\V1\Scorecard.cs" />
     <Compile Include="Api\V1\Search.cs" />
@@ -142,6 +146,7 @@
     <Compile Include="Api\V1\Todo.cs" />
     <Compile Include="Api\V1\Users.cs" />
     <Compile Include="App_Start\DateTimeModelBinder.cs" />
+    <Compile Include="App_Start\EventConfig.cs" />
     <Compile Include="App_Start\HookConfig.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="Areas\CoreProcess\Accessors\TaskAccessor.cs" />
@@ -155,39 +160,67 @@
     <Compile Include="Areas\CoreProcess\CoreProcessAreaRegistration.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\ITaskAccessor.cs" />
     <Compile Include="Areas\CoreProcess\Interfaces\IProcessDefAccessor.cs" />
+    <Compile Include="Areas\People\Controllers\ErrorController.cs" />
     <Compile Include="Areas\People\Engines\Surveys\Impl\QuarterlyConversation\Sections\RockCompletionSection.cs" />
+    <None Include="Content\Chart\metric-graphics.less" />
     <Compile Include="Controllers\AbstractController\BaseExpensiveController.cs" />
     <Compile Include="Controllers\ClientSuccessController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
-    <Compile Include="Hooks\CrossCutting\CreateFinancialPermItems.cs" />
-    <Compile Include="Hooks\CrossCutting\SwapScorecardOnRegister.cs" />
-    <Compile Include="Hooks\CrossCutting\ActiveCampaign\ActiveCampaignFirstThreeMeetings.cs" />
-    <Compile Include="Hooks\HookData.cs" />
-    <Compile Include="Hooks\Meeting\AttendeeHooks.cs" />
-    <Compile Include="Hooks\Meeting\AuditLogHooks.cs" />
-    <Compile Include="Hooks\Meeting\CalculateCumulative.cs" />
-    <Compile Include="Hooks\Meeting\DepristineHooks.cs" />
-    <Compile Include="Hooks\Realtime\Dashboard\RealTime_Dashboard_Scorecard.cs" />
-    <Compile Include="Hooks\Realtime\L10\Realtime_L10Scorecard.cs" />
-    <Compile Include="Hooks\Realtime\L10\RealTime_L10_Issues.cs" />
-    <Compile Include="Hooks\Meeting\MeetingRockCompletion.cs" />
-    <Compile Include="Hooks\Realtime\RealTimeHelpers.cs" />
-    <Compile Include="Hooks\Realtime\Dashboard\RealTime_Dashboard_UpdateL10Rocks.cs" />
-    <Compile Include="Hooks\Realtime\Dashboard\RealTime_Dashboard_Todo.cs" />
-    <Compile Include="Hooks\Realtime\L10\RealTime_L10_Todo.cs" />
-    <Compile Include="Hooks\Realtime\L10\RealTime_L10_UpdateRocks.cs" />
-    <Compile Include="Hooks\Realtime\VTO\RealTime_VTO_UpdateRocks.cs" />
-    <Compile Include="Hooks\Realtime\CoreProcess\RealTime_Tasks.cs" />
-    <Compile Include="Hooks\CrossCutting\UpdateUserCache.cs" />
-    <Compile Include="Hooks\UserRegistration\UpdatePlaceholder.cs" />
+    <Compile Include="Crosscutting\Hooks\CrossCutting\Formula\CascadeScorecardUpdates.cs" />
+    <Compile Include="Crosscutting\Hooks\Payment\ExecutePaymentOnCardUpdate.cs" />
+    <Compile Include="Crosscutting\Hooks\Payment\FirstPaymentEmail.cs" />
+    <Compile Include="Crosscutting\Flags\OrganizationFlag.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IOrganizationFlagHook.cs" />
+    <Compile Include="Crosscutting\Hooks\Payment\CardExpireEmail.cs" />
+    <Compile Include="Exceptions\TestException.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\EventExecutor.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Events\Base\BaseL10EventAnalyzers.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Events\ConsecutiveLateEnds.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Events\ConsecutiveLateStarts.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Events\DaysWithoutL10.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Events\AverageMeetingRatingBelowForWeeksInARow.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Events\TodoCompletionConsecutiveWeeks.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Models\EventLogModel.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Models\IEventAnalyzer.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Searchers\SearchL10Meeting.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Searchers\SearchL10RecurrenceIds.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Searchers\SearchLeadershipL10RecurrenceIds.cs" />
+    <Compile Include="Crosscutting\EventAnalyzers\Searchers\SearchPageTimers.cs" />
+    <Compile Include="Crosscutting\Hooks\CrossCutting\CreateFinancialPermItems.cs" />
+    <Compile Include="Crosscutting\Hooks\CrossCutting\SwapScorecardOnRegister.cs" />
+    <Compile Include="Crosscutting\Hooks\CrossCutting\ActiveCampaign\ActiveCampaignFirstThreeMeetings.cs" />
+    <Compile Include="Crosscutting\Hooks\HookData.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IEventHook.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\INotificationHook.cs" />
+    <Compile Include="Crosscutting\Hooks\Meeting\AttendeeHooks.cs" />
+    <Compile Include="Crosscutting\Hooks\Meeting\AuditLogHooks.cs" />
+    <Compile Include="Crosscutting\Hooks\Meeting\CalculateCumulative.cs" />
+    <Compile Include="Crosscutting\Hooks\Meeting\DepristineHooks.cs" />
+    <Compile Include="Crosscutting\Hooks\Realtime\Dashboard\RealTime_Dashboard_Scorecard.cs" />
+    <Compile Include="Crosscutting\Hooks\Realtime\L10\Realtime_L10Scorecard.cs" />
+    <Compile Include="Crosscutting\Hooks\Realtime\L10\RealTime_L10_Issues.cs" />
+    <Compile Include="Crosscutting\Hooks\Meeting\MeetingRockCompletion.cs" />
+    <Compile Include="Crosscutting\Hooks\Realtime\RealTimeHelpers.cs" />
+    <Compile Include="Crosscutting\Hooks\Realtime\Dashboard\RealTime_Dashboard_UpdateL10Rocks.cs" />
+    <Compile Include="Crosscutting\Hooks\Realtime\Dashboard\RealTime_Dashboard_Todo.cs" />
+    <Compile Include="Crosscutting\Hooks\Realtime\L10\RealTime_L10_Todo.cs" />
+    <Compile Include="Crosscutting\Hooks\Realtime\L10\RealTime_L10_UpdateRocks.cs" />
+    <Compile Include="Crosscutting\Hooks\Realtime\VTO\RealTime_VTO_UpdateRocks.cs" />
+    <Compile Include="Crosscutting\Hooks\Realtime\CoreProcess\RealTime_Tasks.cs" />
+    <Compile Include="Crosscutting\Hooks\CrossCutting\UpdateUserCache.cs" />
+    <Compile Include="Crosscutting\Hooks\UserRegistration\UpdatePlaceholder.cs" />
     <Compile Include="Hubs\CoreProcessHub.cs" />
     <Compile Include="Models\Angular\CoreProcess\AngularTask.cs" />
     <Compile Include="Models\Angular\CoreProcess\AngularCoreProcess.cs" />
     <Compile Include="Models\Angular\LocalDateTime.cs" />
+    <Compile Include="Models\Angular\Notifications\AngularAppNotification.cs" />
+    <Compile Include="Models\Angular\Users\AngularUserRole.cs" />
     <Compile Include="Models\Application\Variable.cs" />
+    <Compile Include="Models\Charts\MetricGraphic.cs" />
     <Compile Include="Models\ClientSuccess\TooltipModels.cs" />
     <Compile Include="Models\Enums\DashboardType.cs" />
     <Compile Include="Models\L10\L10LookupCache.cs" />
+    <Compile Include="Models\Notifications\NotificationModel.cs" />
     <Compile Include="Models\ViewModels\CreateRockViewModel.cs" />
     <Compile Include="Models\ViewModels\CreateMeasurableViewModel.cs" />
     <Compile Include="Models\UserModels\UserRole.cs" />
@@ -277,12 +310,12 @@
     <Compile Include="Areas\People\Engines\Surveys\Strategies\Events\SurveyBuilderEventsSaveStrategy.cs" />
     <Compile Include="Areas\People\Engines\Surveys\SurveyReconstructionEngine.cs" />
     <Compile Include="Controllers\SuController.cs" />
-    <Compile Include="Hooks\CrossCutting\ActiveCampaign\ActiveCampaignEventHooks.cs" />
-    <Compile Include="Hooks\CrossCutting\EnterpriseHook.cs" />
-    <Compile Include="Hooks\CrossCutting\UpdateRoles_Notifications.cs" />
-    <Compile Include="Hooks\CrossCutting\UpdateUserModel_TeamNames.cs" />
-    <Compile Include="Hooks\Webhook\IssueWebhook.cs" />
-    <Compile Include="Hooks\Webhook\TodoWebhook.cs" />
+    <Compile Include="Crosscutting\Hooks\CrossCutting\ActiveCampaign\ActiveCampaignEventHooks.cs" />
+    <Compile Include="Crosscutting\Hooks\CrossCutting\EnterpriseHook.cs" />
+    <Compile Include="Crosscutting\Hooks\CrossCutting\UpdateRoles_Notifications.cs" />
+    <Compile Include="Crosscutting\Hooks\CrossCutting\UpdateUserModel_TeamNames.cs" />
+    <Compile Include="Crosscutting\Hooks\Webhook\IssueWebhook.cs" />
+    <Compile Include="Crosscutting\Hooks\Webhook\TodoWebhook.cs" />
     <Compile Include="Hubs\PeopleHub.cs" />
     <Compile Include="Models\Angular\Base\AngularPicture.cs" />
     <Compile Include="Models\Angular\Dashboard\AngularDashboard.cs" />
@@ -327,8 +360,8 @@
     <Compile Include="Utilities\DivisorUtility.cs" />
     <Compile Include="Utilities\EmailUtil.cs" />
     <Compile Include="Controllers\IntegrationsController.cs" />
-    <Compile Include="Hooks\Integrations\BasecampTodoHook.cs" />
-    <Compile Include="Hooks\CrossCutting\CreateUserOrganization_UpdateHierarchy.cs" />
+    <Compile Include="Crosscutting\Hooks\Integrations\BasecampTodoHook.cs" />
+    <Compile Include="Crosscutting\Hooks\CrossCutting\CreateUserOrganization_UpdateHierarchy.cs" />
     <Compile Include="Accessors\Hydrators\ResponsibilityGroupHydration.cs" />
     <Compile Include="Accessors\Hydrators\UserHydration.cs" />
     <Compile Include="Accessors\ImageAccessor.cs" />
@@ -498,11 +531,11 @@
     <Compile Include="Exceptions\PhoneException.cs" />
     <Compile Include="Exceptions\SchedulerException.cs" />
     <Compile Include="Exceptions\SyncException.cs" />
-    <Compile Include="Helpers\HtmlPrefixScopeExtensions.cs" />
-    <Compile Include="Helpers\SecuredValueHtmlHelper.cs" />
-    <Compile Include="Helpers\SelectExtensions.cs" />
-    <Compile Include="Hooks\HooksRegistry.cs" />
-    <Compile Include="Hooks\Integrations\Outlook_TodoHook.cs" />
+    <Compile Include="Utilities\Helpers\HtmlPrefixScopeExtensions.cs" />
+    <Compile Include="Utilities\Helpers\SecuredValueHtmlHelper.cs" />
+    <Compile Include="Utilities\Helpers\SelectExtensions.cs" />
+    <Compile Include="Crosscutting\Hooks\HooksRegistry.cs" />
+    <Compile Include="Crosscutting\Hooks\Integrations\Outlook_TodoHook.cs" />
     <Compile Include="Hubs\AlertHub.cs" />
     <Compile Include="Hubs\BaseHub.cs" />
     <Compile Include="Hubs\MessageHub.cs" />
@@ -752,7 +785,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\HtmlExtensions.cs" />
+    <Compile Include="Utilities\Helpers\HtmlExtensions.cs" />
     <Compile Include="Models\Interfaces\IDeletable.cs" />
     <Compile Include="Properties\MessageStrings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -868,23 +901,24 @@
     <Compile Include="Utilities\FileUtilities.cs" />
     <Compile Include="Utilities\DistanceUtility.cs" />
     <Compile Include="Utilities\ForModelUtil.cs" />
+    <Compile Include="Utilities\FormulaUtility.cs" />
     <Compile Include="Utilities\GraphUtility.cs" />
     <Compile Include="Utilities\HashUtil.cs" />
-    <Compile Include="Utilities\Hooks\IAccountEvent.cs" />
-    <Compile Include="Utilities\Hooks\ICreateIssue.cs" />
-    <Compile Include="Utilities\Hooks\IHeadlineHook.cs" />
-    <Compile Include="Utilities\Hooks\IMeasurableHook.cs" />
-    <Compile Include="Utilities\Hooks\IMeetingEvents.cs" />
-    <Compile Include="Utilities\Hooks\IMeetingItemHooks.cs" />
-    <Compile Include="Utilities\Hooks\IOrganizationHooks.cs" />
-    <Compile Include="Utilities\Hooks\IUserRoleHook.cs" />
-    <Compile Include="Utilities\Hooks\IScoreHook.cs" />
-    <Compile Include="Utilities\Hooks\IRockHook.cs" />
-    <Compile Include="Utilities\Hooks\ITaskHook.cs" />
-    <Compile Include="Utilities\Hooks\ITodoHook.cs" />
-    <Compile Include="Utilities\Hooks\IUserHooks.cs" />
-    <Compile Include="Utilities\Hooks\IHook.cs" />
-    <Compile Include="Utilities\Hooks\IRolesHook.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IAccountEvent.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\ICreateIssue.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IHeadlineHook.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IMeasurableHook.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IMeetingEvents.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IMeetingItemHooks.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IOrganizationHooks.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IUserRoleHook.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IScoreHook.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IRockHook.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\ITaskHook.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\ITodoHook.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IUserHooks.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IHook.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IRolesHook.cs" />
     <Compile Include="Utilities\HtmlUtility.cs" />
     <Compile Include="Utilities\Integrations\ActiveCampaign.cs" />
     <Compile Include="Utilities\NHibernateHelper.cs" />
@@ -1017,6 +1051,7 @@
     <Content Include="Areas\People\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\People\Views\QuarterlyConversation\Issue.cshtml" />
     <Content Include="Areas\People\Views\PeopleAnalyzer\Index.cshtml" />
+    <Content Include="Areas\People\Views\QuarterlyConversation\Surveys.cshtml" />
     <None Include="bundleconfig.json" />
     <None Include="Content\Angular\ngsortable.less" />
     <Content Include="Content\Angular\ngsortable.css">
@@ -1037,12 +1072,22 @@
     <Content Include="Content\bootstrap\custom\XEditable.css">
       <DependentUpon>XEditable.less</DependentUpon>
     </Content>
+    <Content Include="Content\Chart\metric-graphics.css">
+      <DependentUpon>metric-graphics.less</DependentUpon>
+    </Content>
     <Content Include="Content\creditcard_icon\bank.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\favicon-local.ico" />
     <Content Include="Content\GettingStarted\GettingStarted.css">
       <DependentUpon>GettingStarted.less</DependentUpon>
+    </Content>
+    <Content Include="Content\img\TRACTION-TOOLS_large_stacked_2c.png" />
+    <Content Include="Content\L10\L10Scorecard.css">
+      <DependentUpon>L10Scorecard.less</DependentUpon>
+    </Content>
+    <Content Include="Content\Inputs\TagInput.css">
+      <DependentUpon>TagInput.less</DependentUpon>
     </Content>
     <Content Include="Content\People\MaterialRadio.css">
       <DependentUpon>MaterialRadio.less</DependentUpon>
@@ -1191,6 +1236,7 @@
     <Content Include="Content\L10\L10Wizard.less" />
     <Content Include="Content\Angular\Rocks.less" />
     <Content Include="Content\Angular\Issues.less" />
+    <None Include="Data\APS.cert" />
     <Content Include="IIS\install.zip" />
     <Content Include="Content\bootstrap\custom\modal.less" />
     <Content Include="Content\MaterialDesign\Components\Progress.less" />
@@ -1228,7 +1274,9 @@
     <Content Include="Content\People\MaterialRadio.less" />
     <Content Include="project.json" />
     <Content Include="Content\Swagger\CustomSwaggerStyle.less" />
-    <Compile Include="Hooks\Realtime\L10\RealTime_L10_Headline.cs" />
+    <Compile Include="Crosscutting\Hooks\Interfaces\IPaymentHook.cs" />
+    <Compile Include="Crosscutting\Hooks\Realtime\L10\RealTime_L10_Headline.cs" />
+    <Content Include="Content\Inputs\TagInput.less" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1239,6 +1287,7 @@
     <None Include="Resources\EOS_Model.png" />
     <None Include="Resources\closed.gif" />
     <None Include="Resources\open.gif" />
+    <None Include="Resources\AppleAPS.txt" />
     <Content Include="Scripts\Angular\AccountabilityChart\ACController.js" />
     <Content Include="Scripts\Angular\angular.js" />
     <Content Include="Scripts\Angular\GettingStartd\GSApp.js" />
@@ -1276,10 +1325,12 @@
     <Content Include="Scripts\Angular\People\Survey\SurveyComponents.js" />
     <Content Include="Scripts\Angular\Tiles\L10StatsTile.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
+    <Content Include="Scripts\Charts\metrics-graphics.js" />
     <Content Include="Scripts\components\jquery.bootstrap-duallistbox.js" />
     <Content Include="Scripts\AccountabilityChart\accountabilityChart.js" />
     <Content Include="Scripts\components\milestones.js" />
     <Content Include="Scripts\CoreProcess\coreProcessRT.js" />
+    <Content Include="Scripts\d3\d3.v4.12.2.js" />
     <Content Include="Scripts\d3\d3.v4.js" />
     <Content Include="Scripts\d3\radial.d3.tree.js" />
     <Content Include="Scripts\Dashboard\dashboard.js" />
@@ -1288,6 +1339,16 @@
     <Content Include="Scripts\home\screenshot.js" />
     <Content Include="Scripts\home\landscape.js" />
     <Content Include="Scripts\home\pretty-json.min.js" />
+    <Content Include="Scripts\Inputs\backbone.min.js" />
+    <Content Include="Scripts\Inputs\backbone.subviews.js" />
+    <Content Include="Scripts\Inputs\bullseye.js" />
+    <Content Include="Scripts\Inputs\jquery.min.js" />
+    <Content Include="Scripts\Inputs\liquidmetal.js" />
+    <Content Include="Scripts\Inputs\list.png" />
+    <Content Include="Scripts\Inputs\require.js" />
+    <Content Include="Scripts\Inputs\token-editor.js" />
+    <Content Include="Scripts\Inputs\underscore.min.js" />
+    <Content Include="Scripts\Inputs\underscore.string.min.js" />
     <Content Include="Scripts\jquery\jquery.autoresize.min.js">
       <DependentUpon>jquery.autoresize.js</DependentUpon>
     </Content>
@@ -1310,6 +1371,7 @@
     <Content Include="Scripts\Main\alerts.js" />
     <Content Include="Scripts\Main\backwardcompatability.js" />
     <Content Include="Scripts\Main\beta.js" />
+    <Content Include="Scripts\Main\chart.js" />
     <Content Include="Scripts\Main\clickableclass.js" />
     <Content Include="Scripts\Main\datatable.js" />
     <Content Include="Scripts\Main\datepickers.js" />
@@ -1364,6 +1426,7 @@
     <Content Include="SoftwareUpdates\20160622.txt" />
     <Content Include="SoftwareUpdates\20160620.txt" />
     <Content Include="SoftwareUpdates\20171207.txt" />
+    <Compile Include="Utilities\QuarterGuessUtility.cs" />
     <Content Include="Views\Permissions\Dropdown.cshtml" />
     <Content Include="Content\Bootstrap-tabs.css" />
     <Content Include="Content\bootstrap.vertical-tabs.css" />
@@ -1754,14 +1817,19 @@
     <Content Include="Views\Headlines\EditModal.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\LocalDateTime.cshtml" />
     <Content Include="Views\L10\Pages.cshtml" />
+    <Content Include="Views\Organization\ResendJoinEmailManual.cshtml" />
+    <Content Include="Views\L10\EditRating.cshtml" />
+    <Content Include="Views\Scorecard\FormulaPartial.cshtml" />
+    <Content Include="Views\ClientSuccess\Close.cshtml" />
+    <Content Include="Views\Data\Dashboard.cshtml" />
     <None Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
+      <DependentUpon>web.config</DependentUpon>
     </None>
     <None Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
+      <DependentUpon>web.config</DependentUpon>
     </None>
     <None Include="Web.UPDATE DATABSE.config">
-      <DependentUpon>Web.config</DependentUpon>
+      <DependentUpon>web.config</DependentUpon>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -1846,7 +1914,7 @@
     <Content Include="Content\jquery.nouislider.css" />
     <Content Include="Content\jquery.qtip.css" />
     <Content Include="Content\L10\L10IDS.css" />
-    <Content Include="Content\L10\L10Scorecard.css" />
+    <None Include="Content\L10\L10Scorecard.less" />
     <Content Include="Content\L10\L10Stats.css" />
     <Content Include="Content\print.css" />
     <Content Include="Content\ReportBuilder\evaluation.css" />
@@ -2188,7 +2256,7 @@
     <Content Include="Views\Dashboard\_L10TileList.cshtml" />
     <Content Include="Views\L10\ExternalPage.cshtml" />
     <None Include="Views\Review\Details\ChartPicker.cshtml" />
-    <Content Include="Web.config">
+    <Content Include="web.config">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="wkhtmltox0.dll">
@@ -2465,19 +2533,16 @@
     <Content Include="Views\TileData\L10Issues.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="Areas\CoreProcess\CamundaFiles\" />
     <Folder Include="Areas\People\Engines\Surveys\Abstract\" />
     <Folder Include="Content\fonts\fonts\" />
     <Folder Include="External\" />
     <Folder Include="logs\" />
-    <Folder Include="Models\Notifications\" />
     <Folder Include="Scripts\Angular\Helpers\Filters\" />
     <Folder Include="Utilities\Migradoc\XYScatter\" />
     <Folder Include="Views\AngularAccountability\" />
     <Folder Include="Views\BaseExpensive\" />
     <Folder Include="Views\Console\" />
-    <Folder Include="Views\Data\" />
     <Folder Include="Views\DropDown\" />
     <Folder Include="Views\HealthCheck\" />
     <Folder Include="Views\Img\" />
@@ -2681,7 +2746,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>3751</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:44301</IISUrl>
+          <IISUrl>http://localhost:44302</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>http://radial.elasticbeanstalk.com/</CustomServerUrl>

@@ -223,6 +223,10 @@
 .ids [data-awaitingsolve='True'] .issuesModal {
   pointer-events: none !important;
 }
+.ids [data-awaitingsolve='true'] .issuesModal_move,
+.ids [data-awaitingsolve='True'] .issuesModal_move {
+  pointer-events: none !important;
+}
 .sortable {
   margin: 0 0 9px 0;
   min-height: 10px;
