@@ -22,6 +22,7 @@ using RadialReview.Models;
 using RadialReview.Models.Application;
 using RadialReview.Properties;
 using RadialReview.Utilities.DataTypes;
+using System.Threading;
 
 namespace RadialReview.Areas.People.Controllers {
     public class QuarterlyConversationController : BaseController {
@@ -64,7 +65,8 @@ namespace RadialReview.Areas.People.Controllers {
 
         [Access(AccessLevel.UserOrganization)]
         [HttpPost]
-        public async Task<ActionResult> Issue(FormCollection form) {
+        [AsyncTimeout(20*60000)]
+        public async Task<ActionResult> Issue(CancellationToken ct, FormCollection form) {
             var name = form["Name"];
             var qtrStart = (form["QuarterStart"] ?? "").ToDateTime("MM-dd-yyyy HH:mm:ss");
             var dueDate = (form["DueDate"] ?? "").ToDateTime("MM-dd-yyyy HH:mm:ss");
