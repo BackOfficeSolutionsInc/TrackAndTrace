@@ -124,36 +124,41 @@ namespace RadialReview.Accessors {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
                     var perms = PermissionsUtility.Create(s, caller);
-                    perms.ViewOrganization(orgId);
-
-                    var data = s.QueryOver<UserOrganizationModel>()
-                        .Where(x => x.Organization.Id == orgId)
-                        .Select(x => x.AttachTime, x => x.DeleteTime, x => x.DeleteTime, x => x.CreateTime)
-                        .List<object[]>()
-                        .ToList();
-
-                    var ac = s.QueryOver<AccountabilityNode>()
-                        .Where(x => x.OrganizationId == orgId)
-                        .Select(x => x.CreateTime, x => x.DeleteTime, x => x.DeleteTime)
-                        .List<object[]>()
-                        .SelectNoException(x => new EventTimes(x[0], x[1], x[2]))
-                        .ToList();
-
-                    var attach = data.Select(x => new EventTimes(x[0], x[1], x[2])).ToList();
-                    var create = data.Select(x => new EventTimes(x[3], x[1], x[2])).ToList();
-
-                    var b1 = GenerateBurndown("Employees", attach,"Registered");
-                    var b2 = GenerateBurndown("", create, "Accounts");
-                    var b3 = GenerateBurndown("", ac, "Seats");
-
-                    var bd = new MetricGraphic("Employees");
-                    foreach (var i in b1.GetTimeseries().Union(b2.GetTimeseries().Union(b3.GetTimeseries())))
-                        bd.AddTimeseries(i);
-
-                    bd.aggregate_rollover = true;
-                    return bd;
+                    return GetOrganizationMemberBurndown(s, perms, orgId);
                 }
             }
+        }
+
+        public static MetricGraphic GetOrganizationMemberBurndown(ISession s, PermissionsUtility perms, long orgId) {
+            perms.ViewOrganization(orgId);
+
+            var data = s.QueryOver<UserOrganizationModel>()
+                .Where(x => x.Organization.Id == orgId)
+                .Select(x => x.AttachTime, x => x.DeleteTime, x => x.DeleteTime, x => x.CreateTime)
+                .List<object[]>()
+                .ToList();
+
+            var ac = s.QueryOver<AccountabilityNode>()
+                .Where(x => x.OrganizationId == orgId)
+                .Where(x=>x.DeleteTime==null || x.DeleteTime > new DateTime(2016,8,20))
+                .Select(x => x.CreateTime, x => x.DeleteTime, x => x.DeleteTime)
+                .List<object[]>()
+                .SelectNoException(x => new EventTimes(x[0], x[1], x[2]))
+                .ToList();
+
+            var attach = data.Select(x => new EventTimes(x[0], x[1], x[2])).ToList();
+            var create = data.Select(x => new EventTimes(x[3], x[1], x[2])).ToList();
+
+            var b1 = GenerateBurndown("Employees", attach, "Registered");
+            var b2 = GenerateBurndown("", create, "Accounts");
+            var b3 = GenerateBurndown("", ac, "Seats");
+
+            var bd = new MetricGraphic("Employees");
+            foreach (var i in b1.GetTimeseries().Union(b2.GetTimeseries().Union(b3.GetTimeseries())))
+                bd.AddTimeseries(i);
+
+            bd.aggregate_rollover = true;
+            return bd;
         }
     }
 }

@@ -17,11 +17,11 @@ namespace RadialReview.Controllers.AbstractController
 		public class Divisor {
 			public int divisor { get; set; }
 			public int remainder { get; set; }
-			public double duration { get; set; }
-			public int updates { get; set; }
+			public double? duration { get; set; }
+			public int? updates { get; set; }
 
 			public TimeSpan GetDuration() {
-				return TimeSpan.FromMilliseconds(duration);
+				return TimeSpan.FromMilliseconds(duration??0);
 			}
 
 			public double GetDurationSeconds() {

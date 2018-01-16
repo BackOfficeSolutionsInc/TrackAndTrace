@@ -6,9 +6,10 @@
     if (Model.MeetingMeasurable.Measurable.NotNull(x => x._Editable) == false) {
         inlineEdit = "";
     }
-    
-    isEditable = Model.Scores.Where(x=>x.MeasurableId == Model.MeetingMeasurable.Measurable.Id).All(x=>x._Editable!=false);
-    
+
+    if (!Model.IsDivider) {
+        isEditable = Model.Scores.Where(x => x.MeasurableId == Model.MeetingMeasurable.Measurable.Id).All(x => x._Editable != false);
+    }
 
 
     var auto = Model.MeetingMeasurable.Measurable.NotNull(x => x.AccountableUser) == null;

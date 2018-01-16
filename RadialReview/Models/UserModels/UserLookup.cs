@@ -41,6 +41,8 @@ namespace RadialReview.Models.UserModels
 		public virtual bool _PersonallyManaging { get; set; }
 		public virtual string _ImageUrlSuffix { get; set; }
 
+       // public virtual UserOrganizationModel _User { get; set; }
+
 		public virtual bool IsClient { get; set; }
 
 		public virtual WebHookEventType? EmailStatus { get; set; }
@@ -76,6 +78,7 @@ namespace RadialReview.Models.UserModels
 				Id(x => x.Id);
 #pragma warning restore CS0618 // Type or member is obsolete
 				Map(x => x.UserId).Index("UserLookup_UserId_IDX");
+               // References(x => x._User).Column("UserId").LazyLoad().Nullable();
 				Map(x => x.AttachTime);
 				Map(x => x.CreateTime);
 				Map(x => x.DeleteTime);
