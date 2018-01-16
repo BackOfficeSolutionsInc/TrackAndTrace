@@ -63,7 +63,8 @@ namespace RadialReview.Models.Angular.Meeting
 		public IEnumerable<AngularMeetingNotes> Notes { get; set; }
 		public IEnumerable<AngularRock> Rocks { get; set; }
 		public IEnumerable<AngularTodo> Todos { get; set; }
-		public IEnumerable<AngularHeadline> Headlines { get; set; }
+        public IEnumerable<AngularTodo> Milestones { get; set; }
+        public IEnumerable<AngularHeadline> Headlines { get; set; }
 		public AngularIssuesList IssuesList { get; set; }
 		[IgnoreDataMember]
 		public AngularDateRange date { get; set; }

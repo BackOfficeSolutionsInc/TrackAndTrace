@@ -83,7 +83,7 @@ namespace RadialReview.Accessors {
 						//var todoData = TodoData.FromTodo(todo);
 						//userMeetingHub.appendTodo(".todo-list", todoData);
 						var updates = new AngularRecurrence(-2);
-						updates.Todos = AngularList.CreateFrom(AngularListType.Add, new AngularTodo(ms, rock.AccountableUser));
+						updates.Milestones = AngularList.CreateFrom(AngularListType.Add, new AngularTodo(ms, rock.AccountableUser));
 						userMeetingHub.update(updates);
 
 
