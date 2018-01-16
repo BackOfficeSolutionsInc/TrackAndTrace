@@ -9,6 +9,7 @@ using System.Web;
 namespace RadialReview.Crosscutting.Flags {
     public enum OrganizationFlagType {
         Standard = 0,
+        Delinquent =60,
         ExtendedTrial = 99,
         Close =100,
     }

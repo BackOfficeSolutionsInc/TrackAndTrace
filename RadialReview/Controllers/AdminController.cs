@@ -617,6 +617,7 @@ namespace RadialReview.Controllers {
             public DateTime UserCreateTime { get; set; }
             public string AccountType { get; set; }
             public DateTime? OrgCreateTime { get; set; }
+            public DateTime? LastLogin { get; internal set; }
         }
         [Access(AccessLevel.Radial)]
         public ActionResult AllUsers(long id) {
@@ -737,7 +738,8 @@ namespace RadialReview.Controllers {
                             OrgName = org.NotNull(y => y.Name),
                             AccountType = "" + org.NotNull(y => y.AccountType),
                             OrgCreateTime = org.NotNull(y => y.CreateTime),
-                            UserCreateTime = x.CreateTime
+                            UserCreateTime = x.CreateTime,
+                            LastLogin = x.LastLogin,
 
                         };
                     }).Where(x => x != null).ToList();
@@ -795,11 +797,23 @@ namespace RadialReview.Controllers {
                         csv.Add("" + o.UserId, "OrgName", o.OrgName);
                         csv.Add("" + o.UserId, "UserId", "" + o.UserId);
                         csv.Add("" + o.UserId, "OrgId", "" + o.OrgId);
+                        csv.Add("" + o.UserId, "LastLogin", "" + o.LastLogin);
                         csv.Add("" + o.UserId, "UserCreateTime", "" + o.UserCreateTime);
                         csv.Add("" + o.UserId, "AccountType", o.AccountType);
                         csv.Add("" + o.UserId, "OrgCreateTime", "" + o.OrgCreateTime);
                         csv.Add("" + o.UserId, "LeadershipTeam", "" + leadershipMembers[o.UserId]);
                     }
+
+                    /*First Name        
+Last Name        
+Status        
+TT Active Account        
+Expired Flag    True / False    
+Late Payment Flag    True / False    
+Payment Failed Flag    True / False    could be done direct in TT
+Flag For Disabled / Blacklisted from TT        
+Flag For Disabled / Blacklisted from CS        
+3 Successful Meetings while in Trial (over 30 min)*/
 
                     return File(csv.ToBytes(), "text/csv", DateTime.UtcNow.ToJavascriptMilliseconds() + "_AllValidUsers.csv");
 

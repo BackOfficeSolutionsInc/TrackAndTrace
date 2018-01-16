@@ -62,7 +62,7 @@ namespace RadialReview.Accessors {
             }
         }
 
-
+        [Obsolete("unused.",true)]
         public static async Task<InvoiceModel> SendInvoice(string email, long organizationId, long taskId, DateTime executeTime, bool forceUseTest = false, DateTime? calculateTime = null) {
             //PaymentResult result = null;
             InvoiceModel invoice = null;
@@ -97,7 +97,7 @@ namespace RadialReview.Accessors {
                     calculateTime = calculateTime ?? DateTime.UtcNow;
                     try {
                         var itemized = CalculateCharge(s, org, plan, calculateTime.Value);
-                        invoice = CreateInvoice(s, org, plan, executeTime, itemized);
+                        invoice = await CreateInvoice(s, org, plan, executeTime, itemized);
                     } finally {
 
                         tx.Commit();
@@ -200,11 +200,11 @@ namespace RadialReview.Accessors {
             public PaymentResult Result { get; set; }
         }
 
-        public static async Task<ChargeResult> ChargeOrganization_Unsafe(ISession s, OrganizationModel org, PaymentPlanModel plan, DateTime executeTime, bool forceUseTest,bool firstAttempt) {
+        public static async Task<ChargeResult> ChargeOrganization_Unsafe(ISession s, OrganizationModel org, PaymentPlanModel plan, DateTime executeTime, bool forceUseTest, bool firstAttempt) {
             try {
                 var o = new ChargeResult();
                 var itemized = CalculateCharge(s, org, plan, executeTime);
-                o.Invoice = CreateInvoice(s, org, plan, executeTime, itemized);
+                o.Invoice = await CreateInvoice(s, org, plan, executeTime, itemized);
 #pragma warning disable CS0618 // Type or member is obsolete
                 o.Result = await ExecuteInvoice(s, o.Invoice, forceUseTest);
 #pragma warning restore CS0618 // Type or member is obsolete
@@ -214,12 +214,12 @@ namespace RadialReview.Accessors {
                 throw;
             } catch (Exception e) {
                 if (!(e is FallthroughException))
-                    await HooksRegistry.Each<IPaymentHook>((ses, x) => x.PaymentFailedUncaptured(ses, org.Id,executeTime, e.Message, firstAttempt));
+                    await HooksRegistry.Each<IPaymentHook>((ses, x) => x.PaymentFailedUncaptured(ses, org.Id, executeTime, e.Message, firstAttempt));
                 throw;
             }
         }
 
-        public static InvoiceModel CreateInvoice(ISession s, OrganizationModel org, PaymentPlanModel paymentPlan, DateTime executeTime, IEnumerable<Itemized> items) {
+        public static async Task<InvoiceModel> CreateInvoice(ISession s, OrganizationModel org, PaymentPlanModel paymentPlan, DateTime executeTime, IEnumerable<Itemized> items) {
             var invoice = new InvoiceModel() {
                 Organization = org,
                 InvoiceDueDate = executeTime.Add(TimespanExtensions.OneMonth()).Date
@@ -250,6 +250,10 @@ namespace RadialReview.Accessors {
             invoice.InvoiceItems = invoiceItems;
             invoice.AmountDue = invoice.InvoiceItems.Sum(x => x.AmountDue);
             s.Update(invoice);
+
+            await HooksRegistry.Each<IInvoiceHook>((ses, x) => x.InvoiceCreated(s, invoice));
+
+
             return invoice;
         }
 
@@ -260,12 +264,17 @@ namespace RadialReview.Accessors {
                 throw new FallthroughException("Invoice was already paid");
             if (invoice.ForgivenBy != null)
                 throw new FallthroughException("Invoice was forgiven");
-
+            //try {
             var result = await ChargeOrganizationAmount(s, invoice.Organization.Id, invoice.AmountDue, useTest);
 
             invoice.TransactionId = result.id;
             invoice.PaidTime = DateTime.UtcNow;
             s.Update(invoice);
+
+            await HooksRegistry.Each<IInvoiceHook>((ses, x) => x.UpdateInvoice(s, invoice, new IInvoiceUpdates() { PaidStatusChanged = true }));
+            //}catch(Exception) {
+            //    throw;
+            //}
 
             return result;
         }
@@ -389,8 +398,8 @@ namespace RadialReview.Accessors {
 
                 if (plan.BaselinePrice > 0) {
                     var reviewItem = new Itemized() {
-                        Name = "Traction® Tools"+ durationDesc,
-                        Price = plan.BaselinePrice*durationMult,
+                        Name = "Traction® Tools" + durationDesc,
+                        Price = plan.BaselinePrice * durationMult,
                         Quantity = 1,
                     };
                     itemized.Add(reviewItem);
@@ -398,7 +407,7 @@ namespace RadialReview.Accessors {
 
                 if (reviewEnabled) {
                     var reviewItem = new Itemized() {
-                        Name = "Quarterly Conversation"+durationDesc,
+                        Name = "Quarterly Conversation" + durationDesc,
                         Price = plan.ReviewPricePerPerson * durationMult,
                         Quantity = calc.NumberQCUsersToChargeFor//allPeopleList.Where(x => !x.IsClient).Count()
                     };
@@ -412,7 +421,7 @@ namespace RadialReview.Accessors {
                 }
                 if (l10Enabled) {
                     var l10Item = new Itemized() {
-                        Name = "L10 Meeting Software"+ durationDesc,
+                        Name = "L10 Meeting Software" + durationDesc,
                         Price = plan.L10PricePerPerson * durationMult,
                         Quantity = calc.NumberL10UsersToChargeFor,
                     };
@@ -446,7 +455,7 @@ namespace RadialReview.Accessors {
 
                 };
 
-                if (org != null && discountLookup.ContainsKey(org.AccountType) && itemized.Sum(x=>x.Total())!=0) {
+                if (org != null && discountLookup.ContainsKey(org.AccountType) && itemized.Sum(x => x.Total()) != 0) {
                     var total = itemized.Sum(x => x.Total());
                     itemized.Add(new Itemized() {
                         Name = discountLookup[org.AccountType],//"Discount (Implementer)",
@@ -454,7 +463,7 @@ namespace RadialReview.Accessors {
                         Quantity = 1,
                     });
                 }
-               
+
                 if (org != null && org.AccountType == AccountType.Cancelled) {
                     itemized = new List<Itemized>();
                 }
@@ -466,7 +475,7 @@ namespace RadialReview.Accessors {
         }
 
 
-        [Obsolete("Unsafe")]
+        [Obsolete("Use ExecuteInvoice instead. Unsafe")]
         public static async Task<PaymentResult> ChargeOrganizationAmount(ISession s, long organizationId, decimal amount, bool forceTest = false) {
             if (amount == 0) {
                 await EventUtil.Trigger(x => x.Create(s, EventType.PaymentFree, null, organizationId, ForModel.Create<OrganizationModel>(organizationId), message: "No Charge", arg1: 0m));
@@ -522,7 +531,7 @@ namespace RadialReview.Accessors {
         }
 
 
-        [Obsolete("Unsafe")]
+        [Obsolete("Do not use. Use ExecuteInvoice instead. Unsafe.")]
         public static async Task<PaymentResult> ChargeOrganizationAmount(long organizationId, decimal amount, bool useTest = false) {
             using (var s = HibernateSession.GetCurrentSession()) {
                 using (var tx = s.BeginTransaction()) {
@@ -539,7 +548,7 @@ namespace RadialReview.Accessors {
                 using (var tx = s.BeginTransaction()) {
                     if (!caller.User.IsRadialAdmin && organizationId != caller.Organization.Id)
                         throw new PermissionsException("Organization Ids do not match");
-                    
+
                     PermissionsUtility.Create(s, caller).EditCompanyPayment(organizationId);
                     var cards = s.QueryOver<PaymentSpringsToken>().Where(x => x.OrganizationId == organizationId && x.DeleteTime == null).List().ToList();
 

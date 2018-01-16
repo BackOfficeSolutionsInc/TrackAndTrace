@@ -172,6 +172,7 @@
     <Compile Include="Crosscutting\Flags\OrganizationFlag.cs" />
     <Compile Include="Crosscutting\Hooks\Interfaces\IOrganizationFlagHook.cs" />
     <Compile Include="Crosscutting\Hooks\Payment\CardExpireEmail.cs" />
+    <Compile Include="Crosscutting\Hooks\Payment\SetDelinquentFlag.cs" />
     <Compile Include="Exceptions\TestException.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\EventExecutor.cs" />
     <Compile Include="Crosscutting\EventAnalyzers\Events\Base\BaseL10EventAnalyzers.cs" />

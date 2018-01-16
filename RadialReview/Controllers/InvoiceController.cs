@@ -60,15 +60,15 @@ namespace RadialReview.Controllers {
         }
 
         [Access(AccessLevel.Radial)]
-        public JsonResult Forgive(long id, bool forgive = true) {
-            InvoiceAccessor.Forgive(GetUser(), id, forgive);
+        public async Task<JsonResult> Forgive(long id, bool forgive = true) {
+            await InvoiceAccessor.Forgive(GetUser(), id, forgive);
             return Json(ResultObject.SilentSuccess(new { id, forgive }), JsonRequestBehavior.AllowGet);
         }
 
         [Access(AccessLevel.Radial)]
-        public JsonResult MarkPaid(long id, bool paid = true, DateTime? time = null) {
+        public async Task<JsonResult> MarkPaid(long id, bool paid = true, DateTime? time = null) {
             time = time ?? DateTime.UtcNow;
-            InvoiceAccessor.MarkPaid(GetUser(), id, time.Value, paid);
+            await InvoiceAccessor.MarkPaid(GetUser(), id, time.Value, paid);
             return Json(ResultObject.SilentSuccess(new { id, paid, time = paid ? time : null }), JsonRequestBehavior.AllowGet);
         }
 

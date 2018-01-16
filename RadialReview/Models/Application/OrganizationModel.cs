@@ -169,6 +169,7 @@ namespace RadialReview.Models {
 			public virtual bool OnlySeeRocksAndScorecardBelowYou { get; set; }
 
             public virtual bool AllowAddClient { get; set; }
+
 			
 			public virtual bool EnableL10 { get; set; }
 			public virtual bool EnableReview { get; set; }
